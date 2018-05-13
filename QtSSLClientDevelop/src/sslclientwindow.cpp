@@ -14,9 +14,6 @@ SSLClient::SSLClient(QWidget *parent) :
 
     socket = new QSslSocket(this);
 
-    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-    ui->pteLog->appendPlainText(metaEnum.valueToKey(QAbstractSocket::ConnectedState));
-
 }
 
 SSLClient::~SSLClient()
