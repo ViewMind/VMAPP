@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>images/binding_bc_English.jpeg</file>
+        <file>images/binding_uc_English.jpeg</file>
+        <file>images/binding_uc_Spanish.jpeg</file>
+        <file>images/reading_English.jpeg</file>
+        <file>images/reading_Spanish.jpeg</file>
+        <file>images/fielding_English.jpeg</file>
+        <file>images/fielding_Spanish.jpeg</file>
+        <file>images/binding_bc_Spanish.jpeg</file>
+    </qresource>
+</RCC>

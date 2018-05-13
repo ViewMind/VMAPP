@@ -1,0 +1,22 @@
+2 LARGE_TARGETS
+0-test-01-different1 x d
+02     12
+ff01d5 81007f
+279c27 fa8071
+00     11
+7f8000 fed700
+279c27 fa8071
+0-test-02-same1 x s
+01     12
+279c27 fed700
+fed700 279c27
+00     10
+fed700 279c27
+279c27 fed700
+0-test-03-different2 x d
+00     10
+fed700 fa8071
+7f8000 4682b4
+01     12
+fed700 fa8071
+ff01d5 00e8e8

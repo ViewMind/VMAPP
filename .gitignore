@@ -1,0 +1,13 @@
+CodeRepository/*
+*.pro.user
+BindingDesigner/exe/
+*.qmake.stash
+*ui_*.h
+*MOCS*
+*OBJS*
+*Makefile*
+EyeExperimenter/exe/release/
+EyeReportGenerator/exe/release/
+QtSSLClientDevelop/exe/
+SSLServer/bin/release/
+

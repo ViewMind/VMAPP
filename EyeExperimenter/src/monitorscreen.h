@@ -1,0 +1,50 @@
+#ifndef MONITORSCREEN_H
+#define MONITORSCREEN_H
+
+#include <QWidget>
+#include <QGraphicsView>
+#include <QDesktopWidget>
+#include <QVBoxLayout>
+#include <QApplication>
+#include <QGraphicsScene>
+#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/Experiments/readingmanager.h"
+#include "../../CommonClasses/Experiments/fieldingmanager.h"
+#include "../../CommonClasses/Experiments/bindingmanager.h"
+
+
+class MonitorScreen : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit MonitorScreen(QWidget *parent = nullptr, const QRect &screen = QRect());
+    void setBackgroundBrush(const QBrush &brush);
+
+signals:
+
+public slots:
+    void updateBackground(const QPixmap &image);
+    void updateEyePositions(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
+
+private:
+    QGraphicsView *gview;    
+    ReadingManager reading;
+    BindingManager binding;
+    FieldingManager fielding;
+
+    // The graphical items
+    QGraphicsPixmapItem *background;
+    QGraphicsEllipseItem *leftEyeTracker;
+    QGraphicsEllipseItem *rightEyeTracker;
+    qreal R;
+
+    // Geomtric constants for scaling and offsetting.
+    qreal targetWidth;
+    qreal targetHeight;
+    qreal scale;
+    qreal offsetX;
+    qreal offsetY;
+
+};
+
+#endif // MONITORSCREEN_H

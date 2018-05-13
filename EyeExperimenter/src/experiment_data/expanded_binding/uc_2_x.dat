@@ -1,0 +1,295 @@
+2
+0-test-same-0 x s
+22     21     
+fed700 81007f 
+fa8071 4682b4 
+00     12     
+fed700 81007f 
+fa8071 4682b4 
+0-test-same-1 x s
+01     00     
+81007f 4682b4 
+b49299 279c27 
+11     22     
+81007f 4682b4 
+b49299 279c27 
+0-test-different-2 x d
+21     10     
+81007f 279c27 
+00e8e8 ff01d5 
+12     00     
+b49299 fa8071 
+00e8e8 ff01d5 
+0-test-different-3 x d
+20     12     
+fa8071 992a1b 
+ff01d5 7f8000 
+11     21     
+fed700 b49299 
+ff01d5 7f8000 
+0-test-same-4 x s
+11     21     
+fa8071 fed700 
+ff01d5 992a1b 
+22     20     
+fa8071 fed700 
+ff01d5 992a1b 
+0-test-different-5 x d
+00     21     
+fed700 fa8071 
+b49299 279c27 
+10     22     
+ff01d5 992a1b 
+b49299 279c27 
+0-test-different-6 x d
+01     02     
+81007f ff01d5 
+fed700 fa8071 
+22     12     
+b49299 4682b4 
+fed700 fa8071 
+0-test-same-7 x s
+11     02     
+7f8000 ff01d5 
+992a1b fa8071 
+20     21     
+7f8000 ff01d5 
+992a1b fa8071 
+0-test-different-8 x d
+00     22     
+b49299 4682b4 
+fed700 81007f 
+02     11     
+992a1b fa8071 
+fed700 81007f 
+0-test-different-9 x d
+01     10     
+ff01d5 fed700 
+81007f b49299 
+11     20     
+fa8071 992a1b 
+81007f b49299 
+01-trial-different-10 x d
+22     10     
+81007f ff01d5 
+4682b4 fa8071 
+21     12     
+fed700 b49299 
+4682b4 fa8071 
+02-trial-same-11 x s
+20     11     
+fa8071 992a1b 
+81007f fed700 
+00     21     
+fa8071 992a1b 
+81007f fed700 
+03-trial-same-12 x s
+10     02     
+00e8e8 7f8000 
+fed700 4682b4 
+00     01     
+00e8e8 7f8000 
+fed700 4682b4 
+04-trial-same-13 x s
+22     10     
+b49299 ff01d5 
+279c27 81007f 
+21     01     
+b49299 ff01d5 
+279c27 81007f 
+05-trial-same-14 x s
+12     01     
+b49299 81007f 
+4682b4 00e8e8 
+22     21     
+b49299 81007f 
+4682b4 00e8e8 
+06-trial-same-15 x s
+12     02     
+fed700 992a1b 
+7f8000 b49299 
+22     01     
+fed700 992a1b 
+7f8000 b49299 
+07-trial-different-16 x d
+01     02     
+81007f b49299 
+fa8071 fed700 
+10     11     
+ff01d5 992a1b 
+fa8071 fed700 
+08-trial-different-17 x d
+10     02     
+4682b4 ff01d5 
+b49299 fed700 
+11     01     
+fa8071 992a1b 
+b49299 fed700 
+09-trial-different-18 x d
+10     02     
+81007f 00e8e8 
+ff01d5 279c27 
+01     20     
+b49299 fa8071 
+ff01d5 279c27 
+10-trial-same-19 x s
+20     21     
+00e8e8 7f8000 
+b49299 fa8071 
+10     11     
+00e8e8 7f8000 
+b49299 fa8071 
+11-trial-same-20 x s
+01     21     
+fed700 fa8071 
+279c27 7f8000 
+02     12     
+fed700 fa8071 
+279c27 7f8000 
+12-trial-same-21 x s
+20     22     
+00e8e8 fed700 
+fa8071 ff01d5 
+02     12     
+00e8e8 fed700 
+fa8071 ff01d5 
+13-trial-same-22 x s
+01     11     
+81007f fa8071 
+4682b4 ff01d5 
+02     12     
+81007f fa8071 
+4682b4 ff01d5 
+14-trial-same-23 x s
+22     01     
+fa8071 b49299 
+7f8000 279c27 
+12     02     
+fa8071 b49299 
+7f8000 279c27 
+15-trial-different-24 x d
+20     22     
+279c27 7f8000 
+fed700 00e8e8 
+11     12     
+fa8071 b49299 
+fed700 00e8e8 
+16-trial-different-25 x d
+11     10     
+279c27 fa8071 
+ff01d5 992a1b 
+22     01     
+fed700 b49299 
+ff01d5 992a1b 
+17-trial-same-26 x s
+20     11     
+279c27 992a1b 
+4682b4 b49299 
+12     21     
+279c27 992a1b 
+4682b4 b49299 
+18-trial-different-27 x d
+12     11     
+fa8071 7f8000 
+81007f 4682b4 
+22     10     
+ff01d5 b49299 
+81007f 4682b4 
+19-trial-different-28 x d
+11     21     
+4682b4 992a1b 
+fa8071 00e8e8 
+00     02     
+b49299 ff01d5 
+fa8071 00e8e8 
+20-trial-different-29 x d
+11     01     
+992a1b 4682b4 
+7f8000 fed700 
+00     22     
+b49299 fa8071 
+7f8000 fed700 
+21-trial-same-30 x s
+00     10     
+992a1b ff01d5 
+fed700 00e8e8 
+21     22     
+992a1b ff01d5 
+fed700 00e8e8 
+22-trial-different-31 x d
+12     00     
+ff01d5 b49299 
+81007f 4682b4 
+01     21     
+fa8071 992a1b 
+81007f 4682b4 
+23-trial-same-32 x s
+21     12     
+7f8000 00e8e8 
+ff01d5 992a1b 
+00     01     
+7f8000 00e8e8 
+ff01d5 992a1b 
+24-trial-different-33 x d
+01     12     
+fed700 279c27 
+992a1b 7f8000 
+21     11     
+b49299 fa8071 
+992a1b 7f8000 
+25-trial-different-34 x d
+22     21     
+7f8000 279c27 
+81007f fed700 
+01     20     
+fa8071 b49299 
+81007f fed700 
+26-trial-different-35 x d
+20     11     
+b49299 81007f 
+ff01d5 4682b4 
+22     12     
+fa8071 992a1b 
+ff01d5 4682b4 
+27-trial-different-36 x d
+21     02     
+7f8000 ff01d5 
+b49299 fed700 
+01     22     
+fa8071 992a1b 
+b49299 fed700 
+28-trial-same-37 x s
+12     22     
+7f8000 992a1b 
+00e8e8 fa8071 
+00     10     
+7f8000 992a1b 
+00e8e8 fa8071 
+29-trial-same-38 x s
+20     22     
+279c27 992a1b 
+4682b4 fed700 
+01     12     
+279c27 992a1b 
+4682b4 fed700 
+30-trial-different-39 x d
+01     12     
+fa8071 81007f 
+ff01d5 4682b4 
+22     10     
+fed700 b49299 
+ff01d5 4682b4 
+31-trial-same-40 x s
+20     11     
+279c27 992a1b 
+b49299 fed700 
+10     12     
+279c27 992a1b 
+b49299 fed700 
+32-trial-different-41 x d
+21     22     
+fed700 ff01d5 
+279c27 81007f 
+10     02     
+fa8071 b49299 
+279c27 81007f 

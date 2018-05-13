@@ -1,0 +1,10 @@
+#--------------------------------------------------------------------------------------#
+#                        SSLServerManager Configuration File                           #
+#--------------------------------------------------------------------------------------#
+
+
+# Output directory. This is where the received information will be stored.
+output_dir = /home/ariela/Workspace/RececivedClientFiles;
+
+# The port for the TCP Server Connection.
+TCPPort = 54912;
