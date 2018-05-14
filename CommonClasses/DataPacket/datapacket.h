@@ -27,7 +27,7 @@ public:
     QByteArray toByteArray() const;
 
     // Load the information from a existing byte array.
-    void fromByteArray(const QByteArray &array);
+    bool fromByteArray(const QByteArray &array);
 
     // Saves a particular field as a file in the specified directory.
     bool saveFile (const QString &directory, qint32 fieldIndex);

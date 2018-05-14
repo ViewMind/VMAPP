@@ -50,6 +50,9 @@ void SSLManager::on_newConnection(){
 
 // Handling all signals
 void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
+
+    QByteArray ba;
+
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
         addMessage("LOG","Lost connection from: " + sockets.value(socket)->socket()->peerAddress().toString());
@@ -62,6 +65,8 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
         socketErrorFound(socket);
         break;
     case SSLIDSocket::SSL_SIGNAL_READY_READ:
+        ba = sockets.value(socket)->socket()->readAll();
+        addMessage("LOG","Received " + QString::number(ba.size()) + " bytes");
         break;
     case SSLIDSocket::SSL_SIGNAL_SSL_ERROR:
         sslErrorsFound(socket);

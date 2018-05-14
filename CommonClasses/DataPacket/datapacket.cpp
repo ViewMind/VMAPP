@@ -78,10 +78,14 @@ QByteArray DataPacket::toByteArray() const{
 
     }
 
-    return ans;
+    // Adding the total byte size at the beginning
+    QByteArray size = sizeToByteArray(ans.size());
+    size.append(ans);
+
+    return size;
 }
 
-void DataPacket::fromByteArray(const QByteArray &array){
+bool DataPacket::fromByteArray(const QByteArray &array){
 
     qint32 i = 0;
     QByteArray temp;
@@ -90,6 +94,15 @@ void DataPacket::fromByteArray(const QByteArray &array){
     QString str;
     qreal value;
     QList<QVariant> list;
+
+    // Getting the total packet size
+    for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
+        temp.append(array.at(i)); i++;
+    }
+    quint32 totalPacketSize = byteArrayToSize(temp);
+    if ((array.size() - BYTES_FOR_SIZE) != totalPacketSize){
+        return false;
+    }
 
     while (i < array.size()){
 
@@ -167,6 +180,8 @@ void DataPacket::fromByteArray(const QByteArray &array){
         fields << f;
 
     }
+
+    return true;
 
 }
 

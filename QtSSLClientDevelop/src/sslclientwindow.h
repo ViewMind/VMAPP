@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtNetwork/QSslSocket>
 #include <QMetaEnum>
+#include "../../CommonClasses/DataPacket/datapacket.h"
 
 namespace Ui {
 class SSLClient;

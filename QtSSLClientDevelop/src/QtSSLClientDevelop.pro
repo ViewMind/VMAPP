@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    sslclientwindow.cpp
+    sslclientwindow.cpp \
+    ../../CommonClasses/DataPacket/datapacket.cpp
 
 HEADERS += \
-    sslclientwindow.h
+    sslclientwindow.h \
+    ../../CommonClasses/DataPacket/datapacket.h
 
 FORMS += \
     sslclientwindow.ui
