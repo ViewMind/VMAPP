@@ -100,7 +100,7 @@ bool DataPacket::fromByteArray(const QByteArray &array){
         temp.append(array.at(i)); i++;
     }
     quint32 totalPacketSize = byteArrayToSize(temp);
-    if ((array.size() - BYTES_FOR_SIZE) != totalPacketSize){
+    if (((quint32) array.size() - BYTES_FOR_SIZE) != totalPacketSize){
         return false;
     }
 
