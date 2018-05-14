@@ -31,6 +31,11 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
 
     sslManager.startServer((quint16) config.getInt(CONFIG_TCP_PORT));
 
+    if (!QSslSocket::supportsSsl()){
+        log.appendError("No support for SSL found. Cannot continue");
+        return;
+    }
+
     log.appendStandard("Starting server...");
 
 }

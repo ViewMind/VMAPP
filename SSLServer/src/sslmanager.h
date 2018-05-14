@@ -20,6 +20,7 @@ public:
 
 private slots:
     void on_newConnection();
+    void on_lostConnection();
     void on_newSSLSignal(quint64 socket, quint8 signaltype);
 
 signals:
