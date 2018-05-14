@@ -85,10 +85,23 @@ QByteArray DataPacket::toByteArray() const{
     return size;
 }
 
-bool DataPacket::fromByteArray(const QByteArray &array){
+bool DataPacket::bufferByteArray(const QByteArray &array){
 
-    qint32 i = 0;
     QByteArray temp;
+    if (buffer.size() < BYTES_FOR_SIZE){
+        buffer.append(array);
+
+        if (buffer.size() >= BYTES_FOR_SIZE){
+            for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
+                temp.append(buffer.at(i)); i++;
+            }
+            packetSize = byteArrayToSize(temp);
+        }
+
+        return false;
+    }
+
+    qint32 i = BYTES_FOR_SIZE;
     quint32 nameSize = 0;
     quint32 strSize = 0;
     QString str;
@@ -106,7 +119,7 @@ bool DataPacket::fromByteArray(const QByteArray &array){
 
     while (i < array.size()){
 
-        quint8 identifier = (quint8) array.at(i);
+        quint8 identifier = (quint8) buffer.at(i);
         DataPacketFieldType dpft = (DataPacketFieldType) identifier;
         i++;
         Field f;
@@ -118,28 +131,28 @@ bool DataPacket::fromByteArray(const QByteArray &array){
             // Getting the size of the file name.
             temp.clear();
             for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
-                temp.append(array.at(i)); i++;
+                temp.append(buffer.at(i)); i++;
             }
             nameSize = byteArrayToSize(temp);
 
             // Getting the file name.
             temp.clear();
             for (quint32 j = 0; j < nameSize; j++){
-                temp.append(array.at(i)); i++;
+                temp.append(buffer.at(i)); i++;
             }
             str = QString(temp);
 
             // Getting the file size.
             temp.clear();
             for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
-                temp.append(array.at(i)); i++;
+                temp.append(buffer.at(i)); i++;
             }
             strSize = byteArrayToSize(temp);
 
             // Getting the file data.
             temp.clear();
             for (quint32 j = 0; j < strSize; j++){
-                temp.append(array.at(i)); i++;
+                temp.append(buffer.at(i)); i++;
             }
 
             list << str << temp;
@@ -151,7 +164,7 @@ bool DataPacket::fromByteArray(const QByteArray &array){
             // This is always 8 bytes.
             temp.clear();
             for (qint32 j = 0; j < BYTES_FOR_REAL; j++){
-                temp.append(array.at(i)); i++;
+                temp.append(buffer.at(i)); i++;
             }
             value = *reinterpret_cast<const qreal*>(temp.data());
             f.data = value;
@@ -162,14 +175,14 @@ bool DataPacket::fromByteArray(const QByteArray &array){
             // Getting the size of the string
             temp.clear();
             for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
-                temp.append(array.at(i)); i++;
+                temp.append(buffer.at(i)); i++;
             }
             strSize = byteArrayToSize(temp);
 
             // Getting the string
             temp.clear();
             for (quint32 j = 0; j < nameSize; j++){
-                temp.append(array.at(i)); i++;
+                temp.append(buffer.at(i)); i++;
             }
             str = QString(temp);
 

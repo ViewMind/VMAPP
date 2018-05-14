@@ -26,8 +26,11 @@ public:
     // Transforms packet into a byte array to send.
     QByteArray toByteArray() const;
 
+    // Clear buffered data
+    void clearBufferedData() const { buffer.clear(); packetSize = 0;}
+
     // Load the information from a existing byte array.
-    bool fromByteArray(const QByteArray &array);
+    bool bufferByteArray(const QByteArray &array);
 
     // Saves a particular field as a file in the specified directory.
     bool saveFile (const QString &directory, qint32 fieldIndex);
@@ -37,6 +40,14 @@ public:
     static quint32 byteArrayToSize(const QByteArray &size);
 
 private:
+
+    // The buffer array.
+    QByteArray buffer;
+
+    // Expected number of bytes to arrive
+    quint32 packetSize;
+
+    // The data
     Fields fields;
 
     // Generic interface to add a field as is.

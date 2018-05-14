@@ -4,6 +4,7 @@
 #include <QMetaEnum>
 #include <QHash>
 #include "../../CommonClasses/SSLIDSocket/sslidsocket.h"
+#include "../../CommonClasses/DataPacket/datapacket.h"
 #include "ssllistener.h"
 
 class SSLManager: public QObject
@@ -30,6 +31,9 @@ private:
 
     // Listens for incoming connections and enables de SSL capabilities by using a QSSLSocket
     SSLListener *listener;
+
+    // Current data packet
+    DataPacket receivingData;
 
     // The queue of information that needs to be processed
     QHash<quint64,SSLIDSocket*> sockets;
