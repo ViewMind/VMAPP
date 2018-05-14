@@ -50,6 +50,10 @@ void SSLManager::on_newConnection(){
     sslsocket->setLocalCertificate(":/certificates/server.csr");
     sslsocket->setPeerVerifyMode(QSslSocket::VerifyNone);
     sslsocket->startServerEncryption();
+
+    // TODO This should be moved to where the socke is acknowledged to start transmitting.
+    receivingData.clearBufferedData();
+
 }
 
 // Handling all signals
@@ -72,7 +76,12 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
         break;
     case SSLIDSocket::SSL_SIGNAL_READY_READ:
         ba = sockets.value(socket)->socket()->readAll();
-        addMessage("LOG","Received " + QString::number(ba.size()) + " bytes");
+        if (receivingData.bufferByteArray(ba)){
+            addMessage("SUCCESS","Finished receiving the packet");
+        }
+        else {
+            addMessage("LOG","Received " + QString::number(ba.size()) + " bytes");
+        }
         break;
     case SSLIDSocket::SSL_SIGNAL_SSL_ERROR:
         sslErrorsFound(socket);
