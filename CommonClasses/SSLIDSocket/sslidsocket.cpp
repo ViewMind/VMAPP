@@ -12,14 +12,16 @@ SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id):QObject()
     ID = id;
     if (newSocket == nullptr) return;
 
+    sslSocket = newSocket;
+
     // Creating all the connections from signals and slots.
     connect(sslSocket,&QSslSocket::encrypted,this,&SSLIDSocket::on_encryptedSuccess);
     connect(sslSocket,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
-//    connect(sslSocket,&QSslSocket::sslErrors,this,&SSLIDSocket::on_sslErrors);
-//    connect(sslSocket,&QSslSocket::stateChanged,this,&SSLIDSocket::on_socketStateChanged);
-//    connect(sslSocket,&QSslSocket::error,this,&SSLIDSocket::on_socketError);
-//    connect(sslSocket,&QSslSocket::readyRead,this,&SSLIDSocket::on_readyRead);
-//    connect(sslSocket,&QSslSocket::disconnected,this,&SSLIDSocket::on_disconnected);
+    connect(sslSocket,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(on_sslErrors(QList<QSslError>)));
+    connect(sslSocket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(on_socketStateChanged(QAbstractSocket::SocketState)));
+    connect(sslSocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(on_socketError(QAbstractSocket::SocketError)));
+    connect(sslSocket,&QSslSocket::readyRead,this,&SSLIDSocket::on_readyRead);
+    connect(sslSocket,&QSslSocket::disconnected,this,&SSLIDSocket::on_disconnected);
 }
 
 

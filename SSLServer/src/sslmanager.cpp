@@ -1,5 +1,3 @@
-//QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-//ui->pteLog->appendPlainText(QString("SOCKET STATE: ") + metaEnum.valueToKey(state));
 #include "sslmanager.h"
 
 SSLManager::SSLManager(QObject *parent):QObject(parent)
@@ -12,6 +10,7 @@ SSLManager::SSLManager(QObject *parent):QObject(parent)
 
     // Listen for new connections.
     connect(listener,&SSLListener::newConnection,this,&SSLManager::on_newConnection);
+    connect(listener,&SSLListener::lostConnection,this,&SSLManager::on_lostConnection);
 }
 
 void SSLManager::startServer(quint16 port){
@@ -21,10 +20,15 @@ void SSLManager::startServer(quint16 port){
     }
 }
 
+void SSLManager::on_lostConnection(){
+    addMessage("WARNING","Lost connection from the SSL Listener!!!");
+}
+
 void SSLManager::on_newConnection(){
 
     // New connection is available.
-    QSslSocket *sslsocket = dynamic_cast<QSslSocket*>(listener->nextPendingConnection());
+    //QSslSocket *sslsocket = dynamic_cast<QSslSocket*>(listener->nextPendingConnection());
+    QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
     SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen);
 
     if (!socket->isValid()) {
@@ -39,7 +43,7 @@ void SSLManager::on_newConnection(){
     queue << socket->getID();
 
     // Doing the connection SIGNAL-SLOT
-    //connect(&socket,&SSLIDSocket::sslSignal,this,&SSLManager::on_newSSLSignal);
+    connect(socket,&SSLIDSocket::sslSignal,this,&SSLManager::on_newSSLSignal);
 
     // The SSL procedure.
     sslsocket->setPrivateKey(":/certificates/server.key");
@@ -52,8 +56,10 @@ void SSLManager::on_newConnection(){
 void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
-        addMessage("LOG","Lost connection from: " + sockets.value(socket)->socket()->peerAddress().toString());
-        removeSocket(socket);
+        if (sockets.contains(socket)){
+            addMessage("LOG","Lost connection from: " + sockets.value(socket)->socket()->peerAddress().toString());
+            removeSocket(socket);
+        }
         break;
     case SSLIDSocket::SSL_SIGNAL_ENCRYPTED:
         addMessage("SUCCESS","SSL Handshake completed for address: " + sockets.value(socket)->socket()->peerAddress().toString());
@@ -74,6 +80,10 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
 
 void SSLManager::socketErrorFound(quint64 id){
 
+    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+    // be removed once. After that, te program crashes.
+    if (!sockets.contains(id)) return;
+
     QAbstractSocket::SocketError error = sockets.value(id)->socket()->error();
     QHostAddress addr = sockets.value(id)->socket()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
@@ -85,6 +95,11 @@ void SSLManager::socketErrorFound(quint64 id){
 }
 
 void SSLManager::sslErrorsFound(quint64 id){
+
+    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+    // be removed once. After that, te program crashes.
+    if (!sockets.contains(id)) return;
+
     QList<QSslError> errorlist = sockets.value(id)->socket()->sslErrors();
     QHostAddress addr = sockets.value(id)->socket()->peerAddress();
     for (qint32 i = 0; i < errorlist.size(); i++){
@@ -97,10 +112,16 @@ void SSLManager::sslErrorsFound(quint64 id){
 }
 
 void SSLManager::changedState(quint64 id){
+
+    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+    // be removed once. After that, te program crashes.
+    if (!sockets.contains(id)) return;
+
     QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
     QHostAddress addr = sockets.value(id)->socket()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
     addMessage(addr.toString(),QString("New socket state, ") + metaEnum.valueToKey(state));
+
 }
 
 void SSLManager::addMessage(const QString &type, const QString &msg){

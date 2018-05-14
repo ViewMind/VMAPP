@@ -85,10 +85,10 @@ void DataPacket::fromByteArray(const QByteArray &array){
 
     qint32 i = 0;
     QByteArray temp;
-    quint32 nameSize;
-    quint32 strSize;
+    quint32 nameSize = 0;
+    quint32 strSize = 0;
     QString str;
-    qreal value;
+    qreal value = 0;
     QList<QVariant> list;
 
     while (i < array.size()){

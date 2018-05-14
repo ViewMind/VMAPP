@@ -70,7 +70,7 @@ bool ConfigurationManager::loadConfiguration(const QString &file, const char* te
             }
             break;
         case PS_END_COMMENT:
-            if (c == "\n") state = PS_NAME_OR_COMMENT;
+            if (c == '\n') state = PS_NAME_OR_COMMENT;
             break;
         case PS_NAME_OR_COMMENT:
             if (c.isSpace()){
@@ -291,7 +291,6 @@ bool ConfigurationManager::verifyParsedCommands(){
 QString ConfigurationManager::checkValidtyQVariant(const QVariant &data, const QString &keyword, ValueType type){
     //qWarning() << keyword << "::" << data;
     bool ok;
-    qreal test;
     switch (type){
     case VT_BOOL:
         if (!data.canConvert(QMetaType::Bool)){
@@ -299,13 +298,13 @@ QString ConfigurationManager::checkValidtyQVariant(const QVariant &data, const Q
         }
         break;
     case VT_INT:
-        test = data.toInt(&ok);
+        data.toInt(&ok);
         if (!ok){
             return  "On keyword " + keyword + " value is invalid integer";
         }
         break;
     case VT_REAL:
-        test = data.toDouble(&ok);
+        data.toDouble(&ok);
         if (!ok){
             return  "On keyword " + keyword + " value is invalid as real number";
         }
@@ -315,6 +314,8 @@ QString ConfigurationManager::checkValidtyQVariant(const QVariant &data, const Q
             return  "On keyword " + keyword + " value is invalid string";
         }
         break;
+    default:
+        return "";
     }
     return "";
 }
