@@ -77,6 +77,7 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
     case SSLIDSocket::SSL_SIGNAL_READY_READ:
         ba = sockets.value(socket)->socket()->readAll();
         if (receivingData.bufferByteArray(ba)){
+            qWarning() << "ACA TOY";
             addMessage("SUCCESS","Finished receiving the packet");
         }
         else {
