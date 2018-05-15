@@ -8,7 +8,7 @@
 #include <QProcess>
 #include <QTimer>
 
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "eyedataprocessingthread.h"

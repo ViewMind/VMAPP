@@ -7,7 +7,7 @@
  * generic representation of that trials info
  * ********************************************/
 
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 #include "csvcheckedreader.h"
 #include <QtMath>
 

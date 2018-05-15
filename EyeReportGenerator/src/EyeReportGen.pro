@@ -39,7 +39,7 @@ HEADERS  += eyereportui.h \
     eyedataprocessingthread.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ../../CommonClasses/LogInterface/loginterface.h \
-    ../../CommonClasses/Experiments/common.h \
+    ../../CommonClasses/common.h \
     EyeMatrixProcessor/eyematrixprocessor.h \
     EyeMatrixGenerator/edpbase.h \
     EyeMatrixGenerator/edpreading.h \

@@ -1,7 +1,7 @@
 #ifndef IMAGEREPORTDRAWER_H
 #define IMAGEREPORTDRAWER_H
 
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
