@@ -53,6 +53,9 @@ private:
     // Remove form the map and the list
     void removeSocket(quint64 id);
 
+    // Process the received data.
+    void processDataPacket();
+
     // Emmitting the message signal
     void addMessage(const QString &type, const QString &msg);
 

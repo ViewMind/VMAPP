@@ -78,6 +78,7 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
         ba = sockets.value(socket)->socket()->readAll();
         if (receivingData.bufferByteArray(ba)){
             addMessage("SUCCESS","Finished receiving the packet");
+            processDataPacket();
         }
         else {
             addMessage("LOG","Received " + QString::number(ba.size()) + " bytes");
@@ -89,6 +90,28 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
     case SSLIDSocket::SSL_SIGNAL_STATE_CHANGED:
         changedState(socket);
         break;
+    }
+}
+
+void SSLManager::processDataPacket(){
+    QString outputDirectory = "C:/Users/Viewmind/Documents/ExperimentOutputs/01_test_output";
+
+    for (qint32 i = 0; i < receivingData.fieldList().size(); i++){
+        if (receivingData.fieldList().at(i).fieldType == DPFT_FILE){
+            if (!receivingData.saveFile(outputDirectory,i)){
+                addMessage("ERROR", "Could not save file field " + QString::number(i));
+            }
+            else addMessage("LOG", "Saved file field " + QString::number(i));
+        }
+        else if (receivingData.fieldList().at(i).fieldType == DPFT_REAL_VALUE){
+            addMessage("LOG","Received value : " + QString::number(receivingData.fieldList().at(i).data.toDouble()));
+        }
+        else if (receivingData.fieldList().at(i).fieldType == DPFT_STRING) {
+            addMessage("LOG","Received string : " + receivingData.fieldList().at(i).data.toString());
+        }
+        else{
+            addMessage("ERROR","Received unknown field type");
+        }
     }
 }
 

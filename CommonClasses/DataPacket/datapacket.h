@@ -35,6 +35,9 @@ public:
     // Saves a particular field as a file in the specified directory.
     bool saveFile (const QString &directory, qint32 fieldIndex);
 
+    // Direct access to the field list.
+    Fields fieldList() const {return fields;}
+
     // Transform a size to a numberic representation of 4 bytes.
     static QByteArray sizeToByteArray(quint32 size);
     static quint32 byteArrayToSize(const QByteArray &size);
