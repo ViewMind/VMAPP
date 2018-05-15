@@ -77,7 +77,7 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
     case SSLIDSocket::SSL_SIGNAL_READY_READ:
         ba = sockets.value(socket)->socket()->readAll();
         if (receivingData.bufferByteArray(ba)){
-            addMessage("SUCCESS","Finished receiving the packet");
+            addMessage("SUCCESS","Finished receiving the packet with fields: " + QString::number(receivingData.fieldList().size()));
             processDataPacket();
         }
         else {
@@ -94,7 +94,7 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
 }
 
 void SSLManager::processDataPacket(){
-    QString outputDirectory = "C:/Users/Viewmind/Documents/ExperimentOutputs/01_test_output";
+    QString outputDirectory = "/home/ariela/Workspace/ET/test_output";
 
     for (qint32 i = 0; i < receivingData.fieldList().size(); i++){
         if (receivingData.fieldList().at(i).fieldType == DPFT_FILE){

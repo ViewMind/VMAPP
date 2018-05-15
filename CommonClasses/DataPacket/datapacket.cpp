@@ -88,9 +88,9 @@ QByteArray DataPacket::toByteArray() const{
 bool DataPacket::bufferByteArray(const QByteArray &array){
 
     QByteArray temp;
+
     if (buffer.size() < BYTES_FOR_SIZE){
         buffer.append(array);
-
         if (buffer.size() >= BYTES_FOR_SIZE){
             for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
                 temp.append(buffer.at(j));
@@ -100,6 +100,10 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
 
         return false;
     }
+    else{
+        buffer.append(array);
+        if ((quint32)buffer.size() < packetSize + BYTES_FOR_SIZE) return false;
+    }
 
     qint32 i = BYTES_FOR_SIZE;
     quint32 nameSize = 0;
@@ -107,15 +111,6 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
     QString str;
     qreal value = 0;
     QList<QVariant> list;
-
-    // Getting the total packet size
-    for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
-        temp.append(array.at(i)); i++;
-    }
-    quint32 totalPacketSize = byteArrayToSize(temp);
-    if (((quint32) array.size() - BYTES_FOR_SIZE) != totalPacketSize){
-        return false;
-    }
 
     while (i < buffer.size()){
 
@@ -188,10 +183,11 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
 
             f.data = str;
             break;
+        default:
+            qWarning() << "Unknown field type" << dpft << identifier;
         }
 
         fields << f;
-
     }
 
     return true;
