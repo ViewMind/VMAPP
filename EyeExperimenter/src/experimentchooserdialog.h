@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QFile>
 #include <QTextStream>
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 
 namespace Ui {
 class ExperimentChooserDialog;

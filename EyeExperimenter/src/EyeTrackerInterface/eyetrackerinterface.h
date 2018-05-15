@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QString>
 #include "eyetrackerdata.h"
-#include "../../../CommonClasses/Experiments/common.h"
+#include "../../../CommonClasses/common.h"
 
 class EyeTrackerInterface : public QObject
 {

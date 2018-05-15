@@ -37,7 +37,7 @@ typedef enum {TSF_START,
 // Typedefs for the type of information in a data packet.
 typedef enum {DPFT_FILE = 0, DPFT_REAL_VALUE = 1, DPFT_STRING = 2} DataPacketFieldType;
 
-#define   EXPERIMENTER_VERSION                          "1.0.1"
+#define   EXPERIMENTER_VERSION                          "1.0.2"
 #define   EYE_REP_GEN_VERSION                           "1.1"
 #define   SERVER_MANAGER_VERSION                        "1.0"
 

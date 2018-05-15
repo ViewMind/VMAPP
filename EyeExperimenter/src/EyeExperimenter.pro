@@ -51,9 +51,9 @@ HEADERS  += maingui.h \
     Experiments/readingexperiment.h \
     Experiments/imageexperiment.h \
     Experiments/fieldingexperiment.h \
+    ../../CommonClasses/common.h \
     ../../CommonClasses/LogInterface/loginterface.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
-    ../../CommonClasses/Experiments/common.h \
     ../../CommonClasses/Experiments/fieldingmanager.h \
     ../../CommonClasses/Experiments/phrases.h \
     ../../CommonClasses/Experiments/readingmanager.h \
