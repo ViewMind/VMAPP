@@ -52,6 +52,8 @@ void SSLClient::on_encryptedSuccess(){
     dp.addString("Este es mi primer paquete");
     dp.addValue(-6988.7);
 
+    qWarning() << "Number of fields" << dp.fieldList().size();
+
     // Sending the raw data.
     QByteArray dataToWrite = dp.toByteArray();
     ui->pteLog->appendPlainText("Sending the raw data: " + QString::number(dataToWrite.size()));

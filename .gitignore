@@ -12,4 +12,4 @@ QtSSLClientDevelop/exe/
 SSLServer/bin/release/
 SSLServer/bin/SSLServer
 SSLServer/bin/qrc_certificates.cpp
-
+*.tmp*

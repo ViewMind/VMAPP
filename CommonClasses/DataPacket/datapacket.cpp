@@ -9,7 +9,7 @@ bool DataPacket::addFile(const QString &fileName){
     // Checking the file exists and getting its complete name (filename + extension).
     QFileInfo info(fileName);
     if (!info.exists())  return false;
-    QString fname = info.completeBaseName();
+    QString fname = info.completeBaseName() + "." + info.completeSuffix();
 
     // Getting the files as raw information.
     QFile file(fileName);
@@ -43,7 +43,7 @@ void DataPacket::addField(DataPacketFieldType dpft, const QVariant &data){
 
 QByteArray DataPacket::toByteArray() const{
 
-    QByteArray ans;
+    QByteArray ans;    
 
     for (qint32 i = 0; i < fields.size(); i++){
 
@@ -117,7 +117,7 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
         return false;
     }
 
-    while (i < array.size()){
+    while (i < buffer.size()){
 
         quint8 identifier = (quint8) buffer.at(i);
         DataPacketFieldType dpft = (DataPacketFieldType) identifier;
@@ -181,7 +181,7 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
 
             // Getting the string
             temp.clear();
-            for (quint32 j = 0; j < nameSize; j++){
+            for (quint32 j = 0; j < strSize; j++){
                 temp.append(buffer.at(i)); i++;
             }
             str = QString(temp);
