@@ -102,11 +102,8 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
     }
     else{
         buffer.append(array);
-        //qWarning() << "Expecting size" << packetSize + BYTES_FOR_SIZE << " and have now" << buffer.size();
         if ((quint32)buffer.size() < packetSize + BYTES_FOR_SIZE) return false;
     }
-
-    qWarning() << "SEGUI";
 
     qint32 i = BYTES_FOR_SIZE;
     quint32 nameSize = 0;
@@ -115,7 +112,7 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
     qreal value = 0;
     QList<QVariant> list;
 
-    while (i < array.size()){
+    while (i < buffer.size()){
 
         quint8 identifier = (quint8) buffer.at(i);
         DataPacketFieldType dpft = (DataPacketFieldType) identifier;
@@ -179,17 +176,18 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
 
             // Getting the string
             temp.clear();
-            for (quint32 j = 0; j < nameSize; j++){
+            for (quint32 j = 0; j < strSize; j++){
                 temp.append(buffer.at(i)); i++;
             }
             str = QString(temp);
 
             f.data = str;
             break;
+        default:
+            qWarning() << "Unknown field type" << dpft << identifier;
         }
 
         fields << f;
-
     }
 
     return true;
