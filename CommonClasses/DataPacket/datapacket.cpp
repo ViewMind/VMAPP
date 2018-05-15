@@ -93,7 +93,7 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
 
         if (buffer.size() >= BYTES_FOR_SIZE){
             for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
-                temp.append(buffer.at(i)); i++;
+                temp.append(buffer.at(j));
             }
             packetSize = byteArrayToSize(temp);
         }

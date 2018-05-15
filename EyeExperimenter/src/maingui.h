@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "../../CommonClasses/LogInterface/loginterface.h"
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 
 #include "experimentchooserdialog.h"
 #include "eyetrackerselectiondialog.h"

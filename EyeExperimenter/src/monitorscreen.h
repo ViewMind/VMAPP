@@ -7,7 +7,7 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QGraphicsScene>
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/Experiments/readingmanager.h"
 #include "../../CommonClasses/Experiments/fieldingmanager.h"
 #include "../../CommonClasses/Experiments/bindingmanager.h"

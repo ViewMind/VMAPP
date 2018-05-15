@@ -27,7 +27,7 @@ public:
     QByteArray toByteArray() const;
 
     // Clear buffered data
-    void clearBufferedData() const { buffer.clear(); packetSize = 0;}
+    void clearBufferedData() { buffer.clear(); packetSize = 0;}
 
     // Load the information from a existing byte array.
     bool bufferByteArray(const QByteArray &array);

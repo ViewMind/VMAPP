@@ -8,7 +8,7 @@
 #include <QVBoxLayout>
 #include <QKeyEvent>
 
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 
 class InstructionDialog : public QDialog
 {

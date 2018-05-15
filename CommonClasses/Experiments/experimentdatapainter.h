@@ -1,7 +1,7 @@
 #ifndef EXPERIMENTDATAPAINTER_H
 #define EXPERIMENTDATAPAINTER_H
 
-#include "common.h"
+#include "../common.h"
 
 class ExperimentDataPainter
 {

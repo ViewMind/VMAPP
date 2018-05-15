@@ -16,7 +16,7 @@
 #include "../monitorscreen.h"
 #include "../EyeTrackerInterface/eyetrackerdata.h"
 #include "../../../CommonClasses/Experiments/experimentdatapainter.h"
-#include "../../../CommonClasses/Experiments/common.h"
+#include "../../../CommonClasses/common.h"
 
 class Experiment : public QWidget
 {

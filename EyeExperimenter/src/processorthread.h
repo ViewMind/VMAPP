@@ -3,7 +3,7 @@
 
 #include <QThread>
 #include <QProcess>
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 
 class ProcessorThread : public QThread
 {

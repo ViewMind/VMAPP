@@ -53,12 +53,12 @@ void SSLClient::on_encryptedSuccess(){
     dp.addValue(-6988.7);
 
     // Sending the raw data.
-    ui->pteLog->appendPlainText("Sending the raw data: " + QString::number(dp.toByteArray().size()));
+    QByteArray dataToWrite = dp.toByteArray();
+    ui->pteLog->appendPlainText("Sending the raw data: " + QString::number(dataToWrite.size()));
 
-    qint64 num = socket->write(dp.toByteArray().constData());
+    qint64 num = socket->write(dp.toByteArray().constData(),dataToWrite.size());
 
     ui->pteLog->appendPlainText("Number of bytes actually sent: " + QString::number(num));
-
 
 }
 

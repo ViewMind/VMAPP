@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QDir>
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/Experiments/readingmanager.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 
