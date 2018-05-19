@@ -14,6 +14,8 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QImage>
+#include <QDir>
+#include <QStringList>
 
 // Common classes
 #include "ConfigurationManager/configurationmanager.h"
@@ -34,8 +36,6 @@ typedef enum {TSF_START,
               TSF_SHOW_BLANK_2,
               TSF_SHOW_BLANK_1} TrialStateFielding;                                                       // State machine states for Fielding
 
-// Typedefs for the type of information in a data packet.
-typedef enum {DPFT_FILE = 0, DPFT_REAL_VALUE = 1, DPFT_STRING = 2} DataPacketFieldType;
 
 #define   EXPERIMENTER_VERSION                          "1.0.2"
 #define   EYE_REP_GEN_VERSION                           "1.1"
@@ -50,6 +50,30 @@ typedef enum {DPFT_FILE = 0, DPFT_REAL_VALUE = 1, DPFT_STRING = 2} DataPacketFie
 // Constant sizes for information
 #define   BYTES_FOR_SIZE                                4
 #define   BYTES_FOR_REAL                                8
+
+// Constants to define field types and field information in data packests
+#define   DPFT_FILE                                     0
+#define   DPFT_REAL_VALUE                               1
+#define   DPFT_STRING                                   2
+
+#define   DPFI_DOCTOR_ID                                0
+#define   DPFI_PATIENT_ID                               1
+#define   DPFI_BINDING_UC                               2
+#define   DPFI_BINDING_BC                               3
+#define   DPFI_READING                                  4
+#define   DPFI_AGE                                      5
+#define   DPFI_SEND_INFORMATION                         6
+#define   DPFI_REPORT                                   7
+
+// Results when buffering the data in a data packet.
+#define   DATABUFFER_RESULT_NOT_DONE                    0
+#define   DATABUFFER_RESULT_ERROR                       1
+#define   DATABUFFER_RESULT_DONE                        2
+
+// Default timeout times in ms
+#define   DEFAULT_TIMEOUT_CONNECTION                    60000
+#define   DEFAULT_TIMEOUT_WAIT_ACK                      60000
+#define   DEFAULT_TIMEOUT_WAIT_REPORT                   120000
 
 #define   COMMON_TEXT_CODEC                             "UTF-8"
 
@@ -69,6 +93,7 @@ typedef enum {DPFT_FILE = 0, DPFT_REAL_VALUE = 1, DPFT_STRING = 2} DataPacketFie
 #define   FILE_OUTPUT_FIELDING                          "fielding"
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_PATIENT_INFO_FILE                        "patient_info"
+#define   FILE_LOCAL_DB                                 "localdb.db"
  
 // Defines that identify values in hash map and how to replace the string in the generated report
 #define   STAT_ID_TOTAL_FIXATIONS                       0
@@ -106,8 +131,8 @@ typedef enum {DPFT_FILE = 0, DPFT_REAL_VALUE = 1, DPFT_STRING = 2} DataPacketFie
 #define   CONFIG_MARGIN_TARGET_HIT                      "margin_target_hit"
 #define   CONFIG_FAST_PROCESSING                        "fast_processing"
 #define   CONFIG_EXP_LIST                               "experiments"
-#define   CONFIG_OUTPUT_DIR                             "output_dir"
-#define   CONFIG_OUTPUT_REPO                            "output_directory"
+//#define   CONFIG_OUTPUT_DIR                             "output_dir"
+//#define   CONFIG_OUTPUT_REPO                            "output_directory"
 #define   CONFIG_READING_PX_TOL                         "reading_px_tol_for_target"
 #define   CONFIG_EYEPROCESSOR_PATH                      "eyeprocessor_path"
 #define   CONFIG_OVERWRITE_BEHAVIOUR                    "overwrite_exp_files"
@@ -128,7 +153,10 @@ typedef enum {DPFT_FILE = 0, DPFT_REAL_VALUE = 1, DPFT_STRING = 2} DataPacketFie
 #define   CONFIG_BC_FILE_FILTER                         "bc_file_filter"
 #define   CONFIG_UC_FILE_FILTER                         "uc_file_filter"
 #define   CONFIG_DAT_TIME_FILTER_THRESHOLD              "time_filter_threshold"
-#define   CONFIG_TCP_PORT                               "TCPPort"
+#define   CONFIG_TCP_PORT                               "tcp_port"
+#define   CONFIG_SERVER_ADDRESS                         "server_address"
+#define   CONFIG_CONNECTION_TIMEOUT                     "connection_time_out"
+#define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"
@@ -291,5 +319,35 @@ typedef enum {DPFT_FILE = 0, DPFT_REAL_VALUE = 1, DPFT_STRING = 2} DataPacketFie
 // Eye Trackers
 #define   EYE_TRACKER_REDM                              0
 #define   EYE_TRACKER_MOUSE                             1
+
+/****************************************************************************************
+ * Function that returns the newest dat file in a directory for a given
+ * base name.
+ * **************************************************************************************/
+
+static inline QString getNewestFile(const QString &directory, const QString &baseName){
+    // Getting all the files with the correct based name and sorted by modification time.
+    QDir dir(directory);
+    QStringList filter;
+    filter << baseName + "_*.dat";
+    QStringList allfiles = dir.entryList(filter,QDir::Files,QDir::Time);
+
+    // This is used to simply look for simple bc uc files when no expanded versions are desired.
+    qint32 i = 0;
+    qint32 targetFileNameSize = baseName.size() + 9; // 9 = 1 underscore, 4 numbers, 1 dot, and 3 because of the dat
+
+    // qWarning() << "Searching for files with the base" << baseName;
+
+    while (i < allfiles.size()){
+        if (allfiles.at(i).size() != targetFileNameSize){
+            allfiles.removeAt(i);
+        }
+        else i++;
+    }
+
+
+    if (allfiles.isEmpty()) return "";
+    return directory + "/" + allfiles.first();
+}
 
 #endif // COMMON_H

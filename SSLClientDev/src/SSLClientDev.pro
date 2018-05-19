@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-05-12T17:12:17
+# Project created by QtCreator 2018-05-19T10:49:04
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QtSSLClientDevelop
+TARGET = SSLClientDev
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -22,15 +22,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+MOC_DIR = MOCS
+OBJECTS_DIR = OBJS
+
 
 SOURCES += \
         main.cpp \
-    sslclientwindow.cpp \
-    ../../CommonClasses/DataPacket/datapacket.cpp
+        sslclientdev.cpp \
+    sslclient.cpp \
+    ../../CommonClasses/DataPacket/datapacket.cpp \
+    ../../CommonClasses/LogInterface/loginterface.cpp \
+    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp
 
 HEADERS += \
-    sslclientwindow.h \
-    ../../CommonClasses/DataPacket/datapacket.h
+        sslclientdev.h \
+    sslclient.h \
+    ../../CommonClasses/DataPacket/datapacket.h \
+    ../../CommonClasses/common.h \
+    ../../CommonClasses/LogInterface/loginterface.h \
+    ../../CommonClasses/ConfigurationManager/configurationmanager.h
 
 FORMS += \
-    sslclientwindow.ui
+        sslclientdev.ui \
+    sslclient.ui

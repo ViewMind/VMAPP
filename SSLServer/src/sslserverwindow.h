@@ -2,6 +2,7 @@
 #define SSLSERVERWINDOW_H
 
 #include <QMainWindow>
+#include <QProcess>
 
 
 #include "../../CommonClasses/DataPacket/datapacket.h"

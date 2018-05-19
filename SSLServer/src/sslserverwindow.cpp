@@ -38,6 +38,14 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
 
     log.appendStandard("Starting server...");
 
+    // Attempting to call eye processor
+    QString program = "C:/Users/Viewmind/Documents/QtProjects/EyeReportGenerator/exe/release/EyeReportGen.exe";
+    QStringList arguments;
+    arguments << "argumento 1" << "argumento 2";
+
+    QProcess *myProcess = new QProcess(parent);
+    myProcess->start(program, arguments);
+
 }
 
 void SSLServerWindow::on_messagesAvailable(){

@@ -8,7 +8,7 @@ BindingDesigner/exe/
 *Makefile*
 EyeExperimenter/exe/release/
 EyeReportGenerator/exe/release/
-QtSSLClientDevelop/exe/
+SSLClientDev/exe/
 SSLServer/bin/release/
 SSLServer/bin/SSLServer
 SSLServer/bin/qrc_certificates.cpp

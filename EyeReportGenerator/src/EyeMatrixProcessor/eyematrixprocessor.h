@@ -8,7 +8,7 @@
 #include "dataset.h"
 #include "csvcheckedreader.h"
 #include "imagereportdrawer.h"
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 
 class EyeMatrixProcessor
 {

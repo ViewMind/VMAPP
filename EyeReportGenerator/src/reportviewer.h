@@ -7,7 +7,7 @@
 #include <QGraphicsView>
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
-#include "../../../CommonClasses/Experiments/common.h"
+#include "../../../CommonClasses/common.h"
 
 class ReportViewer: public QWidget
 {
