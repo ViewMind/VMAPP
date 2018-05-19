@@ -12,11 +12,15 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
     log.setLogInterface(ui->plainTextEdit);
     ui->progressBar->setValue(0);
 
-    //log.appendSuccess("I was called!!!!");
+    log.appendSuccess("I was called!!!!");
 
-    //qWarning() << QApplication::arguments();
+    QStringList args =  QApplication::arguments();
 
-    //return;
+    for (qint32 i = 0; i < args.size(); i++){
+        log.appendStandard(args.at(i));
+    }
+
+    return;
 
     connect(&pthread,&EyeDataProcessingThread::finished,this,&EyeReportUI::onPThreadFinished);
     connect(&pthread,&EyeDataProcessingThread::appendMessage,this,&EyeReportUI::onAppendMsg);

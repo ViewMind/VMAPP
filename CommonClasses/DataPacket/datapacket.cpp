@@ -4,7 +4,7 @@ DataPacket::DataPacket()
 {
 }
 
-bool DataPacket::addFile(const QString &fileName){
+bool DataPacket::addFile(const QString &fileName, quint8 field_information){
 
     // Checking the file exists and getting its complete name (filename + extension).
     QFileInfo info(fileName);
@@ -21,23 +21,24 @@ bool DataPacket::addFile(const QString &fileName){
     data << fname;
     data << filedata;
 
-    addField(DPFT_FILE,data);
+    addField(DPFT_FILE,data,field_information);
     return true;
 
 }
 
-void DataPacket::addString(const QString &data){
-    addField(DPFT_STRING,data);
+void DataPacket::addString(const QString &data, quint8 field_information){
+    addField(DPFT_STRING,data,field_information);
 }
 
-void DataPacket::addValue(qreal value){
-    addField(DPFT_REAL_VALUE,value);
+void DataPacket::addValue(qreal value, quint8 field_information){
+    addField(DPFT_REAL_VALUE,value,field_information);
 }
 
-void DataPacket::addField(DataPacketFieldType dpft, const QVariant &data){
+void DataPacket::addField(quint8 dpft, const QVariant &data, quint8 field_information){
     Field f;
     f.fieldType = dpft;
     f.data = data;
+    f.fieldInformation = field_information;
     fields << f;
 }
 
@@ -49,7 +50,8 @@ QByteArray DataPacket::toByteArray() const{
 
         // Adding the type.
         Field f = fields.at(i);
-        ans.append((quint8)f.fieldType);
+        ans.append(f.fieldType);
+        ans.append(f.fieldInformation);
         qreal v;
 
         switch (f.fieldType){
@@ -85,7 +87,7 @@ QByteArray DataPacket::toByteArray() const{
     return size;
 }
 
-bool DataPacket::bufferByteArray(const QByteArray &array){
+quint8 DataPacket::bufferByteArray(const QByteArray &array){
 
     QByteArray temp;
 
@@ -98,11 +100,11 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
             packetSize = byteArrayToSize(temp);
         }
 
-        return false;
+        return DATABUFFER_RESULT_NOT_DONE;
     }
     else{
         buffer.append(array);
-        if ((quint32)buffer.size() < packetSize + BYTES_FOR_SIZE) return false;
+        if ((quint32)buffer.size() < packetSize + BYTES_FOR_SIZE) return DATABUFFER_RESULT_NOT_DONE;
     }
 
     qint32 i = BYTES_FOR_SIZE;
@@ -114,13 +116,11 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
 
     while (i < buffer.size()){
 
-        quint8 identifier = (quint8) buffer.at(i);
-        DataPacketFieldType dpft = (DataPacketFieldType) identifier;
-        i++;
         Field f;
-        f.fieldType = dpft;
+        f.fieldType = (quint8) buffer.at(i); i++;;
+        f.fieldInformation = (quint8) buffer.at(i); i++;
 
-        switch (dpft){
+        switch (f.fieldType){
         case DPFT_FILE:
 
             // Getting the size of the file name.
@@ -184,34 +184,36 @@ bool DataPacket::bufferByteArray(const QByteArray &array){
             f.data = str;
             break;
         default:
-            qWarning() << "Unknown field type" << dpft << identifier;
+            fields.clear();
+            clearAll();
+            return DATABUFFER_RESULT_ERROR;
         }
 
         fields << f;
     }
 
-    return true;
+    return DATABUFFER_RESULT_DONE;
 
 }
 
-bool DataPacket::saveFile(const QString &directory, qint32 fieldIndex){
+QString DataPacket::saveFile(const QString &directory, qint32 fieldIndex){
 
     // Checking that everything is kosher.
-    if ((fieldIndex < 0) || (fieldIndex >= fields.size())) return false;
-    if (fields.at(fieldIndex).fieldType != DPFT_FILE) return false;
-    if (!QDir(directory).exists()) return false;
+    if ((fieldIndex < 0) || (fieldIndex >= fields.size())) return "";
+    if (fields.at(fieldIndex).fieldType != DPFT_FILE) return "";
+    if (!QDir(directory).exists()) return "";
 
     // Opening a file and saving the data as is.
     Field f =  fields.at(fieldIndex);
     QString fileName = directory + "/" + f.data.toList().first().toString();
     QFile file (fileName);
-    if (!file.open(QFile::WriteOnly)) return false;
+    if (!file.open(QFile::WriteOnly)) return "";
     qint64 written = file.write(f.data.toList().last().toByteArray());
     file.close();
 
     // If the numbers of bytes written differs from the number of bytes on the array, there was a problem.
     if (written != f.data.toList().last().toByteArray().size()) return false;
-    return true;
+    return fileName;
 }
 
 QByteArray DataPacket::sizeToByteArray(quint32 size){
