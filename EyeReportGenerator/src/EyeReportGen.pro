@@ -49,7 +49,6 @@ HEADERS  += eyereportui.h \
     EyeMatrixProcessor/dataset.h \
     EyeMatrixProcessor/csvcheckedreader.h \
     ../../CommonClasses/Experiments/bindingmanager.h \
-    ../../CommonClasses/Experiments/common.h \
     ../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../CommonClasses/Experiments/fieldingmanager.h \
     ../../CommonClasses/Experiments/readingmanager.h \

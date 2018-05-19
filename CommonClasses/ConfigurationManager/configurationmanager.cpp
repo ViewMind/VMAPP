@@ -221,7 +221,7 @@ bool ConfigurationManager::verifyParsedCommands(){
 
     QStringList parsed = data.keys();
 
-    for (qint32 i = 0; i < parsed.size(); i++){
+    for (qint32 i = 0; i < parsed.size(); i++){        
 
         if (!verif.contains(parsed.at(i))){
             errors << "Keyword: " + parsed.at(i) + " is invalid. Please check your syntax.";

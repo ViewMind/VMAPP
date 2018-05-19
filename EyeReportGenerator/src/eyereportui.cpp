@@ -12,16 +12,6 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
     log.setLogInterface(ui->plainTextEdit);
     ui->progressBar->setValue(0);
 
-    log.appendSuccess("I was called!!!!");
-
-    QStringList args =  QApplication::arguments();
-
-    for (qint32 i = 0; i < args.size(); i++){
-        log.appendStandard(args.at(i));
-    }
-
-    return;
-
     connect(&pthread,&EyeDataProcessingThread::finished,this,&EyeReportUI::onPThreadFinished);
     connect(&pthread,&EyeDataProcessingThread::appendMessage,this,&EyeReportUI::onAppendMsg);
     connect(&pthread,&EyeDataProcessingThread::updateProgressBar,this,&EyeReportUI::onUpdatePBar);
@@ -35,6 +25,7 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
     cv[CONFIG_DISTANCE_2_MONITOR] = cmd;
 
     cmd.clear();
+    cmd.optional = true;
     cv[CONFIG_DOCTOR_NAME] = cmd;
 
     cmd.clear();
@@ -62,6 +53,7 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
     cv[CONFIG_MOVING_WINDOW_DISP] = cmd;
 
     cmd.clear();
+    cmd.optional = true;
     cv[CONFIG_PATIENT_DIRECTORY] = cmd;
 
     cmd.fields << ConfigurationManager::VT_STRING;
@@ -70,10 +62,12 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
     cv[CONFIG_EXP_LIST] = cmd;
 
     cmd.clear();
+    cmd.optional = true;
     cv[CONFIG_PATIENT_NAME] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
+    cmd.optional = true;
     cv[CONFIG_PATIENT_AGE] = cmd;
 
     cmd.clear();
@@ -103,6 +97,7 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
     cmd.optional = true;
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DAT_TIME_FILTER_THRESHOLD] = cmd;
+
 
     configuration.setupVerification(cv);
 
@@ -141,6 +136,9 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
         configuration.addKeyValuePair(CONFIG_DAT_TIME_FILTER_THRESHOLD,(qint32)0);
     }
 
+    // Checking if any of the parameters are overwritten via command line.
+    loadArguments();
+
     // Deleting the tex file if it exists;
     QString outImage = configuration.getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME  + ".png";
     QFile(outImage).remove();
@@ -157,13 +155,19 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
 
 void EyeReportUI::onPThreadFinished(){
     // This means that I can show the report if exists.
-    if (configuration.getBool(CONFIG_ENABLE_REPORT_GEN)){
-        QString reportImage = configuration.getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME  + ".png";
-        if (QFile(reportImage).exists()){
-            ReportViewer *viewer = new ReportViewer(this);
-            viewer->loadReport(reportImage);
-            viewer->show();
+    QString reportImage = configuration.getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME  + ".png";
+
+    if (!configuration.getBool(CONFIG_RUN_AND_QUIT)){
+        if (configuration.getBool(CONFIG_ENABLE_REPORT_GEN)){
+            if (QFile(reportImage).exists()){
+                ReportViewer *viewer = new ReportViewer(this);
+                viewer->loadReport(reportImage);
+                viewer->show();
+            }
         }
+    }
+    else{
+        this->close();
     }
 }
 
@@ -207,4 +211,53 @@ void EyeReportUI::testReport(){
         viewer->loadReport(reportImage);
         viewer->show();
     }
+}
+
+void EyeReportUI::loadArguments(){
+    QStringList arguments = QApplication::arguments();
+
+    // Parsing arguments to the command line
+    QString field = "";
+    QString value = "";
+
+    // Bye default it is not a quit and run
+    configuration.addKeyValuePair(CONFIG_RUN_AND_QUIT,false);
+
+    // Not many checks are done as if nothing is replaced or the arguments are incorrect, the
+    // report will be generated with the values from the file or an error will be generated.
+    // Also the first value is skipped as it is simply the program itself.
+    for (qint32 i = 1; i < arguments.size(); i++){
+        QString val = arguments.at(i);
+        //qWarning() << "val is" << val;
+        if (val.startsWith('-')){
+            // This a field, which means that the last one needs to be saved.
+            addToConfigFromCmdLine(field,value);
+            value = "";
+            field = val.remove(0,1);
+        }
+        else{
+            // Anything without an - is concatenated as part of the value.
+            if (value.isEmpty()) value = val;
+            else value = value +" " + val;
+        }
+    }
+
+    // The last field value pair needs to be added after the loop
+    addToConfigFromCmdLine(field,value);
+
+
+}
+
+
+void EyeReportUI::addToConfigFromCmdLine(const QString &field, const QString &value){
+    if (!field.isEmpty()){
+        if (field == CONFIG_PATIENT_DIRECTORY){
+            // This should be "run-and-quit" type run
+            configuration.addKeyValuePair(CONFIG_RUN_AND_QUIT,true);
+            // Also ensures fast processing
+            configuration.addKeyValuePair(CONFIG_FAST_PROCESSING,true);
+        }
+    }
+    //qWarning() << "Adding" << field << "<|>" <<  value;
+    configuration.addKeyValuePair(field,value);
 }

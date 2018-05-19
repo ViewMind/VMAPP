@@ -106,6 +106,7 @@ void EyeDataProcessingThread::run(){
         emit(appendMessage("PLEASE WAIT WHILE REPORT IS BEING GENERATED....",MSG_TYPE_STD));
         ImageReportDrawer repDrawer;
         repDrawer.drawReport(emp.getResults(),config,what2Add);
+        emit(appendMessage("Report Generated.",MSG_TYPE_SUCC));
     }
 
 }

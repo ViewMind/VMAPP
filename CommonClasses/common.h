@@ -38,7 +38,7 @@ typedef enum {TSF_START,
 
 
 #define   EXPERIMENTER_VERSION                          "1.0.2"
-#define   EYE_REP_GEN_VERSION                           "1.1"
+#define   EYE_REP_GEN_VERSION                           "1.2"
 #define   SERVER_MANAGER_VERSION                        "1.0"
 
 #ifdef ENABLE_EXPANDED_BINDING_OPTIONS   
@@ -157,6 +157,7 @@ typedef enum {TSF_START,
 #define   CONFIG_SERVER_ADDRESS                         "server_address"
 #define   CONFIG_CONNECTION_TIMEOUT                     "connection_time_out"
 #define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
+#define   CONFIG_RUN_AND_QUIT                           "run_and_quit"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"

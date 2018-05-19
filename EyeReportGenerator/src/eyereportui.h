@@ -42,6 +42,9 @@ private:
 
     void testReport();
 
+    void loadArguments();
+    void addToConfigFromCmdLine(const QString &field, const QString &value);
+
 };
 
 #endif // EYEREPORTUI_H
