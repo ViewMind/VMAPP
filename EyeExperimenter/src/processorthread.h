@@ -4,6 +4,11 @@
 #include <QThread>
 #include <QProcess>
 #include "../../CommonClasses/common.h"
+#include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+
+// Scripts for calling eye processor
+#define   SCRIPT_CALL_PROCESSOR                         "callprocessor.bat"
+#define   SCRIPT_EYEPROCESSOR_EXE                       "EyeReportGen.exe"
 
 class ProcessorThread : public QThread
 {

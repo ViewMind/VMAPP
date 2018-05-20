@@ -15,10 +15,10 @@
 #include "EyeMatrixGenerator/edpfielding.h"
 #include "EyeMatrixProcessor/eyematrixprocessor.h"
 
-#define  MSG_TYPE_STD  0
-#define  MSG_TYPE_SUCC 1
-#define  MSG_TYPE_ERR  2
-#define  MSG_TYPE_WARN 3
+#define   MSG_TYPE_STD                                   0
+#define   MSG_TYPE_SUCC                                  1
+#define   MSG_TYPE_ERR                                   2
+#define   MSG_TYPE_WARN                                  3
 
 class EyeDataProcessingThread : public QThread
 {

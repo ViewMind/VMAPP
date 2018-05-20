@@ -4,7 +4,17 @@
 #include "edpbase.h"
 #include "../../CommonClasses/Experiments/fieldingmanager.h"
 
+// Defines for fielding experiment raw data file
+#define   FIELDING_TI                                   0
+#define   FIELDING_XR                                   1
+#define   FIELDING_YR                                   2
+#define   FIELDING_XL                                   3
+#define   FIELDING_YL                                   4
+#define   FIELDING_PR                                   5
+#define   FIELDING_PL                                   6
 
+// Warning threshold for low number of data points. Unused for now
+// #define   FIELDING_WARNING_NUM_DATAPOINTS               6
 
 class EDPFielding : public EDPBase
 {

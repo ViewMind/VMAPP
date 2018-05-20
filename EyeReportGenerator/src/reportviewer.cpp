@@ -5,7 +5,7 @@ ReportViewer::ReportViewer(QWidget *parent): QWidget(parent)
 
     // Making this window frameless and making sure it stays on top.
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
-    qreal width = SCREEN_H/1.414; // Max heigh and width proportionate to screen width.
+    qreal width = SCREEN_H/1.414; // Max height and width proportionate to screen width.
     this->setGeometry(0,0,width,SCREEN_H);
 
     // Creating a graphics widget and adding it to the layout

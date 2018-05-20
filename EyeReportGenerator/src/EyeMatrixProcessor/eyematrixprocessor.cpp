@@ -43,8 +43,8 @@ QString EyeMatrixProcessor::processBinding(const QString &csvFile, bool bound){
     int eye = -1;
     if (bindingEye != -1) eye = bindingEye;
 
-    ProcessingResults r;
-    ProcessingResults l;
+    DataSet::ProcessingResults r;
+    DataSet::ProcessingResults l;
 
     if (bound){
         r = csvBindingBC.getProcessingResults(EXP_BINDING_BC,&eye,EYE_R);
@@ -117,8 +117,8 @@ QString EyeMatrixProcessor::processFielding(const QString &csvFile){
     if (!error.isEmpty()) return "";
     int eye = -1;
 
-    ProcessingResults resL = csvFielding.getProcessingResults(EXP_FIELDNG,&eye,EYE_L);
-    ProcessingResults resR = csvFielding.getProcessingResults(EXP_FIELDNG,&eye,EYE_R);
+    DataSet::ProcessingResults resL = csvFielding.getProcessingResults(EXP_FIELDNG,&eye,EYE_L);
+    DataSet::ProcessingResults resR = csvFielding.getProcessingResults(EXP_FIELDNG,&eye,EYE_R);
 
     QString report = "RESULTS FIELDING:<br>";
 

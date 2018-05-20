@@ -33,10 +33,10 @@ void ReadingManager::init(ConfigurationManager *c){
 
 bool ReadingManager::parseExpConfiguration(const QString &contents){
 
-
     // Getting the description if available.
     QString experimentData = contents;
     qint32 commentToken = contents.indexOf(READING_COMMENT_STRING);
+
     if (commentToken != -1){
         qint32 end = commentToken+QString(READING_COMMENT_STRING).length();
         description = contents.mid(0,commentToken);

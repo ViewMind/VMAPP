@@ -15,7 +15,7 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
     currentQuestion = 0;
 
     // Allways start drawing the point.
-    qstate = QS_POINT;
+    qstate = ReadingManager::ReadingManager::QS_POINT;
 
     // This window is shown and given focus.
     this->show();
@@ -73,12 +73,12 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     }
 
     // Data is ONLY saved when looking at a phrase.
-    if (qstate == QS_PHRASE){
+    if (qstate == ReadingManager::QS_PHRASE){
         appendDataToFile(data,indR.first(),indR.last(),indL.first(),indL.last(),
                          m->getPhrase(currentQuestion).getSizeInWords());
     }
 
-    if (qstate == QS_QUESTION) return;
+    if (qstate == ReadingManager::QS_QUESTION) return;
 
     if (isPointWithInTolerance(x,y)){
         advanceToTheNextPhrase();
@@ -88,7 +88,7 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
 void ReadingExperiment::advanceToTheNextPhrase(){
 
-    if ((qstate == QS_QUESTION) || (qstate == QS_PHRASE)){
+    if ((qstate == ReadingManager::QS_QUESTION) || (qstate == ReadingManager::QS_PHRASE)){
         // I move on to the next question only I'm in a question or phrase qstate.
         if (currentQuestion < m->size()-1){
             currentQuestion++;
@@ -125,18 +125,18 @@ bool ReadingExperiment::isPointWithInTolerance(int x, int y){
 void ReadingExperiment::determineQuestionState(){
 
     switch (qstate){
-    case QS_POINT:
-        if (m->getPhrase(currentQuestion).hasQuestion()) qstate = QS_INFORMATION;
-        else qstate = QS_PHRASE;
+    case ReadingManager::QS_POINT:
+        if (m->getPhrase(currentQuestion).hasQuestion()) qstate = ReadingManager::QS_INFORMATION;
+        else qstate = ReadingManager::QS_PHRASE;
         break;
-    case QS_PHRASE:
-        qstate = QS_POINT;
+    case ReadingManager::QS_PHRASE:
+        qstate = ReadingManager::QS_POINT;
         break;
-    case QS_INFORMATION:
-        qstate = QS_QUESTION;
+    case ReadingManager::QS_INFORMATION:
+        qstate = ReadingManager::QS_QUESTION;
         break;
-    case QS_QUESTION:
-        qstate = QS_POINT;
+    case ReadingManager::QS_QUESTION:
+        qstate = ReadingManager::QS_POINT;
         break;
     }
 
@@ -145,7 +145,7 @@ void ReadingExperiment::determineQuestionState(){
 void ReadingExperiment::mousePressEvent(QMouseEvent *event){
 
     // The logic here should only be run if this a question and the experiment is running.
-    if ((state != STATE_RUNNING) || (qstate != QS_QUESTION)) return;
+    if ((state != STATE_RUNNING) || (qstate != ReadingManager::QS_QUESTION)) return;
 
     if (event->button() == Qt::LeftButton){
         qint32 where = m->isPointContainedInAClickArea(event->pos());
@@ -164,7 +164,7 @@ void ReadingExperiment::keyPressEvent(QKeyEvent *event){
 
     // In the question state, the advance must be with the mouse click.
     // Otherwise the space bar advances the question.
-    if ((qstate != QS_QUESTION) && (event->key() == Qt::Key_Space)){
+    if ((qstate != ReadingManager::QS_QUESTION) && (event->key() == Qt::Key_Space)){
         advanceToTheNextPhrase();
     }
 }

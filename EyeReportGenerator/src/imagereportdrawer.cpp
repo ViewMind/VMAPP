@@ -12,7 +12,7 @@ ImageReportDrawer::ImageReportDrawer()
 }
 
 
-void ImageReportDrawer::drawReport(const ProcessingResults &res, ConfigurationManager *c, const QHash<qint32,bool> &whatToAdd){
+void ImageReportDrawer::drawReport(const DataSet::ProcessingResults &res, ConfigurationManager *c, const QHash<qint32,bool> &whatToAdd){
 
     canvas->clear();
 

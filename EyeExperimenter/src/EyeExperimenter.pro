@@ -64,7 +64,8 @@ HEADERS  += maingui.h \
     experimentchooserdialog.h \
     eyetrackerselectiondialog.h \
     settingsdialog.h \
-    instructiondialog.h
+    instructiondialog.h \
+    eye_experimenter_defines.h
 
 
 FORMS    += maingui.ui \

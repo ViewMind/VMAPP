@@ -191,7 +191,7 @@ void EyeReportUI::testReport(){
 
     qWarning() << "Test Report";
 
-    ProcessingResults res;
+    DataSet::ProcessingResults res;
     res[STAT_ID_ENCODING_MEM_VALUE] = 0.00987;
     res[STAT_ID_FIRST_STEP_FIXATIONS] = 65;
     res[STAT_ID_MULTIPLE_FIXATIONS] = 16.62;

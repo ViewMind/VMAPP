@@ -159,7 +159,7 @@ bool EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
         qint32 imgNumber = imgID.toInt();
 
         if (imgNumber < 4){
-            m->setDrawState(DS_CROSS_TARGET);
+            m->setDrawState(FieldingManager::DS_CROSS_TARGET);
             if (!m->setTargetPositionFromTrialName(trialID,imgNumber-1)){
                 error = "Could not find trial with name " + trialID + " for drawing the fixations";
                 return false;
@@ -167,13 +167,13 @@ bool EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
         }
         else{
             if (imgNumber == 5){
-                m->setDrawState(DS_3);
+                m->setDrawState(FieldingManager::DS_3);
             }
             else if (imgNumber == 6){
-                m->setDrawState(DS_2);
+                m->setDrawState(FieldingManager::DS_2);
             }
             else{
-                m->setDrawState(DS_1);
+                m->setDrawState(FieldingManager::DS_1);
             }
         }
 

@@ -125,26 +125,26 @@ void FieldingExperiment::drawCurrentImage(){
 
     switch (tstate){
     case TSF_SHOW_BLANK_1:
-        m->setDrawState(DS_1);
+        m->setDrawState(FieldingManager::DS_1);
         break;
     case TSF_SHOW_BLANK_2:
-        m->setDrawState(DS_2);
+        m->setDrawState(FieldingManager::DS_2);
         break;
     case TSF_SHOW_BLANK_3:
-        m->setDrawState(DS_3);
+        m->setDrawState(FieldingManager::DS_3);
         break;
     case TSF_SHOW_DOT_1:
-        m->setDrawState(DS_CROSS_TARGET);
+        m->setDrawState(FieldingManager::DS_CROSS_TARGET);
         break;
     case TSF_SHOW_DOT_2:
-        m->setDrawState(DS_CROSS_TARGET);
+        m->setDrawState(FieldingManager::DS_CROSS_TARGET);
         break;
     case TSF_SHOW_DOT_3:
-        m->setDrawState(DS_CROSS_TARGET);
+        m->setDrawState(FieldingManager::DS_CROSS_TARGET);
         break;
     case TSF_START:
         // Before drawing the start of a new trial, we check if a pause is necessary.
-        if ( (currentTrial == 32) || (currentTrial == 64)){
+        if ( (currentTrial == PAUSE_TRIAL_1) || (currentTrial == PAUSE_TRIAL_2)){
 
             // Paused must be set to zero.
             if (state == STATE_RUNNING){
@@ -156,11 +156,11 @@ void FieldingExperiment::drawCurrentImage(){
             }
 
         }
-        m->setDrawState(DS_CROSS);
+        m->setDrawState(FieldingManager::DS_CROSS);
         currentImage=-1;
         break;
     case TSF_TRANSITION:
-        m->setDrawState(DS_CROSS);
+        m->setDrawState(FieldingManager::DS_CROSS);
         currentImage=3;
         break;
     }

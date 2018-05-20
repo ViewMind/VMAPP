@@ -9,6 +9,7 @@
 #include <QKeyEvent>
 
 #include "../../CommonClasses/common.h"
+#include "../../CommonClasses/Experiments/experimentdatapainter.h"
 
 class InstructionDialog : public QDialog
 {

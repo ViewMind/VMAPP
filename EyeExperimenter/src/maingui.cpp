@@ -28,8 +28,8 @@ MainGUI::MainGUI(QWidget *parent) :
     }
 
     // Checking the output directory exists.
-    if (!QDir(configuration.getString(CONFIG_OUTPUT_REPO)).exists()){
-        logger.appendError("ERROR: Output directory: " + configuration.getString(CONFIG_OUTPUT_REPO) + " could not be found. Please correct this and restart the program");
+    if (!QDir(configuration.getString(CONFIG_OUTPUT_DIR)).exists()){
+        logger.appendError("ERROR: Output directory: " + configuration.getString(CONFIG_OUTPUT_DIR) + " could not be found. Please correct this and restart the program");
         ui->actionStart_Experiment->setEnabled(false);
     }
 
@@ -88,7 +88,7 @@ void MainGUI::on_actionStart_Experiment_triggered()
     }
 
     // Setting the values to the configuration.
-    QString outDir = configuration.getString(CONFIG_OUTPUT_REPO);
+    QString outDir = configuration.getString(CONFIG_OUTPUT_DIR);
     QDir repo(outDir);
     pname = chooser.getPatientName();
     QString patientDir = chooser.getPatientName().replace(" ","_");

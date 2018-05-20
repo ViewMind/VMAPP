@@ -8,9 +8,30 @@
 #include "experiment.h"
 #include "../../CommonClasses/Experiments/fieldingmanager.h"
 
+// Timer timess
+#define   TIME_TRANSITION                               50
+#define   TIME_TARGET                                   25
+#define   TIME_CONDITION                                50
+#define   TIMER_TIME_INTERVAL                           10
+
+// Possible pauses for the fielding experiment
+#define   PAUSE_TRIAL_1                                 32
+#define   PAUSE_TRIAL_2                                 64
+
 class FieldingExperiment : public Experiment
 {
 public:
+
+    // State machine states for Fielding
+    typedef enum {TSF_START,
+                  TSF_SHOW_DOT_1,
+                  TSF_SHOW_DOT_2,
+                  TSF_SHOW_DOT_3,
+                  TSF_TRANSITION,
+                  TSF_SHOW_BLANK_3,
+                  TSF_SHOW_BLANK_2,
+                  TSF_SHOW_BLANK_1} TrialStateFielding;
+
     FieldingExperiment(QWidget *parent = 0);
 
     // Reimplementation of virtual functions

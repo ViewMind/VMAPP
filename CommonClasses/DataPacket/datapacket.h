@@ -9,6 +9,24 @@ class DataPacket
 {
 public:
 
+    static const quint8 DPFT_FILE                                     = 0;
+    static const quint8 DPFT_REAL_VALUE                               = 1;
+    static const quint8 DPFT_STRING                                   = 2;
+    static const quint8 DPFT_INVALID                                  = 3;
+
+    static const quint8 DPFI_DOCTOR_ID                                = 0;
+    static const quint8 DPFI_PATIENT_ID                               = 1;
+    static const quint8 DPFI_BINDING_UC                               = 2;
+    static const quint8 DPFI_BINDING_BC                               = 3;
+    static const quint8 DPFI_READING                                  = 4;
+    static const quint8 DPFI_AGE                                      = 5;
+    static const quint8 DPFI_SEND_INFORMATION                         = 6;
+    static const quint8 DPFI_REPORT                                   = 7;
+
+    static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
+    static const quint8 DATABUFFER_RESULT_ERROR                       = 1;
+    static const quint8 DATABUFFER_RESULT_DONE                        = 2;
+
     struct Field {
         QVariant data;
         quint8 fieldType = DPFT_FILE;
@@ -51,6 +69,10 @@ public:
     static quint32 byteArrayToSize(const QByteArray &size);
 
 private:
+
+    // Constant sizes for information
+    static const quint8 BYTES_FOR_SIZE = 4;
+    static const quint8 BYTES_FOR_REAL = 8;
 
     // The buffer array.
     QByteArray buffer;

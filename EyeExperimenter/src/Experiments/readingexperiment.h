@@ -35,7 +35,7 @@ private:
     ReadingManager *m;
 
     // The current state.
-    QuestionState qstate;
+    ReadingManager::QuestionState qstate;
 
     // The pointer to the current question.
     qint32 currentQuestion;

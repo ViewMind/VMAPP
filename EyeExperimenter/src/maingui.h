@@ -9,7 +9,9 @@
 #include <iostream>
 
 #include "../../CommonClasses/LogInterface/loginterface.h"
-#include "../../CommonClasses/common.h"
+//#include "../../CommonClasses/common.h"
+
+#include "eye_experimenter_defines.h"
 
 #include "experimentchooserdialog.h"
 #include "eyetrackerselectiondialog.h"

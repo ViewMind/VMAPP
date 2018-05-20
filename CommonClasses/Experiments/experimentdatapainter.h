@@ -1,7 +1,13 @@
 #ifndef EXPERIMENTDATAPAINTER_H
 #define EXPERIMENTDATAPAINTER_H
 
-#include "../common.h"
+#include <QGraphicsScene>
+#include <QPainter>
+#include "../ConfigurationManager/configurationmanager.h"
+
+// Screen resolution is fixed.
+#define   SCREEN_W                                      1024
+#define   SCREEN_H                                      768
 
 class ExperimentDataPainter
 {

@@ -45,7 +45,7 @@ void DataSet::setLeftAndRightData(const CSVData &all, qint32 eyeCol){
 
 }
 
-ProcessingResults DataSet::getProcessingResults(qint32 experiment,  int *eyeUsed, int eyeToUse){
+DataSet::ProcessingResults DataSet::getProcessingResults(qint32 experiment,  int *eyeUsed, int eyeToUse){
 
     ProcessingResults results;
 
@@ -82,7 +82,7 @@ ProcessingResults DataSet::getProcessingResults(qint32 experiment,  int *eyeUsed
 
 }
 
-ProcessingResults DataSet::getReadingResultsFor(qint32 eyeID) const{
+DataSet::ProcessingResults DataSet::getReadingResultsFor(qint32 eyeID) const{
 
     ProcessingResults info;
     qint32 total = eyes.at(eyeID).size();
@@ -148,7 +148,7 @@ ProcessingResults DataSet::getReadingResultsFor(qint32 eyeID) const{
 
 }
 
-ProcessingResults DataSet::getBindingResultsFor(qint32 eyeID, bool bound) const{
+DataSet::ProcessingResults DataSet::getBindingResultsFor(qint32 eyeID, bool bound) const{
 
     // Variables to calculate average pupil size when trial is zero.
     qreal sum = 0;
@@ -203,7 +203,7 @@ ProcessingResults DataSet::getBindingResultsFor(qint32 eyeID, bool bound) const{
 
 }
 
-ProcessingResults DataSet::getFieldingResultsFor(qint32 eyeID) const{
+DataSet::ProcessingResults DataSet::getFieldingResultsFor(qint32 eyeID) const{
 
     ProcessingResults results;
 

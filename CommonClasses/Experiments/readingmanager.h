@@ -8,9 +8,15 @@
 #include "phrases.h"
 #include "experimentdatapainter.h"
 
+#define   READING_COMMENT_STRING                        "######"
+
 class ReadingManager: public ExperimentDataPainter
 {
 public:
+
+    // State machine for the reading trials
+    typedef enum {QS_POINT, QS_PHRASE, QS_QUESTION, QS_INFORMATION} QuestionState;
+
     ReadingManager();
 
     // Reimplemented functions for common interface.

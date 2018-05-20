@@ -8,7 +8,11 @@
 #include "dataset.h"
 #include "csvcheckedreader.h"
 #include "imagereportdrawer.h"
-#include "../../CommonClasses/common.h"
+
+// Reading processing parameters
+#define   READING_N_TO_FILTER_FROM_START                10
+#define   READING_MIN_VALID_FIXATION                    51
+#define   READING_MAX_VALID_FIXATION                    1750
 
 class EyeMatrixProcessor
 {
@@ -23,7 +27,7 @@ public:
     QString processBinding(const QString &csvFile, bool bound);
     QString processFielding(const QString &csvFile);
 
-    ProcessingResults getResults() const {return results;}
+    DataSet::ProcessingResults getResults() const {return results;}
 
 private:
 
@@ -31,7 +35,7 @@ private:
     QString error;
 
     // The processing results
-    ProcessingResults results;
+    DataSet::ProcessingResults results;
 
     // Data generated from reading CSV, separated by Eye.
     DataSet csvReading;

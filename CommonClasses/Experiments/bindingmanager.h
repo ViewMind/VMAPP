@@ -6,12 +6,26 @@
  * for the binding experiment.
  * **************************************/
 
+#include "../../CommonClasses/common.h"
 #include "experimentdatapainter.h"
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
 #include <QFile>
 #include <QTextStream>
 #include <QtMath>
+
+// Binding target dimensions (in mm)
+#define   BINDING_LARGE_TARGET_MARK                     "LARGE_TARGETS"
+#define   BINDING_TARGET_SIDE                           10
+#define   BINDING_TARGET_HS                             0.25
+#define   BINDING_TARGET_HL                             2.6
+#define   BINDING_TARGET_VS                             1.33
+#define   BINDING_TARGET_VL                             3.54
+#define   BINDING_TARGET_GRID                           105
+
+// Strings for same and different in the CSV file.
+#define   STR_DIFFERENT                                 "different"
+#define   STR_SAME                                      "same"
 
 class BindingManager:  public ExperimentDataPainter
 {

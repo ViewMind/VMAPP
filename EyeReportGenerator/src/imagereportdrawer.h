@@ -1,7 +1,8 @@
 #ifndef IMAGEREPORTDRAWER_H
 #define IMAGEREPORTDRAWER_H
 
-#include "../../CommonClasses/common.h"
+#include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "EyeMatrixProcessor/dataset.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
@@ -107,7 +108,7 @@ class ImageReportDrawer
 {
 public:
     ImageReportDrawer();
-    void drawReport(const ProcessingResults &res,
+    void drawReport(const DataSet::ProcessingResults &res,
                     ConfigurationManager *c,
                     const QHash<qint32, bool> &whatToAdd);
 

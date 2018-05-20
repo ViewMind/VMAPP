@@ -7,9 +7,20 @@
 #include "experiment.h"
 #include "../../CommonClasses/Experiments/bindingmanager.h"
 
+// Timer constants
+#define   TIME_START_CROSS                              250
+#define   TIME_IMAGE_1                                  2000
+#define   TIME_WHITE_TRANSITION                         900
+#define   TIME_IMAGE_2_TIMEOUT                          10000
+#define   TIME_FINISH                                   1000
+
 class ImageExperiment : public Experiment
 {
 public:
+
+    // State machine states for Binding trials
+    typedef enum {TSB_CENTER_CROSS,TSB_SHOW,TSB_TRANSITION,TSB_TEST,TSB_FINISH} TrialStateBinding;
+
     ImageExperiment(bool bound, QWidget *parent = 0);
     ~ImageExperiment();
 

@@ -30,7 +30,7 @@ Experiment::Experiment(QWidget *parent) : QWidget(parent)
 bool Experiment::startExperiment(ConfigurationManager *c){
     config = c;
     error = "";
-    workingDirectory = c->getString(CONFIG_OUTPUT_DIR);    
+    workingDirectory = c->getString(CONFIG_PATIENT_DIRECTORY);
 
     // Saving the patient info file
     QString err;

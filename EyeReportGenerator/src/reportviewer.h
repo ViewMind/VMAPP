@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
 #include "../../../CommonClasses/common.h"
+#include "../../../CommonClasses/Experiments/experimentdatapainter.h"
 
 class ReportViewer: public QWidget
 {
