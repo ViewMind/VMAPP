@@ -202,6 +202,22 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
 
 }
 
+bool DataPacket::saveFiles(const QString &directory){
+
+    QList<quint8> fieldlist = fields.keys();
+
+    for (qint32 i = 0; i < fieldlist.size(); i++){
+        if (fields.value(fieldlist.at(i)).fieldType == DPFT_FILE){
+            QString ans = saveFile(directory,fieldlist.at(i));
+            if (ans.isEmpty()) return false;
+        }
+    }
+
+    return true;
+
+}
+
+
 QString DataPacket::saveFile(const QString &directory, quint8 fieldInfo){
 
     // Checking that everything is kosher.

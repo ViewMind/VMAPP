@@ -29,7 +29,7 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
 
     connect(&sslManager,&SSLManager::newMessages,this,&SSLServerWindow::on_messagesAvailable);
 
-    sslManager.startServer((quint16) config.getInt(CONFIG_TCP_PORT));
+    sslManager.startServer(&config);
 
     if (!QSslSocket::supportsSsl()){
         log.appendError("No support for SSL found. Cannot continue");
@@ -37,14 +37,6 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
     }
 
     log.appendStandard("Starting server...");
-
-//    // Attempting to call eye processor
-//    QString program = "C:/Users/Viewmind/Documents/QtProjects/EyeReportGenerator/exe/release/EyeReportGen.exe";
-//    QStringList arguments;
-//    arguments << "argumento 1" << "argumento 2";
-
-//    QProcess *myProcess = new QProcess(parent);
-//    myProcess->start(program, arguments);
 
 }
 

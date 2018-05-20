@@ -54,6 +54,9 @@ public:
     // Otherwise returns an empty string.
     QString saveFile(const QString &directory, quint8 fieldInfo);
 
+    // Saves all files in the packet to a directory
+    bool saveFiles(const QString& directory);
+
     // Checks for a field type
     bool hasInformationField(quint8 field_info) {return fields.contains(field_info);}
     bool isInformationFieldOfType(quint8 field_info, quint8 field_type);

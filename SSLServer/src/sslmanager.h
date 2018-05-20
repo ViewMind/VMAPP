@@ -60,11 +60,14 @@ private:
     // Remove form the map and the list
     void removeSocket(quint64 id);
 
-    // Process the received data.
-    void processDataPacket();
+    // Launch processor
+    void lauchEyeReportProcessor(quint64 socket);
 
     // If processes slots are available, requests information from the first socket in the queue.
     void requestProcessInformation();
+
+    // Final Step in the process, sending the report.
+    void sendReport(quint64 socket);
 
     // Emmitting the message signal
     void addMessage(const QString &type, const QString &msg);

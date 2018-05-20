@@ -3,7 +3,11 @@
 
 #include <QSslSocket>
 #include <QTimer>
+#include <QProcess>
+#include <QDateTime>
 #include "../../CommonClasses/DataPacket/datapacket.h"
+
+#define  TIME_FORMAT_STRING  "yyyy_MM_DD_hh_mm_ss"
 
 /*****************************************************************
  * The objective of this class is to provide an identifying value
@@ -25,6 +29,7 @@ public:
     static const quint8 SSL_SIGNAL_DISCONNECTED  = 5;
     static const quint8 SSL_SIGNAL_TIMEOUT       = 6;
     static const quint8 SSL_SIGNAL_DATA_RX_ERROR = 7;
+    static const quint8 SSL_SIGNAL_PROCESS_DONE  = 8;
 
     SSLIDSocket();
     SSLIDSocket(QSslSocket *newSocket, quint64 id);
@@ -36,6 +41,12 @@ public:
 
     void startTimeoutTimer(qint32 ms);
     void stopTimer() {timer.stop();}
+
+    // Defines where the files received will be saved. If all is ok, it proceeds to generate them.
+    // Returns a error message if there is one.
+    QString setWorkingDirectoryAndSaveAllFiles(const QString &baseDir);
+    QString getWorkingDirectory() const { return workingDirectory; }
+    void processData(const QString &processorPath, const QStringList &args);
 
     bool isValid() const { return sslSocket != nullptr; }
     quint64 getID() const {return ID;}
@@ -51,12 +62,14 @@ private slots:
     void on_readyRead();
     void on_disconnected();
     void on_timeout();
+    void on_processFinished(qint32 status);
 
 private:
-
+    QString workingDirectory;
     QSslSocket *sslSocket;
     DataPacket rx;
     QTimer timer;
+    QProcess process;
     quint64 ID;
 
 };
