@@ -19,7 +19,7 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
     cv[CONFIG_TCP_PORT] = cmd;
 
     cmd.clear();
-    cv[CONFIG_OUTPUT_DIR] = cmd;
+    cv[CONFIG_RAW_DATA_REPO] = cmd;
 
     config.setupVerification(cv);
     if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
@@ -38,13 +38,13 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
 
     log.appendStandard("Starting server...");
 
-    // Attempting to call eye processor
-    QString program = "C:/Users/Viewmind/Documents/QtProjects/EyeReportGenerator/exe/release/EyeReportGen.exe";
-    QStringList arguments;
-    arguments << "argumento 1" << "argumento 2";
+//    // Attempting to call eye processor
+//    QString program = "C:/Users/Viewmind/Documents/QtProjects/EyeReportGenerator/exe/release/EyeReportGen.exe";
+//    QStringList arguments;
+//    arguments << "argumento 1" << "argumento 2";
 
-    QProcess *myProcess = new QProcess(parent);
-    myProcess->start(program, arguments);
+//    QProcess *myProcess = new QProcess(parent);
+//    myProcess->start(program, arguments);
 
 }
 

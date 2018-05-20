@@ -8,9 +8,13 @@
 #include <QTimer>
 #include <QMetaEnum>
 
-#include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/common.h"
+#include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/DataPacket/datapacket.h"
+
+#define   DEFAULT_TIMEOUT_CONNECTION                    60000
+#define   DEFAULT_TIMEOUT_WAIT_ACK                      60000
 
 namespace Ui {
 class SSLClient;

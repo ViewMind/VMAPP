@@ -3,9 +3,13 @@
 
 #include <QMetaEnum>
 #include <QHash>
-#include "../../CommonClasses/SSLIDSocket/sslidsocket.h"
-#include "../../CommonClasses/DataPacket/datapacket.h"
+
+#include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "sslidsocket.h"
 #include "ssllistener.h"
+
+#define   DEFAULT_TIMEOUT_WAIT_REPORT                   120000
+#define   DEFAULT_TIMEOUT_WAIT_DATA                     10000
 
 class SSLManager: public QObject
 {
@@ -14,7 +18,7 @@ public:
     SSLManager(QObject *parent = Q_NULLPTR);
 
     // Start the server
-    void startServer(quint16 port);
+    void startServer(ConfigurationManager *c);
 
     // Get all messages.
     QStringList getMessages();
@@ -29,23 +33,26 @@ signals:
 
 private:
 
+    // The configuration
+    ConfigurationManager *config;
+
     // Listens for incoming connections and enables de SSL capabilities by using a QSSLSocket
     SSLListener *listener;
-
-    // Current data packet
-    DataPacket receivingData;
 
     // The queue of information that needs to be processed
     QHash<quint64,SSLIDSocket*> sockets;
     QList<quint64> queue;
 
-    // Generates ever increasing values.
+    // Keep count of the number of parallel proceses
+    QSet<quint64> socketsBeingProcessed;
+
+    // Generates ever increasing values for unique socket ids.
     quint64 idGen;
 
     // The list of errors
     QStringList messages;
 
-    // Helper fucntion to generate messages.
+    // Helper fucntions to generate messages.
     void changedState(quint64 id);
     void socketErrorFound(quint64 id);
     void sslErrorsFound(quint64 id);
@@ -55,6 +62,9 @@ private:
 
     // Process the received data.
     void processDataPacket();
+
+    // If processes slots are available, requests information from the first socket in the queue.
+    void requestProcessInformation();
 
     // Emmitting the message signal
     void addMessage(const QString &type, const QString &msg);

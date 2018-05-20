@@ -74,19 +74,19 @@ void SSLClient::on_pbRequestReport_clicked()
         reading = false;
     }
     else{
-        txDP.addFile(readingfile,DPFI_READING);
+        txDP.addFile(readingfile,DataPacket::DPFI_READING);
     }
     QString bindingBC = getNewestFile(directory,FILE_OUTPUT_BINDING_BC);
     if (bindingBC.isEmpty()){
         log.appendWarning("WARNING: No binding BC file found");
         binding = false;
-        txDP.addFile(bindingBC,DPFI_BINDING_BC);
+        txDP.addFile(bindingBC,DataPacket::DPFI_BINDING_BC);
     }
     QString bindingUC = getNewestFile(directory,FILE_OUTPUT_BINDING_UC);
     if (bindingUC.isEmpty()){
         log.appendWarning("WARNING: No binding UC file found");
         binding = false;
-        txDP.addFile(bindingUC,DPFI_BINDING_UC);
+        txDP.addFile(bindingUC,DataPacket::DPFI_BINDING_UC);
     }
 
     if (!reading && !binding){
@@ -130,9 +130,9 @@ void SSLClient::on_pbRequestReport_clicked()
         log.appendWarning("WARNING: Doctor's name was not loaded. Using stock information");
     }
 
-    txDP.addString(dname,DPFI_DOCTOR_ID);
-    txDP.addString(pname,DPFI_PATIENT_ID);
-    txDP.addValue(p_age,DPFI_AGE);
+    txDP.addString(dname,DataPacket::DPFI_DOCTOR_ID);
+    txDP.addString(pname,DataPacket::DPFI_PATIENT_ID);
+    txDP.addValue(p_age,DataPacket::DPFI_AGE);
 
     // Requesting connection and ack
     informationSent = false;
@@ -162,7 +162,7 @@ void SSLClient::on_readyRead(){
 
         if (clientState == CS_WAIT_FOR_ACK){
 
-            if (rxDP.hasInformationField(DPFI_SEND_INFORMATION)){
+            if (rxDP.hasInformationField(DataPacket::DPFI_SEND_INFORMATION)){
                 // Since in the information was requested, it is now sent.
                 QByteArray ba = txDP.toByteArray();
                 qint64 num = socket->write(ba.constData(),ba.size());
@@ -188,13 +188,13 @@ void SSLClient::on_readyRead(){
         }
         else{ // We are waiting for a report
 
-            if (rxDP.isInformationFieldOfType(DPFI_REPORT,DPFT_FILE)){
+            if (rxDP.isInformationFieldOfType(DataPacket::DPFI_REPORT,DataPacket::DPFT_FILE)){
                 rxDP.clearBufferedData();
                 return;
             }
 
             // At this point the report was received so it is saved
-            QString reportPath = rxDP.saveFile(ui->lePatientDirectory->text(),DPFI_REPORT);
+            QString reportPath = rxDP.saveFile(ui->lePatientDirectory->text(),DataPacket::DPFI_REPORT);
             if (reportPath.isEmpty()){
                 log.appendError("ERROR: Could not save the report to the directory: " + ui->lePatientDirectory->text() + ". Please try again");
             }

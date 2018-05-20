@@ -20,8 +20,9 @@ SOURCES += main.cpp\
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     sslmanager.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
-    ../../CommonClasses/SSLIDSocket/sslidsocket.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp
+    ../../CommonClasses/LogInterface/loginterface.cpp \
+    sslidsocket.cpp \
+    processwithid.cpp
 
 HEADERS  += sslserverwindow.h \
     ../../CommonClasses/common.h \
@@ -29,8 +30,9 @@ HEADERS  += sslserverwindow.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     sslmanager.h \
     ../../CommonClasses/DataPacket/datapacket.h \
-    ../../CommonClasses/SSLIDSocket/sslidsocket.h \
-    ../../CommonClasses/LogInterface/loginterface.h
+    ../../CommonClasses/LogInterface/loginterface.h \
+    sslidsocket.h \
+    processwithid.h
 
 FORMS    += sslserverwindow.ui
 

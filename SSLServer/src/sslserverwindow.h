@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QProcess>
 
+#define   SERVER_MANAGER_VERSION                        "1.0"
 
-#include "../../CommonClasses/DataPacket/datapacket.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "sslmanager.h"
 
