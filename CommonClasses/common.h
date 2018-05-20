@@ -55,6 +55,7 @@ typedef enum {TSF_START,
 #define   DPFT_FILE                                     0
 #define   DPFT_REAL_VALUE                               1
 #define   DPFT_STRING                                   2
+#define   DPFT_INVALID                                  3
 
 #define   DPFI_DOCTOR_ID                                0
 #define   DPFI_PATIENT_ID                               1
@@ -74,6 +75,7 @@ typedef enum {TSF_START,
 #define   DEFAULT_TIMEOUT_CONNECTION                    60000
 #define   DEFAULT_TIMEOUT_WAIT_ACK                      60000
 #define   DEFAULT_TIMEOUT_WAIT_REPORT                   120000
+#define   DEFAULT_TIMEOUT_WAIT_DATA                     10000
 
 #define   COMMON_TEXT_CODEC                             "UTF-8"
 
@@ -133,6 +135,7 @@ typedef enum {TSF_START,
 #define   CONFIG_EXP_LIST                               "experiments"
 //#define   CONFIG_OUTPUT_DIR                             "output_dir"
 //#define   CONFIG_OUTPUT_REPO                            "output_directory"
+#define   CONFIG_RAW_DATA_REPO                          "raw_data_repo"
 #define   CONFIG_READING_PX_TOL                         "reading_px_tol_for_target"
 #define   CONFIG_EYEPROCESSOR_PATH                      "eyeprocessor_path"
 #define   CONFIG_OVERWRITE_BEHAVIOUR                    "overwrite_exp_files"
@@ -158,6 +161,8 @@ typedef enum {TSF_START,
 #define   CONFIG_CONNECTION_TIMEOUT                     "connection_time_out"
 #define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
 #define   CONFIG_RUN_AND_QUIT                           "run_and_quit"
+#define   CONFIG_NUMBER_OF_PARALLEL_PROCESSES           "number_of_paralell_processes"
+#define   CONFIG_WAIT_DATA_TIMEOUT                      "wait_data_timeout"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"

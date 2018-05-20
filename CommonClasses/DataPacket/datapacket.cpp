@@ -38,20 +38,25 @@ void DataPacket::addField(quint8 dpft, const QVariant &data, quint8 field_inform
     Field f;
     f.fieldType = dpft;
     f.data = data;
-    f.fieldInformation = field_information;
-    fields << f;
+    fields[field_information] = f;
+}
+
+bool DataPacket::isInformationFieldOfType(quint8 field_info, quint8 field_type){
+    if (!fields.contains(field_info)) return false;
+    return (fields.value(field_info).fieldType == field_type);
 }
 
 QByteArray DataPacket::toByteArray() const{
 
     QByteArray ans;    
+    QList<quint8> fieldInfo = fields.keys();
 
-    for (qint32 i = 0; i < fields.size(); i++){
+    for (qint32 i = 0; i < fieldInfo.size(); i++){
 
         // Adding the type.
-        Field f = fields.at(i);
+        Field f = fields.value(fieldInfo.at(i));
         ans.append(f.fieldType);
-        ans.append(f.fieldInformation);
+        ans.append(fieldInfo.at(i));
         qreal v;
 
         switch (f.fieldType){
@@ -110,6 +115,7 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
     qint32 i = BYTES_FOR_SIZE;
     quint32 nameSize = 0;
     quint32 strSize = 0;
+    quint8 fieldInformation;
     QString str;
     qreal value = 0;
     QList<QVariant> list;
@@ -118,7 +124,7 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
 
         Field f;
         f.fieldType = (quint8) buffer.at(i); i++;;
-        f.fieldInformation = (quint8) buffer.at(i); i++;
+        fieldInformation = (quint8) buffer.at(i); i++;
 
         switch (f.fieldType){
         case DPFT_FILE:
@@ -189,22 +195,22 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
             return DATABUFFER_RESULT_ERROR;
         }
 
-        fields << f;
+        fields[fieldInformation] = f;
     }
 
     return DATABUFFER_RESULT_DONE;
 
 }
 
-QString DataPacket::saveFile(const QString &directory, qint32 fieldIndex){
+QString DataPacket::saveFile(const QString &directory, quint8 fieldInfo){
 
     // Checking that everything is kosher.
-    if ((fieldIndex < 0) || (fieldIndex >= fields.size())) return "";
-    if (fields.at(fieldIndex).fieldType != DPFT_FILE) return "";
+    if (!fields.contains(fieldInfo)) return "";
+    if (fields.value(fieldInfo).fieldType != DPFT_FILE) return "";
     if (!QDir(directory).exists()) return "";
 
     // Opening a file and saving the data as is.
-    Field f =  fields.at(fieldIndex);
+    Field f =  fields.value(fieldInfo);
     QString fileName = directory + "/" + f.data.toList().first().toString();
     QFile file (fileName);
     if (!file.open(QFile::WriteOnly)) return "";

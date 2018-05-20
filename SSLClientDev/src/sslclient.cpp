@@ -162,7 +162,7 @@ void SSLClient::on_readyRead(){
 
         if (clientState == CS_WAIT_FOR_ACK){
 
-            if (rxDP.fieldList().first().fieldInformation == DPFI_SEND_INFORMATION){
+            if (rxDP.hasInformationField(DPFI_SEND_INFORMATION)){
                 // Since in the information was requested, it is now sent.
                 QByteArray ba = txDP.toByteArray();
                 qint64 num = socket->write(ba.constData(),ba.size());
@@ -188,23 +188,13 @@ void SSLClient::on_readyRead(){
         }
         else{ // We are waiting for a report
 
-            qint32 reportIndex = -1;
-            for (qint32 i = 0; i < rxDP.fieldList().size(); i++){
-                if ( (rxDP.fieldList().at(i).fieldInformation == DPFI_REPORT) &&
-                     (rxDP.fieldList().at(i).fieldType == DPFT_FILE) ){
-                    reportIndex = i;
-                    break;
-                }
-            }
-
-            // Received garbage data.
-            if (reportIndex == -1){
+            if (rxDP.isInformationFieldOfType(DPFI_REPORT,DPFT_FILE)){
                 rxDP.clearBufferedData();
                 return;
             }
 
             // At this point the report was received so it is saved
-            QString reportPath = rxDP.saveFile(ui->lePatientDirectory->text(),reportIndex);
+            QString reportPath = rxDP.saveFile(ui->lePatientDirectory->text(),DPFI_REPORT);
             if (reportPath.isEmpty()){
                 log.appendError("ERROR: Could not save the report to the directory: " + ui->lePatientDirectory->text() + ". Please try again");
             }
