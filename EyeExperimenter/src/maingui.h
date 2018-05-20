@@ -9,12 +9,6 @@
 #include <iostream>
 
 #include "../../CommonClasses/LogInterface/loginterface.h"
-//#include "../../CommonClasses/common.h"
-
-#include "eye_experimenter_defines.h"
-
-#include "experimentchooserdialog.h"
-#include "eyetrackerselectiondialog.h"
 
 #include "Experiments/readingexperiment.h"
 #include "Experiments/imageexperiment.h"
@@ -23,6 +17,8 @@
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
 #include "EyeTrackerInterface/RED/redinterface.h"
 
+#include "experimentchooserdialog.h"
+#include "eyetrackerselectiondialog.h"
 #include "processorthread.h"
 #include "monitorscreen.h"
 #include "settingsdialog.h"
@@ -88,7 +84,7 @@ private:
     void setWidgetPositions();
 
     // Contains all the logic to interpret the expanded version of the Binding experiment
-    QString getBindingExperiment(bool bc, const QString &demo);
+    QString getBindingExperiment(bool bc);
 
 };
 

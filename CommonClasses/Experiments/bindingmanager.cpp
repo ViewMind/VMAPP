@@ -73,9 +73,11 @@ void BindingManager::init(ConfigurationManager *c){
 
 void BindingManager::drawCenter(qint32 currentTrial){
     canvas->clear();
-    currentTrial++;
-    // Patch to avoid changing the logic of the workign Binding experiment.
-    if (currentTrial >= trials.size()) currentTrial = trials.size()-1;
+
+    //currentTrial++;
+    // Patch to avoid changing the logic of the working Binding experiment.
+    //if (currentTrial >= trials.size()) currentTrial = trials.size()-1;
+
     if (trials.at(currentTrial).number == -1){
         canvas->addLine(line0,QPen(QBrush(Qt::red),2));
         canvas->addLine(line1,QPen(QBrush(Qt::red),2));
@@ -99,6 +101,12 @@ void BindingManager::drawTrial(qint32 currentTrial, bool show){
 
 }
 
+void BindingManager::enableDemoMode(){
+    while (trials.size() > NUMBER_OF_TRIALS_IN_DEMO_MODE){
+        trials.removeLast();
+    }
+}
+
 bool BindingManager::parseExpConfiguration(const QString &contents){
 
     bool legacyDescription = false;
@@ -117,6 +125,8 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
             largeTargets = true;
         }
     }
+
+    usesNumbers = false;
 
     if (!config->containsKeyword(CONFIG_XPX_2_MM)){
         error = "Configuration file requires the horizontal pixel to mm ratio: x_px_mm";
@@ -220,16 +230,21 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
         }
         BindingTrial trial;
         trial.name = tokens.at(0);
-        if (tokens.at(1) == 'x'){
+        if (tokens.at(1) == 'x'){            
+            if (usesNumbers){
+                error = "Transition numbers were found, but then a x  @ line:" + lines.at(i);
+                return false;
+            }
             trial.number = -1;
         }
         else{
+            usesNumbers = true;
             bool ok;
             trial.number = tokens.at(1).toUInt(&ok);
             if (!ok){
                 error = "Invalid number in trial name @ line: " + lines.at(i);
                 return false;
-            }
+            }            
         }
 
         if (tokens.at(2) == "s") trial.isSame = true;
@@ -261,6 +276,8 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
         i = i + 7;
 
     }
+
+    if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
 
     return true;
 }

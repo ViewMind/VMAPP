@@ -71,6 +71,8 @@ private:
     // Used to provide some area extra around an option so as to provide a larger clickable target
     const qint32 AIR = 20;
 
+    void enableDemoMode();
+
 };
 
 #endif // READINGMANGER_H

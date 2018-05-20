@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QDir>
+#include "eye_experimenter_defines.h"
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/Experiments/readingmanager.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"

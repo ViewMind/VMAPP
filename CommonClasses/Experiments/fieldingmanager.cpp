@@ -5,6 +5,12 @@ FieldingManager::FieldingManager()
 
 }
 
+void FieldingManager::enableDemoMode(){
+    while (fieldingTrials.size() > NUMBER_OF_TRIALS_IN_DEMO_MODE){
+        fieldingTrials.removeLast();
+    }
+}
+
 bool FieldingManager::parseExpConfiguration(const QString &contents){
 
     // Generating the contents from the phrases
@@ -52,6 +58,8 @@ bool FieldingManager::parseExpConfiguration(const QString &contents){
         fieldingTrials << t;
 
     }
+
+    if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
 
     return true;
 

@@ -95,6 +95,8 @@ private:
     QGraphicsSimpleTextItem *gText2;
     QGraphicsSimpleTextItem *gText3;
 
+    void enableDemoMode();
+
 };
 
 #endif // FIELDINGDRAW_H

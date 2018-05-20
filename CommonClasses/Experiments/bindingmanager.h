@@ -6,7 +6,6 @@
  * for the binding experiment.
  * **************************************/
 
-#include "../../CommonClasses/common.h"
 #include "experimentdatapainter.h"
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
@@ -79,11 +78,10 @@ public:
     // Draw a particular trial
     void drawTrial(qint32 currentTrial, bool show);
 
-    // Get the number of trials
-    qint32 getNumberOfTrials() const {return trials.size();}
-
     // Get the info on one trial.
     BindingTrial getTrial(qint32 trial) {return trials.at(trial);}
+
+    bool getUsesNumbers() const {return usesNumbers;}
 
 private:
 
@@ -92,6 +90,9 @@ private:
 
     // The trial structure
     QList<BindingTrial> trials;
+
+    // Uses number or crosses.
+    bool usesNumbers;
 
     // The number of targets in each slide of the trial
     qint32 numberOfTargets;
@@ -104,7 +105,7 @@ private:
     bool parseColors(const QString &line, BindingTrial *trial, bool background, bool show);
     bool legacyParser(const QString &contents);
 
-
+    void enableDemoMode();
 
 };
 

@@ -14,6 +14,7 @@ ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent)
 
     // Binding type.
     isBound = bound;
+
 }
 
 bool ImageExperiment::startExperiment(ConfigurationManager *c){
@@ -26,16 +27,21 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
 
     if (!Experiment::startExperiment(c)) return false;
 
+    if (m->getUsesNumbers()) timeCountForStart = TIME_START_NUMBER;
+    else timeCountForStart = TIME_START_CROSS;
+
     // If there were no problems the experiment can begin.
-    currentTrial = -1;
+    currentTrial = 0;
     error = "";
     state = STATE_RUNNING;
+    atLast = false;
     ignoreData = false;
+    newImage(m->getTrial(currentTrial).name,0);
     trialState = TSB_CENTER_CROSS;
     drawCurrentImage();
     stateTimer->setInterval(1);
     stateTimer->start();
-    timerCounter = TIME_START_CROSS;
+    timerCounter = timeCountForStart;
     this->show();
     this->activateWindow();
 
@@ -44,32 +50,40 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
 }
 
 void ImageExperiment::drawCurrentImage(){
+
     if (trialState == TSB_CENTER_CROSS){
+        //qWarning() << "DRAWING: Center Cross" << currentTrial;
         m->drawCenter(currentTrial);
+        emit(updateBackground(m->getImage()));
         return;
     }
 
-    if ((trialState == TSB_TRANSITION) || (trialState == TSB_FINISH)){
+    if ((trialState == TSB_TRANSITION) || (trialState == TSB_FINISH) || (trialState == TSB_NUMBER_TRANSITION)){
+        //qWarning() << "DRAWING: Transition" << currentTrial;
         gview->scene()->clear();
+        emit(updateBackground(m->getImage()));
         return;
     }
 
-    if (trialState == TSB_SHOW) m->drawTrial(currentTrial,true);
-    else if (trialState == TSB_TEST) m->drawTrial(currentTrial,false);
-
+    if (trialState == TSB_SHOW) {
+        //qWarning() << "DRAWING: Show" << currentTrial;
+        m->drawTrial(currentTrial,true);
+    }
+    else if (trialState == TSB_TEST) {
+        //qWarning() << "DRAWING: Test" << currentTrial;
+        m->drawTrial(currentTrial,false);
+    }
     emit(updateBackground(m->getImage()));
 
 }
 
 void ImageExperiment::advanceTrial(){
 
-    if (currentTrial < m->getNumberOfTrials() - 1){
+    if (currentTrial < m->size()-1){
         currentTrial++;
 
         // Adding the entry in the file
         newImage(m->getTrial(currentTrial).name,0);
-
-        drawCurrentImage();
         return;
     }
 
@@ -160,32 +174,46 @@ void ImageExperiment::nextState(){
 
     switch (trialState){
     case TSB_CENTER_CROSS:
-        //qWarning() << "ENTER: Center cross";
-        trialState = TSB_SHOW;
-        advanceTrial();
-        timerCounter = TIME_IMAGE_1;
+        //qWarning() << "ENTER: Center cross" << currentTrial;
+        if (!m->getUsesNumbers()){
+            trialState = TSB_SHOW;
+            timerCounter = TIME_IMAGE_1;
+            drawCurrentImage();
+        }
+        else{
+            trialState = TSB_NUMBER_TRANSITION;
+            timerCounter = TIME_NUMBER_TRANSITION;
+            drawCurrentImage();
+        }
         return;
+    case TSB_NUMBER_TRANSITION:
+        //qWarning() << "ENTER: NTransition" << currentTrial;
+        trialState = TSB_SHOW;
+        drawCurrentImage();
+        timerCounter = TIME_IMAGE_1;
+        break;
     case TSB_FINISH:
-        //qWarning() << "ENTER: FINISH";
+        //qWarning() << "ENTER: FINISH" << currentTrial;
+        advanceTrial();
         trialState = TSB_CENTER_CROSS;
         drawCurrentImage();
-        timerCounter = TIME_START_CROSS;
+        timerCounter = timeCountForStart;
         return;
     case TSB_SHOW:
-        //qWarning() << "ENTER: SHOW";
+        //qWarning() << "ENTER: SHOW" << currentTrial;
         trialState = TSB_TRANSITION;
         drawCurrentImage();
         timerCounter = TIME_WHITE_TRANSITION;
         return;
     case TSB_TEST:
-        //qWarning() << "ENTER: TEST";
+        //qWarning() << "ENTER: TEST" << currentTrial;
         trialState = TSB_FINISH;
         addAnswer(answer);
         drawCurrentImage();
         timerCounter = TIME_FINISH;
         return;
     case TSB_TRANSITION:
-        //qWarning() << "ENTER: TRANSITION";
+        //qWarning() << "ENTER: TRANSITION" << currentTrial;
         trialState = TSB_TEST;
         answer = "N/A";
         newImage(m->getTrial(currentTrial).name,1);
@@ -193,6 +221,7 @@ void ImageExperiment::nextState(){
         timerCounter = TIME_IMAGE_2_TIMEOUT;
         return;
     }
+
 
 }
 

@@ -33,13 +33,13 @@ reading_px_tol_for_target = 18;
 #         OPTIONS MODIFIED BY EXPERIMENTER             #
 #------------------------------------------------------#
 
-patient_name = Ariel Arelovich;
-patient_age = 34;
+patient_name = Juan de Los Palotes;
+patient_age = 56;
 doctor_name = Doctor Genius;
 report_language = English;
-patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs/Ariel_Arelovich;
-patient_email = aarelovich@gmail.com;
+patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs/Juan_de_Los_Palotes/Juan_de_Los_Palotes/Juan_de_Los_Palotes;
+patient_email = jpalotes@pepe.com;
 demo_mode = true;
-binding_default = false;
+binding_default = true;
 binding_num_targets = 4;
-binding_use_numbers = true;
+binding_use_numbers = false;

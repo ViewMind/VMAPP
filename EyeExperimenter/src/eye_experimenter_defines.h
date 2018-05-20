@@ -7,7 +7,7 @@
 // Show the console for debugging messages when cannot find bug by locally running it.
 // #define  SHOW_CONSOLE
 
-#define   EXPERIMENTER_VERSION                          "1.0.2"
+#define   EXPERIMENTER_VERSION                          "1.0.3"
 
 #ifdef ENABLE_EXPANDED_BINDING_OPTIONS
    #define   EXPANDED_VERSION                           "-EBO"

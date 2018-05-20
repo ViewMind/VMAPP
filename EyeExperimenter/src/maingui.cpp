@@ -232,33 +232,31 @@ void MainGUI::startExperiment(){
     qint32 expSelected = experimentSequence.at(expInSeq);
     QBrush background;
     QString instruction = "";
-    QString demo = "";
-    if (configuration.getBool(CONFIG_DEMO_MODE)) demo = "_demo";
 
     // Using the polimorphism, the experiment object is created according to the selected index.
     QString readingQuestions;
     switch (expSelected){
     case EXP_READING:
-        readingQuestions = ":/expdata/experiment_data/Reading_" + configuration.getString(CONFIG_REPORT_LANGUAGE) + demo + ".dat";
+        readingQuestions = ":/expdata/experiment_data/Reading_" + configuration.getString(CONFIG_REPORT_LANGUAGE) + ".dat";
         configuration.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,readingQuestions);
         experiment = new ReadingExperiment();
         background = QBrush(Qt::gray);
         instruction = ":/images/images/reading";
         break;
     case EXP_BINDING_BC:
-        configuration.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(true,demo));
+        configuration.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(true));
         experiment = new ImageExperiment(true);
         background = QBrush(Qt::gray);
         instruction = ":/images/images/binding_bc";
         break;
     case EXP_BINDING_UC:
-        configuration.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(false,demo));
+        configuration.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(false));
         experiment = new ImageExperiment(false);
         background = QBrush(Qt::gray);
         instruction = ":/images/images/binding_uc";
         break;
     case EXP_FIELDNG:
-        configuration.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/expdata/experiment_data/fielding" + demo + ".dat");
+        configuration.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/expdata/experiment_data/fielding.dat");
         experiment = new FieldingExperiment();
         background = QBrush(Qt::black);
         instruction = ":/images/images/fielding";
@@ -415,11 +413,11 @@ void MainGUI::setWidgetPositions(){
     monitor = new MonitorScreen(this,secondScreen);
 }
 
-QString MainGUI::getBindingExperiment(bool bc, const QString &demo){
+QString MainGUI::getBindingExperiment(bool bc){
 
     QString defaultExp;
-    if (bc) defaultExp = ":/expdata/experiment_data/bc" + demo + ".dat";
-    else defaultExp = ":/expdata/experiment_data/uc" + demo + ".dat";
+    if (bc) defaultExp = ":/expdata/experiment_data/bc.dat";
+    else defaultExp = ":/expdata/experiment_data/uc.dat";
 
     if (!configuration.containsKeyword(CONFIG_BINDING_DEFAULT)) {
         configuration.addKeyValuePair(CONFIG_BINDING_DEFAULT,false);

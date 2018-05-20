@@ -9,6 +9,8 @@
 
 // Timer constants
 #define   TIME_START_CROSS                              250
+#define   TIME_START_NUMBER                             2000
+#define   TIME_NUMBER_TRANSITION                        2000
 #define   TIME_IMAGE_1                                  2000
 #define   TIME_WHITE_TRANSITION                         900
 #define   TIME_IMAGE_2_TIMEOUT                          10000
@@ -19,7 +21,7 @@ class ImageExperiment : public Experiment
 public:
 
     // State machine states for Binding trials
-    typedef enum {TSB_CENTER_CROSS,TSB_SHOW,TSB_TRANSITION,TSB_TEST,TSB_FINISH} TrialStateBinding;
+    typedef enum {TSB_CENTER_CROSS,TSB_SHOW,TSB_TRANSITION,TSB_TEST,TSB_FINISH,TSB_NUMBER_TRANSITION} TrialStateBinding;
 
     ImageExperiment(bool bound, QWidget *parent = 0);
     ~ImageExperiment();
@@ -46,8 +48,12 @@ private:
     // Check if the experiment is bound or unbound
     bool isBound;
 
+    // Varies depending if using numbered configuration or not.
+    qint32 timeCountForStart;
+
     // This will indicate the current image.
     qint32 currentTrial;
+    bool atLast;
 
     // The timer to automatically go from trial to test image.
     QTimer *stateTimer;

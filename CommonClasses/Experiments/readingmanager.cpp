@@ -86,8 +86,15 @@ bool ReadingManager::parseExpConfiguration(const QString &contents){
 
     }
 
+    if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
     return true;
 
+}
+
+void ReadingManager::enableDemoMode(){
+    while (phrases.size() > NUMBER_OF_TRIALS_IN_DEMO_MODE){
+        phrases.removeLast();
+    }
 }
 
 bool ReadingManager::drawPhrase(const QString &idStr){
