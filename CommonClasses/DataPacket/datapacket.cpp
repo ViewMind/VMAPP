@@ -103,9 +103,11 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
                 temp.append(buffer.at(j));
             }
             packetSize = byteArrayToSize(temp);
+            // Check to see if all the data arrived.
+            qWarning() << "Buffer size" << buffer.size() << "packet size" << packetSize;
+            if ((quint32)buffer.size() < packetSize + BYTES_FOR_SIZE) return DATABUFFER_RESULT_NOT_DONE;
         }
-
-        return DATABUFFER_RESULT_NOT_DONE;
+        else return DATABUFFER_RESULT_NOT_DONE;
     }
     else{
         buffer.append(array);
