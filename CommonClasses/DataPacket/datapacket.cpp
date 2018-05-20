@@ -234,7 +234,7 @@ QString DataPacket::saveFile(const QString &directory, quint8 fieldInfo){
     file.close();
 
     // If the numbers of bytes written differs from the number of bytes on the array, there was a problem.
-    if (written != f.data.toList().last().toByteArray().size()) return false;
+    if (written != f.data.toList().last().toByteArray().size()) return "";
     return fileName;
 }
 
