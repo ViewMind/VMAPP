@@ -11,5 +11,8 @@ EyeReportGenerator/exe/release/
 SSLClientDev/exe/
 SSLServer/bin/release/
 SSLServer/bin/SSLServer
-SSLServer/bin/qrc_certificates.cpp
+SSLServer/bin/*.cpp
+EyeReportGenerator/exe/EyeReportGen
+EyeReportGenerator/exe/*.cpp
+ReportViewerDev/
 *.tmp*

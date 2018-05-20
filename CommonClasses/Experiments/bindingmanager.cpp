@@ -230,7 +230,7 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
         }
         BindingTrial trial;
         trial.name = tokens.at(0);
-        if (tokens.at(1) == 'x'){            
+        if (tokens.at(1) == "x"){
             if (usesNumbers){
                 error = "Transition numbers were found, but then a x  @ line:" + lines.at(i);
                 return false;

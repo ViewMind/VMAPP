@@ -68,10 +68,8 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
                 imageData.clear();
             }
             else{
-                bool printing = false;
                 if (((tokens.size() == 2) && (tokens.last().trimmed() == "1")) || (line.contains("->"))){
                     warnings = warnings + "Trial ID: " + id + ". ISTrial: " + isTrial + " has no data points<br>";
-                    printing = true;
                 }
             }
 
