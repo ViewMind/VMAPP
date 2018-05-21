@@ -216,6 +216,10 @@ void EyeReportUI::testReport(){
 void EyeReportUI::loadArguments(){
     QStringList arguments = QApplication::arguments();
 
+//    for (qint32 i = 0; i < arguments.size(); i++){
+//        log.appendStandard(arguments.at(i));
+//    }
+
     // Parsing arguments to the command line
     QString field = "";
     QString value = "";
@@ -256,8 +260,9 @@ void EyeReportUI::addToConfigFromCmdLine(const QString &field, const QString &va
             configuration.addKeyValuePair(CONFIG_RUN_AND_QUIT,true);
             // Also ensures fast processing
             configuration.addKeyValuePair(CONFIG_FAST_PROCESSING,true);
+            log.appendStandard("RUN AND QUIT SET");
         }
     }
-    //qWarning() << "Adding" << field << "<|>" <<  value;
+    //log.appendStandard("Adding field,value pair: " + field + "<|>" + value);
     configuration.addKeyValuePair(field,value);
 }

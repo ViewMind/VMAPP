@@ -24,6 +24,8 @@ public:
 private slots:
     void on_messagesAvailable();
 
+    void on_pbClearConsole_clicked();
+
 private:
     Ui::SSLServerWindow *ui;
     SSLManager sslManager;
