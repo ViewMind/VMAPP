@@ -32,7 +32,8 @@ SOURCES += \
     sslclient.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
     ../../CommonClasses/LogInterface/loginterface.cpp \
-    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp
+    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+    ../../CommonClasses/ImageExplorer/imageexplorer.cpp
 
 HEADERS += \
         sslclientdev.h \
@@ -40,7 +41,8 @@ HEADERS += \
     ../../CommonClasses/DataPacket/datapacket.h \
     ../../CommonClasses/common.h \
     ../../CommonClasses/LogInterface/loginterface.h \
-    ../../CommonClasses/ConfigurationManager/configurationmanager.h
+    ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../CommonClasses/ImageExplorer/imageexplorer.h
 
 FORMS += \
         sslclientdev.ui \

@@ -11,10 +11,13 @@
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
+#include "../../CommonClasses/ImageExplorer/imageexplorer.h"
 #include "../../CommonClasses/DataPacket/datapacket.h"
 
 #define   DEFAULT_TIMEOUT_CONNECTION                    60000
 #define   DEFAULT_TIMEOUT_WAIT_ACK                      60000
+
+#define   ENABLE_DELAY_TIMER
 
 namespace Ui {
 class SSLClient;
@@ -40,6 +43,11 @@ private slots:
     // Timer
     void on_timeOut();
 
+#ifdef ENABLE_DELAY_TIMER
+    // Delay timer timeout
+    void onDelayTimerTimeOut();
+#endif
+
     // GUI Slots
     void on_pbSearch_clicked();
     void on_pbRequestReport_clicked();
@@ -53,12 +61,21 @@ private:
     // Ui Message writer
     LogInterface log;
 
+    // To show the report once received.
+    ImageExplorer reportShower;
+
     // The socket for the actual connection
     QSslSocket *socket;
 
     // Buffers for sending and receiving data
     DataPacket txDP;
     DataPacket rxDP;
+
+#ifdef ENABLE_DELAY_TIMER
+    // Timer to delay send to server by 10 seconds
+    QTimer delayTimer;
+    qint32 secondCounter;
+#endif
 
     // Flag to indicate that the information has been sent
     bool informationSent;
@@ -70,6 +87,11 @@ private:
 
     // Configures and starts the timer and uses a default value if one is not present
     void startTimeoutTimer();
+
+    // Starts the whole process
+    void connectToServer();
+
+    void uiEnable(bool enable);
 };
 
 #endif // SSLCLIENT_H

@@ -26,6 +26,10 @@ SSLClient::SSLClient(QWidget *parent, ConfigurationManager *c) :
     connect(socket,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(on_sslErrors(QList<QSslError>)));
     connect(socket,SIGNAL(readyRead()),this,SLOT(on_readyRead()));
 
+#ifdef ENABLE_DELAY_TIMER
+    connect(&delayTimer,&QTimer::timeout,this,&SSLClient::onDelayTimerTimeOut);
+#endif
+
     // Timer connection
     connect(&timer,&QTimer::timeout,this,&SSLClient::on_timeOut);
 
@@ -49,10 +53,33 @@ SSLClient::SSLClient(QWidget *parent, ConfigurationManager *c) :
 
     clientState = CS_CONNECTING;
     ui->pbRequestReport->setEnabled(true);
+    reportShower.hide();
 }
 
 
-void SSLClient::on_pbRequestReport_clicked()
+void SSLClient::on_pbRequestReport_clicked(){
+#ifdef ENABLE_DELAY_TIMER
+    delayTimer.setInterval(1000);
+    secondCounter = 10;
+    delayTimer.start();
+    onDelayTimerTimeOut();
+#else
+    connectToServer();
+#endif
+}
+
+#ifdef ENABLE_DELAY_TIMER
+void SSLClient::onDelayTimerTimeOut(){
+    secondCounter--;
+    ui->pbRequestReport->setText("Request Report (" + QString::number(secondCounter) + ")");
+    if (secondCounter == 0) {
+        delayTimer.stop();
+        connectToServer();
+    }
+}
+#endif
+
+void SSLClient::connectToServer()
 {
     // A configuration is created in order to get the patient information.
     QString directory = ui->lePatientDirectory->text();
@@ -80,15 +107,18 @@ void SSLClient::on_pbRequestReport_clicked()
     if (bindingBC.isEmpty()){
         log.appendWarning("WARNING: No binding BC file found");
         binding = false;
+    }
+    else{
         txDP.addFile(bindingBC,DataPacket::DPFI_BINDING_BC);
     }
     QString bindingUC = getNewestFile(directory,FILE_OUTPUT_BINDING_UC);
     if (bindingUC.isEmpty()){
         log.appendWarning("WARNING: No binding UC file found");
         binding = false;
+    }
+    else{
         txDP.addFile(bindingUC,DataPacket::DPFI_BINDING_UC);
     }
-
     if (!reading && !binding){
         log.appendError("ERROR: No processing is possible due to missing files.");
         return;
@@ -104,7 +134,7 @@ void SSLClient::on_pbRequestReport_clicked()
     }
     else{
         ConfigurationManager m;
-        if (!m.loadConfiguration(patientInfoFile,COMMON_TEXT_CODEC)){
+        if (m.loadConfiguration(patientInfoFile,COMMON_TEXT_CODEC)){
             if (m.containsKeyword(CONFIG_PATIENT_NAME)){
                 pname = m.getString(CONFIG_PATIENT_NAME);
             }
@@ -119,7 +149,7 @@ void SSLClient::on_pbRequestReport_clicked()
             }
         }
         else{
-            log.appendWarning("WARNING: Error loading patient file. Using stock information");
+            log.appendWarning("WARNING: Error loading patient file (" + m.getError() + "). Using stock information.");
         }
     }
 
@@ -137,12 +167,11 @@ void SSLClient::on_pbRequestReport_clicked()
     // Requesting connection and ack
     informationSent = false;
     socket->connectToHostEncrypted(config->getString(CONFIG_SERVER_ADDRESS),(quint16)config->getInt(CONFIG_TCP_PORT));
-    ui->pbRequestReport->setEnabled(false);
-    ui->pbSearch->setEnabled(false);
 
     // Starting timeout timer.
     clientState = CS_CONNECTING;
     startTimeoutTimer();
+    uiEnable(false);
 
 }
 
@@ -158,8 +187,9 @@ void SSLClient::on_readyRead(){
 
     if (clientState == CS_CONNECTING) return;
 
-    if (rxDP.bufferByteArray(socket->readAll())){
+    quint8 errcode = rxDP.bufferByteArray(socket->readAll());
 
+    if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
         if (clientState == CS_WAIT_FOR_ACK){
 
             if (rxDP.hasInformationField(DataPacket::DPFI_SEND_INFORMATION)){
@@ -173,9 +203,10 @@ void SSLClient::on_readyRead(){
                     ui->pbSearch->setEnabled(true);
                     return;
                 }
-
+                log.appendStandard("LOG: Sent requested information to server: " + QString::number(num) + " bytes");
                 rxDP.clearBufferedData();
                 clientState = CS_WAIT_FOR_REPORT;
+                timer.stop();
                 startTimeoutTimer();
 
             }
@@ -188,10 +219,11 @@ void SSLClient::on_readyRead(){
         }
         else{ // We are waiting for a report
 
-            if (rxDP.isInformationFieldOfType(DataPacket::DPFI_REPORT,DataPacket::DPFT_FILE)){
+            if (!rxDP.isInformationFieldOfType(DataPacket::DPFI_REPORT,DataPacket::DPFT_FILE)){
                 rxDP.clearBufferedData();
                 return;
             }
+            timer.stop();
 
             // At this point the report was received so it is saved
             QString reportPath = rxDP.saveFile(ui->lePatientDirectory->text(),DataPacket::DPFI_REPORT);
@@ -200,18 +232,30 @@ void SSLClient::on_readyRead(){
             }
             else{
                 log.appendSuccess("Report saved to: " + reportPath);
+                reportShower.setImageFile(reportPath);
+                reportShower.show();
             }
 
             rxDP.clearAll();
             socket->disconnectFromHost();
-            ui->pbRequestReport->setEnabled(true);
-            ui->pbSearch->setEnabled(false);
+            uiEnable(true);
         }
 
+    }
+    else if (errcode == DataPacket::DATABUFFER_RESULT_ERROR){
+        log.appendError("ERROR: Buffering data from the receiver");
+        rxDP.clearAll();
+        socket->disconnectFromHost();
+        uiEnable(true);
     }
 
 }
 
+
+void SSLClient::uiEnable(bool enable){
+    ui->pbRequestReport->setEnabled(enable);
+    ui->pbSearch->setEnabled(enable);
+}
 
 
 //************************************* Socket and SSL Errors, Socket state changes ****************************************
@@ -231,6 +275,10 @@ void SSLClient::on_socketStateChanged(QAbstractSocket::SocketState state){
 void SSLClient::on_socketError(QAbstractSocket::SocketError error){
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
     log.appendWarning(QString("SOCKET ERROR: ") + metaEnum.valueToKey(error));
+    // If there is an error then the timer should be stopped.
+    if (timer.isActive()) timer.stop();
+    socket->disconnectFromHost();
+    uiEnable(true);
 }
 
 void SSLClient::on_pbSearch_clicked()
