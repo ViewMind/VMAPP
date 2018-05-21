@@ -15,7 +15,6 @@ SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id):QObject()
     sslSocket = newSocket;
 
     // Creating all the connections from signals and slots.
-    connect(sslSocket,&QSslSocket::encrypted,this,&SSLIDSocket::on_encryptedSuccess);
     connect(sslSocket,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
     connect(sslSocket,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(on_sslErrors(QList<QSslError>)));
     connect(sslSocket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(on_socketStateChanged(QAbstractSocket::SocketState)));
@@ -23,12 +22,14 @@ SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id):QObject()
     connect(sslSocket,&QSslSocket::readyRead,this,&SSLIDSocket::on_readyRead);
     connect(sslSocket,&QSslSocket::disconnected,this,&SSLIDSocket::on_disconnected);
     connect(&timer,&QTimer::timeout,this,&SSLIDSocket::on_timeout);
-    connect(&process,SIGNAL(finished(int)),this,SIGNAL(on_processFinished(qint32)));
+    connect(&process,SIGNAL(finished(int)),this,SLOT(on_processFinished(qint32)));
 
     workingDirectory = "";
 }
 
 void SSLIDSocket::processData(const QString &processorPath, const QStringList &args){
+    QFileInfo info(processorPath);
+    process.setWorkingDirectory(info.absolutePath());
     process.start(processorPath,args);
 }
 
@@ -105,7 +106,8 @@ void SSLIDSocket::on_encryptedSuccess(){
 
 void SSLIDSocket::on_readyRead(){
     // Should buffer the data
-    quint8 ans = rx.bufferByteArray(socket()->readAll());
+    QByteArray ba = socket()->readAll();
+    quint8 ans = rx.bufferByteArray(ba);
     if (ans == DataPacket::DATABUFFER_RESULT_DONE){
         emit(sslSignal(ID,SSL_SIGNAL_DATA_RX_DONE));
     }

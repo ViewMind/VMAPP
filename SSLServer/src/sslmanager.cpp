@@ -31,6 +31,8 @@ void SSLManager::startServer(ConfigurationManager *c){
         return;
     }
 
+    addMessage("PARALLEL PROCESSES: ",c->getString(CONFIG_NUMBER_OF_PARALLEL_PROCESSES));
+
     if (!listener->listen(QHostAddress::Any,(quint16)config->getInt(CONFIG_TCP_PORT))){
         addMessage("ERROR","Could not start SSL Server: " + listener->errorString());
         return;
@@ -72,8 +74,6 @@ void SSLManager::on_newConnection(){
 
 // Handling all signals
 void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
-
-    QByteArray ba;
 
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
@@ -145,8 +145,8 @@ void SSLManager::sendReport(quint64 socket){
         addMessage("ERROR","Could failure sending the report to host: " + sockets.value(socket)->socket()->peerAddress().toString());
     }
 
-    // One way or another a socket is removed wheter some error happened or all ended up ok.
-    removeSocket(socket);
+    addMessage("LOG","Sending report back to host: " + sockets.value(socket)->socket()->peerAddress().toString() + ". Size: " + QString::number(ba.size()) + " bytes");
+
 }
 
 void SSLManager::lauchEyeReportProcessor(quint64 socket){
@@ -157,13 +157,18 @@ void SSLManager::lauchEyeReportProcessor(quint64 socket){
         return;
     }
 
+    DataPacket d = sockets.value(socket)->getDataPacket();
+
     // All good and the files have been saved.
     QStringList arguments;
-    QString dash = "";
-    arguments << dash + CONFIG_PATIENT_AGE << config->getString(CONFIG_PATIENT_AGE);
-    arguments << dash + CONFIG_PATIENT_NAME << config->getString(CONFIG_PATIENT_NAME);
+    QString dash = "-";
+    arguments << dash + CONFIG_PATIENT_AGE << d.getField(DataPacket::DPFI_AGE).data.toString();
+    arguments << dash + CONFIG_PATIENT_NAME << d.getField(DataPacket::DPFI_PATIENT_ID).data.toString();
     arguments << dash + CONFIG_PATIENT_DIRECTORY << sockets.value(socket)->getWorkingDirectory();
-    arguments << dash + CONFIG_DOCTOR_NAME << config->getString(CONFIG_DOCTOR_NAME);
+    arguments << dash + CONFIG_DOCTOR_NAME << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+
+    addMessage("LOG","Process information from: " + sockets.value(socket)->socket()->peerAddress().toString());
+    sockets.value(socket)->processData(config->getString(CONFIG_EYEPROCESSOR_PATH),arguments);
 
 }
 
@@ -185,23 +190,30 @@ void SSLManager::requestProcessInformation(){
             }
             else{
                 sockets.value(id)->startTimeoutTimer(config->getInt(CONFIG_WAIT_DATA_TIMEOUT));
+                addMessage("LOG","Sent request for data to " + sockets.value(id)->socket()->peerAddress().toString());
             }
         }
     }
+
+    addMessage("LOG","Queue contains " + QString::number(queue.size()) + " pending requests");
+    addMessage("LOG","Processing " + QString::number(socketsBeingProcessed.size()) + " at once");
 
 }
 
 void SSLManager::removeSocket(quint64 id){
     if (sockets.contains(id)) {
-        if (sockets.value(id)->isValid()) sockets.value(id)->socket()->disconnectFromHost();
+        if (sockets.value(id)->isValid()){
+            sockets.value(id)->socket()->disconnectFromHost();
+        }
         sockets.remove(id);
     }
-
     qint32 index = queue.indexOf(id);
     if (index != -1) queue.removeAt(index);
     if (socketsBeingProcessed.remove(id)){
+        addMessage("LOG","Remaining processing requests: " + QString::number(socketsBeingProcessed.size()));
         requestProcessInformation();
     }
+
 }
 
 
@@ -218,7 +230,10 @@ void SSLManager::socketErrorFound(quint64 id){
     QAbstractSocket::SocketError error = sockets.value(id)->socket()->error();
     QHostAddress addr = sockets.value(id)->socket()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    addMessage("ERROR",QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
+    if (error != QAbstractSocket::RemoteHostClosedError)
+       addMessage("ERROR",QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
+    else
+       addMessage("LOG",QString("Closed connection from Address: ") + addr.toString());
 
     // Eliminating it from the list.
     removeSocket(id);
