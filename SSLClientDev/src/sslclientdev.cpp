@@ -6,6 +6,10 @@ SSLClientDev::SSLClientDev(QWidget *parent) :
     ui(new Ui::SSLClientDev)
 {
     ui->setupUi(this);
+    config.addKeyValuePair(CONFIG_SERVER_ADDRESS,"192.168.1.10");
+    config.addKeyValuePair(CONFIG_TCP_PORT,54912);
+    client = new SSLClient(this,&config);
+    client->show();
 }
 
 SSLClientDev::~SSLClientDev()

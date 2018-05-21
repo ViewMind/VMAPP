@@ -18,6 +18,8 @@ public:
 
 private:
     Ui::SSLClientDev *ui;
+    SSLClient *client;
+    ConfigurationManager config;
 };
 
 #endif // SSLCLIENTDEV_H

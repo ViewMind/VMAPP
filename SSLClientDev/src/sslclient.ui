@@ -25,6 +25,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLineEdit" name="lePatientDirectory">
+       <property name="text">
+        <string>C:\Users\Viewmind\Documents\ExperimentOutputs\Patient_Zero</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>

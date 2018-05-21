@@ -11,6 +11,7 @@
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
+#include "../../CommonClasses/ImageExplorer/imageexplorer.h"
 #include "../../CommonClasses/DataPacket/datapacket.h"
 
 #define   DEFAULT_TIMEOUT_CONNECTION                    60000
@@ -52,6 +53,9 @@ private:
 
     // Ui Message writer
     LogInterface log;
+
+    // To show the report once received.
+    ImageExplorer reportShower;
 
     // The socket for the actual connection
     QSslSocket *socket;
