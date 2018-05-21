@@ -17,7 +17,7 @@
 #define   DEFAULT_TIMEOUT_CONNECTION                    60000
 #define   DEFAULT_TIMEOUT_WAIT_ACK                      60000
 
-#define   ENABLE_DELAY_TIMER
+//#define   ENABLE_DELAY_TIMER
 
 namespace Ui {
 class SSLClient;
