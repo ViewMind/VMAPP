@@ -108,7 +108,7 @@ void SSLClient::on_pbRequestReport_clicked()
     }
     else{
         ConfigurationManager m;
-        if (!m.loadConfiguration(patientInfoFile,COMMON_TEXT_CODEC)){
+        if (m.loadConfiguration(patientInfoFile,COMMON_TEXT_CODEC)){
             if (m.containsKeyword(CONFIG_PATIENT_NAME)){
                 pname = m.getString(CONFIG_PATIENT_NAME);
             }
@@ -123,7 +123,7 @@ void SSLClient::on_pbRequestReport_clicked()
             }
         }
         else{
-            log.appendWarning("WARNING: Error loading patient file. Using stock information");
+            log.appendWarning("WARNING: Error loading patient file (" + m.getError() + "). Using stock information.");
         }
     }
 
