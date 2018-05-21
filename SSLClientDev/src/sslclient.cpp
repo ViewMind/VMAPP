@@ -233,7 +233,8 @@ void SSLClient::on_readyRead(){
             else{
                 log.appendSuccess("Report saved to: " + reportPath);
                 reportShower.setImageFile(reportPath);
-                reportShower.show();
+                reportShower.setZoomType(ImageExplorer::FIT_FIT_WIDTH);
+                reportShower.showMaximized();
             }
 
             rxDP.clearAll();
