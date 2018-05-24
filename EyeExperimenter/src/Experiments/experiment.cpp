@@ -5,6 +5,9 @@ Experiment::Experiment(QWidget *parent) : QWidget(parent)
 
     // Making this window frameless and making sure it stays on top.
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
+    // Finding the current desktop resolution
+    //QDesktopWidget *desktop = QApplication::desktop();
+    //QRect screen = desktop->screenGeometry(this);
     this->setGeometry(0,0,SCREEN_W,SCREEN_H);
 
     // Creating a graphics widget and adding it to the layout

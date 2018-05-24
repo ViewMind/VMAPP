@@ -10,7 +10,8 @@
 
 // Timer timess
 #define   TIME_TRANSITION                               50
-#define   TIME_TARGET                                   25
+//#define   TIME_TARGET                                   25
+#define   TIME_TARGET                                   20000000000
 #define   TIME_CONDITION                                50
 #define   TIMER_TIME_INTERVAL                           10
 

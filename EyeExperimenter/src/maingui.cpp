@@ -69,7 +69,7 @@ void MainGUI::on_actionConfigure_triggered()
 void MainGUI::on_actionStart_Experiment_triggered()
 {
 
-    if (!checkResolution()) return;
+    //if (!checkResolution()) return;
 
     ExperimentChooserDialog chooser(this);
 
@@ -184,7 +184,7 @@ void MainGUI::on_actionConnect_to_EyeTracker_triggered()
 void MainGUI::on_actionCalibrate_Eye_Tracker_triggered()
 {
 
-    if (!checkResolution()) return;
+    //if (!checkResolution()) return;
 
     EyeTrackerCalibrationParameters calibrationParams;
     calibrationParams.forceCalibration = true;
