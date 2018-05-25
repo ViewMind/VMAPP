@@ -4,7 +4,7 @@ FieldingExperiment::FieldingExperiment(QWidget *parent):Experiment(parent){
 
     manager = new FieldingManager();
     m = (FieldingManager*)manager;
-    expHeader = HEADER_IMAGE_EXPERIMENT;
+    expHeader = HEADER_FIELDING_EXPERIMENT;
     outputDataFile = FILE_OUTPUT_FIELDING;
 
     // Used for the pause in the middle.

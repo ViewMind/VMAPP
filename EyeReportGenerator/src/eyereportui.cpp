@@ -160,9 +160,9 @@ void EyeReportUI::onPThreadFinished(){
     if (!configuration.getBool(CONFIG_RUN_AND_QUIT)){
         if (configuration.getBool(CONFIG_ENABLE_REPORT_GEN)){
             if (QFile(reportImage).exists()){
-                ReportViewer *viewer = new ReportViewer(this);
-                viewer->loadReport(reportImage);
-                viewer->show();
+                ImageExplorer viewer;
+                viewer.setImageFile(reportImage);
+                viewer.show();
             }
         }
     }
@@ -207,9 +207,9 @@ void EyeReportUI::testReport(){
 
     QString reportImage = configuration.getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME  + ".png";
     if (QFile(reportImage).exists()){
-        ReportViewer *viewer = new ReportViewer(this);
-        viewer->loadReport(reportImage);
-        viewer->show();
+        ImageExplorer viewer;
+        viewer.setImageFile(reportImage);
+        viewer.show();
     }
 }
 

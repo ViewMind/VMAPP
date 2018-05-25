@@ -128,6 +128,9 @@ QString EyeDataProcessingThread::csvGeneration(EDPBase *processor, const QString
         return "";
     }
 
+    // Resolution is now known.
+    processor->initManager(config);
+
     processor->setFastProcessing(config->getBool(CONFIG_FAST_PROCESSING));
 
     //emit(appendMessage("-> Configuring " + id  + " data processor",MSG_TYPE_STD));
@@ -231,6 +234,9 @@ bool EyeDataProcessingThread::separateInfoByTag(const QString &file, const QStri
         }
     }
 
+    if (getResolutionToConfig(datalist.first())){
+        datalist.removeFirst();
+    }
     *data       = datalist.join('\n');
     *experiment = explist.join('\n');
 
@@ -239,6 +245,30 @@ bool EyeDataProcessingThread::separateInfoByTag(const QString &file, const QStri
         emit(appendMessage("Could not find the tag " + tag + " in the input file: " + file,2));
         return false;
     }
+}
+
+bool EyeDataProcessingThread::getResolutionToConfig(const QString &firstline){
+    // Getting the resolution for the experiment
+    // Default values.
+    config->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);
+    config->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,1024);
+
+    QStringList tokens = firstline.split(" ",QString::SkipEmptyParts);
+    if (tokens.size() != 2) return false;
+
+    bool ok;
+    qreal w = tokens.first().toUInt(&ok);
+    if (!ok) return false;
+    qreal h = tokens.last().toUInt(&ok);
+    if (!ok) return false;
+
+    // Setting the obtained resolution
+    config->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+    config->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
+
+    qWarning() << "Resolution" << w << h;
+
+    return true;
 }
 
 void EyeDataProcessingThread::onUpdateProgress(qint32 v){

@@ -33,7 +33,7 @@ SOURCES += main.cpp\
     ../../CommonClasses/Experiments/phrases.cpp \
     ../../CommonClasses/Experiments/readingmanager.cpp \
     imagereportdrawer.cpp \
-    reportviewer.cpp
+    ../../CommonClasses/ImageExplorer/imageexplorer.cpp
 
 HEADERS  += eyereportui.h \
     eyedataprocessingthread.h \
@@ -54,7 +54,7 @@ HEADERS  += eyereportui.h \
     ../../CommonClasses/Experiments/readingmanager.h \
     ../../CommonClasses/Experiments/phrases.h \
     imagereportdrawer.h \
-    reportviewer.h
+    ../../CommonClasses/ImageExplorer/imageexplorer.h
 
 
 FORMS    += eyereportui.ui

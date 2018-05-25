@@ -70,6 +70,8 @@ private:
 
     QString csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header);
 
+    bool getResolutionToConfig(const QString &firstline);
+
 };
 
 #endif // EYEDATAPROCESSINGTHREAD_H

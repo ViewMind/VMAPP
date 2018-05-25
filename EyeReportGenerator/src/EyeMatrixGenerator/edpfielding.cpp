@@ -15,8 +15,8 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
     QStringList lines = data.split("\n");
 
     // The header format is HEADERNAME size X Y, so 2 and 3 have the center coordinates.
-    centerX = SCREEN_W/2;
-    centerY = SCREEN_H/2;
+    centerX = config->getReal(CONFIG_RESOLUTION_WIDTH)/2;
+    centerY = config->getReal(CONFIG_RESOLUTION_WIDTH)/2;
 
     // This will have all the data from a single image.
     DataMatrix imageData;

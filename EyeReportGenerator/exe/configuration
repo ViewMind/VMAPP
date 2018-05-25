@@ -16,7 +16,7 @@ enable_report_generation = true;
 # Enabling fast generation, means that the fixation images will not be generated.
 # Anything other than "false" means that fast processing is on. 
 # However, if commented false value will be assumed.
-fast_processing = true;
+# fast_processing = true;
 
 #------------------------------------------------------#
 #                DATA PROCESSING                       #
@@ -25,7 +25,8 @@ fast_processing = true;
 # This list defines which experiments will be processed.
 # If the field is not present then this will mean all algorithms;
 # experiments = binding_uc | binding_bc;
-experiments = binding_uc | binding_bc | reading;
+# experiments = binding_uc | binding_bc | reading;
+experiments = reading;
 
 # Filters to handle special bc and uc files.
 # bc_file_filter = _2_x;
@@ -61,8 +62,8 @@ margin_target_hit                     = 10;     # mm
 #           OPTIONS MODIFIED BY PROGRAM                #
 #------------------------------------------------------#
 
-patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs/00_test;
-patient_age = 34;
+patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs\00_Nuevo_EE;
 doctor_name = Doctor Genius;
-patient_name = Ariel Arelovich;
+patient_name = 00 Nuevo EE;
+patient_age = 56;
 report_language = English;
