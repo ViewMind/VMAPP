@@ -118,7 +118,7 @@ void MainGUI::on_actionStart_Experiment_triggered()
         return;
     }
 
-    configuration.addKeyValuePair(CONFIG_OUTPUT_DIR,outDir);
+    //configuration.addKeyValuePair(CONFIG_OUTPUT_DIR,outDir);
 
     // Creating the patient directory if it doesn't exist
     if (!QDir(outDir).exists()){
