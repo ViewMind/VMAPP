@@ -40,15 +40,20 @@ MainGUI::MainGUI(QWidget *parent) :
     // Second monitor handle.
     monitor = nullptr;
 
-    // Moving the windows if necessary
-    setWidgetPositions();
-
 #ifdef SHOW_CONSOLE
     qWarning() << "Starting application";
 #endif
 
+    // Calling the screen resolution in order to fix those values.
+    QDesktopWidget *desktop = QApplication::desktop();
+    QRect screen = desktop->screenGeometry(this);
+    configuration.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,screen.width());
+    configuration.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
 
+    // Moving the windows if necessary
+    setWidgetPositions();
 
+    logger.appendStandard("Using resolution of: " + QString::number(screen.width()) + "x" + QString::number(screen.height()));
 }
 
 
@@ -117,8 +122,6 @@ void MainGUI::on_actionStart_Experiment_triggered()
         logger.appendError("Cannot continue without a patient name");
         return;
     }
-
-    configuration.addKeyValuePair(CONFIG_OUTPUT_DIR,outDir);
 
     // Creating the patient directory if it doesn't exist
     if (!QDir(outDir).exists()){
@@ -270,7 +273,7 @@ void MainGUI::startExperiment(){
 
     // Showing the title card.
     if (!instruction.isEmpty()){
-        InstructionDialog diag(this);
+        InstructionDialog diag(this,configuration.getReal(CONFIG_RESOLUTION_WIDTH),configuration.getReal(CONFIG_RESOLUTION_HEIGHT));
         diag.setInstruction(instruction);
         if (monitor != nullptr){
             monitor->show();
@@ -387,15 +390,15 @@ void MainGUI::on_pthread_finished(){
 
 bool MainGUI::checkResolution(){
     // Checking correct resolution.
-    QDesktopWidget *desktop = QApplication::desktop();
-    QRect screen = desktop->screenGeometry(this);
-    if ((screen.width() != SCREEN_W) || (screen.height() != SCREEN_H)){
-        logger.appendError("Cannot start experiment with the resolution: " + QString::number(screen.width()) + "x" + QString::number(screen.height())
-                           + ". Required is: " +
-                           QString::number(SCREEN_W) + "x" + QString::number(SCREEN_H)
-                           + ". Please change your screen resolution.");
-        return false;
-    }
+//    QDesktopWidget *desktop = QApplication::desktop();
+//    QRect screen = desktop->screenGeometry(this);
+//    if ((screen.width() != SCREEN_W) || (screen.height() != SCREEN_H)){
+//        logger.appendError("Cannot start experiment with the resolution: " + QString::number(screen.width()) + "x" + QString::number(screen.height())
+//                           + ". Required is: " +
+//                           QString::number(SCREEN_W) + "x" + QString::number(SCREEN_H)
+//                           + ". Please change your screen resolution.");
+//        return false;
+//    }
     return true;
 }
 
@@ -410,7 +413,7 @@ void MainGUI::setWidgetPositions(){
 
     // Setting up the monitor
     QRect secondScreen = desktop->screenGeometry(1);
-    monitor = new MonitorScreen(this,secondScreen);
+    monitor = new MonitorScreen(this,secondScreen,configuration.getReal(CONFIG_RESOLUTION_WIDTH),configuration.getReal(CONFIG_RESOLUTION_HEIGHT));
 }
 
 QString MainGUI::getBindingExperiment(bool bc){

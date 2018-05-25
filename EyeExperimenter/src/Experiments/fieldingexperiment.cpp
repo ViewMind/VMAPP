@@ -104,8 +104,8 @@ void FieldingExperiment::drawPauseImage(){
     QGraphicsSimpleTextItem *phraseToShow = gview->scene()->addSimpleText(mainPhrase,QFont());
     phraseToShow->setPen(QPen(Qt::black));
     phraseToShow->setBrush(QBrush(Qt::black));
-    xpos = (SCREEN_W - phraseToShow->boundingRect().width())/2;
-    ypos = (SCREEN_H - phraseToShow->boundingRect().height())/2;
+    xpos = (this->geometry().width() - phraseToShow->boundingRect().width())/2;
+    ypos = (this->geometry().height() - phraseToShow->boundingRect().height())/2;
     phraseToShow->setPos(xpos,ypos);
 
     // Nothing more to do.

@@ -10,7 +10,7 @@ void ReadingManager::init(ConfigurationManager *c){
     ExperimentDataPainter::init(c);
 
     // Setting the background brush.
-    canvas->setBackgroundBrush(QBrush(Qt::white));
+    canvas->setBackgroundBrush(QBrush(Qt::gray));
 
     // Setting the radious and the default positions.
     R = 0.01*canvas->width();
@@ -117,10 +117,7 @@ bool ReadingManager::drawPhrase(const QString &idStr){
         return false;
     }
 
-    //qWarning() << "Drawing selected index" << selectedIndex;
-    //qWarning() << "Canvas size" << canvas->width() << canvas->height();
     drawPhrase(QS_PHRASE,selectedIndex,true);
-    //qWarning() << "Drawn";
     return true;
 
 }
@@ -182,7 +179,7 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
         qint32 yposp = ypos + phraseToShow->boundingRect().height()/2;
 
         // Creating a screen to hide the phrase.
-        canvas->addRect(0,0,WScreen,HScreen,QPen(),QBrush(Qt::white));
+        canvas->addRect(0,0,WScreen,HScreen,QPen(),QBrush(Qt::gray));
 
         // This dot should appear about in the middle of the first letter.
         startPoint = canvas->addEllipse(0,0,2*R,2*R,QPen(QBrush(Qt::black),2),QBrush(Qt::red));
@@ -210,7 +207,6 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
         qint32 NOptions = phrases.at(currentQuestion).getNofOptions();
         for (qint32 i = 1; i < phrases.at(currentQuestion).size(); i++){
             QString option = phrases.at(currentQuestion).getFollowUpAt(i);
-            //qWarning() << "Option" << i << "is" << option;
             QGraphicsSimpleTextItem *item = canvas->addSimpleText(option,questionFont);
             item->setPen(QPen(Qt::black));
             item->setBrush(QBrush(Qt::red));
@@ -225,10 +221,10 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
         for (qint32 i = 0; i < NOptions; i++){
 
             // Drawing the rectangle on the bottom of the option;
-
-            //qWarning() << "Drawing rectangle" << i+1;
-
             x = x + spaceBetweenOptions;
+
+            //qWarning() << "Drawing rectangle i" << i << "at" << x << "for option" << list.at(i)->text();
+
             QRect r(0,0,list.at(i)->boundingRect().width() + 2*AIR,list.at(i)->boundingRect().height() + 2*AIR);
             QGraphicsRectItem *ri =  canvas->addRect(r);
             ri->setPen(QPen(QBrush(Qt::red),2));

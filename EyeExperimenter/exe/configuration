@@ -14,7 +14,7 @@ output_directory = C:\Users\Viewmind\Documents\ExperimentOutputs;
 overwrite_exp_files = true;
 
 # Dual monitor mode
-dual_monitor_mode = false;
+dual_monitor_mode = true;
 
 # The relationship between the effective screen area (not counting the black bars)
 # and the number of pixels in said area. In X and Y. 
@@ -33,13 +33,13 @@ reading_px_tol_for_target = 18;
 #         OPTIONS MODIFIED BY EXPERIMENTER             #
 #------------------------------------------------------#
 
-patient_name = Juan de Los Palotes;
+patient_name = 00 Nuevo EE;
 patient_age = 56;
 doctor_name = Doctor Genius;
 report_language = English;
-patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs/Juan_de_Los_Palotes;
+patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs/00_Nuevo_EE;
 patient_email = jpalotes@pepe.com;
-demo_mode = true;
+demo_mode = false;
 binding_default = true;
 binding_num_targets = 4;
 binding_use_numbers = false;

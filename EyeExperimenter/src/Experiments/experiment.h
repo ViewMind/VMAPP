@@ -113,6 +113,9 @@ protected:
     // Given a base name it produces the next name in an increasing list
     QString getNextName(const QString &baseName);
 
+    // Sets up the view given the configuration
+    void setupView();
+
 };
 
 #endif // EXPERIMENT_H

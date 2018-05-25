@@ -79,19 +79,25 @@ void ImageExperiment::drawCurrentImage(){
 
 void ImageExperiment::advanceTrial(){
 
+    //qWarning() << currentTrial;
+
     if (currentTrial < m->size()-1){
         currentTrial++;
-
         // Adding the entry in the file
         newImage(m->getTrial(currentTrial).name,0);
         return;
     }
-
     // This is done.
     state = STATE_STOPPED;
+
     stateTimer->stop();
-    if (!error.isEmpty()) emit(experimentEndend(ER_WARNING));
-    else emit(experimentEndend(ER_NORMAL));
+
+    if (!error.isEmpty()) {
+        emit(experimentEndend(ER_WARNING));
+    }
+    else {
+        emit(experimentEndend(ER_NORMAL));
+    }
 }
 
 void ImageExperiment::togglePauseExperiment(){

@@ -17,7 +17,7 @@ class MonitorScreen : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MonitorScreen(QWidget *parent = nullptr, const QRect &screen = QRect());
+    explicit MonitorScreen(QWidget *parent = nullptr, const QRect &screen = QRect(), qreal SCREEN_W = 1, qreal SCREEN_H = 1);
     void setBackgroundBrush(const QBrush &brush);
 
 signals:
@@ -41,9 +41,9 @@ private:
     // Geomtric constants for scaling and offsetting.
     qreal targetWidth;
     qreal targetHeight;
-    qreal scale;
-    qreal offsetX;
-    qreal offsetY;
+    qreal scaleX;
+    qreal scaleY
+    ;
 
 };
 

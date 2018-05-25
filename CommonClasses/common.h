@@ -3,12 +3,8 @@
 
 #include <QDebug>
 #include <QDir>
-// #include <QHash>
-// #include <QVariantHash>
-// #include <QGraphicsScene>
-// #include <QPainter>
-// #include <QImage>
-// #include <QStringList>
+#include <QDesktopWidget>
+#include <QApplication>
 
 // Defining text codec for all text files.
 #define   COMMON_TEXT_CODEC                             "UTF-8"
@@ -59,6 +55,8 @@
 #define   CONFIG_RUN_AND_QUIT                           "run_and_quit"
 #define   CONFIG_NUMBER_OF_PARALLEL_PROCESSES           "number_of_paralell_processes"
 #define   CONFIG_WAIT_DATA_TIMEOUT                      "wait_data_timeout"
+#define   CONFIG_RESOLUTION_WIDTH                       "config_resolution_width"
+#define   CONFIG_RESOLUTION_HEIGHT                      "config_resolution_height"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"

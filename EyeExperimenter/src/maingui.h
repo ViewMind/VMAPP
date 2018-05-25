@@ -65,7 +65,7 @@ private:
     LogInterface logger;
 
     // The configuration structure
-    ConfigurationManager configuration;
+    ConfigurationManager configuration;    
 
     // The sequence of experiments required.
     QList<qint32> experimentSequence;

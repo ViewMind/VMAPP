@@ -3,22 +3,6 @@
 Experiment::Experiment(QWidget *parent) : QWidget(parent)
 {
 
-    // Making this window frameless and making sure it stays on top.
-    this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
-    // Finding the current desktop resolution
-    //QDesktopWidget *desktop = QApplication::desktop();
-    //QRect screen = desktop->screenGeometry(this);
-    this->setGeometry(0,0,SCREEN_W,SCREEN_H);
-
-    // Creating a graphics widget and adding it to the layout
-    gview = new QGraphicsView(this);
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0,0,0,0);
-    layout->addWidget(gview);
-
-    gview->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    gview->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
     // The Experiment is created in the stopped state.
     state = STATE_STOPPED;
 
@@ -28,6 +12,23 @@ Experiment::Experiment(QWidget *parent) : QWidget(parent)
     // By default debug mode is true
     debugMode = false;
 
+}
+
+void Experiment::setupView(){
+    // Making this window frameless and making sure it stays on top.
+    this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
+
+    // Finding the current desktop resolution
+    this->setGeometry(0,0,config->getReal(CONFIG_RESOLUTION_WIDTH),config->getReal(CONFIG_RESOLUTION_HEIGHT));
+
+    // Creating a graphics widget and adding it to the layout
+    gview = new QGraphicsView(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0,0,0,0);
+    layout->addWidget(gview);
+
+    gview->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    gview->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 bool Experiment::startExperiment(ConfigurationManager *c){
@@ -65,6 +66,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
 
     // Initializing the graphical interface and passing on the configuration.
     manager->init(c);
+    setupView();
     this->gview->setScene(manager->getCanvas());
 
     // Configuring the experimet
@@ -97,6 +99,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     QTextStream writer(&file);
     writer.setCodec(COMMON_TEXT_CODEC);
     writer << expHeader << "\n"
+           << config->getReal(CONFIG_RESOLUTION_WIDTH) << " " << config->getReal(CONFIG_RESOLUTION_HEIGHT) << "\n"
            << contents << "\n"
            << expHeader << "\n";
     file.close();

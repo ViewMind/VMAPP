@@ -2,12 +2,12 @@
 #define EYE_EXPERIMENTER_DEFINES_H
 
 // Used only for extended binding options.
-#define  ENABLE_EXPANDED_BINDING_OPTIONS
+//#define  ENABLE_EXPANDED_BINDING_OPTIONS
 
 // Show the console for debugging messages when cannot find bug by locally running it.
 // #define  SHOW_CONSOLE
 
-#define   EXPERIMENTER_VERSION                          "1.0.3"
+#define   EXPERIMENTER_VERSION                          "1.1.0"
 
 #ifdef ENABLE_EXPANDED_BINDING_OPTIONS
    #define   EXPANDED_VERSION                           "-EBO"

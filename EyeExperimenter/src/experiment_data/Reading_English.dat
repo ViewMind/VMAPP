@@ -9,7 +9,7 @@ Description: English language set of reading sentences and questions.
 36: Mario likes watching movies on a Sunday.|
 42: Martin’s house has a very big garden.|
 45: John is not OK with his girlfriend.|
-50: The movie finished in a strange way.| How did the movie finish? Stragely, Unpredicatably, Comically
+50: The movie finished in a strange way.| How did the movie finish?, Stragely, Unpredicatably, Comically
 56: Louis visited some European relatives last month.|
 59: Laure advised me about visiting a doctor urgently.|
 68: The weather is very damp in London.|
@@ -33,7 +33,7 @@ Description: English language set of reading sentences and questions.
 148: Gold is a very coveted mineral.|
 151: Some nights the sky is full of stars.|
 154: John has little vision in both eyes.|
-157: The Lord told the server to be silent.| What did the Lord ask of the server? Compliance, Silence, Money 
+157: The Lord told the server to be silent.| What did the Lord ask of the server?, Compliance, Silence, Money 
 159: He had a meeting with Marie the other day.|
 162: In his house they always make very elaborated meals.|
 172: The parrots ate the corn plant.|

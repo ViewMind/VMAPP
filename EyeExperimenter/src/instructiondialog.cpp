@@ -1,7 +1,11 @@
 #include "instructiondialog.h"
 
-InstructionDialog::InstructionDialog(QWidget *parent): QDialog(parent)
+InstructionDialog::InstructionDialog(QWidget *parent, qreal w, qreal h): QDialog(parent)
 {
+
+    SCREEN_H = h;
+    SCREEN_W = w;
+
     // Making this window frameless and making sure it stays on top.
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
     this->setGeometry(0,0,SCREEN_W,SCREEN_H);
@@ -22,7 +26,7 @@ InstructionDialog::InstructionDialog(QWidget *parent): QDialog(parent)
 void InstructionDialog::setInstruction(const QString &inst){
 
     QImage image(inst);
-    image = image.scaled(QSize(SCREEN_W,SCREEN_H),Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    image = image.scaled(QSize(SCREEN_W,SCREEN_H),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     QPixmap pixmap = QPixmap::fromImage(image);
     gview->scene()->addPixmap(pixmap);
 

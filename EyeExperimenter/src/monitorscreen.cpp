@@ -1,6 +1,6 @@
 #include "monitorscreen.h"
 
-MonitorScreen::MonitorScreen(QWidget *parent, const QRect &screen) : QWidget(parent)
+MonitorScreen::MonitorScreen(QWidget *parent, const QRect &screen, qreal SCREEN_W, qreal SCREEN_H) : QWidget(parent)
 {
 
     // Making this window frameless and making sure it stays on top.
@@ -31,12 +31,12 @@ MonitorScreen::MonitorScreen(QWidget *parent, const QRect &screen) : QWidget(par
     rightEyeTracker = gview->scene()->addEllipse(0,0,2*R,2*R,QPen(),QBrush(QColor(0,255,0,100)));
 
     // Calculating the values. Will assume that scaling to height is the right option.
-    scale = (double)gview->scene()->height()/(double)SCREEN_H;
     targetHeight = gview->scene()->height();
-    targetWidth = SCREEN_W*scale;
-    offsetX = (gview->scene()->width() - targetWidth)/2;
-    offsetY = 0;
-    background->setPos(offsetX,offsetY);
+    targetWidth = gview->scene()->width();
+    scaleX = (targetWidth/SCREEN_W);
+    scaleY = (targetHeight/SCREEN_H);
+    qWarning() << scaleX << scaleY;
+    background->setPos(0,0);
 }
 
 void MonitorScreen::setBackgroundBrush(const QBrush &brush){
@@ -50,10 +50,10 @@ void MonitorScreen::updateBackground(const QPixmap &image){
 
 
 void MonitorScreen::updateEyePositions(qint32 rx, qint32 ry, qint32 lx, qint32 ly){
-    rx = rx*scale + offsetX;
-    lx = lx*scale + offsetX;
-    ry = ry*scale + offsetY;
-    ly = ly*scale + offsetY;
+    rx = rx*scaleX;
+    lx = lx*scaleX;
+    ry = ry*scaleY;
+    ly = ly*scaleY;
 
     rightEyeTracker->setPos(rx-R,ry-R);
     leftEyeTracker->setPos(lx-R,ly-R);

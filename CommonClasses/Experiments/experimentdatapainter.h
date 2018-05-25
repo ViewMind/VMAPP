@@ -3,12 +3,10 @@
 
 #include <QGraphicsScene>
 #include <QPainter>
+#include <QDesktopWidget>
+#include <QApplication>
 #include "../common.h"
 #include "../ConfigurationManager/configurationmanager.h"
-
-// Screen resolution is fixed.
-#define   SCREEN_W                                      1024
-#define   SCREEN_H                                      768
 
 // Number of actual trials to have in demo mode
 #define   NUMBER_OF_TRIALS_IN_DEMO_MODE                 3
@@ -30,6 +28,10 @@ public:
     QGraphicsScene * getCanvas() {return canvas;}
 
 protected:
+
+    qreal ScreenResolutionWidth;
+    qreal ScreenResolutionHeight;
+
     ConfigurationManager *config;
     QGraphicsScene *canvas;
     QString error;

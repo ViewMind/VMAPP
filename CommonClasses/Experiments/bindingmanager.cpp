@@ -84,7 +84,7 @@ void BindingManager::drawCenter(qint32 currentTrial){
     }
     else{
         QGraphicsTextItem *number = canvas->addText(QString::number(trials.at(currentTrial).number),QFont("Mono",30));
-        number->setPos((SCREEN_W - number->boundingRect().width())/2,(SCREEN_H - number->boundingRect().height())/2);
+        number->setPos((ScreenResolutionWidth - number->boundingRect().width())/2,(ScreenResolutionHeight - number->boundingRect().height())/2);
     }
 }
 
@@ -162,14 +162,23 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
 
     if ((numberOfTargets == 2) && (largeTargets)){
         // Legacy values for targets.
-        drawStructure.FlagSideH = 181;
-        drawStructure.FlagSideV = 181;
-        drawStructure.HSBorder = 4;
-        drawStructure.HLBorder = 47;
-        drawStructure.VSBorder = 24;
-        drawStructure.VLBorder = 64;
-        drawStructure.xpos << 165 << 677;
-        drawStructure.ypos << 102 << 294 << 486;
+        // Calculating the the offset to center in the screen.
+        // Offset to contemplate different resoluitions
+        qreal xOffset, yOffset;
+        xOffset = BINDING_AREA_WIDTH/config->getReal(CONFIG_XPX_2_MM);
+        yOffset = BINDING_AREA_HEIGHT/config->getReal(CONFIG_YPX_2_MM);
+        xOffset = (ScreenResolutionWidth - xOffset)/2;
+        yOffset = (ScreenResolutionHeight - yOffset)/2;
+        drawStructure.FlagSideH = 181/(4*config->getReal(CONFIG_XPX_2_MM));
+        drawStructure.FlagSideV = 181/(4*config->getReal(CONFIG_YPX_2_MM));
+        drawStructure.HSBorder = 4/(4*config->getReal(CONFIG_XPX_2_MM));
+        drawStructure.HLBorder = 47/(4*config->getReal(CONFIG_XPX_2_MM));
+        drawStructure.VSBorder = 24/(4*config->getReal(CONFIG_YPX_2_MM));
+        drawStructure.VLBorder = 64/(4*config->getReal(CONFIG_YPX_2_MM));
+        drawStructure.xpos << 165/(4*config->getReal(CONFIG_XPX_2_MM)) + xOffset << 677/(4*config->getReal(CONFIG_XPX_2_MM)) + xOffset;
+        drawStructure.ypos << 102/(4*config->getReal(CONFIG_YPX_2_MM)) + yOffset
+                           << 294/(4*config->getReal(CONFIG_YPX_2_MM)) + yOffset
+                           << 486/(4*config->getReal(CONFIG_YPX_2_MM)) + yOffset;
     }
     else{
 
@@ -184,8 +193,8 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
         qreal Hg = BINDING_TARGET_GRID/config->getReal(CONFIG_YPX_2_MM);
         qreal Sx = BINDING_TARGET_SIDE/config->getReal(CONFIG_XPX_2_MM);
         qreal Sy = BINDING_TARGET_SIDE/config->getReal(CONFIG_YPX_2_MM);
-        qint32 Xog = (SCREEN_W - Wg)/2;
-        qint32 Yog = (SCREEN_H - Hg)/2;
+        qint32 Xog = (ScreenResolutionWidth - Wg)/2;
+        qint32 Yog = (ScreenResolutionHeight - Hg)/2;
         qint32 Gx = Wg/3;
         qint32 Gy = Hg/3;
 
