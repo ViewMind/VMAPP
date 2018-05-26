@@ -2,5 +2,13 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>ViewHome.qml</file>
+        <file>ViewSettings.qml</file>
+        <file>VMLineTextInput.qml</file>
+        <file>VMDialogCloseButton.qml</file>
+        <file>VMComboBox.qml</file>
+        <file>VMButton.qml</file>
+        <file>VMCheckBox.qml</file>
+        <file>ViewPatientReg.qml</file>
+        <file>VMBase.qml</file>
     </qresource>
 </RCC>

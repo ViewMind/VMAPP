@@ -1,0 +1,26 @@
+# UI Language file: English
+
+#********************************* VIEWHOME SCREEN *********************************
+
+viewhome_btnConfSettings = CONFIGURE SETTINGS;
+viewhome_slideTitle = Start your evaluation;
+viewhome_description = Using high-precision Eye-Tracking, in <b> a 10-minutes, <br>
+non-invasive and standarized test</b>, we are able to detect <br>
+Mild Cognitive Impairment and to predict the onset of <br>
+Alzheimer's Disease and other dementias, years before <br>
+symptoms are visible.;
+viewhome_btnGetStarted = GET STARTED;
+
+
+#********************************* SETTINGS DIALOG *********************************
+viewsettings_diagSubTitle = Before starting please fill the information below;
+viewsettings_diagTitle = CONFIGURE SETTINGS;
+viewsettings_diagLabelDoctor = Doctor's name;
+viewsettings_diagLabelLang = Language for EyeExperimenter, Report and Reading experiment;
+viewsettings_diagLabelET = EyeTracker selection;
+viewsettings_diagLabelEmail = Email;
+viewsettings_diagBtnAdvance = ADVANCED;
+viewsettings_diagBtnOK = OK;
+viewsettings_diagCBoxRemember = Remember settings;
+
+
