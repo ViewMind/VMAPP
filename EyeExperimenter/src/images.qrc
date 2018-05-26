@@ -1,12 +1,8 @@
 <RCC>
-    <qresource prefix="/images">
-        <file>images/binding_bc_English.jpeg</file>
-        <file>images/binding_uc_English.jpeg</file>
-        <file>images/binding_uc_Spanish.jpeg</file>
-        <file>images/reading_English.jpeg</file>
-        <file>images/reading_Spanish.jpeg</file>
-        <file>images/fielding_English.jpeg</file>
-        <file>images/fielding_Spanish.jpeg</file>
-        <file>images/binding_bc_Spanish.jpeg</file>
+    <qresource prefix="/">
+        <file>images/ESQUINA_DERECHA_ARRIBA.png</file>
+        <file>images/ESQUINA_IZQUIERDA_ABAJo.png</file>
+        <file>images/ILUSTRACION.png</file>
+        <file>images/LOGO.png</file>
     </qresource>
 </RCC>

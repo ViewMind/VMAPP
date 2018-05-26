@@ -1,35 +1,18 @@
-#include "maingui.h"
-#include <QApplication>
-
-#ifdef SHOW_CONSOLE
-#include <windows.h>
-#include <stdio.h>
-#endif
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
-
-#ifdef SHOW_CONSOLE
-    // detach from the current console window
-    // if launched from a console window, that will still run waiting for the new console (below) to close
-    // it is useful to detach from Qt Creator's <Application output> panel
-    FreeConsole();
-
-    // create a separate new console window
-    AllocConsole();
-
-    // attach the new console to this application's process
-    AttachConsole(GetCurrentProcessId());
-
-    // reopen the std I/O streams to redirect I/O to the new console
-    freopen("CON", "w", stdout);
-    freopen("CON", "w", stderr);
-    freopen("CON", "r", stdin);
+#if defined(Q_OS_WIN)
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    QApplication a(argc, argv);
-    MainGUI w;
-    w.show();
+    QGuiApplication app(argc, argv);
 
-    return a.exec();
+    QQmlApplicationEngine engine;
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    if (engine.rootObjects().isEmpty())
+        return -1;
+
+    return app.exec();
 }

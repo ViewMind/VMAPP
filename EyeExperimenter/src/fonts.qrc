@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>fonts/GothaHTFBol</file>
+        <file>fonts/GothaHTFBoo</file>
+        <file>fonts/GothaHTFLig</file>
+        <file>fonts/GothaHTFMed</file>
+        <file>fonts/Gotham HTF</file>
+        <file>fonts/Roboto-Bold.ttf</file>
+        <file>fonts/Roboto-Medium.ttf</file>
+        <file>fonts/Roboto-Regular.ttf</file>
+    </qresource>
+</RCC>

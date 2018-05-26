@@ -5,4 +5,4 @@ del Makefile*
 del qrc_*
 del *.h
 del .qmake.stash
-del release/*qrc_.cpp
+del release\*qrc_*.cpp
