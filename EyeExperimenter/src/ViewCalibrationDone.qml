@@ -5,8 +5,8 @@ import QtGraphicalEffects 1.0
 VMBase {
 
     id: viewCalibrationDone
-    width: 1280
-    height: 768
+    width: viewCalibrationDone.vmWIDTH
+    height: viewCalibrationDone.vmHEIGHT
 
     function openDiag(){
         viewCalibrationDoneDiag.open()
@@ -64,6 +64,8 @@ VMBase {
             anchors.top: imgCalibration.bottom
             anchors.topMargin: 48
             onClicked: {
+                viewCalibrationDoneDiag.close()
+                swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
             }
         }
 
@@ -75,8 +77,8 @@ VMBase {
             anchors.right: parent.right
             anchors.rightMargin: 25
             onClicked: {
-                //viewCalibrationDoneDiag.close()
-                //swiperControl.currentIndex = swiperControl.vmIndexPatientReg
+                viewCalibrationDoneDiag.close()
+                swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
             }
         }
     }

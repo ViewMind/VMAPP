@@ -3,8 +3,8 @@ import QtQuick.Controls 2.3
 
 VMBase {
     id: viewHome
-    width: 1280
-    height: 768
+    width: viewHome.vmWIDTH
+    height: viewHome.vmHEIGHT
 
     readonly property string keysearch: "viewhome_"
 

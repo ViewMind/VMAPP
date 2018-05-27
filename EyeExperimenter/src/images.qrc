@@ -7,5 +7,14 @@
         <file>images/AVATAR_MEDICO.png</file>
         <file>images/OJO.png</file>
         <file>images/CALIBRACION.png</file>
+        <file>images/01.png</file>
+        <file>images/01d.png</file>
+        <file>images/02.png</file>
+        <file>images/02d.png</file>
+        <file>images/03.png</file>
+        <file>images/03d.png</file>
+        <file>images/04.png</file>
+        <file>images/04d.png</file>
+        <file>images/CHECK.png</file>
     </qresource>
 </RCC>

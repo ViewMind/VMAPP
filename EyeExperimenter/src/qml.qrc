@@ -15,5 +15,7 @@
         <file>VMRegistrationTextInput.qml</file>
         <file>ViewCalibration.qml</file>
         <file>ViewCalibrationDone.qml</file>
+        <file>ViewPresentExperiment.qml</file>
+        <file>VMExperimentTrackerItem.qml</file>
     </qresource>
 </RCC>

@@ -5,8 +5,8 @@ import QtQuick.Window 2.2
 Window {
     visible: true
     title: qsTr("EyeExperimenter")
-    minimumHeight: 780
-    maximumHeight: 780
+    minimumHeight: 768
+    maximumHeight: 768
     maximumWidth: 1280
     minimumWidth: 1280
 
@@ -19,7 +19,7 @@ Window {
         readonly property int vmIndexPresentExperiment: 4
 
         id: swiperControl
-        currentIndex: 0
+        currentIndex: vmIndexHome
         anchors.fill: parent
 
         Item{
@@ -49,6 +49,14 @@ Window {
             ViewCalibrationDone{
                 id: viewCalibrationDone
                 anchors.fill: parent
+            }
+        }
+
+        Item{
+            ViewPresentExperiment{
+                id: viewPresentExperimet
+                anchors.fill: parent
+                onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
             }
         }
 

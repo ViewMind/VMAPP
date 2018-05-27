@@ -46,3 +46,41 @@ viewcalibstart_btnStart = START CALIBRATION;
 #********************************* CALIBRATION DONE SCREEN DIALOG *********************************
 viewcalibdone_viewTitle = CALIBRATION DONE;
 viewcalibdone_btnContinue = CONTINUE;
+
+
+#********************************* EXPERIMENT PRESENTATION *********************************
+viewpresentexp_itemReading = Reading Evaluation;
+viewpresentexp_itemBindingUC = Binding UC Evaluation;
+viewpresentexp_itemBindingBC = Binding BC Evaluation;
+viewpresentexp_itemFielding = Fielding Evaluation;
+
+viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
+When your gaze is located on the dot, it will vanish<br>
+and the sentence will appear. </b>Read the sentence silently</b><br>
+and a normal pace. Indicate the end of the reading <br>
+by looking at the <b> red dot on the lower right corner.</b><br><br>
+Repeat until the test is over.<br><br>
+During the evaluation you will be asked to <b>answer</b><br>
+<b>questions</b> about the content of the sentences.<br>
+<b>Click on the correct answer and continue with test</b>;
+
+viewpresentexp_bindingUCExp = Two images will appear on the screen. Each of them has a <br>
+colored shape, inside a squared colored frame. After 2 seconds,<br>
+the images will vanish and a new pair of images will appear<br><br>
+<b>Press "S" (same)</b> if both pair of images have the <b>same color</b><br>
+arrangements or <b>"D" (different)</b> if any of <b>the colors has changed</b><br><br>
+The first 10 images are meant for practice.<br>
+They won't be considered in the results.;
+
+viewpresentexp_bindingBCExp = Two images will appear on the screen. Each of them has a <br>
+colored shape, inside a squared colored frame. After 2 seconds,<br>
+the images will vanish and a new pair of images will appear<br><br>
+<b>Press "S" (same)</b> if both pair of images have the <b>same color</b><br>
+arrangements or <b>"D" (different)</b> if <b>colors swapped between</b><br> 
+<b>the frame and the shape</b> on at least one image.<br><br>
+The first 10 images are meant for practice.<br>
+They won't be considered in the results.;
+
+viewpresentexp_fieldingExp = Explanation of the<br><b>Fielding </b> experiment;
+
+viewpresentexp_btnContinue = CONTINUE;

@@ -19,7 +19,6 @@ signals:
 public slots:
 
 private:
-
     ConfigurationManager configuration;
     ConfigurationManager language;
 

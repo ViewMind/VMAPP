@@ -4,10 +4,11 @@ import QtQuick.Controls 2.3
 VMBase {
 
     id: viewPatientReg
-    width: 1280
-    height: 768
+    width: viewPatientReg.vmWIDTH
+    height: viewPatientReg.vmHEIGHT
 
     readonly property string keysearch: "viewpatientreg_"
+    property var vmSelectedExperiments: []
 
     // Title and subtitle
     Text {
@@ -164,7 +165,23 @@ VMBase {
         anchors.left: btnCancel.right
         anchors.leftMargin: 30
         onClicked: {
-            swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart
+            vmSelectedExperiments = [];
+            if (cboxReading.checked){
+                vmSelectedExperiments.push(viewPatientReg.vmExpIndexReading);
+            }
+            if (cboxBindingBC.checked){
+                vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingBC);
+            }
+            if (cboxBindingUC.checked){
+                vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
+            }
+            if (cboxFielding.checked){
+                vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
+            }
+            if (vmSelectedExperiments.length > 0){
+                viewPresentExperimet.setTracker(vmSelectedExperiments);
+                swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart
+            }
         }
     }
 

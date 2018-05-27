@@ -12,6 +12,14 @@ Rectangle {
     readonly property alias robotoB: robottoBold
     readonly property alias robotoR: robottoReg
 
+    readonly property int vmExpIndexReading:   1;
+    readonly property int vmExpIndexBindingUC: 2;
+    readonly property int vmExpIndexBindingBC: 3;
+    readonly property int vmExpIndexFielding:  4;
+
+    readonly property int vmWIDTH: 1280
+    readonly property int vmHEIGHT: 768
+
     signal backButtonPressed();
 
     // The Fonts

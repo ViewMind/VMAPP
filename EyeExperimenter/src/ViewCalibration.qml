@@ -5,8 +5,8 @@ import QtGraphicalEffects 1.0
 VMBase {
 
     id: viewCalibrationStart
-    width: 1280
-    height: 768
+    width: viewCalibrationStart.vmWIDTH
+    height: viewCalibrationStart.vmHEIGHT
 
     function openDiag(){
         viewCalibrationStartDiag.open()
@@ -76,6 +76,7 @@ VMBase {
             anchors.top: imgEye.bottom
             anchors.topMargin: 42
             onClicked: {
+                viewCalibrationStartDiag.close()
                 swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
             }
         }
