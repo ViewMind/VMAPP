@@ -23,4 +23,26 @@ viewsettings_diagBtnAdvance = ADVANCED;
 viewsettings_diagBtnOK = OK;
 viewsettings_diagCBoxRemember = Remember settings;
 
+#********************************* PATIENT'S REGISTRATION SCREEN *********************************
+viewpatientreg_viewTitle = Patient's registration;
+viewpatientreg_viewSubTitle = Please complete the information below;
+viewpatientreg_liPatientPlaceholder = Patient's name;
+viewpatientreg_liAgePlaceholder = Age;
+viewpatientreg_liEmailPlaceholder = Email;
+viewpatientreg_labelExperimentTitle = Experiments;
+viewpatientreg_cboxReading = Reading;
+viewpatientreg_cboxBindingUC = Binding UC;
+viewpatientreg_cboxBindingBC = Binding BC;
+viewpatientreg_cboxFielding = Fielding;
+viewpatientreg_labelInstruction = Choose the tests you'll be taking;
+viewpatientreg_btnCancel = CANCEL;
+viewpatientreg_btnOK = OK;
 
+#********************************* CALIBRATION START SCREEN DIALOG *********************************
+viewcalibstart_viewTitle = Calibration;
+viewcalibstart_viewSubTitle = In order to proceed the eye tracker must be calibrated.;
+viewcalibstart_btnStart = START CALIBRATION;
+
+#********************************* CALIBRATION DONE SCREEN DIALOG *********************************
+viewcalibdone_viewTitle = CALIBRATION DONE;
+viewcalibdone_btnContinue = CONTINUE;

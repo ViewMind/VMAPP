@@ -2,8 +2,13 @@ import QtQuick 2.6
 import QtQuick.Controls 2.3
 
 CheckBox {
+
+    property string vmTextColor: "#525252"
+
     id: control
     checked: false
+    leftPadding: 0    
+
     indicator: Rectangle {
         width: 20
         height: 20
@@ -27,7 +32,7 @@ CheckBox {
         text: control.text
         font: control.font
         opacity: enabled ? 1.0 : 0.3
-        color: "#757575" //control.down ? "#757575" : "#21be2b"
+        color: vmTextColor //"#757575" //control.down ? "#757575" : "#21be2b"
         verticalAlignment: Text.AlignVCenter
         leftPadding: control.indicator.width + control.spacing
     }

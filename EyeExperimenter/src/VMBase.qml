@@ -3,6 +3,7 @@ import QtQuick.Controls 2.3
 
 Rectangle {
 
+    property bool isHomePage: false
     readonly property alias vmBanner: topBanner
     readonly property alias gothamM: gothamMedium
     readonly property alias gothamB: gothamBold
@@ -10,6 +11,8 @@ Rectangle {
     readonly property alias robotoM: robottoMed
     readonly property alias robotoB: robottoBold
     readonly property alias robotoR: robottoReg
+
+    signal backButtonPressed();
 
     // The Fonts
     FontLoader {
@@ -71,6 +74,33 @@ Rectangle {
         source: "qrc:/images/ESQUINA_IZQUIERDA_ABAJo.png"
         anchors.bottom: parent.bottom
         anchors.left: parent.left
+    }
+
+
+    // The back button
+    VMBackButton{
+        id: btnBack
+        anchors.top: parent.top
+        anchors.topMargin: 34
+        anchors.left: parent.left
+        anchors.leftMargin: 61
+        visible: !isHomePage
+        onClicked: backButtonPressed();
+    }
+
+    VMDoctorMenu{
+        id: doctorMenu
+        visible: !isHomePage
+        anchors.top: parent.top
+        anchors.right: parent.right
+        vmFont: gothamM.name
+        anchors.verticalCenter: vmBanner.verticalCenter
+        onWidthChanged: {
+            anchors.top = parent.top
+            anchors.topMargin = 33
+            anchors.right = parent.right
+            anchors.rightMargin = 63
+        }
     }
 
 }

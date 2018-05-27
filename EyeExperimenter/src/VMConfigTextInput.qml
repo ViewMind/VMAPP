@@ -1,9 +1,6 @@
 import QtQuick 2.0
 
 Item {
-    //width: 100
-    //height: 50
-
     property string vmFont: "Mono"
 
     Canvas {
@@ -16,7 +13,7 @@ Item {
             ctx.strokeStyle = "#297FCA";
             ctx.lineWidth = 2;
             ctx.lineCap = "round"
-            console.log("w and h are " + width + " and " + height);
+            //console.log("w and h are " + width + " and " + height);
             ctx.moveTo(0,height);
             ctx.lineTo(width,height);
             ctx.closePath();

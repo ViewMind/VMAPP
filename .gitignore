@@ -6,7 +6,7 @@ BindingDesigner/exe/
 *MOCS*
 *OBJS*
 *Makefile*
-EyeExperimenter/exe/release/
+EyeExperimenter/exe/
 EyeReportGenerator/exe/release/
 SSLClientDev/exe/
 SSLServer/bin/release/

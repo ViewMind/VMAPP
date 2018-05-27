@@ -12,6 +12,7 @@ class Loader : public QObject
 public:
     explicit Loader(QObject *parent = nullptr);
     Q_INVOKABLE QString getStringForKey(const QString &key);
+    Q_INVOKABLE QString getDoctorsName();
 
 signals:
 

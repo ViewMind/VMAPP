@@ -4,5 +4,8 @@
         <file>images/ESQUINA_IZQUIERDA_ABAJo.png</file>
         <file>images/ILUSTRACION.png</file>
         <file>images/LOGO.png</file>
+        <file>images/AVATAR_MEDICO.png</file>
+        <file>images/OJO.png</file>
+        <file>images/CALIBRACION.png</file>
     </qresource>
 </RCC>

@@ -4,7 +4,7 @@ import QtGraphicalEffects 1.0
 
 Dialog {
 
-    property string keybase: "viewsettings_"
+    readonly property string keybase: "viewsettings_"
 
     id: viewSettings
     modal: true
@@ -25,25 +25,13 @@ Dialog {
     Text {
         id: diagTitle
         font.pixelSize: 18
-        font.family: base.gothamB.name
+        font.family: viewHome.gothamB.name
         color: "#297FCA"
         text: loader.getStringForKey(keybase+"diagTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: 50
     }
-
-    // The settings explanation
-//    Text {
-//        id: diagSubTitle
-//        font.pixelSize: 11
-//        font.family: base.robotoR.name
-//        color: "#757575"
-//        text: loader.getStringForKey(keybase+"diagSubTitle");
-//        anchors.horizontalCenter: parent.horizontalCenter
-//        anchors.top: diagTitle.bottom
-//        anchors.topMargin: 11
-//    }
 
     // Creating the close button
     VMDialogCloseButton {
@@ -61,7 +49,7 @@ Dialog {
     Text {
         id: diagLabelDoctor
         text: loader.getStringForKey(keybase+"diagLabelDoctor");
-        font.family: base.robotoB.name
+        font.family: viewHome.robotoB.name
         font.pixelSize: 13
         font.bold: true
         anchors.top: diagTitle.bottom
@@ -70,9 +58,9 @@ Dialog {
         anchors.leftMargin: 150
     }
 
-    VMLineTextInput{
+    VMConfigTextInput {
         id: diagTIDoctor
-        vmFont: base.robotoR.name
+        vmFont: viewHome.robotoR.name
         width: 314
         height: 20
         anchors.bottom: diagLabelDoctor.bottom
@@ -86,7 +74,7 @@ Dialog {
     Text {
         id: diagLabelEmail
         text: loader.getStringForKey(keybase+"diagLabelEmail");
-        font.family: base.robotoB.name
+        font.family: viewHome.robotoB.name
         font.pixelSize: 13
         font.bold: true
         anchors.top: diagTIDoctor.bottom
@@ -95,9 +83,9 @@ Dialog {
         anchors.leftMargin: 150
     }
 
-    VMLineTextInput{
+    VMConfigTextInput {
         id: diagTIEmail
-        vmFont: base.robotoR.name
+        vmFont: viewHome.robotoR.name
         width: 314
         height: 20
         anchors.top: diagLabelEmail.bottom
@@ -110,7 +98,7 @@ Dialog {
     Text {
         id: diagLabelLang
         text: loader.getStringForKey(keybase+"diagLabelLang");
-        font.family: base.robotoB.name
+        font.family: viewHome.robotoB.name
         font.pixelSize: 13
         font.bold: true
         anchors.top: diagTIEmail.bottom
@@ -122,7 +110,7 @@ Dialog {
     VMComboBox{
         id: diagCBLang
         vmModel: ["English", "Spanish"]
-        font.family: base.robotoR.name
+        font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: diagLabelLang.bottom
         anchors.topMargin: 5
@@ -134,7 +122,7 @@ Dialog {
     Text {
         id: diagLabelET
         text: loader.getStringForKey(keybase+"diagLabelET");
-        font.family: base.robotoB.name
+        font.family: viewHome.robotoB.name
         font.pixelSize: 13
         font.bold: true
         anchors.top: diagCBLang.bottom
@@ -146,7 +134,7 @@ Dialog {
     VMComboBox{
         id: diagCBET
         vmModel: ["REDm", "Mouse"]
-        font.family: base.robotoR.name
+        font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: diagLabelET.bottom
         anchors.topMargin: 5
@@ -154,21 +142,9 @@ Dialog {
         anchors.leftMargin: 150
     }
 
-//    VMButton{
-//        id: diagBtnAdvance
-//        enabled: false
-//        vmFont: gothamMedium.name
-//        vmSize: [120, 49]
-//        vmText: loader.getStringForKey(keybase+"diagBtnAdvance");
-//        anchors.top: diagTIEmail.bottom
-//        anchors.topMargin: 36
-//        anchors.left: parent.left
-//        anchors.leftMargin: 150
-//    }
-
     VMButton{
         id: diagBtnOK
-        vmFont: base.gothamM.name
+        vmFont: viewHome.gothamM.name
         vmSize: [120, 49]
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
         anchors.top: diagCBET.bottom
@@ -176,16 +152,5 @@ Dialog {
         anchors.left: parent.left
         anchors.leftMargin: 150
     }
-
-//    VMCheckBox {
-//        id: diagCBoxRemember
-//        font.family: base.robotoR.name
-//        font.pixelSize: 13
-//        text: loader.getStringForKey(keybase+"diagCBoxRemember");
-//        anchors.left: parent.left
-//        anchors.leftMargin: 150
-//        anchors.top: diagBtnAdvance.bottom
-//        anchors.topMargin: 40
-//    }
 
 }

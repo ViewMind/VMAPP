@@ -3,12 +3,17 @@
         <file>main.qml</file>
         <file>ViewHome.qml</file>
         <file>ViewSettings.qml</file>
-        <file>VMLineTextInput.qml</file>
+        <file>VMConfigTextInput.qml</file>
         <file>VMDialogCloseButton.qml</file>
         <file>VMComboBox.qml</file>
         <file>VMButton.qml</file>
         <file>VMCheckBox.qml</file>
         <file>ViewPatientReg.qml</file>
         <file>VMBase.qml</file>
+        <file>VMBackButton.qml</file>
+        <file>VMDoctorMenu.qml</file>
+        <file>VMRegistrationTextInput.qml</file>
+        <file>ViewCalibration.qml</file>
+        <file>ViewCalibrationDone.qml</file>
     </qresource>
 </RCC>

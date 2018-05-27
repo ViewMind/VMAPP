@@ -30,3 +30,17 @@ QString Loader::getStringForKey(const QString &key){
     }
     else return "ERROR: NOT FOUND";
 }
+
+QString Loader::getDoctorsName(){
+    QString name = configuration.getString(CONFIG_DOCTOR_NAME);
+    if (name.isEmpty()){
+        QString lang = configuration.getString(CONFIG_REPORT_LANGUAGE);
+        if (lang == CONFIG_P_LANG_ES){
+            return "No se ha configurado un nombre";
+        }
+        else{
+            return "No name has been configured";
+        }
+    }
+    return name;
+}
