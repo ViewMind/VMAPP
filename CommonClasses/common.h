@@ -57,6 +57,7 @@
 #define   CONFIG_WAIT_DATA_TIMEOUT                      "wait_data_timeout"
 #define   CONFIG_RESOLUTION_WIDTH                       "config_resolution_width"
 #define   CONFIG_RESOLUTION_HEIGHT                      "config_resolution_height"
+#define   CONFIG_SELECTED_ET                            "selected_eyetracker"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"
@@ -65,6 +66,8 @@
 #define   CONFIG_P_EXP_READING                          "reading"
 #define   CONFIG_P_LANG_ES                              "Spanish"
 #define   CONFIG_P_LANG_EN                              "English"
+#define   CONFIG_P_ET_MOUSE                             "Mouse"
+#define   CONFIG_P_ET_REDM                              "REDm"
 
 // Indexes of the selected experiments
 #define   EXP_SEQ_READING_IMAGES_UC_BC                  0

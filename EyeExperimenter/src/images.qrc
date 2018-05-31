@@ -16,5 +16,11 @@
         <file>images/04.png</file>
         <file>images/04d.png</file>
         <file>images/CHECK.png</file>
+        <file>images/AVATAR_CELESTE.png</file>
+        <file>images/viewmind.png</file>
+        <file>images/bound.gif</file>
+        <file>images/reading.gif</file>
+        <file>images/unbound.gif</file>
+        <file>images/fielding.gif</file>
     </qresource>
 </RCC>

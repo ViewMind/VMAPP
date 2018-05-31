@@ -9,6 +9,7 @@ VMBase {
 
     readonly property string keysearch: "viewpatientreg_"
     property var vmSelectedExperiments: []
+    property int vmCurrentExperimentIndex: 0
 
     // Title and subtitle
     Text {
@@ -125,6 +126,8 @@ VMBase {
         anchors.topMargin: 14
         anchors.left: cboxBindingBC.right
         anchors.leftMargin: 20
+        // TODO: Fix Fielding and make this visible again
+        visible: false
     }
 
     // The instruction text
@@ -181,6 +184,8 @@ VMBase {
             if (vmSelectedExperiments.length > 0){
                 viewPresentExperimet.setTracker(vmSelectedExperiments);
                 swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart
+                vmCurrentExperimentIndex = -1;
+                viewPresentExperimet.advanceCurrentExperiment()
             }
         }
     }

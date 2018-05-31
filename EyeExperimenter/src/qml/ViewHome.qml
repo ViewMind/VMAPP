@@ -2,6 +2,7 @@ import QtQuick 2.6
 import QtQuick.Controls 2.3
 
 VMBase {
+
     id: viewHome
     width: viewHome.vmWIDTH
     height: viewHome.vmHEIGHT

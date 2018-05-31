@@ -1,12 +1,16 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QIcon>
 
 #include "loader.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    // The icon
+    app.setWindowIcon(QIcon(":/images/viewmind.png"));
 
     // The QML Engine
     QQmlApplicationEngine engine;
@@ -16,7 +20,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("loader",&loader);
 
     // Rendering the QML files
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
 

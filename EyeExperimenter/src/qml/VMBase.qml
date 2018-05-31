@@ -99,15 +99,28 @@ Rectangle {
     VMDoctorMenu{
         id: doctorMenu
         visible: !isHomePage
-        anchors.top: parent.top
-        anchors.right: parent.right
         vmFont: gothamM.name
-        anchors.verticalCenter: vmBanner.verticalCenter
+        anchors.verticalCenter: vmBanner.verticalCenter        
         onWidthChanged: {
             anchors.top = parent.top
-            anchors.topMargin = 33
             anchors.right = parent.right
-            anchors.rightMargin = 63
+            anchors.rightMargin = 33
+        }
+        onShowMenu: {
+            expMenu.z = 10;
+        }
+    }
+
+    VMDoctorMenuExpanded{
+        id: expMenu
+        vmDrName: doctorMenu.vmDrName
+        vmFont: gothamM.name
+        width: doctorMenu.width
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.rightMargin: 33
+        onHideMenu: {
+            expMenu.z = -10
         }
     }
 

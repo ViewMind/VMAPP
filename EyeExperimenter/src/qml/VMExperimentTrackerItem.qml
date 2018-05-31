@@ -43,7 +43,7 @@ Rectangle {
     Image{
        id: number
        source: getImageSrc()
-       scale: (vmTrackerItemState == vmTRACKER_ITEM_STATE_DONE)? 1 : 0.46
+       scale: (vmTrackerItemState == vmTRACKER_ITEM_STATE_DONE)? 0.8 : 0.46
        anchors.verticalCenter: parent.verticalCenter
     }
 
@@ -52,9 +52,10 @@ Rectangle {
         text: vmText
         font.family: vmFont
         font.pixelSize: 14
+        color: (vmTrackerItemState == vmTRACKER_ITEM_STATE_NOTDONE)? "#bcbec0" : "#000000"
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: number.right
-        anchors.leftMargin: -5
+        anchors.leftMargin: (vmTrackerItemState == vmTRACKER_ITEM_STATE_DONE)? 3 : -5
     }
 
     // The separator

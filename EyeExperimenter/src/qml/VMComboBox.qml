@@ -51,13 +51,14 @@ ComboBox {
         }
 
         onPaint: {
-            context.reset();
-            context.moveTo(0, 0);
-            context.lineTo(width, 0);
-            context.lineTo(width / 2, height);
-            context.closePath();
-            context.fillStyle = control.pressed ? "#297FCA" : "#297FCA";
-            context.fill();
+            var ctx = canvas.getContext("2d");
+            ctx.reset();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(width, 0);
+            ctx.lineTo(width / 2, height);
+            ctx.closePath();
+            ctx.fillStyle = control.pressed ? "#297FCA" : "#297FCA";
+            ctx.fill();
         }
     }
 

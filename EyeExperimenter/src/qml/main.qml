@@ -4,11 +4,11 @@ import QtQuick.Window 2.2
 
 Window {
     visible: true
-    title: qsTr("EyeExperimenter")
+    title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()
     minimumHeight: 768
     maximumHeight: 768
     maximumWidth: 1280
-    minimumWidth: 1280
+    minimumWidth: 1280   
 
     SwipeView {
 
@@ -17,9 +17,11 @@ Window {
         readonly property int vmIndexCalibrationStart: 2
         readonly property int vmIndexCalibrationDone: 3
         readonly property int vmIndexPresentExperiment: 4
+        readonly property int vmIndexResults: 5
 
         id: swiperControl
         currentIndex: vmIndexHome
+        interactive: false
         anchors.fill: parent
 
         Item{
@@ -55,6 +57,14 @@ Window {
         Item{
             ViewPresentExperiment{
                 id: viewPresentExperimet
+                anchors.fill: parent
+                onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
+            }
+        }
+
+        Item{
+            ViewResults{
+                id: viewResults
                 anchors.fill: parent
                 onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
             }

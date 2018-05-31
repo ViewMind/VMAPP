@@ -1,21 +1,24 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>ViewHome.qml</file>
-        <file>ViewSettings.qml</file>
-        <file>VMConfigTextInput.qml</file>
-        <file>VMDialogCloseButton.qml</file>
-        <file>VMComboBox.qml</file>
-        <file>VMButton.qml</file>
-        <file>VMCheckBox.qml</file>
-        <file>ViewPatientReg.qml</file>
-        <file>VMBase.qml</file>
-        <file>VMBackButton.qml</file>
-        <file>VMDoctorMenu.qml</file>
-        <file>VMRegistrationTextInput.qml</file>
-        <file>ViewCalibration.qml</file>
-        <file>ViewCalibrationDone.qml</file>
-        <file>ViewPresentExperiment.qml</file>
-        <file>VMExperimentTrackerItem.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/ViewCalibration.qml</file>
+        <file>qml/ViewCalibrationDone.qml</file>
+        <file>qml/ViewHome.qml</file>
+        <file>qml/ViewPatientReg.qml</file>
+        <file>qml/ViewPresentExperiment.qml</file>
+        <file>qml/ViewResults.qml</file>
+        <file>qml/ViewSettings.qml</file>
+        <file>qml/VMBackButton.qml</file>
+        <file>qml/VMBase.qml</file>
+        <file>qml/VMButton.qml</file>
+        <file>qml/VMCheckBox.qml</file>
+        <file>qml/VMComboBox.qml</file>
+        <file>qml/VMConfigTextInput.qml</file>
+        <file>qml/VMDialogCloseButton.qml</file>
+        <file>qml/VMDoctorMenu.qml</file>
+        <file>qml/VMDoctorMenuExpanded.qml</file>
+        <file>qml/VMExperimentTrackerItem.qml</file>
+        <file>qml/VMRegistrationTextInput.qml</file>
+        <file>qml/VMResultBar.qml</file>
     </qresource>
 </RCC>
