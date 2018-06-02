@@ -52,8 +52,6 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         onExited: {
-            //console.log("Has mouse: " + btnChangeSettingMouseArea.containsMouse)
-            //if (!btnChangeSettingMouseArea.containsMouse)
             hideMenu()
         }
     }
@@ -96,7 +94,7 @@ Rectangle {
     Text{
         id: labETSel
         color: "#88B2D0"
-        text: vmSelectedEyeTracker
+        text: "Eyetracker: " + vmSelectedEyeTracker
         font.family: gothamRegular.name
         font.pixelSize: 13
         anchors.left: parent.left
@@ -142,7 +140,8 @@ Rectangle {
         anchors.topMargin: 18
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            console.log("Was clicked!");
+            swiperControl.currentIndex = swiperControl.vmIndexHome;
+            viewHome.openSettingsDialog();
         }
     }
 

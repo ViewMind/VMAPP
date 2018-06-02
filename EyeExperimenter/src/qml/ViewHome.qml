@@ -9,6 +9,31 @@ VMBase {
 
     readonly property string keysearch: "viewhome_"
 
+    function getErrorTitleAndMessage(keyid){
+        var str = loader.getStringForKey(keyid);
+        var res = str.split("<>");
+        return res;
+    }
+
+    function openSettingsDialog(){
+        viewSettings.open();
+    }
+
+    Component.onCompleted: {
+        // Checking that the everything was loaded correctly.
+        if (loader.getLoaderError()){
+            viewHome.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_LOAD_CONFIG;
+            var titleMsg = getErrorTitleAndMessage("error_loading_config");
+            viewHome.vmErrorDiag.vmErrorMessage = titleMsg[1];
+            viewHome.vmErrorDiag.vmErrorTitle = titleMsg[0];
+            viewHome.vmErrorDiag.open();
+        }
+        else if (!loader.hasValidOutputRepo()){
+            viewSettings.vmInvalidRepoError = true;
+            viewSettings.open();
+        }
+    }
+
     // ViewMind Logo
     Image {
         id: logo
@@ -33,20 +58,19 @@ VMBase {
         }
     }
 
-    // The configurations dialog
-    ViewSettings{
-        id: viewSettings
-        x: 333
-        y: 94
-    }
-
     // The configure settings button
-    Button {
+    Button {        
         id: btnConfSettings
+        scale: btnConfSettings.pressed? 0.9:1
+        Behavior on scale{
+            NumberAnimation {
+                duration: 25
+            }
+        }
         background: Rectangle {
             id: btnConfSettingsRect
             radius: 3
-            color: "#ffffff"
+            color: btnConfSettings.pressed? "#e8f2f8" :"#ffffff"
             width: 178
             height: 43
         }

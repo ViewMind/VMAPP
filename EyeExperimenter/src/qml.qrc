@@ -20,5 +20,7 @@
         <file>qml/VMExperimentTrackerItem.qml</file>
         <file>qml/VMRegistrationTextInput.qml</file>
         <file>qml/VMResultBar.qml</file>
+        <file>qml/VMDefines.qml</file>
+        <file>qml/VMErrorDialog.qml</file>
     </qresource>
 </RCC>

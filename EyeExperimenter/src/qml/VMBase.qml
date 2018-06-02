@@ -20,7 +20,16 @@ Rectangle {
     readonly property int vmWIDTH: 1280
     readonly property int vmHEIGHT: 768
 
+    property alias vmErrorDiag: errorDialog
+
     signal backButtonPressed();
+
+    function updateMenus(){
+        doctorMenu.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+        expMenu.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+        expMenu.vmSelectedEyeTracker = loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET);
+        expMenu.vmSelectedLanguage = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE);
+    }
 
     // The Fonts
     FontLoader {
@@ -51,6 +60,17 @@ Rectangle {
     FontLoader{
         id: robottoBold
         source: "qrc:/fonts/Roboto-Bold.ttf"
+    }
+
+    // Scripts generated constants
+    VMDefines {
+        id: vmDefines;
+    }
+
+    VMErrorDialog{
+        id: errorDialog
+        x: 332
+        y: (parent.height-height)/2
     }
 
     id: viewBase

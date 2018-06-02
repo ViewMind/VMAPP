@@ -19,9 +19,12 @@ viewsettings_diagLabelDoctor = Doctor's name;
 viewsettings_diagLabelLang = Language for EyeExperimenter, Report and Reading experiment;
 viewsettings_diagLabelET = EyeTracker selection;
 viewsettings_diagLabelEmail = Email;
-viewsettings_diagBtnAdvance = ADVANCED;
 viewsettings_diagBtnOK = OK;
-viewsettings_diagCBoxRemember = Remember settings;
+viewsettings_diagLabelRepo = Work directory;
+viewsettings_diagCboxDemo = Demo mode;
+viewsettings_diagCboxDualMonitor = Dual monitor mode;
+viewsettings_error_invalid_repo = Please select a valid work directory;
+viewsettings_error_invalid_dr = Doctor's name cannot be left empty;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Patient's registration;
@@ -37,6 +40,9 @@ viewpatientreg_cboxFielding = N-Back Test;
 viewpatientreg_labelInstruction = Choose the tests you'll be taking;
 viewpatientreg_btnCancel = CANCEL;
 viewpatientreg_btnOK = OK;
+viewpatientreg_error_empty_patient_name = Patient's name must be entered;
+viewpatientreg_error_empty_patient_age = Patient's age must be entered;
+viewpatientreg_labelNoInstructionSetError = At least one study must be selected;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibration;
@@ -125,4 +131,14 @@ viewresults_labelVisualShortTermMemoryExp = Reference parameter HIGHER or EQUAL 
 
 viewresults_btnDownload = DOWNLOAD;
 viewresults_btnFinalize = FINISH;
+
+#********************************* ERROR MESSAGES *********************************
+# Error messages are split into title
+error_loading_config = Program cannot continue<>A fatal error has occurred loading the configuration.<br>The program will close now; 
+error_patient_dir = Patient folder<>Could not create the patient directory;
+error_et_connect = Eyetracker connection<>Eyetracker connection failed.<br>Please try again;
+error_et_calibrate = Eyetracker calibration<>Eyetracker is not calibrated.<br>Please try again;
+error_programming = Programming error<>Contact Ariel Arelovich;
+error_experiment_end = Study ended abruptly<>The study did not end as expected<br>Please try again;
+msg_change_lang = Change language<>The program must be restarted to change the language;
 

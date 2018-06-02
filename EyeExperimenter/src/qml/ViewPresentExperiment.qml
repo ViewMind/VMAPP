@@ -13,6 +13,23 @@ VMBase {
     property string vmSlideExplanation: "No explanation set";
     property string vmSlideAnimation: "";
 
+    Connections{
+        target: flowControl
+        onExperimentHasFinished:{
+            if (!flowControl.isExperimentEndOk()){
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
+                var titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
+            if (advanceCurrentExperiment()){
+                swiperControl.currentIndex = swiperControl.vmIndexResults;
+            }
+        }
+    }
+
     // The experiment tracker logic and math functions
     function enableTrackItem(item, place, accWidth, listLength){
         item.vmOrderInTracker = place+1;
@@ -136,12 +153,12 @@ VMBase {
 
         // Can only advance if this is not the last one.
         if (index === viewPatientReg.vmSelectedExperiments.length-1){
-            return;
+            return true;
         }
 
         viewPatientReg.vmCurrentExperimentIndex++;
         // If this is not the first experiment set the current experiment as done.
-        if (index != -1){
+        if (index !== -1){
             setStateOfItem(viewPatientReg.vmSelectedExperiments[index],itemReading.vmTRACKER_ITEM_STATE_DONE)
         }
         // The new experiment is selected as done.
@@ -150,6 +167,9 @@ VMBase {
 
         // Properties are set to the values of the curent experiment
         setPropertiesForExperiment(index);
+
+        // Not done with the sequence.
+        return false
 
     }
 
@@ -235,7 +255,15 @@ VMBase {
         anchors.bottomMargin: 82
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            advanceCurrentExperiment()
+            var index = viewPatientReg.vmCurrentExperimentIndex;
+            if (!flowControl.startNewExperiment(viewPatientReg.vmSelectedExperiments[index])){
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
+                titleMsg = viewHome.getErrorTitleAndMessage("error_programming");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
         }
     }
 

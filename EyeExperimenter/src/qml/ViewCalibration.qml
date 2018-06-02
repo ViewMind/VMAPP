@@ -70,14 +70,36 @@ VMBase {
         VMButton{
             id: btnStart
             vmFont: gothamM.name
-            vmSize: [180, 50]
+            vmSize: [190, 50]
             vmText: loader.getStringForKey(keysearch+"btnStart");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: imgEye.bottom
             anchors.topMargin: 42
             onClicked: {
-                viewCalibrationStartDiag.close()
-                swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
+                var titleMsg
+                if (!flowControl.isConnected()){
+                    if (!flowControl.connectToEyeTracker()){
+                        vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
+                        titleMsg = viewHome.getErrorTitleAndMessage("error_et_connect");
+                        vmErrorDiag.vmErrorMessage = titleMsg[1];
+                        vmErrorDiag.vmErrorTitle = titleMsg[0];
+                        vmErrorDiag.open();
+                        return;
+                    }
+                }
+
+                if (!flowControl.calibrateEyeTracker()){
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
+                    titleMsg = viewHome.getErrorTitleAndMessage("error_et_calibrate");
+                    vmErrorDiag.vmErrorMessage = titleMsg[1];
+                    vmErrorDiag.vmErrorTitle = titleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
+                else{
+                    viewCalibrationStartDiag.close()
+                    swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
+                }
             }
         }
 

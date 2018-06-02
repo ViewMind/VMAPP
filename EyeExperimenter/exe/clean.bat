@@ -7,3 +7,4 @@ del qrc_*
 del *.h
 del .qmake.stash
 del release\*qrc_*.cpp
+del logfile.log

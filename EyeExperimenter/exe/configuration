@@ -2,12 +2,8 @@
 #                         EyeExperimenter Configuration File                           #
 #--------------------------------------------------------------------------------------#
 
-
-# Output directory. A Directory for each patient is created here 
-output_directory = C:\Users\Viewmind\Documents\ExperimentOutputs;
-
 # Dual monitor mode
-dual_monitor_mode = true;
+dual_monitor_mode = false;
 
 # The relationship between the effective screen area (not counting the black bars)
 # and the number of pixels in said area. In X and Y. 
@@ -25,8 +21,8 @@ reading_px_tol_for_target = 18;
 #           GENERAL CONFIGURATION OPTIONS              #
 #------------------------------------------------------#
 
-report_language = English;
-demo_mode = false;
+report_language = Spanish;
+demo_mode = true;
 
 
 #------------------------------------------------------#
@@ -36,3 +32,7 @@ demo_mode = false;
 binding_default = true;
 binding_num_targets = 4;
 binding_use_numbers = false;
+doctor_name = Miles Genius;
+doctor_email = pepe@pepe.com;
+selected_eyetracker = Mouse;
+output_directory = C:/Users/Viewmind/Documents/ExperimentOutputs/EyeExperimenter2Outputs;

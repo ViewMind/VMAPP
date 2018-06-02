@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.3
+import QtGraphicalEffects 1.0
 
 ComboBox {
 
@@ -17,21 +18,24 @@ ComboBox {
         contentItem: Rectangle {
             anchors.fill: parent
             border.width: 1
-            border.color: "#297FCA"
-            color: highlighted ? "#dfdfdf" : "#ffffff"
-            radius: 2
-            Text {
-                text: modelData
-                //color: hovered? "yellow" :  "#21be2b"
-                font: control.font
-                elide: Text.ElideRight
-                anchors{
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    leftMargin: 2
-                }
+            border.color: "#dadada"
+            layer.enabled: true
+            layer.effect: FastBlur{
+                radius: 2
             }
-
+            color: highlighted ? "#eeeeee" : "#ffffff"
+        }
+        Text {
+            text: modelData
+            //color: hovered? "yellow" :  "#21be2b"
+            font: control.font
+            elide: Text.ElideRight
+            padding: 5
+            anchors{
+                verticalCenter: parent.verticalCenter
+                left: parent.left
+                leftMargin: 2
+            }
         }
         highlighted: control.highlightedIndex === index
     }
@@ -69,6 +73,7 @@ ComboBox {
         font: control.font
         color: control.pressed ? "#757575" : "#757575"
         verticalAlignment: Text.AlignVCenter
+        padding: 5
         elide: Text.ElideRight
     }
 

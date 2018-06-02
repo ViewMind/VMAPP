@@ -7,6 +7,9 @@
 // Show the console for debugging messages when cannot find bug by locally running it.
 // #define  SHOW_CONSOLE
 
+#define   DIRNAME_REPORTS                               "viewmind_reports"
+#define   DIRNAME_RAWDATA                               "viewmind_etdata"
+
 #define   EXPERIMENTER_VERSION                          "2.0.0"
 
 #ifdef ENABLE_EXPANDED_BINDING_OPTIONS

@@ -8,7 +8,28 @@ Window {
     minimumHeight: 768
     maximumHeight: 768
     maximumWidth: 1280
-    minimumWidth: 1280   
+    minimumWidth: 1280
+//    x: 0
+//    y: 0
+
+
+    Component.onCompleted: {
+        console.log("SCREEN " + Screen.width + "x" + Screen.height);
+        console.log("TOTAL SCREEN " + Screen.desktopAvailableWidth + "x" + Screen.desktopAvailableHeight);
+        loader.setScreenResolution(Screen.width, Screen.height);
+    }
+
+    // The configurations dialog.
+    ViewSettings{
+        id: viewSettings
+        x: 333
+        y: (parent.height - viewSettings.height)/2
+        onUpdateMenus: {
+            viewPatientReg.updateMenus();
+            viewPresentExperimet.updateMenus();
+            viewResults.updateMenus();
+        }
+    }
 
     SwipeView {
 
@@ -37,6 +58,9 @@ Window {
                 id: viewPatientReg
                 anchors.fill: parent
                 onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexHome
+                Component.onCompleted: {
+                    updateMenus();
+                }
             }
         }
 
@@ -59,6 +83,9 @@ Window {
                 id: viewPresentExperimet
                 anchors.fill: parent
                 onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
+                Component.onCompleted: {
+                    updateMenus();
+                }
             }
         }
 
@@ -67,6 +94,9 @@ Window {
                 id: viewResults
                 anchors.fill: parent
                 onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
+                Component.onCompleted: {
+                    updateMenus();
+                }
             }
         }
 

@@ -2,12 +2,23 @@
 #define LOGINTERFACE_H
 
 #include <QPlainTextEdit>
+#include <QDateTime>
+#include <QTextStream>
+#include <QDebug>
+
+// The log file name
+#define   LOG_FILE_LOG                                  "logfile.log"
+
+// Defining text codec for all text files.
+#define   COMMON_TEXT_CODEC                             "UTF-8"
 
 class LogInterface
 {
 public:
+
     LogInterface();
-    void setLogInterface(QPlainTextEdit *pte){log = pte; enabled = true;}
+    void setLogInterface(QPlainTextEdit *pte = nullptr);
+    void setLogFileLocation(const QString &logfile);
 
     // Append messages according to type
     void appendError(const QString &msg);
@@ -16,11 +27,13 @@ public:
     void appendWarning(const QString &msg);
 
 private:
-    bool enabled;
-    QPlainTextEdit *log;
+    QPlainTextEdit *log;    
+    QString logFile;
+    typedef enum {LOG_STD, LOG_ERROR, LOG_WARNING, LOG_SUCCESS} MessageType;
 
     // The actual functions that appends the messages.
     void appendMessage(const QString &msg, const QString &color, bool bold = false);
+    void appendMessage(const QString &msg, MessageType type);
 
 };
 

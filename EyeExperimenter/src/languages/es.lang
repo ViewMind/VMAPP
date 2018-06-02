@@ -20,9 +20,12 @@ viewsettings_diagLabelDoctor = Nombre del doctor;
 viewsettings_diagLabelLang = Lenguage utilizado por el programa, el informe y el experimento de lectura;
 viewsettings_diagLabelET = Selección de EyeTracker;
 viewsettings_diagLabelEmail = Email;
-viewsettings_diagBtnAdvance = AVANZADO;
 viewsettings_diagBtnOK = OK;
-viewsettings_diagCBoxRemember = Recordar configuración;
+viewsettings_diagCboxDemo = Modo demo;
+viewsettings_diagCboxDualMonitor = Habilitar segundo monitor;
+viewsettings_diagLabelRepo = Directorio de trabajo;
+viewsettings_error_invalid_repo = Por favor elija un directorio de trabajo válido;
+viewsettings_error_invalid_dr = El nombre del doctor no puede quedar vacio;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Registro de paciente;
@@ -38,6 +41,9 @@ viewpatientreg_cboxFielding = N-Back Test;
 viewpatientreg_labelInstruction = Elija las pruebas que tomará;
 viewpatientreg_btnCancel = CANCELAR;
 viewpatientreg_btnOK = OK;
+viewpatientreg_error_empty_patient_name = Se debe ingresar el nombre del paciente;
+viewpatientreg_error_empty_patient_age = Se debe ingresar la edad del paciente;
+viewpatientreg_labelNoInstructionSetError = Se debe elegir al menos un estudio;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibración;
@@ -47,7 +53,6 @@ viewcalibstart_btnStart = COMENZAR CALIBRACIÓN;
 #********************************* CALIBRATION DONE SCREEN DIALOG *********************************
 viewcalibdone_viewTitle = FIN DE LA CALIBRACIÓN;
 viewcalibdone_btnContinue = CONTINUAR;
-
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Evaluación de Lectura;
@@ -126,4 +131,15 @@ viewresults_labelVisualShortTermMemoryExp = Parámetro referencia MAYOR o IGUAL 
 
 viewresults_btnDownload = DESCARGAR;
 viewresults_btnFinalize = FINALIZAR;
+
+#********************************* ERROR MESSAGES *********************************
+# Error messages are split into title by a <>
+error_loading_config = El programa no<br>puede continuar<>Un error crítico ha ocurrido al cargar la<br>configuración. El programa se cerrará;
+error_patient_dir = Directorio del paciente<>No se ha podido crear el directorio del paciente;
+error_et_connect = Conexión al Eyetracker<>La conexión al Eyetracker ha fallado<br>Por favor inténtelo nuevamente;
+error_et_calibrate = Calibración Eyetracker<>El Eyetracker no está calibrado.<br>Por favor inténtelo nuevamente;
+error_programming = Error de programación<>Contactar a Ariel Arelovich;
+error_experiment_end = Fin de estudio anormal<>El estudio no terminó como corresponde<br>Por favor inténtelo nuevamente;
+msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;
+
 

@@ -15,7 +15,8 @@ RCC_DIR = QRC
 RESOURCES += qml.qrc \
     fonts.qrc \
     images.qrc \
-    languages.qrc
+    languages.qrc \
+    expdata.qrc
 
 SOURCES += main.cpp \
     loader.cpp \
@@ -24,7 +25,18 @@ SOURCES += main.cpp \
     ../../CommonClasses/Experiments/experimentdatapainter.cpp \
     ../../CommonClasses/Experiments/fieldingmanager.cpp \
     ../../CommonClasses/Experiments/phrases.cpp \
-    ../../CommonClasses/Experiments/readingmanager.cpp
+    ../../CommonClasses/Experiments/readingmanager.cpp \
+    ../../CommonClasses/LogInterface/loginterface.cpp \
+    EyeTrackerInterface/eyetrackerdata.cpp \
+    EyeTrackerInterface/eyetrackerinterface.cpp \
+    EyeTrackerInterface/Mouse/calibrationarea.cpp \
+    EyeTrackerInterface/Mouse/mouseinterface.cpp \
+    flowcontrol.cpp \
+    Experiments/experiment.cpp \
+    Experiments/fieldingexperiment.cpp \
+    Experiments/imageexperiment.cpp \
+    Experiments/readingexperiment.cpp \
+    monitorscreen.cpp
 
 HEADERS += \
     loader.h \
@@ -37,4 +49,15 @@ HEADERS += \
     ../../CommonClasses/Experiments/phrases.h \
     ../../CommonClasses/Experiments/readingmanager.h \
     eye_experimenter_defines.h \
-    ../../CommonClasses/common.h
+    ../../CommonClasses/common.h \
+    ../../CommonClasses/LogInterface/loginterface.h \
+    EyeTrackerInterface/eyetrackerdata.h \
+    EyeTrackerInterface/eyetrackerinterface.h \
+    EyeTrackerInterface/Mouse/calibrationarea.h \
+    EyeTrackerInterface/Mouse/mouseinterface.h \
+    flowcontrol.h \
+    Experiments/experiment.h \
+    Experiments/fieldingexperiment.h \
+    Experiments/imageexperiment.h \
+    Experiments/readingexperiment.h \
+    monitorscreen.h

@@ -5,9 +5,7 @@
 #include <QDir>
 #include <QDesktopWidget>
 #include <QApplication>
-
-// Defining text codec for all text files.
-#define   COMMON_TEXT_CODEC                             "UTF-8"
+#include "LogInterface/loginterface.h"
 
 // Which value is which eye.
 #define   EYE_L                                         0
@@ -16,6 +14,7 @@
 // Configuration key values (cmd names in the configuration file)
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
 #define   CONFIG_DOCTOR_NAME                            "doctor_name"
+#define   CONFIG_DOCTOR_EMAIL                           "doctor_email"
 #define   CONFIG_MOVING_WINDOW_DISP                     "moving_window_max_dispersion"
 #define   CONFIG_MIN_FIXATION_LENGTH                    "minimum_fixation_length"
 #define   CONFIG_SAMPLE_FREQUENCY                       "sample_frequency"
@@ -30,7 +29,6 @@
 #define   CONFIG_RAW_DATA_REPO                          "raw_data_repo"
 #define   CONFIG_READING_PX_TOL                         "reading_px_tol_for_target"
 #define   CONFIG_EYEPROCESSOR_PATH                      "eyeprocessor_path"
-#define   CONFIG_OVERWRITE_BEHAVIOUR                    "overwrite_exp_files"
 #define   CONFIG_DUAL_MONITOR_MODE                      "dual_monitor_mode"
 #define   CONFIG_EXP_CONFIG_FILE                        "exp_config_file"
 #define   CONFIG_DATA_OUTPUT_FILE                       "data_output_file"
@@ -58,6 +56,7 @@
 #define   CONFIG_RESOLUTION_WIDTH                       "config_resolution_width"
 #define   CONFIG_RESOLUTION_HEIGHT                      "config_resolution_height"
 #define   CONFIG_SELECTED_ET                            "selected_eyetracker"
+#define   CONFIG_PATIENT_REPORT_DIR                     "patient_report_dir"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"
@@ -70,7 +69,6 @@
 #define   CONFIG_P_ET_REDM                              "REDm"
 
 // Indexes of the selected experiments
-#define   EXP_SEQ_READING_IMAGES_UC_BC                  0
 #define   EXP_READING                                   1
 #define   EXP_BINDING_UC                                2
 #define   EXP_BINDING_BC                                3

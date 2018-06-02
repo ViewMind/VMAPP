@@ -4,19 +4,19 @@ Item {
 
     property string vmFont: "Mono"
     property string vmPlaceHolder: "Some text ..."
+    property string vmEnteredText: ""
+    property string vmErrorMsg: ""
     property bool vmNumbersOnly: false
-
-    // Qt Quick approach to make internal variables.
-    Item {
-        id: own
-        property string enteredText: ""
-    }
 
     Rectangle {
         id: lineEditRect
         anchors.fill: parent
         color: "#e4f1fd"
+        border.width: (vmErrorMsg === "")? 1 : 2
+        border.color: (vmErrorMsg === "")? "#e4f1fd" : "#ca2026"
         radius: 2
+        layer.enabled: true
+        clip: true
     }
 
     TextInput {
@@ -26,14 +26,14 @@ Item {
         font.family: vmFont
         font.pixelSize: 13
         anchors.bottom: parent.bottom
-        //inputMethodHints: vmNumbersOnly ? Qt.ImhDigitsOnly : Qt.ImhNone
         verticalAlignment: TextInput.AlignVCenter
         leftPadding: 10
         width: lineEditRect.width
         height: lineEditRect.height
         onActiveFocusChanged: {
             if (activeFocus){
-                if (own.enteredText === ""){
+                vmErrorMsg = "";
+                if (vmEnteredText === ""){
                     // Removing the placeholder
                     lineEdit.text = "";
                 }
@@ -41,7 +41,7 @@ Item {
         }
 
         onEditingFinished: {
-            own.enteredText = lineEdit.text;
+            vmEnteredText = lineEdit.text;
             if (lineEdit.text === ""){
                 lineEdit.text = vmPlaceHolder
             }
@@ -49,11 +49,23 @@ Item {
             else if (vmNumbersOnly){
                 var parsed = parseInt(lineEdit.text)
                 if (isNaN(parsed)){
-                    own.enteredText = "";
+                    vmEnteredText = "";
                     lineEdit.text = vmPlaceHolder
                 }
             }
         }
+    }
+
+    Text{
+        id: errorMsg
+        text: vmErrorMsg
+        color:  "#ca2026"
+        font.family: vmFont
+        font.pixelSize: 12
+        anchors.left: lineEditRect.left
+        anchors.top: lineEditRect.bottom
+        anchors.topMargin: 5
+        visible: (vmErrorMsg !== "")
     }
 
 }

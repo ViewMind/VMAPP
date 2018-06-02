@@ -3,12 +3,27 @@ import QtQuick 2.6
 Rectangle {
     id: container
     property string vmFont: "Mono"
-    property string vmDrName: ""
+    property string vmDrName: "DOCTOR"
 
     color: "#88b2d0"
     height: vmBanner.height
 
     signal showMenu();
+
+    function doctorNameChanged(){
+        var name = "";
+        name = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+        if (name !== ""){
+            name = "Dr. " + name;
+        }
+        var space = 10
+        var leftMargin = 30; var rightMargin = 15;
+        vmDrName = name.toUpperCase()
+        container.width = doctorsName.width + imgDrAvatar.width + space + leftMargin + rightMargin
+        imgDrAvatar.anchors.left = doctorsName.right
+        imgDrAvatar.anchors.leftMargin = space - leftMargin
+        doctorsName.padding = leftMargin
+    }
 
     Text{
         id: doctorsName
@@ -19,15 +34,7 @@ Rectangle {
         color: "#ffffff"
         verticalAlignment: Text.AlignVCenter
         Component.onCompleted: {
-            // This is required to correctly calculate the item's dimensions.
-            var name = "Dr. " + loader.getDoctorsName();
-            var space = 10
-            var leftMargin = 30; var rightMargin = 15;
-            vmDrName = name.toUpperCase()
-            container.width = doctorsName.width + imgDrAvatar.width + space + leftMargin + rightMargin
-            imgDrAvatar.anchors.left = doctorsName.right
-            imgDrAvatar.anchors.leftMargin = space - leftMargin
-            doctorsName.padding = leftMargin
+            doctorNameChanged();
         }
     }
 
