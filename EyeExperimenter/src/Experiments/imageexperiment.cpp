@@ -51,6 +51,8 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
 
 void ImageExperiment::drawCurrentImage(){
 
+    if (state != STATE_RUNNING) return;
+
     if (trialState == TSB_CENTER_CROSS){
         //qWarning() << "DRAWING: Center Cross" << currentTrial;
         m->drawCenter(currentTrial);
@@ -168,8 +170,8 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
 }
 
 void ImageExperiment::onTimeOut(){
-    timerCounter--;
-    if (timerCounter == 0) {
+    timerCounter--;    
+    if (timerCounter == 0){
         nextState();
     }
 }

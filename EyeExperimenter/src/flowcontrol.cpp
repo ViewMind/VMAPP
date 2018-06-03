@@ -213,3 +213,17 @@ QString FlowControl::getBindingExperiment(bool bc){
     return exp;
 
 }
+
+//void FlowControl::setWidgetPositions(){
+//    QDesktopWidget *desktop = QApplication::desktop();
+//    if (desktop->screenCount() < 2) return;
+//    if (!configuration->getBool(CONFIG_DUAL_MONITOR_MODE)) return;
+
+//    // Moving the main window
+//    //QRect mainScreen = desktop->screenGeometry(0);
+//    //this->move(QPoint(mainScreen.x(),mainScreen.y()));
+
+//    // Setting up the monitor
+//    QRect secondScreen = desktop->screenGeometry(1);
+//    monitor = new MonitorScreen(this,secondScreen,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
+//}

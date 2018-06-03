@@ -74,10 +74,6 @@ void BindingManager::init(ConfigurationManager *c){
 void BindingManager::drawCenter(qint32 currentTrial){
     canvas->clear();
 
-    //currentTrial++;
-    // Patch to avoid changing the logic of the working Binding experiment.
-    //if (currentTrial >= trials.size()) currentTrial = trials.size()-1;
-
     if (trials.at(currentTrial).number == -1){
         canvas->addLine(line0,QPen(QBrush(Qt::red),2));
         canvas->addLine(line1,QPen(QBrush(Qt::red),2));
