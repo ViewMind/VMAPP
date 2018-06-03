@@ -28,8 +28,8 @@ reading_px_tol_for_target = 18;
 #           GENERAL CONFIGURATION OPTIONS              #
 #------------------------------------------------------#
 
-report_language = Spanish;
-demo_mode = false;
+report_language = English;
+demo_mode = true;
 
 #------------------------------------------------------#
 #         OPTIONS MODIFIED BY EXPERIMENTER             #
@@ -40,5 +40,5 @@ binding_num_targets = 4;
 binding_use_numbers = false;
 doctor_name = Miles Genius;
 doctor_email = pepe@pepe.com;
-selected_eyetracker = REDm;
+selected_eyetracker = Mouse;
 output_directory = C:/Users/Viewmind/Documents/ExperimentOutputs/EyeExperimenter2Outputs;

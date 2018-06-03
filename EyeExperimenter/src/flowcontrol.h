@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QWidget>
 #include <QProcess>
+#include <QtMath>
+#include <QFileDialog>
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -18,6 +20,7 @@
 #include "EyeTrackerInterface/RED/redinterface.h"
 
 #include "monitorscreen.h"
+#include "imagereportdrawer.h"
 
 class FlowControl : public QWidget
 {
@@ -33,8 +36,13 @@ public:
     Q_INVOKABLE void setupSecondMonitor();
     Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
-    Q_INVOKABLE void checkSSLAvailability() {return sslclient->sslEnabled();}
-    Q_INVOKABLE void requestReportData() {sslclient->requestReport();}
+    Q_INVOKABLE bool checkSSLAvailability() {return sslclient->sslEnabled();}
+    Q_INVOKABLE void requestReportData() {sslTransactionAllOk = false; sslclient->requestReport();}
+    Q_INVOKABLE bool isSSLTransactionOK() const {return sslTransactionAllOk;}
+    Q_INVOKABLE QString getReportDataField(const QString &key);
+    Q_INVOKABLE int getReportResultBarPosition(const QString &key);
+    Q_INVOKABLE void saveReport();
+    Q_INVOKABLE void saveReportAs(const QString &title);
 
 signals:
 
@@ -43,9 +51,6 @@ signals:
 
     // Transaction finished.
     void sslTransactionFinished();
-
-    // Report generated.
-    void reportGenerationFinished();
 
 public slots:
 
@@ -62,6 +67,9 @@ private:
 
     // The process for the server.
     QProcess sslServer;
+
+    // Delays saving the report until the wait dialog can be shown.
+    QTimer delayTimer;
 
     // The second screen for monitoring the experiments.
     MonitorScreen *monitor;
@@ -81,14 +89,23 @@ private:
     // The configuration structure
     ConfigurationManager *configuration;
 
+    // The structure where the report data is saved.
+    ConfigurationManager reportData;
+
     // Flags to avoid reconnecting during recalibration
     bool connected;
 
     // Binary status for the end of an experiment.
     bool experimentIsOk;
 
+    // Flag to check on transaction status
+    bool sslTransactionAllOk;
+
     // Helper function to selecte expanded binding files.
     QString getBindingExperiment(bool bc);
+
+    // Calculates the segment of the result bar based on boundaries.
+    int calculateSegment(qreal value, QList<qreal> segments, bool largerBetter);
 
 };
 

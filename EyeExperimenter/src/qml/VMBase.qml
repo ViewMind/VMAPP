@@ -11,6 +11,7 @@ Rectangle {
     readonly property alias robotoM: robottoMed
     readonly property alias robotoB: robottoBold
     readonly property alias robotoR: robottoReg
+    readonly property alias vmDefines: masterDefines
 
     readonly property int vmExpIndexReading:   1;
     readonly property int vmExpIndexBindingUC: 2;
@@ -65,7 +66,7 @@ Rectangle {
 
     // Scripts generated constants
     VMDefines {
-        id: vmDefines;
+        id: masterDefines;
     }
 
     VMErrorDialog{

@@ -59,6 +59,7 @@
 #define   CONFIG_REPORT_DATE                            "report_date"
 #define   CONFIG_SSLSERVER_PATH                         "ssl_server_path"
 #define   CONFIG_REPORT_PATH                            "report_path"
+#define   CONFIG_IMAGE_REPORT_PATH                      "image_report_path"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -102,11 +103,11 @@
  * base name.
  * **************************************************************************************/
 
-static inline QString getNewestFile(const QString &directory, const QString &baseName){
+static inline QString getNewestFile(const QString &directory, const QString &baseName, const QString &extension = "dat"){
     // Getting all the files with the correct based name and sorted by modification time.
     QDir dir(directory);
     QStringList filter;
-    filter << baseName + "_*.dat";
+    filter << baseName + "_*." + extension;
     QStringList allfiles = dir.entryList(filter,QDir::Files,QDir::Time);
 
 /// TODO: Fix for enhanced EBO versions

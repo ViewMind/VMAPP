@@ -17,7 +17,8 @@ RESOURCES += qml.qrc \
     images.qrc \
     languages.qrc \
     expdata.qrc \
-    demo_data.qrc
+    demo_data.qrc \
+    report_text.qrc
 
 SOURCES += main.cpp \
     loader.cpp \
@@ -40,7 +41,8 @@ SOURCES += main.cpp \
     monitorscreen.cpp \
     EyeTrackerInterface/RED/redinterface.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
-    sslclient/sslclient.cpp
+    sslclient/sslclient.cpp \
+    imagereportdrawer.cpp
 
 HEADERS += \
     loader.h \
@@ -68,7 +70,8 @@ HEADERS += \
     EyeTrackerInterface/RED/iViewXAPI.h \
     EyeTrackerInterface/RED/redinterface.h \
     ../../CommonClasses/DataPacket/datapacket.h \
-    sslclient/sslclient.h
+    sslclient/sslclient.h \
+    imagereportdrawer.h
 
 win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
 

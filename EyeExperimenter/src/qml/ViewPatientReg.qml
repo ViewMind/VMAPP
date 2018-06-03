@@ -38,7 +38,7 @@ VMBase {
     // Input fields
     VMRegistrationTextInput {
         id: liPatientPlaceholder
-        vmEnteredText: "a";
+        //vmEnteredText: "a";
         vmFont: viewHome.robotoM.name
         vmPlaceHolder: loader.getStringForKey(keysearch+"liPatientPlaceholder");
         width: 410
@@ -52,7 +52,7 @@ VMBase {
     VMRegistrationTextInput {
         id: liAgePlaceholder
         vmFont: viewHome.robotoM.name
-        vmEnteredText: "5";
+        //vmEnteredText: "5";
         vmNumbersOnly: true
         vmPlaceHolder: loader.getStringForKey(keysearch+"liAgePlaceholder");
         width: 192
@@ -95,7 +95,6 @@ VMBase {
         anchors.top: labelExperimentTitle.bottom
         anchors.topMargin: 14
         anchors.left: labelExperimentTitle.left
-        checked: true;
         onCheckedChanged: {
             labelNoInstructionSetError.visible = false;
         }

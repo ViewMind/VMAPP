@@ -129,6 +129,8 @@ viewresults_labelWorkingMemmoryExp = Reference parameter 70 - 90;
 viewresults_labelRetrievalMemoryExp = Reference parameter 23 - 39;
 viewresults_labelVisualShortTermMemoryExp = Reference parameter HIGHER or EQUAL to 0.009;
 
+viewresults_save_report = Save report;
+
 viewresults_btnDownload = DOWNLOAD;
 viewresults_btnFinalize = FINISH;
 
@@ -142,5 +144,11 @@ error_programming = Programming error<>Contact Ariel Arelovich;
 error_experiment_end = Study ended abruptly<>The study did not end as expected<br>Please try again;
 error_no_ssl = SLL not detected<>SSL Libraries were not detected.<br>Server request for reports will not be possible;
 error_server_comm = Communication error<>It was not possible to establish a link with the server<br>Please, try again;
+
+
+#********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Change language<>The program must be restarted to change the language;
+msg_request_report = Processing...<>Please wait while the report information is obtained;
+msg_report_generation = Generating report<>Your report will be ready shortly...;
+
 

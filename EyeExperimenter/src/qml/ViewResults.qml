@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Dialogs 1.1
 
 VMBase {
 
@@ -7,22 +8,59 @@ VMBase {
     height: viewHome.vmHEIGHT
 
     readonly property string keysearch: "viewresults_"
-    property string vmPatient: "Florencia Fernandez"
-    property string vmAge: "56"
-    property string vmDrName: "Gustavo Roux"
-    property string vmDate: "24/10/2017"
 
-    property int  vmResPAttentional: 439
-    property real vmResPExecutives:  16.62
-    property real vmResWorkMem:      83.37
-    property real vmResMemRec:       45.55
-    property real vmResMemEnc:       0.03
+    property string vmPatient: ""
+    property string vmAge: ""
+    property string vmDrName: ""
+    property string vmDate: ""
 
-    property int vmPAttentionalResBarPos : 2
+    property string vmResPAttentional: "0"
+    property string vmResPExecutives:  "0"
+    property string vmResWorkMem:      "0"
+    property string vmResMemRec:       "0"
+    property string vmResMemEnc:       "0"
+
+    property int vmPAttentionalResBarPos : 0
     property int vmPExecutivesResBarPos : 0
-    property int vmWorkMemResBarPos : 1
-    property int vmMemRecResBarPos : 2
-    property int vmMemEncResBarPos : 1
+    property int vmWorkMemResBarPos : 0
+    property int vmMemRecResBarPos : 0
+    property int vmMemEncResBarPos : 0
+
+    function fillFieldsFromReportInfo(){
+
+        // Values and bar positions
+        vmResPAttentional = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_ATTENTIONAL_PROCESSES);
+        if (vmResPAttentional !== "N/A"){
+            vmPAttentionalResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_ATTENTIONAL_PROCESSES);
+        }
+
+        vmResPExecutives = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_EXECUTIVE_PROCESSES);
+        if (vmResPExecutives !== "N/A"){
+            vmPExecutivesResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_EXECUTIVE_PROCESSES);
+        }
+
+        vmResMemEnc = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_MEMORY_ENCODING);
+        if (vmResMemEnc !== "N/A"){
+            vmMemEncResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_MEMORY_ENCODING);
+        }
+
+        vmResMemRec = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_RETRIEVAL_MEMORY);
+        if (vmResMemRec !== "N/A"){
+            vmMemRecResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_RETRIEVAL_MEMORY);
+        }
+
+        vmResWorkMem = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_WORKING_MEMORY);
+        if (vmResWorkMem !== "N/A"){
+            vmWorkMemResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_WORKING_MEMORY);
+        }
+
+        // Patient and doctor data
+        vmPatient = flowControl.getReportDataField(vmDefines.vmCONFIG_PATIENT_NAME);
+        vmDrName = flowControl.getReportDataField(vmDefines.vmCONFIG_DOCTOR_NAME);
+        vmAge = flowControl.getReportDataField(vmDefines.vmCONFIG_PATIENT_AGE);
+        vmDate = flowControl.getReportDataField(vmDefines.vmCONFIG_REPORT_DATE);
+
+    }
 
     Text{
         id: title
@@ -579,7 +617,11 @@ VMBase {
         anchors.leftMargin: 503
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 10
+        onClicked: {
+            flowControl.saveReportAs(loader.getStringForKey(keysearch+"save_report"));
+        }
     }
+
 
     VMButton{
         id: btnFinalize
@@ -590,6 +632,9 @@ VMBase {
         anchors.leftMargin: 18
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 10
+        onClicked: {
+            swiperControl.currentIndex = swiperControl.vmIndexHome;
+        }
     }
 
 }

@@ -116,6 +116,9 @@ Window {
                 case vmIndexCalibrationDone:
                     viewCalibrationDone.openDiag()
                     break;
+                case vmIndexWaitFor:
+                    viewWaitFor.openDiag();
+                    break;
             }
         }
 

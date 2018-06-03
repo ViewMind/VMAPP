@@ -1,4 +1,4 @@
- #include "sslmanager.h"
+#include "sslmanager.h"
 
 SSLManager::SSLManager(QObject *parent):QObject(parent)
 {
@@ -36,7 +36,7 @@ void SSLManager::startServer(ConfigurationManager *c){
     if (!listener->listen(QHostAddress::Any,(quint16)config->getInt(CONFIG_TCP_PORT))){
         addMessage("ERROR","Could not start SSL Server: " + listener->errorString());
         return;
-    }    
+    }
 
 }
 
@@ -125,12 +125,16 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
 }
 
 void SSLManager::sendReport(quint64 socket){
-    QString reportfile = sockets.value(socket)->getWorkingDirectory() + "/" + FILE_REPORT_NAME + ".png";
+
+    // Finding the newest rep file in the folder.
+    QString reportfile = getNewestFile(sockets.value(socket)->getWorkingDirectory(),FILE_REPORT_NAME,"rep");
+
     if (!QFile(reportfile).exists()){
         addMessage("ERROR","Could not generate report file for working folder: " + sockets.value(socket)->getWorkingDirectory());
         removeSocket(socket);
         return;
     }
+    addMessage("LOG","Report file found : " + reportfile);
 
     DataPacket tx;
     if (!tx.addFile(reportfile,DataPacket::DPFI_REPORT)){
@@ -229,9 +233,9 @@ void SSLManager::socketErrorFound(quint64 id){
     QHostAddress addr = sockets.value(id)->socket()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
     if (error != QAbstractSocket::RemoteHostClosedError)
-       addMessage("ERROR",QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
+        addMessage("ERROR",QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
     else
-       addMessage("LOG",QString("Closed connection from Address: ") + addr.toString());
+        addMessage("LOG",QString("Closed connection from Address: ") + addr.toString());
 
     // Eliminating it from the list.
     removeSocket(id);

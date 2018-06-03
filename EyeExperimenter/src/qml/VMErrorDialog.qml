@@ -10,6 +10,8 @@ Dialog {
     readonly property int vmERROR_CONNECT_ET: 3
     readonly property int vmERROR_PROG_ERROR: 4
     readonly property int vmERROR_EXP_END_ERROR: 5
+    readonly property int vmERROR_SERVER_COMM: 6
+    readonly property int vmERROR_NO_SSL: 7
 
     property string vmErrorTitle: "Error Ocurred"
     property string vmErrorMessage: "An error has ocurred"
@@ -95,8 +97,15 @@ Dialog {
             close();
             break;
         case vmERROR_EXP_END_ERROR:
-            errorDiag.close()
+            close()
             swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+            break;
+        case vmERROR_SERVER_COMM:
+            close();
+            swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+            break;
+        case vmERROR_NO_SSL:
+            close();
             break;
         default:
             Qt.quit();

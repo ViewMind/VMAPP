@@ -63,6 +63,9 @@ public:
     // Check if a keyword was defined.
     bool containsKeyword(const QString &kw) const { return data.contains(kw); }
 
+    // Delete all data
+    void clear() {data.clear(); verif.clear();}
+
     // List of getter functions. They all have the same structure. They get a value based on a name and
     // ok is set to true if the data of the type can be obtained from the entry with that name.
     QString getString(const QString &name, bool *ok = nullptr) const;
@@ -91,7 +94,6 @@ private:
 
     // The actual data
     QVariantHash data;
-
 
     // Verification structure and functions.
     CommandVerifications verif;

@@ -24,12 +24,12 @@ VMBase {
                 vmErrorDiag.open();
                 return;
             }
-            if (advanceCurrentExperiment()){
-
-                //swiperControl.currentIndex = swiperControl.vmIndexResults;
+            if (advanceCurrentExperiment()){                
                 swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
-                viewWaitFor.openDiag();
-
+                titleMsg = viewHome.getErrorTitleAndMessage("msg_request_report");
+                viewWaitFor.vmMessage = titleMsg[1];
+                viewWaitFor.vmTitle = titleMsg[0];
+                flowControl.requestReportData();
             }
         }
     }

@@ -32,6 +32,17 @@ VMBase {
             viewSettings.vmInvalidRepoError = true;
             viewSettings.open();
         }
+
+        // SSL Check is done right now
+        if (!flowControl.checkSSLAvailability()){
+            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_NO_SSL;
+            titleMsg = viewHome.getErrorTitleAndMessage("error_no_ssl");
+            vmErrorDiag.vmErrorMessage = titleMsg[1];
+            vmErrorDiag.vmErrorTitle = titleMsg[0];
+            vmErrorDiag.open();
+            return;
+        }
+
     }
 
     // ViewMind Logo

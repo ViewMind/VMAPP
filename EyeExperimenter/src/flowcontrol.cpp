@@ -38,16 +38,106 @@ FlowControl::FlowControl(QWidget *parent, LogInterface *l, ConfigurationManager 
 
 }
 
+void FlowControl::saveReport(){
+    ImageReportDrawer reportDrawer;
+    reportDrawer.drawReport(&reportData,configuration);
+}
+
+void FlowControl::saveReportAs(const QString &title){
+
+    QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
+    if (newFileName.isEmpty()) return;
+    if (!QFile::copy(configuration->getString(CONFIG_IMAGE_REPORT_PATH),newFileName)){
+        logger->appendError("Could not save report from " + configuration->getString(CONFIG_IMAGE_REPORT_PATH) + " to " + newFileName);
+    }
+}
+
 void FlowControl::resolutionCalculations(){
     QDesktopWidget *desktop = QApplication::desktop();
-    //    qWarning() << "Number of screens" << desktop->screenCount();
-    //    for (qint32 i = 0; i < desktop->screenCount(); i++){
-    //        qWarning() << "Available Geometry for screen " << i << desktop->screenGeometry(i);
-    //    }
-    //    qWarning() << "Current screen" << desktop->screenNumber();
+    // This line will assume that the current screen is the one where the experiments will be drawn.
     QRect screen = desktop->screenGeometry(desktop->screenNumber());
     configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,screen.width());
     configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
+}
+
+void FlowControl::onSLLTransactionFinished(bool allOk){
+    sslTransactionAllOk = allOk;
+    if (allOk){
+        // Loading the report
+        reportData.clear();
+        // The ssl client should have set up the config report path.
+        if (!reportData.loadConfiguration(configuration->getString(CONFIG_REPORT_PATH),COMMON_TEXT_CODEC)){
+            logger->appendError("Error loading the report data file: " + reportData.getError());
+            sslTransactionAllOk = false;
+        }
+    }
+    emit(sslTransactionFinished());
+}
+
+QString FlowControl::getReportDataField(const QString &key){
+    if (reportData.containsKeyword(key)){
+        return reportData.getString(key);
+    }
+    else return "N/A";
+}
+
+int FlowControl::getReportResultBarPosition(const QString &key){
+
+    qreal value = reportData.getReal(key);
+    QList<qreal> list;
+    bool largerBetter;
+
+    if (key == CONFIG_RESULTS_ATTENTIONAL_PROCESSES){
+        list << 450 << 550 << 650 << 750;
+        largerBetter = false;
+    }
+    else if (key == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
+        list << -4 << 18 << 40 << 62;
+        largerBetter = false;
+    }
+    else if (key == CONFIG_RESULTS_MEMORY_ENCODING){
+        list << -0.991 << 0.009 << 1.009;
+        largerBetter = true;
+    }
+    else if (key == CONFIG_RESULTS_RETRIEVAL_MEMORY){
+        list << 7 << 15 << 23 << 31;
+        largerBetter = true;
+    }
+    else if (key == CONFIG_RESULTS_WORKING_MEMORY){
+        list << 50 << 60 << 70 << 80;
+        largerBetter = true;
+    }
+    else{
+        return 0;
+    }
+
+    return calculateSegment(value,list,largerBetter);
+
+}
+
+
+int FlowControl::calculateSegment(qreal value, QList<qreal> segments, bool largerBetter){
+    int result = 0;
+    result = 0;
+    for (qint32 i = 0; i < segments.size()-1; i++){
+        if (value < segments.at(i)){
+            break;
+        }
+        result = i;
+    }
+    // If larger is better then the indexes are inverted as 0 represents green which is good and 2 represents red.
+    if (largerBetter){
+        if (segments.size() == 4){
+            if (result == 0) result = 2;
+            else if (result == 2) result = 0;
+        }
+        else{
+            if (result == 0) result = 1;
+            else if (result == 1) result = 0;
+        }
+    }
+
+    return result;
 }
 
 void FlowControl::eyeTrackerChanged(){
@@ -123,6 +213,9 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
 
     QBrush background;
     experimentIsOk = true;
+
+    // Making sure no old reports are stored.
+    configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,"");
 
     // Using the polimorphism, the experiment object is created according to the selected index.
     QString readingQuestions;
@@ -289,7 +382,6 @@ void FlowControl::setupSecondMonitor(){
 }
 
 FlowControl::~FlowControl(){
-    qWarning() << "Aca estamos";
     sslServer.kill();
 }
 

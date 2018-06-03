@@ -16,27 +16,23 @@ VMBase {
     Connections{
         target: flowControl
         onSslTransactionFinished: {
+            viewWaitFor.closeDiag();
+            if (!flowControl.isSSLTransactionOK()){
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
+                var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
 
+            // Saving the report first.
+            flowControl.saveReport();
+
+            // Now doing this.
+            viewResults.fillFieldsFromReportInfo();
+            swiperControl.currentIndex = swiperControl.vmIndexResults;
         }
-        onReportGenerationFinished: {
-
-        }
-//            if (!flowControl.isExperimentEndOk()){
-//                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
-//                var titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
-//                vmErrorDiag.vmErrorMessage = titleMsg[1];
-//                vmErrorDiag.vmErrorTitle = titleMsg[0];
-//                vmErrorDiag.open();
-//                return;
-//            }
-//            if (advanceCurrentExperiment()){
-
-//                //swiperControl.currentIndex = swiperControl.vmIndexResults;
-//                swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
-//                viewWaitFor.openDiag();
-
-//            }
-
     }
 
 
@@ -107,19 +103,19 @@ VMBase {
             x: (parent.width - slideAnimation.width)/2;
         }
 
-//        // The Ok.
-//        VMButton{
-//            id: btnOk
-//            vmSize: [180, 50]
-//            vmText: vmErrorButtonMsg
-//            vmFont: gothamM.name
-//            anchors.top: diagImage.bottom
-//            anchors.topMargin: 40
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            onClicked: {
-//                waitForDone();
-//            }
-//        }
+        //        // The Ok.
+        //        VMButton{
+        //            id: btnOk
+        //            vmSize: [180, 50]
+        //            vmText: vmErrorButtonMsg
+        //            vmFont: gothamM.name
+        //            anchors.top: diagImage.bottom
+        //            anchors.topMargin: 40
+        //            anchors.horizontalCenter: parent.horizontalCenter
+        //            onClicked: {
+        //                waitForDone();
+        //            }
+        //        }
 
     }
 

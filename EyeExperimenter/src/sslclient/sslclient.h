@@ -15,8 +15,6 @@
 #define   DEFAULT_TIMEOUT_CONNECTION                    60000
 #define   DEFAULT_TIMEOUT_WAIT_ACK                      60000
 
-//#define   ENABLE_DELAY_TIMER
-
 namespace Ui {
 class SSLClient;
 }
@@ -48,11 +46,6 @@ private slots:
     // Timer
     void on_timeOut();
 
-#ifdef ENABLE_DELAY_TIMER
-    // Delay timer timeout
-    void onDelayTimerTimeOut();
-#endif
-
 private:
     // All configuration variables.
     ConfigurationManager *config;
@@ -67,14 +60,11 @@ private:
     DataPacket txDP;
     DataPacket rxDP;
 
-#ifdef ENABLE_DELAY_TIMER
-    // Timer to delay send to server by 10 seconds
-    QTimer delayTimer;
-    qint32 secondCounter;
-#endif
-
     // Flag to indicate that the information has been sent
     bool informationSent;
+
+    // Flag that indicates if the transaction finished signal was setn
+    bool sentTransactionFinishedSignal;
 
     // Connection time out and a variable to determine in which state was the timeout
     QTimer timer;
@@ -86,6 +76,9 @@ private:
 
     // Starts the whole process
     void connectToServer();
+
+    // Two steps to send the signal so a fucntion is used.
+    void sendFinishedSignal(bool okvalue);
 
 };
 

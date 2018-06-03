@@ -18,10 +18,6 @@ SSLClient::SSLClient(QObject *parent, ConfigurationManager *c, LogInterface *l) 
     connect(socket,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(on_sslErrors(QList<QSslError>)));
     connect(socket,SIGNAL(readyRead()),this,SLOT(on_readyRead()));
 
-#ifdef ENABLE_DELAY_TIMER
-    connect(&delayTimer,&QTimer::timeout,this,&SSLClient::onDelayTimerTimeOut);
-#endif
-
     // Timer connection
     connect(&timer,&QTimer::timeout,this,&SSLClient::on_timeOut);
 
@@ -46,28 +42,22 @@ SSLClient::SSLClient(QObject *parent, ConfigurationManager *c, LogInterface *l) 
     clientState = CS_CONNECTING;
 }
 
-
-void SSLClient::requestReport(){
-#ifdef ENABLE_DELAY_TIMER
-    delayTimer.setInterval(1000);
-    secondCounter = 10;
-    delayTimer.start();
-    onDelayTimerTimeOut();
-#else
-    connectToServer();
-#endif
-}
-
-#ifdef ENABLE_DELAY_TIMER
-void SSLClient::onDelayTimerTimeOut(){
-    secondCounter--;
-    ui->pbRequestReport->setText("Request Report (" + QString::number(secondCounter) + ")");
-    if (secondCounter == 0) {
-        delayTimer.stop();
-        connectToServer();
+void SSLClient::sendFinishedSignal(bool okvalue){
+    if (!sentTransactionFinishedSignal){
+        sentTransactionFinishedSignal = true;
+        emit(transactionFinished(okvalue));
     }
 }
-#endif
+
+void SSLClient::requestReport(){
+    if (!sslEnabled()){
+        log->appendError("Attempted request even though SSL is not enabled");
+        sendFinishedSignal(false);
+        return;
+    }
+    sentTransactionFinishedSignal = false;
+    connectToServer();
+}
 
 void SSLClient::connectToServer()
 {
@@ -76,7 +66,7 @@ void SSLClient::connectToServer()
 
     if (!QDir(directory).exists()){
         log->appendError("Patient directory does not exist");
-        emit(transactionFinished(false));
+        sendFinishedSignal(false);
         return;
     }
 
@@ -112,7 +102,7 @@ void SSLClient::connectToServer()
     }
 
     QString bindingUC;
-    if (config->getBool(CONFIG_DEMO_MODE)) bindingBC = ":/demo_data/binding_uc_2018_06_03.dat";
+    if (config->getBool(CONFIG_DEMO_MODE)) bindingUC = ":/demo_data/binding_uc_2018_06_03.dat";
     else bindingUC = getNewestFile(directory,FILE_OUTPUT_BINDING_UC);
 
     if (bindingUC.isEmpty()){
@@ -124,12 +114,12 @@ void SSLClient::connectToServer()
     }
     if (!reading && !binding){
         log->appendError("ERROR: No processing is possible due to missing files.");
-        emit(transactionFinished(false));
+        sendFinishedSignal(false);
         return;
     }
 
     QString patientInfoFile = directory + "/" + QString(FILE_PATIENT_INFO_FILE);
-    QString pname = "A. Patient";
+    QString pname = "A Patient";
     QString dname = "The Doctor";
 
     if (!QFile(patientInfoFile).exists()){
@@ -140,7 +130,7 @@ void SSLClient::connectToServer()
 
     if (!QFile(patientInfoFile).exists()){
         log->appendError("ERROR: Could not read or create the patient info file at " + patientInfoFile);
-        emit(transactionFinished(false));
+        sendFinishedSignal(false);
         return;
     }
 
@@ -151,8 +141,8 @@ void SSLClient::connectToServer()
         log->appendWarning("WARNING: Doctor's name was not loaded. Using stock information");
     }
 
-    if (config->containsKeyword(CONFIG_DOCTOR_NAME)){
-        dname = config->getString(CONFIG_DOCTOR_NAME);
+    if (config->containsKeyword(CONFIG_PATIENT_NAME)){
+        pname = config->getString(CONFIG_PATIENT_NAME);
     }
     else{
         log->appendWarning("WARNING: Doctor's name was not loaded. Using stock information");
@@ -196,7 +186,7 @@ void SSLClient::on_readyRead(){
                 if (num != ba.size()){
                     log->appendError("ERROR: Unable to send the information. Please try again.");
                     socket->disconnectFromHost();
-                    emit(transactionFinished(false));
+                    sendFinishedSignal(false);
                     return;
                 }
                 log->appendStandard("LOG: Sent requested information to server: " + QString::number(num) + " bytes");
@@ -225,12 +215,12 @@ void SSLClient::on_readyRead(){
             QString reportPath = rxDP.saveFile(config->getString(CONFIG_PATIENT_DIRECTORY),DataPacket::DPFI_REPORT);
             if (reportPath.isEmpty()){
                 log->appendError("ERROR: Could not save the report to the directory: " + reportPath + ". Please try again");
-                emit(transactionFinished(false));
+                sendFinishedSignal(false);
             }
             else{
                 log->appendSuccess("Report saved to: " + reportPath);
                 config->addKeyValuePair(CONFIG_REPORT_PATH,reportPath);
-                emit(transactionFinished(true));
+                sendFinishedSignal(true);
             }
 
             rxDP.clearAll();
@@ -267,6 +257,7 @@ void SSLClient::on_socketError(QAbstractSocket::SocketError error){
     // If there is an error then the timer should be stopped.
     if (timer.isActive()) timer.stop();
     socket->disconnectFromHost();
+    sendFinishedSignal(false);
 }
 
 //*************************************************************************************************************************

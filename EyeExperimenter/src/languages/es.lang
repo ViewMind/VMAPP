@@ -129,6 +129,8 @@ viewresults_labelWorkingMemmoryExp = Parámetro referencia 70 - 90;
 viewresults_labelRetrievalMemoryExp = Parámetro referencia 23 - 39;
 viewresults_labelVisualShortTermMemoryExp = Parámetro referencia MAYOR o IGUAL a 0.009;
 
+viewresults_save_report = Guardar reporte;
+
 viewresults_btnDownload = DESCARGAR;
 viewresults_btnFinalize = FINALIZAR;
 
@@ -142,6 +144,9 @@ error_programming = Error de programación<>Contactar a Ariel Arelovich;
 error_experiment_end = Fin de estudio anormal<>El estudio no terminó como corresponde<br>Por favor inténtelo nuevamente;
 error_no_ssl = SSL no se detectó<>No se detectaron las bibliotecas de SSL<br>No será posible la comunicación con el servidor;
 error_server_comm = Error de comunicación<>No se pudo establecer un vinculo con servidor.<br>Por favor, detectar nuevamente;
-msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;
 
+#********************************* INFORMATION MESSAGES *********************************
+msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;
+msg_request_report = Procesando...<>Por favor espere mientras se obtiene la información del reporte;
+msg_report_generation = Generando reporte<>En un instante su informe estará listo...;
 

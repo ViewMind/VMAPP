@@ -7,7 +7,7 @@
 #include <QDateTime>
 #include "../../CommonClasses/DataPacket/datapacket.h"
 
-#define  TIME_FORMAT_STRING  "yyyy_MM_DD_hh_mm_ss"
+#define  TIME_FORMAT_STRING  "yyyy_MM_dd_hh_mm_ss"
 
 /*****************************************************************
  * The objective of this class is to provide an identifying value
