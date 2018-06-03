@@ -8,16 +8,11 @@
 #include <QProcess>
 #include <QTimer>
 
-//#include "../../CommonClasses/common.h"
-#include "../../CommonClasses/LogInterface/loginterface.h"
+#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../CommonClasses/ImageExplorer/imageexplorer.h"
 #include "eyedataprocessingthread.h"
 
-#define   EYE_REP_GEN_VERSION                           "1.3"
-
-// Comment for normal function. Otherwise just generates a report
-// #define  TEST_REPORT
+#define   EYE_REP_GEN_VERSION                           "2.0"
 
 namespace Ui {
 class EyeReportUI;

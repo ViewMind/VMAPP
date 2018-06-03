@@ -5,18 +5,18 @@ import QtQuick.Window 2.2
 Window {
     visible: true
     title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()
-    minimumHeight: 768
-    maximumHeight: 768
+    id: mainWindow
+    minimumHeight: 690
+    maximumHeight: 690
     maximumWidth: 1280
     minimumWidth: 1280
-//    x: 0
-//    y: 0
-
 
     Component.onCompleted: {
-        console.log("SCREEN " + Screen.width + "x" + Screen.height);
-        console.log("TOTAL SCREEN " + Screen.desktopAvailableWidth + "x" + Screen.desktopAvailableHeight);
-        loader.setScreenResolution(Screen.width, Screen.height);
+        flowControl.resolutionCalculations();
+        var frameGeomtry = loader.frameSize(mainWindow)
+        var hdiff = frameGeomtry.height - height - 10;
+        x = (Screen.width - width)/2;
+        y = hdiff; // This should put the window at the top of the screen.
     }
 
     // The configurations dialog.
@@ -39,6 +39,7 @@ Window {
         readonly property int vmIndexCalibrationDone: 3
         readonly property int vmIndexPresentExperiment: 4
         readonly property int vmIndexResults: 5
+        readonly property int vmIndexWaitFor: 6
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -97,6 +98,13 @@ Window {
                 Component.onCompleted: {
                     updateMenus();
                 }
+            }
+        }
+
+        Item{
+            ViewWaitFor{
+                id: viewWaitFor
+                anchors.fill: parent
             }
         }
 

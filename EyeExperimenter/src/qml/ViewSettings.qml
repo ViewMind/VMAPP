@@ -8,6 +8,7 @@ Dialog {
     readonly property string keybase: "viewsettings_"
     property bool vmInvalidRepoError: false;
     property string vmLoadLanguage: "";
+    property string vmLoadET: "";
     property bool vmRestartRequired: false;
 
     signal updateMenus();
@@ -228,7 +229,10 @@ Dialog {
         currentIndex: {
             var sel = loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET)
             for (var i = 0; i < vmModel.length; i++){
-                if (vmModel[i] === sel) return i;
+                if (vmModel[i] === sel) {
+                    vmLoadET = vmModel[i];
+                    return i;
+                }
             }
             return 0;
         }
@@ -317,9 +321,15 @@ Dialog {
         // Signal to update dropdown menu information.
         updateMenus()
 
-        // Reloading the languge.
+        // Restart required
         if (vmLoadLanguage !== diagCBLang.currentText){
             viewSettings.vmRestartRequired = true;
+        }
+        else{
+            // Check if et changed.
+            if (diagCBET.currentText !== vmLoadET){
+                flowControl.eyeTrackerChanged()
+            }
         }
 
         return true;

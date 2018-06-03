@@ -26,6 +26,7 @@ class EyeDataProcessingThread : public QThread
 public:
     EyeDataProcessingThread();
     void initialize(ConfigurationManager *c, const QSet<QString> &exps);
+    QString getReportFileOutput() const {return reportFileOutput; }
 
     // The actual processing function
     void run();
@@ -61,9 +62,10 @@ private:
     MonitorGeometry mgeo;
     MovingWindowParameters mwp;    
 
-    //---------------------------------------- AUX Functions -------------------------------------------
-    QString getNewestFile(const QString &directory, const QString &baseName);
+    // The full path to the generated file.
+    QString reportFileOutput;
 
+    //---------------------------------------- AUX Functions -------------------------------------------
     // Separates the data from the experiment description in the data files.
     // Returns the error message if there was one.
     bool separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment);
@@ -71,6 +73,8 @@ private:
     QString csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header);
 
     bool getResolutionToConfig(const QString &firstline);
+
+    void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd);
 
 };
 

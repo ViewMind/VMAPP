@@ -35,7 +35,6 @@ MonitorScreen::MonitorScreen(QWidget *parent, const QRect &screen, qreal SCREEN_
     targetWidth = gview->scene()->width();
     scaleX = (targetWidth/SCREEN_W);
     scaleY = (targetHeight/SCREEN_H);
-    qWarning() << scaleX << scaleY;
     background->setPos(0,0);
 }
 

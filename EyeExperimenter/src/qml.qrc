@@ -22,5 +22,6 @@
         <file>qml/VMResultBar.qml</file>
         <file>qml/VMDefines.qml</file>
         <file>qml/VMErrorDialog.qml</file>
+        <file>qml/ViewWaitFor.qml</file>
     </qresource>
 </RCC>

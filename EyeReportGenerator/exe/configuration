@@ -2,21 +2,14 @@
 #                            EyeReportGen Configuration File                           #
 #--------------------------------------------------------------------------------------#
 
-# Used for demo purposes. The report will use fixed values instead of calculated ones. This is usefull when the analyzed data comes from short experiments.
-# Comment or change value to false in order to use the actual calculated values.
-# demo_mode = true;
-
 #------------------------------------------------------#
 #                      REPORT                          #
 #------------------------------------------------------#
 
-# When set to true the report is generated even if all the data is not there.
-enable_report_generation = true;
-
 # Enabling fast generation, means that the fixation images will not be generated.
 # Anything other than "false" means that fast processing is on. 
 # However, if commented false value will be assumed.
-# fast_processing = true;
+fast_processing = true;
 
 #------------------------------------------------------#
 #                DATA PROCESSING                       #
@@ -25,15 +18,15 @@ enable_report_generation = true;
 # This list defines which experiments will be processed.
 # If the field is not present then this will mean all algorithms;
 # experiments = binding_uc | binding_bc;
-# experiments = binding_uc | binding_bc | reading;
-experiments = reading;
+experiments = binding_uc | binding_bc | reading;
+# experiments = reading;
 
 # Filters to handle special bc and uc files.
 # bc_file_filter = _2_x;
 # uc_file_filter = _2_x;
 
 # Filtering spurious data values. All time stamps whose value are larger than this threshold will be filtered out.
-time_filter_threshold = 20000000;
+# time_filter_threshold = 20000000;
 
 # The maximum dispersion accepted for data points to be considered a fixation
 moving_window_max_dispersion          = 30;     # px
@@ -59,11 +52,7 @@ latency_escape_radious                = 80;     # px
 margin_target_hit                     = 10;     # mm
 
 #------------------------------------------------------#
-#           OPTIONS MODIFIED BY PROGRAM                #
+#         OPTIONS MODIFIED BY OTHER PROGRAMS           #
 #------------------------------------------------------#
-
-patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs\00_Nuevo_EE;
+patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs\EyeExperimenter2Outputs\viewmind_etdata\Miles_Genius\a\bkp;
 doctor_name = Doctor Genius;
-patient_name = 00 Nuevo EE;
-patient_age = 56;
-report_language = English;

@@ -28,6 +28,7 @@ void LogInterface::appendError(const QString &msg){
 void LogInterface::appendStandard(const QString &msg){
     if (log != nullptr) {
         appendMessage(msg,"#000000");
+        return;
     }
     appendMessage(msg,LOG_STD);
 }

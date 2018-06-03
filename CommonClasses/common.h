@@ -36,7 +36,6 @@
 #define   CONFIG_PATIENT_NAME                           "patient_name"
 #define   CONFIG_ADD_TO_REPORT                          "add_to_report"
 #define   CONFIG_REPORT_LANGUAGE                        "report_language"
-#define   CONFIG_ENABLE_REPORT_GEN                      "enable_report_generation"
 #define   CONFIG_PATIENT_EMAIL                          "patient_email"
 #define   CONFIG_REPORT_NO_LOGO                         "no_logo_in_report"
 #define   CONFIG_DEMO_MODE                              "demo_mode"
@@ -57,6 +56,16 @@
 #define   CONFIG_RESOLUTION_HEIGHT                      "config_resolution_height"
 #define   CONFIG_SELECTED_ET                            "selected_eyetracker"
 #define   CONFIG_PATIENT_REPORT_DIR                     "patient_report_dir"
+#define   CONFIG_REPORT_DATE                            "report_date"
+#define   CONFIG_SSLSERVER_PATH                         "ssl_server_path"
+#define   CONFIG_REPORT_PATH                            "report_path"
+
+// Result values for the Result EyeReport Generator File
+#define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
+#define   CONFIG_RESULTS_EXECUTIVE_PROCESSES            "executive_proceseses"
+#define   CONFIG_RESULTS_WORKING_MEMORY                 "working_memory"
+#define   CONFIG_RESULTS_RETRIEVAL_MEMORY               "retrieval_memory"
+#define   CONFIG_RESULTS_MEMORY_ENCODING                "memory_encoding"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"
@@ -100,19 +109,17 @@ static inline QString getNewestFile(const QString &directory, const QString &bas
     filter << baseName + "_*.dat";
     QStringList allfiles = dir.entryList(filter,QDir::Files,QDir::Time);
 
-    // This is used to simply look for simple bc uc files when no expanded versions are desired.
-    qint32 i = 0;
-    qint32 targetFileNameSize = baseName.size() + 9; // 9 = 1 underscore, 4 numbers, 1 dot, and 3 because of the dat
-
-    // qWarning() << "Searching for files with the base" << baseName;
-
-    while (i < allfiles.size()){
-        if (allfiles.at(i).size() != targetFileNameSize){
-            allfiles.removeAt(i);
-        }
-        else i++;
-    }
-
+/// TODO: Fix for enhanced EBO versions
+//    This is used to simply look for simple bc uc files when no expanded versions are desired.
+//    qint32 i = 0;
+//    qint32 targetFileNameSize = baseName.size() + 9; // 9 = 1 underscore, 4 numbers, 1 dot, and 3 because of the dat
+//    // qWarning() << "Searching for files with the base" << baseName;
+//    while (i < allfiles.size()){
+//        if (allfiles.at(i).size() != targetFileNameSize){
+//            allfiles.removeAt(i);
+//        }
+//        else i++;
+//    }
 
     if (allfiles.isEmpty()) return "";
     return directory + "/" + allfiles.first();

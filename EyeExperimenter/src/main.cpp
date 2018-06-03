@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 
     // Laods all language related data
     Loader loader(nullptr,&globalLog,&configuration);
+    //FlowControl flowControl(nullptr,&globalLog,&configuration);
     FlowControl flowControl(nullptr,&globalLog,&configuration);
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);

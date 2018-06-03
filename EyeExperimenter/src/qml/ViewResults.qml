@@ -33,8 +33,8 @@ VMBase {
         verticalAlignment: Text.AlignVCenter
         anchors.left: parent.left
         anchors.leftMargin: 150
-        anchors.bottom: rectInfoPatient.top
-        anchors.bottomMargin: 19;
+        anchors.top: vmBanner.bottom
+        anchors.topMargin: 5
     }
 
     // Patient info rectangle
@@ -44,8 +44,8 @@ VMBase {
         radius: 2
         width: 385
         height: 207
-        anchors.top: vmBanner.bottom
-        anchors.topMargin: 94
+        anchors.top: title.bottom
+        anchors.topMargin: 5
         anchors.left: title.left
 
         // Patient
@@ -578,7 +578,7 @@ VMBase {
         anchors.left: parent.left
         anchors.leftMargin: 503
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 45
+        anchors.bottomMargin: 10
     }
 
     VMButton{
@@ -589,7 +589,7 @@ VMBase {
         anchors.left: btnDownload.right
         anchors.leftMargin: 18
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 45
+        anchors.bottomMargin: 10
     }
 
 }

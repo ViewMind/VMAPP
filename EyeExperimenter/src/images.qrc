@@ -23,5 +23,6 @@
         <file>images/unbound.gif</file>
         <file>images/fielding.gif</file>
         <file>images/ERROR_ILUS.png</file>
+        <file>images/LOADING.gif</file>
     </qresource>
 </RCC>

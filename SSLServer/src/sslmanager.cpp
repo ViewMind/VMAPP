@@ -162,8 +162,6 @@ void SSLManager::lauchEyeReportProcessor(quint64 socket){
     // All good and the files have been saved.
     QStringList arguments;
     QString dash = "-";
-    arguments << dash + CONFIG_PATIENT_AGE << d.getField(DataPacket::DPFI_AGE).data.toString();
-    arguments << dash + CONFIG_PATIENT_NAME << d.getField(DataPacket::DPFI_PATIENT_ID).data.toString();
     arguments << dash + CONFIG_PATIENT_DIRECTORY << sockets.value(socket)->getWorkingDirectory();
     arguments << dash + CONFIG_DOCTOR_NAME << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
 

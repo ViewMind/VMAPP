@@ -2,6 +2,8 @@
 #define FLOWCONTROL_H
 
 #include <QObject>
+#include <QWidget>
+#include <QProcess>
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -10,26 +12,40 @@
 #include "Experiments/imageexperiment.h"
 #include "Experiments/fieldingexperiment.h"
 
+#include "sslclient/sslclient.h"
+
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
-//#include "EyeTrackerInterface/RED/redinterface.h"
+#include "EyeTrackerInterface/RED/redinterface.h"
 
 #include "monitorscreen.h"
 
-class FlowControl : public QObject
+class FlowControl : public QWidget
 {
     Q_OBJECT
 public:
-    explicit FlowControl(QObject *parent = nullptr, LogInterface *l = nullptr, ConfigurationManager *c = nullptr);
+    explicit FlowControl(QWidget *parent = Q_NULLPTR, LogInterface *l = nullptr, ConfigurationManager *c = nullptr);
+    FlowControl::~FlowControl();
     Q_INVOKABLE bool connectToEyeTracker();
     Q_INVOKABLE bool calibrateEyeTracker();
     Q_INVOKABLE bool startNewExperiment(qint32 experimentID);
     Q_INVOKABLE bool isConnected() const { return connected; }
     Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
+    Q_INVOKABLE void setupSecondMonitor();
+    Q_INVOKABLE void eyeTrackerChanged();
+    Q_INVOKABLE void resolutionCalculations();
+    Q_INVOKABLE void checkSSLAvailability() {return sslclient->sslEnabled();}
+    Q_INVOKABLE void requestReportData() {sslclient->requestReport();}
 
 signals:
 
     // This tells QML that the experiment has finished.
     void experimentHasFinished();
+
+    // Transaction finished.
+    void sslTransactionFinished();
+
+    // Report generated.
+    void reportGenerationFinished();
 
 public slots:
 
@@ -39,7 +55,13 @@ public slots:
     // A calibration is requested in the middle of an experiment.
     void requestCalibration();
 
+    // When an SSL Transaction finishes
+    void onSLLTransactionFinished(bool allOk);
+
 private:
+
+    // The process for the server.
+    QProcess sslServer;
 
     // The second screen for monitoring the experiments.
     MonitorScreen *monitor;
@@ -52,6 +74,9 @@ private:
 
     // The Log interface
     LogInterface *logger;
+
+    // The sslclient to send the information process request.
+    SSLClient *sslclient;
 
     // The configuration structure
     ConfigurationManager *configuration;

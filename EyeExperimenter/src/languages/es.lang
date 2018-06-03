@@ -110,7 +110,7 @@ se muestra en el siguiente código:;
 
 viewresults_labelSquareGreen = No se encontraron problemas funcionales relevantes;
 viewresults_labelSquareYellow = Funcionamiento ligeramente deficiente, no es <br>necesariamente patológico.;
-viewresults_labelSquareRed = Funcionamiento patológico completamente deficiente y/o patológico.;
+viewresults_labelSquareRed = Funcionamiento patológico completamente deficiente <br> y/o patológico.;
 
 viewresults_labelAttetionalProcesses = PROCESOS ATENCIONALES;
 viewresults_labelExecutivesProcesses = PROCESOS EJECUTIVOS;
@@ -140,6 +140,8 @@ error_et_connect = Conexión al Eyetracker<>La conexión al Eyetracker ha fallad
 error_et_calibrate = Calibración Eyetracker<>El Eyetracker no está calibrado.<br>Por favor inténtelo nuevamente;
 error_programming = Error de programación<>Contactar a Ariel Arelovich;
 error_experiment_end = Fin de estudio anormal<>El estudio no terminó como corresponde<br>Por favor inténtelo nuevamente;
+error_no_ssl = SSL no se detectó<>No se detectaron las bibliotecas de SSL<br>No será posible la comunicación con el servidor;
+error_server_comm = Error de comunicación<>No se pudo establecer un vinculo con servidor.<br>Por favor, detectar nuevamente;
 msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;
 
 

@@ -1,4 +1,4 @@
-QT += quick gui widgets
+QT += quick gui widgets network
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -16,7 +16,8 @@ RESOURCES += qml.qrc \
     fonts.qrc \
     images.qrc \
     languages.qrc \
-    expdata.qrc
+    expdata.qrc \
+    demo_data.qrc
 
 SOURCES += main.cpp \
     loader.cpp \
@@ -36,7 +37,10 @@ SOURCES += main.cpp \
     Experiments/fieldingexperiment.cpp \
     Experiments/imageexperiment.cpp \
     Experiments/readingexperiment.cpp \
-    monitorscreen.cpp
+    monitorscreen.cpp \
+    EyeTrackerInterface/RED/redinterface.cpp \
+    ../../CommonClasses/DataPacket/datapacket.cpp \
+    sslclient/sslclient.cpp
 
 HEADERS += \
     loader.h \
@@ -60,4 +64,16 @@ HEADERS += \
     Experiments/fieldingexperiment.h \
     Experiments/imageexperiment.h \
     Experiments/readingexperiment.h \
-    monitorscreen.h
+    monitorscreen.h \
+    EyeTrackerInterface/RED/iViewXAPI.h \
+    EyeTrackerInterface/RED/redinterface.h \
+    ../../CommonClasses/DataPacket/datapacket.h \
+    sslclient/sslclient.h
+
+win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
+
+INCLUDEPATH += $$PWD/EyeTrackerInterface/RED
+DEPENDPATH += $$PWD/EyeTrackerInterface/RED
+
+FORMS +=
+

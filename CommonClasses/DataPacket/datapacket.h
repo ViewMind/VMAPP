@@ -19,7 +19,7 @@ public:
     static const quint8 DPFI_BINDING_UC                               = 2;
     static const quint8 DPFI_BINDING_BC                               = 3;
     static const quint8 DPFI_READING                                  = 4;
-    static const quint8 DPFI_AGE                                      = 5;
+    static const quint8 DPFI_PATIENT_FILE                             = 5;
     static const quint8 DPFI_SEND_INFORMATION                         = 6;
     static const quint8 DPFI_REPORT                                   = 7;
 

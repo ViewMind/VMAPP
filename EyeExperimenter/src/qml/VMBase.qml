@@ -18,7 +18,8 @@ Rectangle {
     readonly property int vmExpIndexFielding:  4;
 
     readonly property int vmWIDTH: 1280
-    readonly property int vmHEIGHT: 768
+    //readonly property int vmHEIGHT: 768
+    readonly property int vmHEIGHT: 720
 
     property alias vmErrorDiag: errorDialog
 

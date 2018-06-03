@@ -11,8 +11,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = SSLServer
 TEMPLATE = app
 
-MOC_DIR = MOCS
+
 OBJECTS_DIR = OBJS
+MOC_DIR     = MOCS
+RCC_DIR     = QRC
+CONFIG     -= debug_and_release
 
 SOURCES += main.cpp\
         sslserverwindow.cpp \

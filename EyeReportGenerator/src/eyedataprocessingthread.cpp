@@ -45,6 +45,7 @@ void EyeDataProcessingThread::initialize(ConfigurationManager *c, const QSet<QSt
 void EyeDataProcessingThread::run(){
 
     EyeMatrixProcessor emp;
+    reportFileOutput = "";
 
     // Each of the processing fucntions is called. In this way, processing of just one can be accomplished
     // just by running this complete function but it will keep going if a file does not exist.
@@ -96,22 +97,62 @@ void EyeDataProcessingThread::run(){
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
     }
 
-    if (config->getBool(CONFIG_ENABLE_REPORT_GEN)){
-        // if (matrixBindingBC.isEmpty() || matrixBindingUC.isEmpty() || matrixReading.isEmpty()) return;
-
-        QHash<qint32,bool> what2Add;
-        what2Add[STAT_ID_ENCODING_MEM_VALUE] = !matrixBindingBC.isEmpty() && !matrixBindingUC.isEmpty();
-        what2Add[STAT_ID_TOTAL_FIXATIONS] = !matrixReading.isEmpty();
-
-        emit(appendMessage("PLEASE WAIT WHILE REPORT IS BEING GENERATED....",MSG_TYPE_STD));
-        ImageReportDrawer repDrawer;
-        repDrawer.drawReport(emp.getResults(),config,what2Add);
-        emit(appendMessage("Report Generated.",MSG_TYPE_SUCC));
-    }
+    // Generating the resport based on available data.
+    QHash<qint32,bool> what2Add;
+    what2Add[STAT_ID_ENCODING_MEM_VALUE] = !matrixBindingBC.isEmpty() && !matrixBindingUC.isEmpty();
+    what2Add[STAT_ID_TOTAL_FIXATIONS] = !matrixReading.isEmpty();
+    generateReportFile(emp.getResults(),what2Add);
+    emit(appendMessage("Report Generated: " + reportFileOutput,MSG_TYPE_SUCC));
 
 }
 
+void EyeDataProcessingThread::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd){
 
+    QString patientFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_PATIENT_INFO_FILE;
+    // Loading the patient data
+    ConfigurationManager patientData;
+    patientData.loadConfiguration(patientFile,COMMON_TEXT_CODEC);
+
+    // Setting default values, so that there will always be information.
+    if (!patientData.containsKeyword(CONFIG_PATIENT_NAME)){
+        patientData.addKeyValuePair(CONFIG_PATIENT_NAME,"N/A");
+    }
+    if (!patientData.containsKeyword(CONFIG_PATIENT_AGE)){
+        patientData.addKeyValuePair(CONFIG_PATIENT_AGE,"N/A");
+    }
+    if (!config->containsKeyword(CONFIG_DOCTOR_NAME)){
+        config->addKeyValuePair(CONFIG_DOCTOR_NAME,"N/A");
+    }
+    reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME;
+    reportFileOutput = reportFileOutput + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd") + ".rep";
+
+    // Adding the required report data
+    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,patientData.getString(CONFIG_PATIENT_NAME));
+    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,patientData.getString(CONFIG_PATIENT_AGE));
+    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_DOCTOR_NAME,config->getString(CONFIG_DOCTOR_NAME));
+    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_REPORT_DATE,QDateTime::currentDateTime().toString("dd/MM/yyyy"));
+
+    // Adding the actual results
+    if (whatToAdd.value(STAT_ID_TOTAL_FIXATIONS)){
+        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_ATTENTIONAL_PROCESSES,
+                                       QString::number(res.value(STAT_ID_TOTAL_FIXATIONS),'f',0));
+
+        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_EXECUTIVE_PROCESSES,
+                                       QString::number(res.value(STAT_ID_MULTIPLE_FIXATIONS)*100.0/res.value(STAT_ID_TOTAL_FIXATIONS),'f',0));
+
+        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_WORKING_MEMORY,
+                                       QString::number(res.value(STAT_ID_FIRST_STEP_FIXATIONS)*100.0/res.value(STAT_ID_TOTAL_FIXATIONS),'f',0));
+
+        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_RETRIEVAL_MEMORY,
+                                       QString::number(res.value(STAT_ID_SINGLE_FIXATIONS)*100.0/res.value(STAT_ID_TOTAL_FIXATIONS),'f',0));
+    }
+
+    if (whatToAdd.value(STAT_ID_ENCODING_MEM_VALUE)){
+        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_MEMORY_ENCODING,
+                                       QString::number(res.value(STAT_ID_ENCODING_MEM_VALUE),'f',3));
+
+    }
+}
 
 QString EyeDataProcessingThread::csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header){
     QString data;
@@ -163,36 +204,11 @@ QString EyeDataProcessingThread::csvGeneration(EDPBase *processor, const QString
         }
 
         emit(appendMessage("DONE!: " + id + " Matrix Generated. DAT File used: " + dataFile,1));
-    }    
+    }
 
 
     return processor->getOuputMatrixFileName();
 
-}
-
-QString EyeDataProcessingThread::getNewestFile(const QString &directory, const QString &baseName){
-    // Getting all the files with the correct based name and sorted by modification time.
-    QDir dir(directory);
-    QStringList filter;
-    filter << baseName + "_*.dat";
-    QStringList allfiles = dir.entryList(filter,QDir::Files,QDir::Time);
-
-    // This is used to simply look for simple bc uc files when no expanded versions are desired.
-    qint32 i = 0;
-    qint32 targetFileNameSize = baseName.size() + 9; // 9 = 1 underscore, 4 numbers, 1 dot, and 3 because of the dat
-
-    // qWarning() << "Searching for files with the base" << baseName;
-
-    while (i < allfiles.size()){
-        if (allfiles.at(i).size() != targetFileNameSize){
-            allfiles.removeAt(i);
-        }
-        else i++;
-    }
-
-
-    if (allfiles.isEmpty()) return "";
-    return directory + "/" + allfiles.first();
 }
 
 bool EyeDataProcessingThread::separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment){
@@ -265,8 +281,6 @@ bool EyeDataProcessingThread::getResolutionToConfig(const QString &firstline){
     // Setting the obtained resolution
     config->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
     config->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
-
-    qWarning() << "Resolution" << w << h;
 
     return true;
 }

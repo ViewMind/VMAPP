@@ -18,7 +18,7 @@ VMBase {
         font.family: gothamB.name
         font.pixelSize: 43
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 129
+        anchors.topMargin: 60
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
         text: loader.getStringForKey(keysearch+"viewTitle");

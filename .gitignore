@@ -7,12 +7,9 @@ BindingDesigner/exe/
 *OBJS*
 *Makefile*
 EyeExperimenter/exe/
-EyeReportGenerator/exe/release/
 SSLClientDev/exe/
-SSLServer/bin/release/
-SSLServer/bin/SSLServer
-SSLServer/bin/*.cpp
-EyeReportGenerator/exe/EyeReportGen
-EyeReportGenerator/exe/*.cpp
+SSLServer/exe
+EyeReportGenerator/exe/
 ReportViewerDev/
+*.autosave
 *.tmp*

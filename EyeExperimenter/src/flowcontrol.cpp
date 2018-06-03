@@ -1,6 +1,6 @@
 #include "flowcontrol.h"
 
-FlowControl::FlowControl(QObject *parent, LogInterface *l, ConfigurationManager *c) : QObject(parent)
+FlowControl::FlowControl(QWidget *parent, LogInterface *l, ConfigurationManager *c) : QWidget(parent)
 {
     // Intializing the eyetracker pointer
     configuration = c;
@@ -9,15 +9,57 @@ FlowControl::FlowControl(QObject *parent, LogInterface *l, ConfigurationManager 
     connected = false;
     experiment = nullptr;
     monitor = nullptr;
+    this->setVisible(false);
 
-    // Calling the screen resolution in order to fix those values.
-//    QDesktopWidget *desktop = QApplication::desktop();
-//    QRect screen = desktop->screenGeometry(this);
-//    configuration.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,screen.width());
-//    configuration.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
+    // Launching the server if it was configured.
+    QString server = configuration->getString(CONFIG_SSLSERVER_PATH);
+    if (QFile(server).exists()){
+
+        QFileInfo info(server);
+        QString sOldPath = QDir::currentPath();
+        QDir::setCurrent( info.absolutePath() );
+
+        //Run it!
+        //obProcess.startDetached(m_sLaunchFilename, obList);
+        sslServer.start(server);
+
+        QDir::setCurrent( sOldPath );
+
+    }
+    else{
+        logger->appendWarning("SSL Server configured in path, but the file does not exist.");
+    }
+
+    // Creating the sslclient
+    sslclient = new SSLClient(this,c,l);
+
+    // Connection to the "finished" slot.
+    connect(sslclient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
 
 }
 
+void FlowControl::resolutionCalculations(){
+    QDesktopWidget *desktop = QApplication::desktop();
+    //    qWarning() << "Number of screens" << desktop->screenCount();
+    //    for (qint32 i = 0; i < desktop->screenCount(); i++){
+    //        qWarning() << "Available Geometry for screen " << i << desktop->screenGeometry(i);
+    //    }
+    //    qWarning() << "Current screen" << desktop->screenNumber();
+    QRect screen = desktop->screenGeometry(desktop->screenNumber());
+    configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,screen.width());
+    configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
+}
+
+void FlowControl::eyeTrackerChanged(){
+    if (eyeTracker != nullptr){
+        if (experiment != nullptr){
+            disconnect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
+        }
+        delete eyeTracker;
+        eyeTracker = nullptr;
+    }
+    connected = false;
+}
 
 bool FlowControl::connectToEyeTracker(){
 
@@ -30,8 +72,7 @@ bool FlowControl::connectToEyeTracker(){
         eyeTracker = new MouseInterface();
     }
     else if (eyeTrackerSelected == CONFIG_P_ET_REDM){
-        return false;
-        //eyeTracker = new REDInterface();
+        eyeTracker = new REDInterface();
     }
     else{
         logger->appendError("Selected unknown EyeTracker: " + eyeTrackerSelected);
@@ -134,7 +175,10 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     experiment->startExperiment(configuration);
 
     if (monitor != nullptr){
-        monitor->show();
+        if (configuration->getBool(CONFIG_DUAL_MONITOR_MODE)) {
+            monitor->show();
+        }
+        else monitor->hide();
     }
 
     return true;
@@ -214,16 +258,38 @@ QString FlowControl::getBindingExperiment(bool bc){
 
 }
 
-//void FlowControl::setWidgetPositions(){
-//    QDesktopWidget *desktop = QApplication::desktop();
-//    if (desktop->screenCount() < 2) return;
-//    if (!configuration->getBool(CONFIG_DUAL_MONITOR_MODE)) return;
+void FlowControl::setupSecondMonitor(){
 
-//    // Moving the main window
-//    //QRect mainScreen = desktop->screenGeometry(0);
-//    //this->move(QPoint(mainScreen.x(),mainScreen.y()));
+    QDesktopWidget *desktop = QApplication::desktop();
+    if (desktop->screenCount() < 2) {
+        // There is nothing to do as there is no second monitor.
+        if (monitor == nullptr) return;
+        // In case the monitor was disconnected.
+        logger->appendWarning("Attempting to restore situation in which second monitor seems to have been disconnected after it was created");
+        if (monitor != nullptr){
+            if (experiment != nullptr){
+                disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
+                disconnect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
+            }
+            delete monitor;
+            monitor = nullptr;
+        }
+        return;
+    }
 
-//    // Setting up the monitor
-//    QRect secondScreen = desktop->screenGeometry(1);
-//    monitor = new MonitorScreen(this,secondScreen,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
-//}
+    // Nothing to do.
+    if (monitor != nullptr) return;
+
+    // Creating the second monitor.
+    if (!configuration->getBool(CONFIG_DUAL_MONITOR_MODE)) return;
+
+    // Setting up the monitor
+    QRect secondScreen = desktop->screenGeometry(1);
+    monitor = new MonitorScreen(Q_NULLPTR,secondScreen,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
+}
+
+FlowControl::~FlowControl(){
+    qWarning() << "Aca estamos";
+    sslServer.kill();
+}
+

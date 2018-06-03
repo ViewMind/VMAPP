@@ -18,6 +18,10 @@ Loader::Loader(QObject *parent, LogInterface *l, ConfigurationManager *c) : QObj
     cv[CONFIG_XPX_2_MM] = cmd;
     cv[CONFIG_YPX_2_MM] = cmd;
     cv[CONFIG_READING_PX_TOL] = cmd;
+    cv[CONFIG_TCP_PORT] = cmd;
+
+    cmd.clear();
+    cv[CONFIG_SERVER_ADDRESS] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_BOOL;
@@ -32,6 +36,7 @@ Loader::Loader(QObject *parent, LogInterface *l, ConfigurationManager *c) : QObj
     cv[CONFIG_OUTPUT_DIR] = cmd;
     cv[CONFIG_REPORT_LANGUAGE] = cmd;
     cv[CONFIG_SELECTED_ET] = cmd;
+    cv[CONFIG_SSLSERVER_PATH] = cmd;
 
     // Optional booleans
     cmd.clear();
@@ -57,9 +62,12 @@ Loader::Loader(QObject *parent, LogInterface *l, ConfigurationManager *c) : QObj
 
 }
 
-void Loader::setScreenResolution(qint32 width, qint32 height){
-    configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,width);
-    configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,height);
+QRect Loader::frameSize(QObject *window)
+{
+    QQuickWindow *qw = qobject_cast<QQuickWindow *>(window);
+    if(qw)
+        return qw->frameGeometry();
+    return QRect();
 }
 
 QString Loader::hasValidOutputRepo(const QString &dirToCheck){

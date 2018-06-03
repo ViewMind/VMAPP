@@ -25,7 +25,11 @@ VMBase {
                 return;
             }
             if (advanceCurrentExperiment()){
-                swiperControl.currentIndex = swiperControl.vmIndexResults;
+
+                //swiperControl.currentIndex = swiperControl.vmIndexResults;
+                swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
+                viewWaitFor.openDiag();
+
             }
         }
     }
@@ -78,7 +82,6 @@ VMBase {
             vmSlideAnimation = "qrc:/images/unbound.gif"
             break;
         case vmExpIndexReading:
-            console.log("Setting reading");
             vmSlideTitle = loader.getStringForKey(keysearch+"itemReading");
             vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");            
             vmSlideAnimation = "qrc:/images/reading.gif"
@@ -218,7 +221,7 @@ VMBase {
         font.pixelSize: 43
         color: "#297fca"
         anchors.top: experimentTracker.bottom
-        anchors.topMargin: 60
+        anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -252,9 +255,14 @@ VMBase {
         vmInvertColors: true
         vmFont: viewPresentExperiment.gothamM.name
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 82
+        anchors.bottomMargin: 62
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
+
+            // Setting up the second monitor, if necessary.
+            flowControl.setupSecondMonitor();
+
+            // Starting the experiment.
             var index = viewPatientReg.vmCurrentExperimentIndex;
             if (!flowControl.startNewExperiment(viewPatientReg.vmSelectedExperiments[index])){
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;

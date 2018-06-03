@@ -20,7 +20,7 @@ VMBase {
         modal: true
         width: 614
         height: 523
-        y: 139
+        y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.CloseOnEscape
 
@@ -64,7 +64,7 @@ VMBase {
             anchors.top: imgCalibration.bottom
             anchors.topMargin: 48
             onClicked: {
-                viewCalibrationDoneDiag.close()
+                viewCalibrationDoneDiag.close();
                 swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
             }
         }
