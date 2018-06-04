@@ -9,11 +9,12 @@ ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent)
     else outputDataFile = FILE_OUTPUT_BINDING_UC;
 
     // Connecting the timer time out with the time out function.
-    stateTimer = new QTimer();
-    connect(stateTimer,&QTimer::timeout,this,&ImageExperiment::onTimeOut);
+    connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::onTimeOut);
 
     // Binding type.
     isBound = bound;
+
+    logger = new LogInterface();
 
 }
 
@@ -39,8 +40,8 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
     newImage(m->getTrial(currentTrial).name,0);
     trialState = TSB_CENTER_CROSS;
     drawCurrentImage();
-    stateTimer->setInterval(1);
-    stateTimer->start();
+    stateTimer.setInterval(1);
+    stateTimer.start();
     timerCounter = timeCountForStart;
     this->show();
     this->activateWindow();
@@ -54,7 +55,6 @@ void ImageExperiment::drawCurrentImage(){
     if (state != STATE_RUNNING) return;
 
     if (trialState == TSB_CENTER_CROSS){
-        //qWarning() << "DRAWING: Center Cross" << currentTrial;
         m->drawCenter(currentTrial);
         emit(updateBackground(m->getImage()));
         return;
@@ -81,7 +81,7 @@ void ImageExperiment::drawCurrentImage(){
 
 void ImageExperiment::advanceTrial(){
 
-    //qWarning() << currentTrial;
+    if (state != STATE_RUNNING) return;
 
     if (currentTrial < m->size()-1){
         currentTrial++;
@@ -91,8 +91,7 @@ void ImageExperiment::advanceTrial(){
     }
     // This is done.
     state = STATE_STOPPED;
-
-    stateTimer->stop();
+    stateTimer.stop();
 
     if (!error.isEmpty()) {
         emit(experimentEndend(ER_WARNING));
@@ -107,6 +106,7 @@ void ImageExperiment::togglePauseExperiment(){
 }
 
 void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
+
     Experiment::newEyeDataAvailable(data);
 
     if (state != STATE_RUNNING) return;
@@ -143,7 +143,7 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
 
     // Making sure the experiment can be aborted
     if (event->key() == Qt::Key_Escape){
-        stateTimer->stop();
+        stateTimer.stop();
         state = STATE_STOPPED;
         emit(experimentEndend(ER_ABORTED));
     }
@@ -170,6 +170,7 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
 }
 
 void ImageExperiment::onTimeOut(){
+    if (state != STATE_RUNNING) return;
     timerCounter--;    
     if (timerCounter == 0){
         nextState();
@@ -178,6 +179,7 @@ void ImageExperiment::onTimeOut(){
 
 void ImageExperiment::nextState(){
 
+    if (state != STATE_RUNNING) return;
     timerCounter = 0;
 
     switch (trialState){
@@ -281,5 +283,4 @@ void ImageExperiment::addAnswer(QString ans){
 }
 
 ImageExperiment::~ImageExperiment(){
-    delete stateTimer;
 }

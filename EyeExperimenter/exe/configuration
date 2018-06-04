@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------------------------#
 
 # Dual monitor mode
-dual_monitor_mode = true;
+dual_monitor_mode = false;
 
 # The relationship between the effective screen area (not counting the black bars)
 # and the number of pixels in said area. In X and Y. 
@@ -28,7 +28,7 @@ reading_px_tol_for_target = 18;
 #           GENERAL CONFIGURATION OPTIONS              #
 #------------------------------------------------------#
 
-report_language = English;
+report_language = Spanish;
 demo_mode = true;
 
 #------------------------------------------------------#

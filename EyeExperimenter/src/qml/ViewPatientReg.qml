@@ -38,7 +38,7 @@ VMBase {
     // Input fields
     VMRegistrationTextInput {
         id: liPatientPlaceholder
-        //vmEnteredText: "a";
+        //vmEnteredText: "Juan de los palotes";
         vmFont: viewHome.robotoM.name
         vmPlaceHolder: loader.getStringForKey(keysearch+"liPatientPlaceholder");
         width: 410
@@ -52,7 +52,7 @@ VMBase {
     VMRegistrationTextInput {
         id: liAgePlaceholder
         vmFont: viewHome.robotoM.name
-        //vmEnteredText: "5";
+        //vmEnteredText: "23";
         vmNumbersOnly: true
         vmPlaceHolder: loader.getStringForKey(keysearch+"liAgePlaceholder");
         width: 192

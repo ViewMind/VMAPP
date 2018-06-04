@@ -56,8 +56,8 @@ viewcalibdone_btnContinue = CONTINUE;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Reading Evaluation;
-viewpresentexp_itemBindingUC = Binding UC Evaluation;
-viewpresentexp_itemBindingBC = Binding BC Evaluation;
+viewpresentexp_itemBindingUC = Unbound Colors Evaluation;
+viewpresentexp_itemBindingBC = Bound Colors Evaluation;
 viewpresentexp_itemFielding = Fielding Evaluation;
 
 viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>

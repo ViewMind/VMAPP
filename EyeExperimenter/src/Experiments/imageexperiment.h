@@ -40,6 +40,8 @@ protected:
 
 private:
 
+    LogInterface *logger;
+
     // The Binding manager handle
     BindingManager *m;
 
@@ -57,7 +59,7 @@ private:
     bool atLast;
 
     // The timer to automatically go from trial to test image.
-    QTimer *stateTimer;
+    QTimer stateTimer;
     qint32 timerCounter;
 
     // Flag use to sincronize data writing to the file.

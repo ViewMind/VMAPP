@@ -217,6 +217,8 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     // Making sure no old reports are stored.
     configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,"");
 
+    logger->appendStandard("Starting experiment with ID " + QString::number(experimentID));
+
     // Using the polimorphism, the experiment object is created according to the selected index.
     QString readingQuestions;
     switch (experimentID){
@@ -280,6 +282,9 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
 
 void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
+
+    logger->appendStandard("EXPERIMENT FINISHED");
+
     // Make the experiment windown invisible.
     experiment->hide();
 
@@ -313,6 +318,8 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     }
     delete experiment;
     experiment = nullptr;
+
+    logger->appendStandard("EXPERIMENT DELETED");
 
     // Notifying the QML.
     emit(experimentHasFinished());

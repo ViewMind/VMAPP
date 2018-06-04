@@ -24,7 +24,7 @@ VMBase {
                 vmErrorDiag.open();
                 return;
             }
-            if (advanceCurrentExperiment()){                
+            if (advanceCurrentExperiment()){
                 swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
                 titleMsg = viewHome.getErrorTitleAndMessage("msg_request_report");
                 viewWaitFor.vmMessage = titleMsg[1];

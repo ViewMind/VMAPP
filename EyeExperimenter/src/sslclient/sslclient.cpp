@@ -126,13 +126,16 @@ void SSLClient::connectToServer()
         log->appendWarning("WARNING: No Patient information found. Attempting to create it");
         ConfigurationManager::setValue(patientInfoFile,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,config->getString(CONFIG_PATIENT_NAME));
         ConfigurationManager::setValue(patientInfoFile,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,config->getString(CONFIG_PATIENT_AGE));
+        if (!QFile(patientInfoFile).exists()){
+            log->appendError("ERROR: Could not read or create the patient info file at " + patientInfoFile);
+            sendFinishedSignal(false);
+            return;
+        }
     }
 
-    if (!QFile(patientInfoFile).exists()){
-        log->appendError("ERROR: Could not read or create the patient info file at " + patientInfoFile);
-        sendFinishedSignal(false);
-        return;
-    }
+    // Load the patient file
+    ConfigurationManager patientconfig;
+    patientconfig.loadConfiguration(patientInfoFile,COMMON_TEXT_CODEC);
 
     if (config->containsKeyword(CONFIG_DOCTOR_NAME)){
         dname = config->getString(CONFIG_DOCTOR_NAME);
@@ -141,11 +144,11 @@ void SSLClient::connectToServer()
         log->appendWarning("WARNING: Doctor's name was not loaded. Using stock information");
     }
 
-    if (config->containsKeyword(CONFIG_PATIENT_NAME)){
-        pname = config->getString(CONFIG_PATIENT_NAME);
+    if (patientconfig.containsKeyword(CONFIG_PATIENT_NAME)){
+        pname = patientconfig.getString(CONFIG_PATIENT_NAME);
     }
     else{
-        log->appendWarning("WARNING: Doctor's name was not loaded. Using stock information");
+        log->appendWarning("WARNING: Patient's name was not loaded. Using stock information");
     }
 
     // Creating the packet to send to the server.

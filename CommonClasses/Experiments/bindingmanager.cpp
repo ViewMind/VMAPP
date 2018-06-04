@@ -72,6 +72,10 @@ void BindingManager::init(ConfigurationManager *c){
 }
 
 void BindingManager::drawCenter(qint32 currentTrial){
+
+    // PATCH: I have a random crash at the end of Bining Experiment SOMETIMES which I can't reproduce and does not happen in
+    // Debug mode. I think it might be this but I don't know.
+    if (canvas == nullptr) return;
     canvas->clear();
 
     if (trials.at(currentTrial).number == -1){
