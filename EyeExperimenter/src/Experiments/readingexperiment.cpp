@@ -246,6 +246,4 @@ QList<qint32> ReadingExperiment::calculateWordAndCharacterPostion(qint32 x, qint
 }
 
 ReadingExperiment::~ReadingExperiment(){
-    delete m;
-    m = nullptr;
 }

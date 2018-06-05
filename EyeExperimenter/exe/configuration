@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------------------------#
 
 # Dual monitor mode
-dual_monitor_mode = false;
+dual_monitor_mode = true;
 
 # The relationship between the effective screen area (not counting the black bars)
 # and the number of pixels in said area. In X and Y. 
@@ -11,7 +11,7 @@ x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
 # Runs the ssl_server if it, exists.
-#ssl_server_path = C:/Users/Viewmind/Documents/QtProjects/SSLServer/exe/SSLServer.exe;
+ssl_server_path = C:/Users/Viewmind/Documents/QtProjects/SSLServer/exe/SSLServer.exe;
 
 # The server address and port to which it sends the processing requests
 server_address = localhost;
@@ -40,5 +40,5 @@ binding_num_targets = 4;
 binding_use_numbers = false;
 doctor_name = Miles Genius;
 doctor_email = pepe@pepe.com;
-selected_eyetracker = Mouse;
+selected_eyetracker = REDm;
 output_directory = C:/Users/Viewmind/Documents/ExperimentOutputs/EyeExperimenter2Outputs;

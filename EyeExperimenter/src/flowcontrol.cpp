@@ -282,9 +282,6 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
 
 void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
-
-    logger->appendStandard("EXPERIMENT FINISHED");
-
     // Make the experiment windown invisible.
     experiment->hide();
 
@@ -319,7 +316,7 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     delete experiment;
     experiment = nullptr;
 
-    logger->appendStandard("EXPERIMENT DELETED");
+    logger->appendStandard("EXPERIMENT FINISHED");
 
     // Notifying the QML.
     emit(experimentHasFinished());

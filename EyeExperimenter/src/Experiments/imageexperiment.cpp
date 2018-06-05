@@ -86,18 +86,11 @@ bool ImageExperiment::advanceTrial(){
         currentTrial++;
         // Adding the entry in the file
         newImage(m->getTrial(currentTrial).name,0);
-        return false;
+        return true;
     }
     // This is done.
     state = STATE_STOPPED;
     stateTimer.stop();
-
-    if (!error.isEmpty()) {
-        emit(experimentEndend(ER_WARNING));
-    }
-    else {
-        emit(experimentEndend(ER_NORMAL));
-    }
     return false;
 }
 
@@ -205,10 +198,13 @@ void ImageExperiment::nextState(){
         break;
     case TSB_FINISH:
         //qWarning() << "ENTER: FINISH" << currentTrial;
-        if (advanceTrial()) return; // This means that we are done.
-        trialState = TSB_CENTER_CROSS;
-        drawCurrentImage();
-        timerCounter = timeCountForStart;
+        if (advanceTrial()){
+            trialState = TSB_CENTER_CROSS;
+            drawCurrentImage();
+            timerCounter = timeCountForStart;}
+        else{
+            emit(experimentEndend(ER_NORMAL));
+        }
         return;
     case TSB_SHOW:
         //qWarning() << "ENTER: SHOW" << currentTrial;
@@ -284,6 +280,4 @@ void ImageExperiment::addAnswer(QString ans){
 }
 
 ImageExperiment::~ImageExperiment(){
-    delete m;
-    m = nullptr;
 }
