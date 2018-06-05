@@ -15,6 +15,7 @@ class ExperimentDataPainter
 {
 public:
     ExperimentDataPainter();
+    ~ExperimentDataPainter();
 
     // Basic functions to reimplement.
     virtual bool parseExpConfiguration(const QString &contents){ Q_UNUSED(contents) return false;}

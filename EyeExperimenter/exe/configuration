@@ -11,7 +11,7 @@ x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
 # Runs the ssl_server if it, exists.
-ssl_server_path = C:/Users/Viewmind/Documents/QtProjects/SSLServer/exe/SSLServer.exe;
+#ssl_server_path = C:/Users/Viewmind/Documents/QtProjects/SSLServer/exe/SSLServer.exe;
 
 # The server address and port to which it sends the processing requests
 server_address = localhost;

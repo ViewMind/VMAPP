@@ -7,6 +7,8 @@ BindingManager::BindingManager()
 
 void BindingManager::drawFlags(const BindingSlide &slide){
 
+    qWarning() << "draw flags";
+
     canvas->clear();
 
     // Each target is drawn according to its values.
@@ -73,9 +75,8 @@ void BindingManager::init(ConfigurationManager *c){
 
 void BindingManager::drawCenter(qint32 currentTrial){
 
-    // PATCH: I have a random crash at the end of Bining Experiment SOMETIMES which I can't reproduce and does not happen in
-    // Debug mode. I think it might be this but I don't know.
-    if (canvas == nullptr) return;
+    qWarning() << "draw center";
+
     canvas->clear();
 
     if (trials.at(currentTrial).number == -1){
@@ -89,6 +90,8 @@ void BindingManager::drawCenter(qint32 currentTrial){
 }
 
 void BindingManager::drawTrial(qint32 currentTrial, bool show){
+
+    qWarning() << "draw trial";
 
     if (show){
         //qWarning() << "Drawing show for" << currentTrial;

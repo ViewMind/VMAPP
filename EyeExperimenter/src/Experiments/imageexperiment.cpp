@@ -14,8 +14,6 @@ ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent)
     // Binding type.
     isBound = bound;
 
-    logger = new LogInterface();
-
 }
 
 bool ImageExperiment::startExperiment(ConfigurationManager *c){
@@ -41,7 +39,7 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
     trialState = TSB_CENTER_CROSS;
     drawCurrentImage();
     stateTimer.setInterval(1);
-    stateTimer.start();
+    //stateTimer.start();
     timerCounter = timeCountForStart;
     this->show();
     this->activateWindow();
@@ -55,6 +53,7 @@ void ImageExperiment::drawCurrentImage(){
     if (state != STATE_RUNNING) return;
 
     if (trialState == TSB_CENTER_CROSS){
+        //qWarning() << "DRAWING: Center Cross" << currentTrial;
         m->drawCenter(currentTrial);
         emit(updateBackground(m->getImage()));
         return;
@@ -79,15 +78,15 @@ void ImageExperiment::drawCurrentImage(){
 
 }
 
-void ImageExperiment::advanceTrial(){
+bool ImageExperiment::advanceTrial(){
 
-    if (state != STATE_RUNNING) return;
+    //qWarning() << currentTrial;
 
     if (currentTrial < m->size()-1){
         currentTrial++;
         // Adding the entry in the file
         newImage(m->getTrial(currentTrial).name,0);
-        return;
+        return false;
     }
     // This is done.
     state = STATE_STOPPED;
@@ -99,6 +98,7 @@ void ImageExperiment::advanceTrial(){
     else {
         emit(experimentEndend(ER_NORMAL));
     }
+    return false;
 }
 
 void ImageExperiment::togglePauseExperiment(){
@@ -106,7 +106,6 @@ void ImageExperiment::togglePauseExperiment(){
 }
 
 void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
-
     Experiment::newEyeDataAvailable(data);
 
     if (state != STATE_RUNNING) return;
@@ -147,6 +146,10 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
         state = STATE_STOPPED;
         emit(experimentEndend(ER_ABORTED));
     }
+    else if(event->key() == Qt::Key_M) {
+        nextState();
+        return;
+    }
 
     // Key presses are only valid in TSB_TEST state
     if (trialState != TSB_TEST) return;
@@ -170,8 +173,7 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
 }
 
 void ImageExperiment::onTimeOut(){
-    if (state != STATE_RUNNING) return;
-    timerCounter--;    
+    timerCounter--;
     if (timerCounter == 0){
         nextState();
     }
@@ -179,7 +181,6 @@ void ImageExperiment::onTimeOut(){
 
 void ImageExperiment::nextState(){
 
-    if (state != STATE_RUNNING) return;
     timerCounter = 0;
 
     switch (trialState){
@@ -204,7 +205,7 @@ void ImageExperiment::nextState(){
         break;
     case TSB_FINISH:
         //qWarning() << "ENTER: FINISH" << currentTrial;
-        advanceTrial();
+        if (advanceTrial()) return; // This means that we are done.
         trialState = TSB_CENTER_CROSS;
         drawCurrentImage();
         timerCounter = timeCountForStart;
@@ -283,4 +284,6 @@ void ImageExperiment::addAnswer(QString ans){
 }
 
 ImageExperiment::~ImageExperiment(){
+    delete m;
+    m = nullptr;
 }

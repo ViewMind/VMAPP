@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QGraphicsPixmapItem>
 
+//#include "timer.h"
 #include "experiment.h"
 #include "../../CommonClasses/Experiments/bindingmanager.h"
 
@@ -60,6 +61,7 @@ private:
 
     // The timer to automatically go from trial to test image.
     QTimer stateTimer;
+    //Timer stateTimer;
     qint32 timerCounter;
 
     // Flag use to sincronize data writing to the file.
@@ -72,7 +74,7 @@ private:
     void drawCurrentImage();
 
     // Advance to the next image
-    void advanceTrial();
+    bool advanceTrial();
 
     // Functions that moves the state machine
     void nextState();

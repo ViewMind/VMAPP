@@ -16,6 +16,7 @@ VMBase {
     Connections{
         target: flowControl
         onExperimentHasFinished:{
+            console.log("Termine el experimento");
             if (!flowControl.isExperimentEndOk()){
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
                 var titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
@@ -25,11 +26,13 @@ VMBase {
                 return;
             }
             if (advanceCurrentExperiment()){
-                swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
-                titleMsg = viewHome.getErrorTitleAndMessage("msg_request_report");
-                viewWaitFor.vmMessage = titleMsg[1];
-                viewWaitFor.vmTitle = titleMsg[0];
-                flowControl.requestReportData();
+                //swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
+                console.log("Cambiando el index al de resultados")
+                swiperControl.currentIndex = swiperControl.vmIndexResults;
+                //titleMsg = viewHome.getErrorTitleAndMessage("msg_request_report");
+                //viewWaitFor.vmMessage = titleMsg[1];
+                //viewWaitFor.vmTitle = titleMsg[0];
+                //flowControl.requestReportData();
             }
         }
     }

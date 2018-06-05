@@ -87,6 +87,9 @@ public:
 
 private:
 
+    // For debugging
+    LogInterface logger;
+
     // Lines used to draw a cross in the center of the screen
     QLineF line0, line1;
 

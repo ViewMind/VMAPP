@@ -17,6 +17,7 @@ Window {
         var hdiff = frameGeomtry.height - height - 10;
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.
+        swiperControl.currentIndex = swiperControl.vmIndexHome;
     }
 
     // The configurations dialog.
@@ -109,23 +110,21 @@ Window {
         }
 
         onCurrentIndexChanged: {
+
             switch(currentIndex){
-                case vmIndexCalibrationStart:
-                    viewCalibrationStart.openDiag()
-                    break;
-                case vmIndexCalibrationDone:
-                    viewCalibrationDone.openDiag()
-                    break;
-                case vmIndexWaitFor:
-                    viewWaitFor.openDiag();
-                    break;
+            case vmIndexCalibrationStart:
+                viewCalibrationStart.openDiag()
+                break;
+            case vmIndexCalibrationDone:
+                viewCalibrationDone.openDiag()
+                break;
+            case vmIndexWaitFor:
+                viewWaitFor.openDiag();
+                break;
             }
+
         }
 
     }
-
-
-
-
 
 }
