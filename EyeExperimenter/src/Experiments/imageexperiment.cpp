@@ -39,7 +39,7 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
     trialState = TSB_CENTER_CROSS;
     drawCurrentImage();
     stateTimer.setInterval(1);
-    //stateTimer.start();
+    stateTimer.start();
     timerCounter = timeCountForStart;
     this->show();
     this->activateWindow();

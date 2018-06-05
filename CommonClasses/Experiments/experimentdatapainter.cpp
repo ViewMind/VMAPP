@@ -22,7 +22,6 @@ QPixmap ExperimentDataPainter::getImage() const{
 }
 
 ExperimentDataPainter::~ExperimentDataPainter(){
-    qWarning() << "Se borra el canvas";
     delete canvas;
     canvas = nullptr;
 }

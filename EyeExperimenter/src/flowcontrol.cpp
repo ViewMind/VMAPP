@@ -320,12 +320,9 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     experiment = nullptr;
 
     logger->appendStandard("EXPERIMENT DELETED");
-    qWarning() << "Se borro el experimento";
 
     // Notifying the QML.
     emit(experimentHasFinished());
-
-    qWarning() << "Emiti la señal";
 
 }
 

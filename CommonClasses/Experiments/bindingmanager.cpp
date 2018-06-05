@@ -7,8 +7,6 @@ BindingManager::BindingManager()
 
 void BindingManager::drawFlags(const BindingSlide &slide){
 
-    qWarning() << "draw flags";
-
     canvas->clear();
 
     // Each target is drawn according to its values.
@@ -75,8 +73,6 @@ void BindingManager::init(ConfigurationManager *c){
 
 void BindingManager::drawCenter(qint32 currentTrial){
 
-    qWarning() << "draw center";
-
     canvas->clear();
 
     if (trials.at(currentTrial).number == -1){
@@ -90,8 +86,6 @@ void BindingManager::drawCenter(qint32 currentTrial){
 }
 
 void BindingManager::drawTrial(qint32 currentTrial, bool show){
-
-    qWarning() << "draw trial";
 
     if (show){
         //qWarning() << "Drawing show for" << currentTrial;
