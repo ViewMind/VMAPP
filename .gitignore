@@ -6,10 +6,10 @@ BindingDesigner/exe/
 *MOCS*
 *OBJS*
 *Makefile*
-EyeExperimenter/exe/
 SSLClientDev/exe/
 SSLServer/exe
 EyeReportGenerator/exe/
+EyeExperimenter/exe
 ETFollower/exe/
 ReportViewerDev/
 *.autosave

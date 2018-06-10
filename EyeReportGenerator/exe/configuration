@@ -35,7 +35,7 @@ moving_window_max_dispersion          = 30;     # px
 minimum_fixation_length               = 50;     # ms 
 
 # The sample frequency of the EyeTracker.
-sample_frequency                      = 120;    # Hz
+sample_frequency                      = 150;    # Hz
 
 # The distance to the monitor screen
 distance_to_monitor                   = 60;     # cm
@@ -54,5 +54,5 @@ margin_target_hit                     = 10;     # mm
 #------------------------------------------------------#
 #         OPTIONS MODIFIED BY OTHER PROGRAMS           #
 #------------------------------------------------------#
-patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs\EyeExperimenter2Outputs\viewmind_etdata\Miles_Genius\a\bkp;
+patient_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs/ServerDir/Miles_Genius/test_reading/2018_06_10_11_43_33;
 doctor_name = Doctor Genius;
