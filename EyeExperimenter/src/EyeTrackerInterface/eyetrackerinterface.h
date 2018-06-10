@@ -11,28 +11,38 @@ class EyeTrackerInterface : public QObject
     Q_OBJECT
 public:
 
-    typedef enum {ES_SUCCESS, ES_WARNING, ES_FAIL} ExitStatus;
+    static const quint8 ET_CODE_CALIBRATION_DONE     = 0;
+    static const quint8 ET_CODE_CALIBRATION_ABORTED  = 1;
+    static const quint8 ET_CODE_CALIBRATION_FAILED   = 2;
+    static const quint8 ET_CODE_CONNECTION_SUCCESS   = 3;
+    static const quint8 ET_CODE_CONNECTION_FAIL      = 4;
+    static const quint8 ET_CODE_DISCONNECTED_FROM_ET = 5;
 
-    explicit EyeTrackerInterface(QObject *parent = 0);
+    explicit EyeTrackerInterface(QObject *parent = 0, qreal width = 1, qreal height = 1);
 
-    virtual ExitStatus connectToEyeTracker();
+    virtual void connectToEyeTracker();
 
     virtual void enableUpdating(bool enable);
 
     virtual void disconnectFromEyeTracker();
 
-    virtual ExitStatus calibrate(EyeTrackerCalibrationParameters params);
-
-    QString getMessage() const {return message;}
-
+    virtual void calibrate(EyeTrackerCalibrationParameters params);
 
 signals:
     void newDataAvailable(EyeTrackerData data);
 
+    // Connection and calibration signals
+    void eyeTrackeControl(quint8 code);
+
+    // SHOULD ONLY BE SENT WHEN IT REPRESENTS AN ERROR.
+    void disconnectedFromET();
+
 protected:
+    LogInterface logger;
 
-    QString message;
-
+    // The resolution, in case it is required by the
+    qreal screenWidth;
+    qreal screenHeight;
 };
 
 #endif // EYETRACKERINTERFACE_H

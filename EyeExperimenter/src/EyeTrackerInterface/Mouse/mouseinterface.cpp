@@ -11,20 +11,17 @@ MouseInterface::MouseInterface()
     calibrationScreen = new CalibrationArea();
     connect(calibrationScreen,&CalibrationArea::calibrationCanceled,this,&MouseInterface::on_calibrationCancelled);
 
-#ifdef DEVELOPMENT_MODE
-    isCalibrated = true;
-    isBeingCalibrated = false;
-    sendData = true;
-#endif
+    // This makes it so that the calibration screen is never shown.
+    calibrationScreen->setAutoCalibration(true);
 
 }
 
 
-EyeTrackerInterface::ExitStatus MouseInterface::connectToEyeTracker(){
+void MouseInterface::connectToEyeTracker(){
     // "Connecting to the server"
     dataToSend.time = 0;
     pollTimer.start(TIMEOUT);
-    return ES_SUCCESS;
+    emit(eyeTrackeControl(ET_CODE_CONNECTION_SUCCESS));
 }
 
 void MouseInterface::enableUpdating(bool enable){
@@ -35,18 +32,16 @@ void MouseInterface::disconnectFromEyeTracker(){
     pollTimer.stop();
 }
 
-
-
-EyeTrackerInterface::ExitStatus MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
+void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
     Q_UNUSED(params);
     isBeingCalibrated = true;
     isCalibrated = false;
     calibrationScreen->exec();
     if (isCalibrated)
-        return ES_SUCCESS;
+        emit(eyeTrackeControl(ET_CODE_CALIBRATION_DONE));
     else{
-        message = "Calibration was aborted";
-        return ES_FAIL;
+        logger.appendWarning("MOUSE TRACKER: Calibration was aborted");
+        emit(eyeTrackeControl(ET_CODE_CALIBRATION_ABORTED));
     }
 }
 
@@ -58,7 +53,8 @@ void MouseInterface::on_calibrationCancelled(){
 void MouseInterface::on_pollTimer_Up(){
 
     // Time is the time stamp in millisecond since the connection to the server started.
-    dataToSend.time = dataToSend.time + TIMEOUT;
+    // Time in microseconds.
+    dataToSend.time = dataToSend.time + TIMEOUT*1000;
 
     QPoint point = QCursor::pos();
     if (isBeingCalibrated){
@@ -78,8 +74,8 @@ void MouseInterface::on_pollTimer_Up(){
     dataToSend.xRight = point.x();
     dataToSend.yLeft = point.y();
     dataToSend.yRight = point.y();
-    dataToSend.pdRight = 1;
-    dataToSend.pdLeft = 1;
+    dataToSend.pdRight = 0;
+    dataToSend.pdLeft = 0;
 
     emit (newDataAvailable(dataToSend));
 

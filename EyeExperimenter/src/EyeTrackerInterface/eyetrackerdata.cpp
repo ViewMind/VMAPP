@@ -2,7 +2,13 @@
 
 EyeTrackerData::EyeTrackerData()
 {
-
+    xLeft = 0;
+    yLeft = 0;
+    xRight = 0;
+    yLeft = 0;
+    pdLeft = 0;
+    pdRight = 0;
+    timeUnit = TU_US; // By default time unit is a microsecond.
 }
 
 

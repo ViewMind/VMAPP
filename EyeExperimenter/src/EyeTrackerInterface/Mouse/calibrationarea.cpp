@@ -4,8 +4,8 @@ CalibrationArea::CalibrationArea(QWidget *parent) : QDialog(parent)
 {
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint);
 
-    int W = QApplication::desktop()->size().width();
-    int H = QApplication::desktop()->size().height();
+    int W = QApplication::desktop()->screenGeometry(0).width();
+    int H = QApplication::desktop()->screenGeometry(0).height();
 
     this->setGeometry(0,0,W,H);
 
@@ -17,7 +17,6 @@ CalibrationArea::CalibrationArea(QWidget *parent) : QDialog(parent)
 
     gview->setScene(new QGraphicsScene(0,0,W,H,this));
     gview->scene()->addRect(0,0,W,H,QPen(),QBrush(Qt::gray));
-    //gview->fitInView(0,0,W,H,Qt::KeepAspectRatioByExpanding);
     gview->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     gview->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -53,8 +52,7 @@ void CalibrationArea::drawCalibrationPoint(){
 
 bool CalibrationArea::isInCalibrationPoint(int x, int y){
 
-    // HACK to make mouse "Calibration" instantaneous
-    return true;
+    if (autoCalibrate) return true;
 
     if (currentPoint == calibrationPoints.size()) return true;
 

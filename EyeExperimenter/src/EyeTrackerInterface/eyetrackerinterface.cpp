@@ -1,14 +1,14 @@
 #include "eyetrackerinterface.h"
 
-EyeTrackerInterface::EyeTrackerInterface(QObject *parent) : QObject(parent)
+EyeTrackerInterface::EyeTrackerInterface(QObject *parent, qreal width, qreal height) : QObject(parent)
 {
     qRegisterMetaType<EyeTrackerData>("EyeTrackerData");
+    screenHeight = height;
+    screenWidth = width;
 }
 
 
-EyeTrackerInterface::ExitStatus EyeTrackerInterface::connectToEyeTracker(){
-    message = "Unimplemented Eye Tracker Interface";
-    return ES_FAIL;
+void EyeTrackerInterface::connectToEyeTracker(){
 }
 
 void EyeTrackerInterface::enableUpdating(bool enable){
@@ -18,9 +18,7 @@ void EyeTrackerInterface::enableUpdating(bool enable){
 void EyeTrackerInterface::disconnectFromEyeTracker(){
 }
 
-EyeTrackerInterface::ExitStatus EyeTrackerInterface::calibrate(EyeTrackerCalibrationParameters params){
+void EyeTrackerInterface::calibrate(EyeTrackerCalibrationParameters params){
     Q_UNUSED(params);
-    message = "Unimplemented Eye Tracker Interface";
-    return ES_FAIL;
 }
 

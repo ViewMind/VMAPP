@@ -10,6 +10,7 @@ EyeExperimenter/exe/
 SSLClientDev/exe/
 SSLServer/exe
 EyeReportGenerator/exe/
+ETFollower/exe/
 ReportViewerDev/
 *.autosave
 *.tmp*

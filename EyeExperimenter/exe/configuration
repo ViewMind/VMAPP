@@ -40,5 +40,5 @@ binding_num_targets = 4;
 binding_use_numbers = false;
 doctor_name = Miles Genius;
 doctor_email = pepe@pepe.com;
-selected_eyetracker = REDm;
-output_directory = C:/Users/Viewmind/Documents/ExperimentOutputs/EyeExperimenter2Outputs;
+selected_eyetracker = Mouse;
+output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;
