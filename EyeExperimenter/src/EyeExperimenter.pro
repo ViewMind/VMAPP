@@ -42,7 +42,10 @@ SOURCES += main.cpp \
     EyeTrackerInterface/RED/redinterface.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
     sslclient/sslclient.cpp \
-    imagereportdrawer.cpp
+    imagereportdrawer.cpp \
+    EyeTrackerInterface/GazePoint/eventdetection.cpp \
+    EyeTrackerInterface/GazePoint/opengazecommand.cpp \
+    EyeTrackerInterface/GazePoint/opengazeinterface.cpp
 
 HEADERS += \
     loader.h \
@@ -71,7 +74,10 @@ HEADERS += \
     EyeTrackerInterface/RED/redinterface.h \
     ../../CommonClasses/DataPacket/datapacket.h \
     sslclient/sslclient.h \
-    imagereportdrawer.h
+    imagereportdrawer.h \
+    EyeTrackerInterface/GazePoint/eventdetection.h \
+    EyeTrackerInterface/GazePoint/opengazecommand.h \
+    EyeTrackerInterface/GazePoint/opengazeinterface.h
 
 win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
 

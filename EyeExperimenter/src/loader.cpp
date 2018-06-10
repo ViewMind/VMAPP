@@ -1,6 +1,6 @@
 #include "loader.h"
 
-Loader::Loader(QObject *parent, LogInterface *l, ConfigurationManager *c) : QObject(parent)
+Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
 {
 
     // Loading the configuration file and checking for the must have configuration
@@ -9,9 +9,6 @@ Loader::Loader(QObject *parent, LogInterface *l, ConfigurationManager *c) : QObj
 
     loadingError = false;
     configuration = c;
-
-    // The pointer to the logger.
-    logger = l;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_REAL;
@@ -50,7 +47,7 @@ Loader::Loader(QObject *parent, LogInterface *l, ConfigurationManager *c) : QObj
     configuration->setupVerification(cv);
 
     if (!configuration->loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
-        logger->appendError("Errors loading the configuration file: " + configuration->getError());
+        logger.appendError("Errors loading the configuration file: " + configuration->getError());
         loadingError = true;
     }
 
@@ -93,13 +90,13 @@ QString Loader::hasValidOutputRepo(const QString &dirToCheck){
     QDir rawdata(dir.path() + "/" + QString(DIRNAME_RAWDATA));
     if (!reports.exists()){
         if (!dir.mkdir(DIRNAME_REPORTS)){
-            logger->appendError("Cannot create reports directory in selected output directory");
+            logger.appendError("Cannot create reports directory in selected output directory");
             return "";
         }
     }
     if (!rawdata.exists()){
         if (!dir.mkdir(DIRNAME_RAWDATA)){
-            logger->appendError("Cannot create etdata directory in selected output directory");
+            logger.appendError("Cannot create etdata directory in selected output directory");
             return "";
         }
     }
@@ -139,7 +136,7 @@ void Loader::changeLanguage(){
     if (lang == CONFIG_P_LANG_ES){
         if (!language.loadConfiguration(":/languages/es.lang",COMMON_TEXT_CODEC)){
             // In a stable program this should NEVER happen.
-            logger->appendError("CANNOT LOAD ES LANG FILE: " + language.getError());
+            logger.appendError("CANNOT LOAD ES LANG FILE: " + language.getError());
             loadingError = true;
         }
     }
@@ -147,7 +144,7 @@ void Loader::changeLanguage(){
         // Defaults to english
         if (!language.loadConfiguration(":/languages/en.lang",COMMON_TEXT_CODEC)){
             // In a stable program this should NEVER happen.
-            logger->appendError("CANNOT LOAD EN LANG FILE: " + language.getError());
+            logger.appendError("CANNOT LOAD EN LANG FILE: " + language.getError());
             loadingError = true;
         }
     }
@@ -203,7 +200,7 @@ bool Loader::createDirectorySubstructure(QString drname, QString pname, QString 
     if (!QDir(drdir).exists()){
         QDir base(baseDir);
         if (!base.mkdir(drname)){
-            logger->appendError("Could not create doctor dir: " + drdir + " in " + baseDir);
+            logger.appendError("Could not create doctor dir: " + drdir + " in " + baseDir);
             return false;
         }
     }
@@ -211,7 +208,7 @@ bool Loader::createDirectorySubstructure(QString drname, QString pname, QString 
     QDir dirdr(drdir);
     if (!QDir(pdir).exists()){
         if (!dirdr.mkdir(pname)){
-            logger->appendError("Could not create patient dir: " + pname + " in " + drdir);
+            logger.appendError("Could not create patient dir: " + pname + " in " + drdir);
             return false;
         }
     }

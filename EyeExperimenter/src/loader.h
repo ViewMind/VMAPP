@@ -13,7 +13,7 @@ class Loader : public QObject
 {
     Q_OBJECT
 public:
-    explicit Loader(QObject *parent = nullptr, LogInterface *l = nullptr, ConfigurationManager *c = nullptr);
+    explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr);
     Q_INVOKABLE QString getStringForKey(const QString &key);
     Q_INVOKABLE QString getConfigurationString(const QString &key);
     Q_INVOKABLE bool getConfigurationBoolean(const QString &key);
@@ -30,7 +30,7 @@ signals:
 public slots:
 
 private:
-    LogInterface *logger;
+    LogInterface logger;
     bool loadingError;
     ConfigurationManager *configuration;
     ConfigurationManager language;

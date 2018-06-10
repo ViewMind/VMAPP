@@ -32,7 +32,7 @@ signals:
     void newDataAvailable(EyeTrackerData data);
 
     // Connection and calibration signals
-    void eyeTrackeControl(quint8 code);
+    void eyeTrackerControl(quint8 code);
 
     // SHOULD ONLY BE SENT WHEN IT REPRESENTS AN ERROR.
     void disconnectedFromET();

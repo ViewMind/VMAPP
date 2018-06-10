@@ -30,13 +30,13 @@ OpenGazeInterface::OpenGazeInterface(QObject *parent, qreal width, qreal height)
 void OpenGazeInterface::on_calibrationAborted(){
     eventDetecter->hide();
     logger.appendWarning("OpenGaze ET: Calibration aborted");
-    emit(eyeTrackeControl(ET_CODE_CALIBRATION_ABORTED));
+    emit(eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED));
 }
 
 //***************************************** Socket related functions.******************************************************
 void OpenGazeInterface::on_connected(){
     logger.appendSuccess("CONNECTED to OpenGaze EyeTracker Server");
-    emit(eyeTrackeControl(ET_CODE_CONNECTION_SUCCESS));
+    emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
 
     // Configuring the ET
     QStringList cmds2Enable;
@@ -54,7 +54,7 @@ void OpenGazeInterface::on_socketError(QAbstractSocket::SocketError error){
     if (isConnecting) {
         isConnecting = false;
         logger.appendError("Calibration failed due to last error");
-        emit(eyeTrackeControl(ET_CODE_CALIBRATION_FAILED));
+        emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
     }
 }
 
@@ -80,7 +80,7 @@ void OpenGazeInterface::on_readyRead(){
 
 void OpenGazeInterface::on_disconnected(){
     logger.appendWarning("DISCONNECTED from OpenGaze EyeTracker Server");
-    if (!shouldDisconnect) emit(eyeTrackeControl(ET_CODE_DISCONNECTED_FROM_ET));
+    if (!shouldDisconnect) emit(eyeTrackerControl(ET_CODE_DISCONNECTED_FROM_ET));
 }
 
 //*************************** Processing commands received by the ET ************************************************
@@ -90,6 +90,10 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
 
     if (cmd.getCommandType() == GPCT_REC){
         EyeTrackerData data;
+
+        // Make it MS to ensure that it works with the all data processign capabilities.
+        data.timeUnit = EyeTrackerData::TU_MS;
+
         if ((cmd.getField(GPF_LPOGV) == "1") && canUseLeft()){
             data.xLeft = qRound(cmd.getField(GPF_LPOGX).toDouble()*screenWidth);
             data.yLeft = qRound(cmd.getField(GPF_LPOGY).toDouble()*screenHeight);
@@ -110,7 +114,7 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             pupil = pupil/scale;
             data.pdRight = pupil;
         }
-        data.time = cmd.getField(GPF_TIME).toDouble()*1000000; // (Transforming seconds into microseconds);
+        data.time = cmd.getField(GPF_TIME).toDouble()*1000; // (Transforming seconds into ms);
         emit(newDataAvailable(data));
     }
     else if (cmd.getCommandType() == GPCT_CAL){
@@ -149,7 +153,7 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
                 // Could not calibrate
                 logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for both eyes");
                 sendOk = false;
-                emit(eyeTrackeControl(ET_CODE_CALIBRATION_FAILED));
+                emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
             }
 
             // Something when right.
@@ -157,7 +161,7 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             OpenGazeCommand closeWindow;
             closeWindow.setEnableCommand(GPC_CALIBRATE_SHOW,false);
             socket->write(closeWindow.prepareCommandToSend());
-            if (sendOk) emit(eyeTrackeControl(ET_CODE_CALIBRATION_DONE));
+            if (sendOk) emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
         }
     }
 }

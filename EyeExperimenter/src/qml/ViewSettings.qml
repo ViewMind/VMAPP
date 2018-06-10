@@ -225,7 +225,7 @@ Dialog {
 
     VMComboBox{
         id: diagCBET
-        vmModel: ["REDm", "Mouse"]
+        vmModel: ["REDm", "Mouse", "GP3HD"]
         currentIndex: {
             var sel = loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET)
             for (var i = 0; i < vmModel.length; i++){

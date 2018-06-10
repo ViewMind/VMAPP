@@ -24,7 +24,7 @@ class SSLClient : public QObject
     Q_OBJECT
 
 public:
-    explicit SSLClient(QObject *parent = 0, ConfigurationManager *c = nullptr, LogInterface *l = nullptr);
+    explicit SSLClient(QObject *parent = 0, ConfigurationManager *c = nullptr);
     bool sslEnabled() const {return QSslSocket::supportsSsl();}
     ~SSLClient();
     void requestReport();
@@ -51,7 +51,7 @@ private:
     ConfigurationManager *config;
 
     // Ui Message writer
-    LogInterface *log;
+    LogInterface log;
 
     // The socket for the actual connection
     QSslSocket *socket;

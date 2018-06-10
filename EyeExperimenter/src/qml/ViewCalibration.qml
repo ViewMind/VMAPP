@@ -8,6 +8,39 @@ VMBase {
     width: viewCalibrationStart.vmWIDTH
     height: viewCalibrationStart.vmHEIGHT
 
+    Connections{
+        target: flowControl
+        onConnectedToEyeTracker:{
+            var titleMsg;
+            if (!flowControl.isConnected()){
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
+                titleMsg = viewHome.getErrorTitleAndMessage("error_et_connect");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
+            // All is good so the calibration is requested.
+            flowControl.calibrateEyeTracker();
+        }
+        onCalibrationDone: {
+            var titleMsg;
+            if (!flowControl.isCalibrated()){
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
+                titleMsg = viewHome.getErrorTitleAndMessage("error_et_calibrate");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
+            else{
+                viewCalibrationStartDiag.close()
+                swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
+            }
+        }
+
+    }
+
     function openDiag(){
         viewCalibrationStartDiag.open()
     }
@@ -76,30 +109,8 @@ VMBase {
             anchors.top: imgEye.bottom
             anchors.topMargin: 42
             onClicked: {
-                var titleMsg
-                if (!flowControl.isConnected()){
-                    if (!flowControl.connectToEyeTracker()){
-                        vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
-                        titleMsg = viewHome.getErrorTitleAndMessage("error_et_connect");
-                        vmErrorDiag.vmErrorMessage = titleMsg[1];
-                        vmErrorDiag.vmErrorTitle = titleMsg[0];
-                        vmErrorDiag.open();
-                        return;
-                    }
-                }
-
-                if (!flowControl.calibrateEyeTracker()){
-                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
-                    titleMsg = viewHome.getErrorTitleAndMessage("error_et_calibrate");
-                    vmErrorDiag.vmErrorMessage = titleMsg[1];
-                    vmErrorDiag.vmErrorTitle = titleMsg[0];
-                    vmErrorDiag.open();
-                    return;
-                }
-                else{
-                    viewCalibrationStartDiag.close()
-                    swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
-                }
+                if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
+                else flowControl.calibrateEyeTracker();
             }
         }
 

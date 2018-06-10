@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------------------------#
 
 # Dual monitor mode
-dual_monitor_mode = true;
+dual_monitor_mode = false;
 
 # The relationship between the effective screen area (not counting the black bars)
 # and the number of pixels in said area. In X and Y. 
@@ -22,14 +22,14 @@ tcp_port = 54912;
 #------------------------------------------------------#
 
 # In the reading experiment, the tolerance for detecting the patient looked at the red dot 
-reading_px_tol_for_target = 18;
+reading_px_tol_for_target = 32;
 
 #------------------------------------------------------#
 #           GENERAL CONFIGURATION OPTIONS              #
 #------------------------------------------------------#
 
 report_language = Spanish;
-demo_mode = true;
+demo_mode = false;
 
 #------------------------------------------------------#
 #         OPTIONS MODIFIED BY EXPERIMENTER             #
@@ -40,5 +40,5 @@ binding_num_targets = 4;
 binding_use_numbers = false;
 doctor_name = Miles Genius;
 doctor_email = pepe@pepe.com;
-selected_eyetracker = Mouse;
+selected_eyetracker = GP3HD;
 output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;

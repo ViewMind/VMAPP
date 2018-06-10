@@ -10,32 +10,36 @@ REDInterface::REDInterface():EyeTrackerInterface()
     lastData.time = 0;
     lastData.pdLeft = 0;
     lastData.pdRight = 0;
+    lastData.timeUnit = EyeTrackerData::TU_MS;
     pollTimer.start(5);
 }
 
-EyeTrackerInterface::ExitStatus REDInterface::connectToEyeTracker(){
+void REDInterface::connectToEyeTracker(){
     // Connecting the server
     int result = iV_ConnectLocal();
 
     if (result != RET_SUCCESS){
-        message = "Connecting to server. " + num2Error(result);
-        return ES_FAIL;
+        logger.appendError("SMI REDM: Connecting to server. " + num2Error(result));
+        emit(eyeTrackerControl(ET_CODE_CONNECTION_FAIL));
+        return;
     }
 
-    return ES_SUCCESS;
+    emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
 }
 
-EyeTrackerInterface::ExitStatus REDInterface::calibrate(EyeTrackerCalibrationParameters params){
+void REDInterface::calibrate(EyeTrackerCalibrationParameters params){
 
     if (!params.name.isEmpty() && !params.forceCalibration){
         QByteArray buffer = params.name.toLatin1();
         int result = iV_LoadCalibration(buffer.data());
 
         if (result != RET_SUCCESS){
-            message = "Loading Calibration. " + num2Error(result);
+            logger.appendError("SMI REDM: Loading Calibration. " + num2Error(result));
+            emit(eyeTrackerControl(ET_CODE_CONNECTION_FAIL));
         }
         else{
-            return ES_SUCCESS;
+            emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
+            return;
         }
     }
 
@@ -53,15 +57,17 @@ EyeTrackerInterface::ExitStatus REDInterface::calibrate(EyeTrackerCalibrationPar
     int result = iV_SetupCalibration(&calibrationData);
 
     if (result != RET_SUCCESS){
-        message = message + ". Setting up calibration: " + num2Error(result);
-        return ES_FAIL;
+        logger.appendError("SMI REDM: Setting up calibration. " + num2Error(result));
+        emit(eyeTrackerControl(ET_CODE_CONNECTION_FAIL));
+        return;
     }
 
     result = iV_Calibrate();
 
     if (result != RET_SUCCESS){
-       message = message + ". During calibration: " + num2Error(result);
-       return ES_FAIL;
+        logger.appendError("SMI REDM: During calibration. " + num2Error(result));
+        emit(eyeTrackerControl(ET_CODE_CONNECTION_FAIL));
+        return;
     }
 
     // Attempting to save calibration
@@ -70,13 +76,11 @@ EyeTrackerInterface::ExitStatus REDInterface::calibrate(EyeTrackerCalibrationPar
         result = iV_SaveCalibration(buffer.data());
 
         if (result != RET_SUCCESS){
-            message = message + ". Saving calibration: " + num2Error(result);
-            return ES_WARNING;
+            logger.appendWarning("SMI REDM: Saving calibration. " +  num2Error(result));
         }
     }
 
-
-    return ES_SUCCESS;
+    emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
 }
 
 void REDInterface::enableUpdating(bool enable){

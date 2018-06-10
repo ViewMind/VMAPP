@@ -21,7 +21,7 @@ void MouseInterface::connectToEyeTracker(){
     // "Connecting to the server"
     dataToSend.time = 0;
     pollTimer.start(TIMEOUT);
-    emit(eyeTrackeControl(ET_CODE_CONNECTION_SUCCESS));
+    emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
 }
 
 void MouseInterface::enableUpdating(bool enable){
@@ -38,10 +38,10 @@ void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
     isCalibrated = false;
     calibrationScreen->exec();
     if (isCalibrated)
-        emit(eyeTrackeControl(ET_CODE_CALIBRATION_DONE));
+        emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
     else{
         logger.appendWarning("MOUSE TRACKER: Calibration was aborted");
-        emit(eyeTrackeControl(ET_CODE_CALIBRATION_ABORTED));
+        emit(eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED));
     }
 }
 

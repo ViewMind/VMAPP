@@ -26,8 +26,7 @@ public:
     qreal pdLeft;
     qreal pdRight;
     qint64 time;
-
-    TimeUnit getTimeUnit() const {return timeUnit;}
+    TimeUnit timeUnit;
 
     bool operator==(const EyeTrackerData &d){
         return (d.time == time);
@@ -42,7 +41,7 @@ public:
     QString toString() const;
 
 private:
-    TimeUnit timeUnit;
+
 
 };
 

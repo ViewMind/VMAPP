@@ -18,6 +18,7 @@
 
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
 #include "EyeTrackerInterface/RED/redinterface.h"
+#include "EyeTrackerInterface/GazePoint/opengazeinterface.h"
 
 #include "monitorscreen.h"
 #include "imagereportdrawer.h"
@@ -26,12 +27,13 @@ class FlowControl : public QWidget
 {
     Q_OBJECT
 public:
-    explicit FlowControl(QWidget *parent = Q_NULLPTR, LogInterface *l = nullptr, ConfigurationManager *c = nullptr);
+    explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     FlowControl::~FlowControl();
-    Q_INVOKABLE bool connectToEyeTracker();
-    Q_INVOKABLE bool calibrateEyeTracker();
+    Q_INVOKABLE void connectToEyeTracker();
+    Q_INVOKABLE void calibrateEyeTracker();
     Q_INVOKABLE bool startNewExperiment(qint32 experimentID);
     Q_INVOKABLE bool isConnected() const { return connected; }
+    Q_INVOKABLE bool isCalibrated() const { return calibrated; }
     Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
     Q_INVOKABLE void setupSecondMonitor();
     Q_INVOKABLE void eyeTrackerChanged();
@@ -52,6 +54,10 @@ signals:
     // Transaction finished.
     void sslTransactionFinished();
 
+    // Signals to indicate all is good.
+    void connectedToEyeTracker(bool ok);
+    void calibrationDone(bool ok);
+
 public slots:
 
     // When an experiment finishes.
@@ -62,6 +68,9 @@ public slots:
 
     // When an SSL Transaction finishes
     void onSLLTransactionFinished(bool allOk);
+
+    // Eye tracker control changes
+    void onEyeTrackerControl(quint8 code);
 
 private:
 
@@ -81,7 +90,7 @@ private:
     EyeTrackerInterface *eyeTracker;
 
     // The Log interface
-    LogInterface *logger;
+    LogInterface logger;
 
     // The sslclient to send the information process request.
     SSLClient *sslclient;
@@ -94,6 +103,9 @@ private:
 
     // Flags to avoid reconnecting during recalibration
     bool connected;
+
+    // Flag to check if the eyetracker is calibrated or not
+    bool calibrated;
 
     // Binary status for the end of an experiment.
     bool experimentIsOk;

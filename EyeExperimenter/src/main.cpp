@@ -7,9 +7,6 @@
 #include "loader.h"
 #include "flowcontrol.h"
 
-// The global logging object.
-LogInterface globalLog;
-
 // Global Configuration
 ConfigurationManager configuration;
 
@@ -25,9 +22,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     // Laods all language related data
-    Loader loader(nullptr,&globalLog,&configuration);
-    //FlowControl flowControl(nullptr,&globalLog,&configuration);
-    FlowControl flowControl(nullptr,&globalLog,&configuration);
+    Loader loader(nullptr,&configuration);
+    FlowControl flowControl(nullptr,&configuration);
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);
 

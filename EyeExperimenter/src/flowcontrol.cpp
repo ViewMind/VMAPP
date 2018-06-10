@@ -1,12 +1,12 @@
 #include "flowcontrol.h"
 
-FlowControl::FlowControl(QWidget *parent, LogInterface *l, ConfigurationManager *c) : QWidget(parent)
+FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(parent)
 {
     // Intializing the eyetracker pointer
     configuration = c;
     eyeTracker = nullptr;
-    logger = l;
     connected = false;
+    calibrated = false;
     experiment = nullptr;
     monitor = nullptr;
     this->setVisible(false);
@@ -27,11 +27,11 @@ FlowControl::FlowControl(QWidget *parent, LogInterface *l, ConfigurationManager 
 
     }
     else{
-        logger->appendWarning("SSL Server configured in path, but the file does not exist.");
+        logger.appendWarning("SSL Server configured in path, but the file does not exist.");
     }
 
     // Creating the sslclient
-    sslclient = new SSLClient(this,c,l);
+    sslclient = new SSLClient(this,c);
 
     // Connection to the "finished" slot.
     connect(sslclient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
@@ -48,7 +48,7 @@ void FlowControl::saveReportAs(const QString &title){
     QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
     if (newFileName.isEmpty()) return;
     if (!QFile::copy(configuration->getString(CONFIG_IMAGE_REPORT_PATH),newFileName)){
-        logger->appendError("Could not save report from " + configuration->getString(CONFIG_IMAGE_REPORT_PATH) + " to " + newFileName);
+        logger.appendError("Could not save report from " + configuration->getString(CONFIG_IMAGE_REPORT_PATH) + " to " + newFileName);
     }
 }
 
@@ -67,7 +67,7 @@ void FlowControl::onSLLTransactionFinished(bool allOk){
         reportData.clear();
         // The ssl client should have set up the config report path.
         if (!reportData.loadConfiguration(configuration->getString(CONFIG_REPORT_PATH),COMMON_TEXT_CODEC)){
-            logger->appendError("Error loading the report data file: " + reportData.getError());
+            logger.appendError("Error loading the report data file: " + reportData.getError());
             sslTransactionAllOk = false;
         }
     }
@@ -151,10 +151,13 @@ void FlowControl::eyeTrackerChanged(){
     connected = false;
 }
 
-bool FlowControl::connectToEyeTracker(){
+void FlowControl::connectToEyeTracker(){
 
     // Creating the connection with the EyeTracker
     if (eyeTracker != nullptr) delete eyeTracker;
+
+    // The new et is NOT calibrated.
+    calibrated = false;
 
     QString eyeTrackerSelected = configuration->getString(CONFIG_SELECTED_ET);
 
@@ -164,49 +167,53 @@ bool FlowControl::connectToEyeTracker(){
     else if (eyeTrackerSelected == CONFIG_P_ET_REDM){
         eyeTracker = new REDInterface();
     }
+    else if (eyeTrackerSelected == CONFIG_P_ET_GP3HD){
+        eyeTracker = new OpenGazeInterface(this,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
+    }
     else{
-        logger->appendError("Selected unknown EyeTracker: " + eyeTrackerSelected);
-        return false;
+        logger.appendError("Selected unknown EyeTracker: " + eyeTrackerSelected);
+        return;
     }
 
-    EyeTrackerInterface::ExitStatus es = eyeTracker->connectToEyeTracker();
-    switch (es){
-    case EyeTrackerInterface::ES_FAIL:
-        logger->appendError("Error Connecting to the EyeTracker: " + eyeTracker->getMessage());
-        delete eyeTracker;
-        eyeTracker = nullptr;
-        return false;
-    case EyeTrackerInterface::ES_SUCCESS:
-        logger->appendSuccess("Connection to EyeTracker established successfully!");
-        break;
-    case EyeTrackerInterface::ES_WARNING:
-        logger->appendWarning("Connecting to the EyeTracker, " + eyeTracker->getMessage());
-        break;
-    }
-
-    connected = true;
-    return true;
-
+    connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
+    eyeTracker->connectToEyeTracker();
 }
 
-bool FlowControl::calibrateEyeTracker(){
+void FlowControl::calibrateEyeTracker(){
     EyeTrackerCalibrationParameters calibrationParams;
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "";
-    EyeTrackerInterface::ExitStatus es = eyeTracker->calibrate(calibrationParams);
-    switch (es){
-    case EyeTrackerInterface::ES_FAIL:
-        logger->appendError("Error Calibrating the EyeTracker: " + eyeTracker->getMessage());
-        return false;
+    calibrated = false;
+    eyeTracker->calibrate(calibrationParams);
+}
+
+void FlowControl::onEyeTrackerControl(quint8 code){
+    switch(code){
+    case EyeTrackerInterface::ET_CODE_CALIBRATION_ABORTED:
+        calibrated = false;
+        emit(calibrationDone(false));
         break;
-    case EyeTrackerInterface::ES_SUCCESS:
-        logger->appendSuccess("Calibration completed successfully!");
+    case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
+        calibrated = true;
+        emit(calibrationDone(true));
         break;
-    case EyeTrackerInterface::ES_WARNING:
-        logger->appendError("Warning: Calibrating the EyeTracker, " + eyeTracker->getMessage());
+    case EyeTrackerInterface::ET_CODE_CALIBRATION_FAILED:
+        calibrated = false;
+        emit(calibrationDone(false));
+        break;
+    case EyeTrackerInterface::ET_CODE_CONNECTION_FAIL:
+        connected = false;
+        emit(connectedToEyeTracker(false));
+        break;
+    case EyeTrackerInterface::ET_CODE_CONNECTION_SUCCESS:
+        connected = true;
+        emit(connectedToEyeTracker(true));
+        break;
+    case EyeTrackerInterface::ET_CODE_DISCONNECTED_FROM_ET:
+        logger.appendError("Disconnected from EyeTracker");
+        connected = false;
         break;
     }
-    return true;
 }
 
 bool FlowControl::startNewExperiment(qint32 experimentID){
@@ -217,7 +224,7 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     // Making sure no old reports are stored.
     configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,"");
 
-    logger->appendStandard("Starting experiment with ID " + QString::number(experimentID));
+    logger.appendStandard("Starting experiment with ID " + QString::number(experimentID));
 
     // Using the polimorphism, the experiment object is created according to the selected index.
     QString readingQuestions;
@@ -244,7 +251,7 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         background = QBrush(Qt::black);
         break;
     default:
-        logger->appendError("Unknown experiment was selected " + QString::number(experimentID));
+        logger.appendError("Unknown experiment was selected " + QString::number(experimentID));
         return false;
     }
 
@@ -290,18 +297,18 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
     switch (er){
     case Experiment::ER_ABORTED:
-        logger->appendStandard("Experiment aborted");
+        logger.appendStandard("Experiment aborted");
         experimentIsOk = false;
         break;
     case Experiment::ER_FAILURE:
-        logger->appendError("EXPERIMENT FAILURE: " + experiment->getError());
+        logger.appendError("EXPERIMENT FAILURE: " + experiment->getError());
         experimentIsOk = false;
         break;
     case Experiment::ER_NORMAL:
-        logger->appendSuccess("Experiment finished sucessfully!");
+        logger.appendSuccess("Experiment finished sucessfully!");
         break;
     case Experiment::ER_WARNING:
-        logger->appendStandard("EXPERIMENT WARNING: " + experiment->getError());
+        logger.appendStandard("EXPERIMENT WARNING: " + experiment->getError());
         break;
     }
 
@@ -316,7 +323,7 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     delete experiment;
     experiment = nullptr;
 
-    logger->appendStandard("EXPERIMENT FINISHED");
+    logger.appendStandard("EXPERIMENT FINISHED");
 
     // Notifying the QML.
     emit(experimentHasFinished());
@@ -362,7 +369,7 @@ void FlowControl::setupSecondMonitor(){
         // There is nothing to do as there is no second monitor.
         if (monitor == nullptr) return;
         // In case the monitor was disconnected.
-        logger->appendWarning("Attempting to restore situation in which second monitor seems to have been disconnected after it was created");
+        logger.appendWarning("Attempting to restore situation in which second monitor seems to have been disconnected after it was created");
         if (monitor != nullptr){
             if (experiment != nullptr){
                 disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);

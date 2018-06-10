@@ -77,6 +77,7 @@
 #define   CONFIG_P_LANG_EN                              "English"
 #define   CONFIG_P_ET_MOUSE                             "Mouse"
 #define   CONFIG_P_ET_REDM                              "REDm"
+#define   CONFIG_P_ET_GP3HD                             "GP3HD"
 
 // Indexes of the selected experiments
 #define   EXP_READING                                   1

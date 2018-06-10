@@ -12,7 +12,7 @@
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "eyedataprocessingthread.h"
 
-#define   EYE_REP_GEN_VERSION                           "2.0"
+#define   EYE_REP_GEN_VERSION                           "2.0.1"
 
 namespace Ui {
 class EyeReportUI;
