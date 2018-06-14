@@ -18,12 +18,6 @@ ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent)
 
 bool ImageExperiment::startExperiment(ConfigurationManager *c){
 
-    if (!c->getBool(CONFIG_BINDING_DEFAULT)){
-        outputDataFile = outputDataFile + "_" + QString::number(c->getInt(CONFIG_BINDING_NUM_TARGETS)) + "_";
-        if (c->getBool(CONFIG_BINDING_USE_NUMBERS)) outputDataFile = outputDataFile + "n";
-        else outputDataFile = outputDataFile + "x";
-    }
-
     if (!Experiment::startExperiment(c)) return false;
 
     if (m->getUsesNumbers()) timeCountForStart = TIME_START_NUMBER;

@@ -58,7 +58,7 @@ viewcalibdone_btnContinue = CONTINUE;
 viewpresentexp_itemReading = Reading Evaluation;
 viewpresentexp_itemBindingUC = Unbound Colors Evaluation;
 viewpresentexp_itemBindingBC = Bound Colors Evaluation;
-viewpresentexp_itemFielding = Fielding Evaluation;
+viewpresentexp_itemFielding = N-Back Evaluation;
 
 viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
 When your gaze is located on the dot, it will vanish<br>
@@ -89,7 +89,7 @@ arrangements or <b>"D" (different)</b> if any <b>colors of the two</b><br>
 The first 10 images are meant for practice.<br>
 They won't be considered in the results.;
 
-viewpresentexp_fieldingExp = Explanation of the<br><b>Fielding </b> experiment;
+viewpresentexp_fieldingExp = Explanation of the<br><b>N-Back </b> study;
 
 viewpresentexp_btnContinue = CONTINUE;
 

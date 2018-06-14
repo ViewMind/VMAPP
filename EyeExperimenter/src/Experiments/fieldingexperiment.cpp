@@ -11,8 +11,7 @@ FieldingExperiment::FieldingExperiment(QWidget *parent):Experiment(parent){
     Paused=0;
 
     // Connecting the timer time out with the time out function.
-    stateTimer = new QTimer();
-    connect(stateTimer,&QTimer::timeout,this,&FieldingExperiment::onTimeOut);
+    connect(&stateTimer,&QTimer::timeout,this,&FieldingExperiment::onTimeOut);
 }
 
 bool FieldingExperiment::startExperiment(ConfigurationManager *c){
@@ -25,9 +24,8 @@ bool FieldingExperiment::startExperiment(ConfigurationManager *c){
 
     state = STATE_RUNNING;
     tstate = TSF_START;
-    stateTimer->setInterval(TIMER_TIME_INTERVAL);
-    stateTimer->start();
-    timerCounter = TIME_TRANSITION;
+    stateTimer.setInterval(TIME_TRANSITION);
+    stateTimer.start();
 
     drawCurrentImage();
 
@@ -45,50 +43,51 @@ void FieldingExperiment::nextState(){
         currentTrial++;
         if (finalizeExperiment()) return;
         tstate = TSF_START;
-        timerCounter = TIME_TRANSITION;
+        stateTimer.setInterval(TIME_TRANSITION);
         break;
     case TSF_SHOW_BLANK_2:
         tstate = TSF_SHOW_BLANK_1;
         currentImage = 0;
-        timerCounter = TIME_CONDITION;
         addTrialHeader();
+        stateTimer.setInterval(TIME_CONDITION);
         break;
     case TSF_SHOW_BLANK_3:
         tstate = TSF_SHOW_BLANK_2;
         currentImage = 1;
-        timerCounter = TIME_CONDITION;
         addTrialHeader();
+        stateTimer.setInterval(TIME_CONDITION);
         break;
     case TSF_SHOW_DOT_1:
         tstate = TSF_SHOW_DOT_2;
         currentImage = 1;
-        timerCounter = TIME_TARGET;
         addTrialHeader();
+        stateTimer.setInterval(TIME_TARGET);
         break;
     case TSF_SHOW_DOT_2:
         tstate = TSF_SHOW_DOT_3;
         currentImage = 2;
-        timerCounter = TIME_TARGET;
         addTrialHeader();
+        stateTimer.setInterval(TIME_TARGET);
         break;
     case TSF_SHOW_DOT_3:
         tstate = TSF_TRANSITION;
-        timerCounter = TIME_TRANSITION;
+        stateTimer.setInterval(TIME_TRANSITION);
         break;
     case TSF_START:
         tstate = TSF_SHOW_DOT_1;
         currentImage = 0;
-        timerCounter = TIME_TARGET;
         addTrialHeader();
+        stateTimer.setInterval(TIME_TARGET);
         break;
     case TSF_TRANSITION:
         tstate = TSF_SHOW_BLANK_3;
         currentImage = 2;
-        timerCounter = TIME_CONDITION;
         addTrialHeader();
+        stateTimer.setInterval(TIME_CONDITION);
         break;
     }
 
+    stateTimer.start();
     drawCurrentImage();
 }
 
@@ -115,8 +114,8 @@ void FieldingExperiment::drawPauseImage(){
 
 
 void FieldingExperiment::onTimeOut(){
-    timerCounter--;
-    if (timerCounter == 0) nextState();
+    stateTimer.stop();
+    nextState();
 }
 
 void FieldingExperiment::drawCurrentImage(){
@@ -148,8 +147,8 @@ void FieldingExperiment::drawCurrentImage(){
 
             // Paused must be set to zero.
             if (state == STATE_RUNNING){
-                timerCounter = -1;
                 state = STATE_PAUSED;
+                stateTimer.stop();
                 drawPauseImage();
                 emit(updateBackground(m->getImage()));
                 return;
@@ -170,7 +169,7 @@ void FieldingExperiment::drawCurrentImage(){
 
 bool FieldingExperiment::finalizeExperiment(){
     if (currentTrial < m->size()) return false;
-    stateTimer->stop();
+    stateTimer.stop();
     state = STATE_STOPPED;
     if (error.isEmpty()) emit(experimentEndend(ER_NORMAL));
     else emit(experimentEndend(ER_WARNING));
@@ -184,7 +183,7 @@ void FieldingExperiment::togglePauseExperiment(){
 void FieldingExperiment::keyPressEvent(QKeyEvent *event){
     // Making sure the experiment can be aborted, but any other key is ignored.
     if (event->key() == Qt::Key_Escape){
-        stateTimer->stop();
+        stateTimer.stop();
         state = STATE_STOPPED;
         emit(experimentEndend(ER_ABORTED));
     }

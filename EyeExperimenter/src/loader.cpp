@@ -41,8 +41,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[CONFIG_DEMO_MODE] = cmd;
     cv[CONFIG_BINDING_DEFAULT] = cmd;
-    cv[CONFIG_BINDING_NUM_TARGETS] = cmd;
-    cv[CONFIG_BINDING_USE_NUMBERS] = cmd;
 
     configuration->setupVerification(cv);
 

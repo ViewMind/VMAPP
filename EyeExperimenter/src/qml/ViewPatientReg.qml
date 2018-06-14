@@ -139,8 +139,6 @@ VMBase {
         anchors.topMargin: 14
         anchors.left: cboxBindingBC.right
         anchors.leftMargin: 20
-        // TODO: Fix Fielding and make this visible again
-        visible: false
         onCheckedChanged: {
             labelNoInstructionSetError.visible = false;
         }

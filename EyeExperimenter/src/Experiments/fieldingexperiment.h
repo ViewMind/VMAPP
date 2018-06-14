@@ -9,11 +9,10 @@
 #include "../../CommonClasses/Experiments/fieldingmanager.h"
 
 // Timer timess
-#define   TIME_TRANSITION                               50
-#define   TIME_TARGET                                   25
-//#define   TIME_TARGET                                   20000000000
-#define   TIME_CONDITION                                50
-#define   TIMER_TIME_INTERVAL                           10
+#define   TIME_TRANSITION                               500
+#define   TIME_TARGET                                   250
+#define   TIME_CONDITION                                500
+//#define   TIMER_TIME_INTERVAL                           10
 
 // Possible pauses for the fielding experiment
 #define   PAUSE_TRIAL_1                                 32
@@ -62,8 +61,7 @@ private:
     qint32 currentImage;
 
     // The timer and the counter.
-    QTimer *stateTimer;
-    qint32 timerCounter;
+    QTimer stateTimer;
 
     // Flag use to sincronize data writing to the file.
     bool ignoreData;

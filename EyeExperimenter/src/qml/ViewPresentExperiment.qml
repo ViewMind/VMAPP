@@ -89,7 +89,7 @@ VMBase {
         case vmExpIndexFielding:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");
             vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
-            vmSlideAnimation = "qrc:/images/fielding.gif"
+            vmSlideAnimation = ""
             break;
         }
     }

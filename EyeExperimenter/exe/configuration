@@ -25,20 +25,25 @@ tcp_port = 54912;
 reading_px_tol_for_target = 32;
 
 #------------------------------------------------------#
+#                   BINDING CONFIGS                    #
+#------------------------------------------------------#
+
+# If set as true or if it doesn't exist, Binding will use large targets.
+# Set to false to use small 1sqcm targets.
+binding_default = false;
+
+#------------------------------------------------------#
 #           GENERAL CONFIGURATION OPTIONS              #
 #------------------------------------------------------#
 
 report_language = Spanish;
-demo_mode = false;
+demo_mode = true;
 
 #------------------------------------------------------#
 #         OPTIONS MODIFIED BY EXPERIMENTER             #
 #------------------------------------------------------#
 
-binding_default = true;
-binding_num_targets = 4;
-binding_use_numbers = false;
 doctor_name = Miles Genius;
 doctor_email = pepe@pepe.com;
-selected_eyetracker = GP3HD;
+selected_eyetracker = Mouse;
 output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;

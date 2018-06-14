@@ -58,7 +58,7 @@ viewcalibdone_btnContinue = CONTINUAR;
 viewpresentexp_itemReading = Evaluación de Lectura;
 viewpresentexp_itemBindingUC = Evaluación Colores Unbound;
 viewpresentexp_itemBindingBC = Evaluación Colores Bound;
-viewpresentexp_itemFielding = Test N-Back;
+viewpresentexp_itemFielding = Evaluación N-Back;
 
 viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
 Cuando su mira se encuentre ubicada sobre el punto, este desaparecerá <br>
@@ -89,7 +89,7 @@ or <b>presione "D" </b> si alguno <b>de los colores de las dos</b> <br>
 Las primeras 10 imagenes serán de prueba. <br>
 No serán consideradas en los resultados.;
 
-viewpresentexp_fieldingExp = Expliación de la Evaluación de <br><b>Fielding </b>;
+viewpresentexp_fieldingExp = Expliación de la Evaluación <br><b>N-Back</b>;
 
 viewpresentexp_btnContinue = CONTINUAR;
 

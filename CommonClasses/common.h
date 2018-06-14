@@ -39,8 +39,6 @@
 #define   CONFIG_PATIENT_EMAIL                          "patient_email"
 #define   CONFIG_REPORT_NO_LOGO                         "no_logo_in_report"
 #define   CONFIG_DEMO_MODE                              "demo_mode"
-#define   CONFIG_BINDING_NUM_TARGETS                    "binding_num_targets"
-#define   CONFIG_BINDING_USE_NUMBERS                    "binding_use_numbers"
 #define   CONFIG_BINDING_DEFAULT                        "binding_default"
 #define   CONFIG_BC_FILE_FILTER                         "bc_file_filter"
 #define   CONFIG_UC_FILE_FILTER                         "uc_file_filter"

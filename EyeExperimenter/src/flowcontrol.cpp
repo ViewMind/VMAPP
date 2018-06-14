@@ -346,24 +346,14 @@ QString FlowControl::getBindingExperiment(bool bc){
     else defaultExp = ":/experiment_data/uc.dat";
 
     if (!configuration->containsKeyword(CONFIG_BINDING_DEFAULT)) {
-        configuration->addKeyValuePair(CONFIG_BINDING_DEFAULT,false);
+        configuration->addKeyValuePair(CONFIG_BINDING_DEFAULT,true);
         return defaultExp;
     }
 
     if (configuration->getBool(CONFIG_BINDING_DEFAULT)) return defaultExp;
 
-    // If it got here, then that means it is one of the expanede experiment
-    QString exp = ":/expdata/experiment_data/expanded_binding/";
-    if (bc) exp = exp + "bc_";
-    else exp = exp + "uc_";
-
-    // The number of targets
-    exp = exp + QString::number(configuration->getInt(CONFIG_BINDING_NUM_TARGETS)) + "_";
-
-    if (configuration->getBool(CONFIG_BINDING_USE_NUMBERS)) exp = exp + "n.dat";
-    else exp = exp + "x.dat";
-
-    return exp;
+    if (bc) return ":/experiment_data/bc_small.dat";
+    else return ":/experiment_data/uc_small.dat";
 
 }
 
