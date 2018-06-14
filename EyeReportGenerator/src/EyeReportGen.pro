@@ -13,6 +13,8 @@ TEMPLATE = app
 
 OBJECTS_DIR = OBJS
 MOC_DIR     = MOCS
+RCC_DIR     = QRC
+CONFIG     -= debug_and_release
 
 SOURCES += main.cpp\
         eyereportui.cpp \
@@ -32,8 +34,7 @@ SOURCES += main.cpp\
     ../../CommonClasses/Experiments/fieldingmanager.cpp \
     ../../CommonClasses/Experiments/phrases.cpp \
     ../../CommonClasses/Experiments/readingmanager.cpp \
-    imagereportdrawer.cpp \
-    reportviewer.cpp
+    ../../CommonClasses/ImageExplorer/imageexplorer.cpp
 
 HEADERS  += eyereportui.h \
     eyedataprocessingthread.h \
@@ -53,11 +54,8 @@ HEADERS  += eyereportui.h \
     ../../CommonClasses/Experiments/fieldingmanager.h \
     ../../CommonClasses/Experiments/readingmanager.h \
     ../../CommonClasses/Experiments/phrases.h \
-    imagereportdrawer.h \
-    reportviewer.h
-
+    ../../CommonClasses/ImageExplorer/imageexplorer.h
 
 FORMS    += eyereportui.ui
 
-RESOURCES += \
-    resources.qrc
+RESOURCES +=

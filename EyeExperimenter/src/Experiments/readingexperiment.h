@@ -17,7 +17,7 @@ class ReadingExperiment : public Experiment
 {
 public:
     ReadingExperiment(QWidget *parent = 0);
-
+    ~ReadingExperiment();
     bool startExperiment(ConfigurationManager *c);
     void togglePauseExperiment();
     bool loadConfiguration(const QString &fileName);

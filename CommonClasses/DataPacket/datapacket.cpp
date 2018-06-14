@@ -103,9 +103,11 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
                 temp.append(buffer.at(j));
             }
             packetSize = byteArrayToSize(temp);
+            // Check to see if all the data arrived.
+            // qWarning() << "Buffer size" << buffer.size() << "packet size" << packetSize;
+            if ((quint32)buffer.size() < packetSize + BYTES_FOR_SIZE) return DATABUFFER_RESULT_NOT_DONE;
         }
-
-        return DATABUFFER_RESULT_NOT_DONE;
+        else return DATABUFFER_RESULT_NOT_DONE;
     }
     else{
         buffer.append(array);
@@ -156,6 +158,7 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
                 temp.append(buffer.at(i)); i++;
             }
 
+            list.clear();
             list << str << temp;
             f.data = list;
 
@@ -202,6 +205,22 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
 
 }
 
+bool DataPacket::saveFiles(const QString &directory){
+
+    QList<quint8> fieldlist = fields.keys();
+
+    for (qint32 i = 0; i < fieldlist.size(); i++){
+        if (fields.value(fieldlist.at(i)).fieldType == DPFT_FILE){
+            QString ans = saveFile(directory,fieldlist.at(i));
+            if (ans.isEmpty()) return false;
+        }
+    }
+
+    return true;
+
+}
+
+
 QString DataPacket::saveFile(const QString &directory, quint8 fieldInfo){
 
     // Checking that everything is kosher.
@@ -218,7 +237,7 @@ QString DataPacket::saveFile(const QString &directory, quint8 fieldInfo){
     file.close();
 
     // If the numbers of bytes written differs from the number of bytes on the array, there was a problem.
-    if (written != f.data.toList().last().toByteArray().size()) return false;
+    if (written != f.data.toList().last().toByteArray().size()) return "";
     return fileName;
 }
 

@@ -12,28 +12,36 @@ class EyeTrackerData
 {
 public:
 
-    // The Eyetracker data should have the pixel being looked at by the left and right eyes and the pupil diameter in mm.
+
+    typedef enum {TU_MS, TU_US} TimeUnit;
+
+    // The Eyetracker data should have the pixel being looked at by the left and right eyes and the pupil diameter.
+    // The values dimension depend on the what the ET Provides.
 
     EyeTrackerData();
-    double xRight;
-    double yRight;
-    double xLeft;
-    double yLeft;
-    double pdLeft;
-    double pdRight;
+    qint32 xRight;
+    qint32 yRight;
+    qint32 xLeft;
+    qint32 yLeft;
+    qreal pdLeft;
+    qreal pdRight;
     qint64 time;
+    TimeUnit timeUnit;
 
     bool operator==(const EyeTrackerData &d){
         return (d.time == time);
     }
 
-    double avgX() const {return (xRight + xLeft)/2;}
-    double avgY() const {return (yRight + yLeft)/2;}
+    double avgX() const {return ((qreal)xRight + (qreal)xLeft)/2;}
+    double avgY() const {return ((qreal)yRight + (qreal)yLeft)/2;}
 
     bool isRightZero() const {return ((xRight == 0) && (yRight == 0));}
     bool isLeftZero() const {return ((xLeft == 0) && (yLeft == 0));}
 
     QString toString() const;
+
+private:
+
 
 };
 

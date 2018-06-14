@@ -15,7 +15,6 @@ SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id):QObject()
     sslSocket = newSocket;
 
     // Creating all the connections from signals and slots.
-    connect(sslSocket,&QSslSocket::encrypted,this,&SSLIDSocket::on_encryptedSuccess);
     connect(sslSocket,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
     connect(sslSocket,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(on_sslErrors(QList<QSslError>)));
     connect(sslSocket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(on_socketStateChanged(QAbstractSocket::SocketState)));
@@ -23,6 +22,69 @@ SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id):QObject()
     connect(sslSocket,&QSslSocket::readyRead,this,&SSLIDSocket::on_readyRead);
     connect(sslSocket,&QSslSocket::disconnected,this,&SSLIDSocket::on_disconnected);
     connect(&timer,&QTimer::timeout,this,&SSLIDSocket::on_timeout);
+    connect(&process,SIGNAL(finished(int)),this,SLOT(on_processFinished(qint32)));
+
+    workingDirectory = "";
+}
+
+void SSLIDSocket::processData(const QString &processorPath, const QStringList &args){
+    QFileInfo info(processorPath);
+    process.setWorkingDirectory(info.absolutePath());
+    process.start(processorPath,args);
+}
+
+void SSLIDSocket::on_processFinished(qint32 status){
+    Q_UNUSED(status);
+    emit(sslSignal(ID,SSL_SIGNAL_PROCESS_DONE));
+}
+
+QString SSLIDSocket::setWorkingDirectoryAndSaveAllFiles(const QString &baseDir){
+    // Assuming that the base directory exists
+
+    QString patient = "unknown_patient";
+    DataPacket::Field f = rx.getField(DataPacket::DPFI_PATIENT_ID);
+    if (f.fieldType == DataPacket::DPFT_STRING){
+        patient = f.data.toString();
+        patient = patient.replace(' ','_');
+    }
+
+    QString doctor = "unknown_doctor";
+    f = rx.getField(DataPacket::DPFI_DOCTOR_ID);
+    if (f.fieldType == DataPacket::DPFT_STRING){
+        doctor = f.data.toString();
+        doctor = doctor.replace(' ','_');
+    }
+
+    QDir bdir(baseDir);
+
+    if (!QDir(baseDir + "/" + doctor).exists()){
+        if (!bdir.mkdir(doctor)){
+            return "Could not create doctor subdirectory: " + doctor;
+        }
+    }
+
+    QDir ddir(baseDir + "/" + doctor);
+    if (!QDir(ddir.path() + "/" + patient).exists()){
+        if (!ddir.mkdir(patient)){
+            return "Could not create patient subdirectory: " + patient + " in " + ddir.path();
+        }
+    }
+
+    // The time stamp dir should never exist.
+    QString wdir = QDateTime::currentDateTime().toString(TIME_FORMAT_STRING);
+    QDir pdir(ddir.path() + "/" + patient);
+    if (!pdir.mkdir(wdir)){
+        return "Could not create time stamp dir in " + pdir.path();
+    }
+
+    workingDirectory = pdir.path() + "/" + wdir;
+
+    // Since the working directory was generated the files can now be saved.
+    if (!rx.saveFiles(workingDirectory)){
+        return "There were errors saving packet files.";
+    }
+
+    return "";
 }
 
 void SSLIDSocket::startTimeoutTimer(qint32 ms){
@@ -44,11 +106,12 @@ void SSLIDSocket::on_encryptedSuccess(){
 
 void SSLIDSocket::on_readyRead(){
     // Should buffer the data
-    quint8 ans = rx.bufferByteArray(socket()->readAll());
-    if (ans == DATABUFFER_RESULT_DONE){
+    QByteArray ba = socket()->readAll();
+    quint8 ans = rx.bufferByteArray(ba);
+    if (ans == DataPacket::DATABUFFER_RESULT_DONE){
         emit(sslSignal(ID,SSL_SIGNAL_DATA_RX_DONE));
     }
-    else if (ans == DATABUFFER_RESULT_ERROR){
+    else if (ans == DataPacket::DATABUFFER_RESULT_ERROR){
         emit(sslSignal(ID,SSL_SIGNAL_DATA_RX_ERROR));
     }
 }

@@ -15,13 +15,13 @@ class MouseInterface: public EyeTrackerInterface
 public:
     MouseInterface();
 
-    ExitStatus connectToEyeTracker();
+    void connectToEyeTracker();
 
     void enableUpdating(bool enable);
 
     void disconnectFromEyeTracker();
 
-    ExitStatus calibrate(EyeTrackerCalibrationParameters params);
+    void calibrate(EyeTrackerCalibrationParameters params);
 
     ~MouseInterface();
 
@@ -32,8 +32,8 @@ private slots:
 private:
     QTimer pollTimer;
 
-    // 83 Milliseconds is approximately 1/120, for 120 Hz sampling rate.
-    const qint32 TIMEOUT = 83;
+    // 8.3 Milliseconds is approximately 1/120, for 120 Hz sampling rate.
+    const qint32 TIMEOUT = 8;
 
     EyeTrackerData dataToSend;
 

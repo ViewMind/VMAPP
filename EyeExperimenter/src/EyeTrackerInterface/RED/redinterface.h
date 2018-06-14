@@ -12,13 +12,13 @@ class REDInterface : public EyeTrackerInterface
 public:
     REDInterface();
 
-    ExitStatus connectToEyeTracker();
+    void connectToEyeTracker();
 
     void enableUpdating(bool enable);
 
     void disconnectFromEyeTracker();
 
-    ExitStatus calibrate(EyeTrackerCalibrationParameters params);
+    void calibrate(EyeTrackerCalibrationParameters params);
 
 
 private slots:

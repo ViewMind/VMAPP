@@ -6,7 +6,9 @@ ExperimentDataPainter::ExperimentDataPainter()
 }
 
 void ExperimentDataPainter::init(ConfigurationManager *c){
-    canvas = new QGraphicsScene(0,0,SCREEN_W,SCREEN_H);
+    ScreenResolutionHeight = c->getReal(CONFIG_RESOLUTION_HEIGHT);
+    ScreenResolutionWidth = c->getReal(CONFIG_RESOLUTION_WIDTH);
+    canvas = new QGraphicsScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
     config = c;
 }
 
@@ -17,4 +19,9 @@ QPixmap ExperimentDataPainter::getImage() const{
     painter.setRenderHint(QPainter::Antialiasing);
     canvas->render(&painter);
     return image;
+}
+
+ExperimentDataPainter::~ExperimentDataPainter(){
+    delete canvas;
+    canvas = nullptr;
 }

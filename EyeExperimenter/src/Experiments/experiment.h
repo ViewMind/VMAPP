@@ -53,6 +53,9 @@ public:
     // Enable and disable the debug mode
     void setDebugMode(bool enable){debugMode = enable;}
 
+    // Whenever not in mouse mode the cursor should be hidden
+    void hideCursor() {this->setCursor(Qt::BlankCursor);}
+
 signals:
 
     // Should be emitted when the experiment is finalized
@@ -107,11 +110,8 @@ protected:
     // Flag used to indicate that debug mode is enabled. To be used to print auxiliary data.
     bool debugMode;
 
-    // Used for setting the data file
-    void setDataFile(QString expFileName, bool overwrite);
-
-    // Given a base name it produces the next name in an increasing list
-    QString getNextName(const QString &baseName);
+    // Sets up the view given the configuration
+    void setupView();
 
 };
 

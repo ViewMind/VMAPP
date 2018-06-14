@@ -71,17 +71,8 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
     cv[CONFIG_PATIENT_AGE] = cmd;
 
     cmd.clear();
+    cmd.optional = true;
     cv[CONFIG_REPORT_LANGUAGE] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_BOOL;
-    cmd.optional = true;
-    cv[CONFIG_ENABLE_REPORT_GEN] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_BOOL;
-    cmd.optional = true;
-    cv[CONFIG_DEMO_MODE] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_BOOL;
@@ -154,21 +145,8 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
 
 
 void EyeReportUI::onPThreadFinished(){
-    // This means that I can show the report if exists.
-    QString reportImage = configuration.getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME  + ".png";
-
-    if (!configuration.getBool(CONFIG_RUN_AND_QUIT)){
-        if (configuration.getBool(CONFIG_ENABLE_REPORT_GEN)){
-            if (QFile(reportImage).exists()){
-                ReportViewer *viewer = new ReportViewer(this);
-                viewer->loadReport(reportImage);
-                viewer->show();
-            }
-        }
-    }
-    else{
-        this->close();
-    }
+    // Quit the application if it was called with the run and quit option (ussually from the server)
+    if (configuration.getBool(CONFIG_RUN_AND_QUIT)) this->close();
 }
 
 void EyeReportUI::onUpdatePBar(qint32 value){
@@ -187,34 +165,12 @@ EyeReportUI::~EyeReportUI()
     delete ui;
 }
 
-void EyeReportUI::testReport(){
-
-    qWarning() << "Test Report";
-
-    DataSet::ProcessingResults res;
-    res[STAT_ID_ENCODING_MEM_VALUE] = 0.00987;
-    res[STAT_ID_FIRST_STEP_FIXATIONS] = 65;
-    res[STAT_ID_MULTIPLE_FIXATIONS] = 16.62;
-    res[STAT_ID_TOTAL_FIXATIONS] = 600;
-    res[STAT_ID_SINGLE_FIXATIONS] = 45.55;
-
-    QHash<qint32,bool> what2Add;
-    what2Add[STAT_ID_TOTAL_FIXATIONS] = true;
-    what2Add[STAT_ID_ENCODING_MEM_VALUE] = true;
-
-    ImageReportDrawer drawer;
-    drawer.drawReport(res,&configuration,what2Add);
-
-    QString reportImage = configuration.getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME  + ".png";
-    if (QFile(reportImage).exists()){
-        ReportViewer *viewer = new ReportViewer(this);
-        viewer->loadReport(reportImage);
-        viewer->show();
-    }
-}
-
 void EyeReportUI::loadArguments(){
     QStringList arguments = QApplication::arguments();
+
+//    for (qint32 i = 0; i < arguments.size(); i++){
+//        log.appendStandard(arguments.at(i));
+//    }
 
     // Parsing arguments to the command line
     QString field = "";
@@ -256,8 +212,9 @@ void EyeReportUI::addToConfigFromCmdLine(const QString &field, const QString &va
             configuration.addKeyValuePair(CONFIG_RUN_AND_QUIT,true);
             // Also ensures fast processing
             configuration.addKeyValuePair(CONFIG_FAST_PROCESSING,true);
+            log.appendStandard("RUN AND QUIT SET");
         }
     }
-    //qWarning() << "Adding" << field << "<|>" <<  value;
+    //log.appendStandard("Adding field,value pair: " + field + "<|>" + value);
     configuration.addKeyValuePair(field,value);
 }

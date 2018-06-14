@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>demo_data/binding_bc_2018_06_03.dat</file>
+        <file>demo_data/binding_uc_2018_06_03.dat</file>
+        <file>demo_data/reading_2018_06_03.dat</file>
+    </qresource>
+</RCC>

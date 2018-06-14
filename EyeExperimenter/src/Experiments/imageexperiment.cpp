@@ -9,8 +9,7 @@ ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent)
     else outputDataFile = FILE_OUTPUT_BINDING_UC;
 
     // Connecting the timer time out with the time out function.
-    stateTimer = new QTimer();
-    connect(stateTimer,&QTimer::timeout,this,&ImageExperiment::onTimeOut);
+    connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::onTimeOut);
 
     // Binding type.
     isBound = bound;
@@ -18,12 +17,6 @@ ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent)
 }
 
 bool ImageExperiment::startExperiment(ConfigurationManager *c){
-
-    if (!c->getBool(CONFIG_BINDING_DEFAULT)){
-        outputDataFile = outputDataFile + "_" + QString::number(c->getInt(CONFIG_BINDING_NUM_TARGETS)) + "_";
-        if (c->getBool(CONFIG_BINDING_USE_NUMBERS)) outputDataFile = outputDataFile + "n";
-        else outputDataFile = outputDataFile + "x";
-    }
 
     if (!Experiment::startExperiment(c)) return false;
 
@@ -39,8 +32,8 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
     newImage(m->getTrial(currentTrial).name,0);
     trialState = TSB_CENTER_CROSS;
     drawCurrentImage();
-    stateTimer->setInterval(1);
-    stateTimer->start();
+    stateTimer.setInterval(1);
+    stateTimer.start();
     timerCounter = timeCountForStart;
     this->show();
     this->activateWindow();
@@ -50,6 +43,8 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
 }
 
 void ImageExperiment::drawCurrentImage(){
+
+    if (state != STATE_RUNNING) return;
 
     if (trialState == TSB_CENTER_CROSS){
         //qWarning() << "DRAWING: Center Cross" << currentTrial;
@@ -77,21 +72,20 @@ void ImageExperiment::drawCurrentImage(){
 
 }
 
-void ImageExperiment::advanceTrial(){
+bool ImageExperiment::advanceTrial(){
+
+    //qWarning() << currentTrial;
 
     if (currentTrial < m->size()-1){
         currentTrial++;
-
         // Adding the entry in the file
         newImage(m->getTrial(currentTrial).name,0);
-        return;
+        return true;
     }
-
     // This is done.
     state = STATE_STOPPED;
-    stateTimer->stop();
-    if (!error.isEmpty()) emit(experimentEndend(ER_WARNING));
-    else emit(experimentEndend(ER_NORMAL));
+    stateTimer.stop();
+    return false;
 }
 
 void ImageExperiment::togglePauseExperiment(){
@@ -135,9 +129,13 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
 
     // Making sure the experiment can be aborted
     if (event->key() == Qt::Key_Escape){
-        stateTimer->stop();
+        stateTimer.stop();
         state = STATE_STOPPED;
         emit(experimentEndend(ER_ABORTED));
+    }
+    else if(event->key() == Qt::Key_M) {
+        nextState();
+        return;
     }
 
     // Key presses are only valid in TSB_TEST state
@@ -163,7 +161,7 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
 
 void ImageExperiment::onTimeOut(){
     timerCounter--;
-    if (timerCounter == 0) {
+    if (timerCounter == 0){
         nextState();
     }
 }
@@ -194,10 +192,13 @@ void ImageExperiment::nextState(){
         break;
     case TSB_FINISH:
         //qWarning() << "ENTER: FINISH" << currentTrial;
-        advanceTrial();
-        trialState = TSB_CENTER_CROSS;
-        drawCurrentImage();
-        timerCounter = timeCountForStart;
+        if (advanceTrial()){
+            trialState = TSB_CENTER_CROSS;
+            drawCurrentImage();
+            timerCounter = timeCountForStart;}
+        else{
+            emit(experimentEndend(ER_NORMAL));
+        }
         return;
     case TSB_SHOW:
         //qWarning() << "ENTER: SHOW" << currentTrial;
@@ -273,5 +274,4 @@ void ImageExperiment::addAnswer(QString ans){
 }
 
 ImageExperiment::~ImageExperiment(){
-    delete stateTimer;
 }

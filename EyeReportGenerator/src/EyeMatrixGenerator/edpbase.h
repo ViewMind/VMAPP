@@ -31,6 +31,7 @@ public:
 
     // This function does the setup based on the type of processing required.
     bool configure(const QString &fileName, const QString &managerConfigData);
+    void initManager(ConfigurationManager *c){ config = c; manager->init(c); }
 
     // Setting the distance to monitor
     void setMonitorGeometry(const MonitorGeometry &mg) {monitorGeometry = mg;}

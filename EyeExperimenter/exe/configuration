@@ -2,17 +2,6 @@
 #                         EyeExperimenter Configuration File                           #
 #--------------------------------------------------------------------------------------#
 
-
-# Output directory. A Directory for each patient is created here 
-output_directory = C:\Users\Viewmind\Documents\ExperimentOutputs;
-
-# The location of the the exe for the processor. If this is empty or commented out, the program
-# will not attempt to launch the processor.
-# eyeprocessor_path = C:\Users\Viewmind\Documents\QtProjects\EyeReportGenerator\exe\release;
-
-# Behaviour regarding existing files.
-overwrite_exp_files = true;
-
 # Dual monitor mode
 dual_monitor_mode = false;
 
@@ -21,25 +10,41 @@ dual_monitor_mode = false;
 x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
+# Runs the ssl_server if it, exists.
+ssl_server_path = C:/Users/Viewmind/Documents/QtProjects/SSLServer/exe/SSLServer.exe;
+
+# The server address and port to which it sends the processing requests
+server_address = localhost;
+tcp_port = 54912;
+
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
 #------------------------------------------------------#
 
 # In the reading experiment, the tolerance for detecting the patient looked at the red dot 
-reading_px_tol_for_target = 18;
+reading_px_tol_for_target = 32;
 
+#------------------------------------------------------#
+#                   BINDING CONFIGS                    #
+#------------------------------------------------------#
+
+# If set as true or if it doesn't exist, Binding will use large targets.
+# Set to false to use small 1sqcm targets.
+binding_default = false;
+
+#------------------------------------------------------#
+#           GENERAL CONFIGURATION OPTIONS              #
+#------------------------------------------------------#
+
+report_language = Spanish;
+demo_mode = true;
 
 #------------------------------------------------------#
 #         OPTIONS MODIFIED BY EXPERIMENTER             #
 #------------------------------------------------------#
 
-patient_name = Juan de Los Palotes;
-patient_age = 56;
-doctor_name = Doctor Genius;
-report_language = English;
-patient_directory = C:\Users\Viewmind\Documents\ExperimentOutputs/Juan_de_Los_Palotes;
-patient_email = jpalotes@pepe.com;
-demo_mode = true;
-binding_default = false;
-binding_num_targets = 3;
-binding_use_numbers = true;
+doctor_name = Miles Genius;
+doctor_email = pepe@pepe.com;
+selected_eyetracker = Mouse;
+output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;
+>>>>>>> develop

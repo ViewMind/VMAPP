@@ -19,7 +19,7 @@ public:
     static const quint8 DPFI_BINDING_UC                               = 2;
     static const quint8 DPFI_BINDING_BC                               = 3;
     static const quint8 DPFI_READING                                  = 4;
-    static const quint8 DPFI_AGE                                      = 5;
+    static const quint8 DPFI_PATIENT_FILE                             = 5;
     static const quint8 DPFI_SEND_INFORMATION                         = 6;
     static const quint8 DPFI_REPORT                                   = 7;
 
@@ -53,6 +53,9 @@ public:
     // Saves a particular field as a file in the specified directory. Returns the full file path if successful.
     // Otherwise returns an empty string.
     QString saveFile(const QString &directory, quint8 fieldInfo);
+
+    // Saves all files in the packet to a directory
+    bool saveFiles(const QString& directory);
 
     // Checks for a field type
     bool hasInformationField(quint8 field_info) {return fields.contains(field_info);}

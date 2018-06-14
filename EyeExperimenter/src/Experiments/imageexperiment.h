@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QGraphicsPixmapItem>
 
+//#include "timer.h"
 #include "experiment.h"
 #include "../../CommonClasses/Experiments/bindingmanager.h"
 
@@ -12,6 +13,7 @@
 #define   TIME_START_NUMBER                             2000
 #define   TIME_NUMBER_TRANSITION                        2000
 #define   TIME_IMAGE_1                                  2000
+//#define   TIME_IMAGE_1                                  20000000000
 #define   TIME_WHITE_TRANSITION                         900
 #define   TIME_IMAGE_2_TIMEOUT                          10000
 #define   TIME_FINISH                                   1000
@@ -39,6 +41,8 @@ protected:
 
 private:
 
+    LogInterface *logger;
+
     // The Binding manager handle
     BindingManager *m;
 
@@ -56,7 +60,8 @@ private:
     bool atLast;
 
     // The timer to automatically go from trial to test image.
-    QTimer *stateTimer;
+    QTimer stateTimer;
+    //Timer stateTimer;
     qint32 timerCounter;
 
     // Flag use to sincronize data writing to the file.
@@ -69,7 +74,7 @@ private:
     void drawCurrentImage();
 
     // Advance to the next image
-    void advanceTrial();
+    bool advanceTrial();
 
     // Functions that moves the state machine
     void nextState();

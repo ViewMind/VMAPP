@@ -1,4 +1,4 @@
- #include "sslmanager.h"
+#include "sslmanager.h"
 
 SSLManager::SSLManager(QObject *parent):QObject(parent)
 {
@@ -17,10 +17,27 @@ void SSLManager::startServer(ConfigurationManager *c){
 
     config = c;
 
+    // Checking that the output repo exists.
+    QDir d(c->getString(CONFIG_RAW_DATA_REPO));
+    if (!d.exists()){
+        addMessage("ERROR","Output repo directory does not exist: " + c->getString(CONFIG_RAW_DATA_REPO));
+        return;
+    }
+
+    // Checking that the processor exists.
+    QFile file(c->getString(CONFIG_EYEPROCESSOR_PATH));
+    if (!file.exists()){
+        addMessage("ERROR","EyeReportGenerator could not be found at: " + c->getString(CONFIG_EYEPROCESSOR_PATH));
+        return;
+    }
+
+    addMessage("PARALLEL PROCESSES: ",c->getString(CONFIG_NUMBER_OF_PARALLEL_PROCESSES));
+
     if (!listener->listen(QHostAddress::Any,(quint16)config->getInt(CONFIG_TCP_PORT))){
         addMessage("ERROR","Could not start SSL Server: " + listener->errorString());
         return;
-    }    
+    }
+
 }
 
 void SSLManager::on_lostConnection(){
@@ -53,15 +70,10 @@ void SSLManager::on_newConnection(){
     sslsocket->setPeerVerifyMode(QSslSocket::VerifyNone);
     sslsocket->startServerEncryption();
 
-    // TODO This should be moved to where the socke is acknowledged to start transmitting.
-    // receivingData.clearBufferedData();
-
 }
 
 // Handling all signals
 void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
-
-    QByteArray ba;
 
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
@@ -80,7 +92,8 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
         break;
     case SSLIDSocket::SSL_SIGNAL_DATA_RX_DONE:
         // Information has arrived ok. Starting the process.
-        sockets.value(socket)->stopTimer();                
+        sockets.value(socket)->stopTimer();
+        lauchEyeReportProcessor(socket);
         break;
     case SSLIDSocket::SSL_SIGNAL_DATA_RX_ERROR:
         sockets.value(socket)->stopTimer();
@@ -99,6 +112,9 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
             removeSocket(socket);
         }
         break;
+    case SSLIDSocket::SSL_SIGNAL_PROCESS_DONE:
+        sendReport(socket);
+        break;
     case SSLIDSocket::SSL_SIGNAL_SSL_ERROR:
         sslErrorsFound(socket);
         break;
@@ -108,15 +124,66 @@ void SSLManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
     }
 }
 
+void SSLManager::sendReport(quint64 socket){
+
+    // Finding the newest rep file in the folder.
+    QString reportfile = getNewestFile(sockets.value(socket)->getWorkingDirectory(),FILE_REPORT_NAME,"rep");
+
+    if (!QFile(reportfile).exists()){
+        addMessage("ERROR","Could not generate report file for working folder: " + sockets.value(socket)->getWorkingDirectory());
+        removeSocket(socket);
+        return;
+    }
+    addMessage("LOG","Report file found : " + reportfile);
+
+    DataPacket tx;
+    if (!tx.addFile(reportfile,DataPacket::DPFI_REPORT)){
+        addMessage("ERROR","Could not add report file to data packet to send from: " + reportfile);
+        removeSocket(socket);
+        return;
+    }
+
+    QByteArray ba = tx.toByteArray();
+    qint64 n = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+    if (n != ba.size()){
+        addMessage("ERROR","Could failure sending the report to host: " + sockets.value(socket)->socket()->peerAddress().toString());
+    }
+
+    addMessage("LOG","Sending report back to host: " + sockets.value(socket)->socket()->peerAddress().toString() + ". Size: " + QString::number(ba.size()) + " bytes");
+
+}
+
+void SSLManager::lauchEyeReportProcessor(quint64 socket){
+    QString error = sockets.value(socket)->setWorkingDirectoryAndSaveAllFiles(config->getString(CONFIG_RAW_DATA_REPO));
+    if (!error.isEmpty()){
+        addMessage("ERROR","Could not save data files in incomming packet: " + error);
+        removeSocket(socket);
+        return;
+    }
+
+    DataPacket d = sockets.value(socket)->getDataPacket();
+
+    // All good and the files have been saved.
+    QStringList arguments;
+    QString dash = "-";
+    arguments << dash + CONFIG_PATIENT_DIRECTORY << sockets.value(socket)->getWorkingDirectory();
+    arguments << dash + CONFIG_DOCTOR_NAME << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+
+    addMessage("LOG","Process information from: " + sockets.value(socket)->socket()->peerAddress().toString());
+    sockets.value(socket)->processData(config->getString(CONFIG_EYEPROCESSOR_PATH),arguments);
+
+}
+
 void SSLManager::requestProcessInformation(){
 
-    if (socketsBeingProcessed.size() < maxNumberOfParalellProcesses){
+    if (socketsBeingProcessed.size() < config->getInt(CONFIG_NUMBER_OF_PARALLEL_PROCESSES)){
         // Request information from the next in queue.
         if (!queue.isEmpty()){
-            quint64 id = queue.removeFirst();
+            quint64 id = queue.first();
+            queue.removeFirst();
             socketsBeingProcessed << id;
             DataPacket tx;
-            tx.addValue(0,DPFI_SEND_INFORMATION);
+            tx.addValue(0,DataPacket::DPFI_SEND_INFORMATION);
             QByteArray ba = tx.toByteArray();
             qint64 num = sockets.value(id)->socket()->write(ba,ba.size());
             if (num != ba.size()){
@@ -125,47 +192,32 @@ void SSLManager::requestProcessInformation(){
             }
             else{
                 sockets.value(id)->startTimeoutTimer(config->getInt(CONFIG_WAIT_DATA_TIMEOUT));
+                addMessage("LOG","Sent request for data to " + sockets.value(id)->socket()->peerAddress().toString());
             }
         }
     }
+
+    addMessage("LOG","Queue contains " + QString::number(queue.size()) + " pending requests");
+    addMessage("LOG","Processing " + QString::number(socketsBeingProcessed.size()) + " at once");
 
 }
 
 void SSLManager::removeSocket(quint64 id){
     if (sockets.contains(id)) {
-        sockets.value(id)->socket()->disconnectFromHost();
+        if (sockets.value(id)->isValid()){
+            sockets.value(id)->socket()->disconnectFromHost();
+        }
         sockets.remove(id);
     }
-    if (receivingData.contains(id)) receivingData.remove(id);
     qint32 index = queue.indexOf(id);
     if (index != -1) queue.removeAt(index);
     if (socketsBeingProcessed.remove(id)){
+        addMessage("LOG","Remaining processing requests: " + QString::number(socketsBeingProcessed.size()));
         requestProcessInformation();
     }
+
 }
 
-void SSLManager::processDataPacket(){
-    QString outputDirectory = "/home/ariela/Workspace/ET/test_output";
-
-    for (qint32 i = 0; i < receivingData.fieldList().size(); i++){
-        if (receivingData.fieldList().at(i).fieldType == DPFT_FILE){
-            QString resultingFile = receivingData.saveFile(outputDirectory,i);
-            if (resultingFile.isEmpty()){
-                addMessage("ERROR", "Could not save file field " + QString::number(i));
-            }
-            else addMessage("LOG", "Saved file field " + QString::number(i));
-        }
-        else if (receivingData.fieldList().at(i).fieldType == DPFT_REAL_VALUE){
-            addMessage("LOG","Received value : " + QString::number(receivingData.fieldList().at(i).data.toDouble()));
-        }
-        else if (receivingData.fieldList().at(i).fieldType == DPFT_STRING) {
-            addMessage("LOG","Received string : " + receivingData.fieldList().at(i).data.toString());
-        }
-        else{
-            addMessage("ERROR","Received unknown field type");
-        }
-    }
-}
 
 /*****************************************************************************************************************************
  * Message managging functions
@@ -180,7 +232,10 @@ void SSLManager::socketErrorFound(quint64 id){
     QAbstractSocket::SocketError error = sockets.value(id)->socket()->error();
     QHostAddress addr = sockets.value(id)->socket()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    addMessage("ERROR",QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
+    if (error != QAbstractSocket::RemoteHostClosedError)
+        addMessage("ERROR",QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
+    else
+        addMessage("LOG",QString("Closed connection from Address: ") + addr.toString());
 
     // Eliminating it from the list.
     removeSocket(id);

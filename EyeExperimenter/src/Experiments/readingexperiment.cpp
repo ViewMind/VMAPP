@@ -244,3 +244,6 @@ QList<qint32> ReadingExperiment::calculateWordAndCharacterPostion(qint32 x, qint
     }
     return QList<qint32>() << wordIndex << charIndex;
 }
+
+ReadingExperiment::~ReadingExperiment(){
+}

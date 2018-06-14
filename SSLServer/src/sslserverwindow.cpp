@@ -21,6 +21,17 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
     cmd.clear();
     cv[CONFIG_RAW_DATA_REPO] = cmd;
 
+    cmd.clear();
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_NUMBER_OF_PARALLEL_PROCESSES] = cmd;
+
+    cmd.clear();
+    cv[CONFIG_EYEPROCESSOR_PATH] = cmd;
+
+    cmd.clear();
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_WAIT_DATA_TIMEOUT] = cmd;
+
     config.setupVerification(cv);
     if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
         log.appendError("Configuration file errors:<br>"+config.getError());
@@ -29,7 +40,10 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
 
     connect(&sslManager,&SSLManager::newMessages,this,&SSLServerWindow::on_messagesAvailable);
 
-    sslManager.startServer((quint16) config.getInt(CONFIG_TCP_PORT));
+    // Multiplying timeout times 1000 to turn into ms.
+    config.addKeyValuePair(CONFIG_WAIT_DATA_TIMEOUT,config.getInt(CONFIG_WAIT_DATA_TIMEOUT)*1000);
+
+    sslManager.startServer(&config);
 
     if (!QSslSocket::supportsSsl()){
         log.appendError("No support for SSL found. Cannot continue");
@@ -37,14 +51,6 @@ SSLServerWindow::SSLServerWindow(QWidget *parent) :
     }
 
     log.appendStandard("Starting server...");
-
-//    // Attempting to call eye processor
-//    QString program = "C:/Users/Viewmind/Documents/QtProjects/EyeReportGenerator/exe/release/EyeReportGen.exe";
-//    QStringList arguments;
-//    arguments << "argumento 1" << "argumento 2";
-
-//    QProcess *myProcess = new QProcess(parent);
-//    myProcess->start(program, arguments);
 
 }
 
@@ -55,7 +61,13 @@ void SSLServerWindow::on_messagesAvailable(){
     }
 }
 
+void SSLServerWindow::on_pbClearConsole_clicked()
+{
+    ui->pteLog->clear();
+}
+
 SSLServerWindow::~SSLServerWindow()
 {
     delete ui;
 }
+

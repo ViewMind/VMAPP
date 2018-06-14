@@ -20,6 +20,7 @@ public:
 
     // Advances to the next calibration point. Returns true ONLY when the calibration is done.
     bool isInCalibrationPoint(int x, int y);
+    void setAutoCalibration(bool autoc) {autoCalibrate = autoc;}
 
 signals:
     void calibrationCanceled();
@@ -34,6 +35,7 @@ private:
     QList<QPoint> calibrationPoints;
     qint32 currentPoint;
     qreal R;
+    bool autoCalibrate;
 
     void drawCalibrationPoint();
 

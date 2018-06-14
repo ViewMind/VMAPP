@@ -1,0 +1,154 @@
+# UI Language file: English
+
+#********************************* VIEWHOME SCREEN *********************************
+
+viewhome_btnConfSettings = CONFIGURE SETTINGS;
+viewhome_slideTitle = Start your evaluation;
+viewhome_description = Using high-precision Eye-Tracking, in <b> a 10-minutes, <br>
+non-invasive and standarized test</b>, we are able to detect <br>
+Mild Cognitive Impairment and to predict the onset of <br>
+Alzheimer's Disease and other dementias, years before <br>
+symptoms are visible.;
+viewhome_btnGetStarted = GET STARTED;
+
+
+#********************************* SETTINGS DIALOG *********************************
+viewsettings_diagSubTitle = Before starting please fill the information below;
+viewsettings_diagTitle = CONFIGURE SETTINGS;
+viewsettings_diagLabelDoctor = Doctor's name;
+viewsettings_diagLabelLang = Language for EyeExperimenter, Report and Reading experiment;
+viewsettings_diagLabelET = EyeTracker selection;
+viewsettings_diagLabelEmail = Email;
+viewsettings_diagBtnOK = OK;
+viewsettings_diagLabelRepo = Work directory;
+viewsettings_diagCboxDemo = Demo mode;
+viewsettings_diagCboxDualMonitor = Dual monitor mode;
+viewsettings_error_invalid_repo = Please select a valid work directory;
+viewsettings_error_invalid_dr = Doctor's name cannot be left empty;
+
+#********************************* PATIENT'S REGISTRATION SCREEN *********************************
+viewpatientreg_viewTitle = Patient's registration;
+viewpatientreg_viewSubTitle = Please complete the information below;
+viewpatientreg_liPatientPlaceholder = Patient's name;
+viewpatientreg_liAgePlaceholder = Age;
+viewpatientreg_liEmailPlaceholder = Email;
+viewpatientreg_labelExperimentTitle = Study;
+viewpatientreg_cboxReading = Reading;
+viewpatientreg_cboxBindingUC = Unbound Colors;
+viewpatientreg_cboxBindingBC = Bound Colors;
+viewpatientreg_cboxFielding = N-Back Test;
+viewpatientreg_labelInstruction = Choose the tests you'll be taking;
+viewpatientreg_btnCancel = CANCEL;
+viewpatientreg_btnOK = OK;
+viewpatientreg_error_empty_patient_name = Patient's name must be entered;
+viewpatientreg_error_empty_patient_age = Patient's age must be entered;
+viewpatientreg_labelNoInstructionSetError = At least one study must be selected;
+
+#********************************* CALIBRATION START SCREEN DIALOG *********************************
+viewcalibstart_viewTitle = Calibration;
+viewcalibstart_viewSubTitle = In order to proceed the eye tracker must be calibrated.;
+viewcalibstart_btnStart = START CALIBRATION;
+
+#********************************* CALIBRATION DONE SCREEN DIALOG *********************************
+viewcalibdone_viewTitle = CALIBRATION DONE;
+viewcalibdone_btnContinue = CONTINUE;
+
+
+#********************************* EXPERIMENT PRESENTATION *********************************
+viewpresentexp_itemReading = Reading Evaluation;
+viewpresentexp_itemBindingUC = Unbound Colors Evaluation;
+viewpresentexp_itemBindingBC = Bound Colors Evaluation;
+viewpresentexp_itemFielding = N-Back Evaluation;
+
+viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
+When your gaze is located on the dot, it will vanish<br>
+and the sentence will appear. </b>Read the sentence silently</b><br>
+and a normal pace. Indicate the end of the reading <br>
+by looking at the <b> red dot on the lower right corner.</b><br><br>
+Repeat until the test is over.<br><br>
+During the evaluation you will be asked to <b>answer</b><br>
+<b>questions</b> about the content of the sentences.<br>
+<b>Click on the correct answer and continue with test</b>;
+
+viewpresentexp_bindingUCExp = Two images will appear on the screen. Each of them has a <br>
+colored shape, inside a squared colored frame. After 2 seconds,<br>
+the images will vanish and a new pair of images will appear<br><br>
+<b>Press "S" (same)</b> if both pair of images have the <b>same color</b><br>
+arrangements or <b>"D" (different)</b> if any of <b>two images swapped either</b><br>
+<b>the color from the cross or the from the squared frame</b>
+<br><br>
+The first 10 images are meant for practice.<br>
+They won't be considered in the results.;
+
+viewpresentexp_bindingBCExp = Two images will appear on the screen. Each of them has a <br>
+colored shape, inside a squared colored frame. After 2 seconds,<br>
+the images will vanish and a new pair of images will appear<br><br>
+<b>Press "S" (same)</b> if both pair of images have the <b>same color</b><br>
+arrangements or <b>"D" (different)</b> if any <b>colors of the two</b><br> 
+<b>images was replaced by a new color </b><br><br>
+The first 10 images are meant for practice.<br>
+They won't be considered in the results.;
+
+viewpresentexp_fieldingExp = Explanation of the<br><b>N-Back </b> study;
+
+viewpresentexp_btnContinue = CONTINUE;
+
+#********************************* DOCTOR DIALOG *********************************
+viewdrdiag_btnChangeSettings = CHANGE SETTINGS;
+
+#********************************* RESULTS SCREEN *********************************
+viewresults_title = Results;
+viewresults_labelPatient = Patient;
+viewresults_labelAge = Age;
+viewresults_labelDate = Date;
+viewresults_labelDrName = Doctor's Name;
+viewresults_labelExp = The following is the interpretation of the data<br> 
+obtained through a neurocognitive evaluation performed <br>
+using Eye-Tracking technique<br><br>
+The result of each function analyzed, is stated in <br>
+the following code:;
+
+viewresults_labelSquareGreen = No relevant functional problems were detected;
+viewresults_labelSquareYellow = Mildly deficient functioning, not necessarily <br>pathological;
+viewresults_labelSquareRed = Completely deficient and/or pathological <br>functioning;
+
+viewresults_labelAttetionalProcesses = ATTENTIONAL PROCESSES;
+viewresults_labelExecutivesProcesses = EXECUTIVE PROCESSES;
+viewresults_labelWorkingMemmory = WORKING MEMORY;
+viewresults_labelRetrievalMemory = RETRIEVAL MEMORY;
+viewresults_labelVisualShortTermMemory = VISUAL SHORT TERM MEMORY;
+
+viewresults_labelExecutivesProcessesRef = Anterior cingulate cortex;
+viewresults_labelWorkingMemmoryRef = Prefrontal cortex;
+viewresults_labelRetrievalMemoryRef = Dorsolateral prefrontal cortex, <br> Hippocampus, Subiculum;
+viewresults_labelVisualShortTermMemoryRef = Entorhinal and Perirhinal cortex,<br>MediumTemporal Lobe;
+
+viewresults_labelAttetionalProcessesExp = Reference parameter LOWER to 550;
+viewresults_labelExecutivesProcessesExp = Reference Parameter 7 - 18;
+viewresults_labelWorkingMemmoryExp = Reference parameter 70 - 90;
+viewresults_labelRetrievalMemoryExp = Reference parameter 23 - 39;
+viewresults_labelVisualShortTermMemoryExp = Reference parameter HIGHER or EQUAL to 0.009;
+
+viewresults_save_report = Save report;
+
+viewresults_btnDownload = DOWNLOAD;
+viewresults_btnFinalize = FINISH;
+
+#********************************* ERROR MESSAGES *********************************
+# Error messages are split into title
+error_loading_config = Program cannot continue<>A fatal error has occurred loading the configuration.<br>The program will close now; 
+error_patient_dir = Patient folder<>Could not create the patient directory;
+error_et_connect = Eyetracker connection<>Eyetracker connection failed.<br>Please try again;
+error_et_calibrate = Eyetracker calibration<>Eyetracker is not calibrated.<br>Please try again;
+error_programming = Programming error<>Contact Ariel Arelovich;
+error_experiment_end = Study ended abruptly<>The study did not end as expected<br>Please try again;
+error_no_ssl = SLL not detected<>SSL Libraries were not detected.<br>Server request for reports will not be possible;
+error_server_comm = Communication error<>It was not possible to establish a link with the server<br>Please, try again;
+
+
+#********************************* INFORMATION MESSAGES *********************************
+msg_change_lang = Change language<>The program must be restarted to change the language;
+msg_request_report = Processing...<>Please wait while the report information is obtained;
+msg_report_generation = Generating report<>Your report will be ready shortly...;
+
+

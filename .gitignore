@@ -6,10 +6,11 @@ BindingDesigner/exe/
 *MOCS*
 *OBJS*
 *Makefile*
-EyeExperimenter/exe/release/
-EyeReportGenerator/exe/release/
 SSLClientDev/exe/
-SSLServer/bin/release/
-SSLServer/bin/SSLServer
-SSLServer/bin/qrc_certificates.cpp
+SSLServer/exe
+EyeReportGenerator/exe/
+EyeExperimenter/exe
+ETFollower/exe/
+ReportViewerDev/
+*.autosave
 *.tmp*

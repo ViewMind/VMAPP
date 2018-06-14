@@ -1,35 +1,38 @@
-#include "maingui.h"
-#include <QApplication>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QIcon>
 
-#ifdef SHOW_CONSOLE
-#include <windows.h>
-#include <stdio.h>
-#endif
+#include "../../CommonClasses/LogInterface/loginterface.h"
+#include "loader.h"
+#include "flowcontrol.h"
+
+// Global Configuration
+ConfigurationManager configuration;
 
 int main(int argc, char *argv[])
 {
 
-#ifdef SHOW_CONSOLE
-    // detach from the current console window
-    // if launched from a console window, that will still run waiting for the new console (below) to close
-    // it is useful to detach from Qt Creator's <Application output> panel
-    FreeConsole();
+    //QGuiApplication app(argc, argv);
+    QApplication app(argc,argv);
 
-    // create a separate new console window
-    AllocConsole();
+    // The icon
+    app.setWindowIcon(QIcon(":/images/viewmind.png"));
 
-    // attach the new console to this application's process
-    AttachConsole(GetCurrentProcessId());
 
-    // reopen the std I/O streams to redirect I/O to the new console
-    freopen("CON", "w", stdout);
-    freopen("CON", "w", stderr);
-    freopen("CON", "r", stdin);
-#endif
+    // The QML Engine
+    QQmlApplicationEngine engine;
 
-    QApplication a(argc, argv);
-    MainGUI w;
-    w.show();
+    // Laods all language related data
+    Loader loader(nullptr,&configuration);
+    FlowControl flowControl(nullptr,&configuration);
+    engine.rootContext()->setContextProperty("loader", &loader);
+    engine.rootContext()->setContextProperty("flowControl", &flowControl);
 
-    return a.exec();
+    // Rendering the QML files
+    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+    if (engine.rootObjects().isEmpty())
+        return -1;
+
+    return app.exec();
 }

@@ -7,7 +7,6 @@
 #include <QDate>
 #include "dataset.h"
 #include "csvcheckedreader.h"
-#include "imagereportdrawer.h"
 
 // Reading processing parameters
 #define   READING_N_TO_FILTER_FROM_START                10

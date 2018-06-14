@@ -14,6 +14,8 @@
 #include <QtMath>
 
 // Binding target dimensions (in mm)
+#define   BINDING_AREA_WIDTH                            256
+#define   BINDING_AREA_HEIGHT                           192
 #define   BINDING_LARGE_TARGET_MARK                     "LARGE_TARGETS"
 #define   BINDING_TARGET_SIDE                           10
 #define   BINDING_TARGET_HS                             0.25
@@ -84,6 +86,9 @@ public:
     bool getUsesNumbers() const {return usesNumbers;}
 
 private:
+
+    // For debugging
+    LogInterface logger;
 
     // Lines used to draw a cross in the center of the screen
     QLineF line0, line1;

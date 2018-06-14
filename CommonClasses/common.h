@@ -3,15 +3,9 @@
 
 #include <QDebug>
 #include <QDir>
-// #include <QHash>
-// #include <QVariantHash>
-// #include <QGraphicsScene>
-// #include <QPainter>
-// #include <QImage>
-// #include <QStringList>
-
-// Defining text codec for all text files.
-#define   COMMON_TEXT_CODEC                             "UTF-8"
+#include <QDesktopWidget>
+#include <QApplication>
+#include "LogInterface/loginterface.h"
 
 // Which value is which eye.
 #define   EYE_L                                         0
@@ -20,6 +14,7 @@
 // Configuration key values (cmd names in the configuration file)
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
 #define   CONFIG_DOCTOR_NAME                            "doctor_name"
+#define   CONFIG_DOCTOR_EMAIL                           "doctor_email"
 #define   CONFIG_MOVING_WINDOW_DISP                     "moving_window_max_dispersion"
 #define   CONFIG_MIN_FIXATION_LENGTH                    "minimum_fixation_length"
 #define   CONFIG_SAMPLE_FREQUENCY                       "sample_frequency"
@@ -34,7 +29,6 @@
 #define   CONFIG_RAW_DATA_REPO                          "raw_data_repo"
 #define   CONFIG_READING_PX_TOL                         "reading_px_tol_for_target"
 #define   CONFIG_EYEPROCESSOR_PATH                      "eyeprocessor_path"
-#define   CONFIG_OVERWRITE_BEHAVIOUR                    "overwrite_exp_files"
 #define   CONFIG_DUAL_MONITOR_MODE                      "dual_monitor_mode"
 #define   CONFIG_EXP_CONFIG_FILE                        "exp_config_file"
 #define   CONFIG_DATA_OUTPUT_FILE                       "data_output_file"
@@ -42,12 +36,9 @@
 #define   CONFIG_PATIENT_NAME                           "patient_name"
 #define   CONFIG_ADD_TO_REPORT                          "add_to_report"
 #define   CONFIG_REPORT_LANGUAGE                        "report_language"
-#define   CONFIG_ENABLE_REPORT_GEN                      "enable_report_generation"
 #define   CONFIG_PATIENT_EMAIL                          "patient_email"
 #define   CONFIG_REPORT_NO_LOGO                         "no_logo_in_report"
 #define   CONFIG_DEMO_MODE                              "demo_mode"
-#define   CONFIG_BINDING_NUM_TARGETS                    "binding_num_targets"
-#define   CONFIG_BINDING_USE_NUMBERS                    "binding_use_numbers"
 #define   CONFIG_BINDING_DEFAULT                        "binding_default"
 #define   CONFIG_BC_FILE_FILTER                         "bc_file_filter"
 #define   CONFIG_UC_FILE_FILTER                         "uc_file_filter"
@@ -59,6 +50,21 @@
 #define   CONFIG_RUN_AND_QUIT                           "run_and_quit"
 #define   CONFIG_NUMBER_OF_PARALLEL_PROCESSES           "number_of_paralell_processes"
 #define   CONFIG_WAIT_DATA_TIMEOUT                      "wait_data_timeout"
+#define   CONFIG_RESOLUTION_WIDTH                       "config_resolution_width"
+#define   CONFIG_RESOLUTION_HEIGHT                      "config_resolution_height"
+#define   CONFIG_SELECTED_ET                            "selected_eyetracker"
+#define   CONFIG_PATIENT_REPORT_DIR                     "patient_report_dir"
+#define   CONFIG_REPORT_DATE                            "report_date"
+#define   CONFIG_SSLSERVER_PATH                         "ssl_server_path"
+#define   CONFIG_REPORT_PATH                            "report_path"
+#define   CONFIG_IMAGE_REPORT_PATH                      "image_report_path"
+
+// Result values for the Result EyeReport Generator File
+#define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
+#define   CONFIG_RESULTS_EXECUTIVE_PROCESSES            "executive_proceseses"
+#define   CONFIG_RESULTS_WORKING_MEMORY                 "working_memory"
+#define   CONFIG_RESULTS_RETRIEVAL_MEMORY               "retrieval_memory"
+#define   CONFIG_RESULTS_MEMORY_ENCODING                "memory_encoding"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"
@@ -67,9 +73,11 @@
 #define   CONFIG_P_EXP_READING                          "reading"
 #define   CONFIG_P_LANG_ES                              "Spanish"
 #define   CONFIG_P_LANG_EN                              "English"
+#define   CONFIG_P_ET_MOUSE                             "Mouse"
+#define   CONFIG_P_ET_REDM                              "REDm"
+#define   CONFIG_P_ET_GP3HD                             "GP3HD"
 
 // Indexes of the selected experiments
-#define   EXP_SEQ_READING_IMAGES_UC_BC                  0
 #define   EXP_READING                                   1
 #define   EXP_BINDING_UC                                2
 #define   EXP_BINDING_BC                                3
@@ -94,26 +102,24 @@
  * base name.
  * **************************************************************************************/
 
-static inline QString getNewestFile(const QString &directory, const QString &baseName){
+static inline QString getNewestFile(const QString &directory, const QString &baseName, const QString &extension = "dat"){
     // Getting all the files with the correct based name and sorted by modification time.
     QDir dir(directory);
     QStringList filter;
-    filter << baseName + "_*.dat";
+    filter << baseName + "_*." + extension;
     QStringList allfiles = dir.entryList(filter,QDir::Files,QDir::Time);
 
-    // This is used to simply look for simple bc uc files when no expanded versions are desired.
-    qint32 i = 0;
-    qint32 targetFileNameSize = baseName.size() + 9; // 9 = 1 underscore, 4 numbers, 1 dot, and 3 because of the dat
-
-    // qWarning() << "Searching for files with the base" << baseName;
-
-    while (i < allfiles.size()){
-        if (allfiles.at(i).size() != targetFileNameSize){
-            allfiles.removeAt(i);
-        }
-        else i++;
-    }
-
+/// TODO: Fix for enhanced EBO versions
+//    This is used to simply look for simple bc uc files when no expanded versions are desired.
+//    qint32 i = 0;
+//    qint32 targetFileNameSize = baseName.size() + 9; // 9 = 1 underscore, 4 numbers, 1 dot, and 3 because of the dat
+//    // qWarning() << "Searching for files with the base" << baseName;
+//    while (i < allfiles.size()){
+//        if (allfiles.at(i).size() != targetFileNameSize){
+//            allfiles.removeAt(i);
+//        }
+//        else i++;
+//    }
 
     if (allfiles.isEmpty()) return "";
     return directory + "/" + allfiles.first();

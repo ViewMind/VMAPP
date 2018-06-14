@@ -1,12 +1,28 @@
 <RCC>
-    <qresource prefix="/images">
-        <file>images/binding_bc_English.jpeg</file>
-        <file>images/binding_uc_English.jpeg</file>
-        <file>images/binding_uc_Spanish.jpeg</file>
-        <file>images/reading_English.jpeg</file>
-        <file>images/reading_Spanish.jpeg</file>
-        <file>images/fielding_English.jpeg</file>
-        <file>images/fielding_Spanish.jpeg</file>
-        <file>images/binding_bc_Spanish.jpeg</file>
+    <qresource prefix="/">
+        <file>images/ESQUINA_DERECHA_ARRIBA.png</file>
+        <file>images/ESQUINA_IZQUIERDA_ABAJo.png</file>
+        <file>images/ILUSTRACION.png</file>
+        <file>images/LOGO.png</file>
+        <file>images/AVATAR_MEDICO.png</file>
+        <file>images/OJO.png</file>
+        <file>images/CALIBRACION.png</file>
+        <file>images/01.png</file>
+        <file>images/01d.png</file>
+        <file>images/02.png</file>
+        <file>images/02d.png</file>
+        <file>images/03.png</file>
+        <file>images/03d.png</file>
+        <file>images/04.png</file>
+        <file>images/04d.png</file>
+        <file>images/CHECK.png</file>
+        <file>images/AVATAR_CELESTE.png</file>
+        <file>images/viewmind.png</file>
+        <file>images/bound.gif</file>
+        <file>images/reading.gif</file>
+        <file>images/unbound.gif</file>
+        <file>images/fielding.gif</file>
+        <file>images/ERROR_ILUS.png</file>
+        <file>images/LOADING.gif</file>
     </qresource>
 </RCC>

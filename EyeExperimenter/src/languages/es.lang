@@ -1,0 +1,152 @@
+# UI Language file: Spanish
+
+#********************************* VIEWHOME SCREEN *********************************
+
+viewhome_btnConfSettings = PREFERENCIAS;
+viewhome_slideTitle = Comenzar su evaluación;
+viewhome_description = Utilizando Seguimiento Ocular de alta precisión, en <br>
+<b>una prueba estándar, no invasiva de 10 minutos</b>, podemos <br>
+detectar Dificultades Cognitivas Leves y predecir <br>
+el comienzo de Síndrome de Alzheimer y otras demencias, <br>
+años antes de que sus síntomas sean visibles.;
+
+viewhome_btnGetStarted = COMENZAR;
+
+
+#********************************* SETTINGS DIALOG *********************************
+viewsettings_diagSubTitle = Antes de comenzar, por favor llene los siguientes datos;
+viewsettings_diagTitle = PREFERENCIAS;
+viewsettings_diagLabelDoctor = Nombre del doctor;
+viewsettings_diagLabelLang = Lenguage utilizado por el programa, el informe y el experimento de lectura;
+viewsettings_diagLabelET = Selección de EyeTracker;
+viewsettings_diagLabelEmail = Email;
+viewsettings_diagBtnOK = OK;
+viewsettings_diagCboxDemo = Modo demo;
+viewsettings_diagCboxDualMonitor = Habilitar segundo monitor;
+viewsettings_diagLabelRepo = Directorio de trabajo;
+viewsettings_error_invalid_repo = Por favor elija un directorio de trabajo válido;
+viewsettings_error_invalid_dr = El nombre del doctor no puede quedar vacio;
+
+#********************************* PATIENT'S REGISTRATION SCREEN *********************************
+viewpatientreg_viewTitle = Registro de paciente;
+viewpatientreg_viewSubTitle = Por favor, complete la siguiente información;
+viewpatientreg_liPatientPlaceholder = Nombre del paciente;
+viewpatientreg_liAgePlaceholder = Edad;
+viewpatientreg_liEmailPlaceholder = Email;
+viewpatientreg_labelExperimentTitle = Estudio;
+viewpatientreg_cboxReading = Lectura;
+viewpatientreg_cboxBindingUC = Colores Unbound;
+viewpatientreg_cboxBindingBC = Colores Bound;
+viewpatientreg_cboxFielding = N-Back Test;
+viewpatientreg_labelInstruction = Elija las pruebas que tomará;
+viewpatientreg_btnCancel = CANCELAR;
+viewpatientreg_btnOK = OK;
+viewpatientreg_error_empty_patient_name = Se debe ingresar el nombre del paciente;
+viewpatientreg_error_empty_patient_age = Se debe ingresar la edad del paciente;
+viewpatientreg_labelNoInstructionSetError = Se debe elegir al menos un estudio;
+
+#********************************* CALIBRATION START SCREEN DIALOG *********************************
+viewcalibstart_viewTitle = Calibración;
+viewcalibstart_viewSubTitle = Para proceder, el EyeTracker se debe calibrar;
+viewcalibstart_btnStart = COMENZAR CALIBRACIÓN;
+
+#********************************* CALIBRATION DONE SCREEN DIALOG *********************************
+viewcalibdone_viewTitle = FIN DE LA CALIBRACIÓN;
+viewcalibdone_btnContinue = CONTINUAR;
+
+#********************************* EXPERIMENT PRESENTATION *********************************
+viewpresentexp_itemReading = Evaluación de Lectura;
+viewpresentexp_itemBindingUC = Evaluación Colores Unbound;
+viewpresentexp_itemBindingBC = Evaluación Colores Bound;
+viewpresentexp_itemFielding = Evaluación N-Back;
+
+viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
+Cuando su mira se encuentre ubicada sobre el punto, este desaparecerá <br>
+y la oración se dibujará. <b>Lea la oración en silencio</b> <br>
+y a un paso normal. Indique el final de la lectura mirando<br> 
+al <b>punto rojo en la esquina derecha inferior.</b><br><br> 
+Repita los pasos hasta finalizar la evaluación. <br><br>
+Durante la evaluación deberá <b>responder preguntas</b> <br>
+acerca de los contenidos de las oraciones. <br>
+<b>Haga click con el mouse en la respuesta correcta</b> <br>
+para continuar con la prueba.;
+
+viewpresentexp_bindingUCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
+de color dentro de de un marco cuadrado de color. Luego de 2 segundos, <br>
+las images se desvanecerán y un nuevo par de imágenes se aparecerán. <br><br>
+<b>Presione "S"</b> si ambos pares de imágenes contienen los mismos colores <br>
+or <b>presione "D" </b> si alguna de las dos imágenes intercambió los <br>
+colores de las cruces o lo de los marcos. <br><br>
+Las primeras 10 imagenes serán de prueba. <br>
+No serán consideradas en los resultados.;
+
+viewpresentexp_bindingBCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
+de color dentro de de un marco cuadrado de color. Luego de 2 segundos, <br>
+las images se desvanecerán y un nuevo par de imágenes se aparecerán. <br><br>
+<b>Presione "S"</b> si ambos pares de imágenes contienen los mismos colores <br>
+or <b>presione "D" </b> si alguno <b>de los colores de las dos</b> <br>
+<b>imágnes fueron reemplazados por un nuevo color</b> <br><br>
+Las primeras 10 imagenes serán de prueba. <br>
+No serán consideradas en los resultados.;
+
+viewpresentexp_fieldingExp = Expliación de la Evaluación <br><b>N-Back</b>;
+
+viewpresentexp_btnContinue = CONTINUAR;
+
+#********************************* DOCTOR DIALOG *********************************
+viewdrdiag_btnChangeSettings = PREFERENCIAS;
+
+#********************************* RESULTS SCREEN *********************************
+viewresults_title = Resultados;
+viewresults_labelPatient = Paciente;
+viewresults_labelAge = Edad;
+viewresults_labelDate = Fecha;
+viewresults_labelDrName = Nombre del doctor;
+viewresults_labelExp = La siguiente es una interpretación de los datos obtenidos <br>
+a través una evaluación neurocognitiva realizada a través <br>
+de la técnica de seguimiento ocular.<br><br>
+El resultado de cada función analizada <br>
+se muestra en el siguiente código:;
+
+viewresults_labelSquareGreen = No se encontraron problemas funcionales relevantes;
+viewresults_labelSquareYellow = Funcionamiento ligeramente deficiente, no es <br>necesariamente patológico.;
+viewresults_labelSquareRed = Funcionamiento patológico completamente deficiente <br> y/o patológico.;
+
+viewresults_labelAttetionalProcesses = PROCESOS ATENCIONALES;
+viewresults_labelExecutivesProcesses = PROCESOS EJECUTIVOS;
+viewresults_labelWorkingMemmory = MEMORIA DE TRABAJO;
+viewresults_labelRetrievalMemory = MEMORIA DE RECUPERACIÓN;
+viewresults_labelVisualShortTermMemory = MEMORIA VISUAL DE CORTO PLAZO;
+
+viewresults_labelExecutivesProcessesRef = Cortex del Cingulo Anterior;
+viewresults_labelWorkingMemmoryRef = Corteza Prefrontal;
+viewresults_labelRetrievalMemoryRef = Corteza frontal Dorsolateral <br> Hipocampo, Subiculum;
+viewresults_labelVisualShortTermMemoryRef = Corteza Entorrinal y Perirrinal <br> Lóbulo Temporal Medio;
+
+viewresults_labelAttetionalProcessesExp = Parámetro referencia MENOR a 550;
+viewresults_labelExecutivesProcessesExp = Parámetro referencia 7 - 18;
+viewresults_labelWorkingMemmoryExp = Parámetro referencia 70 - 90;
+viewresults_labelRetrievalMemoryExp = Parámetro referencia 23 - 39;
+viewresults_labelVisualShortTermMemoryExp = Parámetro referencia MAYOR o IGUAL a 0.009;
+
+viewresults_save_report = Guardar reporte;
+
+viewresults_btnDownload = DESCARGAR;
+viewresults_btnFinalize = FINALIZAR;
+
+#********************************* ERROR MESSAGES *********************************
+# Error messages are split into title by a <>
+error_loading_config = El programa no<br>puede continuar<>Un error crítico ha ocurrido al cargar la<br>configuración. El programa se cerrará;
+error_patient_dir = Directorio del paciente<>No se ha podido crear el directorio del paciente;
+error_et_connect = Conexión al Eyetracker<>La conexión al Eyetracker ha fallado<br>Por favor inténtelo nuevamente;
+error_et_calibrate = Calibración Eyetracker<>El Eyetracker no está calibrado.<br>Por favor inténtelo nuevamente;
+error_programming = Error de programación<>Contactar a Ariel Arelovich;
+error_experiment_end = Fin de estudio anormal<>El estudio no terminó como corresponde<br>Por favor inténtelo nuevamente;
+error_no_ssl = SSL no se detectó<>No se detectaron las bibliotecas de SSL<br>No será posible la comunicación con el servidor;
+error_server_comm = Error de comunicación<>No se pudo establecer un vinculo con servidor.<br>Por favor, detectar nuevamente;
+
+#********************************* INFORMATION MESSAGES *********************************
+msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;
+msg_request_report = Procesando...<>Por favor espere mientras se obtiene la información del reporte;
+msg_report_generation = Generando reporte<>En un instante su informe estará listo...;
+

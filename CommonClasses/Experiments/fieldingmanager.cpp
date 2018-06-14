@@ -1,7 +1,6 @@
 #include "fieldingmanager.h"
 
-FieldingManager::FieldingManager()
-{
+FieldingManager::FieldingManager(){
 
 }
 
@@ -71,46 +70,50 @@ void FieldingManager::init(ConfigurationManager *c){
 }
 
 void FieldingManager::drawBackground(){
-    qint32 WScreen = canvas->width();
-    qint32 HScreen = canvas->height();
-    qint32 generalOffsetX = (WScreen - AREA_WIDTH)/2;
-    qint32 generalOffsetY = (HScreen - AREA_HEIGHT)/2;
+
+    qreal kx = config->getReal(CONFIG_XPX_2_MM);
+    qreal ky = config->getReal(CONFIG_YPX_2_MM);
+
+    qint32 WScreen = AREA_WIDTH/kx;
+    qint32 HScreen = AREA_HEIGHT/ky;
+    qint32 generalOffsetX = (ScreenResolutionWidth - WScreen)/2;
+    qint32 generalOffsetY = (ScreenResolutionHeight - HScreen)/2;
 
     // Background
-    canvas->addRect(generalOffsetX,generalOffsetY,AREA_WIDTH,AREA_HEIGHT,QPen(),QBrush(Qt::black));
+    canvas->addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
 
     // Rectangle origins in order, in order
     rectangleLocations.clear();
-    rectangleLocations << QPoint(generalOffsetX+RECT_0_X,generalOffsetY+RECT_0_Y);
-    rectangleLocations << QPoint(generalOffsetX+RECT_1_X,generalOffsetY+RECT_1_Y);
-    rectangleLocations << QPoint(generalOffsetX+RECT_2_X,generalOffsetY+RECT_2_Y);
-    rectangleLocations << QPoint(generalOffsetX+RECT_3_X,generalOffsetY+RECT_3_Y);
-    rectangleLocations << QPoint(generalOffsetX+RECT_4_X,generalOffsetY+RECT_4_Y);
-    rectangleLocations << QPoint(generalOffsetX+RECT_5_X,generalOffsetY+RECT_5_Y);
+    rectangleLocations << QPoint(generalOffsetX+RECT_0_X/kx,generalOffsetY+RECT_0_Y/ky);
+    rectangleLocations << QPoint(generalOffsetX+RECT_1_X/kx,generalOffsetY+RECT_1_Y/ky);
+    rectangleLocations << QPoint(generalOffsetX+RECT_2_X/kx,generalOffsetY+RECT_2_Y/ky);
+    rectangleLocations << QPoint(generalOffsetX+RECT_3_X/kx,generalOffsetY+RECT_3_Y/ky);
+    rectangleLocations << QPoint(generalOffsetX+RECT_4_X/kx,generalOffsetY+RECT_4_Y/ky);
+    rectangleLocations << QPoint(generalOffsetX+RECT_5_X/kx,generalOffsetY+RECT_5_Y/ky);
 
     // Adding the rectangles to the scene
     for (qint32 i = 0; i < rectangleLocations.size(); i++){
-        QGraphicsRectItem *rect = canvas->addRect(0,0,RECT_WIDTH,RECT_HEIGHT,
+        QGraphicsRectItem *rect = canvas->addRect(0,0,RECT_WIDTH/kx,RECT_HEIGHT/ky,
                                                           QPen(QBrush(Qt::white),2),
                                                           QBrush(Qt::black));
         rect->setPos(rectangleLocations.at(i));
     }
 
     // Adding the cross
-    gCrossLine0 = canvas->addLine(CROSS_P0_X+generalOffsetX,CROSS_P0_Y+generalOffsetY,
-                                          CROSS_P2_X+generalOffsetX,CROSS_P2_Y+generalOffsetY,
+    gCrossLine0 = canvas->addLine(CROSS_P0_X/kx+generalOffsetX,CROSS_P0_Y/ky+generalOffsetY,
+                                          CROSS_P2_X/kx+generalOffsetX,CROSS_P2_Y/ky+generalOffsetY,
                                           QPen(QBrush(Qt::white),4));
-    gCrossLine1 = canvas->addLine(CROSS_P1_X+generalOffsetX,CROSS_P1_Y+generalOffsetY,
-                                          CROSS_P3_X+generalOffsetX,CROSS_P3_Y+generalOffsetY,
+    gCrossLine1 = canvas->addLine(CROSS_P1_X/kx+generalOffsetX,CROSS_P1_Y/ky+generalOffsetY,
+                                          CROSS_P3_X/kx+generalOffsetX,CROSS_P3_Y/ky+generalOffsetY,
                                           QPen(QBrush(Qt::white),4));
 
     gCrossLine0->setZValue(-1);
     gCrossLine1->setZValue(-1);
 
     // Adding the target
-    gTarget = canvas->addEllipse(TARGET_OFFSET_X,
-                                 TARGET_OFFSET_Y,
-                                 TARGET_R*2,TARGET_R*2,
+    gTarget = canvas->addEllipse(TARGET_OFFSET_X/kx,
+                                 TARGET_OFFSET_Y/ky,
+                                 TARGET_R*2/kx,TARGET_R*2/ky,
                                  QPen(),QBrush(Qt::red));
 
     // Adding the text
@@ -120,8 +123,8 @@ void FieldingManager::drawBackground(){
     letterFont.setBold(true);
 
     gText1 = canvas->addSimpleText("1",letterFont);
-    qint32 x = (AREA_WIDTH - gText1->boundingRect().width())/2 + generalOffsetX;
-    qint32 y = (AREA_HEIGHT - gText1->boundingRect().height())/2 + generalOffsetY;
+    qint32 x = (ScreenResolutionWidth - gText1->boundingRect().width())/2;
+    qint32 y = (ScreenResolutionHeight - gText1->boundingRect().height())/2;
     gText1->setPos(x,y);
     gText1->setPen(QPen(Qt::white));
     gText1->setBrush(QBrush(Qt::white));

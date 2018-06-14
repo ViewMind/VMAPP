@@ -1,83 +1,88 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2017-07-21T17:40:01
-#
-#-------------------------------------------------
+QT += quick gui widgets network
+CONFIG += c++11
 
-QT       += core gui
+# The following define makes your compiler emit warnings if you use
+# any feature of Qt which as been marked deprecated (the exact warnings
+# depend on your compiler). Please consult the documentation of the
+# deprecated API in order to know how to port your code away from it.
+DEFINES += QT_DEPRECATED_WARNINGS
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = EyeExperimenter
-TEMPLATE = app
-
+CONFIG -= debug_and_release
 MOC_DIR = MOCS
 OBJECTS_DIR = OBJS
+RCC_DIR = QRC
 
-SOURCES += main.cpp\       
-    EyeTrackerInterface/eyetrackerdata.cpp \
-    EyeTrackerInterface/eyetrackerinterface.cpp \
-    EyeTrackerInterface/Mouse/mouseinterface.cpp \
-    EyeTrackerInterface/Mouse/calibrationarea.cpp \
-    EyeTrackerInterface/RED/redinterface.cpp \
-    Experiments/experiment.cpp \
-    Experiments/readingexperiment.cpp \
-    Experiments/imageexperiment.cpp \
-    Experiments/fieldingexperiment.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp \
+RESOURCES += qml.qrc \
+    fonts.qrc \
+    images.qrc \
+    languages.qrc \
+    expdata.qrc \
+    demo_data.qrc \
+    report_text.qrc
+
+SOURCES += main.cpp \
+    loader.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+    ../../CommonClasses/Experiments/bindingmanager.cpp \
+    ../../CommonClasses/Experiments/experimentdatapainter.cpp \
     ../../CommonClasses/Experiments/fieldingmanager.cpp \
     ../../CommonClasses/Experiments/phrases.cpp \
     ../../CommonClasses/Experiments/readingmanager.cpp \
-    ../../CommonClasses/Experiments/bindingmanager.cpp \
-    ../../CommonClasses/Experiments/experimentdatapainter.cpp \
-    maingui.cpp \
-    experimentchooserdialog.cpp \
-    eyetrackerselectiondialog.cpp \
-    processorthread.cpp \
+    ../../CommonClasses/LogInterface/loginterface.cpp \
+    EyeTrackerInterface/eyetrackerdata.cpp \
+    EyeTrackerInterface/eyetrackerinterface.cpp \
+    EyeTrackerInterface/Mouse/calibrationarea.cpp \
+    EyeTrackerInterface/Mouse/mouseinterface.cpp \
+    flowcontrol.cpp \
+    Experiments/experiment.cpp \
+    Experiments/fieldingexperiment.cpp \
+    Experiments/imageexperiment.cpp \
+    Experiments/readingexperiment.cpp \
     monitorscreen.cpp \
-    settingsdialog.cpp \
-    instructiondialog.cpp
+    EyeTrackerInterface/RED/redinterface.cpp \
+    ../../CommonClasses/DataPacket/datapacket.cpp \
+    sslclient/sslclient.cpp \
+    imagereportdrawer.cpp \
+    EyeTrackerInterface/GazePoint/eventdetection.cpp \
+    EyeTrackerInterface/GazePoint/opengazecommand.cpp \
+    EyeTrackerInterface/GazePoint/opengazeinterface.cpp
 
-
-HEADERS  += maingui.h \
-    EyeTrackerInterface/eyetrackerdata.h \
-    EyeTrackerInterface/eyetrackerinterface.h \
-    EyeTrackerInterface/Mouse/mouseinterface.h \
-    EyeTrackerInterface/Mouse/calibrationarea.h \
-    EyeTrackerInterface/RED/redinterface.h \
-    EyeTrackerInterface/RED/iViewXAPI.h \
-    Experiments/experiment.h \
-    Experiments/readingexperiment.h \
-    Experiments/imageexperiment.h \
-    Experiments/fieldingexperiment.h \
-    ../../CommonClasses/common.h \
-    ../../CommonClasses/LogInterface/loginterface.h \
+HEADERS += \
+    loader.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../CommonClasses/common.h \
+    ../../CommonClasses/common.h \
+    ../../CommonClasses/Experiments/bindingmanager.h \
+    ../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../CommonClasses/Experiments/fieldingmanager.h \
     ../../CommonClasses/Experiments/phrases.h \
     ../../CommonClasses/Experiments/readingmanager.h \
-    ../../CommonClasses/Experiments/bindingmanager.h \
-    ../../CommonClasses/Experiments/experimentdatapainter.h \
-    processorthread.h \
+    eye_experimenter_defines.h \
+    ../../CommonClasses/common.h \
+    ../../CommonClasses/LogInterface/loginterface.h \
+    EyeTrackerInterface/eyetrackerdata.h \
+    EyeTrackerInterface/eyetrackerinterface.h \
+    EyeTrackerInterface/Mouse/calibrationarea.h \
+    EyeTrackerInterface/Mouse/mouseinterface.h \
+    flowcontrol.h \
+    Experiments/experiment.h \
+    Experiments/fieldingexperiment.h \
+    Experiments/imageexperiment.h \
+    Experiments/readingexperiment.h \
     monitorscreen.h \
-    experimentchooserdialog.h \
-    eyetrackerselectiondialog.h \
-    settingsdialog.h \
-    instructiondialog.h \
-    eye_experimenter_defines.h
+    EyeTrackerInterface/RED/iViewXAPI.h \
+    EyeTrackerInterface/RED/redinterface.h \
+    ../../CommonClasses/DataPacket/datapacket.h \
+    sslclient/sslclient.h \
+    imagereportdrawer.h \
+    EyeTrackerInterface/GazePoint/eventdetection.h \
+    EyeTrackerInterface/GazePoint/opengazecommand.h \
+    EyeTrackerInterface/GazePoint/opengazeinterface.h
 
-
-FORMS    += maingui.ui \
-    experimentchooserdialog.ui \
-    eyetrackerselectiondialog.ui \
-    settingsdialog.ui
-
-RESOURCES += \
-    icons.qrc \
-    images.qrc \
-    expdata.qrc
 win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
 
 INCLUDEPATH += $$PWD/EyeTrackerInterface/RED
 DEPENDPATH += $$PWD/EyeTrackerInterface/RED
+
+FORMS +=
+
