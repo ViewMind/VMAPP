@@ -10,7 +10,7 @@
 #define   DIRNAME_REPORTS                               "viewmind_reports"
 #define   DIRNAME_RAWDATA                               "viewmind_etdata"
 
-#define   EXPERIMENTER_VERSION                          "2.1.0"
+#define   EXPERIMENTER_VERSION                          "2.1.1"
 
 #ifdef ENABLE_EXPANDED_BINDING_OPTIONS
    #define   EXPANDED_VERSION                           "-EBO"

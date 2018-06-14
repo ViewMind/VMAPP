@@ -12,11 +12,13 @@ ConfigurationManager configuration;
 
 int main(int argc, char *argv[])
 {
+
     //QGuiApplication app(argc, argv);
     QApplication app(argc,argv);
 
     // The icon
     app.setWindowIcon(QIcon(":/images/viewmind.png"));
+
 
     // The QML Engine
     QQmlApplicationEngine engine;

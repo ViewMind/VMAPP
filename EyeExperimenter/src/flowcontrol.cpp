@@ -255,6 +255,11 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         return false;
     }
 
+    // Hiding cursor UNLESS the ET is in mouse mode.
+    if (configuration->getString(CONFIG_SELECTED_ET) != CONFIG_P_ET_MOUSE){
+        experiment->hideCursor();
+    }
+
     // Making sure that that both experiment signals are connected.
     // Eyetracker should be connected by this point.
     connect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);

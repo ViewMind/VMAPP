@@ -11,7 +11,6 @@ Experiment::Experiment(QWidget *parent) : QWidget(parent)
 
     // By default debug mode is true
     debugMode = false;
-
 }
 
 void Experiment::setupView(){
