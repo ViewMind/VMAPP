@@ -4,9 +4,6 @@ OpenGazeInterface::OpenGazeInterface(QObject *parent, qreal width, qreal height)
 {
     socket = new QTcpSocket(this);
 
-    // No eye data set.
-    eyeDataToUse = -1;
-
     // Doing the connections
     connect(socket,SIGNAL(connected()),this,SLOT(on_connected()));
     connect(socket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(on_socketError(QAbstractSocket::SocketError)));
@@ -89,33 +86,62 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
     //cmd.prettyPrint();
 
     if (cmd.getCommandType() == GPCT_REC){
+
+        // This is data point from the eytracker
         EyeTrackerData data;
 
         // Make it MS to ensure that it works with the all data processign capabilities.
         data.timeUnit = EyeTrackerData::TU_MS;
+        bool send = false;
 
+        // Condition for left eye
         if ((cmd.getField(GPF_LPOGV) == "1") && canUseLeft()){
             data.xLeft = qRound(cmd.getField(GPF_LPOGX).toDouble()*screenWidth);
             data.yLeft = qRound(cmd.getField(GPF_LPOGY).toDouble()*screenHeight);
+            send = true;
+            if (cmd.getField(GPF_LPV) == "1"){
+                qreal pupil = cmd.getField(GPF_LPD).toDouble();
+                qreal scale = cmd.getField(GPF_LPS).toDouble();
+                pupil = pupil/scale;
+                data.pdLeft = pupil;
+            }
+            else{
+                data.pdLeft = 0;
+            }
         }
+        else{
+            data.xLeft = 0;
+            data.yLeft = 0;
+            data.pdLeft = 0;
+        }
+
+        // Condition for right eye
         if ((cmd.getField(GPF_RPOGV) == "1") && canUseRight()){
             data.xRight = qRound(cmd.getField(GPF_RPOGX).toDouble()*screenWidth);
             data.yRight = qRound(cmd.getField(GPF_RPOGY).toDouble()*screenHeight);
+            send = true;
+            if (cmd.getField(GPF_RPV) == "1"){
+                qreal pupil = cmd.getField(GPF_RPD).toDouble();
+                qreal scale = cmd.getField(GPF_RPS).toDouble();
+                pupil = pupil/scale;
+                data.pdRight = pupil;
+            }
+            else{
+                data.pdRight = 0;
+            }
         }
-        if (cmd.getField(GPF_LPV) == "1"){
-            qreal pupil = cmd.getField(GPF_LPD).toDouble();
-            qreal scale = cmd.getField(GPF_LPS).toDouble();
-            pupil = pupil/scale;
-            data.pdLeft = pupil;
+        else {
+            data.xRight = 0;
+            data.yRight = 0;
+            data.pdRight = 0;
         }
-        if (cmd.getField(GPF_RPV) == "1"){
-            qreal pupil = cmd.getField(GPF_RPD).toDouble();
-            qreal scale = cmd.getField(GPF_RPS).toDouble();
-            pupil = pupil/scale;
-            data.pdRight = pupil;
+
+        // Send only if there was any valid data.
+        if (send){
+            data.time = cmd.getField(GPF_TIME).toDouble()*1000; // (Transforming seconds into ms);
+            emit(newDataAvailable(data));
         }
-        data.time = cmd.getField(GPF_TIME).toDouble()*1000; // (Transforming seconds into ms);
-        emit(newDataAvailable(data));
+
     }
     else if (cmd.getCommandType() == GPCT_CAL){
         if (cmd.getID() == GPC_CALIB_RESULT){
@@ -135,33 +161,23 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
                 if (rv == "1") rightValid++;
             }
 
-            if ((leftValid/total) >= CALIBRATION_THRESHOLD){
-                if ((rightValid/total) >= CALIBRATION_THRESHOLD){
-                    //Use both.
-                    eyeDataToUse = USE_BOTH_EYES;
-                }
-                else {
-                    logger.appendWarning("Gazepoint ET: Ignoring data for right eye due to poor calbration results");
-                    eyeDataToUse = USE_LEFT_EYE;
-                }
-            }
-            else if ((rightValid/total) >= CALIBRATION_THRESHOLD){
-                logger.appendWarning("Gazepoint ET: Ignoring data for left eye due to poor calbration results");
-                eyeDataToUse = USE_RIGHT_EYE;
-            }
-            else{
-                // Could not calibrate
-                logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for both eyes");
+            if (canUseLeft() && (total != leftValid)){
+                logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for left eye: " + QString::number(leftValid) + " out of " + QString::number(total));
                 sendOk = false;
-                emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
             }
 
-            // Something when right.
+            if (canUseRight() && (total != rightValid)){
+                logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for right eye: " + QString::number(rightValid) + " out of " + QString::number(total));
+                sendOk = false;
+            }
+
+            // Do clean up and send the correct signal.
             eventDetecter->hide();
             OpenGazeCommand closeWindow;
             closeWindow.setEnableCommand(GPC_CALIBRATE_SHOW,false);
             socket->write(closeWindow.prepareCommandToSend());
             if (sendOk) emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+            else emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
         }
     }
 }

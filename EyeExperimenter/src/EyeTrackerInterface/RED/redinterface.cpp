@@ -93,41 +93,38 @@ void REDInterface::enableUpdating(bool enable){
 }
 
 void REDInterface::disconnectFromEyeTracker(){
-   iV_Disconnect();
+    iV_Disconnect();
 }
 
 void REDInterface::on_pollTimer_Up(){
     SampleStruct data;
     iV_GetSample(&data);
 
-#ifdef SHOW_CONSOLE
-    if ((data.timestamp/1000) > 20000000){
-        qWarning() << "FOUND LARGE TIME FROM SOURCE OF: " << lastData.time;
+    if (data.timestamp == lastData.time) return;
+
+    if (canUseLeft()){
+        lastData.xLeft = data.leftEye.gazeX;
+        lastData.yLeft = data.leftEye.gazeY;
+        lastData.pdLeft = data.leftEye.diam;
     }
     else{
-        qWarning() << lastData.time;
+        lastData.xLeft = 0;
+        lastData.yLeft = 0;
+        lastData.pdLeft = 0;
     }
-#endif
-
-    if (data.timestamp == lastData.time) return;    
-    lastData.xLeft = data.leftEye.gazeX;
-    lastData.yLeft = data.leftEye.gazeY;
-    lastData.xRight = data.rightEye.gazeX;
-    lastData.yRight = data.rightEye.gazeY;
+    if (canUseRight()){
+        lastData.xRight = data.rightEye.gazeX;
+        lastData.yRight = data.rightEye.gazeY;
+        lastData.pdRight = data.rightEye.diam;
+    }
+    else{
+        lastData.xRight = 0;
+        lastData.yRight = 0;
+        lastData.pdRight = 0;
+    }
 
     // The data is returned in us so it is turned to ms.
     lastData.time = data.timestamp/1000;
-    lastData.pdLeft = data.leftEye.diam;
-    lastData.pdRight = data.rightEye.diam;
-
-#ifdef SHOW_CONSOLE
-    if (lastData.time > 20000000){
-        qWarning() << "FOUND LARGE TIME OF: " << lastData.time;
-    }
-    else{
-        qWarning() << lastData.time;
-    }
-#endif
 
     // Sending the new data.
     emit(newDataAvailable(lastData));

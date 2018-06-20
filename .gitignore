@@ -11,6 +11,7 @@ SSLServer/exe
 EyeReportGenerator/exe/
 EyeExperimenter/exe
 ETFollower/exe/
+PNGReportGenerator/exe/
 ReportViewerDev/
 *.autosave
 *.tmp*

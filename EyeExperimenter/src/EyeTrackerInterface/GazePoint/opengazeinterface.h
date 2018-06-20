@@ -8,9 +8,6 @@
 #include "opengazecommand.h"
 #include "eventdetection.h"
 
-#define  USE_LEFT_EYE          0
-#define  USE_RIGHT_EYE         1
-#define  USE_BOTH_EYES         2
 #define  CALIBRATION_THRESHOLD 0.7
 
 class OpenGazeInterface: public EyeTrackerInterface
@@ -54,15 +51,8 @@ private:
     // Buffers the current command in order to process it.
     QByteArray buffer;
 
-    // Eye data to use
-    qint32 eyeDataToUse;
-
     // Function that takes command depending on the received command.
     void processReceivedCommand(const OpenGazeCommand &cmd);
-
-    // Shorcut functions for clarity.
-    bool canUseLeft() const {return (eyeDataToUse == USE_LEFT_EYE) || (eyeDataToUse == USE_BOTH_EYES);}
-    bool canUseRight() const {return (eyeDataToUse == USE_LEFT_EYE) || (eyeDataToUse == USE_BOTH_EYES);}
 
 };
 

@@ -154,6 +154,7 @@ void SSLClient::connectToServer()
     txDP.addFile(patientInfoFile,DataPacket::DPFI_PATIENT_FILE);
     txDP.addString(dname,DataPacket::DPFI_DOCTOR_ID);
     txDP.addString(pname,DataPacket::DPFI_PATIENT_ID);
+    txDP.addValue(config->getInt(CONFIG_VALID_EYE),DataPacket::DPFI_VALID_EYE);
 
     // Requesting connection and ack
     informationSent = false;

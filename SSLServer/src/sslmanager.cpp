@@ -168,6 +168,7 @@ void SSLManager::lauchEyeReportProcessor(quint64 socket){
     QString dash = "-";
     arguments << dash + CONFIG_PATIENT_DIRECTORY << sockets.value(socket)->getWorkingDirectory();
     arguments << dash + CONFIG_DOCTOR_NAME << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+    arguments << dash + CONFIG_VALID_EYE << d.getField(DataPacket::DPFI_VALID_EYE).data.toString();
 
     addMessage("LOG","Process information from: " + sockets.value(socket)->socket()->peerAddress().toString());
     sockets.value(socket)->processData(config->getString(CONFIG_EYEPROCESSOR_PATH),arguments);

@@ -1,0 +1,28 @@
+patient_name = PATIENT;
+doctor_name = REQUESTING DOCTOR;
+patient_age = AGE;
+date = DATE;
+result_title = RESULTS;
+
+explanation_pt1 = The following report is an interpretation of the data obtained through;
+explanation_pt2 = performed using Eye-Tracking technique<br><br>The result of each function analyzed, is stated in the following code:;
+explanation_bold = neurocognitive evaluation;
+
+color_explanation = No relevant functional problems
+were detected|Midly deficient functioning,
+not necessarily pathological|Completely deficient and/or
+pathological functioning;
+
+results_name = ATTENTIONAL PROCESSES|EXECUTIVE PROCESSES|WORKING MEMORY|RETRIEVAL MEMORY|VISUAL SHORT TERM MEMORY;
+
+results_clarification = Anterior cingulate cortex|Prefrontal cortex|Dorsolateral prefrontal cortex,
+Hippocampus,Subiculum|Entorhinal and Perirhinal cortex,
+MediumTemporal Lobe;
+
+motto = Cognitive Performace
+Evaluations through
+Eye-Tracking;
+
+date_format = MM/dd/yyyy;
+
+result_ranges = Reference parameter LOWER to 550|Reference Parameter 7 - 18|Reference parameter 70 - 90|Reference parameter 23 - 39|Reference parameter HIGHER or EQUAL to 0.009;

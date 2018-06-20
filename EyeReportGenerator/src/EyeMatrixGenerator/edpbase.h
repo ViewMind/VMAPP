@@ -59,7 +59,7 @@ public:
 
     QString getOuputMatrixFileName() const { return outputFile; }
 
-    QStringList getFilteredLines() const {return filteredLinesList;}
+    QStringList getFilteredLines() const {return filteredLinesList;}    
 
 signals:
     // This signal is intened to update a progress bar. It will give value between 0 and 100 to represent percent.

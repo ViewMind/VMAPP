@@ -41,10 +41,18 @@ void EyeDataProcessingThread::initialize(ConfigurationManager *c, const QSet<QSt
 
 }
 
+QString EyeDataProcessingThread::formatBindingResultsForPrinting(const EDPImages::BindingAnswers &ans){
+    QString report = "";
+    report = report + "Number of correct answers in test trials: " + QString::number(ans.testCorrect) + "<br>";
+    report = report + "Number of wrong answers in test trials: " + QString::number(ans.testWrong) + "<br>";
+    report = report + "Number of correct answers : " + QString::number(ans.correct) + "<br>";
+    report = report + "Number of wrong answers : " + QString::number(ans.wrong) + "<br>";
+    return report;
+}
 
 void EyeDataProcessingThread::run(){
 
-    EyeMatrixProcessor emp;
+    EyeMatrixProcessor emp((quint8)config->getInt(CONFIG_VALID_EYE));
     reportFileOutput = "";
 
     // Each of the processing fucntions is called. In this way, processing of just one can be accomplished
@@ -68,6 +76,8 @@ void EyeDataProcessingThread::run(){
         QString report = emp.processBinding(matrixBindingBC,true);
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
+            EDPImages::BindingAnswers ans = images.getExperimentAnswers();
+            emit(appendMessage(formatBindingResultsForPrinting(ans),MSG_TYPE_STD));
         }
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
     }
@@ -81,6 +91,9 @@ void EyeDataProcessingThread::run(){
         QString report = emp.processBinding(matrixBindingUC,false);
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
+            EDPImages::BindingAnswers ans = images.getExperimentAnswers();
+            emit(appendMessage(formatBindingResultsForPrinting(ans),MSG_TYPE_STD));
+
         }
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
     }

@@ -81,9 +81,11 @@ public:
     void roundColumnValues(qint32 idCol);
     void filterRowsWithColOutsideRange(qreal min, qreal max, qint32 idCol);
 
-    // Processing functions.
-    ProcessingResults getProcessingResults(qint32 experiment, int *eyeUsed, int eyeToUse = -1);
+    // Required for selecting which eye to use when Both Eyes were selected.
+    quint8 getEyeWithMostFixations() const;
 
+    // Processing functions.
+    ProcessingResults getProcessingResults(qint32 experiment, qint32 eyeToUse);
 
 private:
 

@@ -76,6 +76,8 @@ private:
 
     void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd);
 
+    QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers & ans);
+
 };
 
 #endif // EYEDATAPROCESSINGTHREAD_H

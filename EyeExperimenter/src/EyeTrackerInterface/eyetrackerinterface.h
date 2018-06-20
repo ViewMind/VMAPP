@@ -28,6 +28,8 @@ public:
 
     virtual void calibrate(EyeTrackerCalibrationParameters params);
 
+    void setEyeToTransmit(quint8 eye) {eyeToTransmit = eye;}
+
 signals:
     void newDataAvailable(EyeTrackerData data);
 
@@ -40,9 +42,16 @@ signals:
 protected:
     LogInterface logger;
 
+    // Which EyeDataToTransmit
+    quint8 eyeToTransmit;
+
     // The resolution, in case it is required by the
     qreal screenWidth;
     qreal screenHeight;
+
+    // Shorcut functions for clarity.
+    bool canUseLeft() const {return ((eyeToTransmit == EYE_BOTH) || (eyeToTransmit == EYE_L));}
+    bool canUseRight() const {return ((eyeToTransmit == EYE_BOTH) || (eyeToTransmit == EYE_R));}
 };
 
 #endif // EYETRACKERINTERFACE_H

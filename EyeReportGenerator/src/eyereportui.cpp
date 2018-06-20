@@ -67,6 +67,10 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_VALID_EYE] = cmd;
+
+    cmd.clear();
+    cmd.type = ConfigurationManager::VT_INT;
     cmd.optional = true;
     cv[CONFIG_PATIENT_AGE] = cmd;
 
@@ -88,7 +92,6 @@ EyeReportUI::EyeReportUI(QWidget *parent) :
     cmd.optional = true;
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DAT_TIME_FILTER_THRESHOLD] = cmd;
-
 
     configuration.setupVerification(cv);
 
@@ -167,10 +170,6 @@ EyeReportUI::~EyeReportUI()
 
 void EyeReportUI::loadArguments(){
     QStringList arguments = QApplication::arguments();
-
-//    for (qint32 i = 0; i < arguments.size(); i++){
-//        log.appendStandard(arguments.at(i));
-//    }
 
     // Parsing arguments to the command line
     QString field = "";

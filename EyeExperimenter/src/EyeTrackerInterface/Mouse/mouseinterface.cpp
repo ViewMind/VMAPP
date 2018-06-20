@@ -69,11 +69,23 @@ void MouseInterface::on_pollTimer_Up(){
     // Assuming this is not a calibration.
     if (!isCalibrated || !sendData) return;
 
+    if (canUseLeft()){
+        dataToSend.xLeft = point.x();
+        dataToSend.yLeft = point.y();
+    }
+    else{
+        dataToSend.yLeft = 0;
+        dataToSend.xLeft = 0;
+    }
+    if (canUseRight()){
+        dataToSend.xRight = point.x();
+        dataToSend.yRight = point.y();
+    }
+    else{
+        dataToSend.xRight = 0;
+        dataToSend.yRight = 0;
+    }
 
-    dataToSend.xLeft = point.x();
-    dataToSend.xRight = point.x();
-    dataToSend.yLeft = point.y();
-    dataToSend.yRight = point.y();
     dataToSend.pdRight = 0;
     dataToSend.pdLeft = 0;
 

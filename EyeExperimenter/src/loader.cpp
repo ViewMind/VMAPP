@@ -35,6 +35,11 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     cv[CONFIG_SELECTED_ET] = cmd;
     cv[CONFIG_SSLSERVER_PATH] = cmd;
 
+    cmd.clear();
+    cmd.optional = true;
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_VALID_EYE] = cmd;
+
     // Optional booleans
     cmd.clear();
     cmd.optional = true;
@@ -108,11 +113,24 @@ QString Loader::hasValidOutputRepo(const QString &dirToCheck){
 }
 
 
-QString Loader::getStringForKey(const QString &key){
-    if (language.containsKeyword(key)){
-        return language.getString(key);
+QString Loader::getStringForKey(const QString &key, qint32 listIndex){
+    if (listIndex == -1){
+        if (language.containsKeyword(key)){
+            return language.getString(key);
+        }
+        else return "ERROR: NOT FOUND";
     }
-    else return "ERROR: NOT FOUND";
+    else{
+        // This is a list field.
+        if (language.containsKeyword(key)){
+            QStringList list = language.getStringList(key);
+            if ((list.size() > listIndex) && (listIndex >= 0)){
+                return list.at(listIndex);
+            }
+            else return "ERROR: NOT FOUND";
+        }
+        else return "ERROR: NOT FOUND";
+    }
 }
 
 QString Loader::getConfigurationString(const QString &key){
@@ -157,6 +175,9 @@ void Loader::setConfigurationBoolean(const QString &key, bool value){
     ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,boolText,configuration);
 }
 
+void Loader::setConfigurationInt(const QString &key, qint32 value){
+    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,QString::number(value),configuration);
+}
 
 bool Loader::createPatientDirectory(const QString &patient, const QString &age, const QString &email){
 

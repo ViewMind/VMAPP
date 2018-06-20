@@ -36,7 +36,7 @@ binding_default = false;
 #           GENERAL CONFIGURATION OPTIONS              #
 #------------------------------------------------------#
 
-report_language = Spanish;
+report_language = English;
 demo_mode = true;
 
 #------------------------------------------------------#
@@ -47,4 +47,6 @@ doctor_name = Miles Genius;
 doctor_email = pepe@pepe.com;
 selected_eyetracker = Mouse;
 output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;
->>>>>>> develop
+
+
+valid_eye = 1;

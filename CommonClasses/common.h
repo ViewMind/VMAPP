@@ -10,6 +10,7 @@
 // Which value is which eye.
 #define   EYE_L                                         0
 #define   EYE_R                                         1
+#define   EYE_BOTH                                      2
 
 // Configuration key values (cmd names in the configuration file)
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
@@ -58,6 +59,7 @@
 #define   CONFIG_SSLSERVER_PATH                         "ssl_server_path"
 #define   CONFIG_REPORT_PATH                            "report_path"
 #define   CONFIG_IMAGE_REPORT_PATH                      "image_report_path"
+#define   CONFIG_VALID_EYE                              "valid_eye"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

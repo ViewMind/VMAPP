@@ -14,12 +14,13 @@ class Loader : public QObject
     Q_OBJECT
 public:
     explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr);
-    Q_INVOKABLE QString getStringForKey(const QString &key);
+    Q_INVOKABLE QString getStringForKey(const QString &key, qint32 listIndex = -1);
     Q_INVOKABLE QString getConfigurationString(const QString &key);
     Q_INVOKABLE bool getConfigurationBoolean(const QString &key);
     Q_INVOKABLE bool getLoaderError() const {return loadingError; }
     Q_INVOKABLE void setConfigurationString(const QString &key, const QString &value);
     Q_INVOKABLE void setConfigurationBoolean(const QString &key, bool value);
+    Q_INVOKABLE void setConfigurationInt(const QString &key, qint32 value);
     Q_INVOKABLE QString hasValidOutputRepo(const QString &dirToCheck = "");
     Q_INVOKABLE QString getWindowTilteVersion(){ return EXPERIMENTER_VERSION; }
     Q_INVOKABLE bool createPatientDirectory(const QString &patient, const QString &age, const QString &email);

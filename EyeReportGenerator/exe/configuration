@@ -21,6 +21,9 @@ fast_processing = true;
 experiments = binding_uc | binding_bc | reading;
 # experiments = reading;
 
+# Which eye is the valid eye. Left = 0, Right = 1, Both = 2.
+valid_eye = 1;
+
 # Filters to handle special bc and uc files.
 # bc_file_filter = _2_x;
 # uc_file_filter = _2_x;
@@ -54,5 +57,6 @@ margin_target_hit                     = 10;     # mm
 #------------------------------------------------------#
 #         OPTIONS MODIFIED BY OTHER PROGRAMS           #
 #------------------------------------------------------#
-patient_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs/ServerDir/Miles_Genius/test_reading/2018_06_10_11_43_33;
+#patient_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs/OtherSources;
+patient_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs/ServerDir/Miles_Genius/t/2018_06_20_14_55_56;
 doctor_name = Doctor Genius;

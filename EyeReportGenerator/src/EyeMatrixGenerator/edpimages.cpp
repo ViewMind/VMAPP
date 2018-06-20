@@ -6,6 +6,18 @@ EDPImages::EDPImages(ConfigurationManager *c):EDPBase(c)
     manager->init(c);
 }
 
+void EDPImages::sumToAnswers(const QString &trialID, const QString &ans){
+    if (trialID.contains(STR_TEST)){
+        if (trialID.contains(STR_SAME) && ans == "S") answers.testCorrect++;
+        else if (trialID.contains(STR_DIFFERENT) && ans == "D") answers.testCorrect++;
+        else answers.testWrong++;
+    }
+    else{
+        if (trialID.contains(STR_SAME) && ans == "S") answers.correct++;
+        else if (trialID.contains(STR_DIFFERENT) && ans == "D") answers.correct++;
+        else answers.wrong++;
+    }
+}
 
 bool EDPImages::doEyeDataProcessing(const QString &data){
 
@@ -30,6 +42,11 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
     filteredLinesList.clear();
     warnings = "";
 
+    answers.correct = 0;
+    answers.testCorrect = 0;
+    answers.testWrong = 0;
+    answers.wrong = 0;
+
     for (qint32 i = 0; i < lines.size(); i++){
 
         QString line = lines.at(i);
@@ -43,6 +60,7 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
                 QStringList parts = line.split("->");
                 response = parts.last();
                 if (response.isEmpty()) response = "N/A";
+                sumToAnswers(parts.first(),response);
             }
             else{
                 response = "N/A";

@@ -11,6 +11,11 @@ Dialog {
     property string vmLoadET: "";
     property bool vmRestartRequired: false;
 
+    // Indexes for the list and to identify the eys.
+    readonly property int vmEYE_L:    0
+    readonly property int vmEYE_R:    1
+    readonly property int vmEYE_BOTH: 2
+
     signal updateMenus();
 
     id: viewSettings
@@ -244,6 +249,43 @@ Dialog {
         anchors.leftMargin: 150
     }
 
+    // Combo box for eyetracker selection and label
+    Text {
+        id: diagLabelEye
+        text: loader.getStringForKey(keybase+"diagLabelEye");
+        font.family: viewHome.robotoB.name
+        font.pixelSize: 13
+        font.bold: true
+        anchors.top: diagCBLang.bottom
+        anchors.topMargin: 38
+        anchors.left: diagLabelET.right
+        anchors.leftMargin: 20
+    }
+
+    VMComboBox{
+        id: diagCBEyeType
+        vmModel: {
+            //["REDm", "Mouse", "GP3HD"]
+            var options = [];
+            var id = keybase+"diagCBEyeType";
+            options.push(loader.getStringForKey(id,vmEYE_L));
+            options.push(loader.getStringForKey(id,vmEYE_R));
+            options.push(loader.getStringForKey(id,vmEYE_BOTH));
+            return options;
+        }
+        currentIndex: {
+            var sel = loader.getConfigurationString(vmDefines.vmCONFIG_VALID_EYE)
+            if (sel === "0") return vmEYE_L;
+            if (sel === "1") return vmEYE_R;
+            return vmEYE_BOTH;
+        }
+        font.family: viewHome.robotoR.name
+        font.pixelSize: 13
+        anchors.top: diagLabelEye.bottom
+        anchors.topMargin: 5
+        anchors.left: diagLabelEye.left
+    }
+
     // The double monitor and demo mode selections
 
     VMCheckBox{
@@ -317,6 +359,15 @@ Dialog {
         loader.setConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
         loader.setConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
         loader.setConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
+        if (diagCBEyeType.currentIndex == vmEYE_L){
+            loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,vmEYE_L);
+        }
+        else if (diagCBEyeType.currentIndex == vmEYE_R){
+            loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,vmEYE_R);
+        }
+        else{
+            loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,vmEYE_BOTH);
+        }
 
         // Signal to update dropdown menu information.
         updateMenus()

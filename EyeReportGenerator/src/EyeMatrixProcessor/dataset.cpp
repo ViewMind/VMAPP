@@ -45,34 +45,32 @@ void DataSet::setLeftAndRightData(const CSVData &all, qint32 eyeCol){
 
 }
 
-DataSet::ProcessingResults DataSet::getProcessingResults(qint32 experiment,  int *eyeUsed, int eyeToUse){
+quint8 DataSet::getEyeWithMostFixations() const{
+    if (eyes.first().size() > eyes.last().size()) return EYE_L;
+    else return EYE_R;
+}
+
+DataSet::ProcessingResults DataSet::getProcessingResults(qint32 experiment, qint32 eyeToUse){
 
     ProcessingResults results;
 
-    // 0 means left, 1 means right and anything else means the one with the most fixations.
-    switch (eyeToUse) {
-    case EYE_L: *eyeUsed = EYE_L;
-        break;
-    case EYE_R: *eyeUsed = EYE_R;
-        break;
-    default:
-        if (eyes.first().size() > eyes.last().size()) *eyeUsed = EYE_L;
-        else *eyeUsed = EYE_R;
-        break;
+    if (eyeToUse == EYE_BOTH){
+        // When both eyes are selected by default the eye to use is the right one.
+        eyeToUse = EYE_R;
     }
 
     switch (experiment){
     case EXP_BINDING_BC:
-        results = getBindingResultsFor(*eyeUsed,true);
+        results = getBindingResultsFor(eyeToUse,true);
         break;
     case EXP_BINDING_UC:
-        results = getBindingResultsFor(*eyeUsed,false);
+        results = getBindingResultsFor(eyeToUse,false);
         break;
     case EXP_FIELDNG:
-        results = getFieldingResultsFor(*eyeUsed);
+        results = getFieldingResultsFor(eyeToUse);
         break;
     case EXP_READING:
-        results = getReadingResultsFor(*eyeUsed);
+        results = getReadingResultsFor(eyeToUse);
         break;
     default:
         break;
@@ -154,11 +152,6 @@ DataSet::ProcessingResults DataSet::getBindingResultsFor(qint32 eyeID, bool boun
     qreal sum = 0;
     qreal counter = 0;
 
-    // Variables for counting same or different response.
-    qint32 correct = 0;
-    qint32 total = 0;
-    qint32 lastTrial = 0;
-
     for (qint32 r = 0; r < eyes.at(eyeID).size(); r++){
         qint32 trialID = eyes.at(eyeID).at(r).value(CSV_BINDING_TRIALID_COL).toInt();
         bool isTrial = eyes.at(eyeID).at(r).value(CSV_BINDING_ISTRIAL_COL).toBool();
@@ -168,33 +161,16 @@ DataSet::ProcessingResults DataSet::getBindingResultsFor(qint32 eyeID, bool boun
                 sum = sum + eyes.at(eyeID).at(r).value(CSV_BINDING_PUPIL_COL).toDouble();
                 counter++;
             }
-            if (lastTrial != trialID){
-                if (eyes.at(eyeID).at(r).value(CSV_BINDING_ISTRIAL_COL).toBool()){
-                    QString trialType = eyes.at(eyeID).at(r).value(CSV_BINDING_TRIALTYPE_COL).toString();
-                    QString trialResponse = eyes.at(eyeID).at(r).value(CSV_BINDING_TRIALRESPONSE_COL).toString();
-                    trialType = trialType.mid(0,1);
-                    trialResponse = trialResponse.toLower();
-
-                    if (trialType == trialResponse) correct++;
-                    total++;
-
-                    lastTrial = trialID;
-                }
-            }
         }
     }
 
     ProcessingResults info;
 
     if (bound){
-        info[STAT_ID_BC_CORRECT]   = correct;
-        info[STAT_ID_BC_WRONG]     = total - correct;
         if (eyeID == EYE_R) info[STAT_ID_BC_PUPIL_R]   = sum/counter;
         else info[STAT_ID_BC_PUPIL_L]   = sum/counter;
     }
     else{
-        info[STAT_ID_UC_CORRECT] = correct;
-        info[STAT_ID_UC_WRONG]   = total - correct;
         if (eyeID == EYE_R) info[STAT_ID_UC_PUPIL_R]   = sum/counter;
         else info[STAT_ID_UC_PUPIL_L]   = sum/counter;
     }

@@ -16,7 +16,7 @@
 class EyeMatrixProcessor
 {
 public:
-    EyeMatrixProcessor();
+    EyeMatrixProcessor(quint8 eye);
 
     // If thre was an error
     QString getError() const {return error;}
@@ -39,12 +39,20 @@ private:
     // Data generated from reading CSV, separated by Eye.
     DataSet csvReading;
 
+    // The selected data processing eye. The actual eye selected which changes with each experiment and the string representation
+    quint8 eyeForResults;
+    quint8 selectedEye;
+    QString selectedEyeStr;
+
+
     // The binding CSV data.
     DataSet csvBindingBC;
     DataSet csvBindingUC;
 
-    // In order to make sure that the binding coefficient is calculated with the same eye.
-    qint32 bindingEye;
+    // Requires a two pass for processBiding with both UC and BC to calculate the final report value.
+    // The variables serve the purposes of flags AND to save the best eye for each Binding experiment
+    quint8 eyeForUC;
+    quint8 eyeForBC;
 
     // Fielding data
     DataSet csvFielding;
@@ -57,6 +65,9 @@ private:
 
     // Function that writes the tex file and an auxiliary function.
     QString statIDToString(qint32 stat) const;
+
+    // Function that sets the slected eye variables.
+    void setSelectedEyeVariables(const DataSet &set);
 
 
 };

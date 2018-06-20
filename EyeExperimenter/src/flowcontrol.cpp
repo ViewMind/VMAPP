@@ -176,6 +176,7 @@ void FlowControl::connectToEyeTracker(){
     }
 
     connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
+    eyeTracker->setEyeToTransmit(configuration->getInt(CONFIG_VALID_EYE));
     eyeTracker->connectToEyeTracker();
 }
 

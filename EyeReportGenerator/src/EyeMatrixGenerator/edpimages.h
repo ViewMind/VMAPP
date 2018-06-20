@@ -17,13 +17,27 @@
 #define   IMAGE_PR                                      5
 #define   IMAGE_PL                                      6
 
+#define   STR_TEST                                      "test"
+#define   STR_SAME                                      "same"
+#define   STR_DIFFERENT                                 "different"
+
 class EDPImages: public EDPBase
 {
 public:
+
+    struct BindingAnswers {
+        qreal testCorrect;
+        qreal testWrong;
+        qreal correct;
+        qreal wrong;
+    };
+
     EDPImages(ConfigurationManager *c);
 
     // Function reimplementation headers.
     bool doEyeDataProcessing(const QString &data);
+
+    BindingAnswers getExperimentAnswers() const {return answers;}
 
 private:
 
@@ -32,6 +46,12 @@ private:
 
     // Adding the data of each image.
     bool appendDataToImageMatrix(const DataMatrix &data, const QString &trialName, const QString &isTrial, const QString &response);
+
+    // The answers found.
+    BindingAnswers answers;
+
+    // Increments the correct field of answers
+    void sumToAnswers(const QString &trialID, const QString &ans);
 
 };
 

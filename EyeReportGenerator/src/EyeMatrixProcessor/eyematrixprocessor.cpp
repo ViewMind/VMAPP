@@ -1,8 +1,32 @@
 #include "eyematrixprocessor.h"
 
-EyeMatrixProcessor::EyeMatrixProcessor()
+EyeMatrixProcessor::EyeMatrixProcessor(quint8 eye)
 {
-    bindingEye = -1;
+
+    // Since eye both cannto be a final value it is used to identify that the data has not been processed.
+    eyeForBC = EYE_BOTH;
+    eyeForUC = EYE_BOTH;
+
+    eyeForResults = eye;
+    if (eye == EYE_L){
+        eyeForResults = EYE_L;
+    }
+    else if (eye == EYE_R){
+        eyeForResults = EYE_R;
+    }
+    else{
+        eyeForResults = EYE_BOTH;
+    }
+}
+
+void EyeMatrixProcessor::setSelectedEyeVariables(const DataSet &set){
+
+    if (eyeForResults == EYE_L) selectedEye = EYE_L;
+    else if (eyeForResults == EYE_R) selectedEye = EYE_R;
+    else selectedEye = set.getEyeWithMostFixations();
+
+    if (selectedEye == EYE_L) selectedEyeStr = "Left";
+    else selectedEyeStr = "Right";
 }
 
 QString EyeMatrixProcessor::processReading(const QString &csvFile){
@@ -14,22 +38,46 @@ QString EyeMatrixProcessor::processReading(const QString &csvFile){
     csvReading.removeFirstNDifferent(READING_N_TO_FILTER_FROM_START,CSV_READING_SENTENCE_COL);
     csvReading.removeAllWithValueZero(CSV_READING_WORD_INDEX_COL);
     csvReading.filterRowsWithColOutsideRange(READING_MIN_VALID_FIXATION,READING_MAX_VALID_FIXATION,CSV_READING_FIXATION_LENGHT_COL);
-    int eye = -1;
-    results.unite(csvReading.getProcessingResults(EXP_READING,&eye));
+
+    setSelectedEyeVariables(csvReading);
+
+    DataSet::ProcessingResults r = csvReading.getProcessingResults(EXP_READING,EYE_R);
+    DataSet::ProcessingResults l = csvReading.getProcessingResults(EXP_READING,EYE_L);
 
     // Generating the report.
-    QString report = "READING RESULTS:<br>";
 
-    qreal total = results.value(STAT_ID_TOTAL_FIXATIONS);
-    qreal first = results.value(STAT_ID_FIRST_STEP_FIXATIONS);
-    qreal multi = results.value(STAT_ID_MULTIPLE_FIXATIONS);
-    qreal single = results.value(STAT_ID_SINGLE_FIXATIONS);
+    QString report = "<br>READING RESULTS (Eye: Left):<br>";
+    qreal total = l.value(STAT_ID_TOTAL_FIXATIONS);
+    qreal first = l.value(STAT_ID_FIRST_STEP_FIXATIONS);
+    qreal multi = l.value(STAT_ID_MULTIPLE_FIXATIONS);
+    qreal single = l.value(STAT_ID_SINGLE_FIXATIONS);
 
-    // Report text
+    // Report text for Left Eye
     report = report + "Total number of fixations: " + QString::number(total)  + "<br>";
     report = report + "First Step Fixations: "  + QString::number(first) + " (" + QString::number(100.0*first/total)  + "%)<br>";
     report = report + "Multiple Step Fixations: "  + QString::number(multi) + " (" + QString::number(100.0*multi/total)  + "%)<br>";
     report = report + "Single Fixations: " + QString::number(single) + " (" + QString::number(100.0*single/total)  + "%)<br>";
+
+    report = report + "<br>READING RESULTS (Eye: Right):<br>";
+    total  = r.value(STAT_ID_TOTAL_FIXATIONS);
+    first  = r.value(STAT_ID_FIRST_STEP_FIXATIONS);
+    multi  = r.value(STAT_ID_MULTIPLE_FIXATIONS);
+    single = r.value(STAT_ID_SINGLE_FIXATIONS);
+
+    // Report text for Right Eye
+    report = report + "Total number of fixations: " + QString::number(total)  + "<br>";
+    report = report + "First Step Fixations: "  + QString::number(first) + " (" + QString::number(100.0*first/total)  + "%)<br>";
+    report = report + "Multiple Step Fixations: "  + QString::number(multi) + " (" + QString::number(100.0*multi/total)  + "%)<br>";
+    report = report + "Single Fixations: " + QString::number(single) + " (" + QString::number(100.0*single/total)  + "%)<br>";
+
+    if (selectedEye == EYE_L){
+        results.unite(l);
+        report = report + "<br>REPORT uses value from <b>LEFT</b> eye<br>" ;
+    }
+    else{
+        results.unite(r);
+        report = report + "<br>REPORT uses value from <b>RIGHT</b> eye<br>" ;
+    }
 
     return report;
 
@@ -40,72 +88,76 @@ QString EyeMatrixProcessor::processBinding(const QString &csvFile, bool bound){
     loadBindingCSV(csvFile,bound);
     if (!error.isEmpty()) return "";
 
-    int eye = -1;
-    if (bindingEye != -1) eye = bindingEye;
-
     DataSet::ProcessingResults r;
     DataSet::ProcessingResults l;
 
     if (bound){
-        r = csvBindingBC.getProcessingResults(EXP_BINDING_BC,&eye,EYE_R);
-        l = csvBindingBC.getProcessingResults(EXP_BINDING_BC,&eye,EYE_L);
-        //results.unite(csvBindingBC.getProcessingResults(EXP_BINDING_BC,&eye));
+        r = csvBindingBC.getProcessingResults(EXP_BINDING_BC,EYE_R);
+        l = csvBindingBC.getProcessingResults(EXP_BINDING_BC,EYE_L);
+        setSelectedEyeVariables(csvBindingBC);
+        eyeForBC = selectedEye;
     }
     else{
-        //results.unite(csvBindingUC.getProcessingResults(EXP_BINDING_UC,&eye));
-        r = csvBindingUC.getProcessingResults(EXP_BINDING_UC,&eye,EYE_R);
-        l = csvBindingUC.getProcessingResults(EXP_BINDING_UC,&eye,EYE_L);
+        r = csvBindingUC.getProcessingResults(EXP_BINDING_UC,EYE_R);
+        l = csvBindingUC.getProcessingResults(EXP_BINDING_UC,EYE_L);
+        setSelectedEyeVariables(csvBindingUC);
+        eyeForUC = selectedEye;
     }
 
     // Generating the report.
-    QString report = "RESULTS:<br>";
+    QString report = "RESULTS (Selcted/Best Eye " + selectedEyeStr + "):<br>";
 
-    if (bound) report = "BINDING BC " + report;
+    if (bound) report = "BINDING BC. " + report;
     else report = "BINDING UC " + report;
 
     // Report text
     if (bound){
 
-        report = report + "Eye: LEFT<br>";
-        report = report + "Number of correct answers : " + QString::number(l.value(STAT_ID_BC_CORRECT)) + "<br>";
-        report = report + "Number of wrong answers : " + QString::number(l.value(STAT_ID_BC_WRONG)) + "<br>";
-        report = report + "Average Pupil Size excluding Trial 0 : " + QString::number(l.value(STAT_ID_BC_PUPIL_L)) + "<br>";
+        report = report + "Left EyeAverage Pupil Size excluding Trial 0 : " + QString::number(l.value(STAT_ID_BC_PUPIL_L)) + "<br>";
+        report = report + "Right Eye Average Pupil Size excluding Trial 0 : " + QString::number(r.value(STAT_ID_BC_PUPIL_R)) + "<br>";
 
-        report = report + "Eye: RIGHT<br>";
-        report = report + "Number of correct answers : " + QString::number(r.value(STAT_ID_BC_CORRECT)) + "<br>";
-        report = report + "Number of wrong answers : " + QString::number(r.value(STAT_ID_BC_WRONG)) + "<br>";
-        report = report + "Average Pupil Size excluding Trial 0 : " + QString::number(r.value(STAT_ID_BC_PUPIL_R)) + "<br>";
-
+        results[STAT_ID_BC_PUPIL_R] = r.value(STAT_ID_BC_PUPIL_R);
         results[STAT_ID_BC_PUPIL_L] = l.value(STAT_ID_BC_PUPIL_L);
 
     }
     else{
-        report = report + "Eye: LEFT<br>";
-        report = report + "Number of correct answers : " + QString::number(l.value(STAT_ID_UC_CORRECT)) + "<br>";
-        report = report + "Number of wrong answers : " + QString::number(l.value(STAT_ID_UC_WRONG)) + "<br>";
-        report = report + "Average Pupil Size excluding Trial 0 : " + QString::number(l.value(STAT_ID_UC_PUPIL_L)) + "<br>";
+        report = report + "Left Eye Average Pupil Size excluding Trial 0 : " + QString::number(l.value(STAT_ID_UC_PUPIL_L)) + "<br>";
+        report = report + "Right Eye Average Pupil Size excluding Trial 0 : " + QString::number(r.value(STAT_ID_UC_PUPIL_R)) + "<br>";
 
-        report = report + "Eye: RIGHT<br>";
-        report = report + "Number of correct answers : " + QString::number(r.value(STAT_ID_UC_CORRECT)) + "<br>";
-        report = report + "Number of wrong answers : " + QString::number(r.value(STAT_ID_UC_WRONG)) + "<br>";
-        report = report + "Average Pupil Size excluding Trial 0 : " + QString::number(r.value(STAT_ID_UC_PUPIL_R)) + "<br>";
-
+        results[STAT_ID_UC_PUPIL_R] = r.value(STAT_ID_UC_PUPIL_R);
         results[STAT_ID_UC_PUPIL_L] = l.value(STAT_ID_UC_PUPIL_L);
     }
 
-    // Using the right eye, always for the final results.
-    results.unite(r);
+    // The encodig memory coefficient can be calculated only when both UC and BC studies have been processed.
+    if ((eyeForBC != EYE_BOTH) && (eyeForUC != EYE_BOTH)){
 
+        qreal differenceR = results.value(STAT_ID_BC_PUPIL_R) - results.value(STAT_ID_UC_PUPIL_R);
+        report = report + "<br>Encoding memory process R: " + QString::number(differenceR);
 
-    // If bindingEye is not -1 then this is the Second Binding experiment and the encodig memory coefficient can be calculated.
-    if (bindingEye != -1){
-        qreal difference = results.value(STAT_ID_BC_PUPIL_R) - results.value(STAT_ID_UC_PUPIL_R);
-        report = report + "<br>Encoding memory process R: " + QString::number(difference);
-        results[STAT_ID_ENCODING_MEM_VALUE] = difference;
-        difference = results.value(STAT_ID_BC_PUPIL_L) - results.value(STAT_ID_UC_PUPIL_L);
-        report = report + "<br>Encoding memory process L: " + QString::number(difference);
+        qreal differenceL = results.value(STAT_ID_BC_PUPIL_L) - results.value(STAT_ID_UC_PUPIL_L);
+        report = report + "<br>Encoding memory process L: " + QString::number(differenceL);
+
+        QString eyeused = "";
+
+        if (eyeForBC == eyeForUC){
+            if (eyeForBC == EYE_R){
+                results[STAT_ID_ENCODING_MEM_VALUE] = differenceR;
+                eyeused = "RIGHT";
+            }
+            else{
+                results[STAT_ID_ENCODING_MEM_VALUE] = differenceL;
+                eyeused = "LEFT";
+            }
+        }
+        else{
+            // The selected eye for each of the experiment is differente so the right one is used as default
+            results[STAT_ID_ENCODING_MEM_VALUE] = differenceR;
+            eyeused = "Right";
+        }
+
+        report = report + "<br><br> REPORT uses value from the <b>" + eyeused + "</b> eye <br>";
+
     }
-    else bindingEye = eye;
 
     return report;
 
@@ -115,10 +167,9 @@ QString EyeMatrixProcessor::processFielding(const QString &csvFile){
 
     loadFieldingCSV(csvFile);
     if (!error.isEmpty()) return "";
-    int eye = -1;
 
-    DataSet::ProcessingResults resL = csvFielding.getProcessingResults(EXP_FIELDNG,&eye,EYE_L);
-    DataSet::ProcessingResults resR = csvFielding.getProcessingResults(EXP_FIELDNG,&eye,EYE_R);
+    DataSet::ProcessingResults resL = csvFielding.getProcessingResults(EXP_FIELDNG,EYE_L);
+    DataSet::ProcessingResults resR = csvFielding.getProcessingResults(EXP_FIELDNG,EYE_R);
 
     QString report = "RESULTS FIELDING:<br>";
 

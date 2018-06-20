@@ -54,6 +54,7 @@ Item{
     readonly property string vmCONFIG_RESULTS_WORKING_MEMORY: "working_memory"
     readonly property string vmCONFIG_RESULTS_RETRIEVAL_MEMORY: "retrieval_memory"
     readonly property string vmCONFIG_RESULTS_MEMORY_ENCODING: "memory_encoding"
+    readonly property string vmCONFIG_VALID_EYE: "valid_eye"
     readonly property string vmCONFIG_P_EXP_FIELDING: "fielding"
     readonly property string vmCONFIG_P_EXP_BIDING_UC: "binding_uc"
     readonly property string vmCONFIG_P_EXP_BIDING_BC: "binding_bc"
