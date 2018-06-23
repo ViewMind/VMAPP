@@ -175,8 +175,7 @@ void FlowControl::connectToEyeTracker(){
         return;
     }
 
-    connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
-    eyeTracker->setEyeToTransmit(configuration->getInt(CONFIG_VALID_EYE));
+    connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));    
     eyeTracker->connectToEyeTracker();
 }
 
@@ -278,6 +277,9 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
 
     // Making sure that the eyetracker is sending data.
     eyeTracker->enableUpdating(true);
+
+    // Making sure the right eye is used.
+    eyeTracker->setEyeToTransmit(configuration->getInt(CONFIG_VALID_EYE));
 
     // Start the experiment.
     experiment->startExperiment(configuration);
