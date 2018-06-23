@@ -4,11 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = SSLServer
+QT       += core widgets network
+TARGET   = SSLServer
 TEMPLATE = app
 
 
@@ -16,26 +13,28 @@ OBJECTS_DIR = OBJS
 MOC_DIR     = MOCS
 RCC_DIR     = QRC
 CONFIG     -= debug_and_release
+CONFIG     += console
 
 SOURCES += main.cpp\
-        sslserverwindow.cpp \
-    ssllistener.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
-    sslmanager.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
     ../../CommonClasses/LogInterface/loginterface.cpp \
-    sslidsocket.cpp
+    ssllistener.cpp \
+    sslmanager.cpp \
+    sslidsocket.cpp \
+    inputcontrol.cpp \
+    servercontrol.cpp
 
-HEADERS  += sslserverwindow.h \
+HEADERS  += \
     ../../CommonClasses/common.h \
-    ssllistener.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
-    sslmanager.h \
     ../../CommonClasses/DataPacket/datapacket.h \
     ../../CommonClasses/LogInterface/loginterface.h \
-    sslidsocket.h
-
-FORMS    += sslserverwindow.ui
+    ssllistener.h \
+    sslmanager.h \
+    sslidsocket.h \
+    inputcontrol.h \
+    servercontrol.h
 
 RESOURCES += \
     certificates.qrc

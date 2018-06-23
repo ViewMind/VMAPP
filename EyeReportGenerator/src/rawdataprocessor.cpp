@@ -1,10 +1,10 @@
-#include "eyedataprocessingthread.h"
+#include "rawdataprocessor.h"
 
-EyeDataProcessingThread::EyeDataProcessingThread()
+RawDataProcessor::RawDataProcessor(QObject *parent):QObject(parent)
 {
 }
 
-void EyeDataProcessingThread::initialize(ConfigurationManager *c, const QSet<QString> &exps){
+void RawDataProcessor::initialize(ConfigurationManager *c, const QSet<QString> &exps){
     config = c;
 
     // Getting the corresponding files for processing
@@ -41,7 +41,7 @@ void EyeDataProcessingThread::initialize(ConfigurationManager *c, const QSet<QSt
 
 }
 
-QString EyeDataProcessingThread::formatBindingResultsForPrinting(const EDPImages::BindingAnswers &ans){
+QString RawDataProcessor::formatBindingResultsForPrinting(const EDPImages::BindingAnswers &ans){
     QString report = "";
     report = report + "Number of correct answers in test trials: " + QString::number(ans.testCorrect) + "<br>";
     report = report + "Number of wrong answers in test trials: " + QString::number(ans.testWrong) + "<br>";
@@ -50,14 +50,15 @@ QString EyeDataProcessingThread::formatBindingResultsForPrinting(const EDPImages
     return report;
 }
 
-void EyeDataProcessingThread::run(){
+void RawDataProcessor::run(){
 
     EyeMatrixProcessor emp((quint8)config->getInt(CONFIG_VALID_EYE));
     reportFileOutput = "";
 
+
     // Each of the processing fucntions is called. In this way, processing of just one can be accomplished
     // just by running this complete function but it will keep going if a file does not exist.
-    if (experiments.contains(CONFIG_P_EXP_READING)) {
+    if (experiments.contains(CONFIG_P_EXP_READING)) {        
         emit(appendMessage("========== STARTED READING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPReading reading(config);
         matrixReading = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
@@ -68,7 +69,7 @@ void EyeDataProcessingThread::run(){
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
     }
 
-    emit(updateProgressBar(0));
+
     if (experiments.contains(CONFIG_P_EXP_BIDING_BC)) {
         emit(appendMessage("========== STARTED BINDING BC PROCESSING ==========",MSG_TYPE_SUCC));
         EDPImages images(config);
@@ -83,7 +84,6 @@ void EyeDataProcessingThread::run(){
     }
 
 
-    emit(updateProgressBar(0));
     if (experiments.contains(CONFIG_P_EXP_BIDING_UC)){
         emit(appendMessage("========== STARTED BINDING UC PROCESSING ==========",MSG_TYPE_SUCC));
         EDPImages images(config);
@@ -98,7 +98,6 @@ void EyeDataProcessingThread::run(){
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
     }
 
-    emit(updateProgressBar(0));
     if (experiments.contains(CONFIG_P_EXP_FIELDING)) {
         emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPFielding fielding(config);
@@ -119,7 +118,7 @@ void EyeDataProcessingThread::run(){
 
 }
 
-void EyeDataProcessingThread::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd){
+void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd){
 
     QString patientFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_PATIENT_INFO_FILE;
     // Loading the patient data
@@ -167,7 +166,7 @@ void EyeDataProcessingThread::generateReportFile(const DataSet::ProcessingResult
     }
 }
 
-QString EyeDataProcessingThread::csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header){
+QString RawDataProcessor::csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header){
     QString data;
     QString exp;
 
@@ -175,8 +174,6 @@ QString EyeDataProcessingThread::csvGeneration(EDPBase *processor, const QString
         emit(appendMessage(id + " processing was configured but no " + id + " file was found",MSG_TYPE_ERR));
         return "";
     }
-
-    //emit(appendMessage("-> Separating experiment data from recorded data from Binding " + ids + " experiment file",0));
 
     if (!separateInfoByTag(dataFile,header,&data,&exp)){
         return "";
@@ -187,15 +184,12 @@ QString EyeDataProcessingThread::csvGeneration(EDPBase *processor, const QString
 
     processor->setFastProcessing(config->getBool(CONFIG_FAST_PROCESSING));
 
-    //emit(appendMessage("-> Configuring " + id  + " data processor",MSG_TYPE_STD));
-
-    connect(processor,&EDPBase::updateProgress,this,&EyeDataProcessingThread::onUpdateProgress);
-
     processor->setFieldingMarginInMM(config->getReal(CONFIG_MARGIN_TARGET_HIT));
     processor->setMonitorGeometry(mgeo);
     processor->setMovingWindowParameters(mwp);
     processor->calculateWindowSize();
     processor->setPixelsInSacadicLatency(config->getInt(CONFIG_LATENCY_ESCAPE_RAD));
+
 
     if (!processor->configure(dataFile,exp)){
         emit(appendMessage("ERROR: Configuring " + id + " experiment: " + processor->getError(),MSG_TYPE_ERR));
@@ -224,7 +218,7 @@ QString EyeDataProcessingThread::csvGeneration(EDPBase *processor, const QString
 
 }
 
-bool EyeDataProcessingThread::separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment){
+bool RawDataProcessor::separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment){
 
     QFile f(file);
     if (!f.open(QFile::ReadOnly)){
@@ -276,7 +270,7 @@ bool EyeDataProcessingThread::separateInfoByTag(const QString &file, const QStri
     }
 }
 
-bool EyeDataProcessingThread::getResolutionToConfig(const QString &firstline){
+bool RawDataProcessor::getResolutionToConfig(const QString &firstline){
     // Getting the resolution for the experiment
     // Default values.
     config->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);
@@ -296,8 +290,4 @@ bool EyeDataProcessingThread::getResolutionToConfig(const QString &firstline){
     config->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
 
     return true;
-}
-
-void EyeDataProcessingThread::onUpdateProgress(qint32 v){
-    emit(updateProgressBar(v));
 }

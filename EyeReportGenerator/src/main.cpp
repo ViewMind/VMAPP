@@ -1,11 +1,13 @@
-#include "eyereportui.h"
 #include <QApplication>
+#include "control.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    EyeReportUI w;
-    w.show();
+
+    Control control(&a);
+    QObject::connect(&control,SIGNAL(done()),&a,SLOT(quit()),Qt::QueuedConnection);
+    control.run();
 
     return a.exec();
 }

@@ -11,6 +11,10 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     monitor = nullptr;
     this->setVisible(false);
 
+    // For debugging.
+    connect(&sslServer,SIGNAL(errorOccurred(QProcess::ProcessError)),this,SLOT(onErrorOccurred(QProcess::ProcessError)));
+    connect(&sslServer,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(onStateChanged(QProcess::ProcessState)));
+
     // Launching the server if it was configured.
     QString server = configuration->getString(CONFIG_SSLSERVER_PATH);
     if (QFile(server).exists()){
@@ -27,7 +31,8 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
 
     }
     else{
-        logger.appendWarning("SSL Server configured in path, but the file does not exist.");
+        if (!server.isEmpty())
+            logger.appendWarning("SSL Server configured in path, but the file does not exist.");
     }
 
     // Creating the sslclient
@@ -36,6 +41,16 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     // Connection to the "finished" slot.
     connect(sslclient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
 
+}
+
+void FlowControl::onErrorOccurred(QProcess::ProcessError error){
+    QMetaEnum metaEnum = QMetaEnum::fromType<QProcess::ProcessError>();
+    logger.appendError(QString("PROCESS ERROR: ") + metaEnum.valueToKey(error));
+}
+
+void FlowControl::onStateChanged(QProcess::ProcessState newState){
+    QMetaEnum metaEnum = QMetaEnum::fromType<QProcess::ProcessState>();
+    logger.appendStandard(QString("SSLServer Process state changed to: ") + metaEnum.valueToKey(newState));
 }
 
 void FlowControl::saveReport(){

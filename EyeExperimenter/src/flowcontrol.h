@@ -72,6 +72,10 @@ public slots:
     // Eye tracker control changes
     void onEyeTrackerControl(quint8 code);
 
+    // FOR Debugging.
+    void onStateChanged(QProcess::ProcessState newState);
+    void onErrorOccurred(QProcess::ProcessError error);
+
 private:
 
     // The process for the server.

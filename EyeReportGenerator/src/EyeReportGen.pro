@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core widgets gui
 
 TARGET = EyeReportGen
 TEMPLATE = app
@@ -15,10 +13,9 @@ OBJECTS_DIR = OBJS
 MOC_DIR     = MOCS
 RCC_DIR     = QRC
 CONFIG     -= debug_and_release
+CONFIG     += console
 
 SOURCES += main.cpp\
-        eyereportui.cpp \
-    eyedataprocessingthread.cpp \
     EyeMatrixProcessor/eyematrixprocessor.cpp \
     EyeMatrixGenerator/edpbase.cpp \
     EyeMatrixGenerator/edpreading.cpp \
@@ -26,7 +23,6 @@ SOURCES += main.cpp\
     EyeMatrixGenerator/edpimages.cpp \
     EyeMatrixGenerator/edpfielding.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp \
     EyeMatrixProcessor/dataset.cpp \
     EyeMatrixProcessor/csvcheckedreader.cpp \
     ../../CommonClasses/Experiments/bindingmanager.cpp \
@@ -34,12 +30,13 @@ SOURCES += main.cpp\
     ../../CommonClasses/Experiments/fieldingmanager.cpp \
     ../../CommonClasses/Experiments/phrases.cpp \
     ../../CommonClasses/Experiments/readingmanager.cpp \
-    ../../CommonClasses/ImageExplorer/imageexplorer.cpp
+    control.cpp \
+    rawdataprocessor.cpp \
+    htmlwriter.cpp \
+    ../../CommonClasses/LogInterface/loginterface.cpp
 
-HEADERS  += eyereportui.h \
-    eyedataprocessingthread.h \
+HEADERS  += \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
-    ../../CommonClasses/LogInterface/loginterface.h \
     ../../CommonClasses/common.h \
     EyeMatrixProcessor/eyematrixprocessor.h \
     EyeMatrixGenerator/edpbase.h \
@@ -54,8 +51,9 @@ HEADERS  += eyereportui.h \
     ../../CommonClasses/Experiments/fieldingmanager.h \
     ../../CommonClasses/Experiments/readingmanager.h \
     ../../CommonClasses/Experiments/phrases.h \
-    ../../CommonClasses/ImageExplorer/imageexplorer.h
-
-FORMS    += eyereportui.ui
+    control.h \
+    rawdataprocessor.h \
+    htmlwriter.h \
+    ../../CommonClasses/LogInterface/loginterface.h
 
 RESOURCES +=

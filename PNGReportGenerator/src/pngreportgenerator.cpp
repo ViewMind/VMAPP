@@ -28,7 +28,7 @@ void PNGReportGenerator::on_pbGenerate_clicked()
     if (ui->cboxUseLogo->isChecked())
         config.addKeyValuePair(CONFIG_REPORT_NO_LOGO,"false");
     else
-        config.addKeyValuePair(CONFIG_REPORT_NO_LOGO,"false");
+        config.addKeyValuePair(CONFIG_REPORT_NO_LOGO,"true");
 
     QFileInfo info(ui->lePath->text());
     if (!info.exists()){

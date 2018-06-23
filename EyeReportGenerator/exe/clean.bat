@@ -5,3 +5,4 @@ del Makefile*
 del qrc_*
 del *.h
 del .qmake.stash
+del *.html

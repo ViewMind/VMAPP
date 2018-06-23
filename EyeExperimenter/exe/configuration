@@ -49,4 +49,4 @@ selected_eyetracker = Mouse;
 output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;
 
 
-valid_eye = 1;
+valid_eye = 2;

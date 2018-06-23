@@ -2,13 +2,11 @@
 #define EYEDATAPROCESSINGTHREAD_H
 
 /************************************************
- * The final output of this class is .tex of the
- * retport. PDF generation and viewing is handled
- * by the main thread.
+ * Class that controls the calls
  * *********************************************/
 
 #include <QThread>
-#include <QGraphicsScene>
+//#include <QGraphicsScene>
 
 #include "EyeMatrixGenerator/edpreading.h"
 #include "EyeMatrixGenerator/edpimages.h"
@@ -20,22 +18,18 @@
 #define   MSG_TYPE_ERR                                   2
 #define   MSG_TYPE_WARN                                  3
 
-class EyeDataProcessingThread : public QThread
+class RawDataProcessor : public QObject
 {
     Q_OBJECT
 public:
-    EyeDataProcessingThread();
+    RawDataProcessor(QObject *parent = 0);
     void initialize(ConfigurationManager *c, const QSet<QString> &exps);
     QString getReportFileOutput() const {return reportFileOutput; }
 
     // The actual processing function
     void run();
 
-public slots:
-    void onUpdateProgress(qint32 v);
-
 signals:
-    void updateProgressBar(qint32 p);
     void appendMessage(const QString &msg, qint32 type);
 
 private:

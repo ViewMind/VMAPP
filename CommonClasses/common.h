@@ -48,7 +48,6 @@
 #define   CONFIG_SERVER_ADDRESS                         "server_address"
 #define   CONFIG_CONNECTION_TIMEOUT                     "connection_time_out"
 #define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
-#define   CONFIG_RUN_AND_QUIT                           "run_and_quit"
 #define   CONFIG_NUMBER_OF_PARALLEL_PROCESSES           "number_of_paralell_processes"
 #define   CONFIG_WAIT_DATA_TIMEOUT                      "wait_data_timeout"
 #define   CONFIG_RESOLUTION_WIDTH                       "config_resolution_width"
