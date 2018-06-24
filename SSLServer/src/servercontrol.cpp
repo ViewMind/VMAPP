@@ -26,6 +26,11 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
     cv[CONFIG_WAIT_DATA_TIMEOUT] = cmd;
 
     config.setupVerification(cv);
+
+}
+
+void ServerControl::startServer(){
+
     if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
         log.appendError("Configuration file errors:<br>"+config.getError());
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
@@ -37,9 +42,7 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
 
     // Multiplying timeout times 1000 to turn into ms.
     config.addKeyValuePair(CONFIG_WAIT_DATA_TIMEOUT,config.getInt(CONFIG_WAIT_DATA_TIMEOUT)*1000);
-}
 
-void ServerControl::startServer(){
     sslManager.startServer(&config);
 
     if (!QSslSocket::supportsSsl()){
