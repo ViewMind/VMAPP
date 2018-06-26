@@ -5,12 +5,9 @@
 #include <QDir>
 #include <QTextStream>
 #include <QFileInfo>
-#include <QPainter>
-#include <QPoint>
 #include <QDebug>
-#include <QGraphicsScene>
 #include "movingwindowalgorithm.h"
-#include "../../CommonClasses/Experiments/experimentdatapainter.h"
+#include "../../ConfigurationManager/configurationmanager.h"
 
 struct MonitorGeometry{
     qreal XmmToPxRatio;
@@ -30,8 +27,7 @@ public:
     virtual bool doEyeDataProcessing(const QString &data){ Q_UNUSED(data) error = "BASE EDP CLASS"; return false;}
 
     // This function does the setup based on the type of processing required.
-    bool configure(const QString &fileName, const QString &managerConfigData);
-    void initManager(ConfigurationManager *c){ config = c; manager->init(c); }
+    void configure(const QString &fileName, const QString &exp);
 
     // Setting the distance to monitor
     void setMonitorGeometry(const MonitorGeometry &mg) {monitorGeometry = mg;}
@@ -54,21 +50,16 @@ public:
     // Setting the Fielding margin
     void setFieldingMarginInMM(qint32 fm) {fieldingMarginInMM = fm;}
 
-    // Changes whether to generate the images or not.
-    void setFastProcessing(bool enable) {  skipImageGeneration = enable; }
-
     QString getOuputMatrixFileName() const { return outputFile; }
 
-    QStringList getFilteredLines() const {return filteredLinesList;}    
+    QStringList getFilteredLines() const {return filteredLinesList;}
 
-signals:
-    // This signal is intened to update a progress bar. It will give value between 0 and 100 to represent percent.
-    void updateProgress(qint32 progress);
+    FixationList getEyeFixations() const {return eyeFixations;}
 
 protected:
 
-    // The drawing and experiment manager
-    ExperimentDataPainter *manager;
+    // Stored fixation results
+    FixationList eyeFixations;
 
     // Configuration manager just in case
     ConfigurationManager *config;
@@ -78,9 +69,6 @@ protected:
 
     // The working directory, should have the patient name.
     QString workingDirectory;
-
-    // The directory where images are saved.
-    QString outputImageDirectory;
 
     // The output file
     QString outputFile;
@@ -93,12 +81,6 @@ protected:
 
     // Filtered lines list.
     QStringList filteredLinesList;
-
-    // Used to process data faster.
-    bool skipImageGeneration;
-
-    // The number of images that will be processed. Obtained from the header of the data file
-    qint32 numberToProcess;
 
     // Used to determine when the eye left the center position of the screen.
     qint32 pixelsInSacadicLatency;
@@ -117,9 +99,6 @@ protected:
 
     // Auxiliary function that counts how many zeros there are in the column col, between start and end rows.
     qint32 countZeros(const DataMatrix &data, qint32 col, qint32 startRow, qint32 endRow, qreal tol = 1e-6) const;
-
-    // Auxiliary function that draws the fixations of each eye in an image
-    void drawFixationOnImage(const QString &outputBaseFileName, const Fixations &l, const Fixations &r);
 
     // Filtering function to remove spurious data.
     struct FilterReturn{

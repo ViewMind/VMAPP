@@ -2,8 +2,7 @@
 
 EDPReading::EDPReading(ConfigurationManager *c):EDPBase(c)
 {
-    manager = new ReadingManager();
-    manager->init(c);
+
 }
 
 bool EDPReading::doEyeDataProcessing(const QString &data){
@@ -22,8 +21,6 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
     warnings = "";
     filteredLinesList.clear();
     bool dontCheckNext = false;
-
-    qint32 updateCounter = 0;
 
     for (qint32 i = 0; i < lines.size(); i++){
 
@@ -47,10 +44,6 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
                 appendDataToReadingMatrix(imageData,lastID);
                 //qWarning() << "DONE";
 
-                // Updating progress
-                updateCounter++;
-                emit (updateProgress((updateCounter+1)*100/numberToProcess));
-
                 // Clearing the image data
                 //qWarning() << "CLEARING";
                 imageData.clear();
@@ -58,9 +51,6 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
 
             lastID = id;
             if (line.contains("->")){
-                // Updating progress
-                updateCounter++;
-                emit (updateProgress((updateCounter+1)*100/numberToProcess));
                 // The next time the check for the number of lines will give zero due to this being a question and it has no data.
                 dontCheckNext = true;
                 continue;
@@ -95,10 +85,6 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
         //qWarning() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
         appendDataToReadingMatrix(imageData,lastID);
         //qWarning() << "DONE";
-
-        // Updating progress
-        updateCounter++;
-        emit (updateProgress((updateCounter+1)*100/numberToProcess));
     }
 
     return true;
@@ -151,12 +137,10 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
     Fixations fR = mwa.computeFixations(data,READ_XR,READ_YR,READ_TI);
 
     // The image with the fixations is generated.
-    ReadingManager *m = (ReadingManager *)manager;
-    if (!skipImageGeneration){
-        if (m->drawPhrase(imgID)){
-            drawFixationOnImage(imgID,fL,fR);
-        }
-    }
+    eyeFixations.left.append(fL);
+    eyeFixations.right.append(fR);
+    QStringList id; id << imgID;
+    eyeFixations.trialID.append(id);
 
     QFile file(outputFile);
     if (!file.open(QFile::Append)){

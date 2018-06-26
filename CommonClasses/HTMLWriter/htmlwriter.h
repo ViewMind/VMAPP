@@ -17,6 +17,8 @@ public:
 
     void write(const QString &filename, const QString &title);
 
+    void reset() {htmlData = "";}
+
 private:
     QString htmlData;
     void appendMessage(const QString &msg, const QString &color, bool bold = false, bool plainHTML = false);

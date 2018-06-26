@@ -2,11 +2,13 @@
 #define EYEDATAPROCESSINGTHREAD_H
 
 /************************************************
- * Class that controls the calls
+ * Processes the raw eyetracker data.
+ * 1) It generates the intermediate CSV Files
+ * 2) Processes the CSV files and generates the
+ *    final output
  * *********************************************/
 
 #include <QThread>
-//#include <QGraphicsScene>
 
 #include "EyeMatrixGenerator/edpreading.h"
 #include "EyeMatrixGenerator/edpimages.h"
@@ -22,9 +24,12 @@ class RawDataProcessor : public QObject
 {
     Q_OBJECT
 public:
+
     RawDataProcessor(QObject *parent = 0);
     void initialize(ConfigurationManager *c, const QSet<QString> &exps);
+    void initialize(ConfigurationManager *c, const QStringList &filesToProcess);
     QString getReportFileOutput() const {return reportFileOutput; }
+    QHash<QString,FixationList> getFixations() const {return fixations;}
 
     // The actual processing function
     void run();
@@ -40,13 +45,16 @@ private:
     // Experiments to actually process
     QSet<QString> experiments;
 
+    // Processed fixations in the proper structure. This is used to draw fixations if needed.
+    QHash<QString,FixationList> fixations;
+
     // The files that will be processed
     QString dataReading;
     QString dataBindingUC;
     QString dataBindingBC;
     QString dataFielding;
 
-    // The matrix fiel
+    // The matrix file
     QString matrixReading;
     QString matrixBindingUC;
     QString matrixBindingBC;
@@ -63,6 +71,8 @@ private:
     // Separates the data from the experiment description in the data files.
     // Returns the error message if there was one.
     bool separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment);
+
+    void commonInitialization();
 
     QString csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header);
 

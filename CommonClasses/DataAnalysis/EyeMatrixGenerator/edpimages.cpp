@@ -2,8 +2,6 @@
 
 EDPImages::EDPImages(ConfigurationManager *c):EDPBase(c)
 {
-    manager = new BindingManager();
-    manager->init(c);
 }
 
 void EDPImages::sumToAnswers(const QString &trialID, const QString &ans){
@@ -29,7 +27,6 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
 
     // This will have all the data from a single image.
     DataMatrix imageData;
-    qint32 updateCounter = 0;
 
     QString id;
     QString isTrial;
@@ -72,10 +69,6 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
                 // Adding data to matrix
                 //qWarning() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
                 appendDataToImageMatrix(imageData,id,isTrial,response);
-
-                // Updating progress
-                updateCounter++;
-                emit (updateProgress(updateCounter*100/numberToProcess));
 
                 if (imageData.size() < BINDING_WARNING_NUM_DATAPOINTS){
                     warnings = warnings + "Trial ID: " + id + ". ISTrial: " + isTrial + " had less than " + QString::number(BINDING_WARNING_NUM_DATAPOINTS) + " datapoints <br>";
@@ -131,9 +124,6 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
         //qWarning() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
         appendDataToImageMatrix(imageData,id,isTrial,response);
 
-        // Updating progress
-        updateCounter++;
-        emit (updateProgress(updateCounter*100/numberToProcess));
     }
 
     return true;
@@ -182,16 +172,12 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     Fixations fL = mwa.computeFixations(data,IMAGE_XL,IMAGE_YL,IMAGE_TI);
     Fixations fR = mwa.computeFixations(data,IMAGE_XR,IMAGE_YR,IMAGE_TI);
 
-    BindingManager *m = (BindingManager *)manager;
-
-    if (!skipImageGeneration){
-        if (m->drawFlags(trialName,isTrial == "0")){
-            // Constructing the image name
-            QString imageName = trialName + "_" + isTrial;
-            //... and drawing the fixations on the image.
-            drawFixationOnImage(imageName,fL,fR);
-        }
-    }
+    // Adding to the result struct
+    eyeFixations.left.append(fL);
+    eyeFixations.right.append(fR);
+    QStringList id;
+    id << trialName << isTrial;
+    eyeFixations.trialID.append(id);
 
     QFile file(outputFile);
     if (!file.open(QFile::Append)){

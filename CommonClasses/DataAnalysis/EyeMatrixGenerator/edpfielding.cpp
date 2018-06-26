@@ -2,8 +2,6 @@
 
 EDPFielding::EDPFielding(ConfigurationManager *c):EDPBase(c)
 {
-    manager = new FieldingManager();
-    manager->init(c);
 }
 
 bool EDPFielding::doEyeDataProcessing(const QString &data){
@@ -20,7 +18,6 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
 
     // This will have all the data from a single image.
     DataMatrix imageData;
-    qint32 updateCounter = 0;
 
     QString id;
     QString imageNumber;
@@ -47,10 +44,6 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
                 // Adding data to matrix
                 //qWarning() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
                 appendDataToFieldingMatrix(imageData,id,imageNumber,targetX,targetY);
-
-                // Updating progress
-                updateCounter++;
-                emit (updateProgress((updateCounter+1)*100/numberToProcess));
 
                 // Clearing the image data
                 //qWarning() << "CLEARING";
@@ -89,11 +82,6 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
         // Adding data to matrix
         //qWarning() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
         appendDataToFieldingMatrix(imageData,id,imageNumber,targetX,targetY);
-
-        // Updating progress
-        updateCounter++;
-        // The +10 is a simple bug so that the progress bar does not finish in 99%
-        emit (updateProgress((updateCounter+10)*100/numberToProcess));
 
         // Clearing the image data
         //qWarning() << "CLEARING";
@@ -149,40 +137,11 @@ bool EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
     qreal maxX = targetX + (qreal)(RECT_WIDTH)/2 + dW;
     qreal maxY = targetY + (qreal)(RECT_HEIGHT)/2 + dH;
 
-    //qWarning() << "X Limits: " << minX << maxX << ". Y Limits: " << minY << maxY;
-    //qWarning() << trialID << imgID;
-
-    FieldingManager *m = (FieldingManager *)manager;
-
-    if (!skipImageGeneration){
-
-        qint32 imgNumber = imgID.toInt();
-
-        if (imgNumber < 4){
-            m->setDrawState(FieldingManager::DS_CROSS_TARGET);
-            if (!m->setTargetPositionFromTrialName(trialID,imgNumber-1)){
-                error = "Could not find trial with name " + trialID + " for drawing the fixations";
-                return false;
-            }
-        }
-        else{
-            if (imgNumber == 5){
-                m->setDrawState(FieldingManager::DS_3);
-            }
-            else if (imgNumber == 6){
-                m->setDrawState(FieldingManager::DS_2);
-            }
-            else{
-                m->setDrawState(FieldingManager::DS_1);
-            }
-        }
-
-        // Constructing the image name
-        QString imageName = trialID + "_" + imgID;
-        //... and drawing the fixations on the image.
-        drawFixationOnImage(imageName,fL,fR);
-    }
-
+    eyeFixations.left.append(fL);
+    eyeFixations.right.append(fR);
+    QStringList id;
+    id << imgID << trialID;
+    eyeFixations.trialID.append(id);
 
     QFile file(outputFile);
     if (!file.open(QFile::Append)){

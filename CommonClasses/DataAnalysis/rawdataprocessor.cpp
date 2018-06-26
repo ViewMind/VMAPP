@@ -22,7 +22,38 @@ void RawDataProcessor::initialize(ConfigurationManager *c, const QSet<QString> &
     dataBindingBC = getNewestFile(config->getString(CONFIG_PATIENT_DIRECTORY),fileBC);
     dataBindingUC = getNewestFile(config->getString(CONFIG_PATIENT_DIRECTORY),fileUC);
     dataFielding = getNewestFile(config->getString(CONFIG_PATIENT_DIRECTORY),FILE_OUTPUT_FIELDING);
+    experiments = exps;
 
+    commonInitialization();
+
+}
+
+void RawDataProcessor::initialize(ConfigurationManager *c, const QStringList &filesToProcess){
+    config = c;
+    commonInitialization();
+    experiments.clear();
+    for (qint32 i = 0; i < filesToProcess.size(); i++){
+        if (filesToProcess.at(i).contains(FILE_OUTPUT_BINDING_BC)){
+            dataBindingBC = filesToProcess.at(i);
+            experiments << CONFIG_P_EXP_BIDING_BC;
+        }
+        else if (filesToProcess.at(i).contains(FILE_OUTPUT_BINDING_UC)){
+            dataBindingUC = filesToProcess.at(i);
+            experiments << CONFIG_P_EXP_BIDING_UC;
+        }
+        else if (filesToProcess.at(i).contains(FILE_OUTPUT_READING)){
+            dataReading = filesToProcess.at(i);
+            experiments << CONFIG_P_EXP_READING;
+        }
+        else if (filesToProcess.at(i).contains(FILE_OUTPUT_FIELDING)){
+            dataFielding = filesToProcess.at(i);
+            experiments << CONFIG_P_EXP_FIELDING;
+        }
+    }
+}
+
+
+void RawDataProcessor::commonInitialization(){
     matrixBindingBC = "";
     matrixReading = "";
     matrixFielding = "";
@@ -36,9 +67,6 @@ void RawDataProcessor::initialize(ConfigurationManager *c, const QSet<QString> &
     mwp.minimumFixationLength          = config->getReal(CONFIG_MIN_FIXATION_LENGTH);
     mwp.sampleFrequency                = config->getReal(CONFIG_SAMPLE_FREQUENCY);
     mwp.calculateWindowSize();
-
-    experiments = exps;
-
 }
 
 QString RawDataProcessor::formatBindingResultsForPrinting(const EDPImages::BindingAnswers &ans){
@@ -62,7 +90,8 @@ void RawDataProcessor::run(){
         emit(appendMessage("========== STARTED READING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPReading reading(config);
         matrixReading = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
-        QString report = emp.processReading(matrixReading);
+        fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
+        QString report = emp.processReading(matrixReading);        
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
         }
@@ -74,6 +103,7 @@ void RawDataProcessor::run(){
         emit(appendMessage("========== STARTED BINDING BC PROCESSING ==========",MSG_TYPE_SUCC));
         EDPImages images(config);
         matrixBindingBC = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
+        fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingBC,true);
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -88,6 +118,7 @@ void RawDataProcessor::run(){
         emit(appendMessage("========== STARTED BINDING UC PROCESSING ==========",MSG_TYPE_SUCC));
         EDPImages images(config);
         matrixBindingUC = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
+        fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingUC,false);
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -102,6 +133,7 @@ void RawDataProcessor::run(){
         emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPFielding fielding(config);
         matrixFielding = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
+        fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
         QString report = emp.processFielding(matrixFielding);
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -179,22 +211,14 @@ QString RawDataProcessor::csvGeneration(EDPBase *processor, const QString &id, c
         return "";
     }
 
-    // Resolution is now known.
-    processor->initManager(config);
-
-    processor->setFastProcessing(config->getBool(CONFIG_FAST_PROCESSING));
-
     processor->setFieldingMarginInMM(config->getReal(CONFIG_MARGIN_TARGET_HIT));
     processor->setMonitorGeometry(mgeo);
     processor->setMovingWindowParameters(mwp);
     processor->calculateWindowSize();
     processor->setPixelsInSacadicLatency(config->getInt(CONFIG_LATENCY_ESCAPE_RAD));
 
-
-    if (!processor->configure(dataFile,exp)){
-        emit(appendMessage("ERROR: Configuring " + id + " experiment: " + processor->getError(),MSG_TYPE_ERR));
-        return "";
-    }
+    // Configuring the experiment
+    processor->configure(dataFile,exp);
 
     emit(appendMessage("-> Generating  " + id + " CSV file",0));
     if (!processor->doEyeDataProcessing(data)){
@@ -271,6 +295,7 @@ bool RawDataProcessor::separateInfoByTag(const QString &file, const QString &tag
 }
 
 bool RawDataProcessor::getResolutionToConfig(const QString &firstline){
+
     // Getting the resolution for the experiment
     // Default values.
     config->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);

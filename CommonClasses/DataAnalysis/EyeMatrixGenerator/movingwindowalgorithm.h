@@ -28,6 +28,18 @@ struct Fixation{
 
 typedef QList<Fixation> Fixations;
 
+struct FixationList{
+    QString experimentDescription;
+    QList<QStringList> trialID;
+    QList<Fixations> left;
+    QList<Fixations> right;
+    void clear(){
+        trialID.clear();
+        left.clear();
+        right.clear();
+    }
+};
+
 // Structure that contains the data of the Moving window algorithm.
 struct MovingWindowParameters{
 public:

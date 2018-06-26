@@ -12,6 +12,7 @@ EyeReportGenerator/exe/
 EyeExperimenter/exe
 ETFollower/exe/
 PNGReportGenerator/exe/
+EyeDataAnalyzer/exe/
 ReportViewerDev/
 *.autosave
 *.tmp*
