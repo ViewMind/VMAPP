@@ -12,6 +12,7 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
         log.appendError("ERROR Loading configuration: " + configuration.getError());
     }
     fillUi();
+
 }
 
 

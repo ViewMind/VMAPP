@@ -83,7 +83,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
 
     // Adding the logo
     if (!c->getBool(CONFIG_REPORT_NO_LOGO)){
-        QImage logo(":/report_text/viewmind.png");
+        QImage logo(":/CommonClasses/PNGWriter/report_text/viewmind.png");
         logo = logo.scaled(QSize(BANNER_LOGO_WIDTH,BANNER_LOGO_HEIGHT),Qt::KeepAspectRatio,Qt::SmoothTransformation);
         QGraphicsPixmapItem* logoItem = new QGraphicsPixmapItem(QPixmap::fromImage(logo));
         canvas->addItem(logoItem);
@@ -414,7 +414,7 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
 void ImageReportDrawer::loadFonts(){
 
     QStringList fontFileList;
-    QString base = ":/report_text/";
+    QString base = ":/CommonClasses/PNGWriter/report_text/";
     fontFileList << FONT_BOLD
                  << FONT_BOOK
                  << FONT_MEDIUM
@@ -433,7 +433,7 @@ void ImageReportDrawer::loadFonts(){
 
 bool ImageReportDrawer::loadLanguageConfiguration(const QString &lang){
 
-    QString path = ":/report_text/";
+    QString path = ":/CommonClasses/PNGWriter/report_text/";
     if ((lang != "Spanish") && (lang != "English")) return false;
     path = path + lang;
 

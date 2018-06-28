@@ -6,7 +6,7 @@
 #include <QLineEdit>
 
 #define   PROGRAM_NAME      "EyeDataAnalyzer"
-#define   PROGRAM_VERSION   "1.0.0"
+#define   PROGRAM_VERSION   "1.0.1"
 #define   WORK_DIR          "outputs"
 
 #include "../../CommonClasses/HTMLWriter/htmlwriter.h"
