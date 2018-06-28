@@ -9,6 +9,7 @@
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../CommonClasses/PNGWriter/imagereportdrawer.h"
 
 #include "Experiments/readingexperiment.h"
 #include "Experiments/imageexperiment.h"
@@ -21,7 +22,7 @@
 #include "EyeTrackerInterface/GazePoint/opengazeinterface.h"
 
 #include "monitorscreen.h"
-#include "imagereportdrawer.h"
+
 
 class FlowControl : public QWidget
 {

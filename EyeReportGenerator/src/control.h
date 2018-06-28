@@ -3,11 +3,11 @@
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "htmlwriter.h"
-#include "rawdataprocessor.h"
+#include "../../CommonClasses/HTMLWriter/htmlwriter.h"
+#include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
 
 #define   EYE_REP_GEN_NAME                              "EyeRepGenerator"
-#define   EYE_REP_GEN_VERSION                           "3.0.0"
+#define   EYE_REP_GEN_VERSION                           "3.1.0"
 
 class Control : public QObject
 {

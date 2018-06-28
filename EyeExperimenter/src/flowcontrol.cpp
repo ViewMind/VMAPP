@@ -16,7 +16,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     connect(&sslServer,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(onStateChanged(QProcess::ProcessState)));
 
     // Launching the server if it was configured.
-    QString server = configuration->getString(CONFIG_SSLSERVER_PATH);
+    QString server = configuration->getString(CONFIG_SSLSERVER_PATH);                                                                                                                            
     if (QFile(server).exists()){
 
         QFileInfo info(server);
