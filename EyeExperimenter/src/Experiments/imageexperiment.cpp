@@ -9,7 +9,8 @@ ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent)
     else outputDataFile = FILE_OUTPUT_BINDING_UC;
 
     // Connecting the timer time out with the time out function.
-    connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::onTimeOut);
+    //connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::onTimeOut);
+    connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::nextState);
 
     // Binding type.
     isBound = bound;
@@ -20,9 +21,6 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
 
     if (!Experiment::startExperiment(c)) return false;
 
-    if (m->getUsesNumbers()) timeCountForStart = TIME_START_NUMBER;
-    else timeCountForStart = TIME_START_CROSS;
-
     // If there were no problems the experiment can begin.
     currentTrial = 0;
     error = "";
@@ -32,9 +30,8 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
     newImage(m->getTrial(currentTrial).name,0);
     trialState = TSB_CENTER_CROSS;
     drawCurrentImage();
-    stateTimer.setInterval(1);
+    stateTimer.setInterval(TIME_START_CROSS);
     stateTimer.start();
-    timerCounter = timeCountForStart;
     this->show();
     this->activateWindow();
 
@@ -53,7 +50,7 @@ void ImageExperiment::drawCurrentImage(){
         return;
     }
 
-    if ((trialState == TSB_TRANSITION) || (trialState == TSB_FINISH) || (trialState == TSB_NUMBER_TRANSITION)){
+    if ((trialState == TSB_TRANSITION) || (trialState == TSB_FINISH)){
         //qWarning() << "DRAWING: Transition" << currentTrial;
         gview->scene()->clear();
         emit(updateBackground(m->getImage()));
@@ -159,43 +156,27 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
 
 }
 
-void ImageExperiment::onTimeOut(){
-    timerCounter--;
-    if (timerCounter == 0){
-        nextState();
-    }
-}
-
 void ImageExperiment::nextState(){
 
-    timerCounter = 0;
+    //qWarning() << "TIME INTERVAL: " << mtime.elapsed();
+    //mtime.start();
+    stateTimer.stop();
 
     switch (trialState){
     case TSB_CENTER_CROSS:
-        //qWarning() << "ENTER: Center cross" << currentTrial;
-        if (!m->getUsesNumbers()){
-            trialState = TSB_SHOW;
-            timerCounter = TIME_IMAGE_1;
-            drawCurrentImage();
-        }
-        else{
-            trialState = TSB_NUMBER_TRANSITION;
-            timerCounter = TIME_NUMBER_TRANSITION;
-            drawCurrentImage();
-        }
-        return;
-    case TSB_NUMBER_TRANSITION:
-        //qWarning() << "ENTER: NTransition" << currentTrial;
         trialState = TSB_SHOW;
+        stateTimer.setInterval(TIME_IMAGE_1);
+        stateTimer.start();
         drawCurrentImage();
-        timerCounter = TIME_IMAGE_1;
-        break;
+        return;
     case TSB_FINISH:
         //qWarning() << "ENTER: FINISH" << currentTrial;
         if (advanceTrial()){
             trialState = TSB_CENTER_CROSS;
             drawCurrentImage();
-            timerCounter = timeCountForStart;}
+            stateTimer.setInterval(TIME_START_CROSS);
+            stateTimer.start();
+        }
         else{
             emit(experimentEndend(ER_NORMAL));
         }
@@ -204,14 +185,16 @@ void ImageExperiment::nextState(){
         //qWarning() << "ENTER: SHOW" << currentTrial;
         trialState = TSB_TRANSITION;
         drawCurrentImage();
-        timerCounter = TIME_WHITE_TRANSITION;
+        stateTimer.setInterval(TIME_WHITE_TRANSITION);
+        stateTimer.start();
         return;
     case TSB_TEST:
         //qWarning() << "ENTER: TEST" << currentTrial;
         trialState = TSB_FINISH;
         addAnswer(answer);
         drawCurrentImage();
-        timerCounter = TIME_FINISH;
+        stateTimer.setInterval(TIME_FINISH);
+        stateTimer.start();
         return;
     case TSB_TRANSITION:
         //qWarning() << "ENTER: TRANSITION" << currentTrial;
@@ -219,7 +202,8 @@ void ImageExperiment::nextState(){
         answer = "N/A";
         newImage(m->getTrial(currentTrial).name,1);
         drawCurrentImage();
-        timerCounter = TIME_IMAGE_2_TIMEOUT;
+        stateTimer.setInterval(TIME_IMAGE_2_TIMEOUT);
+        stateTimer.start();
         return;
     }
 
