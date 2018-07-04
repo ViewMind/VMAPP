@@ -247,6 +247,17 @@ void EyeMatrixProcessor::loadBindingCSV(const QString &filename, bool boundColor
     cc.type = CSVCheckedReader::CT_REAL;
     cclist << cc;
 
+    // The gaze column
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The nf column
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+
     if (boundColors) csvBindingBC = loadCSV(filename,cclist,CSV_BINDING_EYE_ID_COL);
     else csvBindingUC = loadCSV(filename,cclist,CSV_BINDING_EYE_ID_COL);
 

@@ -155,7 +155,9 @@ bool EDPImages::initializeImageDataMatrix(){
            << "ojoDI"
            << "blink"
            << "amp_sacada"
-           << "pupila";
+           << "pupila"
+           << "gaze"
+           << "nf";
 
     writer << header.join(",") << "\n";
     file.close();
@@ -171,6 +173,23 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     // Calculating the fixations for each eye.;
     Fixations fL = mwa.computeFixations(data,IMAGE_XL,IMAGE_YL,IMAGE_TI);
     Fixations fR = mwa.computeFixations(data,IMAGE_XR,IMAGE_YR,IMAGE_TI);
+
+    // Number of fixations for each Eye.
+    QString nfL = QString::number(fL.size());
+    QString nfR = QString::number(fR.size());
+
+    // Fixation sum, called Gaze.
+    qreal sum;
+    sum = 0;
+    for (qint32 i = 0; i < fL.size(); i++){
+        sum = sum + fL.at(i).duration;
+    }
+    QString gazeL = QString::number(sum);
+    sum = 0;
+    for (qint32 i = 0; i < fR.size(); i++){
+        sum = sum + fR.at(i).duration;
+    }
+    QString gazeR = QString::number(sum);
 
     // Adding to the result struct
     eyeFixations.left.append(fL);
@@ -241,7 +260,9 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << "0,"
                << countZeros(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
                << sacade << ","
-               << averageColumnOfMatrix(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd);
+               << averageColumnOfMatrix(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
+               << gazeL << ","
+               << nfL;
         writer << "\n";
     }
 
@@ -271,7 +292,9 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << "1,"
                << countZeros(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
                << sacade << ","
-               << averageColumnOfMatrix(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd);
+               << averageColumnOfMatrix(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
+               << gazeR << ","
+               << nfR;
         writer << "\n";
     }
 

@@ -34,6 +34,7 @@
 #define GPC_SERIAL_ID                "SERIAL_ID"
 #define GPC_COMPANY_ID               "COMPANY_ID"
 #define GPC_API_ID                   "API_ID"
+#define GPC_ENABLE_SEND_PUPILMM      "ENABLE_SEND_PUPILMM"
 
 // A list of the common GazePoint Fields used.
 #define GPF_PTS                      "PTS"
@@ -56,6 +57,10 @@
 #define GPF_RPD                      "RPD"
 #define GPF_RPS                      "RPS"
 #define GPF_RPV                      "RPV"
+#define GPF_LPMM                     "LPMM"
+#define GPF_RPMM                     "RPMM"
+#define GPF_LPMMV                    "LPMMV"
+#define GPF_RPMMV                    "RPMMV"
 
 // The GazePoint Command Types
 #define GPCT_NACK                    "NACK"

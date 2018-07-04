@@ -37,7 +37,7 @@ void OpenGazeInterface::on_connected(){
 
     // Configuring the ET
     QStringList cmds2Enable;
-    cmds2Enable << GPC_ENABLE_SEND_POG_LEFT << GPC_ENABLE_SEND_POG_RIGHT << GPC_ENABLE_SEND_PUPIL_LEFT << GPC_ENABLE_SEND_PUPIL_RIGHT << GPC_ENABLE_SEND_TIME;
+    cmds2Enable << GPC_ENABLE_SEND_POG_LEFT << GPC_ENABLE_SEND_POG_RIGHT << GPC_ENABLE_SEND_PUPILMM << GPC_ENABLE_SEND_TIME;
     for (qint32 i = 0; i < cmds2Enable.size(); i++){
         OpenGazeCommand cmd;
         cmd.setEnableCommand(cmds2Enable.at(i),true);
@@ -99,10 +99,8 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             data.xLeft = qRound(cmd.getField(GPF_LPOGX).toDouble()*screenWidth);
             data.yLeft = qRound(cmd.getField(GPF_LPOGY).toDouble()*screenHeight);
             send = true;
-            if (cmd.getField(GPF_LPV) == "1"){
-                qreal pupil = cmd.getField(GPF_LPD).toDouble();
-                qreal scale = cmd.getField(GPF_LPS).toDouble();
-                pupil = pupil/scale;
+            if (cmd.getField(GPF_LPMMV) == "1"){
+                qreal pupil = cmd.getField(GPF_LPMM).toDouble();
                 data.pdLeft = pupil;
             }
             else{
@@ -120,10 +118,8 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             data.xRight = qRound(cmd.getField(GPF_RPOGX).toDouble()*screenWidth);
             data.yRight = qRound(cmd.getField(GPF_RPOGY).toDouble()*screenHeight);
             send = true;
-            if (cmd.getField(GPF_RPV) == "1"){
-                qreal pupil = cmd.getField(GPF_RPD).toDouble();
-                qreal scale = cmd.getField(GPF_RPS).toDouble();
-                pupil = pupil/scale;
+            if (cmd.getField(GPF_RPMMV) == "1"){
+                qreal pupil = cmd.getField(GPF_RPMM).toDouble();
                 data.pdRight = pupil;
             }
             else{
