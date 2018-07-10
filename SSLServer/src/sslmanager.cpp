@@ -129,6 +129,30 @@ void SSLManager::sendReport(quint64 socket){
     // Finding the newest rep file in the folder.
     QString reportfile = getNewestFile(sockets.value(socket)->getWorkingDirectory(),FILE_REPORT_NAME,"rep");
 
+    // Since the processing is done, now the data can be saved to the database
+    ConfigurationManager toDB;
+    QString dbfile = sockets.value(socket)->getWorkingDirectory() + "/" + FILE_DBDATA_FILE;
+    if (toDB.loadConfiguration(dbfile,COMMON_TEXT_CODEC)){
+
+        QStringList values;
+        QStringList columns = toDB.getAllKeys();
+        for (qint32 i = 0; i < columns.size(); i++){
+            values << toDB.getString(columns.at(i));
+        }
+
+        // Adding the IDs and the date.
+        DataPacket d = sockets.value(socket)->getDataPacket();
+        columns << TEYERES_COL_STUDY_DATE << TEYERES_COL_PATIENTID << TEYERES_COL_DOCTORID;
+        values << "TIMESTAMP(NOW())" << d.getField(DataPacket::DPFI_PATIENT_ID).data.toString()  << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+
+        if (!dbConn->insertDB(TABLE_EYE_RESULTS,columns,values)){
+            addMessage("ERROR","DB Error saving the results: " + dbConn->getError());
+        }
+    }
+    else{
+        addMessage("ERROR","Could not load the db info file: " + toDB.getError());
+    }
+
     if (!QFile(reportfile).exists()){
         addMessage("ERROR","Could not generate report file for working folder: " + sockets.value(socket)->getWorkingDirectory());
         removeSocket(socket);
@@ -163,11 +187,50 @@ void SSLManager::lauchEyeReportProcessor(quint64 socket){
 
     DataPacket d = sockets.value(socket)->getDataPacket();
 
+    // The patient birth date, name, lastname and the doctor's name and last name should be in the DB.
+    QString patientName, patientAge, doctorName;
+    QStringList columns;
+
+    // Math to get the birthdate from the date
+    columns << "TIMESTAMPDIFF(YEAR,"  + QString(TPATREQ_COL_BIRTHDATE) +  ",CURDATE())" << TPATREQ_COL_FIRSTNAME << TPATREQ_COL_LASTNAME;
+    QString condition = QString(TPATREQ_COL_UID) + " = '" + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString() + "'";
+
+    // Patient data
+    if (!dbConn->readFromDB(TABLE_PATIENTS_REQ_DATA,columns,condition)){
+        addMessage("ERROR: ",dbConn->getError());
+        patientAge = "0";
+        patientName = d.getField(DataPacket::DPFI_PATIENT_ID).data.toString();
+    }
+    else{
+        DBInterface::DBData data = dbConn->getLastResult();
+        if (data.rows.size() > 0){
+            patientName = data.rows.first().at(1) + " " + data.rows.first().at(2);
+            patientAge =  data.rows.first().at(0);
+        }
+    }
+
+    // Doctor Data
+    columns.clear();
+    columns << TDOCTOR_COL_FIRSTNAME << TDOCTOR_COL_LASTNAME;
+    condition = QString(TDOCTOR_COL_UID) + " = '" + d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString() + "'";
+    if (!dbConn->readFromDB(TABLE_DOCTORS,columns,condition)){
+        addMessage("ERROR: ",dbConn->getError());
+        doctorName = d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+    }
+    else{
+        DBInterface::DBData data = dbConn->getLastResult();
+        if (data.rows.size() > 0){
+            doctorName = data.rows.first().at(0) + " " + data.rows.first().at(1);
+        }
+    }
+
     // All good and the files have been saved.
     QStringList arguments;
     QString dash = "-";
     arguments << dash + CONFIG_PATIENT_DIRECTORY << sockets.value(socket)->getWorkingDirectory();
-    arguments << dash + CONFIG_DOCTOR_NAME << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+    arguments << dash + CONFIG_DOCTOR_NAME << doctorName;
+    arguments << dash + CONFIG_PATIENT_NAME << patientName;
+    arguments << dash + CONFIG_PATIENT_AGE << patientAge;
     arguments << dash + CONFIG_VALID_EYE << d.getField(DataPacket::DPFI_VALID_EYE).data.toString();
 
     addMessage("LOG","Process information from: " + sockets.value(socket)->socket()->peerAddress().toString());

@@ -74,6 +74,9 @@ public:
     bool    getBool(const QString &name, bool *ok = nullptr) const;
     QStringList getStringList(const QString &name) const;
 
+    // Gets all the keys
+    QStringList getAllKeys() const {return data.keys();}
+
     // Service function to replace a value in a configuration text file.
     static QString setValue(const QString &fileName, const char *textCodec,
                             const QString &cmd,

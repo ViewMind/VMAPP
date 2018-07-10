@@ -1,0 +1,265 @@
+#include "dbcommmanager.h"
+
+DBCommManager::DBCommManager(QObject *parent) : QObject(parent)
+{
+
+    // Creating the the listner.
+    listener = new SSLListener(this);
+
+    // Listen for new connections.
+    connect(listener,&SSLListener::newConnection,this,&DBCommManager::on_newConnection);
+    connect(listener,&SSLListener::lostConnection,this,&DBCommManager::on_lostConnection);
+
+    idGen = 0;
+
+}
+
+
+bool DBCommManager::startServer(const ConfigurationManager &c){
+
+    if (!dbConnection.initDB(c)){
+        log.appendError("ERROR : Could not start SQL Connection: " + dbConnection.getError());
+        return false;
+    }
+
+    timeOut = c.getInt(CONFIG_CONNECTION_TIMEOUT);
+    if (timeOut == 0){
+        // Default time out is 10 seconds.
+        timeOut = 10000;
+    }
+
+    if (!listener->listen(QHostAddress::Any,(quint16)c.getInt(CONFIG_TCP_PORT_DBCOMM))){
+        log.appendError("ERROR : Could not start SQL SSL Server: " + listener->errorString());
+        return false;
+    }
+
+    return true;
+
+}
+
+// For now, this fucntion is not used.
+void DBCommManager::on_lostConnection(){
+}
+
+void DBCommManager::on_newConnection(){
+
+    // New connection is available.
+    QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
+    SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen);
+
+    //log.appendStandard("New connection with id " + QString::number(idGen));
+
+    idGen++;
+
+    if (!socket->isValid()) {
+        log.appendError("ERROR: Could not cast incomming socket connection");
+        return;
+    }
+
+    // Saving the socket.
+    sockets[socket->getID()] = socket;
+
+    // Doing the connection SIGNAL-SLOT
+    connect(socket,&SSLIDSocket::sslSignal,this,&DBCommManager::on_newSSLSignal);
+
+    // The SSL procedure.
+    sslsocket->setPrivateKey(":/certificates/server.key");
+    sslsocket->setLocalCertificate(":/certificates/server.csr");
+    sslsocket->setPeerVerifyMode(QSslSocket::VerifyNone);
+    sslsocket->startServerEncryption();
+
+}
+
+
+// Handling all signals
+void DBCommManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
+
+    switch (signaltype){
+    case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
+        if (sockets.contains(socket)){
+            log.appendStandard("Lost connection from: " + sockets.value(socket)->socket()->peerAddress().toString());
+            removeSocket(socket);
+        }
+        break;
+    case SSLIDSocket::SSL_SIGNAL_ENCRYPTED:
+        log.appendSuccess("SSL Handshake completed for address: " + sockets.value(socket)->socket()->peerAddress().toString());
+        sockets.value(socket)->startTimeoutTimer(timeOut);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_ERROR:
+        socketErrorFound(socket);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_DATA_RX_DONE:
+        // Information has arrived ok. Starting the process.
+        //log.appendStandard("Done buffering data for " + QString::number(socket));
+        sockets.value(socket)->stopTimer();
+        processSQLRequest(socket);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_DATA_RX_ERROR:
+        sockets.value(socket)->stopTimer();
+        // Data is most likely corrupted.
+        if (sockets.contains(socket)){
+            sockets.value(socket)->stopTimer();
+            log.appendError("Buffering data from: " + sockets.value(socket)->socket()->peerAddress().toString() + " gave an error");
+            removeSocket(socket);
+        }
+        break;
+    case SSLIDSocket::SSL_SIGNAL_TIMEOUT:
+        // This means that the data did not arrive on time.
+        if (sockets.contains(socket)){
+            sockets.value(socket)->stopTimer();
+            log.appendError("Data from " + sockets.value(socket)->socket()->peerAddress().toString() + " did not arrive in time. SocketID: " + QString::number(socket));
+            removeSocket(socket);
+        }
+        break;
+    case SSLIDSocket::SSL_SIGNAL_PROCESS_DONE:
+        //This signal should never be emitted here.
+        break;
+    case SSLIDSocket::SSL_SIGNAL_SSL_ERROR:
+        sslErrorsFound(socket);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_STATE_CHANGED:
+        changedState(socket);
+        break;
+    }
+}
+
+
+void DBCommManager::removeSocket(quint64 id){
+    if (sockets.contains(id)) {
+        if (sockets.value(id)->isValid()){
+            sockets.value(id)->socket()->disconnectFromHost();
+        }
+        sockets.remove(id);
+    }
+}
+
+
+void DBCommManager::socketErrorFound(quint64 id){
+
+    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+    // be removed once. After that, te program crashes.
+    if (!sockets.contains(id)) return;
+
+    QAbstractSocket::SocketError error = sockets.value(id)->socket()->error();
+    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
+    if (error != QAbstractSocket::RemoteHostClosedError)
+        log.appendError(QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
+    else
+        log.appendStandard(QString("Closed connection from Address: ") + addr.toString());
+
+    // Eliminating it from the list.
+    removeSocket(id);
+
+}
+
+void DBCommManager::sslErrorsFound(quint64 id){
+
+    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+    // be removed once. After that, te program crashes.
+    if (!sockets.contains(id)) return;
+
+    QList<QSslError> errorlist = sockets.value(id)->socket()->sslErrors();
+    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    for (qint32 i = 0; i < errorlist.size(); i++){
+        log.appendError("SSL Error," + errorlist.at(i).errorString() + " from Address: " + addr.toString());
+    }
+
+    // Eliminating it from the list.
+    removeSocket(id);
+
+}
+
+void DBCommManager::processSQLRequest(quint64 socket){
+
+    DataPacket dp = sockets.value(socket)->getDataPacket();
+    QString tx_type = dp.getField(DataPacket::DPFI_DB_QUERY_TYPE).data.toString();
+
+    // Which tables affect which transactions:
+    QStringList tableNames = dp.getField(DataPacket::DPFI_DB_TABLE).data.toString().split(DB_TRANSACTION_LIST_SEP);
+
+    // List of columns for each transaction
+    QStringList allCols = dp.getField(DataPacket::DPFI_DB_COL).data.toString().split(DB_TRANSACTION_LIST_SEP);
+    QList<QStringList> columnsList;
+    for (qint32 i = 0; i < allCols.size(); i++){
+        columnsList << allCols.at(i).split(DB_COLUMN_SEP);
+    }
+
+    if (tx_type == SQL_QUERY_TYPE_GET){
+
+        // It is either getting Doctor data or Patient Data
+        QStringList conditions = dp.getField(DataPacket::DPFI_DB_CONDITIION).data.toString().split(DB_TRANSACTION_LIST_SEP);
+
+        // Executing each transaction and appending the result
+
+        QStringList dberrors;
+        QStringList queryresults;
+
+        for (qint32 i = 0; i < tableNames.size(); i++){
+            if (!dbConnection.readFromDB(tableNames.at(i),columnsList.at(i),conditions.at(i))){
+                dberrors << dbConnection.getError();
+                queryresults << "";
+                log.appendError("On SQL Transaction: " + dbConnection.getError());
+            }
+            else{
+                DBInterface::DBData dbdata = dbConnection.getLastResult();
+                queryresults << dbdata.joinRowsAndCols(DB_ROW_SEP,DB_COLUMN_SEP);
+                dberrors << "";
+            }
+        }
+
+        DataPacket tx;
+
+        // Adding the tables
+        tx.addString(dp.getField(DataPacket::DPFI_DB_TABLE).data.toString(),DataPacket::DPFI_DB_TABLE);
+        // Adding the columns
+        tx.addString(dp.getField(DataPacket::DPFI_DB_COL).data.toString(),DataPacket::DPFI_DB_COL);
+        // Adding the values
+        tx.addString(queryresults.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_VALUE);
+        // Adding the errors
+        tx.addString(dberrors.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_ERROR);
+
+        QByteArray ba = tx.toByteArray();
+        qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            log.appendError("Failure sending db ans to host: " + sockets.value(socket)->socket()->peerAddress().toString());
+        }
+
+    }
+    else{
+        // Data will be inserted in table
+        // Special processing is required if table is the patient table.
+
+        QStringList allValues = dp.getField(DataPacket::DPFI_DB_VALUE).data.toString().split(DB_TRANSACTION_LIST_SEP);
+        QList<QStringList> values;
+        for (qint32 i = 0; i < allValues.size(); i++){
+            values << allValues.at(i).split(DB_COLUMN_SEP);
+        }
+
+        for (qint32 i = 0; i < tableNames.size(); i++){
+            if (!dbConnection.insertDB(tableNames.at(i),columnsList.at(i),values.at(i))){
+                log.appendError("On SQL Transaction: " + dbConnection.getError());
+            }
+        }
+
+    }
+
+    // In this case the transaction is done.
+    removeSocket(socket);
+
+}
+
+void DBCommManager::changedState(quint64 id){
+
+    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+    // be removed once. After that, te program crashes.
+    if (!sockets.contains(id)) return;
+
+    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
+    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
+
+}
+
+

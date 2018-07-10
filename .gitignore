@@ -14,5 +14,8 @@ ETFollower/exe/
 PNGReportGenerator/exe/
 EyeDataAnalyzer/exe/
 ReportViewerDev/
+SQLClient/bin/
+SSLServer/bin/
+SSLServer/bin5.6/
 *.autosave
 *.tmp*

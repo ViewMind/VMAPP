@@ -6,7 +6,7 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 
 #define  PROGRAM_NAME      "EyeSever"
-#define  PROGRAM_VERSION   "2.0.1"
+#define  PROGRAM_VERSION   "3.0.0"
 
 class InputControl : public QThread
 {

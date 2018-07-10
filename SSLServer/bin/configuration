@@ -1,0 +1,34 @@
+#--------------------------------------------------------------------------------------#
+#                        SSLServerManager Configuration File                           #
+#--------------------------------------------------------------------------------------#
+
+# Output directory. This is where the received information will be stored.
+#raw_data_repo = C:/Users/Viewmind/Documents/ExperimenterOutputs/ServerDir;
+raw_data_repo = /home/ariela/Workspace/Viewmind/ET/server;
+
+# The port for the TCP Server Connection.
+tcp_port = 54912;
+
+# How many eye-data-processors to run in parallel
+number_of_paralell_processes = 2;
+
+# Path to the eyeprocessor executable.
+#eyeprocessor_path = C:/Users/Viewmind/Documents/QtProjects/EyeReportGenerator/exe/EyeReportGen.exe;
+eyeprocessor_path = /home/ariela/repos/viewmind_projects/EyeReportGenerator/exe/EyeReportGen;
+
+# Time outs (in seconds) for waiting for the client to send the report data
+wait_data_timeout = 10;
+
+# DB data
+# This is the TCP port used for SQL Requests.
+tcp_port_db_comm = 54915;
+db_name = viewmind_data;
+db_user = vmuser;
+db_passwd = viewmind_2018;
+
+# Local computer
+db_host = localhost;
+
+# Amazon host
+#db_host = viewminddb.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
+#db_port = 3306;

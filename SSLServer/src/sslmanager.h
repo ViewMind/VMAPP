@@ -3,7 +3,9 @@
 
 #include <QMetaEnum>
 #include <QHash>
+#include <QtMath>
 
+#include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "sslidsocket.h"
 #include "ssllistener.h"
@@ -16,6 +18,9 @@ class SSLManager: public QObject
     Q_OBJECT
 public:
     SSLManager(QObject *parent = Q_NULLPTR);
+
+    // Set connection to db
+    void setDBConnection(DBInterface *dbif) {dbConn = dbif;}
 
     // Start the server
     void startServer(ConfigurationManager *c);
@@ -38,6 +43,9 @@ private:
 
     // Listens for incoming connections and enables de SSL capabilities by using a QSSLSocket
     SSLListener *listener;
+
+    // Handle to do DB queries
+    DBInterface *dbConn;
 
     // The queue of information that needs to be processed
     QHash<quint64,SSLIDSocket*> sockets;

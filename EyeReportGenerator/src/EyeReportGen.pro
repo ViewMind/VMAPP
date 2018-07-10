@@ -54,6 +54,7 @@ HEADERS  += \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/csvcheckedreader.h \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.h \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.h \
-    ../../CommonClasses/HTMLWriter/htmlwriter.h
+    ../../CommonClasses/HTMLWriter/htmlwriter.h \
+    ../../CommonClasses/SQLConn/dbdescription.h
 
 RESOURCES +=

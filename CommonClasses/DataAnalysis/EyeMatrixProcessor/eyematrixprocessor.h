@@ -5,8 +5,11 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDate>
+#include <QHash>
 #include "dataset.h"
 #include "csvcheckedreader.h"
+#include "../../CommonClasses/SQLConn/dbdescription.h"
+
 
 // Reading processing parameters
 #define   READING_N_TO_FILTER_FROM_START                10
@@ -16,17 +19,21 @@
 class EyeMatrixProcessor
 {
 public:
+
+    typedef QHash<QString,qreal> DBHash;
+
     EyeMatrixProcessor(quint8 eye);
 
     // If thre was an error
     QString getError() const {return error;}
 
     // Process the CSV files.
-    QString processReading(const QString &csvFile);
-    QString processBinding(const QString &csvFile, bool bound);
-    QString processFielding(const QString &csvFile);
+    QString processReading(const QString &csvFile, DBHash *dbdata = nullptr);
+    QString processBinding(const QString &csvFile, bool bound, DBHash *dbdata = nullptr);
+    QString processFielding(const QString &csvFile, qint32 numberOfTrials, DBHash *dbdata = nullptr);
 
     DataSet::ProcessingResults getResults() const {return results;}
+
 
 private:
 
@@ -43,7 +50,6 @@ private:
     quint8 eyeForResults;
     quint8 selectedEye;
     QString selectedEyeStr;
-
 
     // The binding CSV data.
     DataSet csvBindingBC;

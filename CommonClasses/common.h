@@ -12,9 +12,14 @@
 #define   EYE_R                                         1
 #define   EYE_BOTH                                      2
 
+// SQL Query type: GET or SET
+#define   SQL_QUERY_TYPE_GET                            "get"
+#define   SQL_QUERY_TYPE_SET                            "set"
+
 // Configuration key values (cmd names in the configuration file)
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
 #define   CONFIG_DOCTOR_NAME                            "doctor_name"
+#define   CONFIG_DOCTOR_UID                             "doctor_uid"
 #define   CONFIG_DOCTOR_EMAIL                           "doctor_email"
 #define   CONFIG_MOVING_WINDOW_DISP                     "moving_window_max_dispersion"
 #define   CONFIG_MIN_FIXATION_LENGTH                    "minimum_fixation_length"
@@ -35,6 +40,7 @@
 #define   CONFIG_DATA_OUTPUT_FILE                       "data_output_file"
 #define   CONFIG_PATIENT_AGE                            "patient_age"
 #define   CONFIG_PATIENT_NAME                           "patient_name"
+#define   CONFIG_PATIENT_UID                            "patient_uid"
 #define   CONFIG_ADD_TO_REPORT                          "add_to_report"
 #define   CONFIG_REPORT_LANGUAGE                        "report_language"
 #define   CONFIG_PATIENT_EMAIL                          "patient_email"
@@ -59,6 +65,13 @@
 #define   CONFIG_REPORT_PATH                            "report_path"
 #define   CONFIG_IMAGE_REPORT_PATH                      "image_report_path"
 #define   CONFIG_VALID_EYE                              "valid_eye"
+#define   CONFIG_TCP_PORT_DBCOMM                        "tcp_port_db_comm"
+#define   CONFIG_DBUSER                                 "db_user"
+#define   CONFIG_DBNAME                                 "db_name"
+#define   CONFIG_DBHOST                                 "db_host"
+#define   CONFIG_DBPASSWORD                             "db_passwd"
+#define   CONFIG_DBPORT                                 "db_port"
+
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -92,6 +105,7 @@
 #define   FILE_OUTPUT_FIELDING                          "fielding"
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_PATIENT_INFO_FILE                        "patient_info"
+#define   FILE_DBDATA_FILE                              "dbdata.dbf"
 
 // Headers for the data files identifying the format of the data in that experiment.
 #define   HEADER_READING_EXPERIMENT                     "#READING"

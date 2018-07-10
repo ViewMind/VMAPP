@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core widgets network
+QT       += core widgets network sql
 TARGET   = SSLServer
 TEMPLATE = app
 
@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     sslmanager.cpp \
     sslidsocket.cpp \
     inputcontrol.cpp \
-    servercontrol.cpp
+    servercontrol.cpp \
+    dbcommmanager.cpp \
+    ../../CommonClasses/SQLConn/dbinterface.cpp
 
 HEADERS  += \
     ../../CommonClasses/common.h \
@@ -34,7 +36,10 @@ HEADERS  += \
     sslmanager.h \
     sslidsocket.h \
     inputcontrol.h \
-    servercontrol.h
+    servercontrol.h \
+    ../../CommonClasses/SQLConn/dbdescription.h \
+    dbcommmanager.h \
+    ../../CommonClasses/SQLConn/dbinterface.h
 
 RESOURCES += \
     certificates.qrc

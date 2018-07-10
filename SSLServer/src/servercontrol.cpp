@@ -25,7 +25,27 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_WAIT_DATA_TIMEOUT] = cmd;
 
+    cmd.clear();
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_TCP_PORT_DBCOMM] = cmd;
+
+    // DB configuration is all strings.
+    cmd.clear();
+    cv[CONFIG_DBHOST] = cmd;
+    cv[CONFIG_DBNAME] = cmd;
+    cv[CONFIG_DBPASSWORD] = cmd;
+    cv[CONFIG_DBUSER] = cmd;
+
+    cmd.clear();
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_TCP_PORT_DBCOMM] = cmd;
+
+    cmd.optional = true;
+    cv[CONFIG_DBPORT] = cmd;
+
     config.setupVerification(cv);
+
+    sslManager.setDBConnection(dbmng.getDBInterface());
 
 }
 
@@ -43,8 +63,6 @@ void ServerControl::startServer(){
     // Multiplying timeout times 1000 to turn into ms.
     config.addKeyValuePair(CONFIG_WAIT_DATA_TIMEOUT,config.getInt(CONFIG_WAIT_DATA_TIMEOUT)*1000);
 
-    sslManager.startServer(&config);
-
     if (!QSslSocket::supportsSsl()){
         log.appendError("No support for SSL found. Cannot continue");
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
@@ -52,7 +70,10 @@ void ServerControl::startServer(){
         return;
     }
 
-    log.appendStandard("Starting server...");
+    log.appendStandard("Starting eye processing server...");
+    sslManager.startServer(&config);
+    log.appendStandard("Starting sql server...");
+    dbmng.startServer(config);
 }
 
 void ServerControl::on_messagesAvailable(){

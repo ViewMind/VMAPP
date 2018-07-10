@@ -24,6 +24,9 @@ public:
     // Function reimplementation headers.
     bool doEyeDataProcessing(const QString &data);
 
+    // The number of trials done.
+    qint32 getNumberOfTrials() const {return numberOfTrials;}
+
 private:
 
     // Initialization of the data matrix (header row)
@@ -38,6 +41,9 @@ private:
 
     // The center of the screen to measure sacadic latency.
     qreal centerX,centerY;
+
+    // The number of trials
+    qint32 numberOfTrials;
 
     // Margin for hit detection
     qreal dH, dW;

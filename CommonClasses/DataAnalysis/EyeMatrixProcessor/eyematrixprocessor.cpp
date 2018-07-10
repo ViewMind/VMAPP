@@ -29,7 +29,7 @@ void EyeMatrixProcessor::setSelectedEyeVariables(const DataSet &set){
     else selectedEyeStr = "Right";
 }
 
-QString EyeMatrixProcessor::processReading(const QString &csvFile){
+QString EyeMatrixProcessor::processReading(const QString &csvFile, DBHash *dbdata){
 
     loadReadingCSV(csvFile);
     if (!error.isEmpty()) return "";
@@ -52,6 +52,14 @@ QString EyeMatrixProcessor::processReading(const QString &csvFile){
     qreal multi = l.value(STAT_ID_MULTIPLE_FIXATIONS);
     qreal single = l.value(STAT_ID_SINGLE_FIXATIONS);
 
+    // Saving the DB Data
+    if (dbdata != nullptr){
+        dbdata->insert(TEYERES_COL_RDFSTEPFIXL,first);
+        dbdata->insert(TEYERES_COL_RDMSTEPFIXL,multi);
+        dbdata->insert(TEYERES_COL_RDSSTEPFIXL,single);
+        dbdata->insert(TEYERES_COL_RDTOTALFIXL,total);
+    }
+
     // Report text for Left Eye
     report = report + "Total number of fixations: " + QString::number(total)  + "<br>";
     report = report + "First Step Fixations: "  + QString::number(first) + " (" + QString::number(100.0*first/total)  + "%)<br>";
@@ -63,6 +71,13 @@ QString EyeMatrixProcessor::processReading(const QString &csvFile){
     first  = r.value(STAT_ID_FIRST_STEP_FIXATIONS);
     multi  = r.value(STAT_ID_MULTIPLE_FIXATIONS);
     single = r.value(STAT_ID_SINGLE_FIXATIONS);
+
+    if (dbdata != nullptr){
+        dbdata->insert(TEYERES_COL_RDFSTEPFIXR,first);
+        dbdata->insert(TEYERES_COL_RDMSTEPFIXR,multi);
+        dbdata->insert(TEYERES_COL_RDSSTEPFIXR,single);
+        dbdata->insert(TEYERES_COL_RDTOTALFIXR,total);
+    }
 
     // Report text for Right Eye
     report = report + "Total number of fixations: " + QString::number(total)  + "<br>";
@@ -83,7 +98,7 @@ QString EyeMatrixProcessor::processReading(const QString &csvFile){
 
 }
 
-QString EyeMatrixProcessor::processBinding(const QString &csvFile, bool bound){
+QString EyeMatrixProcessor::processBinding(const QString &csvFile, bool bound, DBHash *dbdata){
 
     loadBindingCSV(csvFile,bound);
     if (!error.isEmpty()) return "";
@@ -119,6 +134,11 @@ QString EyeMatrixProcessor::processBinding(const QString &csvFile, bool bound){
         results[STAT_ID_BC_PUPIL_R] = r.value(STAT_ID_BC_PUPIL_R);
         results[STAT_ID_BC_PUPIL_L] = l.value(STAT_ID_BC_PUPIL_L);
 
+        if (dbdata != nullptr){
+            dbdata->insert(TEYERES_COL_BCAVGPUPILL,l.value(STAT_ID_BC_PUPIL_L));
+            dbdata->insert(TEYERES_COL_BCAVGPUPILR,r.value(STAT_ID_BC_PUPIL_R));
+        }
+
     }
     else{
         report = report + "Left Eye Average Pupil Size excluding Trial 0 : " + QString::number(l.value(STAT_ID_UC_PUPIL_L)) + "<br>";
@@ -126,6 +146,12 @@ QString EyeMatrixProcessor::processBinding(const QString &csvFile, bool bound){
 
         results[STAT_ID_UC_PUPIL_R] = r.value(STAT_ID_UC_PUPIL_R);
         results[STAT_ID_UC_PUPIL_L] = l.value(STAT_ID_UC_PUPIL_L);
+
+        if (dbdata != nullptr){
+            dbdata->insert(TEYERES_COL_UCAVGPUPILL,l.value(STAT_ID_UC_PUPIL_L));
+            dbdata->insert(TEYERES_COL_UCAVGPUPILR,r.value(STAT_ID_UC_PUPIL_R));
+        }
+
     }
 
     // The encodig memory coefficient can be calculated only when both UC and BC studies have been processed.
@@ -163,7 +189,7 @@ QString EyeMatrixProcessor::processBinding(const QString &csvFile, bool bound){
 
 }
 
-QString EyeMatrixProcessor::processFielding(const QString &csvFile){
+QString EyeMatrixProcessor::processFielding(const QString &csvFile, qint32 numberOfTrials, DBHash *dbdata){
 
     loadFieldingCSV(csvFile);
     if (!error.isEmpty()) return "";
@@ -174,14 +200,21 @@ QString EyeMatrixProcessor::processFielding(const QString &csvFile){
     QString report = "RESULTS FIELDING:<br>";
 
     qreal hits = resL.value(STAT_ID_FIELDING_HIT_COUNT);
-    qreal total = resL.value(STAT_ID_FIELDING_HIT_POSSIBLE);
-    report = report + "Number of hits L: " + QString::number(hits) + " (" + QString::number(hits*100.0/total) + "%)" + "<br>";
-    report = report + "Possible Hits L: " + QString::number(total) + "<br>";
+    if (dbdata != nullptr){
+        dbdata->insert(TEYERES_COL_FDHITL,hits);
+    }
+
+    report = report + "Number of hits L: " + QString::number(hits) + " (" + QString::number(hits*100.0/numberOfTrials) + "%)" + "<br>";
+    report = report + "Possible Hits L: " + QString::number(numberOfTrials) + "<br>";
 
     hits = resR.value(STAT_ID_FIELDING_HIT_COUNT);
-    total = resR.value(STAT_ID_FIELDING_HIT_POSSIBLE);
-    report = report + "Number of hits R: " + QString::number(hits) + " (" + QString::number(hits*100.0/total) + "%)" + "<br>";
-    report = report + "Possible Hits R: " + QString::number(total) + "<br>";
+    if (dbdata != nullptr){
+        dbdata->insert(TEYERES_COL_FDHITR,hits);
+        dbdata->insert(TEYERES_COL_FDHITR,hits);
+    }
+
+    report = report + "Number of hits R: " + QString::number(hits) + " (" + QString::number(hits*100.0/numberOfTrials) + "%)" + "<br>";
+    report = report + "Possible Hits R: " + QString::number(numberOfTrials) + "<br>";
     return report;
 
 }

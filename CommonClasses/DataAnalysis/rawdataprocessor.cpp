@@ -83,6 +83,9 @@ void RawDataProcessor::run(){
     EyeMatrixProcessor emp((quint8)config->getInt(CONFIG_VALID_EYE));
     reportFileOutput = "";
 
+    EyeMatrixProcessor::DBHash dbdata;
+
+    QStringList studyID;
 
     // Each of the processing fucntions is called. In this way, processing of just one can be accomplished
     // just by running this complete function but it will keep going if a file does not exist.
@@ -91,7 +94,9 @@ void RawDataProcessor::run(){
         EDPReading reading(config);
         matrixReading = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
-        QString report = emp.processReading(matrixReading);        
+        QString report = emp.processReading(matrixReading,&dbdata);
+        /// TODO: Get versions of experiment from somewhere else.
+        studyID << "rdv_1";
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
         }
@@ -104,10 +109,19 @@ void RawDataProcessor::run(){
         EDPImages images(config);
         matrixBindingBC = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
-        QString report = emp.processBinding(matrixBindingBC,true);
+        QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
+        /// TODO: Get versions of experiment from somewhere else.
+        studyID << "bcv_1";
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
+
+            // Saving the binding answers
+            dbdata[TEYERES_COL_BCCORRECT] = ans.correct;
+            dbdata[TEYERES_COL_BCWRONGANS] = ans.wrong;
+            dbdata[TEYERES_COL_BCTESTCORRECTANS] = ans.testCorrect;
+            dbdata[TEYERES_COL_BCTESTWRONGANS] = ans.testWrong;
+
             emit(appendMessage(formatBindingResultsForPrinting(ans),MSG_TYPE_STD));
         }
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
@@ -119,10 +133,19 @@ void RawDataProcessor::run(){
         EDPImages images(config);
         matrixBindingUC = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
-        QString report = emp.processBinding(matrixBindingUC,false);
+        QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
+        /// TODO: Get versions of experiment from somewhere else.
+        studyID << "ucv_1";
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
+
+            // Saving the binding answers
+            dbdata[TEYERES_COL_UCCORRECT] = ans.correct;
+            dbdata[TEYERES_COL_UCWRONGANS] = ans.wrong;
+            dbdata[TEYERES_COL_UCTESTCORRECTANS] = ans.testCorrect;
+            dbdata[TEYERES_COL_UCTESTWRONGANS] = ans.testWrong;
+
             emit(appendMessage(formatBindingResultsForPrinting(ans),MSG_TYPE_STD));
 
         }
@@ -134,7 +157,9 @@ void RawDataProcessor::run(){
         EDPFielding fielding(config);
         matrixFielding = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
         fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
-        QString report = emp.processFielding(matrixFielding);
+        QString report = emp.processFielding(matrixFielding,fielding.getNumberOfTrials());
+        /// TODO: Get versions of experiment from somewhere else.
+        studyID << "fdv_1";
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
         }
@@ -148,31 +173,33 @@ void RawDataProcessor::run(){
     generateReportFile(emp.getResults(),what2Add);
     emit(appendMessage("Report Generated: " + reportFileOutput,MSG_TYPE_SUCC));
 
+    // Saving the database data to text file
+    QFile dbdatafile(config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_DBDATA_FILE) ;
+    if (!dbdatafile.open(QFile::WriteOnly)){
+        emit(appendMessage("Could not open " + dbdatafile.fileName() + " for writing the db data file.",MSG_TYPE_ERR));
+        return;
+    }
+
+    QTextStream writer(&dbdatafile);
+    writer.setCodec(COMMON_TEXT_CODEC);
+    QStringList cols = dbdata.keys();
+    for (qint32 i = 0; i < cols.size(); i++){
+        writer << cols.at(i) + " = " + QString::number(dbdata.value(cols.at(i))) + ";\n";
+    }
+    writer << QString(TEYERES_COL_STUDY_ID) + " = " + studyID.join("_") + ";\n";
+    dbdatafile.close();
+    emit(appendMessage("DB Data File Generated to: " + dbdatafile.fileName(),MSG_TYPE_SUCC));
+
 }
 
 void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd){
 
-    QString patientFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_PATIENT_INFO_FILE;
-    // Loading the patient data
-    ConfigurationManager patientData;
-    patientData.loadConfiguration(patientFile,COMMON_TEXT_CODEC);
-
-    // Setting default values, so that there will always be information.
-    if (!patientData.containsKeyword(CONFIG_PATIENT_NAME)){
-        patientData.addKeyValuePair(CONFIG_PATIENT_NAME,"N/A");
-    }
-    if (!patientData.containsKeyword(CONFIG_PATIENT_AGE)){
-        patientData.addKeyValuePair(CONFIG_PATIENT_AGE,"N/A");
-    }
-    if (!config->containsKeyword(CONFIG_DOCTOR_NAME)){
-        config->addKeyValuePair(CONFIG_DOCTOR_NAME,"N/A");
-    }
     reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME;
     reportFileOutput = reportFileOutput + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd") + ".rep";
 
     // Adding the required report data
-    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,patientData.getString(CONFIG_PATIENT_NAME));
-    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,patientData.getString(CONFIG_PATIENT_AGE));
+    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,config->getString(CONFIG_PATIENT_NAME));
+    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,config->getString(CONFIG_PATIENT_AGE));
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_DOCTOR_NAME,config->getString(CONFIG_DOCTOR_NAME));
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_REPORT_DATE,QDateTime::currentDateTime().toString("dd/MM/yyyy"));
 

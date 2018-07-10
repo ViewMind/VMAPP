@@ -184,18 +184,10 @@ DataSet::ProcessingResults DataSet::getFieldingResultsFor(qint32 eyeID) const{
     ProcessingResults results;
 
     QHash<qint32, QSet<qint32> > hitCounter;
-    qreal trialCounter = 0;
-    qint32 lastID = -1;
 
     for (qint32 r = 0; r < eyes.at(eyeID).size(); r++){
 
         qint32 trialID = eyes.at(eyeID).at(r).value(CSV_FIELDING_TRIALID_COL).toInt();
-
-        if (trialID != lastID){
-            trialCounter++;
-            lastID = trialID;
-        }
-
         if (eyes.at(eyeID).at(r).value(CSV_FIELDING_TARGET_HIT_COL).toBool()){
             hitCounter[trialID]
                     << eyes.at(eyeID).at(r).value(CSV_FIELDING_IMGNUMBER_COL).toInt();
@@ -211,7 +203,6 @@ DataSet::ProcessingResults DataSet::getFieldingResultsFor(qint32 eyeID) const{
 
 
     results[STAT_ID_FIELDING_HIT_COUNT] = hits;  // Each trial has 3 possible hits.
-    results[STAT_ID_FIELDING_HIT_POSSIBLE] = trialCounter*3;
 
     return results;
 

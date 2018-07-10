@@ -26,6 +26,8 @@ class RawDataProcessor : public QObject
 public:
 
     RawDataProcessor(QObject *parent = 0);
+
+    // The first method is used when calling the program automatically by another program. The second one when used to directly process the file.
     void initialize(ConfigurationManager *c, const QSet<QString> &exps);
     void initialize(ConfigurationManager *c, const QStringList &filesToProcess);
     QString getReportFileOutput() const {return reportFileOutput; }

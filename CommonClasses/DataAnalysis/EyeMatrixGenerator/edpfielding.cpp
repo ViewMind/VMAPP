@@ -19,8 +19,12 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
     // This will have all the data from a single image.
     DataMatrix imageData;
 
-    QString id;
+    QString id;    
     QString imageNumber;
+
+    // Variables used to count the number of trials
+    numberOfTrials = 0;
+    QString lastID = "";
 
     // X and Y margin for look detection
     dH = fieldingMarginInMM/monitorGeometry.YmmToPxRatio;
@@ -58,6 +62,11 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
             number = tokens.at(3).trimmed();
             targetY = number.toDouble();
 
+            if (lastID != id){
+                numberOfTrials++;
+                lastID = id;
+            }
+
             // There is nothing more to do.
             continue;
         }
@@ -87,7 +96,6 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
         //qWarning() << "CLEARING";
         imageData.clear();
     }
-
     return true;
 
 

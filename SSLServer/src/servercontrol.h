@@ -5,6 +5,7 @@
 #include <iostream>
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "sslmanager.h"
+#include "dbcommmanager.h"
 
 class ServerControl : public QObject
 {
@@ -20,6 +21,7 @@ public slots:
     void on_messagesAvailable();
 
 private:
+    DBCommManager dbmng;
     SSLManager sslManager;
     LogInterface log;
     ConfigurationManager config;

@@ -38,6 +38,11 @@ SSLClient::SSLClient(QObject *parent, ConfigurationManager *c) :
         return;
     }
 
+    if (!c->containsKeyword(CONFIG_TCP_PORT_DBCOMM)){
+        log.appendError("SQL Server port was not set in the configuration file");
+        return;
+    }
+
     clientState = CS_CONNECTING;
 }
 
@@ -56,6 +61,70 @@ void SSLClient::requestReport(){
     }
     sentTransactionFinishedSignal = false;
     connectToServer();
+}
+
+void SSLClient::setDBTransactionType(const QString &type){
+    queryType = type;
+    valuesForColumnsList = "";
+    tableNames = "";
+    columnList = "";
+    conditionsList = "";
+}
+
+void SSLClient::appendSET(const QString &tableName, const QStringList &columns, const QStringList &values){
+
+    if (queryType != SQL_QUERY_TYPE_SET) return;
+
+    if (tableNames.isEmpty()){
+        tableNames = tableName;
+        columnList = columns.join(DB_COLUMN_SEP);
+        valuesForColumnsList = values.join(DB_COLUMN_SEP);
+    }
+    else {
+        tableNames = tableNames + DB_TRANSACTION_LIST_SEP + tableName;
+        columnList = columnList + DB_TRANSACTION_LIST_SEP + columns.join(DB_COLUMN_SEP);
+        valuesForColumnsList = valuesForColumnsList + DB_TRANSACTION_LIST_SEP + values.join(DB_COLUMN_SEP);
+    }
+
+}
+
+void SSLClient::appendGET(const QString &tableName, const QStringList &columns, const QString &condition){
+
+    if (queryType != SQL_QUERY_TYPE_GET) return;
+
+    if (tableNames.isEmpty()){
+        tableNames = tableName;
+        columnList = columns.join(DB_COLUMN_SEP);
+        conditionsList = condition;
+    }
+    else {
+        tableNames = tableNames + DB_TRANSACTION_LIST_SEP + tableName;
+        columnList = columnList + DB_TRANSACTION_LIST_SEP + columns.join(DB_COLUMN_SEP);
+        conditionsList = conditionsList + DB_TRANSACTION_LIST_SEP + condition;
+    }
+
+}
+
+void SSLClient::runDBTransaction(){
+
+    txDP.clearAll();
+    txDP.addString(queryType,DataPacket::DPFI_DB_QUERY_TYPE);
+    txDP.addString(tableNames,DataPacket::DPFI_DB_TABLE);
+    txDP.addString(columnList,DataPacket::DPFI_DB_COL);
+
+    if (queryType == SQL_QUERY_TYPE_SET){
+        clientState = CS_CONNECTING_TO_SQL_SET;
+        txDP.addString(valuesForColumnsList,DataPacket::DPFI_DB_VALUE);
+    }
+    else{
+        clientState = CS_CONNECTING_TO_SQL_GET;
+        txDP.addString(conditionsList,DataPacket::DPFI_DB_CONDITIION);
+    }
+
+    sentTransactionFinishedSignal = false;
+
+    socket->connectToHostEncrypted(config->getString(CONFIG_SERVER_ADDRESS),(quint16)config->getInt(CONFIG_TCP_PORT_DBCOMM));
+    startTimeoutTimer();
 }
 
 void SSLClient::connectToServer()
@@ -117,43 +186,10 @@ void SSLClient::connectToServer()
         return;
     }
 
-    QString patientInfoFile = directory + "/" + QString(FILE_PATIENT_INFO_FILE);
-    QString pname = "A Patient";
-    QString dname = "The Doctor";
-
-    if (!QFile(patientInfoFile).exists()){
-        log.appendWarning("WARNING: No Patient information found. Attempting to create it");
-        ConfigurationManager::setValue(patientInfoFile,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,config->getString(CONFIG_PATIENT_NAME));
-        ConfigurationManager::setValue(patientInfoFile,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,config->getString(CONFIG_PATIENT_AGE));
-        if (!QFile(patientInfoFile).exists()){
-            log.appendError("ERROR: Could not read or create the patient info file at " + patientInfoFile);
-            sendFinishedSignal(false);
-            return;
-        }
-    }
-
-    // Load the patient file
-    ConfigurationManager patientconfig;
-    patientconfig.loadConfiguration(patientInfoFile,COMMON_TEXT_CODEC);
-
-    if (config->containsKeyword(CONFIG_DOCTOR_NAME)){
-        dname = config->getString(CONFIG_DOCTOR_NAME);
-    }
-    else{
-        log.appendWarning("WARNING: Doctor's name was not loaded. Using stock information");
-    }
-
-    if (patientconfig.containsKeyword(CONFIG_PATIENT_NAME)){
-        pname = patientconfig.getString(CONFIG_PATIENT_NAME);
-    }
-    else{
-        log.appendWarning("WARNING: Patient's name was not loaded. Using stock information");
-    }
 
     // Creating the packet to send to the server.
-    txDP.addFile(patientInfoFile,DataPacket::DPFI_PATIENT_FILE);
-    txDP.addString(dname,DataPacket::DPFI_DOCTOR_ID);
-    txDP.addString(pname,DataPacket::DPFI_PATIENT_ID);
+    txDP.addString(config->getString(CONFIG_DOCTOR_UID),DataPacket::DPFI_DOCTOR_ID);
+    txDP.addString(config->getString(CONFIG_PATIENT_UID),DataPacket::DPFI_PATIENT_ID);
     txDP.addValue(config->getInt(CONFIG_VALID_EYE),DataPacket::DPFI_VALID_EYE);
 
     // Requesting connection and ack
@@ -166,11 +202,48 @@ void SSLClient::connectToServer()
 }
 
 void SSLClient::on_encryptedSuccess(){
-    log.appendSuccess("Established encrypted connection to the server. Waiting for acknowledge ... ");
-    rxDP.clearAll();
-    timer.stop();
-    clientState = CS_WAIT_FOR_ACK;
-    startTimeoutTimer();
+    if (clientState == CS_CONNECTING){
+        log.appendSuccess("Established encrypted connection to the server. Waiting for acknowledge ... ");
+        rxDP.clearAll();
+        timer.stop();
+        clientState = CS_WAIT_FOR_ACK;
+        startTimeoutTimer();
+    }
+    else if ((clientState == CS_CONNECTING_TO_SQL_SET) || (clientState == CS_CONNECTING_TO_SQL_GET)){
+        log.appendSuccess("Established encrypted connection to the sql server. Sending request to server ... ");
+        QByteArray ba = txDP.toByteArray();
+        qint64 num = socket->write(ba.constData(),ba.size());
+        bool ans;
+        if (num != ba.size()){
+            log.appendError("ERROR: Unable to send the information to SQL Server. Please try again.");
+            ans = false;
+        }
+        else{
+            ans = true;
+        }
+
+        // If there was a problem everything is stopped.
+        if (!ans){
+            clientState = CS_CONNECTING;
+            socket->disconnectFromHost();
+            return;
+        }
+
+        if (clientState == CS_CONNECTING_TO_SQL_SET){
+            // A Set does not need to do anything else. A get needs to wait for a response.
+            clientState = CS_CONNECTING;
+            sentTransactionFinishedSignal = true;
+            emit(transactionFinished(ans));
+        }
+
+    }
+    else {
+        log.appendError("Invalid state upon encrypted success closing off the connection");
+        socket->disconnectFromHost();
+        clientState = CS_CONNECTING;
+        sendFinishedSignal(false);
+        return;
+    }
 }
 
 void SSLClient::on_readyRead(){
@@ -180,7 +253,32 @@ void SSLClient::on_readyRead(){
     quint8 errcode = rxDP.bufferByteArray(socket->readAll());
 
     if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
-        if (clientState == CS_WAIT_FOR_ACK){
+
+        if (clientState == CS_CONNECTING_TO_SQL_GET){
+
+            // Got the data form the DB.
+            dbdata.clear();
+
+            QStringList tableNames = rxDP.getField(DataPacket::DPFI_DB_TABLE).data.toString().split(DB_TRANSACTION_LIST_SEP);
+            QStringList allColumns = rxDP.getField(DataPacket::DPFI_DB_COL).data.toString().split(DB_TRANSACTION_LIST_SEP);
+            QStringList allErrors= rxDP.getField(DataPacket::DPFI_DB_ERROR).data.toString().split(DB_TRANSACTION_LIST_SEP,QString::KeepEmptyParts);
+            QStringList allValues= rxDP.getField(DataPacket::DPFI_DB_VALUE).data.toString().split(DB_TRANSACTION_LIST_SEP,QString::KeepEmptyParts);
+
+            for (qint32 i = 0; i < tableNames.size(); i++){
+                DBInterface::DBData datum;
+                datum.error = allErrors.at(i);
+                datum.columns = allColumns.at(i).split(DB_COLUMN_SEP);
+                datum.fillRowsFromString(allValues.at(i),DB_ROW_SEP,DB_COLUMN_SEP);
+                dbdata << datum;
+            }
+
+            // The client disconnects, since it allready has all the info.
+            socket->disconnectFromHost();
+            sentTransactionFinishedSignal = true;
+            emit(transactionFinished(true));
+
+        }
+        else if (clientState == CS_WAIT_FOR_ACK){
 
             if (rxDP.hasInformationField(DataPacket::DPFI_SEND_INFORMATION)){
                 // Since in the information was requested, it is now sent.
@@ -197,7 +295,6 @@ void SSLClient::on_readyRead(){
                 clientState = CS_WAIT_FOR_REPORT;
                 timer.stop();
                 startTimeoutTimer();
-
             }
             else{
                 // This is not it and it should start again.
@@ -252,6 +349,9 @@ void SSLClient::on_sslErrors(const QList<QSslError> &errors){
 void SSLClient::on_socketStateChanged(QAbstractSocket::SocketState state){
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
     log.appendStandard(QString("Log: Socket state - ") + metaEnum.valueToKey(state));
+    if (state == QAbstractSocket::UnconnectedState){
+        emit(diconnectionFinished());
+    }
 }
 
 void SSLClient::on_socketError(QAbstractSocket::SocketError error){
@@ -279,6 +379,11 @@ void SSLClient::on_timeOut(){
         log.appendError("ERROR: Server request for information did not arrive before expected time. Closing connection. Please retry.");
         emit(transactionFinished(false));
         break;
+    case CS_CONNECTING_TO_SQL_GET:
+    case CS_CONNECTING_TO_SQL_SET:
+        log.appendError("ERROR: SQL server connection notice did not arrive before the expected time. Closing connection. Please retry.");
+        emit(transactionFinished(false));
+        break;
     }
     socket->disconnectFromHost();
 }
@@ -289,16 +394,6 @@ void SSLClient::startTimeoutTimer(){
     qint32 timeout;
 
     switch(clientState){
-    case CS_CONNECTING:
-        timeout = DEFAULT_TIMEOUT_CONNECTION;
-        if (config->containsKeyword(CONFIG_CONNECTION_TIMEOUT)){
-            timeout = config->getInt(CONFIG_CONNECTION_TIMEOUT)*1000;
-        }
-        else{
-            message = message + "Connection timeout was not configured.";
-            showMessage = true;
-        }
-        break;
     case CS_WAIT_FOR_REPORT:
         timeout = DEFAULT_TIMEOUT_WAIT_ACK;
         if (config->containsKeyword(CONFIG_CONNECTION_TIMEOUT)){
@@ -316,6 +411,16 @@ void SSLClient::startTimeoutTimer(){
         }
         else{
             message = message + "Data request timeout was not configured.";
+            showMessage = true;
+        }
+        break;
+    default:
+        timeout = DEFAULT_TIMEOUT_CONNECTION;
+        if (config->containsKeyword(CONFIG_CONNECTION_TIMEOUT)){
+            timeout = config->getInt(CONFIG_CONNECTION_TIMEOUT)*1000;
+        }
+        else{
+            message = message + "Connection timeout was not configured.";
             showMessage = true;
         }
         break;

@@ -23,6 +23,12 @@ public:
     static const quint8 DPFI_SEND_INFORMATION                         = 6;
     static const quint8 DPFI_REPORT                                   = 7;
     static const quint8 DPFI_VALID_EYE                                = 8;
+    static const quint8 DPFI_DB_QUERY_TYPE                            = 9;
+    static const quint8 DPFI_DB_TABLE                                 = 10;
+    static const quint8 DPFI_DB_COL                                   = 11;
+    static const quint8 DPFI_DB_VALUE                                 = 12;
+    static const quint8 DPFI_DB_CONDITIION                            = 13;
+    static const quint8 DPFI_DB_ERROR                                 = 14;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;
