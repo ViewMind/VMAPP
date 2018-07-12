@@ -79,6 +79,7 @@
 #define   CONFIG_RESULTS_WORKING_MEMORY                 "working_memory"
 #define   CONFIG_RESULTS_RETRIEVAL_MEMORY               "retrieval_memory"
 #define   CONFIG_RESULTS_MEMORY_ENCODING                "memory_encoding"
+#define   CONFIG_RESULTS_BEHAVIOURAL_RESPONSE           "behavioural_response"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"

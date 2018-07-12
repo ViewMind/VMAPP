@@ -35,6 +35,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.stopValues.clear();
         d.stopValues << 450 << 550 << 650 << 750;
         d.largerBetter = false;
+        d.calcValue = -1;
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(1);
@@ -44,6 +45,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.stopValues.clear();
         d.stopValues << -4 << 18 << 40 << 62;
         d.largerBetter = false;
+        d.calcValue = -1;
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(2);
@@ -53,6 +55,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.stopValues.clear();
         d.stopValues << 50 << 60 << 70 << 80;
         d.largerBetter = true;
+        d.calcValue = -1;
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(3);
@@ -62,6 +65,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.stopValues.clear();
         d.stopValues << 7 << 15 << 23 << 31;
         d.largerBetter = true;
+        d.calcValue = -1;
         data2Show << d;
     }
 
@@ -73,7 +77,33 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.stopValues.clear();
         d.stopValues << -0.991 << 0.009 << 1.009;
         d.largerBetter = true;
+        d.calcValue = -1;
         data2Show << d;
+
+        d.name = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
+        d.range = "";
+        d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
+        d.value = "";
+        d.stopValues.clear();
+        d.stopValues << -1 << 0 << 1;
+        d.largerBetter = true;
+        d.calcValue = true;
+
+        // First one should be BC and the second one is UC. Need to compute the faux value in order to draw the data.
+        QStringList results = dataSet->getStringList(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
+
+        qint32 BC = results.first().toUInt();
+        qint32 UC = results.last().toUInt();
+
+        if ((BC >= 9) && (UC <= 9)){
+            d.calcValue = -0.5;
+        }
+        else{
+            d.calcValue = 0.5;
+        }
+
+        data2Show << d;
+
     }
 
     //----------------------------------------- BACKGROUNDS ------------------------------------------------
@@ -319,7 +349,11 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
     // Calculating the segment bars.
     QStringList colorScale;
 
-    qreal vreal = d.value.toDouble();
+    qreal vreal;
+    if (d.calcValue == -1)
+        vreal = d.value.toDouble();
+    else
+        vreal = d.calcValue;
 
     if (d.stopValues.size() == 4) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
     else if (d.stopValues.size() == 3) colorScale << COLOR_GREEN << COLOR_YELLOW;

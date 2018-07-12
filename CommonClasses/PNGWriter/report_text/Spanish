@@ -13,11 +13,11 @@ de funcionamiento relevante|Funcionamiento levemente deficiente,
 no necesariamente patológico|Funcionamiento completamente
 deficiente y/o patológico;
 
-results_name = PROCESOS ATENCIONALES|PROCESOS EJECUTIVOS|MEMORIA DE TRABAJO|MEMORIA DE RECUPERACIÓN|MEMORIA VISUAL DE CORTO PLAZO;
+results_name = PROCESOS ATENCIONALES|PROCESOS EJECUTIVOS|MEMORIA DE TRABAJO|MEMORIA DE RECUPERACIÓN|MEMORIA VISUAL DE CORTO PLAZO|RESPUESTA CONDUCTUAL;
 
 results_clarification = Cortex del Cingulo Anterior|Corteza Prefrontal|Corteza frontal Dorsolateral
 Hipocampo, Subiculum|Corteza Entorrinal y Perirrinal
-Lóbulo Temporal Medio;
+Lóbulo Temporal Medio|Via Visual Ventral;
 
 motto = Medición de Desempeño
 Cognitivo mediante

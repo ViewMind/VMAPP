@@ -34,6 +34,8 @@ public:
 
     DataSet::ProcessingResults getResults() const {return results;}
 
+    // Helper function to add to the same result structure values that are calculated NOT processing the CSV files.
+    void addExtraToResults(qint32 id, qreal value){ results[id] = value; }
 
 private:
 

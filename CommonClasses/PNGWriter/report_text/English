@@ -13,11 +13,11 @@ were detected|Midly deficient functioning,
 not necessarily pathological|Completely deficient and/or
 pathological functioning;
 
-results_name = ATTENTIONAL PROCESSES|EXECUTIVE PROCESSES|WORKING MEMORY|RETRIEVAL MEMORY|VISUAL SHORT TERM MEMORY;
+results_name = ATTENTIONAL PROCESSES|EXECUTIVE PROCESSES|WORKING MEMORY|RETRIEVAL MEMORY|VISUAL SHORT TERM MEMORY|BEHAVIOURAL RESPONSE;
 
 results_clarification = Anterior cingulate cortex|Prefrontal cortex|Dorsolateral prefrontal cortex,
 Hippocampus,Subiculum|Entorhinal and Perirhinal cortex,
-MediumTemporal Lobe;
+MediumTemporal Lobe|Visual Ventral Stream;
 
 motto = Cognitive Performace
 Evaluations through

@@ -255,7 +255,7 @@ void EyeDataAnalyzer::on_cbUseLogo_stateChanged(int arg1)
 
 void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
 {
-    // First step: Create Work directory.
+    // First step: Check the patient dir.
     QString patientDir = ui->lePatientDir->text();
     QDir pdir(patientDir);
     if (!pdir.exists()){
@@ -330,7 +330,6 @@ void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
     RawDataProcessor processor(this);
     htmlWriter.reset();
     connect(&processor,SIGNAL(appendMessage(QString,qint32)),this,SLOT(onProcessorMessage(QString,qint32)));
-    qWarning() << "Procesando con " << configuration.getString(CONFIG_MOVING_WINDOW_DISP);
     processor.initialize(&configuration,files);
     log.appendStandard("Processing started...");
     processor.run();

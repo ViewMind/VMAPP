@@ -39,7 +39,8 @@
 
 // Dimensions
 #define  PAGE_WIDTH                    595*MASTER_SCALE
-#define  PAGE_HEIGHT                   842*MASTER_SCALE
+//#define  PAGE_HEIGHT                   842*MASTER_SCALE
+#define  PAGE_HEIGHT                   942*MASTER_SCALE
 #define  BANNER_HEIGHT                 108*MASTER_SCALE
 #define  BANNER_LOGO_HEIGHT            31*MASTER_SCALE
 #define  BANNER_LOGO_WIDTH             146*MASTER_SCALE
@@ -132,6 +133,7 @@ private:
         QGraphicsTextItem *gclarification;
         QList<qreal> stopValues;
         bool largerBetter;
+        qreal calcValue;
     };
 
     typedef QList<ShowDatum> ShowData;

@@ -116,6 +116,8 @@ void RawDataProcessor::run(){
             emit(appendMessage(report,MSG_TYPE_STD));
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
 
+            emp.addExtraToResults(STAT_ID_BC_WRONG,ans.wrong);
+
             // Saving the binding answers
             dbdata[TEYERES_COL_BCCORRECT] = ans.correct;
             dbdata[TEYERES_COL_BCWRONGANS] = ans.wrong;
@@ -139,6 +141,8 @@ void RawDataProcessor::run(){
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
+
+            emp.addExtraToResults(STAT_ID_UC_WRONG,ans.wrong);
 
             // Saving the binding answers
             dbdata[TEYERES_COL_UCCORRECT] = ans.correct;
@@ -221,6 +225,11 @@ void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res,
     if (whatToAdd.value(STAT_ID_ENCODING_MEM_VALUE)){
         ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_MEMORY_ENCODING,
                                        QString::number(res.value(STAT_ID_ENCODING_MEM_VALUE),'f',3));
+
+        // Adding the answers incorrect answers as a String List.
+        QStringList list;
+        list << QString::number(res.value(STAT_ID_BC_WRONG)) << QString::number(res.value(STAT_ID_UC_WRONG));
+        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_BEHAVIOURAL_RESPONSE,list.join("|"));
 
     }
 }
