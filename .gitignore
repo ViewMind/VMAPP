@@ -17,5 +17,8 @@ ReportViewerDev/
 SQLClient/bin/
 SSLServer/bin/
 SSLServer/bin5.6/
+Doc/*.aux
+Doc/*.log
+Doc/*.gz
 *.autosave
 *.tmp*
