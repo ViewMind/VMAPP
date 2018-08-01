@@ -80,22 +80,22 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.calcValue = -1;
         data2Show << d;
 
+        // First one should be BC and the second one is UC. Need to compute the faux value in order to draw the data.
+        QStringList results = dataSet->getStringList(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
+
         d.name = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
-        d.range = "";
+        d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
-        d.value = "";
+        d.value = results.first();
         d.stopValues.clear();
         d.stopValues << -1 << 0 << 1;
         d.largerBetter = true;
         d.calcValue = true;
 
-        // First one should be BC and the second one is UC. Need to compute the faux value in order to draw the data.
-        QStringList results = dataSet->getStringList(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
-
         qint32 BC = results.first().toUInt();
         qint32 UC = results.last().toUInt();
 
-        if ((BC >= 9) && (UC <= 9)){
+        if ((BC > 9) && (UC <= 9)){
             d.calcValue = -0.5;
         }
         else{

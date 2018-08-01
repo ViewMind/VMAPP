@@ -25,4 +25,4 @@ Eye-Tracking;
 
 date_format = dd/MM/yyyy;
 
-result_ranges = Parámetro referencia MENOR a 550|Parámetro referencia 7 - 18|Parámetro referencia 70 - 90|Parámetro referencia 23 - 39|Parámetro referencia MAYOR o IGUAL a 0.009;
+result_ranges = Parámetro referencia MENOR a 550|Parámetro referencia 7 - 18|Parámetro referencia 70 - 90|Parámetro referencia 23 - 39|Parámetro referencia MAYOR o IGUAL a 0.009|Parámetro de referencia MENOR a 10;
