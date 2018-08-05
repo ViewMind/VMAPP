@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS tEyeResults;
 CREATE TABLE tPatientReqData (
     keyid              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
     uid                VARCHAR(255) UNIQUE,
+    doctorid           VARCHAR(255),
     firstname          VARCHAR(255),
     lastname           VARCHAR(255),
     countryid          VARCHAR(255),
@@ -19,8 +20,7 @@ CREATE TABLE tPatientReqData (
 
 CREATE TABLE tPatientOptionalData (
     keyid              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,     
-    patientid          VARCHAR(255),
-    doctorid           VARCHAR(255),
+    patientid          VARCHAR(255),    
     date_insertion     DATETIME,    
     state              VARCHAR(255),
     city               VARCHAR(255),

@@ -5,14 +5,14 @@ DBInterface::DBInterface()
     dbConnection = QSqlDatabase::addDatabase("QMYSQL");
 }
 
-bool DBInterface::initDB(const ConfigurationManager &config){
+bool DBInterface::initDB(ConfigurationManager *config){
 
-    dbConnection.setHostName(config.getString(CONFIG_DBHOST));
-    dbConnection.setDatabaseName(config.getString(CONFIG_DBNAME));
-    dbConnection.setUserName(config.getString(CONFIG_DBUSER));
-    dbConnection.setPassword(config.getString(CONFIG_DBPASSWORD));
-    if (config.containsKeyword(CONFIG_DBPORT)){
-        dbConnection.setPort(config.getInt(CONFIG_DBPORT));
+    dbConnection.setHostName(config->getString(CONFIG_DBHOST));
+    dbConnection.setDatabaseName(config->getString(CONFIG_DBNAME));
+    dbConnection.setUserName(config->getString(CONFIG_DBUSER));
+    dbConnection.setPassword(config->getString(CONFIG_DBPASSWORD));
+    if (config->containsKeyword(CONFIG_DBPORT)){
+        dbConnection.setPort(config->getInt(CONFIG_DBPORT));
     }
 
     if (!dbConnection.open()){

@@ -74,6 +74,9 @@ public:
     // Clear all data.
     void clearAll() { buffer.clear(); fields.clear(); packetSize = 0; }
 
+    // Get the last file names saved
+    QStringList getLastFilesSaved() const { return fileNamesSaved; }
+
     // Transform a size to a numberic representation of 4 bytes.
     static QByteArray sizeToByteArray(quint32 size);
     static quint32 byteArrayToSize(const QByteArray &size);
@@ -92,6 +95,9 @@ private:
 
     // The data
     Fields fields;
+
+    // The names of the last set of files saved
+    QStringList fileNamesSaved;
 
     // Generic interface to add a field as is.
     void addField(quint8 dpft, const QVariant & data, quint8 field_information);

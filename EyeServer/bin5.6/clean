@@ -1,0 +1,6 @@
+#!/bin/bash
+
+rm -rf MOCS
+rm -rf OBJS
+rm -rf QRC
+rm Makefile

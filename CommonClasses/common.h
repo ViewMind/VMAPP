@@ -50,12 +50,12 @@
 #define   CONFIG_BC_FILE_FILTER                         "bc_file_filter"
 #define   CONFIG_UC_FILE_FILTER                         "uc_file_filter"
 #define   CONFIG_DAT_TIME_FILTER_THRESHOLD              "time_filter_threshold"
-#define   CONFIG_TCP_PORT                               "tcp_port"
 #define   CONFIG_SERVER_ADDRESS                         "server_address"
 #define   CONFIG_CONNECTION_TIMEOUT                     "connection_time_out"
 #define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
+#define   CONFIG_WAIT_REPORT_TIMEOUT                    "wait_report_timeout"
+#define   CONFIG_WAIT_DBDATA_TIMEOUT                    "wait_db_data_timeout"
 #define   CONFIG_NUMBER_OF_PARALLEL_PROCESSES           "number_of_paralell_processes"
-#define   CONFIG_WAIT_DATA_TIMEOUT                      "wait_data_timeout"
 #define   CONFIG_RESOLUTION_WIDTH                       "config_resolution_width"
 #define   CONFIG_RESOLUTION_HEIGHT                      "config_resolution_height"
 #define   CONFIG_SELECTED_ET                            "selected_eyetracker"
@@ -65,7 +65,6 @@
 #define   CONFIG_REPORT_PATH                            "report_path"
 #define   CONFIG_IMAGE_REPORT_PATH                      "image_report_path"
 #define   CONFIG_VALID_EYE                              "valid_eye"
-#define   CONFIG_TCP_PORT_DBCOMM                        "tcp_port_db_comm"
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"
 #define   CONFIG_DBHOST                                 "db_host"
@@ -112,6 +111,10 @@
 #define   HEADER_IMAGE_EXPERIMENT                       "#IMAGE"
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
 
+// TCP Ports.
+static const quint16 TCP_PORT_DB_COMM                    = 54915;
+static const quint16 TCP_PORT_DATA_PROCESSING            = 54912;
+
 /****************************************************************************************
  * Function that returns the newest dat file in a directory for a given
  * base name.
@@ -123,18 +126,6 @@ static inline QString getNewestFile(const QString &directory, const QString &bas
     QStringList filter;
     filter << baseName + "_*." + extension;
     QStringList allfiles = dir.entryList(filter,QDir::Files,QDir::Time);
-
-/// TODO: Fix for enhanced EBO versions
-//    This is used to simply look for simple bc uc files when no expanded versions are desired.
-//    qint32 i = 0;
-//    qint32 targetFileNameSize = baseName.size() + 9; // 9 = 1 underscore, 4 numbers, 1 dot, and 3 because of the dat
-//    // qWarning() << "Searching for files with the base" << baseName;
-//    while (i < allfiles.size()){
-//        if (allfiles.at(i).size() != targetFileNameSize){
-//            allfiles.removeAt(i);
-//        }
-//        else i++;
-//    }
 
     if (allfiles.isEmpty()) return "";
     return directory + "/" + allfiles.first();

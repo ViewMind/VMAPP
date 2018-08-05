@@ -1,4 +1,5 @@
 #include <QCoreApplication>
+#include <QTest>
 
 #include "sslwrapper.h"
 
@@ -9,14 +10,22 @@ int main(int argc, char *argv[])
     qWarning() << "Starting";
     SSLWrapper wrapper(nullptr);
 
+//    wrapper.addSomeRandomDoctorData(2);
+
+//    qWarning() << "Waiting for 10 seconds before creating patient data";
+//    QTest::qWait(10000);
+
+//    qWarning() << "Creating patient data";
 //    wrapper.sendSomeRandomPatientData(10,true);
-//    wrapper.addSomeRandomDoctorData(10);
+
 
 //    QStringList uids;
-//    uids << "AR21447144" << "AR31775787";
+//    uids << "AR20584968" << "AR22912155";
 //    wrapper.requestPatientData(uids);
 
     wrapper.sendDataToProcess();
+
+    qWarning() << "Finished!";
 
     return a.exec();
 }

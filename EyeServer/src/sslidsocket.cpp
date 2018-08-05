@@ -56,7 +56,6 @@ QString SSLIDSocket::setWorkingDirectoryAndSaveAllFiles(const QString &baseDir){
     }
 
     QDir bdir(baseDir);
-
     if (!QDir(baseDir + "/" + doctor).exists()){
         if (!bdir.mkdir(doctor)){
             return "Could not create doctor subdirectory: " + doctor;
@@ -78,10 +77,23 @@ QString SSLIDSocket::setWorkingDirectoryAndSaveAllFiles(const QString &baseDir){
     }
 
     workingDirectory = pdir.path() + "/" + wdir;
+    QString baseNameForS3 = doctor+"/"+patient +"/"+wdir+"/";
+
 
     // Since the working directory was generated the files can now be saved.
     if (!rx.saveFiles(workingDirectory)){
         return "There were errors saving packet files.";
+    }
+
+    // Pushing the files to the using AWS to the S3 storarge.
+    QStringList savedFiles = rx.getLastFilesSaved();
+    for (qint32 i = 0; i < savedFiles.size(); i++){
+        QFileInfo info(savedFiles.at(i));
+        QString cmd = S3_BASE_COMMAND;
+        cmd = cmd + " " + savedFiles.at(i) + " ";
+        cmd = cmd + S3_ADDRESSS + baseNameForS3 + info.baseName() + "." + info.suffix() + " ";
+        cmd = cmd + S3_PARMETERS;
+        QProcess::execute(cmd);
     }
 
     return "";

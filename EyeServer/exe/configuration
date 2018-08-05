@@ -1,0 +1,18 @@
+#--------------------------------------------------------------------------------------#
+#                        SSLServerManager Configuration File                           #
+#--------------------------------------------------------------------------------------#
+
+# Output directory. This is where the received information will be stored.
+raw_data_repo = C:/Users/Viewmind/Documents/ExperimenterOutputs/ServerDir;
+
+# The port for the TCP Server Connection.
+tcp_port = 54912;
+
+# How many eye-data-processors to run in parallel
+number_of_paralell_processes = 2;
+
+# Path to the eyeprocessor executable.
+eyeprocessor_path = C:/Users/Viewmind/Documents/QtProjects/EyeReportGenerator/exe/EyeReportGen.exe;
+
+# Time outs (in seconds) for waiting for the client to send the report data
+wait_data_timeout = 10;

@@ -1,34 +1,24 @@
-#include "dbcommmanager.h"
+#include "dbcommsslserver.h"
 
-DBCommManager::DBCommManager(QObject *parent) : QObject(parent)
+DBCommSSLServer::DBCommSSLServer(QObject *parent) : QObject(parent)
 {
 
     // Creating the the listner.
     listener = new SSLListener(this);
 
     // Listen for new connections.
-    connect(listener,&SSLListener::newConnection,this,&DBCommManager::on_newConnection);
-    connect(listener,&SSLListener::lostConnection,this,&DBCommManager::on_lostConnection);
+    connect(listener,&SSLListener::newConnection,this,&DBCommSSLServer::on_newConnection);
+    connect(listener,&SSLListener::lostConnection,this,&DBCommSSLServer::on_lostConnection);
 
     idGen = 0;
 
 }
 
 
-bool DBCommManager::startServer(const ConfigurationManager &c){
+bool DBCommSSLServer::startServer(ConfigurationManager *c){
 
-    if (!dbConnection.initDB(c)){
-        log.appendError("ERROR : Could not start SQL Connection: " + dbConnection.getError());
-        return false;
-    }
-
-    timeOut = c.getInt(CONFIG_CONNECTION_TIMEOUT);
-    if (timeOut == 0){
-        // Default time out is 10 seconds.
-        timeOut = 10000;
-    }
-
-    if (!listener->listen(QHostAddress::Any,(quint16)c.getInt(CONFIG_TCP_PORT_DBCOMM))){
+    config = c;
+    if (!listener->listen(QHostAddress::Any,TCP_PORT_DB_COMM)){
         log.appendError("ERROR : Could not start SQL SSL Server: " + listener->errorString());
         return false;
     }
@@ -37,11 +27,11 @@ bool DBCommManager::startServer(const ConfigurationManager &c){
 
 }
 
-// For now, this fucntion is not used.
-void DBCommManager::on_lostConnection(){
+// For now, this function is not used.
+void DBCommSSLServer::on_lostConnection(){
 }
 
-void DBCommManager::on_newConnection(){
+void DBCommSSLServer::on_newConnection(){
 
     // New connection is available.
     QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
@@ -60,7 +50,7 @@ void DBCommManager::on_newConnection(){
     sockets[socket->getID()] = socket;
 
     // Doing the connection SIGNAL-SLOT
-    connect(socket,&SSLIDSocket::sslSignal,this,&DBCommManager::on_newSSLSignal);
+    connect(socket,&SSLIDSocket::sslSignal,this,&DBCommSSLServer::on_newSSLSignal);
 
     // The SSL procedure.
     sslsocket->setPrivateKey(":/certificates/server.key");
@@ -72,7 +62,7 @@ void DBCommManager::on_newConnection(){
 
 
 // Handling all signals
-void DBCommManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
+void DBCommSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
 
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
@@ -83,7 +73,7 @@ void DBCommManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
         break;
     case SSLIDSocket::SSL_SIGNAL_ENCRYPTED:
         log.appendSuccess("SSL Handshake completed for address: " + sockets.value(socket)->socket()->peerAddress().toString());
-        sockets.value(socket)->startTimeoutTimer(timeOut);
+        sockets.value(socket)->startTimeoutTimer(config->getInt(CONFIG_DATA_REQUEST_TIMEOUT)*1000);
         break;
     case SSLIDSocket::SSL_SIGNAL_ERROR:
         socketErrorFound(socket);
@@ -124,7 +114,7 @@ void DBCommManager::on_newSSLSignal(quint64 socket, quint8 signaltype){
 }
 
 
-void DBCommManager::removeSocket(quint64 id){
+void DBCommSSLServer::removeSocket(quint64 id){
     if (sockets.contains(id)) {
         if (sockets.value(id)->isValid()){
             sockets.value(id)->socket()->disconnectFromHost();
@@ -134,7 +124,7 @@ void DBCommManager::removeSocket(quint64 id){
 }
 
 
-void DBCommManager::socketErrorFound(quint64 id){
+void DBCommSSLServer::socketErrorFound(quint64 id){
 
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
@@ -153,7 +143,7 @@ void DBCommManager::socketErrorFound(quint64 id){
 
 }
 
-void DBCommManager::sslErrorsFound(quint64 id){
+void DBCommSSLServer::sslErrorsFound(quint64 id){
 
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
@@ -170,7 +160,12 @@ void DBCommManager::sslErrorsFound(quint64 id){
 
 }
 
-void DBCommManager::processSQLRequest(quint64 socket){
+void DBCommSSLServer::processSQLRequest(quint64 socket){
+
+    if (!dbConnection.initDB(config)){
+        log.appendError("ERROR : Could not start SQL Connection: " + dbConnection.getError());
+        return;
+    }
 
     DataPacket dp = sockets.value(socket)->getDataPacket();
     QString tx_type = dp.getField(DataPacket::DPFI_DB_QUERY_TYPE).data.toString();
@@ -202,7 +197,7 @@ void DBCommManager::processSQLRequest(quint64 socket){
                 log.appendError("On SQL Transaction: " + dbConnection.getError());
             }
             else{
-                DBInterface::DBData dbdata = dbConnection.getLastResult();
+                DBData dbdata = dbConnection.getLastResult();
                 queryresults << dbdata.joinRowsAndCols(DB_ROW_SEP,DB_COLUMN_SEP);
                 dberrors << "";
             }
@@ -237,6 +232,7 @@ void DBCommManager::processSQLRequest(quint64 socket){
         }
 
         for (qint32 i = 0; i < tableNames.size(); i++){
+            //log.appendStandard("SET " + QString::number(i) +  " on TABLE " + tableNames.at(i) + ": COLUMNS -> " + columnsList.at(i).join("|") + ". VALUES: " + values.at(i).join("|"));
             if (!dbConnection.insertDB(tableNames.at(i),columnsList.at(i),values.at(i))){
                 log.appendError("On SQL Transaction: " + dbConnection.getError());
             }
@@ -244,12 +240,15 @@ void DBCommManager::processSQLRequest(quint64 socket){
 
     }
 
+    // Closing connection to db.
+    dbConnection.close();
+
     // In this case the transaction is done.
     removeSocket(socket);
 
 }
 
-void DBCommManager::changedState(quint64 id){
+void DBCommSSLServer::changedState(quint64 id){
 
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
