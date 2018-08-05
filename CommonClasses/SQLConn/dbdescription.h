@@ -1,6 +1,34 @@
 #ifndef DBDESCRIPTION_H
 #define DBDESCRIPTION_H
 
+#include <QStringList>
+
+// The structure where the DB data is saved.
+struct DBData{
+    QStringList columns;
+    QString error;
+    QList<QStringList> rows;
+    void clear(){
+        columns.clear();
+        rows.clear();
+        error = "";
+    }
+    QString joinRowsAndCols(const QString &rowSep, const QString &colSep){
+        QStringList compactedrows;
+        for (qint32 i = 0; i < rows.size(); i++){
+            compactedrows << rows.at(i).join(colSep);
+        }
+        return compactedrows.join(rowSep);
+    }
+    void fillRowsFromString(const QString &data, const QString &rowSep, const QString &colSep){
+        QStringList crows = data.split(rowSep);
+        for (qint32 i= 0; i < crows.size(); i++){
+                rows << crows.at(i).split(colSep);
+        }
+    }
+};
+
+// Separators used for both the data packet and inside a list of the table.
 #define  DB_LIST_IN_COL_SEP                         "<||>"
 #define  DB_COLUMN_SEP                              "<|=|>"
 #define  DB_TRANSACTION_LIST_SEP                    "<|==|>"
@@ -15,6 +43,7 @@
 // Column names for required patient info
 #define  TPATREQ_KEYID                           "keyid"           
 #define  TPATREQ_COL_UID                         "uid"
+#define  TPATREQ_COL_DOCTORID                    "doctorid"
 #define  TPATREQ_COL_FIRSTNAME                   "firstname"
 #define  TPATREQ_COL_LASTNAME                    "lastname"
 #define  TPATREQ_COL_COUNTRYID                   "countryid"
@@ -25,7 +54,6 @@
 // Column names for optional patient table
 #define  TPATOPT_COL_KEYID                       "keyid"
 #define  TPATOPT_COL_PATIENTID                   "patientid"
-#define  TPATOPT_COL_DOCTORID                    "doctorid"
 #define  TPATOPT_COL_DATE_INS                    "date_insertion"
 #define  TPATOPT_COL_CITY                        "city"
 #define  TPATOPT_COL_MAINACTIVITY                "mainactivity"

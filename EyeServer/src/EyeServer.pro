@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core widgets network sql
-TARGET   = SSLServer
+TARGET   = EyeServer
 TEMPLATE = app
 
 
@@ -20,12 +20,12 @@ SOURCES += main.cpp\
     ../../CommonClasses/DataPacket/datapacket.cpp \
     ../../CommonClasses/LogInterface/loginterface.cpp \
     ssllistener.cpp \
-    sslmanager.cpp \
     sslidsocket.cpp \
     inputcontrol.cpp \
     servercontrol.cpp \
-    dbcommmanager.cpp \
-    ../../CommonClasses/SQLConn/dbinterface.cpp
+    ../../CommonClasses/SQLConn/dbinterface.cpp \
+    dataprocessingsslserver.cpp \
+    dbcommsslserver.cpp
 
 HEADERS  += \
     ../../CommonClasses/common.h \
@@ -33,13 +33,13 @@ HEADERS  += \
     ../../CommonClasses/DataPacket/datapacket.h \
     ../../CommonClasses/LogInterface/loginterface.h \
     ssllistener.h \
-    sslmanager.h \
     sslidsocket.h \
     inputcontrol.h \
     servercontrol.h \
     ../../CommonClasses/SQLConn/dbdescription.h \
-    dbcommmanager.h \
-    ../../CommonClasses/SQLConn/dbinterface.h
+    ../../CommonClasses/SQLConn/dbinterface.h \
+    dataprocessingsslserver.h \
+    dbcommsslserver.h
 
 RESOURCES += \
     certificates.qrc

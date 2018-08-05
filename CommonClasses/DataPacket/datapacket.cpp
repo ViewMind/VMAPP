@@ -209,10 +209,16 @@ bool DataPacket::saveFiles(const QString &directory){
 
     QList<quint8> fieldlist = fields.keys();
 
+    fileNamesSaved.clear();
+
     for (qint32 i = 0; i < fieldlist.size(); i++){
         if (fields.value(fieldlist.at(i)).fieldType == DPFT_FILE){
             QString ans = saveFile(directory,fieldlist.at(i));
-            if (ans.isEmpty()) return false;
+            if (ans.isEmpty()) {
+                fileNamesSaved.clear();
+                return false;
+            }
+            fileNamesSaved << ans;
         }
     }
 

@@ -4,8 +4,8 @@
 #include <QObject>
 #include <iostream>
 #include "../../CommonClasses/LogInterface/loginterface.h"
-#include "sslmanager.h"
-#include "dbcommmanager.h"
+#include "dataprocessingsslserver.h"
+#include "dbcommsslserver.h"
 
 class ServerControl : public QObject
 {
@@ -17,12 +17,9 @@ public:
 signals:
     void exitRequested();
 
-public slots:
-    void on_messagesAvailable();
-
 private:
-    DBCommManager dbmng;
-    SSLManager sslManager;
+    DBCommSSLServer dbSSLServer;
+    DataProcessingSSLServer dataProcessingSSLServer;
     LogInterface log;
     ConfigurationManager config;
 };

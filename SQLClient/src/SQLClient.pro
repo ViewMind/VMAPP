@@ -1,5 +1,5 @@
 QT -= gui
-QT += network widgets sql
+QT += network widgets sql testlib
 
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -27,7 +27,9 @@ SOURCES += main.cpp \
     ../../CommonClasses/LogInterface/loginterface.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     sslwrapper.cpp \
-    ../../CommonClasses/SQLConn/dbinterface.cpp
+    ../../CommonClasses/SQLConn/dbinterface.cpp \
+    ../../EyeExperimenter/src/sslclient/ssldbclient.cpp \
+    ../../EyeExperimenter/src/sslclient/ssldataprocessingclient.cpp
 
 HEADERS += \
     ../../CommonClasses/DataPacket/datapacket.h \
@@ -36,4 +38,6 @@ HEADERS += \
     ../../CommonClasses/LogInterface/loginterface.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     sslwrapper.h \
-    ../../CommonClasses/SQLConn/dbinterface.h
+    ../../CommonClasses/SQLConn/dbinterface.h \
+    ../../EyeExperimenter/src/sslclient/ssldbclient.h \
+    ../../EyeExperimenter/src/sslclient/ssldataprocessingclient.h

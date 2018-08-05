@@ -8,12 +8,12 @@
 #include "sslidsocket.h"
 #include "ssllistener.h"
 
-class DBCommManager : public QObject
+class DBCommSSLServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit DBCommManager(QObject *parent = nullptr);
-    bool startServer(const ConfigurationManager &c);
+    explicit DBCommSSLServer(QObject *parent = nullptr);
+    bool startServer(ConfigurationManager *c);
     DBInterface * getDBInterface() { return &dbConnection; }
 
 signals:
@@ -28,15 +28,15 @@ private:
     // Logging to file.
     LogInterface log;
 
+    // Pointer to the configuration file
+    ConfigurationManager *config;
+
     // Manages the SQL Connection.
     DBInterface dbConnection;
 
     // Listens for new connections and stores them in the sockets.
     SSLListener *listener;
     QHash<quint64,SSLIDSocket*> sockets;
-
-    // So that the connection does not wait forever.
-    qint32 timeOut;
 
     // Generates ever increasing values for unique socket ids.
     quint64 idGen;

@@ -10,14 +10,11 @@
 #include "sslidsocket.h"
 #include "ssllistener.h"
 
-#define   DEFAULT_TIMEOUT_WAIT_REPORT                   120000
-#define   DEFAULT_TIMEOUT_WAIT_DATA                     10000
-
-class SSLManager: public QObject
+class DataProcessingSSLServer: public QObject
 {
     Q_OBJECT
 public:
-    SSLManager(QObject *parent = Q_NULLPTR);
+    DataProcessingSSLServer(QObject *parent = Q_NULLPTR);
 
     // Set connection to db
     void setDBConnection(DBInterface *dbif) {dbConn = dbif;}
@@ -25,18 +22,15 @@ public:
     // Start the server
     void startServer(ConfigurationManager *c);
 
-    // Get all messages.
-    QStringList getMessages();
-
 private slots:
     void on_newConnection();
     void on_lostConnection();
     void on_newSSLSignal(quint64 socket, quint8 signaltype);
 
-signals:
-    void newMessages();
-
 private:
+
+    // Logging to file.
+    LogInterface log;
 
     // The configuration
     ConfigurationManager *config;
@@ -57,9 +51,6 @@ private:
     // Generates ever increasing values for unique socket ids.
     quint64 idGen;
 
-    // The list of errors
-    QStringList messages;
-
     // Helper fucntions to generate messages.
     void changedState(quint64 id);
     void socketErrorFound(quint64 id);
@@ -76,9 +67,6 @@ private:
 
     // Final Step in the process, sending the report.
     void sendReport(quint64 socket);
-
-    // Emmitting the message signal
-    void addMessage(const QString &type, const QString &msg);
 
 };
 

@@ -7,12 +7,19 @@
 #include <QDateTime>
 #include "../../CommonClasses/DataPacket/datapacket.h"
 
+#define  S3_BASE_COMMAND     "aws s3 cp"
+#define  S3_ADDRESSS         "s3://viewmind-raw-eye-data/"
+#define  S3_PARMETERS        "--quiet"
 #define  TIME_FORMAT_STRING  "yyyy_MM_dd_hh_mm_ss"
 
 /*****************************************************************
  * The objective of this class is to provide an identifying value
  * to the Sockect. This is required to properley identify the
  * QSslSocket signals that will be all connected to the same slot
+ * It also contains convenience function for doing some simple data
+ * processing on the received bytes as well as saving files as
+ * well as saving the data to S3 storage (as it is basically the same
+ * action).
  * ***************************************************************/
 
 class SSLIDSocket: public QObject
