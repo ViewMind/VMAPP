@@ -1,5 +1,17 @@
 #include "bindingmanager.h"
 
+// Dimensions for drawing the target flags. The dimensions are in mm so that they can be drawn the same size independently of the screen resolution.
+static const float BINDING_TARGET_SIDE =              45.25;
+static const float BINDING_TARGET_HS =                1;
+static const float BINDING_TARGET_HL =                11.75;
+static const float BINDING_TARGET_VS =                6;
+static const float BINDING_TARGET_VL =                16;
+
+static const float BINDING_GRID_SPACING_X_2FLAGS =    128;
+static const float BINDING_GRID_SPACING_X_3FLAGS =    64;
+static const float BINDING_GRID_SPACING_Y =           48;
+
+
 BindingManager::BindingManager()
 {
     canvas = nullptr;
@@ -71,18 +83,10 @@ void BindingManager::init(ConfigurationManager *c){
 
 }
 
-void BindingManager::drawCenter(qint32 currentTrial){
-
+void BindingManager::drawCenter(){
     canvas->clear();
-
-    if (trials.at(currentTrial).number == -1){
-        canvas->addLine(line0,QPen(QBrush(Qt::red),2));
-        canvas->addLine(line1,QPen(QBrush(Qt::red),2));
-    }
-    else{
-        QGraphicsTextItem *number = canvas->addText(QString::number(trials.at(currentTrial).number),QFont("Mono",30));
-        number->setPos((ScreenResolutionWidth - number->boundingRect().width())/2,(ScreenResolutionHeight - number->boundingRect().height())/2);
-    }
+    canvas->addLine(line0,QPen(QBrush(Qt::red),2));
+    canvas->addLine(line1,QPen(QBrush(Qt::red),2));
 }
 
 void BindingManager::drawTrial(qint32 currentTrial, bool show){
@@ -108,23 +112,14 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
 
     bool legacyDescription = false;
 
-    // Generating the contents from the phrases
+    // Splitting into lines.
     QStringList lines = contents.split('\n',QString::KeepEmptyParts);
 
     // Checking for old interpretation marking
     QStringList tokens;
     tokens = lines.first().split(' ',QString::SkipEmptyParts);
 
-    // Making any character to signify old form
-    bool largeTargets = false;
-    if (tokens.size() == 2){
-        if (tokens.last() == BINDING_LARGE_TARGET_MARK){
-            largeTargets = true;
-        }
-    }
-
-    usesNumbers = false;
-
+    // Checking for the must have values.
     if (!config->containsKeyword(CONFIG_XPX_2_MM)){
         error = "Configuration file requires the horizontal pixel to mm ratio: x_px_mm";
         return false;
@@ -133,12 +128,13 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
     if (!config->containsKeyword(CONFIG_YPX_2_MM)){
         error = "Configuration file requires the vertical pixel to mm ratio: y_px_mm";
         return false;
-    }    
+    }
+
+    int horizontalGridPoints;
 
     if (tokens.size() == 13) {
         // This is a legacy binding description.
         numberOfTargets = 2;
-        largeTargets = true;
         legacyDescription = true;
     }
     else{
@@ -146,7 +142,11 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
         // Getting the number of targets in the trial
         numberOfTargets = tokens.first().toInt();
 
-        if ((numberOfTargets < 2) || (numberOfTargets > 4)){
+        // Even tough its the same value, there is no real relation between the grid size and the number of targets selected.
+        // For clarity a different variable is used.
+        horizontalGridPoints = numberOfTargets;
+
+        if ((numberOfTargets != 2) && (numberOfTargets != 3)){
             error = "Invalid number of targets in the first line " + lines.first();
             return false;
         }
@@ -157,28 +157,9 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
     drawStructure.xpos.clear();
     drawStructure.ypos.clear();
 
-    if ((numberOfTargets == 2) && (largeTargets)){
-        // Legacy values for targets.
-        // Calculating the the offset to center in the screen.
-        // Offset to contemplate different resoluitions
-        qreal xOffset, yOffset;
-        xOffset = BINDING_AREA_WIDTH/config->getReal(CONFIG_XPX_2_MM);
-        yOffset = BINDING_AREA_HEIGHT/config->getReal(CONFIG_YPX_2_MM);
-        xOffset = (ScreenResolutionWidth - xOffset)/2;
-        yOffset = (ScreenResolutionHeight - yOffset)/2;
-        drawStructure.FlagSideH = 181/(4*config->getReal(CONFIG_XPX_2_MM));
-        drawStructure.FlagSideV = 181/(4*config->getReal(CONFIG_YPX_2_MM));
-        drawStructure.HSBorder = 4/(4*config->getReal(CONFIG_XPX_2_MM));
-        drawStructure.HLBorder = 47/(4*config->getReal(CONFIG_XPX_2_MM));
-        drawStructure.VSBorder = 24/(4*config->getReal(CONFIG_YPX_2_MM));
-        drawStructure.VLBorder = 64/(4*config->getReal(CONFIG_YPX_2_MM));
-        drawStructure.xpos << 165/(4*config->getReal(CONFIG_XPX_2_MM)) + xOffset << 677/(4*config->getReal(CONFIG_XPX_2_MM)) + xOffset;
-        drawStructure.ypos << 102/(4*config->getReal(CONFIG_YPX_2_MM)) + yOffset
-                           << 294/(4*config->getReal(CONFIG_YPX_2_MM)) + yOffset
-                           << 486/(4*config->getReal(CONFIG_YPX_2_MM)) + yOffset;
-    }
-    else{
+    if (!legacyDescription){
 
+        // The mm values are transformed to pixels and the math is only once to define the possible target positions.
         drawStructure.FlagSideH = BINDING_TARGET_SIDE/config->getReal(CONFIG_XPX_2_MM);
         drawStructure.FlagSideV = BINDING_TARGET_SIDE/config->getReal(CONFIG_YPX_2_MM);
         drawStructure.HSBorder  = BINDING_TARGET_HS/config->getReal(CONFIG_XPX_2_MM);
@@ -186,28 +167,34 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
         drawStructure.HLBorder  = BINDING_TARGET_HL/config->getReal(CONFIG_YPX_2_MM);
         drawStructure.VSBorder  = BINDING_TARGET_VS/config->getReal(CONFIG_YPX_2_MM);
 
-        qreal Wg = BINDING_TARGET_GRID/config->getReal(CONFIG_XPX_2_MM);
-        qreal Hg = BINDING_TARGET_GRID/config->getReal(CONFIG_YPX_2_MM);
+        qreal spacingx;
+        if (numberOfTargets == 2) spacingx = BINDING_GRID_SPACING_X_2FLAGS;
+        else spacingx = BINDING_GRID_SPACING_X_3FLAGS;
+
+        qreal Gxpx = spacingx/config->getReal(CONFIG_XPX_2_MM);
+        qreal Gypx = BINDING_GRID_SPACING_Y/config->getReal(CONFIG_YPX_2_MM);
         qreal Sx = BINDING_TARGET_SIDE/config->getReal(CONFIG_XPX_2_MM);
         qreal Sy = BINDING_TARGET_SIDE/config->getReal(CONFIG_YPX_2_MM);
-        qint32 Xog = (ScreenResolutionWidth - Wg)/2;
-        qint32 Yog = (ScreenResolutionHeight - Hg)/2;
-        qint32 Gx = Wg/3;
-        qint32 Gy = Hg/3;
 
-        // The grid is 3x3.
-        for (qint32 i = 0; i < 3; i++){
-            drawStructure.xpos << Xog + ((2*i+1)*Gx - Sx)/2;
+        // Total horizontal space required by the placement grid
+        qreal Wx = Gxpx*(horizontalGridPoints-1) + Sx;
+        // Total vertical space required by the placement grid
+        qreal Wy = Gypx*2 + Sy;
+
+        qint32 Xog = (ScreenResolutionWidth - Wx)/2;
+        qint32 Yog = (ScreenResolutionHeight - Wy)/2;
+
+        for (qint32 i = 0; i < horizontalGridPoints; i++){
+            drawStructure.xpos << Xog + (i*Gxpx);
         }
 
         for (qint32 j = 0; j < 3; j++){
-            drawStructure.ypos << Yog + ((2*j+1)*Gy - Sy)/2;
+            drawStructure.ypos << Yog + (j*Gypx);
         }
 
     }
-
-    // Doing a Legacy parse.
-    if (legacyDescription){
+    else{
+        // Doing a Legacy parse.
         return legacyParser(contents);
     }
 
@@ -236,22 +223,9 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
         }
         BindingTrial trial;
         trial.name = tokens.at(0);
-        if (tokens.at(1) == "x"){
-            if (usesNumbers){
-                error = "Transition numbers were found, but then a x  @ line:" + lines.at(i);
-                return false;
-            }
-            trial.number = -1;
-        }
-        else{
-            usesNumbers = true;
-            bool ok;
-            trial.number = tokens.at(1).toUInt(&ok);
-            if (!ok){
-                error = "Invalid number in trial name @ line: " + lines.at(i);
-                return false;
-            }            
-        }
+
+        // The token position at 1 was used to describe what was drawn before the trial. It's no longer used.
+        // However the code was not changed because the description files were not changed.
 
         if (tokens.at(2) == "s") trial.isSame = true;
         else if (tokens.at(2) == "d") trial.isSame = false;
@@ -279,6 +253,9 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
         if (!parseColors(lines.at(i+6),&trial,false,false)) return false;
 
         trials << trial;
+
+        qWarning() << "ADDING :" << trial.toString();
+
         i = i + 7;
 
     }
@@ -316,8 +293,11 @@ bool BindingManager::parseFlagPositions(const QString &line, BindingTrial *trial
                     + QString::number(drawStructure.ypos.size()) + " @ line: " + line;
             return false;
         }
+        qWarning() << "For " << i << "Position" << flag.x << "from" << drawStructure.xpos << "is" << drawStructure.xpos.at(flag.x)
+                   << "and" << "Position" << flag.y << "from" << drawStructure.ypos << "is" << drawStructure.ypos.at(flag.y);
         flag.x = drawStructure.xpos.at(flag.x);
         flag.y = drawStructure.ypos.at(flag.y);
+
         if (show) trial->show.append(flag);
         else trial->test.append(flag);
     }
@@ -357,6 +337,9 @@ bool BindingManager::parseColors(const QString &line, BindingTrial *trial, bool 
     return true;
 }
 
+
+// Legacy parse is maintained in case there is a need to draw targets that were described with the very first
+// description file.
 bool BindingManager::legacyParser(const QString &contents){
 
     QStringList lines = contents.split("\n",QString::SkipEmptyParts);
@@ -382,7 +365,6 @@ bool BindingManager::legacyParser(const QString &contents){
 
         BindingTrial trial;
         trial.name = tokens.at(0);
-        trial.number = -1;
         trial.isSame = trial.name.contains(STR_SAME);
 
         BindingFlag sl, sr, tl, tr;

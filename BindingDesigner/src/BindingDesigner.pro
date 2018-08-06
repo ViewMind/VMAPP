@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-04-16T15:58:38
+# Project created by QtCreator 2018-08-05T16:51:25
 #
 #-------------------------------------------------
 
@@ -11,37 +11,35 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = BindingDesigner
 TEMPLATE = app
 
+CONFIG -= debug_and_release
+MOC_DIR = MOCS
+OBJECTS_DIR = OBJS
+RCC_DIR = QRC
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
+
 DEFINES += QT_DEPRECATED_WARNINGS
-
-# You can also make your code fail to compile if you use deprecated APIs.
-# In order to do so, uncomment the following line.
-# You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
+        bindinggenerator.cpp \
+    bindingfilegenerator.cpp \
     ../../CommonClasses/Experiments/bindingmanager.cpp \
     ../../CommonClasses/Experiments/experimentdatapainter.cpp \
-    showscreen.cpp \
-    bindingfilegenerator.cpp \
-    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp
+    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+    ../../CommonClasses/LogInterface/loginterface.cpp
 
 HEADERS += \
-        mainwindow.h \
-    ../../CommonClasses/Experiments/bindingmanager.h \
-    ../../CommonClasses/Experiments/common.h \
-    ../../CommonClasses/Experiments/experimentdatapainter.h \
-    showscreen.h \
+        bindinggenerator.h \
     bindingfilegenerator.h \
-    ../../CommonClasses/ConfigurationManager/configurationmanager.h
+    ../../CommonClasses/Experiments/bindingmanager.h \
+    ../../CommonClasses/Experiments/experimentdatapainter.h \
+    ../../CommonClasses/common.h \
+    ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../CommonClasses/LogInterface/loginterface.h
 
 FORMS += \
-        mainwindow.ui
-
-RESOURCES +=
+        bindinggenerator.ui

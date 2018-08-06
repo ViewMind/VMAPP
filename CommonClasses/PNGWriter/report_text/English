@@ -16,8 +16,8 @@ pathological functioning;
 results_name = ATTENTIONAL PROCESSES|EXECUTIVE PROCESSES|WORKING MEMORY|RETRIEVAL MEMORY|VISUAL SHORT TERM MEMORY|BEHAVIOURAL RESPONSE;
 
 results_clarification = Anterior cingulate cortex|Prefrontal cortex|Dorsolateral prefrontal cortex,
-Hippocampus,Subiculum|Entorhinal and Perirhinal cortex,
-MediumTemporal Lobe|Visual Ventral Stream;
+Hippocampus,Subiculum|Locus Coeruleus and Superior colliculus|Entorhinal and Perirhinal Cortex.
+Medial Temporal Lobe;
 
 motto = Cognitive Performace
 Evaluations through
@@ -25,4 +25,4 @@ Eye-Tracking;
 
 date_format = MM/dd/yyyy;
 
-result_ranges = Reference parameter LOWER to 550|Reference Parameter 7 - 18|Reference parameter 70 - 90|Reference parameter 23 - 39|Reference parameter HIGHER or EQUAL to 0.009|Reference parameter LESS than 10;
+result_ranges = Reference parameter LOWER to 550|Reference Parameter LESS than 30|Reference parameter GREATER than 70|Reference parameter GREATER than 23|Reference parameter GREATER than 0.05|Reference parameter LESS than 10;

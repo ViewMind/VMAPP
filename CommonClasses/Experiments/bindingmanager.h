@@ -13,17 +13,6 @@
 #include <QTextStream>
 #include <QtMath>
 
-// Binding target dimensions (in mm)
-#define   BINDING_AREA_WIDTH                            256
-#define   BINDING_AREA_HEIGHT                           192
-#define   BINDING_LARGE_TARGET_MARK                     "LARGE_TARGETS"
-#define   BINDING_TARGET_SIDE                           10
-#define   BINDING_TARGET_HS                             0.25
-#define   BINDING_TARGET_HL                             2.6
-#define   BINDING_TARGET_VS                             1.33
-#define   BINDING_TARGET_VL                             3.54
-#define   BINDING_TARGET_GRID                           105
-
 // Strings for same and different in the CSV file.
 #define   STR_DIFFERENT                                 "different"
 #define   STR_SAME                                      "same"
@@ -37,16 +26,38 @@ public:
         qint32 y;
         QColor back;
         QColor cross;
+
+        // For debugging.
+        QString toString() const{
+            QString ans = "";
+            ans = "(" + QString::number(x) + "," + QString::number(y) + ") ";
+            ans = ans + "BACK: " + back.name() + " CROSS: " + cross.name();
+            return ans;
+        }
     };
 
     typedef QList<BindingFlag> BindingSlide;
 
     struct BindingTrial {
         QString name;
-        qint32 number;
         BindingSlide show;
         BindingSlide test;
         bool isSame;
+
+        // For debugging.
+        QString toString() const {
+            QString ans = name + ". ";
+            ans = ans  + "SHOW -> ";
+            for (qint32 i = 0; i < show.size(); i++){
+                ans = ans + "TARGET " + QString::number(i) + ": " + show.at(i).toString() + "| ";
+            }
+            ans = ans  + "TEST -> ";
+            for (qint32 i = 0; i < test.size(); i++){
+                ans = ans + "TARGET " + QString::number(i) + ": " + test.at(i).toString() + "| ";
+            }
+            return ans;
+        }
+
     };
 
     struct FlagDrawStructure {
@@ -75,15 +86,13 @@ public:
     bool drawFlags(const QString &trialName, bool show);
 
     // Draw the cross
-    void drawCenter(qint32 currentTrial);
+    void drawCenter();
 
     // Draw a particular trial
     void drawTrial(qint32 currentTrial, bool show);
 
     // Get the info on one trial.
     BindingTrial getTrial(qint32 trial) {return trials.at(trial);}
-
-    bool getUsesNumbers() const {return usesNumbers;}
 
 private:
 
@@ -95,9 +104,6 @@ private:
 
     // The trial structure
     QList<BindingTrial> trials;
-
-    // Uses number or crosses.
-    bool usesNumbers;
 
     // The number of targets in each slide of the trial
     qint32 numberOfTargets;

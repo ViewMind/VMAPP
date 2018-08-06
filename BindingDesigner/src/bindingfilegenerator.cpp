@@ -1,5 +1,10 @@
 #include "bindingfilegenerator.h"
 
+static const int NUMBER_OF_SAME_TEST_CASES_TO_GENERATE = 5;
+static const int NUMBER_OF_DIFF_TEST_CASES_TO_GENERATE = 5;
+static const int NUMBER_OF_DIFF_TRIALS_TO_GENERATE     = 16;
+static const int NUMBER_OF_SAME_TRIALS_TO_GENERATE     = 16;
+
 BindingFileGenerator::BindingFileGenerator()
 {
     qsrand(QDateTime::currentSecsSinceEpoch());
@@ -7,43 +12,66 @@ BindingFileGenerator::BindingFileGenerator()
 
 void BindingFileGenerator::generateFile(const QString &filename, bool bc, bool numbered, int ntargets){
 
-    qint32 NTestCases = 10;
-    qint32 NTrueTrials = 32;
-    //    qint32 NTestCases = 1;
-    //    qint32 NTrueTrials = 1;
-
-    qint32 baseNumer = 100;
-    qint32 diffNumber = 3;
-    qint32 textNumber = baseNumer + (NTestCases + NTrueTrials)*diffNumber;
-
 
     // Generating the content.
     QString contents = QString::number(ntargets) + "\n";
     if ((ntargets < 2) || (ntargets > 4)){
         qWarning() << "N targets is invalid" << ntargets;
+        return;
     }
 
+    // Setting the grid Type and the min manhattan distance variable according to type.
+    Slide::GridType gridType;
+    bool minManhattan1;
+    if (ntargets == 2){
+        gridType = Slide::GT_3x2;
+        minManhattan1 = false;
+    }
+    else{
+        gridType = Slide::GT_3x3;
+        minManhattan1 = true;
+    }
+
+    // Generating the which are same and which are different
+    qint32 ntests = NUMBER_OF_DIFF_TEST_CASES_TO_GENERATE + NUMBER_OF_SAME_TEST_CASES_TO_GENERATE;
+    qint32 ntrials = NUMBER_OF_DIFF_TRIALS_TO_GENERATE + NUMBER_OF_SAME_TRIALS_TO_GENERATE;
+
+    QSet<qint32> sameTests;
+    QSet<qint32> sameTrials;
+
+    for (qint32 i = 0; i < NUMBER_OF_SAME_TEST_CASES_TO_GENERATE; i++) sameTests << qrand() % ntests;
+    for (qint32 i = 0; i < NUMBER_OF_SAME_TRIALS_TO_GENERATE; i++) sameTrials << qrand() % ntrials;
+
+    // This is all for the numbering system.
+    qint32 baseNumer = 100;
+    qint32 diffNumber = 3;
+    qint32 textNumber = baseNumer + (ntests + ntrials)*diffNumber;
+
     // Need to generate 10 test cases and then 32 trials.
-    qint32 nTrials = NTestCases + NTrueTrials;
     QString prefix;
     QString trialType;
     QString name;
     qint32 trialCounter = 1;
-    for (qint32 i = 0; i < nTrials; i++){
+    qint32 ntotal = ntests + ntrials;
+    qint32 index;
+    bool same;
 
-        if (i < NTestCases) {
+    for (qint32 i = 0; i < ntotal; i++){
+
+        if (i < ntests) {
             prefix = "0-test";
+            index = i;
+            same = sameTests.contains(index);
         }
         else {
             prefix = QString::number(trialCounter);
             if (prefix.size() < 2) prefix = "0" + prefix;
             prefix = prefix + "-trial";
             trialCounter++;
+            index = i - ntests;
+            same = sameTrials.contains(index);
         }
         name = "";
-
-        // Same or different.
-        bool same = ((qrand() % 2)== 1);
 
         if (same) {
             name = name + prefix + "-" + QString(STR_SAME) + "-" + QString::number(i) + " ";
@@ -62,16 +90,17 @@ void BindingFileGenerator::generateFile(const QString &filename, bool bc, bool n
         name = name  + trialType;
         contents = contents  + name + "\n";
 
+        qWarning() << "GENERATING" << name;
+
         // Creating the show slide and adding it to the contents.
-        Slide show(ntargets);
-        show.resetPositions();
+        Slide show(ntargets,gridType,minManhattan1);
         show.generateRandomPositions();
         show.setColors();
         contents = contents + show.toDescription();
 
         // Generating an new set of postions
         Slide test(show);
-        test.generateRandomPositions();
+        test.generateRandomPositions(true);
 
         // Changing the colors according to specification, depending on bound or unbound if a different type trial
         if (!same){
@@ -102,8 +131,10 @@ void BindingFileGenerator::generateFile(const QString &filename, bool bc, bool n
 
 //***************************************** SLIDE FUNCTIONS ********************************************
 
-BindingFileGenerator::Slide::Slide(qint32 nt){
+BindingFileGenerator::Slide::Slide(qint32 nt, GridType gt, bool mManhattanDof1){
     nTargets = nt;
+    gridType = gt;
+    minimumManhattanDistanceOf1 = mManhattanDof1;
 }
 
 BindingFileGenerator::Slide::Slide(const Slide &s){
@@ -112,7 +143,8 @@ BindingFileGenerator::Slide::Slide(const Slide &s){
     remainingColors = s.remainingColors;
     backs = s.backs;
     crosses = s.crosses;
-    remainingPos = s.remainingPos;
+    gridType = s.gridType;
+    minimumManhattanDistanceOf1 = s.minimumManhattanDistanceOf1;
 }
 
 bool BindingFileGenerator::Slide::areEqual(const Slide &s){
@@ -121,7 +153,7 @@ bool BindingFileGenerator::Slide::areEqual(const Slide &s){
             //qWarning() << "different crosses" << crosses.at(i) << s.crosses.at(i);
             return false;
         }
-        if (backs.at(i)   != s.backs.at(i)) {
+        if (backs.at(i)  != s.backs.at(i)) {
             //qWarning() << "different backs" << backs.at(i) << s.backs.at(i);
             return false;
         }
@@ -201,18 +233,97 @@ void BindingFileGenerator::Slide::unboundChange(){
 
 void BindingFileGenerator::Slide::resetPositions(){
     remainingPos.clear();
-    remainingPos << "00" << "10" << "20"
-                 << "01" << "11" << "21"
-                 << "02" << "12" << "22";
+    if (gridType == GT_3x3){
+        remainingPos << "00" << "10" << "20"
+                     << "01" << "11" << "21"
+                     << "02" << "12" << "22";
+    }
+    else{
+        // A 3x2 Grid.
+        remainingPos << "00" << "10"
+                     << "01" << "11"
+                     << "02" << "12";
+    }
 }
 
-void BindingFileGenerator::Slide::generateRandomPositions(){
+void BindingFileGenerator::Slide::generateRandomPositions(bool avoidExistingPositions){
+
+    QStringList positionsToAvoid;
+    if (avoidExistingPositions) positionsToAvoid = pos;
+    resetPositions();
     pos.clear();
-    qint32 inx;
-    for (qint32 i = 0; i < nTargets; i++){
-        inx = qrand() % remainingPos.size();
-        pos << remainingPos.at(inx);
-        remainingPos.removeAt(inx);
+
+    if (minimumManhattanDistanceOf1){
+
+        qWarning() << "-----------ENTRANDO-------------";
+        qWarning() << remainingPos;
+
+        qint32 inx;
+        QStringList toRemove;
+
+        for (qint32 i = 0; i < nTargets; i++){
+
+            qWarning() << "RPOS" << remainingPos;
+
+            QStringList secCopyRPos = remainingPos;
+            if (!positionsToAvoid.isEmpty()){
+                secCopyRPos.removeOne(positionsToAvoid.at(i));
+            }
+
+            inx = qrand() % secCopyRPos.size();
+            pos << secCopyRPos.at(inx);
+
+            qWarning() << "SELECTED" << pos.last();
+
+            // Removing only the selected index and those within a manhattan distance of 1.
+            toRemove.clear();
+            for (qint32 j = 0; j < secCopyRPos.size(); j++){
+                if (j == inx) toRemove << secCopyRPos.at(j);
+                else if (manhattanDistance(pos.last(),secCopyRPos.at(j)) == 1) toRemove << secCopyRPos.at(j);
+            }
+
+            // Checking if the position to avoid is also a Manhattan dinstance 1.
+            if (!positionsToAvoid.isEmpty()){
+                if (manhattanDistance(pos.last(),positionsToAvoid.at(i)) == 1){
+                    toRemove << positionsToAvoid.at(i);
+                }
+            }
+
+            // Actually removing it from the original copy
+            for (qint32 j = 0; j < toRemove.size(); j++){
+                remainingPos.removeOne(toRemove.at(j));
+            }
+
+        }
+
+
+
+    }
+    else{
+
+        qint32 inx;
+        for (qint32 i = 0; i < nTargets; i++){
+            QStringList secCopyRPos = remainingPos;
+            if (!positionsToAvoid.isEmpty()){
+                secCopyRPos.removeOne(positionsToAvoid.at(i));
+            }
+            inx = qrand() % secCopyRPos.size();
+            pos << secCopyRPos.at(inx);
+            remainingPos.removeOne(pos.last());
+        }
     }
 
+}
+
+qint32 BindingFileGenerator::Slide::manhattanDistance(const QString &a, const QString &b){
+
+    QString ars = a.at(0);
+    QString acs = a.at(1);
+    QString brs = b.at(0);
+    QString bcs = b.at(1);
+
+    qint32 diffR = qAbs(ars.toInt() - brs.toInt());
+    qint32 diffC = qAbs(acs.toInt() - bcs.toInt());
+
+    return diffR + diffC;
 }

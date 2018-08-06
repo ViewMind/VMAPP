@@ -16,8 +16,8 @@ deficiente y/o patológico;
 results_name = PROCESOS ATENCIONALES|PROCESOS EJECUTIVOS|MEMORIA DE TRABAJO|MEMORIA DE RECUPERACIÓN|MEMORIA VISUAL DE CORTO PLAZO|RESPUESTA CONDUCTUAL;
 
 results_clarification = Cortex del Cingulo Anterior|Corteza Prefrontal|Corteza frontal Dorsolateral
-Hipocampo, Subiculum|Corteza Entorrinal y Perirrinal
-Lóbulo Temporal Medio|Via Visual Ventral;
+Hipocampo, Subiculum|Locus Coeruleus y Coliculo superior.|Corteza Entorrinal y Perirrinal.
+Lobulo Temporal Medio;
 
 motto = Medición de Desempeño
 Cognitivo mediante
@@ -25,4 +25,4 @@ Eye-Tracking;
 
 date_format = dd/MM/yyyy;
 
-result_ranges = Parámetro referencia MENOR a 550|Parámetro referencia 7 - 18|Parámetro referencia 70 - 90|Parámetro referencia 23 - 39|Parámetro referencia MAYOR o IGUAL a 0.009|Parámetro de referencia MENOR a 10;
+result_ranges = Parámetro referencia MENOR a 550|Parámetro referencia MENOR a 30|Parámetro referencia MAYOR a 70|Parámetro referencia MAYOR a 23|Parámetro referencia MAYOR a 0.05|Parámetro de referencia MENOR a 10;

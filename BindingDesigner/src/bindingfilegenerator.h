@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QDateTime>
-#include "../../CommonClasses/Experiments/common.h"
+#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/Experiments/bindingmanager.h"
 
 class BindingFileGenerator
@@ -20,14 +20,17 @@ private:
     class Slide {
 
     public:
-        Slide(qint32 nt);
+
+        typedef enum {GT_3x2, GT_3x3} GridType;
+
+        Slide(qint32 nt, GridType gt, bool mManhattanDof1);
         Slide(const Slide &s);
 
         QString toDescription() const;
         void setColors();
         void boundChange();
         void unboundChange();
-        void generateRandomPositions();
+        void generateRandomPositions(bool avoidExistingPositions = false);
         void resetPositions();
         bool areEqual(const Slide &s);
 
@@ -36,9 +39,13 @@ private:
         QStringList crosses;
         QStringList remainingColors;
         QStringList remainingPos;
+        GridType gridType;
+        bool minimumManhattanDistanceOf1;
         qint32 nTargets;
+
     private:
         QList<qint32> select2RandomPositions();
+        qint32 manhattanDistance(const QString &a, const QString &b);
     };
 
 };

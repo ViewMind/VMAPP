@@ -75,7 +75,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(3);
         d.value = QString::number(dataSet->getReal(CONFIG_RESULTS_MEMORY_ENCODING),'f',3);
         d.stopValues.clear();
-        d.stopValues << -0.991 << 0.009 << 1.009;
+        d.stopValues << -0.95 << 0.05 << 1.05;
         d.largerBetter = true;
         d.calcValue = -1;
         data2Show << d;
@@ -93,9 +93,10 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.calcValue = true;
 
         qint32 BC = results.first().toUInt();
-        qint32 UC = results.last().toUInt();
+        //qint32 UC = results.last().toUInt();
 
-        if ((BC > 9) && (UC <= 9)){
+        if (BC > 10){
+            // This is the yellow section.
             d.calcValue = -0.5;
         }
         else{
