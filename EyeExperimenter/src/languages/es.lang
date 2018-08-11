@@ -103,7 +103,7 @@ viewdrdiag_btnChangeSettings = PREFERENCIAS;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Información del Doctor;
-viewdrinfo_labelFullname = Nombre completo;
+viewdrinfo_subtitle = Please fill the information below;
 viewdrinfo_labelDocument_number = Número de documento;
 viewdrinfo_labelCountry = País;
 viewdrinfo_labelProvince = Provicia/Estado;
@@ -111,6 +111,7 @@ viewdrinfo_labelCity = Ciudad;
 viewdrinfo_labelAddress = Dirección;
 viewdrinfo_labelPhone = Teléfono;
 viewdrinfo_labelMail = Email;
+viewdrinfo_docTypes = DNI|Pasaporte|Identificación;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Resultados;

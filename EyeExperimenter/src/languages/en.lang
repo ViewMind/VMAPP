@@ -102,7 +102,8 @@ viewpresentexp_btnContinue = CONTINUE;
 viewdrdiag_btnChangeSettings = CHANGE SETTINGS;
 
 #********************************* DOCTOR INFORMATION *********************************
-viewdrinfo_title = Doctor´s information;
+viewdrinfo_title = Doctor's information;
+viewdrinfo_subtitle = Please fill the information below;
 viewdrinfo_labelFullname = Full name;
 viewdrinfo_labelDocument_number = Document number;
 viewdrinfo_labelCountry = Country;
@@ -111,6 +112,7 @@ viewdrinfo_labelCity = City;
 viewdrinfo_labelAddress = Address;
 viewdrinfo_labelPhone = Phone;
 viewdrinfo_labelMail = Email;
+viewdrinfo_docTypes = DNI|Passport|Identity Card;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Results;

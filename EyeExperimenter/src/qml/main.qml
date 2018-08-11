@@ -58,9 +58,9 @@ Window {
                 id: viewHome
                 isHomePage: true;
                 anchors.fill: parent
-//                Component.onCompleted: {
-//                    viewDrInfo.open();
-//                }
+                Component.onCompleted: {
+                    viewDrInfo.open();
+                }
             }
         }
 
