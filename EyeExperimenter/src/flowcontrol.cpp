@@ -252,12 +252,12 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         break;
     case EXP_BINDING_BC:
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(true));
-        experiment = new ImageExperiment(true);
+        experiment = new ImageExperiment(true,use3BindingTargetsEnable);
         background = QBrush(Qt::gray);
         break;
     case EXP_BINDING_UC:
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(false));
-        experiment = new ImageExperiment(false);
+        experiment = new ImageExperiment(false,use3BindingTargetsEnable);
         background = QBrush(Qt::gray);
         break;
     case EXP_FIELDNG:
