@@ -16,7 +16,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     connect(&sslServer,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(onStateChanged(QProcess::ProcessState)));
 
     // Launching the server if it was configured.
-    QString server = configuration->getString(CONFIG_SSLSERVER_PATH);                                                                                                                            
+    QString server = configuration->getString(CONFIG_SSLSERVER_PATH);
     if (QFile(server).exists()){
 
         QFileInfo info(server);
@@ -36,10 +36,10 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     }
 
     // Creating the sslclient
-    sslclient = new SSLClient(this,c);
+    sslDataProcessingClient = new SSLDataProcessingClient(this,c);
 
     // Connection to the "finished" slot.
-    connect(sslclient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
+    connect(sslDataProcessingClient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
 
 }
 
@@ -190,7 +190,7 @@ void FlowControl::connectToEyeTracker(){
         return;
     }
 
-    connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));    
+    connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
     eyeTracker->connectToEyeTracker();
 }
 
@@ -358,21 +358,14 @@ void FlowControl::requestCalibration(){
 }
 
 QString FlowControl::getBindingExperiment(bool bc){
-
-    QString defaultExp;
-    if (bc) defaultExp = ":/experiment_data/bc.dat";
-    else defaultExp = ":/experiment_data/uc.dat";
-
-    if (!configuration->containsKeyword(CONFIG_BINDING_DEFAULT)) {
-        configuration->addKeyValuePair(CONFIG_BINDING_DEFAULT,true);
-        return defaultExp;
+    if (!use3BindingTargetsEnable){
+        if (bc) return ":/experiment_data/bc.dat";
+        else return ":/experiment_data/uc.dat";
     }
-
-    if (configuration->getBool(CONFIG_BINDING_DEFAULT)) return defaultExp;
-
-    if (bc) return ":/experiment_data/bc_small.dat";
-    else return ":/experiment_data/uc_small.dat";
-
+    else{
+        if (bc) return ":/experiment_data/bc_3.dat";
+        else return ":/experiment_data/uc_3.dat";
+    }
 }
 
 void FlowControl::setupSecondMonitor(){

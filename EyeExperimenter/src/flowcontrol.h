@@ -15,7 +15,7 @@
 #include "Experiments/imageexperiment.h"
 #include "Experiments/fieldingexperiment.h"
 
-#include "sslclient/sslclient.h"
+#include "sslclient/ssldataprocessingclient.h"
 
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
 #include "EyeTrackerInterface/RED/redinterface.h"
@@ -39,13 +39,14 @@ public:
     Q_INVOKABLE void setupSecondMonitor();
     Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
-    Q_INVOKABLE bool checkSSLAvailability() {return sslclient->sslEnabled();}
-    Q_INVOKABLE void requestReportData() {sslTransactionAllOk = false; sslclient->requestReport();}
+    Q_INVOKABLE bool checkSSLAvailability() {return sslDataProcessingClient->sslEnabled();}
+    Q_INVOKABLE void requestReportData() {sslTransactionAllOk = false; sslDataProcessingClient->requestReport();}
     Q_INVOKABLE bool isSSLTransactionOK() const {return sslTransactionAllOk;}
     Q_INVOKABLE QString getReportDataField(const QString &key);
     Q_INVOKABLE int getReportResultBarPosition(const QString &key);
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
+    Q_INVOKABLE void setUse3BindingTargets(bool use3) {use3BindingTargetsEnable = use3;}
 
 signals:
 
@@ -97,8 +98,11 @@ private:
     // The Log interface
     LogInterface logger;
 
+    // Flag to indicate the use of 3 Binding Targets instead of 2.
+    bool use3BindingTargetsEnable;
+
     // The sslclient to send the information process request.
-    SSLClient *sslclient;
+    SSLDataProcessingClient *sslDataProcessingClient;
 
     // The configuration structure
     ConfigurationManager *configuration;

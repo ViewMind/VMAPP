@@ -45,6 +45,7 @@ viewpatientreg_btnOK = OK;
 viewpatientreg_error_empty_patient_name = Patient's name must be entered;
 viewpatientreg_error_empty_patient_age = Patient's age must be entered;
 viewpatientreg_labelNoInstructionSetError = At least one study must be selected;
+viewpatientreg_labelNTargets = Number of targets for Color studies;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibration;
@@ -60,6 +61,8 @@ viewcalibdone_btnContinue = CONTINUE;
 viewpresentexp_itemReading = Reading Evaluation;
 viewpresentexp_itemBindingUC = Unbound Colors Evaluation;
 viewpresentexp_itemBindingBC = Bound Colors Evaluation;
+viewpresentexp_itemBindingUC3 = Unbound Colors Evaluation 3;
+viewpresentexp_itemBindingBC3 = Bound Colors Evaluation 3;
 viewpresentexp_itemFielding = N-Back Evaluation;
 
 viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
@@ -98,6 +101,17 @@ viewpresentexp_btnContinue = CONTINUE;
 #********************************* DOCTOR DIALOG *********************************
 viewdrdiag_btnChangeSettings = CHANGE SETTINGS;
 
+#********************************* DOCTOR INFORMATION *********************************
+viewdrinfo_title = Doctor´s information;
+viewdrinfo_labelFullname = Full name;
+viewdrinfo_labelDocument_number = Document number;
+viewdrinfo_labelCountry = Country;
+viewdrinfo_labelProvince = Province/State;
+viewdrinfo_labelCity = City;
+viewdrinfo_labelAddress = Address;
+viewdrinfo_labelPhone = Phone;
+viewdrinfo_labelMail = Email;
+
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Results;
 viewresults_labelPatient = Patient;
@@ -135,6 +149,8 @@ viewresults_save_report = Save report;
 
 viewresults_btnDownload = DOWNLOAD;
 viewresults_btnFinalize = FINISH;
+
+#********************************* RESULTS SCREEN *********************************
 
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title

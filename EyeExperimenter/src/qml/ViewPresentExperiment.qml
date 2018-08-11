@@ -25,11 +25,12 @@ VMBase {
                 return;
             }
             if (advanceCurrentExperiment()){
-                swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
+                //swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
+                swiperControl.currentIndex = swiperControl.vmIndexHome;
                 titleMsg = viewHome.getErrorTitleAndMessage("msg_request_report");
                 viewWaitFor.vmMessage = titleMsg[1];
                 viewWaitFor.vmTitle = titleMsg[0];
-                flowControl.requestReportData();
+                //flowControl.requestReportData();
             }
         }
     }
@@ -72,18 +73,32 @@ VMBase {
     function setPropertiesForExperiment(index){
         switch(index){
         case vmExpIndexBindingBC:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC");
-            vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
-            vmSlideAnimation = "qrc:/images/bound.gif"
+            if (viewPatientReg.use3BindingTargets()){
+                vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
+                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
+                vmSlideAnimation = "qrc:/images/bound.gif"
+            }
+            else{
+                vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC");
+                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
+                vmSlideAnimation = "qrc:/images/bound.gif"
+            }
             break;
         case vmExpIndexBindingUC:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC");
-            vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
-            vmSlideAnimation = "qrc:/images/unbound.gif"
+            if (viewPatientReg.use3BindingTargets()){
+                vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
+                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
+                vmSlideAnimation = "qrc:/images/unbound.gif"
+            }
+            else{
+                vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC");
+                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
+                vmSlideAnimation = "qrc:/images/unbound.gif"
+            }
             break;
         case vmExpIndexReading:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemReading");
-            vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");            
+            vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");
             vmSlideAnimation = "qrc:/images/reading.gif"
             break;
         case vmExpIndexFielding:
@@ -176,6 +191,10 @@ VMBase {
 
     }
 
+    function changeBindingTitles(use3){
+        experimentTracker.changeBindingTitles(use3);
+    }
+
     // The experiment tracker
     Rectangle{
 
@@ -185,6 +204,17 @@ VMBase {
         anchors.top: vmBanner.bottom
         anchors.left: parent.left
         color: "#EDEDEE"
+
+        function changeBindingTitles(use3){
+            if (use3){
+                itemBindingUC.vmText = loader.getStringForKey(keysearch + "itemBindingUC3");
+                itemBindingBC.vmText = loader.getStringForKey(keysearch + "itemBindingBC3");
+            }
+            else{
+                itemBindingUC.vmText = loader.getStringForKey(keysearch + "itemBindingUC");
+                itemBindingBC.vmText = loader.getStringForKey(keysearch + "itemBindingBC");
+            }
+        }
 
         VMExperimentTrackerItem {
             id: itemReading

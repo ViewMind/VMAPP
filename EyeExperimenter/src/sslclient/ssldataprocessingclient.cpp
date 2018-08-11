@@ -3,12 +3,12 @@
 SSLDataProcessingClient::SSLDataProcessingClient(QObject *parent, ConfigurationManager *c):SSLClient(parent,c)
 {
     if (!c->containsKeyword(CONFIG_WAIT_REPORT_TIMEOUT)){
-        log.appendError("Data processing tcp port was not set in the configuration file");
+        log.appendError("Wait for report timeout was not set in the configuration file");
         return;
     }
 
     if (!c->containsKeyword(CONFIG_DATA_REQUEST_TIMEOUT)){
-        log.appendError("Data processing tcp port was not set in the configuration file");
+        log.appendError("Data request timeout was not set in the configuration file");
         return;
     }
 

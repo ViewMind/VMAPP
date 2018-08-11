@@ -15,7 +15,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     cv[CONFIG_XPX_2_MM] = cmd;
     cv[CONFIG_YPX_2_MM] = cmd;
     cv[CONFIG_READING_PX_TOL] = cmd;
-    cv[CONFIG_TCP_PORT] = cmd;
 
     cmd.clear();
     cv[CONFIG_SERVER_ADDRESS] = cmd;
@@ -24,6 +23,13 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     cmd.type = ConfigurationManager::VT_BOOL;
     cmd.optional = true;
     cv[CONFIG_DUAL_MONITOR_MODE] = cmd;
+
+    cmd.clear();
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_CONNECTION_TIMEOUT] = cmd;
+    cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
+    cv[CONFIG_WAIT_DBDATA_TIMEOUT] = cmd;
+    cv[CONFIG_WAIT_REPORT_TIMEOUT] = cmd;
 
     // Optional strings
     cmd.clear();
@@ -45,7 +51,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     cmd.optional = true;
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[CONFIG_DEMO_MODE] = cmd;
-    cv[CONFIG_BINDING_DEFAULT] = cmd;
 
     configuration->setupVerification(cv);
 
@@ -244,10 +249,6 @@ void Loader::loadDefaultConfigurations(){
     }
     if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)){
         configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
-    }
-    // This should allways be true in the std version of the software
-    if (!configuration->containsKeyword(CONFIG_BINDING_DEFAULT)){
-        configuration->addKeyValuePair(CONFIG_BINDING_DEFAULT,true);
     }
     if (!configuration->containsKeyword(CONFIG_SELECTED_ET)){
         configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);

@@ -368,7 +368,10 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
 
             // Draw fixations.
             FixationDrawer fdrawer;
-            fdrawer.prepareToDrawFixations(keys.at(i),&configuration,lastFixations.value(keys.at(i)).experimentDescription,workDir);
+            if (!fdrawer.prepareToDrawFixations(keys.at(i),&configuration,lastFixations.value(keys.at(i)).experimentDescription,workDir)){
+                log.appendError("Error drawing fixation for experiment " + keys.at(i) + ". Error is: " + fdrawer.getError());
+                return;
+            }
             if (!fdrawer.drawFixations(lastFixations.value(keys.at(i)))){
                 log.appendError("Error drawing fixation for experiment " + keys.at(i) + ". Error is: " + fdrawer.getError());
                 return;

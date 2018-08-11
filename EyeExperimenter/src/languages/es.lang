@@ -46,6 +46,7 @@ viewpatientreg_btnOK = OK;
 viewpatientreg_error_empty_patient_name = Se debe ingresar el nombre del paciente;
 viewpatientreg_error_empty_patient_age = Se debe ingresar la edad del paciente;
 viewpatientreg_labelNoInstructionSetError = Se debe elegir al menos un estudio;
+viewpatientreg_labelNTargets = Número de objetivos en los estudios de Colores;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibración;
@@ -60,6 +61,8 @@ viewcalibdone_btnContinue = CONTINUAR;
 viewpresentexp_itemReading = Evaluación de Lectura;
 viewpresentexp_itemBindingUC = Evaluación Colores Unbound;
 viewpresentexp_itemBindingBC = Evaluación Colores Bound;
+viewpresentexp_itemBindingUC3 = Evaluación Colores Unbound 3;
+viewpresentexp_itemBindingBC3 = Evaluación Colores Bound 3;
 viewpresentexp_itemFielding = Evaluación N-Back;
 
 viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
@@ -97,6 +100,17 @@ viewpresentexp_btnContinue = CONTINUAR;
 
 #********************************* DOCTOR DIALOG *********************************
 viewdrdiag_btnChangeSettings = PREFERENCIAS;
+
+#********************************* DOCTOR INFORMATION *********************************
+viewdrinfo_title = Información del Doctor;
+viewdrinfo_labelFullname = Nombre completo;
+viewdrinfo_labelDocument_number = Número de documento;
+viewdrinfo_labelCountry = País;
+viewdrinfo_labelProvince = Provicia/Estado;
+viewdrinfo_labelCity = Ciudad;
+viewdrinfo_labelAddress = Dirección;
+viewdrinfo_labelPhone = Teléfono;
+viewdrinfo_labelMail = Email;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Resultados;

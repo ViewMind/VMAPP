@@ -254,7 +254,7 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
 
         trials << trial;
 
-        qWarning() << "ADDING :" << trial.toString();
+        // qWarning() << "ADDING :" << trial.toString();
 
         i = i + 7;
 
@@ -293,8 +293,8 @@ bool BindingManager::parseFlagPositions(const QString &line, BindingTrial *trial
                     + QString::number(drawStructure.ypos.size()) + " @ line: " + line;
             return false;
         }
-        qWarning() << "For " << i << "Position" << flag.x << "from" << drawStructure.xpos << "is" << drawStructure.xpos.at(flag.x)
-                   << "and" << "Position" << flag.y << "from" << drawStructure.ypos << "is" << drawStructure.ypos.at(flag.y);
+//        qWarning() << "For " << i << "Position" << flag.x << "from" << drawStructure.xpos << "is" << drawStructure.xpos.at(flag.x)
+//                   << "and" << "Position" << flag.y << "from" << drawStructure.ypos << "is" << drawStructure.ypos.at(flag.y);
         flag.x = drawStructure.xpos.at(flag.x);
         flag.y = drawStructure.ypos.at(flag.y);
 

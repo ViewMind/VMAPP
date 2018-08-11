@@ -4,6 +4,6 @@
 #define   DIRNAME_REPORTS                               "viewmind_reports"
 #define   DIRNAME_RAWDATA                               "viewmind_etdata"
 
-#define   EXPERIMENTER_VERSION                          "2.2.4"
+#define   EXPERIMENTER_VERSION                          "3.1.0"
 
 #endif // EYE_EXPERIMENTER_DEFINES_H

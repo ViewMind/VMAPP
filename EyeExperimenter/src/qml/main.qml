@@ -32,6 +32,12 @@ Window {
         }
     }
 
+    ViewDoctorInformation {
+        id: viewDrInfo
+        x: (parent.width - viewDrInfo.width)/2
+        y: (parent.height - viewDrInfo.height)/2
+    }
+
     SwipeView {
 
         readonly property int vmIndexHome: 0
@@ -52,6 +58,9 @@ Window {
                 id: viewHome
                 isHomePage: true;
                 anchors.fill: parent
+//                Component.onCompleted: {
+//                    viewDrInfo.open();
+//                }
             }
         }
 

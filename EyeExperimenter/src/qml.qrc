@@ -23,5 +23,6 @@
         <file>qml/VMDefines.qml</file>
         <file>qml/VMErrorDialog.qml</file>
         <file>qml/ViewWaitFor.qml</file>
+        <file>qml/ViewDoctorInformation.qml</file>
     </qresource>
 </RCC>

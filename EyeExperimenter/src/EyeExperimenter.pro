@@ -45,7 +45,8 @@ SOURCES += main.cpp \
     EyeTrackerInterface/GazePoint/eventdetection.cpp \
     EyeTrackerInterface/GazePoint/opengazecommand.cpp \
     EyeTrackerInterface/GazePoint/opengazeinterface.cpp \
-    ../../CommonClasses/PNGWriter/imagereportdrawer.cpp
+    ../../CommonClasses/PNGWriter/imagereportdrawer.cpp \
+    sslclient/ssldataprocessingclient.cpp
 
 HEADERS += \
     loader.h \
@@ -77,7 +78,8 @@ HEADERS += \
     EyeTrackerInterface/GazePoint/eventdetection.h \
     EyeTrackerInterface/GazePoint/opengazecommand.h \
     EyeTrackerInterface/GazePoint/opengazeinterface.h \
-    ../../CommonClasses/PNGWriter/imagereportdrawer.h
+    ../../CommonClasses/PNGWriter/imagereportdrawer.h \
+    sslclient/ssldataprocessingclient.h
 
 win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
 

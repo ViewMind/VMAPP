@@ -2,51 +2,44 @@
 #                         EyeExperimenter Configuration File                           #
 #--------------------------------------------------------------------------------------#
 
-# Dual monitor mode
-dual_monitor_mode = false;
-
 # The relationship between the effective screen area (not counting the black bars)
 # and the number of pixels in said area. In X and Y. 
 x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
 # Runs the ssl_server if it, exists.
-ssl_server_path = C:/Users/Viewmind/Documents/QtProjects/SSLServer/exe/SSLServer.exe;
+# ssl_server_path = C:/Users/Viewmind/Documents/QtProjects/SSLServer/exe/SSLServer.exe;
 
 # The server address and port to which it sends the processing requests
-server_address = localhost;
-tcp_port = 54912;
+# server_address = localhost;
+
+# Direction of my laptop in the local area network.
+server_address = 18.220.30.34;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
 #------------------------------------------------------#
 
 # In the reading experiment, the tolerance for detecting the patient looked at the red dot 
-reading_px_tol_for_target = 32;
+reading_px_tol_for_target = 60;
 
 #------------------------------------------------------#
-#                   BINDING CONFIGS                    #
+#             TIME OUTS FOR TCP/CONNECTIONS            #
 #------------------------------------------------------#
 
-# If set as true or if it doesn't exist, Binding will use large targets.
-# Set to false to use small 1sqcm targets.
-binding_default = false;
-
-#------------------------------------------------------#
-#           GENERAL CONFIGURATION OPTIONS              #
-#------------------------------------------------------#
-
-report_language = English;
-demo_mode = true;
+connection_time_out = 60;   # seconds.
+data_request_time_out = 60; # seconds 
+wait_report_timeout = 60;   # seconds
+wait_db_data_timeout = 60;  # seconds
 
 #------------------------------------------------------#
 #         OPTIONS MODIFIED BY EXPERIMENTER             #
 #------------------------------------------------------#
-
+dual_monitor_mode = false;
+report_language = English;
+demo_mode = true;
 doctor_name = Miles Genius;
 doctor_email = pepe@pepe.com;
 selected_eyetracker = Mouse;
 output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;
-
-
 valid_eye = 2;

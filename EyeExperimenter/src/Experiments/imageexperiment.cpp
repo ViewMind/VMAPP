@@ -45,7 +45,7 @@ void ImageExperiment::drawCurrentImage(){
 
     if (trialState == TSB_CENTER_CROSS){
         //qWarning() << "DRAWING: Center Cross" << currentTrial;
-        m->drawCenter(currentTrial);
+        m->drawCenter();
         emit(updateBackground(m->getImage()));
         return;
     }

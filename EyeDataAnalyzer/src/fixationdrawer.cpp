@@ -13,7 +13,7 @@ bool FixationDrawer::prepareToDrawFixations(const QString &expID, ConfigurationM
     if (expID == CONFIG_P_EXP_READING){
         manager = new ReadingManager();
     }
-    if ((expID == CONFIG_P_EXP_BIDING_BC) || (expID == CONFIG_P_EXP_BIDING_UC)){
+    else if ((expID == CONFIG_P_EXP_BIDING_BC) || (expID == CONFIG_P_EXP_BIDING_UC)){
         manager = new BindingManager();
     }
     else if (expID == CONFIG_P_EXP_FIELDING){
@@ -57,6 +57,7 @@ bool FixationDrawer::drawFixations(const FixationList &flist){
     }
     else if (experimentID == CONFIG_P_EXP_READING){
         ReadingManager *m = (ReadingManager *)manager;
+        qWarning() << "Draw fixation on Reading";
         for (qint32 i = 0; i < flist.trialID.size(); i++){
             QString imgID = flist.trialID.at(i).first();
             if (m->drawPhrase(imgID)){

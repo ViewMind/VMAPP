@@ -286,6 +286,7 @@ Dialog {
         anchors.left: diagLabelEye.left
     }
 
+
     // The double monitor and demo mode selections
 
     VMCheckBox{

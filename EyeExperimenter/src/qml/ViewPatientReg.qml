@@ -11,6 +11,9 @@ VMBase {
     property var vmSelectedExperiments: []
     property int vmCurrentExperimentIndex: 0
 
+    function use3BindingTargets(){
+        return (cbNumberOfBindingTargets.currentIndex == 1);
+    }
 
     // Title and subtitle
     Text {
@@ -114,7 +117,6 @@ VMBase {
         }
     }
 
-
     VMCheckBox{
         id: cboxBindingBC
         text: loader.getStringForKey(keysearch+"cboxBindingBC");
@@ -171,6 +173,33 @@ VMBase {
         visible: false
     }
 
+    // The experiment checkboxes
+    Text {
+        id: labelNTargets
+        font.family: robotoB.name
+        font.pixelSize: 13
+        font.bold: true
+        anchors.top:  labelExperimentTitle.top
+        anchors.left: cboxFielding.right
+        anchors.leftMargin: 14
+        color: "#5499d5"
+        text: loader.getStringForKey(keysearch+"labelNTargets");
+    }
+
+    VMComboBox{
+        id: cbNumberOfBindingTargets
+        vmModel: ["2", "3"]
+        font.family: viewHome.robotoR.name
+        font.pixelSize: 13
+        anchors.top: labelNTargets.bottom
+        anchors.topMargin: 14
+        anchors.left: labelNTargets.left
+        onCurrentIndexChanged: {
+            //console.log("Current index is now: " + currentIndex + ". Should use 3: " + (currentIndex == 1));
+            flowControl.setUse3BindingTargets(currentIndex == 1);
+            viewPresentExperimet.changeBindingTitles(currentIndex == 1);
+        }
+    }
 
     // The accept and cancel buttons
     VMButton{
