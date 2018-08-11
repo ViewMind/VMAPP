@@ -1,12 +1,16 @@
 #include "imageexperiment.h"
 
-ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent){
+ImageExperiment::ImageExperiment(bool bound, bool use3Targets, QWidget *parent):Experiment(parent){
 
     manager = new BindingManager();
     m = (BindingManager*) manager;
     expHeader = HEADER_IMAGE_EXPERIMENT;
     if (bound) outputDataFile = FILE_OUTPUT_BINDING_BC;
     else outputDataFile = FILE_OUTPUT_BINDING_UC;
+
+    if (use3Targets){
+        outputDataFile = outputDataFile + "_3";
+    }
 
     // Connecting the timer time out with the time out function.
     //connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::onTimeOut);
