@@ -8,53 +8,53 @@ Item {
     property string vmErrorMsg: ""
     property bool vmNumbersOnly: false
 
+    height: 40
+    z: 0
+
     Rectangle {
         id: lineEditRect
         anchors.fill: parent
         color: "#ffffff"
-        border.width: (vmErrorMsg === "")? 1 : 2
-        border.color: (vmErrorMsg === "")? "#e4f1fd" : "#ffffff"
+        border.width: (vmErrorMsg === "")? 0 : 2
+        border.color: "#e4f1fd"
         radius: 2
-        layer.enabled: true
-        clip: true
+        //layer.enabled: true
+        //clip: true
     }
 
     Rectangle {
         id: subLine
         width: lineEditRect.width
-        height: 2;
+        height: 1;
+        border.color: "#297fca"
         color: "#297fca"
         anchors.bottom: lineEditRect.bottom
     }
 
-    Text{
-        id: labelText
-        text: vmPlaceHolder
-        color:  "#297fca"
-        font.family: vmFont
-        font.pixelSize: 9
-        anchors.left: lineEditRect.left
-        anchors.top: lineEditRect.top
-        visible: (vmEnteredText !== "")
+    function clear(){
+        labelText.visible = false;
+        lineEdit.text = vmPlaceHolder
+        vmEnteredText = "";
     }
 
     TextInput {
         id: lineEdit
         text: vmPlaceHolder
-        color: "#5499d5"
+        color: (labelText.visible)? "#58595b" : "#cfcfcf"
         font.family: vmFont
         font.pixelSize: 13
         anchors.bottom: subLine.top
+        anchors.bottomMargin: 5
         verticalAlignment: TextInput.AlignVCenter
         leftPadding: 0
         width: lineEditRect.width
-        height: lineEditRect.height - subLine.height - labelText.height
         onActiveFocusChanged: {
             if (activeFocus){
                 vmErrorMsg = "";
                 if (vmEnteredText === ""){
-                    // Removing the placeholder
+                    // Removing the placeholder and making the labelText visible
                     lineEdit.text = "";
+                    labelText.visible = true;
                 }
             }
         }
@@ -63,6 +63,7 @@ Item {
             vmEnteredText = lineEdit.text;
             if (lineEdit.text === ""){
                 lineEdit.text = vmPlaceHolder
+                labelText.visible = false;
             }
             // Checking input validity
             else if (vmNumbersOnly){
@@ -73,6 +74,18 @@ Item {
                 }
             }
         }
+    }
+
+    Text{
+        id: labelText
+        text: vmPlaceHolder
+        color:  "#297fca"
+        font.family: vmFont
+        font.pixelSize: 11
+        anchors.left: lineEditRect.left
+        anchors.bottom: lineEdit.top
+        anchors.bottomMargin: 5
+        visible: (vmEnteredText !== "")
     }
 
     Text{

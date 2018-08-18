@@ -102,8 +102,10 @@ void SSLDBClient::on_encryptedSuccess(){
     }
     else{
         clientState = CS_WAIT_DB_DATA;
+        rxDP.clearAll();
         startTimeoutTimer(config->getInt(CONFIG_WAIT_DBDATA_TIMEOUT)*1000);
     }
+
 }
 
 void SSLDBClient::on_readyRead(){

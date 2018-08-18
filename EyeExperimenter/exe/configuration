@@ -24,6 +24,15 @@ server_address = 18.220.30.34;
 reading_px_tol_for_target = 60;
 
 #------------------------------------------------------#
+#                   OTHER                              #
+#------------------------------------------------------#
+
+# This is the default country for entering patient and doctor data. I NEEDS to be two letter international 
+# ISO Code. AR for Argentina, and CO for Colombia.
+default_country = CO;
+
+
+#------------------------------------------------------#
 #             TIME OUTS FOR TCP/CONNECTIONS            #
 #------------------------------------------------------#
 
@@ -35,11 +44,13 @@ wait_db_data_timeout = 60;  # seconds
 #------------------------------------------------------#
 #         OPTIONS MODIFIED BY EXPERIMENTER             #
 #------------------------------------------------------#
+
 dual_monitor_mode = false;
-report_language = English;
+report_language = Spanish;
 demo_mode = true;
-doctor_name = Miles Genius;
-doctor_email = pepe@pepe.com;
 selected_eyetracker = Mouse;
 output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;
+doctor_uid = CO26413168;
 valid_eye = 2;
+doctor_name = Otro Doctor;
+offline_mode = false;

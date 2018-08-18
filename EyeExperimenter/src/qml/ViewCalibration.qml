@@ -123,7 +123,7 @@ VMBase {
             anchors.rightMargin: 25
             onClicked: {
                 viewCalibrationStartDiag.close()
-                swiperControl.currentIndex = swiperControl.vmIndexPatientReg
+                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
             }
         }
     }

@@ -3,6 +3,7 @@
 
 #define   DIRNAME_REPORTS                               "viewmind_reports"
 #define   DIRNAME_RAWDATA                               "viewmind_etdata"
+#define   LOCAL_DB                                      "localdb.dat"
 
 #define   EXPERIMENTER_VERSION                          "4.0.0"
 

@@ -41,12 +41,14 @@ SOURCES += main.cpp \
     monitorscreen.cpp \
     EyeTrackerInterface/RED/redinterface.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
-    sslclient/sslclient.cpp \
     EyeTrackerInterface/GazePoint/eventdetection.cpp \
     EyeTrackerInterface/GazePoint/opengazecommand.cpp \
     EyeTrackerInterface/GazePoint/opengazeinterface.cpp \
     ../../CommonClasses/PNGWriter/imagereportdrawer.cpp \
-    sslclient/ssldataprocessingclient.cpp
+    sslclient/ssldataprocessingclient.cpp \
+    sslclient/sslclient.cpp \
+    sslclient/ssldbclient.cpp \
+    localinformationmanager.cpp
 
 HEADERS += \
     loader.h \
@@ -74,12 +76,16 @@ HEADERS += \
     EyeTrackerInterface/RED/iViewXAPI.h \
     EyeTrackerInterface/RED/redinterface.h \
     ../../CommonClasses/DataPacket/datapacket.h \
-    sslclient/sslclient.h \
     EyeTrackerInterface/GazePoint/eventdetection.h \
     EyeTrackerInterface/GazePoint/opengazecommand.h \
     EyeTrackerInterface/GazePoint/opengazeinterface.h \
     ../../CommonClasses/PNGWriter/imagereportdrawer.h \
-    sslclient/ssldataprocessingclient.h
+    countries.h \
+    ../../CommonClasses/SQLConn/dbdescription.h \
+    sslclient/sslclient.h \
+    sslclient/ssldataprocessingclient.h \
+    sslclient/ssldbclient.h \
+    localinformationmanager.h
 
 win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
 

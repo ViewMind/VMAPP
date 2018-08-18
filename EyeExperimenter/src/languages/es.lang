@@ -1,7 +1,6 @@
 # UI Language file: Spanish
 
 #********************************* VIEWHOME SCREEN *********************************
-
 viewhome_btnConfSettings = PREFERENCIAS;
 viewhome_slideTitle = Comenzar su evaluación;
 viewhome_description = Utilizando Seguimiento Ocular de alta precisión, en <br>
@@ -9,21 +8,17 @@ viewhome_description = Utilizando Seguimiento Ocular de alta precisión, en <br>
 detectar Dificultades Cognitivas Leves y predecir <br>
 el comienzo de Síndrome de Alzheimer y otras demencias, <br>
 años antes de que sus síntomas sean visibles.;
-
 viewhome_btnGetStarted = COMENZAR;
 
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Antes de comenzar, por favor llene los siguientes datos;
 viewsettings_diagTitle = PREFERENCIAS;
-viewsettings_diagLabelDoctor = Nombre del doctor;
 viewsettings_diagLabelLang = Lenguage utilizado por el programa, el informe y el experimento de lectura;
 viewsettings_diagLabelET = Selección de EyeTracker;
-viewsettings_diagLabelEye = Selección del ojo a utilizar;
-viewsettings_diagCBEyeType = Izquierdo|Derecho|Ambos;
-viewsettings_diagLabelEmail = Email;
 viewsettings_diagBtnOK = OK;
 viewsettings_diagCboxDemo = Modo demo;
+viewsettings_diagCboxOfflineMode = Modo fuera de línea;
 viewsettings_diagCboxDualMonitor = Habilitar segundo monitor;
 viewsettings_diagLabelRepo = Directorio de trabajo;
 viewsettings_error_invalid_repo = Por favor elija un directorio de trabajo válido;
@@ -32,21 +27,47 @@ viewsettings_error_invalid_dr = El nombre del doctor no puede quedar vacio;
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Registro de paciente;
 viewpatientreg_viewSubTitle = Por favor, complete la siguiente información;
-viewpatientreg_liPatientPlaceholder = Nombre del paciente;
-viewpatientreg_liAgePlaceholder = Edad;
-viewpatientreg_liEmailPlaceholder = Email;
-viewpatientreg_labelExperimentTitle = Estudio;
-viewpatientreg_cboxReading = Lectura;
-viewpatientreg_cboxBindingUC = Colores Unbound;
-viewpatientreg_cboxBindingBC = Colores Bound;
-viewpatientreg_cboxFielding = N-Back Test;
-viewpatientreg_labelInstruction = Elija las pruebas que tomará;
+viewpatientreg_labelName = Nombre;
+viewpatientreg_labelLastName = Apellido;
+viewpatientreg_labelBirthDate = Fecha de nacimiento;
+viewpatientreg_labelGender = Género;
+viewpatientreg_labelCountry = Pais;
+viewpatientreg_labelCity = Ciudad;
+viewpatientreg_labelProvince = Provincia/Estado;
+viewpatientreg_labelDocument_number = Número de documento;
+viewpatientreg_docTypes = DNI|Pasaporte|Identificación;
+viewpatientreg_labelConsent = Al continuar, usted está aceptando las condiciones y la política de uso de datos;
 viewpatientreg_btnCancel = CANCELAR;
-viewpatientreg_btnOK = OK;
-viewpatientreg_error_empty_patient_name = Se debe ingresar el nombre del paciente;
-viewpatientreg_error_empty_patient_age = Se debe ingresar la edad del paciente;
-viewpatientreg_labelNoInstructionSetError = Se debe elegir al menos un estudio;
-viewpatientreg_labelNTargets = Número de objetivos en los estudios de Colores;
+viewpatientreg_btnContinue = CONTINUAR;
+viewpatientreg_errorEmpty = No puede estar vacío;
+
+#********************************* START STUDY SCREEN *********************************
+viewstudystart_labelTitle = Estudios Oculares;
+viewstudystart_labelSubTitle = Configure los estudios que se realizarán;
+viewstudystart_cbPatientSelection = Seleccione uno de los pacientes del doctor;
+viewstudystart_btnAddPatient = Agregar un pacient nuevo;
+viewstudystart_cboxReading = Lectura;
+viewstudystart_cboxBindingUC = Colores Unbound;
+viewstudystart_cboxBindingBC = Colores Bound;
+viewstudystart_cboxFielding = N-Back Test;
+viewstudystart_labelInstruction = Elija las pruebas que tomará;
+viewstudystart_labelInstruction2 = Configure los parámetros de los estudios;
+viewstudystart_btnStart = COMENZAR;
+viewstudystart_btnBack = ATRAS;
+viewstudystart_labelEyeMsg = Selección del ojo a utilizar;
+viewstudystart_labelEyeType = Izquierdo|Derecho|Ambos;
+viewstudystart_labelNTargets = Número de objetivos en los estudios de Colores;
+viewstudystart_labelNoPatientError = No se ha elegido ningún paciente;
+viewstudystart_labelNoInstructionSetError = Se debe elegir al menos un estudio;
+
+#********************************* DOCTOR SELECTION DIALOG *********************************
+viewdrsel_viewTitle = Selección del Doctor;
+viewdrsel_viewSubTitle = Seleccione un perfíl de Doctor o agregue uno nuevo;
+viewdrsel_labelDrProfile = Perfil de Doctor;
+viewdrsel_btnAddProfile = Agregar Perfil;
+viewdrsel_btnOk = OK;
+viewdrsel_labelNoDrError = Por favor, seleccion un perfíl de doctor antes de continuar;
+
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibración;
@@ -102,8 +123,10 @@ viewpresentexp_btnContinue = CONTINUAR;
 viewdrdiag_btnChangeSettings = PREFERENCIAS;
 
 #********************************* DOCTOR INFORMATION *********************************
-viewdrinfo_title = Información del Doctor;
+viewdrinfo_title = Perfíl del Doctor;
 viewdrinfo_subtitle = Please fill the information below;
+viewdrinfo_labelName = Nombre;
+viewdrinfo_labelLastName = Apellido;
 viewdrinfo_labelDocument_number = Número de documento;
 viewdrinfo_labelCountry = País;
 viewdrinfo_labelProvince = Provicia/Estado;
@@ -111,7 +134,11 @@ viewdrinfo_labelCity = Ciudad;
 viewdrinfo_labelAddress = Dirección;
 viewdrinfo_labelPhone = Teléfono;
 viewdrinfo_labelMail = Email;
+viewdrinfo_labelInstitution = Institución Medica;
 viewdrinfo_docTypes = DNI|Pasaporte|Identificación;
+viewdrinfo_btnBack = Atras;
+viewdrinfo_btnSave = Guardar;
+viewdrinfo_errorEmpty = No puede estar vacio;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Resultados;

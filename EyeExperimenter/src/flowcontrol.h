@@ -40,13 +40,14 @@ public:
     Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
     Q_INVOKABLE bool checkSSLAvailability() {return sslDataProcessingClient->sslEnabled();}
-    Q_INVOKABLE void requestReportData() {sslTransactionAllOk = false; sslDataProcessingClient->requestReport();}
+    Q_INVOKABLE void requestReportData();
     Q_INVOKABLE bool isSSLTransactionOK() const {return sslTransactionAllOk;}
     Q_INVOKABLE QString getReportDataField(const QString &key);
     Q_INVOKABLE int getReportResultBarPosition(const QString &key);
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
     Q_INVOKABLE void setUse3BindingTargets(bool use3) {use3BindingTargetsEnable = use3;}
+    Q_INVOKABLE bool getUse3BindingTargets() { return use3BindingTargetsEnable; }
 
 signals:
 
@@ -127,6 +128,12 @@ private:
 
     // Calculates the segment of the result bar based on boundaries.
     int calculateSegment(qreal value, QList<qreal> segments, bool largerBetter);
+
+    // The country codes and the function to load them
+    QStringList countryList;
+    QStringList countryCodes;
+    void fillCountryList();
+
 
 };
 

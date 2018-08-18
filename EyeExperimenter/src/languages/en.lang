@@ -1,7 +1,6 @@
 # UI Language file: English
 
 #********************************* VIEWHOME SCREEN *********************************
-
 viewhome_btnConfSettings = CONFIGURE SETTINGS;
 viewhome_slideTitle = Start your evaluation;
 viewhome_description = Using high-precision Eye-Tracking, in <b> a 10-minutes, <br>
@@ -15,37 +14,59 @@ viewhome_btnGetStarted = GET STARTED;
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Before starting please fill the information below;
 viewsettings_diagTitle = CONFIGURE SETTINGS;
-viewsettings_diagLabelDoctor = Doctor's name;
 viewsettings_diagLabelLang = Language for EyeExperimenter, Report and Reading experiment;
 viewsettings_diagLabelET = EyeTracker selection;
-viewsettings_diagLabelEye = Select which eye to use;
-viewsettings_diagCBEyeType = Left|Right|Both;
-viewsettings_diagLabelEmail = Email;
 viewsettings_diagBtnOK = OK;
-viewsettings_diagLabelRepo = Work directory;
 viewsettings_diagCboxDemo = Demo mode;
+viewsettings_diagCboxOfflineMode = Offline Mode;
 viewsettings_diagCboxDualMonitor = Dual monitor mode;
+viewsettings_diagLabelRepo = Work directory;
 viewsettings_error_invalid_repo = Please select a valid work directory;
 viewsettings_error_invalid_dr = Doctor's name cannot be left empty;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Patient's registration;
 viewpatientreg_viewSubTitle = Please complete the information below;
-viewpatientreg_liPatientPlaceholder = Patient's name;
-viewpatientreg_liAgePlaceholder = Age;
-viewpatientreg_liEmailPlaceholder = Email;
-viewpatientreg_labelExperimentTitle = Study;
-viewpatientreg_cboxReading = Reading;
-viewpatientreg_cboxBindingUC = Unbound Colors;
-viewpatientreg_cboxBindingBC = Bound Colors;
-viewpatientreg_cboxFielding = N-Back Test;
-viewpatientreg_labelInstruction = Choose the tests you'll be taking;
+viewpatientreg_labelName = Name;
+viewpatientreg_labelLastName = Last name;
+viewpatientreg_labelBirthDate = Birth date;
+viewpatientreg_labelGender = Gender;
+viewpatientreg_labelCountry = Country;
+viewpatientreg_labelCity = City;
+viewpatientreg_labelProvince = Province/State;
+viewpatientreg_labelDocument_number = Document number;
+viewpatientreg_docTypes = DNI|Passport|Identity Card;
+viewpatientreg_labelConsent = By clicking continue, you accept the Conditions and the Data policy;
 viewpatientreg_btnCancel = CANCEL;
-viewpatientreg_btnOK = OK;
-viewpatientreg_error_empty_patient_name = Patient's name must be entered;
-viewpatientreg_error_empty_patient_age = Patient's age must be entered;
-viewpatientreg_labelNoInstructionSetError = At least one study must be selected;
-viewpatientreg_labelNTargets = Number of targets for Color studies;
+viewpatientreg_btnContinue = CONTINUE;
+viewpatientreg_errorEmpty = Cannot be empty;
+
+#********************************* START STUDY SCREEN *********************************
+viewstudystart_labelTitle = Eye Studies;
+viewstudystart_labelSubTitle = Configure the studies to perform;
+viewstudystart_cbPatientSelection = Select one of the doctor's patient;
+viewstudystart_btnAddPatient = Add a new patient;
+viewstudystart_cboxReading = Reading;
+viewstudystart_cboxBindingUC = Unbound Colors;
+viewstudystart_cboxBindingBC = Bound Colors;
+viewstudystart_cboxFielding = N-Back Test;
+viewstudystart_labelInstruction = Choose the tests you'll be taking;
+viewstudystart_labelInstruction2 = Configure study parameters;
+viewstudystart_btnStart = START;
+viewstudystart_btnBack = BACK;
+viewstudystart_labelEyeMsg = Select which eye to use;
+viewstudystart_labelEyeType = Left|Right|Both;
+viewstudystart_labelNTargets = Number of targets for Color studies;
+viewstudystart_labelNoPatientError = No patient has been selected;
+viewstudystart_labelNoInstructionSetError = At least one study must be selected;
+
+#********************************* DOCTOR SELECTION DIALOG *********************************
+viewdrsel_viewTitle = Doctor selection;
+viewdrsel_viewSubTitle = Select Doctor's profile or add a new one;
+viewdrsel_labelDrProfile = Doctor's profile;
+viewdrsel_btnAddProfile = Add a profile;
+viewdrsel_btnOk = OK;
+viewdrsel_labelNoDrError = Please select a doctor's profile in order to continue;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibration;
@@ -102,9 +123,10 @@ viewpresentexp_btnContinue = CONTINUE;
 viewdrdiag_btnChangeSettings = CHANGE SETTINGS;
 
 #********************************* DOCTOR INFORMATION *********************************
-viewdrinfo_title = Doctor's information;
+viewdrinfo_title = Doctor's Profile;
 viewdrinfo_subtitle = Please fill the information below;
-viewdrinfo_labelFullname = Full name;
+viewdrinfo_labelName = Name;
+viewdrinfo_labelLastName = Last name;
 viewdrinfo_labelDocument_number = Document number;
 viewdrinfo_labelCountry = Country;
 viewdrinfo_labelProvince = Province/State;
@@ -112,7 +134,11 @@ viewdrinfo_labelCity = City;
 viewdrinfo_labelAddress = Address;
 viewdrinfo_labelPhone = Phone;
 viewdrinfo_labelMail = Email;
+viewdrinfo_labelInstitution = Medical Institution;
 viewdrinfo_docTypes = DNI|Passport|Identity Card;
+viewdrinfo_btnSave = Save;
+viewdrinfo_btnBack = Back;
+viewdrinfo_errorEmpty = Cannot be empty;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Results;

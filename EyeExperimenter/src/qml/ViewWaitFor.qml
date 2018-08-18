@@ -30,8 +30,8 @@ VMBase {
             flowControl.saveReport();
 
             // Now doing this.
-            viewResults.fillFieldsFromReportInfo();
-            swiperControl.currentIndex = swiperControl.vmIndexResults;
+            // viewResults.fillFieldsFromReportInfo();
+            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
         }
     }
 

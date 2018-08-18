@@ -18,6 +18,7 @@ Window {
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.
         swiperControl.currentIndex = swiperControl.vmIndexHome;
+        //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
     }
 
     // The configurations dialog.
@@ -26,9 +27,7 @@ Window {
         x: 333
         y: (parent.height - viewSettings.height)/2
         onUpdateMenus: {
-            viewPatientReg.updateMenus();
-            viewPresentExperimet.updateMenus();
-            viewResults.updateMenus();
+            viewHome.updateDrMenuText();
         }
     }
 
@@ -38,15 +37,23 @@ Window {
         y: (parent.height - viewDrInfo.height)/2
     }
 
+    ViewDoctorSelection {
+        id: viewDrSelection
+        x: (parent.width - viewDrSelection.width)/2
+        y: (parent.height - viewDrSelection.height)/2
+    }
+
     SwipeView {
 
         readonly property int vmIndexHome: 0
-        readonly property int vmIndexPatientReg: 1
-        readonly property int vmIndexCalibrationStart: 2
-        readonly property int vmIndexCalibrationDone: 3
-        readonly property int vmIndexPresentExperiment: 4
-        readonly property int vmIndexResults: 5
-        readonly property int vmIndexWaitFor: 6
+        readonly property int vmIndexStudyStart: 1
+        readonly property int vmIndexPatientReg: 2
+        readonly property int vmIndexCalibrationStart: 3
+        readonly property int vmIndexCalibrationDone: 4
+        readonly property int vmIndexPresentExperiment: 5
+        readonly property int vmIndexResults: 6
+        readonly property int vmIndexWaitFor: 7
+
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -58,20 +65,21 @@ Window {
                 id: viewHome
                 isHomePage: true;
                 anchors.fill: parent
-                Component.onCompleted: {
-                    viewDrInfo.open();
-                }
             }
         }
 
         Item{
-            ViewPatientReg{
+            ViewStudyStart{
+                id: viewStudyStart
+                anchors.fill: parent
+            }
+        }
+
+        Item{
+            ViewPatientRegistration{
                 id: viewPatientReg
                 anchors.fill: parent
                 onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexHome
-                Component.onCompleted: {
-                    updateMenus();
-                }
             }
         }
 
@@ -94,9 +102,6 @@ Window {
                 id: viewPresentExperimet
                 anchors.fill: parent
                 onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
-                Component.onCompleted: {
-                    updateMenus();
-                }
             }
         }
 
@@ -105,9 +110,6 @@ Window {
                 id: viewResults
                 anchors.fill: parent
                 onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
-                Component.onCompleted: {
-                    updateMenus();
-                }
             }
         }
 

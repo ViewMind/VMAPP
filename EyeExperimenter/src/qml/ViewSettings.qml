@@ -9,7 +9,8 @@ Dialog {
     property bool vmInvalidRepoError: false;
     property string vmLoadLanguage: "";
     property string vmLoadET: "";
-    property bool vmRestartRequired: false;
+    property bool vmOfflineModeStatus: false;
+    property bool vmRestartRequired: false;    
 
     // Indexes for the list and to identify the eys.
     readonly property int vmEYE_L:    0
@@ -21,7 +22,7 @@ Dialog {
     id: viewSettings
     modal: true
     width: 614
-    height: 680
+    height: 580
     closePolicy: Popup.CloseOnEscape
 
     contentItem: Rectangle {
@@ -102,20 +103,18 @@ Dialog {
         font.bold: true
         anchors.top: diagTitle.bottom
         anchors.topMargin: 45
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.left: diagTIRepo.left
     }
 
     VMConfigTextInput {
         id: diagTIRepo
         vmFont: viewHome.robotoR.name
         vmAcceptInput: false
-        width: 314
+        width: 500
         height: 20
-        anchors.bottom: diagLabelRepo.bottom
-        anchors.bottomMargin: -35
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.top: diagLabelRepo.bottom
+        anchors.topMargin: 15
+        anchors.horizontalCenter: parent.horizontalCenter
         vmErrorMsg: {
             if(vmInvalidRepoError){
                 return loader.getStringForKey(keybase+"error_invalid_repo")
@@ -130,57 +129,6 @@ Dialog {
         }
     }
 
-    // Doctor's label and input field
-    Text {
-        id: diagLabelDoctor
-        text: loader.getStringForKey(keybase+"diagLabelDoctor");
-        font.family: viewHome.robotoB.name
-        font.pixelSize: 13
-        font.bold: true
-        anchors.top: diagTIRepo.bottom
-        anchors.topMargin: 45
-        anchors.left: parent.left
-        anchors.leftMargin: 150
-    }
-
-    VMConfigTextInput {
-        id: diagTIDoctor
-        vmTextField.text: loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-        vmFont: viewHome.robotoR.name
-        width: 314
-        height: 20
-        anchors.bottom: diagLabelDoctor.bottom
-        anchors.bottomMargin: -35
-        anchors.left: parent.left
-        anchors.leftMargin: 150
-    }
-
-
-    // Doctor's label and input field
-    Text {
-        id: diagLabelEmail
-        text: loader.getStringForKey(keybase+"diagLabelEmail");
-        font.family: viewHome.robotoB.name
-        font.pixelSize: 13
-        font.bold: true
-        anchors.top: diagTIDoctor.bottom
-        anchors.topMargin: 35
-        anchors.left: parent.left
-        anchors.leftMargin: 150
-    }
-
-    VMConfigTextInput {
-        id: diagTIEmail
-        vmFont: viewHome.robotoR.name
-        vmTextField.text: loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_EMAIL);
-        width: 314
-        height: 20
-        anchors.top: diagLabelEmail.bottom
-        anchors.topMargin: 10
-        anchors.left: parent.left
-        anchors.leftMargin: 150
-    }
-
     // Combo box for language selection and label
     Text {
         id: diagLabelLang
@@ -188,10 +136,9 @@ Dialog {
         font.family: viewHome.robotoB.name
         font.pixelSize: 13
         font.bold: true
-        anchors.top: diagTIEmail.bottom
-        anchors.topMargin: 38
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.top: diagTIRepo.bottom
+        anchors.topMargin: 25
+        anchors.left: diagTIRepo.left
     }
 
     VMComboBox{
@@ -210,9 +157,8 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: diagLabelLang.bottom
-        anchors.topMargin: 5
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.topMargin: 15
+        anchors.left: diagTIRepo.left
     }
 
     // Combo box for eyetracker selection and label
@@ -223,9 +169,8 @@ Dialog {
         font.pixelSize: 13
         font.bold: true
         anchors.top: diagCBLang.bottom
-        anchors.topMargin: 38
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.topMargin: 25
+        anchors.left: diagTIRepo.left
     }
 
     VMComboBox{
@@ -244,46 +189,8 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: diagLabelET.bottom
-        anchors.topMargin: 5
-        anchors.left: parent.left
-        anchors.leftMargin: 150
-    }
-
-    // Combo box for eyetracker selection and label
-    Text {
-        id: diagLabelEye
-        text: loader.getStringForKey(keybase+"diagLabelEye");
-        font.family: viewHome.robotoB.name
-        font.pixelSize: 13
-        font.bold: true
-        anchors.top: diagCBLang.bottom
-        anchors.topMargin: 38
-        anchors.left: diagLabelET.right
-        anchors.leftMargin: 20
-    }
-
-    VMComboBox{
-        id: diagCBEyeType
-        vmModel: {
-            //["REDm", "Mouse", "GP3HD"]
-            var options = [];
-            var id = keybase+"diagCBEyeType";
-            options.push(loader.getStringForKey(id,vmEYE_L));
-            options.push(loader.getStringForKey(id,vmEYE_R));
-            options.push(loader.getStringForKey(id,vmEYE_BOTH));
-            return options;
-        }
-        currentIndex: {
-            var sel = loader.getConfigurationString(vmDefines.vmCONFIG_VALID_EYE)
-            if (sel === "0") return vmEYE_L;
-            if (sel === "1") return vmEYE_R;
-            return vmEYE_BOTH;
-        }
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
-        anchors.top: diagLabelEye.bottom
-        anchors.topMargin: 5
-        anchors.left: diagLabelEye.left
+        anchors.topMargin: 15
+        anchors.left: diagTIRepo.left
     }
 
 
@@ -296,8 +203,7 @@ Dialog {
         font.pixelSize: 13
         anchors.top: diagCBET.bottom
         anchors.topMargin: 20
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.left: diagTIRepo.left
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE);
     }
 
@@ -306,11 +212,24 @@ Dialog {
         text: loader.getStringForKey(keybase+"diagCboxDualMonitor");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
-        anchors.top: diagCBET.bottom
-        anchors.topMargin: 20
+        anchors.top: diagCboxDemo.top
         anchors.left: diagCboxDemo.right
         anchors.leftMargin: 20
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);
+    }
+
+    VMCheckBox{
+        id: diagCboxOfflineMode
+        text: loader.getStringForKey(keybase+"diagCboxOfflineMode");
+        font.family: viewHome.robotoR.name
+        font.pixelSize: 13
+        anchors.top: diagCboxDemo.top
+        anchors.left: diagCboxDualMonitor.right
+        anchors.leftMargin: 20
+        checked: {
+            vmOfflineModeStatus = loader.getConfigurationBoolean(vmDefines.vmCONFIG_OFFLINE_MODE);
+            return vmOfflineModeStatus;
+        }
     }
 
     VMButton{
@@ -318,10 +237,9 @@ Dialog {
         vmFont: viewHome.gothamM.name
         vmSize: [120, 49]
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.top: diagCboxDualMonitor.bottom
+        anchors.topMargin: 45
+        anchors.left: diagTIRepo.left
         onClicked: {
             if (checkAllOk()) close();
             if (vmRestartRequired){
@@ -348,33 +266,24 @@ Dialog {
             diagTIRepo.vmErrorMsg = loader.getStringForKey(keybase+"error_invalid_repo");
             return false;
         }
-        if (diagTIDoctor.vmTextField.text === ""){
-            diagTIDoctor.vmErrorMsg = loader.getStringForKey(keybase+"error_invalid_dr");
-            return false;
-        }
 
         // Saving the configuration.
-        loader.setConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME,diagTIDoctor.vmTextField.text);
-        loader.setConfigurationString(vmDefines.vmCONFIG_DOCTOR_EMAIL,diagTIEmail.vmTextField.text);
         loader.setConfigurationString(vmDefines.vmCONFIG_SELECTED_ET,diagCBET.currentText);
         loader.setConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
         loader.setConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
         loader.setConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
-        if (diagCBEyeType.currentIndex == vmEYE_L){
-            loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,vmEYE_L);
-        }
-        else if (diagCBEyeType.currentIndex == vmEYE_R){
-            loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,vmEYE_R);
-        }
-        else{
-            loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,vmEYE_BOTH);
-        }
+        loader.setConfigurationBoolean(vmDefines.vmCONFIG_OFFLINE_MODE,diagCboxOfflineMode.checked);
+
+        // Checking if a restart is required, becuase of the a change into offline mode.
 
         // Signal to update dropdown menu information.
-        updateMenus()
+        updateMenus();
 
         // Restart required
         if (vmLoadLanguage !== diagCBLang.currentText){
+            viewSettings.vmRestartRequired = true;
+        }
+        else if (vmOfflineModeStatus !== diagCboxOfflineMode.checked){
             viewSettings.vmRestartRequired = true;
         }
         else{

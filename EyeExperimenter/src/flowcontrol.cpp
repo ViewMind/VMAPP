@@ -75,6 +75,11 @@ void FlowControl::resolutionCalculations(){
     configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
 }
 
+void FlowControl::requestReportData(){
+    sslTransactionAllOk = false;
+    sslDataProcessingClient->requestReport();
+}
+
 void FlowControl::onSLLTransactionFinished(bool allOk){
     sslTransactionAllOk = allOk;
     if (allOk){

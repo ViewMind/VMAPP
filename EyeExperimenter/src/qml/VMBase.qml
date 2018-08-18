@@ -25,13 +25,6 @@ Rectangle {
 
     signal backButtonPressed();
 
-    function updateMenus(){
-        doctorMenu.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-        expMenu.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-        expMenu.vmSelectedEyeTracker = loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET);
-        expMenu.vmSelectedLanguage = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE);
-    }
-
     // The Fonts
     FontLoader {
         id: gothamMedium
@@ -79,6 +72,11 @@ Rectangle {
     height: 768
     anchors.fill: parent
 
+    function updateText(){
+        doctorMenu.updateText();
+        expMenu.updateText();
+    }
+
     // The top banner
     Rectangle {
         id: topBanner
@@ -122,11 +120,9 @@ Rectangle {
         visible: !isHomePage
         vmFont: gothamM.name
         anchors.verticalCenter: vmBanner.verticalCenter        
-        onWidthChanged: {
-            anchors.top = parent.top
-            anchors.right = parent.right
-            anchors.rightMargin = 33
-        }
+        width: 200
+        anchors.right: parent.right
+        anchors.rightMargin: 33
         onShowMenu: {
             expMenu.z = 10;
         }
@@ -134,7 +130,6 @@ Rectangle {
 
     VMDoctorMenuExpanded{
         id: expMenu
-        vmDrName: doctorMenu.vmDrName
         vmFont: gothamM.name
         width: doctorMenu.width
         anchors.right: parent.right

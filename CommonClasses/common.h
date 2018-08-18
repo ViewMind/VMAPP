@@ -17,6 +17,7 @@
 #define   SQL_QUERY_TYPE_SET                            "set"
 
 // Configuration key values (cmd names in the configuration file)
+/// TODO : Clean up unused defines.
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
 #define   CONFIG_DOCTOR_NAME                            "doctor_name"
 #define   CONFIG_DOCTOR_UID                             "doctor_uid"
@@ -38,12 +39,11 @@
 #define   CONFIG_DUAL_MONITOR_MODE                      "dual_monitor_mode"
 #define   CONFIG_EXP_CONFIG_FILE                        "exp_config_file"
 #define   CONFIG_DATA_OUTPUT_FILE                       "data_output_file"
-#define   CONFIG_PATIENT_AGE                            "patient_age"
 #define   CONFIG_PATIENT_NAME                           "patient_name"
 #define   CONFIG_PATIENT_UID                            "patient_uid"
+#define   CONFIG_PATIENT_AGE                            "patient_age"
 #define   CONFIG_ADD_TO_REPORT                          "add_to_report"
 #define   CONFIG_REPORT_LANGUAGE                        "report_language"
-#define   CONFIG_PATIENT_EMAIL                          "patient_email"
 #define   CONFIG_REPORT_NO_LOGO                         "no_logo_in_report"
 #define   CONFIG_DEMO_MODE                              "demo_mode"
 #define   CONFIG_BC_FILE_FILTER                         "bc_file_filter"
@@ -69,6 +69,8 @@
 #define   CONFIG_DBHOST                                 "db_host"
 #define   CONFIG_DBPASSWORD                             "db_passwd"
 #define   CONFIG_DBPORT                                 "db_port"
+#define   CONFIG_OFFLINE_MODE                           "offline_mode"
+#define   CONFIG_DEFAULT_COUNTRY                        "default_country"
 
 
 // Result values for the Result EyeReport Generator File

@@ -6,9 +6,9 @@ Rectangle {
 
     id: container
     property string vmFont: "Mono"
-    property string vmDrName: "No name"
-    property string vmSelectedEyeTracker: "NONE"
-    property string vmSelectedLanguage: "NONE"
+    property string vmDrName: "NO NAME";
+    property string vmSelectedET: "";
+    property string vmSelectedLang: "";
 
     z: -10
     height: 260
@@ -20,6 +20,12 @@ Rectangle {
     }
 
     signal hideMenu();
+
+    function updateText(){
+        vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+        vmSelectedET = "Eyetracker: " + loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET);
+        vmSelectedLang = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE);
+    }
 
     Rectangle{
         id: textContainer
@@ -70,7 +76,7 @@ Rectangle {
     Text{
         id: labLang
         color: "#88B2D0"
-        text: vmSelectedLanguage
+        text: vmSelectedLang
         font.family: gothamRegular.name
         font.pixelSize: 13
         anchors.left: parent.left
@@ -94,7 +100,7 @@ Rectangle {
     Text{
         id: labETSel
         color: "#88B2D0"
-        text: "Eyetracker: " + vmSelectedEyeTracker
+        text: vmSelectedET
         font.family: gothamRegular.name
         font.pixelSize: 13
         anchors.left: parent.left

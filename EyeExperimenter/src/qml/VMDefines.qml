@@ -2,6 +2,7 @@ import QtQuick 2.0
 
 Item{
 
+    /// TODO: CLEAN UP Most of these are not used.
     readonly property string vmCONFIG_PATIENT_DIRECTORY: "patient_directory"
     readonly property string vmCONFIG_DOCTOR_NAME: "doctor_name"
     readonly property string vmCONFIG_DOCTOR_EMAIL: "doctor_email"
@@ -20,6 +21,7 @@ Item{
     readonly property string vmCONFIG_READING_PX_TOL: "reading_px_tol_for_target"
     readonly property string vmCONFIG_EYEPROCESSOR_PATH: "eyeprocessor_path"
     readonly property string vmCONFIG_DUAL_MONITOR_MODE: "dual_monitor_mode"
+    readonly property string vmCONFIG_OFFLINE_MODE: "offline_mode"
     readonly property string vmCONFIG_EXP_CONFIG_FILE: "exp_config_file"
     readonly property string vmCONFIG_DATA_OUTPUT_FILE: "data_output_file"
     readonly property string vmCONFIG_PATIENT_AGE: "patient_age"
@@ -63,4 +65,7 @@ Item{
     readonly property string vmCONFIG_P_LANG_EN: "English"
     readonly property string vmCONFIG_P_ET_MOUSE: "Mouse"
     readonly property string vmCONFIG_P_ET_REDM: "REDm"
+    readonly property string vmCONFIG_DOCTOR_UID : "doctor_uid"
+    readonly property string vmCONFIG_PATIENT_UID: "patient_uid"
+
 }

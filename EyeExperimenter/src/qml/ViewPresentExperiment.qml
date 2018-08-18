@@ -25,12 +25,16 @@ VMBase {
                 return;
             }
             if (advanceCurrentExperiment()){
-                //swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
-                swiperControl.currentIndex = swiperControl.vmIndexHome;
+                if (loader.getConfigurationBoolean(vmDefines.vmCONFIG_OFFLINE_MODE)){
+                    swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+                    return;
+                }
+                swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
+                //swiperControl.currentIndex = swiperControl.vmIndexHome;
                 titleMsg = viewHome.getErrorTitleAndMessage("msg_request_report");
                 viewWaitFor.vmMessage = titleMsg[1];
                 viewWaitFor.vmTitle = titleMsg[0];
-                //flowControl.requestReportData();
+                flowControl.requestReportData();
             }
         }
     }
@@ -73,7 +77,7 @@ VMBase {
     function setPropertiesForExperiment(index){
         switch(index){
         case vmExpIndexBindingBC:
-            if (viewPatientReg.use3BindingTargets()){
+            if (flowControl.getUse3BindingTargets()){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
                 vmSlideAnimation = "qrc:/images/bound.gif"
@@ -85,7 +89,7 @@ VMBase {
             }
             break;
         case vmExpIndexBindingUC:
-            if (viewPatientReg.use3BindingTargets()){
+            if (flowControl.getUse3BindingTargets()){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
                 vmSlideAnimation = "qrc:/images/unbound.gif"
@@ -167,20 +171,20 @@ VMBase {
     }
 
     function advanceCurrentExperiment(){
-        var index = viewPatientReg.vmCurrentExperimentIndex;
+        var index = viewStudyStart.vmCurrentExperimentIndex;
 
         // Can only advance if this is not the last one.
-        if (index === viewPatientReg.vmSelectedExperiments.length-1){
+        if (index === viewStudyStart.vmSelectedExperiments.length-1){
             return true;
         }
 
-        viewPatientReg.vmCurrentExperimentIndex++;
+        viewStudyStart.vmCurrentExperimentIndex++;
         // If this is not the first experiment set the current experiment as done.
         if (index !== -1){
-            setStateOfItem(viewPatientReg.vmSelectedExperiments[index],itemReading.vmTRACKER_ITEM_STATE_DONE)
+            setStateOfItem(viewStudyStart.vmSelectedExperiments[index],itemReading.vmTRACKER_ITEM_STATE_DONE)
         }
         // The new experiment is selected as done.
-        index = viewPatientReg.vmSelectedExperiments[viewPatientReg.vmCurrentExperimentIndex];
+        index = viewStudyStart.vmSelectedExperiments[viewStudyStart.vmCurrentExperimentIndex];
         setStateOfItem(index,itemReading.vmTRACKER_ITEM_STATE_CURRENT)
 
         // Properties are set to the values of the curent experiment
@@ -293,8 +297,8 @@ VMBase {
             flowControl.setupSecondMonitor();
 
             // Starting the experiment.
-            var index = viewPatientReg.vmCurrentExperimentIndex;
-            if (!flowControl.startNewExperiment(viewPatientReg.vmSelectedExperiments[index])){
+            var index = viewStudyStart.vmCurrentExperimentIndex;
+            if (!flowControl.startNewExperiment(viewStudyStart.vmSelectedExperiments[index])){
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
                 titleMsg = viewHome.getErrorTitleAndMessage("error_programming");
                 vmErrorDiag.vmErrorMessage = titleMsg[1];

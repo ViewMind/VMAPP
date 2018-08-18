@@ -19,11 +19,23 @@ VMBase {
         viewSettings.open();
     }
 
+    function updateDrMenuText(){
+        updateText()
+        viewCalibrationDone.updateText();
+        viewCalibrationStart.updateText();
+        viewPatientReg.updateText()
+        viewPresentExperimet.updateText()
+        viewResults.updateText()
+        viewStudyStart.updateText()
+        viewWaitFor.updateText()
+    }
+
     Component.onCompleted: {
         // Checking that the everything was loaded correctly.
         if (loader.getLoaderError()){
             viewHome.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_LOAD_CONFIG;
             var titleMsg = getErrorTitleAndMessage("error_loading_config");
+            console.log("Title msg is " + titleMsg);
             viewHome.vmErrorDiag.vmErrorMessage = titleMsg[1];
             viewHome.vmErrorDiag.vmErrorTitle = titleMsg[0];
             viewHome.vmErrorDiag.open();
@@ -42,6 +54,9 @@ VMBase {
             vmErrorDiag.open();
             return;
         }
+
+        // Updating the doctor's list.
+        loader.getUserDoctorInfoFromDB();
 
     }
 
@@ -142,7 +157,7 @@ VMBase {
             topMargin: 53
         }
         onClicked: {
-            swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+            viewDrSelection.open();
         }
     }
 }

@@ -4,7 +4,6 @@
         <file>qml/ViewCalibration.qml</file>
         <file>qml/ViewCalibrationDone.qml</file>
         <file>qml/ViewHome.qml</file>
-        <file>qml/ViewPatientReg.qml</file>
         <file>qml/ViewPresentExperiment.qml</file>
         <file>qml/ViewResults.qml</file>
         <file>qml/ViewSettings.qml</file>
@@ -25,5 +24,9 @@
         <file>qml/ViewWaitFor.qml</file>
         <file>qml/ViewDoctorInformation.qml</file>
         <file>qml/VMTextDataInput.qml</file>
+        <file>qml/ViewPatientRegistration.qml</file>
+        <file>qml/VMDateInputField.qml</file>
+        <file>qml/ViewStudyStart.qml</file>
+        <file>qml/ViewDoctorSelection.qml</file>
     </qresource>
 </RCC>
