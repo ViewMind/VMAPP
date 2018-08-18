@@ -12,7 +12,7 @@ CREATE TABLE tPatientReqData (
     doctorid           VARCHAR(255),
     firstname          VARCHAR(255),
     lastname           VARCHAR(255),
-    countryid          VARCHAR(255),
+    idtype             VARCHAR(255),
     sex                CHAR,
     birthcountry       VARCHAR(2),
     birthdate          DATE
@@ -41,7 +41,8 @@ CREATE TABLE tDoctors (
     uid                VARCHAR(255) UNIQUE,
     firstname          VARCHAR(255),
     lastname           VARCHAR(255),
-    courntryid         VARCHAR(255),
+    idtype             VARCHAR(255),
+    countryid          VARCHAR(2),
     state              VARCHAR(255),
     city               VARCHAR(255),
     medicalinstitution VARCHAR(255),
