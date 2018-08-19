@@ -10,7 +10,7 @@ Dialog {
     id: viewDoctorSelection
     modal: true
     width: 654
-    height: 480
+    height: 520
     closePolicy: Popup.CloseOnEscape
 
     contentItem: Rectangle {
@@ -51,6 +51,16 @@ Dialog {
         }
     }
 
+    Image {
+        id: drPic
+        source: "qrc:/images/dr_icon.png"
+        width: 108
+        height: 108
+        anchors.top: parent.top
+        anchors.topMargin: 70
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+
     // The Doctor Information Title and subtitle
     Text {
         id: diagTitle
@@ -59,50 +69,48 @@ Dialog {
         color: "#297FCA"
         text: loader.getStringForKey(keybase+"viewTitle");
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.topMargin: 80
+        anchors.top: drPic.bottom
+        anchors.topMargin: 15
     }
 
     Text {
         id: diagSubTitle
         font.pixelSize: 11
         font.family: viewHome.gothamR.name
-        color: "#cfcfcf"
+        color: "#969696"
         text: loader.getStringForKey(keybase+"viewSubTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: diagTitle.bottom
         anchors.topMargin: 10
     }
 
-    // The selection box and the add button
-    VMComboBox{
-        id: labelDrProfile
-        width: 350
-        vmModel: []
-        font.family: viewHome.robotoR.name
-        anchors.horizontalCenter: parent.horizontalCenter
+    Row {
+
+        id: rowProfileAndAdd
+        spacing: 10
         anchors.top: diagSubTitle.bottom
         anchors.topMargin: 39
-        onCurrentIndexChanged: {
-            if (currentIndex != 0) labelError.visible = false;
-        }
-    }
+        anchors.horizontalCenter: parent.horizontalCenter
 
-    VMButton{
-        id: btnAddProfile
-        height: 50
-        width: labelDrProfile.width
-        vmText: loader.getStringForKey(keybase+"btnAddProfile");
-        vmFont: viewHome.gothamM.name
-        anchors.left: labelDrProfile.left
-        anchors.top: labelDrProfile.bottom
-        anchors.topMargin: 23
-        vmInvertColors: true
-        onClicked: {
-            viewDoctorSelection.close();
-            viewDrInfo.clearAllFields();
-            viewDrInfo.open();
+        // The selection box and the add button
+        VMComboBox{
+            id: labelDrProfile
+            width: 350
+            vmModel: []
+            font.family: viewHome.robotoR.name
         }
+
+        VMPlusButton{
+            id: btnAddProfile
+            height: labelDrProfile.height
+            anchors.bottom: labelDrProfile.bottom
+            onClicked: {
+                viewDoctorSelection.close();
+                viewDrInfo.clearAllFields();
+                swiperControl.currentIndex = swiperControl.vmIndexDrProfile;
+            }
+        }
+
     }
 
     VMButton{
@@ -110,12 +118,12 @@ Dialog {
         height: 50
         vmText: loader.getStringForKey(keybase+"btnOk");
         vmFont: viewHome.gothamM.name
-        anchors.top: btnAddProfile.bottom
-        anchors.topMargin: 70
+        anchors.top: rowProfileAndAdd.bottom
+        anchors.topMargin: 106
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             if ((labelDrProfile.currentIndex == 0) || (labelDrProfile.count == 0)){
-                labelError.visible = true;
+                labelDrProfile.vmErrorMsg = loader.getStringForKey(keybase+"labelNoDrError");
             }
             else{
                 // Since the format is FirstName LastName - (UID), this knowledge is used to extract the UID.
@@ -139,19 +147,6 @@ Dialog {
                 swiperControl.currentIndex = swiperControl.vmIndexStudyStart
             }
         }
-    }
-
-    // The error
-    Text {
-        id: labelError
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 12
-        anchors.bottom:  btnOk.top
-        anchors.bottomMargin: 14
-        anchors.horizontalCenter: parent.horizontalCenter
-        color: "#ca2026"
-        text: loader.getStringForKey(keybase+"labelNoDrError");
-        visible: false
     }
 
 }

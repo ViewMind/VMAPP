@@ -26,9 +26,9 @@ VMBase {
         font.family: gothamB.name
         font.pixelSize: 43
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: 80
         anchors.horizontalCenter: parent.horizontalCenter
-        color: "#3fa2f7"
+        color: "#297fca"
         text: loader.getStringForKey(keysearch+"labelTitle");
     }
 
@@ -37,109 +37,111 @@ VMBase {
         font.family: robotoR.name
         font.pixelSize: 13
         anchors.top:  viewTitle.bottom
-        anchors.topMargin: 23
+        anchors.topMargin: 11
         anchors.horizontalCenter: parent.horizontalCenter
-        color: "#5499d5"
+        color: "#bcbec0"
         text: loader.getStringForKey(keysearch+"labelSubTitle");
     }
 
+    Row{
 
-    // Patient selection
-    VMComboBox{
-        id: cbPatientSelection
-        width: 440
-        vmModel: [];
-        font.family: viewHome.robotoR.name
-        anchors.left: parent.left
-        anchors.leftMargin: 420
+        id: rowPatientAndAdd
+        spacing: 10
         anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 39
-    }
+        anchors.topMargin: 43
+        anchors.horizontalCenter: parent.horizontalCenter
 
-    VMButton{
-        id: btnAddPatient
-        height: 50
-        width: cbPatientSelection.width
-        vmText: loader.getStringForKey(keysearch+"btnAddPatient");
-        vmFont: viewHome.gothamM.name
-        anchors.left: cbPatientSelection.left
-        anchors.top: cbPatientSelection.bottom
-        anchors.topMargin: 30
-        vmInvertColors: true
-        onClicked: {
-            viewPatientReg.clearAll();
-            swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+        // Patient selection
+        VMComboBox{
+            id: cbPatientSelection
+            width: 470
+            vmModel: [];
+            font.family: viewHome.robotoR.name
         }
-    }
 
-    // Message for study selection
-    Text {
-        id: labelInstruction
-        font.family: robotoB.name
-        font.pixelSize: 15
-        anchors.top: btnAddPatient.bottom
-        anchors.topMargin: 22
-        anchors.left: btnAddPatient.left
-        color: "#5499d5"
-        text: loader.getStringForKey(keysearch+"labelInstruction");
-    }
-
-    // The possible studies
-    VMCheckBox{
-        id: cboxReading
-        text: loader.getStringForKey(keysearch+"cboxReading");
-        font.family: robotoR.name
-        font.pixelSize: 13
-        anchors.top: labelInstruction.bottom
-        anchors.topMargin: 14
-        anchors.left: labelInstruction.left
-        onCheckedChanged: {
-            labelNoInstructionSetError.visible = false;
-        }
-    }
-
-    VMCheckBox{
-        id: cboxBindingUC
-        text: loader.getStringForKey(keysearch+"cboxBindingUC");
-        font.family: robotoR.name
-        font.pixelSize: 13
-        anchors.top: labelInstruction.bottom
-        anchors.topMargin: 14
-        anchors.left: cboxReading.right
-        anchors.leftMargin: 20
-        onCheckedChanged: {
-            labelNoInstructionSetError.visible = false;
-        }
-    }
-
-    VMCheckBox{
-        id: cboxBindingBC
-        text: loader.getStringForKey(keysearch+"cboxBindingBC");
-        font.family: robotoR.name
-        font.pixelSize: 13
-        anchors.top: labelInstruction.bottom
-        anchors.topMargin: 14
-        anchors.left: cboxBindingUC.right
-        anchors.leftMargin: 20
-        onCheckedChanged: {
-            labelNoInstructionSetError.visible = false;
+        VMPlusButton{
+            id: btnAddPatient
+            height: cbPatientSelection.height
+            onClicked: {
+                viewPatientReg.clearAll();
+                swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+            }
         }
 
     }
 
-    VMCheckBox{
-        id: cboxFielding
-        text: loader.getStringForKey(keysearch+"cboxFielding");
-        font.family: robotoR.name
-        font.pixelSize: 13
-        anchors.top: labelInstruction.bottom
-        anchors.topMargin: 14
-        anchors.left: cboxBindingBC.right
-        anchors.leftMargin: 20
-        onCheckedChanged: {
-            labelNoInstructionSetError.visible = false;
+    Row{
+        id: rowSelectStudiesInstruction
+        anchors.left: rowPatientAndAdd.left
+        anchors.top: rowPatientAndAdd.bottom
+        anchors.topMargin: 45
+        spacing: 5
+
+        // Message for study selection
+        Text {
+            id: labelSelectStudy
+            font.family: robotoB.name
+            font.pixelSize: 15
+            color: "#000000"
+            text: loader.getStringForKey(keysearch+"labelSelectStudy");
         }
 
+        Text {
+            id: labelInstruction
+            font.family: robotoR.name
+            font.pixelSize: 9
+            color: "#58595b"
+            anchors.verticalCenter: labelSelectStudy.verticalCenter
+            text: "(" + loader.getStringForKey(keysearch+"labelInstruction") + ")";
+        }
+
+    }
+
+
+    Row{
+        id: rowSelectStudies
+        anchors.left: rowSelectStudiesInstruction.left
+        spacing: 10
+        anchors.top: rowSelectStudiesInstruction.bottom
+        anchors.topMargin: 13
+
+        // The possible studies
+        VMToggleButton{
+            id: cboxReading
+            vmText: loader.getStringForKey(keysearch+"cboxReading");
+            vmFont: robotoR.name
+            onVmOnChanged: {
+                labelNoInstructionSetError.visible = false;
+            }
+        }
+
+        VMToggleButton{
+            id: cboxBindingUC
+            vmText: loader.getStringForKey(keysearch+"cboxBindingUC");
+            vmFont: robotoR.name
+            onVmOnChanged: {
+                labelNoInstructionSetError.visible = false;
+            }
+        }
+
+        VMToggleButton{
+            id: cboxBindingBC
+            vmText: loader.getStringForKey(keysearch+"cboxBindingBC");
+            vmFont: robotoR.name
+            onVmOnChanged: {
+                labelNoInstructionSetError.visible = false;
+            }
+
+        }
+
+        VMToggleButton{
+            id: cboxFielding
+            vmText: loader.getStringForKey(keysearch+"cboxFielding");
+            vmFont: robotoR.name
+            onVmOnChanged: {
+                labelNoInstructionSetError.visible = false;
+            }
+        }
     }
 
     // Message for configuring experiment options
@@ -147,10 +149,10 @@ VMBase {
         id: labelInstruction2
         font.family: robotoB.name
         font.pixelSize: 15
-        anchors.top: cboxReading.bottom
-        anchors.topMargin: 22
-        anchors.left: btnAddPatient.left
-        color: "#5499d5"
+        anchors.top: rowSelectStudies.bottom
+        anchors.topMargin: 44
+        anchors.left: rowPatientAndAdd.left
+        color: "#000000"
         text: loader.getStringForKey(keysearch+"labelInstruction2");
     }
 
@@ -161,15 +163,15 @@ VMBase {
         font.pixelSize: 13
         width: cbEyeMsg.width
         anchors.top: labelInstruction2.bottom
-        anchors.topMargin: 22
-        anchors.left: btnAddPatient.left
+        anchors.topMargin: 13
+        anchors.left: rowPatientAndAdd.left
         color: "#d5d5d5"
         text: loader.getStringForKey(keysearch+"labelEyeMsg");
     }
 
     VMComboBox{
         id: cbEyeMsg
-        width: 212
+        width: (rowPatientAndAdd.width - 16)/2
         vmModel:  loader.getStringListForKey(keysearch+"labelEyeType");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
@@ -184,8 +186,7 @@ VMBase {
         font.family: robotoB.name
         font.pixelSize: 13
         width: cbNumberOfTargets.width
-        anchors.top: labelInstruction2.bottom
-        anchors.topMargin: 22
+        anchors.top: labelEyeMsg.top
         anchors.left: cbNumberOfTargets.left
         color: "#d5d5d5"
         text: loader.getStringForKey(keysearch+"labelNTargets");
@@ -193,7 +194,7 @@ VMBase {
 
     VMComboBox{
         id: cbNumberOfTargets
-        width: 212
+        width: cbEyeMsg.width
         vmModel: ["2","3"];
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
@@ -222,7 +223,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: cbNumberOfTargets.bottom
         anchors.topMargin: 36
-        spacing: 29
+        spacing: 30
 
         VMButton{
             id: btnBack
@@ -241,16 +242,18 @@ VMBase {
             vmText: loader.getStringForKey(keysearch+"btnStart");
             vmFont: viewHome.gothamM.name
             onClicked: {
+
+                if (cbPatientSelection.currentIndex === 0){
+                    cbPatientSelection.vmErrorMsg = loader.getStringForKey(keysearch+"labelNoPatientError");
+                    return;
+                }
+
                 var patient_name = cbPatientSelection.currentText;
                 var parts = patient_name.split("(");
                 var uid = parts[1];
                 // The last character is a ) so it is removed.
                 uid = uid.slice(0,-1);
 
-                if (cbPatientSelection.currentIndex === 0){
-                    cbPatientSelection.vmErrorMsg = loader.getStringForKey(keysearch+"labelNoPatientError");
-                    return;
-                }
                 if (!loader.createPatientDirectory(uid)){
                     vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CREATING_PDIR;
                     var titleMsg = viewHome.getErrorTitleAndMessage("error_patient_dir");
@@ -261,16 +264,16 @@ VMBase {
                 }
 
                 vmSelectedExperiments = [];
-                if (cboxReading.checked){
+                if (cboxReading.vmOn){
                     vmSelectedExperiments.push(viewPatientReg.vmExpIndexReading);
                 }
-                if (cboxBindingBC.checked){
+                if (cboxBindingBC.vmOn){
                     vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingBC);
                 }
-                if (cboxBindingUC.checked){
+                if (cboxBindingUC.vmOn){
                     vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
                 }
-                if (cboxFielding.checked){
+                if (cboxFielding.vmOn){
                     vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
                 }
                 if (vmSelectedExperiments.length > 0){

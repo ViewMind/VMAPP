@@ -50,13 +50,14 @@ viewstudystart_cboxReading = Lectura;
 viewstudystart_cboxBindingUC = Colores Unbound;
 viewstudystart_cboxBindingBC = Colores Bound;
 viewstudystart_cboxFielding = N-Back Test;
+viewstudystart_labelSelectStudy = Seleccione estudios;
 viewstudystart_labelInstruction = Elija las pruebas que tomará;
 viewstudystart_labelInstruction2 = Configure los parámetros de los estudios;
 viewstudystart_btnStart = COMENZAR;
 viewstudystart_btnBack = ATRAS;
 viewstudystart_labelEyeMsg = Selección del ojo a utilizar;
 viewstudystart_labelEyeType = Izquierdo|Derecho|Ambos;
-viewstudystart_labelNTargets = Número de objetivos en los estudios de Colores;
+viewstudystart_labelNTargets = Nº de objetivos en los estudios de Colores;
 viewstudystart_labelNoPatientError = No se ha elegido ningún paciente;
 viewstudystart_labelNoInstructionSetError = Se debe elegir al menos un estudio;
 
@@ -119,12 +120,9 @@ viewpresentexp_fieldingExp = Expliación de la Evaluación <br><b>N-Back</b>;
 
 viewpresentexp_btnContinue = CONTINUAR;
 
-#********************************* DOCTOR DIALOG *********************************
-viewdrdiag_btnChangeSettings = PREFERENCIAS;
-
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;
-viewdrinfo_subtitle = Please fill the information below;
+viewdrinfo_subtitle = Por favor, complete la siguiente información;
 viewdrinfo_labelName = Nombre;
 viewdrinfo_labelLastName = Apellido;
 viewdrinfo_labelDocument_number = Número de documento;
@@ -193,4 +191,3 @@ error_server_comm = Error de comunicación<>No se pudo establecer un vinculo con
 msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;
 msg_request_report = Procesando...<>Por favor espere mientras se obtiene la información del reporte;
 msg_report_generation = Generando reporte<>En un instante su informe estará listo...;
-

@@ -18,7 +18,6 @@ Window {
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.
         swiperControl.currentIndex = swiperControl.vmIndexHome;
-        //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
     }
 
     // The configurations dialog.
@@ -31,12 +30,6 @@ Window {
         }
     }
 
-    ViewDoctorInformation {
-        id: viewDrInfo
-        x: (parent.width - viewDrInfo.width)/2
-        y: (parent.height - viewDrInfo.height)/2
-    }
-
     ViewDoctorSelection {
         id: viewDrSelection
         x: (parent.width - viewDrSelection.width)/2
@@ -46,13 +39,14 @@ Window {
     SwipeView {
 
         readonly property int vmIndexHome: 0
-        readonly property int vmIndexStudyStart: 1
-        readonly property int vmIndexPatientReg: 2
-        readonly property int vmIndexCalibrationStart: 3
-        readonly property int vmIndexCalibrationDone: 4
-        readonly property int vmIndexPresentExperiment: 5
-        readonly property int vmIndexResults: 6
-        readonly property int vmIndexWaitFor: 7
+        readonly property int vmIndexDrProfile: 1
+        readonly property int vmIndexStudyStart: 2
+        readonly property int vmIndexPatientReg: 3
+        readonly property int vmIndexCalibrationStart: 4
+        readonly property int vmIndexCalibrationDone: 5
+        readonly property int vmIndexPresentExperiment: 6
+        readonly property int vmIndexResults: 7
+        readonly property int vmIndexWaitFor: 8
 
 
         id: swiperControl
@@ -69,6 +63,14 @@ Window {
         }
 
         Item{
+            ViewDoctorProfile{
+                id: viewDrInfo
+                isHomePage: true;
+                anchors.fill: parent
+            }
+        }
+
+        Item{
             ViewStudyStart{
                 id: viewStudyStart
                 anchors.fill: parent
@@ -79,7 +81,6 @@ Window {
             ViewPatientRegistration{
                 id: viewPatientReg
                 anchors.fill: parent
-                onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexHome
             }
         }
 
@@ -101,7 +102,6 @@ Window {
             ViewPresentExperiment{
                 id: viewPresentExperimet
                 anchors.fill: parent
-                onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
             }
         }
 
@@ -109,7 +109,6 @@ Window {
             ViewResults{
                 id: viewResults
                 anchors.fill: parent
-                onBackButtonPressed: swiperControl.currentIndex = swiperControl.vmIndexPatientReg
             }
         }
 

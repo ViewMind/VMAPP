@@ -22,11 +22,13 @@
         <file>qml/VMDefines.qml</file>
         <file>qml/VMErrorDialog.qml</file>
         <file>qml/ViewWaitFor.qml</file>
-        <file>qml/ViewDoctorInformation.qml</file>
         <file>qml/VMTextDataInput.qml</file>
         <file>qml/ViewPatientRegistration.qml</file>
         <file>qml/VMDateInputField.qml</file>
         <file>qml/ViewStudyStart.qml</file>
         <file>qml/ViewDoctorSelection.qml</file>
+        <file>qml/ViewDoctorProfile.qml</file>
+        <file>qml/VMPlusButton.qml</file>
+        <file>qml/VMToggleButton.qml</file>
     </qresource>
 </RCC>

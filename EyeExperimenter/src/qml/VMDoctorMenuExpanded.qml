@@ -137,7 +137,7 @@ Rectangle {
                 font.pixelSize: 13
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                text: loader.getStringForKey("viewdrdiag_btnChangeSettings");
+                text: loader.getStringForKey("viewhome_btnConfSettings");
                 color: "#BCBEC0"
             }
 

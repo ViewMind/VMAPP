@@ -104,16 +104,16 @@ Rectangle {
     }
 
 
-    // The back button
-    VMBackButton{
-        id: btnBack
-        anchors.top: parent.top
-        anchors.topMargin: 34
-        anchors.left: parent.left
-        anchors.leftMargin: 61
-        visible: !isHomePage
-        onClicked: backButtonPressed();
-    }
+//    // The back button
+//    VMBackButton{
+//        id: btnBack
+//        anchors.top: parent.top
+//        anchors.topMargin: 34
+//        anchors.left: parent.left
+//        anchors.leftMargin: 61
+//        visible: !isHomePage
+//        onClicked: backButtonPressed();
+//    }
 
     VMDoctorMenu{
         id: doctorMenu
