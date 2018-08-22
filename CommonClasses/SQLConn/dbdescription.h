@@ -26,7 +26,20 @@ struct DBData{
                 rows << crows.at(i).split(colSep);
         }
     }
+    void debugColumns() const{
+        qWarning() << "COLUMNS" << columns;
+        for (int i = 0; i < rows.size(); i++){
+            qWarning() << " ROW:" << i << rows.at(i) << "Row Size: " << rows.size();
+        }
+    }
 };
+
+inline static void printDBDataList(const QList<DBData> &dbdata){
+    for (int i = 0; i < dbdata.size(); i++){
+        qWarning() << " --> DATUM: " << i;
+        dbdata.at(i).debugColumns();
+    }
+}
 
 // Separators used for both the data packet and inside a list of the table.
 #define  DB_LIST_IN_COL_SEP                         "<||>"

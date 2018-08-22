@@ -117,10 +117,12 @@ void Loader::onTransactionFinished(bool isOk){
             }
             // Assuming only one row per transaction so....
             if (dbdata.at(i).rows.size() != 1){
-                logger.appendError("Expeting only 1 Row per transaction at " + QString::number(i) + " but got " + QString::number(dbdata.at(i).rows.size()));
+                logger.appendError("DRLIST: Expecting only 1 Row per transaction at " + QString::number(i) + " but got " + QString::number(dbdata.at(i).rows.size()));
             }
             else if (dbdata.at(i).rows.first().size() != 3){
-                logger.appendError("Expeting 3 Columns in each row, but row " + QString::number(i) + " got " + QString::number(dbdata.at(i).rows.first().size()));
+                logger.appendError("DRLIST: Expecting 3 Columns in each row, but row " + QString::number(i) + " got " + QString::number(dbdata.at(i).rows.first().size()));
+                //qWarning()  << "DRLiST";
+                //printDBDataList(dbdata);
             }
             else userDoctorInfo << dbdata.at(i).rows.first().at(0) + " " + dbdata.at(i).rows.first().at(1) + " - (" + dbdata.at(i).rows.first().at(2) + ")";
         }
@@ -157,7 +159,9 @@ void Loader::onTransactionFinished(bool isOk){
             for (qint32 i = 0; i < dbdata.first().rows.size(); i++){
                 // There should be ONLY 3 columns.
                 if (dbdata.first().rows.at(i).size() != 3){
-                    logger.appendError("Expeting 3 Columns in each row, but row " + QString::number(i) + " got " + QString::number(dbdata.first().rows.at(i).size()));
+                    logger.appendError("PAT_LIST: Expecting 3 Columns in ech row, but row " + QString::number(i) + " got " + QString::number(dbdata.first().rows.at(i).size()));
+                    //qWarning()  << "PATLiST";
+                    //printDBDataList(dbdata);
                     break;
                 }
                 else patientListForDoctor << dbdata.first().rows.at(i).at(0) + " " + dbdata.first().rows.at(i).at(1) + " - (" + dbdata.first().rows.at(i).at(2) + ")";

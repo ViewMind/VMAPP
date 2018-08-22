@@ -117,6 +117,8 @@ void SSLDBClient::on_readyRead(){
         // Got the data form the DB. Should only be here in state CS_CONNECTING_TO_SQL_GET
         dbdata.clear();
 
+        timer.stop();
+
         QStringList tableNames = rxDP.getField(DataPacket::DPFI_DB_TABLE).data.toString().split(DB_TRANSACTION_LIST_SEP);
         QStringList allColumns = rxDP.getField(DataPacket::DPFI_DB_COL).data.toString().split(DB_TRANSACTION_LIST_SEP);
         QStringList allErrors= rxDP.getField(DataPacket::DPFI_DB_ERROR).data.toString().split(DB_TRANSACTION_LIST_SEP,QString::KeepEmptyParts);

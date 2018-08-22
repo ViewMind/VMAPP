@@ -24,6 +24,9 @@ Dialog {
 
     Connections{
         target: loader
+        onNewDoctorAdded:{
+            loader.getUserDoctorInfoFromDB();
+        }
         onUpdatedDoctorList:{
             updateDrProfile()
         }
