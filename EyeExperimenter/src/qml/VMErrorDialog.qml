@@ -98,11 +98,11 @@ Dialog {
             break;
         case vmERROR_EXP_END_ERROR:
             close()
-            swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
             break;
         case vmERROR_SERVER_COMM:
             close();
-            swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
             break;
         case vmERROR_NO_SSL:
             close();
