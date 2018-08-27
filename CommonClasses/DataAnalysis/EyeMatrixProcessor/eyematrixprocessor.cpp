@@ -360,6 +360,26 @@ void EyeMatrixProcessor::loadReadingCSV(const QString &filename){
     cc.type = CSVCheckedReader::CT_REAL;
     cclist << cc;
 
+    // The number of blinks
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_INT;
+    cclist << cc;
+
+    // The amplitude of the sacade
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_REAL;
+    cclist << cc;
+
+    // The gaze
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_REAL;
+    cclist << cc;
+
+    // The number of fixations
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_INT;
+    cclist << cc;
+
     csvReading = loadCSV(filename,cclist,CSV_READING_EYE_ID_COL);
 
 }

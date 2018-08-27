@@ -47,6 +47,14 @@ qint32 EDPBase::countZeros(const DataMatrix &data,
 
 }
 
+qreal EDPBase::getGaze(const Fixations &fixations){
+    qreal gaze = 0;
+    for (qint32 i = 0; i < fixations.length(); i++){
+        gaze = gaze + fixations.at(i).duration;
+    }
+    return gaze;
+}
+
 
 
 

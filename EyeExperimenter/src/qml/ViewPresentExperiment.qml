@@ -87,6 +87,8 @@ VMBase {
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
                 vmSlideAnimation = "qrc:/images/bound.gif"
             }
+            slideAnimation.visible = false;
+            slideDescription.visible = false;
             break;
         case vmExpIndexBindingUC:
             if (flowControl.getUse3BindingTargets()){
@@ -99,6 +101,8 @@ VMBase {
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
                 vmSlideAnimation = "qrc:/images/unbound.gif"
             }
+            slideAnimation.visible = false;
+            slideDescription.visible = false;
             break;
         case vmExpIndexReading:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemReading");

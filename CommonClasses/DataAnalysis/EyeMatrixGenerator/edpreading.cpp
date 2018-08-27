@@ -117,7 +117,11 @@ bool EDPReading::initializeReadingDataMatrix(){
            << "dur"
            << "longoracion"
            << "ojoDI"
-           << "pupila";
+           << "pupila"
+           << "blink"
+           << "amp_sac"
+           << "gaze"
+           << "nf";
 
     writer << header.join(",") << "\n";
     file.close();
@@ -130,11 +134,15 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
 
     // Calculating the fixations for each eye.;
     Fixations fL = mwa.computeFixations(data,READ_XL,READ_YL,READ_TI);
-
-    //qWarning() << "ABORTING";
-    //abort();
-
     Fixations fR = mwa.computeFixations(data,READ_XR,READ_YR,READ_TI);
+
+    // Number of fixations for each Eye.
+    QString nfL = QString::number(fL.size());
+    QString nfR = QString::number(fR.size());
+
+    // Fixation sum, called Gaze.
+    QString gazeL = QString::number(getGaze(fL));
+    QString gazeR = QString::number(getGaze(fR));
 
     // The image with the fixations is generated.
     eyeFixations.left.append(fL);
@@ -151,6 +159,9 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
     QTextStream writer(&file);
 
     // The exact same processing is done for left and right.
+    SacadeAmplitudeCalculator sac;
+    sac.reset();
+
     for (qint32 i = 0; i < fL.size(); i++){
 
         // Average position of th word.
@@ -171,15 +182,27 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
                                           fL.at(i).indexFixationStart,
                                           fL.at(i).indexFixationEnd);
 
-        writer << subjectIdentifier << "," << "1," << imgID << "," << imgID << "," << i+1 << ","
-            << fL.at(i).x << "," << wn << "," << pos << "," << fL.at(i).duration << ","
-               // The length of the sentece is alwasy the same so the value of the first row is taken, only.
-            << data.first().at(READ_SL) << ",0"
-            << "," << pup;
+        writer << subjectIdentifier << ","
+               << "1,"
+               << imgID << ","
+               << imgID << ","
+               << i+1 << ","
+               << fL.at(i).x << ","
+               << wn << ","
+               << pos << ","
+               << fL.at(i).duration << ","
+                  // The length of the sentece is alwasy the same so the value of the first row is taken, only.
+               << data.first().at(READ_SL)
+               << ",0" << ","
+               << pup << ","
+               << countZeros(data,READ_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
+               << sac.calculateSacadeAmplitude(fL.at(i).x,fL.at(i).y,monitorGeometry) << ","
+               << gazeL << ","
+               << nfL;
         writer << "\n";
     }
 
-
+    sac.reset();
     for (qint32 i = 0; i < fR.size(); i++){
 
         // Average position of th word.
@@ -201,11 +224,23 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
                                           fR.at(i).indexFixationEnd);
 
 
-        writer << subjectIdentifier << "," << "1," << imgID << "," << imgID << "," << i+1 << ","
-            << fR.at(i).x << "," << wn << "," << pos << "," << fR.at(i).duration << ","
-               // The length of the sentece is alwasy the same so the value of the first row is taken, only.
-            << data.first().at(READ_SL) << ",1"
-            << "," << pup;
+        writer << subjectIdentifier << ","
+               << "1,"
+               << imgID << ","
+               << imgID << ","
+               << i+1 << ","
+               << fR.at(i).x << ","
+               << wn << ","
+               << pos << ","
+               << fR.at(i).duration << ","
+                  // The length of the sentece is alwasy the same so the value of the first row is taken, only.
+               << data.first().at(READ_SL)
+               << ",1" << ","
+               << pup << ","
+               << countZeros(data,READ_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
+               << sac.calculateSacadeAmplitude(fR.at(i).x,fR.at(i).y,monitorGeometry) << ","
+               << gazeR << ","
+               << nfR;
         writer << "\n";
     }
 

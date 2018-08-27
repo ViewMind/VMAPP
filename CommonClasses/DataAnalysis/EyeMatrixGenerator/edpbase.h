@@ -106,6 +106,36 @@ protected:
         QStringList filteredLines;
     };
 
+    // Structured used to calculate the sacade amplitude.
+    struct SacadeAmplitudeCalculator{
+
+        qreal lastX;
+        qreal lastY;
+
+        void reset(){
+            lastX = -1;
+            lastY = -1;
+        }
+
+        qreal calculateSacadeAmplitude(qreal x, qreal y, const MonitorGeometry &monitorGeometry){
+            qreal sacade = 0;
+            if ((lastX > -1) && (lastY > -1)){
+                // Calculating the sacade
+                qreal xINmm = (lastX - x)*monitorGeometry.XmmToPxRatio;
+                qreal yINmm = (lastY - y)*monitorGeometry.YmmToPxRatio;
+                qreal delta = qSqrt(qPow(xINmm,2) + qPow(yINmm,2));
+                sacade = qAtan(delta/monitorGeometry.distanceToMonitorInMilimiters)*180.0/3.141516;
+            }
+            lastX = x;
+            lastY = y;
+            return sacade;
+        }
+
+    };
+
+    // Sum of the duration of a fixation list.
+    qreal getGaze(const Fixations &fixations);
+
 };
 
 #endif // EDPBASE_H

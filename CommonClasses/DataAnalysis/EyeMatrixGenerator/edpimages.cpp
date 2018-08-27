@@ -179,17 +179,8 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     QString nfR = QString::number(fR.size());
 
     // Fixation sum, called Gaze.
-    qreal sum;
-    sum = 0;
-    for (qint32 i = 0; i < fL.size(); i++){
-        sum = sum + fL.at(i).duration;
-    }
-    QString gazeL = QString::number(sum);
-    sum = 0;
-    for (qint32 i = 0; i < fR.size(); i++){
-        sum = sum + fR.at(i).duration;
-    }
-    QString gazeR = QString::number(sum);
+    QString gazeL = QString::number(getGaze(fL));
+    QString gazeR = QString::number(getGaze(fR));
 
     // Adding to the result struct
     eyeFixations.left.append(fL);
@@ -232,23 +223,11 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
         trial_type = "N/A";
     }
 
-    // The x and y of the last fixation. Used to calculate the value of the sacade.
-    qreal lastX = -1;
-    qreal lastY = -1;
+    // Used to calculate the value of the sacade.
+    SacadeAmplitudeCalculator sac;
+    sac.reset();
 
     for (qint32 i = 0; i < fL.size(); i++){
-
-        qreal sacade = 0;
-        if ((lastX > -1) && (lastY > -1)){
-            // Calculating the sacade
-            qreal xINmm = (lastX - fL.at(i).x)*monitorGeometry.XmmToPxRatio;
-            qreal yINmm = (lastY - fL.at(i).y)*monitorGeometry.YmmToPxRatio;
-            qreal delta = qSqrt(qPow(xINmm,2) + qPow(yINmm,2));
-            sacade = qAtan(delta/monitorGeometry.distanceToMonitorInMilimiters)*180.0/3.141516;
-        }
-
-        lastX = fL.at(i).x;
-        lastY = fL.at(i).y;
 
         writer << subjectIdentifier << ","
                << trial_id << ","
@@ -259,28 +238,15 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << fL.at(i).duration << ","
                << "0,"
                << countZeros(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
-               << sacade << ","
+               << sac.calculateSacadeAmplitude(fL.at(i).x,fL.at(i).y,monitorGeometry) << ","
                << averageColumnOfMatrix(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
                << gazeL << ","
                << nfL;
         writer << "\n";
     }
 
-    lastX = -1;
-    lastY = -1;
+    sac.reset();
     for (qint32 i = 0; i < fR.size(); i++){
-
-        qreal sacade = 0;
-        if ((lastX > -1) && (lastY > -1)){
-            // Calculating the sacade
-            qreal xINmm = (lastX - fR.at(i).x)*monitorGeometry.XmmToPxRatio;
-            qreal yINmm = (lastY - fR.at(i).y)*monitorGeometry.YmmToPxRatio;
-            qreal delta = qSqrt(qPow(xINmm,2) + qPow(yINmm,2));
-            sacade = qAtan(delta/monitorGeometry.distanceToMonitorInMilimiters);
-        }
-
-        lastX = fR.at(i).x;
-        lastY = fR.at(i).y;
 
         writer << subjectIdentifier << ","
                << trial_id << ","
@@ -291,7 +257,7 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << fR.at(i).duration << ","
                << "1,"
                << countZeros(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
-               << sacade << ","
+               << sac.calculateSacadeAmplitude(fR.at(i).x,fR.at(i).y,monitorGeometry) << ","
                << averageColumnOfMatrix(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
                << gazeR << ","
                << nfR;
