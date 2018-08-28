@@ -257,12 +257,12 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         break;
     case EXP_BINDING_BC:
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(true));
-        experiment = new ImageExperiment(true,use3BindingTargetsEnable);
+        experiment = new ImageExperiment(true);
         background = QBrush(Qt::gray);
         break;
     case EXP_BINDING_UC:
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(false));
-        experiment = new ImageExperiment(false,use3BindingTargetsEnable);
+        experiment = new ImageExperiment(false);
         background = QBrush(Qt::gray);
         break;
     case EXP_FIELDNG:
@@ -363,7 +363,7 @@ void FlowControl::requestCalibration(){
 }
 
 QString FlowControl::getBindingExperiment(bool bc){
-    if (!use3BindingTargetsEnable){
+    if (configuration->getInt(CONFIG_BINDING_NUMBER_OF_TARGETS) == 2){
         if (bc) return ":/experiment_data/bc.dat";
         else return ":/experiment_data/uc.dat";
     }

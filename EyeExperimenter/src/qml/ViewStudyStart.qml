@@ -171,7 +171,7 @@ VMBase {
 
     VMComboBox{
         id: cbEyeMsg
-        width: (rowPatientAndAdd.width - 16)/2
+        width: (rowPatientAndAdd.width - 16)/3
         vmModel:  loader.getStringListForKey(keysearch+"labelEyeType");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
@@ -201,6 +201,29 @@ VMBase {
         anchors.top: labelNTargets.bottom
         anchors.topMargin: 5
         anchors.left: cbEyeMsg.right
+        anchors.leftMargin: 16
+    }
+
+    Text {
+        id: labelTargetSize
+        font.family: robotoB.name
+        font.pixelSize: 13
+        width: cbNumberOfTargets.width
+        anchors.top: labelEyeMsg.top
+        anchors.left: cbTargetSize.left
+        color: "#d5d5d5"
+        text: loader.getStringForKey(keysearch+"labelTargetSize");
+    }
+
+    VMComboBox{
+        id: cbTargetSize
+        width: cbEyeMsg.width
+        vmModel: loader.getStringListForKey(keysearch+"targetOptions");
+        font.family: viewHome.robotoR.name
+        font.pixelSize: 13
+        anchors.top: labelNTargets.bottom
+        anchors.topMargin: 5
+        anchors.left: cbNumberOfTargets.right
         anchors.leftMargin: 16
     }
 
@@ -279,8 +302,9 @@ VMBase {
                 if (vmSelectedExperiments.length > 0){
 
                     // All is good, so the parameters are set.
-                    loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.currentIndex);
-                    flowControl.setUse3BindingTargets(cbNumberOfTargets.currentIndex === 1);
+                    loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.currentIndex,false);
+                    loader.setConfigurationInt(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.currentText,false);
+                    loader.setConfigurationBoolean(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.currentIndex == 1),false);
 
                     viewPresentExperimet.setTracker(vmSelectedExperiments);
                     swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart

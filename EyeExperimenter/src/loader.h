@@ -22,9 +22,9 @@ public:
     Q_INVOKABLE QString getConfigurationString(const QString &key);
     Q_INVOKABLE bool getConfigurationBoolean(const QString &key);
     Q_INVOKABLE bool getLoaderError() const {return loadingError; }
-    Q_INVOKABLE void setConfigurationString(const QString &key, const QString &value);
-    Q_INVOKABLE void setConfigurationBoolean(const QString &key, bool value);
-    Q_INVOKABLE void setConfigurationInt(const QString &key, qint32 value);
+    Q_INVOKABLE void setConfigurationString(const QString &key, const QString &value, bool saveToFile = true);
+    Q_INVOKABLE void setConfigurationBoolean(const QString &key, bool value, bool saveToFile = true);
+    Q_INVOKABLE void setConfigurationInt(const QString &key, qint32 value, bool saveToFile = true);
     Q_INVOKABLE QString hasValidOutputRepo(const QString &dirToCheck = "");
     Q_INVOKABLE QString getWindowTilteVersion(){ return EXPERIMENTER_VERSION; }
     Q_INVOKABLE bool createPatientDirectory(const QString &patientuid);

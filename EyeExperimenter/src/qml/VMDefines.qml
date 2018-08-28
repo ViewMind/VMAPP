@@ -31,7 +31,6 @@ Item{
     readonly property string vmCONFIG_PATIENT_EMAIL: "patient_email"
     readonly property string vmCONFIG_REPORT_NO_LOGO: "no_logo_in_report"
     readonly property string vmCONFIG_DEMO_MODE: "demo_mode"
-    readonly property string vmCONFIG_BINDING_NUM_TARGETS: "binding_num_targets"
     readonly property string vmCONFIG_BINDING_USE_NUMBERS: "binding_use_numbers"
     readonly property string vmCONFIG_BINDING_DEFAULT: "binding_default"
     readonly property string vmCONFIG_BC_FILE_FILTER: "bc_file_filter"
@@ -67,5 +66,6 @@ Item{
     readonly property string vmCONFIG_P_ET_REDM: "REDm"
     readonly property string vmCONFIG_DOCTOR_UID : "doctor_uid"
     readonly property string vmCONFIG_PATIENT_UID: "patient_uid"
-
+    readonly property string vmCONFIG_BINDING_TARGET_SMALL: "binding_target_small"
+    readonly property string vmCONFIG_BINDING_NUMBER_OF_TARGETS:"binding_number_of_targets"
 }

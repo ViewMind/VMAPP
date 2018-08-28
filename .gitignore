@@ -20,5 +20,6 @@ SSLServer/bin5.6/
 Doc/*.aux
 Doc/*.log
 Doc/*.gz
+BindingDesigner/outputs/*
 *.autosave
 *.tmp*

@@ -96,6 +96,19 @@ public:
 
 private:
 
+    struct DrawValues{
+        qreal side;
+        qreal hs;
+        qreal hl;
+        qreal vs;
+        qreal vl;
+        qreal gx;
+        qreal gy;
+    };
+
+    // Used to select the constants to use when drawing.
+    DrawValues drawValues;
+
     // For debugging
     LogInterface logger;
 
@@ -115,6 +128,7 @@ private:
     bool parseFlagPositions(const QString &line, BindingTrial *trial, bool show);
     bool parseColors(const QString &line, BindingTrial *trial, bool background, bool show);
     bool legacyParser(const QString &contents);
+    void loadDrawStructure();
 
     void enableDemoMode();
 

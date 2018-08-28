@@ -1,15 +1,25 @@
 #include "bindingmanager.h"
 
 // Dimensions for drawing the target flags. The dimensions are in mm so that they can be drawn the same size independently of the screen resolution.
-static const float BINDING_TARGET_SIDE =              45.25;
-static const float BINDING_TARGET_HS =                1;
-static const float BINDING_TARGET_HL =                11.75;
-static const float BINDING_TARGET_VS =                6;
-static const float BINDING_TARGET_VL =                16;
+static const float LARGE_BINDING_TARGET_SIDE =              45.25;
+static const float LARGE_BINDING_TARGET_HS =                1;
+static const float LARGE_BINDING_TARGET_HL =                11.75;
+static const float LARGE_BINDING_TARGET_VS =                6;
+static const float LARGE_BINDING_TARGET_VL =                16;
 
-static const float BINDING_GRID_SPACING_X_2FLAGS =    128;
-static const float BINDING_GRID_SPACING_X_3FLAGS =    64;
-static const float BINDING_GRID_SPACING_Y =           48;
+static const float LARGE_BINDING_GRID_SPACING_X_2FLAGS =    128;
+static const float LARGE_BINDING_GRID_SPACING_X_3FLAGS =    64;
+static const float LARGE_BINDING_GRID_SPACING_Y =           48;
+
+static const float SMALL_BINDING_TARGET_SIDE =              10;
+static const float SMALL_BINDING_TARGET_HS =                0.25;
+static const float SMALL_BINDING_TARGET_HL =                2.6;
+static const float SMALL_BINDING_TARGET_VS =                1.33;
+static const float SMALL_BINDING_TARGET_VL =                3.54;
+
+static const float SMALL_BINDING_GRID_SPACING_X_2FLAGS =    35;
+static const float SMALL_BINDING_GRID_SPACING_X_3FLAGS =    35;
+static const float SMALL_BINDING_GRID_SPACING_Y =           35;
 
 
 BindingManager::BindingManager()
@@ -157,24 +167,23 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
     drawStructure.xpos.clear();
     drawStructure.ypos.clear();
 
+    // Loading the draw structure
+    loadDrawStructure();
+
     if (!legacyDescription){
 
         // The mm values are transformed to pixels and the math is only once to define the possible target positions.
-        drawStructure.FlagSideH = BINDING_TARGET_SIDE/config->getReal(CONFIG_XPX_2_MM);
-        drawStructure.FlagSideV = BINDING_TARGET_SIDE/config->getReal(CONFIG_YPX_2_MM);
-        drawStructure.HSBorder  = BINDING_TARGET_HS/config->getReal(CONFIG_XPX_2_MM);
-        drawStructure.VLBorder  = BINDING_TARGET_VL/config->getReal(CONFIG_XPX_2_MM);
-        drawStructure.HLBorder  = BINDING_TARGET_HL/config->getReal(CONFIG_YPX_2_MM);
-        drawStructure.VSBorder  = BINDING_TARGET_VS/config->getReal(CONFIG_YPX_2_MM);
+        drawStructure.FlagSideH = drawValues.side/config->getReal(CONFIG_XPX_2_MM);
+        drawStructure.FlagSideV = drawValues.side/config->getReal(CONFIG_YPX_2_MM);
+        drawStructure.HSBorder  = drawValues.hs/config->getReal(CONFIG_XPX_2_MM);
+        drawStructure.VLBorder  = drawValues.vl/config->getReal(CONFIG_XPX_2_MM);
+        drawStructure.HLBorder  = drawValues.hl/config->getReal(CONFIG_YPX_2_MM);
+        drawStructure.VSBorder  = drawValues.vs/config->getReal(CONFIG_YPX_2_MM);
 
-        qreal spacingx;
-        if (numberOfTargets == 2) spacingx = BINDING_GRID_SPACING_X_2FLAGS;
-        else spacingx = BINDING_GRID_SPACING_X_3FLAGS;
-
-        qreal Gxpx = spacingx/config->getReal(CONFIG_XPX_2_MM);
-        qreal Gypx = BINDING_GRID_SPACING_Y/config->getReal(CONFIG_YPX_2_MM);
-        qreal Sx = BINDING_TARGET_SIDE/config->getReal(CONFIG_XPX_2_MM);
-        qreal Sy = BINDING_TARGET_SIDE/config->getReal(CONFIG_YPX_2_MM);
+        qreal Gxpx = drawValues.gx/config->getReal(CONFIG_XPX_2_MM);
+        qreal Gypx = drawValues.gy/config->getReal(CONFIG_YPX_2_MM);
+        qreal Sx = drawValues.side/config->getReal(CONFIG_XPX_2_MM);
+        qreal Sy = drawValues.side/config->getReal(CONFIG_YPX_2_MM);
 
         // Total horizontal space required by the placement grid
         qreal Wx = Gxpx*(horizontalGridPoints-1) + Sx;
@@ -398,5 +407,41 @@ bool BindingManager::legacyParser(const QString &contents){
 
     return true;
 
+}
+
+void BindingManager::loadDrawStructure(){
+    if (config->getBool(CONFIG_BINDING_TARGET_SMALL)){
+        drawValues.hl = SMALL_BINDING_TARGET_HL;
+        drawValues.hs = SMALL_BINDING_TARGET_HS;
+        drawValues.vl = SMALL_BINDING_TARGET_VL;
+        drawValues.vs = SMALL_BINDING_TARGET_VS;
+        drawValues.side = SMALL_BINDING_TARGET_SIDE;
+        if (numberOfTargets == 2){
+            drawValues.gx = SMALL_BINDING_GRID_SPACING_X_2FLAGS;
+            drawValues.gy = SMALL_BINDING_GRID_SPACING_Y;
+        }
+        else{
+            // Assuming 3 targets
+            drawValues.gx = SMALL_BINDING_GRID_SPACING_X_3FLAGS;
+            drawValues.gy = SMALL_BINDING_GRID_SPACING_Y;
+        }
+    }
+    else{
+        // Using large targets.
+        drawValues.hl = LARGE_BINDING_TARGET_HL;
+        drawValues.hs = LARGE_BINDING_TARGET_HS;
+        drawValues.vl = LARGE_BINDING_TARGET_VL;
+        drawValues.vs = LARGE_BINDING_TARGET_VS;
+        drawValues.side = LARGE_BINDING_TARGET_SIDE;
+        if (numberOfTargets == 2){
+            drawValues.gx = LARGE_BINDING_GRID_SPACING_X_2FLAGS;
+            drawValues.gy = LARGE_BINDING_GRID_SPACING_Y;
+        }
+        else{
+            // Assuming 3 targets
+            drawValues.gx = LARGE_BINDING_GRID_SPACING_X_3FLAGS;
+            drawValues.gy = LARGE_BINDING_GRID_SPACING_Y;
+        }
+    }
 }
 

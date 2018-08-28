@@ -57,9 +57,11 @@ viewstudystart_btnStart = START;
 viewstudystart_btnBack = BACK;
 viewstudystart_labelEyeMsg = Select which eye to use;
 viewstudystart_labelEyeType = Left|Right|Both;
-viewstudystart_labelNTargets = Number of targets for Color studies;
+viewstudystart_labelNTargets = Number of color targets;
 viewstudystart_labelNoPatientError = No patient has been selected;
 viewstudystart_labelNoInstructionSetError = At least one study must be selected;
+viewstudystart_labelTargetSize = Color target size;
+viewstudystart_targetOptions = Large|Small;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Doctor selection;

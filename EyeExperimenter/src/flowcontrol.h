@@ -46,8 +46,6 @@ public:
     Q_INVOKABLE int getReportResultBarPosition(const QString &key);
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
-    Q_INVOKABLE void setUse3BindingTargets(bool use3) {use3BindingTargetsEnable = use3;}
-    Q_INVOKABLE bool getUse3BindingTargets() { return use3BindingTargetsEnable; }
 
 signals:
 
@@ -98,9 +96,6 @@ private:
 
     // The Log interface
     LogInterface logger;
-
-    // Flag to indicate the use of 3 Binding Targets instead of 2.
-    bool use3BindingTargetsEnable;
 
     // The sslclient to send the information process request.
     SSLDataProcessingClient *sslDataProcessingClient;

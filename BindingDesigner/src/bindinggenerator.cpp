@@ -58,6 +58,7 @@ void BindingGenerator::drawPictures(const QString &input){
     config.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,1366);
     config.addKeyValuePair(CONFIG_XPX_2_MM,0.25);
     config.addKeyValuePair(CONFIG_YPX_2_MM,0.25);
+    config.addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,(ui->cbTargetSize->currentIndex() == 0));
     bmng.init(&config);
 
     QFileInfo basefile(input);

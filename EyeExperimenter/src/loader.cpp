@@ -429,17 +429,23 @@ void Loader::changeLanguage(){
     }
 }
 
-void Loader::setConfigurationString(const QString &key, const QString &value){
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,value,configuration);
+void Loader::setConfigurationString(const QString &key, const QString &value, bool saveToFile){
+    if (saveToFile)
+       ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,value,configuration);
+    else configuration->addKeyValuePair(key,value);
 }
 
-void Loader::setConfigurationBoolean(const QString &key, bool value){
+void Loader::setConfigurationBoolean(const QString &key, bool value, bool saveToFile){
     QString boolText = value ? "true" : "false";
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,boolText,configuration);
+    if (saveToFile)
+       ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,boolText,configuration);
+    else configuration->addKeyValuePair(key,value);
 }
 
-void Loader::setConfigurationInt(const QString &key, qint32 value){
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,QString::number(value),configuration);
+void Loader::setConfigurationInt(const QString &key, qint32 value, bool saveToFile){
+    if (saveToFile)
+       ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,QString::number(value),configuration);
+    else configuration->addKeyValuePair(key,value);
 }
 
 bool Loader::createPatientDirectory(const QString &patientuid){

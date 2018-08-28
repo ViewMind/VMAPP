@@ -95,9 +95,9 @@ void RawDataProcessor::run(){
         matrixReading = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
         QString report = emp.processReading(matrixReading,&dbdata);
-        /// TODO: Get versions of experiment from somewhere else.
-        studyID << "rdv_1";
+        /// TODO: Get versions of experiment from somewhere else.        
         if (!report.isEmpty()){
+            studyID << "rdv_1";
             emit(appendMessage(report,MSG_TYPE_STD));
         }
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
@@ -110,10 +110,11 @@ void RawDataProcessor::run(){
         matrixBindingBC = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
-        /// TODO: Get versions of experiment from somewhere else.
-        studyID << "bcv_1";
+        /// TODO: Get versions of experiment from somewhere else.        
+
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
+            studyID << getVersionForBindingExperiment(true) + "v1";
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
 
             emp.addExtraToResults(STAT_ID_BC_WRONG,ans.wrong);
@@ -136,10 +137,10 @@ void RawDataProcessor::run(){
         matrixBindingUC = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
-        /// TODO: Get versions of experiment from somewhere else.
-        studyID << "ucv_1";
+        /// TODO: Get versions of experiment from somewhere else.        
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
+            studyID << getVersionForBindingExperiment(false) + "v1";
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
 
             emp.addExtraToResults(STAT_ID_UC_WRONG,ans.wrong);
@@ -162,9 +163,9 @@ void RawDataProcessor::run(){
         matrixFielding = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
         fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
         QString report = emp.processFielding(matrixFielding,fielding.getNumberOfTrials());
-        /// TODO: Get versions of experiment from somewhere else.
-        studyID << "fdv_1";
+        /// TODO: Get versions of experiment from somewhere else.        
         if (!report.isEmpty()){
+            studyID << "fdv_1";
             emit(appendMessage(report,MSG_TYPE_STD));
         }
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
@@ -351,4 +352,34 @@ bool RawDataProcessor::getResolutionToConfig(const QString &firstline){
     config->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
 
     return true;
+}
+
+QString RawDataProcessor::getVersionForBindingExperiment(bool bound){
+    QString base;
+    QString fileName;
+    if (bound) {
+        base = "bc";
+        fileName = dataBindingBC;
+    }
+    else{
+        base = "uc";
+        fileName = dataBindingUC;
+    }
+
+    QFileInfo info(fileName);
+    fileName = info.baseName();
+
+    QStringList parts = fileName.split("_",QString::SkipEmptyParts);
+
+    qWarning() << "Parts" << parts;
+
+    if (parts.size() == NUMBER_OF_PARTS_FOR_BINDING_FILE){
+        base = base  + parts.at(2) + parts.at(3);
+    }
+    // By default the experiments are for two targets large.
+    else base = base + 2l;
+
+    qWarning() << "Base" << base;
+
+    return base;
 }

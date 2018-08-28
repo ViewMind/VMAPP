@@ -71,6 +71,8 @@
 #define   CONFIG_DBPORT                                 "db_port"
 #define   CONFIG_OFFLINE_MODE                           "offline_mode"
 #define   CONFIG_DEFAULT_COUNTRY                        "default_country"
+#define   CONFIG_BINDING_TARGET_SMALL                   "binding_target_small"
+#define   CONFIG_BINDING_NUMBER_OF_TARGETS              "binding_number_of_targets"
 
 
 // Result values for the Result EyeReport Generator File

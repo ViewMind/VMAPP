@@ -77,7 +77,7 @@ VMBase {
     function setPropertiesForExperiment(index){
         switch(index){
         case vmExpIndexBindingBC:
-            if (flowControl.getUse3BindingTargets()){
+            if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
                 vmSlideAnimation = "qrc:/images/bound.gif"
@@ -91,7 +91,7 @@ VMBase {
             slideDescription.visible = false;
             break;
         case vmExpIndexBindingUC:
-            if (flowControl.getUse3BindingTargets()){
+            if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
                 vmSlideAnimation = "qrc:/images/unbound.gif"

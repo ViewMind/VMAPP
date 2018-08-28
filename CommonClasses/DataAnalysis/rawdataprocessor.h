@@ -19,6 +19,7 @@
 #define   MSG_TYPE_SUCC                                  1
 #define   MSG_TYPE_ERR                                   2
 #define   MSG_TYPE_WARN                                  3
+#define   NUMBER_OF_PARTS_FOR_BINDING_FILE               7
 
 class RawDataProcessor : public QObject
 {
@@ -83,6 +84,8 @@ private:
     void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd);
 
     QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers & ans);
+
+    QString getVersionForBindingExperiment(bool bound);
 
 };
 
