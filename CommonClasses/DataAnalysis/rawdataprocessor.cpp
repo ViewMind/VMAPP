@@ -377,7 +377,7 @@ QString RawDataProcessor::getVersionForBindingExperiment(bool bound){
         base = base  + parts.at(2) + parts.at(3);
     }
     // By default the experiments are for two targets large.
-    else base = base + 2l;
+    else base = base + "2l";
 
     qWarning() << "Base" << base;
 
