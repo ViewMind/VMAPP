@@ -86,7 +86,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
 
     QTextStream writer(&file);
     writer.setCodec(COMMON_TEXT_CODEC);
-    writer << expHeader << "\n"           
+    writer << expHeader + " " + manager->getVersion() << "\n"
            << contents << "\n"
            << expHeader << "\n"
            << config->getReal(CONFIG_RESOLUTION_WIDTH) << " " << config->getReal(CONFIG_RESOLUTION_HEIGHT) << "\n";

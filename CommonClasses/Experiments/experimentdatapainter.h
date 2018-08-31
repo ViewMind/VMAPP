@@ -28,6 +28,8 @@ public:
 
     QGraphicsScene * getCanvas() {return canvas;}
 
+    QString getVersion() const { return versionString; }
+
 protected:
 
     qreal ScreenResolutionWidth;
@@ -36,6 +38,7 @@ protected:
     ConfigurationManager *config;
     QGraphicsScene *canvas;
     QString error;
+    QString versionString;
 
     // Trims the number of trials to number in demo mode.
     virtual void enableDemoMode(){}

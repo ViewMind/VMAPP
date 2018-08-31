@@ -33,6 +33,8 @@ void ReadingManager::init(ConfigurationManager *c){
 
 bool ReadingManager::parseExpConfiguration(const QString &contents){
 
+    // If a version string is present it is in the very first line
+
     // Getting the description if available.
     QString experimentData = contents;
     qint32 commentToken = contents.indexOf(READING_COMMENT_STRING);
@@ -40,13 +42,20 @@ bool ReadingManager::parseExpConfiguration(const QString &contents){
     if (commentToken != -1){
         qint32 end = commentToken+QString(READING_COMMENT_STRING).length();
         description = contents.mid(0,commentToken);
-        experimentData = contents.mid(end+1);
+        experimentData = experimentData.mid(end+1);
     }
 
     // Generating the contents from the phrases
-    QStringList lines = experimentData.split('\n',QString::KeepEmptyParts);
+    QStringList lines = experimentData.split('\n',QString::SkipEmptyParts);
 
-    for (qint32 i = 0; i < lines.size(); i++){
+    // Checking if the first line is a version string with the presence of ":".
+    qint32 startI = 0;
+    if (!lines.first().contains(":")){
+        startI = 1;
+        versionString = lines.first();
+    }
+
+    for (qint32 i = startI; i < lines.size(); i++){
 
         QString line = lines.at(i);
 

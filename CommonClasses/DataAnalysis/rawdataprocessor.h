@@ -71,13 +71,23 @@ private:
     QString reportFileOutput;
 
     //---------------------------------------- AUX Functions -------------------------------------------
+
+    // The structure is used to return data gathered by each function so that it can be used in the main function.
+    struct TagParseReturn{
+        bool ok;
+        QString version;
+        QString filePath;
+    };
+
     // Separates the data from the experiment description in the data files.
-    // Returns the error message if there was one.
-    bool separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment);
+    // Requires an structure as it needs to return a boolean to indicate a problem AND
+    // The version of the experiment which is located in the header. Empty means version 1.
+
+    TagParseReturn separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment);
 
     void commonInitialization();
 
-    QString csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header);
+    TagParseReturn csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header);
 
     bool getResolutionToConfig(const QString &firstline);
 

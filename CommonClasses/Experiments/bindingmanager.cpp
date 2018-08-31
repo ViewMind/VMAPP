@@ -1,25 +1,25 @@
 #include "bindingmanager.h"
 
 // Dimensions for drawing the target flags. The dimensions are in mm so that they can be drawn the same size independently of the screen resolution.
-static const float LARGE_BINDING_TARGET_SIDE =              45.25;
-static const float LARGE_BINDING_TARGET_HS =                1;
-static const float LARGE_BINDING_TARGET_HL =                11.75;
-static const float LARGE_BINDING_TARGET_VS =                6;
-static const float LARGE_BINDING_TARGET_VL =                16;
+static const float LARGE_BINDING_TARGET_SIDE =              45.25f;
+static const float LARGE_BINDING_TARGET_HS =                1.0f;
+static const float LARGE_BINDING_TARGET_HL =                11.75f;
+static const float LARGE_BINDING_TARGET_VS =                6.0f;
+static const float LARGE_BINDING_TARGET_VL =                16.0f;
 
-static const float LARGE_BINDING_GRID_SPACING_X_2FLAGS =    128;
-static const float LARGE_BINDING_GRID_SPACING_X_3FLAGS =    64;
-static const float LARGE_BINDING_GRID_SPACING_Y =           48;
+static const float LARGE_BINDING_GRID_SPACING_X_2FLAGS =    128.0f;
+static const float LARGE_BINDING_GRID_SPACING_X_3FLAGS =    64.0f;
+static const float LARGE_BINDING_GRID_SPACING_Y =           48.0f;
 
-static const float SMALL_BINDING_TARGET_SIDE =              10;
-static const float SMALL_BINDING_TARGET_HS =                0.25;
-static const float SMALL_BINDING_TARGET_HL =                2.6;
-static const float SMALL_BINDING_TARGET_VS =                1.33;
-static const float SMALL_BINDING_TARGET_VL =                3.54;
+static const float SMALL_BINDING_TARGET_SIDE =              10.0f;
+static const float SMALL_BINDING_TARGET_HS =                0.25f;
+static const float SMALL_BINDING_TARGET_HL =                2.6f;
+static const float SMALL_BINDING_TARGET_VS =                1.33f;
+static const float SMALL_BINDING_TARGET_VL =                3.54f;
 
-static const float SMALL_BINDING_GRID_SPACING_X_2FLAGS =    35;
-static const float SMALL_BINDING_GRID_SPACING_X_3FLAGS =    35;
-static const float SMALL_BINDING_GRID_SPACING_Y =           35;
+static const float SMALL_BINDING_GRID_SPACING_X_2FLAGS =    20.0f;
+static const float SMALL_BINDING_GRID_SPACING_X_3FLAGS =    20.0f;
+static const float SMALL_BINDING_GRID_SPACING_Y =           20.0f;
 
 
 BindingManager::BindingManager()
@@ -126,6 +126,7 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
     QStringList lines = contents.split('\n',QString::KeepEmptyParts);
 
     // Checking for old interpretation marking
+    /// TODO: Remove this when it is safe.
     QStringList tokens;
     tokens = lines.first().split(' ',QString::SkipEmptyParts);
 
@@ -151,6 +152,11 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
 
         // Getting the number of targets in the trial
         numberOfTargets = tokens.first().toInt();
+
+        // Last value, if it exists should be the version string
+        if (tokens.size() > 1){
+            versionString = tokens.last();
+        }
 
         // Even tough its the same value, there is no real relation between the grid size and the number of targets selected.
         // For clarity a different variable is used.

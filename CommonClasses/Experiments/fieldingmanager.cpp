@@ -20,7 +20,17 @@ bool FieldingManager::parseExpConfiguration(const QString &contents){
     // Needed to check for unique ids.
     QSet<QString> uniqueIDs;
 
-    for (qint32 i = 0; i < lines.size(); i++){
+    // Checking the size of the first line to see if it is a version string.
+    qint32 startI = 0;
+    QString possibleHeader = lines.first();
+    QStringList headerParts = possibleHeader.split(" ",QString::SkipEmptyParts);
+    if (headerParts.size() == 1){
+        // Version string pesent
+        startI = 1;
+        versionString = headerParts.first();
+    }
+
+    for (qint32 i = startI; i < lines.size(); i++){
 
         if (lines.at(i).isEmpty()) continue;
 

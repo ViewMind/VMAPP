@@ -2,7 +2,7 @@
 
 ExperimentDataPainter::ExperimentDataPainter()
 {
-
+    versionString = "v1";
 }
 
 void ExperimentDataPainter::init(ConfigurationManager *c){

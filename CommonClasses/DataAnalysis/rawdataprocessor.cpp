@@ -87,17 +87,19 @@ void RawDataProcessor::run(){
 
     QStringList studyID;
 
+    RawDataProcessor::TagParseReturn tagRet;
+
     // Each of the processing fucntions is called. In this way, processing of just one can be accomplished
     // just by running this complete function but it will keep going if a file does not exist.
-    if (experiments.contains(CONFIG_P_EXP_READING)) {        
+    if (experiments.contains(CONFIG_P_EXP_READING)) {
         emit(appendMessage("========== STARTED READING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPReading reading(config);
-        matrixReading = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
+        tagRet = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
+        matrixReading = tagRet.filePath;
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
         QString report = emp.processReading(matrixReading,&dbdata);
-        /// TODO: Get versions of experiment from somewhere else.        
         if (!report.isEmpty()){
-            studyID << "rdv_1";
+            studyID << "rd" + tagRet.version;
             emit(appendMessage(report,MSG_TYPE_STD));
         }
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
@@ -107,14 +109,14 @@ void RawDataProcessor::run(){
     if (experiments.contains(CONFIG_P_EXP_BIDING_BC)) {
         emit(appendMessage("========== STARTED BINDING BC PROCESSING ==========",MSG_TYPE_SUCC));
         EDPImages images(config);
-        matrixBindingBC = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
+        tagRet = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
+        matrixBindingBC = tagRet.filePath;
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
-        /// TODO: Get versions of experiment from somewhere else.        
 
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
-            studyID << getVersionForBindingExperiment(true) + "v1";
+            studyID << getVersionForBindingExperiment(true) + tagRet.version;
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
 
             emp.addExtraToResults(STAT_ID_BC_WRONG,ans.wrong);
@@ -134,13 +136,13 @@ void RawDataProcessor::run(){
     if (experiments.contains(CONFIG_P_EXP_BIDING_UC)){
         emit(appendMessage("========== STARTED BINDING UC PROCESSING ==========",MSG_TYPE_SUCC));
         EDPImages images(config);
-        matrixBindingUC = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
+        tagRet = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
+        matrixBindingUC = tagRet.filePath;
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
-        /// TODO: Get versions of experiment from somewhere else.        
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
-            studyID << getVersionForBindingExperiment(false) + "v1";
+            studyID << getVersionForBindingExperiment(false) + tagRet.version;
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
 
             emp.addExtraToResults(STAT_ID_UC_WRONG,ans.wrong);
@@ -160,12 +162,12 @@ void RawDataProcessor::run(){
     if (experiments.contains(CONFIG_P_EXP_FIELDING)) {
         emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPFielding fielding(config);
-        matrixFielding = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
+        tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
+        matrixFielding = tagRet.filePath;
         fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
         QString report = emp.processFielding(matrixFielding,fielding.getNumberOfTrials());
-        /// TODO: Get versions of experiment from somewhere else.        
         if (!report.isEmpty()){
-            studyID << "fdv_1";
+            studyID << "fd" + tagRet.version;
             emit(appendMessage(report,MSG_TYPE_STD));
         }
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
@@ -235,17 +237,23 @@ void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res,
     }
 }
 
-QString RawDataProcessor::csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header){
+RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header){
     QString data;
     QString exp;
 
+    RawDataProcessor::TagParseReturn tagRet;
+
     if (dataFile.isEmpty()){
         emit(appendMessage(id + " processing was configured but no " + id + " file was found",MSG_TYPE_ERR));
-        return "";
+        tagRet.filePath = "";
+        return tagRet;
     }
 
-    if (!separateInfoByTag(dataFile,header,&data,&exp)){
-        return "";
+    tagRet = separateInfoByTag(dataFile,header,&data,&exp);
+
+    if (!tagRet.ok){
+        tagRet.filePath = "";
+        return tagRet;
     }
 
     processor->setFieldingMarginInMM(config->getReal(CONFIG_MARGIN_TARGET_HIT));
@@ -275,16 +283,20 @@ QString RawDataProcessor::csvGeneration(EDPBase *processor, const QString &id, c
     }
 
 
-    return processor->getOuputMatrixFileName();
+    tagRet.filePath = processor->getOuputMatrixFileName();
+    return tagRet;
 
 }
 
-bool RawDataProcessor::separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment){
+RawDataProcessor::TagParseReturn RawDataProcessor::separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment){
+
+    TagParseReturn ans;
+    ans.ok = false;
 
     QFile f(file);
     if (!f.open(QFile::ReadOnly)){
         emit(appendMessage("Could not open " + file + " for reading",2));
-        return false;
+        return ans;
     }
 
     QTextStream reader(&f);
@@ -305,7 +317,17 @@ bool RawDataProcessor::separateInfoByTag(const QString &file, const QString &tag
 
         // Until the first tag is found, everything else is ignored
         if (tagFound == 0){
-            if (line.contains(tag,Qt::CaseSensitive)) tagFound++;
+            if (line.contains(tag,Qt::CaseSensitive)) {
+                tagFound++;
+                // Separating by space. By definition the last non empty string is the version string.
+                QStringList parts = line.split(" ",QString::SkipEmptyParts);
+                if (parts.size() == 1){
+                    // There is no version string so it is version 1.
+                    ans.version = "v1";
+                }
+                else ans.version = parts.last();
+
+            }
             else continue;
         }
         // Until the second tag is found everything else is the experiment description.
@@ -324,10 +346,13 @@ bool RawDataProcessor::separateInfoByTag(const QString &file, const QString &tag
     *data       = datalist.join('\n');
     *experiment = explist.join('\n');
 
-    if (tagFound == 2) return true;
+    if (tagFound == 2){
+        ans.ok = true;
+        return ans;
+    }
     else{
         emit(appendMessage("Could not find the tag " + tag + " in the input file: " + file,2));
-        return false;
+        return ans;
     }
 }
 
@@ -371,7 +396,7 @@ QString RawDataProcessor::getVersionForBindingExperiment(bool bound){
 
     QStringList parts = fileName.split("_",QString::SkipEmptyParts);
 
-    qWarning() << "Parts" << parts;
+    //qWarning() << "Parts" << parts;
 
     if (parts.size() == NUMBER_OF_PARTS_FOR_BINDING_FILE){
         base = base  + parts.at(2) + parts.at(3);
@@ -379,7 +404,7 @@ QString RawDataProcessor::getVersionForBindingExperiment(bool bound){
     // By default the experiments are for two targets large.
     else base = base + "2l";
 
-    qWarning() << "Base" << base;
+    //qWarning() << "Base" << base;
 
     return base;
 }
