@@ -58,5 +58,6 @@ margin_target_hit                     = 10;     # mm
 #         OPTIONS MODIFIED BY OTHER PROGRAMS           #
 #------------------------------------------------------#
 #patient_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs/OtherSources;
-patient_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs/atest;
+#patient_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs/patients/gera_test;
+patient_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs/viewmind_etdata/CO26413168/CO26695228;
 doctor_name = Doctor Genius;
