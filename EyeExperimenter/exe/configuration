@@ -46,7 +46,7 @@ wait_db_data_timeout = 60;  # seconds
 #------------------------------------------------------#
 
 dual_monitor_mode = false;
-report_language = Spanish;
+report_language = English;
 demo_mode = true;
 selected_eyetracker = Mouse;
 output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;
