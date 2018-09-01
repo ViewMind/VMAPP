@@ -94,13 +94,9 @@ Cuando su mira se encuentre ubicada sobre el punto, este desaparecerá <br>
 y la oración se dibujará. <b>Lea la oración en silencio</b> <br>
 y a un paso normal. Indique el final de la lectura mirando<br> 
 al <b>punto rojo en la esquina derecha inferior.</b><br><br> 
-Repita los pasos hasta finalizar la evaluación. <br><br>
-Durante la evaluación deberá <b>responder preguntas</b> <br>
-acerca de los contenidos de las oraciones. <br>
-<b>Haga click con el mouse en la respuesta correcta</b> <br>
-para continuar con la prueba.;
+Repita los pasos hasta finalizar la evaluación.;
 
-viewpresentexp_bindingUCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
+viewpresentexp_bindingBCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
 de color dentro de de un marco cuadrado de color. Luego de 2 segundos, <br>
 las images se desvanecerán y un nuevo par de imágenes se aparecerán. <br><br>
 <b>Presione "S"</b> si ambos pares de imágenes contienen los mismos colores <br>
@@ -109,7 +105,7 @@ colores de las cruces o lo de los marcos. <br><br>
 Las primeras 10 imagenes serán de prueba. <br>
 No serán consideradas en los resultados.;
 
-viewpresentexp_bindingBCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
+viewpresentexp_bindingUCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
 de color dentro de de un marco cuadrado de color. Luego de 2 segundos, <br>
 las images se desvanecerán y un nuevo par de imágenes se aparecerán. <br><br>
 <b>Presione "S"</b> si ambos pares de imágenes contienen los mismos colores <br>
