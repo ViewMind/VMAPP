@@ -350,6 +350,9 @@ void EyeDataAnalyzer::onProcessorMessage(const QString &msg, qint32 type){
 void EyeDataAnalyzer::on_pbDrawFixations_clicked()
 {
 
+    // Adding the Target size to the configuration
+    configuration.addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,(ui->comboTargetSize->currentIndex() == 1));
+
     if (!lastFixations.isEmpty()){
 
         QString baseDir = ui->lePatientDir->text();

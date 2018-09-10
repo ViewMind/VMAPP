@@ -121,7 +121,8 @@ bool EDPReading::initializeReadingDataMatrix(){
            << "blink"
            << "amp_sac"
            << "gaze"
-           << "nf";
+           << "nf"
+           << "fixY";
 
     writer << header.join(",") << "\n";
     file.close();
@@ -198,7 +199,8 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
                << countZeros(data,READ_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
                << sac.calculateSacadeAmplitude(fL.at(i).x,fL.at(i).y,monitorGeometry) << ","
                << gazeL << ","
-               << nfL;
+               << nfL << ","
+               << fL.at(i).y;
         writer << "\n";
     }
 
@@ -240,7 +242,8 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
                << countZeros(data,READ_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
                << sac.calculateSacadeAmplitude(fR.at(i).x,fR.at(i).y,monitorGeometry) << ","
                << gazeR << ","
-               << nfR;
+               << nfR << ","
+               << fR.at(i).y;
         writer << "\n";
     }
 

@@ -173,7 +173,7 @@ void RawDataProcessor::run(){
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
     }
 
-    // Generating the resport based on available data.
+    // Generating the report based on available data.
     QHash<qint32,bool> what2Add;
     what2Add[STAT_ID_ENCODING_MEM_VALUE] = !matrixBindingBC.isEmpty() && !matrixBindingUC.isEmpty();
     what2Add[STAT_ID_TOTAL_FIXATIONS] = !matrixReading.isEmpty();
@@ -203,6 +203,9 @@ void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res,
 
     reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME;
     reportFileOutput = reportFileOutput + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd") + ".rep";
+
+    // Deleting the resport if it exists.
+    QFile::remove(reportFileOutput);
 
     // Adding the required report data
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,config->getString(CONFIG_PATIENT_NAME));

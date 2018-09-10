@@ -106,7 +106,7 @@ private:
         qreal gy;
     };
 
-    // Used to select the constants to use when drawing.
+    // Used to select the constants to used when drawing.
     DrawValues drawValues;
 
     // For debugging
