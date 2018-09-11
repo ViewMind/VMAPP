@@ -381,6 +381,8 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
             }
 
         }
+
+        log.appendSuccess("Fixations Drawn!!!");
     }
     else{
         log.appendError("Data must be analyzed before fixations can be drawn");

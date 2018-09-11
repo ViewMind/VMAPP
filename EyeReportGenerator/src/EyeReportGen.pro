@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/csvcheckedreader.cpp \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.cpp \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.cpp \
-    ../../CommonClasses/HTMLWriter/htmlwriter.cpp
+    ../../CommonClasses/HTMLWriter/htmlwriter.cpp \
+    ../../CommonClasses/Experiments/bindingparser.cpp
 
 HEADERS  += \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
@@ -45,6 +46,7 @@ HEADERS  += \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.h \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.h \
     ../../CommonClasses/HTMLWriter/htmlwriter.h \
-    ../../CommonClasses/SQLConn/dbdescription.h
+    ../../CommonClasses/SQLConn/dbdescription.h \
+    ../../CommonClasses/Experiments/bindingparser.h
 
 RESOURCES +=

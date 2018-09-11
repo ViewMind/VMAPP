@@ -23,6 +23,16 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
         return false;
     }
 
+    // Parsing the experiment.
+    config->addKeyValuePair(CONFIG_DEMO_MODE,false);
+    if (!parser.parseBindingExperiment(eyeFixations.experimentDescription,
+                                       config,
+                                       config->getReal(CONFIG_RESOLUTION_WIDTH),config->getReal(CONFIG_RESOLUTION_WIDTH),
+                                       0)){
+        error = "Error parsing binding experiment: " + parser.getError();
+        return false;
+    }
+
     QStringList lines = data.split("\n");
 
     // This will have all the data from a single image.
@@ -157,7 +167,16 @@ bool EDPImages::initializeImageDataMatrix(){
            << "amp_sacada"
            << "pupila"
            << "gaze"
-           << "nf";
+           << "nf"
+           << "fixX"
+           << "fixY"
+           << "targetSide"
+           << "tX1"
+           << "tY1"
+           << "tX2"
+           << "tY2"
+           << "tX3"
+           << "tY3";
 
     writer << header.join(",") << "\n";
     file.close();
@@ -173,6 +192,9 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     // Calculating the fixations for each eye.;
     Fixations fL = mwa.computeFixations(data,IMAGE_XL,IMAGE_YL,IMAGE_TI);
     Fixations fR = mwa.computeFixations(data,IMAGE_XR,IMAGE_YR,IMAGE_TI);
+
+    // Finding the right trial
+    BindingParser::BindingTrial bindingTrial = parser.getTrialByName(trialName);
 
     // Number of fixations for each Eye.
     QString nfL = QString::number(fL.size());
@@ -206,8 +228,10 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     // The first part should be the trial id.
     trial_id = tokens.first();
 
-    // Now checking if type is same or different. This will only work as long as the directory names,
+    // Now checking if type is same or different. This will only work as long as the trial names,
     // contain the information.
+    QString targetXYData;
+
     if (isTrial == "1"){
         if (trialName.contains(STR_DIFFERENT)){
             trial_type = STR_DIFFERENT;
@@ -217,10 +241,12 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
         }
         else{
             trial_type = "N/A";
-        }
+        }        
+        targetXYData = bindingTrial.getCSVXYData(true);
     }
     else{
         trial_type = "N/A";
+        targetXYData = bindingTrial.getCSVXYData(false);
     }
 
     // Used to calculate the value of the sacade.
@@ -241,7 +267,11 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << sac.calculateSacadeAmplitude(fL.at(i).x,fL.at(i).y,monitorGeometry) << ","
                << averageColumnOfMatrix(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
                << gazeL << ","
-               << nfL;
+               << nfL << ","
+               << fL.at(i).x << ","
+               << fL.at(i).y << ","
+               << QString::number(parser.getDrawStructure().FlagSideH) << ","
+               << targetXYData;
         writer << "\n";
     }
 
@@ -260,7 +290,11 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << sac.calculateSacadeAmplitude(fR.at(i).x,fR.at(i).y,monitorGeometry) << ","
                << averageColumnOfMatrix(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
                << gazeR << ","
-               << nfR;
+               << nfR << ","
+               << fR.at(i).x << ","
+               << fR.at(i).y << ","
+               << QString::number(parser.getDrawStructure().FlagSideH) << ","
+               << targetXYData;
         writer << "\n";
     }
 

@@ -107,8 +107,11 @@ void RawDataProcessor::run(){
 
 
     if (experiments.contains(CONFIG_P_EXP_BIDING_BC)) {
-        emit(appendMessage("========== STARTED BINDING BC PROCESSING ==========",MSG_TYPE_SUCC));
+        emit(appendMessage("========== STARTED BINDING BC PROCESSING ==========",MSG_TYPE_SUCC));        
+
         EDPImages images(config);
+        // This function generates the tag for the DB but ALSO sets whether the targets use are small or large.
+        QString bindingVersion = getVersionForBindingExperiment(true);
         tagRet = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
         matrixBindingBC = tagRet.filePath;
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
@@ -116,7 +119,7 @@ void RawDataProcessor::run(){
 
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
-            studyID << getVersionForBindingExperiment(true) + tagRet.version;
+            studyID << bindingVersion + tagRet.version;
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
 
             emp.addExtraToResults(STAT_ID_BC_WRONG,ans.wrong);
@@ -135,14 +138,17 @@ void RawDataProcessor::run(){
 
     if (experiments.contains(CONFIG_P_EXP_BIDING_UC)){
         emit(appendMessage("========== STARTED BINDING UC PROCESSING ==========",MSG_TYPE_SUCC));
+
         EDPImages images(config);
+        // This function generates the tag for the DB but ALSO sets whether the targets use are small or large.
+        QString bindingVersion = getVersionForBindingExperiment(false);
         tagRet = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
         matrixBindingUC = tagRet.filePath;
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
-            studyID << getVersionForBindingExperiment(false) + tagRet.version;
+            studyID << bindingVersion + tagRet.version;
             EDPImages::BindingAnswers ans = images.getExperimentAnswers();
 
             emp.addExtraToResults(STAT_ID_UC_WRONG,ans.wrong);
@@ -401,8 +407,10 @@ QString RawDataProcessor::getVersionForBindingExperiment(bool bound){
 
     //qWarning() << "Parts" << parts;
 
+    config->addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,false);
     if (parts.size() == NUMBER_OF_PARTS_FOR_BINDING_FILE){
         base = base  + parts.at(2) + parts.at(3);
+        if (parts.at(3) == "s") config->addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,true);
     }
     // By default the experiments are for two targets large.
     else base = base + "2l";

@@ -3,7 +3,7 @@
 
 #include "edpbase.h"
 #include "../../CommonClasses/common.h"
-#include "../../CommonClasses/Experiments/bindingmanager.h"
+#include "../../CommonClasses/Experiments/bindingparser.h"
 
 // Warning threshold for low number of data points.
 #define   BINDING_WARNING_NUM_DATAPOINTS                10
@@ -52,6 +52,9 @@ private:
 
     // Increments the correct field of answers
     void sumToAnswers(const QString &trialID, const QString &ans);
+
+    // Parser for the experiment description in order to get information on what targets are on each trial.
+    BindingParser parser;
 
 };
 

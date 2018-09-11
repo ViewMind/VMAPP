@@ -290,6 +290,50 @@ void EyeMatrixProcessor::loadBindingCSV(const QString &filename, bool boundColor
     cc.type = CSVCheckedReader::CT_IGNORE;
     cclist << cc;
 
+    // The Fixation X Position
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The Fixation Y Position
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The side in pixels of the targets
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The X coordinates of Target 1
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The Y coordinates of Target 1
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The X coordinates of Target 2
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The Y coordinates of Target 2
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The X coordinates of Target 3
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
+    // The Y coordinates of Target 3
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
 
     if (boundColors) csvBindingBC = loadCSV(filename,cclist,CSV_BINDING_EYE_ID_COL);
     else csvBindingUC = loadCSV(filename,cclist,CSV_BINDING_EYE_ID_COL);
@@ -379,6 +423,12 @@ void EyeMatrixProcessor::loadReadingCSV(const QString &filename){
     cc.clear();
     cc.type = CSVCheckedReader::CT_INT;
     cclist << cc;
+
+    // The screen Y of the fixation
+    cc.clear();
+    cc.type = CSVCheckedReader::CT_IGNORE;
+    cclist << cc;
+
 
     csvReading = loadCSV(filename,cclist,CSV_READING_EYE_ID_COL);
 
