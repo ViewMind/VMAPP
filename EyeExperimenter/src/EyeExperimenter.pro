@@ -48,7 +48,8 @@ SOURCES += main.cpp \
     sslclient/ssldataprocessingclient.cpp \
     sslclient/sslclient.cpp \
     sslclient/ssldbclient.cpp \
-    localinformationmanager.cpp
+    localinformationmanager.cpp \
+    ../../CommonClasses/Experiments/bindingparser.cpp
 
 HEADERS += \
     loader.h \
@@ -85,7 +86,8 @@ HEADERS += \
     sslclient/sslclient.h \
     sslclient/ssldataprocessingclient.h \
     sslclient/ssldbclient.h \
-    localinformationmanager.h
+    localinformationmanager.h \
+    ../../CommonClasses/Experiments/bindingparser.h
 
 win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
 

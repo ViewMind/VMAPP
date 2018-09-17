@@ -22,27 +22,29 @@ public:
     Q_INVOKABLE QString getConfigurationString(const QString &key);
     Q_INVOKABLE bool getConfigurationBoolean(const QString &key);
     Q_INVOKABLE bool getLoaderError() const {return loadingError; }
-    Q_INVOKABLE void setConfigurationString(const QString &key, const QString &value, bool saveToFile = true);
-    Q_INVOKABLE void setConfigurationBoolean(const QString &key, bool value, bool saveToFile = true);
-    Q_INVOKABLE void setConfigurationInt(const QString &key, qint32 value, bool saveToFile = true);
+    Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
+    Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var) {configuration->addKeyValuePair(key,var);}
     Q_INVOKABLE QString hasValidOutputRepo(const QString &dirToCheck = "");
     Q_INVOKABLE QString getWindowTilteVersion(){ return EXPERIMENTER_VERSION; }
     Q_INVOKABLE bool createPatientDirectory(const QString &patientuid);
     Q_INVOKABLE QRect frameSize(QObject *window);
     Q_INVOKABLE QStringList getCountryList() {return countries->getCountryList();}
-    Q_INVOKABLE QStringList getPatientList() {return patientListForDoctor; }
-    Q_INVOKABLE QStringList getDoctorList() {return userDoctorInfo; }
-    Q_INVOKABLE int getDefaultCountry();
+    Q_INVOKABLE QStringList getPatientList();
+    Q_INVOKABLE QStringList getUIDList();
+    Q_INVOKABLE QStringList getPatientIsOKList();
+    Q_INVOKABLE QStringList getDoctorList();
+    Q_INVOKABLE QString getDoctorUIDByIndex(qint32 selectedIndex);
+    Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim->getCurrentDoctorInfo();}
+    Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim->getCurrentPatientInfo();}
+    Q_INVOKABLE int getDefaultCountry(bool offset = true);
+    Q_INVOKABLE QString getCountryCodeForCountry(const QString &country) { return countries->getCodeForCountry(country); }
+    Q_INVOKABLE int getCountryIndexFromCode(const QString &code) { return countries->getIndexFromCode(code); }
     Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata);
     Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt);
-    Q_INVOKABLE void getUserDoctorInfoFromDB();
-    Q_INVOKABLE void getPatientListFromDB();
+    Q_INVOKABLE void startDBSync();
 
 signals:
-    void newDoctorAdded();
-    void newPatientAdded();
-    void updatedDoctorList();
-    void updatedDoctorPatientList();
+    void synchDone();
 
 public slots:
     void onTransactionFinished(bool isOk);
@@ -60,16 +62,11 @@ private:
     // The list of countries and their codes.
     CountryStruct *countries;
 
-    // The list of the THIS PC users (doctors)
-    QStringList userDoctorInfo;
-    QStringList patientListForDoctor;
+    // The list that holds list names and corresponding uids
+    QList<QStringList> nameInfoList;
 
     // To connect to the DB in the server.
     SSLDBClient *dbClient;
-
-    // Type of DB Operations.
-    typedef enum {DBO_NEW_DR, DBO_NEW_PATIENT, DBO_LIST_PATIENTS, DBO_LIST_DOCTORS} DBOperation;
-    DBOperation dbOperation;
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();

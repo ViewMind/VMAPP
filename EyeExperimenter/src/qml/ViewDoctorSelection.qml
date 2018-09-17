@@ -22,20 +22,28 @@ Dialog {
         }
     }
 
-    Connections{
-        target: loader
-        onNewDoctorAdded:{
-            loader.getUserDoctorInfoFromDB();
-        }
-        onUpdatedDoctorList:{
-            updateDrProfile()
-        }
-    }
-
     function updateDrProfile(){
         var ans = loader.getDoctorList();
         ans.unshift(loader.getStringForKey(keybase+"labelDrProfile"));
         labelDrProfile.vmModel = ans;
+    }
+
+    function setCurrentDoctor(){
+        if ((labelDrProfile.currentIndex == 0) || (labelDrProfile.count == 0)){
+            labelDrProfile.vmErrorMsg = loader.getStringForKey(keybase+"labelNoDrError");
+            return false;
+        }
+        else{
+            // Since the format is FirstName LastName - (UID), this knowledge is used to extract the UID.
+            var name = labelDrProfile.currentText;
+            var uid = loader.getDoctorUIDByIndex(labelDrProfile.currentIndex-1)
+
+            //console.log("Setting the UID to: " + uid);
+            loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_UID,uid);
+            loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_NAME,name);
+            return true;
+        }
+
     }
 
     VMDefines{
@@ -114,6 +122,19 @@ Dialog {
             }
         }
 
+        VMPencilButton {
+            id: btnEditDrInfo
+            height: labelDrProfile.height
+            anchors.bottom: labelDrProfile.bottom
+            onClicked: {
+                if (setCurrentDoctor()){
+                    viewDoctorSelection.close();
+                    viewDrInfo.clearAllFields();
+                    viewDrInfo.loadDoctorInformation();
+                    swiperControl.currentIndex = swiperControl.vmIndexDrProfile;
+                }
+            }
+        }
     }
 
     VMButton{
@@ -125,29 +146,12 @@ Dialog {
         anchors.topMargin: 106
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            if ((labelDrProfile.currentIndex == 0) || (labelDrProfile.count == 0)){
-                labelDrProfile.vmErrorMsg = loader.getStringForKey(keybase+"labelNoDrError");
-            }
-            else{
-                // Since the format is FirstName LastName - (UID), this knowledge is used to extract the UID.
-                var text = labelDrProfile.currentText;
-                var parts = text.split("(");
-                var uid = parts[1];
-                // The last character is a ) so it is removed.
-                uid = uid.slice(0,-1);
-
-                //console.log("Setting the UID to: " + uid);
-                loader.setConfigurationString(vmDefines.vmCONFIG_DOCTOR_UID,uid);
-                loader.setConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME,parts[0].slice(0,-3));
-
+            if (setCurrentDoctor()){
                 // Updating the text of the doctor menu.
-                viewHome.updateDrMenuText()
-
-                // Updating the patient list.
-                loader.getPatientListFromDB();
+                viewHome.updateDrMenuText();
 
                 viewDoctorSelection.close();
-                swiperControl.currentIndex = swiperControl.vmIndexStudyStart
+                swiperControl.currentIndex = swiperControl.vmIndexPatientList
             }
         }
     }

@@ -2,17 +2,6 @@
 
 SSLDataProcessingClient::SSLDataProcessingClient(QObject *parent, ConfigurationManager *c):SSLClient(parent,c)
 {
-    if (!c->containsKeyword(CONFIG_WAIT_REPORT_TIMEOUT)){
-        log.appendError("Wait for report timeout was not set in the configuration file");
-        return;
-    }
-
-    if (!c->containsKeyword(CONFIG_DATA_REQUEST_TIMEOUT)){
-        log.appendError("Data request timeout was not set in the configuration file");
-        return;
-    }
-
-    clientConfigured = true;
     clientState = CS_CONNECTING;
 }
 
@@ -25,11 +14,6 @@ void SSLDataProcessingClient::sendFinishedSignal(bool okvalue){
 }
 
 void SSLDataProcessingClient::requestReport(){
-    if (!clientConfigured){
-        log.appendError("Cannot Report request process as client is not properly configured.");
-        sendFinishedSignal(false);
-        return;
-    }
     sentTransactionFinishedSignal = false;
     connectToServer();
 }

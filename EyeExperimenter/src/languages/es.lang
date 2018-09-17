@@ -23,6 +23,7 @@ viewsettings_diagCboxDualMonitor = Habilitar segundo monitor;
 viewsettings_diagLabelRepo = Directorio de trabajo;
 viewsettings_error_invalid_repo = Por favor elija un directorio de trabajo válido;
 viewsettings_error_invalid_dr = El nombre del doctor no puede quedar vacio;
+viewsettings_diagLabelDefaultCountry = Seleccione el país elegido por defecto;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Registro de paciente;
@@ -38,7 +39,7 @@ viewpatientreg_labelDocument_number = Número de documento;
 viewpatientreg_docTypes = DNI|Pasaporte|Identificación;
 viewpatientreg_labelConsent = Al continuar, usted está aceptando las condiciones y la política de uso de datos;
 viewpatientreg_btnCancel = CANCELAR;
-viewpatientreg_btnContinue = CONTINUAR;
+viewpatientreg_btnContinue = ACPTAR;
 viewpatientreg_errorEmpty = No puede estar vacío;
 
 #********************************* START STUDY SCREEN *********************************
@@ -105,6 +106,7 @@ colores de las cruces o lo de los marcos. <br><br>
 Las primeras 10 imagenes serán de prueba. <br>
 No serán consideradas en los resultados.;
 
+
 viewpresentexp_bindingUCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
 de color dentro de de un marco cuadrado de color. Luego de 2 segundos, <br>
 las images se desvanecerán y un nuevo par de imágenes se aparecerán. <br><br>
@@ -117,6 +119,20 @@ No serán consideradas en los resultados.;
 viewpresentexp_fieldingExp = Expliación de la Evaluación <br><b>N-Back</b>;
 
 viewpresentexp_btnContinue = CONTINUAR;
+
+#********************************* PATIENT LIST *********************************
+viewpatientlist_title = Lista de Pacientes;
+viewpatientlist_subtitle = Seleccione un paciente para estudio; 
+viewpatientlist_headerPatient = Paciente;
+viewpatientlist_headerStatus = Estado;
+viewpatientlist_statusOK = OK;
+viewpatientlist_statusRepPending = Reportes pendientes;
+viewpatientlist_btnCreate = Crear Reporte;
+viewpatientlist_btnView = Ver Reportes;
+viewpatientlist_btnBack = ATRAS;
+viewpatientlist_btnStart = COMENZAR ESTUDIO;
+viewpatientlist_diagConnectTitle = Sincronizando;
+viewpatientlist_diagConnectMessage = Por favor, aguarde un momento;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;
@@ -132,8 +148,8 @@ viewdrinfo_labelPhone = Teléfono;
 viewdrinfo_labelMail = Email;
 viewdrinfo_labelInstitution = Institución Medica;
 viewdrinfo_docTypes = DNI|Pasaporte|Identificación;
-viewdrinfo_btnBack = Atras;
-viewdrinfo_btnSave = Guardar;
+viewdrinfo_btnBack = ATRAS;
+viewdrinfo_btnSave = GUARDAR;
 viewdrinfo_errorEmpty = No puede estar vacio;
 
 #********************************* RESULTS SCREEN *********************************

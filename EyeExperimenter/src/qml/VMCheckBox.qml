@@ -7,7 +7,7 @@ CheckBox {
 
     id: control
     checked: false
-    leftPadding: 0    
+    leftPadding: 0
 
     indicator: Rectangle {
         width: 20

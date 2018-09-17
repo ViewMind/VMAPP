@@ -11,15 +11,6 @@ VMBase {
     property var vmSelectedExperiments: []
     property int vmCurrentExperimentIndex: 0
 
-    Connections{
-        target: loader
-        onUpdatedDoctorPatientList:{
-            var ans = loader.getPatientList();
-            ans.unshift(loader.getStringForKey(keysearch+"cbPatientSelection"));
-            cbPatientSelection.vmModel = ans;
-        }
-    }
-
     // Title and subtitle
     Text {
         id: viewTitle

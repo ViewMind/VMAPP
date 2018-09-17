@@ -20,6 +20,40 @@ VMBase {
         labelName.clear();
         labelPhone.clear();
         labelProvince.clear();
+        labelCountry.enabled = true;
+        labelDocument_number.enabled = true;
+    }
+
+    function loadDoctorInformation(){
+        var drInfo = loader.getCurrentDoctorInformation();
+        labelAddress.setText(drInfo.address);
+        labelCity.setText(drInfo.city);
+        labelMail.setText(drInfo.email);
+        labelName.setText(drInfo.firstname);
+        labelLastName.setText(drInfo.lastname);
+        labelProvince.setText(drInfo.state);
+        labelPhone.setText(drInfo.telephone);
+        // Substr is used as the first two letters are the country code.
+        labelDocument_number.setText(drInfo.uid.substr(2));
+        labelInstitution.setText(drInfo.medicalinstitution);
+
+        // Setting the document type.
+        var idType = drInfo.idtype;
+        var model = docTypes.model;
+        for (var i = 0; i < model.length; i++){
+            if (model[i] === idType){
+                docTypes.currentIndex = i;
+                break;
+            }
+        }
+
+        // Setting the country.
+        var index = loader.getCountryIndexFromCode(drInfo.countryid);
+        labelCountry.currentIndex = index+1; // 1  is added because 0 is no selection.
+
+        // The country and ID are unique. They can't be modified.
+        labelCountry.enabled = false;
+        labelDocument_number.enabled = false;
     }
 
     Button {
@@ -274,6 +308,7 @@ VMBase {
                 }
 
                 loader.addNewDoctorToDB(dbData);
+                viewDrSelection.updateDrProfile();
                 swiperControl.currentIndex = swiperControl.vmIndexHome;
 
             }

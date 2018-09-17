@@ -129,6 +129,33 @@ Dialog {
         }
     }
 
+    // Combo box for selecting the default country.
+    Text {
+        id: diagLabelDefaultCountry
+        text: loader.getStringForKey(keybase+"diagLabelDefaultCountry");
+        font.family: viewHome.robotoB.name
+        font.pixelSize: 13
+        font.bold: true
+        anchors.top: diagTIRepo.bottom
+        anchors.topMargin: 25
+        anchors.left: diagTIRepo.left
+    }
+
+    VMComboBox{
+        id: diagDBDefaultCountry
+        width: 440
+        vmModel: {
+            var data = loader.getCountryList();
+            return data;
+        }
+        currentIndex: loader.getDefaultCountry(false);
+        font.family: viewHome.robotoR.name
+        font.pixelSize: 13
+        anchors.top: diagLabelDefaultCountry.bottom
+        anchors.topMargin: 22
+        anchors.left: diagTIRepo.left
+    }
+
     // Combo box for language selection and label
     Text {
         id: diagLabelLang
@@ -136,7 +163,7 @@ Dialog {
         font.family: viewHome.robotoB.name
         font.pixelSize: 13
         font.bold: true
-        anchors.top: diagTIRepo.bottom
+        anchors.top: diagDBDefaultCountry.bottom
         anchors.topMargin: 25
         anchors.left: diagTIRepo.left
     }
@@ -218,20 +245,6 @@ Dialog {
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);
     }
 
-    VMCheckBox{
-        id: diagCboxOfflineMode
-        text: loader.getStringForKey(keybase+"diagCboxOfflineMode");
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
-        anchors.top: diagCboxDemo.top
-        anchors.left: diagCboxDualMonitor.right
-        anchors.leftMargin: 20
-        checked: {
-            vmOfflineModeStatus = loader.getConfigurationBoolean(vmDefines.vmCONFIG_OFFLINE_MODE);
-            return vmOfflineModeStatus;
-        }
-    }
-
     VMButton{
         id: diagBtnOK
         vmFont: viewHome.gothamM.name
@@ -267,12 +280,15 @@ Dialog {
             return false;
         }
 
-        // Saving the configuration.
-        loader.setConfigurationString(vmDefines.vmCONFIG_SELECTED_ET,diagCBET.currentText);
-        loader.setConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
-        loader.setConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
-        loader.setConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
-        loader.setConfigurationBoolean(vmDefines.vmCONFIG_OFFLINE_MODE,diagCboxOfflineMode.checked);
+
+
+        // Saving the settings.
+        loader.setSettingsValue(vmDefines.vmCONFIG_OUTPUT_DIR,diagTIRepo.vmTextField.text);
+        loader.setSettingsValue(vmDefines.vmCONFIG_SELECTED_ET,diagCBET.currentText);
+        loader.setSettingsValue(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
+        loader.setSettingsValue(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
+        loader.setSettingsValue(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
+        loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_COUNTRY,loader.getCountryCodeForCountry(diagDBDefaultCountry.currentText));
 
         // Checking if a restart is required, becuase of the a change into offline mode.
 
@@ -281,9 +297,6 @@ Dialog {
 
         // Restart required
         if (vmLoadLanguage !== diagCBLang.currentText){
-            viewSettings.vmRestartRequired = true;
-        }
-        else if (vmOfflineModeStatus !== diagCboxOfflineMode.checked){
             viewSettings.vmRestartRequired = true;
         }
         else{

@@ -22,6 +22,14 @@ Item {
         vmEnteredText = "";
     }
 
+    function setISODate(text){
+        var parts = text.split("-")
+        var dateText = parts[2] + "/" + parts[1] + "/" +parts[0];
+        labelText.visible = true;
+        lineEdit.text = dateText;
+        vmEnteredText = dateText;
+    }
+
     Rectangle {
         id: lineEditRect
         anchors.fill: parent
@@ -139,8 +147,7 @@ Item {
                         lineEdit.text = temp;
                     }
                 }
-
-
+                //console.log("vmEnteredText is " + vmEnteredText);
             }
         }
 

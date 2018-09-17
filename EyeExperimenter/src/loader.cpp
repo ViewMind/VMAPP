@@ -3,7 +3,8 @@
 Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
 {
 
-    // Loading the configuration file and checking for the must have configuration
+    // Loading the configuration file and checking for the must have configurations
+    // The data is this file should NEVER change. Its values should be fixed.
     ConfigurationManager::CommandVerifications cv;
     ConfigurationManager::Command cmd;
 
@@ -14,66 +15,69 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cmd.type = ConfigurationManager::VT_REAL;
     cv[CONFIG_XPX_2_MM] = cmd;
     cv[CONFIG_YPX_2_MM] = cmd;
-    cv[CONFIG_READING_PX_TOL] = cmd;
-
-    cmd.clear();
-    cv[CONFIG_SERVER_ADDRESS] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_BOOL;
-    cmd.optional = true;
-    cv[CONFIG_DUAL_MONITOR_MODE] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
+    // Eye Data processing parameters
+    cv[CONFIG_READING_PX_TOL] = cmd;
+    cv[CONFIG_MOVING_WINDOW_DISP] = cmd;
+    cv[CONFIG_MIN_FIXATION_LENGTH] = cmd;
+    cv[CONFIG_SAMPLE_FREQUENCY] = cmd;
+    cv[CONFIG_DISTANCE_2_MONITOR] = cmd;
+    cv[CONFIG_LATENCY_ESCAPE_RAD] = cmd;
+    cv[CONFIG_MARGIN_TARGET_HIT] = cmd;
+
+    // Timeouts for connections.
     cv[CONFIG_CONNECTION_TIMEOUT] = cmd;
     cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
     cv[CONFIG_WAIT_DBDATA_TIMEOUT] = cmd;
     cv[CONFIG_WAIT_REPORT_TIMEOUT] = cmd;
 
-    // Optional strings
+    // Server address and the default country.
     cmd.clear();
-    cmd.optional = true;
-    cv[CONFIG_OUTPUT_DIR] = cmd;
-    cv[CONFIG_REPORT_LANGUAGE] = cmd;
-    cv[CONFIG_SELECTED_ET] = cmd;
-    cv[CONFIG_SSLSERVER_PATH] = cmd;
-    cv[CONFIG_DEFAULT_COUNTRY] = cmd;
+    cv[CONFIG_SERVER_ADDRESS] = cmd;
 
-    cmd.clear();
-    cmd.optional = true;
-    cmd.type = ConfigurationManager::VT_INT;
-    cv[CONFIG_VALID_EYE] = cmd;
-
-    // Optional booleans
-    cmd.clear();
-    cmd.optional = true;
-    cmd.type = ConfigurationManager::VT_BOOL;
-    cv[CONFIG_DEMO_MODE] = cmd;
-    cv[CONFIG_OFFLINE_MODE] = cmd;
-
-    cmd.clear();
-    cmd.optional = true;
-    cv[CONFIG_DOCTOR_UID] = cmd;
-    cv[CONFIG_DOCTOR_NAME] = cmd;
-
+    // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
-
-
     if (!configuration->loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
         logger.appendError("Errors loading the configuration file: " + configuration->getError());
+        // The program should not be able to continue after loading the language.
         loadingError = true;
     }
 
-    if (!loadingError){
-        loadDefaultConfigurations();
+    // Loading the settings.
+    ConfigurationManager settings;
+    cv.clear();
+    cmd.clear();
+    cmd.optional = true; // All settings are optional.
+
+    // The strings.
+    cv[CONFIG_OUTPUT_DIR] = cmd;
+    cv[CONFIG_REPORT_LANGUAGE] = cmd;
+    cv[CONFIG_SELECTED_ET] = cmd;
+    cv[CONFIG_DEFAULT_COUNTRY] = cmd;
+
+    // The booleans
+    cmd.type = ConfigurationManager::VT_BOOL;
+    cv[CONFIG_DUAL_MONITOR_MODE] = cmd;
+    cv[CONFIG_DEMO_MODE] = cmd;
+
+    // Merging the settings or loading the default configuration.
+    settings.setupVerification(cv);
+    if (!settings.loadConfiguration(FILE_SETTINGS,COMMON_TEXT_CODEC)){
+        logger.appendError("Errors loading the settings file: " + settings.getError());
     }
+    else{
+        configuration->merge(settings);
+    }
+    loadDefaultConfigurations();
 
     countries = cs;
     changeLanguage();
+    if (loadingError) return;
 
     // Setting up de client for DB connection
-    dbClient = new SSLDBClient(this,c);
+    dbClient = new SSLDBClient(this,configuration);
     connect(dbClient,SIGNAL(transactionFinished(bool)),this,SLOT(onTransactionFinished(bool)));
     connect(dbClient,SIGNAL(diconnectionFinished()),this,SLOT(onDisconnectFromDB()));
 
@@ -85,112 +89,24 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
 //******************************************* DB Related Functions ***********************************************
 
-void Loader::onTransactionFinished(bool isOk){
-
-    QList<DBData> dbdata;
-    QStringList locallist;
-
-    switch (dbOperation){
-    case DBO_NEW_DR:
-        if (!isOk){
-            logger.appendError("DB Add doctor operation failed.");
-        }
-        break;
-    case DBO_LIST_DOCTORS:
-
-        // Getting the dr info from the local DB,
-        locallist = lim->getDoctorList(false);
-        if (configuration->getBool(CONFIG_OFFLINE_MODE)){
-            // There is nothing more to do.
-            userDoctorInfo = locallist;
-            emit(updatedDoctorList());
-            return;
-        }
-
-        // Should now set the user doctor info
-        userDoctorInfo.clear();
-        dbdata = dbClient->getDBData();
-        for (qint32 i = 0; i < dbdata.size(); i++){
-            if (!dbdata.at(i).error.isEmpty()){
-                logger.appendError("DB Error on list doctors:  " + dbdata.at(i).error);
-                return;
-            }
-            // Assuming only one row per transaction so....
-            if (dbdata.at(i).rows.size() != 1){
-                logger.appendError("DRLIST: Expecting only 1 Row per transaction at " + QString::number(i) + " but got " + QString::number(dbdata.at(i).rows.size()));
-            }
-            else if (dbdata.at(i).rows.first().size() != 3){
-                logger.appendError("DRLIST: Expecting 3 Columns in each row, but row " + QString::number(i) + " got " + QString::number(dbdata.at(i).rows.first().size()));
-                //qWarning()  << "DRLiST";
-                //printDBDataList(dbdata);
-            }
-            else userDoctorInfo << dbdata.at(i).rows.first().at(0) + " " + dbdata.at(i).rows.first().at(1) + " - (" + dbdata.at(i).rows.first().at(2) + ")";
-        }
-
-        // Comparing both lists and emitting the longest one:
-        if (locallist.size() > userDoctorInfo.size()) userDoctorInfo = locallist;
-
-        emit(updatedDoctorList());
-        break;
-    case DBO_NEW_PATIENT:
-        // Nothing to do.
-        break;
-    case DBO_LIST_PATIENTS:
-
-        locallist = lim->getPatientListForDoctor();
-        if (configuration->getBool(CONFIG_OFFLINE_MODE)){
-            // There is nothing more to do.
-            patientListForDoctor = locallist;
-            emit(updatedDoctorPatientList());
-            return;
-        }
-
-        patientListForDoctor.clear();
-        dbdata = dbClient->getDBData();
-        // There should only be ONE query.
-        if (dbdata.size() != 1){
-            logger.appendError("Expeting only 1 Query Result for Patient List but got " + QString::number(dbdata.size()));
-        }
-        else if (!dbdata.first().error.isEmpty()){
-            logger.appendError("DB Error on list patients:  " + dbdata.first().error);
-        }
-        else{
-            // There can be multiple roews.
-            for (qint32 i = 0; i < dbdata.first().rows.size(); i++){
-                // There should be ONLY 3 columns.
-                if (dbdata.first().rows.at(i).size() != 3){
-                    logger.appendError("PAT_LIST: Expecting 3 Columns in ech row, but row " + QString::number(i) + " got " + QString::number(dbdata.first().rows.at(i).size()));
-                    //qWarning()  << "PATLiST";
-                    //printDBDataList(dbdata);
-                    break;
-                }
-                else patientListForDoctor << dbdata.first().rows.at(i).at(0) + " " + dbdata.first().rows.at(i).at(1) + " - (" + dbdata.first().rows.at(i).at(2) + ")";
-            }
-
-        }
-
-        if (locallist.size() > patientListForDoctor.size()) patientListForDoctor = locallist;
-
-        emit(updatedDoctorPatientList());
-        break;
-    default:
-        break;
-    }
+void Loader::startDBSync(){
+    // Adding all the data that needs to be sent.
+    lim->setupDBSynch(dbClient);
+    // Running the transaction.
+    dbClient->runDBTransaction();
 }
 
-void Loader::onDisconnectFromDB(){
-    if (dbOperation == DBO_NEW_DR){
-        emit(newDoctorAdded());
-    }
-    else if (dbOperation == DBO_NEW_PATIENT){
-        emit(newPatientAdded());
+void Loader::onTransactionFinished(bool isOk){
+    Q_UNUSED(isOk)
+}
+
+void Loader::onDisconnectFromDB(){    
+    if (!dbClient->getTransactionStatus()){
+       /// TODO send error signal if not ok
     }
 }
 
 void Loader::addNewDoctorToDB(QVariantMap dbdata){
-    dbOperation = DBO_NEW_DR;
-    dbClient->setDBTransactionType(SQL_QUERY_TYPE_SET);
-
     // The data for the country must be changed as well as the UID must be generated.
     QString countryCode = countries->getCodeForCountry(dbdata.value(TDOCTOR_COL_COUNTRYID).toString());
     dbdata[TDOCTOR_COL_COUNTRYID] = countryCode;
@@ -207,20 +123,9 @@ void Loader::addNewDoctorToDB(QVariantMap dbdata){
 
     // Saving data locally.
     lim->addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values);
-
-    // In offline mode, there is nothing more to do.
-    if (configuration->getBool(CONFIG_OFFLINE_MODE)){
-        emit(newDoctorAdded());
-        return;
-    }
-
-    dbClient->appendSET(TABLE_DOCTORS,columns,values);
-    dbClient->runDBTransaction();
 }
 
 void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
-    dbOperation = DBO_NEW_PATIENT;
-    dbClient->setDBTransactionType(SQL_QUERY_TYPE_SET);
 
     // Making necessary adjustments
     QString countryCode = countries->getCodeForCountry(dbdatareq.value(TPATREQ_COL_BIRTHCOUNTRY).toString());
@@ -244,7 +149,8 @@ void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
     for (qint32 i = 0; i < columns.size(); i++){
         values << dbdatareq.value(columns.at(i)).toString();
     }
-    dbClient->appendSET(TABLE_PATIENTS_REQ_DATA,columns,values);
+
+    //dbClient->appendSET(TABLE_PATIENTS_REQ_DATA,columns,values);
     allColumns = columns;
     allValues = values;
 
@@ -256,7 +162,6 @@ void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
     for (qint32 i = 0; i < columns.size(); i++){
         values << dbdataopt.value(columns.at(i)).toString();
     }
-    dbClient->appendSET(TABLE_PATIENTS_OPT_DATA,columns,values);
 
     // Saving to the local DB.
     allColumns << columns;
@@ -266,67 +171,55 @@ void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
 
     lim->addPatientData(dbdatareq.value(TPATREQ_COL_UID).toString(),allColumns,allValues);
 
-    if (configuration->getBool(CONFIG_OFFLINE_MODE)) {
-        emit(newPatientAdded());
-        return;
-    }
-
-    dbClient->runDBTransaction();
-}
-
-void Loader::getUserDoctorInfoFromDB(){
-
-    dbOperation = DBO_LIST_DOCTORS;
-    dbClient->setDBTransactionType(SQL_QUERY_TYPE_GET);
-
-    if (configuration->getBool(CONFIG_OFFLINE_MODE)){
-        onTransactionFinished(true);
-        return;
-    }
-
-    QStringList list_uid = lim->getDoctorList(true);
-    QStringList columns;
-    columns << TDOCTOR_COL_FIRSTNAME << TDOCTOR_COL_LASTNAME << TDOCTOR_COL_UID;
-
-    for (qint32 i = 0; i < list_uid.size(); i++){
-        QString condition = QString(TDOCTOR_COL_UID) + " = '" + list_uid.at(i) + "'";
-        dbClient->appendGET(TABLE_DOCTORS,columns,condition);
-    }
-
-    dbClient->runDBTransaction();
-}
-
-void Loader::getPatientListFromDB(){
-    QString druid = configuration->getString(CONFIG_DOCTOR_UID);
-    lim->setCurrentDoctor(druid);
-    if (druid == "") return;
-
-    dbOperation = DBO_LIST_PATIENTS;
-    dbClient->setDBTransactionType(SQL_QUERY_TYPE_GET);
-
-    // For offline mode the local db will be used.
-    if (configuration->getBool(CONFIG_OFFLINE_MODE)){
-        onTransactionFinished(true);
-        return;
-    }
-
-    QStringList columns;
-    columns << TPATREQ_COL_FIRSTNAME << TPATREQ_COL_LASTNAME << TPATREQ_COL_UID;
-
-    QString condition = QString(TPATREQ_COL_DOCTORID) + " = '" + druid + "'";
-    dbClient->appendGET(TABLE_PATIENTS_REQ_DATA,columns,condition);
-
-    dbClient->runDBTransaction();
 }
 
 //****************************************************************************************************************
 
-int Loader::getDefaultCountry(){
+QStringList Loader::getDoctorList() {
+    nameInfoList.clear();
+    nameInfoList = lim->getDoctorList();
+    if (nameInfoList.isEmpty()) return QStringList();
+    else return nameInfoList.at(0);
+}
+
+QStringList Loader::getPatientList(){
+    nameInfoList.clear();
+    nameInfoList = lim->getPatientListForDoctor();
+    if (nameInfoList.isEmpty()) return QStringList();
+    else return nameInfoList.at(0);
+}
+
+QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
+    if (nameInfoList.size() < 2) return "";
+    if ((selectedIndex > -1) && (selectedIndex < nameInfoList.at(1).size())){
+        return nameInfoList.at(1).at(selectedIndex);
+    }
+    else return "";
+}
+
+QStringList Loader::getUIDList() {
+    if (nameInfoList.size() < 2) return QStringList();
+    else return nameInfoList.at(1);
+}
+
+QStringList Loader::getPatientIsOKList() {
+    if (nameInfoList.size() < 3) return QStringList();
+    else return nameInfoList.at(2);
+}
+
+
+int Loader::getDefaultCountry(bool offset){
     QString countryCode = configuration->getString(CONFIG_DEFAULT_COUNTRY);
     if (countryCode.isEmpty()) return 0;
     int ans = countries->getIndexFromCode(countryCode);
-    // -1 Means that no selction is done, which means 0 code. All indexes are offseted by 1, due to this.
-    return ans + 1;
+    if (offset){
+        // -1 Means that no selction is done, which means 0 code. All indexes are offseted by 1, due to this.
+        return ans + 1;
+    }
+    else {
+        if (ans == -1) return 0;
+        else return ans;
+    }
 }
 
 QRect Loader::frameSize(QObject *window)
@@ -371,14 +264,10 @@ QString Loader::hasValidOutputRepo(const QString &dirToCheck){
         }
     }
 
-    // Saving it to disk
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_OUTPUT_DIR,configuration->getString(CONFIG_OUTPUT_DIR));
-
     // Returning the new dir.
     return configuration->getString(CONFIG_OUTPUT_DIR);
 
 }
-
 
 QString Loader::getStringForKey(const QString &key){
     if (language.containsKeyword(key)){
@@ -429,23 +318,8 @@ void Loader::changeLanguage(){
     }
 }
 
-void Loader::setConfigurationString(const QString &key, const QString &value, bool saveToFile){
-    if (saveToFile)
-       ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,value,configuration);
-    else configuration->addKeyValuePair(key,value);
-}
-
-void Loader::setConfigurationBoolean(const QString &key, bool value, bool saveToFile){
-    QString boolText = value ? "true" : "false";
-    if (saveToFile)
-       ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,boolText,configuration);
-    else configuration->addKeyValuePair(key,value);
-}
-
-void Loader::setConfigurationInt(const QString &key, qint32 value, bool saveToFile){
-    if (saveToFile)
-       ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,key,QString::number(value),configuration);
-    else configuration->addKeyValuePair(key,value);
+void Loader::setSettingsValue(const QString &key, const QVariant &var){
+    ConfigurationManager::setValue(FILE_SETTINGS,COMMON_TEXT_CODEC,key,var.toString(),configuration);
 }
 
 bool Loader::createPatientDirectory(const QString &patientuid){
@@ -497,16 +371,13 @@ bool Loader::createDirectorySubstructure(QString drname, QString pname, QString 
 }
 
 void Loader::loadDefaultConfigurations(){
-    if (!configuration->containsKeyword(CONFIG_DEMO_MODE)){
-        configuration->addKeyValuePair(CONFIG_DEMO_MODE,false);
-    }
-    if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)){
-        configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
-    }
-    if (!configuration->containsKeyword(CONFIG_SELECTED_ET)){
-        configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
-    }
-    if (!configuration->containsKeyword(CONFIG_REPORT_LANGUAGE)){
-        configuration->addKeyValuePair(CONFIG_REPORT_LANGUAGE,CONFIG_P_LANG_EN);
-    }
+
+    if (!configuration->containsKeyword(CONFIG_OUTPUT_DIR)) configuration->addKeyValuePair(CONFIG_OUTPUT_DIR,""); // Reconfigure the settings.
+    if (!configuration->containsKeyword(CONFIG_DEFAULT_COUNTRY)) configuration->addKeyValuePair(CONFIG_DEFAULT_COUNTRY,"AR");
+    if (!configuration->containsKeyword(CONFIG_DEMO_MODE)) configuration->addKeyValuePair(CONFIG_DEMO_MODE,false);
+    if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)) configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
+    if (!configuration->containsKeyword(CONFIG_SELECTED_ET)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
+    if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)) configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
+    if (!configuration->containsKeyword(CONFIG_REPORT_LANGUAGE)) configuration->addKeyValuePair(CONFIG_REPORT_LANGUAGE,CONFIG_P_LANG_EN);
+
 }

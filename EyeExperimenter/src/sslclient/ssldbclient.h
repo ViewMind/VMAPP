@@ -44,7 +44,7 @@ private slots:
 private:
 
     // State of the transacition to DB.
-    typedef enum {CS_CONNECTING_TO_SQL_GET, CS_CONNECTING_TO_SQL_SET, CS_WAIT_DB_DATA} ClientState;
+    typedef enum {CS_CONNECTING_TO_SQL_GET, CS_CONNECTING_TO_SQL_SET, CS_WAIT_DB_DATA, CS_WAIT_SET_ACK} ClientState;
     ClientState clientState;
 
     // Data obtained from an SQL request

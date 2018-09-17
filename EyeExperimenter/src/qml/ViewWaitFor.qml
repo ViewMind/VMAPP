@@ -103,20 +103,6 @@ VMBase {
             x: (parent.width - slideAnimation.width)/2;
         }
 
-        //        // The Ok.
-        //        VMButton{
-        //            id: btnOk
-        //            vmSize: [180, 50]
-        //            vmText: vmErrorButtonMsg
-        //            vmFont: gothamM.name
-        //            anchors.top: diagImage.bottom
-        //            anchors.topMargin: 40
-        //            anchors.horizontalCenter: parent.horizontalCenter
-        //            onClicked: {
-        //                waitForDone();
-        //            }
-        //        }
-
     }
 
 

@@ -28,6 +28,7 @@ VMBase {
         viewResults.updateText()
         viewStudyStart.updateText()
         viewWaitFor.updateText()
+        viewPatList.updateText()
     }
 
     Component.onCompleted: {
@@ -55,8 +56,8 @@ VMBase {
             return;
         }
 
-        // Updating the doctor's list.
-        loader.getUserDoctorInfoFromDB();
+        // Loading the Dr Options.
+        viewDrSelection.updateDrProfile();
 
     }
 

@@ -5,6 +5,6 @@
 #define   DIRNAME_RAWDATA                               "viewmind_etdata"
 #define   LOCAL_DB                                      "localdb.dat"
 
-#define   EXPERIMENTER_VERSION                          "4.1.6"
+#define   EXPERIMENTER_VERSION                          "5.0.0"
 
 #endif // EYE_EXPERIMENTER_DEFINES_H

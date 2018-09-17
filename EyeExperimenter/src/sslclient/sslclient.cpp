@@ -4,13 +4,6 @@ SSLClient::SSLClient(QObject *parent, ConfigurationManager *c) :
     QObject(parent)
 {
 
-    clientConfigured = false;
-
-    if (!QSslSocket::supportsSsl()){
-        log.appendError("There is no support for SSL. Please request help from ViewMind to solve this issue.");
-        return;
-    }
-
     // Creating the socket and making the connections.
     socket = new QSslSocket(this);
     connect(socket,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
@@ -24,22 +17,6 @@ SSLClient::SSLClient(QObject *parent, ConfigurationManager *c) :
 
     // Setting up the configuation and checking that everything is there.
     config = c;
-
-    if (config == nullptr){
-        log.appendError("BAD SSLCLIENT INITIALIZATION");
-        return;
-    }
-
-    if (!c->containsKeyword(CONFIG_SERVER_ADDRESS)){
-        log.appendError("Server address was not set in the configuration file");
-        return;
-    }
-
-    if (!c->containsKeyword(CONFIG_CONNECTION_TIMEOUT)){
-        log.appendError("Connection timeout was not configured");
-        return;
-    }
-
 }
 
 void SSLClient::on_encryptedSuccess(){

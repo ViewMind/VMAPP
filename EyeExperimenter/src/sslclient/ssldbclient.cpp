@@ -2,12 +2,7 @@
 
 SSLDBClient::SSLDBClient(QObject *parent, ConfigurationManager *c):SSLClient(parent,c)
 {
-    if (!c->containsKeyword(CONFIG_WAIT_DBDATA_TIMEOUT)){
-        log.appendError("SQL Server timeout for data request was not configured");
-        return;
-    }
-
-    clientConfigured = true;
+    // The program will not load without time configuration so the proper configuration check is unnecessary.
 }
 
 void SSLDBClient::setDBTransactionType(const QString &type){
@@ -54,15 +49,11 @@ void SSLDBClient::appendGET(const QString &tableName, const QStringList &columns
 
 void SSLDBClient::runDBTransaction(){
 
-    if (!clientConfigured){
-        log.appendError("Cannot DB Transaction process as client is not properly configured.");
-        return;
-    }
-
     txDP.clearAll();
     txDP.addString(queryType,DataPacket::DPFI_DB_QUERY_TYPE);
     txDP.addString(tableNames,DataPacket::DPFI_DB_TABLE);
     txDP.addString(columnList,DataPacket::DPFI_DB_COL);
+    transactionStatus = true;
 
     if (queryType == SQL_QUERY_TYPE_SET){
         clientState = CS_CONNECTING_TO_SQL_SET;
@@ -78,12 +69,11 @@ void SSLDBClient::runDBTransaction(){
 }
 
 void SSLDBClient::on_encryptedSuccess(){
-    log.appendSuccess("Established encrypted connection to the sql server. Sending request to server ... ");
     QByteArray ba = txDP.toByteArray();
     qint64 num = socket->write(ba.constData(),ba.size());
     bool ans;
     if (num != ba.size()){
-        log.appendError("ERROR: Unable to send the information to SQL Server. Please try again.");
+        log.appendError("ERROR: Unable to send the information to SQL Server. Write failed");
         ans = false;
     }
     else{
@@ -92,20 +82,21 @@ void SSLDBClient::on_encryptedSuccess(){
 
     // If there was a problem everything is stopped.
     if (!ans){
+        transactionStatus = false;
         socket->disconnectFromHost();
         return;
     }
 
     if (clientState == CS_CONNECTING_TO_SQL_SET){
-        // A Set does not need to do anything else. A get needs to wait for a response.
-        emit(transactionFinished(ans));
+        // Awaiting ACK from server
+        clientState = CS_WAIT_SET_ACK;
     }
     else{
+        // Awaiting data from server
         clientState = CS_WAIT_DB_DATA;
-        rxDP.clearAll();
-        startTimeoutTimer(config->getInt(CONFIG_WAIT_DBDATA_TIMEOUT)*1000);
     }
-
+    rxDP.clearAll();
+    startTimeoutTimer(config->getInt(CONFIG_WAIT_DBDATA_TIMEOUT)*1000);
 }
 
 void SSLDBClient::on_readyRead(){
@@ -114,32 +105,43 @@ void SSLDBClient::on_readyRead(){
 
     if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
 
-        // Got the data form the DB. Should only be here in state CS_CONNECTING_TO_SQL_GET
         dbdata.clear();
-
         timer.stop();
 
-        QStringList tableNames = rxDP.getField(DataPacket::DPFI_DB_TABLE).data.toString().split(DB_TRANSACTION_LIST_SEP);
-        QStringList allColumns = rxDP.getField(DataPacket::DPFI_DB_COL).data.toString().split(DB_TRANSACTION_LIST_SEP);
-        QStringList allErrors= rxDP.getField(DataPacket::DPFI_DB_ERROR).data.toString().split(DB_TRANSACTION_LIST_SEP,QString::KeepEmptyParts);
-        QStringList allValues= rxDP.getField(DataPacket::DPFI_DB_VALUE).data.toString().split(DB_TRANSACTION_LIST_SEP,QString::KeepEmptyParts);
+        if (clientState == CS_WAIT_DB_DATA){
 
-        for (qint32 i = 0; i < tableNames.size(); i++){
-            DBData datum;
-            datum.error = allErrors.at(i);
-            datum.columns = allColumns.at(i).split(DB_COLUMN_SEP);
-            datum.fillRowsFromString(allValues.at(i),DB_ROW_SEP,DB_COLUMN_SEP);
-            dbdata << datum;
+            // Got the data form the DB.
+
+            QStringList tableNames = rxDP.getField(DataPacket::DPFI_DB_TABLE).data.toString().split(DB_TRANSACTION_LIST_SEP);
+            QStringList allColumns = rxDP.getField(DataPacket::DPFI_DB_COL).data.toString().split(DB_TRANSACTION_LIST_SEP);
+            QStringList allErrors= rxDP.getField(DataPacket::DPFI_DB_ERROR).data.toString().split(DB_TRANSACTION_LIST_SEP,QString::KeepEmptyParts);
+            QStringList allValues= rxDP.getField(DataPacket::DPFI_DB_VALUE).data.toString().split(DB_TRANSACTION_LIST_SEP,QString::KeepEmptyParts);
+
+            for (qint32 i = 0; i < tableNames.size(); i++){
+                DBData datum;
+                datum.error = allErrors.at(i);
+                datum.columns = allColumns.at(i).split(DB_COLUMN_SEP);
+                datum.fillRowsFromString(allValues.at(i),DB_ROW_SEP,DB_COLUMN_SEP);
+                dbdata << datum;
+            }
+
+            // The client disconnects, since it allready has all the info.
+            socket->disconnectFromHost();
         }
-
-        // The client disconnects, since it allready has all the info.
-        socket->disconnectFromHost();
-        emit(transactionFinished(true));
+        else {
+            // Expecting ACK from a set operation
+            if (!rxDP.hasInformationField(DataPacket::DPFI_DB_SET_ACK)){
+                transactionStatus = false;
+                log.appendError("ERROR: Expecting DB Set ACK but somehting else arrived.");
+            }
+            socket->disconnectFromHost();
+        }
 
     }
     else if (errcode == DataPacket::DATABUFFER_RESULT_ERROR){
         log.appendError("ERROR: Buffering data from the receiver");
         rxDP.clearAll();
+        transactionStatus = false;
         socket->disconnectFromHost();
     }
 
@@ -159,14 +161,18 @@ void SSLDBClient::on_timeOut(){
     switch(clientState){
     case CS_WAIT_DB_DATA:
         log.appendError("ERROR: SQL Server request for information did not arrive before expected time. Closing connection. Please retry.");
-        emit(transactionFinished(false));
+        transactionStatus = false;
+        break;
+    case CS_WAIT_SET_ACK:
+        log.appendError("ERROR: SQL Server request for information did not arrive before expected time. Closing connection. Please retry.");
+        transactionStatus = false;
         break;
     case CS_CONNECTING_TO_SQL_GET:
     case CS_CONNECTING_TO_SQL_SET:
         log.appendError("ERROR: SQL server connection notice did not arrive before the expected time. Closing connection. Please retry.");
-        emit(transactionFinished(false));
+        transactionStatus = false;
         break;
-    }    
+    }
     socket->disconnectFromHost();
 }
 

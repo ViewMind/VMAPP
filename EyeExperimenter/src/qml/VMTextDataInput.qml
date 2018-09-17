@@ -37,6 +37,12 @@ Item {
         vmEnteredText = "";
     }
 
+    function setText(text){
+        labelText.visible = true;
+        vmEnteredText = text;
+        lineEdit.text = text;
+    }
+
     TextInput {
         id: lineEdit
         text: vmPlaceHolder

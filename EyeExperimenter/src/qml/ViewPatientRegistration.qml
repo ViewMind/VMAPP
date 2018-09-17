@@ -9,15 +9,6 @@ VMBase {
 
     readonly property string keysearch: "viewpatientreg_"
 
-    Connections{
-        target: loader
-        onNewPatientAdded:{
-            clearAll();
-            loader.getPatientListFromDB();
-            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-        }
-    }
-
     function clearAll(){
         labelBirthDate.clear();
         labelName.clear();
@@ -28,6 +19,47 @@ VMBase {
         labelProvince.clear();
         labelCity.clear();
     }
+
+    function loadPatientInformation(){
+        var patInfo = loader.getCurrentPatientInformation();
+        labelCity.setText(patInfo.city);
+        labelName.setText(patInfo.firstname);
+        labelLastName.setText(patInfo.lastname);
+        labelProvince.setText(patInfo.state);
+
+        // Substr is used as the first two letters are the country code.
+        labelDocument_number.setText(patInfo.uid.substr(2));
+
+        for (var key in patInfo){
+            console.log(key + ": " + patInfo[key]);
+        }
+
+        // Setting the document type.
+        var idType = patInfo.idtype;
+        var model = docTypes.model;
+        for (var i = 0; i < model.length; i++){
+            if (model[i] === idType){
+                docTypes.currentIndex = i;
+                break;
+            }
+        }
+
+        // Setting the gender
+        if (patInfo.sex === "M") labelGender.currentIndex = 1;
+        else labelGender.currentIndex = 2;
+
+        // Setting the country.
+        var index = loader.getCountryIndexFromCode(patInfo.birthcountry);
+        labelCountry.currentIndex = index+1; // 1  is added because 0 is no selection.
+
+        // The country and ID are unique. They can't be modified.
+        labelCountry.enabled = false;
+        labelDocument_number.enabled = false;
+
+        labelBirthDate.setISODate(patInfo.birthdate);
+    }
+
+
 
     // Title and subtitle
     Text {
@@ -178,7 +210,7 @@ VMBase {
             vmInvertColors: true
             onClicked: {
                 clearAll();
-                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+                swiperControl.currentIndex = swiperControl.vmIndexPatientList;
             }
         }
 
@@ -239,6 +271,7 @@ VMBase {
                 //console.log("Country Index: " + dbData.countryid + ". Text: " + labelCountry.currentText);
 
                 loader.addNewPatientToDB(dbDataReq,dbDataOpt);
+                swiperControl.currentIndex = swiperControl.vmIndexPatientList;
             }
         }
     }

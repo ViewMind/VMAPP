@@ -16,9 +16,15 @@ Button{
 
     function determineColors(){
         if (vmButton.vmInvertColors){
-            vmButton.vmColorBkg = "#ffffff";
-            if (pressed){
-                vmButton.vmColorText = "#4984b3";
+            if (vmButton.enabled){
+                vmButton.vmColorBkg = "#ffffff";
+                if (pressed){
+                    vmButton.vmColorText = "#4984b3";
+                }
+            }
+            else {
+                vmButton.vmColorBkg = "#ffffff"
+                vmButton.vmColorText = "#bcbec0"
             }
         }
         else{

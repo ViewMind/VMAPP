@@ -29,6 +29,7 @@ public:
     static const quint8 DPFI_DB_VALUE                                 = 12;
     static const quint8 DPFI_DB_CONDITIION                            = 13;
     static const quint8 DPFI_DB_ERROR                                 = 14;
+    static const quint8 DPFI_DB_SET_ACK                               = 15;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;

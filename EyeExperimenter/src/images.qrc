@@ -25,6 +25,6 @@
         <file>images/ERROR_ILUS.png</file>
         <file>images/LOADING.gif</file>
         <file>images/dr_icon.png</file>
-        <file>images/plus_sign.png</file>
+        <file>images/edit_icon.png</file>
     </qresource>
 </RCC>

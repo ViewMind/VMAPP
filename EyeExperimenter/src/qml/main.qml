@@ -18,7 +18,9 @@ Window {
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.
         swiperControl.currentIndex = swiperControl.vmIndexHome;
+        //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
     }
+
 
     // The configurations dialog.
     ViewSettings{
@@ -40,13 +42,14 @@ Window {
 
         readonly property int vmIndexHome: 0
         readonly property int vmIndexDrProfile: 1
-        readonly property int vmIndexStudyStart: 2
-        readonly property int vmIndexPatientReg: 3
-        readonly property int vmIndexCalibrationStart: 4
-        readonly property int vmIndexCalibrationDone: 5
-        readonly property int vmIndexPresentExperiment: 6
-        readonly property int vmIndexResults: 7
-        readonly property int vmIndexWaitFor: 8
+        readonly property int vmIndexPatientList: 2
+        readonly property int vmIndexStudyStart: 3
+        readonly property int vmIndexPatientReg: 4
+        readonly property int vmIndexCalibrationStart: 5
+        readonly property int vmIndexCalibrationDone: 6
+        readonly property int vmIndexPresentExperiment: 7
+        readonly property int vmIndexResults: 8
+        readonly property int vmIndexWaitFor: 9
 
 
         id: swiperControl
@@ -66,6 +69,13 @@ Window {
             ViewDoctorProfile{
                 id: viewDrInfo
                 isHomePage: true;
+                anchors.fill: parent
+            }
+        }
+
+        Item {
+            ViewPatientList {
+                id: viewPatList
                 anchors.fill: parent
             }
         }
@@ -127,6 +137,12 @@ Window {
                 break;
             case vmIndexCalibrationDone:
                 viewCalibrationDone.openDiag()
+                break;
+            case vmIndexPatientList:
+                // This will laod patients which will also trigger the search for unprocessed information.
+                viewPatList.loadPatients();
+                // Doing the synch
+                viewPatList.startDBSync();
                 break;
             case vmIndexWaitFor:
                 viewWaitFor.openDiag();

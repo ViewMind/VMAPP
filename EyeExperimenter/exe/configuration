@@ -7,14 +7,10 @@
 x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
-# Runs the ssl_server if it, exists.
-# ssl_server_path = C:/Users/Viewmind/Documents/QtProjects/SSLServer/exe/SSLServer.exe;
-
-# The server address and port to which it sends the processing requests
-# server_address = localhost;
-
 # Direction of my laptop in the local area network.
-server_address = 18.220.30.34;
+server_address = 18.191.142.5;
+# Real Server Address
+# server_address = 18.220.30.34
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
@@ -24,13 +20,14 @@ server_address = 18.220.30.34;
 reading_px_tol_for_target = 60;
 
 #------------------------------------------------------#
-#                   OTHER                              #
+#     CONFIGURATION FOR EYE DATA PROCESSING            #
 #------------------------------------------------------#
-
-# This is the default country for entering patient and doctor data. I NEEDS to be two letter international 
-# ISO Code. AR for Argentina, and CO for Colombia.
-default_country = CO;
-
+moving_window_max_dispersion = 100;      #px
+minimum_fixation_length      =  50;      #ms
+sample_frequency             = 150;      #Hz
+distance_to_monitor          =  60;      #cm
+latency_escape_radious       =  80;      #px
+margin_target_hit            =  10;      #mm 
 
 #------------------------------------------------------#
 #             TIME OUTS FOR TCP/CONNECTIONS            #
@@ -40,17 +37,3 @@ connection_time_out = 60;   # seconds.
 data_request_time_out = 60; # seconds 
 wait_report_timeout = 60;   # seconds
 wait_db_data_timeout = 60;  # seconds
-
-#------------------------------------------------------#
-#         OPTIONS MODIFIED BY EXPERIMENTER             #
-#------------------------------------------------------#
-
-dual_monitor_mode = false;
-report_language = English;
-demo_mode = true;
-selected_eyetracker = Mouse;
-output_directory = C:/Users/Viewmind/Documents/ExperimenterOutputs;
-doctor_uid = CO26413168;
-valid_eye = 2;
-doctor_name = Otro Doctor;
-offline_mode = true;

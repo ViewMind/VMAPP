@@ -320,6 +320,13 @@ QString ConfigurationManager::checkValidtyQVariant(const QVariant &data, const Q
     return "";
 }
 
+void ConfigurationManager::merge(const ConfigurationManager &configmng){
+    QStringList keys = configmng.getAllKeys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        data[keys.at(i)] = configmng.getVariant(keys.at(i));
+    }
+}
+
 QString ConfigurationManager::setValue(const QString &fileName,
                                        const char* textCodec,
                                        const QString &cmd,

@@ -73,9 +73,13 @@ public:
     qreal   getReal(const QString &name, bool *ok = nullptr) const;
     bool    getBool(const QString &name, bool *ok = nullptr) const;
     QStringList getStringList(const QString &name) const;
+    QVariant getVariant(const QString &name) const { return data.value(name); }
 
     // Gets all the keys
     QStringList getAllKeys() const {return data.keys();}
+
+    // Merge with another configuration manager.
+    void merge(const ConfigurationManager &configmng);
 
     // Service function to replace a value in a configuration text file.
     static QString setValue(const QString &fileName, const char *textCodec,

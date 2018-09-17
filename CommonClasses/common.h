@@ -102,12 +102,12 @@
 
 // Base names for common files shared accross multiple apps.
 #define   FILE_CONFIGURATION                            "configuration"
+#define   FILE_SETTINGS                                 "settings"
 #define   FILE_OUTPUT_READING                           "reading"
 #define   FILE_OUTPUT_BINDING_UC                        "binding_uc"
 #define   FILE_OUTPUT_BINDING_BC                        "binding_bc"
 #define   FILE_OUTPUT_FIELDING                          "fielding"
 #define   FILE_REPORT_NAME                              "report"
-#define   FILE_PATIENT_INFO_FILE                        "patient_info"
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
 
 // Headers for the data files identifying the format of the data in that experiment.
@@ -134,5 +134,50 @@ static inline QString getNewestFile(const QString &directory, const QString &bas
     if (allfiles.isEmpty()) return "";
     return directory + "/" + allfiles.first();
 }
+
+// Returns the experiment type and time stamp based on the file name format.
+static inline QStringList getBindingFileInformation(const QString &bindingFile){
+
+    QStringList parts = bindingFile.split(".",QString::SkipEmptyParts);
+    QString baseName = parts.first();
+    parts = baseName.split("_",QString::SkipEmptyParts);
+    QStringList ans;
+    if (parts.size() == 5){
+        // This is an old file so it only contains a date as timestamp.
+        // Target size was large and number of targets were two.
+        ans << "2l" << parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
+    }
+    else if (parts.size() == 7){
+        // File name before time stamp included hours and minutes
+        ans << parts.at(2) + parts.at(3) << parts.at(4) + "_" + parts.at(5) + "_" + parts.at(6);
+    }
+    else if (parts.size() == 9){
+        // Full file name with time stamp including hours and minutes.
+        ans << parts.at(2) + parts.at(3) << parts.at(4) + "_" + parts.at(5) + "_" + parts.at(6) + "_" + parts.at(7) + "_" + parts.at(8);
+    }
+
+    return ans;
+}
+
+// Returns the experiment type and time stamp based on the file name format.
+// The output is left as a list in case in the future more information is left in the file name.
+static inline QStringList getReadingInformation(const QString &readingFile){
+
+    QStringList parts = readingFile.split(".",QString::SkipEmptyParts);
+    QString baseName = parts.first();
+    parts = baseName.split("_",QString::SkipEmptyParts);
+    QStringList ans;
+    if (parts.size() == 4){
+        // This is an old file so it only contains a date as timestamp.
+        ans << parts.at(1) + "_" + parts.at(2) + "_" + parts.at(3);
+    }
+    else if (parts.size() == 6){
+        // File name before time stamp included hours and minutes
+        ans << parts.at(1) + "_" + parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4) + "_" + parts.at(5);
+    }
+
+    return ans;
+}
+
 
 #endif // COMMON_H

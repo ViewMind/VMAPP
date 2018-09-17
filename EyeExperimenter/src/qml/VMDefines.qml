@@ -68,4 +68,5 @@ Item{
     readonly property string vmCONFIG_PATIENT_UID: "patient_uid"
     readonly property string vmCONFIG_BINDING_TARGET_SMALL: "binding_target_small"
     readonly property string vmCONFIG_BINDING_NUMBER_OF_TARGETS:"binding_number_of_targets"
+    readonly property string vmCONFIG_DEFAULT_COUNTRY:"default_country"
 }

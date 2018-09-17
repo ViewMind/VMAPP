@@ -30,5 +30,8 @@
         <file>qml/ViewDoctorProfile.qml</file>
         <file>qml/VMPlusButton.qml</file>
         <file>qml/VMToggleButton.qml</file>
+        <file>qml/ViewPatientList.qml</file>
+        <file>qml/VMPencilButton.qml</file>
+        <file>qml/VMPatientEntry.qml</file>
     </qresource>
 </RCC>
