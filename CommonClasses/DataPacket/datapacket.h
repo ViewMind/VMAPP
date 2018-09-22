@@ -22,7 +22,7 @@ public:
     static const quint8 DPFI_PATIENT_FILE                             = 5;
     static const quint8 DPFI_SEND_INFORMATION                         = 6;
     static const quint8 DPFI_REPORT                                   = 7;
-    static const quint8 DPFI_VALID_EYE                                = 8;
+    static const quint8 DPFI_DEMO_MODE                                = 8;
     static const quint8 DPFI_DB_QUERY_TYPE                            = 9;
     static const quint8 DPFI_DB_TABLE                                 = 10;
     static const quint8 DPFI_DB_COL                                   = 11;

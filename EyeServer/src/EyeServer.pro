@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     ../../CommonClasses/LogInterface/loginterface.cpp \
     ssllistener.cpp \
     sslidsocket.cpp \
-    inputcontrol.cpp \
     servercontrol.cpp \
     ../../CommonClasses/SQLConn/dbinterface.cpp \
     dataprocessingsslserver.cpp \
@@ -34,7 +33,6 @@ HEADERS  += \
     ../../CommonClasses/LogInterface/loginterface.h \
     ssllistener.h \
     sslidsocket.h \
-    inputcontrol.h \
     servercontrol.h \
     ../../CommonClasses/SQLConn/dbdescription.h \
     ../../CommonClasses/SQLConn/dbinterface.h \

@@ -2,6 +2,7 @@
 #define DBDESCRIPTION_H
 
 #include <QStringList>
+#include <QDebug>
 
 // The structure where the DB data is saved.
 struct DBData{

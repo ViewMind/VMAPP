@@ -76,6 +76,7 @@
 #define   CONFIG_FILE_BIDING_BC                         "file_binding_bc"
 #define   CONFIG_FILE_READING                           "file_reading"
 #define   CONFIG_FILE_FIELDING                          "file_fielding"
+#define   CONFIG_S3_ADDRESS                             "s3_address"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -111,6 +112,7 @@
 #define   FILE_OUTPUT_FIELDING                          "fielding"
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
+#define   FILE_EYE_REP_GEN_CONFIGURATION                "eye_rep_gen_conf"
 
 // Headers for the data files identifying the format of the data in that experiment.
 #define   HEADER_READING_EXPERIMENT                     "#READING"

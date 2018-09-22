@@ -18,7 +18,7 @@ SSLWrapper::SSLWrapper(QObject *parent) : QObject(parent)
 
     // This is fixed due to this being a simple test.
     //config.addKeyValuePair(CONFIG_SERVER_ADDRESS,"localhost");
-    config.addKeyValuePair(CONFIG_SERVER_ADDRESS,"18.220.30.34");
+    config.addKeyValuePair(CONFIG_SERVER_ADDRESS,"18.191.142.5");
 
     // Used when compiling for test in the EC2 Server.
     //config.addKeyValuePair(CONFIG_SERVER_ADDRESS,"18.220.30.34");
@@ -35,6 +35,13 @@ SSLWrapper::SSLWrapper(QObject *parent) : QObject(parent)
     // For the Request Report to work properly, these NEED to be in the DB.
     config.addKeyValuePair(CONFIG_DOCTOR_UID,"AR31653499");
     config.addKeyValuePair(CONFIG_PATIENT_UID,"AR26844014");
+
+    // Connecting to the db.
+    config.addKeyValuePair(CONFIG_DBHOST);
+    config->getString(CONFIG_DBHOST));
+    dbConnection.setDatabaseName(config->getString(CONFIG_DBNAME));
+    dbConnection.setUserName(config->getString(CONFIG_DBUSER));
+    dbConnection.setPassword(config->getString(CONFIG_DBPASSWORD));
 
     config.addKeyValuePair(CONFIG_DEMO_MODE,"false");
 

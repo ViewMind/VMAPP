@@ -27,6 +27,7 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
     cv[CONFIG_DBNAME] = cmd;
     cv[CONFIG_DBPASSWORD] = cmd;
     cv[CONFIG_DBUSER] = cmd;
+    cv[CONFIG_S3_ADDRESS] = cmd;
 
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DBPORT] = cmd;

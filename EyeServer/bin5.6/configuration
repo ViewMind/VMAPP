@@ -3,16 +3,29 @@
 #--------------------------------------------------------------------------------------#
 
 # Output directory. This is where the received information will be stored.
-raw_data_repo = C:/Users/Viewmind/Documents/ExperimenterOutputs/ServerDir;
-
-# The port for the TCP Server Connection.
-tcp_port = 54912;
+raw_data_repo = /home/ec2-user/EyeServer/output;
 
 # How many eye-data-processors to run in parallel
 number_of_paralell_processes = 2;
 
 # Path to the eyeprocessor executable.
-eyeprocessor_path = C:/Users/Viewmind/Documents/QtProjects/EyeReportGenerator/exe/EyeReportGen.exe;
+eyeprocessor_path = /home/ec2-user/EyeReportGenerator/EyeReportGen;
 
 # Time outs (in seconds) for waiting for the client to send the report data
-wait_data_timeout = 10;
+data_request_time_out = 180; # Seconds
+
+# DB data for develop
+db_name = viewmind_develop;
+db_user = devuser;
+db_passwd = dev1984;
+s3_address = develop-testing;
+
+## DB data for production
+#db_name = viewmind_data;
+#db_user = vmuser;
+#db_passwd = viewmind_2018;
+#s3_address = viewmind-raw-eye-data;
+
+# Amazon host
+db_host = viewminddb.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
+db_port = 3306;

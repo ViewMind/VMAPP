@@ -35,7 +35,7 @@ void DBCommSSLServer::on_newConnection(){
 
     // New connection is available.
     QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
-    SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen);
+    SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen,config->getString(CONFIG_S3_ADDRESS));
 
     //log.appendStandard("New connection with id " + QString::number(idGen));
 
@@ -180,6 +180,8 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
         columnsList << allCols.at(i).split(DB_COLUMN_SEP);
     }
 
+    DataPacket tx;
+
     if (tx_type == SQL_QUERY_TYPE_GET){
 
         // It is either getting Doctor data or Patient Data
@@ -203,8 +205,6 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
             }
         }
 
-        DataPacket tx;
-
         // Adding the tables
         tx.addString(dp.getField(DataPacket::DPFI_DB_TABLE).data.toString(),DataPacket::DPFI_DB_TABLE);
         // Adding the columns
@@ -213,12 +213,6 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
         tx.addString(queryresults.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_VALUE);
         // Adding the errors
         tx.addString(dberrors.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_ERROR);
-
-        QByteArray ba = tx.toByteArray();
-        qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
-        if (num != ba.size()){
-            log.appendError("Failure sending db ans to host: " + sockets.value(socket)->socket()->peerAddress().toString());
-        }
 
     }
     else{
@@ -231,13 +225,30 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
             values << allValues.at(i).split(DB_COLUMN_SEP);
         }
 
+        // A set should return either the errors or an ack.
+        QStringList dberrors;
+
         for (qint32 i = 0; i < tableNames.size(); i++){
             //log.appendStandard("SET " + QString::number(i) +  " on TABLE " + tableNames.at(i) + ": COLUMNS -> " + columnsList.at(i).join("|") + ". VALUES: " + values.at(i).join("|"));
             if (!dbConnection.insertDB(tableNames.at(i),columnsList.at(i),values.at(i))){
+                dberrors << dbConnection.getError();
                 log.appendError("On SQL Transaction: " + dbConnection.getError());
             }
         }
 
+        if (dberrors.size() > 0){
+            tx.addString(dberrors.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_ERROR);
+        }
+        else{
+            tx.addValue(0,DataPacket::DPFI_DB_SET_ACK);
+        }
+
+    }
+
+    QByteArray ba = tx.toByteArray();
+    qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+    if (num != ba.size()){
+        log.appendError("Failure sending db ans to host: " + sockets.value(socket)->socket()->peerAddress().toString());
     }
 
     // Closing connection to db.

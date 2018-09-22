@@ -68,6 +68,9 @@ private:
     // Final Step in the process, sending the report.
     void sendReport(quint64 socket);
 
+    void removeAllRepFiles(const QString &directory);
+    QString getReportFile(const QString &directory);
+
 };
 
 #endif // SSLMANAGER_H

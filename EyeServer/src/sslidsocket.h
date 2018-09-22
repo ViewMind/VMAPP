@@ -8,7 +8,7 @@
 #include "../../CommonClasses/DataPacket/datapacket.h"
 
 #define  S3_BASE_COMMAND     "aws s3 cp"
-#define  S3_ADDRESSS         "s3://viewmind-raw-eye-data/"
+//#define  S3_ADDRESSS         "s3://viewmind-raw-eye-data/"
 #define  S3_PARMETERS        "--quiet"
 #define  TIME_FORMAT_STRING  "yyyy_MM_dd_hh_mm_ss"
 
@@ -39,7 +39,7 @@ public:
     static const quint8 SSL_SIGNAL_PROCESS_DONE  = 8;
 
     SSLIDSocket();
-    SSLIDSocket(QSslSocket *newSocket, quint64 id);
+    SSLIDSocket(QSslSocket *newSocket, quint64 id, const QString &s3);
     ~SSLIDSocket();
 
     QSslSocket* socket() const {return sslSocket;}
@@ -72,6 +72,7 @@ private slots:
     void on_processFinished(qint32 status);
 
 private:
+    QString s3Address;
     QString workingDirectory;
     QSslSocket *sslSocket;
     DataPacket rx;

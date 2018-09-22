@@ -48,7 +48,7 @@ void DataProcessingSSLServer::on_newConnection(){
 
     // New connection is available.
     QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
-    SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen);
+    SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen,config->getString(CONFIG_S3_ADDRESS));
 
     if (!socket->isValid()) {
         log.appendError("Could not cast incomming socket connection");
@@ -134,38 +134,48 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     }
 
     // Finding the newest rep file in the folder.
-    QString reportfile = getNewestFile(sockets.value(socket)->getWorkingDirectory(),FILE_REPORT_NAME,"rep");
-
-    // Since the processing is done, now the data can be saved to the database
-    ConfigurationManager toDB;
-    QString dbfile = sockets.value(socket)->getWorkingDirectory() + "/" + FILE_DBDATA_FILE;
-    if (toDB.loadConfiguration(dbfile,COMMON_TEXT_CODEC)){
-
-        QStringList values;
-        QStringList columns = toDB.getAllKeys();
-        for (qint32 i = 0; i < columns.size(); i++){
-            values << toDB.getString(columns.at(i));
-        }
-
-        // Adding the IDs and the date.
-        DataPacket d = sockets.value(socket)->getDataPacket();
-        columns << TEYERES_COL_STUDY_DATE << TEYERES_COL_PATIENTID << TEYERES_COL_DOCTORID;
-        values << "TIMESTAMP(NOW())" << d.getField(DataPacket::DPFI_PATIENT_ID).data.toString()  << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
-
-        if (!dbConn->insertDB(TABLE_EYE_RESULTS,columns,values)){
-            log.appendError("DB Error saving the results: " + dbConn->getError());
-        }
-    }
-    else{
-        log.appendError("Could not load the db info file: " + toDB.getError());
-    }
-
-    if (!QFile(reportfile).exists()){
-        log.appendError("Could not generate report file for working folder: " + sockets.value(socket)->getWorkingDirectory());
+    QString reportfile = getReportFile(sockets.value(socket)->getWorkingDirectory());
+    if (reportfile.isEmpty()){
         removeSocket(socket);
         return;
     }
-    log.appendStandard("Report file found : " + reportfile);
+
+    // Data is saved to the data base ONLY in demo mode.
+    if (sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
+
+        // Since the processing is done, now the data can be saved to the database
+        ConfigurationManager toDB;
+        QString dbfile = sockets.value(socket)->getWorkingDirectory() + "/" + FILE_DBDATA_FILE;
+        if (toDB.loadConfiguration(dbfile,COMMON_TEXT_CODEC)){
+
+            QStringList values;
+            QStringList columns = toDB.getAllKeys();
+            for (qint32 i = 0; i < columns.size(); i++){
+                values << toDB.getString(columns.at(i));
+            }
+
+            // Adding the IDs and the date.
+            DataPacket d = sockets.value(socket)->getDataPacket();
+            columns << TEYERES_COL_STUDY_DATE << TEYERES_COL_PATIENTID << TEYERES_COL_DOCTORID;
+            values << "TIMESTAMP(NOW())" << d.getField(DataPacket::DPFI_PATIENT_ID).data.toString()  << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+
+            if (!dbConn->insertDB(TABLE_EYE_RESULTS,columns,values)){
+                dbConn->close();
+                log.appendError("DB Error saving the results: " + dbConn->getError());
+                removeSocket(socket);
+                return;
+            }
+        }
+        else{
+            dbConn->close();
+            log.appendError("Could not load the db info file: " + toDB.getError());
+            removeSocket(socket);
+            return;
+        }
+        // Closing the connection to the database
+        dbConn->close();
+
+    }
 
     DataPacket tx;
     if (!tx.addFile(reportfile,DataPacket::DPFI_REPORT)){
@@ -178,16 +188,15 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     qint64 n = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
     if (n != ba.size()){
         log.appendError("Could failure sending the report to host: " + sockets.value(socket)->socket()->peerAddress().toString());
+        return;
     }
 
-    log.appendStandard("Sending report back to host: " + sockets.value(socket)->socket()->peerAddress().toString() + ". Size: " + QString::number(ba.size()) + " bytes");
+    //log.appendStandard("Sending report back to host: " + sockets.value(socket)->socket()->peerAddress().toString() + ". Size: " + QString::number(ba.size()) + " bytes");
 
-    // Closing the connection to the database
-    dbConn->close();
 
 }
 
-void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
+void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){    
     QString error = sockets.value(socket)->setWorkingDirectoryAndSaveAllFiles(config->getString(CONFIG_RAW_DATA_REPO));
     if (!error.isEmpty()){
         log.appendError("Could not save data files in incomming packet: " + error);
@@ -195,70 +204,62 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
         return;
     }
 
+    // Removing previous or existing rep files
+    removeAllRepFiles(sockets.value(socket)->getWorkingDirectory());
 
-    // Opening connection to the database.
+    // Opening connection to the database, to check that the doctor and patient uid in the DB are present.
     if (!dbConn->initDB(config)){
         removeSocket(socket);
         log.appendError("Could not start SQL Connection when launching the EyeReport Processor:  " + dbConn->getError());
         return;
     }
 
+    // Getting some patient data to make sure, its in the DB.
     DataPacket d = sockets.value(socket)->getDataPacket();
-
-    // The patient birth date, name, lastname and the doctor's name and last name should be in the DB.
-    QString patientName, patientAge, doctorName;
     QStringList columns;
-
-    // Math to get the birthdate from the date
-    columns << "TIMESTAMPDIFF(YEAR,"  + QString(TPATREQ_COL_BIRTHDATE) +  ",CURDATE())" << TPATREQ_COL_FIRSTNAME << TPATREQ_COL_LASTNAME;
+    columns << TPATREQ_KEYID  << TPATREQ_COL_FIRSTNAME << TPATREQ_COL_LASTNAME;
     QString condition = QString(TPATREQ_COL_UID) + " = '" + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString() + "'";
 
     // Patient data
     if (!dbConn->readFromDB(TABLE_PATIENTS_REQ_DATA,columns,condition)){
         log.appendError(dbConn->getError());
-        patientAge = "0";
-        patientName = d.getField(DataPacket::DPFI_PATIENT_ID).data.toString();
     }
     else{
         DBData data = dbConn->getLastResult();
-        if (data.rows.size() > 0){
-            patientName = data.rows.first().at(1) + " " + data.rows.first().at(2);
-            patientAge =  data.rows.first().at(0);
+        if (data.rows.size() == 0){
+            // Patient is not in the DB.
+            log.appendError("No patient data found for uid:  " + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString());
+            return;
         }
     }
 
     // Doctor Data
     columns.clear();
-    columns << TDOCTOR_COL_FIRSTNAME << TDOCTOR_COL_LASTNAME;
+    columns << TDOCTOR_COL_KEYID << TDOCTOR_COL_FIRSTNAME << TDOCTOR_COL_LASTNAME;
     condition = QString(TDOCTOR_COL_UID) + " = '" + d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString() + "'";
     if (!dbConn->readFromDB(TABLE_DOCTORS,columns,condition)){
         log.appendError(dbConn->getError());
-        doctorName = d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
     }
     else{
         DBData data = dbConn->getLastResult();
-        if (data.rows.size() > 0){
-            doctorName = data.rows.first().at(0) + " " + data.rows.first().at(1);
+        if (data.rows.size() == 0){
+            // Patient is not in the DB.
+            log.appendError("No doctor data found for uid:  " + d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString());
+            return;
         }
     }
 
     // All good and the files have been saved.
     QStringList arguments;
-    QString dash = "-";
-    arguments << dash + CONFIG_PATIENT_DIRECTORY << sockets.value(socket)->getWorkingDirectory();
-    arguments << dash + CONFIG_DOCTOR_NAME << doctorName;
-    arguments << dash + CONFIG_PATIENT_NAME << patientName;
-    arguments << dash + CONFIG_PATIENT_AGE << patientAge;
-    arguments << dash + CONFIG_VALID_EYE << d.getField(DataPacket::DPFI_VALID_EYE).data.toString();
+    arguments << sockets.value(socket)->getWorkingDirectory() + "/" + FILE_EYE_REP_GEN_CONFIGURATION;
 
-    log.appendStandard("Process information from: " + sockets.value(socket)->socket()->peerAddress().toString());
+    //log.appendStandard("Process information from: " + sockets.value(socket)->socket()->peerAddress().toString());
 
     // Closing connection to db
     dbConn->close();
 
     // Processing the data.
     sockets.value(socket)->processData(config->getString(CONFIG_EYEPROCESSOR_PATH),arguments);
-
 
 }
 
@@ -322,8 +323,8 @@ void DataProcessingSSLServer::socketErrorFound(quint64 id){
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
     if (error != QAbstractSocket::RemoteHostClosedError)
         log.appendError(QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
-    else
-        log.appendStandard(QString("Closed connection from Address: ") + addr.toString());
+    //    else
+    //        log.appendStandard(QString("Closed connection from Address: ") + addr.toString());
 
     // Eliminating it from the list.
     removeSocket(id);
@@ -348,14 +349,42 @@ void DataProcessingSSLServer::sslErrorsFound(quint64 id){
 }
 
 void DataProcessingSSLServer::changedState(quint64 id){
+    Q_UNUSED(id)
+//    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+//    // be removed once. After that, te program crashes.
+//    if (!sockets.contains(id)) return;
 
-    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
-    // be removed once. After that, te program crashes.
-    if (!sockets.contains(id)) return;
+//    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
+//    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+//    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+//    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
+}
 
-    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
-    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
-    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
 
+/*****************************************************************************************************************************
+ * Rep files helper functions.
+ * **************************************************************************************************************************/
+
+void DataProcessingSSLServer::removeAllRepFiles(const QString &directory){
+    QStringList filters;
+    filters << "*.rep";
+    QStringList files = QDir(directory).entryList(filters,QDir::Files);
+    for (qint32 i = 0; i < files.size(); i++){
+        QFile(directory + "/" + files.at(i)).remove();
+    }
+}
+
+QString DataProcessingSSLServer::getReportFile(const QString &directory){
+    QStringList filters;
+    filters << "*.rep";
+    QStringList files = QDir(directory).entryList(filters,QDir::Files);
+    if (files.size() > 1){
+        log.appendError("On directory: " + directory + " more than one report file was found.");
+        return "";
+    }
+    else if (files.isEmpty()){
+        log.appendError("No report file found on director: " + directory);
+        return "";
+    }
+    else return directory  + "/" + files.first();
 }

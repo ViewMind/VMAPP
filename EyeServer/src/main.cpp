@@ -1,6 +1,8 @@
 #include <QCoreApplication>
-#include "inputcontrol.h"
 #include "servercontrol.h"
+
+#define  PROGRAM_NAME      "EyeSever"
+#define  PROGRAM_VERSION   "4.0.0"
 
 int main(int argc, char *argv[])
 {
@@ -11,10 +13,12 @@ int main(int argc, char *argv[])
     QObject::connect(&scontrol,SIGNAL(exitRequested()),&a,SLOT(quit()),Qt::QueuedConnection);
     scontrol.startServer();
 
-    // Listen to the input ...
-    InputControl icontrol(&a);
-    QObject::connect(&icontrol,SIGNAL(exitRequested()),&a,SLOT(quit()),Qt::QueuedConnection);
-    icontrol.start();
+    std::cout << "================" << PROGRAM_NAME << "================" << std::endl;
+    std::cout << "| Version: " << PROGRAM_VERSION << std::endl;
+    std::cout << "| Log file: " << LOG_FILE_LOG << std::endl;
+    std::cout << "| Type exit to kill the server" << std::endl;
+    std::cout << "========================================" << std::endl;
+    std::cout << ">> ";
 
     return a.exec();
 }

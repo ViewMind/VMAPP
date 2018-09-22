@@ -3,9 +3,10 @@
 SSLIDSocket::SSLIDSocket():QObject(){
     sslSocket = nullptr;
     ID = 0;
+    s3Address = "";
 }
 
-SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id):QObject()
+SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id, const QString &s3):QObject()
 {
 
     sslSocket = nullptr;
@@ -23,7 +24,7 @@ SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id):QObject()
     connect(sslSocket,&QSslSocket::disconnected,this,&SSLIDSocket::on_disconnected);
     connect(&timer,&QTimer::timeout,this,&SSLIDSocket::on_timeout);
     connect(&process,SIGNAL(finished(int)),this,SLOT(on_processFinished(qint32)));
-
+    s3Address = s3;
     workingDirectory = "";
 }
 
@@ -76,22 +77,23 @@ QString SSLIDSocket::setWorkingDirectoryAndSaveAllFiles(const QString &baseDir){
         return "Could not create time stamp dir in " + pdir.path();
     }
 
-    workingDirectory = pdir.path() + "/" + wdir;
-    QString baseNameForS3 = doctor+"/"+patient +"/"+wdir+"/";
-
-
     // Since the working directory was generated the files can now be saved.
+    workingDirectory = pdir.path() + "/" + wdir;
     if (!rx.saveFiles(workingDirectory)){
         return "There were errors saving packet files.";
     }
 
+    // If this is demo mode the information is NOT saved.
+    if (rx.getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 1) return "";
+
     // Pushing the files to the using AWS to the S3 storarge.
+    QString baseNameForS3 = doctor+"/"+patient +"/"+wdir+"/";
     QStringList savedFiles = rx.getLastFilesSaved();
     for (qint32 i = 0; i < savedFiles.size(); i++){
         QFileInfo info(savedFiles.at(i));
         QString cmd = S3_BASE_COMMAND;
         cmd = cmd + " " + savedFiles.at(i) + " ";
-        cmd = cmd + S3_ADDRESSS + baseNameForS3 + info.baseName() + "." + info.suffix() + " ";
+        cmd = cmd + "s3://"  + s3Address  + "/"  + baseNameForS3 + info.baseName() + "." + info.suffix() + " ";
         cmd = cmd + S3_PARMETERS;
         QProcess::execute(cmd);
     }
