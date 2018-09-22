@@ -30,9 +30,9 @@ VMBase {
         // Substr is used as the first two letters are the country code.
         labelDocument_number.setText(patInfo.uid.substr(2));
 
-        for (var key in patInfo){
-            console.log(key + ": " + patInfo[key]);
-        }
+//        for (var key in patInfo){
+//            console.log(key + ": " + patInfo[key]);
+//        }
 
         // Setting the document type.
         var idType = patInfo.idtype;

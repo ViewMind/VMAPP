@@ -26,6 +26,7 @@ Dialog {
         var ans = loader.getDoctorList();
         ans.unshift(loader.getStringForKey(keybase+"labelDrProfile"));
         labelDrProfile.vmModel = ans;
+        labelDrProfile.currentIndex = 0;
     }
 
     function setCurrentDoctor(){
@@ -38,12 +39,16 @@ Dialog {
             var name = labelDrProfile.currentText;
             var uid = loader.getDoctorUIDByIndex(labelDrProfile.currentIndex-1)
 
-            //console.log("Setting the UID to: " + uid);
+            //console.log("Setting the DOCTOR UID to: " + uid);
             loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_UID,uid);
             loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_NAME,name);
             return true;
         }
 
+    }
+
+    onOpened: {
+        updateDrProfile();
     }
 
     VMDefines{

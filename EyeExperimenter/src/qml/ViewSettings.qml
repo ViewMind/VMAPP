@@ -8,7 +8,6 @@ Dialog {
     readonly property string keybase: "viewsettings_"
     property bool vmInvalidRepoError: false;
     property string vmLoadLanguage: "";
-    property string vmLoadET: "";
     property bool vmOfflineModeStatus: false;
     property bool vmRestartRequired: false;    
 
@@ -200,35 +199,14 @@ Dialog {
         anchors.left: diagTIRepo.left
     }
 
-    VMComboBox{
-        id: diagCBET
-        vmModel: ["REDm", "Mouse", "GP3HD"]
-        currentIndex: {
-            var sel = loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET)
-            for (var i = 0; i < vmModel.length; i++){
-                if (vmModel[i] === sel) {
-                    vmLoadET = vmModel[i];
-                    return i;
-                }
-            }
-            return 0;
-        }
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
-        anchors.top: diagLabelET.bottom
-        anchors.topMargin: 15
-        anchors.left: diagTIRepo.left
-    }
-
-
-    // The double monitor and demo mode selections
+    // The double monitor, demo mode and use mouse selections
 
     VMCheckBox{
         id: diagCboxDemo
         text: loader.getStringForKey(keybase+"diagCboxDemo");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
-        anchors.top: diagCBET.bottom
+        anchors.top: diagLabelET.bottom
         anchors.topMargin: 20
         anchors.left: diagTIRepo.left
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE);
@@ -243,6 +221,17 @@ Dialog {
         anchors.left: diagCboxDemo.right
         anchors.leftMargin: 20
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);
+    }
+
+    VMCheckBox{
+        id: diagCboxUseMouse
+        text: loader.getStringForKey(keybase+"diagCboxUseMouse");
+        font.family: viewHome.robotoR.name
+        font.pixelSize: 13
+        anchors.top: diagCboxDemo.top
+        anchors.left: diagCboxDualMonitor.right
+        anchors.leftMargin: 20
+        checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)
     }
 
     VMButton{
@@ -280,17 +269,13 @@ Dialog {
             return false;
         }
 
-
-
         // Saving the settings.
-        loader.setSettingsValue(vmDefines.vmCONFIG_OUTPUT_DIR,diagTIRepo.vmTextField.text);
-        loader.setSettingsValue(vmDefines.vmCONFIG_SELECTED_ET,diagCBET.currentText);
+        loader.setSettingsValue(vmDefines.vmCONFIG_OUTPUT_DIR,diagTIRepo.vmTextField.text);        
         loader.setSettingsValue(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
         loader.setSettingsValue(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
         loader.setSettingsValue(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
         loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_COUNTRY,loader.getCountryCodeForCountry(diagDBDefaultCountry.currentText));
-
-        // Checking if a restart is required, becuase of the a change into offline mode.
+        loader.setSettingsValue(vmDefines.vmCONFIG_USE_MOUSE,diagCboxUseMouse.checked);
 
         // Signal to update dropdown menu information.
         updateMenus();
@@ -301,7 +286,7 @@ Dialog {
         }
         else{
             // Check if et changed.
-            if (diagCBET.currentText !== vmLoadET){
+            if (loader.checkETChange()){
                 flowControl.eyeTrackerChanged()
             }
         }

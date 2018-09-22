@@ -8,6 +8,7 @@
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/SQLConn/dbdescription.h"
+#include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
 #include "sslclient/ssldbclient.h"
 #include "eye_experimenter_defines.h"
 
@@ -16,22 +17,22 @@ class LocalInformationManager
 public:
 
     LocalInformationManager(ConfigurationManager *c);
-    bool addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values);
-    bool addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values);
+    void addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values);
+    void addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values);
     QList<QStringList> getPatientListForDoctor();
     QList<QStringList> getDoctorList();
     QVariantMap getCurrentDoctorInfo() {return localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap();}
     QVariantMap getCurrentPatientInfo() {
         return localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap().value(PATIENT_DATA).toMap().value(config->getString(CONFIG_PATIENT_UID)).toMap();
-    }
+    }    
+    void setUpdateFlagTo(bool flag);
 
-    // Synch functions.
-    void setupDBSynch(SSLDBClient *client);
+    // Synch function. Returns false if the there is nothing to synch. (No changes to Doctor and Patient data).
+    bool setupDBSynch(SSLDBClient *client);
 
 
     // FOR DEBUGGING ONLY
     void printLocalDB();
-    void printReportRequests();
 
 private:
 
@@ -45,10 +46,10 @@ private:
     QVariantMap localDB;
 
     // Used to iterate over unprocessed information.
-    QHash<QString, QHash<QString,QStringList> > patientReportRequest;
-    void findRemainingReports();
+    QHash<QString, DatFileInfoInDir> patientReportInformation;
+    void fillPatientDatInformation();
 
-    bool backupDB();
+    void backupDB();
     void loadDB();
 
 

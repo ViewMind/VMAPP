@@ -10,12 +10,13 @@ LocalInformationManager::LocalInformationManager(ConfigurationManager *c)
     loadDB();
 }
 
-void LocalInformationManager::setupDBSynch(SSLDBClient *client){
+bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 
     client->setDBTransactionType(SQL_QUERY_TYPE_SET);
+    bool ans = false;
 
     QStringList allDrUIDs = localDB.keys();
-    for (qint32 i = 0; i < allDrUIDs.at(i); i++){
+    for (qint32 i = 0; i < allDrUIDs.size(); i++){
 
         // Checking if the doctor needs to be synched up.
         QString druid = allDrUIDs.at(i);
@@ -30,11 +31,13 @@ void LocalInformationManager::setupDBSynch(SSLDBClient *client){
             QStringList values;
             QSet<QString> avoid; avoid << DOCTOR_UPDATE << PATIENT_DATA;
             QStringList keys = drmap.keys();
-            for (qint32 i = 0; i < keys.size(); i++){
-                if (avoid.contains(keys.at(i))) continue;
-                columns << keys.at(i);
-                values << drmap.value(keys.at(i)).toString();
+            for (qint32 j = 0; j < keys.size(); j++){
+                //Y esta bqWarning() << "Key " << j << " out of " << keys.size();
+                if (avoid.contains(keys.at(j))) continue;
+                columns << keys.at(j);
+                values << drmap.value(keys.at(j)).toString();
             }
+            ans = true;
             client->appendSET(TABLE_DOCTORS,columns,values);
         }
 
@@ -44,7 +47,7 @@ void LocalInformationManager::setupDBSynch(SSLDBClient *client){
 
         for (qint32 j = 0; j < allPatUIDs.size(); j++){
 
-            QString patID = allPatUIDs.at(i);
+            QString patID = allPatUIDs.at(j);
             QVariantMap patientMap = patientData.value(patID).toMap();
 
             bool addPatient = false;
@@ -58,37 +61,40 @@ void LocalInformationManager::setupDBSynch(SSLDBClient *client){
                 QStringList valuesOpt;
                 QSet<QString> avoid; avoid << PATIENT_UPDATE;
                 QSet<QString> required; required << TPATREQ_COL_BIRTHCOUNTRY << TPATREQ_COL_BIRTHDATE << TPATREQ_COL_FIRSTNAME << TPATREQ_COL_IDTYPE
-                                                 << TPATREQ_COL_LASTNAME << TPATREQ_COL_SEX << TPATREQ_COL_UID;
+                                                 << TPATREQ_COL_LASTNAME << TPATREQ_COL_SEX << TPATREQ_COL_UID << TPATREQ_COL_DOCTORID;
                 QStringList keys = patientMap.keys();
-                for (qint32 i = 0; i < keys.size(); i++){
-                    if (avoid.contains(keys.at(i))) continue;
-                    if (required.contains(keys.at(i))){
-                        columns << keys.at(i);
-                        values << patientMap.value(keys.at(i)).toString();
+                for (qint32 k = 0; k < keys.size(); k++){
+                    if (avoid.contains(keys.at(k))) continue;
+                    if (required.contains(keys.at(k))){
+                        columns << keys.at(k);
+                        values << patientMap.value(keys.at(k)).toString();
                     }
                     else{
-                        columnsOpt << keys.at(i);
-                        valuesOpt << patientMap.value(keys.at(i)).toString();
+                        columnsOpt << keys.at(k);
+                        valuesOpt << patientMap.value(keys.at(k)).toString();
                     }
                 }
 
                 // Adding the DR ID.
-                columns << TPATREQ_COL_DOCTORID; values << druid;
                 client->appendSET(TABLE_PATIENTS_REQ_DATA,columns,values);
                 client->appendSET(TABLE_PATIENTS_OPT_DATA,columnsOpt,valuesOpt);
+                ans = true;
             }
         }
     }
 
+    return ans;
+
 }
 
-void LocalInformationManager::findRemainingReports(){
+void LocalInformationManager::fillPatientDatInformation(){
 
-    patientReportRequest.clear();
+    patientReportInformation.clear();
 
     // Creating the source directory path.
     QString baseDir = config->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA)
             + "/" + config->getString(CONFIG_DOCTOR_UID);
+
 
     QDir doctorDir(baseDir);
     if (!doctorDir.exists()){
@@ -106,111 +112,54 @@ void LocalInformationManager::findRemainingReports(){
         QStringList filters;
         QDir patientDir(baseDir + "/" + directories.at(i));
 
-        filters << "*.rep";
-        QStringList reports = patientDir.entryList(filters,QDir::Files);
-
-        filters.clear();
-        filters << QString(FILE_OUTPUT_BINDING_BC) +  "*.dat";
-        QStringList bcFiles = patientDir.entryList(filters,QDir::Files);
-
-        filters.clear();
-        filters << QString(FILE_OUTPUT_BINDING_UC) +  "*.dat";
-        QStringList ucFiles = patientDir.entryList(filters,QDir::Files);
-
-        filters.clear();
-        filters << QString(FILE_OUTPUT_READING) +  "*.dat";
-        QStringList readFiles = patientDir.entryList(filters,QDir::Files);
-
-        QHash<QString, QStringList> fileSetsByTimeStamp;
-
-        // Joining BC and UC Files as set of files.
-        QSet<QString> bcSuffixes;
-        for (qint32 j = 0; j < bcFiles.size(); j++){
-            QString suffix = bcFiles.at(j);
-            suffix = suffix.mid(QString(FILE_OUTPUT_BINDING_BC).size(),-1);
-            bcSuffixes << suffix;
-        }
-        for (qint32 j = 0; j < ucFiles.size(); j++){
-            QString suffix = ucFiles.at(j);
-            suffix = suffix.mid(QString(FILE_OUTPUT_BINDING_UC).size(),-1);
-            if (bcSuffixes.contains(suffix)){
-                // This is a pair of binding files that need to be processed.
-                QStringList list;
-                list << patientDir.path() + "/" + ucFiles.at(j)
-                     << patientDir.path() + "/" + QString(FILE_OUTPUT_BINDING_UC) + suffix;
-                // Getting the timestamp for the file
-                QStringList info = getBindingFileInformation(ucFiles.at(j));
-                if (!info.isEmpty()){
-                    fileSetsByTimeStamp[info.last()] = list;
-                }
-            }
-        }
-
-        // Checking the reading files.
-        for (qint32 j = 0; j < readFiles.size(); j++){
-            // Getting the timestamp.
-            QStringList info = getReadingInformation(readFiles.at(j));
-            if (!info.isEmpty()){
-                if (fileSetsByTimeStamp.contains(info.first())){
-                    fileSetsByTimeStamp[info.first()].append(patientDir.path() + "/" + readFiles.at(j));
-                }
-                else{
-                    QStringList list;
-                    list << patientDir.path() + "/" + readFiles.at(j);
-                    fileSetsByTimeStamp[info.first()] = list;
-                }
-            }
-        }
-
-
-        // Checking the generated files against the report time stamp.
-        QSet<QString> existingTimeStamps;
-        for (qint32 j = 0; j < reports.size(); j++){
-            QString repfile = reports.at(i);
-            QStringList parts = repfile.split(".");
-            repfile = parts.first();
-            QString prefix = QString(FILE_REPORT_NAME) + "_";
-            QString timestamp = repfile.mid(prefix.size());
-            existingTimeStamps << timestamp;
-        }
-
-        QStringList keys = fileSetsByTimeStamp.keys();
-        QHash<QString, QStringList> fileSetsWithoutReport;
-        for (qint32 j = 0; j < keys.size(); j++){
-            if (!existingTimeStamps.contains(keys.at(j))){
-                // This report must be generated
-                fileSetsWithoutReport[keys.at(j)] = fileSetsByTimeStamp.value(keys.at(j));
-            }
-        }
-
-        if (fileSetsWithoutReport.size() > 0){
-            patientReportRequest[directories.at(i)] = fileSetsWithoutReport;
-        }
+        //qWarning() << "DAT INFO TIME";
+        DatFileInfoInDir datInfo;
+        datInfo.setDatDirectory(patientDir.path());
+        patientReportInformation[directories.at(i)] = datInfo;
+        //datInfo.printData();
     }
-
-    printReportRequests();
 
 }
 
-bool LocalInformationManager::addDoctorData(const QString &dr_uid,const QStringList &cols, const QStringList &values){
+void LocalInformationManager::addDoctorData(const QString &dr_uid,const QStringList &cols, const QStringList &values){
 
-    // No need to check for UID unicity. If the UID is the same this is an update.
-
+    // Doctor information needs to be checked against existing information to see if there is a change.
     QVariantMap drinfo;
     // Adding the dr information.
     for (qint32 i = 0; i < cols.size(); i++){
         drinfo[cols.at(i)] = values.at(i);
     }
-    drinfo[DOCTOR_UPDATE] = true;
 
-    // Empty map for the patient.
-    drinfo[PATIENT_DATA] = QVariantMap();
-    localDB[dr_uid] = drinfo;
+    if (!localDB.contains(dr_uid)){
+        // Empty map for the patient.
+        drinfo[DOCTOR_UPDATE] = true;
+        drinfo[PATIENT_DATA] = QVariantMap();
+        localDB[dr_uid] = drinfo;
+    }
+    else {
+        // Doctor is existing. Checking all information except patient data
+        bool update = false;
+        QVariantMap drmap = localDB.value(dr_uid).toMap();
+        for (qint32 i = 0; i < cols.size(); i++){
+            if (!drmap.contains(cols.at(i))){
+                update = true;
+                break;
+            }
+            else if (drmap.value(cols.at(i)).toString() != values.at(i)){
+                update = true;
+                break;
+            }
+        }
+        drinfo[DOCTOR_UPDATE] = update;
+        // Saving the existent patient data.
+        drinfo[PATIENT_DATA] = drmap.value(PATIENT_DATA);
+        localDB[dr_uid] = drinfo;
+    }
 
-    return backupDB();
+    backupDB();
 }
 
-bool LocalInformationManager::addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values){
+void LocalInformationManager::addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values){
 
     QVariantMap drinfo = localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap();
     QVariantMap patients = drinfo.value(PATIENT_DATA).toMap();
@@ -220,7 +169,27 @@ bool LocalInformationManager::addPatientData(const QString &patient_uid, const Q
     for (qint32 i = 0; i < cols.size(); i++){
         thispatient[cols.at(i)] = values.at(i);
     }
-    thispatient[PATIENT_UPDATE] = true;
+
+    // Checking to see if updte is necessary
+    if (patients.contains(patient_uid)){
+        QVariantMap basePatient = patients.value(patient_uid).toMap();
+        thispatient[PATIENT_UPDATE] = false;
+        for (qint32 i = 0; i < cols.size(); i++){
+            if (!basePatient.contains(cols.at(i))){
+                thispatient[PATIENT_UPDATE] = true;
+                break;
+            }
+            else if (basePatient.value(cols.at(i)).toString() != values.at(i)){
+                thispatient[PATIENT_UPDATE] = true;
+                break;
+
+            }
+        }
+
+    }
+    else{
+        thispatient[PATIENT_UPDATE] = true;
+    }
 
     // Storing the patient information in the patient map for the doctor
     patients[patient_uid] = thispatient;
@@ -234,6 +203,28 @@ bool LocalInformationManager::addPatientData(const QString &patient_uid, const Q
     // Finally saving the DB.
     return backupDB();
 
+}
+
+void LocalInformationManager::setUpdateFlagTo(bool flag){
+
+    QStringList druids = localDB.keys();
+    for (qint32 i = 0; i < druids.size(); i++){
+        QVariantMap drmap = localDB.value(druids.at(i)).toMap();
+        drmap[DOCTOR_UPDATE] = flag;
+        QVariantMap patients = drmap.value(PATIENT_DATA).toMap();
+        QStringList patuids = patients.keys();
+        for (qint32 j = 0; j < patuids.size(); j++){
+            QVariantMap patmap = patients.value(patuids.at(j)).toMap();
+            patmap[PATIENT_UPDATE] = flag;
+            patients[patuids.at(j)] = patmap;
+        }
+        drmap[PATIENT_DATA] = patients;
+        localDB[druids.at(i)] = drmap;
+    }
+
+    backupDB();
+    //qWarning() << "AFTER SETTING THE FLAG TO" << flag;
+    //printLocalDB();
 }
 
 QList<QStringList> LocalInformationManager::getDoctorList(){
@@ -253,16 +244,17 @@ QList<QStringList> LocalInformationManager::getPatientListForDoctor(){
     QStringList names;
     QVariantMap patients = localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap().value(PATIENT_DATA).toMap();
     QStringList uids = patients.keys();
+    //qWarning() << "PAT UIDS for" << config->getString(CONFIG_DOCTOR_UID) << " are " << uids;
     for (qint32 i = 0; i < uids.size(); i++){
         QVariantMap patinfo = patients.value(uids.at(i)).toMap();
         names << patinfo.value(TPATREQ_COL_FIRSTNAME).toString() + " " + patinfo.value(TPATREQ_COL_LASTNAME).toString();
     }
     if (!names.isEmpty()) {
         ans << names << uids;
-        findRemainingReports();
+        fillPatientDatInformation();
         QStringList isoklist;
         for (qint32 i = 0; i < uids.size(); i++){
-            if (patientReportRequest.contains(uids.at(i))) isoklist << "false";
+            if (patientReportInformation.value(uids.at(i)).hasPendingReports()) isoklist << "false";
             else isoklist << "true";
         }
         ans << isoklist;
@@ -296,13 +288,12 @@ void LocalInformationManager::loadDB(){
 
 }
 
-bool LocalInformationManager::backupDB(){
+void LocalInformationManager::backupDB(){
 
     // Checking to see if the directory structure exists.
     QDir basedir(config->getString(CONFIG_OUTPUT_DIR) + "/" + DIRNAME_RAWDATA);
     if (!basedir.exists()){
         log.appendError("LOCALDB: Base Data directory: " + basedir.path() + " does not exist and it should, at this point");
-        return false;
     }
 
     QString dbfile = basedir.path() + "/" + LOCAL_DB;
@@ -310,7 +301,6 @@ bool LocalInformationManager::backupDB(){
     QFile file(dbfile);
     if (!file.open(QFile::WriteOnly)){
         log.appendError("LOCALDB: Cannot open DB file " + dbfile  + " for writing");
-        return false;
     }
 
     QDataStream writer(&file);
@@ -320,9 +310,9 @@ bool LocalInformationManager::backupDB(){
 
     // Backing up the DB.
     QFile(LOCAL_DB).remove();
-    QFile::copy(dbfile,LOCAL_DB);
-
-    return true;
+    if (!QFile::copy(dbfile,LOCAL_DB)){
+        log.appendError("LOCALDB: Failed to backup file " + dbfile);
+    }
 
 }
 
@@ -339,7 +329,7 @@ void LocalInformationManager::printLocalDB(){
         QStringList drcols = drinfo.keys();
         for (qint32 j = 0; j < drcols.size(); j++){
             if (drcols.at(j) != PATIENT_DATA)
-               qWarning() << tab1 << drcols.at(j) << " = " << drinfo.value(drcols.at(j)).toString();
+                qWarning() << tab1 << drcols.at(j) << " = " << drinfo.value(drcols.at(j)).toString();
         }
         QVariantMap patients = drinfo.value(PATIENT_DATA).toMap();
         qWarning() << tab1 << "PATIENT DATA:";
@@ -356,11 +346,3 @@ void LocalInformationManager::printLocalDB(){
 
 }
 
-void LocalInformationManager::printReportRequests(){
-
-    QStringList timestamps = patientReportRequest.keys();
-    for (qint32 i = 0; i < timestamps.size(); i++){
-        qWarning() << "TIMESTAMP: " << timestamps.at(i) << ". FILES: " << patientReportRequest.value(timestamps.at(i));
-    }
-
-}

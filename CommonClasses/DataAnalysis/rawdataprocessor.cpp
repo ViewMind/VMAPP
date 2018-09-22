@@ -4,56 +4,27 @@ RawDataProcessor::RawDataProcessor(QObject *parent):QObject(parent)
 {
 }
 
-void RawDataProcessor::initialize(ConfigurationManager *c, const QSet<QString> &exps){
+
+void RawDataProcessor::initialize(ConfigurationManager *c){
     config = c;
 
-    // Getting the corresponding files for processing
-    QString fileBC = FILE_OUTPUT_BINDING_BC;
-    QString fileUC = FILE_OUTPUT_BINDING_UC;
+    QString currentDir = config->getString(CONFIG_PATIENT_DIRECTORY);
+    if (config->containsKeyword(CONFIG_FILE_READING))
+        dataReading = currentDir + "/" + config->getString(CONFIG_FILE_READING);
+    else dataReading = "";
 
-    if (c->containsKeyword(CONFIG_BC_FILE_FILTER)){
-        fileBC = fileBC + c->getString(CONFIG_BC_FILE_FILTER);
-    }
-    if (c->containsKeyword(CONFIG_UC_FILE_FILTER)){
-        fileUC = fileUC + c->getString(CONFIG_UC_FILE_FILTER);
-    }
+    if (config->containsKeyword(CONFIG_FILE_BIDING_BC))
+        dataBindingBC = currentDir + "/" + config->getString(CONFIG_FILE_BIDING_BC);
+    else dataBindingBC = "";
 
-    dataReading = getNewestFile(config->getString(CONFIG_PATIENT_DIRECTORY),FILE_OUTPUT_READING);
-    dataBindingBC = getNewestFile(config->getString(CONFIG_PATIENT_DIRECTORY),fileBC);
-    dataBindingUC = getNewestFile(config->getString(CONFIG_PATIENT_DIRECTORY),fileUC);
-    dataFielding = getNewestFile(config->getString(CONFIG_PATIENT_DIRECTORY),FILE_OUTPUT_FIELDING);
-    experiments = exps;
+    if (config->containsKeyword(CONFIG_FILE_BIDING_UC))
+        dataBindingUC = currentDir + "/" + config->getString(CONFIG_FILE_BIDING_UC);
+    else dataBindingUC = "";
 
-    commonInitialization();
+    if (config->containsKeyword(CONFIG_FILE_FIELDING))
+        dataFielding = currentDir + "/" + config->getString(CONFIG_FILE_FIELDING);
+    else dataFielding = "";
 
-}
-
-void RawDataProcessor::initialize(ConfigurationManager *c, const QStringList &filesToProcess){
-    config = c;
-    commonInitialization();
-    experiments.clear();
-    for (qint32 i = 0; i < filesToProcess.size(); i++){
-        if (filesToProcess.at(i).contains(FILE_OUTPUT_BINDING_BC)){
-            dataBindingBC = filesToProcess.at(i);
-            experiments << CONFIG_P_EXP_BIDING_BC;
-        }
-        else if (filesToProcess.at(i).contains(FILE_OUTPUT_BINDING_UC)){
-            dataBindingUC = filesToProcess.at(i);
-            experiments << CONFIG_P_EXP_BIDING_UC;
-        }
-        else if (filesToProcess.at(i).contains(FILE_OUTPUT_READING)){
-            dataReading = filesToProcess.at(i);
-            experiments << CONFIG_P_EXP_READING;
-        }
-        else if (filesToProcess.at(i).contains(FILE_OUTPUT_FIELDING)){
-            dataFielding = filesToProcess.at(i);
-            experiments << CONFIG_P_EXP_FIELDING;
-        }
-    }
-}
-
-
-void RawDataProcessor::commonInitialization(){
     matrixBindingBC = "";
     matrixReading = "";
     matrixFielding = "";
@@ -69,6 +40,7 @@ void RawDataProcessor::commonInitialization(){
     mwp.calculateWindowSize();
 }
 
+
 QString RawDataProcessor::formatBindingResultsForPrinting(const EDPImages::BindingAnswers &ans){
     QString report = "";
     report = report + "Number of correct answers in test trials: " + QString::number(ans.testCorrect) + "<br>";
@@ -83,21 +55,28 @@ void RawDataProcessor::run(){
     EyeMatrixProcessor emp((quint8)config->getInt(CONFIG_VALID_EYE));
     reportFileOutput = "";
 
-    EyeMatrixProcessor::DBHash dbdata;
-
     QStringList studyID;
-
+    EyeMatrixProcessor::DBHash dbdata;
     RawDataProcessor::TagParseReturn tagRet;
+
+    QString dateForReport;
+    QStringList reportInfoText;
 
     // Each of the processing fucntions is called. In this way, processing of just one can be accomplished
     // just by running this complete function but it will keep going if a file does not exist.
-    if (experiments.contains(CONFIG_P_EXP_READING)) {
+    if (!dataReading.isEmpty()) {
         emit(appendMessage("========== STARTED READING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPReading reading(config);
         tagRet = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
         matrixReading = tagRet.filePath;
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
         QString report = emp.processReading(matrixReading,&dbdata);
+
+        QFileInfo info(dataReading);
+        DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getReadingInformation(info.baseName());
+        dateForReport = datInfo.date;
+        reportInfoText << "r";
+
         if (!report.isEmpty()){
             studyID << "rd" + tagRet.version;
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -106,8 +85,8 @@ void RawDataProcessor::run(){
     }
 
 
-    if (experiments.contains(CONFIG_P_EXP_BIDING_BC)) {
-        emit(appendMessage("========== STARTED BINDING BC PROCESSING ==========",MSG_TYPE_SUCC));        
+    if (!dataBindingBC.isEmpty()) {
+        emit(appendMessage("========== STARTED BINDING BC PROCESSING ==========",MSG_TYPE_SUCC));
 
         EDPImages images(config);
         // This function generates the tag for the DB but ALSO sets whether the targets use are small or large.
@@ -116,6 +95,15 @@ void RawDataProcessor::run(){
         matrixBindingBC = tagRet.filePath;
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
+
+        // The code needs to be saved only once as it should be the same for both BC and UC.
+        QFileInfo info(dataBindingBC);
+        DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getBindingFileInformation(info.baseName());
+        reportInfoText << "b" + datInfo.extraInfo;
+        if (dateForReport.isEmpty()) dateForReport = datInfo.date;
+        else if (dateForReport != datInfo.date){
+            emit(appendMessage("Using files from different dates. Using the date first found: " + dateForReport,MSG_TYPE_WARN));
+        }
 
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -136,7 +124,7 @@ void RawDataProcessor::run(){
     }
 
 
-    if (experiments.contains(CONFIG_P_EXP_BIDING_UC)){
+    if (!dataBindingUC.isEmpty()){
         emit(appendMessage("========== STARTED BINDING UC PROCESSING ==========",MSG_TYPE_SUCC));
 
         EDPImages images(config);
@@ -146,6 +134,15 @@ void RawDataProcessor::run(){
         matrixBindingUC = tagRet.filePath;
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
         QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
+
+        // The code needs to be saved only once as it should be the same for both BC and UC.
+        QFileInfo info(dataBindingUC);
+        DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getBindingFileInformation(info.baseName());
+        if (dateForReport.isEmpty()) dateForReport = datInfo.date;
+        else if (dateForReport != datInfo.date){
+            emit(appendMessage("Using files from different dates. Using the date first found: " + dateForReport,MSG_TYPE_WARN));
+        }
+
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
             studyID << bindingVersion + tagRet.version;
@@ -165,7 +162,7 @@ void RawDataProcessor::run(){
         else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
     }
 
-    if (experiments.contains(CONFIG_P_EXP_FIELDING)) {
+    if (!dataFielding.isEmpty()) {
         emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPFielding fielding(config);
         tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
@@ -183,7 +180,16 @@ void RawDataProcessor::run(){
     QHash<qint32,bool> what2Add;
     what2Add[STAT_ID_ENCODING_MEM_VALUE] = !matrixBindingBC.isEmpty() && !matrixBindingUC.isEmpty();
     what2Add[STAT_ID_TOTAL_FIXATIONS] = !matrixReading.isEmpty();
-    generateReportFile(emp.getResults(),what2Add);
+
+    QString repFileCode = "";
+    if (reportInfoText.isEmpty()){
+        emit(appendMessage("Nothing selected to process. Exiting." + reportFileOutput,MSG_TYPE_STD));
+        return;
+    }
+
+    qWarning() << "DATE" << dateForReport << "List" << reportInfoText;
+
+    generateReportFile(emp.getResults(),what2Add,reportInfoText.join("_") + "_" + dateForReport);
     emit(appendMessage("Report Generated: " + reportFileOutput,MSG_TYPE_SUCC));
 
     // Saving the database data to text file
@@ -205,10 +211,10 @@ void RawDataProcessor::run(){
 
 }
 
-void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd){
+void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode){
 
     reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME;
-    reportFileOutput = reportFileOutput + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd") + ".rep";
+    reportFileOutput = reportFileOutput + "_" + repFileCode + ".rep";
 
     // Deleting the resport if it exists.
     QFile::remove(reportFileOutput);

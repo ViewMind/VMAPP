@@ -36,6 +36,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Server address and the default country.
     cmd.clear();
     cv[CONFIG_SERVER_ADDRESS] = cmd;
+    cv[CONFIG_EYETRACKER_CONFIGURED] = cmd;
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
@@ -54,13 +55,13 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // The strings.
     cv[CONFIG_OUTPUT_DIR] = cmd;
     cv[CONFIG_REPORT_LANGUAGE] = cmd;
-    cv[CONFIG_SELECTED_ET] = cmd;
     cv[CONFIG_DEFAULT_COUNTRY] = cmd;
 
     // The booleans
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[CONFIG_DUAL_MONITOR_MODE] = cmd;
     cv[CONFIG_DEMO_MODE] = cmd;
+    cv[CONFIG_USE_MOUSE] = cmd;
 
     // Merging the settings or loading the default configuration.
     settings.setupVerification(cv);
@@ -91,9 +92,10 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
 void Loader::startDBSync(){
     // Adding all the data that needs to be sent.
-    lim->setupDBSynch(dbClient);
-    // Running the transaction.
-    dbClient->runDBTransaction();
+    if (lim->setupDBSynch(dbClient))
+        // Running the transaction.
+        dbClient->runDBTransaction();
+    else onDisconnectFromDB();
 }
 
 void Loader::onTransactionFinished(bool isOk){
@@ -101,9 +103,10 @@ void Loader::onTransactionFinished(bool isOk){
 }
 
 void Loader::onDisconnectFromDB(){    
-    if (!dbClient->getTransactionStatus()){
-       /// TODO send error signal if not ok
+    if (dbClient->getTransactionStatus()){
+        lim->setUpdateFlagTo(false);
     }
+    emit(synchDone());
 }
 
 void Loader::addNewDoctorToDB(QVariantMap dbdata){
@@ -207,7 +210,6 @@ QStringList Loader::getPatientIsOKList() {
     else return nameInfoList.at(2);
 }
 
-
 int Loader::getDefaultCountry(bool offset){
     QString countryCode = configuration->getString(CONFIG_DEFAULT_COUNTRY);
     if (countryCode.isEmpty()) return 0;
@@ -267,6 +269,21 @@ QString Loader::hasValidOutputRepo(const QString &dirToCheck){
     // Returning the new dir.
     return configuration->getString(CONFIG_OUTPUT_DIR);
 
+}
+
+bool Loader::checkETChange(){
+    // Returns true if ET has been changed is required.
+    if (configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) != CONFIG_P_ET_MOUSE)){
+        // Mouse was configured, but mouse is not the selected ET. Switching to mouse.
+        configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
+        return true;
+    }
+    else if (!configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) == CONFIG_P_ET_MOUSE)){
+        // Mouse was NOT configured but it IS the selected ET. Switching to configured ET.
+        configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
+        return true;
+    }
+    return false;
 }
 
 QString Loader::getStringForKey(const QString &key){
@@ -376,8 +393,13 @@ void Loader::loadDefaultConfigurations(){
     if (!configuration->containsKeyword(CONFIG_DEFAULT_COUNTRY)) configuration->addKeyValuePair(CONFIG_DEFAULT_COUNTRY,"AR");
     if (!configuration->containsKeyword(CONFIG_DEMO_MODE)) configuration->addKeyValuePair(CONFIG_DEMO_MODE,false);
     if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)) configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
+    if (!configuration->containsKeyword(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_USE_MOUSE,true);
     if (!configuration->containsKeyword(CONFIG_SELECTED_ET)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
     if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)) configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
     if (!configuration->containsKeyword(CONFIG_REPORT_LANGUAGE)) configuration->addKeyValuePair(CONFIG_REPORT_LANGUAGE,CONFIG_P_LANG_EN);
 
+}
+
+Loader::~Loader(){
+    delete lim;
 }

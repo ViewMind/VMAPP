@@ -129,17 +129,25 @@ void SSLDBClient::on_readyRead(){
             socket->disconnectFromHost();
         }
         else {
-            // Expecting ACK from a set operation
+            // Expecting ACK from a set operation or error.
             if (!rxDP.hasInformationField(DataPacket::DPFI_DB_SET_ACK)){
                 transactionStatus = false;
-                log.appendError("ERROR: Expecting DB Set ACK but somehting else arrived.");
+                if (rxDP.hasInformationField(DataPacket::DPFI_DB_ERROR)){
+                    // The errors must be separated:
+                    QStringList dberrors = rxDP.getField(DataPacket::DPFI_DB_ERROR).data.toString().split(DB_TRANSACTION_LIST_SEP);
+                    for (qint32 i = 0; i < dberrors.size(); i++){
+                        log.appendError("On DB Synch: " + dberrors.at(i));
+                    }
+                }
+                else log.appendError("Expecting DB Set ACK but somehting else arrived.");
             }
+            // Otherwise ACK has arrived and is all good.
             socket->disconnectFromHost();
         }
 
     }
     else if (errcode == DataPacket::DATABUFFER_RESULT_ERROR){
-        log.appendError("ERROR: Buffering data from the receiver");
+        log.appendError("Buffering data from the receiver");
         rxDP.clearAll();
         transactionStatus = false;
         socket->disconnectFromHost();
@@ -160,16 +168,16 @@ void SSLDBClient::on_timeOut(){
     timer.stop();
     switch(clientState){
     case CS_WAIT_DB_DATA:
-        log.appendError("ERROR: SQL Server request for information did not arrive before expected time. Closing connection. Please retry.");
+        log.appendError("SQL Server request for information did not arrive before expected time. Closing connection. Please retry.");
         transactionStatus = false;
         break;
     case CS_WAIT_SET_ACK:
-        log.appendError("ERROR: SQL Server request for information did not arrive before expected time. Closing connection. Please retry.");
+        log.appendError("SQL Server request for information did not arrive before expected time. Closing connection. Please retry.");
         transactionStatus = false;
         break;
     case CS_CONNECTING_TO_SQL_GET:
     case CS_CONNECTING_TO_SQL_SET:
-        log.appendError("ERROR: SQL server connection notice did not arrive before the expected time. Closing connection. Please retry.");
+        log.appendError("SQL server connection notice did not arrive before the expected time. Closing connection. Please retry.");
         transactionStatus = false;
         break;
     }

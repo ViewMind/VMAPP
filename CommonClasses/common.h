@@ -30,7 +30,6 @@
 #define   CONFIG_YPX_2_MM                               "y_px_mm"
 #define   CONFIG_LATENCY_ESCAPE_RAD                     "latency_escape_radious"
 #define   CONFIG_MARGIN_TARGET_HIT                      "margin_target_hit"
-#define   CONFIG_FAST_PROCESSING                        "fast_processing"
 #define   CONFIG_EXP_LIST                               "experiments"
 #define   CONFIG_OUTPUT_DIR                             "output_directory"
 #define   CONFIG_RAW_DATA_REPO                          "raw_data_repo"
@@ -46,8 +45,6 @@
 #define   CONFIG_REPORT_LANGUAGE                        "report_language"
 #define   CONFIG_REPORT_NO_LOGO                         "no_logo_in_report"
 #define   CONFIG_DEMO_MODE                              "demo_mode"
-#define   CONFIG_BC_FILE_FILTER                         "bc_file_filter"
-#define   CONFIG_UC_FILE_FILTER                         "uc_file_filter"
 #define   CONFIG_DAT_TIME_FILTER_THRESHOLD              "time_filter_threshold"
 #define   CONFIG_SERVER_ADDRESS                         "server_address"
 #define   CONFIG_CONNECTION_TIMEOUT                     "connection_time_out"
@@ -73,7 +70,12 @@
 #define   CONFIG_DEFAULT_COUNTRY                        "default_country"
 #define   CONFIG_BINDING_TARGET_SMALL                   "binding_target_small"
 #define   CONFIG_BINDING_NUMBER_OF_TARGETS              "binding_number_of_targets"
-
+#define   CONFIG_USE_MOUSE                              "use_mouse"
+#define   CONFIG_EYETRACKER_CONFIGURED                  "eyetracker_configured"
+#define   CONFIG_FILE_BIDING_UC                         "file_binding_uc"
+#define   CONFIG_FILE_BIDING_BC                         "file_binding_bc"
+#define   CONFIG_FILE_READING                           "file_reading"
+#define   CONFIG_FILE_FIELDING                          "file_fielding"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -118,66 +120,5 @@
 // TCP Ports.
 static const quint16 TCP_PORT_DB_COMM                    = 54915;
 static const quint16 TCP_PORT_DATA_PROCESSING            = 54912;
-
-/****************************************************************************************
- * Function that returns the newest dat file in a directory for a given
- * base name.
- * **************************************************************************************/
-
-static inline QString getNewestFile(const QString &directory, const QString &baseName, const QString &extension = "dat"){
-    // Getting all the files with the correct based name and sorted by modification time.
-    QDir dir(directory);
-    QStringList filter;
-    filter << baseName + "_*." + extension;
-    QStringList allfiles = dir.entryList(filter,QDir::Files,QDir::Time);
-
-    if (allfiles.isEmpty()) return "";
-    return directory + "/" + allfiles.first();
-}
-
-// Returns the experiment type and time stamp based on the file name format.
-static inline QStringList getBindingFileInformation(const QString &bindingFile){
-
-    QStringList parts = bindingFile.split(".",QString::SkipEmptyParts);
-    QString baseName = parts.first();
-    parts = baseName.split("_",QString::SkipEmptyParts);
-    QStringList ans;
-    if (parts.size() == 5){
-        // This is an old file so it only contains a date as timestamp.
-        // Target size was large and number of targets were two.
-        ans << "2l" << parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
-    }
-    else if (parts.size() == 7){
-        // File name before time stamp included hours and minutes
-        ans << parts.at(2) + parts.at(3) << parts.at(4) + "_" + parts.at(5) + "_" + parts.at(6);
-    }
-    else if (parts.size() == 9){
-        // Full file name with time stamp including hours and minutes.
-        ans << parts.at(2) + parts.at(3) << parts.at(4) + "_" + parts.at(5) + "_" + parts.at(6) + "_" + parts.at(7) + "_" + parts.at(8);
-    }
-
-    return ans;
-}
-
-// Returns the experiment type and time stamp based on the file name format.
-// The output is left as a list in case in the future more information is left in the file name.
-static inline QStringList getReadingInformation(const QString &readingFile){
-
-    QStringList parts = readingFile.split(".",QString::SkipEmptyParts);
-    QString baseName = parts.first();
-    parts = baseName.split("_",QString::SkipEmptyParts);
-    QStringList ans;
-    if (parts.size() == 4){
-        // This is an old file so it only contains a date as timestamp.
-        ans << parts.at(1) + "_" + parts.at(2) + "_" + parts.at(3);
-    }
-    else if (parts.size() == 6){
-        // File name before time stamp included hours and minutes
-        ans << parts.at(1) + "_" + parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4) + "_" + parts.at(5);
-    }
-
-    return ans;
-}
-
 
 #endif // COMMON_H

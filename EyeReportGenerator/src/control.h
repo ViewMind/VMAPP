@@ -7,7 +7,7 @@
 #include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
 
 #define   EYE_REP_GEN_NAME                              "EyeRepGenerator"
-#define   EYE_REP_GEN_VERSION                           "3.2.1"
+#define   EYE_REP_GEN_VERSION                           "4.0.0"
 
 class Control : public QObject
 {
@@ -33,11 +33,6 @@ private:
     // All necessary steps to properly quit
     void exitProgram();
 
-    // Load arguments from the command line if present.
-    void loadArguments();
-
-    // Adds to the configuration based on command line arguments.
-    void addToConfigFromCmdLine(const QString &field, const QString &value);
 };
 
 #endif // CONTROL_H

@@ -36,7 +36,7 @@ void SSLDataProcessingClient::connectToServer()
 
     QString readingfile;
     if (config->getBool(CONFIG_DEMO_MODE)) readingfile = ":/demo_data/reading_2018_06_03.dat";
-    else readingfile = getNewestFile(directory,FILE_OUTPUT_READING);
+    //else readingfile = getNewestFile(directory,FILE_OUTPUT_READING);
 
     if (readingfile.isEmpty()){
         log.appendWarning("WARNING: No reading file found");
@@ -48,7 +48,7 @@ void SSLDataProcessingClient::connectToServer()
 
     QString bindingBC;
     if (config->getBool(CONFIG_DEMO_MODE)) bindingBC = ":/demo_data/binding_bc_2018_06_03.dat";
-    else bindingBC = getNewestFile(directory,FILE_OUTPUT_BINDING_BC);
+    //else bindingBC = getNewestFile(directory,FILE_OUTPUT_BINDING_BC);
 
     if (bindingBC.isEmpty()){
         log.appendWarning("WARNING: No binding BC file found");
@@ -60,7 +60,7 @@ void SSLDataProcessingClient::connectToServer()
 
     QString bindingUC;
     if (config->getBool(CONFIG_DEMO_MODE)) bindingUC = ":/demo_data/binding_uc_2018_06_03.dat";
-    else bindingUC = getNewestFile(directory,FILE_OUTPUT_BINDING_UC);
+    //else bindingUC = getNewestFile(directory,FILE_OUTPUT_BINDING_UC);
 
     if (bindingUC.isEmpty()){
         log.appendWarning("WARNING: No binding UC file found");

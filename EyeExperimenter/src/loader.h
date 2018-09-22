@@ -17,6 +17,7 @@ class Loader : public QObject
     Q_OBJECT
 public:
     explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr, CountryStruct *cs = nullptr);
+    ~Loader();
     Q_INVOKABLE QString getStringForKey(const QString &key);
     Q_INVOKABLE QStringList getStringListForKey(const QString &key);
     Q_INVOKABLE QString getConfigurationString(const QString &key);
@@ -24,6 +25,7 @@ public:
     Q_INVOKABLE bool getLoaderError() const {return loadingError; }
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
     Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var) {configuration->addKeyValuePair(key,var);}
+    Q_INVOKABLE bool checkETChange();
     Q_INVOKABLE QString hasValidOutputRepo(const QString &dirToCheck = "");
     Q_INVOKABLE QString getWindowTilteVersion(){ return EXPERIMENTER_VERSION; }
     Q_INVOKABLE bool createPatientDirectory(const QString &patientuid);

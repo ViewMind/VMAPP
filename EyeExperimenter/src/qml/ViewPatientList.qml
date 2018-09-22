@@ -12,6 +12,13 @@ VMBase {
 
     readonly property string keybase: "viewpatientlist_"
 
+    Connections {
+        target: loader
+        onSynchDone: {
+            connectionDialog.close();
+        }
+    }
+
 
     Dialog {
 
@@ -100,6 +107,7 @@ VMBase {
     }
 
     function setCurrentPatient(){
+        if (patientListView.currentIndex == -1) return;
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_UID,patientList.get(patientListView.currentIndex).uid);
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_NAME,patientList.get(patientListView.currentIndex).pname);
         //console.log("PNAME: " + patientList.get(patientListView.currentIndex).pname + ". UID: " + patientList.get(patientListView.currentIndex).uid);
@@ -110,7 +118,7 @@ VMBase {
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagConnectMessage");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagConnectTitle");
         connectionDialog.open();
-
+        loader.startDBSync();
 
     }
 

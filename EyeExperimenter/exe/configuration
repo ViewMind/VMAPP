@@ -22,9 +22,23 @@ reading_px_tol_for_target = 60;
 #------------------------------------------------------#
 #     CONFIGURATION FOR EYE DATA PROCESSING            #
 #------------------------------------------------------#
+
+# Parameters for GazePoint GP3HD
+eyetracker_configured        = GP3HD;    #GazePoint ET
 moving_window_max_dispersion = 100;      #px
-minimum_fixation_length      =  50;      #ms
 sample_frequency             = 150;      #Hz
+
+# Parameters for SMI REDm 120 HZ
+#eyetracker_configured        = REDm;     #SMI ET
+#moving_window_max_dispersion = 30;       #px
+#sample_frequency             = 120;      #Hz
+
+# Parameters for SMI REDm 250 HZ
+#eyetracker_configured        = REDm;     #SMI ET
+#moving_window_max_dispersion = 30;       #px
+#sample_frequency             = 250;      #Hz
+
+minimum_fixation_length      =  50;      #ms
 distance_to_monitor          =  60;      #cm
 latency_escape_radious       =  80;      #px
 margin_target_hit            =  10;      #mm 

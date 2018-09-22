@@ -29,15 +29,16 @@ void SSLClient::on_readyRead(){
 //************************************* Socket and SSL Errors, Socket state changes ****************************************
 
 void SSLClient::on_sslErrors(const QList<QSslError> &errors){
-    for (qint32 i = 0; i < errors.size(); i++){
-        log.appendWarning("SSL ERROR: " + errors.at(i).errorString());
-    }
+//    for (qint32 i = 0; i < errors.size(); i++){
+//        log.appendWarning("SSL ERROR: " + errors.at(i).errorString());
+//    }
+    Q_UNUSED(errors);
     socket->ignoreSslErrors();
 }
 
 void SSLClient::on_socketStateChanged(QAbstractSocket::SocketState state){
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-    log.appendStandard(QString("Log: Socket state - ") + metaEnum.valueToKey(state));
+    //log.appendStandard(QString("Log: Socket state - ") + metaEnum.valueToKey(state));
     if (state == QAbstractSocket::UnconnectedState){
         emit(diconnectionFinished());
     }
@@ -45,8 +46,9 @@ void SSLClient::on_socketStateChanged(QAbstractSocket::SocketState state){
 
 void SSLClient::on_socketError(QAbstractSocket::SocketError error){
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    log.appendWarning(QString("SOCKET ERROR: ") + metaEnum.valueToKey(error));
+    //log.appendWarning(QString("SOCKET ERROR: ") + metaEnum.valueToKey(error));
     // If there is an error then the timer should be stopped.
+    Q_UNUSED(error);
     if (timer.isActive()) timer.stop();
     socket->disconnectFromHost();
 }

@@ -14,6 +14,7 @@
 #include "EyeMatrixGenerator/edpimages.h"
 #include "EyeMatrixGenerator/edpfielding.h"
 #include "EyeMatrixProcessor/eyematrixprocessor.h"
+#include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
 
 #define   MSG_TYPE_STD                                   0
 #define   MSG_TYPE_SUCC                                  1
@@ -29,8 +30,7 @@ public:
     RawDataProcessor(QObject *parent = 0);
 
     // The first method is used when calling the program automatically by another program. The second one when used to directly process the file.
-    void initialize(ConfigurationManager *c, const QSet<QString> &exps);
-    void initialize(ConfigurationManager *c, const QStringList &filesToProcess);
+    void initialize(ConfigurationManager *c);
     QString getReportFileOutput() const {return reportFileOutput; }
     QHash<QString,FixationList> getFixations() const {return fixations;}
 
@@ -45,13 +45,10 @@ private:
     // For configuration and logging
     ConfigurationManager *config;
 
-    // Experiments to actually process
-    QSet<QString> experiments;
-
     // Processed fixations in the proper structure. This is used to draw fixations if needed.
     QHash<QString,FixationList> fixations;
 
-    // The files that will be processed
+    // The source *.dat files.
     QString dataReading;
     QString dataBindingUC;
     QString dataBindingBC;
@@ -85,13 +82,11 @@ private:
 
     TagParseReturn separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment);
 
-    void commonInitialization();
-
     TagParseReturn csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header);
 
     bool getResolutionToConfig(const QString &firstline);
 
-    void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd);
+    void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode);
 
     QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers & ans);
 

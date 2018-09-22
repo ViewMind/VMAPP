@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.cpp \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.cpp \
     ../../CommonClasses/HTMLWriter/htmlwriter.cpp \
-    ../../CommonClasses/Experiments/bindingparser.cpp
+    ../../CommonClasses/Experiments/bindingparser.cpp \
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp
 
 HEADERS  += \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
@@ -47,6 +48,7 @@ HEADERS  += \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.h \
     ../../CommonClasses/HTMLWriter/htmlwriter.h \
     ../../CommonClasses/SQLConn/dbdescription.h \
-    ../../CommonClasses/Experiments/bindingparser.h
+    ../../CommonClasses/Experiments/bindingparser.h \
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.h
 
 RESOURCES +=
