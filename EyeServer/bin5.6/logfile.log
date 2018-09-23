@@ -1,1 +1,0 @@
-04/08/2018 - 19:32:24. ERROR: Configuration file errors:<br>Keyword: tcp_port is invalid. Please check your syntax.<br>Keyword: wait_data_timeout is invalid. Please check your syntax.<br>The following mandatory keywords were not found in the configuration file: db_name db_host data_request_time_out db_passwd db_user

@@ -77,7 +77,7 @@ bool BindingParser::parseBindingExperiment(const QString &contents, Configuratio
         return false;
     }
 
-    int horizontalGridPoints;
+    int horizontalGridPoints = 2; // Initialization done just o avoid a warning
 
     if (tokens.size() == 13) {
         // This is a legacy binding description.

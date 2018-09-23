@@ -7,7 +7,8 @@ BindingDesigner/exe/
 *OBJS*
 *Makefile*
 SSLClientDev/exe/
-SSLServer/exe
+EyeServer/exe
+EyeServer/bin5.6/EyeServer
 EyeReportGenerator/exe/
 EyeExperimenter/exe
 ETFollower/exe/
@@ -23,3 +24,4 @@ Doc/*.gz
 BindingDesigner/outputs/*
 *.autosave
 *.tmp*
+*.log
