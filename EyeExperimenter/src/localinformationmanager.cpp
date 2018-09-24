@@ -97,6 +97,7 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 
 void LocalInformationManager::fillPatientDatInformation(){
 
+    qWarning() << "Filling patient report information";
     patientReportInformation.clear();
 
     // Creating the source directory path.
@@ -117,14 +118,14 @@ void LocalInformationManager::fillPatientDatInformation(){
         if (!patientData.contains(directories.at(i))) continue;
 
         // Separating all files by extension and prefix if necessary.
-        QStringList filters;
         QDir patientDir(baseDir + "/" + directories.at(i));
 
         //qWarning() << "DAT INFO TIME";
         DatFileInfoInDir datInfo;
         datInfo.setDatDirectory(patientDir.path());
         patientReportInformation[directories.at(i)] = datInfo;
-        //datInfo.printData();
+        qWarning() << "PATIENT REPORT INFO for" << directories.at(i);
+        datInfo.printData();
     }
 
 }

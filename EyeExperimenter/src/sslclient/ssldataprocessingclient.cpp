@@ -9,6 +9,7 @@ SSLDataProcessingClient::SSLDataProcessingClient(QObject *parent, ConfigurationM
 void SSLDataProcessingClient::sendFinishedSignal(bool okvalue){
     if (!sentTransactionFinishedSignal){
         sentTransactionFinishedSignal = true;
+        transactionStatus = okvalue;
         emit(transactionFinished(okvalue));
     }
 }
@@ -48,7 +49,8 @@ void SSLDataProcessingClient::connectToServer()
     else demo = 0;
 
     /// TODO: FOR NOW NOTHING IS DEMO MODE. Change.
-    txDP.addValue(1,DataPacket::DPFI_DEMO_MODE);
+    /// txDP.addValue(demo,DataPacket::DPFI_DEMO_MODE);
+    txDP.addValue(0,DataPacket::DPFI_DEMO_MODE);
 
     // Requesting connection and ack
     informationSent = false;
@@ -124,7 +126,7 @@ void SSLDataProcessingClient::on_readyRead(){
                 sendFinishedSignal(false);
             }
             else{
-                //log.appendSuccess("Report saved to: " + reportPath);
+                log.appendStandard("LOG: Report saved to: " + reportPath);
                 config->addKeyValuePair(CONFIG_REPORT_PATH,reportPath);
                 sendFinishedSignal(true);
             }

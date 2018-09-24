@@ -39,7 +39,8 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     sslDataProcessingClient = new SSLDataProcessingClient(this,c);
 
     // Connection to the "finished" slot.
-    connect(sslDataProcessingClient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
+    //connect(sslDataProcessingClient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
+    connect(sslDataProcessingClient,SIGNAL(diconnectionFinished()),this,SLOT(onDisconnectionFinished()));
 
 }
 
@@ -78,17 +79,21 @@ void FlowControl::resolutionCalculations(){
 void FlowControl::requestReportData(){
     sslTransactionAllOk = false;
     emit(requestNextFileSet());
-    //sslDataProcessingClient->requestReport();
 }
 
-void FlowControl::onNextFileSet(const QStringList &fileSet){
+void FlowControl::onNextFileSet(const QStringList &fileSetAndName){
 
-    qWarning() << "NEXT FILE SET: " << fileSet;
+    qWarning() << "NEXT FILE SET: " << fileSetAndName;
 
-    if (fileSet.isEmpty()){
+    if (fileSetAndName.isEmpty()){
         emit(sslTransactionFinished());
         return;
     }
+
+    // The first value is the expected report name.
+    logger.appendStandard("Expected Report is: " + fileSetAndName.first());
+    QStringList fileSet = fileSetAndName;
+    fileSet.removeFirst();
 
     // Generating the configuration file required to send to the server.
 
@@ -162,9 +167,9 @@ void FlowControl::onNextFileSet(const QStringList &fileSet){
 
 }
 
-void FlowControl::onSLLTransactionFinished(bool allOk){
-    sslTransactionAllOk = allOk;
-    if (!allOk) emit(sslTransactionFinished());
+void FlowControl::onDisconnectionFinished(){
+    sslTransactionAllOk = sslDataProcessingClient->getTransactionStatus();
+    if (!sslTransactionAllOk) emit(sslTransactionFinished());
     else emit(requestNextFileSet());
 //    if (allOk){
 //        // Loading the report

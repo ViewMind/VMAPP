@@ -99,6 +99,87 @@ void DatFileInfoInDir::insertDatIntoInfoList(QList<DatInfo> *list, const DatInfo
 }
 
 
+void DatFileInfoInDir::setExpectedReportFileSet(const QString &date, const QSet<QString> existingReports){
+
+    QStringList binding;
+    DatInfoAndRep infoAndRep = filesByDate.value(date);
+    DatInfoHash hash = infoAndRep.datInfo;
+
+    QString newestReadingFile;
+
+    // For each type of binding (as defined by extra info) the pair of uc and bc binding files are saved.
+    QHash<QString,QStringList> newestBinding;
+
+
+    bool hasReading = hash.contains(FILE_OUTPUT_READING);
+    if (hasReading){
+        newestReadingFile = hash.value(FILE_OUTPUT_READING).last().fileName;
+    }
+
+    if (hash.contains(FILE_OUTPUT_BINDING_BC) && hash.contains(FILE_OUTPUT_BINDING_UC)){
+        QSet<QString> bcTypes, ucTypes;
+
+        QList<DatInfo> datInfoList = hash.value(FILE_OUTPUT_BINDING_BC);
+        for (qint32 i = 0; i < datInfoList.size(); i++) bcTypes << datInfoList.at(i).extraInfo;
+
+        datInfoList = hash.value(FILE_OUTPUT_BINDING_UC);
+        for (qint32 i = 0; i < datInfoList.size(); i++) ucTypes << datInfoList.at(i).extraInfo;
+
+        binding = bcTypes.intersect(ucTypes).toList();
+
+        //qWarning() << "COMMON BINDING TYPES" << binding;
+
+        // Getting the newest file for each of the binding files for each fo the binding study types.
+        for (qint32 i = 0; i < binding.size(); i++){
+            datInfoList = hash.value(FILE_OUTPUT_BINDING_BC);
+            QStringList pair;
+            for (qint32 j = datInfoList.size()-1; j >= 0; j--){
+                if (datInfoList.value(j).extraInfo == binding.at(i)){
+                    pair << datInfoList.value(j).fileName;
+                    break;
+                }
+            }
+
+            datInfoList = hash.value(FILE_OUTPUT_BINDING_UC);
+            for (qint32 j = datInfoList.size()-1; j >= 0; j--){
+                if (datInfoList.value(j).extraInfo == binding.at(i)){
+                    pair << datInfoList.value(j).fileName;
+                    break;
+                }
+            }
+            //qWarning() << "SAVING BINDING PAIR" << pair;
+            newestBinding[binding.at(i)] = pair;
+        }
+
+    }
+
+    QString expectedRep;
+    if (binding.isEmpty() && hasReading){
+        expectedRep = QString(FILE_REPORT_NAME) + "_r_" + date + ".rep";
+        QStringList filesForReport;
+        filesForReport << newestReadingFile;
+        infoAndRep.reportFileSet[expectedRep] = filesForReport;
+        filesByDate[date] = infoAndRep;
+        return;
+    }
+
+    for (qint32 i = 0; i < binding.size(); i++){
+
+        if (hasReading) expectedRep = QString(FILE_REPORT_NAME) + "_r_b" + binding.at(i) + "_" + date + ".rep";
+        else expectedRep = QString(FILE_REPORT_NAME) + "_b" + binding.at(i) + "_" + date + ".rep";
+
+        QStringList filesForReport;
+        // If the existing reports do not contain the expected repor then the file set is added.
+        if (!existingReports.contains(expectedRep)){
+            if (hasReading) filesForReport << newestReadingFile;
+            filesForReport << newestBinding.value(binding.at(i));
+            infoAndRep.reportFileSet[expectedRep] = filesForReport;
+            filesByDate[date] = infoAndRep;
+        }
+    }
+
+}
+
 bool DatFileInfoInDir::hasPendingReports() const {
     QStringList dates = filesByDate.keys();
     for (qint32 i = 0; i < dates.size(); i++){
@@ -115,7 +196,9 @@ void DatFileInfoInDir::prepareToInterateOverPendingReportFileSets(){
         QHash<QString, QStringList> hash = filesByDate.value(dates.at(i)).reportFileSet;
         QStringList repFiles = hash.keys();
         for (qint32 j = 0; j < repFiles.size(); j++){
-            fileSets << hash.value(repFiles.at(j));
+            QStringList list = hash.value(repFiles.at(j));
+            list.prepend(repFiles.at(j));
+            fileSets << list;
         }
     }
 }
@@ -243,85 +326,4 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getRerportInformation(const QString 
 
     }
     return ans;
-}
-
-void DatFileInfoInDir::setExpectedReportFileSet(const QString &date, const QSet<QString> existingReports){
-
-    QStringList binding;
-    DatInfoAndRep infoAndRep = filesByDate.value(date);
-    DatInfoHash hash = infoAndRep.datInfo;
-
-    QString newestReadingFile;
-
-    // For each type of binding (as defined by extra info) the pair of uc and bc binding files are saved.
-    QHash<QString,QStringList> newestBinding;
-
-
-    bool hasReading = hash.contains(FILE_OUTPUT_READING);
-    if (hasReading){
-        newestReadingFile = hash.value(FILE_OUTPUT_READING).last().fileName;
-    }
-
-    if (hash.contains(FILE_OUTPUT_BINDING_BC) && hash.contains(FILE_OUTPUT_BINDING_UC)){
-        QSet<QString> bcTypes, ucTypes;
-
-        QList<DatInfo> datInfoList = hash.value(FILE_OUTPUT_BINDING_BC);
-        for (qint32 i = 0; i < datInfoList.size(); i++) bcTypes << datInfoList.at(i).extraInfo;
-
-        datInfoList = hash.value(FILE_OUTPUT_BINDING_UC);
-        for (qint32 i = 0; i < datInfoList.size(); i++) ucTypes << datInfoList.at(i).extraInfo;
-
-        binding = bcTypes.intersect(ucTypes).toList();
-
-        //qWarning() << "COMMON BINDING TYPES" << binding;
-
-        // Getting the newest file for each of the binding files for each fo the binding study types.
-        for (qint32 i = 0; i < binding.size(); i++){
-            datInfoList = hash.value(FILE_OUTPUT_BINDING_BC);
-            QStringList pair;
-            for (qint32 j = datInfoList.size()-1; j >= 0; j--){
-                if (datInfoList.value(j).extraInfo == binding.at(i)){
-                    pair << datInfoList.value(j).fileName;
-                    break;
-                }
-            }
-
-            datInfoList = hash.value(FILE_OUTPUT_BINDING_UC);
-            for (qint32 j = datInfoList.size()-1; j >= 0; j--){
-                if (datInfoList.value(j).extraInfo == binding.at(i)){
-                    pair << datInfoList.value(j).fileName;
-                    break;
-                }
-            }
-            //qWarning() << "SAVING BINDING PAIR" << pair;
-            newestBinding[binding.at(i)] = pair;
-        }
-
-    }
-
-    QString expectedRep;
-    if (binding.isEmpty() && hasReading){
-        expectedRep = QString(FILE_REPORT_NAME) + "_r_" + date + ".rep";
-        QStringList filesForReport;
-        filesForReport << newestReadingFile;
-        infoAndRep.reportFileSet[expectedRep] = filesForReport;
-        filesByDate[date] = infoAndRep;
-        return;
-    }
-
-    for (qint32 i = 0; i < binding.size(); i++){
-
-        if (hasReading) expectedRep = QString(FILE_REPORT_NAME) + "_r_b" + binding.at(i) + "_" + date + ".rep";
-        else expectedRep = QString(FILE_REPORT_NAME) + "_b" + binding.at(i) + "_" + date + ".rep";
-
-        QStringList filesForReport;
-        // If the existing reports do not contain the expected repor then the file set is added.
-        if (!existingReports.contains(expectedRep)){
-            if (hasReading) filesForReport << newestReadingFile;
-            filesForReport << newestBinding.value(binding.at(i));
-            infoAndRep.reportFileSet[expectedRep] = filesForReport;
-            filesByDate[date] = infoAndRep;
-        }
-    }
-
 }
