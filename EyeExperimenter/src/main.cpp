@@ -27,6 +27,11 @@ int main(int argc, char *argv[])
     // Laods all language related data
     Loader loader(nullptr,&configuration,&countries);
     FlowControl flowControl(nullptr,&configuration);
+
+    // Doing the connections for communication between the classes
+    QObject::connect(&loader,SIGNAL(nextFileSet(QStringList)),&flowControl,SLOT(onNextFileSet(QStringList)));
+    QObject::connect(&flowControl,SIGNAL(requestNextFileSet()),&loader,SLOT(onRequestNextPendingReport()));
+
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);
 

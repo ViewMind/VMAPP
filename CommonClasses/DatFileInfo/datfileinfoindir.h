@@ -14,6 +14,7 @@ public:
     struct DatInfo{
         QString basename;
         QString fileName;
+        QString validEye;
         QString extraInfo;
         QString date;
         qint32  hour;
@@ -28,10 +29,16 @@ public:
     void setDatDirectory(const QString &dir);
     bool hasPendingReports() const;
 
+    // Functions to iterate over file sets to generate reports.
+    void prepareToInterateOverPendingReportFileSets();
+    QStringList nextPendingReportFileSet();
+
     // Functions that parse the file names and gather the information in a DatInfo structure.
+    static DatInfo getDatFileInformation(const QString &file);
     static DatInfo getBindingFileInformation(const QString &bindingFile);
     static DatInfo getReadingInformation(const QString &readingFile);
     static DatInfo getRerportInformation(const QString &repfile);
+    static qint32 getValidEyeForDatList(const QStringList &list);
 
     /// FOR DEBUGGING ONLY.
     void printData();
@@ -40,7 +47,6 @@ private:
 
     struct DatInfoAndRep{
         DatInfoHash datInfo;
-        QStringList expectedRepFiles;
         QHash<QString,QStringList> reportFileSet;
     };
 
@@ -50,6 +56,10 @@ private:
     // 3) The list is ordered from oldest to newest.
     QHash<QString,DatInfoAndRep> filesByDate;
 
+    // Used for iteration
+    QList<QStringList> fileSets;
+    qint32 currentFileSet;
+
     // Parsing functions based on file name
     void insertDatIntoInfoList(QList<DatInfo> *list, const DatInfo &info);
 
@@ -58,6 +68,7 @@ private:
     // If the file does not exist then the list of files that are needed for processing are saved as a set associated to the
     // file report name.
     void setExpectedReportFileSet(const QString &date, const QSet<QString> existingReports);
+
 
 };
 

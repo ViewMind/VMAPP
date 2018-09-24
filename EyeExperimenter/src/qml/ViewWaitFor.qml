@@ -13,27 +13,19 @@ VMBase {
     property string vmMessage: "Message";
 
 
-    Connections{
-        target: flowControl
-        onSslTransactionFinished: {
-            viewWaitFor.closeDiag();
-            if (!flowControl.isSSLTransactionOK()){
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
-                var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
-                return;
-            }
+//    Connections{
+//        target: flowControl
+//        onSslTransactionFinished: {
+//            viewWaitFor.closeDiag();
 
-            // Saving the report first.
-            flowControl.saveReport();
+//            // Saving the report first.
+//            flowControl.saveReport();
 
-            // Now doing this.
-            // viewResults.fillFieldsFromReportInfo();
-            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-        }
-    }
+//            // Now doing this.
+//            // viewResults.fillFieldsFromReportInfo();
+//            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+//        }
+//    }
 
 
     function openDiag(){

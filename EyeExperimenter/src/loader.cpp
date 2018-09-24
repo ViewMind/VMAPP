@@ -178,6 +178,21 @@ void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
 
 //****************************************************************************************************************
 
+void Loader::prepareForRequestOfPendingReports(){
+    lim->preparePendingReports();
+}
+
+void Loader::onRequestNextPendingReport(){
+    emit(nextFileSet(lim->nextPendingReport()));
+}
+
+void Loader::setAgeForCurrentPatient(){
+    QString birthDate = lim->getFieldForCurrentPatient(TPATREQ_COL_BIRTHDATE);
+    QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
+    int currentAge = QDate::currentDate().year() - bdate.year();
+    configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);
+}
+
 QStringList Loader::getDoctorList() {
     nameInfoList.clear();
     nameInfoList = lim->getDoctorList();
@@ -339,9 +354,10 @@ void Loader::setSettingsValue(const QString &key, const QVariant &var){
     ConfigurationManager::setValue(FILE_SETTINGS,COMMON_TEXT_CODEC,key,var.toString(),configuration);
 }
 
-bool Loader::createPatientDirectory(const QString &patientuid){
+bool Loader::createPatientDirectory(){
 
     // Creating the doctor directory.
+    QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
     QString baseDir = configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA);
     QString repDir = configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_REPORTS);
     QString drname = configuration->getString(CONFIG_DOCTOR_UID);

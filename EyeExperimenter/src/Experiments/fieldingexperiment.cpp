@@ -183,9 +183,8 @@ void FieldingExperiment::togglePauseExperiment(){
 void FieldingExperiment::keyPressEvent(QKeyEvent *event){
     // Making sure the experiment can be aborted, but any other key is ignored.
     if (event->key() == Qt::Key_Escape){
-        stateTimer.stop();
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_ABORTED));
+        experimenteAborted();
+        return;
     }
 	else{
         if (state == STATE_PAUSED){

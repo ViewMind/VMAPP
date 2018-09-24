@@ -10,6 +10,8 @@ el comienzo de Síndrome de Alzheimer y otras demencias, <br>
 años antes de que sus síntomas sean visibles.;
 viewhome_btnGetStarted = COMENZAR;
 
+#********************************* DOCTOR MENU *********************************
+viewdrmenu_mode = Modo;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Antes de comenzar, por favor llene los siguientes datos;
@@ -64,6 +66,7 @@ viewstudystart_labelNoPatientError = No se ha elegido ningún paciente;
 viewstudystart_labelNoInstructionSetError = Se debe elegir al menos un estudio;
 viewstudystart_labelTargetSize = Tamaño objetivos de colores;
 viewstudystart_targetOptions = Grande|Pequeños;
+viewstudystart_labelSelPatient = Paciente Seleccionado;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Selección del Doctor;
@@ -134,6 +137,8 @@ viewpatientlist_btnBack = ATRAS;
 viewpatientlist_btnStart = COMENZAR ESTUDIO;
 viewpatientlist_diagConnectTitle = Sincronizando;
 viewpatientlist_diagConnectMessage = Por favor, aguarde un momento;
+viewpatientlist_diagRepTitle = Solicitando reportes;
+viewpatientlist_diagRepMessage = Por favor, aguarde un momento;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;

@@ -19,6 +19,24 @@ VMBase {
         }
     }
 
+    Connections {
+        target: flowControl
+        onSslTransactionFinished:{
+            connectionDialog.close();
+            if (!flowControl.isSSLTransactionOK()){
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
+                var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
+            else{
+                console.log("All good");
+            }
+        }
+    }
+
 
     Dialog {
 
@@ -101,15 +119,32 @@ VMBase {
         patientListView.currentIndex = -1;
     }
 
-    function requestReportToServer(index){
-        console.log("Get Report for index: " +  index);
+    function requestReportToServer(){
+        loader.prepareForRequestOfPendingReports();
+        connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
+        connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
+        connectionDialog.open();
+        flowControl.requestReportData();
+
         //patientList.setProperty(index,"vmIsOk",true);
     }
 
     function setCurrentPatient(){
         if (patientListView.currentIndex == -1) return;
+
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_UID,patientList.get(patientListView.currentIndex).uid);
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_NAME,patientList.get(patientListView.currentIndex).pname);
+        loader.setAgeForCurrentPatient();
+
+        if (!loader.createPatientDirectory()){
+            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CREATING_PDIR;
+            var titleMsg = viewHome.getErrorTitleAndMessage("error_patient_dir");
+            vmErrorDiag.vmErrorMessage = titleMsg[1];
+            vmErrorDiag.vmErrorTitle = titleMsg[0];
+            vmErrorDiag.open();
+            return;
+        }
+
         //console.log("PNAME: " + patientList.get(patientListView.currentIndex).pname + ". UID: " + patientList.get(patientListView.currentIndex).uid);
     }
 
@@ -267,8 +302,8 @@ VMBase {
                     vmPatientName: pname
                     vmItemIndex: index
                     onFetchReport: {
-                        console.log("Fetch report of " + index);
-                        requestReportToServer(index)
+                        patientListView.currentIndex = index;
+                        requestReportToServer()
                     }
                 }
                 onCurrentIndexChanged: {
@@ -312,7 +347,7 @@ VMBase {
             enabled: patientListView.currentIndex !== -1
             onClicked: {
                 setCurrentPatient();
-                //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
             }
         }
     }

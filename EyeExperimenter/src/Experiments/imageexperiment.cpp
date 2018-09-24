@@ -130,9 +130,8 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
 
     // Making sure the experiment can be aborted
     if (event->key() == Qt::Key_Escape){
-        stateTimer.stop();
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_ABORTED));
+        experimenteAborted();
+        return;
     }
     else if(event->key() == Qt::Key_M) {
         nextState();

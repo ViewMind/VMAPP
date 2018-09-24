@@ -77,6 +77,7 @@
 #define   CONFIG_FILE_READING                           "file_reading"
 #define   CONFIG_FILE_FIELDING                          "file_fielding"
 #define   CONFIG_S3_ADDRESS                             "s3_address"
+#define   CONFIG_LIST_DONE_EXPERIMENTS                  "list_done_experiments"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

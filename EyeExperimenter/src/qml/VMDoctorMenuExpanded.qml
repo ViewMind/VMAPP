@@ -9,9 +9,10 @@ Rectangle {
     property string vmDrName: "NO NAME";
     property string vmSelectedET: "";
     property string vmSelectedLang: "";
+    property string vmDemoMode: "";
 
     z: -10
-    height: 260
+    height: 290
     color: "#ffffff"
 
     layer.enabled: true
@@ -25,6 +26,9 @@ Rectangle {
         vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
         vmSelectedET = "Eyetracker: " + loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET);
         vmSelectedLang = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE);
+        vmDemoMode = loader.getStringForKey("viewdrmenu_mode") + ": "
+        if (loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE)) vmDemoMode = vmDemoMode + "Demo";
+        else vmDemoMode = vmDemoMode + "Normal"
     }
 
     Rectangle{
@@ -72,6 +76,30 @@ Rectangle {
         anchors.top: textContainer.bottom
     }
 
+    // Demo mode
+    Text{
+        id: labDemoMode
+        color: "#88B2D0"
+        text: vmDemoMode
+        font.family: gothamRegular.name
+        font.pixelSize: 13
+        anchors.left: parent.left
+        anchors.leftMargin: 30
+        anchors.top: mainDivisor.bottom
+        anchors.topMargin: 19
+    }
+
+    // Demo mode divisor
+    Rectangle{
+        id: divDemoMode
+        color: "#88B2D0"
+        width: parent.width*0.8
+        height: 1
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: labDemoMode.bottom
+        anchors.topMargin: 11
+    }
+
     // Language name
     Text{
         id: labLang
@@ -81,8 +109,8 @@ Rectangle {
         font.pixelSize: 13
         anchors.left: parent.left
         anchors.leftMargin: 30
-        anchors.top: mainDivisor.bottom
-        anchors.topMargin: 19
+        anchors.top: divDemoMode.bottom
+        anchors.topMargin: 11
     }
 
     // Language divisor
@@ -106,14 +134,14 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 30
         anchors.top: divLang.bottom
-        anchors.topMargin: 19
+        anchors.topMargin: 11
     }
 
     // Eye tracker selected divisor
     Rectangle{
         id: divETSel
         color: "#88B2D0"
-        width: parent.width*0.7
+        width: parent.width*0.8
         height: 1
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: labETSel.bottom

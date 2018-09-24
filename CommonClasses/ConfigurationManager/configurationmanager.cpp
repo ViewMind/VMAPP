@@ -327,6 +327,10 @@ void ConfigurationManager::merge(const ConfigurationManager &configmng){
     }
 }
 
+QString ConfigurationManager::saveValueToFile(const QString &fileName, const char *textCode, const QString &key){
+    return setValue(fileName,textCode,key,data.value(key).toString());
+}
+
 QString ConfigurationManager::setValue(const QString &fileName,
                                        const char* textCodec,
                                        const QString &cmd,

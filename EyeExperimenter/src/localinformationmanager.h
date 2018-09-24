@@ -21,6 +21,7 @@ public:
     void addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values);
     QList<QStringList> getPatientListForDoctor();
     QList<QStringList> getDoctorList();
+    QString getFieldForCurrentPatient(const QString &field) const;
     QVariantMap getCurrentDoctorInfo() {return localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap();}
     QVariantMap getCurrentPatientInfo() {
         return localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap().value(PATIENT_DATA).toMap().value(config->getString(CONFIG_PATIENT_UID)).toMap();
@@ -30,6 +31,9 @@ public:
     // Synch function. Returns false if the there is nothing to synch. (No changes to Doctor and Patient data).
     bool setupDBSynch(SSLDBClient *client);
 
+    // Functions for iterating over file sets to be processed.
+    void preparePendingReports();
+    QStringList nextPendingReport();
 
     // FOR DEBUGGING ONLY
     void printLocalDB();

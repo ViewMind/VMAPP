@@ -9,6 +9,7 @@
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
 #include "../../CommonClasses/PNGWriter/imagereportdrawer.h"
 
 #include "Experiments/readingexperiment.h"
@@ -59,6 +60,9 @@ signals:
     void connectedToEyeTracker(bool ok);
     void calibrationDone(bool ok);
 
+    // Requesting next file set to process.
+    void requestNextFileSet();
+
 public slots:
 
     // When an experiment finishes.
@@ -76,6 +80,9 @@ public slots:
     // FOR Debugging.
     void onStateChanged(QProcess::ProcessState newState);
     void onErrorOccurred(QProcess::ProcessError error);
+
+    // For receiving information to send to the server
+    void onNextFileSet(const QStringList &fileSet);
 
 private:
 

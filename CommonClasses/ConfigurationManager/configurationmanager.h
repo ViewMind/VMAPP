@@ -81,6 +81,9 @@ public:
     // Merge with another configuration manager.
     void merge(const ConfigurationManager &configmng);
 
+    // Wrapper function to save a value from the configuration to a file in disc.
+    QString saveValueToFile(const QString &fileName, const char *textCode, const QString &key);
+
     // Service function to replace a value in a configuration text file.
     static QString setValue(const QString &fileName, const char *textCodec,
                             const QString &cmd,

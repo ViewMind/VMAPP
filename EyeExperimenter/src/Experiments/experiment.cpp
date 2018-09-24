@@ -35,10 +35,6 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     error = "";
     workingDirectory = c->getString(CONFIG_PATIENT_DIRECTORY);
 
-    // Saving the patient info file
-    QString err;
-    QStringList errors;
-
     // Loading the experiment configuration file.
     QFile expfile(config->getString(CONFIG_EXP_CONFIG_FILE));
     if (!expfile.open(QFile::ReadOnly)){
@@ -65,7 +61,8 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     }
 
     // The output data file is set.
-    dataFile = workingDirectory + "/" + outputDataFile + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd") + ".dat";
+    dataFile = workingDirectory + "/" + outputDataFile + "_" + config->getString(CONFIG_VALID_EYE)
+            + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm") + ".dat";
 
     // Deleting the data file if it exists, otherwise the new data will be appended to the old data.
     QFile file(dataFile);
@@ -110,20 +107,46 @@ void Experiment::newEyeDataAvailable(const EyeTrackerData &data){
     emit(updateEyePositions(data.xRight,data.yRight,data.xLeft,data.yLeft));
 }
 
-void Experiment::keyPressEvent(QKeyEvent *event){
-    // FOR ALL Experiments:
-    //   ESC = Abort
-    //   C   = Request Calibration
-    switch (event->key()){
-    case Qt::Key_Escape:
-        state = STATE_STOPPED;
-        this->hide();
-        emit (experimentEndend(ER_ABORTED));
-        break;
-    case Qt::Key_C:
-        state = STATE_PAUSED;
-        emit(calibrationRequest());
-        break;
+void Experiment::experimenteAborted(){
+    state = STATE_STOPPED;
+    this->hide();
+
+    QString abortDir;
+    QDir(workingDirectory).mkdir(DIR_ABORTED);
+    abortDir = workingDirectory + "/" + QString(DIR_ABORTED);
+    if (QDir(abortDir).exists()){
+        QFileInfo info(dataFile);
+        QString destination = abortDir + "/" + info.baseName() + "." + info.suffix();
+        if (!QFile::copy(dataFile,destination)) {
+            error = "Could not copy data file " + dataFile + " to abort directory inside patient directory: " + abortDir;
+            emit(experimentEndend(ER_FAILURE));
+            return;
+        }
+        else QFile(dataFile).remove();
+    }
+    else {
+        error = "Could not create abort directory inside patient directory: " + workingDirectory;
+        emit(experimentEndend(ER_FAILURE));
+        return;
     }
 
+    emit (experimentEndend(ER_ABORTED));
+}
+
+void Experiment::keyPressEvent(QKeyEvent *event){
+    Q_UNUSED(event);
+//    // FOR ALL Experiments:
+//    //   ESC = Abort
+//    //   C   = Request Calibration
+//    switch (event->key()){
+//    case Qt::Key_Escape:
+//        state = STATE_STOPPED;
+//        this->hide();
+//        emit (experimentEndend(ER_ABORTED));
+//        break;
+//    case Qt::Key_C:
+//        state = STATE_PAUSED;
+//        emit(calibrationRequest());
+//        break;
+//    }
 }

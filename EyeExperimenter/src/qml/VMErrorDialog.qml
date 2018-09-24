@@ -102,7 +102,6 @@ Dialog {
             break;
         case vmERROR_SERVER_COMM:
             close();
-            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
             break;
         case vmERROR_NO_SSL:
             close();

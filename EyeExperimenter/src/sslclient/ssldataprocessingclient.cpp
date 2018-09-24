@@ -21,64 +21,34 @@ void SSLDataProcessingClient::requestReport(){
 void SSLDataProcessingClient::connectToServer()
 {
     QString directory = config->getString(CONFIG_PATIENT_DIRECTORY);
+    QString confFile = directory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
 
-    if (!QDir(directory).exists()){
-        log.appendError("Patient directory does not exist");
+    ConfigurationManager eyeGenConf;
+    if (!eyeGenConf.loadConfiguration(confFile,COMMON_TEXT_CODEC)){
+        log.appendError("Failed to load eye report configuration file: " + eyeGenConf.getError());
         sendFinishedSignal(false);
         return;
     }
 
     txDP.clearAll();
-
-    bool reading, binding;
-    reading = true;
-    binding = true;
-
-    QString readingfile;
-    if (config->getBool(CONFIG_DEMO_MODE)) readingfile = ":/demo_data/reading_2018_06_03.dat";
-    //else readingfile = getNewestFile(directory,FILE_OUTPUT_READING);
-
-    if (readingfile.isEmpty()){
-        log.appendWarning("WARNING: No reading file found");
-        reading = false;
-    }
-    else{
-        txDP.addFile(readingfile,DataPacket::DPFI_READING);
-    }
-
-    QString bindingBC;
-    if (config->getBool(CONFIG_DEMO_MODE)) bindingBC = ":/demo_data/binding_bc_2018_06_03.dat";
-    //else bindingBC = getNewestFile(directory,FILE_OUTPUT_BINDING_BC);
-
-    if (bindingBC.isEmpty()){
-        log.appendWarning("WARNING: No binding BC file found");
-        binding = false;
-    }
-    else{
-        txDP.addFile(bindingBC,DataPacket::DPFI_BINDING_BC);
-    }
-
-    QString bindingUC;
-    if (config->getBool(CONFIG_DEMO_MODE)) bindingUC = ":/demo_data/binding_uc_2018_06_03.dat";
-    //else bindingUC = getNewestFile(directory,FILE_OUTPUT_BINDING_UC);
-
-    if (bindingUC.isEmpty()){
-        log.appendWarning("WARNING: No binding UC file found");
-        binding = false;
-    }
-    else{
-        txDP.addFile(bindingUC,DataPacket::DPFI_BINDING_UC);
-    }
-    if (!reading && !binding){
-        log.appendError("ERROR: No processing is possible due to missing files.");
-        sendFinishedSignal(false);
-        return;
-    }
-
-    // Creating the packet to send to the server.
     txDP.addString(config->getString(CONFIG_DOCTOR_UID),DataPacket::DPFI_DOCTOR_ID);
     txDP.addString(config->getString(CONFIG_PATIENT_UID),DataPacket::DPFI_PATIENT_ID);
-    txDP.addValue(config->getInt(CONFIG_VALID_EYE),DataPacket::DPFI_VALID_EYE);
+    txDP.addFile(confFile,DataPacket::DPFI_PATIENT_FILE);
+
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC))
+        txDP.addFile(directory + "/" + eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC);
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC))
+        txDP.addFile(directory + "/" + eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC);
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_READING))
+        txDP.addFile(directory + "/" + eyeGenConf.containsKeyword(CONFIG_FILE_READING),DataPacket::DPFI_READING);
+
+    // adding the the demo mode.
+    qreal demo;
+    if (config->getBool(CONFIG_DEMO_MODE)) demo = 1;
+    else demo = 0;
+
+    /// TODO: FOR NOW NOTHING IS DEMO MODE. Change.
+    txDP.addValue(1,DataPacket::DPFI_DEMO_MODE);
 
     // Requesting connection and ack
     informationSent = false;
@@ -91,7 +61,7 @@ void SSLDataProcessingClient::connectToServer()
 
 void SSLDataProcessingClient::on_encryptedSuccess(){
     if (clientState == CS_CONNECTING){
-        log.appendSuccess("Established encrypted connection to the server. Waiting for acknowledge ... ");
+        log.appendStandard("LOG: Established encrypted connection to the server. Waiting for acknowledge ... ");
         rxDP.clearAll();
         timer.stop();
         clientState = CS_WAIT_FOR_ACK;
@@ -121,7 +91,7 @@ void SSLDataProcessingClient::on_readyRead(){
                 QByteArray ba = txDP.toByteArray();
                 qint64 num = socket->write(ba.constData(),ba.size());
                 if (num != ba.size()){
-                    log.appendError("ERROR: Unable to send the information. Please try again.");
+                    log.appendError("Unable to send the information. Please try again.");
                     socket->disconnectFromHost();
                     sendFinishedSignal(false);
                     return;
@@ -150,11 +120,11 @@ void SSLDataProcessingClient::on_readyRead(){
             // At this point the report was received so it is saved
             QString reportPath = rxDP.saveFile(config->getString(CONFIG_PATIENT_DIRECTORY),DataPacket::DPFI_REPORT);
             if (reportPath.isEmpty()){
-                log.appendError("ERROR: Could not save the report to the directory: " + reportPath + ". Please try again");
+                log.appendError("Could not save the report to the directory: " + reportPath + ". Please try again");
                 sendFinishedSignal(false);
             }
             else{
-                log.appendSuccess("Report saved to: " + reportPath);
+                //log.appendSuccess("Report saved to: " + reportPath);
                 config->addKeyValuePair(CONFIG_REPORT_PATH,reportPath);
                 sendFinishedSignal(true);
             }
@@ -165,7 +135,7 @@ void SSLDataProcessingClient::on_readyRead(){
 
     }
     else if (errcode == DataPacket::DATABUFFER_RESULT_ERROR){
-        log.appendError("ERROR: Buffering data from the receiver");
+        log.appendError("Buffering data from the receiver");
         rxDP.clearAll();
         socket->disconnectFromHost();
     }
@@ -177,6 +147,8 @@ void SSLDataProcessingClient::on_readyRead(){
 
 void SSLDataProcessingClient::on_socketError(QAbstractSocket::SocketError error){
     SSLClient::on_socketError(error);
+    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
+    log.appendError("Disconnecting on socket error: " + QString(metaEnum.valueToKey(error)) + " Transaction incomplete.");
     sendFinishedSignal(false);
 }
 
@@ -185,15 +157,15 @@ void SSLDataProcessingClient::on_socketError(QAbstractSocket::SocketError error)
 void SSLDataProcessingClient::on_timeOut(){
     switch(clientState){
     case CS_CONNECTING:
-        log.appendError("ERROR: Server connection notice did not arrive before the expected time. Closing connection. Please retry.");
+        log.appendError("Server connection notice did not arrive before the expected time. Closing connection. Please retry.");
         emit(transactionFinished(false));
         break;
     case CS_WAIT_FOR_REPORT:
-        log.appendError("ERROR: Server generated report did not arrive before expected time. Closing connection. Please retry.");
+        log.appendError("Server generated report did not arrive before expected time. Closing connection. Please retry.");
         emit(transactionFinished(false));
         break;
     case CS_WAIT_FOR_ACK:
-        log.appendError("ERROR: Server request for information did not arrive before expected time. Closing connection. Please retry.");
+        log.appendError("Server request for information did not arrive before expected time. Closing connection. Please retry.");
         emit(transactionFinished(false));
         break;
     }

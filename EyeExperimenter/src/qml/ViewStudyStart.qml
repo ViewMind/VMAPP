@@ -11,13 +11,17 @@ VMBase {
     property var vmSelectedExperiments: []
     property int vmCurrentExperimentIndex: 0
 
+    function setPatientName(){
+        labelPatientName.text = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+    }
+
     // Title and subtitle
     Text {
         id: viewTitle
         font.family: gothamB.name
         font.pixelSize: 43
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 80
+        anchors.topMargin: 50
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#297fca"
         text: loader.getStringForKey(keysearch+"labelTitle");
@@ -34,37 +38,46 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelSubTitle");
     }
 
-    Row{
 
-        id: rowPatientAndAdd
-        spacing: 10
+    // Message for study selection
+    Text {
+        id: labelSelPatient
+        font.family: robotoB.name
+        font.pixelSize: 15
+        color: "#000000"
+        text: loader.getStringForKey(keysearch+"labelSelPatient");
         anchors.top: viewSubTitle.bottom
         anchors.topMargin: 43
+        anchors.left: backgroundPatientName.left
+    }
+
+    Rectangle{
+        id: backgroundPatientName
+        width: 533
+        height: 40
+        radius: 5
+        color: "#ebf3fa"
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: labelSelPatient.bottom
+        anchors.topMargin: 13
 
-        // Patient selection
-        VMComboBox{
-            id: cbPatientSelection
-            width: 470
-            vmModel: [];
-            font.family: viewHome.robotoR.name
-        }
-
-        VMPlusButton{
-            id: btnAddPatient
-            height: cbPatientSelection.height
-            onClicked: {
-                viewPatientReg.clearAll();
-                swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
-            }
+        Text {
+            id: labelPatientName
+            font.family: robotoR.name
+            font.pixelSize: 15
+            color: "#58595b"
+            anchors.verticalCenter: backgroundPatientName.verticalCenter
+            text: "";
+            anchors.left: backgroundPatientName.left
+            anchors.leftMargin: 10
         }
 
     }
 
     Row{
         id: rowSelectStudiesInstruction
-        anchors.left: rowPatientAndAdd.left
-        anchors.top: rowPatientAndAdd.bottom
+        anchors.left: backgroundPatientName.left
+        anchors.top: backgroundPatientName.bottom
         anchors.topMargin: 45
         spacing: 5
 
@@ -87,7 +100,6 @@ VMBase {
         }
 
     }
-
 
     Row{
         id: rowSelectStudies
@@ -142,7 +154,7 @@ VMBase {
         font.pixelSize: 15
         anchors.top: rowSelectStudies.bottom
         anchors.topMargin: 44
-        anchors.left: rowPatientAndAdd.left
+        anchors.left: backgroundPatientName.left
         color: "#000000"
         text: loader.getStringForKey(keysearch+"labelInstruction2");
     }
@@ -155,14 +167,14 @@ VMBase {
         width: cbEyeMsg.width
         anchors.top: labelInstruction2.bottom
         anchors.topMargin: 13
-        anchors.left: rowPatientAndAdd.left
+        anchors.left: backgroundPatientName.left
         color: "#d5d5d5"
         text: loader.getStringForKey(keysearch+"labelEyeMsg");
     }
 
     VMComboBox{
         id: cbEyeMsg
-        width: (rowPatientAndAdd.width - 16)/3
+        width: (backgroundPatientName.width - 16)/3
         vmModel:  loader.getStringListForKey(keysearch+"labelEyeType");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
@@ -257,26 +269,6 @@ VMBase {
             vmFont: viewHome.gothamM.name
             onClicked: {
 
-                if (cbPatientSelection.currentIndex === 0){
-                    cbPatientSelection.vmErrorMsg = loader.getStringForKey(keysearch+"labelNoPatientError");
-                    return;
-                }
-
-                var patient_name = cbPatientSelection.currentText;
-                var parts = patient_name.split("(");
-                var uid = parts[1];
-                // The last character is a ) so it is removed.
-                uid = uid.slice(0,-1);
-
-                if (!loader.createPatientDirectory(uid)){
-                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CREATING_PDIR;
-                    var titleMsg = viewHome.getErrorTitleAndMessage("error_patient_dir");
-                    vmErrorDiag.vmErrorMessage = titleMsg[1];
-                    vmErrorDiag.vmErrorTitle = titleMsg[0];
-                    vmErrorDiag.open();
-                    return;
-                }
-
                 vmSelectedExperiments = [];
                 if (cboxReading.vmOn){
                     vmSelectedExperiments.push(viewPatientReg.vmExpIndexReading);
@@ -293,9 +285,9 @@ VMBase {
                 if (vmSelectedExperiments.length > 0){
 
                     // All is good, so the parameters are set.
-                    loader.setConfigurationInt(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.currentIndex,false);
-                    loader.setConfigurationInt(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.currentText,false);
-                    loader.setConfigurationBoolean(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.currentIndex == 1),false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.currentIndex,false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.currentText,false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.currentIndex == 1),false);
 
                     viewPresentExperimet.setTracker(vmSelectedExperiments);
                     swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart

@@ -18,6 +18,8 @@
 #include "../../../CommonClasses/Experiments/experimentdatapainter.h"
 #include "../../../CommonClasses/common.h"
 
+#define  DIR_ABORTED  "exp_aborted"
+
 class Experiment : public QWidget
 {
     Q_OBJECT
@@ -112,6 +114,9 @@ protected:
 
     // Sets up the view given the configuration
     void setupView();
+
+    // Move the garbage data file to the aborted directory.
+    void experimenteAborted();
 
 };
 

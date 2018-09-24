@@ -77,21 +77,105 @@ void FlowControl::resolutionCalculations(){
 
 void FlowControl::requestReportData(){
     sslTransactionAllOk = false;
+    emit(requestNextFileSet());
+    //sslDataProcessingClient->requestReport();
+}
+
+void FlowControl::onNextFileSet(const QStringList &fileSet){
+
+    qWarning() << "NEXT FILE SET: " << fileSet;
+
+    if (fileSet.isEmpty()){
+        emit(sslTransactionFinished());
+        return;
+    }
+
+    // Generating the configuration file required to send to the server.
+
+    QString expgenfile = configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_EYE_REP_GEN_CONFIGURATION;
+    QString error;
+    QStringList toSave;
+
+    toSave << CONFIG_DOCTOR_NAME << CONFIG_PATIENT_AGE << CONFIG_PATIENT_NAME << CONFIG_MOVING_WINDOW_DISP
+           << CONFIG_MIN_FIXATION_LENGTH << CONFIG_SAMPLE_FREQUENCY << CONFIG_DISTANCE_2_MONITOR << CONFIG_XPX_2_MM << CONFIG_YPX_2_MM
+           << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT;
+
+    for (qint32 i = 0; i < toSave.size(); i++){
+        error = configuration->saveValueToFile(expgenfile,COMMON_TEXT_CODEC,toSave.at(i));
+        if (!error.isEmpty()){
+            logger.appendError("WRITING EYE REP GEN FILE: " + error);
+            sslTransactionAllOk = false;
+            emit(sslTransactionFinished());
+            return;
+        }
+    }
+
+    qint32 validEye = DatFileInfoInDir::getValidEyeForDatList(fileSet);
+
+    error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_VALID_EYE,QString::number(validEye));
+    if (!error.isEmpty()){
+        logger.appendError("WRITING EYE REP GEN FILE: " + error);
+        sslTransactionAllOk = false;
+        emit(sslTransactionFinished());
+        return;
+    }
+
+    error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_DAT_TIME_FILTER_THRESHOLD,"0");
+    if (!error.isEmpty()){
+        logger.appendError("WRITING EYE REP GEN FILE: " + error);
+        sslTransactionAllOk = false;
+        emit(sslTransactionFinished());
+        return;
+    }
+
+    for (qint32 i = 0; i < fileSet.size(); i++){
+        if (fileSet.at(i).startsWith(FILE_OUTPUT_READING)){
+            error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_FILE_READING,fileSet.at(i));
+            if (!error.isEmpty()){
+                logger.appendError("WRITING EYE REP GEN FILE: " + error);
+                sslTransactionAllOk = false;
+                emit(sslTransactionFinished());
+                return;
+            }
+        }
+        else if (fileSet.at(i).startsWith(FILE_OUTPUT_BINDING_BC)){
+            error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_FILE_BIDING_BC,fileSet.at(i));
+            if (!error.isEmpty()){
+                logger.appendError("WRITING EYE REP GEN FILE: " + error);
+                sslTransactionAllOk = false;
+                emit(sslTransactionFinished());
+                return;
+            }
+        }
+        else if (fileSet.at(i).startsWith(FILE_OUTPUT_BINDING_UC)){
+            error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_FILE_BIDING_UC,fileSet.at(i));
+            if (!error.isEmpty()){
+                logger.appendError("WRITING EYE REP GEN FILE: " + error);
+                sslTransactionAllOk = false;
+                emit(sslTransactionFinished());
+                return;
+            }
+        }
+    }
+
     sslDataProcessingClient->requestReport();
+
 }
 
 void FlowControl::onSLLTransactionFinished(bool allOk){
     sslTransactionAllOk = allOk;
-    if (allOk){
-        // Loading the report
-        reportData.clear();
-        // The ssl client should have set up the config report path.
-        if (!reportData.loadConfiguration(configuration->getString(CONFIG_REPORT_PATH),COMMON_TEXT_CODEC)){
-            logger.appendError("Error loading the report data file: " + reportData.getError());
-            sslTransactionAllOk = false;
-        }
-    }
-    emit(sslTransactionFinished());
+    if (!allOk) emit(sslTransactionFinished());
+    else emit(requestNextFileSet());
+//    if (allOk){
+//        // Loading the report
+//        reportData.clear();
+//        // The ssl client should have set up the config report path.
+//        if (!reportData.loadConfiguration(configuration->getString(CONFIG_REPORT_PATH),COMMON_TEXT_CODEC)){
+//            logger.appendError("Error loading the report data file: " + reportData.getError());
+//            sslTransactionAllOk = false;
+//        }
+//    }
+
 }
 
 QString FlowControl::getReportDataField(const QString &key){
@@ -244,7 +328,7 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     // Making sure no old reports are stored.
     configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,"");
 
-    logger.appendStandard("Starting experiment with ID " + QString::number(experimentID));
+    //logger.appendStandard("Starting experiment with ID " + QString::number(experimentID));
 
     // Using the polimorphism, the experiment object is created according to the selected index.
     QString readingQuestions;

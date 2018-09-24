@@ -407,19 +407,8 @@ QString RawDataProcessor::getVersionForBindingExperiment(bool bound){
     }
 
     QFileInfo info(fileName);
-    fileName = info.baseName();
-
-    QStringList parts = fileName.split("_",QString::SkipEmptyParts);
-
-    //qWarning() << "Parts" << parts;
-
-    config->addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,false);
-    if (parts.size() == NUMBER_OF_PARTS_FOR_BINDING_FILE){
-        base = base  + parts.at(2) + parts.at(3);
-        if (parts.at(3) == "s") config->addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,true);
-    }
-    // By default the experiments are for two targets large.
-    else base = base + "2l";
+    DatFileInfoInDir::DatInfo datinfo = DatFileInfoInDir::getBindingFileInformation(info.baseName());
+    base = base + datinfo.extraInfo;
 
     //qWarning() << "Base" << base;
 

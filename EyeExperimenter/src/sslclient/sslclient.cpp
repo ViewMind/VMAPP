@@ -46,7 +46,7 @@ void SSLClient::on_socketStateChanged(QAbstractSocket::SocketState state){
 
 void SSLClient::on_socketError(QAbstractSocket::SocketError error){
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    //log.appendWarning(QString("SOCKET ERROR: ") + metaEnum.valueToKey(error));
+    //log.appendError(QString("SOCKET ERROR: ") + metaEnum.valueToKey(error));
     // If there is an error then the timer should be stopped.
     Q_UNUSED(error);
     if (timer.isActive()) timer.stop();

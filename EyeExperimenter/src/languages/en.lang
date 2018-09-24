@@ -10,6 +10,8 @@ Alzheimer's Disease and other dementias, years before <br>
 symptoms are visible.;
 viewhome_btnGetStarted = GET STARTED;
 
+#********************************* DOCTOR MENU *********************************
+viewdrmenu_mode = Mode;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Before starting please fill the information below;
@@ -64,6 +66,7 @@ viewstudystart_labelNoPatientError = No patient has been selected;
 viewstudystart_labelNoInstructionSetError = At least one study must be selected;
 viewstudystart_labelTargetSize = Color target size;
 viewstudystart_targetOptions = Large|Small;
+viewstudystart_labelSelPatient = Selected Patient;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Doctor selection;
@@ -134,6 +137,8 @@ viewpatientlist_btnBack = BACK;
 viewpatientlist_btnStart = START STUDY;
 viewpatientlist_diagConnectTitle = Synchronizing;
 viewpatientlist_diagConnectMessage = Please wait a moment;
+viewpatientlist_diagRepTitle = Requesting reports;
+viewpatientlist_diagRepMessage = Please wait a moment;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Doctor's Profile;

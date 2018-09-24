@@ -61,7 +61,7 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     }
     else if (data.isRightZero()){
         x = data.xLeft;
-        y = data.yLeft;        
+        y = data.yLeft;
         indL = calculateWordAndCharacterPostion(x,y);
         indR << -1 << -1;
     }
@@ -160,7 +160,11 @@ void ReadingExperiment::mousePressEvent(QMouseEvent *event){
 }
 
 void ReadingExperiment::keyPressEvent(QKeyEvent *event){
-    Experiment::keyPressEvent(event);
+
+    if (event->key() == Qt::Key_Escape){
+        experimenteAborted();
+        return;
+    }
 
     // In the question state, the advance must be with the mouse click.
     // Otherwise the space bar advances the question.

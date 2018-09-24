@@ -28,7 +28,7 @@ public:
     Q_INVOKABLE bool checkETChange();
     Q_INVOKABLE QString hasValidOutputRepo(const QString &dirToCheck = "");
     Q_INVOKABLE QString getWindowTilteVersion(){ return EXPERIMENTER_VERSION; }
-    Q_INVOKABLE bool createPatientDirectory(const QString &patientuid);
+    Q_INVOKABLE bool createPatientDirectory();
     Q_INVOKABLE QRect frameSize(QObject *window);
     Q_INVOKABLE QStringList getCountryList() {return countries->getCountryList();}
     Q_INVOKABLE QStringList getPatientList();
@@ -40,17 +40,25 @@ public:
     Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim->getCurrentPatientInfo();}
     Q_INVOKABLE int getDefaultCountry(bool offset = true);
     Q_INVOKABLE QString getCountryCodeForCountry(const QString &country) { return countries->getCodeForCountry(country); }
+    Q_INVOKABLE void setAgeForCurrentPatient();
     Q_INVOKABLE int getCountryIndexFromCode(const QString &code) { return countries->getIndexFromCode(code); }
     Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata);
     Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt);
     Q_INVOKABLE void startDBSync();
+    Q_INVOKABLE void prepareForRequestOfPendingReports();
 
 signals:
     void synchDone();
 
+    // Signal to FlowControl, indicating the next file set to process.
+    void nextFileSet(const QStringList &fileSet);
+
 public slots:
     void onTransactionFinished(bool isOk);
     void onDisconnectFromDB();
+
+    // Request of the flow control for the next set of files to process.
+    void onRequestNextPendingReport();
 
 private:
     LogInterface logger;

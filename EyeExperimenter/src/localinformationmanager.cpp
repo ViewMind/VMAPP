@@ -10,6 +10,14 @@ LocalInformationManager::LocalInformationManager(ConfigurationManager *c)
     loadDB();
 }
 
+QString LocalInformationManager::getFieldForCurrentPatient(const QString &field) const{
+
+    QString druid = config->getString(CONFIG_DOCTOR_UID);
+    QString patuid = config->getString(CONFIG_PATIENT_UID);
+    return localDB.value(druid).toMap().value(PATIENT_DATA).toMap().value(patuid).toMap().value(field).toString();
+
+}
+
 bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 
     client->setDBTransactionType(SQL_QUERY_TYPE_SET);
@@ -225,6 +233,14 @@ void LocalInformationManager::setUpdateFlagTo(bool flag){
     backupDB();
     //qWarning() << "AFTER SETTING THE FLAG TO" << flag;
     //printLocalDB();
+}
+
+void LocalInformationManager::preparePendingReports(){
+    patientReportInformation[config->getString(CONFIG_PATIENT_UID)].prepareToInterateOverPendingReportFileSets();
+}
+
+QStringList LocalInformationManager::nextPendingReport(){
+    return patientReportInformation[config->getString(CONFIG_PATIENT_UID)].nextPendingReportFileSet();
 }
 
 QList<QStringList> LocalInformationManager::getDoctorList(){
