@@ -36,11 +36,11 @@ void SSLDataProcessingClient::connectToServer()
     txDP.addFile(confFile,DataPacket::DPFI_PATIENT_FILE);
 
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC))
-        txDP.addFile(directory + "/" + eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC);
+        txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC);
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC))
-        txDP.addFile(directory + "/" + eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC);
+        txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC);
     if (eyeGenConf.containsKeyword(CONFIG_FILE_READING))
-        txDP.addFile(directory + "/" + eyeGenConf.containsKeyword(CONFIG_FILE_READING),DataPacket::DPFI_READING);
+        txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING);
 
     // adding the the demo mode.
     qreal demo;

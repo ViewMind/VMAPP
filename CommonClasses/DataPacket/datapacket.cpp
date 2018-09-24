@@ -9,7 +9,10 @@ bool DataPacket::addFile(const QString &fileName, quint8 field_information){
     // Checking the file exists and getting its complete name (filename + extension).
     QFileInfo info(fileName);
     if (!info.exists())  return false;
-    QString fname = info.completeBaseName() + "." + info.completeSuffix();
+    QString fname = info.completeBaseName();
+    if (!info.completeSuffix().isEmpty()){
+        fname = fname + "." + info.completeSuffix();
+    }
 
     // Getting the files as raw information.
     QFile file(fileName);
