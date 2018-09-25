@@ -9,7 +9,7 @@ Experiment::Experiment(QWidget *parent) : QWidget(parent)
     // Hiding the window
     this->hide();
 
-    // By default debug mode is true
+    // Bye default data needs to be saved.
     debugMode = false;
 }
 
@@ -43,6 +43,8 @@ bool Experiment::startExperiment(ConfigurationManager *c){
         return false;
     }
 
+    bool saveData = !(config->getBool(CONFIG_DEMO_MODE) || config->getBool(CONFIG_USE_MOUSE));
+
     QTextStream reader(&expfile);
     reader.setCodec(COMMON_TEXT_CODEC);
     QString contents = reader.readAll();
@@ -61,7 +63,8 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     }
 
     // The output data file is set.
-    dataFile = workingDirectory + "/" + outputDataFile + "_" + config->getString(CONFIG_VALID_EYE)
+    if (!saveData) outputDataFile = "demo" + outputDataFile;
+    dataFile = workingDirectory + "/" + outputDataFile + "_" + config->getString(CONFIG_VALID_EYE) + "_"
             + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm") + ".dat";
 
     // Deleting the data file if it exists, otherwise the new data will be appended to the old data.
@@ -81,6 +84,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
         return false;
     }
 
+    if (!saveData) return true;
     QTextStream writer(&file);
     writer.setCodec(COMMON_TEXT_CODEC);
     writer << expHeader + " " + manager->getVersion() << "\n"

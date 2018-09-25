@@ -18,7 +18,7 @@ Window {
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.
         swiperControl.currentIndex = swiperControl.vmIndexHome;
-        //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+        //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
     }
 
 
@@ -49,7 +49,7 @@ Window {
         readonly property int vmIndexCalibrationDone: 6
         readonly property int vmIndexPresentExperiment: 7
         readonly property int vmIndexResults: 8
-        readonly property int vmIndexWaitFor: 9
+        readonly property int vmIndexStudyDone: 9
 
 
         id: swiperControl
@@ -123,8 +123,8 @@ Window {
         }
 
         Item{
-            ViewWaitFor{
-                id: viewWaitFor
+            ViewStudyDone{
+                id: viewStudyDone
                 anchors.fill: parent
             }
         }
@@ -147,8 +147,8 @@ Window {
             case vmIndexStudyStart:
                 viewStudyStart.setPatientName();
                 break;
-            case vmIndexWaitFor:
-                viewWaitFor.openDiag();
+            case vmIndexStudyDone:
+                viewStudyDone.openDiag();
                 break;
             }
 

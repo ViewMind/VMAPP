@@ -158,6 +158,12 @@ viewdrinfo_btnBack = ATRAS;
 viewdrinfo_btnSave = GUARDAR;
 viewdrinfo_errorEmpty = No puede estar vacio;
 
+#********************************* EXPERIMENT DONE SCREEN *********************************
+viewexpdone_title = El estudio ha finalizado;
+viewexpdone_question = ¿Desearia pedir el informe ahora?;
+viewexpdone_goback = ATRAS;
+viewexpdone_yes = SI;
+
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Resultados;
 viewresults_labelPatient = Paciente;

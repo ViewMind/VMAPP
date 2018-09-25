@@ -258,7 +258,7 @@ VMBase {
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             onClicked: {
-                swiperControl.currentIndex = swiperControl.vmIndexHome;
+                swiperControl.currentIndex = swiperControl.vmIndexPatientList;
             }
         }
 

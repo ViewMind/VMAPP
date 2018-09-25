@@ -156,10 +156,13 @@ void DatFileInfoInDir::setExpectedReportFileSet(const QString &date, const QSet<
     QString expectedRep;
     if (binding.isEmpty() && hasReading){
         expectedRep = QString(FILE_REPORT_NAME) + "_r_" + date + ".rep";
-        QStringList filesForReport;
-        filesForReport << newestReadingFile;
-        infoAndRep.reportFileSet[expectedRep] = filesForReport;
-        filesByDate[date] = infoAndRep;
+        // If the existing reports do not contain the expected report then the file set is added.
+        if (!existingReports.contains(expectedRep)){
+            QStringList filesForReport;
+            filesForReport << newestReadingFile;
+            infoAndRep.reportFileSet[expectedRep] = filesForReport;
+            filesByDate[date] = infoAndRep;
+        }
         return;
     }
 
@@ -169,7 +172,7 @@ void DatFileInfoInDir::setExpectedReportFileSet(const QString &date, const QSet<
         else expectedRep = QString(FILE_REPORT_NAME) + "_b" + binding.at(i) + "_" + date + ".rep";
 
         QStringList filesForReport;
-        // If the existing reports do not contain the expected repor then the file set is added.
+        // If the existing reports do not contain the expected report then the file set is added.
         if (!existingReports.contains(expectedRep)){
             if (hasReading) filesForReport << newestReadingFile;
             filesForReport << newestBinding.value(binding.at(i));

@@ -21,7 +21,6 @@
         <file>qml/VMResultBar.qml</file>
         <file>qml/VMDefines.qml</file>
         <file>qml/VMErrorDialog.qml</file>
-        <file>qml/ViewWaitFor.qml</file>
         <file>qml/VMTextDataInput.qml</file>
         <file>qml/ViewPatientRegistration.qml</file>
         <file>qml/VMDateInputField.qml</file>
@@ -33,5 +32,6 @@
         <file>qml/ViewPatientList.qml</file>
         <file>qml/VMPencilButton.qml</file>
         <file>qml/VMPatientEntry.qml</file>
+        <file>qml/ViewStudyDone.qml</file>
     </qresource>
 </RCC>

@@ -9,6 +9,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     calibrated = false;
     experiment = nullptr;
     monitor = nullptr;
+    demoTransaction = false;
     this->setVisible(false);
 
     // For debugging.
@@ -42,6 +43,11 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     //connect(sslDataProcessingClient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
     connect(sslDataProcessingClient,SIGNAL(diconnectionFinished()),this,SLOT(onDisconnectionFinished()));
 
+}
+
+void FlowControl::startDemoTransaction(){
+    demoTransaction = true;
+    onNextFileSet(QStringList());
 }
 
 void FlowControl::onErrorOccurred(QProcess::ProcessError error){
@@ -83,21 +89,32 @@ void FlowControl::requestReportData(){
 
 void FlowControl::onNextFileSet(const QStringList &fileSetAndName){
 
-    qWarning() << "NEXT FILE SET: " << fileSetAndName;
+    //qWarning() << "NEXT FILE SET: " << fileSetAndName;
 
-    if (fileSetAndName.isEmpty()){
+    if (fileSetAndName.isEmpty() && !demoTransaction){
         emit(sslTransactionFinished());
         return;
     }
 
+
     // The first value is the expected report name.
-    logger.appendStandard("Expected Report is: " + fileSetAndName.first());
     QStringList fileSet = fileSetAndName;
-    fileSet.removeFirst();
+    if (!demoTransaction){
+        logger.appendStandard("Expected Report is: " + fileSetAndName.first());
+        fileSet.removeFirst();
+    }
+    else{
+        fileSet.clear();
+        fileSet << "binding_bc_2018_06_03.dat" << "binding_uc_2018_06_03.dat" << "reading_2018_06_03.dat";
+    }
+
+    //qWarning() << "File set" << fileSet;
 
     // Generating the configuration file required to send to the server.
-
     QString expgenfile = configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_EYE_REP_GEN_CONFIGURATION;
+    // Making sure previous version of the file are not present so as to ensure that no garbage data is used in this current configuration.
+    QFile(expgenfile).remove();
+
     QString error;
     QStringList toSave;
 
@@ -115,7 +132,11 @@ void FlowControl::onNextFileSet(const QStringList &fileSetAndName){
         }
     }
 
-    qint32 validEye = DatFileInfoInDir::getValidEyeForDatList(fileSet);
+    //qWarning() << "Saved expgen";
+
+    qint32 validEye;
+    if (!demoTransaction) validEye = DatFileInfoInDir::getValidEyeForDatList(fileSet);
+    else validEye = EYE_BOTH;
 
     error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_VALID_EYE,QString::number(validEye));
     if (!error.isEmpty()){
@@ -163,24 +184,23 @@ void FlowControl::onNextFileSet(const QStringList &fileSetAndName){
         }
     }
 
-    sslDataProcessingClient->requestReport();
+    //qWarning() << "Requesting report";
+    sslDataProcessingClient->requestReport(!demoTransaction);
 
 }
 
 void FlowControl::onDisconnectionFinished(){
     sslTransactionAllOk = sslDataProcessingClient->getTransactionStatus();
+
+    // If this is a demo transaction there is nothing else to do.
+    if (demoTransaction){
+        demoTransaction = false;
+        emit(sslTransactionFinished());
+        return;
+    }
+
     if (!sslTransactionAllOk) emit(sslTransactionFinished());
     else emit(requestNextFileSet());
-//    if (allOk){
-//        // Loading the report
-//        reportData.clear();
-//        // The ssl client should have set up the config report path.
-//        if (!reportData.loadConfiguration(configuration->getString(CONFIG_REPORT_PATH),COMMON_TEXT_CODEC)){
-//            logger.appendError("Error loading the report data file: " + reportData.getError());
-//            sslTransactionAllOk = false;
-//        }
-//    }
-
 }
 
 QString FlowControl::getReportDataField(const QString &key){
@@ -422,10 +442,9 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
         experimentIsOk = false;
         break;
     case Experiment::ER_NORMAL:
-        logger.appendSuccess("Experiment finished sucessfully!");
         break;
     case Experiment::ER_WARNING:
-        logger.appendStandard("EXPERIMENT WARNING: " + experiment->getError());
+        logger.appendWarning("EXPERIMENT WARNING: " + experiment->getError());
         break;
     }
 
@@ -439,8 +458,6 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     }
     delete experiment;
     experiment = nullptr;
-
-    logger.appendStandard("EXPERIMENT FINISHED");
 
     // Notifying the QML.
     emit(experimentHasFinished());

@@ -22,8 +22,8 @@ VMBase {
     Connections {
         target: flowControl
         onSslTransactionFinished:{
-            connectionDialog.close();
             if (!flowControl.isSSLTransactionOK()){
+                connectionDialog.close();
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
                 var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
                 vmErrorDiag.vmErrorMessage = titleMsg[1];
@@ -32,7 +32,8 @@ VMBase {
                 return;
             }
             else{
-                console.log("All good");
+                loadPatients();
+                connectionDialog.close();
             }
         }
     }
@@ -117,6 +118,13 @@ VMBase {
         }
 
         patientListView.currentIndex = -1;
+    }
+
+    function startDemoTransaction(){
+        connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
+        connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
+        connectionDialog.open();
+        flowControl.startDemoTransaction();
     }
 
     function requestReportToServer(){

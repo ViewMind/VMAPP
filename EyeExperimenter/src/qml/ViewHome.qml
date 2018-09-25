@@ -27,7 +27,6 @@ VMBase {
         viewPresentExperimet.updateText()
         viewResults.updateText()
         viewStudyStart.updateText()
-        viewWaitFor.updateText()
         viewPatList.updateText()
     }
 

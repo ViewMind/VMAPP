@@ -217,7 +217,7 @@ void ImageExperiment::nextState(){
 
 void ImageExperiment::newImage(QString name, qint32 isTrial){
 
-    ignoreData = true;
+    ignoreData = true;    
 
     QFile file(dataFile);
     if (!file.open(QFile::Append)){

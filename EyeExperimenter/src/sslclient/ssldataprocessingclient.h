@@ -18,7 +18,7 @@ public:
     ~SSLDataProcessingClient();
 
     // Main interface function. The only one required. Everything after this point is predefined.
-    void requestReport();
+    void requestReport(bool saveData);
 
 private slots:
 
@@ -40,7 +40,7 @@ private:
     ClientState clientState;
 
     // Starts the whole process
-    void connectToServer();
+    void connectToServer(bool saveData);
 
     // Flag that indicates if the transaction finished signal was setn
     bool sentTransactionFinishedSignal;

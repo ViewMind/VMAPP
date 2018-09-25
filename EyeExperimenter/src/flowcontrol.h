@@ -47,6 +47,7 @@ public:
     Q_INVOKABLE int getReportResultBarPosition(const QString &key);
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
+    Q_INVOKABLE void startDemoTransaction();
 
 signals:
 
@@ -72,7 +73,8 @@ public slots:
     void requestCalibration();
 
     // When an SSL Transaction finishes
-    void onSLLTransactionFinished(bool allOk);
+    //void onSLLTransactionFinished(bool allOk);
+    void onDisconnectionFinished();
 
     // Eye tracker control changes
     void onEyeTrackerControl(quint8 code);
@@ -82,7 +84,7 @@ public slots:
     void onErrorOccurred(QProcess::ProcessError error);
 
     // For receiving information to send to the server
-    void onNextFileSet(const QStringList &fileSet);
+    void onNextFileSet(const QStringList &fileSetAndName);
 
 private:
 
@@ -124,6 +126,9 @@ private:
 
     // Flag to check on transaction status
     bool sslTransactionAllOk;
+
+    // Flag used to generate demo transaction
+    bool demoTransaction;
 
     // Helper function to selecte expanded binding files.
     QString getBindingExperiment(bool bc);

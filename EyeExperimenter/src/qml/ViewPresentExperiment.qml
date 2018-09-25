@@ -25,16 +25,7 @@ VMBase {
                 return;
             }
             if (advanceCurrentExperiment()){
-                if (loader.getConfigurationBoolean(vmDefines.vmCONFIG_OFFLINE_MODE)){
-                    swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-                    return;
-                }
-                swiperControl.currentIndex = swiperControl.vmIndexWaitFor;
-                //swiperControl.currentIndex = swiperControl.vmIndexHome;
-                titleMsg = viewHome.getErrorTitleAndMessage("msg_request_report");
-                viewWaitFor.vmMessage = titleMsg[1];
-                viewWaitFor.vmTitle = titleMsg[0];
-                flowControl.requestReportData();
+                swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
             }
         }
     }

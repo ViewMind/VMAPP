@@ -14,12 +14,12 @@ void SSLDataProcessingClient::sendFinishedSignal(bool okvalue){
     }
 }
 
-void SSLDataProcessingClient::requestReport(){
+void SSLDataProcessingClient::requestReport(bool saveData){
     sentTransactionFinishedSignal = false;
-    connectToServer();
+    connectToServer(saveData);
 }
 
-void SSLDataProcessingClient::connectToServer()
+void SSLDataProcessingClient::connectToServer(bool saveData)
 {
     QString directory = config->getString(CONFIG_PATIENT_DIRECTORY);
     QString confFile = directory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
@@ -37,20 +37,23 @@ void SSLDataProcessingClient::connectToServer()
     txDP.addFile(confFile,DataPacket::DPFI_PATIENT_FILE);
 
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC))
-        txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC);
+        if (saveData) txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC);
+        else txDP.addFile(":/demo_data/binding_bc_2018_06_03.dat",DataPacket::DPFI_BINDING_BC);
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC))
-        txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC);
+        if (saveData) txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC);
+        else txDP.addFile(":/demo_data/binding_uc_2018_06_03.dat",DataPacket::DPFI_BINDING_BC);
     if (eyeGenConf.containsKeyword(CONFIG_FILE_READING))
-        txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING);
+        if (saveData) txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING);
+        else txDP.addFile(":/demo_data/reading_2018_06_03.dat",DataPacket::DPFI_BINDING_BC);
 
     // adding the the demo mode.
     qreal demo;
-    if (config->getBool(CONFIG_DEMO_MODE)) demo = 1;
-    else demo = 0;
+    if (saveData) demo = 0;
+    else demo = 1;
 
     /// TODO: FOR NOW NOTHING IS DEMO MODE. Change.
-    /// txDP.addValue(demo,DataPacket::DPFI_DEMO_MODE);
-    txDP.addValue(0,DataPacket::DPFI_DEMO_MODE);
+    txDP.addValue(demo,DataPacket::DPFI_DEMO_MODE);
+    //txDP.addValue(0,DataPacket::DPFI_DEMO_MODE);
 
     // Requesting connection and ack
     informationSent = false;
