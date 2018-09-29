@@ -10,6 +10,7 @@
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
+#include "../../CommonClasses/PNGWriter/repfileinfo.h"
 #include "../../CommonClasses/PNGWriter/imagereportdrawer.h"
 
 #include "Experiments/readingexperiment.h"
@@ -48,6 +49,9 @@ public:
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
     Q_INVOKABLE void startDemoTransaction();
+    Q_INVOKABLE void prepareForReportListIteration();
+    Q_INVOKABLE QVariantMap nextReportInList();
+    Q_INVOKABLE void setReportIndex(qint32 id) { selectedReport = id; }
 
 signals:
 
@@ -63,6 +67,10 @@ signals:
 
     // Requesting next file set to process.
     void requestNextFileSet();
+
+    // Used to signal the UI to open the dialog to wait for the report generation.
+    void reportGenerationRequested();
+    void reportGenerationDone();
 
 public slots:
 
@@ -85,6 +93,10 @@ public slots:
 
     // For receiving information to send to the server
     void onNextFileSet(const QStringList &fileSetAndName);
+
+private slots:
+    // The function that actually draws the report
+    void drawReport();
 
 private:
 
@@ -112,8 +124,9 @@ private:
     // The configuration structure
     ConfigurationManager *configuration;
 
-    // The structure where the report data is saved.
-    ConfigurationManager reportData;
+    // The report list for a given directory.
+    qint32 selectedReport;
+    RepFileInfo reportsForPatient;
 
     // Flags to avoid reconnecting during recalibration
     bool connected;
@@ -140,6 +153,8 @@ private:
     QStringList countryList;
     QStringList countryCodes;
     void fillCountryList();
+
+
 
 
 };

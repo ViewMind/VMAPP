@@ -273,6 +273,7 @@ QList<QStringList> LocalInformationManager::getPatientListForDoctor(){
             if (patientReportInformation.value(uids.at(i)).hasPendingReports()) isoklist << "false";
             else isoklist << "true";
         }
+        //qWarning() << "IS OK LIST" << isoklist;
         ans << isoklist;
     }
     return ans;

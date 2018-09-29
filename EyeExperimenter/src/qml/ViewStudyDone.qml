@@ -26,7 +26,7 @@ VMBase {
         height: 600
         y: (parent.height - height)/2
         x: (parent.width - width)/2
-        closePolicy: Popup.CloseOnEscape
+        closePolicy: Popup.NoAutoClose
 
         contentItem: Rectangle {
             id: rectDialog

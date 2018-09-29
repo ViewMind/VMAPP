@@ -12,12 +12,30 @@ ImageReportDrawer::ImageReportDrawer()
 }
 
 
-void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationManager *c){
+void ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c){
 
     canvas->clear();
 
     if (!loadLanguageConfiguration(c->getString(CONFIG_REPORT_LANGUAGE))) return;
     loadFonts();
+
+    //----------------------------------- CHECKING WHICH DATA NEEDS TO BE ADDED ----------------------------------------------
+    bool doReading = false;
+    if (ds.contains(CONFIG_RESULTS_ATTENTIONAL_PROCESSES)){
+        QString str = ds.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
+        if ((str != "0") && (str != "nan")) doReading = true;
+    }
+
+    bool doMemEnc = false;
+    if (ds.contains(CONFIG_RESULTS_MEMORY_ENCODING)){
+        QString str = ds.value(CONFIG_RESULTS_MEMORY_ENCODING).toString();
+        if ((str != "0") && (str != "nan")) doMemEnc = true;
+    }
+
+    bool doBehavioural = false;
+    if (ds.contains(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE)){
+        doBehavioural = true;
+    }
 
     //----------------------------------- GENERATING SHOW STRUCTURES ----------------------------------------------
     ShowData data2Show;
@@ -26,11 +44,11 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
     /// TODO simplify the code in order to take advantage of the math done in flowControl
     /// TODO eliminate the dual fonts.
 
-    if (dataSet->containsKeyword(CONFIG_RESULTS_ATTENTIONAL_PROCESSES)){
+    if (doReading){
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(0);
         d.clarification = "";
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(0);
-        qreal totalFixations = dataSet->getReal(CONFIG_RESULTS_ATTENTIONAL_PROCESSES);
+        qreal totalFixations = ds.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toReal();
         d.value = QString::number(totalFixations,'f',0);
         d.stopValues.clear();
         d.stopValues << 450 << 550 << 650 << 750;
@@ -41,7 +59,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(1);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(1);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(0);
-        d.value = QString::number(dataSet->getReal(CONFIG_RESULTS_EXECUTIVE_PROCESSES),'f',0);
+        d.value = QString::number(ds.value(CONFIG_RESULTS_EXECUTIVE_PROCESSES).toReal(),'f',0);
         d.stopValues.clear();
         d.stopValues << -4 << 18 << 40 << 62;
         d.largerBetter = false;
@@ -51,7 +69,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(2);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(2);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(1);
-        d.value = QString::number(dataSet->getReal(CONFIG_RESULTS_WORKING_MEMORY),'f',0);
+        d.value = QString::number(ds.value(CONFIG_RESULTS_WORKING_MEMORY).toReal(),'f',0);
         d.stopValues.clear();
         d.stopValues << 50 << 60 << 70 << 80;
         d.largerBetter = true;
@@ -61,7 +79,7 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(3);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(3);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(2);
-        d.value = QString::number(dataSet->getReal(CONFIG_RESULTS_RETRIEVAL_MEMORY),'f',0);
+        d.value = QString::number(ds.value(CONFIG_RESULTS_RETRIEVAL_MEMORY).toReal(),'f',0);
         d.stopValues.clear();
         d.stopValues << 7 << 15 << 23 << 31;
         d.largerBetter = true;
@@ -69,41 +87,43 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
         data2Show << d;
     }
 
-    if (dataSet->containsKeyword(CONFIG_RESULTS_MEMORY_ENCODING)){
+    if (doMemEnc){
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(4);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(4);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(3);
-        d.value = QString::number(dataSet->getReal(CONFIG_RESULTS_MEMORY_ENCODING),'f',3);
+        d.value = QString::number(ds.value(CONFIG_RESULTS_MEMORY_ENCODING).toReal(),'f',3);
         d.stopValues.clear();
         d.stopValues << -0.95 << 0.05 << 1.05;
         d.largerBetter = true;
         d.calcValue = -1;
         data2Show << d;
 
-        // First one should be BC and the second one is UC. Need to compute the faux value in order to draw the data.
-        QStringList results = dataSet->getStringList(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
+        if (doBehavioural) {
+            // First one should be BC and the second one is UC. Need to compute the faux value in order to draw the data.
+            QStringList results = ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE).toStringList();
 
-        d.name = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
-        d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
-        d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
-        d.value = results.first();
-        d.stopValues.clear();
-        d.stopValues << -1 << 0 << 1;
-        d.largerBetter = true;
-        d.calcValue = true;
+            d.name = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
+            d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
+            d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
+            d.value = results.first();
+            d.stopValues.clear();
+            d.stopValues << -1 << 0 << 1;
+            d.largerBetter = true;
+            d.calcValue = true;
 
-        qint32 BC = results.first().toUInt();
-        //qint32 UC = results.last().toUInt();
+            qint32 BC = results.first().toUInt();
+            //qint32 UC = results.last().toUInt();
 
-        if (BC > 10){
-            // This is the yellow section.
-            d.calcValue = -0.5;
+            if (BC > 10){
+                // This is the yellow section.
+                d.calcValue = -0.5;
+            }
+            else{
+                d.calcValue = 0.5;
+            }
+
+            data2Show << d;
         }
-        else{
-            d.calcValue = 0.5;
-        }
-
-        data2Show << d;
 
     }
 
@@ -176,11 +196,11 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
     QGraphicsTextItem *date         = canvas->addText(langData.getString(DR_CONFG_DATE) + ": ",upperBarField);
     date->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
 
-    QGraphicsTextItem *patient_data = canvas->addText(dataSet->getString(CONFIG_PATIENT_NAME),upperBarInfo);
+    QGraphicsTextItem *patient_data = canvas->addText(ds.value(CONFIG_PATIENT_NAME).toString(),upperBarInfo);
     patient_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
-    QGraphicsTextItem *doctor_data  = canvas->addText(dataSet->getString(CONFIG_DOCTOR_NAME),upperBarInfo);
+    QGraphicsTextItem *doctor_data  = canvas->addText(ds.value(CONFIG_DOCTOR_NAME).toString(),upperBarInfo);
     doctor_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
-    QGraphicsTextItem *age_data     = canvas->addText(dataSet->getString(CONFIG_PATIENT_AGE),upperBarInfo);
+    QGraphicsTextItem *age_data     = canvas->addText(ds.value(CONFIG_PATIENT_AGE).toString(),upperBarInfo);
     age_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
     QGraphicsTextItem *date_data    = canvas->addText(QDate::currentDate().toString(langData.getString(DR_CONFG_DATE_FORMAT)),upperBarInfo);
     date_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
@@ -338,10 +358,10 @@ void ImageReportDrawer::drawReport(ConfigurationManager *dataSet, ConfigurationM
     painter.setRenderHint(QPainter::Antialiasing);
     canvas->render(&painter);
 
-    QString generatedReport = c->getString(CONFIG_PATIENT_REPORT_DIR) + "/" + QString(FILE_REPORT_NAME) + QDateTime::currentDateTime().toString("_yyyy_MM_dd")  + ".png";
+    //QString generatedReport = c->getString(CONFIG_PATIENT_REPORT_DIR) + "/" + QString(FILE_REPORT_NAME) + QDateTime::currentDateTime().toString("_yyyy_MM_dd")  + ".png";
     // Saving the path to the configuration
-    c->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,generatedReport);
-    image.save(generatedReport);
+    //c->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,generatedReport);
+    image.save(c->getString(CONFIG_IMAGE_REPORT_PATH));
 
 }
 

@@ -33,5 +33,7 @@
         <file>qml/VMPencilButton.qml</file>
         <file>qml/VMPatientEntry.qml</file>
         <file>qml/ViewStudyDone.qml</file>
+        <file>qml/ViewShowReports.qml</file>
+        <file>qml/VMReportEntry.qml</file>
     </qresource>
 </RCC>

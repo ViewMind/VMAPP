@@ -18,7 +18,7 @@ Window {
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.
         swiperControl.currentIndex = swiperControl.vmIndexHome;
-        //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
+        //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
     }
 
 
@@ -147,6 +147,9 @@ Window {
             case vmIndexStudyStart:
                 viewStudyStart.setPatientName();
                 break;
+            case vmIndexResults:
+                viewResults.fillFieldsFromReportInfo();
+                break
             case vmIndexStudyDone:
                 viewStudyDone.openDiag();
                 break;

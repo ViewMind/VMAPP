@@ -22,7 +22,7 @@ VMBase {
         height: 523
         y: (parent.height - height)/2
         x: (parent.width - width)/2
-        closePolicy: Popup.CloseOnEscape
+        closePolicy: Popup.NoAutoClose
 
         // The Drop shadow
         contentItem: Rectangle {

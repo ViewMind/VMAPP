@@ -50,7 +50,7 @@ VMBase {
         height: 600
         y: (parent.height - height)/2
         x: (parent.width - width)/2
-        closePolicy: Popup.CloseOnEscape
+        closePolicy: Popup.NoAutoClose
 
         contentItem: Rectangle {
             id: rectDialog
@@ -93,6 +93,11 @@ VMBase {
             x: (parent.width - slideAnimation.width)/2;
         }
 
+    }
+
+
+    ViewShowReports{
+        id: diagShowReports
     }
 
 
@@ -235,7 +240,9 @@ VMBase {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 20
+            enabled: patientListView.currentIndex !== -1
             onClicked: {
+                diagShowReports.open();
             }
         }
     }
@@ -324,8 +331,6 @@ VMBase {
                 }
             }
         }
-
-
     }
 
     // Buttons

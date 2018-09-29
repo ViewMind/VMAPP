@@ -22,7 +22,7 @@ Dialog {
     modal: true
     width: 614
     height: 580
-    closePolicy: Popup.CloseOnEscape
+    closePolicy: Popup.NoAutoClose
 
     contentItem: Rectangle {
         id: rectDialog

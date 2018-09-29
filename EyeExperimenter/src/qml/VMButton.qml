@@ -21,6 +21,9 @@ Button{
                 if (pressed){
                     vmButton.vmColorText = "#4984b3";
                 }
+                else{
+                    vmButton.vmColorText = "#297fca";
+                }
             }
             else {
                 vmButton.vmColorBkg = "#ffffff"

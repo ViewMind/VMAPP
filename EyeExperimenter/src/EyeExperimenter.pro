@@ -50,7 +50,8 @@ SOURCES += main.cpp \
     sslclient/ssldbclient.cpp \
     localinformationmanager.cpp \
     ../../CommonClasses/Experiments/bindingparser.cpp \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
+    ../../CommonClasses/PNGWriter/repfileinfo.cpp
 
 HEADERS += \
     loader.h \
@@ -89,7 +90,8 @@ HEADERS += \
     sslclient/ssldbclient.h \
     localinformationmanager.h \
     ../../CommonClasses/Experiments/bindingparser.h \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.h
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
+    ../../CommonClasses/PNGWriter/repfileinfo.h
 
 win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
 

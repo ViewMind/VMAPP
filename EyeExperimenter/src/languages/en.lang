@@ -140,6 +140,16 @@ viewpatientlist_diagConnectMessage = Please wait a moment;
 viewpatientlist_diagRepTitle = Requesting reports;
 viewpatientlist_diagRepMessage = Please wait a moment;
 
+#********************************* SHOW REPORTS *********************************
+viewshowreports_diagViewRepTitle = Reports;
+viewshowreports_diagViewRepSubTitle = Double click on the report to see results;
+viewshowreports_diagPatientName = Patient;
+viewshowreports_diagTabDate = Date;
+viewshowreports_diagTabTime = Time;
+viewshowreports_diagTabReading = Reading;
+viewshowreports_diagTabBinding = Colors;
+viewshowreports_diagBtnView = VIEW;
+
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Doctor's Profile;
 viewdrinfo_subtitle = Please fill the information below;
@@ -199,8 +209,11 @@ viewresults_labelVisualShortTermMemoryExp = Reference parameter HIGHER or EQUAL 
 
 viewresults_save_report = Save report;
 
+viewresults_diagWaitTitle = Generating Report; 
+viewresults_diagWaitMessage = Please, wait for a moment;
+
 viewresults_btnDownload = DOWNLOAD;
-viewresults_btnFinalize = FINISH;
+viewresults_btnFinalize = BACK;
 
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title

@@ -268,12 +268,7 @@ QString Loader::hasValidOutputRepo(const QString &dirToCheck){
 
     QDir reports(dir.path() + "/" + QString(DIRNAME_REPORTS));
     QDir rawdata(dir.path() + "/" + QString(DIRNAME_RAWDATA));
-    if (!reports.exists()){
-        if (!dir.mkdir(DIRNAME_REPORTS)){
-            logger.appendError("Cannot create reports directory in selected output directory");
-            return "";
-        }
-    }
+
     if (!rawdata.exists()){
         if (!dir.mkdir(DIRNAME_RAWDATA)){
             logger.appendError("Cannot create etdata directory in selected output directory");

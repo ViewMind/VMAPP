@@ -16,6 +16,9 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     connect(&sslServer,SIGNAL(errorOccurred(QProcess::ProcessError)),this,SLOT(onErrorOccurred(QProcess::ProcessError)));
     connect(&sslServer,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(onStateChanged(QProcess::ProcessState)));
 
+    // For delay the what the UI shows before drawing a report.
+    connect(&delayTimer,SIGNAL(timeout()),this,SLOT(drawReport()));
+
     // Launching the server if it was configured.
     QString server = configuration->getString(CONFIG_SSLSERVER_PATH);
     if (QFile(server).exists()){
@@ -45,6 +48,16 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
 
 }
 
+void FlowControl::prepareForReportListIteration(){
+    selectedReport = -1;
+    reportsForPatient.setDirectory(configuration->getString(CONFIG_PATIENT_DIRECTORY));
+    reportsForPatient.prepareIteration();
+}
+
+QVariantMap FlowControl::nextReportInList(){
+    return reportsForPatient.nextReportInfo();
+}
+
 void FlowControl::startDemoTransaction(){
     demoTransaction = true;
     onNextFileSet(QStringList());
@@ -61,17 +74,28 @@ void FlowControl::onStateChanged(QProcess::ProcessState newState){
 }
 
 void FlowControl::saveReport(){
-    ImageReportDrawer reportDrawer;
-    reportDrawer.drawReport(&reportData,configuration);
+    //ImageReportDrawer reportDrawer;
+    //reportDrawer.drawReport(&reportData,configuration);
+    delayTimer.setInterval(200);
+    delayTimer.start();
+}
+
+void FlowControl::drawReport(){
+    delayTimer.stop();
+    ImageReportDrawer drawer;
+    drawer.drawReport(reportsForPatient.getRepData(selectedReport),configuration);
+    emit(reportGenerationDone());
 }
 
 void FlowControl::saveReportAs(const QString &title){
 
     QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
     if (newFileName.isEmpty()) return;
-    if (!QFile::copy(configuration->getString(CONFIG_IMAGE_REPORT_PATH),newFileName)){
-        logger.appendError("Could not save report from " + configuration->getString(CONFIG_IMAGE_REPORT_PATH) + " to " + newFileName);
-    }
+    configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,newFileName);
+    emit(reportGenerationRequested());
+//    if (!QFile::copy(configuration->getString(CONFIG_IMAGE_REPORT_PATH),newFileName)){
+//        logger.appendError("Could not save report from " + configuration->getString(CONFIG_IMAGE_REPORT_PATH) + " to " + newFileName);
+//    }
 }
 
 void FlowControl::resolutionCalculations(){
@@ -204,15 +228,19 @@ void FlowControl::onDisconnectionFinished(){
 }
 
 QString FlowControl::getReportDataField(const QString &key){
-    if (reportData.containsKeyword(key)){
-        return reportData.getString(key);
+    QVariantMap data = reportsForPatient.getRepData(selectedReport);
+    if (data.contains(key)){
+        QString ans =  data.value(key).toString();
+        if ((ans != "nan") && (ans != "0")) return ans;
+        else return "N/A";
     }
     else return "N/A";
 }
 
 int FlowControl::getReportResultBarPosition(const QString &key){
 
-    qreal value = reportData.getReal(key);
+    QVariantMap data = reportsForPatient.getRepData(selectedReport);
+    qreal value = data.value(key).toReal();
     QList<qreal> list;
     bool largerBetter;
 

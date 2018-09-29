@@ -1,5 +1,6 @@
-import QtQuick 2.0
-import QtQuick.Dialogs 1.1
+import QtQuick 2.6
+import QtQuick.Controls 2.3
+import QtGraphicalEffects 1.0
 
 VMBase {
 
@@ -59,6 +60,70 @@ VMBase {
         vmDrName = flowControl.getReportDataField(vmDefines.vmCONFIG_DOCTOR_NAME);
         vmAge = flowControl.getReportDataField(vmDefines.vmCONFIG_PATIENT_AGE);
         vmDate = flowControl.getReportDataField(vmDefines.vmCONFIG_REPORT_DATE);
+
+    }
+
+    Connections{
+        target: flowControl
+        onReportGenerationRequested: {
+            reportDialog.open();
+            flowControl.saveReport();
+        }
+        onReportGenerationDone: {
+            reportDialog.close();
+        }
+    }
+
+    Dialog {
+
+        id: reportDialog;
+        modal: true
+        width: 614
+        height: 600
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        // The instruction text
+        Text {
+            id: diagTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43
+            anchors.top: parent.top
+            anchors.topMargin: 88
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: loader.getStringForKey(keysearch+"diagWaitTitle")
+        }
+
+        // The instruction text
+        Text {
+            id: diagMessage
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13
+            anchors.top:  diagTitle.bottom
+            anchors.topMargin: 26
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: loader.getStringForKey(keysearch+"diagWaitMessage")
+        }
+
+        AnimatedImage {
+            id: slideAnimation
+            source: "qrc:/images/LOADING.gif"
+            anchors.top: diagMessage.bottom
+            anchors.topMargin: 30
+            x: (parent.width - slideAnimation.width)/2;
+        }
 
     }
 
@@ -633,7 +698,7 @@ VMBase {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 10
         onClicked: {
-            swiperControl.currentIndex = swiperControl.vmIndexHome;
+            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         }
     }
 

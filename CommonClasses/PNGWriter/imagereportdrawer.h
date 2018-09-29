@@ -114,7 +114,7 @@ class ImageReportDrawer
 
 public:
     ImageReportDrawer();
-    void drawReport(ConfigurationManager *ds, ConfigurationManager *config);
+    void drawReport(const QVariantMap &ds, ConfigurationManager *config);
 
 private:
 

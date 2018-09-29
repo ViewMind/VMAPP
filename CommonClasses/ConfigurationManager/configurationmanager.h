@@ -84,6 +84,10 @@ public:
     // Wrapper function to save a value from the configuration to a file in disc.
     QString saveValueToFile(const QString &fileName, const char *textCode, const QString &key);
 
+    // Functions to get to and from map.
+    QVariantMap getMap() const {QVariant temp; temp = data; return temp.toMap();}
+    //void fromMap(const QVariantMap &map) {QVariant temp; temp = map; data = temp.toHash();}
+
     // Service function to replace a value in a configuration text file.
     static QString setValue(const QString &fileName, const char *textCodec,
                             const QString &cmd,
