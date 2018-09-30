@@ -133,24 +133,6 @@ Dialog {
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
-        Rectangle {
-            id: headerTime
-            color: "#adadad"
-            border.width: 2
-            border.color: "#EDEDEE"
-            radius: 4
-            width: columnWidth
-            height: parent.height
-            Text {
-                id: timeText
-                text: loader.getStringForKey(keybase+"diagTabTime");
-                width: parent.width
-                font.family: gothamB.name
-                font.pixelSize: 15
-                horizontalAlignment: Text.AlignHCenter
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
 
         Rectangle {
             id: headerReading
@@ -213,7 +195,6 @@ Dialog {
                 delegate: VMReportEntry {
                     vmReportName: repname
                     vmDate: date
-                    vmTime: time
                     vmReading: reading
                     vmBinding: binding
                     vmItemIndex: index

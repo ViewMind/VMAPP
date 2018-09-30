@@ -49,7 +49,7 @@ Item {
         border.width: 2
         height: vmHeight
         width: viewReport.columnWidth
-        anchors.left: hourRect.right
+        anchors.left: dateRect.right
         anchors.top: parent.top
         Text {
             font.family: viewHome.gothamR.name

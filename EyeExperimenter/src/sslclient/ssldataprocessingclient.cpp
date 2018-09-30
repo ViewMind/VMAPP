@@ -41,10 +41,10 @@ void SSLDataProcessingClient::connectToServer(bool saveData)
         else txDP.addFile(":/demo_data/binding_bc_2018_06_03.dat",DataPacket::DPFI_BINDING_BC);
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC))
         if (saveData) txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC);
-        else txDP.addFile(":/demo_data/binding_uc_2018_06_03.dat",DataPacket::DPFI_BINDING_BC);
+        else txDP.addFile(":/demo_data/binding_uc_2018_06_03.dat",DataPacket::DPFI_BINDING_UC);
     if (eyeGenConf.containsKeyword(CONFIG_FILE_READING))
         if (saveData) txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING);
-        else txDP.addFile(":/demo_data/reading_2018_06_03.dat",DataPacket::DPFI_BINDING_BC);
+        else txDP.addFile(":/demo_data/reading_2018_06_03.dat",DataPacket::DPFI_READING);
 
     // adding the the demo mode.
     qreal demo;
