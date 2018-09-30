@@ -49,7 +49,10 @@ SOURCES += \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.cpp \
     ../../CommonClasses/HTMLWriter/htmlwriter.cpp \
     ../../CommonClasses/PNGWriter/imagereportdrawer.cpp \
-    ../../CommonClasses/Experiments/bindingparser.cpp
+    ../../CommonClasses/Experiments/bindingparser.cpp \
+    ../../CommonClasses/PNGWriter/repfileinfo.cpp \
+    ../../CommonClasses/PNGWriter/resultbar.cpp \
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -73,7 +76,10 @@ HEADERS += \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.h \
     ../../CommonClasses/HTMLWriter/htmlwriter.h \
     ../../CommonClasses/PNGWriter/imagereportdrawer.h \
-    ../../CommonClasses/Experiments/bindingparser.h
+    ../../CommonClasses/Experiments/bindingparser.h \
+    ../../CommonClasses/PNGWriter/repfileinfo.h \
+    ../../CommonClasses/PNGWriter/resultbar.h \
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.h
 
 FORMS += \
         eyedataanalyzer.ui

@@ -187,7 +187,13 @@ void RawDataProcessor::run(){
         return;
     }
 
-    qWarning() << "DATE" << dateForReport << "List" << reportInfoText;
+
+    // Setting the report date to the date of the data.
+    QStringList dateParts = dateForReport.split("_");
+
+    // The check is done in case of an unforseen bug. Otherwise the program will crash attempting to access non existent values on a list.
+    if (dateParts.size() != 3) config->addKeyValuePair(CONFIG_REPORT_DATE,dateForReport);
+    else config->addKeyValuePair(CONFIG_REPORT_DATE,dateParts.at(2) + "/" + dateParts.at(1) + "/" + dateParts.at(0));
 
     generateReportFile(emp.getResults(),what2Add,reportInfoText.join("_") + "_" + dateForReport);
     emit(appendMessage("Report Generated: " + reportFileOutput,MSG_TYPE_SUCC));
@@ -223,7 +229,8 @@ void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res,
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,config->getString(CONFIG_PATIENT_NAME));
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,config->getString(CONFIG_PATIENT_AGE));
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_DOCTOR_NAME,config->getString(CONFIG_DOCTOR_NAME));
-    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_REPORT_DATE,QDateTime::currentDateTime().toString("dd/MM/yyyy"));
+    //QDateTime::currentDateTime().toString("dd/MM/yyyy")
+    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_REPORT_DATE,config->getString(CONFIG_REPORT_DATE));
 
     // Adding the actual results
     if (whatToAdd.value(STAT_ID_TOTAL_FIXATIONS)){

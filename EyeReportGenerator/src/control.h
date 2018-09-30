@@ -27,7 +27,7 @@ private slots:
 
 private:
     ConfigurationManager configuration;
-    HTMLWriter log;
+    LogInterface log;
     RawDataProcessor data_processor;
 
     // All necessary steps to properly quit

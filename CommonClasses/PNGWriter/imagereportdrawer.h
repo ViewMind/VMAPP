@@ -2,7 +2,7 @@
 #define IMAGEREPORTDRAWER_H
 
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../CommonClasses/common.h"
+#include "resultbar.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
@@ -114,7 +114,9 @@ class ImageReportDrawer
 
 public:
     ImageReportDrawer();
-    void drawReport(const QVariantMap &ds, ConfigurationManager *config);
+    bool drawReport(const QVariantMap &ds, ConfigurationManager *config);
+
+    static ConfigurationManager loadReportText(QString lang);
 
 private:
 
@@ -131,9 +133,7 @@ private:
         QGraphicsTextItem *grange;
         QGraphicsTextItem *gvalue;
         QGraphicsTextItem *gclarification;
-        QList<qreal> stopValues;
-        bool largerBetter;
-        qreal calcValue;
+        ResultBar resultBar;
     };
 
     typedef QList<ShowDatum> ShowData;
@@ -143,7 +143,7 @@ private:
     QPolygonF downArrow;
 
     // Loading of auxiliary data files.
-    bool loadLanguageConfiguration(const QString &lang);
+
     void loadFonts();
 
     // The return value are as follows 1 per segment and the last one is the indicator value.

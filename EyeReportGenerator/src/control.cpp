@@ -38,10 +38,12 @@ Control::Control(QObject *parent) : QObject(parent)
 
     configuration.setupVerification(cv);
 
+    // Adding the version to the log file
+    log.appendStandard(QString(EYE_REP_GEN_NAME) + " - " + QString(EYE_REP_GEN_VERSION));
+
 }
 
 void Control::exitProgram(){
-    log.write(QString(EYE_REP_GEN_NAME) + ".html",QString(EYE_REP_GEN_NAME) + " - " + QString(EYE_REP_GEN_VERSION));
     emit(done());
 }
 
@@ -83,10 +85,14 @@ void Control::run(){
 
 
 void Control::onAppendMsg(const QString &msg, qint32 type){
-    if (type == MSG_TYPE_STD) log.appendStandard(msg);
-    else if (type == MSG_TYPE_SUCC) log.appendSuccess(msg);
-    else if (type == MSG_TYPE_ERR) log.appendError(msg);
-    else log.appendWarning(msg);
+
+    // Transforming HTML to text.
+    QString plainText = msg;
+    plainText = plainText.replace("<br>","\n");
+    if (type == MSG_TYPE_STD) log.appendStandard(plainText);
+    else if (type == MSG_TYPE_SUCC) log.appendSuccess(plainText);
+    else if (type == MSG_TYPE_ERR) log.appendError(plainText);
+    else log.appendWarning(plainText);
 }
 
 

@@ -35,5 +35,6 @@
         <file>qml/ViewStudyDone.qml</file>
         <file>qml/ViewShowReports.qml</file>
         <file>qml/VMReportEntry.qml</file>
+        <file>qml/VMResultEntry.qml</file>
     </qresource>
 </RCC>

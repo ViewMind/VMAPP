@@ -12,11 +12,10 @@ ImageReportDrawer::ImageReportDrawer()
 }
 
 
-void ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c){
+bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c){
 
     canvas->clear();
-
-    if (!loadLanguageConfiguration(c->getString(CONFIG_REPORT_LANGUAGE))) return;
+    langData = loadReportText(c->getString(CONFIG_REPORT_LANGUAGE));
     loadFonts();
 
     //----------------------------------- CHECKING WHICH DATA NEEDS TO BE ADDED ----------------------------------------------
@@ -48,42 +47,34 @@ void ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(0);
         d.clarification = "";
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(0);
-        qreal totalFixations = ds.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toReal();
+        d.resultBar.setResultType(CONFIG_RESULTS_ATTENTIONAL_PROCESSES);
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES));
+        qreal totalFixations = d.resultBar.getValue();
         d.value = QString::number(totalFixations,'f',0);
-        d.stopValues.clear();
-        d.stopValues << 450 << 550 << 650 << 750;
-        d.largerBetter = false;
-        d.calcValue = -1;
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(1);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(1);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(0);
-        d.value = QString::number(ds.value(CONFIG_RESULTS_EXECUTIVE_PROCESSES).toReal(),'f',0);
-        d.stopValues.clear();
-        d.stopValues << -4 << 18 << 40 << 62;
-        d.largerBetter = false;
-        d.calcValue = -1;
+        d.resultBar.setResultType(CONFIG_RESULTS_EXECUTIVE_PROCESSES);
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_EXECUTIVE_PROCESSES));
+        d.value = QString::number(d.resultBar.getValue(),'f',0);
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(2);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(2);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(1);
-        d.value = QString::number(ds.value(CONFIG_RESULTS_WORKING_MEMORY).toReal(),'f',0);
-        d.stopValues.clear();
-        d.stopValues << 50 << 60 << 70 << 80;
-        d.largerBetter = true;
-        d.calcValue = -1;
+        d.resultBar.setResultType(CONFIG_RESULTS_WORKING_MEMORY);
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_WORKING_MEMORY));
+        d.value = QString::number(d.resultBar.getValue(),'f',0);
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(3);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(3);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(2);
-        d.value = QString::number(ds.value(CONFIG_RESULTS_RETRIEVAL_MEMORY).toReal(),'f',0);
-        d.stopValues.clear();
-        d.stopValues << 7 << 15 << 23 << 31;
-        d.largerBetter = true;
-        d.calcValue = -1;
+        d.resultBar.setResultType(CONFIG_RESULTS_RETRIEVAL_MEMORY);
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_RETRIEVAL_MEMORY));
+        d.value = QString::number(d.resultBar.getValue(),'f',0);
         data2Show << d;
     }
 
@@ -91,37 +82,19 @@ void ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(4);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(4);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(3);
-        d.value = QString::number(ds.value(CONFIG_RESULTS_MEMORY_ENCODING).toReal(),'f',3);
-        d.stopValues.clear();
-        d.stopValues << -0.95 << 0.05 << 1.05;
-        d.largerBetter = true;
-        d.calcValue = -1;
+        d.resultBar.setResultType(CONFIG_RESULTS_MEMORY_ENCODING);
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_MEMORY_ENCODING));
+        d.value = QString::number(d.resultBar.getValue(),'f',3);
         data2Show << d;
 
         if (doBehavioural) {
             // First one should be BC and the second one is UC. Need to compute the faux value in order to draw the data.
-            QStringList results = ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE).toStringList();
-
             d.name = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
             d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
             d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
-            d.value = results.first();
-            d.stopValues.clear();
-            d.stopValues << -1 << 0 << 1;
-            d.largerBetter = true;
-            d.calcValue = true;
-
-            qint32 BC = results.first().toUInt();
-            //qint32 UC = results.last().toUInt();
-
-            if (BC > 10){
-                // This is the yellow section.
-                d.calcValue = -0.5;
-            }
-            else{
-                d.calcValue = 0.5;
-            }
-
+            d.resultBar.setResultType(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
+            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE));
+            d.value = QString::number(d.resultBar.getValue());
             data2Show << d;
         }
 
@@ -202,7 +175,7 @@ void ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     doctor_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
     QGraphicsTextItem *age_data     = canvas->addText(ds.value(CONFIG_PATIENT_AGE).toString(),upperBarInfo);
     age_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
-    QGraphicsTextItem *date_data    = canvas->addText(QDate::currentDate().toString(langData.getString(DR_CONFG_DATE_FORMAT)),upperBarInfo);
+    QGraphicsTextItem *date_data    = canvas->addText(ds.value(CONFIG_REPORT_DATE).toString(),upperBarInfo);
     date_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
 
     qreal yOffset1 = BANNER_HEIGHT + (BAR_PATIENT_BAR_HEIGHT -  patient->boundingRect().height()*2)/2;
@@ -357,11 +330,7 @@ void ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
     canvas->render(&painter);
-
-    //QString generatedReport = c->getString(CONFIG_PATIENT_REPORT_DIR) + "/" + QString(FILE_REPORT_NAME) + QDateTime::currentDateTime().toString("_yyyy_MM_dd")  + ".png";
-    // Saving the path to the configuration
-    //c->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,generatedReport);
-    image.save(c->getString(CONFIG_IMAGE_REPORT_PATH));
+    return image.save(c->getString(CONFIG_IMAGE_REPORT_PATH));
 
 }
 
@@ -369,67 +338,20 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
 
     // Calculating the segment bars.
     QStringList colorScale;
+    qint32 resBarSize = d.resultBar.getValues().size();
 
-    qreal vreal;
-    if (d.calcValue == -1)
-        vreal = d.value.toDouble();
-    else
-        vreal = d.calcValue;
-
-    if (d.stopValues.size() == 4) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
-    else if (d.stopValues.size() == 3) colorScale << COLOR_GREEN << COLOR_YELLOW;
+    if (resBarSize == 4) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
+    else if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_YELLOW;
+    else qWarning() << "Res Bar Size is neither 3 or 4 it is" << resBarSize;
 
     qreal R = RESULTS_SEGBAR_HEIGHT/2;
-    qreal fullRange = d.stopValues.last() - d.stopValues.first();
-
     QList<qreal> barSegments;
-    qreal segment_sum = 0;
-    for (qint32 i = 1; i < d.stopValues.size()-1; i++){
-        qreal segment = (d.stopValues.at(i) - d.stopValues.at(i-1))/fullRange;
-        barSegments << segment*RESULTS_SEGBAR_WIDTH;
-        segment_sum = segment_sum + segment;
-    }
-    barSegments << (1-segment_sum)*RESULTS_SEGBAR_WIDTH;
+    qreal barSegWidth = (qreal)RESULTS_SEGBAR_WIDTH/resBarSize;
+    for (qint32 i = 0; i < resBarSize-1; i++) barSegments << barSegWidth;
+    qreal indicator = d.resultBar.getSegmentBarIndex();
 
     // Calculating the indicator, which should be in the middle of the corresponding segment.
-    qreal indicatorOffset;
-
-    if (d.stopValues.size() == 4){
-        if (d.largerBetter){
-            if (vreal < d.stopValues.at(1)){
-                indicatorOffset = barSegments.at(0) + barSegments.at(1) + barSegments.at(2)*0.5;
-            }
-            else if (vreal < d.stopValues.at(2)){
-                indicatorOffset = barSegments.at(0) + barSegments.at(1)*0.5;
-            }
-            else{
-                indicatorOffset = barSegments.at(0)*0.5;
-            }
-        }
-        else{
-            if (vreal < d.stopValues.at(1)){
-                indicatorOffset = barSegments.at(0)*0.5;
-            }
-            else if (vreal < d.stopValues.at(2)){
-                indicatorOffset = barSegments.at(0) + barSegments.at(1)*0.5;
-            }
-            else{
-                indicatorOffset = barSegments.at(0) + barSegments.at(1) + barSegments.at(2)*0.5;
-            }
-        }
-    }
-    else{
-        // Two segment bar.
-        if (d.largerBetter){
-            if (vreal > d.stopValues.at(1)) indicatorOffset = barSegments.at(0)*0.5;
-            else indicatorOffset = barSegments.at(0) + barSegments.at(1)*0.5;
-        }
-        else{
-            if (vreal < d.stopValues.at(1)) indicatorOffset = barSegments.at(0)*0.5;
-            else indicatorOffset = barSegments.at(0) + barSegments.at(1)*0.5;
-        }
-    }
-
+    qreal indicatorOffset = (2*indicator + 1)*barSegWidth/2;
 
     // The ones in the borders need to be shorte to account for the semicircle at the end.
     barSegments[0] = barSegments.first() - R;
@@ -486,10 +408,13 @@ void ImageReportDrawer::loadFonts(){
 
 }
 
-bool ImageReportDrawer::loadLanguageConfiguration(const QString &lang){
+ConfigurationManager ImageReportDrawer::loadReportText(QString lang){
+
+    ConfigurationManager langData;
 
     QString path = ":/CommonClasses/PNGWriter/report_text/";
-    if ((lang != "Spanish") && (lang != "English")) return false;
+
+    if ((lang != CONFIG_P_LANG_ES) && (lang != CONFIG_P_LANG_EN)) lang = CONFIG_P_LANG_EN;
     path = path + lang;
 
     ConfigurationManager::CommandVerifications cv;
@@ -554,12 +479,10 @@ bool ImageReportDrawer::loadLanguageConfiguration(const QString &lang){
     if (!langData.setupVerification(cv)){
         qWarning() << "Setup Verification Error" << langData.getError();
     }
-    bool ans = langData.loadConfiguration(path,COMMON_TEXT_CODEC);
-
-    if (!ans){
+    if (!langData.loadConfiguration(path,COMMON_TEXT_CODEC)){
         qWarning() << "Error loading lang" << langData.getError();
     }
 
-    return ans;
+    return langData;
 
 }

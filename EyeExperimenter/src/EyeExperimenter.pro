@@ -51,7 +51,8 @@ SOURCES += main.cpp \
     localinformationmanager.cpp \
     ../../CommonClasses/Experiments/bindingparser.cpp \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
-    ../../CommonClasses/PNGWriter/repfileinfo.cpp
+    ../../CommonClasses/PNGWriter/repfileinfo.cpp \
+    ../../CommonClasses/PNGWriter/resultbar.cpp
 
 HEADERS += \
     loader.h \
@@ -91,7 +92,8 @@ HEADERS += \
     localinformationmanager.h \
     ../../CommonClasses/Experiments/bindingparser.h \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
-    ../../CommonClasses/PNGWriter/repfileinfo.h
+    ../../CommonClasses/PNGWriter/repfileinfo.h \
+    ../../CommonClasses/PNGWriter/resultbar.h
 
 win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
 

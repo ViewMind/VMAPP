@@ -266,9 +266,7 @@ QString Loader::hasValidOutputRepo(const QString &dirToCheck){
     QDir dir(configuration->getString(CONFIG_OUTPUT_DIR));
     if (!dir.exists()) return "";
 
-    QDir reports(dir.path() + "/" + QString(DIRNAME_REPORTS));
     QDir rawdata(dir.path() + "/" + QString(DIRNAME_RAWDATA));
-
     if (!rawdata.exists()){
         if (!dir.mkdir(DIRNAME_RAWDATA)){
             logger.appendError("Cannot create etdata directory in selected output directory");
@@ -354,12 +352,10 @@ bool Loader::createPatientDirectory(){
     // Creating the doctor directory.
     QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
     QString baseDir = configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA);
-    QString repDir = configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_REPORTS);
     QString drname = configuration->getString(CONFIG_DOCTOR_UID);
     configuration->addKeyValuePair(CONFIG_PATIENT_UID,patientuid);
 
     if (!createDirectorySubstructure(drname,patientuid,baseDir,CONFIG_PATIENT_DIRECTORY)) return false;
-    if (!createDirectorySubstructure(drname,patientuid,repDir,CONFIG_PATIENT_REPORT_DIR)) return false;
 
     return true;
 }

@@ -54,6 +54,9 @@ public:
     // Used in order to add data and unify as the only configuration structure in a program
     void addKeyValuePair(const QString &name, const QVariant &value);
 
+    // Used to remove a given key
+    void removeKey(const QString &key) {data.remove(key);}
+
     // Getting the error
     QString getError() const {return error;}
 

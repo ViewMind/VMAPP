@@ -44,14 +44,15 @@ public:
     Q_INVOKABLE bool checkSSLAvailability() {return sslDataProcessingClient->sslEnabled();}
     Q_INVOKABLE void requestReportData();
     Q_INVOKABLE bool isSSLTransactionOK() const {return sslTransactionAllOk;}
-    Q_INVOKABLE QString getReportDataField(const QString &key);
-    Q_INVOKABLE int getReportResultBarPosition(const QString &key);
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
     Q_INVOKABLE void startDemoTransaction();
     Q_INVOKABLE void prepareForReportListIteration();
     Q_INVOKABLE QVariantMap nextReportInList();
     Q_INVOKABLE void setReportIndex(qint32 id) { selectedReport = id; }
+    Q_INVOKABLE void prepareSelectedReportIteration();
+    Q_INVOKABLE QVariantMap nextSelectedReportItem();
+    Q_INVOKABLE QStringList getSelectedReportInfo();
 
 signals:
 
@@ -77,19 +78,11 @@ public slots:
     // When an experiment finishes.
     void on_experimentFinished(const Experiment::ExperimentResult & er);
 
-    // A calibration is requested in the middle of an experiment.
-    void requestCalibration();
-
     // When an SSL Transaction finishes
-    //void onSLLTransactionFinished(bool allOk);
     void onDisconnectionFinished();
 
     // Eye tracker control changes
     void onEyeTrackerControl(quint8 code);
-
-    // FOR Debugging.
-    void onStateChanged(QProcess::ProcessState newState);
-    void onErrorOccurred(QProcess::ProcessError error);
 
     // For receiving information to send to the server
     void onNextFileSet(const QStringList &fileSetAndName);
@@ -99,9 +92,6 @@ private slots:
     void drawReport();
 
 private:
-
-    // The process for the server.
-    QProcess sslServer;
 
     // Delays saving the report until the wait dialog can be shown.
     QTimer delayTimer;
@@ -124,9 +114,12 @@ private:
     // The configuration structure
     ConfigurationManager *configuration;
 
-    // The report list for a given directory.
+    // The report list for a given directory and required selection index and iteration values.
     qint32 selectedReport;
+    qint32 selectedReportItemIterator;
     RepFileInfo reportsForPatient;
+    QList<QVariantMap> reportItems;
+    QStringList reportTextDataIndexes;
 
     // Flags to avoid reconnecting during recalibration
     bool connected;
@@ -146,16 +139,13 @@ private:
     // Helper function to selecte expanded binding files.
     QString getBindingExperiment(bool bc);
 
-    // Calculates the segment of the result bar based on boundaries.
-    int calculateSegment(qreal value, QList<qreal> segments, bool largerBetter);
+    // Add data to report items
+    void addToReportItems(const QStringList &items, const QVariantMap &report, const QStringList &titles, const QStringList &explanations, const QStringList &references);
 
     // The country codes and the function to load them
     QStringList countryList;
     QStringList countryCodes;
     void fillCountryList();
-
-
-
 
 };
 

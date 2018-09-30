@@ -4,14 +4,17 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QLineEdit>
+#include <QListWidgetItem>
 
 #define   PROGRAM_NAME      "EyeDataAnalyzer"
-#define   PROGRAM_VERSION   "1.6.0"
+#define   PROGRAM_VERSION   "2.0.0"
 #define   WORK_DIR          "outputs"
+#define   DATA_ROLE         1500
 
 #include "../../CommonClasses/HTMLWriter/htmlwriter.h"
 #include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
 #include "../../CommonClasses/PNGWriter/imagereportdrawer.h"
+#include "../../CommonClasses/PNGWriter/repfileinfo.h"
 #include "fixationdrawer.h"
 
 namespace Ui {
@@ -67,13 +70,17 @@ private slots:
 
     void on_pbGeneratePNG_clicked();
 
+    void on_lwReportsThatCanBeGenerated_itemClicked(QListWidgetItem *item);
+
 private:
     Ui::EyeDataAnalyzer *ui;
     ConfigurationManager configuration;
     LogInterface log;
     HTMLWriter htmlWriter;
     QHash<QString,FixationList> lastFixations;
-    QHash<QString,QString> processedFiles;
+
+    // The dat info of the selected directory.
+    DatFileInfoInDir infoInDir;
 
     // Fills the ui with loaded configuration
     void fillUi();
@@ -84,6 +91,9 @@ private:
     // Validation for numeric values
     void validateAndSave(QLineEdit *le, const QString &parameter, bool positive, bool real);
     QString validNumber(const QString &str, bool positive = true, bool isReal = false);
+
+    // Controlling the ui buttons.
+    void enableControlButtons(bool enable);
 };
 
 #endif // EYEDATAANALYZER_H

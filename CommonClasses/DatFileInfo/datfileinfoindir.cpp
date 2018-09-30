@@ -5,7 +5,7 @@ DatFileInfoInDir::DatFileInfoInDir(){
 }
 
 
-void DatFileInfoInDir::setDatDirectory(const QString &dir)
+void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfTheyExist)
 {
     filesByDate.clear();
 
@@ -52,7 +52,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
 
     for (qint32 i = 0; i < dates.size(); i++){
         //qWarning() << "Doing" << dates.at(i) << "Existing files are" << existing;
-        setExpectedReportFileSet(dates.at(i),existing);
+        setExpectedReportFileSet(dates.at(i),existing,listRepEvenIfTheyExist);
     }
     //qWarning() << "DONE WITH SET EXPECTED REPORT FILE";
 
@@ -99,7 +99,7 @@ void DatFileInfoInDir::insertDatIntoInfoList(QList<DatInfo> *list, const DatInfo
 }
 
 
-void DatFileInfoInDir::setExpectedReportFileSet(const QString &date, const QSet<QString> existingReports){
+void DatFileInfoInDir::setExpectedReportFileSet(const QString &date, const QSet<QString> existingReports, bool ignoreExisting){
 
     QStringList binding;
     DatInfoAndRep infoAndRep = filesByDate.value(date);
@@ -157,7 +157,7 @@ void DatFileInfoInDir::setExpectedReportFileSet(const QString &date, const QSet<
     if (binding.isEmpty() && hasReading){
         expectedRep = QString(FILE_REPORT_NAME) + "_r_" + date + ".rep";
         // If the existing reports do not contain the expected report then the file set is added.
-        if (!existingReports.contains(expectedRep)){
+        if (!existingReports.contains(expectedRep) || ignoreExisting){
             QStringList filesForReport;
             filesForReport << newestReadingFile;
             infoAndRep.reportFileSet[expectedRep] = filesForReport;
@@ -173,7 +173,7 @@ void DatFileInfoInDir::setExpectedReportFileSet(const QString &date, const QSet<
 
         QStringList filesForReport;
         // If the existing reports do not contain the expected report then the file set is added.
-        if (!existingReports.contains(expectedRep)){
+        if (!existingReports.contains(expectedRep) || ignoreExisting){
             if (hasReading) filesForReport << newestReadingFile;
             filesForReport << newestBinding.value(binding.at(i));
             infoAndRep.reportFileSet[expectedRep] = filesForReport;

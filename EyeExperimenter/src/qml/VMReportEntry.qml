@@ -14,7 +14,7 @@ Item {
     readonly property int vmFontSize: 12
 
     height: vmHeight
-    width: viewReport.columnWidth*4
+    width: viewReport.columnWidth*3
 
     MouseArea {
         anchors.fill: parent
@@ -37,26 +37,6 @@ Item {
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
             text: vmDate
-            color: vmRepSelected? "#ffffff" : "#000000"
-            anchors.centerIn: parent
-        }
-    }
-
-
-
-    Rectangle {
-        id: hourRect
-        color: vmRepSelected? "#4984b3" : "#ffffff"
-        border.color: "#EDEDEE"
-        border.width: 2
-        height: vmHeight
-        width: viewReport.columnWidth
-        anchors.left: dateRect.right
-        anchors.top: parent.top
-        Text {
-            font.family: viewHome.gothamR.name
-            font.pixelSize: vmFontSize
-            text: vmTime
             color: vmRepSelected? "#ffffff" : "#000000"
             anchors.centerIn: parent
         }

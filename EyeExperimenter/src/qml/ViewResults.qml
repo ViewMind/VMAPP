@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.3
+import QtQuick.Controls 1.4
 import QtGraphicalEffects 1.0
 
 VMBase {
@@ -15,51 +16,35 @@ VMBase {
     property string vmDrName: ""
     property string vmDate: ""
 
-    property string vmResPAttentional: "0"
-    property string vmResPExecutives:  "0"
-    property string vmResWorkMem:      "0"
-    property string vmResMemRec:       "0"
-    property string vmResMemEnc:       "0"
-
-    property int vmPAttentionalResBarPos : 0
-    property int vmPExecutivesResBarPos : 0
-    property int vmWorkMemResBarPos : 0
-    property int vmMemRecResBarPos : 0
-    property int vmMemEncResBarPos : 0
+    ListModel{
+        id: resultsList
+    }
 
     function fillFieldsFromReportInfo(){
 
-        // Values and bar positions
-        vmResPAttentional = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_ATTENTIONAL_PROCESSES);
-        if (vmResPAttentional !== "N/A"){
-            vmPAttentionalResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_ATTENTIONAL_PROCESSES);
-        }
+        // Preparing all the items that should go on the list.
+        resultsList.clear();
+        flowControl.prepareSelectedReportIteration();
 
-        vmResPExecutives = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_EXECUTIVE_PROCESSES);
-        if (vmResPExecutives !== "N/A"){
-            vmPExecutivesResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_EXECUTIVE_PROCESSES);
-        }
-
-        vmResMemEnc = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_MEMORY_ENCODING);
-        if (vmResMemEnc !== "N/A"){
-            vmMemEncResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_MEMORY_ENCODING);
-        }
-
-        vmResMemRec = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_RETRIEVAL_MEMORY);
-        if (vmResMemRec !== "N/A"){
-            vmMemRecResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_RETRIEVAL_MEMORY);
-        }
-
-        vmResWorkMem = flowControl.getReportDataField(vmDefines.vmCONFIG_RESULTS_WORKING_MEMORY);
-        if (vmResWorkMem !== "N/A"){
-            vmWorkMemResBarPos = flowControl.getReportResultBarPosition(vmDefines.vmCONFIG_RESULTS_WORKING_MEMORY);
+        var done = false;
+        while (!done){
+            var map = flowControl.nextSelectedReportItem();
+            done = !("vmTitleText" in map);
+            if (!done){
+//                console.log("================= APPENDING =====================");
+//                for (var key in map){
+//                    console.log("   " + key + ": " + map[key]);
+//                }
+                resultsList.append(map);
+            }
         }
 
         // Patient and doctor data
-        vmPatient = flowControl.getReportDataField(vmDefines.vmCONFIG_PATIENT_NAME);
-        vmDrName = flowControl.getReportDataField(vmDefines.vmCONFIG_DOCTOR_NAME);
-        vmAge = flowControl.getReportDataField(vmDefines.vmCONFIG_PATIENT_AGE);
-        vmDate = flowControl.getReportDataField(vmDefines.vmCONFIG_REPORT_DATE);
+        var list  = flowControl.getSelectedReportInfo();
+        vmPatient = list[1];
+        vmDrName  = list[0];
+        vmAge     = list[2];
+        vmDate    = list[3];
 
     }
 
@@ -351,323 +336,18 @@ VMBase {
         anchors.left: rectInfoPatient.right
         anchors.leftMargin: 19
 
-        // ------------ Attentional processes -------------
-        Text{
-            id: labelAttetionalProcesses
-            textFormat: Text.RichText
-            color: "#505050"
-            text: loader.getStringForKey(keysearch+"labelAttetionalProcesses");
-            font.family: gothamM.name
-            font.pixelSize: 14
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: parent.top
-            anchors.topMargin: 21
-        }
-
-        Text{
-            id: labelAttetionalProcessesExp
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelAttetionalProcessesExp");
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.bottom: labelAttetionalProcessesDiv.top
-            anchors.bottomMargin: 5
-        }
-
-        Rectangle{
-            id: labelAttetionalProcessesDiv
-            width: 544
-            height: 1
-            color: "#d3d3d4"
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 97
-        }
-
-        Text{
-            id: labelAttetionalProcessesRes
-            textFormat: Text.RichText
-            text: vmResPAttentional
-            font.family: gothamR.name
-            font.pixelSize: 23
-            anchors.right: parent.right
-            anchors.rightMargin: 31
-            y: (labelAttetionalProcessesDiv.y - labelAttetionalProcessesRes.height)/2
-        }
-
-        VMResultBar{
-            id: labelAttetionalProcessesResBar
-            x: 300
-            anchors.verticalCenter: labelAttetionalProcessesRes.verticalCenter
-            vmIndicatorInSection: vmPAttentionalResBarPos
-        }
-
-        // ------------ Executives processes -------------
-        Text{
-            id: labelExecutivesProcesses
-            textFormat: Text.RichText
-            color: "#505050"
-            text: loader.getStringForKey(keysearch+"labelExecutivesProcesses");
-            font.family: gothamM.name
-            font.pixelSize: 14
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: labelAttetionalProcessesDiv.bottom
-            anchors.topMargin: 15
-        }
-
-        Rectangle{
-            id: labelExecutivesProcessesDiv
-            width: 544
-            height: 1
-            color: "#d3d3d4"
-            y: labelAttetionalProcessesDiv.y + 94
-            anchors.topMargin: 21
-        }
-
-        Text{
-            id: labelExecutivesProcessesRes
-            textFormat: Text.RichText
-            text: vmResPExecutives
-            font.family: gothamR.name
-            font.pixelSize: 23
-            anchors.right: parent.right
-            anchors.rightMargin: 31
-            y: (labelExecutivesProcessesDiv.y + labelAttetionalProcessesDiv.y - labelExecutivesProcessesRes.height)/2
-        }
-
-        Text{
-            id: labelExecutivesProcessesRef
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelExecutivesProcessesRef")
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: labelExecutivesProcesses.bottom
-            anchors.topMargin: 7
-        }
-
-        Text{
-            id: labelExecutivesProcessesExp
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelExecutivesProcessesExp");
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.bottom: labelExecutivesProcessesDiv.top
-            anchors.bottomMargin: 5
-
-        }
-
-        VMResultBar{
-            id: labelExecutivesProcessesResBar
-            x: 300
-            anchors.verticalCenter: labelExecutivesProcessesRes.verticalCenter
-            vmIndicatorInSection: vmPExecutivesResBarPos
-        }
-
-        // ------------ Working Memory -------------
-        Text{
-            id: labelWorkingMemmory
-            textFormat: Text.RichText
-            color: "#505050"
-            text: loader.getStringForKey(keysearch+"labelWorkingMemmory");
-            font.family: gothamM.name
-            font.pixelSize: 14
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: labelExecutivesProcessesDiv.bottom
-            anchors.topMargin: 21
-        }
-
-        Text{
-            id: labelWorkingMemmoryExp
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelWorkingMemmoryExp");
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.bottom: labelWorkingMemmoryDiv.top
-            anchors.bottomMargin: 5
-
-        }
-
-        Rectangle{
-            id: labelWorkingMemmoryDiv
-            width: 544
-            height: 1
-            color: "#d3d3d4"
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: labelExecutivesProcessesDiv.y + 94
-        }
-
-        Text{
-            id: labelWorkingMemmoryRes
-            textFormat: Text.RichText
-            text: vmResWorkMem
-            font.family: gothamR.name
-            font.pixelSize: 23
-            anchors.right: parent.right
-            anchors.rightMargin: 31
-            y: (labelWorkingMemmoryDiv.y + labelExecutivesProcessesDiv.y - labelWorkingMemmoryRes.height)/2
-        }
-
-        Text{
-            id: labelWorkingMemmoryRef
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelWorkingMemmoryRef")
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: labelWorkingMemmory.bottom
-            anchors.topMargin: 7
-        }
-
-
-        VMResultBar{
-            id: labelWorkingMemmoryResBar
-            x: 300
-            anchors.verticalCenter: labelWorkingMemmoryRes.verticalCenter
-            vmIndicatorInSection: vmWorkMemResBarPos
-        }
-
-        // ------------ Retrieval memory -------------
-        Text{
-            id: labelRetrievalMemory
-            textFormat: Text.RichText
-            color: "#505050"
-            text: loader.getStringForKey(keysearch+"labelRetrievalMemory");
-            font.family: gothamM.name
-            font.pixelSize: 14
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: labelWorkingMemmoryDiv.bottom
-            anchors.topMargin: 21
-        }
-
-        Text{
-            id: labelRetrievalMemoryExp
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelRetrievalMemoryExp");
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.bottom: labelRetrievalMemoryDiv.top
-            anchors.bottomMargin: 5
-        }
-
-        Rectangle{
-            id: labelRetrievalMemoryDiv
-            width: 544
-            height: 1
-            color: "#d3d3d4"
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: labelWorkingMemmoryDiv.y + 94
-        }
-
-        Text{
-            id: labelRetrievalMemoryRes
-            textFormat: Text.RichText
-            text: vmResMemRec
-            font.family: gothamR.name
-            font.pixelSize: 23
-            anchors.right: parent.right
-            anchors.rightMargin: 31
-            y: (labelRetrievalMemoryDiv.y + labelWorkingMemmoryDiv.y - labelRetrievalMemoryRes.height)/2
-        }
-
-        Text{
-            id: labelRetrievalMemoryRef
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelRetrievalMemoryRef")
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: labelRetrievalMemory.bottom
-            anchors.topMargin: 7
-        }
-
-        VMResultBar{
-            id: labelRetrievalMemoryResBar
-            x: 300
-            anchors.verticalCenter: labelRetrievalMemoryRes.verticalCenter
-            vmIndicatorInSection: vmMemRecResBarPos
-        }
-
-        // ------------ Visual short term memory -------------
-        Text{
-            id: labelVisualShortTermMemory
-            textFormat: Text.RichText
-            color: "#505050"
-            text: loader.getStringForKey(keysearch+"labelVisualShortTermMemory");
-            font.family: gothamM.name
-            font.pixelSize: 14
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: labelRetrievalMemoryDiv.bottom
-            anchors.topMargin: 15
-        }
-
-        Text{
-            id: labelVisualShortTermMemoryExp
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelVisualShortTermMemoryExp");
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 10
-
-        }
-
-        Text{
-            id: labelVisualShortTermMemoryRes
-            textFormat: Text.RichText
-            text: vmResMemEnc
-            font.family: gothamR.name
-            font.pixelSize: 23
-            anchors.right: parent.right
-            anchors.rightMargin: 31
-            y: (parent.height + labelRetrievalMemoryDiv.y - labelVisualShortTermMemoryRes.height)/2
-        }
-
-
-        Text{
-            id: labelVisualShortTermMemoryRef
-            textFormat: Text.RichText
-            color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelVisualShortTermMemoryRef")
-            font.family: robotoR.name
-            font.pixelSize: 11
-            anchors.left: parent.left
-            anchors.leftMargin: 16
-            anchors.top: labelVisualShortTermMemory.bottom
-            anchors.topMargin: 7
-        }
-
-        VMResultBar{
-            id: labelVisualShortTermMemoryResBar
-            vmTwoSection: true
-            x: 300
-            anchors.verticalCenter: labelVisualShortTermMemoryRes.verticalCenter
-            vmIndicatorInSection: vmMemEncResBarPos
+        ScrollView {
+            id: resultsArea
+            anchors.fill: parent
+            clip: true
+            verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
+            ListView {
+                id: resultsListView
+                anchors.fill: parent
+                model: resultsList
+                delegate: VMResultEntry {
+                }
+            }
         }
 
     }

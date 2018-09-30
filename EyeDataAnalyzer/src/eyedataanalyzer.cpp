@@ -12,6 +12,7 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
         log.appendError("ERROR Loading configuration: " + configuration.getError());
     }
     fillUi();
+    enableControlButtons(false);
 
 }
 
@@ -32,36 +33,19 @@ void EyeDataAnalyzer::listDatFilesInPatientDirectory(){
         return;
     }
 
-    QStringList filters;
-    filters << QString(FILE_OUTPUT_READING) + "*.dat";
-    filters << QString(FILE_OUTPUT_BINDING_BC) + "*.dat";
-    filters << QString(FILE_OUTPUT_BINDING_UC) + "*.dat";
-    filters << QString(FILE_OUTPUT_FIELDING) + "*.dat";
-    QStringList files = dir.entryList(filters,QDir::Files,QDir::Time);
 
-    ui->lwFilesInPatientDir->clear();
+    infoInDir.setDatDirectory(selected,true);
+
+    ui->lwReportsThatCanBeGenerated->clear();
     lastFixations.clear();
 
-    for (qint32 i = 0; i < files.size(); i++){
-        QListWidgetItem *item = new QListWidgetItem(files.at(i),ui->lwFilesInPatientDir);
-        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-        item->setCheckState(Qt::Unchecked);
-    }
-
-    // If patient data file exists, it is loaded.
-    QFile patientDataFile(selected + "/" + FILE_PATIENT_INFO_FILE);
-    if (patientDataFile.exists()){
-        ConfigurationManager pdata;
-        if (!pdata.loadConfiguration(patientDataFile.fileName(),COMMON_TEXT_CODEC)){
-            log.appendError("Could not load patient file: " + pdata.getError());
-            return;
-        }
-        else{
-            ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,pdata.getString(CONFIG_PATIENT_NAME),&configuration);
-            ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,pdata.getString(CONFIG_PATIENT_AGE),&configuration);
-            ui->lePatientAge->setText(configuration.getString(CONFIG_PATIENT_AGE));
-            ui->lePatientName->setText(configuration.getString(CONFIG_PATIENT_NAME));
-        }
+    infoInDir.prepareToInterateOverPendingReportFileSets();
+    while (true){
+        QStringList fileSet = infoInDir.nextPendingReportFileSet();
+        if (fileSet.isEmpty()) break;
+        // The first value is the report name
+        QListWidgetItem *item = new QListWidgetItem(fileSet.first(),ui->lwReportsThatCanBeGenerated);
+        item->setData(DATA_ROLE,fileSet);
     }
 }
 
@@ -263,80 +247,55 @@ void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
         return;
     }
 
-    // Second step: Gather test files to analyze.
-    processedFiles.clear();
-    QStringList files;
-    for (qint32 i = 0; i < ui->lwFilesInPatientDir->count(); i++){
-        QListWidgetItem *item = ui->lwFilesInPatientDir->item(i);
-        if (item->checkState() == Qt::Checked){
-
-            QString fname = item->text();
-            QString fullPath = patientDir + "/" + fname;
-            files << fullPath;
-
-            if (fname.contains(FILE_OUTPUT_BINDING_BC)){
-                if (processedFiles.contains(FILE_OUTPUT_BINDING_BC)){
-                    log.appendError("Cannot selecte more than one binding BC file");
-                    return;
-                }
-                else{
-                    QFileInfo info(fullPath);
-                    processedFiles[FILE_OUTPUT_BINDING_BC] = info.baseName();
-                }
-            }
-
-            else if (fname.contains(FILE_OUTPUT_BINDING_UC)){
-                if (processedFiles.contains(FILE_OUTPUT_BINDING_UC)){
-                    log.appendError("Cannot selecte more than one binding UC file");
-                    return;
-                }
-                else{
-                    QFileInfo info(fullPath);
-                    processedFiles[FILE_OUTPUT_BINDING_UC] = info.baseName();
-                }
-            }
-
-            else if (fname.contains(FILE_OUTPUT_READING)){
-                if (processedFiles.contains(FILE_OUTPUT_READING)){
-                    log.appendError("Cannot selecte more than one reading file");
-                    return;
-                }
-                else{
-                    QFileInfo info(fullPath);
-                    processedFiles[FILE_OUTPUT_READING] = info.baseName();
-                }
-            }
-
-            else if (fname.contains(FILE_OUTPUT_FIELDING)){
-                if (processedFiles.contains(FILE_OUTPUT_FIELDING)){
-                    log.appendError("Cannot selecte more than one fielding file");
-                    return;
-                }
-                else{
-                    QFileInfo info(fullPath);
-                    processedFiles[FILE_OUTPUT_FIELDING] = info.baseName();
-                }
-            }
-
-        }
+    // Getting the file set
+    QListWidgetItem *selectedItem = ui->lwReportsThatCanBeGenerated->currentItem();
+    if (selectedItem == nullptr){
+        log.appendError("A report must be selected");
+        return;
     }
 
-    if (files.isEmpty()){
-        log.appendError("No files were selected for processing");
-        return;
+    configuration.removeKey(CONFIG_FILE_BIDING_BC);
+    configuration.removeKey(CONFIG_FILE_BIDING_UC);
+    configuration.removeKey(CONFIG_FILE_READING);
+    configuration.removeKey(CONFIG_FILE_FIELDING);
+
+    QStringList files = selectedItem->data(DATA_ROLE).toStringList();
+
+    for (qint32 i = 0; i < files.size(); i++){
+        QString fname = files.at(i);
+        if (fname.contains(FILE_OUTPUT_BINDING_BC)){
+            configuration.addKeyValuePair(CONFIG_FILE_BIDING_BC,fname);
+        }
+
+        else if (fname.contains(FILE_OUTPUT_BINDING_UC)){
+            configuration.addKeyValuePair(CONFIG_FILE_BIDING_UC,fname);
+        }
+
+        else if (fname.contains(FILE_OUTPUT_READING)){
+            configuration.addKeyValuePair(CONFIG_FILE_READING,fname);
+
+        }
+
+        else if (fname.contains(FILE_OUTPUT_FIELDING)){
+            configuration.addKeyValuePair(CONFIG_FILE_FIELDING,fname);
+        }
+
     }
 
     // Third step, processing the data.
     RawDataProcessor processor(this);
     htmlWriter.reset();
     connect(&processor,SIGNAL(appendMessage(QString,qint32)),this,SLOT(onProcessorMessage(QString,qint32)));
-    processor.initialize(&configuration,files);
+    processor.initialize(&configuration);
     log.appendStandard("Processing started...");
     processor.run();
     QString outputFile = patientDir + "/output.html";
     htmlWriter.write(outputFile,"Data Analyizer - " + QString(PROGRAM_VERSION));
     log.appendSuccess("Processing done: Output at: " + outputFile);
+    log.appendSuccess("Current Report is: : "  + processor.getReportFileOutput());
+    configuration.addKeyValuePair(CONFIG_REPORT_PATH,processor.getReportFileOutput());
     lastFixations = processor.getFixations();
+    enableControlButtons(true);
 
 }
 
@@ -352,6 +311,10 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
 
     // Adding the Target size to the configuration
     configuration.addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,(ui->comboTargetSize->currentIndex() == 1));
+    QStringList list;
+    QListWidgetItem *selected = ui->lwReportsThatCanBeGenerated->currentItem();
+    if (selected == nullptr) return;
+    list = selected->data(DATA_ROLE).toStringList();
 
     if (!lastFixations.isEmpty()){
 
@@ -359,11 +322,21 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
         QDir pdir(baseDir);
         QStringList keys = lastFixations.keys();
 
+        // Seeing which key belongs to whcih file.
         for (qint32 i = 0; i < keys.size(); i++){
 
+            QString currentFile;
+            for (qint32 j = 1; j < list.size(); j++){
+                if (list.at(j).startsWith(keys.at(i))){
+                    currentFile = list.at(j);
+                    break;
+                }
+            }
+
             // Make the output directory
-            pdir.mkdir(processedFiles.value(keys.at(i)));
-            QString workDir = baseDir + "/" + processedFiles.value(keys.at(i));
+            QFileInfo info(currentFile);
+            pdir.mkdir(info.baseName());
+            QString workDir = baseDir + "/" + info.baseName();
             if (!QDir(workDir).exists()){
                 log.appendError("Could not create output image directory: " + workDir);
                 return;
@@ -391,29 +364,50 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
 
 void EyeDataAnalyzer::on_pbGeneratePNG_clicked()
 {
-
-    QString fileName = getNewestFile(ui->lePatientDir->text(),FILE_REPORT_NAME,"rep");
+    QString fileName = configuration.getString(CONFIG_REPORT_PATH);
     if (fileName.isEmpty()){
-        log.appendError("No .rep file found in patient dir. Try running a data analysis first");
+        log.appendError("No report file set. Need to run a analysis first");
         return;
     }
-
-    ConfigurationManager dataSet;
-    if (!dataSet.loadConfiguration(fileName,COMMON_TEXT_CODEC)){
-        log.appendError("Error loading rep file: " + dataSet.getError());
-        return;
-    }
-
     log.appendStandard("Generating PNG Report ...");
+
+    RepFileInfo repInfoOnDir;
+    repInfoOnDir.setDirectory(configuration.getString(CONFIG_PATIENT_DIRECTORY));
+    QVariantMap dataSet = repInfoOnDir.getRepData(fileName);
+    if (dataSet.isEmpty()){
+        log.appendError("Could not load data on report file: " + fileName);
+        return;
+    }
+
+    // Setting the image report name
+    QFileInfo info(fileName);
+    QString outputPath = info.absolutePath() + "/" + info.baseName() + ".png";
+    configuration.addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,outputPath);
+
     ImageReportDrawer reportDrawer;
-    configuration.addKeyValuePair(CONFIG_PATIENT_REPORT_DIR,ui->lePatientDir->text());
-    reportDrawer.drawReport(&dataSet,&configuration);
-    QString output = configuration.getString(CONFIG_IMAGE_REPORT_PATH);
-    if (QFile(output).exists()){
-        log.appendSuccess("Report successfully generated!");
+    reportDrawer.drawReport(dataSet,&configuration);
+
+    if (QFile(outputPath).exists()){
+        log.appendSuccess("Generated image report at: " + outputPath);
     }
     else{
         log.appendError("Could not generate PNG report");
     }
+}
 
+void EyeDataAnalyzer::on_lwReportsThatCanBeGenerated_itemClicked(QListWidgetItem *item)
+{
+    ui->lwFilesInReport->clear();
+    QStringList files = item->data(DATA_ROLE).toStringList();
+
+    for (qint32 i = 1; i < files.size(); i++){
+        ui->lwFilesInReport->addItem(new QListWidgetItem(files.at(i)));
+    }
+
+    enableControlButtons(false);
+}
+
+void EyeDataAnalyzer::enableControlButtons(bool enable){
+    ui->pbDrawFixations->setEnabled(enable);
+    ui->pbGeneratePNG->setEnabled(enable);
 }

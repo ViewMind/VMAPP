@@ -190,23 +190,6 @@ viewresults_labelSquareGreen = No se encontraron problemas funcionales relevante
 viewresults_labelSquareYellow = Funcionamiento ligeramente deficiente, no es <br>necesariamente patológico.;
 viewresults_labelSquareRed = Funcionamiento patológico completamente deficiente <br> y/o patológico.;
 
-viewresults_labelAttetionalProcesses = PROCESOS ATENCIONALES;
-viewresults_labelExecutivesProcesses = PROCESOS EJECUTIVOS;
-viewresults_labelWorkingMemmory = MEMORIA DE TRABAJO;
-viewresults_labelRetrievalMemory = MEMORIA DE RECUPERACIÓN;
-viewresults_labelVisualShortTermMemory = MEMORIA VISUAL DE CORTO PLAZO;
-
-viewresults_labelExecutivesProcessesRef = Cortex del Cingulo Anterior;
-viewresults_labelWorkingMemmoryRef = Corteza Prefrontal;
-viewresults_labelRetrievalMemoryRef = Corteza frontal Dorsolateral <br> Hipocampo, Subiculum;
-viewresults_labelVisualShortTermMemoryRef = Corteza Entorrinal y Perirrinal <br> Lóbulo Temporal Medio;
-
-viewresults_labelAttetionalProcessesExp = Parámetro referencia MENOR a 550;
-viewresults_labelExecutivesProcessesExp = Parámetro referencia 7 - 18;
-viewresults_labelWorkingMemmoryExp = Parámetro referencia 70 - 90;
-viewresults_labelRetrievalMemoryExp = Parámetro referencia 23 - 39;
-viewresults_labelVisualShortTermMemoryExp = Parámetro referencia MAYOR o IGUAL a 0.009;
-
 viewresults_save_report = Guardar reporte;
 
 viewresults_diagWaitTitle = Generando Reporte; 

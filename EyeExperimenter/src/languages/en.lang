@@ -190,23 +190,6 @@ viewresults_labelSquareGreen = No relevant functional problems were detected;
 viewresults_labelSquareYellow = Mildly deficient functioning, not necessarily <br>pathological;
 viewresults_labelSquareRed = Completely deficient and/or pathological <br>functioning;
 
-viewresults_labelAttetionalProcesses = ATTENTIONAL PROCESSES;
-viewresults_labelExecutivesProcesses = EXECUTIVE PROCESSES;
-viewresults_labelWorkingMemmory = WORKING MEMORY;
-viewresults_labelRetrievalMemory = RETRIEVAL MEMORY;
-viewresults_labelVisualShortTermMemory = VISUAL SHORT TERM MEMORY;
-
-viewresults_labelExecutivesProcessesRef = Anterior cingulate cortex;
-viewresults_labelWorkingMemmoryRef = Prefrontal cortex;
-viewresults_labelRetrievalMemoryRef = Dorsolateral prefrontal cortex, <br> Hippocampus, Subiculum;
-viewresults_labelVisualShortTermMemoryRef = Entorhinal and Perirhinal cortex,<br>MediumTemporal Lobe;
-
-viewresults_labelAttetionalProcessesExp = Reference parameter LOWER to 550;
-viewresults_labelExecutivesProcessesExp = Reference Parameter 7 - 18;
-viewresults_labelWorkingMemmoryExp = Reference parameter 70 - 90;
-viewresults_labelRetrievalMemoryExp = Reference parameter 23 - 39;
-viewresults_labelVisualShortTermMemoryExp = Reference parameter HIGHER or EQUAL to 0.009;
-
 viewresults_save_report = Save report;
 
 viewresults_diagWaitTitle = Generating Report; 

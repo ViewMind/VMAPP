@@ -26,7 +26,7 @@ public:
 
     DatFileInfoInDir();
 
-    void setDatDirectory(const QString &dir);
+    void setDatDirectory(const QString &dir, bool listRepEvenIfTheyExist = false);
     bool hasPendingReports() const;
 
     // Functions to iterate over file sets to generate reports.
@@ -67,7 +67,7 @@ private:
     // the function generates the expected name for the report file. Then checks that againts existing report files
     // If the file does not exist then the list of files that are needed for processing are saved as a set associated to the
     // file report name.
-    void setExpectedReportFileSet(const QString &date, const QSet<QString> existingReports);
+    void setExpectedReportFileSet(const QString &date, const QSet<QString> existingReports, bool ignoreExisting = false);
 
 
 };

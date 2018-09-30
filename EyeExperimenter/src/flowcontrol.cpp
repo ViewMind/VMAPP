@@ -12,41 +12,64 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     demoTransaction = false;
     this->setVisible(false);
 
-    // For debugging.
-    connect(&sslServer,SIGNAL(errorOccurred(QProcess::ProcessError)),this,SLOT(onErrorOccurred(QProcess::ProcessError)));
-    connect(&sslServer,SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(onStateChanged(QProcess::ProcessState)));
-
     // For delay the what the UI shows before drawing a report.
     connect(&delayTimer,SIGNAL(timeout()),this,SLOT(drawReport()));
-
-    // Launching the server if it was configured.
-    QString server = configuration->getString(CONFIG_SSLSERVER_PATH);
-    if (QFile(server).exists()){
-
-        QFileInfo info(server);
-        QString sOldPath = QDir::currentPath();
-        QDir::setCurrent( info.absolutePath() );
-
-        //Run it!
-        //obProcess.startDetached(m_sLaunchFilename, obList);
-        sslServer.start(server);
-
-        QDir::setCurrent( sOldPath );
-
-    }
-    else{
-        if (!server.isEmpty())
-            logger.appendWarning("SSL Server configured in path, but the file does not exist.");
-    }
 
     // Creating the sslclient
     sslDataProcessingClient = new SSLDataProcessingClient(this,c);
 
     // Connection to the "finished" slot.
-    //connect(sslDataProcessingClient,SIGNAL(transactionFinished(bool)),this,SLOT(onSLLTransactionFinished(bool)));
     connect(sslDataProcessingClient,SIGNAL(diconnectionFinished()),this,SLOT(onDisconnectionFinished()));
 
+    // This infomration should only be updated if the report text is updated. First is the title, then the exp index and the ref index.
+    reportTextDataIndexes << CONFIG_RESULTS_ATTENTIONAL_PROCESSES << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY
+                          << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_MEMORY_ENCODING
+                          << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
+
 }
+
+////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
+
+void FlowControl::resolutionCalculations(){
+    QDesktopWidget *desktop = QApplication::desktop();
+    // This line will assume that the current screen is the one where the experiments will be drawn.
+    QRect screen = desktop->screenGeometry(desktop->screenNumber());
+    configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,screen.width());
+    configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
+}
+
+void FlowControl::setupSecondMonitor(){
+
+    QDesktopWidget *desktop = QApplication::desktop();
+    if (desktop->screenCount() < 2) {
+        // There is nothing to do as there is no second monitor.
+        if (monitor == nullptr) return;
+        // In case the monitor was disconnected.
+        logger.appendWarning("Attempting to restore situation in which second monitor seems to have been disconnected after it was created");
+        if (monitor != nullptr){
+            if (experiment != nullptr){
+                disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
+                disconnect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
+            }
+            delete monitor;
+            monitor = nullptr;
+        }
+        return;
+    }
+
+    // Nothing to do.
+    if (monitor != nullptr) return;
+
+    // Creating the second monitor.
+    if (!configuration->getBool(CONFIG_DUAL_MONITOR_MODE)) return;
+
+    // Setting up the monitor
+    QRect secondScreen = desktop->screenGeometry(1);
+    monitor = new MonitorScreen(Q_NULLPTR,secondScreen,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
+}
+
+
+////////////////////////////// REPORT REQUEST FUNCTIONS ///////////////////////////////////////
 
 void FlowControl::prepareForReportListIteration(){
     selectedReport = -1;
@@ -63,19 +86,7 @@ void FlowControl::startDemoTransaction(){
     onNextFileSet(QStringList());
 }
 
-void FlowControl::onErrorOccurred(QProcess::ProcessError error){
-    QMetaEnum metaEnum = QMetaEnum::fromType<QProcess::ProcessError>();
-    logger.appendError(QString("PROCESS ERROR: ") + metaEnum.valueToKey(error));
-}
-
-void FlowControl::onStateChanged(QProcess::ProcessState newState){
-    QMetaEnum metaEnum = QMetaEnum::fromType<QProcess::ProcessState>();
-    logger.appendStandard(QString("SSLServer Process state changed to: ") + metaEnum.valueToKey(newState));
-}
-
 void FlowControl::saveReport(){
-    //ImageReportDrawer reportDrawer;
-    //reportDrawer.drawReport(&reportData,configuration);
     delayTimer.setInterval(200);
     delayTimer.start();
 }
@@ -83,27 +94,17 @@ void FlowControl::saveReport(){
 void FlowControl::drawReport(){
     delayTimer.stop();
     ImageReportDrawer drawer;
-    drawer.drawReport(reportsForPatient.getRepData(selectedReport),configuration);
+    if (!drawer.drawReport(reportsForPatient.getRepData(selectedReport),configuration)){
+        logger.appendError("Could not save the requested report file to: " + configuration->getString(CONFIG_IMAGE_REPORT_PATH));
+    }
     emit(reportGenerationDone());
 }
 
 void FlowControl::saveReportAs(const QString &title){
-
     QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
     if (newFileName.isEmpty()) return;
     configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,newFileName);
     emit(reportGenerationRequested());
-//    if (!QFile::copy(configuration->getString(CONFIG_IMAGE_REPORT_PATH),newFileName)){
-//        logger.appendError("Could not save report from " + configuration->getString(CONFIG_IMAGE_REPORT_PATH) + " to " + newFileName);
-//    }
-}
-
-void FlowControl::resolutionCalculations(){
-    QDesktopWidget *desktop = QApplication::desktop();
-    // This line will assume that the current screen is the one where the experiments will be drawn.
-    QRect screen = desktop->screenGeometry(desktop->screenNumber());
-    configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,screen.width());
-    configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
 }
 
 void FlowControl::requestReportData(){
@@ -227,75 +228,7 @@ void FlowControl::onDisconnectionFinished(){
     else emit(requestNextFileSet());
 }
 
-QString FlowControl::getReportDataField(const QString &key){
-    QVariantMap data = reportsForPatient.getRepData(selectedReport);
-    if (data.contains(key)){
-        QString ans =  data.value(key).toString();
-        if ((ans != "nan") && (ans != "0")) return ans;
-        else return "N/A";
-    }
-    else return "N/A";
-}
-
-int FlowControl::getReportResultBarPosition(const QString &key){
-
-    QVariantMap data = reportsForPatient.getRepData(selectedReport);
-    qreal value = data.value(key).toReal();
-    QList<qreal> list;
-    bool largerBetter;
-
-    if (key == CONFIG_RESULTS_ATTENTIONAL_PROCESSES){
-        list << 450 << 550 << 650 << 750;
-        largerBetter = false;
-    }
-    else if (key == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
-        list << -4 << 18 << 40 << 62;
-        largerBetter = false;
-    }
-    else if (key == CONFIG_RESULTS_MEMORY_ENCODING){
-        list << -0.991 << 0.009 << 1.009;
-        largerBetter = true;
-    }
-    else if (key == CONFIG_RESULTS_RETRIEVAL_MEMORY){
-        list << 7 << 15 << 23 << 31;
-        largerBetter = true;
-    }
-    else if (key == CONFIG_RESULTS_WORKING_MEMORY){
-        list << 50 << 60 << 70 << 80;
-        largerBetter = true;
-    }
-    else{
-        return 0;
-    }
-
-    return calculateSegment(value,list,largerBetter);
-
-}
-
-
-int FlowControl::calculateSegment(qreal value, QList<qreal> segments, bool largerBetter){
-    int result = 0;
-    result = 0;
-    for (qint32 i = 0; i < segments.size()-1; i++){
-        if (value < segments.at(i)){
-            break;
-        }
-        result = i;
-    }
-    // If larger is better then the indexes are inverted as 0 represents green which is good and 2 represents red.
-    if (largerBetter){
-        if (segments.size() == 4){
-            if (result == 0) result = 2;
-            else if (result == 2) result = 0;
-        }
-        else{
-            if (result == 0) result = 1;
-            else if (result == 1) result = 0;
-        }
-    }
-
-    return result;
-}
+////////////////////////////// FLOW CONTROL FUNCTIONS ///////////////////////////////////////
 
 void FlowControl::eyeTrackerChanged(){
     if (eyeTracker != nullptr){
@@ -420,7 +353,7 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     // Making sure that that both experiment signals are connected.
     // Eyetracker should be connected by this point.
     connect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
-    connect(experiment,&Experiment::calibrationRequest,this,&FlowControl::requestCalibration);
+    //connect(experiment,&Experiment::calibrationRequest,this,&FlowControl::requestCalibration);
     connect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
 
     if (monitor != nullptr){
@@ -478,7 +411,7 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
     // Destroying the experiment and reactivating the start experiment.
     disconnect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
-    disconnect(experiment,&Experiment::calibrationRequest,this,&FlowControl::requestCalibration);
+    //disconnect(experiment,&Experiment::calibrationRequest,this,&FlowControl::requestCalibration);
     disconnect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
     if (monitor != nullptr){
         disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
@@ -492,10 +425,6 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
 }
 
-void FlowControl::requestCalibration(){
-    /// TODO Enable calibration in the middle of the experiment.
-}
-
 QString FlowControl::getBindingExperiment(bool bc){
     if (configuration->getInt(CONFIG_BINDING_NUMBER_OF_TARGETS) == 2){
         if (bc) return ":/experiment_data/bc.dat";
@@ -507,37 +436,86 @@ QString FlowControl::getBindingExperiment(bool bc){
     }
 }
 
-void FlowControl::setupSecondMonitor(){
+////////////////////////////// REPORT GENERATION FUNCTIONS ///////////////////////////////////////
 
-    QDesktopWidget *desktop = QApplication::desktop();
-    if (desktop->screenCount() < 2) {
-        // There is nothing to do as there is no second monitor.
-        if (monitor == nullptr) return;
-        // In case the monitor was disconnected.
-        logger.appendWarning("Attempting to restore situation in which second monitor seems to have been disconnected after it was created");
-        if (monitor != nullptr){
-            if (experiment != nullptr){
-                disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
-                disconnect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
-            }
-            delete monitor;
-            monitor = nullptr;
+void FlowControl::prepareSelectedReportIteration(){
+    reportItems.clear();
+    QVariantMap report = reportsForPatient.getRepData(selectedReport);
+
+    ConfigurationManager text = ImageReportDrawer::loadReportText(configuration->getString(CONFIG_REPORT_LANGUAGE));
+    QStringList titles = text.getStringList(DR_CONFG_RESULTS_NAME);
+    QStringList explanations = text.getStringList(DR_CONFG_RES_CLARIFICATION);
+    QStringList references = text.getStringList(DR_CONFG_RESULT_RANGES);
+
+    if (report.contains(CONFIG_RESULTS_ATTENTIONAL_PROCESSES)){
+        QString ans = report.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
+        if ((ans != "nan") && (ans != "0")){
+            // Adding all the reading items.
+            QStringList reading; reading << CONFIG_RESULTS_ATTENTIONAL_PROCESSES << CONFIG_RESULTS_EXECUTIVE_PROCESSES
+                                         << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY;
+            addToReportItems(reading,report,titles,explanations,references);
         }
-        return;
+
     }
 
-    // Nothing to do.
-    if (monitor != nullptr) return;
+    if (report.contains(CONFIG_RESULTS_MEMORY_ENCODING)){
+        QString ans = report.value(CONFIG_RESULTS_MEMORY_ENCODING).toString();
+        if ((ans != "nan") && (ans != "0")){
+            QStringList binding; binding << CONFIG_RESULTS_MEMORY_ENCODING << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
+            addToReportItems(binding,report,titles,explanations,references);
+        }
+    }
 
-    // Creating the second monitor.
-    if (!configuration->getBool(CONFIG_DUAL_MONITOR_MODE)) return;
+    selectedReportItemIterator = 0;
 
-    // Setting up the monitor
-    QRect secondScreen = desktop->screenGeometry(1);
-    monitor = new MonitorScreen(Q_NULLPTR,secondScreen,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
 }
 
+void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &report, const QStringList &titles,
+                                   const QStringList &explanations, const QStringList &references){
+
+    for (qint32 i = 0; i < items.size(); i++){
+        QVariantMap map;
+        qint32 index = reportTextDataIndexes.indexOf(items.at(i));
+        ResultBar bar;
+        bar.setResultType(items.at(i));
+        bar.setValue(report.value(items.at(i)));
+        qreal value = bar.getValue();
+        qint32 indicator = bar.getSegmentBarIndex();
+
+        map["vmTitleText"] = titles.at(index);
+        if (index == 0) map ["vmExpText"] = "";
+        else{
+            QString exp = explanations.at(index-1);
+            exp = exp.replace("\n","<br>");
+            map["vmExpText"] = exp;
+        }
+        map["vmRefText"] = references.at(index);        
+        map["vmResValue"] = QString::number(value);
+        map["vmResBarIndicator"] = QString::number(indicator);
+        map["vmHasTwoSections"] = bar.hasTwoSections();
+        reportItems << map;
+    }
+}
+
+QStringList FlowControl::getSelectedReportInfo(){
+    QVariantMap report = reportsForPatient.getRepData(selectedReport);
+    QStringList ans;
+    ans << report.value(CONFIG_DOCTOR_NAME).toString();
+    ans << report.value(CONFIG_PATIENT_NAME).toString();
+    ans << report.value(CONFIG_PATIENT_AGE).toString();
+    ans << report.value(CONFIG_REPORT_DATE).toString();
+    return ans;
+}
+
+QVariantMap FlowControl::nextSelectedReportItem(){
+    if (selectedReportItemIterator < reportItems.size()){
+        selectedReportItemIterator++;
+        return reportItems.at(selectedReportItemIterator-1);
+    }
+    else return QVariantMap();
+}
+
+///////////////////////////////////////////////////////////////////
 FlowControl::~FlowControl(){
-    sslServer.kill();
-}
 
+}

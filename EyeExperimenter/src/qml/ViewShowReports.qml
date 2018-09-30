@@ -11,7 +11,7 @@ Dialog {
     readonly property int dialogWidth: 800
     readonly property int repTableWidth: dialogWidth*0.8
     readonly property int repTableHeight: dialogHeight*0.4
-    readonly property int columnWidth: repTableWidth/4
+    readonly property int columnWidth: repTableWidth/3
 
     id: viewReport;
     modal: true

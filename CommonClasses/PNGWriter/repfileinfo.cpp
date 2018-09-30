@@ -18,21 +18,20 @@ void RepFileInfo::setDirectory(const QString &directory){
     if (repFiles.isEmpty()) return;
 
     for (qint32 i = 0; i < repFiles.size(); i++){
-
-
         QString repfile = repFiles.at(i);
+
+        if (!repfile.startsWith(FILE_REPORT_NAME)) continue;
 
         // Splitting at the dot.
         QStringList parts = repfile.split(".");
         QString basename = parts.at(0);
         parts = basename.split("_");
 
-        if ((parts.size() < 5) || (parts.size() > 8)){
+        if ((parts.size() < 5) || (parts.size() > 6)){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");
             continue;
         }
 
-        QString time = "N/A";
         QString date;
         QString reading;
         QString binding;
@@ -56,25 +55,6 @@ void RepFileInfo::setDirectory(const QString &directory){
             reading = "OK";
             binding = parts.at(2);
             date = parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3);
-            break;
-        case 7:
-            if (parts.at(1).contains('r')){
-                reading = "OK";
-                binding = "N/A";
-            }
-            else{
-                reading = "N/A";
-                binding = parts.at(1);
-            }
-            date = parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2);
-            time = parts.at(5) + ":" + parts.at(6);
-            break;
-        case 8:
-            // The first is the report and the second one is the binding
-            reading = "OK";
-            binding = parts.at(2);
-            date = parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3);
-            time = parts.at(6) + ":" + parts.at(7);
             break;
         }
 
@@ -112,7 +92,6 @@ void RepFileInfo::setDirectory(const QString &directory){
         info[KEY_READING] = reading;
         info[KEY_REPNAME] = repfile;
         info[KEY_SELFLAG] = false;
-        info[KEY_TIME] = time;
 
         repFileInfo << info;
         repData << data;
@@ -128,4 +107,22 @@ QVariantMap RepFileInfo::nextReportInfo() {
         return repFileInfo.at(now);
     }
     else return QVariantMap();
+}
+
+QVariantMap RepFileInfo::getRepData(const QString &fileName) const{
+
+    QFileInfo info(fileName);
+    QString toSearch = info.baseName() + "." + info.suffix();
+
+    qint32 index = -1;
+    for (qint32 i = 0; i < repFileInfo.size(); i++){
+        if (repFileInfo.at(i).value(KEY_REPNAME).toString() == toSearch){
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1) return QVariantMap();
+    return repData.at(index);
+
 }

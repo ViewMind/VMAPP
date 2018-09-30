@@ -10,7 +10,6 @@
 
 #define KEY_REPNAME "repname"
 #define KEY_DATE    "date"
-#define KEY_TIME    "time"
 #define KEY_READING "reading"
 #define KEY_BINDING "binding"
 #define KEY_INDEX   "repname"
@@ -24,6 +23,7 @@ public:
     void prepareIteration() {currentIterValue = 0;}
     QVariantMap nextReportInfo();
     QVariantMap getRepData(qint32 index) const {return repData.at(index);}
+    QVariantMap getRepData(const QString &fileName) const;
 
 private:
 
