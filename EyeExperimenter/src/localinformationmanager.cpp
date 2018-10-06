@@ -249,7 +249,16 @@ QList<QStringList> LocalInformationManager::getDoctorList(){
     QStringList uids = localDB.keys();
     for (qint32 i = 0; i < uids.size(); i++){
         QVariantMap drinfo = localDB.value(uids.at(i)).toMap();
-        names << drinfo.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drinfo.value(TDOCTOR_COL_LASTNAME).toString();
+
+        // Checking if this is test mode and the UID is correct.
+        if (!config->getBool(CONFIG_TEST_MODE)){
+            QString testUID = uids.at(i);
+            testUID = testUID.remove(0,2); // Removing the country characters
+            if (testUID == TEST_UID) continue;
+        }
+
+        names << drinfo.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drinfo.value(TDOCTOR_COL_LASTNAME).toString()
+                 + " (" + uids.at(i) + ")";
     }
     if (!names.isEmpty()) ans << names << uids;
     return ans;

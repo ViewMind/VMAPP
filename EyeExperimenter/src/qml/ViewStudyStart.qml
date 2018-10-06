@@ -141,6 +141,7 @@ VMBase {
             id: cboxFielding
             vmText: loader.getStringForKey(keysearch+"cboxFielding");
             vmFont: robotoR.name
+            visible: false
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
             }

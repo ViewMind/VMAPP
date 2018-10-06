@@ -134,11 +134,11 @@ viewpatientlist_statusRepPending = Reportes pendientes;
 viewpatientlist_btnCreate = Crear Reporte;
 viewpatientlist_btnView = Ver Reportes;
 viewpatientlist_btnBack = ATRAS;
-viewpatientlist_btnStart = COMENZAR ESTUDIO;
+viewpatientlist_btnStart = ESTUDIOS;
 viewpatientlist_diagConnectTitle = Sincronizando;
-viewpatientlist_diagConnectMessage = Por favor, aguarde un momento;
+viewpatientlist_diagConnectMessage = Aguarde un momento;
 viewpatientlist_diagRepTitle = Solicitando reportes;
-viewpatientlist_diagRepMessage = Por favor, aguarde un momento;
+viewpatientlist_diagRepMessage = Aguarde un momento;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
@@ -193,7 +193,7 @@ viewresults_labelSquareRed = Funcionamiento patológico completamente deficiente
 viewresults_save_report = Guardar reporte;
 
 viewresults_diagWaitTitle = Generando Reporte; 
-viewresults_diagWaitMessage = Por favor, espere un momento;
+viewresults_diagWaitMessage = Espere un momento;
 
 viewresults_btnDownload = DESCARGAR;
 viewresults_btnFinalize = VOLVER;

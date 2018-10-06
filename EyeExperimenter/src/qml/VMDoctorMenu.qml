@@ -13,6 +13,8 @@ Rectangle {
 
     function updateText(){
         vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+        var parts = vmDrName.split("(");
+        vmDrName = parts[0];
     }
 
     Text{

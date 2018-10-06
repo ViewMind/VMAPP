@@ -39,6 +39,7 @@ VMBase {
             viewHome.vmErrorDiag.vmErrorMessage = titleMsg[1];
             viewHome.vmErrorDiag.vmErrorTitle = titleMsg[0];
             viewHome.vmErrorDiag.open();
+            return;
         }
         else if (!loader.hasValidOutputRepo()){
             viewSettings.vmInvalidRepoError = true;

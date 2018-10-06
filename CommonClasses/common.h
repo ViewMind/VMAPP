@@ -78,6 +78,10 @@
 #define   CONFIG_FILE_FIELDING                          "file_fielding"
 #define   CONFIG_S3_ADDRESS                             "s3_address"
 #define   CONFIG_LIST_DONE_EXPERIMENTS                  "list_done_experiments"
+#define   CONFIG_TEST_MODE                              "test_mode"
+
+// The unique UID for tests.
+#define   TEST_UID                                      "vm00000000"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

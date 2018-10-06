@@ -130,7 +130,7 @@ void FlowControl::onNextFileSet(const QStringList &fileSetAndName){
     }
     else{
         fileSet.clear();
-        fileSet << "binding_bc_2018_06_03.dat" << "binding_uc_2018_06_03.dat" << "reading_2018_06_03.dat";
+        fileSet << "binding_bc_2010_06_03.dat" << "binding_uc_2010_06_03.dat" << "reading_2010_06_03.dat";
     }
 
     //qWarning() << "File set" << fileSet;

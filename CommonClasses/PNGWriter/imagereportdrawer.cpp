@@ -171,7 +171,16 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     QGraphicsTextItem *patient_data = canvas->addText(ds.value(CONFIG_PATIENT_NAME).toString(),upperBarInfo);
     patient_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
-    QGraphicsTextItem *doctor_data  = canvas->addText(ds.value(CONFIG_DOCTOR_NAME).toString(),upperBarInfo);
+
+    // Doctor name, might contain UID. It is necessary to remove it.
+    QString drname = ds.value(CONFIG_DOCTOR_NAME).toString();
+    if (drname.contains('(')){
+        QStringList parts = drname.split('(');
+        drname = parts.first();
+        drname = drname.trimmed();
+    }
+
+    QGraphicsTextItem *doctor_data  = canvas->addText(drname,upperBarInfo);
     doctor_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
     QGraphicsTextItem *age_data     = canvas->addText(ds.value(CONFIG_PATIENT_AGE).toString(),upperBarInfo);
     age_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));

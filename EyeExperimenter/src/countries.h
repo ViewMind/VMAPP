@@ -33,7 +33,7 @@ public:
                           << "Paraguay" << "Peru" << "Philippines" << "Pitcairn" << "Poland" << "Portugal" << "Puerto Rico" << "Qatar" << "Réunion" << "Romania"
                           << "Russian Federation" << "Rwanda" << "Saint Barthélemy" << "Saint Helena, Ascension and Tristan da Cunha" << "Saint Kitts and Nevis" << "Saint Lucia"
                           << "Saint Martin (French part)" << "Saint Pierre and Miquelon" << "Saint Vincent and the Grenadines" << "Samoa" << "San Marino" << "Sao Tome and Principe"
-                          << "Saudi Arabia" << "Senegal" << "Serbia" << "Seychelles" << "Sierra Leone" << "Singapore" << "Sint Maarten (Dutch part)" << "Slovakia" << "Slovenia"
+                          << "Saudi Arabia" << "Scotland" << "Senegal" << "Serbia" << "Seychelles" << "Sierra Leone" << "Singapore" << "Sint Maarten (Dutch part)" << "Slovakia" << "Slovenia"
                           << "Solomon Islands" << "Somalia" << "South Africa" << "South Georgia and the South Sandwich Islands" << "South Sudan" << "Spain" << "Sri Lanka" << "Sudan"
                           << "Suriname" << "Svalbard and Jan Mayen" << "Swaziland" << "Sweden" << "Switzerland" << "Syrian Arab Republic" << "Taiwan, Province of China"
                           << "Tajikistan" << "Tanzania, United Republic of" << "Thailand" << "Timor-Leste" << "Togo" << "Tokelau" << "Tonga" << "Trinidad and Tobago" << "Tunisia"
@@ -56,10 +56,10 @@ public:
                      <<	"FM" <<	"MD" <<	"MC" <<	"MN" <<	"ME" <<	"MS" <<	"MA" <<	"MZ" <<	"MM" <<	"NA" <<	"NR" <<	"NP" <<	"NL" <<	"NC" <<	"NZ" <<	"NI"
                      <<	"NE" <<	"NG" <<	"NU" <<	"NF" <<	"MP" <<	"NO" <<	"OM" <<	"PK" <<	"PW" <<	"PS" <<	"PA" <<	"PG" <<	"PY" <<	"PE" <<	"PH" <<	"PN"
                      <<	"PL" <<	"PT" <<	"PR" <<	"QA" <<	"RE" <<	"RO" <<	"RU" <<	"RW" <<	"BL" <<	"SH" <<	"KN" <<	"LC" <<	"MF" <<	"PM" <<	"VC" <<	"WS"
-                     <<	"SM" <<	"ST" <<	"SA" <<	"SN" <<	"RS" <<	"SC" <<	"SL" <<	"SG" <<	"SX" <<	"SK" <<	"SI" <<	"SB" <<	"SO" <<	"ZA" <<	"GS" <<	"SS"
-                     <<	"ES" <<	"LK" <<	"SD" <<	"SR" <<	"SJ" <<	"SZ" <<	"SE" <<	"CH" <<	"SY" <<	"TW" <<	"TJ" <<	"TZ" <<	"TH" <<	"TL" <<	"TG" <<	"TK"
-                     <<	"TO" <<	"TT" <<	"TN" <<	"TR" <<	"TM" <<	"TC" <<	"TV" <<	"UG" <<	"UA" <<	"AE" <<	"GB" <<	"US" <<	"UM" <<	"UY" <<	"UZ" <<	"VU"
-                     <<	"VE" <<	"VN" <<	"VG" <<	"VI" <<	"WF" <<	"EH" <<	"YE" <<	"ZM" <<	"ZW";
+                     <<	"SM" <<	"ST" <<	"SA" << "SQ" <<	"SN" <<	"RS" <<	"SC" <<	"SL" <<	"SG" <<	"SX" <<	"SK" <<	"SI" <<	"SB" <<	"SO" <<	"ZA" <<	"GS"
+                     <<	"SS" <<	"ES" <<	"LK" <<	"SD" <<	"SR" <<	"SJ" <<	"SZ" <<	"SE" <<	"CH" <<	"SY" <<	"TW" <<	"TJ" <<	"TZ" <<	"TH" <<	"TL" <<	"TG"
+                     <<	"TK" <<	"TO" <<	"TT" <<	"TN" <<	"TR" <<	"TM" <<	"TC" <<	"TV" <<	"UG" <<	"UA" <<	"AE" <<	"GB" <<	"US" <<	"UM" <<	"UY" <<	"UZ"
+                     <<	"VU" <<	"VE" <<	"VN" <<	"VG" <<	"VI" <<	"WF" <<	"EH" <<	"YE" <<	"ZM" <<	"ZW";
 
     }
 

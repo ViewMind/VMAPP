@@ -15,6 +15,9 @@ VMBase {
     property string vmAge: ""
     property string vmDrName: ""
     property string vmDate: ""
+    property string vmTitleDemo: ""
+
+    readonly property string vmDEMO_DATE: "03/06/2010"
 
     ListModel{
         id: resultsList
@@ -31,10 +34,10 @@ VMBase {
             var map = flowControl.nextSelectedReportItem();
             done = !("vmTitleText" in map);
             if (!done){
-//                console.log("================= APPENDING =====================");
-//                for (var key in map){
-//                    console.log("   " + key + ": " + map[key]);
-//                }
+                //                console.log("================= APPENDING =====================");
+                //                for (var key in map){
+                //                    console.log("   " + key + ": " + map[key]);
+                //                }
                 resultsList.append(map);
             }
         }
@@ -45,6 +48,13 @@ VMBase {
         vmDrName  = list[0];
         vmAge     = list[2];
         vmDate    = list[3];
+
+        console.log("vmDate is |" + vmDate  + "| and comparing to " + vmDEMO_DATE);
+        if (vmDate === vmDEMO_DATE){
+            console.log("Is demo");
+            vmTitleDemo = " (DEMO)";
+        }
+        else vmTitleDemo = "";
 
     }
 
@@ -114,7 +124,7 @@ VMBase {
 
     Text{
         id: title
-        text: loader.getStringForKey(keysearch+"title");
+        text: loader.getStringForKey(keysearch+"title") + vmTitleDemo;
         color: "#297FCA"
         font.family: gothamB.name
         font.pixelSize: 43

@@ -17,6 +17,10 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cv[CONFIG_YPX_2_MM] = cmd;
 
     cmd.clear();
+    cmd.type = ConfigurationManager::VT_BOOL;
+    cv[CONFIG_TEST_MODE] = cmd;
+
+    cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
     // Eye Data processing parameters
     cv[CONFIG_READING_PX_TOL] = cmd;
@@ -61,7 +65,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[CONFIG_DUAL_MONITOR_MODE] = cmd;
     cv[CONFIG_DEMO_MODE] = cmd;
-    cv[CONFIG_USE_MOUSE] = cmd;
+    cv[CONFIG_USE_MOUSE] = cmd;    
 
     // Merging the settings or loading the default configuration.
     settings.setupVerification(cv);

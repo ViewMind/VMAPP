@@ -55,7 +55,7 @@ Dialog {
                 reportList.append(map);
             }
         }
-
+        vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
         reportListView.currentIndex = -1;
     }
 
