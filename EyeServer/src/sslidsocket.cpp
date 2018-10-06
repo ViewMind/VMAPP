@@ -95,6 +95,7 @@ QString SSLIDSocket::setWorkingDirectoryAndSaveAllFiles(const QString &baseDir){
         cmd = cmd + " " + savedFiles.at(i) + " ";
         cmd = cmd + "s3://"  + s3Address  + "/"  + baseNameForS3 + info.baseName() + "." + info.suffix() + " ";
         cmd = cmd + S3_PARMETERS;
+        //qWarning() << "S3 Command is " << cmd;
         QProcess::execute(cmd);
     }
 
