@@ -8,11 +8,11 @@ BindingDesigner/exe/
 *Makefile*
 SSLClientDev/exe/
 EyeServer/exe
-EyeServer/bin5.6/EyeServer
-EyeReportGenerator/exe/
+EyeServer/bin5/EyeServer
+EyeReportGenerator/bin/
 EyeExperimenter/exe
 ETFollower/exe/
-DBManager/bin5_9_2/
+DBManager/bin/
 PNGReportGenerator/exe/
 EyeDataAnalyzer/exe/
 ReportViewerDev/
