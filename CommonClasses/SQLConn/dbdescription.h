@@ -53,6 +53,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TABLE_PATIENTS_OPT_DATA                 "tPatientOptionalData"
 #define  TABLE_DOCTORS                           "tDoctors"
 #define  TABLE_EYE_RESULTS                       "tEyeResults"
+#define  TABLE_INSTITUTION                       "tInstitution"
 
 // Column names for required patient info
 #define  TPATREQ_KEYID                           "keyid"           
@@ -95,6 +96,16 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TDOCTOR_COL_EMAIL                       "email"
 #define  TDOCTOR_COL_ADDRESS                     "address"
 
+// Columnn names for the institituion table
+#define  TINST_COL_KEYID                         "keyid"
+#define  TINST_COL_UID                           "uid"
+#define  TINST_COL_NAME                          "name"
+#define  TINST_COL_HASHPASS                      "hashpass"
+#define  TINST_COL_EVALS                         "evaluations"
+#define  TINST_COL_ETSERIAL                      "etserial"
+#define  TINST_COL_ETBRAND                       "etbrand"
+#define  TINST_COL_ETMODEL                       "etmodel"
+
 // Column names for the EyeResult tables.
 #define  TEYERES_COL_KEYID                       "keyid"       
 #define  TEYERES_COL_PATIENTID                   "patientid"   
@@ -128,5 +139,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TEYERES_COL_FDHITR                      "fdHitR"      
 #define  TEYERES_COL_FDHITL                      "fdHitL"
 #define  TEYERES_COL_FDHITTOTAL                  "fdHitTotal"
+
+
 
 #endif //DBDESCRIPTION_H

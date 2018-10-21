@@ -51,6 +51,35 @@ bool DBInterface::insertDB(const QString &table, const QStringList &columns, con
 
 }
 
+bool DBInterface::updateDB(const QString &table, const QStringList &columns, const QStringList &values, const QString &condition){
+   QString query = "UPDATE ";
+   if (columns.isEmpty()){
+       error = "SELECT Error. Columns cannot be an empty list";
+       return false;
+   }
+
+   query = query + table + " SET ";
+   QStringList tojoin;
+   for (qint32 i = 0; i < columns.size(); i++){
+       tojoin << columns.at(i) + " = '" + values.at(i) + "'";
+   }
+   query = query + tojoin.join(",");
+   if (condition.isEmpty()){
+       error = "UPDATE Error: Cannto update withouth a condition";
+       return false;
+   }
+   query = query + " WHERE " + condition;
+
+   QSqlQuery q;
+   if (!q.exec(query)){
+       error = "UPDATE Error on query: " + query + ". ERROR: " + q.lastError().text();
+       return false;
+   }
+
+   return true;
+
+}
+
 bool DBInterface::readFromDB(const QString &table, const QStringList &columns, const QString &conditions){
 
     QString query = "SELECT ";

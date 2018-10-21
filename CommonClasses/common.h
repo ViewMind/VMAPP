@@ -79,6 +79,9 @@
 #define   CONFIG_S3_ADDRESS                             "s3_address"
 #define   CONFIG_LIST_DONE_EXPERIMENTS                  "list_done_experiments"
 #define   CONFIG_TEST_MODE                              "test_mode"
+#define   CONFIG_INST_NAME                              "inst_name"
+#define   CONFIG_INST_UID                               "inst_uid"
+#define   CONFIG_INST_ETSERIAL                          "inst_et_serial"
 
 // The unique UID for tests.
 #define   TEST_UID                                      "vm00000000"

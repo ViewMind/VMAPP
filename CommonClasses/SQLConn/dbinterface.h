@@ -25,6 +25,9 @@ public:
     // Select Query. Returns the first row only
     bool readFromDB(const QString &table, const QStringList &columns, const QString &conditions);
 
+    // Update Query.
+    bool updateDB(const QString &table, const QStringList &columns, const QStringList &values, const QString &condition);
+
     // Closing the connection to the server
     void close() { dbConnection.close(); }
 
