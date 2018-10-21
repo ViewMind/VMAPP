@@ -8,7 +8,7 @@ BindingDesigner/exe/
 *Makefile*
 SSLClientDev/exe/
 EyeServer/exe
-EyeServer/bin5/EyeServer
+EyeServer/bin/EyeServer
 EyeReportGenerator/bin/
 EyeExperimenter/exe
 ETFollower/exe/

@@ -2,7 +2,7 @@
 #include "servercontrol.h"
 
 #define  PROGRAM_NAME      "EyeSever"
-#define  PROGRAM_VERSION   "4.0.0"
+#define  PROGRAM_VERSION   "4.1.0"
 
 int main(int argc, char *argv[])
 {
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     std::cout << "================" << PROGRAM_NAME << "================" << std::endl;
     std::cout << "| Version: " << PROGRAM_VERSION << std::endl;
     std::cout << "| Log file: " << LOG_FILE_LOG << std::endl;
-    std::cout << "| Type exit to kill the server" << std::endl;
+    std::cout << "| CTRL-C to kill the server" << std::endl;
     std::cout << "========================================" << std::endl;
     std::cout << ">> ";
 

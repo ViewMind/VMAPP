@@ -30,6 +30,10 @@ public:
     static const quint8 DPFI_DB_CONDITIION                            = 13;
     static const quint8 DPFI_DB_ERROR                                 = 14;
     static const quint8 DPFI_DB_SET_ACK                               = 15;
+    static const quint8 DPFI_DB_INST_PASSWORD                         = 16;
+    static const quint8 DPFI_DB_INST_UID                              = 17;
+    static const quint8 DPFI_DB_ET_SERIAL                             = 18;
+    static const quint8 DPFI_PROCESSING_ACK                           = 19;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;

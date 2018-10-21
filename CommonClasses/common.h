@@ -84,7 +84,19 @@
 #define   CONFIG_INST_ETSERIAL                          "inst_et_serial"
 
 // The unique UID for tests.
-#define   TEST_UID                                      "vm00000000"
+#define   TEST_UID                                      "vm0000"
+
+// The ACK Results when returning from DB Set Transaction
+#define   DBACK_ALL_OK                                  0
+#define   DBACK_PASSWORD_PROBLEM                        1
+#define   DBACK_PASSWORD_INSTITUTION_UID_ERROR          2
+#define   DBACK_PASSWORD_DBCOMM_ERROR                   3
+
+// The ACK Results for a request report transactions
+#define   RR_ALL_OK                                      0
+#define   RR_OUT_OF_EVALUATIONS                          1
+#define   RR_WRONG_ET_SERIAL                             2
+#define   RR_DB_ERROR                                    3
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

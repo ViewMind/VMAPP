@@ -79,7 +79,6 @@ private:
     QTimer timer;
     QProcess process;
     quint64 ID;
-
 };
 
 #endif // SSLIDSOCKET_H

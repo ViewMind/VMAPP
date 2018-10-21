@@ -182,6 +182,31 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 
     DataPacket tx;
 
+    // Checking if one of the tables is de doctor's name.
+    if (tableNames.contains(TABLE_DOCTORS)){
+        // In this case, the password should have been sent as well.
+        qint32 UID = dp.getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
+        QString password = dp.getField(DataPacket::DPFI_DB_INST_PASSWORD).data.toString();
+        quint8 code = checkInstitutionPassword(UID,password);
+        if (code != DBACK_ALL_OK){
+            // Sending the wrong password ack.
+            tx.addValue(code,DataPacket::DPFI_DB_SET_ACK);
+
+            QByteArray ba = tx.toByteArray();
+            qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+            if (num != ba.size()){
+                log.appendError("Failure sending db ans to host: " + sockets.value(socket)->socket()->peerAddress().toString());
+            }
+
+            // Closing connection to db.
+            dbConnection.close();
+
+            // In this case the transaction is done.
+            removeSocket(socket);
+            return;
+        }
+    }
+
     if (tx_type == SQL_QUERY_TYPE_GET){
 
         // It is either getting Doctor data or Patient Data
@@ -240,7 +265,7 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
             tx.addString(dberrors.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_ERROR);
         }
         else{
-            tx.addValue(0,DataPacket::DPFI_DB_SET_ACK);
+            tx.addValue(DBACK_ALL_OK,DataPacket::DPFI_DB_SET_ACK);
         }
 
     }
@@ -256,6 +281,38 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 
     // In this case the transaction is done.
     removeSocket(socket);
+
+}
+
+
+quint8 DBCommSSLServer::checkInstitutionPassword(qint32 UID, const QString &password){
+
+    if (password != PASS_HASH_SIZE){
+        log.appendError("ERROR: Invalid password size: " + password + ", is not " + QString::number(PASS_HASH_SIZE));
+        return DBACK_PASSWORD_PROBLEM;
+    }
+
+    QStringList column;
+    column << TINST_COL_HASHPASS;
+    QString condition = QString(TINST_COL_UID) + " = '" + QString::number(UID) + "'";
+
+    if (!dbConnection.readFromDB(TABLE_INSTITUTION,column,condition)){
+        log.appendError("ERROR: While getting instituion password: " + dbConnection.getError());
+        return DBACK_PASSWORD_DBCOMM_ERROR;
+    }
+
+    DBData dbdata = dbConnection.getLastResult();
+    if (dbdata.rows.size() != 1){
+        log.appendError("ERROR: While getting instituion password: Number of institutions for UID " + QString(UID) + " is "  + QString(dbdata.rows.size()) + " instead of 1");
+        return DBACK_PASSWORD_INSTITUTION_UID_ERROR;
+    }
+
+    if (dbdata.rows.first().first() != password){
+        log.appendError("ERROR: Institution password mistmatch for institution with UID " + QString(UID));
+        return DBACK_PASSWORD_PROBLEM;
+    }
+
+    return DBACK_ALL_OK;
 
 }
 

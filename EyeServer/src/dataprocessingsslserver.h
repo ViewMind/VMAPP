@@ -71,6 +71,10 @@ private:
     void removeAllRepFiles(const QString &directory);
     QString getReportFile(const QString &directory);
 
+    // Check if the report can be requested.
+    quint8 verifyReportRequest(qint32 UID, const QString &etserial);
+    void decreaseReportCount(qint32 UID);
+
 };
 
 #endif // SSLMANAGER_H

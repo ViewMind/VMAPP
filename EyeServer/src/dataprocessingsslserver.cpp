@@ -84,7 +84,6 @@ void DataProcessingSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype)
         break;
     case SSLIDSocket::SSL_SIGNAL_ENCRYPTED:
         log.appendSuccess("SSL Handshake completed for address: " + sockets.value(socket)->socket()->peerAddress().toString());
-        // Requests process information.
         requestProcessInformation();
         break;
     case SSLIDSocket::SSL_SIGNAL_ERROR:
@@ -140,7 +139,7 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
         return;
     }
 
-    // Data is saved to the data base ONLY in demo mode.
+    // Data is saved to the data base ONLY when NOT in demo mode.
     if (sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
 
         // Since the processing is done, now the data can be saved to the database
@@ -172,8 +171,6 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
             removeSocket(socket);
             return;
         }
-        // Closing the connection to the database
-        dbConn->close();
 
     }
 
@@ -184,12 +181,24 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
         return;
     }
 
+    // Adding the ACK Code of all ok. Any other code is NOT sent from this function.
+    tx.addValue(RR_ALL_OK,DataPacket::DPFI_PROCESSING_ACK);
+
     QByteArray ba = tx.toByteArray();
     qint64 n = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
     if (n != ba.size()){
         log.appendError("Could failure sending the report to host: " + sockets.value(socket)->socket()->peerAddress().toString());
         return;
     }
+
+    // ONLY AFTER the report was successfully sent the number of evaluations is decreased, and IF this is not demo mode.
+    if (sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
+        qint32 UID = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
+        decreaseReportCount(UID);
+    }
+
+    // Closing the connection to the database
+    dbConn->close();
 
     //log.appendStandard("Sending report back to host: " + sockets.value(socket)->socket()->peerAddress().toString() + ". Size: " + QString::number(ba.size()) + " bytes");
 
@@ -216,6 +225,27 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
 
     // Getting some patient data to make sure, its in the DB.
     DataPacket d = sockets.value(socket)->getDataPacket();
+
+
+    // Verifying that the information can be processed
+    QString etserial = d.getField(DataPacket::DPFI_DB_ET_SERIAL).data.toString();
+    qint32 UID = d.getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
+    quint8 code = verifyReportRequest(UID,etserial);
+
+    if (code != RR_ALL_OK){
+        // Need to return the error code.
+        DataPacket tx;
+        tx.addValue(code,DataPacket::DPFI_PROCESSING_ACK);
+        QByteArray ba = tx.toByteArray();
+        qint64 n = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+        if (n != ba.size()){
+            log.appendError("Could failure sending processing ack code to host: " + sockets.value(socket)->socket()->peerAddress().toString());
+            return;
+        }
+        removeSocket(socket);
+        return;
+    }
+
     QStringList columns;
     columns << TPATREQ_KEYID  << TPATREQ_COL_FIRSTNAME << TPATREQ_COL_LASTNAME;
     QString condition = QString(TPATREQ_COL_UID) + " = '" + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString() + "'";
@@ -279,7 +309,7 @@ void DataProcessingSSLServer::requestProcessInformation(){
                 log.appendError("Could not send ACK packet to: " + sockets.value(id)->socket()->peerAddress().toString());
                 removeSocket(id);
             }
-            else{
+            else {
                 sockets.value(id)->startTimeoutTimer(config->getInt(CONFIG_DATA_REQUEST_TIMEOUT)*1000);
                 log.appendStandard("Sent request for data to " + sockets.value(id)->socket()->peerAddress().toString());
             }
@@ -348,16 +378,92 @@ void DataProcessingSSLServer::sslErrorsFound(quint64 id){
 
 }
 
+quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &etserial){
+
+    // When this is called the connection to the DB is openend.
+
+    QStringList columns;
+    columns << TINST_COL_ETSERIAL << TINST_COL_EVALS;
+    QString condition = QString(TINST_COL_UID) + " = '" + QString(UID) + "'";
+    if (!dbConn->readFromDB(TABLE_INSTITUTION,columns,condition)){
+        log.appendError("When querying et serial and number of evaluations: " + dbConn->getError());
+        return RR_DB_ERROR;
+    }
+
+    DBData data = dbConn->getLastResult();
+
+    if (data.rows.size() != 1){
+        log.appendError("When querying et serial and number of evaluations: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1");
+        return RR_DB_ERROR;
+    }
+
+    QString serial = data.rows.first().first();
+    qint32  numevals = data.rows.first().last().toInt();
+
+    // Checking the serial
+    if (serial != etserial){
+        log.appendError("ETSerial " + etserial + " does not correspond to the serial registered for insitituion with UID " + QString(UID));
+        return RR_WRONG_ET_SERIAL;
+    }
+
+    // Checking the number of evaluations
+    if ((numevals > 0) && (numevals != -1)){
+        log.appendError("No evaluations remaining forinsitituion with UID " + QString(UID));
+        return RR_OUT_OF_EVALUATIONS;
+    }
+
+    return RR_ALL_OK;
+}
+
+
+void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
+
+    QStringList columns;
+    columns << TINST_COL_EVALS;
+    QString condition = QString(TINST_COL_UID) + " = '" + QString(UID) + "'";
+    if (!dbConn->readFromDB(TABLE_INSTITUTION,columns,condition)){
+        log.appendError("Decreasing report count: " + dbConn->getError());
+        return;
+    }
+
+    DBData data = dbConn->getLastResult();
+
+    if (data.rows.size() != 1){
+        log.appendError("Decreasing report count: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1");
+        return;
+    }
+    qint32  numevals = data.rows.first().first().toInt();
+
+    if (numevals == -1) return;
+
+    // Checking the number of evaluations
+    if ((numevals <= 0)){
+        log.appendError("Asked to decrease number of evaluations for " + QString(UID) + " when it is " + QString(numevals));
+        return;
+    }
+
+    // Decreasing and saving.
+    numevals--;
+    QStringList values;
+    values << QString(numevals);
+
+    if (!dbConn->updateDB(TABLE_INSTITUTION,columns,values,condition)){
+        log.appendError("When saving new number of evaluations " + QString(UID) + " when it is " + QString(numevals));
+        return;
+    }
+
+}
+
 void DataProcessingSSLServer::changedState(quint64 id){
     Q_UNUSED(id)
-//    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
-//    // be removed once. After that, te program crashes.
-//    if (!sockets.contains(id)) return;
+    //    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+    //    // be removed once. After that, te program crashes.
+    //    if (!sockets.contains(id)) return;
 
-//    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
-//    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
-//    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-//    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
+    //    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
+    //    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    //    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+    //    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
 }
 
 
