@@ -6,6 +6,7 @@ Item {
     property string vmPlaceHolder: "Some text ..."
     property string vmEnteredText: ""
     property string vmErrorMsg: ""
+    property bool vmIsPasswordField: false
     property bool vmNumbersOnly: false
 
     height: 40
@@ -54,6 +55,7 @@ Item {
         verticalAlignment: TextInput.AlignVCenter
         leftPadding: 0
         width: lineEditRect.width
+        echoMode: (vmIsPasswordField)? TextInput.PasswordEchoOnEdit : TextInput.Normal;
         onActiveFocusChanged: {
             if (activeFocus){
                 vmErrorMsg = "";

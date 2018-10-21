@@ -53,7 +53,7 @@ void SSLDBClient::runDBTransaction(){
     txDP.addString(queryType,DataPacket::DPFI_DB_QUERY_TYPE);
     txDP.addString(tableNames,DataPacket::DPFI_DB_TABLE);
     txDP.addString(columnList,DataPacket::DPFI_DB_COL);
-    transactionStatus = true;
+    transactionIsOk = false;
 
     if (queryType == SQL_QUERY_TYPE_SET){
         clientState = CS_CONNECTING_TO_SQL_SET;
@@ -82,7 +82,6 @@ void SSLDBClient::on_encryptedSuccess(){
 
     // If there was a problem everything is stopped.
     if (!ans){
-        transactionStatus = false;
         socket->disconnectFromHost();
         return;
     }
@@ -126,12 +125,12 @@ void SSLDBClient::on_readyRead(){
             }
 
             // The client disconnects, since it allready has all the info.
+            transactionIsOk = true;
             socket->disconnectFromHost();
         }
         else {
             // Expecting ACK from a set operation or error.
             if (!rxDP.hasInformationField(DataPacket::DPFI_DB_SET_ACK)){
-                transactionStatus = false;
                 if (rxDP.hasInformationField(DataPacket::DPFI_DB_ERROR)){
                     // The errors must be separated:
                     QStringList dberrors = rxDP.getField(DataPacket::DPFI_DB_ERROR).data.toString().split(DB_TRANSACTION_LIST_SEP);
@@ -141,15 +140,17 @@ void SSLDBClient::on_readyRead(){
                 }
                 else log.appendError("Expecting DB Set ACK but somehting else arrived.");
             }
-            // Otherwise ACK has arrived and is all good.
-            socket->disconnectFromHost();
+            else {
+                // Otherwise ACK has arrived and is all good.
+                transactionIsOk = true;
+                socket->disconnectFromHost();
+            }
         }
 
     }
     else if (errcode == DataPacket::DATABUFFER_RESULT_ERROR){
         log.appendError("Buffering data from the receiver");
         rxDP.clearAll();
-        transactionStatus = false;
         socket->disconnectFromHost();
     }
 
@@ -160,6 +161,10 @@ void SSLDBClient::on_readyRead(){
 
 void SSLDBClient::on_socketError(QAbstractSocket::SocketError error){
     SSLClient::on_socketError(error);
+    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
+    log.appendError("Disconnecting on socket error: " + QString(metaEnum.valueToKey(error)) + " on DB Synch");
+    socket->disconnectFromHost();
+    timer.stop();
 }
 
 //*************************************************************************************************************************
@@ -169,16 +174,13 @@ void SSLDBClient::on_timeOut(){
     switch(clientState){
     case CS_WAIT_DB_DATA:
         log.appendError("SQL Server request for information did not arrive before expected time. Closing connection. Please retry.");
-        transactionStatus = false;
         break;
     case CS_WAIT_SET_ACK:
         log.appendError("SQL Server request for information did not arrive before expected time. Closing connection. Please retry.");
-        transactionStatus = false;
         break;
     case CS_CONNECTING_TO_SQL_GET:
     case CS_CONNECTING_TO_SQL_SET:
         log.appendError("SQL server connection notice did not arrive before the expected time. Closing connection. Please retry.");
-        transactionStatus = false;
         break;
     }
     socket->disconnectFromHost();

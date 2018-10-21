@@ -18,7 +18,8 @@ RESOURCES += qml.qrc \
     languages.qrc \
     expdata.qrc \
     demo_data.qrc \
-    report_text.qrc
+    report_text.qrc \
+    agreements.qrc
 
 SOURCES += main.cpp \
     loader.cpp \

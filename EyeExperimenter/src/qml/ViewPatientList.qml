@@ -16,14 +16,22 @@ VMBase {
         target: loader
         onSynchDone: {
             connectionDialog.close();
+            if (!loader.wasDBTransactionOk()){
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
+                var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
         }
     }
 
     Connections {
         target: flowControl
         onSslTransactionFinished:{
-            if (!flowControl.isSSLTransactionOK()){
-                connectionDialog.close();
+            connectionDialog.close();
+            if (!flowControl.isSSLTransactionOK()){                
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
                 var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
                 vmErrorDiag.vmErrorMessage = titleMsg[1];
@@ -33,7 +41,6 @@ VMBase {
             }
             else{
                 loadPatients();
-                connectionDialog.close();
             }
         }
     }
@@ -95,6 +102,87 @@ VMBase {
 
     }
 
+    Dialog {
+
+        property bool vmShowInst: false
+        property string vmDrName : ""
+
+        id: askPasswordDialog;
+        modal: true
+        width: 614
+        height: 300
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectPassDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        VMDialogCloseButton {
+            id: btnClose
+            anchors.top: parent.top
+            anchors.topMargin: 22
+            anchors.right: parent.right
+            anchors.rightMargin: 25
+            onClicked: {
+                askPasswordDialog.close();
+            }
+        }
+
+        // The instruction text
+        Text {
+            id: diagPassTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43
+            anchors.top: parent.top
+            anchors.topMargin: 50
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            color: "#297fca"
+            text: askPasswordDialog.vmShowInst ? loader.getStringForKey(keybase+"inst_password") : loader.getStringForKey(keybase+"dr_password");
+        }
+
+        // The instruction text
+        Text {
+            id: diagPassMessage
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13
+            textFormat: Text.RichText
+            anchors.top:  diagPassTitle.bottom
+            anchors.topMargin: 20
+            anchors.left: diagPassTitle.left
+            text: askPasswordDialog.vmShowInst ? loader.getStringForKey(keybase+"inst_password_msg") : loader.getStringForKey(keybase+"dr_password_msg")
+                                                 + " " + askPasswordDialog.vmDrName;
+        }
+
+        VMPasswordField{
+            id: passwordInput
+            anchors.bottom: btnCheckPassword.top
+            anchors.bottomMargin: 20
+            anchors.left: diagPassTitle.left
+            width: parent.width*0.8;
+            vmLabelText: ""
+        }
+
+        VMButton{
+            id: btnCheckPassword
+            height: 50
+            vmText: "OK";
+            vmFont: viewHome.gothamM.name
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20
+            onClicked: {
+
+            }
+        }
+    }
 
     ViewShowReports{
         id: diagShowReports
@@ -123,6 +211,12 @@ VMBase {
         }
 
         patientListView.currentIndex = -1;
+    }
+
+    function askPassword(showInst){
+        askPasswordDialog.vmShowInst = showInst;
+        askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+        askPasswordDialog.open();
     }
 
     function startDemoTransaction(){

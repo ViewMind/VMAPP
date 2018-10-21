@@ -40,10 +40,13 @@ viewpatientreg_labelCity = City;
 viewpatientreg_labelProvince = Province/State;
 viewpatientreg_labelDocument_number = Document number;
 viewpatientreg_docTypes = DNI|Passport|Identity Card;
-viewpatientreg_labelConsent = By clicking continue, you accept the Conditions and the Data policy;
+viewpatientreg_labelConsent = I accept the <a href="terms_of_use">Terms Of Use</a> and <a href="privacy_policy">Privacy Policy</a>;
 viewpatientreg_btnCancel = CANCEL;
 viewpatientreg_btnContinue = ACCEPT;
 viewpatientreg_errorEmpty = Cannot be empty;
+viewpatientreg_errorNoAccept = You must accept the Terms of Use and the Privacy Policy;
+viewpatientreg_terms_of_use = Terms Of Use;
+viewpatientreg_privacy_policy = Privacy Policy;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Eye Studies;
@@ -84,7 +87,6 @@ viewcalibstart_btnStart = START CALIBRATION;
 #********************************* CALIBRATION DONE SCREEN DIALOG *********************************
 viewcalibdone_viewTitle = CALIBRATION DONE;
 viewcalibdone_btnContinue = CONTINUE;
-
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Reading Evaluation;
@@ -139,6 +141,10 @@ viewpatientlist_diagConnectTitle = Synchronizing;
 viewpatientlist_diagConnectMessage = Please wait a moment;
 viewpatientlist_diagRepTitle = Requesting reports;
 viewpatientlist_diagRepMessage = Please wait a moment;
+viewpatientlist_inst_password_msg = Doctor's information has been modified <br>To enable this changes please input the Institution's Password.;
+viewpatientlist_dr_password_msg = Please input the password for Doctor:;
+viewpatientlist_inst_password = Institution's Password;
+viewpatientlist_dr_password = Doctor's Password;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reports;
@@ -167,6 +173,9 @@ viewdrinfo_docTypes = DNI|Passport|Identity Card;
 viewdrinfo_btnSave = SAVE;
 viewdrinfo_btnBack = BACK;
 viewdrinfo_errorEmpty = Cannot be empty;
+viewdrinfo_password = Password;
+viewdrinfo_verify_password = Verify Password;
+viewdrinfo_password_match = The passwords do not match;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = The study has concluded;

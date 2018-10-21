@@ -1,5 +1,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.3
+//import QtQuick.Controls 1.4
+import QtGraphicalEffects 1.0
 
 VMBase {
 
@@ -30,9 +32,9 @@ VMBase {
         // Substr is used as the first two letters are the country code.
         labelDocument_number.setText(patInfo.uid.substr(2));
 
-//        for (var key in patInfo){
-//            console.log(key + ": " + patInfo[key]);
-//        }
+        //        for (var key in patInfo){
+        //            console.log(key + ": " + patInfo[key]);
+        //        }
 
         // Setting the document type.
         var idType = patInfo.idtype;
@@ -60,6 +62,75 @@ VMBase {
     }
 
 
+    Dialog {
+        id: showTextDialog;
+        modal: true
+        width: 614
+        height: 600
+
+        property string vmContent: ""
+        property string vmTitle: ""
+
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        Text {
+            id: diagTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43
+            anchors.top: parent.top
+            anchors.topMargin: 20
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: showTextDialog.vmTitle
+
+        }
+        ScrollView {
+            id: idScrollView
+            width: showTextDialog.width*0.9;
+            contentWidth: width
+            height: showTextDialog.height*0.62;
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top : diagTitle.bottom
+            anchors.topMargin: 40
+            clip: true
+            //horizontalScrollBarPolicy : Qt.ScrollBarAlwaysOff
+            TextEdit {
+                id: idContent
+                width: parent.width;
+                height: parent.height;
+                font.family: robotoR.name
+                font.pixelSize: 13
+                readOnly: true
+                text: showTextDialog.vmContent
+                wrapMode: Text.Wrap
+            }
+        }
+
+        VMButton{
+            id: btnClose
+            height: 50
+            vmText: "OK";
+            vmFont: viewHome.gothamM.name
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20;
+            onClicked: {
+                showTextDialog.close();
+            }
+        }
+
+    }
 
     // Title and subtitle
     Text {
@@ -82,6 +153,18 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#5499d5"
         text: loader.getStringForKey(keysearch+"viewSubTitle");
+    }
+
+    Text {
+        id: noAcceptError
+        font.family: robotoR.name
+        font.pixelSize: 13
+        anchors.top:  viewSubTitle.bottom
+        anchors.topMargin: 15
+        anchors.horizontalCenter: parent.horizontalCenter
+        color: "#ca2026"
+        visible: false
+        text: loader.getStringForKey(keysearch+"errorNoAccept");
     }
 
     // Name and last name
@@ -184,15 +267,29 @@ VMBase {
     }
 
     // Message and Buttons
-    Text {
+
+    Row{
         id: labelConsent
-        font.family: robotoR.name
-        font.pixelSize: 13
+        spacing: 5
         anchors.top:  labelCity.bottom
         anchors.topMargin: 41
         anchors.horizontalCenter: parent.horizontalCenter
-        color: "#58595b"
-        text: loader.getStringForKey(keysearch+"labelConsent");
+        VMCheckBox{
+            id: cbConsent
+        }
+        Text {
+            id: consentText
+            font.family: robotoR.name
+            font.pixelSize: 13
+            color: "#58595b"
+            text: loader.getStringForKey(keysearch+"labelConsent");
+            anchors.verticalCenter: cbConsent.verticalCenter
+            onLinkActivated: {
+                showTextDialog.vmContent = loader.loadTextFile(":/agreements/" + link + ".txt");
+                showTextDialog.vmTitle = loader.getStringForKey(keysearch + link);
+                showTextDialog.open();
+            }
+        }
     }
 
     // Buttons
@@ -219,21 +316,28 @@ VMBase {
             vmText: loader.getStringForKey(keysearch+"btnContinue");
             vmFont: viewHome.gothamM.name
             onClicked: {
+
+                if (!cbConsent.checked){
+                    noAcceptError.visible = true;
+                    return;
+                }
+                else noAcceptError.visible = false;
+
                 // THIS IS THE TABLE DATA.
                 var dbDataReq = {
-                   uid: labelDocument_number.vmEnteredText,
-                   doctorid: loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_UID),
-                   birthdate: labelBirthDate.vmEnteredText,
-                   firstname: labelName.vmEnteredText,
-                   lastname: labelLastName.vmEnteredText,
-                   idtype: docTypes.currentText,
-                   sex: labelGender.currentText,
-                   birthcountry: labelCountry.currentText
+                    uid: labelDocument_number.vmEnteredText,
+                    doctorid: loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_UID),
+                    birthdate: labelBirthDate.vmEnteredText,
+                    firstname: labelName.vmEnteredText,
+                    lastname: labelLastName.vmEnteredText,
+                    idtype: docTypes.currentText,
+                    sex: labelGender.currentText,
+                    birthcountry: labelCountry.currentText
                 };
 
                 var dbDataOpt = {
-                   state: labelProvince.vmEnteredText,
-                   city: labelCity.vmEnteredText
+                    state: labelProvince.vmEnteredText,
+                    city: labelCity.vmEnteredText
                 };
 
 

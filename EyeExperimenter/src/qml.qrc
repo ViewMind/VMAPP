@@ -36,5 +36,6 @@
         <file>qml/ViewShowReports.qml</file>
         <file>qml/VMReportEntry.qml</file>
         <file>qml/VMResultEntry.qml</file>
+        <file>qml/VMPasswordField.qml</file>
     </qresource>
 </RCC>

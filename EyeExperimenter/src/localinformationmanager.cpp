@@ -106,7 +106,8 @@ void LocalInformationManager::fillPatientDatInformation(){
 
     QDir doctorDir(baseDir);
     if (!doctorDir.exists()){
-        log.appendError("Base directory for the current Doctor: " + baseDir + " was not found");
+        // This is not necessarily an error because all new Doctors will not have a base directory created.
+        // log.appendError("Base directory for the current Doctor: " + baseDir + " was not found");
         return;
     }
 

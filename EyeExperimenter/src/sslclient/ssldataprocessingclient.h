@@ -42,12 +42,6 @@ private:
     // Starts the whole process
     void connectToServer(bool saveData);
 
-    // Flag that indicates if the transaction finished signal was setn
-    bool sentTransactionFinishedSignal;
-
-    // Two steps to send the signal so a function is used.
-    void sendFinishedSignal(bool okvalue);
-
 };
 
 #endif // SLLDATAPROCESSINGCLIENT_H

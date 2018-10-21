@@ -46,6 +46,8 @@ public:
     Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt);
     Q_INVOKABLE void startDBSync();
     Q_INVOKABLE void prepareForRequestOfPendingReports();
+    Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
+    Q_INVOKABLE QString loadTextFile(const QString &fileName);
 
 signals:
     void synchDone();
@@ -54,7 +56,7 @@ signals:
     void nextFileSet(const QStringList &fileSet);
 
 public slots:
-    void onTransactionFinished(bool isOk);
+    // For when the DB Transaction has finished.
     void onDisconnectFromDB();
 
     // Request of the flow control for the next set of files to process.
@@ -75,8 +77,9 @@ private:
     // The list that holds list names and corresponding uids
     QList<QStringList> nameInfoList;
 
-    // To connect to the DB in the server.
+    // To connect to the DB in the server. Flags are required to provide the proper information to the QML side.
     SSLDBClient *dbClient;
+    bool wasDBTransactionStarted;
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();

@@ -10,46 +10,46 @@ Checking procedure.
 2)  In the configuration ensure that the address is for the production server (18.220.30.34).
 3)  Configure a viewmind_etdata folder in a different location. 
 4)  The change the name of the localdb.dat to localdb.dat.bkp in the Application directory.
-2)  Open the EyeExperimenter.
-3)  Open the Setting Dialog. 
+5)  Open the EyeExperimenter.
+6)  Open the Setting Dialog. 
        a) Verify that the program will be tested in the language that is most likely
        to be used. 
 	   b) Set the Country where the Medical Institution is located. (Reboot application if this changes).
        c) Activate mouse and demo mode.
-5)  Start and create a new doctor and ensure that the ID is vm00000000.
-6)  Select the doctor and go to patient screen. A Synch should occur. Check that the doctor 
+7)  Start and create a new doctor and ensure that the ID is vm00000000.
+8)  Select the doctor and go to patient screen. A Synch should occur. Check that the doctor 
     appeared in the DB. (Remote console connection)
-7)  Modify the Dr with some information. And go to the patient screen again. Another synch should occur. 
+9)  Modify the Dr with some information. And go to the patient screen again. Another synch should occur. 
     Verify that the doctor appears again.
-8)  Create a new fictional patient. Check DB for its appearance. 
+10) Create a new fictional patient. Check DB for its appearance. 
     Keep in mind the used ID so as to quickly locate the patient folder. 
-9)  Modify the fictional patient and Check that it appears in the DB again.
-10) Select the patient and start study. Select reading, binding uc and binding bc
-11) Complete the demo run. When asked to send the report right now select Yes. 
-12) Select the created patient and click on View report.
-13) Select the Demo information and verify that it shows all values.
-14) Download the Report to the PC anywhere to verify correct report generation 
+11) Modify the fictional patient and Check that it appears in the DB again.
+12) Select the patient and start study. Select reading, binding uc and binding bc
+13) Complete the demo run. When asked to send the report right now select Yes. 
+14) Select the created patient and click on View report.
+15) Select the Demo information and verify that it shows all values.
+16) Download the Report to the PC anywhere to verify correct report generation 
     (Open up and check that there are no problems with the report).
-15) Go back to patient screen and select the created patient again. Select only bc and uc and select 3 targets.
-15) Complete study and press no.
-16) Repeat BC and UC study with 2 small targets with Left Eye.
-17) Repeat BC and UC study with 3 small targets with Right Eye.
-18) Start a reading experiment. Abort by pressing escape. 
+17) Go back to patient screen and select the created patient again. Select only bc and uc and select 3 targets.
+18) Complete study and press no.
+19) Repeat BC and UC study with 2 small targets with Left Eye.
+20) Repeat BC and UC study with 3 small targets with Right Eye.
+21) Start a reading experiment. Abort by pressing escape. 
     a) Verify that data was moved to the exp_abort folder of the patient directory.
 	b) Verify that all previous tests were generated with the correct name.
 	c) Open up the files and check for zeros in experiments done with only one eye.
-19) Copy the files found in test files to the patient directory. 
-18) Reload the patient list and check that the report pending button appears. 
+22) Copy the files found in test files to the patient directory. 
+23) Reload the patient list and check that the report pending button appears. 
     a) Press the report pending button. Make sure that the information is loaded into the S3 bin.
     b) Once checked, delete the vm00000000 bin. 
 	c) Check that the results were logged in the DB. 
-20) Go to setting screen and disable the mouse.  
-21) Do a demo run with Reading, Binding UC and Binding BC. 
+24) Go to setting screen and disable the mouse.  
+25) Do a demo run with Reading, Binding UC and Binding BC. 
     a) Verify, in the patient directory that the information saved is coherent.
-25) Change the repo directory to the original setting.
+26) Change the repo directory to the original setting.
 27) Change the configuration to test_mode = false;
-26) Change the localdb.dat.bkp to localdb.dat
-28) Finally restart the application one last time and ensure that there are no problems. 
+28) Change the localdb.dat.bkp to localdb.dat
+29) Finally restart the application one last time and ensure that there are no problems. 
 
 
 

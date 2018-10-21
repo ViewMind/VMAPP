@@ -40,10 +40,13 @@ viewpatientreg_labelCity = Ciudad;
 viewpatientreg_labelProvince = Provincia/Estado;
 viewpatientreg_labelDocument_number = Número de documento;
 viewpatientreg_docTypes = DNI|Pasaporte|Identificación;
-viewpatientreg_labelConsent = Al continuar, usted está aceptando las condiciones y la política de uso de datos;
+viewpatientreg_labelConsent = Acepto las <a href="terms_of_use">Condiciones de Uso</a> y las <a href="privacy_policy">Políticas de Privacidad</a>;
 viewpatientreg_btnCancel = CANCELAR;
 viewpatientreg_btnContinue = ACPTAR;
 viewpatientreg_errorEmpty = No puede estar vacío;
+viewpatientreg_errorNoAccept = Se debe acepatar las Condiciones de Uso y la Poítica de Privacidad;
+viewpatientreg_terms_of_use = Condiciones de Uso;
+viewpatientreg_privacy_policy = Política de Privacidad;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Estudios Oculares;
@@ -75,7 +78,6 @@ viewdrsel_labelDrProfile = Perfil de Doctor;
 viewdrsel_btnAddProfile = Agregar Perfil;
 viewdrsel_btnOk = OK;
 viewdrsel_labelNoDrError = Por favor, seleccion un perfíl de doctor antes de continuar;
-
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibración;
@@ -139,6 +141,10 @@ viewpatientlist_diagConnectTitle = Sincronizando;
 viewpatientlist_diagConnectMessage = Aguarde un momento;
 viewpatientlist_diagRepTitle = Solicitando reportes;
 viewpatientlist_diagRepMessage = Aguarde un momento;
+viewpatientlist_inst_password_msg = La información de Doctores ha sido modificada <br>Para habilitar estos cambios por favor ingresse la Contraseña de la Institución.;
+viewpatientlist_dr_password_msg = Por favor ingrese la contraseña para el doctor:;
+viewpatientlist_inst_password = Contraseña de la Institución;
+viewpatientlist_dr_password = Contraseña del Doctor;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
@@ -167,6 +173,9 @@ viewdrinfo_docTypes = DNI|Pasaporte|Identificación;
 viewdrinfo_btnBack = ATRAS;
 viewdrinfo_btnSave = GUARDAR;
 viewdrinfo_errorEmpty = No puede estar vacio;
+viewdrinfo_password = Contraseña;
+viewdrinfo_verify_password = Verifique Contraseña;
+viewdrinfo_password_match = Las contraseñas no coinciden;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = El estudio ha finalizado;

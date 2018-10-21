@@ -23,15 +23,12 @@ public:
     ~SSLClient();
 
     bool sslEnabled() const {return QSslSocket::supportsSsl();}
-    bool getTransactionStatus() const {return transactionStatus;}
+    bool getTransactionStatus() const {return transactionIsOk;}
 
 signals:
 
-    /// TODO: See about leaving only ONE of this two.
-    void transactionFinished(bool isOk);
-
-    // All is done when the disconnection is finished.
-    void diconnectionFinished();
+    // The transaction finished will be sent on disconnect only.
+    void transactionFinished();
 
 protected slots:
 
@@ -63,7 +60,7 @@ protected:
     QTimer timer;
 
     // For checking if there were errors
-    bool transactionStatus;
+    bool transactionIsOk;
 
     // Simple fucntion to start the timer with a given value.
     void startTimeoutTimer(qint32 ms);

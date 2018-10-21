@@ -83,8 +83,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // Setting up de client for DB connection
     dbClient = new SSLDBClient(this,configuration);
-    connect(dbClient,SIGNAL(transactionFinished(bool)),this,SLOT(onTransactionFinished(bool)));
-    connect(dbClient,SIGNAL(diconnectionFinished()),this,SLOT(onDisconnectFromDB()));
+    connect(dbClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectFromDB()));
 
     // Creating the local configuration manager, and loading the local DB.
     lim = new LocalInformationManager(configuration);
@@ -96,21 +95,31 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
 void Loader::startDBSync(){
     // Adding all the data that needs to be sent.
-    if (lim->setupDBSynch(dbClient))
+    wasDBTransactionStarted = false;
+    if (lim->setupDBSynch(dbClient)){
         // Running the transaction.
+        wasDBTransactionStarted = true;
         dbClient->runDBTransaction();
-    else onDisconnectFromDB();
+    }
+    else {
+        onDisconnectFromDB();
+    }
 }
 
-void Loader::onTransactionFinished(bool isOk){
-    Q_UNUSED(isOk)
-}
-
-void Loader::onDisconnectFromDB(){    
+void Loader::onDisconnectFromDB(){
     if (dbClient->getTransactionStatus()){
         lim->setUpdateFlagTo(false);
     }
     emit(synchDone());
+}
+
+QString Loader::loadTextFile(const QString &fileName){
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly)) return "";
+    QTextStream reader(&file);
+    QString ans = reader.readAll();
+    file.close();
+    return ans;
 }
 
 void Loader::addNewDoctorToDB(QVariantMap dbdata){

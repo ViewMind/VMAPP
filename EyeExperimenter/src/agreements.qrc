@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>agreements/privacy_policy.txt</file>
+        <file>agreements/terms_of_use.txt</file>
+    </qresource>
+</RCC>

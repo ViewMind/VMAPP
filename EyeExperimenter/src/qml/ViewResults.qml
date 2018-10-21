@@ -49,9 +49,7 @@ VMBase {
         vmAge     = list[2];
         vmDate    = list[3];
 
-        console.log("vmDate is |" + vmDate  + "| and comparing to " + vmDEMO_DATE);
         if (vmDate === vmDEMO_DATE){
-            console.log("Is demo");
             vmTitleDemo = " (DEMO)";
         }
         else vmTitleDemo = "";

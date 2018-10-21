@@ -19,7 +19,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     sslDataProcessingClient = new SSLDataProcessingClient(this,c);
 
     // Connection to the "finished" slot.
-    connect(sslDataProcessingClient,SIGNAL(diconnectionFinished()),this,SLOT(onDisconnectionFinished()));
+    connect(sslDataProcessingClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectionFinished()));
 
     // This infomration should only be updated if the report text is updated. First is the title, then the exp index and the ref index.
     reportTextDataIndexes << CONFIG_RESULTS_ATTENTIONAL_PROCESSES << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY

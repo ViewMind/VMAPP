@@ -15,7 +15,6 @@ VMBase {
         docTypes.currentIndex = 0;
         labelLastName.clear();
         labelDocument_number.clear();
-        labelInstitution.clear();
         labelMail.clear();
         labelName.clear();
         labelPhone.clear();
@@ -35,7 +34,6 @@ VMBase {
         labelPhone.setText(drInfo.telephone);
         // Substr is used as the first two letters are the country code.
         labelDocument_number.setText(drInfo.uid.substr(2));
-        labelInstitution.setText(drInfo.medicalinstitution);
 
         // Setting the document type.
         var idType = drInfo.idtype;
@@ -197,12 +195,6 @@ VMBase {
 
         }
 
-        VMTextDataInput{
-            id: labelInstitution
-            width: parent.width
-            vmPlaceHolder: loader.getStringForKey(keybase+"labelInstitution");
-        }
-
         Row {
             id: rowCityAndAddress
             anchors.horizontalCenter: parent.horizontalCenter
@@ -242,6 +234,25 @@ VMBase {
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelMail");
             }
 
+        }
+
+        Row {
+            id: rowPasswords
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 16
+            width: parent.width
+
+            VMPasswordField{
+                id: labelPassword;
+                width: 162
+                vmLabelText: loader.getStringForKey(keybase+"password");
+            }
+
+            VMPasswordField{
+                id: labelVerifyPassword
+                width: (rowPasswords.width - rowPasswords.spacing - labelPassword.width)
+                vmLabelText: loader.getStringForKey(keybase+"verify_password");
+            }
         }
 
     }

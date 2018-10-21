@@ -37,10 +37,11 @@ void SSLClient::on_sslErrors(const QList<QSslError> &errors){
 }
 
 void SSLClient::on_socketStateChanged(QAbstractSocket::SocketState state){
-    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-    //log.appendStandard(QString("Log: Socket state - ") + metaEnum.valueToKey(state));
+    //Q_UNUSED(state);
+//    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+//    log.appendStandard(QString("Log: Socket state - ") + metaEnum.valueToKey(state));
     if (state == QAbstractSocket::UnconnectedState){
-        emit(diconnectionFinished());
+        emit(transactionFinished());
     }
 }
 
