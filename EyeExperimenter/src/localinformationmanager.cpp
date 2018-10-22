@@ -1,8 +1,9 @@
 #include "localinformationmanager.h"
 
-const QString LocalInformationManager::PATIENT_DATA   = "PATIENT_DATA";
-const QString LocalInformationManager::PATIENT_UPDATE = "PATIENT_UPDATE";
-const QString LocalInformationManager::DOCTOR_UPDATE  = "DOCTOR_UPDATE";
+const QString LocalInformationManager::PATIENT_DATA          = "PATIENT_DATA";
+const QString LocalInformationManager::PATIENT_UPDATE        = "PATIENT_UPDATE";
+const QString LocalInformationManager::DOCTOR_UPDATE         = "DOCTOR_UPDATE";
+const QString LocalInformationManager::DOCTOR_PASSWORD       = "DOCTOR_PASSWORD";
 
 LocalInformationManager::LocalInformationManager(ConfigurationManager *c)
 {
@@ -130,13 +131,18 @@ void LocalInformationManager::fillPatientDatInformation(){
 
 }
 
-void LocalInformationManager::addDoctorData(const QString &dr_uid,const QStringList &cols, const QStringList &values){
+bool LocalInformationManager::addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password){
 
     // Doctor information needs to be checked against existing information to see if there is a change.
     QVariantMap drinfo;
     // Adding the dr information.
     for (qint32 i = 0; i < cols.size(); i++){
         drinfo[cols.at(i)] = values.at(i);
+    }
+
+    // Setting the new password if necessary.
+    if (!password.isEmpty()){
+        drinfo[DOCTOR_PASSWORD] = password;
     }
 
     if (!localDB.contains(dr_uid)){
@@ -166,6 +172,8 @@ void LocalInformationManager::addDoctorData(const QString &dr_uid,const QStringL
     }
 
     backupDB();
+
+    return false;
 }
 
 void LocalInformationManager::addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values){

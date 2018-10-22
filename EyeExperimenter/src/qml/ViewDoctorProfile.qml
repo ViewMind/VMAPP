@@ -18,6 +18,8 @@ VMBase {
         labelMail.clear();
         labelName.clear();
         labelPhone.clear();
+        labelPassword.clear();
+        labelVerifyPassword.clear();
         labelProvince.clear();
         labelCountry.enabled = true;
         labelDocument_number.enabled = true;
@@ -35,7 +37,7 @@ VMBase {
         // Substr is used as the first two letters are the country code.
         labelDocument_number.setText(drInfo.uid.substr(2));
 
-        // Setting the document type.
+        // Setting the id type.
         var idType = drInfo.idtype;
         var model = docTypes.model;
         for (var i = 0; i < model.length; i++){
@@ -282,6 +284,11 @@ VMBase {
             vmFont: gothamM.name
             onClicked: {
 
+                if (labelPassword.getText() !== labelVerifyPassword.getText()){
+                    labelPassword.vmErrorMsg = loader.getStringForKey(keybase + "password_match");
+                    return;
+                }
+
                 // THIS IS THE TABLE DATA.
                 var dbData = {
                     uid: labelDocument_number.vmEnteredText,
@@ -294,7 +301,8 @@ VMBase {
                     medicalinstitution: labelInstitution.vmEnteredText,
                     telephone: labelPhone.vmEnteredText,
                     email: labelMail.vmEnteredText,
-                    address: labelAddress.vmEnteredText
+                    address: labelAddress.vmEnteredText,
+                    password: labelPassword.getText()
                 };
 
                 // The absolute must values are the document, the country, the name and the last name.

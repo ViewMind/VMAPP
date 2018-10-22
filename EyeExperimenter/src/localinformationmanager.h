@@ -3,6 +3,7 @@
 
 #include <QVariantMap>
 #include <QDataStream>
+#include <QCryptographicHash>
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -17,7 +18,7 @@ class LocalInformationManager
 public:
 
     LocalInformationManager(ConfigurationManager *c);
-    void addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values);
+    bool addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password);
     void addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values);
     QList<QStringList> getPatientListForDoctor();
     QList<QStringList> getDoctorList();
@@ -43,7 +44,9 @@ private:
     static const QString PATIENT_DATA;
     static const QString DOCTOR_UPDATE;
     static const QString PATIENT_UPDATE;
-    static const qint32 LOCAL_DB_VERSION = 1;
+    static const QString DOCTOR_PASSWORD;
+    static const QString DOCTOR_TEMP_PASSWORD;
+    static const qint32  LOCAL_DB_VERSION = 2;
 
     ConfigurationManager *config;
     LogInterface log;

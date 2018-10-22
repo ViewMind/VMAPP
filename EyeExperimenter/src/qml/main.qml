@@ -50,7 +50,6 @@ Window {
         readonly property int vmIndexResults: 8
         readonly property int vmIndexStudyDone: 9
 
-
         id: swiperControl
         currentIndex: vmIndexHome
         interactive: false

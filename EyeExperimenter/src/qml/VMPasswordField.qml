@@ -20,6 +20,8 @@ Item {
         //clip: true
     }
 
+    function getText() {return lineEdit.text;}
+
     Rectangle {
         id: subLine
         width: lineEditRect.width

@@ -131,6 +131,13 @@ void Loader::addNewDoctorToDB(QVariantMap dbdata){
     QStringList columns;
     QStringList values;
 
+    // The passoword for the doctor ONLY goes into the local DB, it needs to be removed from the data.
+    QString password = dbdata.value("password");
+    if (password != ""){
+        // The password needs to be overwritten.
+        password = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
+    }
+
     // Converting the QVariantMap to a double string list
     columns = dbdata.keys();
     for (qint32 i = 0; i < columns.size(); i++){
@@ -138,7 +145,7 @@ void Loader::addNewDoctorToDB(QVariantMap dbdata){
     }
 
     // Saving data locally.
-    lim->addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values);
+    lim->addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password);
 }
 
 void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
