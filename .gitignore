@@ -15,6 +15,7 @@ ETFollower/exe/
 DBManager/bin/
 PNGReportGenerator/exe/
 EyeDataAnalyzer/exe/
+EyeReportGenerator/exe/
 ReportViewerDev/
 SQLClient/bin/
 Doc/*.aux

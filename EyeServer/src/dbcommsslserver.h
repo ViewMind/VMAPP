@@ -54,9 +54,6 @@ private:
     // Do the actual DB stuff
     void processSQLRequest(quint64 socket);
 
-    // Check the password for creating/updating doctor information.
-    quint8 checkInstitutionPassword(qint32 UID, const QString &password);
-
 };
 
 #endif // DBCOMMMANAGER_H

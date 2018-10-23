@@ -2,7 +2,7 @@
 #include "servercontrol.h"
 
 #define  PROGRAM_NAME      "EyeSever"
-#define  PROGRAM_VERSION   "4.1.0"
+#define  PROGRAM_VERSION   "4.1.1"
 
 int main(int argc, char *argv[])
 {
