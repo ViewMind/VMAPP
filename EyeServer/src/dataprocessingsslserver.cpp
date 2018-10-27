@@ -393,7 +393,7 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
     DBData data = dbConn->getLastResult();
 
     if (data.rows.size() != 1){
-        log.appendError("When querying et serial and number of evaluations: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1");
+        log.appendError("When querying et serial and number of evaluations: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1. UID: " + QString::number(UID));
         return RR_DB_ERROR;
     }
 
