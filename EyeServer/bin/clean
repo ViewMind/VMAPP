@@ -4,3 +4,4 @@ rm -rf MOCS
 rm -rf OBJS
 rm -rf QRC
 rm Makefile
+rm EyeServer
