@@ -429,7 +429,7 @@ void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
     DBData data = dbConn->getLastResult();
 
     if (data.rows.size() != 1){
-        log.appendError("Decreasing report count: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1");
+        log.appendError("Decreasing report count: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1, for UID: " + QString::number(UID) );
         return;
     }
     qint32  numevals = data.rows.first().first().toInt();
