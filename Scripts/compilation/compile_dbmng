@@ -2,7 +2,7 @@
 
 # Constants to change in order to change compilation.
 BASE_DIR="/home/ec2-user/viewmind_projects"
-SRC_DIR=$BASE_DIR"DBManager/src"
+SRC_DIR=$BASE_DIR"/DBManager/src"
 OUTPUT=$BASE_DIR"/DBManager/bin"
 APPNAME="DBManager"
 DEST="/home/ec2-user/DBMng/"
