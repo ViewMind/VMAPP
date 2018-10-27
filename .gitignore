@@ -25,3 +25,5 @@ BindingDesigner/outputs/*
 *.autosave
 *.tmp*
 *.log
+EyeServer/bin/QRC/
+
