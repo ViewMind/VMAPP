@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "===================== CALLIING QMAKE ====================="
+qmake-qt5 /home/ec2-user/viewmind_projects/EyeServer/src -spec linux-g++
+make qmake_all
+if [[ -f "Makefile" ]]; then
+   echo "===================== CALLIING MAKE ====================="
+   make
+   if [[ -f "EyeServer" ]]; then
+      mv EyeServer /home/ec2-user/EyeServer/
+   else
+      echo "MAKE FAILED"
+   fi
+else
+   echo "QMAKE FAILED"
+fi
+
