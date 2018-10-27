@@ -6,7 +6,7 @@
 #include "InstDBComm.h"
 
 #define PROGRAM_NAME      "DBManager"
-#define PROGRAM_VERSION   "0.0.1"
+#define PROGRAM_VERSION   "1.0.0"
 
 #define INPUT_NAME     0
 #define INPUT_NEVAL    1
@@ -44,6 +44,7 @@ private:
     void updateInstitution();
     void resetPasswInstitution();
     void printInstitutionInfo();
+    void deleteTestEntries();
 
     // Comunications variables.
     bool commTransactionOk;
@@ -52,6 +53,7 @@ private:
     InstDBComm::Institution commInstitutionInfo;
 
     void institutionSelection();
+    void userSelection();
     void inputInstitutionInfo(bool update);
     void showInfoScreen(bool showPassword = true);
 

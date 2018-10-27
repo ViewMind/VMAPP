@@ -28,6 +28,9 @@ public:
     // Update Query.
     bool updateDB(const QString &table, const QStringList &columns, const QStringList &values, const QString &condition);
 
+    // Delete Query
+    bool deleteRowFromDB(const QString &table, const QString &condition);
+
     // Closing the connection to the server
     void close() { dbConnection.close(); }
 

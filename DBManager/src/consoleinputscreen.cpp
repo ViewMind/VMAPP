@@ -27,6 +27,12 @@ void ConsoleInputScreen::setInformationScreen(const QStringList &information, bo
     useGoBack = isGoBackAnOption;
 }
 
+void ConsoleInputScreen::setQuestion(const QString &question){
+    clearAll();
+    screenType = CIT_QUESTION;
+    menuText << question;
+}
+
 void ConsoleInputScreen::clearAll(){
     selected = 0;
     inputData.clear();
@@ -46,6 +52,44 @@ void ConsoleInputScreen::show(bool noInput){
         break;
     case CIT_MENU: showMenu();
         break;
+    case CIT_QUESTION: showQuestion();
+        break;
+    }
+}
+
+void ConsoleInputScreen::showQuestion(){
+    std::string input;
+    std::string message;
+
+    while (true){
+        // Clearing the screen
+        QProcess::execute("clear");
+
+        if (!message.empty()) std::cout << "MESSAGE: " << message << std::endl;
+
+        for (qint32 i = 0; i < menuText.size(); i++){
+            std::cout << menuText.at(i).toStdString() << std::endl;
+        }
+
+        std::cout << "Press y to accept. Press g to go back and cancel" << std::endl;
+        std::cout << ">> ";
+
+        // Getting the navigation.
+        std::getline(std::cin,input);
+
+        // Two options g for going back or n for next.
+        QString selection = QString::fromStdString(input);
+        if (selection == "g") {
+            action = CA_BACK;
+            break;
+        }
+        else if (selection == "y"){
+            action = CA_SUBMIT;
+            break;
+        }
+        else {
+            message = "Invalid input: " + input;
+        }
     }
 }
 

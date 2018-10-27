@@ -7,6 +7,7 @@ Control::Control(QObject *parent):QThread(parent)
     mainMenu.addMenuOption("Reset institution password");
     mainMenu.addMenuOption("Update institution information");
     mainMenu.addMenuOption("See institution information");
+    mainMenu.addMenuOption("Delete test entries");
     mainMenu.addMenuOption("Exit");
 }
 
@@ -56,12 +57,54 @@ void Control::run(){
             printInstitutionInfo();
             break;
         case 4:
+            // Delete test entries
+            deleteTestEntries();
+            break;
+        case 5:
             // Exit
             db.close();
             emit(exitRequested());
             return;
         }
 
+    }
+
+}
+
+void Control::deleteTestEntries(){
+
+    bool ok;
+    QStringList userList = db.getPossibleTestUsers(&ok);
+    if (!ok){
+        std::cout << "ERROR Getting the user list: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
+        getchar();
+        commTransactionOk = false;
+        return;
+    }
+
+    ConsoleInputScreen screen;
+    screen.setMenuTitle("Select possible test user to delete:");
+
+    for (qint32 i = 0; i < userList.size(); i++){
+        if ((i % 2) == 1) continue; // Odd entries are the actual UIDs
+        screen.addMenuOption(userList.at(i),userList.at(i+1));
+    }
+
+    screen.show();
+
+    if (screen.getAction() == ConsoleInputScreen::CA_BACK) return;
+
+    QString uid = screen.getSelectedData().toString();
+
+    ConsoleInputScreen confirm;
+    confirm.setQuestion("Are you sure you want to delete all entries with user UID: " + uid + "?");
+    confirm.show();
+
+    if (confirm.getAction() == ConsoleInputScreen::CA_BACK) return;
+
+    if (!db.deleteUserInfo(uid)){
+        std::cout << "ERROR: " << db.getError().toStdString() <<  ". Press any key to continue" << std::endl;
+        getchar();
     }
 
 }
@@ -136,7 +179,7 @@ void Control::institutionSelection(){
     bool ok = false;
     commTransactionOk = true;
 
-    // Selecting the institution  
+    // Selecting the institution
     QList<InstDBComm::Institution> info = db.getAllInstitutions(&ok);
     if (!ok){
         std::cout << "ERROR Getting institution list: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
@@ -165,6 +208,8 @@ void Control::institutionSelection(){
         }
     }
 }
+
+
 
 void Control::inputInstitutionInfo(bool update){
 

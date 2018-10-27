@@ -26,6 +26,15 @@ public:
         bool ok;
     };
 
+    struct Users {
+        QString name;
+        QString lastName;
+        QString keyid;
+        QString uid;
+        bool ok;
+    };
+
+
     // Connection initialization.
     bool initConnection();
 
@@ -33,6 +42,8 @@ public:
     bool addNewInstitution(const Institution &inst);
     bool updateNewInstitution(const Institution &inst);
     bool resetPassword(const QString &keyidInst);
+    bool deleteUserInfo(const QString &uid);
+    QStringList getPossibleTestUsers(bool *isOk);
     QList<Institution> getAllInstitutions(bool *isOk);
     Institution getInstitutionInfo(const QString &keyidInst);
 

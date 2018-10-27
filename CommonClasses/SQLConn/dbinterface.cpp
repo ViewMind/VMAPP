@@ -80,6 +80,16 @@ bool DBInterface::updateDB(const QString &table, const QStringList &columns, con
 
 }
 
+bool DBInterface::deleteRowFromDB(const QString &table, const QString &condition){
+    QString query = "DELETE FROM " + table + " WHERE " + condition;
+    QSqlQuery q;
+    if (!q.exec(query)){
+        error = "DELETE Error on query: " + query + ". ERROR: " + q.lastError().text();
+        return false;
+    }
+    return true;
+}
+
 bool DBInterface::readFromDB(const QString &table, const QStringList &columns, const QString &conditions){
 
     QString query = "SELECT ";

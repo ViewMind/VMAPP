@@ -162,6 +162,66 @@ bool InstDBComm::resetPassword(const QString &keyidInst){
 
 }
 
+bool InstDBComm::deleteUserInfo(const QString &uid){
+
+    QStringList columns;
+    columns << TPATREQ_COL_UID;
+    QString condition = TPATREQ_COL_DOCTORID;
+    condition = condition + " = '" + uid + "'";
+    if (!db.readFromDB(TABLE_PATIENTS_REQ_DATA,columns,condition)){
+        error = db.getError();
+        return false;
+    }
+
+    // Getting the UIDs
+
+    DBData data = db.getLastResult();
+
+    if (data.rows.size() > 0){
+
+        QSet<QString> patuids;
+        for (qint32 i = 0; i < data.rows.size(); i++){
+            if (data.rows.at(i).isEmpty()) continue;
+            patuids << data.rows.at(i).first();
+        }
+
+        // Deleteing data form REQ Table
+        QStringList conds;
+        QSetIterator<QString> iter(patuids);
+        while (iter.hasNext()){
+            conds << QString(TPATREQ_COL_UID) + " = '" + iter.next() + "'";
+        }
+        condition = conds.join(" OR ");
+
+        if (!db.deleteRowFromDB(TABLE_PATIENTS_REQ_DATA,condition)){
+            error = db.getError();
+            return false;
+        }
+
+        // Deleteing data from OPT Table.
+        conds.clear();
+        while (iter.hasNext()){
+            conds << QString(TPATOPT_COL_PATIENTID) + " = '" + iter.next() + "'";
+        }
+        condition = conds.join(" OR ");
+
+        if (!db.deleteRowFromDB(TABLE_PATIENTS_OPT_DATA,condition)){
+            error = db.getError();
+            return false;
+        }
+    }
+
+    // Finally deleting the doctor
+    condition = QString(TDOCTOR_COL_UID) + " = '" + uid + "'";
+    if (!db.deleteRowFromDB(TABLE_DOCTORS,condition)){
+        error = db.getError();
+        return false;
+    }
+
+    return true;
+
+}
+
 QList<InstDBComm::Institution> InstDBComm::getAllInstitutions(bool *isOk){
     *isOk = true;
     QList<Institution> ans;
@@ -181,6 +241,37 @@ QList<InstDBComm::Institution> InstDBComm::getAllInstitutions(bool *isOk){
         inst.name = result.rows.at(i).first();
         inst.keyid = result.rows.at(i).last();
         ans << inst;
+    }
+
+    return ans;
+}
+
+QStringList InstDBComm::getPossibleTestUsers(bool *isOk){
+
+    *isOk = true;
+    QStringList ans;
+    QString condition = TDOCTOR_COL_UID;
+    condition = condition + " LIKE '%" + QString(TEST_UID) + "%'";
+
+    QStringList columns;
+    columns << TDOCTOR_COL_FIRSTNAME << TDOCTOR_COL_LASTNAME << TDOCTOR_COL_UID;
+
+    if (!db.readFromDB(TABLE_DOCTORS,columns,condition)){
+        error = db.getError();
+        *isOk = false;
+        return ans;
+    }
+
+    DBData rows = db.getLastResult();
+
+    for (qint32 i = 0; i < rows.rows.size(); i++){
+        if (rows.rows.at(i).size() != columns.size()){
+            error = "Geting possible users: Expecting 3 coluns for row " + QString(i) + " but found: " + QString(rows.rows.at(i).size());
+            ans.clear();
+            return ans;
+        }
+        ans << rows.rows.at(i).at(0) + " " +  rows.rows.at(i).at(1) + " (" + rows.rows.at(i).at(2) + ")";
+        ans << rows.rows.at(i).at(2); // This ias added so the UID does not need to be obtained again.
     }
 
     return ans;

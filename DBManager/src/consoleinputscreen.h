@@ -11,7 +11,7 @@ class ConsoleInputScreen
 public:
 
     ConsoleInputScreen();
-    typedef enum {CIT_MENU, CIT_DATA_INPUT, CIT_INFORMATION} ConsoleInputType;
+    typedef enum {CIT_MENU, CIT_DATA_INPUT, CIT_INFORMATION, CIT_QUESTION} ConsoleInputType;
     typedef enum {CA_BACK, CA_SUBMIT, CA_NEXT} ConsoleAction;
 
     // Set options associated and data for a Menu Screen
@@ -23,6 +23,9 @@ public:
 
     // Set lines of texts for information show
     void setInformationScreen(const QStringList &information, bool isGoBackAnOption);
+
+    // Set question for confirmation
+    void setQuestion(const QString &question);
 
     // Show the screen acoording to the configuration.
     void show(bool noInput = false);
@@ -53,6 +56,7 @@ private:
     bool addedNumbers;
 
     void showMenu();
+    void showQuestion();
     void showPrompts();
     void showInformation(bool noInput);
 };
