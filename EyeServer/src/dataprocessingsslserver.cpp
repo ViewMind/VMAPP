@@ -232,6 +232,8 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
     qint32 UID = d.getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
     quint8 code = verifyReportRequest(UID,etserial);
 
+    //qWarning() << "VERIFY REPORT REQUEST CODE:" << code;
+
     if (code != RR_ALL_OK){
         // Need to return the error code.
         DataPacket tx;
@@ -384,7 +386,7 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
 
     QStringList columns;
     columns << TINST_COL_ETSERIAL << TINST_COL_EVALS;
-    QString condition = QString(TINST_COL_UID) + " = '" + QString(UID) + "'";
+    QString condition = QString(TINST_COL_UID) + " = '" + QString::number(UID) + "'";
     if (!dbConn->readFromDB(TABLE_INSTITUTION,columns,condition)){
         log.appendError("When querying et serial and number of evaluations: " + dbConn->getError());
         return RR_DB_ERROR;
@@ -402,13 +404,13 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
 
     // Checking the serial
     if (serial != etserial){
-        log.appendError("ETSerial " + etserial + " does not correspond to the serial registered for insitituion with UID " + QString(UID));
+        log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID) + ": |" + serial + "|");
         return RR_WRONG_ET_SERIAL;
     }
 
     // Checking the number of evaluations
-    if ((numevals > 0) && (numevals != -1)){
-        log.appendError("No evaluations remaining forinsitituion with UID " + QString(UID));
+    if (numevals == 0 ){
+        log.appendError("No evaluations remaining forinsitituion with UID " + QString::number(UID));
         return RR_OUT_OF_EVALUATIONS;
     }
 
@@ -420,7 +422,7 @@ void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
 
     QStringList columns;
     columns << TINST_COL_EVALS;
-    QString condition = QString(TINST_COL_UID) + " = '" + QString(UID) + "'";
+    QString condition = QString(TINST_COL_UID) + " = '" + QString::number(UID) + "'";
     if (!dbConn->readFromDB(TABLE_INSTITUTION,columns,condition)){
         log.appendError("Decreasing report count: " + dbConn->getError());
         return;
