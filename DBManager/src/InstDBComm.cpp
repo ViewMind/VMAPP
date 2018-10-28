@@ -200,6 +200,7 @@ bool InstDBComm::deleteUserInfo(const QString &uid){
 
         // Deleteing data from OPT Table.
         conds.clear();
+        iter.toFront();
         while (iter.hasNext()){
             conds << QString(TPATOPT_COL_PATIENTID) + " = '" + iter.next() + "'";
         }
