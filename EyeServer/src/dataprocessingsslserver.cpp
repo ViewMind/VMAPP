@@ -447,7 +447,7 @@ void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
     // Decreasing and saving.
     numevals--;
     QStringList values;
-    values << QString(numevals);
+    values << QString::number(numevals);
 
     if (!dbConn->updateDB(TABLE_INSTITUTION,columns,values,condition)){
         log.appendError("When saving new number of evaluations " + QString(UID) + " when it is " + QString(numevals));
