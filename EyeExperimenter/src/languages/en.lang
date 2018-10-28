@@ -78,6 +78,12 @@ viewdrsel_labelDrProfile = Doctor's profile;
 viewdrsel_btnAddProfile = Add a profile;
 viewdrsel_btnOk = OK;
 viewdrsel_labelNoDrError = Please select a doctor's profile in order to continue;
+viewdrsel_labelInstPassword = Please enter the institution's password;
+viewdrsel_btnValidate = VALIDATE;
+viewdrsel_instpassword_wrong = The password entered is incorrect. Please make verify the Institution´s password.;
+viewdrsel_password_connect_error = The connection to the server could not be established. Unable to verify.;
+viewdrsel_novalid_msg = Not validated. Will be unable to request reports;
+viewdrsel_verif_title = Verifying password;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibration;
@@ -141,10 +147,10 @@ viewpatientlist_diagConnectTitle = Synchronizing;
 viewpatientlist_diagConnectMessage = Please wait a moment;
 viewpatientlist_diagRepTitle = Requesting reports;
 viewpatientlist_diagRepMessage = Please wait a moment;
-viewpatientlist_inst_password_msg = Doctor's information has been modified <br>To enable this changes please input the Institution's Password.;
-viewpatientlist_dr_password_msg = Please input the password for Doctor:;
-viewpatientlist_inst_password = Institution's Password;
-viewpatientlist_dr_password = Doctor's Password;
+viewpatientlist_msg_nopass = No password set|Please edit the user information and set a password, for it;
+viewpatientlist_msg_notvalid = User not validated|This user is not validated and cannot request reports.<br>Please solve this issue validating it using the Institution´s password;
+viewpatientlist_ask_password = Password required;
+viewpatientlist_wrong_dr_password = Password is incorrect;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reports;
@@ -217,6 +223,9 @@ error_programming = Programming error<>Contact Ariel Arelovich;
 error_experiment_end = Study ended abruptly<>The study did not end as expected<br>Please try again;
 error_no_ssl = SLL not detected<>SSL Libraries were not detected.<br>Server request for reports will not be possible;
 error_server_comm = Communication error<>It was not possible to establish a link with the server<br>Please, try again;
+error_db_transaction = Database Error|There was an error related to the database<br>Please contact the ViewMind team;
+error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracker is incorrect<br>Please contact the ViewMind team;
+error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Change language<>The program must be restarted to change the language;

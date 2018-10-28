@@ -12,6 +12,7 @@ Dialog {
     readonly property int vmERROR_EXP_END_ERROR: 5
     readonly property int vmERROR_SERVER_COMM: 6
     readonly property int vmERROR_NO_SSL: 7
+    readonly property int vmERROR_PROC_ACK: 8
 
     property string vmErrorTitle: "Error Ocurred"
     property string vmErrorMessage: "An error has ocurred"
@@ -20,7 +21,7 @@ Dialog {
 
     id: errorDiag;
     modal: true
-    width: 614
+    width: 634
     height: 600
     closePolicy: Popup.NoAutoClose
 
@@ -104,6 +105,9 @@ Dialog {
             close();
             break;
         case vmERROR_NO_SSL:
+            close();
+            break;
+        case vmERROR_PROC_ACK:
             close();
             break;
         default:

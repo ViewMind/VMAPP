@@ -53,6 +53,7 @@ public:
     Q_INVOKABLE void prepareSelectedReportIteration();
     Q_INVOKABLE QVariantMap nextSelectedReportItem();
     Q_INVOKABLE QStringList getSelectedReportInfo();
+    Q_INVOKABLE quint8 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
 
 signals:
 

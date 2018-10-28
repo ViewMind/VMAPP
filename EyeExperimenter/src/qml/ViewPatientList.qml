@@ -31,13 +31,24 @@ VMBase {
         target: flowControl
         onSslTransactionFinished:{
             connectionDialog.close();
-            if (!flowControl.isSSLTransactionOK()){                
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
-                var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
-                return;
+            if (!flowControl.isSSLTransactionOK()){
+                // console.log("SSL Eye Server Transaction Error Code: " + flowControl.getSSLTransactionError());
+                var errorTitleMsg = loader.getErrorMessageForCode(flowControl.getSSLTransactionError());
+                if (errorTitleMsg.length === 2){ // If the code was all ok but the transaction was NOT ok, then it was a communications error.
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROC_ACK;
+                    vmErrorDiag.vmErrorMessage = errorTitleMsg[1];
+                    vmErrorDiag.vmErrorTitle = errorTitleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
+                else{
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
+                    var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
+                    vmErrorDiag.vmErrorMessage = titleMsg[1];
+                    vmErrorDiag.vmErrorTitle = titleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
             }
             else{
                 loadPatients();
@@ -104,13 +115,71 @@ VMBase {
 
     Dialog {
 
-        property bool vmShowInst: false
+        property string vmMsgTitle: ""
+        property string vmMsgText: ""
+
+        id: showMsgDialog;
+        modal: true
+        width: 614
+        height: 250
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectShowMsgDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        VMDialogCloseButton {
+            id: btnClose
+            anchors.top: parent.top
+            anchors.topMargin: 22
+            anchors.right: parent.right
+            anchors.rightMargin: 25
+            onClicked: {
+                showMsgDialog.close();
+            }
+        }
+
+        // The instruction text
+        Text {
+            id: showMsgDialogTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43
+            anchors.top: parent.top
+            anchors.topMargin: 50
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            color: "#297fca"
+            text: showMsgDialog.vmMsgTitle
+        }
+
+        // The instruction text
+        Text {
+            id: showMsgDialogMessage
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13
+            textFormat: Text.RichText
+            anchors.top:  showMsgDialogTitle.bottom
+            anchors.topMargin: 20
+            anchors.left: showMsgDialogTitle.left
+            text: showMsgDialog.vmMsgText
+        }
+    }
+
+    Dialog {
+
         property string vmDrName : ""
 
         id: askPasswordDialog;
         modal: true
         width: 614
-        height: 300
+        height: 280
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -125,7 +194,7 @@ VMBase {
         }
 
         VMDialogCloseButton {
-            id: btnClose
+            id: btnClosePass
             anchors.top: parent.top
             anchors.topMargin: 22
             anchors.right: parent.right
@@ -142,32 +211,18 @@ VMBase {
             font.pixelSize: 43
             anchors.top: parent.top
             anchors.topMargin: 50
-            anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
-            text: askPasswordDialog.vmShowInst ? loader.getStringForKey(keybase+"inst_password") : loader.getStringForKey(keybase+"dr_password");
-        }
-
-        // The instruction text
-        Text {
-            id: diagPassMessage
-            font.family: viewHome.robotoR.name
-            font.pixelSize: 13
-            textFormat: Text.RichText
-            anchors.top:  diagPassTitle.bottom
-            anchors.topMargin: 20
-            anchors.left: diagPassTitle.left
-            text: askPasswordDialog.vmShowInst ? loader.getStringForKey(keybase+"inst_password_msg") : loader.getStringForKey(keybase+"dr_password_msg")
-                                                 + " " + askPasswordDialog.vmDrName;
+            text: askPasswordDialog.vmDrName
         }
 
         VMPasswordField{
             id: passwordInput
             anchors.bottom: btnCheckPassword.top
-            anchors.bottomMargin: 20
+            anchors.bottomMargin: 30
             anchors.left: diagPassTitle.left
-            width: parent.width*0.8;
-            vmLabelText: ""
+            width: diagPassTitle.width;
+            vmLabelText: loader.getStringForKey(keybase+"ask_password");
         }
 
         VMButton{
@@ -177,10 +232,25 @@ VMBase {
             vmFont: viewHome.gothamM.name
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20
-            onClicked: {
-
+            anchors.bottomMargin: 30
+            onClicked:{
+                if (loader.isDoctorPasswordCorrect(passwordInput.getText())){
+                    askPasswordDialog.close();
+                    loader.prepareForRequestOfPendingReports();
+                    connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
+                    connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
+                    connectionDialog.open();
+                    flowControl.requestReportData();
+                }
+                else{
+                    passwordInput.vmErrorMsg =  loader.getStringForKey(keybase+"wrong_dr_password");
+                }
             }
+        }
+
+        onOpened: {
+            passwordInput.setText("");
+            passwordInput.vmErrorMsg = "";
         }
     }
 
@@ -213,12 +283,6 @@ VMBase {
         patientListView.currentIndex = -1;
     }
 
-    function askPassword(showInst){
-        askPasswordDialog.vmShowInst = showInst;
-        askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-        askPasswordDialog.open();
-    }
-
     function startDemoTransaction(){
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
@@ -227,13 +291,25 @@ VMBase {
     }
 
     function requestReportToServer(){
-        loader.prepareForRequestOfPendingReports();
-        connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
-        connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
-        connectionDialog.open();
-        flowControl.requestReportData();
+        if (!loader.isDoctorValidated(-1)){
+            showMessage("msg_notvalid");
+            return;
+        }
 
-        //patientList.setProperty(index,"vmIsOk",true);
+        if (!loader.doesCurrentDoctorHavePassword()){
+            showMessage("msg_nopass");
+            return;
+        }
+
+        askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+        askPasswordDialog.open();
+    }
+
+    function showMessage(msg){
+        var list = loader.getStringListForKey(keybase+msg);
+        showMsgDialog.vmMsgText = list[1];
+        showMsgDialog.vmMsgTitle = list[0];
+        showMsgDialog.open();
     }
 
     function setCurrentPatient(){

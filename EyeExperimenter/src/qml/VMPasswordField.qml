@@ -21,6 +21,7 @@ Item {
     }
 
     function getText() {return lineEdit.text;}
+    function setText(pass) {lineEdit.text = pass;}
 
     Rectangle {
         id: subLine

@@ -42,7 +42,7 @@ viewpatientreg_labelDocument_number = Número de documento;
 viewpatientreg_docTypes = DNI|Pasaporte|Identificación;
 viewpatientreg_labelConsent = Acepto las <a href="terms_of_use">Condiciones de Uso</a> y las <a href="privacy_policy">Políticas de Privacidad</a>;
 viewpatientreg_btnCancel = CANCELAR;
-viewpatientreg_btnContinue = ACPTAR;
+viewpatientreg_btnContinue = ACEPTAR;
 viewpatientreg_errorEmpty = No puede estar vacío;
 viewpatientreg_errorNoAccept = Se debe acepatar las Condiciones de Uso y la Poítica de Privacidad;
 viewpatientreg_terms_of_use = Condiciones de Uso;
@@ -78,6 +78,12 @@ viewdrsel_labelDrProfile = Perfil de Doctor;
 viewdrsel_btnAddProfile = Agregar Perfil;
 viewdrsel_btnOk = OK;
 viewdrsel_labelNoDrError = Por favor, seleccion un perfíl de doctor antes de continuar;
+viewdrsel_labelInstPassword = Por favor ingrese la contraseña de la institución;
+viewdrsel_btnValidate = VALIDAR;
+viewdrsel_instpassword_wrong = La contraseña es incorrecta. Por favor verifique la contraseña de la institución.;
+viewdrsel_password_connect_error = No se puede establecer la conexión al servidor. No se puede verificar.;
+viewdrsel_novalid_msg = No se encuentra validado. No podrá pedir reportes.;
+viewdrsel_verif_title = Verificando contraseña;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibración;
@@ -141,10 +147,10 @@ viewpatientlist_diagConnectTitle = Sincronizando;
 viewpatientlist_diagConnectMessage = Aguarde un momento;
 viewpatientlist_diagRepTitle = Solicitando reportes;
 viewpatientlist_diagRepMessage = Aguarde un momento;
-viewpatientlist_inst_password_msg = La información de Doctores ha sido modificada <br>Para habilitar estos cambios por favor ingresse la Contraseña de la Institución.;
-viewpatientlist_dr_password_msg = Por favor ingrese la contraseña para el doctor:;
-viewpatientlist_inst_password = Contraseña de la Institución;
-viewpatientlist_dr_password = Contraseña del Doctor;
+viewpatientlist_msg_nopass = Sin contraseña|Por favor edite la información del usuario e ingrese una contraeña;
+viewpatientlist_msg_notvalid = Usuario no validado|Este usuario no ha sido validado y por ende no puede pedir informes.<br>Por favor valídelo utilizando la contraseña de la Institución;
+viewpatientlist_ask_password = Se requiere contraseña;
+viewpatientlist_wrong_dr_password = La contraeña es incorrecta;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
@@ -217,6 +223,9 @@ error_programming = Error de programación<>Contactar a Ariel Arelovich;
 error_experiment_end = Fin de estudio anormal<>El estudio no terminó como corresponde<br>Por favor inténtelo nuevamente;
 error_no_ssl = SSL no se detectó<>No se detectaron las bibliotecas de SSL<br>No será posible la comunicación con el servidor;
 error_server_comm = Error de comunicación<>No se pudo establecer un vinculo con servidor.<br>Por favor, detectar nuevamente;
+error_db_transaction = Error de Base de Datos|Hubo un error relacionado con la base de datos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
+error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
+error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;

@@ -33,7 +33,7 @@ Button{
         else{
             vmButton.vmColorText = "#ffffff"
             if (vmButton.enabled){
-                if (vmButton.pressed){
+                if (pressed){
                     vmButton.vmColorBkg = "#4984b3";
                 }
                 else{
@@ -62,9 +62,10 @@ Button{
         determineColors();
     }
 
-    onPressed: {
+    onPressedChanged: {
         determineColors();
     }
+
 
     background: Rectangle {
         id: rectArea

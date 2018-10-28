@@ -9,13 +9,17 @@ y_px_mm                               = 0.25;   # mm/px
 
 # Development Server.
 server_address = 18.191.142.5;
-# Real Server Address
+# Production Server Address
 # server_address = 18.220.30.34;
+# Local server
+# server_address = 192.168.1.10;
 
 #------------------------------------------------------#
-#                 TEST MODE CONFIGURATION              #
+#                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
-test_mode = true;
+inst_et_serial = ;
+inst_name = Axis;
+inst_uid = 1858989878;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #

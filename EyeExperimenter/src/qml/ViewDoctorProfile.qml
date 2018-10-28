@@ -298,7 +298,6 @@ VMBase {
                     countryid: labelCountry.currentText,
                     state: labelProvince.vmEnteredText,
                     city: labelCity.vmEnteredText,
-                    medicalinstitution: labelInstitution.vmEnteredText,
                     telephone: labelPhone.vmEnteredText,
                     email: labelMail.vmEnteredText,
                     address: labelAddress.vmEnteredText,

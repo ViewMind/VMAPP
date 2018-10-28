@@ -15,6 +15,8 @@ void SSLDataProcessingClient::connectToServer(bool saveData)
     QString directory = config->getString(CONFIG_PATIENT_DIRECTORY);
     QString confFile = directory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
 
+    processingACKCode = RR_ALL_OK;
+
     ConfigurationManager eyeGenConf;
     if (!eyeGenConf.loadConfiguration(confFile,COMMON_TEXT_CODEC)){
         log.appendError("Failed to load eye report configuration file: " + eyeGenConf.getError());
@@ -25,6 +27,7 @@ void SSLDataProcessingClient::connectToServer(bool saveData)
     txDP.clearAll();
     txDP.addString(config->getString(CONFIG_DOCTOR_UID),DataPacket::DPFI_DOCTOR_ID);
     txDP.addString(config->getString(CONFIG_PATIENT_UID),DataPacket::DPFI_PATIENT_ID);
+    txDP.addValue(config->getInt(CONFIG_INST_UID),DataPacket::DPFI_DB_INST_UID);
     txDP.addFile(confFile,DataPacket::DPFI_PATIENT_FILE);
 
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC))
@@ -104,19 +107,36 @@ void SSLDataProcessingClient::on_readyRead(){
         }
         else{ // We are waiting for a report
 
-            if (!rxDP.isInformationFieldOfType(DataPacket::DPFI_REPORT,DataPacket::DPFT_FILE)){
+            if (!rxDP.hasInformationField(DataPacket::DPFI_PROCESSING_ACK)){
+                log.appendWarning("Received packet with no information field");
                 rxDP.clearBufferedData();
                 return;
             }
-            timer.stop();
 
-            // At this point the report was received so it is saved
+            timer.stop();
+            processingACKCode = rxDP.getField(DataPacket::DPFI_PROCESSING_ACK).data.toInt();
+
+            if (processingACKCode != RR_ALL_OK){
+                //qWarning() << "SSDATAClent: Processing NOT OK. Code: " << processingACKCode;
+                rxDP.clearAll();
+                socket->disconnectFromHost();
+                return;
+            }
+
+            if (!rxDP.isInformationFieldOfType(DataPacket::DPFI_REPORT,DataPacket::DPFT_FILE)){
+                log.appendError("Received packet with no Processing error and No Report field");
+                rxDP.clearBufferedData();
+                socket->disconnectFromHost();
+                return;
+            }
+
+            // At this point the report was received and the processing code was ok.
             QString reportPath = rxDP.saveFile(config->getString(CONFIG_PATIENT_DIRECTORY),DataPacket::DPFI_REPORT);
             if (reportPath.isEmpty()){
                 log.appendError("Could not save the report to the directory: " + reportPath + ". Please try again");
             }
             else{
-                log.appendStandard("LOG: Report saved to: " + reportPath);
+                log.appendStandard("Report saved to: " + reportPath);
                 config->addKeyValuePair(CONFIG_REPORT_PATH,reportPath);
                 transactionIsOk = true;
             }

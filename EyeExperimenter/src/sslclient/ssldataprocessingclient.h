@@ -20,6 +20,9 @@ public:
     // Main interface function. The only one required. Everything after this point is predefined.
     void requestReport(bool saveData);
 
+    // Obtaining code allows for more precise messages.
+    quint8 getProcessingCode() {return processingACKCode;}
+
 private slots:
 
     // SSL and TCP Related slots
@@ -38,6 +41,9 @@ private:
     // State of the communication process.
     typedef enum {CS_CONNECTING, CS_WAIT_FOR_ACK, CS_WAIT_FOR_REPORT} ClientState;
     ClientState clientState;
+
+    // The last processing code.
+    quint8 processingACKCode;
 
     // Starts the whole process
     void connectToServer(bool saveData);

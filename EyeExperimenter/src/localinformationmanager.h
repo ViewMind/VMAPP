@@ -18,8 +18,11 @@ class LocalInformationManager
 public:
 
     LocalInformationManager(ConfigurationManager *c);
-    bool addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password);
+    void addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password);
     void addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values);
+    bool isDoctorValid(const QString &dr_uid);
+    void validateDoctor(const QString &dr_uid);
+    QString getCurrentDoctorPassword();
     QList<QStringList> getPatientListForDoctor();
     QList<QStringList> getDoctorList();
     QString getFieldForCurrentPatient(const QString &field) const;
@@ -45,7 +48,7 @@ private:
     static const QString DOCTOR_UPDATE;
     static const QString PATIENT_UPDATE;
     static const QString DOCTOR_PASSWORD;
-    static const QString DOCTOR_TEMP_PASSWORD;
+    static const QString DOCTOR_VALID;
     static const qint32  LOCAL_DB_VERSION = 2;
 
     ConfigurationManager *config;

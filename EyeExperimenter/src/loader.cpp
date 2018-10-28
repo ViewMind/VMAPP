@@ -9,16 +9,13 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     ConfigurationManager::Command cmd;
 
     loadingError = false;
+    hasshedPassword = "";
     configuration = c;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_REAL;
     cv[CONFIG_XPX_2_MM] = cmd;
     cv[CONFIG_YPX_2_MM] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_BOOL;
-    cv[CONFIG_TEST_MODE] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
@@ -41,6 +38,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cmd.clear();
     cv[CONFIG_SERVER_ADDRESS] = cmd;
     cv[CONFIG_EYETRACKER_CONFIGURED] = cmd;
+    cv[CONFIG_INST_NAME] = cmd;
+    cv[CONFIG_INST_ETSERIAL] = cmd;
+    cv[CONFIG_INST_UID] = cmd;
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
@@ -65,7 +65,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[CONFIG_DUAL_MONITOR_MODE] = cmd;
     cv[CONFIG_DEMO_MODE] = cmd;
-    cv[CONFIG_USE_MOUSE] = cmd;    
+    cv[CONFIG_USE_MOUSE] = cmd;
 
     // Merging the settings or loading the default configuration.
     settings.setupVerification(cv);
@@ -106,11 +106,78 @@ void Loader::startDBSync(){
     }
 }
 
+void Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr){
+    // Storing the hasshed password for later comparison
+    hasshedPassword = QString(QCryptographicHash::hash(instPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
+    drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
+    QStringList columns;
+    columns << TINST_COL_HASHPASS;
+    QString condition = QString(TINST_COL_UID) + "= '" + configuration->getString(CONFIG_INST_UID)  + "'";
+    dbClient->setDBTransactionType(SQL_QUERY_TYPE_GET);
+    dbClient->appendGET(TABLE_INSTITUTION,columns,condition);
+    dbClient->runDBTransaction();
+}
+
 void Loader::onDisconnectFromDB(){
-    if (dbClient->getTransactionStatus()){
-        lim->setUpdateFlagTo(false);
+    if (hasshedPassword.isEmpty()){
+        if (dbClient->getTransactionStatus()){
+            lim->setUpdateFlagTo(false);
+        }
+        emit(synchDone());
     }
-    emit(synchDone());
+    else{
+        // This was a password validations request.
+        if (!dbClient->getTransactionStatus()){
+            // There was a connection error.
+            hasshedPassword = "";
+            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
+            return;
+        }
+
+
+        // To save code the global is put in a local
+        QString hpass = hasshedPassword;
+        hasshedPassword = "";
+
+        // There should only be one result
+        if (dbClient->getDBData().size() != 1){
+            logger.appendError("Expecting only one result from institution password verification but got: " + QString::number(dbClient->getDBData().size()));
+            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
+            return;
+        }
+
+        // Only one row in the only dbdata and no errors.
+        DBData dbdata = dbClient->getDBData().first();
+        if (!dbdata.error.isEmpty()){
+            logger.appendError("DB Error for institution password : " + dbdata.error);
+            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
+            return;
+        }
+
+        if (dbdata.rows.size() != 1){
+            logger.appendError("Expecting only one row from institution password verification but got: " + QString::number(dbdata.rows.size()));
+            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
+            return;
+        }
+
+        // Should only be one column
+        if (dbdata.rows.first().size() != 1){
+            logger.appendError("Expecting only one column from institution password verification but got: " + QString::number(dbdata.rows.first().size()));
+            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
+            return;
+        }
+
+        QString dbpass = dbdata.rows.first().first();
+
+        if (dbpass == hpass) {
+            // Validating the doctor
+            lim->validateDoctor(drUIDtoValidate);
+            emit(instPasswordVerifyResults(""));
+        }
+        else emit(instPasswordVerifyResults(getStringForKey("viewdrsel_instpassword_wrong")));
+
+    }
+
 }
 
 QString Loader::loadTextFile(const QString &fileName){
@@ -120,6 +187,22 @@ QString Loader::loadTextFile(const QString &fileName){
     QString ans = reader.readAll();
     file.close();
     return ans;
+}
+
+QStringList Loader::getErrorMessageForCode(quint8 code){
+    //qWarning() << "GETTING ERROR MESSAGE FOR CODE" << code;
+    switch (code) {
+    case RR_DB_ERROR:
+        return language.getStringList("error_db_transaction");
+    case RR_OUT_OF_EVALUATIONS:
+        return language.getStringList("error_db_outofevals");
+    case RR_WRONG_ET_SERIAL:
+        return language.getStringList("error_db_wrongetserial");
+    default:
+        logger.appendError("UNKNOWN Code when getting transaction error message: " + QString::number(code));
+        break;
+    }
+    return QStringList();
 }
 
 void Loader::addNewDoctorToDB(QVariantMap dbdata){
@@ -132,17 +215,24 @@ void Loader::addNewDoctorToDB(QVariantMap dbdata){
     QStringList values;
 
     // The passoword for the doctor ONLY goes into the local DB, it needs to be removed from the data.
-    QString password = dbdata.value("password");
+    QString password = dbdata.value("password").toString();
     if (password != ""){
         // The password needs to be overwritten.
         password = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
     }
+
+    // Removing the password from DBData, since its not part of the tables.
+    dbdata.remove("password");
 
     // Converting the QVariantMap to a double string list
     columns = dbdata.keys();
     for (qint32 i = 0; i < columns.size(); i++){
         values << dbdata.value(columns.at(i)).toString();
     }
+
+    // Adding the medical institution
+    columns << TDOCTOR_COL_MEDICAL_INST;
+    values << configuration->getString(CONFIG_INST_UID);
 
     // Saving data locally.
     lim->addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password);
@@ -233,6 +323,18 @@ QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
         return nameInfoList.at(1).at(selectedIndex);
     }
     else return "";
+}
+
+bool Loader::isDoctorPasswordCorrect(const QString &password){
+    QString hashpass = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
+    return (lim->getCurrentDoctorPassword() == hashpass);
+}
+
+bool Loader::isDoctorValidated(qint32 selectedIndex){
+    QString uid;
+    if (selectedIndex == -1) uid = configuration->getString(CONFIG_DOCTOR_UID);
+    else uid = getDoctorUIDByIndex(selectedIndex);
+    return lim->isDoctorValid(uid);
 }
 
 QStringList Loader::getUIDList() {

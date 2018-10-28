@@ -53,6 +53,7 @@ void SSLDBClient::runDBTransaction(){
     txDP.addString(queryType,DataPacket::DPFI_DB_QUERY_TYPE);
     txDP.addString(tableNames,DataPacket::DPFI_DB_TABLE);
     txDP.addString(columnList,DataPacket::DPFI_DB_COL);
+    dbdata.clear();
     transactionIsOk = false;
 
     if (queryType == SQL_QUERY_TYPE_SET){
@@ -162,8 +163,8 @@ void SSLDBClient::on_readyRead(){
 void SSLDBClient::on_socketError(QAbstractSocket::SocketError error){
     SSLClient::on_socketError(error);
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    log.appendError("Disconnecting on socket error: " + QString(metaEnum.valueToKey(error)) + " on DB Synch");
-    socket->disconnectFromHost();
+    if (error != QAbstractSocket::RemoteHostClosedError) log.appendError("Disconnecting on socket error: " + QString(metaEnum.valueToKey(error)) + " on DB connection");
+    if (socket->state() == QAbstractSocket::ConnectedState) socket->disconnectFromHost();
     timer.stop();
 }
 

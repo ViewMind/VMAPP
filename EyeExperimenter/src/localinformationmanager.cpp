@@ -4,6 +4,7 @@ const QString LocalInformationManager::PATIENT_DATA          = "PATIENT_DATA";
 const QString LocalInformationManager::PATIENT_UPDATE        = "PATIENT_UPDATE";
 const QString LocalInformationManager::DOCTOR_UPDATE         = "DOCTOR_UPDATE";
 const QString LocalInformationManager::DOCTOR_PASSWORD       = "DOCTOR_PASSWORD";
+const QString LocalInformationManager::DOCTOR_VALID          = "DOCTOR_VALID";
 
 LocalInformationManager::LocalInformationManager(ConfigurationManager *c)
 {
@@ -17,6 +18,29 @@ QString LocalInformationManager::getFieldForCurrentPatient(const QString &field)
     QString patuid = config->getString(CONFIG_PATIENT_UID);
     return localDB.value(druid).toMap().value(PATIENT_DATA).toMap().value(patuid).toMap().value(field).toString();
 
+}
+
+QString LocalInformationManager::getCurrentDoctorPassword(){
+    return localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap().value(DOCTOR_PASSWORD,"").toString();
+}
+
+void LocalInformationManager::validateDoctor(const QString &dr_uid){
+    //qWarning() << "Validating DR" << dr_uid;
+    if (!localDB.contains(dr_uid)) return;
+    QVariantMap drmap = localDB.value(dr_uid).toMap();
+    drmap[DOCTOR_VALID] = true;
+    localDB[dr_uid] = drmap;
+    backupDB();
+}
+
+bool LocalInformationManager::isDoctorValid(const QString &dr_uid){
+    if (!localDB.contains(dr_uid)) {
+        return false;
+    }
+    if (!localDB.value(dr_uid).toMap().contains(DOCTOR_VALID)) {
+        return false;
+    }
+    return localDB.value(dr_uid).toMap().value(DOCTOR_VALID).toBool();
 }
 
 bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
@@ -35,10 +59,17 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
         if (!drmap.contains(DOCTOR_UPDATE)) addDoctor = true;
         else if (drmap.value(DOCTOR_UPDATE).toBool()) addDoctor = true;
 
-        if (addDoctor){
+        //qWarning() << "Flags: UPDATE" << drmap.value(DOCTOR_UPDATE).toBool() << " VALID " << drmap.value(DOCTOR_VALID).toBool() << druid;
+
+        // Doctors who do not contain or whose valid flag is false do NOT update its information.
+        if (!drmap.contains(DOCTOR_VALID)) continue;
+        if (!drmap.value(DOCTOR_VALID).toBool()) continue;
+
+        if (addDoctor){            
             QStringList columns;
             QStringList values;
-            QSet<QString> avoid; avoid << DOCTOR_UPDATE << PATIENT_DATA;
+            QSet<QString> avoid;
+            avoid << DOCTOR_UPDATE << PATIENT_DATA << DOCTOR_VALID << DOCTOR_PASSWORD;
             QStringList keys = drmap.keys();
             for (qint32 j = 0; j < keys.size(); j++){
                 //Y esta bqWarning() << "Key " << j << " out of " << keys.size();
@@ -131,7 +162,7 @@ void LocalInformationManager::fillPatientDatInformation(){
 
 }
 
-bool LocalInformationManager::addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password){
+void LocalInformationManager::addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password){
 
     // Doctor information needs to be checked against existing information to see if there is a change.
     QVariantMap drinfo;
@@ -142,12 +173,15 @@ bool LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
 
     // Setting the new password if necessary.
     if (!password.isEmpty()){
+        drinfo[DOCTOR_UPDATE] = true;
+        drinfo[DOCTOR_VALID] = false;
         drinfo[DOCTOR_PASSWORD] = password;
     }
 
     if (!localDB.contains(dr_uid)){
         // Empty map for the patient.
         drinfo[DOCTOR_UPDATE] = true;
+        drinfo[DOCTOR_VALID] = false;
         drinfo[PATIENT_DATA] = QVariantMap();
         localDB[dr_uid] = drinfo;
     }
@@ -166,14 +200,16 @@ bool LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
             }
         }
         drinfo[DOCTOR_UPDATE] = update;
+        if (update) drinfo[DOCTOR_VALID] = false;
+
         // Saving the existent patient data.
         drinfo[PATIENT_DATA] = drmap.value(PATIENT_DATA);
         localDB[dr_uid] = drinfo;
     }
 
-    backupDB();
+    //qWarning() << "On Adding Dr Info UPDATE" << drinfo.value(DOCTOR_UPDATE).toBool() << " VALID " << drinfo.value(DOCTOR_VALID).toBool() << dr_uid;
 
-    return false;
+    backupDB();
 }
 
 void LocalInformationManager::addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values){
@@ -199,10 +235,8 @@ void LocalInformationManager::addPatientData(const QString &patient_uid, const Q
             else if (basePatient.value(cols.at(i)).toString() != values.at(i)){
                 thispatient[PATIENT_UPDATE] = true;
                 break;
-
             }
         }
-
     }
     else{
         thispatient[PATIENT_UPDATE] = true;
@@ -258,14 +292,6 @@ QList<QStringList> LocalInformationManager::getDoctorList(){
     QStringList uids = localDB.keys();
     for (qint32 i = 0; i < uids.size(); i++){
         QVariantMap drinfo = localDB.value(uids.at(i)).toMap();
-
-        // Checking if this is test mode and the UID is correct.
-        if (!config->getBool(CONFIG_TEST_MODE)){
-            QString testUID = uids.at(i);
-            testUID = testUID.remove(0,2); // Removing the country characters
-            if (testUID == TEST_UID) continue;
-        }
-
         names << drinfo.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drinfo.value(TDOCTOR_COL_LASTNAME).toString()
                  + " (" + uids.at(i) + ")";
     }

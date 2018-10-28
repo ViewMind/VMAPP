@@ -224,7 +224,9 @@ void FlowControl::onDisconnectionFinished(){
         return;
     }
 
-    if (!sslTransactionAllOk) emit(sslTransactionFinished());
+    if (!sslTransactionAllOk) {
+        emit(sslTransactionFinished());
+    }
     else emit(requestNextFileSet());
 }
 
@@ -496,6 +498,7 @@ void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &
         reportItems << map;
     }
 }
+
 
 QStringList FlowControl::getSelectedReportInfo(){
     QVariantMap report = reportsForPatient.getRepData(selectedReport);

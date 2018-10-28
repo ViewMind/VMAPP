@@ -36,6 +36,9 @@ public:
     Q_INVOKABLE QStringList getPatientIsOKList();
     Q_INVOKABLE QStringList getDoctorList();
     Q_INVOKABLE QString getDoctorUIDByIndex(qint32 selectedIndex);
+    Q_INVOKABLE bool isDoctorValidated(qint32 selectedIndex);
+    Q_INVOKABLE bool isDoctorPasswordCorrect(const QString &password);
+    Q_INVOKABLE bool doesCurrentDoctorHavePassword() { return !lim->getCurrentDoctorPassword().isEmpty(); }
     Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim->getCurrentDoctorInfo();}
     Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim->getCurrentPatientInfo();}
     Q_INVOKABLE int getDefaultCountry(bool offset = true);
@@ -45,15 +48,20 @@ public:
     Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata);
     Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt);
     Q_INVOKABLE void startDBSync();
+    Q_INVOKABLE void requestDrValidation(const QString &instPassword, qint32 selectedDr);
     Q_INVOKABLE void prepareForRequestOfPendingReports();
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE QString loadTextFile(const QString &fileName);
+    Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
 
 signals:
     void synchDone();
 
     // Signal to FlowControl, indicating the next file set to process.
-    void nextFileSet(const QStringList &fileSet);
+    void nextFileSet(const QStringList &fileSet);   
+
+    // Signal with the result message of verifying the institution password
+    void instPasswordVerifyResults(QString verifyMsg);
 
 public slots:
     // For when the DB Transaction has finished.
@@ -76,6 +84,10 @@ private:
 
     // The list that holds list names and corresponding uids
     QList<QStringList> nameInfoList;
+
+    // Temporarily save the hasshed institution password for comparison.s
+    QString hasshedPassword;
+    QString drUIDtoValidate;
 
     // To connect to the DB in the server. Flags are required to provide the proper information to the QML side.
     SSLDBClient *dbClient;

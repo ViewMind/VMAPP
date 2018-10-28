@@ -10,7 +10,7 @@ Dialog {
     id: viewDoctorSelection
     modal: true
     width: 654
-    height: 520
+    height: 600
     closePolicy: Popup.NoAutoClose
 
     contentItem: Rectangle {
@@ -34,10 +34,13 @@ Dialog {
             labelDrProfile.vmErrorMsg = loader.getStringForKey(keybase+"labelNoDrError");
             return false;
         }
-        else{
-            // Since the format is FirstName LastName - (UID), this knowledge is used to extract the UID.
+        else{            
             var name = labelDrProfile.currentText;
             var uid = loader.getDoctorUIDByIndex(labelDrProfile.currentIndex-1)
+
+            // Cleaning the name
+            var parts = name.split("(");
+            name = parts[0];
 
             //console.log("Setting the DOCTOR UID to: " + uid);
             loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_UID,uid);
@@ -47,9 +50,83 @@ Dialog {
 
     }
 
+    function changeView(wait){
+        if (wait){
+           btnClose.visible = false;
+           rowProfileAndAdd.visible = false;
+           drPic.visible = false;
+           diagTitle.visible = false;
+           diagSubTitle.visible = false;
+           instPassRow.visible = false;
+           btnOk.visible = false;
+           diagVerifWaitTitle.visible = true;
+           slideAnimation.visible = true;
+        }
+        else{
+            btnClose.visible = true;
+            rowProfileAndAdd.visible = true;
+            drPic.visible = true;
+            diagTitle.visible = true;
+            diagSubTitle.visible = true;
+            btnOk.visible = true;
+            diagVerifWaitTitle.visible = false;
+            slideAnimation.visible = false;
+        }
+
+    }
+
+    Connections{
+        target: loader
+        onInstPasswordVerifyResults:{
+            changeView(false);
+            instPassword.clear();
+            if (verifyMsg !== ""){
+                instPassword.vmErrorMsg = verifyMsg;
+                instPassRow.visible = true;
+            }
+            else{
+                labelDrProfile.vmErrorMsg = "";
+                instPassword.vmErrorMsg = "";
+                instPassRow.visible = false;
+            }
+        }
+    }
+
     onOpened: {
+        instPassword.clear();
+        instPassword.setText("3n5YPEfz");
         updateDrProfile();
     }
+
+    //****************************************************************************************
+    //******************* SECOND VIEW FOR AWAITING PASSWORD VERIFICATION *********************
+    //****************************************************************************************
+
+    // The instruction text
+    Text {
+        id: diagVerifWaitTitle
+        font.family: viewHome.gothamB.name
+        font.pixelSize: 43
+        anchors.top: parent.top
+        anchors.topMargin: 88
+        anchors.horizontalCenter: parent.horizontalCenter
+        color: "#297fca"
+        text: loader.getStringForKey(keybase+"verif_title");
+        visible: false;
+    }
+
+    AnimatedImage {
+        id: slideAnimation
+        source: "qrc:/images/LOADING.gif"
+        anchors.top: diagVerifWaitTitle.bottom
+        anchors.topMargin: 30
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: false
+    }
+
+    //****************************************************************************************
+    //****************************************************************************************
+    //****************************************************************************************
 
     VMDefines{
         id: vmDefines
@@ -114,6 +191,23 @@ Dialog {
             width: 350
             vmModel: []
             font.family: viewHome.robotoR.name
+            onCurrentIndexChanged: {
+                if (currentIndex > 0){
+                    if (!loader.isDoctorValidated(currentIndex-1)){
+                        vmErrorMsg = loader.getStringForKey(keybase+"novalid_msg");
+                        instPassRow.visible = true;
+                    }
+                    else {
+                        instPassRow.visible = false;
+                        vmErrorMsg = "";
+                    }
+                }
+                else {
+                    vmErrorMsg = "";
+                    instPassRow.visible = false;
+                }
+                instPassword.vmErrorMsg = "";
+            }
         }
 
         VMPlusButton{
@@ -142,13 +236,41 @@ Dialog {
         }
     }
 
+    Row {
+        id: instPassRow
+        anchors.left: rowProfileAndAdd.left
+        anchors.top: rowProfileAndAdd.bottom
+        anchors.topMargin: 50
+        spacing: 10
+
+        VMPasswordField{
+            id: instPassword
+            vmLabelText: loader.getStringForKey(keybase+"labelInstPassword");
+            width: labelDrProfile.width
+        }
+
+        VMButton{
+            id: btnValidate
+            height: labelDrProfile.height
+            vmText: loader.getStringForKey(keybase+"btnValidate");
+            vmFont: viewHome.gothamM.name
+            width: rowProfileAndAdd.width - spacing - instPassword.width
+            anchors.bottom: instPassword.bottom
+            onClicked: {
+                loader.requestDrValidation(instPassword.getText(),labelDrProfile.currentIndex-1);
+                changeView(true);
+            }
+        }
+
+    }
+
     VMButton{
         id: btnOk
         height: 50
         vmText: loader.getStringForKey(keybase+"btnOk");
         vmFont: viewHome.gothamM.name
-        anchors.top: rowProfileAndAdd.bottom
-        anchors.topMargin: 106
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             if (setCurrentDoctor()){
