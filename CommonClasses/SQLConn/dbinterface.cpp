@@ -104,6 +104,7 @@ bool DBInterface::readFromDB(const QString &table, const QStringList &columns, c
     }
 
     QSqlQuery q;
+    //qWarning() << "EXECUTING READ QUERY: " << query;
     if (!q.exec(query)){
         error = "SELECT Error on query: " + query + ". ERROR: " + q.lastError().text();
         return false;

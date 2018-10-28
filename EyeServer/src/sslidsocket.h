@@ -8,7 +8,6 @@
 #include "../../CommonClasses/DataPacket/datapacket.h"
 
 #define  S3_BASE_COMMAND     "aws s3 cp"
-//#define  S3_ADDRESSS         "s3://viewmind-raw-eye-data/"
 #define  S3_PARMETERS        "--quiet"
 #define  TIME_FORMAT_STRING  "yyyy_MM_dd_hh_mm_ss"
 

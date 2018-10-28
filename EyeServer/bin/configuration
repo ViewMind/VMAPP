@@ -3,22 +3,33 @@
 #--------------------------------------------------------------------------------------#
 
 # Output directory. This is where the received information will be stored.
-raw_data_repo = /home/ec2-user/EyeServer/output;
+# raw_data_repo = /home/ec2-user/EyeServer/output;
+raw_data_repo = /home/ariela/repos/viewmind_projects/EyeServer/bin/output;
 
 # How many eye-data-processors to run in parallel
 number_of_paralell_processes = 2;
 
 # Path to the eyeprocessor executable.
-eyeprocessor_path = /home/ec2-user/EyeReportGenerator/EyeReportGen;
+# eyeprocessor_path = /home/ec2-user/EyeReportGenerator/EyeReportGen;
+eyeprocessor_path = /home/ariela/repos/viewmind_projects/EyeReportGenerator/bin/EyeReportGen;
 
 # Time outs (in seconds) for waiting for the client to send the report data
 data_request_time_out = 180; # Seconds
 
-# DB data for develop
+# DB data for local laptop
 db_name = viewmind_develop;
-db_user = devuser;
-db_passwd = dev1984;
+db_user = vmdb;
+db_passwd = vmdb;
+db_host = localhost;
+db_port = 3306;
+# This is just the program will run locally. It will fail when it uses this.
 s3_address = develop-testing;
+
+# DB data for develop
+#db_name = viewmind_develop;
+#db_user = devuser;
+#db_passwd = dev1984;
+#s3_address = develop-testing;
 
 ## DB data for production
 #db_name = viewmind_data;
@@ -27,5 +38,6 @@ s3_address = develop-testing;
 #s3_address = viewmind-raw-eye-data;
 
 # Amazon host
-db_host = viewminddb.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
-db_port = 3306;
+#db_host = viewminddb.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
+#db_port = 3306;
+

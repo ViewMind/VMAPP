@@ -16,6 +16,7 @@ DBManager/bin/
 PNGReportGenerator/exe/
 EyeDataAnalyzer/exe/
 EyeReportGenerator/exe/
+EyeServer/bin/output/
 ReportViewerDev/
 SQLClient/bin/
 Doc/*.aux
@@ -25,3 +26,7 @@ BindingDesigner/outputs/*
 *.autosave
 *.tmp*
 *.log
+EyeServer/bin/QRC/
+Scripts/dbscripts/bkpDev/
+Scripts/dbscripts/bkpProd/
+
