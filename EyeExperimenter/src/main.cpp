@@ -6,7 +6,6 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "loader.h"
 #include "flowcontrol.h"
-#include "localinformationmanager.h"
 
 // Global Configuration
 ConfigurationManager configuration;

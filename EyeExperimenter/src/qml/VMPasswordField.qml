@@ -36,7 +36,6 @@ Item {
         lineEdit.text = ""
     }
 
-
     TextInput {
         id: lineEdit
         color: "#58595b"

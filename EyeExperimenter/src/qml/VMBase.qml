@@ -103,17 +103,9 @@ Rectangle {
         anchors.left: parent.left
     }
 
-
-//    // The back button
-//    VMBackButton{
-//        id: btnBack
-//        anchors.top: parent.top
-//        anchors.topMargin: 34
-//        anchors.left: parent.left
-//        anchors.leftMargin: 61
-//        visible: !isHomePage
-//        onClicked: backButtonPressed();
-//    }
+    function setMenuVisibility(visible){
+        doctorMenu.visible = visible;
+    }
 
     VMDoctorMenu{
         id: doctorMenu

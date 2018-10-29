@@ -2,6 +2,7 @@
 
 #********************************* VIEWHOME SCREEN *********************************
 viewhome_btnConfSettings = PREFERENCIAS;
+viewhome_btnEditDrInfo = PERSONAL;
 viewhome_slideTitle = Comenzar su evaluación;
 viewhome_description = Utilizando Seguimiento Ocular de alta precisión, en <br>
 <b>una prueba estándar, no invasiva de 10 minutos</b>, podemos <br>
@@ -76,7 +77,7 @@ viewdrsel_viewTitle = Selección del Doctor;
 viewdrsel_viewSubTitle = Seleccione un perfíl de Doctor o agregue uno nuevo;
 viewdrsel_labelDrProfile = Perfil de Doctor;
 viewdrsel_btnAddProfile = Agregar Perfil;
-viewdrsel_btnOk = OK;
+viewdrsel_btnOk = INGRESAR;
 viewdrsel_labelNoDrError = Por favor, seleccion un perfíl de doctor antes de continuar;
 viewdrsel_labelInstPassword = Por favor ingrese la contraseña de la institución;
 viewdrsel_btnValidate = VALIDAR;
@@ -84,6 +85,9 @@ viewdrsel_instpassword_wrong = La contraseña es incorrecta. Por favor verifique
 viewdrsel_password_connect_error = No se puede establecer la conexión al servidor. No se puede verificar.;
 viewdrsel_novalid_msg = No se encuentra validado. No podrá pedir reportes.;
 viewdrsel_verif_title = Verificando contraseña;
+viewdrsel_drpassword = Contraseña;
+viewdrsel_drwrongpass = Contraseña incorrecta;
+viewdrsel_drnopass = No se ha fijado una contraseña;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibración;
@@ -182,6 +186,9 @@ viewdrinfo_errorEmpty = No puede estar vacio;
 viewdrinfo_password = Contraseña;
 viewdrinfo_verify_password = Verifique Contraseña;
 viewdrinfo_password_match = Las contraseñas no coinciden;
+viewdrinfo_disable = Deshabilitar doctor;
+viewdrinfo_disable_warning = Advertencia|Una vez desahbilitado doctor y validado el cambio, no es posible deshacerlo<br>Desea continuar?;
+viewdrinfo_drexists = Identificación existente;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = El estudio ha finalizado;

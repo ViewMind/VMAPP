@@ -7,10 +7,11 @@
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../CommonClasses/LocalInformationManager/localinformationmanager.h"
 #include "sslclient/ssldbclient.h"
 #include "eye_experimenter_defines.h"
 #include "countries.h"
-#include "localinformationmanager.h"
+
 
 class Loader : public QObject
 {
@@ -37,15 +38,16 @@ public:
     Q_INVOKABLE QStringList getDoctorList();
     Q_INVOKABLE QString getDoctorUIDByIndex(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorValidated(qint32 selectedIndex);
+    Q_INVOKABLE bool isDoctorPasswordEmpty(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorPasswordCorrect(const QString &password);
-    Q_INVOKABLE bool doesCurrentDoctorHavePassword() { return !lim->getCurrentDoctorPassword().isEmpty(); }
+    Q_INVOKABLE bool doesCurrentDoctorHavePassword() { return !lim->getDoctorPassword().isEmpty(); }
     Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim->getCurrentDoctorInfo();}
     Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim->getCurrentPatientInfo();}
     Q_INVOKABLE int getDefaultCountry(bool offset = true);
     Q_INVOKABLE QString getCountryCodeForCountry(const QString &country) { return countries->getCodeForCountry(country); }
     Q_INVOKABLE void setAgeForCurrentPatient();
     Q_INVOKABLE int getCountryIndexFromCode(const QString &code) { return countries->getIndexFromCode(code); }
-    Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata);
+    Q_INVOKABLE bool addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew);
     Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt);
     Q_INVOKABLE void startDBSync();
     Q_INVOKABLE void requestDrValidation(const QString &instPassword, qint32 selectedDr);

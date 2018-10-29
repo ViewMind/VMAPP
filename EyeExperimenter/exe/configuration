@@ -20,6 +20,7 @@ server_address = 18.191.142.5;
 inst_et_serial = ;
 inst_name = Axis;
 inst_uid = 1858989878;
+inst_pass = d2e3f72c2c992b61fe69de59de28ffbb55fcc2d71ca9aac9d61da0985ea843b3;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #

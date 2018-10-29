@@ -5,6 +5,7 @@ const QString LocalInformationManager::PATIENT_UPDATE        = "PATIENT_UPDATE";
 const QString LocalInformationManager::DOCTOR_UPDATE         = "DOCTOR_UPDATE";
 const QString LocalInformationManager::DOCTOR_PASSWORD       = "DOCTOR_PASSWORD";
 const QString LocalInformationManager::DOCTOR_VALID          = "DOCTOR_VALID";
+const QString LocalInformationManager::DOCTOR_HIDDEN         = "DOCTOR_HIDDEN";
 
 LocalInformationManager::LocalInformationManager(ConfigurationManager *c)
 {
@@ -20,8 +21,9 @@ QString LocalInformationManager::getFieldForCurrentPatient(const QString &field)
 
 }
 
-QString LocalInformationManager::getCurrentDoctorPassword(){
-    return localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap().value(DOCTOR_PASSWORD,"").toString();
+QString LocalInformationManager::getDoctorPassword(QString uid){
+    if (uid.isEmpty()) uid = config->getString(CONFIG_DOCTOR_UID);
+    return localDB.value(uid).toMap().value(DOCTOR_PASSWORD,"").toString();
 }
 
 void LocalInformationManager::validateDoctor(const QString &dr_uid){
@@ -31,6 +33,31 @@ void LocalInformationManager::validateDoctor(const QString &dr_uid){
     drmap[DOCTOR_VALID] = true;
     localDB[dr_uid] = drmap;
     backupDB();
+}
+
+void LocalInformationManager::deleteDoctor(const QString &uid){
+    if (!localDB.contains(uid)) return;
+    localDB.remove(uid);
+    backupDB();
+}
+
+bool LocalInformationManager::isHidden(const QString &uid){
+    if (!localDB.contains(uid)) return false;
+    if (!localDB.value(uid).toMap().contains(DOCTOR_HIDDEN)) return false;
+    if (!localDB.value(uid).toMap().contains(DOCTOR_VALID)) return false;
+    return (localDB.value(uid).toMap().value(DOCTOR_HIDDEN).toBool() && localDB.value(uid).toMap().value(DOCTOR_VALID).toBool());
+}
+
+void LocalInformationManager::makeVisible(const QString &uid){
+    if (!localDB.contains(uid)) return;
+    QVariantMap drmap = localDB.value(uid).toMap();
+    drmap[DOCTOR_HIDDEN] = false;
+    localDB[uid] = drmap;
+    backupDB();
+}
+
+bool LocalInformationManager::doesDoctorExist(const QString &uid) const{
+    return localDB.contains(uid);
 }
 
 bool LocalInformationManager::isDoctorValid(const QString &dr_uid){
@@ -43,6 +70,7 @@ bool LocalInformationManager::isDoctorValid(const QString &dr_uid){
     return localDB.value(dr_uid).toMap().value(DOCTOR_VALID).toBool();
 }
 
+#ifdef USESSL
 bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 
     client->setDBTransactionType(SQL_QUERY_TYPE_SET);
@@ -69,7 +97,7 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
             QStringList columns;
             QStringList values;
             QSet<QString> avoid;
-            avoid << DOCTOR_UPDATE << PATIENT_DATA << DOCTOR_VALID << DOCTOR_PASSWORD;
+            avoid << DOCTOR_UPDATE << PATIENT_DATA << DOCTOR_VALID << DOCTOR_PASSWORD << DOCTOR_HIDDEN;
             QStringList keys = drmap.keys();
             for (qint32 j = 0; j < keys.size(); j++){
                 //Y esta bqWarning() << "Key " << j << " out of " << keys.size();
@@ -126,6 +154,7 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
     return ans;
 
 }
+#endif
 
 void LocalInformationManager::fillPatientDatInformation(){
 
@@ -162,7 +191,7 @@ void LocalInformationManager::fillPatientDatInformation(){
 
 }
 
-void LocalInformationManager::addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password){
+void LocalInformationManager::addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden){
 
     // Doctor information needs to be checked against existing information to see if there is a change.
     QVariantMap drinfo;
@@ -171,17 +200,19 @@ void LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
         drinfo[cols.at(i)] = values.at(i);
     }
 
-    // Setting the new password if necessary.
+    drinfo[DOCTOR_HIDDEN] = hidden;
+    drinfo[DOCTOR_VALID] = true;
+
+    // Setting the new password if necessary, only if not empty.
     if (!password.isEmpty()){
-        drinfo[DOCTOR_UPDATE] = true;
-        drinfo[DOCTOR_VALID] = false;
         drinfo[DOCTOR_PASSWORD] = password;
     }
 
     if (!localDB.contains(dr_uid)){
         // Empty map for the patient.
         drinfo[DOCTOR_UPDATE] = true;
-        drinfo[DOCTOR_VALID] = false;
+        drinfo[DOCTOR_VALID] = false; // Doctor is invalidated ONLY when created and when its hidden status is changed.
+        drinfo[DOCTOR_HIDDEN] = false; // It should not be possible to CREATE a hidden Doctor. But just in case.
         drinfo[PATIENT_DATA] = QVariantMap();
         localDB[dr_uid] = drinfo;
     }
@@ -200,15 +231,17 @@ void LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
             }
         }
         drinfo[DOCTOR_UPDATE] = update;
-        if (update) drinfo[DOCTOR_VALID] = false;
-
+        if (hidden){
+            // If the doctor was hidden, nothing else matters. It will not be updated and it is invalid.
+            drinfo[DOCTOR_UPDATE] = false;
+            drinfo[DOCTOR_VALID] = false;
+        }
         // Saving the existent patient data.
         drinfo[PATIENT_DATA] = drmap.value(PATIENT_DATA);
         localDB[dr_uid] = drinfo;
     }
 
     //qWarning() << "On Adding Dr Info UPDATE" << drinfo.value(DOCTOR_UPDATE).toBool() << " VALID " << drinfo.value(DOCTOR_VALID).toBool() << dr_uid;
-
     backupDB();
 }
 
@@ -286,12 +319,13 @@ QStringList LocalInformationManager::nextPendingReport(){
     return patientReportInformation[config->getString(CONFIG_PATIENT_UID)].nextPendingReportFileSet();
 }
 
-QList<QStringList> LocalInformationManager::getDoctorList(){
+QList<QStringList> LocalInformationManager::getDoctorList(bool forceShow){
     QList<QStringList> ans;
     QStringList names;
     QStringList uids = localDB.keys();
     for (qint32 i = 0; i < uids.size(); i++){
         QVariantMap drinfo = localDB.value(uids.at(i)).toMap();
+        if (isHidden(uids.at(i)) && !forceShow) continue;
         names << drinfo.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drinfo.value(TDOCTOR_COL_LASTNAME).toString()
                  + " (" + uids.at(i) + ")";
     }

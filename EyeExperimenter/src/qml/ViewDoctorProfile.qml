@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.3
+import QtGraphicalEffects 1.0
 
 VMBase {
 
@@ -8,6 +9,7 @@ VMBase {
     height: viewDoctorInformation.vmHEIGHT
 
     readonly property string keybase: "viewdrinfo_"
+    property bool newEntry: true;
 
     function clearAllFields(){
         labelAddress.clear();
@@ -23,6 +25,9 @@ VMBase {
         labelProvince.clear();
         labelCountry.enabled = true;
         labelDocument_number.enabled = true;
+        cboxDisable.visible = false;
+        cboxDisable.checked = false;
+        setMenuVisibility(false);
     }
 
     function loadDoctorInformation(){
@@ -34,6 +39,7 @@ VMBase {
         labelLastName.setText(drInfo.lastname);
         labelProvince.setText(drInfo.state);
         labelPhone.setText(drInfo.telephone);
+
         // Substr is used as the first two letters are the country code.
         labelDocument_number.setText(drInfo.uid.substr(2));
 
@@ -54,40 +60,147 @@ VMBase {
         // The country and ID are unique. They can't be modified.
         labelCountry.enabled = false;
         labelDocument_number.enabled = false;
+
+        newEntry = false;
+        cboxDisable.visible = true;
+        setMenuVisibility(true);
     }
 
-    Button {
-        id: btnConfSettings
-        scale: btnConfSettings.pressed? 0.9:1
-        Behavior on scale{
-            NumberAnimation {
-                duration: 25
+    function checkAndSave(){
+        if (labelPassword.getText() !== labelVerifyPassword.getText()){
+            labelPassword.vmErrorMsg = loader.getStringForKey(keybase + "password_match");
+            return;
+        }
+
+        // THIS IS THE TABLE DATA.
+        var dbData = {
+            uid: labelDocument_number.vmEnteredText,
+            idtype: docTypes.currentText,
+            firstname: labelName.vmEnteredText,
+            lastname: labelLastName.vmEnteredText,
+            countryid: labelCountry.currentText,
+            state: labelProvince.vmEnteredText,
+            city: labelCity.vmEnteredText,
+            telephone: labelPhone.vmEnteredText,
+            email: labelMail.vmEnteredText,
+            address: labelAddress.vmEnteredText
+        };
+
+        // The absolute must values are the document, the country, the name and the last name.
+        if (labelCountry.currentIndex === 0){
+            labelCountry.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
+            return;
+        }
+
+        if (dbData.uid === ""){
+            labelDocument_number.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
+            return;
+        }
+
+        if (dbData.firstname === ""){
+            labelName.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
+            return;
+        }
+
+        if (dbData.lastname === ""){
+            labelLastName.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
+            return;
+        }
+
+        if (loader.addNewDoctorToDB(dbData, labelPassword.getText(), cboxDisable.checked, newEntry)){
+            viewDrSelection.updateDrProfile();
+            swiperControl.currentIndex = swiperControl.vmIndexHome;
+        }
+        else{
+            labelDocument_number.vmErrorMsg = loader.getStringForKey(keybase + "drexists");
+        }
+
+    }
+
+    Dialog {
+        id: showMsgDialog;
+        modal: true
+        width: 614
+        height: 280
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectShowMsgDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
             }
         }
-        background: Rectangle {
-            id: btnConfSettingsRect
-            radius: 3
-            color: btnConfSettings.pressed? "#e8f2f8" :"#ffffff"
-            width: 178
-            height: 43
+
+        VMDialogCloseButton {
+            id: btnClose
+            anchors.top: parent.top
+            anchors.topMargin: 22
+            anchors.right: parent.right
+            anchors.rightMargin: 25
+            onClicked: {
+                showMsgDialog.close();
+            }
         }
-        contentItem: Text{
-            anchors.centerIn: btnConfSettingsRect
-            font.family: gothamM.name
+
+        // The instruction text
+        Text {
+            id: showMsgDialogTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43
+            anchors.top: parent.top
+            anchors.topMargin: 50
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            color: "#297fca"
+            text: loader.getStringListForKey(keybase + "disable_warning")[0];
+        }
+
+        // The instruction text
+        Text {
+            id: showMsgDialogMessage
+            font.family: viewHome.robotoR.name
             font.pixelSize: 13
-            text: loader.getStringForKey("viewhome_btnConfSettings");
-            color: "#88b2d0"
+            textFormat: Text.RichText
+            anchors.top:  showMsgDialogTitle.bottom
+            anchors.topMargin: 20
+            anchors.left: showMsgDialogTitle.left
+            text: loader.getStringListForKey(keybase + "disable_warning")[1];
         }
-        anchors{
-            right: parent.right
-            rightMargin: 63
-            top: parent.top
-            topMargin: 19
+
+        // Buttons
+        Row{
+            id: rowButtonsDiag
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: showMsgDialogMessage.bottom
+            anchors.topMargin: 40
+            spacing: 15
+
+            VMButton{
+                id: btnNo
+                height: 50
+                vmText: "NO"
+                vmFont: gothamM.name
+                vmInvertColors: true
+                onClicked: {
+                    showMsgDialog.close()
+                }
+            }
+
+            VMButton{
+                id: btnOk
+                vmText: "OK";
+                vmFont: gothamM.name
+                onClicked: {
+                    showMsgDialog.close()
+                    checkAndSave();
+                }
+            }
         }
-        onClicked: {
-            swiperControl.currentIndex = swiperControl.vmIndexHome
-            viewSettings.open()
-        }
+
     }
 
     // The Doctor Information Title and subtitle
@@ -259,6 +372,16 @@ VMBase {
 
     }
 
+    // The disable button
+    VMCheckBox{
+        id: cboxDisable
+        text: loader.getStringForKey(keybase + "disable");
+        anchors.top: mainForm.bottom
+        anchors.topMargin: 20
+        anchors.left: mainForm.left
+        visible: false;
+    }
+
     // Buttons
     Row{
         id: rowButtons
@@ -283,52 +406,12 @@ VMBase {
             vmText: loader.getStringForKey(keybase+"btnSave");
             vmFont: gothamM.name
             onClicked: {
-
-                if (labelPassword.getText() !== labelVerifyPassword.getText()){
-                    labelPassword.vmErrorMsg = loader.getStringForKey(keybase + "password_match");
-                    return;
+                if (cboxDisable.checked){
+                    showMsgDialog.open();
                 }
-
-                // THIS IS THE TABLE DATA.
-                var dbData = {
-                    uid: labelDocument_number.vmEnteredText,
-                    idtype: docTypes.currentText,
-                    firstname: labelName.vmEnteredText,
-                    lastname: labelLastName.vmEnteredText,
-                    countryid: labelCountry.currentText,
-                    state: labelProvince.vmEnteredText,
-                    city: labelCity.vmEnteredText,
-                    telephone: labelPhone.vmEnteredText,
-                    email: labelMail.vmEnteredText,
-                    address: labelAddress.vmEnteredText,
-                    password: labelPassword.getText()
-                };
-
-                // The absolute must values are the document, the country, the name and the last name.
-                if (labelCountry.currentIndex === 0){
-                    labelCountry.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
-                    return;
+                else{
+                    checkAndSave();
                 }
-
-                if (dbData.uid === ""){
-                    labelDocument_number.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
-                    return;
-                }
-
-                if (dbData.firstname === ""){
-                    labelName.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
-                    return;
-                }
-
-                if (dbData.lastname === ""){
-                    labelLastName.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
-                    return;
-                }
-
-                loader.addNewDoctorToDB(dbData);
-                viewDrSelection.updateDrProfile();
-                swiperControl.currentIndex = swiperControl.vmIndexHome;
-
             }
         }
     }

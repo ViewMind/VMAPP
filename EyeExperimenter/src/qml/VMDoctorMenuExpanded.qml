@@ -12,7 +12,7 @@ Rectangle {
     property string vmDemoMode: "";
 
     z: -10
-    height: 290
+    height: 364
     color: "#ffffff"
 
     layer.enabled: true
@@ -178,6 +178,38 @@ Rectangle {
         onClicked: {
             swiperControl.currentIndex = swiperControl.vmIndexHome;
             viewHome.openSettingsDialog();
+        }
+    }
+
+    // The button is a mouse area otherwise the menu exists.
+    MouseArea{
+        id: btnChangeDoctorInfo
+        width: parent.width*0.9
+        height: 38
+        Rectangle {
+            id: btnDrInfoRect
+            anchors.fill: parent
+            radius: 3
+            color: (btnChangeDoctorInfo.pressed)? "ff0000" : "#ffffff"
+            border.color: "#BCBEC0"
+            Text{
+                anchors.centerIn: btnDrInfoRect
+                font.family: gothamM.name
+                font.pixelSize: 13
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                text: loader.getStringForKey("viewhome_btnEditDrInfo");
+                color: "#BCBEC0"
+            }
+
+        }
+        anchors.top: btnChangeSettingMouseArea.bottom
+        anchors.topMargin: 18
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: {
+            viewDrInfo.clearAllFields();
+            viewDrInfo.loadDoctorInformation();
+            swiperControl.currentIndex = swiperControl.vmIndexDrProfile;
         }
     }
 

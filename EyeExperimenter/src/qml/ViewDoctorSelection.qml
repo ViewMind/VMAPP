@@ -10,7 +10,7 @@ Dialog {
     id: viewDoctorSelection
     modal: true
     width: 654
-    height: 600
+    height: 650
     closePolicy: Popup.NoAutoClose
 
     contentItem: Rectangle {
@@ -47,7 +47,6 @@ Dialog {
             loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_NAME,name);
             return true;
         }
-
     }
 
     function changeView(wait){
@@ -59,6 +58,7 @@ Dialog {
            diagSubTitle.visible = false;
            instPassRow.visible = false;
            btnOk.visible = false;
+           drPassword.visible = false;
            diagVerifWaitTitle.visible = true;
            slideAnimation.visible = true;
         }
@@ -68,6 +68,7 @@ Dialog {
             drPic.visible = true;
             diagTitle.visible = true;
             diagSubTitle.visible = true;
+            drPassword.visible = true;
             btnOk.visible = true;
             diagVerifWaitTitle.visible = false;
             slideAnimation.visible = false;
@@ -94,6 +95,7 @@ Dialog {
 
     onOpened: {
         instPassword.clear();
+        drPassword.clear();
         instPassword.setText("3n5YPEfz");
         updateDrProfile();
     }
@@ -201,10 +203,20 @@ Dialog {
                         instPassRow.visible = false;
                         vmErrorMsg = "";
                     }
+
+                    if (loader.isDoctorPasswordEmpty(currentIndex-1)){
+                        //console.log("Setting the error message: " + loader.getStringForKey(keybase+"drnopass"));
+                        drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drnopass");
+                    }
+                    else{
+                        drPassword.vmErrorMsg = "";
+                    }
+
                 }
                 else {
                     vmErrorMsg = "";
                     instPassRow.visible = false;
+                    drPassword.vmErrorMsg = "";
                 }
                 instPassword.vmErrorMsg = "";
             }
@@ -221,26 +233,22 @@ Dialog {
             }
         }
 
-        VMPencilButton {
-            id: btnEditDrInfo
-            height: labelDrProfile.height
-            anchors.bottom: labelDrProfile.bottom
-            onClicked: {
-                if (setCurrentDoctor()){
-                    viewDoctorSelection.close();
-                    viewDrInfo.clearAllFields();
-                    viewDrInfo.loadDoctorInformation();
-                    swiperControl.currentIndex = swiperControl.vmIndexDrProfile;
-                }
-            }
-        }
+    }
+
+    VMPasswordField{
+        id: drPassword
+        vmLabelText: loader.getStringForKey(keybase+"drpassword");
+        width: labelDrProfile.width
+        anchors.left: rowProfileAndAdd.left
+        anchors.top: rowProfileAndAdd.bottom
+        anchors.topMargin: 50
     }
 
     Row {
         id: instPassRow
         anchors.left: rowProfileAndAdd.left
-        anchors.top: rowProfileAndAdd.bottom
-        anchors.topMargin: 50
+        anchors.top: drPassword.bottom
+        anchors.topMargin: 60
         spacing: 10
 
         VMPasswordField{
@@ -254,14 +262,13 @@ Dialog {
             height: labelDrProfile.height
             vmText: loader.getStringForKey(keybase+"btnValidate");
             vmFont: viewHome.gothamM.name
-            width: rowProfileAndAdd.width - spacing - instPassword.width
+            width: 80
             anchors.bottom: instPassword.bottom
             onClicked: {
                 loader.requestDrValidation(instPassword.getText(),labelDrProfile.currentIndex-1);
                 changeView(true);
             }
         }
-
     }
 
     VMButton{
@@ -274,11 +281,16 @@ Dialog {
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             if (setCurrentDoctor()){
-                // Updating the text of the doctor menu.
-                viewHome.updateDrMenuText();
-
-                viewDoctorSelection.close();
-                swiperControl.currentIndex = swiperControl.vmIndexPatientList
+                if (loader.isDoctorPasswordCorrect(drPassword.getText())){
+                    // Updating the text of the doctor menu.
+                    viewHome.updateDrMenuText();
+                    viewDoctorSelection.close();
+                    swiperControl.currentIndex = swiperControl.vmIndexPatientList
+                    drPassword.vmErrorMsg = "";
+                }
+                else{
+                    drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drwrongpass");;
+                }
             }
         }
     }

@@ -28,6 +28,7 @@ VMBase {
         viewResults.updateText()
         viewStudyStart.updateText()
         viewPatList.updateText()
+        viewDrInfo.updateText();
     }
 
     Component.onCompleted: {

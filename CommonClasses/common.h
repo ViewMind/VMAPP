@@ -16,6 +16,9 @@
 #define   SQL_QUERY_TYPE_GET                            "get"
 #define   SQL_QUERY_TYPE_SET                            "set"
 
+// The directory name where the raw data will be located
+#define   DIRNAME_RAWDATA                               "viewmind_etdata"
+
 // Configuration key values (cmd names in the configuration file)
 /// TODO : Clean up unused defines.
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
@@ -81,6 +84,7 @@
 #define   CONFIG_INST_NAME                              "inst_name"
 #define   CONFIG_INST_UID                               "inst_uid"
 #define   CONFIG_INST_ETSERIAL                          "inst_et_serial"
+#define   CONFIG_INST_PASSWORD                          "inst_pass"
 
 // The unique UID for tests.
 #define   TEST_UID                                      "vm0000"

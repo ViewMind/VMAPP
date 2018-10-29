@@ -2,6 +2,7 @@
 
 #********************************* VIEWHOME SCREEN *********************************
 viewhome_btnConfSettings = CONFIGURE SETTINGS;
+viewhome_btnEditDrInfo = PERSONAL;
 viewhome_slideTitle = Start your evaluation;
 viewhome_description = Using high-precision Eye-Tracking, in <b> a 10-minutes, <br>
 non-invasive and standarized test</b>, we are able to detect <br>
@@ -76,7 +77,7 @@ viewdrsel_viewTitle = Doctor selection;
 viewdrsel_viewSubTitle = Select Doctor's profile or add a new one;
 viewdrsel_labelDrProfile = Doctor's profile;
 viewdrsel_btnAddProfile = Add a profile;
-viewdrsel_btnOk = OK;
+viewdrsel_btnOk = LOGIN;
 viewdrsel_labelNoDrError = Please select a doctor's profile in order to continue;
 viewdrsel_labelInstPassword = Please enter the institution's password;
 viewdrsel_btnValidate = VALIDATE;
@@ -84,6 +85,9 @@ viewdrsel_instpassword_wrong = The password entered is incorrect. Please make ve
 viewdrsel_password_connect_error = The connection to the server could not be established. Unable to verify.;
 viewdrsel_novalid_msg = Not validated. Will be unable to request reports;
 viewdrsel_verif_title = Verifying password;
+viewdrsel_drpassword = Password;
+viewdrsel_drwrongpass = Wrong password;
+viewdrsel_drnopass = No password has been set;
 
 #********************************* CALIBRATION START SCREEN DIALOG *********************************
 viewcalibstart_viewTitle = Calibration;
@@ -182,6 +186,9 @@ viewdrinfo_errorEmpty = Cannot be empty;
 viewdrinfo_password = Password;
 viewdrinfo_verify_password = Verify Password;
 viewdrinfo_password_match = The passwords do not match;
+viewdrinfo_disable = Disable doctor;
+viewdrinfo_disable_warning = Warning|Once disabled and validated, it is not possible to go undo<br>Continue anyway?;
+viewdrinfo_drexists = Existing identification;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = The study has concluded;

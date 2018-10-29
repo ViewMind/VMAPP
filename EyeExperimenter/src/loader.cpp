@@ -41,6 +41,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cv[CONFIG_INST_NAME] = cmd;
     cv[CONFIG_INST_ETSERIAL] = cmd;
     cv[CONFIG_INST_UID] = cmd;
+    cv[CONFIG_INST_PASSWORD] = cmd;
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
@@ -205,24 +206,26 @@ QStringList Loader::getErrorMessageForCode(quint8 code){
     return QStringList();
 }
 
-void Loader::addNewDoctorToDB(QVariantMap dbdata){
+bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew){
     // The data for the country must be changed as well as the UID must be generated.
     QString countryCode = countries->getCodeForCountry(dbdata.value(TDOCTOR_COL_COUNTRYID).toString());
     dbdata[TDOCTOR_COL_COUNTRYID] = countryCode;
-    dbdata[TDOCTOR_COL_UID] = countryCode + dbdata.value(TDOCTOR_COL_UID).toString();
+    QString uid = countryCode + dbdata.value(TDOCTOR_COL_UID).toString();
+    dbdata[TDOCTOR_COL_UID] = uid;
+
+    // This function returns false ONLY when it is attempting to create a new doctor with an existing UID.
+    if (isNew && lim->doesDoctorExist(uid)){
+        return false;
+    }
 
     QStringList columns;
     QStringList values;
 
     // The passoword for the doctor ONLY goes into the local DB, it needs to be removed from the data.
-    QString password = dbdata.value("password").toString();
     if (password != ""){
         // The password needs to be overwritten.
         password = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
     }
-
-    // Removing the password from DBData, since its not part of the tables.
-    dbdata.remove("password");
 
     // Converting the QVariantMap to a double string list
     columns = dbdata.keys();
@@ -235,7 +238,8 @@ void Loader::addNewDoctorToDB(QVariantMap dbdata){
     values << configuration->getString(CONFIG_INST_UID);
 
     // Saving data locally.
-    lim->addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password);
+    lim->addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password,hide);
+    return true;
 }
 
 void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
@@ -327,7 +331,10 @@ QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
 
 bool Loader::isDoctorPasswordCorrect(const QString &password){
     QString hashpass = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
-    return (lim->getCurrentDoctorPassword() == hashpass);
+    if (lim->getDoctorPassword().isEmpty()) return true;
+    if (lim->getDoctorPassword() == hashpass) return true;
+    // Checking against the institution password
+    return (hashpass == configuration->getString(CONFIG_INST_PASSWORD));
 }
 
 bool Loader::isDoctorValidated(qint32 selectedIndex){
@@ -335,6 +342,12 @@ bool Loader::isDoctorValidated(qint32 selectedIndex){
     if (selectedIndex == -1) uid = configuration->getString(CONFIG_DOCTOR_UID);
     else uid = getDoctorUIDByIndex(selectedIndex);
     return lim->isDoctorValid(uid);
+}
+
+bool Loader::isDoctorPasswordEmpty(qint32 selectedIndex){
+    QString uid = getDoctorUIDByIndex(selectedIndex);
+    //qWarning() << "Password for UID" << uid << " is " << lim->getDoctorPassword(uid) << ". Is empty: " <<  lim->getDoctorPassword(uid).isEmpty();
+    return lim->getDoctorPassword(uid).isEmpty();
 }
 
 QStringList Loader::getUIDList() {
