@@ -9,7 +9,6 @@ VMBase {
     height: viewDoctorInformation.vmHEIGHT
 
     readonly property string keybase: "viewdrinfo_"
-    property bool newEntry: true;
 
     function clearAllFields(){
         labelAddress.clear();
@@ -40,6 +39,16 @@ VMBase {
         labelProvince.setText(drInfo.state);
         labelPhone.setText(drInfo.telephone);
 
+        // Clearing error just in case
+        labelAddress.vmErrorMsg = "";
+        labelCity.vmErrorMsg = "";
+        labelMail.vmErrorMsg = "";
+        labelName.vmErrorMsg = "";
+        labelLastName.vmErrorMsg = "";
+        labelProvince.vmErrorMsg = "";
+        labelPhone.vmErrorMsg = "";
+        labelDocument_number.vmErrorMsg = "";
+
         // Substr is used as the first two letters are the country code.
         labelDocument_number.setText(drInfo.uid.substr(2));
 
@@ -61,7 +70,6 @@ VMBase {
         labelCountry.enabled = false;
         labelDocument_number.enabled = false;
 
-        newEntry = false;
         cboxDisable.visible = true;
         setMenuVisibility(true);
     }
@@ -107,7 +115,7 @@ VMBase {
             return;
         }
 
-        if (loader.addNewDoctorToDB(dbData, labelPassword.getText(), cboxDisable.checked, newEntry)){
+        if (loader.addNewDoctorToDB(dbData, labelPassword.getText(), cboxDisable.checked, !cboxDisable.visible)){
             viewDrSelection.updateDrProfile();
             swiperControl.currentIndex = swiperControl.vmIndexHome;
         }

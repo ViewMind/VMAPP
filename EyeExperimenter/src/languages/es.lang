@@ -82,9 +82,7 @@ viewdrsel_labelNoDrError = Por favor, seleccion un perfíl de doctor antes de co
 viewdrsel_labelInstPassword = Por favor ingrese la contraseña de la institución;
 viewdrsel_btnValidate = VALIDAR;
 viewdrsel_instpassword_wrong = La contraseña es incorrecta. Por favor verifique la contraseña de la institución.;
-viewdrsel_password_connect_error = No se puede establecer la conexión al servidor. No se puede verificar.;
 viewdrsel_novalid_msg = No se encuentra validado. No podrá pedir reportes.;
-viewdrsel_verif_title = Verificando contraseña;
 viewdrsel_drpassword = Contraseña;
 viewdrsel_drwrongpass = Contraseña incorrecta;
 viewdrsel_drnopass = No se ha fijado una contraseña;
@@ -155,6 +153,7 @@ viewpatientlist_msg_nopass = Sin contraseña|Por favor edite la información del
 viewpatientlist_msg_notvalid = Usuario no validado|Este usuario no ha sido validado y por ende no puede pedir informes.<br>Por favor valídelo utilizando la contraseña de la Institución;
 viewpatientlist_ask_password = Se requiere contraseña;
 viewpatientlist_wrong_dr_password = La contraeña es incorrecta;
+viewpatientlist_view_all = Ver Todos los Pacientes;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;

@@ -5,7 +5,6 @@
 
 #include <QVariantMap>
 #include <QDataStream>
-#include <QCryptographicHash>
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -49,7 +48,7 @@ public:
 
     // Used ONLY in the LocalDBMng program
     void deleteDoctor(const QString &uid);
-    void makeVisible(const QString &uid);
+    void setDoctorData(const QString &uid, const QStringList &keys, const QVariantList &values);
 
     // FOR DEBUGGING ONLY
     void printLocalDB();

@@ -383,6 +383,7 @@ VMBase {
             anchors.left: parent.left
             anchors.leftMargin: 20;
             onClicked: {
+                viewPatientReg.clearAll();
                 swiperControl.currentIndex = swiperControl.vmIndexPatientReg
             }
         }
@@ -413,6 +414,21 @@ VMBase {
             enabled: patientListView.currentIndex !== -1
             onClicked: {
                 diagShowReports.open();
+            }
+        }
+
+        VMButton{
+            id: btnViewAll
+            height: 30
+            vmText: loader.getStringForKey(keybase+"view_all");
+            vmFont: viewHome.gothamM.name
+            width: 200
+            vmInvertColors: true
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: btnView.left
+            anchors.rightMargin: 20
+            onClicked: {
+                console.log("Do your stuff");
             }
         }
     }

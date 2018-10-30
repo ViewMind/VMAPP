@@ -8,6 +8,11 @@
 
 #include "../../CommonClasses/LocalInformationManager/localinformationmanager.h"
 
+#define ITEM_ACTION_BOOL   0
+#define ITEM_ACTION_STRING 1
+#define ITEM_ACTION_PASS   2
+#define ROLE               2000
+
 namespace Ui {
 class DBView;
 }
@@ -29,7 +34,7 @@ private slots:
 
     void on_pbDeleteSelected_clicked();
 
-    void on_pbMakeVisible_clicked();
+    void on_pbApplyChanges_clicked();
 
 private:
     Ui::DBView *ui;

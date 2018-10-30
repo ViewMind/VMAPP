@@ -49,49 +49,6 @@ Dialog {
         }
     }
 
-    function changeView(wait){
-        if (wait){
-           btnClose.visible = false;
-           rowProfileAndAdd.visible = false;
-           drPic.visible = false;
-           diagTitle.visible = false;
-           diagSubTitle.visible = false;
-           instPassRow.visible = false;
-           btnOk.visible = false;
-           drPassword.visible = false;
-           diagVerifWaitTitle.visible = true;
-           slideAnimation.visible = true;
-        }
-        else{
-            btnClose.visible = true;
-            rowProfileAndAdd.visible = true;
-            drPic.visible = true;
-            diagTitle.visible = true;
-            diagSubTitle.visible = true;
-            drPassword.visible = true;
-            btnOk.visible = true;
-            diagVerifWaitTitle.visible = false;
-            slideAnimation.visible = false;
-        }
-
-    }
-
-    Connections{
-        target: loader
-        onInstPasswordVerifyResults:{
-            changeView(false);
-            instPassword.clear();
-            if (verifyMsg !== ""){
-                instPassword.vmErrorMsg = verifyMsg;
-                instPassRow.visible = true;
-            }
-            else{
-                labelDrProfile.vmErrorMsg = "";
-                instPassword.vmErrorMsg = "";
-                instPassRow.visible = false;
-            }
-        }
-    }
 
     onOpened: {
         instPassword.clear();
@@ -99,36 +56,6 @@ Dialog {
         instPassword.setText("3n5YPEfz");
         updateDrProfile();
     }
-
-    //****************************************************************************************
-    //******************* SECOND VIEW FOR AWAITING PASSWORD VERIFICATION *********************
-    //****************************************************************************************
-
-    // The instruction text
-    Text {
-        id: diagVerifWaitTitle
-        font.family: viewHome.gothamB.name
-        font.pixelSize: 43
-        anchors.top: parent.top
-        anchors.topMargin: 88
-        anchors.horizontalCenter: parent.horizontalCenter
-        color: "#297fca"
-        text: loader.getStringForKey(keybase+"verif_title");
-        visible: false;
-    }
-
-    AnimatedImage {
-        id: slideAnimation
-        source: "qrc:/images/LOADING.gif"
-        anchors.top: diagVerifWaitTitle.bottom
-        anchors.topMargin: 30
-        anchors.horizontalCenter: parent.horizontalCenter
-        visible: false
-    }
-
-    //****************************************************************************************
-    //****************************************************************************************
-    //****************************************************************************************
 
     VMDefines{
         id: vmDefines
@@ -201,9 +128,12 @@ Dialog {
                     }
                     else {
                         instPassRow.visible = false;
+                        instPassword.vmErrorMsg = "";
                         vmErrorMsg = "";
                     }
 
+
+                    drPassword.setText("");
                     if (loader.isDoctorPasswordEmpty(currentIndex-1)){
                         //console.log("Setting the error message: " + loader.getStringForKey(keybase+"drnopass"));
                         drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drnopass");
@@ -217,8 +147,7 @@ Dialog {
                     vmErrorMsg = "";
                     instPassRow.visible = false;
                     drPassword.vmErrorMsg = "";
-                }
-                instPassword.vmErrorMsg = "";
+                }                
             }
         }
 
@@ -265,8 +194,14 @@ Dialog {
             width: 80
             anchors.bottom: instPassword.bottom
             onClicked: {
-                loader.requestDrValidation(instPassword.getText(),labelDrProfile.currentIndex-1);
-                changeView(true);
+                if (!loader.requestDrValidation(instPassword.getText(),labelDrProfile.currentIndex-1)){
+                    instPassword.vmErrorMsg = loader.getStringForKey(keybase+"instpassword_wrong");
+                }
+                else{
+                    instPassRow.visible = false;
+                    instPassword.vmErrorMsg = "";
+                    viewDoctorSelection.close();
+                }
             }
         }
     }

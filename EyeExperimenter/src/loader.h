@@ -50,7 +50,7 @@ public:
     Q_INVOKABLE bool addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew);
     Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt);
     Q_INVOKABLE void startDBSync();
-    Q_INVOKABLE void requestDrValidation(const QString &instPassword, qint32 selectedDr);
+    Q_INVOKABLE bool requestDrValidation(const QString &instPassword, qint32 selectedDr);
     Q_INVOKABLE void prepareForRequestOfPendingReports();
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE QString loadTextFile(const QString &fileName);
@@ -61,9 +61,6 @@ signals:
 
     // Signal to FlowControl, indicating the next file set to process.
     void nextFileSet(const QStringList &fileSet);   
-
-    // Signal with the result message of verifying the institution password
-    void instPasswordVerifyResults(QString verifyMsg);
 
 public slots:
     // For when the DB Transaction has finished.
@@ -86,10 +83,6 @@ private:
 
     // The list that holds list names and corresponding uids
     QList<QStringList> nameInfoList;
-
-    // Temporarily save the hasshed institution password for comparison.s
-    QString hasshedPassword;
-    QString drUIDtoValidate;
 
     // To connect to the DB in the server. Flags are required to provide the proper information to the QML side.
     SSLDBClient *dbClient;

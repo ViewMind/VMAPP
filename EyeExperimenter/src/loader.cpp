@@ -9,7 +9,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     ConfigurationManager::Command cmd;
 
     loadingError = false;
-    hasshedPassword = "";
     configuration = c;
 
     cmd.clear();
@@ -107,78 +106,22 @@ void Loader::startDBSync(){
     }
 }
 
-void Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr){
+bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr){
     // Storing the hasshed password for later comparison
-    hasshedPassword = QString(QCryptographicHash::hash(instPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
-    drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
-    QStringList columns;
-    columns << TINST_COL_HASHPASS;
-    QString condition = QString(TINST_COL_UID) + "= '" + configuration->getString(CONFIG_INST_UID)  + "'";
-    dbClient->setDBTransactionType(SQL_QUERY_TYPE_GET);
-    dbClient->appendGET(TABLE_INSTITUTION,columns,condition);
-    dbClient->runDBTransaction();
+    QString hasshedPassword = QString(QCryptographicHash::hash(instPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
+    QString drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
+    if (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword){
+        lim->validateDoctor(drUIDtoValidate);
+        return true;
+    }
+    return false;
 }
 
 void Loader::onDisconnectFromDB(){
-    if (hasshedPassword.isEmpty()){
-        if (dbClient->getTransactionStatus()){
-            lim->setUpdateFlagTo(false);
-        }
-        emit(synchDone());
+    if (dbClient->getTransactionStatus()){
+        lim->setUpdateFlagTo(false);
     }
-    else{
-        // This was a password validations request.
-        if (!dbClient->getTransactionStatus()){
-            // There was a connection error.
-            hasshedPassword = "";
-            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
-            return;
-        }
-
-
-        // To save code the global is put in a local
-        QString hpass = hasshedPassword;
-        hasshedPassword = "";
-
-        // There should only be one result
-        if (dbClient->getDBData().size() != 1){
-            logger.appendError("Expecting only one result from institution password verification but got: " + QString::number(dbClient->getDBData().size()));
-            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
-            return;
-        }
-
-        // Only one row in the only dbdata and no errors.
-        DBData dbdata = dbClient->getDBData().first();
-        if (!dbdata.error.isEmpty()){
-            logger.appendError("DB Error for institution password : " + dbdata.error);
-            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
-            return;
-        }
-
-        if (dbdata.rows.size() != 1){
-            logger.appendError("Expecting only one row from institution password verification but got: " + QString::number(dbdata.rows.size()));
-            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
-            return;
-        }
-
-        // Should only be one column
-        if (dbdata.rows.first().size() != 1){
-            logger.appendError("Expecting only one column from institution password verification but got: " + QString::number(dbdata.rows.first().size()));
-            emit(instPasswordVerifyResults(getStringForKey("viewdrsel_password_connect_error")));
-            return;
-        }
-
-        QString dbpass = dbdata.rows.first().first();
-
-        if (dbpass == hpass) {
-            // Validating the doctor
-            lim->validateDoctor(drUIDtoValidate);
-            emit(instPasswordVerifyResults(""));
-        }
-        else emit(instPasswordVerifyResults(getStringForKey("viewdrsel_instpassword_wrong")));
-
-    }
-
+    emit(synchDone());
 }
 
 QString Loader::loadTextFile(const QString &fileName){
@@ -214,6 +157,7 @@ bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, b
     dbdata[TDOCTOR_COL_UID] = uid;
 
     // This function returns false ONLY when it is attempting to create a new doctor with an existing UID.
+    // qWarning() << "IsNew" << isNew << "Exists" << lim->doesDoctorExist(uid);
     if (isNew && lim->doesDoctorExist(uid)){
         return false;
     }

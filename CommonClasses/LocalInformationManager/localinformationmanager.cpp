@@ -31,6 +31,8 @@ void LocalInformationManager::validateDoctor(const QString &dr_uid){
     if (!localDB.contains(dr_uid)) return;
     QVariantMap drmap = localDB.value(dr_uid).toMap();
     drmap[DOCTOR_VALID] = true;
+    // Since there were no updates while invalid, an update is forced.
+    drmap[DOCTOR_UPDATE] = true;
     localDB[dr_uid] = drmap;
     backupDB();
 }
@@ -41,19 +43,21 @@ void LocalInformationManager::deleteDoctor(const QString &uid){
     backupDB();
 }
 
+void LocalInformationManager::setDoctorData(const QString &uid, const QStringList &keys, const QVariantList &values){
+    if (!localDB.contains(uid)) return;
+    QVariantMap drmap = localDB.value(uid).toMap();
+    for (qint32 i = 0; i < keys.size(); i++){
+        drmap[keys.at(i)] = values.at(i);
+    }
+    localDB[uid] = drmap;
+    backupDB();
+}
+
 bool LocalInformationManager::isHidden(const QString &uid){
     if (!localDB.contains(uid)) return false;
     if (!localDB.value(uid).toMap().contains(DOCTOR_HIDDEN)) return false;
     if (!localDB.value(uid).toMap().contains(DOCTOR_VALID)) return false;
     return (localDB.value(uid).toMap().value(DOCTOR_HIDDEN).toBool() && localDB.value(uid).toMap().value(DOCTOR_VALID).toBool());
-}
-
-void LocalInformationManager::makeVisible(const QString &uid){
-    if (!localDB.contains(uid)) return;
-    QVariantMap drmap = localDB.value(uid).toMap();
-    drmap[DOCTOR_HIDDEN] = false;
-    localDB[uid] = drmap;
-    backupDB();
 }
 
 bool LocalInformationManager::doesDoctorExist(const QString &uid) const{
@@ -195,25 +199,22 @@ void LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
 
     // Doctor information needs to be checked against existing information to see if there is a change.
     QVariantMap drinfo;
+
     // Adding the dr information.
     for (qint32 i = 0; i < cols.size(); i++){
         drinfo[cols.at(i)] = values.at(i);
     }
 
     drinfo[DOCTOR_HIDDEN] = hidden;
-    drinfo[DOCTOR_VALID] = true;
-
-    // Setting the new password if necessary, only if not empty.
-    if (!password.isEmpty()){
-        drinfo[DOCTOR_PASSWORD] = password;
-    }
 
     if (!localDB.contains(dr_uid)){
-        // Empty map for the patient.
+        // This is a new docotr.
         drinfo[DOCTOR_UPDATE] = true;
         drinfo[DOCTOR_VALID] = false; // Doctor is invalidated ONLY when created and when its hidden status is changed.
         drinfo[DOCTOR_HIDDEN] = false; // It should not be possible to CREATE a hidden Doctor. But just in case.
-        drinfo[PATIENT_DATA] = QVariantMap();
+        drinfo[DOCTOR_PASSWORD] = password;
+        // Empty map for the patient.
+        drinfo[PATIENT_DATA] = QVariantMap();        
         localDB[dr_uid] = drinfo;
     }
     else {
@@ -231,11 +232,24 @@ void LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
             }
         }
         drinfo[DOCTOR_UPDATE] = update;
-        if (hidden){
-            // If the doctor was hidden, nothing else matters. It will not be updated and it is invalid.
+
+        // Making sure the password and valid fields are copied.
+        if (drmap.contains(DOCTOR_VALID)) drinfo[DOCTOR_VALID] = drmap.value(DOCTOR_VALID);
+        else drinfo[DOCTOR_VALID] = false;
+        if (drmap.contains(DOCTOR_PASSWORD)) drinfo[DOCTOR_PASSWORD] = drmap.value(DOCTOR_PASSWORD);
+        else drinfo[DOCTOR_PASSWORD] = "";
+
+        // Setting the new password if necessary, only if not empty.
+        if (!password.isEmpty()){
+            drinfo[DOCTOR_PASSWORD] = password;
+        }
+
+        // If the doctor was hidden, nothing else matters. It will not be updated and it is invalid.
+        if (hidden){            
             drinfo[DOCTOR_UPDATE] = false;
             drinfo[DOCTOR_VALID] = false;
         }
+
         // Saving the existent patient data.
         drinfo[PATIENT_DATA] = drmap.value(PATIENT_DATA);
         localDB[dr_uid] = drinfo;
@@ -323,13 +337,15 @@ QList<QStringList> LocalInformationManager::getDoctorList(bool forceShow){
     QList<QStringList> ans;
     QStringList names;
     QStringList uids = localDB.keys();
+    QStringList showUIds;
     for (qint32 i = 0; i < uids.size(); i++){
         QVariantMap drinfo = localDB.value(uids.at(i)).toMap();
         if (isHidden(uids.at(i)) && !forceShow) continue;
         names << drinfo.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drinfo.value(TDOCTOR_COL_LASTNAME).toString()
                  + " (" + uids.at(i) + ")";
+        showUIds << uids.at(i);
     }
-    if (!names.isEmpty()) ans << names << uids;
+    if (!names.isEmpty()) ans << names << showUIds;
     return ans;
 }
 
