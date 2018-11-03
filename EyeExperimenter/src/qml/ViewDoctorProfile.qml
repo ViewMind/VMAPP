@@ -117,7 +117,8 @@ VMBase {
 
         if (loader.addNewDoctorToDB(dbData, labelPassword.getText(), cboxDisable.checked, !cboxDisable.visible)){
             viewDrSelection.updateDrProfile();
-            swiperControl.currentIndex = swiperControl.vmIndexHome;
+            if (cboxDisable.visible) swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+            else swiperControl.currentIndex = swiperControl.vmIndexHome;
         }
         else{
             labelDocument_number.vmErrorMsg = loader.getStringForKey(keybase + "drexists");
@@ -405,7 +406,8 @@ VMBase {
             vmFont: gothamM.name
             vmInvertColors: true
             onClicked: {
-                swiperControl.currentIndex = swiperControl.vmIndexHome;
+                if (cboxDisable.visible) swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+                else swiperControl.currentIndex = swiperControl.vmIndexHome;
             }
         }
 

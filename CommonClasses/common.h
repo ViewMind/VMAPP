@@ -86,6 +86,7 @@
 #define   CONFIG_INST_ETSERIAL                          "inst_et_serial"
 #define   CONFIG_INST_PASSWORD                          "inst_pass"
 
+
 // The unique UID for tests.
 #define   TEST_UID                                      "vm0000"
 

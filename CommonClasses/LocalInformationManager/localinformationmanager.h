@@ -22,20 +22,22 @@ class LocalInformationManager
 {
 public:
 
-    LocalInformationManager(ConfigurationManager *c);
+    LocalInformationManager();
+    void setDirectory(const QString &workDir);
     void addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
-    void addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values);
+    void addPatientData(const QString &druid, const QString &patient_uid, const QStringList &cols, const QStringList &values);
     bool isDoctorValid(const QString &dr_uid);
     bool doesDoctorExist(const QString &uid) const;
+    bool doesPatientExist(const QString &druid, const QString &patuid) const;
     void validateDoctor(const QString &dr_uid);
-    QString getDoctorPassword(QString uid = "");
-    QList<QStringList> getPatientListForDoctor();
+    QString getDoctorPassword(const QString &uid);
+    QList<QStringList> getPatientListForDoctor(const QString &druid);
     QList<QStringList> getDoctorList(bool forceShow = false);
-    QString getFieldForCurrentPatient(const QString &field) const;
-    QVariantMap getCurrentDoctorInfo() {return localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap();}
-    QVariantMap getCurrentPatientInfo() {
-        return localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap().value(PATIENT_DATA).toMap().value(config->getString(CONFIG_PATIENT_UID)).toMap();
-    }    
+    QString getFieldForPatient(const QString &druid, const QString &patuid, const QString &field) const;
+    QVariantMap getDoctorInfo(const QString &uid) {return localDB.value(uid).toMap();}
+    QVariantMap getPatientInfo(const QString &druid, const QString &patuid) const;
+    QList<QStringList> getAllPatientInfo() const;
+    QString getWorkDirectory() const {return workingDirectory;}
     void setUpdateFlagTo(bool flag);
 
     // Synch function. Returns false if the there is nothing to synch. (No changes to Doctor and Patient data).
@@ -43,8 +45,8 @@ public:
     bool setupDBSynch(SSLDBClient *client);
 #endif
     // Functions for iterating over file sets to be processed.
-    void preparePendingReports();
-    QStringList nextPendingReport();
+    void preparePendingReports(const QString &uid);
+    QStringList nextPendingReport(const QString &uid);
 
     // Used ONLY in the LocalDBMng program
     void deleteDoctor(const QString &uid);
@@ -63,13 +65,16 @@ private:
     static const QString DOCTOR_HIDDEN;
     static const qint32  LOCAL_DB_VERSION = 2;
 
-    ConfigurationManager *config;
+    // Working directory.
+    QString workingDirectory;
+
+    //ConfigurationManager *config;
     LogInterface log;
     QVariantMap localDB;
 
     // Used to iterate over unprocessed information.
     QHash<QString, DatFileInfoInDir> patientReportInformation;
-    void fillPatientDatInformation();
+    void fillPatientDatInformation(const QString &druid);
 
     void backupDB();
     void loadDB();

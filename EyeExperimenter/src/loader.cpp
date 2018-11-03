@@ -86,8 +86,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     connect(dbClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectFromDB()));
 
     // Creating the local configuration manager, and loading the local DB.
-    lim = new LocalInformationManager(configuration);
-    //lim->printLocalDB();
+    lim.setDirectory(configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA));
 
 }
 
@@ -96,7 +95,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 void Loader::startDBSync(){
     // Adding all the data that needs to be sent.
     wasDBTransactionStarted = false;
-    if (lim->setupDBSynch(dbClient)){
+    if (lim.setupDBSynch(dbClient)){
         // Running the transaction.
         wasDBTransactionStarted = true;
         dbClient->runDBTransaction();
@@ -111,7 +110,7 @@ bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr)
     QString hasshedPassword = QString(QCryptographicHash::hash(instPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
     QString drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
     if (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword){
-        lim->validateDoctor(drUIDtoValidate);
+        lim.validateDoctor(drUIDtoValidate);
         return true;
     }
     return false;
@@ -119,7 +118,7 @@ bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr)
 
 void Loader::onDisconnectFromDB(){
     if (dbClient->getTransactionStatus()){
-        lim->setUpdateFlagTo(false);
+        lim.setUpdateFlagTo(false);
     }
     emit(synchDone());
 }
@@ -131,6 +130,19 @@ QString Loader::loadTextFile(const QString &fileName){
     QString ans = reader.readAll();
     file.close();
     return ans;
+}
+
+void Loader::prepareAllPatientIteration(){
+    allPatientList = lim.getAllPatientInfo();
+    allPatientIndex = 0;
+}
+
+QStringList Loader::nextInAllPatientIteration(){
+    if (allPatientIndex == allPatientList.size()) return QStringList();
+    else{
+        allPatientIndex++;
+        return allPatientList.at(allPatientIndex-1);
+    }
 }
 
 QStringList Loader::getErrorMessageForCode(quint8 code){
@@ -157,8 +169,8 @@ bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, b
     dbdata[TDOCTOR_COL_UID] = uid;
 
     // This function returns false ONLY when it is attempting to create a new doctor with an existing UID.
-    // qWarning() << "IsNew" << isNew << "Exists" << lim->doesDoctorExist(uid);
-    if (isNew && lim->doesDoctorExist(uid)){
+    // qWarning() << "IsNew" << isNew << "Exists" << lim.doesDoctorExist(uid);
+    if (isNew && lim.doesDoctorExist(uid)){
         return false;
     }
 
@@ -182,16 +194,19 @@ bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, b
     values << configuration->getString(CONFIG_INST_UID);
 
     // Saving data locally.
-    lim->addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password,hide);
+    lim.addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password,hide);
     return true;
 }
 
-void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
+bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, bool isNew){
 
     // Making necessary adjustments
     QString countryCode = countries->getCodeForCountry(dbdatareq.value(TPATREQ_COL_BIRTHCOUNTRY).toString());
     dbdatareq[TPATREQ_COL_BIRTHCOUNTRY] = countryCode;
-    dbdatareq[TPATREQ_COL_UID] = countryCode + dbdatareq.value(TPATREQ_COL_UID).toString();
+    QString uid = countryCode + dbdatareq.value(TPATREQ_COL_UID).toString();
+    dbdatareq[TPATREQ_COL_UID] = uid;
+
+    if (lim.doesPatientExist(configuration->getString(CONFIG_DOCTOR_UID),uid) && isNew) return false;
 
     // Transforming the date format.
     QString date = dbdatareq.value(TPATREQ_COL_BIRTHDATE).toString();
@@ -230,22 +245,24 @@ void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
     // qWarning() << "All Columns" << allColumns.size() << allColumns;
     // qWarning() << "All Values" << allValues.size() << allValues;
 
-    lim->addPatientData(dbdatareq.value(TPATREQ_COL_UID).toString(),allColumns,allValues);
+    lim.addPatientData(configuration->getString(CONFIG_DOCTOR_UID),dbdatareq.value(TPATREQ_COL_UID).toString(),allColumns,allValues);
+
+    return true;
 
 }
 
 //****************************************************************************************************************
 
 void Loader::prepareForRequestOfPendingReports(){
-    lim->preparePendingReports();
+    lim.preparePendingReports(configuration->getString(CONFIG_PATIENT_UID));
 }
 
 void Loader::onRequestNextPendingReport(){
-    emit(nextFileSet(lim->nextPendingReport()));
+    emit(nextFileSet(lim.nextPendingReport(configuration->getString(CONFIG_PATIENT_UID))));
 }
 
 void Loader::setAgeForCurrentPatient(){
-    QString birthDate = lim->getFieldForCurrentPatient(TPATREQ_COL_BIRTHDATE);
+    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID),TPATREQ_COL_BIRTHDATE);
     QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
     int currentAge = QDate::currentDate().year() - bdate.year();
     configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);
@@ -253,14 +270,14 @@ void Loader::setAgeForCurrentPatient(){
 
 QStringList Loader::getDoctorList() {
     nameInfoList.clear();
-    nameInfoList = lim->getDoctorList();
+    nameInfoList = lim.getDoctorList();
     if (nameInfoList.isEmpty()) return QStringList();
     else return nameInfoList.at(0);
 }
 
 QStringList Loader::getPatientList(){
     nameInfoList.clear();
-    nameInfoList = lim->getPatientListForDoctor();
+    nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID));
     if (nameInfoList.isEmpty()) return QStringList();
     else return nameInfoList.at(0);
 }
@@ -275,8 +292,9 @@ QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
 
 bool Loader::isDoctorPasswordCorrect(const QString &password){
     QString hashpass = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
-    if (lim->getDoctorPassword().isEmpty()) return true;
-    if (lim->getDoctorPassword() == hashpass) return true;
+    QString storedPassword = lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID));
+    if (storedPassword.isEmpty()) return true;
+    if (storedPassword == hashpass) return true;
     // Checking against the institution password
     return (hashpass == configuration->getString(CONFIG_INST_PASSWORD));
 }
@@ -285,13 +303,13 @@ bool Loader::isDoctorValidated(qint32 selectedIndex){
     QString uid;
     if (selectedIndex == -1) uid = configuration->getString(CONFIG_DOCTOR_UID);
     else uid = getDoctorUIDByIndex(selectedIndex);
-    return lim->isDoctorValid(uid);
+    return lim.isDoctorValid(uid);
 }
 
 bool Loader::isDoctorPasswordEmpty(qint32 selectedIndex){
     QString uid = getDoctorUIDByIndex(selectedIndex);
-    //qWarning() << "Password for UID" << uid << " is " << lim->getDoctorPassword(uid) << ". Is empty: " <<  lim->getDoctorPassword(uid).isEmpty();
-    return lim->getDoctorPassword(uid).isEmpty();
+    //qWarning() << "Password for UID" << uid << " is " << lim.getDoctorPassword(uid) << ". Is empty: " <<  lim.getDoctorPassword(uid).isEmpty();
+    return lim.getDoctorPassword(uid).isEmpty();
 }
 
 QStringList Loader::getUIDList() {
@@ -487,5 +505,5 @@ void Loader::loadDefaultConfigurations(){
 }
 
 Loader::~Loader(){
-    delete lim;
+
 }

@@ -48,6 +48,7 @@ viewpatientreg_errorEmpty = No puede estar vacío;
 viewpatientreg_errorNoAccept = Se debe acepatar las Condiciones de Uso y la Poítica de Privacidad;
 viewpatientreg_terms_of_use = Condiciones de Uso;
 viewpatientreg_privacy_policy = Política de Privacidad;
+viewpatientreg_errorExists = Este paciente existe bajo este doctor;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Estudios Oculares;
@@ -164,6 +165,13 @@ viewshowreports_diagTabTime = Hora;
 viewshowreports_diagTabReading = Lectura;
 viewshowreports_diagTabBinding = Colores;
 viewshowreports_diagBtnView = VER;
+viewshowreports_diagBtnBack = BACK;
+
+#********************************* VIEW ALL PATIENTS *********************************
+viewallreports_title = Lista de Pacientes;
+viewallreports_patient_col = Paciente;
+viewallreports_doctor_col = Doctor;
+viewallreports_view = VER REPORTES;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;

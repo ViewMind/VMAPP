@@ -10,6 +10,7 @@ VMBase {
     height: viewPatientRegistration.vmHEIGHT
 
     readonly property string keysearch: "viewpatientreg_"
+    property bool vmIsNew: true;
 
     function clearAll(){
         labelBirthDate.clear();
@@ -20,6 +21,7 @@ VMBase {
         labelDocument_number.clear();
         labelProvince.clear();
         labelCity.clear();
+        vmIsNew = true;
     }
 
     function loadPatientInformation(){
@@ -59,6 +61,8 @@ VMBase {
         labelDocument_number.enabled = false;
 
         labelBirthDate.setISODate(patInfo.birthdate);
+
+        vmIsNew = false;
     }
 
 
@@ -374,8 +378,12 @@ VMBase {
 
                 //console.log("Country Index: " + dbData.countryid + ". Text: " + labelCountry.currentText);
 
-                loader.addNewPatientToDB(dbDataReq,dbDataOpt);
-                swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+                if (loader.addNewPatientToDB(dbDataReq,dbDataOpt,vmIsNew)){
+                    swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+                }
+                else{
+                    labelDocument_number.vmErrorMsg = loader.getStringForKey(keysearch + "errorExists");
+                }
             }
         }
     }

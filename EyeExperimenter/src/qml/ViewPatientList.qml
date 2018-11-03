@@ -236,11 +236,7 @@ VMBase {
             onClicked:{
                 if (loader.isDoctorPasswordCorrect(passwordInput.getText())){
                     askPasswordDialog.close();
-                    loader.prepareForRequestOfPendingReports();
-                    connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
-                    connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
-                    connectionDialog.open();
-                    flowControl.requestReportData();
+                    viewAllPatients.open();
                 }
                 else{
                     passwordInput.vmErrorMsg =  loader.getStringForKey(keybase+"wrong_dr_password");
@@ -254,10 +250,10 @@ VMBase {
         }
     }
 
-    ViewShowReports{
-        id: diagShowReports
-    }
 
+    ViewAllPatients{
+        id: viewAllPatients
+    }
 
     ListModel {
         id: patientList
@@ -295,14 +291,15 @@ VMBase {
             showMessage("msg_notvalid");
             return;
         }
-
         if (!loader.doesCurrentDoctorHavePassword()){
             showMessage("msg_nopass");
             return;
         }
-
-        askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-        askPasswordDialog.open();
+        loader.prepareForRequestOfPendingReports();
+        connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
+        connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
+        connectionDialog.open();
+        flowControl.requestReportData();
     }
 
     function showMessage(msg){
@@ -413,7 +410,9 @@ VMBase {
             anchors.rightMargin: 20
             enabled: patientListView.currentIndex !== -1
             onClicked: {
-                diagShowReports.open();
+                viewShowReports.vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+                viewShowReports.vmPatientDirectory = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_DIRECTORY);
+                swiperControl.currentIndex = swiperControl.vmIndexShowReports;
             }
         }
 
@@ -428,7 +427,8 @@ VMBase {
             anchors.right: btnView.left
             anchors.rightMargin: 20
             onClicked: {
-                console.log("Do your stuff");
+                askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+                askPasswordDialog.open();
             }
         }
     }

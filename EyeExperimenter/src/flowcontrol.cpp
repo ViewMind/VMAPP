@@ -71,9 +71,9 @@ void FlowControl::setupSecondMonitor(){
 
 ////////////////////////////// REPORT REQUEST FUNCTIONS ///////////////////////////////////////
 
-void FlowControl::prepareForReportListIteration(){
+void FlowControl::prepareForReportListIteration(const QString &patientDirectory){
     selectedReport = -1;
-    reportsForPatient.setDirectory(configuration->getString(CONFIG_PATIENT_DIRECTORY));
+    reportsForPatient.setDirectory(patientDirectory);
     reportsForPatient.prepareIteration();
 }
 

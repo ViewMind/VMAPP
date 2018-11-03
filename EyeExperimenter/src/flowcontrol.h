@@ -47,7 +47,7 @@ public:
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
     Q_INVOKABLE void startDemoTransaction();
-    Q_INVOKABLE void prepareForReportListIteration();
+    Q_INVOKABLE void prepareForReportListIteration(const QString &patientDirectory);
     Q_INVOKABLE QVariantMap nextReportInList();
     Q_INVOKABLE void setReportIndex(qint32 id) { selectedReport = id; }
     Q_INVOKABLE void prepareSelectedReportIteration();

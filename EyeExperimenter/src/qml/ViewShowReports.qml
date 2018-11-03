@@ -3,48 +3,30 @@ import QtQuick.Controls 2.3
 import QtGraphicalEffects 1.0
 
 
-Dialog {
+VMBase {
 
-    property string vmPatientName: "Eustaquio Señor Paciente";
+
     readonly property string keybase: "viewshowreports_"
-    readonly property int dialogHeight: 650
-    readonly property int dialogWidth: 800
-    readonly property int repTableWidth: dialogWidth*0.8
-    readonly property int repTableHeight: dialogHeight*0.4
+    readonly property int repTableWidth: width*0.7
+    readonly property int repTableHeight: height*0.4
     readonly property int columnWidth: repTableWidth/3
 
+    // The two properties that must be set when checking this.
+    property string vmPatientDirectory: ""
+    property string vmPatientName: "";
+
     id: viewReport;
-    modal: true
-    width: dialogWidth
-    height: dialogHeight
-    y: (parent.height - height)/2
-    x: (parent.width - width)/2
-    closePolicy: Popup.NoAutoClose
-
-    contentItem: Rectangle {
-        id: rectReportDialog
-        anchors.fill: parent
-        layer.enabled: true
-        layer.effect: DropShadow{
-            radius: 5
-        }
-    }
-
     ListModel{
         id: reportList;
     }
-
-    onOpened: {
-        loadReportsForPatient();
-    }
-
 
     // Loads the list model with the patient information
     function loadReportsForPatient() {
 
         // Clearing the current model.
         reportList.clear()
-        flowControl.prepareForReportListIteration();
+        // console.log("Patient name: " + vmPatientName + " and directory: " + vmPatientDirectory);
+        flowControl.prepareForReportListIteration(vmPatientDirectory);
 
         var done = false;
 
@@ -55,30 +37,16 @@ Dialog {
                 reportList.append(map);
             }
         }
-        vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
         reportListView.currentIndex = -1;
     }
-
-    // Creating the close button
-    VMDialogCloseButton {
-        id: btnClose
-        anchors.top: parent.top
-        anchors.topMargin: 22
-        anchors.right: parent.right
-        anchors.rightMargin: 25
-        onClicked: {
-            viewReport.close();
-        }
-    }
-
 
     // The instruction text
     Text {
         id: diagViewRepTitle
         font.family: viewHome.gothamB.name
         font.pixelSize: 43
-        anchors.top: parent.top
-        anchors.topMargin: 60
+        anchors.top: vmBanner.bottom
+        anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#297fca"
         text:  loader.getStringForKey(keybase+"diagViewRepTitle");
@@ -211,21 +179,36 @@ Dialog {
     }
 
 
-    VMButton{
-        id: diagBtnView
-        height: 50
-        vmText: loader.getStringForKey(keybase+"diagBtnView");
-        vmFont: viewHome.gothamM.name
-        enabled: reportListView.currentIndex !== -1
+    Row{
+
         anchors.top: tableBackground.bottom
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: {
-            viewReport.close();
-            flowControl.setReportIndex(reportListView.currentIndex);
-            swiperControl.currentIndex = swiperControl.vmIndexResults;
-        }
-    }
+        spacing: 30
 
+        VMButton{
+            id: diagBtnBack
+            height: 50
+            vmText: loader.getStringForKey(keybase+"diagBtnBack");
+            vmFont: viewHome.gothamM.name
+            vmInvertColors: true
+            onClicked: {
+                swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+            }
+        }
+
+        VMButton{
+            id: diagBtnView
+            height: 50
+            vmText: loader.getStringForKey(keybase+"diagBtnView");
+            vmFont: viewHome.gothamM.name
+            enabled: reportListView.currentIndex !== -1
+            onClicked: {
+                flowControl.setReportIndex(reportListView.currentIndex);
+                swiperControl.currentIndex = swiperControl.vmIndexResults;
+            }
+        }
+
+    }
 
 }

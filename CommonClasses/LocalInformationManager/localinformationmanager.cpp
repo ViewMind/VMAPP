@@ -7,23 +7,46 @@ const QString LocalInformationManager::DOCTOR_PASSWORD       = "DOCTOR_PASSWORD"
 const QString LocalInformationManager::DOCTOR_VALID          = "DOCTOR_VALID";
 const QString LocalInformationManager::DOCTOR_HIDDEN         = "DOCTOR_HIDDEN";
 
-LocalInformationManager::LocalInformationManager(ConfigurationManager *c)
+LocalInformationManager::LocalInformationManager()
 {
-    config = c;
+    workingDirectory = "";
+}
+
+void LocalInformationManager::setDirectory(const QString &workDir){
+    workingDirectory = workDir;
     loadDB();
 }
 
-QString LocalInformationManager::getFieldForCurrentPatient(const QString &field) const{
-
-    QString druid = config->getString(CONFIG_DOCTOR_UID);
-    QString patuid = config->getString(CONFIG_PATIENT_UID);
-    return localDB.value(druid).toMap().value(PATIENT_DATA).toMap().value(patuid).toMap().value(field).toString();
-
+QList<QStringList> LocalInformationManager::getAllPatientInfo() const {
+    QList<QStringList> ans;
+    QStringList druids = localDB.keys();
+    for (qint32 i = 0; i < druids.size(); i++){
+        QVariantMap patients = localDB.value(druids.at(i)).toMap().value(PATIENT_DATA).toMap();
+        QStringList patuids = patients.keys();
+        for (qint32 j =0; j < patuids.size(); j++){
+            QStringList datum;
+            datum << localDB.value(druids.at(i)).toMap().value(TDOCTOR_COL_FIRSTNAME).toString() + " "
+                     + localDB.value(druids.at(i)).toMap().value(TDOCTOR_COL_LASTNAME).toString();
+            datum << druids.at(i);
+            datum << patients.value(patuids.at(j)).toMap().value(TPATREQ_COL_FIRSTNAME).toString() + " "
+                     + patients.value(patuids.at(j)).toMap().value(TPATREQ_COL_LASTNAME).toString();
+            datum << patuids.at(j);
+            ans << datum;
+        }
+    }
+    return ans;
 }
 
-QString LocalInformationManager::getDoctorPassword(QString uid){
-    if (uid.isEmpty()) uid = config->getString(CONFIG_DOCTOR_UID);
+QString LocalInformationManager::getFieldForPatient(const QString &druid, const QString &patuid, const QString &field) const{
+    return localDB.value(druid).toMap().value(PATIENT_DATA).toMap().value(patuid).toMap().value(field).toString();
+}
+
+QString LocalInformationManager::getDoctorPassword(const QString &uid){
     return localDB.value(uid).toMap().value(DOCTOR_PASSWORD,"").toString();
+}
+
+QVariantMap LocalInformationManager::getPatientInfo(const QString &druid, const QString &patuid) const {
+    return localDB.value(druid).toMap().value(PATIENT_DATA).toMap().value(patuid).toMap();
 }
 
 void LocalInformationManager::validateDoctor(const QString &dr_uid){
@@ -62,6 +85,11 @@ bool LocalInformationManager::isHidden(const QString &uid){
 
 bool LocalInformationManager::doesDoctorExist(const QString &uid) const{
     return localDB.contains(uid);
+}
+
+bool LocalInformationManager::doesPatientExist(const QString &druid, const QString &patuid) const{
+    if (!localDB.contains(druid)) return false;
+    return localDB.value(druid).toMap().value(PATIENT_DATA).toMap().contains(patuid);
 }
 
 bool LocalInformationManager::isDoctorValid(const QString &dr_uid){
@@ -160,14 +188,12 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 }
 #endif
 
-void LocalInformationManager::fillPatientDatInformation(){
+void LocalInformationManager::fillPatientDatInformation(const QString &druid){
 
     patientReportInformation.clear();
 
     // Creating the source directory path.
-    QString baseDir = config->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA)
-            + "/" + config->getString(CONFIG_DOCTOR_UID);
-
+    QString baseDir = workingDirectory + "/" + druid;
 
     QDir doctorDir(baseDir);
     if (!doctorDir.exists()){
@@ -178,7 +204,7 @@ void LocalInformationManager::fillPatientDatInformation(){
 
     // The Directory exists, so a list of all directories inside it, is generated.
     QStringList directories = doctorDir.entryList(QStringList(),QDir::Dirs | QDir::NoDotAndDotDot);
-    QVariantMap patientData = localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap().value(PATIENT_DATA).toMap();
+    QVariantMap patientData = localDB.value(druid).toMap().value(PATIENT_DATA).toMap();
     for (qint32 i = 0; i < directories.size(); i++){
         if (!patientData.contains(directories.at(i))) continue;
 
@@ -259,9 +285,9 @@ void LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
     backupDB();
 }
 
-void LocalInformationManager::addPatientData(const QString &patient_uid, const QStringList &cols, const QStringList &values){
+void LocalInformationManager::addPatientData(const QString &druid, const QString &patient_uid, const QStringList &cols, const QStringList &values){
 
-    QVariantMap drinfo = localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap();
+    QVariantMap drinfo = localDB.value(druid).toMap();
     QVariantMap patients = drinfo.value(PATIENT_DATA).toMap();
 
     // Patient information to variant map.
@@ -296,7 +322,7 @@ void LocalInformationManager::addPatientData(const QString &patient_uid, const Q
     drinfo[PATIENT_DATA] = patients;
 
     // Storing the new dr map in the local db.
-    localDB[config->getString(CONFIG_DOCTOR_UID)] = drinfo;
+    localDB[druid] = drinfo;
 
     // Finally saving the DB.
     return backupDB();
@@ -325,12 +351,12 @@ void LocalInformationManager::setUpdateFlagTo(bool flag){
     //printLocalDB();
 }
 
-void LocalInformationManager::preparePendingReports(){
-    patientReportInformation[config->getString(CONFIG_PATIENT_UID)].prepareToInterateOverPendingReportFileSets();
+void LocalInformationManager::preparePendingReports(const QString &uid){
+    patientReportInformation[uid].prepareToInterateOverPendingReportFileSets();
 }
 
-QStringList LocalInformationManager::nextPendingReport(){
-    return patientReportInformation[config->getString(CONFIG_PATIENT_UID)].nextPendingReportFileSet();
+QStringList LocalInformationManager::nextPendingReport(const QString &uid){
+    return patientReportInformation[uid].nextPendingReportFileSet();
 }
 
 QList<QStringList> LocalInformationManager::getDoctorList(bool forceShow){
@@ -349,10 +375,10 @@ QList<QStringList> LocalInformationManager::getDoctorList(bool forceShow){
     return ans;
 }
 
-QList<QStringList> LocalInformationManager::getPatientListForDoctor(){
+QList<QStringList> LocalInformationManager::getPatientListForDoctor(const QString &druid){
     QList<QStringList> ans;
     QStringList names;
-    QVariantMap patients = localDB.value(config->getString(CONFIG_DOCTOR_UID)).toMap().value(PATIENT_DATA).toMap();
+    QVariantMap patients = localDB.value(druid).toMap().value(PATIENT_DATA).toMap();
     QStringList uids = patients.keys();
     //qWarning() << "PAT UIDS for" << config->getString(CONFIG_DOCTOR_UID) << " are " << uids;
     for (qint32 i = 0; i < uids.size(); i++){
@@ -361,7 +387,7 @@ QList<QStringList> LocalInformationManager::getPatientListForDoctor(){
     }
     if (!names.isEmpty()) {
         ans << names << uids;
-        fillPatientDatInformation();
+        fillPatientDatInformation(druid);
         QStringList isoklist;
         for (qint32 i = 0; i < uids.size(); i++){
             if (patientReportInformation.value(uids.at(i)).hasPendingReports()) isoklist << "false";
@@ -376,7 +402,7 @@ QList<QStringList> LocalInformationManager::getPatientListForDoctor(){
 void LocalInformationManager::loadDB(){
 
     // Checking to see if the directory structure exists.
-    QDir basedir(config->getString(CONFIG_OUTPUT_DIR) + "/" + DIRNAME_RAWDATA);
+    QDir basedir(workingDirectory);
     if (!basedir.exists()){
         log.appendError("LOCALDB LOADING: Base Data directory: " + basedir.path() + " does not exist and it should, at this point");
         return;
@@ -402,7 +428,7 @@ void LocalInformationManager::loadDB(){
 void LocalInformationManager::backupDB(){
 
     // Checking to see if the directory structure exists.
-    QDir basedir(config->getString(CONFIG_OUTPUT_DIR) + "/" + DIRNAME_RAWDATA);
+    QDir basedir(workingDirectory);
     if (!basedir.exists()){
         log.appendError("LOCALDB: Base Data directory: " + basedir.path() + " does not exist and it should, at this point");
     }

@@ -48,6 +48,7 @@ viewpatientreg_errorEmpty = Cannot be empty;
 viewpatientreg_errorNoAccept = You must accept the Terms of Use and the Privacy Policy;
 viewpatientreg_terms_of_use = Terms Of Use;
 viewpatientreg_privacy_policy = Privacy Policy;
+viewpatientreg_errorExists = This patient is exists under this doctor;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Eye Studies;
@@ -153,6 +154,7 @@ viewpatientlist_msg_nopass = No password set|Please edit the user information an
 viewpatientlist_msg_notvalid = User not validated|This user is not validated and cannot request reports.<br>Please solve this issue validating it using the Institution´s password;
 viewpatientlist_ask_password = Password required;
 viewpatientlist_wrong_dr_password = Password is incorrect;
+viewpatientlist_view_all = View All Patients;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reports;
@@ -163,6 +165,13 @@ viewshowreports_diagTabTime = Time;
 viewshowreports_diagTabReading = Reading;
 viewshowreports_diagTabBinding = Colors;
 viewshowreports_diagBtnView = VIEW;
+viewshowreports_diagBtnBack = BACK;
+
+#********************************* VIEW ALL PATIENTS *********************************
+viewallreports_title = Patient List;
+viewallreports_patient_col = Patient;
+viewallreports_doctor_col = Doctor;
+viewallreports_view = VIEW REPORTS;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Doctor's Profile;
