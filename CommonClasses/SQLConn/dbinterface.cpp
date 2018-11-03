@@ -90,6 +90,22 @@ bool DBInterface::deleteRowFromDB(const QString &table, const QString &condition
     return true;
 }
 
+qint32 DBInterface::getNewestKeyid(const QString &keyidColName, const QString &table){
+    QString query = "SELECT MAX(" + keyidColName + ") FROM " + table;
+    QSqlQuery q;
+    if (!q.exec(query)){
+        error = "SELECT MAX, Error on query: " + query + ". ERROR: " + q.lastError().text();
+        return -1;
+    }
+
+    if (!q.next()){
+        error = "SELECT MAX Did not rerturn any results";
+        return -1;
+    }
+    return q.value(0).toInt();
+
+}
+
 bool DBInterface::readFromDB(const QString &table, const QStringList &columns, const QString &conditions){
 
     QString query = "SELECT ";

@@ -71,15 +71,14 @@ void Control::run(){
 
 }
 
-void Control::deleteTestEntries(){
+bool Control::deleteTestEntries(){
 
     bool ok;
     QStringList userList = db.getPossibleTestUsers(&ok);
     if (!ok){
         std::cout << "ERROR Getting the user list: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
         getchar();
-        commTransactionOk = false;
-        return;
+        return false;
     }
 
     ConsoleInputScreen screen;
@@ -92,7 +91,7 @@ void Control::deleteTestEntries(){
 
     screen.show();
 
-    if (screen.getAction() == ConsoleInputScreen::CA_BACK) return;
+    if (screen.getAction() == ConsoleInputScreen::CA_BACK) return true;
 
     QString uid = screen.getSelectedData().toString();
 
@@ -100,92 +99,97 @@ void Control::deleteTestEntries(){
     confirm.setQuestion("Are you sure you want to delete all entries with user UID: " + uid + "?");
     confirm.show();
 
-    if (confirm.getAction() == ConsoleInputScreen::CA_BACK) return;
+    if (confirm.getAction() == ConsoleInputScreen::CA_BACK) return true;
 
     if (!db.deleteUserInfo(uid)){
         std::cout << "ERROR: " << db.getError().toStdString() <<  ". Press any key to continue" << std::endl;
         getchar();
+        return false;
     }
+
+    return true;
 
 }
 
 void Control::newInstitutions(){
 
-    inputInstitutionInfo(false);
+    InstDBComm::Institution inst;
+    inst = inputInstitutionInfo(inst);
 
-    if (!commTransactionOk) return;
+    if (!inst.ok) return;
 
-    if (!db.addNewInstitution(commInstitutionInfo)){
+    qint32 keyid = db.addNewInstitution(inst);
+
+    if (keyid == -1){
         std::cout << "ERROR Adding new institution: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
         getchar();
         return;
     }
-    commInstitutionInfo.uid = QString::number(db.getGeeneratedUID());
-
-    showInfoScreen();
-
+    showInfoScreen(true,QString::number(keyid));
 }
 
 void Control::resetPasswInstitution(){
 
-    institutionSelection();
-    if ((!commTransactionOk) || (commSelection == -1)) return;
+    InstDBComm::Institution inst =  institutionSelection();
+    if (!inst.ok) return;
 
     // Setting the neww password
-    if (!db.resetPassword(commKeyid)){
+    if (!db.resetPassword(inst.keyid)){
         std::cout << "ERROR Resetting password: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
         getchar();
         return;
     }
 
     // Showing the new password
-    showInfoScreen();
+    showInfoScreen(true,inst.keyid);
 
 }
 
 void Control::updateInstitution(){
 
-    institutionSelection();
-    if ((!commTransactionOk) || (commSelection == -1)) return;
+    InstDBComm::Institution inst = institutionSelection();
+    if (!inst.ok) return;
 
-    inputInstitutionInfo(true);
-    if (!commTransactionOk) return;
+    inst =  inputInstitutionInfo(inst);
+    if (!inst.ok) return;
 
-    commInstitutionInfo.keyid = commKeyid;
-    if (!db.updateNewInstitution(commInstitutionInfo)){
+    if (!db.updateNewInstitution(inst)){
         std::cout << "ERROR: Updating instituion information " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
         getchar();
         return;
     }
 
     // Showing updated information.
-    showInfoScreen();
+    showInfoScreen(false,inst.keyid);
 
 }
 
 void Control::printInstitutionInfo(){
 
-    institutionSelection();
-    if ((!commTransactionOk) || (commSelection == -1)) return;
+    InstDBComm::Institution inst = institutionSelection();
+    if (!inst.ok) return;
 
     // Showing the information
-    showInfoScreen(false);
+    showInfoScreen(false,inst.keyid);
 
 }
 
-void Control::institutionSelection(){
+InstDBComm::Institution Control::institutionSelection(){
 
     ConsoleInputScreen screen;
-    bool ok = false;
-    commTransactionOk = true;
+    InstDBComm::Institution inst;
+    inst.ok = true;
+    inst.keyid = -1;
+
 
     // Selecting the institution
+    bool ok;
     QList<InstDBComm::Institution> info = db.getAllInstitutions(&ok);
     if (!ok){
         std::cout << "ERROR Getting institution list: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
         getchar();
-        commTransactionOk = false;
-        return;
+        inst.ok = false;
+        return inst;
     }
 
     for (qint32 i = 0; i < info.size(); i++){
@@ -195,33 +199,32 @@ void Control::institutionSelection(){
     screen.show();
 
     if (screen.getAction() == ConsoleInputScreen::CA_BACK) {
-        commSelection = -1;
+        return inst;
     }
     else {
-        commInstitutionInfo = db.getInstitutionInfo(screen.getSelectedData().toString());
-        commSelection = screen.getSelected();
-        commKeyid = commInstitutionInfo.keyid;
-        if (!commInstitutionInfo.ok){
-            commTransactionOk = false;
+        inst = db.getInstitutionInfo(screen.getSelectedData().toString());
+        if (!inst.ok){
             std::cout << "ERROR Getting institution information: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
             getchar();
         }
+        return inst;
     }
 }
 
 
 
-void Control::inputInstitutionInfo(bool update){
+InstDBComm::Institution Control::inputInstitutionInfo(InstDBComm::Institution inst){
 
     ConsoleInputScreen screen;
-    commTransactionOk = true;
+    bool update = !inst.uid.isEmpty();
+    inst.ok = true;
 
     if (update){
-        screen.addDataEntryPrompt("Name [" + commInstitutionInfo.name  + "]");
-        screen.addDataEntryPrompt("Number of evaluations [" + commInstitutionInfo.numEvals + "]");
-        screen.addDataEntryPrompt("EyeTracker Brand [" + commInstitutionInfo.etbrand +  "]");
-        screen.addDataEntryPrompt("EyeTracker Model [" + commInstitutionInfo.etmodel +  "]");
-        screen.addDataEntryPrompt("EyeTracker Serial Number [" + commInstitutionInfo.etserial +  "]");
+        screen.addDataEntryPrompt("Name [" + inst.name  + "]");
+        screen.addDataEntryPrompt("Number of evaluations [" + inst.numEvals + "]");
+        screen.addDataEntryPrompt("EyeTracker Brand [" + inst.etbrand +  "]");
+        screen.addDataEntryPrompt("EyeTracker Model [" + inst.etmodel +  "]");
+        screen.addDataEntryPrompt("EyeTracker Serial Number [" + inst.etserial +  "]");
     }
     else {
         screen.addDataEntryPrompt("Name");
@@ -231,7 +234,7 @@ void Control::inputInstitutionInfo(bool update){
         screen.addDataEntryPrompt("EyeTracker Serial Number");
     }
 
-    if (update) screen.setMenuTitle("Input institution information (UID: " + commInstitutionInfo.uid  + "). Leave empty to leave as is:");
+    if (update) screen.setMenuTitle("Input institution information (UID: " + inst.uid  + "). Leave empty to leave as is:");
     else screen.setMenuTitle("Input institution information");
 
     while (true){
@@ -248,33 +251,47 @@ void Control::inputInstitutionInfo(bool update){
                 // Should ask for infromation again.
             }
             else {
-                commInstitutionInfo.etbrand = input.at(INPUT_BRAND);
-                commInstitutionInfo.etmodel = input.at(INPUT_MODEL);
-                commInstitutionInfo.etserial = input.at(INPUT_ETSN);
-                commInstitutionInfo.keyid = "";
-                commInstitutionInfo.name = input.at(INPUT_NAME);
-                commInstitutionInfo.numEvals = input.at(INPUT_NEVAL);
-                commInstitutionInfo.uid = "";
+                if (!input.at(INPUT_BRAND).isEmpty())
+                    inst.etbrand = input.at(INPUT_BRAND);
+                if (!input.at(INPUT_MODEL).isEmpty())
+                    inst.etmodel = input.at(INPUT_MODEL);
+                if (!input.at(INPUT_ETSN).isEmpty())
+                    inst.etserial = input.at(INPUT_ETSN);
+                if (!input.at(INPUT_NAME).isEmpty())
+                    inst.name = input.at(INPUT_NAME);
+                if (!input.at(INPUT_NEVAL).isEmpty())
+                    inst.numEvals = input.at(INPUT_NEVAL);
                 break;
             }
         }
-        else break;
+        else {
+            inst.ok = false;
+            break;
+        }
     }
+
+    return inst;
 }
 
-void Control::showInfoScreen(bool showPassword){
+void Control::showInfoScreen(bool showPassword, const QString &keyid){
+
+
+    InstDBComm::Institution inst = db.getInstitutionInfo(keyid);
 
     // Now I need to show the generated information
     ConsoleInputScreen screen;
-    screen.setMenuTitle("Instituion: " + commInstitutionInfo.name);
+    screen.setMenuTitle("Instituion: " + inst.name);
     QStringList info;
-    info << "Number of evaluations remaining: " + commInstitutionInfo.numEvals;
-    info << "ET : " + commInstitutionInfo.etbrand + " " + commInstitutionInfo.etmodel;
-    if (showPassword) info << "Password: " + db.getGeneratedPassword();
+    info << "Number of evaluations remaining: " + inst.numEvals;
+    info << "ET : " + inst.etbrand + " " + inst.etmodel;
+    if (showPassword) {
+        info << "Password: " + db.getGeneratedPassword();
+    }
     info << "Configuation file snippet:";
-    info << QString(CONFIG_INST_ETSERIAL) + " = " + commInstitutionInfo.etserial + ";";
-    info << QString(CONFIG_INST_NAME) + " = " + commInstitutionInfo.name + ";";
-    info << QString(CONFIG_INST_UID) + " = " + commInstitutionInfo.uid + ";";
+    info << QString(CONFIG_INST_PASSWORD) + " = " + inst.password + ";";
+    info << QString(CONFIG_INST_ETSERIAL) + " = " + inst.etserial + ";";
+    info << QString(CONFIG_INST_NAME) + " = " + inst.name + ";";
+    info << QString(CONFIG_INST_UID) + " = " + inst.uid + ";";
     screen.setInformationScreen(info,false);
     screen.show();
 

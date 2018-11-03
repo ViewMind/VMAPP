@@ -31,6 +31,9 @@ public:
     // Delete Query
     bool deleteRowFromDB(const QString &table, const QString &condition);
 
+    // Get last generated keyid from a table;
+    qint32 getNewestKeyid(const QString &keyidColName, const QString &table);
+
     // Closing the connection to the server
     void close() { dbConnection.close(); }
 

@@ -160,6 +160,69 @@ void DBCommSSLServer::sslErrorsFound(quint64 id){
 
 }
 
+quint8 DBCommSSLServer::verifyDoctor(const QStringList &columns, const QStringList &values){
+    qint32 instIndex = columns.indexOf(TDOCTOR_COL_MEDICAL_INST);
+    if ((instIndex == -1) || (instIndex >= values.size())) {
+        log.appendError("On VERIFY DOCTOR: No column found for Medical Institution. Index: " + QString::number(instIndex) + " Column List: " + columns.join(", "));
+        return DBACK_UID_ERROR;
+    }
+    QString inst_uid = values.at(instIndex);
+
+    QStringList cols;
+    cols << TINST_COL_UID;
+    QString cond = QString(TINST_COL_UID) + "='" + inst_uid + "'";
+
+    if (!dbConnection.readFromDB(TABLE_INSTITUTION,cols,cond)){
+        log.appendError("On VERIFY DOCTOR, DB Error: " + dbConnection.getError());
+        return DBACK_DBCOMM_ERROR;
+    }
+
+    DBData data = dbConnection.getLastResult();
+    if (data.rows.size() != 1){
+        log.appendError("On VERIFY DOCTOR, Expecting only 1 row from the DB, but got " + QString::number(data.rows.size()));
+        return DBACK_UID_ERROR;
+    }
+
+    if (data.rows.first().size() != 1){
+        log.appendError("On VERIFY DOCTOR, Expecting only 1 column from the DB, but got " + QString::number(data.rows.first().size()));
+        return DBACK_UID_ERROR;
+    }
+
+    // If it matched, then the UID is ok.
+
+    return DBACK_ALL_OK;
+}
+
+
+quint8 DBCommSSLServer::verifyPatient(const QStringList &columns, const QStringList &values){
+    qint32 drIndex = columns.indexOf(TPATREQ_COL_DOCTORID);
+    if ((drIndex == -1) || (drIndex >= values.size())) {
+        log.appendError("On VERIFY PATIENT: No column found for Doctor UID found. Index: " + QString::number(drIndex) + " Column List: " + columns.join(", "));
+        return DBACK_UID_ERROR;
+    }
+    QString druid = values.at(drIndex);
+
+    QStringList cols;
+    cols << TDOCTOR_COL_UID;
+    QString cond = QString(TDOCTOR_COL_UID) + "='" + druid + "'";
+
+    if (!dbConnection.readFromDB(TABLE_DOCTORS,cols,cond)){
+        log.appendError("On VERIFY PATIENT, DB Error: " + dbConnection.getError());
+        return DBACK_DBCOMM_ERROR;
+    }
+
+    DBData data = dbConnection.getLastResult();
+    if (data.rows.size() < 1){
+        log.appendError("On VERIFY PATIENT, Expecting only 1 row from the DB, but got " + QString::number(data.rows.size()));
+        return DBACK_UID_ERROR;
+    }
+
+    // If it matched, then the UID is ok.
+
+    return DBACK_ALL_OK;
+}
+
+
 void DBCommSSLServer::processSQLRequest(quint64 socket){
 
     if (!dbConnection.initDB(config)){
@@ -216,6 +279,7 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 
     }
     else{
+
         // Data will be inserted in table
         // Special processing is required if table is the patient table.
 
@@ -227,20 +291,32 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 
         // A set should return either the errors or an ack.
         QStringList dberrors;
-
+        quint8 code = DBACK_ALL_OK;
         for (qint32 i = 0; i < tableNames.size(); i++){
             //log.appendStandard("SET " + QString::number(i) +  " on TABLE " + tableNames.at(i) + ": COLUMNS -> " + columnsList.at(i).join("|") + ". VALUES: " + values.at(i).join("|"));
+
+            // TWO CHECKS Are Required:
+            // 1) If this is a doctor information, it must come from an existing insitution
+            // 2) If this is a patient it must come from an existing doctor.
+            if (tableNames.at(i) == TABLE_DOCTORS){
+                quint8 code = verifyDoctor(columnsList.at(i),values.at(i));
+                if (code != DBACK_ALL_OK) break;
+            }
+
+            if (tableNames.at(i) == TABLE_PATIENTS_REQ_DATA){
+                quint8 code = verifyPatient(columnsList.at(i),values.at(i));
+                if (code != DBACK_ALL_OK) break;
+            }
+
             if (!dbConnection.insertDB(tableNames.at(i),columnsList.at(i),values.at(i))){
                 dberrors << dbConnection.getError();
                 log.appendError("On SQL Transaction: " + dbConnection.getError());
             }
         }
 
-        if (dberrors.size() > 0){
+        tx.addValue(code,DataPacket::DPFI_DB_SET_ACK);
+        if (dberrors.size() > 0){            
             tx.addString(dberrors.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_ERROR);
-        }
-        else{
-            tx.addValue(DBACK_ALL_OK,DataPacket::DPFI_DB_SET_ACK);
         }
 
     }

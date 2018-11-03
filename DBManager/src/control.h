@@ -6,7 +6,7 @@
 #include "InstDBComm.h"
 
 #define PROGRAM_NAME      "DBManager"
-#define PROGRAM_VERSION   "1.0.0"
+#define PROGRAM_VERSION   "1.1.0"
 
 #define INPUT_NAME     0
 #define INPUT_NEVAL    1
@@ -39,23 +39,15 @@ private:
 
     // Auxiliary functions
     QStringList getGreeting() const;
-    bool initialization();
     void newInstitutions();
     void updateInstitution();
     void resetPasswInstitution();
     void printInstitutionInfo();
-    void deleteTestEntries();
+    bool deleteTestEntries();
 
-    // Comunications variables.
-    bool commTransactionOk;
-    qint32 commSelection;
-    QString commKeyid;
-    InstDBComm::Institution commInstitutionInfo;
-
-    void institutionSelection();
-    void userSelection();
-    void inputInstitutionInfo(bool update);
-    void showInfoScreen(bool showPassword = true);
+    InstDBComm::Institution institutionSelection();
+    InstDBComm::Institution inputInstitutionInfo(InstDBComm::Institution inst);
+    void showInfoScreen(bool showPassword, const QString &keyid);
 
 
 };
