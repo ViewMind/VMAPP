@@ -53,7 +53,7 @@ Dialog {
     onOpened: {
         instPassword.clear();
         drPassword.clear();
-        instPassword.setText("3n5YPEfz");
+        //instPassword.setText("3n5YPEfz");
         updateDrProfile();
     }
 

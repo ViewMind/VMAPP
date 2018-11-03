@@ -28,6 +28,9 @@ public:
     // Executes the queued up transaction.
     void runDBTransaction();
 
+    // Returns the error code of the ack;
+    quint8 getErrorCode() { return errorCode; }
+
     // The result of GET Transactions.
     QList<DBData> getDBData() const { return dbdata; }
 
@@ -49,6 +52,9 @@ private:
 
     // Data obtained from an SQL request
     QList<DBData> dbdata;
+
+    // When setting the data.
+    quint8 errorCode;
 
     // For queuing up the query data
     QString queryType;

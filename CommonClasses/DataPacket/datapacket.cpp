@@ -281,3 +281,10 @@ quint32 DataPacket::byteArrayToSize(const QByteArray &size){
     }
     return ans;
 }
+
+void DataPacket::print(){
+    QList<quint8> keys = fields.keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        qWarning() << "Field of Type: " << keys.at(i);
+    }
+}

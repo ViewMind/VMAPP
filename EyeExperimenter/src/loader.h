@@ -55,6 +55,7 @@ public:
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE QString loadTextFile(const QString &fileName);
     Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
+    Q_INVOKABLE QStringList getErrorMessageForDBCode();
     Q_INVOKABLE void prepareAllPatientIteration();
     Q_INVOKABLE QStringList nextInAllPatientIteration();
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}

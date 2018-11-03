@@ -195,7 +195,7 @@ viewdrinfo_verify_password = Verifique Contraseña;
 viewdrinfo_password_match = Las contraseñas no coinciden;
 viewdrinfo_disable = Deshabilitar doctor;
 viewdrinfo_disable_warning = Advertencia|Una vez desahbilitado doctor y validado el cambio, no es posible deshacerlo<br>Desea continuar?;
-viewdrinfo_drexists = Identificación existente;
+viewdrinfo_drexists = Este Doctor ya existe;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = El estudio ha finalizado;
@@ -240,6 +240,7 @@ error_server_comm = Error de comunicación<>No se pudo establecer un vinculo con
 error_db_transaction = Error de Base de Datos|Hubo un error relacionado con la base de datos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
+error_db_wronginst = ID Incorrrecto|El ID de esta institución está equivocado o el doctor no fue registrado<br>Por favor contacte a ViewMind para resolverlo;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;

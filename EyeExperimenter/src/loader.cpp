@@ -42,6 +42,11 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cv[CONFIG_INST_UID] = cmd;
     cv[CONFIG_INST_PASSWORD] = cmd;
 
+    cmd.clear();
+    cmd.optional = true;
+    cmd.type = ConfigurationManager::VT_BOOL;
+    cv[CONFIG_TEST_MODE] = cmd;
+
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
     if (!configuration->loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
@@ -87,6 +92,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // Creating the local configuration manager, and loading the local DB.
     lim.setDirectory(configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA));
+
+    // Resetting the medical institution, just in case
+    lim.resetMedicalInstitutionForAllDoctors(configuration->getString(CONFIG_INST_UID));
 
 }
 
@@ -161,6 +169,21 @@ QStringList Loader::getErrorMessageForCode(quint8 code){
     return QStringList();
 }
 
+
+QStringList Loader::getErrorMessageForDBCode(){
+    quint8 code = dbClient->getErrorCode();
+    //qWarning() << "GETTING ERROR MESSAGE FOR CODE" << code;
+    switch (code) {
+    case DBACK_DBCOMM_ERROR:
+        return language.getStringList("error_db_transaction");
+    case DBACK_UID_ERROR:
+        return language.getStringList("error_db_wronginst");
+    default:
+        logger.appendError("UNKNOWN Code when getting transaction error message: " + QString::number(code));
+        break;
+    }
+    return QStringList();
+}
 bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew){
     // The data for the country must be changed as well as the UID must be generated.
     QString countryCode = countries->getCodeForCountry(dbdata.value(TDOCTOR_COL_COUNTRYID).toString());
@@ -171,6 +194,11 @@ bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, b
     // This function returns false ONLY when it is attempting to create a new doctor with an existing UID.
     // qWarning() << "IsNew" << isNew << "Exists" << lim.doesDoctorExist(uid);
     if (isNew && lim.doesDoctorExist(uid)){
+        return false;
+    }
+
+    // Checking for test mode doctor
+    if (uid.contains(TEST_UID) && !configuration->getBool(CONFIG_TEST_MODE)){
         return false;
     }
 

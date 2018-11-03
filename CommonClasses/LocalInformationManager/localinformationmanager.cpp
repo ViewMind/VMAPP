@@ -17,6 +17,16 @@ void LocalInformationManager::setDirectory(const QString &workDir){
     loadDB();
 }
 
+void LocalInformationManager::resetMedicalInstitutionForAllDoctors(const QString &inst_uid){
+    QStringList druids = localDB.keys();
+    for (qint32 i = 0; i < druids.size(); i++){
+        QVariantMap drmap = localDB.value(druids.at(i)).toMap();
+        drmap[TDOCTOR_COL_MEDICAL_INST] = inst_uid;
+        localDB[druids.at(i)] = drmap;
+    }
+    backupDB();
+}
+
 QList<QStringList> LocalInformationManager::getAllPatientInfo() const {
     QList<QStringList> ans;
     QStringList druids = localDB.keys();
@@ -125,7 +135,8 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
         if (!drmap.contains(DOCTOR_VALID)) continue;
         if (!drmap.value(DOCTOR_VALID).toBool()) continue;
 
-        if (addDoctor){            
+        if (addDoctor){
+            //qWarning() << "Adding the doctor";
             QStringList columns;
             QStringList values;
             QSet<QString> avoid;

@@ -195,7 +195,7 @@ viewdrinfo_verify_password = Verify Password;
 viewdrinfo_password_match = The passwords do not match;
 viewdrinfo_disable = Disable doctor;
 viewdrinfo_disable_warning = Warning|Once disabled and validated, it is not possible to go undo<br>Continue anyway?;
-viewdrinfo_drexists = Existing identification;
+viewdrinfo_drexists = Doctor already exists;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = The study has concluded;
@@ -240,6 +240,7 @@ error_server_comm = Communication error<>It was not possible to establish a link
 error_db_transaction = Database Error|There was an error related to the database<br>Please contact the ViewMind team;
 error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracker is incorrect<br>Please contact the ViewMind team;
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
+error_db_wronginst = Incorrect ID|The ID for this institution is incorrect or the doctor is not registered<br>Please contact ViewMind in order to solve this problem;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Change language<>The program must be restarted to change the language;

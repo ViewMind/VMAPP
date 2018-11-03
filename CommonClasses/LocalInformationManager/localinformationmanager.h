@@ -23,6 +23,7 @@ class LocalInformationManager
 public:
 
     LocalInformationManager();
+    void resetMedicalInstitutionForAllDoctors(const QString &inst_uid);
     void setDirectory(const QString &workDir);
     void addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
     void addPatientData(const QString &druid, const QString &patient_uid, const QStringList &cols, const QStringList &values);

@@ -17,12 +17,22 @@ VMBase {
         onSynchDone: {
             connectionDialog.close();
             if (!loader.wasDBTransactionOk()){
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
-                var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
-                return;
+                var errorTitleMsg = loader.getErrorMessageForDBCode();
+                if (errorTitleMsg.length === 2){ // If the code was all ok but the transaction was NOT ok, then it was a communications error.
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROC_ACK;
+                    vmErrorDiag.vmErrorMessage = errorTitleMsg[1];
+                    vmErrorDiag.vmErrorTitle = errorTitleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
+                else{
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
+                    var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
+                    vmErrorDiag.vmErrorMessage = titleMsg[1];
+                    vmErrorDiag.vmErrorTitle = titleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
             }
         }
     }
