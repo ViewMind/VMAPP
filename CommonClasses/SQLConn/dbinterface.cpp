@@ -82,6 +82,8 @@ bool DBInterface::updateDB(const QString &table, const QStringList &columns, con
 
 bool DBInterface::deleteRowFromDB(const QString &table, const QString &condition){
     QString query = "DELETE FROM " + table + " WHERE " + condition;
+    LogInterface log;
+    log.appendStandard("DELETE QUERY IS: " + query);
     QSqlQuery q;
     if (!q.exec(query)){
         error = "DELETE Error on query: " + query + ". ERROR: " + q.lastError().text();
