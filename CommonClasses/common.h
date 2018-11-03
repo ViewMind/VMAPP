@@ -85,15 +85,17 @@
 #define   CONFIG_INST_UID                               "inst_uid"
 #define   CONFIG_INST_ETSERIAL                          "inst_et_serial"
 #define   CONFIG_INST_PASSWORD                          "inst_pass"
+#define   CONFIG_TEST_MODE                              "test_mode"
 
 // The unique UID for tests.
-#define   TEST_UID                                      "vm0000"
+#define   TEST_UID                                      "ARvm0000"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0
 #define   DBACK_PASSWORD_PROBLEM                        1
-#define   DBACK_PASSWORD_INSTITUTION_UID_ERROR          2
-#define   DBACK_PASSWORD_DBCOMM_ERROR                   3
+#define   DBACK_UID_ERROR                               2
+#define   DBACK_DBCOMM_ERROR                            3
+
 
 // The ACK Results for a request report transactions
 #define   RR_ALL_OK                                      0

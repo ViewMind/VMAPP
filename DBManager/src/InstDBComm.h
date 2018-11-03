@@ -16,6 +16,19 @@ public:
     InstDBComm();
 
     struct Institution {
+
+        Institution(){
+            name = "";
+            keyid = "";
+            uid = "";
+            etserial = "";
+            etbrand = "";
+            etmodel = "";
+            numEvals = "";
+            password = "";
+            ok = true;
+        }
+
         QString name;
         QString keyid;
         QString uid;
@@ -23,6 +36,7 @@ public:
         QString etbrand;
         QString etmodel;
         QString numEvals;
+        QString password;
         bool ok;
     };
 
@@ -39,7 +53,7 @@ public:
     bool initConnection();
 
     // Queries sinthezised as functions.
-    bool addNewInstitution(const Institution &inst);
+    qint32 addNewInstitution(const Institution &inst);
     bool updateNewInstitution(const Institution &inst);
     bool resetPassword(const QString &keyidInst);
     bool deleteUserInfo(const QString &uid);

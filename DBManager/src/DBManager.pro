@@ -26,7 +26,8 @@ SOURCES += \
     control.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     InstDBComm.cpp \
-    ../../CommonClasses/SQLConn/dbinterface.cpp
+    ../../CommonClasses/SQLConn/dbinterface.cpp \
+    ../../CommonClasses/LogInterface/loginterface.cpp
 
 HEADERS += \
     consoleinputscreen.h \
@@ -35,4 +36,5 @@ HEADERS += \
     ../../CommonClasses/SQLConn/dbdescription.h \
     InstDBComm.h \
     ../../CommonClasses/SQLConn/dbinterface.h \
-    ../../CommonClasses/common.h
+    ../../CommonClasses/common.h \
+    ../../CommonClasses/LogInterface/loginterface.h

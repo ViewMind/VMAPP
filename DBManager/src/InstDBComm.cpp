@@ -2,8 +2,6 @@
 
 InstDBComm::InstDBComm()
 {
-    // Seeding the random number generator
-    qsrand(QTime::currentTime().msec());
 
     QStringList letters;
     letters << "a" << "b" << "c" << "e" << "e" << "f" << "g" << "h" << "i" << "j" << "k" << "l" << "m"
@@ -55,10 +53,14 @@ bool InstDBComm::initConnection(){
 
     connectionMsg = "Established connection to DB: " + dbconf.getString(CONFIG_DBNAME) + " for " + dbconf.getString(CONFIG_DBUSER) + "@" + dbconf.getString(CONFIG_DBHOST) + portmsg;
 
+    // Seeding the random number generator (this ensures that the seed is done in the proper thread).
+    int seed = QTime::currentTime().msec();
+    qsrand(seed);
+
     return true;
 }
 
-bool InstDBComm::addNewInstitution(const Institution &inst){
+qint32 InstDBComm::addNewInstitution(const Institution &inst){
 
     // First the existing UIDs need to be gathered.
     QStringList columns;
@@ -66,7 +68,7 @@ bool InstDBComm::addNewInstitution(const Institution &inst){
     columns << TINST_COL_UID;
     if (!db.readFromDB(TABLE_INSTITUTION,columns,"")){
         error = db.getError();
-        return false;
+        return -1;
     }
 
     DBData result = db.getLastResult();
@@ -94,10 +96,17 @@ bool InstDBComm::addNewInstitution(const Institution &inst){
 
     if (!db.insertDB(TABLE_INSTITUTION,columns,values)){
         error = db.getError();
-        return false;
+        return -1;
     }
 
-    return true;
+    // All good getting the keyid
+    qint32 keyid = db.getNewestKeyid(TINST_COL_KEYID,TABLE_INSTITUTION);
+    if (keyid == -1){
+        error = db.getError();
+        return -1;
+    }
+
+    return keyid;
 }
 
 bool InstDBComm::updateNewInstitution(const Institution &inst){
@@ -129,6 +138,8 @@ bool InstDBComm::updateNewInstitution(const Institution &inst){
         columns << TINST_COL_ETBRAND;
         values << inst.etbrand;
     }
+
+    if (columns.isEmpty()) return true; // Nothing changed in the institution info.
 
     if (!db.updateDB(TABLE_INSTITUTION,columns,values,QString(TINST_COL_KEYID) + " = '" + inst.keyid + "'")){
         error = db.getError();
@@ -210,6 +221,14 @@ bool InstDBComm::deleteUserInfo(const QString &uid){
             error = db.getError();
             return false;
         }
+
+    }
+
+    // Now deleteing all results
+    condition = QString(TEYERES_COL_DOCTORID) + " = '" + uid + "'";
+    if (!db.deleteRowFromDB(TABLE_EYE_RESULTS,condition)){
+        error = db.getError();
+        return false;
     }
 
     // Finally deleting the doctor
@@ -282,7 +301,7 @@ InstDBComm::Institution InstDBComm::getInstitutionInfo(const QString &keyidInst)
     QStringList columns;
     Institution info;
 
-    columns << TINST_COL_ETSERIAL << TINST_COL_EVALS << TINST_COL_NAME << TINST_COL_UID << TINST_COL_KEYID << TINST_COL_ETBRAND << TINST_COL_ETMODEL;
+    columns << TINST_COL_ETSERIAL << TINST_COL_EVALS << TINST_COL_NAME << TINST_COL_UID << TINST_COL_KEYID << TINST_COL_ETBRAND << TINST_COL_ETMODEL << TINST_COL_HASHPASS;
     if (!db.readFromDB(TABLE_INSTITUTION,columns,QString(TINST_COL_KEYID) + " = '" + keyidInst + "'")){
         error = db.getError();
         info.ok = false;
@@ -321,6 +340,9 @@ InstDBComm::Institution InstDBComm::getInstitutionInfo(const QString &keyidInst)
             break;
         case 6:
             info.etmodel = row.at(i);
+            break;
+        case 7:
+            info.password = row.at(i);
             break;
         default:
             break;

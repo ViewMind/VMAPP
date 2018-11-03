@@ -417,7 +417,6 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
     return RR_ALL_OK;
 }
 
-
 void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
 
     QStringList columns;

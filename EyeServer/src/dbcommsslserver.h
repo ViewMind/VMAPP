@@ -54,6 +54,10 @@ private:
     // Do the actual DB stuff
     void processSQLRequest(quint64 socket);
 
+    // Verify to insert
+    quint8 verifyDoctor(const QStringList &columns, const QStringList &values);
+    quint8 verifyPatient(const QStringList &columns, const QStringList &values);
+
 };
 
 #endif // DBCOMMMANAGER_H
