@@ -255,6 +255,8 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
         QStringList dberrors;
         QStringList queryresults;
 
+        //qWarning() << "Table Names" << tableNames;
+
         for (qint32 i = 0; i < tableNames.size(); i++){
             if (!dbConnection.readFromDB(tableNames.at(i),columnsList.at(i),conditions.at(i))){
                 dberrors << dbConnection.getError();
@@ -292,21 +294,26 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
         // A set should return either the errors or an ack.
         QStringList dberrors;
         quint8 code = DBACK_ALL_OK;
+
         for (qint32 i = 0; i < tableNames.size(); i++){
             //log.appendStandard("SET " + QString::number(i) +  " on TABLE " + tableNames.at(i) + ": COLUMNS -> " + columnsList.at(i).join("|") + ". VALUES: " + values.at(i).join("|"));
+
+            //qWarning() << "Setting information on" << tableNames.at(i);
 
             // TWO CHECKS Are Required:
             // 1) If this is a doctor information, it must come from an existing insitution
             // 2) If this is a patient it must come from an existing doctor.
             if (tableNames.at(i) == TABLE_DOCTORS){
-                quint8 code = verifyDoctor(columnsList.at(i),values.at(i));
+                code = verifyDoctor(columnsList.at(i),values.at(i));
                 if (code != DBACK_ALL_OK) break;
             }
 
             if (tableNames.at(i) == TABLE_PATIENTS_REQ_DATA){
-                quint8 code = verifyPatient(columnsList.at(i),values.at(i));
+                code = verifyPatient(columnsList.at(i),values.at(i));
                 if (code != DBACK_ALL_OK) break;
             }
+
+            //qWarning() << "Doing insertion";
 
             if (!dbConnection.insertDB(tableNames.at(i),columnsList.at(i),values.at(i))){
                 dberrors << dbConnection.getError();
@@ -314,6 +321,7 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
             }
         }
 
+        //log.appendStandard("Setting SET ACK Field with " + QString::number(code));
         tx.addValue(code,DataPacket::DPFI_DB_SET_ACK);
         if (dberrors.size() > 0){            
             tx.addString(dberrors.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_ERROR);

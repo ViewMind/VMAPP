@@ -402,6 +402,8 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
     QString serial = data.rows.first().first();
     qint32  numevals = data.rows.first().last().toInt();
 
+    qWarning() << "SERIAL S/N" << serial << "Number of Evaluations: " << numevals << "Sent serial" << serial;
+
     // Checking the serial
     if (serial != etserial){
         log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID) + ": |" + serial + "|");
