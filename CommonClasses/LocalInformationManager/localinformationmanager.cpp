@@ -10,11 +10,16 @@ const QString LocalInformationManager::DOCTOR_HIDDEN         = "DOCTOR_HIDDEN";
 LocalInformationManager::LocalInformationManager()
 {
     workingDirectory = "";
+    backupDirectory = "";
 }
 
 void LocalInformationManager::setDirectory(const QString &workDir){
     workingDirectory = workDir;
     loadDB();
+}
+
+void LocalInformationManager::enableBackups(const QString &backupDir){
+    backupDirectory = backupDir;
 }
 
 void LocalInformationManager::resetMedicalInstitutionForAllDoctors(const QString &inst_uid){
@@ -251,7 +256,7 @@ void LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
         drinfo[DOCTOR_HIDDEN] = false; // It should not be possible to CREATE a hidden Doctor. But just in case.
         drinfo[DOCTOR_PASSWORD] = password;
         // Empty map for the patient.
-        drinfo[PATIENT_DATA] = QVariantMap();        
+        drinfo[PATIENT_DATA] = QVariantMap();
         localDB[dr_uid] = drinfo;
     }
     else {
@@ -282,7 +287,7 @@ void LocalInformationManager::addDoctorData(const QString &dr_uid, const QString
         }
 
         // If the doctor was hidden, nothing else matters. It will not be updated and it is invalid.
-        if (hidden){            
+        if (hidden){
             drinfo[DOCTOR_UPDATE] = false;
             drinfo[DOCTOR_VALID] = false;
         }
@@ -457,9 +462,12 @@ void LocalInformationManager::backupDB(){
     file.close();
 
     // Backing up the DB.
-    QFile(LOCAL_DB).remove();
-    if (!QFile::copy(dbfile,LOCAL_DB)){
-        log.appendError("LOCALDB: Failed to backup file " + dbfile);
+    if (!backupDirectory.isEmpty()){
+        QString bkpfile = backupDirectory + "/" + QString(LOCAL_DB);
+        QFile(bkpfile).remove();
+        if (!QFile::copy(dbfile,bkpfile)){
+            log.appendError("LOCALDB: Failed to backup file " + dbfile);
+        }
     }
 
 }

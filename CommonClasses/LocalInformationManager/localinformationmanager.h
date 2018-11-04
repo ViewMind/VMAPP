@@ -1,7 +1,7 @@
 #ifndef LOCALINFORMATIONMANAGER_H
 #define LOCALINFORMATIONMANAGER_H
 
-#define USESSL
+//#define USESSL
 
 #include <QVariantMap>
 #include <QDataStream>
@@ -25,6 +25,7 @@ public:
     LocalInformationManager();
     void resetMedicalInstitutionForAllDoctors(const QString &inst_uid);
     void setDirectory(const QString &workDir);
+    void enableBackups(const QString &backupDir);
     void addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
     void addPatientData(const QString &druid, const QString &patient_uid, const QStringList &cols, const QStringList &values);
     bool isDoctorValid(const QString &dr_uid);
@@ -68,6 +69,7 @@ private:
 
     // Working directory.
     QString workingDirectory;
+    QString backupDirectory;
 
     //ConfigurationManager *config;
     LogInterface log;

@@ -43,10 +43,6 @@ VMBase {
             viewHome.vmErrorDiag.open();
             return;
         }
-        else if (!loader.hasValidOutputRepo()){
-            viewSettings.vmInvalidRepoError = true;
-            viewSettings.open();
-        }
 
         // SSL Check is done right now
         if (!flowControl.checkSSLAvailability()){

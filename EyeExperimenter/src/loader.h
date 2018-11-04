@@ -27,7 +27,6 @@ public:
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
     Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var) {configuration->addKeyValuePair(key,var);}
     Q_INVOKABLE bool checkETChange();
-    Q_INVOKABLE QString hasValidOutputRepo(const QString &dirToCheck = "");
     Q_INVOKABLE QString getWindowTilteVersion(){ return EXPERIMENTER_VERSION; }
     Q_INVOKABLE bool createPatientDirectory();
     Q_INVOKABLE QRect frameSize(QObject *window);

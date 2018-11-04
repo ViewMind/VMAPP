@@ -21,6 +21,7 @@ VMBase {
         labelDocument_number.clear();
         labelProvince.clear();
         labelCity.clear();
+        cbConsent.checked = false;
         vmIsNew = true;
     }
 
@@ -62,6 +63,7 @@ VMBase {
 
         labelBirthDate.setISODate(patInfo.birthdate);
 
+        cbConsent.checked = true;
         vmIsNew = false;
     }
 

@@ -20,7 +20,7 @@ void DBView::on_pbBrowse_clicked()
 
     QString selected = QFileDialog::getOpenFileName(this,"Select Local DB file",".",LOCAL_DB);
     // HACK. REMOVE
-    selected = "C:/Users/Viewmind/Documents/ExperimenterOutputs/viewmind_etdata/localdb.dat";
+    // selected = "C:/Users/Viewmind/Documents/ExperimenterOutputs/viewmind_etdata/localdb.dat";
     if (selected.isEmpty()) return;
     ui->leLocalDB->setText(selected);
 

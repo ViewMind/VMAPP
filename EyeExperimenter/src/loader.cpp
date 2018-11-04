@@ -62,7 +62,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cmd.optional = true; // All settings are optional.
 
     // The strings.
-    cv[CONFIG_OUTPUT_DIR] = cmd;
     cv[CONFIG_REPORT_LANGUAGE] = cmd;
     cv[CONFIG_DEFAULT_COUNTRY] = cmd;
 
@@ -76,6 +75,8 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     settings.setupVerification(cv);
     if (!settings.loadConfiguration(FILE_SETTINGS,COMMON_TEXT_CODEC)){
         logger.appendError("Errors loading the settings file: " + settings.getError());
+        // Settings files should not have unwanted key words
+        loadingError = true;
     }
     else{
         configuration->merge(settings);
@@ -86,12 +87,26 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     changeLanguage();
     if (loadingError) return;
 
+    // Must make sure that the data directory exists
+    QDir rawdata(DIRNAME_RAWDATA);
+    if (!rawdata.exists()){
+        if (!QDir(".").mkdir(DIRNAME_RAWDATA)){
+            logger.appendError("Cannot create viewmind_data directory");
+            loadingError = true;
+            return;
+        }
+    }
+
     // Setting up de client for DB connection
     dbClient = new SSLDBClient(this,configuration);
     connect(dbClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectFromDB()));
 
     // Creating the local configuration manager, and loading the local DB.
-    lim.setDirectory(configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA));
+    lim.setDirectory(QString(DIRNAME_RAWDATA));
+
+    // Creating the db backup directory if it does not exist.
+    QDir(".").mkdir(DIRNAME_DBBKP);
+    lim.enableBackups(DIRNAME_DBBKP);
 
     // Resetting the medical institution, just in case
     lim.resetMedicalInstitutionForAllDoctors(configuration->getString(CONFIG_INST_UID));
@@ -372,38 +387,6 @@ QRect Loader::frameSize(QObject *window)
     return QRect();
 }
 
-QString Loader::hasValidOutputRepo(const QString &dirToCheck){
-
-    if (dirToCheck != ""){
-        QUrl url(dirToCheck);
-        QString fileloc = url.toLocalFile();
-
-        if (fileloc.isEmpty()){
-            // This means that it is a stright directroy path and not an URL.
-            fileloc = dirToCheck;
-        }
-
-        configuration->addKeyValuePair(CONFIG_OUTPUT_DIR,fileloc);
-    }
-
-    // Checking if the directory for the outputs exists and is valid. If there are any problems the user is asked for a directory instead.
-    if (!configuration->containsKeyword(CONFIG_OUTPUT_DIR)) return "";
-    QDir dir(configuration->getString(CONFIG_OUTPUT_DIR));
-    if (!dir.exists()) return "";
-
-    QDir rawdata(dir.path() + "/" + QString(DIRNAME_RAWDATA));
-    if (!rawdata.exists()){
-        if (!dir.mkdir(DIRNAME_RAWDATA)){
-            logger.appendError("Cannot create etdata directory in selected output directory");
-            return "";
-        }
-    }
-
-    // Returning the new dir.
-    return configuration->getString(CONFIG_OUTPUT_DIR);
-
-}
-
 bool Loader::checkETChange(){
     // Returns true if ET has been changed is required.
     if (configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) != CONFIG_P_ET_MOUSE)){
@@ -476,7 +459,7 @@ bool Loader::createPatientDirectory(){
 
     // Creating the doctor directory.
     QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
-    QString baseDir = configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA);
+    QString baseDir = DIRNAME_RAWDATA;
     QString drname = configuration->getString(CONFIG_DOCTOR_UID);
     configuration->addKeyValuePair(CONFIG_PATIENT_UID,patientuid);
 
@@ -521,7 +504,6 @@ bool Loader::createDirectorySubstructure(QString drname, QString pname, QString 
 
 void Loader::loadDefaultConfigurations(){
 
-    if (!configuration->containsKeyword(CONFIG_OUTPUT_DIR)) configuration->addKeyValuePair(CONFIG_OUTPUT_DIR,""); // Reconfigure the settings.
     if (!configuration->containsKeyword(CONFIG_DEFAULT_COUNTRY)) configuration->addKeyValuePair(CONFIG_DEFAULT_COUNTRY,"AR");
     if (!configuration->containsKeyword(CONFIG_DEMO_MODE)) configuration->addKeyValuePair(CONFIG_DEMO_MODE,false);
     if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)) configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
