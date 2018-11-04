@@ -37,5 +37,7 @@
         <file>qml/VMReportEntry.qml</file>
         <file>qml/VMResultEntry.qml</file>
         <file>qml/VMPasswordField.qml</file>
+        <file>qml/ViewAllPatients.qml</file>
+        <file>qml/VMPatientDoctorEntry.qml</file>
     </qresource>
 </RCC>

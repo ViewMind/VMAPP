@@ -29,6 +29,7 @@ VMBase {
         viewStudyStart.updateText()
         viewPatList.updateText()
         viewDrInfo.updateText();
+        viewShowReports.updateText();
     }
 
     Component.onCompleted: {
@@ -41,10 +42,6 @@ VMBase {
             viewHome.vmErrorDiag.vmErrorTitle = titleMsg[0];
             viewHome.vmErrorDiag.open();
             return;
-        }
-        else if (!loader.hasValidOutputRepo()){
-            viewSettings.vmInvalidRepoError = true;
-            viewSettings.open();
         }
 
         // SSL Check is done right now

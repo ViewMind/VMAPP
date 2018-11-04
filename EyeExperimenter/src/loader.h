@@ -27,7 +27,6 @@ public:
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
     Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var) {configuration->addKeyValuePair(key,var);}
     Q_INVOKABLE bool checkETChange();
-    Q_INVOKABLE QString hasValidOutputRepo(const QString &dirToCheck = "");
     Q_INVOKABLE QString getWindowTilteVersion(){ return EXPERIMENTER_VERSION; }
     Q_INVOKABLE bool createPatientDirectory();
     Q_INVOKABLE QRect frameSize(QObject *window);
@@ -40,22 +39,25 @@ public:
     Q_INVOKABLE bool isDoctorValidated(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorPasswordEmpty(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorPasswordCorrect(const QString &password);
-    Q_INVOKABLE bool doesCurrentDoctorHavePassword() { return !lim->getDoctorPassword().isEmpty(); }
-    Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim->getCurrentDoctorInfo();}
-    Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim->getCurrentPatientInfo();}
+    Q_INVOKABLE bool doesCurrentDoctorHavePassword() { return !lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID)).isEmpty(); }
+    Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim.getDoctorInfo(configuration->getString(CONFIG_DOCTOR_UID));}
+    Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID));}
     Q_INVOKABLE int getDefaultCountry(bool offset = true);
     Q_INVOKABLE QString getCountryCodeForCountry(const QString &country) { return countries->getCodeForCountry(country); }
     Q_INVOKABLE void setAgeForCurrentPatient();
     Q_INVOKABLE int getCountryIndexFromCode(const QString &code) { return countries->getIndexFromCode(code); }
     Q_INVOKABLE bool addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew);
-    Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt);
+    Q_INVOKABLE bool addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, bool isNew);
     Q_INVOKABLE void startDBSync();
     Q_INVOKABLE bool requestDrValidation(const QString &instPassword, qint32 selectedDr);
     Q_INVOKABLE void prepareForRequestOfPendingReports();
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE QString loadTextFile(const QString &fileName);
     Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
-
+    Q_INVOKABLE QStringList getErrorMessageForDBCode();
+    Q_INVOKABLE void prepareAllPatientIteration();
+    Q_INVOKABLE QStringList nextInAllPatientIteration();
+    Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
 signals:
     void synchDone();
 
@@ -76,7 +78,7 @@ private:
     ConfigurationManager language;
 
     // To control data
-    LocalInformationManager *lim;
+    LocalInformationManager lim;
 
     // The list of countries and their codes.
     CountryStruct *countries;
@@ -87,6 +89,10 @@ private:
     // To connect to the DB in the server. Flags are required to provide the proper information to the QML side.
     SSLDBClient *dbClient;
     bool wasDBTransactionStarted;
+
+    // For next patient iteration
+    QList<QStringList> allPatientList;
+    qint32 allPatientIndex;
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();

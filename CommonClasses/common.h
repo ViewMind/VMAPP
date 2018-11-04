@@ -18,6 +18,7 @@
 
 // The directory name where the raw data will be located
 #define   DIRNAME_RAWDATA                               "viewmind_etdata"
+#define   DIRNAME_DBBKP                                 "dbbkp"
 
 // Configuration key values (cmd names in the configuration file)
 /// TODO : Clean up unused defines.
@@ -34,7 +35,6 @@
 #define   CONFIG_LATENCY_ESCAPE_RAD                     "latency_escape_radious"
 #define   CONFIG_MARGIN_TARGET_HIT                      "margin_target_hit"
 #define   CONFIG_EXP_LIST                               "experiments"
-#define   CONFIG_OUTPUT_DIR                             "output_directory"
 #define   CONFIG_RAW_DATA_REPO                          "raw_data_repo"
 #define   CONFIG_READING_PX_TOL                         "reading_px_tol_for_target"
 #define   CONFIG_EYEPROCESSOR_PATH                      "eyeprocessor_path"
@@ -86,6 +86,7 @@
 #define   CONFIG_INST_ETSERIAL                          "inst_et_serial"
 #define   CONFIG_INST_PASSWORD                          "inst_pass"
 #define   CONFIG_TEST_MODE                              "test_mode"
+
 
 // The unique UID for tests.
 #define   TEST_UID                                      "ARvm0000"

@@ -53,12 +53,15 @@ void SSLDBClient::runDBTransaction(){
     txDP.addString(queryType,DataPacket::DPFI_DB_QUERY_TYPE);
     txDP.addString(tableNames,DataPacket::DPFI_DB_TABLE);
     txDP.addString(columnList,DataPacket::DPFI_DB_COL);
+
     dbdata.clear();
     transactionIsOk = false;
+    errorCode = DBACK_ALL_OK;
 
     if (queryType == SQL_QUERY_TYPE_SET){
         clientState = CS_CONNECTING_TO_SQL_SET;
         txDP.addString(valuesForColumnsList,DataPacket::DPFI_DB_VALUE);
+        qWarning() << "Sending a Set" << tableNames << columnList << valuesForColumnsList;
     }
     else{
         clientState = CS_CONNECTING_TO_SQL_GET;
@@ -131,19 +134,26 @@ void SSLDBClient::on_readyRead(){
         }
         else {
             // Expecting ACK from a set operation or error.
-            if (!rxDP.hasInformationField(DataPacket::DPFI_DB_SET_ACK)){
-                if (rxDP.hasInformationField(DataPacket::DPFI_DB_ERROR)){
-                    // The errors must be separated:
-                    QStringList dberrors = rxDP.getField(DataPacket::DPFI_DB_ERROR).data.toString().split(DB_TRANSACTION_LIST_SEP);
-                    for (qint32 i = 0; i < dberrors.size(); i++){
-                        log.appendError("On DB Synch: " + dberrors.at(i));
+
+            if (rxDP.hasInformationField(DataPacket::DPFI_DB_SET_ACK)){
+                errorCode = rxDP.getField(DataPacket::DPFI_DB_SET_ACK).data.toInt();
+                if (errorCode != DBACK_ALL_OK){
+                    if (rxDP.hasInformationField(DataPacket::DPFI_DB_ERROR)){
+                        // The errors must be separated:
+                        QStringList dberrors = rxDP.getField(DataPacket::DPFI_DB_ERROR).data.toString().split(DB_TRANSACTION_LIST_SEP);
+                        for (qint32 i = 0; i < dberrors.size(); i++){
+                            log.appendError("On DB Synch: " + dberrors.at(i));
+                        }
                     }
                 }
-                else log.appendError("Expecting DB Set ACK but somehting else arrived.");
+                else{
+                    transactionIsOk = true;
+                }
+                socket->disconnectFromHost();
             }
             else {
                 // Otherwise ACK has arrived and is all good.
-                transactionIsOk = true;
+                log.appendError("Expecting DB Set ACK but somehting else arrived.");
                 socket->disconnectFromHost();
             }
         }

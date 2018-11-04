@@ -6,7 +6,6 @@ DBView::DBView(QWidget *parent) :
     ui(new Ui::DBView)
 {
     ui->setupUi(this);
-    lim = nullptr;
     this->setWindowTitle("DBModifier - V1.0.0");
 
 }
@@ -21,18 +20,17 @@ void DBView::on_pbBrowse_clicked()
 
     QString selected = QFileDialog::getOpenFileName(this,"Select Local DB file",".",LOCAL_DB);
     // HACK. REMOVE
-    selected = "C:/Users/Viewmind/Documents/ExperimenterOutputs/viewmind_etdata/localdb.dat";
+    // selected = "C:/Users/Viewmind/Documents/ExperimenterOutputs/viewmind_etdata/localdb.dat";
     if (selected.isEmpty()) return;
     ui->leLocalDB->setText(selected);
 
     QFileInfo info(selected);
     QDir baseDir = info.absoluteDir();
-    baseDir.cdUp();
-    config.addKeyValuePair(CONFIG_OUTPUT_DIR,baseDir.absolutePath());
+    //baseDir.cdUp();
+    lim.setDirectory(baseDir.absolutePath());
 
     // Should load the local DB file.
     qWarning() << baseDir.absolutePath();
-    lim = new LocalInformationManager(&config);
 
     // Filling the doctor list
     fillDoctorList();
@@ -41,9 +39,9 @@ void DBView::on_pbBrowse_clicked()
 
 
 void DBView::fillDoctorList(){
-    if (lim == nullptr) return;
 
-    QList<QStringList> info = lim->getDoctorList(true);
+    QList<QStringList> info = lim.getDoctorList(true);
+    if (info.size() != 2) return;
     QStringList drlist = info.first();
     QStringList uidlist = info.last();
     ui->lvDoctors->clear();
@@ -68,8 +66,7 @@ void DBView::on_checkBox_toggled(bool checked)
 void DBView::on_lvDoctors_itemClicked(QListWidgetItem *item)
 {
     QString uid = item->data(ROLE).toString();
-    config.addKeyValuePair(CONFIG_DOCTOR_UID,uid);
-    QVariantMap data = lim->getCurrentDoctorInfo();
+    QVariantMap data = lim.getDoctorInfo(uid);
 
     //qWarning() << data;
 
@@ -108,10 +105,9 @@ void DBView::on_lvDoctors_itemClicked(QListWidgetItem *item)
 
 void DBView::on_pbDeleteSelected_clicked()
 {
-    if (lim == nullptr) return;
     int res = QMessageBox::question(this,"Delete Doctor From DB","Are you sure you want to delete doctor: " + ui->lvDoctors->currentItem()->text() + "?",QMessageBox::Yes,QMessageBox::Cancel);
     if (res == QMessageBox::Yes){
-        lim->deleteDoctor(ui->lvDoctors->currentItem()->data(ROLE).toString());
+        lim.deleteDoctor(ui->lvDoctors->currentItem()->data(ROLE).toString());
     }
 
     fillDoctorList();
@@ -135,7 +131,7 @@ void DBView::on_pbApplyChanges_clicked()
         }
     }
 
-    lim->setDoctorData(ui->lvDoctors->currentItem()->data(ROLE).toString(),keys,values);
+    lim.setDoctorData(ui->lvDoctors->currentItem()->data(ROLE).toString(),keys,values);
     fillDoctorList();
 
 }

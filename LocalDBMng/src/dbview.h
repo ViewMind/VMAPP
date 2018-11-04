@@ -38,8 +38,8 @@ private slots:
 
 private:
     Ui::DBView *ui;
-    LocalInformationManager *lim;
-    ConfigurationManager config;
+    LocalInformationManager lim;
+    //ConfigurationManager config;
 
     void fillDoctorList();
 };

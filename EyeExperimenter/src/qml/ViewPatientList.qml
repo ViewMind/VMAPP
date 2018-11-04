@@ -17,12 +17,22 @@ VMBase {
         onSynchDone: {
             connectionDialog.close();
             if (!loader.wasDBTransactionOk()){
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
-                var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
-                return;
+                var errorTitleMsg = loader.getErrorMessageForDBCode();
+                if (errorTitleMsg.length === 2){ // If the code was all ok but the transaction was NOT ok, then it was a communications error.
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROC_ACK;
+                    vmErrorDiag.vmErrorMessage = errorTitleMsg[1];
+                    vmErrorDiag.vmErrorTitle = errorTitleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
+                else{
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
+                    var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
+                    vmErrorDiag.vmErrorMessage = titleMsg[1];
+                    vmErrorDiag.vmErrorTitle = titleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
             }
         }
     }
@@ -236,11 +246,7 @@ VMBase {
             onClicked:{
                 if (loader.isDoctorPasswordCorrect(passwordInput.getText())){
                     askPasswordDialog.close();
-                    loader.prepareForRequestOfPendingReports();
-                    connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
-                    connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
-                    connectionDialog.open();
-                    flowControl.requestReportData();
+                    viewAllPatients.open();
                 }
                 else{
                     passwordInput.vmErrorMsg =  loader.getStringForKey(keybase+"wrong_dr_password");
@@ -254,10 +260,10 @@ VMBase {
         }
     }
 
-    ViewShowReports{
-        id: diagShowReports
-    }
 
+    ViewAllPatients{
+        id: viewAllPatients
+    }
 
     ListModel {
         id: patientList
@@ -295,14 +301,15 @@ VMBase {
             showMessage("msg_notvalid");
             return;
         }
-
         if (!loader.doesCurrentDoctorHavePassword()){
             showMessage("msg_nopass");
             return;
         }
-
-        askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-        askPasswordDialog.open();
+        loader.prepareForRequestOfPendingReports();
+        connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
+        connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
+        connectionDialog.open();
+        flowControl.requestReportData();
     }
 
     function showMessage(msg){
@@ -413,7 +420,9 @@ VMBase {
             anchors.rightMargin: 20
             enabled: patientListView.currentIndex !== -1
             onClicked: {
-                diagShowReports.open();
+                viewShowReports.vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+                viewShowReports.vmPatientDirectory = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_DIRECTORY);
+                swiperControl.currentIndex = swiperControl.vmIndexShowReports;
             }
         }
 
@@ -428,7 +437,8 @@ VMBase {
             anchors.right: btnView.left
             anchors.rightMargin: 20
             onClicked: {
-                console.log("Do your stuff");
+                askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+                askPasswordDialog.open();
             }
         }
     }

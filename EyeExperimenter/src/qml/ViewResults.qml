@@ -386,7 +386,7 @@ VMBase {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 10
         onClicked: {
-            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+            swiperControl.currentIndex = swiperControl.vmIndexShowReports;
         }
     }
 

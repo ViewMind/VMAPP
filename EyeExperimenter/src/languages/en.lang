@@ -48,6 +48,7 @@ viewpatientreg_errorEmpty = Cannot be empty;
 viewpatientreg_errorNoAccept = You must accept the Terms of Use and the Privacy Policy;
 viewpatientreg_terms_of_use = Terms Of Use;
 viewpatientreg_privacy_policy = Privacy Policy;
+viewpatientreg_errorExists = This patient is exists under this doctor;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Eye Studies;
@@ -153,6 +154,7 @@ viewpatientlist_msg_nopass = No password set|Please edit the user information an
 viewpatientlist_msg_notvalid = User not validated|This user is not validated and cannot request reports.<br>Please solve this issue validating it using the Institution´s password;
 viewpatientlist_ask_password = Password required;
 viewpatientlist_wrong_dr_password = Password is incorrect;
+viewpatientlist_view_all = View All Patients;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reports;
@@ -163,6 +165,13 @@ viewshowreports_diagTabTime = Time;
 viewshowreports_diagTabReading = Reading;
 viewshowreports_diagTabBinding = Colors;
 viewshowreports_diagBtnView = VIEW;
+viewshowreports_diagBtnBack = BACK;
+
+#********************************* VIEW ALL PATIENTS *********************************
+viewallreports_title = Patient List;
+viewallreports_patient_col = Patient;
+viewallreports_doctor_col = Doctor;
+viewallreports_view = VIEW REPORTS;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Doctor's Profile;
@@ -186,7 +195,7 @@ viewdrinfo_verify_password = Verify Password;
 viewdrinfo_password_match = The passwords do not match;
 viewdrinfo_disable = Disable doctor;
 viewdrinfo_disable_warning = Warning|Once disabled and validated, it is not possible to go undo<br>Continue anyway?;
-viewdrinfo_drexists = Existing identification;
+viewdrinfo_drexists = Doctor already exists;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = The study has concluded;
@@ -231,6 +240,7 @@ error_server_comm = Communication error<>It was not possible to establish a link
 error_db_transaction = Database Error|There was an error related to the database<br>Please contact the ViewMind team;
 error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracker is incorrect<br>Please contact the ViewMind team;
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
+error_db_wronginst = Incorrect ID|The ID for this institution is incorrect or the doctor is not registered<br>Please contact ViewMind in order to solve this problem;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Change language<>The program must be restarted to change the language;

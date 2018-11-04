@@ -42,6 +42,11 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cv[CONFIG_INST_UID] = cmd;
     cv[CONFIG_INST_PASSWORD] = cmd;
 
+    cmd.clear();
+    cmd.optional = true;
+    cmd.type = ConfigurationManager::VT_BOOL;
+    cv[CONFIG_TEST_MODE] = cmd;
+
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
     if (!configuration->loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
@@ -57,7 +62,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cmd.optional = true; // All settings are optional.
 
     // The strings.
-    cv[CONFIG_OUTPUT_DIR] = cmd;
     cv[CONFIG_REPORT_LANGUAGE] = cmd;
     cv[CONFIG_DEFAULT_COUNTRY] = cmd;
 
@@ -71,6 +75,8 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     settings.setupVerification(cv);
     if (!settings.loadConfiguration(FILE_SETTINGS,COMMON_TEXT_CODEC)){
         logger.appendError("Errors loading the settings file: " + settings.getError());
+        // Settings files should not have unwanted key words
+        loadingError = true;
     }
     else{
         configuration->merge(settings);
@@ -81,13 +87,29 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     changeLanguage();
     if (loadingError) return;
 
+    // Must make sure that the data directory exists
+    QDir rawdata(DIRNAME_RAWDATA);
+    if (!rawdata.exists()){
+        if (!QDir(".").mkdir(DIRNAME_RAWDATA)){
+            logger.appendError("Cannot create viewmind_data directory");
+            loadingError = true;
+            return;
+        }
+    }
+
     // Setting up de client for DB connection
     dbClient = new SSLDBClient(this,configuration);
     connect(dbClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectFromDB()));
 
     // Creating the local configuration manager, and loading the local DB.
-    lim = new LocalInformationManager(configuration);
-    //lim->printLocalDB();
+    lim.setDirectory(QString(DIRNAME_RAWDATA));
+
+    // Creating the db backup directory if it does not exist.
+    QDir(".").mkdir(DIRNAME_DBBKP);
+    lim.enableBackups(DIRNAME_DBBKP);
+
+    // Resetting the medical institution, just in case
+    lim.resetMedicalInstitutionForAllDoctors(configuration->getString(CONFIG_INST_UID));
 
 }
 
@@ -96,7 +118,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 void Loader::startDBSync(){
     // Adding all the data that needs to be sent.
     wasDBTransactionStarted = false;
-    if (lim->setupDBSynch(dbClient)){
+    if (lim.setupDBSynch(dbClient)){
         // Running the transaction.
         wasDBTransactionStarted = true;
         dbClient->runDBTransaction();
@@ -111,7 +133,7 @@ bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr)
     QString hasshedPassword = QString(QCryptographicHash::hash(instPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
     QString drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
     if (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword){
-        lim->validateDoctor(drUIDtoValidate);
+        lim.validateDoctor(drUIDtoValidate);
         return true;
     }
     return false;
@@ -119,7 +141,7 @@ bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr)
 
 void Loader::onDisconnectFromDB(){
     if (dbClient->getTransactionStatus()){
-        lim->setUpdateFlagTo(false);
+        lim.setUpdateFlagTo(false);
     }
     emit(synchDone());
 }
@@ -131,6 +153,19 @@ QString Loader::loadTextFile(const QString &fileName){
     QString ans = reader.readAll();
     file.close();
     return ans;
+}
+
+void Loader::prepareAllPatientIteration(){
+    allPatientList = lim.getAllPatientInfo();
+    allPatientIndex = 0;
+}
+
+QStringList Loader::nextInAllPatientIteration(){
+    if (allPatientIndex == allPatientList.size()) return QStringList();
+    else{
+        allPatientIndex++;
+        return allPatientList.at(allPatientIndex-1);
+    }
 }
 
 QStringList Loader::getErrorMessageForCode(quint8 code){
@@ -149,6 +184,21 @@ QStringList Loader::getErrorMessageForCode(quint8 code){
     return QStringList();
 }
 
+
+QStringList Loader::getErrorMessageForDBCode(){
+    quint8 code = dbClient->getErrorCode();
+    //qWarning() << "GETTING ERROR MESSAGE FOR CODE" << code;
+    switch (code) {
+    case DBACK_DBCOMM_ERROR:
+        return language.getStringList("error_db_transaction");
+    case DBACK_UID_ERROR:
+        return language.getStringList("error_db_wronginst");
+    default:
+        logger.appendError("UNKNOWN Code when getting transaction error message: " + QString::number(code));
+        break;
+    }
+    return QStringList();
+}
 bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew){
     // The data for the country must be changed as well as the UID must be generated.
     QString countryCode = countries->getCodeForCountry(dbdata.value(TDOCTOR_COL_COUNTRYID).toString());
@@ -157,8 +207,13 @@ bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, b
     dbdata[TDOCTOR_COL_UID] = uid;
 
     // This function returns false ONLY when it is attempting to create a new doctor with an existing UID.
-    // qWarning() << "IsNew" << isNew << "Exists" << lim->doesDoctorExist(uid);
-    if (isNew && lim->doesDoctorExist(uid)){
+    // qWarning() << "IsNew" << isNew << "Exists" << lim.doesDoctorExist(uid);
+    if (isNew && lim.doesDoctorExist(uid)){
+        return false;
+    }
+
+    // Checking for test mode doctor
+    if (uid.contains(TEST_UID) && !configuration->getBool(CONFIG_TEST_MODE)){
         return false;
     }
 
@@ -182,16 +237,19 @@ bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, b
     values << configuration->getString(CONFIG_INST_UID);
 
     // Saving data locally.
-    lim->addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password,hide);
+    lim.addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password,hide);
     return true;
 }
 
-void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
+bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, bool isNew){
 
     // Making necessary adjustments
     QString countryCode = countries->getCodeForCountry(dbdatareq.value(TPATREQ_COL_BIRTHCOUNTRY).toString());
     dbdatareq[TPATREQ_COL_BIRTHCOUNTRY] = countryCode;
-    dbdatareq[TPATREQ_COL_UID] = countryCode + dbdatareq.value(TPATREQ_COL_UID).toString();
+    QString uid = countryCode + dbdatareq.value(TPATREQ_COL_UID).toString();
+    dbdatareq[TPATREQ_COL_UID] = uid;
+
+    if (lim.doesPatientExist(configuration->getString(CONFIG_DOCTOR_UID),uid) && isNew) return false;
 
     // Transforming the date format.
     QString date = dbdatareq.value(TPATREQ_COL_BIRTHDATE).toString();
@@ -230,22 +288,24 @@ void Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt){
     // qWarning() << "All Columns" << allColumns.size() << allColumns;
     // qWarning() << "All Values" << allValues.size() << allValues;
 
-    lim->addPatientData(dbdatareq.value(TPATREQ_COL_UID).toString(),allColumns,allValues);
+    lim.addPatientData(configuration->getString(CONFIG_DOCTOR_UID),dbdatareq.value(TPATREQ_COL_UID).toString(),allColumns,allValues);
+
+    return true;
 
 }
 
 //****************************************************************************************************************
 
 void Loader::prepareForRequestOfPendingReports(){
-    lim->preparePendingReports();
+    lim.preparePendingReports(configuration->getString(CONFIG_PATIENT_UID));
 }
 
 void Loader::onRequestNextPendingReport(){
-    emit(nextFileSet(lim->nextPendingReport()));
+    emit(nextFileSet(lim.nextPendingReport(configuration->getString(CONFIG_PATIENT_UID))));
 }
 
 void Loader::setAgeForCurrentPatient(){
-    QString birthDate = lim->getFieldForCurrentPatient(TPATREQ_COL_BIRTHDATE);
+    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID),TPATREQ_COL_BIRTHDATE);
     QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
     int currentAge = QDate::currentDate().year() - bdate.year();
     configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);
@@ -253,14 +313,14 @@ void Loader::setAgeForCurrentPatient(){
 
 QStringList Loader::getDoctorList() {
     nameInfoList.clear();
-    nameInfoList = lim->getDoctorList();
+    nameInfoList = lim.getDoctorList();
     if (nameInfoList.isEmpty()) return QStringList();
     else return nameInfoList.at(0);
 }
 
 QStringList Loader::getPatientList(){
     nameInfoList.clear();
-    nameInfoList = lim->getPatientListForDoctor();
+    nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID));
     if (nameInfoList.isEmpty()) return QStringList();
     else return nameInfoList.at(0);
 }
@@ -275,8 +335,9 @@ QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
 
 bool Loader::isDoctorPasswordCorrect(const QString &password){
     QString hashpass = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
-    if (lim->getDoctorPassword().isEmpty()) return true;
-    if (lim->getDoctorPassword() == hashpass) return true;
+    QString storedPassword = lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID));
+    if (storedPassword.isEmpty()) return true;
+    if (storedPassword == hashpass) return true;
     // Checking against the institution password
     return (hashpass == configuration->getString(CONFIG_INST_PASSWORD));
 }
@@ -285,13 +346,13 @@ bool Loader::isDoctorValidated(qint32 selectedIndex){
     QString uid;
     if (selectedIndex == -1) uid = configuration->getString(CONFIG_DOCTOR_UID);
     else uid = getDoctorUIDByIndex(selectedIndex);
-    return lim->isDoctorValid(uid);
+    return lim.isDoctorValid(uid);
 }
 
 bool Loader::isDoctorPasswordEmpty(qint32 selectedIndex){
     QString uid = getDoctorUIDByIndex(selectedIndex);
-    //qWarning() << "Password for UID" << uid << " is " << lim->getDoctorPassword(uid) << ". Is empty: " <<  lim->getDoctorPassword(uid).isEmpty();
-    return lim->getDoctorPassword(uid).isEmpty();
+    //qWarning() << "Password for UID" << uid << " is " << lim.getDoctorPassword(uid) << ". Is empty: " <<  lim.getDoctorPassword(uid).isEmpty();
+    return lim.getDoctorPassword(uid).isEmpty();
 }
 
 QStringList Loader::getUIDList() {
@@ -324,38 +385,6 @@ QRect Loader::frameSize(QObject *window)
     if(qw)
         return qw->frameGeometry();
     return QRect();
-}
-
-QString Loader::hasValidOutputRepo(const QString &dirToCheck){
-
-    if (dirToCheck != ""){
-        QUrl url(dirToCheck);
-        QString fileloc = url.toLocalFile();
-
-        if (fileloc.isEmpty()){
-            // This means that it is a stright directroy path and not an URL.
-            fileloc = dirToCheck;
-        }
-
-        configuration->addKeyValuePair(CONFIG_OUTPUT_DIR,fileloc);
-    }
-
-    // Checking if the directory for the outputs exists and is valid. If there are any problems the user is asked for a directory instead.
-    if (!configuration->containsKeyword(CONFIG_OUTPUT_DIR)) return "";
-    QDir dir(configuration->getString(CONFIG_OUTPUT_DIR));
-    if (!dir.exists()) return "";
-
-    QDir rawdata(dir.path() + "/" + QString(DIRNAME_RAWDATA));
-    if (!rawdata.exists()){
-        if (!dir.mkdir(DIRNAME_RAWDATA)){
-            logger.appendError("Cannot create etdata directory in selected output directory");
-            return "";
-        }
-    }
-
-    // Returning the new dir.
-    return configuration->getString(CONFIG_OUTPUT_DIR);
-
 }
 
 bool Loader::checkETChange(){
@@ -430,7 +459,7 @@ bool Loader::createPatientDirectory(){
 
     // Creating the doctor directory.
     QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
-    QString baseDir = configuration->getString(CONFIG_OUTPUT_DIR) + "/" + QString(DIRNAME_RAWDATA);
+    QString baseDir = DIRNAME_RAWDATA;
     QString drname = configuration->getString(CONFIG_DOCTOR_UID);
     configuration->addKeyValuePair(CONFIG_PATIENT_UID,patientuid);
 
@@ -475,7 +504,6 @@ bool Loader::createDirectorySubstructure(QString drname, QString pname, QString 
 
 void Loader::loadDefaultConfigurations(){
 
-    if (!configuration->containsKeyword(CONFIG_OUTPUT_DIR)) configuration->addKeyValuePair(CONFIG_OUTPUT_DIR,""); // Reconfigure the settings.
     if (!configuration->containsKeyword(CONFIG_DEFAULT_COUNTRY)) configuration->addKeyValuePair(CONFIG_DEFAULT_COUNTRY,"AR");
     if (!configuration->containsKeyword(CONFIG_DEMO_MODE)) configuration->addKeyValuePair(CONFIG_DEMO_MODE,false);
     if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)) configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
@@ -487,5 +515,5 @@ void Loader::loadDefaultConfigurations(){
 }
 
 Loader::~Loader(){
-    delete lim;
+
 }

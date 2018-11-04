@@ -21,7 +21,7 @@ Dialog {
     id: viewSettings
     modal: true
     width: 614
-    height: 580
+    height: 520
     closePolicy: Popup.NoAutoClose
 
     contentItem: Rectangle {
@@ -37,37 +37,6 @@ Dialog {
         id: vmDefines
     }
 
-    function checkOutputRepo(location){
-        var dirLoc = loader.hasValidOutputRepo(location);
-        if (dirLoc === ""){
-            diagTIRepo.vmErrorMsg = loader.getStringForKey(keybase+"error_invalid_repo");
-            vmInvalidRepoError = true;
-        }
-        else {
-            diagTIRepo.vmTextField.text = dirLoc;
-            diagTIRepo.vmTextField.ensureVisible(0);
-            vmInvalidRepoError = false;
-        }
-    }
-
-    // The file selector dialog
-    FileDialog {
-        id: fileDialog
-        title: loader.getStringForKey(keybase+"error_invalid_repo");
-        folder: diagTIRepo.vmTextField.text
-        selectExisting: true
-        selectFolder: true
-        selectMultiple: false
-        onAccepted: {
-            checkOutputRepo(fileDialog.fileUrl)
-            close();
-        }
-        onRejected: {
-            checkOutputRepo("");
-            close();
-        }
-    }
-
     // The configure settings title
     Text {
         id: diagTitle
@@ -77,7 +46,7 @@ Dialog {
         text: loader.getStringForKey(keybase+"diagTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: 50
+        anchors.topMargin: 70
     }
 
     // Creating the close button
@@ -93,41 +62,6 @@ Dialog {
         }
     }
 
-    // Doctor's label and input field
-    Text {
-        id: diagLabelRepo
-        text: loader.getStringForKey(keybase+"diagLabelRepo");
-        font.family: viewHome.robotoB.name
-        font.pixelSize: 13
-        font.bold: true
-        anchors.top: diagTitle.bottom
-        anchors.topMargin: 45
-        anchors.left: diagTIRepo.left
-    }
-
-    VMConfigTextInput {
-        id: diagTIRepo
-        vmFont: viewHome.robotoR.name
-        vmAcceptInput: false
-        width: 500
-        height: 20
-        anchors.top: diagLabelRepo.bottom
-        anchors.topMargin: 15
-        anchors.horizontalCenter: parent.horizontalCenter
-        vmErrorMsg: {
-            if(vmInvalidRepoError){
-                return loader.getStringForKey(keybase+"error_invalid_repo")
-            }
-            else{
-                return "";
-            }
-        }
-        vmTextField.text: loader.getConfigurationString(vmDefines.vmCONFIG_OUTPUT_DIR);
-        onGotClicked: {
-            fileDialog.open();
-        }
-    }
-
     // Combo box for selecting the default country.
     Text {
         id: diagLabelDefaultCountry
@@ -135,9 +69,9 @@ Dialog {
         font.family: viewHome.robotoB.name
         font.pixelSize: 13
         font.bold: true
-        anchors.top: diagTIRepo.bottom
+        anchors.top: diagTitle.bottom
         anchors.topMargin: 25
-        anchors.left: diagTIRepo.left
+        anchors.left: diagDBDefaultCountry.left
     }
 
     VMComboBox{
@@ -152,7 +86,7 @@ Dialog {
         font.pixelSize: 13
         anchors.top: diagLabelDefaultCountry.bottom
         anchors.topMargin: 22
-        anchors.left: diagTIRepo.left
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     // Combo box for language selection and label
@@ -164,7 +98,7 @@ Dialog {
         font.bold: true
         anchors.top: diagDBDefaultCountry.bottom
         anchors.topMargin: 25
-        anchors.left: diagTIRepo.left
+        anchors.left: diagDBDefaultCountry.left
     }
 
     VMComboBox{
@@ -184,7 +118,7 @@ Dialog {
         font.pixelSize: 13
         anchors.top: diagLabelLang.bottom
         anchors.topMargin: 15
-        anchors.left: diagTIRepo.left
+        anchors.left: diagDBDefaultCountry.left
     }
 
     // Combo box for eyetracker selection and label
@@ -196,7 +130,7 @@ Dialog {
         font.bold: true
         anchors.top: diagCBLang.bottom
         anchors.topMargin: 25
-        anchors.left: diagTIRepo.left
+        anchors.left: diagDBDefaultCountry.left
     }
 
     // The double monitor, demo mode and use mouse selections
@@ -208,7 +142,7 @@ Dialog {
         font.pixelSize: 13
         anchors.top: diagLabelET.bottom
         anchors.topMargin: 20
-        anchors.left: diagTIRepo.left
+        anchors.left: diagDBDefaultCountry.left
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE);
     }
 
@@ -241,7 +175,7 @@ Dialog {
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
         anchors.top: diagCboxDualMonitor.bottom
         anchors.topMargin: 45
-        anchors.left: diagTIRepo.left
+        anchors.left: diagDBDefaultCountry.left
         onClicked: {
             if (checkAllOk()) close();
             if (vmRestartRequired){
@@ -264,13 +198,8 @@ Dialog {
 
     // Checks that everything is ok
     function checkAllOk(save){
-        if (vmInvalidRepoError){
-            diagTIRepo.vmErrorMsg = loader.getStringForKey(keybase+"error_invalid_repo");
-            return false;
-        }
 
         // Saving the settings.
-        loader.setSettingsValue(vmDefines.vmCONFIG_OUTPUT_DIR,diagTIRepo.vmTextField.text);        
         loader.setSettingsValue(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
         loader.setSettingsValue(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
         loader.setSettingsValue(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);

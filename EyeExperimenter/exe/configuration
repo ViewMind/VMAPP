@@ -17,10 +17,16 @@ server_address = 18.191.142.5;
 #------------------------------------------------------#
 #                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
+#inst_et_serial = ;
+#inst_name = Axis;
+#inst_uid = 1858989878;
+#inst_pass = d2e3f72c2c992b61fe69de59de28ffbb55fcc2d71ca9aac9d61da0985ea843b3;
+
+inst_pass = 5ef3f51d45b533c6f173d25a2f2704a3b1a26b75226934a96d1c036cde594ef2;
 inst_et_serial = ;
-inst_name = Axis;
-inst_uid = 1858989878;
-inst_pass = d2e3f72c2c992b61fe69de59de28ffbb55fcc2d71ca9aac9d61da0985ea843b3;
+inst_name = Institucion de Prueba;
+inst_uid = 313644376;
+
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #

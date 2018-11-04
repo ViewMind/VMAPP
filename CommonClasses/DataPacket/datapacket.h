@@ -82,6 +82,9 @@ public:
     // Get the last file names saved
     QStringList getLastFilesSaved() const { return fileNamesSaved; }
 
+    // For Debuggging
+    void print();
+
     // Transform a size to a numberic representation of 4 bytes.
     static QByteArray sizeToByteArray(quint32 size);
     static quint32 byteArrayToSize(const QByteArray &size);

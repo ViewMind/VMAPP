@@ -42,13 +42,14 @@ Window {
         readonly property int vmIndexHome: 0
         readonly property int vmIndexDrProfile: 1
         readonly property int vmIndexPatientList: 2
-        readonly property int vmIndexStudyStart: 3
-        readonly property int vmIndexPatientReg: 4
-        readonly property int vmIndexCalibrationStart: 5
-        readonly property int vmIndexCalibrationDone: 6
-        readonly property int vmIndexPresentExperiment: 7
-        readonly property int vmIndexResults: 8
-        readonly property int vmIndexStudyDone: 9
+        readonly property int vmIndexShowReports: 3
+        readonly property int vmIndexStudyStart: 4
+        readonly property int vmIndexPatientReg: 5
+        readonly property int vmIndexCalibrationStart: 6
+        readonly property int vmIndexCalibrationDone: 7
+        readonly property int vmIndexPresentExperiment: 8
+        readonly property int vmIndexResults: 9
+        readonly property int vmIndexStudyDone: 10
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -74,6 +75,13 @@ Window {
         Item {
             ViewPatientList {
                 id: viewPatList
+                anchors.fill: parent
+            }
+        }
+
+        Item{
+            ViewShowReports{
+                id: viewShowReports
                 anchors.fill: parent
             }
         }
@@ -141,6 +149,9 @@ Window {
                 viewPatList.loadPatients();
                 // Doing the synch
                 viewPatList.startDBSync();
+                break;
+            case vmIndexShowReports:
+                viewShowReports.loadReportsForPatient();
                 break;
             case vmIndexStudyStart:
                 viewStudyStart.setPatientName();
