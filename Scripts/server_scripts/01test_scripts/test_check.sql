@@ -7,7 +7,7 @@ SELECT * FROM tPatientOptionalData WHERE patientid = 'ARvm0001';
 SELECT '------------------- Results Table  -------------------' AS '';
 SELECT * FROM tEyeResults WHERE doctorid = 'ARvm0000';
 SELECT '------------------- OlD STUFF CHECK FOR DOCTOR  -------------------' AS '';
-SELECT * FROM tDoctors WHERE doctorid LIKE '%vm00%'
+SELECT * FROM tDoctors WHERE uid LIKE '%vm00%'
 
 
 
