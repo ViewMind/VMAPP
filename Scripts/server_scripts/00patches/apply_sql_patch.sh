@@ -31,4 +31,8 @@ if [[ ! -f $PATCH ]]; then
    exit
 fi
 
+echo "BACKING UP LOCALLY....."
+mysqldump -h $DBHOST -P $DBPORT -u $DBUSER -p"$DBPASS" --databases $DBNAME > "$DBNAME"DBBKP.sql
+
+echo "APPLYING PATCH ....."
 mysql -h $DBHOST  -P $DBPORT -u $DBUSER -p"$DBPASS" $DBNAME < $PATCH
