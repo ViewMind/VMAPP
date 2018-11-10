@@ -1,0 +1,20 @@
+# Configuration for local laptop
+#dbname   = vmdb;
+#dbuser   = vmdb;
+#dbpasswd = vmdb;
+#dbhost   = localhost;
+
+# Configuration for development server
+db_name   = viewmind_develop;
+db_user   = devuser;
+db_passwd = dev1984;
+db_host   = viewminddb.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
+db_port   = 3306;
+
+
+# Configuration for production server
+#db_name   = viewmind_data;
+#db_user   = vmuser;
+#db_passwd = viewmind_2018;
+#db_host   = viewminddb.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
+#db_port   = 3306;
