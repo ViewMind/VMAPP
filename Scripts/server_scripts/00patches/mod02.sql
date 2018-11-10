@@ -1,5 +1,3 @@
-USE viewmind_develop; 
-
 DROP TABLE IF EXISTS tInstitution;
 
 CREATE TABLE tInstitution (
