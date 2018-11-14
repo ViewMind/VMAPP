@@ -20,8 +20,12 @@
 #include "sslclient/ssldataprocessingclient.h"
 
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
-#include "EyeTrackerInterface/RED/redinterface.h"
 #include "EyeTrackerInterface/GazePoint/opengazeinterface.h"
+
+#ifdef USE_IVIEW
+#include "EyeTrackerInterface/RED/redinterface.h"
+#endif
+
 
 #include "monitorscreen.h"
 

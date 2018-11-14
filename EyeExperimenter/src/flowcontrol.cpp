@@ -253,13 +253,18 @@ void FlowControl::connectToEyeTracker(){
 
     QString eyeTrackerSelected = configuration->getString(CONFIG_SELECTED_ET);
 
+    //qWarning() << "CONNECTING TO ET. Selected" << eyeTrackerSelected;
+
     if (eyeTrackerSelected == CONFIG_P_ET_MOUSE){
         eyeTracker = new MouseInterface();
     }
+#ifdef USE_IVIEW
     else if (eyeTrackerSelected == CONFIG_P_ET_REDM){
         eyeTracker = new REDInterface();
     }
+#endif
     else if (eyeTrackerSelected == CONFIG_P_ET_GP3HD){
+        //qWarning() << "Creating the Open Gaze ET";
         eyeTracker = new OpenGazeInterface(this,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
     }
     else{
@@ -276,10 +281,16 @@ void FlowControl::calibrateEyeTracker(){
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "";
     calibrated = false;
+    //qWarning() << "CALIBRATION STARTED";
+
+    // Making sure the right eye is used, in both the calibration and the experiment.
+    eyeTracker->setEyeToTransmit(configuration->getInt(CONFIG_VALID_EYE));
+
     eyeTracker->calibrate(calibrationParams);
 }
 
 void FlowControl::onEyeTrackerControl(quint8 code){
+    //qWarning() << "ON EYETRACKER CONTROL" << code;
     switch(code){
     case EyeTrackerInterface::ET_CODE_CALIBRATION_ABORTED:
         calibrated = false;
@@ -369,9 +380,6 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
 
     // Making sure that the eyetracker is sending data.
     eyeTracker->enableUpdating(true);
-
-    // Making sure the right eye is used.
-    eyeTracker->setEyeToTransmit(configuration->getInt(CONFIG_VALID_EYE));
 
     // Start the experiment.
     experiment->startExperiment(configuration);
