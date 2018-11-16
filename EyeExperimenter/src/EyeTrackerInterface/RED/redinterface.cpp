@@ -88,7 +88,7 @@ void REDInterface::enableUpdating(bool enable){
         pollTimer.stop();
     }
     else{
-        pollTimer.start(5);
+        pollTimer.start(2);
     }
 }
 
