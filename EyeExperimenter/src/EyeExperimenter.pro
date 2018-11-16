@@ -6,6 +6,7 @@ CONFIG += c++11
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
+#DEFINES += USE_IVIEW
 
 CONFIG -= debug_and_release
 MOC_DIR = MOCS
@@ -40,7 +41,6 @@ SOURCES += main.cpp \
     Experiments/imageexperiment.cpp \
     Experiments/readingexperiment.cpp \
     monitorscreen.cpp \
-    EyeTrackerInterface/RED/redinterface.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
     EyeTrackerInterface/GazePoint/eventdetection.cpp \
     EyeTrackerInterface/GazePoint/opengazecommand.cpp \
@@ -78,8 +78,6 @@ HEADERS += \
     Experiments/imageexperiment.h \
     Experiments/readingexperiment.h \
     monitorscreen.h \
-    EyeTrackerInterface/RED/iViewXAPI.h \
-    EyeTrackerInterface/RED/redinterface.h \
     ../../CommonClasses/DataPacket/datapacket.h \
     EyeTrackerInterface/GazePoint/eventdetection.h \
     EyeTrackerInterface/GazePoint/opengazecommand.h \
@@ -96,10 +94,14 @@ HEADERS += \
     ../../CommonClasses/PNGWriter/resultbar.h \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.h
 
-win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
+contains(DEFINES, USE_IVIEW) {
+  win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
+  INCLUDEPATH += $$PWD/EyeTrackerInterface/RED
+  DEPENDPATH += $$PWD/EyeTrackerInterface/RED
+  SOURCES += EyeTrackerInterface/RED/redinterface.cpp
+  HEADERS += EyeTrackerInterface/RED/iViewXAPI.h \
+             EyeTrackerInterface/RED/redinterface.h
 
-INCLUDEPATH += $$PWD/EyeTrackerInterface/RED
-DEPENDPATH += $$PWD/EyeTrackerInterface/RED
+}
 
-FORMS +=
 

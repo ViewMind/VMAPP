@@ -22,6 +22,7 @@ OpenGazeInterface::OpenGazeInterface(QObject *parent, qreal width, qreal height)
     buffer = "";
 
     // Calibration data
+    //qWarning() << "CREATING GP3HD";
 }
 
 void OpenGazeInterface::on_calibrationAborted(){
@@ -77,6 +78,7 @@ void OpenGazeInterface::on_readyRead(){
 
 void OpenGazeInterface::on_disconnected(){
     logger.appendWarning("DISCONNECTED from OpenGaze EyeTracker Server");
+    //qWarning() << "SHOULD DISCONNECT" << shouldDisconnect;
     if (!shouldDisconnect) emit(eyeTrackerControl(ET_CODE_DISCONNECTED_FROM_ET));
 }
 
@@ -157,6 +159,10 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
                 if (rv == "1") rightValid++;
             }
 
+
+            //qWarning() << "Total" << total  << "LEFT VALID" << leftValid << "RIGHT VALID" << rightValid
+            //           << "Can use left: " << canUseLeft() << "Can use right: " << canUseRight() << "Eye To Transmit" << eyeToTransmit;
+
             if (canUseLeft() && (total != leftValid)){
                 logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for left eye: " + QString::number(leftValid) + " out of " + QString::number(total));
                 sendOk = false;
@@ -172,6 +178,7 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             OpenGazeCommand closeWindow;
             closeWindow.setEnableCommand(GPC_CALIBRATE_SHOW,false);
             socket->write(closeWindow.prepareCommandToSend());
+            //qWarning() << "SENDING THE CALIBRATION FINISH COMMAND" << sendOk;
             if (sendOk) emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
             else emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
         }

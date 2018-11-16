@@ -61,7 +61,7 @@ void SSLDBClient::runDBTransaction(){
     if (queryType == SQL_QUERY_TYPE_SET){
         clientState = CS_CONNECTING_TO_SQL_SET;
         txDP.addString(valuesForColumnsList,DataPacket::DPFI_DB_VALUE);
-        qWarning() << "Sending a Set" << tableNames << columnList << valuesForColumnsList;
+        //qWarning() << "Sending a Set" << tableNames << columnList << valuesForColumnsList;
     }
     else{
         clientState = CS_CONNECTING_TO_SQL_GET;

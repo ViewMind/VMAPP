@@ -111,6 +111,23 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Resetting the medical institution, just in case
     lim.resetMedicalInstitutionForAllDoctors(configuration->getString(CONFIG_INST_UID));
 
+#ifdef USE_IVIEW
+    QString expectedET = CONFIG_P_ET_REDM;
+#else
+    QString expectedET = CONFIG_P_ET_GP3HD;
+#endif
+
+    if (configuration->getString(CONFIG_EYETRACKER_CONFIGURED) != expectedET){
+        logger.appendError("Wrong ET in the configuration file: Was expecting " + expectedET + " but found: " + configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
+        loadingError = true;
+        return;
+    }
+
+    // Checking which ET should be used: Mouse or the one in the configuration file.
+    if (configuration->getBool(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
+    else configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
+
+
 }
 
 //******************************************* DB Related Functions ***********************************************
