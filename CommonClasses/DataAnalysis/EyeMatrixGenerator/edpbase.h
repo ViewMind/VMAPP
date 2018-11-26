@@ -56,6 +56,8 @@ public:
 
     FixationList getEyeFixations() const {return eyeFixations;}
 
+    QStringList getSamplingFrequencyCheck() const { return samplingFrequencyCheck; }
+
 protected:
 
     // Stored fixation results
@@ -96,6 +98,9 @@ protected:
 
     // The object to calculate the fixation
     MovingWindowAlgorithm mwa;
+
+    // Flag that raises if sampling check does not hold.
+    QStringList samplingFrequencyCheck;
 
     // Auxiliary function to average a column of a matrix between rows startRow and endRow, inclusive.
     qreal averageColumnOfMatrix(const DataMatrix &data, qint32 col, qint32 startRow, qint32 endRow);

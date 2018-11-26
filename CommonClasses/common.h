@@ -111,6 +111,7 @@
 #define   CONFIG_RESULTS_RETRIEVAL_MEMORY               "retrieval_memory"
 #define   CONFIG_RESULTS_MEMORY_ENCODING                "memory_encoding"
 #define   CONFIG_RESULTS_BEHAVIOURAL_RESPONSE           "behavioural_response"
+#define   CONFIG_RESULTS_FREQ_ERRORS_PRESENT            "freq_errors_present"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"

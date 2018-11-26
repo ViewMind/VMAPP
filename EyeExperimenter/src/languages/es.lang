@@ -241,6 +241,7 @@ error_db_transaction = Error de Base de Datos|Hubo un error relacionado con la b
 error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
 error_db_wronginst = ID Incorrrecto|El ID de esta institución está equivocado o el doctor no fue registrado<br>Por favor contacte a ViewMind para resolverlo;
+error_freq_check = Error de Frequencia|Hubo un problema al obtener los datos del ET<br>Los resultados pueden no ser confiables<br>Por favor contacte a ViewMind para obtener ayuda.;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;

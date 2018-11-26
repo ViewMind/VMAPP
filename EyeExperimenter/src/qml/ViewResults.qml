@@ -44,15 +44,26 @@ VMBase {
 
         // Patient and doctor data
         var list  = flowControl.getSelectedReportInfo();
+        var freqErr = false;
         vmPatient = list[1];
         vmDrName  = list[0];
         vmAge     = list[2];
         vmDate    = list[3];
+        freqErr   = list[4];
 
         if (vmDate === vmDEMO_DATE){
             vmTitleDemo = " (DEMO)";
         }
         else vmTitleDemo = "";
+
+        if (){
+            viewResults.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_LOAD_CONFIG;
+            var titleMsg = getErrorTitleAndMessage("error_freq_check");
+            viewResults.vmErrorDiag.vmErrorMessage = titleMsg[1];
+            viewResults.vmErrorDiag.vmErrorTitle = titleMsg[0];
+            viewResults.vmErrorDiag.open();
+            return;
+        }
 
     }
 

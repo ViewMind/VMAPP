@@ -71,6 +71,7 @@ private:
     // The structure is used to return data gathered by each function so that it can be used in the main function.
     struct TagParseReturn{
         bool ok;
+        bool freqCheckErrors = false;
         QString version;
         QString filePath;
     };
@@ -85,11 +86,13 @@ private:
 
     bool getResolutionToConfig(const QString &firstline);
 
-    void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode);
+    void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode, bool freqErrorsOk);
 
     QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers & ans);
 
     QString getVersionForBindingExperiment(bool bound);
+
+    bool getFrequencyCheckErrors(const QStringList & ferrors);
 
 };
 

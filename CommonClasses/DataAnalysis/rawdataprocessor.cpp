@@ -62,6 +62,8 @@ void RawDataProcessor::run(){
     QString dateForReport;
     QStringList reportInfoText;
 
+    bool freqErrorsOK = true;
+
     // Each of the processing fucntions is called. In this way, processing of just one can be accomplished
     // just by running this complete function but it will keep going if a file does not exist.
     if (!dataReading.isEmpty()) {
@@ -76,6 +78,8 @@ void RawDataProcessor::run(){
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getReadingInformation(info.baseName());
         dateForReport = datInfo.date;
         reportInfoText << "r";
+
+        if (!tagRet.freqCheckErrors) freqErrorsOK = false;
 
         if (!report.isEmpty()){
             studyID << "rd" + tagRet.version;
@@ -104,6 +108,8 @@ void RawDataProcessor::run(){
         else if (dateForReport != datInfo.date){
             emit(appendMessage("Using files from different dates. Using the date first found: " + dateForReport,MSG_TYPE_WARN));
         }
+
+        if (!tagRet.freqCheckErrors) freqErrorsOK = false;
 
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -143,6 +149,8 @@ void RawDataProcessor::run(){
             emit(appendMessage("Using files from different dates. Using the date first found: " + dateForReport,MSG_TYPE_WARN));
         }
 
+        if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
             studyID << bindingVersion + tagRet.version;
@@ -169,6 +177,7 @@ void RawDataProcessor::run(){
         matrixFielding = tagRet.filePath;
         fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
         QString report = emp.processFielding(matrixFielding,fielding.getNumberOfTrials());
+        if (!tagRet.freqCheckErrors) freqErrorsOK = false;
         if (!report.isEmpty()){
             studyID << "fd" + tagRet.version;
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -195,7 +204,7 @@ void RawDataProcessor::run(){
     if (dateParts.size() != 3) config->addKeyValuePair(CONFIG_REPORT_DATE,dateForReport);
     else config->addKeyValuePair(CONFIG_REPORT_DATE,dateParts.at(2) + "/" + dateParts.at(1) + "/" + dateParts.at(0));
 
-    generateReportFile(emp.getResults(),what2Add,reportInfoText.join("_") + "_" + dateForReport);
+    generateReportFile(emp.getResults(),what2Add,reportInfoText.join("_") + "_" + dateForReport, freqErrorsOK);
     emit(appendMessage("Report Generated: " + reportFileOutput,MSG_TYPE_SUCC));
 
     // Saving the database data to text file
@@ -217,7 +226,7 @@ void RawDataProcessor::run(){
 
 }
 
-void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode){
+void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode, bool freqErrorsOk){
 
     reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME;
     reportFileOutput = reportFileOutput + "_" + repFileCode + ".rep";
@@ -225,12 +234,17 @@ void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res,
     // Deleting the resport if it exists.
     QFile::remove(reportFileOutput);
 
+    QString freqErrValue;
+    if (freqErrorsOk) freqErrValue = "false";
+    else freqErrValue = "true";
+
     // Adding the required report data
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,config->getString(CONFIG_PATIENT_NAME));
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,config->getString(CONFIG_PATIENT_AGE));
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_DOCTOR_NAME,config->getString(CONFIG_DOCTOR_NAME));
     //QDateTime::currentDateTime().toString("dd/MM/yyyy")
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_REPORT_DATE,config->getString(CONFIG_REPORT_DATE));
+    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_FREQ_ERRORS_PRESENT,freqErrValue);
 
     // Adding the actual results
     if (whatToAdd.value(STAT_ID_TOTAL_FIXATIONS)){
@@ -304,10 +318,20 @@ RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *proces
         emit(appendMessage("DONE!: " + id + " Matrix Generated. DAT File used: " + dataFile,1));
     }
 
+    tagRet.freqCheckErrors = getFrequencyCheckErrors(processor->getSamplingFrequencyCheck());
 
     tagRet.filePath = processor->getOuputMatrixFileName();
     return tagRet;
 
+}
+
+bool RawDataProcessor::getFrequencyCheckErrors(const QStringList &ferrors){
+    LogInterface temp_log;
+    temp_log.setLogFileLocation("freq_errors.log");
+    for (qint32 i = 0; i < ferrors.size(); i++){
+        temp_log.appendError("DR: " + config->getString(CONFIG_DOCTOR_NAME) + ". PAT: " + config->getString(CONFIG_PATIENT_NAME) + ". " +  ferrors.at(i));
+    }
+    return ferrors.isEmpty();
 }
 
 RawDataProcessor::TagParseReturn RawDataProcessor::separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment){

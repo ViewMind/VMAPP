@@ -13,6 +13,7 @@ Dialog {
     readonly property int vmERROR_SERVER_COMM: 6
     readonly property int vmERROR_NO_SSL: 7
     readonly property int vmERROR_PROC_ACK: 8
+    readonly property int vmERROR_FREQ_ERR: 9
 
     property string vmErrorTitle: "Error Ocurred"
     property string vmErrorMessage: "An error has ocurred"
@@ -108,6 +109,9 @@ Dialog {
             close();
             break;
         case vmERROR_PROC_ACK:
+            close();
+            break;
+        case vmERROR_FREQ_ERR:
             close();
             break;
         default:

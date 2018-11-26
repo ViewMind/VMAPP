@@ -135,6 +135,14 @@ bool EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
                                              const qreal &targetX,
                                              const qreal &targetY){
 
+    qreal freqCheck = calculateSamplingFrequency(data,FIELDING_TI);
+    qreal freq = config->getReal(CONFIG_SAMPLE_FREQUENCY);
+    if (qAbs(freqCheck - freq) > 0.1*freq){
+        samplingFrequencyCheck << "Fielding Frequency Check failed at: " + imgID
+                                  + ". Expected Frequency is " + QString::number(freq)
+                                  + ". Measured: " + QString::number(freqCheck);
+    }
+
     // Calculating the fixations for each eye.;
     Fixations fL = mwa.computeFixations(data,FIELDING_XL,FIELDING_YL,FIELDING_TI);
     Fixations fR = mwa.computeFixations(data,FIELDING_XR,FIELDING_YR,FIELDING_TI);
