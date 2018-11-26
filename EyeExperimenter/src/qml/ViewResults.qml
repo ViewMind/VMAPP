@@ -56,9 +56,9 @@ VMBase {
         }
         else vmTitleDemo = "";
 
-        if (){
-            viewResults.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_LOAD_CONFIG;
-            var titleMsg = getErrorTitleAndMessage("error_freq_check");
+        if (freqErr === "false"){
+            viewResults.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_FREQ_ERR;
+            var titleMsg = viewHome.getErrorTitleAndMessage("error_freq_check");
             viewResults.vmErrorDiag.vmErrorMessage = titleMsg[1];
             viewResults.vmErrorDiag.vmErrorTitle = titleMsg[0];
             viewResults.vmErrorDiag.open();

@@ -237,11 +237,11 @@ error_programming = Error de programación<>Contactar a Ariel Arelovich;
 error_experiment_end = Fin de estudio anormal<>El estudio no terminó como corresponde<br>Por favor inténtelo nuevamente;
 error_no_ssl = SSL no se detectó<>No se detectaron las bibliotecas de SSL<br>No será posible la comunicación con el servidor;
 error_server_comm = Error de comunicación<>No se pudo establecer un vinculo con servidor.<br>Por favor, detectar nuevamente;
+error_freq_check = Error de Frequencia<>Hubo un problema al obtener los datos del ET<br>Los resultados pueden no ser confiables<br>Por favor contacte a ViewMind para obtener ayuda.;
 error_db_transaction = Error de Base de Datos|Hubo un error relacionado con la base de datos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
 error_db_wronginst = ID Incorrrecto|El ID de esta institución está equivocado o el doctor no fue registrado<br>Por favor contacte a ViewMind para resolverlo;
-error_freq_check = Error de Frequencia|Hubo un problema al obtener los datos del ET<br>Los resultados pueden no ser confiables<br>Por favor contacte a ViewMind para obtener ayuda.;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;
