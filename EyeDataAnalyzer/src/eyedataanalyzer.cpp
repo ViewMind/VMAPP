@@ -14,6 +14,8 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
     fillUi();
     enableControlButtons(false);
 
+    //ui->lePatientDir->setText("C:\Users\Viewmind\Documents\QtProjects\EyeExperimenter\exe\viewmind_etdata\AR30000000\AR30000000");
+
 }
 
 

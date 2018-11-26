@@ -55,6 +55,20 @@ qreal EDPBase::getGaze(const Fixations &fixations){
     return gaze;
 }
 
+qreal EDPBase::calculateSamplingFrequency(const DataMatrix &eventData, qint32 timeCol){
+
+    qreal freqAcc = 0;
+    qreal freqCounter = eventData.size()-1;
+
+    for (qint32 i = 1; i < eventData.size(); i++){
+        //qWarning() << eventData.at(i).at(timeCol) <<  eventData.at(i-1).at(timeCol) << eventData.at(i).at(timeCol) - eventData.at(i-1).at(timeCol);
+        freqAcc = freqAcc + ((qreal)(1000))/(eventData.at(i).at(timeCol) - eventData.at(i-1).at(timeCol));
+    }
+
+    return freqAcc/freqCounter;
+
+}
+
 
 
 

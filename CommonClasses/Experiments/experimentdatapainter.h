@@ -2,6 +2,7 @@
 #define EXPERIMENTDATAPAINTER_H
 
 #include <QGraphicsScene>
+#include <QGraphicsEllipseItem>
 #include <QPainter>
 #include <QDesktopWidget>
 #include <QApplication>
@@ -23,6 +24,10 @@ public:
     virtual qint32 size() const {return 0;}
     virtual qreal sizeToProcess() const {return 0;}
 
+    // For on-screen gaze tracking.
+    void updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl);
+    void redrawGazePoints();
+
     QPixmap getImage() const;
     QString getError() const {return error;}
 
@@ -32,8 +37,18 @@ public:
 
 protected:
 
+    void updateGazePosition();
+    void clearCanvas();
+
     qreal ScreenResolutionWidth;
     qreal ScreenResolutionHeight;
+
+    // Enable on-screen gaze tracking
+    bool gazeUpdateEnabled; // This flag needs to be used to ensure that NO update is done when the ellipse items don´t exist;
+    qreal gazeXr,gazeXl,gazeYr,gazeYl;
+    QGraphicsEllipseItem *leftEyeTracker;
+    QGraphicsEllipseItem *rightEyeTracker;
+    qreal R;
 
     ConfigurationManager *config;
     QGraphicsScene *canvas;

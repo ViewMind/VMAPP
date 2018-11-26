@@ -27,6 +27,8 @@ inst_et_serial = ;
 inst_name = Institucion de Prueba;
 inst_uid = 313644376;
 
+# enable_gaze_following = true;
+
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #

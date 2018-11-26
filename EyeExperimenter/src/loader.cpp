@@ -46,6 +46,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cmd.optional = true;
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[CONFIG_TEST_MODE] = cmd;
+    cv[CONFIG_ENABLE_GAZE_FOLLOWING] = cmd;
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);

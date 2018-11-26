@@ -56,7 +56,7 @@ void ImageExperiment::drawCurrentImage(){
 
     if ((trialState == TSB_TRANSITION) || (trialState == TSB_FINISH)){
         //qWarning() << "DRAWING: Transition" << currentTrial;
-        gview->scene()->clear();
+        m->drawClear();
         emit(updateBackground(m->getImage()));
         return;
     }
@@ -102,27 +102,16 @@ void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
-    QFile file(dataFile);
-    if (!file.open(QFile::Append)){
-        error = "Could not open data file " + dataFile + " for appending data.";
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_FAILURE));
-    }
-
-    QTextStream writer(&file);
-    writer.setCodec(COMMON_TEXT_CODEC);
-
     // Adding the data row.
-    writer << data.time << " "
-           << data.xRight << " "
-           << data.yRight << " "
-           << data.xLeft << " "
-           << data.yLeft << " "
-           << data.pdRight << " "
-           << data.pdLeft << "\n";
-
-
-    file.close();
+    QVariantList dataS;
+    dataS  << data.time
+           << data.xRight
+           << data.yRight
+           << data.xLeft
+           << data.yLeft
+           << data.pdRight
+           << data.pdLeft;
+    etData << QVariant(dataS);
 
 }
 
@@ -181,7 +170,8 @@ void ImageExperiment::nextState(){
             stateTimer.start();
         }
         else{
-            emit(experimentEndend(ER_NORMAL));
+            if (!saveDataToHardDisk()) emit(experimentEndend(ER_FAILURE));
+            else emit(experimentEndend(ER_NORMAL));
         }
         return;
     case TSB_SHOW:
@@ -218,23 +208,10 @@ void ImageExperiment::nextState(){
 void ImageExperiment::newImage(QString name, qint32 isTrial){
 
     ignoreData = true;    
-
-    QFile file(dataFile);
-    if (!file.open(QFile::Append)){
-        error = "Could not open data file " + dataFile + " for appending data.";
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_FAILURE));
-    }
-
-    QTextStream writer(&file);
-    writer.setCodec(COMMON_TEXT_CODEC);
-
-    writer << name << " "
-           << isTrial // 1 if it is test and 0 if it is show.
-           << "\n";
-
-    file.close();
-
+    QVariantList dataS;
+    dataS  << name
+           << isTrial; // 1 if it is test and 0 if it is show.
+    etData << QVariant(dataS);
     ignoreData = false;
 
 }
@@ -242,20 +219,9 @@ void ImageExperiment::newImage(QString name, qint32 isTrial){
 void ImageExperiment::addAnswer(QString ans){
 
     ignoreData = true;
-
-    QFile file(dataFile);
-    if (!file.open(QFile::Append)){
-        error = "Could not open data file " + dataFile + " for appending data.";
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_FAILURE));
-    }
-
-    QTextStream writer(&file);
-    writer.setCodec(COMMON_TEXT_CODEC);
-
-    writer << m->getTrial(currentTrial).name << "->" << ans << "\n";
-    file.close();
-
+    QVariantList dataS;
+    dataS << m->getTrial(currentTrial).name + "->" + ans;
+    etData << QVariant(dataS);
     ignoreData = false;
 
 }

@@ -154,7 +154,8 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
     }
 
     // Any other state the phrase needs to be drawn.
-    canvas->clear();
+    clearCanvas();
+
     QString mainPhrase;
     qint32 xpos, ypos;
     qint32 WScreen,HScreen;

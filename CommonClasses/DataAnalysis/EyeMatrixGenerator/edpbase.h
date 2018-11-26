@@ -82,6 +82,9 @@ protected:
     // Filtered lines list.
     QStringList filteredLinesList;
 
+    // Used to store processed data in order to do a frequency analysis.
+    QList<DataMatrix> eventData;
+
     // Used to determine when the eye left the center position of the screen.
     qint32 pixelsInSacadicLatency;
 
@@ -135,6 +138,9 @@ protected:
 
     // Sum of the duration of a fixation list.
     qreal getGaze(const Fixations &fixations);
+
+    // Calculate the sampling frequency.
+    qreal calculateSamplingFrequency (const DataMatrix &eventData, qint32 timeCol);
 
 };
 
