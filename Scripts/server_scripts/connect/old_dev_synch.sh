@@ -15,11 +15,10 @@ SSLSERVER_CONFIG=$REPO"/EyeServer/bin/configuration"
 SQLSCRIPTS=$REPO"/Scripts/dbscripts"
 
 # Copying
-scp -i $KEY $SSLSERVER ec2-user@$DNS:/home/ec2-user/EyeServer/
+scp -r -i $KEY ec2-user@$DNS:/home/ec2-user/EyeServer/s3bkp .
+
 #scp -i $KEY $DBMNG     ec2-user@$DNS:/home/ec2-user/DBMng/
 #scp -i $KEY $EYEREPGEN ec2-user@$DNS:/home/ec2-user/EyeReportGenerator
-
-
 ##### OLD STUFF
 #scp -i $KEY  $SSLSERVER_CONFIG ec2-user@$DNS:/home/ec2-user/EyeServer/configuration
 #scp -i $KEY  $EYEREPGEN ec2-user@$DNS:/home/ec2-user/EyeReportGenerator
