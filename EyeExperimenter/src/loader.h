@@ -31,7 +31,7 @@ public:
     Q_INVOKABLE bool createPatientDirectory();
     Q_INVOKABLE QRect frameSize(QObject *window);
     Q_INVOKABLE QStringList getCountryList() {return countries->getCountryList();}
-    Q_INVOKABLE QStringList getPatientList();
+    Q_INVOKABLE QStringList getPatientList(const QString &filter = "");
     Q_INVOKABLE QStringList getUIDList();
     Q_INVOKABLE QStringList getPatientIsOKList();
     Q_INVOKABLE QStringList getDoctorList();
@@ -55,7 +55,7 @@ public:
     Q_INVOKABLE QString loadTextFile(const QString &fileName);
     Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
     Q_INVOKABLE QStringList getErrorMessageForDBCode();
-    Q_INVOKABLE void prepareAllPatientIteration();
+    Q_INVOKABLE void prepareAllPatientIteration(const QString &filter = "");
     Q_INVOKABLE QStringList nextInAllPatientIteration();
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
 signals:

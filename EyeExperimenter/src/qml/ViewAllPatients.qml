@@ -10,7 +10,7 @@ Dialog {
     readonly property int dialogHeight: 650
     readonly property int dialogWidth: 800
     readonly property int repTableWidth: dialogWidth*0.8
-    readonly property int repTableHeight: dialogHeight*0.5
+    readonly property int repTableHeight: dialogHeight*0.4
     readonly property int columnWidth: repTableWidth/2
 
     id: viewAllPatients;
@@ -40,10 +40,15 @@ Dialog {
 
 
     // Loads the list model with the patient information
-    function loadPatients() {
+    function loadPatients(filter) {
+
+        if (filter === undefined){
+            searchBar.clearSearch();
+            filter = "";
+        }
 
         allPatientList.clear();
-        loader.prepareAllPatientIteration();
+        loader.prepareAllPatientIteration(filter);
 
         while (true){
             var list = loader.nextInAllPatientIteration();
@@ -95,10 +100,66 @@ Dialog {
         //text: loader.getStringForKey(keybase+"diagViewRepSubTitle");
     }
 
+
+    Rectangle {
+        id: searchBar
+        color: "#ffffff"
+        border.width: 2
+        border.color: "#EDEDEE"
+        radius: 4
+        width: repTableWidth
+        height: 0.05*parent.height
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: diagViewRepSubTitle.bottom
+        anchors.topMargin: 20
+        function clearSearch(){
+            inputRect.clearSearch();
+        }
+
+        Text {
+            id: filter
+            font.pixelSize: 13
+            font.family: viewHome.gothamM.name
+            text: loader.getStringForKey(keybase+"filter");
+            color: "#297fca"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+        }
+
+        Rectangle {
+            id: inputRect
+            color: "#f0f0f0"
+            width: 0.76*parent.width
+            height: 0.82*parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: filter.right
+            anchors.leftMargin: 10
+            radius: 10
+            function clearSearch(){
+                searchInput.text = "";
+            }
+            TextInput {
+                id: searchInput
+                font.pixelSize:  12
+                color: "#000000"
+                verticalAlignment: TextInput.AlignVCenter
+                font.family: viewHome.gothamR.name
+                anchors.fill: parent
+                leftPadding: 10
+                onTextChanged: {
+                    loadPatients(text);
+                }
+            }
+        }
+    }
+
+
+
     // The table header.
     Row {
         id: tableHeader
-        anchors.top: diagViewRepSubTitle.bottom
+        anchors.top: searchBar.bottom
         anchors.topMargin: 10
         anchors.horizontalCenter: parent.horizontalCenter
         height: 30

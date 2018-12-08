@@ -173,8 +173,8 @@ QString Loader::loadTextFile(const QString &fileName){
     return ans;
 }
 
-void Loader::prepareAllPatientIteration(){
-    allPatientList = lim.getAllPatientInfo();
+void Loader::prepareAllPatientIteration(const QString &filter){
+    allPatientList = lim.getAllPatientInfo(filter);
     allPatientIndex = 0;
 }
 
@@ -336,9 +336,9 @@ QStringList Loader::getDoctorList() {
     else return nameInfoList.at(0);
 }
 
-QStringList Loader::getPatientList(){
+QStringList Loader::getPatientList(const QString &filter){
     nameInfoList.clear();
-    nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID));
+    nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID),filter);
     if (nameInfoList.isEmpty()) return QStringList();
     else return nameInfoList.at(0);
 }

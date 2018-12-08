@@ -155,6 +155,7 @@ viewpatientlist_msg_notvalid = User not validated|This user is not validated and
 viewpatientlist_ask_password = Password required;
 viewpatientlist_wrong_dr_password = Password is incorrect;
 viewpatientlist_view_all = View All Patients;
+viewpatientlist_filter = Search;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reports;
@@ -172,6 +173,7 @@ viewallreports_title = Patient List;
 viewallreports_patient_col = Patient;
 viewallreports_doctor_col = Doctor;
 viewallreports_view = VIEW REPORTS;
+viewallreports_filter = Search Patients;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Doctor's Profile;

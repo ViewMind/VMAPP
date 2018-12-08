@@ -34,7 +34,8 @@ SOURCES += \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     ../../CommonClasses/LogInterface/loginterface.cpp \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
+    howmanydiag.cpp
 
 HEADERS += \
         dbview.h \
@@ -42,7 +43,9 @@ HEADERS += \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ../../CommonClasses/LogInterface/loginterface.h \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.h
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
+    howmanydiag.h
 
 FORMS += \
-        dbview.ui
+        dbview.ui \
+    howmanydiag.ui

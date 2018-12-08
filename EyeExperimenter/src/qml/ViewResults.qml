@@ -56,7 +56,7 @@ VMBase {
         }
         else vmTitleDemo = "";
 
-        if (freqErr === "false"){
+        if (freqErr === "true"){
             viewResults.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_FREQ_ERR;
             var titleMsg = viewHome.getErrorTitleAndMessage("error_freq_check");
             viewResults.vmErrorDiag.vmErrorMessage = titleMsg[1];

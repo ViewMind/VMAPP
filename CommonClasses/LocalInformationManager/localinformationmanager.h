@@ -33,12 +33,12 @@ public:
     bool doesPatientExist(const QString &druid, const QString &patuid) const;
     void validateDoctor(const QString &dr_uid);
     QString getDoctorPassword(const QString &uid);
-    QList<QStringList> getPatientListForDoctor(const QString &druid);
+    QList<QStringList> getPatientListForDoctor(const QString &druid, const QString &filter = "");
     QList<QStringList> getDoctorList(bool forceShow = false);
     QString getFieldForPatient(const QString &druid, const QString &patuid, const QString &field) const;
     QVariantMap getDoctorInfo(const QString &uid) {return localDB.value(uid).toMap();}
     QVariantMap getPatientInfo(const QString &druid, const QString &patuid) const;
-    QList<QStringList> getAllPatientInfo() const;
+    QList<QStringList> getAllPatientInfo(const QString &filter = "") const;
     QString getWorkDirectory() const {return workingDirectory;}
     void setUpdateFlagTo(bool flag);
 

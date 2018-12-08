@@ -6,7 +6,8 @@ DBView::DBView(QWidget *parent) :
     ui(new Ui::DBView)
 {
     ui->setupUi(this);
-    this->setWindowTitle("DBModifier - V1.0.0");
+    this->setWindowTitle("DBModifier - V1.1.0");
+    qsrand(static_cast<quint64>(QTime::currentTime().msecsSinceStartOfDay()));
 
 }
 
@@ -133,5 +134,63 @@ void DBView::on_pbApplyChanges_clicked()
 
     lim.setDoctorData(ui->lvDoctors->currentItem()->data(ROLE).toString(),keys,values);
     fillDoctorList();
+
+}
+
+void DBView::on_actionInsert_Random_Patients_triggered()
+{
+    QString drUID = ui->lvDoctors->currentItem()->data(ROLE).toString();
+    HowManyDiag diag(this);
+    if (diag.exec() == QDialog::Rejected) return;
+    qint32 number = diag.getHowMany();
+
+    if (number == 0) return;
+
+    QStringList someRandomNames;
+    someRandomNames << "Willia Griswold" << "Roberto Bagnell" << "Ignacio Deloach" << "Margarete Kearney" << "Charmaine Mcaninch" << "Ned Mendel" << "Joye Weinberg"
+                    << "Sam Pankratz" << "Edgardo Dunneback" << "Jami Alpert" << "Maragret Magallanes" << "Arica Mcclaskey" << "Golda Elwell" << "Jeana Concha"
+                    << "Shaina Stanback" << "Vivien Mccawley" << "Carly Wills" << "Buena Roehl" << "Felecia Peed" << "Onita Mcphee" << "Allena Rippey" << "Viviana Winchenbach"
+                    << "Mirian Chiang" << "Phuong Bittinger" << "Tyrone Santucci" << "Oren Grindstaff" << "Vivan Gatling" << "Tierra Schaller" << "Corliss Hurd" << "Kathe Motyka"
+                    << "Winnifred Yamasaki" << "Carmelita Nagata" << "Daria Almodovar" << "Kayce Plumb" << "Marylee Harkey" << "Otis Vanarsdale" << "Debrah Woods" << "Nenita Defilippo"
+                    << "Eric Steimle" << "Jovita Yao" << "Eloisa Perrodin" << "Florentino Roop" << "Fay Machnik" << "Taryn Eberhardt" << "Cecila Lam" << "Carmine Hynes" << "Adela Basso"
+                    << "Kyra Chute" << "Willodean Carmean" << "Estella Rickerson";
+
+    for (qint32 k = 0; k < number; k++){
+        QHash<QString,QString> data;
+
+        qint32 dni = 20;
+        dni = dni + (qrand() % 15);
+        dni = dni * 1000000 + (qrand() % 999999);
+
+        qint32 year = 2018 - (qrand() & 70);
+        qint32 day = (qrand() % 29) + 1;
+        qint32 month = (qrand() % 12) + 1;
+
+        QString isodate = QString::number(year) + "-";
+        QString mm = QString::number(month);
+        if (month < 10) mm = "0" + mm;
+        QString dd = QString::number(day);
+        if (day < 10) dd = "0" + dd;
+        isodate = isodate + mm + "-" + dd;
+
+        data[TPATREQ_COL_BIRTHCOUNTRY] = "AR";
+        data[TPATREQ_COL_DOCTORID] = drUID;
+        data[TPATREQ_COL_FIRSTNAME] = getRandomFirstName(someRandomNames);
+        data[TPATREQ_COL_BIRTHDATE] = isodate;
+        data[TPATREQ_COL_LASTNAME] = getRandomLastName(someRandomNames);
+        data[TPATREQ_COL_SEX] = ((qrand() % 2) == 0) ? "M" : "F";
+        data[TPATREQ_COL_UID] = data[TPATREQ_COL_BIRTHCOUNTRY] + QString::number(dni);
+
+        // Adding the transaction
+        QStringList columns = data.keys();
+        QStringList values;
+        for (qint32 i = 0; i < columns.size(); i++){
+            values << data.value(columns.at(i));
+        }
+
+        lim.addPatientData(drUID,data.value(TPATREQ_COL_UID),columns,values);
+    }
+
+    QMessageBox::information(this,"Done","Added " + QString::number(number) + " patients",QMessageBox::Ok);
 
 }

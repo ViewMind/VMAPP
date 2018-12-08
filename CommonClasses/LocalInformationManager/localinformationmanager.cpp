@@ -32,7 +32,7 @@ void LocalInformationManager::resetMedicalInstitutionForAllDoctors(const QString
     backupDB();
 }
 
-QList<QStringList> LocalInformationManager::getAllPatientInfo() const {
+QList<QStringList> LocalInformationManager::getAllPatientInfo(const QString &filter) const {
     QList<QStringList> ans;
     QStringList druids = localDB.keys();
     for (qint32 i = 0; i < druids.size(); i++){
@@ -40,13 +40,20 @@ QList<QStringList> LocalInformationManager::getAllPatientInfo() const {
         QStringList patuids = patients.keys();
         for (qint32 j =0; j < patuids.size(); j++){
             QStringList datum;
-            datum << localDB.value(druids.at(i)).toMap().value(TDOCTOR_COL_FIRSTNAME).toString() + " "
-                     + localDB.value(druids.at(i)).toMap().value(TDOCTOR_COL_LASTNAME).toString();
-            datum << druids.at(i);
-            datum << patients.value(patuids.at(j)).toMap().value(TPATREQ_COL_FIRSTNAME).toString() + " "
-                     + patients.value(patuids.at(j)).toMap().value(TPATREQ_COL_LASTNAME).toString();
-            datum << patuids.at(j);
-            ans << datum;
+
+            QString patName = patients.value(patuids.at(j)).toMap().value(TPATREQ_COL_FIRSTNAME).toString() + " "
+                    + patients.value(patuids.at(j)).toMap().value(TPATREQ_COL_LASTNAME).toString();
+
+            if ( filter.isEmpty() || patName.contains(filter,Qt::CaseInsensitive) || patuids.at(j).contains(filter,Qt::CaseInsensitive) ){
+
+                datum << localDB.value(druids.at(i)).toMap().value(TDOCTOR_COL_FIRSTNAME).toString() + " "
+                         + localDB.value(druids.at(i)).toMap().value(TDOCTOR_COL_LASTNAME).toString();
+                datum << druids.at(i);
+                datum << patName;
+                datum << patuids.at(j);
+                ans << datum;
+
+            }
         }
     }
     return ans;
@@ -391,22 +398,27 @@ QList<QStringList> LocalInformationManager::getDoctorList(bool forceShow){
     return ans;
 }
 
-QList<QStringList> LocalInformationManager::getPatientListForDoctor(const QString &druid){
+QList<QStringList> LocalInformationManager::getPatientListForDoctor(const QString &druid, const QString &filter){
     QList<QStringList> ans;
     QStringList names;
     QVariantMap patients = localDB.value(druid).toMap().value(PATIENT_DATA).toMap();
     QStringList uids = patients.keys();
+    QStringList uidsToReturn;
     //qWarning() << "PAT UIDS for" << config->getString(CONFIG_DOCTOR_UID) << " are " << uids;
     for (qint32 i = 0; i < uids.size(); i++){
         QVariantMap patinfo = patients.value(uids.at(i)).toMap();
-        names << patinfo.value(TPATREQ_COL_FIRSTNAME).toString() + " " + patinfo.value(TPATREQ_COL_LASTNAME).toString();
+        QString entryText = patinfo.value(TPATREQ_COL_FIRSTNAME).toString() + " " + patinfo.value(TPATREQ_COL_LASTNAME).toString();
+        if ( filter.isEmpty() || entryText.contains(filter,Qt::CaseInsensitive) || uids.at(i).contains(filter,Qt::CaseInsensitive) ){
+            names << entryText;
+            uidsToReturn << uids.at(i);
+        }
     }
     if (!names.isEmpty()) {
-        ans << names << uids;
+        ans << names << uidsToReturn;
         fillPatientDatInformation(druid);
         QStringList isoklist;
-        for (qint32 i = 0; i < uids.size(); i++){
-            if (patientReportInformation.value(uids.at(i)).hasPendingReports()) isoklist << "false";
+        for (qint32 i = 0; i < uidsToReturn.size(); i++){
+            if (patientReportInformation.value(uidsToReturn.at(i)).hasPendingReports()) isoklist << "false";
             else isoklist << "true";
         }
         //qWarning() << "IS OK LIST" << isoklist;

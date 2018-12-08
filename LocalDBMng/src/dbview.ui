@@ -127,6 +127,28 @@
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1095</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionInsert_Random_Patients"/>
+   </widget>
+   <addaction name="menuTools"/>
+  </widget>
+  <action name="actionInsert_Random_Patients">
+   <property name="text">
+    <string>Insert Random Patients</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

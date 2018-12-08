@@ -8,7 +8,7 @@ VMBase {
     width: viewPatientList.vmWIDTH
     height: viewPatientList.vmHEIGHT
     readonly property real vmTableWidth: 0.60*viewPatientList.vmWIDTH
-    readonly property real vmTableHeight: 0.45*viewPatientList.vmHEIGHT
+    readonly property real vmTableHeight: 0.33*viewPatientList.vmHEIGHT
 
     readonly property string keybase: "viewpatientlist_"
 
@@ -270,10 +270,15 @@ VMBase {
     }
 
     // Loads the list model with the patient information
-    function loadPatients() {
+    function loadPatients(filterText) {
+
+        if (filterText === undefined){
+            searchBar.clearSearch();
+            filterText = "";
+        }
 
         // WARNING: Get patient list call fills the other two lists. It NEEDS to be called first.
-        var patientNameList = loader.getPatientList();
+        var patientNameList = loader.getPatientList(filterText);
         var uidList = loader.getUIDList();
         var isOkList = loader.getPatientIsOKList();
 
@@ -443,10 +448,66 @@ VMBase {
         }
     }
 
+    Rectangle {
+        id: searchBar
+        color: "#ffffff"
+        border.width: 2
+        border.color: "#EDEDEE"
+        radius: 4
+        width: vmTableWidth
+        height: 0.05*parent.height
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: toolBar.bottom
+        anchors.topMargin: 20
+        function clearSearch(){
+            inputRect.clearSearch();
+        }
+
+        Text {
+            id: filter
+            font.pixelSize: 13
+            font.family: viewHome.gothamM.name
+            text: loader.getStringForKey(keybase+"filter");
+            color: "#297fca"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+        }
+
+        Rectangle {
+            id: inputRect
+            color: "#f0f0f0"
+            width: 0.9*parent.width
+            height: 0.82*parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: filter.right
+            anchors.leftMargin: 10
+            radius: 10
+            function clearSearch(){
+                searchInput.text = "";
+            }
+            TextInput {
+                id: searchInput
+                font.pixelSize:  12
+                color: "#000000"
+                verticalAlignment: TextInput.AlignVCenter
+                font.family: viewHome.gothamR.name
+                anchors.fill: parent
+                leftPadding: 10
+                onTextChanged: {
+                    loadPatients(text);
+                }
+            }
+        }
+
+
+
+    }
+
     // The table header.
     Row {
         id: tableHeader
-        anchors.top: toolBar.bottom
+        anchors.top: searchBar.bottom
         anchors.topMargin: 10
         anchors.left: toolBar.left
         height: 30

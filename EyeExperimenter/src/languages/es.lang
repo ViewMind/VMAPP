@@ -155,6 +155,7 @@ viewpatientlist_msg_notvalid = Usuario no validado|Este usuario no ha sido valid
 viewpatientlist_ask_password = Se requiere contraseña;
 viewpatientlist_wrong_dr_password = La contraeña es incorrecta;
 viewpatientlist_view_all = Ver Todos los Pacientes;
+viewpatientlist_filter = Buscar;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
@@ -172,6 +173,7 @@ viewallreports_title = Lista de Pacientes;
 viewallreports_patient_col = Paciente;
 viewallreports_doctor_col = Doctor;
 viewallreports_view = VER REPORTES;
+viewallreports_filter = Buscar Pacientes;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;
