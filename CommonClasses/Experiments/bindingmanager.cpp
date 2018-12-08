@@ -7,7 +7,7 @@ BindingManager::BindingManager()
 
 void BindingManager::drawFlags(const BindingParser::BindingSlide &slide){
 
-    canvas->clear();
+    clearCanvas();
 
     // Each target is drawn according to its values.
 
@@ -72,7 +72,7 @@ void BindingManager::init(ConfigurationManager *c){
 }
 
 void BindingManager::drawCenter(){
-    canvas->clear();
+    clearCanvas();
     canvas->addLine(line0,QPen(QBrush(Qt::red),2));
     canvas->addLine(line1,QPen(QBrush(Qt::red),2));
 }

@@ -50,7 +50,7 @@ private:
     void advanceToTheNextPhrase();
 
     // The function that actually writes the data to the HDD. Returns false if there is a problem.
-    void appendDataToFile(const EyeTrackerData &data,
+    void appendEyeTrackerData(const EyeTrackerData &data,
                           qint32 wordIndexR,
                           qint32 characterIndexR,
                           qint32 wordIndexL,

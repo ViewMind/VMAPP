@@ -100,6 +100,9 @@ protected:
     // The base name for the data output file
     QString outputDataFile;
 
+    // The formatted data received from the ET.
+    QVariantList etData;
+
     // Error message
     QString error;
 
@@ -117,6 +120,9 @@ protected:
 
     // Move the garbage data file to the aborted directory.
     void experimenteAborted();
+
+    // Saving the data to the disk.
+    bool saveDataToHardDisk();
 
 };
 

@@ -87,7 +87,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     if (!saveData) return true;
     QTextStream writer(&file);
     writer.setCodec(COMMON_TEXT_CODEC);
-    writer << expHeader + " " + manager->getVersion() << "\n"
+    writer << expHeader + " " + manager->getVersion() << "\n"              
            << contents << "\n"
            << expHeader << "\n"
            << config->getReal(CONFIG_RESOLUTION_WIDTH) << " " << config->getReal(CONFIG_RESOLUTION_HEIGHT) << "\n";
@@ -109,6 +109,7 @@ void Experiment::togglePauseExperiment(){
 
 void Experiment::newEyeDataAvailable(const EyeTrackerData &data){
     emit(updateEyePositions(data.xRight,data.yRight,data.xLeft,data.yLeft));
+    manager->updateGazePoints(data.xRight,data.xLeft,data.yRight,data.yLeft);
 }
 
 void Experiment::experimenteAborted(){
@@ -135,6 +136,30 @@ void Experiment::experimenteAborted(){
     }
 
     emit (experimentEndend(ER_ABORTED));
+}
+
+bool Experiment::saveDataToHardDisk(){
+    QFile file(dataFile);
+    if (!file.open(QFile::Append)){
+        error = "Could not open data file " + dataFile + " for appending data.";
+        state = STATE_STOPPED;
+        return false;
+    }
+
+    QTextStream writer(&file);
+    writer.setCodec(COMMON_TEXT_CODEC);
+
+    for (qint32 i = 0; i < etData.size(); i++){
+        QVariantList line = etData.at(i).toList();
+        for (qint32 j = 0; j < line.size(); j++){
+            writer << line.at(j).toString() << " ";
+        }
+        writer << "\n";
+    }
+
+    file.close();
+    etData.clear();
+    return true;
 }
 
 void Experiment::keyPressEvent(QKeyEvent *event){

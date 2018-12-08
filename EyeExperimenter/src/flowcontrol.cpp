@@ -515,6 +515,7 @@ QStringList FlowControl::getSelectedReportInfo(){
     ans << report.value(CONFIG_PATIENT_NAME).toString();
     ans << report.value(CONFIG_PATIENT_AGE).toString();
     ans << report.value(CONFIG_REPORT_DATE).toString();
+    ans << report.value(CONFIG_RESULTS_FREQ_ERRORS_PRESENT).toString();
     return ans;
 }
 

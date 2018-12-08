@@ -237,10 +237,12 @@ error_programming = Programming error<>Contact Ariel Arelovich;
 error_experiment_end = Study ended abruptly<>The study did not end as expected<br>Please try again;
 error_no_ssl = SLL not detected<>SSL Libraries were not detected.<br>Server request for reports will not be possible;
 error_server_comm = Communication error<>It was not possible to establish a link with the server<br>Please, try again;
+error_freq_check = Frequency Error<>There was a problem gathering data from the ET<br>Results may not be reliable<br>Please contact Viewmind for assistance.;
 error_db_transaction = Database Error|There was an error related to the database<br>Please contact the ViewMind team;
 error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracker is incorrect<br>Please contact the ViewMind team;
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
 error_db_wronginst = Incorrect ID|The ID for this institution is incorrect or the doctor is not registered<br>Please contact ViewMind in order to solve this problem;
+
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Change language<>The program must be restarted to change the language;

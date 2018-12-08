@@ -133,6 +133,14 @@ bool EDPReading::initializeReadingDataMatrix(){
 
 bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString &imgID){
 
+    qreal freqCheck = calculateSamplingFrequency(data,READ_TI);
+    qreal freq = config->getReal(CONFIG_SAMPLE_FREQUENCY);
+    if (qAbs(freqCheck - freq) > 0.1*freq){
+        samplingFrequencyCheck << "Reading Frequency Check failed at: " + imgID
+                                  + ". Expected Frequency is " + QString::number(freq)
+                                  + ". Measured: " + QString::number(freqCheck);
+    }
+
     // Calculating the fixations for each eye.;
     Fixations fL = mwa.computeFixations(data,READ_XL,READ_YL,READ_TI);
     Fixations fR = mwa.computeFixations(data,READ_XR,READ_YR,READ_TI);

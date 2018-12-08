@@ -76,7 +76,8 @@ bool FieldingManager::parseExpConfiguration(const QString &contents){
 
 void FieldingManager::init(ConfigurationManager *c){
     ExperimentDataPainter::init(c);
-    drawBackground();
+    clearCanvas();
+    drawBackground();    
 }
 
 void FieldingManager::drawBackground(){

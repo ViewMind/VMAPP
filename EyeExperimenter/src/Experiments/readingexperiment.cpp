@@ -53,28 +53,35 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // Determining what character the user is looking at.
     qint32 x,y;
     QList<qint32> indL, indR;
+    qreal rx, ry, lx, ly;
     if (data.isLeftZero()){
         x = data.xRight;
         y = data.yRight;
         indR = calculateWordAndCharacterPostion(x,y);
         indL << -1 << -1;
+        lx = 0; ly = 0;
+        rx = x; ry = y;
     }
     else if (data.isRightZero()){
         x = data.xLeft;
         y = data.yLeft;
         indL = calculateWordAndCharacterPostion(x,y);
         indR << -1 << -1;
+        lx = x; ly = y;
+        rx = 0; ry = 0;
     }
     else{
         x = data.avgX();
         y = data.avgY();
         indL = calculateWordAndCharacterPostion(data.xLeft,data.yLeft);
         indR = calculateWordAndCharacterPostion(data.xRight,data.yRight);
+        lx = data.xLeft; ly = data.yLeft;
+        rx = data.xRight; ry = data.yRight;
     }
 
     // Data is ONLY saved when looking at a phrase.
     if (qstate == ReadingManager::QS_PHRASE){
-        appendDataToFile(data,indR.first(),indR.last(),indL.first(),indL.last(),
+        appendEyeTrackerData(data,indR.first(),indR.last(),indL.first(),indL.last(),
                          m->getPhrase(currentQuestion).getSizeInWords());
     }
 
@@ -83,7 +90,6 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (isPointWithInTolerance(x,y)){
         advanceToTheNextPhrase();
     }
-
 }
 
 void ReadingExperiment::advanceToTheNextPhrase(){
@@ -95,6 +101,10 @@ void ReadingExperiment::advanceToTheNextPhrase(){
         }
         else{
             state = STATE_STOPPED;
+            if (!saveDataToHardDisk()){
+                emit (experimentEndend(ER_FAILURE));
+                return;
+            }
             if (error.isEmpty()) emit(experimentEndend(ER_NORMAL));
             else emit (experimentEndend(ER_WARNING));
             return;
@@ -106,6 +116,7 @@ void ReadingExperiment::advanceToTheNextPhrase(){
 
     // And the next phrase is drawn.
     m->drawPhrase(qstate,currentQuestion);
+
     if (debugMode){
         emit(updateBackground(m->getImage()));
     }
@@ -173,61 +184,42 @@ void ReadingExperiment::keyPressEvent(QKeyEvent *event){
     }
 }
 
-void ReadingExperiment::appendDataToFile(const EyeTrackerData &data,
-                                         qint32 wordIndexR,
-                                         qint32 characterIndexR,
-                                         qint32 wordIndexL,
-                                         qint32 characterIndexL,
-                                         qint32 sentenceLength){
+void ReadingExperiment::appendEyeTrackerData(const EyeTrackerData &data,
+                                             qint32 wordIndexR,
+                                             qint32 characterIndexR,
+                                             qint32 wordIndexL,
+                                             qint32 characterIndexL,
+                                             qint32 sentenceLength){
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
-    QFile file(dataFile);
-    if (!file.open(QFile::Append)){
-        error = "Could not open data file " + dataFile + " for appending data.";
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_FAILURE));
-    }
-
-    QTextStream writer(&file);
-    writer.setCodec(COMMON_TEXT_CODEC);
-
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    writer << m->getPhrase(currentQuestion).zeroPadID() << " "
-           << data.time << " "
-           << data.xRight << " "
-           << data.yRight << " "
-           << data.xLeft << " "
-           << data.yLeft  << " "
-           << wordIndexR+1 << " "
-           << characterIndexR+1 << " "
-           << wordIndexL+1 << " "
-           << characterIndexL+1 << " "
-           << sentenceLength << " "
-           << data.pdRight << " "
-           << data.pdLeft << "\n";
-    file.close();
+    QVariantList dataS;
+    dataS << m->getPhrase(currentQuestion).zeroPadID() << " "
+           << data.time
+           << data.xRight
+           << data.yRight
+           << data.xLeft
+           << data.yLeft
+           << wordIndexR+1
+           << characterIndexR+1
+           << wordIndexL+1
+           << characterIndexL+1
+           << sentenceLength
+           << data.pdRight
+           << data.pdLeft;
+    etData << QVariant(dataS);
 }
 
 void ReadingExperiment::saveAnswer(qint32 selected){
 
-    QFile file(dataFile);
-    if (!file.open(QFile::Append)){
-        error = "Could not open data file " + dataFile + " for saving the answer to a question.";
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_FAILURE));
-    }
-
-    QTextStream writer(&file);
-    writer.setCodec(COMMON_TEXT_CODEC);
-
     // Format: Image ID, time stamp for right and left.
     Phrase p = m->getPhrase(currentQuestion);
-    writer << p.zeroPadID() << " "
+    QVariantList dataS;
+    dataS << p.zeroPadID() << " "
            << p.getFollowUpQuestion() << " -> "
            << p.getFollowUpAt(selected) << "\n";
-
-    file.close();
+    etData << dataS;
 }
 
 

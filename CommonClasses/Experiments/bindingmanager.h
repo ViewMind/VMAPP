@@ -35,6 +35,9 @@ public:
     // Draw the cross
     void drawCenter();
 
+    // Clear the screen
+    void drawClear() { clearCanvas(); }
+
     // Draw a particular trial
     void drawTrial(qint32 currentTrial, bool show);
 

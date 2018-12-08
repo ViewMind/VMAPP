@@ -189,6 +189,14 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                                         const QString &isTrial,
                                         const QString &response){
 
+    qreal freqCheck = calculateSamplingFrequency(data,IMAGE_TI);
+    qreal freq = config->getReal(CONFIG_SAMPLE_FREQUENCY);
+    if (qAbs(freqCheck - freq) > 0.1*freq){
+        samplingFrequencyCheck << "Binding Frequency Check failed at: " + trialName + "_" + isTrial
+                                  + ". Expected Frequency is " + QString::number(freq)
+                                  + ". Measured: " + QString::number(freqCheck);
+    }
+
     // Calculating the fixations for each eye.;
     Fixations fL = mwa.computeFixations(data,IMAGE_XL,IMAGE_YL,IMAGE_TI);
     Fixations fR = mwa.computeFixations(data,IMAGE_XR,IMAGE_YR,IMAGE_TI);

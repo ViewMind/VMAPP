@@ -30,7 +30,8 @@ SOURCES += \
     ../../CommonClasses/Experiments/bindingmanager.cpp \
     ../../CommonClasses/Experiments/experimentdatapainter.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp
+    ../../CommonClasses/LogInterface/loginterface.cpp \
+    ../../CommonClasses/Experiments/bindingparser.cpp
 
 HEADERS += \
         bindinggenerator.h \
@@ -39,7 +40,8 @@ HEADERS += \
     ../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../CommonClasses/common.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
-    ../../CommonClasses/LogInterface/loginterface.h
+    ../../CommonClasses/LogInterface/loginterface.h \
+    ../../CommonClasses/Experiments/bindingparser.h
 
 FORMS += \
         bindinggenerator.ui

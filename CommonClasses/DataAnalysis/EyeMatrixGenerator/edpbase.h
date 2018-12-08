@@ -56,6 +56,8 @@ public:
 
     FixationList getEyeFixations() const {return eyeFixations;}
 
+    QStringList getSamplingFrequencyCheck() const { return samplingFrequencyCheck; }
+
 protected:
 
     // Stored fixation results
@@ -82,6 +84,9 @@ protected:
     // Filtered lines list.
     QStringList filteredLinesList;
 
+    // Used to store processed data in order to do a frequency analysis.
+    QList<DataMatrix> eventData;
+
     // Used to determine when the eye left the center position of the screen.
     qint32 pixelsInSacadicLatency;
 
@@ -93,6 +98,9 @@ protected:
 
     // The object to calculate the fixation
     MovingWindowAlgorithm mwa;
+
+    // Flag that raises if sampling check does not hold.
+    QStringList samplingFrequencyCheck;
 
     // Auxiliary function to average a column of a matrix between rows startRow and endRow, inclusive.
     qreal averageColumnOfMatrix(const DataMatrix &data, qint32 col, qint32 startRow, qint32 endRow);
@@ -135,6 +143,9 @@ protected:
 
     // Sum of the duration of a fixation list.
     qreal getGaze(const Fixations &fixations);
+
+    // Calculate the sampling frequency.
+    qreal calculateSamplingFrequency (const DataMatrix &eventData, qint32 timeCol);
 
 };
 

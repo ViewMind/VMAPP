@@ -86,7 +86,7 @@
 #define   CONFIG_INST_ETSERIAL                          "inst_et_serial"
 #define   CONFIG_INST_PASSWORD                          "inst_pass"
 #define   CONFIG_TEST_MODE                              "test_mode"
-
+#define   CONFIG_ENABLE_GAZE_FOLLOWING                  "enable_gaze_following"
 
 // The unique UID for tests.
 #define   TEST_UID                                      "ARvm0000"
@@ -111,6 +111,7 @@
 #define   CONFIG_RESULTS_RETRIEVAL_MEMORY               "retrieval_memory"
 #define   CONFIG_RESULTS_MEMORY_ENCODING                "memory_encoding"
 #define   CONFIG_RESULTS_BEHAVIOURAL_RESPONSE           "behavioural_response"
+#define   CONFIG_RESULTS_FREQ_ERRORS_PRESENT            "freq_errors_present"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"
