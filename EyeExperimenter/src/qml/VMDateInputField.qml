@@ -10,6 +10,7 @@ Item {
     property string vmErrorMsg: ""
     property bool vmNumbersOnly: false
     property bool vmCalendarInput : false;
+    property bool vmFocus: false
 
     // For now, we only support ONE date format.
     readonly property string vmDateFormat: "DD/MM/YYYY"
@@ -54,6 +55,7 @@ Item {
         property bool vmIgnoreTextChanged: false
 
         id: lineEdit
+        focus: vmFocus
         text: vmPlaceHolder + " - (" + vmDateFormat + ")"
         color: (labelText.visible)? "#58595b" : "#cfcfcf"
         font.family: vmFont
@@ -105,6 +107,7 @@ Item {
                 else{
                     lineEdit.text = vmEnteredText;
                 }
+                vmFocus = false;
             }
         }
 

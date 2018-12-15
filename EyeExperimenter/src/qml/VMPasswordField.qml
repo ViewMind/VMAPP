@@ -5,6 +5,7 @@ Item {
     property string vmFont: "Mono"
     property string vmLabelText: "Some text ..."
     property string vmErrorMsg: ""
+    property bool vmFocus: false
 
     height: 40
     z: 0
@@ -38,6 +39,7 @@ Item {
 
     TextInput {
         id: lineEdit
+        focus: vmFocus
         color: "#58595b"
         font.family: vmFont
         font.pixelSize: 13
@@ -47,6 +49,7 @@ Item {
         leftPadding: 0
         width: lineEditRect.width
         echoMode: TextInput.Password;
+        onActiveFocusChanged: if (!activeFocus) vmFocus = false;
     }
 
     Text{

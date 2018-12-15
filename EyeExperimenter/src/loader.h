@@ -31,6 +31,7 @@ public:
     Q_INVOKABLE bool createPatientDirectory();
     Q_INVOKABLE QRect frameSize(QObject *window);
     Q_INVOKABLE QStringList getCountryList() {return countries->getCountryList();}
+    Q_INVOKABLE QStringList getCountryCodeList() {return countries->getCodeList();}
     Q_INVOKABLE QStringList getPatientList(const QString &filter = "");
     Q_INVOKABLE QStringList getUIDList();
     Q_INVOKABLE QStringList getPatientIsOKList();

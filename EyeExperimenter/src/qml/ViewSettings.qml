@@ -24,6 +24,13 @@ Dialog {
     height: 520
     closePolicy: Popup.NoAutoClose
 
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            focus = true
+        }
+    }
+
     contentItem: Rectangle {
         id: rectDialog
         anchors.fill: parent
@@ -32,6 +39,7 @@ Dialog {
             radius: 5
         }
     }
+
 
     VMDefines{
         id: vmDefines
@@ -74,19 +82,18 @@ Dialog {
         anchors.left: diagDBDefaultCountry.left
     }
 
-    VMComboBox{
+    VMAutoCompleteComboBox{
         id: diagDBDefaultCountry
         width: 440
-        vmModel: {
-            var data = loader.getCountryList();
-            return data;
-        }
-        currentIndex: loader.getDefaultCountry(false);
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        height: 30
+        z: 1
+        vmList: loader.getCountryList()
+        vmValues: loader.getCountryCodeList()
         anchors.top: diagLabelDefaultCountry.bottom
-        anchors.topMargin: 22
+        anchors.topMargin: 12
         anchors.horizontalCenter: parent.horizontalCenter
+        onVmValuesChanged: diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
+        onVmListChanged: diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
     }
 
     // Combo box for language selection and label
@@ -203,7 +210,7 @@ Dialog {
         loader.setSettingsValue(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
         loader.setSettingsValue(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
         loader.setSettingsValue(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
-        loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_COUNTRY,loader.getCountryCodeForCountry(diagDBDefaultCountry.currentText));
+        loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_COUNTRY,loader.getCountryCodeForCountry(diagDBDefaultCountry.vmCurrentText));
         loader.setSettingsValue(vmDefines.vmCONFIG_USE_MOUSE,diagCboxUseMouse.checked);
 
         // Signal to update dropdown menu information.

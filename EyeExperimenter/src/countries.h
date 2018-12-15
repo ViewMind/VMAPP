@@ -9,7 +9,7 @@ public:
     void fillCountryList(bool inEnglish = true) {
         if (COUNTRY_CODE.size() != 0) return;
         /// TODO: Get the country list in spanish.
-        if ((inEnglish) || (!inEnglish)){
+        if (inEnglish) {
             COUNTRY_LIST <<  "Afghanistan" << "Åland Islands" << "Albania" << "Algeria" << "American Samoa" << "Andorra" << "Angola" << "Anguilla" << "Antarctica"
                           << "Antigua and Barbuda" << "Argentina" << "Armenia" << "Aruba" << "Australia" << "Austria" << "Azerbaijan" << "Bahamas" << "Bahrain"
                           << "Bangladesh" << "Barbados" << "Belarus" << "Belgium" << "Belize" << "Benin" << "Bermuda" << "Bhutan" << "Bolivia, Plurinational State of"
@@ -41,8 +41,42 @@ public:
                           << "United States" << "United States Minor Outlying Islands" << "Uruguay" << "Uzbekistan" << "Vanuatu" << "Venezuela, Bolivarian Republic of" << "Viet Nam"
                           << "Virgin Islands, British" << "Virgin Islands, U.S." << "Wallis and Futuna" << "Western Sahara" << "Yemen" << "Zambia" << "Zimbabwe";
         }
-        /// TODO: Get the country list in english
-        else return;
+        else {
+            // Only other language is spanish
+            COUNTRY_LIST << "Afganistán" << "Islas Aland" << "Albania" << "Argelia" << "Samoa Americana" << "Andorra" << "Angola" << "Anguila" << "Antártico"
+                         << "Antigua y Barbuda" << "Argentina" << "Armenia" << "Aruba" << "Australia" << "Austria" << "Azerbaiyán" << "Bahamas" << "Bahréin"
+                         << "Bangladesh" << "Barbados" << "Bielorrusia" << "Bélgica" << "Belice" << "Benín" << "Bermudas" << "Bután" << "Bolivia"
+                         << "Bonaire, San Eustaquio y Saba" << "Bosnia y Herzegovina" << "Botsuana" << "Isla Bouvet" << "Brasil"
+                         << "Territorio Británico en el Océano Índico" << "Brunéi Darussalam" << "Bulgaria" << "Burkina Faso" << "Burundi" << "Camboya" << "Camerún"
+                         << "Canadá" << "Cabo Verde" << "Islas Caimán" << "República Centroafricana" << "Chad" << "Chile" << "China, República Popular"
+                         << "Isla de Navidad" << "Islas Cocos" << "Colombia" << "Comoras" << "Congo" << "Congo, República del" << "Islas Cook" << "Costa Rica"
+                         << "Costa de Marfil" << "Croacia" << "Cuba" << "Curasao" << "Chipre" << "República Checa" << "Dinamarca" << "Yibuti" << "Dominica"
+                         << "República Dominicana" << "Ecuador" << "Egipto" << "El Salvador" << "Guinea Ecuatorial" << "Eritrea" << "Estonia" << "Etiopía"
+                         << "Islas Malvinas" << "Islas Feroe" << "Fiyi" << "Finlandia" << "Francia" << "Guayana Francesa" << "Polinesia Francesa"
+                         << "Territorios Franceses del Sur" << "Gabón" << "Gambia" << "Georgia" << "Alemania" << "Ghana" << "Gibraltar" << "Grecia" << "Groenlandia"
+                         << "Granada" << "Guadalupe" << "Guam" << "Guatemala" << "Guernesey" << "Guinea" << "Guinea-Bissau" << "Guyana" << "Haití"
+                         << "Islas Heard y McDonald" << "Estado de la Ciudad del Vaticano" << "Honduras" << "Hong Kong" << "Hungría" << "Islandia" << "India"
+                         << "Indonesia" << "Irán" << "Iraq" << "Irlanda" << "Isla de Man" << "Israel" << "Italia" << "Jamaica" << "Japón" << "Isla de Jersey"
+                         << "Jordania" << "Kazajistán" << "Kenia" << "Kiribati" << "República de Corea, Popular Democrática de" << "Corea, República de" << "Kuwait"
+                         << "Kirguistán" << "República Democrática Popular Lao" << "Letonia" << "Líbano" << "Lesoto" << "Liberia" << "Libia" << "Liechtenstein"
+                         << "Lituania" << "Luxemburgo" << "Macao" << "Macedonia, República de" << "Madagascar" << "Malaui" << "Malasia" << "Maldivas" << "Malí"
+                         << "Malta" << "Islas Marshall" << "Martinica" << "Mauritania" << "Mauricio" << "Mayotte" << "México" << "Micronesia, estados federados de"
+                         << "Moldavia, República de" << "Mónaco" << "Mongolia" << "Montenegro" << "Montserrat" << "Marruecos" << "Mozambique" << "Myanmar (Birmania)"
+                         << "Namibia" << "Nauru" << "Nepal" << "Países Bajos" << "Nueva Caledonia" << "Nueva Zelanda" << "Nicaragua" << "Níger" << "Nigeria"
+                         << "Niue" << "Isla Norfolk" << "Islas Marianas del Norte" << "Noruega" << "Omán" << "Pakistán" << "Palaos" << "Palestina" << "Panamá"
+                         << "Papúa Nueva Guinea" << "Paraguay" << "Perú" << "Filipinas" << "Pitcairn" << "Polonia" << "Portugal" << "Puerto Rico" << "Qatar"
+                         << "Reunión" << "Rumania" << "Rusia" << "Ruanda" << "San Bartolomé" << "Santa Helena, Ascensión y Tristán da Cunha" << "San Cristóbal y Nieves"
+                         << "Santa Lucía" << "San Martin" << "San Pedro y Miquelón" << "San Vicente y las Granadinas" << "Samoa" << "San Marino"
+                         << "Santo Tomé y Príncipe" << "Arabia Saudita" << "Escocia" << "Senegal" << "Serbia" << "Seychelles" << "Sierra Leona" << "Singapur"
+                         << "Sint Maarten" << "Eslovaquia" << "Eslovenia" << "Islas Salomón" << "Somalia" << "Sudáfrica" << "Islas Georgias del Sur y Sandwich del Sur"
+                         << "Sudán del Sur" << "España" << "Sri Lanka" << "Sudán" << "Surinam" << "Svalbard y Jan Mayen" << "Suazilandia" << "Suecia" << "Suiza"
+                         << "República Árabe Siria" << "Taiwan, provincia de China" << "Tayikistán" << "Tanzania, República Unida de" << "Tailandia"
+                         << "Timor-Leste" << "Togo" << "Tokelau" << "Tonga" << "Trinidad y Tobago" << "Túnez" << "Turquía" << "Turkmenistán" << "Islas Turcas y Caicos"
+                         << "Tuvalu" << "Uganda" << "Ucrania" << "Emiratos Árabes Unidos" << "Reino Unido" << "Estados Unidos"
+                         << "Islas menores alejadas de los Estados Unidos" << "Uruguay" << "Uzbekistán" << "Vanuatu" << "Venezuela, República Bolivariana de"
+                         << "Viet Nam" << "Islas Vírgenes Británicas" << "Islas Vírgenes, EE.UU." << "Wallis y Futuna" << "Sahara Occidental" << "Yemen" << "Zambia"
+                         << "Zimbabue";
+        }
 
         COUNTRY_CODE <<	"AF" <<	"AX" <<	"AL" <<	"DZ" <<	"AS" <<	"AD" <<	"AO" <<	"AI" <<	"AQ" <<	"AG" <<	"AR" <<	"AM" <<	"AW" <<	"AU" <<	"AT" <<	"AZ"
                      <<	"BS" <<	"BH" <<	"BD" <<	"BB" <<	"BY" <<	"BE" <<	"BZ" <<	"BJ" <<	"BM" <<	"BT" <<	"BO" <<	"BQ" <<	"BA" <<	"BW" <<	"BV" <<	"BR"
@@ -85,6 +119,7 @@ public:
     }
 
     QStringList getCountryList() const {return COUNTRY_LIST;}
+    QStringList getCodeList() const {return COUNTRY_CODE;}
 
 private:
     QStringList COUNTRY_LIST;

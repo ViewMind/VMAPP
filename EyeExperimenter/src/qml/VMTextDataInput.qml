@@ -8,6 +8,7 @@ Item {
     property string vmErrorMsg: ""
     property bool vmIsPasswordField: false
     property bool vmNumbersOnly: false
+    property bool vmFocus: false
 
     height: 40
     z: 0
@@ -39,6 +40,7 @@ Item {
     }
 
     function setText(text){
+        if ((text === "") || (text === undefined)) return;
         labelText.visible = true;
         vmEnteredText = text;
         lineEdit.text = text;
@@ -46,6 +48,7 @@ Item {
 
     TextInput {
         id: lineEdit
+        focus: vmFocus
         text: vmPlaceHolder
         color: (labelText.visible)? "#58595b" : "#cfcfcf"
         font.family: vmFont
@@ -65,6 +68,7 @@ Item {
                     labelText.visible = true;
                 }
             }
+            else vmFocus = false;
         }
 
         onEditingFinished: {

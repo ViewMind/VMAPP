@@ -64,10 +64,10 @@ VMBase {
 
         // Setting the country.
         var index = loader.getCountryIndexFromCode(drInfo.countryid);
-        labelCountry.currentIndex = index+1; // 1  is added because 0 is no selection.
+        labelCountry.setCurrentIndex(index);
 
         // The country and ID are unique. They can't be modified.
-        labelCountry.enabled = false;
+        labelCountry.vmEnabled = false;
         labelDocument_number.enabled = false;
 
         cboxDisable.visible = true;
@@ -257,12 +257,14 @@ VMBase {
                 id: labelName
                 width: (rowNameAndLastName.width - rowNameAndLastName.spacing)/2
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelName");
+                Keys.onTabPressed: labelLastName.vmFocus = true;
             }
 
             VMTextDataInput{
                 id: labelLastName
                 width: (rowNameAndLastName.width - rowNameAndLastName.spacing)/2
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelLastName");
+                Keys.onTabPressed: labelDocument_number.vmFocus = true;
             }
 
         }
@@ -286,6 +288,7 @@ VMBase {
                 id: labelDocument_number
                 width: (rowDocument.width - rowDocument.spacing - docTypes.width)
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelDocument_number");
+                Keys.onTabPressed: labelCountry.vmFocus = true;
             }
 
         }
@@ -296,25 +299,25 @@ VMBase {
             spacing: 16
             width: parent.width
 
-            // Country, province and city
-            VMComboBox{
+            VMAutoCompleteComboBox{
                 id: labelCountry
-                vmModel: {
-                    var data = loader.getCountryList();
-                    data.unshift(loader.getStringForKey(keybase+"labelCountry"));
-                    return data;
-                }
-                currentIndex:  loader.getDefaultCountry();
                 width: 260
-                font.family: robotoR.name
-                font.pixelSize: 13
+                height: 30
+                z: 1
+                vmLabel: loader.getStringForKey(keybase+"labelCountry")
+                vmList: loader.getCountryList()
+                vmValues: loader.getCountryCodeList()
+                onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+                onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
                 anchors.bottom: labelProvince.bottom
+                Keys.onTabPressed: labelProvince.vmFocus = true;
             }
 
             VMTextDataInput{
                 id: labelProvince
                 width: (rowCountryAndProvince.width - rowCountryAndProvince.spacing - labelCountry.width)
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelProvince");
+                Keys.onTabPressed: labelCity.vmFocus = true;
             }
 
         }
@@ -329,12 +332,14 @@ VMBase {
                 id: labelCity
                 width: 162
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelCity");
+                 Keys.onTabPressed: labelAddress.vmFocus = true;
             }
 
             VMTextDataInput{
                 id: labelAddress
                 width: (rowCityAndAddress.width - rowCityAndAddress.spacing - labelCity.width)
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelAddress");
+                Keys.onTabPressed: labelPhone.vmFocus = true;
             }
 
         }
@@ -350,12 +355,14 @@ VMBase {
                 id: labelPhone
                 width: 162
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelPhone");
+                Keys.onTabPressed: labelMail.vmFocus = true;
             }
 
             VMTextDataInput{
                 id: labelMail
                 width: (phoneAndEmail.width - phoneAndEmail.spacing - labelPhone.width)
                 vmPlaceHolder: loader.getStringForKey(keybase+"labelMail");
+                Keys.onTabPressed: labelPassword.vmFocus = true;
             }
 
         }
@@ -370,12 +377,14 @@ VMBase {
                 id: labelPassword;
                 width: 162
                 vmLabelText: loader.getStringForKey(keybase+"password");
+                Keys.onTabPressed: labelVerifyPassword.vmFocus = true;
             }
 
             VMPasswordField{
                 id: labelVerifyPassword
                 width: (rowPasswords.width - rowPasswords.spacing - labelPassword.width)
                 vmLabelText: loader.getStringForKey(keybase+"verify_password");
+                Keys.onTabPressed: labelName.vmFocus = true;
             }
         }
 

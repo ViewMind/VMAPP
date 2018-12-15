@@ -35,10 +35,6 @@ VMBase {
         // Substr is used as the first two letters are the country code.
         labelDocument_number.setText(patInfo.uid.substr(2));
 
-        //        for (var key in patInfo){
-        //            console.log(key + ": " + patInfo[key]);
-        //        }
-
         // Setting the document type.
         var idType = patInfo.idtype;
         var model = docTypes.model;
@@ -55,7 +51,8 @@ VMBase {
 
         // Setting the country.
         var index = loader.getCountryIndexFromCode(patInfo.birthcountry);
-        labelCountry.currentIndex = index+1; // 1  is added because 0 is no selection.
+        labelCountry.setCurrentIndex(index);
+        labelCountry.vmEnabled = false;
 
         // The country and ID are unique. They can't be modified.
         labelCountry.enabled = false;
@@ -180,8 +177,9 @@ VMBase {
         anchors.left: parent.left
         anchors.leftMargin: 420
         anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 39
+        anchors.topMargin: 30
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelName");
+        Keys.onTabPressed: labelLastName.vmFocus = true;
     }
 
     VMTextDataInput{
@@ -190,26 +188,28 @@ VMBase {
         anchors.left: labelName.right
         anchors.leftMargin: 16
         anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 39
+        anchors.topMargin: 30
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelLastName");
+        Keys.onTabPressed: labelCountry.vmFocus = true;
     }
 
-    // Country, province and city
-    VMComboBox{
+    VMAutoCompleteComboBox{
         id: labelCountry
         width: 440
-        vmModel: {
-            var data = loader.getCountryList();
-            data.unshift(loader.getStringForKey(keysearch+"labelCountry"));
-            return data;
-        }
-        currentIndex: loader.getDefaultCountry();
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        height: 30
+        z: 1
+        vmLabel: loader.getStringForKey(keysearch+"labelCountry")
+        vmList: loader.getCountryList()
+        vmValues: loader.getCountryCodeList()
+        onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+        onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
         anchors.top: labelLastName.bottom
-        anchors.topMargin: 22
+        anchors.topMargin: 30
         anchors.left: labelName.left
+        vmEnabled: true
+        Keys.onTabPressed: labelBirthDate.vmFocus = true;
     }
+
 
     // Gender and Date of Birth.
     VMComboBox{
@@ -230,6 +230,7 @@ VMBase {
         anchors.leftMargin: 28
         anchors.bottom: labelGender.bottom
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelBirthDate");
+        Keys.onTabPressed: labelDocument_number.vmFocus = true;
     }
 
     // Document type and number.
@@ -250,6 +251,7 @@ VMBase {
         anchors.leftMargin: 28
         anchors.bottom: docTypes.bottom
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelDocument_number");
+        Keys.onTabPressed: labelProvince.vmFocus = true;
     }
 
 
@@ -260,6 +262,7 @@ VMBase {
         anchors.top: docTypes.bottom
         anchors.topMargin: 22
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelProvince");
+        Keys.onTabPressed: labelCity.vmFocus = true;
     }
 
     VMTextDataInput{
@@ -270,6 +273,8 @@ VMBase {
         anchors.top: docTypes.bottom
         anchors.topMargin: 22
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelCity");
+        Keys.onTabPressed: labelName.vmFocus = true;
+
     }
 
     // Message and Buttons
@@ -338,7 +343,7 @@ VMBase {
                     lastname: labelLastName.vmEnteredText,
                     idtype: docTypes.currentText,
                     sex: labelGender.currentText,
-                    birthcountry: labelCountry.currentText
+                    birthcountry: labelCountry.vmCurrentText
                 };
 
                 var dbDataOpt = {
@@ -353,8 +358,11 @@ VMBase {
                 }
 
                 // The absolute must values are the document, the country, the name and the last name.
-                if (labelCountry.currentIndex === 0){
-                    labelCountry.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+                if (labelCountry.vmCurrentText === ""){
+                    // THIS SHOULD NEVER Happen. If no country has been selected the first one is selected by default and the field does not allow
+                    // an empty box or non existing country.
+                    // But I leave this code here just in case, I'm wrong as the country code is FUNDAMENTAL in creating the ID.
+                    // labelCountry.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
                     return;
                 }
 
