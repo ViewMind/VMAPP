@@ -11,10 +11,25 @@ db_passwd = dev1984;
 db_host   = viewminddb.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
 db_port   = 3306;
 
-
+######################### Server information.
 # Configuration for production server
 #db_name   = viewmind_data;
 #db_user   = vmuser;
 #db_passwd = viewmind_2018;
 #db_host   = viewminddb.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
 #db_port   = 3306;
+
+# Configuration for the viewmind id database
+db_id_name   = viewmind_id;
+db_id_passwd = ksjdn3228shs1852;
+db_id_user   = vmid;
+db_id_host   = viewmind-id.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
+db_port      = 3306;
+
+# Configuration for the viewmind patient data database
+db_id_name   = viewmind_patdata;
+db_id_passwd = 2436dhfbvur82653;
+db_id_user   = vmpatdata;
+db_id_host   = viewmind-patdata.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com ;
+db_port      = 3306;
+

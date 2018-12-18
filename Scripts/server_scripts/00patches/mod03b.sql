@@ -1,0 +1,8 @@
+USE viewmind_id;
+
+DROP TABLE IF EXISTS tPatientIDs;
+
+CREATE TABLE tIDs (
+    keyid   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+    uid     VARCHAR(255) UNIQUE
+);
