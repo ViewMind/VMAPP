@@ -20,6 +20,18 @@ elif [[ $1 == "id" ]]; then
    HOST="viewmind-id$HOSTADDRESS";
    USER="vmid"
    PASSWD="ksjdn3228shs1852"   
+elif [[ $1 == "rootdb" ]]; then
+   HOST="viewminddb$HOSTADDRESS";
+   USER="root"
+   PASSWD="vimiroot"   
+elif [[ $1 == "rootid" ]]; then
+   HOST="viewmind-id$HOSTADDRESS";
+   USER="root"
+   PASSWD="vimiroot"   
+elif [[ $1 == "rootpatdata" ]]; then
+   HOST="viewmind-patdata$HOSTADDRESS";
+   USER="root"
+   PASSWD="vimiroot"   
 else
    echo "Unrecognized RDS: $1"
    exit
