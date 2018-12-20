@@ -24,12 +24,12 @@ db_id_name   = viewmind_id;
 db_id_passwd = ksjdn3228shs1852;
 db_id_user   = vmid;
 db_id_host   = viewmind-id.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com;
-db_port      = 3306;
+db_id_port      = 3306;
 
 # Configuration for the viewmind patient data database
-db_id_name   = viewmind_patdata;
-db_id_passwd = 2436dhfbvur82653;
-db_id_user   = vmpatdata;
-db_id_host   = viewmind-patdata.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com ;
-db_port      = 3306;
+db_patdata_name   = viewmind_patdata;
+db_patdata_passwd = 2436dhfbvur82653;
+db_patdata_user   = vmpatdata;
+db_patdata_host   = viewmind-patdata.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com ;
+db_patdataport    = 3306;
 
