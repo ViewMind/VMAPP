@@ -32,3 +32,4 @@ Scripts/dbscripts/bkpProd/
 LocalDBMng/exe/
 *.~*
 Scripts/server_scripts/connect/s3bkp/
+Scripts/server_scripts/bkp*/
