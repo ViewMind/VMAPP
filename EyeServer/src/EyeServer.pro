@@ -37,7 +37,8 @@ HEADERS  += \
     ../../CommonClasses/SQLConn/dbdescription.h \
     ../../CommonClasses/SQLConn/dbinterface.h \
     dataprocessingsslserver.h \
-    dbcommsslserver.h
+    dbcommsslserver.h \
+    server_defines.h
 
 RESOURCES += \
     certificates.qrc

@@ -21,7 +21,6 @@
 #define   DIRNAME_DBBKP                                 "dbbkp"
 
 // Configuration key values (cmd names in the configuration file)
-/// TODO : Clean up unused defines.
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
 #define   CONFIG_DOCTOR_NAME                            "doctor_name"
 #define   CONFIG_DOCTOR_UID                             "doctor_uid"
@@ -54,7 +53,6 @@
 #define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
 #define   CONFIG_WAIT_REPORT_TIMEOUT                    "wait_report_timeout"
 #define   CONFIG_WAIT_DBDATA_TIMEOUT                    "wait_db_data_timeout"
-#define   CONFIG_NUMBER_OF_PARALLEL_PROCESSES           "number_of_paralell_processes"
 #define   CONFIG_RESOLUTION_WIDTH                       "config_resolution_width"
 #define   CONFIG_RESOLUTION_HEIGHT                      "config_resolution_height"
 #define   CONFIG_SELECTED_ET                            "selected_eyetracker"
@@ -64,11 +62,6 @@
 #define   CONFIG_REPORT_PATH                            "report_path"
 #define   CONFIG_IMAGE_REPORT_PATH                      "image_report_path"
 #define   CONFIG_VALID_EYE                              "valid_eye"
-#define   CONFIG_DBUSER                                 "db_user"
-#define   CONFIG_DBNAME                                 "db_name"
-#define   CONFIG_DBHOST                                 "db_host"
-#define   CONFIG_DBPASSWORD                             "db_passwd"
-#define   CONFIG_DBPORT                                 "db_port"
 #define   CONFIG_OFFLINE_MODE                           "offline_mode"
 #define   CONFIG_DEFAULT_COUNTRY                        "default_country"
 #define   CONFIG_BINDING_TARGET_SMALL                   "binding_target_small"
@@ -79,7 +72,6 @@
 #define   CONFIG_FILE_BIDING_BC                         "file_binding_bc"
 #define   CONFIG_FILE_READING                           "file_reading"
 #define   CONFIG_FILE_FIELDING                          "file_fielding"
-#define   CONFIG_S3_ADDRESS                             "s3_address"
 #define   CONFIG_LIST_DONE_EXPERIMENTS                  "list_done_experiments"
 #define   CONFIG_INST_NAME                              "inst_name"
 #define   CONFIG_INST_UID                               "inst_uid"

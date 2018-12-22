@@ -336,7 +336,7 @@ VMBase {
 
                 // THIS IS THE TABLE DATA.
                 var dbDataReq = {
-                    uid: labelDocument_number.vmEnteredText,
+                    puid: labelDocument_number.vmEnteredText,
                     doctorid: loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_UID),
                     birthdate: labelBirthDate.vmEnteredText,
                     firstname: labelName.vmEnteredText,

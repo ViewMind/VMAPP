@@ -262,19 +262,19 @@ bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, b
 bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, bool isNew){
 
     // Making necessary adjustments
-    QString countryCode = countries->getCodeForCountry(dbdatareq.value(TPATREQ_COL_BIRTHCOUNTRY).toString());
-    dbdatareq[TPATREQ_COL_BIRTHCOUNTRY] = countryCode;
-    QString uid = countryCode + dbdatareq.value(TPATREQ_COL_UID).toString();
-    dbdatareq[TPATREQ_COL_UID] = uid;
+    QString countryCode = countries->getCodeForCountry(dbdatareq.value(TPATDATA_COL_BIRTHCOUNTRY).toString());
+    dbdatareq[TPATDATA_COL_BIRTHCOUNTRY] = countryCode;
+    QString uid = countryCode + dbdatareq.value(TPATDATA_COL_PUID).toString();
+    dbdatareq[TPATDATA_COL_PUID] = uid;
 
     if (lim.doesPatientExist(configuration->getString(CONFIG_DOCTOR_UID),uid) && isNew) return false;
 
     // Transforming the date format.
-    QString date = dbdatareq.value(TPATREQ_COL_BIRTHDATE).toString();
+    QString date = dbdatareq.value(TPATDATA_COL_BIRTHDATE).toString();
     QStringList dateParts = date.split("/");
     // Since the date format is given by the program, I can trust that the split will have 3 parts. Setting the ISO Date.
     date = dateParts.at(2) + "-" + dateParts.at(1) + "-" + dateParts.at(0);
-    dbdatareq[TPATREQ_COL_BIRTHDATE] = date;
+    dbdatareq[TPATDATA_COL_BIRTHDATE] = date;
 
     QStringList columns;
     QStringList values;
@@ -292,8 +292,7 @@ bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, boo
     allValues = values;
 
     // Adding the optional data, plus the mandaotory data.
-    dbdataopt[TPATOPT_COL_DATE_INS] = "TIMESTAMP(NOW())";
-    dbdataopt[TPATOPT_COL_PATIENTID] = dbdatareq.value(TPATREQ_COL_UID).toString();
+    dbdataopt[TPATDATA_COL_DATE_INS] = "TIMESTAMP(NOW())";
     columns = dbdataopt.keys();
     values.clear();
     for (qint32 i = 0; i < columns.size(); i++){
@@ -306,7 +305,7 @@ bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, boo
     // qWarning() << "All Columns" << allColumns.size() << allColumns;
     // qWarning() << "All Values" << allValues.size() << allValues;
 
-    lim.addPatientData(configuration->getString(CONFIG_DOCTOR_UID),dbdatareq.value(TPATREQ_COL_UID).toString(),allColumns,allValues);
+    lim.addPatientData(configuration->getString(CONFIG_DOCTOR_UID),dbdatareq.value(TPATDATA_COL_PUID).toString(),allColumns,allValues);
 
     return true;
 
@@ -323,7 +322,7 @@ void Loader::onRequestNextPendingReport(){
 }
 
 void Loader::setAgeForCurrentPatient(){
-    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID),TPATREQ_COL_BIRTHDATE);
+    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID),TPATDATA_COL_BIRTHDATE);
     QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
     int currentAge = QDate::currentDate().year() - bdate.year();
     configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);

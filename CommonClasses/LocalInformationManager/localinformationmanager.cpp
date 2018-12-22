@@ -41,8 +41,8 @@ QList<QStringList> LocalInformationManager::getAllPatientInfo(const QString &fil
         for (qint32 j =0; j < patuids.size(); j++){
             QStringList datum;
 
-            QString patName = patients.value(patuids.at(j)).toMap().value(TPATREQ_COL_FIRSTNAME).toString() + " "
-                    + patients.value(patuids.at(j)).toMap().value(TPATREQ_COL_LASTNAME).toString();
+            QString patName = patients.value(patuids.at(j)).toMap().value(TPATDATA_COL_FIRSTNAME).toString() + " "
+                    + patients.value(patuids.at(j)).toMap().value(TPATDATA_COL_LASTNAME).toString();
 
             if ( filter.isEmpty() || patName.contains(filter,Qt::CaseInsensitive) || patuids.at(j).contains(filter,Qt::CaseInsensitive) ){
 
@@ -180,27 +180,16 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
             if (addPatient){
                 QStringList columns;
                 QStringList values;
-                QStringList columnsOpt;
-                QStringList valuesOpt;
                 QSet<QString> avoid; avoid << PATIENT_UPDATE;
-                QSet<QString> required; required << TPATREQ_COL_BIRTHCOUNTRY << TPATREQ_COL_BIRTHDATE << TPATREQ_COL_FIRSTNAME << TPATREQ_COL_IDTYPE
-                                                 << TPATREQ_COL_LASTNAME << TPATREQ_COL_SEX << TPATREQ_COL_UID << TPATREQ_COL_DOCTORID;
                 QStringList keys = patientMap.keys();
                 for (qint32 k = 0; k < keys.size(); k++){
                     if (avoid.contains(keys.at(k))) continue;
-                    if (required.contains(keys.at(k))){
-                        columns << keys.at(k);
-                        values << patientMap.value(keys.at(k)).toString();
-                    }
-                    else{
-                        columnsOpt << keys.at(k);
-                        valuesOpt << patientMap.value(keys.at(k)).toString();
-                    }
+                    columns << keys.at(k);
+                    values << patientMap.value(keys.at(k)).toString();
                 }
 
                 // Adding the DR ID.
-                client->appendSET(TABLE_PATIENTS_REQ_DATA,columns,values);
-                client->appendSET(TABLE_PATIENTS_OPT_DATA,columnsOpt,valuesOpt);
+                client->appendSET(TABLE_PATDATA,columns,values);
                 ans = true;
             }
         }
@@ -407,7 +396,7 @@ QList<QStringList> LocalInformationManager::getPatientListForDoctor(const QStrin
     //qWarning() << "PAT UIDS for" << config->getString(CONFIG_DOCTOR_UID) << " are " << uids;
     for (qint32 i = 0; i < uids.size(); i++){
         QVariantMap patinfo = patients.value(uids.at(i)).toMap();
-        QString entryText = patinfo.value(TPATREQ_COL_FIRSTNAME).toString() + " " + patinfo.value(TPATREQ_COL_LASTNAME).toString();
+        QString entryText = patinfo.value(TPATDATA_COL_FIRSTNAME).toString() + " " + patinfo.value(TPATDATA_COL_LASTNAME).toString();
         if ( filter.isEmpty() || entryText.contains(filter,Qt::CaseInsensitive) || uids.at(i).contains(filter,Qt::CaseInsensitive) ){
             names << entryText;
             uidsToReturn << uids.at(i);
