@@ -7,7 +7,6 @@
 #include <QSqlQuery>
 
 #include "dbdescription.h"
-#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 
 class DBInterface
