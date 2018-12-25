@@ -1,6 +1,9 @@
 #ifndef SERVER_DEFINES_H
 #define SERVER_DEFINES_H
 
+#define   PROGRAM_NAME                                  "EyeSever"
+#define   PROGRAM_VERSION                               "5.0.0"
+
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"
 #define   CONFIG_DBHOST                                 "db_host"
@@ -21,5 +24,9 @@
 
 #define   CONFIG_S3_ADDRESS                             "s3_address"
 #define   CONFIG_NUMBER_OF_PARALLEL_PROCESSES           "number_of_paralell_processes"
+
+#define   DB_NAME_BASE                                  "db_base"
+#define   DB_NAME_ID                                    "db_id"
+#define   DB_NAME_PATDATA                               "db_patdata"
 
 #endif // SERVER_DEFINES_H

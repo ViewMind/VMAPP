@@ -7,6 +7,7 @@
 
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "server_defines.h"
 #include "sslidsocket.h"
 #include "ssllistener.h"
 
@@ -16,11 +17,9 @@ class DataProcessingSSLServer: public QObject
 public:
     DataProcessingSSLServer(QObject *parent = Q_NULLPTR);
 
-    // Set connection to db
-    void setDBConnection(DBInterface *dbif) {dbConn = dbif;}
-
     // Start the server
     void startServer(ConfigurationManager *c);
+    void setDBConnections(DBInterface *base, DBInterface *id, DBInterface *patdata){ dbConnBase = base; dbConnID = id; dbConnPatData = patdata; }
 
 private slots:
     void on_newConnection();
@@ -38,8 +37,10 @@ private:
     // Listens for incoming connections and enables de SSL capabilities by using a QSSLSocket
     SSLListener *listener;
 
-    // Handle to do DB queries
-    DBInterface *dbConn;
+    // Handle to do DB queries on the different databases
+    DBInterface *dbConnBase;
+    DBInterface *dbConnID;
+    DBInterface *dbConnPatData;
 
     // The queue of information that needs to be processed
     QHash<quint64,SSLIDSocket*> sockets;
@@ -74,6 +75,8 @@ private:
     // Check if the report can be requested.
     quint8 verifyReportRequest(qint32 UID, const QString &etserial);
     void decreaseReportCount(qint32 UID);
+    bool initAllDBS();
+    QString getPatientID(const QString &pat_uid);
 
 };
 

@@ -72,7 +72,6 @@ void DataProcessingSSLServer::on_newConnection(){
 
 }
 
-// Handling all signals
 void DataProcessingSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
 
     switch (signaltype){
@@ -126,11 +125,7 @@ void DataProcessingSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype)
 void DataProcessingSSLServer::sendReport(quint64 socket){
 
     // Opening connection to the database.
-    if (!dbConn->initDB(config)){
-        removeSocket(socket);
-        log.appendError("Could not start SQL Connection when sending back the report:  " + dbConn->getError());
-        return;
-    }
+    if (!initAllDBS()) return;
 
     // Finding the newest rep file in the folder.
     QString reportfile = getReportFile(sockets.value(socket)->getWorkingDirectory());
@@ -155,18 +150,32 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
 
             // Adding the IDs and the date.
             DataPacket d = sockets.value(socket)->getDataPacket();
-            columns << TEYERES_COL_STUDY_DATE << TEYERES_COL_PATIENTID << TEYERES_COL_DOCTORID;
-            values << "TIMESTAMP(NOW())" << d.getField(DataPacket::DPFI_PATIENT_ID).data.toString()  << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+            QString puid = getPatientID(d.getField(DataPacket::DPFI_PATIENT_ID).data.toString());
+            if (puid == -1){
+                log.appendError("Unknown patient id from uid: " + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString() + " when getting puid from report. This should not be possible.");
+                dbConnBase->close();
+                dbConnID->close();
+                dbConnPatData->close();
+                removeSocket(socket);
+                return;
+            }
 
-            if (!dbConn->insertDB(TABLE_EYE_RESULTS,columns,values)){
-                dbConn->close();
-                log.appendError("DB Error saving the results: " + dbConn->getError());
+            columns << TEYERES_COL_STUDY_DATE << TEYERES_COL_PUID << TEYERES_COL_DOCTORID;
+            values << "TIMESTAMP(NOW())" << puid  << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+
+            if (!dbConnBase->insertDB(TABLE_EYE_RESULTS,columns,values)){
+                dbConnBase->close();
+                dbConnID->close();
+                dbConnPatData->close();
+                log.appendError("DB Error saving the results: " + dbConnBase->getError());
                 removeSocket(socket);
                 return;
             }
         }
         else{
-            dbConn->close();
+            dbConnBase->close();
+            dbConnID->close();
+            dbConnPatData->close();
             log.appendError("Could not load the db info file: " + toDB.getError());
             removeSocket(socket);
             return;
@@ -198,7 +207,9 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     }
 
     // Closing the connection to the database
-    dbConn->close();
+    dbConnBase->close();
+    dbConnID->close();
+    dbConnPatData->close();
 
     //log.appendStandard("Sending report back to host: " + sockets.value(socket)->socket()->peerAddress().toString() + ". Size: " + QString::number(ba.size()) + " bytes");
 
@@ -206,6 +217,7 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
 }
 
 void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){    
+
     QString error = sockets.value(socket)->setWorkingDirectoryAndSaveAllFiles(config->getString(CONFIG_RAW_DATA_REPO));
     if (!error.isEmpty()){
         log.appendError("Could not save data files in incomming packet: " + error);
@@ -217,20 +229,15 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
     removeAllRepFiles(sockets.value(socket)->getWorkingDirectory());
 
     // Opening connection to the database, to check that the doctor and patient uid in the DB are present.
-    if (!dbConn->initDB(config)){
-        removeSocket(socket);
-        log.appendError("Could not start SQL Connection when launching the EyeReport Processor:  " + dbConn->getError());
-        return;
-    }
+    if (!initAllDBS()) return;
 
     // Getting some patient data to make sure, its in the DB.
     DataPacket d = sockets.value(socket)->getDataPacket();
 
-
     // Verifying that the information can be processed
     QString etserial = d.getField(DataPacket::DPFI_DB_ET_SERIAL).data.toString();
-    qint32 UID = d.getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
-    quint8 code = verifyReportRequest(UID,etserial);
+    qint32 inst_uid = d.getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
+    quint8 code = verifyReportRequest(inst_uid,etserial);
 
     //qWarning() << "VERIFY REPORT REQUEST CODE:" << code;
 
@@ -248,16 +255,25 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
         return;
     }
 
+
+    QString puid = getPatientID(d.getField(DataPacket::DPFI_PATIENT_ID).data.toString());
+    if (puid == -1){
+        // Patient is not in the DB.
+        log.appendError("No patient id found for uid:  " + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString());
+        return;
+    }
+
     QStringList columns;
-    columns << TPATREQ_KEYID  << TPATREQ_COL_FIRSTNAME << TPATREQ_COL_LASTNAME;
-    QString condition = QString(TPATREQ_COL_UID) + " = '" + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString() + "'";
+    columns << TPATDATA_COL_KEYID;
+    QString condition = QString(TPATDATA_COL_PUID) + " = '" + puid + "'";
 
     // Patient data
-    if (!dbConn->readFromDB(TABLE_PATIENTS_REQ_DATA,columns,condition)){
-        log.appendError(dbConn->getError());
+    if (!dbConnPatData->readFromDB(TABLE_PATDATA,columns,condition)){
+        log.appendError(dbConnPatData->getError());
+        return;
     }
     else{
-        DBData data = dbConn->getLastResult();
+        DBData data = dbConnPatData->getLastResult();
         if (data.rows.size() == 0){
             // Patient is not in the DB.
             log.appendError("No patient data found for uid:  " + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString());
@@ -267,15 +283,16 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
 
     // Doctor Data
     columns.clear();
-    columns << TDOCTOR_COL_KEYID << TDOCTOR_COL_FIRSTNAME << TDOCTOR_COL_LASTNAME;
+    columns << TDOCTOR_COL_KEYID;
     condition = QString(TDOCTOR_COL_UID) + " = '" + d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString() + "'";
-    if (!dbConn->readFromDB(TABLE_DOCTORS,columns,condition)){
-        log.appendError(dbConn->getError());
+    if (!dbConnBase->readFromDB(TABLE_DOCTORS,columns,condition)){
+        log.appendError(dbConnBase->getError());
+        return;
     }
     else{
-        DBData data = dbConn->getLastResult();
+        DBData data = dbConnBase->getLastResult();
         if (data.rows.size() == 0){
-            // Patient is not in the DB.
+            // Doctor is not in the DB.
             log.appendError("No doctor data found for uid:  " + d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString());
             return;
         }
@@ -288,7 +305,9 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
     //log.appendStandard("Process information from: " + sockets.value(socket)->socket()->peerAddress().toString());
 
     // Closing connection to db
-    dbConn->close();
+    dbConnBase->close();
+    dbConnPatData->close();
+    dbConnID->close();
 
     // Processing the data.
     sockets.value(socket)->processData(config->getString(CONFIG_EYEPROCESSOR_PATH),arguments);
@@ -380,41 +399,73 @@ void DataProcessingSSLServer::sslErrorsFound(quint64 id){
 
 }
 
+void DataProcessingSSLServer::changedState(quint64 id){
+    Q_UNUSED(id)
+    //    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
+    //    // be removed once. After that, te program crashes.
+    //    if (!sockets.contains(id)) return;
+
+    //    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
+    //    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    //    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+    //    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
+}
+
+
+/*****************************************************************************************************************************
+ * Database transaction helper functions
+ * **************************************************************************************************************************/
+
 quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &etserial){
 
     // When this is called the connection to the DB is openend.
 
     QStringList columns;
-    columns << TINST_COL_ETSERIAL << TINST_COL_EVALS;
+    columns << TINST_COL_UID << TINST_COL_EVALS;
     QString condition = QString(TINST_COL_UID) + " = '" + QString::number(UID) + "'";
-    if (!dbConn->readFromDB(TABLE_INSTITUTION,columns,condition)){
-        log.appendError("When querying et serial and number of evaluations: " + dbConn->getError());
+    if (!dbConnBase->readFromDB(TABLE_INSTITUTION,columns,condition)){
+        log.appendError("When querying institution and number of evaluations: " + dbConnBase->getError());
         return RR_DB_ERROR;
     }
 
-    DBData data = dbConn->getLastResult();
+    DBData data = dbConnBase->getLastResult();
 
     if (data.rows.size() != 1){
-        log.appendError("When querying et serial and number of evaluations: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1. UID: " + QString::number(UID));
+        log.appendError("When querying the institution and number of evaluations: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1. UID: " + QString::number(UID));
         return RR_DB_ERROR;
-    }
-
-    QString serial = data.rows.first().first();
-    qint32  numevals = data.rows.first().last().toInt();
-
-    qWarning() << "SERIAL S/N" << serial << "Number of Evaluations: " << numevals << "Sent serial" << serial;
-
-    // Checking the serial
-    if (serial != etserial){
-        log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID) + ": |" + serial + "|");
-        return RR_WRONG_ET_SERIAL;
     }
 
     // Checking the number of evaluations
+    if (data.rows.first().size() != 2){
+        log.appendError("When querying the institution and number of evaluations: Number of returned columns was " + QString::number(data.rows.first().size()) + " instead of 2. INST UID: " + QString::number(UID));
+        return RR_DB_ERROR;
+
+    }
+
+    qint32  numevals = data.rows.first().last().toInt();
     if (numevals == 0 ){
         log.appendError("No evaluations remaining forinsitituion with UID " + QString::number(UID));
         return RR_OUT_OF_EVALUATIONS;
     }
+
+    // Checking the serial number of the ET
+    columns.clear();
+    columns << TPLACED_PROD_COL_ETSERIAL;
+    condition = "(" + QString(TPLACED_PROD_COL_ETSERIAL) + " = '" + etserial + "') AND (" + QString(TPLACED_PROD_COL_INSTITUTION) + " = '" + UID + "')";
+    if (!dbConnBase->readFromDB(TABLE_PLACEDPRODUCTS,columns,condition)){
+        log.appendError("When querying serial number for institituion: " + dbConnBase->getError());
+        return RR_DB_ERROR;
+    }
+
+    //qWarning() << "SERIAL S/N" << serial << "Number of Evaluations: " << numevals << "Sent serial" << serial;
+    data = dbConnBase->getLastResult();
+
+    // Checking the serial
+    if (data.rows.first().size() != 1){
+        log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
+        return RR_WRONG_ET_SERIAL;
+    }
+
 
     return RR_ALL_OK;
 }
@@ -424,12 +475,12 @@ void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
     QStringList columns;
     columns << TINST_COL_EVALS;
     QString condition = QString(TINST_COL_UID) + " = '" + QString::number(UID) + "'";
-    if (!dbConn->readFromDB(TABLE_INSTITUTION,columns,condition)){
-        log.appendError("Decreasing report count: " + dbConn->getError());
+    if (!dbConnBase->readFromDB(TABLE_INSTITUTION,columns,condition)){
+        log.appendError("Decreasing report count: " + dbConnBase->getError());
         return;
     }
 
-    DBData data = dbConn->getLastResult();
+    DBData data = dbConnBase->getLastResult();
 
     if (data.rows.size() != 1){
         log.appendError("Decreasing report count: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1, for UID: " + QString::number(UID) );
@@ -450,25 +501,53 @@ void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
     QStringList values;
     values << QString::number(numevals);
 
-    if (!dbConn->updateDB(TABLE_INSTITUTION,columns,values,condition)){
-        log.appendError("When saving new number of evaluations " + QString(UID) + " when it is " + QString(numevals));
+    if (!dbConnBase->updateDB(TABLE_INSTITUTION,columns,values,condition)){
+        log.appendError("When saving new number of evaluations " + QString(UID) + " when it is " + QString(numevals) + ": " + dbConnBase->getError());
         return;
     }
 
 }
 
-void DataProcessingSSLServer::changedState(quint64 id){
-    Q_UNUSED(id)
-    //    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
-    //    // be removed once. After that, te program crashes.
-    //    if (!sockets.contains(id)) return;
-
-    //    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
-    //    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
-    //    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-    //    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
+bool DataProcessingSSLServer::initAllDBS(){
+    if (!dbConnBase->open()){
+        log.appendError("ERROR : Could not start SQL Connection on Data Processing Server to Base DB : " + dbConnBase->getError());
+        return false;
+    }
+    if (!dbConnID->open()){
+        log.appendError("ERROR : Could not start SQL Connection on Data Processing Server to Patient ID DB: " + dbConnBase->getError());
+        return false;
+    }
+    if (!dbConnPatData->open()){
+        log.appendError("ERROR : Could not start SQL Connection on Data Processing Server to  to Patient Data DB: " + dbConnBase->getError());
+        return false;
+    }
+    return true;
 }
 
+QString DataProcessingSSLServer::getPatientID(const QString &pat_uid){
+
+    QStringList columns;
+    columns << TPATID_COL_KEYID;
+    QString condition = QString(TPATID_COL_UID) + " = '" + pat_uid + "'";
+    if (!dbConnID->readFromDB(TABLE_INSTITUTION,columns,condition)){
+        log.appendError("When querying for the database id of patient: " + pat_uid + ". Got the error: " +  dbConnBase->getError());
+        return "-1";
+    }
+
+    DBData data = dbConnID->getLastResult();
+    if (data.rows.size() != 1){
+        log.appendError("When querying for the database id of patient: " + pat_uid + ". Got the number of rows: " +  QString::number(data.rows.size()));
+        return "-1";
+    }
+
+    if (data.rows.first().size() != 1){
+        log.appendError("When querying for the database id of patient: " + pat_uid + ". Got the number of columns: " +  QString::number(data.rows.first().size()));
+        return "-1";
+    }
+
+    return data.rows.first().first();
+
+}
 
 /*****************************************************************************************************************************
  * Rep files helper functions.

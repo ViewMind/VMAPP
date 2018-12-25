@@ -16,8 +16,8 @@ public:
 
     DBInterface();
 
-    // Initializes the connection to the database returning true if sucessfull.
-    bool initDB(ConfigurationManager *config);
+    // Initializes the connection to thez database returning true if sucessfull.
+    void setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port);
 
     // Insert Query
     bool insertDB(const QString &table, const QStringList &columns, const QStringList &values);
@@ -35,6 +35,7 @@ public:
     qint32 getNewestKeyid(const QString &keyidColName, const QString &table);
 
     // Closing the connection to the server
+    bool open();
     void close() { dbConnection.close(); }
 
     QString getError() const {return error;}
@@ -50,6 +51,9 @@ private:
 
     // The last result (a single row).
     DBData lastResult;
+
+    // Making sure init is only called once.
+    bool dbSetupDone;
 
 };
 

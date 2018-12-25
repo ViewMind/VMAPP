@@ -2,27 +2,32 @@
 
 DBInterface::DBInterface()
 {
-    dbConnection = QSqlDatabase::addDatabase("QMYSQL");
+    dbSetupDone = false;
 }
 
-bool DBInterface::initDB(ConfigurationManager *config){
+void DBInterface::setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port){
 
-    dbConnection.setHostName(config->getString(CONFIG_DBHOST));
-    dbConnection.setDatabaseName(config->getString(CONFIG_DBNAME));
-    dbConnection.setUserName(config->getString(CONFIG_DBUSER));
-    dbConnection.setPassword(config->getString(CONFIG_DBPASSWORD));
-    if (config->containsKeyword(CONFIG_DBPORT)){
-        dbConnection.setPort(config->getInt(CONFIG_DBPORT));
+    if (dbSetupDone) return;
+
+    dbConnection = QSqlDatabase::addDatabase("QMYSQL",instanceName);
+    dbConnection.setHostName(host);
+    dbConnection.setDatabaseName(dbname);
+    dbConnection.setUserName(user);
+    dbConnection.setPassword(passwd);
+    if (port != 0){
+        dbConnection.setPort(port);
     }
 
+    dbSetupDone = true;
+}
+
+bool DBInterface::open(){
     if (!dbConnection.open()){
         error = dbConnection.lastError().text();
         return false;
     }
-
     return true;
 }
-
 
 bool DBInterface::insertDB(const QString &table, const QStringList &columns, const QStringList &values){
 
@@ -41,7 +46,7 @@ bool DBInterface::insertDB(const QString &table, const QStringList &columns, con
 
     query = query  + columns.join(",") + ") VALUES (" + quotedVals.join(",") + ")";
 
-    QSqlQuery q;
+    QSqlQuery q(dbConnection);
     if (!q.exec(query)){
         error = "INSERT Error on query: " + query + ". ERROR: " + q.lastError().text();
         return false;
@@ -70,7 +75,7 @@ bool DBInterface::updateDB(const QString &table, const QStringList &columns, con
    }
    query = query + " WHERE " + condition;
 
-   QSqlQuery q;
+   QSqlQuery q(dbConnection);
    if (!q.exec(query)){
        error = "UPDATE Error on query: " + query + ". ERROR: " + q.lastError().text();
        return false;
@@ -84,7 +89,7 @@ bool DBInterface::deleteRowFromDB(const QString &table, const QString &condition
     QString query = "DELETE FROM " + table + " WHERE " + condition;
     LogInterface log;
     log.appendStandard("DELETE QUERY IS: " + query);
-    QSqlQuery q;
+    QSqlQuery q(dbConnection);
     if (!q.exec(query)){
         error = "DELETE Error on query: " + query + ". ERROR: " + q.lastError().text();
         return false;
@@ -94,7 +99,7 @@ bool DBInterface::deleteRowFromDB(const QString &table, const QString &condition
 
 qint32 DBInterface::getNewestKeyid(const QString &keyidColName, const QString &table){
     QString query = "SELECT MAX(" + keyidColName + ") FROM " + table;
-    QSqlQuery q;
+    QSqlQuery q(dbConnection);
     if (!q.exec(query)){
         error = "SELECT MAX, Error on query: " + query + ". ERROR: " + q.lastError().text();
         return -1;
@@ -121,7 +126,7 @@ bool DBInterface::readFromDB(const QString &table, const QStringList &columns, c
         query = query + " WHERE " + conditions;
     }
 
-    QSqlQuery q;
+    QSqlQuery q(dbConnection);
     //qWarning() << "EXECUTING READ QUERY: " << query;
     if (!q.exec(query)){
         error = "SELECT Error on query: " + query + ". ERROR: " + q.lastError().text();

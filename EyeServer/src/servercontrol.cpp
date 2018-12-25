@@ -27,14 +27,51 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
     cv[CONFIG_DBNAME] = cmd;
     cv[CONFIG_DBPASSWORD] = cmd;
     cv[CONFIG_DBUSER] = cmd;
+
+    cv[CONFIG_ID_DBHOST] = cmd;
+    cv[CONFIG_ID_DBNAME] = cmd;
+    cv[CONFIG_ID_DBPASSWORD] = cmd;
+    cv[CONFIG_ID_DBUSER] = cmd;
+
+    cv[CONFIG_PATDATA_DBHOST] = cmd;
+    cv[CONFIG_PATDATA_DBNAME] = cmd;
+    cv[CONFIG_PATDATA_DBPASSWORD] = cmd;
+    cv[CONFIG_PATDATA_DBUSER] = cmd;
+
+
     cv[CONFIG_S3_ADDRESS] = cmd;
 
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DBPORT] = cmd;
+    cv[CONFIG_ID_DBPORT] = cmd;
+    cv[CONFIG_PATDATA_DBPORT] = cmd;
 
     config.setupVerification(cv);
 
-    dataProcessingSSLServer.setDBConnection(dbSSLServer.getDBInterface());
+    // Initializing the database connections.
+    QString host = config.getString(CONFIG_DBHOST);
+    QString dbname = config.getString(CONFIG_DBNAME);
+    QString user = config.getString(CONFIG_DBUSER);
+    QString passwd = config.getString(CONFIG_DBPASSWORD);
+    quint16 port = config.getInt(CONFIG_DBPORT);
+    dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port);
+
+    host = config.getString(CONFIG_ID_DBHOST);
+    dbname = config.getString(CONFIG_ID_DBNAME);
+    user = config.getString(CONFIG_ID_DBUSER);
+    passwd = config.getString(CONFIG_ID_DBPASSWORD);
+    port = config.getInt(CONFIG_ID_DBPORT);
+    dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port);
+
+    host = config.getString(CONFIG_PATDATA_DBHOST);
+    dbname = config.getString(CONFIG_PATDATA_DBNAME);
+    user = config.getString(CONFIG_PATDATA_DBUSER);
+    passwd = config.getString(CONFIG_PATDATA_DBPASSWORD);
+    port = config.getInt(CONFIG_PATDATA_DBPORT);
+    dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port);
+
+    dbSSLServer.setDBConnections(&dbConnBase,&dbConnID,&dbConnPatData);
+    dataProcessingSSLServer.setDBConnections(&dbConnBase,&dbConnID,&dbConnPatData);
 
 }
 

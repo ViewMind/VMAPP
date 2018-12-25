@@ -7,6 +7,7 @@
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "sslidsocket.h"
 #include "ssllistener.h"
+#include "server_defines.h"
 
 class DBCommSSLServer : public QObject
 {
@@ -14,7 +15,7 @@ class DBCommSSLServer : public QObject
 public:
     explicit DBCommSSLServer(QObject *parent = nullptr);
     bool startServer(ConfigurationManager *c);
-    DBInterface * getDBInterface() { return &dbConnection; }
+    void setDBConnections(DBInterface *base, DBInterface *id, DBInterface *patdata){ dbConnBase = base; dbConnID = id; dbConnPatData = patdata; }
 
 signals:
 
@@ -33,8 +34,10 @@ private:
     // Pointer to the configuration file
     ConfigurationManager *config;
 
-    // Manages the SQL Connection.
-    DBInterface dbConnection;
+    // The SQL Connections to the different databases
+    DBInterface *dbConnBase;
+    DBInterface *dbConnID;
+    DBInterface *dbConnPatData;
 
     // Listens for new connections and stores them in the sockets.
     SSLListener *listener;
@@ -54,9 +57,20 @@ private:
     // Do the actual DB stuff
     void processSQLRequest(quint64 socket);
 
+    // Auxiliary function to handel the multiple DBInterfaces
+    bool initAllDBS();
+    DBInterface *getDBIFFromTable(const QString &tableName);
+
+
+    struct VerifyPatientRetStruct {
+        quint8 errorCode;
+        qint32 puid;
+        qint32 indexOfPatUid;
+    };
+
     // Verify to insert
     quint8 verifyDoctor(const QStringList &columns, const QStringList &values);
-    quint8 verifyPatient(const QStringList &columns, const QStringList &values);
+    VerifyPatientRetStruct verifyPatient(const QStringList &columns, const QStringList &values);
 
 };
 

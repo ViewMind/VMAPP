@@ -172,12 +172,12 @@ quint8 DBCommSSLServer::verifyDoctor(const QStringList &columns, const QStringLi
     cols << TINST_COL_UID;
     QString cond = QString(TINST_COL_UID) + "='" + inst_uid + "'";
 
-    if (!dbConnection.readFromDB(TABLE_INSTITUTION,cols,cond)){
-        log.appendError("On VERIFY DOCTOR, DB Error: " + dbConnection.getError());
+    if (!dbConnBase->readFromDB(TABLE_INSTITUTION,cols,cond)){
+        log.appendError("On VERIFY DOCTOR, DB Error: " + dbConnBase->getError());
         return DBACK_DBCOMM_ERROR;
     }
 
-    DBData data = dbConnection.getLastResult();
+    DBData data = dbConnBase->getLastResult();
     if (data.rows.size() != 1){
         log.appendError("On VERIFY DOCTOR, Expecting only 1 row from the DB, but got " + QString::number(data.rows.size()));
         return DBACK_UID_ERROR;
@@ -194,11 +194,18 @@ quint8 DBCommSSLServer::verifyDoctor(const QStringList &columns, const QStringLi
 }
 
 
-quint8 DBCommSSLServer::verifyPatient(const QStringList &columns, const QStringList &values){
-    qint32 drIndex = columns.indexOf(TPATREQ_COL_DOCTORID);
+DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QStringList &columns, const QStringList &values){
+
+    VerifyPatientRetStruct ret;
+    ret.errorCode = DBACK_ALL_OK;
+    ret.puid = -1;
+    ret.indexOfPatUid = -1;
+
+    qint32 drIndex = columns.indexOf(TPATDATA_COL_DOCTORID);
     if ((drIndex == -1) || (drIndex >= values.size())) {
         log.appendError("On VERIFY PATIENT: No column found for Doctor UID found. Index: " + QString::number(drIndex) + " Column List: " + columns.join(", "));
-        return DBACK_UID_ERROR;
+        ret.errorCode = DBACK_UID_ERROR;
+        return ret;
     }
     QString druid = values.at(drIndex);
 
@@ -206,29 +213,113 @@ quint8 DBCommSSLServer::verifyPatient(const QStringList &columns, const QStringL
     cols << TDOCTOR_COL_UID;
     QString cond = QString(TDOCTOR_COL_UID) + "='" + druid + "'";
 
-    if (!dbConnection.readFromDB(TABLE_DOCTORS,cols,cond)){
-        log.appendError("On VERIFY PATIENT, DB Error: " + dbConnection.getError());
-        return DBACK_DBCOMM_ERROR;
+    if (!dbConnBase->readFromDB(TABLE_DOCTORS,cols,cond)){
+        log.appendError("On VERIFY PATIENT, DB Error: " + dbConnBase->getError());
+        ret.errorCode = DBACK_DBCOMM_ERROR;
+        return ret;
     }
 
-    DBData data = dbConnection.getLastResult();
+    DBData data = dbConnBase->getLastResult();
     if (data.rows.size() < 1){
         log.appendError("On VERIFY PATIENT, Expecting only 1 row from the DB, but got " + QString::number(data.rows.size()));
-        return DBACK_UID_ERROR;
+        ret.errorCode = DBACK_UID_ERROR;
+        return ret;
     }
 
-    // If it matched, then the UID is ok.
+    // If it matched, then the UID is ok. This means that the doctor exists. Now the patient needs to be checked.
+    ret.indexOfPatUid = columns.indexOf(TPATDATA_COL_PUID);
+    if ((ret.indexOfPatUid  == -1) || (ret.indexOfPatUid  >= values.size())) {
+        log.appendError("On VERIFY PATIENT: No column found for PUID found. Index: " + QString::number(ret.indexOfPatUid) + " Column List: " + columns.join(", "));
+        ret.errorCode = DBACK_UID_ERROR;
+        return ret;
+    }
+    QString patid = values.at(ret.indexOfPatUid);
+    cols.clear();
+    cols << TPATID_COL_UID;
+    cond = QString(TPATID_COL_UID) + "='" + patid +"'";
 
-    return DBACK_ALL_OK;
+    if (!dbConnID->readFromDB(TABLE_PATIENTD_IDS,cols,cond)){
+        log.appendError("On VERIFY PATIENT, DB Error: " + dbConnID->getError());
+        ret.errorCode = DBACK_DBCOMM_ERROR;
+        return ret;
+    }
+
+    if (data.rows.size() == 0){
+
+        // This a new patient and it needs to be added to the DB.
+        cols.clear();
+        QStringList vals;
+        cols << TPATID_COL_UID;
+        vals << patid;
+        if (!dbConnID->insertDB(TABLE_PATIENTD_IDS,cols,vals)){
+            log.appendError("On VERIFY PATIENT: Adding a new patient: " + dbConnID->getError());
+            ret.errorCode = DBACK_DBCOMM_ERROR;
+            return ret;
+        }
+
+        // Once added the keyid is obtained.
+        cols.clear();
+        cols << TPATID_COL_UID;
+        cond = QString(TPATID_COL_UID) + "='" + patid +"'";
+
+        if (!dbConnID->readFromDB(TABLE_PATIENTD_IDS,cols,cond)){
+            log.appendError("On VERIFY PATIENT, DB Error: " + dbConnID->getError());
+            ret.errorCode = DBACK_DBCOMM_ERROR;
+            return ret;
+        }
+
+        if (data.rows.size() == 1){
+            if (data.rows.first().size() == 1){
+                ret.puid = data.rows.first().first().toInt();
+                return ret;
+            }
+        }
+
+        // If the code got here there was a problem with the query.
+        log.appendError("On VERIFY PATIENT: Error on query for PatIDTable, after adding it. A number of rows and columns different than 1 was returned");
+        ret.errorCode = DBACK_DBCOMM_ERROR;
+        return ret;
+
+    }
+    else{
+        if (data.rows.first().size() > 0)  ret.puid = data.rows.first().first().toInt();
+        else {
+            log.appendError("On VERIFY PATIENT: Error on query for PatIDTable. Rows were returned but with not columns");
+            ret.errorCode = DBACK_DBCOMM_ERROR;
+            return ret;
+        }
+    }
+
+
+    return ret;
 }
 
 
+bool DBCommSSLServer::initAllDBS(){
+    if (!dbConnBase->open()){
+        log.appendError("ERROR : Could not start SQL Connection to Base DB: " + dbConnBase->getError());
+        return false;
+    }
+    if (!dbConnID->open()){
+        log.appendError("ERROR : Could not start SQL Connection to Patient ID DB: " + dbConnBase->getError());
+        return false;
+    }
+    if (!dbConnPatData->open()){
+        log.appendError("ERROR : Could not start SQL Connection to Patient Data DB: " + dbConnBase->getError());
+        return false;
+    }
+    return true;
+}
+
+DBInterface * DBCommSSLServer::getDBIFFromTable(const QString &tableName){
+    if (tableName == TABLE_PATIENTD_IDS) return dbConnID;
+    else if (tableName == TABLE_PATDATA) return dbConnPatData;
+    else return dbConnBase;
+}
+
 void DBCommSSLServer::processSQLRequest(quint64 socket){
 
-    if (!dbConnection.initDB(config)){
-        log.appendError("ERROR : Could not start SQL Connection: " + dbConnection.getError());
-        return;
-    }
+    if (!initAllDBS()) return;
 
     DataPacket dp = sockets.value(socket)->getDataPacket();
     QString tx_type = dp.getField(DataPacket::DPFI_DB_QUERY_TYPE).data.toString();
@@ -258,13 +349,16 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
         //qWarning() << "Table Names" << tableNames;
 
         for (qint32 i = 0; i < tableNames.size(); i++){
-            if (!dbConnection.readFromDB(tableNames.at(i),columnsList.at(i),conditions.at(i))){
-                dberrors << dbConnection.getError();
+
+            DBInterface *dbConnection = getDBIFFromTable(tableNames.at(i));
+
+            if (!dbConnection->readFromDB(tableNames.at(i),columnsList.at(i),conditions.at(i))){
+                dberrors << dbConnection->getError();
                 queryresults << "";
-                log.appendError("On SQL Transaction: " + dbConnection.getError());
+                log.appendError("On SQL Transaction: " + dbConnection->getError());
             }
             else{
-                DBData dbdata = dbConnection.getLastResult();
+                DBData dbdata = dbConnection->getLastResult();
                 queryresults << dbdata.joinRowsAndCols(DB_ROW_SEP,DB_COLUMN_SEP);
                 dberrors << "";
             }
@@ -308,16 +402,19 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
                 if (code != DBACK_ALL_OK) break;
             }
 
-            if (tableNames.at(i) == TABLE_PATIENTS_REQ_DATA){
-                code = verifyPatient(columnsList.at(i),values.at(i));
-                if (code != DBACK_ALL_OK) break;
+            if (tableNames.at(i) == TABLE_PATDATA){
+                VerifyPatientRetStruct ret = verifyPatient(columnsList.at(i),values.at(i));
+                if (ret.errorCode != DBACK_ALL_OK) break;
+                // Replacing the universal ID with the DB ID.
+                values[i][ret.indexOfPatUid] = QString::number(ret.puid);
             }
 
-            //qWarning() << "Doing insertion";
+            // This takes advantage of the fact that there are no tables with the same names in the different databases.
+            DBInterface *dbConnection = getDBIFFromTable(tableNames.at(i));
 
-            if (!dbConnection.insertDB(tableNames.at(i),columnsList.at(i),values.at(i))){
-                dberrors << dbConnection.getError();
-                log.appendError("On SQL Transaction: " + dbConnection.getError());
+            if (!dbConnection->insertDB(tableNames.at(i),columnsList.at(i),values.at(i))){
+                dberrors << dbConnection->getError();
+                log.appendError("On SQL Transaction: " + dbConnection->getError());
             }
         }
 
@@ -336,7 +433,9 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
     }
 
     // Closing connection to db.
-    dbConnection.close();
+    dbConnBase->close();
+    dbConnID->close();
+    dbConnPatData->close();
 
     // In this case the transaction is done.
     removeSocket(socket);

@@ -100,7 +100,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 
 // Column names for the EyeResult tables.
 #define  TEYERES_COL_KEYID                       "keyid"
-#define  TEYERES_COL_PATIENTID                   "patientid"
+#define  TEYERES_COL_PUID                        "puid"
 #define  TEYERES_COL_DOCTORID                    "doctorid"
 #define  TEYERES_COL_STUDY_ID                    "study_id"
 #define  TEYERES_COL_STUDY_DATE                  "study_date"

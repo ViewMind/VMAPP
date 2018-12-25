@@ -22,6 +22,11 @@ private:
     DataProcessingSSLServer dataProcessingSSLServer;
     LogInterface log;
     ConfigurationManager config;
+
+    // The database interfaces
+    DBInterface dbConnBase;
+    DBInterface dbConnID;
+    DBInterface dbConnPatData;
 };
 
 #endif // SERVERCONTROL_H

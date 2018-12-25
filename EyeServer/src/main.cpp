@@ -1,8 +1,6 @@
 #include <QCoreApplication>
 #include "servercontrol.h"
 
-#define  PROGRAM_NAME      "EyeSever"
-#define  PROGRAM_VERSION   "4.1.2"
 
 int main(int argc, char *argv[])
 {
