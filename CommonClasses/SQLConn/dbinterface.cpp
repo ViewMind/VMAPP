@@ -14,6 +14,7 @@ void DBInterface::setupDB(const QString &instanceName, const QString &host, cons
     dbConnection.setDatabaseName(dbname);
     dbConnection.setUserName(user);
     dbConnection.setPassword(passwd);
+    //qWarning() << "Setting up DB Connection" << instanceName << "with " << dbConnection.userName() << dbConnection.password();
     if (port != 0){
         dbConnection.setPort(port);
     }
@@ -22,6 +23,7 @@ void DBInterface::setupDB(const QString &instanceName, const QString &host, cons
 }
 
 bool DBInterface::open(){
+    //qWarning() << "Opening DB Connection with " << dbConnection.userName() << dbConnection.password();
     if (!dbConnection.open()){
         error = dbConnection.lastError().text();
         return false;

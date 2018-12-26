@@ -3,12 +3,14 @@
 Control::Control(QObject *parent):QThread(parent)
 {
     mainMenu.setMenuTitle("What do you want to do?");
-    mainMenu.addMenuOption("New institution");
-    mainMenu.addMenuOption("Reset institution password");
-    mainMenu.addMenuOption("Update institution information");
-    mainMenu.addMenuOption("See institution information");
-    mainMenu.addMenuOption("Delete test entries");
-    mainMenu.addMenuOption("Exit");
+    mainMenu.addMenuOption("New institution",MENU_OPTION_NEW_INSTITUTION);
+    mainMenu.addMenuOption("Reset institution password",MENU_OPTION_RESET_PASSWD);
+    mainMenu.addMenuOption("Update institution information",MENU_OPTION_UPDATE_INSTITUTION);
+    mainMenu.addMenuOption("Add product",MENU_OPTION_NEW_PRODUCT);
+    mainMenu.addMenuOption("Modify product",MENU_OPTION_UPDATE_PRODUCT);
+    mainMenu.addMenuOption("Search for product",MENU_OPTION_SEARCH_PRODUCT);
+    mainMenu.addMenuOption("Delete test entries",MENU_DELETE_TEST_ENTRIES);
+    mainMenu.addMenuOption("Exit",MENU_OPTION_EXIT);
 }
 
 void Control::run(){
@@ -40,27 +42,36 @@ void Control::run(){
         }
 
         // A menu was selected.
-        switch (mainMenu.getSelected()){
-        case 0:
+        switch (mainMenu.getSelectedData().toInt()){
+        case MENU_OPTION_NEW_INSTITUTION:
+            // Create a new institution
             newInstitutions();
             break;
-        case 1:
+        case MENU_OPTION_RESET_PASSWD:
             // Reset institution password
             resetPasswInstitution();
             break;
-        case 2:
+        case MENU_OPTION_UPDATE_INSTITUTION:
             // Update institution information.
             updateInstitution();
             break;
-        case 3:
-            // Just show institution information.
-            printInstitutionInfo();
+        case MENU_OPTION_NEW_PRODUCT:
+            // Add a product for a given institution
+            addPlacedProductForInstitution();
             break;
-        case 4:
+        case MENU_OPTION_UPDATE_PRODUCT:
+            // Add a product for a given institution
+            modifyProduct();
+            break;
+        case MENU_OPTION_SEARCH_PRODUCT:
+            // Search for products
+            searchForProducts();
+            break;
+        case MENU_DELETE_TEST_ENTRIES:
             // Delete test entries
             deleteTestEntries();
             break;
-        case 5:
+        case MENU_OPTION_EXIT:
             // Exit
             db.close();
             emit(exitRequested());
@@ -73,38 +84,22 @@ void Control::run(){
 
 bool Control::deleteTestEntries(){
 
-    bool ok;
-    QStringList userList = db.getPossibleTestUsers(&ok);
-    if (!ok){
-        std::cout << "ERROR Getting the user list: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
-        getchar();
-        return false;
-    }
-
-    ConsoleInputScreen screen;
-    screen.setMenuTitle("Select possible test user to delete:");
-
-    for (qint32 i = 0; i < userList.size(); i++){
-        if ((i % 2) == 1) continue; // Odd entries are the actual UIDs
-        screen.addMenuOption(userList.at(i),userList.at(i+1));
-    }
-
-    screen.show();
-
-    if (screen.getAction() == ConsoleInputScreen::CA_BACK) return true;
-
-    QString uid = screen.getSelectedData().toString();
-
     ConsoleInputScreen confirm;
-    confirm.setQuestion("Are you sure you want to delete all entries with user UID: " + uid + "?");
+    confirm.setQuestion("This will delete all users with the UID: " + QString(TEST_UID)+  " Do you want to proceed?");
     confirm.show();
 
     if (confirm.getAction() == ConsoleInputScreen::CA_BACK) return true;
 
-    if (!db.deleteUserInfo(uid)){
+    bool deletedOne;
+    if (!db.deleteTestUsers(&deletedOne)){
         std::cout << "ERROR: " << db.getError().toStdString() <<  ". Press any key to continue" << std::endl;
         getchar();
         return false;
+    }
+
+    if (!deletedOne){
+        std::cout << "No test users were found. Did nothing. Press any key to continue" << std::endl;
+        getchar();
     }
 
     return true;
@@ -113,10 +108,11 @@ bool Control::deleteTestEntries(){
 
 void Control::newInstitutions(){
 
-    InstDBComm::Institution inst;
-    inst = inputInstitutionInfo(inst);
+    DBQueries::StringMap inst;
+    bool accepted;
+    inst = inputInstitutionInfo(inst,&accepted);
 
-    if (!inst.ok) return;
+    if (!accepted) return;
 
     qint32 keyid = db.addNewInstitution(inst);
 
@@ -125,33 +121,35 @@ void Control::newInstitutions(){
         getchar();
         return;
     }
-    showInfoScreen(true,QString::number(keyid));
+    showInstitutionInfoScreen(true,QString::number(keyid));
 }
 
 void Control::resetPasswInstitution(){
 
-    InstDBComm::Institution inst =  institutionSelection();
-    if (!inst.ok) return;
+    bool ok;
+    DBQueries::StringMap inst =  institutionSelection(&ok);
+    if (!ok) return;
 
     // Setting the neww password
-    if (!db.resetPassword(inst.keyid)){
+    if (!db.resetPassword(inst.value(TINST_COL_KEYID))){
         std::cout << "ERROR Resetting password: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
         getchar();
         return;
     }
 
     // Showing the new password
-    showInfoScreen(true,inst.keyid);
+    showInstitutionInfoScreen(true,inst.keyid);
 
 }
 
 void Control::updateInstitution(){
 
-    InstDBComm::Institution inst = institutionSelection();
+    bool ok;
+    DBQueries::StringMap inst = institutionSelection(&ok);
     if (!inst.ok) return;
 
-    inst =  inputInstitutionInfo(inst);
-    if (!inst.ok) return;
+    inst =  inputInstitutionInfo(inst,&ok);
+    if (!ok) return;
 
     if (!db.updateNewInstitution(inst)){
         std::cout << "ERROR: Updating instituion information " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
@@ -160,50 +158,44 @@ void Control::updateInstitution(){
     }
 
     // Showing updated information.
-    showInfoScreen(false,inst.keyid);
+    showInstitutionInfoScreen(false,inst.keyid);
 
 }
 
-void Control::printInstitutionInfo(){
-
-    InstDBComm::Institution inst = institutionSelection();
-    if (!inst.ok) return;
-
-    // Showing the information
-    showInfoScreen(false,inst.keyid);
+void Control::addPlacedProductForInstitution(){
 
 }
 
-InstDBComm::Institution Control::institutionSelection(){
+DBQueries::StringMap Control::institutionSelection(bool *isOk){
 
     ConsoleInputScreen screen;
-    InstDBComm::Institution inst;
-    inst.ok = true;
-    inst.keyid = -1;
-
+    DBQueries::StringMap inst;
+    *isOk = true;
 
     // Selecting the institution
     bool ok;
-    QList<InstDBComm::Institution> info = db.getAllInstitutions(&ok);
+    QList<DBQueries::StringMap> info = db.getAllInstitutions(&ok);
     if (!ok){
         std::cout << "ERROR Getting institution list: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
         getchar();
-        inst.ok = false;
+        *isOk = false;
         return inst;
     }
 
     for (qint32 i = 0; i < info.size(); i++){
-        screen.addMenuOption(info.at(i).name,info.at(i).keyid);
+        screen.addMenuOption(info.at(i).value(TINST_COL_NAME),info.at(i).value(TINST_COL_KEYID));
     }
     screen.setMenuTitle("Select institution");
     screen.show();
 
     if (screen.getAction() == ConsoleInputScreen::CA_BACK) {
+        *isOk = false;
         return inst;
     }
     else {
-        inst = db.getInstitutionInfo(screen.getSelectedData().toString());
-        if (!inst.ok){
+        inst = db.getInstitutionInfo(screen.getSelectedData().toString(),&ok);
+        if (!ok){
+            *isOk = false;
             std::cout << "ERROR Getting institution information: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
             getchar();
         }
@@ -211,61 +203,61 @@ InstDBComm::Institution Control::institutionSelection(){
     }
 }
 
-
-
-InstDBComm::Institution Control::inputInstitutionInfo(InstDBComm::Institution inst){
+DBQueries::StringMap Control::inputInstitutionInfo(DBQueries::StringMap inst, bool *accepted){
 
     ConsoleInputScreen screen;
-    bool update = !inst.uid.isEmpty();
-    inst.ok = true;
+    bool update = !inst.value(TINST_COL_UID).isEmpty();
+    *accepted = true;
 
     if (update){
-        screen.addDataEntryPrompt("Name [" + inst.name  + "]");
-        screen.addDataEntryPrompt("Number of evaluations [" + inst.numEvals + "]");
-        screen.addDataEntryPrompt("EyeTracker Brand [" + inst.etbrand +  "]");
-        screen.addDataEntryPrompt("EyeTracker Model [" + inst.etmodel +  "]");
-        screen.addDataEntryPrompt("EyeTracker Serial Number [" + inst.etserial +  "]");
+        screen.addDataEntryPrompt("Institution Name [" + inst.value(TINST_COL_NAME)  + "]",TINST_COL_NAME);
+        screen.addDataEntryPrompt("Institution Contact First Name [" + inst.value(TINST_COL_FNAME)  + "]",TINST_COL_FNAME);
+        screen.addDataEntryPrompt("Institution Contact Last Name [" + inst.value(TINST_COL_LNAME)  + "]",TINST_COL_LNAME);
+        screen.addDataEntryPrompt("Institution Address [" + inst.value(TINST_COL_ADDRESS)  + "]",TINST_COL_ADDRESS);
+        screen.addDataEntryPrompt("Institution EMail [" + inst.value(TINST_COL_EMAIL)  + "]",TINST_COL_EMAIL);
+        screen.addDataEntryPrompt("Institution Phone [" + inst.value(TINST_COL_PHONE)  + "]",TINST_COL_PHONE);
+        screen.addDataEntryPrompt("Number of evaluations [" + inst.value(TINST_COL_EVALS) + "]",TINST_COL_EVALS);
     }
     else {
-        screen.addDataEntryPrompt("Name");
-        screen.addDataEntryPrompt("Number of evaluations");
-        screen.addDataEntryPrompt("EyeTracker Brand");
-        screen.addDataEntryPrompt("EyeTracker Model");
-        screen.addDataEntryPrompt("EyeTracker Serial Number");
+        screen.addDataEntryPrompt("Institution Name",TINST_COL_NAME);
+        screen.addDataEntryPrompt("Institution Contact First Name",TINST_COL_FNAME);
+        screen.addDataEntryPrompt("Institution Contact Last Name",TINST_COL_LNAME);
+        screen.addDataEntryPrompt("Institution Address",TINST_COL_ADDRESS);
+        screen.addDataEntryPrompt("Institution EMail",TINST_COL_EMAIL);
+        screen.addDataEntryPrompt("Institution Phone",TINST_COL_PHONE);
+        screen.addDataEntryPrompt("Number of evaluations",TINST_COL_EVALS);
     }
 
-    if (update) screen.setMenuTitle("Input institution information (UID: " + inst.uid  + "). Leave empty to leave as is:");
+    if (update) screen.setMenuTitle("Input institution information (UID: " + inst.value(TINST_COL_UID)  + "). Leave empty to leave as is:");
     else screen.setMenuTitle("Input institution information");
 
     while (true){
         screen.show();
         if (screen.getAction() == ConsoleInputScreen::CA_SUBMIT){
+
             // Checking the the number of evalution is a valid number. However if this is an update, then it can be empty.
-            QStringList input = screen.getInputedData();
+            QStringList values = screen.getInputedData();
+            QStringList columns = screen.getMenuEntryIDs();
+
+            if (update){
+                // When updating empty means leaving as is.
+                for (qint32 i = 0; i < columns.size(); i++){
+                    if (!values.isEmpty()){
+                        inst[columns.at(i)] = values.at(i);
+                    }
+                }
+            }
 
             bool ok = true;
-            input.at(INPUT_NEVAL).toInt(&ok);
-            if ((!ok) && !(update && input.at(INPUT_NEVAL).isEmpty())){
+            inst.at(TINST_COL_EVALS).toInt(&ok);
+            if (!ok){
                 std::cout << "ERROR: Number of evaluations should be a integer. Press any key to continue" << std::endl;
                 getchar();
                 // Should ask for infromation again.
             }
-            else {
-                if (!input.at(INPUT_BRAND).isEmpty())
-                    inst.etbrand = input.at(INPUT_BRAND);
-                if (!input.at(INPUT_MODEL).isEmpty())
-                    inst.etmodel = input.at(INPUT_MODEL);
-                if (!input.at(INPUT_ETSN).isEmpty())
-                    inst.etserial = input.at(INPUT_ETSN);
-                if (!input.at(INPUT_NAME).isEmpty())
-                    inst.name = input.at(INPUT_NAME);
-                if (!input.at(INPUT_NEVAL).isEmpty())
-                    inst.numEvals = input.at(INPUT_NEVAL);
-                break;
-            }
         }
         else {
-            inst.ok = false;
+            *accepted = false;
             break;
         }
     }
@@ -273,30 +265,98 @@ InstDBComm::Institution Control::inputInstitutionInfo(InstDBComm::Institution in
     return inst;
 }
 
-void Control::showInfoScreen(bool showPassword, const QString &keyid){
+DBQueries::StringMap Control::inputProductInfo(DBQueries::StringMap product, bool *accepted){
 
+    ConsoleInputScreen screen;
+    bool update = !product.value(TPLACED_PROD_COL_PRODSN).isEmpty();
+    *accepted = true;
 
-    InstDBComm::Institution inst = db.getInstitutionInfo(keyid);
+    if (update){
+        screen.addDataEntryPrompt("Product Name [" + product.value(TPLACED_PROD_COL_PRODUCT)  + "]",TPLACED_PROD_COL_PRODUCT);
+        screen.addDataEntryPrompt("Product Software Version [" + product.value(TPLACED_PROD_COL_SOFTVER)  + "]",TPLACED_PROD_COL_SOFTVER);
+        screen.addDataEntryPrompt("PC Model [" + product.value(TPLACED_PROD_COL_PCMODEL)  + "]",TPLACED_PROD_COL_PCMODEL);
+        screen.addDataEntryPrompt("ET Brand [" + product.value(TPLACED_PROD_COL_ETBRAND)  + "]",TPLACED_PROD_COL_ETBRAND);
+        screen.addDataEntryPrompt("ET Model [" + product.value(TPLACED_PROD_COL_ETMODEL)  + "]",TPLACED_PROD_COL_ETMODEL);
+        screen.addDataEntryPrompt("ET S/N [" + product.value(TPLACED_PROD_COL_ETSERIAL)  + "]",TPLACED_PROD_COL_ETSERIAL);
+        screen.addDataEntryPrompt("ChinRest Model [" + product.value(TPLACED_PROD_COL_CHINRESTMODEL) + "]",TPLACED_PROD_COL_CHINRESTMODEL);
+        screen.addDataEntryPrompt("ChinRest S/N [" + product.value(TPLACED_PROD_COL_CHINRESTSN) + "]",TPLACED_PROD_COL_CHINRESTSN);
+    }
+    else {
+        screen.addDataEntryPrompt("Product Name [" + product.value(TPLACED_PROD_COL_PRODUCT)  + "]",TPLACED_PROD_COL_PRODUCT);
+        screen.addDataEntryPrompt("Product Software Version [" + product.value(TPLACED_PROD_COL_SOFTVER)  + "]",TPLACED_PROD_COL_SOFTVER);
+        screen.addDataEntryPrompt("PC Model [" + product.value(TPLACED_PROD_COL_PCMODEL)  + "]",TPLACED_PROD_COL_PCMODEL);
+        screen.addDataEntryPrompt("ET Brand [" + product.value(TPLACED_PROD_COL_ETBRAND)  + "]",TPLACED_PROD_COL_ETBRAND);
+        screen.addDataEntryPrompt("ET Model [" + product.value(TPLACED_PROD_COL_ETMODEL)  + "]",TPLACED_PROD_COL_ETMODEL);
+        screen.addDataEntryPrompt("ET S/N [" + product.value(TPLACED_PROD_COL_ETSERIAL)  + "]",TPLACED_PROD_COL_ETSERIAL);
+        screen.addDataEntryPrompt("ChinRest Model [" + product.value(TPLACED_PROD_COL_CHINRESTMODEL) + "]",TPLACED_PROD_COL_CHINRESTMODEL);
+        screen.addDataEntryPrompt("ChinRest S/N [" + product.value(TPLACED_PROD_COL_CHINRESTSN) + "]",TPLACED_PROD_COL_CHINRESTSN);
+    }
+
+    if (update) screen.setMenuTitle("Input Placed Product information (UID: " + product.value(TINST_COL_UID)  + "). Leave empty to leave as is:");
+    else screen.setMenuTitle("Input institution information");
+
+    while (true){
+        screen.show();
+        if (screen.getAction() == ConsoleInputScreen::CA_SUBMIT){
+
+            // Checking the the number of evalution is a valid number. However if this is an update, then it can be empty.
+            QStringList values = screen.getInputedData();
+            QStringList columns = screen.getMenuEntryIDs();
+
+            if (update){
+                // When updating empty means leaving as is.
+                for (qint32 i = 0; i < columns.size(); i++){
+                    if (!values.isEmpty()){
+                        product[columns.at(i)] = values.at(i);
+                    }
+                }
+            }
+
+            bool ok = true;
+            product.at(TINST_COL_EVALS).toInt(&ok);
+            if (!ok){
+                std::cout << "ERROR: Number of evaluations should be a integer. Press any key to continue" << std::endl;
+                getchar();
+                // Should ask for infromation again.
+            }
+        }
+        else {
+            *accepted = false;
+            break;
+        }
+    }
+
+    return product;
+}
+
+void Control::showInstitutionInfoScreen(bool showPassword, const QString &keyid){
+
+    bool isOk = true;
+    DBQueries::StringMap inst = db.getInstitutionInfo(keyid,&isOk);
+    if (!isOk){
+        std::cout << "ERROR: Getting instituion info: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
+        getchar();
+        return;
+    }
 
     // Now I need to show the generated information
     ConsoleInputScreen screen;
-    screen.setMenuTitle("Instituion: " + inst.name);
+    screen.setMenuTitle("Instituion Name: " + inst.value(TINST_COL_NAME));
     QStringList info;
-    info << "Number of evaluations remaining: " + inst.numEvals;
-    info << "ET : " + inst.etbrand + " " + inst.etmodel;
+    info << "Number of evaluations remaining: " + inst.value(TINST_COL_EVALS);
     if (showPassword) {
         info << "Password: " + db.getGeneratedPassword();
     }
-    info << "Configuation file snippet:";
-    info << QString(CONFIG_INST_PASSWORD) + " = " + inst.password + ";";
-    info << QString(CONFIG_INST_ETSERIAL) + " = " + inst.etserial + ";";
-    info << QString(CONFIG_INST_NAME) + " = " + inst.name + ";";
-    info << QString(CONFIG_INST_UID) + " = " + inst.uid + ";";
+    info << "Institution Contact First Name: " <<  inst.value(TINST_COL_FNAME);
+    info << "Institution Contact Last Name: "  <<  inst.value(TINST_COL_LNAME);
+    info << "Institution Address: "            <<  inst.value(TINST_COL_ADDRESS);
+    info << "Institution EMail: "              <<  inst.value(TINST_COL_EMAIL);
+    info << "Institution Phone: "              <<  inst.value(TINST_COL_PHONE);
+
     screen.setInformationScreen(info,false);
     screen.show();
 
 }
-
 
 QStringList Control::getGreeting() const {
     QStringList list;

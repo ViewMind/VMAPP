@@ -48,6 +48,24 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
 
     config.setupVerification(cv);
 
+}
+
+void ServerControl::startServer(){
+
+    if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
+        log.appendError("Configuration file errors:<br>"+config.getError());
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        emit(exitRequested());
+        return;
+    }
+
+    if (!QSslSocket::supportsSsl()){
+        log.appendError("No support for SSL found. Cannot continue");
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        emit(exitRequested());
+        return;
+    }
+
     // Initializing the database connections.
     QString host = config.getString(CONFIG_DBHOST);
     QString dbname = config.getString(CONFIG_DBNAME);
@@ -72,24 +90,6 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
 
     dbSSLServer.setDBConnections(&dbConnBase,&dbConnID,&dbConnPatData);
     dataProcessingSSLServer.setDBConnections(&dbConnBase,&dbConnID,&dbConnPatData);
-
-}
-
-void ServerControl::startServer(){
-
-    if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
-        log.appendError("Configuration file errors:<br>"+config.getError());
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        emit(exitRequested());
-        return;
-    }
-
-    if (!QSslSocket::supportsSsl()){
-        log.appendError("No support for SSL found. Cannot continue");
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        emit(exitRequested());
-        return;
-    }
 
     log.appendStandard("Starting eye processing server...");
     dataProcessingSSLServer.startServer(&config);

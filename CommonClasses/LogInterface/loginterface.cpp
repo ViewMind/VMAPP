@@ -3,7 +3,7 @@
 LogInterface::LogInterface()
 {
     // By default it creates a text file for logging.
-    log = nullptr;
+    graphicalLogInterface = false;
     // Default logFile
     logFile = LOG_FILE_LOG;
 }
@@ -12,12 +12,8 @@ void LogInterface::setLogFileLocation(const QString &logfile){
     logFile = logfile;
 }
 
-void LogInterface::setLogInterface(QPlainTextEdit *pte){
-    log = pte;
-}
-
 void LogInterface::appendError(const QString &msg){
-    if (log != nullptr) {
+    if (graphicalLogInterface) {
         appendMessage(msg,"#aa0000",true);
         return;
     }
@@ -26,7 +22,7 @@ void LogInterface::appendError(const QString &msg){
 }
 
 void LogInterface::appendStandard(const QString &msg){
-    if (log != nullptr) {
+    if (graphicalLogInterface) {
         appendMessage(msg,"#000000");
         return;
     }
@@ -34,7 +30,7 @@ void LogInterface::appendStandard(const QString &msg){
 }
 
 void LogInterface::appendSuccess(const QString &msg){
-    if (log != nullptr) {
+    if (graphicalLogInterface) {
         appendMessage(msg,"#55aa00",true);
         return;
     }
@@ -42,7 +38,7 @@ void LogInterface::appendSuccess(const QString &msg){
 }
 
 void LogInterface::appendWarning(const QString &msg){
-    if (log != nullptr) {
+    if (graphicalLogInterface) {
         appendMessage(msg,"#969600",true);
         return;
     }
@@ -50,17 +46,15 @@ void LogInterface::appendWarning(const QString &msg){
 }
 
 void LogInterface::appendMessage(const QString &msg, const QString &color, bool bold){
-    if (log != nullptr){
-        QString html = "<p><span style=\"font-family: 'Courier New'; color: " + color;
-        if (bold){
-            html = html + "; font-weight: bold\">";
-        }
-        else{
-            html = html + "; font-weight: normal\">";
-        }
-        html = html + msg + "</span></p>";
-        log->appendHtml(html);
+    QString html = "<p><span style=\"font-family: 'Courier New'; color: " + color;
+    if (bold){
+        html = html + "; font-weight: bold\">";
     }
+    else{
+        html = html + "; font-weight: normal\">";
+    }
+    html = html + msg + "</span></p>";
+    emit(newUiMessage(html));
 }
 
 void LogInterface::appendMessage(const QString &msg, MessageType type){

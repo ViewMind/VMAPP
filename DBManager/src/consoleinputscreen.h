@@ -19,7 +19,7 @@ public:
     void addMenuOption(const QString &option, const QVariant &data = QVariant());
 
     // Set prompts for data entry.
-    void addDataEntryPrompt(const QString &prompt);
+    void addDataEntryPrompt(const QString &prompt, const QString &dataID);
 
     // Set lines of texts for information show
     void setInformationScreen(const QStringList &information, bool isGoBackAnOption);
@@ -38,6 +38,7 @@ public:
     QVariant getSelectedData() const {if (dataForMenu.size() > 0) return dataForMenu.at(selected); else return QVariant();}
     qint32 getSelected() const {return selected;}
     QStringList getInputedData() const {return inputData;}
+    QStringList getMenuEntryIDs() const {return menuEntryID;}
 
 
 private:
@@ -49,6 +50,7 @@ private:
     ConsoleAction action;
     QString menuTitle;
     QStringList menuText;
+    QStringList menuEntryID;
     QVariantList dataForMenu;
     QStringList inputData;
     qint32 selected;

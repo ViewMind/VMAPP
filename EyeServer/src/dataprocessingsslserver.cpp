@@ -74,6 +74,8 @@ void DataProcessingSSLServer::on_newConnection(){
 
 void DataProcessingSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
 
+    //qWarning() << "DATA PROCESSING SSL SIGNAL" << signalType;
+
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
         if (sockets.contains(socket)){
@@ -218,6 +220,7 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
 
 void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){    
 
+
     QString error = sockets.value(socket)->setWorkingDirectoryAndSaveAllFiles(config->getString(CONFIG_RAW_DATA_REPO));
     if (!error.isEmpty()){
         log.appendError("Could not save data files in incomming packet: " + error);
@@ -238,8 +241,6 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
     QString etserial = d.getField(DataPacket::DPFI_DB_ET_SERIAL).data.toString();
     qint32 inst_uid = d.getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
     quint8 code = verifyReportRequest(inst_uid,etserial);
-
-    //qWarning() << "VERIFY REPORT REQUEST CODE:" << code;
 
     if (code != RR_ALL_OK){
         // Need to return the error code.
@@ -457,11 +458,17 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
         return RR_DB_ERROR;
     }
 
-    //qWarning() << "SERIAL S/N" << serial << "Number of Evaluations: " << numevals << "Sent serial" << serial;
+    //qWarning() << "Number of Evaluations: " << numevals << "Sent serial" << etserial;
     data = dbConnBase->getLastResult();
 
     // Checking the serial
-    if (data.rows.first().size() != 1){
+    if (data.rows.size() == 1){
+        if (data.rows.first().size() != 1){
+            log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
+            return RR_WRONG_ET_SERIAL;
+        }
+    }
+    else{
         log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
         return RR_WRONG_ET_SERIAL;
     }
@@ -514,11 +521,11 @@ bool DataProcessingSSLServer::initAllDBS(){
         return false;
     }
     if (!dbConnID->open()){
-        log.appendError("ERROR : Could not start SQL Connection on Data Processing Server to Patient ID DB: " + dbConnBase->getError());
+        log.appendError("ERROR : Could not start SQL Connection on Data Processing Server to Patient ID DB: " + dbConnID->getError());
         return false;
     }
     if (!dbConnPatData->open()){
-        log.appendError("ERROR : Could not start SQL Connection on Data Processing Server to  to Patient Data DB: " + dbConnBase->getError());
+        log.appendError("ERROR : Could not start SQL Connection on Data Processing Server to the Patient Data DB: " + dbConnPatData->getError());
         return false;
     }
     return true;

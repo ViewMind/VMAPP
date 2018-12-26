@@ -226,6 +226,8 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
         return ret;
     }
 
+    //////////////////////////// TABLE ID Operations
+
     // If it matched, then the UID is ok. This means that the doctor exists. Now the patient needs to be checked.
     ret.indexOfPatUid = columns.indexOf(TPATDATA_COL_PUID);
     if ((ret.indexOfPatUid  == -1) || (ret.indexOfPatUid  >= values.size())) {
@@ -235,7 +237,12 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
     }
     QString patid = values.at(ret.indexOfPatUid);
     cols.clear();
-    cols << TPATID_COL_UID;
+    cols << TPATID_COL_KEYID;
+
+    // Transforming the patid via the SHA3-512.
+    qWarning() << "Searching for patid" << patid;
+    patid = QCryptographicHash::hash(patid.toLatin1(),QCryptographicHash::Sha3_512).toHex();
+
     cond = QString(TPATID_COL_UID) + "='" + patid +"'";
 
     if (!dbConnID->readFromDB(TABLE_PATIENTD_IDS,cols,cond)){
@@ -243,10 +250,12 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
         ret.errorCode = DBACK_DBCOMM_ERROR;
         return ret;
     }
+    data = dbConnID->getLastResult();
 
     if (data.rows.size() == 0){
 
         // This a new patient and it needs to be added to the DB.
+        qWarning() << "Adding the new patient to the DB with uid" << patid;
         cols.clear();
         QStringList vals;
         cols << TPATID_COL_UID;
@@ -259,7 +268,7 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
 
         // Once added the keyid is obtained.
         cols.clear();
-        cols << TPATID_COL_UID;
+        cols << TPATID_COL_KEYID;
         cond = QString(TPATID_COL_UID) + "='" + patid +"'";
 
         if (!dbConnID->readFromDB(TABLE_PATIENTD_IDS,cols,cond)){
@@ -267,6 +276,8 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
             ret.errorCode = DBACK_DBCOMM_ERROR;
             return ret;
         }
+
+        data = dbConnID->getLastResult();
 
         if (data.rows.size() == 1){
             if (data.rows.first().size() == 1){
@@ -282,7 +293,10 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
 
     }
     else{
-        if (data.rows.first().size() > 0)  ret.puid = data.rows.first().first().toInt();
+        if (data.rows.first().size() > 0)  {
+            qWarning() << "The keyid for the patient is" << data.rows;
+            ret.puid = data.rows.first().first().toInt();
+        }
         else {
             log.appendError("On VERIFY PATIENT: Error on query for PatIDTable. Rows were returned but with not columns");
             ret.errorCode = DBACK_DBCOMM_ERROR;
@@ -297,15 +311,15 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
 
 bool DBCommSSLServer::initAllDBS(){
     if (!dbConnBase->open()){
-        log.appendError("ERROR : Could not start SQL Connection to Base DB: " + dbConnBase->getError());
+        log.appendError("ERROR : Could not start SQL Connection to the Base DB: " + dbConnBase->getError());
         return false;
     }
     if (!dbConnID->open()){
-        log.appendError("ERROR : Could not start SQL Connection to Patient ID DB: " + dbConnBase->getError());
+        log.appendError("ERROR : Could not start SQL Connection to the Patient ID DB: " + dbConnID->getError());
         return false;
     }
     if (!dbConnPatData->open()){
-        log.appendError("ERROR : Could not start SQL Connection to Patient Data DB: " + dbConnBase->getError());
+        log.appendError("ERROR : Could not start SQL Connection to the Patient Data DB: " + dbConnPatData->getError());
         return false;
     }
     return true;
@@ -404,8 +418,12 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 
             if (tableNames.at(i) == TABLE_PATDATA){
                 VerifyPatientRetStruct ret = verifyPatient(columnsList.at(i),values.at(i));
-                if (ret.errorCode != DBACK_ALL_OK) break;
+                if (ret.errorCode != DBACK_ALL_OK) {
+                    code = ret.errorCode;
+                    break;
+                }
                 // Replacing the universal ID with the DB ID.
+                qWarning() << "Index of the pat uid" << ret.indexOfPatUid << "the puid" << ret.puid;
                 values[i][ret.indexOfPatUid] = QString::number(ret.puid);
             }
 

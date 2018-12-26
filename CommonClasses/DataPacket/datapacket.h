@@ -3,6 +3,8 @@
 
 #include <QByteArray>
 #include <QVariant>
+#include <QFileInfo>
+#include <QDir>
 #include "../../CommonClasses/common.h"
 
 class DataPacket

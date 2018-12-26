@@ -1,10 +1,6 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <QDebug>
-#include <QDir>
-#include <QDesktopWidget>
-#include <QApplication>
 #include "LogInterface/loginterface.h"
 
 // Which value is which eye.

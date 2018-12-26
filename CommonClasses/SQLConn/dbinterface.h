@@ -5,6 +5,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QCryptographicHash>
 
 #include "dbdescription.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"

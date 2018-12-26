@@ -1,5 +1,5 @@
 QT -= gui
-QT += sql widgets
+QT += sql
 
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -25,16 +25,17 @@ SOURCES += \
     consoleinputscreen.cpp \
     control.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
-    InstDBComm.cpp \
     ../../CommonClasses/SQLConn/dbinterface.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp
+    ../../CommonClasses/LogInterface/loginterface.cpp \
+    DBQueries.cpp
 
 HEADERS += \
     consoleinputscreen.h \
     control.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ../../CommonClasses/SQLConn/dbdescription.h \
-    InstDBComm.h \
     ../../CommonClasses/SQLConn/dbinterface.h \
     ../../CommonClasses/common.h \
-    ../../CommonClasses/LogInterface/loginterface.h
+    ../../CommonClasses/LogInterface/loginterface.h \
+    DBQueries.h \
+    ../../CommonClasses/server_defines.h

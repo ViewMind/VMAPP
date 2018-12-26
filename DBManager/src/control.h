@@ -3,16 +3,20 @@
 
 #include <QThread>
 #include "consoleinputscreen.h"
-#include "InstDBComm.h"
+#include "DBQueries.h"
 
 #define PROGRAM_NAME      "DBManager"
-#define PROGRAM_VERSION   "1.1.0"
+#define PROGRAM_VERSION   "2.0.0"
 
-#define INPUT_NAME     0
-#define INPUT_NEVAL    1
-#define INPUT_BRAND    2
-#define INPUT_MODEL    3
-#define INPUT_ETSN     4
+#define MENU_OPTION_NEW_INSTITUTION       0
+#define MENU_OPTION_UPDATE_INSTITUTION    1
+#define MENU_OPTION_NEW_PRODUCT           2
+#define MENU_OPTION_UPDATE_PRODUCT        3
+#define MENU_OPTION_SEARCH_PRODUCT        4
+#define MENU_DELETE_TEST_ENTRIES          5
+#define MENU_OPTION_RESET_PASSWD          6
+#define MENU_OPTION_EXIT                  7
+
 
 class Control : public QThread
 {
@@ -35,19 +39,24 @@ private:
     ConsoleInputScreen mainMenu;
 
     // Interface to the database
-    InstDBComm db;
+    DBQueries db;
 
     // Auxiliary functions
     QStringList getGreeting() const;
+
+    // Menu action functions.
     void newInstitutions();
     void updateInstitution();
     void resetPasswInstitution();
-    void printInstitutionInfo();
     bool deleteTestEntries();
+    void addPlacedProductForInstitution();
+    void searchForProducts();
+    void modifyProducts();
 
-    InstDBComm::Institution institutionSelection();
-    InstDBComm::Institution inputInstitutionInfo(InstDBComm::Institution inst);
-    void showInfoScreen(bool showPassword, const QString &keyid);
+    DBQueries::StringMap institutionSelection(bool *isOk);
+    DBQueries::StringMap inputInstitutionInfo(DBQueries::StringMap inst, bool *accepted);
+    DBQueries::StringMap inputProductInfo(DBQueries::StringMap product, bool *accepted);
+    void showInstitutionInfoScreen(bool showPassword, const QString &keyid);
 
 
 };

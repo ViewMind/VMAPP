@@ -7,10 +7,11 @@ ConsoleInputScreen::ConsoleInputScreen()
 }
 
 
-void ConsoleInputScreen::addDataEntryPrompt(const QString &prompt){
+void ConsoleInputScreen::addDataEntryPrompt(const QString &prompt, const QString &dataID){
     if (screenType != CIT_DATA_INPUT) clearAll();
     screenType = CIT_DATA_INPUT;
     menuText << prompt;
+    menuEntryID << dataID;
 }
 
 void ConsoleInputScreen::addMenuOption(const QString &option, const QVariant &data){
