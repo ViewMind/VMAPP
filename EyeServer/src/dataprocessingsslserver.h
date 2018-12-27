@@ -7,7 +7,7 @@
 
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "server_defines.h"
+#include "../../CommonClasses/server_defines.h"
 #include "sslidsocket.h"
 #include "ssllistener.h"
 

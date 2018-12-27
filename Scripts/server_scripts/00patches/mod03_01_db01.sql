@@ -91,8 +91,8 @@ ALTER TABLE tPatientData DROP COLUMN uid;
 ALTER TABLE tInstitution ADD firstname           VARCHAR(255);  
 ALTER TABLE tInstitution ADD lastname            VARCHAR(255);
 ALTER TABLE tInstitution ADD address             VARCHAR(255);
-ALTER TABLE tInstitution ADD phone               INT;
-ALTER TABLE tInstitution ADD email               INT;
+ALTER TABLE tInstitution ADD phone               VARCHAR(255);
+ALTER TABLE tInstitution ADD email               VARCHAR(255);
 
 -- Moving the corresponding data from the institution table to the tPlacedProducts table
 INSERT INTO tPlacedProducts (institution, etbrand, etmodel, etserial) SELECT uid, etbrand, etmodel, etserial FROM tInstitution;

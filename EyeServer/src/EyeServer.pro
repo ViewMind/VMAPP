@@ -41,4 +41,5 @@ HEADERS  += \
     ../../CommonClasses/server_defines.h
 
 RESOURCES += \
-    certificates.qrc
+    certificates.qrc \
+    configurations.qrc

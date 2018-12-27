@@ -49,6 +49,9 @@ bool DBInterface::insertDB(const QString &table, const QStringList &columns, con
     query = query  + columns.join(",") + ") VALUES (" + quotedVals.join(",") + ")";
 
     QSqlQuery q(dbConnection);
+
+    //qWarning() << "INSERT QUERY" << query;
+
     if (!q.exec(query)){
         error = "INSERT Error on query: " + query + ". ERROR: " + q.lastError().text();
         return false;

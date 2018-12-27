@@ -54,10 +54,11 @@ private:
     void modifyProducts();
 
     DBQueries::StringMap institutionSelection(bool *isOk);
+    DBQueries::StringMap productSelection(bool *isOk, const QString &instUID);
     DBQueries::StringMap inputInstitutionInfo(DBQueries::StringMap inst, bool *accepted);
     DBQueries::StringMap inputProductInfo(DBQueries::StringMap product, bool *accepted);
     void showInstitutionInfoScreen(bool showPassword, const QString &keyid);
-
+    void showPlacedProductInfoScreen(const QString & productKeyid, QStringList *result = nullptr);
 
 };
 

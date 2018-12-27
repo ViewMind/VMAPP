@@ -39,3 +39,6 @@ HEADERS += \
     ../../CommonClasses/LogInterface/loginterface.h \
     DBQueries.h \
     ../../CommonClasses/server_defines.h
+
+RESOURCES += \
+    configurations.qrc

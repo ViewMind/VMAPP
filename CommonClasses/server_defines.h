@@ -1,8 +1,15 @@
 #ifndef SERVER_DEFINES_H
 #define SERVER_DEFINES_H
 
-#define   PROGRAM_NAME                                  "EyeSever"
-#define   PROGRAM_VERSION                               "5.0.0"
+//  Defines that control which of the configuration files is used for the databse. ONLY 1 should be active at the time.
+#define   SERVER_LOCALHOST
+//#define   SERVER_DEVELOPMENT
+//#define   SERVER_PRODUCTION
+
+#define   COMMON_PATH_FOR_DB_CONFIGURATIONS             ":/CommonClasses/DBConfigurations/"
+
+#define   SERVER_PROGRAM_NAME                           "EyeSever"
+#define   SERVER_PROGRAM_VERSION                        "5.0.0"
 
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"
