@@ -5,9 +5,9 @@
 #include <QMetaEnum>
 #include "../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../CommonClasses/SQLConn/dbinterface.h"
+#include "../../CommonClasses/server_defines.h"
 #include "sslidsocket.h"
 #include "ssllistener.h"
-#include "server_defines.h"
 
 class DBCommSSLServer : public QObject
 {

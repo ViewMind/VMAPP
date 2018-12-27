@@ -6,7 +6,7 @@ Control::Control(QObject *parent):QThread(parent)
     mainMenu.addMenuOption("New institution",MENU_OPTION_NEW_INSTITUTION);
     mainMenu.addMenuOption("Reset institution password",MENU_OPTION_RESET_PASSWD);
     mainMenu.addMenuOption("Update institution information",MENU_OPTION_UPDATE_INSTITUTION);
-    mainMenu.addMenuOption("Add product",MENU_OPTION_NEW_PRODUCT);
+    mainMenu.addMenuOption("Add placed product in an institution",MENU_OPTION_NEW_PRODUCT);
     mainMenu.addMenuOption("Modify product",MENU_OPTION_UPDATE_PRODUCT);
     mainMenu.addMenuOption("Search for product",MENU_OPTION_SEARCH_PRODUCT);
     mainMenu.addMenuOption("Delete test entries",MENU_DELETE_TEST_ENTRIES);
@@ -18,7 +18,7 @@ void Control::run(){
     QStringList loadmsg = getGreeting();
 
     if (!db.initConnection()){
-        loadmsg << "Error on DB Initialization " << db.getError();
+        loadmsg << "Error on DB Initialization: " + db.getError();
         loadScreen.setInformationScreen(loadmsg,false);
         loadScreen.show();
         emit(exitRequested());
@@ -61,7 +61,7 @@ void Control::run(){
             break;
         case MENU_OPTION_UPDATE_PRODUCT:
             // Add a product for a given institution
-            modifyProduct();
+            modifyProducts();
             break;
         case MENU_OPTION_SEARCH_PRODUCT:
             // Search for products
@@ -138,7 +138,7 @@ void Control::resetPasswInstitution(){
     }
 
     // Showing the new password
-    showInstitutionInfoScreen(true,inst.keyid);
+    showInstitutionInfoScreen(true,inst.value(TINST_COL_KEYID));
 
 }
 
@@ -146,7 +146,8 @@ void Control::updateInstitution(){
 
     bool ok;
     DBQueries::StringMap inst = institutionSelection(&ok);
-    if (!inst.ok) return;
+
+    if (!ok) return;
 
     inst =  inputInstitutionInfo(inst,&ok);
     if (!ok) return;
@@ -158,11 +159,140 @@ void Control::updateInstitution(){
     }
 
     // Showing updated information.
-    showInstitutionInfoScreen(false,inst.keyid);
+    showInstitutionInfoScreen(false,inst.value(TINST_COL_KEYID));
 
 }
 
 void Control::addPlacedProductForInstitution(){
+
+    bool ok;
+    DBQueries::StringMap inst = institutionSelection(&ok);
+    if (!ok) return;
+
+    DBQueries::StringMap product = db.getEmptyStringMap(DBQueries::BSMT_PLACED_PRODUCT);
+    product = inputProductInfo(product,&ok);
+    if (!ok) return;
+
+    product[TPLACED_PROD_COL_INSTITUTION] = inst.value(TINST_COL_UID);
+
+    qint32 keyid = db.addNewProduct(product);
+
+    if (keyid == -1){
+        std::cout << "ERROR Adding new placed product: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
+        getchar();
+        return;
+    }
+
+    // Showing the information
+    showPlacedProductInfoScreen(QString::number(keyid));
+
+}
+
+void Control::modifyProducts(){
+
+    bool ok;
+    DBQueries::StringMap inst = institutionSelection(&ok);
+    if (!ok) return;
+
+    DBQueries::StringMap product = productSelection(&ok,inst.value(TINST_COL_UID));
+    if (!ok) return;
+
+    product =  inputProductInfo(product,&ok);
+    if (!ok) return;
+
+    if (!db.updateProduct(product)){
+        std::cout << "ERROR: Updating product information " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
+        getchar();
+        return;
+    }
+
+    showPlacedProductInfoScreen(product.value(TPLACED_PROD_COL_KEYID));
+
+}
+
+void Control::searchForProducts(){
+    ConsoleInputScreen screen;
+    screen.addDataEntryPrompt("Input search string","");
+    screen.setMenuTitle("Search in placed products");
+    while (true){
+        screen.show();
+        if (screen.getAction() == ConsoleInputScreen::CA_SUBMIT){
+            QStringList searchstrlist = screen.getInputedData();
+
+            bool ok;
+            QStringList ans = db.searchForPlacedProducts(searchstrlist.first(),&ok);
+
+            if (!ok){
+                std::cout << "ERROR: While searching for products " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
+                getchar();
+                return;
+            }
+
+            QFile file("searchoutput");
+            if (!file.open(QFile::WriteOnly)){
+                std::cout << "ERROR: Could not opern file for search output for writing. Press any key to continue" << std::endl;
+                getchar();
+                return;
+            }
+
+            QTextStream writer(&file);
+            writer.setCodec(COMMON_TEXT_CODEC);
+
+            writer << "SEARCH RESULTS FOR: " + searchstrlist.first() + "\n";
+
+            for (qint32 i = 0; i < ans.size(); i++){
+                QStringList writeData;
+                showPlacedProductInfoScreen(ans.at(i),&writeData);
+                writer << ">>>>>>>>>>>>>>><< RESULT " + QString::number(i) + ":\n";
+                writer << writeData.join("\n");
+            }
+            file.close();
+
+            std::cout << "Output written to file searchoutput. Press any key to continue" << std::endl;
+            getchar();
+            return;
+
+
+        }
+        else break;
+    }
+}
+
+DBQueries::StringMap Control::productSelection(bool *isOk, const QString &instUID){
+
+    ConsoleInputScreen screen;
+    DBQueries::StringMap product;
+    *isOk = true;
+
+    // Selecting the institution
+    bool ok;
+    QList<DBQueries::StringMap> info = db.getAllProductsForInstitutions(instUID,&ok);
+    if (!ok){
+        std::cout << "ERROR Getting product list: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
+        getchar();
+        *isOk = false;
+        return product;
+    }
+
+    for (qint32 i = 0; i < info.size(); i++){
+        screen.addMenuOption(info.at(i).value(TPLACED_PROD_COL_PRODUCT) + " - S/N: " + info.at(i).value(TPLACED_PROD_COL_PRODSN) ,info.at(i).value(TPLACED_PROD_COL_KEYID));
+    }
+    screen.setMenuTitle("Select product");
+    screen.show();
+
+    if (screen.getAction() == ConsoleInputScreen::CA_BACK) {
+        *isOk = false;
+        return product;
+    }
+    else {
+        product = db.getProductInformation(screen.getSelectedData().toString(),&ok);
+        if (!ok){
+            *isOk = false;
+            std::cout << "ERROR Getting product information: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
+            getchar();
+        }
+        return product;
+    }
 
 }
 
@@ -239,22 +369,26 @@ DBQueries::StringMap Control::inputInstitutionInfo(DBQueries::StringMap inst, bo
             QStringList values = screen.getInputedData();
             QStringList columns = screen.getMenuEntryIDs();
 
-            if (update){
-                // When updating empty means leaving as is.
-                for (qint32 i = 0; i < columns.size(); i++){
-                    if (!values.isEmpty()){
-                        inst[columns.at(i)] = values.at(i);
-                    }
+            // When updating empty means leaving as is.
+            for (qint32 i = 0; i < columns.size(); i++){
+                if (!values.at(i).isEmpty() || !update){
+                    inst[columns.at(i)] = values.at(i);
                 }
             }
 
             bool ok = true;
-            inst.at(TINST_COL_EVALS).toInt(&ok);
+            //qWarning() << "Converting value |" + inst.value(TINST_COL_EVALS) + "|";
+            inst.value(TINST_COL_EVALS).toInt(&ok);
+
+            // This is ok if 1) the number of evaluations is a valid integer. OR 2) We are updating AND no number evaluation has been entered.
+            // ok = ok || (update && !inst.contains(TINST_COL_EVALS));
+
             if (!ok){
                 std::cout << "ERROR: Number of evaluations should be a integer. Press any key to continue" << std::endl;
                 getchar();
                 // Should ask for infromation again.
             }
+            else break;
         }
         else {
             *accepted = false;
@@ -282,18 +416,18 @@ DBQueries::StringMap Control::inputProductInfo(DBQueries::StringMap product, boo
         screen.addDataEntryPrompt("ChinRest S/N [" + product.value(TPLACED_PROD_COL_CHINRESTSN) + "]",TPLACED_PROD_COL_CHINRESTSN);
     }
     else {
-        screen.addDataEntryPrompt("Product Name [" + product.value(TPLACED_PROD_COL_PRODUCT)  + "]",TPLACED_PROD_COL_PRODUCT);
-        screen.addDataEntryPrompt("Product Software Version [" + product.value(TPLACED_PROD_COL_SOFTVER)  + "]",TPLACED_PROD_COL_SOFTVER);
-        screen.addDataEntryPrompt("PC Model [" + product.value(TPLACED_PROD_COL_PCMODEL)  + "]",TPLACED_PROD_COL_PCMODEL);
-        screen.addDataEntryPrompt("ET Brand [" + product.value(TPLACED_PROD_COL_ETBRAND)  + "]",TPLACED_PROD_COL_ETBRAND);
-        screen.addDataEntryPrompt("ET Model [" + product.value(TPLACED_PROD_COL_ETMODEL)  + "]",TPLACED_PROD_COL_ETMODEL);
-        screen.addDataEntryPrompt("ET S/N [" + product.value(TPLACED_PROD_COL_ETSERIAL)  + "]",TPLACED_PROD_COL_ETSERIAL);
-        screen.addDataEntryPrompt("ChinRest Model [" + product.value(TPLACED_PROD_COL_CHINRESTMODEL) + "]",TPLACED_PROD_COL_CHINRESTMODEL);
-        screen.addDataEntryPrompt("ChinRest S/N [" + product.value(TPLACED_PROD_COL_CHINRESTSN) + "]",TPLACED_PROD_COL_CHINRESTSN);
+        screen.addDataEntryPrompt("Product Name",TPLACED_PROD_COL_PRODUCT);
+        screen.addDataEntryPrompt("Product Software Version",TPLACED_PROD_COL_SOFTVER);
+        screen.addDataEntryPrompt("PC Model",TPLACED_PROD_COL_PCMODEL);
+        screen.addDataEntryPrompt("ET Brand",TPLACED_PROD_COL_ETBRAND);
+        screen.addDataEntryPrompt("ET Model" ,TPLACED_PROD_COL_ETMODEL);
+        screen.addDataEntryPrompt("ET S/N",TPLACED_PROD_COL_ETSERIAL);
+        screen.addDataEntryPrompt("ChinRest Model" ,TPLACED_PROD_COL_CHINRESTMODEL);
+        screen.addDataEntryPrompt("ChinRest S/N",TPLACED_PROD_COL_CHINRESTSN);
     }
 
-    if (update) screen.setMenuTitle("Input Placed Product information (UID: " + product.value(TINST_COL_UID)  + "). Leave empty to leave as is:");
-    else screen.setMenuTitle("Input institution information");
+    if (update) screen.setMenuTitle("Input Placed Product information (UID: " + product.value(TPLACED_PROD_COL_INSTITUTION)  + "). Leave empty to leave as is:");
+    else screen.setMenuTitle("Input product information information");
 
     while (true){
         screen.show();
@@ -303,22 +437,14 @@ DBQueries::StringMap Control::inputProductInfo(DBQueries::StringMap product, boo
             QStringList values = screen.getInputedData();
             QStringList columns = screen.getMenuEntryIDs();
 
-            if (update){
-                // When updating empty means leaving as is.
-                for (qint32 i = 0; i < columns.size(); i++){
-                    if (!values.isEmpty()){
-                        product[columns.at(i)] = values.at(i);
-                    }
+            // When updating empty means leaving as is.
+            for (qint32 i = 0; i < columns.size(); i++){
+                if (!values.at(i).isEmpty()){
+                    product[columns.at(i)] = values.at(i);
                 }
             }
 
-            bool ok = true;
-            product.at(TINST_COL_EVALS).toInt(&ok);
-            if (!ok){
-                std::cout << "ERROR: Number of evaluations should be a integer. Press any key to continue" << std::endl;
-                getchar();
-                // Should ask for infromation again.
-            }
+            break;
         }
         else {
             *accepted = false;
@@ -347,14 +473,57 @@ void Control::showInstitutionInfoScreen(bool showPassword, const QString &keyid)
     if (showPassword) {
         info << "Password: " + db.getGeneratedPassword();
     }
-    info << "Institution Contact First Name: " <<  inst.value(TINST_COL_FNAME);
-    info << "Institution Contact Last Name: "  <<  inst.value(TINST_COL_LNAME);
-    info << "Institution Address: "            <<  inst.value(TINST_COL_ADDRESS);
-    info << "Institution EMail: "              <<  inst.value(TINST_COL_EMAIL);
-    info << "Institution Phone: "              <<  inst.value(TINST_COL_PHONE);
+    info << "Institution Contact First Name: " +  inst.value(TINST_COL_FNAME);
+    info << "Institution Contact Last Name: "  +  inst.value(TINST_COL_LNAME);
+    info << "Institution Address: "            +  inst.value(TINST_COL_ADDRESS);
+    info << "Institution EMail: "              +  inst.value(TINST_COL_EMAIL);
+    info << "Institution Phone: "              +  inst.value(TINST_COL_PHONE);
 
     screen.setInformationScreen(info,false);
     screen.show();
+
+}
+
+void Control::showPlacedProductInfoScreen(const QString & productKeyid, QStringList *result){
+
+    bool isOk = true;
+    DBQueries::StringMap product = db.getProductInformation(productKeyid,&isOk);
+    if (!isOk){
+        std::cout << "ERROR: Getting placed product info: " << db.getError().toStdString() << ". Press any key to continue" << std::endl;
+        getchar();
+        return;
+    }
+
+    // Now I need to show the generated information
+    ConsoleInputScreen screen;
+    screen.setMenuTitle("Placed Product Information");
+    QStringList info;
+    info << "Product Name: " + product.value(TPLACED_PROD_COL_PRODUCT);
+    info << "Product S/N: " + product.value(TPLACED_PROD_COL_PRODSN);
+    info << "Institution: " + product.value(TPLACED_PROD_COL_INSTITUTION);
+    info << "Product Software Version: " + product.value(TPLACED_PROD_COL_SOFTVER);
+    info << "PC Model: " + product.value(TPLACED_PROD_COL_PCMODEL);
+    info << "ET Brand: " + product.value(TPLACED_PROD_COL_ETBRAND);
+    info << "ET Model: "  + product.value(TPLACED_PROD_COL_ETMODEL);
+    info << "ET S/N: " + product.value(TPLACED_PROD_COL_ETSERIAL);
+    info << "ChinRest Model: " + product.value(TPLACED_PROD_COL_CHINRESTMODEL);
+    info << "ChinRest S/N: " + product.value(TPLACED_PROD_COL_CHINRESTSN);
+
+    if (result == nullptr){
+        info << "====================== CONFIGURATIION CODE SNIPPET: ";
+        info << QString(CONFIG_INST_PASSWORD) + " = " + product.value(TINST_COL_HASHPASS) + ";";
+        info << QString(CONFIG_INST_UID) + " = " + product.value(TPLACED_PROD_COL_INSTITUTION) + ";";
+        info << QString(CONFIG_INST_NAME) + " = " + product.value(TINST_COL_NAME) + ";";
+        info << QString(CONFIG_INST_ETSERIAL) + " = " + product.value(TPLACED_PROD_COL_ETSERIAL) + ";";
+
+        screen.setInformationScreen(info,false);
+        screen.show();
+    }
+    else{
+        for (qint32 i = 0; i < info.size(); i++){
+            result->append(info.at(i));
+        }
+    }
 
 }
 

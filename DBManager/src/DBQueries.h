@@ -29,9 +29,13 @@ public:
     bool updateNewInstitution(StringMap inst);
     bool resetPassword(const QString &keyidInst);
     bool deleteTestUsers(bool *deletedOne);
-    bool addNewProduct(StringMap product);
+    qint32 addNewProduct(StringMap product);
+    bool updateProduct(StringMap product);
     QList<StringMap> getAllInstitutions(bool *isOk);
-    StringMap getInstitutionInfo(const QString &keyidInst, bool *isOk);
+    QList<StringMap> getAllProductsForInstitutions(const QString &instUID, bool *isOk);
+    QStringList searchForPlacedProducts(const QString &search, bool *isOk);
+    StringMap getInstitutionInfo(const QString &keyidPP, bool *isOk);
+    StringMap getProductInformation(const QString &keyidProd, bool *isOk);
 
     // Close connection.
     void close() {dbBase.close(); dbPatData.close(); dbPatID.close();}

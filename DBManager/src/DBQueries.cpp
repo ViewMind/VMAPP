@@ -46,7 +46,28 @@ bool DBQueries::initConnection(){
 
     ConfigurationManager dbconf;
     dbconf.setupVerification(cv);
-    if (!dbconf.loadConfiguration(CONFIG_FILE,COMMON_TEXT_CODEC)){
+    QString configurationFile = COMMON_PATH_FOR_DB_CONFIGURATIONS;
+    qint32 definitions = 0;
+
+#ifdef SERVER_LOCALHOST
+    configurationFile = configurationFile + "db_localhost";
+    definitions++;
+#endif
+#ifdef SERVER_DEVELOPMENT
+    configurationFile = configurationFile + "db_development";
+    definitions++;
+#endif
+#ifdef SERVER_PRODUCTION
+    configurationFile = configurationFile + "db_production";
+    definitions++;
+#endif
+
+    if (definitions != 1){
+        error = "The number of DB Configuration files is " + QString::number(definitions) + " instead of 1" ;
+        return false;
+    }
+
+    if (!dbconf.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
         error = "Loading DB configuration file: " + dbconf.getError();
         return false;
     }
@@ -60,7 +81,7 @@ bool DBQueries::initConnection(){
 
     dbBase.setupDB(DB_NAME_BASE,dbconf.getString(CONFIG_DBHOST),dbconf.getString(CONFIG_DBNAME),dbconf.getString(CONFIG_DBUSER),dbconf.getString(CONFIG_DBPASSWORD),dbconf.getInt(CONFIG_DBPORT));
     dbPatID.setupDB(DB_NAME_ID,dbconf.getString(CONFIG_ID_DBHOST),dbconf.getString(CONFIG_ID_DBNAME),dbconf.getString(CONFIG_ID_DBUSER),dbconf.getString(CONFIG_ID_DBPASSWORD),dbconf.getInt(CONFIG_ID_DBPORT));
-    dbPatData.setupDB(DB_NAME_BASE,dbconf.getString(CONFIG_PATDATA_DBHOST),dbconf.getString(CONFIG_PATDATA_DBNAME),dbconf.getString(CONFIG_PATDATA_DBUSER),dbconf.getString(CONFIG_PATDATA_DBPASSWORD),dbconf.getInt(CONFIG_PATDATA_DBPORT));
+    dbPatData.setupDB(DB_NAME_PATDATA,dbconf.getString(CONFIG_PATDATA_DBHOST),dbconf.getString(CONFIG_PATDATA_DBNAME),dbconf.getString(CONFIG_PATDATA_DBUSER),dbconf.getString(CONFIG_PATDATA_DBPASSWORD),dbconf.getInt(CONFIG_PATDATA_DBPORT));
 
     if (!dbBase.open()){
         error = "Connecting to Base DB: " + dbBase.getError();
@@ -68,16 +89,16 @@ bool DBQueries::initConnection(){
     }
 
     if (!dbPatID.open()){
-        error = "Connecting to Base DB: " + dbBase.getError();
+        error = "Connecting to Pat ID DB: " + dbPatID.getError();
         return false;
     }
 
     if (!dbPatData.open()){
-        error = "Connecting to Base DB: " + dbBase.getError();
+        error = "Connecting to PatData DB: " + dbPatID.getError();
         return false;
     }
 
-    connectionMsg = "Established connection to DBs:\n" + dbconf.getString(CONFIG_DBNAME) + " for " + dbconf.getString(CONFIG_DBUSER) + "@" + dbconf.getString(CONFIG_DBHOST) + portmsg;
+    connectionMsg = "Established connection to DBs:\n" + dbconf.getString(CONFIG_DBNAME) + " for " + dbconf.getString(CONFIG_DBUSER) + "@" + dbconf.getString(CONFIG_DBHOST) + portmsg + "\n";
     connectionMsg = connectionMsg + dbconf.getString(CONFIG_ID_DBNAME) + " for " + dbconf.getString(CONFIG_ID_DBUSER) + "@" + dbconf.getString(CONFIG_ID_DBHOST) + portmsgID + "\n";
     connectionMsg = connectionMsg + dbconf.getString(CONFIG_PATDATA_DBNAME) + " for " + dbconf.getString(CONFIG_PATDATA_DBUSER) + "@" + dbconf.getString(CONFIG_PATDATA_DBHOST) + portmsgID + "\n";
 
@@ -88,7 +109,7 @@ bool DBQueries::initConnection(){
     return true;
 }
 
-bool DBQueries::addNewProduct(StringMap product){
+qint32 DBQueries::addNewProduct(StringMap product){
 
     // Inserting the produc info
     product.remove(TPLACED_PROD_COL_KEYID);
@@ -96,14 +117,14 @@ bool DBQueries::addNewProduct(StringMap product){
     stringMapToColumnValuePair(product,&columns,&values);
     if (!dbBase.insertDB(TABLE_PLACEDPRODUCTS,columns,values)){
         error = dbBase.getError();
-        return false;
+        return -1;
     }
 
     // All good, getting the keyid to generate the product serial number
     qint32 keyid = dbBase.getNewestKeyid(TPLACED_PROD_COL_KEYID,TABLE_PLACEDPRODUCTS);
     if (keyid == -1){
         error = dbBase.getError();
-        return false;
+        return -1;
     }
 
     QString valnum = QString::number(keyid);
@@ -115,10 +136,10 @@ bool DBQueries::addNewProduct(StringMap product){
     QString condition = QString(TPLACED_PROD_COL_KEYID) + " = '" + QString::number(keyid) + "'";
     if (!dbBase.updateDB(TABLE_PLACEDPRODUCTS,columns,values,condition)){
         error = dbBase.getError();
-        return false;
+        return -1;
     }
 
-    return true;
+    return keyid;
 
 }
 
@@ -151,7 +172,7 @@ qint32 DBQueries::addNewInstitution(StringMap inst){
     // Generating the Hash of the password
     QString hashpass(QCryptographicHash::hash(generatedPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
     inst[TINST_COL_HASHPASS] = hashpass;
-    inst[TINST_COL_UID] = generatedUID;
+    inst[TINST_COL_UID] = QString::number(generatedUID);
 
     columns.clear();
     QStringList values;
@@ -195,6 +216,28 @@ bool DBQueries::updateNewInstitution(StringMap inst){
 
 }
 
+bool DBQueries::updateProduct(StringMap product){
+
+    QStringList columns;
+    QStringList values;
+
+    QString keyid = product.value(TPLACED_PROD_COL_KEYID);
+    product.remove(TPLACED_PROD_COL_KEYID);
+    product.remove(TINST_COL_HASHPASS);
+    product.remove(TINST_COL_NAME);
+
+    stringMapToColumnValuePair(product,&columns,&values);
+
+    if (!dbBase.updateDB(TABLE_PLACEDPRODUCTS,columns,values,QString(TINST_COL_KEYID) + " = '" + keyid + "'")){
+        error = dbBase.getError();
+        return false;
+    }
+
+    return true;
+
+}
+
+
 bool DBQueries::resetPassword(const QString &keyidInst){
 
     // Generating a new password
@@ -220,7 +263,7 @@ bool DBQueries::resetPassword(const QString &keyidInst){
 
 bool DBQueries::deleteTestUsers(bool *deletedOne){
 
-    QString uid = QCryptographicHash::hash(QString(TEST_UID),QCryptographicHash::Sha3_512).toHex();
+    QString uid = QCryptographicHash::hash(QString(TEST_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
 
     QStringList columns;
     columns << TPATID_COL_KEYID;
@@ -293,6 +336,63 @@ QList<DBQueries::StringMap> DBQueries::getAllInstitutions(bool *isOk){
     return ans;
 }
 
+QStringList DBQueries::searchForPlacedProducts(const QString &search, bool *isOk){
+
+    *isOk = true;
+    QStringList ans;
+
+
+    QStringList columns = getEmptyStringMap(BSMT_PLACED_PRODUCT).keys();
+    QStringList conditions;
+    for (qint32 i = 0; i < columns.size(); i++){
+        conditions << "(" + columns.at(i) + " LIKE '%" + search + "%')";
+    }
+    QString condition = conditions.join(" OR ");
+
+    columns.clear();
+    columns << TPLACED_PROD_COL_KEYID;
+    if (!dbBase.readFromDB(TABLE_PLACEDPRODUCTS,columns,condition)){
+        error = dbBase.getError();
+        *isOk = false;
+        return ans;
+    }
+
+    DBData result = dbBase.getLastResult();
+
+    for (qint32 i = 0; i <  result.rows.size(); i++){
+        ans << result.rows.at(i).first();
+    }
+
+    return ans;
+
+}
+
+QList<DBQueries::StringMap> DBQueries::getAllProductsForInstitutions(const QString &instUID, bool *isOk){
+    *isOk = true;
+    QList<StringMap> ans;
+
+    QStringList columns;
+    columns << TPLACED_PROD_COL_PRODUCT << TPLACED_PROD_COL_PRODSN << TPLACED_PROD_COL_KEYID;
+    if (!dbBase.readFromDB(TABLE_PLACEDPRODUCTS,columns,QString(TPLACED_PROD_COL_INSTITUTION) + " = '" + instUID + "'")){
+        error = dbBase.getError();
+        *isOk = false;
+        return ans;
+    }
+
+    DBData result = dbBase.getLastResult();
+
+    for (qint32 i = 0; i <  result.rows.size(); i++){
+        StringMap map = getEmptyStringMap(BSMT_PLACED_PRODUCT);
+        map[TPLACED_PROD_COL_PRODUCT]  = result.rows.at(i).first();
+        map[TPLACED_PROD_COL_PRODSN] = result.rows.at(i).at(1);
+        map[TPLACED_PROD_COL_KEYID] = result.rows.at(i).last();
+        ans << map;
+    }
+
+    return ans;
+}
+
+
 DBQueries::StringMap DBQueries::getInstitutionInfo(const QString &keyidInst, bool *isOk){
     QStringList columns;
     StringMap info;
@@ -317,6 +417,60 @@ DBQueries::StringMap DBQueries::getInstitutionInfo(const QString &keyidInst, boo
     for (qint32 i = 0; i < columns.size(); i++){
         info[columns.at(i)] = row.at(i);
     }
+
+    return info;
+}
+
+DBQueries::StringMap DBQueries::getProductInformation(const QString &keyidPP, bool *isOk){
+
+    QStringList columns;
+    StringMap info;
+    *isOk = true;
+
+    info = getEmptyStringMap(BSMT_PLACED_PRODUCT);
+
+    columns = info.keys();
+    if (!dbBase.readFromDB(TABLE_PLACEDPRODUCTS,columns,QString(TPLACED_PROD_COL_KEYID) + " = '" + keyidPP + "'")){
+        error = dbBase.getError();
+        *isOk = false;
+        return info;
+    }
+
+    if (dbBase.getLastResult().rows.size() != 1){
+        *isOk = false;
+        error = "When getting info on a placed product, obtained a number of rows different thatn 1: " + QString::number(dbBase.getLastResult().rows.size());
+        return info;
+    }
+
+    QStringList row = dbBase.getLastResult().rows.first();
+    for (qint32 i = 0; i < columns.size(); i++){
+        info[columns.at(i)] = row.at(i);
+    }
+
+    // Getting the information for the institution for the hashed password.
+    columns.clear();
+    columns << TINST_COL_HASHPASS << TINST_COL_NAME;
+    if (!dbBase.readFromDB(TABLE_INSTITUTION,columns,QString(TINST_COL_UID)+ " = '" + info.value(TPLACED_PROD_COL_INSTITUTION) + "'")){
+        *isOk = false;
+        error = dbBase.getError();
+        return info;
+    }
+
+    if (dbBase.getLastResult().rows.size() != 1){
+        *isOk = false;
+        error = "When getting info on institution for a placed a placed product, obtained a number of rows different thatn 1: " + QString::number(dbBase.getLastResult().rows.size());
+        return info;
+    }
+
+    row = dbBase.getLastResult().rows.first();
+    if (row.size() != 2){
+        *isOk = false;
+        error = "When getting info on institution for a placed a placed product, obtained a number of columns different than 2: " + QString::number(row.size());
+        return info;
+    }
+
+    info[TINST_COL_HASHPASS] = row.first();
+    info[TINST_COL_NAME] = row.last();
 
     return info;
 }
@@ -360,11 +514,11 @@ DBQueries::StringMap DBQueries::getEmptyStringMap(BaseStringMapType bsmt){
 
     QStringList cols;
     switch (bsmt){
-       BSMT_INSTITUTION:
+       case BSMT_INSTITUTION:
           cols << TINST_COL_ADDRESS << TINST_COL_EMAIL << TINST_COL_EVALS << TINST_COL_FNAME << TINST_COL_HASHPASS
-               << TINST_COL_LNAME << TINST_COL_NAME << TINST_COL_PHONE << TINST_COL_KEYID;
+               << TINST_COL_LNAME << TINST_COL_NAME << TINST_COL_PHONE << TINST_COL_KEYID << TINST_COL_UID;
        break;
-       BSMT_PLACED_PRODUCT:
+       case BSMT_PLACED_PRODUCT:
           cols << TPLACED_PROD_COL_CHINRESTMODEL << TPLACED_PROD_COL_CHINRESTSN << TPLACED_PROD_COL_ETBRAND << TPLACED_PROD_COL_ETMODEL << TPLACED_PROD_COL_ETSERIAL
                << TPLACED_PROD_COL_INSTITUTION << TPLACED_PROD_COL_PCMODEL << TPLACED_PROD_COL_PRODSN << TPLACED_PROD_COL_PRODUCT << TPLACED_PROD_COL_SOFTVER
                << TPLACED_PROD_COL_KEYID;

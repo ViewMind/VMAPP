@@ -452,7 +452,7 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
     // Checking the serial number of the ET
     columns.clear();
     columns << TPLACED_PROD_COL_ETSERIAL;
-    condition = "(" + QString(TPLACED_PROD_COL_ETSERIAL) + " = '" + etserial + "') AND (" + QString(TPLACED_PROD_COL_INSTITUTION) + " = '" + UID + "')";
+    condition = "(" + QString(TPLACED_PROD_COL_ETSERIAL) + " = '" + etserial + "') AND (" + QString(TPLACED_PROD_COL_INSTITUTION) + " = '" + QString::number(UID) + "')";
     if (!dbConnBase->readFromDB(TABLE_PLACEDPRODUCTS,columns,condition)){
         log.appendError("When querying serial number for institituion: " + dbConnBase->getError());
         return RR_DB_ERROR;
@@ -535,9 +535,13 @@ QString DataProcessingSSLServer::getPatientID(const QString &pat_uid){
 
     QStringList columns;
     columns << TPATID_COL_KEYID;
-    QString condition = QString(TPATID_COL_UID) + " = '" + pat_uid + "'";
-    if (!dbConnID->readFromDB(TABLE_INSTITUTION,columns,condition)){
-        log.appendError("When querying for the database id of patient: " + pat_uid + ". Got the error: " +  dbConnBase->getError());
+
+    // Doing the hash on the patient id.
+    QString hashid = QCryptographicHash::hash(pat_uid.toLatin1(),QCryptographicHash::Sha3_512).toHex();
+
+    QString condition = QString(TPATID_COL_UID) + " = '" + hashid + "'";
+    if (!dbConnID->readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
+        log.appendError("When querying for the database id of patient: " + pat_uid + ". Got the error: " +  dbConnID->getError());
         return "-1";
     }
 
