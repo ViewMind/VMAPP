@@ -23,6 +23,46 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
 
     // DB configuration is all strings.
     cmd.clear();
+    cv[CONFIG_S3_ADDRESS] = cmd;
+
+    config.setupVerification(cv);
+
+}
+
+void ServerControl::startServer(){
+
+    QString configurationFile = COMMON_PATH_FOR_DB_CONFIGURATIONS;
+    qint32 definitions = 0;
+
+    ConfigurationManager dbconfigs;
+
+#ifdef SERVER_LOCALHOST
+    configurationFile = configurationFile + "db_localhost";
+    definitions++;
+#endif
+#ifdef SERVER_DEVELOPMENT
+    configurationFile = configurationFile + "db_development";
+    definitions++;
+#endif
+#ifdef SERVER_PRODUCTION
+    configurationFile = configurationFile + "db_production";
+    definitions++;
+#endif
+
+
+    if (definitions != 1){
+        log.appendError("The number of DB Configuration files is " + QString::number(definitions) + " instead of 1");
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        emit(exitRequested());
+        return;
+    }
+
+    // Creating the configuration verifier
+    ConfigurationManager::CommandVerifications cv;
+    ConfigurationManager::Command cmd;
+
+    // DB configuration is all strings.
+    cmd.clear();
     cv[CONFIG_DBHOST] = cmd;
     cv[CONFIG_DBNAME] = cmd;
     cv[CONFIG_DBPASSWORD] = cmd;
@@ -38,19 +78,23 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
     cv[CONFIG_PATDATA_DBPASSWORD] = cmd;
     cv[CONFIG_PATDATA_DBUSER] = cmd;
 
-
-    cv[CONFIG_S3_ADDRESS] = cmd;
-
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DBPORT] = cmd;
     cv[CONFIG_ID_DBPORT] = cmd;
     cv[CONFIG_PATDATA_DBPORT] = cmd;
 
-    config.setupVerification(cv);
+    dbconfigs.setupVerification(cv);
 
-}
+    // Database configuration files
+    if (!dbconfigs.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
+        log.appendError("DB Configuration file errors:<br>"+config.getError());
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        emit(exitRequested());
+        return;
+    }
 
-void ServerControl::startServer(){
+    // Joining the two configuration files
+    config.merge(dbconfigs);
 
     if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
         log.appendError("Configuration file errors:<br>"+config.getError());
