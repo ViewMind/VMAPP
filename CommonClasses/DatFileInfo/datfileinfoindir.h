@@ -1,6 +1,7 @@
 #ifndef DATFILEINFO_H
 #define DATFILEINFO_H
 
+#include <QDir>
 #include "../common.h"
 #include "../LogInterface/loginterface.h"
 

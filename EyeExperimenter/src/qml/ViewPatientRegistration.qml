@@ -32,8 +32,12 @@ VMBase {
         labelLastName.setText(patInfo.lastname);
         labelProvince.setText(patInfo.state);
 
+//        for (var keyputa in patInfo){
+//            console.log(keyputa + ": " + patInfo[keyputa]);
+//        }
+
         // Substr is used as the first two letters are the country code.
-        labelDocument_number.setText(patInfo.uid.substr(2));
+        labelDocument_number.setText(patInfo.puid.substr(2));
 
         // Setting the document type.
         var idType = patInfo.idtype;

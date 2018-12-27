@@ -86,7 +86,7 @@ VMBase {
             idtype: docTypes.currentText,
             firstname: labelName.vmEnteredText,
             lastname: labelLastName.vmEnteredText,
-            countryid: labelCountry.currentText,
+            countryid: labelCountry.vmCurrentText,
             state: labelProvince.vmEnteredText,
             city: labelCity.vmEnteredText,
             telephone: labelPhone.vmEnteredText,
