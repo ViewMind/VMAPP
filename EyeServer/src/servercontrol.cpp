@@ -21,10 +21,6 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
 
-    // DB configuration is all strings.
-    cmd.clear();
-    cv[CONFIG_S3_ADDRESS] = cmd;
-
     config.setupVerification(cv);
 
 }
@@ -77,6 +73,8 @@ void ServerControl::startServer(){
     cv[CONFIG_PATDATA_DBNAME] = cmd;
     cv[CONFIG_PATDATA_DBPASSWORD] = cmd;
     cv[CONFIG_PATDATA_DBUSER] = cmd;
+
+    cv[CONFIG_S3_ADDRESS] = cmd;
 
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DBPORT] = cmd;

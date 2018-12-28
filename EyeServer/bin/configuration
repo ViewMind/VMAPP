@@ -15,7 +15,3 @@ eyeprocessor_path = /home/ariela/repos/viewmind_projects/EyeReportGenerator/bin/
 
 # Time outs (in seconds) for waiting for the client to send the report data
 data_request_time_out = 180; # Seconds
-
-# This is just the program will run locally. It will fail when it uses this.
-s3_address = develop-testing;
-
