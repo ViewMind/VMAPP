@@ -240,8 +240,7 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
     cols << TPATID_COL_KEYID;
 
     // Transforming the patid via the SHA3-512.
-    qWarning() << "Searching for patid" << patid;
-    patid = QCryptographicHash::hash(patid.toLatin1(),QCryptographicHash::Sha3_512).toHex();
+    // qWarning() << "Searching for patid" << patid;
 
     cond = QString(TPATID_COL_UID) + "='" + patid +"'";
 
