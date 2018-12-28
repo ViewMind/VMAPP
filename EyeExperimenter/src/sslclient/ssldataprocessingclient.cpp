@@ -26,7 +26,8 @@ void SSLDataProcessingClient::connectToServer(bool saveData)
 
     txDP.clearAll();
     txDP.addString(config->getString(CONFIG_DOCTOR_UID),DataPacket::DPFI_DOCTOR_ID);
-    txDP.addString(config->getString(CONFIG_PATIENT_UID),DataPacket::DPFI_PATIENT_ID);
+    QString hash = QCryptographicHash::hash(config->getString(CONFIG_PATIENT_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
+    txDP.addString(hash,DataPacket::DPFI_PATIENT_ID);
     txDP.addValue(config->getInt(CONFIG_INST_UID),DataPacket::DPFI_DB_INST_UID);
     txDP.addString(config->getString(CONFIG_INST_ETSERIAL),DataPacket::DPFI_DB_ET_SERIAL);
     txDP.addFile(confFile,DataPacket::DPFI_PATIENT_FILE);

@@ -1,24 +1,13 @@
-#import sha3;
-#data = "Hola Mundo Cruel"
-##s=sha3.sha3_512(data.encode('utf-8')).hexdigest();
-#print(s)
-#
-#tocompare = "e08ec7d57911ef831ccd0cdb9e1148faf3c53560a3695366af78254f91e5e017fc1627561b040497867cc5c3b7d7140a90106ae013ff50469197160582c2e2c4"
-#
-#print(len(tocompare))
-#
-#print("Same: " + str((tocompare == s)) )
-
 #### CONFIGURATION VARIABLES
-LOCAL       = 1;
+LOCAL       = 0;
 DEV         = 1;
 ALTER       = 0;
-DELETE_ONLY = 1;
+DELETE_ONLY = 0;
 
 ######################## IMPLEMENTATION ########################
 
 import _mysql;
-import sha3;
+import hashlib as sha3;
 
 # Local Parameters.
 if (LOCAL):
