@@ -17,6 +17,7 @@ void Control::run(){
 
     QStringList loadmsg = getGreeting();
 
+    qWarning() << "Initializing ... ";
     if (!db.initConnection()){
         loadmsg << "Error on DB Initialization: " + db.getError();
         loadScreen.setInformationScreen(loadmsg,false);

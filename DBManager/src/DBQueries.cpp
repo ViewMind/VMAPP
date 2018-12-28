@@ -39,6 +39,9 @@ bool DBQueries::initConnection(){
     cv[CONFIG_PATDATA_DBPASSWORD] = cmd;
     cv[CONFIG_PATDATA_DBUSER]     = cmd;
 
+    // Not used but part of the configuration file
+    cv[CONFIG_S3_ADDRESS]     = cmd;
+
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DBPORT]         = cmd;
     cv[CONFIG_ID_DBPORT]      = cmd;
