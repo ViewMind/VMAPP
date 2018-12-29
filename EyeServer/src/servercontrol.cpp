@@ -91,15 +91,15 @@ void ServerControl::startServer(){
         return;
     }
 
-    // Joining the two configuration files
-    config.merge(dbconfigs);
-
     if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
         log.appendError("Configuration file errors:<br>"+config.getError());
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         emit(exitRequested());
         return;
     }
+
+    // Joining the two configuration files
+    config.merge(dbconfigs);
 
     if (!QSslSocket::supportsSsl()){
         log.appendError("No support for SSL found. Cannot continue");
@@ -115,6 +115,7 @@ void ServerControl::startServer(){
     QString passwd = config.getString(CONFIG_DBPASSWORD);
     quint16 port = config.getInt(CONFIG_DBPORT);
     dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port);
+    //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = config.getString(CONFIG_ID_DBHOST);
     dbname = config.getString(CONFIG_ID_DBNAME);
@@ -122,6 +123,7 @@ void ServerControl::startServer(){
     passwd = config.getString(CONFIG_ID_DBPASSWORD);
     port = config.getInt(CONFIG_ID_DBPORT);
     dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port);
+    //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = config.getString(CONFIG_PATDATA_DBHOST);
     dbname = config.getString(CONFIG_PATDATA_DBNAME);
@@ -129,9 +131,36 @@ void ServerControl::startServer(){
     passwd = config.getString(CONFIG_PATDATA_DBPASSWORD);
     port = config.getInt(CONFIG_PATDATA_DBPORT);
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port);
+    //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     dbSSLServer.setDBConnections(&dbConnBase,&dbConnID,&dbConnPatData);
     dataProcessingSSLServer.setDBConnections(&dbConnBase,&dbConnID,&dbConnPatData);
+
+    log.appendStandard("Testing DB Connections...");
+    if (!dbConnBase.open()){
+        log.appendError("FAIL TEST CONNECTION DB BASE: " + dbConnBase.getError());
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        emit(exitRequested());
+        return;
+    }
+    dbConnBase.close();
+
+    if (!dbConnID.open()){
+        log.appendError("FAIL TEST CONNECTION DB ID: " + dbConnID.getError());
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        emit(exitRequested());
+        return;
+    }
+    dbConnID.close();
+
+    if (!dbConnPatData.open()){
+        log.appendError("FAIL TEST CONNECTION DB PATDATA: " + dbConnPatData.getError());
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        emit(exitRequested());
+        return;
+    }
+    dbConnPatData.close();
+    log.appendSuccess("Connection tests were sucessfull");
 
     log.appendStandard("Starting eye processing server...");
     dataProcessingSSLServer.startServer(&config);
