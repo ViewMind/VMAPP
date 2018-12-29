@@ -28,7 +28,7 @@ public:
     qint32 addNewInstitution(StringMap inst);
     bool updateNewInstitution(StringMap inst);
     bool resetPassword(const QString &keyidInst);
-    bool deleteTestUsers(bool *deletedOne);
+    bool deleteTestUsers();
     qint32 addNewProduct(StringMap product);
     bool updateProduct(StringMap product);
     QList<StringMap> getAllInstitutions(bool *isOk);

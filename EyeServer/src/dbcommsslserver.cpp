@@ -242,6 +242,8 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
     // Transforming the patid via the SHA3-512.
     // qWarning() << "Searching for patid" << patid;
 
+    //qWarning() << "PATID: " << patid;
+
     cond = QString(TPATID_COL_UID) + "='" + patid +"'";
 
     if (!dbConnID->readFromDB(TABLE_PATIENTD_IDS,cols,cond)){
@@ -254,7 +256,7 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
     if (data.rows.size() == 0){
 
         // This a new patient and it needs to be added to the DB.
-        qWarning() << "Adding the new patient to the DB with uid" << patid;
+        // qWarning() << "Adding the new patient to the DB with uid" << patid;
         cols.clear();
         QStringList vals;
         cols << TPATID_COL_UID;
@@ -293,7 +295,7 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
     }
     else{
         if (data.rows.first().size() > 0)  {
-            qWarning() << "The keyid for the patient is" << data.rows;
+            //qWarning() << "The keyid for the patient is" << data.rows;
             ret.puid = data.rows.first().first().toInt();
         }
         else {
@@ -422,7 +424,7 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
                     break;
                 }
                 // Replacing the universal ID with the DB ID.
-                qWarning() << "Index of the pat uid" << ret.indexOfPatUid << "the puid" << ret.puid;
+                // qWarning() << "Index of the pat uid" << ret.indexOfPatUid << "the puid" << ret.puid;
                 values[i][ret.indexOfPatUid] = QString::number(ret.puid);
             }
 

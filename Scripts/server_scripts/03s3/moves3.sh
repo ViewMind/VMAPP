@@ -36,11 +36,12 @@ for i in "${drids[@]}"; do
       for j in "${patids[@]}"; do
          if [[ $j != "PRE" ]]; then
             patid="${j::-1}"
-            queryRes=($(mysql -h viewmind-id.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com -u root -P 3306 --database=$DB_ID_NAME -e "SELECT keyid FROM tPatientIDs WHERE uid = '$patid'"))
-            puid=${queryRes[1]}
-            puid=$(padTo10 $puid)
-            echo "   PATID: $patid. Query Result: $puid"
-            aws s3 cp --recursive s3://$BUCKET/$i$j s3://$BUCKET/$puid
+            sha=$(python3 sha3_512.py $patid);
+            #queryRes=($(mysql -h viewmind-id.cdqlb2rkfdvi.us-east-2.rds.amazonaws.com -u root -P 3306 --database=$DB_ID_NAME -e "SELECT keyid FROM tPatientIDs WHERE uid = '$patid'"))
+            #puid=${queryRes[1]}
+            #puid=$(padTo10 $puid)
+            echo "   PATID: $patid. SHA3 Result: $sha"
+            aws s3 cp --recursive s3://$BUCKET/$i$j s3://$BUCKET/$sha
          fi
       done
    fi

@@ -86,25 +86,18 @@ void Control::run(){
 bool Control::deleteTestEntries(){
 
     ConsoleInputScreen confirm;
-    confirm.setQuestion("This will delete all users with the UID: " + QString(TEST_UID)+  " Do you want to proceed?");
+    confirm.setQuestion("This will delete all doctor with the UID: " + QString(TEST_UID)+  " and related patient information. Do you want to proceed?");
     confirm.show();
 
     if (confirm.getAction() == ConsoleInputScreen::CA_BACK) return true;
 
-    bool deletedOne;
-    if (!db.deleteTestUsers(&deletedOne)){
+    if (!db.deleteTestUsers()){
         std::cout << "ERROR: " << db.getError().toStdString() <<  ". Press any key to continue" << std::endl;
         getchar();
         return false;
     }
 
-    if (!deletedOne){
-        std::cout << "No test users were found. Did nothing. Press any key to continue" << std::endl;
-        getchar();
-    }
-
     return true;
-
 }
 
 void Control::newInstitutions(){

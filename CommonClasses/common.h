@@ -78,6 +78,7 @@
 
 // The unique UID for tests.
 #define   TEST_UID                                      "ARvm0000"
+#define   TEST_PAT_UID                                  "ARvm0001"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0

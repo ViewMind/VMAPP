@@ -264,52 +264,45 @@ bool DBQueries::resetPassword(const QString &keyidInst){
 
 }
 
-bool DBQueries::deleteTestUsers(bool *deletedOne){
+bool DBQueries::deleteTestUsers(){
 
-    QString uid = QCryptographicHash::hash(QString(TEST_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
-
-    QStringList columns;
-    columns << TPATID_COL_KEYID;
-    QString condition = TPATID_COL_UID;
-    condition = condition + " = '" + uid + "'";
-    if (!dbPatID.readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
-        error = dbPatID.getError();
-        return false;
-    }
-
-    // Getting the UIDs
-
-    DBData data = dbPatID.getLastResult();
-    *deletedOne = false;
-
-    if (data.rows.size() == 0) return true;
-    if (data.rows.first().size() == 0) return true;
-
-    QString puid = data.rows.first().first();
-    *deletedOne = true;
-
-    // Need to delete the pat data entries, the results table and the results table.
+    QString patuid = QCryptographicHash::hash(QString(TEST_PAT_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
 
     // Removing from db patid
-    condition = QString(TPATID_COL_KEYID) + " ='" + puid + "'";
+    QString condition = QString(TPATID_COL_UID) + " ='" + patuid + "'";
     if (!dbPatID.deleteRowFromDB(TABLE_PATIENTD_IDS,condition)){
         error = dbPatID.getError();
         return false;
     }
 
-    // Removing from patient data table
-    condition = QString(TPATDATA_COL_PUID) + " ='" + puid + "'";
+    qWarning() << "removed from id";
+
+    // Removing all doctor information
+    condition = QString(TDOCTOR_COL_UID) + " ='" + QString(TEST_UID) + "'";
+    if (!dbBase.deleteRowFromDB(TABLE_DOCTORS,condition)){
+        error = dbBase.getError();
+        return false;
+    }
+
+    qWarning() << "removed doctors";
+
+    // Removing result information
+    condition = QString(TEYERES_COL_DOCTORID) + " ='" + QString(TEST_UID) + "'";
+    if (!dbBase.deleteRowFromDB(TABLE_EYE_RESULTS,condition)){
+        error = dbBase.getError();
+        return false;
+    }
+
+    qWarning() << "removed results";
+
+    // Removing all patient information for the test doctor
+    condition = QString(TPATDATA_COL_DOCTORID) + " ='" + QString(TEST_UID) + "'";
     if (!dbPatData.deleteRowFromDB(TABLE_PATDATA,condition)){
         error = dbPatData.getError();
         return false;
     }
 
-    // Removing from the results table.
-    condition = QString(TEYERES_COL_PUID) + " ='" + puid + "'";
-    if (!dbBase.deleteRowFromDB(TABLE_EYE_RESULTS,condition)){
-        error = dbBase.getError();
-        return false;
-    }
+    qWarning() << "removed patient data";
 
     return true;
 
