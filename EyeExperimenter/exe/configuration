@@ -27,7 +27,7 @@ inst_pass = 5ef3f51d45b533c6f173d25a2f2704a3b1a26b75226934a96d1c036cde594ef2;
 inst_et_serial = ;
 inst_name = Institucion de Prueba;
 inst_uid = 313644376;
-
+test_mode = true;
 # enable_gaze_following = true;
 
 

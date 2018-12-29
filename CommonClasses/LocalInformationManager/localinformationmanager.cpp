@@ -173,6 +173,9 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
             QString patID = allPatUIDs.at(j);
             QVariantMap patientMap = patientData.value(patID).toMap();
 
+            //qWarning() << "============= PATIENT MAP ===============" ;
+            //qWarning() << patientMap;
+
             bool addPatient = false;
             if (!patientMap.contains(PATIENT_UPDATE)) addPatient = true;
             else if (patientMap.value(PATIENT_UPDATE).toBool()) addPatient = true;
@@ -180,7 +183,7 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
             if (addPatient){
                 QStringList columns;
                 QStringList values;
-                QSet<QString> avoid; avoid << PATIENT_UPDATE;
+                QSet<QString> avoid; avoid << PATIENT_UPDATE << TPATDATA_COL_PUID;
                 QStringList keys = patientMap.keys();
                 for (qint32 k = 0; k < keys.size(); k++){
                     if (avoid.contains(keys.at(k))) continue;
@@ -188,7 +191,11 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
                     values << patientMap.value(keys.at(k)).toString();
                 }
 
-                // Adding the DR ID.
+                // Adding the Hashed patient ID.
+                QString hash = QCryptographicHash::hash(patientMap.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
+                columns << TPATDATA_COL_PUID;
+                values << hash;
+
                 client->appendSET(TABLE_PATDATA,columns,values);
                 ans = true;
             }
