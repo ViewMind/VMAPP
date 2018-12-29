@@ -87,7 +87,7 @@ QString SSLIDSocket::setWorkingDirectoryAndSaveAllFiles(const QString &baseDir){
     if (rx.getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 1) return "";
 
     // Pushing the files to the using AWS to the S3 storarge.
-    QString baseNameForS3 = doctor+"/"+patient +"/"+wdir+"/";
+    QString baseNameForS3 = patient +"/"+wdir+"/";
     QStringList savedFiles = rx.getLastFilesSaved();
     for (qint32 i = 0; i < savedFiles.size(); i++){
         QFileInfo info(savedFiles.at(i));
