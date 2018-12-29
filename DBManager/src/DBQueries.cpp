@@ -269,7 +269,7 @@ bool DBQueries::deleteTestUsers(){
     QString patuid = QCryptographicHash::hash(QString(TEST_PAT_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
 
     // Removing from db patid
-    QString condition = QString(TPATID_COL_KEYID) + " ='" + patuid + "'";
+    QString condition = QString(TPATID_COL_UID) + " ='" + patuid + "'";
     if (!dbPatID.deleteRowFromDB(TABLE_PATIENTD_IDS,condition)){
         error = dbPatID.getError();
         return false;
