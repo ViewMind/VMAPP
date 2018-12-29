@@ -41,7 +41,7 @@ for i in "${drids[@]}"; do
             #puid=${queryRes[1]}
             #puid=$(padTo10 $puid)
             echo "   PATID: $patid. SHA3 Result: $sha"
-            #aws s3 cp --recursive s3://$BUCKET/$i$j s3://$BUCKET/$puid
+            aws s3 cp --recursive s3://$BUCKET/$i$j s3://$BUCKET/$sha
          fi
       done
    fi
