@@ -36,8 +36,8 @@ KEY="/home/ariela/Dropbox/ViewMindData/awspem/aws_ec2_first_time.pem"
 
 # The base backup name
 DB_BKP=$PREFIX"_$(date +"%Y_%m_%d_%H_%M").sql"
-LOCALPASS="vmdb"
-LOCALUSER="vmdb"
+LOCALPASS="givnar"
+LOCALUSER="root"
 
 total=${#DB_NAMES[@]}
 for (( i=0; i<$total; i++ )); do
