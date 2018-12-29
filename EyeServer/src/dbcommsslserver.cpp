@@ -295,7 +295,7 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
     }
     else{
         if (data.rows.first().size() > 0)  {
-            qWarning() << "The keyid for the patient is" << data.rows;
+            //qWarning() << "The keyid for the patient is" << data.rows;
             ret.puid = data.rows.first().first().toInt();
         }
         else {
