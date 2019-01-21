@@ -8,27 +8,31 @@ x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
 # Development Server.
-server_address = 18.191.142.5;
+# server_address = 18.191.142.5;
 # Production Server Address
-# server_address = 18.220.30.34;
+server_address = 18.220.30.34;
 # Local server
 # server_address = 192.168.1.10;
 
 #------------------------------------------------------#
 #                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
-#inst_et_serial = ;
-#inst_name = Axis;
-#inst_uid = 1858989878;
-#inst_pass = d2e3f72c2c992b61fe69de59de28ffbb55fcc2d71ca9aac9d61da0985ea843b3;
 
-# PASS for this hash is A8ESpCU6
-inst_pass = 5ef3f51d45b533c6f173d25a2f2704a3b1a26b75226934a96d1c036cde594ef2;
-inst_et_serial = ;
-inst_name = Institucion de Prueba;
-inst_uid = 313644376;
+# Pass for this hash E1e18z2q. Test Institucion in the production server.
+inst_pass = b53c51f8f31711ca3b7ca3126af9927e2933dcb8a05a83caa9e75ad7c3f8f734;
+inst_uid = 124421464;
+inst_name = Test Institution;
+inst_et_serial = None;
+
+# PASS for this hash is A8ESpCU6. Used for Development Connection
+#inst_pass = 5ef3f51d45b533c6f173d25a2f2704a3b1a26b75226934a96d1c036cde594ef2;
+#inst_et_serial = ;
+#inst_name = Institucion de Prueba;
+#inst_uid = 313644376;
+
+
 test_mode = true;
-# enable_gaze_following = true;
+#enable_gaze_following = true;
 
 
 #------------------------------------------------------#
