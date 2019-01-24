@@ -5,9 +5,6 @@
 #include "consoleinputscreen.h"
 #include "DBQueries.h"
 
-#define PROGRAM_NAME      "DBManager"
-#define PROGRAM_VERSION   "2.0.0"
-
 #define MENU_OPTION_NEW_INSTITUTION       0
 #define MENU_OPTION_UPDATE_INSTITUTION    1
 #define MENU_OPTION_NEW_PRODUCT           2

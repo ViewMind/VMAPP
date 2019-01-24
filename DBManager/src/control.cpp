@@ -403,6 +403,7 @@ DBQueries::StringMap Control::inputProductInfo(DBQueries::StringMap product, boo
         screen.addDataEntryPrompt("Product Name [" + product.value(TPLACED_PROD_COL_PRODUCT)  + "]",TPLACED_PROD_COL_PRODUCT);
         screen.addDataEntryPrompt("Product Software Version [" + product.value(TPLACED_PROD_COL_SOFTVER)  + "]",TPLACED_PROD_COL_SOFTVER);
         screen.addDataEntryPrompt("PC Model [" + product.value(TPLACED_PROD_COL_PCMODEL)  + "]",TPLACED_PROD_COL_PCMODEL);
+        screen.addDataEntryPrompt("PC S/N [" + product.value(TPLACED_PROD_COL_PCSERIALNUM)  + "]",TPLACED_PROD_COL_PCSERIALNUM);
         screen.addDataEntryPrompt("ET Brand [" + product.value(TPLACED_PROD_COL_ETBRAND)  + "]",TPLACED_PROD_COL_ETBRAND);
         screen.addDataEntryPrompt("ET Model [" + product.value(TPLACED_PROD_COL_ETMODEL)  + "]",TPLACED_PROD_COL_ETMODEL);
         screen.addDataEntryPrompt("ET S/N [" + product.value(TPLACED_PROD_COL_ETSERIAL)  + "]",TPLACED_PROD_COL_ETSERIAL);
@@ -413,6 +414,7 @@ DBQueries::StringMap Control::inputProductInfo(DBQueries::StringMap product, boo
         screen.addDataEntryPrompt("Product Name",TPLACED_PROD_COL_PRODUCT);
         screen.addDataEntryPrompt("Product Software Version",TPLACED_PROD_COL_SOFTVER);
         screen.addDataEntryPrompt("PC Model",TPLACED_PROD_COL_PCMODEL);
+        screen.addDataEntryPrompt("PC S/N",TPLACED_PROD_COL_PCSERIALNUM);
         screen.addDataEntryPrompt("ET Brand",TPLACED_PROD_COL_ETBRAND);
         screen.addDataEntryPrompt("ET Model" ,TPLACED_PROD_COL_ETMODEL);
         screen.addDataEntryPrompt("ET S/N",TPLACED_PROD_COL_ETSERIAL);
@@ -497,6 +499,7 @@ void Control::showPlacedProductInfoScreen(const QString & productKeyid, QStringL
     info << "Institution: " + product.value(TPLACED_PROD_COL_INSTITUTION);
     info << "Product Software Version: " + product.value(TPLACED_PROD_COL_SOFTVER);
     info << "PC Model: " + product.value(TPLACED_PROD_COL_PCMODEL);
+    info << "PC S/N: " + product.value(TPLACED_PROD_COL_PCSERIALNUM);
     info << "ET Brand: " + product.value(TPLACED_PROD_COL_ETBRAND);
     info << "ET Model: "  + product.value(TPLACED_PROD_COL_ETMODEL);
     info << "ET S/N: " + product.value(TPLACED_PROD_COL_ETSERIAL);
@@ -523,8 +526,8 @@ void Control::showPlacedProductInfoScreen(const QString & productKeyid, QStringL
 
 QStringList Control::getGreeting() const {
     QStringList list;
-    list << "=============== " + QString(PROGRAM_NAME) + " ===============";
-    list << "= VERSION: " + QString(PROGRAM_VERSION);
+    list << "=============== " + QString(SERVER_PROGRAM_NAME) + " ===============";
+    list << "= VERSION: " + QString(SERVER_PROGRAM_VERSION);
     list << "===========";
     return list;
 }
