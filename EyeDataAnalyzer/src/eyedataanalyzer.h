@@ -7,7 +7,7 @@
 #include <QListWidgetItem>
 
 #define   PROGRAM_NAME      "EyeDataAnalyzer"
-#define   PROGRAM_VERSION   "2.0.0"
+#define   PROGRAM_VERSION   "2.1.0"
 #define   WORK_DIR          "outputs"
 #define   DATA_ROLE         1500
 
@@ -15,6 +15,7 @@
 #include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
 #include "../../CommonClasses/PNGWriter/imagereportdrawer.h"
 #include "../../CommonClasses/PNGWriter/repfileinfo.h"
+#include "../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
 #include "fixationdrawer.h"
 
 namespace Ui {
@@ -30,6 +31,8 @@ public:
     ~EyeDataAnalyzer();
 
 private slots:
+    void on_newUIMessage(const QString &html);
+
     void on_pbBrowsePatientDir_clicked();
 
     void on_leTimeFilterThreshold_editingFinished();
@@ -71,6 +74,8 @@ private slots:
     void on_pbGeneratePNG_clicked();
 
     void on_lwReportsThatCanBeGenerated_itemClicked(QListWidgetItem *item);
+
+    void on_pbFreqAnalysis_clicked();
 
 private:
     Ui::EyeDataAnalyzer *ui;

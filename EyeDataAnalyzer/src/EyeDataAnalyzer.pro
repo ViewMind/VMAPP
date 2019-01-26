@@ -52,7 +52,8 @@ SOURCES += \
     ../../CommonClasses/Experiments/bindingparser.cpp \
     ../../CommonClasses/PNGWriter/repfileinfo.cpp \
     ../../CommonClasses/PNGWriter/resultbar.cpp \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -79,7 +80,8 @@ HEADERS += \
     ../../CommonClasses/Experiments/bindingparser.h \
     ../../CommonClasses/PNGWriter/repfileinfo.h \
     ../../CommonClasses/PNGWriter/resultbar.h \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.h
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h
 
 FORMS += \
         eyedataanalyzer.ui

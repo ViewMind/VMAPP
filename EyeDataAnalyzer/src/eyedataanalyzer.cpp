@@ -6,7 +6,8 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
     ui(new Ui::EyeDataAnalyzer)
 {
     ui->setupUi(this);
-    log.setLogInterface(ui->pteLog);
+    log.setGraphicalLogInterface();
+    connect(&log,SIGNAL(newUiMessage(QString)),this,SLOT(on_newUIMessage(QString)));
     this->setWindowTitle(QString(PROGRAM_NAME) + " - " + QString(PROGRAM_VERSION));
     if (!configuration.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
         log.appendError("ERROR Loading configuration: " + configuration.getError());
@@ -16,6 +17,10 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
 
     //ui->lePatientDir->setText("C:\Users\Viewmind\Documents\QtProjects\EyeExperimenter\exe\viewmind_etdata\AR30000000\AR30000000");
 
+}
+
+void EyeDataAnalyzer::on_newUIMessage(const QString &html){
+    ui->pteLog->appendHtml(html);
 }
 
 
@@ -412,4 +417,32 @@ void EyeDataAnalyzer::on_lwReportsThatCanBeGenerated_itemClicked(QListWidgetItem
 void EyeDataAnalyzer::enableControlButtons(bool enable){
     ui->pbDrawFixations->setEnabled(enable);
     ui->pbGeneratePNG->setEnabled(enable);
+}
+
+void EyeDataAnalyzer::on_pbFreqAnalysis_clicked()
+{
+    if (ui->lwFilesInReport->currentRow() >= 0){
+        QString file = ui->lwFilesInReport->currentItem()->text();
+        file = ui->lePatientDir->text() + "/" + file;
+        FreqAnalysis fa;
+        log.appendStandard("Doing frequency analysis on: " + file);
+        FreqAnalysis::FreqAnalysisResult far = fa.analyzeFile(file);
+        if (far == FreqAnalysis::FAR_FAILED){
+            log.appendError("Could not perform frequency analysis. Cause: " + fa.getError());
+            return;
+        }
+
+        if (far == FreqAnalysis::FAR_WITH_WARNINGS){
+            for (qint32 i = 0; i < fa.getWarnings().size(); i++){
+                log.appendWarning(fa.getWarnings().at(i));
+            }
+        }
+
+        log.appendSuccess("The average frequency is: " + QString::number(fa.getFrequencyResult()) + " Hz");
+
+    }
+    else {
+        log.appendWarning("You need to select an individual file for frequency analysis");
+        return;
+    }
 }
