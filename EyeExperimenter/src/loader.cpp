@@ -324,7 +324,11 @@ void Loader::onRequestNextPendingReport(){
 void Loader::setAgeForCurrentPatient(){
     QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID),TPATDATA_COL_BIRTHDATE);
     QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
-    int currentAge = QDate::currentDate().year() - bdate.year();
+    QDate currentDate =  QDate::currentDate();
+    int currentAge = currentDate.year() - bdate.year();
+    if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ) {
+        currentAge--;
+    }
     configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);
 }
 

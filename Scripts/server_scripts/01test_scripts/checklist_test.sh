@@ -37,7 +37,7 @@ PATSHA3="5c0a9b846380effff34b3fc8ce5f2dc4c0e697f68290da3a87842da6c7efd25b166f17e
 export MYSQL_PWD=$DB_PASS
 
 echo ">> Checking if test doctor exists"
-mysql -h $DB_BASE -P $DB_PORT -u $DB_USER --database=$DBNAME_BASE -e "SELECT * FROM viewmind_develop.tDoctors WHERE uid = 'ARvm0000'"
+mysql -h $DB_BASE -P $DB_PORT -u $DB_USER --database=$DBNAME_BASE -e "SELECT * FROM tDoctors WHERE uid = 'ARvm0000'"
 
 echo ">> Checking if test patient was created correctly "
 mysql -h $DB_PATDATA -P $DB_PORT -u $DB_USER --database=$DBNAME_PATDATA -e "SELECT keyid, doctorid, firstname, lastname, idtype, sex , birthcountry, birthdate , date_insertion, state, city  FROM tPatientData  WHERE doctorid = 'ARvm0000'"
