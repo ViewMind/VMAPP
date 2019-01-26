@@ -151,6 +151,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TPLACED_PROD_COL_PRODSN                 "product_serialnum"
 #define  TPLACED_PROD_COL_SOFTVER                "software_version"
 #define  TPLACED_PROD_COL_PCMODEL                "pc_model"
+#define  TPLACED_PROD_COL_PCSERIALNUM            "pc_serialnum"
 #define  TPLACED_PROD_COL_ETBRAND                "etbrand"
 #define  TPLACED_PROD_COL_ETMODEL                "etmodel"
 #define  TPLACED_PROD_COL_ETSERIAL               "etserial"
