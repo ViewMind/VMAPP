@@ -60,6 +60,23 @@
   
   echo "DB Connections established\n";
   
+  $uidmap = array();
+  
+  if ($fh = fopen('uids_to_add', 'r')) {
+     while (!feof($fh)) {
+         $line = fgets($fh);
+         $parts = explode(",",$line);
+         if ($count($parts[1]) == 2) {
+            $res = mysqli_query($con_patid,"INSERT INTO tPaientIDs (uid) VALUES ('" . $parts[1] . "')");
+            if (!res){
+               echo "ErrorDB. Query: " . $sqlquery . ". El error SQL es: " . mysqli_error($con_patdata);
+               mysqli_close($con_data); mysqli_close($con_id); mysqli_close($con_patdata);     
+               return;   
+            }
+         }
+     }
+     fclose($fh);
+  }  
   
 //   //=============================== LISTING AND HASHING =================================
 //   $res = shell_exec("./AWSLs.sh $BUCKET_DEV/$GERA_ID list");     
