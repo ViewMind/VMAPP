@@ -68,7 +68,7 @@
          $parts = explode(",",$line);
          if (count($parts) == 2) {
            $query = "INSERT INTO tPaientIDs (uid) VALUES ('" . $parts[1] . "')";
-           echo "$query"
+           echo "$query\n";
 //             $res = mysqli_query($con_patid,$query);
 //             if (!res){
 //                echo "ErrorDB. Query: " . $sqlquery . ". El error SQL es: " . mysqli_error($con_patdata);
