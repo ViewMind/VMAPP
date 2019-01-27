@@ -67,7 +67,7 @@
          $line = fgets($fh);
          $parts = explode(",",$line);
          if (count($parts) == 2) {
-           $query = "INSERT INTO tPaientIDs (uid) VALUES ('" . $parts[1] . "')";
+           $query = "INSERT INTO tPatientIDs (uid) VALUES ('" . $parts[1] . "')";
            //echo "$query\n";
            $res = mysqli_query($con_id,$query);
            if (!$res){
