@@ -66,13 +66,15 @@
      while (!feof($fh)) {
          $line = fgets($fh);
          $parts = explode(",",$line);
-         if ($count($parts[1]) == 2) {
-            $res = mysqli_query($con_patid,"INSERT INTO tPaientIDs (uid) VALUES ('" . $parts[1] . "')");
-            if (!res){
-               echo "ErrorDB. Query: " . $sqlquery . ". El error SQL es: " . mysqli_error($con_patdata);
-               mysqli_close($con_data); mysqli_close($con_id); mysqli_close($con_patdata);     
-               return;   
-            }
+         if (count($parts) == 2) {
+           $query = "INSERT INTO tPaientIDs (uid) VALUES ('" . $parts[1] . "')";
+           echo "$query"
+//             $res = mysqli_query($con_patid,$query);
+//             if (!res){
+//                echo "ErrorDB. Query: " . $sqlquery . ". El error SQL es: " . mysqli_error($con_patdata);
+//                mysqli_close($con_data); mysqli_close($con_id); mysqli_close($con_patdata);     
+//                return;   
+//             }
          }
      }
      fclose($fh);
