@@ -46,5 +46,5 @@ mysql -h $DB_ID -P $DB_PORT -u $DB_USER --database=$DBNAME_ID -e "SELECT * FROM 
 echo ">> Checking for test results "
 mysql -h $DB_BASE -P $DB_PORT -u $DB_USER --database=$DBNAME_BASE -e "SELECT keyid, study_id, study_date FROM tEyeResults  WHERE doctorid = 'ARvm0000'"
 
-echo ">> Searrhing for test patient folder"
+echo ">> Searching for test patient folder"
 aws s3 ls s3://$BUCKET | grep $PATSHA3

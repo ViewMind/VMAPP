@@ -38,4 +38,6 @@ export MYSQL_PWD=$PASSWD
 
 echo ">> APPLYING PATCH 04"
 mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "ALTER TABLE tPlacedProducts ADD COLUMN pc_serialnum VARCHAR(255);"
+mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "ALTER TABLE tPlacedProducts ADD COLUMN enabled TINYINT;"
+mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "UPDATE tPlacedProducts SET enabled = '1';"
 

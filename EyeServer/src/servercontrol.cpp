@@ -33,7 +33,7 @@ void ServerControl::startServer(){
     ConfigurationManager dbconfigs;
 
 #ifdef SERVER_LOCALHOST
-    configurationFile = configurationFile + "db_localhost";
+    configurationFile = configurationFile + "db_localhost_prod";
     definitions++;
 #endif
 #ifdef SERVER_DEVELOPMENT
