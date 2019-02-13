@@ -8,27 +8,27 @@ x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
 # Development Server.
-server_address = 18.191.142.5;
+# server_address = 18.191.142.5;
 # Production Server Address
 # server_address = 18.220.30.34;
 # Local server
-# server_address = 192.168.1.10;
+server_address = 192.168.1.10;
 
 #------------------------------------------------------#
 #                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
 
-# Pass for this hash E1e18z2q. Test Institucion in the production server.
-# inst_pass = b53c51f8f31711ca3b7ca3126af9927e2933dcb8a05a83caa9e75ad7c3f8f734;
-# inst_uid = 124421464;
-# inst_name = Test Institution;
-# inst_et_serial = None;
+# Pass for ViewMind Institution in the LocalServer d9LppSJf
+inst_pass = 01cf1f560d48d40622796620564c918fe3792b2c9d501c0fde0564dd38827a51;
+inst_uid = 1369462188;
+inst_name = ViewMind;
+inst_et_serial = ;
 
 # PASS for this hash is A8ESpCU6. Used for Development Connection
-inst_pass = 5ef3f51d45b533c6f173d25a2f2704a3b1a26b75226934a96d1c036cde594ef2;
-inst_et_serial = ;
-inst_name = Institucion de Prueba;
-inst_uid = 313644376;
+# inst_pass = 5ef3f51d45b533c6f173d25a2f2704a3b1a26b75226934a96d1c036cde594ef2;
+# inst_et_serial = ;
+# inst_name = Institucion de Prueba;
+# inst_uid = 313644376;
 
 
 # test_mode = true;

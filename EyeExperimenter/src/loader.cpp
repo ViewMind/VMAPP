@@ -158,7 +158,8 @@ bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr)
 }
 
 void Loader::onDisconnectFromDB(){
-    if (dbClient->getTransactionStatus()){
+    //qWarning() << "onDisconnectFromDB wasDBTransactionStarted" << wasDBTransactionStarted;
+    if (dbClient->getTransactionStatus() && wasDBTransactionStarted){
         lim.setUpdateFlagTo(false);
     }
     emit(synchDone());

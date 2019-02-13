@@ -318,19 +318,23 @@ void LocalInformationManager::addPatientData(const QString &druid, const QString
     // Checking to see if updte is necessary
     if (patients.contains(patient_uid)){
         QVariantMap basePatient = patients.value(patient_uid).toMap();
+        //qWarning() << "addPatientData" << patient_uid << "setting update to false";
         thispatient[PATIENT_UPDATE] = false;
         for (qint32 i = 0; i < cols.size(); i++){
             if (!basePatient.contains(cols.at(i))){
+                //qWarning() << "addPatientData" << patient_uid << "setting update to true because of new data";
                 thispatient[PATIENT_UPDATE] = true;
                 break;
             }
             else if (basePatient.value(cols.at(i)).toString() != values.at(i)){
+                //qWarning() << "addPatientData" << patient_uid << "setting update to true because of value change";
                 thispatient[PATIENT_UPDATE] = true;
                 break;
             }
         }
     }
     else{
+        //qWarning() << "addPatientData" << patient_uid << "setting update to true because of new patient";
         thispatient[PATIENT_UPDATE] = true;
     }
 
@@ -358,6 +362,7 @@ void LocalInformationManager::setUpdateFlagTo(bool flag){
         QStringList patuids = patients.keys();
         for (qint32 j = 0; j < patuids.size(); j++){
             QVariantMap patmap = patients.value(patuids.at(j)).toMap();
+            //qWarning() << "setUpdateFlagTo" << patuids.at(j) << " setting to " << flag;
             patmap[PATIENT_UPDATE] = flag;
             patients[patuids.at(j)] = patmap;
         }
