@@ -100,7 +100,9 @@ void REDInterface::on_pollTimer_Up(){
     SampleStruct data;
     iV_GetSample(&data);
 
-    if (data.timestamp == lastData.time) return;
+    long long mstime = data.timestamp/1000;
+
+    if (mstime == lastData.time) return;
 
     if (canUseLeft()){
         lastData.xLeft = data.leftEye.gazeX;
@@ -124,13 +126,14 @@ void REDInterface::on_pollTimer_Up(){
     }
 
     // The data is returned in us so it is turned to ms.
-    lastData.time = data.timestamp/1000;
+    lastData.time = mstime;
 
     // Sending the new data.
     emit(newDataAvailable(lastData));
 
-    // The time data is loaded again to make sure the time stamp comparison is done correctly.
-    lastData.time = data.timestamp;
+    /// OLD Code. This way comparsion is alwyas done in ms to prevent
+    /// The time data is loaded again to make sure the time stamp comparison is done correctly.
+    /// lastData.time = data.timestamp;
 }
 
 QString REDInterface::num2Error(int result){
