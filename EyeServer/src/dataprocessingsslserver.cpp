@@ -462,17 +462,15 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
     data = dbConnBase->getLastResult();
 
     // Checking the serial
-    if (data.rows.size() == 1){
-        if (data.rows.first().size() != 1){
-            log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
-            return RR_WRONG_ET_SERIAL;
-        }
+    if (data.rows.size() < 1){
+        log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
+        return RR_WRONG_ET_SERIAL;
+
     }
-    else{
+    if (data.rows.first().size() != 1){
         log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
         return RR_WRONG_ET_SERIAL;
     }
-
 
     return RR_ALL_OK;
 }
