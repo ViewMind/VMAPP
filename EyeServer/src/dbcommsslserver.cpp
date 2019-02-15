@@ -313,6 +313,7 @@ DBCommSSLServer::VerifyDBRetStruct DBCommSSLServer::verifyPatient(const QStringL
         }
     }
 
+    ret.logid = druid  + " for " + QString::number(ret.puid);
     return ret;
 }
 
