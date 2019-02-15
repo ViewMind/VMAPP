@@ -49,7 +49,7 @@ reading_px_tol_for_target = 60;
 # Parameters for GazePoint GP3HD
 eyetracker_configured        = GP3HD;    #GazePoint ET
 moving_window_max_dispersion = 100;      #px
-sample_frequency             = 150;      #Hz
+sample_frequency             = 250;      #Hz
 
 # Parameters for SMI REDm 120 HZ
 # eyetracker_configured        = REDm;     #SMI ET

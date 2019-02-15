@@ -22,6 +22,7 @@ VMBase {
         labelProvince.clear();
         labelCity.clear();
         cbConsent.checked = false;
+        labelCountry.vmEnabled = true;
         vmIsNew = true;
     }
 
@@ -37,7 +38,12 @@ VMBase {
 //        }
 
         // Substr is used as the first two letters are the country code.
-        labelDocument_number.setText(patInfo.puid.substr(2));
+        if ("puid" in patInfo){
+           labelDocument_number.setText(patInfo.puid.substr(2));
+        }
+        else if ("uid" in patInfo){
+           labelDocument_number.setText(patInfo.uid.substr(2));
+        }
 
         // Setting the document type.
         var idType = patInfo.idtype;
@@ -59,7 +65,7 @@ VMBase {
         labelCountry.vmEnabled = false;
 
         // The country and ID are unique. They can't be modified.
-        labelCountry.enabled = false;
+        //labelCountry.enabled = false;
         labelDocument_number.enabled = false;
 
         labelBirthDate.setISODate(patInfo.birthdate);
@@ -201,7 +207,7 @@ VMBase {
         id: labelCountry
         width: 440
         height: 30
-        z: 1
+        z: 10
         vmLabel: loader.getStringForKey(keysearch+"labelCountry")
         vmList: loader.getCountryList()
         vmValues: loader.getCountryCodeList()

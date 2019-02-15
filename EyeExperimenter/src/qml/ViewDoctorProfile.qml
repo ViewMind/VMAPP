@@ -26,6 +26,7 @@ VMBase {
         labelDocument_number.enabled = true;
         cboxDisable.visible = false;
         cboxDisable.checked = false;
+        labelCountry.vmEnabled = true;
         setMenuVisibility(false);
     }
 
@@ -235,6 +236,22 @@ VMBase {
         anchors.topMargin: 11
     }
 
+
+//    VMAutoCompleteComboBox{
+//        id: labelCountry2
+//        width: 260
+//        height: 30
+//        vmLabel: loader.getStringForKey(keybase+"labelCountry")
+//        vmList: loader.getCountryList()
+//        vmValues: loader.getCountryCodeList()
+//        onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+//        onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+//        anchors.top: diagSubTitle.bottom
+//                anchors.horizontalCenter: parent.horizontalCenter
+//                z: 10
+//                anchors.topMargin: 100
+//    }
+
     Column {
 
         id: mainForm
@@ -298,12 +315,13 @@ VMBase {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 16
             width: parent.width
+            z: 10
 
             VMAutoCompleteComboBox{
                 id: labelCountry
                 width: 260
                 height: 30
-                z: 1
+                vmMaxOptions: 7
                 vmLabel: loader.getStringForKey(keybase+"labelCountry")
                 vmList: loader.getCountryList()
                 vmValues: loader.getCountryCodeList()
