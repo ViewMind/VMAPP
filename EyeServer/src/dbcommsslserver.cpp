@@ -160,11 +160,13 @@ void DBCommSSLServer::sslErrorsFound(quint64 id){
 
 }
 
-quint8 DBCommSSLServer::verifyDoctor(const QStringList &columns, const QStringList &values){
+DBCommSSLServer::VerifyDBRetStruct DBCommSSLServer::verifyDoctor(const QStringList &columns, const QStringList &values){
+    VerifyDBRetStruct ret;
     qint32 instIndex = columns.indexOf(TDOCTOR_COL_MEDICAL_INST);
     if ((instIndex == -1) || (instIndex >= values.size())) {
         log.appendError("On VERIFY DOCTOR: No column found for Medical Institution. Index: " + QString::number(instIndex) + " Column List: " + columns.join(", "));
-        return DBACK_UID_ERROR;
+        ret.errorCode = DBACK_UID_ERROR;
+        return ret;
     }
     QString inst_uid = values.at(instIndex);
 
@@ -174,29 +176,34 @@ quint8 DBCommSSLServer::verifyDoctor(const QStringList &columns, const QStringLi
 
     if (!dbConnBase->readFromDB(TABLE_INSTITUTION,cols,cond)){
         log.appendError("On VERIFY DOCTOR, DB Error: " + dbConnBase->getError());
-        return DBACK_DBCOMM_ERROR;
+        ret.errorCode = DBACK_DBCOMM_ERROR;
+        return ret;
     }
 
     DBData data = dbConnBase->getLastResult();
     if (data.rows.size() != 1){
         log.appendError("On VERIFY DOCTOR, Expecting only 1 row from the DB, but got " + QString::number(data.rows.size()));
-        return DBACK_UID_ERROR;
+        ret.errorCode = DBACK_UID_ERROR;
+        return ret;
     }
 
     if (data.rows.first().size() != 1){
         log.appendError("On VERIFY DOCTOR, Expecting only 1 column from the DB, but got " + QString::number(data.rows.first().size()));
-        return DBACK_UID_ERROR;
+        ret.errorCode = DBACK_UID_ERROR;
+        return ret;
     }
 
     // If it matched, then the UID is ok.
+    ret.errorCode = DBACK_ALL_OK;
+    ret.logid = inst_uid;
+    return ret;
 
-    return DBACK_ALL_OK;
 }
 
 
-DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QStringList &columns, const QStringList &values){
+DBCommSSLServer::VerifyDBRetStruct DBCommSSLServer::verifyPatient(const QStringList &columns, const QStringList &values){
 
-    VerifyPatientRetStruct ret;
+    VerifyDBRetStruct ret;
     ret.errorCode = DBACK_ALL_OK;
     ret.puid = -1;
     ret.indexOfPatUid = -1;
@@ -261,7 +268,7 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
         QStringList vals;
         cols << TPATID_COL_UID;
         vals << patid;
-        if (!dbConnID->insertDB(TABLE_PATIENTD_IDS,cols,vals)){
+        if (!dbConnID->insertDB(TABLE_PATIENTD_IDS,cols,vals,druid)){
             log.appendError("On VERIFY PATIENT: Adding a new patient: " + dbConnID->getError());
             ret.errorCode = DBACK_DBCOMM_ERROR;
             return ret;
@@ -283,6 +290,7 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
         if (data.rows.size() == 1){
             if (data.rows.first().size() == 1){
                 ret.puid = data.rows.first().first().toInt();
+                ret.logid = druid  + " for " + QString::number(ret.puid);
                 return ret;
             }
         }
@@ -304,7 +312,6 @@ DBCommSSLServer::VerifyPatientRetStruct DBCommSSLServer::verifyPatient(const QSt
             return ret;
         }
     }
-
 
     return ret;
 }
@@ -409,16 +416,18 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 
             //qWarning() << "Setting information on" << tableNames.at(i);
 
+            VerifyDBRetStruct ret;
+
             // TWO CHECKS Are Required:
             // 1) If this is a doctor information, it must come from an existing insitution
             // 2) If this is a patient it must come from an existing doctor.
             if (tableNames.at(i) == TABLE_DOCTORS){
-                code = verifyDoctor(columnsList.at(i),values.at(i));
-                if (code != DBACK_ALL_OK) break;
+                ret = verifyDoctor(columnsList.at(i),values.at(i));
+                if (ret.errorCode != DBACK_ALL_OK) break;
             }
 
             if (tableNames.at(i) == TABLE_PATDATA){
-                VerifyPatientRetStruct ret = verifyPatient(columnsList.at(i),values.at(i));
+                ret = verifyPatient(columnsList.at(i),values.at(i));
                 if (ret.errorCode != DBACK_ALL_OK) {
                     code = ret.errorCode;
                     break;
@@ -431,7 +440,7 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
             // This takes advantage of the fact that there are no tables with the same names in the different databases.
             DBInterface *dbConnection = getDBIFFromTable(tableNames.at(i));
 
-            if (!dbConnection->insertDB(tableNames.at(i),columnsList.at(i),values.at(i))){
+            if (!dbConnection->insertDB(tableNames.at(i),columnsList.at(i),values.at(i),ret.logid)){
                 dberrors << dbConnection->getError();
                 log.appendError("On SQL Transaction: " + dbConnection->getError());
             }

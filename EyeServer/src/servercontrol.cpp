@@ -9,6 +9,7 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
 
     cmd.clear();
     cv[CONFIG_RAW_DATA_REPO] = cmd;
+    cv[CONFIG_DBLOGFILE_LOCATION] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
@@ -85,7 +86,7 @@ void ServerControl::startServer(){
 
     // Database configuration files
     if (!dbconfigs.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
-        log.appendError("DB Configuration file errors:<br>"+config.getError());
+        log.appendError("DB Configuration file errors:<br>"+dbconfigs.getError());
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         emit(exitRequested());
         return;
@@ -108,13 +109,34 @@ void ServerControl::startServer(){
         return;
     }
 
+    // Attempting to create/open the log file
+    QString logfile = config.getString(CONFIG_DBLOGFILE_LOCATION);
+    QFile fileforlog(logfile);
+    if (!fileforlog.exists()){
+        if (!fileforlog.open(QFile::WriteOnly)){
+            log.appendError("Could not create the log file at: " + logfile);
+            std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+            return;
+        }
+        QTextStream writer(&fileforlog);
+        writer << "";
+        fileforlog.close();
+    }
+    else {
+        if (!fileforlog.open(QFile::Append)){
+            log.appendError("Could not open for appending the log file at: " + logfile);
+            std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+            return;
+        }
+    }
+
     // Initializing the database connections.
     QString host = config.getString(CONFIG_DBHOST);
     QString dbname = config.getString(CONFIG_DBNAME);
     QString user = config.getString(CONFIG_DBUSER);
     QString passwd = config.getString(CONFIG_DBPASSWORD);
     quint16 port = config.getInt(CONFIG_DBPORT);
-    dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port);
+    dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = config.getString(CONFIG_ID_DBHOST);
@@ -122,7 +144,7 @@ void ServerControl::startServer(){
     user = config.getString(CONFIG_ID_DBUSER);
     passwd = config.getString(CONFIG_ID_DBPASSWORD);
     port = config.getInt(CONFIG_ID_DBPORT);
-    dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port);
+    dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = config.getString(CONFIG_PATDATA_DBHOST);
@@ -130,7 +152,7 @@ void ServerControl::startServer(){
     user = config.getString(CONFIG_PATDATA_DBUSER);
     passwd = config.getString(CONFIG_PATDATA_DBPASSWORD);
     port = config.getInt(CONFIG_PATDATA_DBPORT);
-    dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port);
+    dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     dbSSLServer.setDBConnections(&dbConnBase,&dbConnID,&dbConnPatData);

@@ -15,3 +15,6 @@ eyeprocessor_path = /home/ariela/repos/viewmind_projects/EyeReportGenerator/bin/
 
 # Time outs (in seconds) for waiting for the client to send the report data
 data_request_time_out = 180; # Seconds
+
+# Where the log file is located. 
+dblogfile = dblog.log;

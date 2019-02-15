@@ -9,7 +9,7 @@
 #define   COMMON_PATH_FOR_DB_CONFIGURATIONS             ":/CommonClasses/DBConfigurations/"
 
 #define   SERVER_PROGRAM_NAME                           "EyeSever"
-#define   SERVER_PROGRAM_VERSION                        "5.0.2"
+#define   SERVER_PROGRAM_VERSION                        "5.1.0"
 
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"

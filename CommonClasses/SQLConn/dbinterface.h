@@ -6,6 +6,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QCryptographicHash>
+#include <QDateTime>
+#include <QTextStream>
 
 #include "dbdescription.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -17,19 +19,19 @@ public:
     DBInterface();
 
     // Initializes the connection to thez database returning true if sucessfull.
-    void setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port);
+    void setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port, const QString log_file);
 
     // Insert Query
-    bool insertDB(const QString &table, const QStringList &columns, const QStringList &values);
+    bool insertDB(const QString &table, const QStringList &columns, const QStringList &values, const QString logid);
 
     // Select Query. Returns the first row only
     bool readFromDB(const QString &table, const QStringList &columns, const QString &conditions);
 
     // Update Query.
-    bool updateDB(const QString &table, const QStringList &columns, const QStringList &values, const QString &condition);
+    bool updateDB(const QString &table, const QStringList &columns, const QStringList &values, const QString &condition, const QString logid);
 
     // Delete Query
-    bool deleteRowFromDB(const QString &table, const QString &condition);
+    bool deleteRowFromDB(const QString &table, const QString &condition, const QString logid);
 
     // Get last generated keyid from a table;
     qint32 getNewestKeyid(const QString &keyidColName, const QString &table);
@@ -54,6 +56,11 @@ private:
 
     // Making sure init is only called once.
     bool dbSetupDone;
+
+    // File that will log each modification in the data base.
+    QString logFile;
+    QString dblogid;
+    void log(const QString &query, const QString &logid);
 
 };
 

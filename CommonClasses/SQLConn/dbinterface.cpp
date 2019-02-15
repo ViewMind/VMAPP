@@ -5,7 +5,7 @@ DBInterface::DBInterface()
     dbSetupDone = false;
 }
 
-void DBInterface::setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port){
+void DBInterface::setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port, const QString log_file){
 
     if (dbSetupDone) return;
 
@@ -20,6 +20,8 @@ void DBInterface::setupDB(const QString &instanceName, const QString &host, cons
     }
 
     dbSetupDone = true;
+    logFile = log_file;
+    dblogid = " [" + dbname + "@" + host + "] ";
 }
 
 bool DBInterface::open(){
@@ -31,7 +33,7 @@ bool DBInterface::open(){
     return true;
 }
 
-bool DBInterface::insertDB(const QString &table, const QStringList &columns, const QStringList &values){
+bool DBInterface::insertDB(const QString &table, const QStringList &columns, const QStringList &values, const QString logid){
 
 
     QString query = "INSERT INTO " + table + "(";
@@ -56,12 +58,13 @@ bool DBInterface::insertDB(const QString &table, const QStringList &columns, con
         error = "INSERT Error on query: " + query + ". ERROR: " + q.lastError().text();
         return false;
     }
+    log(query,logid);
 
     return true;
 
 }
 
-bool DBInterface::updateDB(const QString &table, const QStringList &columns, const QStringList &values, const QString &condition){
+bool DBInterface::updateDB(const QString &table, const QStringList &columns, const QStringList &values, const QString &condition, const QString logid){
    QString query = "UPDATE ";
    if (columns.isEmpty()){
        error = "SELECT Error. Columns cannot be an empty list";
@@ -85,18 +88,20 @@ bool DBInterface::updateDB(const QString &table, const QStringList &columns, con
        error = "UPDATE Error on query: " + query + ". ERROR: " + q.lastError().text();
        return false;
    }
+   log(query,logid);
 
    return true;
 
 }
 
-bool DBInterface::deleteRowFromDB(const QString &table, const QString &condition){
+bool DBInterface::deleteRowFromDB(const QString &table, const QString &condition, const QString logid){
     QString query = "DELETE FROM " + table + " WHERE " + condition;
     QSqlQuery q(dbConnection);
     if (!q.exec(query)){
         error = "DELETE Error on query: " + query + ". ERROR: " + q.lastError().text();
         return false;
     }
+    log(query,logid);
     return true;
 }
 
@@ -149,4 +154,16 @@ bool DBInterface::readFromDB(const QString &table, const QStringList &columns, c
     }
 
     return true;
+}
+
+void DBInterface::log(const QString &query, const QString &logid){
+
+    QString timestamp = "[" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh::mm::ss") + "] ";
+    QString logline = timestamp +  " [" + logid + "] "  +  dblogid + "-> "  + query + "\n";
+
+    QFile file(logFile);
+    if (!file.open(QFile::Append)) return;
+    QTextStream writer(&file);
+    writer << logline;
+    file.close();
 }
