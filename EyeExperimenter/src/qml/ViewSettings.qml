@@ -163,8 +163,9 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: diagCboxDemo.top
-        anchors.left: diagCboxDemo.right
+        anchors.left: diagCboxUseMouse.right
         anchors.leftMargin: 20
+        visible: false
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);
     }
 
@@ -174,7 +175,7 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: diagCboxDemo.top
-        anchors.left: diagCboxDualMonitor.right
+        anchors.left: diagCboxDemo.right
         anchors.leftMargin: 20
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)
     }
@@ -186,7 +187,7 @@ Dialog {
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
         anchors.top: diagCboxDualMonitor.bottom
         anchors.topMargin: 45
-        anchors.left: diagDBDefaultCountry.left
+        anchors.left: diagDBDefaultCountry.left        
         onClicked: {
             if (checkAllOk()) close();
             if (vmRestartRequired){

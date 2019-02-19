@@ -23,6 +23,7 @@ VMBase {
         labelCity.clear();
         cbConsent.checked = false;
         labelCountry.vmEnabled = true;
+        labelDocument_number.enabled = true;
         vmIsNew = true;
     }
 
