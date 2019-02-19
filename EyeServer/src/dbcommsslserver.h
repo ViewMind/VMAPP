@@ -62,15 +62,16 @@ private:
     DBInterface *getDBIFFromTable(const QString &tableName);
 
 
-    struct VerifyPatientRetStruct {
+    struct VerifyDBRetStruct {
         quint8 errorCode;
         qint32 puid;
         qint32 indexOfPatUid;
+        QString logid;
     };
 
     // Verify to insert
-    quint8 verifyDoctor(const QStringList &columns, const QStringList &values);
-    VerifyPatientRetStruct verifyPatient(const QStringList &columns, const QStringList &values);
+    VerifyDBRetStruct verifyDoctor(const QStringList &columns, const QStringList &values);
+    VerifyDBRetStruct verifyPatient(const QStringList &columns, const QStringList &values);
 
 };
 

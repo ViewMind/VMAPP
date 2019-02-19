@@ -75,6 +75,7 @@
 #define   CONFIG_INST_PASSWORD                          "inst_pass"
 #define   CONFIG_TEST_MODE                              "test_mode"
 #define   CONFIG_ENABLE_GAZE_FOLLOWING                  "enable_gaze_following"
+#define   CONFIG_DBLOGFILE_LOCATION                     "dblogfile"
 
 // The unique UID for tests.
 #define   TEST_UID                                      "ARvm0000"

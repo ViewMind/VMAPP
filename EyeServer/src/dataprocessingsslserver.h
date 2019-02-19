@@ -74,7 +74,7 @@ private:
 
     // Check if the report can be requested.
     quint8 verifyReportRequest(qint32 UID, const QString &etserial);
-    void decreaseReportCount(qint32 UID);
+    void decreaseReportCount(qint32 UID, const QString &logid);
     bool initAllDBS();
     QString getPatientID(const QString &pat_uid);
 

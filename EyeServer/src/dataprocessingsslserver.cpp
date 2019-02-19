@@ -137,6 +137,7 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     }
 
     // Data is saved to the data base ONLY when NOT in demo mode.
+    QString logid;
     if (sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
 
         // Since the processing is done, now the data can be saved to the database
@@ -162,10 +163,13 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
                 return;
             }
 
+            QString doctorid = d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
             columns << TEYERES_COL_STUDY_DATE << TEYERES_COL_PUID << TEYERES_COL_DOCTORID;
-            values << "TIMESTAMP(NOW())" << puid  << d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString();
+            values << "TIMESTAMP(NOW())" << puid  << doctorid;
 
-            if (!dbConnBase->insertDB(TABLE_EYE_RESULTS,columns,values)){
+            logid = doctorid + " for " + puid;
+
+            if (!dbConnBase->insertDB(TABLE_EYE_RESULTS,columns,values,logid)){
                 dbConnBase->close();
                 dbConnID->close();
                 dbConnPatData->close();
@@ -205,7 +209,7 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     // ONLY AFTER the report was successfully sent the number of evaluations is decreased, and IF this is not demo mode.
     if (sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
         qint32 UID = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
-        decreaseReportCount(UID);
+        decreaseReportCount(UID,logid);
     }
 
     // Closing the connection to the database
@@ -462,22 +466,20 @@ quint8 DataProcessingSSLServer::verifyReportRequest(qint32 UID, const QString &e
     data = dbConnBase->getLastResult();
 
     // Checking the serial
-    if (data.rows.size() == 1){
-        if (data.rows.first().size() != 1){
-            log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
-            return RR_WRONG_ET_SERIAL;
-        }
+    if (data.rows.size() < 1){
+        log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
+        return RR_WRONG_ET_SERIAL;
+
     }
-    else{
+    if (data.rows.first().size() != 1){
         log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + QString::number(UID));
         return RR_WRONG_ET_SERIAL;
     }
 
-
     return RR_ALL_OK;
 }
 
-void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
+void DataProcessingSSLServer::decreaseReportCount(qint32 UID, const QString &logid){
 
     QStringList columns;
     columns << TINST_COL_EVALS;
@@ -508,7 +510,7 @@ void DataProcessingSSLServer::decreaseReportCount(qint32 UID){
     QStringList values;
     values << QString::number(numevals);
 
-    if (!dbConnBase->updateDB(TABLE_INSTITUTION,columns,values,condition)){
+    if (!dbConnBase->updateDB(TABLE_INSTITUTION,columns,values,condition,logid)){
         log.appendError("When saving new number of evaluations " + QString(UID) + " when it is " + QString(numevals) + ": " + dbConnBase->getError());
         return;
     }
