@@ -19,10 +19,10 @@ server_address = 192.168.1.10;
 #------------------------------------------------------#
 
 # Pass for ViewMind Institution in the LocalServer d9LppSJf
-inst_pass = 01cf1f560d48d40622796620564c918fe3792b2c9d501c0fde0564dd38827a51;
-inst_uid = 1369462188;
-inst_name = ViewMind;
-inst_et_serial = ;
+#inst_pass = 01cf1f560d48d40622796620564c918fe3792b2c9d501c0fde0564dd38827a51;
+#inst_uid = 1369462188;
+#inst_name = ViewMind;
+#inst_et_serial = ;
 
 # PASS for this hash is A8ESpCU6. Used for Development Connection
 # inst_pass = 5ef3f51d45b533c6f173d25a2f2704a3b1a26b75226934a96d1c036cde594ef2;
@@ -30,8 +30,13 @@ inst_et_serial = ;
 # inst_name = Institucion de Prueba;
 # inst_uid = 313644376;
 
+# Pass for ViewMind Institution in the Production Server 7gUiBC7n
+inst_pass = 8e39024ce54f28ce399e83a4623fc5a7c6e95be44373231520d6322ff4f2f378;
+inst_uid = 1369462188;
+inst_name = ViewMind;
+inst_et_serial = ;
 
-# test_mode = true;
+test_mode = true;
 # enable_gaze_following = true;
 
 
@@ -49,7 +54,7 @@ reading_px_tol_for_target = 60;
 # Parameters for GazePoint GP3HD
 eyetracker_configured        = GP3HD;    #GazePoint ET
 moving_window_max_dispersion = 100;      #px
-sample_frequency             = 150;      #Hz
+sample_frequency             = 250;      #Hz
 
 # Parameters for SMI REDm 120 HZ
 # eyetracker_configured        = REDm;     #SMI ET

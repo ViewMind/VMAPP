@@ -8,6 +8,7 @@ Dialog {
     readonly property string keybase: "viewsettings_"
     property bool vmInvalidRepoError: false;
     property string vmLoadLanguage: "";
+    property string vmDefaultCountry: "";
     property bool vmOfflineModeStatus: false;
     property bool vmRestartRequired: false;    
 
@@ -92,8 +93,11 @@ Dialog {
         anchors.top: diagLabelDefaultCountry.bottom
         anchors.topMargin: 12
         anchors.horizontalCenter: parent.horizontalCenter
-        onVmValuesChanged: diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
+        onVmValuesChanged:diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
         onVmListChanged: diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
+        Component.onCompleted: {
+           vmDefaultCountry = loader.getCountryCodeForCountry(diagDBDefaultCountry.vmCurrentText)
+        }
     }
 
     // Combo box for language selection and label
@@ -159,8 +163,9 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: diagCboxDemo.top
-        anchors.left: diagCboxDemo.right
+        anchors.left: diagCboxUseMouse.right
         anchors.leftMargin: 20
+        visible: false
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);
     }
 
@@ -170,7 +175,7 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: diagCboxDemo.top
-        anchors.left: diagCboxDualMonitor.right
+        anchors.left: diagCboxDemo.right
         anchors.leftMargin: 20
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)
     }
@@ -182,7 +187,7 @@ Dialog {
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
         anchors.top: diagCboxDualMonitor.bottom
         anchors.topMargin: 45
-        anchors.left: diagDBDefaultCountry.left
+        anchors.left: diagDBDefaultCountry.left        
         onClicked: {
             if (checkAllOk()) close();
             if (vmRestartRequired){
@@ -207,17 +212,18 @@ Dialog {
     function checkAllOk(save){
 
         // Saving the settings.
+        var newCountry = loader.getCountryCodeForCountry(diagDBDefaultCountry.vmCurrentText);
         loader.setSettingsValue(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
         loader.setSettingsValue(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
         loader.setSettingsValue(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
-        loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_COUNTRY,loader.getCountryCodeForCountry(diagDBDefaultCountry.vmCurrentText));
+        loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_COUNTRY,newCountry);
         loader.setSettingsValue(vmDefines.vmCONFIG_USE_MOUSE,diagCboxUseMouse.checked);
 
         // Signal to update dropdown menu information.
         updateMenus();
 
         // Restart required
-        if (vmLoadLanguage !== diagCBLang.currentText){
+        if ((vmLoadLanguage !== diagCBLang.currentText) || (vmDefaultCountry !== newCountry)){
             viewSettings.vmRestartRequired = true;
         }
         else{

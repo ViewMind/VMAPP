@@ -131,7 +131,7 @@ or <b>presione "D" </b> si alguno <b>de los colores de las dos</b> <br>
 Las primeras 10 imagenes serán de prueba. <br>
 No serán consideradas en los resultados.;
 
-viewpresentexp_fieldingExp = Expliación de la Evaluación <br><b>N-Back</b>;
+viewpresentexp_fieldingExp = Explicación de la Evaluación <br><b>N-Back</b>;
 
 viewpresentexp_btnContinue = CONTINUAR;
 
@@ -166,7 +166,7 @@ viewshowreports_diagTabTime = Hora;
 viewshowreports_diagTabReading = Lectura;
 viewshowreports_diagTabBinding = Colores;
 viewshowreports_diagBtnView = VER;
-viewshowreports_diagBtnBack = BACK;
+viewshowreports_diagBtnBack = ATRAS;
 
 #********************************* VIEW ALL PATIENTS *********************************
 viewallreports_title = Lista de Pacientes;
@@ -246,6 +246,6 @@ error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas
 error_db_wronginst = ID Incorrrecto|El ID de esta institución está equivocado o el doctor no fue registrado<br>Por favor contacte a ViewMind para resolverlo;
 
 #********************************* INFORMATION MESSAGES *********************************
-msg_change_lang = Cambiar Idioma<>Debe reiniciar el programa para cambiar el idioma;
+msg_change_lang = Efectuar los cambios<>Los cambios que realizó requieren que se reinicie el programa;
 msg_request_report = Procesando...<>Por favor espere mientras se obtiene la información del reporte;
 msg_report_generation = Generando reporte<>En un instante su informe estará listo...;
