@@ -36,6 +36,9 @@ public:
     static const quint8 DPFI_DB_INST_UID                              = 17;
     static const quint8 DPFI_DB_ET_SERIAL                             = 18;
     static const quint8 DPFI_PROCESSING_ACK                           = 19;
+    static const quint8 DPFI_UPDATE_REQUEST                           = 20;
+    static const quint8 DPFI_UPDATE_EXE                               = 21;
+    static const quint8 DPFI_UPDATE_CHANGES                           = 22;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;

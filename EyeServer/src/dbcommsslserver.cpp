@@ -82,7 +82,8 @@ void DBCommSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
         // Information has arrived ok. Starting the process.
         //log.appendStandard("Done buffering data for " + QString::number(socket));
         sockets.value(socket)->stopTimer();
-        processSQLRequest(socket);
+        if (sockets.value(socket)->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_REQUEST)) processUpdateRequest(socket);
+        else processSQLRequest(socket);
         break;
     case SSLIDSocket::SSL_SIGNAL_DATA_RX_ERROR:
         sockets.value(socket)->stopTimer();
@@ -449,7 +450,7 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 
         //log.appendStandard("Setting SET ACK Field with " + QString::number(code));
         tx.addValue(code,DataPacket::DPFI_DB_SET_ACK);
-        if (dberrors.size() > 0){            
+        if (dberrors.size() > 0){
             tx.addString(dberrors.join(DB_TRANSACTION_LIST_SEP),DataPacket::DPFI_DB_ERROR);
         }
 
@@ -470,6 +471,108 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
     removeSocket(socket);
 
 }
+
+void DBCommSSLServer::processUpdateRequest(quint64 socket){
+    qint32 whichupdate =  sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_REQUEST).data.toString();
+
+    if (whichupdate == UPDATE_CHECK_GP_CODE){
+        sendExeHash(PATH_TO_UPDATE_GP,"GP",socket);
+    }
+    else if (whichupdate == UPDATE_CHECK_SMI_CODE){
+        sendExeHash(PATH_TO_UPDATE_GP,"GP",socket);
+    }
+    else if (whichupdate == UPDATE_GET_GP_CODE){
+
+    }
+    else if (whichupdate == UPDATE_GET_SMI_CODE){
+
+    }
+    else{
+
+    }
+
+}
+
+void DBCommSSLServer::sendExeHash(const QString &path, const QString &exetype, quint64 socket){
+
+
+    QFile exe(path);
+    if (!exe.exists()){
+        log.appendError("Could not find the " + exetype + " Executable found in its path");
+        removeSocket(socket);
+        return;
+    }
+
+    if (!exe.open(QFile::ReadOnly)){
+        log.appendError("Could not open the " + exetype + " Executable for reading");
+        removeSocket(socket);
+        return;
+    }
+
+    QString hash (QCryptographicHash::hash(exe.readAll(),QCryptographicHash::Sha3_256).toHex());
+    exe.close();
+
+    DataPacket tx;
+    tx.addString(hash,DataPacket::DPFI_UPDATE_REQUEST);
+    QByteArray ba = tx.toByteArray();
+
+    if (!sockets.contains(socket)){
+        log.appendError("When sending executable, socket no longer found in list");
+        return;
+    }
+
+    qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+    if (num != ba.size()){
+        log.appendError("Failure sending hash for " + exetype + " file: " + sockets.value(socket)->socket()->peerAddress().toString());
+    }
+    removeSocket(socket);
+
+}
+
+void DBCommSSLServer::sendExe(const QString &path, const QString &exetype, quint64 socket){
+
+    QFile exe(path);
+    if (!exe.exists()){
+        log.appendError("Could not find the " + exetype + " Executable found in its path");
+        removeSocket(socket);
+        return;
+    }
+
+    QFile changes(PATH_TO_LATESTCHANGES);
+    if (!changes.exists()){
+        log.appendError("Could not find the changes file in its path");
+        removeSocket(socket);
+        return;
+    }
+
+
+    DataPacket tx;
+    if (!tx.addFile(path,DataPacket::DPFI_UPDATE_EXE)){
+        log.appendError("Could not serialize the " + exetype + " executable");
+        removeSocket(socket);
+        return;
+    }
+    if (!tx.addFile(path,DataPacket::DPFI_UPDATE_CHANGES)){
+        log.appendError("Could not serialize the lastest changes file");
+        removeSocket(socket);
+        return;
+    }
+
+    QByteArray ba = tx.toByteArray();
+
+    if (!sockets.contains(socket)){
+        log.appendError("When sending executable, socket no longer found in list");
+        return;
+    }
+
+    qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+    if (num != ba.size()){
+        log.appendError("Failure sending exe data for " + exetype + " file: " + sockets.value(socket)->socket()->peerAddress().toString());
+    }
+    removeSocket(socket);
+
+}
+
 
 void DBCommSSLServer::changedState(quint64 id){
 

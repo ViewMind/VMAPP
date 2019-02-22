@@ -136,6 +136,12 @@
 #define   HEADER_IMAGE_EXPERIMENT                       "#IMAGE"
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
 
+// Codes indicating the type of update transaction
+#define  UPDATE_CHECK_GP_CODE     "cgp"
+#define  UPDATE_CHECK_SMI_CODE    "csmi"
+#define  UPDATE_GET_SMI_CODE      "gsmi"
+#define  UPDATE_GET_GP_CODE       "ggp"
+
 // TCP Ports.
 static const quint16 TCP_PORT_DB_COMM                    = 54915;
 static const quint16 TCP_PORT_DATA_PROCESSING            = 54912;

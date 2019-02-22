@@ -9,6 +9,10 @@
 #include "sslidsocket.h"
 #include "ssllistener.h"
 
+#define  PATH_TO_UPDATE_SMI      "eyeexp/smi/EyeExperimenter.exe"
+#define  PATH_TO_UPDATE_GP       "eyeexp/gp/EyeExperimenter.exe"
+#define  PATH_TO_LATESTCHANGES   "eyeexp/changelog"
+
 class DBCommSSLServer : public QObject
 {
     Q_OBJECT
@@ -57,10 +61,12 @@ private:
     // Do the actual DB stuff
     void processSQLRequest(quint64 socket);
 
+    // Update the EyeExperimenter
+    void processUpdateRequest(quint64 socket);
+
     // Auxiliary function to handel the multiple DBInterfaces
     bool initAllDBS();
     DBInterface *getDBIFFromTable(const QString &tableName);
-
 
     struct VerifyDBRetStruct {
         quint8 errorCode;
@@ -72,6 +78,10 @@ private:
     // Verify to insert
     VerifyDBRetStruct verifyDoctor(const QStringList &columns, const QStringList &values);
     VerifyDBRetStruct verifyPatient(const QStringList &columns, const QStringList &values);
+
+    // Sends the checksum of one of the exes
+    void sendExeHash(const QString &path, const QString &exetype, quint64 socket);
+    void sendExe(const QString &path, const QString &exetype, quint64 socket);
 
 };
 
