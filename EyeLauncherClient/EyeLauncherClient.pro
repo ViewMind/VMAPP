@@ -1,4 +1,4 @@
-QT += quick
+QT += quick network
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -20,7 +20,8 @@ RCC_DIR = QRC
 SOURCES += main.cpp \
     loader.cpp \
     ../CommonClasses/ConfigurationManager/configurationmanager.cpp \
-    ../CommonClasses/LogInterface/loginterface.cpp
+    ../CommonClasses/LogInterface/loginterface.cpp \
+    ../CommonClasses/DataPacket/datapacket.cpp
 
 RESOURCES += qml.qrc \
     images.qrc \
@@ -42,4 +43,5 @@ HEADERS += \
     loader.h \
     ../CommonClasses/ConfigurationManager/configurationmanager.h \
     ../CommonClasses/LogInterface/loginterface.h \
-    ../CommonClasses/common.h
+    ../CommonClasses/common.h \
+    ../CommonClasses/DataPacket/datapacket.h

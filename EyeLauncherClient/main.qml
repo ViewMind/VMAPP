@@ -108,4 +108,8 @@ Window {
         x: (decoratingImage.width + parent.width - loadingImage.width)/2
     }
 
+    Component.onCompleted: {
+        loader.checkForUpdates();
+    }
+
 }
