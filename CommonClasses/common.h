@@ -147,6 +147,7 @@
 #define  UPDATE_CHECK_SMI_CODE                          "csmi"
 #define  UPDATE_GET_SMI_CODE                            "gsmi"
 #define  UPDATE_GET_GP_CODE                             "ggp"
+#define  UPDATE_FORCE_NO_UPDATE_MSG                     "none"
 
 // TCP Ports.
 static const quint16 TCP_PORT_DB_COMM                    = 54915;

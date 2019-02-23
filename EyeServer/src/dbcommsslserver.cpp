@@ -476,10 +476,12 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     QString whichupdate =  sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_REQUEST).data.toString();
 
     if (whichupdate == UPDATE_CHECK_GP_CODE){
-        sendExeHash(PATH_TO_UPDATE_GP,"GP",socket);
+        QString inst_uid = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
+        sendExeHash(PATH_TO_UPDATE_GP,"GP",socket,inst_uid);
     }
     else if (whichupdate == UPDATE_CHECK_SMI_CODE){
-        sendExeHash(PATH_TO_UPDATE_GP,"GP",socket);
+        QString inst_uid = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
+        sendExeHash(PATH_TO_UPDATE_GP,"GP",socket,inst_uid);
     }
     else if (whichupdate == UPDATE_GET_GP_CODE){
         QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
@@ -496,24 +498,27 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     }
 }
 
-void DBCommSSLServer::sendExeHash(const QString &path, const QString &exetype, quint64 socket){
+void DBCommSSLServer::sendExeHash(const QString &path, const QString &exetype, quint64 socket, const QString &instUid){
 
+    QString hash = "none";
 
-    QFile exe(path);
-    if (!exe.exists()){
-        log.appendError("Could not find the " + exetype + " Executable found in its path");
-        removeSocket(socket);
-        return;
+    if (isInstEnabled(instUid)){
+        QFile exe(path);
+        if (!exe.exists()){
+            log.appendError("Could not find the " + exetype + " Executable found in its path");
+            removeSocket(socket);
+            return;
+        }
+
+        if (!exe.open(QFile::ReadOnly)){
+            log.appendError("Could not open the " + exetype + " Executable for reading");
+            removeSocket(socket);
+            return;
+        }
+
+        hash = QString(QCryptographicHash::hash(exe.readAll(),QCryptographicHash::Sha3_256).toHex());
+        exe.close();
     }
-
-    if (!exe.open(QFile::ReadOnly)){
-        log.appendError("Could not open the " + exetype + " Executable for reading");
-        removeSocket(socket);
-        return;
-    }
-
-    QString hash (QCryptographicHash::hash(exe.readAll(),QCryptographicHash::Sha3_256).toHex());
-    exe.close();
 
     DataPacket tx;
     tx.addString(hash,DataPacket::DPFI_UPDATE_REQUEST);
@@ -552,11 +557,11 @@ void DBCommSSLServer::sendExe(const QString &path, const QString &exetype, const
 
     DataPacket tx;
     if (!tx.addFile(path,DataPacket::DPFI_UPDATE_EXE)){
-        log.appendError("Could not serialize the " + exetype + " executable");
+        log.appendError("Could not serialize the " + exetype + " executable on " + path);
         removeSocket(socket);
         return;
     }
-    if (!tx.addFile(PATH_TO_LATESTCHANGES,DataPacket::DPFI_UPDATE_CHANGES)){
+    if (!tx.addFile(pathToChanges,DataPacket::DPFI_UPDATE_CHANGES)){
         log.appendError("Could not serialize the lastest changes file");
         removeSocket(socket);
         return;
@@ -577,6 +582,25 @@ void DBCommSSLServer::sendExe(const QString &path, const QString &exetype, const
 
 }
 
+bool DBCommSSLServer::isInstEnabled(const QString &uid){
+
+    QFile file(FILE_INST_ENABLED_UPDATE);
+    if (!file.open(QFile::ReadOnly)){
+        log.appendError("Could not open enabled file " + file.fileName() + " for reading");
+        return false;
+    }
+    QTextStream reader(&file);
+    while (!reader.atEnd()){
+        QString line = reader.readLine();
+        if (line.contains(uid)){
+            file.close();
+            return true;
+        }
+    }
+    file.close();
+    return false;
+
+}
 
 void DBCommSSLServer::changedState(quint64 id){
 
