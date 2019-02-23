@@ -473,7 +473,7 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 }
 
 void DBCommSSLServer::processUpdateRequest(quint64 socket){
-    qint32 whichupdate =  sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_REQUEST).data.toString();
+    QString whichupdate =  sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_REQUEST).data.toString();
 
     if (whichupdate == UPDATE_CHECK_GP_CODE){
         sendExeHash(PATH_TO_UPDATE_GP,"GP",socket);
@@ -482,10 +482,12 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
         sendExeHash(PATH_TO_UPDATE_GP,"GP",socket);
     }
     else if (whichupdate == UPDATE_GET_GP_CODE){
-        sendExe(PATH_TO_UPDATE_GP,"GP",socket);
+        QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
+        sendExe(PATH_TO_UPDATE_GP,"GP",lang,socket);
     }
     else if (whichupdate == UPDATE_GET_SMI_CODE){
-        sendExe(PATH_TO_UPDATE_SMI,"SMI",socket);
+        QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
+        sendExe(PATH_TO_UPDATE_SMI,"SMI",lang,socket);
     }
     else{
         log.appendError("Unrecognized update message: " + whichupdate);
@@ -530,7 +532,7 @@ void DBCommSSLServer::sendExeHash(const QString &path, const QString &exetype, q
 
 }
 
-void DBCommSSLServer::sendExe(const QString &path, const QString &exetype, quint64 socket){
+void DBCommSSLServer::sendExe(const QString &path, const QString &exetype, const QString lang , quint64 socket){
 
     QFile exe(path);
     if (!exe.exists()){
@@ -539,9 +541,10 @@ void DBCommSSLServer::sendExe(const QString &path, const QString &exetype, quint
         return;
     }
 
-    QFile changes(PATH_TO_LATESTCHANGES);
+    QString pathToChanges = QString(PATH_TO_LATESTCHANGES) + "/" + QString(FILE_CHANGELOG_UPDATER) + "_" + lang;
+    QFile changes(pathToChanges);
     if (!changes.exists()){
-        log.appendError("Could not find the changes file in its path");
+        log.appendError("Could not find the changes file in its path: " + pathToChanges);
         removeSocket(socket);
         return;
     }
