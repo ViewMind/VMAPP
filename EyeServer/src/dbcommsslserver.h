@@ -11,7 +11,7 @@
 
 #define  PATH_TO_UPDATE_SMI      "eyeexp/smi/EyeExperimenter.exe"
 #define  PATH_TO_UPDATE_GP       "eyeexp/gp/EyeExperimenter.exe"
-#define  PATH_TO_LATESTCHANGES   "eyeexp/changelog"
+#define  PATH_TO_LATESTCHANGES   "eyeexp/changelog/"
 
 class DBCommSSLServer : public QObject
 {
@@ -81,7 +81,7 @@ private:
 
     // Sends the checksum of one of the exes
     void sendExeHash(const QString &path, const QString &exetype, quint64 socket);
-    void sendExe(const QString &path, const QString &exetype, quint64 socket);
+    void sendExe(const QString &path, const QString &exetype, const QString lang, quint64 socket);
 
 };
 

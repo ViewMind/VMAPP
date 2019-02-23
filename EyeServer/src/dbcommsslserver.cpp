@@ -482,15 +482,16 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
         sendExeHash(PATH_TO_UPDATE_GP,"GP",socket);
     }
     else if (whichupdate == UPDATE_GET_GP_CODE){
-
+        sendExe(PATH_TO_UPDATE_GP,"GP",socket);
     }
     else if (whichupdate == UPDATE_GET_SMI_CODE){
-
+        sendExe(PATH_TO_UPDATE_SMI,"SMI",socket);
     }
     else{
-
+        log.appendError("Unrecognized update message: " + whichupdate);
+        removeSocket(socket);
+        return;
     }
-
 }
 
 void DBCommSSLServer::sendExeHash(const QString &path, const QString &exetype, quint64 socket){
@@ -552,7 +553,7 @@ void DBCommSSLServer::sendExe(const QString &path, const QString &exetype, quint
         removeSocket(socket);
         return;
     }
-    if (!tx.addFile(path,DataPacket::DPFI_UPDATE_CHANGES)){
+    if (!tx.addFile(PATH_TO_LATESTCHANGES,DataPacket::DPFI_UPDATE_CHANGES)){
         log.appendError("Could not serialize the lastest changes file");
         removeSocket(socket);
         return;

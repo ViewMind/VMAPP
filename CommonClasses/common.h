@@ -130,6 +130,7 @@
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
 #define   FILE_EYE_REP_GEN_CONFIGURATION                "eye_rep_gen_conf"
+#define   FILE_CHANGELOG_UPDATER                        "changelog"
 
 // Headers for the data files identifying the format of the data in that experiment.
 #define   HEADER_READING_EXPERIMENT                     "#READING"
