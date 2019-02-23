@@ -73,6 +73,7 @@ private:
     QProcess eyeExpProcess;
     QString selectedLanguage;
     QString changeLogFile;
+    QString instUID;
     bool isConnReady;
 
 };

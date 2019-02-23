@@ -64,6 +64,13 @@ void Loader::checkForUpdates(){
         return;
     }
 
+    instUID = cfg.getString(CONFIG_INST_UID);
+    if (instUID == ""){
+        logger.appendError("Could not determine institution id");
+        startEyeExperimenter();
+        return;
+    }
+
     // Calculating the hash of the current executable
     QFile exe(FILE_EYEEXP_EXE);
     if (!exe.open(QFile::ReadOnly)){
@@ -82,7 +89,7 @@ void Loader::checkForUpdates(){
     isConnReady = false;
     serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_DB_COMM);
     timeoutTimer.start(TIMEOUT_TO_CONNECT);
-    qWarning() << "Attempting to connect to host";
+    //qWarning() << "Attempting to connect to host";
 
 }
 
@@ -99,7 +106,7 @@ void Loader::requestExeUpdate(){
 void Loader::startEyeExperimenter(){
 
 
-    qWarning() << "Starting eyeserver";
+    //qWarning() << "Starting eyeserver";
     emit(changeMessage(getStringForKey("msg_starting_the_appliation")));
 
     // Checking if the log file exists.
@@ -128,10 +135,12 @@ void Loader::on_encryptedSuccess(){
     timeoutTimer.stop();
     DataPacket tx;
 
-    qWarning() << "Connected to host";
+    //qWarning() << "Connected to host";
 
     if (connectionState == CS_CONNECTING_FOR_CHECK){
+        //qWarning() << "Sending update message" << updateMessage;
         tx.addString(updateMessage,DataPacket::DPFI_UPDATE_REQUEST);
+        tx.addString(instUID,DataPacket::DPFI_DB_INST_UID);
         QByteArray ba = tx.toByteArray();
         qint64 num = serverConn->write(ba.constData(),ba.size());
         if (num != ba.size()){
@@ -142,7 +151,7 @@ void Loader::on_encryptedSuccess(){
         rx.clearAll();
         connectionState = CS_CHECK_UPDATE_SENT;
         timeoutTimer.start(TIMEOUT_TO_GET_UPDATE_CHECK);
-        qWarning() << "Requesting update check";
+        //qWarning() << "Requesting update check";
     }
     else if (connectionState == CS_CONNECTING_FOR_UPDATE){
         QString msg;
@@ -159,7 +168,7 @@ void Loader::on_encryptedSuccess(){
             return;
         }
         rx.clearAll();
-        qWarning() << "Exe Update Request sent";
+        //qWarning() << "Exe Update Request sent";
         connectionState = CS_GET_UPDATE_SENT;
         timeoutTimer.start(TIMEOUT_TO_GET_EXE);
     }
@@ -175,8 +184,8 @@ void Loader::on_readyRead(){
 
         if (connectionState == CS_CHECK_UPDATE_SENT){
             QString hash = rx.getField(DataPacket::DPFI_UPDATE_REQUEST).data.toString();
-            qWarning() << "Update check done. Comparing" << hash << " with " << hashLocalExe;
-            if (hash != hashLocalExe){
+            //qWarning() << "Update check done. Comparing" << hash << " with " << hashLocalExe;
+            if ((hash != hashLocalExe) && (hash != UPDATE_FORCE_NO_UPDATE_MSG)){
                 connectionState = CS_WAIT_FOR_CONNECTION_READY;                
                 logger.appendStandard("Update Found!: Remote Hash: " + hash + ". Local hash: " + hashLocalExe);                
                 hashLocalExe = hash; // Hash is saved for later comparison.
@@ -253,7 +262,7 @@ void Loader::on_readyRead(){
 }
 
 void Loader::on_timeOut(){
-    qWarning() << "Timeout conn state" << connectionState;
+    //qWarning() << "Timeout conn state" << connectionState;
     if ((connectionState == CS_CONNECTING_FOR_CHECK) || (connectionState == CS_CONNECTING_FOR_UPDATE)){
         timeoutTimer.stop();
         logger.appendError("Connection timeout");
@@ -273,7 +282,7 @@ void Loader::on_timeOut(){
         return;
     }
     else if (connectionState == CS_WAIT_FOR_CONNECTION_READY){
-        qWarning() << "Checking if connection is ready";
+        //qWarning() << "Checking if connection is ready";
         if (isConnReady){
             timeoutTimer.stop();
             requestExeUpdate();

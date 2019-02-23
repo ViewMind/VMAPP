@@ -57,7 +57,7 @@ moving_window_max_dispersion = 100;      #px
 sample_frequency             = 250;      #Hz
 
 # Parameters for SMI REDm 120 HZ
-# eyetracker_configured        = REDm;     #SMI ET
+#eyetracker_configured        = REDm;     #SMI ET
 #moving_window_max_dispersion = 30;       #px
 #sample_frequency             = 120;      #Hz
 
