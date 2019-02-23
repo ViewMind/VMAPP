@@ -15,6 +15,11 @@
 // The directory name where the raw data will be located
 #define   DIRNAME_RAWDATA                               "viewmind_etdata"
 #define   DIRNAME_DBBKP                                 "dbbkp"
+#define   DIRNAME_LAUNCHER                              "launcher"
+
+// The semaphore name. To prevent multiple instances for the same application
+#define   SEMAPHORE_NAME                                   "viewind_eyeexperimenter_semaphore"
+#define   SHAREDMEMORY_NAME                                "viewind_eyeexperimenter_shared_memory"
 
 // Configuration key values (cmd names in the configuration file)
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"

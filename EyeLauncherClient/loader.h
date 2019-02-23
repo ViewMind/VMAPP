@@ -7,6 +7,7 @@
 #include <QCryptographicHash>
 #include <QProcess>
 #include <QCoreApplication>
+#include <QMetaEnum>
 #include "../../../CommonClasses/DataPacket/datapacket.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/common.h"
@@ -19,10 +20,10 @@
 #define  FILE_EYEEXP_OLDEXE             "../previous.exe"
 #define  FILE_EYEEXP_CHANGELOG          "changelog"
 
-#define  TIMEOUT_TO_CONNECT              60       // In seconds
-#define  TIMEOUT_TO_GET_UPDATE_CHECK     80       // In seconds
-#define  TIMEOUT_TO_GET_EXE              300      // In seconds
-#define  TIMEOUT_CONN_READY_POLLING      1        // In seconds
+#define  TIMEOUT_TO_CONNECT              60*1000       // In miliseconds
+#define  TIMEOUT_TO_GET_UPDATE_CHECK     80*1000       // In miliseconds
+#define  TIMEOUT_TO_GET_EXE              300*1000      // In miliseconds
+#define  TIMEOUT_CONN_READY_POLLING      1*1000        // In miliseconds
 
 class Loader : public QObject
 {
@@ -45,6 +46,7 @@ public:
     void startEyeExperimenter();
 
 signals:
+    void changeMessage(QString msg);
 
 public slots:
 
@@ -63,11 +65,14 @@ private:
     bool loadingError;
     ConfigurationManager language;
     QSslSocket *serverConn;
-    QTimer timer;
+    QTimer timeoutTimer;
     CheckState connectionState;
     QString updateMessage;
     QString hashLocalExe;
     DataPacket rx;
+    QProcess eyeExpProcess;
+    QString selectedLanguage;
+    QString changeLogFile;
     bool isConnReady;
 
 };

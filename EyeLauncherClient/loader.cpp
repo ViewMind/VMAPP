@@ -6,11 +6,15 @@ Loader::Loader(QObject *parent) : QObject(parent)
     // Attempting to load the settings file to figure out the language.
     ConfigurationManager cmng;
     QString langfile = ":/languages/en.lang";
+    selectedLanguage = CONFIG_P_LANG_EN;
     if (cmng.loadConfiguration(FILE_EYEEXP_SETTINGS,COMMON_TEXT_CODEC)){
         if (cmng.getString(CONFIG_REPORT_LANGUAGE) == CONFIG_P_LANG_ES){
+            selectedLanguage = CONFIG_P_LANG_ES;
             langfile = ":/languages/es.lang";
         }
     }
+
+    changeLogFile = QString(FILE_CHANGELOG_UPDATER) + "_" + selectedLanguage;
 
     if (!language.loadConfiguration(langfile,COMMON_TEXT_CODEC)){
         logger.appendError("Could not load language file");
@@ -26,11 +30,13 @@ Loader::Loader(QObject *parent) : QObject(parent)
     connect(serverConn,SIGNAL(readyRead()),this,SLOT(on_readyRead()));
 
     // Timer connection
-    connect(&timer,&QTimer::timeout,this,&Loader::on_timeOut);
+    //connect(&timer,&QTimer::timeout,this,&Loader::on_timeOut);
+    connect(&timeoutTimer,SIGNAL(timeout()),this,SLOT(on_timeOut()));
 
     connectionState = CS_NONE;
 
 }
+
 
 
 QString Loader::getStringForKey(const QString &key){
@@ -43,7 +49,7 @@ QString Loader::getStringForKey(const QString &key){
 void Loader::checkForUpdates(){
     // Attempting to determine which EyeTracker branch is installed.
     ConfigurationManager cfg;
-    if (!cfg.loadConfiguration(FILE_EYEEXP_SETTINGS,COMMON_TEXT_CODEC)){
+    if (!cfg.loadConfiguration(FILE_EYEEXP_CONFIGURATION,COMMON_TEXT_CODEC)){
         logger.appendError("Could not open EyeExperimenter configuration file: " + cfg.getError());
         startEyeExperimenter();
         return;
@@ -69,26 +75,35 @@ void Loader::checkForUpdates(){
     hashLocalExe = QString(QCryptographicHash::hash(exe.readAll(),QCryptographicHash::Sha3_256).toHex());
     exe.close();
 
+    emit(changeMessage(getStringForKey("msg_wait_update_check")));
+
     // Connecting to the server
-    connectionState = CS_CONNECTING_FOR_UPDATE;
+    connectionState = CS_CONNECTING_FOR_CHECK;
+    isConnReady = false;
     serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_DB_COMM);
-    timer.setInterval(TIMEOUT_TO_CONNECT*1000); // 1 Minute timeout;
+    timeoutTimer.start(TIMEOUT_TO_CONNECT);
+    qWarning() << "Attempting to connect to host";
 
 }
 
 void Loader::requestExeUpdate(){
     // Connecting to the server
+    emit(changeMessage(getStringForKey("msg_downloading_updates")));
     connectionState = CS_CONNECTING_FOR_UPDATE;
     serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_DB_COMM);
-    timer.setInterval(TIMEOUT_TO_CONNECT*1000); // 1 Minute timeout;
+    timeoutTimer.start(TIMEOUT_TO_CONNECT);
 }
 
 
 //************************************* Starting the EyeExperimenter ****************************************
 void Loader::startEyeExperimenter(){
 
+
+    qWarning() << "Starting eyeserver";
+    emit(changeMessage(getStringForKey("msg_starting_the_appliation")));
+
     // Checking if the log file exists.
-    QFile changelog(FILE_EYEEXP_CHANGELOG);
+    QFile changelog(changeLogFile);
     if (!changelog.exists()){
         if (changelog.open(QFile::WriteOnly)){
             QTextStream writer(&changelog);
@@ -98,18 +113,22 @@ void Loader::startEyeExperimenter(){
         else logger.appendError("Could not create changelog file");
     }
 
-    QProcess eyexp;
-    eyexp.start(FILE_EYEEXP_EXE);
+    QProcess eyeExpProcess;
+    eyeExpProcess.setWorkingDirectory("../");
+    eyeExpProcess.setProgram(FILE_EYEEXP_EXE);
+    eyeExpProcess.startDetached();
     connectionState = CS_STARTING_EYEEXP;
-    timer.setInterval(TIMEOUT_CONN_READY_POLLING);
+    timeoutTimer.start(TIMEOUT_CONN_READY_POLLING);
 }
 
 
 //************************************* Communication and timeout slots ****************************************
 void Loader::on_encryptedSuccess(){
 
-    timer.stop();
+    timeoutTimer.stop();
     DataPacket tx;
+
+    qWarning() << "Connected to host";
 
     if (connectionState == CS_CONNECTING_FOR_CHECK){
         tx.addString(updateMessage,DataPacket::DPFI_UPDATE_REQUEST);
@@ -122,7 +141,8 @@ void Loader::on_encryptedSuccess(){
         }
         rx.clearAll();
         connectionState = CS_CHECK_UPDATE_SENT;
-        timer.setInterval(TIMEOUT_TO_GET_UPDATE_CHECK*1000); // 1 Minute timeout;
+        timeoutTimer.start(TIMEOUT_TO_GET_UPDATE_CHECK);
+        qWarning() << "Requesting update check";
     }
     else if (connectionState == CS_CONNECTING_FOR_UPDATE){
         QString msg;
@@ -130,6 +150,7 @@ void Loader::on_encryptedSuccess(){
         else if (updateMessage == UPDATE_CHECK_SMI_CODE) msg = UPDATE_GET_SMI_CODE;
         DataPacket tx;
         tx.addString(msg,DataPacket::DPFI_UPDATE_REQUEST);
+        tx.addString(selectedLanguage,DataPacket::DPFI_UPDATE_LANG);
         QByteArray ba = tx.toByteArray();
         qint64 num = serverConn->write(ba.constData(),ba.size());
         if (num != ba.size()){
@@ -138,8 +159,9 @@ void Loader::on_encryptedSuccess(){
             return;
         }
         rx.clearAll();
+        qWarning() << "Exe Update Request sent";
         connectionState = CS_GET_UPDATE_SENT;
-        timer.setInterval(TIMEOUT_TO_GET_EXE*1000);
+        timeoutTimer.start(TIMEOUT_TO_GET_EXE);
     }
 
 }
@@ -149,16 +171,16 @@ void Loader::on_readyRead(){
     quint8 errcode = rx.bufferByteArray(serverConn->readAll());
     if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
 
-        timer.stop();
+        timeoutTimer.stop();
 
         if (connectionState == CS_CHECK_UPDATE_SENT){
             QString hash = rx.getField(DataPacket::DPFI_UPDATE_REQUEST).data.toString();
+            qWarning() << "Update check done. Comparing" << hash << " with " << hashLocalExe;
             if (hash != hashLocalExe){
-                connectionState = CS_WAIT_FOR_CONNECTION_READY;
-                logger.appendStandard("Update Found!: Remote Hash: " + hash + ". Local hash: " + hashLocalExe);
-                isConnReady = false;
+                connectionState = CS_WAIT_FOR_CONNECTION_READY;                
+                logger.appendStandard("Update Found!: Remote Hash: " + hash + ". Local hash: " + hashLocalExe);                
                 hashLocalExe = hash; // Hash is saved for later comparison.
-                timer.start(TIMEOUT_CONN_READY_POLLING*1000);
+                timeoutTimer.start(TIMEOUT_CONN_READY_POLLING);
                 return;
             }
             else {
@@ -231,33 +253,35 @@ void Loader::on_readyRead(){
 }
 
 void Loader::on_timeOut(){
+    qWarning() << "Timeout conn state" << connectionState;
     if ((connectionState == CS_CONNECTING_FOR_CHECK) || (connectionState == CS_CONNECTING_FOR_UPDATE)){
-        timer.stop();
+        timeoutTimer.stop();
         logger.appendError("Connection timeout");
         startEyeExperimenter();
         return;
     }
     else if (connectionState == CS_CHECK_UPDATE_SENT){
-        timer.stop();
+        timeoutTimer.stop();
         logger.appendError("Check update information did not arrive in time");
         startEyeExperimenter();
         return;
     }
     else if (connectionState == CS_GET_UPDATE_SENT){
-        timer.stop();
+        timeoutTimer.stop();
         logger.appendError("Update download took too long");
         startEyeExperimenter();
         return;
     }
     else if (connectionState == CS_WAIT_FOR_CONNECTION_READY){
+        qWarning() << "Checking if connection is ready";
         if (isConnReady){
-            timer.stop();
+            timeoutTimer.stop();
             requestExeUpdate();
         }
     }
     else if (connectionState == CS_STARTING_EYEEXP){
-        if (!QFile(FILE_EYEEXP_CHANGELOG).exists()){
-            timer.stop();
+        if (!QFile(changeLogFile).exists()){
+            timeoutTimer.stop();
             QCoreApplication::quit();
         }
     }
@@ -280,6 +304,12 @@ void Loader::on_socketStateChanged(QAbstractSocket::SocketState state){
     //    log.appendStandard(QString("Log: Socket state - ") + metaEnum.valueToKey(state));
     if (state == QAbstractSocket::UnconnectedState){
         isConnReady = true;
+        if (connectionState == CS_GET_UPDATE_SENT){
+            // Connection was broken off while expecting the update.
+            logger.appendError("Connection was broken off while wating for the updated executable");
+            timeoutTimer.stop();
+            startEyeExperimenter();
+        }
     }
 }
 
@@ -288,6 +318,5 @@ void Loader::on_socketError(QAbstractSocket::SocketError error){
     //log.appendError(QString("SOCKET ERROR: ") + metaEnum.valueToKey(error));
     // If there is an error then the timer should be stopped.
     Q_UNUSED(error);
-    if (timer.isActive()) timer.stop();
     serverConn->disconnectFromHost();
 }

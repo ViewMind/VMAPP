@@ -128,7 +128,31 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     if (configuration->getBool(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
     else configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
 
+}
 
+//******************************************* Change Log Related Functions ***********************************************
+
+QString Loader::checkForChangeLog(){
+    QString filePath = "launcher/" + QString (FILE_CHANGELOG_UPDATER) + "_"  + configuration->getString(CONFIG_REPORT_LANGUAGE);
+    qWarning() << "Searching for changelog" << filePath;
+    QFile file(filePath);
+    if (!file.open(QFile::ReadOnly)) return "";
+    QTextStream reader(&file);
+    reader.setCodec(COMMON_TEXT_CODEC);
+    QString content = reader.readAll();
+    if (content.size() < 4) return "";
+    else return content;
+}
+
+void Loader::clearChangeLogFile(){
+    QDir dir(DIRNAME_LAUNCHER);
+    QStringList filter;
+    filter << QString(FILE_CHANGELOG_UPDATER) + "*";
+    QStringList allchangelogs = dir.entryList(filter,QDir::Files);
+    for (qint32 i = 0; i < allchangelogs.size(); i++){
+        QFile file(QString(DIRNAME_LAUNCHER) + "/" + allchangelogs.at(i));
+        file.remove();
+    }
 }
 
 //******************************************* DB Related Functions ***********************************************

@@ -7,6 +7,12 @@ Window {
     height: 480
     title: qsTr("EyeExperimenter")
 
+    Connections {
+        target: loader
+        onChangeMessage: {
+            message.setMessage(msg);
+        }
+    }
 
     // The Fonts
     FontLoader {
@@ -86,11 +92,14 @@ Window {
 
     // The explanation
     Text{
+        function setMessage(msg){
+            message.text = msg;
+        }
         id: message
         font.pixelSize: 16
         font.family: robottoReg.name
         color: "#297fca"
-        text: loader.getStringForKey("msg_wait_update_check");
+        text: "";
         anchors{
             top: slideTitle.bottom
             topMargin: 40

@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QUrl>
 #include <QQuickWindow>
+#include <QSystemSemaphore>
+#include <QSharedMemory>
+#include <QCoreApplication>
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -59,6 +62,9 @@ public:
     Q_INVOKABLE void prepareAllPatientIteration(const QString &filter = "");
     Q_INVOKABLE QStringList nextInAllPatientIteration();
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
+    Q_INVOKABLE void clearChangeLogFile();
+    Q_INVOKABLE QString checkForChangeLog();
+
 signals:
     void synchDone();
 
@@ -103,6 +109,7 @@ private:
 
     // Sets the language for program.
     void changeLanguage();
+
 };
 
 #endif // LOADER_H

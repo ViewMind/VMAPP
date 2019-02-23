@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.3
+import QtGraphicalEffects 1.0
 
 VMBase {
 
@@ -32,6 +33,76 @@ VMBase {
         viewShowReports.updateText();
     }
 
+    Dialog {
+        id: showTextDialog;
+        modal: true
+        width: 614
+        height: 600
+
+        property string vmContent: ""
+        property string vmTitle: ""
+
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        Text {
+            id: diagTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43
+            anchors.top: parent.top
+            anchors.topMargin: 20
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: showTextDialog.vmTitle
+
+        }
+        ScrollView {
+            id: idScrollView
+            width: showTextDialog.width*0.9;
+            contentWidth: width
+            height: showTextDialog.height*0.62;
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top : diagTitle.bottom
+            anchors.topMargin: 40
+            clip: true
+            //horizontalScrollBarPolicy : Qt.ScrollBarAlwaysOff
+            TextEdit {
+                id: idContent
+                width: parent.width;
+                height: parent.height;
+                font.family: robotoR.name
+                font.pixelSize: 13
+                readOnly: true
+                text: showTextDialog.vmContent
+                wrapMode: Text.Wrap
+            }
+        }
+
+        VMButton{
+            id: btnClose
+            height: 50
+            vmText: "OK";
+            vmFont: viewHome.gothamM.name
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20;
+            onClicked: {
+                showTextDialog.close();
+            }
+        }
+
+    }
+
     Component.onCompleted: {
         // Checking that the everything was loaded correctly.
         if (loader.getLoaderError()){
@@ -56,6 +127,19 @@ VMBase {
 
         // Loading the Dr Options.
         viewDrSelection.updateDrProfile();
+
+        // Checking for changelog
+        var content = loader.checkForChangeLog();
+        if (content !== ""){
+            var lines = content.split("\n");
+            showTextDialog.vmTitle = lines[0];
+            lines.shift();
+            content = lines.join("\n");
+            showTextDialog.vmContent = content;
+            showTextDialog.open();
+        }
+
+        loader.clearChangeLogFile();
 
     }
 
