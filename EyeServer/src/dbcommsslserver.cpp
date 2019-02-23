@@ -481,7 +481,7 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     }
     else if (whichupdate == UPDATE_CHECK_SMI_CODE){
         QString inst_uid = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
-        sendExeHash(PATH_TO_UPDATE_GP,"GP",socket,inst_uid);
+        sendExeHash(PATH_TO_UPDATE_SMI,"SMI",socket,inst_uid);
     }
     else if (whichupdate == UPDATE_GET_GP_CODE){
         QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
@@ -500,24 +500,26 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
 
 void DBCommSSLServer::sendExeHash(const QString &path, const QString &exetype, quint64 socket, const QString &instUid){
 
-    QString hash = "none";
+    QString hash = UPDATE_FORCE_NO_UPDATE_MSG;
 
-    if (isInstEnabled(instUid)){
-        QFile exe(path);
-        if (!exe.exists()){
-            log.appendError("Could not find the " + exetype + " Executable found in its path");
-            removeSocket(socket);
-            return;
+    if (instUid != ""){
+        if (isInstEnabled(instUid)){
+            QFile exe(path);
+            if (!exe.exists()){
+                log.appendError("Could not find the " + exetype + " Executable found in its path");
+                removeSocket(socket);
+                return;
+            }
+
+            if (!exe.open(QFile::ReadOnly)){
+                log.appendError("Could not open the " + exetype + " Executable for reading");
+                removeSocket(socket);
+                return;
+            }
+
+            hash = QString(QCryptographicHash::hash(exe.readAll(),QCryptographicHash::Sha3_256).toHex());
+            exe.close();
         }
-
-        if (!exe.open(QFile::ReadOnly)){
-            log.appendError("Could not open the " + exetype + " Executable for reading");
-            removeSocket(socket);
-            return;
-        }
-
-        hash = QString(QCryptographicHash::hash(exe.readAll(),QCryptographicHash::Sha3_256).toHex());
-        exe.close();
     }
 
     DataPacket tx;
