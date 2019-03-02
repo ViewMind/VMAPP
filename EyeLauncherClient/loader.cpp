@@ -37,7 +37,16 @@ Loader::Loader(QObject *parent) : QObject(parent)
 
 }
 
-
+QString Loader::getTitleString(){
+   QString ans = LAUNCHER_VERSION;
+   ans = ans;
+#ifdef COMPILE_FOR_PRODUCTION
+   return ans;
+#else
+   ans = ans + " DEVELOPMENT";
+   return ans;
+#endif
+}
 
 QString Loader::getStringForKey(const QString &key){
     if (language.containsKeyword(key)){

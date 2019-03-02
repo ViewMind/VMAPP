@@ -5,7 +5,7 @@ Window {
     visible: true
     width: 960
     height: 480
-    title: qsTr("EyeExperimenter")
+    title: qsTr("EyeExperimenter Launcher - ") + loader.getTitleString();
 
     Connections {
         target: loader

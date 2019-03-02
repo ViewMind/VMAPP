@@ -12,8 +12,16 @@
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/common.h"
 
-#define  SERVER_IP                      "192.168.1.10"    // Local server
-//#define  SERVER_IP                      "18.220.30.34"  // Production server
+#define COMPILE_FOR_PRODUCTION
+
+#ifdef COMPILE_FOR_PRODUCTION
+#define  SERVER_IP                     "18.220.30.34"  // Production server
+#else
+#define  SERVER_IP                     "192.168.1.10"  // Local server
+#endif
+
+#define  LAUNCHER_VERSION               "1.0.0"
+
 #define  FILE_EYEEXP_SETTINGS           "../settings"
 #define  FILE_EYEEXP_CONFIGURATION      "../configuration"
 #define  FILE_EYEEXP_EXE                "../EyeExperimenter.exe"
@@ -41,6 +49,7 @@ public:
     explicit Loader(QObject *parent = nullptr);
     Q_INVOKABLE QString getStringForKey(const QString &key);
     Q_INVOKABLE void checkForUpdates();
+    Q_INVOKABLE QString getTitleString();
 
     void requestExeUpdate();
     void startEyeExperimenter();
