@@ -64,14 +64,15 @@ viewstudystart_labelInstruction = Elija las pruebas que tomará;
 viewstudystart_labelInstruction2 = Configure los parámetros de los estudios;
 viewstudystart_btnStart = COMENZAR;
 viewstudystart_btnBack = ATRAS;
-viewstudystart_labelEyeMsg = Selección del ojo a utilizar;
+viewstudystart_labelEyeMsg = Ojo a utilizar;
 viewstudystart_labelEyeType = Izquierdo|Derecho|Ambos;
-viewstudystart_labelNTargets = Nº de objetivos de Colores;
+viewstudystart_labelNTargets = Nº de objetivos;
 viewstudystart_labelNoPatientError = No se ha elegido ningún paciente;
 viewstudystart_labelNoInstructionSetError = Se debe elegir al menos un estudio;
-viewstudystart_labelTargetSize = Tamaño objetivos de colores;
+viewstudystart_labelTargetSize = Tamaño objetivos;
 viewstudystart_targetOptions = Grande|Pequeños;
 viewstudystart_labelSelPatient = Paciente Seleccionado;
+viewstudystart_labelReadingLanguge = Lengua de lectura;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Selección del Doctor;

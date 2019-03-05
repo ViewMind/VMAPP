@@ -70,4 +70,5 @@ Item{
     readonly property string vmCONFIG_BINDING_NUMBER_OF_TARGETS:"binding_number_of_targets"
     readonly property string vmCONFIG_DEFAULT_COUNTRY:"default_country"
     readonly property string vmCONFIG_USE_MOUSE: "use_mouse"
+    readonly property string vmCONFIG_READING_EXP_LANG: "reading_exp_lang"
 }

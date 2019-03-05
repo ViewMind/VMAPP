@@ -333,7 +333,7 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     QString readingQuestions;
     switch (experimentID){
     case EXP_READING:
-        readingQuestions = ":/experiment_data/Reading_" + configuration->getString(CONFIG_REPORT_LANGUAGE) + ".dat";
+        readingQuestions = ":/experiment_data/Reading_" + configuration->getString(CONFIG_READING_EXP_LANG) + ".dat";
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,readingQuestions);
         experiment = new ReadingExperiment();
         background = QBrush(Qt::gray);

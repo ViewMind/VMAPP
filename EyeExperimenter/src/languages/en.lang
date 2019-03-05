@@ -72,6 +72,7 @@ viewstudystart_labelNoInstructionSetError = At least one study must be selected;
 viewstudystart_labelTargetSize = Color target size;
 viewstudystart_targetOptions = Large|Small;
 viewstudystart_labelSelPatient = Selected Patient;
+viewstudystart_labelReadingLanguge = Reading language;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Doctor selection;
