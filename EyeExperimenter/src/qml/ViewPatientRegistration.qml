@@ -202,6 +202,7 @@ VMBase {
         anchors.topMargin: 30
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelLastName");
         Keys.onTabPressed: labelCountry.vmFocus = true;
+        visible: false
     }
 
     VMAutoCompleteComboBox{
@@ -248,7 +249,8 @@ VMBase {
     VMComboBox{
         id: docTypes
         width: 144
-        vmModel:  loader.getStringListForKey(keysearch+"docTypes")
+        //vmModel:  loader.getStringListForKey(keysearch+"docTypes")
+        vmModel:  ["Subject ID"]
         font.family: viewHome.robotoR.name
         anchors.top: labelGender.bottom
         anchors.topMargin: 30
@@ -274,6 +276,7 @@ VMBase {
         anchors.topMargin: 22
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelProvince");
         Keys.onTabPressed: labelCity.vmFocus = true;
+        visible: false
     }
 
     VMTextDataInput{
@@ -285,7 +288,7 @@ VMBase {
         anchors.topMargin: 22
         vmPlaceHolder: loader.getStringForKey(keysearch+"labelCity");
         Keys.onTabPressed: labelName.vmFocus = true;
-
+        visible: false
     }
 
     // Message and Buttons
@@ -298,6 +301,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         VMCheckBox{
             id: cbConsent
+            visible: false
         }
         Text {
             id: consentText
@@ -311,6 +315,7 @@ VMBase {
                 showTextDialog.vmTitle = loader.getStringForKey(keysearch + link);
                 showTextDialog.open();
             }
+            visible: false
         }
     }
 
@@ -339,11 +344,12 @@ VMBase {
             vmFont: viewHome.gothamM.name
             onClicked: {
 
-                if (!cbConsent.checked){
-                    noAcceptError.visible = true;
-                    return;
-                }
-                else noAcceptError.visible = false;
+                // Consent does not need to be verified
+//                if (!cbConsent.checked){
+//                    noAcceptError.visible = true;
+//                    return;
+//                }
+//                else noAcceptError.visible = false;
 
                 // THIS IS THE TABLE DATA.
                 var dbDataReq = {
@@ -392,10 +398,12 @@ VMBase {
                     return;
                 }
 
-                if (dbDataReq.lastname === ""){
-                    labelLastName.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
-                    return;
-                }
+                // Since the last name will not be entered, it will always be empty.
+
+//                if (dbDataReq.lastname === ""){
+//                    labelLastName.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+//                    return;
+//                }
 
                 //console.log("Country Index: " + dbData.countryid + ". Text: " + labelCountry.currentText);
 

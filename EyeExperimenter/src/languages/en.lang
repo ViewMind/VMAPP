@@ -39,7 +39,7 @@ viewpatientreg_labelGender = Gender;
 viewpatientreg_labelCountry = Country;
 viewpatientreg_labelCity = City;
 viewpatientreg_labelProvince = Province/State;
-viewpatientreg_labelDocument_number = Document number;
+viewpatientreg_labelDocument_number = Subject ID;
 viewpatientreg_docTypes = DNI|Passport|Identity Card;
 viewpatientreg_labelConsent = I accept the <a href="terms_of_use">Terms Of Use</a> and <a href="privacy_policy">Privacy Policy</a>;
 viewpatientreg_btnCancel = CANCEL;
