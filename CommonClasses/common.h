@@ -16,6 +16,7 @@
 #define   DIRNAME_RAWDATA                               "viewmind_etdata"
 #define   DIRNAME_DBBKP                                 "dbbkp"
 #define   DIRNAME_LAUNCHER                              "launcher"
+#define   DIRNAME_PROCESSED_DATA                        "processed_data"
 
 // The semaphore name. To prevent multiple instances for the same application
 #define   SEMAPHORE_NAME                                   "viewind_eyeexperimenter_semaphore"
@@ -81,6 +82,7 @@
 #define   CONFIG_TEST_MODE                              "test_mode"
 #define   CONFIG_ENABLE_GAZE_FOLLOWING                  "enable_gaze_following"
 #define   CONFIG_DBLOGFILE_LOCATION                     "dblogfile"
+#define   CONFIG_READING_EXP_LANG                       "reading_exp_lang"
 
 // The unique UID for tests.
 #define   TEST_UID                                      "ARvm0000"

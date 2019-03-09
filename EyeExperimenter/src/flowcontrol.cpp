@@ -83,7 +83,7 @@ QVariantMap FlowControl::nextReportInList(){
 
 void FlowControl::startDemoTransaction(){
     demoTransaction = true;
-    onNextFileSet(QStringList());
+    onFileSetEmitted(QStringList());
 }
 
 void FlowControl::saveReport(){
@@ -107,16 +107,24 @@ void FlowControl::saveReportAs(const QString &title){
     emit(reportGenerationRequested());
 }
 
-void FlowControl::requestReportData(){
+void FlowControl::requestReportData(bool fromEndOfSimulation){
     sslTransactionAllOk = false;
-    emit(requestNextFileSet());
+    if (fromEndOfSimulation){
+        //currentRunFiles.clear();
+        //currentRunFiles << "reading_2_2019_03_09_18_58.dat";
+        emit(requestFileSet(currentRunFiles));
+    }
+    else{
+        emit(requestFileSet(QStringList()));
+    }
 }
 
-void FlowControl::onNextFileSet(const QStringList &fileSetAndName){
+void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
 
-    //qWarning() << "NEXT FILE SET: " << fileSetAndName;
+    //qWarning() << "Processing File Set: " << fileSetAndName;
 
     if (fileSetAndName.isEmpty() && !demoTransaction){
+        //qWarning() << "File name set is empty";
         emit(sslTransactionFinished());
         return;
     }
@@ -209,13 +217,16 @@ void FlowControl::onNextFileSet(const QStringList &fileSetAndName){
         }
     }
 
-    //qWarning() << "Requesting report";
+    //qWarning() << "Requesting report for file set" << fileSetSentToProcess;
+    if (!demoTransaction) fileSetSentToProcess = fileSet;
     sslDataProcessingClient->requestReport(!demoTransaction);
 
 }
 
 void FlowControl::onDisconnectionFinished(){
     sslTransactionAllOk = sslDataProcessingClient->getTransactionStatus();
+
+    //qWarning() << "Transaction finished" << demoTransaction << sslTransactionAllOk;
 
     // If this is a demo transaction there is nothing else to do.
     if (demoTransaction){
@@ -224,10 +235,10 @@ void FlowControl::onDisconnectionFinished(){
         return;
     }
 
-    if (!sslTransactionAllOk) {
-        emit(sslTransactionFinished());
+    if (sslTransactionAllOk) {
+        moveProcessedFilesToProcessedFolder(fileSetSentToProcess);
     }
-    else emit(requestNextFileSet());
+    emit(sslTransactionFinished());
 }
 
 ////////////////////////////// FLOW CONTROL FUNCTIONS ///////////////////////////////////////
@@ -328,6 +339,7 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,"");
 
     //logger.appendStandard("Starting experiment with ID " + QString::number(experimentID));
+    currentRunFiles.clear();
 
     // Using the polimorphism, the experiment object is created according to the selected index.
     QString readingQuestions;
@@ -402,6 +414,7 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
     // Hide monitor if showing
     if (monitor != nullptr) monitor->hide();
+    QFileInfo info(experiment->getDataFileLocation());
 
     switch (er){
     case Experiment::ER_ABORTED:
@@ -413,11 +426,14 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
         experimentIsOk = false;
         break;
     case Experiment::ER_NORMAL:
+        currentRunFiles << info.baseName() + ".dat";
         break;
     case Experiment::ER_WARNING:
         logger.appendWarning("EXPERIMENT WARNING: " + experiment->getError());
+        currentRunFiles << info.baseName() + ".dat";
         break;
     }
+
 
     // Destroying the experiment and reactivating the start experiment.
     disconnect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
@@ -443,6 +459,38 @@ QString FlowControl::getBindingExperiment(bool bc){
     else{
         if (bc) return ":/experiment_data/bc_3.dat";
         else return ":/experiment_data/uc_3.dat";
+    }
+}
+
+////////////////////////////// MOVE PROCESSED FILES TO PROCESSED DIRECTORY ///////////////////////////////////////
+void FlowControl::moveProcessedFilesToProcessedFolder(const QStringList &fileSet){
+    QString patdir = DIRNAME_RAWDATA;
+    patdir = patdir + "/" + configuration->getString(CONFIG_DOCTOR_UID)
+            + "/" + configuration->getString(CONFIG_PATIENT_UID);
+
+    if (!QDir(patdir + "/" + QString(DIRNAME_PROCESSED_DATA)).exists()){
+        QDir dir(patdir);
+        dir.mkdir(DIRNAME_PROCESSED_DATA);
+    }
+
+    QString pdatafolder = patdir + "/" + QString(DIRNAME_PROCESSED_DATA);
+    if (!QDir(pdatafolder).exists()){
+        logger.appendError("Could not create the processed data folder: " + pdatafolder);
+        return;
+    }
+
+    // Copying each of the files to the processed folder and then deleting them.
+    for (qint32 i = 0; i < fileSet.size(); i++){
+        QString source = patdir + "/" + fileSet.at(i);
+        QString destination = pdatafolder + "/" + fileSet.at(i);
+        if (QFile::copy(source,destination)){
+            if (!QFile(source).remove()){
+                logger.appendError("REMOVING PROCESSED DATA. Could not delete " + source);
+            }
+        }
+        else{
+            logger.appendError("COPYING PROCESSED DATA. Could not copy " + source  + " to " + destination);
+        }
     }
 }
 
@@ -499,7 +547,7 @@ void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &
             exp = exp.replace("\n","<br>");
             map["vmExpText"] = exp;
         }
-        map["vmRefText"] = references.at(index);        
+        map["vmRefText"] = references.at(index);
         map["vmResValue"] = QString::number(value);
         map["vmResBarIndicator"] = QString::number(indicator);
         map["vmHasTwoSections"] = bar.hasTwoSections();
@@ -526,6 +574,7 @@ QVariantMap FlowControl::nextSelectedReportItem(){
     }
     else return QVariantMap();
 }
+
 
 ///////////////////////////////////////////////////////////////////
 FlowControl::~FlowControl(){

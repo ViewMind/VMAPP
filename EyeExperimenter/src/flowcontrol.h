@@ -17,6 +17,8 @@
 #include "Experiments/imageexperiment.h"
 #include "Experiments/fieldingexperiment.h"
 
+#include "monitorscreen.h"
+
 #include "sslclient/ssldataprocessingclient.h"
 
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
@@ -25,10 +27,6 @@
 #ifdef USE_IVIEW
 #include "EyeTrackerInterface/RED/redinterface.h"
 #endif
-
-
-#include "monitorscreen.h"
-
 
 class FlowControl : public QWidget
 {
@@ -46,7 +44,7 @@ public:
     Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
     Q_INVOKABLE bool checkSSLAvailability() {return sslDataProcessingClient->sslEnabled();}
-    Q_INVOKABLE void requestReportData();
+    Q_INVOKABLE void requestReportData(bool fromEndOfSimulation);
     Q_INVOKABLE bool isSSLTransactionOK() const {return sslTransactionAllOk;}
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
@@ -71,8 +69,8 @@ signals:
     void connectedToEyeTracker(bool ok);
     void calibrationDone(bool ok);
 
-    // Requesting next file set to process.
-    void requestNextFileSet();
+    // Requesting file set to process.
+    void requestFileSet(const QStringList &fileList);
 
     // Used to signal the UI to open the dialog to wait for the report generation.
     void reportGenerationRequested();
@@ -90,7 +88,7 @@ public slots:
     void onEyeTrackerControl(quint8 code);
 
     // For receiving information to send to the server
-    void onNextFileSet(const QStringList &fileSetAndName);
+    void onFileSetEmitted(const QStringList &fileSetAndName);
 
 private slots:
     // The function that actually draws the report
@@ -118,6 +116,9 @@ private:
 
     // The configuration structure
     ConfigurationManager *configuration;
+
+    // The list of files generated in the current experiment run.
+    QStringList currentRunFiles;
 
     // The report list for a given directory and required selection index and iteration values.
     qint32 selectedReport;
@@ -151,6 +152,10 @@ private:
     QStringList countryList;
     QStringList countryCodes;
     void fillCountryList();
+
+    // Moves successfully processed files to the corresponding processed folder.
+    QStringList fileSetSentToProcess;
+    void moveProcessedFilesToProcessedFolder(const QStringList &fileSet);
 
 };
 

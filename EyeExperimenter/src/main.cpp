@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
     FlowControl flowControl(nullptr,&configuration);
 
     // Doing the connections for communication between the classes
-    QObject::connect(&loader,SIGNAL(nextFileSet(QStringList)),&flowControl,SLOT(onNextFileSet(QStringList)));
-    QObject::connect(&flowControl,SIGNAL(requestNextFileSet()),&loader,SLOT(onRequestNextPendingReport()));
+    QObject::connect(&loader,SIGNAL(fileSetReady(QStringList)),&flowControl,SLOT(onFileSetEmitted(QStringList)));
+    QObject::connect(&flowControl,SIGNAL(requestFileSet(QStringList)),&loader,SLOT(onFileSetRequested(QStringList)));
 
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);

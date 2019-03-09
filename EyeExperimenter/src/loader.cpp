@@ -454,9 +454,9 @@ bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr)
 
 //******************************************* Report Realated Functions ***********************************************
 
-void Loader::prepareForRequestOfPendingReports(){
-    lim.preparePendingReports(configuration->getString(CONFIG_PATIENT_UID));
-}
+//void Loader::prepareForRequestOfPendingReports(){
+//    lim.preparePendingReports(configuration->getString(CONFIG_PATIENT_UID));
+//}
 
 void Loader::prepareAllPatientIteration(const QString &filter){
     allPatientList = lim.getAllPatientInfo(filter);
@@ -471,6 +471,22 @@ QStringList Loader::nextInAllPatientIteration(){
     }
 }
 
+void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
+    if ((type == -1) && (index == -1)) reportGenerationStruct.clear();
+    else {
+        switch(type){
+        case LIST_INDEX_READING:
+            reportGenerationStruct.readingFileIndex = index;
+            break;
+        case LIST_INDEX_BINDING_UC:
+            reportGenerationStruct.bindingUCFileIndex = index;
+            break;
+        case LIST_INDEX_BINDING_BC:
+            reportGenerationStruct.bindingBCFileIndex = index;
+            break;
+        }
+    }
+}
 
 //******************************************* Updater Related Functions ***********************************************
 
@@ -507,10 +523,17 @@ void Loader::onDisconnectFromDB(){
     emit(synchDone());
 }
 
-void Loader::onRequestNextPendingReport(){
-    emit(nextFileSet(lim.nextPendingReport(configuration->getString(CONFIG_PATIENT_UID))));
+void Loader::onFileSetRequested(const QStringList &fileList){
+    QStringList fileSet;
+    if (fileList.isEmpty()){
+        fileSet = lim.getReportNameAndFileSet(configuration->getString(CONFIG_PATIENT_UID),reportGenerationStruct);
+    }
+    else{
+        fileSet = lim.getReportNameAndFileSet(configuration->getString(CONFIG_PATIENT_UID),fileList);
+        qWarning() << "Getting the report name and file set from existing files" << fileList << "and they are" << fileSet;
+    }
+    emit(fileSetReady(fileSet));
 }
-
 
 //******************************************* Private Auxiliary Functions ***********************************************
 

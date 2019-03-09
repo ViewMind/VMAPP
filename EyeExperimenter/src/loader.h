@@ -68,10 +68,11 @@ public:
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
 
     //******************** Report Related Functions ***************************
-    Q_INVOKABLE void prepareForRequestOfPendingReports();
+    //Q_INVOKABLE void prepareForRequestOfPendingReports();
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE void prepareAllPatientIteration(const QString &filter = "");
     Q_INVOKABLE QStringList nextInAllPatientIteration();    
+    Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);
 
     //******************** Updater Related Functions **************************
     Q_INVOKABLE void clearChangeLogFile();
@@ -81,16 +82,17 @@ signals:
     void synchDone();
 
     // Signal to FlowControl, indicating the next file set to process.
-    void nextFileSet(const QStringList &fileSet);   
+    void fileSetReady(const QStringList &fileSet);
 
 public slots:
     // For when the DB Transaction has finished.
     void onDisconnectFromDB();
 
     // Request of the flow control for the next set of files to process.
-    void onRequestNextPendingReport();
+    void onFileSetRequested(const QStringList &fileList);
 
 private:
+
     LogInterface logger;
     bool loadingError;
     ConfigurationManager *configuration;
@@ -112,6 +114,9 @@ private:
     // For next patient iteration
     QList<QStringList> allPatientList;
     qint32 allPatientIndex;
+
+    // Stores the data selected for processing.
+    DatFileInfoInDir::ReportGenerationStruct reportGenerationStruct;
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();

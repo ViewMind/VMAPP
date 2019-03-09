@@ -5,6 +5,10 @@ import QtQuick.Dialogs 1.1
 
 Dialog {
 
+    readonly property int vmLIST_INDEX_READING: 0
+    readonly property int vmLIST_INDEX_BINDING_BC: 1
+    readonly property int vmLIST_INDEX_BINDING_UC: 2
+
     ListModel {
         id: readingList
     }
@@ -20,27 +24,44 @@ Dialog {
     function readingSelectionChanged(index){
         // Since it's not possible to unselect once selected, the generate button is enabled.
         btnGenerate.enabled = true;
+        loader.operateOnRepGenStruct(index,vmLIST_INDEX_READING)
     }
 
     function bindingBCSelectionChanged(index){
         // When this is clicked, the generate button is automatically disabled because this means
         // that any UC selection is cleared.
         btnGenerate.enabled = false;
+        tableRow.disableUnboundButton();
+        var bindingUCFiles = loader.getFileListCompatibleWithSelectedBC(index);
+        bindingUCList.clear();
+        for (var i = 0; i < bindingUCFiles.length; i++){
+            bindingUCList.append({"vmDisplayText": bindingUCFiles[i], "vmIndexInList": i, "vmIsSelected" : false});
+        }
+        loader.operateOnRepGenStruct(index,vmLIST_INDEX_BINDING_BC)
     }
 
     function bindingUCSelectionChanged(index){
         // When this is clicked then the generate button is enabled, as only valid options are shown.
         btnGenerate.enabled = true;
+        loader.operateOnRepGenStruct(index,vmLIST_INDEX_BINDING_UC)
     }
 
     onOpened: {
+
+        readingList.clear();
+        bindingBCList.clear();
+        bindingUCList.clear();
+        tableRow.disableArchiveButtons();
+        btnGenerate.enabled = true;
+        loader.operateOnRepGenStruct(-1,-1);
+
         // Loading the dat lists.
-        var readingFiles = loader.getFileListForPatient(0);
+        var readingFiles = loader.getFileListForPatient(vmLIST_INDEX_READING);
         for (var i = 0; i < readingFiles.length; i++){
             readingList.append({"vmDisplayText": readingFiles[i], "vmIndexInList": i, "vmIsSelected" : false});
         }
 
-        var bbcFiles = loader.getFileListForPatient(1);
+        var bbcFiles = loader.getFileListForPatient(vmLIST_INDEX_BINDING_BC);
         for (i = 0; i < bbcFiles.length; i++){
             bindingBCList.append({"vmDisplayText": bbcFiles[i], "vmIndexInList": i, "vmIsSelected" : false});
         }
@@ -115,6 +136,16 @@ Dialog {
        spacing: 10
        width: parent.width*0.8
        height: parent.height*0.5
+
+       function disableArchiveButtons(){
+          readingColumn.vmEnableDelete = false;
+          bindingBCColumn.vmEnableDelete = false;
+          disableUnboundButton();
+       }
+
+       function disableUnboundButton(){
+          bindingUCColumn.vmEnableDelete = false;
+       }
 
        // Reading Column
        Column {
@@ -376,7 +407,7 @@ Dialog {
                vmText: loader.getStringForKey(keybase+"btnDelete");
                vmFont: viewHome.gothamM.name
                vmInvertColors: true
-               enabled: bindingBCColumn.vmEnableDelete
+               enabled: bindingUCColumn.vmEnableDelete
                onClicked: {
                }
            }
@@ -384,8 +415,6 @@ Dialog {
        }
 
     }
-
-
 
     // Buttons
     Row{
@@ -415,6 +444,8 @@ Dialog {
             vmFont: viewHome.gothamM.name
             enabled: false
             onClicked: {
+                viewPatList.requestReportToServer(0)
+                viewSelectDatForReport.close();
             }
         }
     }

@@ -307,7 +307,7 @@ VMBase {
         flowControl.startDemoTransaction();
     }
 
-    function requestReportToServer(){
+    function requestReportToServer(fromEndOfRun){
         if (!loader.isDoctorValidated(-1)){
             showMessage("msg_notvalid");
             return;
@@ -316,11 +316,11 @@ VMBase {
             showMessage("msg_nopass");
             return;
         }
-        loader.prepareForRequestOfPendingReports();
+        //loader.prepareForRequestOfPendingReports();
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
         connectionDialog.open();
-        flowControl.requestReportData();
+        flowControl.requestReportData(fromEndOfRun);
     }
 
     function showMessage(msg){
