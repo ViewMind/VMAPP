@@ -261,6 +261,12 @@ VMBase {
     }
 
 
+    ViewSelectDatForReport {
+        id: diagDatSelection
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+    }
+
     ViewAllPatients{
         id: viewAllPatients
     }
@@ -575,7 +581,8 @@ VMBase {
                     vmItemIndex: index
                     onFetchReport: {
                         patientListView.currentIndex = index;
-                        requestReportToServer()
+                        //requestReportToServer()
+                        diagDatSelection.open();
                     }
                 }
                 onCurrentIndexChanged: {

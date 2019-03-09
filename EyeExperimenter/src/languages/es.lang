@@ -230,6 +230,16 @@ viewresults_diagWaitMessage = Espere un momento;
 viewresults_btnDownload = DESCARGAR;
 viewresults_btnFinalize = VOLVER;
 
+#********************************* SELECT DAT SCREEN *********************************
+viewselectdata_labelTitle = Generación de Reportes;
+viewselectdata_labelSubTitle = Seleccionar los estudios que desea incluir en un reporte;
+viewselectdata_labelColReading = Lectura;
+viewselectdata_labelColBindingUC = Colores Unbound;
+viewselectdata_labelColBindingBC = Colores Bound;
+viewselectdata_btnDelete = Archivar;
+viewselectdata_btnCancel = CANCELAR;
+viewselectdata_btnGenReport = GENERAR REPORTE;
+
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title by a <>
 error_loading_config = El programa no<br>puede continuar<>Un error crítico ha ocurrido al cargar la<br>configuración. El programa se cerrará;

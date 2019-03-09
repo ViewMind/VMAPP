@@ -230,6 +230,16 @@ viewresults_diagWaitMessage = Please, wait for a moment;
 viewresults_btnDownload = DOWNLOAD;
 viewresults_btnFinalize = BACK;
 
+#********************************* SELECT DAT SCREEN *********************************
+viewselectdata_labelTitle = Report Generation;
+viewselectdata_labelSubTitle = Select the studies that will be included in the report;
+viewselectdata_labelColReading = Reading;
+viewselectdata_labelColBindingUC = Binding Unbound;
+viewselectdata_labelColBindingBC = Binding Bound;
+viewselectdata_btnDelete = Archive;
+viewselectdata_btnCancel = CANCEL;
+viewselectdata_btnGenReport = GENERATE REPORT;
+
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title
 error_loading_config = Program cannot continue<>A fatal error has occurred loading the configuration.<br>The program will close now; 
@@ -245,7 +255,6 @@ error_db_transaction = Database Error|There was an error related to the database
 error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracker is incorrect<br>Please contact the ViewMind team;
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
 error_db_wronginst = Incorrect ID|The ID for this institution is incorrect or the doctor is not registered<br>Please contact ViewMind in order to solve this problem;
-
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Apply Changes<>The program must be restarted to apply the selected changes;
