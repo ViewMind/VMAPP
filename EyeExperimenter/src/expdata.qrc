@@ -7,5 +7,6 @@
         <file>experiment_data/uc.dat</file>
         <file>experiment_data/bc_3.dat</file>
         <file>experiment_data/uc_3.dat</file>
+        <file>experiment_data/Reading_Deutsche.dat</file>
     </qresource>
 </RCC>
