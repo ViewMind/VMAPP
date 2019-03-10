@@ -5,8 +5,9 @@
 #include "../common.h"
 #include "../LogInterface/loginterface.h"
 
-// This class parses all files in a directory that have the format
-// specified in the constructor. It assumes the following:
+#define   LIST_INDEX_READING     0
+#define   LIST_INDEX_BINDING_BC  1
+#define   LIST_INDEX_BINDING_UC  2
 
 class DatFileInfoInDir
 {
@@ -17,58 +18,70 @@ public:
         QString fileName;
         QString validEye;
         QString extraInfo;
+        QString code;
         QString date;
-        qint32  hour;
+        QString hour;
+        QString orderString;
         QString toString() const{
-            return "FILE: " + fileName + ". TYPE: " + basename + ". DATE: " + date + " @ "  + QString::number(hour) + ". EXTRA: " + extraInfo;
+            return "FILE: " + fileName + ". TYPE: " + basename + ". DATE: " + date + " @ "  + hour
+                    + ". EXTRA: " + extraInfo + ". VALID EYE: " + validEye;
+        }
+        bool isFileCompatibleWith(const DatInfo &info){
+            return (info.validEye == validEye) && (info.extraInfo == extraInfo) && (info.date == date);
+
         }
     };
-    typedef QHash< QString, QList<DatInfo> > DatInfoHash ;
+
+
+    struct ReportGenerationStruct {
+        qint32 readingFileIndex;
+        qint32 bindingBCFileIndex;
+        qint32 bindingUCFileIndex;
+        void clear() { readingFileIndex = -1; bindingBCFileIndex = -1;
+                       bindingUCFileIndex = -1; }
+    };
 
     DatFileInfoInDir();
 
     void setDatDirectory(const QString &dir, bool listRepEvenIfTheyExist = false);
     bool hasPendingReports() const;
 
-    // Functions to iterate over file sets to generate reports.
-    void prepareToInterateOverPendingReportFileSets();
-    QStringList nextPendingReportFileSet();
+    // Accessing the file lists in different ways.
+    QStringList getReadingFileList() const;
+    QStringList getBindingBCFileList() const;
+    QStringList getBindingUCFileList() const;
+    QStringList getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC);
+    QStringList getFileSetAndReportName(const ReportGenerationStruct &repgen) const;
+    QStringList getFileSetAndReportName(const QStringList &fileList);
+    QString getDatFileNameFromSelectionDialogIndex(qint32 index, qint32 whichList) const;
 
     // Functions that parse the file names and gather the information in a DatInfo structure.
     static DatInfo getDatFileInformation(const QString &file);
     static DatInfo getBindingFileInformation(const QString &bindingFile);
     static DatInfo getReadingInformation(const QString &readingFile);
-    static DatInfo getRerportInformation(const QString &repfile);
     static qint32 getValidEyeForDatList(const QStringList &list);
 
-    /// FOR DEBUGGING ONLY.
-    void printData();
 
 private:
-
-    struct DatInfoAndRep{
-        DatInfoHash datInfo;
-        QHash<QString,QStringList> reportFileSet;
-    };
-
-    // Data structure:
-    // 1) Each entry corresponds to a date.
-    // 2) For each date there is a list of DatInfo for each of the base file names (binding uc, binding bc and reading). Also associated for each date, there is a rep file.
-    // 3) The list is ordered from oldest to newest.
-    QHash<QString,DatInfoAndRep> filesByDate;
 
     // Used for iteration
     QList<QStringList> fileSets;
     qint32 currentFileSet;
 
-    // Parsing functions based on file name
-    void insertDatIntoInfoList(QList<DatInfo> *list, const DatInfo &info);
+    // File lists by type.
+    QStringList   filesReading;
+    QStringList   filesBindingBC;
+    QStringList   filesBindingUC;
+    QList<qint32> filesBindingUCValidIndexes;
 
-    // Given the information gathered from a Hash of the list of dat infos associated to files from each experiment,
-    // the function generates the expected name for the report file. Then checks that againts existing report files
-    // If the file does not exist then the list of files that are needed for processing are saved as a set associated to the
-    // file report name.
-    void setExpectedReportFileSet(const QString &date, const QSet<QString> existingReports, bool ignoreExisting = false);
+    // Generalization that only gets any of the code lists for file lists.
+    QStringList getFileList(const QStringList &infoList) const;
+
+    // Smart insertion so that file list are order form newer to older
+    void insertIntoListAccordingToOrder(const QString &fileName, QStringList *list, QStringList *order);
+
+    // Const version that enables to check for existance fo UC Files compatible with BC Files in a const function.
+    QStringList getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC, QList<qint32> *validIndexes) const;
 
 
 };

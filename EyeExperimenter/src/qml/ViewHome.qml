@@ -31,6 +31,7 @@ VMBase {
         viewPatList.updateText()
         viewDrInfo.updateText();
         viewShowReports.updateText();
+        viewStudyDone.updateText();
     }
 
     Dialog {

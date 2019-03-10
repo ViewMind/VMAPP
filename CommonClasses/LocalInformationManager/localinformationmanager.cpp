@@ -13,6 +13,8 @@ LocalInformationManager::LocalInformationManager()
     backupDirectory = "";
 }
 
+//************************************** Interface with Local DB *****************************************
+
 void LocalInformationManager::setDirectory(const QString &workDir){
     workingDirectory = workDir;
     loadDB();
@@ -69,6 +71,15 @@ QString LocalInformationManager::getDoctorPassword(const QString &uid){
 
 QVariantMap LocalInformationManager::getPatientInfo(const QString &druid, const QString &patuid) const {
     return localDB.value(druid).toMap().value(PATIENT_DATA).toMap().value(patuid).toMap();
+}
+
+QStringList LocalInformationManager::getFileListForPatient(const QString &patuid, qint32 whichList) const{
+    switch(whichList){
+    case LIST_INDEX_READING: return patientReportInformation.value(patuid).getReadingFileList();
+    case LIST_INDEX_BINDING_BC: return patientReportInformation.value(patuid).getBindingBCFileList();
+    case LIST_INDEX_BINDING_UC: return patientReportInformation.value(patuid).getBindingUCFileList();
+    default: return QStringList();
+    }
 }
 
 void LocalInformationManager::validateDoctor(const QString &dr_uid){
@@ -375,14 +386,6 @@ void LocalInformationManager::setUpdateFlagTo(bool flag){
     //printLocalDB();
 }
 
-void LocalInformationManager::preparePendingReports(const QString &uid){
-    patientReportInformation[uid].prepareToInterateOverPendingReportFileSets();
-}
-
-QStringList LocalInformationManager::nextPendingReport(const QString &uid){
-    return patientReportInformation[uid].nextPendingReportFileSet();
-}
-
 QList<QStringList> LocalInformationManager::getDoctorList(bool forceShow){
     QList<QStringList> ans;
     QStringList names;
@@ -515,3 +518,20 @@ void LocalInformationManager::printLocalDB(){
 
 }
 
+//************************************** Interface with Patient Report Information *****************************************
+
+QStringList LocalInformationManager::getBindingUCFileListCompatibleWithSelectedBC(const QString &patuid, qint32 selectedBC) {
+    return patientReportInformation[patuid].getBindingUCFileListCompatibleWithSelectedBC(selectedBC);
+}
+
+QStringList LocalInformationManager::getReportNameAndFileSet(const QString &patuid, const DatFileInfoInDir::ReportGenerationStruct &repgen){
+    return patientReportInformation.value(patuid).getFileSetAndReportName(repgen);
+}
+
+QStringList LocalInformationManager::getReportNameAndFileSet(const QString &patuid, const QStringList &fileList){
+    return patientReportInformation[patuid].getFileSetAndReportName(fileList);
+}
+
+QString LocalInformationManager::getDatFileFromIndex(const QString &patuid, qint32 index ,qint32 whichList) const{
+    return patientReportInformation.value(patuid).getDatFileNameFromSelectionDialogIndex(index,whichList);
+}

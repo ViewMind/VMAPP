@@ -18,6 +18,7 @@ Window {
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.       
         swiperControl.currentIndex = swiperControl.vmIndexHome;
+        //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
     }
 
 
@@ -145,6 +146,8 @@ Window {
                 viewCalibrationDone.openDiag()
                 break;
             case vmIndexPatientList:
+                // loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"ARvm0000");
+                // loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
                 // This will laod patients which will also trigger the search for unprocessed information.
                 viewPatList.loadPatients();
                 // Doing the synch
@@ -159,9 +162,9 @@ Window {
             case vmIndexResults:
                 viewResults.fillFieldsFromReportInfo();
                 break
-            case vmIndexStudyDone:
-                viewStudyDone.openDiag();
-                break;
+//            case vmIndexStudyDone:
+//                //viewStudyDone.openDiag();
+//                break;
             }
 
         }

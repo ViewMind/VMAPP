@@ -41,21 +41,24 @@ public:
     QList<QStringList> getAllPatientInfo(const QString &filter = "") const;
     QString getWorkDirectory() const {return workingDirectory;}
     void setUpdateFlagTo(bool flag);
+    // Used ONLY in the LocalDBMng program
+    void deleteDoctor(const QString &uid);
+    void setDoctorData(const QString &uid, const QStringList &keys, const QVariantList &values);
+    // FOR DEBUGGING ONLY
+    void printLocalDB();
 
     // Synch function. Returns false if the there is nothing to synch. (No changes to Doctor and Patient data).
 #ifdef USESSL
     bool setupDBSynch(SSLDBClient *client);
 #endif
-    // Functions for iterating over file sets to be processed.
-    void preparePendingReports(const QString &uid);
-    QStringList nextPendingReport(const QString &uid);
 
-    // Used ONLY in the LocalDBMng program
-    void deleteDoctor(const QString &uid);
-    void setDoctorData(const QString &uid, const QStringList &keys, const QVariantList &values);
-
-    // FOR DEBUGGING ONLY
-    void printLocalDB();
+    // Interface with Dat Info Dir
+    QStringList getFileListForPatient(const QString &patuid, qint32 whichList) const;
+    QStringList getBindingUCFileListCompatibleWithSelectedBC(const QString &patuid, qint32 selectedBC);
+    QStringList getReportNameAndFileSet(const QString &patuid, const DatFileInfoInDir::ReportGenerationStruct &repgen);
+    QStringList getReportNameAndFileSet(const QString &patuid, const QStringList &fileList);
+    QString getDatFileFromIndex(const QString &patuid, qint32 index, qint32 whichList) const;
+    void fillPatientDatInformation(const QString &druid);
 
 private:
 
@@ -76,8 +79,7 @@ private:
     QVariantMap localDB;
 
     // Used to iterate over unprocessed information.
-    QHash<QString, DatFileInfoInDir> patientReportInformation;
-    void fillPatientDatInformation(const QString &druid);
+    QHash<QString, DatFileInfoInDir> patientReportInformation;    
 
     void backupDB();
     void loadDB();

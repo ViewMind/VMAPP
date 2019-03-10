@@ -60,7 +60,7 @@ viewstudystart_cboxBindingUC = Unbound Colors;
 viewstudystart_cboxBindingBC = Bound Colors;
 viewstudystart_cboxFielding = N-Back Test;
 viewstudystart_labelSelectStudy = Select studies;
-viewstudystart_labelInstruction = Choose the tests you'll be taking;
+viewstudystart_labelInstruction = Choose the tests in the order the patient will be taking them;
 viewstudystart_labelInstruction2 = Configure study parameters;
 viewstudystart_btnStart = START;
 viewstudystart_btnBack = BACK;
@@ -203,8 +203,11 @@ viewdrinfo_drexists = Doctor already exists;
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = The study has concluded;
 viewexpdone_question = Would you like to request the report now?;
-viewexpdone_goback = GO BACK;
-viewexpdone_yes = YES;
+viewexpdone_goback = REQUEST LATER;
+viewexpdone_yes = REQUEST NOW;
+viewexpdone_viewTitle = Congratulations!;
+viewexpdone_labelMessage = You have successfully ended ViewMind's Neurocognitive Evaluations;
+viewexpdone_btnContinue = CONTINUE;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Results;
@@ -230,6 +233,16 @@ viewresults_diagWaitMessage = Please, wait for a moment;
 viewresults_btnDownload = DOWNLOAD;
 viewresults_btnFinalize = BACK;
 
+#********************************* SELECT DAT SCREEN *********************************
+viewselectdata_labelTitle = Report Generation;
+viewselectdata_labelSubTitle = Select the studies that will be included in the report;
+viewselectdata_labelColReading = Reading;
+viewselectdata_labelColBindingUC = Binding Unbound;
+viewselectdata_labelColBindingBC = Binding Bound;
+viewselectdata_btnDelete = Archive;
+viewselectdata_btnCancel = CANCEL;
+viewselectdata_btnGenReport = GENERATE REPORT;
+
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title
 error_loading_config = Program cannot continue<>A fatal error has occurred loading the configuration.<br>The program will close now; 
@@ -239,13 +252,12 @@ error_et_calibrate = Eyetracker calibration<>Eyetracker is not calibrated.<br>Pl
 error_programming = Programming error<>Contact Ariel Arelovich;
 error_experiment_end = Study ended abruptly<>The study did not end as expected<br>Please try again;
 error_no_ssl = SLL not detected<>SSL Libraries were not detected.<br>Server request for reports will not be possible;
-error_server_comm = Communication error<>It was not possible to establish a link with the server<br>Please, try again;
+error_server_comm = Communication error<>It was not possible to establish a link with the server<br>If there is no connection you can still use the application in offline mode<br>Check the limitations of offline mode in the user´s manual;
 error_freq_check = Frequency Error<>There was a problem gathering data from the ET<br>Results may not be reliable<br>Please contact Viewmind for assistance.;
 error_db_transaction = Database Error|There was an error related to the database<br>Please contact the ViewMind team;
 error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracker is incorrect<br>Please contact the ViewMind team;
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
 error_db_wronginst = Incorrect ID|The ID for this institution is incorrect or the doctor is not registered<br>Please contact ViewMind in order to solve this problem;
-
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Apply Changes<>The program must be restarted to apply the selected changes;

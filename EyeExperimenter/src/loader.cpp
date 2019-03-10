@@ -130,63 +130,57 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
 }
 
-//******************************************* Change Log Related Functions ***********************************************
+//*********************************************** UI Functions ******************************************************
 
-QString Loader::checkForChangeLog(){
-    QString filePath = "launcher/" + QString (FILE_CHANGELOG_UPDATER) + "_"  + configuration->getString(CONFIG_REPORT_LANGUAGE);
-    qWarning() << "Searching for changelog" << filePath;
-    QFile file(filePath);
-    if (!file.open(QFile::ReadOnly)) return "";
-    QTextStream reader(&file);
-    reader.setCodec(COMMON_TEXT_CODEC);
-    QString content = reader.readAll();
-    if (content.size() < 4) return "";
-    else return content;
+QString Loader::getStringForKey(const QString &key){
+    if (language.containsKeyword(key)){
+        return language.getString(key);
+    }
+    else return "ERROR: NOT FOUND";
 }
 
-void Loader::clearChangeLogFile(){
-    QDir dir(DIRNAME_LAUNCHER);
-    QStringList filter;
-    filter << QString(FILE_CHANGELOG_UPDATER) + "*";
-    QStringList allchangelogs = dir.entryList(filter,QDir::Files);
-    for (qint32 i = 0; i < allchangelogs.size(); i++){
-        QFile file(QString(DIRNAME_LAUNCHER) + "/" + allchangelogs.at(i));
-        file.remove();
+QStringList Loader::getStringListForKey(const QString &key){
+    if (language.containsKeyword(key)){
+        return language.getStringList(key);
     }
+    else return QStringList();
 }
 
-//******************************************* DB Related Functions ***********************************************
-
-void Loader::startDBSync(){
-    // Adding all the data that needs to be sent.
-    wasDBTransactionStarted = false;
-    if (lim.setupDBSynch(dbClient)){
-        // Running the transaction.
-        wasDBTransactionStarted = true;
-        dbClient->runDBTransaction();
+bool Loader::checkETChange(){
+    // Returns true if ET has been changed is required.
+    if (configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) != CONFIG_P_ET_MOUSE)){
+        // Mouse was configured, but mouse is not the selected ET. Switching to mouse.
+        configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
+        return true;
     }
-    else {
-        onDisconnectFromDB();
-    }
-}
-
-bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr){
-    // Storing the hasshed password for later comparison
-    QString hasshedPassword = QString(QCryptographicHash::hash(instPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
-    QString drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
-    if (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword){
-        lim.validateDoctor(drUIDtoValidate);
+    else if (!configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) == CONFIG_P_ET_MOUSE)){
+        // Mouse was NOT configured but it IS the selected ET. Switching to configured ET.
+        configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
         return true;
     }
     return false;
 }
 
-void Loader::onDisconnectFromDB(){
-    //qWarning() << "onDisconnectFromDB wasDBTransactionStarted" << wasDBTransactionStarted;
-    if (dbClient->getTransactionStatus() && wasDBTransactionStarted){
-        lim.setUpdateFlagTo(false);
+QRect Loader::frameSize(QObject *window)
+{
+    QQuickWindow *qw = qobject_cast<QQuickWindow *>(window);
+    if(qw)
+        return qw->frameGeometry();
+    return QRect();
+}
+
+int Loader::getDefaultCountry(bool offset){
+    QString countryCode = configuration->getString(CONFIG_DEFAULT_COUNTRY);
+    if (countryCode.isEmpty()) return 0;
+    int ans = countries->getIndexFromCode(countryCode);
+    if (offset){
+        // -1 Means that no selction is done, which means 0 code. All indexes are offseted by 1, due to this.
+        return ans + 1;
     }
-    emit(synchDone());
+    else {
+        if (ans == -1) return 0;
+        else return ans;
+    }
 }
 
 QString Loader::loadTextFile(const QString &fileName){
@@ -196,19 +190,6 @@ QString Loader::loadTextFile(const QString &fileName){
     QString ans = reader.readAll();
     file.close();
     return ans;
-}
-
-void Loader::prepareAllPatientIteration(const QString &filter){
-    allPatientList = lim.getAllPatientInfo(filter);
-    allPatientIndex = 0;
-}
-
-QStringList Loader::nextInAllPatientIteration(){
-    if (allPatientIndex == allPatientList.size()) return QStringList();
-    else{
-        allPatientIndex++;
-        return allPatientList.at(allPatientIndex-1);
-    }
 }
 
 QStringList Loader::getErrorMessageForCode(quint8 code){
@@ -227,7 +208,6 @@ QStringList Loader::getErrorMessageForCode(quint8 code){
     return QStringList();
 }
 
-
 QStringList Loader::getErrorMessageForDBCode(){
     quint8 code = dbClient->getErrorCode();
     //qWarning() << "GETTING ERROR MESSAGE FOR CODE" << code;
@@ -242,6 +222,117 @@ QStringList Loader::getErrorMessageForDBCode(){
     }
     return QStringList();
 }
+
+QStringList Loader::getFileListForPatient(qint32 type){
+    QString patuid = configuration->getString(CONFIG_PATIENT_UID);
+    return lim.getFileListForPatient(patuid,type);
+}
+
+QStringList Loader::getFileListCompatibleWithSelectedBC(qint32 selectedBC){
+    QString patuid = configuration->getString(CONFIG_PATIENT_UID);
+    return lim.getBindingUCFileListCompatibleWithSelectedBC(patuid,selectedBC);
+}
+
+//*********************************************** Configuration Functions ******************************************************
+
+QString Loader::getConfigurationString(const QString &key){
+    if (configuration->containsKeyword(key)){
+        return configuration->getString(key);
+    }
+    else return "";
+}
+
+bool Loader::getConfigurationBoolean(const QString &key){
+    if (configuration->containsKeyword(key)){
+        return configuration->getBool(key);
+    }
+    else return "";
+}
+
+void Loader::setSettingsValue(const QString &key, const QVariant &var){
+    ConfigurationManager::setValue(FILE_SETTINGS,COMMON_TEXT_CODEC,key,var.toString(),configuration);
+}
+
+void Loader::setAgeForCurrentPatient(){
+    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID),TPATDATA_COL_BIRTHDATE);
+    QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
+    QDate currentDate =  QDate::currentDate();
+    int currentAge = currentDate.year() - bdate.year();
+    if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ) {
+        currentAge--;
+    }
+    configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);
+}
+
+//*********************************************** Local DB Functions ******************************************************
+
+bool Loader::createPatientDirectory(){
+
+    // Creating the doctor directory.
+    QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
+    QString baseDir = DIRNAME_RAWDATA;
+    QString drname = configuration->getString(CONFIG_DOCTOR_UID);
+    configuration->addKeyValuePair(CONFIG_PATIENT_UID,patientuid);
+
+    if (!createDirectorySubstructure(drname,patientuid,baseDir,CONFIG_PATIENT_DIRECTORY)) return false;
+
+    return true;
+}
+
+QStringList Loader::getPatientList(const QString &filter){
+    nameInfoList.clear();
+    nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID),filter);
+    if (nameInfoList.isEmpty()) return QStringList();
+    else return nameInfoList.at(0);
+}
+
+QStringList Loader::getUIDList() {
+    if (nameInfoList.size() < 2) return QStringList();
+    else return nameInfoList.at(1);
+}
+
+QStringList Loader::getPatientIsOKList() {
+    if (nameInfoList.size() < 3) return QStringList();
+    else return nameInfoList.at(2);
+}
+
+QStringList Loader::getDoctorList() {
+    nameInfoList.clear();
+    nameInfoList = lim.getDoctorList();
+    if (nameInfoList.isEmpty()) return QStringList();
+    else return nameInfoList.at(0);
+}
+
+QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
+    if (nameInfoList.size() < 2) return "";
+    if ((selectedIndex > -1) && (selectedIndex < nameInfoList.at(1).size())){
+        return nameInfoList.at(1).at(selectedIndex);
+    }
+    else return "";
+}
+
+bool Loader::isDoctorValidated(qint32 selectedIndex){
+    QString uid;
+    if (selectedIndex == -1) uid = configuration->getString(CONFIG_DOCTOR_UID);
+    else uid = getDoctorUIDByIndex(selectedIndex);
+    return lim.isDoctorValid(uid);
+}
+
+bool Loader::isDoctorPasswordEmpty(qint32 selectedIndex){
+    QString uid = getDoctorUIDByIndex(selectedIndex);
+    //qWarning() << "Password for UID" << uid << " is " << lim.getDoctorPassword(uid) << ". Is empty: " <<  lim.getDoctorPassword(uid).isEmpty();
+    return lim.getDoctorPassword(uid).isEmpty();
+}
+
+bool Loader::isDoctorPasswordCorrect(const QString &password){
+    QString hashpass = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
+    QString storedPassword = lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID));
+    if (storedPassword.isEmpty()) return true;
+    if (storedPassword == hashpass) return true;
+    // Checking against the institution password
+    return (hashpass == configuration->getString(CONFIG_INST_PASSWORD));
+}
+
 bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew){
     // The data for the country must be changed as well as the UID must be generated.
     QString countryCode = countries->getCodeForCountry(dbdata.value(TDOCTOR_COL_COUNTRYID).toString());
@@ -336,145 +427,123 @@ bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, boo
 
 }
 
-//****************************************************************************************************************
-
-void Loader::prepareForRequestOfPendingReports(){
-    lim.preparePendingReports(configuration->getString(CONFIG_PATIENT_UID));
-}
-
-void Loader::onRequestNextPendingReport(){
-    emit(nextFileSet(lim.nextPendingReport(configuration->getString(CONFIG_PATIENT_UID))));
-}
-
-void Loader::setAgeForCurrentPatient(){
-    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID),TPATDATA_COL_BIRTHDATE);
-    QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
-    QDate currentDate =  QDate::currentDate();
-    int currentAge = currentDate.year() - bdate.year();
-    if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ) {
-        currentAge--;
-    }
-    configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);
-}
-
-QStringList Loader::getDoctorList() {
-    nameInfoList.clear();
-    nameInfoList = lim.getDoctorList();
-    if (nameInfoList.isEmpty()) return QStringList();
-    else return nameInfoList.at(0);
-}
-
-QStringList Loader::getPatientList(const QString &filter){
-    nameInfoList.clear();
-    nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID),filter);
-    if (nameInfoList.isEmpty()) return QStringList();
-    else return nameInfoList.at(0);
-}
-
-QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
-    if (nameInfoList.size() < 2) return "";
-    if ((selectedIndex > -1) && (selectedIndex < nameInfoList.at(1).size())){
-        return nameInfoList.at(1).at(selectedIndex);
-    }
-    else return "";
-}
-
-bool Loader::isDoctorPasswordCorrect(const QString &password){
-    QString hashpass = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
-    QString storedPassword = lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID));
-    if (storedPassword.isEmpty()) return true;
-    if (storedPassword == hashpass) return true;
-    // Checking against the institution password
-    return (hashpass == configuration->getString(CONFIG_INST_PASSWORD));
-}
-
-bool Loader::isDoctorValidated(qint32 selectedIndex){
-    QString uid;
-    if (selectedIndex == -1) uid = configuration->getString(CONFIG_DOCTOR_UID);
-    else uid = getDoctorUIDByIndex(selectedIndex);
-    return lim.isDoctorValid(uid);
-}
-
-bool Loader::isDoctorPasswordEmpty(qint32 selectedIndex){
-    QString uid = getDoctorUIDByIndex(selectedIndex);
-    //qWarning() << "Password for UID" << uid << " is " << lim.getDoctorPassword(uid) << ". Is empty: " <<  lim.getDoctorPassword(uid).isEmpty();
-    return lim.getDoctorPassword(uid).isEmpty();
-}
-
-QStringList Loader::getUIDList() {
-    if (nameInfoList.size() < 2) return QStringList();
-    else return nameInfoList.at(1);
-}
-
-QStringList Loader::getPatientIsOKList() {
-    if (nameInfoList.size() < 3) return QStringList();
-    else return nameInfoList.at(2);
-}
-
-int Loader::getDefaultCountry(bool offset){
-    QString countryCode = configuration->getString(CONFIG_DEFAULT_COUNTRY);
-    if (countryCode.isEmpty()) return 0;
-    int ans = countries->getIndexFromCode(countryCode);
-    if (offset){
-        // -1 Means that no selction is done, which means 0 code. All indexes are offseted by 1, due to this.
-        return ans + 1;
+void Loader::startDBSync(){
+    // Adding all the data that needs to be sent.
+    wasDBTransactionStarted = false;
+    if (lim.setupDBSynch(dbClient)){
+        // Running the transaction.
+        wasDBTransactionStarted = true;
+        dbClient->runDBTransaction();
     }
     else {
-        if (ans == -1) return 0;
-        else return ans;
+        onDisconnectFromDB();
     }
 }
 
-QRect Loader::frameSize(QObject *window)
-{
-    QQuickWindow *qw = qobject_cast<QQuickWindow *>(window);
-    if(qw)
-        return qw->frameGeometry();
-    return QRect();
-}
-
-bool Loader::checkETChange(){
-    // Returns true if ET has been changed is required.
-    if (configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) != CONFIG_P_ET_MOUSE)){
-        // Mouse was configured, but mouse is not the selected ET. Switching to mouse.
-        configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
-        return true;
-    }
-    else if (!configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) == CONFIG_P_ET_MOUSE)){
-        // Mouse was NOT configured but it IS the selected ET. Switching to configured ET.
-        configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
+bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr){
+    // Storing the hasshed password for later comparison
+    QString hasshedPassword = QString(QCryptographicHash::hash(instPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
+    QString drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
+    if (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword){
+        lim.validateDoctor(drUIDtoValidate);
         return true;
     }
     return false;
 }
 
-QString Loader::getStringForKey(const QString &key){
-    if (language.containsKeyword(key)){
-        return language.getString(key);
-    }
-    else return "ERROR: NOT FOUND";
+
+//******************************************* Report Realated Functions ***********************************************
+
+//void Loader::prepareForRequestOfPendingReports(){
+//    lim.preparePendingReports(configuration->getString(CONFIG_PATIENT_UID));
+//}
+
+void Loader::prepareAllPatientIteration(const QString &filter){
+    allPatientList = lim.getAllPatientInfo(filter);
+    allPatientIndex = 0;
 }
 
-QStringList Loader::getStringListForKey(const QString &key){
-    if (language.containsKeyword(key)){
-        return language.getStringList(key);
+QStringList Loader::nextInAllPatientIteration(){
+    if (allPatientIndex == allPatientList.size()) return QStringList();
+    else{
+        allPatientIndex++;
+        return allPatientList.at(allPatientIndex-1);
     }
-    else return QStringList();
 }
 
-QString Loader::getConfigurationString(const QString &key){
-    if (configuration->containsKeyword(key)){
-        return configuration->getString(key);
+void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
+    if ((type == -1) && (index == -1)) reportGenerationStruct.clear();
+    else {
+        switch(type){
+        case LIST_INDEX_READING:
+            reportGenerationStruct.readingFileIndex = index;
+            break;
+        case LIST_INDEX_BINDING_UC:
+            reportGenerationStruct.bindingUCFileIndex = index;
+            break;
+        case LIST_INDEX_BINDING_BC:
+            reportGenerationStruct.bindingBCFileIndex = index;
+            break;
+        }
     }
-    else return "";
 }
 
-bool Loader::getConfigurationBoolean(const QString &key){
-    if (configuration->containsKeyword(key)){
-        return configuration->getBool(key);
-    }
-    else return "";
+QString Loader::getDatFileNameFromIndex(qint32 index, qint32 type){
+    return lim.getDatFileFromIndex(configuration->getString(CONFIG_PATIENT_UID),index,type);
 }
+
+void Loader::reloadPatientDatInformationForCurrentDoctor(){
+    lim.fillPatientDatInformation(configuration->getString(CONFIG_DOCTOR_UID));
+}
+
+//******************************************* Updater Related Functions ***********************************************
+
+QString Loader::checkForChangeLog(){
+    QString filePath = "launcher/" + QString (FILE_CHANGELOG_UPDATER) + "_"  + configuration->getString(CONFIG_REPORT_LANGUAGE);
+    qWarning() << "Searching for changelog" << filePath;
+    QFile file(filePath);
+    if (!file.open(QFile::ReadOnly)) return "";
+    QTextStream reader(&file);
+    reader.setCodec(COMMON_TEXT_CODEC);
+    QString content = reader.readAll();
+    if (content.size() < 4) return "";
+    else return content;
+}
+
+void Loader::clearChangeLogFile(){
+    QDir dir(DIRNAME_LAUNCHER);
+    QStringList filter;
+    filter << QString(FILE_CHANGELOG_UPDATER) + "*";
+    QStringList allchangelogs = dir.entryList(filter,QDir::Files);
+    for (qint32 i = 0; i < allchangelogs.size(); i++){
+        QFile file(QString(DIRNAME_LAUNCHER) + "/" + allchangelogs.at(i));
+        file.remove();
+    }
+}
+
+//******************************************* SLOTS ***********************************************
+
+void Loader::onDisconnectFromDB(){
+    //qWarning() << "onDisconnectFromDB wasDBTransactionStarted" << wasDBTransactionStarted;
+    if (dbClient->getTransactionStatus() && wasDBTransactionStarted){
+        lim.setUpdateFlagTo(false);
+    }
+    emit(synchDone());
+}
+
+void Loader::onFileSetRequested(const QStringList &fileList){
+    QStringList fileSet;
+    if (fileList.isEmpty()){
+        fileSet = lim.getReportNameAndFileSet(configuration->getString(CONFIG_PATIENT_UID),reportGenerationStruct);
+    }
+    else{
+        fileSet = lim.getReportNameAndFileSet(configuration->getString(CONFIG_PATIENT_UID),fileList);
+        //qWarning() << "Getting the report name and file set from existing files" << fileList << "and they are" << fileSet;
+    }
+    emit(fileSetReady(fileSet));
+}
+
+//******************************************* Private Auxiliary Functions ***********************************************
 
 void Loader::changeLanguage(){
     QString lang = configuration->getString(CONFIG_REPORT_LANGUAGE);
@@ -495,23 +564,6 @@ void Loader::changeLanguage(){
         }
         else countries->fillCountryList(true);
     }
-}
-
-void Loader::setSettingsValue(const QString &key, const QVariant &var){
-    ConfigurationManager::setValue(FILE_SETTINGS,COMMON_TEXT_CODEC,key,var.toString(),configuration);
-}
-
-bool Loader::createPatientDirectory(){
-
-    // Creating the doctor directory.
-    QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
-    QString baseDir = DIRNAME_RAWDATA;
-    QString drname = configuration->getString(CONFIG_DOCTOR_UID);
-    configuration->addKeyValuePair(CONFIG_PATIENT_UID,patientuid);
-
-    if (!createDirectorySubstructure(drname,patientuid,baseDir,CONFIG_PATIENT_DIRECTORY)) return false;
-
-    return true;
 }
 
 bool Loader::createDirectorySubstructure(QString drname, QString pname, QString baseDir, QString saveAs){

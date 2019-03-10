@@ -37,7 +37,7 @@ Item {
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
             text: {
-                if (vmDate === "03/06/2010") return "DEMO";
+                if (vmDate === viewResults.vmDEMO_DATE) return "DEMO";
                 else return vmDate
             }
             color: vmRepSelected? "#ffffff" : "#000000"
