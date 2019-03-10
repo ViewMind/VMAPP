@@ -192,10 +192,13 @@ void RawDataProcessor::run(){
 
     // The check is done in case of an unforseen bug. Otherwise the program will crash attempting to access non existent values on a list.
     if (dateParts.size() != 5) config->addKeyValuePair(CONFIG_REPORT_DATE,dateForReport);
-    else config->addKeyValuePair(CONFIG_REPORT_DATE,dateParts.at(2) + "/" + dateParts.at(1) + "/" + dateParts.at(0)
-                                 + " " + dateParts.at(3) + ":" + dateParts.at(4) );
+    else {
+        config->addKeyValuePair(CONFIG_REPORT_DATE,dateParts.at(2) + "/" + dateParts.at(1) + "/" + dateParts.at(0) + " " + dateParts.at(3) + ":" + dateParts.at(4) );
+        // Date for report will now be used in legacy versions of report generator. Need to have a name with no hour part.
+        dateForReport = dateParts.at(0) + "_" + dateParts.at(1) + "_" + dateParts.at(1);
+    }
 
-    generateReportFile(emp.getResults(),what2Add,freqErrorsOK);
+    generateReportFile(emp.getResults(),what2Add,reportInfoText.join("_") + "_" + dateForReport,freqErrorsOK);
     emit(appendMessage("Report Generated: " + reportFileOutput,MSG_TYPE_SUCC));
 
     // Saving the database data to text file
@@ -217,9 +220,15 @@ void RawDataProcessor::run(){
 
 }
 
-void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, bool freqErrorsOk){
+void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode, bool freqErrorsOk){
 
-    reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + config->getString(CONFIG_REPORT_FILENAME);
+    if (config->containsKeyword(CONFIG_REPORT_FILENAME)){
+        reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + config->getString(CONFIG_REPORT_FILENAME);
+    }
+    else {
+        reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME;
+        reportFileOutput = reportFileOutput + "_" + repFileCode + ".rep";
+    }
 
     // Deleting the resport if it exists.
     QFile::remove(reportFileOutput);

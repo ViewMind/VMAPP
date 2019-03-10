@@ -86,7 +86,7 @@ private:
 
     bool getResolutionToConfig(const QString &firstline);
 
-    void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, bool freqErrorsOk);
+    void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode ,bool freqErrorsOk);
 
     QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers & ans);
 
