@@ -68,11 +68,12 @@ public:
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
 
     //******************** Report Related Functions ***************************
-    //Q_INVOKABLE void prepareForRequestOfPendingReports();
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE void prepareAllPatientIteration(const QString &filter = "");
     Q_INVOKABLE QStringList nextInAllPatientIteration();    
     Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);
+    Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, qint32 type);
+    Q_INVOKABLE void reloadPatientDatInformationForCurrentDoctor();
 
     //******************** Updater Related Functions **************************
     Q_INVOKABLE void clearChangeLogFile();

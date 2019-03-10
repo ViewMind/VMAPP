@@ -531,3 +531,7 @@ QStringList LocalInformationManager::getReportNameAndFileSet(const QString &patu
 QStringList LocalInformationManager::getReportNameAndFileSet(const QString &patuid, const QStringList &fileList){
     return patientReportInformation[patuid].getFileSetAndReportName(fileList);
 }
+
+QString LocalInformationManager::getDatFileFromIndex(const QString &patuid, qint32 index ,qint32 whichList) const{
+    return patientReportInformation.value(patuid).getDatFileNameFromSelectionDialogIndex(index,whichList);
+}

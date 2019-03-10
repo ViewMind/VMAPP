@@ -132,12 +132,15 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
 
     // The first value is the expected report name.
     QStringList fileSet = fileSetAndName;
+    QString expectedFileName;
     if (!demoTransaction){
-        logger.appendStandard("Expected Report is: " + fileSetAndName.first());
+        //logger.appendStandard("Expected Report is: " + fileSetAndName.first());
+        expectedFileName = fileSet.first();
         fileSet.removeFirst();
     }
     else{
         fileSet.clear();
+        expectedFileName = "report_r_b2l_2010_06_03_09_00.rep";
         fileSet << "binding_bc_2010_06_03.dat" << "binding_uc_2010_06_03.dat" << "reading_2010_06_03.dat";
     }
 
@@ -148,12 +151,15 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
     // Making sure previous version of the file are not present so as to ensure that no garbage data is used in this current configuration.
     QFile(expgenfile).remove();
 
+    // Setting the expected file name
+    configuration->addKeyValuePair(CONFIG_REPORT_FILENAME,expectedFileName);
+
     QString error;
     QStringList toSave;
 
     toSave << CONFIG_DOCTOR_NAME << CONFIG_PATIENT_AGE << CONFIG_PATIENT_NAME << CONFIG_MOVING_WINDOW_DISP
            << CONFIG_MIN_FIXATION_LENGTH << CONFIG_SAMPLE_FREQUENCY << CONFIG_DISTANCE_2_MONITOR << CONFIG_XPX_2_MM << CONFIG_YPX_2_MM
-           << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT;
+           << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT << CONFIG_REPORT_FILENAME;
 
     for (qint32 i = 0; i < toSave.size(); i++){
         error = configuration->saveValueToFile(expgenfile,COMMON_TEXT_CODEC,toSave.at(i));
@@ -217,8 +223,8 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
         }
     }
 
-    //qWarning() << "Requesting report for file set" << fileSetSentToProcess;
     if (!demoTransaction) fileSetSentToProcess = fileSet;
+    //qWarning() << "Requesting report for file set" << fileSetSentToProcess;
     sslDataProcessingClient->requestReport(!demoTransaction);
 
 }
@@ -575,6 +581,11 @@ QVariantMap FlowControl::nextSelectedReportItem(){
     else return QVariantMap();
 }
 
+void FlowControl::archiveSelectedFile(const QString &selectedFile){
+    QStringList fileList;
+    fileList << selectedFile;
+    moveProcessedFilesToProcessedFolder(fileList);
+}
 
 ///////////////////////////////////////////////////////////////////
 FlowControl::~FlowControl(){

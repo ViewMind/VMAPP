@@ -56,6 +56,7 @@ public:
     Q_INVOKABLE QVariantMap nextSelectedReportItem();
     Q_INVOKABLE QStringList getSelectedReportInfo();
     Q_INVOKABLE quint8 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
+    Q_INVOKABLE void archiveSelectedFile(const QString &selectedFile);
 
 signals:
 

@@ -488,6 +488,14 @@ void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
     }
 }
 
+QString Loader::getDatFileNameFromIndex(qint32 index, qint32 type){
+    return lim.getDatFileFromIndex(configuration->getString(CONFIG_PATIENT_UID),index,type);
+}
+
+void Loader::reloadPatientDatInformationForCurrentDoctor(){
+    lim.fillPatientDatInformation(configuration->getString(CONFIG_DOCTOR_UID));
+}
+
 //******************************************* Updater Related Functions ***********************************************
 
 QString Loader::checkForChangeLog(){
@@ -530,7 +538,7 @@ void Loader::onFileSetRequested(const QStringList &fileList){
     }
     else{
         fileSet = lim.getReportNameAndFileSet(configuration->getString(CONFIG_PATIENT_UID),fileList);
-        qWarning() << "Getting the report name and file set from existing files" << fileList << "and they are" << fileSet;
+        //qWarning() << "Getting the report name and file set from existing files" << fileList << "and they are" << fileSet;
     }
     emit(fileSetReady(fileSet));
 }

@@ -17,7 +17,8 @@ VMBase {
     property string vmDate: ""
     property string vmTitleDemo: ""
 
-    readonly property string vmDEMO_DATE: "03/06/2010"
+    readonly property string vmDEMO_DATE:             "03/06/2010 09:00"
+    readonly property string vmDEMO_DATE_FROM_REPORT: "03/06/2010 00:00"
 
     ListModel{
         id: resultsList
@@ -51,7 +52,7 @@ VMBase {
         vmDate    = list[3];
         freqErr   = list[4];
 
-        if (vmDate === vmDEMO_DATE){
+        if (vmDate === vmDEMO_DATE_FROM_REPORT){
             vmTitleDemo = " (DEMO)";
         }
         else vmTitleDemo = "";

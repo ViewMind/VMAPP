@@ -17,14 +17,18 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfThe
     filters << "*.dat";
     QStringList fileList = QDir(dir).entryList(filters,QDir::Files);
 
+    QStringList orderReading;
+    QStringList orderBindingBC;
+    QStringList orderBindingUC;
+
     for (qint32 i = 0; i < fileList.size(); i++){
 
         QString fname = fileList.at(i);
         //qWarning() << "Processing file" << fname;
         //DatInfo datInfo;
-        if (fname.startsWith(FILE_OUTPUT_READING)) filesReading << fname;
-        else if (fname.startsWith(FILE_OUTPUT_BINDING_BC)) filesBindingBC << fname;
-        else if (fname.startsWith(FILE_OUTPUT_BINDING_UC)) filesBindingUC << fname;
+        if (fname.startsWith(FILE_OUTPUT_READING)) insertIntoListAccordingToOrder(fname,&filesReading,&orderReading);
+        else if (fname.startsWith(FILE_OUTPUT_BINDING_BC)) insertIntoListAccordingToOrder(fname,&filesBindingBC,&orderBindingBC);
+        else if (fname.startsWith(FILE_OUTPUT_BINDING_UC)) insertIntoListAccordingToOrder(fname,&filesBindingUC,&orderBindingUC);
 
     }
 }
@@ -32,7 +36,14 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfThe
 
 bool DatFileInfoInDir::hasPendingReports() const {
     if (!filesReading.isEmpty()) return true;
-    if (!filesBindingBC.isEmpty() && !filesBindingUC.isEmpty()) return true;
+    if (!filesBindingBC.isEmpty() && !filesBindingUC.isEmpty()){
+        // This should return true ONLY if for at least one BC file there is a compatible UC file.
+        for (qint32 i = 0; i < filesBindingBC.size(); i++){
+            QList<qint32> dummy;
+            if (!getBindingUCFileListCompatibleWithSelectedBC(i,&dummy).isEmpty()) return true;
+        }
+        return false;
+    }
     else return false;
 }
 
@@ -49,20 +60,25 @@ QStringList DatFileInfoInDir::getBindingUCFileList() const {
 }
 
 QStringList DatFileInfoInDir::getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC){
+    return getBindingUCFileListCompatibleWithSelectedBC(selectedBC,&filesBindingUCValidIndexes);
+}
+
+QStringList DatFileInfoInDir::getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC, QList<qint32> *validIndexes) const{
     DatInfo bc = getBindingFileInformation(filesBindingBC.at(selectedBC));
-    filesBindingUCValidIndexes.clear();
+    validIndexes->clear();
     QStringList ans;
     //qWarning() << "Comparing" << bc.toString();
     for (qint32 i = 0; i < filesBindingUC.size(); i++){
         //qWarning() << "   WITH: " << filesBindingUC.at(i).toString();
         DatInfo uc = getBindingFileInformation(filesBindingUC.at(i));
         if (bc.isFileCompatibleWith(uc)){
-            filesBindingUCValidIndexes << i;
+            validIndexes->append(i);
             ans << uc.code;
         }
     }
     return ans;
 }
+
 
 QStringList DatFileInfoInDir::getFileSetAndReportName(const QStringList &fileList){
 
@@ -122,12 +138,40 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
     }
 
     if (!expectedReportName.isEmpty()){
-       time = time.replace(":","_");
-       expectedReportName = expectedReportName + "_" + date + "_" +  ".rep";
+       expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
        ans.prepend(expectedReportName);
     }
 
     return ans;
+}
+
+QString DatFileInfoInDir::getDatFileNameFromSelectionDialogIndex(qint32 index, qint32 whichList) const{
+    switch(whichList){
+    case LIST_INDEX_READING:
+        return filesReading.at(index);
+    case LIST_INDEX_BINDING_BC:
+        return filesBindingBC.at(index);
+    case LIST_INDEX_BINDING_UC:
+        return filesBindingUC.at(filesBindingUCValidIndexes.at(index));
+    }
+    return "";
+}
+
+void DatFileInfoInDir::insertIntoListAccordingToOrder(const QString &fileName, QStringList *list, QStringList *order){
+    DatInfo info = getDatFileInformation(fileName);
+    bool inserted = false;
+    for (qint32 i = 0; i < order->size(); i++){
+        if (order->at(i) < info.orderString){
+            inserted = true;
+            order->insert(i,info.orderString);
+            list->insert(i,fileName);
+            break;
+        }
+    }
+    if (!inserted){
+        order->append(info.orderString);
+        list->append(fileName);
+    }
 }
 
 QStringList DatFileInfoInDir::getFileList(const QStringList &infoList) const{
@@ -139,7 +183,6 @@ QStringList DatFileInfoInDir::getFileList(const QStringList &infoList) const{
     }
     return list;
 }
-
 
 DatFileInfoInDir::DatInfo DatFileInfoInDir::getDatFileInformation(const QString &file){
     if (file.startsWith(FILE_OUTPUT_BINDING_BC)) return getBindingFileInformation(file);
@@ -240,32 +283,4 @@ qint32 DatFileInfoInDir::getValidEyeForDatList(const QStringList &list){
 
 }
 
-//DatFileInfoInDir::DatInfo DatFileInfoInDir::getRerportInformation(const QString &repfile){
 
-//    QStringList parts = repfile.split(".",QString::SkipEmptyParts);
-//    QString baseName = parts.first();
-//    parts = baseName.split("_",QString::SkipEmptyParts);
-//    DatInfo ans;
-//    ans.extraInfo = "";
-//    ans.fileName = repfile;
-//    if (parts.size() >= 7){
-
-//        // The last 3 parts are the date. While the first is the base name, which should alwasy be report.
-//        ans.basename = parts.at(0);
-//        qint32 last = parts.size()-1;
-//        ans.date = parts.at(last-5) + "_" + parts.at(last-4) + "_" + parts.at(last-3);
-//        ans.hour = parts.at(last-1) + ":" + parts.at(last-2);
-
-//        if (parts.size() > 7) {
-//            // There is extra information regarding what is in the report.
-//            QStringList extraInfo;
-//            for (qint32 i = 1; i < last-2; i++){
-//                extraInfo << parts.at(i);
-//            }
-//            if (extraInfo.size() > 1) ans.extraInfo = extraInfo.join("_");
-//            else ans.extraInfo = extraInfo.first();
-//        }
-
-//    }
-//    return ans;
-//}

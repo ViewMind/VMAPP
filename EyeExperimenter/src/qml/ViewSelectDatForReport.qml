@@ -9,6 +9,10 @@ Dialog {
     readonly property int vmLIST_INDEX_BINDING_BC: 1
     readonly property int vmLIST_INDEX_BINDING_UC: 2
 
+    readonly property int vmSEL_NOT_SELECTED:     0
+    readonly property int vmSEL_SELECTED_VALID:   1
+    readonly property int vmSEL_SELECTED_INVALID: 2
+
     ListModel {
         id: readingList
     }
@@ -23,15 +27,15 @@ Dialog {
 
     function readingSelectionChanged(index){
         // Since it's not possible to unselect once selected, the generate button is enabled.
-        btnGenerate.enabled = true;
+        enableGenerateButtonCheck();
         loader.operateOnRepGenStruct(index,vmLIST_INDEX_READING)
     }
 
     function bindingBCSelectionChanged(index){
         // When this is clicked, the generate button is automatically disabled because this means
         // that any UC selection is cleared.
-        btnGenerate.enabled = false;
-        tableRow.disableUnboundButton();
+        bindingUCColumn.currentIndex = -1;
+        enableGenerateButtonCheck();
         var bindingUCFiles = loader.getFileListCompatibleWithSelectedBC(index);
         bindingUCList.clear();
         for (var i = 0; i < bindingUCFiles.length; i++){
@@ -42,17 +46,39 @@ Dialog {
 
     function bindingUCSelectionChanged(index){
         // When this is clicked then the generate button is enabled, as only valid options are shown.
-        btnGenerate.enabled = true;
+        enableGenerateButtonCheck();
         loader.operateOnRepGenStruct(index,vmLIST_INDEX_BINDING_UC)
     }
 
-    onOpened: {
+    function enableGenerateButtonCheck(){
 
+        var selectedType = [];
+        if (readingColumn.currentIndex > -1) selectedType.push(vmSEL_SELECTED_VALID)
+        else selectedType.push(vmSEL_NOT_SELECTED);
+
+        if ((bindingBCColumn.currentIndex == -1) && (bindingUCColumn.currentIndex == -1)) selectedType.push(vmSEL_NOT_SELECTED);
+        else if ((bindingBCColumn.currentIndex > -1) && (bindingUCColumn.currentIndex > -1)) selectedType.push(vmSEL_SELECTED_VALID)
+        else selectedType.push(vmSEL_SELECTED_INVALID);
+
+        btnGenerate.enabled = false;
+        for (var i = 0; i < selectedType.length; i++){
+            if (selectedType[i] === vmSEL_SELECTED_INVALID) {
+                btnGenerate.enabled = false;
+                return;
+            }
+            if (selectedType[i] === vmSEL_SELECTED_VALID) btnGenerate.enabled = true;
+
+        }
+    }
+
+    function relodInformationOnOpened(){
+        loader.reloadPatientDatInformationForCurrentDoctor();
         readingList.clear();
         bindingBCList.clear();
         bindingUCList.clear();
         tableRow.disableArchiveButtons();
-        btnGenerate.enabled = true;
+        tableRow.resetIndexes();
+        btnGenerate.enabled = false;
         loader.operateOnRepGenStruct(-1,-1);
 
         // Loading the dat lists.
@@ -65,7 +91,10 @@ Dialog {
         for (i = 0; i < bbcFiles.length; i++){
             bindingBCList.append({"vmDisplayText": bbcFiles[i], "vmIndexInList": i, "vmIsSelected" : false});
         }
+    }
 
+    onOpened: {
+        relodInformationOnOpened();
     }
 
 
@@ -140,7 +169,13 @@ Dialog {
        function disableArchiveButtons(){
           readingColumn.vmEnableDelete = false;
           bindingBCColumn.vmEnableDelete = false;
-          disableUnboundButton();
+          disableUnboundButton();          
+       }
+
+       function resetIndexes(){
+           readingColumn.currentIndex = -1;
+           bindingBCColumn.currentIndex = -1;
+           bindingUCColumn.currentIndex = -1;
        }
 
        function disableUnboundButton(){
@@ -154,6 +189,7 @@ Dialog {
            height: parent.height
 
            property bool vmEnableDelete: false;
+           property int currentIndex: -1
 
            // The header of the column
            Rectangle {
@@ -196,9 +232,10 @@ Dialog {
                        delegate: VMDatSelectEntry {
                            width: parent.width
                            onSelected: {
-                               readingSelectionChanged(indexInList)
                                readingListView.currentIndex = indexInList;
                                readingColumn.vmEnableDelete = true;
+                               readingColumn.currentIndex = indexInList;
+                               readingSelectionChanged(indexInList)
                            }
                        }
                        onCurrentIndexChanged: {
@@ -231,6 +268,11 @@ Dialog {
                vmInvertColors: true
                enabled: readingColumn.vmEnableDelete
                onClicked: {
+                   if (readingColumn.currentIndex > -1){
+                      var fileName = loader.getDatFileNameFromIndex(readingColumn.currentIndex,vmLIST_INDEX_READING);
+                      flowControl.archiveSelectedFile(fileName);
+                      relodInformationOnOpened();
+                   }
                }
            }
 
@@ -243,6 +285,7 @@ Dialog {
            height: parent.height
 
            property bool vmEnableDelete: false;
+           property int currentIndex: -1
 
            // The header of the column
            Rectangle {
@@ -284,10 +327,11 @@ Dialog {
                        model: bindingBCList
                        delegate: VMDatSelectEntry {
                            width: parent.width
-                           onSelected: {
-                               bindingBCSelectionChanged(indexInList)
+                           onSelected: {                               
                                bindingBCListView.currentIndex = indexInList;
                                bindingBCColumn.vmEnableDelete = true;
+                               bindingBCColumn.currentIndex = indexInList;
+                               bindingBCSelectionChanged(indexInList)
                            }
                        }
                        onCurrentIndexChanged: {
@@ -320,6 +364,11 @@ Dialog {
                vmInvertColors: true
                enabled: bindingBCColumn.vmEnableDelete
                onClicked: {
+                   if (bindingBCColumn.currentIndex > -1){
+                       var fileName = loader.getDatFileNameFromIndex(bindingBCColumn.currentIndex,vmLIST_INDEX_BINDING_BC);
+                       flowControl.archiveSelectedFile(fileName);
+                       relodInformationOnOpened();
+                   }
                }
            }
 
@@ -332,6 +381,7 @@ Dialog {
            height: parent.height
 
            property bool vmEnableDelete: false;
+           property int currentIndex: -1
 
            // The header of the column
            Rectangle {
@@ -373,10 +423,11 @@ Dialog {
                        model: bindingUCList
                        delegate: VMDatSelectEntry {
                            width: parent.width
-                           onSelected: {
-                               bindingUCSelectionChanged(indexInList)
+                           onSelected: {                               
                                bindingUCListView.currentIndex = indexInList;
                                bindingUCColumn.vmEnableDelete = true;
+                               bindingUCColumn.currentIndex = indexInList;
+                               bindingUCSelectionChanged(indexInList)
                            }
                        }
                        onCurrentIndexChanged: {
@@ -409,6 +460,11 @@ Dialog {
                vmInvertColors: true
                enabled: bindingUCColumn.vmEnableDelete
                onClicked: {
+                   if (bindingUCColumn.currentIndex > -1){
+                      var fileName = loader.getDatFileNameFromIndex(bindingUCColumn.currentIndex,vmLIST_INDEX_BINDING_UC);
+                      flowControl.archiveSelectedFile(fileName);
+                      relodInformationOnOpened();
+                   }
                }
            }
 

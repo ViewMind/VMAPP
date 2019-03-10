@@ -18,10 +18,6 @@
 
 #define   LOCAL_DB                                      "localdb.dat"
 
-#define   LIST_INDEX_READING     0
-#define   LIST_INDEX_BINDING_BC  1
-#define   LIST_INDEX_BINDING_UC  2
-
 class LocalInformationManager
 {
 public:
@@ -61,6 +57,8 @@ public:
     QStringList getBindingUCFileListCompatibleWithSelectedBC(const QString &patuid, qint32 selectedBC);
     QStringList getReportNameAndFileSet(const QString &patuid, const DatFileInfoInDir::ReportGenerationStruct &repgen);
     QStringList getReportNameAndFileSet(const QString &patuid, const QStringList &fileList);
+    QString getDatFileFromIndex(const QString &patuid, qint32 index, qint32 whichList) const;
+    void fillPatientDatInformation(const QString &druid);
 
 private:
 
@@ -81,8 +79,7 @@ private:
     QVariantMap localDB;
 
     // Used to iterate over unprocessed information.
-    QHash<QString, DatFileInfoInDir> patientReportInformation;
-    void fillPatientDatInformation(const QString &druid);
+    QHash<QString, DatFileInfoInDir> patientReportInformation;    
 
     void backupDB();
     void loadDB();

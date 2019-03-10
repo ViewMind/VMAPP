@@ -27,7 +27,7 @@ void RepFileInfo::setDirectory(const QString &directory){
         QString basename = parts.at(0);
         parts = basename.split("_");
 
-        if ((parts.size() < 5) || (parts.size() > 6)){
+        if ((parts.size() < 7) || (parts.size() > 8)){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");
             continue;
         }
@@ -38,7 +38,7 @@ void RepFileInfo::setDirectory(const QString &directory){
 
         // Setting the date, time, reading and binding message
         switch (parts.size()){
-        case 5:
+        case 7:
             // Information can be reading or binding
             if (parts.at(1).contains('r')){
                 reading = "OK";
@@ -48,13 +48,13 @@ void RepFileInfo::setDirectory(const QString &directory){
                 reading = "N/A";
                 binding = parts.at(1);
             }
-            date = parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2);
+            date = parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + " " + parts.at(5) + ":" + parts.at(6);
             break;
-        case 6:
+        case 8:
             // The first is the report and the second one is the binding
             reading = "OK";
             binding = parts.at(2);
-            date = parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3);
+            date = parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3) + " " + parts.at(6) + ":" + parts.at(7);
             break;
         }
 
@@ -84,6 +84,8 @@ void RepFileInfo::setDirectory(const QString &directory){
                 binding = "N/A";
             }
         }
+
+        //qWarning() << "Adding info from" << repFiles.at(i)  << " and date is" << date;
 
         QVariantMap info;
         info[KEY_BINDING] = binding;

@@ -5,6 +5,10 @@
 #include "../common.h"
 #include "../LogInterface/loginterface.h"
 
+#define   LIST_INDEX_READING     0
+#define   LIST_INDEX_BINDING_BC  1
+#define   LIST_INDEX_BINDING_UC  2
+
 class DatFileInfoInDir
 {
 public:
@@ -49,12 +53,12 @@ public:
     QStringList getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC);
     QStringList getFileSetAndReportName(const ReportGenerationStruct &repgen) const;
     QStringList getFileSetAndReportName(const QStringList &fileList);
+    QString getDatFileNameFromSelectionDialogIndex(qint32 index, qint32 whichList) const;
 
     // Functions that parse the file names and gather the information in a DatInfo structure.
     static DatInfo getDatFileInformation(const QString &file);
     static DatInfo getBindingFileInformation(const QString &bindingFile);
     static DatInfo getReadingInformation(const QString &readingFile);
-    //static DatInfo getRerportInformation(const QString &repfile);
     static qint32 getValidEyeForDatList(const QStringList &list);
 
 
@@ -72,6 +76,12 @@ private:
 
     // Generalization that only gets any of the code lists for file lists.
     QStringList getFileList(const QStringList &infoList) const;
+
+    // Smart insertion so that file list are order form newer to older
+    void insertIntoListAccordingToOrder(const QString &fileName, QStringList *list, QStringList *order);
+
+    // Const version that enables to check for existance fo UC Files compatible with BC Files in a const function.
+    QStringList getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC, QList<qint32> *validIndexes) const;
 
 
 };
