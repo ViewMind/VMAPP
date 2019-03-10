@@ -27,14 +27,15 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_PATIENT_AGE] = cmd;
 
     cmd.clear();
-    cv[CONFIG_DOCTOR_NAME]    = cmd;
-    cv[CONFIG_PATIENT_NAME]   = cmd;
+    cv[CONFIG_DOCTOR_NAME]     = cmd;
+    cv[CONFIG_PATIENT_NAME]    = cmd;
 
     cmd.optional = true;
     cv[CONFIG_FILE_BIDING_BC] = cmd;
     cv[CONFIG_FILE_BIDING_UC] = cmd;
     cv[CONFIG_FILE_READING]   = cmd;
     cv[CONFIG_FILE_FIELDING]  = cmd;
+    cv[CONFIG_REPORT_FILENAME] = cmd;
 
     configuration.setupVerification(cv);
 
