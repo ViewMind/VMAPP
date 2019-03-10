@@ -83,6 +83,7 @@
 #define   CONFIG_ENABLE_GAZE_FOLLOWING                  "enable_gaze_following"
 #define   CONFIG_DBLOGFILE_LOCATION                     "dblogfile"
 #define   CONFIG_READING_EXP_LANG                       "reading_exp_lang"
+#define   CONFIG_REPORT_FILENAME                        "report_filename"
 
 // The unique UID for tests.
 #define   TEST_UID                                      "ARvm0000"

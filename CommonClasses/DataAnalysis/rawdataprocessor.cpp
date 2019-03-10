@@ -76,7 +76,7 @@ void RawDataProcessor::run(){
 
         QFileInfo info(dataReading);
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getReadingInformation(info.baseName());
-        dateForReport = datInfo.date;
+        dateForReport = datInfo.date + "_" + datInfo.hour;
         reportInfoText << "r";
 
         if (!tagRet.freqCheckErrors) freqErrorsOK = false;
@@ -104,11 +104,7 @@ void RawDataProcessor::run(){
         QFileInfo info(dataBindingBC);
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getBindingFileInformation(info.baseName());
         reportInfoText << "b" + datInfo.extraInfo;
-        if (dateForReport.isEmpty()) dateForReport = datInfo.date;
-        else if (dateForReport != datInfo.date){
-            emit(appendMessage("Using files from different dates. Using the date first found: " + dateForReport,MSG_TYPE_WARN));
-        }
-
+        if (dateForReport.isEmpty()) dateForReport = datInfo.date + "_" + datInfo.hour;
         if (!tagRet.freqCheckErrors) freqErrorsOK = false;
 
         if (!report.isEmpty()){
@@ -144,11 +140,7 @@ void RawDataProcessor::run(){
         // The code needs to be saved only once as it should be the same for both BC and UC.
         QFileInfo info(dataBindingUC);
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getBindingFileInformation(info.baseName());
-        if (dateForReport.isEmpty()) dateForReport = datInfo.date;
-        else if (dateForReport != datInfo.date){
-            emit(appendMessage("Using files from different dates. Using the date first found: " + dateForReport,MSG_TYPE_WARN));
-        }
-
+        if (dateForReport.isEmpty()) dateForReport = datInfo.date + "_" + datInfo.hour;
         if (!tagRet.freqCheckErrors) freqErrorsOK = false;
 
         if (!report.isEmpty()){
@@ -190,21 +182,20 @@ void RawDataProcessor::run(){
     what2Add[STAT_ID_ENCODING_MEM_VALUE] = !matrixBindingBC.isEmpty() && !matrixBindingUC.isEmpty();
     what2Add[STAT_ID_TOTAL_FIXATIONS] = !matrixReading.isEmpty();
 
-    QString repFileCode = "";
     if (reportInfoText.isEmpty()){
         emit(appendMessage("Nothing selected to process. Exiting." + reportFileOutput,MSG_TYPE_STD));
         return;
     }
 
-
     // Setting the report date to the date of the data.
     QStringList dateParts = dateForReport.split("_");
 
     // The check is done in case of an unforseen bug. Otherwise the program will crash attempting to access non existent values on a list.
-    if (dateParts.size() != 3) config->addKeyValuePair(CONFIG_REPORT_DATE,dateForReport);
-    else config->addKeyValuePair(CONFIG_REPORT_DATE,dateParts.at(2) + "/" + dateParts.at(1) + "/" + dateParts.at(0));
+    if (dateParts.size() != 5) config->addKeyValuePair(CONFIG_REPORT_DATE,dateForReport);
+    else config->addKeyValuePair(CONFIG_REPORT_DATE,dateParts.at(2) + "/" + dateParts.at(1) + "/" + dateParts.at(0)
+                                 + " " + dateParts.at(3) + ":" + dateParts.at(4) );
 
-    generateReportFile(emp.getResults(),what2Add,reportInfoText.join("_") + "_" + dateForReport, freqErrorsOK);
+    generateReportFile(emp.getResults(),what2Add,freqErrorsOK);
     emit(appendMessage("Report Generated: " + reportFileOutput,MSG_TYPE_SUCC));
 
     // Saving the database data to text file
@@ -226,10 +217,9 @@ void RawDataProcessor::run(){
 
 }
 
-void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode, bool freqErrorsOk){
+void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, bool freqErrorsOk){
 
-    reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_REPORT_NAME;
-    reportFileOutput = reportFileOutput + "_" + repFileCode + ".rep";
+    reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + config->getString(CONFIG_REPORT_FILENAME);
 
     // Deleting the resport if it exists.
     QFile::remove(reportFileOutput);
