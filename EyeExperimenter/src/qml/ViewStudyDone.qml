@@ -78,6 +78,7 @@ VMBase {
             VMButton{
                 id: btnBack
                 height: 50
+                width: 180
                 vmText: loader.getStringForKey(keysearch+"goback");
                 vmFont: viewHome.gothamM.name
                 vmInvertColors: true
@@ -90,6 +91,7 @@ VMBase {
             VMButton{
                 id: btnYes
                 height: 50
+                width: 180
                 vmText: loader.getStringForKey(keysearch+"yes");
                 vmFont: viewHome.gothamM.name
                 onClicked: {
@@ -109,4 +111,48 @@ VMBase {
         }
 
     }
+
+    Text {
+        id: viewTitle
+        font.family: gothamB.name
+        font.pixelSize: 43
+        anchors.top:  vmBanner.bottom
+        anchors.topMargin: 46
+        anchors.horizontalCenter: parent.horizontalCenter
+        color: "#3fa2f7"
+        text: loader.getStringForKey(keysearch+"viewTitle");
+    }
+
+    // The head graph
+    Image {
+        id: headDesign
+        source: "qrc:/images/ILUSTRACION.png"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: message.bottom
+        anchors.topMargin: 15
+    }
+
+    Text {
+        id: message
+        font.pixelSize: 16
+        font.family: robotoR.name
+        color: "#297fca"
+        anchors.top:  viewTitle.bottom
+        anchors.topMargin: 15
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: loader.getStringForKey(keysearch+"labelMessage");
+    }
+
+    VMButton{
+        id: btnContinue
+        vmText: loader.getStringForKey(keysearch+"btnContinue");
+        vmFont: gothamM.name
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: headDesign.bottom
+        anchors.topMargin: 30
+        onClicked: {
+            openDiag();
+        }
+    }
+
 }

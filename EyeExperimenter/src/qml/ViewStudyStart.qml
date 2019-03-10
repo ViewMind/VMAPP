@@ -78,7 +78,7 @@ VMBase {
         id: rowSelectStudiesInstruction
         anchors.left: backgroundPatientName.left
         anchors.top: backgroundPatientName.bottom
-        anchors.topMargin: 45
+        anchors.topMargin: 30
         spacing: 5
 
         // Message for study selection
@@ -106,7 +106,7 @@ VMBase {
         anchors.left: rowSelectStudiesInstruction.left
         spacing: 10
         anchors.top: rowSelectStudiesInstruction.bottom
-        anchors.topMargin: 13
+        anchors.topMargin: 5
 
         // The possible studies
         VMToggleButton{
@@ -115,6 +115,8 @@ VMBase {
             vmFont: robotoR.name
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
+                if (cboxReading.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_READING);
+                else multipleSelectionShow.removeItemByID(vmDefines.vmCONFIG_P_EXP_READING)
             }
         }
 
@@ -124,6 +126,8 @@ VMBase {
             vmFont: robotoR.name
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
+                if (cboxBindingUC.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_BIDING_UC);
+                else multipleSelectionShow.removeItemByID(vmDefines.vmCONFIG_P_EXP_BIDING_UC)
             }
         }
 
@@ -133,6 +137,8 @@ VMBase {
             vmFont: robotoR.name
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
+                if (cboxBindingBC.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_BIDING_BC);
+                else multipleSelectionShow.removeItemByID(vmDefines.vmCONFIG_P_EXP_BIDING_BC)
             }
 
         }
@@ -144,17 +150,30 @@ VMBase {
             visible: false
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
+                if (cboxFielding.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_FIELDING);
+                else multipleSelectionShow.removeItemByID(vmDefines.vmCONFIG_P_EXP_FIELDING)
             }
         }
     }
+
+
+    VMMultipleSelectionShow{
+        id: multipleSelectionShow
+        width: backgroundPatientName.width
+        height: 40
+        anchors.top: rowSelectStudies.bottom
+        anchors.topMargin: 15
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+
 
     // Message for configuring experiment options
     Text {
         id: labelInstruction2
         font.family: robotoB.name
         font.pixelSize: 15
-        anchors.top: rowSelectStudies.bottom
-        anchors.topMargin: 44
+        anchors.top: multipleSelectionShow.bottom
+        anchors.topMargin: 30
         anchors.left: backgroundPatientName.left
         color: "#000000"
         text: loader.getStringForKey(keysearch+"labelInstruction2");
@@ -294,18 +313,23 @@ VMBase {
             onClicked: {
 
                 vmSelectedExperiments = [];
-                if (cboxReading.vmOn){
-                    vmSelectedExperiments.push(viewPatientReg.vmExpIndexReading);
+
+                var idList = multipleSelectionShow.getListID();
+                for (var i = 0; i < idList.length; i++){
+                    if (idList[i] === vmDefines.vmCONFIG_P_EXP_BIDING_BC){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingBC);
+                    }
+                    else if (idList[i] === vmDefines.vmCONFIG_P_EXP_READING){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexReading);
+                    }
+                    else if (idList[i] === vmDefines.vmCONFIG_P_EXP_BIDING_UC){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
+                    }
+                    else if (idList[i] === vmDefines.vmCONFIG_P_EXP_FIELDING){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
+                    }
                 }
-                if (cboxBindingBC.vmOn){
-                    vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingBC);
-                }
-                if (cboxBindingUC.vmOn){
-                    vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
-                }
-                if (cboxFielding.vmOn){
-                    vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
-                }
+
                 if (vmSelectedExperiments.length > 0){
 
                     // All is good, so the parameters are set.

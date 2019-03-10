@@ -43,5 +43,6 @@
         <file>qml/VMAutoCompleteCBEntry.qml</file>
         <file>qml/ViewSelectDatForReport.qml</file>
         <file>qml/VMDatSelectEntry.qml</file>
+        <file>qml/VMMultipleSelectionShow.qml</file>
     </qresource>
 </RCC>
