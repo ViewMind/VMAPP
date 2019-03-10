@@ -38,3 +38,5 @@ LocalDBMng/exe/
 *.~*
 Scripts/server_scripts/connect/s3bkp/
 Scripts/server_scripts/bkp*/
+Scripts/server_scripts/05InformationDownload/rawdata/
+
