@@ -298,6 +298,11 @@ VMBase {
         }
 
         patientListView.currentIndex = -1;
+
+        // Checking if the doctor is validated to inhabilitate the view buttons.
+        if (loader.isDoctorValidated(-1)) btnViewAll.enabled = true;
+        else btnViewAll.enabled = false;
+
     }
 
     function startDemoTransaction(){
@@ -429,7 +434,7 @@ VMBase {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 20
-            enabled: patientListView.currentIndex !== -1
+            enabled: ((patientListView.currentIndex !== -1) && (loader.isDoctorValidated(-1)))
             onClicked: {
                 viewShowReports.vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
                 viewShowReports.vmPatientDirectory = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_DIRECTORY);

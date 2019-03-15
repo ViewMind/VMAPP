@@ -158,6 +158,7 @@ Window {
                 break;
             case vmIndexStudyStart:
                 viewStudyStart.setPatientName();
+                viewStudyStart.setDefaultSelections();
                 break;
             case vmIndexResults:
                 viewResults.fillFieldsFromReportInfo();

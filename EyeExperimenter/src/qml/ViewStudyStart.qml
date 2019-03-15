@@ -12,7 +12,15 @@ VMBase {
     property int vmCurrentExperimentIndex: 0
 
     function setPatientName(){
-        labelPatientName.text = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+        var name = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);;
+        var uid = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_UID);;
+        labelPatientName.text = name + " (" + uid + ")"
+    }
+
+    function setDefaultSelections(){
+        cboxReading.vmOn = true;
+        cboxBindingBC.vmOn = true;
+        cboxBindingUC.vmOn = true;
     }
 
     // Title and subtitle
