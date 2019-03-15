@@ -2,7 +2,7 @@
 
 ############## INPUT PARAMETERS #################
 INSTUID="1242673082"
-LOWERDATE="2019-01-01"
+LOWERDATE="2019-03-11"
 
 clear
 
@@ -58,6 +58,26 @@ query="$MYSQL_PATIDDB \"SELECT DISTINCT * FROM tPatientIDs WHERE keyid IN ($puid
 ssh -i $KEY $USER@$DNS "$query > $QUERYRES_ID";
 scp -i $KEY -q $USER@$DNS:"$QUERYRES_ID" .
 
+echo ">> CREATING PUID HASH MAP"
+hashmap_file=($(cat $QUERYRES_ID))
+value=""
+let counter=0
+declare -A hashmap
+for h in "${hashmap_file[@]}"; 
+do
+   if (( (counter % 2) == 0 )); then      
+      value=$h
+      while (( ${#value} < 8)); do
+         value="0$value"
+      done
+      #echo "value: $value" 
+   else
+      #echo "key: $h"
+      hashmap[$h]=$value;
+   fi
+   counter=$((counter + 1))
+done
+
 query="$MYSQL_PATDATADB \"SELECT DISTINCT * FROM tPatientData WHERE puid IN ($puids)\""
 ssh -i $KEY $USER@$DNS "$query > $QUERYRES_PATDATA";
 scp -i $KEY -q $USER@$DNS:"$QUERYRES_PATDATA" .
@@ -91,7 +111,10 @@ do
    echo "  >> Copying locally: $word"
    scp -i $KEY -q -r $USER@$DNS:"$word" $RAWDATA_DIR
    echo "  >> Deleting remote: $word"
-   ssh -i $KEY $USER@$DNS "rm -rf $word"  > /dev/null 2>&1
+   ssh -i $KEY $USER@$DNS "rm -rf $word"  > /dev/null 2>&1   
+   puid=${hashmap[$word]}
+   echo "  >> Renaming downloaded directory to $puid"
+   mv $RAWDATA_DIR/$word $RAWDATA_DIR/$puid;   
 done
 
 echo ">> CALLING THE EYEPROCESSOR ON EACH OF THE FOLDER"
