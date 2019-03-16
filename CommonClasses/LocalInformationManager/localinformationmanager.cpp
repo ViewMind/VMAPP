@@ -120,9 +120,12 @@ bool LocalInformationManager::doesDoctorExist(const QString &uid) const{
     return localDB.contains(uid);
 }
 
-bool LocalInformationManager::doesPatientExist(const QString &druid, const QString &patuid) const{
-    if (!localDB.contains(druid)) return false;
-    return localDB.value(druid).toMap().value(PATIENT_DATA).toMap().contains(patuid);
+bool LocalInformationManager::doesPatientExist(const QString &patuid) const{
+    QStringList druids = localDB.keys();
+    for (qint32 i = 0; i < druids.size(); i++){
+        if (localDB.value(druids.at(i)).toMap().value(PATIENT_DATA).toMap().contains(patuid)) return true;
+    }
+    return false;
 }
 
 bool LocalInformationManager::isDoctorValid(const QString &dr_uid){
@@ -218,37 +221,45 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 }
 #endif
 
-void LocalInformationManager::fillPatientDatInformation(const QString &druid){
+void LocalInformationManager::fillPatientDatInformation(){
 
     patientReportInformation.clear();
 
-    // Creating the source directory path.
-    QString baseDir = workingDirectory + "/" + druid;
+    QStringList doctorDirs = QDir(workingDirectory).entryList(QStringList(),QDir::Dirs | QDir::NoDotAndDotDot);
 
-    QDir doctorDir(baseDir);
-    if (!doctorDir.exists()){
-        // This is not necessarily an error because all new Doctors will not have a base directory created.
-        // log.appendError("Base directory for the current Doctor: " + baseDir + " was not found");
-        return;
+    for (qint32 d = 0; d < doctorDirs.size(); d++){
+        // Creating the source directory path.
+        QString druid = doctorDirs.at(d);
+        QString baseDir = workingDirectory + "/" + druid;
+
+        QDir doctorDir(baseDir);
+        if (!doctorDir.exists()){
+            // This is not necessarily an error because all new Doctors will not have a base directory created.
+            // log.appendError("Base directory for the current Doctor: " + baseDir + " was not found");
+            continue;
+        }
+
+        // The Directory exists, so a list of all directories inside it, is generated.
+        QStringList directories = doctorDir.entryList(QStringList(),QDir::Dirs | QDir::NoDotAndDotDot);
+        QVariantMap patientData = localDB.value(druid).toMap().value(PATIENT_DATA).toMap();
+        for (qint32 i = 0; i < directories.size(); i++){
+
+            QString patuid = directories.at(i);
+
+            if (!patientData.contains(patuid)) continue;
+
+            // Separating all files by extension and prefix if necessary.
+            QDir patientDir(baseDir + "/" + patuid);
+
+            //qWarning() << "DAT INFO FOR" << patientDir.path();
+            DatFileInfoInDir datInfo;
+
+            datInfo.setDatDirectory(patientDir.path(),druid);
+
+            patientReportInformation[directories.at(i)] = datInfo;
+
+        }
     }
-
-    // The Directory exists, so a list of all directories inside it, is generated.
-    QStringList directories = doctorDir.entryList(QStringList(),QDir::Dirs | QDir::NoDotAndDotDot);
-    QVariantMap patientData = localDB.value(druid).toMap().value(PATIENT_DATA).toMap();
-    for (qint32 i = 0; i < directories.size(); i++){
-        if (!patientData.contains(directories.at(i))) continue;
-
-        // Separating all files by extension and prefix if necessary.
-        QDir patientDir(baseDir + "/" + directories.at(i));
-
-        //qWarning() << "DAT INFO TIME";
-        DatFileInfoInDir datInfo;
-        datInfo.setDatDirectory(patientDir.path());
-        patientReportInformation[directories.at(i)] = datInfo;
-        //qWarning() << "PATIENT REPORT INFO for" << directories.at(i);
-        //datInfo.printData();
-    }
-
 }
 
 void LocalInformationManager::addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden){
@@ -386,48 +397,70 @@ void LocalInformationManager::setUpdateFlagTo(bool flag){
     //printLocalDB();
 }
 
-QList<QStringList> LocalInformationManager::getDoctorList(bool forceShow){
-    QList<QStringList> ans;
-    QStringList names;
+LocalInformationManager::DisplayLists LocalInformationManager::getDoctorList(bool forceShow){
+    DisplayLists ans;
     QStringList uids = localDB.keys();
-    QStringList showUIds;
     for (qint32 i = 0; i < uids.size(); i++){
         QVariantMap drinfo = localDB.value(uids.at(i)).toMap();
         if (isHidden(uids.at(i)) && !forceShow) continue;
-        names << drinfo.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drinfo.value(TDOCTOR_COL_LASTNAME).toString()
+        ans.doctorNames << drinfo.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drinfo.value(TDOCTOR_COL_LASTNAME).toString()
                  + " (" + uids.at(i) + ")";
-        showUIds << uids.at(i);
-    }
-    if (!names.isEmpty()) ans << names << showUIds;
+        ans.doctorUIDs << uids.at(i);
+    }    
+    //qWarning() << "Returning doctor names" << ans.doctorNames;
+    //qWarning() << "Returning doctor uids" << ans.doctorUIDs;
     return ans;
 }
 
-QList<QStringList> LocalInformationManager::getPatientListForDoctor(const QString &druid, const QString &filter){
-    QList<QStringList> ans;
-    QStringList names;
-    QVariantMap patients = localDB.value(druid).toMap().value(PATIENT_DATA).toMap();
-    QStringList uids = patients.keys();
-    QStringList uidsToReturn;
-    //qWarning() << "PAT UIDS for" << config->getString(CONFIG_DOCTOR_UID) << " are " << uids;
-    for (qint32 i = 0; i < uids.size(); i++){
-        QVariantMap patinfo = patients.value(uids.at(i)).toMap();
-        QString entryText = patinfo.value(TPATDATA_COL_FIRSTNAME).toString() + " " + patinfo.value(TPATDATA_COL_LASTNAME).toString();
-        if ( filter.isEmpty() || entryText.contains(filter,Qt::CaseInsensitive) || uids.at(i).contains(filter,Qt::CaseInsensitive) ){
-            names << entryText;
-            uidsToReturn << uids.at(i);
+LocalInformationManager::DisplayLists LocalInformationManager::getPatientListForDoctor(const QString &druid, const QString &filter){
+
+
+    DisplayLists ans;
+    QStringList druids;
+
+    // Each time the funciton is called, the directory structure is reviewed.
+    fillPatientDatInformation();
+
+    if (druid.isEmpty()) druids = localDB.keys();
+    else druids << druid;
+
+    for (qint32 d = 0; d < druids.size(); d++){
+
+        QVariantMap drMap = localDB.value(druids.at(d)).toMap();
+        QString drName = drMap.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drMap.value(TDOCTOR_COL_LASTNAME).toString();
+        QVariantMap patients = drMap.value(PATIENT_DATA).toMap();
+        QStringList uids = patients.keys();
+
+        //qWarning() << "PAT UIDS for" << config->getString(CONFIG_DOCTOR_UID) << " are " << uids;
+        for (qint32 i = 0; i < uids.size(); i++){
+            QVariantMap patinfo = patients.value(uids.at(i)).toMap();
+            QString entryText = patinfo.value(TPATDATA_COL_FIRSTNAME).toString() + " " + patinfo.value(TPATDATA_COL_LASTNAME).toString();
+            if ( filter.isEmpty() || entryText.contains(filter,Qt::CaseInsensitive) || uids.at(i).contains(filter,Qt::CaseInsensitive) ){
+                ans.patientNames << entryText;
+                ans.patientUIDs << uids.at(i);
+                ans.doctorNames << drName;
+                ans.doctorUIDs << druids.at(d);
+            }
         }
+
     }
-    if (!names.isEmpty()) {
-        ans << names << uidsToReturn;
-        fillPatientDatInformation(druid);
-        QStringList isoklist;
-        for (qint32 i = 0; i < uidsToReturn.size(); i++){
-            if (patientReportInformation.value(uidsToReturn.at(i)).hasPendingReports()) isoklist << "false";
-            else isoklist << "true";
+
+    if (!ans.patientNames.isEmpty()) {
+        for (qint32 i = 0; i < ans.patientUIDs.size(); i++){
+            //qWarning() << "Is Ok for DR: " << doctorUIDList.at(i) << "y PAT: " << uidsToReturn.at(i);
+            if (patientReportInformation.value(ans.patientUIDs.at(i)).hasPendingReports()) ans.patientISOKList << "false";
+            else ans.patientISOKList << "true";
         }
         //qWarning() << "IS OK LIST" << isoklist;
-        ans << isoklist;
     }
+
+//    qWarning() << "RETURNING FROM getPatientListForDoctor with:";
+//    qWarning() << ans.patientNames;
+//    qWarning() << ans.patientUIDs;
+//    qWarning() << ans.patientISOKList;
+//    qWarning() << ans.doctorNames;
+//    qWarning() << ans.doctorUIDs;
+
     return ans;
 }
 
@@ -449,11 +482,33 @@ void LocalInformationManager::loadDB(){
     }
 
     QDataStream reader(&file);
-    qint32 dummy;
+    qint32 localDBVersion;
     localDB.clear();
-    reader >> dummy;
+    reader >> localDBVersion;
     reader >> localDB;
     file.close();
+
+    if (localDBVersion < LOCAL_DB_VERSION){
+        // Doing cleanup of duplicate entries
+        QStringList druids = localDB.keys();
+        QSet<QString> existingPuids;
+        for (qint32 i = 0; i < druids.size(); i++){
+            QVariantMap drmap = localDB.value(druids.at(i)).toMap();
+            QVariantMap patmap = drmap.value(PATIENT_DATA).toMap();
+            QStringList patuids = patmap.keys();
+            for (qint32 j = 0; j < patuids.size(); j++){
+                if (existingPuids.contains(patuids.at(j))){
+                    log.appendWarning("Removing duplicate PUID: " + patuids.at(j) + " from doctor " + druids.at(i));
+                    patmap.remove(patuids.at(j));
+                }
+                else{
+                    existingPuids << patuids.at(j);
+                }
+            }
+            drmap[PATIENT_DATA] = patmap;
+            localDB[druids.at(i)] = drmap;
+        }
+    }
 
 }
 
@@ -532,6 +587,6 @@ QStringList LocalInformationManager::getReportNameAndFileSet(const QString &patu
     return patientReportInformation[patuid].getFileSetAndReportName(fileList);
 }
 
-QString LocalInformationManager::getDatFileFromIndex(const QString &patuid, qint32 index ,qint32 whichList) const{
+QString LocalInformationManager::getDatFileFromIndex(const QString &patuid, qint32 index, qint32 whichList) const{
     return patientReportInformation.value(patuid).getDatFileNameFromSelectionDialogIndex(index,whichList);
 }

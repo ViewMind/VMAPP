@@ -22,6 +22,15 @@ class LocalInformationManager
 {
 public:
 
+    struct DisplayLists {
+        QStringList patientNames;
+        QStringList patientUIDs;
+        QStringList patientISOKList;
+        QStringList doctorNames;
+        QStringList doctorUIDs;
+        void clear() { patientNames.clear(); patientISOKList.clear(); patientUIDs.clear(); doctorNames.clear(); doctorUIDs.clear(); }
+    };
+
     LocalInformationManager();
     void resetMedicalInstitutionForAllDoctors(const QString &inst_uid);
     void setDirectory(const QString &workDir);
@@ -30,11 +39,11 @@ public:
     void addPatientData(const QString &druid, const QString &patient_uid, const QStringList &cols, const QStringList &values);
     bool isDoctorValid(const QString &dr_uid);
     bool doesDoctorExist(const QString &uid) const;
-    bool doesPatientExist(const QString &druid, const QString &patuid) const;
+    bool doesPatientExist(const QString &patuid) const;
     void validateDoctor(const QString &dr_uid);
     QString getDoctorPassword(const QString &uid);
-    QList<QStringList> getPatientListForDoctor(const QString &druid, const QString &filter = "");
-    QList<QStringList> getDoctorList(bool forceShow = false);
+    DisplayLists getPatientListForDoctor(const QString &druid, const QString &filter = "");
+    DisplayLists getDoctorList(bool forceShow = false);
     QString getFieldForPatient(const QString &druid, const QString &patuid, const QString &field) const;
     QVariantMap getDoctorInfo(const QString &uid) {return localDB.value(uid).toMap();}
     QVariantMap getPatientInfo(const QString &druid, const QString &patuid) const;
@@ -58,7 +67,7 @@ public:
     QStringList getReportNameAndFileSet(const QString &patuid, const DatFileInfoInDir::ReportGenerationStruct &repgen);
     QStringList getReportNameAndFileSet(const QString &patuid, const QStringList &fileList);
     QString getDatFileFromIndex(const QString &patuid, qint32 index, qint32 whichList) const;
-    void fillPatientDatInformation(const QString &druid);
+    void fillPatientDatInformation();
 
 private:
 
@@ -68,7 +77,7 @@ private:
     static const QString DOCTOR_PASSWORD;
     static const QString DOCTOR_VALID;
     static const QString DOCTOR_HIDDEN;
-    static const qint32  LOCAL_DB_VERSION = 2;
+    static const qint32  LOCAL_DB_VERSION = 3;
 
     // Working directory.
     QString workingDirectory;
@@ -78,8 +87,8 @@ private:
     LogInterface log;
     QVariantMap localDB;
 
-    // Used to iterate over unprocessed information.
-    QHash<QString, DatFileInfoInDir> patientReportInformation;    
+    // Patient Dir information. First hash is for the patient, second is for the doctor (in case two doctors added the patient twice).
+    QHash<QString, DatFileInfoInDir > patientReportInformation;
 
     void backupDB();
     void loadDB();

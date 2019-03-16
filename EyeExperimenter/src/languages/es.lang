@@ -141,6 +141,7 @@ viewpatientlist_title = Lista de Pacientes;
 viewpatientlist_subtitle = Seleccione un paciente para estudio; 
 viewpatientlist_headerPatient = Paciente;
 viewpatientlist_headerStatus = Estado;
+viewpatientlist_headerDoctor = Doctor;
 viewpatientlist_statusOK = OK;
 viewpatientlist_statusRepPending = Reportes pendientes;
 viewpatientlist_btnCreate = Crear Reporte;
@@ -156,6 +157,7 @@ viewpatientlist_msg_notvalid = Usuario no validado|Este usuario no ha sido valid
 viewpatientlist_ask_password = Se requiere contraseña;
 viewpatientlist_wrong_dr_password = La contraeña es incorrecta;
 viewpatientlist_view_all = Ver Todos los Pacientes;
+viewpatientlist_view_yours = Ver Sus Pacientes;
 viewpatientlist_filter = Buscar;
 
 #********************************* SHOW REPORTS *********************************

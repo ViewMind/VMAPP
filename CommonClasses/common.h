@@ -26,6 +26,7 @@
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
 #define   CONFIG_DOCTOR_NAME                            "doctor_name"
 #define   CONFIG_DOCTOR_UID                             "doctor_uid"
+#define   CONFIG_DOCTOR_WORK_UID                        "doctor_work_uid"
 #define   CONFIG_DOCTOR_EMAIL                           "doctor_email"
 #define   CONFIG_MOVING_WINDOW_DISP                     "moving_window_max_dispersion"
 #define   CONFIG_MIN_FIXATION_LENGTH                    "minimum_fixation_length"

@@ -9,6 +9,8 @@
 #define   LIST_INDEX_BINDING_BC  1
 #define   LIST_INDEX_BINDING_UC  2
 
+#define   LIST_NUMBER_OF_LISTS   3
+
 class DatFileInfoInDir
 {
 public:
@@ -43,7 +45,7 @@ public:
 
     DatFileInfoInDir();
 
-    void setDatDirectory(const QString &dir, bool listRepEvenIfTheyExist = false);
+    void setDatDirectory(const QString &dir, const QString &druid);
     bool hasPendingReports() const;
 
     // Accessing the file lists in different ways.
@@ -55,6 +57,7 @@ public:
     QStringList getFileSetAndReportName(const QStringList &fileList);
     QString getDatFileNameFromSelectionDialogIndex(qint32 index, qint32 whichList) const;
 
+
     // Functions that parse the file names and gather the information in a DatInfo structure.
     static DatInfo getDatFileInformation(const QString &file);
     static DatInfo getBindingFileInformation(const QString &bindingFile);
@@ -65,14 +68,13 @@ public:
 private:
 
     // Used for iteration
-    QList<QStringList> fileSets;
-    qint32 currentFileSet;
 
     // File lists by type.
     QStringList   filesReading;
     QStringList   filesBindingBC;
     QStringList   filesBindingUC;
     QList<qint32> filesBindingUCValidIndexes;
+    QString doctorUID;
 
     // Generalization that only gets any of the code lists for file lists.
     QStringList getFileList(const QStringList &infoList) const;

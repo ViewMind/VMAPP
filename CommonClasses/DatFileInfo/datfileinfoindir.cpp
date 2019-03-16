@@ -4,9 +4,8 @@ DatFileInfoInDir::DatFileInfoInDir(){
 
 }
 
-void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfTheyExist)
+void DatFileInfoInDir::setDatDirectory(const QString &dir, const QString &druid)
 {
-    Q_UNUSED(listRepEvenIfTheyExist)
 
     filesReading.clear();
     filesBindingBC.clear();
@@ -17,6 +16,10 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfThe
     filters << "*.dat";
     QStringList fileList = QDir(dir).entryList(filters,QDir::Files);
 
+    //qWarning() << "SETTING DAT DIRECTORY: File list is" << fileList;
+    doctorUID = druid;
+
+    // Saving the doctor directory.
     QStringList orderReading;
     QStringList orderBindingBC;
     QStringList orderBindingUC;
@@ -35,6 +38,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfThe
 
 
 bool DatFileInfoInDir::hasPendingReports() const {
+    //qWarning() << "HAS PENDING REPORTS" << filesReading << filesBindingBC << filesBindingUC;
     if (!filesReading.isEmpty()) return true;
     if (!filesBindingBC.isEmpty() && !filesBindingUC.isEmpty()){
         // This should return true ONLY if for at least one BC file there is a compatible UC file.
@@ -138,8 +142,8 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
     }
 
     if (!expectedReportName.isEmpty()){
-       expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
-       ans.prepend(expectedReportName);
+        expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
+        ans.prepend(expectedReportName);
     }
 
     return ans;

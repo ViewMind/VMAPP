@@ -38,8 +38,8 @@ public:
     Q_INVOKABLE QString loadTextFile(const QString &fileName);
     Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
     Q_INVOKABLE QStringList getErrorMessageForDBCode();
-    Q_INVOKABLE QStringList getFileListForPatient(qint32 type);
-    Q_INVOKABLE QStringList getFileListCompatibleWithSelectedBC(qint32 selectedBC);
+    Q_INVOKABLE QStringList getFileListForPatient(QString patuid, qint32 type);
+    Q_INVOKABLE QStringList getFileListCompatibleWithSelectedBC(QString patuid, qint32 selectedBC);
 
     //******************** Configuration Functions ***************************
     Q_INVOKABLE QString getConfigurationString(const QString &key);
@@ -50,10 +50,12 @@ public:
 
     //******************** Local DB Functions ***************************
     Q_INVOKABLE bool createPatientDirectory();
-    Q_INVOKABLE QStringList getPatientList(const QString &filter = "");
-    Q_INVOKABLE QStringList getUIDList();
-    Q_INVOKABLE QStringList getPatientIsOKList();
-    Q_INVOKABLE QStringList getDoctorList();
+    Q_INVOKABLE QStringList generatePatientLists(const QString &filter = "", bool showAll = false);
+    Q_INVOKABLE QStringList getPatientUIDLists() {return nameInfoList.patientUIDs;}
+    Q_INVOKABLE QStringList getPatientIsOKList() {return nameInfoList.patientISOKList; }
+    Q_INVOKABLE void loadDoctorSelectionInformation() { nameInfoList = lim.getDoctorList(); }
+    Q_INVOKABLE QStringList getDoctorNameList() {return nameInfoList.doctorNames; }
+    Q_INVOKABLE QStringList getDoctorUIDList() {return nameInfoList.doctorUIDs; }
     Q_INVOKABLE QString getDoctorUIDByIndex(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorValidated(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorPasswordEmpty(qint32 selectedIndex);
@@ -69,11 +71,9 @@ public:
 
     //******************** Report Related Functions ***************************
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
-    Q_INVOKABLE void prepareAllPatientIteration(const QString &filter = "");
-    Q_INVOKABLE QStringList nextInAllPatientIteration();    
     Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);
-    Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, qint32 type);
-    Q_INVOKABLE void reloadPatientDatInformationForCurrentDoctor();
+    Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, QString patuid, qint32 type);
+    Q_INVOKABLE void reloadPatientDatInformation() {lim.fillPatientDatInformation();}
 
     //******************** Updater Related Functions **************************
     Q_INVOKABLE void clearChangeLogFile();
@@ -106,15 +106,11 @@ private:
     CountryStruct *countries;
 
     // The list that holds list names and corresponding uids
-    QList<QStringList> nameInfoList;
+    LocalInformationManager::DisplayLists nameInfoList;
 
     // To connect to the DB in the server. Flags are required to provide the proper information to the QML side.
     SSLDBClient *dbClient;
     bool wasDBTransactionStarted;
-
-    // For next patient iteration
-    QList<QStringList> allPatientList;
-    qint32 allPatientIndex;
 
     // Stores the data selected for processing.
     DatFileInfoInDir::ReportGenerationStruct reportGenerationStruct;

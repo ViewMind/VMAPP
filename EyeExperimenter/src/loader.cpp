@@ -223,13 +223,13 @@ QStringList Loader::getErrorMessageForDBCode(){
     return QStringList();
 }
 
-QStringList Loader::getFileListForPatient(qint32 type){
-    QString patuid = configuration->getString(CONFIG_PATIENT_UID);
+QStringList Loader::getFileListForPatient(QString patuid, qint32 type){
+    if (patuid.isEmpty()) patuid = configuration->getString(CONFIG_PATIENT_UID);
     return lim.getFileListForPatient(patuid,type);
 }
 
-QStringList Loader::getFileListCompatibleWithSelectedBC(qint32 selectedBC){
-    QString patuid = configuration->getString(CONFIG_PATIENT_UID);
+QStringList Loader::getFileListCompatibleWithSelectedBC(QString patuid, qint32 selectedBC){
+    if (patuid.isEmpty()) patuid = configuration->getString(CONFIG_PATIENT_UID);
     return lim.getBindingUCFileListCompatibleWithSelectedBC(patuid,selectedBC);
 }
 
@@ -271,7 +271,7 @@ bool Loader::createPatientDirectory(){
     // Creating the doctor directory.
     QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
     QString baseDir = DIRNAME_RAWDATA;
-    QString drname = configuration->getString(CONFIG_DOCTOR_UID);
+    QString drname = configuration->getString(CONFIG_DOCTOR_WORK_UID);
     configuration->addKeyValuePair(CONFIG_PATIENT_UID,patientuid);
 
     if (!createDirectorySubstructure(drname,patientuid,baseDir,CONFIG_PATIENT_DIRECTORY)) return false;
@@ -279,34 +279,17 @@ bool Loader::createPatientDirectory(){
     return true;
 }
 
-QStringList Loader::getPatientList(const QString &filter){
+QStringList Loader::generatePatientLists(const QString &filter, bool showAll){
     nameInfoList.clear();
-    nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID),filter);
-    if (nameInfoList.isEmpty()) return QStringList();
-    else return nameInfoList.at(0);
-}
-
-QStringList Loader::getUIDList() {
-    if (nameInfoList.size() < 2) return QStringList();
-    else return nameInfoList.at(1);
-}
-
-QStringList Loader::getPatientIsOKList() {
-    if (nameInfoList.size() < 3) return QStringList();
-    else return nameInfoList.at(2);
-}
-
-QStringList Loader::getDoctorList() {
-    nameInfoList.clear();
-    nameInfoList = lim.getDoctorList();
-    if (nameInfoList.isEmpty()) return QStringList();
-    else return nameInfoList.at(0);
+    //qWarning() << "GENERATE PATIENT LIST " << showAll;
+    if (showAll) nameInfoList = lim.getPatientListForDoctor("",filter);
+    else nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID),filter);
+    return nameInfoList.patientNames;
 }
 
 QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
-    if (nameInfoList.size() < 2) return "";
-    if ((selectedIndex > -1) && (selectedIndex < nameInfoList.at(1).size())){
-        return nameInfoList.at(1).at(selectedIndex);
+    if ((selectedIndex > -1) && (selectedIndex < nameInfoList.doctorUIDs.size())){
+        return nameInfoList.doctorUIDs.at(selectedIndex);
     }
     else return "";
 }
@@ -383,7 +366,7 @@ bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, boo
     QString uid = countryCode + dbdatareq.value(TPATDATA_COL_PUID).toString();
     dbdatareq[TPATDATA_COL_PUID] = uid;
 
-    if (lim.doesPatientExist(configuration->getString(CONFIG_DOCTOR_UID),uid) && isNew) return false;
+    if (lim.doesPatientExist(uid) && isNew) return false;
 
     // Transforming the date format.
     QString date = dbdatareq.value(TPATDATA_COL_BIRTHDATE).toString();
@@ -454,23 +437,6 @@ bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr)
 
 //******************************************* Report Realated Functions ***********************************************
 
-//void Loader::prepareForRequestOfPendingReports(){
-//    lim.preparePendingReports(configuration->getString(CONFIG_PATIENT_UID));
-//}
-
-void Loader::prepareAllPatientIteration(const QString &filter){
-    allPatientList = lim.getAllPatientInfo(filter);
-    allPatientIndex = 0;
-}
-
-QStringList Loader::nextInAllPatientIteration(){
-    if (allPatientIndex == allPatientList.size()) return QStringList();
-    else{
-        allPatientIndex++;
-        return allPatientList.at(allPatientIndex-1);
-    }
-}
-
 void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
     if ((type == -1) && (index == -1)) reportGenerationStruct.clear();
     else {
@@ -488,13 +454,11 @@ void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
     }
 }
 
-QString Loader::getDatFileNameFromIndex(qint32 index, qint32 type){
-    return lim.getDatFileFromIndex(configuration->getString(CONFIG_PATIENT_UID),index,type);
+QString Loader::getDatFileNameFromIndex(qint32 index, QString patuid, qint32 type){
+    if (patuid.isEmpty()) patuid = configuration->getString(CONFIG_PATIENT_UID);
+    return lim.getDatFileFromIndex(patuid,index,type);
 }
 
-void Loader::reloadPatientDatInformationForCurrentDoctor(){
-    lim.fillPatientDatInformation(configuration->getString(CONFIG_DOCTOR_UID));
-}
 
 //******************************************* Updater Related Functions ***********************************************
 
@@ -533,11 +497,12 @@ void Loader::onDisconnectFromDB(){
 
 void Loader::onFileSetRequested(const QStringList &fileList){
     QStringList fileSet;
+    QString patuid = configuration->getString(CONFIG_PATIENT_UID);
     if (fileList.isEmpty()){
-        fileSet = lim.getReportNameAndFileSet(configuration->getString(CONFIG_PATIENT_UID),reportGenerationStruct);
+        fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);
     }
     else{
-        fileSet = lim.getReportNameAndFileSet(configuration->getString(CONFIG_PATIENT_UID),fileList);
+        fileSet = lim.getReportNameAndFileSet(patuid,fileList);
         //qWarning() << "Getting the report name and file set from existing files" << fileList << "and they are" << fileSet;
     }
     emit(fileSetReady(fileSet));

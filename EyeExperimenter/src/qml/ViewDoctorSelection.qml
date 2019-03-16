@@ -23,7 +23,8 @@ Dialog {
     }
 
     function updateDrProfile(){
-        var ans = loader.getDoctorList();
+        loader.loadDoctorSelectionInformation();
+        var ans = loader.getDoctorNameList();
         ans.unshift(loader.getStringForKey(keybase+"labelDrProfile"));
         labelDrProfile.vmModel = ans;
         labelDrProfile.currentIndex = 0;

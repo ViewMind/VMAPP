@@ -12,6 +12,8 @@ VMBase {
 
     readonly property string keybase: "viewpatientlist_"
 
+    property bool vmShowAll: false;
+
     Connections {
         target: loader
         onSynchDone: {
@@ -246,7 +248,8 @@ VMBase {
             onClicked:{
                 if (loader.isDoctorPasswordCorrect(passwordInput.getText())){
                     askPasswordDialog.close();
-                    viewAllPatients.open();
+                    vmShowAll = true;
+                    loadPatients();
                 }
                 else{
                     passwordInput.vmErrorMsg =  loader.getStringForKey(keybase+"wrong_dr_password");
@@ -267,10 +270,6 @@ VMBase {
         x: (parent.width - width)/2
     }
 
-    ViewAllPatients{
-        id: viewAllPatients
-    }
-
     ListModel {
         id: patientList
     }
@@ -284,17 +283,26 @@ VMBase {
         }
 
         // WARNING: Get patient list call fills the other two lists. It NEEDS to be called first.
-        var patientNameList = loader.getPatientList(filterText);
-        var uidList = loader.getUIDList();
+        var patientNameList = loader.generatePatientLists(filterText, vmShowAll);
+        var uidList = loader.getPatientUIDLists();
         var isOkList = loader.getPatientIsOKList();
+        var drName = loader.getDoctorNameList();
+        var drUID  = loader.getDoctorUIDList();
 
         // Clearing the current model.
         patientList.clear()
 
-        //console.log("Patient List: " + patientNameList.length + ". UIDList: " + uidList.length + ". isOKList: " + isOkList.length);
-
         for (var i = 0; i < patientNameList.length; i++){
-            patientList.append({"uid": uidList[i], "pname": patientNameList[i], "vmIsOk": (isOkList[i] === "true"), "index" : i, "vmIsSelected" : false});
+            //console.log("PATIENTLIST: " + patientNameList[i] + " PUID: " +  uidList[i] + "  OK: " + isOkList[i] + " DR: " + drName[i] + "  DRUID: " + drUID[i]);
+            var display_doctor_name = "";
+            if (vmShowAll) display_doctor_name = drName[i];
+            patientList.append({"vmPatientUID": uidList[i],
+                                "vmPatientName": patientNameList[i],
+                                "vmIsOk": (isOkList[i] === "true"),
+                                "vmDrName" : display_doctor_name,
+                                "vmDrUID": drUID[i],
+                                "vmItemIndex" : i,
+                                "vmIsSelected" : false});
         }
 
         patientListView.currentIndex = -1;
@@ -333,8 +341,11 @@ VMBase {
     function setCurrentPatient(){
         if (patientListView.currentIndex == -1) return;
 
-        loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_UID,patientList.get(patientListView.currentIndex).uid);
-        loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_NAME,patientList.get(patientListView.currentIndex).pname);
+        //console.log("Pat name: " + patientList.get(patientListView.currentIndex).vmPatientName)
+
+        loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_NAME,patientList.get(patientListView.currentIndex).vmPatientName);
+        loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_UID,patientList.get(patientListView.currentIndex).vmPatientUID);
+        loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_WORK_UID,patientList.get(patientListView.currentIndex).vmDrUID);
         loader.setAgeForCurrentPatient();
 
         if (!loader.createPatientDirectory()){
@@ -440,7 +451,10 @@ VMBase {
         VMButton{
             id: btnViewAll
             height: 30
-            vmText: loader.getStringForKey(keybase+"view_all");
+            vmText: {
+                if (vmShowAll) return loader.getStringForKey(keybase+"view_yours");
+                else loader.getStringForKey(keybase+"view_all");
+            }
             vmFont: viewHome.gothamM.name
             width: 200
             vmInvertColors: true
@@ -448,8 +462,16 @@ VMBase {
             anchors.right: btnView.left
             anchors.rightMargin: 20
             onClicked: {
-                askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-                askPasswordDialog.open();
+                if (vmShowAll){
+                    vmShowAll = false;
+                    loadPatients();
+                }
+                else {
+                    vmShowAll = true;
+                    loadPatients();
+                    //askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
+                    //askPasswordDialog.open();
+                }
             }
         }
     }
@@ -523,7 +545,10 @@ VMBase {
             border.width: 2
             border.color: "#EDEDEE"
             radius: 4
-            width: 0.7*vmTableWidth
+            width: {
+                if (vmShowAll) return 0.35*vmTableWidth;
+                else return 0.7*vmTableWidth
+            }
             height: parent.height
             Text {
                 id: patientText
@@ -535,13 +560,40 @@ VMBase {
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
+
+        Rectangle {
+            id: headerDoctor
+            color: "#ffffff"
+            border.width: 2
+            border.color: "#EDEDEE"
+            radius: 4
+            width: {
+                if (vmShowAll) return 0.35*vmTableWidth;
+                else return 0;
+            }
+            visible: vmShowAll
+            height: parent.height
+            Text {
+                id: doctorText
+                text: loader.getStringForKey(keybase+"headerDoctor");
+                width: parent.width
+                font.family: gothamB.name
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
         Rectangle {
             id: headerStatus
             color: "#ffffff"
             border.width: 2
             border.color: "#EDEDEE"
             radius: 4
-            width: vmTableWidth-headerPatient.width
+            width: {
+                if (vmShowAll) return vmTableWidth - headerPatient.width - headerDoctor.width;
+                else return vmTableWidth - headerPatient.width
+            }
             height: parent.height
             Text {
                 id: statusText
@@ -576,9 +628,6 @@ VMBase {
                 anchors.fill: parent
                 model: patientList
                 delegate: VMPatientEntry {
-                    vmPatientUID: uid
-                    vmPatientName: pname
-                    vmItemIndex: index
                     onFetchReport: {
                         patientListView.currentIndex = index;
                         //requestReportToServer()

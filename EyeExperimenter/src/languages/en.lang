@@ -141,6 +141,7 @@ viewpatientlist_title = Patient List;
 viewpatientlist_subtitle = Select patient for study; 
 viewpatientlist_headerPatient = Patient;
 viewpatientlist_headerStatus = Status;
+viewpatientlist_headerDoctor = Doctor;
 viewpatientlist_statusOK = OK;
 viewpatientlist_statusRepPending = Reports Pending;
 viewpatientlist_btnCreate = Create Report;
@@ -156,6 +157,7 @@ viewpatientlist_msg_notvalid = User not validated|This user is not validated and
 viewpatientlist_ask_password = Password required;
 viewpatientlist_wrong_dr_password = Password is incorrect;
 viewpatientlist_view_all = View All Patients;
+viewpatientlist_view_yours = View Your Patients;
 viewpatientlist_filter = Search;
 
 #********************************* SHOW REPORTS *********************************
