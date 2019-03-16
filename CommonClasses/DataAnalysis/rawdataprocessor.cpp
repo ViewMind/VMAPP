@@ -195,7 +195,7 @@ void RawDataProcessor::run(){
     else {
         config->addKeyValuePair(CONFIG_REPORT_DATE,dateParts.at(2) + "/" + dateParts.at(1) + "/" + dateParts.at(0) + " " + dateParts.at(3) + ":" + dateParts.at(4) );
         // Date for report will now be used in legacy versions of report generator. Need to have a name with no hour part.
-        dateForReport = dateParts.at(0) + "_" + dateParts.at(1) + "_" + dateParts.at(1);
+        dateForReport = dateParts.at(0) + "_" + dateParts.at(1) + "_" + dateParts.at(2);
     }
 
     generateReportFile(emp.getResults(),what2Add,reportInfoText.join("_") + "_" + dateForReport,freqErrorsOK);
