@@ -34,16 +34,16 @@ VMBase {
         labelLastName.setText(patInfo.lastname);
         labelProvince.setText(patInfo.state);
 
-//        for (var keyputa in patInfo){
-//            console.log(keyputa + ": " + patInfo[keyputa]);
-//        }
+        //        for (var keyputa in patInfo){
+        //            console.log(keyputa + ": " + patInfo[keyputa]);
+        //        }
 
         // Substr is used as the first two letters are the country code.
         if ("puid" in patInfo){
-           labelDocument_number.setText(patInfo.puid.substr(2));
+            labelDocument_number.setText(patInfo.puid.substr(2));
         }
         else if ("uid" in patInfo){
-           labelDocument_number.setText(patInfo.uid.substr(2));
+            labelDocument_number.setText(patInfo.uid.substr(2));
         }
 
         // Setting the document type.
@@ -152,7 +152,7 @@ VMBase {
         font.family: gothamB.name
         font.pixelSize: 43
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 46
+        anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
         text: loader.getStringForKey(keysearch+"viewTitle");
@@ -163,7 +163,7 @@ VMBase {
         font.family: robotoR.name
         font.pixelSize: 13
         anchors.top:  viewTitle.bottom
-        anchors.topMargin: 23
+        anchors.topMargin: 13
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#5499d5"
         text: loader.getStringForKey(keysearch+"viewSubTitle");
@@ -181,111 +181,98 @@ VMBase {
         text: loader.getStringForKey(keysearch+"errorNoAccept");
     }
 
-    // Name and last name
-    VMTextDataInput{
-        id: labelName
-        width: 212
-        anchors.left: parent.left
-        anchors.leftMargin: 420
-        anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 30
-        vmPlaceHolder: loader.getStringForKey(keysearch+"labelName");
-        Keys.onTabPressed: labelLastName.vmFocus = true;
-    }
 
-    VMTextDataInput{
-        id: labelLastName
-        width: 212
-        anchors.left: labelName.right
-        anchors.leftMargin: 16
-        anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 30
-        vmPlaceHolder: loader.getStringForKey(keysearch+"labelLastName");
-        Keys.onTabPressed: labelCountry.vmFocus = true;
-    }
+    Column {
 
-    VMAutoCompleteComboBox{
-        id: labelCountry
+        id: mainForm
+        spacing: 30
         width: 440
-        height: 30
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: viewSubTitle.bottom
+        anchors.topMargin: 35
         z: 10
-        vmLabel: loader.getStringForKey(keysearch+"labelCountry")
-        vmList: loader.getCountryList()
-        vmValues: loader.getCountryCodeList()
-        onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-        onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-        anchors.top: labelLastName.bottom
-        anchors.topMargin: 30
-        anchors.left: labelName.left
-        vmEnabled: true
-        Keys.onTabPressed: labelBirthDate.vmFocus = true;
-    }
+        Row {
+            id: rowNames
+            width: parent.width
+            spacing: 16
 
+            // Name and last name
+            VMTextDataInput{
+                id: labelName
+                width: parent.width/2 - parent.spacing
+                vmPlaceHolder: loader.getStringForKey(keysearch+"labelName");
+                Keys.onTabPressed: labelLastName.vmFocus = true;
+            }
 
-    // Gender and Date of Birth.
-    VMComboBox{
-        id: labelGender
-        width: 144
-        vmModel: [loader.getStringForKey(keysearch+"labelGender"), "M", "F"]
-        font.family: viewHome.robotoR.name
-        anchors.top: labelCountry.bottom
-        anchors.topMargin: 23
-        anchors.left: labelName.left
-    }
+            VMTextDataInput{
+                id: labelLastName
+                width: labelName.width
+                vmPlaceHolder: loader.getStringForKey(keysearch+"labelLastName");
+                Keys.onTabPressed: labelCountry.vmFocus = true;
+            }
+        }
 
-    VMDateInputField{
-        id: labelBirthDate
-        width: 268
-        //vmCalendarInput: true
-        anchors.left: labelGender.right
-        anchors.leftMargin: 28
-        anchors.bottom: labelGender.bottom
-        vmPlaceHolder: loader.getStringForKey(keysearch+"labelBirthDate");
-        Keys.onTabPressed: labelDocument_number.vmFocus = true;
-    }
+        Rectangle{
+            id: spacer
+            border.width: 0;
+            color: "#FFFFFF";
+            width: parent.width
+            height: 1
+        }
 
-    // Document type and number.
-    VMComboBox{
-        id: docTypes
-        width: 144
-        vmModel:  loader.getStringListForKey(keysearch+"docTypes")
-        font.family: viewHome.robotoR.name
-        anchors.top: labelGender.bottom
-        anchors.topMargin: 30
-        anchors.left: labelName.left
-    }
+        VMAutoCompleteComboBox{
+            id: labelCountry
+            width: parent.width
+            height: 30
+            z: 10
+            vmLabel: loader.getStringForKey(keysearch+"labelCountry")
+            vmList: loader.getCountryList()
+            vmValues: loader.getCountryCodeList()
+            onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+            onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+            vmEnabled: true
+            Keys.onTabPressed: labelBirthDate.vmFocus = true;
+        }
 
-    VMTextDataInput{
-        id: labelDocument_number
-        width: 268
-        anchors.left: docTypes.right
-        anchors.leftMargin: 28
-        anchors.bottom: docTypes.bottom
-        vmPlaceHolder: loader.getStringForKey(keysearch+"labelDocument_number");
-        Keys.onTabPressed: labelProvince.vmFocus = true;
-    }
+        Row {
 
+            id: genderAndBDateRow
+            width: parent.width
+            spacing: 16
 
-    VMTextDataInput{
-        id: labelProvince
-        width: 163
-        anchors.left: labelName.left
-        anchors.top: docTypes.bottom
-        anchors.topMargin: 22
-        vmPlaceHolder: loader.getStringForKey(keysearch+"labelProvince");
-        Keys.onTabPressed: labelCity.vmFocus = true;
-    }
+            // Gender and Date of Birth.
+            VMComboBox{
+                id: labelGender
+                width: 144
+                vmModel: [loader.getStringForKey(keysearch+"labelGender"), "M", "F"]
+                font.family: viewHome.robotoR.name
+                anchors.bottom: parent.bottom
+            }
 
-    VMTextDataInput{
-        id: labelCity
-        width: 261
-        anchors.left: labelProvince.right
-        anchors.leftMargin: 16
-        anchors.top: docTypes.bottom
-        anchors.topMargin: 22
-        vmPlaceHolder: loader.getStringForKey(keysearch+"labelCity");
-        Keys.onTabPressed: labelName.vmFocus = true;
+            VMDateInputField{
+                id: labelBirthDate
+                width: parent.width - labelGender.width - parent.spacing
+                //vmCalendarInput: true
+                vmPlaceHolder: loader.getStringForKey(keysearch+"labelBirthDate");
+                Keys.onTabPressed: labelDocument_number.vmFocus = true;
+                anchors.verticalCenter: parent.verticalCenter
+            }
 
+        }
+
+        VMTextDataInput{
+            id: labelDocument_number
+            width: parent.width
+            vmPlaceHolder: loader.getStringForKey(keysearch+"labelDocument_number");
+            Keys.onTabPressed: labelProvince.vmFocus = true;
+        }
+
+        VMComboBox{
+            id: assignedDoctor
+            width: parent.width
+            //vmModel: [loader.getStringForKey(keysearch+"labelGender"), "M", "F"]
+            font.family: viewHome.robotoR.name
+        }
     }
 
     // Message and Buttons
@@ -293,8 +280,8 @@ VMBase {
     Row{
         id: labelConsent
         spacing: 5
-        anchors.top:  labelCity.bottom
-        anchors.topMargin: 41
+        anchors.top:  mainForm.bottom
+        anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
         VMCheckBox{
             id: cbConsent

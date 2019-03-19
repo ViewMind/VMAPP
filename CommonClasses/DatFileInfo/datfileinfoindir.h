@@ -45,7 +45,7 @@ public:
 
     DatFileInfoInDir();
 
-    void setDatDirectory(const QString &dir, const QString &druid);
+    void setDatDirectory(const QString &dir);
     bool hasPendingReports() const;
 
     // Accessing the file lists in different ways.
@@ -74,7 +74,6 @@ private:
     QStringList   filesBindingBC;
     QStringList   filesBindingUC;
     QList<qint32> filesBindingUCValidIndexes;
-    QString doctorUID;
 
     // Generalization that only gets any of the code lists for file lists.
     QStringList getFileList(const QStringList &infoList) const;

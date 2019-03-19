@@ -85,6 +85,11 @@
 #define   CONFIG_DBLOGFILE_LOCATION                     "dblogfile"
 #define   CONFIG_READING_EXP_LANG                       "reading_exp_lang"
 #define   CONFIG_REPORT_FILENAME                        "report_filename"
+#define   CONFIG_TOL_MAX_PERIOD_TOL                     "tol_max_allowed_period"
+#define   CONFIG_TOL_MIN_PERIOD_TOL                     "tol_min_allowed_period"
+#define   CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL            "tol_max_fglitches_in_trial"
+#define   CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL  "tol_min_number_of_data_items_in_trial"
+#define   CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES      "tol_max_percent_of_invalid_values"
 
 // The unique UID for tests.
 #define   TEST_UID                                      "ARvm0000"

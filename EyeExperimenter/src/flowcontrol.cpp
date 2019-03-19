@@ -440,6 +440,17 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
         break;
     }
 
+    // Doing the frequency check.
+    frequencyErrorsPresent = false;
+    if (experimentIsOk){
+        if (!configuration->getBool(CONFIG_DEMO_MODE)){
+            if (!experiment->doFrequencyCheck()){
+                logger.appendError(experiment->getError());
+                experimentIsOk = false;
+                frequencyErrorsPresent = true;
+            }
+        }
+    }
 
     // Destroying the experiment and reactivating the start experiment.
     disconnect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);

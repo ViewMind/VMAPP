@@ -12,13 +12,33 @@ class FreqAnalysis
 {
 public:
 
-    typedef enum {FAR_OK, FAR_FAILED, FAR_WITH_WARNINGS} FreqAnalysisResult;
+    struct FreqCheckParameters {
+        qreal periodMax;
+        qreal periodMin;
+        qreal fexpected;
+        qint32 maxAllowedFreqGlitchesPerTrial;
+        qint32 minNumberOfDataItems;
+        qreal maxAllowedPercentOfInvalidValues;
+        QString toString(const QString tab = "") const { return
+                      tab + "Period should be in ["  + QString::number(periodMin) + ", " + QString::number(periodMax)+ "] ms\n"
+                    + tab + "Maximum % of Frequency Glitches allowed in a trial: " + QString::number(maxAllowedFreqGlitchesPerTrial) + "\n"
+                    + tab + "Maximum % of Invalid values allowed in a trial: " + QString::number(maxAllowedPercentOfInvalidValues) + "\n"
+                    + tab + "Minimum number of data points allowed in a trial: " + QString::number(minNumberOfDataItems) + "\n"
+                    + tab + "Expected Frequency: " + QString::number(fexpected) + " Hz\n"; }
+    };
 
-    FreqAnalysis();    
+    struct FreqAnalysisResult {
+        QStringList errorList;
+        QStringList individualErrorList;
+        QStringList invalidValues;
+        QList< QList<qreal> > diffTimes;
+        QList<qreal> avgFreqPerTrial;
+        qreal averageFrequency;
+        void analysisValid(const FreqCheckParameters p);
+    };
+
+    FreqAnalysis();
     FreqAnalysisResult analyzeFile(const QString &fname, qreal timeUnitInSeconds = 1e-3);
-    QString getError() const {return error; }
-    QStringList getWarnings() const {return warnings;}
-    qreal getFrequencyResult() const { return frequencyResult; }
 
 private:
 
@@ -33,14 +53,14 @@ private:
     };
 
     QString fileToAnalyze;
-    QString error;
-    QStringList warnings;
     qreal timeUnit;
     qreal frequencyResult;
 
-    QStringList getFileLines();
+    // Saving all glitches and values.
+
+    QStringList getFileLines(QString *error);
     QStringList removeHeader(const QStringList &lines, const QString &header);
-    qreal calculateFrequency(const QList<qreal> &times);
+    qreal calculateFrequency(const QList<qreal> &times, QList<qreal> *dtimes);
     FreqAnalysisResult freqAnalysis(const FreqAnalysisBehaviour &fab);
 };
 

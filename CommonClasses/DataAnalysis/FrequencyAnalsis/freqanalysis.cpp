@@ -5,12 +5,66 @@ FreqAnalysis::FreqAnalysis()
 
 }
 
+void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p){
+    errorList.clear();
+
+    //qreal periodInMs = 1000/p.fexpected;
+    qint32 fglitches = 0;
+    qreal totalNumberOfDataPoints = 0;
+
+    // Checking frequency glitches
+    individualErrorList << "Frequency Analysis Parametrs:\n" + p.toString("      ");
+    for (qint32 i = 0; i < diffTimes.size(); i++){
+
+        // Checking first the minimum number of data points.
+        qint32 numData = diffTimes.at(i).size() + 1;
+        if (numData < p.minNumberOfDataItems){
+            errorList << "Data set " + QString::number(i) + " has a total of " + QString::number(numData)
+                    + " ET points which is less than the minimum allowed of " + QString::number(p.minNumberOfDataItems);
+        }
+
+        totalNumberOfDataPoints = totalNumberOfDataPoints + numData;
+        qreal trialFreq = avgFreqPerTrial.at(i);
+
+        fglitches = 0;
+
+        individualErrorList << "---> Data Set " + QString::number(i);
+
+        for (qint32 j = 0; j < diffTimes.at(i).size(); j++){
+            qreal dt = diffTimes.at(i).at(j);
+            if ((dt < p.periodMin) || (dt > p.periodMax)) {
+                fglitches ++;
+                individualErrorList << "   ---> Period @ " + QString::number(j) + " is " + QString::number(dt);
+            }
+        }
+
+        qreal ep = (qreal)fglitches*100.0/(qreal)(numData-1);
+        individualErrorList << "---> Number of glitches " + QString::number(fglitches) + " number of measured periods: "
+                               + QString::number(diffTimes.at(i).size()) + " (" + QString::number(ep) + "%)"
+                               + ". AVG F in Trial: " + QString::number(trialFreq);
+
+        if (ep > p.maxAllowedFreqGlitchesPerTrial){
+            errorList << "Data set " + QString::number(i) + " has " + QString::number(ep) + " % of frequency glitches";
+        }
+
+    }
+
+
+    // Checking invalid values
+    qreal invalidPercent = (qreal)invalidValues.size()*100.0/totalNumberOfDataPoints;
+    if (invalidPercent > p.maxAllowedPercentOfInvalidValues){
+        errorList << "The number of invalid values is above the allowed tolerance: " + QString::number(invalidValues.size()) + " which is "
+                + QString::number(invalidPercent) + "% (Tolerance at: " + QString::number(p.maxAllowedPercentOfInvalidValues) + "%)";
+    }
+
+}
+
 FreqAnalysis::FreqAnalysisResult FreqAnalysis::analyzeFile(const QString &fname, qreal timeUnitInSeconds){
     fileToAnalyze = fname;
     timeUnit = timeUnitInSeconds;
     QFileInfo info(fileToAnalyze);
     QStringList parts = info.baseName().split("_");
-    FreqAnalysisBehaviour fab;
+    FreqAnalysisBehaviour fab;    
     if (parts.first() == FILE_BINDING){
         fab.trialChangeBehaviour = TCB_LINE_SIZE_CHANGE;
         fab.dataLineSize = 7;
@@ -28,15 +82,16 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::analyzeFile(const QString &fname,
         return freqAnalysis(fab);
     }
     else{
-        error = "Unrecognized file name. Cannot perform frequency analysis";
-        return FAR_FAILED;
+        FreqAnalysisResult far;
+        far.errorList << "Unrecognized file name. Cannot perform frequency analysis";
+        return far;
     }
 }
 
-QStringList FreqAnalysis::getFileLines(){
+QStringList FreqAnalysis::getFileLines(QString *error){
     QFile file(fileToAnalyze);
     if (!file.open(QFile::ReadOnly)){
-        error = "Could not open file: " + fileToAnalyze + " for reading";
+        *error = "Could not open file: " + fileToAnalyze + " for reading";
         return QStringList();
     }
 
@@ -65,15 +120,23 @@ QStringList FreqAnalysis::removeHeader(const QStringList &lines, const QString &
 
 FreqAnalysis::FreqAnalysisResult FreqAnalysis::freqAnalysis(const FreqAnalysis::FreqAnalysisBehaviour &fab){
 
-    warnings.clear();
+    FreqAnalysisResult far;
 
-    QStringList content = getFileLines();
-    if (content.isEmpty()) return FAR_FAILED;
+    QString local_error;
+    QStringList content = getFileLines(&local_error);
+    if (!local_error.isEmpty()){
+        far.errorList << local_error;
+        return far;
+    }
+    if (content.isEmpty()) {
+        far.errorList << "No content found";
+        return far;
+    }
 
     content = removeHeader(content,fab.header);
     if (content.isEmpty()){
-        error = "Header segment for binding was not found";
-        return FAR_FAILED;
+        far.errorList << "Header segment for binding was not found";
+        return far;
     }
 
     QList<qreal> times;
@@ -86,7 +149,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::freqAnalysis(const FreqAnalysis::
 
     for (qint32 i = 0; i < content.size(); i++){
 
-        QStringList parts = content.at(i).split(" ");
+        QStringList parts = content.at(i).split(" ",QString::SkipEmptyParts);
 
         trialChange = false;
         if (fab.trialChangeBehaviour == TCB_LINE_SIZE_CHANGE){
@@ -101,8 +164,11 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::freqAnalysis(const FreqAnalysis::
 
         if (trialChange){
             if (times.size() >= 2) {
-                freqAcc = freqAcc + calculateFrequency(times);
+                QList<qreal> dtimes;
+                freqAcc = freqAcc + calculateFrequency(times, &dtimes);
                 freqCounter++;
+                far.avgFreqPerTrial << freqAcc/freqCounter;
+                far.diffTimes << dtimes;
             }
             times.clear();
         }
@@ -110,7 +176,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::freqAnalysis(const FreqAnalysis::
             ok = true;
             qreal value =  parts.at(fab.timeColumn).toDouble(&ok);
             if (!ok){
-                warnings << "Found invalid time value: " + parts.first();
+                far.invalidValues << parts.at(fab.timeColumn);
             }
             else{
                 times << value;
@@ -120,20 +186,23 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::freqAnalysis(const FreqAnalysis::
 
     if (freqCounter == 0){
         frequencyResult  = 0;
-        error = "Did not find two consecutive time stamps in a trial";
-        return FAR_FAILED;
+        far.errorList << "Did not find two consecutive time stamps in a trial";
+        return far;
     }
-    else frequencyResult = freqAcc/freqCounter;
+    else far.averageFrequency = freqAcc/freqCounter;
 
-    return FAR_OK;
+    return far;
 
 }
 
-qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times){
+qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<qreal> *dtimes){
     qreal freqsAcc = 0;
     qreal freqCounter = 0;
+    qreal f;
     for (qint32 i = 1; i < times.size(); i++){
-        freqsAcc = freqsAcc + (1.0)/((times.at(i) - times.at(i-1))*timeUnit);
+        f = (1.0)/((times.at(i) - times.at(i-1))*timeUnit);
+        dtimes->append(times.at(i) - times.at(i-1));
+        freqsAcc = freqsAcc + f;
         freqCounter++;
     }
     return freqsAcc/freqCounter;

@@ -53,7 +53,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
     ../../CommonClasses/PNGWriter/repfileinfo.cpp \
     ../../CommonClasses/PNGWriter/resultbar.cpp \
-    ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp
+    ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp
 
 HEADERS += \
     loader.h \
@@ -92,7 +93,8 @@ HEADERS += \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
     ../../CommonClasses/PNGWriter/repfileinfo.h \
     ../../CommonClasses/PNGWriter/resultbar.h \
-    ../../CommonClasses/LocalInformationManager/localinformationmanager.h
+    ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h
 
 contains(DEFINES, USE_IVIEW) {
   win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI

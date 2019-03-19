@@ -16,6 +16,7 @@
 #include "../monitorscreen.h"
 #include "../EyeTrackerInterface/eyetrackerdata.h"
 #include "../../../CommonClasses/Experiments/experimentdatapainter.h"
+#include "../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
 #include "../../../CommonClasses/common.h"
 
 #define  DIR_ABORTED  "exp_aborted"
@@ -40,8 +41,8 @@ public:
     // Used to stop the experiment for any reason, like calibration
     virtual void togglePauseExperiment();
 
-    // Used to configure the second monitor
-    // virtual void configureSecondMonitor (MonitorScreen *screen);
+    // To verify that the data was gathered correctly.
+    bool doFrequencyCheck();
 
     // To obtain the experiment state
     ExperimentState getExperimentState() const {return state;}
@@ -57,6 +58,9 @@ public:
 
     // Whenever not in mouse mode the cursor should be hidden
     void hideCursor() {this->setCursor(Qt::BlankCursor);}
+
+    // FOR DEBUGGING ONLY
+    void setupFreqCheck(ConfigurationManager *c, QString fileName) { dataFile = fileName; config = c; }
 
 signals:
 
@@ -118,8 +122,11 @@ protected:
     // Sets up the view given the configuration
     void setupView();
 
-    // Move the garbage data file to the aborted directory.
+    // Steps for aborted experiment
     void experimenteAborted();
+
+    // Move the garbage data file to the aborted directory, returns the new file name, or empty if there was an error
+    QString moveDataFileToAborted();
 
     // Saving the data to the disk.
     bool saveDataToHardDisk();

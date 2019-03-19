@@ -4,7 +4,7 @@ DatFileInfoInDir::DatFileInfoInDir(){
 
 }
 
-void DatFileInfoInDir::setDatDirectory(const QString &dir, const QString &druid)
+void DatFileInfoInDir::setDatDirectory(const QString &dir)
 {
 
     filesReading.clear();
@@ -17,7 +17,6 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir, const QString &druid)
     QStringList fileList = QDir(dir).entryList(filters,QDir::Files);
 
     //qWarning() << "SETTING DAT DIRECTORY: File list is" << fileList;
-    doctorUID = druid;
 
     // Saving the doctor directory.
     QStringList orderReading;

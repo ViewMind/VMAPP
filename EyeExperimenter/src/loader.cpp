@@ -27,6 +27,14 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cv[CONFIG_LATENCY_ESCAPE_RAD] = cmd;
     cv[CONFIG_MARGIN_TARGET_HIT] = cmd;
 
+    cmd.clear();
+    cmd.type = ConfigurationManager::VT_REAL;
+    cv[CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL] = cmd;
+    cv[CONFIG_TOL_MAX_PERIOD_TOL] = cmd;
+    cv[CONFIG_TOL_MIN_PERIOD_TOL] = cmd;
+    cv[CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES] = cmd;
+    cv[CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL] = cmd;
+
     // Timeouts for connections.
     cv[CONFIG_CONNECTION_TIMEOUT] = cmd;
     cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
@@ -127,6 +135,18 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Checking which ET should be used: Mouse or the one in the configuration file.
     if (configuration->getBool(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
     else configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
+
+//    // TEST FOR FREQ CHECK
+//    Experiment *e = new Experiment();
+//    QString reading = "C:/Users/Viewmind/Documents/QtProjects/EyeExperimenter/exe/viewmind_etdata/AR123456789/CO123456788/reading_2_2019_03_16_11_54.dat";
+//    //QString binding = "C:/Users/Viewmind/Documents/ExperimenterOutputs/grace_worked/binding_bc_2_l_2_2019_03_14_17_56.dat";
+//    e->setupFreqCheck(configuration,reading);
+//    if (!e->doFrequencyCheck()){
+//        logger.appendError("Failed test freq check: " + e->getError());
+//    }
+//    else{
+//        logger.appendSuccess("Freq Check Passed");
+//    }
 
 }
 
@@ -254,7 +274,7 @@ void Loader::setSettingsValue(const QString &key, const QVariant &var){
 }
 
 void Loader::setAgeForCurrentPatient(){
-    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID),TPATDATA_COL_BIRTHDATE);
+    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_PATIENT_UID),TPATDATA_COL_BIRTHDATE);
     QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
     QDate currentDate =  QDate::currentDate();
     int currentAge = currentDate.year() - bdate.year();
@@ -316,22 +336,21 @@ bool Loader::isDoctorPasswordCorrect(const QString &password){
     return (hashpass == configuration->getString(CONFIG_INST_PASSWORD));
 }
 
-bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew){
+void Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide){
+
     // The data for the country must be changed as well as the UID must be generated.
-    QString countryCode = countries->getCodeForCountry(dbdata.value(TDOCTOR_COL_COUNTRYID).toString());
-    dbdata[TDOCTOR_COL_COUNTRYID] = countryCode;
-    QString uid = countryCode + dbdata.value(TDOCTOR_COL_UID).toString();
-    dbdata[TDOCTOR_COL_UID] = uid;
+    QString uid = dbdata.value(TDOCTOR_COL_UID).toString();
 
-    // This function returns false ONLY when it is attempting to create a new doctor with an existing UID.
-    // qWarning() << "IsNew" << isNew << "Exists" << lim.doesDoctorExist(uid);
-    if (isNew && lim.doesDoctorExist(uid)){
-        return false;
-    }
-
-    // Checking for test mode doctor
-    if (uid.contains(TEST_UID) && !configuration->getBool(CONFIG_TEST_MODE)){
-        return false;
+    if (uid.isEmpty()){
+        // This is a new doctor
+        if (configuration->getBool(CONFIG_TEST_MODE)){
+            // CAN ONLY CREATE XXXX Doctor.
+            uid = "TEST_XXXX";
+        }
+        else{
+            uid = lim.newDoctorID();
+            uid = configuration->getString(CONFIG_INST_UID) + "_" + uid;
+        }
     }
 
     QStringList columns;
@@ -354,26 +373,29 @@ bool Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, b
     values << configuration->getString(CONFIG_INST_UID);
 
     // Saving data locally.
-    lim.addDoctorData(dbdata.value(TDOCTOR_COL_UID).toString(),columns,values,password,hide);
-    return true;
+    lim.addDoctorData(uid,columns,values,password,hide);
+
 }
 
-bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, bool isNew){
+bool Loader::addNewPatientToDB(QVariantMap dbdata, bool isNew){
 
     // Making necessary adjustments
-    QString countryCode = countries->getCodeForCountry(dbdatareq.value(TPATDATA_COL_BIRTHCOUNTRY).toString());
-    dbdatareq[TPATDATA_COL_BIRTHCOUNTRY] = countryCode;
-    QString uid = countryCode + dbdatareq.value(TPATDATA_COL_PUID).toString();
-    dbdatareq[TPATDATA_COL_PUID] = uid;
+    QString countryCode = countries->getCodeForCountry(dbdata.value(TPATDATA_COL_BIRTHCOUNTRY).toString());
+    dbdata[TPATDATA_COL_BIRTHCOUNTRY] = countryCode;
+    QString uid = countryCode + dbdata.value(TPATDATA_COL_PUID).toString();
+    dbdata[TPATDATA_COL_PUID] = uid;
 
     if (lim.doesPatientExist(uid) && isNew) return false;
 
     // Transforming the date format.
-    QString date = dbdatareq.value(TPATDATA_COL_BIRTHDATE).toString();
+    QString date = dbdata.value(TPATDATA_COL_BIRTHDATE).toString();
     QStringList dateParts = date.split("/");
     // Since the date format is given by the program, I can trust that the split will have 3 parts. Setting the ISO Date.
     date = dateParts.at(2) + "-" + dateParts.at(1) + "-" + dateParts.at(0);
-    dbdatareq[TPATDATA_COL_BIRTHDATE] = date;
+    dbdata[TPATDATA_COL_BIRTHDATE] = date;
+
+    // Insertion date.
+    dbdata[TPATDATA_COL_DATE_INS] = "TIMESTAMP(NOW())";
 
     QStringList columns;
     QStringList values;
@@ -381,9 +403,9 @@ bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, boo
     QStringList allColumns;
     QStringList allValues;
 
-    columns = dbdatareq.keys();
+    columns = dbdata.keys();
     for (qint32 i = 0; i < columns.size(); i++){
-        values << dbdatareq.value(columns.at(i)).toString();
+        values << dbdata.value(columns.at(i)).toString();
     }
 
     //dbClient->appendSET(TABLE_PATIENTS_REQ_DATA,columns,values);
@@ -391,20 +413,7 @@ bool Loader::addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, boo
     allValues = values;
 
     // Adding the optional data, plus the mandaotory data.
-    dbdataopt[TPATDATA_COL_DATE_INS] = "TIMESTAMP(NOW())";
-    columns = dbdataopt.keys();
-    values.clear();
-    for (qint32 i = 0; i < columns.size(); i++){
-        values << dbdataopt.value(columns.at(i)).toString();
-    }
-
-    // Saving to the local DB.
-    allColumns << columns;
-    allValues << values;
-    // qWarning() << "All Columns" << allColumns.size() << allColumns;
-    // qWarning() << "All Values" << allValues.size() << allValues;
-
-    lim.addPatientData(configuration->getString(CONFIG_DOCTOR_UID),dbdatareq.value(TPATDATA_COL_PUID).toString(),allColumns,allValues);
+    lim.addPatientData(dbdata.value(TPATDATA_COL_PUID).toString(),configuration->getString(CONFIG_DOCTOR_UID),allColumns,allValues);
 
     return true;
 

@@ -263,6 +263,15 @@ VMBase {
         }
     }
 
+    ViewDatSelectionDiag{
+        id: viewDatSelectionDiag;
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+    }
+
+//    function test(){
+//       viewDatSelectionDiag.open();
+//    }
 
     ViewSelectDatForReport {
         id: diagDatSelection

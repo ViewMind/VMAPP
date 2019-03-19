@@ -43,5 +43,8 @@
         <file>qml/ViewSelectDatForReport.qml</file>
         <file>qml/VMDatSelectEntry.qml</file>
         <file>qml/VMMultipleSelectionShow.qml</file>
+        <file>qml/ViewDatSelectionDiag.qml</file>
+        <file>qml/VMDatItem.qml</file>
+        <file>qml/VMDatSelection.qml</file>
     </qresource>
 </RCC>

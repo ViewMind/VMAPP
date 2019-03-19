@@ -17,6 +17,7 @@
 #endif
 
 #define   LOCAL_DB                                      "localdb.dat"
+#define   DR_ID_LENGTH                                   4
 
 class LocalInformationManager
 {
@@ -28,7 +29,10 @@ public:
         QStringList patientISOKList;
         QStringList doctorNames;
         QStringList doctorUIDs;
-        void clear() { patientNames.clear(); patientISOKList.clear(); patientUIDs.clear(); doctorNames.clear(); doctorUIDs.clear(); }
+        QStringList creatorNames;
+        QStringList creatorUIDs;
+        void clear() { patientNames.clear(); patientISOKList.clear(); patientUIDs.clear(); doctorNames.clear();
+                       doctorUIDs.clear(); creatorNames.clear(); creatorUIDs.clear(); }
     };
 
     LocalInformationManager();
@@ -36,25 +40,25 @@ public:
     void setDirectory(const QString &workDir);
     void enableBackups(const QString &backupDir);
     void addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
-    void addPatientData(const QString &druid, const QString &patient_uid, const QStringList &cols, const QStringList &values);
+    void addPatientData(const QString &patient_uid, const QString &creator_uid, const QStringList &cols, const QStringList &values);
     bool isDoctorValid(const QString &dr_uid);
     bool doesDoctorExist(const QString &uid) const;
     bool doesPatientExist(const QString &patuid) const;
     void validateDoctor(const QString &dr_uid);
+    QString newDoctorID();
     QString getDoctorPassword(const QString &uid);
     DisplayLists getPatientListForDoctor(const QString &druid, const QString &filter = "");
     DisplayLists getDoctorList(bool forceShow = false);
-    QString getFieldForPatient(const QString &druid, const QString &patuid, const QString &field) const;
-    QVariantMap getDoctorInfo(const QString &uid) {return localDB.value(uid).toMap();}
-    QVariantMap getPatientInfo(const QString &druid, const QString &patuid) const;
-    QList<QStringList> getAllPatientInfo(const QString &filter = "") const;
+    QString getFieldForPatient(const QString &patuid, const QString &field) const;
+    QVariantMap getDoctorInfo(const QString &uid) const;
+    QVariantMap getPatientInfo(const QString &patuid) const;
     QString getWorkDirectory() const {return workingDirectory;}
     void setUpdateFlagTo(bool flag);
+
     // Used ONLY in the LocalDBMng program
-    void deleteDoctor(const QString &uid);
+    bool deleteDoctor(const QString &uid);
     void setDoctorData(const QString &uid, const QStringList &keys, const QVariantList &values);
-    // FOR DEBUGGING ONLY
-    void printLocalDB();
+
 
     // Synch function. Returns false if the there is nothing to synch. (No changes to Doctor and Patient data).
 #ifdef USESSL
@@ -71,6 +75,9 @@ public:
 
 private:
 
+    static const QString PATIENT_CREATOR;
+    static const QString DOCTOR_DATA;
+    static const QString DOCTOR_COUNTER;
     static const QString PATIENT_DATA;
     static const QString DOCTOR_UPDATE;
     static const QString PATIENT_UPDATE;
@@ -93,7 +100,7 @@ private:
     void backupDB();
     void loadDB();
     bool isHidden(const QString &uid);
-
+    void printDBToConsole();
 
 };
 #endif // LOCALINFORMATIONMANAGER_H

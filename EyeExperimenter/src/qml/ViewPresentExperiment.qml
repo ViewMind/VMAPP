@@ -17,12 +17,23 @@ VMBase {
         target: flowControl
         onExperimentHasFinished:{
             if (!flowControl.isExperimentEndOk()){
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
-                var titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
-                return;
+                var titleMsg
+                if (flowControl.areThereFrequencyErrorsPresent()){
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
+                    titleMsg = viewHome.getErrorTitleAndMessage("error_freq_check");
+                    vmErrorDiag.vmErrorMessage = titleMsg[1];
+                    vmErrorDiag.vmErrorTitle = titleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
+                else{
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
+                    titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
+                    vmErrorDiag.vmErrorMessage = titleMsg[1];
+                    vmErrorDiag.vmErrorTitle = titleMsg[0];
+                    vmErrorDiag.open();
+                    return;
+                }
             }
             if (advanceCurrentExperiment()){
                 swiperControl.currentIndex = swiperControl.vmIndexStudyDone;

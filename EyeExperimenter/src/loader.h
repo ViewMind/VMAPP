@@ -8,6 +8,8 @@
 #include <QSharedMemory>
 #include <QCoreApplication>
 
+#include "Experiments/experiment.h"
+
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/LocalInformationManager/localinformationmanager.h"
@@ -62,9 +64,9 @@ public:
     Q_INVOKABLE bool isDoctorPasswordCorrect(const QString &password);
     Q_INVOKABLE bool doesCurrentDoctorHavePassword() { return !lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID)).isEmpty(); }
     Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim.getDoctorInfo(configuration->getString(CONFIG_DOCTOR_UID));}
-    Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID));}
-    Q_INVOKABLE bool addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew);
-    Q_INVOKABLE bool addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, bool isNew);
+    Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_PATIENT_UID));}
+    Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide);
+    Q_INVOKABLE bool addNewPatientToDB(QVariantMap dbdata, bool isNew);
     Q_INVOKABLE void startDBSync();
     Q_INVOKABLE bool requestDrValidation(const QString &instPassword, qint32 selectedDr);
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
