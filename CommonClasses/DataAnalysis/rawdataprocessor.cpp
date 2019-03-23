@@ -215,6 +215,7 @@ void RawDataProcessor::run(){
         writer << cols.at(i) + " = " + QString::number(dbdata.value(cols.at(i))) + ";\n";
     }
     writer << QString(TEYERES_COL_STUDY_ID) + " = " + studyID.join("_") + ";\n";
+    writer << QString(TEYERES_COL_PROTOCOL) + " =  " + config->getString(CONFIG_PROTOCOL_NAME) + ";\n";
     dbdatafile.close();
     emit(appendMessage("DB Data File Generated to: " + dbdatafile.fileName(),MSG_TYPE_SUCC));
 
