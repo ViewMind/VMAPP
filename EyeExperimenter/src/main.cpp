@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("flowControl", &flowControl);
 
     // Rendering the QML files
-    //qWarning() << "Loading";
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

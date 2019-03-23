@@ -97,7 +97,7 @@ HEADERS += \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h
 
 contains(DEFINES, USE_IVIEW) {
-  win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
+  LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
   INCLUDEPATH += $$PWD/EyeTrackerInterface/RED
   DEPENDPATH += $$PWD/EyeTrackerInterface/RED
   SOURCES += EyeTrackerInterface/RED/redinterface.cpp

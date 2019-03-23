@@ -17,6 +17,7 @@
 #define   DIRNAME_DBBKP                                 "dbbkp"
 #define   DIRNAME_LAUNCHER                              "launcher"
 #define   DIRNAME_PROCESSED_DATA                        "processed_data"
+#define   DIRNAME_ARCHIVE                               "archive"
 
 // The semaphore name. To prevent multiple instances for the same application
 #define   SEMAPHORE_NAME                                   "viewind_eyeexperimenter_semaphore"
@@ -90,6 +91,7 @@
 #define   CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL            "tol_max_fglitches_in_trial"
 #define   CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL  "tol_min_number_of_data_items_in_trial"
 #define   CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES      "tol_max_percent_of_invalid_values"
+#define   CONFIG_PROTOCOL_NAME                          "protocol_name"
 
 // The unique UID for tests.
 #define   TEST_UID                                      "ARvm0000"
@@ -157,6 +159,11 @@
 #define  UPDATE_GET_SMI_CODE                            "gsmi"
 #define  UPDATE_GET_GP_CODE                             "ggp"
 #define  UPDATE_FORCE_NO_UPDATE_MSG                     "none"
+
+// Codes for reading languages languages.
+#define  READING_LANG_SPANISH                           "es"
+#define  READING_LANG_ENGLISH                           "en"
+#define  READING_LANG_GERMAN                            "de"
 
 // TCP Ports.
 static const quint16 TCP_PORT_DB_COMM                    = 54915;

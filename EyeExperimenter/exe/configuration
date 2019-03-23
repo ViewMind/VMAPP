@@ -36,7 +36,7 @@ inst_et_serial = ;
 #inst_name = ViewMind;
 #inst_et_serial = ;
 
-test_mode = true;
+# test_mode = true;
 # enable_gaze_following = true;
 
 
@@ -51,21 +51,8 @@ reading_px_tol_for_target = 60;
 #     CONFIGURATION FOR EYE DATA PROCESSING            #
 #------------------------------------------------------#
 
-# Parameters for GazePoint GP3HD
-eyetracker_configured        = GP3HD;    #GazePoint ET
 moving_window_max_dispersion = 100;      #px
 sample_frequency             = 150;      #Hz
-
-# Parameters for SMI REDm 120 HZ
-#eyetracker_configured        = REDm;     #SMI ET
-#moving_window_max_dispersion = 30;       #px
-#sample_frequency             = 120;      #Hz
-
-# Parameters for SMI REDm 250 HZ
-# eyetracker_configured        = REDm;     #SMI ET
-# moving_window_max_dispersion = 30;       #px
-# sample_frequency             = 250;      #Hz
-
 minimum_fixation_length      =  50;      #ms
 distance_to_monitor          =  60;      #cm
 latency_escape_radious       =  80;      #px
@@ -78,10 +65,11 @@ margin_target_hit            =  10;      #mm
 
 tol_max_allowed_period                   = 8;  # ms
 tol_min_allowed_period                   = 5;  # ms
-#tol_max_allowed_period                   = 5;  # ms
-#tol_min_allowed_period                   = 3;  # ms
-tol_max_fglitches_in_trial               = 1;   #%  
-tol_min_number_of_data_items_in_trial    = 100; # Absolute number
+# IMPORTANT: The percent of data points that contain glitches that will be tolerated in a data set. 
+tol_max_fglitches_in_trial               = 10;   # %  
+# Minimun number of points required in a set to be valid.
+tol_min_number_of_data_items_in_trial    = 60; # Absolute number
+# Percent of the total number of points (in the entire study) that were not valid numbers.
 tol_max_percent_of_invalid_values        = 3;   # %
 
 

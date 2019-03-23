@@ -131,6 +131,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TEYERES_COL_FDHITR                      "fdHitR"
 #define  TEYERES_COL_FDHITL                      "fdHitL"
 #define  TEYERES_COL_FDHITTOTAL                  "fdHitTotal"
+#define  TEYERES_COL_PROTOCOL                    "protocol"
 
 // Columnn names for the institituion table
 #define  TINST_COL_KEYID                         "keyid"

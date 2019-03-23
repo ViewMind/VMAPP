@@ -50,7 +50,7 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
     }
 
 
-    // Checking invalid values
+    // Checking invalid values. the percent of string sin the times stasmp that could not be converted to number of the COMPLETE STUDY.
     qreal invalidPercent = (qreal)invalidValues.size()*100.0/totalNumberOfDataPoints;
     if (invalidPercent > p.maxAllowedPercentOfInvalidValues){
         errorList << "The number of invalid values is above the allowed tolerance: " + QString::number(invalidValues.size()) + " which is "

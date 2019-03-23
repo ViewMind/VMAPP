@@ -2,6 +2,7 @@
 
 FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(parent)
 {
+
     // Intializing the eyetracker pointer
     configuration = c;
     eyeTracker = nullptr;
@@ -157,9 +158,11 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
     QString error;
     QStringList toSave;
 
+    configuration->addKeyValuePair(CONFIG_PROTOCOL_NAME,"ColoProtocol");
+
     toSave << CONFIG_DOCTOR_NAME << CONFIG_PATIENT_AGE << CONFIG_PATIENT_NAME << CONFIG_MOVING_WINDOW_DISP
            << CONFIG_MIN_FIXATION_LENGTH << CONFIG_SAMPLE_FREQUENCY << CONFIG_DISTANCE_2_MONITOR << CONFIG_XPX_2_MM << CONFIG_YPX_2_MM
-           << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT << CONFIG_REPORT_FILENAME;
+           << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT << CONFIG_REPORT_FILENAME << CONFIG_PROTOCOL_NAME;
 
     for (qint32 i = 0; i < toSave.size(); i++){
         error = configuration->saveValueToFile(expgenfile,COMMON_TEXT_CODEC,toSave.at(i));
@@ -376,6 +379,7 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         return false;
     }
 
+
     // Hiding cursor UNLESS the ET is in mouse mode.
     if (configuration->getString(CONFIG_SELECTED_ET) != CONFIG_P_ET_MOUSE){
         experiment->hideCursor();
@@ -443,7 +447,7 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     // Doing the frequency check.
     frequencyErrorsPresent = false;
     if (experimentIsOk){
-        if (!configuration->getBool(CONFIG_DEMO_MODE)){
+        if (!configuration->getBool(CONFIG_DEMO_MODE) && !configuration->getBool(CONFIG_USE_MOUSE)){
             if (!experiment->doFrequencyCheck()){
                 logger.appendError(experiment->getError());
                 experimentIsOk = false;
@@ -482,8 +486,7 @@ QString FlowControl::getBindingExperiment(bool bc){
 ////////////////////////////// MOVE PROCESSED FILES TO PROCESSED DIRECTORY ///////////////////////////////////////
 void FlowControl::moveProcessedFilesToProcessedFolder(const QStringList &fileSet){
     QString patdir = DIRNAME_RAWDATA;
-    patdir = patdir + "/" + configuration->getString(CONFIG_DOCTOR_UID)
-            + "/" + configuration->getString(CONFIG_PATIENT_UID);
+    patdir = patdir + "/" + configuration->getString(CONFIG_PATIENT_UID);
 
     if (!QDir(patdir + "/" + QString(DIRNAME_PROCESSED_DATA)).exists()){
         QDir dir(patdir);
@@ -509,6 +512,38 @@ void FlowControl::moveProcessedFilesToProcessedFolder(const QStringList &fileSet
             logger.appendError("COPYING PROCESSED DATA. Could not copy " + source  + " to " + destination);
         }
     }
+}
+
+
+void FlowControl::moveFileToArchivedFileFolder(const QString &filename){
+    QString patdir = DIRNAME_RAWDATA;
+    patdir = patdir + "/" + configuration->getString(CONFIG_PATIENT_UID);
+
+    if (!QDir(patdir + "/" + QString(DIRNAME_ARCHIVE)).exists()){
+        QDir dir(patdir);
+        dir.mkdir(DIRNAME_ARCHIVE);
+    }
+
+    QString pdatafolder = patdir + "/" + QString(DIRNAME_ARCHIVE);
+    if (!QDir(pdatafolder).exists()){
+        logger.appendError("Could not create the archive data folder: " + pdatafolder);
+        return;
+    }
+
+    // Copying each of the files to the archive folder and then deleting them. Also adding the time stamp.
+    QString timestamp = QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm");
+
+    QString source = patdir + "/" + filename;
+    QString destination = pdatafolder + "/" + filename + "." + timestamp;
+    if (QFile::copy(source,destination)){
+        if (!QFile(source).remove()){
+            logger.appendError("REMOVING ARCHIVED DATA. Could not delete " + source);
+        }
+    }
+    else{
+        logger.appendError("COPYING ARCHIVED DATA. Could not copy " + source  + " to " + destination);
+    }
+
 }
 
 ////////////////////////////// REPORT GENERATION FUNCTIONS ///////////////////////////////////////
@@ -592,11 +627,6 @@ QVariantMap FlowControl::nextSelectedReportItem(){
     else return QVariantMap();
 }
 
-void FlowControl::archiveSelectedFile(const QString &selectedFile){
-    QStringList fileList;
-    fileList << selectedFile;
-    moveProcessedFilesToProcessedFolder(fileList);
-}
 
 ///////////////////////////////////////////////////////////////////
 FlowControl::~FlowControl(){

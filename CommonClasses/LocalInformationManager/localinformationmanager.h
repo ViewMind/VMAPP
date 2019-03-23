@@ -39,7 +39,7 @@ public:
     void resetMedicalInstitutionForAllDoctors(const QString &inst_uid);
     void setDirectory(const QString &workDir);
     void enableBackups(const QString &backupDir);
-    void addDoctorData(const QString &dr_uid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
+    void addDoctorData(const QString &druid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
     void addPatientData(const QString &patient_uid, const QString &creator_uid, const QStringList &cols, const QStringList &values);
     bool isDoctorValid(const QString &dr_uid);
     bool doesDoctorExist(const QString &uid) const;
@@ -71,7 +71,7 @@ public:
     QStringList getReportNameAndFileSet(const QString &patuid, const DatFileInfoInDir::ReportGenerationStruct &repgen);
     QStringList getReportNameAndFileSet(const QString &patuid, const QStringList &fileList);
     QString getDatFileFromIndex(const QString &patuid, qint32 index, qint32 whichList) const;
-    void fillPatientDatInformation();
+    void fillPatientDatInformation(const QString &patient);
 
 private:
 

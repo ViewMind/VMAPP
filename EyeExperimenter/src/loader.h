@@ -59,6 +59,7 @@ public:
     Q_INVOKABLE QStringList getDoctorNameList() {return nameInfoList.doctorNames; }
     Q_INVOKABLE QStringList getDoctorUIDList() {return nameInfoList.doctorUIDs; }
     Q_INVOKABLE QString getDoctorUIDByIndex(qint32 selectedIndex);
+    Q_INVOKABLE qint32 getIndexOfDoctor(QString uid);
     Q_INVOKABLE bool isDoctorValidated(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorPasswordEmpty(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorPasswordCorrect(const QString &password);
@@ -75,7 +76,7 @@ public:
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);
     Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, QString patuid, qint32 type);
-    Q_INVOKABLE void reloadPatientDatInformation() {lim.fillPatientDatInformation();}
+    Q_INVOKABLE void reloadPatientDatInformation();
 
     //******************** Updater Related Functions **************************
     Q_INVOKABLE void clearChangeLogFile();
@@ -119,9 +120,6 @@ private:
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();
-
-    // Creates the directory substructure
-    bool createDirectorySubstructure(QString drname, QString pname, QString baseDir, QString saveAs);
 
     // Sets the language for program.
     void changeLanguage();

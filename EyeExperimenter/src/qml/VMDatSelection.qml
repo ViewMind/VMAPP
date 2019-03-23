@@ -20,10 +20,14 @@ Item {
     }
 
     function clearSelection(){
-        currentIndex = -1;
+        vmCurrentIndex = -1;
         vmSelection = "";
         vmFilledDisplay = false;
+        listContainer.visible = false;
+        modelList.clear();
     }
+
+    signal archiveRequested(int indexInList);
 
     ListModel {
         id: modelList
@@ -70,7 +74,7 @@ Item {
             Text {
                 id: titleText
                 font.family: viewHome.gothamB.name
-                font.pixelSize: 12
+                font.pixelSize: 13
                 text: vmTitle
                 color: {
                     if (!vmEnabled) return "#888889"
@@ -82,7 +86,7 @@ Item {
             Text {
                 id: selectionText
                 font.family: viewHome.robotoR.name
-                font.pixelSize: 11
+                font.pixelSize: 12
                 text: (vmSelection === "")? vmPlaceHolderText : vmSelection
                 color: {
                     if (!vmEnabled) return "#888889"
@@ -142,7 +146,8 @@ Item {
         anchors.top: titleBox.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width-4
-        height: vmDatItemHeight*3
+        height: { if (modelList.count > 3) return vmDatItemHeight*3
+                  else return modelList.count*vmDatItemHeight; }
         visible: false;
 
         onVisibleChanged: {
@@ -171,7 +176,7 @@ Item {
                     width: parent.width
                     height: vmDatItemHeight
                     onArchiveItem: {
-                        console.log("ARCHIVED ITEM: " + indexInList)
+                        archiveRequested(indexInList)
                     }
                     onSelectionMade: {
                         vmCurrentIndex = indexInList;

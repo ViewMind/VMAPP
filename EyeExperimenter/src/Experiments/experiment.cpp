@@ -36,6 +36,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     workingDirectory = c->getString(CONFIG_PATIENT_DIRECTORY);
 
     // Loading the experiment configuration file.
+    //qWarning() << "Reading the configuration file" << config->getString(CONFIG_EXP_CONFIG_FILE);
     QFile expfile(config->getString(CONFIG_EXP_CONFIG_FILE));
     if (!expfile.open(QFile::ReadOnly)){
         error = "Could not open experiment configuration file: " + expfile.fileName();

@@ -17,26 +17,23 @@ VMBase {
         labelName.clear();
         labelLastName.clear();
         labelGender.currentIndex = 0;
-        docTypes.currentIndex = 0;
         labelDocument_number.clear();
-        labelProvince.clear();
-        labelCity.clear();
         cbConsent.checked = false;
         labelCountry.vmEnabled = true;
         labelDocument_number.enabled = true;
         vmIsNew = true;
+        loader.loadDoctorSelectionInformation();
+        assignedDoctor.vmModel = loader.getDoctorNameList();
+        var ind = loader.getIndexOfDoctor("");
+        if (ind < 0) ind = 0;
+        assignedDoctor.currentIndex = ind;
+
     }
 
     function loadPatientInformation(){
         var patInfo = loader.getCurrentPatientInformation();
-        labelCity.setText(patInfo.city);
         labelName.setText(patInfo.firstname);
         labelLastName.setText(patInfo.lastname);
-        labelProvince.setText(patInfo.state);
-
-        //        for (var keyputa in patInfo){
-        //            console.log(keyputa + ": " + patInfo[keyputa]);
-        //        }
 
         // Substr is used as the first two letters are the country code.
         if ("puid" in patInfo){
@@ -44,16 +41,6 @@ VMBase {
         }
         else if ("uid" in patInfo){
             labelDocument_number.setText(patInfo.uid.substr(2));
-        }
-
-        // Setting the document type.
-        var idType = patInfo.idtype;
-        var model = docTypes.model;
-        for (var i = 0; i < model.length; i++){
-            if (model[i] === idType){
-                docTypes.currentIndex = i;
-                break;
-            }
         }
 
         // Setting the gender
@@ -66,15 +53,19 @@ VMBase {
         labelCountry.vmEnabled = false;
 
         // The country and ID are unique. They can't be modified.
-        //labelCountry.enabled = false;
         labelDocument_number.enabled = false;
 
+        // The birth date
         labelBirthDate.setISODate(patInfo.birthdate);
+
+        // The assigned doctor.
+        loader.loadDoctorSelectionInformation();
+        assignedDoctor.vmModel = loader.getDoctorNameList();
+        assignedDoctor.currentIndex = loader.getIndexOfDoctor(patInfo.doctorid);
 
         cbConsent.checked = true;
         vmIsNew = false;
     }
-
 
     Dialog {
         id: showTextDialog;
@@ -181,98 +172,106 @@ VMBase {
         text: loader.getStringForKey(keysearch+"errorNoAccept");
     }
 
-
-    Column {
-
-        id: mainForm
-        spacing: 30
+    Row {
+        id: rowNames
         width: 440
-        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 16
         anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 35
-        z: 10
-        Row {
-            id: rowNames
-            width: parent.width
-            spacing: 16
+        anchors.topMargin: 30
+        anchors.horizontalCenter: parent.horizontalCenter
 
-            // Name and last name
-            VMTextDataInput{
-                id: labelName
-                width: parent.width/2 - parent.spacing
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelName");
-                Keys.onTabPressed: labelLastName.vmFocus = true;
-            }
-
-            VMTextDataInput{
-                id: labelLastName
-                width: labelName.width
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelLastName");
-                Keys.onTabPressed: labelCountry.vmFocus = true;
-            }
-        }
-
-        Rectangle{
-            id: spacer
-            border.width: 0;
-            color: "#FFFFFF";
-            width: parent.width
-            height: 1
-        }
-
-        VMAutoCompleteComboBox{
-            id: labelCountry
-            width: parent.width
-            height: 30
-            z: 10
-            vmLabel: loader.getStringForKey(keysearch+"labelCountry")
-            vmList: loader.getCountryList()
-            vmValues: loader.getCountryCodeList()
-            onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-            onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-            vmEnabled: true
-            Keys.onTabPressed: labelBirthDate.vmFocus = true;
-        }
-
-        Row {
-
-            id: genderAndBDateRow
-            width: parent.width
-            spacing: 16
-
-            // Gender and Date of Birth.
-            VMComboBox{
-                id: labelGender
-                width: 144
-                vmModel: [loader.getStringForKey(keysearch+"labelGender"), "M", "F"]
-                font.family: viewHome.robotoR.name
-                anchors.bottom: parent.bottom
-            }
-
-            VMDateInputField{
-                id: labelBirthDate
-                width: parent.width - labelGender.width - parent.spacing
-                //vmCalendarInput: true
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelBirthDate");
-                Keys.onTabPressed: labelDocument_number.vmFocus = true;
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
+        // Name and last name
+        VMTextDataInput{
+            id: labelName
+            width: parent.width/2 - parent.spacing
+            vmPlaceHolder: loader.getStringForKey(keysearch+"labelName");
+            Keys.onTabPressed: labelLastName.vmFocus = true;
         }
 
         VMTextDataInput{
-            id: labelDocument_number
-            width: parent.width
-            vmPlaceHolder: loader.getStringForKey(keysearch+"labelDocument_number");
-            Keys.onTabPressed: labelProvince.vmFocus = true;
+            id: labelLastName
+            width: labelName.width
+            vmPlaceHolder: loader.getStringForKey(keysearch+"labelLastName");
+            Keys.onTabPressed: labelCountry.vmFocus = true;
+        }
+    }
+
+    VMAutoCompleteComboBox{
+        id: labelCountry
+        width: rowNames.width
+        height: 30
+        z: 10
+        vmLabel: loader.getStringForKey(keysearch+"labelCountry")
+        vmList: loader.getCountryList()
+        vmValues: loader.getCountryCodeList()
+        onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+        onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+        vmEnabled: true
+        Keys.onTabPressed: labelBirthDate.vmFocus = true;
+        anchors.top: rowNames.bottom
+        anchors.topMargin: 43
+        anchors.left: rowNames.left
+    }
+
+    Row {
+
+        id: genderAndBDateRow
+        width: rowNames.width
+        spacing: 16
+        anchors.top: labelCountry.bottom
+        anchors.topMargin: 23
+        anchors.left: rowNames.left
+
+        // Gender and Date of Birth.
+        VMComboBox{
+            id: labelGender
+            width: 144
+            vmModel: [loader.getStringForKey(keysearch+"labelGender"), "M", "F"]
+            font.family: viewHome.robotoR.name
+            anchors.bottom: parent.bottom
         }
 
-        VMComboBox{
-            id: assignedDoctor
-            width: parent.width
-            //vmModel: [loader.getStringForKey(keysearch+"labelGender"), "M", "F"]
-            font.family: viewHome.robotoR.name
+        VMDateInputField{
+            id: labelBirthDate
+            width: parent.width - labelGender.width - parent.spacing
+            //vmCalendarInput: true
+            vmPlaceHolder: loader.getStringForKey(keysearch+"labelBirthDate");
+            Keys.onTabPressed: labelDocument_number.vmFocus = true;
+            anchors.verticalCenter: parent.verticalCenter
         }
+
+    }
+
+    VMTextDataInput{
+        id: labelDocument_number
+        width: rowNames.width
+        vmPlaceHolder: loader.getStringForKey(keysearch+"labelDocument_number");
+        Keys.onTabPressed: labelAssignedDoctor.vmFocus = true;
+        anchors.top: genderAndBDateRow.bottom
+        anchors.topMargin: 18
+        anchors.left: rowNames.left
+    }
+
+    Text{
+        id: labelAssignedDoctor
+        text: loader.getStringForKey(keysearch+"labelAssignedDoctor");
+        color:  "#297fca"
+        font.family: "Mono"
+        font.pixelSize: 11
+        anchors.left: rowNames.left
+        anchors.bottom: assignedDoctor.top
+        anchors.bottomMargin: 5
+        Keys.onTabPressed: labelName.vmFocus = true;
+    }
+
+    VMComboBox{
+        id: assignedDoctor
+        width: rowNames.width
+        //vmModel:
+        font.family: viewHome.robotoR.name
+        anchors.top: labelDocument_number.bottom
+        anchors.topMargin: 50
+        anchors.left: rowNames.left
     }
 
     // Message and Buttons
@@ -280,7 +279,7 @@ VMBase {
     Row{
         id: labelConsent
         spacing: 5
-        anchors.top:  mainForm.bottom
+        anchors.top:  assignedDoctor.bottom
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
         VMCheckBox{
@@ -335,20 +334,13 @@ VMBase {
                 // THIS IS THE TABLE DATA.
                 var dbDataReq = {
                     puid: labelDocument_number.vmEnteredText,
-                    doctorid: loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_UID),
+                    doctorid: loader.getDoctorUIDByIndex(assignedDoctor.currentIndex),
                     birthdate: labelBirthDate.vmEnteredText,
                     firstname: labelName.vmEnteredText,
                     lastname: labelLastName.vmEnteredText,
-                    idtype: docTypes.currentText,
                     sex: labelGender.currentText,
                     birthcountry: labelCountry.vmCurrentText
                 };
-
-                var dbDataOpt = {
-                    state: labelProvince.vmEnteredText,
-                    city: labelCity.vmEnteredText
-                };
-
 
                 if (dbDataReq.birthdate === ""){
                     labelBirthDate.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
@@ -384,9 +376,7 @@ VMBase {
                     return;
                 }
 
-                //console.log("Country Index: " + dbData.countryid + ". Text: " + labelCountry.currentText);
-
-                if (loader.addNewPatientToDB(dbDataReq,dbDataOpt,vmIsNew)){
+                if (loader.addNewPatientToDB(dbDataReq,vmIsNew)){
                     swiperControl.currentIndex = swiperControl.vmIndexPatientList;
                 }
                 else{

@@ -49,6 +49,7 @@ viewpatientreg_errorNoAccept = Se debe acepatar las Condiciones de Uso y la Poí
 viewpatientreg_terms_of_use = Condiciones de Uso;
 viewpatientreg_privacy_policy = Política de Privacidad;
 viewpatientreg_errorExists = Este paciente existe bajo este doctor;
+viewpatientreg_labelAssignedDoctor = Asignar a doctor;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Estudios Oculares;
@@ -159,6 +160,7 @@ viewpatientlist_wrong_dr_password = La contraeña es incorrecta;
 viewpatientlist_view_all = Ver Todos los Pacientes;
 viewpatientlist_view_yours = Ver Sus Pacientes;
 viewpatientlist_filter = Buscar;
+viewpatientlist_archive_msg=Archivar|Se encuentra por archivar los datos de un estudio. Si procede la información permanecerá en la computadora<br>pero no podrá ser enviada a procesar en el futuro<br>¿Desea Continuar?|Si|No;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
@@ -241,6 +243,8 @@ viewselectdata_labelSubTitle = Seleccionar los estudios que desea incluir en un 
 viewselectdata_labelColReading = Lectura;
 viewselectdata_labelColBindingUC = Colores Unbound;
 viewselectdata_labelColBindingBC = Colores Bound;
+viewselectdata_labelNoUse = No utilizar en reporte;
+viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_btnDelete = Archivar;
 viewselectdata_btnCancel = CANCELAR;
 viewselectdata_btnGenReport = GENERAR REPORTE;

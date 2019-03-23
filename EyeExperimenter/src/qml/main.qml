@@ -17,8 +17,8 @@ Window {
         var hdiff = frameGeomtry.height - height - 10;
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.       
-        //swiperControl.currentIndex = swiperControl.vmIndexHome;
-        swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+        swiperControl.currentIndex = swiperControl.vmIndexHome;
+        //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
     }
 
 
@@ -145,9 +145,13 @@ Window {
             case vmIndexCalibrationDone:
                 viewCalibrationDone.openDiag()
                 break;
+            case vmIndexPresentExperiment:
+                // The continue button is disabled to avoid pressing space or enter and starting the experiment again.
+                viewPresentExperimet.enableContinue();
+                break;
             case vmIndexPatientList:
-                // loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"ARvm0000");
-                // loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
+                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"1369462188_0000");
+                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
                 // This will laod patients which will also trigger the search for unprocessed information.
                 //viewPatList.test();
                 viewPatList.loadPatients();

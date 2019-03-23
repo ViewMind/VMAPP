@@ -63,15 +63,10 @@ VMBase {
             return;
         }
 
-        if (loader.addNewDoctorToDB(dbData, labelPassword.getText(), cboxDisable.checked)){
-            viewDrSelection.updateDrProfile();
-            if (cboxDisable.visible) swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-            else swiperControl.currentIndex = swiperControl.vmIndexHome;
-        }
-        else{
-            labelDocument_number.vmErrorMsg = loader.getStringForKey(keybase + "drexists");
-        }
-
+        loader.addNewDoctorToDB(dbData, labelPassword.getText(), cboxDisable.checked)
+        viewDrSelection.updateDrProfile();
+        if (cboxDisable.visible) swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+        else swiperControl.currentIndex = swiperControl.vmIndexHome;
     }
 
     Dialog {
@@ -206,7 +201,7 @@ VMBase {
             id: labelLastName
             width: parent.width
             vmPlaceHolder: loader.getStringForKey(keybase+"labelLastName");
-            Keys.onTabPressed: labelDocument_number.vmFocus = true;
+            Keys.onTabPressed: labelMail.vmFocus = true;
         }
 
         VMTextDataInput{

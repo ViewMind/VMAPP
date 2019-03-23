@@ -43,6 +43,8 @@ Dialog {
             var parts = name.split("(");
             name = parts[0];
 
+            //console.log("Setting current doctor to " + name + " and " + uid);
+
             //console.log("Setting the DOCTOR UID to: " + uid);
             loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_UID,uid);
             loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_NAME,name);
@@ -221,6 +223,7 @@ Dialog {
                     // Updating the text of the doctor menu.
                     viewHome.updateDrMenuText();
                     viewDoctorSelection.close();
+                    viewPatList.vmShowAll = false;
                     swiperControl.currentIndex = swiperControl.vmIndexPatientList
                     drPassword.vmErrorMsg = "";
                 }

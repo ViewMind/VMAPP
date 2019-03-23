@@ -4,11 +4,13 @@ ReadingExperiment::ReadingExperiment(QWidget *parent):Experiment(parent)
 {
     manager = new ReadingManager();
     m = (ReadingManager*) manager;
-    expHeader = HEADER_READING_EXPERIMENT;
-    outputDataFile = FILE_OUTPUT_READING;
+    expHeader = HEADER_READING_EXPERIMENT;    
 }
 
 bool ReadingExperiment::startExperiment(ConfigurationManager *c){
+
+    outputDataFile = QString(FILE_OUTPUT_READING) + "_" + c->getString(CONFIG_READING_EXP_LANG);
+
     if (!Experiment::startExperiment(c)) return false;
 
     // Setting the first question.

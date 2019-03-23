@@ -68,7 +68,6 @@ VMBase {
         }
     }
 
-
     Dialog {
 
         property string vmTitle: "TITLE"
@@ -129,6 +128,10 @@ VMBase {
 
         property string vmMsgTitle: ""
         property string vmMsgText: ""
+        property bool vmRequireAns: false
+        property string vmYesButtonLabel: ""
+        property string vmNoButtonLabel: ""
+        property var vmParameters: []
 
         id: showMsgDialog;
         modal: true
@@ -182,6 +185,41 @@ VMBase {
             anchors.left: showMsgDialogTitle.left
             text: showMsgDialog.vmMsgText
         }
+
+        VMButton{
+            id: btnNegative
+            height: 40
+            vmText: showMsgDialog.vmNoButtonLabel
+            vmFont: viewHome.gothamM.name
+            vmInvertColors: true
+            visible: showMsgDialog.vmRequireAns
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20
+            anchors.left: parent.left
+            anchors.leftMargin: 50
+            onClicked: {
+                showMsgDialog.vmRequireAns = false;
+                showMsgDialog.close();
+            }
+        }
+
+        VMButton{
+            id: btnPositive
+            height: 40
+            vmText: showMsgDialog.vmYesButtonLabel
+            vmFont: viewHome.gothamM.name
+            visible: showMsgDialog.vmRequireAns
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20
+            anchors.right: parent.right
+            anchors.rightMargin: 50
+            onClicked: {
+                showMsgDialog.vmRequireAns = false;
+                showMsgDialog.close();
+                viewDatSelectionDiag.archiveFile(showMsgDialog.vmParameters[0],showMsgDialog.vmParameters[1]);
+            }
+        }
+
     }
 
     Dialog {
@@ -269,15 +307,6 @@ VMBase {
         x: (parent.width - width)/2
     }
 
-//    function test(){
-//       viewDatSelectionDiag.open();
-//    }
-
-    ViewSelectDatForReport {
-        id: diagDatSelection
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-    }
 
     ListModel {
         id: patientList
@@ -315,6 +344,10 @@ VMBase {
         }
 
         patientListView.currentIndex = -1;
+        if (!loader.isDoctorValidated(-1)){
+            btnViewAll.enabled = false;
+        }
+
     }
 
     function startDemoTransaction(){
@@ -376,6 +409,17 @@ VMBase {
         connectionDialog.open();
         loader.startDBSync();
 
+    }
+
+    function configureShowMessageForArchive(which,index){
+        showMsgDialog.vmRequireAns = true;
+        showMsgDialog.vmParameters = [which, index];
+        var parts = loader.getStringListForKey(keybase+"archive_msg");
+        showMsgDialog.vmMsgTitle = parts[0];
+        showMsgDialog.vmMsgText = parts[1];
+        showMsgDialog.vmYesButtonLabel = parts[2];
+        showMsgDialog.vmNoButtonLabel = parts[3];
+        showMsgDialog.open();
     }
 
     // The Doctor Information Title and subtitle
@@ -639,8 +683,7 @@ VMBase {
                 delegate: VMPatientEntry {
                     onFetchReport: {
                         patientListView.currentIndex = index;
-                        //requestReportToServer()
-                        diagDatSelection.open();
+                        viewDatSelectionDiag.open();
                     }
                 }
                 onCurrentIndexChanged: {

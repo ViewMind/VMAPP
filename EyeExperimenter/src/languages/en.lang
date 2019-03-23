@@ -49,6 +49,7 @@ viewpatientreg_errorNoAccept = You must accept the Terms of Use and the Privacy 
 viewpatientreg_terms_of_use = Terms Of Use;
 viewpatientreg_privacy_policy = Privacy Policy;
 viewpatientreg_errorExists = This patient is exists under this doctor;
+viewpatientreg_labelAssignedDoctor = Assigned doctor;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Eye Studies;
@@ -159,6 +160,7 @@ viewpatientlist_wrong_dr_password = Password is incorrect;
 viewpatientlist_view_all = View All Patients;
 viewpatientlist_view_yours = View Your Patients;
 viewpatientlist_filter = Search;
+viewpatientlist_archive_msg=Archive|You are about to archive the data from a study. If you proceed the data will remain in the computer,<br>but you will not be able to process it in the future.<br>Would you like to proceed?|Yes|No;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reports;
@@ -241,6 +243,8 @@ viewselectdata_labelSubTitle = Select the studies that will be included in the r
 viewselectdata_labelColReading = Reading;
 viewselectdata_labelColBindingUC = Binding Unbound;
 viewselectdata_labelColBindingBC = Binding Bound;
+viewselectdata_labelNoUse = Do not use for report;
+viewselectdata_labelSelectOption = Select data file;
 viewselectdata_btnDelete = Archive;
 viewselectdata_btnCancel = CANCEL;
 viewselectdata_btnGenReport = GENERATE REPORT;

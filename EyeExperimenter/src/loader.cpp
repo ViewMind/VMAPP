@@ -44,7 +44,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Server address and the default country.
     cmd.clear();
     cv[CONFIG_SERVER_ADDRESS] = cmd;
-    cv[CONFIG_EYETRACKER_CONFIGURED] = cmd;
+    //cv[CONFIG_EYETRACKER_CONFIGURED] = cmd;
     cv[CONFIG_INST_NAME] = cmd;
     cv[CONFIG_INST_ETSERIAL] = cmd;
     cv[CONFIG_INST_UID] = cmd;
@@ -59,6 +59,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
     if (!configuration->loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
+        qWarning() << "Could not load config file";
         logger.appendError("Errors loading the configuration file: " + configuration->getError());
         // The program should not be able to continue after loading the language.
         loadingError = true;
@@ -94,7 +95,14 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     countries = cs;
     changeLanguage();
+
     if (loadingError) return;
+
+#ifdef USE_IVIEW
+    configuration->addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_REDM);
+#else
+    configuration->addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_GP3HD);
+#endif
 
     // Must make sure that the data directory exists
     QDir rawdata(DIRNAME_RAWDATA);
@@ -290,11 +298,18 @@ bool Loader::createPatientDirectory(){
 
     // Creating the doctor directory.
     QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
-    QString baseDir = DIRNAME_RAWDATA;
-    QString drname = configuration->getString(CONFIG_DOCTOR_WORK_UID);
-    configuration->addKeyValuePair(CONFIG_PATIENT_UID,patientuid);
+    QString patdirPath = QString(DIRNAME_RAWDATA) + "/" + patientuid;
+    if (!QDir(patdirPath).exists()){
+       QDir baseDir(DIRNAME_RAWDATA);
+       baseDir.mkdir(patientuid);
+    }
 
-    if (!createDirectorySubstructure(drname,patientuid,baseDir,CONFIG_PATIENT_DIRECTORY)) return false;
+    if (!QDir(patdirPath).exists()){
+        logger.appendError("Could not create patient dir " + patientuid + " in directory");
+        return false;
+    }
+
+    configuration->addKeyValuePair(CONFIG_PATIENT_DIRECTORY,patdirPath);
 
     return true;
 }
@@ -312,6 +327,11 @@ QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
         return nameInfoList.doctorUIDs.at(selectedIndex);
     }
     else return "";
+}
+
+qint32 Loader::getIndexOfDoctor(QString uid){
+    if (uid.isEmpty()) uid = configuration->getString(CONFIG_DOCTOR_UID);
+    return nameInfoList.doctorUIDs.indexOf(uid);
 }
 
 bool Loader::isDoctorValidated(qint32 selectedIndex){
@@ -468,6 +488,10 @@ QString Loader::getDatFileNameFromIndex(qint32 index, QString patuid, qint32 typ
     return lim.getDatFileFromIndex(patuid,index,type);
 }
 
+void Loader::reloadPatientDatInformation(){
+    lim.fillPatientDatInformation(configuration->getString(CONFIG_PATIENT_UID));
+}
+
 
 //******************************************* Updater Related Functions ***********************************************
 
@@ -538,40 +562,6 @@ void Loader::changeLanguage(){
         }
         else countries->fillCountryList(true);
     }
-}
-
-bool Loader::createDirectorySubstructure(QString drname, QString pname, QString baseDir, QString saveAs){
-
-    // This is legacy code, should have no effect. Left just in case.
-    drname = drname.replace(" ","_");
-    drname = drname.replace(".","_");
-
-    pname = pname.replace(" ","_");
-    pname = pname.replace(".","_");
-
-    QString drdir = baseDir + "/" + drname;
-    QString pdir = drdir + "/" + pname;
-
-    // Creating the the doctor's dir
-    if (!QDir(drdir).exists()){
-        QDir base(baseDir);
-        if (!base.mkdir(drname)){
-            logger.appendError("Could not create doctor dir: " + drdir + " in " + baseDir);
-            return false;
-        }
-    }
-
-    QDir dirdr(drdir);
-    if (!QDir(pdir).exists()){
-        if (!dirdr.mkdir(pname)){
-            logger.appendError("Could not create patient dir: " + pname + " in " + drdir);
-            return false;
-        }
-    }
-
-    // Al is good and pdir is the final working directory so it is set in the configuration->
-    configuration->addKeyValuePair(saveAs,pdir);
-    return true;
 }
 
 void Loader::loadDefaultConfigurations(){

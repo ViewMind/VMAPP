@@ -57,7 +57,7 @@ public:
     Q_INVOKABLE QVariantMap nextSelectedReportItem();
     Q_INVOKABLE QStringList getSelectedReportInfo();
     Q_INVOKABLE quint8 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
-    Q_INVOKABLE void archiveSelectedFile(const QString &selectedFile);
+    Q_INVOKABLE void moveFileToArchivedFileFolder(const QString &filename);
 
 signals:
 
@@ -161,6 +161,8 @@ private:
     // Moves successfully processed files to the corresponding processed folder.
     QStringList fileSetSentToProcess;
     void moveProcessedFilesToProcessedFolder(const QStringList &fileSet);
+
+
 
 };
 
