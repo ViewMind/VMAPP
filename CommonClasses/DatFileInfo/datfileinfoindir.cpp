@@ -4,9 +4,8 @@ DatFileInfoInDir::DatFileInfoInDir(){
 
 }
 
-void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfTheyExist)
+void DatFileInfoInDir::setDatDirectory(const QString &dir)
 {
-    Q_UNUSED(listRepEvenIfTheyExist)
 
     filesReading.clear();
     filesBindingBC.clear();
@@ -17,6 +16,9 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfThe
     filters << "*.dat";
     QStringList fileList = QDir(dir).entryList(filters,QDir::Files);
 
+    //qWarning() << "SETTING DAT DIRECTORY: File list is" << fileList;
+
+    // Saving the doctor directory.
     QStringList orderReading;
     QStringList orderBindingBC;
     QStringList orderBindingUC;
@@ -35,12 +37,16 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir, bool listRepEvenIfThe
 
 
 bool DatFileInfoInDir::hasPendingReports() const {
+    //qWarning() << "HAS PENDING REPORTS" << filesReading << filesBindingBC << filesBindingUC;
     if (!filesReading.isEmpty()) return true;
     if (!filesBindingBC.isEmpty() && !filesBindingUC.isEmpty()){
         // This should return true ONLY if for at least one BC file there is a compatible UC file.
         for (qint32 i = 0; i < filesBindingBC.size(); i++){
             QList<qint32> dummy;
-            if (!getBindingUCFileListCompatibleWithSelectedBC(i,&dummy).isEmpty()) return true;
+            if (!getBindingUCFileListCompatibleWithSelectedBC(i,&dummy).isEmpty()) {
+                //qWarning() << "List of Compatible UC Files (indexes)" << dummy;
+                return true;
+            }
         }
         return false;
     }
@@ -115,7 +121,7 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
 
     if (repgen.readingFileIndex != -1){
         DatInfo reading_file = getReadingInformation(filesReading.at(repgen.readingFileIndex));
-        expectedReportName = QString(FILE_REPORT_NAME) + "_r";
+        expectedReportName = QString(FILE_REPORT_NAME) + "_R" + reading_file.extraInfo + reading_file.validEye;
         date = reading_file.date;
         time = reading_file.hour;
         ans << reading_file.fileName;
@@ -126,7 +132,7 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
         DatInfo bc = getBindingFileInformation(filesBindingBC.at(repgen.bindingBCFileIndex));
         if (expectedReportName.isEmpty()) expectedReportName = FILE_REPORT_NAME;
         // Extra info and date must have matched for these two files to have been selected.
-        expectedReportName = expectedReportName + "_" + uc.extraInfo;
+        expectedReportName = expectedReportName + "_B" + uc.extraInfo + uc.validEye;
         if (date.isEmpty() || (date < uc.date)) {
             date = uc.date;
             time = uc.hour;
@@ -138,8 +144,8 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
     }
 
     if (!expectedReportName.isEmpty()){
-       expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
-       ans.prepend(expectedReportName);
+        expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
+        ans.prepend(expectedReportName);
     }
 
     return ans;
@@ -251,16 +257,26 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getReadingInformation(const QString 
         ans.hour = "00_00";
         ans.validEye = QString::number(EYE_BOTH);
         ans.basename = parts.at(0);
-        ans.code = "RD" + ans.validEye + " - " + parts.at(3) + "/" + parts.at(2) + "/" + parts.at(1);
+        ans.code = "R" + ans.validEye + " - " + parts.at(3) + "/" + parts.at(2) + "/" + parts.at(1);
         ans.orderString = parts.at(1) +  parts.at(2) + parts.at(3) + "00_00";
     }
     else if (parts.size() == 7){
-        // File name before time stamp included hours and minutes
+        // File name includes time stamp included hours and minutes
         ans.date = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
         ans.validEye = parts.at(1);
         ans.hour = parts.at(5) + "_" + parts.at(6);
         ans.basename = parts.at(0);
-        ans.code = "RD" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + " " + parts.at(5) + ":" + parts.at(6);
+        ans.code = "R" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + " " + parts.at(5) + ":" + parts.at(6);
+        ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
+    }
+    else if (parts.size() == 8){
+        // File name includes time stamp included hours and minutes and language.
+        ans.date = parts.at(3) + "_" + parts.at(4) + "_" + parts.at(5);
+        ans.validEye = parts.at(2);
+        ans.extraInfo = parts.at(1).toUpper();
+        ans.hour = parts.at(6) + "_" + parts.at(7);
+        ans.basename = parts.at(0);
+        ans.code = "R" + ans.extraInfo +  ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + " " + parts.at(5) + ":" + parts.at(6);
         ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
     }
 

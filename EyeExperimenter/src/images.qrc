@@ -26,5 +26,7 @@
         <file>images/LOADING.gif</file>
         <file>images/dr_icon.png</file>
         <file>images/edit_icon.png</file>
+        <file>images/black_folder.png</file>
+        <file>images/white-folder.png</file>
     </qresource>
 </RCC>

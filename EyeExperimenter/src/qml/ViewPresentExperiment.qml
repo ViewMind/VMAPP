@@ -13,18 +13,36 @@ VMBase {
     property string vmSlideExplanation: "No explanation set";
     property string vmSlideAnimation: "";
 
+    function enableContinue(){
+        btnContinue.enabled = true;
+    }
+
     Connections{
         target: flowControl
         onExperimentHasFinished:{
             if (!flowControl.isExperimentEndOk()){
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
-                var titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
-                return;
+                var titleMsg
+                if (flowControl.areThereFrequencyErrorsPresent()){
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
+                    titleMsg = viewHome.getErrorTitleAndMessage("error_freq_check");
+                    vmErrorDiag.vmErrorMessage = titleMsg[1];
+                    vmErrorDiag.vmErrorTitle = titleMsg[0];
+                    vmErrorDiag.open();
+                    btnContinue.enabled = false;
+                    return;
+                }
+                else{
+                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
+                    titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
+                    vmErrorDiag.vmErrorMessage = titleMsg[1];
+                    vmErrorDiag.vmErrorTitle = titleMsg[0];
+                    vmErrorDiag.open();
+                    btnContinue.enabled = false;
+                    return;
+                }
             }
             if (advanceCurrentExperiment()){
+                btnContinue.enabled = true;
                 swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
             }
         }

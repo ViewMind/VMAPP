@@ -23,7 +23,8 @@ Dialog {
     }
 
     function updateDrProfile(){
-        var ans = loader.getDoctorList();
+        loader.loadDoctorSelectionInformation();
+        var ans = loader.getDoctorNameList();
         ans.unshift(loader.getStringForKey(keybase+"labelDrProfile"));
         labelDrProfile.vmModel = ans;
         labelDrProfile.currentIndex = 0;
@@ -41,6 +42,8 @@ Dialog {
             // Cleaning the name
             var parts = name.split("(");
             name = parts[0];
+
+            //console.log("Setting current doctor to " + name + " and " + uid);
 
             //console.log("Setting the DOCTOR UID to: " + uid);
             loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_UID,uid);
@@ -220,6 +223,7 @@ Dialog {
                     // Updating the text of the doctor menu.
                     viewHome.updateDrMenuText();
                     viewDoctorSelection.close();
+                    viewPatList.vmShowAll = false;
                     swiperControl.currentIndex = swiperControl.vmIndexPatientList
                     drPassword.vmErrorMsg = "";
                 }

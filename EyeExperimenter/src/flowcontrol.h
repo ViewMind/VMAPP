@@ -40,6 +40,7 @@ public:
     Q_INVOKABLE bool isConnected() const { return connected; }
     Q_INVOKABLE bool isCalibrated() const { return calibrated; }
     Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
+    Q_INVOKABLE bool areThereFrequencyErrorsPresent() const {return frequencyErrorsPresent;}
     Q_INVOKABLE void setupSecondMonitor();
     Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
@@ -56,7 +57,7 @@ public:
     Q_INVOKABLE QVariantMap nextSelectedReportItem();
     Q_INVOKABLE QStringList getSelectedReportInfo();
     Q_INVOKABLE quint8 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
-    Q_INVOKABLE void archiveSelectedFile(const QString &selectedFile);
+    Q_INVOKABLE void moveFileToArchivedFileFolder(const QString &filename);
 
 signals:
 
@@ -137,6 +138,9 @@ private:
     // Binary status for the end of an experiment.
     bool experimentIsOk;
 
+    // Flag to indicate frequency errors and use the appropiate message.
+    bool frequencyErrorsPresent;
+
     // Flag to check on transaction status
     bool sslTransactionAllOk;
 
@@ -157,6 +161,8 @@ private:
     // Moves successfully processed files to the corresponding processed folder.
     QStringList fileSetSentToProcess;
     void moveProcessedFilesToProcessedFolder(const QStringList &fileSet);
+
+
 
 };
 

@@ -9,10 +9,13 @@
 #include "sslidsocket.h"
 #include "ssllistener.h"
 
-#define  PATH_TO_UPDATE_SMI         "eyeexp/smi/EyeExperimenter.exe"
-#define  PATH_TO_UPDATE_GP          "eyeexp/gp/EyeExperimenter.exe"
-#define  PATH_TO_LATESTCHANGES      "eyeexp/changelog/"
-#define  FILE_INST_ENABLED_UPDATE   "eyeexp/changelog/enabled"
+#define  DIRNAME_UPDATE_DIR                "etdir"
+#define  DIRNAME_UPDATE_DIR_LOG_SUBIDR     "logs"
+#define  DIRNAME_UPDATE_DIR_FLOGS_SUBIDR   "flogs"
+#define  FILENAME_EYE_LAUNCHER             "etdir/launcher.exe"
+#define  FILENAME_CONFIGURATION            "configuration"
+#define  FILENAME_CHANGELOG                "changelog"
+#define  FILENAME_EYE_EXPERIMENTER         "EyeExperimenter.exe"
 
 class DBCommSSLServer : public QObject
 {
@@ -81,12 +84,7 @@ private:
     VerifyDBRetStruct verifyPatient(const QStringList &columns, const QStringList &values);
 
     // Sends the checksum of one of the exes
-    void sendExeHash(const QString &path, const QString &exetype, quint64 socket, const QString &instUid);
-    void sendExe(const QString &path, const QString &exetype, const QString lang, quint64 socket);
-
-    // Checks the enabled file for the institution uid.
-    bool isInstEnabled(const QString &uid);
-
+    void sendUpdateAns(DataPacket tx, quint64 socket, const QString &ans);
 
 };
 

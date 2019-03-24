@@ -49,6 +49,7 @@ viewpatientreg_errorNoAccept = Se debe acepatar las Condiciones de Uso y la Poí
 viewpatientreg_terms_of_use = Condiciones de Uso;
 viewpatientreg_privacy_policy = Política de Privacidad;
 viewpatientreg_errorExists = Este paciente existe bajo este doctor;
+viewpatientreg_labelAssignedDoctor = Asignar a doctor;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Estudios Oculares;
@@ -141,6 +142,7 @@ viewpatientlist_title = Lista de Pacientes;
 viewpatientlist_subtitle = Seleccione un paciente para estudio; 
 viewpatientlist_headerPatient = Paciente;
 viewpatientlist_headerStatus = Estado;
+viewpatientlist_headerDoctor = Doctor;
 viewpatientlist_statusOK = OK;
 viewpatientlist_statusRepPending = Reportes pendientes;
 viewpatientlist_btnCreate = Crear Reporte;
@@ -156,7 +158,9 @@ viewpatientlist_msg_notvalid = Usuario no validado|Este usuario no ha sido valid
 viewpatientlist_ask_password = Se requiere contraseña;
 viewpatientlist_wrong_dr_password = La contraeña es incorrecta;
 viewpatientlist_view_all = Ver Todos los Pacientes;
+viewpatientlist_view_yours = Ver Sus Pacientes;
 viewpatientlist_filter = Buscar;
+viewpatientlist_archive_msg=Archivar|Se encuentra por archivar los datos de un estudio. Si procede la información permanecerá en la computadora<br>pero no podrá ser enviada a procesar en el futuro<br>¿Desea Continuar?|Si|No;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
@@ -239,6 +243,8 @@ viewselectdata_labelSubTitle = Seleccionar los estudios que desea incluir en un 
 viewselectdata_labelColReading = Lectura;
 viewselectdata_labelColBindingUC = Colores Unbound;
 viewselectdata_labelColBindingBC = Colores Bound;
+viewselectdata_labelNoUse = No utilizar en reporte;
+viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_btnDelete = Archivar;
 viewselectdata_btnCancel = CANCELAR;
 viewselectdata_btnGenReport = GENERAR REPORTE;
@@ -257,7 +263,8 @@ error_freq_check = Error de Frequencia<>Hubo un problema al obtener los datos de
 error_db_transaction = Error de Base de Datos|Hubo un error relacionado con la base de datos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
-error_db_wronginst = ID Incorrrecto|El ID de esta institución está equivocado o el doctor no fue registrado<br>Por favor contacte a ViewMind para resolverlo;
+error_db_wronginst = ID Incorrecto|El ID de esta institución está equivocado o el doctor no fue registrado<br>Por favor contacte a ViewMind para resolverlo;
+error_launcher_update = Se debe reiniciar<>En 5 segundos el programa se cerrará. Por favor reinicielo.;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Efectuar los cambios<>Los cambios que realizó requieren que se reinicie el programa;

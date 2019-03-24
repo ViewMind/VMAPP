@@ -230,7 +230,7 @@ bool DataPacket::saveFiles(const QString &directory){
 }
 
 
-QString DataPacket::saveFile(const QString &directory, quint8 fieldInfo){
+QString DataPacket::saveFile(const QString &directory, quint8 fieldInfo, const QString &fileNameSuffix){
 
     // Checking that everything is kosher.
     if (!fields.contains(fieldInfo)) return "";
@@ -239,7 +239,7 @@ QString DataPacket::saveFile(const QString &directory, quint8 fieldInfo){
 
     // Opening a file and saving the data as is.
     Field f =  fields.value(fieldInfo);
-    QString fileName = directory + "/" + f.data.toList().first().toString();
+    QString fileName = directory + "/" + f.data.toList().first().toString() + fileNameSuffix;
     QFile file (fileName);
     if (!file.open(QFile::WriteOnly)) return "";
     qint64 written = file.write(f.data.toList().last().toByteArray());
@@ -282,9 +282,17 @@ quint32 DataPacket::byteArrayToSize(const QByteArray &size){
     return ans;
 }
 
+QString DataPacket::getFileHash(const QString &filePath){
+    QFile file(filePath);
+    if (!file.exists()) return "";
+    if (!file.open(QFile::ReadOnly)) return "";
+    return QString(QCryptographicHash::hash(file.readAll(),QCryptographicHash::Sha3_256).toHex());
+}
+
 void DataPacket::print(){
     QList<quint8> keys = fields.keys();
     for (qint32 i = 0; i < keys.size(); i++){
         qWarning() << "Field of Type: " << keys.at(i);
     }
 }
+

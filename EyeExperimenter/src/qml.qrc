@@ -37,12 +37,12 @@
         <file>qml/VMReportEntry.qml</file>
         <file>qml/VMResultEntry.qml</file>
         <file>qml/VMPasswordField.qml</file>
-        <file>qml/ViewAllPatients.qml</file>
         <file>qml/VMPatientDoctorEntry.qml</file>
         <file>qml/VMAutoCompleteComboBox.qml</file>
         <file>qml/VMAutoCompleteCBEntry.qml</file>
-        <file>qml/ViewSelectDatForReport.qml</file>
-        <file>qml/VMDatSelectEntry.qml</file>
         <file>qml/VMMultipleSelectionShow.qml</file>
+        <file>qml/ViewDatSelectionDiag.qml</file>
+        <file>qml/VMDatItem.qml</file>
+        <file>qml/VMDatSelection.qml</file>
     </qresource>
 </RCC>

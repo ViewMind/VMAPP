@@ -4,11 +4,9 @@ Item {
 
     id: vmPatientEntry
 
-    property string vmPatientName: "Placeholder Text"
-    property string vmPatientUID: ""
     property int vmPatientColWidth: headerPatient.width
     property int vmStatusColWidth: headerStatus.width
-    property int vmItemIndex: 0
+    property int vmDoctorColWidth: headerDoctor.width
 
     readonly property int vmHeight: 30
     readonly property int vmFontSize: 12
@@ -40,11 +38,36 @@ Item {
             id: patientText
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: vmPatientName + " (" + vmPatientUID  + ")"
+            text: {
+                var dispid = "";
+                var parts = vmPatientUID.split("_");
+                if (parts.length === 3)dispid = parts[2];
+                else dispid = vmPatientUID;
+                return vmPatientName + " (" + dispid  + ")"
+            }
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: 20
+        }
+    }
+
+    Rectangle {
+        id: doctorRect
+        color: "#ffffff"
+        border.color: "#EDEDEE"
+        border.width: 2
+        height: vmHeight
+        width: vmDoctorColWidth
+        anchors.left: patientRect.right
+        anchors.top: parent.top
+        visible: (vmDrName !== "")
+        Text {
+            id: doctorText
+            font.family: viewHome.gothamR.name
+            font.pixelSize: vmFontSize
+            text: vmDrName
+            anchors.centerIn: parent
         }
     }
 
@@ -55,7 +78,10 @@ Item {
         border.width: 2
         height: vmHeight
         width: vmStatusColWidth
-        anchors.left: patientRect.right
+        anchors.left: {
+            if (doctorRect.visible) return doctorRect.right
+            else return patientRect.right;
+        }
         anchors.top: parent.top
         visible: vmIsOk
         Text {
@@ -74,7 +100,10 @@ Item {
         height: vmHeight
         width: vmStatusColWidth
         vmFont: viewHome.gothamM.name
-        anchors.left: patientRect.right
+        anchors.left: {
+            if (doctorRect.visible) return doctorRect.right
+            else return patientRect.right;
+        }
         anchors.top: parent.top
         onClicked: {
             vmPatientEntry.fetchReport(vmItemIndex);

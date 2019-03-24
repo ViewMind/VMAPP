@@ -8,6 +8,8 @@
 #include <QSharedMemory>
 #include <QCoreApplication>
 
+#include "Experiments/experiment.h"
+
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/LocalInformationManager/localinformationmanager.h"
@@ -38,8 +40,8 @@ public:
     Q_INVOKABLE QString loadTextFile(const QString &fileName);
     Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
     Q_INVOKABLE QStringList getErrorMessageForDBCode();
-    Q_INVOKABLE QStringList getFileListForPatient(qint32 type);
-    Q_INVOKABLE QStringList getFileListCompatibleWithSelectedBC(qint32 selectedBC);
+    Q_INVOKABLE QStringList getFileListForPatient(QString patuid, qint32 type);
+    Q_INVOKABLE QStringList getFileListCompatibleWithSelectedBC(QString patuid, qint32 selectedBC);
 
     //******************** Configuration Functions ***************************
     Q_INVOKABLE QString getConfigurationString(const QString &key);
@@ -50,40 +52,43 @@ public:
 
     //******************** Local DB Functions ***************************
     Q_INVOKABLE bool createPatientDirectory();
-    Q_INVOKABLE QStringList getPatientList(const QString &filter = "");
-    Q_INVOKABLE QStringList getUIDList();
-    Q_INVOKABLE QStringList getPatientIsOKList();
-    Q_INVOKABLE QStringList getDoctorList();
+    Q_INVOKABLE QStringList generatePatientLists(const QString &filter = "", bool showAll = false);
+    Q_INVOKABLE QStringList getPatientUIDLists() {return nameInfoList.patientUIDs;}
+    Q_INVOKABLE QStringList getPatientIsOKList() {return nameInfoList.patientISOKList; }
+    Q_INVOKABLE void loadDoctorSelectionInformation() { nameInfoList = lim.getDoctorList(); }
+    Q_INVOKABLE QStringList getDoctorNameList() {return nameInfoList.doctorNames; }
+    Q_INVOKABLE QStringList getDoctorUIDList() {return nameInfoList.doctorUIDs; }
     Q_INVOKABLE QString getDoctorUIDByIndex(qint32 selectedIndex);
+    Q_INVOKABLE qint32 getIndexOfDoctor(QString uid);
     Q_INVOKABLE bool isDoctorValidated(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorPasswordEmpty(qint32 selectedIndex);
     Q_INVOKABLE bool isDoctorPasswordCorrect(const QString &password);
     Q_INVOKABLE bool doesCurrentDoctorHavePassword() { return !lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID)).isEmpty(); }
     Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim.getDoctorInfo(configuration->getString(CONFIG_DOCTOR_UID));}
-    Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_DOCTOR_UID),configuration->getString(CONFIG_PATIENT_UID));}
-    Q_INVOKABLE bool addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide, bool isNew);
-    Q_INVOKABLE bool addNewPatientToDB(QVariantMap dbdatareq, QVariantMap dbdataopt, bool isNew);
+    Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_PATIENT_UID));}
+    Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide);
+    Q_INVOKABLE bool addNewPatientToDB(QVariantMap dbdata, bool isNew);
     Q_INVOKABLE void startDBSync();
     Q_INVOKABLE bool requestDrValidation(const QString &instPassword, qint32 selectedDr);
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
 
     //******************** Report Related Functions ***************************
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
-    Q_INVOKABLE void prepareAllPatientIteration(const QString &filter = "");
-    Q_INVOKABLE QStringList nextInAllPatientIteration();    
     Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);
-    Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, qint32 type);
-    Q_INVOKABLE void reloadPatientDatInformationForCurrentDoctor();
+    Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, QString patuid, qint32 type);
+    Q_INVOKABLE void reloadPatientDatInformation();
 
     //******************** Updater Related Functions **************************
-    Q_INVOKABLE void clearChangeLogFile();
+    Q_INVOKABLE bool clearChangeLogFile();
     Q_INVOKABLE QString checkForChangeLog();
+    Q_INVOKABLE void replaceEyeLauncher();
 
 signals:
     void synchDone();
 
     // Signal to FlowControl, indicating the next file set to process.
     void fileSetReady(const QStringList &fileSet);
+
 
 public slots:
     // For when the DB Transaction has finished.
@@ -106,24 +111,17 @@ private:
     CountryStruct *countries;
 
     // The list that holds list names and corresponding uids
-    QList<QStringList> nameInfoList;
+    LocalInformationManager::DisplayLists nameInfoList;
 
     // To connect to the DB in the server. Flags are required to provide the proper information to the QML side.
     SSLDBClient *dbClient;
     bool wasDBTransactionStarted;
-
-    // For next patient iteration
-    QList<QStringList> allPatientList;
-    qint32 allPatientIndex;
 
     // Stores the data selected for processing.
     DatFileInfoInDir::ReportGenerationStruct reportGenerationStruct;
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();
-
-    // Creates the directory substructure
-    bool createDirectorySubstructure(QString drname, QString pname, QString baseDir, QString saveAs);
 
     // Sets the language for program.
     void changeLanguage();

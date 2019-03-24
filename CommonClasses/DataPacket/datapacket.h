@@ -5,6 +5,7 @@
 #include <QVariant>
 #include <QFileInfo>
 #include <QDir>
+#include <QCryptographicHash>
 #include "../../CommonClasses/common.h"
 
 class DataPacket
@@ -36,10 +37,16 @@ public:
     static const quint8 DPFI_DB_INST_UID                              = 17;
     static const quint8 DPFI_DB_ET_SERIAL                             = 18;
     static const quint8 DPFI_PROCESSING_ACK                           = 19;
-    static const quint8 DPFI_UPDATE_REQUEST                           = 20;
-    static const quint8 DPFI_UPDATE_EXE                               = 21;
-    static const quint8 DPFI_UPDATE_CHANGES                           = 22;
-    static const quint8 DPFI_UPDATE_LANG                              = 23;
+    static const quint8 DPFI_UPDATE_EYEEXP_ID                         = 20;
+    static const quint8 DPFI_UPDATE_EYEEXP                            = 21;
+    static const quint8 DPFI_UPDATE_EYELAUNCHER                       = 22;
+    static const quint8 DPFI_UPDATE_CONFIG                            = 23;
+    static const quint8 DPFI_UPDATE_LOGFILE                           = 24;
+    static const quint8 DPFI_UPDATE_FLOGNAMES                         = 25;
+    static const quint8 DPFI_UPDATE_FLOGCONTENT                       = 26;
+    static const quint8 DPFI_UPDATE_LANG                              = 27;
+    static const quint8 DPFI_UPDATE_RESULT                            = 28;
+    static const quint8 DPFI_UPDATE_CHANGES                           = 29;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;
@@ -70,7 +77,7 @@ public:
 
     // Saves a particular field as a file in the specified directory. Returns the full file path if successful.
     // Otherwise returns an empty string.
-    QString saveFile(const QString &directory, quint8 fieldInfo);
+    QString saveFile(const QString &directory, quint8 fieldInfo, const QString &fileNameSuffix = "");
 
     // Saves all files in the packet to a directory
     bool saveFiles(const QString& directory);
@@ -94,6 +101,7 @@ public:
     // Transform a size to a numberic representation of 4 bytes.
     static QByteArray sizeToByteArray(quint32 size);
     static quint32 byteArrayToSize(const QByteArray &size);
+    static QString getFileHash(const QString &filePath);
 
 private:
 

@@ -6,6 +6,7 @@ Item{
     readonly property string vmCONFIG_PATIENT_DIRECTORY: "patient_directory"
     readonly property string vmCONFIG_DOCTOR_NAME: "doctor_name"
     readonly property string vmCONFIG_DOCTOR_EMAIL: "doctor_email"
+    readonly property string vmCONFIG_DOCTOR_WORK_UID: "doctor_work_uid"
     readonly property string vmCONFIG_MOVING_WINDOW_DISP: "moving_window_max_dispersion"
     readonly property string vmCONFIG_MIN_FIXATION_LENGTH: "minimum_fixation_length"
     readonly property string vmCONFIG_SAMPLE_FREQUENCY: "sample_frequency"

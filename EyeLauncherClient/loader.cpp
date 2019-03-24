@@ -33,18 +33,16 @@ Loader::Loader(QObject *parent) : QObject(parent)
     //connect(&timer,&QTimer::timeout,this,&Loader::on_timeOut);
     connect(&timeoutTimer,SIGNAL(timeout()),this,SLOT(on_timeOut()));
 
-    connectionState = CS_NONE;
-
 }
 
 QString Loader::getTitleString(){
-   QString ans = LAUNCHER_VERSION;
-   ans = ans;
+    QString ans = LAUNCHER_VERSION;
+    ans = ans;
 #ifdef COMPILE_FOR_PRODUCTION
-   return ans;
+    return ans;
 #else
-   ans = ans + " DEVELOPMENT";
-   return ans;
+    ans = ans + " DEVELOPMENT";
+    return ans;
 #endif
 }
 
@@ -56,7 +54,10 @@ QString Loader::getStringForKey(const QString &key){
 }
 
 void Loader::checkForUpdates(){
-    // Attempting to determine which EyeTracker branch is installed.
+
+    emit(changeMessage(getStringForKey("msg_wait_update_check")));
+
+    // Getting the institution and eyeexp id information.
     ConfigurationManager cfg;
     if (!cfg.loadConfiguration(FILE_EYEEXP_CONFIGURATION,COMMON_TEXT_CODEC)){
         logger.appendError("Could not open EyeExperimenter configuration file: " + cfg.getError());
@@ -64,56 +65,114 @@ void Loader::checkForUpdates(){
         return;
     }
 
-    QString ettype = cfg.getString(CONFIG_EYETRACKER_CONFIGURED);
-    if (ettype == CONFIG_P_ET_GP3HD) updateMessage = UPDATE_CHECK_GP_CODE;
-    else if (ettype == CONFIG_P_ET_REDM) updateMessage = UPDATE_CHECK_SMI_CODE;
-    else {
-        logger.appendError("Could not determine EyeExperimenter type from " + ettype);
-        startEyeExperimenter();
-        return;
-    }
-
     instUID = cfg.getString(CONFIG_INST_UID);
-    if (instUID == ""){
+    if (instUID.isEmpty()){
         logger.appendError("Could not determine institution id");
         startEyeExperimenter();
         return;
     }
 
-    // Calculating the hash of the current executable
-    QFile exe(FILE_EYEEXP_EXE);
-    if (!exe.open(QFile::ReadOnly)){
-        logger.appendError("Could not open the executable file for calculating the hash");
+    eyeexpID = cfg.getString(CONFIG_EYEEXP_NUMBER);
+    if (eyeexpID.isEmpty()){
+        logger.appendError("Could not determine institution id");
         startEyeExperimenter();
         return;
     }
 
-    hashLocalExe = QString(QCryptographicHash::hash(exe.readAll(),QCryptographicHash::Sha3_256).toHex());
-    exe.close();
+    // Getting the language setting
+    ConfigurationManager settings;
+    if (!settings.loadConfiguration(FILE_EYEEXP_SETTINGS,COMMON_TEXT_CODEC)){
+        logger.appendError("Could not load the settings file: " + settings.getError());
+    }
 
-    emit(changeMessage(getStringForKey("msg_wait_update_check")));
+    selectedLanguage = settings.getString(CONFIG_REPORT_LANGUAGE);
+    if (selectedLanguage.isEmpty()){
+        logger.appendError("Could not determine application language");
+        startEyeExperimenter();
+        return;
+    }
+    changeLogFile = QString(FILE_CHANGELOG_UPDATER) + "_" + selectedLanguage;
+
+    // Loading the memory file and the flogs, if necessary.
+    flogFilesSent.clear();
+    QFile memoryFile(FILE_FREQLOG_MEMORY);
+    if (memoryFile.open(QFile::ReadOnly)){
+        QDataStream reader(&memoryFile);
+        reader >> flogFilesSent;
+        memoryFile.close();
+    }
+    else{
+        logger.appendWarning("Could not open memory file for reading");
+    }
+    getAllFreqLogFilesNotSent(flogFilesSent);
+
+    // Calculating the hashes.
+    eyeLauncherHash = DataPacket::getFileHash(FILE_EYEEXP_LAUNCHER);
+    eyeExperimenterHash = DataPacket::getFileHash(FILE_EYEEXP_EXE);
+    eyeConfigurationHash = DataPacket::getFileHash(FILE_EYEEXP_CONFIGURATION);
+
+    if (eyeLauncherHash.isEmpty()){
+        logger.appendError("Could not determine launcher hash");
+    }
+    if (eyeExperimenterHash.isEmpty()){
+        logger.appendError("Could not determine EyeExperimenter hash");
+    }
+    if (eyeConfigurationHash.isEmpty()){
+        logger.appendError("Could not determine Configuration hash");
+    }
 
     // Connecting to the server
-    connectionState = CS_CONNECTING_FOR_CHECK;
-    isConnReady = false;
-    serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_DB_COMM);
-    timeoutTimer.start(TIMEOUT_TO_CONNECT);
-    //qWarning() << "Attempting to connect to host";
-
-}
-
-void Loader::requestExeUpdate(){
-    // Connecting to the server
-    emit(changeMessage(getStringForKey("msg_downloading_updates")));
-    connectionState = CS_CONNECTING_FOR_UPDATE;
+    connectionState = CS_CONNECTING;
     serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_DB_COMM);
     timeoutTimer.start(TIMEOUT_TO_CONNECT);
 }
 
+//************************************* File Gathering Funcions ****************************************
+void Loader::getAllFreqLogFilesNotSent(const QSet<QString> &sentAllReady){
+
+    flogContents.clear();
+    flogNames.clear();
+
+    QString eyeExpDBDir = "../" + QString(DIRNAME_RAWDATA);
+    QStringList filters; filters << "*.dat.flog";
+    QStringList patientDirs = QDir(eyeExpDBDir).entryList(QStringList(),QDir::Dirs | QDir::NoDotAndDotDot);
+
+    for (qint32 i = 0; i < patientDirs.size(); i++){
+
+        // Searching for all flog files in the aborted directory.
+        QString abortDir = eyeExpDBDir + "/" + patientDirs.at(i) + "/" + QString(DIRNAME_ABORTED);
+        QStringList ferrorFiles = QDir(abortDir).entryList(filters,QDir::Files);
+
+        // Each of these files is processed and if the time stamp is lower or empty, added for sending.
+        for (qint32 j = 0; j < ferrorFiles.size(); j++){
+
+            //qWarning() << "FERROR FILE: " << patientDirs.at(i) << ferrorFiles.at(j) << "COMPARE STRING:" << info.date + info.hour;
+            QString fileName = patientDirs.at(i) + "_" + ferrorFiles.at(j);
+
+            // Adding the files for sending
+            if (sentAllReady.contains(fileName)) continue;
+
+            QFile file(abortDir + "/" + ferrorFiles.at(j));
+            if (!file.open(QFile::ReadOnly)){
+                logger.appendError("Could not open freq log file: " + file.fileName() + " for reading its contents");
+                continue;
+            }
+
+            QTextStream reader(&file);
+            flogContents << reader.readAll();
+            file.close();
+            flogNames << fileName;
+
+        }
+
+    }
+
+    qWarning() << "SENDING: " << flogNames;
+
+}
 
 //************************************* Starting the EyeExperimenter ****************************************
 void Loader::startEyeExperimenter(){
-
 
     //qWarning() << "Starting eyeserver";
     emit(changeMessage(getStringForKey("msg_starting_the_appliation")));
@@ -130,181 +189,166 @@ void Loader::startEyeExperimenter(){
     }
 
     QProcess eyeExpProcess;
+    connectionState = CS_POLLING;
     eyeExpProcess.setWorkingDirectory("../");
     eyeExpProcess.setProgram(FILE_EYEEXP_EXE);
     eyeExpProcess.startDetached();
-    connectionState = CS_STARTING_EYEEXP;
     timeoutTimer.start(TIMEOUT_CONN_READY_POLLING);
 }
-
 
 //************************************* Communication and timeout slots ****************************************
 void Loader::on_encryptedSuccess(){
 
     timeoutTimer.stop();
     DataPacket tx;
-
-    //qWarning() << "Connected to host";
-
-    if (connectionState == CS_CONNECTING_FOR_CHECK){
-        //qWarning() << "Sending update message" << updateMessage;
-        tx.addString(updateMessage,DataPacket::DPFI_UPDATE_REQUEST);
-        tx.addString(instUID,DataPacket::DPFI_DB_INST_UID);
-        QByteArray ba = tx.toByteArray();
-        qint64 num = serverConn->write(ba.constData(),ba.size());
-        if (num != ba.size()){
-            logger.appendError("Could not send check update request.");
-            startEyeExperimenter();
-            return;
-        }
-        rx.clearAll();
-        connectionState = CS_CHECK_UPDATE_SENT;
-        timeoutTimer.start(TIMEOUT_TO_GET_UPDATE_CHECK);
-        //qWarning() << "Requesting update check";
+    if (!tx.addFile(FILE_EYEEXP_LOG,DataPacket::DPFI_UPDATE_LOGFILE)){
+        logger.appendError("No log file to add to the package");
     }
-    else if (connectionState == CS_CONNECTING_FOR_UPDATE){
-        QString msg;
-        if (updateMessage == UPDATE_CHECK_GP_CODE) msg = UPDATE_GET_GP_CODE;
-        else if (updateMessage == UPDATE_CHECK_SMI_CODE) msg = UPDATE_GET_SMI_CODE;
-        DataPacket tx;
-        tx.addString(msg,DataPacket::DPFI_UPDATE_REQUEST);
-        tx.addString(selectedLanguage,DataPacket::DPFI_UPDATE_LANG);
-        QByteArray ba = tx.toByteArray();
-        qint64 num = serverConn->write(ba.constData(),ba.size());
-        if (num != ba.size()){
-            logger.appendError("Could not send get update request.");
-            startEyeExperimenter();
-            return;
-        }
-        rx.clearAll();
-        //qWarning() << "Exe Update Request sent";
-        connectionState = CS_GET_UPDATE_SENT;
-        timeoutTimer.start(TIMEOUT_TO_GET_EXE);
-    }
+    tx.addString(instUID,DataPacket::DPFI_DB_INST_UID);
+    tx.addString(eyeexpID,DataPacket::DPFI_UPDATE_EYEEXP_ID);
+    tx.addString(selectedLanguage,DataPacket::DPFI_UPDATE_LANG);
+    tx.addString(eyeExperimenterHash,DataPacket::DPFI_UPDATE_EYEEXP);
+    tx.addString(eyeLauncherHash,DataPacket::DPFI_UPDATE_EYELAUNCHER);
+    tx.addString(eyeConfigurationHash,DataPacket::DPFI_UPDATE_CONFIG);
+    tx.addString(eyeConfigurationHash,DataPacket::DPFI_UPDATE_CONFIG);
+    tx.addString(flogNames.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_UPDATE_FLOGNAMES);
+    tx.addString(flogContents.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_UPDATE_FLOGCONTENT);
 
+    QByteArray ba = tx.toByteArray();
+    qint64 num = serverConn->write(ba.constData(),ba.size());
+    if (num != ba.size()){
+        logger.appendError("Could not send check update request.");
+        startEyeExperimenter();
+        return;
+    }
+    rx.clearAll();
+    connectionState = CS_GETTING_INFO;
+    timeoutTimer.start(TIMEOUT_TO_GET_UPDATE_CHECK);
 }
 
 void Loader::on_readyRead(){
 
     quint8 errcode = rx.bufferByteArray(serverConn->readAll());
     if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
-
         timeoutTimer.stop();
 
-        if (connectionState == CS_CHECK_UPDATE_SENT){
-            QString hash = rx.getField(DataPacket::DPFI_UPDATE_REQUEST).data.toString();
-            //qWarning() << "Update check done. Comparing" << hash << " with " << hashLocalExe;
-            if ((hash != hashLocalExe) && (hash != UPDATE_FORCE_NO_UPDATE_MSG)){
-                connectionState = CS_WAIT_FOR_CONNECTION_READY;                
-                logger.appendStandard("Update Found!: Remote Hash: " + hash + ". Local hash: " + hashLocalExe);                
-                hashLocalExe = hash; // Hash is saved for later comparison.
-                timeoutTimer.start(TIMEOUT_CONN_READY_POLLING);
-                return;
-            }
-            else {
-                // No update.
-                startEyeExperimenter();
-                return;
-            }
-        }
-        else if (connectionState == CS_GET_UPDATE_SENT){
-
-            // First step is backing up the olde exe.
-            QFile oldexe(FILE_EYEEXP_OLDEXE);
-            if (oldexe.exists()) oldexe.remove();
-            if (!QFile::copy(FILE_EYEEXP_EXE,FILE_EYEEXP_OLDEXE)){
-                logger.appendError("Could not create backup of the executable file. Aborting update");
-                startEyeExperimenter();
-                return;
-            }
-
-            QString filename;
-            filename = rx.saveFile(".",DataPacket::DPFI_UPDATE_EXE);
-            QString logfile = rx.saveFile(".",DataPacket::DPFI_UPDATE_CHANGES);
-            if (filename.isEmpty()){
-                logger.appendError("Could not create new executable");
-                startEyeExperimenter();
-                return;
-            }
-
-            if (logfile.isEmpty()){
-                logger.appendWarning("Could not save the change log. Continuing anyway");
-            }
-
-            // The hash of the file is checked.
-            QFile newexe(filename);
-            if (!newexe.open(QFile::ReadOnly)){
-                logger.appendError("Could not open newly created exe for hash computation");
-                newexe.remove();
-                startEyeExperimenter();
-                return;
-            }
-
-            QString hash = QString(QCryptographicHash::hash(newexe.readAll(),QCryptographicHash::Sha3_256).toHex());
-            newexe.close();
-
-            if (hash != hashLocalExe){
-                logger.appendError("Hash error on update. Was expecting: " + hashLocalExe + ". But got: " + hash);
-                newexe.remove();
-                startEyeExperimenter();
-                return;
-            }
-
-            // All checks passed so now the executable file is overwritten.
-            // The file is saved in the current directory before being copied.
-            QFile currentexe(FILE_EYEEXP_EXE);
-            currentexe.remove();
-            if (!QFile::copy(filename,FILE_EYEEXP_EXE)){
-                logger.appendError("Failed to copy locally downoladed new executable to its final destination");
-            }
-            newexe.remove();
+        QString ans = rx.getField(DataPacket::DPFI_UPDATE_RESULT).data.toString();
+        if (ans != "OK"){
+            logger.appendError("There was a problem in the server with the update request");
             startEyeExperimenter();
             return;
         }
-    }
-    else if (errcode == DataPacket::DATABUFFER_RESULT_ERROR){
-        logger.appendError("Buffering data from the receiver");
-        serverConn->disconnectFromHost();
+
+
+        // Since everything was ok. The Flog files are added to the memory.
+        for (qint32 i = 0; i < flogNames.size(); i++){
+            flogFilesSent << flogNames.at(i);
+        }
+        QFile memory(FILE_FREQLOG_MEMORY);
+        if (memory.open(QFile::WriteOnly)){
+            QDataStream writer(&memory);
+            writer << flogFilesSent;
+            memory.close();
+        }
+        else{
+            logger.appendError("Could not save list of sent files to memory");
+        }
+
+        // Renaming the EyeExperimenter log file.
+        QString oldlog = QString(FILE_EYEEXP_LOG) + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm");
+        if (!QFile::copy(FILE_EYEEXP_LOG,oldlog)){
+            logger.appendError("Could not create the the log file backup: " + oldlog);
+        }
+
+        // Checking if there is a new version of the launcher.
+        if (rx.hasInformationField(DataPacket::DPFI_UPDATE_EYELAUNCHER)){
+            // Saved locally. Its the responsability of the EyeExperimenter to actually replace it.
+            QString eyalauncher = rx.saveFile(".",DataPacket::DPFI_UPDATE_EYELAUNCHER);
+            if (eyalauncher.isEmpty()) logger.appendError("Received UPDATE for EyeLauncherClient but was not able to save it");
+            else logger.appendStandard("Downloaded update for EyeLauncherClient");
+        }
+
+        // Checking if there is a new version of the configuration file
+        if (rx.hasInformationField(DataPacket::DPFI_UPDATE_CONFIG)){
+            // Making a backup of the old file.
+            QFile(FILE_EYEEXP_CONFIGURATION_BKP).remove();
+            if (!QFile::copy(FILE_EYEEXP_CONFIGURATION,FILE_EYEEXP_CONFIGURATION_BKP)){
+                logger.appendError("Could not create a backup of the configuration file. Not updating");
+            }
+            else {
+                QString fname = rx.saveFile("../",DataPacket::DPFI_UPDATE_CONFIG);
+                if (!fname.isEmpty()){
+                    logger.appendStandard("Downloaded update for the configuration file");
+                }
+                else{
+                    logger.appendError("Could not save new configuration file. Attempting to restore previous one.");
+                    if (!QFile::copy(FILE_EYEEXP_CONFIGURATION_BKP,FILE_EYEEXP_CONFIGURATION)){
+                        logger.appendError("Could not restore backup of the configuration file. Launch will fail");
+                    }
+                }
+            }
+        }
+
+        // Checking if there is a new version of the actual eye experimenter file
+        if (rx.hasInformationField(DataPacket::DPFI_UPDATE_EYEEXP)){
+            // Making a backup of the old file.
+            QFile(FILE_EYEEXP_OLDEXE).remove();
+            if (!QFile::copy(FILE_EYEEXP_EXE,FILE_EYEEXP_OLDEXE)){
+                logger.appendError("Could not create a backup of the EyeExperimenter file. Not updating");
+            }
+            else {
+                if (!QFile(FILE_EYEEXP_EXE).remove()){
+                    logger.appendError("Could not delete existing EyeExperimenter");;
+                }
+                else{
+                    QString fname = rx.saveFile("../",DataPacket::DPFI_UPDATE_EYEEXP);
+                    if (!fname.isEmpty()){
+                        logger.appendStandard("Downloaded update for the EyeExperimenter file");
+                    }
+                    else{
+                        logger.appendError("Could not save new the EyeExperimenter file. Attempting to restore previous one.");
+                        if (!QFile::copy(FILE_EYEEXP_OLDEXE,FILE_EYEEXP_EXE)){
+                            logger.appendError("Could not restore EyeExperimenter of the configuration file. Launch will fail if the original file was deleted");
+                        }
+                    }
+                }
+            }
+        }
+
+        // Saving the changelog file if present.
+        if (rx.hasInformationField(DataPacket::DPFI_UPDATE_CHANGES)){
+            QString fname = rx.saveFile(".",DataPacket::DPFI_UPDATE_CHANGES);
+            if (!fname.isEmpty()) logger.appendError("Could not save changelog file");
+            else logger.appendStandard("Saved changelog file: " + fname);
+        }
+
         startEyeExperimenter();
-        return;
+
     }
+
 }
 
 void Loader::on_timeOut(){
     //qWarning() << "Timeout conn state" << connectionState;
-    if ((connectionState == CS_CONNECTING_FOR_CHECK) || (connectionState == CS_CONNECTING_FOR_UPDATE)){
+    if (connectionState == CS_CONNECTING){
         timeoutTimer.stop();
         logger.appendError("Connection timeout");
         startEyeExperimenter();
         return;
     }
-    else if (connectionState == CS_CHECK_UPDATE_SENT){
+    else if (connectionState == CS_GETTING_INFO) {
         timeoutTimer.stop();
         logger.appendError("Check update information did not arrive in time");
         startEyeExperimenter();
         return;
     }
-    else if (connectionState == CS_GET_UPDATE_SENT){
-        timeoutTimer.stop();
-        logger.appendError("Update download took too long");
-        startEyeExperimenter();
-        return;
-    }
-    else if (connectionState == CS_WAIT_FOR_CONNECTION_READY){
-        //qWarning() << "Checking if connection is ready";
-        if (isConnReady){
-            timeoutTimer.stop();
-            requestExeUpdate();
-        }
-    }
-    else if (connectionState == CS_STARTING_EYEEXP){
+    else if (connectionState == CS_POLLING) {
         if (!QFile(changeLogFile).exists()){
             timeoutTimer.stop();
             QCoreApplication::quit();
         }
     }
 }
-
 
 //************************************* Socket and SSL Errors, Socket state changes ****************************************
 
@@ -317,18 +361,18 @@ void Loader::on_sslErrors(const QList<QSslError> &errors){
 }
 
 void Loader::on_socketStateChanged(QAbstractSocket::SocketState state){
-    //    Q_UNUSED(state);
+    Q_UNUSED(state);
     //    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
     //    log.appendStandard(QString("Log: Socket state - ") + metaEnum.valueToKey(state));
-    if (state == QAbstractSocket::UnconnectedState){
-        isConnReady = true;
-        if (connectionState == CS_GET_UPDATE_SENT){
-            // Connection was broken off while expecting the update.
-            logger.appendError("Connection was broken off while wating for the updated executable");
-            timeoutTimer.stop();
-            startEyeExperimenter();
-        }
-    }
+    //    if (state == QAbstractSocket::UnconnectedState){
+    //        isConnReady = true;
+    //        if (connectionState == CS_GET_UPDATE_SENT){
+    //            // Connection was broken off while expecting the update.
+    //            logger.appendError("Connection was broken off while wating for the updated executable");
+    //            timeoutTimer.stop();
+    //            startEyeExperimenter();
+    //        }
+    //    }
 }
 
 void Loader::on_socketError(QAbstractSocket::SocketError error){

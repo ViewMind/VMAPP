@@ -82,7 +82,7 @@ void DBCommSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
         // Information has arrived ok. Starting the process.
         //log.appendStandard("Done buffering data for " + QString::number(socket));
         sockets.value(socket)->stopTimer();
-        if (sockets.value(socket)->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_REQUEST)) processUpdateRequest(socket);
+        if (sockets.value(socket)->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_EYEEXP_ID)) processUpdateRequest(socket);
         else processSQLRequest(socket);
         break;
     case SSLIDSocket::SSL_SIGNAL_DATA_RX_ERROR:
@@ -473,135 +473,130 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
 }
 
 void DBCommSSLServer::processUpdateRequest(quint64 socket){
-    QString whichupdate =  sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_REQUEST).data.toString();
 
-    if (whichupdate == UPDATE_CHECK_GP_CODE){
-        QString inst_uid = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
-        sendExeHash(PATH_TO_UPDATE_GP,"GP",socket,inst_uid);
-    }
-    else if (whichupdate == UPDATE_CHECK_SMI_CODE){
-        QString inst_uid = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
-        sendExeHash(PATH_TO_UPDATE_SMI,"SMI",socket,inst_uid);
-    }
-    else if (whichupdate == UPDATE_GET_GP_CODE){
-        QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
-        sendExe(PATH_TO_UPDATE_GP,"GP",lang,socket);
-    }
-    else if (whichupdate == UPDATE_GET_SMI_CODE){
-        QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
-        sendExe(PATH_TO_UPDATE_SMI,"SMI",lang,socket);
-    }
-    else{
-        log.appendError("Unrecognized update message: " + whichupdate);
-        removeSocket(socket);
+    QString inst_uid = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
+    QString eyeexp_number = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYEEXP_ID).data.toString();
+
+    // Verifying that the directory exists
+    QString basePath = QString(DIRNAME_UPDATE_DIR) + "/" + inst_uid + "/" + eyeexp_number;
+    if (!QDir(basePath).exists()){
+        log.appendError("Could not find update directory: " + basePath);
+        sendUpdateAns(DataPacket(),socket,"FAILED");
         return;
     }
-}
 
-void DBCommSSLServer::sendExeHash(const QString &path, const QString &exetype, quint64 socket, const QString &instUid){
 
-    QString hash = UPDATE_FORCE_NO_UPDATE_MSG;
+    // Verifying that the log directories exists.
+    QDir baseDir(basePath);
+    QString logDirPath = basePath + "/" + QString(DIRNAME_UPDATE_DIR_LOG_SUBIDR);
+    QString flogDirPath = basePath + "/" + QString(DIRNAME_UPDATE_DIR_FLOGS_SUBIDR);
+    baseDir.mkdir(DIRNAME_UPDATE_DIR_LOG_SUBIDR);
+    baseDir.mkdir(DIRNAME_UPDATE_DIR_FLOGS_SUBIDR);
+    if (!QDir(logDirPath).exists()){
+        log.appendError("Could not create LOG Directory: " + logDirPath);
+        sendUpdateAns(DataPacket(),socket,"FAILED");
+        return;
+    }
+    if (!QDir(flogDirPath).exists()){
+        log.appendError("Could not create FLOG Directory: " + flogDirPath);
+        sendUpdateAns(DataPacket(),socket,"FAILED");
+        return;
+    }
 
-    if (instUid != ""){
-        if (isInstEnabled(instUid)){
-            QFile exe(path);
-            if (!exe.exists()){
-                log.appendError("Could not find the " + exetype + " Executable found in its path");
-                removeSocket(socket);
-                return;
-            }
 
-            if (!exe.open(QFile::ReadOnly)){
-                log.appendError("Could not open the " + exetype + " Executable for reading");
-                removeSocket(socket);
-                return;
-            }
+    // Saving the log files
+    QString timestamp = "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss");
+    sockets.value(socket)->getDataPacket().saveFile(logDirPath,DataPacket::DPFI_UPDATE_LOGFILE,timestamp);
 
-            hash = QString(QCryptographicHash::hash(exe.readAll(),QCryptographicHash::Sha3_256).toHex());
-            exe.close();
+    // Saving flogs if any.
+    if (sockets.value(socket)->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_FLOGNAMES)){
+
+        QString filenames_str = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_FLOGNAMES).data.toString();
+        QString filecontents_str = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_FLOGCONTENT).data.toString();
+        QStringList filenames = filenames_str.split(DB_LIST_IN_COL_SEP);
+        QStringList filecontens = filecontents_str.split(DB_LIST_IN_COL_SEP);
+
+        if (filecontens.size() != filenames.size()){
+            log.appendError("Number of flog filenames : (" + QString::number(filecontens.size())  + ") does not match the number of file contents (" + QString::number(filenames.size()) + ")");
+            sendUpdateAns(DataPacket(),socket,"FAILED");
+            return;
         }
-    }
 
-    DataPacket tx;
-    tx.addString(hash,DataPacket::DPFI_UPDATE_REQUEST);
-    QByteArray ba = tx.toByteArray();
-
-    if (!sockets.contains(socket)){
-        log.appendError("When sending executable, socket no longer found in list");
-        return;
-    }
-
-    qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
-    if (num != ba.size()){
-        log.appendError("Failure sending hash for " + exetype + " file: " + sockets.value(socket)->socket()->peerAddress().toString());
-    }
-    removeSocket(socket);
-
-}
-
-void DBCommSSLServer::sendExe(const QString &path, const QString &exetype, const QString lang , quint64 socket){
-
-    QFile exe(path);
-    if (!exe.exists()){
-        log.appendError("Could not find the " + exetype + " Executable found in its path");
-        removeSocket(socket);
-        return;
-    }
-
-    QString pathToChanges = QString(PATH_TO_LATESTCHANGES) + "/" + QString(FILE_CHANGELOG_UPDATER) + "_" + lang;
-    QFile changes(pathToChanges);
-    if (!changes.exists()){
-        log.appendError("Could not find the changes file in its path: " + pathToChanges);
-        removeSocket(socket);
-        return;
-    }
-
-
-    DataPacket tx;
-    if (!tx.addFile(path,DataPacket::DPFI_UPDATE_EXE)){
-        log.appendError("Could not serialize the " + exetype + " executable on " + path);
-        removeSocket(socket);
-        return;
-    }
-    if (!tx.addFile(pathToChanges,DataPacket::DPFI_UPDATE_CHANGES)){
-        log.appendError("Could not serialize the lastest changes file");
-        removeSocket(socket);
-        return;
-    }
-
-    QByteArray ba = tx.toByteArray();
-
-    if (!sockets.contains(socket)){
-        log.appendError("When sending executable, socket no longer found in list");
-        return;
-    }
-
-    qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
-    if (num != ba.size()){
-        log.appendError("Failure sending exe data for " + exetype + " file: " + sockets.value(socket)->socket()->peerAddress().toString());
-    }
-    removeSocket(socket);
-
-}
-
-bool DBCommSSLServer::isInstEnabled(const QString &uid){
-
-    QFile file(FILE_INST_ENABLED_UPDATE);
-    if (!file.open(QFile::ReadOnly)){
-        log.appendError("Could not open enabled file " + file.fileName() + " for reading");
-        return false;
-    }
-    QTextStream reader(&file);
-    while (!reader.atEnd()){
-        QString line = reader.readLine();
-        if (line.contains(uid)){
+        for (qint32 i = 0; i < filecontens.size(); i++){
+            QFile file(flogDirPath + "/" + filenames.at(i));
+            if (!file.open(QFile::WriteOnly)){
+                log.appendError("Could not open f log file for writing: " + file.fileName());
+                continue;
+            }
+            QTextStream writer(&file);
+            writer << filecontens.at(i);
             file.close();
-            return true;
+        }
+
+    }
+
+    // Checking the hashes sent.
+    DataPacket tx;
+    QString eyeexehash      = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYEEXP).data.toString();
+    QString confighash      = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_CONFIG).data.toString();
+    QString eyelauncherhash = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYELAUNCHER).data.toString();
+
+    QString hash = DataPacket::getFileHash(FILENAME_EYE_LAUNCHER);
+    if (hash.isEmpty()){
+        log.appendError("Could not compute hash for the local eyelauncher");
+    }
+    else if ((hash != eyelauncherhash) && (!eyelauncherhash.isEmpty())){
+        if (!tx.addFile(FILENAME_EYE_LAUNCHER,DataPacket::DPFI_UPDATE_EYELAUNCHER)){
+            log.appendError("Could not add local eyelauncher to send back");;
         }
     }
-    file.close();
-    return false;
 
+    QString hashFilePath = basePath + "/" + QString(FILENAME_CONFIGURATION);
+    hash = DataPacket::getFileHash(hashFilePath);
+    if (hash.isEmpty()){
+        log.appendError("Could not compute hash for the local configuration file on path: " + hashFilePath);
+    }
+    else if ((hash != confighash) && !confighash.isEmpty()){
+        if (!tx.addFile(hashFilePath,DataPacket::DPFI_UPDATE_CONFIG)){
+            log.appendError("Could not add local configuration to send back: " + hashFilePath);
+        }
+    }
+
+    hashFilePath = basePath + "/" + QString(FILENAME_EYE_EXPERIMENTER);
+    hash = DataPacket::getFileHash(hashFilePath);
+    if (hash.isEmpty()){
+        log.appendError("Could not compute hash for the local eye experimetner file on path: " + hashFilePath);
+    }
+    else if ((hash != eyeexehash) && !eyeexehash.isEmpty()){
+        if (!tx.addFile(hashFilePath,DataPacket::DPFI_UPDATE_EYEEXP)){
+            log.appendError("Could not add local eye experimenter to send back: " + hashFilePath);
+        }
+
+        // Getting the laanguage in order to return the change log.
+        QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
+        QString changeLogFilepath = basePath + "/" + QString(FILENAME_CHANGELOG) + "_" + lang;
+        if (!tx.addFile(changeLogFilepath,DataPacket::DPFI_UPDATE_CHANGES)){
+            log.appendError("Could not add local eye experimenter to send back: " + changeLogFilepath);
+        }
+    }
+
+    sendUpdateAns(tx,socket,"OK");
+
+}
+
+void DBCommSSLServer::sendUpdateAns(DataPacket tx, quint64 socket, const QString &ans){
+    tx.addString(ans,DataPacket::DPFI_UPDATE_RESULT);
+    QByteArray ba = tx.toByteArray();
+    if (!sockets.contains(socket)){
+        log.appendError("When sending update answer, socket no longer found in list");
+        return;
+    }
+
+    qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+    if (num != ba.size()){
+        log.appendError("Failure sending update answer to: " + sockets.value(socket)->socket()->peerAddress().toString());
+    }
+    removeSocket(socket);
 }
 
 void DBCommSSLServer::changedState(quint64 id){

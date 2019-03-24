@@ -17,15 +17,18 @@
 #define   DIRNAME_DBBKP                                 "dbbkp"
 #define   DIRNAME_LAUNCHER                              "launcher"
 #define   DIRNAME_PROCESSED_DATA                        "processed_data"
+#define   DIRNAME_ARCHIVE                               "archive"
+#define   DIRNAME_ABORTED                               "exp_aborted"
 
 // The semaphore name. To prevent multiple instances for the same application
-#define   SEMAPHORE_NAME                                   "viewind_eyeexperimenter_semaphore"
-#define   SHAREDMEMORY_NAME                                "viewind_eyeexperimenter_shared_memory"
+#define   SEMAPHORE_NAME                                "viewind_eyeexperimenter_semaphore"
+#define   SHAREDMEMORY_NAME                             "viewind_eyeexperimenter_shared_memory"
 
 // Configuration key values (cmd names in the configuration file)
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
 #define   CONFIG_DOCTOR_NAME                            "doctor_name"
 #define   CONFIG_DOCTOR_UID                             "doctor_uid"
+#define   CONFIG_DOCTOR_WORK_UID                        "doctor_work_uid"
 #define   CONFIG_DOCTOR_EMAIL                           "doctor_email"
 #define   CONFIG_MOVING_WINDOW_DISP                     "moving_window_max_dispersion"
 #define   CONFIG_MIN_FIXATION_LENGTH                    "minimum_fixation_length"
@@ -84,10 +87,13 @@
 #define   CONFIG_DBLOGFILE_LOCATION                     "dblogfile"
 #define   CONFIG_READING_EXP_LANG                       "reading_exp_lang"
 #define   CONFIG_REPORT_FILENAME                        "report_filename"
-
-// The unique UID for tests.
-#define   TEST_UID                                      "ARvm0000"
-#define   TEST_PAT_UID                                  "ARvm0001"
+#define   CONFIG_TOL_MAX_PERIOD_TOL                     "tol_max_allowed_period"
+#define   CONFIG_TOL_MIN_PERIOD_TOL                     "tol_min_allowed_period"
+#define   CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL            "tol_max_fglitches_in_trial"
+#define   CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL  "tol_min_number_of_data_items_in_trial"
+#define   CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES      "tol_max_percent_of_invalid_values"
+#define   CONFIG_PROTOCOL_NAME                          "protocol_name"
+#define   CONFIG_EYEEXP_NUMBER                          "eyeexp_number"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0
@@ -139,6 +145,10 @@
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
 #define   FILE_EYE_REP_GEN_CONFIGURATION                "eye_rep_gen_conf"
 #define   FILE_CHANGELOG_UPDATER                        "changelog"
+#define   FILE_NEW_LAUCHER_FILE                         "launcher.exe"
+#define   FILE_EYE_LAUCHER_FILE                         "EyeLauncherClient.exe"
+#define   FILE_OLD_LAUCHER_FILE                         "EyeLauncherClientPrevious.exe"
+
 
 // Headers for the data files identifying the format of the data in that experiment.
 #define   HEADER_READING_EXPERIMENT                     "#READING"
@@ -151,6 +161,13 @@
 #define  UPDATE_GET_SMI_CODE                            "gsmi"
 #define  UPDATE_GET_GP_CODE                             "ggp"
 #define  UPDATE_FORCE_NO_UPDATE_MSG                     "none"
+
+// Codes for reading languages languages.
+#define  READING_LANG_SPANISH                           "es"
+#define  READING_LANG_ENGLISH                           "en"
+#define  READING_LANG_GERMAN                            "de"
+
+
 
 // TCP Ports.
 static const quint16 TCP_PORT_DB_COMM                    = 54915;

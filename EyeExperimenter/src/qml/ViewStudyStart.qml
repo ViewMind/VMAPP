@@ -352,13 +352,13 @@ VMBase {
                     var readlang;
                     switch(cbReadingLang.currentIndex){
                     case 0:
-                        readlang = "English";
+                        readlang = "en";
                         break;
                     case 1:
-                        readlang = "Spanish";
+                        readlang = "es";
                         break;
                     case 2:
-                        readlang = "Deutsche"
+                        readlang = "de"
                     }
                     loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,readlang,false);
 

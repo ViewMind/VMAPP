@@ -135,8 +135,9 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
         }
 
         // Send only if there was any valid data.
-        if (send){
+        if (send){            
             data.time = cmd.getField(GPF_TIME).toDouble()*1000; // (Transforming seconds into ms);
+            //qWarning() << "Original time stamp of" << cmd.getField(GPF_TIME).toDouble() << "timedata" << data.time;
             emit(newDataAvailable(data));
         }
 

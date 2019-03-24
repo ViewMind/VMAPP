@@ -9,67 +9,31 @@ VMBase {
     height: viewDoctorInformation.vmHEIGHT
 
     readonly property string keybase: "viewdrinfo_"
+    property string drUID: "";
 
     function clearAllFields(){
-        labelAddress.clear();
-        labelCity.clear();
-        docTypes.currentIndex = 0;
         labelLastName.clear();
-        labelDocument_number.clear();
         labelMail.clear();
         labelName.clear();
-        labelPhone.clear();
         labelPassword.clear();
         labelVerifyPassword.clear();
-        labelProvince.clear();
-        labelCountry.enabled = true;
-        labelDocument_number.enabled = true;
         cboxDisable.visible = false;
         cboxDisable.checked = false;
-        labelCountry.vmEnabled = true;
+        drUID = "";
         setMenuVisibility(false);
     }
 
     function loadDoctorInformation(){
         var drInfo = loader.getCurrentDoctorInformation();
-        labelAddress.setText(drInfo.address);
-        labelCity.setText(drInfo.city);
         labelMail.setText(drInfo.email);
         labelName.setText(drInfo.firstname);
         labelLastName.setText(drInfo.lastname);
-        labelProvince.setText(drInfo.state);
-        labelPhone.setText(drInfo.telephone);
+        drUID = drInfo.uid;
 
         // Clearing error just in case
-        labelAddress.vmErrorMsg = "";
-        labelCity.vmErrorMsg = "";
         labelMail.vmErrorMsg = "";
         labelName.vmErrorMsg = "";
         labelLastName.vmErrorMsg = "";
-        labelProvince.vmErrorMsg = "";
-        labelPhone.vmErrorMsg = "";
-        labelDocument_number.vmErrorMsg = "";
-
-        // Substr is used as the first two letters are the country code.
-        labelDocument_number.setText(drInfo.uid.substr(2));
-
-        // Setting the id type.
-        var idType = drInfo.idtype;
-        var model = docTypes.model;
-        for (var i = 0; i < model.length; i++){
-            if (model[i] === idType){
-                docTypes.currentIndex = i;
-                break;
-            }
-        }
-
-        // Setting the country.
-        var index = loader.getCountryIndexFromCode(drInfo.countryid);
-        labelCountry.setCurrentIndex(index);
-
-        // The country and ID are unique. They can't be modified.
-        labelCountry.vmEnabled = false;
-        labelDocument_number.enabled = false;
 
         cboxDisable.visible = true;
         setMenuVisibility(true);
@@ -83,28 +47,11 @@ VMBase {
 
         // THIS IS THE TABLE DATA.
         var dbData = {
-            uid: labelDocument_number.vmEnteredText,
-            idtype: docTypes.currentText,
             firstname: labelName.vmEnteredText,
             lastname: labelLastName.vmEnteredText,
-            countryid: labelCountry.vmCurrentText,
-            state: labelProvince.vmEnteredText,
-            city: labelCity.vmEnteredText,
-            telephone: labelPhone.vmEnteredText,
             email: labelMail.vmEnteredText,
-            address: labelAddress.vmEnteredText
+            uid: drUID
         };
-
-        // The absolute must values are the document, the country, the name and the last name.
-        if (labelCountry.currentIndex === 0){
-            labelCountry.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
-            return;
-        }
-
-        if (dbData.uid === ""){
-            labelDocument_number.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
-            return;
-        }
 
         if (dbData.firstname === ""){
             labelName.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
@@ -116,15 +63,10 @@ VMBase {
             return;
         }
 
-        if (loader.addNewDoctorToDB(dbData, labelPassword.getText(), cboxDisable.checked, !cboxDisable.visible)){
-            viewDrSelection.updateDrProfile();
-            if (cboxDisable.visible) swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-            else swiperControl.currentIndex = swiperControl.vmIndexHome;
-        }
-        else{
-            labelDocument_number.vmErrorMsg = loader.getStringForKey(keybase + "drexists");
-        }
-
+        loader.addNewDoctorToDB(dbData, labelPassword.getText(), cboxDisable.checked)
+        viewDrSelection.updateDrProfile();
+        if (cboxDisable.visible) swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+        else swiperControl.currentIndex = swiperControl.vmIndexHome;
     }
 
     Dialog {
@@ -236,22 +178,6 @@ VMBase {
         anchors.topMargin: 11
     }
 
-
-//    VMAutoCompleteComboBox{
-//        id: labelCountry2
-//        width: 260
-//        height: 30
-//        vmLabel: loader.getStringForKey(keybase+"labelCountry")
-//        vmList: loader.getCountryList()
-//        vmValues: loader.getCountryCodeList()
-//        onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-//        onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-//        anchors.top: diagSubTitle.bottom
-//                anchors.horizontalCenter: parent.horizontalCenter
-//                z: 10
-//                anchors.topMargin: 100
-//    }
-
     Column {
 
         id: mainForm
@@ -259,151 +185,44 @@ VMBase {
         anchors.top: diagSubTitle.bottom
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 23
+        spacing: 40
 
         // The form fields
 
-        Row {
-            id: rowNameAndLastName
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 16
+        // Name and institution
+        VMTextDataInput{
+            id: labelName
             width: parent.width
-
-            // Name and institution
-            VMTextDataInput{
-                id: labelName
-                width: (rowNameAndLastName.width - rowNameAndLastName.spacing)/2
-                vmPlaceHolder: loader.getStringForKey(keybase+"labelName");
-                Keys.onTabPressed: labelLastName.vmFocus = true;
-            }
-
-            VMTextDataInput{
-                id: labelLastName
-                width: (rowNameAndLastName.width - rowNameAndLastName.spacing)/2
-                vmPlaceHolder: loader.getStringForKey(keybase+"labelLastName");
-                Keys.onTabPressed: labelDocument_number.vmFocus = true;
-            }
-
+            vmPlaceHolder: loader.getStringForKey(keybase+"labelName");
+            Keys.onTabPressed: labelLastName.vmFocus = true;
         }
 
-        Row {
-            id: rowDocument
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 16
+        VMTextDataInput{
+            id: labelLastName
             width: parent.width
-
-            // Document type and number.
-            VMComboBox{
-                id: docTypes
-                width: 162
-                vmModel:  loader.getStringListForKey(keybase+"docTypes")
-                font.family: robotoR.name
-                anchors.bottom: labelDocument_number.bottom
-            }
-
-            VMTextDataInput{
-                id: labelDocument_number
-                width: (rowDocument.width - rowDocument.spacing - docTypes.width)
-                vmPlaceHolder: loader.getStringForKey(keybase+"labelDocument_number");
-                Keys.onTabPressed: labelCountry.vmFocus = true;
-            }
-
+            vmPlaceHolder: loader.getStringForKey(keybase+"labelLastName");
+            Keys.onTabPressed: labelMail.vmFocus = true;
         }
 
-        Row {
-            id: rowCountryAndProvince
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 16
+        VMTextDataInput{
+            id: labelMail
             width: parent.width
-            z: 10
-
-            VMAutoCompleteComboBox{
-                id: labelCountry
-                width: 260
-                height: 30
-                vmMaxOptions: 7
-                vmLabel: loader.getStringForKey(keybase+"labelCountry")
-                vmList: loader.getCountryList()
-                vmValues: loader.getCountryCodeList()
-                onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-                onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-                anchors.bottom: labelProvince.bottom
-                Keys.onTabPressed: labelProvince.vmFocus = true;
-            }
-
-            VMTextDataInput{
-                id: labelProvince
-                width: (rowCountryAndProvince.width - rowCountryAndProvince.spacing - labelCountry.width)
-                vmPlaceHolder: loader.getStringForKey(keybase+"labelProvince");
-                Keys.onTabPressed: labelCity.vmFocus = true;
-            }
-
+            vmPlaceHolder: loader.getStringForKey(keybase+"labelMail");
+            Keys.onTabPressed: labelPassword.vmFocus = true;
         }
 
-        Row {
-            id: rowCityAndAddress
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 16
+        VMPasswordField{
+            id: labelPassword;
             width: parent.width
-
-            VMTextDataInput{
-                id: labelCity
-                width: 162
-                vmPlaceHolder: loader.getStringForKey(keybase+"labelCity");
-                 Keys.onTabPressed: labelAddress.vmFocus = true;
-            }
-
-            VMTextDataInput{
-                id: labelAddress
-                width: (rowCityAndAddress.width - rowCityAndAddress.spacing - labelCity.width)
-                vmPlaceHolder: loader.getStringForKey(keybase+"labelAddress");
-                Keys.onTabPressed: labelPhone.vmFocus = true;
-            }
-
+            vmLabelText: loader.getStringForKey(keybase+"password");
+            Keys.onTabPressed: labelVerifyPassword.vmFocus = true;
         }
 
-        Row {
-            id: phoneAndEmail
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 16
+        VMPasswordField{
+            id: labelVerifyPassword
             width: parent.width
-
-            // Phone, address and email
-            VMTextDataInput{
-                id: labelPhone
-                width: 162
-                vmPlaceHolder: loader.getStringForKey(keybase+"labelPhone");
-                Keys.onTabPressed: labelMail.vmFocus = true;
-            }
-
-            VMTextDataInput{
-                id: labelMail
-                width: (phoneAndEmail.width - phoneAndEmail.spacing - labelPhone.width)
-                vmPlaceHolder: loader.getStringForKey(keybase+"labelMail");
-                Keys.onTabPressed: labelPassword.vmFocus = true;
-            }
-
-        }
-
-        Row {
-            id: rowPasswords
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 16
-            width: parent.width
-
-            VMPasswordField{
-                id: labelPassword;
-                width: 162
-                vmLabelText: loader.getStringForKey(keybase+"password");
-                Keys.onTabPressed: labelVerifyPassword.vmFocus = true;
-            }
-
-            VMPasswordField{
-                id: labelVerifyPassword
-                width: (rowPasswords.width - rowPasswords.spacing - labelPassword.width)
-                vmLabelText: loader.getStringForKey(keybase+"verify_password");
-                Keys.onTabPressed: labelName.vmFocus = true;
-            }
+            vmLabelText: loader.getStringForKey(keybase+"verify_password");
+            Keys.onTabPressed: labelName.vmFocus = true;
         }
 
     }

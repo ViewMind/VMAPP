@@ -6,7 +6,7 @@ CONFIG += c++11
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
-#DEFINES += USE_IVIEW
+DEFINES += USE_IVIEW
 
 CONFIG -= debug_and_release
 MOC_DIR = MOCS
@@ -53,7 +53,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
     ../../CommonClasses/PNGWriter/repfileinfo.cpp \
     ../../CommonClasses/PNGWriter/resultbar.cpp \
-    ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp
+    ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp
 
 HEADERS += \
     loader.h \
@@ -92,10 +93,11 @@ HEADERS += \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
     ../../CommonClasses/PNGWriter/repfileinfo.h \
     ../../CommonClasses/PNGWriter/resultbar.h \
-    ../../CommonClasses/LocalInformationManager/localinformationmanager.h
+    ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h
 
 contains(DEFINES, USE_IVIEW) {
-  win32: LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
+  LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI
   INCLUDEPATH += $$PWD/EyeTrackerInterface/RED
   DEPENDPATH += $$PWD/EyeTrackerInterface/RED
   SOURCES += EyeTrackerInterface/RED/redinterface.cpp

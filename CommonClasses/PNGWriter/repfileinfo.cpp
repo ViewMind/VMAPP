@@ -40,8 +40,8 @@ void RepFileInfo::setDirectory(const QString &directory){
         switch (parts.size()){
         case 7:
             // Information can be reading or binding
-            if (parts.at(1).contains('r')){
-                reading = "OK";
+            if (parts.at(1).contains('R')){
+                reading = parts.at(1);
                 binding = "N/A";
             }
             else{
@@ -52,7 +52,7 @@ void RepFileInfo::setDirectory(const QString &directory){
             break;
         case 8:
             // The first is the report and the second one is the binding
-            reading = "OK";
+            reading = parts.at(1);
             binding = parts.at(2);
             date = parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3) + " " + parts.at(6) + ":" + parts.at(7);
             break;
