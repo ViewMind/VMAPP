@@ -505,7 +505,7 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
 
 
     // Saving the log files
-    QString timestamp = QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss");
+    QString timestamp = "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss");
     sockets.value(socket)->getDataPacket().saveFile(logDirPath,DataPacket::DPFI_UPDATE_LOGFILE,timestamp);
 
     // Saving flogs if any.
@@ -537,7 +537,6 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
 
     // Checking the hashes sent.
     DataPacket tx;
-    QString ans = "OK";
     QString eyeexehash      = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYEEXP).data.toString();
     QString confighash      = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_CONFIG).data.toString();
     QString eyelauncherhash = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYELAUNCHER).data.toString();
@@ -546,7 +545,7 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     if (hash.isEmpty()){
         log.appendError("Could not compute hash for the local eyelauncher");
     }
-    else if (hash != eyelauncherhash){
+    else if ((hash != eyelauncherhash) && (!eyelauncherhash.isEmpty())){
         if (!tx.addFile(FILENAME_EYE_LAUNCHER,DataPacket::DPFI_UPDATE_EYELAUNCHER)){
             log.appendError("Could not add local eyelauncher to send back");;
         }
@@ -556,12 +555,10 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     hash = DataPacket::getFileHash(hashFilePath);
     if (hash.isEmpty()){
         log.appendError("Could not compute hash for the local configuration file on path: " + hashFilePath);
-        ans = "FAILED";
     }
-    else if (hash != confighash){
+    else if ((hash != confighash) && !confighash.isEmpty()){
         if (!tx.addFile(hashFilePath,DataPacket::DPFI_UPDATE_CONFIG)){
             log.appendError("Could not add local configuration to send back: " + hashFilePath);
-            ans = "FAILED";
         }
     }
 
@@ -569,12 +566,10 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     hash = DataPacket::getFileHash(hashFilePath);
     if (hash.isEmpty()){
         log.appendError("Could not compute hash for the local eye experimetner file on path: " + hashFilePath);
-        ans = "FAILED";
     }
-    else if (hash != eyeexehash){
+    else if ((hash != eyeexehash) && !eyeexehash.isEmpty()){
         if (!tx.addFile(hashFilePath,DataPacket::DPFI_UPDATE_EYEEXP)){
             log.appendError("Could not add local eye experimenter to send back: " + hashFilePath);
-            ans = "FAILED";
         }
 
         // Getting the laanguage in order to return the change log.

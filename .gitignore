@@ -8,10 +8,7 @@ BindingDesigner/exe/
 *Makefile*
 SSLClientDev/exe/
 EyeServer/exe
-EyeServer/bin/eyeexp/gp/EyeExperimenter.exe
-EyeServer/bin/eyeexp/smi/EyeExperimenter.exe
-EyeServer/bin/eyeexp/changelog/enabled
-EyeServer/bin/eyeexp/gp/configuration
+EyeServer/bin/etdir
 EyeServer/bin/EyeServer
 EyeServer/bin/eyeexp/changelog/changelog_*
 EyeReportGenerator/bin/
