@@ -20,8 +20,8 @@
 #define   DIRNAME_ARCHIVE                               "archive"
 
 // The semaphore name. To prevent multiple instances for the same application
-#define   SEMAPHORE_NAME                                   "viewind_eyeexperimenter_semaphore"
-#define   SHAREDMEMORY_NAME                                "viewind_eyeexperimenter_shared_memory"
+#define   SEMAPHORE_NAME                                "viewind_eyeexperimenter_semaphore"
+#define   SHAREDMEMORY_NAME                             "viewind_eyeexperimenter_shared_memory"
 
 // Configuration key values (cmd names in the configuration file)
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
@@ -93,10 +93,6 @@
 #define   CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES      "tol_max_percent_of_invalid_values"
 #define   CONFIG_PROTOCOL_NAME                          "protocol_name"
 
-// The unique UID for tests.
-#define   TEST_UID                                      "ARvm0000"
-#define   TEST_PAT_UID                                  "ARvm0001"
-
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0
 #define   DBACK_PASSWORD_PROBLEM                        1
@@ -164,6 +160,8 @@
 #define  READING_LANG_SPANISH                           "es"
 #define  READING_LANG_ENGLISH                           "en"
 #define  READING_LANG_GERMAN                            "de"
+
+
 
 // TCP Ports.
 static const quint16 TCP_PORT_DB_COMM                    = 54915;
