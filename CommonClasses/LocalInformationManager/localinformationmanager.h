@@ -11,6 +11,7 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
+#include "eye_experimenter_defines.h"
 
 #ifdef USESSL
 #include "sslclient/ssldbclient.h"
@@ -18,6 +19,7 @@
 
 #define   LOCAL_DB                                      "localdb.dat"
 #define   DR_ID_LENGTH                                   4
+#define   PAT_ID_LENGTH                                  4
 
 class LocalInformationManager
 {
@@ -37,7 +39,7 @@ public:
 
     LocalInformationManager();
     void resetMedicalInstitutionForAllDoctors(const QString &inst_uid);
-    void setDirectory(const QString &workDir);
+    void setDirectory(const QString &workDir, const QString eyeexpid);
     void enableBackups(const QString &backupDir);
     void addDoctorData(const QString &druid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
     void addPatientData(const QString &patient_uid, const QString &creator_uid, const QStringList &cols, const QStringList &values);
@@ -46,6 +48,7 @@ public:
     bool doesPatientExist(const QString &patuid) const;
     void validateDoctor(const QString &dr_uid);
     QString newDoctorID();
+    QString newPatientID();
     QString getDoctorPassword(const QString &uid);
     DisplayLists getPatientListForDoctor(const QString &druid, const QString &filter = "");
     DisplayLists getDoctorList(bool forceShow = false);
@@ -78,13 +81,14 @@ private:
     static const QString PATIENT_CREATOR;
     static const QString DOCTOR_DATA;
     static const QString DOCTOR_COUNTER;
+    static const QString PATIENT_COUNTER;
     static const QString PATIENT_DATA;
     static const QString DOCTOR_UPDATE;
     static const QString PATIENT_UPDATE;
     static const QString DOCTOR_PASSWORD;
     static const QString DOCTOR_VALID;
     static const QString DOCTOR_HIDDEN;
-    static const qint32  LOCAL_DB_VERSION = 3;
+    static const qint32  LOCAL_DB_VERSION = 4;
 
     // Working directory.
     QString workingDirectory;
@@ -98,7 +102,7 @@ private:
     QHash<QString, DatFileInfoInDir > patientReportInformation;
 
     void backupDB();
-    void loadDB();
+    void loadDB(QString eyeexpid);
     bool isHidden(const QString &uid);
     void printDBToConsole();
 

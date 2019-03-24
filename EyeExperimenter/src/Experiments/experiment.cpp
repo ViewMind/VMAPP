@@ -178,8 +178,8 @@ void Experiment::experimenteAborted(){
 
 QString Experiment::moveDataFileToAborted(){
     QString abortDir;
-    QDir(workingDirectory).mkdir(DIR_ABORTED);
-    abortDir = workingDirectory + "/" + QString(DIR_ABORTED);
+    QDir(workingDirectory).mkdir(DIRNAME_ABORTED);
+    abortDir = workingDirectory + "/" + QString(DIRNAME_ABORTED);
     if (QDir(abortDir).exists()){
         QFileInfo info(dataFile);
         QString destination = abortDir + "/" + info.baseName() + "." + info.suffix();

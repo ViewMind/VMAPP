@@ -38,7 +38,13 @@ Item {
             id: patientText
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: vmPatientName + " (" + vmPatientUID  + ")"
+            text: {
+                var dispid = "";
+                var parts = vmPatientUID.split("_");
+                if (parts.length === 3)dispid = parts[2];
+                else dispid = vmPatientUID;
+                return vmPatientName + " (" + dispid  + ")"
+            }
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left

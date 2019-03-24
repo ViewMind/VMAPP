@@ -19,8 +19,6 @@
 #include "../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
 #include "../../../CommonClasses/common.h"
 
-#define  DIR_ABORTED  "exp_aborted"
-
 class Experiment : public QWidget
 {
     Q_OBJECT

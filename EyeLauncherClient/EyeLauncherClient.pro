@@ -44,4 +44,5 @@ HEADERS += \
     ../CommonClasses/ConfigurationManager/configurationmanager.h \
     ../CommonClasses/LogInterface/loginterface.h \
     ../CommonClasses/common.h \
-    ../CommonClasses/DataPacket/datapacket.h
+    ../CommonClasses/DataPacket/datapacket.h \
+    ../CommonClasses/SQLConn/dbdescription.h

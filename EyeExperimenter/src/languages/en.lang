@@ -264,6 +264,7 @@ error_db_transaction = Database Error|There was an error related to the database
 error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracker is incorrect<br>Please contact the ViewMind team;
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
 error_db_wronginst = Incorrect ID|The ID for this institution is incorrect or the doctor is not registered<br>Please contact ViewMind in order to solve this problem;
+error_launcher_update = Restart required<>In 5 seconds the program will close. Please restart it;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Apply Changes<>The program must be restarted to apply the selected changes;

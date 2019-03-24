@@ -44,7 +44,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Server address and the default country.
     cmd.clear();
     cv[CONFIG_SERVER_ADDRESS] = cmd;
-    //cv[CONFIG_EYETRACKER_CONFIGURED] = cmd;
+    cv[CONFIG_EYEEXP_NUMBER] = cmd;
     cv[CONFIG_INST_NAME] = cmd;
     cv[CONFIG_INST_ETSERIAL] = cmd;
     cv[CONFIG_INST_UID] = cmd;
@@ -119,7 +119,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     connect(dbClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectFromDB()));
 
     // Creating the local configuration manager, and loading the local DB.
-    lim.setDirectory(QString(DIRNAME_RAWDATA));
+    lim.setDirectory(QString(DIRNAME_RAWDATA), configuration->getString(CONFIG_EYEEXP_NUMBER));
 
     // Creating the db backup directory if it does not exist.
     QDir(".").mkdir(DIRNAME_DBBKP);
@@ -144,17 +144,17 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     if (configuration->getBool(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
     else configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
 
-//    // TEST FOR FREQ CHECK
-//    Experiment *e = new Experiment();
-//    QString reading = "C:/Users/Viewmind/Documents/QtProjects/EyeExperimenter/exe/viewmind_etdata/AR123456789/CO123456788/reading_2_2019_03_16_11_54.dat";
-//    //QString binding = "C:/Users/Viewmind/Documents/ExperimenterOutputs/grace_worked/binding_bc_2_l_2_2019_03_14_17_56.dat";
-//    e->setupFreqCheck(configuration,reading);
-//    if (!e->doFrequencyCheck()){
-//        logger.appendError("Failed test freq check: " + e->getError());
-//    }
-//    else{
-//        logger.appendSuccess("Freq Check Passed");
-//    }
+    //    // TEST FOR FREQ CHECK
+    //    Experiment *e = new Experiment();
+    //    QString reading = "C:/Users/Viewmind/Documents/QtProjects/EyeExperimenter/exe/viewmind_etdata/AR123456789/CO123456788/reading_2_2019_03_16_11_54.dat";
+    //    //QString binding = "C:/Users/Viewmind/Documents/ExperimenterOutputs/grace_worked/binding_bc_2_l_2_2019_03_14_17_56.dat";
+    //    e->setupFreqCheck(configuration,reading);
+    //    if (!e->doFrequencyCheck()){
+    //        logger.appendError("Failed test freq check: " + e->getError());
+    //    }
+    //    else{
+    //        logger.appendSuccess("Freq Check Passed");
+    //    }
 
 }
 
@@ -230,7 +230,7 @@ QStringList Loader::getErrorMessageForCode(quint8 code){
     case RR_WRONG_ET_SERIAL:
         return language.getStringList("error_db_wrongetserial");
     default:
-        logger.appendError("UNKNOWN Code when getting transaction error message: " + QString::number(code));
+        //logger.appendError("UNKNOWN Code when getting transaction error message: " + QString::number(code));
         break;
     }
     return QStringList();
@@ -245,7 +245,7 @@ QStringList Loader::getErrorMessageForDBCode(){
     case DBACK_UID_ERROR:
         return language.getStringList("error_db_wronginst");
     default:
-        logger.appendError("UNKNOWN Code when getting transaction error message: " + QString::number(code));
+        logger.appendError("UNKNOWN Code when getting transaction db error message: " + QString::number(code));
         break;
     }
     return QStringList();
@@ -300,8 +300,8 @@ bool Loader::createPatientDirectory(){
     QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
     QString patdirPath = QString(DIRNAME_RAWDATA) + "/" + patientuid;
     if (!QDir(patdirPath).exists()){
-       QDir baseDir(DIRNAME_RAWDATA);
-       baseDir.mkdir(patientuid);
+        QDir baseDir(DIRNAME_RAWDATA);
+        baseDir.mkdir(patientuid);
     }
 
     if (!QDir(patdirPath).exists()){
@@ -507,7 +507,7 @@ QString Loader::checkForChangeLog(){
     else return content;
 }
 
-void Loader::clearChangeLogFile(){
+bool Loader::clearChangeLogFile(){
     QDir dir(DIRNAME_LAUNCHER);
     QStringList filter;
     filter << QString(FILE_CHANGELOG_UPDATER) + "*";
@@ -516,6 +516,36 @@ void Loader::clearChangeLogFile(){
         QFile file(QString(DIRNAME_LAUNCHER) + "/" + allchangelogs.at(i));
         file.remove();
     }
+
+    QFile newLauncher(QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_NEW_LAUCHER_FILE));
+    return newLauncher.exists();
+}
+
+void Loader::replaceEyeLauncher(){
+    QString newfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_NEW_LAUCHER_FILE);
+    QString oldfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_OLD_LAUCHER_FILE);
+    QString currentfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_EYE_LAUCHER_FILE);
+
+    // Backing up current
+    QFile(oldfile).remove();
+    if (!QFile::copy(currentfile,oldfile)){
+        logger.appendError("Failed to backup EyeLauncherClient from " + currentfile + " to " + oldfile);
+        QCoreApplication::quit();
+    }
+
+    // Replacing the current with the new
+    QFile(currentfile).remove();
+    if (!QFile::copy(newfile,currentfile)){
+        logger.appendError("Failed to update EyeLauncherClient from " + newfile + " to " + currentfile);
+        QCoreApplication::quit();
+    }
+
+    // Removing the new file
+    if (!QFile(newfile).remove()){
+        logger.appendError("Could not remove new EyeLauncherClient file: " + newfile);
+    }
+
+    QCoreApplication::quit();
 }
 
 //******************************************* SLOTS ***********************************************

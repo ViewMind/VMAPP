@@ -52,6 +52,7 @@ void SSLDataProcessingClient::connectToServer(bool saveData)
 
     // Requesting connection and ack
     informationSent = false;
+    //qWarning() << "Connecting to "  << config->getString(CONFIG_SERVER_ADDRESS) << TCP_PORT_DATA_PROCESSING;
     socket->connectToHostEncrypted(config->getString(CONFIG_SERVER_ADDRESS),TCP_PORT_DATA_PROCESSING);
 
     // Starting timeout timer.

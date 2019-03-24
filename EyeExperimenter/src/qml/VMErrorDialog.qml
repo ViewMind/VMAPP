@@ -14,6 +14,7 @@ Dialog {
     readonly property int vmERROR_NO_SSL: 7
     readonly property int vmERROR_PROC_ACK: 8
     readonly property int vmERROR_FREQ_ERR: 9
+    readonly property int vmERROR_LAUNCHER_UPDATE: 10
 
     property string vmErrorTitle: "Error Ocurred"
     property string vmErrorMessage: "An error has ocurred"
