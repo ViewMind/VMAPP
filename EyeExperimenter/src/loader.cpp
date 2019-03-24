@@ -44,7 +44,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Server address and the default country.
     cmd.clear();
     cv[CONFIG_SERVER_ADDRESS] = cmd;
-    //cv[CONFIG_EYETRACKER_CONFIGURED] = cmd;
+    cv[CONFIG_EYEEXP_NUMBER] = cmd;
     cv[CONFIG_INST_NAME] = cmd;
     cv[CONFIG_INST_ETSERIAL] = cmd;
     cv[CONFIG_INST_UID] = cmd;
@@ -119,7 +119,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     connect(dbClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectFromDB()));
 
     // Creating the local configuration manager, and loading the local DB.
-    lim.setDirectory(QString(DIRNAME_RAWDATA));
+    lim.setDirectory(QString(DIRNAME_RAWDATA), configuration->getString(CONFIG_EYEEXP_NUMBER));
 
     // Creating the db backup directory if it does not exist.
     QDir(".").mkdir(DIRNAME_DBBKP);

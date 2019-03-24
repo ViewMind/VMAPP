@@ -20,8 +20,9 @@ server_address = 192.168.1.10;
 
 # Pass for ViewMind Institution in the LocalServer d9LppSJf
 inst_pass = 01cf1f560d48d40622796620564c918fe3792b2c9d501c0fde0564dd38827a51;
-inst_uid = 1369462188;
-inst_name = ViewMind;
+eyeexp_number = 0000;
+inst_uid = 1242673082;
+inst_name = Stathclyde;
 inst_et_serial = ;
 
 # PASS for this hash is A8ESpCU6. Used for Development Connection
@@ -38,7 +39,6 @@ inst_et_serial = ;
 
 # test_mode = true;
 # enable_gaze_following = true;
-
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #

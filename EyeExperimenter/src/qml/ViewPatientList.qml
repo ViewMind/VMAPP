@@ -522,8 +522,6 @@ VMBase {
                 else {
                     vmShowAll = true;
                     loadPatients();
-                    //askPasswordDialog.vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-                    //askPasswordDialog.open();
                 }
             }
         }

@@ -57,7 +57,7 @@ Window {
         // ViewMind Logo
         Image {
             id: logo
-            source: "qrc:/../EyeExperimenter/src/images/LOGO.png"
+            source: "qrc:/../EyeExperimenter/src/images/OJO.png"
             anchors{
                 verticalCenter: topBanner.verticalCenter
                 left: parent.left

@@ -3,6 +3,7 @@
 const QString LocalInformationManager::PATIENT_DATA          = "PATIENT_DATA";
 const QString LocalInformationManager::PATIENT_CREATOR       = "PATIENT_CREATOR";
 const QString LocalInformationManager::PATIENT_UPDATE        = "PATIENT_UPDATE";
+const QString LocalInformationManager::PATIENT_COUNTER       = "PATIENT_COUNTER";
 const QString LocalInformationManager::DOCTOR_DATA           = "DOCTOR_DATA";
 const QString LocalInformationManager::DOCTOR_COUNTER        = "DOCTOR_COUNTER";
 const QString LocalInformationManager::DOCTOR_UPDATE         = "DOCTOR_UPDATE";
@@ -18,9 +19,9 @@ LocalInformationManager::LocalInformationManager()
 
 //************************************** Interface with Local DB *****************************************
 
-void LocalInformationManager::setDirectory(const QString &workDir){
+void LocalInformationManager::setDirectory(const QString &workDir, const QString eyeexpid){
     workingDirectory = workDir;
-    loadDB();
+    loadDB(eyeexpid);
 }
 
 void LocalInformationManager::enableBackups(const QString &backupDir){
@@ -454,7 +455,7 @@ LocalInformationManager::DisplayLists LocalInformationManager::getPatientListFor
     return ans;
 }
 
-void LocalInformationManager::loadDB(){
+void LocalInformationManager::loadDB(QString eyeexpid){
 
     // Checking to see if the directory structure exists.
     QDir basedir(workingDirectory);
@@ -478,7 +479,7 @@ void LocalInformationManager::loadDB(){
     reader >> localDB;
     file.close();
 
-    if (localDBVersion < LOCAL_DB_VERSION){
+    if (!localDB.contains(DOCTOR_COUNTER)){
 
         // Remaking the DB into a by Patient DB + Doctor DB. If a patient is repeated it is added to the assigned doctor field
         QVariantMap drdb;
@@ -487,6 +488,8 @@ void LocalInformationManager::loadDB(){
         QVariantMap bkpLocalDb = localDB;
         localDB.clear();
         localDB[DOCTOR_COUNTER] = 0;
+        localDB[PATIENT_COUNTER] = 0;
+        QHash<QString,QString> existingPatients;
 
         QStringList druids = bkpLocalDb.keys();
 
@@ -506,7 +509,7 @@ void LocalInformationManager::loadDB(){
             QString numid = newDoctorID();
 
             newDRMap[TDOCTOR_COL_MEDICAL_INST] = medinst;
-            newDRMap[TDOCTOR_COL_UID] = medinst + "_" + numid;
+            newDRMap[TDOCTOR_COL_UID] = medinst + "_" + eyeexpid + "_"  + numid;
             // Forcing updates.
             newDRMap[DOCTOR_UPDATE] = true;
             newDRMap[DOCTOR_PASSWORD] = drmap.value(DOCTOR_PASSWORD);
@@ -522,23 +525,30 @@ void LocalInformationManager::loadDB(){
 
                 QString patuid = patuids.at(j);
 
-                if (patdb.contains(patuid)){
-                    QVariantMap pdb = patdb.value(patuid).toMap();
-                    pdb[PATIENT_CREATOR] = medinst + "_" + numid;
-                    patdb[patuid] = pdb;
+                if (existingPatients.contains(patuid)){
+                    QString nid = existingPatients.value(patuid);
+                    QVariantMap pdb = patdb.value(nid).toMap();
+                    pdb[PATIENT_CREATOR] = medinst + "_" + eyeexpid + "_"  + numid;
+                    patdb[nid] = pdb;
                     continue;
                 }
 
+                QString pnumid = newPatientID();
+                QString newpatuid = medinst + "_" + eyeexpid + "_"  + pnumid;
+                log.appendStandard("MAPPING: " + patuid + " ==> " + newpatuid);
+                existingPatients[patuid] = newpatuid;
+
                 QVariantMap pdb = patmap.value(patuid).toMap();
-                pdb[TPATDATA_COL_DOCTORID] = medinst + "_" + numid;
-                pdb[PATIENT_CREATOR] = medinst + "_" + numid;
+                pdb[TPATDATA_COL_DOCTORID] = medinst + "_" + eyeexpid + "_"  + numid;
+                pdb[PATIENT_CREATOR] = medinst + "_" + eyeexpid + "_"  + numid;
+                pdb[TPATDATA_COL_PUID] = newpatuid;
 
                 // Removing non important data
                 pdb.remove(TPATDATA_COL_STATE);
                 pdb.remove(TPATDATA_COL_CITY);
                 pdb.remove(TPATDATA_COL_IDTYPE);
 
-                patdb[patuid] = pdb;
+                patdb[newpatuid] = pdb;
 
             }
         }
@@ -546,12 +556,63 @@ void LocalInformationManager::loadDB(){
         // When all is said and done, the information is stored in the local DB.
         localDB[PATIENT_DATA] = patdb;
         localDB[DOCTOR_DATA]  = drdb;
-
+        qWarning() << "NO DOCTOR COUNTER FOUND";
         printDBToConsole();
 
     }
+    else if (!localDB.contains(PATIENT_COUNTER)){
+        localDB[PATIENT_COUNTER] = 0;
+        QVariantMap drdb = localDB.value(DOCTOR_DATA).toMap();
+        QVariantMap patdb = localDB.value(PATIENT_DATA).toMap();
 
-    //printDBToConsole();
+        // Changing doctor ids
+        QStringList keys; keys = drdb.keys();
+        QHash<QString,QString> drmap;
+        QString medinst;
+
+        for (qint32 i = 0; i < keys.size(); i++){
+            QString oldid = keys.at(i);
+            QVariantMap drdata = drdb.value(oldid).toMap();
+            QStringList parts = oldid.split("_");
+            medinst = parts.first();
+            QString newid;
+            if (parts.size() != 2){
+                log.appendError("OLD DB WITH UNKNOWN DR ÏD: " + oldid);
+                newid = oldid;
+            }
+            else{
+                newid = parts.first() + "_" + eyeexpid + "_D" + parts.last();
+            }
+            drdata[DOCTOR_UPDATE] = true;
+            drdata[TDOCTOR_COL_UID] = newid;
+            drdb[newid] = drdata;
+            drdb.remove(oldid);
+            drmap[oldid] = newid;
+        }
+
+        // Changing patient data.
+        keys = patdb.keys();
+        for (qint32 i = 0; i < keys.size(); i++){
+            QString oldid = keys.at(i);
+            QVariantMap patdata = patdb.value(oldid).toMap();
+            QString newid = medinst + "_" + eyeexpid + "_" + newPatientID();
+            QString drassinged = patdata.value(TPATDATA_COL_DOCTORID).toString();
+            QString drcreator  = patdata.value(PATIENT_CREATOR).toString();
+            if (!drmap.contains(drassinged)) log.appendError("DB REPURPOSE: Could not find assigned doctor: " + drassinged + " for pat " + oldid);
+            if (!drmap.contains(drcreator)) log.appendError("DB REPURPOSE: Could not find creatro doctor: " + drcreator + "for pat " + oldid);
+            patdata[TPATDATA_COL_DOCTORID] = drmap.value(drassinged);
+            patdata[PATIENT_CREATOR] = drmap.value(drcreator);
+            patdata[PATIENT_UPDATE] = true;
+            patdb.remove(oldid);
+            patdb[newid] = patdata;
+            log.appendStandard("MAPPING: " + oldid + " ==> " + newid);
+        }
+
+        localDB[DOCTOR_DATA] = drdb;
+        localDB[PATIENT_DATA] = patdb;
+        qWarning() << "NO PATIENT COUNTER FOUND";
+        printDBToConsole();
+    }
 
 }
 
@@ -609,7 +670,18 @@ QString LocalInformationManager::newDoctorID(){
     QString id = QString::number(drcounter);
     while (id.length() < DR_ID_LENGTH) id = "0" + id;
     drcounter++;
+    id = "D" + id;
     localDB[DOCTOR_COUNTER] = drcounter;
+    return id;
+}
+
+QString LocalInformationManager::newPatientID(){
+    qint32 drcounter = localDB.value(PATIENT_COUNTER).toInt();
+    QString id = QString::number(drcounter);
+    while (id.length() < PAT_ID_LENGTH) id = "0" + id;
+    id = "P" + id;
+    drcounter++;
+    localDB[PATIENT_COUNTER] = drcounter;
     return id;
 }
 
