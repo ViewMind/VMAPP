@@ -104,6 +104,65 @@ VMBase {
 
     }
 
+    Dialog {
+        id: restartDialog;
+        modal: true
+        width: 614
+        height: 200
+
+        property string vmContent: ""
+        property string vmTitle: ""
+
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: restartRectDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        Column {
+            id: restartDiagRow
+            spacing: 20
+            anchors.centerIn: parent
+
+            Text {
+                id: restartDiagTitle
+                font.family: viewHome.gothamB.name
+                font.pixelSize: 43
+                color: "#297fca"
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: restartDialog.vmTitle
+            }
+
+            // The instruction text
+            Text {
+                id: restartDiagMessage
+                font.family: viewHome.robotoR.name
+                font.pixelSize: 13
+                textFormat: Text.RichText
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: restartDialog.vmContent
+            }
+
+        }
+
+    }
+
+    Timer {
+        id: closeTimer;
+        interval: 5000
+        repeat: false
+        onTriggered: {
+            loader.replaceEyeLauncher();
+        }
+    }
+
     Component.onCompleted: {
         // Checking that the everything was loaded correctly.
         if (loader.getLoaderError()){
@@ -140,7 +199,13 @@ VMBase {
             showTextDialog.open();
         }
 
-        loader.clearChangeLogFile();
+        if (loader.clearChangeLogFile()){
+            titleMsg = viewHome.getErrorTitleAndMessage("error_launcher_update");
+            restartDialog.vmContent = titleMsg[1];
+            restartDialog.vmTitle = titleMsg[0];
+            restartDialog.open();
+            closeTimer.start()
+        }
 
     }
 
@@ -169,7 +234,7 @@ VMBase {
     }
 
     // The configure settings button
-    Button {        
+    Button {
         id: btnConfSettings
         scale: btnConfSettings.pressed? 0.9:1
         Behavior on scale{

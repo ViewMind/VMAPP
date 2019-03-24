@@ -79,14 +79,16 @@ public:
     Q_INVOKABLE void reloadPatientDatInformation();
 
     //******************** Updater Related Functions **************************
-    Q_INVOKABLE void clearChangeLogFile();
+    Q_INVOKABLE bool clearChangeLogFile();
     Q_INVOKABLE QString checkForChangeLog();
+    Q_INVOKABLE void replaceEyeLauncher();
 
 signals:
     void synchDone();
 
     // Signal to FlowControl, indicating the next file set to process.
     void fileSetReady(const QStringList &fileSet);
+
 
 public slots:
     // For when the DB Transaction has finished.

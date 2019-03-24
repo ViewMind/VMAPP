@@ -263,7 +263,8 @@ error_freq_check = Error de Frequencia<>Hubo un problema al obtener los datos de
 error_db_transaction = Error de Base de Datos|Hubo un error relacionado con la base de datos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
-error_db_wronginst = ID Incorrrecto|El ID de esta institución está equivocado o el doctor no fue registrado<br>Por favor contacte a ViewMind para resolverlo;
+error_db_wronginst = ID Incorrecto|El ID de esta institución está equivocado o el doctor no fue registrado<br>Por favor contacte a ViewMind para resolverlo;
+error_launcher_update = Se debe reiniciar<>En 5 segundos el programa se cerrará. Por favor reinicielo.;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Efectuar los cambios<>Los cambios que realizó requieren que se reinicie el programa;

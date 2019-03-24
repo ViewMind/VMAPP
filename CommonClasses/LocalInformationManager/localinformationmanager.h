@@ -19,7 +19,7 @@
 
 #define   LOCAL_DB                                      "localdb.dat"
 #define   DR_ID_LENGTH                                   4
-#define   PAT_ID_LENGTH                                   4
+#define   PAT_ID_LENGTH                                  4
 
 class LocalInformationManager
 {
