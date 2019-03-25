@@ -27,11 +27,18 @@ public:
                     + tab + "Expected Frequency: " + QString::number(fexpected) + " Hz\n"; }
     };
 
+    struct TimePair {
+        qreal start;
+        qreal end;
+        qreal getDiff() const { return end  - start; }
+        QString toString() const { return "[" + QString::number(start,'f') + "," + QString::number(end,'f') + "]"; }
+    };
+
     struct FreqAnalysisResult {
         QStringList errorList;
         QStringList individualErrorList;
         QStringList invalidValues;
-        QList< QList<qreal> > diffTimes;
+        QList< QList<TimePair> > diffTimes;
         QList<qreal> avgFreqPerTrial;
         qreal averageFrequency;
         void analysisValid(const FreqCheckParameters p);
@@ -60,7 +67,7 @@ private:
 
     QStringList getFileLines(QString *error);
     QStringList removeHeader(const QStringList &lines, const QString &header);
-    qreal calculateFrequency(const QList<qreal> &times, QList<qreal> *dtimes);
+    qreal calculateFrequency(const QList<qreal> &times, QList<TimePair> *dtimes);
     FreqAnalysisResult freqAnalysis(const FreqAnalysisBehaviour &fab);
 };
 

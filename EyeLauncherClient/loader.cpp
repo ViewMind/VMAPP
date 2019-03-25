@@ -167,7 +167,7 @@ void Loader::getAllFreqLogFilesNotSent(const QSet<QString> &sentAllReady){
 
     }
 
-    qWarning() << "SENDING: " << flogNames;
+    //qWarning() << "SENDING: " << flogNames;
 
 }
 

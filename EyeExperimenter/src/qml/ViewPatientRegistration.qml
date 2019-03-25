@@ -11,6 +11,7 @@ VMBase {
 
     readonly property string keysearch: "viewpatientreg_"
     property bool vmIsNew: true;
+    property string patientUID: "";
 
     function clearAll(){
         labelBirthDate.clear();
@@ -21,13 +22,12 @@ VMBase {
         cbConsent.checked = false;
         labelCountry.vmEnabled = true;
         labelDocument_number.enabled = true;
-        vmIsNew = true;
         loader.loadDoctorSelectionInformation();
         assignedDoctor.vmModel = loader.getDoctorNameList();
         var ind = loader.getIndexOfDoctor("");
         if (ind < 0) ind = 0;
         assignedDoctor.currentIndex = ind;
-
+        patientUID = "";
     }
 
     function loadPatientInformation(){
@@ -35,13 +35,12 @@ VMBase {
         labelName.setText(patInfo.firstname);
         labelLastName.setText(patInfo.lastname);
 
-        // Substr is used as the first two letters are the country code.
-        if ("puid" in patInfo){
-            labelDocument_number.setText(patInfo.puid.substr(2));
-        }
-        else if ("uid" in patInfo){
-            labelDocument_number.setText(patInfo.uid.substr(2));
-        }
+//        for (var k in patInfo){
+//            console.log(k + "=" + patInfo[k]);
+//        }
+
+        patientUID = patInfo.puid;
+        labelDocument_number.setText(patInfo.displayID)
 
         // Setting the gender
         if (patInfo.sex === "M") labelGender.currentIndex = 1;
@@ -50,10 +49,6 @@ VMBase {
         // Setting the country.
         var index = loader.getCountryIndexFromCode(patInfo.birthcountry);
         labelCountry.setCurrentIndex(index);
-        labelCountry.vmEnabled = false;
-
-        // The country and ID are unique. They can't be modified.
-        labelDocument_number.enabled = false;
 
         // The birth date
         labelBirthDate.setISODate(patInfo.birthdate);
@@ -64,7 +59,6 @@ VMBase {
         assignedDoctor.currentIndex = loader.getIndexOfDoctor(patInfo.doctorid);
 
         cbConsent.checked = true;
-        vmIsNew = false;
     }
 
     Dialog {
@@ -333,13 +327,14 @@ VMBase {
 
                 // THIS IS THE TABLE DATA.
                 var dbDataReq = {
-                    puid: labelDocument_number.vmEnteredText,
+                    displayID: labelDocument_number.vmEnteredText,
                     doctorid: loader.getDoctorUIDByIndex(assignedDoctor.currentIndex),
                     birthdate: labelBirthDate.vmEnteredText,
                     firstname: labelName.vmEnteredText,
                     lastname: labelLastName.vmEnteredText,
                     sex: labelGender.currentText,
-                    birthcountry: labelCountry.vmCurrentText
+                    birthcountry: labelCountry.vmCurrentText,
+                    puid: patientUID
                 };
 
                 if (dbDataReq.birthdate === ""){
@@ -376,12 +371,9 @@ VMBase {
                     return;
                 }
 
-                if (loader.addNewPatientToDB(dbDataReq,vmIsNew)){
-                    swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-                }
-                else{
-                    labelDocument_number.vmErrorMsg = loader.getStringForKey(keysearch + "errorExists");
-                }
+                loader.addNewPatientToDB(dbDataReq)
+                swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+
             }
         }
     }

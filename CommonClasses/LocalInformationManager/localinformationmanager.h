@@ -33,13 +33,16 @@ public:
         QStringList doctorUIDs;
         QStringList creatorNames;
         QStringList creatorUIDs;
+        QStringList patientDisplayIDs;
         void clear() { patientNames.clear(); patientISOKList.clear(); patientUIDs.clear(); doctorNames.clear();
-                       doctorUIDs.clear(); creatorNames.clear(); creatorUIDs.clear(); }
+                       doctorUIDs.clear(); creatorNames.clear(); creatorUIDs.clear(); patientDisplayIDs.clear();}
     };
 
     LocalInformationManager();
     void resetMedicalInstitutionForAllDoctors(const QString &inst_uid);
-    void setDirectory(const QString &workDir, const QString eyeexpid);
+    void setDirectory(const QString &workDir, const QString &eyeexpid, const QString &instUID);
+    void setViewAllFlag(bool flagValue);
+    bool getViewAllFlag() const;
     void enableBackups(const QString &backupDir);
     void addDoctorData(const QString &druid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
     void addPatientData(const QString &patient_uid, const QString &creator_uid, const QStringList &cols, const QStringList &values);
@@ -88,6 +91,7 @@ private:
     static const QString DOCTOR_PASSWORD;
     static const QString DOCTOR_VALID;
     static const QString DOCTOR_HIDDEN;
+    static const QString FLAG_VIEWALL;
     static const qint32  LOCAL_DB_VERSION = 4;
 
     // Working directory.
@@ -102,7 +106,7 @@ private:
     QHash<QString, DatFileInfoInDir > patientReportInformation;
 
     void backupDB();
-    void loadDB(QString eyeexpid);
+    void loadDB(QString eyeexpid, QString instUID);
     bool isHidden(const QString &uid);
     void printDBToConsole();
 

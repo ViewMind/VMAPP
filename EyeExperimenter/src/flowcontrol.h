@@ -58,6 +58,7 @@ public:
     Q_INVOKABLE QStringList getSelectedReportInfo();
     Q_INVOKABLE quint8 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
     Q_INVOKABLE void moveFileToArchivedFileFolder(const QString &filename);
+    Q_INVOKABLE void doFrequencyAnalysis(const QString &filename);
 
 signals:
 
