@@ -84,6 +84,8 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TPATDATA_COL_DIAGNOSTIC                  "diagnostic"
 #define  TPATDATA_COL_PUID                        "puid"
 
+#define  TPATDATA_NONCOL_DISPLAYID                "displayID"
+
 // Column names for the doctor table
 #define  TDOCTOR_COL_KEYID                       "keyid"
 #define  TDOCTOR_COL_UID                         "uid"

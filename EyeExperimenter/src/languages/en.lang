@@ -28,6 +28,11 @@ viewsettings_diagLabelRepo = Work directory;
 viewsettings_error_invalid_repo = Please select a valid work directory;
 viewsettings_error_invalid_dr = Doctor's name cannot be left empty;
 viewsettings_diagLabelDefaultCountry = Select the default chosen country;
+viewsettings_diagInstPassword = Institution Password;
+viewsettings_diagEnableViewAll = Enable View All Patients;
+viewsettings_diagDisableViewAll = Disable View All Patients;
+viewsettings_diagLabelEnableViewAll = Enable control for View All Patients;
+viewsettings_diagWrongPass = Wrong password;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Patient's registration;

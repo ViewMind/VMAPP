@@ -625,6 +625,52 @@ QVariantMap FlowControl::nextSelectedReportItem(){
     else return QVariantMap();
 }
 
+void FlowControl::doFrequencyAnalysis(const QString &filename){
+
+    FreqAnalysis freqChecker;
+    FreqAnalysis::FreqAnalysisResult fres;
+
+    // Froming path
+    QString pathToFile = QString(DIRNAME_RAWDATA) + "/" + configuration->getString(CONFIG_PATIENT_UID) + "/" + filename;
+
+    fres = freqChecker.analyzeFile(pathToFile);
+    QString outputFile = pathToFile + ".gflog";
+
+    QString freqReport;
+
+    if (!fres.errorList.isEmpty()){
+        freqReport = "FREQ ANALYSIS ERROR: \n   " + fres.errorList.join("\n   ");
+        logger.appendStandard(freqReport);
+        return;
+    }
+    else {
+
+        FreqAnalysis::FreqCheckParameters fcp;
+        fcp.fexpected                        = configuration->getReal(CONFIG_SAMPLE_FREQUENCY);
+        fcp.periodMax                        = configuration->getReal(CONFIG_TOL_MAX_PERIOD_TOL);
+        fcp.periodMin                        = configuration->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
+        fcp.maxAllowedFreqGlitchesPerTrial   = configuration->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
+        fcp.maxAllowedPercentOfInvalidValues = configuration->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
+        fcp.minNumberOfDataItems             = configuration->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+
+        fres.analysisValid(fcp);
+        freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";
+        freqReport = freqReport + fres.errorList.join("\n   ");
+        freqReport = freqReport  + "\n   Individual Freq Errors:\n   " + fres.individualErrorList.join("\n   ");
+    }
+
+    QFile file(outputFile);
+    if (!file.open(QFile::WriteOnly)){
+        logger.appendError("Could not write requested frequency analysis output to write output to: " + outputFile);
+        logger.appendStandard(freqReport);
+    }
+    else{
+        QTextStream writer(&file);
+        writer << freqReport;
+        file.close();
+    }
+
+}
 
 ///////////////////////////////////////////////////////////////////
 FlowControl::~FlowControl(){

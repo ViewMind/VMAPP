@@ -28,6 +28,7 @@ Item {
     }
 
     signal archiveRequested(int indexInList);
+    signal frequencyAnalysisRequested(int indexInList);
 
     ListModel {
         id: modelList
@@ -183,6 +184,9 @@ Item {
                         listContainer.visible = false;
                         vmSelection = displayText;
                         updateDisplay();
+                    }
+                    onFrequencyAnalysis: {
+                        frequencyAnalysisRequested(indexInList)
                     }
                 }
             }

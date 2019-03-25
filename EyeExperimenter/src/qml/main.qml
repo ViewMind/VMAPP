@@ -150,7 +150,7 @@ Window {
                 viewPresentExperimet.enableContinue();
                 break;
             case vmIndexPatientList:
-                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"1369462188_0000");
+                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"1369462188_0000_D0000");
                 //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
                 // This will laod patients which will also trigger the search for unprocessed information.
                 //viewPatList.test();
