@@ -18,7 +18,7 @@ Window {
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.       
         swiperControl.currentIndex = swiperControl.vmIndexHome;
-        //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+        //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
     }
 
 
@@ -36,6 +36,12 @@ Window {
         id: viewDrSelection
         x: (parent.width - viewDrSelection.width)/2
         y: (parent.height - viewDrSelection.height)/2
+    }
+
+    ViewProtocols{
+        id: viewProtocols
+        x: (parent.width - viewProtocols.width)/2
+        y: (parent.height - viewProtocols.height)/2
     }
 
     SwipeView {
@@ -150,7 +156,7 @@ Window {
                 viewPresentExperimet.enableContinue();
                 break;
             case vmIndexPatientList:
-                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"1369462188_0000");
+                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"1369462188_0000_D0000");
                 //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
                 // This will laod patients which will also trigger the search for unprocessed information.
                 //viewPatList.test();

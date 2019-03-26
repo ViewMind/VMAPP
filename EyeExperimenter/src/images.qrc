@@ -28,5 +28,6 @@
         <file>images/edit_icon.png</file>
         <file>images/black_folder.png</file>
         <file>images/white-folder.png</file>
+        <file>images/frecuency.png</file>
     </qresource>
 </RCC>

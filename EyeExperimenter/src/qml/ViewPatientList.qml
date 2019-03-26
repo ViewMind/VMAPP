@@ -322,6 +322,7 @@ VMBase {
 
         // WARNING: Get patient list call fills the other two lists. It NEEDS to be called first.
         var patientNameList = loader.generatePatientLists(filterText, vmShowAll);
+        var patientDisplayID = loader.getPatientDisplayIDList();
         var uidList = loader.getPatientUIDLists();
         var isOkList = loader.getPatientIsOKList();
         var drName = loader.getDoctorNameList();
@@ -330,23 +331,36 @@ VMBase {
         // Clearing the current model.
         patientList.clear()
 
+        var drValid = loader.isDoctorValidated(-1);
+        if (loader.getViewAllFlag()) drValid = true;
+
         for (var i = 0; i < patientNameList.length; i++){
             //console.log("PATIENTLIST: " + patientNameList[i] + " PUID: " +  uidList[i] + "  OK: " + isOkList[i] + " DR: " + drName[i] + "  DRUID: " + drUID[i]);
             var display_doctor_name = "";
             if (vmShowAll) display_doctor_name = drName[i];
             patientList.append({"vmPatientUID": uidList[i],
-                                "vmPatientName": patientNameList[i],
-                                "vmIsOk": (isOkList[i] === "true"),
-                                "vmDrName" : display_doctor_name,
-                                "vmDrUID": drUID[i],
-                                "vmItemIndex" : i,
-                                "vmIsSelected" : false});
+                                   "vmDisplayID": patientDisplayID[i],
+                                   "vmPatientName": patientNameList[i],
+                                   "vmIsOk": (isOkList[i] === "true"),
+                                   "vmEnableGenRepButon": drValid,
+                                   "vmDrName" : display_doctor_name,
+                                   "vmDrUID": drUID[i],
+                                   "vmItemIndex" : i,
+                                   "vmIsSelected" : false});
         }
 
         patientListView.currentIndex = -1;
-        // Checking if the doctor is validated to inhabilitate the view buttons.
-        if (loader.isDoctorValidated(-1)) btnViewAll.enabled = true;
-        else btnViewAll.enabled = false;
+        if (loader.getViewAllFlag()){
+            btnViewAll.enabled = true;
+        }
+        else {
+            if (drValid){
+                btnViewAll.enabled = true;
+            }
+            else{
+                btnViewAll.enabled = false;
+            }
+        }
     }
 
     function startDemoTransaction(){
@@ -492,7 +506,7 @@ VMBase {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 20
-            enabled: ((patientListView.currentIndex !== -1) && (loader.isDoctorValidated(-1)))
+            enabled: (patientListView.currentIndex !== -1) && (loader.isDoctorValidated(-1) || loader.getViewAllFlag() )
             onClicked: {
                 viewShowReports.vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
                 viewShowReports.vmPatientDirectory = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_DIRECTORY);

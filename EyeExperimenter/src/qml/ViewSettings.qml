@@ -10,7 +10,7 @@ Dialog {
     property string vmLoadLanguage: "";
     property string vmDefaultCountry: "";
     property bool vmOfflineModeStatus: false;
-    property bool vmRestartRequired: false;    
+    property bool vmRestartRequired: false;
 
     // Indexes for the list and to identify the eys.
     readonly property int vmEYE_L:    0
@@ -22,7 +22,7 @@ Dialog {
     id: viewSettings
     modal: true
     width: 614
-    height: 520
+    height: 560
     closePolicy: Popup.NoAutoClose
 
     MouseArea {
@@ -44,6 +44,13 @@ Dialog {
 
     VMDefines{
         id: vmDefines
+    }
+
+    onOpened: {
+        if (loader.getViewAllFlag()) diagBtnEnableViewAll.vmText = loader.getStringForKey(keybase+"diagDisableViewAll");
+        else diagBtnEnableViewAll.vmText = loader.getStringForKey(keybase+"diagEnableViewAll");
+        instPassword.setText("");
+        instPassword.vmErrorMsg = "";
     }
 
     // The configure settings title
@@ -96,7 +103,7 @@ Dialog {
         onVmValuesChanged:diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
         onVmListChanged: diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
         Component.onCompleted: {
-           vmDefaultCountry = loader.getCountryCodeForCountry(diagDBDefaultCountry.vmCurrentText)
+            vmDefaultCountry = loader.getCountryCodeForCountry(diagDBDefaultCountry.vmCurrentText)
         }
     }
 
@@ -181,14 +188,60 @@ Dialog {
         visible: false
     }
 
+    Text {
+        id: diagLabelEnableViewAll
+        text: loader.getStringForKey(keybase+"diagLabelEnableViewAll");
+        font.family: viewHome.robotoB.name
+        font.pixelSize: 13
+        font.bold: true
+        anchors.top: diagCboxUseMouse.bottom
+        anchors.topMargin: 20
+        anchors.left: diagDBDefaultCountry.left
+    }
+
+    Row{
+        id: viewAllEnableRow
+        anchors.left: diagCBLang.left
+        anchors.top: diagLabelEnableViewAll.bottom
+        anchors.topMargin: 20
+        spacing: 10
+
+        VMPasswordField{
+            id: instPassword
+            vmLabelText: loader.getStringForKey(keybase+"diagInstPassword");
+            width: 150
+        }
+
+        VMButton{
+            id: diagBtnEnableViewAll
+            vmFont: viewHome.gothamM.name
+            vmSize: [250, 30]
+            vmText: ""
+            onClicked: {
+
+                if (loader.verifyInstitutionPassword(instPassword.getText())){
+                    var current = loader.getViewAllFlag();
+                    loader.setViewAllFlag(!current)
+                    viewSettings.close();
+                }
+                else{
+                    instPassword.vmErrorMsg = loader.getStringForKey(keybase + "diagWrongPass")
+                }
+
+            }
+            anchors.bottom: instPassword.bottom
+        }
+
+    }
+
     VMButton{
         id: diagBtnOK
         vmFont: viewHome.gothamM.name
         vmSize: [120, 49]
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
-        anchors.top: diagCboxDualMonitor.bottom
+        anchors.top: viewAllEnableRow.bottom
         anchors.topMargin: 45
-        anchors.left: diagDBDefaultCountry.left        
+        anchors.left: diagDBDefaultCountry.left
         onClicked: {
             if (checkAllOk()) close();
             if (vmRestartRequired){

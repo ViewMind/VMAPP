@@ -10,6 +10,9 @@ const QString LocalInformationManager::DOCTOR_UPDATE         = "DOCTOR_UPDATE";
 const QString LocalInformationManager::DOCTOR_PASSWORD       = "DOCTOR_PASSWORD";
 const QString LocalInformationManager::DOCTOR_VALID          = "DOCTOR_VALID";
 const QString LocalInformationManager::DOCTOR_HIDDEN         = "DOCTOR_HIDDEN";
+const QString LocalInformationManager::FLAG_VIEWALL          = "FLAG_VIEWALL";
+const QString LocalInformationManager::PROTOCOLS             = "PROTOCOLS";
+const QString LocalInformationManager::PROTOCOL_VALID        = "PROTOCOL_VALID";
 
 LocalInformationManager::LocalInformationManager()
 {
@@ -19,9 +22,19 @@ LocalInformationManager::LocalInformationManager()
 
 //************************************** Interface with Local DB *****************************************
 
-void LocalInformationManager::setDirectory(const QString &workDir, const QString eyeexpid){
+void LocalInformationManager::setDirectory(const QString &workDir, const QString &eyeexpid, const QString &instUID){
     workingDirectory = workDir;
-    loadDB(eyeexpid);
+    loadDB(eyeexpid,instUID);
+}
+
+void LocalInformationManager::setViewAllFlag(bool flagValue){
+    localDB[FLAG_VIEWALL] = flagValue;
+    backupDB();
+}
+
+bool LocalInformationManager::getViewAllFlag() const{
+    if (localDB.contains(FLAG_VIEWALL)) return localDB.value(FLAG_VIEWALL).toBool();
+    else return false;
 }
 
 void LocalInformationManager::enableBackups(const QString &backupDir){
@@ -49,6 +62,7 @@ QString LocalInformationManager::getDoctorPassword(const QString &uid){
 }
 
 QVariantMap LocalInformationManager::getPatientInfo(const QString &patuid) const {
+    //qWarning() << "Will return patient info for" << patuid;
     return localDB.value(PATIENT_DATA).toMap().value(patuid).toMap();
 }
 
@@ -128,7 +142,9 @@ bool LocalInformationManager::isDoctorValid(const QString &dr_uid){
     //qWarning() << "Checking if doctor is valid" << dr_uid;
     //printDBToConsole();
     if (!localDB.value(DOCTOR_DATA).toMap().contains(dr_uid)) return false;
+    //qWarning() << "Existe";
     if (!localDB.value(DOCTOR_DATA).toMap().value(dr_uid).toMap().contains(DOCTOR_VALID)) return false;
+    //qWarning() << "Returning the value of the flag in the database";
     return localDB.value(DOCTOR_DATA).toMap().value(dr_uid).toMap().value(DOCTOR_VALID).toBool();
 }
 
@@ -175,6 +191,12 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 
         QVariantMap patientMap = localDB.value(PATIENT_DATA).toMap().value(patuids.at(j)).toMap();
 
+        // Patient must be assiged to a VALIDATED doctor. Otherwise synchronization will not be possible as de Doctor is not in the DB.
+        QString assignedDoctor = patientMap.value(TPATDATA_COL_DOCTORID).toString();
+        if (!localDB.value(DOCTOR_DATA).toMap().value(assignedDoctor).toMap().value(DOCTOR_VALID).toBool()){
+            continue;
+        }
+
         bool addPatient = false;
         if (!patientMap.contains(PATIENT_UPDATE)) addPatient = true;
         else if (patientMap.value(PATIENT_UPDATE).toBool()) addPatient = true;
@@ -182,17 +204,24 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
         if (addPatient){
             QStringList columns;
             QStringList values;
-            QSet<QString> avoid; avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR;
+            QSet<QString> avoid; avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID << TPATDATA_NONCOL_PROTOCOL;
+            QSet<QString> needToHash; needToHash << TPATDATA_COL_FIRSTNAME << TPATDATA_COL_LASTNAME;
             QStringList keys = patientMap.keys();
             for (qint32 k = 0; k < keys.size(); k++){
                 if (avoid.contains(keys.at(k))) continue;
                 columns << keys.at(k);
-                values << patientMap.value(keys.at(k)).toString();
+                QString value = patientMap.value(keys.at(k)).toString();
+                if (needToHash.contains(keys.at(k))){
+                    value = QCryptographicHash::hash(value.toLatin1(),QCryptographicHash::Sha3_256).toHex();
+                }
+                values << value;
             }
 
             // Adding the Hashed patient ID.
+
             QString hash = QCryptographicHash::hash(patientMap.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
             columns << TPATDATA_COL_PUID;
+            log.appendStandard(patientMap.value(TPATDATA_COL_PUID).toString() + "==>" + hash);
             values << hash;
 
             client->appendSET(TABLE_PATDATA,columns,values);
@@ -219,17 +248,21 @@ void LocalInformationManager::fillPatientDatInformation(const QString &patient){
         QString patDirName = workingDirectory + "/" + patuid;
         QDir patientDir(patDirName);
 
+        //qWarning() << "CHECKING FOR" << patDirName;
+
         if (!patientDir.exists()){
             // This is not necessarily an error because not all new patients willt have a patient directory created.
-            // log.appendError("Base directory for the current Doctor: " + baseDir + " was not found");
             continue;
         }
 
         DatFileInfoInDir datInfo;
         datInfo.setDatDirectory(patientDir.path());
+        //qWarning() << "Adding information for patuid" << patuid;
         patientReportInformation[patuid] = datInfo;
 
     }
+
+    //printDBToConsole();
 }
 
 void LocalInformationManager::addDoctorData(const QString &druid,
@@ -277,7 +310,6 @@ void LocalInformationManager::addDoctorData(const QString &druid,
         drinfo[DOCTOR_UPDATE] = update;
 
         // Making sure the password and valid fields are copied.
-        qWarning() << drmap.contains(DOCTOR_VALID) << drmap.value(DOCTOR_VALID).toBool();
         if (drmap.contains(DOCTOR_VALID)) drinfo[DOCTOR_VALID] = drmap.value(DOCTOR_VALID);
         else drinfo[DOCTOR_VALID] = false;
         if (drmap.contains(DOCTOR_PASSWORD)) drinfo[DOCTOR_PASSWORD] = drmap.value(DOCTOR_PASSWORD);
@@ -391,7 +423,7 @@ LocalInformationManager::DisplayLists LocalInformationManager::getDoctorList(boo
 
         QString displayUID = uids.at(i);
         QStringList parts = uids.at(i).split("_");
-        if (parts.size() == 2) displayUID = parts.last();
+        if (parts.size() == 3) displayUID = parts.last();
         ans.doctorNames << drinfo.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + drinfo.value(TDOCTOR_COL_LASTNAME).toString()
                            + " (" + displayUID + ")";
         ans.doctorUIDs << uids.at(i);
@@ -421,9 +453,11 @@ LocalInformationManager::DisplayLists LocalInformationManager::getPatientListFor
         if (!druid.isEmpty() && (duid != druid) && (cuid != druid)) continue;
 
         QString entryText = patinfo.value(TPATDATA_COL_FIRSTNAME).toString() + " " + patinfo.value(TPATDATA_COL_LASTNAME).toString();
-        if ( filter.isEmpty() || entryText.contains(filter,Qt::CaseInsensitive) || uids.at(i).contains(filter,Qt::CaseInsensitive) ){
+        QString displayID = patinfo.value(TPATDATA_NONCOL_DISPLAYID).toString();
+        if ( filter.isEmpty() || entryText.contains(filter,Qt::CaseInsensitive) || displayID.contains(filter,Qt::CaseInsensitive) ){
             ans.patientNames << entryText;
             ans.patientUIDs << uids.at(i);
+            ans.patientDisplayIDs << displayID;
 
             QVariantMap dmap = localDB.value(DOCTOR_DATA).toMap().value(duid).toMap();
             ans.doctorNames <<  dmap.value(TDOCTOR_COL_FIRSTNAME).toString() + " " + dmap.value(TDOCTOR_COL_LASTNAME).toString();
@@ -455,7 +489,7 @@ LocalInformationManager::DisplayLists LocalInformationManager::getPatientListFor
     return ans;
 }
 
-void LocalInformationManager::loadDB(QString eyeexpid){
+void LocalInformationManager::loadDB(QString eyeexpid, QString instUID){
 
     // Checking to see if the directory structure exists.
     QDir basedir(workingDirectory);
@@ -505,11 +539,10 @@ void LocalInformationManager::loadDB(QString eyeexpid){
             newDRMap[TDOCTOR_COL_EMAIL] = drmap.value(TDOCTOR_COL_EMAIL).toString();
 
             // Generating the new UID.
-            QString medinst = drmap.value(TDOCTOR_COL_MEDICAL_INST).toString();
             QString numid = newDoctorID();
 
-            newDRMap[TDOCTOR_COL_MEDICAL_INST] = medinst;
-            newDRMap[TDOCTOR_COL_UID] = medinst + "_" + eyeexpid + "_"  + numid;
+            newDRMap[TDOCTOR_COL_MEDICAL_INST] = instUID;
+            newDRMap[TDOCTOR_COL_UID] = instUID + "_" + eyeexpid + "_"  + numid;
             // Forcing updates.
             newDRMap[DOCTOR_UPDATE] = true;
             newDRMap[DOCTOR_PASSWORD] = drmap.value(DOCTOR_PASSWORD);
@@ -517,7 +550,7 @@ void LocalInformationManager::loadDB(QString eyeexpid){
             newDRMap[DOCTOR_HIDDEN] = drmap.value(DOCTOR_HIDDEN);
 
             // Adding the doctor data to the doctor DB
-            drdb[medinst + "_" + numid] = newDRMap;
+            drdb[instUID + "_" + eyeexpid + "_" + numid] = newDRMap;
 
             // Adding all of the doctor's patients to the patient db
             QStringList patuids = patmap.keys();
@@ -528,20 +561,22 @@ void LocalInformationManager::loadDB(QString eyeexpid){
                 if (existingPatients.contains(patuid)){
                     QString nid = existingPatients.value(patuid);
                     QVariantMap pdb = patdb.value(nid).toMap();
-                    pdb[PATIENT_CREATOR] = medinst + "_" + eyeexpid + "_"  + numid;
+                    pdb[PATIENT_CREATOR] = instUID + "_" + eyeexpid + "_"  + numid;
                     patdb[nid] = pdb;
                     continue;
                 }
 
                 QString pnumid = newPatientID();
-                QString newpatuid = medinst + "_" + eyeexpid + "_"  + pnumid;
+                QString newpatuid = instUID + "_" + eyeexpid + "_"  + pnumid;
                 log.appendStandard("MAPPING: " + patuid + " ==> " + newpatuid);
                 existingPatients[patuid] = newpatuid;
 
                 QVariantMap pdb = patmap.value(patuid).toMap();
-                pdb[TPATDATA_COL_DOCTORID] = medinst + "_" + eyeexpid + "_"  + numid;
-                pdb[PATIENT_CREATOR] = medinst + "_" + eyeexpid + "_"  + numid;
+                pdb[TPATDATA_COL_DOCTORID] = instUID + "_" + eyeexpid + "_"  + numid;
+                pdb[PATIENT_CREATOR] = instUID + "_" + eyeexpid + "_"  + numid;
                 pdb[TPATDATA_COL_PUID] = newpatuid;
+                pdb[TPATDATA_NONCOL_DISPLAYID] = patuid;
+                pdb[PATIENT_UPDATE] = true;
 
                 // Removing non important data
                 pdb.remove(TPATDATA_COL_STATE);
@@ -568,22 +603,22 @@ void LocalInformationManager::loadDB(QString eyeexpid){
         // Changing doctor ids
         QStringList keys; keys = drdb.keys();
         QHash<QString,QString> drmap;
-        QString medinst;
 
         for (qint32 i = 0; i < keys.size(); i++){
             QString oldid = keys.at(i);
             QVariantMap drdata = drdb.value(oldid).toMap();
             QStringList parts = oldid.split("_");
-            medinst = parts.first();
             QString newid;
             if (parts.size() != 2){
                 log.appendError("OLD DB WITH UNKNOWN DR ÏD: " + oldid);
                 newid = oldid;
             }
             else{
-                newid = parts.first() + "_" + eyeexpid + "_D" + parts.last();
+                newid = instUID + "_" + eyeexpid + "_D" + parts.last();
             }
             drdata[DOCTOR_UPDATE] = true;
+            drdata[DOCTOR_VALID] = true;
+            drdata[TDOCTOR_COL_MEDICAL_INST] = instUID;
             drdata[TDOCTOR_COL_UID] = newid;
             drdb[newid] = drdata;
             drdb.remove(oldid);
@@ -595,7 +630,7 @@ void LocalInformationManager::loadDB(QString eyeexpid){
         for (qint32 i = 0; i < keys.size(); i++){
             QString oldid = keys.at(i);
             QVariantMap patdata = patdb.value(oldid).toMap();
-            QString newid = medinst + "_" + eyeexpid + "_" + newPatientID();
+            QString newid = instUID + "_" + eyeexpid + "_" + newPatientID();
             QString drassinged = patdata.value(TPATDATA_COL_DOCTORID).toString();
             QString drcreator  = patdata.value(PATIENT_CREATOR).toString();
             if (!drmap.contains(drassinged)) log.appendError("DB REPURPOSE: Could not find assigned doctor: " + drassinged + " for pat " + oldid);
@@ -603,6 +638,8 @@ void LocalInformationManager::loadDB(QString eyeexpid){
             patdata[TPATDATA_COL_DOCTORID] = drmap.value(drassinged);
             patdata[PATIENT_CREATOR] = drmap.value(drcreator);
             patdata[PATIENT_UPDATE] = true;
+            patdata[TPATDATA_COL_PUID] = newid;
+            patdata[TPATDATA_NONCOL_DISPLAYID] = oldid;
             patdb.remove(oldid);
             patdb[newid] = patdata;
             log.appendStandard("MAPPING: " + oldid + " ==> " + newid);
@@ -613,6 +650,8 @@ void LocalInformationManager::loadDB(QString eyeexpid){
         qWarning() << "NO PATIENT COUNTER FOUND";
         printDBToConsole();
     }
+
+    //printDBToConsole();
 
 }
 
@@ -632,6 +671,7 @@ void LocalInformationManager::backupDB(){
     }
 
     QDataStream writer(&file);
+    //printDBToConsole();
     writer << LOCAL_DB_VERSION;
     writer << localDB;
     file.close();
@@ -649,6 +689,9 @@ void LocalInformationManager::backupDB(){
 
 void LocalInformationManager::printDBToConsole(){
     qWarning() << "DOCTOR COUNTER: " + localDB.value(DOCTOR_COUNTER).toString();
+    qWarning() << "PATIENT COUNTER: " + localDB.value(PATIENT_COUNTER).toString();
+    qWarning() << "VIEW ALL FLAG" << localDB.value(FLAG_VIEWALL).toBool();
+    qWarning() << "PROTOCOLS" << localDB.value(PROTOCOLS).toStringList();
     QStringList maps;
     maps << DOCTOR_DATA << PATIENT_DATA;
     for (qint32 i = 0; i < maps.size(); i++){
@@ -701,4 +744,48 @@ QStringList LocalInformationManager::getReportNameAndFileSet(const QString &patu
 
 QString LocalInformationManager::getDatFileFromIndex(const QString &patuid, qint32 index, qint32 whichList) const{
     return patientReportInformation.value(patuid).getDatFileNameFromSelectionDialogIndex(index,whichList);
+}
+
+//************************************** Interface with Protocol List *****************************************
+bool LocalInformationManager::addProtocol(const QString &protocol){
+    if (!localDB.contains(PROTOCOLS)){
+        QStringList list; list << protocol;
+        QVariantList valid; valid << true;
+        localDB[PROTOCOLS] = list;
+        localDB[PROTOCOL_VALID] = valid;
+        backupDB();
+        return true;
+    }
+    else if (localDB.value(PROTOCOLS).toStringList().contains(protocol)) return false;
+    else{
+        QStringList protocollist = localDB.value(PROTOCOLS).toStringList();
+        QVariantList valid = localDB.value(PROTOCOL_VALID).toList();
+        protocollist << protocol;
+        valid << true;
+        localDB[PROTOCOLS] = protocollist;
+        localDB[PROTOCOL_VALID] = valid;
+        backupDB();
+        return true;
+    }    
+}
+
+void LocalInformationManager::deleteProtocol(const QString &protocol){
+    if (!localDB.contains(PROTOCOLS)) return;
+    QStringList protocollist = localDB.value(PROTOCOLS).toStringList();
+    QVariantList valid = localDB.value(PROTOCOL_VALID).toList();
+    qint32 index = protocollist.indexOf(protocol);
+    if (index > -1) valid[index] = false;
+    localDB[PROTOCOL_VALID] = valid;
+    backupDB();
+}
+
+QStringList LocalInformationManager::getProtocolList(bool full) const {
+    QStringList list;
+    if (!localDB.contains(PROTOCOLS)) return list;
+    QStringList fullist = localDB.value(PROTOCOLS).toStringList();
+    if (full) return fullist;
+    for (qint32 i = 0; i < fullist.size(); i++){
+        if (localDB.value(PROTOCOL_VALID).toList().at(i).toBool()) list << fullist.at(i);
+    }
+    return list;
 }

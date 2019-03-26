@@ -12,7 +12,7 @@ Rectangle {
     property string vmDemoMode: "";
 
     z: -10
-    height: 364
+    height: 410
     color: "#ffffff"
 
     layer.enabled: true
@@ -31,6 +31,9 @@ Rectangle {
         vmDemoMode = loader.getStringForKey("viewdrmenu_mode") + ": "
         if (loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE)) vmDemoMode = vmDemoMode + "Demo";
         else vmDemoMode = vmDemoMode + "Normal"
+        // Checking if the doctor is validated
+        if (loader.isDoctorValidated(-1)) btnProtocols.enabled = true;
+        else btnProtocols.enabled = false;
     }
 
     Rectangle{
@@ -210,6 +213,36 @@ Rectangle {
             viewDrInfo.clearAllFields();
             viewDrInfo.loadDoctorInformation();
             swiperControl.currentIndex = swiperControl.vmIndexDrProfile;
+        }
+    }
+
+    // The button is a mouse area otherwise the menu exists.
+    MouseArea{
+        id: btnProtocols
+        width: parent.width*0.9
+        height: 38
+        Rectangle {
+            id: btnProtocolsRect
+            anchors.fill: parent
+            radius: 3
+            color: (btnProtocols.pressed)? "ff0000" : "#ffffff"
+            border.color: btnProtocols.enabled? "#BCBEC0" : "#dadcde"
+            Text{
+                anchors.centerIn: btnProtocolsRect
+                font.family: gothamM.name
+                font.pixelSize: 13
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                text: loader.getStringForKey("viewhome_btnProtocol");
+                color: btnProtocols.enabled? "#BCBEC0" : "#dadcde"
+            }
+
+        }
+        anchors.top: btnChangeDoctorInfo.bottom
+        anchors.topMargin: 18
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: {
+            viewProtocols.open();
         }
     }
 

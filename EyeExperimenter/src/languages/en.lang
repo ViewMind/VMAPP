@@ -3,6 +3,7 @@
 #********************************* VIEWHOME SCREEN *********************************
 viewhome_btnConfSettings = CONFIGURE SETTINGS;
 viewhome_btnEditDrInfo = PERSONAL;
+viewhome_btnProtocol = PROTOCOL;
 viewhome_slideTitle = Start your evaluation;
 viewhome_description = Using high-precision Eye-Tracking, in <b> a 10-minutes, <br>
 non-invasive and standarized test</b>, we are able to detect <br>
@@ -28,6 +29,11 @@ viewsettings_diagLabelRepo = Work directory;
 viewsettings_error_invalid_repo = Please select a valid work directory;
 viewsettings_error_invalid_dr = Doctor's name cannot be left empty;
 viewsettings_diagLabelDefaultCountry = Select the default chosen country;
+viewsettings_diagInstPassword = Institution Password;
+viewsettings_diagEnableViewAll = Enable View All Patients;
+viewsettings_diagDisableViewAll = Disable View All Patients;
+viewsettings_diagLabelEnableViewAll = Enable control for View All Patients;
+viewsettings_diagWrongPass = Wrong password;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Patient's registration;
@@ -50,6 +56,7 @@ viewpatientreg_terms_of_use = Terms Of Use;
 viewpatientreg_privacy_policy = Privacy Policy;
 viewpatientreg_errorExists = This patient is exists under this doctor;
 viewpatientreg_labelAssignedDoctor = Assigned doctor;
+viewpatientreg_labelProtocol = Protocol;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Eye Studies;
@@ -248,6 +255,16 @@ viewselectdata_labelSelectOption = Select data file;
 viewselectdata_btnDelete = Archive;
 viewselectdata_btnCancel = CANCEL;
 viewselectdata_btnGenReport = GENERATE REPORT;
+
+#********************************* PROTOCOLSCREEN SCREEN *********************************
+viewprotocol_diagTitle = Medical Protocols;
+viewprotocol_diagSubTitle = Add and delete protocols;
+viewprotocol_btnDelete = DELETE;
+viewprotocol_btnAdd = ADD;
+viewprotocol_msgPressAgainToDelete = Press again to delete the selected protocol;
+viewprotocol_msgExists = The protocol already exists;
+viewprotocol_labelNewProtocol = New protocol;
+viewprotocol_optionSelectProtocol = Select protocol;
 
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title

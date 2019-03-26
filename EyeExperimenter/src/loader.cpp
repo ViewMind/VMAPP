@@ -119,7 +119,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     connect(dbClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectFromDB()));
 
     // Creating the local configuration manager, and loading the local DB.
-    lim.setDirectory(QString(DIRNAME_RAWDATA), configuration->getString(CONFIG_EYEEXP_NUMBER));
+    lim.setDirectory(QString(DIRNAME_RAWDATA), configuration->getString(CONFIG_EYEEXP_NUMBER), configuration->getString(CONFIG_INST_UID));
 
     // Creating the db backup directory if it does not exist.
     QDir(".").mkdir(DIRNAME_DBBKP);
@@ -365,11 +365,11 @@ void Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide){
         // This is a new doctor
         if (configuration->getBool(CONFIG_TEST_MODE)){
             // CAN ONLY CREATE XXXX Doctor.
-            uid = "TEST_XXXX";
+            uid = TEST_DOCTOR_ID;
         }
         else{
             uid = lim.newDoctorID();
-            uid = configuration->getString(CONFIG_INST_UID) + "_" + uid;
+            uid = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + uid;
         }
     }
 
@@ -397,15 +397,15 @@ void Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide){
 
 }
 
-bool Loader::addNewPatientToDB(QVariantMap dbdata, bool isNew){
+void Loader::addNewPatientToDB(QVariantMap dbdata){
 
     // Making necessary adjustments
-    QString countryCode = countries->getCodeForCountry(dbdata.value(TPATDATA_COL_BIRTHCOUNTRY).toString());
-    dbdata[TPATDATA_COL_BIRTHCOUNTRY] = countryCode;
-    QString uid = countryCode + dbdata.value(TPATDATA_COL_PUID).toString();
-    dbdata[TPATDATA_COL_PUID] = uid;
-
-    if (lim.doesPatientExist(uid) && isNew) return false;
+    if (dbdata.value(TPATDATA_COL_PUID).toString().isEmpty()){
+        QString uid = lim.newPatientID();
+        uid = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + uid;
+        dbdata[TPATDATA_COL_PUID] = uid;
+        dbdata[TPATDATA_NONCOL_DISPLAYID] = dbdata[TPATDATA_NONCOL_PROTOCOL].toString() + "_" + dbdata[TPATDATA_NONCOL_DISPLAYID].toString();
+    }
 
     // Transforming the date format.
     QString date = dbdata.value(TPATDATA_COL_BIRTHDATE).toString();
@@ -413,6 +413,9 @@ bool Loader::addNewPatientToDB(QVariantMap dbdata, bool isNew){
     // Since the date format is given by the program, I can trust that the split will have 3 parts. Setting the ISO Date.
     date = dateParts.at(2) + "-" + dateParts.at(1) + "-" + dateParts.at(0);
     dbdata[TPATDATA_COL_BIRTHDATE] = date;
+
+    QString countryCode = countries->getCodeForCountry(dbdata.value(TPATDATA_COL_BIRTHCOUNTRY).toString());
+    dbdata[TPATDATA_COL_BIRTHCOUNTRY] = countryCode;
 
     // Insertion date.
     dbdata[TPATDATA_COL_DATE_INS] = "TIMESTAMP(NOW())";
@@ -435,8 +438,6 @@ bool Loader::addNewPatientToDB(QVariantMap dbdata, bool isNew){
     // Adding the optional data, plus the mandaotory data.
     lim.addPatientData(dbdata.value(TPATDATA_COL_PUID).toString(),configuration->getString(CONFIG_DOCTOR_UID),allColumns,allValues);
 
-    return true;
-
 }
 
 void Loader::startDBSync(){
@@ -452,11 +453,15 @@ void Loader::startDBSync(){
     }
 }
 
+bool Loader::verifyInstitutionPassword(const QString &instPass){
+    QString hasshedPassword = QString(QCryptographicHash::hash(instPass.toUtf8(),QCryptographicHash::Sha256).toHex());
+    return (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword);
+}
+
 bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr){
     // Storing the hasshed password for later comparison
-    QString hasshedPassword = QString(QCryptographicHash::hash(instPassword.toUtf8(),QCryptographicHash::Sha256).toHex());
     QString drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
-    if (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword){
+    if (verifyInstitutionPassword(instPassword)){
         lim.validateDoctor(drUIDtoValidate);
         return true;
     }
@@ -561,6 +566,11 @@ void Loader::onDisconnectFromDB(){
 void Loader::onFileSetRequested(const QStringList &fileList){
     QStringList fileSet;
     QString patuid = configuration->getString(CONFIG_PATIENT_UID);
+
+    // Setting the protocol ID
+    QVariantMap patdata = lim.getPatientInfo(patuid);
+    configuration->addKeyValuePair(CONFIG_PROTOCOL_NAME,patdata.value(TPATDATA_NONCOL_PROTOCOL).toString());
+
     if (fileList.isEmpty()){
         fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);
     }

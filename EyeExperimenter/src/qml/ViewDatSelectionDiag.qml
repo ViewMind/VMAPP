@@ -117,6 +117,11 @@ Dialog {
         viewPatList.loadPatients();
     }
 
+    function doFrequencyAnalysis(which,index){
+        var filename = loader.getDatFileNameFromIndex(index,"",which);
+        flowControl.doFrequencyAnalysis(filename);
+    }
+
     // The select report title
     Text {
         id: diagTitle
@@ -177,6 +182,12 @@ Dialog {
                    viewPatList.configureShowMessageForArchive(vmLIST_INDEX_READING,indexInList-1)
                 }
             }
+            onFrequencyAnalysisRequested: {
+                if (indexInList > 0){
+                   viewDatSelectionDiag.close();
+                   viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_READING,indexInList-1)
+                }
+            }
         }
 
         VMDatSelection{
@@ -195,6 +206,12 @@ Dialog {
                    viewPatList.configureShowMessageForArchive(vmLIST_INDEX_BINDING_BC,indexInList-1)
                 }
             }
+            onFrequencyAnalysisRequested: {
+                if (indexInList > 0){
+                   viewDatSelectionDiag.close();
+                   viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_BC,indexInList-1)
+                }
+            }
         }
 
         VMDatSelection{
@@ -211,6 +228,12 @@ Dialog {
                 if (indexInList > 0){
                    viewDatSelectionDiag.close();
                    viewPatList.configureShowMessageForArchive(vmLIST_INDEX_BINDING_UC,indexInList-1)
+                }
+            }
+            onFrequencyAnalysisRequested: {
+                if (indexInList > 0){
+                   viewDatSelectionDiag.close();
+                   viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_UC,indexInList-1)
                 }
             }
         }

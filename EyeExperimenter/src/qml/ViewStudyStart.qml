@@ -12,9 +12,10 @@ VMBase {
     property int vmCurrentExperimentIndex: 0
 
     function setPatientName(){
-        var name = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);;
-        var uid = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_UID);;
-        labelPatientName.text = name + " (" + uid + ")"
+        var name = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+        var uid = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_UID);
+        var patData = loader.getCurrentPatientInformation();
+        labelPatientName.text = patData.displayID;
     }
 
     function setDefaultSelections(){

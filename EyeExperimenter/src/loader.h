@@ -58,6 +58,7 @@ public:
     Q_INVOKABLE void loadDoctorSelectionInformation() { nameInfoList = lim.getDoctorList(); }
     Q_INVOKABLE QStringList getDoctorNameList() {return nameInfoList.doctorNames; }
     Q_INVOKABLE QStringList getDoctorUIDList() {return nameInfoList.doctorUIDs; }
+    Q_INVOKABLE QStringList getPatientDisplayIDList() { return nameInfoList.patientDisplayIDs; }
     Q_INVOKABLE QString getDoctorUIDByIndex(qint32 selectedIndex);
     Q_INVOKABLE qint32 getIndexOfDoctor(QString uid);
     Q_INVOKABLE bool isDoctorValidated(qint32 selectedIndex);
@@ -67,10 +68,18 @@ public:
     Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim.getDoctorInfo(configuration->getString(CONFIG_DOCTOR_UID));}
     Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_PATIENT_UID));}
     Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide);
-    Q_INVOKABLE bool addNewPatientToDB(QVariantMap dbdata, bool isNew);
+    Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdata);
     Q_INVOKABLE void startDBSync();
     Q_INVOKABLE bool requestDrValidation(const QString &instPassword, qint32 selectedDr);
+    Q_INVOKABLE bool verifyInstitutionPassword(const QString &instPass);
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
+    Q_INVOKABLE bool getViewAllFlag() const {return lim.getViewAllFlag(); }
+    Q_INVOKABLE void setViewAllFlag(bool flag) {lim.setViewAllFlag(flag); }
+
+    //******************** Protocol related functions ***************************
+    Q_INVOKABLE bool addProtocol(const QString &p) { return lim.addProtocol(p); }
+    Q_INVOKABLE void deleteProtocol(const QString &p) { lim.deleteProtocol(p); }
+    Q_INVOKABLE QStringList getProtocolList(bool full) { return lim.getProtocolList(full); }
 
     //******************** Report Related Functions ***************************
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}

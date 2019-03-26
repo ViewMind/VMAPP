@@ -38,13 +38,8 @@ Item {
             id: patientText
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: {
-                var dispid = "";
-                var parts = vmPatientUID.split("_");
-                if (parts.length === 3)dispid = parts[2];
-                else dispid = vmPatientUID;
-                return vmPatientName + " (" + dispid  + ")"
-            }
+            //text: vmPatientName + " (" +  vmDisplayID + ")"
+            text: vmDisplayID
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
@@ -96,6 +91,7 @@ Item {
     VMButton {
         id: btnFetchReport
         visible: !vmIsOk
+        enabled: vmEnableGenRepButon
         vmText: loader.getStringForKey("viewpatientlist_statusRepPending")
         height: vmHeight
         width: vmStatusColWidth

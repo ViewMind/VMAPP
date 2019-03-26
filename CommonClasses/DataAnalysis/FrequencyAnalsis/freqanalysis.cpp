@@ -31,17 +31,24 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
         individualErrorList << "---> Data Set " + QString::number(i);
 
         for (qint32 j = 0; j < diffTimes.at(i).size(); j++){
-            qreal dt = diffTimes.at(i).at(j);
+            qreal dt = diffTimes.at(i).at(j).getDiff();
             if ((dt < p.periodMin) || (dt > p.periodMax)) {
                 fglitches ++;
-                individualErrorList << "   ---> Period @ " + QString::number(j) + " is " + QString::number(dt);
+                individualErrorList << "   ---> Period @ " + QString::number(j) + " is " + QString::number(dt) + " " + diffTimes.at(i).at(j).toString();
             }
         }
 
+        QString temp = "";
+        if (diffTimes.at(i).size() >= 2){
+            qreal duration = diffTimes.at(i).last().end - diffTimes.at(i).first().start;
+            qreal avgT = 1000.0/trialFreq;
+            temp = "Data set duration: " + QString::number(duration) + ". Expected Number of Points: " + QString::number(duration/avgT);
+        }
+
         qreal ep = (qreal)fglitches*100.0/(qreal)(numData-1);
-        individualErrorList << "---> Number of glitches " + QString::number(fglitches) + " number of measured periods: "
+        individualErrorList << "   ---> Number of glitches " + QString::number(fglitches) + ". Number of measured periods: "
                                + QString::number(diffTimes.at(i).size()) + " (" + QString::number(ep) + "%)"
-                               + ". AVG F in Trial: " + QString::number(trialFreq);
+                               + ". AVG F in Trial: " + QString::number(trialFreq) + ". " + temp;
 
         if (ep > p.maxAllowedFreqGlitchesPerTrial){
             errorList << "Data set " + QString::number(i) + " has " + QString::number(ep) + " % of frequency glitches";
@@ -164,7 +171,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::freqAnalysis(const FreqAnalysis::
 
         if (trialChange){
             if (times.size() >= 2) {
-                QList<qreal> dtimes;
+                QList<TimePair> dtimes;
                 freqAcc = freqAcc + calculateFrequency(times, &dtimes);
                 freqCounter++;
                 far.avgFreqPerTrial << freqAcc/freqCounter;
@@ -195,13 +202,16 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::freqAnalysis(const FreqAnalysis::
 
 }
 
-qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<qreal> *dtimes){
+qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<TimePair> *dtimes){
     qreal freqsAcc = 0;
     qreal freqCounter = 0;
     qreal f;
     for (qint32 i = 1; i < times.size(); i++){
         f = (1.0)/((times.at(i) - times.at(i-1))*timeUnit);
-        dtimes->append(times.at(i) - times.at(i-1));
+        TimePair tp;
+        tp.start = times.at(i-1);
+        tp.end   = times.at(i);
+        dtimes->append(tp);
         freqsAcc = freqsAcc + f;
         freqCounter++;
     }

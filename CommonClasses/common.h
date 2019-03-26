@@ -95,12 +95,13 @@
 #define   CONFIG_PROTOCOL_NAME                          "protocol_name"
 #define   CONFIG_EYEEXP_NUMBER                          "eyeexp_number"
 
+#define   TEST_DOCTOR_ID                                "TEST_0000_XXXX"
+
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0
 #define   DBACK_PASSWORD_PROBLEM                        1
 #define   DBACK_UID_ERROR                               2
 #define   DBACK_DBCOMM_ERROR                            3
-
 
 // The ACK Results for a request report transactions
 #define   RR_ALL_OK                                      0

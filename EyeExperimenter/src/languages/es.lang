@@ -3,6 +3,7 @@
 #********************************* VIEWHOME SCREEN *********************************
 viewhome_btnConfSettings = PREFERENCIAS;
 viewhome_btnEditDrInfo = PERSONAL;
+viewhome_btnProtocol = PROTOCOLO;
 viewhome_slideTitle = Comenzar su evaluación;
 viewhome_description = Utilizando Seguimiento Ocular de alta precisión, en <br>
 <b>una prueba estándar, no invasiva de 10 minutos</b>, podemos <br>
@@ -28,6 +29,11 @@ viewsettings_diagLabelRepo = Directorio de trabajo;
 viewsettings_error_invalid_repo = Por favor elija un directorio de trabajo válido;
 viewsettings_error_invalid_dr = El nombre del doctor no puede quedar vacio;
 viewsettings_diagLabelDefaultCountry = Seleccione el país elegido por defecto;
+viewsettings_diagInstPassword = Contraseña de Institución;
+viewsettings_diagEnableViewAll = Habilitar ver todos los pacientes;
+viewsettings_diagDisableViewAll = Deshabilitar ver todos los pacientes;
+viewsettings_diagLabelEnableViewAll = Habilitación de ver a todos los pacientes;
+viewsettings_diagWrongPass = Contraseña incorrecta;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Registro de paciente;
@@ -50,6 +56,7 @@ viewpatientreg_terms_of_use = Condiciones de Uso;
 viewpatientreg_privacy_policy = Política de Privacidad;
 viewpatientreg_errorExists = Este paciente existe bajo este doctor;
 viewpatientreg_labelAssignedDoctor = Asignar a doctor;
+viewpatientreg_labelProtocol = Protocolo;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Estudios Oculares;
@@ -248,6 +255,16 @@ viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_btnDelete = Archivar;
 viewselectdata_btnCancel = CANCELAR;
 viewselectdata_btnGenReport = GENERAR REPORTE;
+
+#********************************* PROTOCOLSCREEN SCREEN *********************************
+viewprotocol_diagTitle = Protocolos Médicos;
+viewprotocol_diagSubTitle = Agregar y eliminar protocolos;
+viewprotocol_btnDelete = ELIMINAR;
+viewprotocol_btnAdd = AGREGAR;
+viewprotocol_msgPressAgainToDelete = Presione el botón nuevamente para eliminar el protocolo seleccionado;
+viewprotocol_msgExists = El protocolo ya existe;
+viewprotocol_labelNewProtocol = Nuevo protocolo;
+viewprotocol_optionSelectProtocol = Seleccione protocolo;
 
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title by a <>
