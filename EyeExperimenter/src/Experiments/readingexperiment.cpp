@@ -216,7 +216,7 @@ void ReadingExperiment::appendEyeTrackerData(const EyeTrackerData &data,
 void ReadingExperiment::saveAnswer(qint32 selected){
 
     // Format: Image ID, time stamp for right and left.
-    Phrase p = m->getPhrase(currentQuestion);
+    ReadingParser::Phrase p = m->getPhrase(currentQuestion);
     QVariantList dataS;
     dataS << p.zeroPadID() << " "
            << p.getFollowUpQuestion() << " -> "
@@ -236,7 +236,7 @@ QList<qint32> ReadingExperiment::calculateWordAndCharacterPostion(qint32 x, qint
     QString currentWord = "";
 
     if (charIndex != -1){
-        Phrase p = m->getPhrase(currentQuestion);
+        ReadingParser::Phrase p = m->getPhrase(currentQuestion);
         wordIndex = p.wordIndexForCharacterIndex(charIndex);
         currentWord = p.getIthWord(wordIndex);
     }

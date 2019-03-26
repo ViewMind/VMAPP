@@ -27,6 +27,10 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
                           << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_MEMORY_ENCODING
                           << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
 
+    /// TEST FOR FREQ CHECK
+    configuration->addKeyValuePair(CONFIG_PATIENT_UID,"1242673082_0000_P0005");
+    doFrequencyAnalysis("binding_bc_2_l_2_2019_03_26_10_05.dat");
+
 }
 
 ////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
@@ -654,6 +658,7 @@ void FlowControl::doFrequencyAnalysis(const QString &filename){
         fcp.maxAllowedFreqGlitchesPerTrial   = configuration->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
         fcp.maxAllowedPercentOfInvalidValues = configuration->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
         fcp.minNumberOfDataItems             = configuration->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+        fcp.maxAllowedFailedTrials           = configuration->getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
 
         fres.analysisValid(fcp);
         freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";

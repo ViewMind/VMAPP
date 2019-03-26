@@ -119,6 +119,7 @@ bool Experiment::doFrequencyCheck(){
         fcp.maxAllowedFreqGlitchesPerTrial   = config->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
         fcp.maxAllowedPercentOfInvalidValues = config->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
         fcp.minNumberOfDataItems             = config->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+        fcp.maxAllowedFailedTrials           = config->getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
 
         fres.analysisValid(fcp);
 
