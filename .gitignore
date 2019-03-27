@@ -12,7 +12,7 @@ EyeServer/bin/etdir
 EyeServer/bin/EyeServer
 EyeServer/bin/eyeexp/changelog/changelog_*
 EyeReportGenerator/bin/
-EyeExperimenter/exe
+EyeExperimenter/exe32
 ETFollower/exe/
 DBManager/bin/
 PNGReportGenerator/exe/

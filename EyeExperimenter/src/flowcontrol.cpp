@@ -29,7 +29,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
 
     /// TEST FOR FREQ CHECK
     configuration->addKeyValuePair(CONFIG_PATIENT_UID,"1242673082_0000_P0005");
-    doFrequencyAnalysis("binding_bc_2_l_2_2019_03_26_10_05.dat");
+    doFrequencyAnalysis("reading_es_2_2019_03_22_20_59.dat");
 
 }
 

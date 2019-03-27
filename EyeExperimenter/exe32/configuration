@@ -64,8 +64,8 @@ margin_target_hit            =  10;      #mm
 #------------------------------------------------------#
 
 # The allowed diviation from the base period
-tol_max_allowed_period                   = 5;  # ms
-tol_min_allowed_period                   = 3;  # ms
+tol_max_allowed_period                   = 8;  # ms
+tol_min_allowed_period                   = 4;  # ms
 
 # IMPORTANT: The percent of data points that contain glitches that will be tolerated in a data set. 
 tol_max_fglitches_in_trial               = 10;   # %  

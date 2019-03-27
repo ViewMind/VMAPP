@@ -22,11 +22,13 @@ public:
         bool hasQuestion() const {return !followUpQuestion.isEmpty();}
 
         void setID(qint32 ID) {id = ID;}
+        void setStringID(const QString &sid) { stringID = sid; }
         void setPhrase(const QString &p);
         void appendToFollowUp(const QString &s) {followUpQuestion << s;}
 
         // Accessing and convenience functions
         qint32 getID() const {return id;}
+        QString getStringID() const {return stringID;}
         qint32 getSizeInWords() const {return spaceIndexes.size()+1;}
         QString getPhrase() const {return phrase;}
         QString getFollowUpQuestion() const {return followUpQuestion.first();}
@@ -41,6 +43,7 @@ public:
     private:
         QString phrase;
         qint32 id;
+        QString stringID;
         QStringList followUpQuestion;
         QList<qint32> spaceIndexes;
     };

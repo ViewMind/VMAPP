@@ -46,6 +46,9 @@ bool ReadingParser::parseReadingDescription(const QString &contents){
 
         bool ok;
         p.setID(idAndQuestion.first().toInt(&ok));
+        QString sid = idAndQuestion.first();
+        while (sid.length() < PAD_LENGTH_FOR_ID) sid = "0" + sid;
+        p.setStringID(sid);
         if (!ok){
             error = "Invalid id (it is not an integer) " + idAndQuestion.first() + " @ " + QString::number(i+1);
             return false;

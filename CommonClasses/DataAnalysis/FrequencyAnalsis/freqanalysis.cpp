@@ -29,7 +29,7 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
 
         // Checking first the minimum number of data points.
         if (fads.numberOfDataPoints < p.minNumberOfDataItems){
-            tempErrors << " Data set " + QString::number(i) + " has a total of " + QString::number(fads.numberOfDataPoints)
+            tempErrors << " Data set " + fads.trialName + " has a total of " + QString::number(fads.numberOfDataPoints)
                     + " ET points which is less than the minimum allowed of " + QString::number(p.minNumberOfDataItems);
         }
 
@@ -64,6 +64,8 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
     }
 
     if (tempErrors.size() > p.maxAllowedFailedTrials){
+        errorList << "Number of data sets with too many frequency glitches: " + QString::number(tempErrors.size())
+                     + " which is above the specified" + QString::number(p.maxAllowedFailedTrials);
         errorList << tempErrors;
     }
 
@@ -118,7 +120,7 @@ QStringList FreqAnalysis::separateHeaderFromData(QString *error, const QString &
         else data << lines.at(i);
     }
 
-    QStringList ans; ans << headerData << data;
+    QStringList ans; ans << headerData.join("\n") << data.join("\n");
     return ans;
 
 }
@@ -167,7 +169,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performReadingAnalyis(){
         }
         QString name = parts.at(0);
         QString time = parts.at(1);
-        if (dataSetTimes.contains(name)){
+        if (!dataSetTimes.contains(name)){
             QList<qreal> list;
             QStringList invalids;
             dataSetTimes[name] = list;
@@ -189,7 +191,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performReadingAnalyis(){
     for (qint32 i = 0; i < parser.getPhrases().size(); i++){
 
         FreqAnalyisDataSet faDataSet;
-        QString name = parser.getPhrases().at(i).getID();
+        QString name = parser.getPhrases().at(i).getStringID();
         QList<qreal> times = dataSetTimes.value(name);
 
         faDataSet.numberOfDataPoints = times.size();
@@ -261,7 +263,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performBindingAnalyis(){
     if (h == 0) h = 1;
 
     if (!parser.parseBindingExperiment(header,&config,w,h,1)){
-        far.errorList << "PARSING READING DESCRIPTION: " + parser.getError();
+        far.errorList << "PARSING BINDING DESCRIPTION: " + parser.getError();
     }
     far.expectedNumberOfDataSets = parser.getTrialList().size();
 
@@ -281,6 +283,10 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performBindingAnalyis(){
         if (parts.size() == 2) {
             // Name change line.
             name = parts.join("_");
+            QList<qreal> list;
+            QStringList invalids;
+            dataSetTimes[name] = list;
+            invalidTimes[name] = invalids;
             continue;
         }
         else if (parts.size() != 7){
@@ -289,13 +295,6 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performBindingAnalyis(){
         }
 
         QString time = parts.at(0);
-        if (dataSetTimes.contains(name)){
-            QList<qreal> list;
-            QStringList invalids;
-            dataSetTimes[name] = list;
-            invalidTimes[name] = invalids;
-        }
-
         bool ok;
         qreal value = time.toDouble(&ok);
         if (ok){
@@ -307,15 +306,19 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performBindingAnalyis(){
     }
 
     // Doing the frequency analysis per data set;
+
     qreal freqAcc = 0;
     for (qint32 i = 0; i < parser.getTrialList().size(); i++){
 
-        QString name = name = parser.getTrialList().at(i).name;
+        QString bname = parser.getTrialList().at(i).name;
+        //qWarning() << name << parser.getTrialList().size();
         for (qint32 j = 0; j < 2; j++){
 
             FreqAnalyisDataSet faDataSet;
-            name = name + "_" + QString::number(j);
+            name = bname + "_" + QString::number(j);
             QList<qreal> times = dataSetTimes.value(name);
+
+            //qWarning() << "DOES DATA SET CONTAIN" << name << dataSetTimes.contains(name) << times.size();
 
             faDataSet.numberOfDataPoints = times.size();
             faDataSet.trialName = name;

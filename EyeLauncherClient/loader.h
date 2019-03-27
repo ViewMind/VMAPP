@@ -14,7 +14,7 @@
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/common.h"
 
-//#define COMPILE_FOR_PRODUCTION
+#define COMPILE_FOR_PRODUCTION
 
 #ifdef COMPILE_FOR_PRODUCTION
 #define  SERVER_IP                     "18.220.30.34"  // Production server
