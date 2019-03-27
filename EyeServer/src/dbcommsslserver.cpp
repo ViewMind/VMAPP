@@ -576,7 +576,7 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
         QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
         QString changeLogFilepath = basePath + "/" + QString(FILENAME_CHANGELOG) + "_" + lang;
         if (!tx.addFile(changeLogFilepath,DataPacket::DPFI_UPDATE_CHANGES)){
-            log.appendError("Could not add local eye experimenter to send back: " + changeLogFilepath);
+            log.appendError("Could not add local change log to send back: " + changeLogFilepath);
         }
     }
 
