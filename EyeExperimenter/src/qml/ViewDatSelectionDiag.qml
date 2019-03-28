@@ -72,8 +72,8 @@ Dialog {
         bindingUC.clearSelection();
         enableGenerateButtonCheck();
         if (index <= 0) {
-           bindingUC.vmEnabled = false;
-           return;
+            bindingUC.vmEnabled = false;
+            return;
         }
         var bindingUCFiles = loader.getFileListCompatibleWithSelectedBC("",index-1);
         if (bindingUCFiles.length > 0){
@@ -178,14 +178,14 @@ Dialog {
             }
             onArchiveRequested: {
                 if (indexInList > 0){
-                   viewDatSelectionDiag.close();
-                   viewPatList.configureShowMessageForArchive(vmLIST_INDEX_READING,indexInList-1)
+                    viewDatSelectionDiag.close();
+                    viewPatList.configureShowMessageForArchive(vmLIST_INDEX_READING,indexInList-1)
                 }
             }
             onFrequencyAnalysisRequested: {
                 if (indexInList > 0){
-                   viewDatSelectionDiag.close();
-                   viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_READING,indexInList-1)
+                    viewDatSelectionDiag.close();
+                    viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_READING,indexInList-1)
                 }
             }
         }
@@ -202,14 +202,14 @@ Dialog {
             }
             onArchiveRequested: {
                 if (indexInList > 0){
-                   viewDatSelectionDiag.close();
-                   viewPatList.configureShowMessageForArchive(vmLIST_INDEX_BINDING_BC,indexInList-1)
+                    viewDatSelectionDiag.close();
+                    viewPatList.configureShowMessageForArchive(vmLIST_INDEX_BINDING_BC,indexInList-1)
                 }
             }
             onFrequencyAnalysisRequested: {
                 if (indexInList > 0){
-                   viewDatSelectionDiag.close();
-                   viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_BC,indexInList-1)
+                    viewDatSelectionDiag.close();
+                    viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_BC,indexInList-1)
                 }
             }
         }
@@ -225,16 +225,12 @@ Dialog {
                 bindingUCSelectionChanged(bindingUC.vmCurrentIndex);
             }
             onArchiveRequested: {
-                if (indexInList > 0){
-                   viewDatSelectionDiag.close();
-                   viewPatList.configureShowMessageForArchive(vmLIST_INDEX_BINDING_UC,indexInList-1)
-                }
+                viewDatSelectionDiag.close();
+                viewPatList.configureShowMessageForArchive(vmLIST_INDEX_BINDING_UC,indexInList)
             }
             onFrequencyAnalysisRequested: {
-                if (indexInList > 0){
-                   viewDatSelectionDiag.close();
-                   viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_UC,indexInList-1)
-                }
+                viewDatSelectionDiag.close();
+                viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_UC,indexInList)
             }
         }
 

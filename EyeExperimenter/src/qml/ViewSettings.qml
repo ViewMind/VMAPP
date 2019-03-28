@@ -185,7 +185,7 @@ Dialog {
         anchors.left: diagCboxDemo.right
         anchors.leftMargin: 20
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)
-        visible: false
+        visible: true
     }
 
     Text {

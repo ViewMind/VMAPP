@@ -38,8 +38,8 @@ Item {
             id: patientText
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            //text: vmPatientName + " (" +  vmDisplayID + ")"
-            text: vmDisplayID
+            text: vmPatientName + " (" +  vmDisplayID + ")"
+            //text: vmDisplayID
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left

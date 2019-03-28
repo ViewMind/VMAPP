@@ -394,7 +394,8 @@ void Loader::addNewPatientToDB(QVariantMap dbdata){
         QString uid = lim.newPatientID();
         uid = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + uid;
         dbdata[TPATDATA_COL_PUID] = uid;
-        dbdata[TPATDATA_NONCOL_DISPLAYID] = dbdata[TPATDATA_NONCOL_PROTOCOL].toString() + "_" + dbdata[TPATDATA_NONCOL_DISPLAYID].toString();
+        QString protocol = dbdata[TPATDATA_NONCOL_PROTOCOL].toString();
+        if (!protocol.isEmpty()) dbdata[TPATDATA_NONCOL_DISPLAYID] = protocol + "_" + dbdata[TPATDATA_NONCOL_DISPLAYID].toString();
     }
 
     // Transforming the date format.

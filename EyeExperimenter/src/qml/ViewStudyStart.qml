@@ -15,7 +15,8 @@ VMBase {
         var name = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
         var uid = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_UID);
         var patData = loader.getCurrentPatientInformation();
-        labelPatientName.text = patData.displayID;
+        //labelPatientName.text = patData.displayID;
+        labelPatientName.text = patData.firstname + " " + patData.lastname + " (" + patData.displayID + ")";
     }
 
     function setDefaultSelections(){

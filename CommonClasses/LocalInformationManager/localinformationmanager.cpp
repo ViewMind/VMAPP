@@ -221,7 +221,7 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 
             QString hash = QCryptographicHash::hash(patientMap.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
             columns << TPATDATA_COL_PUID;
-            log.appendStandard(patientMap.value(TPATDATA_COL_PUID).toString() + "==>" + hash);
+            //log.appendStandard(patientMap.value(TPATDATA_COL_PUID).toString() + "==>" + hash);
             values << hash;
 
             client->appendSET(TABLE_PATDATA,columns,values);
@@ -501,17 +501,26 @@ void LocalInformationManager::loadDB(QString eyeexpid, QString instUID){
     QString dbfile = basedir.path() + "/" + LOCAL_DB;
 
     QFile file(dbfile);
-    if (!file.open(QFile::ReadOnly)){
-        log.appendError("LOCALDB: Cannot open DB file " + dbfile  + " for reading");
+
+    if (file.exists()){
+        if (!file.open(QFile::ReadOnly)){
+            log.appendError("LOCALDB: Cannot open DB file " + dbfile  + " for reading");
+            return;
+        }
+        QDataStream reader(&file);
+        qint32 localDBVersion;
+        localDB.clear();
+        reader >> localDBVersion;
+        reader >> localDB;
+        file.close();
+    }
+    else{
+        localDB[DOCTOR_COUNTER] = 0;
+        localDB[PATIENT_COUNTER] = 0;
+        backupDB();
         return;
     }
 
-    QDataStream reader(&file);
-    qint32 localDBVersion;
-    localDB.clear();
-    reader >> localDBVersion;
-    reader >> localDB;
-    file.close();
 
     if (!localDB.contains(DOCTOR_COUNTER)){
 
@@ -525,6 +534,7 @@ void LocalInformationManager::loadDB(QString eyeexpid, QString instUID){
         localDB[PATIENT_COUNTER] = 0;
         QHash<QString,QString> existingPatients;
 
+        qWarning() << "Keys are" << bkpLocalDb.keys();
         QStringList druids = bkpLocalDb.keys();
 
         for (qint32 i = 0; i < druids.size(); i++){
@@ -766,7 +776,7 @@ bool LocalInformationManager::addProtocol(const QString &protocol){
         localDB[PROTOCOL_VALID] = valid;
         backupDB();
         return true;
-    }    
+    }
 }
 
 void LocalInformationManager::deleteProtocol(const QString &protocol){

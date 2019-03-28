@@ -180,7 +180,7 @@ VMBase {
         anchors.top: viewSubTitle.bottom
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
-        visible: false
+        // visible: false
         // Name and last name
         VMTextDataInput{
             id: labelName
@@ -210,7 +210,7 @@ VMBase {
         vmEnabled: true
         Keys.onTabPressed: labelBirthDate.vmFocus = true;
         anchors.top: rowNames.bottom
-        anchors.topMargin: 13
+        anchors.topMargin: 35
         anchors.left: rowNames.left
     }
 
@@ -389,17 +389,22 @@ VMBase {
                 }
 
 
-                if ((labelProtocol.currentIndex === 0) && (dbDataReq.puid === "")){
-                    labelProtocol.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
-                    return;
+//                if ((labelProtocol.currentIndex === 0) && (dbDataReq.puid === "")){
+//                    labelProtocol.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+//                    return;
+//                }
+
+                // This version of the software allows leaving the protocol name empty as to generate the old DISPLAY ID.
+                if (labelProtocol.currentIndex === 0){
+                    dbDataReq.patient_protocol = ""
                 }
 
                 // Since the last name will not be entered, it will always be empty.
 
-                //                if (dbDataReq.lastname === ""){
-                //                    labelLastName.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
-                //                    return;
-                //                }
+                if (dbDataReq.lastname === ""){
+                    labelLastName.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+                    return;
+                }
 
                 loader.addNewPatientToDB(dbDataReq)
                 swiperControl.currentIndex = swiperControl.vmIndexPatientList;
