@@ -22,7 +22,7 @@
 #define  SERVER_IP                     "192.168.1.10"  // Local server
 #endif
 
-#define  LAUNCHER_VERSION               "2.0.0"
+#define  LAUNCHER_VERSION               "2.0.1"
 
 #define  FILE_EYEEXP_SETTINGS           "../settings"
 #define  FILE_EYEEXP_CONFIGURATION      "../configuration"
