@@ -34,6 +34,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cv[CONFIG_TOL_MIN_PERIOD_TOL] = cmd;
     cv[CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES] = cmd;
     cv[CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL] = cmd;
+    cv[CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS] = cmd;
 
     // Timeouts for connections.
     cv[CONFIG_CONNECTION_TIMEOUT] = cmd;
@@ -144,17 +145,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     if (configuration->getBool(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
     else configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
 
-    //    // TEST FOR FREQ CHECK
-    //    Experiment *e = new Experiment();
-    //    QString reading = "C:/Users/Viewmind/Documents/QtProjects/EyeExperimenter/exe/viewmind_etdata/AR123456789/CO123456788/reading_2_2019_03_16_11_54.dat";
-    //    //QString binding = "C:/Users/Viewmind/Documents/ExperimenterOutputs/grace_worked/binding_bc_2_l_2_2019_03_14_17_56.dat";
-    //    e->setupFreqCheck(configuration,reading);
-    //    if (!e->doFrequencyCheck()){
-    //        logger.appendError("Failed test freq check: " + e->getError());
-    //    }
-    //    else{
-    //        logger.appendSuccess("Freq Check Passed");
-    //    }
 
 }
 
@@ -404,6 +394,8 @@ void Loader::addNewPatientToDB(QVariantMap dbdata){
         QString uid = lim.newPatientID();
         uid = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + uid;
         dbdata[TPATDATA_COL_PUID] = uid;
+        QString protocol = dbdata[TPATDATA_NONCOL_PROTOCOL].toString();
+        if (!protocol.isEmpty()) dbdata[TPATDATA_NONCOL_DISPLAYID] = protocol + "_" + dbdata[TPATDATA_NONCOL_DISPLAYID].toString();
     }
 
     // Transforming the date format.
@@ -565,6 +557,11 @@ void Loader::onDisconnectFromDB(){
 void Loader::onFileSetRequested(const QStringList &fileList){
     QStringList fileSet;
     QString patuid = configuration->getString(CONFIG_PATIENT_UID);
+
+    // Setting the protocol ID
+    QVariantMap patdata = lim.getPatientInfo(patuid);
+    configuration->addKeyValuePair(CONFIG_PROTOCOL_NAME,patdata.value(TPATDATA_NONCOL_PROTOCOL).toString());
+
     if (fileList.isEmpty()){
         fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);
     }

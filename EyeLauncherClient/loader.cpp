@@ -211,8 +211,10 @@ void Loader::on_encryptedSuccess(){
     tx.addString(eyeLauncherHash,DataPacket::DPFI_UPDATE_EYELAUNCHER);
     tx.addString(eyeConfigurationHash,DataPacket::DPFI_UPDATE_CONFIG);
     tx.addString(eyeConfigurationHash,DataPacket::DPFI_UPDATE_CONFIG);
-    tx.addString(flogNames.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_UPDATE_FLOGNAMES);
-    tx.addString(flogContents.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_UPDATE_FLOGCONTENT);
+    if (flogNames.size() > 0 ){
+        tx.addString(flogNames.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_UPDATE_FLOGNAMES);
+        tx.addString(flogContents.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_UPDATE_FLOGCONTENT);
+    }
 
     QByteArray ba = tx.toByteArray();
     qint64 num = serverConn->write(ba.constData(),ba.size());

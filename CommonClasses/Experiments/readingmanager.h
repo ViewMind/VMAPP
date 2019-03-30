@@ -5,10 +5,8 @@
 #include <QGraphicsSimpleTextItem>
 #include <QGraphicsEllipseItem>
 #include <QFontMetrics>
-#include "phrases.h"
+#include "readingparser.h"
 #include "experimentdatapainter.h"
-
-#define   READING_COMMENT_STRING                        "######"
 
 class ReadingManager: public ExperimentDataPainter
 {
@@ -26,7 +24,7 @@ public:
     qreal  sizeToProcess() const {return size();}
 
     // Individual functionality.
-    Phrase getPhrase(qint32 index) const { return phrases.at(index);}
+    ReadingParser::Phrase getPhrase(qint32 index) const { return phrases.at(index);}
     void drawPhrase(QuestionState qstate, qint32 currentQuestion, bool simpleDraw = false);
     bool drawPhrase(const QString &idStr);
     qint32 getEscapeX() const { return escapeX; }
@@ -41,7 +39,7 @@ public:
 private:
 
     // The phrases structure.
-    Phrases phrases;
+    ReadingParser::Phrases phrases;
 
     // Font for the questions
     QFont questionFont;

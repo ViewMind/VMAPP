@@ -6,7 +6,7 @@ CONFIG += c++11
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += USE_IVIEW
+#DEFINES += USE_IVIEW
 
 CONFIG -= debug_and_release
 MOC_DIR = MOCS
@@ -28,7 +28,6 @@ SOURCES += main.cpp \
     ../../CommonClasses/Experiments/bindingmanager.cpp \
     ../../CommonClasses/Experiments/experimentdatapainter.cpp \
     ../../CommonClasses/Experiments/fieldingmanager.cpp \
-    ../../CommonClasses/Experiments/phrases.cpp \
     ../../CommonClasses/Experiments/readingmanager.cpp \
     ../../CommonClasses/LogInterface/loginterface.cpp \
     EyeTrackerInterface/eyetrackerdata.cpp \
@@ -54,7 +53,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/PNGWriter/repfileinfo.cpp \
     ../../CommonClasses/PNGWriter/resultbar.cpp \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
-    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
+    ../../CommonClasses/Experiments/readingparser.cpp
 
 HEADERS += \
     loader.h \
@@ -64,7 +64,6 @@ HEADERS += \
     ../../CommonClasses/Experiments/bindingmanager.h \
     ../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../CommonClasses/Experiments/fieldingmanager.h \
-    ../../CommonClasses/Experiments/phrases.h \
     ../../CommonClasses/Experiments/readingmanager.h \
     eye_experimenter_defines.h \
     ../../CommonClasses/common.h \
@@ -94,7 +93,8 @@ HEADERS += \
     ../../CommonClasses/PNGWriter/repfileinfo.h \
     ../../CommonClasses/PNGWriter/resultbar.h \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
-    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
+    ../../CommonClasses/Experiments/readingparser.h
 
 contains(DEFINES, USE_IVIEW) {
   LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI

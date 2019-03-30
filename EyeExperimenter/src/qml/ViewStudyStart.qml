@@ -12,7 +12,17 @@ VMBase {
     property int vmCurrentExperimentIndex: 0
 
     function setPatientName(){
-        labelPatientName.text = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+        var name = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+        var uid = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_UID);
+        var patData = loader.getCurrentPatientInformation();
+        //labelPatientName.text = patData.displayID;
+        labelPatientName.text = patData.firstname + " " + patData.lastname + " (" + patData.displayID + ")";
+    }
+
+    function setDefaultSelections(){
+        cboxReading.vmOn = true;
+        cboxBindingBC.vmOn = true;
+        cboxBindingUC.vmOn = true;
     }
 
     // Title and subtitle
@@ -192,6 +202,7 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelEyeMsg");
     }
 
+    /////////////////////// Which Eye to use
     VMComboBox{
         id: cbEyeMsg
         width: (backgroundPatientName.width - 16)/4
@@ -204,6 +215,7 @@ VMBase {
         currentIndex: 2;
     }
 
+    /////////////////////// Number of targets
     Text {
         id: labelNTargets
         font.family: robotoB.name
@@ -223,10 +235,11 @@ VMBase {
         font.pixelSize: 13
         anchors.top: labelNTargets.bottom
         anchors.topMargin: 5
-        anchors.left: cbEyeMsg.right
+        anchors.left: cbReadingLang.right
         anchors.leftMargin: 16
     }
 
+    /////////////////////// Target Size
     Text {
         id: labelTargetSize
         font.family: robotoB.name
@@ -250,6 +263,7 @@ VMBase {
         anchors.leftMargin: 16
     }
 
+    /////////////////////// Reading languge
     Text {
         id: labelReadingLanguge
         font.family: robotoB.name
@@ -269,7 +283,7 @@ VMBase {
         font.pixelSize: 13
         anchors.top: labelNTargets.bottom
         anchors.topMargin: 5
-        anchors.left: cbTargetSize.right
+        anchors.left: cbEyeMsg.right
         anchors.leftMargin: 16
     }
 

@@ -96,8 +96,8 @@ VMBase {
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
                 vmSlideAnimation = "qrc:/images/bound.gif"
             }
-            //slideAnimation.visible = false;
-            //slideDescription.visible = false;
+            slideAnimation.visible = false;
+            slideDescription.visible = false;
             break;
         case vmExpIndexBindingUC:
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
@@ -110,13 +110,15 @@ VMBase {
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
                 vmSlideAnimation = "qrc:/images/unbound.gif"
             }
-            //slideAnimation.visible = false;
-            //slideDescription.visible = false;
+            slideAnimation.visible = false;
+            slideDescription.visible = false;
             break;
         case vmExpIndexReading:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemReading");
             vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");
             vmSlideAnimation = "qrc:/images/reading.gif"
+            //slideAnimation.visible = false;
+            //slideDescription.visible = false;
             break;
         case vmExpIndexFielding:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");

@@ -6,61 +6,73 @@ FreqAnalysis::FreqAnalysis()
 }
 
 void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p){
+
     errorList.clear();
 
-    //qreal periodInMs = 1000/p.fexpected;
     qint32 fglitches = 0;
     qreal totalNumberOfDataPoints = 0;
 
     // Checking frequency glitches
     individualErrorList << "Frequency Analysis Parametrs:\n" + p.toString("      ");
-    for (qint32 i = 0; i < diffTimes.size(); i++){
+
+    QStringList tempErrors;
+    qreal tNumOfInvalidValues = 0;
+
+    for (qint32 i = 0; i < freqAnalysisForEachDataSet.size(); i++){
+
+        FreqAnalyisDataSet fads = freqAnalysisForEachDataSet.at(i);
+
+        if (fads.diffTimes.isEmpty()){
+            errorList << "Data set " + fads.trialName + " does not have ANY data points";
+            continue;
+        }
 
         // Checking first the minimum number of data points.
-        qint32 numData = diffTimes.at(i).size() + 1;
-        if (numData < p.minNumberOfDataItems){
-            errorList << "Data set " + QString::number(i) + " has a total of " + QString::number(numData)
+        if (fads.numberOfDataPoints < p.minNumberOfDataItems){
+            tempErrors << " Data set " + fads.trialName + " has a total of " + QString::number(fads.numberOfDataPoints)
                     + " ET points which is less than the minimum allowed of " + QString::number(p.minNumberOfDataItems);
         }
 
-        totalNumberOfDataPoints = totalNumberOfDataPoints + numData;
-        qreal trialFreq = avgFreqPerTrial.at(i);
+        totalNumberOfDataPoints = totalNumberOfDataPoints + fads.numberOfDataPoints;
+        qreal trialFreq = fads.averageFrequency;
 
         fglitches = 0;
 
-        individualErrorList << "---> Data Set " + QString::number(i);
+        individualErrorList << "---> Data Set " + fads.trialName;
 
-        for (qint32 j = 0; j < diffTimes.at(i).size(); j++){
-            qreal dt = diffTimes.at(i).at(j).getDiff();
+        for (qint32 j = 0; j < fads.diffTimes.size(); j++){
+            qreal dt = fads.diffTimes.at(j).getDiff();
             if ((dt < p.periodMin) || (dt > p.periodMax)) {
                 fglitches ++;
-                individualErrorList << "   ---> Period @ " + QString::number(j) + " is " + QString::number(dt) + " " + diffTimes.at(i).at(j).toString();
+                individualErrorList << "   ---> Period @ " + QString::number(j) + " is " + QString::number(dt) + " " +  fads.diffTimes.at(j).toString();
             }
         }
 
-        QString temp = "";
-        if (diffTimes.at(i).size() >= 2){
-            qreal duration = diffTimes.at(i).last().end - diffTimes.at(i).first().start;
-            qreal avgT = 1000.0/trialFreq;
-            temp = "Data set duration: " + QString::number(duration) + ". Expected Number of Points: " + QString::number(duration/avgT);
-        }
+        QString temp = "Data set duration: " + QString::number(fads.duration) + ". Expected Number of Points: " + QString::number(fads.expectedNumberOfDataPoints);
 
-        qreal ep = (qreal)fglitches*100.0/(qreal)(numData-1);
+        qreal ep = (qreal)fglitches*100.0/fads.numberOfDataPoints;
         individualErrorList << "   ---> Number of glitches " + QString::number(fglitches) + ". Number of measured periods: "
-                               + QString::number(diffTimes.at(i).size()) + " (" + QString::number(ep) + "%)"
+                               + QString::number(fads.diffTimes.size()) + " (" + QString::number(ep) + "%)"
                                + ". AVG F in Trial: " + QString::number(trialFreq) + ". " + temp;
 
         if (ep > p.maxAllowedFreqGlitchesPerTrial){
             errorList << "Data set " + QString::number(i) + " has " + QString::number(ep) + " % of frequency glitches";
         }
 
+        tNumOfInvalidValues = fads.invalidValues.size() + tNumOfInvalidValues;
+
     }
 
+    if (tempErrors.size() > p.maxAllowedFailedTrials){
+        errorList << "Number of data sets with too many frequency glitches: " + QString::number(tempErrors.size())
+                     + " which is above the specified" + QString::number(p.maxAllowedFailedTrials);
+        errorList << tempErrors;
+    }
 
     // Checking invalid values. the percent of string sin the times stasmp that could not be converted to number of the COMPLETE STUDY.
-    qreal invalidPercent = (qreal)invalidValues.size()*100.0/totalNumberOfDataPoints;
+    qreal invalidPercent = tNumOfInvalidValues*100.0/totalNumberOfDataPoints;
     if (invalidPercent > p.maxAllowedPercentOfInvalidValues){
-        errorList << "The number of invalid values is above the allowed tolerance: " + QString::number(invalidValues.size()) + " which is "
+        errorList << "The number of invalid values is above the allowed tolerance: " + QString::number(tNumOfInvalidValues) + " which is "
                 + QString::number(invalidPercent) + "% (Tolerance at: " + QString::number(p.maxAllowedPercentOfInvalidValues) + "%)";
     }
 
@@ -71,22 +83,11 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::analyzeFile(const QString &fname,
     timeUnit = timeUnitInSeconds;
     QFileInfo info(fileToAnalyze);
     QStringList parts = info.baseName().split("_");
-    FreqAnalysisBehaviour fab;    
     if (parts.first() == FILE_BINDING){
-        fab.trialChangeBehaviour = TCB_LINE_SIZE_CHANGE;
-        fab.dataLineSize = 7;
-        fab.timeColumn = 0;
-        fab.valueChangeColumn = 0;
-        fab.header = HEADER_IMAGE_EXPERIMENT;
-        return freqAnalysis(fab);
+        return performBindingAnalyis();
     }
     else if (parts.first() == FILE_OUTPUT_READING){
-        fab.trialChangeBehaviour = TCB_LINE_VALUE_CHANGE;
-        fab.dataLineSize = 13;
-        fab.timeColumn = 1;
-        fab.valueChangeColumn = 0;
-        fab.header = HEADER_READING_EXPERIMENT;
-        return freqAnalysis(fab);
+        return performReadingAnalyis();
     }
     else{
         FreqAnalysisResult far;
@@ -95,7 +96,8 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::analyzeFile(const QString &fname,
     }
 }
 
-QStringList FreqAnalysis::getFileLines(QString *error){
+QStringList FreqAnalysis::separateHeaderFromData(QString *error, const QString &header){
+
     QFile file(fileToAnalyze);
     if (!file.open(QFile::ReadOnly)){
         *error = "Could not open file: " + fileToAnalyze + " for reading";
@@ -107,99 +109,243 @@ QStringList FreqAnalysis::getFileLines(QString *error){
     QString content = reader.readAll();
     file.close();
 
-    return content.split("\n");
-}
+    QStringList lines = content.split("\n");
+    QStringList headerData;
+    QStringList data;
+    qint32 headerCounter = 0;
 
-QStringList FreqAnalysis::removeHeader(const QStringList &lines, const QString &header){
-    qint32 lineid = 0;
-    qint32 counter = 0;
-
-    // Removing the header
-    while (lineid < lines.size()){
-        if (lines.at(lineid).startsWith(header)) counter++;
-        lineid++;
-        if (counter == 2) break;
+    for (qint32 i = 0; i < lines.size(); i++){
+        if (lines.at(i).startsWith(header)) headerCounter++;
+        else if (headerCounter < 2) headerData << lines.at(i);
+        else data << lines.at(i);
     }
 
-    if (lineid < lines.size())  return lines.mid(lineid);
-    else return QStringList();
+    QStringList ans; ans << headerData.join("\n") << data.join("\n");
+    return ans;
+
 }
 
-FreqAnalysis::FreqAnalysisResult FreqAnalysis::freqAnalysis(const FreqAnalysis::FreqAnalysisBehaviour &fab){
+FreqAnalysis::FreqAnalysisResult FreqAnalysis::performReadingAnalyis(){
 
     FreqAnalysisResult far;
 
     QString local_error;
-    QStringList content = getFileLines(&local_error);
+    QStringList contentAndHeader = separateHeaderFromData(&local_error,HEADER_READING_EXPERIMENT);
     if (!local_error.isEmpty()){
         far.errorList << local_error;
         return far;
     }
+
+    QString header = contentAndHeader.first();
+    QString content = contentAndHeader.last();
+    contentAndHeader.clear();
+
     if (content.isEmpty()) {
         far.errorList << "No content found";
         return far;
     }
 
-    content = removeHeader(content,fab.header);
-    if (content.isEmpty()){
-        far.errorList << "Header segment for binding was not found";
-        return far;
+    // Parsing the reading parameters
+    ReadingParser parser;
+    if (!parser.parseReadingDescription(header)){
+        far.errorList << "PARSING READING DESCRIPTION: " + parser.getError();
+    }
+    far.expectedNumberOfDataSets = parser.getPhrases().size();
+
+    // Parsing the experiment data.
+    QHash<QString, QList<qreal> > dataSetTimes;
+    QHash<QString, QStringList > invalidTimes;
+
+    // TODO: FIRST LINE IS RESOLUTION
+    QStringList lines = content.split("\n");
+    for (qint32 i = 1; i < lines.size(); i++){
+
+        if (lines.at(i).trimmed().isEmpty()) continue;
+
+        QStringList parts = lines.at(i).split(" ",QString::SkipEmptyParts);
+        if (parts.size() != 13){
+            far.errorList << "Reading line :" + lines.at(i) + " does not have 13 parts";
+            return far;
+        }
+        QString name = parts.at(0);
+        QString time = parts.at(1);
+        if (!dataSetTimes.contains(name)){
+            QList<qreal> list;
+            QStringList invalids;
+            dataSetTimes[name] = list;
+            invalidTimes[name] = invalids;
+        }
+
+        bool ok;
+        qreal value = time.toDouble(&ok);
+        if (ok){
+            dataSetTimes[name].append(value);
+        }
+        else{
+            invalidTimes[name].append(time);
+        }
     }
 
-    QList<qreal> times;
+    // Doing the frequency analysis per data set;
     qreal freqAcc = 0;
-    qreal freqCounter = 0;
+    for (qint32 i = 0; i < parser.getPhrases().size(); i++){
 
-    bool trialChange;
-    bool ok;
-    QString previousValue = "";
+        FreqAnalyisDataSet faDataSet;
+        QString name = parser.getPhrases().at(i).getStringID();
+        QList<qreal> times = dataSetTimes.value(name);
 
-    for (qint32 i = 0; i < content.size(); i++){
+        faDataSet.numberOfDataPoints = times.size();
+        faDataSet.trialName = name;
 
-        QStringList parts = content.at(i).split(" ",QString::SkipEmptyParts);
-
-        trialChange = false;
-        if (fab.trialChangeBehaviour == TCB_LINE_SIZE_CHANGE){
-            trialChange = (parts.size() != fab.dataLineSize);
+        if (times.size() < 2){
+            faDataSet.averageFrequency = 0;
+            faDataSet.duration = 0;
+            faDataSet.expectedNumberOfDataPoints = 0;
         }
-        else if (fab.trialChangeBehaviour == TCB_LINE_VALUE_CHANGE){
-            // For simplicity all lines that are not the size of dataLineSize are ignored.
-            if (fab.dataLineSize != parts.size()) continue;
-            trialChange = (parts.at(fab.valueChangeColumn) != previousValue);
-            previousValue = parts.at(fab.valueChangeColumn);
+        else {
+            QList<TimePair> dtimes;
+            faDataSet.averageFrequency = calculateFrequency(times,&dtimes);
+            freqAcc = freqAcc + faDataSet.averageFrequency;
+            faDataSet.diffTimes = dtimes;
+            faDataSet.duration = times.last() - times.first();
+            qreal TinMS = 1000.0/faDataSet.averageFrequency;
+            faDataSet.expectedNumberOfDataPoints = faDataSet.duration/TinMS;
+            faDataSet.numberOfDataPoints = times.size();
+            faDataSet.invalidValues = invalidTimes.value(name);
         }
 
-        if (trialChange){
-            if (times.size() >= 2) {
-                QList<TimePair> dtimes;
-                freqAcc = freqAcc + calculateFrequency(times, &dtimes);
-                freqCounter++;
-                far.avgFreqPerTrial << freqAcc/freqCounter;
-                far.diffTimes << dtimes;
-            }
-            times.clear();
-        }
-        else if (parts.size() == fab.dataLineSize){
-            ok = true;
-            qreal value =  parts.at(fab.timeColumn).toDouble(&ok);
-            if (!ok){
-                far.invalidValues << parts.at(fab.timeColumn);
-            }
-            else{
-                times << value;
-            }
-        }
+        far.freqAnalysisForEachDataSet << faDataSet;
+
     }
-
-    if (freqCounter == 0){
-        frequencyResult  = 0;
-        far.errorList << "Did not find two consecutive time stamps in a trial";
-        return far;
-    }
-    else far.averageFrequency = freqAcc/freqCounter;
-
+    far.averageFrequency = freqAcc/(qreal)(parser.getPhrases().size());
     return far;
 
+}
+
+FreqAnalysis::FreqAnalysisResult FreqAnalysis::performBindingAnalyis(){
+    FreqAnalysisResult far;
+
+    QString local_error;
+    QStringList contentAndHeader = separateHeaderFromData(&local_error,HEADER_IMAGE_EXPERIMENT);
+    if (!local_error.isEmpty()){
+        far.errorList << local_error;
+        return far;
+    }
+
+    QString header = contentAndHeader.first();
+    QString content = contentAndHeader.last();
+    contentAndHeader.clear();
+
+    if (content.isEmpty()) {
+        far.errorList << "No content found";
+        return far;
+    }
+
+    // Parsing the reading parameters
+    BindingParser parser;
+
+    // Creating a configuration of false values JUST to be able to parse.
+    ConfigurationManager config;
+    config.addKeyValuePair(CONFIG_XPX_2_MM,1);
+    config.addKeyValuePair(CONFIG_YPX_2_MM,1);
+    config.addKeyValuePair(CONFIG_DEMO_MODE,false);
+
+    // The first line is the resolution
+    QStringList lines = content.split("\n");
+    QStringList res = lines.first().split(" ",QString::SkipEmptyParts);
+    qreal w = 0; qreal h = 0;
+    if (res.size() == 2){
+        w = res.first().toDouble();
+        h = res.last().toDouble();
+    }
+    // Just in case, avoid any division by zero.
+    if (w == 0) w = 1;
+    if (h == 0) h = 1;
+
+    if (!parser.parseBindingExperiment(header,&config,w,h,1)){
+        far.errorList << "PARSING BINDING DESCRIPTION: " + parser.getError();
+    }
+    far.expectedNumberOfDataSets = parser.getTrialList().size();
+
+    // Parsing the experiment data.
+    QHash<QString, QList<qreal> > dataSetTimes;
+    QHash<QString, QStringList > invalidTimes;
+
+    QString name;
+    for (qint32 i = 1; i < lines.size(); i++){
+
+        if (lines.at(i).trimmed().isEmpty()) continue;
+
+        QStringList parts = lines.at(i).split(" ",QString::SkipEmptyParts);
+
+        // Answer line
+        if (parts.size() == 1) continue;
+        if (parts.size() == 2) {
+            // Name change line.
+            name = parts.join("_");
+            QList<qreal> list;
+            QStringList invalids;
+            dataSetTimes[name] = list;
+            invalidTimes[name] = invalids;
+            continue;
+        }
+        else if (parts.size() != 7){
+            far.errorList << "Binding line :" + lines.at(i) + " does not have 7 parts";
+            return far;
+        }
+
+        QString time = parts.at(0);
+        bool ok;
+        qreal value = time.toDouble(&ok);
+        if (ok){
+            dataSetTimes[name].append(value);
+        }
+        else{
+            invalidTimes[name].append(time);
+        }
+    }
+
+    // Doing the frequency analysis per data set;
+
+    qreal freqAcc = 0;
+    for (qint32 i = 0; i < parser.getTrialList().size(); i++){
+
+        QString bname = parser.getTrialList().at(i).name;
+        //qWarning() << name << parser.getTrialList().size();
+        for (qint32 j = 0; j < 2; j++){
+
+            FreqAnalyisDataSet faDataSet;
+            name = bname + "_" + QString::number(j);
+            QList<qreal> times = dataSetTimes.value(name);
+
+            //qWarning() << "DOES DATA SET CONTAIN" << name << dataSetTimes.contains(name) << times.size();
+
+            faDataSet.numberOfDataPoints = times.size();
+            faDataSet.trialName = name;
+
+            if (times.size() < 2){
+                faDataSet.averageFrequency = 0;
+                faDataSet.duration = 0;
+                faDataSet.expectedNumberOfDataPoints = 0;
+            }
+            else {
+                QList<TimePair> dtimes;
+                faDataSet.averageFrequency = calculateFrequency(times,&dtimes);
+                freqAcc = freqAcc + faDataSet.averageFrequency;
+                faDataSet.diffTimes = dtimes;
+                faDataSet.duration = times.last() - times.first();
+                qreal TinMS = 1000.0/faDataSet.averageFrequency;
+                faDataSet.expectedNumberOfDataPoints = faDataSet.duration/TinMS;
+                faDataSet.numberOfDataPoints = times.size();
+                faDataSet.invalidValues = invalidTimes.value(name);
+            }
+
+            far.freqAnalysisForEachDataSet << faDataSet;
+
+        }
+    }
+    far.averageFrequency = freqAcc/(qreal)(far.expectedNumberOfDataSets);
+    return far;
 }
 
 qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<TimePair> *dtimes){
@@ -217,7 +363,4 @@ qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<TimePair
     }
     return freqsAcc/freqCounter;
 }
-
-
-
 

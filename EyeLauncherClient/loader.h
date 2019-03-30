@@ -14,7 +14,7 @@
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/common.h"
 
-//#define COMPILE_FOR_PRODUCTION
+#define COMPILE_FOR_PRODUCTION
 
 #ifdef COMPILE_FOR_PRODUCTION
 #define  SERVER_IP                     "18.220.30.34"  // Production server
@@ -22,7 +22,7 @@
 #define  SERVER_IP                     "192.168.1.10"  // Local server
 #endif
 
-#define  LAUNCHER_VERSION               "2.0.0"
+#define  LAUNCHER_VERSION               "2.0.1"
 
 #define  FILE_EYEEXP_SETTINGS           "../settings"
 #define  FILE_EYEEXP_CONFIGURATION      "../configuration"

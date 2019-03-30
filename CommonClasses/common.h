@@ -92,6 +92,7 @@
 #define   CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL            "tol_max_fglitches_in_trial"
 #define   CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL  "tol_min_number_of_data_items_in_trial"
 #define   CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES      "tol_max_percent_of_invalid_values"
+#define   CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS       "tol_num_allowed_of_failed_data_sets"
 #define   CONFIG_PROTOCOL_NAME                          "protocol_name"
 #define   CONFIG_EYEEXP_NUMBER                          "eyeexp_number"
 

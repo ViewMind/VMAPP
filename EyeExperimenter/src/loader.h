@@ -76,6 +76,11 @@ public:
     Q_INVOKABLE bool getViewAllFlag() const {return lim.getViewAllFlag(); }
     Q_INVOKABLE void setViewAllFlag(bool flag) {lim.setViewAllFlag(flag); }
 
+    //******************** Protocol related functions ***************************
+    Q_INVOKABLE bool addProtocol(const QString &p) { return lim.addProtocol(p); }
+    Q_INVOKABLE void deleteProtocol(const QString &p) { lim.deleteProtocol(p); }
+    Q_INVOKABLE QStringList getProtocolList(bool full) { return lim.getProtocolList(full); }
+
     //******************** Report Related Functions ***************************
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);

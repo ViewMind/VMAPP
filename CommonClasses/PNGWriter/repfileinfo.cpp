@@ -27,7 +27,7 @@ void RepFileInfo::setDirectory(const QString &directory){
         QString basename = parts.at(0);
         parts = basename.split("_");
 
-        if ((parts.size() < 7) || (parts.size() > 8)){
+        if ((parts.size() < 5) || (parts.size() > 8)){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");
             continue;
         }
@@ -38,6 +38,24 @@ void RepFileInfo::setDirectory(const QString &directory){
 
         // Setting the date, time, reading and binding message
         switch (parts.size()){
+        case 5:
+            // OLD FORMAT JUST READING OR BINDING BUT NOT BOTH
+            if (parts.at(1).toUpper().contains('R')){
+                reading = parts.at(1);
+                binding = "N/A";
+            }
+            else{
+                reading = "N/A";
+                binding = parts.at(1);
+            }
+            date = parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2);
+            break;
+        case 6:
+            // OLD FORMAT READING AND BINDING BUT NOT BOTH
+            reading = parts.at(1);
+            binding = parts.at(2);
+            date = parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3);
+            break;
         case 7:
             // Information can be reading or binding
             if (parts.at(1).contains('R')){

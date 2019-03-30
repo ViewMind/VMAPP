@@ -102,6 +102,7 @@ public:
     QString getVersionString() const {return versionString;}
     QList<BindingTrial> getTrials() const {return trials;}
     BindingTrial getTrialByName(const QString &id) const;
+    QList<BindingTrial> getTrialList() const {return trials;}
     void demoModeList(qint32 numberToLeave);
 
 

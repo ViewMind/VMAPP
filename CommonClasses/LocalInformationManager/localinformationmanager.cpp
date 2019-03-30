@@ -11,6 +11,8 @@ const QString LocalInformationManager::DOCTOR_PASSWORD       = "DOCTOR_PASSWORD"
 const QString LocalInformationManager::DOCTOR_VALID          = "DOCTOR_VALID";
 const QString LocalInformationManager::DOCTOR_HIDDEN         = "DOCTOR_HIDDEN";
 const QString LocalInformationManager::FLAG_VIEWALL          = "FLAG_VIEWALL";
+const QString LocalInformationManager::PROTOCOLS             = "PROTOCOLS";
+const QString LocalInformationManager::PROTOCOL_VALID        = "PROTOCOL_VALID";
 
 LocalInformationManager::LocalInformationManager()
 {
@@ -202,7 +204,7 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
         if (addPatient){
             QStringList columns;
             QStringList values;
-            QSet<QString> avoid; avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID;
+            QSet<QString> avoid; avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID << TPATDATA_NONCOL_PROTOCOL;
             QSet<QString> needToHash; needToHash << TPATDATA_COL_FIRSTNAME << TPATDATA_COL_LASTNAME;
             QStringList keys = patientMap.keys();
             for (qint32 k = 0; k < keys.size(); k++){
@@ -219,7 +221,7 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
 
             QString hash = QCryptographicHash::hash(patientMap.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
             columns << TPATDATA_COL_PUID;
-            log.appendStandard(patientMap.value(TPATDATA_COL_PUID).toString() + "==>" + hash);
+            //log.appendStandard(patientMap.value(TPATDATA_COL_PUID).toString() + "==>" + hash);
             values << hash;
 
             client->appendSET(TABLE_PATDATA,columns,values);
@@ -499,17 +501,26 @@ void LocalInformationManager::loadDB(QString eyeexpid, QString instUID){
     QString dbfile = basedir.path() + "/" + LOCAL_DB;
 
     QFile file(dbfile);
-    if (!file.open(QFile::ReadOnly)){
-        log.appendError("LOCALDB: Cannot open DB file " + dbfile  + " for reading");
+
+    if (file.exists()){
+        if (!file.open(QFile::ReadOnly)){
+            log.appendError("LOCALDB: Cannot open DB file " + dbfile  + " for reading");
+            return;
+        }
+        QDataStream reader(&file);
+        qint32 localDBVersion;
+        localDB.clear();
+        reader >> localDBVersion;
+        reader >> localDB;
+        file.close();
+    }
+    else{
+        localDB[DOCTOR_COUNTER] = 0;
+        localDB[PATIENT_COUNTER] = 0;
+        backupDB();
         return;
     }
 
-    QDataStream reader(&file);
-    qint32 localDBVersion;
-    localDB.clear();
-    reader >> localDBVersion;
-    reader >> localDB;
-    file.close();
 
     if (!localDB.contains(DOCTOR_COUNTER)){
 
@@ -523,6 +534,7 @@ void LocalInformationManager::loadDB(QString eyeexpid, QString instUID){
         localDB[PATIENT_COUNTER] = 0;
         QHash<QString,QString> existingPatients;
 
+        qWarning() << "Keys are" << bkpLocalDb.keys();
         QStringList druids = bkpLocalDb.keys();
 
         for (qint32 i = 0; i < druids.size(); i++){
@@ -669,6 +681,7 @@ void LocalInformationManager::backupDB(){
     }
 
     QDataStream writer(&file);
+    //printDBToConsole();
     writer << LOCAL_DB_VERSION;
     writer << localDB;
     file.close();
@@ -688,6 +701,7 @@ void LocalInformationManager::printDBToConsole(){
     qWarning() << "DOCTOR COUNTER: " + localDB.value(DOCTOR_COUNTER).toString();
     qWarning() << "PATIENT COUNTER: " + localDB.value(PATIENT_COUNTER).toString();
     qWarning() << "VIEW ALL FLAG" << localDB.value(FLAG_VIEWALL).toBool();
+    qWarning() << "PROTOCOLS" << localDB.value(PROTOCOLS).toStringList();
     QStringList maps;
     maps << DOCTOR_DATA << PATIENT_DATA;
     for (qint32 i = 0; i < maps.size(); i++){
@@ -740,4 +754,48 @@ QStringList LocalInformationManager::getReportNameAndFileSet(const QString &patu
 
 QString LocalInformationManager::getDatFileFromIndex(const QString &patuid, qint32 index, qint32 whichList) const{
     return patientReportInformation.value(patuid).getDatFileNameFromSelectionDialogIndex(index,whichList);
+}
+
+//************************************** Interface with Protocol List *****************************************
+bool LocalInformationManager::addProtocol(const QString &protocol){
+    if (!localDB.contains(PROTOCOLS)){
+        QStringList list; list << protocol;
+        QVariantList valid; valid << true;
+        localDB[PROTOCOLS] = list;
+        localDB[PROTOCOL_VALID] = valid;
+        backupDB();
+        return true;
+    }
+    else if (localDB.value(PROTOCOLS).toStringList().contains(protocol)) return false;
+    else{
+        QStringList protocollist = localDB.value(PROTOCOLS).toStringList();
+        QVariantList valid = localDB.value(PROTOCOL_VALID).toList();
+        protocollist << protocol;
+        valid << true;
+        localDB[PROTOCOLS] = protocollist;
+        localDB[PROTOCOL_VALID] = valid;
+        backupDB();
+        return true;
+    }
+}
+
+void LocalInformationManager::deleteProtocol(const QString &protocol){
+    if (!localDB.contains(PROTOCOLS)) return;
+    QStringList protocollist = localDB.value(PROTOCOLS).toStringList();
+    QVariantList valid = localDB.value(PROTOCOL_VALID).toList();
+    qint32 index = protocollist.indexOf(protocol);
+    if (index > -1) valid[index] = false;
+    localDB[PROTOCOL_VALID] = valid;
+    backupDB();
+}
+
+QStringList LocalInformationManager::getProtocolList(bool full) const {
+    QStringList list;
+    if (!localDB.contains(PROTOCOLS)) return list;
+    QStringList fullist = localDB.value(PROTOCOLS).toStringList();
+    if (full) return fullist;
+    for (qint32 i = 0; i < fullist.size(); i++){
+        if (localDB.value(PROTOCOL_VALID).toList().at(i).toBool()) list << fullist.at(i);
+    }
+    return list;
 }

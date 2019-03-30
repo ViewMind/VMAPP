@@ -27,6 +27,10 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
                           << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_MEMORY_ENCODING
                           << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
 
+    /// TEST FOR FREQ CHECK
+    // configuration->addKeyValuePair(CONFIG_PATIENT_UID,"1242673082_0000_P0005");
+    // doFrequencyAnalysis("reading_es_2_2019_03_22_20_59.dat");
+
 }
 
 ////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
@@ -157,6 +161,8 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
 
     QString error;
     QStringList toSave;
+
+    // Setting the protocol name
 
     toSave << CONFIG_DOCTOR_NAME << CONFIG_PATIENT_AGE << CONFIG_PATIENT_NAME << CONFIG_MOVING_WINDOW_DISP
            << CONFIG_MIN_FIXATION_LENGTH << CONFIG_SAMPLE_FREQUENCY << CONFIG_DISTANCE_2_MONITOR << CONFIG_XPX_2_MM << CONFIG_YPX_2_MM
@@ -652,6 +658,7 @@ void FlowControl::doFrequencyAnalysis(const QString &filename){
         fcp.maxAllowedFreqGlitchesPerTrial   = configuration->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
         fcp.maxAllowedPercentOfInvalidValues = configuration->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
         fcp.minNumberOfDataItems             = configuration->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+        fcp.maxAllowedFailedTrials           = configuration->getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
 
         fres.analysisValid(fcp);
         freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";

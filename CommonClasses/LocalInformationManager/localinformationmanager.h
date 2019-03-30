@@ -61,6 +61,12 @@ public:
     QString getWorkDirectory() const {return workingDirectory;}
     void setUpdateFlagTo(bool flag);
 
+    // Interface with the protocol list;
+    bool addProtocol(const QString & protocol);
+    void deleteProtocol(const QString &protocol);
+    QStringList getProtocolList(bool full) const;
+
+
     // Used ONLY in the LocalDBMng program
     bool deleteDoctor(const QString &uid);
     void setDoctorData(const QString &uid, const QStringList &keys, const QVariantList &values);
@@ -92,6 +98,8 @@ private:
     static const QString DOCTOR_VALID;
     static const QString DOCTOR_HIDDEN;
     static const QString FLAG_VIEWALL;
+    static const QString PROTOCOLS;
+    static const QString PROTOCOL_VALID;
     static const qint32  LOCAL_DB_VERSION = 4;
 
     // Working directory.

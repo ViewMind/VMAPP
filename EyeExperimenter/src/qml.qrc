@@ -44,5 +44,6 @@
         <file>qml/ViewDatSelectionDiag.qml</file>
         <file>qml/VMDatItem.qml</file>
         <file>qml/VMDatSelection.qml</file>
+        <file>qml/ViewProtocols.qml</file>
     </qresource>
 </RCC>

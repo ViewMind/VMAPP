@@ -3,6 +3,7 @@
 #********************************* VIEWHOME SCREEN *********************************
 viewhome_btnConfSettings = CONFIGURE SETTINGS;
 viewhome_btnEditDrInfo = PERSONAL;
+viewhome_btnProtocol = PROTOCOL;
 viewhome_slideTitle = Start your evaluation;
 viewhome_description = Using high-precision Eye-Tracking, in <b> a 10-minutes, <br>
 non-invasive and standarized test</b>, we are able to detect <br>
@@ -44,7 +45,7 @@ viewpatientreg_labelGender = Gender;
 viewpatientreg_labelCountry = Country;
 viewpatientreg_labelCity = City;
 viewpatientreg_labelProvince = Province/State;
-viewpatientreg_labelDocument_number = Document number;
+viewpatientreg_labelDocument_number = Subject ID;
 viewpatientreg_docTypes = DNI|Passport|Identity Card;
 viewpatientreg_labelConsent = I accept the <a href="terms_of_use">Terms Of Use</a> and <a href="privacy_policy">Privacy Policy</a>;
 viewpatientreg_btnCancel = CANCEL;
@@ -55,6 +56,7 @@ viewpatientreg_terms_of_use = Terms Of Use;
 viewpatientreg_privacy_policy = Privacy Policy;
 viewpatientreg_errorExists = This patient is exists under this doctor;
 viewpatientreg_labelAssignedDoctor = Assigned doctor;
+viewpatientreg_labelProtocol = Protocol;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Eye Studies;
@@ -253,6 +255,16 @@ viewselectdata_labelSelectOption = Select data file;
 viewselectdata_btnDelete = Archive;
 viewselectdata_btnCancel = CANCEL;
 viewselectdata_btnGenReport = GENERATE REPORT;
+
+#********************************* PROTOCOLSCREEN SCREEN *********************************
+viewprotocol_diagTitle = Medical Protocols;
+viewprotocol_diagSubTitle = Add and delete protocols;
+viewprotocol_btnDelete = DELETE;
+viewprotocol_btnAdd = ADD;
+viewprotocol_msgPressAgainToDelete = Press again to delete the selected protocol;
+viewprotocol_msgExists = The protocol already exists;
+viewprotocol_labelNewProtocol = New protocol;
+viewprotocol_optionSelectProtocol = Select protocol;
 
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title

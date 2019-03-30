@@ -173,7 +173,7 @@ Dialog {
         anchors.left: diagCboxUseMouse.right
         anchors.leftMargin: 20
         visible: false
-        checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);
+        checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);        
     }
 
     VMCheckBox{
@@ -185,6 +185,7 @@ Dialog {
         anchors.left: diagCboxDemo.right
         anchors.leftMargin: 20
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)
+        visible: true
     }
 
     Text {

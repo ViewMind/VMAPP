@@ -5,6 +5,8 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include "../../CommonClasses/common.h"
+#include "../../CommonClasses/Experiments/readingparser.h"
+#include "../../CommonClasses/Experiments/bindingparser.h"
 
 #define  FILE_BINDING  "binding"
 
@@ -16,7 +18,8 @@ public:
         qreal periodMax;
         qreal periodMin;
         qreal fexpected;
-        qint32 maxAllowedFreqGlitchesPerTrial;
+        qreal maxAllowedFreqGlitchesPerTrial;
+        qint32 maxAllowedFailedTrials;
         qint32 minNumberOfDataItems;
         qreal maxAllowedPercentOfInvalidValues;
         QString toString(const QString tab = "") const { return
@@ -24,6 +27,7 @@ public:
                     + tab + "Maximum % of Frequency Glitches allowed in a trial: " + QString::number(maxAllowedFreqGlitchesPerTrial) + "\n"
                     + tab + "Maximum % of Invalid values allowed in a trial: " + QString::number(maxAllowedPercentOfInvalidValues) + "\n"
                     + tab + "Minimum number of data points allowed in a trial: " + QString::number(minNumberOfDataItems) + "\n"
+                    + tab + "Max allowed failed trial for frequency glitches: " + QString::number(maxAllowedFailedTrials) + "\n"
                     + tab + "Expected Frequency: " + QString::number(fexpected) + " Hz\n"; }
     };
 
@@ -34,30 +38,34 @@ public:
         QString toString() const { return "[" + QString::number(start,'f') + "," + QString::number(end,'f') + "]"; }
     };
 
+    struct FreqAnalyisDataSet{
+        QString trialName;
+        qreal duration;
+        qreal averageFrequency;
+        qreal expectedNumberOfDataPoints;
+        QList<TimePair> diffTimes;
+        qint32 numberOfDataPoints;
+        QStringList invalidValues;
+    };
+
     struct FreqAnalysisResult {
         QStringList errorList;
         QStringList individualErrorList;
-        QStringList invalidValues;
-        QList< QList<TimePair> > diffTimes;
-        QList<qreal> avgFreqPerTrial;
         qreal averageFrequency;
+        qint32 expectedNumberOfDataSets;
+        QList<FreqAnalyisDataSet> freqAnalysisForEachDataSet;
         void analysisValid(const FreqCheckParameters p);
     };
 
     FreqAnalysis();
     FreqAnalysisResult analyzeFile(const QString &fname, qreal timeUnitInSeconds = 1e-3);
 
+
 private:
 
-    typedef enum {TCB_LINE_SIZE_CHANGE, TCB_LINE_VALUE_CHANGE} TrialChangeBehaviour;
-
-    struct FreqAnalysisBehaviour {
-        TrialChangeBehaviour trialChangeBehaviour;
-        qint32 dataLineSize;
-        qint32 timeColumn;
-        qint32 valueChangeColumn;
-        QString header;
-    };
+    // The experiment parsers
+    ReadingParser readingParser;
+    BindingParser bindingParser;
 
     QString fileToAnalyze;
     qreal timeUnit;
@@ -65,10 +73,12 @@ private:
 
     // Saving all glitches and values.
 
-    QStringList getFileLines(QString *error);
-    QStringList removeHeader(const QStringList &lines, const QString &header);
+    QStringList separateHeaderFromData(QString *error, const QString &header);
     qreal calculateFrequency(const QList<qreal> &times, QList<TimePair> *dtimes);
-    FreqAnalysisResult freqAnalysis(const FreqAnalysisBehaviour &fab);
+
+    FreqAnalysisResult performReadingAnalyis();
+    FreqAnalysisResult performBindingAnalyis();
+
 };
 
 #endif // FREQANALYSIS_H
