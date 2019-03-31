@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>demo_data/binding_bc_2010_06_03.dat</file>
-        <file>demo_data/binding_uc_2010_06_03.dat</file>
-        <file>demo_data/reading_2010_06_03.dat</file>
+        <file>demo_data/binding_bc_2_l_2_2010_06_03_10_00.dat</file>
+        <file>demo_data/binding_uc_2_l_2_2010_03_06_10_03.dat</file>
+        <file>demo_data/reading_2_2010_06_03_10_15.dat</file>
     </qresource>
 </RCC>

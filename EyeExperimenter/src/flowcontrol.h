@@ -45,7 +45,7 @@ public:
     Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
     Q_INVOKABLE bool checkSSLAvailability() {return sslDataProcessingClient->sslEnabled();}
-    Q_INVOKABLE void requestReportData(bool fromEndOfSimulation);
+    Q_INVOKABLE void requestReportData();
     Q_INVOKABLE bool isSSLTransactionOK() const {return sslTransactionAllOk;}
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
@@ -73,7 +73,7 @@ signals:
     void calibrationDone(bool ok);
 
     // Requesting file set to process.
-    void requestFileSet(const QStringList &fileList);
+    void requestFileSet();
 
     // Used to signal the UI to open the dialog to wait for the report generation.
     void reportGenerationRequested();

@@ -56,6 +56,10 @@ Dialog {
 
         bindingBC.vmEnabled = false;
         bindingUC.vmEnabled = false;
+
+        var patname = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+        diagTitle.text = loader.getStringForKey(keybase+"labelTitle") + " - " + patname;
+
     }
 
 

@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
     // Doing the connections for communication between the classes
     QObject::connect(&loader,SIGNAL(fileSetReady(QStringList)),&flowControl,SLOT(onFileSetEmitted(QStringList)));
-    QObject::connect(&flowControl,SIGNAL(requestFileSet(QStringList)),&loader,SLOT(onFileSetRequested(QStringList)));
+    QObject::connect(&flowControl,SIGNAL(requestFileSet()),&loader,SLOT(onFileSetRequested()));
 
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);

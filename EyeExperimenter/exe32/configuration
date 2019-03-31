@@ -54,11 +54,11 @@ tol_min_allowed_period                   = 4;  # ms
 tol_max_fglitches_in_trial               = 10;   # %  
 
 # Minimun number of points required in a set to be valid.
-tol_min_number_of_data_items_in_trial    = 80; # Absolute number
+tol_min_number_of_data_items_in_trial    = 10; # Absolute number
 
 # Percent of the total number of points (in the entire study) that were not valid numbers.
 tol_max_percent_of_invalid_values        = 3;   # %
-tol_num_allowed_of_failed_data_sets      = 0;   # Absolute number
+tol_num_allowed_of_failed_data_sets      = 10;   # Absolute number
 
 
 #------------------------------------------------------#

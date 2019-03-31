@@ -104,7 +104,7 @@ public slots:
     void onDisconnectFromDB();
 
     // Request of the flow control for the next set of files to process.
-    void onFileSetRequested(const QStringList &fileList);
+    void onFileSetRequested();
 
 private:
 

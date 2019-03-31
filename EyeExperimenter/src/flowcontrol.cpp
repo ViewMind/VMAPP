@@ -112,16 +112,9 @@ void FlowControl::saveReportAs(const QString &title){
     emit(reportGenerationRequested());
 }
 
-void FlowControl::requestReportData(bool fromEndOfSimulation){
+void FlowControl::requestReportData(){
     sslTransactionAllOk = false;
-    if (fromEndOfSimulation){
-        //currentRunFiles.clear();
-        //currentRunFiles << "reading_2_2019_03_09_18_58.dat";
-        emit(requestFileSet(currentRunFiles));
-    }
-    else{
-        emit(requestFileSet(QStringList()));
-    }
+    emit(requestFileSet());
 }
 
 void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
@@ -145,8 +138,8 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
     }
     else{
         fileSet.clear();
-        expectedFileName = "report_r_b2l_2010_06_03_09_00.rep";
-        fileSet << "binding_bc_2010_06_03.dat" << "binding_uc_2010_06_03.dat" << "reading_2010_06_03.dat";
+        expectedFileName = "report_REN_B2L2_2010_06_03_10_15.rep";
+        fileSet << "binding_bc_2_l_2_2010_06_03_10_00.dat" << "binding_uc_2_l_2_2010_03_06_10_03.dat" << "reading_2_2010_06_03_10_15.dat";
     }
 
     //qWarning() << "File set" << fileSet;
