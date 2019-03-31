@@ -97,13 +97,13 @@ VMBase {
                 onClicked: {
                     studyDoneDiag.close();
                     swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-//                    viewPatList.requestReportToServer(1);
                     if (loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE) || loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)){
                         viewPatList.startDemoTransaction();
                     }
                     else{
                         // One is passed as a parameter to force the used of the files in the current run files.
-                        viewPatList.requestReportToServer(1);
+                        // viewPatList.requestReportToServer(1);
+                        viewPatList.openDatSelectionDialog();
                     }
 
                 }

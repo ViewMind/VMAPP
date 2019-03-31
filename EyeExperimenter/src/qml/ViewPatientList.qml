@@ -370,7 +370,11 @@ VMBase {
         flowControl.startDemoTransaction();
     }
 
-    function requestReportToServer(fromEndOfRun){
+    function openDatSelectionDialog(){
+        viewDatSelectionDiag.open();
+    }
+
+    function requestReportToServer(){
         if (!loader.isDoctorValidated(-1)){
             showMessage("msg_notvalid");
             return;
@@ -383,7 +387,7 @@ VMBase {
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
         connectionDialog.open();
-        flowControl.requestReportData(fromEndOfRun);
+        flowControl.requestReportData();
     }
 
     function showMessage(msg){

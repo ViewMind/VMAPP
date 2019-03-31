@@ -17,8 +17,8 @@ VMBase {
     property string vmDate: ""
     property string vmTitleDemo: ""
 
-    readonly property string vmDEMO_DATE:             "03/06/2010 09:00"
-    readonly property string vmDEMO_DATE_FROM_REPORT: "03/06/2010 00:00"
+    readonly property string vmDEMO_DATE:             "03/06/2010 10:15"
+    readonly property string vmDEMO_DATE_FROM_REPORT: "03/06/2010 10:15"
 
     ListModel{
         id: resultsList

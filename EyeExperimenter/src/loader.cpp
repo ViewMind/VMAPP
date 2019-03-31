@@ -554,21 +554,14 @@ void Loader::onDisconnectFromDB(){
     emit(synchDone());
 }
 
-void Loader::onFileSetRequested(const QStringList &fileList){
+void Loader::onFileSetRequested(){
     QStringList fileSet;
     QString patuid = configuration->getString(CONFIG_PATIENT_UID);
 
     // Setting the protocol ID
     QVariantMap patdata = lim.getPatientInfo(patuid);
     configuration->addKeyValuePair(CONFIG_PROTOCOL_NAME,patdata.value(TPATDATA_NONCOL_PROTOCOL).toString());
-
-    if (fileList.isEmpty()){
-        fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);
-    }
-    else{
-        fileSet = lim.getReportNameAndFileSet(patuid,fileList);
-        //qWarning() << "Getting the report name and file set from existing files" << fileList << "and they are" << fileSet;
-    }
+    fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);
     emit(fileSetReady(fileSet));
 }
 
