@@ -27,6 +27,5 @@ SOURCES += main.cpp \
 
 HEADERS += \
     s3interface.h \
-    ../CommonClasses/server_defines.h \
     ../../CommonClasses/server_defines.h \
     ../../CommonClasses/LogInterface/loginterface.h

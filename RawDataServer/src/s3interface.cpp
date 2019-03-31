@@ -8,7 +8,7 @@ S3Interface::S3Interface()
 void S3Interface::copyRecursively(const QString &path){
 
     QString aws_command;
-    aws_command = "aws s3 cp --recursive " + s3Address + "/" + path + " copydir > /dev/null 2>&1";
+    aws_command = "aws s3 cp --recursive " + s3Address + "/" + path + " copydir";
 
     QStringList shellComamnds;
     shellComamnds << "rm -rf copydir"; // This will ensure no new data is mistaken with old data.
@@ -21,16 +21,27 @@ void S3Interface::copyRecursively(const QString &path){
     shellComamnds << aws_command;
 #endif
 
+    runShellCommands(shellComamnds);
+
+}
+
+
+bool S3Interface::runShellCommands(const QStringList &shellCommands){
     LogInterface log;
-    for (qint32 i = 0; i < shellComamnds.size(); i++){
-        log.appendStandard("AWS CP DIR: RUNNING COMMAND: " + shellComamnds.at(i));
-        qint32 result = QProcess::execute(shellComamnds.at(i));
+    for (qint32 i = 0; i < shellCommands.size(); i++){
+        log.appendStandard("AWS CP DIR: RUNNING COMMAND: " + shellCommands.at(i));
+        QProcess process;
+        process.start(shellCommands.at(i));
+        process.closeReadChannel(QProcess::StandardOutput);
+        process.closeReadChannel(QProcess::StandardError);
+        process.waitForFinished(60000000);
+        qint32 result = process.exitCode();
         if (result != 0){
            log.appendError("AWS CP DIR: COMMAND RESULT IS: " + QString::number(result));
-           return;
+           return false;
         }
     }
-
+    return true;
 }
 
 S3Interface::S3LSReturn S3Interface::listInPath(const QString &path){
@@ -48,15 +59,9 @@ S3Interface::S3LSReturn S3Interface::listInPath(const QString &path){
     cmdList << aws_command + " > " + QString(SERVER_OUTPUT_FILE);
 #endif
 
-    LogInterface log;
-    for (qint32 i = 0; i < cmdList.size(); i++){
-        log.appendStandard("AWS LIST: RUNNING COMMAND: " + cmdList.at(i));
-        qint32 result = QProcess::execute(cmdList.at(i));
-        if (result != 0){
-           log.appendError("AWS LIST: COMMAND RESULT IS: " + QString::number(result));
-        }
-    }
+    if (!runShellCommands(cmdList)) return ans;
 
+    LogInterface log;
     QFile file(SERVER_OUTPUT_FILE);
     if (!file.open(QFile::ReadOnly)) {
         log.appendError("AWS LIST: Could not open temp output file for reading");

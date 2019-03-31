@@ -41,6 +41,8 @@ public:
 private:
     QString s3Address;
 
+    bool runShellCommands(const QStringList &shellCommands);
+
 };
 
 #endif // S3INTERFACE_H
