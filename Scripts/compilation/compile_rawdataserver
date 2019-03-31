@@ -2,10 +2,10 @@
 
 # Constants to change in order to change compilation.
 BASE_DIR="/home/ec2-user/viewmind_projects"
-SRC_DIR=$BASE_DIR"/DBManager/src"
-OUTPUT=$BASE_DIR"/DBManager/bin"
-APPNAME="DBManager"
-DEST="/home/ec2-user/DBMng/"
+SRC_DIR=$BASE_DIR"/RawDataServer/src"
+OUTPUT=$BASE_DIR"/RawDataServer/bin"
+APPNAME="RawDataServer"
+DEST="/home/ec2-user/RawDataServer/"
 
 # Changing the work directory.
 echo "===================== CHANGING DIR TO: $OUTPUT ====================="

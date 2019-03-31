@@ -11,6 +11,9 @@
 #define   SERVER_PROGRAM_NAME                           "EyeSever"
 #define   SERVER_PROGRAM_VERSION                        "6.1.0"
 
+#define   RAW_DATA_SERVER_NAME                          "RawDataServer"
+#define   RAW_DATA_SERVER_VERSION                       "1.0.0"
+
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"
 #define   CONFIG_DBHOST                                 "db_host"

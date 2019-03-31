@@ -19,6 +19,7 @@ PNGReportGenerator/exe/
 EyeDataAnalyzer/exe/
 EyeReportGenerator/exe/
 EyeServer/bin/output/
+RawDataServer/bin/
 ReportViewerDev/
 SQLClient/bin/
 Doc/*.aux
