@@ -31,7 +31,8 @@ bool S3Interface::runShellCommands(const QStringList &shellCommands){
     for (qint32 i = 0; i < shellCommands.size(); i++){
         log.appendStandard("AWS CP DIR: RUNNING COMMAND: " + shellCommands.at(i));
         QProcess process;
-        process.start(shellCommands.at(i));
+//        process.start(shellCommands.at(i));
+        process.start("sh",QStringList() << "-c" << shellCommands.at(i));
         process.closeReadChannel(QProcess::StandardOutput);
         process.closeReadChannel(QProcess::StandardError);
         process.waitForFinished(60000000);
@@ -56,7 +57,7 @@ S3Interface::S3LSReturn S3Interface::listInPath(const QString &path){
     cmdList << "ssh -i " + QString(SSH_KEY_LOCATION) +  " " + QString(SSH_USER_DNS) + " \"" + aws_command + " > " + QString(SERVER_OUTPUT_FILE) + "\"";
     cmdList << "scp -i " + QString(SSH_KEY_LOCATION) +  " -q " + QString(SSH_USER_DNS) + ":\"" + QString(SERVER_OUTPUT_FILE) + "\" . ";
 #else
-    cmdList << "cmd=\"" + aws_command + " > " + QString(SERVER_OUTPUT_FILE)+"\";exec $cmd";
+    cmdList << aws_command + " > " + QString(SERVER_OUTPUT_FILE);
 #endif
 
 
