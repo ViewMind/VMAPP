@@ -1,6 +1,6 @@
 #### CONFIGURATION VARIABLES
-LOCAL       = 1;
-DEV         = 1;
+LOCAL       = 0;
+DEV         = 0;
 
 ######################## IMPLEMENTATION ########################
 

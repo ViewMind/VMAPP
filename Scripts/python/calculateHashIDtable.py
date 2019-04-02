@@ -1,7 +1,7 @@
 #### CONFIGURATION VARIABLES
 LOCAL       = 0;
-DEV         = 1;
-ALTER       = 0;
+DEV         = 0;
+ALTER       = 1;
 DELETE_ONLY = 0;
 
 ######################## IMPLEMENTATION ########################
