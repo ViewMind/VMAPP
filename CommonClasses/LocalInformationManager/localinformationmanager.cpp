@@ -164,8 +164,8 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
         else if (drmap.value(DOCTOR_UPDATE).toBool()) addDoctor = true;
 
         // Doctors who do not contain or whose valid flag is false do NOT update its information.
-        if (!drmap.contains(DOCTOR_VALID)) continue;
-        if (!drmap.value(DOCTOR_VALID).toBool()) continue;
+        //if (!drmap.contains(DOCTOR_VALID)) continue;
+        //if (!drmap.value(DOCTOR_VALID).toBool()) continue;
 
         if (addDoctor){
             //qWarning() << "Adding the doctor";
@@ -192,10 +192,10 @@ bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
         QVariantMap patientMap = localDB.value(PATIENT_DATA).toMap().value(patuids.at(j)).toMap();
 
         // Patient must be assiged to a VALIDATED doctor. Otherwise synchronization will not be possible as de Doctor is not in the DB.
-        QString assignedDoctor = patientMap.value(TPATDATA_COL_DOCTORID).toString();
-        if (!localDB.value(DOCTOR_DATA).toMap().value(assignedDoctor).toMap().value(DOCTOR_VALID).toBool()){
-            continue;
-        }
+//        QString assignedDoctor = patientMap.value(TPATDATA_COL_DOCTORID).toString();
+//        if (!localDB.value(DOCTOR_DATA).toMap().value(assignedDoctor).toMap().value(DOCTOR_VALID).toBool()){
+//            continue;
+//        }
 
         bool addPatient = false;
         if (!patientMap.contains(PATIENT_UPDATE)) addPatient = true;

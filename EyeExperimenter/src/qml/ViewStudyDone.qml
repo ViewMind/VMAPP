@@ -151,7 +151,10 @@ VMBase {
         anchors.top: headDesign.bottom
         anchors.topMargin: 30
         onClicked: {
-            openDiag();
+            if (loader.isDoctorValidated(-1)){
+                openDiag();
+                viewPatList.openDatSelectionDialog();
+            }
         }
     }
 

@@ -21,6 +21,11 @@ Loader::Loader(QObject *parent) : QObject(parent)
         return;
     }
 
+    if (!QSslSocket::supportsSsl()){
+        logger.appendError("NO SSL SUPPORT FOUND. Starting Eye Experimenter without any checks.");
+        startEyeExperimenter();
+    }
+
     // Creating the socket and making the connections.
     serverConn = new QSslSocket(this);
     connect(serverConn,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));

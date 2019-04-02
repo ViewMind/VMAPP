@@ -61,7 +61,7 @@ Item {
         border.color: vmEnabled? "#3096ef" : "#888889"
         color: {
             if (!vmEnabled) return "#ffffff"
-            else if (vmFilledDisplay) return "#2873b4"
+            else if (vmFilledDisplay) return "#87B3D0"
             else return "#ffffff"
         }
 

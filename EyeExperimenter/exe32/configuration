@@ -7,38 +7,18 @@
 x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
-# Development Server.
-# server_address = 18.191.142.5;
 # Production Server Address
-# server_address = 18.220.30.34;
-# Local server
-server_address = 192.168.1.10;
+server_address = 18.220.30.34;
 
 #------------------------------------------------------#
 #                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
 
-# Pass for ViewMind Institution in the LocalServer d9LppSJf
-inst_pass = 01cf1f560d48d40622796620564c918fe3792b2c9d501c0fde0564dd38827a51;
+inst_pass = 95a0cbb611daa3956f09d4d77708597751b9cb6a6607aa889f5aac4263cd2836;
 eyeexp_number = 0000;
+inst_et_serial = GP3HD-18276280;
+inst_name = Strathclyde;
 inst_uid = 1242673082;
-inst_name = Stathclyde;
-inst_et_serial = ;
-
-# PASS for this hash is A8ESpCU6. Used for Development Connection
-# inst_pass = 5ef3f51d45b533c6f173d25a2f2704a3b1a26b75226934a96d1c036cde594ef2;
-# inst_et_serial = ;
-# inst_name = Institucion de Prueba;
-# inst_uid = 313644376;
-
-# Pass for ViewMind Institution in the Production Server 7gUiBC7n
-#inst_pass = 8e39024ce54f28ce399e83a4623fc5a7c6e95be44373231520d6322ff4f2f378;
-#inst_uid = 1369462188;
-#inst_name = ViewMind;
-#inst_et_serial = ;
-
-# test_mode = true;
-# enable_gaze_following = true;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
@@ -58,12 +38,11 @@ distance_to_monitor          =  60;      #cm
 latency_escape_radious       =  80;      #px
 margin_target_hit            =  10;      #mm 
 
-
 #------------------------------------------------------#
 #             FREQUENCY CHECK PARAMETERS               #
 #------------------------------------------------------#
 
-# The allowed diviation from the base period
+# The allowed deviation from the base period
 tol_max_allowed_period                   = 8;  # ms
 tol_min_allowed_period                   = 4;  # ms
 
@@ -71,7 +50,7 @@ tol_min_allowed_period                   = 4;  # ms
 tol_max_fglitches_in_trial               = 10;   # %  
 
 # Minimun number of points required in a set to be valid.
-tol_min_number_of_data_items_in_trial    = 80; # Absolute number
+tol_min_number_of_data_items_in_trial    = 50; # Absolute number
 
 # Percent of the total number of points (in the entire study) that were not valid numbers.
 tol_max_percent_of_invalid_values        = 3;   # %
@@ -86,3 +65,4 @@ connection_time_out   = 60;   # seconds.
 data_request_time_out = 60; # seconds 
 wait_report_timeout   = 60;   # seconds
 wait_db_data_timeout  = 60;  # seconds
+

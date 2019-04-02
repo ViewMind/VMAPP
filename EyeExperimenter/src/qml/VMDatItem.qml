@@ -72,7 +72,7 @@ Rectangle {
         background: Rectangle {
             id: rectArea
             border.width: 0
-            color: "#000000"
+            color: "#87B3D0"
             anchors.fill: parent
             radius: 10
         }
@@ -117,7 +117,7 @@ Rectangle {
         background: Rectangle {
             id: rectAreaFA
             border.width: 0
-            color: "#000000"
+            color: "#87B3D0"
             anchors.fill: parent
             radius: 10
         }
