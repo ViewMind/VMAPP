@@ -18,7 +18,7 @@ server_address = 192.168.1.10;
 #                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
 
-inst_pass = 44f9bd778520d1ae983b07ea28d6ee5968559f0b190f5e88e8947ce32c7041dc;
+inst_pass = 95a0cbb611daa3956f09d4d77708597751b9cb6a6607aa889f5aac4263cd2836;
 eyeexp_number = 0000;
 inst_et_serial = GP3HD-18276270;
 inst_name = Axis - Bahia Blanca;
