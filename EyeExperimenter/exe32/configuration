@@ -7,22 +7,18 @@
 x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
-# Development Server.
-# server_address = 18.191.142.5;
 # Production Server Address
-# server_address = 18.220.30.34;
-# Local server
-server_address = 192.168.1.10;
+server_address = 18.220.30.34;
 
 #------------------------------------------------------#
 #                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
 
-inst_pass = 44f9bd778520d1ae983b07ea28d6ee5968559f0b190f5e88e8947ce32c7041dc;
+inst_pass = 95a0cbb611daa3956f09d4d77708597751b9cb6a6607aa889f5aac4263cd2836;
 eyeexp_number = 0000;
-inst_et_serial = GP3HD-18276270;
-inst_name = Axis - Bahia Blanca;
-inst_uid = 1145868706;
+inst_et_serial = GP3HD-18276280;
+inst_name = Strathclyde;
+inst_uid = 1242673082;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
@@ -54,11 +50,11 @@ tol_min_allowed_period                   = 4;  # ms
 tol_max_fglitches_in_trial               = 10;   # %  
 
 # Minimun number of points required in a set to be valid.
-tol_min_number_of_data_items_in_trial    = 10; # Absolute number
+tol_min_number_of_data_items_in_trial    = 50; # Absolute number
 
 # Percent of the total number of points (in the entire study) that were not valid numbers.
 tol_max_percent_of_invalid_values        = 3;   # %
-tol_num_allowed_of_failed_data_sets      = 10;   # Absolute number
+tol_num_allowed_of_failed_data_sets      = 0;   # Absolute number
 
 
 #------------------------------------------------------#
