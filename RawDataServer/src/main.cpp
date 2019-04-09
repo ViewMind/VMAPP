@@ -1,17 +1,15 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-
-#define VIEWMIND_DATA_REPO        "viewmind-raw-eye-data"
-
-#include "s3interface.h"
+#include "control.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    S3Interface::S3LSReturn lsRet;
+#ifdef COMPILE_FOR_S3_TEST
 
+    S3Interface::S3LSReturn lsRet;
     S3Interface s3; s3.setS3Bin(VIEWMIND_DATA_REPO);
 
     lsRet = s3.listInPath("AR21483418/");
@@ -26,6 +24,18 @@ int main(int argc, char *argv[])
     s3.copyRecursively("AR21483418/");
 
     qWarning() << "Finished";
+    return a.exec();
+#else
+    Control control(&a);
+    QObject::connect(&control,SIGNAL(exitRequested()),&a,SLOT(quit()),Qt::QueuedConnection);
+    control.startServer();
+
+#endif
+
+    std::cout << "================" << RAW_DATA_SERVER_NAME << "================" << std::endl;
+    std::cout << "| Version: " << RAW_DATA_SERVER_VERSION << std::endl;
+    std::cout << "| CTRL-C to kill the server" << std::endl;
+    std::cout << "========================================" << std::endl;
 
     return a.exec();
 }

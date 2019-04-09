@@ -47,6 +47,9 @@ public:
     static const quint8 DPFI_UPDATE_LANG                              = 27;
     static const quint8 DPFI_UPDATE_RESULT                            = 28;
     static const quint8 DPFI_UPDATE_CHANGES                           = 29;
+    static const quint8 DPFI_INST_NAMES                               = 30;
+    static const quint8 DPFI_DATE_START                               = 31;
+    static const quint8 DPFI_DATE_END                                 = 32;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;

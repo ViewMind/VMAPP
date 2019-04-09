@@ -60,7 +60,6 @@ S3Interface::S3LSReturn S3Interface::listInPath(const QString &path){
     cmdList << aws_command + " > " + QString(SERVER_OUTPUT_FILE);
 #endif
 
-
     if (!runShellCommands(cmdList)) return ans;
 
     LogInterface log;
