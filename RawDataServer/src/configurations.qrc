@@ -1,2 +1,8 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/">
+        <file>../../CommonClasses/DBConfigurations/db_development</file>
+        <file>../../CommonClasses/DBConfigurations/db_localhost</file>
+        <file>../../CommonClasses/DBConfigurations/db_localhost_prod</file>
+        <file>../../CommonClasses/DBConfigurations/db_production</file>
+    </qresource>
+</RCC>

@@ -1,2 +1,6 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/">
+        <file>certificates/server.csr</file>
+        <file>certificates/server.key</file>
+    </qresource>
+</RCC>

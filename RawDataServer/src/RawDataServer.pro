@@ -23,9 +23,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     s3interface.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp
+    ../../CommonClasses/LogInterface/loginterface.cpp \
+    control.cpp \
+    ../../CommonClasses/SQLConn/dbinterface.cpp \
+    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+    ssllistener.cpp \
+    ../../CommonClasses/DataPacket/datapacket.cpp
 
 HEADERS += \
     s3interface.h \
     ../../CommonClasses/server_defines.h \
-    ../../CommonClasses/LogInterface/loginterface.h
+    ../../CommonClasses/LogInterface/loginterface.h \
+    control.h \
+    ../../CommonClasses/SQLConn/dbdescription.h \
+    ../../CommonClasses/SQLConn/dbinterface.h \
+    ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ssllistener.h \
+    ../../CommonClasses/DataPacket/datapacket.h
+
+RESOURCES += \
+    configurations.qrc \
+    certificates.qrc
+

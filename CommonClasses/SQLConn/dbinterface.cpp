@@ -158,6 +158,9 @@ bool DBInterface::readFromDB(const QString &table, const QStringList &columns, c
 
 void DBInterface::log(const QString &query, const QString &logid){
 
+
+    if (logFile.isEmpty()) return;
+
     QString timestamp = "[" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh::mm::ss") + "] ";
     QString logline = timestamp +  " [" + logid + "] "  +  dblogid + "-> "  + query + "\n";
 
