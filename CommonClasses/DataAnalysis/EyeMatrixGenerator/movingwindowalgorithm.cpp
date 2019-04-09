@@ -15,12 +15,14 @@ Fixations MovingWindowAlgorithm::computeFixations(const DataMatrix &data, qint32
 
     while (true) {
 
-        endIndex = startIndex + parameters.getStartWindowSize()-1;
+        endIndex = startIndex + parameters.getStartWindowSize()-1;        
         windowExpanded = false;
 
         // If the end index is outside the bounds the remaining data can be discarded as a fixation there
         // would be shorter than the minimum fixation. So the algorithm ends here.
         if (endIndex >= data.size()) break;
+
+        //qWarning() << "START WINDOW" << parameters.getStartWindowSize() << ". DIFF IS" << data.at(endIndex).at(tI) -  data.at(startIndex).at(tI);
 
         // Getting the start window dispersion limits
         mmX = findDispLimits(data,xI,startIndex,endIndex);

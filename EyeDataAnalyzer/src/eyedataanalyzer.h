@@ -5,11 +5,27 @@
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QListWidgetItem>
+#include <QGroupBox>
+#include <QSslSocket>
+#include <QMessageBox>
 
-#define   PROGRAM_NAME      "EyeDataAnalyzer"
-#define   PROGRAM_VERSION   "2.1.0"
-#define   WORK_DIR          "outputs"
-#define   DATA_ROLE         1500
+//#define COMPILE_FOR_PRODUCTION
+
+#ifdef COMPILE_FOR_PRODUCTION
+#define  SERVER_IP                     "18.220.30.34"  // Production server
+#else
+#define  SERVER_IP                     "192.168.1.10"  // Local server
+#endif
+
+#define   PROGRAM_NAME                 "EyeDataAnalyzer"
+#define   PROGRAM_VERSION              "3.1.0"
+#define   WORK_DIR                     "outputs"
+#define   FILE_DEFAULT_VALUES          "default_values"
+
+#define   ROLE_DATA         1500
+
+#define   VIEW_0_DATABASE_VIEW     0
+#define   VIEW_1_PROCESSING_VIEW   1
 
 #include "../../CommonClasses/HTMLWriter/htmlwriter.h"
 #include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
@@ -31,74 +47,54 @@ public:
     ~EyeDataAnalyzer();
 
 private slots:
+    void onProcessorMessage(const QString &msg, qint32 type);
     void on_newUIMessage(const QString &html);
 
-    void on_pbBrowsePatientDir_clicked();
+    void on_actionDataBase_Connection_triggered();
 
-    void on_leTimeFilterThreshold_editingFinished();
+    void on_actionProcessing_View_triggered();
 
-    void on_leMovingWindowMaxDispersion_editingFinished();
+    void on_lwDirs_itemDoubleClicked(QListWidgetItem *item);
 
-    void on_leMinimumFixationLength_editingFinished();
+    void on_pushButton_clicked();
 
-    void on_leSampleFrequency_editingFinished();
-
-    void on_leLatencyEscapeRadious_editingFinished();
-
-    void on_leDistanceToMonitor_editingFinished();
-
-    void on_leMarginTargetHit_editingFinished();
-
-    void on_leXToMM_editingFinished();
-
-    void on_leYToMM_editingFinished();
-
-    void on_comboLang_currentIndexChanged(const QString &arg1);
-
-    void on_cbUseLogo_stateChanged(int arg1);
-
-    void on_comboEyeSelection_currentIndexChanged(int index);
-
-    void on_leDoctorsName_editingFinished();
-
-    void on_lePatientName_editingFinished();
-
-    void on_lePatientAge_editingFinished();
-
-    void on_pbAnalyzeData_clicked();
-
-    void onProcessorMessage(const QString &msg, qint32 type);
+    void on_pbGenerateReport_clicked();
 
     void on_pbDrawFixations_clicked();
 
-    void on_pbGeneratePNG_clicked();
+    void on_pgFrequencyAnalsis_clicked();
 
-    void on_lwReportsThatCanBeGenerated_itemClicked(QListWidgetItem *item);
+    void on_pteDefConfig_clicked();
 
-    void on_pbFreqAnalysis_clicked();
+    void on_pbSaveDefConf_clicked();
+
+    void on_pbDATFiles_clicked();
+
+    void on_pbGenerateReport_2_clicked();
 
 private:
     Ui::EyeDataAnalyzer *ui;
-    ConfigurationManager configuration;
-    LogInterface log;
+    LogInterface logForProcessing;
+    LogInterface logForDB;
+    QString currentDirectory;
+    ConfigurationManager currentEyeRepGen;
     HTMLWriter htmlWriter;
-    QHash<QString,FixationList> lastFixations;
 
-    // The dat info of the selected directory.
-    DatFileInfoInDir infoInDir;
+    ConfigurationManager defaultReportCompletionParameters;
+    ConfigurationManager defaultValues;
 
-    // Fills the ui with loaded configuration
-    void fillUi();
+    QList<QGroupBox*> appViews;
 
-    // Fills the list widget with the currently selected directory.
-    void listDatFilesInPatientDirectory();
+    // Processing data.
+    QSslSocket *serverConn;
+    DataPacket rx;
 
-    // Validation for numeric values
-    void validateAndSave(QLineEdit *le, const QString &parameter, bool positive, bool real);
-    QString validNumber(const QString &str, bool positive = true, bool isReal = false);
+    void processDirectory();
+    void switchViews(qint32 view);
+    ConfigurationManager createProcessingConfiguration(bool *ok);
+    void overWriteCurrentConfigurationWith(const ConfigurationManager &mng, bool addOnlyNonExistant);
 
-    // Controlling the ui buttons.
-    void enableControlButtons(bool enable);
+
 };
 
 #endif // EYEDATAANALYZER_H

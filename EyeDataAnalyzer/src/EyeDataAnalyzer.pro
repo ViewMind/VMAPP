@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -42,7 +42,6 @@ SOURCES += \
     ../../CommonClasses/Experiments/bindingmanager.cpp \
     ../../CommonClasses/Experiments/experimentdatapainter.cpp \
     ../../CommonClasses/Experiments/fieldingmanager.cpp \
-    ../../CommonClasses/Experiments/phrases.cpp \
     ../../CommonClasses/Experiments/readingmanager.cpp \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/csvcheckedreader.cpp \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.cpp \
@@ -53,6 +52,7 @@ SOURCES += \
     ../../CommonClasses/PNGWriter/repfileinfo.cpp \
     ../../CommonClasses/PNGWriter/resultbar.cpp \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
+    ../../CommonClasses/Experiments/readingparser.cpp \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp
 
 HEADERS += \
@@ -70,7 +70,6 @@ HEADERS += \
     ../../CommonClasses/Experiments/bindingmanager.h \
     ../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../CommonClasses/Experiments/fieldingmanager.h \
-    ../../CommonClasses/Experiments/phrases.h \
     ../../CommonClasses/Experiments/readingmanager.h \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/csvcheckedreader.h \
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.h \
@@ -81,6 +80,7 @@ HEADERS += \
     ../../CommonClasses/PNGWriter/repfileinfo.h \
     ../../CommonClasses/PNGWriter/resultbar.h \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
+    ../../CommonClasses/Experiments/readingparser.h \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h
 
 FORMS += \
