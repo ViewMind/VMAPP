@@ -169,9 +169,8 @@
 #define  READING_LANG_ENGLISH                           "en"
 #define  READING_LANG_GERMAN                            "de"
 
-
-
 // TCP Ports.
+static const quint16 TCP_PORT_RAW_DATA_SERVER            = 54918;
 static const quint16 TCP_PORT_DB_COMM                    = 54915;
 static const quint16 TCP_PORT_DATA_PROCESSING            = 54912;
 

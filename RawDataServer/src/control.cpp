@@ -142,6 +142,13 @@ void Control::startServer(){
     connect(listener,&SSLListener::newConnection,this,&Control::on_newConnection);
     socket = nullptr;
 
+    if (!listener->listen(QHostAddress::Any,TCP_PORT_RAW_DATA_SERVER)){
+        logger.appendError("ERROR : Could not start SSL Server: " + listener->errorString());
+        emit(exitRequested());
+        return;
+    }
+
+
 }
 
 void Control::on_newConnection(){
