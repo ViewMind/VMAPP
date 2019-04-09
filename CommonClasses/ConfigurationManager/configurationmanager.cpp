@@ -4,18 +4,23 @@ ConfigurationManager::ConfigurationManager()
 {
 }
 
-bool ConfigurationManager::loadConfiguration(const QString &file, const char* textCodec){
-    QFile f(file);
-    if (!f.open(QFile::ReadOnly)){
-        error = "Could not open settings file " + file + " for reading.";
-        return false;
-    }
+bool ConfigurationManager::loadConfiguration(const QString &file, const char* textCodec, const QString readText){
 
-    // Reading in all data and closing the file afterwards, using the provided text codec.
-    QTextStream reader(&f);
-    reader.setCodec(textCodec);
-    QString text = reader.readAll();
-    f.close();
+    QString text;
+    if (readText.isEmpty()){
+        QFile f(file);
+        if (!f.open(QFile::ReadOnly)){
+            error = "Could not open settings file " + file + " for reading.";
+            return false;
+        }
+
+        // Reading in all data and closing the file afterwards, using the provided text codec.
+        QTextStream reader(&f);
+        reader.setCodec(textCodec);
+        text = reader.readAll();
+        f.close();
+    }
+    else text = readText;
 
     // Parsing the configuration data
     QString currentCommand = "";
@@ -221,7 +226,7 @@ bool ConfigurationManager::verifyParsedCommands(){
 
     QStringList parsed = data.keys();
 
-    for (qint32 i = 0; i < parsed.size(); i++){        
+    for (qint32 i = 0; i < parsed.size(); i++){
 
         if (!verif.contains(parsed.at(i))){
             errors << "Keyword: " + parsed.at(i) + " is invalid. Please check your syntax.";
@@ -327,6 +332,7 @@ void ConfigurationManager::merge(const ConfigurationManager &configmng){
     }
 }
 
+
 QString ConfigurationManager::saveValueToFile(const QString &fileName, const char *textCode, const QString &key){
     return setValue(fileName,textCode,key,data.value(key).toString());
 }
@@ -362,7 +368,7 @@ QString ConfigurationManager::setValue(const QString &fileName,
     // Searching for the command, and then replacing it or adding it. However, we must make sure that the command is not in a comment.
     qint32 i = 0;
     bool done = false;
-    while (!done){        
+    while (!done){
         i = contents.indexOf(cmd,i,Qt::CaseSensitive);
         if (i == -1) break;
         // Checking that this is not in a comment.

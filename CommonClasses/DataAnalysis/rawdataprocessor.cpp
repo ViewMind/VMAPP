@@ -13,6 +13,8 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
         dataReading = currentDir + "/" + config->getString(CONFIG_FILE_READING);
     else dataReading = "";
 
+    qWarning() << "Data Reading" << dataReading << config->containsKeyword(CONFIG_FILE_READING);
+
     if (config->containsKeyword(CONFIG_FILE_BIDING_BC))
         dataBindingBC = currentDir + "/" + config->getString(CONFIG_FILE_BIDING_BC);
     else dataBindingBC = "";

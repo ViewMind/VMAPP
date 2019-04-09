@@ -49,7 +49,7 @@ public:
     typedef QHash<QString,Command> CommandVerifications;
 
     ConfigurationManager();
-    bool loadConfiguration(const QString &file, const char *textCodec);
+    bool loadConfiguration(const QString &file, const char *textCodec, const QString readText = "");
 
     // Used in order to add data and unify as the only configuration structure in a program
     void addKeyValuePair(const QString &name, const QVariant &value);
@@ -97,6 +97,7 @@ public:
                             const QString &value,
                             ConfigurationManager *configToChange = nullptr,
                             const Delimiters &delimiters = Delimiters());
+
 
 private:
 

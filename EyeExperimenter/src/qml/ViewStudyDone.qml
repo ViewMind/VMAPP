@@ -102,7 +102,7 @@ VMBase {
                     }
                     else{
                         // One is passed as a parameter to force the used of the files in the current run files.
-                        // viewPatList.requestReportToServer(1);
+                        //viewPatList.requestReportToServer(1);
                         viewPatList.openDatSelectionDialog();
                     }
 
@@ -152,9 +152,9 @@ VMBase {
         anchors.topMargin: 30
         onClicked: {
             if (loader.isDoctorValidated(-1)){
-                openDiag();
-                viewPatList.openDatSelectionDialog();
+                openDiag();                
             }
+            else swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         }
     }
 

@@ -6,304 +6,122 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
     ui(new Ui::EyeDataAnalyzer)
 {
     ui->setupUi(this);
-    log.setGraphicalLogInterface();
-    connect(&log,SIGNAL(newUiMessage(QString)),this,SLOT(on_newUIMessage(QString)));
+    logForProcessing.setGraphicalLogInterface();
+    connect(&logForProcessing,SIGNAL(newUiMessage(QString)),this,SLOT(on_newUIMessage(QString)));
     this->setWindowTitle(QString(PROGRAM_NAME) + " - " + QString(PROGRAM_VERSION));
-    if (!configuration.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
-        log.appendError("ERROR Loading configuration: " + configuration.getError());
-    }
-    fillUi();
-    enableControlButtons(false);
 
-    //ui->lePatientDir->setText("C:\Users\Viewmind\Documents\QtProjects\EyeExperimenter\exe\viewmind_etdata\AR30000000\AR30000000");
+    appViews.append(ui->groupBoxDataBaseView);
+    appViews.append(ui->groupBoxProcessingView);
+
+    // Default values
+    defaultReportCompletionParameters.addKeyValuePair(CONFIG_DOCTOR_NAME,"No Doctor");
+    defaultReportCompletionParameters.addKeyValuePair(CONFIG_PATIENT_AGE,"0");
+    defaultReportCompletionParameters.addKeyValuePair(CONFIG_PATIENT_NAME,"Unnamed");
+
+    // Default processing parameters
+    defaultValues.addKeyValuePair(CONFIG_MOVING_WINDOW_DISP,100);
+    defaultValues.addKeyValuePair(CONFIG_MIN_FIXATION_LENGTH,50);
+    defaultValues.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,150);
+    defaultValues.addKeyValuePair(CONFIG_DISTANCE_2_MONITOR,60);
+    defaultValues.addKeyValuePair(CONFIG_XPX_2_MM,0.25);
+    defaultValues.addKeyValuePair(CONFIG_YPX_2_MM,0.25);
+    defaultValues.addKeyValuePair(CONFIG_LATENCY_ESCAPE_RAD,80);
+    defaultValues.addKeyValuePair(CONFIG_MARGIN_TARGET_HIT,10);
+    defaultValues.addKeyValuePair(CONFIG_VALID_EYE,2);
+    defaultValues.addKeyValuePair(CONFIG_DAT_TIME_FILTER_THRESHOLD,0);
+
+    // Frequency analysis paramters
+    defaultValues.addKeyValuePair(CONFIG_TOL_MAX_PERIOD_TOL,8);
+    defaultValues.addKeyValuePair(CONFIG_TOL_MIN_PERIOD_TOL,4);
+    defaultValues.addKeyValuePair(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL,10);
+    defaultValues.addKeyValuePair(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES,3);
+    defaultValues.addKeyValuePair(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL,50);
+    defaultValues.addKeyValuePair(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS,0);
+
+    //switchViews(VIEW_1_PROCESSING_VIEW);
+    switchViews(VIEW_0_DATABASE_VIEW);
+    currentDirectory = "work";
+    processDirectory();
+
+    if (!QSslSocket::supportsSsl()){
+        QMessageBox::critical(this,"SSL Error","There is no SSL support. The application will be unable to download any information",QMessageBox::Ok);
+    }
+
+}
+
+void EyeDataAnalyzer::processDirectory(){
+
+    QStringList filters;
+    QDir currentDir(currentDirectory);
+    QStringList directories = currentDir.entryList(filters,QDir::Dirs|QDir::NoDotAndDotDot);
+    filters.clear(); filters << "*.dat";
+    QStringList datFiles = currentDir.entryList(filters,QDir::Files);
+    filters.clear(); filters << "*.rep";
+    QStringList repFiles = currentDir.entryList(filters,QDir::Files);
+
+
+    // Check if eye_rep_gen_conf exists
+    filters.clear(); filters << "eye_rep_gen*";
+    QStringList eyeRepGen = currentDir.entryList(filters,QDir::Files);
+
+    if (eyeRepGen.size() > 0){
+        QString filename = currentDirectory + "/" + eyeRepGen.first();
+        QFile file(filename);
+        if (!file.open(QFile::ReadOnly)){
+            logForProcessing.appendError("Could not open " + eyeRepGen.first() + " for reading");
+        }
+        else{
+            QTextStream reader(&file);
+            reader.setCodec(COMMON_TEXT_CODEC);
+            ui->pteConfig->setPlainText(reader.readAll());
+            file.close();
+        }
+    }
+
+    // Loading the default settings that are nto presesnt
+    if (!QFile(FILE_DEFAULT_VALUES).exists()){
+        //logForProcessing.appendStandard("Antes");
+        overWriteCurrentConfigurationWith(defaultValues,true);
+        //logForProcessing.appendStandard("MIDDLE");
+        overWriteCurrentConfigurationWith(defaultReportCompletionParameters,true);
+        //logForProcessing.appendStandard("Despues");
+    }
+    else{
+        ConfigurationManager config;
+        if (!config.loadConfiguration(FILE_DEFAULT_VALUES,COMMON_TEXT_CODEC)){
+            logForProcessing.appendError("Error loading default settings file: " + config.getError());
+            return;
+        }
+        overWriteCurrentConfigurationWith(config,true);
+    }
+
+    ui->lwDirs->clear();
+    ui->lwDatFiles->clear();
+
+    for (qint32 i = 0; i < directories.size(); i++){
+        QListWidgetItem *item = new QListWidgetItem(directories.at(i));
+        item->setData(ROLE_DATA,currentDirectory + "/" + directories.at(i));
+        ui->lwDirs->addItem(item);
+    }
+
+    for (qint32 i = 0; i < datFiles.size(); i++){
+        QListWidgetItem *item = new QListWidgetItem(datFiles.at(i));
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+        //item->setCheckState(Qt::Unchecked);
+        item->setData(ROLE_DATA,datFiles.at(i));
+        ui->lwDatFiles->addItem(item);
+    }
+
+    for (qint32 i = 0; i < repFiles.size(); i++){
+        QListWidgetItem *item = new QListWidgetItem(repFiles.at(i));
+        item->setData(ROLE_DATA,repFiles.at(i));
+        ui->lwRepFiles->addItem(item);
+    }
 
 }
 
 void EyeDataAnalyzer::on_newUIMessage(const QString &html){
-    ui->pteLog->appendHtml(html);
-}
-
-
-//******************************************************************* AUX Functions *************************************************************
-
-void EyeDataAnalyzer::listDatFilesInPatientDirectory(){
-
-    QString selected = ui->lePatientDir->text();
-
-    // Listing all possible data files
-    QDir dir(selected);
-
-    if (!dir.exists()){
-        log.appendWarning("Patient directory does not exist: " + selected);
-        ui->lePatientDir->setText("");
-        ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_PATIENT_DIRECTORY,"",&configuration);
-        return;
-    }
-
-
-    infoInDir.setDatDirectory(selected,true);
-
-    ui->lwReportsThatCanBeGenerated->clear();
-    lastFixations.clear();
-
-    infoInDir.prepareToInterateOverPendingReportFileSets();
-    while (true){
-        QStringList fileSet = infoInDir.nextPendingReportFileSet();
-        if (fileSet.isEmpty()) break;
-        // The first value is the report name
-        QListWidgetItem *item = new QListWidgetItem(fileSet.first(),ui->lwReportsThatCanBeGenerated);
-        item->setData(DATA_ROLE,fileSet);
-    }
-}
-
-
-QString EyeDataAnalyzer::validNumber(const QString &str, bool positive, bool isReal){
-    if (isReal){
-        bool ok = true;
-        qreal value = str.toDouble(&ok);
-        if (!ok){
-            return str + " is not a valid real number";
-        }
-        if (positive && (value < 0)){
-            return str + " is not a positive real number";
-        }
-    }
-    else{
-        bool ok = true;
-        qint64 value = str.toLongLong(&ok);
-        if (!ok){
-            return str + " is not a valid integer";
-        }
-        if (positive && (value < 0)){
-            return str + " is not a positive integer";
-        }
-    }
-    return "";
-}
-
-void EyeDataAnalyzer::validateAndSave(QLineEdit *le, const QString &parameter, bool positive, bool real){
-    QString e = validNumber(le->text(),positive,real);
-    if (!e.isEmpty()){
-        log.appendError(e);
-    }
-    else{
-        ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,parameter,le->text(),&configuration);
-    }
-}
-
-void EyeDataAnalyzer::fillUi(){
-
-    // Fill with default values all missing configuration
-    QStringList params;
-    params << CONFIG_DAT_TIME_FILTER_THRESHOLD << CONFIG_MIN_FIXATION_LENGTH << CONFIG_DISTANCE_2_MONITOR << CONFIG_MOVING_WINDOW_DISP
-           << CONFIG_SAMPLE_FREQUENCY << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT << CONFIG_XPX_2_MM << CONFIG_YPX_2_MM
-           << CONFIG_PATIENT_DIRECTORY << CONFIG_REPORT_NO_LOGO << CONFIG_REPORT_LANGUAGE
-           << CONFIG_DOCTOR_NAME << CONFIG_PATIENT_AGE << CONFIG_PATIENT_NAME;
-    QStringList values;
-    values << "0" << "50" << "60" << "30"
-           << "150" << "80" << "10" << "0.25" << "0.25"
-           << "" << "false" << CONFIG_P_LANG_EN
-           << "Miles Genius" << "0" << "Some Guy";
-
-    for (qint32 i = 0; i < params.size(); i++){
-        if (!configuration.containsKeyword(params.at(i)))
-            ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,params.at(i),values.at(i),&configuration);
-    }
-
-    // Fill the UI.
-    ui->leDistanceToMonitor->setText(configuration.getString(CONFIG_DISTANCE_2_MONITOR));
-    ui->leLatencyEscapeRadious->setText(configuration.getString(CONFIG_LATENCY_ESCAPE_RAD));
-    ui->leMarginTargetHit->setText(configuration.getString(CONFIG_MARGIN_TARGET_HIT));
-    ui->leMinimumFixationLength->setText(configuration.getString(CONFIG_MIN_FIXATION_LENGTH));
-    ui->leMovingWindowMaxDispersion->setText(configuration.getString(CONFIG_MOVING_WINDOW_DISP));
-    ui->leSampleFrequency->setText(configuration.getString(CONFIG_SAMPLE_FREQUENCY));
-    ui->leTimeFilterThreshold->setText(configuration.getString(CONFIG_DAT_TIME_FILTER_THRESHOLD));
-    ui->leXToMM->setText(configuration.getString(CONFIG_XPX_2_MM));
-    ui->leYToMM->setText(configuration.getString(CONFIG_YPX_2_MM));
-
-    ui->lePatientAge->setText(configuration.getString(CONFIG_PATIENT_AGE));
-    ui->lePatientName->setText(configuration.getString(CONFIG_PATIENT_NAME));
-    ui->leDoctorsName->setText(configuration.getString(CONFIG_DOCTOR_NAME));
-
-    ui->lePatientDir->setText(configuration.getString(CONFIG_PATIENT_DIRECTORY));
-    if (!ui->lePatientDir->text().isEmpty()) listDatFilesInPatientDirectory();
-
-    ui->cbUseLogo->setChecked(!configuration.getBool(CONFIG_REPORT_NO_LOGO));
-
-    for (qint32 i = 0; i < ui->comboLang->count(); i++){
-        if (ui->comboLang->itemText(i) == configuration.getString(CONFIG_REPORT_LANGUAGE)){
-            ui->comboLang->setCurrentIndex(i);
-            break;
-        }
-    }
-
-    ui->comboEyeSelection->setCurrentIndex(configuration.getInt(CONFIG_VALID_EYE));
-
-}
-
-EyeDataAnalyzer::~EyeDataAnalyzer()
-{
-    delete ui;
-}
-
-
-//******************************************************************* Basic Slot Fucntions *************************************************************
-
-
-void EyeDataAnalyzer::on_pbBrowsePatientDir_clicked()
-{
-
-    QString selected = QFileDialog::getExistingDirectory(this,"Select patient directory",configuration.getString(CONFIG_PATIENT_DIRECTORY));
-    if (selected.isEmpty()) return;
-
-    // The path value should be visible
-    ui->lePatientDir->setText(selected);
-
-    // Saving the selection
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_PATIENT_DIRECTORY,selected,&configuration);
-
-    listDatFilesInPatientDirectory();
-
-}
-
-void EyeDataAnalyzer::on_leMovingWindowMaxDispersion_editingFinished()
-{
-    validateAndSave(ui->leMovingWindowMaxDispersion,CONFIG_MOVING_WINDOW_DISP,true,false);
-}
-
-void EyeDataAnalyzer::on_leTimeFilterThreshold_editingFinished()
-{
-    validateAndSave(ui->leTimeFilterThreshold,CONFIG_DAT_TIME_FILTER_THRESHOLD,true,false);
-}
-
-void EyeDataAnalyzer::on_leMinimumFixationLength_editingFinished()
-{
-    validateAndSave(ui->leMinimumFixationLength,CONFIG_MIN_FIXATION_LENGTH,true,false);
-}
-
-void EyeDataAnalyzer::on_leSampleFrequency_editingFinished()
-{
-    validateAndSave(ui->leSampleFrequency,CONFIG_SAMPLE_FREQUENCY,true,true);
-}
-
-void EyeDataAnalyzer::on_leLatencyEscapeRadious_editingFinished()
-{
-    validateAndSave(ui->leLatencyEscapeRadious,CONFIG_LATENCY_ESCAPE_RAD,true,false);
-}
-
-void EyeDataAnalyzer::on_leDistanceToMonitor_editingFinished()
-{
-    validateAndSave(ui->leDistanceToMonitor,CONFIG_DISTANCE_2_MONITOR,true,false);
-}
-
-void EyeDataAnalyzer::on_leMarginTargetHit_editingFinished()
-{
-    validateAndSave(ui->leMarginTargetHit,CONFIG_MARGIN_TARGET_HIT,true,false);
-}
-
-void EyeDataAnalyzer::on_leXToMM_editingFinished()
-{
-    validateAndSave(ui->leXToMM,CONFIG_XPX_2_MM,true,false);
-}
-
-void EyeDataAnalyzer::on_leYToMM_editingFinished()
-{
-    validateAndSave(ui->leYToMM,CONFIG_YPX_2_MM,true,false);
-}
-
-void EyeDataAnalyzer::on_comboEyeSelection_currentIndexChanged(int index)
-{
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_VALID_EYE,QString::number(index),&configuration);
-}
-
-void EyeDataAnalyzer::on_leDoctorsName_editingFinished()
-{
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_DOCTOR_NAME,ui->leDoctorsName->text(),&configuration);
-}
-
-void EyeDataAnalyzer::on_lePatientName_editingFinished()
-{
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,ui->lePatientName->text(),&configuration);
-}
-
-void EyeDataAnalyzer::on_lePatientAge_editingFinished()
-{
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,ui->lePatientAge->text(),&configuration);
-}
-
-void EyeDataAnalyzer::on_comboLang_currentIndexChanged(const QString &arg1)
-{
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_REPORT_LANGUAGE,arg1,&configuration);
-}
-
-void EyeDataAnalyzer::on_cbUseLogo_stateChanged(int arg1)
-{
-    Q_UNUSED(arg1);
-    QString p = ui->cbUseLogo->isChecked() ? "false" : "true";
-    ConfigurationManager::setValue(FILE_CONFIGURATION,COMMON_TEXT_CODEC,CONFIG_REPORT_NO_LOGO,p,&configuration);
-}
-
-
-void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
-{
-    // First step: Check the patient dir.
-    QString patientDir = ui->lePatientDir->text();
-    QDir pdir(patientDir);
-    if (!pdir.exists()){
-        log.appendError("Patient dir does not exist " + patientDir);
-        return;
-    }
-
-    // Getting the file set
-    QListWidgetItem *selectedItem = ui->lwReportsThatCanBeGenerated->currentItem();
-    if (selectedItem == nullptr){
-        log.appendError("A report must be selected");
-        return;
-    }
-
-    configuration.removeKey(CONFIG_FILE_BIDING_BC);
-    configuration.removeKey(CONFIG_FILE_BIDING_UC);
-    configuration.removeKey(CONFIG_FILE_READING);
-    configuration.removeKey(CONFIG_FILE_FIELDING);
-
-    QStringList files = selectedItem->data(DATA_ROLE).toStringList();
-
-    for (qint32 i = 0; i < files.size(); i++){
-        QString fname = files.at(i);
-        if (fname.contains(FILE_OUTPUT_BINDING_BC)){
-            configuration.addKeyValuePair(CONFIG_FILE_BIDING_BC,fname);
-        }
-
-        else if (fname.contains(FILE_OUTPUT_BINDING_UC)){
-            configuration.addKeyValuePair(CONFIG_FILE_BIDING_UC,fname);
-        }
-
-        else if (fname.contains(FILE_OUTPUT_READING)){
-            configuration.addKeyValuePair(CONFIG_FILE_READING,fname);
-
-        }
-
-        else if (fname.contains(FILE_OUTPUT_FIELDING)){
-            configuration.addKeyValuePair(CONFIG_FILE_FIELDING,fname);
-        }
-
-    }
-
-    // Third step, processing the data.
-    RawDataProcessor processor(this);
-    htmlWriter.reset();
-    connect(&processor,SIGNAL(appendMessage(QString,qint32)),this,SLOT(onProcessorMessage(QString,qint32)));
-    processor.initialize(&configuration);
-    log.appendStandard("Processing started...");
-    processor.run();
-    QString outputFile = patientDir + "/output.html";
-    htmlWriter.write(outputFile,"Data Analyizer - " + QString(PROGRAM_VERSION));
-    log.appendSuccess("Processing done: Output at: " + outputFile);
-    log.appendSuccess("Current Report is: : "  + processor.getReportFileOutput());
-    configuration.addKeyValuePair(CONFIG_REPORT_PATH,processor.getReportFileOutput());
-    lastFixations = processor.getFixations();
-    enableControlButtons(true);
-
+    ui->pteProcessingOutput->appendHtml(html);
 }
 
 void EyeDataAnalyzer::onProcessorMessage(const QString &msg, qint32 type){
@@ -313,136 +131,348 @@ void EyeDataAnalyzer::onProcessorMessage(const QString &msg, qint32 type){
     else htmlWriter.appendWarning(msg);
 }
 
-void EyeDataAnalyzer::on_pbDrawFixations_clicked()
-{
 
-    // Adding the Target size to the configuration
-    configuration.addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,(ui->comboTargetSize->currentIndex() == 1));
-    QStringList list;
-    QListWidgetItem *selected = ui->lwReportsThatCanBeGenerated->currentItem();
-    if (selected == nullptr) return;
-    list = selected->data(DATA_ROLE).toStringList();
 
-    if (!lastFixations.isEmpty()){
-
-        QString baseDir = ui->lePatientDir->text();
-        QDir pdir(baseDir);
-        QStringList keys = lastFixations.keys();
-
-        // Seeing which key belongs to whcih file.
-        for (qint32 i = 0; i < keys.size(); i++){
-
-            QString currentFile;
-            for (qint32 j = 1; j < list.size(); j++){
-                if (list.at(j).startsWith(keys.at(i))){
-                    currentFile = list.at(j);
-                    break;
-                }
-            }
-
-            // Make the output directory
-            QFileInfo info(currentFile);
-            pdir.mkdir(info.baseName());
-            QString workDir = baseDir + "/" + info.baseName();
-            if (!QDir(workDir).exists()){
-                log.appendError("Could not create output image directory: " + workDir);
-                return;
-            }
-
-            // Draw fixations.
-            FixationDrawer fdrawer;
-            if (!fdrawer.prepareToDrawFixations(keys.at(i),&configuration,lastFixations.value(keys.at(i)).experimentDescription,workDir)){
-                log.appendError("Error drawing fixation for experiment " + keys.at(i) + ". Error is: " + fdrawer.getError());
-                return;
-            }
-            if (!fdrawer.drawFixations(lastFixations.value(keys.at(i)))){
-                log.appendError("Error drawing fixation for experiment " + keys.at(i) + ". Error is: " + fdrawer.getError());
-                return;
-            }
-
-        }
-
-        log.appendSuccess("Fixations Drawn!!!");
-    }
-    else{
-        log.appendError("Data must be analyzed before fixations can be drawn");
+void EyeDataAnalyzer::switchViews(qint32 view){
+    for (qint32 i = 0; i < appViews.size(); i++){
+        appViews[i]->setVisible(i == view);
     }
 }
 
-void EyeDataAnalyzer::on_pbGeneratePNG_clicked()
+EyeDataAnalyzer::~EyeDataAnalyzer()
 {
-    QString fileName = configuration.getString(CONFIG_REPORT_PATH);
-    if (fileName.isEmpty()){
-        log.appendError("No report file set. Need to run a analysis first");
+    delete ui;
+}
+
+void EyeDataAnalyzer::on_actionDataBase_Connection_triggered()
+{
+    //switchViews(VIEW_0_DATABASE_VIEW);
+}
+
+void EyeDataAnalyzer::on_actionProcessing_View_triggered()
+{
+    switchViews(VIEW_1_PROCESSING_VIEW);
+}
+
+void EyeDataAnalyzer::on_lwDirs_itemDoubleClicked(QListWidgetItem *item)
+{
+    currentDirectory = item->data(ROLE_DATA).toString();
+    processDirectory();
+}
+
+
+void EyeDataAnalyzer::on_pushButton_clicked()
+{
+    if (currentDirectory.contains("/")){
+        QStringList parts = currentDirectory.split("/");
+        parts.removeLast();
+        currentDirectory = parts.join("/");
+        processDirectory();
+    }
+}
+
+ConfigurationManager EyeDataAnalyzer::createProcessingConfiguration(bool *ok){
+    ConfigurationManager processingParameters;
+    *ok = true;
+    if (!ui->pteConfig->toPlainText().isEmpty()){
+        if (!processingParameters.loadConfiguration("",COMMON_TEXT_CODEC,ui->pteConfig->toPlainText())){
+            logForProcessing.appendError("ERROR in parameters file: " +  processingParameters.getError());
+            *ok = false;
+            return processingParameters;
+        }
+    }
+    processingParameters.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,currentDirectory);
+    return processingParameters;
+}
+
+void EyeDataAnalyzer::overWriteCurrentConfigurationWith(const ConfigurationManager &mng, bool addOnlyNonExistant){
+    bool ok;
+    ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
+    if (!ok) return;
+
+    if (addOnlyNonExistant){
+        QStringList keys = mng.getAllKeys();
+        for (qint32 i = 0; i < keys.size(); i++){
+            if (!processingParameters.containsKeyword(keys.at(i))){
+                processingParameters.addKeyValuePair(keys.at(i),mng.getVariant(keys.at(i)));
+            }
+        }
+    }
+    else processingParameters.merge(mng);
+
+
+    QStringList keys = processingParameters.getAllKeys();
+    QString newText = "";
+    for (qint32 i = 0; i < keys.size(); i++){
+        newText = newText + keys.at(i) + " = " + processingParameters.getString(keys.at(i)) + ";\n";
+    }
+    ui->pteConfig->setPlainText(newText);
+}
+
+void EyeDataAnalyzer::on_pbGenerateReport_clicked()
+{
+
+    bool ok;
+    ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
+    if (!ok) return;
+
+    // Third step, processing the data.
+    RawDataProcessor processor(this);
+    htmlWriter.reset();
+    connect(&processor,SIGNAL(appendMessage(QString,qint32)),this,SLOT(onProcessorMessage(QString,qint32)));
+    processor.initialize(&processingParameters);
+    logForProcessing.appendStandard("Processing started...");
+    processor.run();
+    QString outputFile = currentDirectory + "/output.html";
+    htmlWriter.write(outputFile,"Data Analyizer - " + QString(PROGRAM_VERSION));
+    logForProcessing.appendSuccess("Processing done: Output at: " + outputFile);
+    logForProcessing.appendSuccess("Current Report is: : "  + processor.getReportFileOutput());
+}
+
+void EyeDataAnalyzer::on_pbDrawFixations_clicked()
+{
+
+    if (ui->lwDatFiles->count() == 0){
+        logForProcessing.appendError("No files to process");
         return;
     }
-    log.appendStandard("Generating PNG Report ...");
+
+    if (ui->lwDatFiles->currentRow() < 0){
+        logForProcessing.appendError("No file is selected");
+        return;
+    }
+
+    bool ok;
+    ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
+    if (!ok) return;
+
+    QString fileToProcess = ui->lwDatFiles->currentItem()->text();
+    QString fixationHashName = "";
+    if (fileToProcess.isEmpty()){
+        logForProcessing.appendError("No seleted file: " + fileToProcess);
+        return;
+    }
+    if (fileToProcess.startsWith(FILE_OUTPUT_READING))    {
+        processingParameters.addKeyValuePair(CONFIG_FILE_READING,fileToProcess);
+        fixationHashName = CONFIG_P_EXP_READING;
+    }
+    else if (fileToProcess.startsWith(FILE_OUTPUT_BINDING_BC)){
+        processingParameters.addKeyValuePair(CONFIG_FILE_BIDING_BC,fileToProcess);
+        fixationHashName = CONFIG_P_EXP_BIDING_BC;
+    }
+    else if (fileToProcess.startsWith(FILE_OUTPUT_BINDING_UC)){
+        processingParameters.addKeyValuePair(CONFIG_FILE_BIDING_UC,fileToProcess);
+        fixationHashName = CONFIG_P_EXP_BIDING_UC;
+    }
+    else{
+        logForProcessing.appendError("Unrecognized file type: " + fileToProcess);
+        return;
+    }
+
+    RawDataProcessor processor(this);
+    htmlWriter.reset();
+    connect(&processor,SIGNAL(appendMessage(QString,qint32)),this,SLOT(onProcessorMessage(QString,qint32)));
+    processor.initialize(&processingParameters);
+    logForProcessing.appendStandard("Processing started...");
+    processor.run();
+    FixationList fix = processor.getFixations().value(fixationHashName);
+
+    // Draw fixations.
+    FixationDrawer fdrawer;
+
+    QFileInfo info(fileToProcess);
+    QDir(currentDirectory).mkdir(info.baseName());
+    QString outputDir =  currentDirectory + "/" + info.baseName();
+    if (!QDir(outputDir).exists()){
+        logForProcessing.appendError("Could not create output directory: " + outputDir);
+        return;
+    }
+
+    if (!fdrawer.prepareToDrawFixations(fixationHashName,&processingParameters,fix.experimentDescription,outputDir)){
+        logForProcessing.appendError("Error drawing fixation for experiment " + fixationHashName + ". Error is: " + fdrawer.getError());
+        return;
+    }
+    if (!fdrawer.drawFixations(fix)){
+        logForProcessing.appendError("Error drawing fixation for experiment " + fixationHashName + ". Error is: " + fdrawer.getError());
+        return;
+    }
+
+    logForProcessing.appendSuccess("Fixations were draw in directory: " + outputDir);
+
+}
+
+void EyeDataAnalyzer::on_pgFrequencyAnalsis_clicked()
+{
+    if (ui->lwDatFiles->count() == 0){
+        logForProcessing.appendError("No files to process");
+        return;
+    }
+
+    if (ui->lwDatFiles->currentRow() < 0){
+        logForProcessing.appendError("No file is selected");
+        return;
+    }
+
+    QString fileToProcess = currentDirectory + "/" + ui->lwDatFiles->currentItem()->text();
+
+    FreqAnalysis freqChecker;
+    FreqAnalysis::FreqAnalysisResult fres;
+    fres = freqChecker.analyzeFile(fileToProcess);
+
+    QString freqReport;
+
+    bool ok;
+    ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
+    if (!ok) return;
+
+    if (!fres.errorList.isEmpty()){
+        freqReport = "FREQ ANALYSIS ERROR: \n   " + fres.errorList.join("\n   ");
+    }
+    else {
+
+        FreqAnalysis::FreqCheckParameters fcp;
+        fcp.fexpected                        = processingParameters.getReal(CONFIG_SAMPLE_FREQUENCY);
+        fcp.periodMax                        = processingParameters.getReal(CONFIG_TOL_MAX_PERIOD_TOL);
+        fcp.periodMin                        = processingParameters.getReal(CONFIG_TOL_MIN_PERIOD_TOL);
+        fcp.maxAllowedFreqGlitchesPerTrial   = processingParameters.getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
+        fcp.maxAllowedPercentOfInvalidValues = processingParameters.getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
+        fcp.minNumberOfDataItems             = processingParameters.getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+        fcp.maxAllowedFailedTrials           = processingParameters.getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
+
+        fres.analysisValid(fcp);
+
+
+        freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";
+        freqReport = freqReport + fres.errorList.join("\n   ");
+        freqReport = freqReport  + "\n   Individual Freq Errors:\n   " + fres.individualErrorList.join("\n   ");
+
+    }
+
+    // Saving the frequency log.
+    QString freqLog = fileToProcess + ".flog";
+    QFile file(freqLog);
+    if (!file.open(QFile::WriteOnly)){
+        logForProcessing.appendError("Could not open output file " + freqLog + " for writing");
+        return;
+    }
+
+    QTextStream writer(&file);
+    writer.setCodec(COMMON_TEXT_CODEC);
+    writer << freqReport;
+    file.close();
+
+    logForProcessing.appendSuccess("Generated frequency log file at: " + freqLog);
+
+}
+
+void EyeDataAnalyzer::on_pteDefConfig_clicked()
+{
+
+    if (!QFile(FILE_DEFAULT_VALUES).exists()){
+        overWriteCurrentConfigurationWith(defaultValues,false);
+        overWriteCurrentConfigurationWith(defaultReportCompletionParameters,true);
+    }
+    else{
+        ConfigurationManager config;
+        if (!config.loadConfiguration(FILE_DEFAULT_VALUES,COMMON_TEXT_CODEC)){
+            logForProcessing.appendError("Error loading default settings file: " + config.getError());
+            return;
+        }
+        overWriteCurrentConfigurationWith(config,false);
+    }
+}
+
+
+void EyeDataAnalyzer::on_pbSaveDefConf_clicked()
+{
+    bool ok;
+    ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
+    if (!ok) return;
+
+    QString toSave;
+    QStringList keys = defaultValues.getAllKeys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        toSave = toSave  + keys.at(i) + " = ";
+        if (processingParameters.containsKeyword(keys.at(i))) toSave = toSave + processingParameters.getString(keys.at(i)) + ";\n";
+        else toSave = toSave + defaultValues.getString(keys.at(i)) + ";\n";
+    }
+
+    QFile file(FILE_DEFAULT_VALUES);
+    if (!file.open(QFile::WriteOnly)){
+        logForProcessing.appendError("Could not open settings file for saving");
+        return;
+    }
+
+    QTextStream writer(&file);
+    writer.setCodec(COMMON_TEXT_CODEC);
+    writer << toSave;
+    file.close();
+
+    logForProcessing.appendSuccess("Saved new default configuration");
+
+}
+
+void EyeDataAnalyzer::on_pbDATFiles_clicked()
+{
+    ConfigurationManager config;
+    for (qint32 i = 0; i < ui->lwDatFiles->count(); i++){
+        QString fileToProcess = ui->lwDatFiles->item(i)->text();
+        if (fileToProcess.startsWith(FILE_OUTPUT_READING))    {
+            config.addKeyValuePair(CONFIG_FILE_READING,fileToProcess);
+        }
+        else if (fileToProcess.startsWith(FILE_OUTPUT_BINDING_BC)){
+            config.addKeyValuePair(CONFIG_FILE_BIDING_BC,fileToProcess);
+        }
+        else if (fileToProcess.startsWith(FILE_OUTPUT_BINDING_UC)){
+            config.addKeyValuePair(CONFIG_FILE_BIDING_UC,fileToProcess);
+        }
+    }
+
+    overWriteCurrentConfigurationWith(config,false);
+}
+
+void EyeDataAnalyzer::on_pbGenerateReport_2_clicked()
+{
+
+    if (ui->lwRepFiles->count() == 0){
+        logForProcessing.appendError("No reports generated");
+        return;
+    }
+
+    if (ui->lwRepFiles->currentRow() < 0){
+        logForProcessing.appendError("No report selected");
+        return;
+    }
+
+    logForProcessing.appendStandard("Generating PNG Report ...");
+
+    bool ok;
+    ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
+    if (!ok) return;
+
+    QString selectedReport = ui->lwRepFiles->currentItem()->text();
 
     RepFileInfo repInfoOnDir;
-    repInfoOnDir.setDirectory(configuration.getString(CONFIG_PATIENT_DIRECTORY));
-    QVariantMap dataSet = repInfoOnDir.getRepData(fileName);
+    repInfoOnDir.setDirectory(currentDirectory);
+    QVariantMap dataSet = repInfoOnDir.getRepData(selectedReport);
     if (dataSet.isEmpty()){
-        log.appendError("Could not load data on report file: " + fileName);
+        logForProcessing.appendError("Could not load data on report file: " + selectedReport);
         return;
     }
 
     // Setting the image report name
-    QFileInfo info(fileName);
-    QString outputPath = info.absolutePath() + "/" + info.baseName() + ".png";
-    configuration.addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,outputPath);
+    QFileInfo info(selectedReport);
+    QString outputPath = currentDirectory + "/" + info.baseName() + ".png";
+    processingParameters.addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,outputPath);
 
     ImageReportDrawer reportDrawer;
-    reportDrawer.drawReport(dataSet,&configuration);
+    reportDrawer.drawReport(dataSet,&processingParameters);
 
     if (QFile(outputPath).exists()){
-        log.appendSuccess("Generated image report at: " + outputPath);
+        logForProcessing.appendSuccess("Generated image report at: " + outputPath);
     }
     else{
-        log.appendError("Could not generate PNG report");
-    }
-}
-
-void EyeDataAnalyzer::on_lwReportsThatCanBeGenerated_itemClicked(QListWidgetItem *item)
-{
-    ui->lwFilesInReport->clear();
-    QStringList files = item->data(DATA_ROLE).toStringList();
-
-    for (qint32 i = 1; i < files.size(); i++){
-        ui->lwFilesInReport->addItem(new QListWidgetItem(files.at(i)));
+        logForProcessing.appendError("Could not generate PNG report");
     }
 
-    enableControlButtons(false);
-}
-
-void EyeDataAnalyzer::enableControlButtons(bool enable){
-    ui->pbDrawFixations->setEnabled(enable);
-    ui->pbGeneratePNG->setEnabled(enable);
-}
-
-void EyeDataAnalyzer::on_pbFreqAnalysis_clicked()
-{
-    if (ui->lwFilesInReport->currentRow() >= 0){
-        QString file = ui->lwFilesInReport->currentItem()->text();
-        file = ui->lePatientDir->text() + "/" + file;
-        FreqAnalysis fa;
-        log.appendStandard("Doing frequency analysis on: " + file);
-        FreqAnalysis::FreqAnalysisResult far = fa.analyzeFile(file);
-        if (far == FreqAnalysis::FAR_FAILED){
-            log.appendError("Could not perform frequency analysis. Cause: " + fa.getError());
-            return;
-        }
-
-        if (far == FreqAnalysis::FAR_WITH_WARNINGS){
-            for (qint32 i = 0; i < fa.getWarnings().size(); i++){
-                log.appendWarning(fa.getWarnings().at(i));
-            }
-        }
-
-        log.appendSuccess("The average frequency is: " + QString::number(fa.getFrequencyResult()) + " Hz");
-
-    }
-    else {
-        log.appendWarning("You need to select an individual file for frequency analysis");
-        return;
-    }
 }
