@@ -153,17 +153,21 @@ void Control::startServer(){
 
 void Control::on_newConnection(){
 
-    if (socket == nullptr) return;
+    if (socket != nullptr) return;
+
+    logger.appendStandard("New connection received 0");
 
     // New connection is available.
     socket = (QSslSocket*)(listener->nextPendingConnection());
 
+    logger.appendStandard("New connection received 1");
 
     if (!socket->isValid()) {
         logger.appendError("ERROR: Could not cast incomming socket connection");
         return;
     }
 
+    logger.appendStandard("New connection received 2");
 
     // Doing the connections.
     connect(socket,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
@@ -173,11 +177,18 @@ void Control::on_newConnection(){
     connect(socket,&QSslSocket::readyRead,this,&Control::on_readyRead);
     connect(socket,&QSslSocket::disconnected,this,&Control::on_disconnected);
 
+    logger.appendStandard("New connection received 3");
+
     // The SSL procedure.
     socket->setPrivateKey(":/certificates/server.key");
+    logger.appendStandard("New connection received 3.1");
     socket->setLocalCertificate(":/certificates/server.csr");
+    logger.appendStandard("New connection received 3.2");
     socket->setPeerVerifyMode(QSslSocket::VerifyNone);
+    logger.appendStandard("New connection received 3.2");
     socket->startServerEncryption();
+
+    logger.appendStandard("New connection received 4");
 
 }
 
@@ -192,7 +203,7 @@ void Control::on_encryptedSuccess(){
 void Control::onTimerTimeout(){
     logger.appendError("Timeout waiting for a request from the client");
     timer.stop();
-    clearSocket();
+    clearSocket("Timer TimeOut");
 }
 
 void Control::on_sslErrors(const QList<QSslError> &errors){
@@ -207,7 +218,7 @@ void Control::on_sslErrors(const QList<QSslError> &errors){
     }
 
     // Eliminating it from the list.
-    clearSocket();
+    clearSocket("SSLErrors");
 
 }
 
@@ -218,13 +229,14 @@ void Control::on_socketError(QAbstractSocket::SocketError error){
 
     QHostAddress addr = socket->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    if (error != QAbstractSocket::RemoteHostClosedError)
+    if (error != QAbstractSocket::RemoteHostClosedError){
         logger.appendError(QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
+        // Eliminating it from the list.
+        clearSocket("SocketError");
+    }
     else
         logger.appendStandard(QString("Closed connection from Address: ") + addr.toString());
 
-    // Eliminating it from the list.
-    clearSocket();
 }
 
 void Control::on_socketStateChanged(QAbstractSocket::SocketState state){
@@ -254,7 +266,7 @@ void Control::on_readyRead(){
             if (num != ba.size()){
                 logger.appendError("Failure sending then institution list information");
             }
-            clearSocket();
+            //clearSocket();
         }
     }
     else if (ans == DataPacket::DATABUFFER_RESULT_ERROR){
@@ -265,7 +277,7 @@ void Control::on_readyRead(){
 
 void Control::on_disconnected(){
     logger.appendStandard("Socket was disconnected");
-    clearSocket();
+    clearSocket("OnDisconnected");
 }
 
 /*****************************************************************************************************************************/
@@ -288,7 +300,7 @@ QStringList Control::getInstitutionUIDPair(){
         return ans;
     }
 
-    columns << TINST_COL_UID << TINST_COL_NAME;
+    columns << TINST_COL_ENABLED << TINST_COL_UID << TINST_COL_NAME;
 
     if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,"")){
         logger.appendError("Getting institutions names and uids: " + dbConnBase.getError());
@@ -299,11 +311,12 @@ QStringList Control::getInstitutionUIDPair(){
 
     for (qint32 i = 0; i < res.rows.size(); i++){
 
-        if (res.rows.at(i).size() != 2){
-            logger.appendError("Getting institutions expected two values per row. But got: " + QString::number(res.rows.at(i).size()));
+        if (res.rows.at(i).size() != 3){
+            logger.appendError("Getting institutions expected three values per row. But got: " + QString::number(res.rows.at(i).size()));
             return QStringList();
         }
         ans << res.rows.at(i).first();
+        ans << res.rows.at(i).at(1);
         ans << res.rows.at(i).last();
     }
 
@@ -313,11 +326,12 @@ QStringList Control::getInstitutionUIDPair(){
 
 }
 
-void Control::clearSocket(){
+void Control::clearSocket(const QString &fromWhere){
     if (socket != nullptr){
-        logger.appendStandard("About to delete socket");
+        logger.appendStandard(fromWhere + ": About to delete socket");
+        if (socket->isValid()) socket->disconnectFromHost();
         delete socket;
         socket = nullptr;
-        logger.appendStandard("Socket deleted!");
+        logger.appendStandard(fromWhere + ": Socket deleted!");
     }
 }

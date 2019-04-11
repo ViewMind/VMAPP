@@ -2,7 +2,7 @@
 
 ############## INPUT PARAMETERS #################
 INSTUID="1242673082"
-LOWERDATE="2019-03-01"
+LOWERDATE="2019-03-31"
 
 clear
 

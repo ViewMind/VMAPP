@@ -56,13 +56,14 @@ private:
     // Listening from new connections.
     SSLListener *listener;
     QSslSocket *socket;
+    //QList<QSslSocket*> socketList;
     QTimer timer;
     DataPacket rx;
 
     QStringList getInstitutionUIDPair();
     bool verifyPassword(const QString &password);
     void processRequest();
-    void clearSocket();
+    void clearSocket(const QString &fromWhere);
 
 };
 

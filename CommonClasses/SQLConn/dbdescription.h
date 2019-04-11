@@ -147,6 +147,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TINST_COL_ADDRESS                       "address"
 #define  TINST_COL_PHONE                         "phone"
 #define  TINST_COL_EMAIL                         "email"
+#define  TINST_COL_ENABLED                       "enabled"
 
 // Column names for the placed product table.
 #define  TPLACED_PROD_COL_KEYID                  "keyid"
