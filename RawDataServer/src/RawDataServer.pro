@@ -41,7 +41,8 @@ HEADERS += \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ssllistener.h \
     ../../CommonClasses/DataPacket/datapacket.h \
-    filelister.h
+    filelister.h \
+    ../../CommonClasses/server_defines.h
 
 RESOURCES += \
     configurations.qrc \
