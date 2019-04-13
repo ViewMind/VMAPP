@@ -53,7 +53,9 @@ SOURCES += \
     ../../CommonClasses/PNGWriter/resultbar.cpp \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
     ../../CommonClasses/Experiments/readingparser.cpp \
-    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
+    ../../CommonClasses/DataPacket/datapacket.cpp \
+    waitdialog.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -81,10 +83,13 @@ HEADERS += \
     ../../CommonClasses/PNGWriter/resultbar.h \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
     ../../CommonClasses/Experiments/readingparser.h \
-    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
+    ../../CommonClasses/DataPacket/datapacket.h \
+    waitdialog.h
 
 FORMS += \
-        eyedataanalyzer.ui
+        eyedataanalyzer.ui \
+    waitdialog.ui
 
 RESOURCES += \
     report_res.qrc

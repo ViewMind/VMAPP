@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1085</width>
-    <height>743</height>
+    <height>892</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -157,7 +157,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QPlainTextEdit" name="pteProcessingOutput"/>
+            <widget class="QPlainTextEdit" name="pteProcessingOutput">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -171,23 +175,41 @@
       <property name="title">
        <string>DataBase Connection View</string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="verticalLayout_15">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Institutions</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="cbInstitutions"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_13">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Password</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lePasswordField">
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Institutions</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="cbInstitutions"/>
-           </item>
-          </layout>
-         </item>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
@@ -198,7 +220,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QDateEdit" name="deStartDate"/>
+            <widget class="QDateEdit" name="deStartDate">
+             <property name="displayFormat">
+              <string>dd/MM/yyyy</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -212,7 +238,29 @@
             </widget>
            </item>
            <item>
-            <widget class="QDateEdit" name="deEndDate"/>
+            <widget class="QDateEdit" name="deEndDate">
+             <property name="displayFormat">
+              <string>dd/MM/yyyy</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QPushButton" name="pbGetData">
+             <property name="text">
+              <string>Get Data</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pbClearLog">
+             <property name="text">
+              <string>Clear log</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -228,7 +276,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QPlainTextEdit" name="pteDBOutputLog"/>
+          <widget class="QPlainTextEdit" name="pteDBOutputLog">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -252,17 +304,26 @@
     </property>
     <addaction name="actionDataBase_Connection"/>
     <addaction name="actionProcessing_View"/>
+    <addaction name="actionShow_Full_Log"/>
    </widget>
    <addaction name="menuView"/>
   </widget>
   <action name="actionDataBase_Connection">
    <property name="text">
-    <string>DataBase Connection</string>
+    <string>DataBase Download View</string>
    </property>
   </action>
   <action name="actionProcessing_View">
    <property name="text">
     <string>Processing View</string>
+   </property>
+  </action>
+  <action name="actionShow_Full_Log">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Full Log</string>
    </property>
   </action>
  </widget>

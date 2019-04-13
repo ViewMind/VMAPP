@@ -188,6 +188,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performReadingAnalyis(){
 
     // Doing the frequency analysis per data set;
     qreal freqAcc = 0;
+    qreal freqAccCounter = 0;
     for (qint32 i = 0; i < parser.getPhrases().size(); i++){
 
         FreqAnalyisDataSet faDataSet;
@@ -206,6 +207,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performReadingAnalyis(){
             QList<TimePair> dtimes;
             faDataSet.averageFrequency = calculateFrequency(times,&dtimes);
             freqAcc = freqAcc + faDataSet.averageFrequency;
+            freqAccCounter++;
             faDataSet.diffTimes = dtimes;
             faDataSet.duration = times.last() - times.first();
             qreal TinMS = 1000.0/faDataSet.averageFrequency;
@@ -217,7 +219,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performReadingAnalyis(){
         far.freqAnalysisForEachDataSet << faDataSet;
 
     }
-    far.averageFrequency = freqAcc/(qreal)(parser.getPhrases().size());
+    far.averageFrequency = freqAcc/freqAccCounter;
     return far;
 
 }
@@ -308,6 +310,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performBindingAnalyis(){
     // Doing the frequency analysis per data set;
 
     qreal freqAcc = 0;
+    qreal freqAccCounter = 0;
     for (qint32 i = 0; i < parser.getTrialList().size(); i++){
 
         QString bname = parser.getTrialList().at(i).name;
@@ -332,6 +335,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performBindingAnalyis(){
                 QList<TimePair> dtimes;
                 faDataSet.averageFrequency = calculateFrequency(times,&dtimes);
                 freqAcc = freqAcc + faDataSet.averageFrequency;
+                freqAccCounter++;
                 faDataSet.diffTimes = dtimes;
                 faDataSet.duration = times.last() - times.first();
                 qreal TinMS = 1000.0/faDataSet.averageFrequency;
@@ -344,7 +348,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performBindingAnalyis(){
 
         }
     }
-    far.averageFrequency = freqAcc/(qreal)(far.expectedNumberOfDataSets);
+    far.averageFrequency = freqAcc/(qreal)(freqAccCounter);
     return far;
 }
 

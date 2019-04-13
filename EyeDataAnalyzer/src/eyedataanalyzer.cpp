@@ -7,7 +7,9 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
 {
     ui->setupUi(this);
     logForProcessing.setGraphicalLogInterface();
+    logForDB.setGraphicalLogInterface();
     connect(&logForProcessing,SIGNAL(newUiMessage(QString)),this,SLOT(on_newUIMessage(QString)));
+    connect(&logForDB,SIGNAL(newUiMessage(QString)),this,SLOT(on_newUIMessage_for_DB(QString)));
     this->setWindowTitle(QString(PROGRAM_NAME) + " - " + QString(PROGRAM_VERSION));
 
     appViews.append(ui->groupBoxDataBaseView);
@@ -40,14 +42,215 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
 
     //switchViews(VIEW_1_PROCESSING_VIEW);
     switchViews(VIEW_0_DATABASE_VIEW);
-    currentDirectory = "work";
+    currentDirectory = WORK_DIR;
     processDirectory();
+
+    ui->pbGetData->setEnabled(false);
+    waitDiag = new WaitDialog(this);
 
     if (!QSslSocket::supportsSsl()){
         QMessageBox::critical(this,"SSL Error","There is no SSL support. The application will be unable to download any information",QMessageBox::Ok);
+        return;
+    }
+
+    // Setting the curren  date.
+    ui->deEndDate->setDate(QDate::currentDate());
+    ui->deStartDate->setDate(QDate::currentDate());
+
+    // Creating the socket and making the connections.
+    serverConn = new QSslSocket(this);
+    connect(serverConn,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
+    connect(serverConn,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(on_socketStateChanged(QAbstractSocket::SocketState)));
+    connect(serverConn,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(on_socketError(QAbstractSocket::SocketError)));
+    connect(serverConn,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(on_sslErrors(QList<QSslError>)));
+    connect(serverConn,SIGNAL(readyRead()),this,SLOT(on_readyRead()));
+    connect(&timer,&QTimer::timeout,this,&EyeDataAnalyzer::on_timeOut);
+    connectionState = CS_CONNECTING_FOR_NAME_LIST;
+    serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_RAW_DATA_SERVER);
+    timer.start(10000);
+    waitDiag->setMessage("Contacting the server and getting the institution list. ");
+    waitDiag->setProgressBarVisibility(false);
+    waitDiag->open();
+
+}
+
+//*******************************************  SSL AND TCP RELATED SLOTS *****************************************************
+void EyeDataAnalyzer::on_encryptedSuccess(){
+    timer.stop();
+    logForDB.appendSuccess("Established connection with the server");
+    if (connectionState == CS_CONNECTING_FOR_NAME_LIST){
+        connectionState = CS_GETTING_NAMELIST;
+        waitDiag->setMessage("Getting the institution name list from the server");
+        DataPacket tx;
+        tx.addString("--",DataPacket::DPFI_SEND_INFORMATION);
+        QByteArray ba = tx.toByteArray();
+        qint64 num = serverConn->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logForDB.appendError("Could not send namelist request.");
+            waitDiag->close();
+            return;
+        }
+        timer.start(30000);
+    }
+    else if (connectionState = CS_CONNECTING_FOR_DATA){
+        connectionState = CS_GETTING_DATA;
+        waitDiag->setMessage("Getting the requested information from the server\nThe progress will start only when the information transfer starts (it might take a few minutes)");
+        waitDiag->setProgressBarVisibility(true);
+        waitDiag->setProgressBarValue(0);
+
+        QString startDate = ui->deStartDate->date().toString("yyyy-MM-dd");
+        QString endDate = ui->deEndDate->date().toString("yyyy-MM-dd");
+        institution = ui->cbInstitutions->currentData().toString();
+        QString password = ui->lePasswordField->text();
+
+        //        startDate = "2019-04-01";
+        //        institution = "1242673082";
+        //        endDate = "2019-04-11";
+        password = "c1bt!fpkbQ";
+
+        DataPacket tx;
+        tx.addString(password,DataPacket::DPFI_DB_INST_PASSWORD);
+        tx.addString(institution,DataPacket::DPFI_DB_INST_UID);
+        tx.addString(startDate,DataPacket::DPFI_DATE_START);
+        tx.addString(endDate,DataPacket::DPFI_DATE_END);
+        QByteArray ba = tx.toByteArray();
+        rx.clearAll();
+        qint64 num = serverConn->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logForDB.appendError("Could not send data request.");
+            waitDiag->close();
+            return;
+        }
+        logForDB.appendStandard("Searching for " +ui->cbInstitutions->currentText() + " (" + ui->cbInstitutions->currentData().toString() + "). From " + startDate + " to " + endDate);
     }
 
 }
+
+void EyeDataAnalyzer::on_socketStateChanged(QAbstractSocket::SocketState state){
+    if (!ui->actionShow_Full_Log->isChecked()) return;
+    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+    logForDB.appendStandard(QString("SOCKET STATE: ") + metaEnum.valueToKey(state));
+}
+
+void EyeDataAnalyzer::on_socketError(QAbstractSocket::SocketError error){
+    if (!ui->actionShow_Full_Log->isChecked()) return;
+    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
+    logForDB.appendError(QString("SOCKET ERROR: ") + metaEnum.valueToKey(error));
+    serverConn->disconnectFromHost();
+}
+
+void EyeDataAnalyzer::on_sslErrors(const QList<QSslError> &errors){
+    if (ui->actionShow_Full_Log->isChecked()){
+        for (qint32 i = 0; i < errors.size(); i++){
+            logForDB.appendWarning("SSL MESSAGE: " + errors.at(i).errorString());
+        }
+    }
+    serverConn->ignoreSslErrors();
+}
+
+void EyeDataAnalyzer::on_readyRead(){
+    quint8 errcode = rx.bufferByteArray(serverConn->readAll());
+    if (connectionState == CS_GETTING_DATA){
+        waitDiag->setProgressBarValue(rx.getPercentArrived());
+    }
+    if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
+        timer.stop();
+        waitDiag->close();
+
+        if (connectionState == CS_GETTING_DATA){
+            if (rx.hasInformationField(DataPacket::DPFI_DB_ERROR)){
+                logForDB.appendError("Getting data from the server returned the following error message: " + rx.getField(DataPacket::DPFI_DB_ERROR).data.toString());
+                serverConn->disconnectFromHost();
+                return;
+            }
+            QStringList fileNames = rx.getField(DataPacket::DPFI_RAW_DATA_NAMES).data.toString().split(DB_LIST_IN_COL_SEP);
+            QStringList fileContents = rx.getField(DataPacket::DPFI_RAW_DATA_CONTENT).data.toString().split(DB_LIST_IN_COL_SEP);
+
+            if (fileNames.size() != fileContents.size()){
+                logForDB.appendError("The number of file names is different than the number of file contents");
+                return;
+            }
+
+            for (qint32 i = 0; i < fileNames.size(); i++){
+                //logForDB.appendSuccess("Downloaded File: " + fileNames.at(i));
+                QString path = fileNames.at(i);
+                path = path.replace(WORK_DIR,institution);
+                QStringList pathparts = path.split("/");
+                if (pathparts.size() > 3){
+                    pathparts.removeLast(); // The file name.
+                    QString dir = pathparts.join("/");
+                    QDir(WORK_DIR).mkpath(dir);
+                    QString finalDirForFile = QString(WORK_DIR) + "/" + dir;
+                    QString finalFileName   = QString(WORK_DIR) + "/" + path;
+                    if (!QDir(finalDirForFile).exists()){
+                        logForDB.appendError("Could not create residing directory " + finalDirForFile + " for file: " + fileNames.at(i));
+                        continue;
+                    }
+                    QFile file(finalFileName);
+                    if (!file.open(QFile::WriteOnly)){
+                        logForDB.appendError("Could not opent file: " + finalFileName + " for writing");
+                        continue;
+                    }
+                    QTextStream writer(&file);
+                    writer << fileContents.at(i);
+                    file.close();
+                    logForDB.appendSuccess("Downloaded file: " + finalFileName);
+                }
+                else{
+                    logForDB.appendError("Unrecognized file format: " + path);
+                }
+            }
+
+        }
+        else {
+            QString nameAndUids = rx.getField(DataPacket::DPFI_INST_NAMES).data.toString();
+            //qWarning() << nameAndUids;
+            QStringList parts = nameAndUids.split(DB_LIST_IN_COL_SEP,QString::SkipEmptyParts);
+            for (qint32 i = 0; i < parts.size(); i++){
+                if ((i % 3) == 2){
+                    // This is the NAME and the value before it, is its UID.
+                    if (parts.at(i-2) == "1") ui->cbInstitutions->addItem(parts.at(i),parts.at(i-1));
+                }
+            }
+            if (parts.size() > 0) ui->pbGetData->setEnabled(true);
+        }
+
+        serverConn->disconnectFromHost();
+    }
+
+}
+
+void EyeDataAnalyzer::on_timeOut(){
+    timer.stop();
+    switch(connectionState){
+    case CS_CONNECTING_FOR_DATA:
+        logForDB.appendError("Time out while waiting for the connection to get data");
+        break;
+    case CS_CONNECTING_FOR_NAME_LIST:
+        logForDB.appendError("Timeout while waiting for server connection");
+        break;
+    case CS_GETTING_DATA:
+        logForDB.appendError("Time out while getting the data");
+        break;
+    case CS_GETTING_NAMELIST:
+        logForDB.appendError("Timeout while waiting for server connection");
+        break;
+    }
+    waitDiag->close();
+}
+
+void EyeDataAnalyzer::on_pbGetData_clicked()
+{
+    connectionState = CS_CONNECTING_FOR_DATA;
+    serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_RAW_DATA_SERVER);
+    timer.start(10000);
+    waitDiag->setMessage("Contacting the server for getting the requested data");
+    waitDiag->setProgressBarVisibility(false);
+    waitDiag->open();
+
+}
+
+//****************************************************************************************************************************
 
 void EyeDataAnalyzer::processDirectory(){
 
@@ -124,14 +327,17 @@ void EyeDataAnalyzer::on_newUIMessage(const QString &html){
     ui->pteProcessingOutput->appendHtml(html);
 }
 
+void EyeDataAnalyzer::on_newUIMessage_for_DB(const QString &html){
+    ui->pteDBOutputLog->appendHtml(html);
+}
+
+
 void EyeDataAnalyzer::onProcessorMessage(const QString &msg, qint32 type){
     if (type == MSG_TYPE_STD) htmlWriter.appendStandard(msg);
     else if (type == MSG_TYPE_SUCC) htmlWriter.appendSuccess(msg);
     else if (type == MSG_TYPE_ERR) htmlWriter.appendError(msg);
     else htmlWriter.appendWarning(msg);
 }
-
-
 
 void EyeDataAnalyzer::switchViews(qint32 view){
     for (qint32 i = 0; i < appViews.size(); i++){
@@ -146,7 +352,7 @@ EyeDataAnalyzer::~EyeDataAnalyzer()
 
 void EyeDataAnalyzer::on_actionDataBase_Connection_triggered()
 {
-    //switchViews(VIEW_0_DATABASE_VIEW);
+    switchViews(VIEW_0_DATABASE_VIEW);
 }
 
 void EyeDataAnalyzer::on_actionProcessing_View_triggered()
@@ -160,13 +366,16 @@ void EyeDataAnalyzer::on_lwDirs_itemDoubleClicked(QListWidgetItem *item)
     processDirectory();
 }
 
-
 void EyeDataAnalyzer::on_pushButton_clicked()
 {
     if (currentDirectory.contains("/")){
         QStringList parts = currentDirectory.split("/");
         parts.removeLast();
         currentDirectory = parts.join("/");
+        processDirectory();
+    }
+    else{
+        currentDirectory = WORK_DIR;
         processDirectory();
     }
 }
@@ -382,7 +591,6 @@ void EyeDataAnalyzer::on_pteDefConfig_clicked()
     }
 }
 
-
 void EyeDataAnalyzer::on_pbSaveDefConf_clicked()
 {
     bool ok;
@@ -475,4 +683,9 @@ void EyeDataAnalyzer::on_pbGenerateReport_2_clicked()
         logForProcessing.appendError("Could not generate PNG report");
     }
 
+}
+
+void EyeDataAnalyzer::on_pbClearLog_clicked()
+{
+    ui->pteDBOutputLog->setPlainText("");
 }
