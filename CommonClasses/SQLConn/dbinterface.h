@@ -36,6 +36,9 @@ public:
     // Get last generated keyid from a table;
     qint32 getNewestKeyid(const QString &keyidColName, const QString &table);
 
+    // Execute special query
+    bool specialQuery(const QString &query, const QStringList &columns);
+
     // Closing the connection to the server
     bool open();
     void close() { dbConnection.close(); }

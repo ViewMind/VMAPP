@@ -21,6 +21,7 @@
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "ssllistener.h"
+#include "filelister.h"
 
 
 class Control : public QObject
@@ -55,8 +56,8 @@ private:
 
     // Listening from new connections.
     SSLListener *listener;
-    QSslSocket *socket;
-    //QList<QSslSocket*> socketList;
+    //QSslSocket *socket;
+    QList<QSslSocket*> socketList;
     QTimer timer;
     DataPacket rx;
 

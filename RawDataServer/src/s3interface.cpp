@@ -5,18 +5,17 @@ S3Interface::S3Interface()
 
 }
 
-void S3Interface::copyRecursively(const QString &path){
+void S3Interface::copyRecursively(const QString &path, const QString outputPath){
 
     QString aws_command;
-    aws_command = "aws s3 cp --recursive " + s3Address + "/" + path + " copydir";
+    aws_command = "aws s3 cp --recursive " + s3Address + "/" + path + " " + QString(SERVER_WORK_DIR)  + "/" + outputPath;
 
     QStringList shellComamnds;
-    shellComamnds << "rm -rf copydir"; // This will ensure no new data is mistaken with old data.
 
 #ifdef SERVER_LOCALHOST
-    shellComamnds << "ssh -i " + QString(SSH_KEY_LOCATION) +  " " + QString(SSH_USER_DNS) + " \" rm -rf copydir \"";
+    shellComamnds << "ssh -i " + QString(SSH_KEY_LOCATION) +  " " + QString(SSH_USER_DNS) + " \" rm -rf " + QString(SERVER_WORK_DIR)  + "\"";
     shellComamnds << "ssh -i " + QString(SSH_KEY_LOCATION) +  " " + QString(SSH_USER_DNS) + " \"" + aws_command + "\"";
-    shellComamnds << "scp -i " + QString(SSH_KEY_LOCATION) +  " -q -r " + QString(SSH_USER_DNS) + ":\"copydir\" . ";
+    shellComamnds << "scp -i " + QString(SSH_KEY_LOCATION) +  " -q -r " + QString(SSH_USER_DNS) + ":\""+ QString(SERVER_WORK_DIR)  + "\" . ";
 #else
     shellComamnds << aws_command;
 #endif

@@ -100,6 +100,7 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
     QByteArray temp;
 
     if (buffer.size() < BYTES_FOR_SIZE){
+        percentArrived = 0;
         buffer.append(array);
         if (buffer.size() >= BYTES_FOR_SIZE){
             for (qint32 j = 0; j < BYTES_FOR_SIZE; j++){
@@ -114,6 +115,11 @@ quint8 DataPacket::bufferByteArray(const QByteArray &array){
     }
     else{
         buffer.append(array);
+
+        // Calculating how much of the packet has arrived.
+        qreal total = packetSize + BYTES_FOR_SIZE;
+        percentArrived = (qreal)buffer.size()*100.0 / total;
+
         if ((quint32)buffer.size() < packetSize + BYTES_FOR_SIZE) return DATABUFFER_RESULT_NOT_DONE;
     }
 

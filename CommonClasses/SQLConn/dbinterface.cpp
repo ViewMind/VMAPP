@@ -156,6 +156,32 @@ bool DBInterface::readFromDB(const QString &table, const QStringList &columns, c
     return true;
 }
 
+bool DBInterface::specialQuery(const QString &query, const QStringList &columns){
+
+    QSqlQuery q(dbConnection);
+    //qWarning() << "EXECUTING READ QUERY: " << query;
+    if (!q.exec(query)){
+        error = "SPECIAL QUERY: " + query + ". ERROR: " + q.lastError().text();
+        return false;
+    }
+
+    lastResult.clear();
+
+    lastResult.columns = columns;
+
+    while (q.next()){
+        QStringList row;
+        for (qint32 i = 0; i < columns.size(); i++){
+            row << q.value(i).toString();
+        }
+        lastResult.rows << row;
+    }
+
+    return true;
+
+
+}
+
 void DBInterface::log(const QString &query, const QString &logid){
 
 

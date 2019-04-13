@@ -140,7 +140,7 @@ void Control::startServer(){
 
     // Listen for new connections.
     connect(listener,&SSLListener::newConnection,this,&Control::on_newConnection);
-    socket = nullptr;
+    //socket = nullptr;
 
     if (!listener->listen(QHostAddress::Any,TCP_PORT_RAW_DATA_SERVER)){
         logger.appendError("ERROR : Could not start SSL Server: " + listener->errorString());
@@ -153,21 +153,22 @@ void Control::startServer(){
 
 void Control::on_newConnection(){
 
-    if (socket != nullptr) return;
+    if (socketList.size() != 0) return;
 
-    logger.appendStandard("New connection received 0");
+   // logger.appendStandard("New connection received 0");
 
     // New connection is available.
-    socket = (QSslSocket*)(listener->nextPendingConnection());
+    QSslSocket *socket = (QSslSocket*)(listener->nextPendingConnection());
+    socketList << socket;
 
-    logger.appendStandard("New connection received 1");
+    //logger.appendStandard("New connection received 1");
 
-    if (!socket->isValid()) {
+    if (!socketList.first()->isValid()) {
         logger.appendError("ERROR: Could not cast incomming socket connection");
         return;
     }
 
-    logger.appendStandard("New connection received 2");
+    //logger.appendStandard("New connection received 2");
 
     // Doing the connections.
     connect(socket,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
@@ -180,15 +181,15 @@ void Control::on_newConnection(){
     logger.appendStandard("New connection received 3");
 
     // The SSL procedure.
-    socket->setPrivateKey(":/certificates/server.key");
-    logger.appendStandard("New connection received 3.1");
-    socket->setLocalCertificate(":/certificates/server.csr");
-    logger.appendStandard("New connection received 3.2");
-    socket->setPeerVerifyMode(QSslSocket::VerifyNone);
-    logger.appendStandard("New connection received 3.2");
-    socket->startServerEncryption();
+    socketList.first()->setPrivateKey(":/certificates/server.key");
+    //logger.appendStandard("New connection received 3.1");
+    socketList.first()->setLocalCertificate(":/certificates/server.csr");
+    //logger.appendStandard("New connection received 3.2");
+    socketList.first()->setPeerVerifyMode(QSslSocket::VerifyNone);
+    //logger.appendStandard("New connection received 3.2");
+    socketList.first()->startServerEncryption();
 
-    logger.appendStandard("New connection received 4");
+    //logger.appendStandard("New connection received 4");
 
 }
 
@@ -210,9 +211,9 @@ void Control::on_sslErrors(const QList<QSslError> &errors){
 
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
-    if (socket == nullptr) return;
+    if (socketList.size() == 0) return;
 
-    QHostAddress addr = socket->peerAddress();
+    QHostAddress addr = socketList.first()->peerAddress();
     for (qint32 i = 0; i < errors.size(); i++){
         logger.appendError("SSL Error," + errors.at(i).errorString() + " from Address: " + addr.toString());
     }
@@ -225,9 +226,9 @@ void Control::on_sslErrors(const QList<QSslError> &errors){
 void Control::on_socketError(QAbstractSocket::SocketError error){
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
-    if (socket == nullptr) return;
+    if (socketList.size() == 0) return;
 
-    QHostAddress addr = socket->peerAddress();
+    QHostAddress addr = socketList.first()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
     if (error != QAbstractSocket::RemoteHostClosedError){
         logger.appendError(QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
@@ -240,14 +241,14 @@ void Control::on_socketError(QAbstractSocket::SocketError error){
 }
 
 void Control::on_socketStateChanged(QAbstractSocket::SocketState state){
-    if (socket == nullptr) return;
-    QHostAddress addr = socket->peerAddress();
+    if (socketList.size() == 0) return;
+    QHostAddress addr = socketList.first()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
     logger.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
 }
 
 void Control::on_readyRead(){
-    QByteArray ba = socket->readAll();
+    QByteArray ba = socketList.first()->readAll();
     quint8 ans = rx.bufferByteArray(ba);
     if (ans == DataPacket::DATABUFFER_RESULT_DONE){
         timer.stop();
@@ -262,7 +263,7 @@ void Control::on_readyRead(){
             DataPacket tx;
             tx.addString(instuids.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_INST_NAMES);
             QByteArray ba = tx.toByteArray();
-            qint64 num = socket->write(ba.constData(),ba.size());
+            qint64 num = socketList.first()->write(ba.constData(),ba.size());
             if (num != ba.size()){
                 logger.appendError("Failure sending then institution list information");
             }
@@ -284,11 +285,160 @@ void Control::on_disconnected(){
 
 bool Control::verifyPassword(const QString &password){
     QString hash =  QString(QCryptographicHash::hash(password.toLatin1(),QCryptographicHash::Sha256).toHex());
-    return (hash == config.getString(RAW_DATA_SERVER_PASSWORD));
+    if (hash == config.getString(RAW_DATA_SERVER_PASSWORD)) return true;
+    else {
+        logger.appendError("Wrong Passsword: " + password);
+        logger.appendError("Expected hash: " + config.getString(RAW_DATA_SERVER_PASSWORD) + " but got hash " + hash);
+        return false;
+    }
 }
 
 void Control::processRequest(){
-    // NOTHING TO DO.
+
+    DataPacket tx;
+
+    if (!dbConnBase.open()){
+        logger.appendError("Getting requested information, could not open DB CON BASE");
+        clearSocket("PROCESS REQUEST");
+        return;
+    }
+
+    if (!dbConnID.open()){
+        logger.appendError("Getting requested information, could not open DB CON BASE");
+        clearSocket("PROCESS REQUEST");
+        return;
+    }
+
+
+    QString password = rx.getField(DataPacket::DPFI_DB_INST_PASSWORD).data.toString();
+    QString instUID = rx.getField(DataPacket::DPFI_DB_INST_UID).data.toString();
+    QString startDate = rx.getField(DataPacket::DPFI_DATE_START).data.toString();
+    QString endDate = rx.getField(DataPacket::DPFI_DATE_END).data.toString();
+
+    if (!verifyPassword(password)){
+        tx.addString("WRONG PASSWORD",DataPacket::DPFI_DB_ERROR);
+        QByteArray ba = tx.toByteArray();
+        qint64 num = socketList.first()->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logger.appendError("Failure sending the wrong password message");
+        }
+        clearSocket("PROCESS REQUEST");
+        return;
+    }
+
+    ///////////////// Getting the puids in the time frame and from the institution rquestested
+    QStringList columns;
+    QString query;
+    query = "SELECT DISTINCT r.puid FROM tEyeResults AS r, tDoctors AS d WHERE r.study_date >= '" + startDate + "' AND r.study_date <= '"
+            + endDate + "' AND r.doctorid = d.uid AND d.medicalinstitution = '" + instUID + "'";
+    columns << TEYERES_COL_PUID;
+
+    if (!dbConnBase.specialQuery(query,columns)){
+        logger.appendError("Getting information from the Eye Results table: " + dbConnBase.getError());
+        clearSocket("PROCESS REQUEST");
+        return;
+    }
+
+    DBData res = dbConnBase.getLastResult();
+    QStringList puids;
+    for (qint32 i = 0; i < res.rows.size(); i++){
+        if (res.rows.at(i).size() != 1){
+            logger.appendError("Getting information from Eye Result Table expected 1 column But got: " + QString::number(res.rows.at(i).size()));
+            clearSocket("PROCESS REQUEST");
+            return;
+        }
+        puids << res.rows.at(i).first();
+    }
+
+    ///////////////// Getting the hashes from the puid.
+    columns.clear();
+    columns << TPATID_COL_KEYID << TPATID_COL_UID;
+    QString condition;
+    condition = "keyid IN (" + puids.join(",") + ")";
+    if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
+        logger.appendError("Getting the patiend ID hashes: " + dbConnID.getError());
+        clearSocket("PROCESS REQUEST");
+        return;
+    }
+
+
+    res = dbConnID.getLastResult();
+    QHash<QString,QString> puidHashMap;
+    for (qint32 i = 0; i < res.rows.size(); i++){
+        if (res.rows.at(i).size() != 2){
+            logger.appendError("Getting information from Patient Table IDs expected 2 column But got: " + QString::number(res.rows.at(i).size()));
+            clearSocket("PROCESS REQUEST");
+            return;
+        }
+        puidHashMap[res.rows.at(i).last()] = res.rows.at(i).first();
+    }
+
+    ///////////////// Getting the hashes from the puid.
+    QStringList hashes = puidHashMap.keys();
+    QStringList downloadedDirectories;
+
+    S3Interface s3;
+    s3.setS3Bin(VIEWMIND_DATA_REPO);
+
+    for (qint32 i = 0; i < hashes.size(); i++){
+        logger.appendStandard("Downloading the directory: " + hashes.at(i));
+        QString name = puidHashMap.value(hashes.at(i));
+        while (name.size() < 10) name = "0" + name;
+        downloadedDirectories << name;
+        s3.copyRecursively(hashes.at(i), name);
+    }
+
+    dbConnID.close();
+    dbConnBase.close();
+
+    ///////////////// Processing the resulting files in order to send them.
+    FileLister fileLister;
+    QStringList fileNames;
+    QStringList fileContents;
+
+    for (qint32 i = 0; i < downloadedDirectories.size(); i++){
+        QString dir = QString(SERVER_WORK_DIR) + "/" + downloadedDirectories.at(i);
+        if (QDir(dir).exists()){
+            fileLister.listFileInDirectory(dir);
+            QStringList fileList = fileLister.getFileList();
+            fileNames << fileList;
+        }
+    }
+
+    bool couldNotRead = false;
+    for (qint32 i = 0; i < fileNames.size(); i++){
+        QFile file(fileNames.at(i));
+        if (!file.open(QFile::ReadOnly)){
+            couldNotRead = true;
+            break;
+        }
+        QTextStream reader(&file);
+        fileContents << reader.readAll();
+        file.close();
+    }
+
+    if (couldNotRead){
+        tx.addString("Error loading downlaoded files",DataPacket::DPFI_DB_ERROR);
+        QByteArray ba = tx.toByteArray();
+        qint64 num = socketList.first()->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logger.appendError("Failure sending the failed downloaded files error");
+        }
+        clearSocket("PROCESS REQUEST");
+        return;
+    }
+
+    // If all was ok. The information is sent back.
+    tx.addString(fileNames.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_RAW_DATA_NAMES);
+    tx.addString(fileContents.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_RAW_DATA_CONTENT);
+    QByteArray ba = tx.toByteArray();
+    qint64 num = socketList.first()->write(ba.constData(),ba.size());
+    if (num != ba.size()){
+        logger.appendError("Failure sending the failed downloaded files error");
+    }
+
+    clearSocket("PROCESS REQUEST");
+
 }
 
 QStringList Control::getInstitutionUIDPair(){
@@ -327,11 +477,10 @@ QStringList Control::getInstitutionUIDPair(){
 }
 
 void Control::clearSocket(const QString &fromWhere){
-    if (socket != nullptr){
+    if (socketList.size() > 0){
         logger.appendStandard(fromWhere + ": About to delete socket");
-        if (socket->isValid()) socket->disconnectFromHost();
-        delete socket;
-        socket = nullptr;
+        if (socketList.first()->isValid()) socketList.first()->disconnectFromHost();
+        socketList.removeFirst();
         logger.appendStandard(fromWhere + ": Socket deleted!");
     }
 }

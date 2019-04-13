@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/SQLConn/dbinterface.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     ssllistener.cpp \
-    ../../CommonClasses/DataPacket/datapacket.cpp
+    ../../CommonClasses/DataPacket/datapacket.cpp \
+    filelister.cpp
 
 HEADERS += \
     s3interface.h \
@@ -39,7 +40,8 @@ HEADERS += \
     ../../CommonClasses/SQLConn/dbinterface.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ssllistener.h \
-    ../../CommonClasses/DataPacket/datapacket.h
+    ../../CommonClasses/DataPacket/datapacket.h \
+    filelister.h
 
 RESOURCES += \
     configurations.qrc \

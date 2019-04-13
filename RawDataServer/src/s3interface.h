@@ -10,6 +10,7 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 
 #define SERVER_OUTPUT_FILE        "temp_output_file"
+#define SERVER_WORK_DIR           "work"
 
 #ifdef SERVER_LOCALHOST
 #define SSH_USER_DNS              "ec2-user@18.191.142.5"
@@ -36,7 +37,7 @@ public:
     S3LSReturn listInPath(const QString &path);
 
     // Copies the files in the path to a directory copydir inside the current working directory. Copydir directory is erased first
-    void copyRecursively(const QString &path);
+    void copyRecursively(const QString &path, const QString outputPath);
 
 private:
     QString s3Address;
