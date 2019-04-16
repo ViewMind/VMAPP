@@ -350,6 +350,17 @@ void Control::processRequest(){
         puids << res.rows.at(i).first();
     }
 
+    if (puids.isEmpty()){
+        tx.addString("No patients from institution " + instUID + " were found between " + startDate + " and " + endDate,DataPacket::DPFI_DB_ERROR);
+        QByteArray ba = tx.toByteArray();
+        qint64 num = socketList.first()->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logger.appendError("Failure sending the no puids message");
+        }
+        clearSocket("PROCESS REQUEST");
+        return;
+    }
+
     ///////////////// Getting the hashes from the puid.
     columns.clear();
     columns << TPATID_COL_KEYID << TPATID_COL_UID;
