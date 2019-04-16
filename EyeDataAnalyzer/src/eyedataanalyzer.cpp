@@ -106,7 +106,7 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
         //        startDate = "2019-04-01";
         //        institution = "1242673082";
         //        endDate = "2019-04-11";
-        password = "c1bt!fpkbQ";
+        //password = "c1bt!fpkbQ";
 
         DataPacket tx;
         tx.addString(password,DataPacket::DPFI_DB_INST_PASSWORD);
@@ -300,6 +300,7 @@ void EyeDataAnalyzer::processDirectory(){
 
     ui->lwDirs->clear();
     ui->lwDatFiles->clear();
+    ui->lwRepFiles->clear();
 
     for (qint32 i = 0; i < directories.size(); i++){
         QListWidgetItem *item = new QListWidgetItem(directories.at(i));

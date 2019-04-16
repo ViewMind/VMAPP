@@ -19,9 +19,7 @@ void EDPImages::sumToAnswers(const QString &trialID, const QString &ans){
 
 bool EDPImages::doEyeDataProcessing(const QString &data){
 
-    if (!initializeImageDataMatrix()){
-        return false;
-    }
+    initializeImageDataMatrix();
 
     // Parsing the experiment.
     config->addKeyValuePair(CONFIG_DEMO_MODE,false);
@@ -43,7 +41,7 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
     QString response;
 
     // Quick patch for unnecessary warnings.
-    QHash<QString,qint32> warningCounter;
+    // QHash<QString,qint32> warningCounter;
 
     qint64 filterValue = config->getInt(CONFIG_DAT_TIME_FILTER_THRESHOLD);
     filteredLinesList.clear();
@@ -136,23 +134,21 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
 
     }
 
-    return true;
-
-
-}
-
-bool EDPImages::initializeImageDataMatrix(){
-    QFile file(outputFile);
-    if (file.exists()){
-        file.remove();
+    // Adding the score column
+    if (csvLines.size() > 2) {
+        for (qint32 i = 1; i < csvLines.size(); i++){
+            csvLines[i] = csvLines.at(i) + "," + QString::number(answers.correct);
+        }
     }
 
-    if (!file.open(QFile::WriteOnly)){
-        error = "Could not open " + outputFile + " for writing";
+    if (!saveDataToFile()){
         return false;
     }
 
-    QTextStream writer(&file);
+    return true;
+}
+
+void EDPImages::initializeImageDataMatrix(){
 
     QStringList header;
     header << "suj"
@@ -176,11 +172,27 @@ bool EDPImages::initializeImageDataMatrix(){
            << "tX2"
            << "tY2"
            << "tX3"
-           << "tY3";
+           << "tY3"
+           << "score";
 
-    writer << header.join(",") << "\n";
+    csvLines << header.join(",");
+}
+
+bool EDPImages::saveDataToFile(){
+
+    QFile file(outputFile);
+    if (file.exists()){
+        file.remove();
+    }
+
+    if (!file.open(QFile::WriteOnly)){
+        error = "Could not open " + outputFile + " for writing";
+        return false;
+    }
+
+    QTextStream writer(&file);
+    writer << csvLines.join("\n");
     file.close();
-
     return true;
 }
 
@@ -219,14 +231,6 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     id << trialName << isTrial;
     eyeFixations.trialID.append(id);
 
-    QFile file(outputFile);
-    if (!file.open(QFile::Append)){
-        error = "Could not open " + outputFile + " for appending";
-        return false;
-    }
-
-    QTextStream writer(&file);
-
     // Deteriminig the trial id and trialtype
     QString trial_id, trial_type;
     QStringList tokens;
@@ -249,7 +253,7 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
         }
         else{
             trial_type = "N/A";
-        }        
+        }
         targetXYData = bindingTrial.getCSVXYData(true);
     }
     else{
@@ -262,50 +266,49 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     sac.reset();
 
     for (qint32 i = 0; i < fL.size(); i++){
-
+        QStringList writer;
         writer << subjectIdentifier << ","
                << trial_id << ","
                << isTrial << ","
                << trialName << ","
                << trial_type << ","
                << response << ","
-               << fL.at(i).duration << ","
+               << QString::number(fL.at(i).duration) << ","
                << "0,"
-               << countZeros(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
-               << sac.calculateSacadeAmplitude(fL.at(i).x,fL.at(i).y,monitorGeometry) << ","
-               << averageColumnOfMatrix(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
+               << QString::number(countZeros(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd)) << ","
+               << QString::number(sac.calculateSacadeAmplitude(fL.at(i).x,fL.at(i).y,monitorGeometry)) << ","
+               << QString::number(averageColumnOfMatrix(data,IMAGE_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd)) << ","
                << gazeL << ","
                << nfL << ","
-               << fL.at(i).x << ","
-               << fL.at(i).y << ","
+               << QString::number(fL.at(i).x) << ","
+               << QString::number(fL.at(i).y) << ","
                << QString::number(parser.getDrawStructure().FlagSideH) << ","
                << targetXYData;
-        writer << "\n";
+        csvLines << writer.join("");
     }
 
     sac.reset();
     for (qint32 i = 0; i < fR.size(); i++){
-
+        QStringList writer;
         writer << subjectIdentifier << ","
                << trial_id << ","
                << isTrial << ","
                << trialName << ","
                << trial_type << ","
                << response << ","
-               << fR.at(i).duration << ","
+               << QString::number(fR.at(i).duration) << ","
                << "1,"
-               << countZeros(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
-               << sac.calculateSacadeAmplitude(fR.at(i).x,fR.at(i).y,monitorGeometry) << ","
-               << averageColumnOfMatrix(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
+               << QString::number(countZeros(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd)) << ","
+               << QString::number(sac.calculateSacadeAmplitude(fR.at(i).x,fR.at(i).y,monitorGeometry)) << ","
+               << QString::number(averageColumnOfMatrix(data,IMAGE_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd)) << ","
                << gazeR << ","
                << nfR << ","
-               << fR.at(i).x << ","
-               << fR.at(i).y << ","
+               << QString::number(fR.at(i).x) << ","
+               << QString::number(fR.at(i).y) << ","
                << QString::number(parser.getDrawStructure().FlagSideH) << ","
                << targetXYData;
-        writer << "\n";
+        csvLines << writer.join("");
     }
 
-    file.close();
     return true;
 }

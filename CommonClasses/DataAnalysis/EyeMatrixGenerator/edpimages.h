@@ -42,9 +42,10 @@ public:
 private:
 
     // Initialization of the data matrix (header row)
-    bool initializeImageDataMatrix();
+    void initializeImageDataMatrix();
 
     // Adding the data of each image.
+    QStringList csvLines;
     bool appendDataToImageMatrix(const DataMatrix &data, const QString &trialName, const QString &isTrial, const QString &response);
 
     // The answers found.
@@ -55,6 +56,9 @@ private:
 
     // Parser for the experiment description in order to get information on what targets are on each trial.
     BindingParser parser;
+
+    // Saving the buffered to a file on disk.
+    bool saveDataToFile();
 
 };
 
