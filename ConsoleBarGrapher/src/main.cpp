@@ -1,9 +1,9 @@
-#include <QApplication>
+#include <QGuiApplication>
 #include "../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QGuiApplication a(argc, argv);
 
     // Setup
     qreal W = 1024;
