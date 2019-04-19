@@ -1,11 +1,11 @@
-#include <QApplication>
+#include <QCoreApplication>
 #include <QPainter>
 #include <QImage>
 #include <QDebug>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QCoreApplication a(argc, argv);
 
     // Setup
     qreal W = 1024;
