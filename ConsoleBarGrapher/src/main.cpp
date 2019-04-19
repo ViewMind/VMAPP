@@ -1,6 +1,4 @@
 #include <QApplication>
-#include <QGraphicsScene>
-#include <QGraphicsEllipseItem>
 #include <QPainter>
 #include <QImage>
 #include <QDebug>
@@ -12,11 +10,8 @@ int main(int argc, char *argv[])
     // Setup
     qreal W = 1024;
     qreal H = 768;
-    QGraphicsScene scene(0,0,W,H);
     QImage image(W,H,QImage::Format_RGB888);
     QPainter painter(&image);
-    scene.render(&painter);
-
 
     // Drawing
     painter.setBrush(QBrush(QColor(255,0,0)));

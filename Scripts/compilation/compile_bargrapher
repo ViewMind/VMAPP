@@ -21,7 +21,7 @@ if [[ -f "Makefile" ]]; then
    echo "===================== CALLIING MAKE ====================="
    make
    if [[ -f $APPNAME ]]; then
-      //mv $APPNAME $DEST
+      #mv $APPNAME $DEST
       echo "FINISHED"
    else
       echo "MAKE FAILED"
