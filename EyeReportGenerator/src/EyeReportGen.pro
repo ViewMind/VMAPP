@@ -31,7 +31,9 @@ SOURCES += main.cpp\
     ../../CommonClasses/HTMLWriter/htmlwriter.cpp \
     ../../CommonClasses/Experiments/bindingparser.cpp \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
-    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp
+    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp \
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
+    ../../CommonClasses/Experiments/readingparser.cpp
 
 HEADERS  += \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
@@ -51,7 +53,9 @@ HEADERS  += \
     ../../CommonClasses/SQLConn/dbdescription.h \
     ../../CommonClasses/Experiments/bindingparser.h \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
-    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h
+    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h \
+    ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
+    ../../CommonClasses/Experiments/readingparser.h
 
 RESOURCES += \
     bargraphs.qrc

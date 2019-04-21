@@ -9,7 +9,7 @@
 #define   COMMON_PATH_FOR_DB_CONFIGURATIONS             ":/CommonClasses/DBConfigurations/"
 
 #define   SERVER_PROGRAM_NAME                           "EyeSever"
-#define   SERVER_PROGRAM_VERSION                        "6.1.0"
+#define   SERVER_PROGRAM_VERSION                        "7.0.0"
 
 #define   RAW_DATA_SERVER_NAME                          "RawDataServer"
 #define   RAW_DATA_SERVER_VERSION                       "1.0.0"

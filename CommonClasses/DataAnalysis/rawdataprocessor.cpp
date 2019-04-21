@@ -76,7 +76,7 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
         barGraphOptionsFromFixationList(reading.getEyeFixations(),dataReading);
-        generateFDBFile(dataReading,reading.getEyeFixations());
+        freqErrorsOK = freqErrorsOK && generateFDBFile(dataReading,reading.getEyeFixations());
 
         QString report = emp.processReading(matrixReading,&dbdata);
 
@@ -86,7 +86,6 @@ void RawDataProcessor::run(){
         reportInfoText << "r";
 
         //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
-        freqErrorsOK = !dataReading.endsWith(".datf");
 
         if (!report.isEmpty()){
             studyID << "rd" + tagRet.version;
@@ -107,8 +106,7 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
         barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingBC);
-        generateFDBFile(dataBindingBC,images.getEyeFixations());
-
+        freqErrorsOK = freqErrorsOK && generateFDBFile(dataBindingBC,images.getEyeFixations());
 
         QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
 
@@ -119,7 +117,6 @@ void RawDataProcessor::run(){
         if (dateForReport.isEmpty()) dateForReport = datInfo.date + "_" + datInfo.hour;
 
         //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
-        freqErrorsOK = !dataBindingBC.endsWith(".datf");
 
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -151,7 +148,7 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
         barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingUC);
-        generateFDBFile(dataBindingUC,images.getEyeFixations());
+        freqErrorsOK = freqErrorsOK && generateFDBFile(dataBindingUC,images.getEyeFixations());
 
         QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
 
@@ -161,7 +158,7 @@ void RawDataProcessor::run(){
         if (dateForReport.isEmpty()) dateForReport = datInfo.date + "_" + datInfo.hour;
 
         //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
-        freqErrorsOK = !dataBindingUC.endsWith(".datf");
+        //freqErrorsOK = !dataBindingUC.endsWith(".datf");
 
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -191,7 +188,6 @@ void RawDataProcessor::run(){
         QString report = emp.processFielding(matrixFielding,fielding.getNumberOfTrials());
 
         //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
-        freqErrorsOK = !dataFielding.endsWith(".datf");
 
         if (!report.isEmpty()){
             studyID << "fd" + tagRet.version;
@@ -256,21 +252,32 @@ void RawDataProcessor::run(){
         }
 
         QTextStream mailWriter(&mailFile);
+        mailWriter.setCodec(COMMON_TEXT_CODEC);
         mailWriter << "<p>" << frequencyErrorMailBody << "</p>";
         mailFile.close();
         emit(appendMessage("Mail body File Generated to: " + mailFile.fileName(),MSG_TYPE_SUCC));
     }
 
+    // Generating the graphs file.
+    QString graphFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_GRAPHS_FILE;
+    BarGrapher bgrapher;
+    for (qint32 i = 0; i < graphValues.size(); i++){
+        bgrapher.addGraphToDo(graphValues.at(i));
+    }
+    if (!bgrapher.createBarGraphHTML(graphFile)){
+        emit(appendMessage("When creating fixation graphs: " + bgrapher.getLastError(),MSG_TYPE_ERR));
+    }
+
 }
 
-void RawDataProcessor::generateFDBFile(const QString &datFile, const FixationList &fixList){
+bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationList &fixList){
     FreqAnalysis freqChecker;
     FreqAnalysis::FreqAnalysisResult fres;
     fres = freqChecker.analyzeFile(datFile);
 
     if (!fres.errorList.isEmpty()){
         emit(appendMessage("Error while doing freq analysis for FDB file (" + datFile + "): " + fres.errorList.join("<br>   "),MSG_TYPE_ERR));
-        return;
+        return true;
     }
 
     FreqAnalysis::FreqCheckParameters fcp;
@@ -289,7 +296,7 @@ void RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
         emit(appendMessage("Difference in frequency check results (" + datFile + "): But found" + fres.errorList.join("<br>   "),MSG_TYPE_ERR));
     }
 
-// Info on the file name.
+    // Info on the file name.
     QFileInfo info(datFile);
 
     // Freq error flag
@@ -330,11 +337,11 @@ void RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
     QFile file(fdbfile);
     if (!file.open(QFile::WriteOnly)){
         emit(appendMessage("Could not open FDB file " + fdbfile + " for writing",MSG_TYPE_ERR));
-        return;
+        return fres.errorList.isEmpty();
     }
 
     QTextStream writer(&file);
-
+    writer.setCodec(COMMON_TEXT_CODEC);
     writer << TFDATA_COL_FILENAME << " = " << info.baseName() + "." + info.suffix() << ";\n";
     writer << TFDATA_COL_FERROR << " = " << ferrorVal << ";\n";
     writer << TFDATA_COL_FREQ_TOL_PARAMS << " = " << freqTolParams.join(",") << ";\n";
@@ -343,6 +350,8 @@ void RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
     writer << TFDATA_COL_NODATA_SET_COUNT << " = " << QString::number(fres.numberOfDataSetsWithLittleDataPoints) << ";\n";
 
     file.close();
+
+    return fres.errorList.isEmpty();
 }
 
 void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode, bool freqErrorsOk){
@@ -641,8 +650,9 @@ void RawDataProcessor::barGraphOptionsFromFixationList(const FixationList &fixli
                 bgo[index].xtext << l.first();
             }
         }
-        bgo[0].title = "Fixations on Reading Sentences longer than 7 for : " + fileName;
-        bgo[1].title = "Fixations on Reading Sentences shorter or equal to 7 for: " + fileName;
+        QFileInfo info(fileName);
+        bgo[0].title = "Fixations on Reading Sentences longer than 7 for : " + info.baseName();
+        bgo[1].title = "Fixations on Reading Sentences shorter or equal to 7 for: " + info.baseName();
     }
     else{
         emit(appendMessage("BarGraph Option Creator: Unknown file type: " + fileName,MSG_TYPE_ERR));

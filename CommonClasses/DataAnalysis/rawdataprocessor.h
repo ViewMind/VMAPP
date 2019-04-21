@@ -34,7 +34,7 @@ public:
     void initialize(ConfigurationManager *c);
     QString getReportFileOutput() const {return reportFileOutput; }
     QHash<QString,FixationList> getFixations() const {return fixations;}
-    QList<BarGrapher::BarGraphOptions> getBarGraphOptions() const {return graphValues;}
+    //QList<BarGrapher::BarGraphOptions> getBarGraphOptions() const {return graphValues;}
 
     // The actual processing function
     void run();
@@ -97,7 +97,7 @@ private:
 
     void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode ,bool freqErrorsOk);
 
-    void generateFDBFile(const QString &datFile, const FixationList &fixList);
+    bool generateFDBFile(const QString &datFile, const FixationList &fixList);
 
     QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers & ans);
 

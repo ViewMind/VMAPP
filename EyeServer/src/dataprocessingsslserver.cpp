@@ -130,8 +130,8 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     if (!initAllDBS()) return;
 
     // Finding the newest rep file in the folder.
-    QString reportfile = getReportFile(sockets.value(socket)->getWorkingDirectory());
-    if (reportfile.isEmpty()){
+    DataProcessingSSLServer::EyeRepGenGeneratedFiles ergf = getNonStandardFileNamesFromEyeRepGen(sockets.value(socket)->getWorkingDirectory());
+    if (!ergf.allOk){
         removeSocket(socket);
         return;
     }
@@ -142,8 +142,9 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
 
         // Since the processing is done, now the data can be saved to the database
         ConfigurationManager toDB;
-        QString dbfile = sockets.value(socket)->getWorkingDirectory() + "/" + FILE_DBDATA_FILE;
-        if (toDB.loadConfiguration(dbfile,COMMON_TEXT_CODEC)){
+        qint32 teyereskeyid;
+
+        if (toDB.loadConfiguration(ergf.dbfFile,COMMON_TEXT_CODEC)){
 
             QStringList values;
             QStringList columns = toDB.getAllKeys();
@@ -177,6 +178,8 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
                 removeSocket(socket);
                 return;
             }
+
+            teyereskeyid = dbConnBase->getNewestKeyid(TEYERES_COL_KEYID,TABLE_EYE_RESULTS);
         }
         else{
             dbConnBase->close();
@@ -187,11 +190,38 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
             return;
         }
 
+        // If the teyereskeyid is -1 the result entry is already saved in the table. It is better to save the current values with a keyid of -1 than not save it at all.
+        if (teyereskeyid == -1){
+            log.appendError("Failed to get the max keyid of the Eye Result Table for files: " + ergf.fdbFiles.join(","));
+        }
+
+        // Saving the FDB Files
+        for (qint32 i = 0; i < ergf.fdbFiles.size(); i++){
+            toDB.clear();
+            if (!toDB.loadConfiguration(ergf.fdbFiles.at(i),COMMON_TEXT_CODEC)){
+                log.appendError("Could not load FDB File: " + ergf.fdbFiles.at(i));
+                continue;
+            }
+            QStringList values;
+            QStringList columns;
+            columns = toDB.getAllKeys();
+            for (qint32 i = 0; i < columns.size(); i++){
+                values << toDB.getString(columns.at(i));
+            }
+            columns << TFDATA_COL_TEYERESULT;
+            values << QString::number(teyereskeyid);
+            if (!dbConnBase->insertDB(TABLE_FDATA,columns,values,logid)){
+                log.appendError("DB Error saving the FDB FILE " + ergf.fdbFiles.at(i) + ": " + dbConnBase->getError());
+            }
+        }
+
+        // Sending the email if the mail body exists.
+        sendFreqErrorEmail(sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt(),ergf.mailFile,ergf.graphFile);
     }
 
     DataPacket tx;
-    if (!tx.addFile(reportfile,DataPacket::DPFI_REPORT)){
-        log.appendError("Could not add report file to data packet to send from: " + reportfile);
+    if (!tx.addFile(ergf.repFile,DataPacket::DPFI_REPORT)){
+        log.appendError("Could not add report file to data packet to send from: " + ergf.repFile);
         removeSocket(socket);
         return;
     }
@@ -233,7 +263,7 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
     }
 
     // Removing previous or existing rep files
-    removeAllRepFiles(sockets.value(socket)->getWorkingDirectory());
+    // removeAllRepFiles(sockets.value(socket)->getWorkingDirectory());
 
     // Opening connection to the database, to check that the doctor and patient uid in the DB are present.
     if (!initAllDBS()) return;
@@ -563,26 +593,162 @@ QString DataProcessingSSLServer::getPatientID(const QString &pat_uid){
  * Rep files helper functions.
  * **************************************************************************************************************************/
 
-void DataProcessingSSLServer::removeAllRepFiles(const QString &directory){
-    QStringList filters;
-    filters << "*.rep";
-    QStringList files = QDir(directory).entryList(filters,QDir::Files);
-    for (qint32 i = 0; i < files.size(); i++){
-        QFile(directory + "/" + files.at(i)).remove();
-    }
-}
+//void DataProcessingSSLServer::removeAllRepFiles(const QString &directory){
+//    QStringList filters;
+//    filters << "*.rep";
+//    QStringList files = QDir(directory).entryList(filters,QDir::Files);
+//    for (qint32 i = 0; i < files.size(); i++){
+//        QFile(directory + "/" + files.at(i)).remove();
+//    }
+//}
 
-QString DataProcessingSSLServer::getReportFile(const QString &directory){
+DataProcessingSSLServer::EyeRepGenGeneratedFiles DataProcessingSSLServer::getNonStandardFileNamesFromEyeRepGen(const QString &directory){
+    EyeRepGenGeneratedFiles ans;
+    ans.allOk = true;
+
     QStringList filters;
     filters << "*.rep";
-    QStringList files = QDir(directory).entryList(filters,QDir::Files);
+    QDir wdir(directory);
+
+    QStringList files = wdir.entryList(filters,QDir::Files);
     if (files.size() > 1){
         log.appendError("On directory: " + directory + " more than one report file was found.");
-        return "";
+        ans.allOk = false;
+        return ans;
     }
     else if (files.isEmpty()){
-        log.appendError("No report file found on director: " + directory);
-        return "";
+        log.appendError("No report file found on directory: " + directory);
+        ans.allOk = false;
+        return ans;
     }
-    else return directory  + "/" + files.first();
+    else ans.repFile = directory  + "/" + files.first();
+
+    filters.clear();
+    files.clear();
+    filters << "*.fdb";
+    files = wdir.entryList(filters,QDir::Files);
+    if (files.isEmpty()){
+        log.appendError("No fdb files found in: " + directory);
+        ans.allOk = false;
+        return ans;
+    }
+    for (qint32 i = 0; i < files.size(); i++){
+        ans.fdbFiles << directory + "/" + files.at(i);
+    }
+
+    ans.dbfFile = directory + "/" + QString(FILE_DBDATA_FILE);
+    ans.graphFile = directory + "/" + QString(FILE_GRAPHS_FILE);
+
+    if (!QFile(ans.dbfFile).exists()){
+        log.appendError("No dbf file found on directory: " + directory);
+        ans.allOk = false;
+        return ans;
+    }
+
+    if (!QFile(ans.graphFile).exists()){
+        log.appendError("No graphs file found on directory: " + directory);
+        ans.allOk = false;
+        return ans;
+    }
+
+    ans.mailFile = directory + "/" + QString(FILE_MAIL_ERROR_LOG);
+    if (!QFile(ans.mailFile).exists()){
+        ans.mailFile = "";
+    }
+    return ans;
+}
+
+void DataProcessingSSLServer::sendFreqErrorEmail(qint32 instUID, const QString &emailBodyFileName, const QString &graphFile){
+
+    if (emailBodyFileName.isEmpty()) return;
+
+    QStringList columns;
+    columns << TINST_COL_NAME;
+    QString condition = QString(TINST_COL_UID) + " = '" + QString::number(instUID) + "'";
+    QString instName = QString::number(instUID);
+    if (!dbConnBase->readFromDB(TABLE_INSTITUTION,columns,condition)){
+        log.appendError("Getting inst name for " + instName + ": " + dbConnBase->getError());
+    }
+    else{
+        DBData data = dbConnBase->getLastResult();
+        if (data.rows.size() != 1){
+            log.appendError("Getting inst name for email, rows size " + QString::number(data.rows.size()) + " instead of 1, for UID: " + QString::number(instUID) );
+        }
+        else {
+            if (data.rows.first().size() < 1){
+                log.appendError("Getting inst name for email, col size is zero for UID: " + QString::number(instUID) );
+            }
+        }
+        instName = data.rows.first().first();
+    }
+
+    QFile mailBody(emailBodyFileName);
+    if (!mailBody.open(QFile::ReadOnly)){
+        log.appendError("Could not open mail body file: " + emailBodyFileName);
+        return;
+    }
+    QTextStream reader(&mailBody);
+    reader.setCodec(COMMON_TEXT_CODEC);
+    QString body = reader.readAll();
+    mailBody.close();
+
+    // Path of the output PHP file
+    QFileInfo info(emailBodyFileName);
+    QString outPHPFilename = info.path() + "/" + QString(FILE_PHP_MAIL);
+    QFile phpFile(outPHPFilename);
+    if (!phpFile.open(QFile::WriteOnly)){
+        log.appendError("Could not open php mail file for writing " + outPHPFilename);
+        return;
+    }
+    QTextStream writer(&phpFile);
+    writer.setCodec(COMMON_TEXT_CODEC);
+
+    writer << "<?php\n";
+#ifdef SERVER_PRODUCTION
+    writer << "require '/home/ec2-user/composer/vendor/autoload.php';\n";
+    writer << "require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';\n";
+#else
+    writer << "use PHPMailer\\PHPMailer\\PHPMailer;\n";
+    writer << "require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';\n";
+#endif
+
+    writer << "$mail = new PHPMailer;\n";
+    writer << "$mail->isSMTP();\n";
+    writer << "$mail->setFrom('check.viewmind@gmail.com', 'ViewMind Administration');\n";
+    writer << "$mail->Username = 'AKIARDLQA5AHRSTLPCYS';\n";
+    writer << "$mail->Password = 'BHGWozyNwZoHjvUAhL8d7H9FC/H4RBNfh564MnKZRKj/';\n";
+    writer << "$mail->Host = 'email-smtp.us-east-1.amazonaws.com';\n";
+    writer << "$mail->Subject = 'ViewMind Frequency Check Alert From: " + instName + "';\n";
+    writer << "$mail->addAddress('aarelovich@gmail.com', 'Ariel Arelovich');\n";
+
+#ifdef SERVER_PRODUCTION
+    writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
+    writer << "$mail->addAddress('gerardofernandez480@gmail.com ', 'Gerardo Fernandez');\n";
+#endif
+
+    // The HTML-formatted body of the email
+    writer << "$mail->Body = '<h3>Frequency problems detected from Institituion: " + instName + "</h3>\n<h3>Details</h3>" + body + "';\n";
+    writer << "$mail->addAttachment('" + graphFile  + "');\n";
+    writer << "$mail->SMTPAuth = true;\n";
+    writer << "$mail->SMTPSecure = 'tls';\n";
+    writer << "$mail->Port = 587;\n";
+    writer << "$mail->isHTML(true);\n";
+    writer << "if(!$mail->send()) {\n";
+    writer << "    echo 'Email error is: ' , $mail->ErrorInfo , PHP_EOL;\n";
+    writer << "}\n";
+    writer << "?>\n";
+
+    // Actually sending the email.
+    phpFile.close();
+    QProcess p;
+    p.setProgram("php");
+    QStringList args; args << outPHPFilename;
+    p.setArguments(args);
+    p.start();
+    p.waitForFinished();
+    QString output(p.readAllStandardOutput());
+    if (!output.trimmed().isEmpty()){
+        log.appendError("EMAIL: " + output.trimmed());
+    }
+
 }

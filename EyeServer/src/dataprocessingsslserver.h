@@ -28,6 +28,15 @@ private slots:
 
 private:
 
+    struct EyeRepGenGeneratedFiles{
+        QString repFile;
+        QStringList fdbFiles;
+        QString graphFile;
+        QString mailFile;
+        QString dbfFile;
+        bool allOk;
+    };
+
     // Logging to file.
     LogInterface log;
 
@@ -69,8 +78,9 @@ private:
     // Final Step in the process, sending the report.
     void sendReport(quint64 socket);
 
-    void removeAllRepFiles(const QString &directory);
-    QString getReportFile(const QString &directory);
+    //void removeAllRepFiles(const QString &directory);
+    EyeRepGenGeneratedFiles getNonStandardFileNamesFromEyeRepGen(const QString &directory);
+    void sendFreqErrorEmail(qint32 instUID, const QString &emailBodyFileName, const QString &graphFile);
 
     // Check if the report can be requested.
     quint8 verifyReportRequest(qint32 UID, const QString &etserial);
