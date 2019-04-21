@@ -13,8 +13,6 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
         dataReading = currentDir + "/" + config->getString(CONFIG_FILE_READING);
     else dataReading = "";
 
-    qWarning() << "Data Reading" << dataReading << config->containsKeyword(CONFIG_FILE_READING);
-
     if (config->containsKeyword(CONFIG_FILE_BIDING_BC))
         dataBindingBC = currentDir + "/" + config->getString(CONFIG_FILE_BIDING_BC);
     else dataBindingBC = "";
@@ -74,6 +72,7 @@ void RawDataProcessor::run(){
         tagRet = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
         matrixReading = tagRet.filePath;
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
+        barGraphOptionsFromFixationList(reading.getEyeFixations(),dataReading);
         QString report = emp.processReading(matrixReading,&dbdata);
 
         QFileInfo info(dataReading);
@@ -100,6 +99,7 @@ void RawDataProcessor::run(){
         tagRet = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
         matrixBindingBC = tagRet.filePath;
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
+        barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingBC);
         QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
 
         // The code needs to be saved only once as it should be the same for both BC and UC.
@@ -137,6 +137,7 @@ void RawDataProcessor::run(){
         tagRet = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
         matrixBindingUC = tagRet.filePath;
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
+        barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingUC);
         QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
 
         // The code needs to be saved only once as it should be the same for both BC and UC.
@@ -446,4 +447,85 @@ QString RawDataProcessor::getVersionForBindingExperiment(bool bound){
     //qWarning() << "Base" << base;
 
     return base;
+}
+
+void RawDataProcessor::barGraphOptionsFromFixationList(const FixationList &fixlist, const QString &fileName){
+
+    QList<BarGrapher::BarGraphOptions> bgo;
+
+    if (fileName.contains(CONFIG_P_EXP_BIDING_BC) || fileName.contains(CONFIG_P_EXP_BIDING_UC)){
+        QString title;
+        if (fileName.contains(CONFIG_P_EXP_BIDING_BC)) title = "Binding BC";
+        else title = "Binding UC";
+
+        bgo << BarGrapher::BarGraphOptions();  // Left Eye.
+        bgo << BarGrapher::BarGraphOptions();  // Right Eye
+        for (qint32 i = 0; i < 2; i++){
+            bgo[i].width = 1280;
+            bgo[i].height = 720;
+            bgo[i].associatedFileName = fileName;
+            bgo[i].drawValuesOnBars = false;
+            bgo[i].fontSize = 12;
+            bgo[i].ylabel = "Number of Total Unfiltered Fixations";
+            bgo[i].associatedFileName = fileName;
+            bgo[i].colors << "#2022a2" << "#a21d3c";
+            bgo[i].dataSets << QList<qreal>() << QList<qreal>();
+            bgo[i].legend << "Show" << "Decision";
+        }
+        for (qint32 i = 0; i < fixlist.trialID.size(); i++){
+            QStringList l = fixlist.trialID.at(i);
+            // This check should alwasy pass. However if for some future bug the list does not contain any values the code inside would crash the program
+            if (l.size() == 2){                
+                qint32 index = 0;
+                if (l.last() == "1") index = 1;
+                if (index == 0){
+                    bgo[EYE_L].xtext << l.first();
+                    bgo[EYE_R].xtext << l.first();
+                }
+                bgo[EYE_L].dataSets[index].append(fixlist.left.at(i).size());
+                bgo[EYE_R].dataSets[index].append(fixlist.right.at(i).size());
+            }
+        }
+
+        QFileInfo info(fileName);
+
+        bgo[EYE_L].title = "Left Eye Fixations for " + title + ": " + info.baseName();
+        bgo[EYE_R].title = "Right Eye Fixations for " + title + ": " + info.baseName();
+    }
+    else if (fileName.contains(CONFIG_P_EXP_READING)){
+        bgo << BarGrapher::BarGraphOptions(); // Sentences longer than 7 words
+        bgo << BarGrapher::BarGraphOptions(); // Sentences shorter or equal to 7 words.
+
+        for (qint32 i = 0; i < 2; i++){
+            bgo[i].width = 1280;
+            bgo[i].height = 720;
+            bgo[i].associatedFileName = fileName;
+            bgo[i].drawValuesOnBars = false;
+            bgo[i].fontSize = 12;
+            bgo[i].ylabel = "Number of Total Unfiltered Fixations";
+            bgo[i].associatedFileName = fileName;
+            bgo[i].colors << "#2022a2" << "#a21d3c";
+            bgo[i].dataSets << QList<qreal>() << QList<qreal>();
+            bgo[i].legend << "Left Eye" << "Right Eye";
+        }
+        for (qint32 i = 0; i < fixlist.trialID.size(); i++){
+            QStringList l = fixlist.trialID.at(i);
+            // This check should alwasy pass. However if for some future bug the list does not contain any values the code inside would crash the program
+            if (l.size() == 2){
+                qint32 sl = l.last().toInt();
+                qint32 index = 0;
+                if (sl <= 7) index = 1;
+                bgo[index].dataSets[EYE_L].append(fixlist.left.at(i).size());
+                bgo[index].dataSets[EYE_R].append(fixlist.right.at(i).size());
+                bgo[index].xtext << l.first();
+            }
+        }
+        bgo[0].title = "Fixations on Reading Sentences longer than 7 for : " + fileName;
+        bgo[1].title = "Fixations on Reading Sentences shorter or equal to 7 for: " + fileName;
+    }
+    else{
+        emit(appendMessage("BarGraph Option Creator: Unknown file type: " + fileName,MSG_TYPE_ERR));
+    }
+
+    graphValues << bgo;
 }

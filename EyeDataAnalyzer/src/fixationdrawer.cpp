@@ -57,7 +57,7 @@ bool FixationDrawer::drawFixations(const FixationList &flist){
     }
     else if (experimentID == CONFIG_P_EXP_READING){
         ReadingManager *m = (ReadingManager *)manager;
-        qWarning() << "Draw fixation on Reading";
+        //qWarning() << "Draw fixation on Reading";
         for (qint32 i = 0; i < flist.trialID.size(); i++){
             QString imgID = flist.trialID.at(i).first();
             if (m->drawPhrase(imgID)){

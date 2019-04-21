@@ -31,6 +31,9 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
         return false;
     }
 
+    eyeFixations.trialID = parser.getExpectedIDs();
+    eyeFixations.fillFixationsLists();
+
     QStringList lines = data.split("\n");
 
     // This will have all the data from a single image.
@@ -225,11 +228,15 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     QString gazeR = QString::number(getGaze(fR));
 
     // Adding to the result struct
-    eyeFixations.left.append(fL);
-    eyeFixations.right.append(fR);
     QStringList id;
     id << trialName << isTrial;
-    eyeFixations.trialID.append(id);
+    qint32 index = eyeFixations.indexOfTrial(id);
+    if (index == -1){
+        error = "Cannot find Trial with id: " + id.join(" ");
+        return false;
+    }
+    eyeFixations.left[index] = fL;
+    eyeFixations.right[index] = fR;
 
     // Deteriminig the trial id and trialtype
     QString trial_id, trial_type;

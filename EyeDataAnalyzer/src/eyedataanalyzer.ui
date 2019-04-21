@@ -24,7 +24,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QPushButton" name="pbGenerateReport">
+          <widget class="QPushButton" name="pbAnalyzeData">
            <property name="text">
             <string>Analyze Data</string>
            </property>
@@ -45,7 +45,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pbGenerateReport_2">
+          <widget class="QPushButton" name="pbGenerateReport">
            <property name="text">
             <string>Generate Report</string>
            </property>
@@ -108,7 +108,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton">
+                <widget class="QPushButton" name="pbUp">
                  <property name="text">
                   <string>UP</string>
                  </property>

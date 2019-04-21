@@ -18,12 +18,16 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
     QStringList tempErrors;
     qreal tNumOfInvalidValues = 0;
 
+    qint32 numberOfDataSetsWithLittleDataPoints = 0;
+    qint32 numberOfDataSetsWithTooManyFreqGlitches = 0;
+
     for (qint32 i = 0; i < freqAnalysisForEachDataSet.size(); i++){
 
         FreqAnalyisDataSet fads = freqAnalysisForEachDataSet.at(i);
 
         if (fads.diffTimes.isEmpty()){
             errorList << "Data set " + fads.trialName + " does not have ANY data points";
+            numberOfDataSetsWithLittleDataPoints++;
             continue;
         }
 
@@ -31,6 +35,7 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
         if (fads.numberOfDataPoints < p.minNumberOfDataItems){
             tempErrors << " Data set " + fads.trialName + " has a total of " + QString::number(fads.numberOfDataPoints)
                     + " ET points which is less than the minimum allowed of " + QString::number(p.minNumberOfDataItems);
+            numberOfDataSetsWithLittleDataPoints++;
         }
 
         totalNumberOfDataPoints = totalNumberOfDataPoints + fads.numberOfDataPoints;
@@ -57,17 +62,23 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
 
         if (ep > p.maxAllowedFreqGlitchesPerTrial){
             errorList << "Data set " + QString::number(i) + " has " + QString::number(ep) + " % of frequency glitches";
+            numberOfDataSetsWithTooManyFreqGlitches++;
         }
 
         tNumOfInvalidValues = fads.invalidValues.size() + tNumOfInvalidValues;
 
     }
 
-    if (tempErrors.size() > p.maxAllowedFailedTrials){
-        errorList << "Number of data sets with too many frequency glitches: " + QString::number(tempErrors.size())
-                     + " which is above the specified" + QString::number(p.maxAllowedFailedTrials);
-        errorList << tempErrors;
+    if (numberOfDataSetsWithTooManyFreqGlitches > 0){
+        errorList.prepend("Number of data sets with too many frequency glitches: " + QString::number(numberOfDataSetsWithTooManyFreqGlitches)
+                          + " Specified Threshold " + QString::number(p.maxAllowedFailedTrials) );
     }
+
+    if (numberOfDataSetsWithLittleDataPoints > 0){
+        errorList.prepend("Number of data sets with too few data points: " + QString::number(numberOfDataSetsWithLittleDataPoints));
+    }
+
+    errorList << tempErrors;
 
     // Checking invalid values. the percent of string sin the times stasmp that could not be converted to number of the COMPLETE STUDY.
     qreal invalidPercent = tNumOfInvalidValues*100.0/totalNumberOfDataPoints;

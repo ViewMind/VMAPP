@@ -175,6 +175,13 @@ bool BindingParser::parseBindingExperiment(const QString &contents, Configuratio
         BindingTrial trial;
         trial.name = tokens.at(0);
 
+        QStringList expectedID;
+        expectedID << trial.name << "0";
+        expectedIDs << expectedID;
+        expectedID.clear();
+        expectedID << trial.name << "1";
+        expectedIDs << expectedID;
+
         // The token position at 1 was used to describe what was drawn before the trial. It's no longer used.
         // However the code was not changed because the description files were not changed.
 

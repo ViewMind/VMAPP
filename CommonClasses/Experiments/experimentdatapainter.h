@@ -35,6 +35,8 @@ public:
 
     QString getVersion() const { return versionString; }
 
+    QList<QStringList> getExpectedIDs() const { return expectedIDs; }
+
 protected:
 
     void updateGazePosition();
@@ -49,6 +51,9 @@ protected:
     QGraphicsEllipseItem *leftEyeTracker;
     QGraphicsEllipseItem *rightEyeTracker;
     qreal R;
+
+    // The expected ids for the experiment
+    QList<QStringList> expectedIDs;
 
     ConfigurationManager *config;
     QGraphicsScene *canvas;

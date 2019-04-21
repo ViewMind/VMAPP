@@ -21,7 +21,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "4.1.0"
+#define   PROGRAM_VERSION              "4.2.0"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -64,9 +64,9 @@ public slots:
 
     void on_lwDirs_itemDoubleClicked(QListWidgetItem *item);
 
-    void on_pushButton_clicked();
+    void on_pbUp_clicked();
 
-    void on_pbGenerateReport_clicked();
+    void on_pbAnalyzeData_clicked();
 
     void on_pbDrawFixations_clicked();
 
@@ -78,7 +78,7 @@ public slots:
 
     void on_pbDATFiles_clicked();
 
-    void on_pbGenerateReport_2_clicked();
+    void on_pbGenerateReport_clicked();
 
 public slots:
 

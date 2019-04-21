@@ -103,6 +103,7 @@ public:
     QList<BindingTrial> getTrials() const {return trials;}
     BindingTrial getTrialByName(const QString &id) const;
     QList<BindingTrial> getTrialList() const {return trials;}
+    QList<QStringList> getExpectedIDs() const {return expectedIDs;}
     void demoModeList(qint32 numberToLeave);
 
 
@@ -133,6 +134,9 @@ private:
 
    // Tells the system how to draw the flags.
    FlagDrawStructure drawStructure;
+
+   // The expected IDs
+   QList<QStringList> expectedIDs;
 
    // Aux functions for parsing.
    bool parseFlagPositions(const QString &line, BindingTrial *trial, bool show);

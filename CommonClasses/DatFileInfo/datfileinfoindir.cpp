@@ -13,7 +13,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
 
     // STEP 1: Creating the structure with just the .dat information.
     QStringList filters;
-    filters << "*.dat";
+    filters << "*.dat" << "*.datf";
     QStringList fileList = QDir(dir).entryList(filters,QDir::Files);
 
     //qWarning() << "SETTING DAT DIRECTORY: File list is" << fileList;

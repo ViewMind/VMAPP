@@ -58,9 +58,10 @@ public:
     QString getVersion() const {return versionString;}
     QString getError() const {return error;}
     Phrases getPhrases() const {return phrases; }
+    QList<QStringList> getExpectedIDs() const { return expectedIDs; }
 
 private:
-
+    QList<QStringList> expectedIDs;
     QString description;
     QString versionString;
     Phrases phrases;

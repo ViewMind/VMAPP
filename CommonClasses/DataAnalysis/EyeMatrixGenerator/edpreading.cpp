@@ -11,6 +11,11 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
         return false;
     }
 
+    ReadingParser parser;
+    parser.parseReadingDescription(eyeFixations.experimentDescription);
+    eyeFixations.trialID = parser.getExpectedIDs();
+    eyeFixations.fillFixationsLists();
+
     QStringList lines = data.split("\n");
 
     // This will have all the data from a single image.
@@ -153,11 +158,12 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
     QString gazeL = QString::number(getGaze(fL));
     QString gazeR = QString::number(getGaze(fR));
 
-    // The image with the fixations is generated.
-    eyeFixations.left.append(fL);
-    eyeFixations.right.append(fR);
-    QStringList id; id << imgID;
-    eyeFixations.trialID.append(id);
+    // The second value of the ID is the sentence length, as it is necessary later on.
+    QStringList id;
+    id << imgID << QString::number(data.first().at(READ_SL));
+    qint32 index = eyeFixations.indexOfTrial(id);
+    eyeFixations.left[index] = fL;
+    eyeFixations.right[index] = fR;
 
     QFile file(outputFile);
     if (!file.open(QFile::Append)){

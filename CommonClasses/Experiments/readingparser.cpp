@@ -57,6 +57,11 @@ bool ReadingParser::parseReadingDescription(const QString &contents){
         QStringList qAndA = idAndQuestion.last().split("|",QString::SkipEmptyParts);
         p.setPhrase(qAndA.first().trimmed());
 
+        QStringList expectedID;
+        expectedID << sid;
+        expectedID << QString::number(p.getPhrase().split(" ",QString::SkipEmptyParts).size());
+        expectedIDs << expectedID;
+
         if (qAndA.size() == 2){
             QStringList options = qAndA.last().split(',',QString::SkipEmptyParts);
             for (qint32 j = 0; j < options.size(); j++){

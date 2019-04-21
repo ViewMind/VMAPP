@@ -126,6 +126,9 @@ protected:
     // Move the garbage data file to the aborted directory, returns the new file name, or empty if there was an error
     QString moveDataFileToAborted();
 
+    // This will change the extension of a dat file to a datf file. This will mark the file a having had frequency errors.
+    QString changeFileExtensionToDatF();
+
     // Saving the data to the disk.
     bool saveDataToHardDisk();
 

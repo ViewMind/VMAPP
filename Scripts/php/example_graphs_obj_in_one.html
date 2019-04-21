@@ -20,14 +20,16 @@
            /// fontSize: OPTIONAL. If not present defaults to 10.
            /// drawValueOnBars: OPTIONAL. Draws the values of the bar over it, if true.
            /// ylabel: OPTIONAL. If present it draws the label of the yAxis.
+           /// legend: OPTIONAL If present it will draw a box with the corresponding text, below the title. The number of values must be the same as the number of datasets.
            
            // CONSTANTS
            LEFT_MARGIN   = 0.08;
-           TOP_MARGIN    = 0.08;
+           TOP_MARGIN    = 0.16;
            RIGHT_MARGIN  = 0.04;
            BOTTOM_MARGIN = 0.1;
            YTICK_COUNT   = 10;
            COL_W_AIR     = 0.04;
+           LEGEND_AIR    = 4;
            
            var fontSize = 10;
            if ("fontSize" in obj) fontSize = obj.fontSize;
@@ -61,8 +63,15 @@
            }
            
            if (obj.colors.length != M){
-              console.log("The number of data sets (" + M  + ") must coincide with the legth of the color array: " + obj.colors.length);
+              console.log("The number of data sets (" + M  + ") must coincide with the length of the color array: " + obj.colors.length);
               return;           
+           }
+           
+           if ("legend" in obj){
+              if (obj.legend.length != M){
+                 console.log("The number of data sets (" + M  + ") must coincide with the length of the legend array: " + obj.legend.length);
+                 return;
+              }
            }
            
            var ctx = document.getElementById(obj.canvas).getContext("2d");
@@ -174,12 +183,39 @@
            ctx.fillText(ylabel,0,0)               
            ctx.restore();              
            
+           
+           var titley = TOP_MARGIN*obj.height/4;
+           // Drawing the legend, if present
+           if ("legend" in obj){
+              var legRectH = 1.5*fontSize;
+              var legRectW = 50;            
+              var yval = titley+legRectH
+              ctx.font = fontSize + "px bold sans-serif";
+              var l = 0;
+              var txtl = [];
+              for (var i = 0; i < M; i++) {                 
+                 var txtw = ctx.measureText(obj.legend[i]).width;
+                 l = l + txtw  + 2*LEGEND_AIR; // The 5 is to represent the AIR around the text.                 
+                 txtl.push(txtw)
+              }
+              var totalLW = l + legRectW*M;
+              var startx = xo+xAxisLength/2 - totalLW/2;
+              for (var i = 0; i < M; i++) {
+                  ctx.fillStyle = obj.colors[i];    
+                  ctx.fillRect(startx,yval,legRectW,legRectH);
+                  ctx.fillStyle = "#000000"
+                  ctx.textAlign = "left";
+                  ctx.fillText(obj.legend[i],startx + legRectW + LEGEND_AIR,yval+legRectH-5);           
+                  startx = startx + legRectW + 2*LEGEND_AIR + txtl[i];
+              }                            
+           }
+           
            // Drawing the title
            fontSize = fontSize*2;
            ctx.fillStyle = "#000000"
            ctx.font = fontSize + "px bold sans-serif";
            ctx.textAlign = "center";
-           ctx.fillText(obj.title,xo+xAxisLength/2,TOP_MARGIN*obj.height/2);
+           ctx.fillText(obj.title,xo+xAxisLength/2,titley);           
            
         }
     </script>
@@ -189,14 +225,35 @@
           canvas: "canvasId",
           width:  1280,
           height: 720,
-          dataSet: [[100,200,300],[50, 150, 250]],
-          xtext:   ['Item 1', 'Item 2', 'Item 3'],
+          dataSet: [],
+          xtext:   [],
           colors:  ["#0055ff","#c1ff31"],
           title:  "My first bar graph",
           ylabel: "This a reaaly really really long label for the y axis",
           fontSize: 12,
-          drawValueOnBars: true
+          drawValueOnBars: true,
+          legend: ["The first one", "The Second one"]
        }
+       
+       var ds1 = [];
+       for (var i = 0; i < 42; i++){
+           ds1.push(100);
+           //obj.xtext.push("13-trial-same-22");
+           obj.xtext.push(i);
+       }
+       ds1[25] = 500;
+       ds1[17] = 42;
+       ds1[40] = 250;
+       ds1[6]  = 193;
+       obj.dataSet.push(ds1)
+       obj.dataSet.push(ds1)
+       
+       generateBarGraph(obj);
+       
+       obj.colors = ["#ff0000","#00ffff"];
+       obj.canvas = "canvasId2";
+       obj.title = "Second graph with same data  on same webpage"
+       obj.drawValueOnBars = false;
        generateBarGraph(obj);
        
     </script>

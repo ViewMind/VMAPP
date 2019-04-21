@@ -97,6 +97,7 @@ void BindingManager::enableDemoMode(){
 bool BindingManager::parseExpConfiguration(const QString &contents){    
     bool ans = parser.parseBindingExperiment(contents,config,ScreenResolutionWidth,ScreenResolutionHeight,NUMBER_OF_TRIALS_IN_DEMO_MODE);
     versionString = parser.getVersionString();
+    expectedIDs = parser.getExpectedIDs();
     error = parser.getError();
     return ans;
 }

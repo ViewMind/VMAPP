@@ -15,6 +15,7 @@
 #include "EyeMatrixGenerator/edpfielding.h"
 #include "EyeMatrixProcessor/eyematrixprocessor.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
+#include "../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h"
 
 #define   MSG_TYPE_STD                                   0
 #define   MSG_TYPE_SUCC                                  1
@@ -32,6 +33,7 @@ public:
     void initialize(ConfigurationManager *c);
     QString getReportFileOutput() const {return reportFileOutput; }
     QHash<QString,FixationList> getFixations() const {return fixations;}
+    QList<BarGrapher::BarGraphOptions> getBarGraphOptions() const {return graphValues;}
 
     // The actual processing function
     void run();
@@ -46,6 +48,9 @@ private:
 
     // Processed fixations in the proper structure. This is used to draw fixations if needed.
     QHash<QString,FixationList> fixations;
+
+    // Bar graph structure. Mirrors fixations structure.
+    QList<BarGrapher::BarGraphOptions> graphValues;
 
     // The source *.dat files.
     QString dataReading;
@@ -93,6 +98,8 @@ private:
     QString getVersionForBindingExperiment(bool bound);
 
     bool getFrequencyCheckErrors(const QStringList & ferrors);
+
+    void barGraphOptionsFromFixationList(const FixationList &fixlist, const QString &fileName);
 
 };
 

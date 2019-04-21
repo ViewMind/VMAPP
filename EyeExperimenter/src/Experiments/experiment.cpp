@@ -136,15 +136,16 @@ bool Experiment::doFrequencyCheck(){
     // log is NOT polluted.
     if (!ans){
 
-        QString movedFile = moveDataFileToAborted();
-        if (movedFile.isEmpty()){
-            error = "ERROR while moving aborted file in frequency check: " + error;
+        //QString movedFile = moveDataFileToAborted();
+        QString renamedFile = changeFileExtensionToDatF();
+        if (renamedFile.isEmpty()){
+            error = "ERROR while changing the file extension in frequency check: " + error;
             error = error + "\n" +  freqReport;
         }
         else{
             LogInterface freqerrlogger;
-            error = "Frequency Check Failed: Log can be seen at: " + movedFile + ".flog";
-            freqerrlogger.setLogFileLocation(movedFile + ".flog");
+            error = "Frequency Check Failed: Log can be seen at: " + renamedFile + ".flog";
+            freqerrlogger.setLogFileLocation(renamedFile + ".flog");
             freqerrlogger.appendStandard(freqReport);
         }
     }
@@ -200,6 +201,20 @@ QString Experiment::moveDataFileToAborted(){
         error = "Could not create abort directory inside patient directory: " + workingDirectory;
         return "";
     }
+}
+
+QString Experiment::changeFileExtensionToDatF(){
+    QFileInfo info(dataFile);
+    QString destination = workingDirectory + "/" + info.baseName() + ".datf";
+    if (!QFile::copy(dataFile,destination)) {
+        error = "Could not copy data file " + dataFile + " to its new name: " + destination;
+        return "";
+    }
+    if (!QFile(dataFile).remove()){
+        error = "Could not delete orginal data file " + dataFile + " after changing its extension";
+        return "";
+    }
+    else return destination;
 }
 
 bool Experiment::saveDataToHardDisk(){

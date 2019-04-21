@@ -42,6 +42,7 @@ bool ReadingManager::parseExpConfiguration(const QString &contents){
     description = parser.getDescription();
     versionString = parser.getVersion();
     phrases = parser.getPhrases();
+    expectedIDs = parser.getExpectedIDs();
 
     if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
     return true;

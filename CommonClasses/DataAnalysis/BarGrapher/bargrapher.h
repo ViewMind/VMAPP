@@ -1,49 +1,48 @@
 #ifndef BARGRAPHER_H
 #define BARGRAPHER_H
 
-#include <QPainter>
-#include <QImage>
-#include <QDebug>
+#include <QFile>
+#include <QTextStream>
 #include <QStringList>
-#include <QtMath>
 
 class BarGrapher
 {
 public:
+
+    struct BarGraphOptions {
+        qint32 width;
+        qint32 height;
+        QList< QList<qreal> > dataSets;
+        QStringList colors;
+        QStringList xtext;
+        QString title;
+        QString associatedFileName;
+        qint32 fontSize;
+        QStringList legend;
+        bool drawValuesOnBars;
+        QString ylabel;
+
+        // Constructor
+        BarGraphOptions();
+
+        // Functions
+        QString generateJavaScriptObj(const QString &varName, const QString &tab = "") const;
+        QString verifyValues() const;
+    };
+
     BarGrapher();
+    void addGraphToDo(BarGraphOptions bgo);
+    bool createBarGraphHTML(const QString &fileName);
+    void clearGraphs() {graphs.clear();}
 
-    typedef QList< QList<qreal> > DataSet;
-
-    // Configuration of the Bar Graph
-    void configureGraphText(qreal width, qreal height, const QStringList &xItems, const QString &ylabel, const QString &title);
-
-    // Draw it.
-    QImage generateGraph(const DataSet &dataSet);
-
-    // Get an error if there was one.
-    QString getError() const {return error;}
-
-    // Simply merge images in a grid pattern according to their position in a matrix.
-    static QImage mergeImagesInGrid(const  QList< QList<QImage> > & graphs);
+    QString getLastError() const { return error; }
 
 private:
 
-    // This is sqrt(2)/2 which corresponds to sin(pi/2)
-    static const qreal PROYECTION_FACTOR;
-    static const qreal LEFT_MARGIN;
-    static const qreal RIGHT_MARGIN;
-    static const qreal TOP_MARGIN;
-
-    // Set by the class user
-    QStringList itemDescriptions;
-    QString yAxisText;
-    QString graphTitle;
-
-    qreal W;
-    qreal H;
-
+    QList<BarGraphOptions> graphs;
+    static const QString STR_CANVAS_IDS;
+    static const QString STR_RUN_CODE;
     QString error;
-
 
 };
 

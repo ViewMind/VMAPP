@@ -55,7 +55,8 @@ SOURCES += \
     ../../CommonClasses/Experiments/readingparser.cpp \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
-    waitdialog.cpp
+    waitdialog.cpp \
+    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -85,11 +86,13 @@ HEADERS += \
     ../../CommonClasses/Experiments/readingparser.h \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../CommonClasses/DataPacket/datapacket.h \
-    waitdialog.h
+    waitdialog.h \
+    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h
 
 FORMS += \
         eyedataanalyzer.ui \
     waitdialog.ui
 
 RESOURCES += \
-    report_res.qrc
+    report_res.qrc \
+    bargrapher.qrc

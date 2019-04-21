@@ -103,10 +103,10 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
         institution = ui->cbInstitutions->currentData().toString();
         QString password = ui->lePasswordField->text();
 
-        //        startDate = "2019-04-01";
-        //        institution = "1242673082";
-        //        endDate = "2019-04-11";
-        //password = "c1bt!fpkbQ";
+        // startDate = "2019-04-01";
+        // institution = "1242673082";
+        // endDate = "2019-04-11";
+        // password = "c1bt!fpkbQ";
 
         DataPacket tx;
         tx.addString(password,DataPacket::DPFI_DB_INST_PASSWORD);
@@ -367,7 +367,7 @@ void EyeDataAnalyzer::on_lwDirs_itemDoubleClicked(QListWidgetItem *item)
     processDirectory();
 }
 
-void EyeDataAnalyzer::on_pushButton_clicked()
+void EyeDataAnalyzer::on_pbUp_clicked()
 {
     if (currentDirectory.contains("/")){
         QStringList parts = currentDirectory.split("/");
@@ -419,7 +419,7 @@ void EyeDataAnalyzer::overWriteCurrentConfigurationWith(const ConfigurationManag
     ui->pteConfig->setPlainText(newText);
 }
 
-void EyeDataAnalyzer::on_pbGenerateReport_clicked()
+void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
 {
 
     bool ok;
@@ -437,6 +437,16 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
     htmlWriter.write(outputFile,"Data Analyizer - " + QString(PROGRAM_VERSION));
     logForProcessing.appendSuccess("Processing done: Output at: " + outputFile);
     logForProcessing.appendSuccess("Current Report is: : "  + processor.getReportFileOutput());
+
+    // Generating the graphs.
+    QString graphFile = currentDirectory + "/graphs.html";
+    BarGrapher bgrapher;
+    for (qint32 i = 0; i < processor.getBarGraphOptions().size(); i++){
+        bgrapher.addGraphToDo(processor.getBarGraphOptions().at(i));
+    }
+    if (!bgrapher.createBarGraphHTML(graphFile)){
+        logForProcessing.appendError("When creating fix graphs: " + bgrapher.getLastError());
+    }
 }
 
 void EyeDataAnalyzer::on_pbDrawFixations_clicked()
@@ -640,7 +650,7 @@ void EyeDataAnalyzer::on_pbDATFiles_clicked()
     overWriteCurrentConfigurationWith(config,false);
 }
 
-void EyeDataAnalyzer::on_pbGenerateReport_2_clicked()
+void EyeDataAnalyzer::on_pbGenerateReport_clicked()
 {
 
     if (ui->lwRepFiles->count() == 0){

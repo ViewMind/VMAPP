@@ -4,6 +4,42 @@ MovingWindowAlgorithm::MovingWindowAlgorithm()
 {
 }
 
+void FixationList::displayFixList() const{
+    for (qint32 i = 0; i < trialID.size(); i++){
+        qWarning() << i << ":" << trialID.at(i);
+    }
+    for (qint32 i = 0; i < left.size(); i++){
+        qWarning() << i << ":" << left.at(i).size();
+    }
+    for (qint32 i = 0; i < right.size(); i++){
+        qWarning() << i << ":" << right.at(i).size();
+    }
+}
+
+void FixationList::fillFixationsLists(){
+    left.clear(); right.clear();
+    for (qint32 i = 0; i < trialID.size(); i++){
+        left << Fixations();
+        right << Fixations();
+    }
+}
+
+qint32 FixationList::indexOfTrial(const QStringList &toFind) const{
+    for (qint32 i = 0; i < trialID.size(); i++){
+        if (toFind.size() == trialID.at(i).size()){
+            bool isSame = true;
+            for (qint32 j = 0; j < toFind.size(); j++){
+                if (toFind.at(j) != trialID.at(i).at(j)){
+                    isSame = false;
+                    break;
+                }
+            }
+            if (isSame) return i;
+        }
+    }
+    return -1;
+}
+
 Fixations MovingWindowAlgorithm::computeFixations(const DataMatrix &data, qint32 xI, qint32 yI, qint32 tI){
 
     Fixations fixations;
