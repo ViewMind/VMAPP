@@ -200,10 +200,15 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getDatFileInformation(const QString 
 DatFileInfoInDir::DatInfo DatFileInfoInDir::getBindingFileInformation(const QString &bindingFile){
 
     QStringList parts = bindingFile.split(".",QString::SkipEmptyParts);
+
     QString codePrefix;
     if (bindingFile.contains("bc")) codePrefix = "BC";
     else codePrefix = "UC";
+
     QString baseName = parts.first();
+    QString fmark = "";
+    if (parts.last() == "datf") fmark = " (FE)";
+
     parts = baseName.split("_",QString::SkipEmptyParts);
     DatInfo info;
     info.fileName = bindingFile;
@@ -215,7 +220,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getBindingFileInformation(const QStr
         info.validEye = QString::number(EYE_BOTH);
         info.hour = "00_00";
         info.basename = parts.at(0) + "_" + parts.at(1);
-        info.code = codePrefix + info.extraInfo + info.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2);
+        info.code = codePrefix + info.extraInfo + info.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
         info.orderString =  parts.at(2) + parts.at(3) + parts.at(4) + "0000";
     }
     else if (parts.size() == 7){
@@ -225,7 +230,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getBindingFileInformation(const QStr
         info.hour = "00_00";
         info.validEye = QString::number(EYE_BOTH);
         info.basename = parts.at(0) + "_" + parts.at(1);
-        info.code = codePrefix + info.extraInfo + info.validEye + " - " + parts.at(6) + "/" + parts.at(5) + "/" + parts.at(4);
+        info.code = codePrefix + info.extraInfo + info.validEye + " - " + parts.at(6) + "/" + parts.at(5) + "/" + parts.at(4) + fmark;
         info.orderString =  parts.at(4) + parts.at(5) + parts.at(6) + "0000";
     }
     else if (parts.size() == 10){
@@ -235,7 +240,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getBindingFileInformation(const QStr
         info.hour = parts.at(8) + "_" +  parts.at(9);
         info.basename = parts.at(0) + "_" + parts.at(1);
         info.validEye = parts.at(4);
-        info.code = codePrefix + info.extraInfo + info.validEye + " - " + parts.at(7) + "/" + parts.at(6) + "/" + parts.at(5) + " " + parts.at(8) + ":" + parts.at(9);
+        info.code = codePrefix + info.extraInfo + info.validEye + " - " + parts.at(7) + "/" + parts.at(6) + "/" + parts.at(5) + " " + parts.at(8) + ":" + parts.at(9) + fmark;
         info.orderString = parts.at(5) + parts.at(6) + parts.at(7) + parts.at(8) + parts.at(9);
     }
 
@@ -246,6 +251,10 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getReadingInformation(const QString 
 
     QStringList parts = readingFile.split(".",QString::SkipEmptyParts);
     QString baseName = parts.first();
+
+    QString fmark = "";
+    if (parts.last() == "datf") fmark = " (FE)";
+
     parts = baseName.split("_",QString::SkipEmptyParts);
     DatInfo ans;
     ans.extraInfo = "";
@@ -257,7 +266,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getReadingInformation(const QString 
         ans.hour = "00_00";
         ans.validEye = QString::number(EYE_BOTH);
         ans.basename = parts.at(0);
-        ans.code = "R" + ans.validEye + " - " + parts.at(3) + "/" + parts.at(2) + "/" + parts.at(1);
+        ans.code = "R" + ans.validEye + " - " + parts.at(3) + "/" + parts.at(2) + "/" + parts.at(1) + fmark;
         ans.orderString = parts.at(1) +  parts.at(2) + parts.at(3) + "00_00";
     }
     else if (parts.size() == 7){
@@ -266,7 +275,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getReadingInformation(const QString 
         ans.validEye = parts.at(1);
         ans.hour = parts.at(5) + "_" + parts.at(6);
         ans.basename = parts.at(0);
-        ans.code = "R" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + " " + parts.at(5) + ":" + parts.at(6);
+        ans.code = "R" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + " " + parts.at(5) + ":" + parts.at(6) + fmark;
         ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
     }
     else if (parts.size() == 8){
@@ -276,7 +285,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getReadingInformation(const QString 
         ans.extraInfo = parts.at(1).toUpper();
         ans.hour = parts.at(6) + "_" + parts.at(7);
         ans.basename = parts.at(0);
-        ans.code = "R" + ans.extraInfo +  ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + " " + parts.at(5) + ":" + parts.at(6);
+        ans.code = "R" + ans.extraInfo +  ans.validEye + " - " + parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3) + " " + parts.at(6) + ":" + parts.at(7) + fmark;
         ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
     }
 
