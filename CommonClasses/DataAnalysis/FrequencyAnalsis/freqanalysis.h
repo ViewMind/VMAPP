@@ -54,6 +54,8 @@ public:
         qreal averageFrequency;
         qint32 expectedNumberOfDataSets;
         QList<FreqAnalyisDataSet> freqAnalysisForEachDataSet;
+        qint32 numberOfDataSetsWithLittleDataPoints;
+        qint32 numberOfDataSetsWithTooManyFreqGlitches;
         void analysisValid(const FreqCheckParameters p);
     };
 

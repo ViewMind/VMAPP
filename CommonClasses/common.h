@@ -146,6 +146,7 @@
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
 #define   FILE_EYE_REP_GEN_CONFIGURATION                "eye_rep_gen_conf"
+#define   FILE_MAIL_ERROR_LOG                           "ferror_mail_detail.html"
 #define   FILE_CHANGELOG_UPDATER                        "changelog"
 #define   FILE_NEW_LAUCHER_FILE                         "launcher.exe"
 #define   FILE_EYE_LAUCHER_FILE                         "EyeLauncherClient.exe"

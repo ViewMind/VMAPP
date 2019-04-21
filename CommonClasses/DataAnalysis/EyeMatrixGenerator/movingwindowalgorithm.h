@@ -41,6 +41,7 @@ struct FixationList{
     qint32 indexOfTrial(const QStringList &toFind) const;
     void fillFixationsLists();
     void displayFixList() const;
+    bool checkCoherenceInListSizes() const;
 };
 
 // Structure that contains the data of the Moving window algorithm.

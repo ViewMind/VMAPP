@@ -24,6 +24,10 @@ void FixationList::fillFixationsLists(){
     }
 }
 
+bool FixationList::checkCoherenceInListSizes() const{
+    return (trialID.size() == left.size()) && (left.size() == right.size());
+}
+
 qint32 FixationList::indexOfTrial(const QStringList &toFind) const{
     for (qint32 i = 0; i < trialID.size(); i++){
         if (toFind.size() == trialID.at(i).size()){

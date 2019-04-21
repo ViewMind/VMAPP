@@ -53,6 +53,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TABLE_EYE_RESULTS                       "tEyeResults"
 #define  TABLE_INSTITUTION                       "tInstitution"
 #define  TABLE_PLACEDPRODUCTS                    "tPlacedProducts"
+#define  TABLE_FDATA                             "tFData"
 
 #define  TABLE_PATDATA                           "tPatientData"
 #define  TABLE_PATIENTD_IDS                      "tPatientIDs"
@@ -135,6 +136,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TEYERES_COL_FDHITL                      "fdHitL"
 #define  TEYERES_COL_FDHITTOTAL                  "fdHitTotal"
 #define  TEYERES_COL_PROTOCOL                    "protocol"
+#define  TEYERES_COL_FERROR                      "ferror"
 
 // Columnn names for the institituion table
 #define  TINST_COL_KEYID                         "keyid"
@@ -162,6 +164,16 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TPLACED_PROD_COL_ETSERIAL               "etserial"
 #define  TPLACED_PROD_COL_CHINRESTMODEL          "chinrest_model"
 #define  TPLACED_PROD_COL_CHINRESTSN             "chinrest_serialnum"
+
+// Column names for the FData Table.
+#define  TFDATA_COL_KEYID                        "keyid"
+#define  TFDATA_COL_FREQ_TOL_PARAMS              "freq_tol_params"
+#define  TFDATA_COL_NODATA_SET_COUNT             "no_data_set_count"
+#define  TFDATA_COL_GLITCHED_SET_COUNT           "glicthed_set_count"
+#define  TFDATA_COL_FERROR                       "ferror"
+#define  TFDATA_COL_EYE_FIX_COUNT                "eye_fixation_counts"
+#define  TFDATA_COL_FILENAME                     "filename"
+#define  TFDATA_COL_TEYERESULT                   "teye_result"
 
 
 #endif //DBDESCRIPTION_H

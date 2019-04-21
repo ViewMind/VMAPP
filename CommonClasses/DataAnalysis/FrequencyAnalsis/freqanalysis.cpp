@@ -18,8 +18,8 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
     QStringList tempErrors;
     qreal tNumOfInvalidValues = 0;
 
-    qint32 numberOfDataSetsWithLittleDataPoints = 0;
-    qint32 numberOfDataSetsWithTooManyFreqGlitches = 0;
+    numberOfDataSetsWithLittleDataPoints = 0;
+    numberOfDataSetsWithTooManyFreqGlitches = 0;
 
     for (qint32 i = 0; i < freqAnalysisForEachDataSet.size(); i++){
 
@@ -61,7 +61,7 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
                                + ". AVG F in Trial: " + QString::number(trialFreq) + ". " + temp;
 
         if (ep > p.maxAllowedFreqGlitchesPerTrial){
-            errorList << "Data set " + QString::number(i) + " has " + QString::number(ep) + " % of frequency glitches";
+            errorList << "Data set " + fads.trialName + " has " + QString::number(ep) + " % of frequency glitches";
             numberOfDataSetsWithTooManyFreqGlitches++;
         }
 

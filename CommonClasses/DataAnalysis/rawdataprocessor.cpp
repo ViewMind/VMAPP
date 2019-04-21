@@ -55,6 +55,8 @@ void RawDataProcessor::run(){
     EyeMatrixProcessor emp((quint8)config->getInt(CONFIG_VALID_EYE));
     reportFileOutput = "";
 
+    frequencyErrorMailBody = "";
+
     QStringList studyID;
     EyeMatrixProcessor::DBHash dbdata;
     RawDataProcessor::TagParseReturn tagRet;
@@ -71,8 +73,11 @@ void RawDataProcessor::run(){
         EDPReading reading(config);
         tagRet = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
         matrixReading = tagRet.filePath;
+
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
         barGraphOptionsFromFixationList(reading.getEyeFixations(),dataReading);
+        generateFDBFile(dataReading,reading.getEyeFixations());
+
         QString report = emp.processReading(matrixReading,&dbdata);
 
         QFileInfo info(dataReading);
@@ -80,7 +85,8 @@ void RawDataProcessor::run(){
         dateForReport = datInfo.date + "_" + datInfo.hour;
         reportInfoText << "r";
 
-        if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+        freqErrorsOK = !dataReading.endsWith(".datf");
 
         if (!report.isEmpty()){
             studyID << "rd" + tagRet.version;
@@ -98,8 +104,12 @@ void RawDataProcessor::run(){
         QString bindingVersion = getVersionForBindingExperiment(true);
         tagRet = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
         matrixBindingBC = tagRet.filePath;
+
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
         barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingBC);
+        generateFDBFile(dataBindingBC,images.getEyeFixations());
+
+
         QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
 
         // The code needs to be saved only once as it should be the same for both BC and UC.
@@ -107,7 +117,9 @@ void RawDataProcessor::run(){
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getBindingFileInformation(info.baseName());
         reportInfoText << "b" + datInfo.extraInfo;
         if (dateForReport.isEmpty()) dateForReport = datInfo.date + "_" + datInfo.hour;
-        if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+
+        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+        freqErrorsOK = !dataBindingBC.endsWith(".datf");
 
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -136,15 +148,20 @@ void RawDataProcessor::run(){
         QString bindingVersion = getVersionForBindingExperiment(false);
         tagRet = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
         matrixBindingUC = tagRet.filePath;
+
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
         barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingUC);
+        generateFDBFile(dataBindingUC,images.getEyeFixations());
+
         QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
 
         // The code needs to be saved only once as it should be the same for both BC and UC.
         QFileInfo info(dataBindingUC);
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getBindingFileInformation(info.baseName());
         if (dateForReport.isEmpty()) dateForReport = datInfo.date + "_" + datInfo.hour;
-        if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+
+        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+        freqErrorsOK = !dataBindingUC.endsWith(".datf");
 
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -172,7 +189,10 @@ void RawDataProcessor::run(){
         matrixFielding = tagRet.filePath;
         fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
         QString report = emp.processFielding(matrixFielding,fielding.getNumberOfTrials());
-        if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+
+        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+        freqErrorsOK = !dataFielding.endsWith(".datf");
+
         if (!report.isEmpty()){
             studyID << "fd" + tagRet.version;
             emit(appendMessage(report,MSG_TYPE_STD));
@@ -217,11 +237,112 @@ void RawDataProcessor::run(){
     for (qint32 i = 0; i < cols.size(); i++){
         writer << cols.at(i) + " = " + QString::number(dbdata.value(cols.at(i))) + ";\n";
     }
+    QString ferrorvalue;
+    if (freqErrorsOK) ferrorvalue = "0";
+    else ferrorvalue = "1";
+
     writer << QString(TEYERES_COL_STUDY_ID) + " = " + studyID.join("_") + ";\n";
     writer << QString(TEYERES_COL_PROTOCOL) + " =  " + config->getString(CONFIG_PROTOCOL_NAME) + ";\n";
+    writer << QString(TEYERES_COL_FERROR) + " = " + ferrorvalue + ";\n";
     dbdatafile.close();
     emit(appendMessage("DB Data File Generated to: " + dbdatafile.fileName(),MSG_TYPE_SUCC));
 
+    // Generating mail body if not necessary.
+    if  (!frequencyErrorMailBody.isEmpty()){
+        QFile mailFile(config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_MAIL_ERROR_LOG);
+        if (!mailFile.open(QFile::WriteOnly)){
+            emit(appendMessage("Could not open " + mailFile.fileName() + " for writing the mail ferror file.",MSG_TYPE_ERR));
+            return;
+        }
+
+        QTextStream mailWriter(&mailFile);
+        mailWriter << "<p>" << frequencyErrorMailBody << "</p>";
+        mailFile.close();
+        emit(appendMessage("Mail body File Generated to: " + mailFile.fileName(),MSG_TYPE_SUCC));
+    }
+
+}
+
+void RawDataProcessor::generateFDBFile(const QString &datFile, const FixationList &fixList){
+    FreqAnalysis freqChecker;
+    FreqAnalysis::FreqAnalysisResult fres;
+    fres = freqChecker.analyzeFile(datFile);
+
+    if (!fres.errorList.isEmpty()){
+        emit(appendMessage("Error while doing freq analysis for FDB file (" + datFile + "): " + fres.errorList.join("<br>   "),MSG_TYPE_ERR));
+        return;
+    }
+
+    FreqAnalysis::FreqCheckParameters fcp;
+    fcp.fexpected                        = config->getReal(CONFIG_SAMPLE_FREQUENCY);
+    fcp.periodMax                        = config->getReal(CONFIG_TOL_MAX_PERIOD_TOL);
+    fcp.periodMin                        = config->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
+    fcp.maxAllowedFreqGlitchesPerTrial   = config->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
+    fcp.maxAllowedPercentOfInvalidValues = config->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
+    fcp.minNumberOfDataItems             = config->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+    fcp.maxAllowedFailedTrials           = config->getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
+    fres.analysisValid(fcp);
+
+    bool freqError = datFile.endsWith(".datf");
+    if (freqError == fres.errorList.isEmpty()){
+        // This should not happen. Hence a warning is emitted
+        emit(appendMessage("Difference in frequency check results (" + datFile + "): But found" + fres.errorList.join("<br>   "),MSG_TYPE_ERR));
+    }
+
+// Info on the file name.
+    QFileInfo info(datFile);
+
+    // Freq error flag
+    QString ferrorVal;
+    if (fres.errorList.isEmpty()) ferrorVal = "0";
+    else {
+        ferrorVal = "1";
+        QString html = "<br><b>" + info.baseName() + ":</b><ul>";
+        html = html + "<li>" + fres.errorList.join("</li><li>") + "</li></ul>";
+        frequencyErrorMailBody = frequencyErrorMailBody + "<br>" + html;
+    }
+
+    // Freq Tol Params;
+    QStringList freqTolParams;
+    freqTolParams << "HAP:" + config->getString(CONFIG_TOL_MAX_PERIOD_TOL);
+    freqTolParams << "LAP:" + config->getString(CONFIG_TOL_MIN_PERIOD_TOL);
+    freqTolParams << "HFG:" + config->getString(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
+    freqTolParams << "LNI:" + config->getString(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+    freqTolParams << "HPI:" + config->getString(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
+    freqTolParams << "AFD:" + config->getString(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
+
+    // Fixation List values
+    QStringList fixCountValues;
+    if (fixList.checkCoherenceInListSizes()){
+        QStringList left, right;
+        for (qint32 i = 0; i < fixList.trialID.size(); i++){
+            QString name = fixList.trialID.at(i).join("_");
+            left << name + ":" + QString::number(fixList.left.at(i).size());
+            right << name + ":" + QString::number(fixList.right.at(i).size());
+        }
+        fixCountValues << left.join(",") << right.join(",");
+    }
+    else{
+        emit(appendMessage("Fixation list for (" + datFile + "): is size incoherent. Not adding the data",MSG_TYPE_ERR));
+    }
+
+    QString fdbfile = info.path() + "/" + info.baseName() + ".fdb";
+    QFile file(fdbfile);
+    if (!file.open(QFile::WriteOnly)){
+        emit(appendMessage("Could not open FDB file " + fdbfile + " for writing",MSG_TYPE_ERR));
+        return;
+    }
+
+    QTextStream writer(&file);
+
+    writer << TFDATA_COL_FILENAME << " = " << info.baseName() + "." + info.suffix() << ";\n";
+    writer << TFDATA_COL_FERROR << " = " << ferrorVal << ";\n";
+    writer << TFDATA_COL_FREQ_TOL_PARAMS << " = " << freqTolParams.join(",") << ";\n";
+    writer << TFDATA_COL_EYE_FIX_COUNT << " = " << fixCountValues.join("-") << ";\n";
+    writer << TFDATA_COL_GLITCHED_SET_COUNT << " = " << QString::number(fres.numberOfDataSetsWithTooManyFreqGlitches) << ";\n";
+    writer << TFDATA_COL_NODATA_SET_COUNT << " = " << QString::number(fres.numberOfDataSetsWithLittleDataPoints) << ";\n";
+
+    file.close();
 }
 
 void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode, bool freqErrorsOk){
@@ -321,7 +442,7 @@ RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *proces
         emit(appendMessage("DONE!: " + id + " Matrix Generated. DAT File used: " + dataFile,1));
     }
 
-    tagRet.freqCheckErrors = getFrequencyCheckErrors(processor->getSamplingFrequencyCheck());
+    //tagRet.freqCheckErrors = getFrequencyCheckErrors(processor->getSamplingFrequencyCheck());
 
     tagRet.filePath = processor->getOuputMatrixFileName();
     return tagRet;
@@ -475,7 +596,7 @@ void RawDataProcessor::barGraphOptionsFromFixationList(const FixationList &fixli
         for (qint32 i = 0; i < fixlist.trialID.size(); i++){
             QStringList l = fixlist.trialID.at(i);
             // This check should alwasy pass. However if for some future bug the list does not contain any values the code inside would crash the program
-            if (l.size() == 2){                
+            if (l.size() == 2){
                 qint32 index = 0;
                 if (l.last() == "1") index = 1;
                 if (index == 0){

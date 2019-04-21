@@ -257,7 +257,7 @@ void EyeDataAnalyzer::processDirectory(){
     QStringList filters;
     QDir currentDir(currentDirectory);
     QStringList directories = currentDir.entryList(filters,QDir::Dirs|QDir::NoDotAndDotDot);
-    filters.clear(); filters << "*.dat";
+    filters.clear(); filters << "*.dat" << "*.datf";
     QStringList datFiles = currentDir.entryList(filters,QDir::Files);
     filters.clear(); filters << "*.rep";
     QStringList repFiles = currentDir.entryList(filters,QDir::Files);
@@ -410,6 +410,9 @@ void EyeDataAnalyzer::overWriteCurrentConfigurationWith(const ConfigurationManag
     }
     else processingParameters.merge(mng);
 
+    // Whatever the case the patient and doctor name are overwritten forcefully
+    processingParameters.addKeyValuePair(CONFIG_PATIENT_NAME,defaultReportCompletionParameters.getString(CONFIG_PATIENT_NAME));
+    processingParameters.addKeyValuePair(CONFIG_DOCTOR_NAME,defaultReportCompletionParameters.getString(CONFIG_DOCTOR_NAME));
 
     QStringList keys = processingParameters.getAllKeys();
     QString newText = "";

@@ -16,6 +16,7 @@
 #include "EyeMatrixProcessor/eyematrixprocessor.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
 #include "../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h"
+#include "../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
 
 #define   MSG_TYPE_STD                                   0
 #define   MSG_TYPE_SUCC                                  1
@@ -71,12 +72,15 @@ private:
     // The full path to the generated file.
     QString reportFileOutput;
 
+    // Body of email with frequency errors
+    QString frequencyErrorMailBody;
+
     //---------------------------------------- AUX Functions -------------------------------------------
 
     // The structure is used to return data gathered by each function so that it can be used in the main function.
     struct TagParseReturn{
         bool ok;
-        bool freqCheckErrors = false;
+        //bool freqCheckErrors = false;
         QString version;
         QString filePath;
     };
@@ -92,6 +96,8 @@ private:
     bool getResolutionToConfig(const QString &firstline);
 
     void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode ,bool freqErrorsOk);
+
+    void generateFDBFile(const QString &datFile, const FixationList &fixList);
 
     QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers & ans);
 
