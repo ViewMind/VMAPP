@@ -441,15 +441,15 @@ void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
     logForProcessing.appendSuccess("Processing done: Output at: " + outputFile);
     logForProcessing.appendSuccess("Current Report is: : "  + processor.getReportFileOutput());
 
-    // Generating the graphs.
-    QString graphFile = currentDirectory + "/graphs.html";
-    BarGrapher bgrapher;
-    for (qint32 i = 0; i < processor.getBarGraphOptions().size(); i++){
-        bgrapher.addGraphToDo(processor.getBarGraphOptions().at(i));
-    }
-    if (!bgrapher.createBarGraphHTML(graphFile)){
-        logForProcessing.appendError("When creating fix graphs: " + bgrapher.getLastError());
-    }
+//    // Generating the graphs.
+//    QString graphFile = currentDirectory + "/graphs.html";
+//    BarGrapher bgrapher;
+//    for (qint32 i = 0; i < processor.getBarGraphOptions().size(); i++){
+//        bgrapher.addGraphToDo(processor.getBarGraphOptions().at(i));
+//    }
+//    if (!bgrapher.createBarGraphHTML(graphFile)){
+//        logForProcessing.appendError("When creating fix graphs: " + bgrapher.getLastError());
+//    }
 }
 
 void EyeDataAnalyzer::on_pbDrawFixations_clicked()

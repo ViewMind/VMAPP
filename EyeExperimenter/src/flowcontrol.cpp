@@ -99,7 +99,10 @@ void FlowControl::saveReport(){
 void FlowControl::drawReport(){
     delayTimer.stop();
     ImageReportDrawer drawer;
-    if (!drawer.drawReport(reportsForPatient.getRepData(selectedReport),configuration)){
+    QVariantMap repmap = reportsForPatient.getRepData(selectedReport);
+    repmap[CONFIG_DOCTOR_NAME] = configuration->getString(CONFIG_DOCTOR_NAME);
+    repmap[CONFIG_PATIENT_NAME] = configuration->getString(CONFIG_PATIENT_NAME);
+    if (!drawer.drawReport(repmap,configuration)){
         logger.appendError("Could not save the requested report file to: " + configuration->getString(CONFIG_IMAGE_REPORT_PATH));
     }
     emit(reportGenerationDone());
@@ -615,8 +618,10 @@ void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &
 QStringList FlowControl::getSelectedReportInfo(){
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
     QStringList ans;
-    ans << report.value(CONFIG_DOCTOR_NAME).toString();
-    ans << report.value(CONFIG_PATIENT_NAME).toString();
+    //ans << report.value(CONFIG_DOCTOR_NAME).toString();
+    //ans << report.value(CONFIG_PATIENT_NAME).toString();
+    ans << configuration->getString(CONFIG_DOCTOR_NAME);
+    ans << configuration->getString(CONFIG_PATIENT_NAME);
     ans << report.value(CONFIG_PATIENT_AGE).toString();
     ans << report.value(CONFIG_REPORT_DATE).toString();
     ans << report.value(CONFIG_RESULTS_FREQ_ERRORS_PRESENT).toString();
