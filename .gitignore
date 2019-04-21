@@ -38,4 +38,8 @@ LocalDBMng/exe/
 Scripts/server_scripts/connect/s3bkp/
 Scripts/server_scripts/bkp*/
 Scripts/server_scripts/05InformationDownload/rawdata/
+Scripts/php/composer.json
+Scripts/php/composer.lock
+Scripts/php/vendor/
+
 

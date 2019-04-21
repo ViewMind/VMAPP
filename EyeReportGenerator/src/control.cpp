@@ -18,6 +18,14 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_YPX_2_MM] = cmd;
     cv[CONFIG_MIN_FIXATION_LENGTH] = cmd;
 
+    // The frequency check paramters
+    cv[CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL] = cmd;
+    cv[CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES] = cmd;
+    cv[CONFIG_TOL_MAX_PERIOD_TOL] = cmd;
+    cv[CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL] = cmd;
+    cv[CONFIG_TOL_MIN_PERIOD_TOL] = cmd;
+    cv[CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS] = cmd;
+
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_LATENCY_ESCAPE_RAD] = cmd;
@@ -27,8 +35,6 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_PATIENT_AGE] = cmd;
 
     cmd.clear();
-    cv[CONFIG_DOCTOR_NAME]     = cmd;
-    cv[CONFIG_PATIENT_NAME]    = cmd;
     cv[CONFIG_REPORT_FILENAME] = cmd;
     cv[CONFIG_PROTOCOL_NAME]   = cmd;
 

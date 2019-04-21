@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.cpp \
     ../../CommonClasses/HTMLWriter/htmlwriter.cpp \
     ../../CommonClasses/Experiments/bindingparser.cpp \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
+    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp
 
 HEADERS  += \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
@@ -49,6 +50,8 @@ HEADERS  += \
     ../../CommonClasses/HTMLWriter/htmlwriter.h \
     ../../CommonClasses/SQLConn/dbdescription.h \
     ../../CommonClasses/Experiments/bindingparser.h \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.h
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
+    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h
 
-RESOURCES +=
+RESOURCES += \
+    bargraphs.qrc

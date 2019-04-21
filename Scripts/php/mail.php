@@ -1,10 +1,14 @@
 <?php
 
+// SERVER REQUIRES
 // If necessary, modify the path in the require statement below to refer to the 
 // location of your Composer autoload.php file.
-require '/home/ec2-user/composer/vendor/autoload.php';
+// require '/home/ec2-user/composer/vendor/autoload.php';
+// require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
 
-require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
+// LOCAL DEBIAN REQUIRE
+use PHPMailer\PHPMailer\PHPMailer;
+require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';
 
 // Instantiate a new PHPMailer 
 $mail = new PHPMailer;
@@ -48,7 +52,7 @@ $mail->Body = '<h1>Email Test</h1>
     interface using the <a href="https://github.com/PHPMailer/PHPMailer">
     PHPMailer</a> class.</p>';
 
-$mail->addAttachment("test.html");
+$mail->addAttachment("example_graphs.html");
 
 // Tells PHPMailer to use SMTP authentication
 $mail->SMTPAuth = true;
