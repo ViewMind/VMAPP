@@ -19,11 +19,12 @@ server_address = 192.168.1.10;
 #                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
 
-inst_pass = 95a0cbb611daa3956f09d4d77708597751b9cb6a6607aa889f5aac4263cd2836;
+# Password: =mrUG:aU8U
+inst_pass = d5f7514e82a0733a57cee1ee14b1d032b06bb57f2e02267801a435cb52db0d17;
 eyeexp_number = 0000;
-inst_et_serial = GP3HD-18276280;
-inst_name = Strathclyde;
-inst_uid = 1242673082;
+inst_et_serial = 0000;
+inst_name = Test Institution;
+inst_uid = 0;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #

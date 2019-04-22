@@ -76,7 +76,8 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
         barGraphOptionsFromFixationList(reading.getEyeFixations(),dataReading);
-        freqErrorsOK = freqErrorsOK && generateFDBFile(dataReading,reading.getEyeFixations());
+        bool temp = generateFDBFile(dataReading,reading.getEyeFixations());
+        freqErrorsOK = freqErrorsOK && temp;
 
         QString report = emp.processReading(matrixReading,&dbdata);
 
@@ -106,7 +107,8 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
         barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingBC);
-        freqErrorsOK = freqErrorsOK && generateFDBFile(dataBindingBC,images.getEyeFixations());
+        bool temp = generateFDBFile(dataBindingBC,images.getEyeFixations());
+        freqErrorsOK = freqErrorsOK && temp;
 
         QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
 
@@ -148,7 +150,8 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
         barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingUC);
-        freqErrorsOK = freqErrorsOK && generateFDBFile(dataBindingUC,images.getEyeFixations());
+        bool temp = generateFDBFile(dataBindingUC,images.getEyeFixations());
+        freqErrorsOK = freqErrorsOK && temp;
 
         QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
 
@@ -271,6 +274,9 @@ void RawDataProcessor::run(){
 }
 
 bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationList &fixList){
+
+    qWarning() << "FDB WITH" << datFile;
+
     FreqAnalysis freqChecker;
     FreqAnalysis::FreqAnalysisResult fres;
     fres = freqChecker.analyzeFile(datFile);
