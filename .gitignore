@@ -10,6 +10,7 @@ BindingDesigner/exe/
 SSLClientDev/exe/
 EyeServer/exe
 EyeServer/bin/etdir
+EyeServer/bin/EyeServerMonitor
 EyeServer/bin/EyeServer
 EyeServer/bin/eyeexp/changelog/changelog_*
 EyeReportGenerator/bin/
@@ -23,6 +24,7 @@ EyeServer/bin/output/
 RawDataServer/bin/
 ReportViewerDev/
 SQLClient/bin/
+EyeServerMonitor/bin
 Doc/*.aux
 Doc/*.log
 Doc/*.gz

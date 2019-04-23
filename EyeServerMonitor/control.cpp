@@ -13,7 +13,7 @@ Control::Control(QObject *parent):QObject(parent)
 
 void Control::launchServer(){
     logger.appendStandard("Starting server");
-    eyeServer.setProgram("EyeServer");
+    eyeServer.setProgram("./EyeServer");
     eyeServer.start();
 }
 
