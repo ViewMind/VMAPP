@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
+#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
 
 class Control : public QObject
