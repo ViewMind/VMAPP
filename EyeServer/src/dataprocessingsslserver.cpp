@@ -47,8 +47,15 @@ void DataProcessingSSLServer::on_lostConnection(){
 void DataProcessingSSLServer::on_newConnection(){
 
     // New connection is available.
+#ifdef FULL_VERBOSE
+    log.appendStandard("New data processign connection: ID " + QString::number(idGen));
+#endif
     QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
     SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen,config->getString(CONFIG_S3_ADDRESS));
+
+#ifdef FULL_VERBOSE
+    log.appendStandard("Checking validity");
+#endif
 
     if (!socket->isValid()) {
         log.appendError("Could not cast incomming socket connection");
@@ -57,6 +64,10 @@ void DataProcessingSSLServer::on_newConnection(){
 
     idGen++;
 
+#ifdef FULL_VERBOSE
+    log.appendStandard("Saving to structure");
+#endif
+
     // Saving the socket.
     sockets[socket->getID()] = socket;
     queue << socket->getID();
@@ -64,17 +75,29 @@ void DataProcessingSSLServer::on_newConnection(){
     // Doing the connection SIGNAL-SLOT
     connect(socket,&SSLIDSocket::sslSignal,this,&DataProcessingSSLServer::on_newSSLSignal);
 
+#ifdef FULL_VERBOSE
+    log.appendStandard("Starting the SSL Procedure");
+#endif
+
     // The SSL procedure.
     sslsocket->setPrivateKey(":/certificates/server.key");
     sslsocket->setLocalCertificate(":/certificates/server.csr");
     sslsocket->setPeerVerifyMode(QSslSocket::VerifyNone);
     sslsocket->startServerEncryption();
 
+#ifdef FULL_VERBOSE
+    log.appendStandard("Finished new connection");
+#endif
+
 }
 
 void DataProcessingSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
 
     //qWarning() << "DATA PROCESSING SSL SIGNAL" << signalType;
+
+#ifdef FULL_VERBOSE
+    log.appendStandard("Processing signal type from socket " + QString::number(socket) + " of type " + QString::number(signaltype) + ". Exists: " + QString::number(sockets.contains(socket)));
+#endif
 
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
@@ -122,9 +145,17 @@ void DataProcessingSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype)
         changedState(socket);
         break;
     }
+
+#ifdef FULL_VERBOSE
+    log.appendStandard("Finished new ssl signal");
+#endif
 }
 
 void DataProcessingSSLServer::sendReport(quint64 socket){
+
+#ifdef FULL_VERBOSE
+    log.appendStandard("Send report for socket " + QString::number(socket) + ". Exists: " + QString::number(sockets.contains(socket)));
+#endif
 
     // Opening connection to the database.
     if (!initAllDBS()) return;
@@ -136,9 +167,17 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
         return;
     }
 
+#ifdef FULL_VERBOSE
+    log.appendStandard("Generated all the file names for ERG");
+#endif
+
     // Data is saved to the data base ONLY when NOT in demo mode.
     QString logid;
     if (sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
+
+#ifdef FULL_VERBOSE
+        log.appendStandard("This is not a demo Transaction");
+#endif
 
         // Since the processing is done, now the data can be saved to the database
         ConfigurationManager toDB;
@@ -146,6 +185,9 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
 
         if (toDB.loadConfiguration(ergf.dbfFile,COMMON_TEXT_CODEC)){
 
+#ifdef FULL_VERBOSE
+            log.appendStandard("Loaded dbffile " + ergf.dbfFile);
+#endif
             QStringList values;
             QStringList columns = toDB.getAllKeys();
             for (qint32 i = 0; i < columns.size(); i++){

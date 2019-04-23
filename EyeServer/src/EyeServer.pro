@@ -4,10 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core widgets network sql
+QT       += core network sql
 TARGET   = EyeServer
 TEMPLATE = app
-
 
 OBJECTS_DIR = OBJS
 MOC_DIR     = MOCS
