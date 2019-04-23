@@ -75,7 +75,9 @@ void Control::sendMail(const QString &err){
     writer << "$mail->Host = 'email-smtp.us-east-1.amazonaws.com';\n";
     writer << "$mail->Subject = 'ViewMind EyeServer Stopped Working';\n";
     writer << "$mail->addAddress('aarelovich@gmail.com', 'Ariel Arelovich');\n";
-
+#ifdef SERVER_PRODUCTION
+    writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
+#endif
     // The HTML-formatted body of the email
     writer << "$mail->Body = '" + err + "';\n";
     writer << "$mail->SMTPAuth = true;\n";
