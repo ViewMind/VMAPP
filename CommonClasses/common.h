@@ -171,6 +171,7 @@
 #define  READING_LANG_SPANISH                           "es"
 #define  READING_LANG_ENGLISH                           "en"
 #define  READING_LANG_GERMAN                            "de"
+#define  READING_LANG_FRENCH                            "fr"
 
 // TCP Ports.
 static const quint16 TCP_PORT_RAW_DATA_SERVER            = 54918;

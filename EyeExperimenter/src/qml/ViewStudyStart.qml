@@ -278,7 +278,7 @@ VMBase {
     VMComboBox{
         id: cbReadingLang
         width: cbEyeMsg.width
-        vmModel: ["English", "Español", "Deutsche"];
+        vmModel: ["English", "Español", "Deutsche", "Français"];
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: labelNTargets.bottom
@@ -361,6 +361,10 @@ VMBase {
                         break;
                     case 2:
                         readlang = "de"
+                        break;
+                    case 3:
+                        readlang = "fr";
+                        break;
                     }
                     loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,readlang,false);
 

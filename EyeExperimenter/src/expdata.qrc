@@ -8,5 +8,6 @@
         <file>experiment_data/Reading_de.dat</file>
         <file>experiment_data/Reading_en.dat</file>
         <file>experiment_data/Reading_es.dat</file>
+        <file>experiment_data/Reading_fr.dat</file>
     </qresource>
 </RCC>
