@@ -30,7 +30,7 @@ public:
     static const quint8 SSL_SIGNAL_ENCRYPTED     = 0;
     static const quint8 SSL_SIGNAL_STATE_CHANGED = 1;
     static const quint8 SSL_SIGNAL_SSL_ERROR     = 2;
-    static const quint8 SSL_SIGNAL_ERROR         = 3;
+    static const quint8 SSL_SIGNAL_SOCKET_ERROR  = 3;
     static const quint8 SSL_SIGNAL_DATA_RX_DONE  = 4;
     static const quint8 SSL_SIGNAL_DISCONNECTED  = 5;
     static const quint8 SSL_SIGNAL_TIMEOUT       = 6;
@@ -56,6 +56,8 @@ public:
 
     bool isValid() const { return sslSocket != nullptr; }
     quint64 getID() const {return ID;}
+
+    static QString SSLSignalToString(quint8 signal);
 
 signals:
     void sslSignal(quint64 id, quint8 signalID);

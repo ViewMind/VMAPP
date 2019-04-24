@@ -8,7 +8,7 @@
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/server_defines.h"
-#include "sslidsocket.h"
+#include "sslidsocketmap.h"
 #include "ssllistener.h"
 
 class DataProcessingSSLServer: public QObject
@@ -52,7 +52,8 @@ private:
     DBInterface *dbConnPatData;
 
     // The queue of information that needs to be processed
-    QHash<quint64,SSLIDSocket*> sockets;
+    //QHash<quint64,SSLIDSocket*> sockets;
+    SSLIDSocketMap sockets;
     QList<quint64> queue;
 
     // Keep count of the number of parallel proceses
@@ -67,7 +68,7 @@ private:
     void sslErrorsFound(quint64 id);
 
     // Remove form the map and the list
-    void removeSocket(quint64 id);
+    void removeSocket(quint64 id, const QString &where);
 
     // Launch processor
     void lauchEyeReportProcessor(quint64 socket);

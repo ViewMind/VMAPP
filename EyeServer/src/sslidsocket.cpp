@@ -6,6 +6,21 @@ SSLIDSocket::SSLIDSocket():QObject(){
     s3Address = "";
 }
 
+QString SSLIDSocket::SSLSignalToString(quint8 signal){
+    switch (signal){
+    case SSL_SIGNAL_DATA_RX_DONE: return "DATA RX DONE";
+    case SSL_SIGNAL_DATA_RX_ERROR: return "DATA RX ERROR";
+    case SSL_SIGNAL_DISCONNECTED: return "DISCONNECTED";
+    case SSL_SIGNAL_ENCRYPTED: return "ENCRYPTED";
+    case SSL_SIGNAL_SOCKET_ERROR: return "SOCKET ERROR";
+    case SSL_SIGNAL_PROCESS_DONE: return "PROCESS DONE";
+    case SSL_SIGNAL_SSL_ERROR: return "SSL_ERROR";
+    case SSL_SIGNAL_STATE_CHANGED: return "STATE CHANGED";
+    case SSL_SIGNAL_TIMEOUT: return "TIMEOUT";
+    }
+    return "UNKNOWN CODE: " + QString::number(signal);
+}
+
 SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, quint64 id, const QString &s3):QObject()
 {
 
@@ -133,7 +148,7 @@ void SSLIDSocket::on_readyRead(){
 
 void SSLIDSocket::on_socketError(QAbstractSocket::SocketError error){
     Q_UNUSED(error);
-    emit(sslSignal(ID,SSL_SIGNAL_ERROR));
+    emit(sslSignal(ID,SSL_SIGNAL_SOCKET_ERROR));
 }
 
 void SSLIDSocket::on_socketStateChanged(QAbstractSocket::SocketState state){

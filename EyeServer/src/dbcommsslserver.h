@@ -6,7 +6,7 @@
 #include "../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/server_defines.h"
-#include "sslidsocket.h"
+#include "sslidsocketmap.h"
 #include "ssllistener.h"
 
 #define  DIRNAME_UPDATE_DIR                "etdir"
@@ -49,13 +49,10 @@ private:
 
     // Listens for new connections and stores them in the sockets.
     SSLListener *listener;
-    QHash<quint64,SSLIDSocket*> sockets;
+    SSLIDSocketMap sockets;
 
     // Generates ever increasing values for unique socket ids.
     quint64 idGen;
-
-    // Function that cleanly removes a socket
-    void removeSocket(quint64 id);
 
     // Auxiliary functions for error handling and state changing
     void changedState(quint64 id);

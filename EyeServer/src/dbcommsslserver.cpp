@@ -47,10 +47,12 @@ void DBCommSSLServer::on_newConnection(){
     }
 
     // Saving the socket.
-    sockets[socket->getID()] = socket;
+    sockets.addSocket(socket);
 
     // Doing the connection SIGNAL-SLOT
     connect(socket,&SSLIDSocket::sslSignal,this,&DBCommSSLServer::on_newSSLSignal);
+
+    log.appendStandard("New connection");
 
     // The SSL procedure.
     sslsocket->setPrivateKey(":/certificates/server.key");
@@ -64,43 +66,45 @@ void DBCommSSLServer::on_newConnection(){
 // Handling all signals
 void DBCommSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
 
+    QString where = "DB on_newSSLSignal: " + SSLIDSocket::SSLSignalToString(signaltype);
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(socket,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
+        return;
+    }
+
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
-        if (sockets.contains(socket)){
-            log.appendStandard("Lost connection from: " + sockets.value(socket)->socket()->peerAddress().toString());
-            removeSocket(socket);
-        }
+        log.appendStandard("Lost connection from: " + sslsocket->socket()->peerAddress().toString());
+        sockets.deleteSocket(socket,where);
         break;
     case SSLIDSocket::SSL_SIGNAL_ENCRYPTED:
-        log.appendSuccess("SSL Handshake completed for address: " + sockets.value(socket)->socket()->peerAddress().toString());
-        sockets.value(socket)->startTimeoutTimer(config->getInt(CONFIG_DATA_REQUEST_TIMEOUT)*1000);
+        log.appendSuccess("SSL Handshake completed for address: " + sslsocket->socket()->peerAddress().toString());
+        sslsocket->startTimeoutTimer(config->getInt(CONFIG_DATA_REQUEST_TIMEOUT)*1000);
         break;
-    case SSLIDSocket::SSL_SIGNAL_ERROR:
+    case SSLIDSocket::SSL_SIGNAL_SOCKET_ERROR:
         socketErrorFound(socket);
         break;
     case SSLIDSocket::SSL_SIGNAL_DATA_RX_DONE:
         // Information has arrived ok. Starting the process.
         //log.appendStandard("Done buffering data for " + QString::number(socket));
-        sockets.value(socket)->stopTimer();
-        if (sockets.value(socket)->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_EYEEXP_ID)) processUpdateRequest(socket);
+        sslsocket->stopTimer();
+        if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_EYEEXP_ID)) processUpdateRequest(socket);
         else processSQLRequest(socket);
         break;
     case SSLIDSocket::SSL_SIGNAL_DATA_RX_ERROR:
-        sockets.value(socket)->stopTimer();
+        sslsocket->stopTimer();
         // Data is most likely corrupted.
-        if (sockets.contains(socket)){
-            sockets.value(socket)->stopTimer();
-            log.appendError("Buffering data from: " + sockets.value(socket)->socket()->peerAddress().toString() + " gave an error");
-            removeSocket(socket);
-        }
+        sslsocket->stopTimer();
+        log.appendError("Buffering data from: " + sslsocket->socket()->peerAddress().toString() + " gave an error");
+        sockets.deleteSocket(socket,where);
         break;
     case SSLIDSocket::SSL_SIGNAL_TIMEOUT:
         // This means that the data did not arrive on time.
-        if (sockets.contains(socket)){
-            sockets.value(socket)->stopTimer();
-            log.appendError("Data from " + sockets.value(socket)->socket()->peerAddress().toString() + " did not arrive in time. SocketID: " + QString::number(socket));
-            removeSocket(socket);
-        }
+        sslsocket->stopTimer();
+        log.appendError("Data from " + sslsocket->socket()->peerAddress().toString() + " did not arrive in time. SocketID: " + QString::number(socket));
+        sockets.deleteSocket(socket,where);
         break;
     case SSLIDSocket::SSL_SIGNAL_PROCESS_DONE:
         //This signal should never be emitted here.
@@ -112,52 +116,51 @@ void DBCommSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
         changedState(socket);
         break;
     }
-}
-
-
-void DBCommSSLServer::removeSocket(quint64 id){
-    if (sockets.contains(id)) {
-        if (sockets.value(id)->isValid()){
-            sockets.value(id)->socket()->disconnectFromHost();
-        }
-        sockets.remove(id);
-    }
+    sockets.releaseSocket(socket,where);
 }
 
 
 void DBCommSSLServer::socketErrorFound(quint64 id){
 
-    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
-    // be removed once. After that, te program crashes.
-    if (!sockets.contains(id)) return;
+    QString where = "DB socketErrorFound: ";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(id,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+        return;
+    }
 
-    QAbstractSocket::SocketError error = sockets.value(id)->socket()->error();
-    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    QAbstractSocket::SocketError error = sslsocket->socket()->error();
+    QHostAddress addr = sslsocket->socket()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    if (error != QAbstractSocket::RemoteHostClosedError)
+    if (error != QAbstractSocket::RemoteHostClosedError){
         log.appendError(QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
-    else
-        log.appendStandard(QString("Closed connection from Address: ") + addr.toString());
-
+        sockets.deleteSocket(id,where);
+    }
     // Eliminating it from the list.
-    removeSocket(id);
+    sockets.releaseSocket(id,where);
 
 }
 
 void DBCommSSLServer::sslErrorsFound(quint64 id){
 
-    // Check necessary since multipe signasl are triggered if the other socket dies. Can only
-    // be removed once. After that, te program crashes.
-    if (!sockets.contains(id)) return;
+    QString where = "DB sslErrorsFound: ";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(id,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+        return;
+    }
 
-    QList<QSslError> errorlist = sockets.value(id)->socket()->sslErrors();
-    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    QList<QSslError> errorlist = sslsocket->socket()->sslErrors();
+    QHostAddress addr = sslsocket->socket()->peerAddress();
     for (qint32 i = 0; i < errorlist.size(); i++){
         log.appendError("SSL Error," + errorlist.at(i).errorString() + " from Address: " + addr.toString());
     }
 
     // Eliminating it from the list.
-    removeSocket(id);
+    sockets.deleteSocket(id,where);
+    sockets.releaseSocket(id,where);
 
 }
 
@@ -343,9 +346,17 @@ DBInterface * DBCommSSLServer::getDBIFFromTable(const QString &tableName){
 
 void DBCommSSLServer::processSQLRequest(quint64 socket){
 
+    QString where = "DB processSQLRequest: ";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(socket,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
+        return;
+    }
+
     if (!initAllDBS()) return;
 
-    DataPacket dp = sockets.value(socket)->getDataPacket();
+    DataPacket dp = sslsocket->getDataPacket();
     QString tx_type = dp.getField(DataPacket::DPFI_DB_QUERY_TYPE).data.toString();
 
     // Which tables affect which transactions:
@@ -457,9 +468,9 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
     }
 
     QByteArray ba = tx.toByteArray();
-    qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+    qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
     if (num != ba.size()){
-        log.appendError("Failure sending db ans to host: " + sockets.value(socket)->socket()->peerAddress().toString());
+        log.appendError("Failure sending db ans to host: " + sslsocket->socket()->peerAddress().toString());
     }
 
     // Closing connection to db.
@@ -468,20 +479,29 @@ void DBCommSSLServer::processSQLRequest(quint64 socket){
     dbConnPatData->close();
 
     // In this case the transaction is done.
-    removeSocket(socket);
+    sockets.releaseSocket(socket,where);
 
 }
 
 void DBCommSSLServer::processUpdateRequest(quint64 socket){
 
-    QString inst_uid = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
-    QString eyeexp_number = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYEEXP_ID).data.toString();
+    QString where = "DB processUpdateRequest: ";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(socket,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
+        return;
+    }
+
+    QString inst_uid = sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
+    QString eyeexp_number = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYEEXP_ID).data.toString();
 
     // Verifying that the directory exists
     QString basePath = QString(DIRNAME_UPDATE_DIR) + "/" + inst_uid + "/" + eyeexp_number;
     if (!QDir(basePath).exists()){
         log.appendError("Could not find update directory: " + basePath);
         sendUpdateAns(DataPacket(),socket,"FAILED");
+        sockets.releaseSocket(socket,where);
         return;
     }
 
@@ -495,30 +515,33 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     if (!QDir(logDirPath).exists()){
         log.appendError("Could not create LOG Directory: " + logDirPath);
         sendUpdateAns(DataPacket(),socket,"FAILED");
+        sockets.releaseSocket(socket,where);
         return;
     }
     if (!QDir(flogDirPath).exists()){
         log.appendError("Could not create FLOG Directory: " + flogDirPath);
         sendUpdateAns(DataPacket(),socket,"FAILED");
+        sockets.releaseSocket(socket,where);
         return;
     }
 
 
     // Saving the log files
     QString timestamp = "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss");
-    sockets.value(socket)->getDataPacket().saveFile(logDirPath,DataPacket::DPFI_UPDATE_LOGFILE,timestamp);
+    sslsocket->getDataPacket().saveFile(logDirPath,DataPacket::DPFI_UPDATE_LOGFILE,timestamp);
 
     // Saving flogs if any.
-    if (sockets.value(socket)->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_FLOGNAMES)){
+    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_FLOGNAMES)){
 
-        QString filenames_str = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_FLOGNAMES).data.toString();
-        QString filecontents_str = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_FLOGCONTENT).data.toString();
+        QString filenames_str = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_FLOGNAMES).data.toString();
+        QString filecontents_str = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_FLOGCONTENT).data.toString();
         QStringList filenames = filenames_str.split(DB_LIST_IN_COL_SEP);
         QStringList filecontens = filecontents_str.split(DB_LIST_IN_COL_SEP);
 
         if (filecontens.size() != filenames.size()){
             log.appendError("Number of flog filenames : (" + QString::number(filecontens.size())  + ") does not match the number of file contents (" + QString::number(filenames.size()) + ")");
             sendUpdateAns(DataPacket(),socket,"FAILED");
+            sockets.releaseSocket(socket,where);
             return;
         }
 
@@ -537,9 +560,9 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
 
     // Checking the hashes sent.
     DataPacket tx;
-    QString eyeexehash      = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYEEXP).data.toString();
-    QString confighash      = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_CONFIG).data.toString();
-    QString eyelauncherhash = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYELAUNCHER).data.toString();
+    QString eyeexehash      = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYEEXP).data.toString();
+    QString confighash      = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_CONFIG).data.toString();
+    QString eyelauncherhash = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_EYELAUNCHER).data.toString();
 
     QString hash = DataPacket::getFileHash(FILENAME_EYE_LAUNCHER);
     if (hash.isEmpty()){
@@ -573,7 +596,7 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
         }
 
         // Getting the laanguage in order to return the change log.
-        QString lang = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
+        QString lang = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
         QString changeLogFilepath = basePath + "/" + QString(FILENAME_CHANGELOG) + "_" + lang;
         if (!tx.addFile(changeLogFilepath,DataPacket::DPFI_UPDATE_CHANGES)){
             log.appendError("Could not add local change log to send back: " + changeLogFilepath);
@@ -581,34 +604,39 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     }
 
     sendUpdateAns(tx,socket,"OK");
+    sockets.releaseSocket(socket,where);
 
 }
 
 void DBCommSSLServer::sendUpdateAns(DataPacket tx, quint64 socket, const QString &ans){
     tx.addString(ans,DataPacket::DPFI_UPDATE_RESULT);
     QByteArray ba = tx.toByteArray();
-    if (!sockets.contains(socket)){
-        log.appendError("When sending update answer, socket no longer found in list");
+
+    QString where = "DB sendUpdateAns: ";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(socket,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
         return;
     }
 
-    qint64 num = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+    qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
     if (num != ba.size()){
-        log.appendError("Failure sending update answer to: " + sockets.value(socket)->socket()->peerAddress().toString());
+        log.appendError("Failure sending update answer to: " + sslsocket->socket()->peerAddress().toString());
     }
-    removeSocket(socket);
+
+    sockets.releaseSocket(socket,where);
 }
 
 void DBCommSSLServer::changedState(quint64 id){
 
+    Q_UNUSED(id)
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
-    if (!sockets.contains(id)) return;
-
-    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
-    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
-    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
+    //    QAbstractSocket::SocketState state = sslsocket->socket()->state();
+    //    QHostAddress addr = sslsocket->socket()->peerAddress();
+    //    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+    //    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
 
 }
 

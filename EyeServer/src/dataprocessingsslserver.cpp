@@ -47,15 +47,8 @@ void DataProcessingSSLServer::on_lostConnection(){
 void DataProcessingSSLServer::on_newConnection(){
 
     // New connection is available.
-#ifdef FULL_VERBOSE
-    log.appendStandard("New data processign connection: ID " + QString::number(idGen));
-#endif
     QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
     SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen,config->getString(CONFIG_S3_ADDRESS));
-
-#ifdef FULL_VERBOSE
-    log.appendStandard("Checking validity");
-#endif
 
     if (!socket->isValid()) {
         log.appendError("Could not cast incomming socket connection");
@@ -64,20 +57,12 @@ void DataProcessingSSLServer::on_newConnection(){
 
     idGen++;
 
-#ifdef FULL_VERBOSE
-    log.appendStandard("Saving to structure");
-#endif
-
     // Saving the socket.
-    sockets[socket->getID()] = socket;
+    sockets.addSocket(socket);
     queue << socket->getID();
 
     // Doing the connection SIGNAL-SLOT
     connect(socket,&SSLIDSocket::sslSignal,this,&DataProcessingSSLServer::on_newSSLSignal);
-
-#ifdef FULL_VERBOSE
-    log.appendStandard("Starting the SSL Procedure");
-#endif
 
     // The SSL procedure.
     sslsocket->setPrivateKey(":/certificates/server.key");
@@ -85,55 +70,47 @@ void DataProcessingSSLServer::on_newConnection(){
     sslsocket->setPeerVerifyMode(QSslSocket::VerifyNone);
     sslsocket->startServerEncryption();
 
-#ifdef FULL_VERBOSE
-    log.appendStandard("Finished new connection");
-#endif
-
 }
 
 void DataProcessingSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype){
 
     //qWarning() << "DATA PROCESSING SSL SIGNAL" << signalType;
-
-#ifdef FULL_VERBOSE
-    log.appendStandard("Processing signal type from socket " + QString::number(socket) + " of type " + QString::number(signaltype) + ". Exists: " + QString::number(sockets.contains(socket)));
-#endif
+    QString where = "on_newSSLSignal: " + SSLIDSocket::SSLSignalToString(signaltype);
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(socket,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
+        return;
+    }
 
     switch (signaltype){
     case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
-        if (sockets.contains(socket)){
-            log.appendStandard("Lost connection from: " + sockets.value(socket)->socket()->peerAddress().toString());
-            removeSocket(socket);
-        }
+        log.appendStandard("Terminated connection: " + sslsocket->socket()->peerAddress().toString());
+        removeSocket(socket,where);
         break;
     case SSLIDSocket::SSL_SIGNAL_ENCRYPTED:
-        log.appendSuccess("SSL Handshake completed for address: " + sockets.value(socket)->socket()->peerAddress().toString());
+        log.appendSuccess("SSL Handshake completed for address: " + sslsocket->socket()->peerAddress().toString());
         requestProcessInformation();
         break;
-    case SSLIDSocket::SSL_SIGNAL_ERROR:
+    case SSLIDSocket::SSL_SIGNAL_SOCKET_ERROR:
         socketErrorFound(socket);
         break;
     case SSLIDSocket::SSL_SIGNAL_DATA_RX_DONE:
         // Information has arrived ok. Starting the process.
-        sockets.value(socket)->stopTimer();
+        sslsocket->stopTimer();
         lauchEyeReportProcessor(socket);
         break;
     case SSLIDSocket::SSL_SIGNAL_DATA_RX_ERROR:
-        sockets.value(socket)->stopTimer();
+        sslsocket->stopTimer();
         // Data is most likely corrupted.
-        if (sockets.contains(socket)){
-            sockets.value(socket)->stopTimer();
-            log.appendError("Data from " + sockets.value(socket)->socket()->peerAddress().toString() + " was corrupted or contained errors");
-            removeSocket(socket);
-        }
+        log.appendError("Data from " + sslsocket->socket()->peerAddress().toString() + " was corrupted or contained errors");
+        removeSocket(socket,where);
         break;
     case SSLIDSocket::SSL_SIGNAL_TIMEOUT:
         // This means that the data did not arrive on time.
-        if (sockets.contains(socket)){
-            sockets.value(socket)->stopTimer();
-            log.appendError("Data from " + sockets.value(socket)->socket()->peerAddress().toString() + " did not arrive in time");
-            removeSocket(socket);
-        }
+        sslsocket->stopTimer();
+        log.appendError("Data from " + sslsocket->socket()->peerAddress().toString() + " did not arrive in time");
+        removeSocket(socket,where);
         break;
     case SSLIDSocket::SSL_SIGNAL_PROCESS_DONE:
         sendReport(socket);
@@ -146,38 +123,34 @@ void DataProcessingSSLServer::on_newSSLSignal(quint64 socket, quint8 signaltype)
         break;
     }
 
-#ifdef FULL_VERBOSE
-    log.appendStandard("Finished new ssl signal");
-#endif
+    sockets.releaseSocket(socket,where);
+
 }
 
 void DataProcessingSSLServer::sendReport(quint64 socket){
 
-#ifdef FULL_VERBOSE
-    log.appendStandard("Send report for socket " + QString::number(socket) + ". Exists: " + QString::number(sockets.contains(socket)));
-#endif
-
     // Opening connection to the database.
     if (!initAllDBS()) return;
 
-    // Finding the newest rep file in the folder.
-    DataProcessingSSLServer::EyeRepGenGeneratedFiles ergf = getNonStandardFileNamesFromEyeRepGen(sockets.value(socket)->getWorkingDirectory());
-    if (!ergf.allOk){
-        removeSocket(socket);
+    QString where = "sendReport";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
+        sockets.releaseSocket(socket,where);
         return;
     }
 
-#ifdef FULL_VERBOSE
-    log.appendStandard("Generated all the file names for ERG");
-#endif
+    // Finding the newest rep file in the folder.
+    DataProcessingSSLServer::EyeRepGenGeneratedFiles ergf = getNonStandardFileNamesFromEyeRepGen(sslsocket->getWorkingDirectory());
+    if (!ergf.allOk){
+        sockets.releaseSocket(socket,where);
+        removeSocket(socket,where);
+        return;
+    }
 
     // Data is saved to the data base ONLY when NOT in demo mode.
     QString logid;
-    if (sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
-
-#ifdef FULL_VERBOSE
-        log.appendStandard("This is not a demo Transaction");
-#endif
+    if (sslsocket->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
 
         // Since the processing is done, now the data can be saved to the database
         ConfigurationManager toDB;
@@ -185,9 +158,6 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
 
         if (toDB.loadConfiguration(ergf.dbfFile,COMMON_TEXT_CODEC)){
 
-#ifdef FULL_VERBOSE
-            log.appendStandard("Loaded dbffile " + ergf.dbfFile);
-#endif
             QStringList values;
             QStringList columns = toDB.getAllKeys();
             for (qint32 i = 0; i < columns.size(); i++){
@@ -195,14 +165,15 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
             }
 
             // Adding the IDs and the date.
-            DataPacket d = sockets.value(socket)->getDataPacket();
+            DataPacket d = sslsocket->getDataPacket();
             QString puid = getPatientID(d.getField(DataPacket::DPFI_PATIENT_ID).data.toString());
             if (puid == -1){
                 log.appendError("Unknown patient id from uid: " + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString() + " when getting puid from report. This should not be possible.");
                 dbConnBase->close();
                 dbConnID->close();
                 dbConnPatData->close();
-                removeSocket(socket);
+                sockets.releaseSocket(socket,where);
+                removeSocket(socket,where);
                 return;
             }
 
@@ -217,7 +188,8 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
                 dbConnID->close();
                 dbConnPatData->close();
                 log.appendError("DB Error saving the results: " + dbConnBase->getError());
-                removeSocket(socket);
+                sockets.releaseSocket(socket,where);
+                removeSocket(socket,where);
                 return;
             }
 
@@ -228,7 +200,8 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
             dbConnID->close();
             dbConnPatData->close();
             log.appendError("Could not load the db info file: " + toDB.getError());
-            removeSocket(socket);
+            sockets.releaseSocket(socket,where);
+            removeSocket(socket,where);
             return;
         }
 
@@ -258,13 +231,14 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
         }
 
         // Sending the email if the mail body exists.
-        sendFreqErrorEmail(sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt(),ergf.mailFile,ergf.graphFile);
+        sendFreqErrorEmail(sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt(),ergf.mailFile,ergf.graphFile);
     }
 
     DataPacket tx;
     if (!tx.addFile(ergf.repFile,DataPacket::DPFI_REPORT)){
         log.appendError("Could not add report file to data packet to send from: " + ergf.repFile);
-        removeSocket(socket);
+        sockets.releaseSocket(socket,where);
+        removeSocket(socket,where);
         return;
     }
 
@@ -272,15 +246,16 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     tx.addValue(RR_ALL_OK,DataPacket::DPFI_PROCESSING_ACK);
 
     QByteArray ba = tx.toByteArray();
-    qint64 n = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+    qint64 n = sslsocket->socket()->write(ba.constData(),ba.size());
     if (n != ba.size()){
-        log.appendError("Could failure sending the report to host: " + sockets.value(socket)->socket()->peerAddress().toString());
+        log.appendError("Could failure sending the report to host: " + sslsocket->socket()->peerAddress().toString());
+        sockets.releaseSocket(socket,where);
         return;
     }
 
     // ONLY AFTER the report was successfully sent the number of evaluations is decreased, and IF this is not demo mode.
-    if (sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
-        qint32 UID = sockets.value(socket)->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
+    if (sslsocket->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
+        qint32 UID = sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
         decreaseReportCount(UID,logid);
     }
 
@@ -288,30 +263,38 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     dbConnBase->close();
     dbConnID->close();
     dbConnPatData->close();
+    sockets.releaseSocket(socket,where);
 
-    //log.appendStandard("Sending report back to host: " + sockets.value(socket)->socket()->peerAddress().toString() + ". Size: " + QString::number(ba.size()) + " bytes");
-
+    //log.appendStandard("Sending report back to host: " + sslsocket->socket()->peerAddress().toString() + ". Size: " + QString::number(ba.size()) + " bytes");
 
 }
 
 void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){    
 
+    QString where = "launchEyeReportProcessor";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
+        sockets.releaseSocket(socket,where);
+        return;
+    }
 
-    QString error = sockets.value(socket)->setWorkingDirectoryAndSaveAllFiles(config->getString(CONFIG_RAW_DATA_REPO));
+    QString error = sslsocket->setWorkingDirectoryAndSaveAllFiles(config->getString(CONFIG_RAW_DATA_REPO));
     if (!error.isEmpty()){
         log.appendError("Could not save data files in incomming packet: " + error);
-        removeSocket(socket);
+        sockets.releaseSocket(socket,where);
+        removeSocket(socket,where);
         return;
     }
 
     // Removing previous or existing rep files
-    // removeAllRepFiles(sockets.value(socket)->getWorkingDirectory());
+    // removeAllRepFiles(sslsocket->getWorkingDirectory());
 
     // Opening connection to the database, to check that the doctor and patient uid in the DB are present.
     if (!initAllDBS()) return;
 
     // Getting some patient data to make sure, its in the DB.
-    DataPacket d = sockets.value(socket)->getDataPacket();
+    DataPacket d = sslsocket->getDataPacket();
 
     // Verifying that the information can be processed
     QString etserial = d.getField(DataPacket::DPFI_DB_ET_SERIAL).data.toString();
@@ -323,12 +306,13 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
         DataPacket tx;
         tx.addValue(code,DataPacket::DPFI_PROCESSING_ACK);
         QByteArray ba = tx.toByteArray();
-        qint64 n = sockets.value(socket)->socket()->write(ba.constData(),ba.size());
+        qint64 n = sslsocket->socket()->write(ba.constData(),ba.size());
         if (n != ba.size()){
-            log.appendError("Could failure sending processing ack code to host: " + sockets.value(socket)->socket()->peerAddress().toString());
+            log.appendError("Could failure sending processing ack code to host: " + sslsocket->socket()->peerAddress().toString());
             return;
         }
-        removeSocket(socket);
+        sockets.releaseSocket(socket,where);
+        removeSocket(socket,where);
         return;
     }
 
@@ -354,6 +338,7 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
         if (data.rows.size() == 0){
             // Patient is not in the DB.
             log.appendError("No patient data found for uid:  " + d.getField(DataPacket::DPFI_PATIENT_ID).data.toString());
+            sockets.releaseSocket(socket,where);
             return;
         }
     }
@@ -371,15 +356,16 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
         if (data.rows.size() == 0){
             // Doctor is not in the DB.
             log.appendError("No doctor data found for uid:  " + d.getField(DataPacket::DPFI_DOCTOR_ID).data.toString());
+            sockets.releaseSocket(socket,where);
             return;
         }
     }
 
     // All good and the files have been saved.
     QStringList arguments;
-    arguments << sockets.value(socket)->getWorkingDirectory() + "/" + FILE_EYE_REP_GEN_CONFIGURATION;
+    arguments << sslsocket->getWorkingDirectory() + "/" + FILE_EYE_REP_GEN_CONFIGURATION;
 
-    //log.appendStandard("Process information from: " + sockets.value(socket)->socket()->peerAddress().toString());
+    //log.appendStandard("Process information from: " + sslsocket->socket()->peerAddress().toString());
 
     // Closing connection to db
     dbConnBase->close();
@@ -387,30 +373,43 @@ void DataProcessingSSLServer::lauchEyeReportProcessor(quint64 socket){
     dbConnID->close();
 
     // Processing the data.
-    sockets.value(socket)->processData(config->getString(CONFIG_EYEPROCESSOR_PATH),arguments);
+    sslsocket->processData(config->getString(CONFIG_EYEPROCESSOR_PATH),arguments);
+    sockets.releaseSocket(socket,where);
 
 }
 
 void DataProcessingSSLServer::requestProcessInformation(){
+
+    QString where = "requestProcessInformation";
 
     if (socketsBeingProcessed.size() < config->getInt(CONFIG_NUMBER_OF_PARALLEL_PROCESSES)){
         // Request information from the next in queue.
         if (!queue.isEmpty()){
             quint64 id = queue.first();
             queue.removeFirst();
+
+            SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+            if (sslsocket == nullptr){
+                log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+                sockets.releaseSocket(id,where);
+                return;
+            }
+
             socketsBeingProcessed << id;
             DataPacket tx;
             tx.addValue(0,DataPacket::DPFI_SEND_INFORMATION);
             QByteArray ba = tx.toByteArray();
-            qint64 num = sockets.value(id)->socket()->write(ba,ba.size());
+            qint64 num = sslsocket->socket()->write(ba,ba.size());
             if (num != ba.size()){
-                log.appendError("Could not send ACK packet to: " + sockets.value(id)->socket()->peerAddress().toString());
-                removeSocket(id);
+                log.appendError("Could not send ACK packet to: " + sslsocket->socket()->peerAddress().toString());
+                sockets.releaseSocket(id,where);
+                removeSocket(id,where);
             }
             else {
-                sockets.value(id)->startTimeoutTimer(config->getInt(CONFIG_DATA_REQUEST_TIMEOUT)*1000);
-                log.appendStandard("Sent request for data to " + sockets.value(id)->socket()->peerAddress().toString());
+                sslsocket->startTimeoutTimer(config->getInt(CONFIG_DATA_REQUEST_TIMEOUT)*1000);
+                log.appendStandard("Sent request for data to " + sslsocket->socket()->peerAddress().toString());
             }
+            sockets.releaseSocket(id,where);
         }
     }
 
@@ -419,13 +418,10 @@ void DataProcessingSSLServer::requestProcessInformation(){
 
 }
 
-void DataProcessingSSLServer::removeSocket(quint64 id){
-    if (sockets.contains(id)) {
-        if (sockets.value(id)->isValid()){
-            sockets.value(id)->socket()->disconnectFromHost();
-        }
-        sockets.remove(id);
-    }
+void DataProcessingSSLServer::removeSocket(quint64 id, const QString &where){
+
+    sockets.deleteSocket(id,where);
+
     qint32 index = queue.indexOf(id);
     if (index != -1) queue.removeAt(index);
     if (socketsBeingProcessed.remove(id)){
@@ -444,18 +440,25 @@ void DataProcessingSSLServer::socketErrorFound(quint64 id){
 
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
-    if (!sockets.contains(id)) return;
+    QString where = "socketErrorFound";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(id,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+        return;
+    }
 
-    QAbstractSocket::SocketError error = sockets.value(id)->socket()->error();
-    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    QAbstractSocket::SocketError error = sslsocket->socket()->error();
+    QHostAddress addr = sslsocket->socket()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    if (error != QAbstractSocket::RemoteHostClosedError)
+    if (error != QAbstractSocket::RemoteHostClosedError){
         log.appendError(QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
-    //    else
-    //        log.appendStandard(QString("Closed connection from Address: ") + addr.toString());
+        // Eliminating it from the list.
+        sockets.releaseSocket(id,where);
+        removeSocket(id,where);
+    }
 
-    // Eliminating it from the list.
-    removeSocket(id);
+    sockets.releaseSocket(id,where);
 
 }
 
@@ -463,16 +466,23 @@ void DataProcessingSSLServer::sslErrorsFound(quint64 id){
 
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
-    if (!sockets.contains(id)) return;
+    QString where = "sslErrorsFound";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(id,where);
+        log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+        return;
+    }
 
-    QList<QSslError> errorlist = sockets.value(id)->socket()->sslErrors();
-    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    QList<QSslError> errorlist = sslsocket->socket()->sslErrors();
+    QHostAddress addr = sslsocket->socket()->peerAddress();
     for (qint32 i = 0; i < errorlist.size(); i++){
         log.appendError("SSL Error," + errorlist.at(i).errorString() + " from Address: " + addr.toString());
     }
 
     // Eliminating it from the list.
-    removeSocket(id);
+    sockets.releaseSocket(id,where);
+    removeSocket(id,where);
 
 }
 
@@ -482,8 +492,8 @@ void DataProcessingSSLServer::changedState(quint64 id){
     //    // be removed once. After that, te program crashes.
     //    if (!sockets.contains(id)) return;
 
-    //    QAbstractSocket::SocketState state = sockets.value(id)->socket()->state();
-    //    QHostAddress addr = sockets.value(id)->socket()->peerAddress();
+    //    QAbstractSocket::SocketState state = sslsocket->socket()->state();
+    //    QHostAddress addr = sslsocket->socket()->peerAddress();
     //    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
     //    log.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
 }

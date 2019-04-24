@@ -14,11 +14,6 @@ int main(int argc, char *argv[])
     std::cout << "================" << SERVER_PROGRAM_NAME << "================" << std::endl;
     std::cout << "| Version: " << SERVER_PROGRAM_VERSION << std::endl;
     std::cout << "| Log file: " << LOG_FILE_LOG << std::endl;
-#ifdef FULL_VERBOSE
-    std::cout << "| Verbose Mode: FULL" << std::endl;
-#else
-    std::cout << "| Verbose Mode: NORMAL" << std::endl;
-#endif
     std::cout << "| CTRL-C to kill the server" << std::endl;
     std::cout << "========================================" << std::endl;
     std::cout << ">> ";

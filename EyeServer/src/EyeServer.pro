@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     servercontrol.cpp \
     ../../CommonClasses/SQLConn/dbinterface.cpp \
     dataprocessingsslserver.cpp \
-    dbcommsslserver.cpp
+    dbcommsslserver.cpp \
+    sslidsocketmap.cpp
 
 HEADERS  += \
     ../../CommonClasses/common.h \
@@ -37,7 +38,8 @@ HEADERS  += \
     ../../CommonClasses/SQLConn/dbinterface.h \
     dataprocessingsslserver.h \
     dbcommsslserver.h \
-    ../../CommonClasses/server_defines.h
+    ../../CommonClasses/server_defines.h \
+    sslidsocketmap.h
 
 RESOURCES += \
     certificates.qrc \

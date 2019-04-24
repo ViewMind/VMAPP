@@ -1,12 +1,10 @@
 #ifndef SERVER_DEFINES_H
 #define SERVER_DEFINES_H
 
-//#define   FULL_VERBOSE
-
 //  Defines that control which of the configuration files is used for the databse. ONLY 1 should be active at the time.
-//#define   SERVER_LOCALHOST
+#define   SERVER_LOCALHOST
 //#define   SERVER_DEVELOPMENT
-#define   SERVER_PRODUCTION
+//#define   SERVER_PRODUCTION
 
 #define   COMMON_PATH_FOR_DB_CONFIGURATIONS             ":/CommonClasses/DBConfigurations/"
 
