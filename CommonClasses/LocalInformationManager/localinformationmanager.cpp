@@ -489,7 +489,17 @@ LocalInformationManager::DisplayLists LocalInformationManager::getPatientListFor
     return ans;
 }
 
-void LocalInformationManager::loadDB(QString eyeexpid, QString instUID){
+void LocalInformationManager::setWorkingFile(const QString &fileName){
+    QFileInfo info(fileName);
+    workingDirectory = info.path();
+    loadDB("","",info.baseName() + "." + info.suffix());
+}
+
+void LocalInformationManager::loadDB(QString eyeexpid, QString instUID, QString fileName){
+
+    Q_UNUSED(eyeexpid)
+    Q_UNUSED(instUID)
+
 
     // Checking to see if the directory structure exists.
     QDir basedir(workingDirectory);
@@ -498,7 +508,7 @@ void LocalInformationManager::loadDB(QString eyeexpid, QString instUID){
         return;
     }
 
-    QString dbfile = basedir.path() + "/" + LOCAL_DB;
+    QString dbfile = basedir.path() + "/" + fileName;
 
     QFile file(dbfile);
 
@@ -515,6 +525,7 @@ void LocalInformationManager::loadDB(QString eyeexpid, QString instUID){
         file.close();
     }
     else{
+        log.appendWarning("Set DB File: " + fileName + " does not exist");
         localDB[DOCTOR_COUNTER] = 0;
         localDB[PATIENT_COUNTER] = 0;
         backupDB();
@@ -576,6 +587,19 @@ void LocalInformationManager::printDBToConsole(){
             }
         }
     }
+}
+
+QHash<QString,QString> LocalInformationManager::getPatientHashedIDMap() const {
+    QVariantMap map = localDB.value(PATIENT_DATA).toMap();
+    QStringList uids = map.keys();
+    QHash<QString,QString> ans;
+    for (qint32 j = 0; j < uids.size(); j++){
+        QVariantMap patdata = map.value(uids.at(j)).toMap();
+        QString hash = QCryptographicHash::hash(patdata.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
+        QString patient_name = patdata.value(TPATDATA_COL_FIRSTNAME).toString() + " " + patdata.value(TPATDATA_COL_LASTNAME).toString();
+        ans[hash] = patient_name;
+    }
+    return ans;
 }
 
 QString LocalInformationManager::newDoctorID(){
