@@ -1,17 +1,18 @@
 #ifndef LOCALINFORMATIONMANAGER_H
 #define LOCALINFORMATIONMANAGER_H
 
-#define USESSL
+//#define USESSL
 
 #include <QVariantMap>
 #include <QDataStream>
+#include <QCryptographicHash>
 
 #include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
-#include "eye_experimenter_defines.h"
+//#include "eye_experimenter_defines.h"
 
 #ifdef USESSL
 #include "sslclient/ssldbclient.h"
@@ -41,6 +42,7 @@ public:
     LocalInformationManager();
     void resetMedicalInstitutionForAllDoctors(const QString &inst_uid);
     void setDirectory(const QString &workDir, const QString &eyeexpid, const QString &instUID);
+    void setWorkingFile(const QString &fileName);
     void setViewAllFlag(bool flagValue);
     bool getViewAllFlag() const;
     void enableBackups(const QString &backupDir);
@@ -60,6 +62,8 @@ public:
     QVariantMap getPatientInfo(const QString &patuid) const;
     QString getWorkDirectory() const {return workingDirectory;}
     void setUpdateFlagTo(bool flag);
+
+    QHash<QString,QString> getPatientHashedIDMap() const;
 
     // Interface with the protocol list;
     bool addProtocol(const QString & protocol);
@@ -114,7 +118,7 @@ private:
     QHash<QString, DatFileInfoInDir > patientReportInformation;
 
     void backupDB();
-    void loadDB(QString eyeexpid, QString instUID);
+    void loadDB(QString eyeexpid, QString instUID, QString fileName = LOCAL_DB);
     bool isHidden(const QString &uid);
     void printDBToConsole();
 

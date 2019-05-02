@@ -1,5 +1,4 @@
-#!/bin/bash
+rm -rf OBJS 
 rm -rf MOCS
-rm -rf OBJS
 rm -rf QRC
 rm Makefile
