@@ -530,32 +530,36 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
     QString timestamp = "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss");
     sslsocket->getDataPacket().saveFile(logDirPath,DataPacket::DPFI_UPDATE_LOGFILE,timestamp);
 
-    // Saving flogs if any.
-    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_UPDATE_FLOGNAMES)){
-
-        QString filenames_str = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_FLOGNAMES).data.toString();
-        QString filecontents_str = sslsocket->getDataPacket().getField(DataPacket::DPFI_UPDATE_FLOGCONTENT).data.toString();
-        QStringList filenames = filenames_str.split(DB_LIST_IN_COL_SEP);
-        QStringList filecontens = filecontents_str.split(DB_LIST_IN_COL_SEP);
-
-        if (filecontens.size() != filenames.size()){
-            log.appendError("Number of flog filenames : (" + QString::number(filecontens.size())  + ") does not match the number of file contents (" + QString::number(filenames.size()) + ")");
-            sendUpdateAns(DataPacket(),socket,"FAILED");
-            sockets.releaseSocket(socket,where);
-            return;
+    // Saving the local DB backup, if it exists
+    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_LOCAL_DB_BKP)){
+        // Deleting the backup temp file if it exists
+        QString tempFileName = basePath + "/" + QString(FILE_LOCAL_DB);
+        QFile tempFile(tempFileName);
+        tempFile.remove();
+        if (tempFile.exists()){
+            log.appendError("Could not delete de temporary local db backup: " + tempFileName);
         }
-
-        for (qint32 i = 0; i < filecontens.size(); i++){
-            QFile file(flogDirPath + "/" + filenames.at(i));
-            if (!file.open(QFile::WriteOnly)){
-                log.appendError("Could not open f log file for writing: " + file.fileName());
-                continue;
+        else{
+            // Temporary file was removed, saving the file locally.
+            QString savedFile = sslsocket->getDataPacket().saveFile(basePath,DataPacket::DPFI_LOCAL_DB_BKP);
+            if (savedFile != ""){
+                // Removing the actual bkp file
+                QString bkpFileName = basePath + "/" + QString(FILE_LOCAL_DB_BKP);
+                QFile bkpFile(bkpFileName);
+                bkpFile.remove();
+                if (bkpFile.exists()){
+                    log.appendError("Failed to remove the local DB bkp file: " + bkpFileName);
+                }
+                else{
+                    if (!QFile::copy(tempFileName,bkpFileName)){
+                        log.appendError("Could not copy temporary bkp file " + tempFileName + " to actual local db backup: " + bkpFileName);
+                    }
+                }
             }
-            QTextStream writer(&file);
-            writer << filecontens.at(i);
-            file.close();
+            else{
+                log.appendError("Failed saving the temporary file: " + tempFileName);
+            }
         }
-
     }
 
     // Checking the hashes sent.
