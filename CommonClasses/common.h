@@ -153,7 +153,8 @@
 #define   FILE_NEW_LAUCHER_FILE                         "launcher.exe"
 #define   FILE_EYE_LAUCHER_FILE                         "EyeLauncherClient.exe"
 #define   FILE_OLD_LAUCHER_FILE                         "EyeLauncherClientPrevious.exe"
-
+#define   FILE_LOCAL_DB_BKP                             "localdb_bkp.db"
+#define   FILE_LOCAL_DB                                 "localdb.dat"
 
 // Headers for the data files identifying the format of the data in that experiment.
 #define   HEADER_READING_EXPERIMENT                     "#READING"
