@@ -1,7 +1,7 @@
 #ifndef SSLIDSOCKETMAP_H
 #define SSLIDSOCKETMAP_H
 
-#define  FULL_LOG
+//#define  FULL_LOG
 #include "sslidsocket.h"
 
 class SSLIDSocketMap

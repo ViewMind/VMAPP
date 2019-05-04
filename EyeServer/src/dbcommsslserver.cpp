@@ -532,6 +532,7 @@ void DBCommSSLServer::processUpdateRequest(quint64 socket){
 
     // Saving the local DB backup, if it exists
     if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_LOCAL_DB_BKP)){
+
         // Deleting the backup temp file if it exists
         QString tempFileName = basePath + "/" + QString(FILE_LOCAL_DB);
         QFile tempFile(tempFileName);
