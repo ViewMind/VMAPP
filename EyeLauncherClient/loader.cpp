@@ -35,20 +35,12 @@ Loader::Loader(QObject *parent) : QObject(parent)
     connect(serverConn,SIGNAL(readyRead()),this,SLOT(on_readyRead()));
 
     // Timer connection
-    //connect(&timer,&QTimer::timeout,this,&Loader::on_timeOut);
     connect(&timeoutTimer,SIGNAL(timeout()),this,SLOT(on_timeOut()));
 
 }
 
 QString Loader::getTitleString(){
-    QString ans = LAUNCHER_VERSION;
-    ans = ans;
-#ifdef COMPILE_FOR_PRODUCTION
-    return ans;
-#else
-    ans = ans + " DEVELOPMENT";
-    return ans;
-#endif
+    return LAUNCHER_VERSION;
 }
 
 QString Loader::getStringForKey(const QString &key){
@@ -84,6 +76,16 @@ void Loader::checkForUpdates(){
         return;
     }
 
+    serverIP = cfg.getString(CONFIG_SERVER_ADDRESS);
+    if (serverIP.isEmpty()){
+        logger.appendError("Could not determine server address");
+        startEyeExperimenter();
+        return;
+    }
+
+    bkpLocalDB = false;
+    bkpLocalDB = cfg.getBool(CONFIG_ENABLE_LOCAL_DB_BKP);
+
     // Getting the language setting
     ConfigurationManager settings;
     if (!settings.loadConfiguration(FILE_EYEEXP_SETTINGS,COMMON_TEXT_CODEC)){
@@ -97,19 +99,6 @@ void Loader::checkForUpdates(){
         return;
     }
     changeLogFile = QString(FILE_CHANGELOG_UPDATER) + "_" + selectedLanguage;
-
-    // Loading the memory file and the flogs, if necessary.
-    flogFilesSent.clear();
-    QFile memoryFile(FILE_FREQLOG_MEMORY);
-    if (memoryFile.open(QFile::ReadOnly)){
-        QDataStream reader(&memoryFile);
-        reader >> flogFilesSent;
-        memoryFile.close();
-    }
-    else{
-        logger.appendWarning("Could not open memory file for reading");
-    }
-    getAllFreqLogFilesNotSent(flogFilesSent);
 
     // Calculating the hashes.
     eyeLauncherHash = DataPacket::getFileHash(FILE_EYEEXP_LAUNCHER);
@@ -128,53 +117,10 @@ void Loader::checkForUpdates(){
 
     // Connecting to the server
     connectionState = CS_CONNECTING;
-    serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_DB_COMM);
+    serverConn->connectToHostEncrypted(serverIP,TCP_PORT_DB_COMM);
     timeoutTimer.start(TIMEOUT_TO_CONNECT);
 }
 
-//************************************* File Gathering Funcions ****************************************
-void Loader::getAllFreqLogFilesNotSent(const QSet<QString> &sentAllReady){
-
-    flogContents.clear();
-    flogNames.clear();
-
-    QString eyeExpDBDir = "../" + QString(DIRNAME_RAWDATA);
-    QStringList filters; filters << "*.dat.flog";
-    QStringList patientDirs = QDir(eyeExpDBDir).entryList(QStringList(),QDir::Dirs | QDir::NoDotAndDotDot);
-
-    for (qint32 i = 0; i < patientDirs.size(); i++){
-
-        // Searching for all flog files in the aborted directory.
-        QString abortDir = eyeExpDBDir + "/" + patientDirs.at(i) + "/" + QString(DIRNAME_ABORTED);
-        QStringList ferrorFiles = QDir(abortDir).entryList(filters,QDir::Files);
-
-        // Each of these files is processed and if the time stamp is lower or empty, added for sending.
-        for (qint32 j = 0; j < ferrorFiles.size(); j++){
-
-            //qWarning() << "FERROR FILE: " << patientDirs.at(i) << ferrorFiles.at(j) << "COMPARE STRING:" << info.date + info.hour;
-            QString fileName = patientDirs.at(i) + "_" + ferrorFiles.at(j);
-
-            // Adding the files for sending
-            if (sentAllReady.contains(fileName)) continue;
-
-            QFile file(abortDir + "/" + ferrorFiles.at(j));
-            if (!file.open(QFile::ReadOnly)){
-                logger.appendError("Could not open freq log file: " + file.fileName() + " for reading its contents");
-                continue;
-            }
-
-            QTextStream reader(&file);
-            flogContents << reader.readAll();
-            file.close();
-            flogNames << fileName;
-
-        }
-
-    }
-
-    //qWarning() << "SENDING: " << flogNames;
-
-}
 
 //************************************* Starting the EyeExperimenter ****************************************
 void Loader::startEyeExperimenter(){
@@ -216,9 +162,11 @@ void Loader::on_encryptedSuccess(){
     tx.addString(eyeLauncherHash,DataPacket::DPFI_UPDATE_EYELAUNCHER);
     tx.addString(eyeConfigurationHash,DataPacket::DPFI_UPDATE_CONFIG);
     tx.addString(eyeConfigurationHash,DataPacket::DPFI_UPDATE_CONFIG);
-    if (flogNames.size() > 0 ){
-        tx.addString(flogNames.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_UPDATE_FLOGNAMES);
-        tx.addString(flogContents.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_UPDATE_FLOGCONTENT);
+    if (bkpLocalDB){
+        QString localdb = "../" + QString(DIRNAME_RAWDATA) + FILE_LOCAL_DB;
+        if (!tx.addFile(localdb,DataPacket::DPFI_LOCAL_DB_BKP)){
+            logger.appendError("Could not add local db data file for backup: " + localdb);
+        }
     }
 
     QByteArray ba = tx.toByteArray();
@@ -246,20 +194,6 @@ void Loader::on_readyRead(){
             return;
         }
 
-
-        // Since everything was ok. The Flog files are added to the memory.
-        for (qint32 i = 0; i < flogNames.size(); i++){
-            flogFilesSent << flogNames.at(i);
-        }
-        QFile memory(FILE_FREQLOG_MEMORY);
-        if (memory.open(QFile::WriteOnly)){
-            QDataStream writer(&memory);
-            writer << flogFilesSent;
-            memory.close();
-        }
-        else{
-            logger.appendError("Could not save list of sent files to memory");
-        }
 
         // Renaming the EyeExperimenter log file.
         QString oldlog = QString(FILE_EYEEXP_LOG) + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm");

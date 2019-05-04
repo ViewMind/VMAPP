@@ -95,8 +95,7 @@
 #define   CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS       "tol_num_allowed_of_failed_data_sets"
 #define   CONFIG_PROTOCOL_NAME                          "protocol_name"
 #define   CONFIG_EYEEXP_NUMBER                          "eyeexp_number"
-
-#define   TEST_DOCTOR_ID                                "TEST_0000_XXXX"
+#define   CONFIG_ENABLE_LOCAL_DB_BKP                    "enable_local_db_bkp"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0

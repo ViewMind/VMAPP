@@ -117,7 +117,7 @@ private:
     QHash<QString, DatFileInfoInDir > patientReportInformation;
 
     void backupDB();
-    void loadDB(QString eyeexpid, QString instUID, QString fileName = LOCAL_DB);
+    void loadDB(QString eyeexpid, QString instUID, QString fileName = FILE_LOCAL_DB);
     bool isHidden(const QString &uid);
     void printDBToConsole();
 

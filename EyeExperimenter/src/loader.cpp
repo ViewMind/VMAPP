@@ -54,7 +54,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cmd.clear();
     cmd.optional = true;
     cmd.type = ConfigurationManager::VT_BOOL;
-    cv[CONFIG_TEST_MODE] = cmd;
+    cv[CONFIG_ENABLE_LOCAL_DB_BKP] = cmd;
     cv[CONFIG_ENABLE_GAZE_FOLLOWING] = cmd;
 
     // This cannot have ANY ERRORS
@@ -353,14 +353,8 @@ void Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide){
 
     if (uid.isEmpty()){
         // This is a new doctor
-        if (configuration->getBool(CONFIG_TEST_MODE)){
-            // CAN ONLY CREATE XXXX Doctor.
-            uid = TEST_DOCTOR_ID;
-        }
-        else{
-            uid = lim.newDoctorID();
-            uid = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + uid;
-        }
+        uid = lim.newDoctorID();
+        uid = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + uid;
     }
 
     QStringList columns;

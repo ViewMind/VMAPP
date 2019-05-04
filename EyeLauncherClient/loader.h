@@ -14,15 +14,7 @@
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/common.h"
 
-#define COMPILE_FOR_PRODUCTION
-
-#ifdef COMPILE_FOR_PRODUCTION
-#define  SERVER_IP                     "18.220.30.34"  // Production server
-#else
-#define  SERVER_IP                     "192.168.1.10"  // Local server
-#endif
-
-#define  LAUNCHER_VERSION               "2.0.2"
+#define  LAUNCHER_VERSION               "2.1.0"
 
 #define  FILE_EYEEXP_SETTINGS           "../settings"
 #define  FILE_EYEEXP_CONFIGURATION      "../configuration"
@@ -36,8 +28,6 @@
 #define  TIMEOUT_TO_CONNECT              60*1000       // In miliseconds
 #define  TIMEOUT_TO_GET_UPDATE_CHECK     80*1000       // In miliseconds
 #define  TIMEOUT_CONN_READY_POLLING      1*1000        // In miliseconds
-
-#define  FILE_FREQLOG_MEMORY            "memory"
 
 class Loader : public QObject
 {
@@ -76,6 +66,8 @@ private:
     // Variables obtained from the configuration and settings of the EyeExperimenter.
     QString instUID;
     QString eyeexpID;
+    QString serverIP;
+    bool    bkpLocalDB;
     QString selectedLanguage;
     QString eyeLauncherHash;
     QString eyeConfigurationHash;
@@ -83,11 +75,6 @@ private:
 
     // Local language configuration
     ConfigurationManager language;
-
-    // Frequency errors variables
-    QStringList flogNames;
-    QStringList flogContents;
-    QSet<QString> flogFilesSent;
 
     // The connection to the server, timer and receive package.
     QSslSocket *serverConn;

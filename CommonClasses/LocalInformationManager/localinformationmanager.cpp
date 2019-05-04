@@ -544,7 +544,7 @@ void LocalInformationManager::backupDB(){
         log.appendError("LOCALDB: Base Data directory: " + basedir.path() + " does not exist and it should, at this point");
     }
 
-    QString dbfile = basedir.path() + "/" + LOCAL_DB;
+    QString dbfile = basedir.path() + "/" + FILE_LOCAL_DB;
 
     QFile file(dbfile);
     if (!file.open(QFile::WriteOnly)){
@@ -559,7 +559,7 @@ void LocalInformationManager::backupDB(){
 
     // Backing up the DB.
     if (!backupDirectory.isEmpty()){
-        QString bkpfile = backupDirectory + "/" + QString(LOCAL_DB);
+        QString bkpfile = backupDirectory + "/" + QString(FILE_LOCAL_DB);
         QFile(bkpfile).remove();
         if (!QFile::copy(dbfile,bkpfile)){
             log.appendError("LOCALDB: Failed to backup file " + dbfile);
