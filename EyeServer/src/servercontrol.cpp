@@ -37,15 +37,10 @@ void ServerControl::startServer(){
     configurationFile = configurationFile + "db_localhost_prod";
     definitions++;
 #endif
-#ifdef SERVER_DEVELOPMENT
-    configurationFile = configurationFile + "db_development";
-    definitions++;
-#endif
 #ifdef SERVER_PRODUCTION
     configurationFile = configurationFile + "db_production";
     definitions++;
 #endif
-
 
     if (definitions != 1){
         log.appendError("The number of DB Configuration files is " + QString::number(definitions) + " instead of 1");

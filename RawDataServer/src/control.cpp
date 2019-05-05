@@ -408,7 +408,7 @@ void Control::processRequest(){
         }
 
         QStringList keys = puidHashMap.keys();
-        for (qint32 j = 0; i < keys.size(); j++){
+        for (qint32 j = 0; j < keys.size(); j++){
             if (ret.contains(keys.at(j))){
                 puidList << puidHashMap.value(keys.at(j));
                 patNameList << ret.value(keys.at(j));
@@ -418,6 +418,7 @@ void Control::processRequest(){
             }
         }
     }
+
 
     ///////////////// Getting the data from S3
     QStringList hashes = puidHashMap.keys();

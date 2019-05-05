@@ -88,6 +88,9 @@ public:
     QString getDatFileFromIndex(const QString &patuid, qint32 index, qint32 whichList) const;
     void fillPatientDatInformation(const QString &patient);
 
+    // Used for the debugging.
+    void printDBToConsole();
+
 private:
 
     static const QString PATIENT_CREATOR;
@@ -119,7 +122,7 @@ private:
     void backupDB();
     void loadDB(QString eyeexpid, QString instUID, QString fileName = FILE_LOCAL_DB);
     bool isHidden(const QString &uid);
-    void printDBToConsole();
+
 
 };
 #endif // LOCALINFORMATIONMANAGER_H
