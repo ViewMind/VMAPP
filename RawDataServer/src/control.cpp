@@ -384,7 +384,42 @@ void Control::processRequest(){
         puidHashMap[res.rows.at(i).last()] = res.rows.at(i).first();
     }
 
-    ///////////////// Getting the hashes from the puid.
+    ///////////////// Loading the data backups of the local databases if present.
+    QString instEDirname = ETDIR_PATH + QString("/") + instUID;
+    QStringList dirsInInstPath = QDir(instEDirname).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot);
+
+    QStringList puidList;
+    QStringList patNameList;
+
+    for (qint32 i = 0; i < dirsInInstPath.size(); i++){
+        QString dbfilename = instEDirname + "/" + dirsInInstPath.at(i) + "/" + QString(FILE_LOCAL_DB_BKP);
+        if (!QFile(dbfilename).exists()) continue;
+
+        logger.appendStandard("Loading local DB info for " + dbfilename);
+
+        // The local db backup exists and the information will be sent back.
+        LocalInformationManager lim;
+        lim.setWorkingFile(dbfilename);
+        QHash<QString,QString> ret = lim.getPatientHashedIDMap();
+
+        if (ret.isEmpty()){
+            logger.appendError("Empty patient hashed uid map from local db " + dbfilename);
+            continue;
+        }
+
+        QStringList keys = puidHashMap.keys();
+        for (qint32 j = 0; i < keys.size(); j++){
+            if (ret.contains(keys.at(j))){
+                puidList << puidHashMap.value(keys.at(j));
+                patNameList << ret.value(keys.at(j));
+            }
+            else{
+                logger.appendError("Hashed uid " + keys.at(j) + " from database, not found as a hashed id from local DB " + dbfilename);
+            }
+        }
+    }
+
+    ///////////////// Getting the data from S3
     QStringList hashes = puidHashMap.keys();
     QStringList downloadedDirectories;
 
@@ -437,6 +472,11 @@ void Control::processRequest(){
         }
         clearSocket("PROCESS REQUEST");
         return;
+    }
+
+    if (patNameList.size() > 0){
+        tx.addString(patNameList.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_PATNAME_LIST);
+        tx.addString(puidList.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_PUID_LIST);
     }
 
     // If all was ok. The information is sent back.

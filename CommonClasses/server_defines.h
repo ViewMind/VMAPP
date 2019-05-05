@@ -12,7 +12,7 @@
 #define   SERVER_PROGRAM_VERSION                        "7.2.0"
 
 #define   RAW_DATA_SERVER_NAME                          "RawDataServer"
-#define   RAW_DATA_SERVER_VERSION                       "1.0.0"
+#define   RAW_DATA_SERVER_VERSION                       "2.0.0"
 
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"

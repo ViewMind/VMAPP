@@ -29,7 +29,9 @@ SOURCES += main.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     ssllistener.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
-    filelister.cpp
+    filelister.cpp \
+    ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp
 
 HEADERS += \
     s3interface.h \
@@ -42,7 +44,10 @@ HEADERS += \
     ssllistener.h \
     ../../CommonClasses/DataPacket/datapacket.h \
     filelister.h \
-    ../../CommonClasses/server_defines.h
+    ../../CommonClasses/server_defines.h \
+    ../../CommonClasses/common.h \
+    ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
+    ../../CommonClasses/DatFileInfo/datfileinfoindir.h
 
 RESOURCES += \
     configurations.qrc \

@@ -1,7 +1,7 @@
 #ifndef LOCALINFORMATIONMANAGER_H
 #define LOCALINFORMATIONMANAGER_H
 
-#define USESSL
+//#define USESSL
 
 #include <QVariantMap>
 #include <QDataStream>

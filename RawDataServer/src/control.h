@@ -7,8 +7,6 @@
 #include <QMetaEnum>
 #include <iostream>
 
-//#define COMPILE_FOR_S3_TEST
-
 #define VIEWMIND_DATA_REPO          "viewmind-raw-eye-data"
 #define RAW_DATA_SERVER_PASSWORD    "hashpass"
 #define RAW_DATA_SERVER_DELWORKDIR  "delworkdir"
@@ -20,8 +18,16 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../CommonClasses/LocalInformationManager/localinformationmanager.h"
+#include "../../CommonClasses/server_defines.h"
 #include "ssllistener.h"
 #include "filelister.h"
+
+#ifdef SERVER_LOCALHOST
+   #define  ETDIR_PATH              "../../EyeServer/bin/etdir"
+#else
+   #define  ETDIR_PATH              "../EyeServer/etdir/"
+#endif
 
 
 class Control : public QObject
