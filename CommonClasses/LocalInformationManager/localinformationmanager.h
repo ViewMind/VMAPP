@@ -12,7 +12,7 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
-//#include "eye_experimenter_defines.h"
+
 
 #ifdef USESSL
 #include "sslclient/ssldbclient.h"
@@ -90,6 +90,7 @@ public:
 
     // Used for the debugging.
     void printDBToConsole();
+    QString printDBToString() const;
 
 private:
 

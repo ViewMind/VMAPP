@@ -86,6 +86,8 @@ void Loader::checkForUpdates(){
     bkpLocalDB = false;
     bkpLocalDB = cfg.getBool(CONFIG_ENABLE_LOCAL_DB_BKP);
 
+    //qWarning() << "BKP LOCAL DB is" << bkpLocalDB;
+
     // Getting the language setting
     ConfigurationManager settings;
     if (!settings.loadConfiguration(FILE_EYEEXP_SETTINGS,COMMON_TEXT_CODEC)){
@@ -163,7 +165,7 @@ void Loader::on_encryptedSuccess(){
     tx.addString(eyeConfigurationHash,DataPacket::DPFI_UPDATE_CONFIG);
     tx.addString(eyeConfigurationHash,DataPacket::DPFI_UPDATE_CONFIG);
     if (bkpLocalDB){
-        QString localdb = "../" + QString(DIRNAME_RAWDATA) + FILE_LOCAL_DB;
+        QString localdb = "../" + QString(DIRNAME_RAWDATA) + "/" + QString(FILE_LOCAL_DB);
         if (!tx.addFile(localdb,DataPacket::DPFI_LOCAL_DB_BKP)){
             logger.appendError("Could not add local db data file for backup: " + localdb);
         }

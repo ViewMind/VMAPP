@@ -56,7 +56,8 @@ SOURCES += \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
     ../../CommonClasses/DataPacket/datapacket.cpp \
     waitdialog.cpp \
-    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp
+    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp \
+    patientnamemapmanager.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -87,7 +88,8 @@ HEADERS += \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../CommonClasses/DataPacket/datapacket.h \
     waitdialog.h \
-    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h
+    ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h \
+    patientnamemapmanager.h
 
 FORMS += \
         eyedataanalyzer.ui \

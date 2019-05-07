@@ -45,4 +45,5 @@ Scripts/php/composer.lock
 Scripts/php/vendor/
 EyeTrackerFollower/exe/
 LocalDBPrinter/bin/
+LocalDBPrinter/exe/
 
