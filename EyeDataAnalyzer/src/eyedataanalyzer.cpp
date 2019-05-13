@@ -42,7 +42,7 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
 
     // The existing patient name db
     patNameMng.loadPatNameDB();
-    //patNameMng.printMap();
+    patNameMng.printMap();
 
     //switchViews(VIEW_1_PROCESSING_VIEW);
     switchViews(VIEW_0_DATABASE_VIEW);

@@ -31,7 +31,8 @@ ConfigurationManager PatientNameMapManager::getPatientNameFromDirname(const QStr
 
     QString puid;
     QStringList parts = dirname.split("/",QString::SkipEmptyParts);
-    if (parts.size() > 0) puid = parts.last();
+
+    if (parts.size() >= 2) puid = parts.at(parts.size()-2);
     else return config;
 
     // This will get rid of the extra zeros that the dirname might have.
