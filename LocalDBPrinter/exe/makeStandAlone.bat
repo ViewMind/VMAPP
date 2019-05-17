@@ -1,0 +1,1 @@
+C:\Qt\Qt5.10.0\5.10.0\msvc2015\bin\windeployqt.exe C:\Users\Viewmind\Documents\viewmind_projects\LocalDBPrinter\exe

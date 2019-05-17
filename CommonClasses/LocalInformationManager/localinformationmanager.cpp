@@ -589,6 +589,30 @@ void LocalInformationManager::printDBToConsole(){
     }
 }
 
+QString LocalInformationManager::printDBToString() const{
+    QString ans;
+    ans = ans +   "DOCTOR COUNTER: " + localDB.value(DOCTOR_COUNTER).toString() + "\n";
+    ans = ans +   "PATIENT COUNTER: " + localDB.value(PATIENT_COUNTER).toString()+ "\n";
+    if (localDB.value(FLAG_VIEWALL).toBool()) ans = ans +   "VIEW ALL FLAG: true\n";
+    else ans = ans +   "VIEW ALL FLAG: false\n";
+    ans = ans +   "PROTOCOLS: '" + localDB.value(PROTOCOLS).toStringList().join("','")+ "'\n";
+    QStringList maps;
+    maps << DOCTOR_DATA << PATIENT_DATA;
+    for (qint32 i = 0; i < maps.size(); i++){
+        ans = ans +   "   MAP " + maps.at(i) + "\n";
+        QVariantMap map = localDB.value(maps.at(i)).toMap();
+        QStringList uids = map.keys();
+        for (qint32 j = 0; j < uids.size(); j++){
+            ans = ans +   "      ENTRY:" + uids.at(j) + "\n";
+            QStringList keys = map.value(uids.at(j)).toMap().keys();
+            for (qint32 k = 0; k < keys.size(); k++){
+                ans = ans +   "         " + keys.at(k) + ": " + map.value(uids.at(j)).toMap().value(keys.at(k)).toString()+ "\n";
+            }
+        }
+    }
+    return ans;
+}
+
 QHash<QString,QString> LocalInformationManager::getPatientHashedIDMap() const {
     QVariantMap map = localDB.value(PATIENT_DATA).toMap();
     QStringList uids = map.keys();

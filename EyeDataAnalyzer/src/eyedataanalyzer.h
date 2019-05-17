@@ -21,7 +21,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "4.2.0"
+#define   PROGRAM_VERSION              "4.3.1"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -37,6 +37,7 @@
 #include "../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
 #include "../../CommonClasses/DataPacket/datapacket.h"
 #include "fixationdrawer.h"
+#include "patientnamemapmanager.h"
 #include "waitdialog.h"
 
 namespace Ui {
@@ -113,6 +114,9 @@ private:
     ConfigurationManager defaultValues;
 
     QList<QGroupBox*> appViews;
+
+    // Load patient name map to its puid
+    PatientNameMapManager patNameMng;
 
     // Processing data.
     WaitDialog *waitDiag;

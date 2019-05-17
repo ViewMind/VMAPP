@@ -26,6 +26,8 @@ inst_et_serial = 0000;
 inst_name = Test Institution;
 inst_uid = 0;
 
+enable_local_db_bkp = true;
+
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
 #------------------------------------------------------#

@@ -40,6 +40,10 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
     defaultValues.addKeyValuePair(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL,50);
     defaultValues.addKeyValuePair(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS,0);
 
+    // The existing patient name db
+    patNameMng.loadPatNameDB();
+    patNameMng.printMap();
+
     //switchViews(VIEW_1_PROCESSING_VIEW);
     switchViews(VIEW_0_DATABASE_VIEW);
     currentDirectory = WORK_DIR;
@@ -103,11 +107,6 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
         institution = ui->cbInstitutions->currentData().toString();
         QString password = ui->lePasswordField->text();
 
-        // startDate = "2019-04-01";
-        // institution = "1242673082";
-        // endDate = "2019-04-11";
-        // password = "c1bt!fpkbQ";
-
         DataPacket tx;
         tx.addString(password,DataPacket::DPFI_DB_INST_PASSWORD);
         tx.addString(institution,DataPacket::DPFI_DB_INST_UID);
@@ -165,6 +164,12 @@ void EyeDataAnalyzer::on_readyRead(){
             }
             QStringList fileNames = rx.getField(DataPacket::DPFI_RAW_DATA_NAMES).data.toString().split(DB_LIST_IN_COL_SEP);
             QStringList fileContents = rx.getField(DataPacket::DPFI_RAW_DATA_CONTENT).data.toString().split(DB_LIST_IN_COL_SEP);
+
+            if (rx.hasInformationField(DataPacket::DPFI_PATNAME_LIST)){
+                QStringList puidList = rx.getField(DataPacket::DPFI_PUID_LIST).data.toString().split(DB_LIST_IN_COL_SEP);
+                QStringList patnamelist = rx.getField(DataPacket::DPFI_PATNAME_LIST).data.toString().split(DB_LIST_IN_COL_SEP);
+                patNameMng.addToMap(puidList,patnamelist);
+            }
 
             if (fileNames.size() != fileContents.size()){
                 logForDB.appendError("The number of file names is different than the number of file contents");
@@ -281,7 +286,7 @@ void EyeDataAnalyzer::processDirectory(){
         }
     }
 
-    // Loading the default settings that are nto presesnt
+    // Loading the default settings that are not presesnt
     if (!QFile(FILE_DEFAULT_VALUES).exists()){
         //logForProcessing.appendStandard("Antes");
         overWriteCurrentConfigurationWith(defaultValues,true);
@@ -297,6 +302,8 @@ void EyeDataAnalyzer::processDirectory(){
         }
         overWriteCurrentConfigurationWith(config,true);
     }
+
+    overWriteCurrentConfigurationWith(patNameMng.getPatientNameFromDirname(currentDirectory),false);
 
     ui->lwDirs->clear();
     ui->lwDatFiles->clear();
@@ -410,8 +417,10 @@ void EyeDataAnalyzer::overWriteCurrentConfigurationWith(const ConfigurationManag
     }
     else processingParameters.merge(mng);
 
-    // Whatever the case the patient and doctor name are overwritten forcefully
-    processingParameters.addKeyValuePair(CONFIG_PATIENT_NAME,defaultReportCompletionParameters.getString(CONFIG_PATIENT_NAME));
+    // Whatever the case the patient and doctor name are overwritten forcefully. In the patient name ONLY if it does not exist.
+    if (!processingParameters.containsKeyword(CONFIG_PATIENT_NAME)){
+       processingParameters.addKeyValuePair(CONFIG_PATIENT_NAME,defaultReportCompletionParameters.getString(CONFIG_PATIENT_NAME));
+    }
     processingParameters.addKeyValuePair(CONFIG_DOCTOR_NAME,defaultReportCompletionParameters.getString(CONFIG_DOCTOR_NAME));
 
     QStringList keys = processingParameters.getAllKeys();
@@ -428,7 +437,6 @@ void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
     bool ok;
     ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
     if (!ok) return;
-
     // Third step, processing the data.
     RawDataProcessor processor(this);
     htmlWriter.reset();
