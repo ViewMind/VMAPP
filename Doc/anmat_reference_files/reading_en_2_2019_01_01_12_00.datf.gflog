@@ -1,0 +1,142 @@
+FREQ ANALYSIS REPORT: Avg Frequency: 149.73
+   Number of data sets with too many frequency glitches: 1 Specified Threshold 0
+   Data set 0141 has 15.2632 % of frequency glitches
+   Individual Freq Errors:
+   Frequency Analysis Parametrs:
+      Period should be in [4, 8] ms
+      Maximum % of Frequency Glitches allowed in a trial: 10
+      Maximum % of Invalid values allowed in a trial: 3
+      Minimum number of data points allowed in a trial: 50
+      Max allowed failed trial for frequency glitches: 0
+      Expected Frequency: 150 Hz
+
+   ---> Data Set 0001
+      ---> Period @ 56 is 19 [55365.000000,55384.000000]
+      ---> Number of glitches 1. Number of measured periods: 464 (0.215054%). AVG F in Trial: 149.834. Data set duration: 3121. Expected Number of Points: 467.631
+   ---> Data Set 0002
+      ---> Number of glitches 0. Number of measured periods: 273 (0%). AVG F in Trial: 150.031. Data set duration: 1829. Expected Number of Points: 274.406
+   ---> Data Set 0003
+      ---> Number of glitches 0. Number of measured periods: 524 (0%). AVG F in Trial: 150.07. Data set duration: 3510. Expected Number of Points: 526.747
+   ---> Data Set 0004
+      ---> Number of glitches 0. Number of measured periods: 301 (0%). AVG F in Trial: 150.055. Data set duration: 2016. Expected Number of Points: 302.512
+   ---> Data Set 0005
+      ---> Period @ 214 is 26 [71789.000000,71815.000000]
+      ---> Number of glitches 1. Number of measured periods: 348 (0.286533%). AVG F in Trial: 149.69. Data set duration: 2351. Expected Number of Points: 351.921
+   ---> Data Set 0006
+      ---> Number of glitches 0. Number of measured periods: 343 (0%). AVG F in Trial: 150.059. Data set duration: 2298. Expected Number of Points: 344.836
+   ---> Data Set 0007
+      ---> Number of glitches 0. Number of measured periods: 273 (0%). AVG F in Trial: 150.118. Data set duration: 1828. Expected Number of Points: 274.415
+   ---> Data Set 0008
+      ---> Number of glitches 0. Number of measured periods: 361 (0%). AVG F in Trial: 150.063. Data set duration: 2418. Expected Number of Points: 362.852
+   ---> Data Set 0009
+      ---> Number of glitches 0. Number of measured periods: 341 (0%). AVG F in Trial: 150.119. Data set duration: 2284. Expected Number of Points: 342.871
+   ---> Data Set 0010
+      ---> Number of glitches 0. Number of measured periods: 337 (0%). AVG F in Trial: 150.081. Data set duration: 2258. Expected Number of Points: 338.883
+   ---> Data Set 0016
+      ---> Number of glitches 0. Number of measured periods: 348 (0%). AVG F in Trial: 150.109. Data set duration: 2331. Expected Number of Points: 349.905
+   ---> Data Set 0021
+      ---> Number of glitches 0. Number of measured periods: 304 (0%). AVG F in Trial: 150.102. Data set duration: 2036. Expected Number of Points: 305.607
+   ---> Data Set 0027
+      ---> Number of glitches 0. Number of measured periods: 344 (0%). AVG F in Trial: 150.073. Data set duration: 2304. Expected Number of Points: 345.767
+   ---> Data Set 0030
+      ---> Number of glitches 0. Number of measured periods: 448 (0%). AVG F in Trial: 150.058. Data set duration: 3001. Expected Number of Points: 450.325
+   ---> Data Set 0032
+      ---> Number of glitches 0. Number of measured periods: 301 (0%). AVG F in Trial: 150.016. Data set duration: 2017. Expected Number of Points: 302.582
+   ---> Data Set 0036
+      ---> Number of glitches 0. Number of measured periods: 277 (0%). AVG F in Trial: 150.034. Data set duration: 1856. Expected Number of Points: 278.464
+   ---> Data Set 0042
+      ---> Number of glitches 0. Number of measured periods: 336 (0%). AVG F in Trial: 150.12. Data set duration: 2250. Expected Number of Points: 337.771
+   ---> Data Set 0045
+      ---> Number of glitches 0. Number of measured periods: 295 (0%). AVG F in Trial: 150.141. Data set duration: 1975. Expected Number of Points: 296.529
+   ---> Data Set 0050
+      ---> Number of glitches 0. Number of measured periods: 394 (0%). AVG F in Trial: 150.109. Data set duration: 2639. Expected Number of Points: 396.137
+   ---> Data Set 0056
+      ---> Number of glitches 0. Number of measured periods: 331 (0%). AVG F in Trial: 150.05. Data set duration: 2217. Expected Number of Points: 332.662
+   ---> Data Set 0059
+      ---> Number of glitches 0. Number of measured periods: 559 (0%). AVG F in Trial: 150.055. Data set duration: 3744. Expected Number of Points: 561.807
+   ---> Data Set 0068
+      ---> Number of glitches 0. Number of measured periods: 321 (0%). AVG F in Trial: 150.052. Data set duration: 2150. Expected Number of Points: 322.612
+   ---> Data Set 0071
+      ---> Number of glitches 0. Number of measured periods: 470 (0%). AVG F in Trial: 150.122. Data set duration: 3148. Expected Number of Points: 472.583
+   ---> Data Set 0073
+      ---> Number of glitches 0. Number of measured periods: 389 (0%). AVG F in Trial: 150.064. Data set duration: 2606. Expected Number of Points: 391.067
+   ---> Data Set 0076
+      ---> Number of glitches 0. Number of measured periods: 374 (0%). AVG F in Trial: 150.003. Data set duration: 2506. Expected Number of Points: 375.908
+   ---> Data Set 0084
+      ---> Number of glitches 0. Number of measured periods: 284 (0%). AVG F in Trial: 150.025. Data set duration: 1903. Expected Number of Points: 285.498
+   ---> Data Set 0087
+      ---> Number of glitches 0. Number of measured periods: 269 (0%). AVG F in Trial: 150.115. Data set duration: 1802. Expected Number of Points: 270.507
+   ---> Data Set 0093
+      ---> Number of glitches 0. Number of measured periods: 287 (0%). AVG F in Trial: 150.054. Data set duration: 1923. Expected Number of Points: 288.554
+   ---> Data Set 0096
+      ---> Number of glitches 0. Number of measured periods: 273 (0%). AVG F in Trial: 150.009. Data set duration: 1829. Expected Number of Points: 274.366
+   ---> Data Set 0104
+      ---> Number of glitches 0. Number of measured periods: 277 (0%). AVG F in Trial: 150.034. Data set duration: 1856. Expected Number of Points: 278.464
+   ---> Data Set 0107
+      ---> Number of glitches 0. Number of measured periods: 416 (0%). AVG F in Trial: 150.069. Data set duration: 2787. Expected Number of Points: 418.241
+   ---> Data Set 0110
+      ---> Period @ 109 is 40 [158520.000000,158560.000000]
+      ---> Number of glitches 1. Number of measured periods: 317 (0.314465%). AVG F in Trial: 149.639. Data set duration: 2157. Expected Number of Points: 322.772
+   ---> Data Set 0112
+      ---> Number of glitches 0. Number of measured periods: 424 (0%). AVG F in Trial: 150.045. Data set duration: 2840. Expected Number of Points: 426.128
+   ---> Data Set 0118
+      ---> Number of glitches 0. Number of measured periods: 406 (0%). AVG F in Trial: 150.026. Data set duration: 2720. Expected Number of Points: 408.072
+   ---> Data Set 0121
+      ---> Number of glitches 0. Number of measured periods: 371 (0%). AVG F in Trial: 150.045. Data set duration: 2485. Expected Number of Points: 372.862
+   ---> Data Set 0127
+      ---> Number of glitches 0. Number of measured periods: 341 (0%). AVG F in Trial: 150.084. Data set duration: 2284. Expected Number of Points: 342.791
+   ---> Data Set 0136
+      ---> Number of glitches 0. Number of measured periods: 248 (0%). AVG F in Trial: 150.058. Data set duration: 1661. Expected Number of Points: 249.246
+   ---> Data Set 0139
+      ---> Number of glitches 0. Number of measured periods: 234 (0%). AVG F in Trial: 150.005. Data set duration: 1568. Expected Number of Points: 235.208
+   ---> Data Set 0141
+      ---> Period @ 17 is 21 [181126.000000,181147.000000]
+      ---> Period @ 23 is 20 [181180.000000,181200.000000]
+      ---> Period @ 29 is 13 [181234.000000,181247.000000]
+      ---> Period @ 32 is 27 [181260.000000,181287.000000]
+      ---> Period @ 35 is 60 [181301.000000,181361.000000]
+      ---> Period @ 37 is 27 [181368.000000,181395.000000]
+      ---> Period @ 38 is 19 [181395.000000,181414.000000]
+      ---> Period @ 40 is 20 [181421.000000,181441.000000]
+      ---> Period @ 41 is 40 [181441.000000,181481.000000]
+      ---> Period @ 42 is 21 [181481.000000,181502.000000]
+      ---> Period @ 43 is 13 [181502.000000,181515.000000]
+      ---> Period @ 44 is 40 [181515.000000,181555.000000]
+      ---> Period @ 46 is 13 [181562.000000,181575.000000]
+      ---> Period @ 47 is 101 [181575.000000,181676.000000]
+      ---> Period @ 80 is 14 [181890.000000,181904.000000]
+      ---> Period @ 81 is 26 [181904.000000,181930.000000]
+      ---> Period @ 88 is 13 [181971.000000,181984.000000]
+      ---> Period @ 89 is 33 [181984.000000,182017.000000]
+      ---> Period @ 92 is 20 [182031.000000,182051.000000]
+      ---> Period @ 93 is 27 [182051.000000,182078.000000]
+      ---> Period @ 94 is 26 [182078.000000,182104.000000]
+      ---> Period @ 95 is 21 [182104.000000,182125.000000]
+      ---> Period @ 96 is 13 [182125.000000,182138.000000]
+      ---> Period @ 97 is 14 [182138.000000,182152.000000]
+      ---> Period @ 99 is 20 [182158.000000,182178.000000]
+      ---> Period @ 100 is 20 [182178.000000,182198.000000]
+      ---> Period @ 149 is 20 [182520.000000,182540.000000]
+      ---> Period @ 175 is 27 [182707.000000,182734.000000]
+      ---> Period @ 185 is 21 [182794.000000,182815.000000]
+      ---> Number of glitches 29. Number of measured periods: 189 (15.2632%). AVG F in Trial: 134.436. Data set duration: 1822. Expected Number of Points: 244.943
+   ---> Data Set 0148
+      ---> Number of glitches 0. Number of measured periods: 302 (0%). AVG F in Trial: 150.11. Data set duration: 2022. Expected Number of Points: 303.523
+   ---> Data Set 0151
+      ---> Number of glitches 0. Number of measured periods: 345 (0%). AVG F in Trial: 150.052. Data set duration: 2311. Expected Number of Points: 346.77
+   ---> Data Set 0154
+      ---> Number of glitches 0. Number of measured periods: 235 (0%). AVG F in Trial: 150.076. Data set duration: 1574. Expected Number of Points: 236.22
+   ---> Data Set 0157
+      ---> Number of glitches 0. Number of measured periods: 259 (0%). AVG F in Trial: 150.142. Data set duration: 1735. Expected Number of Points: 260.497
+   ---> Data Set 0159
+      ---> Number of glitches 0. Number of measured periods: 314 (0%). AVG F in Trial: 150.042. Data set duration: 2104. Expected Number of Points: 315.688
+   ---> Data Set 0162
+      ---> Number of glitches 0. Number of measured periods: 309 (0%). AVG F in Trial: 150.119. Data set duration: 2069. Expected Number of Points: 310.597
+   ---> Data Set 0172
+      ---> Number of glitches 0. Number of measured periods: 244 (0%). AVG F in Trial: 150.151. Data set duration: 1634. Expected Number of Points: 245.347
+   ---> Data Set 0181
+      ---> Number of glitches 0. Number of measured periods: 315 (0%). AVG F in Trial: 150.057. Data set duration: 2110. Expected Number of Points: 316.62
+   ---> Data Set 0190
+      ---> Number of glitches 0. Number of measured periods: 261 (0%). AVG F in Trial: 150.064. Data set duration: 1748. Expected Number of Points: 262.312
+   ---> Data Set 0196
+      ---> Number of glitches 0. Number of measured periods: 263 (0%). AVG F in Trial: 150.077. Data set duration: 1762. Expected Number of Points: 264.436

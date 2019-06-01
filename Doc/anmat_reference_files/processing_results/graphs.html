@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HTML5 Bar Graph</title>
+  </head>
+  <body>    
+        <canvas id='canvas0'></canvas>
+    <canvas id='canvas1'></canvas>
+    <canvas id='canvas2'></canvas>
+    <canvas id='canvas3'></canvas>
+    <canvas id='canvas4'></canvas>
+    <canvas id='canvas5'></canvas>
+    <script>
+
+        function generateMessage(canvasID,message,W,H){
+            var ctx = document.getElementById(canvasID).getContext("2d");
+
+            ctx.canvas.width = W;
+            ctx.canvas.height = H;
+
+            // Drawing the background
+            ctx.fillStyle = "#e2e2e2";
+            ctx.fillRect(0,0,W,H)
+
+            ctx.fillStyle = "#000000"
+            ctx.textAlign = "center"
+            ctx.font = "24px bold sans-serif";
+
+            var lines = message.split("\n");
+            var lh = 20;
+            var starty = H/2 - lh*lines.length/2;
+
+            for (var i = 0; i < lines.length; i++){
+               ctx.fillText(lines[i],W/2,starty+i*lh,0.75*W)
+            }
+        }
+
+        function generateBarGraph(obj){
+        
+           // The OBJ requires the following fields
+           /// canvas: To get the context
+           /// width: The width of the graph
+           /// height: The height of the graph
+           /// dataSet: An array of an array of values. All arrays need to be the same size
+           /// colors:  An array of colors. This needs to be the same size as the dataSet.
+           /// xtext: An array of strings same size as the dataset. Needs to be the same size as each of the dataSet Arrays.
+           /// title: The title of the graph.
+           /// fontSize: OPTIONAL. If not present defaults to 10.
+           /// drawValueOnBars: OPTIONAL. Draws the values of the bar over it, if true.
+           /// ylabel: OPTIONAL. If present it draws the label of the yAxis.
+           /// legend: OPTIONAL If present it will draw a box with the corresponding text, below the title. The number of values must be the same as the number of datasets.
+           
+           // CONSTANTS
+           LEFT_MARGIN   = 0.08;
+           TOP_MARGIN    = 0.16;
+           RIGHT_MARGIN  = 0.04;
+           BOTTOM_MARGIN = 0.1;
+           YTICK_COUNT   = 10;
+           COL_W_AIR     = 0.04;
+           LEGEND_AIR    = 4;
+           
+           var fontSize = 10;
+           if ("fontSize" in obj) fontSize = obj.fontSize;
+
+           var drawValueOnBars = false;
+           if ("drawValueOnBars" in obj){
+              if (obj.drawValueOnBars) drawValueOnBars = true;
+           }
+           
+           var ylabel = "DATA";
+           if ("ylabel" in obj) ylabel = obj.ylabel;
+                      
+           // Doing the the checks
+           var M = obj.dataSet.length;
+           if (M == 0){
+              console.log("No data to plot");
+              return;
+           }
+                      
+           var N = obj.dataSet[0].length;
+           for (var i = 0; i < M; i++){
+              if (obj.dataSet[i].length != N){
+                 console.log("All data sets need to be the same size. First is: " + N + " but at " + i + " there is one that is " + obj.dataSet[i].length)
+                 return;
+              }
+           }
+           
+           if (obj.xtext.length != N){
+              console.log("The number of texts in the x axis (" + obj.xtext.length  + ") must coincide with the length of each data set: " + N);
+              return;
+           }
+           
+           if (obj.colors.length != M){
+              console.log("The number of data sets (" + M  + ") must coincide with the length of the color array: " + obj.colors.length);
+              return;           
+           }
+           
+           if ("legend" in obj){
+              if (obj.legend.length != M){
+                 console.log("The number of data sets (" + M  + ") must coincide with the length of the legend array: " + obj.legend.length);
+                 return;
+              }
+           }
+           
+           var ctx = document.getElementById(obj.canvas).getContext("2d");
+           
+           ctx.canvas.width = obj.width;
+           ctx.canvas.height = obj.height;
+           
+           // Drawing the background
+           ctx.fillStyle = "#e2e2e2";
+           ctx.fillRect(0,0,obj.width,obj.height)
+           
+           // Computing the origin
+           var xo = LEFT_MARGIN*obj.width;
+           var yo = obj.height*(1-BOTTOM_MARGIN);
+           var xAxisLength = (1 - LEFT_MARGIN - RIGHT_MARGIN)*obj.width;
+           var yAxisLength = (1 - TOP_MARGIN - BOTTOM_MARGIN)*obj.height;
+           
+           // Drawing the axis
+           ctx.moveTo(xo,yo);
+           ctx.lineTo(xo + xAxisLength,yo);
+           ctx.moveTo(xo,yo);
+           ctx.lineTo(xo,yo-yAxisLength);
+           ctx.stroke()
+           
+           // Calculating the scale with the largest value
+           var maxValue = 0;
+           for (var i = 0; i < M; i++){
+              for (var j = 0; j < N; j++){
+                 if (maxValue < obj.dataSet[i][j]) maxValue = obj.dataSet[i][j];
+              }
+           }
+           
+           // Drawing the ticks
+           var yTickSpace = yAxisLength/YTICK_COUNT;
+           var yTickDelta = maxValue/YTICK_COUNT;
+           
+           var ypos = yo;
+           var ytickwidth = LEFT_MARGIN*obj.width/2;
+           var ytickvalue = 0;
+           for (var i = 0; i < YTICK_COUNT; i++){
+              ypos = ypos - yTickSpace;
+              ytickvalue = ytickvalue + yTickDelta;
+              
+              ctx.fillStyle = "#000000"
+              ctx.moveTo(xo,ypos);
+              ctx.lineTo(xo-5,ypos);
+              ctx.stroke();
+              
+              ctx.textAlign = "right"
+              ctx.font = fontSize + "px bold sans-serif";
+              ctx.fillText(ytickvalue.toFixed(2),xo-5,ypos+3,ytickwidth)
+              
+              // Drawing grid lines.  
+              ctx.setLineDash([5, 3]);
+              ctx.strokeStyle = "#555555"
+              ctx.beginPath();
+              ctx.moveTo(xo,ypos);
+              ctx.lineTo(xo+xAxisLength,ypos);
+              ctx.stroke();              
+           }
+           
+           
+           // Calculating scale constants.
+           var colSpace = xAxisLength/N;
+           var colWidth = colSpace*(1-2*COL_W_AIR)/M;
+           var Ky = yAxisLength/maxValue;
+           
+           var startx = xo;
+           for (var i = 0; i < N; i++){
+
+              // Adding the bars.
+              var sx = startx + COL_W_AIR*colSpace;              
+              for (var j = 0; j < M; j++){
+                 var value = obj.dataSet[j][i]; 
+                 var h = Ky*value;
+                 var xcoord = sx + j*colWidth
+                 ctx.fillStyle = obj.colors[j];                                  
+                 ctx.fillRect(xcoord,yo-h,colWidth,h);
+
+                 if (drawValueOnBars) {
+                    ctx.fillStyle = "#000000"
+                    ctx.font = fontSize + "px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(value,xcoord+colWidth/2,yo-h-fontSize,colWidth)
+                 }
+              }              
+
+              // Adding the text
+              ctx.save();
+              ctx.translate(startx+colSpace/2, yo+fontSize);
+              ctx.rotate(-Math.PI/4);
+              ctx.textAlign = "center";
+              ctx.fillStyle = "#000000"
+              ctx.font = fontSize + "px sans-serif";
+              ctx.textAlign = "right";
+              ctx.fillText(obj.xtext[i],0,0)               
+              ctx.restore();              
+              
+              startx = startx + colSpace;
+           }
+           
+           // Drawing the ylabel.
+           ctx.save();
+           ctx.translate(xo/2,yo-yAxisLength/2);
+           ctx.rotate(-Math.PI/2);
+           ctx.fillStyle = "#000000"
+           ctx.font = fontSize + "px bold sans-serif";
+           ctx.textAlign = "center";
+           ctx.fillText(ylabel,0,0)               
+           ctx.restore();              
+           
+           
+           var titley = TOP_MARGIN*obj.height/4;
+           // Drawing the legend, if present
+           if ("legend" in obj){
+              var legRectH = 1.5*fontSize;
+              var legRectW = 50;            
+              var yval = titley+legRectH
+              ctx.font = fontSize + "px bold sans-serif";
+              var l = 0;
+              var txtl = [];
+              for (var i = 0; i < M; i++) {                 
+                 var txtw = ctx.measureText(obj.legend[i]).width;
+                 l = l + txtw  + 2*LEGEND_AIR; // The 5 is to represent the AIR around the text.                 
+                 txtl.push(txtw)
+              }
+              var totalLW = l + legRectW*M;
+              var startx = xo+xAxisLength/2 - totalLW/2;
+              for (var i = 0; i < M; i++) {
+                  ctx.fillStyle = obj.colors[i];    
+                  ctx.fillRect(startx,yval,legRectW,legRectH);
+                  ctx.fillStyle = "#000000"
+                  ctx.textAlign = "left";
+                  ctx.fillText(obj.legend[i],startx + legRectW + LEGEND_AIR,yval+legRectH-5);           
+                  startx = startx + legRectW + 2*LEGEND_AIR + txtl[i];
+              }                            
+           }
+           
+           // Drawing the title
+           fontSize = fontSize*2;
+           ctx.fillStyle = "#000000"
+           ctx.font = fontSize + "px bold sans-serif";
+           ctx.textAlign = "center";
+           ctx.fillText(obj.title,xo+xAxisLength/2,titley);           
+           
+        }
+        
+        
+    </script>
+    <script>
+       var canvas0 = {
+      canvas: 'canvas0',
+      width: 1280,
+      height: 720,
+      dataSet: [[20,23,21,18,24,21,24,25,29,37,28,23,17,13,17,31,32,29,23,14,18,20,19,19,23,21],[21,24,26,17,23,21,22,20,28,33,27,24,19,14,17,25,28,27,26,15,16,24,17,20,16,18]],
+      xtext: ['0004','0005','0006','0007','0008','0009','0010','0027','0030','0059','0073','0076','0093','0096','0104','0107','0112','0118','0127','0136','0139','0151','0157','0159','0162','0181'],
+      colors: ['#2022a2','#a21d3c'],
+      title: 'Fixations on Reading Sentences longer than 7 for : reading_en_2_2019_01_01_10_00',
+      ylabel: 'Number of Total Unfiltered Fixations',
+      fontSize: 12,
+      legend: ['Left Eye', 'Right Eye'],
+      drawValueOnBars: false
+   }
+   generateBarGraph(canvas0)
+   var canvas1 = {
+      canvas: 'canvas1',
+      width: 1280,
+      height: 720,
+      dataSet: [[30,18,37,24,19,16,17,26,16,25,19,23,27,19,18,19,21,17,20,16,16,16,14],[33,17,32,21,20,17,17,25,20,25,22,23,28,18,18,23,21,16,18,15,16,16,16]],
+      xtext: ['0001','0002','0003','0016','0021','0032','0036','0042','0045','0050','0056','0068','0071','0084','0087','0110','0121','0141','0148','0154','0172','0190','0196'],
+      colors: ['#2022a2','#a21d3c'],
+      title: 'Fixations on Reading Sentences shorter or equal to 7 for: reading_en_2_2019_01_01_10_00',
+      ylabel: 'Number of Total Unfiltered Fixations',
+      fontSize: 12,
+      legend: ['Left Eye', 'Right Eye'],
+      drawValueOnBars: false
+   }
+   generateBarGraph(canvas1)
+   var canvas2 = {
+      canvas: 'canvas2',
+      width: 1280,
+      height: 720,
+      dataSet: [[15,16,17,16,19,20,17,14,19,19,15,15,19,15,20,14,17,17,19,15,16,15,17,15,14,18,17,19,16,15,16,19,14,18,16,17,15,18,16,16,20,19],[9,7,4,5,6,6,4,7,4,2,5,5,6,7,5,6,4,5,6,5,5,12,6,5,4,6,6,9,7,6,7,6,8,5,5,6,5,4,6,4,6,5]],
+      xtext: ['0-test-different-0','0-test-different-1','0-test-same-2','0-test-different-3','0-test-same-4','0-test-different-5','0-test-same-6','0-test-different-7','0-test-same-8','0-test-different-9','01-trial-different-10','02-trial-different-11','03-trial-same-12','04-trial-same-13','05-trial-different-14','06-trial-same-15','07-trial-same-16','08-trial-same-17','09-trial-different-18','10-trial-different-19','11-trial-different-20','12-trial-same-21','13-trial-same-22','14-trial-different-23','15-trial-same-24','16-trial-same-25','17-trial-same-26','18-trial-different-27','19-trial-different-28','20-trial-different-29','21-trial-different-30','22-trial-different-31','23-trial-same-32','24-trial-same-33','25-trial-different-34','26-trial-same-35','27-trial-different-36','28-trial-same-37','29-trial-different-38','30-trial-same-39','31-trial-different-40','32-trial-same-41'],
+      colors: ['#2022a2','#a21d3c'],
+      title: 'Left Eye Fixations for Binding BC: binding_bc_2_l_2_2019_01_01_10_00',
+      ylabel: 'Number of Total Unfiltered Fixations',
+      fontSize: 12,
+      legend: ['Show', 'Decision'],
+      drawValueOnBars: false
+   }
+   generateBarGraph(canvas2)
+   var canvas3 = {
+      canvas: 'canvas3',
+      width: 1280,
+      height: 720,
+      dataSet: [[18,13,16,15,17,17,15,15,13,19,15,14,17,16,18,16,18,16,14,17,16,15,19,14,16,16,15,18,17,14,14,16,16,16,15,16,16,13,17,14,16,18],[8,7,4,5,6,5,5,6,6,2,4,6,5,6,5,4,5,4,7,5,4,8,4,5,4,5,5,9,5,4,6,4,8,5,5,5,3,4,5,4,5,4]],
+      xtext: ['0-test-different-0','0-test-different-1','0-test-same-2','0-test-different-3','0-test-same-4','0-test-different-5','0-test-same-6','0-test-different-7','0-test-same-8','0-test-different-9','01-trial-different-10','02-trial-different-11','03-trial-same-12','04-trial-same-13','05-trial-different-14','06-trial-same-15','07-trial-same-16','08-trial-same-17','09-trial-different-18','10-trial-different-19','11-trial-different-20','12-trial-same-21','13-trial-same-22','14-trial-different-23','15-trial-same-24','16-trial-same-25','17-trial-same-26','18-trial-different-27','19-trial-different-28','20-trial-different-29','21-trial-different-30','22-trial-different-31','23-trial-same-32','24-trial-same-33','25-trial-different-34','26-trial-same-35','27-trial-different-36','28-trial-same-37','29-trial-different-38','30-trial-same-39','31-trial-different-40','32-trial-same-41'],
+      colors: ['#2022a2','#a21d3c'],
+      title: 'Right Eye Fixations for Binding BC: binding_bc_2_l_2_2019_01_01_10_00',
+      ylabel: 'Number of Total Unfiltered Fixations',
+      fontSize: 12,
+      legend: ['Show', 'Decision'],
+      drawValueOnBars: false
+   }
+   generateBarGraph(canvas3)
+   var canvas4 = {
+      canvas: 'canvas4',
+      width: 1280,
+      height: 720,
+      dataSet: [[17,14,16,15,18,18,17,17,19,16,16,12,16,14,15,16,18,17,16,15,14,18,17,20,20,15,15,16,16,15,16,15,14,17,21,18,15,16,14,15,17,19],[6,4,3,3,3,4,4,6,3,4,4,5,3,3,3,4,4,3,4,5,4,3,4,4,4,2,4,3,3,3,6,7,4,5,5,5,4,3,7,4,6,4]],
+      xtext: ['0-test-01-different1','0-test-02-same1','0-test-03-different2','0-test-04-same2','0-test-05-different3','0-test-06-different4','0-test-07-same3','0-test-08-different5','0-test-09-same4','0-test-10-same5','01-same1','02-same2','03-same3','04-different1','05-same4','06-same5','07-same6','08-same7','09-different2','10-different3','11-same8','12-different4','13-different5','14-same9','15-different6','16-different7','17-same10','18-same11','19-different8','20-same12','21-same13','22-same14','23-same15','24-different9','25-different10','26-different11','27-same16','28-different12','29-different13','30-different14','31-different15','32-different16'],
+      colors: ['#2022a2','#a21d3c'],
+      title: 'Left Eye Fixations for Binding UC: binding_uc_2_l_2_2019_01_01_10_30',
+      ylabel: 'Number of Total Unfiltered Fixations',
+      fontSize: 12,
+      legend: ['Show', 'Decision'],
+      drawValueOnBars: false
+   }
+   generateBarGraph(canvas4)
+   var canvas5 = {
+      canvas: 'canvas5',
+      width: 1280,
+      height: 720,
+      dataSet: [[17,19,12,13,16,15,15,16,14,17,16,17,16,16,18,14,17,11,16,15,17,17,19,16,16,20,14,14,16,15,15,18,14,17,18,17,14,18,20,18,18,21],[7,5,3,3,3,4,4,4,2,4,4,5,2,3,2,3,4,3,5,5,3,4,6,6,3,2,3,5,3,4,4,6,3,6,4,4,4,3,5,6,4,7]],
+      xtext: ['0-test-01-different1','0-test-02-same1','0-test-03-different2','0-test-04-same2','0-test-05-different3','0-test-06-different4','0-test-07-same3','0-test-08-different5','0-test-09-same4','0-test-10-same5','01-same1','02-same2','03-same3','04-different1','05-same4','06-same5','07-same6','08-same7','09-different2','10-different3','11-same8','12-different4','13-different5','14-same9','15-different6','16-different7','17-same10','18-same11','19-different8','20-same12','21-same13','22-same14','23-same15','24-different9','25-different10','26-different11','27-same16','28-different12','29-different13','30-different14','31-different15','32-different16'],
+      colors: ['#2022a2','#a21d3c'],
+      title: 'Right Eye Fixations for Binding UC: binding_uc_2_l_2_2019_01_01_10_30',
+      ylabel: 'Number of Total Unfiltered Fixations',
+      fontSize: 12,
+      legend: ['Show', 'Decision'],
+      drawValueOnBars: false
+   }
+   generateBarGraph(canvas5)
+    </script>
+  </body>
+</html>

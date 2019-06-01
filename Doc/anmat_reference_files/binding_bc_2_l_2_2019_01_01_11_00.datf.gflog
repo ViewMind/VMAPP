@@ -1,0 +1,580 @@
+FREQ ANALYSIS REPORT: Avg Frequency: 249.946
+   Number of data sets with too many frequency glitches: 4 Specified Threshold 0
+   Data set 0-test-different-0_0 has 12.4272 % of frequency glitches
+   Data set 0-test-different-9_0 has 14.6 % of frequency glitches
+   Data set 04-trial-same-13_1 has 12.6638 % of frequency glitches
+   Data set 26-trial-same-35_0 has 10.5368 % of frequency glitches
+   Individual Freq Errors:
+   Frequency Analysis Parametrs:
+      Period should be in [4, 8] ms
+      Maximum % of Frequency Glitches allowed in a trial: 10
+      Maximum % of Invalid values allowed in a trial: 3
+      Minimum number of data points allowed in a trial: 50
+      Max allowed failed trial for frequency glitches: 0
+      Expected Frequency: 150 Hz
+
+   ---> Data Set 0-test-different-0_0
+      ---> Period @ 1 is 3 [1162526.000000,1162529.000000]
+      ---> Period @ 19 is 6.7554e+13 [1162598.000000,67553994430862.000000]
+      ---> Period @ 20 is -6.7554e+13 [67553994430862.000000,1162602.000000]
+      ---> Period @ 24 is 6.7554e+13 [1162614.000000,67553994430862.000000]
+      ---> Period @ 25 is -6.7554e+13 [67553994430862.000000,1162618.000000]
+      ---> Period @ 27 is 6.7554e+13 [1162622.000000,67553994430862.000000]
+      ---> Period @ 28 is -6.7554e+13 [67553994430862.000000,1162625.000000]
+      ---> Period @ 34 is 6.7554e+13 [1162646.000000,67553994430862.000000]
+      ---> Period @ 35 is -6.7554e+13 [67553994430862.000000,1162650.000000]
+      ---> Period @ 41 is 6.7554e+13 [1162670.000000,67553994430862.000000]
+      ---> Period @ 42 is -6.7554e+13 [67553994430862.000000,1162674.000000]
+      ---> Period @ 44 is 3 [1162678.000000,1162681.000000]
+      ---> Period @ 46 is 6.7554e+13 [1162686.000000,67553994430862.000000]
+      ---> Period @ 47 is -6.7554e+13 [67553994430862.000000,1162689.000000]
+      ---> Period @ 49 is 6.7554e+13 [1162694.000000,67553994430862.000000]
+      ---> Period @ 50 is -6.7554e+13 [67553994430862.000000,1162697.000000]
+      ---> Period @ 52 is 3 [1162702.000000,1162705.000000]
+      ---> Period @ 56 is 6.7554e+13 [1162718.000000,67553994430862.000000]
+      ---> Period @ 57 is -6.7554e+13 [67553994430862.000000,1162722.000000]
+      ---> Period @ 59 is 3 [1162726.000000,1162729.000000]
+      ---> Period @ 61 is 6.7554e+13 [1162733.000000,67553994430862.000000]
+      ---> Period @ 62 is -6.7554e+13 [67553994430862.000000,1162738.000000]
+      ---> Period @ 64 is 6.7554e+13 [1162742.000000,67553994430862.000000]
+      ---> Period @ 65 is -6.7554e+13 [67553994430862.000000,1162746.000000]
+      ---> Period @ 69 is 6.7554e+13 [1162758.000000,67553994430862.000000]
+      ---> Period @ 70 is -6.7554e+13 [67553994430862.000000,1162762.000000]
+      ---> Period @ 71 is 3 [1162762.000000,1162765.000000]
+      ---> Period @ 72 is 6.7554e+13 [1162765.000000,67553994430862.000000]
+      ---> Period @ 73 is -6.7554e+13 [67553994430862.000000,1162769.000000]
+      ---> Period @ 77 is 6.7554e+13 [1162782.000000,67553994430862.000000]
+      ---> Period @ 78 is -6.7554e+13 [67553994430862.000000,1162786.000000]
+      ---> Period @ 79 is 3 [1162786.000000,1162789.000000]
+      ---> Period @ 80 is 6.7554e+13 [1162789.000000,67553994430862.000000]
+      ---> Period @ 81 is -6.7554e+13 [67553994430862.000000,1162794.000000]
+      ---> Period @ 82 is 3 [1162794.000000,1162797.000000]
+      ---> Period @ 85 is 6.7554e+13 [1162806.000000,67553994430862.000000]
+      ---> Period @ 86 is -6.7554e+13 [67553994430862.000000,1162810.000000]
+      ---> Period @ 90 is 3 [1162822.000000,1162825.000000]
+      ---> Period @ 93 is 3 [1162834.000000,1162837.000000]
+      ---> Period @ 96 is 3 [1162846.000000,1162849.000000]
+      ---> Period @ 103 is 3 [1162874.000000,1162877.000000]
+      ---> Period @ 106 is 3 [1162886.000000,1162889.000000]
+      ---> Period @ 109 is 3 [1162898.000000,1162901.000000]
+      ---> Period @ 112 is 3 [1162910.000000,1162913.000000]
+      ---> Period @ 117 is 3 [1162930.000000,1162933.000000]
+      ---> Period @ 124 is 3 [1162958.000000,1162961.000000]
+      ---> Period @ 126 is 3 [1162966.000000,1162969.000000]
+      ---> Period @ 130 is 3 [1162982.000000,1162985.000000]
+      ---> Period @ 136 is 3 [1163006.000000,1163009.000000]
+      ---> Period @ 139 is 3 [1163018.000000,1163021.000000]
+      ---> Period @ 150 is 3 [1163062.000000,1163065.000000]
+      ---> Period @ 153 is 3 [1163074.000000,1163077.000000]
+      ---> Period @ 156 is 3 [1163086.000000,1163089.000000]
+      ---> Period @ 158 is 3 [1163094.000000,1163097.000000]
+      ---> Period @ 162 is 3 [1163110.000000,1163113.000000]
+      ---> Period @ 168 is 3 [1163134.000000,1163137.000000]
+      ---> Period @ 173 is 3 [1163154.000000,1163157.000000]
+      ---> Period @ 177 is 3 [1163170.000000,1163173.000000]
+      ---> Period @ 180 is 3 [1163182.000000,1163185.000000]
+      ---> Period @ 186 is 3 [1163206.000000,1163209.000000]
+      ---> Period @ 192 is 3 [1163230.000000,1163233.000000]
+      ---> Period @ 197 is 3 [1163250.000000,1163253.000000]
+      ---> Period @ 262 is 9.95833e+13 [1163509.000000,99583319041163.000000]
+      ---> Period @ 263 is -9.95833e+13 [99583319041163.000000,1163513.000000]
+      ---> Number of glitches 64. Number of measured periods: 514 (12.4272%). AVG F in Trial: 236.511. Data set duration: 1991. Expected Number of Points: 470.893
+   ---> Data Set 0-test-different-0_1
+      ---> Number of glitches 0. Number of measured periods: 233 (0%). AVG F in Trial: 250. Data set duration: 932. Expected Number of Points: 233
+   ---> Data Set 0-test-different-1_0
+      ---> Number of glitches 0. Number of measured periods: 501 (0%). AVG F in Trial: 250. Data set duration: 2004. Expected Number of Points: 501
+   ---> Data Set 0-test-different-1_1
+      ---> Period @ 196 is 404 [1171789.000000,1172193.000000]
+      ---> Number of glitches 1. Number of measured periods: 207 (0.480769%). AVG F in Trial: 248.804. Data set duration: 1228. Expected Number of Points: 305.532
+   ---> Data Set 0-test-same-2_0
+      ---> Period @ 104 is 3 [1173913.000000,1173916.000000]
+      ---> Period @ 106 is 3 [1173921.000000,1173924.000000]
+      ---> Period @ 108 is 3 [1173929.000000,1173932.000000]
+      ---> Period @ 185 is 3 [1174237.000000,1174240.000000]
+      ---> Period @ 230 is 3 [1174417.000000,1174420.000000]
+      ---> Period @ 255 is 3 [1174517.000000,1174520.000000]
+      ---> Period @ 266 is 3 [1174561.000000,1174564.000000]
+      ---> Period @ 280 is 3 [1174617.000000,1174620.000000]
+      ---> Period @ 314 is 3 [1174753.000000,1174756.000000]
+      ---> Period @ 484 is 3 [1175433.000000,1175436.000000]
+      ---> Number of glitches 10. Number of measured periods: 500 (1.99601%). AVG F in Trial: 250.767. Data set duration: 1999. Expected Number of Points: 501.283
+   ---> Data Set 0-test-same-2_1
+      ---> Period @ 309 is 733 [1177648.000000,1178381.000000]
+      ---> Number of glitches 1. Number of measured periods: 329 (0.30303%). AVG F in Trial: 248.104. Data set duration: 2057. Expected Number of Points: 510.351
+   ---> Data Set 0-test-different-3_0
+      ---> Number of glitches 0. Number of measured periods: 499 (0%). AVG F in Trial: 250. Data set duration: 1996. Expected Number of Points: 499
+   ---> Data Set 0-test-different-3_1
+      ---> Period @ 198 is 3 [1183441.000000,1183444.000000]
+      ---> Period @ 203 is 3 [1183461.000000,1183464.000000]
+      ---> Period @ 222 is 745 [1183536.000000,1184281.000000]
+      ---> Period @ 226 is 11 [1184294.000000,1184305.000000]
+      ---> Number of glitches 4. Number of measured periods: 288 (1.38408%). AVG F in Trial: 247.948. Data set duration: 1908. Expected Number of Points: 473.084
+   ---> Data Set 0-test-same-4_0
+      ---> Number of glitches 0. Number of measured periods: 496 (0%). AVG F in Trial: 250. Data set duration: 1984. Expected Number of Points: 496
+   ---> Data Set 0-test-same-4_1
+      ---> Period @ 263 is 9.16276e+14 [1189793.000000,916275850343614.000000]
+      ---> Period @ 264 is -9.16276e+14 [916275850343614.000000,1189797.000000]
+      ---> Number of glitches 2. Number of measured periods: 354 (0.56338%). AVG F in Trial: 248.588. Data set duration: 1412. Expected Number of Points: 351.006
+   ---> Data Set 0-test-different-5_0
+      ---> Period @ 0 is 3 [1191817.000000,1191820.000000]
+      ---> Period @ 14 is 3 [1191873.000000,1191876.000000]
+      ---> Period @ 20 is 3 [1191897.000000,1191900.000000]
+      ---> Period @ 30 is 3 [1191937.000000,1191940.000000]
+      ---> Period @ 36 is 3 [1191961.000000,1191964.000000]
+      ---> Period @ 39 is 3 [1191973.000000,1191976.000000]
+      ---> Period @ 44 is 3 [1191993.000000,1191996.000000]
+      ---> Period @ 81 is 3 [1192141.000000,1192144.000000]
+      ---> Period @ 83 is 3 [1192149.000000,1192152.000000]
+      ---> Period @ 89 is 3 [1192173.000000,1192176.000000]
+      ---> Period @ 95 is 3 [1192197.000000,1192200.000000]
+      ---> Period @ 105 is 3 [1192237.000000,1192240.000000]
+      ---> Period @ 120 is 3 [1192297.000000,1192300.000000]
+      ---> Period @ 134 is 3 [1192353.000000,1192356.000000]
+      ---> Period @ 153 is 3 [1192429.000000,1192432.000000]
+      ---> Period @ 155 is 3 [1192437.000000,1192440.000000]
+      ---> Period @ 171 is 3 [1192501.000000,1192504.000000]
+      ---> Period @ 193 is 3 [1192589.000000,1192592.000000]
+      ---> Period @ 197 is 3 [1192605.000000,1192608.000000]
+      ---> Period @ 205 is 3 [1192637.000000,1192640.000000]
+      ---> Period @ 209 is 3 [1192653.000000,1192656.000000]
+      ---> Period @ 220 is 3 [1192697.000000,1192700.000000]
+      ---> Period @ 222 is 3 [1192705.000000,1192708.000000]
+      ---> Period @ 236 is 3 [1192761.000000,1192764.000000]
+      ---> Period @ 244 is 3 [1192793.000000,1192796.000000]
+      ---> Period @ 247 is 3 [1192805.000000,1192808.000000]
+      ---> Period @ 257 is 3 [1192845.000000,1192848.000000]
+      ---> Period @ 262 is 3 [1192865.000000,1192868.000000]
+      ---> Period @ 265 is 3 [1192877.000000,1192880.000000]
+      ---> Period @ 268 is 3 [1192889.000000,1192892.000000]
+      ---> Period @ 271 is 3 [1192901.000000,1192904.000000]
+      ---> Period @ 274 is 3 [1192913.000000,1192916.000000]
+      ---> Period @ 277 is 3 [1192925.000000,1192928.000000]
+      ---> Period @ 280 is 3 [1192937.000000,1192940.000000]
+      ---> Period @ 283 is 3 [1192949.000000,1192952.000000]
+      ---> Number of glitches 35. Number of measured periods: 502 (6.95825%). AVG F in Trial: 252.424. Data set duration: 2007. Expected Number of Points: 506.614
+   ---> Data Set 0-test-different-5_1
+      ---> Number of glitches 0. Number of measured periods: 274 (0%). AVG F in Trial: 250. Data set duration: 1096. Expected Number of Points: 274
+   ---> Data Set 0-test-same-6_0
+      ---> Period @ 474 is 3 [1199660.000000,1199663.000000]
+      ---> Number of glitches 1. Number of measured periods: 497 (0.200803%). AVG F in Trial: 250.168. Data set duration: 1987. Expected Number of Points: 497.083
+   ---> Data Set 0-test-same-6_1
+      ---> Period @ 113 is 3 [1201116.000000,1201119.000000]
+      ---> Period @ 417 is 112 [1202331.000000,1202443.000000]
+      ---> Period @ 517 is 180 [1202843.000000,1203023.000000]
+      ---> Period @ 524 is 3 [1203048.000000,1203051.000000]
+      ---> Number of glitches 4. Number of measured periods: 573 (0.696864%). AVG F in Trial: 249.051. Data set duration: 2580. Expected Number of Points: 642.551
+   ---> Data Set 0-test-different-7_0
+      ---> Number of glitches 0. Number of measured periods: 499 (0%). AVG F in Trial: 250. Data set duration: 1996. Expected Number of Points: 499
+   ---> Data Set 0-test-different-7_1
+      ---> Number of glitches 0. Number of measured periods: 195 (0%). AVG F in Trial: 250. Data set duration: 780. Expected Number of Points: 195
+   ---> Data Set 0-test-same-8_0
+      ---> Period @ 121 is 3 [1210460.000000,1210463.000000]
+      ---> Number of glitches 1. Number of measured periods: 498 (0.200401%). AVG F in Trial: 250.067. Data set duration: 1992. Expected Number of Points: 498.133
+   ---> Data Set 0-test-same-8_1
+      ---> Number of glitches 0. Number of measured periods: 290 (0%). AVG F in Trial: 250. Data set duration: 1160. Expected Number of Points: 290
+   ---> Data Set 0-test-different-9_0
+      ---> Period @ 23 is 3 [1216015.000000,1216018.000000]
+      ---> Period @ 34 is 3 [1216059.000000,1216062.000000]
+      ---> Period @ 38 is 3 [1216075.000000,1216078.000000]
+      ---> Period @ 97 is 3 [1216311.000000,1216314.000000]
+      ---> Period @ 101 is 3 [1216327.000000,1216330.000000]
+      ---> Period @ 104 is 3 [1216339.000000,1216342.000000]
+      ---> Period @ 107 is 3 [1216351.000000,1216354.000000]
+      ---> Period @ 109 is 3 [1216359.000000,1216362.000000]
+      ---> Period @ 113 is 3 [1216375.000000,1216378.000000]
+      ---> Period @ 116 is 3 [1216387.000000,1216390.000000]
+      ---> Period @ 127 is 3 [1216431.000000,1216434.000000]
+      ---> Period @ 131 is 3 [1216447.000000,1216450.000000]
+      ---> Period @ 136 is 3 [1216467.000000,1216470.000000]
+      ---> Period @ 143 is 3 [1216495.000000,1216498.000000]
+      ---> Period @ 146 is 3 [1216507.000000,1216510.000000]
+      ---> Period @ 154 is 3 [1216539.000000,1216542.000000]
+      ---> Period @ 158 is 3 [1216555.000000,1216558.000000]
+      ---> Period @ 162 is 3 [1216571.000000,1216574.000000]
+      ---> Period @ 165 is 3 [1216583.000000,1216586.000000]
+      ---> Period @ 170 is 3 [1216603.000000,1216606.000000]
+      ---> Period @ 175 is 3 [1216623.000000,1216626.000000]
+      ---> Period @ 178 is 3 [1216635.000000,1216638.000000]
+      ---> Period @ 181 is 3 [1216647.000000,1216650.000000]
+      ---> Period @ 184 is 3 [1216659.000000,1216662.000000]
+      ---> Period @ 188 is 3 [1216675.000000,1216678.000000]
+      ---> Period @ 191 is 3 [1216687.000000,1216690.000000]
+      ---> Period @ 194 is 3 [1216699.000000,1216702.000000]
+      ---> Period @ 197 is 3 [1216711.000000,1216714.000000]
+      ---> Period @ 199 is 3 [1216719.000000,1216722.000000]
+      ---> Period @ 204 is 3 [1216739.000000,1216742.000000]
+      ---> Period @ 208 is 3 [1216755.000000,1216758.000000]
+      ---> Period @ 211 is 3 [1216767.000000,1216770.000000]
+      ---> Period @ 213 is 3 [1216775.000000,1216778.000000]
+      ---> Period @ 215 is 3 [1216783.000000,1216786.000000]
+      ---> Period @ 219 is 3 [1216799.000000,1216802.000000]
+      ---> Period @ 225 is 3 [1216823.000000,1216826.000000]
+      ---> Period @ 229 is 3 [1216839.000000,1216842.000000]
+      ---> Period @ 232 is 3 [1216851.000000,1216854.000000]
+      ---> Period @ 237 is 3 [1216871.000000,1216874.000000]
+      ---> Period @ 243 is 3 [1216895.000000,1216898.000000]
+      ---> Period @ 249 is 3 [1216919.000000,1216922.000000]
+      ---> Period @ 252 is 3 [1216931.000000,1216934.000000]
+      ---> Period @ 254 is 3 [1216939.000000,1216942.000000]
+      ---> Period @ 257 is 3 [1216951.000000,1216954.000000]
+      ---> Period @ 259 is 3 [1216959.000000,1216962.000000]
+      ---> Period @ 263 is 3 [1216975.000000,1216978.000000]
+      ---> Period @ 265 is 3 [1216983.000000,1216986.000000]
+      ---> Period @ 267 is 3 [1216991.000000,1216994.000000]
+      ---> Period @ 274 is 3 [1217019.000000,1217022.000000]
+      ---> Period @ 277 is 3 [1217031.000000,1217034.000000]
+      ---> Period @ 285 is 3 [1217063.000000,1217066.000000]
+      ---> Period @ 288 is 3 [1217075.000000,1217078.000000]
+      ---> Period @ 295 is 3 [1217103.000000,1217106.000000]
+      ---> Period @ 297 is 3 [1217111.000000,1217114.000000]
+      ---> Period @ 304 is 3 [1217139.000000,1217142.000000]
+      ---> Period @ 306 is 3 [1217147.000000,1217150.000000]
+      ---> Period @ 315 is 3 [1217183.000000,1217186.000000]
+      ---> Period @ 318 is 3 [1217195.000000,1217198.000000]
+      ---> Period @ 321 is 3 [1217207.000000,1217210.000000]
+      ---> Period @ 325 is 3 [1217223.000000,1217226.000000]
+      ---> Period @ 327 is 3 [1217231.000000,1217234.000000]
+      ---> Period @ 331 is 3 [1217247.000000,1217250.000000]
+      ---> Period @ 334 is 3 [1217259.000000,1217262.000000]
+      ---> Period @ 340 is 3 [1217283.000000,1217286.000000]
+      ---> Period @ 346 is 3 [1217307.000000,1217310.000000]
+      ---> Period @ 349 is 3 [1217319.000000,1217322.000000]
+      ---> Period @ 352 is 3 [1217331.000000,1217334.000000]
+      ---> Period @ 355 is 3 [1217343.000000,1217346.000000]
+      ---> Period @ 361 is 3 [1217367.000000,1217370.000000]
+      ---> Period @ 364 is 3 [1217379.000000,1217382.000000]
+      ---> Period @ 367 is 3 [1217391.000000,1217394.000000]
+      ---> Period @ 370 is 3 [1217403.000000,1217406.000000]
+      ---> Period @ 373 is 3 [1217415.000000,1217418.000000]
+      ---> Number of glitches 73. Number of measured periods: 499 (14.6%). AVG F in Trial: 254.977. Data set duration: 1995. Expected Number of Points: 508.678
+   ---> Data Set 0-test-different-9_1
+      ---> Period @ 6 is 3 [1218855.000000,1218858.000000]
+      ---> Number of glitches 1. Number of measured periods: 267 (0.373134%). AVG F in Trial: 250.125. Data set duration: 1068. Expected Number of Points: 267.133
+   ---> Data Set 01-trial-different-10_0
+      ---> Number of glitches 0. Number of measured periods: 499 (0%). AVG F in Trial: 250. Data set duration: 1996. Expected Number of Points: 499
+   ---> Data Set 01-trial-different-10_1
+      ---> Number of glitches 0. Number of measured periods: 285 (0%). AVG F in Trial: 250. Data set duration: 1140. Expected Number of Points: 285
+   ---> Data Set 02-trial-different-11_0
+      ---> Number of glitches 0. Number of measured periods: 498 (0%). AVG F in Trial: 250. Data set duration: 1992. Expected Number of Points: 498
+   ---> Data Set 02-trial-different-11_1
+      ---> Number of glitches 0. Number of measured periods: 296 (0%). AVG F in Trial: 250. Data set duration: 1184. Expected Number of Points: 296
+   ---> Data Set 03-trial-same-12_0
+      ---> Period @ 97 is 3 [1233630.000000,1233633.000000]
+      ---> Period @ 100 is 3 [1233642.000000,1233645.000000]
+      ---> Period @ 288 is 3 [1234394.000000,1234397.000000]
+      ---> Period @ 313 is 3 [1234494.000000,1234497.000000]
+      ---> Number of glitches 4. Number of measured periods: 498 (0.801603%). AVG F in Trial: 250.368. Data set duration: 1991. Expected Number of Points: 498.483
+   ---> Data Set 03-trial-same-12_1
+      ---> Number of glitches 0. Number of measured periods: 364 (0%). AVG F in Trial: 250. Data set duration: 1456. Expected Number of Points: 364
+   ---> Data Set 04-trial-same-13_0
+      ---> Number of glitches 0. Number of measured periods: 496 (0%). AVG F in Trial: 250. Data set duration: 1984. Expected Number of Points: 496
+   ---> Data Set 04-trial-same-13_1
+      ---> Period @ 4 is 3 [1242378.000000,1242381.000000]
+      ---> Period @ 18 is 3 [1242434.000000,1242437.000000]
+      ---> Period @ 20 is 3 [1242442.000000,1242445.000000]
+      ---> Period @ 30 is 3 [1242482.000000,1242485.000000]
+      ---> Period @ 32 is 3 [1242490.000000,1242493.000000]
+      ---> Period @ 42 is 3 [1242530.000000,1242533.000000]
+      ---> Period @ 51 is 3 [1242566.000000,1242569.000000]
+      ---> Period @ 54 is 3 [1242578.000000,1242581.000000]
+      ---> Period @ 57 is 3 [1242590.000000,1242593.000000]
+      ---> Period @ 109 is 3 [1242798.000000,1242801.000000]
+      ---> Period @ 112 is 3 [1242810.000000,1242813.000000]
+      ---> Period @ 118 is 3 [1242834.000000,1242837.000000]
+      ---> Period @ 121 is 3 [1242846.000000,1242849.000000]
+      ---> Period @ 124 is 3 [1242858.000000,1242861.000000]
+      ---> Period @ 127 is 3 [1242870.000000,1242873.000000]
+      ---> Period @ 136 is 3 [1242906.000000,1242909.000000]
+      ---> Period @ 144 is 3 [1242938.000000,1242941.000000]
+      ---> Period @ 147 is 3 [1242950.000000,1242953.000000]
+      ---> Period @ 151 is 3 [1242966.000000,1242969.000000]
+      ---> Period @ 160 is 3 [1243002.000000,1243005.000000]
+      ---> Period @ 163 is 3 [1243014.000000,1243017.000000]
+      ---> Period @ 165 is 3 [1243022.000000,1243025.000000]
+      ---> Period @ 168 is 3 [1243034.000000,1243037.000000]
+      ---> Period @ 171 is 3 [1243046.000000,1243049.000000]
+      ---> Period @ 175 is 3 [1243062.000000,1243065.000000]
+      ---> Period @ 181 is 3 [1243086.000000,1243089.000000]
+      ---> Period @ 183 is 3 [1243094.000000,1243097.000000]
+      ---> Period @ 191 is 3 [1243126.000000,1243129.000000]
+      ---> Period @ 195 is 3 [1243142.000000,1243145.000000]
+      ---> Number of glitches 29. Number of measured periods: 228 (12.6638%). AVG F in Trial: 254.459. Data set duration: 911. Expected Number of Points: 231.812
+   ---> Data Set 05-trial-different-14_0
+      ---> Number of glitches 0. Number of measured periods: 498 (0%). AVG F in Trial: 250. Data set duration: 1992. Expected Number of Points: 498
+   ---> Data Set 05-trial-different-14_1
+      ---> Number of glitches 0. Number of measured periods: 238 (0%). AVG F in Trial: 250. Data set duration: 952. Expected Number of Points: 238
+   ---> Data Set 06-trial-same-15_0
+      ---> Period @ 249 is 3 [1251138.000000,1251141.000000]
+      ---> Period @ 314 is 3 [1251398.000000,1251401.000000]
+      ---> Period @ 332 is 3 [1251470.000000,1251473.000000]
+      ---> Period @ 347 is 3 [1251530.000000,1251533.000000]
+      ---> Period @ 356 is 3 [1251566.000000,1251569.000000]
+      ---> Period @ 365 is 3 [1251602.000000,1251605.000000]
+      ---> Period @ 381 is 3 [1251666.000000,1251669.000000]
+      ---> Period @ 401 is 3 [1251746.000000,1251749.000000]
+      ---> Period @ 406 is 3 [1251766.000000,1251769.000000]
+      ---> Period @ 438 is 3 [1251894.000000,1251897.000000]
+      ---> Period @ 446 is 3 [1251926.000000,1251929.000000]
+      ---> Number of glitches 11. Number of measured periods: 500 (2.19561%). AVG F in Trial: 250.833. Data set duration: 1999. Expected Number of Points: 501.416
+   ---> Data Set 06-trial-same-15_1
+      ---> Number of glitches 0. Number of measured periods: 206 (0%). AVG F in Trial: 250. Data set duration: 824. Expected Number of Points: 206
+   ---> Data Set 07-trial-same-16_0
+      ---> Number of glitches 0. Number of measured periods: 499 (0%). AVG F in Trial: 250. Data set duration: 1996. Expected Number of Points: 499
+   ---> Data Set 07-trial-same-16_1
+      ---> Period @ 156 is 3 [1259349.000000,1259352.000000]
+      ---> Period @ 158 is 3 [1259357.000000,1259360.000000]
+      ---> Period @ 162 is 3 [1259373.000000,1259376.000000]
+      ---> Number of glitches 3. Number of measured periods: 297 (1.00671%). AVG F in Trial: 250.505. Data set duration: 1187. Expected Number of Points: 297.349
+   ---> Data Set 08-trial-same-17_0
+      ---> Number of glitches 0. Number of measured periods: 497 (0%). AVG F in Trial: 250. Data set duration: 1988. Expected Number of Points: 497
+   ---> Data Set 08-trial-same-17_1
+      ---> Number of glitches 0. Number of measured periods: 345 (0%). AVG F in Trial: 250. Data set duration: 1380. Expected Number of Points: 345
+   ---> Data Set 09-trial-different-18_0
+      ---> Period @ 35 is 3 [1267797.000000,1267800.000000]
+      ---> Period @ 62 is 3 [1267905.000000,1267908.000000]
+      ---> Period @ 78 is 3 [1267969.000000,1267972.000000]
+      ---> Period @ 97 is 3 [1268045.000000,1268048.000000]
+      ---> Period @ 151 is 3 [1268261.000000,1268264.000000]
+      ---> Period @ 247 is 3 [1268645.000000,1268648.000000]
+      ---> Period @ 256 is 3 [1268681.000000,1268684.000000]
+      ---> Period @ 260 is 3 [1268697.000000,1268700.000000]
+      ---> Period @ 268 is 3 [1268729.000000,1268732.000000]
+      ---> Period @ 274 is 3 [1268753.000000,1268756.000000]
+      ---> Period @ 277 is 3 [1268765.000000,1268768.000000]
+      ---> Period @ 281 is 3 [1268781.000000,1268784.000000]
+      ---> Period @ 284 is 3 [1268793.000000,1268796.000000]
+      ---> Period @ 293 is 3 [1268829.000000,1268832.000000]
+      ---> Period @ 300 is 3 [1268857.000000,1268860.000000]
+      ---> Period @ 302 is 3 [1268865.000000,1268868.000000]
+      ---> Number of glitches 16. Number of measured periods: 502 (3.18091%). AVG F in Trial: 251.162. Data set duration: 2007. Expected Number of Points: 504.082
+   ---> Data Set 09-trial-different-18_1
+      ---> Number of glitches 0. Number of measured periods: 192 (0%). AVG F in Trial: 250. Data set duration: 768. Expected Number of Points: 192
+   ---> Data Set 10-trial-different-19_0
+      ---> Number of glitches 0. Number of measured periods: 499 (0%). AVG F in Trial: 250. Data set duration: 1996. Expected Number of Points: 499
+   ---> Data Set 10-trial-different-19_1
+      ---> Number of glitches 0. Number of measured periods: 253 (0%). AVG F in Trial: 250. Data set duration: 1012. Expected Number of Points: 253
+   ---> Data Set 11-trial-different-20_0
+      ---> Period @ 31 is 3 [1278798.000000,1278801.000000]
+      ---> Period @ 56 is 3 [1278898.000000,1278901.000000]
+      ---> Period @ 123 is 3 [1279166.000000,1279169.000000]
+      ---> Number of glitches 3. Number of measured periods: 501 (0.59761%). AVG F in Trial: 250.2. Data set duration: 2004. Expected Number of Points: 501.4
+   ---> Data Set 11-trial-different-20_1
+      ---> Period @ 3 is 3 [1281610.000000,1281613.000000]
+      ---> Number of glitches 1. Number of measured periods: 203 (0.490196%). AVG F in Trial: 250.164. Data set duration: 812. Expected Number of Points: 203.133
+   ---> Data Set 12-trial-same-21_0
+      ---> Number of glitches 0. Number of measured periods: 496 (0%). AVG F in Trial: 250. Data set duration: 1984. Expected Number of Points: 496
+   ---> Data Set 12-trial-same-21_1
+      ---> Number of glitches 0. Number of measured periods: 303 (0%). AVG F in Trial: 250. Data set duration: 1212. Expected Number of Points: 303
+   ---> Data Set 13-trial-same-22_0
+      ---> Number of glitches 0. Number of measured periods: 498 (0%). AVG F in Trial: 250. Data set duration: 1992. Expected Number of Points: 498
+   ---> Data Set 13-trial-same-22_1
+      ---> Period @ 375 is 544 [1294585.000000,1295129.000000]
+      ---> Number of glitches 1. Number of measured periods: 377 (0.26455%). AVG F in Trial: 249.342. Data set duration: 2048. Expected Number of Points: 510.652
+   ---> Data Set 14-trial-different-23_0
+      ---> Period @ 465 is 3 [1298277.000000,1298280.000000]
+      ---> Period @ 467 is 3 [1298285.000000,1298288.000000]
+      ---> Period @ 473 is 3 [1298309.000000,1298312.000000]
+      ---> Period @ 492 is 3 [1298385.000000,1298388.000000]
+      ---> Number of glitches 4. Number of measured periods: 497 (0.803213%). AVG F in Trial: 250.369. Data set duration: 1987. Expected Number of Points: 497.483
+   ---> Data Set 14-trial-different-23_1
+      ---> Period @ 28 is 3 [1299425.000000,1299428.000000]
+      ---> Period @ 41 is 3 [1299477.000000,1299480.000000]
+      ---> Period @ 44 is 3 [1299489.000000,1299492.000000]
+      ---> Period @ 47 is 3 [1299501.000000,1299504.000000]
+      ---> Period @ 62 is 3 [1299561.000000,1299564.000000]
+      ---> Period @ 72 is 3 [1299601.000000,1299604.000000]
+      ---> Period @ 418 is 982 [1300984.000000,1301966.000000]
+      ---> Period @ 422 is 3 [1301983.000000,1301986.000000]
+      ---> Number of glitches 8. Number of measured periods: 456 (1.75055%). AVG F in Trial: 249.527. Data set duration: 2809. Expected Number of Points: 700.922
+   ---> Data Set 15-trial-same-24_0
+      ---> Period @ 426 is 3 [1305082.000000,1305085.000000]
+      ---> Period @ 428 is 3 [1305090.000000,1305093.000000]
+      ---> Period @ 431 is 3 [1305102.000000,1305105.000000]
+      ---> Period @ 434 is 3 [1305114.000000,1305117.000000]
+      ---> Period @ 445 is 3 [1305158.000000,1305161.000000]
+      ---> Period @ 464 is 3 [1305234.000000,1305237.000000]
+      ---> Period @ 497 is 3 [1305366.000000,1305369.000000]
+      ---> Number of glitches 7. Number of measured periods: 499 (1.4%). AVG F in Trial: 250.568. Data set duration: 1995. Expected Number of Points: 499.883
+   ---> Data Set 15-trial-same-24_1
+      ---> Period @ 10 is 3 [1306330.000000,1306333.000000]
+      ---> Period @ 58 is 3 [1306522.000000,1306525.000000]
+      ---> Number of glitches 2. Number of measured periods: 430 (0.464037%). AVG F in Trial: 250.155. Data set duration: 1720. Expected Number of Points: 430.267
+   ---> Data Set 16-trial-same-25_0
+      ---> Number of glitches 0. Number of measured periods: 498 (0%). AVG F in Trial: 250. Data set duration: 1992. Expected Number of Points: 498
+   ---> Data Set 16-trial-same-25_1
+      ---> Number of glitches 0. Number of measured periods: 314 (0%). AVG F in Trial: 250. Data set duration: 1256. Expected Number of Points: 314
+   ---> Data Set 17-trial-same-26_0
+      ---> Period @ 0 is 3 [1315154.000000,1315157.000000]
+      ---> Period @ 3 is 3 [1315166.000000,1315169.000000]
+      ---> Period @ 5 is 3 [1315174.000000,1315177.000000]
+      ---> Number of glitches 3. Number of measured periods: 496 (0.603622%). AVG F in Trial: 250.302. Data set duration: 1983. Expected Number of Points: 496.35
+   ---> Data Set 17-trial-same-26_1
+      ---> Period @ 219 is 140 [1318925.000000,1319065.000000]
+      ---> Number of glitches 1. Number of measured periods: 309 (0.322581%). AVG F in Trial: 249.214. Data set duration: 1372. Expected Number of Points: 341.922
+   ---> Data Set 18-trial-different-27_0
+      ---> Number of glitches 0. Number of measured periods: 502 (0%). AVG F in Trial: 250. Data set duration: 2008. Expected Number of Points: 502
+   ---> Data Set 18-trial-different-27_1
+      ---> Period @ 412 is 3 [1325249.000000,1325252.000000]
+      ---> Period @ 423 is 3 [1325293.000000,1325296.000000]
+      ---> Period @ 447 is 3 [1325389.000000,1325392.000000]
+      ---> Period @ 460 is 3 [1325441.000000,1325444.000000]
+      ---> Period @ 479 is 3 [1325517.000000,1325520.000000]
+      ---> Period @ 508 is 741 [1325632.000000,1326373.000000]
+      ---> Period @ 510 is 3 [1326378.000000,1326381.000000]
+      ---> Period @ 511 is 9 [1326381.000000,1326390.000000]
+      ---> Period @ 514 is 3 [1326402.000000,1326405.000000]
+      ---> Number of glitches 9. Number of measured periods: 744 (1.20805%). AVG F in Trial: 249.548. Data set duration: 3724. Expected Number of Points: 929.316
+   ---> Data Set 19-trial-different-28_0
+      ---> Number of glitches 0. Number of measured periods: 497 (0%). AVG F in Trial: 250. Data set duration: 1988. Expected Number of Points: 497
+   ---> Data Set 19-trial-different-28_1
+      ---> Period @ 425 is 16 [1333189.000000,1333205.000000]
+      ---> Period @ 475 is 68 [1333413.000000,1333481.000000]
+      ---> Period @ 476 is 20 [1333481.000000,1333501.000000]
+      ---> Period @ 787 is 3 [1334741.000000,1334744.000000]
+      ---> Period @ 789 is 3 [1334749.000000,1334752.000000]
+      ---> Period @ 817 is 3 [1334861.000000,1334864.000000]
+      ---> Period @ 842 is 3 [1334961.000000,1334964.000000]
+      ---> Period @ 1071 is 3 [1335877.000000,1335880.000000]
+      ---> Period @ 1537 is 749 [1337740.000000,1338489.000000]
+      ---> Number of glitches 9. Number of measured periods: 1678 (0.536033%). AVG F in Trial: 249.088. Data set duration: 7576. Expected Number of Points: 1887.09
+   ---> Data Set 20-trial-different-29_0
+      ---> Number of glitches 0. Number of measured periods: 500 (0%). AVG F in Trial: 250. Data set duration: 2000. Expected Number of Points: 500
+   ---> Data Set 20-trial-different-29_1
+      ---> Period @ 249 is 3 [1344241.000000,1344244.000000]
+      ---> Period @ 251 is 3 [1344249.000000,1344252.000000]
+      ---> Number of glitches 2. Number of measured periods: 696 (0.286944%). AVG F in Trial: 250.168. Data set duration: 2783. Expected Number of Points: 696.216
+   ---> Data Set 21-trial-different-30_0
+      ---> Number of glitches 0. Number of measured periods: 500 (0%). AVG F in Trial: 250. Data set duration: 2000. Expected Number of Points: 500
+   ---> Data Set 21-trial-different-30_1
+      ---> Number of glitches 0. Number of measured periods: 506 (0%). AVG F in Trial: 250. Data set duration: 2024. Expected Number of Points: 506
+   ---> Data Set 22-trial-different-31_0
+      ---> Period @ 343 is 3 [1354888.000000,1354891.000000]
+      ---> Period @ 345 is 3 [1354896.000000,1354899.000000]
+      ---> Period @ 347 is 3 [1354904.000000,1354907.000000]
+      ---> Period @ 380 is 3 [1355036.000000,1355039.000000]
+      ---> Period @ 390 is 3 [1355076.000000,1355079.000000]
+      ---> Period @ 392 is 3 [1355084.000000,1355087.000000]
+      ---> Period @ 399 is 3 [1355112.000000,1355115.000000]
+      ---> Period @ 422 is 3 [1355204.000000,1355207.000000]
+      ---> Period @ 429 is 3 [1355232.000000,1355235.000000]
+      ---> Period @ 432 is 3 [1355244.000000,1355247.000000]
+      ---> Period @ 437 is 3 [1355264.000000,1355267.000000]
+      ---> Period @ 445 is 3 [1355296.000000,1355299.000000]
+      ---> Period @ 462 is 3 [1355364.000000,1355367.000000]
+      ---> Period @ 467 is 3 [1355384.000000,1355387.000000]
+      ---> Period @ 470 is 3 [1355396.000000,1355399.000000]
+      ---> Period @ 487 is 3 [1355464.000000,1355467.000000]
+      ---> Period @ 489 is 3 [1355472.000000,1355475.000000]
+      ---> Period @ 492 is 3 [1355484.000000,1355487.000000]
+      ---> Number of glitches 18. Number of measured periods: 497 (3.61446%). AVG F in Trial: 251.207. Data set duration: 1988. Expected Number of Points: 499.4
+   ---> Data Set 22-trial-different-31_1
+      ---> Period @ 2 is 3 [1356424.000000,1356427.000000]
+      ---> Number of glitches 1. Number of measured periods: 231 (0.431034%). AVG F in Trial: 250.144. Data set duration: 924. Expected Number of Points: 231.133
+   ---> Data Set 23-trial-same-32_0
+      ---> Number of glitches 0. Number of measured periods: 501 (0%). AVG F in Trial: 250. Data set duration: 2004. Expected Number of Points: 501
+   ---> Data Set 23-trial-same-32_1
+      ---> Number of glitches 0. Number of measured periods: 562 (0%). AVG F in Trial: 250. Data set duration: 2248. Expected Number of Points: 562
+   ---> Data Set 24-trial-same-33_0
+      ---> Period @ 385 is 111 [1367027.000000,1367138.000000]
+      ---> Number of glitches 1. Number of measured periods: 472 (0.211416%). AVG F in Trial: 249.489. Data set duration: 1995. Expected Number of Points: 497.731
+   ---> Data Set 24-trial-same-33_1
+      ---> Period @ 613 is 104 [1370846.000000,1370950.000000]
+      ---> Period @ 614 is 16 [1370950.000000,1370966.000000]
+      ---> Number of glitches 2. Number of measured periods: 652 (0.306279%). AVG F in Trial: 249.344. Data set duration: 2720. Expected Number of Points: 678.215
+   ---> Data Set 25-trial-different-34_0
+      ---> Number of glitches 0. Number of measured periods: 498 (0%). AVG F in Trial: 250. Data set duration: 1992. Expected Number of Points: 498
+   ---> Data Set 25-trial-different-34_1
+      ---> Number of glitches 0. Number of measured periods: 318 (0%). AVG F in Trial: 250. Data set duration: 1272. Expected Number of Points: 318
+   ---> Data Set 26-trial-same-35_0
+      ---> Period @ 5 is 3 [1377834.000000,1377837.000000]
+      ---> Period @ 10 is 3 [1377854.000000,1377857.000000]
+      ---> Period @ 13 is 3 [1377866.000000,1377869.000000]
+      ---> Period @ 16 is 3 [1377878.000000,1377881.000000]
+      ---> Period @ 18 is 3 [1377886.000000,1377889.000000]
+      ---> Period @ 21 is 3 [1377898.000000,1377901.000000]
+      ---> Period @ 24 is 3 [1377910.000000,1377913.000000]
+      ---> Period @ 30 is 3 [1377934.000000,1377937.000000]
+      ---> Period @ 34 is 3 [1377950.000000,1377953.000000]
+      ---> Period @ 40 is 3 [1377974.000000,1377977.000000]
+      ---> Period @ 43 is 3 [1377986.000000,1377989.000000]
+      ---> Period @ 46 is 3 [1377998.000000,1378001.000000]
+      ---> Period @ 49 is 3 [1378010.000000,1378013.000000]
+      ---> Period @ 53 is 3 [1378026.000000,1378029.000000]
+      ---> Period @ 55 is 3 [1378034.000000,1378037.000000]
+      ---> Period @ 67 is 3 [1378082.000000,1378085.000000]
+      ---> Period @ 101 is 3 [1378218.000000,1378221.000000]
+      ---> Period @ 104 is 3 [1378230.000000,1378233.000000]
+      ---> Period @ 106 is 3 [1378238.000000,1378241.000000]
+      ---> Period @ 109 is 3 [1378250.000000,1378253.000000]
+      ---> Period @ 111 is 3 [1378258.000000,1378261.000000]
+      ---> Period @ 113 is 3 [1378266.000000,1378269.000000]
+      ---> Period @ 119 is 3 [1378290.000000,1378293.000000]
+      ---> Period @ 127 is 3 [1378322.000000,1378325.000000]
+      ---> Period @ 137 is 3 [1378362.000000,1378365.000000]
+      ---> Period @ 149 is 3 [1378410.000000,1378413.000000]
+      ---> Period @ 154 is 3 [1378430.000000,1378433.000000]
+      ---> Period @ 162 is 3 [1378462.000000,1378465.000000]
+      ---> Period @ 173 is 3 [1378506.000000,1378509.000000]
+      ---> Period @ 182 is 3 [1378542.000000,1378545.000000]
+      ---> Period @ 194 is 3 [1378590.000000,1378593.000000]
+      ---> Period @ 197 is 3 [1378602.000000,1378605.000000]
+      ---> Period @ 208 is 3 [1378646.000000,1378649.000000]
+      ---> Period @ 212 is 3 [1378662.000000,1378665.000000]
+      ---> Period @ 217 is 3 [1378682.000000,1378685.000000]
+      ---> Period @ 234 is 2.08592e+15 [1378749.000000,2085923091472451.000000]
+      ---> Period @ 235 is -2.08592e+15 [2085923091472451.000000,1378753.000000]
+      ---> Period @ 244 is 3 [1378786.000000,1378789.000000]
+      ---> Period @ 260 is 3 [1378850.000000,1378853.000000]
+      ---> Period @ 282 is 3 [1378938.000000,1378941.000000]
+      ---> Period @ 290 is 3 [1378970.000000,1378973.000000]
+      ---> Period @ 298 is 3 [1379002.000000,1379005.000000]
+      ---> Period @ 304 is 3 [1379026.000000,1379029.000000]
+      ---> Period @ 309 is 3 [1379046.000000,1379049.000000]
+      ---> Period @ 318 is 3 [1379082.000000,1379085.000000]
+      ---> Period @ 327 is 3 [1379118.000000,1379121.000000]
+      ---> Period @ 331 is 3 [1379134.000000,1379137.000000]
+      ---> Period @ 333 is 3 [1379142.000000,1379145.000000]
+      ---> Period @ 340 is 3 [1379170.000000,1379173.000000]
+      ---> Period @ 343 is 3 [1379182.000000,1379185.000000]
+      ---> Period @ 345 is 3 [1379190.000000,1379193.000000]
+      ---> Period @ 348 is 3 [1379202.000000,1379205.000000]
+      ---> Period @ 351 is 3 [1379214.000000,1379217.000000]
+      ---> Number of glitches 53. Number of measured periods: 502 (10.5368%). AVG F in Trial: 252.39. Data set duration: 2004. Expected Number of Points: 505.79
+   ---> Data Set 26-trial-same-35_1
+      ---> Number of glitches 0. Number of measured periods: 293 (0%). AVG F in Trial: 250. Data set duration: 1172. Expected Number of Points: 293
+   ---> Data Set 27-trial-different-36_0
+      ---> Number of glitches 0. Number of measured periods: 501 (0%). AVG F in Trial: 250. Data set duration: 2004. Expected Number of Points: 501
+   ---> Data Set 27-trial-different-36_1
+      ---> Number of glitches 0. Number of measured periods: 284 (0%). AVG F in Trial: 250. Data set duration: 1136. Expected Number of Points: 284
+   ---> Data Set 28-trial-same-37_0
+      ---> Period @ 4 is 3 [1389047.000000,1389050.000000]
+      ---> Period @ 36 is 3 [1389175.000000,1389178.000000]
+      ---> Period @ 61 is 3 [1389275.000000,1389278.000000]
+      ---> Period @ 86 is 3 [1389375.000000,1389378.000000]
+      ---> Number of glitches 4. Number of measured periods: 503 (0.793651%). AVG F in Trial: 250.265. Data set duration: 2012. Expected Number of Points: 503.533
+   ---> Data Set 28-trial-same-37_1
+      ---> Number of glitches 0. Number of measured periods: 424 (0%). AVG F in Trial: 250. Data set duration: 1696. Expected Number of Points: 424
+   ---> Data Set 29-trial-different-38_0
+      ---> Number of glitches 0. Number of measured periods: 496 (0%). AVG F in Trial: 250. Data set duration: 1984. Expected Number of Points: 496
+   ---> Data Set 29-trial-different-38_1
+      ---> Number of glitches 0. Number of measured periods: 405 (0%). AVG F in Trial: 250. Data set duration: 1620. Expected Number of Points: 405
+   ---> Data Set 30-trial-same-39_0
+      ---> Period @ 33 is 3 [1400834.000000,1400837.000000]
+      ---> Period @ 58 is 3 [1400934.000000,1400937.000000]
+      ---> Period @ 287 is 3 [1401850.000000,1401853.000000]
+      ---> Number of glitches 3. Number of measured periods: 496 (0.603622%). AVG F in Trial: 250.202. Data set duration: 1984. Expected Number of Points: 496.4
+   ---> Data Set 30-trial-same-39_1
+      ---> Period @ 566 is 990 [1405861.000000,1406851.000000]
+      ---> Period @ 569 is 12 [1406859.000000,1406871.000000]
+      ---> Period @ 589 is 3 [1406959.000000,1406962.000000]
+      ---> Period @ 592 is 3 [1406971.000000,1406974.000000]
+      ---> Period @ 595 is 3 [1406983.000000,1406986.000000]
+      ---> Number of glitches 5. Number of measured periods: 596 (0.837521%). AVG F in Trial: 248.925. Data set duration: 3389. Expected Number of Points: 843.607
+   ---> Data Set 31-trial-different-40_0
+      ---> Number of glitches 0. Number of measured periods: 498 (0%). AVG F in Trial: 250. Data set duration: 1992. Expected Number of Points: 498
+   ---> Data Set 31-trial-different-40_1
+      ---> Number of glitches 0. Number of measured periods: 232 (0%). AVG F in Trial: 250. Data set duration: 928. Expected Number of Points: 232
+   ---> Data Set 32-trial-same-41_0
+      ---> Number of glitches 0. Number of measured periods: 501 (0%). AVG F in Trial: 250. Data set duration: 2004. Expected Number of Points: 501
+   ---> Data Set 32-trial-same-41_1
+      ---> Number of glitches 0. Number of measured periods: 215 (0%). AVG F in Trial: 250. Data set duration: 860. Expected Number of Points: 215

@@ -17,3 +17,6 @@ UPDATE tEyeResults SET doctorid = '1242673082_0000_D0001'  WHERE doctorid = 'SQ3
 -- AR32907770 SHULZ, MATIAS
 -- SQ313153   
 -- CO83041535 
+
+
+
