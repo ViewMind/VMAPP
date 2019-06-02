@@ -25,6 +25,8 @@ if (length(args) != 3) {
    stop("Reading Script requires 3 and only 3 argurments", call.=FALSE)
 }
 
+setwd("./res")
+
 ofile <- (args[2])  
 a<-read.csv(args[1]) 
 
@@ -536,7 +538,7 @@ a60<-cbind(a3111,a4111)
 
 m3<-predict(models_reading, a60, outcome_groups = 5)
 
-reading_output <- paste0(reading_output,"predicted_deterioration = ",m3$predicted_Deterioro, ";\n")
+reading_output <- paste0(reading_output,"reading_predicted_deterioration = ",m3$predicted_Deterioro, ";\n")
 
 fileConn<-file(args[3])
 writeLines(reading_output, fileConn)

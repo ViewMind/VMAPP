@@ -117,6 +117,12 @@
 #define   CONFIG_RESULTS_MEMORY_ENCODING                "memory_encoding"
 #define   CONFIG_RESULTS_BEHAVIOURAL_RESPONSE           "behavioural_response"
 #define   CONFIG_RESULTS_FREQ_ERRORS_PRESENT            "freq_errors_present"
+#define   CONFIG_RESULTS_BC_PREDICTED_DETERIORATION     "bc_predicted_deterioration"
+#define   CONFIG_RESULTS_UC_PREDICTED_DETERIORATION     "uc_predicted_deterioration"
+#define   CONFIG_RESULTS_BC_PREDICTED_GROUP             "bc_predicted_group"
+#define   CONFIG_RESULTS_UC_PREDICTED_GROUP             "uc_predicted_group"
+#define   CONFIG_RESULTS_READ_PREDICTED_DETERIORATION   "reading_predicted_deterioration"
+#define   CONFIG_RESULTS_BINDING_CONVERSION_INDEX       "binding_conversion_index"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"

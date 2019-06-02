@@ -25,15 +25,13 @@ SOURCES += main.cpp\
     ../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpimages.cpp \
     ../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpreading.cpp \
     ../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.cpp \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/csvcheckedreader.cpp \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.cpp \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.cpp \
     ../../CommonClasses/HTMLWriter/htmlwriter.cpp \
     ../../CommonClasses/Experiments/bindingparser.cpp \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
     ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
-    ../../CommonClasses/Experiments/readingparser.cpp
+    ../../CommonClasses/Experiments/readingparser.cpp \
+    ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.cpp
 
 HEADERS  += \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
@@ -46,16 +44,14 @@ HEADERS  += \
     ../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpimages.h \
     ../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpreading.h \
     ../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/csvcheckedreader.h \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.h \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.h \
     ../../CommonClasses/HTMLWriter/htmlwriter.h \
     ../../CommonClasses/SQLConn/dbdescription.h \
     ../../CommonClasses/Experiments/bindingparser.h \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
     ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
-    ../../CommonClasses/Experiments/readingparser.h
+    ../../CommonClasses/Experiments/readingparser.h \
+    ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h
 
 RESOURCES += \
     bargraphs.qrc

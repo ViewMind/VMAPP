@@ -13,7 +13,7 @@
 #include "EyeMatrixGenerator/edpreading.h"
 #include "EyeMatrixGenerator/edpimages.h"
 #include "EyeMatrixGenerator/edpfielding.h"
-#include "EyeMatrixProcessor/eyematrixprocessor.h"
+#include "../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
 #include "../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h"
 #include "../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
@@ -34,7 +34,6 @@ public:
     void initialize(ConfigurationManager *c);
     QString getReportFileOutput() const {return reportFileOutput; }
     QHash<QString,FixationList> getFixations() const {return fixations;}
-    //QList<BarGrapher::BarGraphOptions> getBarGraphOptions() const {return graphValues;}
 
     // The actual processing function
     void run();
@@ -95,17 +94,17 @@ private:
 
     bool getResolutionToConfig(const QString &firstline);
 
-    void generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode ,bool freqErrorsOk);
+    void generateReportFile(const ConfigurationManager &res, const QString &repFileCode , bool freqErrorsOk);
 
     bool generateFDBFile(const QString &datFile, const FixationList &fixList);
-
-    QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers & ans);
 
     QString getVersionForBindingExperiment(bool bound);
 
     bool getFrequencyCheckErrors(const QStringList & ferrors);
 
     void barGraphOptionsFromFixationList(const FixationList &fixlist, const QString &fileName);
+
+    QString formatBindingResultsForPrinting(const EDPImages::BindingAnswers &ans, const QString &ID);
 
 };
 

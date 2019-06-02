@@ -21,9 +21,11 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
         dataBindingUC = currentDir + "/" + config->getString(CONFIG_FILE_BIDING_UC);
     else dataBindingUC = "";
 
-    if (config->containsKeyword(CONFIG_FILE_FIELDING))
-        dataFielding = currentDir + "/" + config->getString(CONFIG_FILE_FIELDING);
-    else dataFielding = "";
+//    if (config->containsKeyword(CONFIG_FILE_FIELDING))
+//        dataFielding = currentDir + "/" + config->getString(CONFIG_FILE_FIELDING);
+//    else dataFielding = "";
+
+    dataFielding = "";
 
     matrixBindingBC = "";
     matrixReading = "";
@@ -41,8 +43,8 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
 }
 
 
-QString RawDataProcessor::formatBindingResultsForPrinting(const EDPImages::BindingAnswers &ans){
-    QString report = "";
+QString RawDataProcessor::formatBindingResultsForPrinting(const EDPImages::BindingAnswers &ans, const QString &ID){
+    QString report = "ANSWER Summary For: " + ID + "<br>";
     report = report + "Number of correct answers in test trials: " + QString::number(ans.testCorrect) + "<br>";
     report = report + "Number of wrong answers in test trials: " + QString::number(ans.testWrong) + "<br>";
     report = report + "Number of correct answers : " + QString::number(ans.correct) + "<br>";
@@ -52,14 +54,15 @@ QString RawDataProcessor::formatBindingResultsForPrinting(const EDPImages::Bindi
 
 void RawDataProcessor::run(){
 
-    EyeMatrixProcessor emp((quint8)config->getInt(CONFIG_VALID_EYE));
-    reportFileOutput = "";
+    RDataProcessor rdataProcessor;
+    rdataProcessor.setWorkDirectory(config->getString(CONFIG_PATIENT_DIRECTORY));
 
+    reportFileOutput = "";
     frequencyErrorMailBody = "";
 
     QStringList studyID;
-    EyeMatrixProcessor::DBHash dbdata;
     RawDataProcessor::TagParseReturn tagRet;
+    QHash<QString,qreal> bindingAns;
 
     QString dateForReport;
     QStringList reportInfoText;
@@ -79,38 +82,46 @@ void RawDataProcessor::run(){
         bool temp = generateFDBFile(dataReading,reading.getEyeFixations());
         freqErrorsOK = freqErrorsOK && temp;
 
-        QString report = emp.processReading(matrixReading,&dbdata);
+        QString report = rdataProcessor.processReading(matrixReading);
 
         QFileInfo info(dataReading);
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getReadingInformation(info.baseName());
         dateForReport = datInfo.date + "_" + datInfo.hour;
         reportInfoText << "r";
 
-        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
-
         if (!report.isEmpty()){
             studyID << "rd" + tagRet.version;
             emit(appendMessage(report,MSG_TYPE_STD));
         }
-        else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
+        else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
     }
 
 
-    if (!dataBindingBC.isEmpty()) {
-        emit(appendMessage("========== STARTED BINDING BC PROCESSING ==========",MSG_TYPE_SUCC));
+    if (!dataBindingBC.isEmpty() && !dataBindingUC.isEmpty()) {
+        emit(appendMessage("========== STARTED BINDING PROCESSING ==========",MSG_TYPE_SUCC));
 
-        EDPImages images(config);
+        EDPImages imagesBC(config);
         // This function generates the tag for the DB but ALSO sets whether the targets use are small or large.
         QString bindingVersion = getVersionForBindingExperiment(true);
-        tagRet = csvGeneration(&images,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
+        tagRet = csvGeneration(&imagesBC,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
         matrixBindingBC = tagRet.filePath;
 
-        fixations[CONFIG_P_EXP_BIDING_BC] = images.getEyeFixations();
-        barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingBC);
-        bool temp = generateFDBFile(dataBindingBC,images.getEyeFixations());
+        fixations[CONFIG_P_EXP_BIDING_BC] = imagesBC.getEyeFixations();
+        barGraphOptionsFromFixationList(imagesBC.getEyeFixations(),dataBindingBC);
+        bool temp = generateFDBFile(dataBindingBC,imagesBC.getEyeFixations());
         freqErrorsOK = freqErrorsOK && temp;
 
-        QString report = emp.processBinding(matrixBindingBC,true,&dbdata);
+        EDPImages imagesUC(config);
+        // This function generates the tag for the DB but ALSO sets whether the targets use are small or large.
+        tagRet = csvGeneration(&imagesUC,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
+        matrixBindingUC = tagRet.filePath;
+
+        fixations[CONFIG_P_EXP_BIDING_UC] = imagesUC.getEyeFixations();
+        barGraphOptionsFromFixationList(imagesUC.getEyeFixations(),dataBindingUC);
+        temp = generateFDBFile(dataBindingUC,imagesUC.getEyeFixations());
+        freqErrorsOK = freqErrorsOK && temp;
+
+        QString report = rdataProcessor.processBinding(matrixBindingBC,matrixBindingUC);
 
         // The code needs to be saved only once as it should be the same for both BC and UC.
         QFileInfo info(dataBindingBC);
@@ -118,92 +129,46 @@ void RawDataProcessor::run(){
         reportInfoText << "b" + datInfo.extraInfo;
         if (dateForReport.isEmpty()) dateForReport = datInfo.date + "_" + datInfo.hour;
 
-        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
-
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
             studyID << bindingVersion + tagRet.version;
-            EDPImages::BindingAnswers ans = images.getExperimentAnswers();
-
-            emp.addExtraToResults(STAT_ID_BC_WRONG,ans.wrong);
-
-            // Saving the binding answers
-            dbdata[TEYERES_COL_BCCORRECT] = ans.correct;
-            dbdata[TEYERES_COL_BCWRONGANS] = ans.wrong;
-            dbdata[TEYERES_COL_BCTESTCORRECTANS] = ans.testCorrect;
-            dbdata[TEYERES_COL_BCTESTWRONGANS] = ans.testWrong;
-
-            emit(appendMessage(formatBindingResultsForPrinting(ans),MSG_TYPE_STD));
-        }
-        else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
-    }
-
-
-    if (!dataBindingUC.isEmpty()){
-        emit(appendMessage("========== STARTED BINDING UC PROCESSING ==========",MSG_TYPE_SUCC));
-
-        EDPImages images(config);
-        // This function generates the tag for the DB but ALSO sets whether the targets use are small or large.
-        QString bindingVersion = getVersionForBindingExperiment(false);
-        tagRet = csvGeneration(&images,"Binding UC",dataBindingUC,HEADER_IMAGE_EXPERIMENT);
-        matrixBindingUC = tagRet.filePath;
-
-        fixations[CONFIG_P_EXP_BIDING_UC] = images.getEyeFixations();
-        barGraphOptionsFromFixationList(images.getEyeFixations(),dataBindingUC);
-        bool temp = generateFDBFile(dataBindingUC,images.getEyeFixations());
-        freqErrorsOK = freqErrorsOK && temp;
-
-        QString report = emp.processBinding(matrixBindingUC,false,&dbdata);
-
-        // The code needs to be saved only once as it should be the same for both BC and UC.
-        QFileInfo info(dataBindingUC);
-        DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getBindingFileInformation(info.baseName());
-        if (dateForReport.isEmpty()) dateForReport = datInfo.date + "_" + datInfo.hour;
-
-        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
-        //freqErrorsOK = !dataBindingUC.endsWith(".datf");
-
-        if (!report.isEmpty()){
-            emit(appendMessage(report,MSG_TYPE_STD));
-            studyID << bindingVersion + tagRet.version;
-            EDPImages::BindingAnswers ans = images.getExperimentAnswers();
-
-            emp.addExtraToResults(STAT_ID_UC_WRONG,ans.wrong);
+            EDPImages::BindingAnswers bcans = imagesBC.getExperimentAnswers();
+            EDPImages::BindingAnswers ucans = imagesUC.getExperimentAnswers();
 
             // Saving the binding answers
-            dbdata[TEYERES_COL_UCCORRECT] = ans.correct;
-            dbdata[TEYERES_COL_UCWRONGANS] = ans.wrong;
-            dbdata[TEYERES_COL_UCTESTCORRECTANS] = ans.testCorrect;
-            dbdata[TEYERES_COL_UCTESTWRONGANS] = ans.testWrong;
+            bindingAns[TEYERES_COL_BCCORRECT] = bcans.correct;
+            bindingAns[TEYERES_COL_BCWRONGANS] = bcans.wrong;
+            bindingAns[TEYERES_COL_BCTESTCORRECTANS] = bcans.testCorrect;
+            bindingAns[TEYERES_COL_BCTESTWRONGANS] = bcans.testWrong;
+            bindingAns[TEYERES_COL_UCCORRECT] = ucans.correct;
+            bindingAns[TEYERES_COL_UCWRONGANS] = ucans.wrong;
+            bindingAns[TEYERES_COL_UCTESTCORRECTANS] = ucans.testCorrect;
+            bindingAns[TEYERES_COL_UCTESTWRONGANS] = ucans.testWrong;
 
-            emit(appendMessage(formatBindingResultsForPrinting(ans),MSG_TYPE_STD));
-
+            emit(appendMessage(formatBindingResultsForPrinting(bcans,"BC"),MSG_TYPE_STD));
+            emit(appendMessage(formatBindingResultsForPrinting(ucans,"UC"),MSG_TYPE_STD));
         }
-        else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
+        else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
     }
 
-    if (!dataFielding.isEmpty()) {
-        emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
-        EDPFielding fielding(config);
-        tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
-        matrixFielding = tagRet.filePath;
-        fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
-        QString report = emp.processFielding(matrixFielding,fielding.getNumberOfTrials());
+//    if (!dataFielding.isEmpty()) {
+//        emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
+//        EDPFielding fielding(config);
+//        tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
+//        matrixFielding = tagRet.filePath;
+//        fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
+//        QString report = rdataProcessor.processFielding(matrixFielding,fielding.getNumberOfTrials());
 
-        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+//        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
 
-        if (!report.isEmpty()){
-            studyID << "fd" + tagRet.version;
-            emit(appendMessage(report,MSG_TYPE_STD));
-        }
-        else emit(appendMessage(emp.getError(),MSG_TYPE_ERR));
-    }
+//        if (!report.isEmpty()){
+//            studyID << "fd" + tagRet.version;
+//            emit(appendMessage(report,MSG_TYPE_STD));
+//        }
+//        else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
+//    }
 
     // Generating the report based on available data.
-    QHash<qint32,bool> what2Add;
-    what2Add[STAT_ID_ENCODING_MEM_VALUE] = !matrixBindingBC.isEmpty() && !matrixBindingUC.isEmpty();
-    what2Add[STAT_ID_TOTAL_FIXATIONS] = !matrixReading.isEmpty();
-
     if (reportInfoText.isEmpty()){
         emit(appendMessage("Nothing selected to process. Exiting." + reportFileOutput,MSG_TYPE_STD));
         return;
@@ -220,7 +185,7 @@ void RawDataProcessor::run(){
         dateForReport = dateParts.at(0) + "_" + dateParts.at(1) + "_" + dateParts.at(2);
     }
 
-    generateReportFile(emp.getResults(),what2Add,reportInfoText.join("_") + "_" + dateForReport,freqErrorsOK);
+    generateReportFile(rdataProcessor.getResults(),reportInfoText.join("_") + "_" + dateForReport,freqErrorsOK);
     emit(appendMessage("Report Generated: " + reportFileOutput,MSG_TYPE_SUCC));
 
     // Saving the database data to text file
@@ -232,6 +197,14 @@ void RawDataProcessor::run(){
 
     QTextStream writer(&dbdatafile);
     writer.setCodec(COMMON_TEXT_CODEC);
+
+    // Joining all data that goes to the DB.
+    QHash<QString,qreal> dbdata = rdataProcessor.getDBData();
+    QStringList bansKeys = bindingAns.keys();
+    for (qint32 i = 0; i < bansKeys.size(); i++){
+        dbdata[bansKeys.at(i)] = bindingAns.value(bansKeys.at(i));
+    }
+
     QStringList cols = dbdata.keys();
     for (qint32 i = 0; i < cols.size(); i++){
         writer << cols.at(i) + " = " + QString::number(dbdata.value(cols.at(i))) + ";\n";
@@ -360,7 +333,7 @@ bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
     return fres.errorList.isEmpty();
 }
 
-void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res, const QHash<qint32,bool> whatToAdd, const QString &repFileCode, bool freqErrorsOk){
+void RawDataProcessor::generateReportFile(const ConfigurationManager &res, const QString &repFileCode, bool freqErrorsOk){
 
     if (config->containsKeyword(CONFIG_REPORT_FILENAME)){
         reportFileOutput = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + config->getString(CONFIG_REPORT_FILENAME);
@@ -385,30 +358,14 @@ void RawDataProcessor::generateReportFile(const DataSet::ProcessingResults &res,
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_REPORT_DATE,config->getString(CONFIG_REPORT_DATE));
     ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_FREQ_ERRORS_PRESENT,freqErrValue);
 
-    // Adding the actual results
-    if (whatToAdd.value(STAT_ID_TOTAL_FIXATIONS)){
-        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_ATTENTIONAL_PROCESSES,
-                                       QString::number(res.value(STAT_ID_TOTAL_FIXATIONS),'f',0));
+    QStringList resultkeys;
+    QList<qint32> resultDecimals;
+    resultkeys     << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION  << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_BINDING_CONVERSION_INDEX;
+    resultDecimals << 2                                            << 0                                  << 0                             << 0                               << 2;
 
-        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_EXECUTIVE_PROCESSES,
-                                       QString::number(res.value(STAT_ID_MULTIPLE_FIXATIONS)*100.0/res.value(STAT_ID_TOTAL_FIXATIONS),'f',0));
-
-        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_WORKING_MEMORY,
-                                       QString::number(res.value(STAT_ID_FIRST_STEP_FIXATIONS)*100.0/res.value(STAT_ID_TOTAL_FIXATIONS),'f',0));
-
-        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_RETRIEVAL_MEMORY,
-                                       QString::number(res.value(STAT_ID_SINGLE_FIXATIONS)*100.0/res.value(STAT_ID_TOTAL_FIXATIONS),'f',0));
-    }
-
-    if (whatToAdd.value(STAT_ID_ENCODING_MEM_VALUE)){
-        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_MEMORY_ENCODING,
-                                       QString::number(res.value(STAT_ID_ENCODING_MEM_VALUE),'f',3));
-
-        // Adding the answers incorrect answers as a String List.
-        QStringList list;
-        list << QString::number(res.value(STAT_ID_BC_WRONG)) << QString::number(res.value(STAT_ID_UC_WRONG));
-        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_BEHAVIOURAL_RESPONSE,list.join("|"));
-
+    for (qint32 i = 0; i < resultkeys.size(); i++){
+        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,resultkeys.at(i),
+                                       QString::number(res.getReal(resultkeys.at(i)),'f',resultDecimals.at(i)));
     }
 }
 

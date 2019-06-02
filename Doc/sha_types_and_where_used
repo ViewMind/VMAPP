@@ -1,0 +1,5 @@
+ 
+Patient ID -> Sha3 512 (En el EYEEXP)
+Passwords  -> Sha256 (En el EYEEXP)
+Nombre y Apellido -> Sha3 256 (En el EYEEXP)
+Calcular hashes de archivos para comparación -> Sha3 256 (En el EYEEXP y en el EYESERVER)

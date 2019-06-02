@@ -18,6 +18,8 @@ if (length(args) != 3) {
    stop("Binding Script requires 3 and only 3 argurments", call.=FALSE)
 }
 
+setwd("./res")
+
 #### NOTEBOOK ########
 
 BC_AXIS<-read.csv(args[1])
