@@ -1,5 +1,4 @@
 rm(list=ls())
-
 library(memisc)
 library(MASS)
 library(grid)
@@ -8,7 +7,6 @@ library(plyr)
 library(scales)
 library(reshape2)
 library(reshape)
-
 library(healthcareai)
 
 parseq_fast<-function(a)
@@ -21,27 +19,24 @@ parseq_fast<-function(a)
   b <- cbind(b, b[,2]-b[,1]+1)
 }
 
+args = commandArgs(trailingOnly=TRUE)
 
-ofile <- ("PACIENTE_NN_R.rda")   #### INTRODUCR NOMBRE DEL PACIENTE!!!!!!!!!
+if (length(args) != 3) {
+   stop("Reading Script requires 3 and only 3 argurments", call.=FALSE)
+}
 
-
-a<-read.csv("reading_2_2019_03_26_09_24.csv") # se puede usar si se instal? en el CPU "strawbe
+ofile <- (args[2])  
+a<-read.csv(args[1]) 
 
 head(a)
-#names(a)<-c("name","id","sn","trial","fixnr","screenpos","wn","let","dur","nw","eye")
 names(a)<-c("subj_id","id","sn","trial","fixn","screenpos","wn","let","dur","nw","eye", "pupila","blink","ao","gaze","nf","fixY")
 dim(a)
 
-
-
 head(a)
-#a<-a[,2:12]
 a<-a[,2:17]
 a$let<-round(a$let)
 
 tail(a)
-
-
 
 #------------------------------------
 # changes in the fixation sequences
@@ -84,14 +79,8 @@ head(a);dim(a)
 # delete wn==-1 or 0 (words right to the last word)
 idx<-which(a$wn<=0)
 a<- a[-idx,]
-# head(a);dim(a)
 
 tail(a)
-
-# delete sentences 75 135 198 no predictabilities
-#idx<-which(a$sn==75 | a$sn==135 | a$sn==198 | a$sn==175)
-#a<-a[-idx,]
-#head(a);dim(a)
 
 #------------------------------------
 
@@ -241,14 +230,13 @@ parseq_fast<-function(a)
   b <- cbind(b, b[,2]-b[,1]+1)
 }
 
+args = commandArgs(trailingOnly=TRUE)
 
-
-load("PACIENTE_NN_R.rda")
+load(args[2])
 
 head(a)
 dim(a)
 #a[100:150,1:12]
-
 
 
 MINDUR <- 51   #para versión corrección de de j laubrock
@@ -256,7 +244,6 @@ MINDUR <- 51   #para versión corrección de de j laubrock
 MAXDUR <- 1750  # para versión corrección de de j laubrock
 
 MAXAMP <- 24
-
 
 
 #######################
@@ -491,20 +478,27 @@ a10$MF <- DF[match(paste(a4$id),paste(DF$id)),"TOTAL"]
 
 
 
- a10$FPF_<-a10$FPF/a10$TOTAL
-# #a1$FPF_ <- data.frame((a1$FPF_))
-# #a1$FPF_ <- melt(a1$FPF_) 
-# 
- a10$SF_<-a10$SF/a10$TOTAL
-# #a1$SF_ <- data.frame((a1$SF_))
-# #a1$SF_ <- melt(a1$SF_) 
-# 
- a10$MF_<-a10$MF/a10$TOTAL
-# #a1$MF_ <- data.frame((a1$MF_))
-# #a1$MF_ <- melt(a1$MF_) 
+# First path fixation (Working Memory)
+a10$FPF_<-a10$FPF*100/a10$TOTAL
+a10$FPF_
+
+# Single fixation (Retrieval Memory)
+a10$SF_<-a10$SF*100/a10$TOTAL
+a10$SF_
+
+# Multiple Fixation (Executive Processes)
+a10$MF_<-a10$MF*100/a10$TOTAL
+a10$MF_ 
+
+reading_output <- paste0(               "attentional_processes = ", a10$TOTAL, ";\n")
+reading_output <- paste0(reading_output,"executive_proceseses = ",  a10$MF_, ";\n")
+reading_output <- paste0(reading_output,"working_memory = ",        a10$FPF_, ";\n")
+reading_output <- paste0(reading_output,"retrieval_memory = ",      a10$SF_, ";\n")
 
 head(a10)
 
+# txtout <- c(a10$FPF_, a10$SF_, a10$MF_ )
+# write.table(txtout, "reading_output_std.txt") 
 
 a10$mdur<-log(a10$mdur)
 a10$mgaze<-log(a10$mgaze)
@@ -542,6 +536,8 @@ a60<-cbind(a3111,a4111)
 
 m3<-predict(models_reading, a60, outcome_groups = 5)
 
-m3
+reading_output <- paste0(reading_output,"predicted_deterioration = ",m3$predicted_Deterioro, ";\n")
 
-write.table(m3, "reading_output.txt") 
+fileConn<-file(args[3])
+writeLines(reading_output, fileConn)
+close(fileConn)
