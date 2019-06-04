@@ -47,7 +47,6 @@ Nombre: REP_IMG_V1
 Archivo: pueba.png
 Que es: Reporte imagen generado por el programa a partir del REP_READ_EN_B2l2_V1
 
-
 Nombre: FLOG_BC_V1
 Archivo: binding_bc_2_l_2_2019_01_01_11_00.datf.gflog
 Que es: Reporte de errores de frecuencia del archivo BINDING_BC_DATF_V1
@@ -55,5 +54,17 @@ Que es: Reporte de errores de frecuencia del archivo BINDING_BC_DATF_V1
 Nombre: FLOG_RD_V1
 Archivo: reading_en_2_2019_01_01_12_00.datf.gflog
 Que es: Reporte de errores de frecuencia del archivo READING_DATF_V1
+
+Nombre: CSV_BC_V1
+Archivo: binding_bc_2_l_2_2019_01_01_10_00.csv
+Que es: Matriz de datos intermedia resultante de procesar BINDING_BC_DAT_V1
+
+Nombre: CSV_UC_V1
+Archivo: binding_uc_2_l_2_2019_01_01_10_30.csv
+Que es: Matriz de datos intermedia resultante de procesar BINDING_UC_DAT_V1
+
+Nombre: CSV_RD_V1
+Archivo: reading_en_2_2019_01_01_10_00.csv
+Que es: Matriz de datos intermedia resultante de procesar READING_DAT_V1
 
 
