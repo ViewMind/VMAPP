@@ -364,6 +364,7 @@ void RawDataProcessor::generateReportFile(const ConfigurationManager &res, const
     resultDecimals << 2                                            << 0                                  << 0                             << 0                               << 2;
 
     for (qint32 i = 0; i < resultkeys.size(); i++){
+        if (!res.containsKeyword(resultkeys.at(i))) continue; // Only the processed values should be added.
         ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,resultkeys.at(i),
                                        QString::number(res.getReal(resultkeys.at(i)),'f',resultDecimals.at(i)));
     }

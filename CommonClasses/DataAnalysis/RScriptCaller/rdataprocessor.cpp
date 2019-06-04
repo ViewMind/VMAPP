@@ -38,14 +38,14 @@ QString RDataProcessor::processReading(const QString &readingFile){
     dbdata.insert(TEYERES_COL_RDMSTEPFIXR,multi);
     dbdata.insert(TEYERES_COL_RDSSTEPFIXR,single);
     dbdata.insert(TEYERES_COL_RDTOTALFIXR,total);
-
+    dbdata.insert(TEYERES_COL_READ_COG_IMPAIR,results.getReal(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));
 
     // Report text for Left Eye
     report = report + "Total number of fixations: " + QString::number(total)  + "<br>";
     report = report + "First Step Fixations: "  + QString::number(first) + " (" + results.getString(CONFIG_RESULTS_WORKING_MEMORY)  + "%)<br>";
     report = report + "Multiple Step Fixations: "  + QString::number(multi) + " (" + results.getString(CONFIG_RESULTS_EXECUTIVE_PROCESSES)  + "%)<br>";
     report = report + "Single Fixations: " + QString::number(single) + " (" + results.getString(CONFIG_RESULTS_RETRIEVAL_MEMORY)  + "%)<br>";
-    report = report + "Predicted deterioration: " + QString::number(single) + " (" + results.getString(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)  + "%)<br>";
+    report = report + "Predicted deterioration: " + " (" + results.getString(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)  + "%)<br>";
     report = report + "<br>REPORT uses value from <b>RIGHT</b> eye<br>" ;
 
     return report;
@@ -83,7 +83,7 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
     qreal bcindex = results.getReal(CONFIG_RESULTS_BC_PREDICTED_DETERIORATION);
     qreal ucindex = results.getReal(CONFIG_RESULTS_UC_PREDICTED_DETERIORATION);
     dbdata.insert(TEYERES_COL_BIND_INDEX_BC,bcindex);
-    dbdata.insert(TEYERES_COL_BIND_INDEX_BC,ucindex);
+    dbdata.insert(TEYERES_COL_BIND_INDEX_UC,ucindex);
 
     QString bcgroup = results.getString(CONFIG_RESULTS_BC_PREDICTED_GROUP);
     QString ucgroup = results.getString(CONFIG_RESULTS_UC_PREDICTED_GROUP);
