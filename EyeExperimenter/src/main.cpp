@@ -31,7 +31,9 @@ int main(int argc, char *argv[])
     }
     semaphore.release();
 
-    Loader loader(nullptr,&configuration,&countries);
+    UIConfigMap configmap;
+
+    Loader loader(nullptr,&configuration,&countries,&configmap);
     if (isRunning){
         logger.appendError("Another instance of the application was detected. Exiting");
         loader.clearChangeLogFile();
@@ -45,7 +47,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     // Laods all language related data   
-    FlowControl flowControl(nullptr,&configuration);
+    FlowControl flowControl(nullptr,&configuration,&configmap);
 
     // Doing the connections for communication between the classes
     QObject::connect(&loader,SIGNAL(fileSetReady(QStringList)),&flowControl,SLOT(onFileSetEmitted(QStringList)));
@@ -53,6 +55,7 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);
+    engine.rootContext()->setContextProperty("uimap", &configmap);
 
     // Rendering the QML files
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));

@@ -161,7 +161,10 @@ VMBase {
             id: labelPatient
             textFormat: Text.RichText
             color: "#737577"
-            text: loader.getStringForKey(keysearch+"labelPatient") + ": <b>" + vmPatient + "</b>" ;
+            text: {
+                if (uimap.getStructure() === "P") return loader.getStringForKey(keysearch+"labelPatient") + ": <b>" + vmPatient + "</b>" ;
+                if (uimap.getStructure() === "S") return loader.getStringForKey(keysearch+"labelSubject") + ": <b>" + vmPatient + "</b>" ;
+            }
             font.family: robotoR.name
             font.pixelSize: 13
             anchors.left: parent.left

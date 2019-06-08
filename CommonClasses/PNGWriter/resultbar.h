@@ -10,11 +10,14 @@ public:
     bool setResultType(const QString &resultType);
     void setValue(const QVariant &varvalue);
     qint32 getSegmentBarIndex() const {return segmentBarIndex;}
-    qreal getValue() const {return value;}
+    QString getValue() const;
+    qreal getValueAsReal() const {return value;}
     QList<qreal> getValues() const {return values;}
     bool isLargerBetter() const {return largerBetter;}
     bool hasTwoSections() const {return (values.size() == 3);}
     QString getResultConfigured() const {return resType;}
+
+    static QString ReportValueConversion(const QString &resultType, qreal value);
 
 private:
     QString resType;

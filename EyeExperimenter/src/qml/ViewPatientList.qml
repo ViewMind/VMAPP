@@ -405,6 +405,7 @@ VMBase {
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_NAME,patientList.get(patientListView.currentIndex).vmPatientName);
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_UID,patientList.get(patientListView.currentIndex).vmPatientUID);
         loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_WORK_UID,patientList.get(patientListView.currentIndex).vmDrUID);
+        loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_DISPLAYID,patientList.get(patientListView.currentIndex).vmDisplayID);
         loader.setAgeForCurrentPatient();
 
         if (!loader.createPatientDirectory()){
@@ -445,7 +446,10 @@ VMBase {
         font.pixelSize: 43
         font.family: gothamB.name
         color: "#297FCA"
-        text: loader.getStringForKey(keybase+"title");
+        text: {
+            if (uimap.getStructure() === "P") return loader.getStringForKey(keybase+"title");
+            if (uimap.getStructure() === "S") return loader.getStringForKey(keybase+"titleSubject");
+        }
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: vmBanner.bottom
         anchors.topMargin: 30
@@ -456,7 +460,10 @@ VMBase {
         font.pixelSize: 11
         font.family: gothamR.name
         color: "#cfcfcf"
-        text: loader.getStringForKey(keybase+"subtitle");
+        text: {
+            if (uimap.getStructure() === "P") return loader.getStringForKey(keybase+"subtitle");
+            if (uimap.getStructure() === "S") return loader.getStringForKey(keybase+"subtitleSubject");
+        }
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: title.bottom
         anchors.topMargin: 11
@@ -512,7 +519,8 @@ VMBase {
             anchors.rightMargin: 20
             enabled: (patientListView.currentIndex !== -1) && (loader.isDoctorValidated(-1) || loader.getViewAllFlag() )
             onClicked: {
-                viewShowReports.vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+                if (uimap.getStructure() === "P") viewShowReports.vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
+                else if (uimap.getStructure() === "S") viewShowReports.vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_DISPLAYID);
                 viewShowReports.vmPatientDirectory = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_DIRECTORY);
                 swiperControl.currentIndex = swiperControl.vmIndexShowReports;
             }
@@ -522,8 +530,14 @@ VMBase {
             id: btnViewAll
             height: 30
             vmText: {
-                if (vmShowAll) return loader.getStringForKey(keybase+"view_yours");
-                else loader.getStringForKey(keybase+"view_all");
+                if (vmShowAll) {
+                    if (uimap.getStructure() === "P") return loader.getStringForKey(keybase+"view_yours");
+                    if (uimap.getStructure() === "S") return loader.getStringForKey(keybase+"view_yours_subject");
+                }
+                else {
+                    if (uimap.getStructure() === "P") return loader.getStringForKey(keybase+"view_all");
+                    if (uimap.getStructure() === "S") return loader.getStringForKey(keybase+"view_all_subject");
+                }
             }
             vmFont: viewHome.gothamM.name
             width: 200
@@ -620,7 +634,10 @@ VMBase {
             height: parent.height
             Text {
                 id: patientText
-                text: loader.getStringForKey(keybase+"headerPatient");
+                text: {
+                    if (uimap.getStructure() === "P") return loader.getStringForKey(keybase+"headerPatient");
+                    if (uimap.getStructure() === "S") return loader.getStringForKey(keybase+"headerSubject");
+                }
                 width: parent.width
                 font.family: gothamB.name
                 font.pixelSize: 15

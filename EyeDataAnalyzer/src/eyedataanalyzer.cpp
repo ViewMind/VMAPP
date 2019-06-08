@@ -701,7 +701,7 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
     processingParameters.addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,outputPath);
 
     ImageReportDrawer reportDrawer;
-    reportDrawer.drawReport(dataSet,&processingParameters);
+    reportDrawer.drawReport(dataSet,&processingParameters,"B");
 
     if (QFile(outputPath).exists()){
         logForProcessing.appendSuccess("Generated image report at: " + outputPath);

@@ -13,11 +13,12 @@ de funcionamiento relevante|Funcionamiento levemente deficiente,
 no necesariamente patológico|Funcionamiento completamente
 deficiente y/o patológico;
 
-results_name = ÍNDICE DE DETERIORO COGNITIVO|PROCESOS EJECUTIVOS|MEMORIA DE TRABAJO|MEMORIA DE RECUPERACIÓN|ÍNDICE DE CONVERSIÖN DE ENFERMEDAD DE ALZHEIMER;
+results_name = ÍNDICE DE DETERIORO COGNITIVO|PROCESOS EJECUTIVOS|MEMORIA DE TRABAJO|MEMORIA DE RECUPERACIÓN|ÍNDICE DE CONVERSIÖN DE ENFERMEDAD DE ALZHEIMER|RESPUESTA CONDUCTUAL;
 
 results_clarification = Cortex del Cingulo Anterior|Corteza Prefrontal|Corteza frontal Dorsolateral
-Hipocampo, Subiculum|Locus Coeruleus y Coliculo superior.
-Corteza Entorrinal y Perirrinal. Lobulo Temporal Medio;
+Hipocampo, Subiculum|Locus Coeruleus y Coliculo superior.Corteza
+Entorrinal y Perirrinal. Lobulo Temporal Medio|Corteza Entorrinal y Perirrinal.
+Lobulo Temporal Medio;
 
 motto = Medición de Desempeño
 Cognitivo mediante
@@ -25,4 +26,4 @@ Eye-Tracking;
 
 date_format = dd/MM/yyyy;
 
-result_ranges = Valor normales MAYOR a 0.30|Parámetro referencia 7 - 18|Parámetro referencia 70 - 90|Parámetro referencia 23 - 39|Valor normal MAYOR a 0.26;
+result_ranges = Valor normales MAYOR a 30|Valor normales MAYOR a 82|Valor normales MAYOR a 70|Valor normales MAYOR a 23|Valor normal MAYOR a 26|Valor normales MAYOR a 22;

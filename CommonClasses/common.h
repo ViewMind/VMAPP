@@ -96,6 +96,8 @@
 #define   CONFIG_PROTOCOL_NAME                          "protocol_name"
 #define   CONFIG_EYEEXP_NUMBER                          "eyeexp_number"
 #define   CONFIG_ENABLE_LOCAL_DB_BKP                    "enable_local_db_bkp"
+#define   CONFIG_CONFIGURE_STRING                       "configure_options"
+#define   CONFIG_PATIENT_DISPLAYID                      "patient_displayid"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0

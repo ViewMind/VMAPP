@@ -18,7 +18,7 @@ viewdrmenu_mode = Modo;
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Antes de comenzar, por favor llene los siguientes datos;
 viewsettings_diagTitle = PREFERENCIAS;
-viewsettings_diagLabelLang = Lenguage utilizado por el programa, el informe y el experimento de lectura;
+viewsettings_diagLabelLang = Lenguage utilizado por el programa y el informe;
 viewsettings_diagLabelET = Opciones;
 viewsettings_diagBtnOK = OK;
 viewsettings_diagCboxDemo = Modo demo;
@@ -37,6 +37,7 @@ viewsettings_diagWrongPass = Contraseña incorrecta;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Registro de paciente;
+viewpatientreg_viewTitleSubject = Registro de sujeto;
 viewpatientreg_viewSubTitle = Por favor, complete la siguiente información;
 viewpatientreg_labelName = Nombre;
 viewpatientreg_labelLastName = Apellido;
@@ -62,13 +63,14 @@ viewpatientreg_labelProtocol = Protocolo;
 viewstudystart_labelTitle = Estudios Oculares;
 viewstudystart_labelSubTitle = Configure los estudios que se realizarán;
 viewstudystart_cbPatientSelection = Seleccione uno de los pacientes del doctor;
+viewstudystart_cbSubjectSelection = Seleccione uno de los sujetos del doctor;
 viewstudystart_btnAddPatient = Agregar un pacient nuevo;
 viewstudystart_cboxReading = Lectura;
 viewstudystart_cboxBindingUC = Colores Unbound;
 viewstudystart_cboxBindingBC = Colores Bound;
 viewstudystart_cboxFielding = N-Back Test;
 viewstudystart_labelSelectStudy = Seleccione estudios;
-viewstudystart_labelInstruction = Elija las pruebas en el orden en el cual el paciente las tomará;
+viewstudystart_labelInstruction = Elija las evaluaciones en el orden en el cual el paciente las tomará;
 viewstudystart_labelInstruction2 = Configure los parámetros de los estudios;
 viewstudystart_btnStart = COMENZAR;
 viewstudystart_btnBack = ATRAS;
@@ -80,6 +82,7 @@ viewstudystart_labelNoInstructionSetError = Se debe elegir al menos un estudio;
 viewstudystart_labelTargetSize = Tamaño objetivos;
 viewstudystart_targetOptions = Grande|Pequeños;
 viewstudystart_labelSelPatient = Paciente Seleccionado;
+viewstudystart_labelSelSubject = Sujeto Seleccionado;
 viewstudystart_labelReadingLanguge = Lengua de lectura;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
@@ -146,8 +149,11 @@ viewpresentexp_btnContinue = CONTINUAR;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_title = Lista de Pacientes;
+viewpatientlist_titleSubject = Lista de Sujetos;
 viewpatientlist_subtitle = Seleccione un paciente para estudio; 
+viewpatientlist_subtitleSubject = Seleccione un sujeto para estudio; 
 viewpatientlist_headerPatient = Paciente;
+viewpatientlist_headerSubject = Sujeto;
 viewpatientlist_headerStatus = Estado;
 viewpatientlist_headerDoctor = Doctor;
 viewpatientlist_statusOK = OK;
@@ -166,6 +172,8 @@ viewpatientlist_ask_password = Se requiere contraseña;
 viewpatientlist_wrong_dr_password = La contraeña es incorrecta;
 viewpatientlist_view_all = Ver Todos los Pacientes;
 viewpatientlist_view_yours = Ver Sus Pacientes;
+viewpatientlist_view_all_subject = Ver Todos los Sujetos;
+viewpatientlist_view_yours_subject = Sujeto;
 viewpatientlist_filter = Buscar;
 viewpatientlist_archive_msg=Archivar|Se encuentra por archivar los datos de un estudio. Si procede la información permanecerá en la computadora<br>pero no podrá ser enviada a procesar en el futuro<br>¿Desea Continuar?|Si|No;
 
@@ -173,6 +181,7 @@ viewpatientlist_archive_msg=Archivar|Se encuentra por archivar los datos de un e
 viewshowreports_diagViewRepTitle = Reportes;
 viewshowreports_diagViewRepSubTitle = Doble click en el reporte para ver los resultados;
 viewshowreports_diagPatientName = Paciente;
+viewshowreports_diagSubjectID = Sujeto;
 viewshowreports_diagTabDate = Fecha;
 viewshowreports_diagTabTime = Hora;
 viewshowreports_diagTabReading = Lectura;
@@ -180,12 +189,6 @@ viewshowreports_diagTabBinding = Colores;
 viewshowreports_diagBtnView = VER;
 viewshowreports_diagBtnBack = ATRAS;
 
-#********************************* VIEW ALL PATIENTS *********************************
-viewallreports_title = Lista de Pacientes;
-viewallreports_patient_col = Paciente;
-viewallreports_doctor_col = Doctor;
-viewallreports_view = VER REPORTES;
-viewallreports_filter = Buscar Pacientes;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;
@@ -223,6 +226,7 @@ viewexpdone_btnContinue = CONTINUAR;
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Resultados;
 viewresults_labelPatient = Paciente;
+viewresults_labelSubject = Sujeto;
 viewresults_labelAge = Edad;
 viewresults_labelDate = Fecha;
 viewresults_labelDrName = Nombre del doctor;
@@ -259,7 +263,7 @@ viewselectdata_btnGenReport = GENERAR REPORTE;
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Protocolos Médicos;
 viewprotocol_diagSubTitle = Agregar y eliminar protocolos;
-viewprotocol_btnDelete = ELIMINAR;
+viewprotocol_btnDelete = ESCONDER;
 viewprotocol_btnAdd = AGREGAR;
 viewprotocol_msgPressAgainToDelete = Presione el botón nuevamente para eliminar el protocolo seleccionado;
 viewprotocol_msgExists = El protocolo ya existe;

@@ -17,12 +17,13 @@
 #include "Experiments/imageexperiment.h"
 #include "Experiments/fieldingexperiment.h"
 
-#include "monitorscreen.h"
-
 #include "sslclient/ssldataprocessingclient.h"
 
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
 #include "EyeTrackerInterface/GazePoint/opengazeinterface.h"
+
+#include "monitorscreen.h"
+#include "uiconfigmap.h"
 
 #ifdef USE_IVIEW
 #include "EyeTrackerInterface/RED/redinterface.h"
@@ -32,7 +33,7 @@ class FlowControl : public QWidget
 {
     Q_OBJECT
 public:
-    explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
+    explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr, UIConfigMap *ui = nullptr);
     FlowControl::~FlowControl();
     Q_INVOKABLE void connectToEyeTracker();
     Q_INVOKABLE void calibrateEyeTracker();
@@ -120,6 +121,9 @@ private:
     // The configuration structure
     ConfigurationManager *configuration;
 
+    // The UI configuration map
+    UIConfigMap *uimap;
+
     // The list of files generated in the current experiment run.
     QStringList currentRunFiles;
 
@@ -162,8 +166,6 @@ private:
     // Moves successfully processed files to the corresponding processed folder.
     QStringList fileSetSentToProcess;
     void moveProcessedFilesToProcessedFolder(const QStringList &fileSet);
-
-
 
 };
 
