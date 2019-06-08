@@ -436,6 +436,11 @@ void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
 
     bool ok;
     ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
+
+    // Making sure the working directory has a full path
+    QDir wdir(processingParameters.getString(CONFIG_PATIENT_DIRECTORY));
+    processingParameters.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,wdir.absolutePath());
+
     if (!ok) return;
     // Third step, processing the data.
     RawDataProcessor processor(this);

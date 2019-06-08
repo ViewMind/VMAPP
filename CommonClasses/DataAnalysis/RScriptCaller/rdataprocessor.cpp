@@ -67,7 +67,7 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
         return "";
     }
 
-    QString outputconf = workDirectory + "/" + QString(FILE_R_OUT_BINDING);;
+    QString outputconf = workDirectory + "/" + QString(FILE_R_OUT_BINDING);
 
     QStringList arguments;
     arguments << RSCRIPT_BINDING;
@@ -76,6 +76,9 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
     arguments << outputconf;
 
     QProcess::execute(RSCRIPT_RUNNABLE,arguments);
+
+    qDebug() << "BINDING RUN:" << RSCRIPT_RUNNABLE << RSCRIPT_BINDING << bcfile << ucfile << outputconf;
+
     if (!checkAndMerge(outputconf)){
         return "";
     }

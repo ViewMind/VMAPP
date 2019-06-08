@@ -8,9 +8,9 @@ bool ResultBar::setResultType(const QString &resultType){
 
     resType = resultType;
     values.clear();
-    if (resultType == CONFIG_RESULTS_ATTENTIONAL_PROCESSES){
-        values << 450 << 550 << 650 << 750;
-        largerBetter = false;        
+    if (resultType == CONFIG_RESULTS_READ_PREDICTED_DETERIORATION){
+        values << 0 << 0.30 << 0.60;
+        largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
         values << -4 << 18 << 40 << 62;
@@ -24,12 +24,8 @@ bool ResultBar::setResultType(const QString &resultType){
         values << 7 << 15 << 23 << 31;
         largerBetter = true;
     }
-    else if (resultType == CONFIG_RESULTS_MEMORY_ENCODING){
-        values << -0.95 << 0.05 << 1.05;
-        largerBetter = true;
-    }
-    else if (resultType == CONFIG_RESULTS_BEHAVIOURAL_RESPONSE){
-        values << -1 << 0 << -1;
+    else if (resultType == CONFIG_RESULTS_BINDING_CONVERSION_INDEX){
+        values << 0 << 0.26 << 0.52;
         largerBetter = true;
     }
     else{
@@ -44,23 +40,8 @@ void ResultBar::setValue(const QVariant &varvalue){
     // The first step is an interpretation of the value
     qreal calcvalue;
 
-    if (resType == CONFIG_RESULTS_BEHAVIOURAL_RESPONSE){
-        QStringList list = varvalue.toStringList();
-        qint32 BC = list.first().toUInt();
-        value = BC;
-           if (BC > 10){
-            // This is the yellow section.
-            calcvalue = -0.5;
-        }
-        else{
-            calcvalue = 0.5;
-        }
-    }
-    else {
-        value = varvalue.toReal();
-        calcvalue = value;
-    }
-
+    value = varvalue.toReal();
+    calcvalue = value;
     int result = 0;
     result = 0;
     for (qint32 i = 0; i < values.size()-1; i++){

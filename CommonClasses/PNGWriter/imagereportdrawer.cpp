@@ -20,20 +20,15 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     //----------------------------------- CHECKING WHICH DATA NEEDS TO BE ADDED ----------------------------------------------
     bool doReading = false;
-    if (ds.contains(CONFIG_RESULTS_ATTENTIONAL_PROCESSES)){
-        QString str = ds.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
+    if (ds.contains(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
+        QString str = ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION).toString();
         if ((str != "0") && (str != "nan")) doReading = true;
     }
 
     bool doMemEnc = false;
-    if (ds.contains(CONFIG_RESULTS_MEMORY_ENCODING)){
-        QString str = ds.value(CONFIG_RESULTS_MEMORY_ENCODING).toString();
+    if (ds.contains(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
+        QString str = ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX).toString();
         if ((str != "0") && (str != "nan")) doMemEnc = true;
-    }
-
-    bool doBehavioural = false;
-    if (ds.contains(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE)){
-        doBehavioural = true;
     }
 
     //----------------------------------- GENERATING SHOW STRUCTURES ----------------------------------------------
@@ -47,8 +42,8 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(0);
         d.clarification = "";
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(0);
-        d.resultBar.setResultType(CONFIG_RESULTS_ATTENTIONAL_PROCESSES);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES));
+        d.resultBar.setResultType(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION);
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));
         qreal totalFixations = d.resultBar.getValue();
         d.value = QString::number(totalFixations,'f',0);
         data2Show << d;
@@ -82,21 +77,10 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(4);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(4);
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(3);
-        d.resultBar.setResultType(CONFIG_RESULTS_MEMORY_ENCODING);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_MEMORY_ENCODING));
+        d.resultBar.setResultType(CONFIG_RESULTS_BINDING_CONVERSION_INDEX);
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX));
         d.value = QString::number(d.resultBar.getValue(),'f',3);
         data2Show << d;
-
-        if (doBehavioural) {
-            // First one should be BC and the second one is UC. Need to compute the faux value in order to draw the data.
-            d.name = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
-            d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
-            d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
-            d.resultBar.setResultType(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
-            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE));
-            d.value = QString::number(d.resultBar.getValue());
-            data2Show << d;
-        }
 
     }
 
@@ -350,7 +334,7 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
     qint32 resBarSize = d.resultBar.getValues().size();
 
     if (resBarSize == 4) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
-    else if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_YELLOW;
+    else if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_RED;
     else qWarning() << "Res Bar Size is neither 3 or 4 it is" << resBarSize;
 
     qreal R = RESULTS_SEGBAR_HEIGHT/2;

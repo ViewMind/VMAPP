@@ -22,8 +22,8 @@ rm(list=ls())  #Remove workspace
 
 #### NOTEBOOK ########
 
-bcfile <- "/home/ariela/Workspace/Viewmind/testdir/binding_bc_2_l_2_2019_01_01_10_00.csv"
-ucfile <- "/home/ariela/Workspace/Viewmind/testdir/binding_uc_2_l_2_2019_01_01_10_30.csv"
+bcfile <- "binding_bc_2_l_2_2019_04_01_20_34.csv"
+ucfile <- "binding_uc_2_l_2_2019_04_01_20_27.csv"
 
 BC_AXIS<-read.csv(bcfile)
 head(BC_AXIS)

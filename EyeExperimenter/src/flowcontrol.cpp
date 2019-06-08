@@ -23,9 +23,8 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     connect(sslDataProcessingClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectionFinished()));
 
     // This infomration should only be updated if the report text is updated. First is the title, then the exp index and the ref index.
-    reportTextDataIndexes << CONFIG_RESULTS_ATTENTIONAL_PROCESSES << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY
-                          << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_MEMORY_ENCODING
-                          << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
+    reportTextDataIndexes << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY
+                          << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_BINDING_CONVERSION_INDEX;
 
     /// TEST FOR FREQ CHECK
     // configuration->addKeyValuePair(CONFIG_PATIENT_UID,"1242673082_0000_P0005");
@@ -564,21 +563,21 @@ void FlowControl::prepareSelectedReportIteration(){
     QStringList explanations = text.getStringList(DR_CONFG_RES_CLARIFICATION);
     QStringList references = text.getStringList(DR_CONFG_RESULT_RANGES);
 
-    if (report.contains(CONFIG_RESULTS_ATTENTIONAL_PROCESSES)){
+    if (report.contains(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
         QString ans = report.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
         if ((ans != "nan") && (ans != "0")){
             // Adding all the reading items.
-            QStringList reading; reading << CONFIG_RESULTS_ATTENTIONAL_PROCESSES << CONFIG_RESULTS_EXECUTIVE_PROCESSES
+            QStringList reading; reading << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION << CONFIG_RESULTS_EXECUTIVE_PROCESSES
                                          << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY;
             addToReportItems(reading,report,titles,explanations,references);
         }
 
     }
 
-    if (report.contains(CONFIG_RESULTS_MEMORY_ENCODING)){
-        QString ans = report.value(CONFIG_RESULTS_MEMORY_ENCODING).toString();
+    if (report.contains(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
+        QString ans = report.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX).toString();
         if ((ans != "nan") && (ans != "0")){
-            QStringList binding; binding << CONFIG_RESULTS_MEMORY_ENCODING << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
+            QStringList binding; binding << CONFIG_RESULTS_BINDING_CONVERSION_INDEX;
             addToReportItems(binding,report,titles,explanations,references);
         }
     }

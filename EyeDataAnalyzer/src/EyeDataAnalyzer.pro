@@ -43,9 +43,6 @@ SOURCES += \
     ../../CommonClasses/Experiments/experimentdatapainter.cpp \
     ../../CommonClasses/Experiments/fieldingmanager.cpp \
     ../../CommonClasses/Experiments/readingmanager.cpp \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/csvcheckedreader.cpp \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.cpp \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.cpp \
     ../../CommonClasses/HTMLWriter/htmlwriter.cpp \
     ../../CommonClasses/PNGWriter/imagereportdrawer.cpp \
     ../../CommonClasses/Experiments/bindingparser.cpp \
@@ -57,7 +54,8 @@ SOURCES += \
     ../../CommonClasses/DataPacket/datapacket.cpp \
     waitdialog.cpp \
     ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp \
-    patientnamemapmanager.cpp
+    patientnamemapmanager.cpp \
+    ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -75,9 +73,6 @@ HEADERS += \
     ../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../CommonClasses/Experiments/fieldingmanager.h \
     ../../CommonClasses/Experiments/readingmanager.h \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/csvcheckedreader.h \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/dataset.h \
-    ../../CommonClasses/DataAnalysis/EyeMatrixProcessor/eyematrixprocessor.h \
     ../../CommonClasses/HTMLWriter/htmlwriter.h \
     ../../CommonClasses/PNGWriter/imagereportdrawer.h \
     ../../CommonClasses/Experiments/bindingparser.h \
@@ -89,7 +84,8 @@ HEADERS += \
     ../../CommonClasses/DataPacket/datapacket.h \
     waitdialog.h \
     ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h \
-    patientnamemapmanager.h
+    patientnamemapmanager.h \
+    ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h
 
 FORMS += \
         eyedataanalyzer.ui \
