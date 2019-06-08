@@ -39,8 +39,8 @@
 
 // Dimensions
 #define  PAGE_WIDTH                    595*MASTER_SCALE
-//#define  PAGE_HEIGHT                   842*MASTER_SCALE
-#define  PAGE_HEIGHT                   942*MASTER_SCALE
+#define  PAGE_HEIGHT                   842*MASTER_SCALE
+//#define  PAGE_HEIGHT                   942*MASTER_SCALE
 #define  BANNER_HEIGHT                 108*MASTER_SCALE
 #define  BANNER_LOGO_HEIGHT            31*MASTER_SCALE
 #define  BANNER_LOGO_WIDTH             146*MASTER_SCALE
@@ -79,15 +79,24 @@
 
 
 // Color definitions
-#define  COLOR_BANNER                  "#628dae"
-#define  COLOR_BAR_GRAY                "#505150"
+//#define  COLOR_BANNER                  "#628dae"
+//#define  COLOR_BAR_GRAY                "#505150"
 #define  COLOR_LIGHT_GRAY              "#f1f0f0"
+#define  COLOR_BANNER                  "#ffffff"
+#define  COLOR_BAR_GRAY                "#ffffff"
+//#define  COLOR_LIGHT_GRAY              "#ffffff"
+
 #define  COLOR_GREEN                   "#049948"
 #define  COLOR_YELLOW                  "#e5b42c"
 #define  COLOR_RED                     "#cb2026"
+
+#define  COLOR_LINE_SEP                "#4f504f"
+
 #define  COLOR_FONT_WHITE              "#ffffff"
+#define  COLOR_FONT_DARK_GRAY          "#505150"
 #define  COLOR_FONT_EXPLANATION        "#646565"
 #define  COLOR_FONT_RESULTS            "#505150"
+#define  COLOR_FONT_BANNER             "#628dae"
 
 // Font Definitions
 #define  FONT_MEDIUM                   "GothamMedium.otf"
@@ -106,7 +115,7 @@
 #define  FONT_SIZE_RESULT_NAME         14*FONT_SCALE
 #define  FONT_SIZE_RESULT_VALUE        24*FONT_SCALE
 #define  FONT_SIZE_RESULT_RANGE        10*FONT_SCALE
-#define  FONT_SIZE_RESULT_EXP          12*FONT_SCALE
+#define  FONT_SIZE_RESULT_EXP          9*FONT_SCALE
 
 
 class ImageReportDrawer
@@ -114,7 +123,7 @@ class ImageReportDrawer
 
 public:
     ImageReportDrawer();
-    bool drawReport(const QVariantMap &ds, ConfigurationManager *config);
+    bool drawReport(const QVariantMap &ds, ConfigurationManager *c, const QString &bindingCode = "I");
 
     static ConfigurationManager loadReportText(QString lang);
 

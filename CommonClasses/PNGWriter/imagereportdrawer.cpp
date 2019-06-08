@@ -12,7 +12,7 @@ ImageReportDrawer::ImageReportDrawer()
 }
 
 
-bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c){
+bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c,const QString &bindingCode){
 
     canvas->clear();
     langData = loadReportText(c->getString(CONFIG_REPORT_LANGUAGE));
@@ -20,37 +20,38 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     //----------------------------------- CHECKING WHICH DATA NEEDS TO BE ADDED ----------------------------------------------
     bool doReading = false;
-    if (ds.contains(CONFIG_RESULTS_ATTENTIONAL_PROCESSES)){
-        QString str = ds.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
+    if (ds.contains(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
+        QString str = ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION).toString();
         if ((str != "0") && (str != "nan")) doReading = true;
     }
 
     bool doMemEnc = false;
-    if (ds.contains(CONFIG_RESULTS_MEMORY_ENCODING)){
-        QString str = ds.value(CONFIG_RESULTS_MEMORY_ENCODING).toString();
-        if ((str != "0") && (str != "nan")) doMemEnc = true;
+    if (bindingCode == "I"){
+        if (ds.contains(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
+            QString str = ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX).toString();
+            if ((str != "0") && (str != "nan")) doMemEnc = true;
+        }
     }
-
-    bool doBehavioural = false;
-    if (ds.contains(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE)){
-        doBehavioural = true;
+    else if (bindingCode == "B"){
+        if (ds.contains(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE)){
+            QString str = ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE).toString();
+            if ((str != "0") && (str != "nan")) doMemEnc = true;
+        }
     }
 
     //----------------------------------- GENERATING SHOW STRUCTURES ----------------------------------------------
     ShowData data2Show;
     ShowDatum d;
 
-    /// TODO simplify the code in order to take advantage of the math done in flowControl
     /// TODO eliminate the dual fonts.
 
     if (doReading){
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(0);
         d.clarification = "";
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(0);
-        d.resultBar.setResultType(CONFIG_RESULTS_ATTENTIONAL_PROCESSES);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES));
-        qreal totalFixations = d.resultBar.getValue();
-        d.value = QString::number(totalFixations,'f',0);
+        d.resultBar.setResultType(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION);
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));
+        d.value = d.resultBar.getValue();
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(1);
@@ -58,7 +59,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(0);
         d.resultBar.setResultType(CONFIG_RESULTS_EXECUTIVE_PROCESSES);
         d.resultBar.setValue(ds.value(CONFIG_RESULTS_EXECUTIVE_PROCESSES));
-        d.value = QString::number(d.resultBar.getValue(),'f',0);
+        d.value = d.resultBar.getValue();
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(2);
@@ -66,7 +67,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(1);
         d.resultBar.setResultType(CONFIG_RESULTS_WORKING_MEMORY);
         d.resultBar.setValue(ds.value(CONFIG_RESULTS_WORKING_MEMORY));
-        d.value = QString::number(d.resultBar.getValue(),'f',0);
+        d.value = d.resultBar.getValue();
         data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(3);
@@ -74,30 +75,29 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(2);
         d.resultBar.setResultType(CONFIG_RESULTS_RETRIEVAL_MEMORY);
         d.resultBar.setValue(ds.value(CONFIG_RESULTS_RETRIEVAL_MEMORY));
-        d.value = QString::number(d.resultBar.getValue(),'f',0);
+        d.value = d.resultBar.getValue();
         data2Show << d;
     }
 
     if (doMemEnc){
-        d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(4);
-        d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(4);
-        d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(3);
-        d.resultBar.setResultType(CONFIG_RESULTS_MEMORY_ENCODING);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_MEMORY_ENCODING));
-        d.value = QString::number(d.resultBar.getValue(),'f',3);
-        data2Show << d;
-
-        if (doBehavioural) {
-            // First one should be BC and the second one is UC. Need to compute the faux value in order to draw the data.
-            d.name = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
-            d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
-            d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
-            d.resultBar.setResultType(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
-            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE));
-            d.value = QString::number(d.resultBar.getValue());
+        if (bindingCode == "I"){
+            d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(4);
+            d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(4);
+            d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(3);
+            d.resultBar.setResultType(CONFIG_RESULTS_BINDING_CONVERSION_INDEX);
+            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX));
+            d.value = d.resultBar.getValue();
             data2Show << d;
         }
-
+        else if (bindingCode == "B"){
+            d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
+            d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
+            d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
+            d.resultBar.setResultType(CONFIG_RESULTS_BINDING_CONVERSION_INDEX);
+            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX));
+            d.value = d.resultBar.getValue();
+            data2Show << d;
+        }
     }
 
     //----------------------------------------- BACKGROUNDS ------------------------------------------------
@@ -118,7 +118,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     QFont mottoFont = fonts.value(FONT_MEDIUM);
     mottoFont.setPointSize(FONT_SIZE_BANNER);
     QGraphicsTextItem *motto = canvas->addText(langData.getString(DR_CONFG_MOTTO),mottoFont);
-    motto->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    motto->setDefaultTextColor(QColor(COLOR_FONT_BANNER));
     qreal xmotto = PAGE_WIDTH-BANNER_MARGIN_MOTTO_RIGHT-motto->boundingRect().width();
     motto->setPos(xmotto,BANNER_MARGIN_TOP_LOGO);
 
@@ -126,28 +126,39 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     qreal xmottobar = xmotto - PANEL_SQUARE_TO_TEXT_SPACE;
     qreal bar_overshoot = motto->boundingRect().height()*0.05;
 
-    QPen mottoLinePen(Qt::white);
+    QPen mottoLinePen(QColor(COLOR_FONT_BANNER));
     mottoLinePen.setWidth(BANNER_MOTTO_LINE_WIDTH);
     canvas->addLine(xmottobar,motto->pos().y()-bar_overshoot,
                     xmottobar,motto->pos().y()+bar_overshoot+motto->boundingRect().height(),
                     mottoLinePen);
 
 
+//  Rect is now white, so there is no sense in drawing it.
+//    QGraphicsRectItem *bar1 = canvas->addRect(0,0,PAGE_WIDTH,BAR_PATIENT_BAR_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
+//    bar1->setPos(0,BANNER_HEIGHT);
 
-    QGraphicsRectItem *bar1 = canvas->addRect(0,0,PAGE_WIDTH,BAR_PATIENT_BAR_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
-    bar1->setPos(0,BANNER_HEIGHT);
+    QGraphicsLineItem *lineSep1 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
+    lineSep1->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,BANNER_HEIGHT);
 
-    QGraphicsRectItem *panel = canvas->addRect(0,0,PAGE_WIDTH,PANEL_HEIGHT,QPen(),QBrush(QColor(COLOR_LIGHT_GRAY)));
-    panel->setPos(0,BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT);
+    QGraphicsLineItem *lineSep2 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
+    lineSep2->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT);
 
-    QGraphicsRectItem *bar2 = canvas->addRect(0,0,PAGE_WIDTH,BAR_RESULTS_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
+//    QGraphicsRectItem *panel = canvas->addRect(0,0,PAGE_WIDTH,PANEL_HEIGHT,QPen(),QBrush(QColor(COLOR_LIGHT_GRAY)));
+//    panel->setPos(0,BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT);
+
+    //QGraphicsRectItem *bar2 = canvas->addRect(0,0,PAGE_WIDTH,BAR_RESULTS_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
     qint32 resultTitleBarYStart = BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT+PANEL_HEIGHT;
-    bar2->setPos(0,resultTitleBarYStart);
+
+    QGraphicsLineItem *lineSep3 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
+    lineSep3->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,resultTitleBarYStart);
+
+    QGraphicsLineItem *lineSep4 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
+    lineSep4->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,resultTitleBarYStart+BAR_RESULTS_HEIGHT);
 
     QFont resultTitleFont = fonts.value(FONT_BOLD);
     resultTitleFont.setPointSize(FONT_SIZE_RESULT_TITLE);
     QGraphicsTextItem *r = canvas->addText(langData.getString(DR_CONFG_RESULT_TITLE),resultTitleFont);
-    r->setDefaultTextColor(COLOR_FONT_WHITE);
+    r->setDefaultTextColor(COLOR_FONT_DARK_GRAY);
     r->setPos ((PAGE_WIDTH - r->boundingRect().width())/2,
                (BAR_RESULTS_HEIGHT  - r->boundingRect().height())/2 +resultTitleBarYStart);
 
@@ -161,16 +172,16 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     upperBarInfo.setPointSize(FONT_SIZE_UPPERBAR);
 
     QGraphicsTextItem *patient      = canvas->addText(langData.getString(DR_CONFG_PATIENT_NAME) + ": ",upperBarField);
-    patient->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    patient->setDefaultTextColor(QColor(COLOR_FONT_DARK_GRAY));
     QGraphicsTextItem *doctor       = canvas->addText(langData.getString(DR_CONFG_DOCTOR_NAME) + ": ",upperBarField);
-    doctor->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    doctor->setDefaultTextColor(QColor(COLOR_FONT_DARK_GRAY));
     QGraphicsTextItem *age          = canvas->addText(langData.getString(DR_CONFG_PATIENT_AGE) + ": ",upperBarField);
-    age->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    age->setDefaultTextColor(QColor(COLOR_FONT_DARK_GRAY));
     QGraphicsTextItem *date         = canvas->addText(langData.getString(DR_CONFG_DATE) + ": ",upperBarField);
-    date->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    date->setDefaultTextColor(QColor(COLOR_FONT_DARK_GRAY));
 
     QGraphicsTextItem *patient_data = canvas->addText(ds.value(CONFIG_PATIENT_NAME).toString(),upperBarInfo);
-    patient_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    patient_data->setDefaultTextColor(QColor(COLOR_FONT_DARK_GRAY));
 
     // Doctor name, might contain UID. It is necessary to remove it.
     QString drname = ds.value(CONFIG_DOCTOR_NAME).toString();
@@ -181,11 +192,11 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     }
 
     QGraphicsTextItem *doctor_data  = canvas->addText(drname,upperBarInfo);
-    doctor_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    doctor_data->setDefaultTextColor(QColor(COLOR_FONT_DARK_GRAY));
     QGraphicsTextItem *age_data     = canvas->addText(ds.value(CONFIG_PATIENT_AGE).toString(),upperBarInfo);
-    age_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    age_data->setDefaultTextColor(QColor(COLOR_FONT_DARK_GRAY));
     QGraphicsTextItem *date_data    = canvas->addText(ds.value(CONFIG_REPORT_DATE).toString(),upperBarInfo);
-    date_data->setDefaultTextColor(QColor(COLOR_FONT_WHITE));
+    date_data->setDefaultTextColor(QColor(COLOR_FONT_DARK_GRAY));
 
     qreal yOffset1 = BANNER_HEIGHT + (BAR_PATIENT_BAR_HEIGHT -  patient->boundingRect().height()*2)/2;
     qreal yOffset2 = yOffset1 + patient->boundingRect().height();
@@ -350,7 +361,7 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
     qint32 resBarSize = d.resultBar.getValues().size();
 
     if (resBarSize == 4) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
-    else if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_YELLOW;
+    else if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_RED;
     else qWarning() << "Res Bar Size is neither 3 or 4 it is" << resBarSize;
 
     qreal R = RESULTS_SEGBAR_HEIGHT/2;

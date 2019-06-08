@@ -38,8 +38,10 @@ Item {
             id: patientText
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: vmPatientName + " (" +  vmDisplayID + ")"
-            //text: vmDisplayID
+            text: {
+               if (uimap.getStructure() === "P") return vmPatientName + " (" +  vmDisplayID + ")"
+               else return vmDisplayID
+            }
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left

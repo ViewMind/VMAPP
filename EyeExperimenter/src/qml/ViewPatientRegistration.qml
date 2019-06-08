@@ -147,7 +147,10 @@ VMBase {
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
-        text: loader.getStringForKey(keysearch+"viewTitle");
+        text:{
+            if (uimap.getStructure() === "P") return loader.getStringForKey(keysearch+"viewTitle");
+            if (uimap.getStructure() === "S") return loader.getStringForKey(keysearch+"viewTitleSubject");
+         }
     }
 
     Text {
@@ -180,7 +183,10 @@ VMBase {
         anchors.top: viewSubTitle.bottom
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
-        // visible: false
+        visible: {
+            if (uimap.getStructure() === "P") return true;
+            else return false;
+        }
         // Name and last name
         VMTextDataInput{
             id: labelName
@@ -210,7 +216,7 @@ VMBase {
         vmEnabled: true
         Keys.onTabPressed: labelBirthDate.vmFocus = true;
         anchors.top: rowNames.bottom
-        anchors.topMargin: 35
+        anchors.topMargin: rowNames.visible? 35 : 0
         anchors.left: rowNames.left
     }
 
@@ -388,22 +394,28 @@ VMBase {
                     return;
                 }
 
-
-//                if ((labelProtocol.currentIndex === 0) && (dbDataReq.puid === "")){
-//                    labelProtocol.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
-//                    return;
-//                }
-
-                // This version of the software allows leaving the protocol name empty as to generate the old DISPLAY ID.
-                if (labelProtocol.currentIndex === 0){
-                    dbDataReq.patient_protocol = ""
+                if (uimap.getStructure() === "S"){
+                    if ((labelProtocol.currentIndex === 0) && (dbDataReq.puid === "")){
+                        labelProtocol.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+                        return;
+                    }
                 }
 
-                // Since the last name will not be entered, it will always be empty.
-
-                if (dbDataReq.lastname === ""){
-                    labelLastName.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
-                    return;
+                if (uimap.getStructure() === "P"){
+                    // This version of the software allows leaving the protocol name empty as to generate the old DISPLAY ID.
+                    if (labelProtocol.currentIndex === 0){
+                        dbDataReq.patient_protocol = ""
+                    }
+                    // Only check for empty last name in this version.
+                    if (dbDataReq.lastname === ""){
+                        labelLastName.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+                        return;
+                    }
+                    // Only check for empty fist name in this version.
+                    if (dbDataReq.firstname === ""){
+                        labelName.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+                        return;
+                    }
                 }
 
                 loader.addNewPatientToDB(dbDataReq)

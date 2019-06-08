@@ -248,7 +248,7 @@ void RawDataProcessor::run(){
 
 bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationList &fixList){
 
-    qWarning() << "FDB WITH" << datFile;
+    //qWarning() << "FDB WITH" << datFile;
 
     FreqAnalysis freqChecker;
     FreqAnalysis::FreqAnalysisResult fres;

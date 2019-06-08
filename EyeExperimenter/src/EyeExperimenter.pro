@@ -54,7 +54,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/PNGWriter/resultbar.cpp \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
-    ../../CommonClasses/Experiments/readingparser.cpp
+    ../../CommonClasses/Experiments/readingparser.cpp \
+    uiconfigmap.cpp
 
 HEADERS += \
     loader.h \
@@ -94,7 +95,8 @@ HEADERS += \
     ../../CommonClasses/PNGWriter/resultbar.h \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
-    ../../CommonClasses/Experiments/readingparser.h
+    ../../CommonClasses/Experiments/readingparser.h \
+    uiconfigmap.h
 
 contains(DEFINES, USE_IVIEW) {
   LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI

@@ -15,8 +15,9 @@ VMBase {
         var name = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
         var uid = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_UID);
         var patData = loader.getCurrentPatientInformation();
-        //labelPatientName.text = patData.displayID;
-        labelPatientName.text = patData.firstname + " " + patData.lastname + " (" + patData.displayID + ")";
+        if (uimap.getStructure() === "P") labelPatientName.text = patData.firstname + " " + patData.lastname + " (" + patData.displayID + ")";
+        else if (uimap.getStructure() === "S") labelPatientName.text = patData.displayID;
+
     }
 
     function setDefaultSelections(){
@@ -55,7 +56,11 @@ VMBase {
         font.family: robotoB.name
         font.pixelSize: 15
         color: "#000000"
-        text: loader.getStringForKey(keysearch+"labelSelPatient");
+        text: {
+            if (uimap.getStructure() === "P") return loader.getStringForKey(keysearch+"labelSelPatient");
+            if (uimap.getStructure() === "S") return loader.getStringForKey(keysearch+"labelSelSubject");
+        }
+
         anchors.top: viewSubTitle.bottom
         anchors.topMargin: 43
         anchors.left: backgroundPatientName.left
@@ -212,6 +217,7 @@ VMBase {
         anchors.top: labelEyeMsg.bottom
         anchors.topMargin: 5
         anchors.left: labelInstruction2.left
+        enabled: false
         currentIndex: 2;
     }
 
@@ -237,6 +243,10 @@ VMBase {
         anchors.topMargin: 5
         anchors.left: cbReadingLang.right
         anchors.leftMargin: 16
+        enabled: {
+            if (uimap.getBlockedBinding() === "N") return true;
+            else if (uimap.getBlockedBinding() === "Y") return false;
+        }
     }
 
     /////////////////////// Target Size
@@ -261,6 +271,10 @@ VMBase {
         anchors.topMargin: 5
         anchors.left: cbNumberOfTargets.right
         anchors.leftMargin: 16
+        enabled: {
+            if (uimap.getBlockedBinding() === "N") return true;
+            else if (uimap.getBlockedBinding() === "Y") return false;
+        }
     }
 
     /////////////////////// Reading languge

@@ -18,7 +18,7 @@ viewdrmenu_mode = Mode;
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Before starting please fill the information below;
 viewsettings_diagTitle = CONFIGURE SETTINGS;
-viewsettings_diagLabelLang = Language for EyeExperimenter, Report and Reading experiment;
+viewsettings_diagLabelLang = Language for EyeExperimenter and Report;
 viewsettings_diagLabelET = Options;
 viewsettings_diagBtnOK = OK;
 viewsettings_diagCboxDemo = Demo mode;
@@ -32,11 +32,12 @@ viewsettings_diagLabelDefaultCountry = Select the default chosen country;
 viewsettings_diagInstPassword = Institution Password;
 viewsettings_diagEnableViewAll = Enable View All Patients;
 viewsettings_diagDisableViewAll = Disable View All Patients;
-viewsettings_diagLabelEnableViewAll = Enable control for View All Patients;
+viewsettings_diagLabelEnableViewAll = Enable View All Patients;
 viewsettings_diagWrongPass = Wrong password;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Patient's registration;
+viewpatientreg_viewTitleSubject = Subject's registration;
 viewpatientreg_viewSubTitle = Please complete the information below;
 viewpatientreg_labelName = Name;
 viewpatientreg_labelLastName = Last name;
@@ -62,14 +63,15 @@ viewpatientreg_labelProtocol = Protocol;
 viewstudystart_labelTitle = Eye Studies;
 viewstudystart_labelSubTitle = Configure the studies to perform;
 viewstudystart_cbPatientSelection = Select one of the doctor's patient;
+viewstudystart_cbSubjectSelection = Select one of the doctor's subject;
 viewstudystart_btnAddPatient = Add a new patient;
 viewstudystart_cboxReading = Reading;
 viewstudystart_cboxBindingUC = Unbound Colors;
 viewstudystart_cboxBindingBC = Bound Colors;
 viewstudystart_cboxFielding = N-Back Test;
 viewstudystart_labelSelectStudy = Select studies;
-viewstudystart_labelInstruction = Choose the tests in the order the patient will be taking them;
-viewstudystart_labelInstruction2 = Configure study parameters;
+viewstudystart_labelInstruction = Choose the evaluations in the order the patient will be taking them;
+viewstudystart_labelInstruction2 = Configure studies parameters;
 viewstudystart_btnStart = START;
 viewstudystart_btnBack = BACK;
 viewstudystart_labelEyeMsg = Select which eye to use;
@@ -80,6 +82,7 @@ viewstudystart_labelNoInstructionSetError = At least one study must be selected;
 viewstudystart_labelTargetSize = Color target size;
 viewstudystart_targetOptions = Large|Small;
 viewstudystart_labelSelPatient = Selected Patient;
+viewstudystart_labelSelSubject = Selected Subject;
 viewstudystart_labelReadingLanguge = Reading language;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
@@ -146,8 +149,11 @@ viewpresentexp_btnContinue = CONTINUE;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_title = Patient List;
+viewpatientlist_titleSubject = Subject List;
 viewpatientlist_subtitle = Select patient for study; 
+viewpatientlist_subtitleSubject = Select subject for study;
 viewpatientlist_headerPatient = Patient;
+viewpatientlist_headerSubject = Subject;
 viewpatientlist_headerStatus = Status;
 viewpatientlist_headerDoctor = Doctor;
 viewpatientlist_statusOK = OK;
@@ -166,6 +172,8 @@ viewpatientlist_ask_password = Password required;
 viewpatientlist_wrong_dr_password = Password is incorrect;
 viewpatientlist_view_all = View All Patients;
 viewpatientlist_view_yours = View Your Patients;
+viewpatientlist_view_all_subject = View All Subjects;
+viewpatientlist_view_yours_subject = View Your Subjects;
 viewpatientlist_filter = Search;
 viewpatientlist_archive_msg=Archive|You are about to archive the data from a study. If you proceed the data will remain in the computer,<br>but you will not be able to process it in the future.<br>Would you like to proceed?|Yes|No;
 
@@ -173,19 +181,13 @@ viewpatientlist_archive_msg=Archive|You are about to archive the data from a stu
 viewshowreports_diagViewRepTitle = Reports;
 viewshowreports_diagViewRepSubTitle = Double click on the report to see results;
 viewshowreports_diagPatientName = Patient;
+viewshowreports_diagSubjectID = Subject;
 viewshowreports_diagTabDate = Date;
 viewshowreports_diagTabTime = Time;
 viewshowreports_diagTabReading = Reading;
 viewshowreports_diagTabBinding = Colors;
 viewshowreports_diagBtnView = VIEW;
 viewshowreports_diagBtnBack = BACK;
-
-#********************************* VIEW ALL PATIENTS *********************************
-viewallreports_title = Patient List;
-viewallreports_patient_col = Patient;
-viewallreports_doctor_col = Doctor;
-viewallreports_view = VIEW REPORTS;
-viewallreports_filter = Search Patients;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Doctor's Profile;
@@ -217,12 +219,13 @@ viewexpdone_question = Would you like to request the report now?;
 viewexpdone_goback = REQUEST LATER;
 viewexpdone_yes = REQUEST NOW;
 viewexpdone_viewTitle = Congratulations!;
-viewexpdone_labelMessage = You have successfully ended ViewMind's Neurocognitive Evaluations;
+viewexpdone_labelMessage = You have successfully completed ViewMind's Neurocognitive Evaluations;
 viewexpdone_btnContinue = CONTINUE;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Results;
 viewresults_labelPatient = Patient;
+viewresults_labelSubject = Subject;
 viewresults_labelAge = Age;
 viewresults_labelDate = Date;
 viewresults_labelDrName = Doctor's Name;
@@ -259,7 +262,7 @@ viewselectdata_btnGenReport = GENERATE REPORT;
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Medical Protocols;
 viewprotocol_diagSubTitle = Add and delete protocols;
-viewprotocol_btnDelete = DELETE;
+viewprotocol_btnDelete = HIDE;
 viewprotocol_btnAdd = ADD;
 viewprotocol_msgPressAgainToDelete = Press again to delete the selected protocol;
 viewprotocol_msgExists = The protocol already exists;

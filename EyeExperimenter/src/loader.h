@@ -8,21 +8,19 @@
 #include <QSharedMemory>
 #include <QCoreApplication>
 
-#include "Experiments/experiment.h"
-
-#include "../../CommonClasses/common.h"
-#include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/LocalInformationManager/localinformationmanager.h"
+#include "Experiments/experiment.h"
 #include "sslclient/ssldbclient.h"
 #include "eye_experimenter_defines.h"
 #include "countries.h"
+#include "uiconfigmap.h"
 
 
 class Loader : public QObject
 {
     Q_OBJECT
 public:
-    explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr, CountryStruct *cs = nullptr);
+    explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr, CountryStruct *cs = nullptr, UIConfigMap *ui = nullptr);
     ~Loader();
 
     //******************** UI Functions ***************************
@@ -115,6 +113,9 @@ private:
 
     // To control data
     LocalInformationManager lim;
+
+    // UI Config Map
+    UIConfigMap *uimap;
 
     // The list of countries and their codes.
     CountryStruct *countries;

@@ -1,12 +1,14 @@
 #include "loader.h"
 
-Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
+Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UIConfigMap *ui) : QObject(parent)
 {
 
     // Loading the configuration file and checking for the must have configurations
     // The data is this file should NEVER change. Its values should be fixed.
     ConfigurationManager::CommandVerifications cv;
     ConfigurationManager::Command cmd;
+
+    uimap = ui;
 
     loadingError = false;
     configuration = c;
@@ -50,6 +52,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     cv[CONFIG_INST_ETSERIAL] = cmd;
     cv[CONFIG_INST_UID] = cmd;
     cv[CONFIG_INST_PASSWORD] = cmd;
+    cv[CONFIG_CONFIGURE_STRING] = cmd;
 
     cmd.clear();
     cmd.optional = true;
@@ -145,6 +148,12 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     if (configuration->getBool(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
     else configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
 
+    // Loading the configuration UI.
+    if (!ui->setConfigurationString(configuration->getString(CONFIG_CONFIGURE_STRING))){
+        logger.appendError("Loading ui configuration string: " + ui->getError());
+        loadingError = true;
+        return;
+    }
 
 }
 

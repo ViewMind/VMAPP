@@ -24,7 +24,7 @@ Item {
         readonly property int posArrow: {
             if (vmTwoSection){
                 if (vmIndicatorInSection === vmSECTION_GREEN) return parent.width/4;
-                // Assuming yellow section
+                // Assuming red section
                 else return 3*parent.width/4;
             }
             else{
@@ -69,7 +69,9 @@ Item {
     Rectangle{
         id: yellowRect
         color: "#e4b32c"
-        width: (vmTwoSection)? own.sectionWidth - own.semiCircleRadious : own.sectionWidth
+        //width: (vmTwoSection)? own.sectionWidth - own.semiCircleRadious : own.sectionWidth
+        width: own.sectionWidth
+        visible: !vmTwoSection
         height: own.sectionHeight
         anchors.left: greenRect.right
         anchors.verticalCenter: parent.verticalCenter
@@ -78,11 +80,11 @@ Item {
     // The red rectangle might be invisible
     Rectangle{
         id: redRect
-        color: "#ca2026"
-        visible: !vmTwoSection
-        width: own.sectionWidth - own.semiCircleRadious
+        color: "#ca2026"        
+        //width: own.sectionWidth - own.semiCircleRadious
+        width:  own.sectionWidth - own.semiCircleRadious
         height: own.sectionHeight
-        anchors.left: yellowRect.right
+        anchors.left: (vmTwoSection)? greenRect.right : yellowRect.right
         anchors.verticalCenter: parent.verticalCenter
     }
 
@@ -99,7 +101,7 @@ Item {
             ctx.reset();
             ctx.ellipse(0,0,width,height);
             ctx.closePath();
-            ctx.fillStyle = (vmTwoSection) ? "#e4b32c" : "#ca2026"
+            ctx.fillStyle = "#ca2026"
             ctx.fill();
         }
     }

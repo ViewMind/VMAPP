@@ -1,6 +1,6 @@
 #include "flowcontrol.h"
 
-FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(parent)
+FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *ui) : QWidget(parent)
 {
 
     // Intializing the eyetracker pointer
@@ -13,6 +13,8 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     demoTransaction = false;
     this->setVisible(false);
 
+    uimap = ui;
+
     // For delay the what the UI shows before drawing a report.
     connect(&delayTimer,SIGNAL(timeout()),this,SLOT(drawReport()));
 
@@ -23,9 +25,8 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     connect(sslDataProcessingClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectionFinished()));
 
     // This infomration should only be updated if the report text is updated. First is the title, then the exp index and the ref index.
-    reportTextDataIndexes << CONFIG_RESULTS_ATTENTIONAL_PROCESSES << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY
-                          << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_MEMORY_ENCODING
-                          << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
+    reportTextDataIndexes << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY
+                          << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_BINDING_CONVERSION_INDEX << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
 
     /// TEST FOR FREQ CHECK
     // configuration->addKeyValuePair(CONFIG_PATIENT_UID,"1242673082_0000_P0005");
@@ -102,7 +103,7 @@ void FlowControl::drawReport(){
     QVariantMap repmap = reportsForPatient.getRepData(selectedReport);
     repmap[CONFIG_DOCTOR_NAME] = configuration->getString(CONFIG_DOCTOR_NAME);
     repmap[CONFIG_PATIENT_NAME] = configuration->getString(CONFIG_PATIENT_NAME);
-    if (!drawer.drawReport(repmap,configuration)){
+    if (!drawer.drawReport(repmap,configuration,uimap->getIndexBehavioral())){
         logger.appendError("Could not save the requested report file to: " + configuration->getString(CONFIG_IMAGE_REPORT_PATH));
     }
     emit(reportGenerationDone());
@@ -564,21 +565,24 @@ void FlowControl::prepareSelectedReportIteration(){
     QStringList explanations = text.getStringList(DR_CONFG_RES_CLARIFICATION);
     QStringList references = text.getStringList(DR_CONFG_RESULT_RANGES);
 
-    if (report.contains(CONFIG_RESULTS_ATTENTIONAL_PROCESSES)){
+    if (report.contains(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
         QString ans = report.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
         if ((ans != "nan") && (ans != "0")){
             // Adding all the reading items.
-            QStringList reading; reading << CONFIG_RESULTS_ATTENTIONAL_PROCESSES << CONFIG_RESULTS_EXECUTIVE_PROCESSES
+            QStringList reading;
+            reading << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION << CONFIG_RESULTS_EXECUTIVE_PROCESSES
                                          << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY;
             addToReportItems(reading,report,titles,explanations,references);
         }
 
     }
 
-    if (report.contains(CONFIG_RESULTS_MEMORY_ENCODING)){
-        QString ans = report.value(CONFIG_RESULTS_MEMORY_ENCODING).toString();
+    if (report.contains(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
+        QString ans = report.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX).toString();
         if ((ans != "nan") && (ans != "0")){
-            QStringList binding; binding << CONFIG_RESULTS_MEMORY_ENCODING << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
+            QStringList binding;
+            if (uimap->getIndexBehavioral() == "I") binding << CONFIG_RESULTS_BINDING_CONVERSION_INDEX;
+            else if (uimap->getIndexBehavioral() == "B") binding << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
             addToReportItems(binding,report,titles,explanations,references);
         }
     }
@@ -596,7 +600,7 @@ void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &
         ResultBar bar;
         bar.setResultType(items.at(i));
         bar.setValue(report.value(items.at(i)));
-        qreal value = bar.getValue();
+        qreal value = bar.getValueAsReal();
         qint32 indicator = bar.getSegmentBarIndex();
 
         map["vmTitleText"] = titles.at(index);
@@ -607,7 +611,7 @@ void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &
             map["vmExpText"] = exp;
         }
         map["vmRefText"] = references.at(index);
-        map["vmResValue"] = QString::number(value);
+        map["vmResValue"] = ResultBar::ReportValueConversion(items.at(i),value);
         map["vmResBarIndicator"] = QString::number(indicator);
         map["vmHasTwoSections"] = bar.hasTwoSections();
         reportItems << map;
@@ -618,10 +622,9 @@ void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &
 QStringList FlowControl::getSelectedReportInfo(){
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
     QStringList ans;
-    //ans << report.value(CONFIG_DOCTOR_NAME).toString();
-    //ans << report.value(CONFIG_PATIENT_NAME).toString();
     ans << configuration->getString(CONFIG_DOCTOR_NAME);
-    ans << configuration->getString(CONFIG_PATIENT_NAME);
+    if (uimap->getStructure() == "S") ans << configuration->getString(CONFIG_PATIENT_DISPLAYID);
+    else if (uimap->getStructure() == "P") ans << configuration->getString(CONFIG_PATIENT_NAME);
     ans << report.value(CONFIG_PATIENT_AGE).toString();
     ans << report.value(CONFIG_REPORT_DATE).toString();
     ans << report.value(CONFIG_RESULTS_FREQ_ERRORS_PRESENT).toString();

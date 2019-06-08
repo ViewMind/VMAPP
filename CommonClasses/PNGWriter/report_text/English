@@ -13,10 +13,12 @@ were detected|Midly deficient functioning,
 not necessarily pathological|Completely deficient and/or
 pathological functioning;
 
-results_name = ATTENTIONAL PROCESSES|EXECUTIVE PROCESSES|WORKING MEMORY|RETRIEVAL MEMORY|VISUAL SHORT TERM MEMORY|BEHAVIOURAL RESPONSE;
+results_name = INDEX OF COGNITIVE IMPAIRMENT|EXECUTIVE PROCESSES|WORKING MEMORY|RETRIEVAL MEMORY|INDEX OF CONVERSION TO ALZHEIMER'S DISEASE|BEHAVIOURAL RESPONSE;
 
 results_clarification = Anterior cingulate cortex|Prefrontal cortex|Dorsolateral prefrontal cortex,
-Hippocampus,Subiculum|Locus Coeruleus and Superior colliculus|Entorhinal and Perirhinal Cortex.
+Hippocampus,Subiculum|Locus Coeruleus and Superior colliculus
+Entorhinal and Perirhinal Cortex.
+Medial Temporal Lobe|Entorhinal and Perirhinal Cortex.
 Medial Temporal Lobe;
 
 motto = Cognitive Performace
@@ -25,4 +27,4 @@ Eye-Tracking;
 
 date_format = MM/dd/yyyy;
 
-result_ranges = Reference parameter LOWER to 550|Reference Parameter 7 - 18|Reference parameter 70 - 90|Reference parameter 23 - 39|Reference parameter GREATER than 0.05|Reference parameter LESS than 10;
+result_ranges = Normal value GREATER than 30|Normal value GREATER than 82|Normal value GREATER than 70|Normal value GREATER than 23|Normal value GREATER than 26|Normal value GREATER than 22;

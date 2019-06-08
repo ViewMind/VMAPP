@@ -12,6 +12,8 @@
 #include <QTimer>
 #include <QMetaEnum>
 
+//c1bt!fpkbQ
+
 #define COMPILE_FOR_PRODUCTION
 
 #ifdef COMPILE_FOR_PRODUCTION
@@ -21,7 +23,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "4.3.1"
+#define   PROGRAM_VERSION              "4.4.0"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
