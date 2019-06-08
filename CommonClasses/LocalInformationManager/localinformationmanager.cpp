@@ -621,6 +621,7 @@ QHash<QString,QString> LocalInformationManager::getPatientHashedIDMap() const {
         QVariantMap patdata = map.value(uids.at(j)).toMap();
         QString hash = QCryptographicHash::hash(patdata.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
         QString patient_name = patdata.value(TPATDATA_COL_FIRSTNAME).toString() + " " + patdata.value(TPATDATA_COL_LASTNAME).toString();
+        //qWarning() << "PATHASHIDMAP: " << patient_name << patdata.value(TPATDATA_COL_PUID) << hash;
         ans[hash] = patient_name;
     }
     return ans;

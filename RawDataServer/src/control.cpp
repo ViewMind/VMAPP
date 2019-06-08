@@ -370,8 +370,7 @@ void Control::processRequest(){
         logger.appendError("Getting the patiend ID hashes: " + dbConnID.getError());
         clearSocket("PROCESS REQUEST");
         return;
-    }
-
+    }    
 
     res = dbConnID.getLastResult();
     QHash<QString,QString> puidHashMap;
@@ -382,6 +381,7 @@ void Control::processRequest(){
             return;
         }
         puidHashMap[res.rows.at(i).last()] = res.rows.at(i).first();
+        //qWarning() << "HASHMAP:" <<  res.rows.at(i).last() << res.rows.at(i).first();
     }
 
     ///////////////// Loading the data backups of the local databases if present.
@@ -393,14 +393,17 @@ void Control::processRequest(){
 
     for (qint32 i = 0; i < dirsInInstPath.size(); i++){
         QString dbfilename = instEDirname + "/" + dirsInInstPath.at(i) + "/" + QString(FILE_LOCAL_DB_BKP);
-        if (!QFile(dbfilename).exists()) continue;
+        if (!QFile(dbfilename).exists()) {
+            logger.appendWarning("Could not load local db file: " + dbfilename);
+            continue;
+        }
 
         logger.appendStandard("Loading local DB info for " + dbfilename);
 
         // The local db backup exists and the information will be sent back.
         LocalInformationManager lim;
         lim.setWorkingFile(dbfilename);
-        QHash<QString,QString> ret = lim.getPatientHashedIDMap();
+        QHash<QString,QString> ret = lim.getPatientHashedIDMap();        
 
         if (ret.isEmpty()){
             logger.appendError("Empty patient hashed uid map from local db " + dbfilename);
