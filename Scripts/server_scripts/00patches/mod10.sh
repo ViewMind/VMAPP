@@ -33,7 +33,7 @@ PORT=3306
 # Setting up the password access
 export MYSQL_PWD=$PASSWD
 
-echo ">> APPLYING PATCH 09"
+echo ">> APPLYING PATCH 10"
 mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "ALTER TABLE tEyeResults ADD COLUMN binding_index_bc FLOAT"
 mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "ALTER TABLE tEyeResults ADD COLUMN binding_index_uc FLOAT"
 mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "ALTER TABLE tEyeResults ADD COLUMN cognitive_impairment_index FLOAT"

@@ -121,7 +121,20 @@ void RawDataProcessor::run(){
         temp = generateFDBFile(dataBindingUC,imagesUC.getEyeFixations());
         freqErrorsOK = freqErrorsOK && temp;
 
-        QString report = rdataProcessor.processBinding(matrixBindingBC,matrixBindingUC);
+        EDPImages::BindingAnswers bcans = imagesBC.getExperimentAnswers();
+        EDPImages::BindingAnswers ucans = imagesUC.getExperimentAnswers();
+
+        // Saving the binding answers
+        bindingAns[TEYERES_COL_BCCORRECT] = bcans.correct;
+        bindingAns[TEYERES_COL_BCWRONGANS] = bcans.wrong;
+        bindingAns[TEYERES_COL_BCTESTCORRECTANS] = bcans.testCorrect;
+        bindingAns[TEYERES_COL_BCTESTWRONGANS] = bcans.testWrong;
+        bindingAns[TEYERES_COL_UCCORRECT] = ucans.correct;
+        bindingAns[TEYERES_COL_UCWRONGANS] = ucans.wrong;
+        bindingAns[TEYERES_COL_UCTESTCORRECTANS] = ucans.testCorrect;
+        bindingAns[TEYERES_COL_UCTESTWRONGANS] = ucans.testWrong;
+
+        QString report = rdataProcessor.processBinding(matrixBindingBC,matrixBindingUC,bcans.correct,ucans.correct);
 
         // The code needs to be saved only once as it should be the same for both BC and UC.
         QFileInfo info(dataBindingBC);
@@ -132,19 +145,6 @@ void RawDataProcessor::run(){
         if (!report.isEmpty()){
             emit(appendMessage(report,MSG_TYPE_STD));
             studyID << bindingVersion + tagRet.version;
-            EDPImages::BindingAnswers bcans = imagesBC.getExperimentAnswers();
-            EDPImages::BindingAnswers ucans = imagesUC.getExperimentAnswers();
-
-            // Saving the binding answers
-            bindingAns[TEYERES_COL_BCCORRECT] = bcans.correct;
-            bindingAns[TEYERES_COL_BCWRONGANS] = bcans.wrong;
-            bindingAns[TEYERES_COL_BCTESTCORRECTANS] = bcans.testCorrect;
-            bindingAns[TEYERES_COL_BCTESTWRONGANS] = bcans.testWrong;
-            bindingAns[TEYERES_COL_UCCORRECT] = ucans.correct;
-            bindingAns[TEYERES_COL_UCWRONGANS] = ucans.wrong;
-            bindingAns[TEYERES_COL_UCTESTCORRECTANS] = ucans.testCorrect;
-            bindingAns[TEYERES_COL_UCTESTWRONGANS] = ucans.testWrong;
-
             emit(appendMessage(formatBindingResultsForPrinting(bcans,"BC"),MSG_TYPE_STD));
             emit(appendMessage(formatBindingResultsForPrinting(ucans,"UC"),MSG_TYPE_STD));
         }
@@ -368,6 +368,11 @@ void RawDataProcessor::generateReportFile(const ConfigurationManager &res, const
         ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,resultkeys.at(i),
                                        QString::number(res.getReal(resultkeys.at(i)),'f',resultDecimals.at(i)));
     }
+
+    if (res.containsKeyword(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE)){
+        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_BEHAVIOURAL_RESPONSE,res.getString(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE));
+    }
+
 }
 
 RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header){

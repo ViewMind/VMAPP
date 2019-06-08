@@ -771,7 +771,7 @@ void DataProcessingSSLServer::sendFreqErrorEmail(qint32 instUID, const QString &
     writer << "$mail->Password = 'BHGWozyNwZoHjvUAhL8d7H9FC/H4RBNfh564MnKZRKj/';\n";
     writer << "$mail->Host = 'email-smtp.us-east-1.amazonaws.com';\n";
     writer << "$mail->Subject = 'ViewMind Frequency Check Alert From: " + instName + "';\n";
-    writer << "$mail->addAddress('aarelovich@gmail.com', 'Ariel Arelovich');\n";
+    writer << "$mail->addAddress('ariel.arelovich@viewmind.com.ar', 'Ariel Arelovich');\n";
 
 #ifdef SERVER_PRODUCTION
     writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";

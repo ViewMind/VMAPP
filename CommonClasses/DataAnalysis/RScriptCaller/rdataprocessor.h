@@ -24,7 +24,7 @@ public:
 
     void setWorkDirectory(const QString &wdir) { workDirectory = wdir; results.clear(); dbdata.clear();}
     QString processReading(const QString &readingFile);
-    QString processBinding(const QString &bcfile, const QString &ucfile);
+    QString processBinding(const QString &bcfile, const QString &ucfile, qint32 bcright, qint32 ucright);
 
     QString getError() const {return error;}
 

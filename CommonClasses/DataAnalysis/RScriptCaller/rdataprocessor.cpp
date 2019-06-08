@@ -52,7 +52,7 @@ QString RDataProcessor::processReading(const QString &readingFile){
 
 }
 
-QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucfile){
+QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucfile, qint32 bcright, qint32 ucright){
     error = "";
 
     QFileInfo bc_file (bcfile);
@@ -60,6 +60,9 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
         error = "RPROCESSOR: BC file: " + bcfile + "does not exist";
         return "";
     }
+
+    QStringList bres; bres << QString::number(bcright) << QString::number(ucright);
+    results.addKeyValuePair(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE,bres.join("|"));
 
     QFileInfo uc_file (ucfile);
     if (!uc_file.exists()){
