@@ -1,4 +1,3 @@
-rm(list=ls())
 library(memisc)
 library(MASS)
 library(grid)
@@ -17,32 +16,43 @@ parseq_fast<-function(a)
   tmp <- which(diff!=0)
   b <- cbind(c(1,tmp+1), c(tmp, la))
   b <- cbind(b, b[,2]-b[,1]+1)
+
 }
 
 args = commandArgs(trailingOnly=TRUE)
-
 if (length(args) != 3) {
    stop("Reading Script requires 3 and only 3 argurments", call.=FALSE)
 }
 
 setwd("./res")
 
+
+#ofile <- ("PACIENTE_NN_R.rda")   #### INTRODUCR NOMBRE DEL PACIENTE!!!!!!!!!
 ofile <- (args[2])  
+
+#a<-read.csv("reading_2_2019_03_26_09_24.csv") # se puede usar si se instal? en el CPU "strawbe
 a<-read.csv(args[1]) 
 
 head(a)
+#names(a)<-c("name","id","sn","trial","fixnr","screenpos","wn","let","dur","nw","eye")
 names(a)<-c("subj_id","id","sn","trial","fixn","screenpos","wn","let","dur","nw","eye", "pupila","blink","ao","gaze","nf","fixY")
 dim(a)
 
+
+
 head(a)
+#a<-a[,2:12]
 a<-a[,2:17]
 a$let<-round(a$let)
 
 tail(a)
 
+
+
 #------------------------------------
 # changes in the fixation sequences
 #------------------------------------
+#idx<-which(is.nan(a$let) & a$wn<=0)
 
 a$wn<-round(a$wn)
 
@@ -81,14 +91,24 @@ head(a);dim(a)
 # delete wn==-1 or 0 (words right to the last word)
 idx<-which(a$wn<=0)
 a<- a[-idx,]
+# head(a);dim(a)
+
+
 
 tail(a)
+
+# delete sentences 75 135 198 no predictabilities
+#idx<-which(a$sn==75 | a$sn==135 | a$sn==198 | a$sn==175)
+#a<-a[-idx,]
+#head(a);dim(a)
 
 #------------------------------------
 
 
 aL<-a[a$eye==0,c("id","sn","nw","wn","let","dur","pupila","gaze","nf","ao")]
 aR<-a[a$eye==1,c("id","sn","nw","wn","let","dur","pupila","gaze","nf","ao")]
+#aL<-a[a$eye==0,c("id","sn","nw","wn","let","dur", "Condition")]
+#aR<-a[a$eye==1,c("id","sn","nw","wn","let","dur", "Condition")]
 dim(aR)
 rm(a)
 
@@ -115,6 +135,7 @@ sid_mf<-sid[sid[,3]!=1,]
 #structure of a ("id","sn","nw","wn","let","dur")
 a_fsl<-a[sid[,1],]
 for (i in 1:dim(sid_mf)[1]){
+  #if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0 
   a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
 }
 a<-a_fsl;rm(a_fsl)
@@ -192,35 +213,64 @@ head(a)
 dim(a)
 
 # --- add lag & successor information ----------------------------------------------------
+# (fixation level)
+#a[,c("wn1.x", "let1", "l1.x", "ao1", "o1","dir1")] <-
+#  rbind(NA, a[-nrow(a),c("wn", "let", "l", "ao", "o","dir")])
+# a[pq[,1],c("wn1.x", "let1", "l1.x", "ao1", "o1","dir1")] <- NA
 
 a[,c("wn1.x", "let1", "ao1", "o1")] <-
   rbind(NA, a[-nrow(a),c("wn", "let", "ao", "o")])
 a[pq[,1],c("wn1.x", "let1", "ao1", "o1")] <- NA
 
 
+#a[,c("wn2.x", "let2", "l2.x", "ao2", "o2","dir2")] <-
+#  rbind(a[-1,c("wn", "let", "l", "ao", "o","dir")],NA)
+#a[pq[,2],c("wn2.x", "let2", "l2.x", "ao2", "o2","dir2")] <- NA
+
 a[,c("wn2.x", "let2", "ao2", "o2")] <-
   rbind(a[-1,c("wn", "let", "ao", "o")],NA)
 a[pq[,2],c("wn2.x", "let2", "ao2", "o2")] <- NA
 
 
+#a[,c("wn3.x", "let3", "l3.x", "ao3", "o3","dir3")] <-
+#  rbind(NA, NA, a[-(c(nrow(a)-1,nrow(a))),c("wn", "let", "l", "ao", "o","dir")])
+#a[c(pq[,1],pq[,1]+1), c("wn3.x", "let3", "l3.x", "ao3", "o3","dir3")] <- NA
+
 a[,c("wn3.x", "let3", "ao3", "o3")] <-
   rbind(NA, NA, a[-(c(nrow(a)-1,nrow(a))),c("wn", "let", "ao", "o")])
 a[c(pq[,1],pq[,1]+1), c("wn3.x", "let3", "ao3", "o3")] <- NA
+
+#a[,c("wn4.x", "let4", "l4.x", "ao4", "o4","dir4")] <-
+#  rbind(a[-c(1,2),c("wn", "let", "l", "ao", "o","dir")],NA,NA)
+#a[c(pq[,2],pq[,2]-1),c("wn4.x", "let4", "l4.x", "ao4", "o4","dir4")] <- NA
 
 a[,c("wn4.x", "let4", "ao4", "o4")] <-
   rbind(a[-c(1,2),c("wn", "let", "ao", "o")],NA,NA)
 a[c(pq[,2],pq[,2]-1),c("wn4.x", "let4", "ao4", "o4")] <- NA
 
+#str(a)
 # ----------------------------------------------------------------------------------------
 
 
 # --- add index for skipping prior (s1) and subsequent (s2) word -------------------------
+# 0=no skip, 1=skip
+# Skipping word n-1 (s1) and word n+1 (s2)
+#a$s1 <- a$ao1-(1/a$l1+1)-(a$let+1)
+#a$s1[a$s1 >= 0] <- 1
+#a$s1[a$s1 <  0] <- 0
+#
+#a$s2 <- a$ao-(1/a$l2+1)-(1/a$l-a$let)
+#a$s2[a$s2 <  1] <- 0
+#a$s2[a$s2 >= 1] <- 1
+
+
 
 dim(a)
 save(a,file=ofile)
 
 
-rm(list=ls())
+#rm(list=ls())
+
 
 parseq_fast<-function(a)
 {
@@ -232,13 +282,15 @@ parseq_fast<-function(a)
   b <- cbind(b, b[,2]-b[,1]+1)
 }
 
-args = commandArgs(trailingOnly=TRUE)
 
-load(args[2])
+
+#load("PACIENTE_NN_R.rda")
+load(ofile)
 
 head(a)
 dim(a)
 #a[100:150,1:12]
+
 
 
 MINDUR <- 51   #para versión corrección de de j laubrock
@@ -248,12 +300,15 @@ MAXDUR <- 1750  # para versión corrección de de j laubrock
 MAXAMP <- 24
 
 
+
 #######################
 firstpass<-function(a){
   #############################
   ffw<-a[1]; #furthest fixated word (entspricht cur)
   r=0; # regression (entspricht jump, aber umgekehrt gepolt)
   fpf<-c()
+  #fpf<-as.matrix(fpf)
+  #fpf<-as.data.frame(fpf)
   for (i in 1:length(a)){
     if (a[i]==ffw & r==0){
       fpf[i]=1
@@ -409,7 +464,225 @@ head(aL)
 aL<-aL[,c(1,2,3,4,5,6,7,8,9,10,32)]
 
 
+
+
+# 
+# #setwd("C:/Users/gerar/Dropbox/Machine learning/READING_eyelink")  # HP
+#
+#
+# #setwd("C:/Users/usuario/Dropbox/Machine learning/READING_eyelink")  # UNS
+#
+# #load("reading_for_deeplearning.rda")
+# #load("reading_for_deeplearning_TRIAL.rda")   #armado con "selecting_means.r"
+#load("reading_for_deeplearning_ID.rda")
+#load("reading_for_deeplearning_ID.rda")
+# load("reading_for_HEALTHCAREAI_ID.rda")
+# 
+# table(a1$id)
+# #idx<-which(a1$id=="22"|a1$id=="5"|a1$id=="10"|a1$id=="29"|a1$id=="33"|a1$id=="69")
+# 
+# 
+# 
+# #View(a1[1:80,])
+# 
+# a1$id<-as.numeric(a1$id)
+# idx<-which(a1$id >= "65"|a1$id=="48")
+# length(idx)
+# a1<-a1[-idx,]
+# a1$id<-as.factor(a1$id)
+# 
+# head(a1)
+# 
+# 
+# 
+# head(a1)
+# 
+# 
+# 
+# a1<-a1[,c(1,2,3,5,7,9,11,12,13,14,15)]
+# 
+# 
+# str(a1)
+# 
+# a1$Condition<-as.factor(a1$Condition)
+# 
+# a1$TOTAL<-as.numeric(a1$TOTAL)
+# a1$FPF<-as.numeric(a1$FPF)
+# a1$SF<-as.numeric(a1$SF)
+# a1$MF<-as.numeric(a1$MF)
+# 
+# 
+# a1$FPF_<-a1$FPF/a1$TOTAL
+# #a1$FPF_ <- data.frame((a1$FPF_))
+# #a1$FPF_ <- melt(a1$FPF_) 
+# 
+# a1$SF_<-a1$SF/a1$TOTAL
+# #a1$SF_ <- data.frame((a1$SF_))
+# #a1$SF_ <- melt(a1$SF_) 
+# 
+# a1$MF_<-a1$MF/a1$TOTAL
+# #a1$MF_ <- data.frame((a1$MF_))
+# #a1$MF_ <- melt(a1$MF_) 
+# 
+# aggregate(a1$TOTAL,by=list(a1$Condition),mean)
+# aggregate(a1$FPF,by=list(a1$Condition),mean)
+# aggregate(a1$SF,by=list(a1$Condition),mean)
+# aggregate(a1$MF,by=list(a1$Condition),mean)
+# 
+# 
+# 
+# 
+# head(a1)
+# dim(a1)
+# a1<-a1[,c(1,2,3,4,5,6,12,13,14)]
+# 
+# a2<-a1
+# 
+# #a2[,4:7] <- scale(a2[,c(4:7)])
+# summary(a2)
+# 
+# #a2[, c(4,10)][is.na(a2[, c(4,10)])] <- 1
+# 
+# a2$mdur<-log(a2$mdur)
+# a2$mgaze<-log(a2$mgaze)
+# 
+# a2$Deterioro <-ifelse(a1$Condition== "CONTROL", "NO", "SI")
+# 
+# a2$Deterioro<-as.factor(a2$Deterioro)
+# 
+# library(healthcareai)
+# 
+# 
+# #######################################################
+# 
+# head(a2)
+# dim(a2)
+# a3 <- a2[,c(2,10)]
+# head(a3)
+# 
+# 
+# 
+# a4 <- (a2[,3:9])
+# 
+# #a4 <- scale(a2[,3:10],center=TRUE)
+# #a4 <- scale(a2[,3:7])
+# 
+# a5<-cbind(a3,a4)
+# 
+# summary(a5)
+# str(a5)
+# 
+# #View(a5[1:60,])
+# 
+# #m1 <- machine_learn(a5, id, outcome = Condition)
+# 
+# m1 <- machine_learn(a5, id, outcome = Deterioro)
+# 
+# 
+# # interpret(m1) %>%
+# #   plot()
+# # 
+# # summary(m1)
+# 
+# 
+# evaluate(m1, all_models = TRUE)
+# 
+# m2 <- predict(m1, outcome_groups = 5)
+# #m2 <- predict(m1, outcome_groups = .021)
+# #m2 <- predict(m1)
+# View(m2[1:60,])
+# 
+# get_thresholds(m1, optimize = "acc")
+# 
+# get_thresholds(m1) %>%plot()
+# 
+# # is greater than the threshold
+# #install.packages("magrittr") # only needed the first time you use it
+# 
+# library(tidyverse)
+# 
+# class_predictions <-predict(m1)  %>%
+# 
+#   mutate(predicted_class_Deterioro = case_when
+#          (predicted_Deterioro > optimal_threshold ~ "Y",
+#          predicted_Deterioro<= optimal_threshold ~ "N"))
+# 
+# #m2 <- predict(m1, newdata= a2[1:40,])
+# m2
+# evaluate(m2)
+# plot(m2)
+# m2[1:20,]
+# m2[20:30,]
+# m2[30:40,]
+# 
+# m2[40:50,]
+# m2[50:60,]
+# 
+# get_variable_importance(m1) %>%
+#   plot()
+# 
+# explore(m1) %>%
+#   plot()
+# 
+# 
+# test_predictions <-
+#   predict(m1,
+#           risk_groups = c(low = 30, moderate = 40, high = 20, extreme = 10)
+#   )
+# # > Prepping data based on provided recipe
+# test_predictions[1:20,]
+# test_predictions[25:40,]
+# View(test_predictions[1:60,])
+# 
+# 
+# class_preds <- predict(m1,  outcome_groups = 10)
+# table(actual = class_preds$Deterioro, predicted = class_preds$predicted_group)
+# 
+# 
+# 
+# View(class_preds[1:60,])
+# 
+# get_cutoffs(class_preds)
+# 
+# plot(class_preds)
+# 
+# 
+# View(predict(m1) %>%
+#        arrange(desc(predicted_Deterioro)) %>%
+#        mutate(action = case_when(
+#          row_number() <= 3 ~ "admit",
+#          row_number() <= 8 ~ "treat",
+#          TRUE ~ "discharge"
+#        )) %>%
+#        select(predicted_Deterioro, action, everything()))
+# 
+
+#options(max.print=25000)
+#
+# aaa<- predict(m1,
+#         risk_groups = c("risk acceptable" = 90, "risk too high" = 10)) %>%
+#   filter(predicted_group == "risk acceptable") %>%
+#   #  filter(predicted_group == "risk too high") %>%
+#
+#   top_n(n = 50, wt = predicted_Deterioro)
+#
+#
+#
+# View(aaa[1:60,])
+
+#
+# #save_models(m1, file = "my_models_reading.RDS")
+
 models_reading <- load_models("my_models_reading.RDS")
+
+
+
+#####################################################################################
+################################################################################################
+
+
+
+
 
 
 ###############################################################################################
@@ -480,27 +753,23 @@ a10$MF <- DF[match(paste(a4$id),paste(DF$id)),"TOTAL"]
 
 
 
-# First path fixation (Working Memory)
-a10$FPF_<-a10$FPF*100/a10$TOTAL
-a10$FPF_
-
-# Single fixation (Retrieval Memory)
-a10$SF_<-a10$SF*100/a10$TOTAL
-a10$SF_
-
-# Multiple Fixation (Executive Processes)
-a10$MF_<-a10$MF*100/a10$TOTAL
-a10$MF_ 
-
-reading_output <- paste0(               "attentional_processes = ", a10$TOTAL, ";\n")
-reading_output <- paste0(reading_output,"executive_proceseses = ",  a10$MF_, ";\n")
-reading_output <- paste0(reading_output,"working_memory = ",        a10$FPF_, ";\n")
-reading_output <- paste0(reading_output,"retrieval_memory = ",      a10$SF_, ";\n")
+ a10$FPF_<-a10$FPF/a10$TOTAL
+# #a1$FPF_ <- data.frame((a1$FPF_))
+# #a1$FPF_ <- melt(a1$FPF_) 
+# 
+ a10$SF_<-a10$SF/a10$TOTAL
+# #a1$SF_ <- data.frame((a1$SF_))
+# #a1$SF_ <- melt(a1$SF_) 
+# 
+ a10$MF_<-a10$MF/a10$TOTAL
+# #a1$MF_ <- data.frame((a1$MF_))
+# #a1$MF_ <- melt(a1$MF_) 
 
 head(a10)
 
-# txtout <- c(a10$FPF_, a10$SF_, a10$MF_ )
-# write.table(txtout, "reading_output_std.txt") 
+
+
+
 
 a10$mdur<-log(a10$mdur)
 a10$mgaze<-log(a10$mgaze)
@@ -525,6 +794,11 @@ a10$MF<-as.numeric(a10$MF)
 
 head(a10)
 
+reading_output <- paste0(               "attentional_processes = ", a10$TOTAL, ";\n")
+reading_output <- paste0(reading_output,"executive_proceseses = ",  a10$MF_, ";\n")
+reading_output <- paste0(reading_output,"working_memory = ",        a10$FPF_, ";\n")
+reading_output <- paste0(reading_output,"retrieval_memory = ",      a10$SF_, ";\n")
+
 a10<-a10[,c(2,3,5,7,9,15,16,17,18)]
 
 
@@ -538,8 +812,12 @@ a60<-cbind(a3111,a4111)
 
 m3<-predict(models_reading, a60, outcome_groups = 5)
 
+m3
+
 reading_output <- paste0(reading_output,"reading_predicted_deterioration = ",m3$predicted_Deterioro, ";\n")
 
 fileConn<-file(args[3])
 writeLines(reading_output, fileConn)
 close(fileConn)
+
+
