@@ -753,22 +753,19 @@ a10$MF <- DF[match(paste(a4$id),paste(DF$id)),"TOTAL"]
 
 
 
- a10$FPF_<-a10$FPF/a10$TOTAL
+ a10$FPF_<-a10$FPF*100/a10$TOTAL
 # #a1$FPF_ <- data.frame((a1$FPF_))
 # #a1$FPF_ <- melt(a1$FPF_) 
 # 
- a10$SF_<-a10$SF/a10$TOTAL
+ a10$SF_<-a10$SF*100/a10$TOTAL
 # #a1$SF_ <- data.frame((a1$SF_))
 # #a1$SF_ <- melt(a1$SF_) 
 # 
- a10$MF_<-a10$MF/a10$TOTAL
+ a10$MF_<-a10$MF*100/a10$TOTAL
 # #a1$MF_ <- data.frame((a1$MF_))
 # #a1$MF_ <- melt(a1$MF_) 
 
 head(a10)
-
-
-
 
 
 a10$mdur<-log(a10$mdur)
