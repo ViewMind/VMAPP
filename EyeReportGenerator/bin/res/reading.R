@@ -753,15 +753,15 @@ a10$MF <- DF[match(paste(a4$id),paste(DF$id)),"TOTAL"]
 
 
 
- a10$FPF_<-a10$FPF*100/a10$TOTAL
+ a10$FPF_<-a10$FPF/a10$TOTAL
 # #a1$FPF_ <- data.frame((a1$FPF_))
 # #a1$FPF_ <- melt(a1$FPF_) 
 # 
- a10$SF_<-a10$SF*100/a10$TOTAL
+ a10$SF_<-a10$SF/a10$TOTAL
 # #a1$SF_ <- data.frame((a1$SF_))
 # #a1$SF_ <- melt(a1$SF_) 
 # 
- a10$MF_<-a10$MF*100/a10$TOTAL
+ a10$MF_<-a10$MF/a10$TOTAL
 # #a1$MF_ <- data.frame((a1$MF_))
 # #a1$MF_ <- melt(a1$MF_) 
 
@@ -792,9 +792,9 @@ a10$MF<-as.numeric(a10$MF)
 head(a10)
 
 reading_output <- paste0(               "attentional_processes = ", a10$TOTAL, ";\n")
-reading_output <- paste0(reading_output,"executive_proceseses = ",  a10$MF_, ";\n")
-reading_output <- paste0(reading_output,"working_memory = ",        a10$FPF_, ";\n")
-reading_output <- paste0(reading_output,"retrieval_memory = ",      a10$SF_, ";\n")
+reading_output <- paste0(reading_output,"executive_proceseses = ",  a10$MF_*100, ";\n")
+reading_output <- paste0(reading_output,"working_memory = ",        a10$FPF_*100, ";\n")
+reading_output <- paste0(reading_output,"retrieval_memory = ",      a10$SF_*100, ";\n")
 
 a10<-a10[,c(2,3,5,7,9,15,16,17,18)]
 
