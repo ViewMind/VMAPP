@@ -276,6 +276,8 @@ void FlowControl::connectToEyeTracker(){
     // Creating the connection with the EyeTracker
     if (eyeTracker != nullptr) delete eyeTracker;
 
+    logger.appendStandard("Creating new EyeTracker Object");
+
     // The new et is NOT calibrated.
     calibrated = false;
 
@@ -300,6 +302,7 @@ void FlowControl::connectToEyeTracker(){
         return;
     }
 
+    logger.appendStandard("Connecting to EyeTracker....");
     connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
     eyeTracker->connectToEyeTracker();
 }
@@ -314,6 +317,7 @@ void FlowControl::calibrateEyeTracker(){
     // Making sure the right eye is used, in both the calibration and the experiment.
     eyeTracker->setEyeToTransmit(configuration->getInt(CONFIG_VALID_EYE));
 
+    logger.appendStandard("Calibrating the eyetracker....");
     eyeTracker->calibrate(calibrationParams);
 }
 
@@ -321,27 +325,32 @@ void FlowControl::onEyeTrackerControl(quint8 code){
     //qWarning() << "ON EYETRACKER CONTROL" << code;
     switch(code){
     case EyeTrackerInterface::ET_CODE_CALIBRATION_ABORTED:
+        logger.appendWarning("EyeTracker Control: Calibration aborted");
         calibrated = false;
         emit(calibrationDone(false));
         break;
     case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
+        logger.appendStandard("EyeTracker Control: Calibration done successfully");
         calibrated = true;
         emit(calibrationDone(true));
         break;
     case EyeTrackerInterface::ET_CODE_CALIBRATION_FAILED:
+        logger.appendError("EyeTracker Control: Calibration Failed");
         calibrated = false;
         emit(calibrationDone(false));
         break;
     case EyeTrackerInterface::ET_CODE_CONNECTION_FAIL:
+        logger.appendError("EyeTracker Control: Connection to EyeTracker Failed");
         connected = false;
         emit(connectedToEyeTracker(false));
         break;
     case EyeTrackerInterface::ET_CODE_CONNECTION_SUCCESS:
+        logger.appendStandard("EyeTracker Control: Connection to EyeTracker Established");
         connected = true;
         emit(connectedToEyeTracker(true));
         break;
     case EyeTrackerInterface::ET_CODE_DISCONNECTED_FROM_ET:
-        logger.appendError("Disconnected from EyeTracker");
+        logger.appendError("EyeTracker Control: Disconnected from EyeTracker");
         connected = false;
         break;
     }
@@ -362,17 +371,20 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     QString readingQuestions;
     switch (experimentID){
     case EXP_READING:
+        logger.appendStandard("STARTING READING EXPERIMENT");
         readingQuestions = ":/experiment_data/Reading_" + configuration->getString(CONFIG_READING_EXP_LANG) + ".dat";
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,readingQuestions);
         experiment = new ReadingExperiment();
         background = QBrush(Qt::gray);
         break;
     case EXP_BINDING_BC:
+        logger.appendStandard("STARTING BINDING BC EXPERÏMENT");
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(true));
         experiment = new ImageExperiment(true);
         background = QBrush(Qt::gray);
         break;
     case EXP_BINDING_UC:
+        logger.appendStandard("STARTING BINDING UC EXPERÏMENT");
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(false));
         experiment = new ImageExperiment(false);
         background = QBrush(Qt::gray);
@@ -436,7 +448,7 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
     switch (er){
     case Experiment::ER_ABORTED:
-        logger.appendStandard("Experiment aborted");
+        logger.appendStandard("EXPERIMENT aborted");
         experimentIsOk = false;
         break;
     case Experiment::ER_FAILURE:
@@ -444,6 +456,7 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
         experimentIsOk = false;
         break;
     case Experiment::ER_NORMAL:
+        logger.appendSuccess("EXPERIMENT Finshed Successfully");
         currentRunFiles << info.baseName() + ".dat";
         break;
     case Experiment::ER_WARNING:
@@ -558,6 +571,12 @@ void FlowControl::moveFileToArchivedFileFolder(const QString &filename){
 
 void FlowControl::prepareSelectedReportIteration(){
     reportItems.clear();
+
+    /// DEBUG CODE
+    //reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000/");
+    //selectedReport = 0;
+    /// END DEBUG CODE
+
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
 
     ConfigurationManager text = ImageReportDrawer::loadReportText(configuration->getString(CONFIG_REPORT_LANGUAGE));
@@ -600,18 +619,17 @@ void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &
         ResultBar bar;
         bar.setResultType(items.at(i));
         bar.setValue(report.value(items.at(i)));
-        qreal value = bar.getValueAsReal();
         qint32 indicator = bar.getSegmentBarIndex();
 
         map["vmTitleText"] = titles.at(index);
         if (index == 0) map ["vmExpText"] = "";
         else{
             QString exp = explanations.at(index-1);
-            exp = exp.replace("\n","<br>");
+            exp = exp.replace("/n","<br>");
             map["vmExpText"] = exp;
         }
         map["vmRefText"] = references.at(index);
-        map["vmResValue"] = ResultBar::ReportValueConversion(items.at(i),value);
+        map["vmResValue"] = bar.getValue();
         map["vmResBarIndicator"] = QString::number(indicator);
         map["vmHasTwoSections"] = bar.hasTwoSections();
         reportItems << map;
@@ -625,7 +643,14 @@ QStringList FlowControl::getSelectedReportInfo(){
     ans << configuration->getString(CONFIG_DOCTOR_NAME);
     if (uimap->getStructure() == "S") ans << configuration->getString(CONFIG_PATIENT_DISPLAYID);
     else if (uimap->getStructure() == "P") ans << configuration->getString(CONFIG_PATIENT_NAME);
-    ans << report.value(CONFIG_PATIENT_AGE).toString();
+
+    /// PATCH: When the age is not present the age is the year.
+    qint32 patient_age = report.value(CONFIG_PATIENT_AGE).toInt();
+    if ((patient_age > 120) || (patient_age < 10)){
+        ans << "N/A";
+    }
+    else ans << QString::number(patient_age);
+
     ans << report.value(CONFIG_REPORT_DATE).toString();
     ans << report.value(CONFIG_RESULTS_FREQ_ERRORS_PRESENT).toString();
     return ans;

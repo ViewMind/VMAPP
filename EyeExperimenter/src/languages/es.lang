@@ -107,7 +107,7 @@ viewcalibstart_btnStart = COMENZAR CALIBRACIÓN;
 
 #********************************* CALIBRATION DONE SCREEN DIALOG *********************************
 viewcalibdone_viewTitle = FIN DE LA CALIBRACIÓN;
-viewcalibdone_btnContinue = CONTINUAR;
+viewcalibdone_btnContinue = FINALIZAR CALIBRACIÓN;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Evaluación de Lectura;
@@ -145,7 +145,7 @@ No serán consideradas en los resultados.;
 
 viewpresentexp_fieldingExp = Explicación de la Evaluación <br><b>N-Back</b>;
 
-viewpresentexp_btnContinue = CONTINUAR;
+viewpresentexp_btnContinue = COMENZAR EVALUACIÓN;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_title = Lista de Pacientes;
@@ -221,7 +221,7 @@ viewexpdone_goback = GENERAR DESPUES;
 viewexpdone_yes = GENERAR AHORA;
 viewexpdone_viewTitle = ¡Felicitaciones!;
 viewexpdone_labelMessage = Ha concluido exitosamente las Evaluaciones NeuroCognitivas de ViewMind;
-viewexpdone_btnContinue = CONTINUAR;
+viewexpdone_btnContinue = FINALIZAR EVALUACIÓN;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Resultados;

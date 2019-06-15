@@ -203,7 +203,7 @@ VMBase {
         anchors.top: labelInstruction2.bottom
         anchors.topMargin: 13
         anchors.left: backgroundPatientName.left
-        color: "#d5d5d5"
+        color: "#554545"
         text: loader.getStringForKey(keysearch+"labelEyeMsg");
     }
 
@@ -229,14 +229,17 @@ VMBase {
         width: cbNumberOfTargets.width
         anchors.top: labelEyeMsg.top
         anchors.left: cbNumberOfTargets.left
-        color: "#d5d5d5"
+        color: "#554545"
         text: loader.getStringForKey(keysearch+"labelNTargets");
     }
 
     VMComboBox{
         id: cbNumberOfTargets
         width: cbEyeMsg.width
-        vmModel: ["2","3"];
+        vmModel: {
+            if (uimap.getBindDefaultCount() === "2") return  ["2","3"];
+            else if (uimap.getBindDefaultCount() === "3") return  ["3","2"];
+        }
         font.family: viewHome.robotoR.name
         font.pixelSize: 13
         anchors.top: labelNTargets.bottom
@@ -244,8 +247,8 @@ VMBase {
         anchors.left: cbReadingLang.right
         anchors.leftMargin: 16
         enabled: {
-            if (uimap.getBlockedBinding() === "N") return true;
-            else if (uimap.getBlockedBinding() === "Y") return false;
+            if (uimap.getBlockedBindCount() === "N") return true;
+            else if (uimap.getBlockedBindCount() === "Y") return false;
         }
     }
 
@@ -257,7 +260,7 @@ VMBase {
         width: cbNumberOfTargets.width
         anchors.top: labelEyeMsg.top
         anchors.left: cbTargetSize.left
-        color: "#d5d5d5"
+        color: "#554545"
         text: loader.getStringForKey(keysearch+"labelTargetSize");
     }
 
@@ -272,8 +275,8 @@ VMBase {
         anchors.left: cbNumberOfTargets.right
         anchors.leftMargin: 16
         enabled: {
-            if (uimap.getBlockedBinding() === "N") return true;
-            else if (uimap.getBlockedBinding() === "Y") return false;
+            if (uimap.getBlockedBindSize() === "N") return true;
+            else if (uimap.getBlockedBindSize() === "Y") return false;
         }
     }
 
@@ -285,7 +288,7 @@ VMBase {
         width: cbNumberOfTargets.width
         anchors.top: labelEyeMsg.top
         anchors.left: cbReadingLang.left
-        color: "#d5d5d5"
+        color: "#554545"
         text: loader.getStringForKey(keysearch+"labelReadingLanguge");
     }
 

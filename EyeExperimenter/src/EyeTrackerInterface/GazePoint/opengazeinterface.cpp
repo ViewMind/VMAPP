@@ -76,10 +76,12 @@ void OpenGazeInterface::on_readyRead(){
     }
 }
 
-void OpenGazeInterface::on_disconnected(){
-    logger.appendWarning("DISCONNECTED from OpenGaze EyeTracker Server");
+void OpenGazeInterface::on_disconnected(){    
     //qWarning() << "SHOULD DISCONNECT" << shouldDisconnect;
-    if (!shouldDisconnect) emit(eyeTrackerControl(ET_CODE_DISCONNECTED_FROM_ET));
+    if (!shouldDisconnect) {
+        logger.appendError("DISCONNECTED from OpenGaze EyeTracker Server");
+        emit(eyeTrackerControl(ET_CODE_DISCONNECTED_FROM_ET));
+    }
 }
 
 //*************************** Processing commands received by the ET ************************************************

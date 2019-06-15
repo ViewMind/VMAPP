@@ -4,7 +4,7 @@ Item {
 
     id: vmResultEntry
     width: 576
-    height: 95
+    height: 105
 
     Text{
         id: titleText
@@ -30,7 +30,7 @@ Item {
 
     Text{
         id: explanationText
-        textFormat: Text.RichText
+        //textFormat: Text.RichText
         color: "#737577"
         text: vmExpText
         font.family: viewHome.robotoR.name

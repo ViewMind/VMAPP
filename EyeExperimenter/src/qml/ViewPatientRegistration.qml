@@ -31,6 +31,7 @@ VMBase {
         var plist = loader.getProtocolList(false);
         plist.unshift(loader.getStringForKey(keysearch+"labelProtocol"));
         labelProtocol.vmModel = plist;
+        labelProtocol.enabled = true;
     }
 
     function loadPatientInformation(){
@@ -51,7 +52,7 @@ VMBase {
 
         // Setting the gender
         if (patInfo.sex === "M") labelGender.currentIndex = 1;
-        else labelGender.currentIndex = 2;
+        else if (patInfo.sex === "F") labelGender.currentIndex = 2;
 
         // Setting the country.
         var index = loader.getCountryIndexFromCode(patInfo.birthcountry);
@@ -185,7 +186,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         visible: {
             if (uimap.getStructure() === "P") return true;
-            else return false;
+            else if (uimap.getStructure() === "S") return false;
         }
         // Name and last name
         VMTextDataInput{
@@ -264,11 +265,19 @@ VMBase {
             width: labelGender.width
             font.family: viewHome.robotoR.name
             anchors.bottom: parent.bottom
+            visible: {
+               if (uimap.getStructure() === "P") return false;
+               else if (uimap.getStructure() === "S") return true;
+            }
         }
 
         VMTextDataInput{
             id: labelDocument_number
-            width: labelBirthDate.width
+            width: {
+                labelBirthDate.width
+                if (uimap.getStructure() === "P") return  rowNames.width;
+                else if (uimap.getStructure() === "S") return labelBirthDate.width;
+            }
             vmPlaceHolder: loader.getStringForKey(keysearch+"labelDocument_number");
             Keys.onTabPressed: labelAssignedDoctor.vmFocus = true;
         }
@@ -370,10 +379,10 @@ VMBase {
                     patient_protocol: labelProtocol.currentText
                 };
 
-                if (dbDataReq.birthdate === ""){
-                    labelBirthDate.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
-                    return;
-                }
+//                if (dbDataReq.birthdate === ""){
+//                    labelBirthDate.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+//                    return;
+//                }
 
                 // The absolute must values are the document, the country, the name and the last name.
                 if (labelCountry.vmCurrentText === ""){
@@ -384,10 +393,10 @@ VMBase {
                     return;
                 }
 
-                if (labelGender.currentIndex === 0){
-                    labelGender.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
-                    return;
-                }
+//                if (labelGender.currentIndex === 0){
+//                    labelGender.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+//                    return;
+//                }
 
                 if (dbDataReq.uid === ""){
                     labelDocument_number.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");

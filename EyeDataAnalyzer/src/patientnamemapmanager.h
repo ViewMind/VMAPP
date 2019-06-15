@@ -14,14 +14,14 @@ public:
     PatientNameMapManager();
 
     void loadPatNameDB();
-    bool isPuidInNameMap(const QString &puid) const { return patNames.contains(puid); }
-    QString getPatName(const QString &puid) const {return patNames.value(puid);}
+    QString fromSerializedMapData(const QString &data);
+    bool isPuidInNameMap(const QString &puid) const;
+    QString getPatName(const QString &puid) const;
     ConfigurationManager getPatientNameFromDirname(const QString &dirname) const;
-    void addToMap(const QStringList &puids, const QStringList &patnames);
     void printMap() const;
 
 private:
-    QHash<QString,QString> patNames;
+    QVariantMap mapdata;
 };
 
 #endif // PATIENTNAMEMAPMANAGER_H

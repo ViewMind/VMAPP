@@ -107,7 +107,7 @@ viewcalibstart_btnStart = START CALIBRATION;
 
 #********************************* CALIBRATION DONE SCREEN DIALOG *********************************
 viewcalibdone_viewTitle = CALIBRATION DONE;
-viewcalibdone_btnContinue = CONTINUE;
+viewcalibdone_btnContinue = END CALIBRATION;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Reading Evaluation;
@@ -145,7 +145,7 @@ They won't be considered in the results.;
 
 viewpresentexp_fieldingExp = Explanation of the<br><b>N-Back </b> study;
 
-viewpresentexp_btnContinue = CONTINUE;
+viewpresentexp_btnContinue = START EVALUATION;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_title = Patient List;
@@ -220,7 +220,7 @@ viewexpdone_goback = REQUEST LATER;
 viewexpdone_yes = REQUEST NOW;
 viewexpdone_viewTitle = Congratulations!;
 viewexpdone_labelMessage = You have successfully completed ViewMind's Neurocognitive Evaluations;
-viewexpdone_btnContinue = CONTINUE;
+viewexpdone_btnContinue = FINALIZE EVALUATION;
 
 #********************************* RESULTS SCREEN *********************************
 viewresults_title = Results;

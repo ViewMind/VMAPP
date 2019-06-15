@@ -29,5 +29,7 @@
         <file>images/black_folder.png</file>
         <file>images/white-folder.png</file>
         <file>images/frecuency.png</file>
+        <file>images/bound_3.gif</file>
+        <file>images/unbound_3.gif</file>
     </qresource>
 </RCC>

@@ -21,10 +21,6 @@
 #define   DR_ID_LENGTH                                   4
 #define   PAT_ID_LENGTH                                  4
 
-#define   SEP_VALUE_SET  "<=>"
-#define   SEP_KEYVALUE   ":::"
-#define   SEP_FIELDS     "<=1=>"
-
 class LocalInformationManager
 {
 public:
@@ -95,6 +91,8 @@ public:
     // Used for the debugging.
     void printDBToConsole();
     QString printDBToString() const;
+
+    // Used for trasmiting the DB over the net as a string. Just the doctor and patient data
     QString serialDoctorPatientString(const QString &serialized_map) const;
 
 private:

@@ -150,6 +150,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: headDesign.bottom
         anchors.topMargin: 30
+        width: 200
         onClicked: {
             if (loader.isDoctorValidated(-1)){
                 openDiag();                

@@ -17,7 +17,7 @@ public:
     bool hasTwoSections() const {return (values.size() == 3);}
     QString getResultConfigured() const {return resType;}
 
-    static QString ReportValueConversion(const QString &resultType, qreal value);
+
 
 private:
     QString resType;
@@ -25,6 +25,7 @@ private:
     qint32 segmentBarIndex;
     qreal value;
     bool largerBetter;
+    void reportValueConversion();
 
 };
 

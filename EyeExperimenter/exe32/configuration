@@ -28,14 +28,14 @@ inst_uid = 0;
 
 enable_local_db_bkp = true;
 
-configure_options = PBN;
+configure_options = SIYN2;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
 #------------------------------------------------------#
 
 # In the reading experiment, the tolerance for detecting the patient looked at the red dot 
-reading_px_tol_for_target = 60;
+reading_px_tol_for_target = 80;
 
 #------------------------------------------------------#
 #     CONFIGURATION FOR EYE DATA PROCESSING            #

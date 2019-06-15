@@ -89,28 +89,28 @@ VMBase {
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
-                vmSlideAnimation = "qrc:/images/bound.gif"
+                vmSlideAnimation = "qrc:/images/bound_3.gif"
             }
             else{
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
                 vmSlideAnimation = "qrc:/images/bound.gif"
             }
-            slideAnimation.visible = false;
+            //slideAnimation.visible = false;
             slideDescription.visible = false;
             break;
         case vmExpIndexBindingUC:
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
-                vmSlideAnimation = "qrc:/images/unbound.gif"
+                vmSlideAnimation = "qrc:/images/unbound_3.gif"
             }
             else{
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
                 vmSlideAnimation = "qrc:/images/unbound.gif"
             }
-            slideAnimation.visible = false;
+            //slideAnimation.visible = false;
             slideDescription.visible = false;
             break;
         case vmExpIndexReading:
@@ -118,7 +118,7 @@ VMBase {
             vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");
             vmSlideAnimation = "qrc:/images/reading.gif"
             //slideAnimation.visible = false;
-            //slideDescription.visible = false;
+            slideDescription.visible = false;
             break;
         case vmExpIndexFielding:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");
@@ -293,8 +293,10 @@ VMBase {
         source: vmSlideAnimation
         anchors.top: slideTitle.bottom
         anchors.topMargin: 68
-        anchors.right: parent.right
-        anchors.rightMargin: 180
+        //anchors.right: parent.right
+        //anchors.rightMargin: 180
+        anchors.horizontalCenter: parent.horizontalCenter
+        //scale: 1.5
     }
 
     VMButton{

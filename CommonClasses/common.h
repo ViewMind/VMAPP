@@ -181,6 +181,12 @@
 #define  READING_LANG_GERMAN                            "de"
 #define  READING_LANG_FRENCH                            "fr"
 
+// Used for transmiting string serialized maps
+#define   SEP_VALUE_SET                                  "<=>"
+#define   SEP_KEYVALUE                                   ":::"
+#define   SEP_FIELDS                                     "<=1=>"
+
+
 // TCP Ports.
 static const quint16 TCP_PORT_RAW_DATA_SERVER            = 54918;
 static const quint16 TCP_PORT_DB_COMM                    = 54915;

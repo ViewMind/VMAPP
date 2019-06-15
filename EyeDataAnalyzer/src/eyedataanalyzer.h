@@ -12,9 +12,8 @@
 #include <QTimer>
 #include <QMetaEnum>
 
-//c1bt!fpkbQ
 
-#define COMPILE_FOR_PRODUCTION
+//#define COMPILE_FOR_PRODUCTION
 
 #ifdef COMPILE_FOR_PRODUCTION
 #define  SERVER_IP                     "18.220.30.34"  // Production server
@@ -23,7 +22,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "4.4.0"
+#define   PROGRAM_VERSION              "5.0.0"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -101,9 +100,11 @@ private slots:
 
     void on_pbClearLog_clicked();
 
+    void on_pbLocalDB_clicked();
+
 private:
 
-    typedef enum {CS_CONNECTING_FOR_NAME_LIST,CS_GETTING_NAMELIST,CS_GETTING_DATA,CS_CONNECTING_FOR_DATA} ConnectionState;
+    typedef enum {CS_CONNECTING_FOR_NAME_LIST,CS_GETTING_NAMELIST,CS_GETTING_DATA,CS_CONNECTING_FOR_DATA, CS_CONNECTING_FOR_DB_BKP} ConnectionState;
 
     Ui::EyeDataAnalyzer *ui;
     LogInterface logForProcessing;

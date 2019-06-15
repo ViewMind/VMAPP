@@ -13,10 +13,10 @@ bool ResultBar::setResultType(const QString &resultType){
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
-        //values << -4 << 18 << 40 << 62;
-        //largerBetter = false;
+        // values << -4 << 18 << 40 << 62;
+        // largerBetter = false;
         // Values are inverted so that larger values are better.
-        values << 38 << 60 << 82 << 104;
+        values << 50 << 60 << 70 << 80;
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_WORKING_MEMORY){
@@ -24,7 +24,7 @@ bool ResultBar::setResultType(const QString &resultType){
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_RETRIEVAL_MEMORY){
-        values << 7 << 15 << 23 << 31;
+        values << -1 << 7 << 15 << 23;
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_BINDING_CONVERSION_INDEX){
@@ -43,35 +43,19 @@ bool ResultBar::setResultType(const QString &resultType){
 }
 
 QString ResultBar::getValue() const{
-    return ReportValueConversion(resType,value);
+    return QString::number(value,'f',0);
 }
 
-QString ResultBar::ReportValueConversion(const QString &resultType, qreal value){
-    if (resultType == CONFIG_RESULTS_READ_PREDICTED_DETERIORATION){
-        qint32 p = value*100;
-        return QString::number(p);
+void ResultBar::reportValueConversion(){
+    if (resType == CONFIG_RESULTS_READ_PREDICTED_DETERIORATION){
+        value = value*100;
     }
-    else if (resultType == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
-        qint32 p = (100-value);
-        return QString::number(p);
+    else if (resType == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
+        value = (100-value);
     }
-    else if (resultType == CONFIG_RESULTS_WORKING_MEMORY){
-        qint32 p = value;
-        return QString::number(p);
+    else if (resType == CONFIG_RESULTS_BINDING_CONVERSION_INDEX){
+        value = value*100;
     }
-    else if (resultType == CONFIG_RESULTS_RETRIEVAL_MEMORY){
-        qint32 p = value;
-        return QString::number(p);
-    }
-    else if (resultType == CONFIG_RESULTS_BINDING_CONVERSION_INDEX){
-        qint32 p = value*100;
-        return QString::number(p);
-    }
-    else if (resultType == CONFIG_RESULTS_BEHAVIOURAL_RESPONSE){
-        qint32 p = value;
-        return QString::number(p);
-    }
-    return "";
 }
 
 void ResultBar::setValue(const QVariant &varvalue){
@@ -84,6 +68,9 @@ void ResultBar::setValue(const QVariant &varvalue){
         else value = bc_uc.first().toDouble();
     }
     else value = varvalue.toReal();
+
+    // Correcting the values.
+    reportValueConversion();
 
     qreal calcvalue;
     calcvalue = value;
@@ -107,6 +94,8 @@ void ResultBar::setValue(const QVariant &varvalue){
             else if (result == 1) result = 0;
         }
     }
+
+    //qWarning() << result << value;
 
     segmentBarIndex = result;
 }

@@ -404,9 +404,14 @@ void Loader::addNewPatientToDB(QVariantMap dbdata){
     // Transforming the date format.
     QString date = dbdata.value(TPATDATA_COL_BIRTHDATE).toString();
     QStringList dateParts = date.split("/");
-    // Since the date format is given by the program, I can trust that the split will have 3 parts. Setting the ISO Date.
-    date = dateParts.at(2) + "-" + dateParts.at(1) + "-" + dateParts.at(0);
-    dbdata[TPATDATA_COL_BIRTHDATE] = date;
+    if (dateParts.size() == 3){
+        // Since the date format is given by the program, I can trust that the split will have 3 parts. Setting the ISO Date.
+        date = dateParts.at(2) + "-" + dateParts.at(1) + "-" + dateParts.at(0);
+        dbdata[TPATDATA_COL_BIRTHDATE] = date;
+    }
+    else{
+        date = "0000-00-00";
+    }
 
     QString countryCode = countries->getCodeForCountry(dbdata.value(TPATDATA_COL_BIRTHCOUNTRY).toString());
     dbdata[TPATDATA_COL_BIRTHCOUNTRY] = countryCode;

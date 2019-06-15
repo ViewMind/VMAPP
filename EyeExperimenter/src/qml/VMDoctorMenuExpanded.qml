@@ -12,7 +12,10 @@ Rectangle {
     property string vmDemoMode: "";
 
     z: -10
-    height: 410
+    height: {
+        if (uimap.getStructure() === "P") return 350
+        else if (uimap.getStructure() === "S") return 410
+    }
     color: "#ffffff"
 
     layer.enabled: true
@@ -221,6 +224,10 @@ Rectangle {
         id: btnProtocols
         width: parent.width*0.9
         height: 38
+        visible: {
+            if (uimap.getStructure() === "P") return false
+            else if (uimap.getStructure() === "S") return true
+        }
         Rectangle {
             id: btnProtocolsRect
             anchors.fill: parent

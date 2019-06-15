@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 Item {
 
-    readonly property int baseItemWidth: 110
+    readonly property int baseItemWidth: 120
 
     ListModel {
         id: elementList
@@ -10,6 +10,7 @@ Item {
         function redraw(){
             elementList.clear();
             for (var i = 0; i < elementArray.length; i++){
+                elementArray[i].itemOrderIndex = i + 1;
                 elementList.append(elementArray[i]);
             }
         }
@@ -48,12 +49,12 @@ Item {
                 height: container.height*0.8;
                 Rectangle {
                     radius: 5
-                    border.color: "#3a8bd1"
+                    border.color: "#505050"
                     anchors.fill: parent
-                    color: "#3a8bd1"
+                    color: "#505050"
                 }
                 Text {
-                    text: itemText
+                    text: itemOrderIndex + " - " + itemText
                     font.family: robotoR.name
                     font.pixelSize: 13
                     color: "#ffffff"
@@ -76,7 +77,7 @@ Item {
     }
 
     function addItem(text, itemID){
-        elementList.elementArray.push({ "itemText": text, "itemID" : itemID });
+        elementList.elementArray.push({ "itemText": text, "itemID" : itemID, "itemOrderIndex": 0});
         elementList.redraw();
     }
 

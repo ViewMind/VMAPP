@@ -76,6 +76,10 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
     waitDiag->setProgressBarVisibility(false);
     waitDiag->open();
 
+#ifndef COMPILE_FOR_PRODUCTION
+    ui->lePasswordField->setText("c1bt!fpkbQ");
+#endif
+
 }
 
 //*******************************************  SSL AND TCP RELATED SLOTS *****************************************************
@@ -96,7 +100,7 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
         }
         timer.start(30000);
     }
-    else if (connectionState = CS_CONNECTING_FOR_DATA){
+    else if (connectionState == CS_CONNECTING_FOR_DATA){
         connectionState = CS_GETTING_DATA;
         waitDiag->setMessage("Getting the requested information from the server\nThe progress will start only when the information transfer starts (it might take a few minutes)");
         waitDiag->setProgressBarVisibility(true);
@@ -122,6 +126,7 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
         }
         logForDB.appendStandard("Searching for " +ui->cbInstitutions->currentText() + " (" + ui->cbInstitutions->currentData().toString() + "). From " + startDate + " to " + endDate);
     }
+    else if (connectionState == )
 
 }
 
@@ -253,6 +258,15 @@ void EyeDataAnalyzer::on_pbGetData_clicked()
     waitDiag->setProgressBarVisibility(false);
     waitDiag->open();
 
+}
+
+void EyeDataAnalyzer::on_pbLocalDB_clicked(){
+    connectionState = CS_CONNECTING_FOR_DB_BKP;
+    serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_RAW_DATA_SERVER);
+    timer.start(10000);
+    waitDiag->setMessage("Contacting the server for getting local backup data");
+    waitDiag->setProgressBarVisibility(false);
+    waitDiag->open();
 }
 
 //****************************************************************************************************************************
@@ -716,3 +730,5 @@ void EyeDataAnalyzer::on_pbClearLog_clicked()
 {
     ui->pteDBOutputLog->setPlainText("");
 }
+
+
