@@ -19,12 +19,12 @@ SOURCES += main.cpp\
     ../../CommonClasses/DataPacket/datapacket.cpp \
     ../../CommonClasses/LogInterface/loginterface.cpp \
     ssllistener.cpp \
-    sslidsocket.cpp \
     servercontrol.cpp \
     ../../CommonClasses/SQLConn/dbinterface.cpp \
     dataprocessingsslserver.cpp \
     dbcommsslserver.cpp \
-    sslidsocketmap.cpp
+    ../../CommonClasses/SSLIDSocketMap/sslidsocket.cpp \
+    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp
 
 HEADERS  += \
     ../../CommonClasses/common.h \
@@ -32,14 +32,14 @@ HEADERS  += \
     ../../CommonClasses/DataPacket/datapacket.h \
     ../../CommonClasses/LogInterface/loginterface.h \
     ssllistener.h \
-    sslidsocket.h \
     servercontrol.h \
     ../../CommonClasses/SQLConn/dbdescription.h \
     ../../CommonClasses/SQLConn/dbinterface.h \
     dataprocessingsslserver.h \
     dbcommsslserver.h \
     ../../CommonClasses/server_defines.h \
-    sslidsocketmap.h
+    ../../CommonClasses/SSLIDSocketMap/sslidsocket.h \
+    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h
 
 RESOURCES += \
     certificates.qrc \

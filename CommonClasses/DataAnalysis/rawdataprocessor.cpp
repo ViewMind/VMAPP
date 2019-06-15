@@ -361,7 +361,7 @@ void RawDataProcessor::generateReportFile(const ConfigurationManager &res, const
     QStringList resultkeys;
     QList<qint32> resultDecimals;
     resultkeys     << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION  << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_BINDING_CONVERSION_INDEX;
-    resultDecimals << 2                                            << 0                                  << 0                             << 0                               << 2;
+    resultDecimals << 5                                            << 5                                  << 5                             << 5                               << 5;
 
     for (qint32 i = 0; i < resultkeys.size(); i++){
         if (!res.containsKeyword(resultkeys.at(i))) continue; // Only the processed values should be added.

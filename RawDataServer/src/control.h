@@ -18,8 +18,9 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../CommonClasses/LocalInformationManager/localinformationmanager.h"
+#include "../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h"
 #include "../../CommonClasses/server_defines.h"
+#include "../../CommonClasses/LocalInformationManager/localinformationmanager.h"
 #include "ssllistener.h"
 #include "filelister.h"
 
@@ -39,14 +40,7 @@ public:
 
 private slots:
     void on_newConnection();
-    void on_encryptedSuccess();
-    void on_socketStateChanged(QAbstractSocket::SocketState state);
-    void on_socketError(QAbstractSocket::SocketError error);
-    void on_sslErrors(const QList<QSslError> &errors);
-    void on_readyRead();
-    void on_disconnected();
-
-    void onTimerTimeout();
+    void on_newSSLSignal(quint64 socket, quint8 signaltype);
 
 signals:
     void exitRequested();
@@ -62,15 +56,20 @@ private:
 
     // Listening from new connections.
     SSLListener *listener;
-    //QSslSocket *socket;
-    QList<QSslSocket*> socketList;
-    QTimer timer;
-    DataPacket rx;
+    SSLIDSocketMap sockets;
+
+    int idGen;
 
     QStringList getInstitutionUIDPair();
     bool verifyPassword(const QString &password);
-    void processRequest();
-    void clearSocket(const QString &fromWhere);
+    void processRequest(quint64 id);
+
+    void sslErrorsFound(quint64 id);
+    void changedState(quint64 id);
+    void socketErrorFound(quint64 id);
+    void finishedReceivingRequest(quint64 socket);
+    void sendLocalDB(quint64 id);
+
 
 };
 

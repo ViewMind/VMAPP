@@ -55,6 +55,7 @@ public:
     static const quint8 DPFI_LOCAL_DB_BKP                             = 35;
     static const quint8 DPFI_PUID_LIST                                = 36;
     static const quint8 DPFI_PATNAME_LIST                             = 37;
+    static const quint8 DPFI_SERIALIZED_DB                            = 38;
 
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;

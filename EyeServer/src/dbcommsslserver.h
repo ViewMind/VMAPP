@@ -5,8 +5,8 @@
 #include <QMetaEnum>
 #include "../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../CommonClasses/SQLConn/dbinterface.h"
+#include "../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h"
 #include "../../CommonClasses/server_defines.h"
-#include "sslidsocketmap.h"
 #include "ssllistener.h"
 
 #define  DIRNAME_UPDATE_DIR                "etdir"

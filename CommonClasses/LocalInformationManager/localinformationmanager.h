@@ -1,7 +1,7 @@
 #ifndef LOCALINFORMATIONMANAGER_H
 #define LOCALINFORMATIONMANAGER_H
 
-#define USESSL
+//#define USESSL
 
 #include <QVariantMap>
 #include <QDataStream>
@@ -20,6 +20,10 @@
 
 #define   DR_ID_LENGTH                                   4
 #define   PAT_ID_LENGTH                                  4
+
+#define   SEP_VALUE_SET  "<=>"
+#define   SEP_KEYVALUE   ":::"
+#define   SEP_FIELDS     "<=1=>"
 
 class LocalInformationManager
 {
@@ -91,6 +95,7 @@ public:
     // Used for the debugging.
     void printDBToConsole();
     QString printDBToString() const;
+    QString serialDoctorPatientString(const QString &serialized_map) const;
 
 private:
 
@@ -123,6 +128,8 @@ private:
     void backupDB();
     void loadDB(QString eyeexpid, QString instUID, QString fileName = FILE_LOCAL_DB);
     bool isHidden(const QString &uid);
+
+    QString recursiveToSerialString(QString acc, qint32 hierarchy);
 
 
 };

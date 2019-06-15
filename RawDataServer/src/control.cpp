@@ -19,7 +19,7 @@ Control::Control(QObject *parent):QObject(parent)
     // Creating the the listner.
     listener = new SSLListener(this);
 
-    connect(&timer,&QTimer::timeout,this,&Control::onTimerTimeout);
+    idGen = 0;
 }
 
 void Control::startServer(){
@@ -140,7 +140,6 @@ void Control::startServer(){
 
     // Listen for new connections.
     connect(listener,&SSLListener::newConnection,this,&Control::on_newConnection);
-    //socket = nullptr;
 
     if (!listener->listen(QHostAddress::Any,TCP_PORT_RAW_DATA_SERVER)){
         logger.appendError("ERROR : Could not start SSL Server: " + listener->errorString());
@@ -153,17 +152,15 @@ void Control::startServer(){
 
 void Control::on_newConnection(){
 
-    if (socketList.size() != 0) return;
-
-   // logger.appendStandard("New connection received 0");
+    // logger.appendStandard("New connection received 0");
 
     // New connection is available.
-    QSslSocket *socket = (QSslSocket*)(listener->nextPendingConnection());
-    socketList << socket;
+    QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
+    SSLIDSocket *socket = new SSLIDSocket(sslsocket,idGen,"");
 
     //logger.appendStandard("New connection received 1");
 
-    if (!socketList.first()->isValid()) {
+    if (!socket->isValid()) {
         logger.appendError("ERROR: Could not cast incomming socket connection");
         return;
     }
@@ -171,114 +168,228 @@ void Control::on_newConnection(){
     //logger.appendStandard("New connection received 2");
 
     // Doing the connections.
-    connect(socket,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
-    connect(socket,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(on_sslErrors(QList<QSslError>)));
-    connect(socket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(on_socketStateChanged(QAbstractSocket::SocketState)));
-    connect(socket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(on_socketError(QAbstractSocket::SocketError)));
-    connect(socket,&QSslSocket::readyRead,this,&Control::on_readyRead);
-    connect(socket,&QSslSocket::disconnected,this,&Control::on_disconnected);
+    connect(socket,&SSLIDSocket::sslSignal,this,&Control::on_newSSLSignal);
+    sockets.addSocket(socket);
 
     logger.appendStandard("New connection received 3");
 
     // The SSL procedure.
-    socketList.first()->setPrivateKey(":/certificates/server.key");
+    sslsocket->setPrivateKey(":/certificates/server.key");
     //logger.appendStandard("New connection received 3.1");
-    socketList.first()->setLocalCertificate(":/certificates/server.csr");
+    sslsocket->setLocalCertificate(":/certificates/server.csr");
     //logger.appendStandard("New connection received 3.2");
-    socketList.first()->setPeerVerifyMode(QSslSocket::VerifyNone);
+    sslsocket->setPeerVerifyMode(QSslSocket::VerifyNone);
     //logger.appendStandard("New connection received 3.2");
-    socketList.first()->startServerEncryption();
+    sslsocket->startServerEncryption();
 
     //logger.appendStandard("New connection received 4");
 
 }
 
+void Control::on_newSSLSignal(quint64 socket, quint8 signaltype){
+
+    //qWarning() << "DATA PROCESSING SSL SIGNAL" << signalType;
+    QString where = "on_newSSLSignal: " + SSLIDSocket::SSLSignalToString(signaltype);
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(socket,where);
+        logger.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
+        return;
+    }
+
+    switch (signaltype){
+    case SSLIDSocket::SSL_SIGNAL_DISCONNECTED:
+        logger.appendStandard("Terminated connection: " + sslsocket->socket()->peerAddress().toString());
+        sockets.deleteSocket(socket,where);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_ENCRYPTED:
+        logger.appendSuccess("SSL Handshake completed for address: " + sslsocket->socket()->peerAddress().toString() + ". Awaiting a request");
+        sslsocket->startTimeoutTimer(50000);
+        //requestProcessInformation();
+        break;
+    case SSLIDSocket::SSL_SIGNAL_SOCKET_ERROR:
+        socketErrorFound(socket);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_DATA_RX_DONE:
+        // Information has arrived ok. Starting the process.
+        sslsocket->stopTimer();
+        finishedReceivingRequest(socket);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_DATA_RX_ERROR:
+        sslsocket->stopTimer();
+        // Data is most likely corrupted.
+        logger.appendError("Data from " + sslsocket->socket()->peerAddress().toString() + " was corrupted or contained errors");
+        sockets.deleteSocket(socket,where);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_TIMEOUT:
+        // This means that the data did not arrive on time.
+        sslsocket->stopTimer();
+        logger.appendError("Timeout from " + sslsocket->socket()->peerAddress().toString() + " did not arrive in time");
+        sockets.deleteSocket(socket,where);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_PROCESS_DONE:
+        logger.appendError("Unexpected Qt Signal SSL SIGNAL PROCESS DONE.");
+        sockets.deleteSocket(socket,where);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_SSL_ERROR:
+        sslErrorsFound(socket);
+        break;
+    case SSLIDSocket::SSL_SIGNAL_STATE_CHANGED:
+        changedState(socket);
+        break;
+    }
+
+    sockets.releaseSocket(socket,where);
+
+}
+
 
 /***************************************************** QTCP SOCKETS SLOTS ****************************************************/
-void Control::on_encryptedSuccess(){
-    logger.appendStandard("CONNECTED With client. Awaiting for a request");
-    rx.clearAll();
-    timer.start(50000);
-}
-
-void Control::onTimerTimeout(){
-    logger.appendError("Timeout waiting for a request from the client");
-    timer.stop();
-    clearSocket("Timer TimeOut");
-}
-
-void Control::on_sslErrors(const QList<QSslError> &errors){
+void Control::sslErrorsFound(quint64 id){
 
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
-    if (socketList.size() == 0) return;
+    QString where = "sslErrorsFound";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(id,where);
+        logger.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+        return;
+    }
 
-    QHostAddress addr = socketList.first()->peerAddress();
-    for (qint32 i = 0; i < errors.size(); i++){
-        logger.appendError("SSL Error," + errors.at(i).errorString() + " from Address: " + addr.toString());
+    QList<QSslError> errorlist = sslsocket->socket()->sslErrors();
+    QHostAddress addr = sslsocket->socket()->peerAddress();
+    for (qint32 i = 0; i < errorlist.size(); i++){
+        logger.appendError("SSL Error," + errorlist.at(i).errorString() + " from Address: " + addr.toString());
     }
 
     // Eliminating it from the list.
-    clearSocket("SSLErrors");
+    sockets.releaseSocket(id,where);
+    sockets.deleteSocket(id,where);
 
 }
 
-void Control::on_socketError(QAbstractSocket::SocketError error){
+void Control::socketErrorFound(quint64 id){
+
     // Check necessary since multipe signasl are triggered if the other socket dies. Can only
     // be removed once. After that, te program crashes.
-    if (socketList.size() == 0) return;
+    QString where = "socketErrorFound";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(id,where);
+        logger.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+        return;
+    }
 
-    QHostAddress addr = socketList.first()->peerAddress();
+    QAbstractSocket::SocketError error = sslsocket->socket()->error();
+    QHostAddress addr = sslsocket->socket()->peerAddress();
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
     if (error != QAbstractSocket::RemoteHostClosedError){
         logger.appendError(QString("Socket Error found: ") + metaEnum.valueToKey(error) + QString(" from Address: ") + addr.toString());
         // Eliminating it from the list.
-        clearSocket("SocketError");
+        sockets.releaseSocket(id,where);
+        sockets.deleteSocket(id,where);
     }
-    else
-        logger.appendStandard(QString("Closed connection from Address: ") + addr.toString());
+
+    sockets.releaseSocket(id,where);
 
 }
 
-void Control::on_socketStateChanged(QAbstractSocket::SocketState state){
-    if (socketList.size() == 0) return;
-    QHostAddress addr = socketList.first()->peerAddress();
-    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
-    logger.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
+void Control::changedState(quint64 id){
+    Q_UNUSED(id)
+    //    if (sockets.size() == 0) return;
+    //    QHostAddress addr = socket->peerAddress();
+    //    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+    //    logger.appendStandard(addr.toString() + ": " + QString("New socket state, ") + metaEnum.valueToKey(state));
 }
 
-void Control::on_readyRead(){
-    QByteArray ba = socketList.first()->readAll();
-    quint8 ans = rx.bufferByteArray(ba);
-    if (ans == DataPacket::DATABUFFER_RESULT_DONE){
-        timer.stop();
-        if (rx.hasInformationField(DataPacket::DPFI_DB_INST_PASSWORD)){
-            // Data query.
-            processRequest();
-            return;
+void Control::finishedReceivingRequest(quint64 socket){
+
+    QString where = "finishedReceivingRequest";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(socket,where);
+        logger.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));
+        return;
+    }
+
+    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_DB_INST_UID)){
+        // This is a request for a local DB update
+        sendLocalDB(socket);
+    }
+    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_DB_INST_PASSWORD)){
+        // Data query.
+        processRequest(socket);
+    }
+    else {
+        // Institution list query.
+        QStringList instuids = getInstitutionUIDPair();
+        DataPacket tx;
+        tx.addString(instuids.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_INST_NAMES);
+        QByteArray ba = tx.toByteArray();
+        qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logger.appendError("Failure sending then institution list information");
         }
-        else {
-            // Institution list query.
-            QStringList instuids = getInstitutionUIDPair();
-            DataPacket tx;
-            tx.addString(instuids.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_INST_NAMES);
-            QByteArray ba = tx.toByteArray();
-            qint64 num = socketList.first()->write(ba.constData(),ba.size());
-            if (num != ba.size()){
-                logger.appendError("Failure sending then institution list information");
-            }
-            //clearSocket();
-        }
     }
-    else if (ans == DataPacket::DATABUFFER_RESULT_ERROR){
-        timer.stop();
-        logger.appendError("Buffering data gave an error");
-    }
+
+    sockets.releaseSocket(socket,where);
 }
 
-void Control::on_disconnected(){
-    logger.appendStandard("Socket was disconnected");
-    clearSocket("OnDisconnected");
+void Control::sendLocalDB(quint64 id){
+
+    QString where = "sslErrorsFound";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(id,where);
+        logger.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+        return;
+    }
+
+    if (!verifyPassword(sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_PASSWORD).data.toString())){
+        DataPacket tx;
+        tx.addString("WRONG PASSWORD",DataPacket::DPFI_DB_ERROR);
+        QByteArray ba = tx.toByteArray();
+        qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logger.appendError("Failure sending the wrong password message");
+        }
+        sockets.releaseSocket(id,where);
+        return;
+    }
+
+    // Password checks out. Searching for the existance of the Backup.
+    QString instUID = sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
+    QString instEDirname = ETDIR_PATH + QString("/") + instUID;
+    QStringList dirsInInstPath = QDir(instEDirname).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot);
+
+    logger.appendStandard("Requested local DB for institution: " + instUID);
+
+    QString serializedMap;
+    serializedMap = "";
+    for (qint32 i = 0; i < dirsInInstPath.size(); i++){
+        QString dbfilename = instEDirname + "/" + dirsInInstPath.at(i) + "/" + QString(FILE_LOCAL_DB_BKP);
+        if (!QFile(dbfilename).exists()) {
+            logger.appendWarning("Could not load local db file: " + dbfilename);
+            continue;
+        }
+
+        logger.appendStandard("Loading local DB info for " + dbfilename);
+
+        // The local db backup exists and the information will be sent back.
+        LocalInformationManager lim;
+        lim.setWorkingFile(dbfilename);
+        serializedMap = lim.serialDoctorPatientString(serializedMap);
+    }
+
+    DataPacket tx;
+    tx.addString(serializedMap,DataPacket::DPFI_SERIALIZED_DB);
+    QByteArray ba = tx.toByteArray();
+    qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
+    if (num != ba.size()){
+        logger.appendError("Failure sending the wrong password message");
+    }
+    sockets.releaseSocket(id,where);
 }
 
 /*****************************************************************************************************************************/
@@ -293,22 +404,31 @@ bool Control::verifyPassword(const QString &password){
     }
 }
 
-void Control::processRequest(){
+void Control::processRequest(quint64 id){
 
     DataPacket tx;
 
+    QString where = "processRequest";
+    SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
+    if (sslsocket == nullptr){
+        sockets.releaseSocket(id,where);
+        logger.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
+        return;
+    }
+
     if (!dbConnBase.open()){
         logger.appendError("Getting requested information, could not open DB CON BASE");
-        clearSocket("PROCESS REQUEST");
+        sockets.releaseSocket(id,where);
         return;
     }
 
     if (!dbConnID.open()){
         logger.appendError("Getting requested information, could not open DB CON BASE");
-        clearSocket("PROCESS REQUEST");
+        sockets.releaseSocket(id,where);
         return;
     }
 
+    DataPacket rx = sslsocket->getDataPacket();
 
     QString password = rx.getField(DataPacket::DPFI_DB_INST_PASSWORD).data.toString();
     QString instUID = rx.getField(DataPacket::DPFI_DB_INST_UID).data.toString();
@@ -318,11 +438,11 @@ void Control::processRequest(){
     if (!verifyPassword(password)){
         tx.addString("WRONG PASSWORD",DataPacket::DPFI_DB_ERROR);
         QByteArray ba = tx.toByteArray();
-        qint64 num = socketList.first()->write(ba.constData(),ba.size());
+        qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
         if (num != ba.size()){
             logger.appendError("Failure sending the wrong password message");
         }
-        clearSocket("PROCESS REQUEST");
+        sockets.releaseSocket(id,where);
         return;
     }
 
@@ -335,7 +455,7 @@ void Control::processRequest(){
 
     if (!dbConnBase.specialQuery(query,columns)){
         logger.appendError("Getting information from the Eye Results table: " + dbConnBase.getError());
-        clearSocket("PROCESS REQUEST");
+        sockets.releaseSocket(id,where);
         return;
     }
 
@@ -344,7 +464,7 @@ void Control::processRequest(){
     for (qint32 i = 0; i < res.rows.size(); i++){
         if (res.rows.at(i).size() != 1){
             logger.appendError("Getting information from Eye Result Table expected 1 column But got: " + QString::number(res.rows.at(i).size()));
-            clearSocket("PROCESS REQUEST");
+            sockets.releaseSocket(id,where);
             return;
         }
         puids << res.rows.at(i).first();
@@ -353,11 +473,11 @@ void Control::processRequest(){
     if (puids.isEmpty()){
         tx.addString("No patients from institution " + instUID + " were found between " + startDate + " and " + endDate,DataPacket::DPFI_DB_ERROR);
         QByteArray ba = tx.toByteArray();
-        qint64 num = socketList.first()->write(ba.constData(),ba.size());
+        qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
         if (num != ba.size()){
             logger.appendError("Failure sending the no puids message");
         }
-        clearSocket("PROCESS REQUEST");
+        sockets.releaseSocket(id,where);
         return;
     }
 
@@ -368,58 +488,20 @@ void Control::processRequest(){
     condition = "keyid IN (" + puids.join(",") + ")";
     if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
         logger.appendError("Getting the patiend ID hashes: " + dbConnID.getError());
-        clearSocket("PROCESS REQUEST");
+        sockets.releaseSocket(id,where);
         return;
-    }    
+    }
 
     res = dbConnID.getLastResult();
     QHash<QString,QString> puidHashMap;
     for (qint32 i = 0; i < res.rows.size(); i++){
         if (res.rows.at(i).size() != 2){
             logger.appendError("Getting information from Patient Table IDs expected 2 column But got: " + QString::number(res.rows.at(i).size()));
-            clearSocket("PROCESS REQUEST");
+            sockets.releaseSocket(id,where);
             return;
         }
         puidHashMap[res.rows.at(i).last()] = res.rows.at(i).first();
         //qWarning() << "HASHMAP:" <<  res.rows.at(i).last() << res.rows.at(i).first();
-    }
-
-    ///////////////// Loading the data backups of the local databases if present.
-    QString instEDirname = ETDIR_PATH + QString("/") + instUID;
-    QStringList dirsInInstPath = QDir(instEDirname).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot);
-
-    QStringList puidList;
-    QStringList patNameList;
-
-    for (qint32 i = 0; i < dirsInInstPath.size(); i++){
-        QString dbfilename = instEDirname + "/" + dirsInInstPath.at(i) + "/" + QString(FILE_LOCAL_DB_BKP);
-        if (!QFile(dbfilename).exists()) {
-            logger.appendWarning("Could not load local db file: " + dbfilename);
-            continue;
-        }
-
-        logger.appendStandard("Loading local DB info for " + dbfilename);
-
-        // The local db backup exists and the information will be sent back.
-        LocalInformationManager lim;
-        lim.setWorkingFile(dbfilename);
-        QHash<QString,QString> ret = lim.getPatientHashedIDMap();        
-
-        if (ret.isEmpty()){
-            logger.appendError("Empty patient hashed uid map from local db " + dbfilename);
-            continue;
-        }
-
-        QStringList keys = puidHashMap.keys();
-        for (qint32 j = 0; j < keys.size(); j++){
-            if (ret.contains(keys.at(j))){
-                puidList << puidHashMap.value(keys.at(j));
-                patNameList << ret.value(keys.at(j));
-            }
-            else{
-                logger.appendError("Hashed uid " + keys.at(j) + " from database, not found as a hashed id from local DB " + dbfilename);
-            }
-        }
     }
 
 
@@ -470,30 +552,24 @@ void Control::processRequest(){
     if (couldNotRead){
         tx.addString("Error loading downlaoded files",DataPacket::DPFI_DB_ERROR);
         QByteArray ba = tx.toByteArray();
-        qint64 num = socketList.first()->write(ba.constData(),ba.size());
+        qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
         if (num != ba.size()){
             logger.appendError("Failure sending the failed downloaded files error");
         }
-        clearSocket("PROCESS REQUEST");
+        sockets.releaseSocket(id,where);
         return;
-    }
-
-    if (patNameList.size() > 0){
-        tx.addString(patNameList.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_PATNAME_LIST);
-        tx.addString(puidList.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_PUID_LIST);
     }
 
     // If all was ok. The information is sent back.
     tx.addString(fileNames.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_RAW_DATA_NAMES);
     tx.addString(fileContents.join(DB_LIST_IN_COL_SEP),DataPacket::DPFI_RAW_DATA_CONTENT);
     QByteArray ba = tx.toByteArray();
-    qint64 num = socketList.first()->write(ba.constData(),ba.size());
+    qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
     if (num != ba.size()){
         logger.appendError("Failure sending the failed downloaded files error");
     }
 
-    clearSocket("PROCESS REQUEST");
-
+    sockets.releaseSocket(id,where);
 }
 
 QStringList Control::getInstitutionUIDPair(){
@@ -529,13 +605,4 @@ QStringList Control::getInstitutionUIDPair(){
 
     return ans;
 
-}
-
-void Control::clearSocket(const QString &fromWhere){
-    if (socketList.size() > 0){
-        logger.appendStandard(fromWhere + ": About to delete socket");
-        if (socketList.first()->isValid()) socketList.first()->disconnectFromHost();
-        socketList.removeFirst();
-        logger.appendStandard(fromWhere + ": Socket deleted!");
-    }
 }

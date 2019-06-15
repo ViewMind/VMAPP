@@ -613,6 +613,28 @@ QString LocalInformationManager::printDBToString() const{
     return ans;
 }
 
+QString LocalInformationManager::serialDoctorPatientString(const QString &serialized_map) const{
+    QStringList maps;
+    maps << DOCTOR_DATA << PATIENT_DATA;
+    QStringList serialized_maps;
+    for (qint32 i = 0; i < maps.size(); i++){
+        QVariantMap map = localDB.value(maps.at(i)).toMap();
+        QStringList uids = map.keys();
+        for (qint32 j = 0; j < uids.size(); j++){
+            QStringList fields;
+            fields << uids.at(j);
+            QStringList keys = map.value(uids.at(j)).toMap().keys();
+            for (qint32 k = 0; k < keys.size(); k++){
+                fields << keys.at(k) + SEP_KEYVALUE + map.value(uids.at(j)).toMap().value(keys.at(k)).toString();
+            }
+            serialized_maps << fields.join(SEP_FIELDS);
+        }
+    }
+    if (serialized_map.isEmpty()) return serialized_maps.join(SEP_VALUE_SET);
+    else return  serialized_maps.join(SEP_VALUE_SET) + SEP_VALUE_SET + serialized_map;
+}
+
+
 QHash<QString,QString> LocalInformationManager::getPatientHashedIDMap() const {
     QVariantMap map = localDB.value(PATIENT_DATA).toMap();
     QStringList uids = map.keys();

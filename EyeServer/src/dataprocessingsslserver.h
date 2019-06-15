@@ -7,8 +7,8 @@
 
 #include "../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h"
 #include "../../CommonClasses/server_defines.h"
-#include "sslidsocketmap.h"
 #include "ssllistener.h"
 
 class DataProcessingSSLServer: public QObject

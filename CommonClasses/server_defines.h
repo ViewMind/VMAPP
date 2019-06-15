@@ -2,8 +2,8 @@
 #define SERVER_DEFINES_H
 
 //  Defines that control which of the configuration files is used for the databse. ONLY 1 should be active at the time.
-//#define   SERVER_LOCALHOST
-#define   SERVER_PRODUCTION
+#define   SERVER_LOCALHOST
+//#define   SERVER_PRODUCTION
 
 #define   COMMON_PATH_FOR_DB_CONFIGURATIONS             ":/CommonClasses/DBConfigurations/"
 
@@ -11,7 +11,7 @@
 #define   SERVER_PROGRAM_VERSION                        "7.2.0"
 
 #define   RAW_DATA_SERVER_NAME                          "RawDataServer"
-#define   RAW_DATA_SERVER_VERSION                       "2.0.0"
+#define   RAW_DATA_SERVER_VERSION                       "3.0.0"
 
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"
