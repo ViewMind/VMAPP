@@ -33,7 +33,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
     ../../CommonClasses/SSLIDSocketMap/sslidsocket.cpp \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp
+    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp \
+    ../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp
 
 HEADERS += \
     s3interface.h \
@@ -51,7 +52,8 @@ HEADERS += \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
     ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
     ../../CommonClasses/SSLIDSocketMap/sslidsocket.h \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h
+    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h \
+    ../../CommonClasses/VariantMapSerializer/variantmapserializer.h
 
 RESOURCES += \
     configurations.qrc \

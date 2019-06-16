@@ -614,28 +614,11 @@ QString LocalInformationManager::printDBToString() const{
 }
 
 QString LocalInformationManager::serialDoctorPatientString(const QString &serialized_map) const{
-    QStringList maps;
-    maps << DOCTOR_DATA << PATIENT_DATA;
-    QStringList serialized_maps;
-    for (qint32 i = 0; i < maps.size(); i++){
-        QVariantMap map = localDB.value(maps.at(i)).toMap();
-        QStringList uids = map.keys();
-        for (qint32 j = 0; j < uids.size(); j++){
-            QStringList fields;
-            fields << uids.at(j);
-            QStringList keys = map.value(uids.at(j)).toMap().keys();
-            for (qint32 k = 0; k < keys.size(); k++){
-                fields << keys.at(k) + SEP_KEYVALUE + map.value(uids.at(j)).toMap().value(keys.at(k)).toString();
-            }
-            serialized_maps << fields.join(SEP_FIELDS);
-        }
-    }
-    if (serialized_map.isEmpty()) return serialized_maps.join(SEP_VALUE_SET);
-    else return  serialized_maps.join(SEP_VALUE_SET) + SEP_VALUE_SET + serialized_map;
+    QVariantMap patmap = localDB.value(PATIENT_DATA).toMap();
+    return VariantMapSerializer::serializeTwoLevelVariantMap(serialized_map,patmap);
 }
 
-
-QHash<QString,QString> LocalInformationManager::getPatientHashedIDMap() const {
+QHash<QString, QString> LocalInformationManager::getPatientHashedIDMap() const {
     QVariantMap map = localDB.value(PATIENT_DATA).toMap();
     QStringList uids = map.keys();
     QHash<QString,QString> ans;
@@ -647,6 +630,20 @@ QHash<QString,QString> LocalInformationManager::getPatientHashedIDMap() const {
         ans[hash] = patient_name;
     }
     return ans;
+}
+
+QVariantMap LocalInformationManager::getHashedIDPatientMap(QVariantMap hidmap) const {
+    QVariantMap map = localDB.value(PATIENT_DATA).toMap();
+    QStringList uids = map.keys();
+    for (qint32 j = 0; j < uids.size(); j++){
+        QVariantMap patdata = map.value(uids.at(j)).toMap();
+        QString hash = QCryptographicHash::hash(patdata.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
+        QVariantMap m;
+        m[IDMAP_ID_UID] = patdata.value(TPATDATA_COL_PUID);
+        m[IDMAP_ID_PUID] = "";
+        hidmap[hash] = m;
+    }
+    return hidmap;
 }
 
 QString LocalInformationManager::newDoctorID(){

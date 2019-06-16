@@ -12,6 +12,7 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
+#include "../../CommonClasses/VariantMapSerializer/variantmapserializer.h"
 
 
 #ifdef USESSL
@@ -63,6 +64,7 @@ public:
     void setUpdateFlagTo(bool flag);
 
     QHash<QString,QString> getPatientHashedIDMap() const;
+    QVariantMap getHashedIDPatientMap(QVariantMap hidmap) const;
 
     // Interface with the protocol list;
     bool addProtocol(const QString & protocol);

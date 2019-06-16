@@ -147,7 +147,6 @@ void Control::startServer(){
         return;
     }
 
-
 }
 
 void Control::on_newConnection(){
@@ -367,6 +366,9 @@ void Control::sendLocalDB(quint64 id){
 
     QString serializedMap;
     serializedMap = "";
+
+    QVariantMap patientIDmap;
+
     for (qint32 i = 0; i < dirsInInstPath.size(); i++){
         QString dbfilename = instEDirname + "/" + dirsInInstPath.at(i) + "/" + QString(FILE_LOCAL_DB_BKP);
         if (!QFile(dbfilename).exists()) {
@@ -376,14 +378,47 @@ void Control::sendLocalDB(quint64 id){
 
         logger.appendStandard("Loading local DB info for " + dbfilename);
 
-        // The local db backup exists and the information will be sent back.
+        // Getting the local information and a list of the hashed patient ids.
         LocalInformationManager lim;
         lim.setWorkingFile(dbfilename);
         serializedMap = lim.serialDoctorPatientString(serializedMap);
+
+        patientIDmap = lim.getHashedIDPatientMap(patientIDmap);
     }
+
+    // Getting hashed puid to puid map.
+    if (!dbConnID.open()){
+        logger.appendError("Getting local db bkp, could not open DB CON ID");
+        sockets.releaseSocket(id,where);
+    }
+
+    QStringList cols; cols << TPATID_COL_KEYID << TPATID_COL_UID;
+    QString condition = QString(TPATID_COL_UID) +  " IN (" + patientIDmap.keys().join(",") + ")";
+    if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,cols,condition)){
+        logger.appendError("Getting the patiend ID hashes: " + dbConnID.getError());
+        sockets.releaseSocket(id,where);
+        return;
+    }
+
+    DBData res = dbConnID.getLastResult();
+    for (qint32 i = 0; i < res.rows.size(); i++){
+        if (res.rows.at(i).size() != 2){
+            logger.appendError("Getting information from Patient Table IDs expected 2 column But got: " + QString::number(res.rows.at(i).size()));
+            sockets.releaseSocket(id,where);
+            return;
+        }
+        QVariantMap tmap = patientIDmap.value(res.rows.at(i).last()).toMap();
+        tmap[IDMAP_ID_PUID] = res.rows.at(i).first();
+        patientIDmap[res.rows.at(i).last()] = tmap;
+    }
+
+    QString serializedIDmap = VariantMapSerializer::serializeTwoLevelVariantMap("",patientIDmap);
+
+    dbConnID.close();
 
     DataPacket tx;
     tx.addString(serializedMap,DataPacket::DPFI_SERIALIZED_DB);
+    tx.addString(serializedIDmap,DataPacket::DPFI_PUID_LIST);
     QByteArray ba = tx.toByteArray();
     qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
     if (num != ba.size()){

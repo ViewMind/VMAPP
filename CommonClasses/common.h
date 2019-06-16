@@ -181,10 +181,9 @@
 #define  READING_LANG_GERMAN                            "de"
 #define  READING_LANG_FRENCH                            "fr"
 
-// Used for transmiting string serialized maps
-#define   SEP_VALUE_SET                                  "<=>"
-#define   SEP_KEYVALUE                                   ":::"
-#define   SEP_FIELDS                                     "<=1=>"
+// ID MAP NAMES
+#define   IDMAP_ID_PUID                                 "puid"
+#define   IDMAP_ID_UID                                  "uid"
 
 
 // TCP Ports.
