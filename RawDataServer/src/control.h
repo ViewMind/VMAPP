@@ -68,7 +68,7 @@ private:
     void changedState(quint64 id);
     void socketErrorFound(quint64 id);
     void finishedReceivingRequest(quint64 socket);
-    void sendLocalDB(quint64 id);
+    QString sendLocalDB(quint64 id);
 
 
 };

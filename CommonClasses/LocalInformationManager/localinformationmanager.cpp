@@ -615,7 +615,8 @@ QString LocalInformationManager::printDBToString() const{
 
 QString LocalInformationManager::serialDoctorPatientString(const QString &serialized_map) const{
     QVariantMap patmap = localDB.value(PATIENT_DATA).toMap();
-    return VariantMapSerializer::serializeTwoLevelVariantMap(serialized_map,patmap);
+    QString ans = VariantMapSerializer::serializeTwoLevelVariantMap(serialized_map,patmap);
+    return VariantMapSerializer::serializeTwoLevelVariantMap(ans,localDB.value(DOCTOR_DATA).toMap());
 }
 
 QHash<QString, QString> LocalInformationManager::getPatientHashedIDMap() const {

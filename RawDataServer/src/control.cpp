@@ -312,11 +312,21 @@ void Control::finishedReceivingRequest(quint64 socket){
         return;
     }
 
-    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_DB_INST_UID)){
+    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_LOCAL_DB_BKP)){
         // This is a request for a local DB update
-        sendLocalDB(socket);
+        QString err = sendLocalDB(socket);
+        if (!err.isEmpty()){
+            DataPacket tx;
+            logger.appendStandard("Sending back error message: " + err);
+            tx.addString(err,DataPacket::DPFI_DB_ERROR);
+            QByteArray ba = tx.toByteArray();
+            qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
+            if (num != ba.size()){
+                logger.appendError("Failure sending error message on getting the local DB");
+            }
+        }
     }
-    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_DB_INST_PASSWORD)){
+    else if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_DB_INST_PASSWORD)){
         // Data query.
         processRequest(socket);
     }
@@ -335,30 +345,23 @@ void Control::finishedReceivingRequest(quint64 socket){
     sockets.releaseSocket(socket,where);
 }
 
-void Control::sendLocalDB(quint64 id){
+QString Control::sendLocalDB(quint64 id){
 
     QString where = "sslErrorsFound";
     SSLIDSocket *sslsocket = sockets.getSocketLock(id,where);
     if (sslsocket == nullptr){
         sockets.releaseSocket(id,where);
         logger.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(id));
-        return;
+        return "Internal Socket Error";
     }
 
     if (!verifyPassword(sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_PASSWORD).data.toString())){
-        DataPacket tx;
-        tx.addString("WRONG PASSWORD",DataPacket::DPFI_DB_ERROR);
-        QByteArray ba = tx.toByteArray();
-        qint64 num = sslsocket->socket()->write(ba.constData(),ba.size());
-        if (num != ba.size()){
-            logger.appendError("Failure sending the wrong password message");
-        }
         sockets.releaseSocket(id,where);
-        return;
+        return "Wrong password";
     }
 
     // Password checks out. Searching for the existance of the Backup.
-    QString instUID = sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toString();
+    QString instUID = sslsocket->getDataPacket().getField(DataPacket::DPFI_LOCAL_DB_BKP).data.toString();
     QString instEDirname = ETDIR_PATH + QString("/") + instUID;
     QStringList dirsInInstPath = QDir(instEDirname).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot);
 
@@ -386,44 +389,58 @@ void Control::sendLocalDB(quint64 id){
         patientIDmap = lim.getHashedIDPatientMap(patientIDmap);
     }
 
-    // Getting hashed puid to puid map.
-    if (!dbConnID.open()){
-        logger.appendError("Getting local db bkp, could not open DB CON ID");
-        sockets.releaseSocket(id,where);
-    }
-
-    QStringList cols; cols << TPATID_COL_KEYID << TPATID_COL_UID;
-    QString condition = QString(TPATID_COL_UID) +  " IN (" + patientIDmap.keys().join(",") + ")";
-    if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,cols,condition)){
-        logger.appendError("Getting the patiend ID hashes: " + dbConnID.getError());
-        sockets.releaseSocket(id,where);
-        return;
-    }
-
     QVariantMap puidTouidMap;
+    if (!serializedMap.isEmpty()){
 
-    DBData res = dbConnID.getLastResult();    
-    for (qint32 i = 0; i < res.rows.size(); i++){
-        if (res.rows.at(i).size() != 2){
-            logger.appendError("Getting information from Patient Table IDs expected 2 column But got: " + QString::number(res.rows.at(i).size()));
+        // Getting hashed puid to puid map.
+        if (!dbConnID.open()){
+            logger.appendError("Getting local db bkp, could not open DB CON ID");
             sockets.releaseSocket(id,where);
-            return;
+            return "Internal DB Open error";
         }
 
-        QString hashid = res.rows.at(i).last();
-        QString puid   = res.rows.at(i).first();
+        QStringList cols; cols << TPATID_COL_KEYID << TPATID_COL_UID;
+        QString condition = QString(TPATID_COL_UID) +  " IN ('" + patientIDmap.keys().join("','") + "')";
+        if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,cols,condition)){
+            logger.appendError("Getting the patiend ID hashes: " + dbConnID.getError());
+            sockets.releaseSocket(id,where);
+            dbConnID.close();
+            return "Internal DB Query error";
+        }
 
-        if (patientIDmap.contains(hashid)){
-            puidTouidMap[puid] = patientIDmap.value(hashid).toString();
+        DBData res = dbConnID.getLastResult();
+        for (qint32 i = 0; i < res.rows.size(); i++){
+            if (res.rows.at(i).size() != 2){
+                logger.appendError("Getting information from Patient Table IDs expected 2 column But got: " + QString::number(res.rows.at(i).size()));
+                dbConnID.close();
+                sockets.releaseSocket(id,where);
+                return "Internal DB Query error";
+            }
+
+            QString hashid = res.rows.at(i).last();
+            QString puid   = res.rows.at(i).first();
+
+            if (patientIDmap.contains(hashid)){
+                puidTouidMap[puid] = patientIDmap.value(hashid).toString();
+            }
+            else{
+                logger.appendError("NO PUID FOUND for HASH: " + hashid);
+            }
         }
-        else{
-            logger.appendError("NO PUID FOUND for HASH: " + hashid);
-        }
+
+        dbConnID.close();
     }
 
-    QString serializedIDmap = VariantMapSerializer::serializeOneLevelVariantMap("",puidTouidMap);
 
-    dbConnID.close();
+    QString serializedIDmap;
+    if (puidTouidMap.size() > 0){
+        serializedIDmap = VariantMapSerializer::serializeOneLevelVariantMap("",puidTouidMap);
+    }
+    else{
+        logger.appendError("No backup data found");
+        sockets.releaseSocket(id,where);
+        return "No available data to backup";
+    }
 
     DataPacket tx;
     tx.addString(serializedMap,DataPacket::DPFI_SERIALIZED_DB);
@@ -434,6 +451,7 @@ void Control::sendLocalDB(quint64 id){
         logger.appendError("Failure sending the wrong password message");
     }
     sockets.releaseSocket(id,where);
+    return "";
 }
 
 /*****************************************************************************************************************************/

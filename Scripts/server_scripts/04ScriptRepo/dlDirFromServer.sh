@@ -6,7 +6,7 @@ USER="ec2-user"
 KEY="/home/ariela/Dropbox/ViewMindData/awspem/aws_ec2_first_time.pem"
 
 # Command to downlaod an S3 folder and then copy it locally
-scp -i $KEY $USER@$DNS:"/home/ec2-user/EyeServer/etdir/1242673082/0000/localdb.dat" .
+scp -i $KEY -r $USER@$DNS:"/home/ec2-user/EyeServer/etdir/1369462188" .
 
 
 
