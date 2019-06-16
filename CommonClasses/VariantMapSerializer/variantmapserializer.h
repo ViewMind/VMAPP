@@ -12,7 +12,9 @@ class VariantMapSerializer
 public:
     VariantMapSerializer();
 
+    static QString serializeOneLevelVariantMap(const QString &serialized_map, const QVariantMap map2serialize);
     static QString serializeTwoLevelVariantMap(const QString &serialized_map, const QVariantMap map2serialize);
+    static QVariantMap serialOneLevelStringToVariantMap(const QString &serialized_map, QVariantMap acc, QString *error, bool makeTwoWay);
     static QVariantMap serialTwoLevelStringToVariantMap(const QString &serialized_map, QVariantMap acc, QString *error);
 
 };

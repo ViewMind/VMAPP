@@ -400,19 +400,28 @@ void Control::sendLocalDB(quint64 id){
         return;
     }
 
-    DBData res = dbConnID.getLastResult();
+    QVariantMap puidTouidMap;
+
+    DBData res = dbConnID.getLastResult();    
     for (qint32 i = 0; i < res.rows.size(); i++){
         if (res.rows.at(i).size() != 2){
             logger.appendError("Getting information from Patient Table IDs expected 2 column But got: " + QString::number(res.rows.at(i).size()));
             sockets.releaseSocket(id,where);
             return;
         }
-        QVariantMap tmap = patientIDmap.value(res.rows.at(i).last()).toMap();
-        tmap[IDMAP_ID_PUID] = res.rows.at(i).first();
-        patientIDmap[res.rows.at(i).last()] = tmap;
+
+        QString hashid = res.rows.at(i).last();
+        QString puid   = res.rows.at(i).first();
+
+        if (patientIDmap.contains(hashid)){
+            puidTouidMap[puid] = patientIDmap.value(hashid).toString();
+        }
+        else{
+            logger.appendError("NO PUID FOUND for HASH: " + hashid);
+        }
     }
 
-    QString serializedIDmap = VariantMapSerializer::serializeTwoLevelVariantMap("",patientIDmap);
+    QString serializedIDmap = VariantMapSerializer::serializeOneLevelVariantMap("",puidTouidMap);
 
     dbConnID.close();
 

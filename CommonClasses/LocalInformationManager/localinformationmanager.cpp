@@ -638,10 +638,7 @@ QVariantMap LocalInformationManager::getHashedIDPatientMap(QVariantMap hidmap) c
     for (qint32 j = 0; j < uids.size(); j++){
         QVariantMap patdata = map.value(uids.at(j)).toMap();
         QString hash = QCryptographicHash::hash(patdata.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
-        QVariantMap m;
-        m[IDMAP_ID_UID] = patdata.value(TPATDATA_COL_PUID);
-        m[IDMAP_ID_PUID] = "";
-        hidmap[hash] = m;
+        hidmap[hash] = patdata.value(TPATDATA_COL_PUID);
     }
     return hidmap;
 }
