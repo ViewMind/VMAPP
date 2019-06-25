@@ -36,6 +36,8 @@ void OpenGazeInterface::on_connected(){
     logger.appendSuccess("CONNECTED to OpenGaze EyeTracker Server");
     emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
 
+    isConnecting = false;
+
     // Configuring the ET
     QStringList cmds2Enable;
     cmds2Enable << GPC_ENABLE_SEND_POG_LEFT << GPC_ENABLE_SEND_POG_RIGHT << GPC_ENABLE_SEND_PUPILMM << GPC_ENABLE_SEND_TIME;
@@ -48,12 +50,7 @@ void OpenGazeInterface::on_connected(){
 
 void OpenGazeInterface::on_socketError(QAbstractSocket::SocketError error){
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    logger.appendError(QString("SOCKET ERROR: ") +  metaEnum.valueToKey(error));
-    if (isConnecting) {
-        isConnecting = false;
-        logger.appendError("Calibration failed due to last error");
-        emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
-    }
+    logger.appendError(QString("OPEN GAZE SOCKET ERROR: ") +  metaEnum.valueToKey(error));
 }
 
 void OpenGazeInterface::on_readyRead(){

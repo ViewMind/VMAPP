@@ -42,6 +42,11 @@ bool UIConfigMap::setConfigurationString(const QString &configStr){
         return false;
     }
 
+    if ((configStr.at(UIMAP_SECOND_MONITOR_OPTION) == "E") || (configStr.at(UIMAP_SECOND_MONITOR_OPTION) == "D")) options[UIMAP_SECOND_MONITOR_OPTION] = configStr.at(UIMAP_SECOND_MONITOR_OPTION);
+    else{
+        error = "Configuration for Second Monitor Option (5) shouldb be E or D, but found " + QString(configStr.at(UIMAP_SECOND_MONITOR_OPTION));
+        return false;
+    }
     return true;
 
 }

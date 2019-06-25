@@ -28,6 +28,14 @@ class RawDataProcessor : public QObject
     Q_OBJECT
 public:
 
+    // The structure is used to return data gathered by each function so that it can be used in the main function.
+    struct TagParseReturn{
+        bool ok;
+        //bool freqCheckErrors = false;
+        QString version;
+        QString filePath;
+    };
+
     RawDataProcessor(QObject *parent = 0);
 
     // The first method is used when calling the program automatically by another program. The second one when used to directly process the file.
@@ -37,6 +45,8 @@ public:
 
     // The actual processing function
     void run();
+
+    TagParseReturn separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment);
 
 signals:
     void appendMessage(const QString &msg, qint32 type);
@@ -76,19 +86,9 @@ private:
 
     //---------------------------------------- AUX Functions -------------------------------------------
 
-    // The structure is used to return data gathered by each function so that it can be used in the main function.
-    struct TagParseReturn{
-        bool ok;
-        //bool freqCheckErrors = false;
-        QString version;
-        QString filePath;
-    };
-
     // Separates the data from the experiment description in the data files.
     // Requires an structure as it needs to return a boolean to indicate a problem AND
     // The version of the experiment which is located in the header. Empty means version 1.
-
-    TagParseReturn separateInfoByTag(const QString &file, const QString &tag, QString *data, QString *experiment);
 
     TagParseReturn csvGeneration(EDPBase *processor, const QString &id, const QString &dataFile, const QString &header);
 

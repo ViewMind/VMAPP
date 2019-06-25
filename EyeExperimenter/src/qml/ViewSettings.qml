@@ -172,8 +172,14 @@ Dialog {
         anchors.top: diagCboxDemo.top
         anchors.left: diagCboxUseMouse.right
         anchors.leftMargin: 20
-        visible: false
-        checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);        
+        visible: {
+            if (uimap.getSecondMonitorOption() === "E") return true;
+            else if (uimap.getSecondMonitorOption() === "D") return false;
+        }
+        checked: {
+            if (uimap.getSecondMonitorOption() === "E") return loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);
+            else if (uimap.getSecondMonitorOption() === "D") return false;
+        }
     }
 
     VMCheckBox{

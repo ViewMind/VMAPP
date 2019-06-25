@@ -21,9 +21,9 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
         dataBindingUC = currentDir + "/" + config->getString(CONFIG_FILE_BIDING_UC);
     else dataBindingUC = "";
 
-//    if (config->containsKeyword(CONFIG_FILE_FIELDING))
-//        dataFielding = currentDir + "/" + config->getString(CONFIG_FILE_FIELDING);
-//    else dataFielding = "";
+    //    if (config->containsKeyword(CONFIG_FILE_FIELDING))
+    //        dataFielding = currentDir + "/" + config->getString(CONFIG_FILE_FIELDING);
+    //    else dataFielding = "";
 
     dataFielding = "";
 
@@ -151,22 +151,22 @@ void RawDataProcessor::run(){
         else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
     }
 
-//    if (!dataFielding.isEmpty()) {
-//        emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
-//        EDPFielding fielding(config);
-//        tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
-//        matrixFielding = tagRet.filePath;
-//        fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
-//        QString report = rdataProcessor.processFielding(matrixFielding,fielding.getNumberOfTrials());
+    //    if (!dataFielding.isEmpty()) {
+    //        emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
+    //        EDPFielding fielding(config);
+    //        tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
+    //        matrixFielding = tagRet.filePath;
+    //        fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
+    //        QString report = rdataProcessor.processFielding(matrixFielding,fielding.getNumberOfTrials());
 
-//        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+    //        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
 
-//        if (!report.isEmpty()){
-//            studyID << "fd" + tagRet.version;
-//            emit(appendMessage(report,MSG_TYPE_STD));
-//        }
-//        else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
-//    }
+    //        if (!report.isEmpty()){
+    //            studyID << "fd" + tagRet.version;
+    //            emit(appendMessage(report,MSG_TYPE_STD));
+    //        }
+    //        else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
+    //    }
 
     // Generating the report based on available data.
     if (reportInfoText.isEmpty()){
@@ -523,7 +523,6 @@ bool RawDataProcessor::getResolutionToConfig(const QString &firstline){
     // Setting the obtained resolution
     config->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
     config->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
-
     return true;
 }
 

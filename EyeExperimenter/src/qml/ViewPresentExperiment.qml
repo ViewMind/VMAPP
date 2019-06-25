@@ -11,7 +11,7 @@ VMBase {
 
     property string vmSlideTitle: "NO TITLE SET";
     property string vmSlideExplanation: "No explanation set";
-    property string vmSlideAnimation: "";
+    //property string vmSlideAnimation: "";
 
     function enableContinue(){
         btnContinue.enabled = true;
@@ -83,18 +83,30 @@ VMBase {
         }
     }
 
+    function setSlideImages(code,count){
+        var slides = [];
+        for (var i = 0; i < count; i++){
+            slides.push("qrc:/images/" + code + "/" + i + ".gif");
+        }
+        slideViewer.setImageList(slides);
+    }
+
     function setPropertiesForExperiment(index){
         switch(index){
         case vmExpIndexBindingBC:
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
-                vmSlideAnimation = "qrc:/images/bound_3.gif"
+                //vmSlideAnimation = "qrc:/images/bound_3.gif"
+                slideViewer.imgScale = 1.3;
+                setSlideImages("bound3",15);
             }
             else{
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
-                vmSlideAnimation = "qrc:/images/bound.gif"
+                //vmSlideAnimation = "qrc:/images/bound.gif"
+                slideViewer.imgScale = 1.3;
+                setSlideImages("bound",15);
             }
             //slideAnimation.visible = false;
             slideDescription.visible = false;
@@ -103,12 +115,16 @@ VMBase {
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
-                vmSlideAnimation = "qrc:/images/unbound_3.gif"
+                //vmSlideAnimation = "qrc:/images/unbound_3.gif"
+                slideViewer.imgScale = 1.3;
+                setSlideImages("unbound3",15);
             }
             else{
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC");
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
-                vmSlideAnimation = "qrc:/images/unbound.gif"
+                //vmSlideAnimation = "qrc:/images/unbound.gif"
+                slideViewer.imgScale = 1.3;
+                setSlideImages("unbound",15);
             }
             //slideAnimation.visible = false;
             slideDescription.visible = false;
@@ -116,9 +132,11 @@ VMBase {
         case vmExpIndexReading:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemReading");
             vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");
-            vmSlideAnimation = "qrc:/images/reading.gif"
+            //vmSlideAnimation = "qrc:/images/reading.gif"
             //slideAnimation.visible = false;
             slideDescription.visible = false;
+            slideViewer.imgScale = 1.3;
+            setSlideImages("reading_" + loader.getConfigurationString(vmDefines.vmCONFIG_READING_EXP_LANG),3);
             break;
         case vmExpIndexFielding:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");
@@ -288,15 +306,25 @@ VMBase {
         anchors.leftMargin: 178
     }
 
-    AnimatedImage {
-        id: slideAnimation
-        source: vmSlideAnimation
+//    AnimatedImage {
+//        id: slideAnimation
+//        source: vmSlideAnimation
+//        anchors.top: slideTitle.bottom
+//        anchors.topMargin: 68
+//        //anchors.right: parent.right
+//        //anchors.rightMargin: 180
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        //scale: 1.5
+//    }
+
+    VMSlideViewer {
+        id: slideViewer
+        height: parent.height*0.5
+        width: parent.width*0.6
+        btnSide: 80
         anchors.top: slideTitle.bottom
-        anchors.topMargin: 68
-        //anchors.right: parent.right
-        //anchors.rightMargin: 180
+        anchors.topMargin: 10
         anchors.horizontalCenter: parent.horizontalCenter
-        //scale: 1.5
     }
 
     VMButton{
@@ -306,7 +334,7 @@ VMBase {
         vmInvertColors: true
         vmFont: viewPresentExperiment.gothamM.name
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 62
+        anchors.bottomMargin: 40
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
 

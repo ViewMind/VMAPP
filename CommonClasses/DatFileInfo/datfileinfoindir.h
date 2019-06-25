@@ -24,6 +24,7 @@ public:
         QString date;
         QString hour;
         QString orderString;
+        QString category;
         QString toString() const{
             return "FILE: " + fileName + ". TYPE: " + basename + ". DATE: " + date + " @ "  + hour
                     + ". EXTRA: " + extraInfo + ". VALID EYE: " + validEye;

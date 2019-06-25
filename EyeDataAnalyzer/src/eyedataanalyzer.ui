@@ -51,6 +51,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="pbUnifiedCSV">
+           <property name="text">
+            <string>Unified CSV</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -192,23 +199,16 @@
            </item>
            <item>
             <widget class="QPushButton" name="pbLocalDB">
+             <property name="maximumSize">
+              <size>
+               <width>250</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
               <string>Get LocalDB Backup Data</string>
              </property>
             </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </item>

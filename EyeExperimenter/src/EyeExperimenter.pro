@@ -55,7 +55,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
     ../../CommonClasses/Experiments/readingparser.cpp \
-    uiconfigmap.cpp
+    uiconfigmap.cpp \
+    ../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp
 
 HEADERS += \
     loader.h \
@@ -96,7 +97,8 @@ HEADERS += \
     ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
     ../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../CommonClasses/Experiments/readingparser.h \
-    uiconfigmap.h
+    uiconfigmap.h \
+    ../../CommonClasses/VariantMapSerializer/variantmapserializer.h
 
 contains(DEFINES, USE_IVIEW) {
   LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI

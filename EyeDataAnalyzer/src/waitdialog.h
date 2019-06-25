@@ -16,7 +16,9 @@ public:
     ~WaitDialog();
     void setMessage(const QString &msg);
     void setProgressBarVisibility(bool visibility);
-    void setProgressBarValue(qreal value);
+
+public slots:
+     void setProgressBarValue(qreal value);
 
 private:
     Ui::WaitDialog *ui;

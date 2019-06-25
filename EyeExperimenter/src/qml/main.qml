@@ -18,6 +18,7 @@ Window {
         x = (Screen.width - width)/2;
         y = hdiff; // This should put the window at the top of the screen.       
         swiperControl.currentIndex = swiperControl.vmIndexHome;
+        //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
         //swiperControl.currentIndex = swiperControl.vmIndexResults;
@@ -155,6 +156,7 @@ Window {
                 break;
             case vmIndexPresentExperiment:
                 // The continue button is disabled to avoid pressing space or enter and starting the experiment again.
+                //viewStudyStart.testPresentExperimentScreen()
                 viewPresentExperimet.enableContinue();
                 break;
             case vmIndexPatientList:

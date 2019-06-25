@@ -15,7 +15,12 @@ Item {
 
     function setModelList(list){
         for (var i = 0; i < list.length; i++){
-            modelList.append({"vmDisplayText": list[i], "vmIndexInList": i});
+            var parts = list[i].split(" ");
+            var end = parts.length-1;
+            if (parts[end] === "(FE)"){
+               parts[end] = "<font color=\"#ff0000\"><b>(FE)</b></font>";
+            }
+            modelList.append({"vmDisplayText": parts.join(" "), "vmIndexInList": i});
         }
     }
 

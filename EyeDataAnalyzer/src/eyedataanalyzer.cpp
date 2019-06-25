@@ -42,7 +42,7 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
 
     // The existing patient name db
     patNameMng.loadPatNameDB();
-    patNameMng.printMap();
+    //patNameMng.printMap();
 
     //switchViews(VIEW_1_PROCESSING_VIEW);
     switchViews(VIEW_0_DATABASE_VIEW);
@@ -51,6 +51,10 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
 
     ui->pbGetData->setEnabled(false);
     waitDiag = new WaitDialog(this);
+
+    connect(&batchProcessor,&QThread::finished,this,&EyeDataAnalyzer::on_batchProcessing_Done);
+    connect(&batchProcessor,&BatchCSVProcessing::updateAdvance,waitDiag,&WaitDialog::setProgressBarValue);
+    batchProcessor.setDBConnect(&patNameMng);
 
     if (!QSslSocket::supportsSsl()){
         QMessageBox::critical(this,"SSL Error","There is no SSL support. The application will be unable to download any information",QMessageBox::Ok);
@@ -85,7 +89,7 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
 //*******************************************  SSL AND TCP RELATED SLOTS *****************************************************
 void EyeDataAnalyzer::on_encryptedSuccess(){
     timer.stop();
-    logForDB.appendSuccess("Established connection with the server");
+    logForDB.appendSuccess("Established connection with the server. Connecting state: " + connectionStateToString());
     if (connectionState == CS_CONNECTING_FOR_NAME_LIST){
         connectionState = CS_GETTING_NAMELIST;
         waitDiag->setMessage("Getting the institution name list from the server");
@@ -126,7 +130,27 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
         }
         logForDB.appendStandard("Searching for " +ui->cbInstitutions->currentText() + " (" + ui->cbInstitutions->currentData().toString() + "). From " + startDate + " to " + endDate);
     }
-    else if (connectionState == )
+    else if (connectionState == CS_CONNECTING_FOR_DB_BKP){
+        connectionState = CS_GETTING_DB_BKP;
+        waitDiag->setMessage("Getting, if it exists the local DB BKP");
+        waitDiag->setProgressBarVisibility(false);
+        waitDiag->setProgressBarValue(0);
+
+        DataPacket tx;
+        QString password = ui->lePasswordField->text();
+        tx.addString(ui->cbInstitutions->currentData().toString(),DataPacket::DPFI_LOCAL_DB_BKP);
+        tx.addString(password,DataPacket::DPFI_DB_INST_PASSWORD);
+
+        rx.clearAll();
+        QByteArray ba = tx.toByteArray();
+        qint64 num = serverConn->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logForDB.appendError("Could not send local DB request.");
+            waitDiag->close();
+            return;
+        }
+        timer.start(30000);
+    }
 
 }
 
@@ -156,10 +180,12 @@ void EyeDataAnalyzer::on_readyRead(){
     quint8 errcode = rx.bufferByteArray(serverConn->readAll());
     if (connectionState == CS_GETTING_DATA){
         waitDiag->setProgressBarValue(rx.getPercentArrived());
-    }
+    }    
     if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
         timer.stop();
         waitDiag->close();
+
+        logForDB.appendStandard("Finished receiving information. Connecting state: " + connectionStateToString());
 
         if (connectionState == CS_GETTING_DATA){
             if (rx.hasInformationField(DataPacket::DPFI_DB_ERROR)){
@@ -169,12 +195,6 @@ void EyeDataAnalyzer::on_readyRead(){
             }
             QStringList fileNames = rx.getField(DataPacket::DPFI_RAW_DATA_NAMES).data.toString().split(DB_LIST_IN_COL_SEP);
             QStringList fileContents = rx.getField(DataPacket::DPFI_RAW_DATA_CONTENT).data.toString().split(DB_LIST_IN_COL_SEP);
-
-            if (rx.hasInformationField(DataPacket::DPFI_PATNAME_LIST)){
-                QStringList puidList = rx.getField(DataPacket::DPFI_PUID_LIST).data.toString().split(DB_LIST_IN_COL_SEP);
-                QStringList patnamelist = rx.getField(DataPacket::DPFI_PATNAME_LIST).data.toString().split(DB_LIST_IN_COL_SEP);
-                patNameMng.addToMap(puidList,patnamelist);
-            }
 
             if (fileNames.size() != fileContents.size()){
                 logForDB.appendError("The number of file names is different than the number of file contents");
@@ -212,6 +232,24 @@ void EyeDataAnalyzer::on_readyRead(){
             }
 
         }
+        else if (connectionState == CS_GETTING_DB_BKP){
+            if (rx.hasInformationField(DataPacket::DPFI_DB_ERROR)){
+                logForDB.appendError("Getting data from the server returned the following error message: " + rx.getField(DataPacket::DPFI_DB_ERROR).data.toString());
+                serverConn->disconnectFromHost();
+                return;
+            }
+            QString serializedDB = rx.getField(DataPacket::DPFI_SERIALIZED_DB).data.toString();
+            QString serialziedIDMap = rx.getField(DataPacket::DPFI_PUID_LIST).data.toString();
+
+            //qWarning() << serializedDB;
+            //qWarning() << "SERIALIZED ID MAP";
+            //qWarning() << serialziedIDMap;
+
+            QString error = patNameMng.addSerializedIDMap(serialziedIDMap);
+            if (!error.isEmpty()) logForDB.appendError("Interpreting the Serialized IDMap: " + error);
+            error = patNameMng.fromSerializedMapData(serializedDB);
+            if (!error.isEmpty()) logForDB.appendError("Interpreting the Serialized Map DB Data: " + error);
+        }
         else {
             QString nameAndUids = rx.getField(DataPacket::DPFI_INST_NAMES).data.toString();
             //qWarning() << nameAndUids;
@@ -244,6 +282,12 @@ void EyeDataAnalyzer::on_timeOut(){
         break;
     case CS_GETTING_NAMELIST:
         logForDB.appendError("Timeout while waiting for server connection");
+        break;
+    case CS_CONNECTING_FOR_DB_BKP:
+        logForDB.appendError("Timeout while waiting for server connection");
+        break;
+    case CS_GETTING_DB_BKP:
+        logForDB.appendError("Timeout while getting DB Bkp");
         break;
     }
     waitDiag->close();
@@ -732,3 +776,34 @@ void EyeDataAnalyzer::on_pbClearLog_clicked()
 }
 
 
+
+void EyeDataAnalyzer::on_pbUnifiedCSV_clicked()
+{
+    QString selectedDir;
+    selectedDir = QFileDialog::getExistingDirectory(this,"Select the directory to process","work");
+    if (selectedDir.isEmpty())  return;
+
+//    selectedDir = "C:/Users/Viewmind/Documents/viewmind_projects/EyeDataAnalyzer/exe/work/1369462188";
+    waitDiag->setProgressBarVisibility(true);
+    waitDiag->setProgressBarValue(0);
+    waitDiag->setMessage("Processing directory " + selectedDir);
+    waitDiag->open();
+    batchProcessor.setWorkingDir(selectedDir);
+    batchProcessor.start();
+
+}
+
+void EyeDataAnalyzer::on_batchProcessing_Done(){
+    logForProcessing.appendSuccess("Finished batch processing");
+
+    for (qint32 i = 0; i < batchProcessor.getErrors().size(); i++){
+        logForProcessing.appendError(batchProcessor.getErrors().at(i));
+    }
+
+    for (qint32 i = 0; i < batchProcessor.getMessage().size(); i++){
+        logForProcessing.appendSuccess(batchProcessor.getMessage().at(i));
+    }
+
+    waitDiag->close();
+
+}

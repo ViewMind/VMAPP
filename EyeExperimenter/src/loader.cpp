@@ -155,6 +155,11 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
         return;
     }
 
+    // Making sure the second monitor is DISABLED if the configuration string has disabled it.
+    if (uimap->getSecondMonitorOption() == "D"){
+        configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
+    }
+
 }
 
 //*********************************************** UI Functions ******************************************************

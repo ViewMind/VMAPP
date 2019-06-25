@@ -55,7 +55,9 @@ SOURCES += \
     waitdialog.cpp \
     ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.cpp \
     patientnamemapmanager.cpp \
-    ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.cpp
+    ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.cpp \
+    ../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp \
+    batchcsvprocessing.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -85,7 +87,9 @@ HEADERS += \
     waitdialog.h \
     ../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h \
     patientnamemapmanager.h \
-    ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h
+    ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h \
+    ../../CommonClasses/VariantMapSerializer/variantmapserializer.h \
+    batchcsvprocessing.h
 
 FORMS += \
         eyedataanalyzer.ui \

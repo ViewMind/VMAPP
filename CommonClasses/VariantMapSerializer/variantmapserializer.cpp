@@ -24,7 +24,11 @@ QVariantMap VariantMapSerializer::serialOneLevelStringToVariantMap(const QString
             return acc;
         }
         acc[keyvaluepair.first()] = keyvaluepair.last();
-        if (makeTwoWay) acc[keyvaluepair.last()] = keyvaluepair.first();
+        //qWarning() << keyvaluepair.first() << "=" << keyvaluepair.last();
+        if (makeTwoWay) {
+            //qWarning() << keyvaluepair.last() << "=" << keyvaluepair.first();
+            acc[keyvaluepair.last()] = keyvaluepair.first();
+        }
     }
     return acc;
 }

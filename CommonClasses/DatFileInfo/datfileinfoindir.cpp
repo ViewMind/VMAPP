@@ -203,7 +203,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getBindingFileInformation(const QStr
 
     QString codePrefix;
     if (bindingFile.contains("bc")) codePrefix = "BC";
-    else codePrefix = "UC";
+    else codePrefix = "UC";    
 
     QString baseName = parts.first();
     QString fmark = "";
@@ -211,6 +211,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getBindingFileInformation(const QStr
 
     parts = baseName.split("_",QString::SkipEmptyParts);
     DatInfo info;
+    info.category = codePrefix;
     info.fileName = bindingFile;
     if (parts.size() == 5){
         // This is an old file so it only contains a date as timestamp.
@@ -243,6 +244,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getBindingFileInformation(const QStr
         info.code = codePrefix + info.extraInfo + info.validEye + " - " + parts.at(7) + "/" + parts.at(6) + "/" + parts.at(5) + " " + parts.at(8) + ":" + parts.at(9) + fmark;
         info.orderString = parts.at(5) + parts.at(6) + parts.at(7) + parts.at(8) + parts.at(9);
     }
+    info.category = info.category + info.extraInfo;
 
     return info;
 }
@@ -259,6 +261,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getReadingInformation(const QString 
     DatInfo ans;
     ans.extraInfo = "";
     ans.fileName = readingFile;
+    ans.category = "RD";
 
     if (parts.size() == 4){
         // This is an old file so it only contains a date as timestamp.
@@ -288,6 +291,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getReadingInformation(const QString 
         ans.code = "R" + ans.extraInfo +  ans.validEye + " - " + parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3) + " " + parts.at(6) + ":" + parts.at(7) + fmark;
         ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
     }
+    ans.category = ans.category + ans.extraInfo;
 
     return ans;
 }

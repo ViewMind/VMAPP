@@ -45,5 +45,6 @@
         <file>qml/VMDatItem.qml</file>
         <file>qml/VMDatSelection.qml</file>
         <file>qml/ViewProtocols.qml</file>
+        <file>qml/VMSlideViewer.qml</file>
     </qresource>
 </RCC>

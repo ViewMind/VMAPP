@@ -2,6 +2,7 @@
 #define VARIANTMAPSERIALIZER_H
 
 #include <QVariantMap>
+#include <QDebug>
 
 #define   VMS_SEP_VALUE_SET                                  "<=>"
 #define   VMS_SEP_KEYVALUE                                   ":::"

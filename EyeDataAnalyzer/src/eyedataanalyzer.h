@@ -13,7 +13,7 @@
 #include <QMetaEnum>
 
 
-//#define COMPILE_FOR_PRODUCTION
+#define COMPILE_FOR_PRODUCTION
 
 #ifdef COMPILE_FOR_PRODUCTION
 #define  SERVER_IP                     "18.220.30.34"  // Production server
@@ -40,6 +40,7 @@
 #include "fixationdrawer.h"
 #include "patientnamemapmanager.h"
 #include "waitdialog.h"
+#include "batchcsvprocessing.h"
 
 namespace Ui {
 class EyeDataAnalyzer;
@@ -102,9 +103,30 @@ private slots:
 
     void on_pbLocalDB_clicked();
 
+    void on_pbUnifiedCSV_clicked();
+
+    void on_batchProcessing_Done();
+
 private:
 
-    typedef enum {CS_CONNECTING_FOR_NAME_LIST,CS_GETTING_NAMELIST,CS_GETTING_DATA,CS_CONNECTING_FOR_DATA, CS_CONNECTING_FOR_DB_BKP} ConnectionState;
+    typedef enum {CS_CONNECTING_FOR_NAME_LIST,
+                  CS_GETTING_NAMELIST,
+                  CS_GETTING_DATA,
+                  CS_GETTING_DB_BKP,
+                  CS_CONNECTING_FOR_DATA,
+                  CS_CONNECTING_FOR_DB_BKP} ConnectionState;
+
+    QString connectionStateToString() const {
+        switch(connectionState){
+        case CS_CONNECTING_FOR_DATA: return "Connecting for data";
+        case CS_CONNECTING_FOR_DB_BKP: return "Connecting db bkp";
+        case CS_CONNECTING_FOR_NAME_LIST: return "Connecting for name list";
+        case CS_GETTING_DATA: return "Getting data";
+        case CS_GETTING_DB_BKP: return "Getting db bkp";
+        case CS_GETTING_NAMELIST: return "Getting uid inst name list";
+        }
+        return "";
+    }
 
     Ui::EyeDataAnalyzer *ui;
     LogInterface logForProcessing;
@@ -128,6 +150,8 @@ private:
     ConnectionState connectionState;
     QString institution;
     QTimer timer;
+    BatchCSVProcessing batchProcessor;
+
 
     void processDirectory();
     void switchViews(qint32 view);
