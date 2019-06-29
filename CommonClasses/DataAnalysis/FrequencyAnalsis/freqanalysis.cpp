@@ -34,7 +34,7 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
         // Checking first the minimum number of data points.
         if (fads.numberOfDataPoints < p.minNumberOfDataItems){
             tempErrors << " Data set " + fads.trialName + " has a total of " + QString::number(fads.numberOfDataPoints)
-                    + " ET points which is less than the minimum allowed of " + QString::number(p.minNumberOfDataItems);
+                          + " ET points which is less than the minimum allowed of " + QString::number(p.minNumberOfDataItems);
             numberOfDataSetsWithLittleDataPoints++;
         }
 
@@ -69,22 +69,24 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
 
     }
 
-    if (numberOfDataSetsWithTooManyFreqGlitches > 0){
-        errorList.prepend("Number of data sets with too many frequency glitches: " + QString::number(numberOfDataSetsWithTooManyFreqGlitches)
-                          + " Specified Threshold " + QString::number(p.maxAllowedFailedTrials) );
-    }
+    qint32 totalFailedTrials = numberOfDataSetsWithTooManyFreqGlitches + numberOfDataSetsWithLittleDataPoints;
+    if ((totalFailedTrials) > p.maxAllowedFailedTrials){
+        errorList.prepend("Number of failed trials is "  + QString::number(totalFailedTrials) + " Specified Threshold " + QString::number(p.maxAllowedFailedTrials));
+        if (numberOfDataSetsWithTooManyFreqGlitches > 0){
+            errorList.prepend("Number of data sets with too many frequency glitches: " + QString::number(numberOfDataSetsWithTooManyFreqGlitches));
+        }
 
-    if (numberOfDataSetsWithLittleDataPoints > 0){
-        errorList.prepend("Number of data sets with too few data points: " + QString::number(numberOfDataSetsWithLittleDataPoints));
+        if (numberOfDataSetsWithLittleDataPoints > 0){
+            errorList.prepend("Number of data sets with too few data points: " + QString::number(numberOfDataSetsWithLittleDataPoints));
+        }
+        errorList << tempErrors;
     }
-
-    errorList << tempErrors;
 
     // Checking invalid values. the percent of string sin the times stasmp that could not be converted to number of the COMPLETE STUDY.
     qreal invalidPercent = tNumOfInvalidValues*100.0/totalNumberOfDataPoints;
     if (invalidPercent > p.maxAllowedPercentOfInvalidValues){
         errorList << "The number of invalid values is above the allowed tolerance: " + QString::number(tNumOfInvalidValues) + " which is "
-                + QString::number(invalidPercent) + "% (Tolerance at: " + QString::number(p.maxAllowedPercentOfInvalidValues) + "%)";
+                     + QString::number(invalidPercent) + "% (Tolerance at: " + QString::number(p.maxAllowedPercentOfInvalidValues) + "%)";
     }
 
 }
@@ -94,17 +96,28 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::analyzeFile(const QString &fname,
     timeUnit = timeUnitInSeconds;
     QFileInfo info(fileToAnalyze);
     QStringList parts = info.baseName().split("_");
+
+    FreqAnalysisResult far;
+    qint32 firstNDataSetsToFilter;
+
     if (parts.first() == FILE_BINDING){
-        return performBindingAnalyis();
+        far = performBindingAnalyis();
+        firstNDataSetsToFilter = TEST_DATA_SETS_BINDING;
     }
     else if (parts.first() == FILE_OUTPUT_READING){
-        return performReadingAnalyis();
+        far =  performReadingAnalyis();
+        firstNDataSetsToFilter = TEST_DATA_SETS_READING;
     }
     else{
-        FreqAnalysisResult far;
         far.errorList << "Unrecognized file name. Cannot perform frequency analysis";
         return far;
     }
+
+    // Filtering out the fist N data sets.
+    for (qint32 i = 0; i < firstNDataSetsToFilter; i++){
+        far.freqAnalysisForEachDataSet.pop_front();
+    }
+    return far;
 }
 
 QStringList FreqAnalysis::separateHeaderFromData(QString *error, const QString &header){
@@ -368,13 +381,15 @@ qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<TimePair
     qreal freqCounter = 0;
     qreal f;
     for (qint32 i = 1; i < times.size(); i++){
-        f = (1.0)/((times.at(i) - times.at(i-1))*timeUnit);
         TimePair tp;
         tp.start = times.at(i-1);
         tp.end   = times.at(i);
         dtimes->append(tp);
-        freqsAcc = freqsAcc + f;
-        freqCounter++;
+        if (times.at(i) > times.at(i-1)){
+            f = (1.0)/((times.at(i) - times.at(i-1))*timeUnit);
+            freqsAcc = freqsAcc + f;
+            freqCounter++;
+        }
     }
     return freqsAcc/freqCounter;
 }

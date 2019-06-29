@@ -111,10 +111,10 @@ viewcalibdone_btnContinue = FINALIZAR CALIBRACIÓN;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Evaluación de Lectura;
-viewpresentexp_itemBindingUC = Evaluación de Identificación de Nuevos Colores (2);
-viewpresentexp_itemBindingBC = Evaluación de Identificación de Combinaciones de Colores (2);
-viewpresentexp_itemBindingUC3 = Evaluación de Identificación de Nuevos Colores (3);
-viewpresentexp_itemBindingBC3 = Evaluación de Identificación de Combinaciones de Colores (3);
+viewpresentexp_itemBindingUC = Identificación de Nuevos Colores (2);
+viewpresentexp_itemBindingBC = Identificación de Combinaciones de Colores (2);
+viewpresentexp_itemBindingUC3 = Identificación de Nuevos Colores (3);
+viewpresentexp_itemBindingBC3 = Identificación de Combinaciones de Colores (3);
 viewpresentexp_itemFielding = Evaluación N-Back;
 
 viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>

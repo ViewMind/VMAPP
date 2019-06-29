@@ -780,7 +780,10 @@ void EyeDataAnalyzer::on_pbClearLog_clicked()
 void EyeDataAnalyzer::on_pbUnifiedCSV_clicked()
 {
     QString selectedDir;
-    selectedDir = QFileDialog::getExistingDirectory(this,"Select the directory to process","work");
+
+    SelectUnifiedCSVFolderDiag diag(this);
+    if (diag.exec() == QDialog::Rejected) return;
+    selectedDir = diag.getDirectory();
     if (selectedDir.isEmpty())  return;
 
 //    selectedDir = "C:/Users/Viewmind/Documents/viewmind_projects/EyeDataAnalyzer/exe/work/1369462188";
@@ -788,7 +791,7 @@ void EyeDataAnalyzer::on_pbUnifiedCSV_clicked()
     waitDiag->setProgressBarValue(0);
     waitDiag->setMessage("Processing directory " + selectedDir);
     waitDiag->open();
-    batchProcessor.setWorkingDir(selectedDir);
+    batchProcessor.setWorkingDir(selectedDir,diag.getDisplayIDCode());
     batchProcessor.start();
 
 }

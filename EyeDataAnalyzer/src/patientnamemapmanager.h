@@ -11,6 +11,9 @@
 #define FILENAME_DBDATA_MAP  "00drpatdata.dat"
 #define FILENAME_PATUID_MAP  "00uidpuidmap.dat"
 
+#define UNIFIED_CSV_ID_DISPLAY_ID    0
+#define UNIFIED_CSV_ID_NAME_LASTNAME 1
+
 class PatientNameMapManager
 {
 public:
@@ -25,7 +28,7 @@ public:
     //QString getPatName(const QString &puid) const;
 
     ConfigurationManager getPatientNameFromDirname(const QString &dirname) const;
-    QString getDisplayIDFromDirname(const QString &dirname);
+    //QString getDisplayIDFromDirname(const QString &dirname, qint32 whichID);
     void printMap() const;
 
 private:

@@ -10,6 +10,10 @@
 
 #define  FILE_BINDING  "binding"
 
+// The number of data sets which are tests and should NOT factor into the frequency analysis, as they will be discarded.
+#define  TEST_DATA_SETS_READING    10
+#define  TEST_DATA_SETS_BINDING    20
+
 class FreqAnalysis
 {
 public:

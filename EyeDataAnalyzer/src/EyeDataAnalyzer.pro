@@ -57,7 +57,8 @@ SOURCES += \
     patientnamemapmanager.cpp \
     ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.cpp \
     ../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp \
-    batchcsvprocessing.cpp
+    batchcsvprocessing.cpp \
+    selectunifiedcsvfolderdiag.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -89,11 +90,13 @@ HEADERS += \
     patientnamemapmanager.h \
     ../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h \
     ../../CommonClasses/VariantMapSerializer/variantmapserializer.h \
-    batchcsvprocessing.h
+    batchcsvprocessing.h \
+    selectunifiedcsvfolderdiag.h
 
 FORMS += \
         eyedataanalyzer.ui \
-    waitdialog.ui
+    waitdialog.ui \
+    selectunifiedcsvfolderdiag.ui
 
 RESOURCES += \
     report_res.qrc \

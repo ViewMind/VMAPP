@@ -183,7 +183,8 @@ void BatchCSVProcessing::recursiveFillProcessingList(const QString &dir){
             s.configurationFile = confFile;
             s.filePath = dir + "/" + datfiles.at(i);
             ConfigurationManager config = patdata->getPatientNameFromDirname(dir);
-            s.displayID = config.getString(CONFIG_PATIENT_DISPLAYID);
+            if (idToUse == UNIFIED_CSV_ID_DISPLAY_ID) s.displayID = config.getString(CONFIG_PATIENT_DISPLAYID);
+            else if (idToUse == UNIFIED_CSV_ID_NAME_LASTNAME) s.displayID = config.getString(CONFIG_PATIENT_NAME);
             DatFileInfoInDir::DatInfo dinfo = DatFileInfoInDir::getDatFileInformation(datfiles.at(i));
             processingList[dinfo.category].append(s);
         }

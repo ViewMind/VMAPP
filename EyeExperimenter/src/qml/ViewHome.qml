@@ -163,12 +163,21 @@ VMBase {
         }
     }
 
+    function testErrorDiag(which,code){
+        var titleMsg;
+        if (code === -1) titleMsg = viewHome.getErrorTitleAndMessage(which);
+        else titleMsg = loader.getErrorMessageForCode(code)
+        vmErrorDiag.vmErrorMessage = titleMsg[1];
+        vmErrorDiag.vmErrorTitle = titleMsg[0];
+        vmErrorDiag.open();
+    }
+
     Component.onCompleted: {
         // Checking that the everything was loaded correctly.
         if (loader.getLoaderError()){
             viewHome.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_LOAD_CONFIG;
             var titleMsg = getErrorTitleAndMessage("error_loading_config");
-            console.log("Title msg is " + titleMsg);
+            //console.log("Title msg is " + titleMsg);
             viewHome.vmErrorDiag.vmErrorMessage = titleMsg[1];
             viewHome.vmErrorDiag.vmErrorTitle = titleMsg[0];
             viewHome.vmErrorDiag.open();
@@ -206,6 +215,8 @@ VMBase {
             restartDialog.open();
             closeTimer.start()
         }
+
+        //testErrorDiag("error_db_outofevals",-1);
 
     }
 

@@ -9,13 +9,16 @@
 #include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
 #include "patientnamemapmanager.h"
 
+#define UNIFIED_CSV_ID_DISPLAY_ID    0
+#define UNIFIED_CSV_ID_NAME_LASTNAME 1
+
 class BatchCSVProcessing : public QThread
 {
     Q_OBJECT
 public:
     BatchCSVProcessing();
     void setDBConnect(PatientNameMapManager *db) { patdata = db;}
-    void setWorkingDir(const QString &dir) { workingDirectory = dir;}
+    void setWorkingDir(const QString &dir, qint32 id2use) { workingDirectory = dir; idToUse = id2use;}
     void run();
 
     QStringList getErrors() const {return errors;}
@@ -37,6 +40,7 @@ private:
     };
 
     QString workingDirectory;
+    qint32 idToUse;
 
     // Information on how to process a file.
     QHash<QString, QList<DatFileProcessingStruct> > processingList;

@@ -22,7 +22,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "5.0.0"
+#define   PROGRAM_VERSION              "5.1.0"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -41,6 +41,7 @@
 #include "patientnamemapmanager.h"
 #include "waitdialog.h"
 #include "batchcsvprocessing.h"
+#include "selectunifiedcsvfolderdiag.h"
 
 namespace Ui {
 class EyeDataAnalyzer;

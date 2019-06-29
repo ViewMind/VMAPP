@@ -28,7 +28,7 @@ inst_uid = 0;
 
 enable_local_db_bkp = true;
 
-configure_options = SIYN2E;
+configure_options = PIYN2D;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
