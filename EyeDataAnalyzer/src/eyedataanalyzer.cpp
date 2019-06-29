@@ -637,6 +637,9 @@ void EyeDataAnalyzer::on_pgFrequencyAnalsis_clicked()
 
 
         freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";
+        freqReport = freqReport + "Will Result in Frequency Error: ";
+        if (fres.errorList.isEmpty()) freqReport = freqReport + " NO\n   ";
+        else freqReport = freqReport + " YES\n   ";
         freqReport = freqReport + fres.errorList.join("\n   ");
         freqReport = freqReport  + "\n   Individual Freq Errors:\n   " + fres.individualErrorList.join("\n   ");
 

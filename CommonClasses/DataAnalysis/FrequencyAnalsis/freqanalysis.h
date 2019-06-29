@@ -31,7 +31,7 @@ public:
                     + tab + "Maximum % of Frequency Glitches allowed in a trial: " + QString::number(maxAllowedFreqGlitchesPerTrial) + "\n"
                     + tab + "Maximum % of Invalid values allowed in a trial: " + QString::number(maxAllowedPercentOfInvalidValues) + "\n"
                     + tab + "Minimum number of data points allowed in a trial: " + QString::number(minNumberOfDataItems) + "\n"
-                    + tab + "Max allowed failed trial for frequency glitches: " + QString::number(maxAllowedFailedTrials) + "\n"
+                    + tab + "Max failed trials allowed: " + QString::number(maxAllowedFailedTrials) + "\n"
                     + tab + "Expected Frequency: " + QString::number(fexpected) + " Hz\n"; }
     };
 

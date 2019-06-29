@@ -15,7 +15,8 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
     // Checking frequency glitches
     individualErrorList << "Frequency Analysis Parametrs:\n" + p.toString("      ");
 
-    QStringList tempErrors;
+    QStringList tempErrorSummary;
+    QStringList tempErrorList;
     qreal tNumOfInvalidValues = 0;
 
     numberOfDataSetsWithLittleDataPoints = 0;
@@ -26,14 +27,14 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
         FreqAnalyisDataSet fads = freqAnalysisForEachDataSet.at(i);
 
         if (fads.diffTimes.isEmpty()){
-            errorList << "Data set " + fads.trialName + " does not have ANY data points";
+            tempErrorList << "Data set " + fads.trialName + " does not have ANY data points";
             numberOfDataSetsWithLittleDataPoints++;
             continue;
         }
 
         // Checking first the minimum number of data points.
         if (fads.numberOfDataPoints < p.minNumberOfDataItems){
-            tempErrors << " Data set " + fads.trialName + " has a total of " + QString::number(fads.numberOfDataPoints)
+            tempErrorSummary << " Data set " + fads.trialName + " has a total of " + QString::number(fads.numberOfDataPoints)
                           + " ET points which is less than the minimum allowed of " + QString::number(p.minNumberOfDataItems);
             numberOfDataSetsWithLittleDataPoints++;
         }
@@ -61,7 +62,7 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
                                + ". AVG F in Trial: " + QString::number(trialFreq) + ". " + temp;
 
         if (ep > p.maxAllowedFreqGlitchesPerTrial){
-            errorList << "Data set " + fads.trialName + " has " + QString::number(ep) + " % of frequency glitches";
+            tempErrorList << "Data set " + fads.trialName + " has " + QString::number(ep) + " % of frequency glitches";
             numberOfDataSetsWithTooManyFreqGlitches++;
         }
 
@@ -79,7 +80,8 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
         if (numberOfDataSetsWithLittleDataPoints > 0){
             errorList.prepend("Number of data sets with too few data points: " + QString::number(numberOfDataSetsWithLittleDataPoints));
         }
-        errorList << tempErrors;
+        errorList << tempErrorList;
+        errorList << tempErrorSummary;
     }
 
     // Checking invalid values. the percent of string sin the times stasmp that could not be converted to number of the COMPLETE STUDY.
