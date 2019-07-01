@@ -73,7 +73,10 @@ VMBase {
         anchors.topMargin: 26
         anchors.left: tableHeader.left
         color: "#5d5d5d"
-        text: viewReport.vmPatientName;
+        text: {
+            if (uimap.getStructure() === "S")  return loader.getStringForKey(keybase+"diagViewRepSubject") + ": " +  viewReport.vmPatientName;
+            else if (uimap.getStructure() === "P") return loader.getStringForKey(keybase+"diagViewRepPatient") + ": " + viewReport.vmPatientName;
+        }
     }
 
     // The table header.

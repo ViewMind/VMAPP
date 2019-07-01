@@ -284,7 +284,7 @@ VMBase {
     Text{
         id: slideTitle
         text: vmSlideTitle
-        font.family: viewPresentExperiment.gothamB.name
+        font.family: viewPresentExperiment.gothamM.name
         font.pixelSize: 43
         color: "#297fca"
         anchors.top: experimentTracker.bottom

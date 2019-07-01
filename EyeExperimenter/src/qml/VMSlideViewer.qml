@@ -26,7 +26,9 @@ Item {
         function moveImage(forward){
             if (currentIndex === -1) return;
             if ((forward) && (currentIndex < imagelist.length-1)) currentIndex++;
+            else if (forward) currentIndex = 0;
             else if ((!forward) && (currentIndex > 0)) currentIndex--;
+            else if (!forward) currentIndex = imagelist.length-1;
             mainViewer.switchImage(imagelist[currentIndex])
         }
     }
@@ -36,7 +38,8 @@ Item {
         width: viewWindowWidth
         height: parent.height
         border.width: 2
-        border.color: "#297fca"
+        //border.color: "#297fca"
+        border.color: "#ffffff"
         color: backgroundColor
         radius: 2
         anchors.top: parent.top
@@ -44,8 +47,9 @@ Item {
         Image {
             id: showImage
             source: ""
-            anchors.centerIn: parent
-            scale: imgScale
+            //anchors.centerIn: parent
+            //scale: imgScale
+            anchors.fill: parent
         }
         function switchImage(src){
             showImage.source = src;
@@ -69,7 +73,8 @@ Item {
             id: btnBackRect
             anchors.fill: parent
             radius: btnSide/2
-            color: (btnBack.pressed)? "#4984b3" : "#297fca"
+            //color: (btnBack.pressed)? "#4984b3" : "#297fca"
+            color: "#ffffff"
         }
 
         Canvas {
@@ -83,12 +88,12 @@ Item {
             onPaint: {
                 var ctx = backArrow.getContext("2d");
                 ctx.reset();
+                ctx.strokeStyle = "#297fca";
+                ctx.lineWidth = 3;
                 ctx.moveTo(width, 0);
                 ctx.lineTo(0, height/2);
                 ctx.lineTo(width, height);
-                ctx.closePath();
-                ctx.fillStyle = btnBack.pressed? "#2873b4" : "#ffffff"
-                ctx.fill();
+                ctx.stroke();
             }
         }
 
@@ -116,7 +121,8 @@ Item {
             id: btnForwardRect
             anchors.fill: parent
             radius: btnSide/2
-            color: (btnForward.pressed)? "#4984b3" : "#297fca"
+            //color: (btnForward.pressed)? "#4984b3" : "#297fca"
+            color: "#ffffff"
         }
 
 
@@ -131,12 +137,15 @@ Item {
             onPaint: {
                 var ctx = forwardArrow.getContext("2d");
                 ctx.reset();
+                ctx.strokeStyle = "#297fca";
+                ctx.lineWidth = 3;
                 ctx.moveTo(0, 0);
                 ctx.lineTo(width, height/2);
                 ctx.lineTo(0, height);
-                ctx.closePath();
-                ctx.fillStyle = btnForward.pressed? "#2873b4" : "#ffffff"
-                ctx.fill();
+                ctx.stroke();
+                //ctx.closePath();
+                //ctx.fillStyle = btnForward.pressed? "#2873b4" : "#ffffff"
+                //ctx.fill();
             }
         }
 

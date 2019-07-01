@@ -111,10 +111,10 @@ viewcalibdone_btnContinue = FINALIZAR CALIBRACIÓN;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Evaluación de Lectura;
-viewpresentexp_itemBindingUC = Identificación de Nuevos Colores (2);
-viewpresentexp_itemBindingBC = Identificación de Combinaciones de Colores (2);
-viewpresentexp_itemBindingUC3 = Identificación de Nuevos Colores (3);
-viewpresentexp_itemBindingBC3 = Identificación de Combinaciones de Colores (3);
+viewpresentexp_itemBindingUC = Identificación de Nuevos Colores;
+viewpresentexp_itemBindingBC = Identificación de Combinaciones de Colores;
+viewpresentexp_itemBindingUC3 = Identificación de Nuevos Colores;
+viewpresentexp_itemBindingBC3 = Identificación de Combinaciones de Colores;
 viewpresentexp_itemFielding = Evaluación N-Back;
 
 viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
@@ -188,7 +188,8 @@ viewshowreports_diagTabReading = Lectura;
 viewshowreports_diagTabBinding = Colores;
 viewshowreports_diagBtnView = VER;
 viewshowreports_diagBtnBack = ATRAS;
-
+viewshowreports_diagViewRepSubject = SUBJETO;
+viewshowreports_diagViewRepPatient = PACIENTE;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;

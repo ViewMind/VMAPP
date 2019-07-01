@@ -111,10 +111,10 @@ viewcalibdone_btnContinue = END CALIBRATION;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Reading Evaluation;
-viewpresentexp_itemBindingUC = Identify New Colours 2 Evaluation;
-viewpresentexp_itemBindingBC = Identify Colour Combinations 2 Evaluation;
-viewpresentexp_itemBindingUC3 = Identify New Colours 3 Evaluation;;
-viewpresentexp_itemBindingBC3 = Identify Colour Combinations 3 Evaluation;
+viewpresentexp_itemBindingUC = Identify New Colours;
+viewpresentexp_itemBindingBC = Identify Colour Combinationsn;
+viewpresentexp_itemBindingUC3 = Identify New Colours;
+viewpresentexp_itemBindingBC3 = Identify Colour Combinations;
 viewpresentexp_itemFielding = N-Back Evaluation;
 
 viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
@@ -188,6 +188,8 @@ viewshowreports_diagTabReading = Reading;
 viewshowreports_diagTabBinding = Colors;
 viewshowreports_diagBtnView = VIEW;
 viewshowreports_diagBtnBack = BACK;
+viewshowreports_diagViewRepSubject = SUBJECT;
+viewshowreports_diagViewRepPatient = PATIENT;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Doctor's Profile;

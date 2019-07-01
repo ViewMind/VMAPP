@@ -156,7 +156,7 @@ Window {
                 break;
             case vmIndexPresentExperiment:
                 // The continue button is disabled to avoid pressing space or enter and starting the experiment again.
-                //viewStudyStart.testPresentExperimentScreen()
+                // viewStudyStart.testPresentExperimentScreen()
                 viewPresentExperimet.enableContinue();
                 break;
             case vmIndexPatientList:

@@ -573,8 +573,8 @@ void FlowControl::prepareSelectedReportIteration(){
     reportItems.clear();
 
     /// DEBUG CODE
-    reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000/");
-    selectedReport = 0;
+    // reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000/");
+    // selectedReport = 0;
     /// END DEBUG CODE
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);

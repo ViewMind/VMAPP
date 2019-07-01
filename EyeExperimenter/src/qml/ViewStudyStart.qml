@@ -29,10 +29,10 @@ VMBase {
     function testPresentExperimentScreen(){
 
         // Testing READING Screen
-        // vmSelectedExperiments.push(viewPatientReg.vmExpIndexReading);
-        // loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,"de",false);
-        //vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingBC);
-        vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
+        //vmSelectedExperiments.push(viewPatientReg.vmExpIndexReading);
+        //loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,"de",false);
+        vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingBC);
+        //vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
         loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,"2",false);
 
         // Testing Binding Screen
