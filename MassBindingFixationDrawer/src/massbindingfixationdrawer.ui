@@ -27,7 +27,7 @@
       <item>
        <widget class="QLineEdit" name="lineEdit">
         <property name="text">
-         <string>C:/Users/Viewmind/Documents/AAIC2019.csv</string>
+         <string>C:/Users/Viewmind/Documents/AAIC2019-1.csv</string>
         </property>
        </widget>
       </item>
