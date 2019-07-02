@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../../EyeExperimenter/src/experiment_data/bc.dat</file>
+        <file>../../EyeExperimenter/src/experiment_data/uc.dat</file>
+    </qresource>
+</RCC>
