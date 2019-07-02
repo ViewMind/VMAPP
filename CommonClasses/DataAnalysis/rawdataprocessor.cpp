@@ -219,7 +219,7 @@ void RawDataProcessor::run(){
     dbdatafile.close();
     emit(appendMessage("DB Data File Generated to: " + dbdatafile.fileName(),MSG_TYPE_SUCC));
 
-    // Generating mail body if not necessary.
+    // Generating mail body if necessary.
     if  (!frequencyErrorMailBody.isEmpty()){
         QFile mailFile(config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + FILE_MAIL_ERROR_LOG);
         if (!mailFile.open(QFile::WriteOnly)){
