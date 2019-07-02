@@ -175,7 +175,10 @@ void EDPImages::initializeImageDataMatrix(){
            << "tX2"
            << "tY2"
            << "tX3"
-           << "tY3"
+           << "tY3"           
+           << "fixStart"
+           << "fixEnd"
+           << "fixMid"
            << "score";
 
     csvLines << header.join(",");
@@ -290,7 +293,10 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << QString::number(fL.at(i).x) << ","
                << QString::number(fL.at(i).y) << ","
                << QString::number(parser.getDrawStructure().FlagSideH) << ","
-               << targetXYData;
+               << targetXYData << ","
+               << QString::number(fL.at(i).fixStart) << ","
+               << QString::number(fL.at(i).fixEnd) << ","
+               << QString::number((fL.at(i).fixStart + fL.at(i).fixEnd)/2);
         csvLines << writer.join("");
     }
 
@@ -313,7 +319,10 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << QString::number(fR.at(i).x) << ","
                << QString::number(fR.at(i).y) << ","
                << QString::number(parser.getDrawStructure().FlagSideH) << ","
-               << targetXYData;
+               << targetXYData << ","
+               << QString::number(fR.at(i).fixStart) << ","
+               << QString::number(fR.at(i).fixEnd) << ","
+               << QString::number((fR.at(i).fixStart + fR.at(i).fixEnd)/2);
         csvLines << writer.join("");
     }
 
