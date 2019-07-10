@@ -179,6 +179,7 @@ void EDPImages::initializeImageDataMatrix(){
            << "fixStart"
            << "fixEnd"
            << "fixMid"
+           << "timeline"
            << "score";
 
     csvLines << header.join(",");
@@ -214,6 +215,8 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                                   + ". Expected Frequency is " + QString::number(freq)
                                   + ". Measured: " + QString::number(freqCheck);
     }
+
+    qreal slideStart = data.first().at(IMAGE_TI);
 
     // Calculating the fixations for each eye.;
     Fixations fL = mwa.computeFixations(data,IMAGE_XL,IMAGE_YL,IMAGE_TI);
@@ -294,9 +297,10 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << QString::number(fL.at(i).y) << ","
                << QString::number(parser.getDrawStructure().FlagSideH) << ","
                << targetXYData << ","
-               << QString::number(fL.at(i).fixStart) << ","
-               << QString::number(fL.at(i).fixEnd) << ","
-               << QString::number((fL.at(i).fixStart + fL.at(i).fixEnd)/2);
+               << QString::number(fL.at(i).fixStart,'f',2) << ","
+               << QString::number(fL.at(i).fixEnd,'f',2) << ","
+               << QString::number((fL.at(i).fixStart + fL.at(i).fixEnd)/2,'f',2) << ","
+               << QString::number(fL.at(i).fixStart - slideStart,'f',2);
         csvLines << writer.join("");
     }
 
@@ -320,9 +324,10 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
                << QString::number(fR.at(i).y) << ","
                << QString::number(parser.getDrawStructure().FlagSideH) << ","
                << targetXYData << ","
-               << QString::number(fR.at(i).fixStart) << ","
-               << QString::number(fR.at(i).fixEnd) << ","
-               << QString::number((fR.at(i).fixStart + fR.at(i).fixEnd)/2);
+               << QString::number(fR.at(i).fixStart,'f',2) << ","
+               << QString::number(fR.at(i).fixEnd,'f',2) << ","
+               << QString::number((fR.at(i).fixStart + fR.at(i).fixEnd)/2,'f',2) << ","
+               << QString::number(fR.at(i).fixStart - slideStart,'f',2);
         csvLines << writer.join("");
     }
 
