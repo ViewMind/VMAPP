@@ -76,6 +76,7 @@ ConfigurationManager PatientNameMapManager::getPatientNameFromDirname(const QStr
 
     config.addKeyValuePair(CONFIG_PATIENT_NAME,patdata.value(TPATDATA_COL_FIRSTNAME).toString() + " " + patdata.value(TPATDATA_COL_LASTNAME).toString());
     config.addKeyValuePair(CONFIG_PATIENT_DISPLAYID,patdata.value(TPATDATA_NONCOL_DISPLAYID).toString());
+    config.addKeyValuePair(CONFIG_PATIENT_UID,puid);
     return config;
 }
 
