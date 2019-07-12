@@ -21,7 +21,7 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-        //swiperControl.currentIndex = swiperControl.vmIndexResults;        
+        //swiperControl.currentIndex = swiperControl.vmIndexResults;
     }
 
 

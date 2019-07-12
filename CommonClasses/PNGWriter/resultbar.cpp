@@ -24,7 +24,7 @@ bool ResultBar::setResultType(const QString &resultType){
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_RETRIEVAL_MEMORY){
-        values << 0 << 9 << 18 << 26;
+        values << 1 << 5 << 9 << 13;
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_BINDING_CONVERSION_INDEX){

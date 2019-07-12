@@ -27,4 +27,4 @@ Eye-Tracking;
 
 date_format = MM/dd/yyyy;
 
-result_ranges = Normal value GREATER than 30|Normal value GREATER than 70|Normal value GREATER than 70|Normal value GREATER than 18|Normal value GREATER than 26|Normal value GREATER than 22;
+result_ranges = Normal value GREATER than 30|Normal value GREATER than 70|Normal value GREATER than 70|Normal value GREATER than 8|Normal value GREATER than 26|Normal value GREATER than 22;

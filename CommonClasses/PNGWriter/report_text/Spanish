@@ -26,4 +26,4 @@ Eye-Tracking;
 
 date_format = dd/MM/yyyy;
 
-result_ranges = Valor normal MAYOR a 30|Valor normal MAYOR a 70|Valor normal MAYOR a 70|Valor normal MAYOR a 18|Valor normal MAYOR a 26|Valor normal MAYOR a 22;
+result_ranges = Valor normal MAYOR a 30|Valor normal MAYOR a 70|Valor normal MAYOR a 70|Valor normal MAYOR a 8|Valor normal MAYOR a 26|Valor normal MAYOR a 22;
