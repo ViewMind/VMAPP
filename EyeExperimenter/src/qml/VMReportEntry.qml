@@ -2,12 +2,14 @@ import QtQuick 2.0
 
 Item {
 
-    id: vmPatientEntry
+    id: vmReportEntry
     property string vmDate: ""
     property string vmTime: ""
     property string vmReading: ""
     property string vmBinding: ""
     property string vmReportName: ""
+    property bool vmIsUpToDate: true
+    property var vmFileList: []
     property int vmItemIndex: 0
 
     readonly property int vmHeight: 30
@@ -15,6 +17,8 @@ Item {
 
     height: vmHeight
     width: viewReport.columnWidth*3
+
+    signal reprocessReport(var reportName)
 
     MouseArea {
         anchors.fill: parent
@@ -80,5 +84,40 @@ Item {
             anchors.centerIn: parent
         }
     }
+
+    Rectangle {
+        id: statusRectText
+        color: vmRepSelected? "#4984b3" : "#ffffff"
+        border.color: "#EDEDEE"
+        border.width: 2
+        height: vmHeight
+        width: viewReport.columnWidth
+        anchors.left: bindingRect.right
+        anchors.top: parent.top
+        visible: vmIsUpToDate
+        Text {
+            font.family: viewHome.gothamR.name
+            font.pixelSize: vmFontSize
+            text: "OK"
+            color: vmRepSelected? "#ffffff" : "#000000"
+            anchors.centerIn: parent
+        }
+    }
+
+
+    VMButton {
+        id: btnFetchReport
+        visible: !vmIsUpToDate
+        vmText: loader.getStringForKey("viewshowreports_diagReprocess");
+        height: vmHeight
+        width: viewReport.columnWidth
+        vmFont: viewHome.gothamM.name
+        anchors.left: bindingRect.right
+        anchors.top: parent.top
+        onClicked: {
+            vmReportEntry.reprocessReport(vmReportName)
+        }
+    }
+
 
 }

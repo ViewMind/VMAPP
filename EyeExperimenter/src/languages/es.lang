@@ -186,10 +186,12 @@ viewshowreports_diagTabDate = Fecha;
 viewshowreports_diagTabTime = Hora;
 viewshowreports_diagTabReading = Lectura;
 viewshowreports_diagTabBinding = Colores;
+viewshowreports_diagTabStatus = Estado;
 viewshowreports_diagBtnView = VER;
 viewshowreports_diagBtnBack = ATRAS;
 viewshowreports_diagViewRepSubject = SUBJETO;
 viewshowreports_diagViewRepPatient = PACIENTE;
+viewshowreports_diagReprocess = ACTUALIZAR;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;

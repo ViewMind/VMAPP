@@ -9,7 +9,7 @@ VMBase {
     readonly property string keybase: "viewshowreports_"
     readonly property int repTableWidth: width*0.7
     readonly property int repTableHeight: height*0.4
-    readonly property int columnWidth: repTableWidth/3
+    readonly property int columnWidth: repTableWidth/4
 
     // The two properties that must be set when checking this.
     property string vmPatientDirectory: ""
@@ -22,6 +22,11 @@ VMBase {
 
     // Loads the list model with the patient information
     function loadReportsForPatient() {
+
+        // CODE FOR DEBUG ONLY
+        vmPatientName = "Some Patient";
+        vmPatientDirectory = "C:/Users/Viewmind/Documents/viewmind_projects/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000"
+        // END DEBUG CODE
 
         // Clearing the current model.
         reportList.clear()
@@ -142,6 +147,25 @@ VMBase {
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
+
+        Rectangle {
+            id: headerStatus
+            color: "#adadad"
+            border.width: 2
+            border.color: "#EDEDEE"
+            radius: 4
+            width: columnWidth
+            height: parent.height
+            Text {
+                id: statusText
+                text: loader.getStringForKey(keybase+"diagTabStatus");
+                width: parent.width
+                font.family: gothamB.name
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
     }
 
     Rectangle {
@@ -169,6 +193,11 @@ VMBase {
                     vmReading: reading
                     vmBinding: binding
                     vmItemIndex: index
+                    vmIsUpToDate: uptodate
+                    vmFileList: filelist
+                    onReprocessReport: {
+                        console.log("Requested reprocessing of report: " + reportName)
+                    }
                 }
                 onCurrentIndexChanged: {
                     for (var i = 0; i < model.count; i++){

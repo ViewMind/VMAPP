@@ -28,6 +28,8 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_DISTANCE_2_MONITOR] = cmd;
     cv[CONFIG_LATENCY_ESCAPE_RAD] = cmd;
     cv[CONFIG_MARGIN_TARGET_HIT] = cmd;
+    cv[CONFIG_BINDING_ALG_VERSION] = cmd;
+    cv[CONFIG_READING_ALG_VERSION] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_REAL;
@@ -131,6 +133,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
 
     // Resetting the medical institution, just in case
     lim.resetMedicalInstitutionForAllDoctors(configuration->getString(CONFIG_INST_UID));
+
+    // FOR DEBUGGING
+    // lim.printDBToConsole();
 
 #ifdef USE_IVIEW
     QString expectedET = CONFIG_P_ET_REDM;

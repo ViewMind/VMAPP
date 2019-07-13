@@ -30,6 +30,9 @@ enable_local_db_bkp = true;
 
 configure_options = PIYN2D;
 
+reading_algorithm_version = 1;
+binding_algorithm_version = 1;
+
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
 #------------------------------------------------------#

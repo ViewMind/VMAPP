@@ -79,7 +79,10 @@ void FlowControl::setupSecondMonitor(){
 
 void FlowControl::prepareForReportListIteration(const QString &patientDirectory){
     selectedReport = -1;
-    reportsForPatient.setDirectory(patientDirectory);
+    RepFileInfo::AlgorithmVersions algver;
+    algver.bindingAlg = configuration->getInt(CONFIG_BINDING_ALG_VERSION);
+    algver.readingAlg = configuration->getInt(CONFIG_READING_ALG_VERSION);
+    reportsForPatient.setDirectory(patientDirectory,algver);
     reportsForPatient.prepareIteration();
 }
 
