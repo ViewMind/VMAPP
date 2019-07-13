@@ -245,6 +245,13 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
     // Adding the ACK Code of all ok. Any other code is NOT sent from this function.
     tx.addValue(RR_ALL_OK,DataPacket::DPFI_PROCESSING_ACK);
 
+    // Adding the previous version of report sent. (Will be empty if it does not exist).
+    QString previous_report_version = "";
+    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_OLD_REP_FILE)){
+        previous_report_version = sslsocket->getDataPacket().getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
+    }
+    tx.addString(previous_report_version,DataPacket::DPFI_OLD_REP_FILE);
+
     QByteArray ba = tx.toByteArray();
     qint64 n = sslsocket->socket()->write(ba.constData(),ba.size());
     if (n != ba.size()){
@@ -253,11 +260,7 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
         return;
     }
 
-    QString previous_report_version = "";
     qint32 UID = sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
-    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_OLD_REP_FILE)){
-        previous_report_version = sslsocket->getDataPacket().getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
-    }
     if (!previous_report_version.isEmpty()){
         log.appendStandard("Institution " + QString::number(UID) + " requested reprocessing of file " + previous_report_version + " will not decrease evaluation count");
     }

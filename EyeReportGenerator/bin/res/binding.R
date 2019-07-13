@@ -26,13 +26,13 @@ setwd("./res")
 
 
 BC_AXIS<-read.csv(args[1])  
-BC_AXIS<-BC_AXIS[,c(1:13,23)]
+BC_AXIS<-BC_AXIS[,c(1:13,27)]
 names(BC_AXIS) <- c("subj_id", "trial_id", "is_trial","trial_name","trial_type", "response", "dur", "eye",  "blinks", "sacc_ampl",  "pupila","gaze","nf","score")
 
 BC<-BC_AXIS
 
 UC_AXIS<-read.csv(args[2])
-UC_AXIS<-UC_AXIS[,c(1:13,23)]
+UC_AXIS<-UC_AXIS[,c(1:13,27)]
 
 names(UC_AXIS) <- c("subj_id", "trial_id", "is_trial","trial_name","trial_type", "response", "dur", "eye",  "blinks", "sacc_ampl",  "pupila","gaze","nf","score")
 UC<-UC_AXIS
