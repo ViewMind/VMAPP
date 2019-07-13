@@ -253,9 +253,17 @@ void DataProcessingSSLServer::sendReport(quint64 socket){
         return;
     }
 
-    // ONLY AFTER the report was successfully sent the number of evaluations is decreased, and IF this is not demo mode.
-    if (sslsocket->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0){
-        qint32 UID = sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
+    QString previous_report_version = "";
+    qint32 UID = sslsocket->getDataPacket().getField(DataPacket::DPFI_DB_INST_UID).data.toInt();
+    if (sslsocket->getDataPacket().hasInformationField(DataPacket::DPFI_OLD_REP_FILE)){
+        previous_report_version = sslsocket->getDataPacket().getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
+    }
+    if (!previous_report_version.isEmpty()){
+        log.appendStandard("Institution " + QString::number(UID) + " requested reprocessing of file " + previous_report_version + " will not decrease evaluation count");
+    }
+
+    // ONLY AFTER the report was successfully sent the number of evaluations is decreased, and IF this is not demo mode OR a reprocessed file.
+    if ((sslsocket->getDataPacket().getField(DataPacket::DPFI_DEMO_MODE).data.toInt() == 0) && (previous_report_version.isEmpty())){
         decreaseReportCount(UID,logid);
     }
 

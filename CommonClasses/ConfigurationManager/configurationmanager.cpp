@@ -337,6 +337,38 @@ QString ConfigurationManager::saveValueToFile(const QString &fileName, const cha
     return setValue(fileName,textCode,key,data.value(key).toString());
 }
 
+bool ConfigurationManager::saveToFile(const QString &fileName, const char *textCodec, const Delimiters &delimiters){
+
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly)) return false;
+
+    QString save = "";
+    QStringList keys = data.keys();
+    keys.sort();
+    for (qint32 i = 0; i < keys.size(); i++){
+        QString value;
+        QVariant datum = data.value(keys.at(i));
+        if (datum.canConvert(QMetaType::QVariantList)){
+            QVariantList list = datum.toList();
+            QStringList temp;
+            for (qint32 j = 0; j < list.size(); j++){
+                temp << list.at(j).toString();
+            }
+            value = temp.join(delimiters.field);
+        }
+        else value = datum.toString();
+
+        save = save + keys.at(i) + " " + delimiters.name + " " + value + delimiters.statement + "\n";
+    }
+
+    QTextStream writer(&file);
+    writer.setCodec(textCodec);
+    writer << save;
+    file.close();
+    return true;
+
+}
+
 QString ConfigurationManager::setValue(const QString &fileName,
                                        const char* textCodec,
                                        const QString &cmd,

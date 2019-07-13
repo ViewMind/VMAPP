@@ -39,10 +39,12 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_PROTOCOL_NAME]   = cmd;
 
     cmd.optional = true;
-    cv[CONFIG_FILE_BIDING_BC] = cmd;
-    cv[CONFIG_FILE_BIDING_UC] = cmd;
-    cv[CONFIG_FILE_READING]   = cmd;
-    cv[CONFIG_FILE_FIELDING]  = cmd;
+    cv[CONFIG_FILE_BIDING_BC]        = cmd;
+    cv[CONFIG_FILE_BIDING_UC]        = cmd;
+    cv[CONFIG_FILE_READING]          = cmd;
+    cv[CONFIG_FILE_FIELDING]         = cmd;
+    cv[CONFIG_INST_ETSERIAL]         = cmd;
+    cv[CONFIG_PREVIOUS_REPORT_NAME]  = cmd;
 
     configuration.setupVerification(cv);
 

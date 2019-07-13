@@ -350,28 +350,56 @@ void RawDataProcessor::generateReportFile(const ConfigurationManager &res, const
     if (freqErrorsOk) freqErrValue = "false";
     else freqErrValue = "true";
 
-    // Adding the required report data
-    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,config->getString(CONFIG_PATIENT_NAME));
-    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,config->getString(CONFIG_PATIENT_AGE));
-    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_DOCTOR_NAME,config->getString(CONFIG_DOCTOR_NAME));
-    //QDateTime::currentDateTime().toString("dd/MM/yyyy")
-    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_REPORT_DATE,config->getString(CONFIG_REPORT_DATE));
-    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_FREQ_ERRORS_PRESENT,freqErrValue);
-
-    QStringList resultkeys;
-    QList<qint32> resultDecimals;
-    resultkeys     << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION  << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_BINDING_CONVERSION_INDEX;
-    resultDecimals << 5                                            << 5                                  << 5                             << 5                               << 5;
-
-    for (qint32 i = 0; i < resultkeys.size(); i++){
-        if (!res.containsKeyword(resultkeys.at(i))) continue; // Only the processed values should be added.
-        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,resultkeys.at(i),
-                                       QString::number(res.getReal(resultkeys.at(i)),'f',resultDecimals.at(i)));
+    ConfigurationManager results;
+    // The algorithm versions are added based solely on the what variables are present.
+    if (res.containsKeyword(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
+        results.addKeyValuePair(CONFIG_READING_ALG_VERSION,EYE_REP_GEN_READING_ALGORITHM_VERSION);
     }
 
-    if (res.containsKeyword(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE)){
-        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_BEHAVIOURAL_RESPONSE,res.getString(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE));
+    if (res.containsKeyword(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
+        results.addKeyValuePair(CONFIG_BINDING_ALG_VERSION,EYE_REP_GEN_BINDING_ALGORITHM_VERSION);
     }
+
+    // Adding the report values
+    results.merge(res);
+
+    // Adding all configuration parameters as they were presented.
+    results.merge(*config);
+
+    // Removing patient directory as it contains sensitive information
+    results.removeKey(CONFIG_PATIENT_DIRECTORY);
+
+    // Adding the frecuency error flag
+    results.addKeyValuePair(CONFIG_RESULTS_FREQ_ERRORS_PRESENT,freqErrValue);
+
+    // Saving the results to disk.
+    results.saveToFile(reportFileOutput,COMMON_TEXT_CODEC);
+
+
+//    // Adding the required report data
+//    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_NAME,config->getString(CONFIG_PATIENT_NAME));
+//    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_PATIENT_AGE,config->getString(CONFIG_PATIENT_AGE));
+//    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_DOCTOR_NAME,config->getString(CONFIG_DOCTOR_NAME));
+//    //QDateTime::currentDateTime().toString("dd/MM/yyyy")
+//    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_REPORT_DATE,config->getString(CONFIG_REPORT_DATE));
+//    ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_FREQ_ERRORS_PRESENT,freqErrValue);
+
+//    QStringList resultkeys;
+//    QList<qint32> resultDecimals;
+//    resultkeys     << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION  << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_BINDING_CONVERSION_INDEX;
+//    resultDecimals << 5                                            << 5                                  << 5                             << 5                               << 5;
+
+//    for (qint32 i = 0; i < resultkeys.size(); i++){
+//        if (!res.containsKeyword(resultkeys.at(i))) continue; // Only the processed values should be added.
+//        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,resultkeys.at(i),
+//                                       QString::number(res.getReal(resultkeys.at(i)),'f',resultDecimals.at(i)));
+//    }
+
+//    if (res.containsKeyword(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE)){
+//        ConfigurationManager::setValue(reportFileOutput,COMMON_TEXT_CODEC,CONFIG_RESULTS_BEHAVIOURAL_RESPONSE,res.getString(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE));
+//    }
+
+
 
 }
 

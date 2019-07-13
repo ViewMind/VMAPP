@@ -98,6 +98,9 @@
 #define   CONFIG_ENABLE_LOCAL_DB_BKP                    "enable_local_db_bkp"
 #define   CONFIG_CONFIGURE_STRING                       "configure_options"
 #define   CONFIG_PATIENT_DISPLAYID                      "patient_displayid"
+#define   CONFIG_READING_ALG_VERSION                    "reading_algorithm_version"
+#define   CONFIG_BINDING_ALG_VERSION                    "binding_algorithm_version"
+#define   CONFIG_PREVIOUS_REPORT_NAME                   "previous_report_name"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0
@@ -185,6 +188,9 @@
 #define   IDMAP_ID_PUID                                 "puid"
 #define   IDMAP_ID_UID                                  "uid"
 
+// Versions of the processing algorithm
+#define   EYE_REP_GEN_READING_ALGORITHM_VERSION          1
+#define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          1
 
 // TCP Ports.
 static const quint16 TCP_PORT_RAW_DATA_SERVER            = 54918;

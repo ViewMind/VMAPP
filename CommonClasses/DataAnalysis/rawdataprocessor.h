@@ -23,6 +23,7 @@
 #define   MSG_TYPE_ERR                                   2
 #define   MSG_TYPE_WARN                                  3
 
+
 class RawDataProcessor : public QObject
 {
     Q_OBJECT
