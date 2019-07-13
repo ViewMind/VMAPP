@@ -126,7 +126,9 @@ Fixation MovingWindowAlgorithm::calculateFixationPoint(const DataMatrix &data,
     f.y = f.y/size;
 
     // Calculating the duration
-    f.duration = data.at(endI).at(tI) - data.at(startI).at(tI);
+    f.fixStart = data.at(startI).at(tI);
+    f.fixEnd   = data.at(endI).at(tI);
+    f.duration = f.fixEnd - f.fixStart;
     //qWarning() << "CENTROID" << f.x << f.y << "." << "DURATION" << f.duration;
 
     // Finally the indexes are stored.

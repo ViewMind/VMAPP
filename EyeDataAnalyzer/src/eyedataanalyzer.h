@@ -22,7 +22,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "5.1.1"
+#define   PROGRAM_VERSION              "5.1.4 - CSV ExtraLines"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 

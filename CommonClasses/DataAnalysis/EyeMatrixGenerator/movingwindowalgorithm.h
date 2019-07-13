@@ -12,6 +12,8 @@ struct Fixation{
     qreal x;
     qreal y;
     qreal duration;
+    qreal fixStart;
+    qreal fixEnd;
     qint32 indexFixationStart;
     qint32 indexFixationEnd;
 

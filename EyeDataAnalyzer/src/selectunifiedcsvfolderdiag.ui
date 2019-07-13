@@ -64,6 +64,11 @@
          <string>Name and Lastname</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>ViewMindDB ID</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

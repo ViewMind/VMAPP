@@ -11,6 +11,7 @@
 
 #define UNIFIED_CSV_ID_DISPLAY_ID    0
 #define UNIFIED_CSV_ID_NAME_LASTNAME 1
+#define UNIFIED_CSV_ID_VIEWMINDDBID  2
 
 class BatchCSVProcessing : public QThread
 {
