@@ -24,8 +24,8 @@ VMBase {
     function loadReportsForPatient() {
 
         // CODE FOR DEBUG ONLY
-        vmPatientName = "Some Patient";
-        vmPatientDirectory = "C:/Users/Viewmind/Documents/viewmind_projects/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000"
+        // vmPatientName = "Some Patient";
+        // vmPatientDirectory = "C:/Users/Viewmind/Documents/viewmind_projects/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000"
         // END DEBUG CODE
 
         // Clearing the current model.

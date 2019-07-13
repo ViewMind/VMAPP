@@ -185,6 +185,7 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
         return ans; // Any error and the report will be up to date.
     }
 
+    /////// READING
     // Checking if the reports contains binding or reading version information
     bool done = false;
     if (repfile.containsKeyword(CONFIG_READING_ALG_VERSION)){
@@ -207,18 +208,16 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
         }
         else{
             if (repfile.containsKeyword(CONFIG_RESULTS_ATTENTIONAL_PROCESSES)){
-                // This is, indeed, contains reading information.
+                // This is, indeed, contains reading information. And it needs to be updated
                 fileSearchRequired = true;
-                ans.isUpToDate = true;
+                ans.isUpToDate = false;
             }
         }
-
-        /////// READING
         if (fileSearchRequired){
             // No info available so the file list needs to be constructed from the codes.
             QString processed_data_dir = directory + "/" + DIRNAME_PROCESSED_DATA;
             QStringList filters; filters << "reading*.dat" << "reading*.datf";
-            QStringList processedFiles = QDir(processed_data_dir).entryList(filters,QDir::Files|QDir::NoDotAndDotDot);
+            QStringList processedFiles = QDir(processed_data_dir).entryList(filters,QDir::Files|QDir::NoDotAndDotDot,QDir::Time);
             QStringList matches;
             if (processedFiles.isEmpty()){
                 logger.appendError("Searching for processed files to match reading code: " + algver.reading_code
@@ -228,7 +227,14 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
                 for (qint32 i = 0; i < processedFiles.size(); i++){
                     if (processedFiles.at(i).contains(algver.reading_code)) matches << processedFiles.at(i);
                 }
-                if (matches.size() == 1){
+                if (matches.size() >= 1){
+
+                    if (matches.size() > 1){
+                        logger.appendWarning("Searching for processed files to match reading code: " + algver.reading_code
+                                            + " but found more than one match in processed directory " + processed_data_dir
+                                            + ". Matches were: " + matches.join(", ") + ". Will use newest file: " + matches.first());
+                    }
+
                     // All good.
                     ans.fileList << matches.first();
                     // Adding it to the file
@@ -236,12 +242,8 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
                     ConfigurationManager::setValue(repFileName,COMMON_TEXT_CODEC,CONFIG_FILE_READING,matches.first());
                 }
                 else{
-                    if (matches.isEmpty()) logger.appendError("Searching for processed files to match reading code: " + algver.reading_code
+                    logger.appendError("Searching for processed files to match reading code: " + algver.reading_code
                                                                               + " but found no matches in processed directory " + processed_data_dir);
-                    else logger.appendError("Searching for processed files to match reading code: " + algver.reading_code
-                                            + " but found more than one match in processed directory " + processed_data_dir
-                                            + ". Matches were: " + matches.join(", ") );
-
                 }
             }
         }
@@ -269,9 +271,9 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
         }
         else{
             if (repfile.containsKeyword(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE)){
-                // This is, indeed, contains binding information.
+                // This is, indeed, contains binding information. And it needs to be updated
                 fileSearchRequired = true;
-                ans.isUpToDate = true;
+                ans.isUpToDate = false;
             }
         }
 
