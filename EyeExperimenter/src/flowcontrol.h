@@ -60,7 +60,7 @@ public:
     Q_INVOKABLE quint8 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
     Q_INVOKABLE void moveFileToArchivedFileFolder(const QString &filename);
     Q_INVOKABLE void doFrequencyAnalysis(const QString &filename);
-    Q_INVOKABLE void requestDataReprocessing(const QString &reportName, const QString &fileList);
+    Q_INVOKABLE void requestDataReprocessing(const QString &reportName, const QString &fileList, const QString &evaluationID);
 
 signals:
 
@@ -93,7 +93,7 @@ public slots:
     void onEyeTrackerControl(quint8 code);
 
     // For receiving information to send to the server
-    void onFileSetEmitted(const QStringList &fileSetAndName);
+    void onFileSetEmitted(const QStringList &fileSetAndName, const QString &evaluationID);
 
 private slots:
     // The function that actually draws the report

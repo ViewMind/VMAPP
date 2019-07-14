@@ -93,7 +93,7 @@ QVariantMap FlowControl::nextReportInList(){
 
 void FlowControl::startDemoTransaction(){
     demoTransaction = true;
-    onFileSetEmitted(QStringList());
+    onFileSetEmitted(QStringList(),"");
 }
 
 void FlowControl::saveReport(){
@@ -122,18 +122,19 @@ void FlowControl::saveReportAs(const QString &title){
 
 void FlowControl::requestReportData(){
     sslTransactionAllOk = false;
+    reprocessRequest = false;
     emit(requestFileSet());
 }
 
-void FlowControl::requestDataReprocessing(const QString &reportName, const QString &fileList){
+void FlowControl::requestDataReprocessing(const QString &reportName, const QString &fileList, const QString &evaluationID){
     sslTransactionAllOk = false;
     reprocessRequest = true;
     QStringList fileSet;
     fileSet << reportName << fileList.split("|",QString::SkipEmptyParts);
-    onFileSetEmitted(fileSet);
+    onFileSetEmitted(fileSet,evaluationID);
 }
 
-void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
+void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QString &evaluationID){
 
     //qWarning() << "Processing File Set: " << fileSetAndName;
 
@@ -191,9 +192,6 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
         // This means that the report file name exists, so it needs to be loaded.
         ConfigurationManager existingRepFile;
 
-        // In this case the entry ID must be added if exists
-        toSave << CONFIG_RESULT_ENTRY_ID;
-
         // This will be sent to the server.
         oldRepFile = expectedFileName;
 
@@ -231,6 +229,13 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
     }
 
     //qWarning() << "Saved expgen";
+    error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_RESULT_ENTRY_ID,evaluationID);
+    if (!error.isEmpty()){
+        logger.appendError("WRITING EYE REP GEN FILE: " + error);
+        sslTransactionAllOk = false;
+        emit(sslTransactionFinished());
+        return;
+    }
 
     qint32 validEye;
     if (!demoTransaction) validEye = DatFileInfoInDir::getValidEyeForDatList(fileSet);
@@ -301,12 +306,13 @@ void FlowControl::onDisconnectionFinished(){
         return;
     }
 
+    if ((sslTransactionAllOk) && (!reprocessRequest)) {
+        moveProcessedFilesToProcessedFolder(fileSetSentToProcess);
+    }
+
     // Ensuring that the preocessing is done.
     reprocessRequest = false;
 
-    if (sslTransactionAllOk) {
-        moveProcessedFilesToProcessedFolder(fileSetSentToProcess);
-    }
     emit(sslTransactionFinished());
 }
 

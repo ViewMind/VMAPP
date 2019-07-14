@@ -506,6 +506,27 @@ void Loader::reloadPatientDatInformation(){
     lim.fillPatientDatInformation(configuration->getString(CONFIG_PATIENT_UID));
 }
 
+QString Loader::getEvaluationID(const QString &existingFile){
+
+    if (!existingFile.isEmpty()){
+        // This is an existing report and so we try to get the new evaluation ID from the existing report. Otherwise a new one is generated.
+        ConfigurationManager existingRep;
+        if (!existingRep.loadConfiguration(configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + existingFile,COMMON_TEXT_CODEC)){
+            logger.appendError("Trying to get Evaluation ID from existing report: " + existingRep.getError());
+        }
+        else{
+            if (existingRep.containsKeyword(CONFIG_RESULT_ENTRY_ID)){
+                return existingRep.getString(CONFIG_RESULT_ENTRY_ID);
+            }
+        }
+    }
+
+    // If no previous report was set and/or no ID was found in previous report, a new one is generated.
+    QString evalID = lim.newEvaluationID();
+    evalID = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + evalID;
+    return evalID;
+}
+
 
 //******************************************* Updater Related Functions ***********************************************
 
@@ -580,7 +601,7 @@ void Loader::onFileSetRequested(){
     QVariantMap patdata = lim.getPatientInfo(patuid);
     configuration->addKeyValuePair(CONFIG_PROTOCOL_NAME,patdata.value(TPATDATA_NONCOL_PROTOCOL).toString());
     fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);
-    emit(fileSetReady(fileSet));
+    emit(fileSetReady(fileSet,lim.newEvaluationID()));
 }
 
 //******************************************* Private Auxiliary Functions ***********************************************

@@ -21,6 +21,7 @@
 
 #define   DR_ID_LENGTH                                   4
 #define   PAT_ID_LENGTH                                  4
+#define   EVAL_ID_LENGTH                                 10
 
 class LocalInformationManager
 {
@@ -54,6 +55,7 @@ public:
     void validateDoctor(const QString &dr_uid);
     QString newDoctorID();
     QString newPatientID();
+    QString newEvaluationID();
     QString getDoctorPassword(const QString &uid);
     DisplayLists getPatientListForDoctor(const QString &druid, const QString &filter = "");
     DisplayLists getDoctorList(bool forceShow = false);
@@ -102,6 +104,7 @@ private:
     static const QString PATIENT_CREATOR;
     static const QString DOCTOR_DATA;
     static const QString DOCTOR_COUNTER;
+    static const QString EVALUATION_COUNTER;
     static const QString PATIENT_COUNTER;
     static const QString PATIENT_DATA;
     static const QString DOCTOR_UPDATE;
@@ -112,7 +115,7 @@ private:
     static const QString FLAG_VIEWALL;
     static const QString PROTOCOLS;
     static const QString PROTOCOL_VALID;
-    static const qint32  LOCAL_DB_VERSION = 4;
+    static const qint32  LOCAL_DB_VERSION = 5;
 
     // Working directory.
     QString workingDirectory;

@@ -15,6 +15,9 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
     QString directory = config->getString(CONFIG_PATIENT_DIRECTORY);
     QString confFile = directory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
 
+    // If oldRepFile is not empty, then this is a reprocessing request and therefore the files are in the processed_data folder.
+    if (!oldRepFile.isEmpty()) directory = directory + "/" + QString(DIRNAME_PROCESSED_DATA);
+
     processingACKCode = RR_ALL_OK;
 
     ConfigurationManager eyeGenConf;
@@ -26,22 +29,37 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
 
     txDP.clearAll();
     txDP.addString(config->getString(CONFIG_DOCTOR_UID),DataPacket::DPFI_DOCTOR_ID);
-    qWarning() << "Hashing patient UID: " << config->getString(CONFIG_PATIENT_UID);
+    //qWarning() << "Hashing patient UID: " << config->getString(CONFIG_PATIENT_UID);
     QString hash = QCryptographicHash::hash(config->getString(CONFIG_PATIENT_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
     txDP.addString(hash,DataPacket::DPFI_PATIENT_ID);
     txDP.addValue(config->getInt(CONFIG_INST_UID),DataPacket::DPFI_DB_INST_UID);
     txDP.addString(config->getString(CONFIG_INST_ETSERIAL),DataPacket::DPFI_DB_ET_SERIAL);
     txDP.addFile(confFile,DataPacket::DPFI_PATIENT_FILE);
 
-    if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC))
-        if (saveData) txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC);
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC)){
+        if (saveData) {
+            if (!txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC)){
+                log.appendError("On creating the DataPacket, could not get Binding BC File: " + directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC));
+            }
+        }
         else txDP.addFile(":/demo_data/binding_bc_2_l_2_2010_06_03_10_00.dat",DataPacket::DPFI_BINDING_BC);
-    if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC))
-        if (saveData) txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC);
+    }
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC)){
+        if (saveData) {
+            if (!txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC)){
+                log.appendError("On creating the DataPacket, could not get Binding BC File: " + directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC));
+            }
+        }
         else txDP.addFile(":/demo_data/binding_uc_2_l_2_2010_03_06_10_03.dat",DataPacket::DPFI_BINDING_UC);
-    if (eyeGenConf.containsKeyword(CONFIG_FILE_READING))
-        if (saveData) txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING);
+    }
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_READING)){
+        if (saveData) {
+            if(!txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING)){
+                log.appendError("On creating the DataPacket, could not get Binding BC File: " + directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING));
+            }
+        }
         else txDP.addFile(":/demo_data/reading_2_2010_06_03_10_15.dat",DataPacket::DPFI_READING);
+    }
 
     // adding the the demo mode.
     qreal demo;
@@ -49,11 +67,9 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
     if (saveData) demo = 0;
     else demo = 1;
 
-    txDP.addValue(demo,DataPacket::DPFI_DEMO_MODE);    
+    txDP.addValue(demo,DataPacket::DPFI_DEMO_MODE);
     //txDP.addValue(0,DataPacket::DPFI_DEMO_MODE);
     txDP.addString(oldRepFile,DataPacket::DPFI_OLD_REP_FILE);
-
-
 
     // Requesting connection and ack
     informationSent = false;
@@ -141,33 +157,39 @@ void SSLDataProcessingClient::on_readyRead(){
             // If this is a reprocessed file we need to move it first to the old reports folder
             if (rxDP.hasInformationField(DataPacket::DPFI_OLD_REP_FILE)){
 
-                QString oldRepFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
-                QString oldRepDir = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + QString(DIRNAME_OLD_REP);
+                QString oldRepFileNameOnly = rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
+                QString oldRepFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + oldRepFileNameOnly;
 
-                QDir patientDir(config->getString(CONFIG_PATIENT_DIRECTORY));
-                if (!QDir(oldRepDir).exists()){
-                    if (!patientDir.mkdir(DIRNAME_OLD_REP)){
-                        log.appendError("Could not create old report directory: " + oldRepDir);
-                        rxDP.clearAll();
-                        socket->disconnectFromHost();
-                        return;
-                    }
-                }
+                //qWarning() << "OLDREPFILE ON RETURN" << "|" + oldRepFileNameOnly + "|";
 
-                // Checking that file exists
-                if (QFile(oldRepFile).exists()){
-                    // The file exist so it needs to me moved to the old rep dir
-                    QString destinationFile = oldRepDir + "/" + rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString() + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm")  ;
-                    if (!QFile::copy(oldRepFile,destinationFile)){
-                        log.appendError("Could not copy file " + oldRepFile + " to " + destinationFile + ". Cannto save reprocessed report");
-                        rxDP.clearAll();
-                        socket->disconnectFromHost();
-                        return;
+                if (!oldRepFileNameOnly.isEmpty()){
+                    QString oldRepDir = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + QString(DIRNAME_OLD_REP);
+
+                    QDir patientDir(config->getString(CONFIG_PATIENT_DIRECTORY));
+                    if (!QDir(oldRepDir).exists()){
+                        if (!patientDir.mkdir(DIRNAME_OLD_REP)){
+                            log.appendError("Could not create old report directory: " + oldRepDir);
+                            rxDP.clearAll();
+                            socket->disconnectFromHost();
+                            return;
+                        }
                     }
-                }
-                else{
-                    // This should not happen. However as the report does not exists then there is nothing to do.
-                    log.appendWarning("Report " + oldRepFile + " should be a reprocessed report, however the file does not exist");
+
+                    // Checking that file exists
+                    if (QFile(oldRepFile).exists()){
+                        // The file exist so it needs to me moved to the old rep dir
+                        QString destinationFile = oldRepDir + "/" + rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString() + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm")  ;
+                        if (!QFile::copy(oldRepFile,destinationFile)){
+                            log.appendError("Could not copy file " + oldRepFile + " to " + destinationFile + ". Cannto save reprocessed report");
+                            rxDP.clearAll();
+                            socket->disconnectFromHost();
+                            return;
+                        }
+                    }
+                    else{
+                        // This should not happen. However as the report does not exists then there is nothing to do.
+                        log.appendWarning("Report " + oldRepFile + " should be a reprocessed report, however the file does not exist");
+                    }
                 }
 
             }

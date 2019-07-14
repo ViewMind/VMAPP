@@ -28,7 +28,7 @@ inst_uid = 0;
 
 enable_local_db_bkp = true;
 
-configure_options = PIYN2D;
+configure_options = PBYN2D;
 
 reading_algorithm_version = 1;
 binding_algorithm_version = 1;

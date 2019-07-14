@@ -164,7 +164,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         info[KEY_ISUPTODATE] = flist.isUpToDate;
         info[KEY_FILELIST] = flist.fileList.join("|");
 
-        qWarning() << "REP FILE: " << repfile << "FILE LIST: " << flist.fileList;
+        //qWarning() << "REP FILE: " << repfile << "FILE LIST: " << flist.fileList;
 
         repFileInfo << info;
         repData << data;

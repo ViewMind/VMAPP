@@ -80,6 +80,7 @@ public:
     Q_INVOKABLE QStringList getProtocolList(bool full) { return lim.getProtocolList(full); }
 
     //******************** Report Related Functions ***************************
+    Q_INVOKABLE QString getEvaluationID(const QString &existingFile);
     Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);
     Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, QString patuid, qint32 type);
@@ -94,7 +95,7 @@ signals:
     void synchDone();
 
     // Signal to FlowControl, indicating the next file set to process.
-    void fileSetReady(const QStringList &fileSet);
+    void fileSetReady(const QStringList &fileSet, const QString &evaluationID);
 
 
 public slots:

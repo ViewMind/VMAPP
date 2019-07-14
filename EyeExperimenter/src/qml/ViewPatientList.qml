@@ -374,7 +374,7 @@ VMBase {
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
         connectionDialog.open();
-        flowControl.requestDataReprocessing(reportName,fileList);
+        flowControl.requestDataReprocessing(reportName,fileList,loader.getEvaluationID(reportName));
     }
 
     function openDatSelectionDialog(){
@@ -393,7 +393,7 @@ VMBase {
         //loader.prepareForRequestOfPendingReports();
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
-        connectionDialog.open();
+        connectionDialog.open();        
         flowControl.requestReportData();
     }
 

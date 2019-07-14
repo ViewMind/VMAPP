@@ -10,6 +10,7 @@ const QString LocalInformationManager::DOCTOR_UPDATE         = "DOCTOR_UPDATE";
 const QString LocalInformationManager::DOCTOR_PASSWORD       = "DOCTOR_PASSWORD";
 const QString LocalInformationManager::DOCTOR_VALID          = "DOCTOR_VALID";
 const QString LocalInformationManager::DOCTOR_HIDDEN         = "DOCTOR_HIDDEN";
+const QString LocalInformationManager::EVALUATION_COUNTER    = "EVALUATION_COUNTER";
 const QString LocalInformationManager::FLAG_VIEWALL          = "FLAG_VIEWALL";
 const QString LocalInformationManager::PROTOCOLS             = "PROTOCOLS";
 const QString LocalInformationManager::PROTOCOL_VALID        = "PROTOCOL_VALID";
@@ -523,11 +524,17 @@ void LocalInformationManager::loadDB(QString eyeexpid, QString instUID, QString 
         reader >> localDBVersion;
         reader >> localDB;
         file.close();
+
+        if (!localDB.contains(EVALUATION_COUNTER)){
+            localDB[EVALUATION_COUNTER] = 0;
+        }
+
     }
     else{
         log.appendWarning("Set DB File: " + fileName + " does not exist");
         localDB[DOCTOR_COUNTER] = 0;
         localDB[PATIENT_COUNTER] = 0;
+        localDB[EVALUATION_COUNTER] = 0;
         backupDB();
         return;
     }
@@ -571,6 +578,7 @@ void LocalInformationManager::backupDB(){
 void LocalInformationManager::printDBToConsole(){
     qWarning() << "DOCTOR COUNTER: " + localDB.value(DOCTOR_COUNTER).toString();
     qWarning() << "PATIENT COUNTER: " + localDB.value(PATIENT_COUNTER).toString();
+    qWarning() << "EVALUATION COUNTER" + localDB.value(EVALUATION_COUNTER).toString();
     qWarning() << "VIEW ALL FLAG" << localDB.value(FLAG_VIEWALL).toBool();
     qWarning() << "PROTOCOLS" << localDB.value(PROTOCOLS).toStringList();
     QStringList maps;
@@ -593,6 +601,7 @@ QString LocalInformationManager::printDBToString() const{
     QString ans;
     ans = ans +   "DOCTOR COUNTER: " + localDB.value(DOCTOR_COUNTER).toString() + "\n";
     ans = ans +   "PATIENT COUNTER: " + localDB.value(PATIENT_COUNTER).toString()+ "\n";
+    ans = ans +   "EVALUATION COUNTER: " + localDB.value(EVALUATION_COUNTER).toString()+ "\n";
     if (localDB.value(FLAG_VIEWALL).toBool()) ans = ans +   "VIEW ALL FLAG: true\n";
     else ans = ans +   "VIEW ALL FLAG: false\n";
     ans = ans +   "PROTOCOLS: '" + localDB.value(PROTOCOLS).toStringList().join("','")+ "'\n";
@@ -661,6 +670,16 @@ QString LocalInformationManager::newPatientID(){
     id = "P" + id;
     drcounter++;
     localDB[PATIENT_COUNTER] = drcounter;
+    return id;
+}
+
+QString LocalInformationManager::newEvaluationID(){
+    quint64 evalCounter = localDB.value(EVALUATION_COUNTER).toInt();
+    QString id = QString::number(evalCounter);
+    while (id.length() < EVAL_ID_LENGTH) id = "0" + id;
+    id = "E" + id;
+    evalCounter++;
+    localDB[EVALUATION_COUNTER] = evalCounter;
     return id;
 }
 

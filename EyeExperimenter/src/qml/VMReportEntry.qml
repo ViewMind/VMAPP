@@ -94,7 +94,7 @@ Item {
         width: viewReport.columnWidth
         anchors.left: bindingRect.right
         anchors.top: parent.top
-        visible: vmIsUpToDate
+        visible: (vmIsUpToDate || (vmDate === viewResults.vmDEMO_DATE))
         Text {
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
@@ -107,7 +107,7 @@ Item {
 
     VMButton {
         id: btnFetchReport
-        visible: !vmIsUpToDate
+        visible: !statusRectText.visible
         vmText: loader.getStringForKey("viewshowreports_diagReprocess");
         height: vmHeight
         width: viewReport.columnWidth
