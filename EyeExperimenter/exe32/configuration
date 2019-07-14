@@ -30,8 +30,8 @@ enable_local_db_bkp = true;
 
 configure_options = PBYN2D;
 
-reading_algorithm_version = 1;
-binding_algorithm_version = 1;
+#reading_algorithm_version = 1;
+#binding_algorithm_version = 1;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #

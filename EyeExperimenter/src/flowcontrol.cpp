@@ -229,6 +229,7 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
     }
 
     //qWarning() << "Saved expgen";
+    qWarning() << "Evaluation ID: " << evaluationID;
     error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_RESULT_ENTRY_ID,evaluationID);
     if (!error.isEmpty()){
         logger.appendError("WRITING EYE REP GEN FILE: " + error);
