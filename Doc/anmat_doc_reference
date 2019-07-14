@@ -67,4 +67,26 @@ Nombre: CSV_RD_V1
 Archivo: reading_en_2_2019_01_01_10_00.csv
 Que es: Matriz de datos intermedia resultante de procesar READING_DAT_V1
 
+=================================== 14/07/2019 ===================================
+
+Cambios
+CONF_GLOBAL_V1 ==> CONF_GLOBAL_V2  (No realizado)
+Motivo: Contiene dos variables nuevas que indican que la última version de los algoritmos de binding y de reading (ambas en 1 actualmente)
+
+LOCAL_DB_V1    ==> LOCAL_DB_V2  (No realizado)
+Motivo: Contiene una nueva variable que es el contador de evaluaciones (en 0).
+
+REP_READ_EN_B2l2_V1  ==> REP_READ_EN_B2l2_V2
+Motivo: Contiene toda la información con la cual se genero lo que implica muchas variables mas incluyendo la versión de los algoritmos con lo que se generó. 
+
+REP_IMG_V1           ==> REP_IMG_V2
+Motivo: Cambian los textos con los cuales se llaman a ciertas variables
+
+CSV_BC_V1 ==> CSV_BC_V2
+Motivo: Posee dos columnas nuevas. Las mismas se generan para su uso en investigación a futuro. Pero no se utilizan en los calculos de reportes. 
+
+CSV_UC_V1 ==> CSV_UC_V2
+Motivo: Posee dos columnas nuevas. Las mismas se generan para su uso en investigación a futuro. Pero no se utilizan en los calculos de reportes. 
+
+
 
