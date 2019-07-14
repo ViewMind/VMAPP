@@ -46,13 +46,13 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
                 reading = parts.at(1);
                 binding = "N/A";
                 // This is very old. Before ther could be more than one study per day. So just the date is used a code.
-                binding_code = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
+                reading_code = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
             }
             else{
                 reading = "N/A";
                 binding = parts.at(1);
                 // This is very old. Before ther could be more than one study per day. So just the date is used a code.
-                reading_code = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
+                binding_code = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
             }
             date = parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2);
             break;
@@ -162,7 +162,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         info[KEY_REPNAME] = repfile;
         info[KEY_SELFLAG] = false;
         info[KEY_ISUPTODATE] = flist.isUpToDate;
-        info[KEY_FILELIST] = flist.fileList;
+        info[KEY_FILELIST] = flist.fileList.join("|");
 
         qWarning() << "REP FILE: " << repfile << "FILE LIST: " << flist.fileList;
 
@@ -244,6 +244,7 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
                 else{
                     logger.appendError("Searching for processed files to match reading code: " + algver.reading_code
                                                                               + " but found no matches in processed directory " + processed_data_dir);
+                    ans.isUpToDate = true;
                 }
             }
         }
@@ -281,7 +282,7 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
             // No info available so the file list needs to be constructed from the codes.
             QString processed_data_dir = directory + "/" + DIRNAME_PROCESSED_DATA;
             QStringList filters; filters << "binding*.dat" << "binding*.datf";
-            QStringList processedFiles = QDir(processed_data_dir).entryList(filters,QDir::Files|QDir::NoDotAndDotDot);
+            QStringList processedFiles = QDir(processed_data_dir).entryList(filters,QDir::Files|QDir::NoDotAndDotDot,QDir::Time);
             QStringList matches;
             if (processedFiles.isEmpty()){
                 logger.appendError("Searching for processed files to match binding code: " + algver.binding_code
@@ -291,7 +292,25 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
                 for (qint32 i = 0; i < processedFiles.size(); i++){
                     if (processedFiles.at(i).contains(algver.binding_code)) matches << processedFiles.at(i);
                 }
-                if (matches.size() == 2){
+                if (matches.size() >= 2){
+
+                    if (matches.size() > 2){
+                        // Sorting to UC and BC
+                        QStringList bclist;
+                        QStringList uclist;
+                        QStringList temp;
+                        for (qint32 j = 0; j < matches.size(); j++){
+                            if (matches.at(j).startsWith(FILE_OUTPUT_BINDING_BC)) bclist << matches.at(j);
+                            else if (matches.at(j).startsWith(FILE_OUTPUT_BINDING_UC)) uclist << matches.at(j);
+                        }
+
+                        temp << bclist.first() << uclist.first();
+                        logger.appendError("Searching for processed files to match binding code: " + algver.binding_code
+                                                                    + " but found more than two matches in processed directory " + processed_data_dir
+                                                                    + ". Matches were: " + matches.join(", ") + ". Will use: " + temp.join(", "));
+                        matches.clear();
+                        matches = temp;
+                    }
 
                     // Must check that one is a UC file and the other is a BC file.
                     QString bc = "";
@@ -314,17 +333,15 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
                         if (uc.isEmpty()) logger.appendError("Searching for processed files to match binding code: " + algver.binding_code
                                                              + " in processed directory " + processed_data_dir
                                                              + ". Found 2 matches but could not determine UC: " + matches.join(", "));
+                        ans.isUpToDate = true;
 
                     }
 
                 }
                 else{
-                    if (matches.isEmpty()) logger.appendError("Searching for processed files to match binding code: " + algver.binding_code
+                    logger.appendError("Searching for processed files to match binding code: " + algver.binding_code
                                                                               + " but found no matches in processed directory " + processed_data_dir);
-                    else logger.appendError("Searching for processed files to match binding code: " + algver.reading_code
-                                            + " but found more than two matches in processed directory " + processed_data_dir
-                                            + ". Matches were: " + matches.join(", ") );
-
+                    ans.isUpToDate = true;
                 }
             }
         }

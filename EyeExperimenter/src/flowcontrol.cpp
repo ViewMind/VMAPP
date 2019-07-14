@@ -11,6 +11,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *
     experiment = nullptr;
     monitor = nullptr;
     demoTransaction = false;
+    reprocessRequest = false;
     this->setVisible(false);
 
     uimap = ui;
@@ -124,6 +125,14 @@ void FlowControl::requestReportData(){
     emit(requestFileSet());
 }
 
+void FlowControl::requestDataReprocessing(const QString &reportName, const QString &fileList){
+    sslTransactionAllOk = false;
+    reprocessRequest = true;
+    QStringList fileSet;
+    fileSet << reportName << fileList.split("|",QString::SkipEmptyParts);
+    onFileSetEmitted(fileSet);
+}
+
 void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
 
     //qWarning() << "Processing File Set: " << fileSetAndName;
@@ -160,28 +169,64 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
     configuration->addKeyValuePair(CONFIG_REPORT_FILENAME,expectedFileName);
 
     QString error;
+    QString oldRepFile = "";
     QStringList toSave;
 
     // Setting the protocol name
 
     toSave << CONFIG_PATIENT_AGE
-           // Processing Parameters
+              // Processing Parameters
            << CONFIG_MOVING_WINDOW_DISP << CONFIG_MIN_FIXATION_LENGTH << CONFIG_SAMPLE_FREQUENCY
            << CONFIG_DISTANCE_2_MONITOR << CONFIG_XPX_2_MM << CONFIG_YPX_2_MM
            << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT
            << CONFIG_REPORT_FILENAME << CONFIG_PROTOCOL_NAME
-           // Frequency check parameters
+              // Frequency check parameters
            << CONFIG_TOL_MAX_PERIOD_TOL << CONFIG_TOL_MIN_PERIOD_TOL
            << CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL << CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL
-           << CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES << CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS;
+           << CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES << CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS
+              // Record keeping parameters.
+           << CONFIG_INST_ETSERIAL;
 
-    for (qint32 i = 0; i < toSave.size(); i++){
-        error = configuration->saveValueToFile(expgenfile,COMMON_TEXT_CODEC,toSave.at(i));
-        if (!error.isEmpty()){
-            logger.appendError("WRITING EYE REP GEN FILE: " + error);
+    if (reprocessRequest){
+        // This means that the report file name exists, so it needs to be loaded.
+        ConfigurationManager existingRepFile;
+
+        // In this case the entry ID must be added if exists
+        toSave << CONFIG_RESULT_ENTRY_ID;
+
+        // This will be sent to the server.
+        oldRepFile = expectedFileName;
+
+        if (!existingRepFile.loadConfiguration(configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + expectedFileName,COMMON_TEXT_CODEC)){
+            logger.appendError("While attempting to reprocess file: " + configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + expectedFileName
+                               + " got error on loading: " + existingRepFile.getError());
             sslTransactionAllOk = false;
+            reprocessRequest = false;
             emit(sslTransactionFinished());
             return;
+        }
+        ConfigurationManager eyerepgen;
+        for (qint32 i = 0; i < toSave.size(); i++){
+            if (existingRepFile.containsKeyword(toSave.at(i))) eyerepgen.addKeyValuePair(toSave.at(i),existingRepFile.getString(toSave.at(i)));
+            else eyerepgen.addKeyValuePair(toSave.at(i),configuration->getString(toSave.at(i)));
+        }
+        if (!eyerepgen.saveToFile(expgenfile,COMMON_TEXT_CODEC)){
+            logger.appendError("WRITING EYE REP GEN FILE in reprocessing: " + expgenfile + ", could not open file for writing");
+            sslTransactionAllOk = false;
+            reprocessRequest = false;
+            emit(sslTransactionFinished());
+            return;
+        }
+    }
+    else{
+        for (qint32 i = 0; i < toSave.size(); i++){
+            error = configuration->saveValueToFile(expgenfile,COMMON_TEXT_CODEC,toSave.at(i));
+            if (!error.isEmpty()){
+                logger.appendError("WRITING EYE REP GEN FILE: " + error);
+                sslTransactionAllOk = false;
+                emit(sslTransactionFinished());
+                return;
+            }
         }
     }
 
@@ -206,6 +251,7 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
         emit(sslTransactionFinished());
         return;
     }
+
 
     for (qint32 i = 0; i < fileSet.size(); i++){
         if (fileSet.at(i).startsWith(FILE_OUTPUT_READING)){
@@ -239,7 +285,7 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName){
 
     if (!demoTransaction) fileSetSentToProcess = fileSet;
     //qWarning() << "Requesting report for file set" << fileSetSentToProcess;
-    sslDataProcessingClient->requestReport(!demoTransaction);
+    sslDataProcessingClient->requestReport(!demoTransaction,oldRepFile);
 
 }
 
@@ -254,6 +300,9 @@ void FlowControl::onDisconnectionFinished(){
         emit(sslTransactionFinished());
         return;
     }
+
+    // Ensuring that the preocessing is done.
+    reprocessRequest = false;
 
     if (sslTransactionAllOk) {
         moveProcessedFilesToProcessedFolder(fileSetSentToProcess);
@@ -593,7 +642,7 @@ void FlowControl::prepareSelectedReportIteration(){
             // Adding all the reading items.
             QStringList reading;
             reading << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION << CONFIG_RESULTS_EXECUTIVE_PROCESSES
-                                         << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY;
+                    << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY;
             addToReportItems(reading,report,titles,explanations,references);
         }
 

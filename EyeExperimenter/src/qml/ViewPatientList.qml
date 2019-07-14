@@ -370,6 +370,13 @@ VMBase {
         flowControl.startDemoTransaction();
     }
 
+    function reprocessRequest(reportName, fileList){
+        connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
+        connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
+        connectionDialog.open();
+        flowControl.requestDataReprocessing(reportName,fileList);
+    }
+
     function openDatSelectionDialog(){
         viewDatSelectionDiag.open();
     }

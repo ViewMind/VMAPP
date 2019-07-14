@@ -5,12 +5,12 @@ SSLDataProcessingClient::SSLDataProcessingClient(QObject *parent, ConfigurationM
     clientState = CS_CONNECTING;
 }
 
-void SSLDataProcessingClient::requestReport(bool saveData){
+void SSLDataProcessingClient::requestReport(bool saveData, const QString &oldRepFile){
     transactionIsOk = false;
-    connectToServer(saveData);
+    connectToServer(saveData,oldRepFile);
 }
 
-void SSLDataProcessingClient::connectToServer(bool saveData)
+void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldRepFile)
 {
     QString directory = config->getString(CONFIG_PATIENT_DIRECTORY);
     QString confFile = directory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
@@ -26,6 +26,7 @@ void SSLDataProcessingClient::connectToServer(bool saveData)
 
     txDP.clearAll();
     txDP.addString(config->getString(CONFIG_DOCTOR_UID),DataPacket::DPFI_DOCTOR_ID);
+    qWarning() << "Hashing patient UID: " << config->getString(CONFIG_PATIENT_UID);
     QString hash = QCryptographicHash::hash(config->getString(CONFIG_PATIENT_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
     txDP.addString(hash,DataPacket::DPFI_PATIENT_ID);
     txDP.addValue(config->getInt(CONFIG_INST_UID),DataPacket::DPFI_DB_INST_UID);
@@ -44,11 +45,15 @@ void SSLDataProcessingClient::connectToServer(bool saveData)
 
     // adding the the demo mode.
     qreal demo;
+
     if (saveData) demo = 0;
     else demo = 1;
 
-    txDP.addValue(demo,DataPacket::DPFI_DEMO_MODE);
+    txDP.addValue(demo,DataPacket::DPFI_DEMO_MODE);    
     //txDP.addValue(0,DataPacket::DPFI_DEMO_MODE);
+    txDP.addString(oldRepFile,DataPacket::DPFI_OLD_REP_FILE);
+
+
 
     // Requesting connection and ack
     informationSent = false;
@@ -131,6 +136,40 @@ void SSLDataProcessingClient::on_readyRead(){
                 rxDP.clearBufferedData();
                 socket->disconnectFromHost();
                 return;
+            }
+
+            // If this is a reprocessed file we need to move it first to the old reports folder
+            if (rxDP.hasInformationField(DataPacket::DPFI_OLD_REP_FILE)){
+
+                QString oldRepFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
+                QString oldRepDir = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + QString(DIRNAME_OLD_REP);
+
+                QDir patientDir(config->getString(CONFIG_PATIENT_DIRECTORY));
+                if (!QDir(oldRepDir).exists()){
+                    if (!patientDir.mkdir(DIRNAME_OLD_REP)){
+                        log.appendError("Could not create old report directory: " + oldRepDir);
+                        rxDP.clearAll();
+                        socket->disconnectFromHost();
+                        return;
+                    }
+                }
+
+                // Checking that file exists
+                if (QFile(oldRepFile).exists()){
+                    // The file exist so it needs to me moved to the old rep dir
+                    QString destinationFile = oldRepDir + "/" + rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString() + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm")  ;
+                    if (!QFile::copy(oldRepFile,destinationFile)){
+                        log.appendError("Could not copy file " + oldRepFile + " to " + destinationFile + ". Cannto save reprocessed report");
+                        rxDP.clearAll();
+                        socket->disconnectFromHost();
+                        return;
+                    }
+                }
+                else{
+                    // This should not happen. However as the report does not exists then there is nothing to do.
+                    log.appendWarning("Report " + oldRepFile + " should be a reprocessed report, however the file does not exist");
+                }
+
             }
 
             // At this point the report was received and the processing code was ok.

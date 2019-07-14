@@ -19,6 +19,7 @@
 #define   DIRNAME_PROCESSED_DATA                        "processed_data"
 #define   DIRNAME_ARCHIVE                               "archive"
 #define   DIRNAME_ABORTED                               "exp_aborted"
+#define   DIRNAME_OLD_REP                               "old_reports"
 
 // The semaphore name. To prevent multiple instances for the same application
 #define   SEMAPHORE_NAME                                "viewind_eyeexperimenter_semaphore"
@@ -100,7 +101,7 @@
 #define   CONFIG_PATIENT_DISPLAYID                      "patient_displayid"
 #define   CONFIG_READING_ALG_VERSION                    "reading_algorithm_version"
 #define   CONFIG_BINDING_ALG_VERSION                    "binding_algorithm_version"
-#define   CONFIG_PREVIOUS_REPORT_NAME                   "previous_report_name"
+#define   CONFIG_RESULT_ENTRY_ID                        "result_entry_id"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0

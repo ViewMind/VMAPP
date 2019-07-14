@@ -7,6 +7,7 @@
  * **************************************************************************************************/
 
 #include "sslclient.h"
+#include <QDateTime>
 
 class SSLDataProcessingClient: public SSLClient
 {
@@ -18,7 +19,7 @@ public:
     ~SSLDataProcessingClient();
 
     // Main interface function. The only one required. Everything after this point is predefined.
-    void requestReport(bool saveData);
+    void requestReport(bool saveData, const QString &oldRepFile);
 
     // Obtaining code allows for more precise messages.
     quint8 getProcessingCode() {return processingACKCode;}
@@ -46,7 +47,7 @@ private:
     quint8 processingACKCode;
 
     // Starts the whole process
-    void connectToServer(bool saveData);
+    void connectToServer(bool saveData, const QString &oldRepFile);
 
 };
 

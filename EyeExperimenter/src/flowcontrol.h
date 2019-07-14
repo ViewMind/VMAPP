@@ -60,6 +60,7 @@ public:
     Q_INVOKABLE quint8 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
     Q_INVOKABLE void moveFileToArchivedFileFolder(const QString &filename);
     Q_INVOKABLE void doFrequencyAnalysis(const QString &filename);
+    Q_INVOKABLE void requestDataReprocessing(const QString &reportName, const QString &fileList);
 
 signals:
 
@@ -151,6 +152,9 @@ private:
 
     // Flag used to generate demo transaction
     bool demoTransaction;
+
+    // Flag to indicate transaction is reprocessing previous data.
+    bool reprocessRequest;
 
     // Helper function to selecte expanded binding files.
     QString getBindingExperiment(bool bc);

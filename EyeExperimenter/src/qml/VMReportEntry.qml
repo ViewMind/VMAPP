@@ -9,7 +9,7 @@ Item {
     property string vmBinding: ""
     property string vmReportName: ""
     property bool vmIsUpToDate: true
-    property var vmFileList: []
+    property string vmFileList: ""
     property int vmItemIndex: 0
 
     readonly property int vmHeight: 30

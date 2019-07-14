@@ -196,7 +196,9 @@ VMBase {
                     vmIsUpToDate: uptodate
                     vmFileList: filelist
                     onReprocessReport: {
-                        console.log("Requested reprocessing of report: " + reportName)
+                        //console.log("Requested reprocessing of report: " + vmReportName + " and FileList is: " + vmFileList)
+                        swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+                        viewPatList.reprocessRequest(vmReportName,vmFileList);
                     }
                 }
                 onCurrentIndexChanged: {
