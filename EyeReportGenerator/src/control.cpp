@@ -44,7 +44,7 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_FILE_READING]          = cmd;
     cv[CONFIG_FILE_FIELDING]         = cmd;
     cv[CONFIG_INST_ETSERIAL]         = cmd;
-    cv[CONFIG_PREVIOUS_REPORT_NAME]  = cmd;
+    cv[CONFIG_RESULT_ENTRY_ID]       = cmd;
 
     configuration.setupVerification(cv);
 
