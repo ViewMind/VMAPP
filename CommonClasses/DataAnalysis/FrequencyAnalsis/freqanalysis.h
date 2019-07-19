@@ -4,9 +4,9 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
-#include "../../CommonClasses/common.h"
-#include "../../CommonClasses/Experiments/readingparser.h"
-#include "../../CommonClasses/Experiments/bindingparser.h"
+#include "../../../CommonClasses/common.h"
+#include "../../../CommonClasses/Experiments/readingparser.h"
+#include "../../../CommonClasses/Experiments/bindingparser.h"
 
 #define  FILE_BINDING  "binding"
 

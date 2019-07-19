@@ -102,6 +102,8 @@
 #define   CONFIG_READING_ALG_VERSION                    "reading_algorithm_version"
 #define   CONFIG_BINDING_ALG_VERSION                    "binding_algorithm_version"
 #define   CONFIG_RESULT_ENTRY_ID                        "result_entry_id"
+#define   CONFIG_LAUCHER_CONNECT_TIMEOUT                "launcher_connect_timeout"
+#define   CONFIG_LAUCHER_DOWNLOAD_TIMEOUT               "launcher_download_timeout"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0
@@ -195,7 +197,7 @@
 
 // TCP Ports.
 static const quint16 TCP_PORT_RAW_DATA_SERVER            = 54918;
-static const quint16 TCP_PORT_DB_COMM                    = 54915;
+static const quint16 TCP_PORT_UPDATE_SERVER              = 54915;
 static const quint16 TCP_PORT_DATA_PROCESSING            = 54912;
 
 #endif // COMMON_H

@@ -1,7 +1,0 @@
-#!/bin/bash
-
-rm -rf MOCS_L
-rm -rf OBJS_L
-rm -rf QRC_L
-rm Makefile
-rm EyeServerMonitor

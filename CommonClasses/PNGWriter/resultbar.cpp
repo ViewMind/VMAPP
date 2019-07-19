@@ -14,10 +14,11 @@ bool ResultBar::setResultType(const QString &resultType){
     }
     else if (resultType == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
         // values << -4 << 18 << 40 << 62;
-        // largerBetter = false;
+        largerBetter = false;
         // Values are inverted so that larger values are better.
-        values << 50 << 60 << 70 << 80;
-        largerBetter = true;
+        //values << 50 << 60 << 70 << 80;
+        values << 28 << 36 << 44 << 51;
+        largerBetter = false;
     }
     else if (resultType == CONFIG_RESULTS_WORKING_MEMORY){
         values << 50 << 60 << 70 << 80;
@@ -50,9 +51,9 @@ void ResultBar::reportValueConversion(){
     if (resType == CONFIG_RESULTS_READ_PREDICTED_DETERIORATION){
         value = value*100;
     }
-    else if (resType == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
-        value = (100-value);
-    }
+//    else if (resType == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
+//        value = (100-value);
+//    }
     else if (resType == CONFIG_RESULTS_BINDING_CONVERSION_INDEX){
         value = value*100;
     }
