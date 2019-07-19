@@ -24,10 +24,13 @@ VMSoftwareSuite/EyeServer/bin/EyeServerMonitor
 VMSoftwareSuite/EyeServer/bin/EyeServer
 VMSoftwareSuite/EyeServer/bin/QRC/
 VMSoftwareSuite/EyeServer/bin/output/
+VMSoftwareSuite/EyeServer/etdir/
 VMSoftwareSuite/EyeServerMonitor/bin
 
-VMSoftwareSuite/EyeReportGenerator/bin/
-VMSoftwareSuite/EyeReportGenerator/exe/
+VMSoftwareSuite/EyeReportGenerator/bin/MOCS
+VMSoftwareSuite/EyeReportGenerator/bin/OBJS
+VMSoftwareSuite/EyeReportGenerator/bin/QRC
+VMSoftwareSuite/EyeReportGenerator/bin/EyeReportGen
 
 VMSoftwareSuite/EyeExperimenter/exe32
 
