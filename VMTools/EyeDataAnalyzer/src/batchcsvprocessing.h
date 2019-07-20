@@ -3,10 +3,10 @@
 
 #include <QThread>
 
-#include "../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpimages.h"
-#include "../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpreading.h"
-#include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
-#include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
+#include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpimages.h"
+#include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpreading.h"
+#include "../../../CommonClasses/DatFileInfo/datfileinfoindir.h"
+#include "../../../CommonClasses/DataAnalysis/rawdataprocessor.h"
 #include "patientnamemapmanager.h"
 
 #define UNIFIED_CSV_ID_DISPLAY_ID    0

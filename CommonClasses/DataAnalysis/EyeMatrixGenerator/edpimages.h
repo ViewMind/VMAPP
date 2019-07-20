@@ -2,8 +2,8 @@
 #define EDPIMAGES_H
 
 #include "edpbase.h"
-#include "../../CommonClasses/common.h"
-#include "../../CommonClasses/Experiments/bindingparser.h"
+#include "../../common.h"
+#include "../../Experiments/bindingparser.h"
 
 // Warning threshold for low number of data points.
 #define   BINDING_WARNING_NUM_DATAPOINTS                10

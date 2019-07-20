@@ -4,7 +4,7 @@
 #include <QProcess>
 #include <QFileInfo>
 
-#include "../../CommonClasses/SQLConn/dbdescription.h"
+#include "../../SQLConn/dbdescription.h"
 #include "../../ConfigurationManager/configurationmanager.h"
 #include "../../common.h"
 

@@ -52,7 +52,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.resultBar.setResultType(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION);
         d.resultBar.setValue(ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));
         d.value = d.resultBar.getValue();
-        data2Show << d;
+        //data2Show << d;
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(1);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(1);

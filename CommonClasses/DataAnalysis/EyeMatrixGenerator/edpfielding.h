@@ -2,7 +2,7 @@
 #define EDPFIELDING_H
 
 #include "edpbase.h"
-#include "../../CommonClasses/Experiments/fieldingmanager.h"
+#include "../../Experiments/fieldingmanager.h"
 
 // Defines for fielding experiment raw data file
 #define   FIELDING_TI                                   0

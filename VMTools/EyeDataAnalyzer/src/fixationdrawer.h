@@ -2,10 +2,10 @@
 #define FIXATIONDRAWER_H
 
 #include <QDir>
-#include "../../CommonClasses/Experiments/readingmanager.h"
-#include "../../CommonClasses/Experiments/bindingmanager.h"
-#include "../../CommonClasses/Experiments/fieldingmanager.h"
-#include "../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
+#include "../../../CommonClasses/Experiments/readingmanager.h"
+#include "../../../CommonClasses/Experiments/bindingmanager.h"
+#include "../../../CommonClasses/Experiments/fieldingmanager.h"
+#include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
 class FixationDrawer
 {

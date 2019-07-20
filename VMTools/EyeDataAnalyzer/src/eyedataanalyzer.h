@@ -22,7 +22,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "5.1.5"
+#define   PROGRAM_VERSION              "5.1.5 - NO COGNITIVE IMPAIRMENT"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -31,12 +31,12 @@
 #define   VIEW_0_DATABASE_VIEW          0
 #define   VIEW_1_PROCESSING_VIEW        1
 
-#include "../../CommonClasses/HTMLWriter/htmlwriter.h"
-#include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
-#include "../../CommonClasses/PNGWriter/imagereportdrawer.h"
-#include "../../CommonClasses/PNGWriter/repfileinfo.h"
-#include "../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
-#include "../../CommonClasses/DataPacket/datapacket.h"
+#include "../../../CommonClasses/HTMLWriter/htmlwriter.h"
+#include "../../../CommonClasses/DataAnalysis/rawdataprocessor.h"
+#include "../../../CommonClasses/PNGWriter/imagereportdrawer.h"
+#include "../../../CommonClasses/PNGWriter/repfileinfo.h"
+#include "../../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
+#include "../../../CommonClasses/DataPacket/datapacket.h"
 #include "fixationdrawer.h"
 #include "patientnamemapmanager.h"
 #include "waitdialog.h"

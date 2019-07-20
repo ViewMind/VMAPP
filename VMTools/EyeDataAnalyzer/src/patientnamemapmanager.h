@@ -3,10 +3,10 @@
 
 #include <QDataStream>
 #include <QHash>
-#include "../../CommonClasses/common.h"
-#include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../CommonClasses/VariantMapSerializer/variantmapserializer.h"
-#include "../../CommonClasses/SQLConn/dbdescription.h"
+#include "../../../CommonClasses/common.h"
+#include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../../CommonClasses/VariantMapSerializer/variantmapserializer.h"
+#include "../../../CommonClasses/SQLConn/dbdescription.h"
 
 #define FILENAME_DBDATA_MAP  "00drpatdata.dat"
 #define FILENAME_PATUID_MAP  "00uidpuidmap.dat"

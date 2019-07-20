@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>../../CommonClasses/PNGWriter/report_text/English</file>
-        <file>../../CommonClasses/PNGWriter/report_text/GothamBlackRegular.otf</file>
-        <file>../../CommonClasses/PNGWriter/report_text/GothamBold.otf</file>
-        <file>../../CommonClasses/PNGWriter/report_text/GothamBook.otf</file>
-        <file>../../CommonClasses/PNGWriter/report_text/GothamLight.otf</file>
-        <file>../../CommonClasses/PNGWriter/report_text/GothamMedium.otf</file>
-        <file>../../CommonClasses/PNGWriter/report_text/Spanish</file>
-        <file>../../CommonClasses/PNGWriter/report_text/viewmind.png</file>
+        <file>../../../CommonClasses/PNGWriter/report_text/English</file>
+        <file>../../../CommonClasses/PNGWriter/report_text/GothamBlackRegular.otf</file>
+        <file>../../../CommonClasses/PNGWriter/report_text/GothamBold.otf</file>
+        <file>../../../CommonClasses/PNGWriter/report_text/GothamBook.otf</file>
+        <file>../../../CommonClasses/PNGWriter/report_text/GothamLight.otf</file>
+        <file>../../../CommonClasses/PNGWriter/report_text/GothamMedium.otf</file>
+        <file>../../../CommonClasses/PNGWriter/report_text/Spanish</file>
+        <file>../../../CommonClasses/PNGWriter/report_text/viewmind.png</file>
     </qresource>
 </RCC>
