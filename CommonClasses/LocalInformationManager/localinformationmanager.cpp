@@ -149,91 +149,53 @@ bool LocalInformationManager::isDoctorValid(const QString &dr_uid){
     return localDB.value(DOCTOR_DATA).toMap().value(dr_uid).toMap().value(DOCTOR_VALID).toBool();
 }
 
-#ifdef USESSL
-bool LocalInformationManager::setupDBSynch(SSLDBClient *client){
+bool LocalInformationManager::createPatAndDrDBFiles(const QString &patid, const QString &drid){
 
-    client->setDBTransactionType(SQL_QUERY_TYPE_SET);
-    bool ans = false;
-
-    // Adding the doctor data that needs updating
-    QStringList druids = localDB.value(DOCTOR_DATA).toMap().keys();
-    for (qint32 i = 0; i < druids.size(); i++){
-        QVariantMap drmap = localDB.value(DOCTOR_DATA).toMap().value(druids.at(i)).toMap();
-
-        bool addDoctor = false;
-        if (!drmap.contains(DOCTOR_UPDATE)) addDoctor = true;
-        else if (drmap.value(DOCTOR_UPDATE).toBool()) addDoctor = true;
-
-        // Doctors who do not contain or whose valid flag is false do NOT update its information.
-        //if (!drmap.contains(DOCTOR_VALID)) continue;
-        //if (!drmap.value(DOCTOR_VALID).toBool()) continue;
-
-        if (addDoctor){
-            //qWarning() << "Adding the doctor";
-            QStringList columns;
-            QStringList values;
-            QSet<QString> avoid;
-            avoid << DOCTOR_UPDATE << DOCTOR_VALID << DOCTOR_PASSWORD << DOCTOR_HIDDEN;
-            QStringList keys = drmap.keys();
-            for (qint32 j = 0; j < keys.size(); j++){
-                //Y esta bqWarning() << "Key " << j << " out of " << keys.size();
-                if (avoid.contains(keys.at(j))) continue;
-                columns << keys.at(j);
-                values << drmap.value(keys.at(j)).toString();
-            }
-            ans = true;
-            client->appendSET(TABLE_DOCTORS,columns,values);
-        }
+    // Creating the doctor map
+    QVariantMap drmap = localDB.value(DOCTOR_DATA).toMap().value(drid).toMap();
+    ConfigurationManager drdata;
+    QSet<QString> avoid;
+    avoid << DOCTOR_UPDATE << DOCTOR_VALID << DOCTOR_PASSWORD << DOCTOR_HIDDEN;
+    QStringList keys = drmap.keys();
+    for (qint32 j = 0; j < keys.size(); j++){
+        if (avoid.contains(keys.at(j))) continue;
+        drdata.addKeyValuePair(keys.at(j),drmap.value(keys.at(j)));
     }
 
-    // Adding the patient data that needs updating.
-    QStringList patuids = localDB.value(PATIENT_DATA).toMap().keys();
-    for (qint32 j = 0; j < patuids.size(); j++){
-
-        QVariantMap patientMap = localDB.value(PATIENT_DATA).toMap().value(patuids.at(j)).toMap();
-
-        // Patient must be assiged to a VALIDATED doctor. Otherwise synchronization will not be possible as de Doctor is not in the DB.
-//        QString assignedDoctor = patientMap.value(TPATDATA_COL_DOCTORID).toString();
-//        if (!localDB.value(DOCTOR_DATA).toMap().value(assignedDoctor).toMap().value(DOCTOR_VALID).toBool()){
-//            continue;
-//        }
-
-        bool addPatient = false;
-        if (!patientMap.contains(PATIENT_UPDATE)) addPatient = true;
-        else if (patientMap.value(PATIENT_UPDATE).toBool()) addPatient = true;
-
-        if (addPatient){
-            QStringList columns;
-            QStringList values;
-            QSet<QString> avoid; avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID << TPATDATA_NONCOL_PROTOCOL;
-            QSet<QString> needToHash; needToHash << TPATDATA_COL_FIRSTNAME << TPATDATA_COL_LASTNAME;
-            QStringList keys = patientMap.keys();
-            for (qint32 k = 0; k < keys.size(); k++){
-                if (avoid.contains(keys.at(k))) continue;
-                columns << keys.at(k);
-                QString value = patientMap.value(keys.at(k)).toString();
-                if (needToHash.contains(keys.at(k))){
-                    value = QCryptographicHash::hash(value.toLatin1(),QCryptographicHash::Sha3_256).toHex();
-                }
-                values << value;
-            }
-
-            // Adding the Hashed patient ID.
-
-            QString hash = QCryptographicHash::hash(patientMap.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
-            columns << TPATDATA_COL_PUID;
-            //log.appendStandard(patientMap.value(TPATDATA_COL_PUID).toString() + "==>" + hash);
-            values << hash;
-
-            client->appendSET(TABLE_PATDATA,columns,values);
-            ans = true;
+    // Creating the patient map
+    ConfigurationManager patdata;
+    QVariantMap patientMap = localDB.value(PATIENT_DATA).toMap().value(patid).toMap();
+    avoid.clear();
+    avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID << TPATDATA_NONCOL_PROTOCOL;
+    QSet<QString> needToHash; needToHash << TPATDATA_COL_FIRSTNAME << TPATDATA_COL_LASTNAME;
+    QStringList keys = patientMap.keys();
+    for (qint32 k = 0; k < keys.size(); k++){
+        if (avoid.contains(keys.at(k))) continue;
+        QString value = patientMap.value(keys.at(k)).toString();
+        if (needToHash.contains(keys.at(k))){
+            value = QCryptographicHash::hash(value.toLatin1(),QCryptographicHash::Sha3_256).toHex();
         }
+        patdata.addKeyValuePair(keys.at(k),value);
     }
 
-    return ans;
+    // Adding the Hashed patient ID.
+    QString hash = QCryptographicHash::hash(patientMap.value(TPATDATA_COL_PUID).toString().toLatin1(),QCryptographicHash::Sha3_512).toHex();
+    patdata.addKeyValuePair(TPATDATA_COL_PUID,hash);
 
+    // Saving to the patient directory.
+    QString patdir = DIRNAME_RAWDATA + QString("/") + patid + "/";
+    if (!drdata.saveToFile(patdir + FILE_DOCDATA_DB,COMMON_TEXT_CODEC)){
+        log.appendError("Could not create doctor data file: " + patdir + FILE_DOCDATA_DB);
+        return false;
+    }
+
+    if (!patdata.saveToFile(patdir + FILE_PATDATA_DB,COMMON_TEXT_CODEC)){
+        log.appendError("Could not create patient data file: " + patdir + FILE_PATDATA_DB);
+        return false;
+    }
+
+    return true;
 }
-#endif
 
 void LocalInformationManager::fillPatientDatInformation(const QString &patient){
 

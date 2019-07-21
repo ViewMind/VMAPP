@@ -454,7 +454,7 @@ void Loader::addNewPatientToDB(QVariantMap dbdata){
 void Loader::startDBSync(){
     // Adding all the data that needs to be sent.
     wasDBTransactionStarted = false;
-    if (lim.setupDBSynch(dbClient)){
+    if (lim.createPatAndDrDBFiles(dbClient)){
         // Running the transaction.
         wasDBTransactionStarted = true;
         dbClient->runDBTransaction();

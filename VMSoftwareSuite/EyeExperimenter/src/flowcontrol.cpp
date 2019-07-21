@@ -186,7 +186,8 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
            << CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL << CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL
            << CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES << CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS
               // Record keeping parameters.
-           << CONFIG_INST_ETSERIAL;
+           << CONFIG_INST_ETSERIAL
+           << CONFIG_DEMO_MODE;
 
     if (reprocessRequest){
         // This means that the report file name exists, so it needs to be loaded.
@@ -208,6 +209,9 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
             if (existingRepFile.containsKeyword(toSave.at(i))) eyerepgen.addKeyValuePair(toSave.at(i),existingRepFile.getString(toSave.at(i)));
             else eyerepgen.addKeyValuePair(toSave.at(i),configuration->getString(toSave.at(i)));
         }
+
+        eyerepgen.addKeyValuePair(CONFIG_REPROCESS_REQUEST,true);
+
         if (!eyerepgen.saveToFile(expgenfile,COMMON_TEXT_CODEC)){
             logger.appendError("WRITING EYE REP GEN FILE in reprocessing: " + expgenfile + ", could not open file for writing");
             sslTransactionAllOk = false;

@@ -1,8 +1,6 @@
 #ifndef LOCALINFORMATIONMANAGER_H
 #define LOCALINFORMATIONMANAGER_H
 
-#define USESSL
-
 #include <QVariantMap>
 #include <QDataStream>
 #include <QCryptographicHash>
@@ -13,11 +11,6 @@
 #include "../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
 #include "../../CommonClasses/VariantMapSerializer/variantmapserializer.h"
-
-
-#ifdef USESSL
-#include "sslclient/ssldbclient.h"
-#endif
 
 #define   DR_ID_LENGTH                                   4
 #define   PAT_ID_LENGTH                                  4
@@ -78,11 +71,8 @@ public:
     bool deleteDoctor(const QString &uid);
     void setDoctorData(const QString &uid, const QStringList &keys, const QVariantList &values);
 
-
     // Synch function. Returns false if the there is nothing to synch. (No changes to Doctor and Patient data).
-#ifdef USESSL
-    bool setupDBSynch(SSLDBClient *client);
-#endif
+    bool createPatAndDrDBFiles(const QString &patid, const QString &drid);
 
     // Interface with Dat Info Dir
     QStringList getFileListForPatient(const QString &patuid, qint32 whichList) const;

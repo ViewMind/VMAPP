@@ -5,9 +5,9 @@ SSLDataProcessingClient::SSLDataProcessingClient(QObject *parent, ConfigurationM
     clientState = CS_CONNECTING;
 }
 
-void SSLDataProcessingClient::requestReport(bool saveData, const QString &oldRepFile){
+void SSLDataProcessingClient::requestReport(bool isDemoMode, const QString &oldRepFile){
     transactionIsOk = false;
-    connectToServer(saveData,oldRepFile);
+    connectToServer(isDemoMode,oldRepFile);
 }
 
 void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldRepFile)
@@ -16,9 +16,13 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
     QString confFile = directory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
 
     // If oldRepFile is not empty, then this is a reprocessing request and therefore the files are in the processed_data folder.
-    if (!oldRepFile.isEmpty()) directory = directory + "/" + QString(DIRNAME_PROCESSED_DATA);
+    if (!oldRepFile.isEmpty()) {
+        reprocessRequest = true;
+        directory = directory + "/" + QString(DIRNAME_PROCESSED_DATA);
+    }
+    else reprocessRequest = false;
 
-    processingACKCode = RR_ALL_OK;
+    //processingACKCode = RR_ALL_OK;
 
     ConfigurationManager eyeGenConf;
     if (!eyeGenConf.loadConfiguration(confFile,COMMON_TEXT_CODEC)){
@@ -28,13 +32,21 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
     }
 
     txDP.clearAll();
-    txDP.addString(config->getString(CONFIG_DOCTOR_UID),DataPacket::DPFI_DOCTOR_ID);
-    //qWarning() << "Hashing patient UID: " << config->getString(CONFIG_PATIENT_UID);
     QString hash = QCryptographicHash::hash(config->getString(CONFIG_PATIENT_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
     txDP.addString(hash,DataPacket::DPFI_PATIENT_ID);
     txDP.addValue(config->getInt(CONFIG_INST_UID),DataPacket::DPFI_DB_INST_UID);
     txDP.addString(config->getString(CONFIG_INST_ETSERIAL),DataPacket::DPFI_DB_ET_SERIAL);
-    txDP.addFile(confFile,DataPacket::DPFI_PATIENT_FILE);
+    txDP.addFile(confFile,DataPacket::DPFI_CONF_FILE);
+    if (!txDP.addFile(directory + "/" + QString(FILE_PATDATA_DB),DataPacket::DPFI_PATIENT_FILE)){
+        log.appendError("Failed to load patient data file: " + directory + "/" + QString(FILE_PATDATA_DB));
+        emit(transactionFinished());
+        return;
+    }
+    if (!txDP.addFile(directory + "/" + QString(FILE_DOCDATA_DB),DataPacket::DPFI_DOCTOR_FILE)){
+        log.appendError("Failed to load doctor data file: " + directory + "/" + QString(FILE_DOCDATA_DB));
+        emit(transactionFinished());
+        return;
+    }
 
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC)){
         if (saveData) {
@@ -61,19 +73,7 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
         else txDP.addFile(":/demo_data/reading_2_2010_06_03_10_15.dat",DataPacket::DPFI_READING);
     }
 
-    // adding the the demo mode.
-    qreal demo;
-
-    if (saveData) demo = 0;
-    else demo = 1;
-
-    txDP.addValue(demo,DataPacket::DPFI_DEMO_MODE);
-    //txDP.addValue(0,DataPacket::DPFI_DEMO_MODE);
-    txDP.addString(oldRepFile,DataPacket::DPFI_OLD_REP_FILE);
-
     // Requesting connection and ack
-    informationSent = false;
-    //qWarning() << "Connecting to "  << config->getString(CONFIG_SERVER_ADDRESS) << TCP_PORT_DATA_PROCESSING;
     socket->connectToHostEncrypted(config->getString(CONFIG_SERVER_ADDRESS),TCP_PORT_DATA_PROCESSING);
 
     // Starting timeout timer.
@@ -82,12 +82,21 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
 }
 
 void SSLDataProcessingClient::on_encryptedSuccess(){
+    timer.stop();
     if (clientState == CS_CONNECTING){
-        log.appendStandard("LOG: Established encrypted connection to the server. Waiting for acknowledge ... ");
+        log.appendStandard("Established encrypted connection to the server. Sending the information ");
         rxDP.clearAll();
+        clientState = CS_WAIT_FOR_REPORT;
+        QByteArray ba = txDP.toByteArray();
+        qint64 num = socket->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            log.appendError("Unable to send the information to the server");
+            socket->disconnectFromHost();
+            return;
+        }
+        log.appendStandard("Sent requested information to server: " + QString::number(num) + " bytes");
         timer.stop();
-        clientState = CS_WAIT_FOR_ACK;
-        startTimeoutTimer(config->getInt(CONFIG_DATA_REQUEST_TIMEOUT)*1000);
+        startTimeoutTimer(config->getInt(CONFIG_WAIT_REPORT_TIMEOUT)*1000);
     }
     else {
         log.appendError("Invalid state upon encrypted success closing off the connection");
@@ -99,115 +108,89 @@ void SSLDataProcessingClient::on_encryptedSuccess(){
 
 void SSLDataProcessingClient::on_readyRead(){
 
-    if (clientState == CS_CONNECTING) return;
+    if (clientState != CS_WAIT_FOR_REPORT) return;
 
     quint8 errcode = rxDP.bufferByteArray(socket->readAll());
 
     if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
 
-        if (clientState == CS_WAIT_FOR_ACK){
-
-            if (rxDP.hasInformationField(DataPacket::DPFI_SEND_INFORMATION)){
-                // Since in the information was requested, it is now sent.
-                QByteArray ba = txDP.toByteArray();
-                qint64 num = socket->write(ba.constData(),ba.size());
-                if (num != ba.size()){
-                    log.appendError("Unable to send the information. Please try again.");
-                    socket->disconnectFromHost();
-                    return;
-                }
-                log.appendStandard("LOG: Sent requested information to server: " + QString::number(num) + " bytes");
-                rxDP.clearBufferedData();
-                clientState = CS_WAIT_FOR_REPORT;
-                timer.stop();
-                startTimeoutTimer(config->getInt(CONFIG_WAIT_REPORT_TIMEOUT)*1000);
-            }
-            else{
-                // This is not it and it should start again.
-                rxDP.clearBufferedData();
-                return;
-            }
-
+        if (!rxDP.hasInformationField(DataPacket::DPFI_PROCESSING_ACK)){
+            log.appendWarning("Received packet with no information field");
+            rxDP.clearBufferedData();
+            return;
         }
-        else{ // We are waiting for a report
 
-            if (!rxDP.hasInformationField(DataPacket::DPFI_PROCESSING_ACK)){
-                log.appendWarning("Received packet with no information field");
-                rxDP.clearBufferedData();
-                return;
-            }
+        timer.stop();
+        processingACKCode = rxDP.getField(DataPacket::DPFI_PROCESSING_ACK).data.toInt();
 
-            timer.stop();
-            processingACKCode = rxDP.getField(DataPacket::DPFI_PROCESSING_ACK).data.toInt();
-
-            if (processingACKCode != RR_ALL_OK){
-                //qWarning() << "SSDATAClent: Processing NOT OK. Code: " << processingACKCode;
-                rxDP.clearAll();
-                socket->disconnectFromHost();
-                return;
-            }
-
-            if (!rxDP.isInformationFieldOfType(DataPacket::DPFI_REPORT,DataPacket::DPFT_FILE)){
-                log.appendError("Received packet with no Processing error and No Report field");
-                rxDP.clearBufferedData();
-                socket->disconnectFromHost();
-                return;
-            }
-
-            // If this is a reprocessed file we need to move it first to the old reports folder
-            if (rxDP.hasInformationField(DataPacket::DPFI_OLD_REP_FILE)){
-
-                QString oldRepFileNameOnly = rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
-                QString oldRepFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + oldRepFileNameOnly;
-
-                //qWarning() << "OLDREPFILE ON RETURN" << "|" + oldRepFileNameOnly + "|";
-
-                if (!oldRepFileNameOnly.isEmpty()){
-                    QString oldRepDir = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + QString(DIRNAME_OLD_REP);
-
-                    QDir patientDir(config->getString(CONFIG_PATIENT_DIRECTORY));
-                    if (!QDir(oldRepDir).exists()){
-                        if (!patientDir.mkdir(DIRNAME_OLD_REP)){
-                            log.appendError("Could not create old report directory: " + oldRepDir);
-                            rxDP.clearAll();
-                            socket->disconnectFromHost();
-                            return;
-                        }
-                    }
-
-                    // Checking that file exists
-                    if (QFile(oldRepFile).exists()){
-                        // The file exist so it needs to me moved to the old rep dir
-                        QString destinationFile = oldRepDir + "/" + rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString() + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm")  ;
-                        if (!QFile::copy(oldRepFile,destinationFile)){
-                            log.appendError("Could not copy file " + oldRepFile + " to " + destinationFile + ". Cannto save reprocessed report");
-                            rxDP.clearAll();
-                            socket->disconnectFromHost();
-                            return;
-                        }
-                    }
-                    else{
-                        // This should not happen. However as the report does not exists then there is nothing to do.
-                        log.appendWarning("Report " + oldRepFile + " should be a reprocessed report, however the file does not exist");
-                    }
-                }
-
-            }
-
-            // At this point the report was received and the processing code was ok.
-            QString reportPath = rxDP.saveFile(config->getString(CONFIG_PATIENT_DIRECTORY),DataPacket::DPFI_REPORT);
-            if (reportPath.isEmpty()){
-                log.appendError("Could not save the report to the directory: " + reportPath + ". Please try again");
-            }
-            else{
-                log.appendStandard("Report saved to: " + reportPath);
-                config->addKeyValuePair(CONFIG_REPORT_PATH,reportPath);
-                transactionIsOk = true;
-            }
-
+        if (processingACKCode != EYESERVER_RESULT_OK){
+            log.appendError("Received a NOT Ok value from EyeServer: " + QString::number(processingACKCode));
             rxDP.clearAll();
             socket->disconnectFromHost();
+            return;
         }
+
+        if (!rxDP.isInformationFieldOfType(DataPacket::DPFI_REPORT,DataPacket::DPFT_FILE)){
+            log.appendError("Received packet with no Processing error and No Report field");
+            rxDP.clearBufferedData();
+            socket->disconnectFromHost();
+            return;
+        }
+
+        // If this is a reprocessed file we need to move it first to the old reports folder
+        if (reprocessRequest){
+
+            QString oldRepFileNameOnly = rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
+            QString oldRepFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + oldRepFileNameOnly;
+
+            //qWarning() << "OLDREPFILE ON RETURN" << "|" + oldRepFileNameOnly + "|";
+
+            if (!oldRepFileNameOnly.isEmpty()){
+                QString oldRepDir = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + QString(DIRNAME_OLD_REP);
+
+                QDir patientDir(config->getString(CONFIG_PATIENT_DIRECTORY));
+                if (!QDir(oldRepDir).exists()){
+                    if (!patientDir.mkdir(DIRNAME_OLD_REP)){
+                        log.appendError("Could not create old report directory: " + oldRepDir);
+                        rxDP.clearAll();
+                        socket->disconnectFromHost();
+                        return;
+                    }
+                }
+
+                // Checking that file exists
+                if (QFile(oldRepFile).exists()){
+                    // The file exist so it needs to me moved to the old rep dir
+                    QString destinationFile = oldRepDir + "/" + oldRepFileNameOnly + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm")  ;
+                    if (!QFile::copy(oldRepFile,destinationFile)){
+                        log.appendError("Could not copy file " + oldRepFile + " to " + destinationFile + ". Cannto save reprocessed report");
+                        rxDP.clearAll();
+                        socket->disconnectFromHost();
+                        return;
+                    }
+                }
+                else{
+                    // This should not happen. However as the report does not exists then there is nothing to do.
+                    log.appendWarning("Report " + oldRepFile + " should be a reprocessed report, however the file does not exist");
+                }
+            }
+
+        }
+
+        // At this point the report was received and the processing code was ok.
+        QString reportPath = rxDP.saveFile(config->getString(CONFIG_PATIENT_DIRECTORY),DataPacket::DPFI_REPORT);
+        if (reportPath.isEmpty()){
+            log.appendError("Could not save the report to the directory: " + reportPath + ". Please try again");
+        }
+        else{
+            log.appendStandard("Report saved to: " + reportPath);
+            config->addKeyValuePair(CONFIG_REPORT_PATH,reportPath);
+            transactionIsOk = true;
+        }
+
+        rxDP.clearAll();
+        socket->disconnectFromHost();
+
 
     }
     else if (errcode == DataPacket::DATABUFFER_RESULT_ERROR){

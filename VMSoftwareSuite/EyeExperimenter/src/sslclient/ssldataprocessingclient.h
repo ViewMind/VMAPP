@@ -36,15 +36,15 @@ private slots:
 
 private:
 
-    // Flag to indicate that the information has been sent
-    bool informationSent;
-
     // State of the communication process.
-    typedef enum {CS_CONNECTING, CS_WAIT_FOR_ACK, CS_WAIT_FOR_REPORT} ClientState;
+    typedef enum {CS_CONNECTING, CS_WAIT_FOR_REPORT} ClientState;
     ClientState clientState;
 
     // The last processing code.
     quint8 processingACKCode;
+
+    // Flag to indicate reprocessing.
+    bool reprocessRequest;
 
     // Starts the whole process
     void connectToServer(bool saveData, const QString &oldRepFile);
