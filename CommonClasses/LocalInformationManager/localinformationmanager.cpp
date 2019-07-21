@@ -168,7 +168,7 @@ bool LocalInformationManager::createPatAndDrDBFiles(const QString &patid, const 
     avoid.clear();
     avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID << TPATDATA_NONCOL_PROTOCOL;
     QSet<QString> needToHash; needToHash << TPATDATA_COL_FIRSTNAME << TPATDATA_COL_LASTNAME;
-    QStringList keys = patientMap.keys();
+    keys = patientMap.keys();
     for (qint32 k = 0; k < keys.size(); k++){
         if (avoid.contains(keys.at(k))) continue;
         QString value = patientMap.value(keys.at(k)).toString();

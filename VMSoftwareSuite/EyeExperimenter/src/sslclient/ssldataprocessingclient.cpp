@@ -17,12 +17,13 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
 
     // If oldRepFile is not empty, then this is a reprocessing request and therefore the files are in the processed_data folder.
     if (!oldRepFile.isEmpty()) {
-        reprocessRequest = true;
+        previousReportFile = oldRepFile;
         directory = directory + "/" + QString(DIRNAME_PROCESSED_DATA);
     }
-    else reprocessRequest = false;
+    else previousReportFile = "";
 
-    //processingACKCode = RR_ALL_OK;
+    // -1 Is a timeout code.
+    processingACKCode = -1;
 
     ConfigurationManager eyeGenConf;
     if (!eyeGenConf.loadConfiguration(confFile,COMMON_TEXT_CODEC)){
@@ -114,6 +115,7 @@ void SSLDataProcessingClient::on_readyRead(){
 
     if (errcode == DataPacket::DATABUFFER_RESULT_DONE){
 
+        timer.stop();
         if (!rxDP.hasInformationField(DataPacket::DPFI_PROCESSING_ACK)){
             log.appendWarning("Received packet with no information field");
             rxDP.clearBufferedData();
@@ -138,14 +140,13 @@ void SSLDataProcessingClient::on_readyRead(){
         }
 
         // If this is a reprocessed file we need to move it first to the old reports folder
-        if (reprocessRequest){
+        if (!previousReportFile.isEmpty()){
 
-            QString oldRepFileNameOnly = rxDP.getField(DataPacket::DPFI_OLD_REP_FILE).data.toString();
-            QString oldRepFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + oldRepFileNameOnly;
+            QString oldRepFile = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + previousReportFile;
 
-            //qWarning() << "OLDREPFILE ON RETURN" << "|" + oldRepFileNameOnly + "|";
+            //qWarning() << "OLDREPFILE ON RETURN" << "|" + previousReportFile + "|";
 
-            if (!oldRepFileNameOnly.isEmpty()){
+            if (!previousReportFile.isEmpty()){
                 QString oldRepDir = config->getString(CONFIG_PATIENT_DIRECTORY) + "/" + QString(DIRNAME_OLD_REP);
 
                 QDir patientDir(config->getString(CONFIG_PATIENT_DIRECTORY));
@@ -161,7 +162,7 @@ void SSLDataProcessingClient::on_readyRead(){
                 // Checking that file exists
                 if (QFile(oldRepFile).exists()){
                     // The file exist so it needs to me moved to the old rep dir
-                    QString destinationFile = oldRepDir + "/" + oldRepFileNameOnly + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm")  ;
+                    QString destinationFile = oldRepDir + "/" + previousReportFile + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm")  ;
                     if (!QFile::copy(oldRepFile,destinationFile)){
                         log.appendError("Could not copy file " + oldRepFile + " to " + destinationFile + ". Cannto save reprocessed report");
                         rxDP.clearAll();
@@ -189,12 +190,24 @@ void SSLDataProcessingClient::on_readyRead(){
         }
 
         rxDP.clearAll();
+
+        // Sending OK to Server.
+        txDP.clearAll();
+        txDP.addString("OK",DataPacket::DPFI_PROCESSING_ACK);
+        QByteArray ba = txDP.toByteArray();
+        qint64 num = socket->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            log.appendError("Unable to send the report received to the server");
+        }
+
+        clientState = CS_CONNECTING;
+        rxDP.clearAll();
         socket->disconnectFromHost();
-
-
     }
     else if (errcode == DataPacket::DATABUFFER_RESULT_ERROR){
+        timer.stop();
         log.appendError("Buffering data from the receiver");
+        clientState = CS_CONNECTING;
         rxDP.clearAll();
         socket->disconnectFromHost();
     }
@@ -214,18 +227,16 @@ void SSLDataProcessingClient::on_socketError(QAbstractSocket::SocketError error)
 //*************************************************************************************************************************
 
 void SSLDataProcessingClient::on_timeOut(){
+    timer.stop();
+    processingACKCode = -1;
     switch(clientState){
     case CS_CONNECTING:
-        log.appendError("Server connection notice did not arrive before the expected time. Closing connection. Please retry.");
+        log.appendError("Server connection notice did not arrive before the expected time. Closing connection");
         break;
     case CS_WAIT_FOR_REPORT:
-        log.appendError("Server generated report did not arrive before expected time. Closing connection. Please retry.");
+        log.appendError("Server generated report did not arrive before expected time. Closing connection");
         break;
-    case CS_WAIT_FOR_ACK:
-        log.appendError("Server request for information did not arrive before expected time. Closing connection. Please retry.");
-        break;
-    }
-    timer.stop();
+    }    
     socket->disconnectFromHost();
 }
 

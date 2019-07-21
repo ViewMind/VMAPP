@@ -10,7 +10,6 @@
 
 #include "../../../CommonClasses/LocalInformationManager/localinformationmanager.h"
 #include "Experiments/experiment.h"
-#include "sslclient/ssldbclient.h"
 #include "eye_experimenter_defines.h"
 #include "countries.h"
 #include "uiconfigmap.h"
@@ -37,7 +36,6 @@ public:
     Q_INVOKABLE int getCountryIndexFromCode(const QString &code) { return countries->getIndexFromCode(code); }
     Q_INVOKABLE QString loadTextFile(const QString &fileName);
     Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
-    Q_INVOKABLE QStringList getErrorMessageForDBCode();
     Q_INVOKABLE QStringList getFileListForPatient(QString patuid, qint32 type);
     Q_INVOKABLE QStringList getFileListCompatibleWithSelectedBC(QString patuid, qint32 selectedBC);
 
@@ -67,12 +65,12 @@ public:
     Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_PATIENT_UID));}
     Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide);
     Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdata);
-    Q_INVOKABLE void startDBSync();
     Q_INVOKABLE bool requestDrValidation(const QString &instPassword, qint32 selectedDr);
     Q_INVOKABLE bool verifyInstitutionPassword(const QString &instPass);
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
     Q_INVOKABLE bool getViewAllFlag() const {return lim.getViewAllFlag(); }
     Q_INVOKABLE void setViewAllFlag(bool flag) {lim.setViewAllFlag(flag); }
+    Q_INVOKABLE void updateCurrentDoctorAndPatientDBFiles();
 
     //******************** Protocol related functions ***************************
     Q_INVOKABLE bool addProtocol(const QString &p) { return lim.addProtocol(p); }
@@ -81,7 +79,6 @@ public:
 
     //******************** Report Related Functions ***************************
     Q_INVOKABLE QString getEvaluationID(const QString &existingFile);
-    Q_INVOKABLE bool wasDBTransactionOk() {if (wasDBTransactionStarted) return dbClient->getTransactionStatus(); else return true;}
     Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);
     Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, QString patuid, qint32 type);
     Q_INVOKABLE void reloadPatientDatInformation();
@@ -99,9 +96,6 @@ signals:
 
 
 public slots:
-    // For when the DB Transaction has finished.
-    void onDisconnectFromDB();
-
     // Request of the flow control for the next set of files to process.
     void onFileSetRequested();
 
@@ -123,10 +117,6 @@ private:
 
     // The list that holds list names and corresponding uids
     LocalInformationManager::DisplayLists nameInfoList;
-
-    // To connect to the DB in the server. Flags are required to provide the proper information to the QML side.
-    SSLDBClient *dbClient;
-    bool wasDBTransactionStarted;
 
     // Stores the data selected for processing.
     DatFileInfoInDir::ReportGenerationStruct reportGenerationStruct;

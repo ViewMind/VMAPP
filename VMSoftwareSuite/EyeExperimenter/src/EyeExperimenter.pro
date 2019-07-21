@@ -44,7 +44,6 @@ SOURCES += main.cpp \
     ../../../CommonClasses/Experiments/readingparser.cpp \
     ../../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp \
     sslclient/ssldataprocessingclient.cpp \
-    sslclient/ssldbclient.cpp \
     EyeTrackerInterface/GazePoint/eventdetection.cpp \
     EyeTrackerInterface/GazePoint/opengazecommand.cpp \
     EyeTrackerInterface/GazePoint/opengazeinterface.cpp \
@@ -56,6 +55,7 @@ SOURCES += main.cpp \
     Experiments/fieldingexperiment.cpp \
     Experiments/imageexperiment.cpp \
     Experiments/readingexperiment.cpp \
+    sslclient/sslclient.cpp
 
 
 HEADERS += \

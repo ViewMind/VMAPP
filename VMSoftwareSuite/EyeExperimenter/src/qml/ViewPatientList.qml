@@ -15,31 +15,6 @@ VMBase {
     property bool vmShowAll: false;
 
     Connections {
-        target: loader
-        onSynchDone: {
-            connectionDialog.close();
-            if (!loader.wasDBTransactionOk()){
-                var errorTitleMsg = loader.getErrorMessageForDBCode();
-                if (errorTitleMsg.length === 2){ // If the code was all ok but the transaction was NOT ok, then it was a communications error.
-                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROC_ACK;
-                    vmErrorDiag.vmErrorMessage = errorTitleMsg[1];
-                    vmErrorDiag.vmErrorTitle = errorTitleMsg[0];
-                    vmErrorDiag.open();
-                    return;
-                }
-                else{
-                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
-                    var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
-                    vmErrorDiag.vmErrorMessage = titleMsg[1];
-                    vmErrorDiag.vmErrorTitle = titleMsg[0];
-                    vmErrorDiag.open();
-                    return;
-                }
-            }
-        }
-    }
-
-    Connections {
         target: flowControl
         onSslTransactionFinished:{
             connectionDialog.close();
@@ -374,6 +349,7 @@ VMBase {
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
         connectionDialog.open();
+        loader.updateCurrentDoctorAndPatientDBFiles();
         flowControl.requestDataReprocessing(reportName,fileList,loader.getEvaluationID(reportName));
     }
 
@@ -393,7 +369,8 @@ VMBase {
         //loader.prepareForRequestOfPendingReports();
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
-        connectionDialog.open();        
+        connectionDialog.open();
+        loader.updateCurrentDoctorAndPatientDBFiles();
         flowControl.requestReportData();
     }
 
@@ -425,15 +402,6 @@ VMBase {
         }
 
         //console.log("PNAME: " + patientList.get(patientListView.currentIndex).pname + ". UID: " + patientList.get(patientListView.currentIndex).uid);
-    }
-
-    function startDBSync(){
-
-        connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagConnectMessage");
-        connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagConnectTitle");
-        connectionDialog.open();
-        loader.startDBSync();
-
     }
 
     function configureShowMessageForArchive(which,index){

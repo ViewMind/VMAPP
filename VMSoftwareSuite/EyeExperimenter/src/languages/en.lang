@@ -284,10 +284,10 @@ error_experiment_end = Study ended abruptly<>The study did not end as expected<b
 error_no_ssl = SLL not detected<>SSL Libraries were not detected.<br>Server request for reports will not be possible;
 error_server_comm = Connection not available<>It was not possible to establish a link with the server<br>If there is no connection <b>you can still use the application in offline mode</b><br>Check the limitations of offline mode in the user´s manual;
 error_freq_check = Frequency Error<>There was a problem gathering data from the ET<br>Results may not be reliable<br>Please contact Viewmind for assistance.;
-error_db_transaction = Database Error|There was an error related to the database<br>Please contact the ViewMind team;
+error_db_server_error = Server Error|A problem was detected in the server<br>Please contact the ViewMind team;
 error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracker is incorrect<br>Please contact the ViewMind team;
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
-error_db_wronginst = Incorrect ID|The ID for this institution is incorrect or the doctor is not registered<br>Please contact ViewMind in order to solve this problem;
+error_db_timeout = Connection time out|Too much time was spent waiting for the sever to respond<br>Please try again<br>If the problem persists, contact ViewMind in order to solve this problem;
 error_launcher_update = Restart required<>In 5 seconds the program will close. Please restart it;
 
 #********************************* INFORMATION MESSAGES *********************************

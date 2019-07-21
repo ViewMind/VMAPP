@@ -122,10 +122,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
         }
     }
 
-    // Setting up de client for DB connection
-    dbClient = new SSLDBClient(this,configuration);
-    connect(dbClient,SIGNAL(transactionFinished()),this,SLOT(onDisconnectFromDB()));
-
     // Creating the local configuration manager, and loading the local DB.
     lim.setDirectory(QString(DIRNAME_RAWDATA), configuration->getString(CONFIG_EYEEXP_NUMBER), configuration->getString(CONFIG_INST_UID));
 
@@ -234,29 +230,15 @@ QString Loader::loadTextFile(const QString &fileName){
 QStringList Loader::getErrorMessageForCode(quint8 code){
     //qWarning() << "GETTING ERROR MESSAGE FOR CODE" << code;
     switch (code) {
-    case RR_DB_ERROR:
-        return language.getStringList("error_db_transaction");
-    case RR_OUT_OF_EVALUATIONS:
+    case EYESERVER_RESULT_SERVER_ERROR:
+        return language.getStringList("error_db_server_error");
+    case EYESERVER_RESULT_NOEVALS:
         return language.getStringList("error_db_outofevals");
-    case RR_WRONG_ET_SERIAL:
+    case EYESERVER_RESULT_WRONG_SERIAL:
         return language.getStringList("error_db_wrongetserial");
     default:
-        //logger.appendError("UNKNOWN Code when getting transaction error message: " + QString::number(code));
-        break;
-    }
-    return QStringList();
-}
-
-QStringList Loader::getErrorMessageForDBCode(){
-    quint8 code = dbClient->getErrorCode();
-    //qWarning() << "GETTING ERROR MESSAGE FOR CODE" << code;
-    switch (code) {
-    case DBACK_DBCOMM_ERROR:
-        return language.getStringList("error_db_transaction");
-    case DBACK_UID_ERROR:
-        return language.getStringList("error_db_wronginst");
-    default:
-        logger.appendError("UNKNOWN Code when getting transaction db error message: " + QString::number(code));
+        // The default error message is the time out message
+        return language.getStringList("error_db_timeout");
         break;
     }
     return QStringList();
@@ -451,19 +433,6 @@ void Loader::addNewPatientToDB(QVariantMap dbdata){
 
 }
 
-void Loader::startDBSync(){
-    // Adding all the data that needs to be sent.
-    wasDBTransactionStarted = false;
-    if (lim.createPatAndDrDBFiles(dbClient)){
-        // Running the transaction.
-        wasDBTransactionStarted = true;
-        dbClient->runDBTransaction();
-    }
-    else {
-        onDisconnectFromDB();
-    }
-}
-
 bool Loader::verifyInstitutionPassword(const QString &instPass){
     QString hasshedPassword = QString(QCryptographicHash::hash(instPass.toUtf8(),QCryptographicHash::Sha256).toHex());
     return (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword);
@@ -479,6 +448,13 @@ bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr)
     return false;
 }
 
+void Loader::updateCurrentDoctorAndPatientDBFiles(){
+    QString patid = configuration->getString(CONFIG_PATIENT_UID);
+    QString druid = configuration->getString(CONFIG_DOCTOR_UID);
+    if (!lim.createPatAndDrDBFiles(patid,druid)){
+        logger.appendError("There was a problem updating the current doctor and patient files in directory for patient and doctor: " + patid + " and " + druid);
+    }
+}
 
 //******************************************* Report Realated Functions ***********************************************
 
@@ -534,7 +510,7 @@ QString Loader::getEvaluationID(const QString &existingFile){
 
 QString Loader::checkForChangeLog(){
     QString filePath = "launcher/" + QString (FILE_CHANGELOG_UPDATER) + "_"  + configuration->getString(CONFIG_REPORT_LANGUAGE);
-    qWarning() << "Searching for changelog" << filePath;
+    //qWarning() << "Searching for changelog" << filePath;
     QFile file(filePath);
     if (!file.open(QFile::ReadOnly)) return "";
     QTextStream reader(&file);
@@ -586,15 +562,6 @@ void Loader::replaceEyeLauncher(){
 }
 
 //******************************************* SLOTS ***********************************************
-
-void Loader::onDisconnectFromDB(){
-    //qWarning() << "onDisconnectFromDB wasDBTransactionStarted" << wasDBTransactionStarted;
-    if (dbClient->getTransactionStatus() && wasDBTransactionStarted){
-        lim.setUpdateFlagTo(false);
-    }
-    emit(synchDone());
-}
-
 void Loader::onFileSetRequested(){
     QStringList fileSet;
     QString patuid = configuration->getString(CONFIG_PATIENT_UID);

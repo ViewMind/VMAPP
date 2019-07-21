@@ -112,12 +112,6 @@
 #define   CONFIG_DATA_SAVED_TO_DB_FLAG                  "data_saved_to_db_flag"
 #define   CONFIG_TIMESTAMP                              "timestamp"
 
-// The ACK Results when returning from DB Set Transaction
-#define   DBACK_ALL_OK                                  0
-#define   DBACK_PASSWORD_PROBLEM                        1
-#define   DBACK_UID_ERROR                               2
-#define   DBACK_DBCOMM_ERROR                            3
-
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
 #define   CONFIG_RESULTS_EXECUTIVE_PROCESSES            "executive_proceseses"

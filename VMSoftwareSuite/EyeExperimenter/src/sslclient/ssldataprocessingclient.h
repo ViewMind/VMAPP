@@ -19,7 +19,7 @@ public:
     ~SSLDataProcessingClient();
 
     // Main interface function. The only one required. Everything after this point is predefined.
-    void requestReport(bool saveData, const QString &oldRepFile);
+    void requestReport(bool isDemoMode, const QString &oldRepFile);
 
     // Obtaining code allows for more precise messages.
     quint8 getProcessingCode() {return processingACKCode;}
@@ -44,7 +44,7 @@ private:
     quint8 processingACKCode;
 
     // Flag to indicate reprocessing.
-    bool reprocessRequest;
+    QString previousReportFile;
 
     // Starts the whole process
     void connectToServer(bool saveData, const QString &oldRepFile);
