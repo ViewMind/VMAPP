@@ -8,10 +8,13 @@
 #define   COMMON_PATH_FOR_DB_CONFIGURATIONS             ":/CommonClasses/DBConfigurations/"
 
 #define   SERVER_PROGRAM_NAME                           "EyeSever"
-#define   SERVER_PROGRAM_VERSION                        "7.3.0" // 7.2.0
+#define   SERVER_PROGRAM_VERSION                        "8.0.0" // 7.3.0
 
 #define   RAW_DATA_SERVER_NAME                          "RawDataServer"
 #define   RAW_DATA_SERVER_VERSION                       "3.0.0"
+
+#define   EYE_UPDATE_SERVER_NAME                        "EyeUpdateServer"
+#define   EYE_UPDATE_SERVER_VERSION                     "1.0.0"
 
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"
@@ -32,7 +35,6 @@
 #define   CONFIG_PATDATA_DBPORT                         "db_patdata_port"
 
 #define   CONFIG_S3_ADDRESS                             "s3_address"
-#define   CONFIG_NUMBER_OF_PARALLEL_PROCESSES           "number_of_paralell_processes"
 
 #define   DB_NAME_BASE                                  "db_base"
 #define   DB_NAME_ID                                    "db_id"

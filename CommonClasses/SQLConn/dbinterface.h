@@ -5,6 +5,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlDriver>
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QTextStream>
@@ -38,6 +39,12 @@ public:
 
     // Execute special query
     bool specialQuery(const QString &query, const QStringList &columns);
+
+    bool hasTransactions() { return dbConnection.driver()->hasFeature(QSqlDriver::Transactions); }
+
+    bool startTransaction() { return dbConnection.transaction(); }
+    bool commit() { return dbConnection.commit(); }
+    bool doRollBack() { return dbConnection.rollback(); }
 
     // Closing the connection to the server
     bool open();

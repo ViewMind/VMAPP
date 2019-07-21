@@ -45,6 +45,7 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_FILE_FIELDING]         = cmd;
     cv[CONFIG_INST_ETSERIAL]         = cmd;
     cv[CONFIG_RESULT_ENTRY_ID]       = cmd;
+    cv[CONFIG_TRANSACTION_ID]        = cmd;
 
     configuration.setupVerification(cv);
 
@@ -83,6 +84,10 @@ void Control::run(){
 
     // Getting the work directory.
     QFileInfo fileInfo(configFile);
+
+    if (configuration.containsKeyword(CONFIG_TRANSACTION_ID)){
+        log.setID(configuration.getString(CONFIG_TRANSACTION_ID));
+    }
 
     // Starting the data processing.
     configuration.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,fileInfo.absolutePath());

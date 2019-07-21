@@ -20,6 +20,7 @@ public:
 
     LogInterface();
     void setGraphicalLogInterface() {graphicalLogInterface = true;}
+    void setID(const QString &identifier) {id = identifier;}
     void setLogFileLocation(const QString &logfile);
 
     // Append messages according to type
@@ -34,6 +35,7 @@ signals:
 private:
     bool graphicalLogInterface;
     QString logFile;
+    QString id;
     typedef enum {LOG_STD, LOG_ERROR, LOG_WARNING, LOG_SUCCESS} MessageType;
 
     // The actual functions that appends the messages.

@@ -6,6 +6,7 @@ LogInterface::LogInterface()
     graphicalLogInterface = false;
     // Default logFile
     logFile = LOG_FILE_LOG;
+    id = "";
 }
 
 void LogInterface::setLogFileLocation(const QString &logfile){
@@ -65,6 +66,7 @@ void LogInterface::appendMessage(const QString &msg, MessageType type){
 
     // Prepare the message
     QString s = QDateTime::currentDateTime().toString("dd/MM/yyyy - hh:mm:ss");
+    if (!id.isEmpty()) s = "[" + id + "][" + s + "]";
     switch (type){
     case LOG_ERROR:
         s = s + ". ERROR: " + msg;

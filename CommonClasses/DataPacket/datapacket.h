@@ -19,9 +19,9 @@ public:
 
     static const quint8 DPFI_DOCTOR_ID                                = 0;
     static const quint8 DPFI_PATIENT_ID                               = 1;
-    static const quint8 DPFI_BINDING_UC                               = 2;
-    static const quint8 DPFI_BINDING_BC                               = 3;
-    static const quint8 DPFI_READING                                  = 4;
+    //static const quint8 DPFI_BINDING_UC                               = 2;
+    //static const quint8 DPFI_BINDING_BC                               = 3;
+    //static const quint8 DPFI_READING                                  = 4;
     static const quint8 DPFI_PATIENT_FILE                             = 5;
     static const quint8 DPFI_SEND_INFORMATION                         = 6;
     static const quint8 DPFI_REPORT                                   = 7;
@@ -30,9 +30,9 @@ public:
     static const quint8 DPFI_DB_TABLE                                 = 10;
     static const quint8 DPFI_DB_COL                                   = 11;
     static const quint8 DPFI_DB_VALUE                                 = 12;
-    static const quint8 DPFI_DB_CONDITIION                            = 13;
+    //static const quint8 DPFI_DB_CONDITIION                            = 13;
     static const quint8 DPFI_DB_ERROR                                 = 14;
-    static const quint8 DPFI_DB_SET_ACK                               = 15;
+    //static const quint8 DPFI_DB_SET_ACK                               = 15;
     static const quint8 DPFI_DB_INST_PASSWORD                         = 16;
     static const quint8 DPFI_DB_INST_UID                              = 17;
     static const quint8 DPFI_DB_ET_SERIAL                             = 18;
@@ -54,10 +54,10 @@ public:
     static const quint8 DPFI_RAW_DATA_CONTENT                         = 34;
     static const quint8 DPFI_LOCAL_DB_BKP                             = 35;
     static const quint8 DPFI_PUID_LIST                                = 36;
-    static const quint8 DPFI_PATNAME_LIST                             = 37;
+    //static const quint8 DPFI_PATNAME_LIST                             = 37;
     static const quint8 DPFI_SERIALIZED_DB                            = 38;
     static const quint8 DPFI_OLD_REP_FILE                             = 39;
-
+    static const quint8 DPFI_DOCTOR_FILE                              = 40;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;

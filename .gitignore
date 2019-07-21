@@ -26,6 +26,14 @@ VMSoftwareSuite/EyeServer/bin/QRC/
 VMSoftwareSuite/EyeServer/bin/output/
 VMSoftwareSuite/EyeServer/etdir/
 VMSoftwareSuite/EyeServerMonitor/bin
+VMSoftwareSuite/EyeUpdateServer/MOCS
+VMSoftwareSuite/EyeUpdateServer/OBJS
+VMSoftwareSuite/EyeUpdateServer/bin/EyeUpdateServer
+VMSoftwareSuite/EyeUpdateServer/bin/EyeUpdateServerMonitor
+VMSoftwareSuite/EyeUpdateServer/bin/etdir/
+VMSoftwareSuite/EyeUpdateServer/bin/mail.php
+
+VMSoftwareSuite/EyeDBmanager/bin/
 
 VMSoftwareSuite/EyeReportGenerator/bin/MOCS
 VMSoftwareSuite/EyeReportGenerator/bin/OBJS

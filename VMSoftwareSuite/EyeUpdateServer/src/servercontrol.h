@@ -4,7 +4,7 @@
 #include <QObject>
 #include <iostream>
 #include "../../../CommonClasses/LogInterface/loginterface.h"
-#include "dataprocessingsslserver.h"
+#include "updateserver.h"
 
 class ServerControl : public QObject
 {
@@ -17,7 +17,7 @@ signals:
     void exitRequested();
 
 private:
-    DataProcessingSSLServer dataProcessingSSLServer;
+    UpdateServer updateServer;
     LogInterface log;
     ConfigurationManager config;
 };

@@ -25,15 +25,12 @@ void ServerControl::startServer(){
     }
 
     if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
-        log.appendError("Could not load configuration file: " + config.getError());
+        log.appendError("Configuration file errors:<br>"+config.getError());
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         emit(exitRequested());
         return;
     }
 
-    log.appendStandard("Starting eye processing server...");
-    if (!dataProcessingSSLServer.startServer(&config)){
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        emit(exitRequested());
-    }
+    log.appendStandard("Starting update server...");
+    updateServer.startServer(&config);
 }

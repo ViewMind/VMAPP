@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core network sql
+QT       += core network
 TARGET   = EyeServer
 TEMPLATE = app
 
@@ -15,32 +15,28 @@ CONFIG     -= debug_and_release
 CONFIG     += console
 
 SOURCES += main.cpp\
-    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
-    ../../CommonClasses/DataPacket/datapacket.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp \
+    ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+    ../../../CommonClasses/DataPacket/datapacket.cpp \
+    ../../../CommonClasses/LogInterface/loginterface.cpp \
+    ../../../CommonClasses/SSLIDSocketMap/sslidsocket.cpp \
+    ../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp \
     ssllistener.cpp \
-    servercontrol.cpp \
-    ../../CommonClasses/SQLConn/dbinterface.cpp \
-    dataprocessingsslserver.cpp \
-    dbcommsslserver.cpp \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocket.cpp \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp
+    servercontrol.cpp \    
+    dataprocessingsslserver.cpp
+
 
 HEADERS  += \
-    ../../CommonClasses/common.h \
-    ../../CommonClasses/ConfigurationManager/configurationmanager.h \
-    ../../CommonClasses/DataPacket/datapacket.h \
-    ../../CommonClasses/LogInterface/loginterface.h \
-    ssllistener.h \
-    servercontrol.h \
-    ../../CommonClasses/SQLConn/dbdescription.h \
-    ../../CommonClasses/SQLConn/dbinterface.h \
+    ../../../CommonClasses/common.h \
+    ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../../CommonClasses/DataPacket/datapacket.h \
+    ../../../CommonClasses/LogInterface/loginterface.h \
+    ../../../CommonClasses/server_defines.h \
+    ../../../CommonClasses/SSLIDSocketMap/sslidsocket.h \
+    ../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h \
     dataprocessingsslserver.h \
-    dbcommsslserver.h \
-    ../../CommonClasses/server_defines.h \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocket.h \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h
+    ssllistener.h \
+    servercontrol.h
 
 RESOURCES += \
     certificates.qrc \
-    configurations.qrc
+

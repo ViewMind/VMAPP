@@ -1,13 +1,13 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#include "../../CommonClasses/common.h"
-#include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../CommonClasses/HTMLWriter/htmlwriter.h"
-#include "../../CommonClasses/DataAnalysis/rawdataprocessor.h"
+#include "../../../CommonClasses/common.h"
+#include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../../CommonClasses/HTMLWriter/htmlwriter.h"
+#include "../../../CommonClasses/DataAnalysis/rawdataprocessor.h"
 
 #define   EYE_REP_GEN_NAME                              "EyeRepGenerator"
-#define   EYE_REP_GEN_VERSION                           "6.1.0"
+#define   EYE_REP_GEN_VERSION                           "6.1.1"
 
 class Control : public QObject
 {

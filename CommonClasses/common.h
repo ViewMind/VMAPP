@@ -20,6 +20,8 @@
 #define   DIRNAME_ARCHIVE                               "archive"
 #define   DIRNAME_ABORTED                               "exp_aborted"
 #define   DIRNAME_OLD_REP                               "old_reports"
+#define   DIRNAME_SERVER_WORKDIR                        "OUTPUTS"
+#define   DIRNAME_SERVER_LOGS                           "LOGDIR"
 
 // The semaphore name. To prevent multiple instances for the same application
 #define   SEMAPHORE_NAME                                "viewind_eyeexperimenter_semaphore"
@@ -40,9 +42,9 @@
 #define   CONFIG_LATENCY_ESCAPE_RAD                     "latency_escape_radious"
 #define   CONFIG_MARGIN_TARGET_HIT                      "margin_target_hit"
 #define   CONFIG_EXP_LIST                               "experiments"
-#define   CONFIG_RAW_DATA_REPO                          "raw_data_repo"
 #define   CONFIG_READING_PX_TOL                         "reading_px_tol_for_target"
 #define   CONFIG_EYEPROCESSOR_PATH                      "eyeprocessor_path"
+#define   CONFIG_EYEDBMANAGER_PATH                      "eyedbmanager_path"
 #define   CONFIG_DUAL_MONITOR_MODE                      "dual_monitor_mode"
 #define   CONFIG_EXP_CONFIG_FILE                        "exp_config_file"
 #define   CONFIG_DATA_OUTPUT_FILE                       "data_output_file"
@@ -85,7 +87,6 @@
 #define   CONFIG_INST_PASSWORD                          "inst_pass"
 #define   CONFIG_TEST_MODE                              "test_mode"
 #define   CONFIG_ENABLE_GAZE_FOLLOWING                  "enable_gaze_following"
-#define   CONFIG_DBLOGFILE_LOCATION                     "dblogfile"
 #define   CONFIG_READING_EXP_LANG                       "reading_exp_lang"
 #define   CONFIG_REPORT_FILENAME                        "report_filename"
 #define   CONFIG_TOL_MAX_PERIOD_TOL                     "tol_max_allowed_period"
@@ -104,18 +105,18 @@
 #define   CONFIG_RESULT_ENTRY_ID                        "result_entry_id"
 #define   CONFIG_LAUCHER_CONNECT_TIMEOUT                "launcher_connect_timeout"
 #define   CONFIG_LAUCHER_DOWNLOAD_TIMEOUT               "launcher_download_timeout"
+#define   CONFIG_TRANSACTION_ID                         "transaction_id"
+#define   CONFIG_DBMNG_ACTION                           "dbmng_action"
+#define   CONFIG_DBMNG_RESULT                           "dbmng_result"
+#define   CONFIG_REPROCESS_REQUEST                      "reprocess_request"
+#define   CONFIG_DATA_SAVED_TO_DB_FLAG                  "data_saved_to_db_flag"
+#define   CONFIG_TIMESTAMP                              "timestamp"
 
 // The ACK Results when returning from DB Set Transaction
 #define   DBACK_ALL_OK                                  0
 #define   DBACK_PASSWORD_PROBLEM                        1
 #define   DBACK_UID_ERROR                               2
 #define   DBACK_DBCOMM_ERROR                            3
-
-// The ACK Results for a request report transactions
-#define   RR_ALL_OK                                      0
-#define   RR_OUT_OF_EVALUATIONS                          1
-#define   RR_WRONG_ET_SERIAL                             2
-#define   RR_DB_ERROR                                    3
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -142,6 +143,8 @@
 #define   CONFIG_P_ET_MOUSE                             "Mouse"
 #define   CONFIG_P_ET_REDM                              "REDm"
 #define   CONFIG_P_ET_GP3HD                             "GP3HD"
+#define   CONFIG_P_DMBNG_ACTION_CHECK                   "check"
+#define   CONFIG_P_DMBNG_ACTION_STORE                   "store"
 
 // Indexes of the selected experiments
 #define   EXP_READING                                   1
@@ -168,6 +171,9 @@
 #define   FILE_OLD_LAUCHER_FILE                         "EyeLauncherClientPrevious.exe"
 #define   FILE_LOCAL_DB_BKP                             "localdb_bkp.db"
 #define   FILE_LOCAL_DB                                 "localdb.dat"
+#define   FILE_DBMNG_COMM_FILE                          "dbmngcomm"
+#define   FILE_PATDATA_DB                               "patdata.db"
+#define   FILE_DOCDATA_DB                               "docdata.db"
 
 // Headers for the data files identifying the format of the data in that experiment.
 #define   HEADER_READING_EXPERIMENT                     "#READING"
@@ -194,6 +200,22 @@
 // Versions of the processing algorithm
 #define   EYE_REP_GEN_READING_ALGORITHM_VERSION          1
 #define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          1
+
+// DB Managers possible answers
+#define   EYEDBMNG_ANS_OK                                0
+#define   EYEDBMNG_ANS_FILE_ERROR                        1
+#define   EYEDBMNG_ANS_DB_ERROR                          2
+#define   EYEDBMNG_ANS_PARAM_ERROR                       3
+#define   EYEDBMNG_ANS_WRONG_SERIAL                      4
+#define   EYEDBMNG_ANS_NOEVALS                           5
+
+
+// The ACK Results sent from the server to the EyeExperimenter
+#define   EYESERVER_RESULT_OK                            0
+#define   EYESERVER_RESULT_NOEVALS                       1
+#define   EYESERVER_RESULT_WRONG_SERIAL                  2
+#define   EYESERVER_RESULT_SERVER_ERROR                  3
+
 
 // TCP Ports.
 static const quint16 TCP_PORT_RAW_DATA_SERVER            = 54918;
