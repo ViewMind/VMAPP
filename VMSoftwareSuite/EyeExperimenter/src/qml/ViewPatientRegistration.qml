@@ -45,7 +45,6 @@ VMBase {
 
         patientUID = patInfo.puid;
         labelDocument_number.setText(patInfo.displayID)
-        labelDocument_number.enabled = false;
         labelProtocol.vmModel = [patInfo.patient_protocol];
         labelProtocol.enabled = false;
 

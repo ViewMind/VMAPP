@@ -186,8 +186,7 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
            << CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL << CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL
            << CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES << CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS
               // Record keeping parameters.
-           << CONFIG_INST_ETSERIAL
-           << CONFIG_DEMO_MODE;
+           << CONFIG_INST_ETSERIAL;
 
     if (reprocessRequest){
         // This means that the report file name exists, so it needs to be loaded.
@@ -211,6 +210,7 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
         }
 
         eyerepgen.addKeyValuePair(CONFIG_REPROCESS_REQUEST,true);
+        eyerepgen.addKeyValuePair(CONFIG_DEMO_MODE,false);
 
         if (!eyerepgen.saveToFile(expgenfile,COMMON_TEXT_CODEC)){
             logger.appendError("WRITING EYE REP GEN FILE in reprocessing: " + expgenfile + ", could not open file for writing");
@@ -230,10 +230,24 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
                 return;
             }
         }
+
+        QString demoStr;
+        if (demoTransaction) demoStr = "true";
+        else demoStr = "false";
+
+        error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_DEMO_MODE,demoStr);
+        if (!error.isEmpty()){
+            logger.appendError("WRITING EYE REP GEN FILE: " + error);
+            sslTransactionAllOk = false;
+            emit(sslTransactionFinished());
+            return;
+        }
+
     }
 
     //qWarning() << "Saved expgen";
-    qWarning() << "Evaluation ID: " << evaluationID;
+    //qWarning() << "Evaluation ID: " << evaluationID;
+
     error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_RESULT_ENTRY_ID,evaluationID);
     if (!error.isEmpty()){
         logger.appendError("WRITING EYE REP GEN FILE: " + error);
@@ -295,7 +309,7 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
 
     if (!demoTransaction) fileSetSentToProcess = fileSet;
     //qWarning() << "Requesting report for file set" << fileSetSentToProcess;
-    sslDataProcessingClient->requestReport(!demoTransaction,oldRepFile);
+    sslDataProcessingClient->requestReport(demoTransaction,oldRepFile);
 
 }
 

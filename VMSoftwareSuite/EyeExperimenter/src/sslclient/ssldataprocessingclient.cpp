@@ -10,15 +10,16 @@ void SSLDataProcessingClient::requestReport(bool isDemoMode, const QString &oldR
     connectToServer(isDemoMode,oldRepFile);
 }
 
-void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldRepFile)
+void SSLDataProcessingClient::connectToServer(bool isDemoMode, const QString &oldRepFile)
 {
-    QString directory = config->getString(CONFIG_PATIENT_DIRECTORY);
-    QString confFile = directory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
+    QString patientDirectory = config->getString(CONFIG_PATIENT_DIRECTORY);
+    QString datDirectory = patientDirectory;
+    QString confFile = patientDirectory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
 
     // If oldRepFile is not empty, then this is a reprocessing request and therefore the files are in the processed_data folder.
     if (!oldRepFile.isEmpty()) {
         previousReportFile = oldRepFile;
-        directory = directory + "/" + QString(DIRNAME_PROCESSED_DATA);
+        datDirectory = datDirectory + "/" + QString(DIRNAME_PROCESSED_DATA);
     }
     else previousReportFile = "";
 
@@ -38,37 +39,38 @@ void SSLDataProcessingClient::connectToServer(bool saveData, const QString &oldR
     txDP.addValue(config->getInt(CONFIG_INST_UID),DataPacket::DPFI_DB_INST_UID);
     txDP.addString(config->getString(CONFIG_INST_ETSERIAL),DataPacket::DPFI_DB_ET_SERIAL);
     txDP.addFile(confFile,DataPacket::DPFI_CONF_FILE);
-    if (!txDP.addFile(directory + "/" + QString(FILE_PATDATA_DB),DataPacket::DPFI_PATIENT_FILE)){
-        log.appendError("Failed to load patient data file: " + directory + "/" + QString(FILE_PATDATA_DB));
+
+    if (!txDP.addFile(patientDirectory + "/" + QString(FILE_PATDATA_DB),DataPacket::DPFI_PATIENT_FILE)){
+        log.appendError("Failed to load patient data file: " + patientDirectory + "/" + QString(FILE_PATDATA_DB));
         emit(transactionFinished());
         return;
     }
-    if (!txDP.addFile(directory + "/" + QString(FILE_DOCDATA_DB),DataPacket::DPFI_DOCTOR_FILE)){
-        log.appendError("Failed to load doctor data file: " + directory + "/" + QString(FILE_DOCDATA_DB));
+    if (!txDP.addFile(patientDirectory + "/" + QString(FILE_DOCDATA_DB),DataPacket::DPFI_DOCTOR_FILE)){
+        log.appendError("Failed to load doctor data file: " + patientDirectory + "/" + QString(FILE_DOCDATA_DB));
         emit(transactionFinished());
         return;
     }
 
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_BC)){
-        if (saveData) {
-            if (!txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC)){
-                log.appendError("On creating the DataPacket, could not get Binding BC File: " + directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC));
+        if (!isDemoMode) {
+            if (!txDP.addFile(datDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC),DataPacket::DPFI_BINDING_BC)){
+                log.appendError("On creating the DataPacket, could not get Binding BC File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_BC));
             }
         }
         else txDP.addFile(":/demo_data/binding_bc_2_l_2_2010_06_03_10_00.dat",DataPacket::DPFI_BINDING_BC);
     }
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC)){
-        if (saveData) {
-            if (!txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC)){
-                log.appendError("On creating the DataPacket, could not get Binding BC File: " + directory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC));
+        if (!isDemoMode) {
+            if (!txDP.addFile(datDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC)){
+                log.appendError("On creating the DataPacket, could not get Binding BC File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC));
             }
         }
         else txDP.addFile(":/demo_data/binding_uc_2_l_2_2010_03_06_10_03.dat",DataPacket::DPFI_BINDING_UC);
     }
     if (eyeGenConf.containsKeyword(CONFIG_FILE_READING)){
-        if (saveData) {
-            if(!txDP.addFile(directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING)){
-                log.appendError("On creating the DataPacket, could not get Binding BC File: " + directory + "/" + eyeGenConf.getString(CONFIG_FILE_READING));
+        if (!isDemoMode) {
+            if(!txDP.addFile(datDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING)){
+                log.appendError("On creating the DataPacket, could not get Binding BC File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_READING));
             }
         }
         else txDP.addFile(":/demo_data/reading_2_2010_06_03_10_15.dat",DataPacket::DPFI_READING);

@@ -622,6 +622,7 @@ QString LocalInformationManager::newDoctorID(){
     drcounter++;
     id = "D" + id;
     localDB[DOCTOR_COUNTER] = drcounter;
+    backupDB();
     return id;
 }
 
@@ -632,6 +633,7 @@ QString LocalInformationManager::newPatientID(){
     id = "P" + id;
     drcounter++;
     localDB[PATIENT_COUNTER] = drcounter;
+    backupDB();
     return id;
 }
 
@@ -642,6 +644,7 @@ QString LocalInformationManager::newEvaluationID(){
     id = "E" + id;
     evalCounter++;
     localDB[EVALUATION_COUNTER] = evalCounter;
+    backupDB();
     return id;
 }
 

@@ -287,7 +287,7 @@ error_freq_check = Error de Frequencia<>Hubo un problema al obtener los datos de
 error_db_server_error = Error en el Servidor|Se ha detectado un problema con el servidor<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
-error_db_timeout = Se excedió el tiempo de espera|El servidor tardó demasiado en responder<br>Por favor, inténtelo nuevamente<br>Si el problema persiste, contacte a ViewMind para resolverlo;
+error_db_timeout = Se excedió el tiempo<br>de espera|El servidor tardó demasiado en responder<br>Por favor, inténtelo nuevamente<br>Si el problema persiste, contacte a ViewMind para resolverlo;
 error_launcher_update = Se debe reiniciar<>En 5 segundos el programa se cerrará. Por favor reinicielo.;
 
 #********************************* INFORMATION MESSAGES *********************************

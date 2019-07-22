@@ -47,7 +47,7 @@ private:
     QString previousReportFile;
 
     // Starts the whole process
-    void connectToServer(bool saveData, const QString &oldRepFile);
+    void connectToServer(bool isDemoMode, const QString &oldRepFile);
 
 };
 

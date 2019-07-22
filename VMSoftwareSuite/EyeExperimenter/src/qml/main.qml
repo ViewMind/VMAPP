@@ -166,8 +166,6 @@ Window {
                 // This will laod patients which will also trigger the search for unprocessed information.
                 //viewPatList.test();
                 viewPatList.loadPatients();
-                // Doing the synch
-                viewPatList.startDBSync();
                 break;
             case vmIndexShowReports:
                 viewShowReports.loadReportsForPatient();

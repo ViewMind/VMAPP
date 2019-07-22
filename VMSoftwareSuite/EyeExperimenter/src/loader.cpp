@@ -570,7 +570,7 @@ void Loader::onFileSetRequested(){
     QVariantMap patdata = lim.getPatientInfo(patuid);
     configuration->addKeyValuePair(CONFIG_PROTOCOL_NAME,patdata.value(TPATDATA_NONCOL_PROTOCOL).toString());
     fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);
-    emit(fileSetReady(fileSet,lim.newEvaluationID()));
+    emit(fileSetReady(fileSet,getEvaluationID("")));
 }
 
 //******************************************* Private Auxiliary Functions ***********************************************
