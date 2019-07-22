@@ -46,6 +46,8 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_INST_ETSERIAL]         = cmd;
     cv[CONFIG_RESULT_ENTRY_ID]       = cmd;
     cv[CONFIG_TRANSACTION_ID]        = cmd;
+    cv[CONFIG_DEMO_MODE]             = cmd;
+    cv[CONFIG_REPROCESS_REQUEST]     = cmd;
 
     configuration.setupVerification(cv);
 

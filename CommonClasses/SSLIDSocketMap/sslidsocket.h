@@ -14,7 +14,7 @@
 
 #define  TIME_FORMAT_STRING  "yyyy_MM_dd_hh_mm_ss"
 
-#define  LIFE_TIMEOUT        5*60*1000 // A socket cannot live more than this.
+#define  LIFE_TIMEOUT        5*60*1000         // A socket cannot live more than this.
 
 #define  TIME_MEASURE_ESTABLISHED_CONNECTION   "00_Established Connection"
 #define  TIME_MEASURE_INFO_RECEIVED            "01_Information Received"
