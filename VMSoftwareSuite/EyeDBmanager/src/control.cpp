@@ -15,6 +15,7 @@ void Control::run(){
         exitProgram(EYEDBMNG_ANS_PARAM_ERROR);
         return;
     }
+
     workingDirectory = arguments.last();
 
     if (!QDir(workingDirectory).exists()){
@@ -329,52 +330,71 @@ void Control::storeMode(){
     QString druid         = docdata.getString(TDOCTOR_COL_UID);
 
     // ----------------------------- Saving the data to S3 first -------------------------------------
-    QStringList filesToSave;
-    QStringList filters;
-    filters << "*.dat" << "*.datf";
-    filesToSave = QDir(workingDirectory).entryList(filters,QDir::Files);
     QString eyerepgenconf = workingDirectory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
+    QStringList filters;
 
+    if (!demoMode){
+        QStringList filesToSave;
+        filters << "*.dat" << "*.datf";
+        filesToSave = QDir(workingDirectory).entryList(filters,QDir::Files);
 
-    // Data is saved ONLY if this is not a reprocess request.
-    if (!reprocessRequest){
-        if (filesToSave.isEmpty()){
-            log.appendError("Could not load any dat or datf files to send to S3: ");
-            finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
-            return;
-        }
+        // Data is saved ONLY if this is not a reprocess request.
+        if (!reprocessRequest){
+            if (filesToSave.isEmpty()){
+                log.appendError("Could not load any dat or datf files to send to S3: ");
+                finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+                return;
+            }
 
-        filesToSave << QString(FILE_EYE_REP_GEN_CONFIGURATION);
-        for (qint32 i = 0; i < filesToSave.size(); i++){
-            QString cmd = S3_BASE_COMMAND;
-            cmd = cmd + workingDirectory + "/" + filesToSave.at(i) + " ";
-            cmd = cmd + "s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + filesToSave.at(i);
-            cmd = cmd + S3_PARMETERS;
-            QProcess::execute(cmd);
-#ifdef SERVER_LOCALHOST
-            log.appendStandard("Running S3 Command: " + cmd);
-#endif
+            filesToSave << QString(FILE_EYE_REP_GEN_CONFIGURATION);
+            for (qint32 i = 0; i < filesToSave.size(); i++){
+                QString cmd = S3_BASE_COMMAND;
+                cmd = cmd + " " + workingDirectory + "/" + filesToSave.at(i) + " ";
+                cmd = cmd + "s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + filesToSave.at(i) + " ";
+                cmd = cmd + S3_PARMETERS;
+                QProcess::execute(cmd);
+                log.appendStandard("Running S3 Command: " + cmd);
+            }
         }
     }
+    else log.appendStandard("DEMO Transaction not saving information");
 
     // ----------------------------- Checking or adding the doctor data -----------------------------
     dbConnBase.startTransaction();
     columns.clear();
-    temp.clear();
     columns = docdata.getAllKeys();
     for (qint32 i = 0; i < columns.size(); i++){
-        temp << columns.at(i) + " = '" + docdata.getString(columns.at(i)) + "'";
         values << docdata.getString(columns.at(i));
     }
 
-    if (!dbConnBase.readFromDB(TABLE_DOCTORS,columns,temp.join(" AND "))){
+    bool addDrInfo = false;
+    condition = QString(TDOCTOR_COL_UID) + " = '" + docdata.getString(TDOCTOR_COL_UID) + "' ORDER BY " + QString(TDOCTOR_COL_KEYID) + " DESC";
+
+    if (!dbConnBase.readFromDB(TABLE_DOCTORS,columns,condition)){
         log.appendError("When querying the doctor information: " + dbConnBase.getError());
         finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
     data = dbConnBase.getLastResult();
-    if (data.rows.isEmpty()){
+    if (data.rows.isEmpty()) addDrInfo = true;
+    else{
+        // Using only the lastest dr info which should be the first.
+        if (data.rows.first().size() != columns.size()){
+            log.appendError("When getting doctor information " + QString::number(columns.size()) + " was requested. But got: " + QString::number(data.rows.first().size()));
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            return;
+        }
+        for (qint32 i = 0; i < columns.size(); i++){
+            if (docdata.getString(columns.at(i)) != data.rows.first().at(i)) {
+                log.appendStandard("Doctor information updated: " + columns.at(i));
+                addDrInfo = true;
+                break;
+            }
+        }
+    }
+
+    if (addDrInfo){
         // Adding the doctor information, as it was either modified or not present in the DB.
         log.appendStandard("Adding information for doctor: " + druid);
         if (!dbConnBase.insertDB(TABLE_DOCTORS,columns,values,instID)){
@@ -384,14 +404,13 @@ void Control::storeMode(){
         }
     }
 
-
     // ----------------------------- Checking if the patient exists. -----------------------------
     dbConnID.startTransaction();
     columns.clear();
     columns << TPATID_COL_KEYID;
     condition = QString(TPATID_COL_UID) + " = '" + pat_hashed_id + "'";
     if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
-        log.appendError("When adding doctor information: " + dbConnBase.getError());
+        log.appendError("When obtaining patient PUID: " + dbConnID.getError());
         finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
@@ -456,35 +475,54 @@ void Control::storeMode(){
     // ----------------------------- Checking or adding patient data -----------------------------
     // By this point a PUID exists. So an check (or direct insertion is necesssary).
     dbConnPatData.startTransaction();
-    bool patDataExists = true;
 
     columns.clear();
-    temp.clear();
     values.clear();
+    temp.clear();
     columns = patdata.getAllKeys();
-    columns << TPATDATA_COL_PUID;
-    values << puid;
+
+    // Replacing the hashed pid with the database puid.
+    patdata.addKeyValuePair(TPATDATA_COL_PUID,puid);
     for (qint32 i = 0; i < columns.size(); i++){
-        temp << columns.at(i) + " = '" + patdata.getString(columns.at(i)) + "'";
-        values << docdata.getString(columns.at(i));
+        values << patdata.getString(columns.at(i));
     }
 
-
+    bool addPatData = false;
     if (!isNew){
-        if (!dbConnPatData.readFromDB(TABLE_PATDATA,columns,temp.join(" AND "))){
+
+        condition = QString(TPATDATA_COL_PUID) + " = '" + puid + "' ORDER BY " + QString(TPATDATA_COL_KEYID) + " DESC";
+
+        if (!dbConnPatData.readFromDB(TABLE_PATDATA,columns,condition)){
             log.appendError("When querying the patient information: " + dbConnPatData.getError());
             finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
-        data = dbConnBase.getLastResult();
-        if (data.rows.isEmpty()) patDataExists = false;
+        data = dbConnPatData.getLastResult();
+        if (data.rows.isEmpty()) addPatData = true;
+        else{
+
+            if (data.rows.first().size() != columns.size()){
+                log.appendError("When getting patient information " + QString::number(columns.size()) + " was requested. But got: " + QString::number(data.rows.first().size()));
+                finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+                return;
+            }
+
+            for (qint32 i = 0; i < columns.size(); i++){
+                if (columns.at(i) == TPATDATA_COL_DATE_INS) continue; // There is no point in comparing the insertion date.
+                if (patdata.getString(columns.at(i)) != data.rows.first().at(i)) {
+                    log.appendStandard("Patient information updated: " + columns.at(i) + " from " + data.rows.first().at(i) + " to " + patdata.getString(columns.at(i)));
+                    addPatData = true;
+                    break;
+                }
+            }
+        }
     }
 
-    if (isNew || !patDataExists){
+    if (isNew || addPatData){
         // Adding the patient information, as it was either modified or not present in the DB.
         log.appendStandard("Adding information for patient: " + pat_hashed_id);
-        if (!dbConnPatData.insertDB(TABLE_DOCTORS,columns,values,"DR: " + druid  + ", pat: " + pat_hashed_id)){
-            log.appendError("When adding doctor information: " + dbConnBase.getError());
+        if (!dbConnPatData.insertDB(TABLE_PATDATA,columns,values,"DR: " + druid  + ", pat: " + pat_hashed_id)){
+            log.appendError("When adding patient information: " + dbConnPatData.getError());
             finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_ROLLBACK,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
@@ -564,22 +602,23 @@ void Control::storeMode(){
     }
 
     // ----------------------------- Saving the flag y the eyerepconf if all is good. And decreasing the number of evaluations available. -----------------------------
-    if (!reprocessRequest){
 
+    if (!demoMode){
         QString err = ConfigurationManager::setValue(eyerepgenconf,COMMON_TEXT_CODEC,CONFIG_DATA_SAVED_TO_DB_FLAG,"true");
         if (err.isEmpty()){
-                QString cmd = S3_BASE_COMMAND;
-                cmd = cmd + eyerepgenconf + " ";
-                cmd = cmd + "s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
-                cmd = cmd + S3_PARMETERS;
-                QProcess::execute(cmd);
-    #ifdef SERVER_LOCALHOST
-                log.appendStandard("Running S3 Command for flag update: " + cmd);
-    #endif
+            QString cmd = S3_BASE_COMMAND;
+            cmd = cmd + eyerepgenconf + " ";
+            cmd = cmd + "s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
+            cmd = cmd + S3_PARMETERS;
+            QProcess::execute(cmd);
+            log.appendStandard("Running S3 Command for flag update: " + cmd);
         }
         else{
             log.appendError("Could not update eye rep gen conf with saved to DB flag because: " + err);
         }
+    }
+
+    if (!reprocessRequest && !demoMode){
 
         columns.clear();
         columns << TINST_COL_EVALS;
@@ -597,32 +636,43 @@ void Control::storeMode(){
         }
         qint32  numevals = data.rows.first().first().toInt();
 
-        if (numevals == -1) return;
-
-        // Checking the number of evaluations
-        if ((numevals <= 0)){
-            log.appendError("Asked to decrease number of evaluations for " + instID + " when it is " + QString(numevals));
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
-            return;
+        if (numevals == -1) {
+            log.appendStandard("Institution " + instID + " has infinite number of evaluations");
         }
+        else{
 
-        // Decreasing and saving.
-        numevals--;
-        values.clear();
-        values << QString::number(numevals);
+            // Checking the number of evaluations
+            if ((numevals <= 0)){
+                log.appendError("Asked to decrease number of evaluations for " + instID + " when it is " + QString(numevals));
+                finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+                return;
+            }
 
-        if (!dbConnBase.updateDB(TABLE_INSTITUTION,columns,values,condition,logid)){
-            log.appendError("When saving new number of evaluations " + instID + " when it is " + QString(numevals) + ": " + dbConnBase.getError());
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
-            return;
+            // Decreasing and saving.
+            numevals--;
+            values.clear();
+            values << QString::number(numevals);
+
+            log.appendStandard("Decreased number of evaluations of instituition " + instID + " to " + QString::number(numevals));
+
+            if (!dbConnBase.updateDB(TABLE_INSTITUTION,columns,values,condition,logid)){
+                log.appendError("When saving new number of evaluations " + instID + " when it is " + QString(numevals) + ": " + dbConnBase.getError());
+                finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+                return;
+            }
+
         }
     }
+    else log.appendStandard("This is either reprocessing or demo mode. Number of evaluations is not decreased");
 
     // Checking if mail file exists
     QFile mailBody(workingDirectory + "/" + FILE_MAIL_ERROR_LOG);
     if (mailBody.exists()){
         // Mail needs to be sent.
 
+        log.appendStandard("Sending frequency error mail");
+
+        columns.clear();
         columns << TINST_COL_NAME;
         QString condition = QString(TINST_COL_UID) + " = '" + instID + "'";
         QString instName = instID;
@@ -638,8 +688,8 @@ void Control::storeMode(){
                 if (data.rows.first().size() < 1){
                     log.appendError("Getting inst name for email, col size is zero for UID: " + instID );
                 }
+                else instName = data.rows.first().first();
             }
-            instName = data.rows.first().first();
         }
 
         if (!mailBody.open(QFile::ReadOnly)){
@@ -663,13 +713,13 @@ void Control::storeMode(){
         writer.setCodec(COMMON_TEXT_CODEC);
 
         writer << "<?php\n";
-    #ifdef SERVER_PRODUCTION
+#ifdef SERVER_PRODUCTION
         writer << "require '/home/ec2-user/composer/vendor/autoload.php';\n";
         writer << "require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';\n";
-    #else
+#else
         writer << "use PHPMailer\\PHPMailer\\PHPMailer;\n";
         writer << "require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';\n";
-    #endif
+#endif
 
         writer << "$mail = new PHPMailer;\n";
         writer << "$mail->isSMTP();\n";
@@ -680,10 +730,10 @@ void Control::storeMode(){
         writer << "$mail->Subject = 'ViewMind Frequency Check Alert From: " + instName + "';\n";
         writer << "$mail->addAddress('ariel.arelovich@viewmind.com.ar', 'Ariel Arelovich');\n";
 
-    #ifdef SERVER_PRODUCTION
+#ifdef SERVER_PRODUCTION
         writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
         writer << "$mail->addAddress('gerardofernandez480@gmail.com ', 'Gerardo Fernandez');\n";
-    #endif
+#endif
 
         // The HTML-formatted body of the email
         writer << "$mail->Body = '<h3>Frequency problems detected from Institituion: " + instName + "</h3>\n<h3>Details</h3>" + body + "';\n";

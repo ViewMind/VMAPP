@@ -35,7 +35,7 @@ SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, const SSLIDSocketData &cdata):QO
 
     // Customized log file.
     log.setLogFileLocation(QString(DIRNAME_SERVER_LOGS) + "/" + transactionID);
-    log.appendStandard("Created connection id: " + timestamp + " with address " + sslSocket->peerAddress().toString());
+    log.appendStandard("Created connection id: " + transactionID + " with address " + sslSocket->peerAddress().toString());
 
     // Starting life timer.
     lifeTimer.setInterval(LIFE_TIMEOUT);
@@ -74,6 +74,7 @@ void SSLIDSocket::on_lifeTimeOut(){
 }
 
 void SSLIDSocket::doDisconnects(){
+    log.appendStandard("Doing slot-signals disconnect");
     disconnect(sslSocket,SIGNAL(encrypted()),this,SLOT(on_encryptedSuccess()));
     disconnect(sslSocket,SIGNAL(sslErrors(QList<QSslError>)),this,SLOT(on_sslErrors(QList<QSslError>)));
     disconnect(sslSocket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(on_socketStateChanged(QAbstractSocket::SocketState)));
@@ -157,6 +158,17 @@ void SSLIDSocket::dbMngCheck(){
 
     // Creating the work directory
     workingDir = QString(DIRNAME_SERVER_WORKDIR) + "/" + patientHashedID + "/" + timestamp;
+
+    // It is safe to assume that the work dir exists.
+    QDir(QString(DIRNAME_SERVER_WORKDIR)).mkdir(patientHashedID);
+    QDir(QString(DIRNAME_SERVER_WORKDIR) + "/" + patientHashedID).mkdir(timestamp);
+
+    if (!QDir(workingDir).exists()){
+        log.appendError("Working directory: " + workingDir + " does not exists or could not be created");
+        sendCodeToClient(EYESERVER_RESULT_SERVER_ERROR);
+        return;
+    }
+
     if (!rx.saveFiles(workingDir)){
         log.appendError("Could not save files in data packet.");
         sendCodeToClient(EYESERVER_RESULT_SERVER_ERROR);
@@ -239,20 +251,20 @@ void SSLIDSocket::on_eyeDBMngFinished(qint32 status){
         ConfigurationManager::setValue(eyeRepGenConf,COMMON_TEXT_CODEC,CONFIG_TRANSACTION_ID,transactionID);
 
         pstate = PS_WAIT_EYEPROC;
-        QStringList args; args << eyeRepGenConf;
+        QStringList args;
         QFileInfo info(configData.eyeRepGenPath);
+        QFileInfo confInfo(eyeRepGenConf);
+        args << confInfo.absolutePath() + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
         eyeRepGen.setWorkingDirectory(info.absolutePath());
         eyeRepGen.start(configData.eyeRepGenPath,args);
     }
     else {
         timeMeasures[TIME_MEASURE_DBMNG_STORE] = timeMeasurer.elapsed();
-        if (dbmngAns != EYEDBMNG_ANS_OK){
-            log.appendError("EYE DB MNG Store procedure failed with code: " + QString::number(dbmngAns));
-            if (disconectedReceived) {
-                doDisconnects();                
-                log.appendStandard("TIMES: " + timeMeasuresToString());
-                emit(removeSocket(configData.ID));
-            }
+        log.appendStandard("EYE DB MNG Store procedure finished with code: " + QString::number(dbmngAns));
+        if (disconectedReceived) {
+            doDisconnects();
+            log.appendStandard("TIMES: " + timeMeasuresToString());
+            emit(removeSocket(configData.ID));
         }
     }
 
@@ -263,13 +275,13 @@ void SSLIDSocket::on_eyeRepGenFinished(qint32 status){
     timeMeasures[TIME_MEASURE_PROCESSING_DONE] = timeMeasurer.elapsed();
     timeMeasurer.start();
 
-    log.appendStandard("EYE REP GENFinished with status: " + QString::number(status));
+    log.appendStandard("EYE REP GEN Finished with status: " + QString::number(status));
 
     // If all went according to plan, then one and only one .rep file must exist in the directory.
     QStringList filters; filters << "*.rep";
     QStringList repFiles = QDir(workingDir).entryList(filters,QDir::Files);
     if (repFiles.size() != 1){
-        log.appendError("More than one report file was found in the processing directory: " + repFiles.join(","));
+        log.appendError("Number of report files found in the processing directory is different than one. They are: " + repFiles.join(","));
         sendCodeToClient(EYESERVER_RESULT_SERVER_ERROR);
         return;
     }
@@ -312,12 +324,17 @@ void SSLIDSocket::startTimeoutTimer(){
 
 void SSLIDSocket::on_disconnected(){
     log.appendStandard("Disconnected from client");
-    disconectedReceived = true;    
+    disconectedReceived = true;
+    lifeTimer.stop();
+    timer.stop();
     if (pstate != PS_WAIT_DBMNG_STORE) {
         // Only in this case the data timeout is computed and the data shown. Otherwise we need to wait until the last part of the processing is finished
         timeMeasures[TIME_MEASURE_DISCONNECT] =  timeMeasurer.elapsed();
         log.appendStandard("TIMES: " + timeMeasuresToString());
         emit(removeSocket(configData.ID));
+    }
+    else{
+        log.appendStandard("Not removing socket. Waiting the DBMNG Store to finish");
     }
 }
 
@@ -365,10 +382,11 @@ QString SSLIDSocket::timeMeasuresToString(){
     QString ans = "";
     for (qint32 i = 0; i < parts.size(); i++){
         quint64 time = timeMeasures.value(parts.at(i));
-        ans = ans + "   " + parts.at(i) + QString::number(time) + " ms\n";
+        ans = ans + "   " + parts.at(i) + " = " + QString::number(time) + " ms\n";
         accumulated = accumulated + time;
     }
-    ans = ans + "TOTAL: " + QString::number(accumulated);
+    ans =  ans + "TOTAL: " + QString::number(accumulated) + "ms";
+    ans = "\n" + ans;
     return ans;
 }
 
