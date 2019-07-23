@@ -41,7 +41,7 @@ SSLIDSocket::SSLIDSocket(QSslSocket *newSocket, const SSLIDSocketData &cdata):QO
     lifeTimer.setInterval(LIFE_TIMEOUT);
     lifeTimer.start();
 
-    timeMeasurer.start();
+    mtimer.measure(TIME_MEASURE_ESTABLISHED_CONNECTION);
 
     // Waiting for encryption finished.
     startTimeoutTimer();
@@ -69,7 +69,7 @@ void SSLIDSocket::on_lifeTimeOut(){
     lifeTimer.stop();
     timer.stop();
     doDisconnects();
-    log.appendError("Socket life timed out: " + timeMeasuresToString());
+    log.appendError("Socket life timed out");
     emit(removeSocket(configData.ID));
 }
 
@@ -93,8 +93,7 @@ void SSLIDSocket::on_encryptedSuccess(){
     timer.stop();
     log.appendSuccess("Finalized Encrypted Connection");
     pstate = PS_WAIT_INFO;
-    timeMeasures[TIME_MEASURE_ESTABLISHED_CONNECTION] = timeMeasurer.elapsed();
-    timeMeasurer.start();
+    mtimer.measure(TIME_MEASURE_INFO_RECEIVED);
     startTimeoutTimer();
 }
 
@@ -105,15 +104,13 @@ void SSLIDSocket::on_readyRead(){
     if (ans == DataPacket::DATABUFFER_RESULT_DONE){
         timer.stop();
         if (pstate == PS_WAIT_INFO){
-            timeMeasures[TIME_MEASURE_INFO_RECEIVED] = timeMeasurer.elapsed();
-            timeMeasurer.start();
+            mtimer.measure(TIME_MEASURE_DBMNG_CHECK);
             dbMngCheck();
             rx.clearAll();
         }
         else if (pstate == PS_WAIT_CLIENT_OK){
             pstate = PS_WAIT_DBMNG_STORE;
-            timeMeasures[TIME_MEASURE_CLIENT_OK] = timeMeasurer.elapsed();
-            timeMeasurer.start();
+            mtimer.measure(TIME_MEASURE_DBMNG_STORE);
             dbMngStore();
             rx.clearAll();
         }
@@ -214,9 +211,6 @@ void SSLIDSocket::on_eyeDBMngFinished(qint32 status){
 
     if (pstate == PS_WAIT_DBMNG_CHECK){
 
-        timeMeasures[TIME_MEASURE_DBMNG_CHECK] = timeMeasurer.elapsed();
-        timeMeasurer.start();
-
         if (dbmngAns != EYEDBMNG_ANS_OK){
             log.appendError("EYEDBMNG returned NOT OK result code: " + QString::number(dbmngAns));
             qint32 code;
@@ -257,13 +251,18 @@ void SSLIDSocket::on_eyeDBMngFinished(qint32 status){
         args << confInfo.absolutePath() + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
         eyeRepGen.setWorkingDirectory(info.absolutePath());
         eyeRepGen.start(configData.eyeRepGenPath,args);
+
+        mtimer.measure(TIME_MEASURE_PROCESSING_DONE);
     }
     else {
-        timeMeasures[TIME_MEASURE_DBMNG_STORE] = timeMeasurer.elapsed();
+
+        // The store procedure
+        mtimer.measure(TIME_MEASURE_DISCONNECT);
         log.appendStandard("EYE DB MNG Store procedure finished with code: " + QString::number(dbmngAns));
         if (disconectedReceived) {
             doDisconnects();
-            log.appendStandard("TIMES: " + timeMeasuresToString());
+            mtimer.end();
+            log.appendStandard("TIMES: " + mtimer.getTimeSummary());
             emit(removeSocket(configData.ID));
         }
     }
@@ -272,9 +271,7 @@ void SSLIDSocket::on_eyeDBMngFinished(qint32 status){
 
 void SSLIDSocket::on_eyeRepGenFinished(qint32 status){
 
-    timeMeasures[TIME_MEASURE_PROCESSING_DONE] = timeMeasurer.elapsed();
-    timeMeasurer.start();
-
+    mtimer.measure(TIME_MEASURE_CLIENT_OK);
     log.appendStandard("EYE REP GEN Finished with status: " + QString::number(status));
 
     // If all went according to plan, then one and only one .rep file must exist in the directory.
@@ -295,10 +292,21 @@ void SSLIDSocket::on_eyeRepGenFinished(qint32 status){
 void SSLIDSocket::dbMngStore(){
 
     ConfigurationManager dbmngComm;
+
+    QHash<QString,QString> codes;
+    codes[TIME_MEASURE_CLIENT_OK]              = "COK";
+    codes[TIME_MEASURE_DBMNG_CHECK]            = "CHK";
+    codes[TIME_MEASURE_DBMNG_STORE]            = "STO";
+    codes[TIME_MEASURE_DISCONNECT]             = "DIS";
+    codes[TIME_MEASURE_ESTABLISHED_CONNECTION] = "ECN";
+    codes[TIME_MEASURE_INFO_RECEIVED]          = "IRC";
+    codes[TIME_MEASURE_PROCESSING_DONE]        = "PDN";
+
     dbmngComm.addKeyValuePair(CONFIG_INST_ETSERIAL,etSerial);
     dbmngComm.addKeyValuePair(CONFIG_INST_UID,instID);
     dbmngComm.addKeyValuePair(CONFIG_TRANSACTION_ID,transactionID);
     dbmngComm.addKeyValuePair(CONFIG_TIMESTAMP,timestamp);
+    dbmngComm.addKeyValuePair(CONFIG_TIMESTRING,mtimer.getTimeString(codes));
     dbmngComm.addKeyValuePair(CONFIG_DBMNG_ACTION,CONFIG_P_DMBNG_ACTION_STORE);
     if (!dbmngComm.saveToFile(workingDir + "/" + QString(FILE_DBMNG_COMM_FILE),COMMON_TEXT_CODEC)){
         // At this point client will disconnect or has allready disconnected.
@@ -306,7 +314,6 @@ void SSLIDSocket::dbMngStore(){
         pstate = PS_WAIT_DISCONNECT;
         if (disconectedReceived) {
             doDisconnects();
-            log.appendStandard("TIMES: " + timeMeasuresToString());
             emit(removeSocket(configData.ID));
         }
         return;
@@ -329,8 +336,8 @@ void SSLIDSocket::on_disconnected(){
     timer.stop();
     if (pstate != PS_WAIT_DBMNG_STORE) {
         // Only in this case the data timeout is computed and the data shown. Otherwise we need to wait until the last part of the processing is finished
-        timeMeasures[TIME_MEASURE_DISCONNECT] =  timeMeasurer.elapsed();
-        log.appendStandard("TIMES: " + timeMeasuresToString());
+        mtimer.end();
+        log.appendStandard("TIMES: " + mtimer.getTimeSummary());
         emit(removeSocket(configData.ID));
     }
     else{
@@ -374,22 +381,6 @@ QString SSLIDSocket::stateToString(){
     return "UNKNOWN STATE";
 }
 
-QString SSLIDSocket::timeMeasuresToString(){
-    QStringList parts = timeMeasures.keys();
-    if (parts.isEmpty()) return "NO TIME DATA";
-    parts.sort();
-    quint64 accumulated = 0;
-    QString ans = "";
-    for (qint32 i = 0; i < parts.size(); i++){
-        quint64 time = timeMeasures.value(parts.at(i));
-        ans = ans + "   " + parts.at(i) + " = " + QString::number(time) + " ms\n";
-        accumulated = accumulated + time;
-    }
-    ans =  ans + "TOTAL: " + QString::number(accumulated) + "ms";
-    ans = "\n" + ans;
-    return ans;
-}
-
 void SSLIDSocket::sendCodeToClient(qint32 code, const QString repFile){
     DataPacket tx;
     tx.addValue(code,DataPacket::DPFI_PROCESSING_ACK);
@@ -404,7 +395,6 @@ void SSLIDSocket::sendCodeToClient(qint32 code, const QString repFile){
             startTimeoutTimer();
         }
     }
-    timeMeasurer.start();
     QByteArray ba;
     ba = tx.toByteArray();
     qint64 numBytesWritten = sslSocket->write(ba);

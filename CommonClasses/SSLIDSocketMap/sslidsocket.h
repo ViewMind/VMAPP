@@ -7,7 +7,7 @@
 #include <QDateTime>
 #include <QHostAddress>
 #include <QMetaEnum>
-#include <QElapsedTimer>
+#include "../../CommonClasses/TimeMeasurer/timemeasurer.h"
 #include "../../CommonClasses/DataPacket/datapacket.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -88,17 +88,15 @@ private:
     LogInterface log;
     QSslSocket *sslSocket;
     DataPacket rx;
-    QElapsedTimer timeMeasurer;
     QTimer timer;
     QTimer lifeTimer;
     QProcess eyeRepGen;
     QProcess eyeDBMng;
-    QHash<QString,quint64> timeMeasures;
+    TimeMeasurer mtimer;
 
     // Helper functions
     void startTimeoutTimer();    
     QString stateToString();
-    QString timeMeasuresToString();
     void sendCodeToClient(qint32 code, const QString repFile = "");
     void dbMngCheck();
     void dbMngStore();

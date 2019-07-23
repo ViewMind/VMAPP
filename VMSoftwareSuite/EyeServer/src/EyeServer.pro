@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     ../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp \
     ssllistener.cpp \
     servercontrol.cpp \    
-    dataprocessingsslserver.cpp
+    dataprocessingsslserver.cpp \
+    ../../../CommonClasses/TimeMeasurer/timemeasurer.cpp
 
 
 HEADERS  += \
@@ -35,7 +36,8 @@ HEADERS  += \
     ../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h \
     dataprocessingsslserver.h \
     ssllistener.h \
-    servercontrol.h
+    servercontrol.h \
+    ../../../CommonClasses/TimeMeasurer/timemeasurer.h
 
 RESOURCES += \
     certificates.qrc \
