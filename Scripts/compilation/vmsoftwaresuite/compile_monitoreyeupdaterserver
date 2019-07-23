@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Constants to change in order to change compilation.
-BASE_DIR="/home/ec2-user/viewmind_projects"
-SRC_DIR=$BASE_DIR"/EyeReportGenerator/src"
-OUTPUT=$BASE_DIR"/EyeReportGenerator/bin"
-APPNAME="EyeReportGen"
-DEST="/home/ec2-user/EyeReportGenerator/"
+BASE_DIR="/home/ec2-user/viewmind_projects/VMSoftwareSuite"
+SRC_DIR=$BASE_DIR"/EyeUpdateServerMonitor"
+APPNAME="EyeUpdateServerMonitor"
+OUTPUT=$BASE_DIR"/EyeUpdateServerMonitor/bin"
+DEST="/home/ec2-user/EyeUpdateServer/"
 
 # Changing the work directory.
 echo "===================== CHANGING DIR TO: $OUTPUT ====================="
@@ -29,3 +29,4 @@ if [[ -f "Makefile" ]]; then
 else
    echo "QMAKE FAILED"
 fi
+
