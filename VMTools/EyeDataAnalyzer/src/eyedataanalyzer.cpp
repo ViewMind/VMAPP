@@ -819,3 +819,66 @@ void EyeDataAnalyzer::on_batchProcessing_Done(){
     waitDiag->close();
 
 }
+
+void EyeDataAnalyzer::on_pbIDTable_clicked()
+{
+    IDTableDiag tableDiag;
+    if (tableDiag.exec() != QDialog::Accepted) return;
+
+    IDTableDiag::Columns cols = tableDiag.getTableColumns();
+
+    if (cols.dir.isEmpty()) return;
+    if (!QDir(cols.dir).exists()) return;
+
+//    IDTableDiag::Columns cols;
+//    cols.dir = "C:/Users/Viewmind/Documents/viewmind_projects/VMTools/EyeDataAnalyzer/exe/work/1145868706";
+//    cols.displayID = true;
+//    cols.vmHPid = true;
+//    cols.vmPid = true;
+
+    QStringList dirs = QDir(cols.dir).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot);
+    QStringList csv;
+    QStringList header; header << "DBPUID";
+
+    if (cols.displayID) header << "DID";
+    if (cols.vmPid) header     << "PUID";
+    if (cols.vmHPid) header    << "HPUID";
+    csv << header.join(",");
+
+    for (qint32 i = 0; i < dirs.size(); i++){
+        QString d = cols.dir + "/" + dirs.at(i) + "/dummy";
+        ConfigurationManager t =  patNameMng.getPatientNameFromDirname(d);
+        QStringList row;
+        if (t.containsKeyword(CONFIG_PATIENT_UID)) row << t.getString(CONFIG_PATIENT_UID);
+        else row << "N/A";
+        if (cols.displayID){
+            if (t.containsKeyword(CONFIG_PATIENT_DISPLAYID)) row << t.getString(CONFIG_PATIENT_DISPLAYID);
+            else row << "N/A";
+        }
+        if (cols.vmPid){
+            if (t.containsKeyword("PUID")) row << t.getString("PUID");
+            else row << "N/A";
+        }
+        if (cols.vmHPid){
+            if (t.containsKeyword("PUID")){
+                row << QCryptographicHash::hash(t.getString("PUID").toLatin1(),QCryptographicHash::Sha3_512).toHex();
+            }
+            else row << "N/A";
+        }
+        csv << row.join(",");
+    }
+
+    QFile file(cols.dir + "/ID.csv");
+    if (!file.open(QFile::WriteOnly)){
+        logForProcessing.appendError("Could not open file " + file.fileName() + " for writing");
+        return;
+    }
+
+    QTextStream writer(&file);
+    writer.setCodec(COMMON_TEXT_CODEC);
+    writer << csv.join("\n");
+    file.close();
+
+    logForProcessing.appendSuccess("Finished. File at: " + file.fileName());
+
+}

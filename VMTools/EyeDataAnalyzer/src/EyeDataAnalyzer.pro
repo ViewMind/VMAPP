@@ -58,7 +58,8 @@ SOURCES += \
     ../../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.cpp \
     ../../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp \
     batchcsvprocessing.cpp \
-    selectunifiedcsvfolderdiag.cpp
+    selectunifiedcsvfolderdiag.cpp \
+    idtablediag.cpp
 
 HEADERS += \
         eyedataanalyzer.h \
@@ -91,12 +92,14 @@ HEADERS += \
     ../../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h \
     ../../../CommonClasses/VariantMapSerializer/variantmapserializer.h \
     batchcsvprocessing.h \
-    selectunifiedcsvfolderdiag.h
+    selectunifiedcsvfolderdiag.h \
+    idtablediag.h
 
 FORMS += \
         eyedataanalyzer.ui \
     waitdialog.ui \
-    selectunifiedcsvfolderdiag.ui
+    selectunifiedcsvfolderdiag.ui \
+    idtablediag.ui
 
 RESOURCES += \
     report_res.qrc \

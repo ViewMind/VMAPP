@@ -56,7 +56,7 @@ public:
     QVariantMap getDoctorInfo(const QString &uid) const;
     QVariantMap getPatientInfo(const QString &patuid) const;
     QString getWorkDirectory() const {return workingDirectory;}
-    void setUpdateFlagTo(bool flag);
+    void saveIDTable(const QString &fileName, const QStringList &tableHeaders);
 
     QHash<QString,QString> getPatientHashedIDMap() const;
     QVariantMap getHashedIDPatientMap(QVariantMap hidmap) const;

@@ -4,6 +4,10 @@
 viewhome_btnConfSettings = PREFERENCIAS;
 viewhome_btnEditDrInfo = PERSONAL;
 viewhome_btnProtocol = PROTOCOLO;
+viewhome_btnTableID = IDENTIFICADORES;
+viewhome_tableDID   = Identificarodor de Sujeto;
+viewhome_tableHPUID   = Identificarodor de ViewMind;
+viewhome_tableIDtitle = Por favor seleccione donde guardar la planilla de identificadores;
 viewhome_slideTitle = Comenzar su evaluación;
 viewhome_description = Utilizando Seguimiento Ocular de alta precisión, en <br>
 <b>una prueba estándar, no invasiva de 10 minutos</b>, podemos <br>

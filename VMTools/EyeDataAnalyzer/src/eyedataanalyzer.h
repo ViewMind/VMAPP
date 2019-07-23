@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QTimer>
+#include <QCryptographicHash>
 #include <QMetaEnum>
 
 
@@ -22,7 +23,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "5.1.5 - NO COGNITIVE IMPAIRMENT"
+#define   PROGRAM_VERSION              "5.2.0"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -42,6 +43,7 @@
 #include "waitdialog.h"
 #include "batchcsvprocessing.h"
 #include "selectunifiedcsvfolderdiag.h"
+#include "idtablediag.h"
 
 namespace Ui {
 class EyeDataAnalyzer;
@@ -107,6 +109,8 @@ private slots:
     void on_pbUnifiedCSV_clicked();
 
     void on_batchProcessing_Done();
+
+    void on_pbIDTable_clicked();
 
 private:
 

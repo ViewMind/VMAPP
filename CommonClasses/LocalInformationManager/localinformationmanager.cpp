@@ -348,33 +348,29 @@ void LocalInformationManager::addPatientData(const QString &patient_uid, const Q
 
 }
 
-void LocalInformationManager::setUpdateFlagTo(bool flag){
-
-    QVariantMap db;
-    QStringList uids;
-
-    db = localDB.value(DOCTOR_DATA).toMap();
-    uids = db.keys();
-    for (qint32 i = 0; i < uids.size(); i++){
-        QVariantMap map = db.value(uids.at(i)).toMap();
-        map[DOCTOR_UPDATE] = flag;
-        db[uids.at(i)] = map;
+void LocalInformationManager::saveIDTable(const QString &fileName, const QStringList &tableHeaders){
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly)){
+        log.appendError("Could not open file " + fileName + " to save Table IDs");
+        return;
     }
-    localDB[DOCTOR_DATA] = db;
 
+    QStringList rows;
+    rows << tableHeaders.join(",");
 
-    db = localDB.value(PATIENT_DATA).toMap();
-    uids = db.keys();
-    for (qint32 i = 0; i < uids.size(); i++){
-        QVariantMap map = db.value(uids.at(i)).toMap();
-        map[PATIENT_UPDATE] = flag;
-        db[uids.at(i)] = map;
+    QVariantMap patdata = localDB.value(PATIENT_DATA).toMap();
+    QStringList patids = patdata.keys();
+    for (qint32 i = 0; i < patids.size(); i++){
+        QString hash = QCryptographicHash::hash(patids.at(i).toLatin1(),QCryptographicHash::Sha3_512).toHex();
+        QString did  = patdata.value(patids.at(i)).toMap().value(TPATDATA_NONCOL_DISPLAYID).toString();
+        rows << did + "," + hash;
     }
-    localDB[PATIENT_DATA] = db;
 
-    backupDB();
-    //qWarning() << "AFTER SETTING THE FLAG TO" << flag;
-    //printLocalDB();
+    QTextStream writer(&file);
+    writer << rows.join("\n");
+    file.close();
+
+    return;
 }
 
 LocalInformationManager::DisplayLists LocalInformationManager::getDoctorList(bool forceShow){

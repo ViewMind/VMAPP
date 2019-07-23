@@ -58,6 +58,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="pbIDTable">
+           <property name="text">
+            <string>ID Table</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>

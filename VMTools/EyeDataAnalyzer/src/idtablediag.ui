@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SelectUnifiedCSVFolderDiag</class>
- <widget class="QDialog" name="SelectUnifiedCSVFolderDiag">
+ <class>IDTableDiag</class>
+ <widget class="QDialog" name="IDTableDiag">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>148</height>
+    <width>541</width>
+    <height>191</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>ID Table Generation</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Select folder to process</string>
+        <string>Select Directory To Process</string>
        </property>
       </widget>
      </item>
@@ -33,7 +33,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pbBrowse">
+        <widget class="QPushButton" name="pushButton">
          <property name="text">
           <string>Browse ...</string>
          </property>
@@ -44,31 +44,33 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Select which ID to use</string>
+        <string>Select Columns On Table</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="cbIDToUse">
-       <item>
-        <property name="text">
-         <string>(DID) Display ID</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Name and Lastname</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>(DBPUID) ViewMindDB ID</string>
-        </property>
-       </item>
+      <widget class="QCheckBox" name="cbDisplayID">
+       <property name="text">
+        <string>(DID) Display ID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="cbPID">
+       <property name="text">
+        <string>(PUID) ViewMind Local Internal ID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="cbHPID">
+       <property name="text">
+        <string>(HPUID) Hash of ViewMind Local Internal ID</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -76,7 +78,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="pbOK">
+      <widget class="QPushButton" name="pbOk">
        <property name="text">
         <string>OK</string>
        </property>

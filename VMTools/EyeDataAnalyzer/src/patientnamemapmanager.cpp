@@ -65,7 +65,7 @@ ConfigurationManager PatientNameMapManager::getPatientNameFromDirname(const QStr
     puid = QString::number(puidnum);
     config.addKeyValuePair(CONFIG_PATIENT_UID,puid);
 
-    //qWarning() << "PUID " << puid << " from dir " << dirname;
+    qWarning() << "PUID " << puid << " from dir " << dirname;
 
     if (!dbpuid.contains(puid)) return config;
     QString uid = dbpuid.value(puid).toString(); // Conversion from puid (keyid from patid table) to uid (id generated locally)
@@ -74,7 +74,7 @@ ConfigurationManager PatientNameMapManager::getPatientNameFromDirname(const QStr
     QVariantMap patdata = dbdata.value(uid).toMap();
 
     //qWarning() << "Adding the data" << patdata;
-
+    config.addKeyValuePair("PUID",uid);
     config.addKeyValuePair(CONFIG_PATIENT_NAME,patdata.value(TPATDATA_COL_FIRSTNAME).toString() + " " + patdata.value(TPATDATA_COL_LASTNAME).toString());
     config.addKeyValuePair(CONFIG_PATIENT_DISPLAYID,patdata.value(TPATDATA_NONCOL_DISPLAYID).toString());
     return config;

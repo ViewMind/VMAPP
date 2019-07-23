@@ -1,6 +1,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.3
 import QtGraphicalEffects 1.0
+import QtQuick.Dialogs 1.0
 
 VMBase {
 
@@ -233,21 +234,21 @@ VMBase {
         Text {
             id: diagPassTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 43
+            font.pixelSize: 30
             anchors.top: parent.top
             anchors.topMargin: 50
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
-            text: askPasswordDialog.vmDrName
+            text:  loader.getStringForKey("viewhome_btnTableID");
         }
 
         VMPasswordField{
             id: passwordInput
             anchors.bottom: btnCheckPassword.top
             anchors.bottomMargin: 30
-            anchors.left: diagPassTitle.left
-            width: diagPassTitle.width;
-            vmLabelText: loader.getStringForKey(keybase+"ask_password");
+            anchors.horizontalCenter: parent.horizontalCenter;
+            width: diagPassTitle.width*1.5;
+            vmLabelText: loader.getStringForKey("viewdrsel_labelInstPassword");
         }
 
         VMButton{
@@ -259,20 +260,33 @@ VMBase {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 30
             onClicked:{
-                if (loader.isDoctorPasswordCorrect(passwordInput.getText())){
+                if (loader.verifyInstitutionPassword(passwordInput.getText())){
                     askPasswordDialog.close();
-                    vmShowAll = true;
-                    loadPatients();
+                    fileDialog.open();
                 }
                 else{
-                    passwordInput.vmErrorMsg =  loader.getStringForKey(keybase+"wrong_dr_password");
+                    passwordInput.vmErrorMsg =  loader.getStringForKey("viewdrsel_instpassword_wrong");
                 }
             }
         }
 
         onOpened: {
+            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
             passwordInput.setText("");
             passwordInput.vmErrorMsg = "";
+        }
+    }
+
+    FileDialog {
+        id: fileDialog
+        title: loader.getStringForKey("viewhome_tableIDtitle");
+        folder: shortcuts.home
+        nameFilters: ["CSV (*.csv)"]
+        selectExisting: false
+        onAccepted: {
+            loader.generateIDTable(fileUrl)
+        }
+        onRejected: {
         }
     }
 
@@ -285,6 +299,10 @@ VMBase {
 
     ListModel {
         id: patientList
+    }
+
+    function openAskPasswordDialog(){
+        askPasswordDialog.open();
     }
 
     // Loads the list model with the patient information

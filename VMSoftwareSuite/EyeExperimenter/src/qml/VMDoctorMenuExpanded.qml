@@ -13,8 +13,8 @@ Rectangle {
 
     z: -10
     height: {
-        if (uimap.getStructure() === "P") return 350
-        else if (uimap.getStructure() === "S") return 410
+        if (uimap.getStructure() === "P") return 410
+        else if (uimap.getStructure() === "S") return 470
     }
     color: "#ffffff"
 
@@ -219,6 +219,37 @@ Rectangle {
         }
     }
 
+
+    // The button is a mouse area otherwise the menu exists.
+    MouseArea{
+        id: btnTableIDs
+        width: parent.width*0.9
+        height: 38
+        Rectangle {
+            id: btnTableIDsRect
+            anchors.fill: parent
+            radius: 3
+            color: (btnTableIDs.pressed)? "ff0000" : "#ffffff"
+            border.color: btnTableIDs.enabled? "#BCBEC0" : "#dadcde"
+            Text{
+                anchors.centerIn: btnTableIDsRect
+                font.family: gothamM.name
+                font.pixelSize: 13
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                text: loader.getStringForKey("viewhome_btnTableID");
+                color: btnTableIDs.enabled? "#BCBEC0" : "#dadcde"
+            }
+
+        }
+        anchors.top: btnChangeDoctorInfo.bottom
+        anchors.topMargin: 18
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: {
+            viewPatList.openAskPasswordDialog();
+        }
+    }
+
     // The button is a mouse area otherwise the menu exists.
     MouseArea{
         id: btnProtocols
@@ -245,12 +276,13 @@ Rectangle {
             }
 
         }
-        anchors.top: btnChangeDoctorInfo.bottom
+        anchors.top: btnTableIDs.bottom
         anchors.topMargin: 18
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             viewProtocols.open();
         }
     }
+
 
 }

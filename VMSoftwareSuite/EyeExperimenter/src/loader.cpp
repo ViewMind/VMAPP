@@ -456,6 +456,14 @@ void Loader::updateCurrentDoctorAndPatientDBFiles(){
     }
 }
 
+void Loader::generateIDTable(const QString &urlPath){
+    QUrl url(urlPath);
+    QString fileName = url.toLocalFile();
+    QStringList headers;
+    headers << getStringForKey("viewhome_tableDID") << getStringForKey("viewhome_tableHPUID");
+    lim.saveIDTable(fileName,headers);
+}
+
 //******************************************* Report Realated Functions ***********************************************
 
 void Loader::operateOnRepGenStruct(qint32 index, qint32 type){

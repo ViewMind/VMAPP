@@ -4,6 +4,10 @@
 viewhome_btnConfSettings = CONFIGURE SETTINGS;
 viewhome_btnEditDrInfo = PERSONAL;
 viewhome_btnProtocol = PROTOCOL;
+viewhome_btnTableID = IDENTIFIERS;
+viewhome_tableIDtitle = Please select where to save the identifier spreadsheet;
+viewhome_tableDID   = Subject Identifier;
+viewhome_tableHPUID   = ViewMind Identifier;
 viewhome_slideTitle = Start your evaluation;
 viewhome_description = Using high-precision Eye-Tracking, in <b> a 10-minutes, <br>
 non-invasive and standarized test</b>, we are able to detect <br>
