@@ -2,7 +2,7 @@
 
 # Constants to change in order to change compilation.
 BASE_DIR="/home/ec2-user/viewmind_projects/VMSoftwareSuite"
-SRC_DIR=$BASE_DIR"/EyeUpdateServerMonitor"
+SRC_DIR=$BASE_DIR"/EyeUpdateServerMonitor/src"
 APPNAME="EyeUpdateServerMonitor"
 OUTPUT=$BASE_DIR"/EyeUpdateServerMonitor/bin"
 DEST="/home/ec2-user/EyeUpdateServer/"
