@@ -100,7 +100,7 @@ void DataProcessingSSLServer::on_newConnection(){
     sockets.addSocket(socket);
 
     // Doing the connection SIGNAL-SLOT
-    bool ans = connect(socket,&SSLIDSocket::socketDone,this,&DataProcessingSSLServer::on_removeSocket);
+    connect(socket,&SSLIDSocket::socketDone,this,&DataProcessingSSLServer::on_removeSocket);
 
     log.appendStandard("Creating processing socket: " + socket->getTimeStampID());
 
