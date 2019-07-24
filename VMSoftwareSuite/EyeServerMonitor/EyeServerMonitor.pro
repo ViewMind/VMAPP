@@ -21,9 +21,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     control.cpp \
-    ../CommonClasses/LogInterface/loginterface.cpp
+    ../../../CommonClasses/LogInterface/loginterface.cpp
 
 HEADERS += \
     control.h \
-    ../CommonClasses/server_defines.h \
-    ../CommonClasses/LogInterface/loginterface.h
+    ../../../CommonClasses/server_defines.h \
+    ../../../CommonClasses/LogInterface/loginterface.h
