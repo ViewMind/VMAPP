@@ -49,7 +49,7 @@ bool DataProcessingSSLServer::startServer(ConfigurationManager *c){
     c->addKeyValuePair(CONFIG_EYEPROCESSOR_PATH,"/home/ariela/repos/viewmind_projects/VMSoftwareSuite/EyeReportGenerator/bin/EyeReportGen");
     c->addKeyValuePair(CONFIG_EYEDBMANAGER_PATH,"/home/ariela/repos/viewmind_projects/VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager");
 #else
-    c->addKeyValuePair(CONFIG_EYEPROCESSOR_PATH,"/home/ec2-user/EyeReportGenerator/bin/EyeReportGen");
+    c->addKeyValuePair(CONFIG_EYEPROCESSOR_PATH,"/home/ec2-user/EyeReportGenerator/EyeReportGen");
     c->addKeyValuePair(CONFIG_EYEDBMANAGER_PATH,"/home/ec2-user/EyeDBmanager/EyeDBmanager");
 #endif
 
