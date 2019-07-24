@@ -610,7 +610,7 @@ void Control::storeMode(){
         QString err = ConfigurationManager::setValue(eyerepgenconf,COMMON_TEXT_CODEC,CONFIG_DATA_SAVED_TO_DB_FLAG,"true");
         if (err.isEmpty()){
             QString cmd = S3_BASE_COMMAND;
-            cmd = cmd + eyerepgenconf + " ";
+            cmd = cmd + " " + eyerepgenconf + " ";
             cmd = cmd + " s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
             cmd = cmd + S3_PARMETERS;
             QProcess::execute(cmd);
