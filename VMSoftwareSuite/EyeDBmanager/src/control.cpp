@@ -298,6 +298,9 @@ void Control::checkMode(){
 
 void Control::storeMode(){
 
+    QElapsedTimer timer;
+    timer.start();
+
     QString instID        = configuration.getString(CONFIG_INST_UID);
     bool reprocessRequest = configuration.getBool(CONFIG_REPROCESS_REQUEST);
     bool demoMode         = configuration.getBool(CONFIG_DEMO_MODE);
@@ -607,9 +610,9 @@ void Control::storeMode(){
         QString err = ConfigurationManager::setValue(eyerepgenconf,COMMON_TEXT_CODEC,CONFIG_DATA_SAVED_TO_DB_FLAG,"true");
         if (err.isEmpty()){
             QString cmd = S3_BASE_COMMAND;
-            cmd = cmd + eyerepgenconf + " ";
-            cmd = cmd + "s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
-            cmd = cmd + S3_PARMETERS;
+            cmd = cmd + " " + eyerepgenconf + " ";
+            cmd = cmd + " s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
+            cmd = cmd + " " + S3_PARMETERS;
             QProcess::execute(cmd);
             log.appendStandard("Running S3 Command for flag update: " + cmd);
         }
@@ -664,6 +667,18 @@ void Control::storeMode(){
         }
     }
     else log.appendStandard("This is either reprocessing or demo mode. Number of evaluations is not decreased");
+
+    quint64 timeSpent = timer.elapsed();
+
+    // Adding the performance data.
+    columns.clear();
+    values.clear();
+    QStringList perfTimes = configuration.getStringList(CONFIG_TIMESTRING);
+    columns << TPERF_COL_TIMESTRING << TPERF_COL_EYE_RESULT;
+    values << perfTimes.join("|") + "|STO:" + QString::number(timeSpent) << QString::number(resultKeyID);
+    if (!dbConnBase.insertDB(TABLE_PERFORMANCE,columns,values,logid)){
+        log.appendError("Could not add performance data " + dbConnBase.getError());
+    }
 
     // Checking if mail file exists
     QFile mailBody(workingDirectory + "/" + FILE_MAIL_ERROR_LOG);

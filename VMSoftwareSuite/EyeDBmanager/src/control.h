@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <QProcess>
 #include <iostream>
+#include <QElapsedTimer>
 
 #include "../../../CommonClasses/common.h"
 #include "../../../CommonClasses/server_defines.h"

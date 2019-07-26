@@ -7,6 +7,7 @@
 #include "../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h"
 #include "../../../CommonClasses/server_defines.h"
 #include "ssllistener.h"
+#include "updatesocket.h"
 
 #define  DIRNAME_UPDATE_DIR                "etdir"
 #define  DIRNAME_UPDATE_DIR_LOG_SUBIDR     "logs"
@@ -28,11 +29,9 @@ signals:
 private slots:
     void on_newConnection();
     void on_lostConnection();
-    void on_newSSLSignal(quint64 socket, quint8 signaltype);
+    void on_removeSocket(quint64 socket);
 
 private:
-
-    static const qint32 PASS_HASH_SIZE = 64;
 
     // Logging to file.
     LogInterface log;
@@ -46,17 +45,6 @@ private:
 
     // Generates ever increasing values for unique socket ids.
     quint64 idGen;
-
-    // Auxiliary functions for error handling and state changing
-    void changedState(quint64 id);
-    void socketErrorFound(quint64 id);
-    void sslErrorsFound(quint64 id);
-
-    // Update the EyeExperimenter
-    void processUpdateRequest(quint64 socket);
-
-    // Sends the checksum of one of the exes
-    void sendUpdateAns(DataPacket tx, quint64 socket, const QString &ans);
 
 };
 

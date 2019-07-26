@@ -43,12 +43,13 @@ bool DataProcessingSSLServer::startServer(ConfigurationManager *c){
         log.appendError("Data timeout not present");
         return false;
     }
+    else log.appendStandard("Data request is configured as " + config->getString(CONFIG_DATA_REQUEST_TIMEOUT));
 
 #ifdef SERVER_LOCALHOST
     c->addKeyValuePair(CONFIG_EYEPROCESSOR_PATH,"/home/ariela/repos/viewmind_projects/VMSoftwareSuite/EyeReportGenerator/bin/EyeReportGen");
     c->addKeyValuePair(CONFIG_EYEDBMANAGER_PATH,"/home/ariela/repos/viewmind_projects/VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager");
 #else
-    c->addKeyValuePair(CONFIG_EYEPROCESSOR_PATH,"/home/ec2-user/EyeReportGenerator/bin/EyeReportGen");
+    c->addKeyValuePair(CONFIG_EYEPROCESSOR_PATH,"/home/ec2-user/EyeReportGenerator/EyeReportGen");
     c->addKeyValuePair(CONFIG_EYEDBMANAGER_PATH,"/home/ec2-user/EyeDBmanager/EyeDBmanager");
 #endif
 
@@ -76,7 +77,8 @@ bool DataProcessingSSLServer::startServer(ConfigurationManager *c){
 
 void DataProcessingSSLServer::on_newConnection(){
 
-    SSLIDSocket::SSLIDSocketData data;
+
+    ProcessingSocket::ProcessingSocketData data;
     data.eyeDBMngPath = config->getString(CONFIG_EYEDBMANAGER_PATH);
     data.eyeRepGenPath = config->getString(CONFIG_EYEPROCESSOR_PATH);
     data.ID = idGen;
@@ -84,7 +86,8 @@ void DataProcessingSSLServer::on_newConnection(){
 
     // New connection is available.
     QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
-    SSLIDSocket *socket = new SSLIDSocket(sslsocket,data);
+    ProcessingSocket *socket = new ProcessingSocket(sslsocket,data);
+
 
     if (!socket->isValid()) {
         log.appendError("Could not cast incomming socket connection");
@@ -97,7 +100,7 @@ void DataProcessingSSLServer::on_newConnection(){
     sockets.addSocket(socket);
 
     // Doing the connection SIGNAL-SLOT
-    connect(socket,&SSLIDSocket::removeSocket,this,&DataProcessingSSLServer::on_removeSocket);
+    connect(socket,&SSLIDSocket::socketDone,this,&DataProcessingSSLServer::on_removeSocket);
 
     log.appendStandard("Creating processing socket: " + socket->getTimeStampID());
 
@@ -112,7 +115,7 @@ void DataProcessingSSLServer::on_newConnection(){
 void DataProcessingSSLServer::on_removeSocket(quint64 socket){
 
     QString where = "onRemoveSocket";
-    SSLIDSocket *sslsocket = sockets.getSocketLock(socket,where);
+    ProcessingSocket *sslsocket = (ProcessingSocket*)sockets.getSocketLock(socket,where);
     if (sslsocket == nullptr){
         sockets.releaseSocket(socket,where);
         log.appendError("Attempting to get null socket on " + where + " for id : " + QString::number(socket));

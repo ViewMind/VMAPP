@@ -54,6 +54,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TABLE_INSTITUTION                       "tInstitution"
 #define  TABLE_PLACEDPRODUCTS                    "tPlacedProducts"
 #define  TABLE_FDATA                             "tFData"
+#define  TABLE_PERFORMANCE                       "tPerformance"
 
 #define  TABLE_PATDATA                           "tPatientData"
 #define  TABLE_PATIENTD_IDS                      "tPatientIDs"
@@ -179,5 +180,9 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TFDATA_COL_FILENAME                     "filename"
 #define  TFDATA_COL_TEYERESULT                   "teye_result"
 
+// Column names for the tPerformance Table
+#define  TPERF_COL_KEYID                         "keyid"
+#define  TPERF_COL_TIMESTRING                    "timestring"
+#define  TPERF_COL_EYE_RESULT                    "teye_result"
 
 #endif //DBDESCRIPTION_H

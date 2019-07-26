@@ -112,6 +112,7 @@
 #define   CONFIG_DATA_SAVED_TO_DB_FLAG                  "data_saved_to_db_flag"
 #define   CONFIG_TIMESTAMP                              "timestamp"
 #define   CONFIG_REMAINING_EVALUATIONS                  "remaining_evaluations"
+#define   CONFIG_TIMESTRING                             "timestring"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

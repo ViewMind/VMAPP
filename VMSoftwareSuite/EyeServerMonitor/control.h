@@ -7,8 +7,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
-#include "../../CommonClasses/server_defines.h"
-#include "../../CommonClasses/LogInterface/loginterface.h"
+#include "../../../CommonClasses/server_defines.h"
+#include "../../../CommonClasses/LogInterface/loginterface.h"
 
 class Control : public QObject
 {

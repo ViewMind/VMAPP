@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     ../../../CommonClasses/DataPacket/datapacket.cpp \
     ../../../CommonClasses/SSLIDSocketMap/sslidsocket.cpp \
     ../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp \
-    ../../../CommonClasses/LogInterface/loginterface.cpp
+    ../../../CommonClasses/LogInterface/loginterface.cpp \
+    updatesocket.cpp
 
 RESOURCES += \
     certificates.qrc
@@ -44,4 +45,5 @@ HEADERS += \
     ../../../CommonClasses/DataPacket/datapacket.h \
     ../../../CommonClasses/SSLIDSocketMap/sslidsocket.h \
     ../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h \
-    ../../../CommonClasses/LogInterface/loginterface.h
+    ../../../CommonClasses/LogInterface/loginterface.h \
+    updatesocket.h

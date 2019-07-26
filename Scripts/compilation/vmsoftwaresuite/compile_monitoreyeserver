@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Constants to change in order to change compilation.
-BASE_DIR="/home/ec2-user/viewmind_projects"
+BASE_DIR="/home/ec2-user/viewmind_projects/VMSoftwareSuite"
 SRC_DIR=$BASE_DIR"/EyeServerMonitor"
 APPNAME="EyeServerMonitor"
 OUTPUT=$BASE_DIR"/EyeServerMonitor/bin"
