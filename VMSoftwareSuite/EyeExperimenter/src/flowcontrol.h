@@ -61,6 +61,7 @@ public:
     Q_INVOKABLE void moveFileToArchivedFileFolder(const QString &filename);
     Q_INVOKABLE void doFrequencyAnalysis(const QString &filename);
     Q_INVOKABLE void requestDataReprocessing(const QString &reportName, const QString &fileList, const QString &evaluationID);
+    Q_INVOKABLE qint32 numberOfEvaluationsReceived() { return sslDataProcessingClient->getNumberOfEvaluations(); }
 
 signals:
 

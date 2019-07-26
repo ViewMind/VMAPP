@@ -57,6 +57,8 @@ public:
     QVariantMap getPatientInfo(const QString &patuid) const;
     QString getWorkDirectory() const {return workingDirectory;}
     void saveIDTable(const QString &fileName, const QStringList &tableHeaders);
+    qint32 getRemainingEvals() const;
+    void setRemainingEvals(qint32 remevals);
 
     QHash<QString,QString> getPatientHashedIDMap() const;
     QVariantMap getHashedIDPatientMap(QVariantMap hidmap) const;
@@ -105,7 +107,8 @@ private:
     static const QString FLAG_VIEWALL;
     static const QString PROTOCOLS;
     static const QString PROTOCOL_VALID;
-    static const qint32  LOCAL_DB_VERSION = 5;
+    static const QString REMAING_EVALS;
+    static const qint32  LOCAL_DB_VERSION = 6;
 
     // Working directory.
     QString workingDirectory;

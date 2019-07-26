@@ -72,6 +72,8 @@ public:
     Q_INVOKABLE void setViewAllFlag(bool flag) {lim.setViewAllFlag(flag); }
     Q_INVOKABLE void updateCurrentDoctorAndPatientDBFiles();
     Q_INVOKABLE void generateIDTable(const QString &urlPath);
+    Q_INVOKABLE QString getNumberOfEvalsString(bool onlyEvals = false);
+    Q_INVOKABLE void setNumberOfEvaluations(qint32 numevals);
 
     //******************** Protocol related functions ***************************
     Q_INVOKABLE bool addProtocol(const QString &p) { return lim.addProtocol(p); }

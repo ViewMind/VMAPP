@@ -9,12 +9,12 @@ Rectangle {
     property string vmDrName: "NO NAME";
     property string vmSelectedET: "";
     property string vmSelectedLang: "";
-    property string vmDemoMode: "";
+    property string vmDemoMode: "";    
 
     z: -10
     height: {
-        if (uimap.getStructure() === "P") return 410
-        else if (uimap.getStructure() === "S") return 470
+        if (uimap.getStructure() === "P") return 470
+        else if (uimap.getStructure() === "S") return 530
     }
     color: "#ffffff"
 
@@ -37,6 +37,7 @@ Rectangle {
         // Checking if the doctor is validated
         if (loader.isDoctorValidated(-1)) btnProtocols.enabled = true;
         else btnProtocols.enabled = false;
+        labETNumEvals.text = loader.getNumberOfEvalsString(false);
     }
 
     Rectangle{
@@ -156,6 +157,30 @@ Rectangle {
         anchors.topMargin: 11
     }
 
+    // Eye tracker selected
+    Text{
+        id: labETNumEvals
+        color: "#88B2D0"
+        text: loader.getNumberOfEvalsString(false);
+        font.family: gothamRegular.name
+        font.pixelSize: 13
+        anchors.left: parent.left
+        anchors.leftMargin: 30
+        anchors.top: divETSel.bottom
+        anchors.topMargin: 11
+    }
+
+    // Eye tracker selected divisor
+    Rectangle{
+        id: divETNumEvals
+        color: "#88B2D0"
+        width: parent.width*0.8
+        height: 1
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: labETNumEvals.bottom
+        anchors.topMargin: 11
+    }
+
     // The button is a mouse area otherwise the menu exists.
     MouseArea{
         id: btnChangeSettingMouseArea
@@ -178,7 +203,7 @@ Rectangle {
             }
 
         }
-        anchors.top: divETSel.bottom
+        anchors.top: divETNumEvals.bottom
         anchors.topMargin: 18
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {

@@ -23,6 +23,7 @@ public:
 
     // Obtaining code allows for more precise messages.
     quint8 getProcessingCode() {return processingACKCode;}
+    qint32 getNumberOfEvaluations() {return numberOfEvals;}
 
 private slots:
 
@@ -42,6 +43,9 @@ private:
 
     // The last processing code.
     quint8 processingACKCode;
+
+    // The number of evaluations returned.
+    qint32 numberOfEvals;
 
     // Flag to indicate reprocessing.
     QString previousReportFile;

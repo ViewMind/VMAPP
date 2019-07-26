@@ -464,6 +464,22 @@ void Loader::generateIDTable(const QString &urlPath){
     lim.saveIDTable(fileName,headers);
 }
 
+QString Loader::getNumberOfEvalsString(bool onlyEvals){
+    qint32 N = lim.getRemainingEvals();    
+    QString ans;
+    if (N == -1) ans =  getStringForKey("viewhome_remEvalsUnlimited");
+    else ans = QString::number(N);
+
+    if (!onlyEvals) ans = getStringForKey("viewhome_remEvals") + ": " + ans;
+
+    return ans;
+}
+
+void Loader::setNumberOfEvaluations(qint32 numevals){
+    if (numevals < -2) return;
+    lim.setRemainingEvals(numevals);
+}
+
 //******************************************* Report Realated Functions ***********************************************
 
 void Loader::operateOnRepGenStruct(qint32 index, qint32 type){

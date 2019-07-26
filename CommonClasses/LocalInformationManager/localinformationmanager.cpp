@@ -14,6 +14,7 @@ const QString LocalInformationManager::EVALUATION_COUNTER    = "EVALUATION_COUNT
 const QString LocalInformationManager::FLAG_VIEWALL          = "FLAG_VIEWALL";
 const QString LocalInformationManager::PROTOCOLS             = "PROTOCOLS";
 const QString LocalInformationManager::PROTOCOL_VALID        = "PROTOCOL_VALID";
+const QString LocalInformationManager::REMAING_EVALS         = "REMAING_EVALS";
 
 LocalInformationManager::LocalInformationManager()
 {
@@ -373,6 +374,16 @@ void LocalInformationManager::saveIDTable(const QString &fileName, const QString
     return;
 }
 
+qint32 LocalInformationManager::getRemainingEvals() const {
+    if (localDB.contains(REMAING_EVALS)) return localDB.value(REMAING_EVALS).toInt();
+    else return -1;
+}
+
+void LocalInformationManager::setRemainingEvals(qint32 remevals){
+    localDB[REMAING_EVALS] = remevals;
+    backupDB();
+}
+
 LocalInformationManager::DisplayLists LocalInformationManager::getDoctorList(bool forceShow){
     DisplayLists ans;
     QStringList uids = localDB.value(DOCTOR_DATA).toMap().keys();
@@ -534,6 +545,7 @@ void LocalInformationManager::backupDB(){
 }
 
 void LocalInformationManager::printDBToConsole(){
+    qWarning() << "REMAINIG EVALS: " + localDB.value(REMAING_EVALS).toString();
     qWarning() << "DOCTOR COUNTER: " + localDB.value(DOCTOR_COUNTER).toString();
     qWarning() << "PATIENT COUNTER: " + localDB.value(PATIENT_COUNTER).toString();
     qWarning() << "EVALUATION COUNTER" + localDB.value(EVALUATION_COUNTER).toString();
@@ -557,6 +569,7 @@ void LocalInformationManager::printDBToConsole(){
 
 QString LocalInformationManager::printDBToString() const{
     QString ans;
+    ans = ans +   "REMAINIG EVALS: " + localDB.value(REMAING_EVALS).toString() + "\n";
     ans = ans +   "DOCTOR COUNTER: " + localDB.value(DOCTOR_COUNTER).toString() + "\n";
     ans = ans +   "PATIENT COUNTER: " + localDB.value(PATIENT_COUNTER).toString()+ "\n";
     ans = ans +   "EVALUATION COUNTER: " + localDB.value(EVALUATION_COUNTER).toString()+ "\n";

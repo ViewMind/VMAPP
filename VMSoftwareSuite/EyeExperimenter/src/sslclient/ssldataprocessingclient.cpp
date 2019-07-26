@@ -25,6 +25,7 @@ void SSLDataProcessingClient::connectToServer(bool isDemoMode, const QString &ol
 
     // -1 Is a timeout code.
     processingACKCode = -1;
+    numberOfEvals = -2;
 
     ConfigurationManager eyeGenConf;
     if (!eyeGenConf.loadConfiguration(confFile,COMMON_TEXT_CODEC)){
@@ -140,6 +141,12 @@ void SSLDataProcessingClient::on_readyRead(){
             socket->disconnectFromHost();
             return;
         }
+
+        if (rxDP.hasInformationField(DataPacket::DPFI_NUM_EVALS)){
+            numberOfEvals = rxDP.getField(DataPacket::DPFI_NUM_EVALS).data.toInt();
+            if (numberOfEvals < -1) numberOfEvals = -2;
+        }
+        else log.appendError("No information about number of evaluations received");
 
         // If this is a reprocessed file we need to move it first to the old reports folder
         if (!previousReportFile.isEmpty()){

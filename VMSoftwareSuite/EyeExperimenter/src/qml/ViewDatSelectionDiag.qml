@@ -138,6 +138,18 @@ Dialog {
         anchors.topMargin: 70
     }
 
+    // The number of available evaluations
+    Text {
+        id: diagEvals
+        font.pixelSize: 15
+        font.family: viewHome.gothamR.name
+        color: "#297FCA"
+        text: loader.getStringForKey(keybase+"labelEvals") + ": " + loader.getNumberOfEvalsString(true);
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: diagTitle.bottom
+        anchors.topMargin: 10
+    }
+
     // The subtitle with the explanation
     Text {
         id: subTitle
@@ -146,7 +158,7 @@ Dialog {
         color: "#cfcfcf"
         text: loader.getStringForKey(keybase+"labelSubTitle");
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: diagTitle.bottom
+        anchors.top: diagEvals.bottom
         anchors.topMargin: 11
     }
 

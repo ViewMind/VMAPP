@@ -39,6 +39,8 @@ VMBase {
                 }
             }
             else{
+                updateText();
+                loader.setNumberOfEvaluations(flowControl.numberOfEvaluationsReceived());
                 loadPatients();
             }
         }
