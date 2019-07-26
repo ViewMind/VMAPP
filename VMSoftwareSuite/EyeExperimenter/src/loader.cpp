@@ -133,7 +133,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     lim.resetMedicalInstitutionForAllDoctors(configuration->getString(CONFIG_INST_UID));
 
     // FOR DEBUGGING
-    // lim.printDBToConsole();
+    //lim.printDBToConsole();
 
 #ifdef USE_IVIEW
     QString expectedET = CONFIG_P_ET_REDM;
@@ -476,7 +476,7 @@ QString Loader::getNumberOfEvalsString(bool onlyEvals){
 }
 
 void Loader::setNumberOfEvaluations(qint32 numevals){
-    if (numevals < -2) return;
+    if (numevals < -1) return;
     lim.setRemainingEvals(numevals);
 }
 

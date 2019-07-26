@@ -126,6 +126,10 @@ Dialog {
         flowControl.doFrequencyAnalysis(filename);
     }
 
+    function updateNumberOfEvals(){
+        diagEvals.text = loader.getStringForKey(keybase+"labelEvals") + ": " + loader.getNumberOfEvalsString(true);
+    }
+
     // The select report title
     Text {
         id: diagTitle
