@@ -29,6 +29,9 @@ ProcessingSocket::ProcessingSocket(QSslSocket *newSocket, const ProcessingSocket
 
     mtimer.measure(TIME_MEASURE_ESTABLISHED_CONNECTION);
 
+    // This value will ensure NO changes in the client, if something goes wrong.
+    numberOfRemainingEvaluations = -3;
+
     // Waiting for encryption finished.
     startTimeoutTimer();
 
@@ -216,6 +219,13 @@ void ProcessingSocket::on_eyeDBMngFinished(qint32 status){
             sendCodeToClient(code);
             return;
         }
+        else{
+            if (dbmngComm.containsKeyword(CONFIG_REMAINING_EVALUATIONS)){
+               numberOfRemainingEvaluations = dbmngComm.getInt(CONFIG_REMAINING_EVALUATIONS);
+               if (numberOfRemainingEvaluations > 0) numberOfRemainingEvaluations = numberOfRemainingEvaluations - 1;
+               log.appendStandard("Number of remaining evaluations (After this one): " + QString::number(numberOfRemainingEvaluations));
+            }
+        }
 
         // All is good. The processing is done now.
 
@@ -369,6 +379,7 @@ void ProcessingSocket::sendCodeToClient(qint32 code, const QString repFile){
             code = EYESERVER_RESULT_SERVER_ERROR;
         }
         else{
+            tx.addValue(numberOfRemainingEvaluations,DataPacket::DPFI_NUM_EVALS);
             pstate = PS_WAIT_CLIENT_OK;
             startTimeoutTimer();
         }

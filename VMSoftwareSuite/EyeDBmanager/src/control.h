@@ -54,6 +54,9 @@ private:
     DBInterface dbConnID;
     DBInterface dbConnPatData;
 
+    // For saving to the output
+    qint32 numberOfRemaingEvaluations;
+
     // The actual function that take actions in the program
     void checkMode();
     void storeMode();

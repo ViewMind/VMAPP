@@ -76,6 +76,7 @@ private:
     QProcess eyeRepGen;
     QProcess eyeDBMng;
     TimeMeasurer mtimer;    
+    qint32 numberOfRemainingEvaluations;
 
     // Helper functions
     void startTimeoutTimer();    
