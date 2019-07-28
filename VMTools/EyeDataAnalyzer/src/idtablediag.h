@@ -16,20 +16,21 @@ class IDTableDiag : public QDialog
 public:
 
     struct Columns{
-        bool displayID;
-        bool vmPid;
-        bool vmHPid;
+        bool PUID;
+        bool HPUID;
+        bool DBPUID;
+        bool DID;
         QString dir;
     };
 
     explicit IDTableDiag(QWidget *parent = 0);
     ~IDTableDiag();
 
+    void setInstitutions(const QHash<QString, QString> &imap);
+
     Columns getTableColumns() const;
 
 private slots:
-    void on_pushButton_clicked();
-
     void on_pbOk_clicked();
 
     void on_pbCancel_clicked();

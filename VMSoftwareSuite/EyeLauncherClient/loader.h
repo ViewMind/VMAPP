@@ -14,7 +14,7 @@
 #include "../../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../../CommonClasses/common.h"
 
-#define  LAUNCHER_VERSION               "2.1.1"
+#define  LAUNCHER_VERSION               "2.1.2"
 
 #define  FILE_EYEEXP_SETTINGS           "../settings"
 #define  FILE_EYEEXP_CONFIGURATION      "../configuration"

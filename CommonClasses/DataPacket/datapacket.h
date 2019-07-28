@@ -118,7 +118,7 @@ public:
     // Transform a size to a numberic representation of 4 bytes.
     static QByteArray sizeToByteArray(quint32 size);
     static quint32 byteArrayToSize(const QByteArray &size);
-    static QString getFileHash(const QString &filePath);
+    static QString getFileHash(const QString &filePath, QString *specificError);
 
 private:
 

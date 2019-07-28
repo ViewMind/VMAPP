@@ -288,10 +288,16 @@ quint32 DataPacket::byteArrayToSize(const QByteArray &size){
     return ans;
 }
 
-QString DataPacket::getFileHash(const QString &filePath){
+QString DataPacket::getFileHash(const QString &filePath, QString *specificError){
     QFile file(filePath);
-    if (!file.exists()) return "";
-    if (!file.open(QFile::ReadOnly)) return "";
+    if (!file.exists()) {
+        *specificError = "File " + filePath + " does not exist";
+        return "";
+    }
+    if (!file.open(QFile::ReadOnly)) {
+        *specificError = "File " + filePath + " could not be opened for reading";
+        return "";
+    }
     return QString(QCryptographicHash::hash(file.readAll(),QCryptographicHash::Sha3_256).toHex());
 }
 

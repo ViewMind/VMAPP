@@ -13,18 +13,22 @@ IDTableDiag::~IDTableDiag()
     delete ui;
 }
 
-IDTableDiag::Columns IDTableDiag::getTableColumns() const {
-    Columns c;
-    c.displayID = ui->cbDisplayID->isChecked();
-    c.vmHPid    = ui->cbHPID->isChecked();
-    c.vmPid     = ui->cbPID->isChecked();
-    c.dir = ui->lePath->text();
-    return c;
+void IDTableDiag::setInstitutions(const QHash<QString, QString> &imap){
+    ui->comboBox->clear();
+    QStringList keys = imap.keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        ui->comboBox->addItem(imap.value(keys.at(i)) + " - " + keys.at(i),keys.at(i));
+    }
 }
 
-void IDTableDiag::on_pushButton_clicked()
-{
-    ui->lePath->setText(QFileDialog::getExistingDirectory(this,"Select the directory to process","work"));
+IDTableDiag::Columns IDTableDiag::getTableColumns() const {
+    Columns c;
+    c.DBPUID   = ui->cbDBPUID->isChecked();
+    c.DID      = ui->cbDID->isChecked();
+    c.HPUID    = ui->cbHPID->isChecked();
+    c.PUID     = ui->cbPID->isChecked();
+    c.dir      = ui->comboBox->currentData().toString();
+    return c;
 }
 
 void IDTableDiag::on_pbOk_clicked()

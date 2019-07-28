@@ -94,7 +94,7 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
         connectionState = CS_GETTING_NAMELIST;
         waitDiag->setMessage("Getting the institution name list from the server");
         DataPacket tx;
-        tx.addString("--",DataPacket::DPFI_SEND_INFORMATION);
+        tx.addString("--",DataPacket::DPFI_INST_NAMES);
         QByteArray ba = tx.toByteArray();
         qint64 num = serverConn->write(ba.constData(),ba.size());
         if (num != ba.size()){
@@ -129,6 +129,28 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
             return;
         }
         logForDB.appendStandard("Searching for " +ui->cbInstitutions->currentText() + " (" + ui->cbInstitutions->currentData().toString() + "). From " + startDate + " to " + endDate);
+    }
+    else if (connectionState == CS_CONNECTING_VMID_TABLE){
+        connectionState = CS_GETTING_VMID_TABLE;
+        waitDiag->setMessage("Getting the ViewMind ID information for " + ui->cbInstitutions->currentText());
+        waitDiag->setProgressBarVisibility(false);
+        waitDiag->setProgressBarValue(0);
+
+        DataPacket tx;
+        QString password = ui->lePasswordField->text();
+        tx.addString(ui->cbInstitutions->currentData().toString(),DataPacket::DPFI_DB_INST_UID);
+        tx.addString(password,DataPacket::DPFI_DB_INST_PASSWORD);
+        tx.addString("--",DataPacket::DPFI_VMID_TABLE);
+
+        rx.clearAll();
+        QByteArray ba = tx.toByteArray();
+        qint64 num = serverConn->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logForDB.appendError("Could not send local DB request.");
+            waitDiag->close();
+            return;
+        }
+        timer.start(30000);
     }
     else if (connectionState == CS_CONNECTING_FOR_DB_BKP){
         connectionState = CS_GETTING_DB_BKP;
@@ -188,6 +210,7 @@ void EyeDataAnalyzer::on_readyRead(){
         logForDB.appendStandard("Finished receiving information. Connecting state: " + connectionStateToString());
 
         if (connectionState == CS_GETTING_DATA){
+            timer.stop();
             if (rx.hasInformationField(DataPacket::DPFI_DB_ERROR)){
                 logForDB.appendError("Getting data from the server returned the following error message: " + rx.getField(DataPacket::DPFI_DB_ERROR).data.toString());
                 serverConn->disconnectFromHost();
@@ -233,6 +256,7 @@ void EyeDataAnalyzer::on_readyRead(){
 
         }
         else if (connectionState == CS_GETTING_DB_BKP){
+            timer.stop();
             if (rx.hasInformationField(DataPacket::DPFI_DB_ERROR)){
                 logForDB.appendError("Getting data from the server returned the following error message: " + rx.getField(DataPacket::DPFI_DB_ERROR).data.toString());
                 serverConn->disconnectFromHost();
@@ -250,18 +274,43 @@ void EyeDataAnalyzer::on_readyRead(){
             error = patNameMng.fromSerializedMapData(serializedDB);
             if (!error.isEmpty()) logForDB.appendError("Interpreting the Serialized Map DB Data: " + error);
         }
+        else if (connectionState == CS_GETTING_VMID_TABLE){
+            timer.stop();
+            if (rx.hasInformationField(DataPacket::DPFI_DB_ERROR)){
+                logForDB.appendError("Getting VM ID Table returned the following error message: " + rx.getField(DataPacket::DPFI_DB_ERROR).data.toString());
+                serverConn->disconnectFromHost();
+                return;
+            }
+
+            QString table = rx.getField(DataPacket::DPFI_VMID_TABLE).data.toString();
+            QString err = patNameMng.addVMIDTableData(table,ui->cbInstitutions->currentData().toString());
+            if (!err.isEmpty()){
+                logForDB.appendError("Error while getting the VMID table: " + err);
+            }
+
+        }
         else {
+            timer.stop();
             QString nameAndUids = rx.getField(DataPacket::DPFI_INST_NAMES).data.toString();
             //qWarning() << nameAndUids;
             QStringList parts = nameAndUids.split(DB_LIST_IN_COL_SEP,QString::SkipEmptyParts);
+            QStringList instNames;
+            QStringList instIDs;
             for (qint32 i = 0; i < parts.size(); i++){
                 if ((i % 3) == 2){
                     // This is the NAME and the value before it, is its UID.
-                    if (parts.at(i-2) == "1") ui->cbInstitutions->addItem(parts.at(i),parts.at(i-1));
+                    if (parts.at(i-2) == "1") {
+                        instNames << parts.at(i);
+                        instIDs << parts.at(i-1);
+                        ui->cbInstitutions->addItem(parts.at(i) + " - " + parts.at(i-1),parts.at(i-1));
+                    }
+
                 }
             }
             if (parts.size() > 0) ui->pbGetData->setEnabled(true);
+            if (instIDs.size() == instNames.size()) patNameMng.setInstitutions(instIDs,instNames);
         }
+
 
         serverConn->disconnectFromHost();
     }
@@ -303,6 +352,17 @@ void EyeDataAnalyzer::on_pbGetData_clicked()
     waitDiag->open();
 
 }
+
+void EyeDataAnalyzer::on_pbVMIDTableInfo_clicked()
+{
+    connectionState = CS_CONNECTING_VMID_TABLE;
+    serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_RAW_DATA_SERVER);
+    timer.start(10000);
+    waitDiag->setMessage("Contacting the server for getting the ViewMind ID Table information");
+    waitDiag->setProgressBarVisibility(false);
+    waitDiag->open();
+}
+
 
 void EyeDataAnalyzer::on_pbLocalDB_clicked(){
     connectionState = CS_CONNECTING_FOR_DB_BKP;
@@ -823,52 +883,55 @@ void EyeDataAnalyzer::on_batchProcessing_Done(){
 void EyeDataAnalyzer::on_pbIDTable_clicked()
 {
     IDTableDiag tableDiag;
+    tableDiag.setInstitutions(patNameMng.getInstHash());
     if (tableDiag.exec() != QDialog::Accepted) return;
 
     IDTableDiag::Columns cols = tableDiag.getTableColumns();
 
-    if (cols.dir.isEmpty()) return;
-    if (!QDir(cols.dir).exists()) return;
+    QStringList dbpuids = patNameMng.getDBPUIDForInst(cols.dir);
+    if (dbpuids.isEmpty()){
+        logForProcessing.appendError("Could not find any DBPUIDs for Institution: " + cols.dir + ". Please update the VM ID Database");
+        return;
+    }
 
-//    IDTableDiag::Columns cols;
-//    cols.dir = "C:/Users/Viewmind/Documents/viewmind_projects/VMTools/EyeDataAnalyzer/exe/work/1145868706";
-//    cols.displayID = true;
-//    cols.vmHPid = true;
-//    cols.vmPid = true;
-
-    QStringList dirs = QDir(cols.dir).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot);
     QStringList csv;
-    QStringList header; header << "DBPUID";
+    QStringList header;
 
-    if (cols.displayID) header << "DID";
-    if (cols.vmPid) header     << "PUID";
-    if (cols.vmHPid) header    << "HPUID";
+    if (cols.DBPUID)  header << "DBPUID";
+    if (cols.DID)     header << "DID";
+    if (cols.PUID)    header << "PUID";
+    if (cols.HPUID)   header << "HPUID";
+
+    if (header.isEmpty()){
+        logForProcessing.appendError("No columns in the table were selected");
+        return;
+    }
+
     csv << header.join(",");
 
-    for (qint32 i = 0; i < dirs.size(); i++){
-        QString d = cols.dir + "/" + dirs.at(i) + "/dummy";
-        ConfigurationManager t =  patNameMng.getPatientNameFromDirname(d);
+    for (qint32 i = 0; i < dbpuids.size(); i++){;
+        ConfigurationManager t =  patNameMng.getPatientIDInfoFromDBPUID(dbpuids.at(i));
         QStringList row;
-        if (t.containsKeyword(CONFIG_PATIENT_UID)) row << t.getString(CONFIG_PATIENT_UID);
-        else row << "N/A";
-        if (cols.displayID){
-            if (t.containsKeyword(CONFIG_PATIENT_DISPLAYID)) row << t.getString(CONFIG_PATIENT_DISPLAYID);
+        if(cols.DBPUID){
+            if (t.containsKeyword(ID_DBUID)) row << t.getString(ID_DBUID);
             else row << "N/A";
         }
-        if (cols.vmPid){
-            if (t.containsKeyword("PUID")) row << t.getString("PUID");
+        if (cols.DID){
+            if (t.containsKeyword(ID_DID)) row << t.getString(ID_DID);
             else row << "N/A";
         }
-        if (cols.vmHPid){
-            if (t.containsKeyword("PUID")){
-                row << QCryptographicHash::hash(t.getString("PUID").toLatin1(),QCryptographicHash::Sha3_512).toHex();
-            }
+        if (cols.PUID){
+            if (t.containsKeyword(ID_PUID)) row << t.getString(ID_PUID);
+            else row << "N/A";
+        }
+        if (cols.HPUID){
+            if (t.containsKeyword(ID_HPUID)) row << t.getString(ID_HPUID);
             else row << "N/A";
         }
         csv << row.join(",");
     }
 
-    QFile file(cols.dir + "/ID.csv");
+    QFile file(QString(WORK_DIR) + "/"  +  cols.dir + "_ID.csv");
     if (!file.open(QFile::WriteOnly)){
         logForProcessing.appendError("Could not open file " + file.fileName() + " for writing");
         return;
@@ -882,3 +945,5 @@ void EyeDataAnalyzer::on_pbIDTable_clicked()
     logForProcessing.appendSuccess("Finished. File at: " + file.fileName());
 
 }
+
+

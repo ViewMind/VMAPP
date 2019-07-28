@@ -117,18 +117,20 @@ void Loader::checkForUpdates(){
     changeLogFile = QString(FILE_CHANGELOG_UPDATER) + "_" + selectedLanguage;
 
     // Calculating the hashes.
-    eyeLauncherHash = DataPacket::getFileHash(FILE_EYEEXP_LAUNCHER);
-    eyeExperimenterHash = DataPacket::getFileHash(FILE_EYEEXP_EXE);
-    eyeConfigurationHash = DataPacket::getFileHash(FILE_EYEEXP_CONFIGURATION);
 
+    QString errString = "";
+    eyeLauncherHash = DataPacket::getFileHash(FILE_EYEEXP_LAUNCHER,&errString);
     if (eyeLauncherHash.isEmpty()){
-        logger.appendError("Could not determine launcher hash");
+        logger.appendError("Could not determine launcher hash because: " + errString);
     }
+    errString = "";
+    eyeExperimenterHash = DataPacket::getFileHash(FILE_EYEEXP_EXE,&errString);
     if (eyeExperimenterHash.isEmpty()){
-        logger.appendError("Could not determine EyeExperimenter hash");
+        logger.appendError("Could not determine EyeExperimenter hash because: " + errString);
     }
+    eyeConfigurationHash = DataPacket::getFileHash(FILE_EYEEXP_CONFIGURATION,&errString);
     if (eyeConfigurationHash.isEmpty()){
-        logger.appendError("Could not determine Configuration hash");
+        logger.appendError("Could not determine Configuration hash because " + errString);
     }
 
     // Connecting to the server
@@ -209,7 +211,6 @@ void Loader::on_readyRead(){
             startEyeExperimenter();
             return;
         }
-
 
         // Renaming the EyeExperimenter log file.
         QString oldlog = QString(FILE_EYEEXP_LOG) + "." + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm");
