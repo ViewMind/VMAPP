@@ -55,6 +55,9 @@ void UpdateSocket::on_disconnected(){
     if (!finishedUpdatingProcess){
         log.appendError("Updating was not finished correctly");
     }
+    else{
+        log.appendStandard("Finsihed update processing. Requesting socket deletion....");
+    }
     emit(socketDone(ID));
 }
 
@@ -93,6 +96,7 @@ void UpdateSocket::processUpdateRequest(){
         return;
     }
 
+    log.appendStandard("Update request received for Institution: " + inst_uid + " Instance Number: " + eyeexp_number);
 
     // Verifying that the log directories exists.
     QDir baseDir(basePath);
@@ -119,6 +123,8 @@ void UpdateSocket::processUpdateRequest(){
     // Saving the local DB backup, if it exists
     if (rx.hasInformationField(DataPacket::DPFI_LOCAL_DB_BKP)){
 
+        log.appendStandard("Local DB BKP Enabled");
+
         // Deleting the backup temp file if it exists
         QString tempFileName = basePath + "/" + QString(FILE_LOCAL_DB);
         QFile tempFile(tempFileName);
@@ -141,6 +147,7 @@ void UpdateSocket::processUpdateRequest(){
                     if (!QFile::copy(tempFileName,bkpFileName)){
                         log.appendError("Could not copy temporary bkp file " + tempFileName + " to actual local db backup: " + bkpFileName);
                     }
+                    else log.appendStandard("Local BKP saved sucessfully to: " + savedFile);
                 }
             }
             else{
@@ -157,12 +164,13 @@ void UpdateSocket::processUpdateRequest(){
 
     QString hash = DataPacket::getFileHash(FILENAME_EYE_LAUNCHER);
     if (hash.isEmpty()){
-        log.appendError("Could not compute hash for the local eyelauncher");
+        log.appendError("Could not compute hash for the launcher.exe");
     }
     else if ((hash != eyelauncherhash) && (!eyelauncherhash.isEmpty())){
         if (!tx.addFile(FILENAME_EYE_LAUNCHER,DataPacket::DPFI_UPDATE_EYELAUNCHER)){
             log.appendError("Could not add local eyelauncher to send back");;
         }
+        else log.appendStandard("Added launcher.exe to response");
     }
 
     QString hashFilePath = basePath + "/" + QString(FILENAME_CONFIGURATION);
@@ -174,6 +182,7 @@ void UpdateSocket::processUpdateRequest(){
         if (!tx.addFile(hashFilePath,DataPacket::DPFI_UPDATE_CONFIG)){
             log.appendError("Could not add local configuration to send back: " + hashFilePath);
         }
+        else log.appendStandard("Added configuration to response");
     }
 
     hashFilePath = basePath + "/" + QString(FILENAME_EYE_EXPERIMENTER);
@@ -185,6 +194,7 @@ void UpdateSocket::processUpdateRequest(){
         if (!tx.addFile(hashFilePath,DataPacket::DPFI_UPDATE_EYEEXP)){
             log.appendError("Could not add local eye experimenter to send back: " + hashFilePath);
         }
+        else log.appendStandard("Added EyeExperimenter.exe to response");
 
         // Getting the laanguage in order to return the change log.
         QString lang = rx.getField(DataPacket::DPFI_UPDATE_LANG).data.toString();
@@ -192,6 +202,7 @@ void UpdateSocket::processUpdateRequest(){
         if (!tx.addFile(changeLogFilepath,DataPacket::DPFI_UPDATE_CHANGES)){
             log.appendError("Could not add local change log to send back: " + changeLogFilepath);
         }
+        else log.appendStandard("Added changelog to response");
     }
 
     sendUpdateAns(tx,"OK");
@@ -205,6 +216,7 @@ void UpdateSocket::sendUpdateAns(DataPacket tx, const QString &ans){
     if (num != ba.size()){
         log.appendError("Failure sending update");
     }
+    else log.appendStandard("Added updated result and packet was sent");
     if (ans == "OK") finishedUpdatingProcess = true;
     on_disconnected();
 }

@@ -2,7 +2,7 @@
 
 Control::Control(QObject *parent) : QObject(parent)
 {
-
+    numberOfRemaingEvaluations = -3;
 }
 
 void Control::run(){
@@ -255,35 +255,36 @@ void Control::checkMode(){
         return;
     }
 
+    // Checking the number of evaluations
+    columns.clear();
+    columns << TINST_COL_UID << TINST_COL_EVALS;
+    condition = QString(TINST_COL_UID) + " = '" + instID + "'";
+    if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,condition)){
+        log.appendError("When querying institution and number of evaluations: " + dbConnBase.getError());
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+        return;
+    }
+
+    data = dbConnBase.getLastResult();
+
+    if (data.rows.size() != 1){
+        log.appendError("When querying the institution and number of evaluations: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1. UID: " + instID);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+        return;
+    }
+
+    // Checking the number of evaluations
+    if (data.rows.first().size() != 2){
+        log.appendError("When querying the institution and number of evaluations: Number of returned columns was " + QString::number(data.rows.first().size()) + " instead of 2. INST UID: " + instID);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+        return;
+    }
+
+    numberOfRemaingEvaluations = data.rows.first().last().toInt();
 
     if (!demoMode && !reprocessRequest){
-        // Checking the number of evaluations
-        columns.clear();
-        columns << TINST_COL_UID << TINST_COL_EVALS;
-        condition = QString(TINST_COL_UID) + " = '" + instID + "'";
-        if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,condition)){
-            log.appendError("When querying institution and number of evaluations: " + dbConnBase.getError());
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
-            return;
-        }
 
-        data = dbConnBase.getLastResult();
-
-        if (data.rows.size() != 1){
-            log.appendError("When querying the institution and number of evaluations: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1. UID: " + instID);
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
-            return;
-        }
-
-        // Checking the number of evaluations
-        if (data.rows.first().size() != 2){
-            log.appendError("When querying the institution and number of evaluations: Number of returned columns was " + QString::number(data.rows.first().size()) + " instead of 2. INST UID: " + instID);
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
-            return;
-        }
-
-        qint32  numevals = data.rows.first().last().toInt();
-        if (numevals == 0 ){
+        if (numberOfRemaingEvaluations == 0 ){
             log.appendError("No evaluations remaining forinsitituion with UID " + instID);
             finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_NOEVALS);
             return;
@@ -810,5 +811,6 @@ void Control::finishUp(quint8 commitBase, quint8 commitID, quint8 commitPatData,
 
 void Control::exitProgram(qint32 code){
     ConfigurationManager::setValue(commFile,COMMON_TEXT_CODEC,CONFIG_DBMNG_RESULT,QString::number(code));
+    ConfigurationManager::setValue(commFile,COMMON_TEXT_CODEC,CONFIG_REMAINING_EVALUATIONS,QString::number(numberOfRemaingEvaluations));
     emit(done());
 }

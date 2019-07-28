@@ -23,37 +23,39 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     s3interface.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp \
+    ../../../CommonClasses/LogInterface/loginterface.cpp \
     control.cpp \
-    ../../CommonClasses/SQLConn/dbinterface.cpp \
-    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+    ../../../CommonClasses/SQLConn/dbinterface.cpp \
+    ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     ssllistener.cpp \
-    ../../CommonClasses/DataPacket/datapacket.cpp \
+    ../../../CommonClasses/DataPacket/datapacket.cpp \
     filelister.cpp \
-    ../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocket.cpp \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp \
-    ../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp
+    ../../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
+    ../../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
+    ../../../CommonClasses/SSLIDSocketMap/sslidsocket.cpp \
+    ../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.cpp \
+    ../../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp \
+    rawdataserversocket.cpp
 
 HEADERS += \
     s3interface.h \
-    ../../CommonClasses/server_defines.h \
-    ../../CommonClasses/LogInterface/loginterface.h \
+    ../../../CommonClasses/server_defines.h \
+    ../../../CommonClasses/LogInterface/loginterface.h \
     control.h \
-    ../../CommonClasses/SQLConn/dbdescription.h \
-    ../../CommonClasses/SQLConn/dbinterface.h \
-    ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../../CommonClasses/SQLConn/dbdescription.h \
+    ../../../CommonClasses/SQLConn/dbinterface.h \
+    ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ssllistener.h \
-    ../../CommonClasses/DataPacket/datapacket.h \
+    ../../../CommonClasses/DataPacket/datapacket.h \
     filelister.h \
-    ../../CommonClasses/server_defines.h \
-    ../../CommonClasses/common.h \
-    ../../CommonClasses/LocalInformationManager/localinformationmanager.h \
-    ../../CommonClasses/DatFileInfo/datfileinfoindir.h \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocket.h \
-    ../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h \
-    ../../CommonClasses/VariantMapSerializer/variantmapserializer.h
+    ../../../CommonClasses/server_defines.h \
+    ../../../CommonClasses/common.h \
+    ../../../CommonClasses/LocalInformationManager/localinformationmanager.h \
+    ../../../CommonClasses/DatFileInfo/datfileinfoindir.h \
+    ../../../CommonClasses/SSLIDSocketMap/sslidsocket.h \
+    ../../../CommonClasses/SSLIDSocketMap/sslidsocketmap.h \
+    ../../../CommonClasses/VariantMapSerializer/variantmapserializer.h \
+    rawdataserversocket.h
 
 RESOURCES += \
     configurations.qrc \

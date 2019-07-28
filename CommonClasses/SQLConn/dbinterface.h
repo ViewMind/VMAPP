@@ -50,6 +50,8 @@ public:
     bool open();
     void close() { dbConnection.close(); }
 
+    void closeIfOpen() { if (dbConnection.isOpen()) dbConnection.close(); }
+
     QString getError() const {return error;}
     DBData getLastResult() const {return lastResult;}
 
