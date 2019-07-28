@@ -25,6 +25,7 @@ public:
     RawDataServerSocket();
     RawDataServerSocket(QSslSocket *newSocket, quint64 id, ConfigurationManager *c);
     ~RawDataServerSocket();
+    QStringList getDBInstanceNames() const {return dbInstanceNames;}
 
 private slots:
     void on_encryptedSuccess();
@@ -44,6 +45,7 @@ private:
     DBInterface dbConnPatData;
     QString verifcationPassword;
     ConfigurationManager *config;
+    QStringList dbInstanceNames;
 
     bool finishedTask;
 

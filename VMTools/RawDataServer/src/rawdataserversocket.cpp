@@ -2,7 +2,9 @@
 
 RawDataServerSocket::RawDataServerSocket(QSslSocket *newSocket, quint64 id, ConfigurationManager *c):SSLIDSocket(newSocket,id)
 {
-    QString transactionID = QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + "_TID" + QString::number(id);
+    QString idAsStr = QString::number(id);
+    QString transactionID = QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + "_TID" + idAsStr;
+
     config = c;
     verifcationPassword = config->getString(RAW_DATA_SERVER_PASSWORD);
 
@@ -15,21 +17,24 @@ RawDataServerSocket::RawDataServerSocket(QSslSocket *newSocket, quint64 id, Conf
     QString user = config->getString(CONFIG_DBUSER);
     QString passwd = config->getString(CONFIG_DBPASSWORD);
     quint16 port = config->getInt(CONFIG_DBPORT);
-    dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,"");
+    dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,"",false);
+    dbInstanceNames << dbConnBase.getInstanceName();
 
     host = config->getString(CONFIG_ID_DBHOST);
     dbname = config->getString(CONFIG_ID_DBNAME);
     user = config->getString(CONFIG_ID_DBUSER);
     passwd = config->getString(CONFIG_ID_DBPASSWORD);
     port = config->getInt(CONFIG_ID_DBPORT);
-    dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,"");
+    dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,"",false);
+    dbInstanceNames << dbConnID.getInstanceName();
 
     host = config->getString(CONFIG_PATDATA_DBHOST);
     dbname = config->getString(CONFIG_PATDATA_DBNAME);
     user = config->getString(CONFIG_PATDATA_DBUSER);
     passwd = config->getString(CONFIG_PATDATA_DBPASSWORD);
     port = config->getInt(CONFIG_PATDATA_DBPORT);
-    dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"");
+    dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"",false);
+    dbInstanceNames << dbConnPatData.getInstanceName();
 
     // Customized log file.
     log.setLogFileLocation(QString(DIRNAME_SERVER_LOGS) + "/" + transactionID);
@@ -61,18 +66,18 @@ void RawDataServerSocket::on_disconnected(){
         }
         else{
             log.appendStandard("Finsihed task. Requesting socket deletion....");
-            dbConnBase.closeIfOpen();
-            dbConnID.closeIfOpen();
-            dbConnPatData.closeIfOpen();
+            dbConnBase.close();
+            dbConnID.close();
+            dbConnPatData.close();
             emit(socketDone(ID));
         }
         disconnectReceived = true;
     }
     else{
         log.appendStandard("Finsihed task. Requesting socket deletion (was disconnected previously)....");
-        dbConnBase.closeIfOpen();
-        dbConnID.closeIfOpen();
-        dbConnPatData.closeIfOpen();
+        dbConnBase.close();
+        dbConnID.close();
+        dbConnPatData.close();
         emit(socketDone(ID));
     }
 }

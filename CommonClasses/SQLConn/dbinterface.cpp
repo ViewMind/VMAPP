@@ -5,11 +5,12 @@ DBInterface::DBInterface()
     dbSetupDone = false;
 }
 
-void DBInterface::setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port, const QString log_file){
+void DBInterface::setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port, const QString log_file, bool add){
 
     if (dbSetupDone) return;
 
-    dbConnection = QSqlDatabase::addDatabase("QMYSQL",instanceName);
+    if (add) dbConnection = QSqlDatabase::addDatabase("QMYSQL",instanceName);
+    else dbConnection = QSqlDatabase::database(instanceName);
     dbConnection.setHostName(host);
     dbConnection.setDatabaseName(dbname);
     dbConnection.setUserName(user);
@@ -18,6 +19,8 @@ void DBInterface::setupDB(const QString &instanceName, const QString &host, cons
     if (port != 0){
         dbConnection.setPort(port);
     }
+
+    providedInstanceName = instanceName;
 
     dbSetupDone = true;
     logFile = log_file;
@@ -32,6 +35,7 @@ bool DBInterface::open(){
     }
     return true;
 }
+
 
 bool DBInterface::insertDB(const QString &table, const QStringList &columns, const QStringList &values, const QString logid){
 
