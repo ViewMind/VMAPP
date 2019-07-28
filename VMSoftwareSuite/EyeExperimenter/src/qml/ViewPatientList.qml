@@ -363,6 +363,7 @@ VMBase {
         connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
         connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
         connectionDialog.open();
+        loader.updateCurrentDoctorAndPatientDBFiles();
         flowControl.startDemoTransaction();
     }
 
