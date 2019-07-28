@@ -60,6 +60,7 @@ public:
     static const quint8 DPFI_DOCTOR_FILE                              = 40;
     static const quint8 DPFI_CONF_FILE                                = 41;
     static const quint8 DPFI_NUM_EVALS                                = 42;
+    static const quint8 DPFI_VMID_TABLE                               = 43;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;

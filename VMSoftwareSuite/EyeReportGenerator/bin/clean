@@ -7,5 +7,4 @@ rm Makefile
 rm -rf MOCS_L
 rm -rf OBJS_L
 rm -rf QRC_L
-rm EyeUpdateServer
-rm EyeUpdateServerMonitor
+rm EyeReportGen

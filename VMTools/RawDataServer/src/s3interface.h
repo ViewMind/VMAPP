@@ -6,8 +6,8 @@
 #include <QDir>
 #include <QProcess>
 
-#include "../../CommonClasses/server_defines.h"
-#include "../../CommonClasses/LogInterface/loginterface.h"
+#include "../../../CommonClasses/server_defines.h"
+#include "../../../CommonClasses/LogInterface/loginterface.h"
 
 #define SERVER_OUTPUT_FILE        "temp_output_file"
 #define SERVER_WORK_DIR           "work"

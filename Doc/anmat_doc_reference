@@ -67,20 +67,55 @@ Nombre: CSV_RD_V1
 Archivo: reading_en_2_2019_01_01_10_00.csv
 Que es: Matriz de datos intermedia resultante de procesar READING_DAT_V1
 
-=================================== 14/07/2019 ===================================
+=================================== 27/07/2019 ===================================
 
 Cambios
 CONF_GLOBAL_V1 ==> CONF_GLOBAL_V2  (No realizado)
-Motivo: Contiene dos variables nuevas que indican que la última version de los algoritmos de binding y de reading (ambas en 1 actualmente)
+Motivo: Contiene dos variables nuevas que indican que la última version de los algoritmos de binding y de reading (ambas en 1 actualmente). Por otro lado Igual al 1.
+Todos los datos de la Test Insitution.
 
-LOCAL_DB_V1    ==> LOCAL_DB_V2  (No realizado)
-Motivo: Contiene una nueva variable que es el contador de evaluaciones (en 0).
 
 REP_READ_EN_B2l2_V1  ==> REP_READ_EN_B2l2_V2
 Motivo: Contiene toda la información con la cual se genero lo que implica muchas variables mas incluyendo la versión de los algoritmos con lo que se generó. 
 
+REP_READ_EN_DATF_V1  ==> REP_READ_EN_DATF_V2
+Motivo: Contiene toda la información con la cual se genero lo que implica muchas variables mas incluyendo la versión de los algoritmos con lo que se generó. 
+
 REP_IMG_V1           ==> REP_IMG_V2
 Motivo: Cambian los textos con los cuales se llaman a ciertas variables
+
+EYE_REP_GEN_CONF_V1
+Archivo: eye_rep_gen_conf
+Que es: Archivo generado por el pedido de reportes con el cual se envía la inforamación de como procesar los datos y que datos procesar. 
+
+PATDATA_DB_V1: 
+Archivo: patdata.db
+Que es: Archivo generado con la información del paciente acerca del cual se pide el reporte.
+
+DOCDATA_DB_V1: 
+Archivo: docdata.db
+Que es: Archivo generado con la información del evaluador que está pidiendo el reporte.
+
+BC_FDB_V1:
+Archivo: binding_bc_2_l_2_2019_01_01_10_00.fdb
+Que es: Archivo para el almacenamiento de los datos de frecuencia en la base de datos de BINDING_UC_DAT_V1
+
+UC_FDB_V1:
+Archivo: binding_uc_2_l_2_2019_01_01_10_30.fdb
+Que es: Archivo para el almacenamiento de los datos de frecuencia en la base de datos de BINDING_BC_DAT_V1
+
+RD_FDB_V2:
+Archivo: reading_en_2_2019_01_01_10_00.fdbs
+Que es: Archivo para el almacenamiento de los datos de frecuencia en la base de datos de READING_DAT_V1
+
+DBDATA_V1:
+Archivo: dbdata.dbf
+Que es: Archivo con los resulatods para ser almacenados en la base de datos. 
+
+DBMNGCOMM:
+Archivo: dbmngcomm
+Que es: Archivo de comunicación y entrada al controlador de base de datos. 
+
 
 CSV_BC_V1 ==> CSV_BC_V2
 Motivo: Posee dos columnas nuevas. Las mismas se generan para su uso en investigación a futuro. Pero no se utilizan en los calculos de reportes. 
