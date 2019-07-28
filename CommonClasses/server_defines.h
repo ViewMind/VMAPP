@@ -43,7 +43,8 @@
 #ifdef SERVER_LOCALHOST
    #define  ETDIR_PATH              "../../../VMSoftwareSuite/EyeUpdateServer/bin/etdir/"
 #else
-   #define  ETDIR_PATH              "../EyeUpdateServer/etdir/"
+   #define  ETDIR_PATH              "../EyeServer/etdir/"  // OLD PATH.
+   //#define  ETDIR_PATH              "../EyeUpdateServer/etdir/"
 #endif
 
 #endif // SERVER_DEFINES_H
