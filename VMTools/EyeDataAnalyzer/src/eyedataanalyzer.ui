@@ -217,6 +217,13 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="pbVMIDTableInfo">
+             <property name="text">
+              <string>Get ViewMind ID Table Information For Insitution</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>

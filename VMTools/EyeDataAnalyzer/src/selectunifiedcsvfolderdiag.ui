@@ -61,12 +61,22 @@
        </item>
        <item>
         <property name="text">
-         <string>Name and Lastname</string>
+         <string>(DBPUID) ViewMindDB ID</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>(DBPUID) ViewMindDB ID</string>
+         <string>(HPUID) ViewMind Internal Hashed ID</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>(PUID) Viewmind Internal ID</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Name and Lastname</string>
         </property>
        </item>
       </widget>

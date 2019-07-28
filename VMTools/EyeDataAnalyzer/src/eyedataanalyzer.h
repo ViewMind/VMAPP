@@ -23,7 +23,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "5.2.0"
+#define   PROGRAM_VERSION              "6.0.0"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -112,13 +112,17 @@ private slots:
 
     void on_pbIDTable_clicked();
 
+    void on_pbVMIDTableInfo_clicked();
+
 private:
 
     typedef enum {CS_CONNECTING_FOR_NAME_LIST,
                   CS_GETTING_NAMELIST,
                   CS_GETTING_DATA,
                   CS_GETTING_DB_BKP,
+                  CS_GETTING_VMID_TABLE,
                   CS_CONNECTING_FOR_DATA,
+                  CS_CONNECTING_VMID_TABLE,
                   CS_CONNECTING_FOR_DB_BKP} ConnectionState;
 
     QString connectionStateToString() const {
@@ -129,6 +133,8 @@ private:
         case CS_GETTING_DATA: return "Getting data";
         case CS_GETTING_DB_BKP: return "Getting db bkp";
         case CS_GETTING_NAMELIST: return "Getting uid inst name list";
+        case CS_CONNECTING_VMID_TABLE: return "Connecting for VMID table";
+        case CS_GETTING_VMID_TABLE: return "Getting for VMID table";
         }
         return "";
     }
@@ -138,7 +144,7 @@ private:
     LogInterface logForDB;
     QString currentDirectory;
     ConfigurationManager currentEyeRepGen;
-    HTMLWriter htmlWriter;    
+    HTMLWriter htmlWriter;
 
     ConfigurationManager defaultReportCompletionParameters;
     ConfigurationManager defaultValues;
