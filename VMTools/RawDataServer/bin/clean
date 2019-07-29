@@ -1,0 +1,10 @@
+#!/bin/bash
+
+rm -rf MOCS
+rm -rf OBJS
+rm -rf QRC
+rm Makefile
+rm -rf MOCS_L
+rm -rf OBJS_L
+rm -rf QRC_L
+rm RawDataServer

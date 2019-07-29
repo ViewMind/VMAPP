@@ -11,15 +11,13 @@
 
 VMTools/BindingDesigner/exe/
 VMTools/EyeDataAnalyzer/exe/
-VMTools/RawDataServer/bin/
 VMTools/BindingDesigner/outputs/*
 VMTools/EyeTrackerFollower/exe/
-VMTools/LocalDBPrinter/bin/
+VMTools/LocalDBPrinter/
 VMTools/LocalDBPrinter/exe/
 VMTools/MassBindingFixationDrawer/exe/
 
 VMSoftwareSuite/EyeServer/exe
-VMSoftwareSuite/EyeServer/bin/etdir
 VMSoftwareSuite/EyeServer/bin/EyeServerMonitor
 VMSoftwareSuite/EyeServer/bin/EyeServer
 VMSoftwareSuite/EyeServer/bin/QRC/
@@ -27,7 +25,6 @@ VMSoftwareSuite/EyeServer/bin/output/
 VMSoftwareSuite/EyeServer/etdir/
 VMSoftwareSuite/EyeServer/bin/LOGDIR/
 VMSoftwareSuite/EyeServer/bin/OUTPUTS/
-VMSoftwareSuite/EyeServerMonitor/bin
 VMSoftwareSuite/EyeUpdateServer/MOCS
 VMSoftwareSuite/EyeUpdateServer/OBJS
 VMSoftwareSuite/EyeUpdateServer/bin/EyeUpdateServer
@@ -36,7 +33,11 @@ VMSoftwareSuite/EyeUpdateServer/bin/etdir/
 VMSoftwareSuite/EyeUpdateServer/bin/mail.php
 VMSoftwareSuite/EyeUpdateServer/bin/LOGDIR/
 
-VMSoftwareSuite/EyeDBmanager/bin/
+VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager
+VMTools/RawDataServer/bin/LOGDIR/
+VMTools/RawDataServer/bin/RawDataServer
+VMTools/RawDataServer/bin/work/
+
 
 VMSoftwareSuite/EyeReportGenerator/bin/MOCS
 VMSoftwareSuite/EyeReportGenerator/bin/OBJS
