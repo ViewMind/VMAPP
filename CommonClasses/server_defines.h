@@ -11,7 +11,7 @@
 #define   SERVER_PROGRAM_VERSION                        "8.0.0" // 7.3.0
 
 #define   RAW_DATA_SERVER_NAME                          "RawDataServer"
-#define   RAW_DATA_SERVER_VERSION                       "4.0.0"
+#define   RAW_DATA_SERVER_VERSION                       "4.0.1"
 
 #define   EYE_UPDATE_SERVER_NAME                        "EyeUpdateServer"
 #define   EYE_UPDATE_SERVER_VERSION                     "1.0.0"

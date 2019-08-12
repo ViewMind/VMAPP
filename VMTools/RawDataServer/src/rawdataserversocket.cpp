@@ -494,7 +494,7 @@ void RawDataServerSocket::oprVMIDTableRequest(){
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
-    log.appendStandard("Getting the PUIDS for given doctors");
+    log.appendStandard("Getting the PUIDS for given doctors: " + druidlist.join("--"));
     columns.clear();
 
     columns << TPATDATA_COL_PUID << TPATDATA_COL_DOCTORID;
@@ -527,11 +527,11 @@ void RawDataServerSocket::oprVMIDTableRequest(){
 
 
     ///////////////////////////////////////////////////////////////////////////////////
-    log.appendStandard("Getting the HPUID List");
+    log.appendStandard("Getting the HPUID List for PUIDLIST: " + puidlist.join("--"));
     columns.clear();
     columns << TPATID_COL_UID << TPATID_COL_KEYID;
     condition = QString(TPATID_COL_KEYID) +  " IN ('" + puidlist.join("','") + "')";
-    if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,"")){
+    if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
         log.appendError("Getting patient ID information: " + dbConnID.getError());
         sendErrorMessage("Internal DB Query ERROR");
         return;
@@ -553,6 +553,7 @@ void RawDataServerSocket::oprVMIDTableRequest(){
             return;
         }
         // So that the hash and the PUID is in order.
+        log.appendStandard("Adding HPUID: " + dbres.rows.at(i).first() + " mapped to " + dbres.rows.at(i).last());
         map[dbres.rows.at(i).first()] = dbres.rows.at(i).last();
     }
 
@@ -562,6 +563,7 @@ void RawDataServerSocket::oprVMIDTableRequest(){
     puidlist.clear();
     for (qint32 i = 0; i < hpuidlist.size(); i++) puidlist << map.value(hpuidlist.at(i));
     DataPacket tx;
+    log.appendStandard("Seding back: " + puidlist.join(",") + "-" + hpuidlist.join(","));
     tx.addString(puidlist.join(",") + "-" + hpuidlist.join(","),DataPacket::DPFI_VMID_TABLE);
     QByteArray ba = tx.toByteArray();
     qint64 num = sslSocket->write(ba.constData(),ba.size());

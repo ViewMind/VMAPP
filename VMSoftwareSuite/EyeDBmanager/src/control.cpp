@@ -32,7 +32,10 @@ void Control::run(){
         return;
     }
 
-    QString tID  = configuration.getString(CONFIG_TRANSACTION_ID);
+    QString log_file_path = QString(DIRNAME_SERVER_LOGS) + "/" + configuration.getString(CONFIG_TRANSACTION_ID);
+    log.setLogFileLocation(log_file_path);
+
+    QString tID  = "DBMNG_" + configuration.getString(CONFIG_TRANSACTION_ID);
     if (tID.isEmpty()){
         log.appendWarning("No transaction ID found in comm file");
     }
