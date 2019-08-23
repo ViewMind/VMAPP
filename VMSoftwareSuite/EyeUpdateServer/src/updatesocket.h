@@ -9,6 +9,7 @@
 #define  DIRNAME_UPDATE_DIR                "etdir"
 #define  DIRNAME_UPDATE_DIR_LOG_SUBIDR     "logs"
 #define  DIRNAME_UPDATE_DIR_FLOGS_SUBIDR   "flogs"
+#define  DIRNAME_LOCAL_DB_BKPS             "dbbkps"
 #define  FILENAME_EYE_LAUNCHER             "etdir/launcher.exe"
 #define  FILENAME_CONFIGURATION            "configuration"
 #define  FILENAME_CHANGELOG                "changelog"
