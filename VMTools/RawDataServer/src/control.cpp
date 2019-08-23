@@ -187,7 +187,9 @@ void Control::on_newConnection(){
     QSslSocket *sslsocket = (QSslSocket*)(listener->nextPendingConnection());
     RawDataServerSocket *socket = new RawDataServerSocket(sslsocket,idGen,&config);
 
-    logger.appendStandard("Created new connection with ID: " + idGen);
+    logger.appendStandard("Created new connection with ID: " + QString::number(idGen));
+
+    idGen++;
 
     if (!socket->isValid()) {
         logger.appendError("ERROR: Could not cast incomming socket connection");
@@ -222,6 +224,11 @@ void Control::on_removeSocket(quint64 socket){
     }
 
     logger.appendStandard("Removing socket: " + QString::number(sslsocket->getID()));
+//    QStringList dbids = sslsocket->getDBInstanceNames();
+//    for (qint32 i = 0; i < dbids.size(); i++){
+//        QSqlDatabase::removeDatabase(dbids.at(i));
+//    }
+//    logger.appendStandard("Finished removing all DB connections");
 
     sockets.releaseSocket(socket,where);
     sockets.deleteSocket(socket,where);

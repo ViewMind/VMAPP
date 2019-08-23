@@ -13,7 +13,7 @@
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 
 #define EYE_DB_MNG_NAME      "EyeDBManager"
-#define EYE_DB_MNG_VERSION   "1.0.0"
+#define EYE_DB_MNG_VERSION   "1.0.1"
 #define FILE_DB_LOG          "dblog.log"
 
 #define DB_FINISH_ACTION_COMMIT   0

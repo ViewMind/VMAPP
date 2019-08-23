@@ -20,7 +20,7 @@ public:
     DBInterface();
 
     // Initializes the connection to thez database returning true if sucessfull.
-    void setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port, const QString log_file);
+    void setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port, const QString log_file, bool add = true);
 
     // Insert Query
     bool insertDB(const QString &table, const QStringList &columns, const QStringList &values, const QString logid);
@@ -50,10 +50,10 @@ public:
     bool open();
     void close() { dbConnection.close(); }
 
-    void closeIfOpen() { if (dbConnection.isOpen()) dbConnection.close(); }
-
     QString getError() const {return error;}
     DBData getLastResult() const {return lastResult;}
+
+    QString getInstanceName() const { return providedInstanceName; }
 
 private:
 
@@ -68,6 +68,9 @@ private:
 
     // Making sure init is only called once.
     bool dbSetupDone;
+
+    // The provided instance name.
+    QString providedInstanceName;
 
     // File that will log each modification in the data base.
     QString logFile;

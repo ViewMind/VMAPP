@@ -2,7 +2,9 @@
 
 RawDataServerSocket::RawDataServerSocket(QSslSocket *newSocket, quint64 id, ConfigurationManager *c):SSLIDSocket(newSocket,id)
 {
-    QString transactionID = QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + "_TID" + QString::number(id);
+    QString idAsStr = QString::number(id);
+    QString transactionID = QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + "_TID" + idAsStr;
+
     config = c;
     verifcationPassword = config->getString(RAW_DATA_SERVER_PASSWORD);
 
@@ -15,21 +17,24 @@ RawDataServerSocket::RawDataServerSocket(QSslSocket *newSocket, quint64 id, Conf
     QString user = config->getString(CONFIG_DBUSER);
     QString passwd = config->getString(CONFIG_DBPASSWORD);
     quint16 port = config->getInt(CONFIG_DBPORT);
-    dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,"");
+    dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,"",false);
+    dbInstanceNames << dbConnBase.getInstanceName();
 
     host = config->getString(CONFIG_ID_DBHOST);
     dbname = config->getString(CONFIG_ID_DBNAME);
     user = config->getString(CONFIG_ID_DBUSER);
     passwd = config->getString(CONFIG_ID_DBPASSWORD);
     port = config->getInt(CONFIG_ID_DBPORT);
-    dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,"");
+    dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,"",false);
+    dbInstanceNames << dbConnID.getInstanceName();
 
     host = config->getString(CONFIG_PATDATA_DBHOST);
     dbname = config->getString(CONFIG_PATDATA_DBNAME);
     user = config->getString(CONFIG_PATDATA_DBUSER);
     passwd = config->getString(CONFIG_PATDATA_DBPASSWORD);
     port = config->getInt(CONFIG_PATDATA_DBPORT);
-    dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"");
+    dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"",false);
+    dbInstanceNames << dbConnPatData.getInstanceName();
 
     // Customized log file.
     log.setLogFileLocation(QString(DIRNAME_SERVER_LOGS) + "/" + transactionID);
@@ -61,18 +66,18 @@ void RawDataServerSocket::on_disconnected(){
         }
         else{
             log.appendStandard("Finsihed task. Requesting socket deletion....");
-            dbConnBase.closeIfOpen();
-            dbConnID.closeIfOpen();
-            dbConnPatData.closeIfOpen();
+            dbConnBase.close();
+            dbConnID.close();
+            dbConnPatData.close();
             emit(socketDone(ID));
         }
         disconnectReceived = true;
     }
     else{
         log.appendStandard("Finsihed task. Requesting socket deletion (was disconnected previously)....");
-        dbConnBase.closeIfOpen();
-        dbConnID.closeIfOpen();
-        dbConnPatData.closeIfOpen();
+        dbConnBase.close();
+        dbConnID.close();
+        dbConnPatData.close();
         emit(socketDone(ID));
     }
 }
@@ -489,7 +494,7 @@ void RawDataServerSocket::oprVMIDTableRequest(){
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
-    log.appendStandard("Getting the PUIDS for given doctors");
+    log.appendStandard("Getting the PUIDS for given doctors: " + druidlist.join("--"));
     columns.clear();
 
     columns << TPATDATA_COL_PUID << TPATDATA_COL_DOCTORID;
@@ -522,11 +527,11 @@ void RawDataServerSocket::oprVMIDTableRequest(){
 
 
     ///////////////////////////////////////////////////////////////////////////////////
-    log.appendStandard("Getting the HPUID List");
+    log.appendStandard("Getting the HPUID List for PUIDLIST: " + puidlist.join("--"));
     columns.clear();
     columns << TPATID_COL_UID << TPATID_COL_KEYID;
     condition = QString(TPATID_COL_KEYID) +  " IN ('" + puidlist.join("','") + "')";
-    if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,"")){
+    if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
         log.appendError("Getting patient ID information: " + dbConnID.getError());
         sendErrorMessage("Internal DB Query ERROR");
         return;
@@ -548,6 +553,7 @@ void RawDataServerSocket::oprVMIDTableRequest(){
             return;
         }
         // So that the hash and the PUID is in order.
+        log.appendStandard("Adding HPUID: " + dbres.rows.at(i).first() + " mapped to " + dbres.rows.at(i).last());
         map[dbres.rows.at(i).first()] = dbres.rows.at(i).last();
     }
 
@@ -557,6 +563,7 @@ void RawDataServerSocket::oprVMIDTableRequest(){
     puidlist.clear();
     for (qint32 i = 0; i < hpuidlist.size(); i++) puidlist << map.value(hpuidlist.at(i));
     DataPacket tx;
+    log.appendStandard("Seding back: " + puidlist.join(",") + "-" + hpuidlist.join(","));
     tx.addString(puidlist.join(",") + "-" + hpuidlist.join(","),DataPacket::DPFI_VMID_TABLE);
     QByteArray ba = tx.toByteArray();
     qint64 num = sslSocket->write(ba.constData(),ba.size());

@@ -162,9 +162,10 @@ void UpdateSocket::processUpdateRequest(){
     QString confighash      = rx.getField(DataPacket::DPFI_UPDATE_CONFIG).data.toString();
     QString eyelauncherhash = rx.getField(DataPacket::DPFI_UPDATE_EYELAUNCHER).data.toString();
 
-    QString hash = DataPacket::getFileHash(FILENAME_EYE_LAUNCHER);
+    QString err = "";
+    QString hash = DataPacket::getFileHash(FILENAME_EYE_LAUNCHER,&err);
     if (hash.isEmpty()){
-        log.appendError("Could not compute hash for the launcher.exe");
+        log.appendError("Could not compute hash for the launcher.exe: " + err);
     }
     else if ((hash != eyelauncherhash) && (!eyelauncherhash.isEmpty())){
         if (!tx.addFile(FILENAME_EYE_LAUNCHER,DataPacket::DPFI_UPDATE_EYELAUNCHER)){
@@ -173,10 +174,11 @@ void UpdateSocket::processUpdateRequest(){
         else log.appendStandard("Added launcher.exe to response");
     }
 
+    err = "";
     QString hashFilePath = basePath + "/" + QString(FILENAME_CONFIGURATION);
-    hash = DataPacket::getFileHash(hashFilePath);
+    hash = DataPacket::getFileHash(hashFilePath,&err);
     if (hash.isEmpty()){
-        log.appendError("Could not compute hash for the local configuration file on path: " + hashFilePath);
+        log.appendError("Could not compute hash for the local configuration file on path: " + hashFilePath + ": " + err);
     }
     else if ((hash != confighash) && !confighash.isEmpty()){
         if (!tx.addFile(hashFilePath,DataPacket::DPFI_UPDATE_CONFIG)){
@@ -185,10 +187,11 @@ void UpdateSocket::processUpdateRequest(){
         else log.appendStandard("Added configuration to response");
     }
 
+    err = "";
     hashFilePath = basePath + "/" + QString(FILENAME_EYE_EXPERIMENTER);
-    hash = DataPacket::getFileHash(hashFilePath);
+    hash = DataPacket::getFileHash(hashFilePath,&err);
     if (hash.isEmpty()){
-        log.appendError("Could not compute hash for the local eye experimetner file on path: " + hashFilePath);
+        log.appendError("Could not compute hash for the local eye experimetner file on path: " + hashFilePath + ": " + err);
     }
     else if ((hash != eyeexehash) && !eyeexehash.isEmpty()){
         if (!tx.addFile(hashFilePath,DataPacket::DPFI_UPDATE_EYEEXP)){
