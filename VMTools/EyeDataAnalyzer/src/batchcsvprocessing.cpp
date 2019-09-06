@@ -45,7 +45,7 @@ void BatchCSVProcessing::run(){
             if (csvFile.isEmpty()) continue;
 
             //qWarning() << "Appending data of file" << csvFile;
-            outputCSVContents = appendCSV(csvFile,dfps.displayID,outputCSVContents);
+            outputCSVContents = appendCSV(csvFile,dfps.displayID,dfps.age,outputCSVContents);
 
             counter++;
             qint32 percent = counter*100/total;
@@ -125,7 +125,7 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
 
 }
 
-QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const QString &displayID, const QString &csvdata){
+QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const QString &displayID, const QString &patientAge, const QString &csvdata){
 
 
     // Reading the input file.
@@ -147,11 +147,11 @@ QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const QString
     }
 
     QStringList csvLines;
-    if (csvdata.isEmpty()) csvLines << "display_id,"+lines.first();
+    if (csvdata.isEmpty()) csvLines << "display_id,age,"+lines.first();
     else csvLines << csvdata;
 
     for (qint32 i = 1; i < lines.size(); i++){
-        csvLines << displayID + "," + lines.at(i);
+        csvLines << displayID + "," + patientAge  + "," + lines.at(i);
     }
 
     return csvLines.join("\n");
@@ -181,6 +181,14 @@ void BatchCSVProcessing::recursiveFillProcessingList(const QString &dir){
         for (qint32 i = 0; i < datfiles.size(); i++){
             BatchCSVProcessing::DatFileProcessingStruct s;
             s.configurationFile = confFile;
+
+            ConfigurationManager temp;
+            if (!temp.loadConfiguration(confFile,COMMON_TEXT_CODEC)){
+                errors << "Could not load configuration file " + confFile + " with error: " + temp.getError() + " for getting patient age";
+                s.age = "0";
+            }
+            else s.age = temp.getString(CONFIG_PATIENT_AGE);
+
             s.filePath = dir + "/" + datfiles.at(i);
             ConfigurationManager config = patdata->getPatientNameFromDirname(dir);
             if (idToUse == UNIFIED_CSV_ID_DID) s.displayID = config.getString(ID_DID);

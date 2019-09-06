@@ -167,7 +167,8 @@ bool LocalInformationManager::createPatAndDrDBFiles(const QString &patid, const 
     ConfigurationManager patdata;
     QVariantMap patientMap = localDB.value(PATIENT_DATA).toMap().value(patid).toMap();
     avoid.clear();
-    avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID << TPATDATA_NONCOL_PROTOCOL;
+    // The last two present problems ONLY for old local databases.
+    avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID << TPATDATA_NONCOL_PROTOCOL << OLD_PUID_COLUMN << OLD_UID_COLUMN;
     QSet<QString> needToHash; needToHash << TPATDATA_COL_FIRSTNAME << TPATDATA_COL_LASTNAME;
     keys = patientMap.keys();
     for (qint32 k = 0; k < keys.size(); k++){
@@ -535,7 +536,7 @@ void LocalInformationManager::backupDB(){
 
     // Backing up the DB.
     if (!backupDirectory.isEmpty()){
-        QString bkpfile = backupDirectory + "/" + QString(FILE_LOCAL_DB);
+        QString bkpfile = backupDirectory + "/" + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm") + "_" + QString(FILE_LOCAL_DB);
         QFile(bkpfile).remove();
         if (!QFile::copy(dbfile,bkpfile)){
             log.appendError("LOCALDB: Failed to backup file " + dbfile);

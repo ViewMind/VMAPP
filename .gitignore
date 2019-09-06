@@ -32,6 +32,11 @@ VMSoftwareSuite/EyeUpdateServer/bin/EyeUpdateServerMonitor
 VMSoftwareSuite/EyeUpdateServer/bin/etdir/
 VMSoftwareSuite/EyeUpdateServer/bin/mail.php
 VMSoftwareSuite/EyeUpdateServer/bin/LOGDIR/
+VMSoftwareSuite/EyeExperimenter/exe64/
+VMSoftwareSuite/EyeServerMonitor/bin/
+VMTools/PupilLabsDemo/
+VMTools/QtDX11Test/debug/
+VMTools/QtDX11Test/exe/
 
 VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager
 VMTools/RawDataServer/bin/LOGDIR/

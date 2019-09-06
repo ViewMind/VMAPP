@@ -4,19 +4,20 @@ import QtQuick.Window 2.2
 
 Window {
     visible: true
-    title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()
+    //title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()
     id: mainWindow
     minimumHeight: 690
     maximumHeight: 690
     maximumWidth: 1280
     minimumWidth: 1280
 
-    Component.onCompleted: {
+    Component.onCompleted: {        
         flowControl.resolutionCalculations();
         var frameGeomtry = loader.frameSize(mainWindow)
         var hdiff = frameGeomtry.height - height - 10;
-        x = (Screen.width - width)/2;
-        y = hdiff; // This should put the window at the top of the screen.       
+        //x = (Screen.width - width)/2;
+        x = 0;
+        y = hdiff; // This should put the window at the top of the screen.
         swiperControl.currentIndex = swiperControl.vmIndexHome;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
@@ -71,7 +72,7 @@ Window {
         Item{
             ViewHome{
                 id: viewHome
-                isHomePage: true;
+                //isHomePage: true;
                 anchors.fill: parent
             }
         }
@@ -79,7 +80,7 @@ Window {
         Item{
             ViewDoctorProfile{
                 id: viewDrInfo
-                isHomePage: true;
+                //isHomePage: true;
                 anchors.fill: parent
             }
         }

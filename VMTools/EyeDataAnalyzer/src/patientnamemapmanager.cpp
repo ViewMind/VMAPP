@@ -77,6 +77,7 @@ QString PatientNameMapManager::addVMIDTableData(const QString &table, const QStr
 
     for (qint32 i = 0; i < puid.size(); i++){
         QStringList list; list << hpuid.at(i) << instuid;
+        qWarning() << "Adding to " << puid.at(i) << "LIST" << list;
         dbvmid[puid.at(i)] = list;
     }
     QFile file(FILENAME_VMID_MAP);
@@ -90,11 +91,15 @@ QString PatientNameMapManager::addVMIDTableData(const QString &table, const QStr
 }
 
 QStringList PatientNameMapManager::getDBPUIDForInst(const QString &instuid){
+
+    qWarning() << "Getting the DBPUID for institution instuid" << instuid;
+
     QStringList allpuids = dbvmid.keys();
     QStringList ans;
-    for (qint32 i = 0; i < allpuids.size(); i++){
-        QStringList list = dbvmid.value(allpuids.at(i)).toStringList();
+    for (qint32 i = 0; i < allpuids.size(); i++){        
+        QStringList list = dbvmid.value(allpuids.at(i)).toStringList();        
         if (list.last() == instuid){
+            qWarning() << "GOT ID LIST" << list << ". Adding" << allpuids.at(i);
             ans << allpuids.at(i);
         }
     }

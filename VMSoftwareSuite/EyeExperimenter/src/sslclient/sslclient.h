@@ -22,7 +22,7 @@ public:
     explicit SSLClient(QObject *parent = 0, ConfigurationManager *c = nullptr);
     ~SSLClient();
 
-    bool sslEnabled() const {return QSslSocket::supportsSsl();}
+    bool sslEnabled();
     bool getTransactionStatus() const {return transactionIsOk;}
 
 signals:

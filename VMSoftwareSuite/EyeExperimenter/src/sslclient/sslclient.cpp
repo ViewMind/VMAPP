@@ -26,6 +26,14 @@ void SSLClient::on_readyRead(){
 
 }
 
+bool SSLClient::sslEnabled(){
+    bool ans = QSslSocket::supportsSsl();
+    if (!ans){
+        log.appendError("No SSL Support. Library version is supposed to be: " + QSslSocket::sslLibraryBuildVersionString());
+    }
+    return ans;
+}
+
 //************************************* Socket and SSL Errors, Socket state changes ****************************************
 
 void SSLClient::on_sslErrors(const QList<QSslError> &errors){

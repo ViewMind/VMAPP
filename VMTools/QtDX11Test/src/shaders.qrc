@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shaders/pixel_shader.hlsl</file>
+        <file>shaders/vertex_shader.hlsl</file>
+    </qresource>
+</RCC>

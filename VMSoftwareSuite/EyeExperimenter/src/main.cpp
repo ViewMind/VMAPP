@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QIcon>
+#include <QApplication>
 
 #include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "loader.h"
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
     // The QML Engine
     QQmlApplicationEngine engine;
 
-    // Laods all language related data   
+    // Laods all language related data
     FlowControl flowControl(nullptr,&configuration,&configmap);
 
     // Doing the connections for communication between the classes

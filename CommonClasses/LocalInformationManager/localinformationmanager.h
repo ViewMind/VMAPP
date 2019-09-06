@@ -16,6 +16,9 @@
 #define   PAT_ID_LENGTH                                  4
 #define   EVAL_ID_LENGTH                                 10
 
+#define   OLD_PUID_COLUMN                                "patientid"
+#define   OLD_UID_COLUMN                                 "uid"
+
 class LocalInformationManager
 {
 public:

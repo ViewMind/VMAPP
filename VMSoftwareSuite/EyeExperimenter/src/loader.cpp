@@ -134,6 +134,8 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
 
     // FOR DEBUGGING
     //lim.printDBToConsole();
+    //QStringList headers; headers << "A" << "B";
+    //lim.saveIDTable("IDTABLE.csv",headers);
 
 #ifdef USE_IVIEW
     QString expectedET = CONFIG_P_ET_REDM;

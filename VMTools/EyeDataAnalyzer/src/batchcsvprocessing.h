@@ -33,6 +33,7 @@ private:
         QString filePath;
         QString configurationFile;
         QString displayID;
+        QString age;
         QString toString() const { return "FILE: " + filePath + ". CONF: " + configurationFile + ". DISPID: " + displayID;}
     };
 
@@ -49,7 +50,7 @@ private:
     void recursiveFillProcessingList(const QString &dir);
 
     QString generateLocalCSV(DatFileProcessingStruct dfps, bool isReading);
-    QString appendCSV(const QString &fileToAppend, const QString &displayID, const QString &csvdata);
+    QString appendCSV(const QString &fileToAppend, const QString &displayID, const QString &patientAge, const QString &csvdata);
 
 };
 
