@@ -102,8 +102,10 @@ void UpdateSocket::processUpdateRequest(){
     QDir baseDir(basePath);
     QString logDirPath = basePath + "/" + QString(DIRNAME_UPDATE_DIR_LOG_SUBIDR);
     QString flogDirPath = basePath + "/" + QString(DIRNAME_UPDATE_DIR_FLOGS_SUBIDR);
+    QString dbbkpDirPath = basePath + "/" + QString(DIRNAME_LOCAL_DB_BKPS);
     baseDir.mkdir(DIRNAME_UPDATE_DIR_LOG_SUBIDR);
     baseDir.mkdir(DIRNAME_UPDATE_DIR_FLOGS_SUBIDR);
+    baseDir.mkdir(DIRNAME_LOCAL_DB_BKPS);
     if (!QDir(logDirPath).exists()){
         log.appendError("Could not create LOG Directory: " + logDirPath);
         sendUpdateAns(DataPacket(),"FAILED");
@@ -111,6 +113,11 @@ void UpdateSocket::processUpdateRequest(){
     }
     if (!QDir(flogDirPath).exists()){
         log.appendError("Could not create FLOG Directory: " + flogDirPath);
+        sendUpdateAns(DataPacket(),"FAILED");
+        return;
+    }
+    if (!QDir(dbbkpDirPath).exists()){
+        log.appendError("Could not create DB BKP Directory: " + dbbkpDirPath);
         sendUpdateAns(DataPacket(),"FAILED");
         return;
     }
@@ -125,35 +132,12 @@ void UpdateSocket::processUpdateRequest(){
 
         log.appendStandard("Local DB BKP Enabled");
 
-        // Deleting the backup temp file if it exists
-        QString tempFileName = basePath + "/" + QString(FILE_LOCAL_DB);
-        QFile tempFile(tempFileName);
-        tempFile.remove();
-        if (tempFile.exists()){
-            log.appendError("Could not delete de temporary local db backup: " + tempFileName);
+        // Temporary file was removed, saving the file locally.
+        QString savedFile = rx.saveFile(dbbkpDirPath,DataPacket::DPFI_LOCAL_DB_BKP,"." +QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm"));
+        if (savedFile == ""){
+            log.appendError("Failed db bkp file to: " + dbbkpDirPath);
         }
-        else{
-            // Temporary file was removed, saving the file locally.
-            QString savedFile = rx.saveFile(basePath,DataPacket::DPFI_LOCAL_DB_BKP);
-            if (savedFile != ""){
-                // Removing the actual bkp file
-                QString bkpFileName = basePath + "/" + QString(FILE_LOCAL_DB_BKP);
-                QFile bkpFile(bkpFileName);
-                bkpFile.remove();
-                if (bkpFile.exists()){
-                    log.appendError("Failed to remove the local DB bkp file: " + bkpFileName);
-                }
-                else{
-                    if (!QFile::copy(tempFileName,bkpFileName)){
-                        log.appendError("Could not copy temporary bkp file " + tempFileName + " to actual local db backup: " + bkpFileName);
-                    }
-                    else log.appendStandard("Local BKP saved sucessfully to: " + savedFile);
-                }
-            }
-            else{
-                log.appendError("Failed saving the temporary file: " + tempFileName);
-            }
-        }
+
     }
 
     // Checking the hashes sent.

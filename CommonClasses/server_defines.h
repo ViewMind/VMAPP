@@ -14,7 +14,7 @@
 #define   RAW_DATA_SERVER_VERSION                       "4.0.1"
 
 #define   EYE_UPDATE_SERVER_NAME                        "EyeUpdateServer"
-#define   EYE_UPDATE_SERVER_VERSION                     "1.0.0"
+#define   EYE_UPDATE_SERVER_VERSION                     "1.0.1"
 
 #define   CONFIG_DBUSER                                 "db_user"
 #define   CONFIG_DBNAME                                 "db_name"
