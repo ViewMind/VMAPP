@@ -15,8 +15,8 @@ Window {
         flowControl.resolutionCalculations();
         var frameGeomtry = loader.frameSize(mainWindow)
         var hdiff = frameGeomtry.height - height - 10;
-        //x = (Screen.width - width)/2;
-        x = 0;
+        x = (Screen.width - width)/2;
+        //x = 0;
         y = hdiff; // This should put the window at the top of the screen.
         swiperControl.currentIndex = swiperControl.vmIndexHome;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
