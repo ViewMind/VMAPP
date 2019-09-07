@@ -290,21 +290,21 @@ VMBase {
         text: loader.getStringForKey(keysearch+"slideTitle");
     }
 
-    // The explanation
-    Text{
-        id: description
-        textFormat: Text.RichText
-        font.pixelSize: 16
-        font.family: robotoR.name
-        color: "#297fca"
-        text: loader.getStringForKey(keysearch+"description");
-        anchors{
-            top: slideTitle.bottom
-            topMargin: 40
-            left: headDesign.right
-            leftMargin: 75
-        }
-    }
+//    // The explanation
+//    Text{
+//        id: description
+//        textFormat: Text.RichText
+//        font.pixelSize: 16
+//        font.family: robotoR.name
+//        color: "#297fca"
+//        text: loader.getStringForKey(keysearch+"description");
+//        anchors{
+//            top: slideTitle.bottom
+//            topMargin: 40
+//            left: headDesign.right
+//            leftMargin: 75
+//        }
+//    }
 
     VMButton{
         id: btnGetStarted
@@ -313,8 +313,8 @@ VMBase {
         anchors{
             left: headDesign.right
             leftMargin: 75
-            top: description.bottom
-            topMargin: 53
+            top: slideTitle.bottom
+            topMargin: 23
         }
         onClicked: {
             viewDrSelection.open();

@@ -114,8 +114,8 @@ void FlowControl::drawReport(){
 }
 
 void FlowControl::saveReportAs(const QString &title){
-    //QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
-    QString newFileName = "test.png";
+    QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
+    //QString newFileName = "test.png";
     if (newFileName.isEmpty()) return;
     configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,newFileName);
     emit(reportGenerationRequested());
@@ -651,8 +651,8 @@ void FlowControl::prepareSelectedReportIteration(){
     reportItems.clear();
 
     /// DEBUG CODE
-    reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
-    selectedReport = 0;
+    /// reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
+    /// selectedReport = 0;
     /// END DEBUG CODE
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
@@ -696,6 +696,7 @@ void FlowControl::prepareSelectedReportIteration(){
     //qDebug() << "DIAG CLASS SUMMARY:";
     //qDebug().noquote() << "   " + resultBarSummary.toString("\n   ");
     //qDebug() << "RESULT" << diag_class_key;
+    //diag_class_key = "class_NA";
     diagnosisClassText << text.getString(diag_class_key);
 
 

@@ -14,6 +14,9 @@
 #include <QPainter>
 #include <QDate>
 #include <QThread>
+#include <QTextBlock>
+#include <QTextBlockFormat>
+#include <QTextCursor>
 
 // Resource location
 #define  RESOURCE_LOCATION            ":/../../EyeExperimenter/src/report_text/"
@@ -33,6 +36,8 @@
 #define  DR_CONFG_MOTTO               "motto"
 #define  DR_CONFG_RESULT_RANGES       "result_ranges"
 #define  DR_CONFG_RES_CLARIFICATION   "results_clarification"
+#define  DR_CONFG_DISCLAIMER          "disclaimer"
+#define  DR_CONFG_DIAG_CLASS          "class_"
 
 // Drawing Scaling Control
 #define  MASTER_SCALE                  10
@@ -41,7 +46,8 @@
 #define  PAGE_WIDTH                    595*MASTER_SCALE
 #define  PAGE_HEIGHT                   842*MASTER_SCALE
 //#define  PAGE_HEIGHT                   942*MASTER_SCALE
-#define  BANNER_HEIGHT                 108*MASTER_SCALE
+//#define  BANNER_HEIGHT                 108*MASTER_SCALE
+#define  BANNER_HEIGHT                 98*MASTER_SCALE
 #define  BANNER_LOGO_HEIGHT            31*MASTER_SCALE
 #define  BANNER_LOGO_WIDTH             146*MASTER_SCALE
 #define  BANNER_MARGIN_TOP_LOGO        44*MASTER_SCALE
@@ -52,14 +58,16 @@
 #define  BAR_PATIENT_BAR_HEIGHT        48*MASTER_SCALE
 #define  BAR_PATIENT_BAR_MARGIN_LEFT   38*MASTER_SCALE
 #define  BAR_PATIENT_BAR_MARGIN_RIGHT  38*MASTER_SCALE
-#define  PANEL_HEIGHT                  146*MASTER_SCALE
+//#define  PANEL_HEIGHT                  146*MASTER_SCALE
+#define  PANEL_HEIGHT                  66*MASTER_SCALE
 #define  PANEL_EXP_TEXT_WIDTH          280*MASTER_SCALE
 #define  PANEL_SQUARES_EXP_WIDTH       183*MASTER_SCALE
 #define  PANEL_MARGIN_LEFT             38*MASTER_SCALE
 #define  PANEL_MARGIN_RIGHT            38*MASTER_SCALE
 #define  PANEL_HOR_BUFFER_SPACE        49*MASTER_SCALE
 #define  PANEL_SQUARE_BUFFER_SPACE     15*MASTER_SCALE
-#define  PANEL_MARGIN_TOP              30*MASTER_SCALE
+//#define  PANEL_MARGIN_TOP              30*MASTER_SCALE
+#define  PANEL_MARGIN_TOP              10*MASTER_SCALE
 #define  PANEL_MARGIN_BOTTOM           45*MASTER_SCALE
 #define  PANEL_SQUARE_SIDE             14*MASTER_SCALE
 #define  PANEL_SQUARE_TO_TEXT_SPACE    6*MASTER_SCALE
@@ -69,13 +77,15 @@
 #define  RESULTS_MARGIN_BOTTOM         48*MASTER_SCALE
 #define  RESULTS_MARGIN_LEFT           38*MASTER_SCALE
 #define  RESULTS_MARGIN_RIGHT          38*MASTER_SCALE
-#define  RESULTS_SEP_LINE_SPACE        10*MASTER_SCALE
+//#define  RESULTS_SEP_LINE_SPACE        10*MASTER_SCALE
+#define  RESULTS_SEP_LINE_SPACE        5*MASTER_SCALE
 #define  RESULTS_NAME_COL_WIDTH        257*MASTER_SCALE
 #define  RESULTS_NUMBER_COL_WIDTH      83*MASTER_SCALE
 #define  RESULTS_HOR_BUFFER_SPACE      15*MASTER_SCALE
 #define  RESULTS_SEGBAR_HEIGHT         9*MASTER_SCALE
 #define  RESULTS_SEGBAR_WIDTH          146*MASTER_SCALE
 #define  RESULTS_MARKER_TRIANG_DIM     7*MASTER_SCALE
+#define  RESULTS_DIAG_BOX_HEIGHT       120*MASTER_SCALE
 
 
 // Color definitions
@@ -116,6 +126,7 @@
 #define  FONT_SIZE_RESULT_VALUE        24*FONT_SCALE
 #define  FONT_SIZE_RESULT_RANGE        10*FONT_SCALE
 #define  FONT_SIZE_RESULT_EXP          9*FONT_SCALE
+#define  FONT_SIZE_DIAG_TEXT           11*FONT_SCALE
 
 
 class ImageReportDrawer

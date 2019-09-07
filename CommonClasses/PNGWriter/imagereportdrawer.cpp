@@ -45,14 +45,18 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     /// TODO eliminate the dual fonts.
 
+    ResultBar::ResultBarCodes diagClassFinder;
+    diagClassFinder.reset();
+
     if (doReading){
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(0);
         d.clarification = "";
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(0);
         d.resultBar.setResultType(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));
+        d.resultBar.setValue(ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));        
         d.value = d.resultBar.getValue();
         data2Show << d;
+        diagClassFinder.setIDX(d.resultBar);
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(1);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(1);
@@ -61,6 +65,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.resultBar.setValue(ds.value(CONFIG_RESULTS_EXECUTIVE_PROCESSES));
         d.value = d.resultBar.getValue();
         data2Show << d;
+        diagClassFinder.setIDX(d.resultBar);
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(2);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(2);
@@ -69,6 +74,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.resultBar.setValue(ds.value(CONFIG_RESULTS_WORKING_MEMORY));
         d.value = d.resultBar.getValue();
         data2Show << d;
+        diagClassFinder.setIDX(d.resultBar);
 
         d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(3);
         d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(3);
@@ -77,6 +83,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         d.resultBar.setValue(ds.value(CONFIG_RESULTS_RETRIEVAL_MEMORY));
         d.value = d.resultBar.getValue();
         data2Show << d;
+        diagClassFinder.setIDX(d.resultBar);
     }
 
     if (doMemEnc){
@@ -88,6 +95,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
             d.resultBar.setValue(ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX));
             d.value = d.resultBar.getValue();
             data2Show << d;
+            diagClassFinder.setIDX(d.resultBar);
         }
         else if (bindingCode == "B"){
             d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
@@ -97,6 +105,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
             d.resultBar.setValue(ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX));
             d.value = d.resultBar.getValue();
             data2Show << d;
+            diagClassFinder.setIDX(d.resultBar);
         }
     }
 
@@ -224,45 +233,72 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     QString fontDescription = "style = \" color: " + QString(COLOR_FONT_EXPLANATION)
             + "; font-size: " + QString::number((qint32)FONT_SIZE_EXPTEXT) + "pt;";
 
+
+    QStringList tempStringList = langData.getString(DR_CONFG_EXPLANATION_PT2).split("<br>");
+
+//    OLD TEXT. Keeping as comment just in case
+//    QString html = "<span " + fontDescription + "font-family:" + expFont.family() + "\";>";
+//    html = html + langData.getString(DR_CONFG_EXPLANATION_PT1) + "</span>";
+//    html = html + "<span " + fontDescription + "font-family:" + fonts.value(FONT_BLACK).family() + "\";> "
+//            + langData.getString(DR_CONFG_EXPLANATION_BOLD) + " </span>";
+//    html = html + "<span " + fontDescription + "font-family:" + expFont.family() + "\";>";
+//    html = html + langData.getString(DR_CONFG_EXPLANATION_PT2) + "</span>";
     QString html = "<span " + fontDescription + "font-family:" + expFont.family() + "\";>";
-    html = html + langData.getString(DR_CONFG_EXPLANATION_PT1) + "</span>";
-    html = html + "<span " + fontDescription + "font-family:" + fonts.value(FONT_BLACK).family() + "\";> "
-            + langData.getString(DR_CONFG_EXPLANATION_BOLD) + " </span>";
-    html = html + "<span " + fontDescription + "font-family:" + expFont.family() + "\";>";
-    html = html + langData.getString(DR_CONFG_EXPLANATION_PT2) + "</span>";
+    html = html + tempStringList.last() + "</span>";
 
     exp->setHtml(html);
-    exp->setTextWidth(PANEL_EXP_TEXT_WIDTH);
+//    exp->setTextWidth(PANEL_EXP_TEXT_WIDTH);
 
     yOffset1 = BAR_PATIENT_BAR_HEIGHT + BANNER_HEIGHT + PANEL_MARGIN_TOP;
     exp->setPos(PANEL_MARGIN_LEFT,yOffset1);
 
-    qreal colorTableXOffset = PANEL_MARGIN_LEFT + exp->boundingRect().width() + PANEL_HOR_BUFFER_SPACE;
+    //qreal colorTableXOffset = PANEL_MARGIN_LEFT + exp->boundingRect().width() + PANEL_HOR_BUFFER_SPACE;
+    qreal colorTableXOffset = PANEL_MARGIN_LEFT;
     QStringList DescColors = langData.getStringList(DR_CONFG_COLOR_EXPLANATION);
     QStringList ColorScale;
     ColorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
 
     QFont fontSquares = fonts.value(FONT_BOOK);
     fontSquares.setPointSize(FONT_SIZE_SQUARES);
-    yOffset1 = BAR_PATIENT_BAR_HEIGHT + BANNER_HEIGHT + PANEL_MARGIN_TOP;
+//    yOffset1 = BAR_PATIENT_BAR_HEIGHT + BANNER_HEIGHT + PANEL_MARGIN_TOP;
 
+// OLD WAY of displaying the color explanations. Keeping as a comment just in case.
+//    for (qint32 i = 0; i < ColorScale.size(); i++){
+
+//        QPen pen(QColor(ColorScale.at(i)));
+
+//        // Adding the square
+//        QGraphicsRectItem *rect = canvas->addRect(0,0,PANEL_SQUARE_SIDE,PANEL_SQUARE_SIDE,pen,QBrush(QColor(ColorScale.at(i))));
+//        rect->setPos(colorTableXOffset,yOffset1);
+
+//        // Adding the text.
+//        QGraphicsTextItem *desc = canvas->addText(DescColors.at(i),fontSquares);
+//        desc->setDefaultTextColor(COLOR_FONT_EXPLANATION);
+//        qreal y = yOffset1 + (rect->boundingRect().height() - desc->boundingRect().height())/2;
+//        desc->setPos(colorTableXOffset+rect->boundingRect().width() + PANEL_SQUARE_TO_TEXT_SPACE,y);
+
+//        yOffset1 = yOffset1 + rect->boundingRect().height() + PANEL_SQUARE_BUFFER_SPACE;
+
+//    }
+
+    qreal xPos = colorTableXOffset;
+    yOffset1 = yOffset1 + PANEL_MARGIN_TOP + exp->boundingRect().height();
     for (qint32 i = 0; i < ColorScale.size(); i++){
 
         QPen pen(QColor(ColorScale.at(i)));
 
         // Adding the square
         QGraphicsRectItem *rect = canvas->addRect(0,0,PANEL_SQUARE_SIDE,PANEL_SQUARE_SIDE,pen,QBrush(QColor(ColorScale.at(i))));
-        rect->setPos(colorTableXOffset,yOffset1);
+        rect->setPos(xPos ,yOffset1);
 
         // Adding the text.
         QGraphicsTextItem *desc = canvas->addText(DescColors.at(i),fontSquares);
         desc->setDefaultTextColor(COLOR_FONT_EXPLANATION);
-        qreal y = yOffset1 + (rect->boundingRect().height() - desc->boundingRect().height())/2;
-        desc->setPos(colorTableXOffset+rect->boundingRect().width() + PANEL_SQUARE_TO_TEXT_SPACE,y);
-
-        yOffset1 = yOffset1 + rect->boundingRect().height() + PANEL_SQUARE_BUFFER_SPACE;
+        desc->setPos(xPos + rect->boundingRect().width() + PANEL_SQUARE_TO_TEXT_SPACE, yOffset1 + (rect->boundingRect().height() - desc->boundingRect().height())/2);
+        xPos = xPos + rect->boundingRect().width() + PANEL_SQUARE_TO_TEXT_SPACE + desc->boundingRect().width() + PANEL_SQUARE_BUFFER_SPACE;
 
     }
+
 
     //----------------------------------------- RESULT LIST ------------------------------------------------
 
@@ -338,8 +374,60 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         // Calculating values for the next iteration
         yOffset = sepLineY + spaceToLine;
         lastLineY = sepLineY;
+        if (i == data2Show.size()-1){
+            yOffset = lastLineY;
+        }
 
     }
+
+    //----------------------------------------- DIAGNOSIS BOX ------------------------------------------------
+    // Drawing the actual box.
+    qreal rectWidth = PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT;
+
+    qreal topBoxMargin = yOffset+0.08*RESULTS_DIAG_BOX_HEIGHT;
+
+    QGraphicsRectItem *diagnosisBox = canvas->addRect(0,0,rectWidth,RESULTS_DIAG_BOX_HEIGHT,
+                                                      QPen(QBrush(COLOR_FONT_RESULTS),6),QBrush());
+    diagnosisBox->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,yOffset);
+
+
+    // Adding the disclaimer text.
+    QGraphicsTextItem *disclaimer =  canvas->addText(langData.getString(DR_CONFG_DISCLAIMER));
+    clarificationFont.setItalic(true);
+    disclaimer->setTextWidth(rectWidth*0.9);
+    QTextBlockFormat format;
+    format.setAlignment(Qt::AlignHCenter);
+    QTextCursor cursor = disclaimer->textCursor();
+    cursor.select(QTextCursor::Document);
+    cursor.mergeBlockFormat(format);
+    cursor.clearSelection();
+    disclaimer->setTextCursor(cursor);
+    disclaimer->setFont(clarificationFont);
+    disclaimer->setPos(BAR_PATIENT_BAR_MARGIN_LEFT + 0.05*rectWidth,topBoxMargin);
+
+    // Adding the diagnosis text
+    qreal diagTopMargin = topBoxMargin + disclaimer->boundingRect().height() + 0.08*RESULTS_DIAG_BOX_HEIGHT;
+    QString diagTextContent = langData.getString(DR_CONFG_DIAG_CLASS + diagClassFinder.getDiagnosisClass());
+    //diagTextContent = langData.getString("class_4");
+    diagTextContent = diagTextContent.replace("\n"," ");
+    diagTextContent = diagTextContent.replace("\r"," ");
+    diagTextContent = diagTextContent.replace("  "," ");
+    //qDebug() << diagTextContent;
+    QGraphicsTextItem *diagText = canvas->addText(diagTextContent);
+
+    QFont diagTextFont = fonts.value(FONT_BOLD);
+    diagTextFont.setPointSize(FONT_SIZE_RESULT_RANGE);
+
+    diagText->setTextWidth(rectWidth*0.9);
+    diagText->setDefaultTextColor(COLOR_FONT_RESULTS);
+    cursor = diagText->textCursor();
+    cursor.select(QTextCursor::Document);
+    cursor.mergeBlockFormat(format);
+    cursor.clearSelection();
+    diagText->setTextCursor(cursor);
+    diagText->setFont(diagTextFont);
+    diagText->setPos(BAR_PATIENT_BAR_MARGIN_LEFT + 0.05*rectWidth,diagTopMargin);
+
 
 
     //----------------------------------------- SAVING PIC ------------------------------------------------
@@ -437,68 +525,6 @@ ConfigurationManager ImageReportDrawer::loadReportText(QString lang){
     if ((lang != CONFIG_P_LANG_ES) && (lang != CONFIG_P_LANG_EN)) lang = CONFIG_P_LANG_EN;
     path = path + lang;
 
-    ConfigurationManager::CommandVerifications cv;
-    ConfigurationManager::Command cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_LIST;
-    cmd.fields << ConfigurationManager::VT_STRING;
-    cv[DR_CONFG_COLOR_EXPLANATION] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_DATE] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_DOCTOR_NAME] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_EXPLANATION_PT1] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_EXPLANATION_PT2] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_MOTTO] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_PATIENT_AGE] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_PATIENT_NAME] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_RESULT_TITLE] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_DATE_FORMAT] = cmd;
-
-    cmd.clear();
-    cv[DR_CONFG_EXPLANATION_BOLD] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_LIST;
-    cmd.fields << ConfigurationManager::VT_STRING ;
-    cv[DR_CONFG_RESULTS_NAME] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_LIST;
-    cmd.fields << ConfigurationManager::VT_STRING;
-    cv[DR_CONFG_RESULTS_NAME] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_LIST;
-    cmd.fields << ConfigurationManager::VT_STRING;
-    cv[DR_CONFG_RESULT_RANGES] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_LIST;
-    cmd.fields << ConfigurationManager::VT_STRING;
-    cv[DR_CONFG_RES_CLARIFICATION] = cmd;
-
-
-    if (!langData.setupVerification(cv)){
-        qWarning() << "Setup Verification Error" << langData.getError();
-    }
     if (!langData.loadConfiguration(path,COMMON_TEXT_CODEC)){
         qWarning() << "Error loading lang" << langData.getError();
     }

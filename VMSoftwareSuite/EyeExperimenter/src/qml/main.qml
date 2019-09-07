@@ -4,7 +4,7 @@ import QtQuick.Window 2.2
 
 Window {
     visible: true
-    //title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()
+    title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()
     id: mainWindow
     minimumHeight: 690
     maximumHeight: 690
@@ -18,12 +18,12 @@ Window {
         x = (Screen.width - width)/2;
         //x = 0;
         y = hdiff; // This should put the window at the top of the screen.
-        //swiperControl.currentIndex = swiperControl.vmIndexHome;
+        swiperControl.currentIndex = swiperControl.vmIndexHome;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-        swiperControl.currentIndex = swiperControl.vmIndexResults;
+        //swiperControl.currentIndex = swiperControl.vmIndexResults;
         //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
     }
 
