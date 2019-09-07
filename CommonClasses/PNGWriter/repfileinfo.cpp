@@ -15,6 +15,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
     QStringList filters;
     filters << "*.rep";
     QStringList repFiles = QDir(directory).entryList(filters,QDir::Files);
+
     if (repFiles.isEmpty()) return;
 
     for (qint32 i = 0; i < repFiles.size(); i++){
@@ -26,6 +27,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         QStringList parts = repfile.split(".");
         QString basename = parts.at(0);
         parts = basename.split("_");
+
 
         if ((parts.size() < 5) || (parts.size() > 8)){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");

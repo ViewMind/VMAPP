@@ -114,7 +114,8 @@ void FlowControl::drawReport(){
 }
 
 void FlowControl::saveReportAs(const QString &title){
-    QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
+    //QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
+    QString newFileName = "test.png";
     if (newFileName.isEmpty()) return;
     configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,newFileName);
     emit(reportGenerationRequested());
@@ -650,8 +651,8 @@ void FlowControl::prepareSelectedReportIteration(){
     reportItems.clear();
 
     /// DEBUG CODE
-    //reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000/",RepFileInfo::AlgorithmVersions());
-    //selectedReport = 1;
+    reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
+    selectedReport = 0;
     /// END DEBUG CODE
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
@@ -660,6 +661,10 @@ void FlowControl::prepareSelectedReportIteration(){
     QStringList titles = text.getStringList(DR_CONFG_RESULTS_NAME);
     QStringList explanations = text.getStringList(DR_CONFG_RES_CLARIFICATION);
     QStringList references = text.getStringList(DR_CONFG_RESULT_RANGES);
+
+    diagnosisClassText.clear();
+    diagnosisClassText << text.getStringList(DR_CONFG_DISCLAIMER);
+    resultBarSummary.reset();
 
     if (report.contains(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
         QString ans = report.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
@@ -685,17 +690,32 @@ void FlowControl::prepareSelectedReportIteration(){
 
     selectedReportItemIterator = 0;
 
+    // Getting the diagnosis class.
+    QString diag_class_key = DR_CONFG_DIAG_CLASS;
+    diag_class_key = diag_class_key + resultBarSummary.getDiagnosisClass();
+    //qDebug() << "DIAG CLASS SUMMARY:";
+    //qDebug().noquote() << "   " + resultBarSummary.toString("\n   ");
+    //qDebug() << "RESULT" << diag_class_key;
+    diagnosisClassText << text.getString(diag_class_key);
+
+
 }
 
 void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &report, const QStringList &titles,
                                    const QStringList &explanations, const QStringList &references){
 
+
     for (qint32 i = 0; i < items.size(); i++){
         QVariantMap map;
         qint32 index = reportTextDataIndexes.indexOf(items.at(i));
         ResultBar bar;
+
         bar.setResultType(items.at(i));
         bar.setValue(report.value(items.at(i)));
+
+        // Adding the bar segment to determine the diagnosis class.
+        resultBarSummary.setIDX(bar);
+
         qint32 indicator = bar.getSegmentBarIndex();
 
         map["vmTitleText"] = titles.at(index);
@@ -711,6 +731,10 @@ void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &
         map["vmHasTwoSections"] = bar.hasTwoSections();
         reportItems << map;
     }
+}
+
+QStringList FlowControl::getDiagnosticClass(){
+    return diagnosisClassText;
 }
 
 

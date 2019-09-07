@@ -177,17 +177,17 @@
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
 
 // Codes indicating the type of update transaction
-#define  UPDATE_CHECK_GP_CODE                           "cgp"
-#define  UPDATE_CHECK_SMI_CODE                          "csmi"
-#define  UPDATE_GET_SMI_CODE                            "gsmi"
-#define  UPDATE_GET_GP_CODE                             "ggp"
-#define  UPDATE_FORCE_NO_UPDATE_MSG                     "none"
+#define   UPDATE_CHECK_GP_CODE                           "cgp"
+#define   UPDATE_CHECK_SMI_CODE                          "csmi"
+#define   UPDATE_GET_SMI_CODE                            "gsmi"
+#define   UPDATE_GET_GP_CODE                             "ggp"
+#define   UPDATE_FORCE_NO_UPDATE_MSG                     "none"
 
 // Codes for reading languages languages.
-#define  READING_LANG_SPANISH                           "es"
-#define  READING_LANG_ENGLISH                           "en"
-#define  READING_LANG_GERMAN                            "de"
-#define  READING_LANG_FRENCH                            "fr"
+#define   READING_LANG_SPANISH                           "es"
+#define   READING_LANG_ENGLISH                           "en"
+#define   READING_LANG_GERMAN                            "de"
+#define   READING_LANG_FRENCH                            "fr"
 
 // ID MAP NAMES
 #define   IDMAP_ID_PUID                                 "puid"

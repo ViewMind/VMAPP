@@ -7,6 +7,8 @@
 #include <QtMath>
 #include <QFileDialog>
 
+#include <iostream>
+
 #include "../../../CommonClasses/common.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/DatFileInfo/datfileinfoindir.h"
@@ -62,6 +64,7 @@ public:
     Q_INVOKABLE void doFrequencyAnalysis(const QString &filename);
     Q_INVOKABLE void requestDataReprocessing(const QString &reportName, const QString &fileList, const QString &evaluationID);
     Q_INVOKABLE qint32 numberOfEvaluationsReceived() { return sslDataProcessingClient->getNumberOfEvaluations(); }
+    Q_INVOKABLE QStringList getDiagnosticClass();
 
 signals:
 
@@ -135,6 +138,8 @@ private:
     RepFileInfo reportsForPatient;
     QList<QVariantMap> reportItems;
     QStringList reportTextDataIndexes;
+    QStringList diagnosisClassText;
+    ResultBar::ResultBarCodes resultBarSummary;
 
     // Flags to avoid reconnecting during recalibration
     bool connected;

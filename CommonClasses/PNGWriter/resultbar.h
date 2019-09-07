@@ -6,26 +6,50 @@
 class ResultBar
 {
 public:
+
+    typedef enum {BSCC_NONE,BSCC_RED,BSCC_GREEN,BSCC_YELLOW} BarSegmentColorCode;
+
+    struct ResultBarCodes {
+
+    public:
+        void reset();
+        void setIDX(const ResultBar &resbar);
+        QString toString(const QString &joiner  = ",") const;
+        QString getDiagnosisClass() const;
+
+        static QString code2String(const BarSegmentColorCode &bscc);
+
+    private:
+        BarSegmentColorCode idxIDC;   // Congnitive Impairment Index
+        BarSegmentColorCode idxIDBA;  // Index of Beta Amiloid
+        BarSegmentColorCode idxEXP;   // Executive Processes
+        BarSegmentColorCode idxWM;    // Working Memory
+        BarSegmentColorCode idxRM;    // Retrieval Memory
+        BarSegmentColorCode idxBeh;   // Behavioural Index
+
+    };
+
     ResultBar();
     bool setResultType(const QString &resultType);
     void setValue(const QVariant &varvalue);
     qint32 getSegmentBarIndex() const {return segmentBarIndex;}
     QString getValue() const;
-    qreal getValueAsReal() const {return value;}
-    QList<qreal> getValues() const {return values;}
+    qint32 getValueAsNumber() const {return value;}
+    QList<qint32> getValues() const {return values;}
     bool isLargerBetter() const {return largerBetter;}
     bool hasTwoSections() const {return (values.size() == 3);}
     QString getResultConfigured() const {return resType;}
-
+    BarSegmentColorCode getBarSegmentColorCode() const { return bscc; }
 
 
 private:
     QString resType;
-    QList<qreal> values;
+    QList<qint32> values;
     qint32 segmentBarIndex;
-    qreal value;
+    qint32 value;
     bool largerBetter;
-    void reportValueConversion();
+    BarSegmentColorCode bscc;
+    void reportValueConversion(qreal rvalue);
 
 };
 

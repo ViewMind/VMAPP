@@ -27,3 +27,32 @@ Eye-Tracking;
 date_format = dd/MM/yyyy;
 
 result_ranges = Valor normal MAYOR a 30|Valor normal MENOR a 30|Valor normal MAYOR a 70|Valor normal MAYOR a 8|Valor normal MAYOR a 26|Valor normal MAYOR a 22;
+
+disclaimer = Resultados de orientación diagnóstica aproximada. Los mismos deben ser ampliados y ratificados
+con aquellos estudios que el profesional considere oportunos para medir desempeño/patología;
+
+class_0 = Funcionamiento y rendimiento cognitivo normal. 
+Muy bajo o nulo riesgo de demencia;
+
+class_1 = Alteración cognitiva benigna. Puede corresponder a sintomatología de 
+carácter psicológico o neuropsiquiatrico e.g., Síntomas de estrés, 
+ansiosos y/o depresivos. Se sugiere consulta con médico especialista
+en psiquiatría para un diagnóstico definitivo;
+
+class_2 = Alteración cognitiva. Puede corresponder a sintomatología de carácter
+neuropsiquiatrico e.g., trastorno de ansiedad generalizada, trastorno
+por estrés post traumático,  depresión mayor, trastorno de angustia,
+psicosis. También puede tratarse de un proceso de deterioro
+cerebral orgánico no neurodegenerativo. Se sugiere consulta con médico
+especialista en neurología y/o psiquiatría;
+
+class_3 = Riesgo de desarrollar Enfermedad de Alzheimer. No presenta alteraciones
+en el funcionamiento cognitivo pero presenta riesgos de desarrollar
+Enfermedad de Alzheimer. Se aconseja evaluación anual para identificar
+potencial presencia de deterioro cognitivo;
+
+class_4 = Alteracion cognitiva de probable origen neurodegenerativo con altas
+chances de corrresponder a Enfermedad de Alzheimer.
+Se sugiere consulta con especialista en Neurología;
+
+class_NA = Los resultados son inconclusos;

@@ -16,6 +16,8 @@ VMBase {
     property string vmDrName: ""
     property string vmDate: ""
     property string vmTitleDemo: ""
+    property string vmDisclaimer: ""
+    property string vmDiagnosisClass: ""
 
     readonly property string vmDEMO_DATE:             "03/06/2010 10:15"
     readonly property string vmDEMO_DATE_FROM_REPORT: "03/06/2010 10:15"
@@ -65,6 +67,11 @@ VMBase {
             viewResults.vmErrorDiag.open();
             return;
         }
+
+        var diagData = flowControl.getDiagnosticClass();
+
+        vmDisclaimer     = diagData[0];
+        vmDiagnosisClass = diagData[1];
 
     }
 
@@ -354,7 +361,7 @@ VMBase {
         border.color: "#ededee"
         radius: 2
         width: 576
-        height: 473
+        height: 273
         anchors.top: rectInfoPatient.top
         anchors.left: rectInfoPatient.right
         anchors.leftMargin: 19
@@ -371,6 +378,47 @@ VMBase {
                 delegate: VMResultEntry {
                 }
             }
+        }
+
+    }
+
+    // Diagnosis class rectangle
+    Rectangle{
+        id: rectDiagClass
+        color: "#ffffff"
+        border.width: 2
+        border.color: "#ededee"
+        radius: 2
+        width: 576
+        height: 180
+        anchors.left: rectResults.left
+        anchors.top: rectResults.bottom
+        anchors.topMargin: 20
+
+        Text{
+            id: disclaimer
+            color: "#737577"
+            text: vmDisclaimer;
+            font.family: robotoR.name
+            font.pixelSize: 12
+            font.italic: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 29
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        Text{
+            id: diagClassText
+            color: "#737577"
+            text: vmDiagnosisClass;
+            font.family: gothamB.name
+            font.pixelSize: 14
+            font.bold: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: disclaimer.bottom
+            anchors.topMargin: 10
+            horizontalAlignment: Text.AlignHCenter
         }
 
     }
