@@ -18,6 +18,7 @@ VMBase {
     property string vmTitleDemo: ""
     property string vmDisclaimer: ""
     property string vmDiagnosisClass: ""
+    property string vmDiagClassTitle: ""
 
     readonly property string vmDEMO_DATE:             "03/06/2010 10:15"
     readonly property string vmDEMO_DATE_FROM_REPORT: "03/06/2010 10:15"
@@ -72,6 +73,7 @@ VMBase {
 
         vmDisclaimer     = diagData[0];
         vmDiagnosisClass = diagData[1];
+        vmDiagClassTitle = diagData[2];
 
     }
 
@@ -385,9 +387,9 @@ VMBase {
     // Diagnosis class rectangle
     Rectangle{
         id: rectDiagClass
-        color: "#ffffff"
+        color: "#dfebf7"
         border.width: 2
-        border.color: "#ededee"
+        border.color: "#dfebf7"
         radius: 2
         width: 576
         height: 180
@@ -396,16 +398,14 @@ VMBase {
         anchors.topMargin: 20
 
         Text{
-            id: disclaimer
-            color: "#737577"
-            text: vmDisclaimer;
-            font.family: robotoR.name
-            font.pixelSize: 12
-            font.italic: true
-            anchors.horizontalCenter: parent.horizontalCenter
+            id: diagClassTitle
+            color: "#367bb6"
+            text: vmDiagClassTitle;
+            font.family: gothamB.name
+            font.pixelSize: 15
+            anchors.left: diagClassDivider.left
             anchors.top: parent.top
-            anchors.topMargin: 29
-            horizontalAlignment: Text.AlignHCenter
+            anchors.topMargin: 15
         }
 
         Text{
@@ -413,12 +413,38 @@ VMBase {
             color: "#737577"
             text: vmDiagnosisClass;
             font.family: gothamB.name
-            font.pixelSize: 14
+            font.pixelSize: 12
             font.bold: true
+            wrapMode: Text.WordWrap
+            width: 0.9*parent.width
+            anchors.left: diagClassTitle.left
+            anchors.top: diagClassTitle.bottom
+            anchors.topMargin: 6
+        }
+
+        Rectangle {
+            id: diagClassDivider
+            width: 0.9*parent.width
+            height: 2;
+            color: "#737577"
+            border.color: "#737577"
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: disclaimer.bottom
+            anchors.top: diagClassText.bottom
             anchors.topMargin: 10
-            horizontalAlignment: Text.AlignHCenter
+        }
+
+        Text{
+            id: disclaimer
+            color: "#737577"
+            text: vmDisclaimer;
+            font.family: robotoR.name
+            font.pixelSize: 11
+            font.italic: true
+            wrapMode: Text.WordWrap
+            width: 0.9*parent.width
+            anchors.left: diagClassTitle.left
+            anchors.top: diagClassDivider.bottom
+            anchors.topMargin: 10
         }
 
     }

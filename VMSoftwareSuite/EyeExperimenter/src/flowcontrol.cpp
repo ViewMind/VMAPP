@@ -663,7 +663,7 @@ void FlowControl::prepareSelectedReportIteration(){
     QStringList references = text.getStringList(DR_CONFG_RESULT_RANGES);
 
     diagnosisClassText.clear();
-    diagnosisClassText << text.getStringList(DR_CONFG_DISCLAIMER);
+    diagnosisClassText << ImageReportDrawer::cleanNewLines(text.getString(DR_CONFG_DISCLAIMER));
     resultBarSummary.reset();
 
     if (report.contains(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
@@ -696,8 +696,8 @@ void FlowControl::prepareSelectedReportIteration(){
     //qDebug() << "DIAG CLASS SUMMARY:";
     //qDebug().noquote() << "   " + resultBarSummary.toString("\n   ");
     //qDebug() << "RESULT" << diag_class_key;
-    //diag_class_key = "class_NA";
-    diagnosisClassText << text.getString(diag_class_key);
+    //diag_class_key = "class_2";
+    diagnosisClassText <<  ImageReportDrawer::cleanNewLines(text.getString(diag_class_key)) << text.getString(DR_CONFG_DIAGNOSIS_TITLE);
 
 
 }

@@ -38,6 +38,7 @@
 #define  DR_CONFG_RES_CLARIFICATION   "results_clarification"
 #define  DR_CONFG_DISCLAIMER          "disclaimer"
 #define  DR_CONFG_DIAG_CLASS          "class_"
+#define  DR_CONFG_DIAGNOSIS_TITLE     "diag_class_title"
 
 // Drawing Scaling Control
 #define  MASTER_SCALE                  10
@@ -127,6 +128,8 @@
 #define  FONT_SIZE_RESULT_RANGE        10*FONT_SCALE
 #define  FONT_SIZE_RESULT_EXP          9*FONT_SCALE
 #define  FONT_SIZE_DIAG_TEXT           11*FONT_SCALE
+#define  FONT_SIZE_DIAG_DISCLAIMER     9*FONT_SCALE
+#define  FONT_SIZE_DIAG_TITLE          12*FONT_SCALE
 
 
 class ImageReportDrawer
@@ -137,6 +140,7 @@ public:
     bool drawReport(const QVariantMap &ds, ConfigurationManager *c, const QString &bindingCode = "I");
 
     static ConfigurationManager loadReportText(QString lang);
+    static QString cleanNewLines(QString text);
 
 private:
 

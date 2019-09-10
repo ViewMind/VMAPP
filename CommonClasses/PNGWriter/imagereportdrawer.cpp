@@ -384,49 +384,87 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     // Drawing the actual box.
     qreal rectWidth = PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT;
 
-    qreal topBoxMargin = yOffset+0.08*RESULTS_DIAG_BOX_HEIGHT;
+    qreal topBoxMargin = yOffset+0.06*RESULTS_DIAG_BOX_HEIGHT;
 
     QGraphicsRectItem *diagnosisBox = canvas->addRect(0,0,rectWidth,RESULTS_DIAG_BOX_HEIGHT,
                                                       QPen(QBrush(COLOR_FONT_RESULTS),6),QBrush());
     diagnosisBox->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,yOffset);
 
+    qreal diagMarginK = 0.03;
+    qreal diagXStart = BAR_PATIENT_BAR_MARGIN_LEFT + diagMarginK*rectWidth;
+    qreal diagContentWidth = rectWidth*(1.0-2.0*diagMarginK);
 
-    // Adding the disclaimer text.
-    QGraphicsTextItem *disclaimer =  canvas->addText(langData.getString(DR_CONFG_DISCLAIMER));
-    clarificationFont.setItalic(true);
-    disclaimer->setTextWidth(rectWidth*0.9);
-    QTextBlockFormat format;
-    format.setAlignment(Qt::AlignHCenter);
-    QTextCursor cursor = disclaimer->textCursor();
-    cursor.select(QTextCursor::Document);
-    cursor.mergeBlockFormat(format);
-    cursor.clearSelection();
-    disclaimer->setTextCursor(cursor);
-    disclaimer->setFont(clarificationFont);
-    disclaimer->setPos(BAR_PATIENT_BAR_MARGIN_LEFT + 0.05*rectWidth,topBoxMargin);
+    // Adding the diagnosis box title.
+    QGraphicsTextItem *diagBoxTitle = canvas->addText(langData.getString(DR_CONFG_DIAGNOSIS_TITLE));
+    QFont diagBoxTitleFont = fonts.value(FONT_BOLD);
+    diagBoxTitleFont.setPointSize(FONT_SIZE_DIAG_TITLE);
+    diagBoxTitle->setFont(diagBoxTitleFont);
+    diagBoxTitle->setDefaultTextColor(COLOR_FONT_RESULTS);
+    diagBoxTitle->setPos(diagXStart,topBoxMargin);
 
     // Adding the diagnosis text
-    qreal diagTopMargin = topBoxMargin + disclaimer->boundingRect().height() + 0.08*RESULTS_DIAG_BOX_HEIGHT;
+    qreal diagTopMargin = topBoxMargin + diagBoxTitle->boundingRect().height() + 0.06*RESULTS_DIAG_BOX_HEIGHT;
     QString diagTextContent = langData.getString(DR_CONFG_DIAG_CLASS + diagClassFinder.getDiagnosisClass());
-    //diagTextContent = langData.getString("class_4");
-    diagTextContent = diagTextContent.replace("\n"," ");
-    diagTextContent = diagTextContent.replace("\r"," ");
-    diagTextContent = diagTextContent.replace("  "," ");
-    //qDebug() << diagTextContent;
+    //diagTextContent = langData.getString("class_2");  // FOR DEBUG
+    diagTextContent = cleanNewLines(diagTextContent);
     QGraphicsTextItem *diagText = canvas->addText(diagTextContent);
-
-    QFont diagTextFont = fonts.value(FONT_BOLD);
-    diagTextFont.setPointSize(FONT_SIZE_RESULT_RANGE);
-
-    diagText->setTextWidth(rectWidth*0.9);
-    diagText->setDefaultTextColor(COLOR_FONT_RESULTS);
-    cursor = diagText->textCursor();
-    cursor.select(QTextCursor::Document);
-    cursor.mergeBlockFormat(format);
-    cursor.clearSelection();
-    diagText->setTextCursor(cursor);
+    QFont diagTextFont = fonts.value(FONT_MEDIUM);
+    diagTextFont.setPixelSize(FONT_SIZE_DIAG_TEXT);
     diagText->setFont(diagTextFont);
-    diagText->setPos(BAR_PATIENT_BAR_MARGIN_LEFT + 0.05*rectWidth,diagTopMargin);
+    diagText->setTextWidth(diagContentWidth);
+    diagText->setDefaultTextColor(COLOR_FONT_RESULTS);
+    diagText->setPos(diagXStart,diagTopMargin);
+
+    // Adding the divider.
+    qreal yposDiagDiv = diagTopMargin + diagText->boundingRect().height() + 0.04*RESULTS_DIAG_BOX_HEIGHT;
+    QGraphicsLineItem *diagDivLine = canvas->addLine(diagXStart,yposDiagDiv,diagXStart+diagContentWidth,yposDiagDiv,QPen(QBrush(COLOR_FONT_RESULTS),6));
+
+    // Adding the disclaimer
+    qreal yDisclaimer = yposDiagDiv + diagDivLine->boundingRect().height() + 0.04*RESULTS_DIAG_BOX_HEIGHT;
+    QString disclaimerContent = langData.getString(DR_CONFG_DISCLAIMER);
+    disclaimerContent = cleanNewLines(disclaimerContent);
+    QFont disclaimerFont = fonts.value(FONT_LIGHT);
+    disclaimerFont.setPointSize(FONT_SIZE_DIAG_DISCLAIMER);
+    disclaimerFont.setItalic(true);
+    QGraphicsTextItem *disclaimerText = canvas->addText(disclaimerContent);
+    disclaimerText->setFont(disclaimerFont);
+    disclaimerText->setTextWidth(diagContentWidth);
+    disclaimerText->setPos(diagXStart,yDisclaimer);
+
+//    // Adding the disclaimer text.
+//    QGraphicsTextItem *disclaimer =  canvas->addText(langData.getString(DR_CONFG_DISCLAIMER));
+//    clarificationFont.setItalic(true);
+//    disclaimer->setTextWidth(rectWidth*0.9);
+//    QTextBlockFormat format;
+//    format.setAlignment(Qt::AlignHCenter);
+//    QTextCursor cursor = disclaimer->textCursor();
+//    cursor.select(QTextCursor::Document);
+//    cursor.mergeBlockFormat(format);
+//    cursor.clearSelection();
+//    disclaimer->setTextCursor(cursor);
+//    disclaimer->setFont(clarificationFont);
+//    disclaimer->setPos(BAR_PATIENT_BAR_MARGIN_LEFT + 0.05*rectWidth,topBoxMargin);
+
+//    // Adding the diagnosis text
+//    qreal diagTopMargin = topBoxMargin + disclaimer->boundingRect().height() + 0.08*RESULTS_DIAG_BOX_HEIGHT;
+//    QString diagTextContent = langData.getString(DR_CONFG_DIAG_CLASS + diagClassFinder.getDiagnosisClass());
+//    //diagTextContent = langData.getString("class_4");
+//    diagTextContent = cleanNewLines(diagTextContent);
+//    //qDebug() << diagTextContent;
+//    QGraphicsTextItem *diagText = canvas->addText(diagTextContent);
+
+//    QFont diagTextFont = fonts.value(FONT_BOLD);
+//    diagTextFont.setPointSize(FONT_SIZE_RESULT_RANGE);
+
+//    diagText->setTextWidth(rectWidth*0.9);
+//    diagText->setDefaultTextColor(COLOR_FONT_RESULTS);
+//    cursor = diagText->textCursor();
+//    cursor.select(QTextCursor::Document);
+//    cursor.mergeBlockFormat(format);
+//    cursor.clearSelection();
+//    diagText->setTextCursor(cursor);
+//    diagText->setFont(diagTextFont);
+//    diagText->setPos(BAR_PATIENT_BAR_MARGIN_LEFT + 0.05*rectWidth,diagTopMargin);
 
 
 
@@ -531,4 +569,11 @@ ConfigurationManager ImageReportDrawer::loadReportText(QString lang){
 
     return langData;
 
+}
+
+QString ImageReportDrawer::cleanNewLines(QString text){
+    text = text.replace("\n"," ");
+    text = text.replace("\r"," ");
+    text = text.replace("  "," ");
+    return text;
 }
