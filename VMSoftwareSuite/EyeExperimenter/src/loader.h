@@ -51,6 +51,7 @@ public:
     Q_INVOKABLE QStringList generatePatientLists(const QString &filter = "", bool showAll = false);
     Q_INVOKABLE QStringList getPatientUIDLists() {return nameInfoList.patientUIDs;}
     Q_INVOKABLE QStringList getPatientIsOKList() {return nameInfoList.patientISOKList; }
+    Q_INVOKABLE QStringList getPatientMedRecUpToDateList() {return nameInfoList.patientMedRecsUpToDateList;}
     Q_INVOKABLE void loadDoctorSelectionInformation() { nameInfoList = lim.getDoctorList(); }
     Q_INVOKABLE QStringList getDoctorNameList() {return nameInfoList.doctorNames; }
     Q_INVOKABLE QStringList getDoctorUIDList() {return nameInfoList.doctorUIDs; }
@@ -65,6 +66,7 @@ public:
     Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_PATIENT_UID));}
     Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide);
     Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdata);
+    Q_INVOKABLE void addPatientMedicalRecord(QVariantMap medRecord, qint32 recordIndex);
     Q_INVOKABLE bool requestDrValidation(const QString &instPassword, qint32 selectedDr);
     Q_INVOKABLE bool verifyInstitutionPassword(const QString &instPass);
     Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}

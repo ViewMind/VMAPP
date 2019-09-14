@@ -57,6 +57,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TABLE_PERFORMANCE                       "tPerformance"
 
 #define  TABLE_PATDATA                           "tPatientData"
+#define  TABLE_MEDICAL_RECORDS                   "tMedicalRecords"
 #define  TABLE_PATIENTD_IDS                      "tPatientIDs"
 
 // Column names for the patient ids table
@@ -88,6 +89,17 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 
 #define  TPATDATA_NONCOL_DISPLAYID                "displayID"
 #define  TPATDATA_NONCOL_PROTOCOL                 "patient_protocol"
+
+// Column names for the patient medical information
+#define  TPATMEDREC_COL_KEYID                    "keyid"
+#define  TPATMEDREC_COL_PUID                     "puid"
+#define  TPATMEDREC_COL_REC_INDEX                "record_index"
+#define  TPATMEDREC_COL_DATE                     "date"
+#define  TPATMEDREC_COL_MEDICATION               "medication"
+#define  TPATMEDREC_COL_RNM                      "RNM"
+#define  TPATMEDREC_COL_EVALS                    "evaluations"
+#define  TPATMEDREC_COL_FORM_YEARS               "formative_years"
+#define  TPATMEDREC_COL_PRESUMP_DIAGNOSIS        "presumtive_diagnosis"
 
 // Column names for the doctor table
 #define  TDOCTOR_COL_KEYID                       "keyid"

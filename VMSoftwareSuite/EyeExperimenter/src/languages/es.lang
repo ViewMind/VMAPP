@@ -162,8 +162,10 @@ viewpatientlist_headerPatient = Paciente;
 viewpatientlist_headerSubject = Sujeto;
 viewpatientlist_headerStatus = Estado;
 viewpatientlist_headerDoctor = Doctor;
+viewpatientlist_headerSynch = Ficha Médica;
 viewpatientlist_statusOK = OK;
 viewpatientlist_statusRepPending = Reportes pendientes;
+viewpatientlist_statusUpload = Enviar;
 viewpatientlist_btnCreate = Crear Reporte;
 viewpatientlist_btnView = Ver Reportes;
 viewpatientlist_btnBack = ATRAS;
@@ -280,6 +282,52 @@ viewprotocol_msgExists = El protocolo ya existe;
 viewprotocol_labelNewProtocol = Nuevo protocolo;
 viewprotocol_optionSelectProtocol = Seleccione protocolo;
 
+#********************************* MEDICAL INFORMATION SCREEN *********************************
+viewmedinfo_subTitle = Completar la información pertinete.;
+viewmedinfo_labGeneral = Información General;
+viewmedinfo_formalEducation = Años de educación formal;
+viewmedinfo_recordDate = Fecha;
+viewmedinfo_labMED  = Medicación;
+viewmedinfo_labOtherMED  = Especifique el nombre de otra medicación;
+viewmedinfo_medList = Difenhidramina|Fenobarbital|Cannabinoides( CBD, THC, otros)|Amiodorona|Atenolol|Topiromato|Venlafaxina|Fluoxetina|Paroxetina|Sertralina|Rivastigmina|Memantina|Donepecilo|Diazepan|Alprazolam|Clonazepam|Lorazepan|Midazolan|Otros...;
+viewmedinfo_labScores = Evaluaciones;
+viewmedinfo_testNames = MMSE|ACE-R|IFS|BOSTON|Rey|RMN;
+viewmedinfo_testScore = Resultado;
+viewmedinfo_labRMN            = RMN;
+viewmedinfo_RMN_HOC           = Índice de Ocupación Hipocampal (HOC);
+viewmedinfo_RMN_Hipp          = Hipocampo;
+viewmedinfo_RMN_LHip          = Hipocampo Izquierdo;
+viewmedinfo_RMN_RHip          = Hipocampo Derecho;
+viewmedinfo_RMN_Amyg          = Amígdala;
+viewmedinfo_RMN_LAmyg         = Amígdala Izquierda;
+viewmedinfo_RMN_RAmyg         = Amígdala Derecha;
+viewmedinfo_RMN_SupLatVent    = Ventrículo Lateral Superior;
+viewmedinfo_RMN_InfLatVent    = Ventrículo Lateral Inferior;
+viewmedinfo_RMN_TotGrayMatt   = Materia Gris Total;
+viewmedinfo_RMN_TotWhiteMatt  = Materia Blanca Total;
+viewmedinfo_RMN_TotCerCort    = Corteza Cerebral Total;
+viewmedinfo_RMN_LEntCort      = Corteza Entorinal Izquierda;
+viewmedinfo_RMN_REntCort      = Corteza Entorinal Derecha;
+viewmedinfo_RMN_LCorThick     = Espesor Cortical Izquierdo;
+viewmedinfo_RMN_RCorThick     = Espesor Corticla Derecho;
+viewmedinfo_labPDag = Diagnóstico presuntivo;
+viewmedinfo_dose  =  Dosis diaria;
+viewmedinfo_headerMedication = Medicación;
+viewmedinfo_headerEvaluation = Evaluación;
+viewmedinfo_errorInvalidNum = Número inválido;
+viewmedinfo_errorMedFound = La medicación ya está en la lista;
+viewmedinfo_errorEvalFound = La evaluación ya está en la lista;
+viewmedinfo_errorDateEmpty = La fecha no puede estar vacía;
+viewmedinfo_errorInvalidChars = Los siguiente caracteres no puede utilizarse: ;
+viewmedinfo_btnCancel = CANCELAR;
+viewmedinfo_btnSave   = GUARDAR;
+
+#********************************* MEDICAL RECORD SCREEN *********************************
+viewmedrec_subTitle   = Seleccione una ficha médica;
+viewmedrec_headerMain = Ficha Médica;
+viewmedrec_btnBack  = ATRAS;
+viewmedrec_btnView  = VER;
+
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title by a <>
 error_loading_config = El programa no<br>puede continuar<>Un error crítico ha ocurrido al cargar la<br>configuración. El programa se cerrará;
@@ -296,6 +344,7 @@ error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker en
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
 error_db_timeout = Se excedió el tiempo<br>de espera|El servidor tardó demasiado en responder<br>Por favor, inténtelo nuevamente<br>Si el problema persiste, contacte a ViewMind para resolverlo;
 error_launcher_update = Se debe reiniciar<>En 5 segundos el programa se cerrará. Por favor reinicielo.;
+
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Efectuar los cambios<>Los cambios que realizó requieren que se reinicie el programa;

@@ -11,6 +11,7 @@ Item {
     property bool vmNumbersOnly: false
     property bool vmCalendarInput : false;
     property bool vmFocus: false
+    property bool vmEnableDateCheck: true
 
     // For now, we only support ONE date format.
     readonly property string vmDateFormat: "DD/MM/YYYY"
@@ -29,6 +30,12 @@ Item {
         labelText.visible = true;
         lineEdit.text = dateText;
         vmEnteredText = dateText;
+    }
+
+    function getISODate(){
+        var parts = vmEnteredText.split("/");
+        if (parts.length !== 3) return "";
+        return parts[2] + "-" + parts[1] + "-" + parts[0]
     }
 
     Rectangle {
@@ -170,7 +177,8 @@ Item {
                 if (lineEdit.text.length != vmDateFormat.length){
                     reset = true;
                 }
-                else{
+                else if (vmEnableDateCheck){
+
                     // Splitting the date
                     var parts = lineEdit.text.split("/")
                     var day = parseInt(parts[0]);

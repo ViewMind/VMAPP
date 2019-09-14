@@ -32,6 +32,8 @@ VMBase {
         viewDrInfo.updateText();
         viewShowReports.updateText();
         viewStudyDone.updateText();
+        viewMedRecordList.updateText();
+        viewMedicalInformation.updateText();
     }
 
     Dialog {

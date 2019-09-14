@@ -162,8 +162,10 @@ viewpatientlist_headerPatient = Patient;
 viewpatientlist_headerSubject = Subject;
 viewpatientlist_headerStatus = Status;
 viewpatientlist_headerDoctor = Doctor;
+viewpatientlist_headerSynch  = Medical Record;
 viewpatientlist_statusOK = OK;
 viewpatientlist_statusRepPending = Reports Pending;
+viewpatientlist_statusUpload = Upload;
 viewpatientlist_btnCreate = Create Report;
 viewpatientlist_btnView = View Report;
 viewpatientlist_btnBack = BACK;
@@ -280,6 +282,52 @@ viewprotocol_msgExists = The protocol already exists;
 viewprotocol_labelNewProtocol = New protocol;
 viewprotocol_optionSelectProtocol = Select protocol;
 
+#********************************* MEDICAL INFORMATION SCREEN *********************************
+viewmedinfo_subTitle = Complete available information;
+viewmedinfo_labGeneral = General Information;
+viewmedinfo_formalEducation = Years of formal education;
+viewmedinfo_recordDate = Date;
+viewmedinfo_labMED  = Medication;
+viewmedinfo_labOtherMED  = Specify other medication name;
+viewmedinfo_medList = Anticholinergics drugs|IACHE|Benzodiacepines|Cannabinoids|Antiarrhythmic|Antiepileptic|Antipsychotic|SSRI|SNRI|Antihistamine drugs|Others...;
+viewmedinfo_labScores = Evaluations;
+viewmedinfo_testNames = MMSE|ACE-R|IFS|BOSTON|Rey|RMN;
+viewmedinfo_testScore = Result;
+viewmedinfo_labRMN            = RMN;
+viewmedinfo_RMN_HOC           = Hippocampal Occupation Index (HOC);
+viewmedinfo_RMN_Hipp          = Hippocampus;
+viewmedinfo_RMN_LHip          = Left Hippocampus;
+viewmedinfo_RMN_RHip          = Right Hippocampus;
+viewmedinfo_RMN_Amyg          = Amygdala;
+viewmedinfo_RMN_LAmyg         = Left Amygdala;
+viewmedinfo_RMN_RAmyg         = Right Amygdala;
+viewmedinfo_RMN_SupLatVent    = Superior Lateral Ventricle; 
+viewmedinfo_RMN_InfLatVent    = Inferior Lateral Ventricle;
+viewmedinfo_RMN_TotGrayMatt   = Total Gray Matter;
+viewmedinfo_RMN_TotWhiteMatt  = Total White Matter;
+viewmedinfo_RMN_TotCerCort    = Total Cerebral Cortex;
+viewmedinfo_RMN_LEntCort      = Left Entorhinal Cortex;
+viewmedinfo_RMN_REntCort      = Right Entorhinal Cortex;
+viewmedinfo_RMN_LCorThick     = Left Cortical Thickness;
+viewmedinfo_RMN_RCorThick     = Right Cortical Thickness;
+viewmedinfo_labPDag = Presumptive diagnosis;
+viewmedinfo_dose  = Daily dose;
+viewmedinfo_headerMedication = Medication;
+viewmedinfo_headerEvaluation = Evaluation;
+viewmedinfo_errorInvalidNum = Invalid number;
+viewmedinfo_errorMedFound = Medication is already in the list;
+viewmedinfo_errorEvalFound = Evaluation in already in the list;
+viewmedinfo_errorDateEmpty = Date cannot be empty;
+viewmedinfo_errorInvalidChars = The following characters must not be present: ;
+viewmedinfo_btnCancel = CANCEL;
+viewmedinfo_btnSave   = SAVE;
+
+#********************************* MEDICAL RECORD SCREEN *********************************
+viewmedrec_subTitle = Select a medical record entry;
+viewmedrec_headerMain = Medical Record;
+viewmedrec_btnBack   = BACK;
+viewmedrec_btnView   = VIEW;
+
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title
 error_loading_config = Program cannot continue<>A fatal error has occurred loading the configuration.<br>The program will close now; 
@@ -296,6 +344,7 @@ error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracke
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
 error_db_timeout = Connection time out|Too much time was spent waiting for the sever to respond<br>Please try again<br>If the problem persists, contact ViewMind in order to solve this problem;
 error_launcher_update = Restart required<>In 5 seconds the program will close. Please restart it;
+
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Apply Changes<>The program must be restarted to apply the selected changes;

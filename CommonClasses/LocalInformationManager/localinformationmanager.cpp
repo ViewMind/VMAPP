@@ -1,20 +1,22 @@
 #include "localinformationmanager.h"
 
-const QString LocalInformationManager::PATIENT_DATA          = "PATIENT_DATA";
-const QString LocalInformationManager::PATIENT_CREATOR       = "PATIENT_CREATOR";
-const QString LocalInformationManager::PATIENT_UPDATE        = "PATIENT_UPDATE";
-const QString LocalInformationManager::PATIENT_COUNTER       = "PATIENT_COUNTER";
-const QString LocalInformationManager::DOCTOR_DATA           = "DOCTOR_DATA";
-const QString LocalInformationManager::DOCTOR_COUNTER        = "DOCTOR_COUNTER";
-const QString LocalInformationManager::DOCTOR_UPDATE         = "DOCTOR_UPDATE";
-const QString LocalInformationManager::DOCTOR_PASSWORD       = "DOCTOR_PASSWORD";
-const QString LocalInformationManager::DOCTOR_VALID          = "DOCTOR_VALID";
-const QString LocalInformationManager::DOCTOR_HIDDEN         = "DOCTOR_HIDDEN";
-const QString LocalInformationManager::EVALUATION_COUNTER    = "EVALUATION_COUNTER";
-const QString LocalInformationManager::FLAG_VIEWALL          = "FLAG_VIEWALL";
-const QString LocalInformationManager::PROTOCOLS             = "PROTOCOLS";
-const QString LocalInformationManager::PROTOCOL_VALID        = "PROTOCOL_VALID";
-const QString LocalInformationManager::REMAING_EVALS         = "REMAING_EVALS";
+const QString LocalInformationManager::PATIENT_DATA                          = "PATIENT_DATA";
+const QString LocalInformationManager::PATIENT_CREATOR                       = "PATIENT_CREATOR";
+const QString LocalInformationManager::PATIENT_UPDATE                        = "PATIENT_UPDATE";
+const QString LocalInformationManager::PATIENT_COUNTER                       = "PATIENT_COUNTER";
+const QString LocalInformationManager::DOCTOR_DATA                           = "DOCTOR_DATA";
+const QString LocalInformationManager::DOCTOR_COUNTER                        = "DOCTOR_COUNTER";
+const QString LocalInformationManager::DOCTOR_UPDATE                         = "DOCTOR_UPDATE";
+const QString LocalInformationManager::DOCTOR_PASSWORD                       = "DOCTOR_PASSWORD";
+const QString LocalInformationManager::DOCTOR_VALID                          = "DOCTOR_VALID";
+const QString LocalInformationManager::DOCTOR_HIDDEN                         = "DOCTOR_HIDDEN";
+const QString LocalInformationManager::EVALUATION_COUNTER                    = "EVALUATION_COUNTER";
+const QString LocalInformationManager::FLAG_VIEWALL                          = "FLAG_VIEWALL";
+const QString LocalInformationManager::PROTOCOLS                             = "PROTOCOLS";
+const QString LocalInformationManager::PROTOCOL_VALID                        = "PROTOCOL_VALID";
+const QString LocalInformationManager::REMAING_EVALS                         = "REMAING_EVALS";
+const QString LocalInformationManager::PATIENT_MEDICAL_RECORDS               = "MEDICAL_RECORDS";
+const QString LocalInformationManager::PATIENT_MEDICAL_RECORD_UP_TO_DATE     = "MED_RECS_UP_TO_DATE";
 
 LocalInformationManager::LocalInformationManager()
 {
@@ -350,6 +352,57 @@ void LocalInformationManager::addPatientData(const QString &patient_uid, const Q
 
 }
 
+void LocalInformationManager::addPatientMedicalRecord(const QString &patient_uid, const QVariantMap &medicalRecord, qint32 recordIndex){
+
+    if (!localDB.value(PATIENT_DATA).toMap().contains(patient_uid)){
+        log.appendError("Trying to append medical recordd to PUID: " + patient_uid + " that does not exists");
+        return;
+    }
+
+    QVariantMap patientMap = localDB.value(PATIENT_DATA).toMap().value(patient_uid).toMap();
+    QVariantList recordList;
+    if (patientMap.contains(PATIENT_MEDICAL_RECORDS)){
+        recordList = patientMap.value(PATIENT_MEDICAL_RECORDS).toList();
+    }
+
+    // Logic to actually saved the data and define the update.
+    qint32 recordToUpdate = -1;
+    if (recordIndex == -1) {
+        recordList << medicalRecord; // -1 means that this is new record.
+        recordToUpdate = recordList.size()-1;
+    }
+    else{
+        // This is an update to an existing record.
+        if ((recordIndex >= 0) && (recordIndex < recordList.size())){
+            // We check if the records are different.
+            if (recordList.at(recordIndex) != medicalRecord){
+                recordList[recordIndex] = medicalRecord;
+                recordToUpdate = recordIndex;
+            }
+        }
+    }
+
+    if (recordToUpdate != -1){
+        // There was a change so the new list of records is saved.
+        patientMap[PATIENT_MEDICAL_RECORDS] = recordList;
+
+        // Then it's index is added to the update list to know which to send to the server on the next update.
+        QVariantList toUpdateList;
+        if (patientMap.contains(PATIENT_MEDICAL_RECORD_UP_TO_DATE)) toUpdateList = patientMap.value(PATIENT_MEDICAL_RECORD_UP_TO_DATE).toList();
+        toUpdateList << recordToUpdate;
+        patientMap[PATIENT_MEDICAL_RECORD_UP_TO_DATE] = toUpdateList;
+
+        // Finally adding the modified patient map to the local DB
+        QVariantMap patientData = localDB.value(PATIENT_DATA).toMap();
+        patientData[patient_uid] = patientMap;
+        localDB[PATIENT_DATA] = patientData;
+
+        // And backing up said DB.
+        backupDB();
+    }
+
+}
+
 void LocalInformationManager::saveIDTable(const QString &fileName, const QStringList &tableHeaders){
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly)){
@@ -404,7 +457,6 @@ LocalInformationManager::DisplayLists LocalInformationManager::getDoctorList(boo
 
 LocalInformationManager::DisplayLists LocalInformationManager::getPatientListForDoctor(const QString &druid, const QString &filter){
 
-
     DisplayLists ans;
 
     // Each time the funciton is called, the directory structure is reviewed. Necessary to know which patiens have pending reports.
@@ -444,8 +496,18 @@ LocalInformationManager::DisplayLists LocalInformationManager::getPatientListFor
     if (!ans.patientNames.isEmpty()) {
         for (qint32 i = 0; i < ans.patientUIDs.size(); i++){
             //qWarning() << "Is Ok for PAT: " << ans.patientUIDs.at(i);
-            if (patientReportInformation.value(ans.patientUIDs.at(i)).hasPendingReports()) ans.patientISOKList << "false";
+            QString patuid = ans.patientUIDs.at(i);
+            if (patientReportInformation.value(patuid).hasPendingReports()) ans.patientISOKList << "false";
             else ans.patientISOKList << "true";
+
+            // Getting if there were changes in the patient medical records.
+            QVariantMap patmap = localDB.value(PATIENT_DATA).toMap().value(patuid).toMap();
+            QString upToDate = "true";
+            if (patmap.contains(PATIENT_MEDICAL_RECORD_UP_TO_DATE)){
+                if (!patmap.value(PATIENT_MEDICAL_RECORD_UP_TO_DATE).toList().isEmpty()) upToDate = "false";
+            }
+            ans.patientMedRecsUpToDateList << upToDate;
+
         }
         //qWarning() << "IS OK LIST" << isoklist;
     }

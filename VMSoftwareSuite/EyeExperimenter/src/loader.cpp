@@ -435,6 +435,11 @@ void Loader::addNewPatientToDB(QVariantMap dbdata){
 
 }
 
+void Loader::addPatientMedicalRecord(QVariantMap medRecord, qint32 recordIndex){
+    QString patuid = configuration->getString(CONFIG_PATIENT_UID);
+    lim.addPatientMedicalRecord(patuid,medRecord,recordIndex);
+}
+
 bool Loader::verifyInstitutionPassword(const QString &instPass){
     QString hasshedPassword = QString(QCryptographicHash::hash(instPass.toUtf8(),QCryptographicHash::Sha256).toHex());
     return (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword);

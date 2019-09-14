@@ -8,6 +8,7 @@ Item {
     property string vmErrorMsg: ""
     property bool vmIsPasswordField: false
     property bool vmNumbersOnly: false
+    property bool vmAcceptFloat: false
     property bool vmFocus: false
 
     height: 40
@@ -81,6 +82,13 @@ Item {
             else if (vmNumbersOnly){
                 var parsed = parseInt(lineEdit.text)
                 if (isNaN(parsed)){
+                    vmEnteredText = "";
+                    lineEdit.text = vmPlaceHolder
+                }
+            }
+            else if (vmAcceptFloat){
+                var parsedFloat = parseFloat(lineEdit.text)
+                if (isNaN(parsedFloat)){
                     vmEnteredText = "";
                     lineEdit.text = vmPlaceHolder
                 }

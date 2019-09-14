@@ -7,6 +7,7 @@ Item {
     property int vmPatientColWidth: headerPatient.width
     property int vmStatusColWidth: headerStatus.width
     property int vmDoctorColWidth: headerDoctor.width
+    property int vmMedRectColWidth: headerMedRecs.width
 
     readonly property int vmHeight: 30
     readonly property int vmFontSize: 12
@@ -15,6 +16,8 @@ Item {
     width: vmPatientColWidth + vmStatusColWidth
 
     signal fetchReport(int index)
+    signal updateMedicalRecords(int index)
+
 
     Rectangle {
 
@@ -105,6 +108,40 @@ Item {
         anchors.top: parent.top
         onClicked: {
             vmPatientEntry.fetchReport(vmItemIndex);
+        }
+    }
+
+    Rectangle {
+        id: medRecRect
+        color: "#ffffff"
+        border.color: "#EDEDEE"
+        border.width: 2
+        height: vmHeight
+        width: vmMedRectColWidth
+        anchors.left: statusRect.right
+        anchors.top: parent.top
+        visible: vmMedRecUpToDate
+        Text {
+            id: medRectText
+            font.family: viewHome.gothamR.name
+            font.pixelSize: vmFontSize
+            text: loader.getStringForKey("viewpatientlist_statusOK")
+            anchors.centerIn: parent
+        }
+    }
+
+    VMButton {
+        id: btnSendMedRec
+        visible: !vmMedRecUpToDate
+        enabled: vmEnableGenRepButon
+        vmText: loader.getStringForKey("viewpatientlist_statusUpload")
+        height: vmHeight
+        width: vmMedRectColWidth
+        vmFont: viewHome.gothamM.name
+        anchors.left: statusRect.right
+        anchors.top: parent.top
+        onClicked: {
+            vmPatientEntry.updateMedicalRecords(vmItemIndex);
         }
     }
 }

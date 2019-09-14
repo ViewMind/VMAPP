@@ -8,7 +8,7 @@ VMBase {
     id: viewPatientList
     width: viewPatientList.vmWIDTH
     height: viewPatientList.vmHEIGHT
-    readonly property real vmTableWidth: 0.60*viewPatientList.vmWIDTH
+    readonly property real vmTableWidth: 0.70*viewPatientList.vmWIDTH
     readonly property real vmTableHeight: 0.33*viewPatientList.vmHEIGHT
 
     readonly property string keybase: "viewpatientlist_"
@@ -299,7 +299,6 @@ VMBase {
         x: (parent.width - width)/2
     }
 
-
     ListModel {
         id: patientList
     }
@@ -321,8 +320,9 @@ VMBase {
         var patientDisplayID = loader.getPatientDisplayIDList();
         var uidList = loader.getPatientUIDLists();
         var isOkList = loader.getPatientIsOKList();
+        var isMedRecUpToDateList = loader.getPatientMedRecUpToDateList();
         var drName = loader.getDoctorNameList();
-        var drUID  = loader.getDoctorUIDList();
+        var drUID  = loader.getDoctorUIDList();        
 
         // Clearing the current model.
         patientList.clear()
@@ -338,6 +338,7 @@ VMBase {
                                    "vmDisplayID": patientDisplayID[i],
                                    "vmPatientName": patientNameList[i],
                                    "vmIsOk": (isOkList[i] === "true"),
+                                   "vmMedRecUpToDate": (isMedRecUpToDateList[i] === "true"),
                                    "vmEnableGenRepButon": drValid,
                                    "vmDrName" : display_doctor_name,
                                    "vmDrUID": drUID[i],
@@ -407,12 +408,19 @@ VMBase {
         if (patientListView.currentIndex == -1) return;
 
         //console.log("Pat name: " + patientList.get(patientListView.currentIndex).vmPatientName)
+        var displayName;
+        if (uimap.getStructure() === "P") displayName = patientList.get(patientListView.currentIndex).vmPatientName + " (" +  patientList.get(patientListView.currentIndex).vmDisplayID + ")"
+        else displayName = patientList.get(patientListView.currentIndex).vmDisplayID;
 
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_NAME,patientList.get(patientListView.currentIndex).vmPatientName);
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_UID,patientList.get(patientListView.currentIndex).vmPatientUID);
         loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_WORK_UID,patientList.get(patientListView.currentIndex).vmDrUID);
         loader.setValueForConfiguration(vmDefines.vmCONFIG_PATIENT_DISPLAYID,patientList.get(patientListView.currentIndex).vmDisplayID);
         loader.setAgeForCurrentPatient();
+
+        // Settign the titles for the medical record list and the medical record info screen.
+        viewMedRecordList.vmPatientName = displayName;
+        viewMedicalInformation.vmPatientName = displayName;
 
         if (!loader.createPatientDirectory()){
             vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CREATING_PDIR;
@@ -501,6 +509,18 @@ VMBase {
             onClicked: {
                 viewPatientReg.loadPatientInformation();
                 swiperControl.currentIndex = swiperControl.vmIndexPatientReg
+            }
+        }
+
+        VMFolderButton{
+            id: btnMedRecord
+            height: 30
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: btnEditPatient.right
+            anchors.leftMargin: 10;
+            enabled: patientListView.currentIndex !== -1
+            onClicked: {
+                swiperControl.currentIndex = swiperControl.vmIndexMedicalRecordList
             }
         }
 
@@ -625,8 +645,8 @@ VMBase {
             border.color: "#EDEDEE"
             radius: 4
             width: {
-                if (vmShowAll) return 0.35*vmTableWidth;
-                else return 0.7*vmTableWidth
+                if (vmShowAll) return 0.4*vmTableWidth;
+                else return 0.6*vmTableWidth
             }
             height: parent.height
             Text {
@@ -650,7 +670,7 @@ VMBase {
             border.color: "#EDEDEE"
             radius: 4
             width: {
-                if (vmShowAll) return 0.35*vmTableWidth;
+                if (vmShowAll) return 0.27*vmTableWidth;
                 else return 0;
             }
             visible: vmShowAll
@@ -673,8 +693,8 @@ VMBase {
             border.color: "#EDEDEE"
             radius: 4
             width: {
-                if (vmShowAll) return vmTableWidth - headerPatient.width - headerDoctor.width;
-                else return vmTableWidth - headerPatient.width
+                if (vmShowAll) 0.18*vmTableWidth;
+                else return 0.2*vmTableWidth;
             }
             height: parent.height
             Text {
@@ -687,6 +707,29 @@ VMBase {
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
+
+        Rectangle {
+            id: headerMedRecs
+            color: "#ffffff"
+            border.width: 2
+            border.color: "#EDEDEE"
+            radius: 4
+            width: {
+                if (vmShowAll) 0.15*vmTableWidth;
+                else return 0.2*vmTableWidth;
+            }
+            height: parent.height
+            Text {
+                id: medicalRecordText
+                text: loader.getStringForKey(keybase+"headerSynch");
+                width: parent.width
+                font.family: gothamB.name
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
     }
 
     // The table where each of the patient entries will be put. and its background

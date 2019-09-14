@@ -46,5 +46,13 @@
         <file>qml/VMDatSelection.qml</file>
         <file>qml/ViewProtocols.qml</file>
         <file>qml/VMSlideViewer.qml</file>
+        <file>qml/ViewMedicalInformation.qml</file>
+        <file>qml/VMMedicationEntry.qml</file>
+        <file>qml/VMEvaluationEntry.qml</file>
+        <file>qml/VMComboBox2.qml</file>
+        <file>qml/VMTextInputArea.qml</file>
+        <file>qml/ViewMedicalRecordList.qml</file>
+        <file>qml/VMMedRecordEntry.qml</file>
+        <file>qml/VMFolderButton.qml</file>
     </qresource>
 </RCC>

@@ -18,13 +18,14 @@ Window {
         x = (Screen.width - width)/2;
         //x = 0;
         y = hdiff; // This should put the window at the top of the screen.
-        swiperControl.currentIndex = swiperControl.vmIndexHome;
-        //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+        //swiperControl.currentIndex = swiperControl.vmIndexHome;
+        swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
         //swiperControl.currentIndex = swiperControl.vmIndexResults;
         //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
+        //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
     }
 
 
@@ -58,11 +59,13 @@ Window {
         readonly property int vmIndexShowReports: 3
         readonly property int vmIndexStudyStart: 4
         readonly property int vmIndexPatientReg: 5
-        readonly property int vmIndexCalibrationStart: 6
-        readonly property int vmIndexCalibrationDone: 7
-        readonly property int vmIndexPresentExperiment: 8
-        readonly property int vmIndexResults: 9
-        readonly property int vmIndexStudyDone: 10
+        readonly property int vmIndexMedicalRecordList: 6
+        readonly property int vmIndexMedicalInformation: 7
+        readonly property int vmIndexCalibrationStart: 8
+        readonly property int vmIndexCalibrationDone: 9
+        readonly property int vmIndexPresentExperiment: 10
+        readonly property int vmIndexResults: 11
+        readonly property int vmIndexStudyDone: 12
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -72,7 +75,7 @@ Window {
         Item{
             ViewHome{
                 id: viewHome
-                //isHomePage: true;
+                isHomePage: true;
                 anchors.fill: parent
             }
         }
@@ -109,6 +112,20 @@ Window {
         Item{
             ViewPatientRegistration{
                 id: viewPatientReg
+                anchors.fill: parent
+            }
+        }
+
+        Item{
+            ViewMedicalRecordList{
+                id: viewMedRecordList
+                anchors.fill: parent
+            }
+        }
+
+        Item{
+            ViewMedicalInformation{
+                id: viewMedicalInformation
                 anchors.fill: parent
             }
         }
@@ -163,8 +180,8 @@ Window {
                 viewPresentExperimet.enableContinue();
                 break;
             case vmIndexPatientList:
-                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"1369462188_0000_D0000");
-                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
+                loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"0_0000_D0000");
+                loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
                 // This will laod patients which will also trigger the search for unprocessed information.
                 //viewPatList.test();
                 //viewPatList.openAskPasswordDialog();
@@ -180,6 +197,9 @@ Window {
             case vmIndexResults:
                 viewResults.fillFieldsFromReportInfo();
                 break
+            case vmIndexMedicalRecordList:
+                viewMedRecordList.loadPatientRecordList();
+                break;
 //            case vmIndexStudyDone:
 //                //viewStudyDone.openDiag();
 //                break;

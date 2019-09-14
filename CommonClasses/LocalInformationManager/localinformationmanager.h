@@ -32,8 +32,10 @@ public:
         QStringList creatorNames;
         QStringList creatorUIDs;
         QStringList patientDisplayIDs;
+        QStringList patientMedRecsUpToDateList;
         void clear() { patientNames.clear(); patientISOKList.clear(); patientUIDs.clear(); doctorNames.clear();
-                       doctorUIDs.clear(); creatorNames.clear(); creatorUIDs.clear(); patientDisplayIDs.clear();}
+                       doctorUIDs.clear(); creatorNames.clear(); creatorUIDs.clear(); patientDisplayIDs.clear();
+                       patientMedRecsUpToDateList.clear();}
     };
 
     LocalInformationManager();
@@ -45,6 +47,7 @@ public:
     void enableBackups(const QString &backupDir);
     void addDoctorData(const QString &druid, const QStringList &cols, const QStringList &values, const QString &password, bool hidden);
     void addPatientData(const QString &patient_uid, const QString &creator_uid, const QStringList &cols, const QStringList &values);
+    void addPatientMedicalRecord(const QString &patient_uid, const QVariantMap &medicalRecord, qint32 recordIndex = -1);
     bool isDoctorValid(const QString &dr_uid);
     bool doesDoctorExist(const QString &uid) const;
     bool doesPatientExist(const QString &patuid) const;
@@ -111,7 +114,9 @@ private:
     static const QString PROTOCOLS;
     static const QString PROTOCOL_VALID;
     static const QString REMAING_EVALS;
-    static const qint32  LOCAL_DB_VERSION = 6;
+    static const QString PATIENT_MEDICAL_RECORDS;
+    static const QString PATIENT_MEDICAL_RECORD_UP_TO_DATE;
+    static const qint32  LOCAL_DB_VERSION = 7;
 
     // Working directory.
     QString workingDirectory;

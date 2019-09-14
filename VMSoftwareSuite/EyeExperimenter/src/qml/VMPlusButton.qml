@@ -11,6 +11,7 @@ Button{
 
     property double vmStickWidth: width*0.08
     property double vmStickLength: height*0.5
+    property bool vmMakeDeleteButton: false
 
     Behavior on scale{
         NumberAnimation {
@@ -36,6 +37,7 @@ Button{
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: horizontalStick.horizontalCenter
             border.width: 0
+            rotation: vmMakeDeleteButton? 45: 0
         }
         Rectangle{
             id: horizontalStick
@@ -44,6 +46,7 @@ Button{
             color: "#ffffff"
             anchors.centerIn: parent
             border.width: 0
+            rotation: vmMakeDeleteButton? 45: 0
         }
     }
 }
