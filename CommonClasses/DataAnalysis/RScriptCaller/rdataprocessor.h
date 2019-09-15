@@ -9,7 +9,8 @@
 #include "../../common.h"
 
 #define  RSCRIPT_READING    "res/reading.R"
-#define  RSCRIPT_BINDING    "res/binding.R"
+#define  RSCRIPT_BINDING2   "res/binding2.R"
+#define  RSCRIPT_BINDING3   "res/binding3.R"
 #define  RSCRIPT_RUNNABLE   "Rscript"
 
 

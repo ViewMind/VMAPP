@@ -72,15 +72,28 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
 
     QString outputconf = workDirectory + "/" + QString(FILE_R_OUT_BINDING);
 
+    // Checking the BC target value to finde which script to call.
+    QStringList parts = bc_file.baseName().split("_");
+    QString rScriptToCall = "";
+    if (parts.size() > 3){
+        if (parts.at(2) == "2") rScriptToCall = RSCRIPT_BINDING2;
+        else if (parts.at(2) == "3") rScriptToCall = RSCRIPT_BINDING3;
+    }
+
+    if (rScriptToCall.isEmpty()){
+        error = "RPROCESSOR: Cannot determine Binding script to call based on BC file name " + bcfile;
+        return "";
+    }
+
     QStringList arguments;
-    arguments << RSCRIPT_BINDING;
+    arguments << rScriptToCall;
     arguments << bcfile;
     arguments << ucfile;
     arguments << outputconf;
 
     QProcess::execute(RSCRIPT_RUNNABLE,arguments);
 
-    qDebug() << "BINDING RUN:" << RSCRIPT_RUNNABLE << RSCRIPT_BINDING << bcfile << ucfile << outputconf;
+    //qDebug() << "BINDING RUN:" << RSCRIPT_RUNNABLE << rScriptToCall << bcfile << ucfile << outputconf;
 
     if (!checkAndMerge(outputconf)){
         return "";
