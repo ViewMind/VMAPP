@@ -21,6 +21,9 @@ public:
     // Main interface function. The only one required. Everything after this point is predefined.
     void requestReport(bool isDemoMode, const QString &oldRepFile);
 
+    // Request for medical record storage.
+    void sendMedicalRecordData(const QString &patuid);
+
     // Obtaining code allows for more precise messages.
     quint8 getProcessingCode() {return processingACKCode;}
     qint32 getNumberOfEvaluations() {return numberOfEvals;}
@@ -38,7 +41,7 @@ private slots:
 private:
 
     // State of the communication process.
-    typedef enum {CS_CONNECTING, CS_WAIT_FOR_REPORT} ClientState;
+    typedef enum {CS_CONNECTING, CS_WAIT_FOR_REPORT, CS_CONNECTING_FOR_MEDREPORT, CS_WAIT_FOR_MEDREP_OK} ClientState;
     ClientState clientState;
 
     // The last processing code.
@@ -50,8 +53,8 @@ private:
     // Flag to indicate reprocessing.
     QString previousReportFile;
 
-    // Starts the whole process
-    void connectToServer(bool isDemoMode, const QString &oldRepFile);
+    // Starts the whole process of report requesting.
+    void connectToServer(bool isDemoMode, const QString &oldRepFile);    
 
 };
 

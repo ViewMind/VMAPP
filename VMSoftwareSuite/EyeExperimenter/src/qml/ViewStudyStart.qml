@@ -65,7 +65,6 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelSubTitle");
     }
 
-
     // Message for study selection
     Text {
         id: labelSelPatient
@@ -210,7 +209,6 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelInstruction2");
     }
 
-
     Text {
         id: labelEyeMsg
         font.family: robotoB.name
@@ -224,17 +222,18 @@ VMBase {
     }
 
     /////////////////////// Which Eye to use
-    VMComboBox{
+    VMComboBox2{
         id: cbEyeMsg
         width: (backgroundPatientName.width - 16)/4
-        vmModel:  loader.getStringListForKey(keysearch+"labelEyeType");
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
         anchors.top: labelEyeMsg.bottom
         anchors.topMargin: 5
         anchors.left: labelInstruction2.left
-        enabled: false
-        currentIndex: 2;
+        vmEnabled: false
+        z:2
+        Component.onCompleted: {
+            cbEyeMsg.setModelList(loader.getStringListForKey(keysearch+"labelEyeType"));
+            cbEyeMsg.setSelection(2)
+        }
     }
 
     /////////////////////// Number of targets
@@ -249,22 +248,21 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelNTargets");
     }
 
-    VMComboBox{
+    VMComboBox2{
         id: cbNumberOfTargets
         width: cbEyeMsg.width
-        vmModel: {
-            if (uimap.getBindDefaultCount() === "2") return  ["2","3"];
-            else if (uimap.getBindDefaultCount() === "3") return  ["3","2"];
-        }
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
         anchors.top: labelNTargets.bottom
         anchors.topMargin: 5
         anchors.left: cbReadingLang.right
-        anchors.leftMargin: 16
-        enabled: {
+        anchors.leftMargin: 16        
+        z:2
+        vmEnabled: {
             if (uimap.getBlockedBindCount() === "N") return true;
             else if (uimap.getBlockedBindCount() === "Y") return false;
+        }
+        Component.onCompleted: {
+            if (uimap.getBindDefaultCount() === "2") cbNumberOfTargets.setModelList(["2","3"]);
+            else if (uimap.getBindDefaultCount() === "3") cbNumberOfTargets.setModelList(["3","2"]);
         }
     }
 
@@ -276,24 +274,23 @@ VMBase {
         width: cbNumberOfTargets.width
         anchors.top: labelEyeMsg.top
         anchors.left: cbTargetSize.left
-        color: "#554545"
+        color: "#554545"        
         text: loader.getStringForKey(keysearch+"labelTargetSize");
     }
 
-    VMComboBox{
+    VMComboBox2{
         id: cbTargetSize
         width: cbEyeMsg.width
-        vmModel: loader.getStringListForKey(keysearch+"targetOptions");
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
         anchors.top: labelNTargets.bottom
         anchors.topMargin: 5
         anchors.left: cbNumberOfTargets.right
         anchors.leftMargin: 16
-        enabled: {
+        z:2
+        vmEnabled: {
             if (uimap.getBlockedBindSize() === "N") return true;
             else if (uimap.getBlockedBindSize() === "Y") return false;
         }
+        Component.onCompleted: cbTargetSize.setModelList(loader.getStringListForKey(keysearch+"targetOptions"))
     }
 
     /////////////////////// Reading languge
@@ -308,16 +305,16 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelReadingLanguge");
     }
 
-    VMComboBox{
+    VMComboBox2{
         id: cbReadingLang
         width: cbEyeMsg.width
-        vmModel: ["English", "Español", "Deutsche", "Français"];
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
         anchors.top: labelNTargets.bottom
         anchors.topMargin: 5
         anchors.left: cbEyeMsg.right
         anchors.leftMargin: 16
+        vmMaxDisplayItems: 3
+        z:2
+        Component.onCompleted: cbReadingLang.setModelList(["English", "Español", "Deutsche", "Français"])
     }
 
     // An error message.
@@ -380,12 +377,12 @@ VMBase {
                 if (vmSelectedExperiments.length > 0){
 
                     // All is good, so the parameters are set.
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.currentIndex,false);
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.currentText,false);
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.currentIndex == 1),false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.vmCurrentIndex,false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.vmCurrentText,false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.vmCurrentIndex == 1),false);
 
                     var readlang;
-                    switch(cbReadingLang.currentIndex){
+                    switch(cbReadingLang.vmCurrentIndex){
                     case 0:
                         readlang = "en";
                         break;

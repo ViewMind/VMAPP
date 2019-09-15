@@ -37,6 +37,7 @@ void SSLDataProcessingClient::connectToServer(bool isDemoMode, const QString &ol
     txDP.clearAll();
     QString hash = QCryptographicHash::hash(config->getString(CONFIG_PATIENT_UID).toLatin1(),QCryptographicHash::Sha3_512).toHex();
     txDP.addString(hash,DataPacket::DPFI_PATIENT_ID);
+    txDP.addValue(REQUEST_CODE_PROCESS_REPORT,DataPacket::DPFI_REQUEST_FIELD);
     txDP.addValue(config->getInt(CONFIG_INST_UID),DataPacket::DPFI_DB_INST_UID);
     txDP.addString(config->getString(CONFIG_INST_ETSERIAL),DataPacket::DPFI_DB_ET_SERIAL);
     txDP.addFile(confFile,DataPacket::DPFI_CONF_FILE);
@@ -85,12 +86,55 @@ void SSLDataProcessingClient::connectToServer(bool isDemoMode, const QString &ol
     startTimeoutTimer(config->getInt(CONFIG_CONNECTION_TIMEOUT)*1000);
 }
 
+void SSLDataProcessingClient::sendMedicalRecordData(const QString &patuid){
+
+    QString patientDirectory = QString(DIRNAME_RAWDATA) + "/" + patuid;
+    QString confFile = patientDirectory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
+
+    // -1 Is a timeout code.
+    processingACKCode = -1;
+    transactionIsOk = false;
+
+    txDP.clearAll();
+    QString hash = QCryptographicHash::hash(patuid.toLatin1(),QCryptographicHash::Sha3_512).toHex();
+    txDP.addValue(REQUEST_CODE_SAVE_PATIENT_DATA,DataPacket::DPFI_REQUEST_FIELD);
+    txDP.addString(hash,DataPacket::DPFI_PATIENT_ID);
+    txDP.addValue(config->getInt(CONFIG_INST_UID),DataPacket::DPFI_DB_INST_UID);
+    txDP.addString(config->getString(CONFIG_INST_ETSERIAL),DataPacket::DPFI_DB_ET_SERIAL);
+    txDP.addFile(confFile,DataPacket::DPFI_CONF_FILE);
+
+    if (!txDP.addFile(patientDirectory + "/" + QString(FILE_PATDATA_DB),DataPacket::DPFI_PATIENT_FILE)){
+        log.appendError("Failed to load patient data file: " + patientDirectory + "/" + QString(FILE_PATDATA_DB));
+        emit(transactionFinished());
+        return;
+    }
+    if (!txDP.addFile(patientDirectory + "/" + QString(FILE_DOCDATA_DB),DataPacket::DPFI_DOCTOR_FILE)){
+        log.appendError("Failed to load doctor data file: " + patientDirectory + "/" + QString(FILE_DOCDATA_DB));
+        emit(transactionFinished());
+        return;
+    }
+    if (!txDP.addFile(patientDirectory + "/" + QString(FILE_MEDRECORD_DB),DataPacket::DPFI_DB_MEDICAL_RECORD_FILE)){
+        log.appendError("Failed to load medical record data file: " + patientDirectory + "/" + QString(FILE_MEDRECORD_DB));
+        emit(transactionFinished());
+        return;
+    }
+
+    // Requesting connection and ack
+    socket->connectToHostEncrypted(config->getString(CONFIG_SERVER_ADDRESS),TCP_PORT_DATA_PROCESSING);
+
+    // Starting timeout timer.
+    clientState = CS_CONNECTING_FOR_MEDREPORT;
+    startTimeoutTimer(config->getInt(CONFIG_CONNECTION_TIMEOUT)*1000);
+
+}
+
 void SSLDataProcessingClient::on_encryptedSuccess(){
     timer.stop();
-    if (clientState == CS_CONNECTING){
+    if ((clientState == CS_CONNECTING) || (clientState == CS_CONNECTING_FOR_MEDREPORT)){
         log.appendStandard("Established encrypted connection to the server. Sending the information ");
         rxDP.clearAll();
-        clientState = CS_WAIT_FOR_REPORT;
+        if (clientState == CS_CONNECTING) clientState = CS_WAIT_FOR_REPORT;
+        else clientState = CS_WAIT_FOR_MEDREP_OK;
         QByteArray ba = txDP.toByteArray();
         qint64 num = socket->write(ba.constData(),ba.size());
         if (num != ba.size()){
@@ -112,7 +156,7 @@ void SSLDataProcessingClient::on_encryptedSuccess(){
 
 void SSLDataProcessingClient::on_readyRead(){
 
-    if (clientState != CS_WAIT_FOR_REPORT) return;
+    if ((clientState != CS_WAIT_FOR_REPORT) && (clientState != CS_WAIT_FOR_MEDREP_OK)) return;
 
     quint8 errcode = rxDP.bufferByteArray(socket->readAll());
 
@@ -131,6 +175,15 @@ void SSLDataProcessingClient::on_readyRead(){
         if (processingACKCode != EYESERVER_RESULT_OK){
             log.appendError("Received a NOT Ok value from EyeServer: " + QString::number(processingACKCode));
             rxDP.clearAll();
+            socket->disconnectFromHost();
+            return;
+        }
+
+        if (clientState == CS_WAIT_FOR_MEDREP_OK){
+            // There is nothing eles to do.
+            clientState = CS_CONNECTING;
+            rxDP.clearAll();
+            transactionIsOk = true;
             socket->disconnectFromHost();
             return;
         }

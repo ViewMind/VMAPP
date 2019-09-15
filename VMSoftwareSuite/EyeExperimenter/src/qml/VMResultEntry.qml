@@ -4,7 +4,12 @@ Item {
 
     id: vmResultEntry
     width: 576
-    height: 105
+    height: (vmDiagClassTitle == "")? 105 : 180
+
+    //        width: 576
+    //        height: 180
+
+    /////////////////////////////// Normal Results
 
     Text{
         id: titleText
@@ -41,7 +46,6 @@ Item {
         anchors.left: titleText.left
     }
 
-
     Text{
         id: referenceText
         textFormat: Text.RichText
@@ -73,5 +77,68 @@ Item {
         vmIndicatorInSection: vmResBarIndicator
     }
 
+    /////////////////////////////// Diagnosis class rectangle
+    Rectangle{
+        id: rectDiagClass
+        color: "#dfebf7"
+        border.width: 2
+        border.color: "#dfebf7"
+        radius: 2
+        width: 576
+        height: 180
+        anchors.fill: parent
+        visible: vmDiagClassTitle !== ""
+
+        Text{
+            id: diagClassTitle
+            color: "#367bb6"
+            text: vmDiagClassTitle;
+            font.family: gothamB.name
+            font.pixelSize: 15
+            anchors.left: diagClassDivider.left
+            anchors.top: parent.top
+            anchors.topMargin: 15
+        }
+
+        Text{
+            id: diagClassText
+            color: "#737577"
+            text: vmDiagnosisClass;
+            font.family: gothamB.name
+            font.pixelSize: 12
+            font.bold: true
+            wrapMode: Text.WordWrap
+            width: 0.9*parent.width
+            anchors.left: diagClassTitle.left
+            anchors.top: diagClassTitle.bottom
+            anchors.topMargin: 6
+        }
+
+        Rectangle {
+            id: diagClassDivider
+            width: 0.9*parent.width
+            height: 2;
+            color: "#737577"
+            border.color: "#737577"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: diagClassText.bottom
+            anchors.topMargin: 10
+        }
+
+        Text{
+            id: disclaimer
+            color: "#737577"
+            text: vmDisclaimer;
+            font.family: robotoR.name
+            font.pixelSize: 11
+            font.italic: true
+            wrapMode: Text.WordWrap
+            width: 0.9*parent.width
+            anchors.left: diagClassTitle.left
+            anchors.top: diagClassDivider.bottom
+            anchors.topMargin: 10
+        }
+
+    }
 
 }

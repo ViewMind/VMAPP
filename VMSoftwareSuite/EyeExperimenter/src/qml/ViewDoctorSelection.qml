@@ -26,18 +26,18 @@ Dialog {
         loader.loadDoctorSelectionInformation();
         var ans = loader.getDoctorNameList();
         ans.unshift(loader.getStringForKey(keybase+"labelDrProfile"));
-        labelDrProfile.vmModel = ans;
-        labelDrProfile.currentIndex = 0;
+        labelDrProfile.setModelList(ans)
+        labelDrProfile.vmCurrentIndex = 0;
     }
 
     function setCurrentDoctor(){
-        if ((labelDrProfile.currentIndex == 0) || (labelDrProfile.count == 0)){
+        if ((labelDrProfile.vmCurrentIndex === 0) || (labelDrProfile.vmListSize === 0)){
             labelDrProfile.vmErrorMsg = loader.getStringForKey(keybase+"labelNoDrError");
             return false;
         }
         else{            
-            var name = labelDrProfile.currentText;
-            var uid = loader.getDoctorUIDByIndex(labelDrProfile.currentIndex-1)
+            var name = labelDrProfile.vmCurrentText;
+            var uid = loader.getDoctorUIDByIndex(labelDrProfile.vmCurrentIndex-1)
 
             // Cleaning the name
             var parts = name.split("(");
@@ -116,16 +116,15 @@ Dialog {
         anchors.top: diagSubTitle.bottom
         anchors.topMargin: 39
         anchors.horizontalCenter: parent.horizontalCenter
+        z: 1
 
         // The selection box and the add button
-        VMComboBox{
+        VMComboBox2{
             id: labelDrProfile
             width: 350
-            vmModel: []
-            font.family: viewHome.robotoR.name
-            onCurrentIndexChanged: {
-                if (currentIndex > 0){
-                    if (!loader.isDoctorValidated(currentIndex-1)){
+            onVmCurrentIndexChanged: {
+                if (vmCurrentIndex > 0){
+                    if (!loader.isDoctorValidated(vmCurrentIndex-1)){
                         vmErrorMsg = loader.getStringForKey(keybase+"novalid_msg");
                         instPassRow.visible = true;
                     }
@@ -137,7 +136,7 @@ Dialog {
 
 
                     drPassword.setText("");
-                    if (loader.isDoctorPasswordEmpty(currentIndex-1)){
+                    if (loader.isDoctorPasswordEmpty(vmCurrentIndex-1)){
                         //console.log("Setting the error message: " + loader.getStringForKey(keybase+"drnopass"));
                         drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drnopass");
                     }
@@ -197,7 +196,7 @@ Dialog {
             width: 80
             anchors.bottom: instPassword.bottom
             onClicked: {
-                if (!loader.requestDrValidation(instPassword.getText(),labelDrProfile.currentIndex-1)){
+                if (!loader.requestDrValidation(instPassword.getText(),labelDrProfile.vmCurrentIndex-1)){
                     instPassword.vmErrorMsg = loader.getStringForKey(keybase+"instpassword_wrong");
                 }
                 else{

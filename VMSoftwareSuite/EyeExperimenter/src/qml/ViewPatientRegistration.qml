@@ -17,21 +17,21 @@ VMBase {
         labelBirthDate.clear();
         labelName.clear();
         labelLastName.clear();
-        labelGender.currentIndex = 0;
+        labelGender.setSelection(0);
         labelDocument_number.clear();
         cbConsent.checked = false;
         labelCountry.vmEnabled = true;
         labelDocument_number.enabled = true;
         loader.loadDoctorSelectionInformation();
-        assignedDoctor.vmModel = loader.getDoctorNameList();
+        assignedDoctor.setModelList(loader.getDoctorNameList());
         var ind = loader.getIndexOfDoctor("");
         if (ind < 0) ind = 0;
-        assignedDoctor.currentIndex = ind;
+        assignedDoctor.setSelection(ind);
         patientUID = "";
         var plist = loader.getProtocolList(false);
         plist.unshift(loader.getStringForKey(keysearch+"labelProtocol"));
-        labelProtocol.vmModel = plist;
-        labelProtocol.enabled = true;
+        labelProtocol.setModelList(plist);
+        labelProtocol.vmEnabled = true;
     }
 
     function loadPatientInformation(){
@@ -45,13 +45,13 @@ VMBase {
 
         patientUID = patInfo.puid;
         labelDocument_number.setText(patInfo.displayID)
-        labelProtocol.vmModel = [patInfo.patient_protocol];
-        labelProtocol.enabled = false;
+        labelProtocol.setModelList([patInfo.patient_protocol]);
+        labelProtocol.vmEnabled = false;
 
 
         // Setting the gender
-        if (patInfo.sex === "M") labelGender.currentIndex = 1;
-        else if (patInfo.sex === "F") labelGender.currentIndex = 2;
+        if (patInfo.sex === "M") labelGender.setSelection(1);
+        else if (patInfo.sex === "F") labelGender.setSelection(2);
 
         // Setting the country.
         var index = loader.getCountryIndexFromCode(patInfo.birthcountry);
@@ -62,8 +62,8 @@ VMBase {
 
         // The assigned doctor.
         loader.loadDoctorSelectionInformation();
-        assignedDoctor.vmModel = loader.getDoctorNameList();
-        assignedDoctor.currentIndex = loader.getIndexOfDoctor(patInfo.doctorid);
+        assignedDoctor.setModelList(loader.getDoctorNameList());
+        assignedDoctor.setSelection(loader.getIndexOfDoctor(patInfo.doctorid))
 
         cbConsent.checked = true;
     }
@@ -228,14 +228,14 @@ VMBase {
         anchors.top: labelCountry.bottom
         anchors.topMargin: 23
         anchors.left: rowNames.left
+        z: 3
 
         // Gender and Date of Birth.
-        VMComboBox{
+        VMComboBox2{
             id: labelGender
             width: 144
-            vmModel: [loader.getStringForKey(keysearch+"labelGender"), "M", "F"]
-            font.family: viewHome.robotoR.name
             anchors.bottom: parent.bottom
+            Component.onCompleted: labelGender.setModelList([loader.getStringForKey(keysearch+"labelGender"), "M", "F"])
         }
 
         VMDateInputField{
@@ -257,17 +257,17 @@ VMBase {
         anchors.top: genderAndBDateRow.bottom
         anchors.topMargin: 18
         anchors.left: rowNames.left
+        z: 2
 
         // Gender and Date of Birth.
-        VMComboBox{
+        VMComboBox2{
             id: labelProtocol
             width: labelGender.width
-            font.family: viewHome.robotoR.name
             anchors.bottom: parent.bottom
             visible: {
                if (uimap.getStructure() === "P") return false;
                else if (uimap.getStructure() === "S") return true;
-            }
+            }            
         }
 
         VMTextDataInput{
@@ -295,14 +295,13 @@ VMBase {
         Keys.onTabPressed: labelName.vmFocus = true;
     }
 
-    VMComboBox{
+    VMComboBox2{
         id: assignedDoctor
         width: rowNames.width
-        //vmModel:
-        font.family: viewHome.robotoR.name
         anchors.top: genderIDAndProtocol.bottom
         anchors.topMargin: 50
         anchors.left: rowNames.left
+        z: 1
     }
 
     // Message and Buttons
@@ -368,14 +367,14 @@ VMBase {
                 // THIS IS THE TABLE DATA.
                 var dbDataReq = {
                     displayID: labelDocument_number.vmEnteredText,
-                    doctorid: loader.getDoctorUIDByIndex(assignedDoctor.currentIndex),
+                    doctorid: loader.getDoctorUIDByIndex(assignedDoctor.vmCurrentIndex),
                     birthdate: labelBirthDate.vmEnteredText,
                     firstname: labelName.vmEnteredText,
                     lastname: labelLastName.vmEnteredText,
-                    sex: labelGender.currentText,
+                    sex: labelGender.vmCurrentText,
                     birthcountry: labelCountry.vmCurrentText,
                     puid: patientUID,
-                    patient_protocol: labelProtocol.currentText
+                    patient_protocol: labelProtocol.vmCurrentText
                 };
 
 //                if (dbDataReq.birthdate === ""){
@@ -403,7 +402,7 @@ VMBase {
                 }
 
                 if (uimap.getStructure() === "S"){
-                    if ((labelProtocol.currentIndex === 0) && (dbDataReq.puid === "")){
+                    if ((labelProtocol.vmCurrentIndex === 0) && (dbDataReq.puid === "")){
                         labelProtocol.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
                         return;
                     }
@@ -411,7 +410,7 @@ VMBase {
 
                 if (uimap.getStructure() === "P"){
                     // This version of the software allows leaving the protocol name empty as to generate the old DISPLAY ID.
-                    if (labelProtocol.currentIndex === 0){
+                    if (labelProtocol.vmCurrentIndex === 0){
                         dbDataReq.patient_protocol = ""
                     }
                     // Only check for empty last name in this version.

@@ -170,7 +170,9 @@ bool LocalInformationManager::createPatAndDrDBFiles(const QString &patid, const 
     QVariantMap patientMap = localDB.value(PATIENT_DATA).toMap().value(patid).toMap();
     avoid.clear();
     // The last two present problems ONLY for old local databases.
-    avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID << TPATDATA_NONCOL_PROTOCOL << OLD_PUID_COLUMN << OLD_UID_COLUMN;
+    avoid << PATIENT_UPDATE << TPATDATA_COL_PUID << PATIENT_CREATOR << TPATDATA_NONCOL_DISPLAYID
+          << PATIENT_MEDICAL_RECORDS << PATIENT_MEDICAL_RECORD_UP_TO_DATE
+          << TPATDATA_NONCOL_PROTOCOL << OLD_PUID_COLUMN << OLD_UID_COLUMN;
     QSet<QString> needToHash; needToHash << TPATDATA_COL_FIRSTNAME << TPATDATA_COL_LASTNAME;
     keys = patientMap.keys();
     for (qint32 k = 0; k < keys.size(); k++){
@@ -215,7 +217,7 @@ bool LocalInformationManager::createUpdateMedicalDBFile(const QString &patid){
     QHash<QString,QStringList> valuesToAdd;
     QStringList normalColumns;
     QStringList jsonColumns;
-    normalColumns   << TPATMEDREC_COL_DATE << TPATMEDREC_COL_FORM_YEARS << TPATMEDREC_COL_PRESUMP_DIAGNOSIS;
+    normalColumns   << TPATMEDREC_COL_DATE << TPATMEDREC_COL_FORM_YEARS << TPATMEDREC_COL_PRESUMP_DIAGNOSIS << TPATMEDREC_COL_REC_INDEX;
     jsonColumns     << TPATMEDREC_COL_EVALS << TPATMEDREC_COL_MEDICATION << TPATMEDREC_COL_RNM;
 
     QSet<qint32> allreadyAdded;
@@ -233,8 +235,8 @@ bool LocalInformationManager::createUpdateMedicalDBFile(const QString &patid){
             return false;
         }
         QVariantMap medRec = medicalRecords.at(recordIndex).toMap();
-        qWarning() << "Record Index" << recordIndex;
-        qWarning() << "   " << medRec;
+        //qWarning() << "Record Index" << recordIndex;
+        //qWarning() << "   " << medRec;
 
         // Adding normal columns
         for (qint32 j = 0; j < normalColumns.size(); j++){
@@ -501,6 +503,18 @@ void LocalInformationManager::saveIDTable(const QString &fileName, const QString
     file.close();
 
     return;
+}
+
+void LocalInformationManager::cleanMedicalRecordUpdateFlag(const QString &patid){
+    QVariantMap allPatientData = localDB.value(PATIENT_DATA).toMap();
+    if (!allPatientData.contains(patid)){
+        log.appendError("Trying to clean the update flags of a non existing patient: " + patid);
+        return;
+    }
+    QVariantMap patientMap = allPatientData.value(patid).toMap();
+    patientMap[PATIENT_MEDICAL_RECORD_UP_TO_DATE] = QVariantList();
+    allPatientData[patid] = patientMap;
+    localDB[PATIENT_DATA] = allPatientData;
 }
 
 qint32 LocalInformationManager::getRemainingEvals() const {

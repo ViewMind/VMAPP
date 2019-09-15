@@ -16,9 +16,6 @@ VMBase {
     property string vmDrName: ""
     property string vmDate: ""
     property string vmTitleDemo: ""
-    property string vmDisclaimer: ""
-    property string vmDiagnosisClass: ""
-    property string vmDiagClassTitle: ""
 
     readonly property string vmDEMO_DATE:             "03/06/2010 10:15"
     readonly property string vmDEMO_DATE_FROM_REPORT: "03/06/2010 10:15"
@@ -38,10 +35,13 @@ VMBase {
             var map = flowControl.nextSelectedReportItem();
             done = !("vmTitleText" in map);
             if (!done){
-                //                console.log("================= APPENDING =====================");
-                //                for (var key in map){
-                //                    console.log("   " + key + ": " + map[key]);
-                //                }
+                //console.log("================= APPENDING =====================");
+                //for (var key in map){
+                //    console.log("   " + key + ": " + map[key]);
+                //}
+                map.vmDiagClassTitle = ""
+                map.vmDisclaimer = ""
+                map.vmDiagnosisClass = ""
                 resultsList.append(map);
             }
         }
@@ -71,9 +71,25 @@ VMBase {
 
         var diagData = flowControl.getDiagnosticClass();
 
-        vmDisclaimer     = diagData[0];
-        vmDiagnosisClass = diagData[1];
-        vmDiagClassTitle = diagData[2];
+        //console.log("Diag data")
+        //console.log(diagData)
+
+        var diagEntry;
+        diagEntry = {
+            "vmTitleText": "",
+            "vmExpText" : "",
+            "vmRefText" : "",
+            "vmResValue" : "",
+            "vmResBarIndicator": "",
+            "vmDisclaimer" : diagData[0],
+            "vmDiagnosisClass" : diagData[1],
+            "vmDiagClassTitle" : diagData[2]
+        }
+        resultsList.append(diagEntry)
+
+        //console.log(vmDisclaimer)
+        //console.log(vmDiagnosisClass)
+        //console.log(vmDiagClassTitle)
 
     }
 
@@ -363,7 +379,7 @@ VMBase {
         border.color: "#ededee"
         radius: 2
         width: 576
-        height: 273
+        height: rectInfoPatient.height + rectInfoCodeColor.height + rectInfoCodeColor.anchors.topMargin
         anchors.top: rectInfoPatient.top
         anchors.left: rectInfoPatient.right
         anchors.leftMargin: 19
@@ -373,6 +389,7 @@ VMBase {
             anchors.fill: parent
             clip: true
             verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
+
             ListView {
                 id: resultsListView
                 anchors.fill: parent
@@ -380,72 +397,8 @@ VMBase {
                 delegate: VMResultEntry {
                 }
             }
-        }
 
-    }
-
-    // Diagnosis class rectangle
-    Rectangle{
-        id: rectDiagClass
-        color: "#dfebf7"
-        border.width: 2
-        border.color: "#dfebf7"
-        radius: 2
-        width: 576
-        height: 180
-        anchors.left: rectResults.left
-        anchors.top: rectResults.bottom
-        anchors.topMargin: 20
-
-        Text{
-            id: diagClassTitle
-            color: "#367bb6"
-            text: vmDiagClassTitle;
-            font.family: gothamB.name
-            font.pixelSize: 15
-            anchors.left: diagClassDivider.left
-            anchors.top: parent.top
-            anchors.topMargin: 15
-        }
-
-        Text{
-            id: diagClassText
-            color: "#737577"
-            text: vmDiagnosisClass;
-            font.family: gothamB.name
-            font.pixelSize: 12
-            font.bold: true
-            wrapMode: Text.WordWrap
-            width: 0.9*parent.width
-            anchors.left: diagClassTitle.left
-            anchors.top: diagClassTitle.bottom
-            anchors.topMargin: 6
-        }
-
-        Rectangle {
-            id: diagClassDivider
-            width: 0.9*parent.width
-            height: 2;
-            color: "#737577"
-            border.color: "#737577"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: diagClassText.bottom
-            anchors.topMargin: 10
-        }
-
-        Text{
-            id: disclaimer
-            color: "#737577"
-            text: vmDisclaimer;
-            font.family: robotoR.name
-            font.pixelSize: 11
-            font.italic: true
-            wrapMode: Text.WordWrap
-            width: 0.9*parent.width
-            anchors.left: diagClassTitle.left
-            anchors.top: diagClassDivider.bottom
-            anchors.topMargin: 10
-        }
+        } // Scroll view end
 
     }
 
