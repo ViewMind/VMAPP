@@ -68,6 +68,9 @@ public:
     qint32 getRemainingEvals() const;
     void setRemainingEvals(qint32 remevals);
 
+    // Cleaning medical records update flags
+    void cleanMedicalRecordUpdateFlag(const QString &patid);
+
     QHash<QString,QString> getPatientHashedIDMap() const;
     QVariantMap getHashedIDPatientMap(QVariantMap hidmap) const;
 

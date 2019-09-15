@@ -8,12 +8,13 @@ VMBase {
     id: viewPatientList
     width: viewPatientList.vmWIDTH
     height: viewPatientList.vmHEIGHT
+
     readonly property real vmTableWidth: 0.70*viewPatientList.vmWIDTH
     readonly property real vmTableHeight: 0.33*viewPatientList.vmHEIGHT
-
     readonly property string keybase: "viewpatientlist_"
 
     property bool vmShowAll: false;
+    property string vmPatIDForMedRecSync: ""
 
     Connections {
         target: flowControl
@@ -39,9 +40,15 @@ VMBase {
                 }
             }
             else{
-                loader.setNumberOfEvaluations(flowControl.numberOfEvaluationsReceived());
+                if (vmPatIDForMedRecSync === ""){
+                    loader.setNumberOfEvaluations(flowControl.numberOfEvaluationsReceived());
+                    viewDatSelectionDiag.updateNumberOfEvals();
+                }
+                else {
+                    loader.cleanMedicalRecordUpdateList(vmPatIDForMedRecSync)
+                    vmPatIDForMedRecSync = ""
+                }
                 updateText();
-                viewDatSelectionDiag.updateNumberOfEvals();
                 loadPatients();
             }
         }
@@ -322,7 +329,7 @@ VMBase {
         var isOkList = loader.getPatientIsOKList();
         var isMedRecUpToDateList = loader.getPatientMedRecUpToDateList();
         var drName = loader.getDoctorNameList();
-        var drUID  = loader.getDoctorUIDList();        
+        var drUID  = loader.getDoctorUIDList();
 
         // Clearing the current model.
         patientList.clear()
@@ -759,9 +766,19 @@ VMBase {
                     }
                     onUpdateMedicalRecords: {
                         var patuid = patientList.get(index).vmPatientUID;
-                        console.log("Selected patient uid: " + patuid)
                         if (!loader.prepareMedicalRecordFiles(patuid)){
-                            console.log("There was a problem");
+                            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM; // This is not a server comm error but the progam does not need to close.
+                            var titleMsg = viewHome.getErrorTitleAndMessage("error_programming");
+                            vmErrorDiag.vmErrorMessage = titleMsg[1];
+                            vmErrorDiag.vmErrorTitle = titleMsg[0];
+                            vmErrorDiag.open();
+                        }
+                        else {
+                            connectionDialog.vmMessage = loader.getStringForKey(keybase+"diagRepTitle");
+                            connectionDialog.vmTitle = loader.getStringForKey(keybase+"diagRepMessage");
+                            connectionDialog.open();
+                            vmPatIDForMedRecSync = patuid;
+                            flowControl.sendMedicalRecordsToServer(patuid);
                         }
                     }
                 }

@@ -49,6 +49,7 @@ public:
     Q_INVOKABLE void resolutionCalculations();
     Q_INVOKABLE bool checkSSLAvailability() {return sslDataProcessingClient->sslEnabled();}
     Q_INVOKABLE void requestReportData();
+    Q_INVOKABLE void sendMedicalRecordsToServer(const QString &patid);
     Q_INVOKABLE bool isSSLTransactionOK() const {return sslTransactionAllOk;}
     Q_INVOKABLE void saveReport();
     Q_INVOKABLE void saveReportAs(const QString &title);
@@ -161,6 +162,9 @@ private:
 
     // Flag to indicate transaction is reprocessing previous data.
     bool reprocessRequest;
+
+    // The patient id whose medical record got synched up.
+    QString patientIDMedicalRecordUpdate;
 
     // Helper function to selecte expanded binding files.
     QString getBindingExperiment(bool bc);

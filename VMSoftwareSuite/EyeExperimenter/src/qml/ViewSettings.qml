@@ -119,24 +119,25 @@ Dialog {
         anchors.left: diagDBDefaultCountry.left
     }
 
-    VMComboBox{
+    VMComboBox2{
         id: diagCBLang
-        vmModel: ["English", "Spanish"]
-        currentIndex: {
-            var lang = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE)
-            for (var i = 0; i < vmModel.length; i++){
-                if (vmModel[i] === lang){
-                    vmLoadLanguage = lang;
-                    return i;
-                }
-            }
-            return 0;
-        }
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        z: 1
+        width: 100
         anchors.top: diagLabelLang.bottom
         anchors.topMargin: 15
         anchors.left: diagDBDefaultCountry.left
+        Component.onCompleted: {
+            var langs = ["English", "Spanish"]
+            diagCBLang.setModelList(langs)
+            var lang = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE)
+            for (var i = 0; i < langs.length; i++){
+                if (langs[i] === lang){
+                    vmLoadLanguage = lang;
+                    diagCBLang.setSelection(i)
+                    return;
+                }
+            }
+        }
     }
 
     // Combo box for eyetracker selection and label

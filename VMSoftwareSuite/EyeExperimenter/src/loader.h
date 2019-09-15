@@ -77,6 +77,7 @@ public:
     Q_INVOKABLE QString getNumberOfEvalsString(bool onlyEvals = false);
     Q_INVOKABLE void setNumberOfEvaluations(qint32 numevals);
     Q_INVOKABLE bool prepareMedicalRecordFiles(const QString &patid);
+    Q_INVOKABLE void cleanMedicalRecordUpdateList(const QString &patid) { lim.cleanMedicalRecordUpdateFlag(patid); }
 
     //******************** Protocol related functions ***************************
     Q_INVOKABLE bool addProtocol(const QString &p) { return lim.addProtocol(p); }

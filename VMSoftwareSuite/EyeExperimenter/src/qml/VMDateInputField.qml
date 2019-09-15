@@ -9,12 +9,13 @@ Item {
     property string vmEnteredText: ""
     property string vmErrorMsg: ""
     property bool vmNumbersOnly: false
-    property bool vmCalendarInput : false;
     property bool vmFocus: false
     property bool vmEnableDateCheck: true
 
     // For now, we only support ONE date format.
     readonly property string vmDateFormat: "DD/MM/YYYY"
+    // For now, calendar date input is disabled.
+    readonly property bool vmCalendarInput : false;
 
     height: 40
 
@@ -106,7 +107,7 @@ Item {
                 }
             }
             else{
-                calendarPopUp.visible = false;
+                //calendarPopUp.visible = false;
                 if (vmEnteredText === ""){
                     labelText.visible = false;
                     lineEdit.text = vmPlaceHolder + " - (" + vmDateFormat + ")"
@@ -238,49 +239,49 @@ Item {
         visible: (vmErrorMsg !== "")
     }
 
-    Rectangle {
-        id: calendarPopUp
-        visible: false;
-        border.width: 0
-        color: "#ffffff"
-        anchors.left: parent.right
-        anchors.top: parent.top
-        width: parent.width
-        VMComboBox{
-            id: yearPicker
-            width: parent.width
-            vmModel: {
-                var ans = [];
-                var cdate = new Date();
-                var cyear = cdate.getYear() + 1900;
-                var fyear = cyear - 120;
-                for (var i = cyear; i >= fyear; i--){
-                    ans.push(i)
-                }
-                calendar.minimumDate = new Date(fyear, 0, 1);
-                calendar.maximumDate = new Date(cyear, 0, 1);
-                return ans;
-            }
-            font.family: viewHome.robotoR.name
-            anchors.top: parent.top
-            anchors.topMargin: 2
-            anchors.horizontalCenter: parent.horizontalCenter
-            onCurrentIndexChanged: {
-                calendar.visibleYear = 2018 - yearPicker.currentIndex;
-            }
-        }
-        Controls1.Calendar {
-            id: calendar
-            width: parent.width
-            anchors.top: yearPicker.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            onDoubleClicked: {
-                calendarPopUp.visible = false;
-                var sdate = calendar.selectedDate;
-                lineEdit.setDate(sdate);
-                labelText.visible = true;
-            }
-        }
-    }
+//    Rectangle {
+//        id: calendarPopUp
+//        visible: false;
+//        border.width: 0
+//        color: "#ffffff"
+//        anchors.left: parent.right
+//        anchors.top: parent.top
+//        width: parent.width
+//        VMComboBox{
+//            id: yearPicker
+//            width: parent.width
+//            vmModel: {
+//                var ans = [];
+//                var cdate = new Date();
+//                var cyear = cdate.getYear() + 1900;
+//                var fyear = cyear - 120;
+//                for (var i = cyear; i >= fyear; i--){
+//                    ans.push(i)
+//                }
+//                calendar.minimumDate = new Date(fyear, 0, 1);
+//                calendar.maximumDate = new Date(cyear, 0, 1);
+//                return ans;
+//            }
+//            font.family: viewHome.robotoR.name
+//            anchors.top: parent.top
+//            anchors.topMargin: 2
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            onCurrentIndexChanged: {
+//                calendar.visibleYear = 2018 - yearPicker.currentIndex;
+//            }
+//        }
+//        Controls1.Calendar {
+//            id: calendar
+//            width: parent.width
+//            anchors.top: yearPicker.bottom
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            onDoubleClicked: {
+//                calendarPopUp.visible = false;
+//                var sdate = calendar.selectedDate;
+//                lineEdit.setDate(sdate);
+//                labelText.visible = true;
+//            }
+//        }
+//    }
 
 }

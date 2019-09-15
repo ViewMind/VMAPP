@@ -19,11 +19,11 @@ Window {
         //x = 0;
         y = hdiff; // This should put the window at the top of the screen.
         //swiperControl.currentIndex = swiperControl.vmIndexHome;
-        swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+        //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-        //swiperControl.currentIndex = swiperControl.vmIndexResults;
+        swiperControl.currentIndex = swiperControl.vmIndexResults;
         //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
         //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
     }
@@ -180,8 +180,8 @@ Window {
                 viewPresentExperimet.enableContinue();
                 break;
             case vmIndexPatientList:
-                loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"0_0000_D0000");
-                loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
+                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"0_0000_D0000");
+                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
                 // This will laod patients which will also trigger the search for unprocessed information.
                 //viewPatList.test();
                 //viewPatList.openAskPasswordDialog();

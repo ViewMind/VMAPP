@@ -11,7 +11,6 @@
         <file>qml/VMBase.qml</file>
         <file>qml/VMButton.qml</file>
         <file>qml/VMCheckBox.qml</file>
-        <file>qml/VMComboBox.qml</file>
         <file>qml/VMConfigTextInput.qml</file>
         <file>qml/VMDialogCloseButton.qml</file>
         <file>qml/VMDoctorMenu.qml</file>

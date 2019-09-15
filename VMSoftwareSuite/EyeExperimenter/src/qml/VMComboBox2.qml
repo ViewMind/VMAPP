@@ -14,6 +14,7 @@ Item {
     property int vmListSize: 0
 
     function setModelList(list){
+        modelList.clear()
         for (var i = 0; i < list.length; i++){
             modelList.append({"vmText": list[i], "vmIndex": i});
         }
@@ -46,7 +47,7 @@ Item {
     Rectangle {
         id: display
         anchors.fill: parent
-        color:  "#ebf3fa"
+        color: vmEnabled? "#ebf3fa" : "#bcbec0"
 
         // The display Text.
         Text {

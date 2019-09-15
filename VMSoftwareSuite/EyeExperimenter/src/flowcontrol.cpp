@@ -314,6 +314,29 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
 
 }
 
+void FlowControl::sendMedicalRecordsToServer(const QString &patid){
+    sslTransactionAllOk = false;
+    reprocessRequest = false;
+
+    // Creating the conf file with the minimal information required by the server.
+    QString expgenfile = QString(DIRNAME_RAWDATA) + "/" + patid + "/" + FILE_EYE_REP_GEN_CONFIGURATION;
+    QFile(expgenfile).remove();
+
+    ConfigurationManager eyerepgen;
+    eyerepgen.addKeyValuePair(CONFIG_REPROCESS_REQUEST,false);
+    eyerepgen.addKeyValuePair(CONFIG_DEMO_MODE,false);
+
+    if (!eyerepgen.saveToFile(expgenfile,COMMON_TEXT_CODEC)){
+        logger.appendError("WRITING EYE REP GEN FILE for medical records: " + expgenfile + ", could not open file for writing");
+        sslTransactionAllOk = false;
+        reprocessRequest = false;
+        emit(sslTransactionFinished());
+        return;
+    }
+    sslDataProcessingClient->sendMedicalRecordData(patid);
+
+}
+
 void FlowControl::onDisconnectionFinished(){
     sslTransactionAllOk = sslDataProcessingClient->getTransactionStatus();
 
@@ -651,8 +674,8 @@ void FlowControl::prepareSelectedReportIteration(){
     reportItems.clear();
 
     /// DEBUG CODE
-    /// reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
-    /// selectedReport = 0;
+    reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
+    selectedReport = 0;
     /// END DEBUG CODE
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);

@@ -31,7 +31,8 @@ Dialog {
     onOpened: {
         var list =  loader.getProtocolList(false);
         list.unshift(loader.getStringForKey(keybase+"optionSelectProtocol"))
-        cbProtocolToDelete.vmModel = list;
+        console.log(list);
+        cbProtocolToDelete.setModelList(list);
         labelNewProtocol.vmErrorMsg = "";
         cbProtocolToDelete.vmErrorMsg = "";
         labelNewProtocol.clear()
@@ -117,13 +118,12 @@ Dialog {
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
 
-        VMComboBox{
+        VMComboBox2{
             id: cbProtocolToDelete
             width: labelNewProtocol.width
-            font.family: viewHome.robotoR.name
-            font.pixelSize: 13
             anchors.bottom: parent.bottom
-            onCurrentIndexChanged: {
+            vmMaxDisplayItems: 3
+            onVmCurrentIndexChanged: {
                 cbProtocolToDelete.vmErrorMsg = "";
             }
         }
@@ -136,9 +136,9 @@ Dialog {
             vmText: loader.getStringForKey(keybase+"btnDelete");
             anchors.bottom: parent.bottom
             onClicked: {
-                if (cbProtocolToDelete.currentIndex > 0){
+                if (cbProtocolToDelete.vmCurrentIndex > 0){
                     if (cbProtocolToDelete.vmErrorMsg !== ""){
-                        loader.deleteProtocol(cbProtocolToDelete.currentText)
+                        loader.deleteProtocol(cbProtocolToDelete.vmCurrentText)
                         viewProtocols.close();
                     }
                     else{
