@@ -27,7 +27,7 @@ PORT=3306
 export MYSQL_PWD=$PASSWD
 
 echo ">> APPLYING PATCH 13"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "CREATE TABLE tMedicalRecords (
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "CREATE TABLE tMedicalRecords (
                                                                         keyid                 INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                                                                         date                  DATE,
                                                                         puid                  INT,
@@ -39,18 +39,18 @@ mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "CREATE T
                                                                         evaluations           LONGTEXT
                                                                       );"
 
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN idtype;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN state;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN city;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN mainactivity;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN highestdegree;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN physicalactivity;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN nofspokenlang;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN agreesharedata;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN familyhistory;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN patienthistory;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN remedies;"
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN diagnostic;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN idtype;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN state;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN city;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN mainactivity;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN highestdegree;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN physicalactivity;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN nofspokenlang;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN agreesharedata;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN familyhistory;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN patienthistory;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN remedies;"
+mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "ALTER TABLE tPatientData DROP COLUMN diagnostic;"
 
 mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "ALTER TABLE tEyeResults ADD client_study_date DATETIME;"
 
