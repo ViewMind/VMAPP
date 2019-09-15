@@ -201,6 +201,81 @@ bool LocalInformationManager::createPatAndDrDBFiles(const QString &patid, const 
     return true;
 }
 
+bool LocalInformationManager::createUpdateMedicalDBFile(const QString &patid){
+    QVariantMap patientMap = localDB.value(PATIENT_DATA).toMap().value(patid).toMap();
+    QVariantList recordsToUpdate = patientMap.value(PATIENT_MEDICAL_RECORD_UP_TO_DATE).toList();
+    QVariantList medicalRecords = patientMap.value(PATIENT_MEDICAL_RECORDS).toList();
+
+    if (recordsToUpdate.isEmpty()){
+        log.appendError("No records to update for patient: " + patid);
+        return false;
+    }
+
+    // Creating the structure to save to a configuration manager.
+    QHash<QString,QStringList> valuesToAdd;
+    QStringList normalColumns;
+    QStringList jsonColumns;
+    normalColumns   << TPATMEDREC_COL_DATE << TPATMEDREC_COL_FORM_YEARS << TPATMEDREC_COL_PRESUMP_DIAGNOSIS;
+    jsonColumns     << TPATMEDREC_COL_EVALS << TPATMEDREC_COL_MEDICATION << TPATMEDREC_COL_RNM;
+
+    QSet<qint32> allreadyAdded;
+
+    for (qint32 i = 0; i < recordsToUpdate.size(); i++){
+        qint32 recordIndex = recordsToUpdate.at(i).toInt();
+
+        // Due to the way the updating works several modifications to the same record
+        // will add it multiple times to the update list. With this, the information is added only once.
+        if (allreadyAdded.contains(recordIndex)) continue;
+
+        if ((recordIndex < 0) || (recordIndex >= medicalRecords.size())){
+            log.appendError("Attempting to get medical record: " + QString::number(recordIndex) + " from patient "
+                            + patid + " but medical record list has a size of: " + QString::number(medicalRecords.size()));
+            return false;
+        }
+        QVariantMap medRec = medicalRecords.at(recordIndex).toMap();
+        qWarning() << "Record Index" << recordIndex;
+        qWarning() << "   " << medRec;
+
+        // Adding normal columns
+        for (qint32 j = 0; j < normalColumns.size(); j++){
+            QString col = normalColumns.at(j);
+            if (medRec.contains(col)){
+                valuesToAdd[col].append(medRec.value(col).toString());
+            }
+        }
+        // Adding the record index itself.
+        valuesToAdd[TPATMEDREC_COL_REC_INDEX].append(QString::number(recordIndex));
+
+        // Adding json columns.
+        for (qint32 j = 0; j < jsonColumns.size(); j++){
+            QString col = jsonColumns.at(j);
+            if (medRec.contains(col)){
+                QVariantMap mapData = medRec.value(col).toMap();
+                valuesToAdd[col].append(QVariantMap2JSONString(mapData));
+            }
+        }
+
+        allreadyAdded << recordIndex;
+
+    }
+
+    // Adding everything to the configuration manager and then saving
+    ConfigurationManager medRecordConf;
+    QStringList keys; keys << normalColumns << jsonColumns;
+    for (qint32 i = 0; i < keys.size(); i++){
+        medRecordConf.addKeyValuePair(keys.at(i),valuesToAdd.value(keys.at(i)));
+    }
+
+    QString patdir = DIRNAME_RAWDATA + QString("/") + patid + "/";
+    if (!medRecordConf.saveToFile(patdir + FILE_MEDRECORD_DB,COMMON_TEXT_CODEC)){
+        log.appendError("Could save not medical record data file to " + patdir);
+        return false;
+    }
+
+    return true;
+
+}
+
 void LocalInformationManager::fillPatientDatInformation(const QString &patient){
 
     patientReportInformation.clear();
@@ -780,4 +855,9 @@ QStringList LocalInformationManager::getProtocolList(bool full) const {
         if (localDB.value(PROTOCOL_VALID).toList().at(i).toBool()) list << fullist.at(i);
     }
     return list;
+}
+
+QString LocalInformationManager::QVariantMap2JSONString(const QVariantMap &map){
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(map);
+    return QString(jsonDoc.toJson(QJsonDocument::Compact));
 }

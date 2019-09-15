@@ -1,6 +1,8 @@
 #ifndef LOCALINFORMATIONMANAGER_H
 #define LOCALINFORMATIONMANAGER_H
 
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QVariantMap>
 #include <QDataStream>
 #include <QCryptographicHash>
@@ -79,8 +81,11 @@ public:
     bool deleteDoctor(const QString &uid);
     void setDoctorData(const QString &uid, const QStringList &keys, const QVariantList &values);
 
-    // Synch function. Returns false if the there is nothing to synch. (No changes to Doctor and Patient data).
+    // Synch function. Returns false only if there was a problem creating the patien and doctor file.
     bool createPatAndDrDBFiles(const QString &patid, const QString &drid);
+
+    // Creates the DB file to upate. Will return false if there is any problem or inconsistency.
+    bool createUpdateMedicalDBFile(const QString &patid);
 
     // Interface with Dat Info Dir
     QStringList getFileListForPatient(const QString &patuid, qint32 whichList) const;
@@ -96,6 +101,9 @@ public:
 
     // Used for trasmiting the DB over the net as a string. Just the doctor and patient data
     QString serialDoctorPatientString(const QString &serialized_map) const;
+
+    // Helper function. Declared static so it can be used without creating an object.
+    static QString QVariantMap2JSONString(const QVariantMap &map);
 
 private:
 

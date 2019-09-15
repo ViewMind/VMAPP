@@ -487,6 +487,13 @@ void Loader::setNumberOfEvaluations(qint32 numevals){
     lim.setRemainingEvals(numevals);
 }
 
+bool Loader::prepareMedicalRecordFiles(const QString &patid){
+    QString drid  = configuration->getString(CONFIG_DOCTOR_UID);
+    if (!lim.createPatAndDrDBFiles(patid,drid)) return false;
+    if (!lim.createUpdateMedicalDBFile(patid)) return false;
+    return true;
+}
+
 //******************************************* Report Realated Functions ***********************************************
 
 void Loader::operateOnRepGenStruct(qint32 index, qint32 type){

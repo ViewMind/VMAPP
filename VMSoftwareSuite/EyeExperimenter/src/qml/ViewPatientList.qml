@@ -757,6 +757,13 @@ VMBase {
                         patientListView.currentIndex = index;
                         viewDatSelectionDiag.open();
                     }
+                    onUpdateMedicalRecords: {
+                        var patuid = patientList.get(index).vmPatientUID;
+                        console.log("Selected patient uid: " + patuid)
+                        if (!loader.prepareMedicalRecordFiles(patuid)){
+                            console.log("There was a problem");
+                        }
+                    }
                 }
                 onCurrentIndexChanged: {
                     for (var i = 0; i < model.count; i++){
