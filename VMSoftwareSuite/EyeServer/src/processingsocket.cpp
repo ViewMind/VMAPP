@@ -86,8 +86,19 @@ void ProcessingSocket::on_readyRead(){
     if (ans == DataPacket::DATABUFFER_RESULT_DONE){
         timer.stop();
         if (pstate == PS_WAIT_INFO){
-            mtimer.measure(TIME_MEASURE_DBMNG_CHECK);
-            dbMngCheck();
+
+            // Checking if this is a DB ONLY Transaction or a processing report
+            ProcessState pstate = PS_WAIT_DBMNG_CHECK;
+            if (rx.hasInformationField(DataPacket::DPFI_REQUEST_FIELD)){
+                if (rx.getField(DataPacket::DPFI_REQUEST_FIELD).data.toInt() == REQUEST_CODE_SAVE_PATIENT_DATA){
+                    pstate = PS_WAIT_STORE_PATINFO;
+                }
+            }
+
+            if (pstate == PS_WAIT_STORE_PATINFO) mtimer.measure(TIME_MEASURE_DBMNG_CHECK);
+            else mtimer.measure(TIME_MEASURE_DBMNG_CHECK);
+
+            dbMngCheck(pstate);
             rx.clearAll();
         }
         else if (pstate == PS_WAIT_CLIENT_OK){
@@ -109,7 +120,7 @@ void ProcessingSocket::on_readyRead(){
     }
 }
 
-void ProcessingSocket::dbMngCheck(){
+void ProcessingSocket::dbMngCheck(ProcessState state){
 
     etSerial = "";
     instID = "";
@@ -160,7 +171,8 @@ void ProcessingSocket::dbMngCheck(){
     dbmngComm.addKeyValuePair(CONFIG_INST_UID,instID);
     dbmngComm.addKeyValuePair(CONFIG_TRANSACTION_ID,transactionID);
     dbmngComm.addKeyValuePair(CONFIG_TIMESTAMP,timestamp);
-    dbmngComm.addKeyValuePair(CONFIG_DBMNG_ACTION,CONFIG_P_DMBNG_ACTION_CHECK);
+    if (state == PS_WAIT_STORE_PATINFO) dbmngComm.addKeyValuePair(CONFIG_DBMNG_ACTION,CONFIG_P_DBMNG_ACTION_PATDATA);
+    else dbmngComm.addKeyValuePair(CONFIG_DBMNG_ACTION,CONFIG_P_DMBNG_ACTION_CHECK);
     if (!dbmngComm.saveToFile(workingDir + "/" + QString(FILE_DBMNG_COMM_FILE),COMMON_TEXT_CODEC)){
         log.appendError("Could not create DB Comm file for check procedure: " + dbmngComm.getError());
         sendCodeToClient(EYESERVER_RESULT_SERVER_ERROR);
@@ -168,7 +180,8 @@ void ProcessingSocket::dbMngCheck(){
     }
 
     //eyeDBMng.setWorkingDirectory(workingDir);
-    pstate = PS_WAIT_DBMNG_CHECK;
+    //pstate = PS_WAIT_DBMNG_CHECK;
+    pstate = state;
     QStringList arguments;
     arguments << workingDir;
     eyeDBMng.start(configData.eyeDBMngPath,arguments);
@@ -243,7 +256,7 @@ void ProcessingSocket::on_eyeDBMngFinished(qint32 status){
 
         mtimer.measure(TIME_MEASURE_PROCESSING_DONE);
     }
-    else {
+    else if (pstate == PS_WAIT_DBMNG_STORE){
 
         // The store procedure
         mtimer.measure(TIME_MEASURE_DISCONNECT);
@@ -254,6 +267,41 @@ void ProcessingSocket::on_eyeDBMngFinished(qint32 status){
             log.appendStandard("TIMES: " + mtimer.getTimeSummary());
             emit(socketDone(configData.ID));
         }
+    }
+    else {
+
+        // Storing Medical Records. It is necessary to send code to server.
+        mtimer.end();
+        if (dbmngAns != EYEDBMNG_ANS_OK){
+            log.appendError("EYEDBMNG returned NOT OK result code: " + QString::number(dbmngAns));
+            qint32 code;
+            switch (dbmngAns){
+            case EYEDBMNG_ANS_DB_ERROR:
+                code = EYESERVER_RESULT_SERVER_ERROR;
+                break;
+            case EYEDBMNG_ANS_FILE_ERROR:
+                code = EYESERVER_RESULT_SERVER_ERROR;
+                break;
+            case EYEDBMNG_ANS_NOEVALS:
+                code = EYESERVER_RESULT_NOEVALS;
+                break;
+            case EYEDBMNG_ANS_PARAM_ERROR:
+                code = EYESERVER_RESULT_SERVER_ERROR;
+                break;
+            case EYEDBMNG_ANS_WRONG_SERIAL:
+                code = EYESERVER_RESULT_WRONG_SERIAL;
+                break;
+            default:
+                code = EYESERVER_RESULT_SERVER_ERROR;
+                break;
+            }
+            sendCodeToClient(code);
+            return;
+        }
+        else sendCodeToClient(EYESERVER_RESULT_OK);
+
+        // After this all that is necessary is to wait for disconnection.
+
     }
 
 }
@@ -365,6 +413,7 @@ QString ProcessingSocket::stateToString(){
     case PS_WAIT_FINSHED_CONNECTION: return "WAIT FINISHED CONNECTION";
     case PS_WAIT_INFO: return "WAIT INFO";
     case PS_WAIT_DISCONNECT: return "WAIT DISCONNECT";
+    case PS_WAIT_STORE_PATINFO: return "WAIT FOR STORAGE OF PAT INFO";
     }
     return "UNKNOWN STATE";
 }

@@ -202,12 +202,17 @@ void Control::run(){
 
     if (configuration.getString(CONFIG_DBMNG_ACTION) == CONFIG_P_DMBNG_ACTION_STORE){
         log.appendSuccess("DBMNG in Store Mode");
-        storeMode();
+        storeMode(CONFIG_P_DMBNG_ACTION_STORE);
     }
     else if (configuration.getString(CONFIG_DBMNG_ACTION) == CONFIG_P_DMBNG_ACTION_CHECK){
         log.appendSuccess("DBMNG in Check Mode");
         checkMode();
     }
+    else if (configuration.getString(CONFIG_DBMNG_ACTION) == CONFIG_P_DBMNG_ACTION_PATDATA){
+        log.appendSuccess("DBMNG in Patient Data Store Mode");
+        storeMode(CONFIG_P_DBMNG_ACTION_PATDATA); // The first part of the process is identical. So storeMode is called.
+    }
+
     else {
         log.appendError("Unrecognized DBMng Action: " + configuration.getString(CONFIG_DBMNG_ACTION));
         exitProgram(EYEDBMNG_ANS_PARAM_ERROR);
@@ -300,7 +305,7 @@ void Control::checkMode(){
 
 /////////////////////////////////////////// STORE MODE ///////////////////////////////////////////////////////////
 
-void Control::storeMode(){
+void Control::storeMode(const QString &action){
 
     QElapsedTimer timer;
     timer.start();
@@ -327,7 +332,7 @@ void Control::storeMode(){
     }
 
     if (!docdata.loadConfiguration(workingDirectory + "/" + QString(FILE_DOCDATA_DB),COMMON_TEXT_CODEC)){
-        log.appendError("Could not load doc data file: " + patdata.getError());
+        log.appendError("Could not load doc data file: " + docdata.getError());
         finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
         return;
     }
@@ -538,6 +543,12 @@ void Control::storeMode(){
     // In DEMO mode there is no need to do anything else.
     if (demoMode){
         finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+        return;
+    }
+
+    // -------------- If this is a patient medical record store call, here the procedure changes. --------------------
+    if (action == CONFIG_P_DBMNG_ACTION_PATDATA){
+        patDataStoreMode(puid,instID);
         return;
     }
 
@@ -783,6 +794,79 @@ void Control::storeMode(){
     finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_OK);
 }
 
+
+/////////////////////////////////////////// PATDATA STORE MODE ///////////////////////////////////////////////////
+void Control::patDataStoreMode(const QString &puid, const QString &instUID){
+
+    log.appendStandard("Storing medical records...");
+
+    ConfigurationManager medRecords;
+
+    if (!medRecords.loadConfiguration(workingDirectory + "/" + QString(FILE_MEDRECORD_DB),COMMON_TEXT_CODEC)){
+        log.appendError("Could not load medical records db file file: " + medRecords.getError());
+        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+        return;
+    }
+
+    QStringList columns;
+    QList<QStringList> values;
+
+    QStringList allkeys = medRecords.getAllKeys();
+
+    // Verifying consistency in the number of records.
+    qint32 numberOrRecords = -1;
+    for (qint32 i = 0; i < allkeys.size(); i++){
+        qint32 n = medRecords.getStringList(allkeys.at(i)).size();
+        if (numberOrRecords == -1) numberOrRecords = n;
+        else{
+            if (numberOrRecords != n){
+                log.appendError("Medical record number of records mismatch. Column : " + allkeys.at(i) + " has " +  QString::number(n) + " but previous columns had: " + QString::number(numberOrRecords));
+                finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+                return;
+            }
+        }
+    }
+
+    // Initializing the value lists
+    for (qint32 j = 0; j < numberOrRecords; j++){
+        values << QStringList();
+    }
+
+    // Adding the differet records.
+    for (qint32 i = 0; i < allkeys.size(); i++){
+        columns << allkeys.at(i);
+        QStringList allvalues = medRecords.getStringList(allkeys.at(i));
+        for (qint32 j = 0; j < allvalues.size(); j++){
+            values[j].append(allvalues.at(j));
+        }
+    }
+
+    // Adding the patient ID to all of them.
+    columns << TPATMEDREC_COL_PUID;
+    for (qint32 j = 0; j < numberOrRecords; j++){
+        values[j].append(puid);
+    }
+
+    // Adding the records to the database as they would not have been sent without them being changed or new.
+    // The transaction was already started in the function that called this one, so it is not necessary to call it again.
+    for (qint32 j = 0; j < numberOrRecords; j++){
+
+        log.appendStandard("Adding medical record " + QString::number(j+1) + " of " + QString::number(numberOrRecords));
+        if (!dbConnPatData.insertDB(TABLE_MEDICAL_RECORDS,columns,values.at(j),instUID)){
+            log.appendError("When adding medical record information: " + dbConnPatData.getError());
+            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            return;
+        }
+    }
+
+    // If there were not problems we need to finish everything right now.
+    finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_OK);
+
+}
+
+
+
+/////////////////////////////////////////// CLEAN UP ///////////////////////////////////////////////////
 void Control::finishUp(quint8 commitBase, quint8 commitID, quint8 commitPatData, qint32 code){
     if (commitBase == DB_FINISH_ACTION_COMMIT) {
         if (!dbConnBase.commit()) log.appendWarning("FAILED Commit for DB Transaction transaction");

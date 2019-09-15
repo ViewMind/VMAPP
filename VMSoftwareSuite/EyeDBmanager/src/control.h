@@ -13,7 +13,7 @@
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 
 #define EYE_DB_MNG_NAME      "EyeDBManager"
-#define EYE_DB_MNG_VERSION   "1.0.1"
+#define EYE_DB_MNG_VERSION   "1.1.0" // Previous 1.0.1
 #define FILE_DB_LOG          "dblog.log"
 
 #define DB_FINISH_ACTION_COMMIT   0
@@ -59,7 +59,12 @@ private:
 
     // The actual function that take actions in the program
     void checkMode();
-    void storeMode();
+    void storeMode(const QString &action);
+    void patDataStoreMode(const QString &puid, const QString &instUID);
+
+    // Helper fucntions
+    void storeDoctorData();
+    void storePatientData();
 
     // Common to al DB related stuff at the end.
     void finishUp(quint8 commitBase, quint8 commitID, quint8 commitPatData, qint32 code);

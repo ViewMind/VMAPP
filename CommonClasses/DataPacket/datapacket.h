@@ -30,7 +30,7 @@ public:
     static const quint8 DPFI_DB_TABLE                                 = 10;
     static const quint8 DPFI_DB_COL                                   = 11;
     static const quint8 DPFI_DB_VALUE                                 = 12;
-    //static const quint8 DPFI_DB_CONDITIION                            = 13;
+    static const quint8 DPFI_DB_MEDICAL_RECORD_FILE                   = 13;
     static const quint8 DPFI_DB_ERROR                                 = 14;
     //static const quint8 DPFI_DB_SET_ACK                               = 15;
     static const quint8 DPFI_DB_INST_PASSWORD                         = 16;
@@ -61,6 +61,7 @@ public:
     static const quint8 DPFI_CONF_FILE                                = 41;
     static const quint8 DPFI_NUM_EVALS                                = 42;
     static const quint8 DPFI_VMID_TABLE                               = 43;
+    static const quint8 DPFI_REQUEST_FIELD                            = 44;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;

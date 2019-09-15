@@ -141,6 +141,7 @@
 #define   CONFIG_P_ET_GP3HD                             "GP3HD"
 #define   CONFIG_P_DMBNG_ACTION_CHECK                   "check"
 #define   CONFIG_P_DMBNG_ACTION_STORE                   "store"
+#define   CONFIG_P_DBMNG_ACTION_PATDATA                 "patdata"
 
 // Indexes of the selected experiments
 #define   EXP_READING                                   1
@@ -170,6 +171,7 @@
 #define   FILE_DBMNG_COMM_FILE                          "dbmngcomm"
 #define   FILE_PATDATA_DB                               "patdata.db"
 #define   FILE_DOCDATA_DB                               "docdata.db"
+#define   FILE_MEDRECORD_DB                             "medrecords.db"
 
 // Headers for the data files identifying the format of the data in that experiment.
 #define   HEADER_READING_EXPERIMENT                     "#READING"
@@ -211,6 +213,10 @@
 #define   EYESERVER_RESULT_NOEVALS                       1
 #define   EYESERVER_RESULT_WRONG_SERIAL                  2
 #define   EYESERVER_RESULT_SERVER_ERROR                  3
+
+// Request codes for data packet
+#define   REQUEST_CODE_PROCESS_REPORT                    0
+#define   REQUEST_CODE_SAVE_PATIENT_DATA                 1
 
 
 // TCP Ports.

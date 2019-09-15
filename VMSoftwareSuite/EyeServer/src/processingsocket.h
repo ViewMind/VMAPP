@@ -19,6 +19,7 @@
 #define  TIME_MEASURE_CLIENT_OK                "04_Client OK"
 #define  TIME_MEASURE_DBMNG_STORE              "05_DB MNG Store Done"
 #define  TIME_MEASURE_DISCONNECT               "06_To Disconnect"
+#define  TIME_MEASURE_STORE_PATINFO            "07_Store Patient Info"
 
 /*****************************************************************
  * Self contained processing control and client communication class
@@ -60,7 +61,9 @@ private slots:
 
 private:
 
-    typedef enum {PS_WAIT_FINSHED_CONNECTION, PS_WAIT_INFO, PS_WAIT_DBMNG_CHECK, PS_WAIT_EYEPROC, PS_WAIT_CLIENT_OK, PS_WAIT_DBMNG_STORE,PS_WAIT_DISCONNECT} ProcessState;
+    typedef enum {PS_WAIT_FINSHED_CONNECTION, PS_WAIT_INFO, PS_WAIT_DBMNG_CHECK, PS_WAIT_EYEPROC,
+                  PS_WAIT_CLIENT_OK, PS_WAIT_DBMNG_STORE,PS_WAIT_DISCONNECT,
+                  PS_WAIT_STORE_PATINFO} ProcessState;
 
     // Common strings.
     QString timestamp;
@@ -82,7 +85,7 @@ private:
     void startTimeoutTimer();    
     QString stateToString();
     void sendCodeToClient(qint32 code, const QString repFile = "");
-    void dbMngCheck();
+    void dbMngCheck(ProcessState state);
     void dbMngStore();
 
 };

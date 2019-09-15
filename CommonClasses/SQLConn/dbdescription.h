@@ -69,24 +69,11 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TPATDATA_COL_DOCTORID                    "doctorid"
 #define  TPATDATA_COL_FIRSTNAME                   "firstname"
 #define  TPATDATA_COL_LASTNAME                    "lastname"
-#define  TPATDATA_COL_IDTYPE                      "idtype"
 #define  TPATDATA_COL_SEX                         "sex"
 #define  TPATDATA_COL_BIRTHCOUNTRY                "birthcountry"
 #define  TPATDATA_COL_BIRTHDATE                   "birthdate"
 #define  TPATDATA_COL_DATE_INS                    "date_insertion"
-#define  TPATDATA_COL_STATE                       "state"
-#define  TPATDATA_COL_CITY                        "city"
-#define  TPATDATA_COL_MAINACTIVITY                "mainactivity"
-#define  TPATDATA_COL_HIGHESTDEGREE               "highestdegree"
-#define  TPATDATA_COL_PHYSICALACTIVITY            "physicalactivity"
-#define  TPATDATA_COL_NOFSPOKENLANG               "nofspokenlang"
-#define  TPATDATA_COL_AGREESHAREDATA              "agreesharedata"
-#define  TPATDATA_COL_FAMILYHISTORY               "familyhistory"
-#define  TPATDATA_COL_PATIENTHISTORY              "patienthistory"
-#define  TPATDATA_COL_REMEDIES                    "remedies"
-#define  TPATDATA_COL_DIAGNOSTIC                  "diagnostic"
 #define  TPATDATA_COL_PUID                        "puid"
-
 #define  TPATDATA_NONCOL_DISPLAYID                "displayID"
 #define  TPATDATA_NONCOL_PROTOCOL                 "patient_protocol"
 
@@ -154,6 +141,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TEYERES_COL_BIND_INDEX_UC               "binding_index_uc"
 #define  TEYERES_COL_READ_COG_IMPAIR             "cognitive_impairment_index"
 #define  TEYERES_COL_EVALUATION_ID               "evaluation_id"
+#define  TEYERES_COL_CLIENT_STUDY_DATE           "client_study_date"
 
 // Columnn names for the institituion table
 #define  TINST_COL_KEYID                         "keyid"
