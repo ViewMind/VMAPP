@@ -42,12 +42,14 @@ VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager
 VMTools/RawDataServer/bin/LOGDIR/
 VMTools/RawDataServer/bin/RawDataServer
 VMTools/RawDataServer/bin/work/
-
+VMSoftwareSuite/EyeReportGenerator/bin/res/tempvar
 
 VMSoftwareSuite/EyeReportGenerator/bin/MOCS
 VMSoftwareSuite/EyeReportGenerator/bin/OBJS
 VMSoftwareSuite/EyeReportGenerator/bin/QRC
 VMSoftwareSuite/EyeReportGenerator/bin/EyeReportGen
+VMSoftwareSuite/EyeReportGenerator/bin/res/workdir/
+
 
 VMSoftwareSuite/EyeExperimenter/exe32
 
@@ -63,4 +65,6 @@ Scripts/server_scripts/05InformationDownload/rawdata/
 Scripts/php/composer.json
 Scripts/php/composer.lock
 Scripts/php/vendor/
+
+
 

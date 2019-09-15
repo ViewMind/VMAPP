@@ -32,7 +32,7 @@ mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_PATDATA_NAME -e "CREATE T
                                                                         date                  DATE,
                                                                         puid                  INT,
                                                                         record_index          INT,
-                                                                        presumtive_diagnosis  TEXT,
+                                                                        presumptive_diagnosis TEXT,
                                                                         formative_years       INT,
                                                                         medication            LONGTEXT,
                                                                         RNM                   LONGTEXT,

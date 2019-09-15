@@ -23,7 +23,7 @@ public:
     void setupDB(const QString &instanceName, const QString &host, const QString &dbname, const QString &user, const QString &passwd, quint16 port, const QString log_file, bool add = true);
 
     // Insert Query
-    bool insertDB(const QString &table, const QStringList &columns, const QStringList &values, const QString logid);
+    bool insertDB(const QString &table, const QStringList &columns, const QStringList &values, const QString logid, bool dontQuote = false);
 
     // Select Query. Returns the first row only
     bool readFromDB(const QString &table, const QStringList &columns, const QString &conditions);

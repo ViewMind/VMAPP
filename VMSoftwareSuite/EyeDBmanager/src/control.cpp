@@ -345,7 +345,7 @@ void Control::storeMode(const QString &action){
     QString eyerepgenconf = workingDirectory + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
     QStringList filters;
 
-    if (!demoMode){
+    if ((!demoMode) && (action == CONFIG_P_DMBNG_ACTION_STORE)) {
         QStringList filesToSave;
         filters << "*.dat" << "*.datf";
         filesToSave = QDir(workingDirectory).entryList(filters,QDir::Files);
@@ -837,14 +837,14 @@ void Control::patDataStoreMode(const QString &puid, const QString &instUID){
         columns << allkeys.at(i);
         QStringList allvalues = medRecords.getStringList(allkeys.at(i));
         for (qint32 j = 0; j < allvalues.size(); j++){
-            values[j].append(allvalues.at(j));
+            values[j].append("'" + allvalues.at(j) + "'");
         }
     }
 
     // Adding the patient ID to all of them.
     columns << TPATMEDREC_COL_PUID;
     for (qint32 j = 0; j < numberOrRecords; j++){
-        values[j].append(puid);
+        values[j].append("'" + puid + "'");
     }
 
     // Adding the records to the database as they would not have been sent without them being changed or new.
@@ -852,7 +852,7 @@ void Control::patDataStoreMode(const QString &puid, const QString &instUID){
     for (qint32 j = 0; j < numberOrRecords; j++){
 
         log.appendStandard("Adding medical record " + QString::number(j+1) + " of " + QString::number(numberOrRecords));
-        if (!dbConnPatData.insertDB(TABLE_MEDICAL_RECORDS,columns,values.at(j),instUID)){
+        if (!dbConnPatData.insertDB(TABLE_MEDICAL_RECORDS,columns,values.at(j),instUID,true)){
             log.appendError("When adding medical record information: " + dbConnPatData.getError());
             finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;

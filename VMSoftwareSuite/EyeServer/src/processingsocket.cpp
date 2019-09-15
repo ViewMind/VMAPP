@@ -138,9 +138,11 @@ void ProcessingSocket::dbMngCheck(ProcessState state){
         etSerial = rx.getField(DataPacket::DPFI_DB_ET_SERIAL).data.toString();
     }
 
+
     if (etSerial.isEmpty() || instID.isEmpty() || patientHashedID.isEmpty()){
         log.appendError("Missing information. ETSerial: " + etSerial + ". INST ID: " + instID + ". PAT HASH ID: " + patientHashedID);
         sendCodeToClient(EYESERVER_RESULT_SERVER_ERROR);
+        return;
     }
     log.appendStandard("INSTITUTION: " + instID);
     log.appendStandard("ET SERIAL: " + etSerial);
@@ -234,9 +236,9 @@ void ProcessingSocket::on_eyeDBMngFinished(qint32 status){
         }
         else{
             if (dbmngComm.containsKeyword(CONFIG_REMAINING_EVALUATIONS)){
-               numberOfRemainingEvaluations = dbmngComm.getInt(CONFIG_REMAINING_EVALUATIONS);
-               if (numberOfRemainingEvaluations > 0) numberOfRemainingEvaluations = numberOfRemainingEvaluations - 1;
-               log.appendStandard("Number of remaining evaluations (After this one): " + QString::number(numberOfRemainingEvaluations));
+                numberOfRemainingEvaluations = dbmngComm.getInt(CONFIG_REMAINING_EVALUATIONS);
+                if (numberOfRemainingEvaluations > 0) numberOfRemainingEvaluations = numberOfRemainingEvaluations - 1;
+                log.appendStandard("Number of remaining evaluations (After this one): " + QString::number(numberOfRemainingEvaluations));
             }
         }
 

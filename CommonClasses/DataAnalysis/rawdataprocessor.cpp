@@ -93,7 +93,10 @@ void RawDataProcessor::run(){
             studyID << "rd" + tagRet.version;
             emit(appendMessage(report,MSG_TYPE_STD));
         }
-        else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
+        else {
+            emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
+            return;
+        }
     }
 
 
@@ -148,7 +151,10 @@ void RawDataProcessor::run(){
             emit(appendMessage(formatBindingResultsForPrinting(bcans,"BC"),MSG_TYPE_STD));
             emit(appendMessage(formatBindingResultsForPrinting(ucans,"UC"),MSG_TYPE_STD));
         }
-        else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
+        else {
+            emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
+            return;
+        }
     }
 
     //    if (!dataFielding.isEmpty()) {
@@ -176,13 +182,18 @@ void RawDataProcessor::run(){
 
     // Setting the report date to the date of the data.
     QStringList dateParts = dateForReport.split("_");
+    QString client_date_for_db;
 
     // The check is done in case of an unforseen bug. Otherwise the program will crash attempting to access non existent values on a list.
-    if (dateParts.size() != 5) config->addKeyValuePair(CONFIG_REPORT_DATE,dateForReport);
+    if (dateParts.size() != 5) {
+        config->addKeyValuePair(CONFIG_REPORT_DATE,dateForReport);
+        client_date_for_db = "0000-00-00 00:00";
+    }
     else {
         config->addKeyValuePair(CONFIG_REPORT_DATE,dateParts.at(2) + "/" + dateParts.at(1) + "/" + dateParts.at(0) + " " + dateParts.at(3) + ":" + dateParts.at(4) );
         // Date for report will now be used in legacy versions of report generator. Need to have a name with no hour part.
         dateForReport = dateParts.at(0) + "_" + dateParts.at(1) + "_" + dateParts.at(2);
+        client_date_for_db = dateParts.at(0) + "-" + dateParts.at(1) + "-" + dateParts.at(2) + " " + dateParts.at(3) + ":" + dateParts.at(4);
     }
 
     generateReportFile(rdataProcessor.getResults(),reportInfoText.join("_") + "_" + dateForReport,freqErrorsOK);
@@ -217,6 +228,7 @@ void RawDataProcessor::run(){
     writer << QString(TEYERES_COL_PROTOCOL) + " =  " + config->getString(CONFIG_PROTOCOL_NAME) + ";\n";
     writer << QString(TEYERES_COL_FERROR) + " = " + ferrorvalue + ";\n";
     writer << QString(TEYERES_COL_EVALUATION_ID) + " = " + config->getString(CONFIG_RESULT_ENTRY_ID) + ";\n";
+    writer << QString(TEYERES_COL_CLIENT_STUDY_DATE) + " = " + client_date_for_db + ";\n";
     dbdatafile.close();
     emit(appendMessage("DB Data File Generated to: " + dbdatafile.fileName(),MSG_TYPE_SUCC));
 

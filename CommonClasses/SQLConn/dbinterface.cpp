@@ -37,14 +37,14 @@ bool DBInterface::open(){
 }
 
 
-bool DBInterface::insertDB(const QString &table, const QStringList &columns, const QStringList &values, const QString logid){
+bool DBInterface::insertDB(const QString &table, const QStringList &columns, const QStringList &values, const QString logid, bool dontQuote){
 
 
     QString query = "INSERT INTO " + table + "(";
 
     QStringList quotedVals;
     for (qint32 i = 0; i < values.size(); i++){
-        if (!values.at(i).contains('(')){
+        if (!values.at(i).contains('(') && !dontQuote){
             quotedVals << "'" + values.at(i) + "'";
         }
         else{
