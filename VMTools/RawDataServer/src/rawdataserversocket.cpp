@@ -102,6 +102,11 @@ void RawDataServerSocket::on_readyRead(){
             finishedTask = false;
             oprVMIDTableRequest();
         }
+        else if (rx.hasInformationField(DataPacket::DPFI_DB_MEDICAL_RECORD_FILE)){
+            log.appendStandard("Medical Record Request");
+            finishedTask = false;
+            oprMedicalRecords();
+        }
         else if (rx.hasInformationField(DataPacket::DPFI_DB_INST_PASSWORD)) {
             // Data query.
             log.appendStandard("RAW Data Request");
@@ -147,6 +152,185 @@ void RawDataServerSocket::on_sslErrors(const QList<QSslError> &errorlist){
 RawDataServerSocket::~RawDataServerSocket(){
     timer.stop();
     if (sslSocket != nullptr) delete sslSocket;
+}
+
+void RawDataServerSocket::oprMedicalRecords(){
+    if (!verifyPassword(rx.getField(DataPacket::DPFI_DB_INST_PASSWORD).data.toString())){
+        sendErrorMessage("Wrong Password");
+        return;
+    }
+
+    if (!dbConnBase.open()){
+        log.appendError("Getting requested information, could not open DB CON BASE: " + dbConnBase.getError());
+        sendErrorMessage("Internal DB Open Error");
+        return;
+    }
+
+    if (!dbConnID.open()){
+        log.appendError("Getting requested information, could not open DB CON ID: " + dbConnID.getError());
+        sendErrorMessage("Internal DB Open Error");
+        return;
+    }
+
+
+    if (!dbConnPatData.open()){
+        log.appendError("Getting requested information, could not open DB CON PAT DATA: " + dbConnPatData.getError());
+        sendErrorMessage("Internal DB Open Error");
+        return;
+    }
+
+    QString instUID = rx.getField(DataPacket::DPFI_DB_INST_UID).data.toString();
+    log.appendStandard("Getting PUID <-> HPUID map for institution: " + instUID);
+
+    QStringList columns;
+    QString condition;
+    DBData dbres;
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    log.appendStandard("Getting the doctors for said instituion");
+
+    columns << TDOCTOR_COL_UID;
+    condition = QString(TDOCTOR_COL_MEDICAL_INST) + " = '" + instUID + "'";
+    if (!dbConnBase.readFromDB(TABLE_DOCTORS,columns,condition)){
+        log.appendError("Getting doctor ID Information: " + dbConnBase.getError());
+        sendErrorMessage("Internal DB Query ERROR");
+        return;
+    }
+
+    dbres = dbConnBase.getLastResult();
+    if (dbres.rows.isEmpty()){
+        log.appendError("Getting doctor ID information query returned empty");
+        sendErrorMessage("Internal DB Query ERROR");
+        return;
+    }
+
+    QStringList druidlist;
+    for (qint32 i = 0; i < dbres.rows.size(); i++){
+        if (dbres.rows.at(i).size() != columns.size()){
+            log.appendError("Getting doctor ID information: expected number of columns is " + QString::number(columns.size()) + " but result " + QString::number(i)
+                            + " has " + QString::number(dbres.rows.at(i).size()));
+            sendErrorMessage("Internal DB Query ERROR");
+            return;
+        }
+        druidlist << dbres.rows.at(i).first();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    log.appendStandard("Getting the PUIDS for given doctors: " + druidlist.join("--"));
+    columns.clear();
+
+    columns << TPATDATA_COL_PUID << TPATDATA_COL_DOCTORID;
+    condition = QString(TPATDATA_COL_DOCTORID) +  " IN ('" + druidlist.join("','") + "')";
+    if (!dbConnPatData.readFromDB(TABLE_PATDATA,columns,condition)){
+        log.appendError("Getting PUID Information: " + dbConnPatData.getError());
+        sendErrorMessage("Internal DB Query ERROR");
+        return;
+    }
+
+    dbres = dbConnPatData.getLastResult();
+    if (dbres.rows.isEmpty()){
+        log.appendError("Getting doctor ID information query returned empty");
+        sendErrorMessage("Internal DB Query ERROR");
+        return;
+    }
+
+    QSet<QString> puidset;  // using a set to avoid duplicates.
+    for (qint32 i = 0; i < dbres.rows.size(); i++){
+        if (dbres.rows.at(i).size() != columns.size()){
+            log.appendError("Getting PUID ID information: expected number of columns is " + QString::number(columns.size()) + " but result " + QString::number(i)
+                            + " has " + QString::number(dbres.rows.at(i).size()));
+            sendErrorMessage("Internal DB Query ERROR");
+            return;
+        }
+        puidset << dbres.rows.at(i).first();
+    }
+
+    QStringList puidlist = puidset.toList();
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    log.appendStandard("Getting medical records for patients: " + puidlist.join("--"));
+    columns.clear();
+
+    columns << TPATMEDREC_COL_PUID               // 0
+            << TPATMEDREC_COL_DATE               // 1
+            << TPATMEDREC_COL_EVALS              // 2
+            << TPATMEDREC_COL_FORM_YEARS         // 3
+            << TPATMEDREC_COL_MEDICATION         // 4
+            << TPATMEDREC_COL_PRESUMP_DIAGNOSIS  // 5
+            << TPATMEDREC_COL_KEYID              // 6
+            << TPATMEDREC_COL_REC_INDEX          // 7
+            << TPATMEDREC_COL_RNM;               // 8
+
+    qint32 indexOfPUID     = columns.indexOf(TPATMEDREC_COL_PUID);
+    qint32 indexOfRecIndex = columns.indexOf(TPATMEDREC_COL_REC_INDEX);
+
+
+    QStringList columnInRecord;
+    columnInRecord << TPATMEDREC_COL_DATE << TPATMEDREC_COL_EVALS << TPATMEDREC_COL_FORM_YEARS << TPATMEDREC_COL_MEDICATION
+                   << TPATMEDREC_COL_PRESUMP_DIAGNOSIS << TPATMEDREC_COL_RNM << TPATMEDREC_COL_REC_INDEX;
+
+    condition = QString(TPATMEDREC_COL_PUID) +  " IN ('" + puidlist.join("','") + "') ORDER BY " + QString(TPATMEDREC_COL_KEYID) + " ASC";
+
+    if (!dbConnPatData.readFromDB(TABLE_MEDICAL_RECORDS,columns,condition)){
+        log.appendError("Getting PUID Information: " + dbConnPatData.getError());
+        sendErrorMessage("Internal DB Query ERROR");
+        return;
+    }
+
+    dbres = dbConnPatData.getLastResult();
+    QVariantMap medicalRecords; // Each entry will contain a list of maps, representing the medical records used.
+    for (qint32 i = 0; i < dbres.rows.size(); i++){
+        QStringList row = dbres.rows.at(i);
+        if (row.size() != columns.size()){
+            log.appendError("Getting medical record information. expected number of columns is " + QString::number(columns.size()) + " but result " + QString::number(i)
+                            + " has " + QString::number(row.size()));
+            sendErrorMessage("Internal DB Query ERROR");
+            return;
+        }
+        QString puid = row.at(indexOfPUID);
+        qint32 recInd = row.at(indexOfRecIndex).toInt();
+
+        QVariantList patientRecords;
+        if (medicalRecords.contains(puid)) patientRecords = medicalRecords.value(puid).toList();
+
+        // The new record will either be overwrite a blank record or a overwrite an older record.
+        QVariantMap record;
+        for (qint32 j = 0; j < columnInRecord.size(); j++){
+            QString col = columnInRecord.at(j);
+            record[col] = row.at(columns.indexOf(col));
+        }
+
+        if (recInd >= patientRecords.size()){
+            // Completing the list to the record index
+            qint32 num2add = recInd + 1 - patientRecords.size();
+            for (qint32 j = 0; j < num2add; j++) {
+                QVariantMap newRecord;
+                newRecord[TPATMEDREC_COL_REC_INDEX] = patientRecords.size();
+                patientRecords << newRecord;
+            }
+        }
+
+        patientRecords[recInd] = record; // Since the keyid is newer larger keyids will ALWAYS replaces lower keyids.
+        medicalRecords[puid] = patientRecords;
+
+    }
+
+    // Once the data is gathered is sent as a JSON String.
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(medicalRecords);
+
+    log.appendStandard("Sending medical records back to client");
+    // Separating as string lists.
+    DataPacket tx;
+    tx.addString(QString(jsonDoc.toJson(QJsonDocument::Compact)),DataPacket::DPFI_DB_MEDICAL_RECORD_FILE);
+    QByteArray ba = tx.toByteArray();
+    qint64 num = sslSocket->write(ba.constData(),ba.size());
+    if (num != ba.size()){
+        log.appendError("Failure sending medical record data table to client");
+    }
+
+    finishedTask = true;
+    on_disconnected();
+
 }
 
 void RawDataServerSocket::oprLocalDBBkp(){

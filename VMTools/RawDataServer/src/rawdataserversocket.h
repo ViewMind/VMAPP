@@ -53,6 +53,7 @@ private:
     void oprVMIDTableRequest();
     void oprProcessRequest();
     void oprInstList();
+    void oprMedicalRecords();
 
 
     void sendErrorMessage(const QString &errMsg);
