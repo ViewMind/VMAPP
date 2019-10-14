@@ -74,6 +74,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TPATDATA_COL_BIRTHDATE                   "birthdate"
 #define  TPATDATA_COL_DATE_INS                    "date_insertion"
 #define  TPATDATA_COL_PUID                        "puid"
+#define  TPATDATA_COL_FORMATIVE_YEARS             "formative_years"
 #define  TPATDATA_NONCOL_DISPLAYID                "displayID"
 #define  TPATDATA_NONCOL_PROTOCOL                 "patient_protocol"
 
