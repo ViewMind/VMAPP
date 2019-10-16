@@ -3,7 +3,7 @@
 
   //=============================== INPUT PARAMETERS =================================
   
-  $LOCAL_PROD = 1;
+  $LOCAL_PROD = 0;
 
   $config_patdata["db_user"]   = "root";
   $config_patdata["db_name"]   = "viewmind_patdata";
@@ -42,9 +42,28 @@
       return;    
   }    
   
+  $fy = array();
+  
   while ($row = mysqli_fetch_array($res)){  
-      echo $row["keyid"] . ", " . $row["record_index"] . ", " . $row["puid"] . ", " . $row["formative_years"] . "\n";
+      //echo $row["keyid"] . ", " . $row["record_index"] . ", " . $row["puid"] . ", " . $row["formative_years"] . "\n";
+      $fy[$row["puid"]] = $row["formative_years"];
   }
+  
+  foreach ($fy as $puid => $formy){
+     //echo "$puid ->  $formy\n";
+     if ($formy == "") $formy = 0;
+     $sqlquery = "UPDATE tPatientData SET formative_years = $formy WHERE puid = $puid";
+     $res = mysqli_query($con_patdata,$sqlquery);
+     if (!$res){
+         $ret["error"] = "ErrorDB. Query: " . $sqlquery . ". El error SQL es: " . mysqli_error($con_patdata);
+         mysqli_close($con_patdata); 
+         //echo json_encode($ret);
+         echo $ret["error"];
+         return;    
+     }      
+  }
+  
+  
   
   echo "FINISHED";
 
