@@ -6,7 +6,6 @@
 #include "../../../CommonClasses/SQLConn/dbdescription.h"
 #include "../../../CommonClasses/SQLConn/dbinterface.h"
 #include "../../../CommonClasses/LocalInformationManager/localinformationmanager.h"
-#include "../../../CommonClasses/server_defines.h"
 #include "s3interface.h"
 #include "filelister.h"
 

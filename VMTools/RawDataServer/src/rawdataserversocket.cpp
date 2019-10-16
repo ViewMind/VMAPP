@@ -254,31 +254,33 @@ void RawDataServerSocket::oprMedicalRecords(){
     columns << TPATMEDREC_COL_PUID               // 0
             << TPATMEDREC_COL_DATE               // 1
             << TPATMEDREC_COL_EVALS              // 2
-            << TPATMEDREC_COL_FORM_YEARS         // 3
-            << TPATMEDREC_COL_MEDICATION         // 4
-            << TPATMEDREC_COL_PRESUMP_DIAGNOSIS  // 5
-            << TPATMEDREC_COL_KEYID              // 6
-            << TPATMEDREC_COL_REC_INDEX          // 7
-            << TPATMEDREC_COL_RNM;               // 8
+            << TPATMEDREC_COL_MEDICATION         // 3
+            << TPATMEDREC_COL_PRESUMP_DIAGNOSIS  // 4
+            << TPATMEDREC_COL_KEYID              // 5
+            << TPATMEDREC_COL_REC_INDEX          // 6
+            << TPATMEDREC_COL_RNM;               // 7
 
     qint32 indexOfPUID     = columns.indexOf(TPATMEDREC_COL_PUID);
     qint32 indexOfRecIndex = columns.indexOf(TPATMEDREC_COL_REC_INDEX);
 
 
     QStringList columnInRecord;
-    columnInRecord << TPATMEDREC_COL_DATE << TPATMEDREC_COL_EVALS << TPATMEDREC_COL_FORM_YEARS << TPATMEDREC_COL_MEDICATION
+    columnInRecord << TPATMEDREC_COL_DATE << TPATMEDREC_COL_EVALS << TPATMEDREC_COL_MEDICATION
                    << TPATMEDREC_COL_PRESUMP_DIAGNOSIS << TPATMEDREC_COL_RNM << TPATMEDREC_COL_REC_INDEX;
 
     condition = QString(TPATMEDREC_COL_PUID) +  " IN ('" + puidlist.join("','") + "') ORDER BY " + QString(TPATMEDREC_COL_KEYID) + " ASC";
 
     if (!dbConnPatData.readFromDB(TABLE_MEDICAL_RECORDS,columns,condition)){
-        log.appendError("Getting PUID Information: " + dbConnPatData.getError());
+        log.appendError("Getting medical record information: " + dbConnPatData.getError());
         sendErrorMessage("Internal DB Query ERROR");
         return;
     }
 
+
     dbres = dbConnPatData.getLastResult();
-    QVariantMap medicalRecords; // Each entry will contain a list of maps, representing the medical records used.
+    QVariantMap medicalInformation; // Each entry will contain a map with the patient info in the server and a list of maps, representing the medical records used.
+
+
     for (qint32 i = 0; i < dbres.rows.size(); i++){
         QStringList row = dbres.rows.at(i);
         if (row.size() != columns.size()){
@@ -290,8 +292,12 @@ void RawDataServerSocket::oprMedicalRecords(){
         QString puid = row.at(indexOfPUID);
         qint32 recInd = row.at(indexOfRecIndex).toInt();
 
+        QVariantMap patientInfo;
         QVariantList patientRecords;
-        if (medicalRecords.contains(puid)) patientRecords = medicalRecords.value(puid).toList();
+        if (medicalInformation.contains(puid)) {
+            patientInfo = medicalInformation.value(puid).toMap();
+            patientRecords = patientInfo.value(RAW_DATA_SERVER_RETURN_MEDICAL_RECORDS).toList();
+        }
 
         // The new record will either be overwrite a blank record or a overwrite an older record.
         QVariantMap record;
@@ -311,12 +317,64 @@ void RawDataServerSocket::oprMedicalRecords(){
         }
 
         patientRecords[recInd] = record; // Since the keyid is newer larger keyids will ALWAYS replaces lower keyids.
-        medicalRecords[puid] = patientRecords;
+        patientInfo[RAW_DATA_SERVER_RETURN_MEDICAL_RECORDS] = patientRecords;
+        medicalInformation[puid] = patientInfo;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    log.appendStandard("Getting the patient information");
+    columns.clear();
+
+    columns << TPATDATA_COL_BIRTHCOUNTRY
+            << TPATDATA_COL_BIRTHDATE
+            << TPATDATA_COL_DATE_INS
+            << TPATDATA_COL_DOCTORID
+            << TPATDATA_COL_FIRSTNAME
+            << TPATDATA_COL_FORMATIVE_YEARS
+            << TPATDATA_COL_LASTNAME
+            << TPATDATA_COL_PUID
+            << TPATDATA_COL_SEX;
+
+    condition = QString(TPATDATA_COL_PUID) +  " IN ('" + puidlist.join("','") + "') ORDER BY " + QString(TPATDATA_COL_KEYID) + " ASC";
+
+    if (!dbConnPatData.readFromDB(TABLE_PATDATA,columns,condition)){
+        log.appendError("Getting Patient Information : " + dbConnPatData.getError());
+        sendErrorMessage("Internal DB Query ERROR");
+        return;
+    }
+
+    dbres = dbConnPatData.getLastResult();
+
+    for (qint32 i = 0; i < dbres.rows.size(); i++){
+        QVariantMap patientInfo;
+        QStringList row = dbres.rows.at(i);
+        if (row.size() != columns.size()){
+            log.appendError("Getting patient information. expected number of columns is " + QString::number(columns.size()) + " but result " + QString::number(i)
+                            + " has " + QString::number(row.size()));
+            sendErrorMessage("Internal DB Query ERROR");
+            return;
+        }
+
+        QString puid = "-1";
+        for (qint32 j = 0; j < columns.size(); j++){
+            if (columns.at(j) == TPATDATA_COL_PUID){
+                puid = row.at(j);
+            }
+            else{
+                patientInfo[columns.at(j)] = row.at(j);
+            }
+        }
+
+        QVariantMap patStruct = medicalInformation.value(puid).toMap();
+        patStruct[RAW_DATA_SERVER_RETURN_PATIENT_DATA] = patientInfo;
+        medicalInformation[puid] = patStruct;
 
     }
 
+
+    ///////////////////////////////////////////////////////////////////////////////////
     // Once the data is gathered is sent as a JSON String.
-    QJsonDocument jsonDoc = QJsonDocument::fromVariant(medicalRecords);
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(medicalInformation);
 
     log.appendStandard("Sending medical records back to client");
     // Separating as string lists.

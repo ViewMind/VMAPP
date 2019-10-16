@@ -218,6 +218,10 @@
 #define   REQUEST_CODE_PROCESS_REPORT                    0
 #define   REQUEST_CODE_SAVE_PATIENT_DATA                 1
 
+// Field names in data return from raw data server
+#define   RAW_DATA_SERVER_RETURN_PATIENT_DATA            "patient_data"
+#define   RAW_DATA_SERVER_RETURN_MEDICAL_RECORDS         "medical_records"
+
 
 // TCP Ports.
 static const quint16 TCP_PORT_RAW_DATA_SERVER            = 54918;
