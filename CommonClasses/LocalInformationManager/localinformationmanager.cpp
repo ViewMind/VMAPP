@@ -217,7 +217,7 @@ bool LocalInformationManager::createUpdateMedicalDBFile(const QString &patid){
     QHash<QString,QStringList> valuesToAdd;
     QStringList normalColumns;
     QStringList jsonColumns;
-    normalColumns   << TPATMEDREC_COL_DATE << TPATMEDREC_COL_FORM_YEARS << TPATMEDREC_COL_PRESUMP_DIAGNOSIS << TPATMEDREC_COL_REC_INDEX;
+    normalColumns   << TPATMEDREC_COL_DATE << TPATMEDREC_COL_PRESUMP_DIAGNOSIS << TPATMEDREC_COL_REC_INDEX;
     jsonColumns     << TPATMEDREC_COL_EVALS << TPATMEDREC_COL_MEDICATION << TPATMEDREC_COL_RNM;
 
     QSet<qint32> allreadyAdded;

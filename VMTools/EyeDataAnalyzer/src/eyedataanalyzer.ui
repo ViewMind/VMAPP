@@ -224,6 +224,13 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="pbGetMedicalRecords">
+             <property name="text">
+              <string>Get Medical Records</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>

@@ -3,6 +3,8 @@
 
 #include <QDataStream>
 #include <QHash>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include "../../../CommonClasses/common.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/VariantMapSerializer/variantmapserializer.h"
@@ -11,6 +13,8 @@
 #define FILENAME_DBDATA_MAP  "00drpatdata.dat"
 #define FILENAME_PATUID_MAP  "00uidpuidmap.dat"
 #define FILENAME_VMID_MAP    "00vmidmap.dat"
+#define FILENAME_MED_RECS    "00medrecs.dat"
+#define FILENAME_PATDATA     "00patdata.dat"
 
 #define UNIFIED_CSV_ID_DID    0
 #define UNIFIED_CSV_ID_DBPUID 1
@@ -35,6 +39,10 @@ public:
     QString fromSerializedMapData(const QString &data);
     QString addSerializedIDMap(const QString &data);
     QString addVMIDTableData(const QString &table, const QString &instuid);
+    QString addMedicalRecords(const QString &json);
+
+    QVariantMap getClosestMedicalRecord(const QString &dbpuid, const qint64 &studyDateInJulianDays, qint32 maxDayDiff);
+    QVariantMap getPatientDatabaseRecord(const QString &dbpuid);
 
     //bool isPuidInNameMap(const QString &puid) const;
     //QString getPatName(const QString &puid) const;
@@ -51,7 +59,9 @@ private:
     QVariantMap dbdata;
     QVariantMap dbiddata;
     QVariantMap dbvmid;
+    QVariantMap dbpatdata;
     QHash<QString,QString> instituions;
+    QVariantMap dbmedrecs;
 };
 
 #endif // PATIENTNAMEMAPMANAGER_H

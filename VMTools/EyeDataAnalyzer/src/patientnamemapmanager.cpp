@@ -23,12 +23,95 @@ void PatientNameMapManager::loadPatNameDB(){
     reader3 >> dbvmid;
     file3.close();
 
+    QFile file4(FILENAME_MED_RECS);
+    if (!file4.open(QFile::ReadOnly)) return;
+    QDataStream reader4(&file4);
+    reader4 >> dbmedrecs;
+    file4.close();
+
+    QFile file5(FILENAME_PATDATA);
+    if (!file5.open(QFile::ReadOnly)) return;
+    QDataStream reader5(&file5);
+    reader5 >> dbpatdata;
+    file4.close();
+
 }
 
 void PatientNameMapManager::setInstitutions(const QStringList &uids, const QStringList &names){
     for (int i = 0; i < uids.size(); i++){
         instituions[uids.at(i)] = names.at(i);
     }
+}
+
+QString PatientNameMapManager::addMedicalRecords(const QString &json){
+    QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+    QVariantMap medicalInformation = doc.object().toVariantMap();
+
+
+
+    QStringList dbuids = medicalInformation.keys();
+    for (qint32 i = 0; i < dbuids.size(); i++){
+        //qWarning() << "Adding medical records for " << dbuids.at(i);
+        dbpatdata[dbuids.at(i)] = medicalInformation.value(dbuids.at(i)).toMap().value(RAW_DATA_SERVER_RETURN_PATIENT_DATA);
+        dbmedrecs[dbuids.at(i)] = medicalInformation.value(dbuids.at(i)).toMap().value(RAW_DATA_SERVER_RETURN_MEDICAL_RECORDS);
+    }
+
+    QFile file(FILENAME_MED_RECS);
+    if (!file.open(QFile::WriteOnly)) return "Could not open output file for writing: " + QString(FILENAME_MED_RECS);
+
+    QDataStream writer(&file);
+    writer << dbmedrecs;
+    file.close();
+
+
+    QFile file2(FILENAME_PATDATA);
+    if (!file2.open(QFile::WriteOnly)) return "Could not open output file for writing: " + QString(FILENAME_PATDATA);
+
+    QDataStream writer2(&file2);
+    writer2 << dbpatdata;
+    file2.close();
+
+    return "";
+}
+
+QVariantMap PatientNameMapManager::getClosestMedicalRecord(const QString &dbpuid, const qint64 &studyDateInJulianDays , qint32 maxDayDiff){
+    if (!dbmedrecs.contains(dbpuid)) return QVariantMap();
+    QVariantList medRecs = dbmedrecs.value(dbpuid).toList();
+
+    qint64 closest = 0;
+    qint32 index = -1;
+
+    for (qint32 i = 0; i < medRecs.size(); i++){
+        QDate compDate = QDate::fromString(medRecs.at(i).toMap().value(TPATMEDREC_COL_DATE).toString(),"yyyy-MM-dd");
+        qint64 ddiff = (compDate.toJulianDay() - studyDateInJulianDays);
+        //qWarning() << "Date Diff for patient" << dbpuid << "is" << qAbs(ddiff) << "compared to" << maxDayDiff;
+        if (qAbs(ddiff) <= maxDayDiff){
+            // If there is not result yet, this is saved.
+            if (index == -1){
+                index = i;
+                closest = ddiff;
+            }
+            else{
+                // Otherwise, the result is saved ONLY if this medical records is closer two the one that was previously found.
+                if (ddiff < closest){
+                    index = i;
+                    closest = ddiff;
+                }
+            }
+        }
+    }
+
+
+    if (index == -1) return QVariantMap();
+    else {
+        //qWarning() << "RETURNING" << medRecs.at(index).toMap();
+        return medRecs.at(index).toMap();
+    }
+}
+
+QVariantMap PatientNameMapManager::getPatientDatabaseRecord(const QString &dbpuid){
+    if (dbpatdata.contains(dbpuid)) return dbpatdata.value(dbpuid).toMap();
+    else return QVariantMap();
 }
 
 QString PatientNameMapManager::fromSerializedMapData(const QString &data){
@@ -166,5 +249,20 @@ void PatientNameMapManager::printMap() const{
     keys = dbvmid.keys();
     for (qint32 i = 0; i < keys.size(); i++){
         qDebug() << keys.at(i) << ":=" << dbvmid.value(keys.at(i));
+    }
+
+    qDebug() << "MEDICAL RECORDS";
+    QJsonDocument doc = QJsonDocument::fromVariant(dbmedrecs);
+    qDebug().noquote() << QString(doc.toJson(QJsonDocument::Indented));
+
+    qDebug() << "PATIENT DATA: " << dbpatdata.size();
+    //doc = QJsonDocument::fromVariant(dbpatdata);
+    //qDebug().noquote() << QString(doc.toJson(QJsonDocument::Indented));
+    keys = dbpatdata.keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        qDebug() << "FOR" << keys.at(i);
+        QJsonDocument doc = QJsonDocument::fromVariant(dbpatdata.value(keys.at(i)));
+        qDebug().noquote() << QString(doc.toJson(QJsonDocument::Indented));
+        //qDebug() << keys.at(i) << ":" << dbpatdata.value(keys.at(i));
     }
 }

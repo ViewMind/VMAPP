@@ -35,3 +35,7 @@ qint32 SelectUnifiedCSVFolderDiag::getDisplayIDCode() const{
 QString SelectUnifiedCSVFolderDiag::getDirectory() const{
     return ui->lePath->text();
 }
+
+qint64 SelectUnifiedCSVFolderDiag::getMaxDayDiffForMedRecs() const{
+    return ui->leMedRecsDays->text().toInt();
+}

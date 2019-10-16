@@ -274,7 +274,7 @@ Dialog {
 
         // Saving the settings.
         var newCountry = loader.getCountryCodeForCountry(diagDBDefaultCountry.vmCurrentText);
-        loader.setSettingsValue(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.currentText);
+        loader.setSettingsValue(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.vmCurrentText);
         loader.setSettingsValue(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
         loader.setSettingsValue(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
         loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_COUNTRY,newCountry);
@@ -284,7 +284,7 @@ Dialog {
         updateMenus();
 
         // Restart required
-        if ((vmLoadLanguage !== diagCBLang.currentText) || (vmDefaultCountry !== newCountry)){
+        if ((vmLoadLanguage !== diagCBLang.vmCurrentText) || (vmDefaultCountry !== newCountry)){
             viewSettings.vmRestartRequired = true;
         }
         else{

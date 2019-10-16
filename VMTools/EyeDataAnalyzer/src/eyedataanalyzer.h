@@ -23,7 +23,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "6.0.2"
+#define   PROGRAM_VERSION              "6.2.0"
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -114,6 +114,8 @@ private slots:
 
     void on_pbVMIDTableInfo_clicked();
 
+    void on_pbGetMedicalRecords_clicked();
+
 private:
 
     typedef enum {CS_CONNECTING_FOR_NAME_LIST,
@@ -121,8 +123,10 @@ private:
                   CS_GETTING_DATA,
                   CS_GETTING_DB_BKP,
                   CS_GETTING_VMID_TABLE,
+                  CS_GETTING_MEDRECS,
                   CS_CONNECTING_FOR_DATA,
                   CS_CONNECTING_VMID_TABLE,
+                  CS_CONNECTING_FOR_MEDRECS,
                   CS_CONNECTING_FOR_DB_BKP} ConnectionState;
 
     QString connectionStateToString() const {
@@ -135,6 +139,8 @@ private:
         case CS_GETTING_NAMELIST: return "Getting uid inst name list";
         case CS_CONNECTING_VMID_TABLE: return "Connecting for VMID table";
         case CS_GETTING_VMID_TABLE: return "Getting for VMID table";
+        case CS_CONNECTING_FOR_MEDRECS: return "Connecting Medical Records";
+        case CS_GETTING_MEDRECS: return "Getting medical records";
         }
         return "";
     }

@@ -59,11 +59,13 @@ viewpatientreg_btnCancel = CANCEL;
 viewpatientreg_btnContinue = ACCEPT;
 viewpatientreg_errorEmpty = Cannot be empty;
 viewpatientreg_errorNoAccept = You must accept the Terms of Use and the Privacy Policy;
+viewpatientreg_errorInvalidNum = The value entered is not a valid number;
 viewpatientreg_terms_of_use = Terms Of Use;
 viewpatientreg_privacy_policy = Privacy Policy;
 viewpatientreg_errorExists = This patient is exists under this doctor;
 viewpatientreg_labelAssignedDoctor = Assigned doctor;
 viewpatientreg_labelProtocol = Protocol;
+viewpatientreg_labelFormativeYears = Years of education;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Eye Studies;

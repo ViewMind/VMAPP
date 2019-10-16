@@ -2,7 +2,21 @@
 
 BatchCSVProcessing::BatchCSVProcessing()
 {
+    mrListEvals << "MMSE" << "ACE-R" << "IFS" << "BOSTON" << "Rey" << "RMN";
+    mrListMeds << "Difenhidramina" << "Fenobarbital" << "Cannabinoides( CBD, THC, otros)" << "Amiodorona"
+               << "Atenolol" << "Topiromato" << "Venlafaxina" << "Fluoxetina" << "Paroxetina" << "Sertralina"
+               << "Rivastigmina" << "Memantina" << "Donepecilo" << "Diazepan" << "Alprazolam" << "Clonazepam"
+               << "Lorazepan" << "Midazolan";
 
+    mrListRNM <<  "RMN_Amyg"  <<  "RMN_HOC"  <<  "RMN_Hipp" <<
+                  "RMN_InfLatVent" <<  "RMN_SupLatVent" <<
+                  "RMN_LAmyg" <<  "RMN_LCorThick"  <<  "RMN_LEntCort"  <<  "RMN_LHip" <<
+                  "RMN_RAmyg" <<  "RMN_RCorThick"  <<  "RMN_REntCort"  <<  "RMN_RHip" <<
+                  "RMN_TotCertCort" <<  "RMN_TotGrayMatt"  <<  "RMN_TotWhiteMatt";
+    headerMedRec << "medical_record_date" << "years_formation" << mrListMeds <<  mrListEvals << mrListRNM;
+    // PATCH TO REMOVE COMMAS FROM HEADER
+    headerMedRec[4] = "Cannabinoides_CBD_THC_otros";
+    maxDayDiff = 60;
 }
 
 
@@ -33,6 +47,7 @@ void BatchCSVProcessing::run(){
     qint32 counter = 0;
     for (qint32 i = 0; i < cats.size(); i++){
 
+
         QString outputCSVFile = workingDirectory + "/" + cats.at(i) + ".csv";
         QString outputCSVContents = "";
         bool isReading = cats.at(i).contains("RD");
@@ -45,7 +60,7 @@ void BatchCSVProcessing::run(){
             if (csvFile.isEmpty()) continue;
 
             //qWarning() << "Appending data of file" << csvFile;
-            outputCSVContents = appendCSV(csvFile,dfps.displayID,dfps.age,outputCSVContents);
+            outputCSVContents = appendCSV(csvFile,dfps,outputCSVContents);
 
             counter++;
             qint32 percent = counter*100/total;
@@ -66,10 +81,78 @@ void BatchCSVProcessing::run(){
         }
         else errors << "No content to fill file " << outputCSVFile;
 
+
+
     }
 
 }
 
+QStringList BatchCSVProcessing::getClosestMedicalRecord(const QString &dbpuid, const QString &studyDate){
+    //    QDate date2 = QDate::fromString("2019-03-25","yyyy-MM-dd");
+    //    QDate date1 = QDate::fromString("2019-03-08","yyyy-MM-dd");
+    //    qint64 dayDiff = qAbs(date1.toJulianDay() - date2.toJulianDay());
+    //    qDebug() << "DAY DIFF is" << dayDiff;
+    qint64 evaluationDate = QDate::fromString(studyDate,"yyyy-MM-dd").toJulianDay();
+    QVariantMap medRecord = patdata->getClosestMedicalRecord(dbpuid,evaluationDate,maxDayDiff);
+    QVariantMap patientInfo = patdata->getPatientDatabaseRecord(dbpuid);
+    QStringList ans;
+
+    if (medRecord.contains(TPATMEDREC_COL_DATE)) ans << medRecord.value(TPATMEDREC_COL_DATE).toString();
+    else ans << "";
+
+    if (patientInfo.contains(TPATDATA_COL_FORMATIVE_YEARS)) ans << patientInfo.value(TPATDATA_COL_FORMATIVE_YEARS).toString();
+    else ans << "";
+
+    if (medRecord.contains(TPATMEDREC_COL_MEDICATION)){
+        QString json = medRecord.value(TPATMEDREC_COL_MEDICATION).toString();
+        QJsonDocument doc = QJsonDocument::fromJson(json.toLatin1());
+        QVariantMap map = doc.object().toVariantMap();
+        for (qint32 i = 0; i < mrListMeds.size(); i++){
+            if (map.contains(mrListMeds.at(i))) ans << map.value(mrListMeds.at(i)).toString();
+            else ans << "";
+        }
+    }
+    else {
+        for (qint32 i = 0; i < mrListMeds.size(); i++){
+            ans << "";
+        }
+    }
+
+    if (medRecord.contains(TPATMEDREC_COL_EVALS)){
+        QString json = medRecord.value(TPATMEDREC_COL_EVALS).toString();
+        QJsonDocument doc = QJsonDocument::fromJson(json.toLatin1());
+        QVariantMap map = doc.object().toVariantMap();
+        for (qint32 i = 0; i < mrListEvals.size(); i++){
+            if (map.contains(mrListEvals.at(i))) ans << map.value(mrListEvals.at(i)).toString();
+            else ans << "";
+        }
+    }
+    else {
+        for (qint32 i = 0; i < mrListEvals.size(); i++){
+            ans << "";
+        }
+    }
+
+    if (medRecord.contains(TPATMEDREC_COL_RNM)){
+        QString json = medRecord.value(TPATMEDREC_COL_RNM).toString();
+        QJsonDocument doc = QJsonDocument::fromJson(json.toLatin1());
+        QVariantMap map = doc.object().toVariantMap();
+        for (qint32 i = 0; i < mrListRNM.size(); i++){
+            if (map.contains(mrListRNM.at(i))) ans << map.value(mrListRNM.at(i)).toString();
+            else ans << "";
+        }
+    }
+    else {
+        for (qint32 i = 0; i < mrListRNM.size(); i++){
+            ans << "";
+        }
+    }
+
+
+
+
+    return ans;
+}
 
 QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessingStruct dfps, bool isReading){
     ConfigurationManager config;
@@ -114,18 +197,26 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
     processor->setPixelsInSacadicLatency(config.getInt(CONFIG_LATENCY_ESCAPE_RAD));
     processor->configure(dfps.filePath,exp);
 
-    if (!processor->doEyeDataProcessing(data)){
-        errors << processor->getError();
-        return "";
+    if (!data.isEmpty()){
+        if (!processor->doEyeDataProcessing(data)){
+            errors << processor->getError();
+            return "";
+        }
+
+        genCSV = processor->getOuputMatrixFileName();
     }
-    genCSV = processor->getOuputMatrixFileName();
+    else{
+        //qWarning() << "Could not get any data from" << dfps.filePath;
+        messages << "EMPTY FILE: " + dfps.filePath;
+        genCSV = "";
+    }
 
     delete processor;
     return genCSV;
 
 }
 
-QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const QString &displayID, const QString &patientAge, const QString &csvdata){
+QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const DatFileProcessingStruct &dfps, const QString &csvdata){
 
 
     // Reading the input file.
@@ -146,12 +237,17 @@ QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const QString
         return csvdata;
     }
 
+    // Getting medical record information.
+
+
     QStringList csvLines;
-    if (csvdata.isEmpty()) csvLines << "display_id,age,"+lines.first();
+    if (csvdata.isEmpty()) csvLines << "display_id,age,"+lines.first() + "," + headerMedRec.join(",");
     else csvLines << csvdata;
 
+    QStringList medicalRecord = getClosestMedicalRecord(dfps.dbpuid,dfps.studyDate);
+
     for (qint32 i = 1; i < lines.size(); i++){
-        csvLines << displayID + "," + patientAge  + "," + lines.at(i);
+        csvLines << dfps.displayID + "," + dfps.age  + "," + lines.at(i) + "," + medicalRecord.join(",");
     }
 
     return csvLines.join("\n");
@@ -196,6 +292,15 @@ void BatchCSVProcessing::recursiveFillProcessingList(const QString &dir){
             else if (idToUse == UNIFIED_CSV_ID_HPUID) s.displayID = config.getString(ID_HPUID);
             else if (idToUse == UNIFIED_CSV_ID_NAME) s.displayID = config.getString(ID_NAME);
             else if (idToUse == UNIFIED_CSV_ID_PUID) s.displayID = config.getString(ID_PUID);
+            s.dbpuid = config.getString(ID_DBUID);
+
+            // Getting the directory name, in order to get the time stamp.
+            QStringList dirnameParts = qdir.dirName().split("_");
+            if (dirnameParts.size() == 6){
+                s.studyDate = dirnameParts.at(0) + "-" + dirnameParts.at(1) + "-" + dirnameParts.at(2);
+            }
+            else s.studyDate = "";
+
             DatFileInfoInDir::DatInfo dinfo = DatFileInfoInDir::getDatFileInformation(datfiles.at(i));
             processingList[dinfo.category].append(s);
         }

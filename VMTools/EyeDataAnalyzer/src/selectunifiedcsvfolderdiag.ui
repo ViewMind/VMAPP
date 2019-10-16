@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>531</width>
-    <height>148</height>
+    <height>268</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Unified CSV</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
@@ -40,6 +40,27 @@
         </widget>
        </item>
       </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Tolerance for using medical records (in days)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="leMedRecsDays">
+       <property name="inputMethodHints">
+        <set>Qt::ImhDigitsOnly</set>
+       </property>
+       <property name="text">
+        <string>60</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

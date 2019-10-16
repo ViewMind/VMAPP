@@ -59,11 +59,13 @@ viewpatientreg_btnCancel = CANCELAR;
 viewpatientreg_btnContinue = ACEPTAR;
 viewpatientreg_errorEmpty = No puede estar vacío;
 viewpatientreg_errorNoAccept = Se debe acepatar las Condiciones de Uso y la Poítica de Privacidad;
+viewpatientreg_errorInvalidNum = El valor ingresado no es un número válido;
 viewpatientreg_terms_of_use = Condiciones de Uso;
 viewpatientreg_privacy_policy = Política de Privacidad;
 viewpatientreg_errorExists = Este paciente existe bajo este doctor;
 viewpatientreg_labelAssignedDoctor = Asignar a doctor;
 viewpatientreg_labelProtocol = Protocolo;
+viewpatientreg_labelFormativeYears = Años de formación;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Estudios Oculares;

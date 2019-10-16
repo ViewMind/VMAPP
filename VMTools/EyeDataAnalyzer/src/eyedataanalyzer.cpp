@@ -173,6 +173,28 @@ void EyeDataAnalyzer::on_encryptedSuccess(){
         }
         timer.start(30000);
     }
+    else if (connectionState == CS_CONNECTING_FOR_MEDRECS){
+        connectionState = CS_GETTING_MEDRECS;
+        waitDiag->setMessage("Getting, the medical records for the institution.");
+        waitDiag->setProgressBarVisibility(false);
+        waitDiag->setProgressBarValue(0);
+
+        DataPacket tx;
+        QString password = ui->lePasswordField->text();
+        tx.addString(ui->cbInstitutions->currentData().toString(),DataPacket::DPFI_DB_INST_UID);
+        tx.addString(password,DataPacket::DPFI_DB_INST_PASSWORD);
+        tx.addString("nothing",DataPacket::DPFI_DB_MEDICAL_RECORD_FILE);
+
+        rx.clearAll();
+        QByteArray ba = tx.toByteArray();
+        qint64 num = serverConn->write(ba.constData(),ba.size());
+        if (num != ba.size()){
+            logForDB.appendError("Could not send medical records request.");
+            waitDiag->close();
+            return;
+        }
+        timer.start(30000);
+    }
 
 }
 
@@ -289,6 +311,20 @@ void EyeDataAnalyzer::on_readyRead(){
             }
 
         }
+        else if (connectionState == CS_GETTING_MEDRECS){
+            timer.stop();
+            if (rx.hasInformationField(DataPacket::DPFI_DB_ERROR)){
+                logForDB.appendError("Getting Medical Records, returned the following error message: " + rx.getField(DataPacket::DPFI_DB_ERROR).data.toString());
+                serverConn->disconnectFromHost();
+                return;
+            }
+            QString medrecs = rx.getField(DataPacket::DPFI_DB_MEDICAL_RECORD_FILE).data.toString();
+            QString err = patNameMng.addMedicalRecords(medrecs);
+            if (!err.isEmpty()){
+                logForDB.appendError("Error while getting the Medical Records: " + err);
+            }
+
+        }
         else {
             timer.stop();
             QString nameAndUids = rx.getField(DataPacket::DPFI_INST_NAMES).data.toString();
@@ -363,6 +399,15 @@ void EyeDataAnalyzer::on_pbVMIDTableInfo_clicked()
     waitDiag->open();
 }
 
+void EyeDataAnalyzer::on_pbGetMedicalRecords_clicked()
+{
+    connectionState = CS_CONNECTING_FOR_MEDRECS;
+    serverConn->connectToHostEncrypted(SERVER_IP,TCP_PORT_RAW_DATA_SERVER);
+    timer.start(10000);
+    waitDiag->setMessage("Contacting the server for getting the Medical Records for the institution");
+    waitDiag->setProgressBarVisibility(false);
+    waitDiag->open();
+}
 
 void EyeDataAnalyzer::on_pbLocalDB_clicked(){
     connectionState = CS_CONNECTING_FOR_DB_BKP;
@@ -861,6 +906,7 @@ void EyeDataAnalyzer::on_pbUnifiedCSV_clicked()
     waitDiag->setMessage("Processing directory " + selectedDir);
     waitDiag->open();
     batchProcessor.setWorkingDir(selectedDir,diag.getDisplayIDCode());
+    batchProcessor.setMedicalRecordsMaxDayDiff(diag.getMaxDayDiffForMedRecs());
     batchProcessor.start();
 
 }
@@ -945,5 +991,6 @@ void EyeDataAnalyzer::on_pbIDTable_clicked()
     logForProcessing.appendSuccess("Finished. File at: " + file.fileName());
 
 }
+
 
 

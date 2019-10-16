@@ -41,7 +41,6 @@ VMBase {
         medicationList.clear()
         evaluationList.clear()
         inpDose.clear()
-        inpFomativeYears.clear()
         inpOtherMeds.clear()
         inpPresumptiveDiag.setText("")
         inpRMN_Amyg.clear()
@@ -100,9 +99,9 @@ VMBase {
         loadEvaluationList()
 
         // Setting the formative years.
-        if (medicalRecord.formative_years !== -1){
-            inpFomativeYears.setText(medicalRecord.formative_years)
-        }
+//        if (medicalRecord.formative_years !== -1){
+//            inpFomativeYears.setText(medicalRecord.formative_years)
+//        }
 
         // Setting the date
         inpRecordDate.setISODate(medicalRecord.date)
@@ -291,18 +290,16 @@ VMBase {
             anchors.top: generalInfoTitle.bottom
             anchors.topMargin: vmSpaceBetweenTitleAndData
 
-
-            VMTextDataInput{
-                id: inpFomativeYears
-                width: (parent.width-generalInfoRow.spacing)/2
-                vmPlaceHolder: loader.getStringForKey(keysearch+"formalEducation");
-                //Keys.onTabPressed: labelLastName.vmFocus = true;
-            }
-
+//            VMTextDataInput{
+//                id: inpFomativeYears
+//                width: (parent.width-generalInfoRow.spacing)/2
+//                vmPlaceHolder: loader.getStringForKey(keysearch+"formalEducation");
+//                //Keys.onTabPressed: labelLastName.vmFocus = true;
+//            }
 
             VMDateInputField{
                 id: inpRecordDate
-                width: inpFomativeYears.width
+                width: (parent.width-generalInfoRow.spacing)/2
                 vmEnableDateCheck: false
                 vmPlaceHolder: loader.getStringForKey(keysearch+"recordDate");
                 //Keys.onTabPressed: labelDocument_number.vmFocus = true;
@@ -776,17 +773,6 @@ VMBase {
                     return
                 }
                 medicalRecord.date = inpRecordDate.getISODate();
-
-                // The formative years
-                if (inpFomativeYears.vmEnteredText === "") medicalRecord.formative_years = -1;
-                else{
-                    var value = parseInt(inpFomativeYears.vmEnteredText)
-                    if (isNaN(value) || (value < 0)){
-                        inpRecordDate.vmErrorMsg = loader.getStringForKey(keysearch + "errorInvalidNum");
-                        return
-                    }
-                    else medicalRecord.formative_years = value;
-                }
 
                 // Checking the rnm values
                 var inputList = [ inpRMN_Amyg, inpRMN_HOC , inpRMN_Hipp,

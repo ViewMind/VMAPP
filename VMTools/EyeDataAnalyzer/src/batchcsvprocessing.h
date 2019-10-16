@@ -15,6 +15,7 @@ class BatchCSVProcessing : public QThread
 public:
     BatchCSVProcessing();
     void setDBConnect(PatientNameMapManager *db) { patdata = db;}
+    void setMedicalRecordsMaxDayDiff(qint64 ddiff)  {maxDayDiff = ddiff;}
     void setWorkingDir(const QString &dir, qint32 id2use) { workingDirectory = dir; idToUse = id2use;}
     void run();
 
@@ -34,6 +35,8 @@ private:
         QString configurationFile;
         QString displayID;
         QString age;
+        QString studyDate;
+        QString dbpuid;
         QString toString() const { return "FILE: " + filePath + ". CONF: " + configurationFile + ". DISPID: " + displayID;}
     };
 
@@ -46,11 +49,19 @@ private:
     // To access DB data
     PatientNameMapManager *patdata;
 
+    // Medical records string lists
+    QStringList mrListEvals;
+    QStringList mrListMeds;
+    QStringList mrListRNM;
+    QStringList headerMedRec;
+    qint64 maxDayDiff;
+
     // Fill the processing list
     void recursiveFillProcessingList(const QString &dir);
 
     QString generateLocalCSV(DatFileProcessingStruct dfps, bool isReading);
-    QString appendCSV(const QString &fileToAppend, const QString &displayID, const QString &patientAge, const QString &csvdata);
+    QString appendCSV(const QString &fileToAppend, const DatFileProcessingStruct &dfps, const QString &csvdata);
+    QStringList getClosestMedicalRecord(const QString &dbpuid, const QString &studyDate);
 
 };
 

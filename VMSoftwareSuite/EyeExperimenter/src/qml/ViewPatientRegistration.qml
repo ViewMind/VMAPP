@@ -18,6 +18,7 @@ VMBase {
         labelName.clear();
         labelLastName.clear();
         labelGender.setSelection(0);
+        labelFormativeYears.clear();
         labelDocument_number.clear();
         cbConsent.checked = false;
         labelCountry.vmEnabled = true;
@@ -64,6 +65,11 @@ VMBase {
         loader.loadDoctorSelectionInformation();
         assignedDoctor.setModelList(loader.getDoctorNameList());
         assignedDoctor.setSelection(loader.getIndexOfDoctor(patInfo.doctorid))
+
+        // The formative years.
+        if ("formative_years" in patInfo){
+            labelFormativeYears.setText(patInfo.formative_years);
+        }
 
         cbConsent.checked = true;
     }
@@ -203,21 +209,37 @@ VMBase {
         }
     }
 
-    VMAutoCompleteComboBox{
-        id: labelCountry
+    Row {
+
+        id: countryAndYearsRow
         width: rowNames.width
-        height: 30
-        z: 10
-        vmLabel: loader.getStringForKey(keysearch+"labelCountry")
-        vmList: loader.getCountryList()
-        vmValues: loader.getCountryCodeList()
-        onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-        onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
-        vmEnabled: true
-        Keys.onTabPressed: labelBirthDate.vmFocus = true;
+        spacing: 16
         anchors.top: rowNames.bottom
         anchors.topMargin: rowNames.visible? 35 : 0
         anchors.left: rowNames.left
+        z: 10
+
+        VMAutoCompleteComboBox{
+            id: labelCountry
+            width: countryAndYearsRow.width*0.6
+            height: 30
+            z: 10
+            vmLabel: loader.getStringForKey(keysearch+"labelCountry")
+            vmList: loader.getCountryList()
+            vmValues: loader.getCountryCodeList()
+            onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+            onVmListChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
+            vmEnabled: true
+            Keys.onTabPressed: labelFormativeYears.vmFocus = true;
+        }
+
+        VMTextDataInput {
+            id: labelFormativeYears
+            width: countryAndYearsRow.width - countryAndYearsRow.spacing - labelCountry.width
+            vmPlaceHolder: loader.getStringForKey(keysearch+"labelFormativeYears");
+            Keys.onTabPressed: labelBirthDate.vmFocus = true;
+            anchors.bottom: labelCountry.bottom
+        }
     }
 
     Row {
@@ -225,7 +247,7 @@ VMBase {
         id: genderAndBDateRow
         width: rowNames.width
         spacing: 16
-        anchors.top: labelCountry.bottom
+        anchors.top: countryAndYearsRow.bottom
         anchors.topMargin: 23
         anchors.left: rowNames.left
         z: 3
@@ -374,8 +396,19 @@ VMBase {
                     sex: labelGender.vmCurrentText,
                     birthcountry: labelCountry.vmCurrentText,
                     puid: patientUID,
-                    patient_protocol: labelProtocol.vmCurrentText
+                    patient_protocol: labelProtocol.vmCurrentText,
+                    formative_years: labelFormativeYears.vmEnteredText
                 };
+
+                if (labelFormativeYears.vmEnteredText === "") dbDataReq.formative_years = 0;
+                else{
+                    var value = parseInt(labelFormativeYears.vmEnteredText)
+                    if (isNaN(value) || (value < 0)){
+                        labelFormativeYears.vmErrorMsg = loader.getStringForKey(keysearch + "errorInvalidNum");
+                        return
+                    }
+                    else dbDataReq.formative_years = value;
+                }
 
 //                if (dbDataReq.birthdate === ""){
 //                    labelBirthDate.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");

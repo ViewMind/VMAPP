@@ -18,6 +18,7 @@ public:
 
     qint32 getDisplayIDCode() const;
     QString getDirectory() const;
+    qint64 getMaxDayDiffForMedRecs() const;
 
 private slots:
     void on_pbBrowse_clicked();
