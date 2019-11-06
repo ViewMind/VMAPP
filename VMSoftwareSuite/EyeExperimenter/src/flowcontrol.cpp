@@ -40,9 +40,16 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *
 void FlowControl::resolutionCalculations(){
     QDesktopWidget *desktop = QApplication::desktop();
     // This line will assume that the current screen is the one where the experiments will be drawn.
-    QRect screen = desktop->screenGeometry(desktop->screenNumber());
+    QRect screen = desktop->screenGeometry(desktop->screenNumber());    
     configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,screen.width());
     configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
+
+    // Debugging screen calculation
+//    qDebug() << "FLOWCONTROL: Resolution Calculations: Detected Screens";
+//    for (qint32 i = 0; i < desktop->screenCount(); i++){
+//        qDebug() << desktop->screenGeometry(desktop->screen(i));
+//    }
+//    qDebug() << "==========================================";
 }
 
 void FlowControl::setupSecondMonitor(){
