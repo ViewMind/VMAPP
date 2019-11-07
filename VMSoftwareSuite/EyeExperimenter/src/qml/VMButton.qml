@@ -6,7 +6,7 @@ Button{
     id: vmButton
     property string vmText: "VM Button"
     property string vmFont: "Mono"
-    property variant vmSize: [131,50]
+    property variant vmSize: [mainWindow.width*131/1280,mainWindow.height*50/690]
     property bool vmInvertColors: false
     property string vmColorBkg: "#ffffff"
     property string vmColorText: "#297fca"
@@ -77,7 +77,7 @@ Button{
     contentItem: Text{
         anchors.centerIn: parent
         font.family: vmFont
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: vmText

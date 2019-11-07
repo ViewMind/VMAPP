@@ -5,14 +5,19 @@ import QtGraphicalEffects 1.0
 VMBase {
 
     id: viewHome
-    width: viewHome.vmWIDTH
-    height: viewHome.vmHEIGHT
+    width: mainWindow.width
+    height: mainWindow.height
+
+    readonly property double vmScale: mainWindow.width/1280;
 
     readonly property string keysearch: "viewhome_"
 
     function getErrorTitleAndMessage(keyid){
-        var str = loader.getStringForKey(keyid);
-        var res = str.split("<>");
+        var res = loader.getStringListForKey(keyid);
+        if (res.length !== 2){
+            res[0] = "ERROR";
+            res[1] = "CODE: " + keyid
+        }
         return res;
     }
 
@@ -36,6 +41,65 @@ VMBase {
         viewMedicalInformation.updateText();
     }
 
+
+    // Debugging function to test error dialog.
+    function testErrorDiag(which,code){
+        var titleMsg;
+        if (code === -1) titleMsg = viewHome.getErrorTitleAndMessage(which);
+        else titleMsg = loader.getErrorMessageForCode(code)
+        vmErrorDiag.vmErrorMessage = titleMsg[1];
+        vmErrorDiag.vmErrorTitle = titleMsg[0];
+        vmErrorDiag.open();
+    }
+
+    Component.onCompleted: {
+        // Checking that the everything was loaded correctly.
+        if (loader.getLoaderError()){
+            viewHome.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_LOAD_CONFIG;
+            var titleMsg = getErrorTitleAndMessage("error_loading_config");
+            //console.log("Title msg is " + titleMsg);
+            viewHome.vmErrorDiag.vmErrorMessage = titleMsg[1];
+            viewHome.vmErrorDiag.vmErrorTitle = titleMsg[0];
+            viewHome.vmErrorDiag.open();
+            return;
+        }
+
+        // SSL Check is done right now
+        if (!flowControl.checkSSLAvailability()){
+            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_NO_SSL;
+            titleMsg = viewHome.getErrorTitleAndMessage("error_no_ssl");
+            vmErrorDiag.vmErrorMessage = titleMsg[1];
+            vmErrorDiag.vmErrorTitle = titleMsg[0];
+            vmErrorDiag.open();
+            return;
+        }
+
+        // Loading the Dr Options.
+        viewDrSelection.updateDrProfile();
+
+        // Checking for changelog
+        var content = loader.checkForChangeLog();
+        if (content !== ""){
+            var lines = content.split("\n");
+            showTextDialog.vmTitle = lines[0];
+            lines.shift();
+            content = lines.join("\n");
+            showTextDialog.vmContent = content;
+            showTextDialog.open();
+        }
+
+        if (loader.clearChangeLogFile()){
+            titleMsg = viewHome.getErrorTitleAndMessage("error_launcher_update");
+            restartDialog.vmContent = titleMsg[1];
+            restartDialog.vmTitle = titleMsg[0];
+            restartDialog.open();
+            closeTimer.start()
+        }
+
+        //testErrorDiag("error_db_outofevals",-1);
+    }
+
+    // Dialog used to show a wall of text.
     Dialog {
         id: showTextDialog;
         modal: true
@@ -165,73 +229,17 @@ VMBase {
         }
     }
 
-    function testErrorDiag(which,code){
-        var titleMsg;
-        if (code === -1) titleMsg = viewHome.getErrorTitleAndMessage(which);
-        else titleMsg = loader.getErrorMessageForCode(code)
-        vmErrorDiag.vmErrorMessage = titleMsg[1];
-        vmErrorDiag.vmErrorTitle = titleMsg[0];
-        vmErrorDiag.open();
-    }
-
-    Component.onCompleted: {
-        // Checking that the everything was loaded correctly.
-        if (loader.getLoaderError()){
-            viewHome.vmErrorDiag.vmErrorCode = viewHome.vmErrorDiag.vmERROR_LOAD_CONFIG;
-            var titleMsg = getErrorTitleAndMessage("error_loading_config");
-            //console.log("Title msg is " + titleMsg);
-            viewHome.vmErrorDiag.vmErrorMessage = titleMsg[1];
-            viewHome.vmErrorDiag.vmErrorTitle = titleMsg[0];
-            viewHome.vmErrorDiag.open();
-            return;
-        }
-
-        // SSL Check is done right now
-        if (!flowControl.checkSSLAvailability()){
-            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_NO_SSL;
-            titleMsg = viewHome.getErrorTitleAndMessage("error_no_ssl");
-            vmErrorDiag.vmErrorMessage = titleMsg[1];
-            vmErrorDiag.vmErrorTitle = titleMsg[0];
-            vmErrorDiag.open();
-            return;
-        }
-
-        // Loading the Dr Options.
-        viewDrSelection.updateDrProfile();
-
-        // Checking for changelog
-        var content = loader.checkForChangeLog();
-        if (content !== ""){
-            var lines = content.split("\n");
-            showTextDialog.vmTitle = lines[0];
-            lines.shift();
-            content = lines.join("\n");
-            showTextDialog.vmContent = content;
-            showTextDialog.open();
-        }
-
-        if (loader.clearChangeLogFile()){
-            titleMsg = viewHome.getErrorTitleAndMessage("error_launcher_update");
-            restartDialog.vmContent = titleMsg[1];
-            restartDialog.vmTitle = titleMsg[0];
-            restartDialog.open();
-            closeTimer.start()
-        }
-
-        //testErrorDiag("error_db_outofevals",-1);
-
-    }
-
     // ViewMind Logo
     Image {
         id: logo
         source: "qrc:/images/LOGO.png"
         anchors{
             top: parent.top
-            topMargin: 29
+            topMargin: mainWindow.height*0.043
             left: parent.left
-            leftMargin: 61
+            leftMargin: mainWindow.width*0.048
         }
+        scale: vmScale
     }
 
     // The head graph
@@ -240,10 +248,11 @@ VMBase {
         source: "qrc:/images/ILUSTRACION.png"
         anchors{
             left: parent.left
-            leftMargin: 145
+            leftMargin: mainWindow.width*0.113
             bottom: parent.bottom
-            bottomMargin: 191
+            bottomMargin: mainWindow.height*0.277
         }
+        scale: vmScale
     }
 
     // The configure settings button
@@ -259,21 +268,21 @@ VMBase {
             id: btnConfSettingsRect
             radius: 3
             color: btnConfSettings.pressed? "#e8f2f8" :"#ffffff"
-            width: 178
-            height: 43
+            width: mainWindow.width*0.139
+            height: mainWindow.height*0.062
         }
         contentItem: Text{
             anchors.centerIn: btnConfSettingsRect
             font.family: gothamM.name
-            font.pixelSize: 13
+            font.pixelSize: 13*vmScale
             text: loader.getStringForKey(keysearch+"btnConfSettings");
             color: "#88b2d0"
         }
         anchors{
             right: parent.right
-            rightMargin: 63
+            rightMargin: mainWindow.width*0.062
             top: parent.top
-            topMargin: 19
+            topMargin: mainWindow.height*0.027
         }
         onClicked: {
             viewSettings.open()
@@ -283,11 +292,11 @@ VMBase {
     Text {
         id: slideTitle
         font.family: gothamB.name
-        font.pixelSize: 43
+        font.pixelSize: 43*vmScale
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 212
+        anchors.topMargin: mainWindow.height*0.307
         anchors.left: headDesign.right
-        anchors.leftMargin: 75
+        anchors.leftMargin: mainWindow.width*0.058
         color: "#297fca"
         text: loader.getStringForKey(keysearch+"slideTitle");
     }
@@ -314,9 +323,9 @@ VMBase {
         vmFont: gothamM.name
         anchors{
             left: headDesign.right
-            leftMargin: 75
+            leftMargin: mainWindow.width*0.058
             top: slideTitle.bottom
-            topMargin: 23
+            topMargin: mainWindow.height*0.033
         }
         onClicked: {
             viewDrSelection.open();

@@ -18,10 +18,9 @@ Rectangle {
     readonly property int vmExpIndexBindingBC:  3;
     readonly property int vmExpIndexFielding:   4;
 
-    readonly property int vmWIDTH: 1280
-    readonly property int vmHEIGHT: 720
-
     property alias vmErrorDiag: errorDialog
+
+    readonly property double vmScale: mainWindow.width/1280;
 
     signal backButtonPressed();
 
@@ -63,13 +62,11 @@ Rectangle {
 
     VMErrorDialog{
         id: errorDialog
-        x: 332
+        x: (parent.width-width)/2
         y: (parent.height-height)/2
     }
 
     id: viewBase
-    width: 1280
-    height: 768
     anchors.fill: parent
 
     function updateText(){
@@ -81,7 +78,7 @@ Rectangle {
     Rectangle {
         id: topBanner
         width: parent.width
-        height: 81
+        height: mainWindow.height*0.117
         color: "#88b2d0"
         anchors.top: parent.top
         anchors.left: parent.left
@@ -91,16 +88,12 @@ Rectangle {
     Image {
         id: topRight
         source: "qrc:/images/ESQUINA_DERECHA_ARRIBA.png"
-        anchors.top: topBanner.bottom
-        anchors.right: parent.right
     }
 
     // Bottom left screen decoration
     Image {
         id: bottomLeft
         source: "qrc:/images/ESQUINA_IZQUIERDA_ABAJo.png"
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
     }
 
     function setMenuVisibility(visible){
@@ -111,10 +104,10 @@ Rectangle {
         id: doctorMenu
         visible: !isHomePage
         vmFont: gothamM.name
-        anchors.verticalCenter: vmBanner.verticalCenter        
-        width: 200
+        anchors.verticalCenter: vmBanner.verticalCenter                
+        width: mainWindow.width*0.156
         anchors.right: parent.right
-        anchors.rightMargin: 33
+        anchors.rightMargin: mainWindow.width*0.0478
         onShowMenu: {
             expMenu.z = 10;
         }
@@ -126,10 +119,27 @@ Rectangle {
         width: doctorMenu.width
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.rightMargin: 33
+        anchors.rightMargin: mainWindow.width*0.0478
         onHideMenu: {
             expMenu.z = -10
         }
     }
+
+    Component.onCompleted: {
+        // PATCH: For some reason even after scaling the program recognizes the with and size of the border images incorrectly.
+        // The math here calculates the position correctly.
+        var scale = mainWindow.width/1280;
+        var correction = (scale-1)/2
+
+        bottomLeft.scale = scale;
+        bottomLeft.x = bottomLeft.width*correction
+        bottomLeft.y = mainWindow.height - bottomLeft.height*scale + bottomLeft.height*correction
+
+        topRight.scale = scale
+        topRight.x = mainWindow.width - topRight.width*scale + topRight.width*correction
+        // ANOTHER PATCH: The value below should be the same as banner height that for some reason is zero when I use it here. I'm giving up and just putting the same value again.
+        topRight.y = mainWindow.height*0.117 + topRight.height*correction
+    }
+
 
 }

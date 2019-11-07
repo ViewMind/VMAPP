@@ -5,8 +5,6 @@ import QtGraphicalEffects 1.0
 VMBase {
 
     id: viewCalibrationStart
-    width: viewCalibrationStart.vmWIDTH
-    height: viewCalibrationStart.vmHEIGHT
 
     Connections{
         target: flowControl

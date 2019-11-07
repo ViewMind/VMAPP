@@ -3,25 +3,20 @@ import QtQuick.Controls 2.2
 import QtQuick.Window 2.2
 
 Window {
-    visible: true
-    title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()
     id: mainWindow
+    visible: true
+    title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()    
     visibility: Window.Maximized
 
     Component.onCompleted: {        
         flowControl.resolutionCalculations();
-        //var frameGeomtry = loader.frameSize(mainWindow)
-        //console.log(frameGeomtry)
+        // This ensures that no resizing is possible.
         minimumHeight = height;
         maximumHeight = height;
         minimumWidth = width;
         maximumWidth = width;
-        //var hdiff = frameGeomtry.height - height - 10;
-        //x = (Screen.width - width)/2;
-        //x = 0;
-        //y = hdiff; // This should put the window at the top of the screen.
-        swiperControl.currentIndex = swiperControl.vmIndexHome;
 
+        swiperControl.currentIndex = swiperControl.vmIndexHome;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
@@ -35,7 +30,7 @@ Window {
     // The configurations dialog.
     ViewSettings{
         id: viewSettings
-        x: 333
+        x: (parent.width - viewSettings.width)/2
         y: (parent.height - viewSettings.height)/2
         onUpdateMenus: {
             viewHome.updateDrMenuText();
