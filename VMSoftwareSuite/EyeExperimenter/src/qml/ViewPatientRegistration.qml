@@ -99,7 +99,7 @@ VMBase {
         Text {
             id: diagTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 43
+            font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
             anchors.topMargin: 20
             anchors.horizontalCenter: parent.horizontalCenter
@@ -122,7 +122,7 @@ VMBase {
                 width: parent.width;
                 height: parent.height;
                 font.family: robotoR.name
-                font.pixelSize: 13
+                font.pixelSize: 13*viewHome.vmScale
                 readOnly: true
                 text: showTextDialog.vmContent
                 wrapMode: Text.Wrap
@@ -148,7 +148,7 @@ VMBase {
     Text {
         id: viewTitle
         font.family: gothamB.name
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
@@ -162,7 +162,7 @@ VMBase {
     Text {
         id: viewSubTitle
         font.family: robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewTitle.bottom
         anchors.topMargin: 13
         anchors.horizontalCenter: parent.horizontalCenter
@@ -173,7 +173,7 @@ VMBase {
     Text {
         id: noAcceptError
         font.family: robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewSubTitle.bottom
         anchors.topMargin: 15
         anchors.horizontalCenter: parent.horizontalCenter
@@ -310,7 +310,7 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelAssignedDoctor");
         color:  "#297fca"
         font.family: "Mono"
-        font.pixelSize: 11
+        font.pixelSize: 11*viewHome.vmScale
         anchors.left: rowNames.left
         anchors.bottom: assignedDoctor.top
         anchors.bottomMargin: 5
@@ -341,7 +341,7 @@ VMBase {
         Text {
             id: consentText
             font.family: robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             color: "#58595b"
             text: loader.getStringForKey(keysearch+"labelConsent");
             anchors.verticalCenter: cbConsent.verticalCenter

@@ -54,7 +54,7 @@ Item {
             id: displayText
             text: "Test Text"
             font.family: viewHome.robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             color: "#58595b"
             verticalAlignment: Text.AlignVCenter
             anchors.bottom: divisorLine.top
@@ -142,7 +142,7 @@ Item {
                         id: textItem
                         text: vmText
                         font.family: viewHome.robotoR.name
-                        font.pixelSize: 13
+                        font.pixelSize: 13*viewHome.vmScale
                         color: "#58595b"
                         verticalAlignment: Text.AlignVCenter
                         anchors.left: parent.left
@@ -162,7 +162,7 @@ Item {
         text: vmErrorMsg
         color:  "#ca2026"
         font.family: viewHome.robotoR.name
-        font.pixelSize: 12
+        font.pixelSize: 12*viewHome.vmScale
         anchors.left: parent.left
         anchors.top: parent.bottom
         anchors.topMargin: 5

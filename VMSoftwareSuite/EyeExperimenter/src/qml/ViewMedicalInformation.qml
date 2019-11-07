@@ -237,7 +237,7 @@ VMBase {
     Text {
         id: viewTitle
         font.family: gothamB.name
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
@@ -248,7 +248,7 @@ VMBase {
     Text {
         id: viewSubTitle
         font.family: robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewTitle.bottom
         anchors.topMargin: 13
         anchors.horizontalCenter: parent.horizontalCenter
@@ -273,7 +273,7 @@ VMBase {
         Text {
             id: generalInfoTitle
             font.family: gothamB.name
-            font.pixelSize: 16
+            font.pixelSize: 16*viewHome.vmScale
             anchors.top:  parent.top
             anchors.left: parent.left
             anchors.leftMargin: 200
@@ -311,7 +311,7 @@ VMBase {
         Text {
             id: medicationInfoTitle
             font.family: gothamB.name
-            font.pixelSize: 16
+            font.pixelSize: 16*viewHome.vmScale
             anchors.top:  generalInfoRow.bottom
             anchors.topMargin: vmSpaceBetweenDataAndTitle
             anchors.left: generalInfoTitle.left
@@ -395,7 +395,7 @@ VMBase {
                     text: loader.getStringForKey(keysearch+"headerMedication");
                     width: parent.width
                     font.family: gothamB.name
-                    font.pixelSize: 15
+                    font.pixelSize: 15*viewHome.vmScale
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -414,7 +414,7 @@ VMBase {
                     text: loader.getStringForKey(keysearch+"dose");
                     width: parent.width
                     font.family: gothamB.name
-                    font.pixelSize: 15
+                    font.pixelSize: 15*viewHome.vmScale
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -448,7 +448,7 @@ VMBase {
         Text {
             id: evaluationInfoTitle
             font.family: gothamB.name
-            font.pixelSize: 16
+            font.pixelSize: 16*viewHome.vmScale
             anchors.top:  (medicationTableHeader.visible)? medicationListView.bottom : (inpOtherMeds.visible? inpOtherMeds.bottom : medicationAddRow.bottom)
             anchors.topMargin: vmSpaceBetweenDataAndTitle
             anchors.left: generalInfoTitle.left
@@ -511,7 +511,7 @@ VMBase {
                     text: loader.getStringForKey(keysearch+"headerEvaluation");
                     width: parent.width
                     font.family: gothamB.name
-                    font.pixelSize: 15
+                    font.pixelSize: 15*viewHome.vmScale
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -530,7 +530,7 @@ VMBase {
                     text: loader.getStringForKey(keysearch+"testScore");
                     width: parent.width
                     font.family: gothamB.name
-                    font.pixelSize: 15
+                    font.pixelSize: 15*viewHome.vmScale
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -564,7 +564,7 @@ VMBase {
         Text {
             id: rmnInfoTitle
             font.family: gothamB.name
-            font.pixelSize: 16
+            font.pixelSize: 16*viewHome.vmScale
             anchors.top:  (evaluationTableHeader.visible)? evaluationListView.bottom : evaluationAddRow.bottom
             anchors.topMargin: vmSpaceBetweenDataAndTitle
             anchors.left: generalInfoTitle.left
@@ -712,7 +712,7 @@ VMBase {
         Text {
             id: diagInfoTitle
             font.family: gothamB.name
-            font.pixelSize: 16
+            font.pixelSize: 16*viewHome.vmScale
             anchors.top:  rmnAddRow.bottom
             anchors.topMargin: vmSpaceBetweenDataAndTitle
             anchors.left: generalInfoTitle.left

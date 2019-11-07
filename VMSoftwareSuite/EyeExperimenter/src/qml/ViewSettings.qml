@@ -56,7 +56,7 @@ Dialog {
     // The configure settings title
     Text {
         id: diagTitle
-        font.pixelSize: 18
+        font.pixelSize: 18*viewHome.vmScale
         font.family: viewHome.gothamB.name
         color: "#297FCA"
         text: loader.getStringForKey(keybase+"diagTitle");
@@ -83,7 +83,7 @@ Dialog {
         id: diagLabelDefaultCountry
         text: loader.getStringForKey(keybase+"diagLabelDefaultCountry");
         font.family: viewHome.robotoB.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         font.bold: true
         anchors.top: diagTitle.bottom
         anchors.topMargin: 25
@@ -112,7 +112,7 @@ Dialog {
         id: diagLabelLang
         text: loader.getStringForKey(keybase+"diagLabelLang");
         font.family: viewHome.robotoB.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         font.bold: true
         anchors.top: diagDBDefaultCountry.bottom
         anchors.topMargin: 25
@@ -145,7 +145,7 @@ Dialog {
         id: diagLabelET
         text: loader.getStringForKey(keybase+"diagLabelET");
         font.family: viewHome.robotoB.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         font.bold: true
         anchors.top: diagCBLang.bottom
         anchors.topMargin: 25
@@ -158,7 +158,7 @@ Dialog {
         id: diagCboxDemo
         text: loader.getStringForKey(keybase+"diagCboxDemo");
         font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top: diagLabelET.bottom
         anchors.topMargin: 20
         anchors.left: diagDBDefaultCountry.left
@@ -169,7 +169,7 @@ Dialog {
         id: diagCboxDualMonitor
         text: loader.getStringForKey(keybase+"diagCboxDualMonitor");
         font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top: diagCboxDemo.top
         anchors.left: diagCboxUseMouse.right
         anchors.leftMargin: 20
@@ -187,7 +187,7 @@ Dialog {
         id: diagCboxUseMouse
         text: loader.getStringForKey(keybase+"diagCboxUseMouse");
         font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top: diagCboxDemo.top
         anchors.left: diagCboxDemo.right
         anchors.leftMargin: 20
@@ -199,7 +199,7 @@ Dialog {
         id: diagLabelEnableViewAll
         text: loader.getStringForKey(keybase+"diagLabelEnableViewAll");
         font.family: viewHome.robotoB.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         font.bold: true
         anchors.top: diagCboxUseMouse.bottom
         anchors.topMargin: 20

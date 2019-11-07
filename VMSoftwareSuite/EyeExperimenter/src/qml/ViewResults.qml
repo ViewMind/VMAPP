@@ -127,7 +127,7 @@ VMBase {
         Text {
             id: diagTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 43
+            font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
             anchors.topMargin: 88
             anchors.horizontalCenter: parent.horizontalCenter
@@ -139,7 +139,7 @@ VMBase {
         Text {
             id: diagMessage
             font.family: viewHome.robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             anchors.top:  diagTitle.bottom
             anchors.topMargin: 26
             anchors.horizontalCenter: parent.horizontalCenter
@@ -162,7 +162,7 @@ VMBase {
         text: loader.getStringForKey(keysearch+"title") + vmTitleDemo;
         color: "#297FCA"
         font.family: gothamB.name
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         verticalAlignment: Text.AlignVCenter
         anchors.left: parent.left
         anchors.leftMargin: 150
@@ -191,7 +191,7 @@ VMBase {
                 if (uimap.getStructure() === "S") return loader.getStringForKey(keysearch+"labelSubject") + ": <b>" + vmPatient + "</b>" ;
             }
             font.family: robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.top: parent.top
@@ -215,7 +215,7 @@ VMBase {
             color: "#737577"
             text: loader.getStringForKey(keysearch+"labelAge") + ": <b>" + vmAge + "</b>" ;
             font.family: robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.top: labelPatientDiv.bottom
@@ -239,7 +239,7 @@ VMBase {
             color: "#737577"
             text: loader.getStringForKey(keysearch+"labelDrName") + ": <b>" + vmDrName + "</b>" ;
             font.family: robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.top: labelAgeDiv.bottom
@@ -263,7 +263,7 @@ VMBase {
             color: "#737577"
             text: loader.getStringForKey(keysearch+"labelDate") + ": <b>" + vmDate + "</b>" ;
             font.family: robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.top: labelDrNameDiv.bottom
@@ -291,7 +291,7 @@ VMBase {
             color: "#737577"
             text: loader.getStringForKey(keysearch+"labelExp");
             font.family: robotoR.name
-            font.pixelSize: 12
+            font.pixelSize: 12*viewHome.vmScale
             anchors.left: parent.left
             anchors.leftMargin: 30
             anchors.top: parent.top
@@ -316,7 +316,7 @@ VMBase {
             color: "#737577"
             text: loader.getStringForKey(keysearch+"labelSquareGreen");
             font.family: robotoR.name
-            font.pixelSize: 12
+            font.pixelSize: 12*viewHome.vmScale
             anchors.left: rectGreen.right
             anchors.leftMargin: 10
             anchors.top: rectGreen.top
@@ -340,7 +340,7 @@ VMBase {
             color: "#737577"
             text: loader.getStringForKey(keysearch+"labelSquareYellow");
             font.family: robotoR.name
-            font.pixelSize: 12
+            font.pixelSize: 12*viewHome.vmScale
             anchors.left: rectYellow.right
             anchors.leftMargin: 10
             anchors.top: rectYellow.top
@@ -363,7 +363,7 @@ VMBase {
             color: "#737577"
             text: loader.getStringForKey(keysearch+"labelSquareRed");
             font.family: robotoR.name
-            font.pixelSize: 12
+            font.pixelSize: 12*viewHome.vmScale
             anchors.left: rectRed.right
             anchors.leftMargin: 10
             anchors.top: rectRed.top

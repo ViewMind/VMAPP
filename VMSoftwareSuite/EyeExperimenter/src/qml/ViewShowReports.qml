@@ -49,7 +49,7 @@ VMBase {
     Text {
         id: diagViewRepTitle
         font.family: viewHome.gothamB.name
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         anchors.top: vmBanner.bottom
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
@@ -61,7 +61,7 @@ VMBase {
     Text {
         id: diagViewRepSubTitle
         font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top:  diagViewRepTitle.bottom
         anchors.topMargin: 26
         anchors.horizontalCenter: parent.horizontalCenter
@@ -73,7 +73,7 @@ VMBase {
     Text {
         id: diagPatientName
         font.family: viewHome.robotoR.name
-        font.pixelSize: 15
+        font.pixelSize: 15*viewHome.vmScale
         anchors.top:  diagViewRepSubTitle.bottom
         anchors.topMargin: 26
         anchors.left: tableHeader.left
@@ -104,7 +104,7 @@ VMBase {
                 text: loader.getStringForKey(keybase+"diagTabDate");
                 width: parent.width
                 font.family: gothamB.name
-                font.pixelSize: 15
+                font.pixelSize: 15*viewHome.vmScale
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -123,7 +123,7 @@ VMBase {
                 text: loader.getStringForKey(keybase+"diagTabReading");
                 width: parent.width
                 font.family: gothamB.name
-                font.pixelSize: 15
+                font.pixelSize: 15*viewHome.vmScale
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -142,7 +142,7 @@ VMBase {
                 text: loader.getStringForKey(keybase+"diagTabBinding");
                 width: parent.width
                 font.family: gothamB.name
-                font.pixelSize: 15
+                font.pixelSize: 15*viewHome.vmScale
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -161,7 +161,7 @@ VMBase {
                 text: loader.getStringForKey(keybase+"diagTabStatus");
                 width: parent.width
                 font.family: gothamB.name
-                font.pixelSize: 15
+                font.pixelSize: 15*viewHome.vmScale
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }

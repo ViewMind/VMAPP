@@ -80,7 +80,7 @@ Item {
             Text {
                 id: titleText
                 font.family: viewHome.gothamB.name
-                font.pixelSize: 13
+                font.pixelSize: 13*viewHome.vmScale
                 text: vmTitle
                 color: {
                     if (!vmEnabled) return "#888889"
@@ -92,7 +92,7 @@ Item {
             Text {
                 id: selectionText
                 font.family: viewHome.robotoR.name
-                font.pixelSize: 12
+                font.pixelSize: 12*viewHome.vmScale
                 text: (vmSelection === "")? vmPlaceHolderText : vmSelection
                 color: {
                     if (!vmEnabled) return "#888889"

@@ -35,7 +35,7 @@ Rectangle {
     Text {
         id: datInfo
         font.family: viewHome.robotoR.name
-        font.pixelSize: 11
+        font.pixelSize: 11*viewHome.vmScale
         text: vmDisplayText
         color: isBeingHovered? "#ffffff" : "#000000"
         anchors.verticalCenter: parent.verticalCenter

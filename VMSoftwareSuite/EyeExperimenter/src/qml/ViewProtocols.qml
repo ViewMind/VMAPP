@@ -46,7 +46,7 @@ Dialog {
     // The configure settings title
     Text {
         id: diagTitle
-        font.pixelSize: 18
+        font.pixelSize: 18*viewHome.vmScale
         font.family: viewHome.gothamB.name
         color: "#297FCA"
         text: loader.getStringForKey(keybase+"diagTitle");
@@ -58,7 +58,7 @@ Dialog {
     Text {
         id: viewSubTitle
         font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top:  diagTitle.bottom
         anchors.topMargin: 13
         anchors.horizontalCenter: parent.horizontalCenter

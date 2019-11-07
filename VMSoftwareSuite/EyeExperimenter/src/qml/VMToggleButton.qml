@@ -25,7 +25,7 @@ Rectangle {
         id: text
         text: vmText
         font.family: vmFont
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         color: vmOn ? "#ffffff" : "58595b"
         anchors.centerIn: parent
         verticalAlignment: Text.AlignVCenter

@@ -17,8 +17,8 @@ Dialog {
     readonly property string keybase: "viewselectdata_"
     id: viewSelectDatForReport
     modal: true
-    width: 700
-    height: 650
+    width: mainWindow.width*0.546
+    height:  mainWindow.height*0.942
     closePolicy: Popup.NoAutoClose
 
     MouseArea {
@@ -133,46 +133,46 @@ Dialog {
     // The select report title
     Text {
         id: diagTitle
-        font.pixelSize: 18
+        font.pixelSize: 18*viewHome.vmScale
         font.family: viewHome.gothamB.name
         color: "#297FCA"
         text: loader.getStringForKey(keybase+"labelTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: 70
+        anchors.topMargin: mainWindow.height*0.101
     }
 
     // The number of available evaluations
     Text {
         id: diagEvals
-        font.pixelSize: 15
+        font.pixelSize: 15*viewHome.vmScale
         font.family: viewHome.gothamR.name
         color: "#297FCA"
         text: loader.getStringForKey(keybase+"labelEvals") + ": " + loader.getNumberOfEvalsString(true);
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: diagTitle.bottom
-        anchors.topMargin: 10
+        anchors.topMargin: mainWindow.height*0.014
     }
 
     // The subtitle with the explanation
     Text {
         id: subTitle
-        font.pixelSize: 11
+        font.pixelSize: 11*viewHome.vmScale
         font.family: gothamR.name
         color: "#cfcfcf"
         text: loader.getStringForKey(keybase+"labelSubTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: diagEvals.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.015
     }
 
     // Creating the close button
     VMDialogCloseButton {
         id: btnClose
         anchors.top: parent.top
-        anchors.topMargin: 22
+        anchors.topMargin: mainWindow.height*0.031
         anchors.right: parent.right
-        anchors.rightMargin: 25
+        anchors.rightMargin: mainWindow.width*0.019
         onClicked: {
             viewSelectDatForReport.close();
         }
@@ -182,16 +182,16 @@ Dialog {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: subTitle.bottom
-        anchors.topMargin: 20
-        spacing: 30
+        anchors.topMargin: mainWindow.height*0.028
+        spacing: mainWindow.height*0.043
         z: 10
 
         VMDatSelection{
             id: reading;
             vmTitle: loader.getStringForKey(keybase+"labelColReading");
             vmPlaceHolderText: loader.getStringForKey(keybase+"labelSelectOption");
-            width: 400
-            height: 80
+            width: mainWindow.width*0.312
+            height: mainWindow.height*0.115
             z: 10
             onVmCurrentIndexChanged: {
                 readingSelectionChanged(reading.vmCurrentIndex);
@@ -214,8 +214,8 @@ Dialog {
             id: bindingBC;
             vmTitle: loader.getStringForKey(keybase+"labelColBindingBC");
             vmPlaceHolderText: loader.getStringForKey(keybase+"labelSelectOption");
-            width: 400
-            height: 80
+            width: mainWindow.width*0.312
+            height: mainWindow.height*0.115
             z: 9
             onVmCurrentIndexChanged: {
                 bindingBCSelectionChanged(bindingBC.vmCurrentIndex);
@@ -238,8 +238,8 @@ Dialog {
             id: bindingUC;
             vmTitle: loader.getStringForKey(keybase+"labelColBindingUC");
             vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
-            width: 400
-            height: 80
+            width: mainWindow.width*0.312
+            height: mainWindow.height*0.115
             z: 8
             onVmCurrentIndexChanged: {
                 bindingUCSelectionChanged(bindingUC.vmCurrentIndex);
@@ -261,13 +261,13 @@ Dialog {
         id: buttonRow
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 40
-        spacing: 30
+        anchors.bottomMargin: mainWindow.height*0.057
+        spacing: mainWindow.width*0.023
 
         VMButton{
             id: btnBack
-            height: 50
-            width: 160
+            height: mainWindow.height*0.072
+            width: mainWindow.width*0.125
             vmText: loader.getStringForKey(keybase+"btnCancel");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
@@ -278,8 +278,8 @@ Dialog {
 
         VMButton{
             id: btnGenerate
-            height: 50
-            width: 160
+            height: mainWindow.height*0.072
+            width: mainWindow.width*0.125
             vmText: loader.getStringForKey(keybase+"btnGenReport");
             vmFont: viewHome.gothamM.name
             enabled: false

@@ -80,7 +80,7 @@ VMBase {
         Text {
             id: diagTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 43
+            font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
             anchors.topMargin: 88
             anchors.horizontalCenter: parent.horizontalCenter
@@ -92,7 +92,7 @@ VMBase {
         Text {
             id: diagMessage
             font.family: viewHome.robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             anchors.top:  diagTitle.bottom
             anchors.topMargin: 26
             anchors.horizontalCenter: parent.horizontalCenter
@@ -151,7 +151,7 @@ VMBase {
         Text {
             id: showMsgDialogTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 43
+            font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
             anchors.topMargin: 50
             anchors.left: parent.left
@@ -164,7 +164,7 @@ VMBase {
         Text {
             id: showMsgDialogMessage
             font.family: viewHome.robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             textFormat: Text.RichText
             anchors.top:  showMsgDialogTitle.bottom
             anchors.topMargin: 20
@@ -244,7 +244,7 @@ VMBase {
         Text {
             id: diagPassTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 30
+            font.pixelSize: 30*viewHome.vmScale
             anchors.top: parent.top
             anchors.topMargin: 50
             anchors.horizontalCenter: parent.horizontalCenter
@@ -455,7 +455,7 @@ VMBase {
     // The Doctor Information Title and subtitle
     Text {
         id: title
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         font.family: gothamB.name
         color: "#297FCA"
         text: {
@@ -469,7 +469,7 @@ VMBase {
 
     Text {
         id: subTitle
-        font.pixelSize: 11
+        font.pixelSize: 11*viewHome.vmScale
         font.family: gothamR.name
         color: "#cfcfcf"
         text: {
@@ -599,7 +599,7 @@ VMBase {
 
         Text {
             id: filter
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             font.family: viewHome.gothamM.name
             text: loader.getStringForKey(keybase+"filter");
             color: "#297fca"
@@ -622,7 +622,7 @@ VMBase {
             }
             TextInput {
                 id: searchInput
-                font.pixelSize:  12
+                font.pixelSize:  12*viewHome.vmScale
                 color: "#000000"
                 verticalAlignment: TextInput.AlignVCenter
                 font.family: viewHome.gothamR.name
@@ -664,7 +664,7 @@ VMBase {
                 }
                 width: parent.width
                 font.family: gothamB.name
-                font.pixelSize: 15
+                font.pixelSize: 15*viewHome.vmScale
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -687,7 +687,7 @@ VMBase {
                 text: loader.getStringForKey(keybase+"headerDoctor");
                 width: parent.width
                 font.family: gothamB.name
-                font.pixelSize: 15
+                font.pixelSize: 15*viewHome.vmScale
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -709,7 +709,7 @@ VMBase {
                 text: loader.getStringForKey(keybase+"headerStatus");
                 width: parent.width
                 font.family: gothamB.name
-                font.pixelSize: 15
+                font.pixelSize: 15*viewHome.vmScale
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -731,7 +731,7 @@ VMBase {
                 text: loader.getStringForKey(keybase+"headerSynch");
                 width: parent.width
                 font.family: gothamB.name
-                font.pixelSize: 15
+                font.pixelSize: 15*viewHome.vmScale
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }

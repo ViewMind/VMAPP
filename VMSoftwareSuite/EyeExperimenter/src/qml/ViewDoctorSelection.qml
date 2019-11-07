@@ -89,7 +89,7 @@ Dialog {
     // The Doctor Information Title and subtitle
     Text {
         id: diagTitle
-        font.pixelSize: 40
+        font.pixelSize: 40*viewHome.vmScale
         font.family: viewHome.gothamB.name
         color: "#297FCA"
         text: loader.getStringForKey(keybase+"viewTitle");
@@ -100,7 +100,7 @@ Dialog {
 
     Text {
         id: diagSubTitle
-        font.pixelSize: 11
+        font.pixelSize: 11*viewHome.vmScale
         font.family: viewHome.gothamR.name
         color: "#969696"
         text: loader.getStringForKey(keybase+"viewSubTitle");

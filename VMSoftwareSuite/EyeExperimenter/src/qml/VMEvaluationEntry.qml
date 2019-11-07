@@ -5,7 +5,7 @@ Item {
     id: vmEvaluationEntry
 
     readonly property int vmHeight: 30
-    readonly property int vmFontSize: 12
+    readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
     width: headerEvaluation.width + headerResults.width + btnRemove.width

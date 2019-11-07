@@ -285,7 +285,7 @@ VMBase {
         id: slideTitle
         text: vmSlideTitle
         font.family: viewPresentExperiment.gothamM.name
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         color: "#297fca"
         anchors.top: experimentTracker.bottom
         anchors.topMargin: 30
@@ -296,7 +296,7 @@ VMBase {
     Text{
         id: slideDescription
         textFormat: Text.RichText
-        font.pixelSize: 16
+        font.pixelSize: 16*viewHome.vmScale
         font.family: robotoR.name
         color: "#297fca"
         text: vmSlideExplanation

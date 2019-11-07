@@ -51,7 +51,7 @@ Dialog {
     Text {
         id: diagTitle
         font.family: viewHome.gothamB.name
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         anchors.top: parent.top
         anchors.topMargin: 88
         anchors.horizontalCenter: parent.horizontalCenter
@@ -63,7 +63,7 @@ Dialog {
     Text {
         id: diagMessage
         font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top:  diagTitle.bottom
         anchors.topMargin: 26
         anchors.horizontalCenter: parent.horizontalCenter

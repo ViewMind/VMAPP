@@ -54,7 +54,7 @@ Item {
         text: vmPlaceHolder
         color: (labelText.visible)? "#58595b" : "#cfcfcf"
         font.family: vmFont
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.bottom: subLine.top
         anchors.bottomMargin: 5
         verticalAlignment: TextInput.AlignVCenter
@@ -102,7 +102,7 @@ Item {
         text: vmPlaceHolder
         color:  "#297fca"
         font.family: vmFont
-        font.pixelSize: 11
+        font.pixelSize: 11*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.bottom: lineEdit.top
         anchors.bottomMargin: 5
@@ -114,7 +114,7 @@ Item {
         text: vmErrorMsg
         color:  "#ca2026"
         font.family: vmFont
-        font.pixelSize: 12
+        font.pixelSize: 12*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.top: lineEditRect.bottom
         anchors.topMargin: 5

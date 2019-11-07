@@ -9,7 +9,7 @@ Item {
     property int vmItemIndex: 0
 
     readonly property int vmHeight: 30
-    readonly property int vmFontSize: 12
+    readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
     width: vmPatientColWidth + vmDoctorColWidth

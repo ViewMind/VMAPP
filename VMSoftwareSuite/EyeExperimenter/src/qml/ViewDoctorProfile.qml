@@ -72,8 +72,8 @@ VMBase {
     Dialog {
         id: showMsgDialog;
         modal: true
-        width: 614
-        height: 280
+        width: mainWindow.width*0.479
+        height: mainWindow.height*0.405
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -90,9 +90,9 @@ VMBase {
         VMDialogCloseButton {
             id: btnClose
             anchors.top: parent.top
-            anchors.topMargin: 22
+            anchors.topMargin: mainWindow.height*0.031
             anchors.right: parent.right
-            anchors.rightMargin: 25
+            anchors.rightMargin: mainWindow.width*0.019
             onClicked: {
                 showMsgDialog.close();
             }
@@ -102,11 +102,11 @@ VMBase {
         Text {
             id: showMsgDialogTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 43
+            font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
-            anchors.topMargin: 50
+            anchors.topMargin: mainWindow.height*0.072
             anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: mainWindow.width*0.015
             color: "#297fca"
             text: loader.getStringListForKey(keybase + "disable_warning")[0];
         }
@@ -115,10 +115,10 @@ VMBase {
         Text {
             id: showMsgDialogMessage
             font.family: viewHome.robotoR.name
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             textFormat: Text.RichText
             anchors.top:  showMsgDialogTitle.bottom
-            anchors.topMargin: 20
+            anchors.topMargin: mainWindow.height*0.028
             anchors.left: showMsgDialogTitle.left
             text: loader.getStringListForKey(keybase + "disable_warning")[1];
         }
@@ -128,12 +128,12 @@ VMBase {
             id: rowButtonsDiag
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: showMsgDialogMessage.bottom
-            anchors.topMargin: 40
-            spacing: 15
+            anchors.topMargin: mainWindow.height*0.057
+            spacing: mainWindow.width*0.011
 
             VMButton{
                 id: btnNo
-                height: 50
+                height: mainWindow.height*0.072
                 vmText: "NO"
                 vmFont: gothamM.name
                 vmInvertColors: true
@@ -158,34 +158,34 @@ VMBase {
     // The Doctor Information Title and subtitle
     Text {
         id: diagTitle
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         font.family: gothamB.name
         color: "#297FCA"
         text: loader.getStringForKey(keybase+"title");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: vmBanner.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
     }
 
     Text {
         id: diagSubTitle
-        font.pixelSize: 11
+        font.pixelSize: 11*viewHome.vmScale
         font.family: gothamR.name
         color: "#cfcfcf"
         text: loader.getStringForKey(keybase+"subtitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: diagTitle.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.015
     }
 
     Column {
 
         id: mainForm
-        width: 436
+        width: mainWindow.width*0.340
         anchors.top: diagSubTitle.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.028
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 40
+        spacing: mainWindow.height*0.057
 
         // The form fields
 
@@ -232,7 +232,7 @@ VMBase {
         id: cboxDisable
         text: loader.getStringForKey(keybase + "disable");
         anchors.top: mainForm.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.028
         anchors.left: mainForm.left
         visible: false;
     }
@@ -242,12 +242,12 @@ VMBase {
         id: rowButtons
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: mainForm.bottom
-        anchors.topMargin: 50
-        spacing: 15
+        anchors.topMargin: mainWindow.height*0.072
+        spacing: mainWindow.width*0.011
 
         VMButton{
             id: btnBack
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keybase+"btnBack");
             vmFont: gothamM.name
             vmInvertColors: true

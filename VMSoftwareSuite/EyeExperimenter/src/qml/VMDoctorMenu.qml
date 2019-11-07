@@ -22,7 +22,7 @@ Rectangle {
         text: vmDrName;
         height: parent.height
         font.family: vmFont
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         color: "#ffffff"
         verticalAlignment: Text.AlignVCenter
         anchors.left: imgDrAvatar.right;

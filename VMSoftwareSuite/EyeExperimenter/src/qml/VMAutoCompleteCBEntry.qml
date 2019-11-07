@@ -26,7 +26,7 @@ Rectangle {
         //color: (labelText.visible)? "#58595b" : "#cfcfcf"
         color: "#202020"
         font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         verticalAlignment: TextInput.AlignVCenter
         anchors.verticalCenter: contentRect.verticalCenter
         leftPadding: 5

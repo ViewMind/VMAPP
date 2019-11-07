@@ -50,7 +50,7 @@ Rectangle {
             id: doctorsName
             anchors.fill: parent
             text: vmDrName
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             padding: 30
             verticalAlignment: Text.AlignVCenter
             color: "#88B2D0"
@@ -91,7 +91,7 @@ Rectangle {
         color: "#88B2D0"
         text: vmDemoMode
         font.family: gothamRegular.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.left: parent.left
         anchors.leftMargin: 30
         anchors.top: mainDivisor.bottom
@@ -115,7 +115,7 @@ Rectangle {
         color: "#88B2D0"
         text: vmSelectedLang
         font.family: gothamRegular.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.left: parent.left
         anchors.leftMargin: 30
         anchors.top: divDemoMode.bottom
@@ -139,7 +139,7 @@ Rectangle {
         color: "#88B2D0"
         text: vmSelectedET
         font.family: gothamRegular.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.left: parent.left
         anchors.leftMargin: 30
         anchors.top: divLang.bottom
@@ -163,7 +163,7 @@ Rectangle {
         color: "#88B2D0"
         text: loader.getNumberOfEvalsString(false);
         font.family: gothamRegular.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.left: parent.left
         anchors.leftMargin: 30
         anchors.top: divETSel.bottom
@@ -195,7 +195,7 @@ Rectangle {
             Text{
                 anchors.centerIn: btnConfSettingsRect
                 font.family: gothamM.name
-                font.pixelSize: 13
+                font.pixelSize: 13*viewHome.vmScale
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: loader.getStringForKey("viewhome_btnConfSettings");
@@ -226,7 +226,7 @@ Rectangle {
             Text{
                 anchors.centerIn: btnDrInfoRect
                 font.family: gothamM.name
-                font.pixelSize: 13
+                font.pixelSize: 13*viewHome.vmScale
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: loader.getStringForKey("viewhome_btnEditDrInfo");
@@ -259,7 +259,7 @@ Rectangle {
             Text{
                 anchors.centerIn: btnTableIDsRect
                 font.family: gothamM.name
-                font.pixelSize: 13
+                font.pixelSize: 13*viewHome.vmScale
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: loader.getStringForKey("viewhome_btnTableID");
@@ -293,7 +293,7 @@ Rectangle {
             Text{
                 anchors.centerIn: btnProtocolsRect
                 font.family: gothamM.name
-                font.pixelSize: 13
+                font.pixelSize: 13*viewHome.vmScale
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: loader.getStringForKey("viewhome_btnProtocol");

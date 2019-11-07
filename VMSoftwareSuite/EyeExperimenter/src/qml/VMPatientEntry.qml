@@ -10,7 +10,7 @@ Item {
     property int vmMedRectColWidth: headerMedRecs.width
 
     readonly property int vmHeight: 30
-    readonly property int vmFontSize: 12
+    readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
     width: vmPatientColWidth + vmStatusColWidth

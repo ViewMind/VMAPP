@@ -18,8 +18,8 @@ VMBase {
 
         id: viewCalibrationDoneDiag
         modal: true
-        width: 614
-        height: 523
+        width: mainWindow.width*0.479
+        height: mainWindow.height*0.758
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -37,13 +37,13 @@ VMBase {
         // The configure settings title
         Text {
             id: viewTitle
-            font.pixelSize: 18
+            font.pixelSize: 18*viewHome.vmScale
             font.family: viewCalibrationDone.gothamB.name
             color: "#297FCA"
             text: loader.getStringForKey(keysearch+"viewTitle");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: 124
+            anchors.topMargin: mainWindow.height*0.179
         }
 
         // Loading the image
@@ -52,17 +52,17 @@ VMBase {
             source: "qrc:/images/CALIBRACION.png"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: viewTitle.bottom
-            anchors.topMargin: 48
+            anchors.topMargin: mainWindow.height*0.069
         }
 
         VMButton{
             id: btnContinue
             vmFont: gothamM.name
-            vmSize: [180, 50]
+            vmSize: [mainWindow.width*0.140, mainWindow.height*0.072]
             vmText: loader.getStringForKey(keysearch+"btnContinue");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: imgCalibration.bottom
-            anchors.topMargin: 48
+            anchors.topMargin: mainWindow.height*0.069
             onClicked: {
                 viewCalibrationDoneDiag.close();
                 swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
@@ -73,9 +73,9 @@ VMBase {
         VMDialogCloseButton {
             id: btnClose
             anchors.top: parent.top
-            anchors.topMargin: 22
+            anchors.topMargin: mainWindow.height*0.032
             anchors.right: parent.right
-            anchors.rightMargin: 25
+            anchors.rightMargin: mainWindow.width*0.019
             onClicked: {
                 viewCalibrationDoneDiag.close()
                 swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment

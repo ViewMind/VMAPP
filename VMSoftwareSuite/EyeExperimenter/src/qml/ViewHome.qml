@@ -125,7 +125,7 @@ VMBase {
         Text {
             id: diagTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 43
+            font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
             anchors.topMargin: 20
             anchors.horizontalCenter: parent.horizontalCenter
@@ -148,7 +148,7 @@ VMBase {
                 width: parent.width;
                 height: parent.height;
                 font.family: robotoR.name
-                font.pixelSize: 13
+                font.pixelSize: 13*viewHome.vmScale
                 readOnly: true
                 text: showTextDialog.vmContent
                 wrapMode: Text.Wrap
@@ -200,7 +200,7 @@ VMBase {
             Text {
                 id: restartDiagTitle
                 font.family: viewHome.gothamB.name
-                font.pixelSize: 43
+                font.pixelSize: 43*viewHome.vmScale
                 color: "#297fca"
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: restartDialog.vmTitle
@@ -210,7 +210,7 @@ VMBase {
             Text {
                 id: restartDiagMessage
                 font.family: viewHome.robotoR.name
-                font.pixelSize: 13
+                font.pixelSize: 13*viewHome.vmScale
                 textFormat: Text.RichText
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: restartDialog.vmContent
@@ -274,7 +274,7 @@ VMBase {
         contentItem: Text{
             anchors.centerIn: btnConfSettingsRect
             font.family: gothamM.name
-            font.pixelSize: 13*vmScale
+            font.pixelSize: 13*viewHome.vmScale
             text: loader.getStringForKey(keysearch+"btnConfSettings");
             color: "#88b2d0"
         }
@@ -292,7 +292,7 @@ VMBase {
     Text {
         id: slideTitle
         font.family: gothamB.name
-        font.pixelSize: 43*vmScale
+        font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
         anchors.topMargin: mainWindow.height*0.307
         anchors.left: headDesign.right

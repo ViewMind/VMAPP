@@ -23,7 +23,7 @@ Rectangle{
         width: textBoundRect.width - 2*textBoundRect.border.width
         height: textBoundRect.height - 2*textBoundRect.border.width
         font.family: viewHome.robotoR.name
-        font.pixelSize: 12
+        font.pixelSize: 12*viewHome.vmScale
         textColor: "#58595b"
         frameVisible: false
     }
@@ -32,7 +32,7 @@ Rectangle{
         text: vmErrorMsg
         color:  "#ca2026"
         font.family: viewHome.robotoR.name
-        font.pixelSize: 12
+        font.pixelSize: 12*viewHome.vmScale
         anchors.left: parent.left
         anchors.top: parent.bottom
         anchors.topMargin: 5

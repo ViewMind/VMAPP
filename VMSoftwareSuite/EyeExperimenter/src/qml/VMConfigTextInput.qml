@@ -65,7 +65,7 @@ Item {
         id: lineEdit
         color: "#757575"
         font.family: vmFont
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.centerIn: parent
         clip: true
         width: parent.width

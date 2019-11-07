@@ -24,7 +24,7 @@ Item {
         text: vmPlaceHolder
         color: "#5499d5"
         font.family: vmFont
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.bottom: parent.bottom
         verticalAlignment: TextInput.AlignVCenter
         leftPadding: 10
@@ -61,7 +61,7 @@ Item {
         text: vmErrorMsg
         color:  "#ca2026"
         font.family: vmFont
-        font.pixelSize: 12
+        font.pixelSize: 12*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.top: lineEditRect.bottom
         anchors.topMargin: 5

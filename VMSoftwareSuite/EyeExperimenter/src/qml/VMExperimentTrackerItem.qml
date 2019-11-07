@@ -51,7 +51,7 @@ Rectangle {
         id: experiment
         text: vmText
         font.family: vmFont
-        font.pixelSize: 14
+        font.pixelSize: 14*viewHome.vmScale
         color: (vmTrackerItemState == vmTRACKER_ITEM_STATE_NOTDONE)? "#bcbec0" : "#000000"
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: number.right

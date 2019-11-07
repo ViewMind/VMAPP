@@ -49,7 +49,7 @@ VMBase {
         Text {
             id: diagTitle
             font.family: viewHome.gothamB.name
-            font.pixelSize: 43
+            font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
             anchors.topMargin: 88
             anchors.horizontalCenter: parent.horizontalCenter
@@ -61,7 +61,7 @@ VMBase {
         Text {
             id: diagMessage
             font.family: viewHome.robotoR.name
-            font.pixelSize: 26
+            font.pixelSize: 26*viewHome.vmScale
             anchors.top:  diagTitle.bottom
             anchors.centerIn: parent
             color: "#454545"
@@ -115,7 +115,7 @@ VMBase {
     Text {
         id: viewTitle
         font.family: gothamB.name
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
         anchors.topMargin: 46
         anchors.horizontalCenter: parent.horizontalCenter
@@ -134,7 +134,7 @@ VMBase {
 
     Text {
         id: message
-        font.pixelSize: 16
+        font.pixelSize: 16*viewHome.vmScale
         font.family: robotoR.name
         color: "#297fca"
         anchors.top:  viewTitle.bottom

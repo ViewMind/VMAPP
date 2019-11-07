@@ -88,7 +88,7 @@ Item {
         focus: vmFocus
         enabled: vmEnabled
         font.family: viewHome.robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.bottom: subLine.top
         anchors.bottomMargin: 5
         verticalAlignment: TextInput.AlignVCenter
@@ -121,7 +121,7 @@ Item {
         text: vmLabel
         color:  "#297fca"
         font.family: viewHome.robotoR.name
-        font.pixelSize: 11
+        font.pixelSize: 11*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.bottom: lineEditRect.top
         anchors.bottomMargin: 5

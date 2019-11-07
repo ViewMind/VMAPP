@@ -49,8 +49,8 @@ VMBase {
 
         id: viewCalibrationStartDiag
         modal: true
-        width: 614
-        height: 523
+        width: mainWindow.width*0.479
+        height: mainWindow.height*0.758
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -68,25 +68,25 @@ VMBase {
         // The configure settings title
         Text {
             id: viewTitle
-            font.pixelSize: 43
+            font.pixelSize: 43*viewHome.vmScale
             font.family: viewCalibrationStart.gothamB.name
             color: "#297FCA"
             text: loader.getStringForKey(keysearch+"viewTitle");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: 86
+            anchors.topMargin: mainWindow.height*0.124
         }
 
         // The configure settings title
         Text {
             id: viewSubTitle
-            font.pixelSize: 13
+            font.pixelSize: 13*viewHome.vmScale
             font.family: viewCalibrationStart.robotoR.name
             color: "#297FCA"
             text: loader.getStringForKey(keysearch+"viewSubTitle");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: viewTitle.bottom
-            anchors.topMargin: 28
+            anchors.topMargin: mainWindow.height*0.040
         }
 
         // Loading the image
@@ -95,17 +95,17 @@ VMBase {
             source: "qrc:/images/OJO.png"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: viewSubTitle.bottom
-            anchors.topMargin: 37
+            anchors.topMargin: mainWindow.height*0.054
         }
 
         VMButton{
             id: btnStart
-            vmFont: gothamM.name
-            vmSize: [190, 50]
+            vmFont: gothamM.name            
+            vmSize: [mainWindow.width*0.148, mainWindow.height*0.072]
             vmText: loader.getStringForKey(keysearch+"btnStart");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: imgEye.bottom
-            anchors.topMargin: 42
+            anchors.topMargin: mainWindow.height*0.061
             onClicked: {
                 if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
                 else flowControl.calibrateEyeTracker();
@@ -116,9 +116,9 @@ VMBase {
         VMDialogCloseButton {
             id: btnClose
             anchors.top: parent.top
-            anchors.topMargin: 22
+            anchors.topMargin: mainWindow.height*0.032
             anchors.right: parent.right
-            anchors.rightMargin: 25
+            anchors.rightMargin: mainWindow.width*0.019
             onClicked: {
                 viewCalibrationStartDiag.close()
                 swiperControl.currentIndex = swiperControl.vmIndexStudyStart;

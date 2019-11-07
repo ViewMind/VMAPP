@@ -56,7 +56,7 @@ Item {
                 Text {
                     text: itemOrderIndex + " - " + itemText
                     font.family: robotoR.name
-                    font.pixelSize: 13
+                    font.pixelSize: 13*viewHome.vmScale
                     color: "#ffffff"
                     anchors.centerIn: parent
                     verticalAlignment: Text.AlignVCenter

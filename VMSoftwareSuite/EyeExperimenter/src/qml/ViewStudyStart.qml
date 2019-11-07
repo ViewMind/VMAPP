@@ -46,7 +46,7 @@ VMBase {
     Text {
         id: viewTitle
         font.family: gothamB.name
-        font.pixelSize: 43
+        font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
         anchors.topMargin: 50
         anchors.horizontalCenter: parent.horizontalCenter
@@ -57,7 +57,7 @@ VMBase {
     Text {
         id: viewSubTitle
         font.family: robotoR.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewTitle.bottom
         anchors.topMargin: 11
         anchors.horizontalCenter: parent.horizontalCenter
@@ -69,7 +69,7 @@ VMBase {
     Text {
         id: labelSelPatient
         font.family: robotoB.name
-        font.pixelSize: 15
+        font.pixelSize: 15*viewHome.vmScale
         color: "#000000"
         text: {
             if (uimap.getStructure() === "P") return loader.getStringForKey(keysearch+"labelSelPatient");
@@ -94,7 +94,7 @@ VMBase {
         Text {
             id: labelPatientName
             font.family: robotoR.name
-            font.pixelSize: 15
+            font.pixelSize: 15*viewHome.vmScale
             color: "#58595b"
             anchors.verticalCenter: backgroundPatientName.verticalCenter
             text: "";
@@ -123,7 +123,7 @@ VMBase {
         Text {
             id: labelInstruction
             font.family: robotoR.name
-            font.pixelSize: 9
+            font.pixelSize: 9*viewHome.vmScale
             color: "#58595b"
             anchors.verticalCenter: labelSelectStudy.verticalCenter
             text: "(" + loader.getStringForKey(keysearch+"labelInstruction") + ")";
@@ -201,7 +201,7 @@ VMBase {
     Text {
         id: labelInstruction2
         font.family: robotoB.name
-        font.pixelSize: 15
+        font.pixelSize: 15*viewHome.vmScale
         anchors.top: multipleSelectionShow.bottom
         anchors.topMargin: 30
         anchors.left: backgroundPatientName.left
@@ -212,7 +212,7 @@ VMBase {
     Text {
         id: labelEyeMsg
         font.family: robotoB.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         width: cbEyeMsg.width
         anchors.top: labelInstruction2.bottom
         anchors.topMargin: 13
@@ -240,7 +240,7 @@ VMBase {
     Text {
         id: labelNTargets
         font.family: robotoB.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         width: cbNumberOfTargets.width
         anchors.top: labelEyeMsg.top
         anchors.left: cbNumberOfTargets.left
@@ -270,7 +270,7 @@ VMBase {
     Text {
         id: labelTargetSize
         font.family: robotoB.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         width: cbNumberOfTargets.width
         anchors.top: labelEyeMsg.top
         anchors.left: cbTargetSize.left
@@ -297,7 +297,7 @@ VMBase {
     Text {
         id: labelReadingLanguge
         font.family: robotoB.name
-        font.pixelSize: 13
+        font.pixelSize: 13*viewHome.vmScale
         width: cbNumberOfTargets.width
         anchors.top: labelEyeMsg.top
         anchors.left: cbReadingLang.left
@@ -323,7 +323,7 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelNoInstructionSetError");
         color:  "#ca2026"
         font.family: viewHome.robotoM.name
-        font.pixelSize: 12
+        font.pixelSize: 12*viewHome.vmScale
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: buttonRow.top
         anchors.bottomMargin: 10
