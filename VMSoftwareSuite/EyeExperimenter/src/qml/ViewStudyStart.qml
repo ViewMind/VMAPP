@@ -109,7 +109,7 @@ VMBase {
         anchors.left: backgroundPatientName.left
         anchors.top: backgroundPatientName.bottom
         anchors.topMargin: 30
-        spacing: 5
+        spacing: mainWindow.width*0.004
 
         // Message for study selection
         Text {
@@ -134,7 +134,7 @@ VMBase {
     Row{
         id: rowSelectStudies
         anchors.left: rowSelectStudiesInstruction.left
-        spacing: 10
+        spacing: mainWindow.width*0.008
         anchors.top: rowSelectStudiesInstruction.bottom
         anchors.topMargin: 5
 
@@ -336,7 +336,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: cbNumberOfTargets.bottom
         anchors.topMargin: 36
-        spacing: 30
+        spacing: mainWindow.width*0.0023
 
         VMButton{
             id: btnBack

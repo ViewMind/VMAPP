@@ -112,7 +112,7 @@ Dialog {
     Row {
 
         id: rowProfileAndAdd
-        spacing: 10
+        spacing: mainWindow.width*0.008
         anchors.top: diagSubTitle.bottom
         anchors.topMargin: 39
         anchors.horizontalCenter: parent.horizontalCenter
@@ -180,7 +180,7 @@ Dialog {
         anchors.left: rowProfileAndAdd.left
         anchors.top: drPassword.bottom
         anchors.topMargin: 60
-        spacing: 10
+        spacing: mainWindow.width*0.008
 
         VMPasswordField{
             id: instPassword

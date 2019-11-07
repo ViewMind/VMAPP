@@ -128,7 +128,7 @@ VMBase {
         anchors.top: tableBackground.bottom
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 30
+        spacing: mainWindow.width*0.023
 
         VMButton{
             id: diagBtnBack

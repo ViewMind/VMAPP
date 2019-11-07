@@ -75,7 +75,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left:  parent.left
             anchors.leftMargin: 20
-            spacing: 5
+            spacing: mainWindow.height*0.007
 
             Text {
                 id: titleText

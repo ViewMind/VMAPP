@@ -285,7 +285,7 @@ VMBase {
 
             id: generalInfoRow
             width: parent.width*0.6
-            spacing: 100
+            spacing: mainWindow.width*0.078
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: generalInfoTitle.bottom
             anchors.topMargin: vmSpaceBetweenTitleAndData
@@ -323,7 +323,7 @@ VMBase {
 
             id: medicationAddRow
             width: parent.width*0.6
-            spacing: 50
+            spacing: mainWindow.width*0.039
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: medicationInfoTitle.bottom
             anchors.topMargin: vmSpaceBetweenTitleAndData
@@ -460,7 +460,7 @@ VMBase {
 
             id: evaluationAddRow
             width: parent.width*0.6
-            spacing: 50
+            spacing: mainWindow.width*0.039
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: evaluationInfoTitle.bottom
             anchors.topMargin: vmSpaceBetweenTitleAndData
@@ -575,7 +575,7 @@ VMBase {
         Row {
             id: rmnAddRow
             width: parent.width*0.6
-            spacing: 50
+            spacing: mainWindow.width*0.039
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: rmnInfoTitle.bottom
             anchors.topMargin: vmSpaceBetweenTitleAndData
@@ -736,7 +736,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: form.bottom
         anchors.topMargin: 26
-        spacing: 29
+        spacing: mainWindow.width*0.023
 
         VMButton{
             id: btnBack

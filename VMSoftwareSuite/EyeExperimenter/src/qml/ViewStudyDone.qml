@@ -73,7 +73,7 @@ VMBase {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 40
-            spacing: 30
+            spacing: mainWindow.width*0.023
 
             VMButton{
                 id: btnBack

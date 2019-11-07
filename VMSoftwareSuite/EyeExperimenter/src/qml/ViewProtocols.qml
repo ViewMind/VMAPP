@@ -82,7 +82,7 @@ Dialog {
     Row {
         id: rowAddProtocols
         width: parent.width*0.6
-        spacing: 16
+        spacing: mainWindow.width*0.013
         anchors.top: viewSubTitle.bottom
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
@@ -113,7 +113,7 @@ Dialog {
     Row {
         id: rowDeleteProtocols
         width: parent.width*0.6
-        spacing: 16
+        spacing: mainWindow.width*0.013
         anchors.top: rowAddProtocols.bottom
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter

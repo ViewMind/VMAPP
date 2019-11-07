@@ -37,7 +37,7 @@ Item {
         width: container.width*0.9
         anchors.left: container.left
         anchors.leftMargin: container.width*0.05
-        spacing: 4
+        spacing: mainWindow.width*0.003
         Repeater {
             model: elementList
             Item {

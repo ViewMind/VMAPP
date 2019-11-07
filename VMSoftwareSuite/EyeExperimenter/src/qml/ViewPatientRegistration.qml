@@ -185,7 +185,7 @@ VMBase {
     Row {
         id: rowNames
         width: 440
-        spacing: 16
+        spacing: mainWindow.width*0.0125
         anchors.top: viewSubTitle.bottom
         anchors.topMargin: 30
         anchors.horizontalCenter: parent.horizontalCenter
@@ -213,7 +213,7 @@ VMBase {
 
         id: countryAndYearsRow
         width: rowNames.width
-        spacing: 16
+        spacing: mainWindow.width*0.0125
         anchors.top: rowNames.bottom
         anchors.topMargin: rowNames.visible? 35 : 0
         anchors.left: rowNames.left
@@ -246,7 +246,7 @@ VMBase {
 
         id: genderAndBDateRow
         width: rowNames.width
-        spacing: 16
+        spacing: mainWindow.width*0.0165
         anchors.top: countryAndYearsRow.bottom
         anchors.topMargin: 23
         anchors.left: rowNames.left
@@ -275,7 +275,7 @@ VMBase {
 
         id: genderIDAndProtocol
         width: rowNames.width
-        spacing: 16
+        spacing: mainWindow.width*0.0125
         anchors.top: genderAndBDateRow.bottom
         anchors.topMargin: 18
         anchors.left: rowNames.left
@@ -330,7 +330,7 @@ VMBase {
 
     Row{
         id: labelConsent
-        spacing: 5
+        spacing: mainWindow.width*0.004
         anchors.top:  assignedDoctor.bottom
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
@@ -359,7 +359,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: labelConsent.bottom
         anchors.topMargin: 26
-        spacing: 29
+        spacing: mainWindow.width*0.023
 
         VMButton{
             id: btnBack
