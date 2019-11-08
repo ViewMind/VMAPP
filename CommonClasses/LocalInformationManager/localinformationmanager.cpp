@@ -506,6 +506,9 @@ void LocalInformationManager::saveIDTable(const QString &fileName, const QString
 }
 
 void LocalInformationManager::cleanMedicalRecordUpdateFlag(const QString &patid){
+
+    //qDebug() << "LIM: Cleaning update list for" << patid;
+
     QVariantMap allPatientData = localDB.value(PATIENT_DATA).toMap();
     if (!allPatientData.contains(patid)){
         log.appendError("Trying to clean the update flags of a non existing patient: " + patid);
@@ -515,6 +518,9 @@ void LocalInformationManager::cleanMedicalRecordUpdateFlag(const QString &patid)
     patientMap[PATIENT_MEDICAL_RECORD_UP_TO_DATE] = QVariantList();
     allPatientData[patid] = patientMap;
     localDB[PATIENT_DATA] = allPatientData;
+
+    // Changes were made so a backup is necessary
+    backupDB();
 }
 
 qint32 LocalInformationManager::getRemainingEvals() const {
@@ -593,8 +599,12 @@ LocalInformationManager::DisplayLists LocalInformationManager::getPatientListFor
             QVariantMap patmap = localDB.value(PATIENT_DATA).toMap().value(patuid).toMap();
             QString upToDate = "true";
             if (patmap.contains(PATIENT_MEDICAL_RECORD_UP_TO_DATE)){
-                if (!patmap.value(PATIENT_MEDICAL_RECORD_UP_TO_DATE).toList().isEmpty()) upToDate = "false";
+                if (!patmap.value(PATIENT_MEDICAL_RECORD_UP_TO_DATE).toList().isEmpty()) {
+                    //qDebug() << "Patient " << patuid << " has " << patmap.value(PATIENT_MEDICAL_RECORD_UP_TO_DATE).toList().size() << " to send";
+                    upToDate = "false";
+                }
             }
+
             ans.patientMedRecsUpToDateList << upToDate;
 
         }

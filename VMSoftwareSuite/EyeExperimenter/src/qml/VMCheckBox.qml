@@ -10,12 +10,12 @@ CheckBox {
     leftPadding: 0
 
     indicator: Rectangle {
-        width: 20
-        height: 20
+        width: mainWindow.width*0.016
+        height: mainWindow.height*0.029
         x: control.leftPadding
         y: parent.height / 2 - height / 2
         radius: 4
-        border.width: 1
+        border.width: mainWindow.width*0.001
         border.color: "#297fca" //control.down ? "#17a81a" : "#21be2b"
 
         Rectangle {

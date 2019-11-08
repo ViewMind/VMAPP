@@ -51,7 +51,7 @@ VMBase {
         font.family: viewHome.gothamB.name
         font.pixelSize: 43*viewHome.vmScale
         anchors.top: vmBanner.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#297fca"
         text:  loader.getStringForKey(keybase+"diagViewRepTitle");
@@ -63,7 +63,7 @@ VMBase {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top:  diagViewRepTitle.bottom
-        anchors.topMargin: 26
+        anchors.topMargin: mainWindow.height*0.038
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#cfcfcf"
         text: loader.getStringForKey(keybase+"diagViewRepSubTitle");
@@ -75,7 +75,7 @@ VMBase {
         font.family: viewHome.robotoR.name
         font.pixelSize: 15*viewHome.vmScale
         anchors.top:  diagViewRepSubTitle.bottom
-        anchors.topMargin: 26
+        anchors.topMargin: mainWindow.height*0.038
         anchors.left: tableHeader.left
         color: "#5d5d5d"
         text: {
@@ -88,13 +88,13 @@ VMBase {
     Row {
         id: tableHeader
         anchors.top: diagPatientName.bottom
-        anchors.topMargin: 10
+        anchors.topMargin: mainWindow.height*0.014
         anchors.horizontalCenter: parent.horizontalCenter
-        height: 30
+        height: mainWindow.height*0.043
         Rectangle {
             id: headerDate
             color: "#adadad"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: columnWidth
@@ -113,7 +113,7 @@ VMBase {
         Rectangle {
             id: headerReading
             color: "#adadad"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: columnWidth
@@ -132,7 +132,7 @@ VMBase {
         Rectangle {
             id: headerColors
             color: "#adadad"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: columnWidth
@@ -151,7 +151,7 @@ VMBase {
         Rectangle {
             id: headerStatus
             color: "#adadad"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: columnWidth
@@ -171,7 +171,7 @@ VMBase {
     Rectangle {
         id: tableBackground
         color: "#ffffff"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         border.color: "#EDEDEE"
         radius: 4
         anchors.top: tableHeader.bottom
@@ -216,13 +216,13 @@ VMBase {
     Row{
 
         anchors.top: tableBackground.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.029
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 30
 
         VMButton{
             id: diagBtnBack
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keybase+"diagBtnBack");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
@@ -233,7 +233,7 @@ VMBase {
 
         VMButton{
             id: diagBtnView
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keybase+"diagBtnView");
             vmFont: viewHome.gothamM.name
             enabled: reportListView.currentIndex !== -1

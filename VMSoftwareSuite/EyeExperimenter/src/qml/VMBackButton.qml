@@ -2,8 +2,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.3
 
 Button {
-    width: 27
-    height: 20
+    width: mainWindow.width*0.021
+    height: mainWindow.height*0.029
     background: Rectangle {
         id: btnBackRect
         color: "#88B2D0"

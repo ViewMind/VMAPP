@@ -17,7 +17,7 @@ Item {
     // For now, calendar date input is disabled.
     readonly property bool vmCalendarInput : false;
 
-    height: 40
+    height: mainWindow.height*0.058
 
     function clear(){
         labelText.visible = false;
@@ -69,7 +69,7 @@ Item {
         font.family: vmFont
         font.pixelSize: 13*viewHome.vmScale
         anchors.bottom: subLine.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: mainWindow.height*0.007
         verticalAlignment: TextInput.AlignVCenter
         leftPadding: 0
         width: lineEditRect.width
@@ -223,7 +223,7 @@ Item {
         font.pixelSize: 11*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.bottom: lineEdit.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: mainWindow.height*0.007
         visible: (vmEnteredText !== "")
     }
 
@@ -235,14 +235,14 @@ Item {
         font.pixelSize: 12*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.top: lineEditRect.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         visible: (vmErrorMsg !== "")
     }
 
 //    Rectangle {
 //        id: calendarPopUp
 //        visible: false;
-//        border.width: 0
+//        border.width: mainWindow.width*0.0
 //        color: "#ffffff"
 //        anchors.left: parent.right
 //        anchors.top: parent.top
@@ -264,7 +264,7 @@ Item {
 //            }
 //            font.family: viewHome.robotoR.name
 //            anchors.top: parent.top
-//            anchors.topMargin: 2
+//            anchors.topMargin: mainWindow.height*0.003
 //            anchors.horizontalCenter: parent.horizontalCenter
 //            onCurrentIndexChanged: {
 //                calendar.visibleYear = 2018 - yearPicker.currentIndex;

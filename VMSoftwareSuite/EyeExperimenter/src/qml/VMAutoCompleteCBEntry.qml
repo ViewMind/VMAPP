@@ -9,7 +9,7 @@ Rectangle {
 
     id: contentRect
     color: mouseDetect.containsMouse? "#cfcfcf" : "#ffffff"
-    border.width: 1
+    border.width: mainWindow.width*0.001
     border.color: "#cfcfcf"
     z: 10
 

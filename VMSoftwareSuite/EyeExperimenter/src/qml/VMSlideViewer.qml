@@ -2,9 +2,8 @@ import QtQuick 2.0
 
 Item {
 
-    property int btnSide: 50;
+    property int btnSide: mainWindow.width*0.039;
     property int btnAir: btnSide*0.1;
-    property int airMargin: 10
     property int viewWindowWidth: width - 2*(btnSide+btnAir);
     property string backgroundColor: "#ffffff"
     property real imgScale: 1.0
@@ -37,7 +36,7 @@ Item {
         id: mainViewer
         width: viewWindowWidth
         height: parent.height
-        border.width: 2
+        border.width: mainWindow.width*0.002
         //border.color: "#297fca"
         border.color: "#ffffff"
         color: backgroundColor
@@ -83,7 +82,7 @@ Item {
             height: parent.width*0.6
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 10
+            anchors.leftMargin: mainWindow.width*0.008
             contextType: "2d"
             onPaint: {
                 var ctx = backArrow.getContext("2d");
@@ -132,7 +131,7 @@ Item {
             height: parent.width*0.6
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: mainWindow.width*0.016
             contextType: "2d"
             onPaint: {
                 var ctx = forwardArrow.getContext("2d");

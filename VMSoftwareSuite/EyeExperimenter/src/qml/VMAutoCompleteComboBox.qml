@@ -65,7 +65,7 @@ Item {
         id: lineEditRect
         anchors.fill: parent
         color: "#ebf3fa"
-        border.width: 0
+        border.width: mainWindow.width*0.0
     }
 
     ListModel {
@@ -90,7 +90,7 @@ Item {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.bottom: subLine.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: mainWindow.height*0.007
         verticalAlignment: TextInput.AlignVCenter
         leftPadding: 5
         width: lineEditRect.width
@@ -124,7 +124,7 @@ Item {
         font.pixelSize: 11*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.bottom: lineEditRect.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: mainWindow.height*0.007
         visible: (vmLabel != "")
     }
 

@@ -23,8 +23,8 @@ Dialog {
 
     id: errorDiag;
     modal: true
-    width: 634
-    height: 600
+    width: mainWindow.width*0.495
+    height: mainWindow.height*0.87
     closePolicy: Popup.NoAutoClose
 
     contentItem: Rectangle {
@@ -39,9 +39,9 @@ Dialog {
     VMDialogCloseButton {
         id: btnClose
         anchors.top: parent.top
-        anchors.topMargin: 22
+        anchors.topMargin: mainWindow.height*0.032
         anchors.right: parent.right
-        anchors.rightMargin: 25
+        anchors.rightMargin: mainWindow.width*0.02
         onClicked: {
             errorHandling()
         }
@@ -53,7 +53,7 @@ Dialog {
         font.family: viewHome.gothamB.name
         font.pixelSize: 43*viewHome.vmScale
         anchors.top: parent.top
-        anchors.topMargin: 88
+        anchors.topMargin: mainWindow.height*0.128
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#297fca"
         text: vmErrorTitle
@@ -65,7 +65,7 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top:  diagTitle.bottom
-        anchors.topMargin: 26
+        anchors.topMargin: mainWindow.height*0.038
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#297fca"
         text: vmErrorMessage
@@ -76,17 +76,18 @@ Dialog {
         source: "qrc:/images/ERROR_ILUS.png"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top:  diagMessage.bottom
-        anchors.topMargin: 35
+        anchors.topMargin: mainWindow.height*0.051
+        scale: viewHome.vmScale
     }
 
     // The Ok.
     VMButton{
         id: btnOk
-        vmSize: [180, 50]
+        vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
         vmText: vmErrorButtonMsg
         vmFont: gothamM.name
         anchors.top: diagImage.bottom
-        anchors.topMargin: 40
+        anchors.topMargin: mainWindow.height*0.058
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             errorHandling()

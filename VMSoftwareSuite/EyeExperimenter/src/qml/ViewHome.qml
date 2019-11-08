@@ -103,8 +103,8 @@ VMBase {
     Dialog {
         id: showTextDialog;
         modal: true
-        width: 614
-        height: 600
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.87
 
         property string vmContent: ""
         property string vmTitle: ""
@@ -127,7 +127,7 @@ VMBase {
             font.family: viewHome.gothamB.name
             font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
-            anchors.topMargin: 20
+            anchors.topMargin: mainWindow.height*0.029
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
             text: showTextDialog.vmTitle
@@ -140,7 +140,7 @@ VMBase {
             height: showTextDialog.height*0.62;
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top : diagTitle.bottom
-            anchors.topMargin: 40
+            anchors.topMargin: mainWindow.height*0.058
             clip: true
             //horizontalScrollBarPolicy : Qt.ScrollBarAlwaysOff
             TextEdit {
@@ -157,7 +157,7 @@ VMBase {
 
         VMButton{
             id: btnClose
-            height: 50
+            height: mainWindow.height*0.072
             vmText: "OK";
             vmFont: viewHome.gothamM.name
             anchors.horizontalCenter: parent.horizontalCenter
@@ -173,8 +173,8 @@ VMBase {
     Dialog {
         id: restartDialog;
         modal: true
-        width: 614
-        height: 200
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.29
 
         property string vmContent: ""
         property string vmTitle: ""
@@ -311,9 +311,9 @@ VMBase {
 //        text: loader.getStringForKey(keysearch+"description");
 //        anchors{
 //            top: slideTitle.bottom
-//            topMargin: 40
+//            topMargin: mainWindow.height*0.058
 //            left: headDesign.right
-//            leftMargin: 75
+//            leftMargin: mainWindow.width*0.059
 //        }
 //    }
 

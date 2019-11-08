@@ -8,8 +8,8 @@ Dialog {
     readonly property string keybase: "viewprotocol_"
     id: viewProtocols
     modal: true
-    width: 614
-    height: 360
+    width: mainWindow.width*0.48
+    height: mainWindow.height*0.522
     closePolicy: Popup.NoAutoClose
 
     MouseArea {
@@ -52,7 +52,7 @@ Dialog {
         text: loader.getStringForKey(keybase+"diagTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: 70
+        anchors.topMargin: mainWindow.height*0.101
     }
 
     Text {
@@ -60,7 +60,7 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top:  diagTitle.bottom
-        anchors.topMargin: 13
+        anchors.topMargin: mainWindow.height*0.019
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#5499d5"
         text: loader.getStringForKey(keybase+"diagSubTitle");
@@ -70,9 +70,9 @@ Dialog {
     VMDialogCloseButton {
         id: btnClose
         anchors.top: parent.top
-        anchors.topMargin: 22
+        anchors.topMargin: mainWindow.height*0.032
         anchors.right: parent.right
-        anchors.rightMargin: 25
+        anchors.rightMargin: mainWindow.width*0.02
         onClicked: {
             viewProtocols.close();
         }
@@ -84,7 +84,7 @@ Dialog {
         width: parent.width*0.6
         spacing: mainWindow.width*0.013
         anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
 
         VMTextDataInput{
@@ -115,7 +115,7 @@ Dialog {
         width: parent.width*0.6
         spacing: mainWindow.width*0.013
         anchors.top: rowAddProtocols.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
 
         VMComboBox2{

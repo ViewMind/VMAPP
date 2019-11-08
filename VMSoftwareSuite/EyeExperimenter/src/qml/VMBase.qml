@@ -139,6 +139,7 @@ Rectangle {
         topRight.x = mainWindow.width - topRight.width*scale + topRight.width*correction
         // ANOTHER PATCH: The value below should be the same as banner height that for some reason is zero when I use it here. I'm giving up and just putting the same value again.
         topRight.y = mainWindow.height*0.117 + topRight.height*correction
+
     }
 
 

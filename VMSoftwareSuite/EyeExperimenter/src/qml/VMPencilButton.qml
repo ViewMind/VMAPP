@@ -4,7 +4,7 @@ import QtQuick.Controls 2.3
 Button{
 
     id: vmPlusButton
-    height: 40
+    height: mainWindow.height*0.058
     width:  4*height/3;
 
     scale: vmPlusButton.pressed? 0.8:1

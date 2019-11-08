@@ -3,7 +3,7 @@ import QtQuick 2.0
 Rectangle {
 
     id: trackerItem
-    height: 71
+    height: mainWindow.height*0.103
     color: "#EDEDEE"
 
     readonly property int vmTRACKER_ITEM_STATE_DONE:    0
@@ -61,13 +61,13 @@ Rectangle {
     // The separator
     Rectangle{
         id: separator
-        width: 90
-        height: 3
+        width: mainWindow.width*0.07
+        height: mainWindow.height*0.004
         color: "#d5d6d7"
         visible: !vmIsLast
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: experiment.right
-        anchors.leftMargin: 18
+        anchors.leftMargin: mainWindow.width*0.014
     }
 
 }

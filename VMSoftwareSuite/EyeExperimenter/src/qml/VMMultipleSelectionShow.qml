@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 Item {
 
-    readonly property int baseItemWidth: 160
+    readonly property int baseItemWidth: mainWindow.width*0.125
 
     ListModel {
         id: elementList

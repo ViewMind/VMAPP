@@ -4,7 +4,7 @@ import QtQuick.Controls 2.3
 Button{
 
     id: vmFolderButton
-    height: 40
+    height: mainWindow.height*0.058
     width:  4*height/3;
 
     scale: vmFolderButton.pressed? 0.8:1
@@ -32,7 +32,7 @@ Button{
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             color: rectArea.color
-            border.width: 1
+            border.width: mainWindow.width*0.001
             border.color: "#ffffff"
             radius: 1
         }
@@ -44,7 +44,7 @@ Button{
             anchors.bottomMargin: -1
             anchors.left: lowerRect.left
             color: rectArea.color
-            border.width: 1
+            border.width: mainWindow.width*0.001
             border.color: "#ffffff"
             radius: 1
         }

@@ -6,11 +6,9 @@ import QtQuick.Dialogs 1.0
 VMBase {
 
     id: viewPatientList
-    width: viewPatientList.vmWIDTH
-    height: viewPatientList.vmHEIGHT
 
-    readonly property real vmTableWidth: 0.70*viewPatientList.vmWIDTH
-    readonly property real vmTableHeight: 0.33*viewPatientList.vmHEIGHT
+    readonly property real vmTableWidth: 0.70*mainWindow.width
+    readonly property real vmTableHeight: 0.33*mainWindow.height
     readonly property string keybase: "viewpatientlist_"
 
     property bool vmShowAll: false;
@@ -61,8 +59,8 @@ VMBase {
 
         id: connectionDialog;
         modal: true
-        width: 614
-        height: 600
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.87
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -82,7 +80,7 @@ VMBase {
             font.family: viewHome.gothamB.name
             font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
-            anchors.topMargin: 88
+            anchors.topMargin: mainWindow.height*0.128
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
             text: connectionDialog.vmTitle
@@ -94,7 +92,7 @@ VMBase {
             font.family: viewHome.robotoR.name
             font.pixelSize: 13*viewHome.vmScale
             anchors.top:  diagTitle.bottom
-            anchors.topMargin: 26
+            anchors.topMargin: mainWindow.height*0.038
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
             text: connectionDialog.vmMessage
@@ -104,8 +102,9 @@ VMBase {
             id: slideAnimation
             source: "qrc:/images/LOADING.gif"
             anchors.top: diagMessage.bottom
-            anchors.topMargin: 30
+            anchors.topMargin: mainWindow.height*0.043
             x: (parent.width - slideAnimation.width)/2;
+            scale: viewHome.vmScale
         }
 
     }
@@ -121,8 +120,8 @@ VMBase {
 
         id: showMsgDialog;
         modal: true
-        width: 614
-        height: 250
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.362
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -139,9 +138,9 @@ VMBase {
         VMDialogCloseButton {
             id: btnClose
             anchors.top: parent.top
-            anchors.topMargin: 22
+            anchors.topMargin: mainWindow.height*0.032
             anchors.right: parent.right
-            anchors.rightMargin: 25
+            anchors.rightMargin: mainWindow.width*0.02
             onClicked: {
                 showMsgDialog.close();
             }
@@ -153,9 +152,9 @@ VMBase {
             font.family: viewHome.gothamB.name
             font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
-            anchors.topMargin: 50
+            anchors.topMargin: mainWindow.height*0.072
             anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: mainWindow.width*0.016
             color: "#297fca"
             text: showMsgDialog.vmMsgTitle
         }
@@ -167,22 +166,22 @@ VMBase {
             font.pixelSize: 13*viewHome.vmScale
             textFormat: Text.RichText
             anchors.top:  showMsgDialogTitle.bottom
-            anchors.topMargin: 20
+            anchors.topMargin: mainWindow.height*0.029
             anchors.left: showMsgDialogTitle.left
             text: showMsgDialog.vmMsgText
         }
 
         VMButton{
             id: btnNegative
-            height: 40
+            height: mainWindow.height*0.058
             vmText: showMsgDialog.vmNoButtonLabel
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             visible: showMsgDialog.vmRequireAns
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20
+            anchors.bottomMargin: mainWindow.height*0.029
             anchors.left: parent.left
-            anchors.leftMargin: 50
+            anchors.leftMargin: mainWindow.width*0.039
             onClicked: {
                 showMsgDialog.vmRequireAns = false;
                 showMsgDialog.close();
@@ -191,14 +190,14 @@ VMBase {
 
         VMButton{
             id: btnPositive
-            height: 40
+            height: mainWindow.height*0.058
             vmText: showMsgDialog.vmYesButtonLabel
             vmFont: viewHome.gothamM.name
             visible: showMsgDialog.vmRequireAns
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20
+            anchors.bottomMargin: mainWindow.height*0.029
             anchors.right: parent.right
-            anchors.rightMargin: 50
+            anchors.rightMargin: mainWindow.width*0.039
             onClicked: {
                 showMsgDialog.vmRequireAns = false;
                 showMsgDialog.close();
@@ -214,8 +213,8 @@ VMBase {
 
         id: askPasswordDialog;
         modal: true
-        width: 614
-        height: 280
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.406
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -232,9 +231,9 @@ VMBase {
         VMDialogCloseButton {
             id: btnClosePass
             anchors.top: parent.top
-            anchors.topMargin: 22
+            anchors.topMargin: mainWindow.height*0.032
             anchors.right: parent.right
-            anchors.rightMargin: 25
+            anchors.rightMargin: mainWindow.width*0.02
             onClicked: {
                 askPasswordDialog.close();
             }
@@ -246,7 +245,7 @@ VMBase {
             font.family: viewHome.gothamB.name
             font.pixelSize: 30*viewHome.vmScale
             anchors.top: parent.top
-            anchors.topMargin: 50
+            anchors.topMargin: mainWindow.height*0.072
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
             text:  loader.getStringForKey("viewhome_btnTableID");
@@ -255,7 +254,7 @@ VMBase {
         VMPasswordField{
             id: passwordInput
             anchors.bottom: btnCheckPassword.top
-            anchors.bottomMargin: 30
+            anchors.bottomMargin: mainWindow.height*0.043
             anchors.horizontalCenter: parent.horizontalCenter;
             width: diagPassTitle.width*1.5;
             vmLabelText: loader.getStringForKey("viewdrsel_labelInstPassword");
@@ -263,12 +262,12 @@ VMBase {
 
         VMButton{
             id: btnCheckPassword
-            height: 50
+            height: mainWindow.height*0.072
             vmText: "OK";
             vmFont: viewHome.gothamM.name
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 30
+            anchors.bottomMargin: mainWindow.height*0.043
             onClicked:{
                 if (loader.verifyInstitutionPassword(passwordInput.getText())){
                     askPasswordDialog.close();
@@ -464,7 +463,7 @@ VMBase {
         }
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: vmBanner.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
     }
 
     Text {
@@ -478,25 +477,25 @@ VMBase {
         }
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: title.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
     }
 
     Rectangle {
 
         id: toolBar
         color: "#ffffff"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         border.color: "#EDEDEE"
         radius: 4
         width: vmTableWidth
         height: 0.08*parent.height
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: subTitle.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.029
 
         VMPlusButton {
             id: btnAddPatient
-            height: 30
+            height: mainWindow.height*0.043
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: 20;
@@ -508,7 +507,7 @@ VMBase {
 
         VMPencilButton {
             id: btnEditPatient
-            height: 30
+            height: mainWindow.height*0.043
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: btnAddPatient.right
             anchors.leftMargin: 10;
@@ -521,7 +520,7 @@ VMBase {
 
         VMFolderButton{
             id: btnMedRecord
-            height: 30
+            height: mainWindow.height*0.043
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: btnEditPatient.right
             anchors.leftMargin: 10;
@@ -534,13 +533,13 @@ VMBase {
 
         VMButton{
             id: btnView
-            height: 30
+            height: mainWindow.height*0.043
             vmText: loader.getStringForKey(keybase+"btnView");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            anchors.rightMargin: 20
+            anchors.rightMargin: mainWindow.width*0.016
             enabled: (patientListView.currentIndex !== -1) && (loader.isDoctorValidated(-1) || loader.getViewAllFlag() )
             onClicked: {
                 if (uimap.getStructure() === "P") viewShowReports.vmPatientName = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
@@ -552,7 +551,7 @@ VMBase {
 
         VMButton{
             id: btnViewAll
-            height: 30
+            height: mainWindow.height*0.043
             vmText: {
                 if (vmShowAll) {
                     if (uimap.getStructure() === "P") return loader.getStringForKey(keybase+"view_yours");
@@ -564,11 +563,11 @@ VMBase {
                 }
             }
             vmFont: viewHome.gothamM.name
-            width: 200
+            width: mainWindow.width*0.156
             vmInvertColors: true
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: btnView.left
-            anchors.rightMargin: 20
+            anchors.rightMargin: mainWindow.width*0.016
             onClicked: {
                 if (vmShowAll){
                     vmShowAll = false;
@@ -585,14 +584,14 @@ VMBase {
     Rectangle {
         id: searchBar
         color: "#ffffff"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         border.color: "#EDEDEE"
         radius: 4
         width: vmTableWidth
         height: 0.05*parent.height
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: toolBar.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.029
         function clearSearch(){
             inputRect.clearSearch();
         }
@@ -605,7 +604,7 @@ VMBase {
             color: "#297fca"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 10
+            anchors.leftMargin: mainWindow.width*0.008
         }
 
         Rectangle {
@@ -615,7 +614,7 @@ VMBase {
             height: 0.82*parent.height
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: filter.right
-            anchors.leftMargin: 10
+            anchors.leftMargin: mainWindow.width*0.008
             radius: 10
             function clearSearch(){
                 searchInput.text = "";
@@ -642,13 +641,13 @@ VMBase {
     Row {
         id: tableHeader
         anchors.top: searchBar.bottom
-        anchors.topMargin: 10
+        anchors.topMargin: mainWindow.height*0.014
         anchors.left: toolBar.left
-        height: 30
+        height: mainWindow.height*0.043
         Rectangle {
             id: headerPatient
             color: "#ffffff"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: {
@@ -673,7 +672,7 @@ VMBase {
         Rectangle {
             id: headerDoctor
             color: "#ffffff"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: {
@@ -696,7 +695,7 @@ VMBase {
         Rectangle {
             id: headerStatus
             color: "#ffffff"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: {
@@ -718,7 +717,7 @@ VMBase {
         Rectangle {
             id: headerMedRecs
             color: "#ffffff"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: {
@@ -743,7 +742,7 @@ VMBase {
     Rectangle {
         id: tableBackground
         color: "#ffffff"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         border.color: "#EDEDEE"
         radius: 4
         anchors.top: tableHeader.bottom
@@ -799,12 +798,12 @@ VMBase {
         id: buttonRow
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 40
-        spacing: 30
+        anchors.bottomMargin: mainWindow.height*0.058
+        spacing: mainWindow.width*0.023
 
         VMButton{
             id: btnBack
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keybase+"btnBack");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
@@ -815,7 +814,7 @@ VMBase {
 
         VMButton{
             id: btnStart
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keybase+"btnStart");
             vmFont: viewHome.gothamM.name
             enabled: patientListView.currentIndex !== -1

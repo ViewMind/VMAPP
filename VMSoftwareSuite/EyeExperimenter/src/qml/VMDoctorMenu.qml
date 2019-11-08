@@ -26,7 +26,7 @@ Rectangle {
         color: "#ffffff"
         verticalAlignment: Text.AlignVCenter
         anchors.left: imgDrAvatar.right;
-        anchors.leftMargin: 20
+        anchors.leftMargin: mainWindow.width*0.016
     }
 
     Image {

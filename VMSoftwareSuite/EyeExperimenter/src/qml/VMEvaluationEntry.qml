@@ -4,7 +4,7 @@ Item {
 
     id: vmEvaluationEntry
 
-    readonly property int vmHeight: 30
+    readonly property int vmHeight: mainWindow.height*0.043
     readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
@@ -17,7 +17,7 @@ Item {
         id: evaluationRect
         color: vmIsSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: headerMedication.width
         anchors.left: parent.left
@@ -38,7 +38,7 @@ Item {
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: mainWindow.width*0.016
         }
     }
 
@@ -48,7 +48,7 @@ Item {
         id: resultRect
         color: vmIsSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: headerResults.width
         anchors.left: evaluationRect.right
@@ -69,7 +69,7 @@ Item {
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: mainWindow.width*0.016
         }
     }
 

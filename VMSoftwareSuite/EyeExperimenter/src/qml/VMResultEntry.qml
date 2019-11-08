@@ -3,11 +3,11 @@ import QtQuick 2.0
 Item {
 
     id: vmResultEntry
-    width: 576
-    height: (vmDiagClassTitle == "")? 105 : 180
+    width: mainWindow.width*0.45
+    height: (vmDiagClassTitle == "")? mainWindow.height*0.152 : mainWindow.height*0.261
 
-    //        width: 576
-    //        height: 180
+    //        width: mainWindow.width*0.45
+    //        height: mainWindow.height*0.261
 
     /////////////////////////////// Normal Results
 
@@ -20,14 +20,14 @@ Item {
         font.pixelSize: 14*viewHome.vmScale
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.leftMargin: 16
-        anchors.topMargin: 14
+        anchors.leftMargin: mainWindow.width*0.013
+        anchors.topMargin: mainWindow.height*0.02
     }
 
     Rectangle{
         id: itemDivision
         width: parent.width*0.95
-        height: 1
+        height: mainWindow.height*0.001
         color: "#d3d3d4"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -42,7 +42,7 @@ Item {
         font.pixelSize: 11*viewHome.vmScale
         visible: (vmExpText !== "")
         anchors.top: titleText.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         anchors.left: titleText.left
     }
 
@@ -54,7 +54,7 @@ Item {
         font.family: viewHome.robotoR.name
         font.pixelSize: 11*viewHome.vmScale
         anchors.bottom: itemDivision.top
-        anchors.bottomMargin: 10
+        anchors.bottomMargin: mainWindow.height*0.014
         anchors.left: titleText.left
     }
 
@@ -65,7 +65,7 @@ Item {
         font.family: viewHome.gothamR.name
         font.pixelSize: 23*viewHome.vmScale
         anchors.right: parent.right
-        anchors.rightMargin: 31
+        anchors.rightMargin: mainWindow.width*0.024
         anchors.verticalCenter: parent.verticalCenter
     }
 
@@ -81,11 +81,11 @@ Item {
     Rectangle{
         id: rectDiagClass
         color: "#dfebf7"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         border.color: "#dfebf7"
         radius: 2
-        width: 576
-        height: 180
+        width: mainWindow.width*0.45
+        height: mainWindow.height*0.261
         anchors.fill: parent
         visible: vmDiagClassTitle !== ""
 
@@ -97,7 +97,7 @@ Item {
             font.pixelSize: 15*viewHome.vmScale
             anchors.left: diagClassDivider.left
             anchors.top: parent.top
-            anchors.topMargin: 15
+            anchors.topMargin: mainWindow.height*0.022
         }
 
         Text{
@@ -111,7 +111,7 @@ Item {
             width: 0.9*parent.width
             anchors.left: diagClassTitle.left
             anchors.top: diagClassTitle.bottom
-            anchors.topMargin: 6
+            anchors.topMargin: mainWindow.height*0.009
         }
 
         Rectangle {
@@ -122,7 +122,7 @@ Item {
             border.color: "#737577"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: diagClassText.bottom
-            anchors.topMargin: 10
+            anchors.topMargin: mainWindow.height*0.014
         }
 
         Text{
@@ -136,7 +136,7 @@ Item {
             width: 0.9*parent.width
             anchors.left: diagClassTitle.left
             anchors.top: diagClassDivider.bottom
-            anchors.topMargin: 10
+            anchors.topMargin: mainWindow.height*0.014
         }
 
     }

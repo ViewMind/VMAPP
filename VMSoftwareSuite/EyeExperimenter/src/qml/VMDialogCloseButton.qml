@@ -3,8 +3,8 @@ import QtQuick.Controls 2.3
 
 Button {
     id: vmCloseButton
-    width: 20
-    height: 20
+    width: mainWindow.width*0.016
+    height: mainWindow.height*0.029
     background: Rectangle {
         id: btnCloseRect
         color: "#ffffff"

@@ -40,7 +40,7 @@ Rectangle {
         color: isBeingHovered? "#ffffff" : "#000000"
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: 10
+        anchors.leftMargin: mainWindow.width*0.008
     }
 
     Button{
@@ -50,7 +50,7 @@ Rectangle {
         scale: archiveButton.pressed? 0.8:1
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 20
+        anchors.rightMargin: mainWindow.width*0.016
         hoverEnabled: true;
 
         onHoveredChanged: {
@@ -71,7 +71,7 @@ Rectangle {
 
         background: Rectangle {
             id: rectArea
-            border.width: 0
+            border.width: mainWindow.width*0.0
             color: "#87B3D0"
             anchors.fill: parent
             radius: 10
@@ -95,7 +95,7 @@ Rectangle {
         scale: frequencyAnalysisButton.pressed? 0.8:1
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: archiveButton.right
-        anchors.rightMargin: 50
+        anchors.rightMargin: mainWindow.width*0.039
         hoverEnabled: true;
 
         onHoveredChanged: {
@@ -116,7 +116,7 @@ Rectangle {
 
         background: Rectangle {
             id: rectAreaFA
-            border.width: 0
+            border.width: mainWindow.width*0.0
             color: "#87B3D0"
             anchors.fill: parent
             radius: 10

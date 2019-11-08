@@ -12,7 +12,7 @@ Item {
     property string vmFileList: ""
     property int vmItemIndex: 0
 
-    readonly property int vmHeight: 30
+    readonly property int vmHeight: mainWindow.height*0.043
     readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
@@ -32,7 +32,7 @@ Item {
         id: dateRect
         color: vmRepSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: viewReport.columnWidth
         anchors.left: parent.left
@@ -53,7 +53,7 @@ Item {
         id: readingRect
         color: vmRepSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: viewReport.columnWidth
         anchors.left: dateRect.right
@@ -71,7 +71,7 @@ Item {
         id: bindingRect
         color: vmRepSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: viewReport.columnWidth
         anchors.left: readingRect.right
@@ -89,7 +89,7 @@ Item {
         id: statusRectText
         color: vmRepSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: viewReport.columnWidth
         anchors.left: bindingRect.right

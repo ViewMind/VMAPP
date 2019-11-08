@@ -24,6 +24,7 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexResults;
         //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
         //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
+        //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
     }
 
 

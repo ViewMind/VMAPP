@@ -9,7 +9,7 @@ Item {
     property int vmDoctorColWidth: headerDoctor.width
     property int vmMedRectColWidth: headerMedRecs.width
 
-    readonly property int vmHeight: 30
+    readonly property int vmHeight: mainWindow.height*0.043
     readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
@@ -24,7 +24,7 @@ Item {
         id: patientRect
         color: vmIsSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: vmPatientColWidth
         anchors.left: parent.left
@@ -48,7 +48,7 @@ Item {
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: mainWindow.width*0.016
         }
     }
 
@@ -56,7 +56,7 @@ Item {
         id: doctorRect
         color: "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: vmDoctorColWidth
         anchors.left: patientRect.right
@@ -75,7 +75,7 @@ Item {
         id: statusRect
         color: "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: vmStatusColWidth
         anchors.left: {
@@ -115,7 +115,7 @@ Item {
         id: medRecRect
         color: "#ffffff"
         border.color: "#EDEDEE"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         height: vmHeight
         width: vmMedRectColWidth
         anchors.left: statusRect.right

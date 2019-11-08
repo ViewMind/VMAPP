@@ -15,7 +15,7 @@ Rectangle{
 
     id: textBoundRect
     radius: 2
-    border.width: 1
+    border.width: mainWindow.width*0.001
     border.color: "#297fca"
     TextArea {
         id: inpTextArea
@@ -35,7 +35,7 @@ Rectangle{
         font.pixelSize: 12*viewHome.vmScale
         anchors.left: parent.left
         anchors.top: parent.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         visible: (vmErrorMsg !== "")
     }
 }

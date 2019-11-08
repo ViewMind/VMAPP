@@ -8,8 +8,8 @@ Rectangle {
     property string vmText: ""
 
     id: toggleButton
-    height: 26
-    width: 150
+    height: mainWindow.height*0.038
+    width: mainWindow.width*0.117
     radius: 3
     color: vmOn ? "#3a8bd1" : "#ffffff"
     border.color: "#3a8bd1"

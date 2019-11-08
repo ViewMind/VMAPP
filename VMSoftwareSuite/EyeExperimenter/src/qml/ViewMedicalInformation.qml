@@ -239,7 +239,7 @@ VMBase {
         font.family: gothamB.name
         font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
         text: vmPatientName
@@ -250,7 +250,7 @@ VMBase {
         font.family: robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewTitle.bottom
-        anchors.topMargin: 13
+        anchors.topMargin: mainWindow.height*0.019
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#5499d5"
         text: loader.getStringForKey(keysearch+"subTitle");
@@ -266,7 +266,7 @@ VMBase {
         anchors.left: parent.left
         anchors.top: viewSubTitle.top
         ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        anchors.topMargin: 40
+        anchors.topMargin: mainWindow.height*0.058
         contentHeight: vmContentHeight
 
         //////////////////////////// GENERAL INFORMATION
@@ -276,7 +276,7 @@ VMBase {
             font.pixelSize: 16*viewHome.vmScale
             anchors.top:  parent.top
             anchors.left: parent.left
-            anchors.leftMargin: 200
+            anchors.leftMargin: mainWindow.width*0.156
             color: "#b5b5b5"
             text: loader.getStringForKey(keysearch+"labGeneral");
         }
@@ -356,7 +356,7 @@ VMBase {
 
             VMPlusButton {
                 id: btnAddMedication
-                height: 30
+                height: mainWindow.height*0.043
                 anchors.bottom: parent.bottom
                 onClicked: addMedicationToList(inpMedication.vmCurrentText,inpDose.vmEnteredText,inpOtherMeds.vmEnteredText)
             }
@@ -378,14 +378,14 @@ VMBase {
             anchors.top: inpOtherMeds.visible ? inpOtherMeds.bottom : medicationAddRow.bottom;
             anchors.topMargin: 2*vmSpaceBetweenTitleAndData
             anchors.left: medicationAddRow.left
-            height: 30
+            height: mainWindow.height*0.043
             width: medicationAddRow.width
             visible: false
 
             Rectangle {
                 id: headerMedication
                 color: "#adadad"
-                border.width: 2
+                border.width: mainWindow.width*0.002
                 border.color: "#EDEDEE"
                 radius: 4
                 width: parent.width*0.6
@@ -404,7 +404,7 @@ VMBase {
             Rectangle {
                 id: headerDose
                 color: "#adadad"
-                border.width: 2
+                border.width: mainWindow.width*0.002
                 border.color: "#EDEDEE"
                 radius: 4
                 width: parent.width*0.3
@@ -482,7 +482,7 @@ VMBase {
 
             VMPlusButton {
                 id: btnAddEvalution
-                height: 30
+                height: mainWindow.height*0.043
                 anchors.bottom: parent.bottom
                 onClicked: addEvaluationToList(inpEvaluation.vmCurrentText,inpScores.vmEnteredText)
             }
@@ -494,14 +494,14 @@ VMBase {
             anchors.top: evaluationAddRow.bottom
             anchors.topMargin: 2*vmSpaceBetweenTitleAndData
             anchors.left: evaluationAddRow.left
-            height: 30
+            height: mainWindow.height*0.043
             width: evaluationAddRow.width
             visible: false
 
             Rectangle {
                 id: headerEvaluation
                 color: "#adadad"
-                border.width: 2
+                border.width: mainWindow.width*0.002
                 border.color: "#EDEDEE"
                 radius: 4
                 width: parent.width*0.6
@@ -520,7 +520,7 @@ VMBase {
             Rectangle {
                 id: headerResults
                 color: "#adadad"
-                border.width: 2
+                border.width: mainWindow.width*0.002
                 border.color: "#EDEDEE"
                 radius: 4
                 width: parent.width*0.3
@@ -723,7 +723,7 @@ VMBase {
         VMTextInputArea {
             id: inpPresumptiveDiag
             width: parent.width*0.6
-            height: 100
+            height: mainWindow.height*0.145
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: diagInfoTitle.bottom
             anchors.topMargin: vmSpaceBetweenTitleAndData
@@ -735,12 +735,12 @@ VMBase {
     Row{
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: form.bottom
-        anchors.topMargin: 26
+        anchors.topMargin: mainWindow.height*0.038
         spacing: mainWindow.width*0.023
 
         VMButton{
             id: btnBack
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keysearch+"btnCancel");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true

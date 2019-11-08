@@ -48,7 +48,7 @@ VMBase {
         font.family: gothamB.name
         font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 50
+        anchors.topMargin: mainWindow.height*0.072
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#297fca"
         text: loader.getStringForKey(keysearch+"labelTitle");
@@ -59,7 +59,7 @@ VMBase {
         font.family: robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewTitle.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#bcbec0"
         text: loader.getStringForKey(keysearch+"labelSubTitle");
@@ -77,19 +77,19 @@ VMBase {
         }
 
         anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 43
+        anchors.topMargin: mainWindow.height*0.062
         anchors.left: backgroundPatientName.left
     }
 
     Rectangle{
         id: backgroundPatientName
-        width: 533
-        height: 40
+        width: mainWindow.width*0.416
+        height: mainWindow.height*0.058
         radius: 5
         color: "#ebf3fa"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: labelSelPatient.bottom
-        anchors.topMargin: 13
+        anchors.topMargin: mainWindow.height*0.019
 
         Text {
             id: labelPatientName
@@ -99,7 +99,7 @@ VMBase {
             anchors.verticalCenter: backgroundPatientName.verticalCenter
             text: "";
             anchors.left: backgroundPatientName.left
-            anchors.leftMargin: 10
+            anchors.leftMargin: mainWindow.width*0.008
         }
 
     }
@@ -108,7 +108,7 @@ VMBase {
         id: rowSelectStudiesInstruction
         anchors.left: backgroundPatientName.left
         anchors.top: backgroundPatientName.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         spacing: mainWindow.width*0.004
 
         // Message for study selection
@@ -136,7 +136,7 @@ VMBase {
         anchors.left: rowSelectStudiesInstruction.left
         spacing: mainWindow.width*0.008
         anchors.top: rowSelectStudiesInstruction.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
 
         // The possible studies
         VMToggleButton{
@@ -190,9 +190,9 @@ VMBase {
     VMMultipleSelectionShow{
         id: multipleSelectionShow
         width: backgroundPatientName.width
-        height: 40
+        height: mainWindow.height*0.058
         anchors.top: rowSelectStudies.bottom
-        anchors.topMargin: 15
+        anchors.topMargin: mainWindow.height*0.022
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -203,7 +203,7 @@ VMBase {
         font.family: robotoB.name
         font.pixelSize: 15*viewHome.vmScale
         anchors.top: multipleSelectionShow.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.left: backgroundPatientName.left
         color: "#000000"
         text: loader.getStringForKey(keysearch+"labelInstruction2");
@@ -215,7 +215,7 @@ VMBase {
         font.pixelSize: 13*viewHome.vmScale
         width: cbEyeMsg.width
         anchors.top: labelInstruction2.bottom
-        anchors.topMargin: 13
+        anchors.topMargin: mainWindow.height*0.019
         anchors.left: backgroundPatientName.left
         color: "#554545"
         text: loader.getStringForKey(keysearch+"labelEyeMsg");
@@ -226,7 +226,7 @@ VMBase {
         id: cbEyeMsg
         width: (backgroundPatientName.width - 16)/4
         anchors.top: labelEyeMsg.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         anchors.left: labelInstruction2.left
         vmEnabled: false
         z:2
@@ -252,9 +252,9 @@ VMBase {
         id: cbNumberOfTargets
         width: cbEyeMsg.width
         anchors.top: labelNTargets.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         anchors.left: cbReadingLang.right
-        anchors.leftMargin: 16        
+        anchors.leftMargin: mainWindow.width*0.013        
         z:2
         vmEnabled: {
             if (uimap.getBlockedBindCount() === "N") return true;
@@ -282,9 +282,9 @@ VMBase {
         id: cbTargetSize
         width: cbEyeMsg.width
         anchors.top: labelNTargets.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         anchors.left: cbNumberOfTargets.right
-        anchors.leftMargin: 16
+        anchors.leftMargin: mainWindow.width*0.013
         z:2
         vmEnabled: {
             if (uimap.getBlockedBindSize() === "N") return true;
@@ -309,9 +309,9 @@ VMBase {
         id: cbReadingLang
         width: cbEyeMsg.width
         anchors.top: labelNTargets.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         anchors.left: cbEyeMsg.right
-        anchors.leftMargin: 16
+        anchors.leftMargin: mainWindow.width*0.013
         vmMaxDisplayItems: 3
         z:2
         Component.onCompleted: cbReadingLang.setModelList(["English", "Español", "Deutsche", "Français"])
@@ -326,7 +326,7 @@ VMBase {
         font.pixelSize: 12*viewHome.vmScale
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: buttonRow.top
-        anchors.bottomMargin: 10
+        anchors.bottomMargin: mainWindow.height*0.014
         visible: false
     }
 
@@ -335,12 +335,12 @@ VMBase {
         id: buttonRow
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: cbNumberOfTargets.bottom
-        anchors.topMargin: 36
+        anchors.topMargin: mainWindow.height*0.052
         spacing: mainWindow.width*0.0023
 
         VMButton{
             id: btnBack
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keysearch+"btnBack");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
@@ -351,7 +351,7 @@ VMBase {
 
         VMButton{
             id: btnStart
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keysearch+"btnStart");
             vmFont: viewHome.gothamM.name
             onClicked: {

@@ -9,8 +9,8 @@ Dialog {
 
     id: viewDoctorSelection
     modal: true
-    width: 654
-    height: 650
+    width: mainWindow.width*0.511
+    height: mainWindow.height*0.942
     closePolicy: Popup.NoAutoClose
 
     contentItem: Rectangle {
@@ -68,9 +68,9 @@ Dialog {
     VMDialogCloseButton {
         id: btnClose
         anchors.top: parent.top
-        anchors.topMargin: 22
+        anchors.topMargin: mainWindow.height*0.032
         anchors.right: parent.right
-        anchors.rightMargin: 25
+        anchors.rightMargin: mainWindow.width*0.02
         onClicked: {
             viewDoctorSelection.close();
         }
@@ -79,10 +79,10 @@ Dialog {
     Image {
         id: drPic
         source: "qrc:/images/dr_icon.png"
-        width: 108
-        height: 108
+        width: mainWindow.width*0.084
+        height: mainWindow.height*0.157
         anchors.top: parent.top
-        anchors.topMargin: 70
+        anchors.topMargin: mainWindow.height*0.101
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -95,7 +95,7 @@ Dialog {
         text: loader.getStringForKey(keybase+"viewTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: drPic.bottom
-        anchors.topMargin: 15
+        anchors.topMargin: mainWindow.height*0.022
     }
 
     Text {
@@ -106,7 +106,7 @@ Dialog {
         text: loader.getStringForKey(keybase+"viewSubTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: diagTitle.bottom
-        anchors.topMargin: 10
+        anchors.topMargin: mainWindow.height*0.014
     }
 
     Row {
@@ -114,14 +114,14 @@ Dialog {
         id: rowProfileAndAdd
         spacing: mainWindow.width*0.008
         anchors.top: diagSubTitle.bottom
-        anchors.topMargin: 39
+        anchors.topMargin: mainWindow.height*0.057
         anchors.horizontalCenter: parent.horizontalCenter
         z: 1
 
         // The selection box and the add button
         VMComboBox2{
             id: labelDrProfile
-            width: 350
+            width: mainWindow.width*0.273
             onVmCurrentIndexChanged: {
                 if (vmCurrentIndex > 0){
                     if (!loader.isDoctorValidated(vmCurrentIndex-1)){
@@ -172,14 +172,14 @@ Dialog {
         width: labelDrProfile.width
         anchors.left: rowProfileAndAdd.left
         anchors.top: rowProfileAndAdd.bottom
-        anchors.topMargin: 50
+        anchors.topMargin: mainWindow.height*0.072
     }
 
     Row {
         id: instPassRow
         anchors.left: rowProfileAndAdd.left
         anchors.top: drPassword.bottom
-        anchors.topMargin: 60
+        anchors.topMargin: mainWindow.height*0.087
         spacing: mainWindow.width*0.008
 
         VMPasswordField{
@@ -193,7 +193,7 @@ Dialog {
             height: labelDrProfile.height
             vmText: loader.getStringForKey(keybase+"btnValidate");
             vmFont: viewHome.gothamM.name
-            width: 80
+            width: mainWindow.width*0.062
             anchors.bottom: instPassword.bottom
             onClicked: {
                 if (!loader.requestDrValidation(instPassword.getText(),labelDrProfile.vmCurrentIndex-1)){
@@ -210,11 +210,11 @@ Dialog {
 
     VMButton{
         id: btnOk
-        height: 50
+        height: mainWindow.height*0.072
         vmText: loader.getStringForKey(keybase+"btnOk");
         vmFont: viewHome.gothamM.name
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 30
+        anchors.bottomMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             if (setCurrentDoctor()){

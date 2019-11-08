@@ -22,8 +22,8 @@ VMBase {
 
         id: studyDoneDiag;
         modal: true
-        width: 614
-        height: 600
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.87
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -40,9 +40,9 @@ VMBase {
         VMDialogCloseButton {
             id: btnClose
             anchors.top: parent.top
-            anchors.topMargin: 22
+            anchors.topMargin: mainWindow.height*0.032
             anchors.right: parent.right
-            anchors.rightMargin: 25
+            anchors.rightMargin: mainWindow.width*0.02
         }
 
         // The Title
@@ -51,7 +51,7 @@ VMBase {
             font.family: viewHome.gothamB.name
             font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
-            anchors.topMargin: 88
+            anchors.topMargin: mainWindow.height*0.128
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
             text: loader.getStringForKey(keysearch+"title");
@@ -72,13 +72,13 @@ VMBase {
             id: buttonRow
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 40
+            anchors.bottomMargin: mainWindow.height*0.058
             spacing: mainWindow.width*0.023
 
             VMButton{
                 id: btnBack
-                height: 50
-                width: 180
+                height: mainWindow.height*0.072
+                width: mainWindow.width*0.141
                 vmText: loader.getStringForKey(keysearch+"goback");
                 vmFont: viewHome.gothamM.name
                 vmInvertColors: true
@@ -90,8 +90,8 @@ VMBase {
 
             VMButton{
                 id: btnYes
-                height: 50
-                width: 180
+                height: mainWindow.height*0.072
+                width: mainWindow.width*0.141
                 vmText: loader.getStringForKey(keysearch+"yes");
                 vmFont: viewHome.gothamM.name
                 onClicked: {
@@ -117,20 +117,12 @@ VMBase {
         font.family: gothamB.name
         font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 46
+        anchors.topMargin: mainWindow.height*0.067
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
         text: loader.getStringForKey(keysearch+"viewTitle");
     }
 
-    // The head graph
-    Image {
-        id: headDesign
-        source: "qrc:/images/ILUSTRACION.png"
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: message.bottom
-        anchors.topMargin: 15
-    }
 
     Text {
         id: message
@@ -138,25 +130,48 @@ VMBase {
         font.family: robotoR.name
         color: "#297fca"
         anchors.top:  viewTitle.bottom
-        anchors.topMargin: 15
+        anchors.topMargin: mainWindow.height*0.022
         anchors.horizontalCenter: parent.horizontalCenter
         text: loader.getStringForKey(keysearch+"labelMessage");
     }
+
+    // The head graph
+    Image {
+        id: headDesign
+        source: "qrc:/images/ILUSTRACION.png"
+        anchors.horizontalCenter: parent.horizontalCenter
+//        anchors.top: message.bottom
+//        anchors.topMargin: mainWindow.height*0.022
+//        scale: viewHome.vmScale
+    }
+
 
     VMButton{
         id: btnContinue
         vmText: loader.getStringForKey(keysearch+"btnContinue");
         vmFont: gothamM.name
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: headDesign.bottom
-        anchors.topMargin: 30
-        width: 200
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: mainWindow.height*0.072
+        width: mainWindow.width*0.156
         onClicked: {
             if (loader.isDoctorValidated(-1)){
                 openDiag();                
             }
             else swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         }
+    }
+
+    Component.onCompleted: {
+        // PATCH: For some reason even after scaling the program recognizes the with and size of the border images incorrectly.
+        // It makes absolutely no sense. Furthermore I CANNOT, BY ANY MEANS FIGURE OUT HOW TO GET THE Y POSITION OF THE TEXT
+        // which lies right above the image, so I have to compute it as well.
+        // The math here calculates the position correctly.
+        var scale = mainWindow.width/1280;
+        var correction = (scale-1)/2
+        headDesign.scale = scale;
+        headDesign.y = correction*headDesign.height + mainWindow.height*0.328
+
     }
 
 }

@@ -6,8 +6,6 @@ import QtGraphicalEffects 1.0
 VMBase {
 
     id: viewResults
-    width: viewHome.vmWIDTH
-    height: viewHome.vmHEIGHT
 
     readonly property string keysearch: "viewresults_"
 
@@ -108,8 +106,8 @@ VMBase {
 
         id: reportDialog;
         modal: true
-        width: 614
-        height: 600
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.87
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
@@ -129,7 +127,7 @@ VMBase {
             font.family: viewHome.gothamB.name
             font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
-            anchors.topMargin: 88
+            anchors.topMargin: mainWindow.height*0.128
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
             text: loader.getStringForKey(keysearch+"diagWaitTitle")
@@ -141,7 +139,7 @@ VMBase {
             font.family: viewHome.robotoR.name
             font.pixelSize: 13*viewHome.vmScale
             anchors.top:  diagTitle.bottom
-            anchors.topMargin: 26
+            anchors.topMargin: mainWindow.height*0.038
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
             text: loader.getStringForKey(keysearch+"diagWaitMessage")
@@ -151,8 +149,9 @@ VMBase {
             id: slideAnimation
             source: "qrc:/images/LOADING.gif"
             anchors.top: diagMessage.bottom
-            anchors.topMargin: 30
+            anchors.topMargin: mainWindow.height*0.043
             x: (parent.width - slideAnimation.width)/2;
+            scale: viewHome.vmScale
         }
 
     }
@@ -165,9 +164,9 @@ VMBase {
         font.pixelSize: 43*viewHome.vmScale
         verticalAlignment: Text.AlignVCenter
         anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.leftMargin: mainWindow.width*0.117
         anchors.top: vmBanner.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
     }
 
     // Patient info rectangle
@@ -175,10 +174,10 @@ VMBase {
         id: rectInfoPatient
         color: "#EDEDEE"
         radius: 2
-        width: 385
-        height: 207
+        width: mainWindow.width*0.301
+        height: mainWindow.height*0.3
         anchors.top: title.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         anchors.left: title.left
 
         // Patient
@@ -193,19 +192,19 @@ VMBase {
             font.family: robotoR.name
             font.pixelSize: 13*viewHome.vmScale
             anchors.left: parent.left
-            anchors.leftMargin: 16
+            anchors.leftMargin: mainWindow.width*0.013
             anchors.top: parent.top
-            anchors.topMargin: 26
+            anchors.topMargin: mainWindow.height*0.038
         }
 
         Rectangle{
             id: labelPatientDiv
             color: "#d3d3d4"
-            width: 353
-            height: 1
+            width: mainWindow.width*0.276
+            height: mainWindow.height*0.001
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: labelPatient.bottom
-            anchors.topMargin: 16
+            anchors.topMargin: mainWindow.height*0.023
         }
 
         // Age
@@ -217,19 +216,19 @@ VMBase {
             font.family: robotoR.name
             font.pixelSize: 13*viewHome.vmScale
             anchors.left: parent.left
-            anchors.leftMargin: 16
+            anchors.leftMargin: mainWindow.width*0.013
             anchors.top: labelPatientDiv.bottom
-            anchors.topMargin: 16
+            anchors.topMargin: mainWindow.height*0.023
         }
 
         Rectangle{
             id: labelAgeDiv
             color: "#d3d3d4"
-            width: 353
-            height: 1
+            width: mainWindow.width*0.276
+            height: mainWindow.height*0.001
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: labelAge.bottom
-            anchors.topMargin: 16
+            anchors.topMargin: mainWindow.height*0.023
         }
 
         // Dr. Name
@@ -241,19 +240,19 @@ VMBase {
             font.family: robotoR.name
             font.pixelSize: 13*viewHome.vmScale
             anchors.left: parent.left
-            anchors.leftMargin: 16
+            anchors.leftMargin: mainWindow.width*0.013
             anchors.top: labelAgeDiv.bottom
-            anchors.topMargin: 16
+            anchors.topMargin: mainWindow.height*0.023
         }
 
         Rectangle{
             id: labelDrNameDiv
             color: "#d3d3d4"
-            width: 353
-            height: 1
+            width: mainWindow.width*0.276
+            height: mainWindow.height*0.001
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: labelDrName.bottom
-            anchors.topMargin: 16
+            anchors.topMargin: mainWindow.height*0.023
         }
 
         // Date
@@ -265,9 +264,9 @@ VMBase {
             font.family: robotoR.name
             font.pixelSize: 13*viewHome.vmScale
             anchors.left: parent.left
-            anchors.leftMargin: 16
+            anchors.leftMargin: mainWindow.width*0.013
             anchors.top: labelDrNameDiv.bottom
-            anchors.topMargin: 16
+            anchors.topMargin: mainWindow.height*0.023
         }
 
     }
@@ -276,13 +275,13 @@ VMBase {
     Rectangle{
         id: rectInfoCodeColor
         color: "#ffffff"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         border.color: "#ededee"
         radius: 2
-        width: 385
-        height: 247
+        width: mainWindow.width*0.301
+        height: mainWindow.height*0.358
         anchors.top: rectInfoPatient.bottom
-        anchors.topMargin: 19
+        anchors.topMargin: mainWindow.height*0.028
         anchors.left: title.left
 
         Text{
@@ -293,21 +292,21 @@ VMBase {
             font.family: robotoR.name
             font.pixelSize: 12*viewHome.vmScale
             anchors.left: parent.left
-            anchors.leftMargin: 30
+            anchors.leftMargin: mainWindow.width*0.023
             anchors.top: parent.top
-            anchors.topMargin: 29
+            anchors.topMargin: mainWindow.height*0.042
         }
 
         // Green rect and text
         Rectangle{
             id: rectGreen
-            width: 15
-            height: 15
+            width: mainWindow.width*0.012
+            height: mainWindow.height*0.022
             color: "#009949"
             anchors.left: parent.left
-            anchors.leftMargin: 30
+            anchors.leftMargin: mainWindow.width*0.023
             anchors.top: labelExp.bottom
-            anchors.topMargin: 12
+            anchors.topMargin: mainWindow.height*0.017
         }
 
         Text{
@@ -318,20 +317,20 @@ VMBase {
             font.family: robotoR.name
             font.pixelSize: 12*viewHome.vmScale
             anchors.left: rectGreen.right
-            anchors.leftMargin: 10
+            anchors.leftMargin: mainWindow.width*0.008
             anchors.top: rectGreen.top
         }
 
         // Yellow rect and text
         Rectangle{
             id: rectYellow
-            width: 15
-            height: 15
+            width: mainWindow.width*0.012
+            height: mainWindow.height*0.022
             color: "#e4b32c"
             anchors.left: parent.left
-            anchors.leftMargin: 30
+            anchors.leftMargin: mainWindow.width*0.023
             anchors.top: rectGreen.bottom
-            anchors.topMargin: 18
+            anchors.topMargin: mainWindow.height*0.026
         }
 
         Text{
@@ -342,19 +341,19 @@ VMBase {
             font.family: robotoR.name
             font.pixelSize: 12*viewHome.vmScale
             anchors.left: rectYellow.right
-            anchors.leftMargin: 10
+            anchors.leftMargin: mainWindow.width*0.008
             anchors.top: rectYellow.top
         }
 
         Rectangle{
             id: rectRed
-            width: 15
-            height: 15
+            width: mainWindow.width*0.012
+            height: mainWindow.height*0.022
             color: "#ca2026"
             anchors.left: parent.left
-            anchors.leftMargin: 30
+            anchors.leftMargin: mainWindow.width*0.023
             anchors.top: rectYellow.bottom
-            anchors.topMargin: 22
+            anchors.topMargin: mainWindow.height*0.032
         }
 
         Text{
@@ -365,7 +364,7 @@ VMBase {
             font.family: robotoR.name
             font.pixelSize: 12*viewHome.vmScale
             anchors.left: rectRed.right
-            anchors.leftMargin: 10
+            anchors.leftMargin: mainWindow.width*0.008
             anchors.top: rectRed.top
         }
 
@@ -375,14 +374,14 @@ VMBase {
     Rectangle{
         id: rectResults
         color: "#ffffff"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         border.color: "#ededee"
         radius: 2
-        width: 576
+        width: mainWindow.width*0.45
         height: rectInfoPatient.height + rectInfoCodeColor.height + rectInfoCodeColor.anchors.topMargin
         anchors.top: rectInfoPatient.top
         anchors.left: rectInfoPatient.right
-        anchors.leftMargin: 19
+        anchors.leftMargin: mainWindow.width*0.015
 
         ScrollView {
             id: resultsArea
@@ -406,12 +405,12 @@ VMBase {
         id: btnDownload
         vmText:  loader.getStringForKey(keysearch+"btnDownload");
         vmInvertColors: true
-        vmSize: [121,49]
+        vmSize: [mainWindow.width*0.094,mainWindow.height*0.072]
         vmFont: gothamM.name
         anchors.left: parent.left
-        anchors.leftMargin: 503
+        anchors.leftMargin: mainWindow.width*0.393
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 10
+        anchors.bottomMargin: mainWindow.height*0.014
         onClicked: {
             flowControl.saveReportAs(loader.getStringForKey(keysearch+"save_report"));
         }
@@ -421,12 +420,12 @@ VMBase {
     VMButton{
         id: btnFinalize
         vmText:  loader.getStringForKey(keysearch+"btnFinalize");
-        vmSize: [121,49]
+        vmSize: [mainWindow.width*0.094,mainWindow.height*0.072]
         vmFont: gothamM.name
         anchors.left: btnDownload.right
-        anchors.leftMargin: 18
+        anchors.leftMargin: mainWindow.width*0.014
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 10
+        anchors.bottomMargin: mainWindow.height*0.014
         onClicked: {
             swiperControl.currentIndex = swiperControl.vmIndexShowReports;
         }

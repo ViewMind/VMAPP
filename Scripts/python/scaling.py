@@ -28,7 +28,7 @@ for entry in os.listdir(inputPath):
                         line = line.replace(value,"mainWindow.width*"+str(k))
                         #print("R:" + line)  
                     
-            elif (("height" in line) or ("topMargin:" in line) or ("bottomMargin" in line) or ("vmHeight")):
+            elif (("height" in line) or ("topMargin:" in line) or ("bottomMargin" in line) or ("vmHeight" in line)):
                 #print(line)
                 parts = line.split(":");
                 if (len(parts) == 2):                

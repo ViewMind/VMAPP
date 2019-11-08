@@ -64,7 +64,7 @@ Item {
         font.pixelSize: 12*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.top: lineEditRect.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         visible: (vmErrorMsg !== "")
     }
 

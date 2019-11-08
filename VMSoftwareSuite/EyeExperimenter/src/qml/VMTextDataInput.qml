@@ -12,7 +12,7 @@ Item {
     property bool vmFocus: false
 
 
-    height: 40
+    height: mainWindow.height*0.058
     z: 0
 
     Rectangle {
@@ -56,7 +56,7 @@ Item {
         font.family: vmFont
         font.pixelSize: 13*viewHome.vmScale
         anchors.bottom: subLine.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: mainWindow.height*0.007
         verticalAlignment: TextInput.AlignVCenter
         leftPadding: 0
         width: lineEditRect.width
@@ -105,7 +105,7 @@ Item {
         font.pixelSize: 11*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.bottom: lineEdit.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: mainWindow.height*0.007
         visible: (vmEnteredText !== "")
     }
 
@@ -117,7 +117,7 @@ Item {
         font.pixelSize: 12*viewHome.vmScale
         anchors.left: lineEditRect.left
         anchors.top: lineEditRect.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         visible: (vmErrorMsg !== "")
     }
 

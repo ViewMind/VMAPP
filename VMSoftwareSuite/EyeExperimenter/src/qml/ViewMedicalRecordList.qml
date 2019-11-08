@@ -35,7 +35,7 @@ VMBase {
         font.family: gothamB.name
         font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
         text: vmPatientName
@@ -46,17 +46,17 @@ VMBase {
         font.family: robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewTitle.bottom
-        anchors.topMargin: 13
+        anchors.topMargin: mainWindow.height*0.019
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#5499d5"
         text: loader.getStringForKey(keysearch+"subTitle");
     }
 
     VMPlusButton{
-        height: 30
+        height: mainWindow.height*0.043
         anchors.left: tableHeader.left
         anchors.bottom: tableHeader.top
-        anchors.bottomMargin: 15
+        anchors.bottomMargin: mainWindow.height*0.022
         onClicked: {
             viewMedicalInformation.clearAll()
             swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
@@ -67,13 +67,13 @@ VMBase {
     Row {
         id: tableHeader
         anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 40
+        anchors.topMargin: mainWindow.height*0.058
         anchors.horizontalCenter: parent.horizontalCenter
-        height: 30
+        height: mainWindow.height*0.043
         Rectangle {
             id: headerMain
             color: "#adadad"
-            border.width: 2
+            border.width: mainWindow.width*0.002
             border.color: "#EDEDEE"
             radius: 4
             width: viewMedRecList.width*0.7
@@ -93,7 +93,7 @@ VMBase {
     Rectangle {
         id: tableBackground
         color: "#ffffff"
-        border.width: 2
+        border.width: mainWindow.width*0.002
         border.color: "#EDEDEE"
         radius: 4
         anchors.top: tableHeader.bottom
@@ -126,13 +126,13 @@ VMBase {
     Row{
 
         anchors.top: tableBackground.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.029
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: mainWindow.width*0.023
 
         VMButton{
             id: diagBtnBack
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keysearch+"btnBack");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
@@ -143,7 +143,7 @@ VMBase {
 
         VMButton{
             id: diagBtnView
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keysearch+"btnView");
             vmFont: viewHome.gothamM.name
             enabled: medRecListView.currentIndex !== -1

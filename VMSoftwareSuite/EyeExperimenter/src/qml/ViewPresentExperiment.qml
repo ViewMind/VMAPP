@@ -4,8 +4,6 @@ import QtQuick.Controls 2.3
 VMBase {
 
     id: viewPresentExperiment
-    width: viewPresentExperiment.vmWIDTH
-    height: viewPresentExperiment.vmHEIGHT
 
     readonly property string keysearch: "viewpresentexp_"
 
@@ -181,9 +179,9 @@ VMBase {
         }
 
         // Once the list was passed once the offset is calculated:
-        //console.log("Accum w " + accWidth + "L " + L + " and spacign " + spacing + " p.w " + viewPresentExperiment.viewPresentExperiment.vmWIDTH)
+        //console.log("Accum w " + accWidth + "L " + L + " and spacign " + spacing + " p.w " + mainWindow.width)
         var x = accWidth + (L-1)*spacing
-        x = (viewPresentExperiment.vmWIDTH - x)/2;
+        x = (mainWindow.width - x)/2;
         //console.log("Start x is " + x)
         for (i = 0; i < L; i++){
             switch (list[i]){
@@ -237,7 +235,7 @@ VMBase {
 
         id: experimentTracker
         width: parent.width
-        height: 71
+        height: mainWindow.height*0.103
         anchors.top: vmBanner.bottom
         anchors.left: parent.left
         color: "#EDEDEE"
@@ -288,7 +286,7 @@ VMBase {
         font.pixelSize: 43*viewHome.vmScale
         color: "#297fca"
         anchors.top: experimentTracker.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -301,18 +299,18 @@ VMBase {
         color: "#297fca"
         text: vmSlideExplanation
         anchors.top: slideTitle.bottom
-        anchors.topMargin: 68
+        anchors.topMargin: mainWindow.height*0.099
         anchors.left: parent.left
-        anchors.leftMargin: 178
+        anchors.leftMargin: mainWindow.width*0.139
     }
 
 //    AnimatedImage {
 //        id: slideAnimation
 //        source: vmSlideAnimation
 //        anchors.top: slideTitle.bottom
-//        anchors.topMargin: 68
+//        anchors.topMargin: mainWindow.height*0.099
 //        //anchors.right: parent.right
-//        //anchors.rightMargin: 180
+//        //anchors.rightMargin: mainWindow.width*0.141
 //        anchors.horizontalCenter: parent.horizontalCenter
 //        //scale: 1.5
 //    }
@@ -321,20 +319,20 @@ VMBase {
         id: slideViewer
         height: parent.height*0.5
         width: parent.width*0.6
-        btnSide: 80
+        btnSide: mainWindow.width*0.0625
         anchors.top: slideTitle.bottom
-        anchors.topMargin: 10
+        anchors.topMargin: mainWindow.height*0.014
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
     VMButton{
         id: btnContinue
         vmText: loader.getStringForKey(keysearch + "btnContinue")
-        vmSize: [180, 50]
+        vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
         vmInvertColors: true
         vmFont: viewPresentExperiment.gothamM.name
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 40
+        anchors.bottomMargin: mainWindow.height*0.058
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
 

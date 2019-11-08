@@ -13,8 +13,8 @@ Rectangle {
 
     z: -10
     height: {
-        if (uimap.getStructure() === "P") return 470
-        else if (uimap.getStructure() === "S") return 530
+        if (uimap.getStructure() === "P") return mainWindow.height*0.681
+        else if (uimap.getStructure() === "S") return mainWindow.height*0.768
     }
     color: "#ffffff"
 
@@ -80,7 +80,7 @@ Rectangle {
         id: mainDivisor
         color: "#88B2D0"
         width: parent.width*0.9
-        height: 2
+        height: mainWindow.height*0.003
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: textContainer.bottom
     }
@@ -93,9 +93,9 @@ Rectangle {
         font.family: gothamRegular.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.left: parent.left
-        anchors.leftMargin: 30
+        anchors.leftMargin: mainWindow.width*0.023
         anchors.top: mainDivisor.bottom
-        anchors.topMargin: 19
+        anchors.topMargin: mainWindow.height*0.028
     }
 
     // Demo mode divisor
@@ -103,10 +103,10 @@ Rectangle {
         id: divDemoMode
         color: "#88B2D0"
         width: parent.width*0.8
-        height: 1
+        height: mainWindow.height*0.001
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: labDemoMode.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
     }
 
     // Language name
@@ -117,9 +117,9 @@ Rectangle {
         font.family: gothamRegular.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.left: parent.left
-        anchors.leftMargin: 30
+        anchors.leftMargin: mainWindow.width*0.023
         anchors.top: divDemoMode.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
     }
 
     // Language divisor
@@ -127,10 +127,10 @@ Rectangle {
         id: divLang
         color: "#88B2D0"
         width: parent.width*0.8
-        height: 1
+        height: mainWindow.height*0.001
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: labLang.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
     }
 
     // Eye tracker selected
@@ -141,9 +141,9 @@ Rectangle {
         font.family: gothamRegular.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.left: parent.left
-        anchors.leftMargin: 30
+        anchors.leftMargin: mainWindow.width*0.023
         anchors.top: divLang.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
     }
 
     // Eye tracker selected divisor
@@ -151,10 +151,10 @@ Rectangle {
         id: divETSel
         color: "#88B2D0"
         width: parent.width*0.8
-        height: 1
+        height: mainWindow.height*0.001
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: labETSel.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
     }
 
     // Eye tracker selected
@@ -165,9 +165,9 @@ Rectangle {
         font.family: gothamRegular.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.left: parent.left
-        anchors.leftMargin: 30
+        anchors.leftMargin: mainWindow.width*0.023
         anchors.top: divETSel.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
     }
 
     // Eye tracker selected divisor
@@ -175,17 +175,17 @@ Rectangle {
         id: divETNumEvals
         color: "#88B2D0"
         width: parent.width*0.8
-        height: 1
+        height: mainWindow.height*0.001
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: labETNumEvals.bottom
-        anchors.topMargin: 11
+        anchors.topMargin: mainWindow.height*0.016
     }
 
     // The button is a mouse area otherwise the menu exists.
     MouseArea{
         id: btnChangeSettingMouseArea
         width: parent.width*0.9
-        height: 38
+        height: mainWindow.height*0.055
         Rectangle {
             id: btnConfSettingsRect
             anchors.fill: parent
@@ -204,7 +204,7 @@ Rectangle {
 
         }
         anchors.top: divETNumEvals.bottom
-        anchors.topMargin: 18
+        anchors.topMargin: mainWindow.height*0.026
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             swiperControl.currentIndex = swiperControl.vmIndexHome;
@@ -216,7 +216,7 @@ Rectangle {
     MouseArea{
         id: btnChangeDoctorInfo
         width: parent.width*0.9
-        height: 38
+        height: mainWindow.height*0.055
         Rectangle {
             id: btnDrInfoRect
             anchors.fill: parent
@@ -235,7 +235,7 @@ Rectangle {
 
         }
         anchors.top: btnChangeSettingMouseArea.bottom
-        anchors.topMargin: 18
+        anchors.topMargin: mainWindow.height*0.026
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             viewDrInfo.clearAllFields();
@@ -249,7 +249,7 @@ Rectangle {
     MouseArea{
         id: btnTableIDs
         width: parent.width*0.9
-        height: 38
+        height: mainWindow.height*0.055
         Rectangle {
             id: btnTableIDsRect
             anchors.fill: parent
@@ -268,7 +268,7 @@ Rectangle {
 
         }
         anchors.top: btnChangeDoctorInfo.bottom
-        anchors.topMargin: 18
+        anchors.topMargin: mainWindow.height*0.026
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             viewPatList.openAskPasswordDialog();
@@ -279,7 +279,7 @@ Rectangle {
     MouseArea{
         id: btnProtocols
         width: parent.width*0.9
-        height: 38
+        height: mainWindow.height*0.055
         visible: {
             if (uimap.getStructure() === "P") return false
             else if (uimap.getStructure() === "S") return true
@@ -302,7 +302,7 @@ Rectangle {
 
         }
         anchors.top: btnTableIDs.bottom
-        anchors.topMargin: 18
+        anchors.topMargin: mainWindow.height*0.026
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             viewProtocols.open();

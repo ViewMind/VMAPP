@@ -62,7 +62,7 @@ Item {
     Rectangle {
         id: titleBox
         anchors.fill: parent
-        border.width: 1
+        border.width: mainWindow.width*0.001
         border.color: vmEnabled? "#3096ef" : "#888889"
         color: {
             if (!vmEnabled) return "#ffffff"
@@ -74,7 +74,7 @@ Item {
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.left:  parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: mainWindow.width*0.016
             spacing: mainWindow.height*0.007
 
             Text {
@@ -115,11 +115,11 @@ Item {
 
     Canvas {
         id: downArrow
-        width: 12
-        height: 8
+        width: mainWindow.width*0.009
+        height: mainWindow.height*0.012
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 20
+        anchors.rightMargin: mainWindow.width*0.016
         contextType: "2d"
         onPaint: {
             var ctx = downArrow.getContext("2d");

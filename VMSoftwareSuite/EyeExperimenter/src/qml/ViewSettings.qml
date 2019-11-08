@@ -21,8 +21,8 @@ Dialog {
 
     id: viewSettings
     modal: true
-    width: 614
-    height: 560
+    width: mainWindow.width*0.48
+    height: mainWindow.height*0.812
     closePolicy: Popup.NoAutoClose
 
     MouseArea {
@@ -62,16 +62,16 @@ Dialog {
         text: loader.getStringForKey(keybase+"diagTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: 70
+        anchors.topMargin: mainWindow.height*0.101
     }
 
     // Creating the close button
     VMDialogCloseButton {
         id: btnClose
         anchors.top: parent.top
-        anchors.topMargin: 22
+        anchors.topMargin: mainWindow.height*0.032
         anchors.right: parent.right
-        anchors.rightMargin: 25
+        anchors.rightMargin: mainWindow.width*0.02
         onClicked: {
             // The dialog can be closed ONLY if the the output repo is valid.
             if (!vmInvalidRepoError) viewSettings.close()
@@ -86,19 +86,19 @@ Dialog {
         font.pixelSize: 13*viewHome.vmScale
         font.bold: true
         anchors.top: diagTitle.bottom
-        anchors.topMargin: 25
+        anchors.topMargin: mainWindow.height*0.036
         anchors.left: diagDBDefaultCountry.left
     }
 
     VMAutoCompleteComboBox{
         id: diagDBDefaultCountry
-        width: 440
-        height: 30
+        width: mainWindow.width*0.344
+        height: mainWindow.height*0.043
         z: 1
         vmList: loader.getCountryList()
         vmValues: loader.getCountryCodeList()
         anchors.top: diagLabelDefaultCountry.bottom
-        anchors.topMargin: 12
+        anchors.topMargin: mainWindow.height*0.017
         anchors.horizontalCenter: parent.horizontalCenter
         onVmValuesChanged:diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
         onVmListChanged: diagDBDefaultCountry.setCurrentIndex(loader.getDefaultCountry(false))
@@ -115,16 +115,16 @@ Dialog {
         font.pixelSize: 13*viewHome.vmScale
         font.bold: true
         anchors.top: diagDBDefaultCountry.bottom
-        anchors.topMargin: 25
+        anchors.topMargin: mainWindow.height*0.036
         anchors.left: diagDBDefaultCountry.left
     }
 
     VMComboBox2{
         id: diagCBLang
         z: 1
-        width: 100
+        width: mainWindow.width*0.078
         anchors.top: diagLabelLang.bottom
-        anchors.topMargin: 15
+        anchors.topMargin: mainWindow.height*0.022
         anchors.left: diagDBDefaultCountry.left
         Component.onCompleted: {
             var langs = ["English", "Spanish"]
@@ -148,7 +148,7 @@ Dialog {
         font.pixelSize: 13*viewHome.vmScale
         font.bold: true
         anchors.top: diagCBLang.bottom
-        anchors.topMargin: 25
+        anchors.topMargin: mainWindow.height*0.036
         anchors.left: diagDBDefaultCountry.left
     }
 
@@ -160,7 +160,7 @@ Dialog {
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top: diagLabelET.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.029
         anchors.left: diagDBDefaultCountry.left
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE);
     }
@@ -172,7 +172,7 @@ Dialog {
         font.pixelSize: 13*viewHome.vmScale
         anchors.top: diagCboxDemo.top
         anchors.left: diagCboxUseMouse.right
-        anchors.leftMargin: 20
+        anchors.leftMargin: mainWindow.width*0.016
         visible: {
             if (uimap.getSecondMonitorOption() === "E") return true;
             else if (uimap.getSecondMonitorOption() === "D") return false;
@@ -190,7 +190,7 @@ Dialog {
         font.pixelSize: 13*viewHome.vmScale
         anchors.top: diagCboxDemo.top
         anchors.left: diagCboxDemo.right
-        anchors.leftMargin: 20
+        anchors.leftMargin: mainWindow.width*0.016
         checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)
         visible: true
     }
@@ -202,7 +202,7 @@ Dialog {
         font.pixelSize: 13*viewHome.vmScale
         font.bold: true
         anchors.top: diagCboxUseMouse.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.029
         anchors.left: diagDBDefaultCountry.left
     }
 
@@ -210,19 +210,19 @@ Dialog {
         id: viewAllEnableRow
         anchors.left: diagCBLang.left
         anchors.top: diagLabelEnableViewAll.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.029
         spacing: 10
 
         VMPasswordField{
             id: instPassword
             vmLabelText: loader.getStringForKey(keybase+"diagInstPassword");
-            width: 150
+            width: mainWindow.width*0.117
         }
 
         VMButton{
             id: diagBtnEnableViewAll
             vmFont: viewHome.gothamM.name
-            vmSize: [250, 30]
+            vmSize: [mainWindow.width*0.195, mainWindow.height*0.043]
             vmText: ""
             onClicked: {
 
@@ -247,7 +247,7 @@ Dialog {
         vmSize: [120, 49]
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
         anchors.top: viewAllEnableRow.bottom
-        anchors.topMargin: 45
+        anchors.topMargin: mainWindow.height*0.065
         anchors.left: diagDBDefaultCountry.left
         onClicked: {
             if (checkAllOk()) close();

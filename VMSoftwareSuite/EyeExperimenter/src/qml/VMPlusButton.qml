@@ -4,7 +4,7 @@ import QtQuick.Controls 2.3
 Button{
 
     id: vmPlusButton
-    height: 40
+    height: mainWindow.height*0.058
     width:  4*height/3;
 
     scale: vmPlusButton.pressed? 0.8:1
@@ -36,7 +36,7 @@ Button{
             color: "#ffffff"
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: horizontalStick.horizontalCenter
-            border.width: 0
+            border.width: mainWindow.width*0.0
             rotation: vmMakeDeleteButton? 45: 0
         }
         Rectangle{
@@ -45,7 +45,7 @@ Button{
             width: vmStickLength
             color: "#ffffff"
             anchors.centerIn: parent
-            border.width: 0
+            border.width: mainWindow.width*0.0
             rotation: vmMakeDeleteButton? 45: 0
         }
     }

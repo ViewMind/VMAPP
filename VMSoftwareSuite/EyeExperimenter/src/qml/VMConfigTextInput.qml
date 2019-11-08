@@ -14,7 +14,7 @@ Item {
         color: "#ca2026"
         font: lineEdit.font
         anchors.top: lineEditCanvas.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         verticalAlignment: Text.AlignBottom
         horizontalAlignment: Text.AlignRight
         text: vmErrorMsg

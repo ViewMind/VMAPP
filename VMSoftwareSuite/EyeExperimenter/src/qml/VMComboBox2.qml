@@ -4,7 +4,7 @@ import QtQuick.Controls 2.3
 Item {
 
     id: vmComboBox
-    height: 30
+    height: mainWindow.height*0.043
 
     property string vmErrorMsg: ""
     property bool vmEnabled: true
@@ -60,7 +60,7 @@ Item {
             anchors.bottom: divisorLine.top
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 5
+            anchors.leftMargin: mainWindow.width*0.004
         }
 
         // The divisor line at the bottom.
@@ -77,11 +77,11 @@ Item {
         // The triangle that functions as an indicator.
         Canvas {
             id: canvas
-            width: 12
-            height: 8
+            width: mainWindow.width*0.009
+            height: mainWindow.height*0.012
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            anchors.rightMargin: 5
+            anchors.rightMargin: mainWindow.width*0.004
             contextType: "2d"
 
             onPaint: {
@@ -125,7 +125,7 @@ Item {
                 delegate: Rectangle {
                     width: vmComboBox.width
                     height: vmComboBox.height
-                    border.width: 2
+                    border.width: mainWindow.width*0.002
                     border.color: "#dadada"
                     color: mouseItemDetector.containsMouse? "#eeeeee" : "#ffffff"
 
@@ -147,7 +147,7 @@ Item {
                         verticalAlignment: Text.AlignVCenter
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: 5
+                        anchors.leftMargin: mainWindow.width*0.004
                     }
                 }
             }
@@ -165,7 +165,7 @@ Item {
         font.pixelSize: 12*viewHome.vmScale
         anchors.left: parent.left
         anchors.top: parent.bottom
-        anchors.topMargin: 5
+        anchors.topMargin: mainWindow.height*0.007
         z: vmComboBox.z - 1
         visible: (vmErrorMsg !== "")
     }

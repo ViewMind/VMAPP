@@ -10,7 +10,7 @@ Item {
     property int vmIndicatorInSection: 0
     property bool vmApplyYCorrectionToCircles: false
 
-    width: 132
+    width: mainWindow.width*0.103
     height: own.sectionHeight + own.arrowHeight*2 + own.arrowOverShoot*2;
 
     // Private constants
@@ -151,7 +151,7 @@ Item {
         id: indicatorLine
         x: own.posArrow-width/2
         y: 0
-        width: 1
+        width: mainWindow.width*0.001
         height: parent.height
         color: "#000000"
     }

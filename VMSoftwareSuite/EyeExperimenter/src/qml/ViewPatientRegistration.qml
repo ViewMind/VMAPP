@@ -77,8 +77,8 @@ VMBase {
     Dialog {
         id: showTextDialog;
         modal: true
-        width: 614
-        height: 600
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.87
 
         property string vmContent: ""
         property string vmTitle: ""
@@ -101,7 +101,7 @@ VMBase {
             font.family: viewHome.gothamB.name
             font.pixelSize: 43*viewHome.vmScale
             anchors.top: parent.top
-            anchors.topMargin: 20
+            anchors.topMargin: mainWindow.height*0.029
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
             text: showTextDialog.vmTitle
@@ -114,7 +114,7 @@ VMBase {
             height: showTextDialog.height*0.62;
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top : diagTitle.bottom
-            anchors.topMargin: 40
+            anchors.topMargin: mainWindow.height*0.058
             clip: true
             //horizontalScrollBarPolicy : Qt.ScrollBarAlwaysOff
             TextEdit {
@@ -131,7 +131,7 @@ VMBase {
 
         VMButton{
             id: btnClose
-            height: 50
+            height: mainWindow.height*0.072
             vmText: "OK";
             vmFont: viewHome.gothamM.name
             anchors.horizontalCenter: parent.horizontalCenter
@@ -150,7 +150,7 @@ VMBase {
         font.family: gothamB.name
         font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
         text:{
@@ -164,7 +164,7 @@ VMBase {
         font.family: robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewTitle.bottom
-        anchors.topMargin: 13
+        anchors.topMargin: mainWindow.height*0.019
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#5499d5"
         text: loader.getStringForKey(keysearch+"viewSubTitle");
@@ -175,7 +175,7 @@ VMBase {
         font.family: robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top:  viewSubTitle.bottom
-        anchors.topMargin: 15
+        anchors.topMargin: mainWindow.height*0.022
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#ca2026"
         visible: false
@@ -184,10 +184,10 @@ VMBase {
 
     Row {
         id: rowNames
-        width: 440
+        width: mainWindow.width*0.344
         spacing: mainWindow.width*0.0125
         anchors.top: viewSubTitle.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
         visible: {
             if (uimap.getStructure() === "P") return true;
@@ -222,7 +222,7 @@ VMBase {
         VMAutoCompleteComboBox{
             id: labelCountry
             width: countryAndYearsRow.width*0.6
-            height: 30
+            height: mainWindow.height*0.043
             z: 10
             vmLabel: loader.getStringForKey(keysearch+"labelCountry")
             vmList: loader.getCountryList()
@@ -248,14 +248,14 @@ VMBase {
         width: rowNames.width
         spacing: mainWindow.width*0.0165
         anchors.top: countryAndYearsRow.bottom
-        anchors.topMargin: 23
+        anchors.topMargin: mainWindow.height*0.033
         anchors.left: rowNames.left
         z: 3
 
         // Gender and Date of Birth.
         VMComboBox2{
             id: labelGender
-            width: 144
+            width: mainWindow.width*0.113
             anchors.bottom: parent.bottom
             Component.onCompleted: labelGender.setModelList([loader.getStringForKey(keysearch+"labelGender"), "M", "F"])
         }
@@ -277,7 +277,7 @@ VMBase {
         width: rowNames.width
         spacing: mainWindow.width*0.0125
         anchors.top: genderAndBDateRow.bottom
-        anchors.topMargin: 18
+        anchors.topMargin: mainWindow.height*0.026
         anchors.left: rowNames.left
         z: 2
 
@@ -313,7 +313,7 @@ VMBase {
         font.pixelSize: 11*viewHome.vmScale
         anchors.left: rowNames.left
         anchors.bottom: assignedDoctor.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: mainWindow.height*0.007
         Keys.onTabPressed: labelName.vmFocus = true;
     }
 
@@ -321,7 +321,7 @@ VMBase {
         id: assignedDoctor
         width: rowNames.width
         anchors.top: genderIDAndProtocol.bottom
-        anchors.topMargin: 50
+        anchors.topMargin: mainWindow.height*0.072
         anchors.left: rowNames.left
         z: 1
     }
@@ -332,7 +332,7 @@ VMBase {
         id: labelConsent
         spacing: mainWindow.width*0.004
         anchors.top:  assignedDoctor.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: mainWindow.height*0.029
         anchors.horizontalCenter: parent.horizontalCenter
         VMCheckBox{
             id: cbConsent
@@ -358,12 +358,12 @@ VMBase {
     Row{
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: labelConsent.bottom
-        anchors.topMargin: 26
+        anchors.topMargin: mainWindow.height*0.038
         spacing: mainWindow.width*0.023
 
         VMButton{
             id: btnBack
-            height: 50
+            height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keysearch+"btnCancel");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
