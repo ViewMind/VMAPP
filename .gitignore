@@ -44,6 +44,7 @@ VMTools/RawDataServer/bin/LOGDIR/
 VMTools/RawDataServer/bin/RawDataServer
 VMTools/RawDataServer/bin/work/
 VMSoftwareSuite/EyeReportGenerator/bin/res/tempvar
+VMTools/QtOpenGLTest/bin/
 
 VMSoftwareSuite/EyeReportGenerator/bin/MOCS
 VMSoftwareSuite/EyeReportGenerator/bin/OBJS
