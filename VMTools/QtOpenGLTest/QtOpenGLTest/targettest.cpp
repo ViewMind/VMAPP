@@ -94,6 +94,5 @@ void TargetTest::finalize(){
     }
     leftEye = nullptr;
     rightEye = nullptr;
-    if (openGLTexture) delete openGLTexture;
 }
 

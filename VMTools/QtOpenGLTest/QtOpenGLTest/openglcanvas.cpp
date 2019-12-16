@@ -26,18 +26,13 @@ OpenGLCanvas::OpenGLCanvas(QWidget *parent):QOpenGLWidget(parent)
 void OpenGLCanvas::initializeGL(){
     initializeOpenGLFunctions();
     loadShaders();
+
+    // Initialzing texture contents
     targetTest.initialize(this->width(),this->height());
     targetTest.renderCurrentPosition(0,0,0,0);
     glid_Texture = targetTest.getTextureGLID();
-}
 
-void OpenGLCanvas::paintGL(){
-
-    ////// SETUP
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
-
+    // Intialze buffers for the verstex and UV coordinates.
     static const GLfloat g_vertex_buffer_data[] = {
         -1.0f, -1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,
@@ -52,25 +47,23 @@ void OpenGLCanvas::paintGL(){
         0.0f, 1.0f,
     };
 
-    // This will identify our vertex buffer
-    GLuint vertexbuffer;
-    // Generate 1 buffer, put the resulting identifier in vertexbuffer
-    glGenBuffers(1, &vertexbuffer);
-    // The following commands will talk about our 'vertexbuffer' buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    // Give our vertices to OpenGL.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+    glGenBuffers(1, &glid_VertexBuffer);                                                                // Generate 1 buffer, put the resulting identifier in vertexbuffer
+    glBindBuffer(GL_ARRAY_BUFFER, glid_VertexBuffer);                                                   // The following commands will talk about our 'vertexbuffer' buffer
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);  // Give our vertices to OpenGL.
 
-    GLuint uvbuffer;
-    glGenBuffers(1, &uvbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+    glGenBuffers(1, &glid_UVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, glid_UVBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
 
-    // Get a handle for our "myTextureSampler" uniform
-    GLuint TextureID  = glGetUniformLocation(glid_Program, "myTextureSampler");  // THIS is the reference the the shader program parametner. The other is a reference to the actual shader data in memory.
-    //qDebug() << "Texture sampler ID" << TextureID;
+    glid_ShaderTextureParameterID  = glGetUniformLocation(glid_Program, "myTextureSampler");            // THIS is the reference the the shader program parametner.
 
-    ////// END SETUP
+    glGenVertexArrays(1, &glid_VertexArrayID);
+    glBindVertexArray(glid_VertexArrayID);
+
+
+}
+
+void OpenGLCanvas::paintGL(){
 
     /// ACTUALLY DRAWING
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -82,29 +75,29 @@ void OpenGLCanvas::paintGL(){
     glBindTexture(GL_TEXTURE_2D, glid_Texture);
 
     // Set our "myTextureSampler" sampler to use Texture Unit 0
-    glUniform1i(TextureID, 0);
+    glUniform1i(glid_ShaderTextureParameterID, 0);
 
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, glid_VertexBuffer);
     glVertexAttribPointer(
                 0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
                 3,                  // size
                 GL_FLOAT,           // type
                 GL_FALSE,           // normalized?
                 0,                  // stride
-                (void*)0            // array buffer offset
-                );
+                nullptr             // array buffer offset
+     );
 
     // 2nd attribute buffer : UVs
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, glid_UVBuffer);
     glVertexAttribPointer(
         1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
         2,                                // size : U+V => 2
         GL_FLOAT,                         // type
         GL_FALSE,                         // normalized?
         0,                                // stride
-        (void*)0                          // array buffer offset
+        nullptr                           // array buffer offset
     );
 
 
@@ -117,77 +110,19 @@ void OpenGLCanvas::paintGL(){
 }
 
 void OpenGLCanvas::loadShaders(){
-    // Create the shaders
-    GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-    GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-    // Read the Vertex Shader code
-    std::string VertexShaderCode = VERTEX_SHADER.toStdString();
-
-    // Read the Fragment Shader code
-    std::string FragmentShaderCode = FRAGMENT_SHADER.toStdString();
-
-    GLint Result = GL_FALSE;
-    int InfoLogLength;
-
-    // Compile Vertex Shader
-    char const * VertexSourcePointer = VertexShaderCode.c_str();
-    glShaderSource(VertexShaderID, 1, &VertexSourcePointer , nullptr);
-    glCompileShader(VertexShaderID);
-
-    // Check Vertex Shader
-    glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0 ){
-        std::vector<char> VertexShaderErrorMessage(static_cast<unsigned long>(InfoLogLength+1));
-        glGetShaderInfoLog(VertexShaderID, InfoLogLength, nullptr, &VertexShaderErrorMessage[0]);
-        qDebug() << "ERROR compiling vertex shader: " <<  VertexShaderErrorMessage;
+    shaderProgram = new QOpenGLShaderProgram(this);
+    if (!shaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, VERTEX_SHADER)){
+        qDebug() << "ERROR compiling vertex shader";
+        qDebug() << shaderProgram->log();
     }
-
-    // Compile Fragment Shader
-    char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-    glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , nullptr);
-    glCompileShader(FragmentShaderID);
-
-    // Check Fragment Shader
-    glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0 ){
-        std::vector<char> FragmentShaderErrorMessage (static_cast<unsigned long>(InfoLogLength+1));
-        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, nullptr, &FragmentShaderErrorMessage[0]);
-        qDebug() << "ERROR compiling fragment shader: " <<  FragmentShaderErrorMessage;
+    if (!shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, FRAGMENT_SHADER)){
+        qDebug() << "ERROR compiling fragment shader";
+        qDebug() << shaderProgram->log();
     }
-
-    // Link the program
-    glid_Program = glCreateProgram();
-    glAttachShader(glid_Program, VertexShaderID);
-    glAttachShader(glid_Program, FragmentShaderID);
-    glLinkProgram(glid_Program);
-
-    // Check the program
-    glGetProgramiv(glid_Program, GL_LINK_STATUS, &Result);
-    glGetProgramiv(glid_Program, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0 ){
-        std::vector<char> ProgramErrorMessage(static_cast<unsigned long>(InfoLogLength+1));
-        glGetProgramInfoLog(glid_Program, InfoLogLength, nullptr, &ProgramErrorMessage[0]);
-        qDebug()  << "ERROR linking program " << ProgramErrorMessage;
-    }
-
-    glDetachShader(glid_Program, VertexShaderID);
-    glDetachShader(glid_Program, FragmentShaderID);
-
-    glDeleteShader(VertexShaderID);
-    glDeleteShader(FragmentShaderID);
-
+    shaderProgram->link();
+    glid_Program = shaderProgram->programId();
 }
 
-GLuint OpenGLCanvas::loadTexture(QString path){
-    QImage image(path);
-    ogltexture = new QOpenGLTexture(image);
-    ogltexture->setMinificationFilter(QOpenGLTexture::Nearest);
-    ogltexture->setMagnificationFilter(QOpenGLTexture::Nearest);
-    return ogltexture->textureId();
-}
 
 void OpenGLCanvas::mouseMoveEvent(QMouseEvent *ev){
     QOpenGLWidget::mouseMoveEvent(ev);

@@ -10,6 +10,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLTexture>
 #include <QMouseEvent>
+#include <QOpenGLShaderProgram>
 #include <QDebug>
 
 class OpenGLCanvas : public QOpenGLWidget , protected QOpenGLExtraFunctions
@@ -34,10 +35,15 @@ private:
 
     GLuint glid_Program;
     GLuint glid_Texture;
+    GLint glid_ShaderTextureParameterID;
+    GLuint glid_VertexBuffer;
+    GLuint glid_UVBuffer;
+    GLuint glid_VertexArrayID;
 
     void loadShaders();
+
+    QOpenGLShaderProgram *shaderProgram;
     QOpenGLTexture *ogltexture;
-    GLuint loadTexture(QString path);
 
 };
 
