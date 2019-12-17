@@ -24,6 +24,7 @@ bool VIVEEyePoller::initalizeEyeTracking(){
 
 void VIVEEyePoller::run(){
     ViveSR::anipal::Eye::EyeData eye_data;
+    previous.init(4,-2);
     while (keepGoing) {
         int result = ViveSR::anipal::Eye::GetEyeData(&eye_data);
         if (result == ViveSR::Error::WORK) {
@@ -40,6 +41,16 @@ void VIVEEyePoller::run(){
             //                     << re.gaze_direction_normalized.y
             //                     << re.gaze_direction_normalized.z
             //                     << "PS: " << le.pupil_diameter_mm;
+
+            ManyPointCompare now;
+            now.values << le.gaze_direction_normalized.x << le.gaze_direction_normalized.y << re.gaze_direction_normalized.x << re.gaze_direction_normalized.y;
+            if (now.areTheSame(previous)) {
+                qDebug() << "Skipping";
+                previous = now;
+                continue;
+            }
+            previous = now;
+
             QVector4D vecL(le.gaze_direction_normalized.x,le.gaze_direction_normalized.y,le.gaze_direction_normalized.z,0);
             QVector4D vecR(re.gaze_direction_normalized.x,re.gaze_direction_normalized.y,re.gaze_direction_normalized.z,0);
 
@@ -49,8 +60,7 @@ void VIVEEyePoller::run(){
             qreal scaleFactor = 1;
 
             //qDebug() << isCalibrating << shouldStoreCalibrationData;
-            if (isCalibrating && shouldStoreCalibrationData){
-                //qDebug() << "Storing";
+            if (isCalibrating && shouldStoreCalibrationData && (vecL.z() != 0.0f) && (vecR.z() != 0.0f) ){
                 currentCalibrationData.xl << static_cast<qreal>(vecL.x())*scaleFactor/static_cast<qreal>(vecL.z());
                 currentCalibrationData.xr << static_cast<qreal>(vecR.x())*scaleFactor/static_cast<qreal>(vecR.z());
                 currentCalibrationData.yl << static_cast<qreal>(vecL.y())*scaleFactor/static_cast<qreal>(vecL.z());

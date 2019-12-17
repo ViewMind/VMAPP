@@ -60,6 +60,22 @@ private:
     bool isCalibrating;
     bool shouldStoreCalibrationData;
 
+    struct ManyPointCompare{
+        QList<float> values;
+        void init(qint32 n, float v){
+            for (qint32 i = 0; i < n; i++){
+                values << v;
+            }
+        }
+        bool areTheSame(ManyPointCompare fpc){
+            if (fpc.values.size() != values.size()) return false;
+            for (int i = 0; i < values.size(); i++){
+                if (values.at(i) != fpc.values.at(i)) return false;
+            }
+            return true;
+        }
+    };
+
     struct CalibrationData {
         QList<qreal> xr;
         QList<qreal> yr;
@@ -84,6 +100,8 @@ private:
     CalibrationData currentCalibrationData;
 
     LogInterface logger;
+
+    ManyPointCompare previous;
 
     // For the linear conversion
 //    void setMaxWidthAndHeight(qreal W, qreal H);
