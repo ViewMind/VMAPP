@@ -1,7 +1,7 @@
 #ifndef OPENGLCANVAS_H
 #define OPENGLCANVAS_H
 
-#include <QOffscreenSurface>
+#include <QOpenGLWidget>
 #include <QTimer>
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
@@ -14,21 +14,26 @@
 #include <QOpenGLFramebufferObject>
 #include <QDebug>
 
+
 #include "openvr.h"
 #include "targettest.h"
+#include "viveeyepoller.h"
 
-class OpenVRControlObject : public QObject , protected QOpenGLExtraFunctions
+class OpenVRControl : public QOpenGLWidget , protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 public:
-    explicit OpenVRControlObject(QObject *parent = nullptr);
-    ~OpenVRControlObject() override;
+    explicit OpenVRControl(QWidget *parent = nullptr);
+    ~OpenVRControl() override;
 
-    void initializeGL();
-    void paintGL();
+    void initializeGL() override;
+    void paintGL() override;
 
-    Q_INVOKABLE void startTest();
-    Q_INVOKABLE void stopTest();
+    void start();
+    void stop();
+
+public slots:
+    void newPositionData(EyeTrackerData data);
 
 private slots:
     void updateView();
@@ -40,7 +45,7 @@ private:
     static const QString FRAGMENT_SHADER;
 
     // VR Related variables and functions
-    vr::IVRSystem * vrSystem;    
+    vr::IVRSystem * vrSystem;
     QMatrix4x4 eyeMath(vr::EVREye eye);
     QTimer timer;
     bool initializeVR();
@@ -48,8 +53,6 @@ private:
     // Open GL Related variables.
     QOpenGLShaderProgram *shaderProgram;
     QOpenGLTexture *ogltexture;
-    QOpenGLContext *openGLContext;
-    QOffscreenSurface *offscreenSurface;
     GLuint glid_Program;
     GLuint glid_Texture;
     GLint  glid_ShaderTextureParameterID;
@@ -57,18 +60,20 @@ private:
     GLuint glid_VertexBuffer;
     GLuint glid_UVBuffer;
     GLuint glid_VertexArrayID;
+
     struct FramebufferDesc
     {
-//        GLuint m_nDepthBufferId;
+        GLuint m_nDepthBufferId;
         GLuint m_nRenderTextureId;
         GLuint m_nRenderFramebufferId;
-//        GLuint m_nResolveTextureId;
-//        GLuint m_nResolveFramebufferId;
+        GLuint m_nResolveTextureId;
+        GLuint m_nResolveFramebufferId;
     };
 
     FramebufferDesc leftFBDesc;
     FramebufferDesc rightFBDesc;
     FramebufferDesc initFrameBufferDesc(int nWidth, int nHeight);
+
     bool initializeOpenGL();
     void renderToEye(qint32 whichEye);
 
@@ -78,6 +83,10 @@ private:
     // Other variables and functions.
     bool systemInitialized;
     bool enableRefresh;
+
+    // Eye tracking variables and functions.
+    VIVEEyePoller poller;
+    bool initializeEyeTracking();
 
 };
 

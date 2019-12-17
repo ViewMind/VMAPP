@@ -7,8 +7,6 @@ CONFIG += c++11
 # depend on your compiler). Refer to the documentation for the
 # deprecated API to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
-#DEFINES += ENABLE_EYE_TRACKING
-DEFINES += USE_NON_UI_SOLUTION
 
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -16,11 +14,11 @@ DEFINES += USE_NON_UI_SOLUTION
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        ../../../CommonClasses/LogInterface/loginterface.cpp \
+        ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
+        control.cpp \
         eyetrackerdata.cpp \
         main.cpp \
-        openvrcontrol.cpp \
-        openvrcontrolobject.cpp \
-        openvrcontrolwindow.cpp \
         targettest.cpp \
         viveeyepoller.cpp
 
@@ -43,10 +41,11 @@ RCC_DIR = QRC
 #!isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    ../../../CommonClasses/LogInterface/loginterface.h \
+    ../../../CommonClasses/OpenVRControlObject/openvr.h \
+    ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
+    control.h \
     eyetrackerdata.h \
-    openvrcontrol.h \
-    openvrcontrolobject.h \
-    openvrcontrolwindow.h \
     sranipal/SRanipal.h \
     sranipal/SRanipal_Enums.h \
     sranipal/SRanipal_Eye.h \
@@ -61,4 +60,5 @@ HEADERS += \
     targettest.h \
     viveeyepoller.h
 
-LIBS += -L$$PWD/lib -lopenvr_api -lSRanipal
+LIBS += -L$$PWD/lib -lSRanipal
+LIBS += -L$$PWD/../../../CommonClasses/OpenVRControlObject/libs -lopenvr_api

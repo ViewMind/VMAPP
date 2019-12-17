@@ -38,8 +38,4 @@ Window {
 
     }
 
-    onClosing: {
-        control.close();
-    }
-
 }

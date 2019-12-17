@@ -5,16 +5,50 @@ TargetTest::TargetTest()
     canvas = nullptr;
     leftEye = nullptr;
     rightEye = nullptr;
-    openGLTexture = nullptr;
 }
 
-bool TargetTest::initialize(qint32 screenw, qint32 screenh){
+void TargetTest::initialize(qint32 screenw, qint32 screenh){
 
     canvas = new QGraphicsScene(0,0,screenw,screenh);
     canvas->setBackgroundBrush(QBrush(Qt::gray));
+}
 
-    recommendedTargetSize.setWidth(screenw);
-    recommendedTargetSize.setHeight(screenh);
+QImage TargetTest::getClearScreen(){
+    canvas->clear();
+    canvas->setBackgroundBrush(QBrush(Qt::gray));
+    QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
+    QPainter painter( &image );
+    canvas->render( &painter );
+    return image;
+}
+
+QImage TargetTest::setSingleTarget(qint32 x, qint32 y){
+    canvas->clear();
+
+    qreal R = K_LARGE_D*canvas->sceneRect().width()/2;
+    r = K_SMALL_D*canvas->sceneRect().width()/2;
+    qreal offset = (R-r);
+
+    qreal xf = x - R;
+    qreal yf = y - R;
+
+    QGraphicsEllipseItem *circle = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(Qt::darkBlue));
+    QGraphicsEllipseItem *innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::yellow));
+    circle->setPos(xf,yf);
+    innerCircle->setPos(xf+offset,yf+offset);
+
+    QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
+    QPainter painter( &image );
+    canvas->render( &painter );
+    return image;
+
+}
+
+void TargetTest::setTargetTest(){
+    canvas->clear();
+
+    qint32 screenw = static_cast<qint32>(canvas->sceneRect().width());
+    qint32 screenh = static_cast<qint32>(canvas->sceneRect().height());
 
     qreal R = K_LARGE_D*screenw/2;
     r = K_SMALL_D*screenw/2;
@@ -48,58 +82,21 @@ bool TargetTest::initialize(qint32 screenw, qint32 screenh){
     // Initializing the
     leftEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,0,255,100)));
     rightEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,255,0,100)));
-
-    return true;
 }
 
-GLuint TargetTest::getTextureGLID() const{
-    if (openGLTexture != nullptr) return openGLTexture->textureId();
-    else return 0;
-}
-
-QSize TargetTest::getSize(){
-    return recommendedTargetSize;
-}
-
-void TargetTest::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly){
-    if (!canvas) return;
+QImage TargetTest::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly){
+    if (!canvas) return QImage();
 
     leftEye->setPos(lx-r,ly-r);
     rightEye->setPos(rx-r,ry-r);
 
-    //qDebug() << "X is" << rx << "Y is " << ry << canvas->sceneRect();
-
     QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
     QPainter painter( &image );
     canvas->render( &painter );
-
-    if (openGLTexture == nullptr){
-        openGLTexture = new QOpenGLTexture(image.mirrored());
-        openGLTexture->setMinificationFilter(QOpenGLTexture::Linear);
-        openGLTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    }
-    else{
-        openGLTexture->destroy();
-        openGLTexture->create();
-        openGLTexture->setSize(image.size().width()*image.size().height());
-        openGLTexture->setData(image.mirrored(),QOpenGLTexture::DontGenerateMipMaps);
-//        delete openGLTexture;
-//        openGLTexture = new QOpenGLTexture(image.mirrored());
-//        openGLTexture->setMinificationFilter(QOpenGLTexture::Linear);
-//        openGLTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    }
+    return image;
 }
 
 TargetTest::~TargetTest(){
-    finalize();
-}
 
-void TargetTest::finalize(){
-    if (canvas){
-        delete canvas;
-        canvas = nullptr;
-    }
-    leftEye = nullptr;
-    rightEye = nullptr;
 }
 

@@ -1,41 +1,43 @@
 #ifndef OPENGLCANVAS_H
 #define OPENGLCANVAS_H
 
-#include <QOpenGLWidget>
+#include <QOffscreenSurface>
 #include <QTimer>
-#include <QOpenGLFunctions>
-#include <QOpenGLBuffer>
-#include <QOpenGLShader>
-#include <QOpenGLExtraFunctions>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLTexture>
-#include <QMouseEvent>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLFramebufferObject>
+#include <QPainter>
+#include <QImage>
 #include <QDebug>
 
-#include "openvr.h"
-#include "targettest.h"
-#include "viveeyepoller.h"
+#include <QOpenGLFunctions>
+#include <QOpenGLShader>
+#include <QOpenGLExtraFunctions>
+#include <QOpenGLTexture>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
 
-class OpenVRControl : public QOpenGLWidget , protected QOpenGLExtraFunctions
+#include "../LogInterface/loginterface.h"
+#include "openvr.h"
+
+
+class OpenVRControlObject : public QObject , protected QOpenGLExtraFunctions
 {
     Q_OBJECT
 public:
-    explicit OpenVRControl(QWidget *parent = nullptr);
-    ~OpenVRControl() override;
-
-    void initializeGL() override;
-    void paintGL() override;
+    explicit OpenVRControlObject(QObject *parent = nullptr);
+    ~OpenVRControlObject() override;
 
     void start();
-    void stop();
 
-public slots:
-    void newPositionData(EyeTrackerData data);
+    void setImage(QImage *image);
+    void setScreenColor(QColor color);
+    bool isItRunning();
+    void stopRendering();
+    QSize getRecommendedSize();
+
+signals:
+    void newProjectionMatrixes(QMatrix4x4 r, QMatrix4x4 l);
 
 private slots:
-    void updateView();
+    void onRefresh();
 
 private:
 
@@ -43,15 +45,21 @@ private:
     static const QString VERTEX_SHADER;
     static const QString FRAGMENT_SHADER;
 
+    // Update timer constant
+    static const qint32 REFRESH_RATE_IN_MS = 4;
+
     // VR Related variables and functions
-    vr::IVRSystem * vrSystem;
+    vr::IVRSystem * vrSystem;    
     QMatrix4x4 eyeMath(vr::EVREye eye);
-    QTimer timer;
     bool initializeVR();
 
     // Open GL Related variables.
     QOpenGLShaderProgram *shaderProgram;
     QOpenGLTexture *ogltexture;
+    QOpenGLContext *openGLContext;
+    QOffscreenSurface *offscreenSurface;
+    QOpenGLTexture *openGLTexture;
+
     GLuint glid_Program;
     GLuint glid_Texture;
     GLint  glid_ShaderTextureParameterID;
@@ -62,30 +70,28 @@ private:
 
     struct FramebufferDesc
     {
-//        GLuint m_nDepthBufferId;
         GLuint m_nRenderTextureId;
         GLuint m_nRenderFramebufferId;
-//        GLuint m_nResolveTextureId;
-//        GLuint m_nResolveFramebufferId;
     };
-
     FramebufferDesc leftFBDesc;
     FramebufferDesc rightFBDesc;
     FramebufferDesc initFrameBufferDesc(int nWidth, int nHeight);
-
     bool initializeOpenGL();
     void renderToEye(qint32 whichEye);
 
-    // The QGraphics Framework class that actually draws.
-    TargetTest targetTest;
-
     // Other variables and functions.
-    bool systemInitialized;
-    bool enableRefresh;
+    bool initialization();
+    bool isInitialized;
+    QSize recommendedSize;
+    QColor backgroundColor;
+    QMatrix4x4 leftProjectionMatrix;
+    QMatrix4x4 rightProjectionMatrix;
 
-    // Eye tracking variables and functions.
-    VIVEEyePoller poller;
-    bool initializeEyeTracking();
+    // Logger for errors.
+    LogInterface logger;
+
+    // Found no other way of updating the images.
+    QTimer timer;
 
 };
 

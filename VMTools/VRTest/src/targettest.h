@@ -5,9 +5,9 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
-#include <QOpenGLTexture>
 #include <QImage>
 #include <QDebug>
+
 
 class TargetTest
 {
@@ -15,13 +15,14 @@ public:
     TargetTest();
     ~TargetTest();
 
-    bool initialize(qint32 screenw, qint32 screenh);
-    void finalize();
-    void setMaxWidthAndHeight(qint32 W, qint32 H);
-    void renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
-    GLuint getTextureGLID() const;
-    QSize getSize();
+    void initialize(qint32 screenw, qint32 screenh);
 
+    QImage setSingleTarget(qint32 x, qint32 y);
+    QImage getClearScreen();
+
+    void setTargetTest();
+
+    QImage renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
 
 private:
 
@@ -31,9 +32,8 @@ private:
     QGraphicsScene *canvas;
     QGraphicsEllipseItem *leftEye;
     QGraphicsEllipseItem *rightEye;
-    QOpenGLTexture *openGLTexture;
-    QSize recommendedTargetSize;
     qreal r;
+
 };
 
 #endif // TARGETTEST_H
