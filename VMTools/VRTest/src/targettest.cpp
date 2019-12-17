@@ -3,17 +3,18 @@
 TargetTest::TargetTest()
 {
     canvas = nullptr;
-    //fbo = nullptr;
     leftEye = nullptr;
     rightEye = nullptr;
+    openGLTexture = nullptr;
 }
 
-void TargetTest::initialize(quint32 screenw, quint32 screenh){
+bool TargetTest::initialize(qint32 screenw, qint32 screenh){
 
     canvas = new QGraphicsScene(0,0,screenw,screenh);
     canvas->setBackgroundBrush(QBrush(Qt::gray));
-    renderSize.setWidth(static_cast<qint32>(screenw));
-    renderSize.setHeight(static_cast<qint32>(screenh));
+
+    recommendedTargetSize.setWidth(screenw);
+    recommendedTargetSize.setHeight(screenh);
 
     qreal R = K_LARGE_D*screenw/2;
     r = K_SMALL_D*screenw/2;
@@ -44,20 +45,49 @@ void TargetTest::initialize(quint32 screenw, quint32 screenh){
         innerCircle->setPos(x+offset,y+offset);
     }
 
-    // Initializing the eye circles
+    // Initializing the
     leftEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,0,255,100)));
     rightEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,255,0,100)));
 
-    //canvas->addRect(0,0,screenw/2,screenh,QPen(),QBrush(Qt::red));
+    return true;
+}
+
+GLuint TargetTest::getTextureGLID() const{
+    if (openGLTexture != nullptr) return openGLTexture->textureId();
+    else return 0;
+}
+
+QSize TargetTest::getSize(){
+    return recommendedTargetSize;
 }
 
 void TargetTest::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly){
     if (!canvas) return;
+
     leftEye->setPos(lx-r,ly-r);
     rightEye->setPos(rx-r,ry-r);
-    QOpenGLPaintDevice device( renderSize );
-    QPainter painter( &device );
+
+    //qDebug() << "X is" << rx << "Y is " << ry << canvas->sceneRect();
+
+    QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
+    QPainter painter( &image );
     canvas->render( &painter );
+
+    if (openGLTexture == nullptr){
+        openGLTexture = new QOpenGLTexture(image.mirrored());
+        openGLTexture->setMinificationFilter(QOpenGLTexture::Linear);
+        openGLTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+    }
+    else{
+        openGLTexture->destroy();
+        openGLTexture->create();
+        openGLTexture->setSize(image.size().width()*image.size().height());
+        openGLTexture->setData(image.mirrored(),QOpenGLTexture::DontGenerateMipMaps);
+//        delete openGLTexture;
+//        openGLTexture = new QOpenGLTexture(image.mirrored());
+//        openGLTexture->setMinificationFilter(QOpenGLTexture::Linear);
+//        openGLTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+    }
 }
 
 TargetTest::~TargetTest(){
@@ -65,6 +95,11 @@ TargetTest::~TargetTest(){
 }
 
 void TargetTest::finalize(){
-
+    if (canvas){
+        delete canvas;
+        canvas = nullptr;
+    }
+    leftEye = nullptr;
+    rightEye = nullptr;
 }
 

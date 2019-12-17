@@ -17,7 +17,6 @@ public:
 
     bool initialize(qint32 screenw, qint32 screenh);
     void finalize();
-    void setMaxWidthAndHeight(qint32 W, qint32 H);
     void renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
     GLuint getTextureGLID() const;
 

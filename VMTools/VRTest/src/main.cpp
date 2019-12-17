@@ -1,8 +1,12 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "control.h"
 
+#ifdef USE_NON_UI_SOLUTION
+#include "openvrcontrolobject.h"
+#else
+#include "openvrcontrolwindow.h"
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -10,7 +14,11 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    Control control(nullptr);
+#ifdef USE_NON_UI_SOLUTION
+    OpenVRControlObject control(nullptr);
+#else
+    OpenVRControlWindow control;
+#endif
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

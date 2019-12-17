@@ -7,6 +7,7 @@ CONFIG += c++11
 # depend on your compiler). Refer to the documentation for the
 # deprecated API to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
+#DEFINES += USE_NON_UI_SOLUTION
 
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -14,9 +15,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        control.cpp \
+        eyetrackerdata.cpp \
         main.cpp \
-        targettest.cpp
+        openvrcontrol.cpp \
+        openvrcontrolobject.cpp \
+        openvrcontrolwindow.cpp \
+        targettest.cpp \
+        viveeyepoller.cpp
 
 RESOURCES += qml.qrc
 
@@ -37,7 +42,22 @@ RCC_DIR = QRC
 #!isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    control.h \
-    targettest.h
+    eyetrackerdata.h \
+    openvrcontrol.h \
+    openvrcontrolobject.h \
+    openvrcontrolwindow.h \
+    sranipal/SRanipal.h \
+    sranipal/SRanipal_Enums.h \
+    sranipal/SRanipal_Eye.h \
+    sranipal/SRanipal_EyeDataType.h \
+    sranipal/SRanipal_EyeData_v1.h \
+    sranipal/SRanipal_EyeData_v2.h \
+    sranipal/SRanipal_Eye_Calibration_Enums.h \
+    sranipal/SRanipal_Lip.h \
+    sranipal/SRanipal_LipData_v1.h \
+    sranipal/SRanipal_LipData_v2.h \
+    sranipal/ViveSR_Enums.h \
+    targettest.h \
+    viveeyepoller.h
 
-LIBS += -L$$PWD/lib -lopenvr_api
+LIBS += -L$$PWD/lib -lopenvr_api -lSRanipal

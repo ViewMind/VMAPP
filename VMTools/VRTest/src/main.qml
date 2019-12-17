@@ -10,9 +10,12 @@ Window {
 
     Column{
 
+        id: mainColumn
         width: 100
         spacing: 10
         anchors.centerIn: parent
+
+        property bool hasStarted: false;
 
         Button {
             id: startTest
@@ -20,20 +23,23 @@ Window {
             height: 50
             text: "Start Test"
             onClicked: {
-                control.startTest();
+                if (!mainColumn.hasStarted) {
+                    text = "Stop Test";
+                    mainColumn.hasStarted = true;
+                    control.startTest();
+                }
+                else {                    
+                    text = "Start Test";
+                    control.stopTest();
+                    mainColumn.hasStarted = false;
+                }
             }
         }
 
-        Button {
-            id: stopTest
-            width: parent.width
-            height: 50
-            text: "Stop Test"
-            onClicked: {
-                control.stopTest();
-            }
-        }
+    }
 
+    onClosing: {
+        control.close();
     }
 
 }
