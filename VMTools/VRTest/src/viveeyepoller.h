@@ -17,12 +17,27 @@ class VIVEEyePoller : public QThread
 
 public:
     VIVEEyePoller();
+    void setMaxWidthAndHeight(qreal W, qreal H);
     void run() override;
     void stop() { keepGoing = false; }
+    EyeTrackerData getLastData() {return lastData;}
+
+signals:
+    void newEyeData(EyeTrackerData data);
 
 private:
     QTimer timer;
     bool keepGoing;
+
+    // Transformation parameters
+    qreal MaxX;
+    qreal MaxY;
+    qreal bX, mX;
+    qreal bY, mY;
+
+    EyeTrackerData computeValues(qreal xr, qreal yr, qreal xl, qreal yl);
+    EyeTrackerData lastData;
+
 };
 
 #endif // VIVEEYEPOLLER_H

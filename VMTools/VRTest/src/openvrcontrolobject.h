@@ -59,11 +59,11 @@ private:
     GLuint glid_VertexArrayID;
     struct FramebufferDesc
     {
-        GLuint m_nDepthBufferId;
+//        GLuint m_nDepthBufferId;
         GLuint m_nRenderTextureId;
         GLuint m_nRenderFramebufferId;
-        GLuint m_nResolveTextureId;
-        GLuint m_nResolveFramebufferId;
+//        GLuint m_nResolveTextureId;
+//        GLuint m_nResolveFramebufferId;
     };
 
     FramebufferDesc leftFBDesc;

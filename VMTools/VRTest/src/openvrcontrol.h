@@ -16,6 +16,7 @@
 
 #include "openvr.h"
 #include "targettest.h"
+#include "viveeyepoller.h"
 
 class OpenVRControl : public QOpenGLWidget , protected QOpenGLExtraFunctions
 {
@@ -30,8 +31,8 @@ public:
     void start();
     void stop();
 
-protected:
-    void mouseMoveEvent(QMouseEvent *ev) override;
+public slots:
+    void newPositionData(EyeTrackerData data);
 
 private slots:
     void updateView();
@@ -58,18 +59,20 @@ private:
     GLuint glid_VertexBuffer;
     GLuint glid_UVBuffer;
     GLuint glid_VertexArrayID;
+
     struct FramebufferDesc
     {
-        GLuint m_nDepthBufferId;
+//        GLuint m_nDepthBufferId;
         GLuint m_nRenderTextureId;
         GLuint m_nRenderFramebufferId;
-        GLuint m_nResolveTextureId;
-        GLuint m_nResolveFramebufferId;
+//        GLuint m_nResolveTextureId;
+//        GLuint m_nResolveFramebufferId;
     };
 
     FramebufferDesc leftFBDesc;
     FramebufferDesc rightFBDesc;
     FramebufferDesc initFrameBufferDesc(int nWidth, int nHeight);
+
     bool initializeOpenGL();
     void renderToEye(qint32 whichEye);
 
@@ -79,6 +82,10 @@ private:
     // Other variables and functions.
     bool systemInitialized;
     bool enableRefresh;
+
+    // Eye tracking variables and functions.
+    VIVEEyePoller poller;
+    bool initializeEyeTracking();
 
 };
 

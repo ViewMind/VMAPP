@@ -1,29 +1,31 @@
 #include "openvrcontrol.h"
 
 const QString OpenVRControl::VERTEX_SHADER = "#version 330 core\n"
-                                            "layout(location = 0) in vec3 vertexPosition_modelspace;\n"
-                                            "layout(location = 1) in vec2 vertexUV;\n"
-                                            "out vec2 UV;\n"
-                                            "uniform mat4 MVP;"
-                                            "void main() {\n"
-                                            "   gl_Position = MVP * vec4(vertexPosition_modelspace,1);\n"
-                                            "   //gl_Position.xyz = vertexPosition_modelspace;\n"
-                                            "   //gl_Position.w = 1.0;\n"
-                                            "   UV = vertexUV;"
-                                            "}\n";
+                                             "layout(location = 0) in vec3 vertexPosition_modelspace;\n"
+                                             "layout(location = 1) in vec2 vertexUV;\n"
+                                             "out vec2 UV;\n"
+                                             "uniform mat4 MVP;"
+                                             "void main() {\n"
+                                             "   gl_Position = MVP * vec4(vertexPosition_modelspace,1);\n"
+                                             "   //gl_Position.xyz = vertexPosition_modelspace;\n"
+                                             "   //gl_Position.w = 1.0;\n"
+                                             "   UV = vertexUV;"
+                                             "}\n";
 const QString OpenVRControl::FRAGMENT_SHADER = "#version 330 core\n"
-                                              "in vec2 UV;\n"
-                                              "out vec3 color;\n"
-                                              "uniform sampler2D myTextureSampler;\n"
-                                              "void main(){\n"
-                                              "   color = texture(myTextureSampler,UV).rgb;\n"
-                                              "   //color = vec3(UV.x,UV.y,0);\n"
-                                              "}\n";
+                                               "in vec2 UV;\n"
+                                               "out vec3 color;\n"
+                                               "uniform sampler2D myTextureSampler;\n"
+                                               "void main(){\n"
+                                               "   color = texture(myTextureSampler,UV).rgb;\n"
+                                               "   //color = vec3(UV.x,UV.y,0);\n"
+                                               "}\n";
 
 OpenVRControl::OpenVRControl(QWidget *parent):QOpenGLWidget(parent)
 {
     vrSystem = nullptr;
+    qRegisterMetaType<EyeTrackerData>("EyeTrackerData");
     connect(&timer,&QTimer::timeout,this,&OpenVRControl::updateView);
+    connect(&poller,SIGNAL(newEyeData(EyeTrackerData)),this,SLOT(newPositionData(EyeTrackerData)));
     systemInitialized = false;
     enableRefresh = false;
 }
@@ -117,25 +119,29 @@ OpenVRControl::FramebufferDesc OpenVRControl::initFrameBufferDesc(int nWidth, in
     glGenFramebuffers(1, &framebufferDesc.m_nRenderFramebufferId );
     glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nRenderFramebufferId);
 
-    glGenRenderbuffers(1, &framebufferDesc.m_nDepthBufferId);
-    glBindRenderbuffer(GL_RENDERBUFFER, framebufferDesc.m_nDepthBufferId);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, nWidth, nHeight );
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	framebufferDesc.m_nDepthBufferId );
+    // The depth buffer is unnecessary
+//    glGenRenderbuffers(1, &framebufferDesc.m_nDepthBufferId);
+//    glBindRenderbuffer(GL_RENDERBUFFER, framebufferDesc.m_nDepthBufferId);
+//    // glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, nWidth, nHeight );
+//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, nWidth, nHeight );
+//    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	framebufferDesc.m_nDepthBufferId ); // this binds it to the current frame buffer.
+    // The depth buffer is unnecessary
 
     glGenTextures(1, &framebufferDesc.m_nRenderTextureId );
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId );
-    glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, nWidth, nHeight, true);
+    //glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, nWidth, nHeight, true);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, nWidth, nHeight);  // TODO: Test RBG8.
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId, 0);
 
-    glGenFramebuffers(1, &framebufferDesc.m_nResolveFramebufferId );
-    glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId);
+//    glGenFramebuffers(1, &framebufferDesc.m_nResolveFramebufferId );
+//    glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId);
 
-    glGenTextures(1, &framebufferDesc.m_nResolveTextureId );
-    glBindTexture(GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId, 0);
+//    glGenTextures(1, &framebufferDesc.m_nResolveTextureId );
+//    glBindTexture(GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId );
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId, 0);
     //==================================================================================================================================
 
     return framebufferDesc;
@@ -213,24 +219,25 @@ void OpenVRControl::renderToEye(qint32 whichEye){
                 );
 
     if (!renderToScreen){
-        glEnable( GL_MULTISAMPLE );
+        //glEnable( GL_MULTISAMPLE );
         glBindFramebuffer( GL_FRAMEBUFFER, framebufferDesc.m_nRenderFramebufferId );
         glDrawArrays(GL_QUADS, 0, 4);
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-        glDisable( GL_MULTISAMPLE );
+        //glDisable( GL_MULTISAMPLE );
 
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDesc.m_nRenderFramebufferId);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId );
+//        glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDesc.m_nRenderFramebufferId);
+//        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId );
 
-        glBlitFramebuffer( 0, 0, targetTest.getSize().width(), targetTest.getSize().height(), 0, 0, targetTest.getSize().width(), targetTest.getSize().height(),
-                           GL_COLOR_BUFFER_BIT,
-                           GL_LINEAR );
+//        glBlitFramebuffer( 0, 0, targetTest.getSize().width(), targetTest.getSize().height(), 0, 0, targetTest.getSize().width(), targetTest.getSize().height(),
+//                           GL_COLOR_BUFFER_BIT,
+//                           GL_LINEAR );
 
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
+//        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+//        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-        vr::Texture_t texture = {(void*)(uintptr_t)framebufferDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+        //vr::Texture_t texture = {(void*)(uintptr_t)framebufferDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+        vr::Texture_t texture = {(void*)(uintptr_t)framebufferDesc.m_nRenderFramebufferId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
         vr::VRCompositor()->Submit(eye, &texture );
     }
     else{
@@ -261,9 +268,29 @@ QMatrix4x4 OpenVRControl::eyeMath(vr::EVREye eye){
 }
 
 ////////////////////////////////////////// EYE TRACKING FUNCTIONS
-//void Control::newPositionData(int rx, int ry, int lx, int ly){
-//    qDebug() << rx << ry << lx << ly;
-//}
+void OpenVRControl::newPositionData(EyeTrackerData data){
+    //    qDebug() << data.toString();
+    //    targetTest.renderCurrentPosition(data.xLeft,data.yLeft,data.xRight,data.yRight);
+    //    glid_Texture = targetTest.getTextureGLID();
+    //    this->update();
+}
+
+bool OpenVRControl::initializeEyeTracking(){
+    int error = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE, nullptr);
+    if (error == ViveSR::Error::WORK) {
+        poller.setMaxWidthAndHeight(targetTest.getSize().width(),targetTest.getSize().height());
+        poller.start();
+        return true;
+    }
+    else if (error == ViveSR::Error::RUNTIME_NOT_FOUND) {
+        qDebug() << "Eye Tracking Runtime Not Found";
+        return false;
+    }
+    else {
+        qDebug() << "Failed to initialize Eye engine. please refer the code " << error << " of ViveSR::Error";
+        return false;
+    }
+}
 
 ////////////////////////////////////////// CONTROL FUNCTIONS
 void OpenVRControl::start(){
@@ -273,6 +300,10 @@ void OpenVRControl::start(){
 
 void OpenVRControl::stop(){
     enableRefresh = false;
+    if (poller.isRunning()) {
+        poller.stop();
+        qDebug() << "Eye tracking stopped";
+    }
     timer.stop();
 }
 
@@ -287,6 +318,10 @@ void OpenVRControl::initializeGL(){
     if (!initializeOpenGL()) return;
     qDebug() << "Open GL Initialized";
 
+#ifdef ENABLE_EYE_TRACKING
+    if (!initializeEyeTracking()) return;
+    qDebug() << "Eye Tracking initialized";
+#endif
     systemInitialized = true;
     timer.start(4);
 }
@@ -294,16 +329,16 @@ void OpenVRControl::initializeGL(){
 void OpenVRControl::paintGL(){
     if (!enableRefresh) return;
     vr::VRCompositor()->WaitGetPoses(nullptr,0,nullptr,0);
+
+    if (poller.isRunning()){
+        EyeTrackerData data = poller.getLastData();
+        targetTest.renderCurrentPosition(data.xLeft,data.yLeft,data.xRight,data.yRight);
+        glid_Texture = targetTest.getTextureGLID();
+    }
+
     renderToEye(0);
     renderToEye(1);
     renderToEye(2);
-}
-
-void OpenVRControl::mouseMoveEvent(QMouseEvent *ev){
-    QOpenGLWidget::mouseMoveEvent(ev);
-    targetTest.renderCurrentPosition(ev->x(),ev->y(),ev->x(),ev->y());
-    glid_Texture = targetTest.getTextureGLID();
-    this->update();
 }
 
 OpenVRControl::~OpenVRControl(){

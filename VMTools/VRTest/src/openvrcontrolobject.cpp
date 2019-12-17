@@ -84,15 +84,16 @@ bool OpenVRControlObject::initializeOpenGL(){
     vrSystem->GetRecommendedRenderTargetSize( &renderWidth, &renderHeight );
     qint32 rWidth = static_cast<qint32>(renderWidth);    // Done simply to avoid warnings.
     qint32 rHeight = static_cast<qint32>(renderHeight);
-    targetTest.initialize(rWidth,rHeight);
-    targetTest.renderCurrentPosition(0,0,0,0);
-    glid_Texture = targetTest.getTextureGLID();
 
     //this->setGeometry(0,0,rWidth,rHeight);
 
     // Initializing the FB for each eye
-    leftFBDesc = initFrameBufferDesc(rWidth,rHeight);
+    leftFBDesc = initFrameBufferDesc(rWidth,rHeight);    
     rightFBDesc = initFrameBufferDesc(rWidth,rHeight);
+
+    targetTest.initialize(rWidth,rHeight);
+    targetTest.renderCurrentPosition(0,0,0,0);
+    glid_Texture = targetTest.getTextureGLID();
 
     // Intialze buffers for the verstex and UV coordinates.
     static const GLfloat g_vertex_buffer_data[] = {
@@ -135,25 +136,30 @@ OpenVRControlObject::FramebufferDesc OpenVRControlObject::initFrameBufferDesc(in
     glGenFramebuffers(1, &framebufferDesc.m_nRenderFramebufferId );
     glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nRenderFramebufferId);
 
-    glGenRenderbuffers(1, &framebufferDesc.m_nDepthBufferId);
-    glBindRenderbuffer(GL_RENDERBUFFER, framebufferDesc.m_nDepthBufferId);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, nWidth, nHeight );
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	framebufferDesc.m_nDepthBufferId );
+//    glGenRenderbuffers(1, &framebufferDesc.m_nDepthBufferId);
+//    glBindRenderbuffer(GL_RENDERBUFFER, framebufferDesc.m_nDepthBufferId);
+//    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, nWidth, nHeight );
+//    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	framebufferDesc.m_nDepthBufferId );
 
     glGenTextures(1, &framebufferDesc.m_nRenderTextureId );
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId );
-    glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, nWidth, nHeight, true);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId, 0);
+    //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId );
+    glBindTexture(GL_TEXTURE_2D, framebufferDesc.m_nRenderTextureId );
+    //glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, nWidth, nHeight, true);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, nWidth, nHeight);  // TODO: Test RBG8.
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferDesc.m_nRenderTextureId, 0);
 
-    glGenFramebuffers(1, &framebufferDesc.m_nResolveFramebufferId );
-    glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId);
+    glBindFramebuffer(GL_FRAMEBUFFER,0);
 
-    glGenTextures(1, &framebufferDesc.m_nResolveTextureId );
-    glBindTexture(GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId, 0);
+//    glGenFramebuffers(1, &framebufferDesc.m_nResolveFramebufferId );
+//    glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId);
+
+//    glGenTextures(1, &framebufferDesc.m_nResolveTextureId );
+//    glBindTexture(GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId );
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId, 0);
     //==================================================================================================================================
 
     return framebufferDesc;
@@ -186,6 +192,8 @@ void OpenVRControlObject::renderToEye(qint32 whichEye){
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, glid_Texture);
+
+    glViewport(0,0,targetTest.getSize().width(),targetTest.getSize().height());
 
     // Set our "myTextureSampler" sampler to use Texture Unit 0
     glUniform1i(glid_ShaderTextureParameterID, 0);
@@ -231,24 +239,25 @@ void OpenVRControlObject::renderToEye(qint32 whichEye){
                 );
 
     if (!renderToScreen){
-        glEnable( GL_MULTISAMPLE );
+        //glEnable( GL_MULTISAMPLE );
         glBindFramebuffer( GL_FRAMEBUFFER, framebufferDesc.m_nRenderFramebufferId );
         glDrawArrays(GL_QUADS, 0, 4);
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-        glDisable( GL_MULTISAMPLE );
+//        glDisable( GL_MULTISAMPLE );
 
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDesc.m_nRenderFramebufferId);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId );
+//        glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDesc.m_nRenderFramebufferId);
+//        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId );
 
-        glBlitFramebuffer( 0, 0, targetTest.getSize().width(), targetTest.getSize().height(), 0, 0, targetTest.getSize().width(), targetTest.getSize().height(),
-                           GL_COLOR_BUFFER_BIT,
-                           GL_LINEAR );
+//        glBlitFramebuffer( 0, 0, targetTest.getSize().width(), targetTest.getSize().height(), 0, 0, targetTest.getSize().width(), targetTest.getSize().height(),
+//                           GL_COLOR_BUFFER_BIT,
+//                           GL_LINEAR );
 
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
+//        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+//        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
 
-        vr::Texture_t texture = {(void*)(uintptr_t)framebufferDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+        //vr::Texture_t texture = {(void*)(uintptr_t)framebufferDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+        vr::Texture_t texture = {(void*)(uintptr_t)framebufferDesc.m_nRenderFramebufferId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
         vr::VRCompositor()->Submit(eye, &texture );
     }
     else{
@@ -312,10 +321,10 @@ void OpenVRControlObject::initializeGL(){
 
 void OpenVRControlObject::paintGL(){
     if (!enableRefresh) return;
-    vr::VRCompositor()->WaitGetPoses(nullptr,0,nullptr,0);
-    renderToEye(0);
+    vr::VRCompositor()->WaitGetPoses(nullptr,0,nullptr,0);    
     renderToEye(1);
-    renderToEye(2);
+    renderToEye(0);
+    //renderToEye(2);
 }
 
 OpenVRControlObject::~OpenVRControlObject(){
