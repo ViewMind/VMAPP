@@ -4,12 +4,12 @@ VIVEEyePoller::VIVEEyePoller()
 {
     keepGoing = true;
     isCalibrating = false;
+    resetEyeCorrectionCoeffs();
 }
 
 bool VIVEEyePoller::initalizeEyeTracking(){
     int error = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE, nullptr);
     if (error == ViveSR::Error::WORK) {
-        //setMaxWidthAndHeight(w,h);
         return true;
     }
     else if (error == ViveSR::Error::RUNTIME_NOT_FOUND) {
@@ -23,11 +23,19 @@ bool VIVEEyePoller::initalizeEyeTracking(){
 }
 
 void VIVEEyePoller::run(){
+
     ViveSR::anipal::Eye::EyeData eye_data;
     previous.init(4,-2);
+
+    bool areValid;
+    qreal xr = 0.0, xl = 0.0, yr = 0.0, yl = 0.0;
+    qreal pl = 0.0, pr = 0.0;
+    timestampTimer.start();
+
     while (keepGoing) {
         int result = ViveSR::anipal::Eye::GetEyeData(&eye_data);
         if (result == ViveSR::Error::WORK) {
+            mtimer.start();
             ViveSR::anipal::Eye::SingleEyeData le = eye_data.verbose_data.left;
             ViveSR::anipal::Eye::SingleEyeData re = eye_data.verbose_data.right;
 
@@ -45,7 +53,6 @@ void VIVEEyePoller::run(){
             ManyPointCompare now;
             now.values << le.gaze_direction_normalized.x << le.gaze_direction_normalized.y << re.gaze_direction_normalized.x << re.gaze_direction_normalized.y;
             if (now.areTheSame(previous)) {
-                qDebug() << "Skipping";
                 previous = now;
                 continue;
             }
@@ -54,31 +61,36 @@ void VIVEEyePoller::run(){
             QVector4D vecL(le.gaze_direction_normalized.x,le.gaze_direction_normalized.y,le.gaze_direction_normalized.z,0);
             QVector4D vecR(re.gaze_direction_normalized.x,re.gaze_direction_normalized.y,re.gaze_direction_normalized.z,0);
 
+            pr = static_cast<qreal>(re.pupil_diameter_mm);
+            pl = static_cast<qreal>(le.pupil_diameter_mm);
+
             vecL = pLe*vecL;
             vecR = pRe*vecR;
 
-            qreal scaleFactor = 1;
-
-            //qDebug() << isCalibrating << shouldStoreCalibrationData;
-            if (isCalibrating && shouldStoreCalibrationData && (vecL.z() != 0.0f) && (vecR.z() != 0.0f) ){
-                currentCalibrationData.xl << static_cast<qreal>(vecL.x())*scaleFactor/static_cast<qreal>(vecL.z());
-                currentCalibrationData.xr << static_cast<qreal>(vecR.x())*scaleFactor/static_cast<qreal>(vecR.z());
-                currentCalibrationData.yl << static_cast<qreal>(vecL.y())*scaleFactor/static_cast<qreal>(vecL.z());
-                currentCalibrationData.yr << static_cast<qreal>(vecR.y())*scaleFactor/static_cast<qreal>(vecR.z());
+            areValid = (vecL.z() != 0.0f) && (vecR.z() != 0.0f);
+            if (areValid){
+                xl = static_cast<qreal>(vecL.x())/static_cast<qreal>(vecL.z());
+                xr = static_cast<qreal>(vecR.x())/static_cast<qreal>(vecR.z());
+                yl = static_cast<qreal>(vecL.y())/static_cast<qreal>(vecL.z());
+                yr = static_cast<qreal>(vecR.y())/static_cast<qreal>(vecR.z());
             }
 
-//            qreal scaleFactor = 2;
+            if (isCalibrating && shouldStoreCalibrationData && areValid ){
+                currentCalibrationData.xl << xl;
+                currentCalibrationData.xr << xr;
+                currentCalibrationData.yl << yl;
+                currentCalibrationData.yr << yr;
+            }
 
-//            EyeTrackerData data = computeValues(vecR.x()*scaleFactor/vecR.z(),
-//                                                vecR.y()*scaleFactor/vecR.z(),
-//                                                vecL.x()*scaleFactor/vecL.z(),
-//                                                vecL.y()*scaleFactor/vecL.z());
-
-
-//            qDebug() << data.toString();
-
-//            lastData = data;
-//            emit(newEyeData(data));
+            if (areValid){
+                updateEyeTrackerData(xr,yr,xl,yl,pl,pr,timestampTimer.elapsed());
+                if (isCalibrated) {
+                    //qDebug() << "Sending signal";
+                    emit(newEyeData(lastData));
+                }
+            }
+            else{
+            }
 
         }
     }
@@ -89,23 +101,61 @@ void VIVEEyePoller::updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l){
     pLe = l;
 }
 
-void VIVEEyePoller::calibrationDone(){
+void VIVEEyePoller::updateEyeTrackerData(qreal xr, qreal yr, qreal xl, qreal yl, qreal pl, qreal pr, qint64 timestamp){
+    lastData.time = timestamp;
+    lastData.xLeft = static_cast<qint32>(eyeCorrectionCoeffs.xl.m*xl + eyeCorrectionCoeffs.xl.b);
+    lastData.xRight = static_cast<qint32>(eyeCorrectionCoeffs.xr.m*xr + eyeCorrectionCoeffs.xr.b);
+    lastData.yLeft = static_cast<qint32>(eyeCorrectionCoeffs.yl.m*yl + eyeCorrectionCoeffs.yl.b);
+    lastData.yRight = static_cast<qint32>(eyeCorrectionCoeffs.yr.m*yr + eyeCorrectionCoeffs.yr.b);
+    lastData.pdLeft = pl;
+    lastData.pdRight = pr;
+}
+
+void VIVEEyePoller::resetEyeCorrectionCoeffs(){
+    eyeCorrectionCoeffs.xl.b = 0;
+    eyeCorrectionCoeffs.xl.m = 1;
+    eyeCorrectionCoeffs.xr.b = 0;
+    eyeCorrectionCoeffs.xr.m = 1;
+    eyeCorrectionCoeffs.yl.b = 0;
+    eyeCorrectionCoeffs.yl.m = 1;
+    eyeCorrectionCoeffs.yr.b = 0;
+    eyeCorrectionCoeffs.yr.m = 1;
+    isCalibrated = false;
+}
+
+bool VIVEEyePoller::calibrationDone(){
     isCalibrating = false;
     calibrationPointData << currentCalibrationData;
-
-    logger.setLogFileLocation("calibration_data");
-
-    for (qint32 i = 0; i < calibrationPointData.size(); i++){
-        logger.appendStandard("#POINT " + QString::number(i) + "\n");
-        QString temp = calibrationPointData.at(i).toString();
-        logger.appendStandard(temp);
+    CalibrationLeastSquares cls;
+    if (!cls.computeCalibrationCoeffs(calibrationPointData)){
+        return false;
     }
+    eyeCorrectionCoeffs = cls.getCalculatedCoeficients();
+
+    qDebug() << "Printing calibration coefficients";
+    qDebug() << eyeCorrectionCoeffs.xr.m << eyeCorrectionCoeffs.xr.b;
+    qDebug() << eyeCorrectionCoeffs.xl.m << eyeCorrectionCoeffs.xl.b;
+    qDebug() << eyeCorrectionCoeffs.yr.m << eyeCorrectionCoeffs.yr.b;
+    qDebug() << eyeCorrectionCoeffs.yl.m << eyeCorrectionCoeffs.yl.b;
+
+    isCalibrated = true;
+
+    return true;
+
+    //    logger.setLogFileLocation("calibration_data");
+
+    //    for (qint32 i = 0; i < calibrationPointData.size(); i++){
+    //        logger.appendStandard("#POINT " + QString::number(i) + "\n");
+    //        QString temp = calibrationPointData.at(i).toString();
+    //        logger.appendStandard(temp);
+    //    }
 
 }
 
 void VIVEEyePoller::newCalibrationPoint(qint32 xtarget, qint32 ytarget){
     if (!isCalibrating){
         isCalibrating = true;
+        resetEyeCorrectionCoeffs();
         calibrationPointData.clear();
     }
     else{

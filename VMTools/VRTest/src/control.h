@@ -19,6 +19,7 @@ signals:
 
 public slots:
     void onCalibrationTimerTimeout();
+    void onEyeDataAvailable(EyeTrackerData data);
 
 private:
     OpenVRControlObject *openvrco;
@@ -31,6 +32,7 @@ private:
     QList<QPoint> calibrationPoints;
     qint32 calibrationPointIndex;
     bool isWaiting;
+    bool isTargetTest;
 
     VIVEEyePoller eyetracker;
 

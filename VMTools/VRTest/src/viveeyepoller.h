@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QElapsedTimer>
 #include <QMatrix4x4>
 #include <QPoint>
 
@@ -15,6 +16,7 @@
 #include "sranipal/SRanipal_Enums.h"
 
 #include "../../../CommonClasses/LogInterface/loginterface.h"
+#include "../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h"
 
 
 class VIVEEyePoller : public QThread
@@ -26,10 +28,10 @@ public:
     bool initalizeEyeTracking();
     void run() override;
     void stop() { keepGoing = false; }
-    //EyeTrackerData getLastData() {return lastData;}
+    EyeTrackerData getLastData() {return lastData;}
     void setProjectionMatrices(quint8 whichEye, QMatrix4x4 p);
 
-    void calibrationDone();
+    bool calibrationDone();
     void startStoringCalibrationData();
     void newCalibrationPoint(qint32 xtarget, qint32 ytarget);
 
@@ -40,25 +42,6 @@ public slots:
     void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l);
 
 private:
-    QTimer timer;
-    bool keepGoing;
-
-//    // Transformation parameters
-//    qreal MaxX;
-//    qreal MaxY;
-//    qreal bX, mX;
-//    qreal bY, mY;
-
-//    EyeTrackerData computeValues(qreal xr, qreal yr, qreal xl, qreal yl);
-//    EyeTrackerData lastData;
-
-    // Projection Matrices
-    QMatrix4x4 pRe;
-    QMatrix4x4 pLe;
-
-    // Data for computing the calibration points.
-    bool isCalibrating;
-    bool shouldStoreCalibrationData;
 
     struct ManyPointCompare{
         QList<float> values;
@@ -76,35 +59,39 @@ private:
         }
     };
 
-    struct CalibrationData {
-        QList<qreal> xr;
-        QList<qreal> yr;
-        QList<qreal> xl;
-        QList<qreal> yl;
-        void clear(){
-            xr.clear(); yr.clear(); xl.clear(); yl.clear();
-        }
-        QString toString() const{
-            QString ans = "[";
-            for (qint32 i = 0; i < xr.size(); i++){
-                ans = ans + QString::number(xr.at(i)) + " " + QString::number(yr.at(i)) + " " + QString::number(xl.at(i)) + " " + QString::number(yl.at(i)) + ";\n";
-            }
-            ans.remove(ans.length()-1,1);
-            ans= ans + "];";
-            return ans;
-        }
+    // Control variables.
+    QTimer timer;
+    QElapsedTimer timestampTimer;
+    bool keepGoing;
 
-    };
+    QElapsedTimer mtimer;
 
-    QList< CalibrationData> calibrationPointData;
-    CalibrationData currentCalibrationData;
+    // Projection Matrices
+    QMatrix4x4 pRe;
+    QMatrix4x4 pLe;
 
+    // The last valid data point.
+    EyeTrackerData lastData;
+
+    // Data for computing the calibration points.
+    bool isCalibrating;
+    bool shouldStoreCalibrationData;
+    bool isCalibrated;
+    QList<CalibrationLeastSquares::CalibrationData> calibrationPointData;
+    CalibrationLeastSquares::CalibrationData currentCalibrationData;
+    CalibrationLeastSquares::EyeCorrectionCoeffs eyeCorrectionCoeffs;
+    void updateEyeTrackerData(qreal xr, qreal yr, qreal xl, qreal yl, qreal pl, qreal pr, qint64 timestamp);
+    void resetEyeCorrectionCoeffs();
+
+    // Used for debuggin.
     LogInterface logger;
 
+    // Used to filter data that is the same.
     ManyPointCompare previous;
 
-    // For the linear conversion
-//    void setMaxWidthAndHeight(qreal W, qreal H);
+
+
+
 
 };
 

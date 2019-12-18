@@ -14,6 +14,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
         ../../../CommonClasses/LogInterface/loginterface.cpp \
         ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
         control.cpp \
@@ -30,6 +31,10 @@ QML_IMPORT_PATH =
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
+QMAKE_CXXFLAGS_WARN_OFF = -Wfloat-equal
+
+
+
 CONFIG -= debug_and_release
 MOC_DIR = MOCS
 OBJECTS_DIR = OBJS
@@ -41,6 +46,7 @@ RCC_DIR = QRC
 #!isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h \
     ../../../CommonClasses/LogInterface/loginterface.h \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \

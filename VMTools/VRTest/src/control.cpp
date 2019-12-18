@@ -2,9 +2,12 @@
 
 Control::Control(QObject *parent) : QObject(parent)
 {
+    qRegisterMetaType<EyeTrackerData>("EyeTrackerData");
     openvrco = new OpenVRControlObject(this);
     connect(&calibrationTimer,&QTimer::timeout,this,&Control::onCalibrationTimerTimeout);
     connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),&eyetracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
+    connect(&eyetracker,SIGNAL(newEyeData(EyeTrackerData)),this,SLOT(onEyeDataAvailable(EyeTrackerData)));
+    isTargetTest = false;
 }
 
 void Control::startTest(){
@@ -56,17 +59,34 @@ void Control::onCalibrationTimerTimeout(){
             eyetracker.newCalibrationPoint(p.x(),p.y());
         }
         else{
+            if (!eyetracker.calibrationDone()){
+                qDebug() << "CALIBRATION FAILED";
+                QImage image = tt.getClearScreen();
+                openvrco->setImage(&image);
+                return;
+            }
             qDebug() << "Calibration done";
-            eyetracker.calibrationDone();
-            QImage image = tt.getClearScreen();
+            tt.setTargetTest();
+            QImage image = tt.renderCurrentPosition(0,0,0,0);
             openvrco->setImage(&image);
-            openvrco->stopRendering();
-            eyetracker.stop();
+            //isTargetTest = true;
         }
+    }
+}
+
+void Control::onEyeDataAvailable(EyeTrackerData data){
+    if (isTargetTest){
+        QElapsedTimer t;
+        t.start();
+        QImage image = tt.renderCurrentPosition(data.xRight,data.yRight,data.xLeft,data.yLeft);
+        openvrco->setImage(&image);
+        //qDebug() << "Set image takes" << t.elapsed();
     }
 }
 
 void Control::stopTest(){
     calibrationTimer.stop();
     openvrco->stopRendering();
+    isTargetTest = false;
+    eyetracker.stop();
 }

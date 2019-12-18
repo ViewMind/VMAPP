@@ -1,5 +1,5 @@
 #include <QCoreApplication>
-#include "calibrationleastsquares.h"
+#include "../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h"
 #include <QFile>
 #include <QTextStream>
 

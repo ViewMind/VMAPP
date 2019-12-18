@@ -8,6 +8,7 @@
 *.tmp*
 *.log
 *.~*
+*.exe
 
 VMTools/BindingDesigner/exe/
 VMTools/EyeDataAnalyzer/exe/
