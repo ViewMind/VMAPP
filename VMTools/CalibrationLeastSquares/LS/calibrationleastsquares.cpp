@@ -5,6 +5,27 @@ CalibrationLeastSquares::CalibrationLeastSquares()
 
 }
 
+void CalibrationLeastSquares::CalibrationData::clear(){
+    xr.clear(); yr.clear(); xl.clear(); yl.clear();
+}
+bool CalibrationLeastSquares::CalibrationData::isValid(){
+    bool ans = (xr.size() >= 2);
+    ans = ans && (yr.size() >= 2);
+    ans = ans && (xl.size() >= 2);
+    ans = ans && (yl.size() >= 2);
+    ans = ans && (xr.size() == yr.size()) && (yr.size() == xl.size()) && (xl.size() == yl.size());
+    return ans;
+}
+QString CalibrationLeastSquares::CalibrationData::toString() const{
+    QString ans = "[";
+    for (qint32 i = 0; i < xr.size(); i++){
+        ans = ans + QString::number(xr.at(i)) + " " + QString::number(yr.at(i)) + " " + QString::number(xl.at(i)) + " " + QString::number(yl.at(i)) + ";\n";
+    }
+    ans.remove(ans.length()-1,1);
+    ans= ans + "];";
+    return ans;
+}
+
 bool CalibrationLeastSquares::computeCalibrationCoeffs(QList<CalibrationData> calibrationData){
 
     QList<QPoint> calibrationPoints;
@@ -57,11 +78,15 @@ bool CalibrationLeastSquares::computeCalibrationCoeffs(QList<CalibrationData> ca
     return true;
 }
 
+CalibrationLeastSquares::EyeCorrectionCoeffs CalibrationLeastSquares::getCalculatedCoeficients() const{
+    return coeffs;
+}
+
 CalibrationLeastSquares::LinearCoeffs CalibrationLeastSquares::LeastSquaresData::computeLinearCoeffs(){
     LinearCoeffs lc;
 
     // Computing the matrix coefficients
-    qreal m11 = input.length();
+    qreal m11 = 0;
     qreal m12 = 0;
     qreal m21 = 0;
     qreal m22 = 0;
@@ -70,15 +95,24 @@ CalibrationLeastSquares::LinearCoeffs CalibrationLeastSquares::LeastSquaresData:
     qreal t1 =0;
     qreal t2 = 0;
     for (int i = 0; i < input.size(); i++){
+        if (qIsNaN(input.at(i))){ // in case I get NaN values.
+            continue;
+        }
         m12 = m12 + input.at(i);
         m22 = m22 + input.at(i)*input.at(i);
         t1 = t1 + target.at(i);
         t2 = t2 + target.at(i)*input.at(i);
+        m11++;
     }
     m21 = m12;
 
     // Calculating the inverse
     qreal det = m22*m11 - m12*m21;
+    if (det == 0.0) {
+        lc.valid = false;
+        return  lc;
+    }
+    else lc.valid = true;
     qreal im11 = m22/det;
     qreal im12 = -m12/det;
     qreal im21 = -m21/det;

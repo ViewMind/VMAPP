@@ -3,6 +3,8 @@
 
 #include <QList>
 #include <QPoint>
+#include <QtGlobal>
+#include <QDebug>
 
 class CalibrationLeastSquares
 {
@@ -15,32 +17,15 @@ public:
         QList<qreal> yr;
         QList<qreal> xl;
         QList<qreal> yl;
-        void clear(){
-            xr.clear(); yr.clear(); xl.clear(); yl.clear();
-        }
-        bool isValid(){
-            bool ans = (xr.size() >= 2);
-            ans = ans && (yr.size() >= 2);
-            ans = ans && (xl.size() >= 2);
-            ans = ans && (yl.size() >= 2);
-            ans = ans && (xr.size() == yr.size()) && (yr.size() == xl.size()) && (xl.size() == yl.size());
-            return ans;
-        }
-        QString toString() const{
-            QString ans = "[";
-            for (qint32 i = 0; i < xr.size(); i++){
-                ans = ans + QString::number(xr.at(i)) + " " + QString::number(yr.at(i)) + " " + QString::number(xl.at(i)) + " " + QString::number(yl.at(i)) + ";\n";
-            }
-            ans.remove(ans.length()-1,1);
-            ans= ans + "];";
-            return ans;
-        }
+        void clear();
+        bool isValid();
+        QString toString() const;
     };
 
     struct LinearCoeffs{
         qreal m;
         qreal b;
-        bool valid;
+        bool valid;        
     };
 
     struct EyeInputData{
