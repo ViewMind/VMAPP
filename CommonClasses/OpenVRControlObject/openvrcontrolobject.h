@@ -35,6 +35,7 @@ public:
 
 signals:
     void newProjectionMatrixes(QMatrix4x4 r, QMatrix4x4 l);
+    void requestUpdate();
 
 private slots:
     void onRefresh();

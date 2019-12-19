@@ -289,9 +289,10 @@ QMatrix4x4 OpenVRControlObject::eyeMath(vr::EVREye eye){
 
 void OpenVRControlObject::onRefresh(){
     vr::VRCompositor()->WaitGetPoses(nullptr,0,nullptr,0);
+    emit(requestUpdate());
     renderToEye(1);
     renderToEye(0);
-    emit(newProjectionMatrixes(rightProjectionMatrix,leftProjectionMatrix));
+    emit(newProjectionMatrixes(rightProjectionMatrix,leftProjectionMatrix));    
 }
 
 ////////////////////////////////////////// CONTROL FUNCTIONS

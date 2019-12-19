@@ -17,6 +17,7 @@ VMTools/EyeTrackerFollower/exe/
 VMTools/LocalDBPrinter/
 VMTools/LocalDBPrinter/exe/
 VMTools/MassBindingFixationDrawer/exe/
+VMTools/QMLImageUpdater/exe/
 
 VMSoftwareSuite/EyeServer/exe
 VMSoftwareSuite/EyeServer/bin/EyeServerMonitor

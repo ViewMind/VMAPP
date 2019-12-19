@@ -19,7 +19,7 @@ signals:
 
 public slots:
     void onCalibrationTimerTimeout();
-    void onEyeDataAvailable(EyeTrackerData data);
+    void onRequestUpdate();
 
 private:
     OpenVRControlObject *openvrco;

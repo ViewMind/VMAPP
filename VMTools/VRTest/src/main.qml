@@ -36,6 +36,16 @@ Window {
             }
         }
 
+//        Button {
+//            id: tempButton
+//            width: parent.width
+//            height: 50
+//            text: "Test"
+//            onClicked: {
+//               control.stopTest();
+//            }
+//        }
+
     }
 
 }

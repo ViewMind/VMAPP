@@ -79,6 +79,12 @@ void TargetTest::setTargetTest(){
         innerCircle->setPos(x+offset,y+offset);
     }
 
+    // Appending test text.
+    QGraphicsTextItem *testText1 = canvas->addText("This is a very large sentence to test how the eye tracking works",QFont("Mono",40,QFont::Bold));
+    QGraphicsTextItem *testText2 = canvas->addText("Esta es una oración larga para ver cuan bien fuciona el seguimiento ocular",QFont("Mono",23,QFont::Bold));
+    testText1->setPos((screenw - testText1->boundingRect().width())/2,vertical_margin + R + (R+vertical_target_space)/2 - testText1->boundingRect().height()/2);
+    testText2->setPos((screenw - testText2->boundingRect().width())/2,vertical_margin + 3*R + vertical_target_space + (R+vertical_target_space)/2 - testText2->boundingRect().height()/2);
+
     // Initializing the
     leftEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,0,255,100)));
     rightEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,255,0,100)));
@@ -94,6 +100,13 @@ QImage TargetTest::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32
     QPainter painter( &image );
     canvas->render( &painter );
     return image;
+}
+
+void TargetTest::saveCanvasToTestImageFile(){
+    QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
+    QPainter painter( &image );
+    canvas->render( &painter );
+    image.save("test.png");
 }
 
 TargetTest::~TargetTest(){

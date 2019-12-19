@@ -21,6 +21,7 @@ public:
     QImage getClearScreen();
 
     void setTargetTest();
+    void saveCanvasToTestImageFile();
 
     QImage renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
 
