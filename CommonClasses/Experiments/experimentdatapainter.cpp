@@ -47,7 +47,15 @@ void ExperimentDataPainter::redrawGazePoints(){
 
 QPixmap ExperimentDataPainter::getImage() const{
     // Drawing the graphics scene onto the painter.
-    QPixmap image(canvas->width(),canvas->height());
+    QPixmap image(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()));
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    canvas->render(&painter);
+    return image;
+}
+
+QImage ExperimentDataPainter::getQImage() const{
+    QImage image(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()),QImage::Format_RGB32);
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
     canvas->render(&painter);

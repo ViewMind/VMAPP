@@ -29,6 +29,7 @@ public:
     void redrawGazePoints();
 
     QPixmap getImage() const;
+    QImage getQImage() const;
     QString getError() const {return error;}
 
     QGraphicsScene * getCanvas() {return canvas;}
