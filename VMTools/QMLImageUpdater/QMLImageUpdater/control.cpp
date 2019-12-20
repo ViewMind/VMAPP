@@ -2,6 +2,7 @@
 
 Control::Control(QObject *parent) : QObject(parent)
 {
+    qDebug() << "Creating control";
     canvas = new QGraphicsScene(0,0,500,200);
     currentImage = QImage(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()),QImage::Format_RGB32);
     counter = 0;

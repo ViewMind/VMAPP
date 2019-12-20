@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include <QPainter>
+#include <QDebug>
 
 class Control : public QObject
 {

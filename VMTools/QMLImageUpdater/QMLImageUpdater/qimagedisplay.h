@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QPainter>
 #include <QDebug>
+#include <QKeyEvent>
 
 class QImageDisplay : public QQuickPaintedItem
 {
@@ -23,6 +24,9 @@ public:
 
 signals:
     //void imageChanged();
+
+private:
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     QImage displayImage;
