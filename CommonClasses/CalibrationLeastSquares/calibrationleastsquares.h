@@ -5,28 +5,14 @@
 #include <QPoint>
 #include <QtGlobal>
 #include <QDebug>
+#include <QDataStream>
+#include <QFile>
 
 class CalibrationLeastSquares
 {
 public:
 
     CalibrationLeastSquares();
-
-    struct CalibrationData {
-        QList<qreal> xr;
-        QList<qreal> yr;
-        QList<qreal> xl;
-        QList<qreal> yl;
-        void clear();
-        bool isValid();
-        QString toString() const;
-    };
-
-    struct LinearCoeffs{
-        qreal m;
-        qreal b;
-        bool valid;        
-    };
 
     struct EyeInputData{
         qreal xr;
@@ -35,12 +21,29 @@ public:
         qreal yl;
     };
 
+    struct CalibrationData {
+        QList<EyeInputData> eyeData;
+        void clear();
+        bool isValid();
+        QString toString() const;
+    };
+
+    struct LinearCoeffs{
+        qreal m;
+        qreal b;
+        bool valid;
+        QVariant toVariant();
+        void fromVariant(const QVariant &v);
+    };
+
     struct EyeCorrectionCoeffs{
         LinearCoeffs xr;
         LinearCoeffs yr;
         LinearCoeffs xl;
         LinearCoeffs yl;
         EyeInputData computeCorrections(EyeInputData input);
+        void saveCalibrationCoefficients(const QString &file);
+        void loadCalibrationCoefficients(const QString &file);
     };
 
     bool computeCalibrationCoeffs(QList<CalibrationData> calibrationData);

@@ -11,7 +11,7 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
 
     outputDataFile = QString(FILE_OUTPUT_READING) + "_" + c->getString(CONFIG_READING_EXP_LANG);
     if (c->getBool(CONFIG_VR_ENABLED)){
-        c->addKeyValuePair(CONFIG_READING_FONT_SIZE,30);
+        c->addKeyValuePair(CONFIG_READING_FONT_SIZE,25);
         c->addKeyValuePair(CONFIG_READING_ESCAPE_POINT_XY_K,0.10);
         c->addKeyValuePair(CONFIG_READING_FONT_NAME,"Mono");
     }
@@ -37,12 +37,6 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
     state = STATE_RUNNING;
     m->drawPhrase(qstate,currentQuestion);
 
-//    if (vrEnabled){
-//        emit(updateVRDisplay());
-//    }
-//    else if (debugMode){
-//        emit(updateBackground(m->getImage()));
-//    }
     updateSecondMonitorORHMD();
 
     return true;
@@ -134,12 +128,6 @@ void ReadingExperiment::advanceToTheNextPhrase(){
     // And the next phrase is drawn.
     m->drawPhrase(qstate,currentQuestion);
 
-//    if (vrEnabled){
-//        emit(updateVRDisplay());
-//    }
-//    else if (debugMode){
-//        emit(updateBackground(m->getImage()));
-//    }
     updateSecondMonitorORHMD();
 }
 

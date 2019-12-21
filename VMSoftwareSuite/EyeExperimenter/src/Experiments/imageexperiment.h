@@ -23,21 +23,22 @@ public:
     // State machine states for Binding trials
     typedef enum {TSB_CENTER_CROSS,TSB_SHOW,TSB_TRANSITION,TSB_TEST,TSB_FINISH} TrialStateBinding;
 
-    ImageExperiment(bool bound, QWidget *parent = 0);
-    ~ImageExperiment();
+    ImageExperiment(bool bound, QWidget *parent = nullptr);
+    ~ImageExperiment() override;
 
     // Reimplementation of virtual functions
-    bool startExperiment(ConfigurationManager *c);
-    void togglePauseExperiment();
+    bool startExperiment(ConfigurationManager *c) override;
+    void togglePauseExperiment() override;
 
 public slots:
-    void newEyeDataAvailable(const EyeTrackerData &data);
+    void newEyeDataAvailable(const EyeTrackerData &data) override;
     //void onTimeOut();
     // Functions that moves the state machine
     void nextState();
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
+    //void keyPressEvent(QKeyEvent *event);
+    void keyPressHandler(int keyPressed) override;
 
 private:
 

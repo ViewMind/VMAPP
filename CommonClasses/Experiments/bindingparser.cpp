@@ -11,25 +11,25 @@
 
 // Dimensions for drawing the target flags. The dimensions are in mm so that they can be drawn the same size independently of the screen resolution.
 // The parser creates the structure that defines how the values will be drawn. That's why it is here.
-static const float LARGE_BINDING_TARGET_SIDE =              45.25f;
-static const float LARGE_BINDING_TARGET_HS =                1.0f;
-static const float LARGE_BINDING_TARGET_HL =                11.75f;
-static const float LARGE_BINDING_TARGET_VS =                6.0f;
-static const float LARGE_BINDING_TARGET_VL =                16.0f;
+static const qreal LARGE_BINDING_TARGET_SIDE =              45.25;
+static const qreal LARGE_BINDING_TARGET_HS =                1.0;
+static const qreal LARGE_BINDING_TARGET_HL =                11.75;
+static const qreal LARGE_BINDING_TARGET_VS =                6.00;
+static const qreal LARGE_BINDING_TARGET_VL =                16.0;
 
-static const float LARGE_BINDING_GRID_SPACING_X_2FLAGS =    128.0f;
-static const float LARGE_BINDING_GRID_SPACING_X_3FLAGS =    64.0f;
-static const float LARGE_BINDING_GRID_SPACING_Y =           48.0f;
+static const qreal LARGE_BINDING_GRID_SPACING_X_2FLAGS =    128.0;
+static const qreal LARGE_BINDING_GRID_SPACING_X_3FLAGS =    64.0;
+static const qreal LARGE_BINDING_GRID_SPACING_Y =           48.0;
 
-static const float SMALL_BINDING_TARGET_SIDE =              10.0f;
-static const float SMALL_BINDING_TARGET_HS =                0.25f;
-static const float SMALL_BINDING_TARGET_HL =                2.6f;
-static const float SMALL_BINDING_TARGET_VS =                1.33f;
-static const float SMALL_BINDING_TARGET_VL =                3.54f;
+static const qreal SMALL_BINDING_TARGET_SIDE =              10.0;
+static const qreal SMALL_BINDING_TARGET_HS =                0.25;
+static const qreal SMALL_BINDING_TARGET_HL =                2.6;
+static const qreal SMALL_BINDING_TARGET_VS =                1.33;
+static const qreal SMALL_BINDING_TARGET_VL =                3.54;
 
-static const float SMALL_BINDING_GRID_SPACING_X_2FLAGS =    20.0f;
-static const float SMALL_BINDING_GRID_SPACING_X_3FLAGS =    20.0f;
-static const float SMALL_BINDING_GRID_SPACING_Y =           20.0f;
+static const qreal SMALL_BINDING_GRID_SPACING_X_2FLAGS =    20.0;
+static const qreal SMALL_BINDING_GRID_SPACING_X_3FLAGS =    20.0;
+static const qreal SMALL_BINDING_GRID_SPACING_Y =           20.0;
 
 BindingParser::BindingParser()
 {
@@ -132,8 +132,8 @@ bool BindingParser::parseBindingExperiment(const QString &contents, Configuratio
         // Total vertical space required by the placement grid
         qreal Wy = Gypx*2 + Sy;
 
-        qint32 Xog = (ScreenResolutionWidth - Wx)/2;
-        qint32 Yog = (ScreenResolutionHeight - Wy)/2;
+        qreal Xog = (ScreenResolutionWidth - Wx)/2;
+        qreal Yog = (ScreenResolutionHeight - Wy)/2;
 
         for (qint32 i = 0; i < horizontalGridPoints; i++){
             drawStructure.xpos << Xog + (i*Gxpx);
@@ -234,7 +234,7 @@ bool BindingParser::parseFlagPositions(const QString &line, BindingTrial *trial,
     for (qint32 i = 0; i < tokens.size(); i++){
         BindingFlag flag;
         bool ok;
-        qint32 pcode = tokens.at(i).toUInt(&ok);
+        qint32 pcode = tokens.at(i).toInt(&ok);
         if (!ok){
             error = "Invalid postion code @ line: " + line;
             return false;
@@ -254,8 +254,8 @@ bool BindingParser::parseFlagPositions(const QString &line, BindingTrial *trial,
         }
 //        qWarning() << "For " << i << "Position" << flag.x << "from" << drawStructure.xpos << "is" << drawStructure.xpos.at(flag.x)
 //                   << "and" << "Position" << flag.y << "from" << drawStructure.ypos << "is" << drawStructure.ypos.at(flag.y);
-        flag.x = drawStructure.xpos.at(flag.x);
-        flag.y = drawStructure.ypos.at(flag.y);
+        flag.x = static_cast<qint32>(drawStructure.xpos.at(flag.x));
+        flag.y = static_cast<qint32>(drawStructure.ypos.at(flag.y));
 
         if (show) trial->show.append(flag);
         else trial->test.append(flag);
@@ -330,23 +330,23 @@ bool BindingParser::legacyParser(const QString &contents){
 
         sl.back = QColor("#" + tokens.at(2));
         sl.cross = QColor("#" + tokens.at(3));
-        sl.x = drawStructure.xpos.at(0);
-        sl.y = drawStructure.ypos.at(dic.value(tokens.at(1)));
+        sl.x = static_cast<qint32>(drawStructure.xpos.at(0));
+        sl.y = static_cast<qint32>(drawStructure.ypos.at(dic.value(tokens.at(1))));
 
         sr.back = QColor("#" + tokens.at(5));
         sr.cross = QColor("#" + tokens.at(6));
-        sr.x = drawStructure.xpos.at(1);
-        sr.y = drawStructure.ypos.at(dic.value(tokens.at(4)));
+        sr.x = static_cast<qint32>(drawStructure.xpos.at(1));
+        sr.y = static_cast<qint32>(drawStructure.ypos.at(dic.value(tokens.at(4))));
 
         tl.back = QColor("#" + tokens.at(8));
         tl.cross = QColor("#" + tokens.at(9));
-        tl.x = drawStructure.xpos.at(0);
-        tl.y = drawStructure.ypos.at(dic.value(tokens.at(7)));
+        tl.x = static_cast<qint32>(drawStructure.xpos.at(0));
+        tl.y = static_cast<qint32>(drawStructure.ypos.at(dic.value(tokens.at(7))));
 
         tr.back = QColor("#" + tokens.at(11));
         tr.cross = QColor("#" + tokens.at(12));
-        tr.x = drawStructure.xpos.at(1);
-        tr.y = drawStructure.ypos.at(dic.value(tokens.at(10)));
+        tr.x = static_cast<qint32>(drawStructure.xpos.at(1));
+        tr.y = static_cast<qint32>(drawStructure.ypos.at(dic.value(tokens.at(10))));
 
         trial.show << sl << sr;
         trial.test << tl << tr;

@@ -2,92 +2,38 @@
 
 Control::Control(QObject *parent) : QObject(parent)
 {
-    qRegisterMetaType<EyeTrackerData>("EyeTrackerData");
-    //qRegisterMetaType<Experiment::ExperimentResult>("ExperimentResult");
-    openvrco = new OpenVRControlObject(this);
-    connect(&calibrationTimer,&QTimer::timeout,this,&Control::onCalibrationTimerTimeout);
-    connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),&eyetracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
+    openvrco = new OpenVRControlObject(this);        
     connect(openvrco,SIGNAL(requestUpdate()),this,SLOT(onRequestUpdate()));
     renderState = RENDERING_NONE;
     experiment = nullptr;
+}
+
+void Control::initialize(){
+    if (!openvrco->isRendering()) openvrco->start();
+    QSize s = openvrco->getRecommendedSize();
+    eyetracker = new HTCViveEyeProEyeTrackingInterface(this,s.width(),s.height());
+    connect(eyetracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
+    connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),eyetracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
+    eyetracker->connectToEyeTracker();
 }
 
 ////////////////////////////////////////////////// Calibration Functions.
 
 void Control::startCalibration(){
     renderState = RENDERING_NONE;
-    calibrationPassed = false;
     openvrco->setScreenColor(QColor(Qt::gray));
-    if (!openvrco->isRendering()) openvrco->start();
-    QSize s = openvrco->getRecommendedSize();
-
-    // Starting the EyeTracker.
-    if (!eyetracker.initalizeEyeTracking()){
-        qDebug() << "Error intializing eyetracker";
-        return;
-    }
-
-    // Creating the calibration points
-    qreal w = static_cast<qreal>(s.width());
-    qreal h = static_cast<qreal>(s.height());
-
-    QPoint p1(static_cast<qint32>(w*0.25),static_cast<qint32>(h*0.25)); // Top Left
-    QPoint p2(static_cast<qint32>(w*0.75),static_cast<qint32>(h*0.25)); // Top right
-    QPoint p3(static_cast<qint32>(w*0.50),static_cast<qint32>(h*0.50)); // Center
-    QPoint p4(static_cast<qint32>(w*0.25),static_cast<qint32>(h*0.75)); // Bottom Left
-    QPoint p5(static_cast<qint32>(w*0.75),static_cast<qint32>(h*0.75)); // Bottom Right.
-
-    calibrationPoints.clear();
-    calibrationPoints << p1 << p2 << p3 << p4 << p5;
-    calibrationPointIndex = -1;
-    isWaiting = false;
-    tt.initialize(s.width(),s.height());
-    calibrationTimer.start(CALIBRATION_WAIT);
-
-    eyetracker.start();
+    EyeTrackerCalibrationParameters params;
+    params.forceCalibration = true;
+    params.name = "";
+    eyetracker->calibrate(params);
 }
 
-void Control::onCalibrationTimerTimeout(){
-    calibrationTimer.stop();
-    if (isWaiting){
-        calibrationTimer.start(CALIBRATION_SHOW);
-        isWaiting = false;
-        eyetracker.startStoringCalibrationData();
-    }
-    else{
-        calibrationPointIndex++;
-        if (calibrationPointIndex < calibrationPoints.size()){
-            QPoint p = calibrationPoints.at(calibrationPointIndex);
-            //qDebug() << "Calibration point " << calibrationPointIndex << ":" << p;
-            displayImage = tt.setSingleTarget(p.x(),p.y());
-            openvrco->setImage(&displayImage);
-            isWaiting = true;
-            calibrationTimer.start(CALIBRATION_WAIT);
-            eyetracker.newCalibrationPoint(p.x(),p.y());
-            emit(newImageAvailable());
-        }
-        else{
-            if (!eyetracker.calibrationDone()){
-                qDebug() << "CALIBRATION FAILED";
-                displayImage = tt.getClearScreen();
-                openvrco->setImage(&displayImage);
-                emit(newImageAvailable());
-                emit(calibrationFinished());
-                return;
-            }
-            qDebug() << "Calibration finished";
-            tt.setTargetTest();
-            displayImage = tt.getClearScreen();
-            openvrco->setImage(&displayImage);
-            calibrationPassed = true;
-            emit(newImageAvailable());
-            emit(calibrationFinished());
-        }
-    }
-}
-
-bool Control::isCalibrated(){
-    return calibrationPassed;
+void Control::loadLastCalibration(){
+    EyeTrackerCalibrationParameters params;
+    params.forceCalibration = false;
+    params.name = "coeffs.kof";
+    eyetracker->calibrate(params);
+    eyetracker->enableUpdating(true);
 }
 
 ////////////////////////////////////////////////// Update display image
@@ -104,19 +50,18 @@ void Control::keyboardKeyPressed(int key){
     }
 }
 
+
+////////////////////////////////////////////////// Experiment controls
 void Control::startReadingExperiment(QString lang){
     if (experiment != nullptr) delete experiment;
     experiment = new ReadingExperiment();
-
-    // TODO connect to experiment ended.
-    // void experimentEndend(const ExperimentResult &result);
 
     // Connecting the eyetracker to teh experiment.
     configExperiments.clear();
     QSize s = openvrco->getRecommendedSize();
     qreal w = static_cast<qreal>(s.width());
     qreal h = static_cast<qreal>(s.height());
-    connect(&eyetracker,SIGNAL(newEyeData(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
+    connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
     connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
     connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
 
@@ -134,8 +79,54 @@ void Control::startReadingExperiment(QString lang){
 
 
     renderState = RENDERING_EXPERIMENT;
+    openvrco->setScreenColor(QColor(Qt::gray));
     experiment->startExperiment(&configExperiments);
 
+}
+
+void Control::startBindingExperiment(bool isBound, qint32 targetNum, bool areTargetsSmall){
+    if (experiment != nullptr) delete experiment;
+    experiment = new ImageExperiment(isBound);
+
+    QString expFileName = "";
+    if (isBound) expFileName = ":/experiment_data/bc";
+    else expFileName = ":/experiment_data/uc";
+
+    if (targetNum == 2) expFileName = expFileName + ".dat";
+    else expFileName = expFileName + "_3.dat";
+
+    // Connecting the eyetracker to teh experiment.
+    configExperiments.clear();
+    QSize s = openvrco->getRecommendedSize();
+    qreal w = static_cast<qreal>(s.width());
+    qreal h = static_cast<qreal>(s.height());
+    connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
+    connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
+    connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
+
+    // Configuring the experiment.
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+    configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
+    configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,expFileName);
+    configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+    configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
+
+    configExperiments.addKeyValuePair(CONFIG_YPX_2_MM,0.25);
+    configExperiments.addKeyValuePair(CONFIG_XPX_2_MM,0.25);
+
+//    configExperiments.addKeyValuePair(CONFIG_YPX_2_MM,0.2);
+//    configExperiments.addKeyValuePair(CONFIG_XPX_2_MM,0.2);
+
+    configExperiments.addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,areTargetsSmall);
+    configExperiments.addKeyValuePair(CONFIG_BINDING_NUMBER_OF_TARGETS,targetNum);
+
+
+    renderState = RENDERING_EXPERIMENT;
+    openvrco->setScreenColor(QColor(Qt::gray));
+    experiment->startExperiment(&configExperiments);
 }
 
 void Control::onExperimentFinished(const Experiment::ExperimentResult &result){
@@ -145,21 +136,40 @@ void Control::onExperimentFinished(const Experiment::ExperimentResult &result){
 
 
 ////////////////////////////////////////////////// Eye Tracking Testing.
-void Control::testEyeTracking(){
-    renderState = RENDERING_TARGET_TEST;
 
-    // Starting the EyeTracker.
-    if (!eyetracker.initalizeEyeTracking()){
-        qDebug() << "Error intializing eyetracker";
-        return;
+void Control::onEyeTrackerControl(quint8 code){
+    switch (code) {
+    case EyeTrackerInterface::ET_CODE_CONNECTION_FAIL:
+        qDebug() << "EyeTracking connection failed";
+        break;
+    case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
+        displayImage = eyetracker->getCalibrationImage();
+        openvrco->setImage(&displayImage);
+        emit(newImageAvailable());
+        qDebug() << "CALIBRATION SUCESSFULL";
+        break;
+    case EyeTrackerInterface::ET_CODE_CALIBRATION_FAILED:
+        qDebug() << "CALIBRATION FAILED";
+        break;
+    case EyeTrackerInterface::ET_CODE_CONNECTION_SUCCESS:
+        qDebug() << "EyeTracking is running";
+        break;
+    case EyeTrackerInterface::ET_CODE_CALIBRATION_ABORTED:
+        break;
+    case EyeTrackerInterface::ET_CODE_DISCONNECTED_FROM_ET:
+        break;
+    case EyeTrackerInterface::ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE:
+        displayImage = eyetracker->getCalibrationImage();
+        openvrco->setImage(&displayImage);
+        emit(newImageAvailable());
+        break;
     }
+}
 
-    if (!eyetracker.isRunning()) eyetracker.start();
-
+void Control::testEyeTracking(){    
+    renderState = RENDERING_TARGET_TEST;
     openvrco->setScreenColor(QColor(Qt::gray));
-    if (!openvrco->isRendering()) openvrco->start();
     QSize s = openvrco->getRecommendedSize();
-
     tt.initialize(s.width(),s.height());
     tt.setTargetTest();
 }
@@ -179,12 +189,12 @@ void Control::onRequestUpdate(){
 
 QImage Control::generateHMDImage(){
     if (renderState == RENDERING_TARGET_TEST){
-        EyeTrackerData data = eyetracker.getLastData();
+        EyeTrackerData data = eyetracker->getLastData();
         displayImage = tt.renderCurrentPosition(data.xRight,data.yRight,data.xLeft,data.yLeft);
         return displayImage;        
     }
     if (renderState == RENDERING_EXPERIMENT){
-        EyeTrackerData data = eyetracker.getLastData();
+        EyeTrackerData data = eyetracker->getLastData();
         QImage image = experiment->getVRDisplayImage();
         displayImage = image;
         QPainter painter(&displayImage);

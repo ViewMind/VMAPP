@@ -8,7 +8,7 @@
 #include <QMatrix4x4>
 #include <QPoint>
 
-#include "eyetrackerdata.h"
+#include "../eyetrackerdata.h"
 
 // Eye tracking libraries
 #include "sranipal/SRanipal.h"
@@ -34,12 +34,12 @@ public:
     bool calibrationDone();
     void startStoringCalibrationData();
     void newCalibrationPoint(qint32 xtarget, qint32 ytarget);
+    void saveCalibrationCoefficients(const QString &file);
+    void loadCalibrationCoefficients(const QString &file);
+    void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l);
 
 signals:
     void newEyeData(EyeTrackerData data);
-
-public slots:
-    void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l);
 
 private:
 
@@ -64,8 +64,6 @@ private:
     QElapsedTimer timestampTimer;
     bool keepGoing;
 
-    QElapsedTimer mtimer;
-
     // Projection Matrices
     QMatrix4x4 pRe;
     QMatrix4x4 pLe;
@@ -83,7 +81,7 @@ private:
     QList<CalibrationLeastSquares::CalibrationData> calibrationPointData;
     CalibrationLeastSquares::CalibrationData currentCalibrationData;
     CalibrationLeastSquares::EyeCorrectionCoeffs eyeCorrectionCoeffs;
-    void updateEyeTrackerData(qreal xr, qreal yr, qreal xl, qreal yl, qreal pl, qreal pr, qint64 timestamp);
+    void updateEyeTrackerData(CalibrationLeastSquares::EyeInputData eyeData, qreal pl, qreal pr, qint64 timestamp);
     void resetEyeCorrectionCoeffs();
 
     // Used for debuggin.

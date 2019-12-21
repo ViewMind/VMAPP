@@ -40,6 +40,7 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
         this->show();
         this->activateWindow();
     }
+    else updateSecondMonitorORHMD();
 
     return true;
 
@@ -52,7 +53,7 @@ void ImageExperiment::drawCurrentImage(){
     if (trialState == TSB_CENTER_CROSS){
         //qWarning() << "DRAWING: Center Cross" << currentTrial;
         m->drawCenter();
-        emit(updateBackground(m->getImage()));
+        updateSecondMonitorORHMD();
         return;
     }
 
@@ -71,7 +72,7 @@ void ImageExperiment::drawCurrentImage(){
         //qWarning() << "DRAWING: Test" << currentTrial;
         m->drawTrial(currentTrial,false);
     }
-    emit(updateBackground(m->getImage()));
+    updateSecondMonitorORHMD();
 
 }
 
@@ -117,14 +118,14 @@ void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
 }
 
-void ImageExperiment::keyPressEvent(QKeyEvent *event){
+void ImageExperiment::keyPressHandler(int keyPressed){
 
     // Making sure the experiment can be aborted
-    if (event->key() == Qt::Key_Escape){
+    if (keyPressed == Qt::Key_Escape){
         experimenteAborted();
         return;
     }
-    else if(event->key() == Qt::Key_M) {
+    else if(keyPressed == Qt::Key_Right) {
         nextState();
         return;
     }
@@ -133,7 +134,7 @@ void ImageExperiment::keyPressEvent(QKeyEvent *event){
     if (trialState != TSB_TEST) return;
 
     // If it's an odd image, THEN we see if the letter is S or D
-    switch (event->key()){
+    switch (keyPressed){
     case Qt::Key_S:
         answer = "S";
         nextState();

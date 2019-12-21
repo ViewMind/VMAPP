@@ -1,4 +1,4 @@
-#include "CalibrationTargets.h"
+#include "calibrationtargets.h"
 
 CalibrationTargets::CalibrationTargets()
 {

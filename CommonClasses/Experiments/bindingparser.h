@@ -82,14 +82,14 @@ public:
     };
 
     struct FlagDrawStructure {
-        qint32 FlagSideH;
-        qint32 FlagSideV;
-        qint32 HSBorder;
-        qint32 HLBorder;
-        qint32 VSBorder;
-        qint32 VLBorder;
-        QList<qint32> xpos;
-        QList<qint32> ypos;
+        qreal FlagSideH;
+        qreal FlagSideV;
+        qreal HSBorder;
+        qreal HLBorder;
+        qreal VSBorder;
+        qreal VLBorder;
+        QList<qreal> xpos;
+        QList<qreal> ypos;
     };
 
 
@@ -120,29 +120,29 @@ private:
         qreal gy;
     };
 
-   // Error message.
-   QString error;
+    // Error message.
+    QString error;
 
-   // Version string
-   QString versionString;
+    // Version string
+    QString versionString;
 
-   // The trial structure
-   QList<BindingTrial> trials;
+    // The trial structure
+    QList<BindingTrial> trials;
 
-   // The number of targets in each slide of the trial
-   qint32 numberOfTargets;
+    // The number of targets in each slide of the trial
+    qint32 numberOfTargets;
 
-   // Tells the system how to draw the flags.
-   FlagDrawStructure drawStructure;
+    // Tells the system how to draw the flags.
+    FlagDrawStructure drawStructure;
 
-   // The expected IDs
-   QList<QStringList> expectedIDs;
+    // The expected IDs
+    QList<QStringList> expectedIDs;
 
-   // Aux functions for parsing.
-   bool parseFlagPositions(const QString &line, BindingTrial *trial, bool show);
-   bool parseColors(const QString &line, BindingTrial *trial, bool background, bool show);
-   bool legacyParser(const QString &contents);
-   DrawValues loadDrawStructure(bool targetsSmall);
+    // Aux functions for parsing.
+    bool parseFlagPositions(const QString &line, BindingTrial *trial, bool show);
+    bool parseColors(const QString &line, BindingTrial *trial, bool background, bool show);
+    bool legacyParser(const QString &contents);
+    DrawValues loadDrawStructure(bool targetsSmall);
 
 
 };

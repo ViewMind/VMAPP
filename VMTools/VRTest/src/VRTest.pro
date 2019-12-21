@@ -29,12 +29,14 @@ SOURCES += \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.cpp \
-        CalibrationTargets.cpp \
+        EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
+        EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
+        EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.cpp \
+        EyeTrackerInterface/eyetrackerdata.cpp \
+        EyeTrackerInterface/eyetrackerinterface.cpp \
         control.cpp \
-        eyetrackerdata.cpp \
         main.cpp \
-        qimagedisplay.cpp \
-        viveeyepoller.cpp
+        qimagedisplay.cpp
 
 RESOURCES += qml.qrc \
     expdata.qrc
@@ -77,22 +79,23 @@ HEADERS += \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.h \
-    CalibrationTargets.h \
+    EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
+    EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
+    EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.h \
+    EyeTrackerInterface/eyetrackerdata.h \
+    EyeTrackerInterface/eyetrackerinterface.h \
     control.h \
-    eyetrackerdata.h \
     qimagedisplay.h \
-    sranipal/SRanipal.h \
-    sranipal/SRanipal_Enums.h \
-    sranipal/SRanipal_Eye.h \
-    sranipal/SRanipal_EyeDataType.h \
-    sranipal/SRanipal_EyeData_v1.h \
-    sranipal/SRanipal_EyeData_v2.h \
-    sranipal/SRanipal_Eye_Calibration_Enums.h \
-    sranipal/SRanipal_Lip.h \
-    sranipal/SRanipal_LipData_v1.h \
-    sranipal/SRanipal_LipData_v2.h \
-    sranipal/ViveSR_Enums.h \
-    viveeyepoller.h
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_Enums.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_Eye.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_EyeDataType.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_EyeData_v1.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_EyeData_v2.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_Eye_Calibration_Enums.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_Lip.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_LipData_v1.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_LipData_v2.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/ViveSR_Enums.h
 
 LIBS += -L$$PWD/lib -lSRanipal
 LIBS += -L$$PWD/../../../CommonClasses/OpenVRControlObject/libs -lopenvr_api

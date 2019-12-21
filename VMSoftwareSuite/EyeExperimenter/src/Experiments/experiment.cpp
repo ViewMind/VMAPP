@@ -21,7 +21,9 @@ void Experiment::setupView(){
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
 
     // Finding the current desktop resolution
-    this->setGeometry(0,0,config->getReal(CONFIG_RESOLUTION_WIDTH),config->getReal(CONFIG_RESOLUTION_HEIGHT));
+    this->setGeometry(0,0,
+                      static_cast<qint32>(config->getReal(CONFIG_RESOLUTION_WIDTH)),
+                      static_cast<qint32>(config->getReal(CONFIG_RESOLUTION_HEIGHT)));
 
     // Creating a graphics widget and adding it to the layout
     gview = new QGraphicsView(this);
@@ -122,8 +124,8 @@ bool Experiment::doFrequencyCheck(){
         fcp.periodMin                        = config->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
         fcp.maxAllowedFreqGlitchesPerTrial   = config->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
         fcp.maxAllowedPercentOfInvalidValues = config->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
-        fcp.minNumberOfDataItems             = config->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
-        fcp.maxAllowedFailedTrials           = config->getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
+        fcp.minNumberOfDataItems             = config->getInt(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+        fcp.maxAllowedFailedTrials           = config->getInt(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
 
         fres.analysisValid(fcp);
 

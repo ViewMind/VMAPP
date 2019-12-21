@@ -6,8 +6,8 @@ import com.qml 1.0
 
 Window {
     visible: true
-    width: 1000
-    height: 600
+    width: 1920
+    height: 1080
     title: qsTr("Qt-QML-VR Tester")
 
     Connections{
@@ -15,19 +15,15 @@ Window {
         onNewImageAvailable: {
             hmdView.image = control.image;
         }
-//        onCalibrationFinished:{
-//            if (control.isCalibrated()){
-//                startCalibration.enabled = true;
-//                startBinding.enabled = true;
-//                startReading.enabled = true
-//            }
-//        }
     }
 
     Rectangle {
         id: rectBase
         color: "#3843e0"
         anchors.fill: parent
+
+        property int elementWidth: rectBase.width*0.10
+        property int elementHeight: rectBase.height*0.03
 
         QImageDisplay {
             id: hmdView
@@ -38,102 +34,159 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
-        Row{
-
-            id: buttonRow
+        Column{
+            id: btnColumn
+            anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: hmdView.bottom
             anchors.topMargin: 0.01*parent.height
-            spacing: 0.01*parent.width
-            anchors.horizontalCenter: parent.horizontalCenter
 
-            Button {
-                id: startCalibration
-                width: rectBase.width*0.125
-                height: rectBase.height*0.08
-                text: "Start Calibration"
-                onClicked: {
-                    control.startCalibration();
-                    enabled = false;
-                }
-            }
+            spacing: parent.height*0.01
 
-            Button {
-                id: startTest
-                width: rectBase.width*0.125
-                height: rectBase.height*0.08
-                text: "Test calibration"
-                onClicked: {
-                    control.testEyeTracking();
-                }
-            }
+            Row{
 
-            Button {
-                id: startBinding
-                enabled: false
-                width: rectBase.width*0.125
-                height: rectBase.height*0.08
-                text: "Start Binding"
-                onClicked: {
+                id: calibrationRow
+                spacing: 0.01*parent.width
+                anchors.horizontalCenter: parent.horizontalCenter
 
-                }
-            }
-
-            ComboBox {
-                id: cbBindingType
-                width: startBinding.width
-                height: startBinding.height
-                model: [ "Bound", "Unbound"]
-            }
-
-            Button {
-                id: startReading
-                //enabled: false
-                width: rectBase.width*0.125
-                height: rectBase.height*0.08
-                text: "Start Reading"
-                onClicked: {
-                    switch(cbReadingLang.currentIndex){
-                    case 0:
-                        control.startReadingExperiment("es");
-                        break;
-                    case 1:
-                        control.startReadingExperiment("en");
-                        break;
-                    case 2:
-                        control.startReadingExperiment("de");
-                        break;
-                    case 3:
-                        control.startReadingExperiment("fr");
-                        break;
+                Button {
+                    id: startUpHeadSet
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Initialize"
+                    onClicked: {
+                        control.initialize();
+                        enabled = false;
                     }
                 }
+
+                Button {
+                    id: startCalibration
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start Calibration"
+                    onClicked: {
+                        control.startCalibration();                        
+                    }
+                }
+
+                Button {
+                    id: startTest
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Test calibration"
+                    onClicked: {
+                        control.testEyeTracking();
+                    }
+                }
+
+                Button {
+                    id: loadLastCalibration
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Load Last Calibration"
+                    onClicked: {
+                        control.loadLastCalibration();
+                    }
+                }
+
+
             }
 
-            ComboBox {
-                id: cbReadingLang
-                width: startBinding.width
-                height: startBinding.height
-                model: [ "Spanish", "English", "German", "French"];
+            Row{
+
+                id: readinRow
+                spacing: 0.01*parent.width
+                anchors.horizontalCenter: parent.horizontalCenter
+
+
+                Button {
+                    id: startReading
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start Reading"
+                    onClicked: {
+                        switch(cbReadingLang.currentIndex){
+                        case 0:
+                            control.startReadingExperiment("es");
+                            break;
+                        case 1:
+                            control.startReadingExperiment("en");
+                            break;
+                        case 2:
+                            control.startReadingExperiment("de");
+                            break;
+                        case 3:
+                            control.startReadingExperiment("fr");
+                            break;
+                        }
+                    }
+                }
+
+                ComboBox {
+                    id: cbReadingLang
+                    width: startBinding.width
+                    height: startBinding.height
+                    model: [ "Spanish", "English", "German", "French"];
+                }
+
+                Button {
+                    id: startFielding
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start Fielding"
+                    onClicked: {
+                    }
+                }
+
             }
 
+            Row{
+
+                id: bindingRow
+                spacing: 0.01*parent.width
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Button {
+                    id: startBinding
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start Binding"
+                    onClicked: {
+                        control.startBindingExperiment(
+                                    cbBindingType.currentIndex == 0,            // Is Bound?
+                                    cbBindingTargetNum.currentIndex + 2,        // How many targets?
+                                    cbBindingSize.currentIndex == 1             // Are Targets Small?
+                                    );
+                    }
+                }
+
+                ComboBox {
+                    id: cbBindingType
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    model: [ "Bound", "Unbound"]
+                }
+
+                ComboBox {
+                    id: cbBindingSize
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    model: [ "Grandes", "Pequeños"]
+                }
+
+                ComboBox {
+                    id: cbBindingTargetNum
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    model: [ "2", "3"];
+                }
+
+            }
 
         }
 
         Keys.onPressed: {
             control.keyboardKeyPressed(event.key);
-//            switch(event.key){
-//            case Qt.Key_S:
-//                console.log("Pressed S")
-//                break;
-//            case Qt.Key_D:
-//                console.log("Pressed D")
-//                break;
-//            case Qt.Key_Escape:
-//                console.log("Pressed ESC")
-//                break;
-//            case Qt.Key_Right:
-//                console.log("Pressed RIGHT");
-//            }
         }
 
     }

@@ -58,7 +58,7 @@ void BindingManager::init(ConfigurationManager *c){
 
     canvas->setBackgroundBrush(QBrush(Qt::gray));
 
-    qint32 WScreen, HScreen;
+    qreal WScreen, HScreen;
     WScreen = canvas->width();
     HScreen = canvas->height();
 

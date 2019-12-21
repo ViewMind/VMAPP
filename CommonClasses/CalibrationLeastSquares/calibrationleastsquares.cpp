@@ -6,20 +6,18 @@ CalibrationLeastSquares::CalibrationLeastSquares()
 }
 
 void CalibrationLeastSquares::CalibrationData::clear(){
-    xr.clear(); yr.clear(); xl.clear(); yl.clear();
+    eyeData.clear();
 }
 bool CalibrationLeastSquares::CalibrationData::isValid(){
-    bool ans = (xr.size() >= 2);
-    ans = ans && (yr.size() >= 2);
-    ans = ans && (xl.size() >= 2);
-    ans = ans && (yl.size() >= 2);
-    ans = ans && (xr.size() == yr.size()) && (yr.size() == xl.size()) && (xl.size() == yl.size());
-    return ans;
+    return (eyeData.size() >= 2 );
 }
 QString CalibrationLeastSquares::CalibrationData::toString() const{
     QString ans = "[";
-    for (qint32 i = 0; i < xr.size(); i++){
-        ans = ans + QString::number(xr.at(i)) + " " + QString::number(yr.at(i)) + " " + QString::number(xl.at(i)) + " " + QString::number(yl.at(i)) + ";\n";
+    for (qint32 i = 0; i < eyeData.size(); i++){
+        ans = ans + QString::number(eyeData.at(i).xr) + " "
+                + QString::number(eyeData.at(i).yr) + " "
+                + QString::number(eyeData.at(i).xl) + " "
+                + QString::number(eyeData.at(i).yl) + ";\n";
     }
     ans.remove(ans.length()-1,1);
     ans= ans + "];";
@@ -42,31 +40,28 @@ bool CalibrationLeastSquares::computeCalibrationCoeffs(QList<CalibrationData> ca
 
         // Getting the calibraton point.
         //QPoint point(static_cast<qint32>(d.xl.first()),static_cast<qint32>(d.yl.first()));
-        qreal targetX = d.xl.first();
-        qreal targetY = d.yl.first();
+        qreal targetX = d.eyeData.first().xl;
+        qreal targetY = d.eyeData.first().yl;
 
         // Removing the point from list
-        d.xl.removeAt(0);
-        d.yl.removeAt(0);
-        d.xr.removeAt(0);
-        d.yr.removeAt(0);
+        d.eyeData.removeAt(0);
 
         // Appending the list to the correspodning Least Squeres Struc
-        xr.input << d.xr;
-        xl.input << d.xl;
-        yr.input << d.yr;
-        yl.input << d.yl;
-
-        // Adding the corresponding value to the target vectors
-        for (int j = 0; j < d.xr.size(); j++){
-            xr.target << targetX;
-            xl.target << targetX;
+        for (qint32 i = 0; i < d.eyeData.size(); i++){
+            xr.input << d.eyeData.at(i).xr;
+            xl.input << d.eyeData.at(i).xl;
+            yr.input << d.eyeData.at(i).yr;
+            yl.input << d.eyeData.at(i).yl;
         }
 
-        for (int j = 0; j < d.yr.size(); j++){
+        // Adding the corresponding value to the target vectors
+        for (int j = 0; j < d.eyeData.size(); j++){
+            xr.target << targetX;
+            xl.target << targetX;
             yr.target << targetY;
             yl.target << targetY;
         }
+
     }
 
     // Doing the least squres computation. Starting by computing the matrix oefficients.
@@ -131,4 +126,45 @@ CalibrationLeastSquares::EyeInputData CalibrationLeastSquares::EyeCorrectionCoef
     input.yl = yl.m*input.yl + yl.b;
     input.yr = yr.m*input.yr + yr.b;
     return input;
+}
+
+QVariant CalibrationLeastSquares::LinearCoeffs::toVariant(){
+    QVariantList list;
+    list << m << b << valid;
+    return list;
+}
+
+void CalibrationLeastSquares::LinearCoeffs::fromVariant(const QVariant &v){
+    QVariantList list = v.toList();
+    if (list.size() != 3) return;
+    m = list.at(0).toDouble();
+    b = list.at(1).toDouble();
+    valid = list.at(2).toBool();
+}
+
+void CalibrationLeastSquares::EyeCorrectionCoeffs::loadCalibrationCoefficients(const QString &file){
+    QFile f(file);
+    if (!f.open(QFile::ReadOnly)) return;
+    QDataStream reader(&f);
+    QVariantList coeffs;
+    reader >> coeffs;
+    f.close();
+    //qDebug() << "Loaded" << coeffs;
+    //QVariantList coeffs = cdata.toList();
+    if (coeffs.size() != 4) return;
+    xl.fromVariant(coeffs.at(0));
+    xr.fromVariant(coeffs.at(1));
+    yl.fromVariant(coeffs.at(2));
+    yr.fromVariant(coeffs.at(3));
+}
+
+void CalibrationLeastSquares::EyeCorrectionCoeffs::saveCalibrationCoefficients(const QString &file){
+    QFile f(file);
+    if (!f.open(QFile::WriteOnly)) return;
+    QDataStream writer(&f);
+    QVariantList coeffs;
+    coeffs << xl.toVariant() << xr.toVariant() << yl.toVariant() << yr.toVariant();
+    //qDebug() << "SAVING "  << coeffs ;
+    writer << coeffs;
+    f.close();
 }
