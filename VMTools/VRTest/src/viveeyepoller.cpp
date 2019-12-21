@@ -5,11 +5,16 @@ VIVEEyePoller::VIVEEyePoller()
     keepGoing = true;
     isCalibrating = false;
     resetEyeCorrectionCoeffs();
+    wasInitialized = false;
 }
 
 bool VIVEEyePoller::initalizeEyeTracking(){
+
+    if (wasInitialized) return true;
+
     int error = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE, nullptr);
     if (error == ViveSR::Error::WORK) {
+        wasInitialized = true;
         return true;
     }
     else if (error == ViveSR::Error::RUNTIME_NOT_FOUND) {
@@ -20,6 +25,7 @@ bool VIVEEyePoller::initalizeEyeTracking(){
         qDebug() << "Failed to initialize Eye engine. please refer the code " << error << " of ViveSR::Error";
         return false;
     }
+
 }
 
 void VIVEEyePoller::run(){
@@ -88,8 +94,6 @@ void VIVEEyePoller::run(){
                     //qDebug() << "Sending signal";
                     emit(newEyeData(lastData));
                 }
-            }
-            else{
             }
 
         }

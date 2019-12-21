@@ -29,8 +29,8 @@ public:
     void run() override;
     void stop() { keepGoing = false; }
     EyeTrackerData getLastData() {return lastData;}
+    bool isRunning() { return keepGoing;  }
     void setProjectionMatrices(quint8 whichEye, QMatrix4x4 p);
-
     bool calibrationDone();
     void startStoringCalibrationData();
     void newCalibrationPoint(qint32 xtarget, qint32 ytarget);
@@ -69,6 +69,9 @@ private:
     // Projection Matrices
     QMatrix4x4 pRe;
     QMatrix4x4 pLe;
+
+    // To inialize only ONCE.
+    bool wasInitialized;
 
     // The last valid data point.
     EyeTrackerData lastData;

@@ -9,11 +9,11 @@
 #include <QDebug>
 
 
-class TargetTest
+class CalibrationTargets
 {
 public:
-    TargetTest();
-    ~TargetTest();
+    CalibrationTargets();
+    ~CalibrationTargets();
 
     void initialize(qint32 screenw, qint32 screenh);
 

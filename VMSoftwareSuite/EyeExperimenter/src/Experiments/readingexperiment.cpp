@@ -3,13 +3,22 @@
 ReadingExperiment::ReadingExperiment(QWidget *parent):Experiment(parent)
 {
     manager = new ReadingManager();
-    m = (ReadingManager*) manager;
+    m = dynamic_cast<ReadingManager*>(manager);
     expHeader = HEADER_READING_EXPERIMENT;    
 }
 
 bool ReadingExperiment::startExperiment(ConfigurationManager *c){
 
     outputDataFile = QString(FILE_OUTPUT_READING) + "_" + c->getString(CONFIG_READING_EXP_LANG);
+    if (c->getBool(CONFIG_VR_ENABLED)){
+        c->addKeyValuePair(CONFIG_READING_FONT_SIZE,30);
+        c->addKeyValuePair(CONFIG_READING_ESCAPE_POINT_Y_K,0.10);
+    }
+    else{
+        c->addKeyValuePair(CONFIG_READING_FONT_SIZE,20);
+        c->addKeyValuePair(CONFIG_READING_ESCAPE_POINT_Y_K,0.5);
+    }
+
 
     if (!Experiment::startExperiment(c)) return false;
 
@@ -20,13 +29,16 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
     qstate = ReadingManager::ReadingManager::QS_POINT;
 
     // This window is shown and given focus.
-    this->show();
+    if (!vrEnabled) this->show();
 
     // The current state is running.
     state = STATE_RUNNING;
     m->drawPhrase(qstate,currentQuestion);
 
-    if (debugMode){
+    if (vrEnabled){
+        emit(updateVRDisplay());
+    }
+    else if (debugMode){
         emit(updateBackground(m->getImage()));
     }
 
@@ -73,8 +85,8 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
         rx = 0; ry = 0;
     }
     else{
-        x = data.avgX();
-        y = data.avgY();
+        x = static_cast<qint32>(data.avgX());
+        y = static_cast<qint32>(data.avgY());
         indL = calculateWordAndCharacterPostion(data.xLeft,data.yLeft);
         indR = calculateWordAndCharacterPostion(data.xRight,data.yRight);
         lx = data.xLeft; ly = data.yLeft;
@@ -119,7 +131,10 @@ void ReadingExperiment::advanceToTheNextPhrase(){
     // And the next phrase is drawn.
     m->drawPhrase(qstate,currentQuestion);
 
-    if (debugMode){
+    if (vrEnabled){
+        emit(updateVRDisplay());
+    }
+    else if (debugMode){
         emit(updateBackground(m->getImage()));
     }
 }
@@ -172,18 +187,24 @@ void ReadingExperiment::mousePressEvent(QMouseEvent *event){
     }
 }
 
-void ReadingExperiment::keyPressEvent(QKeyEvent *event){
+void ReadingExperiment::keyPressHandler(int keyPressed){
 
-    if (event->key() == Qt::Key_Escape){
+    if (keyPressed == Qt::Key_Escape){
         experimenteAborted();
         return;
     }
 
     // In the question state, the advance must be with the mouse click.
     // Otherwise the space bar advances the question.
-    if ((qstate != ReadingManager::QS_QUESTION) && (event->key() == Qt::Key_Space)){
+    if ((qstate != ReadingManager::QS_QUESTION) && (keyPressed == Qt::Key_Right)){
         advanceToTheNextPhrase();
     }
+
+    // FOR QUICK MOVEMENT. COMMENT OUT
+    if (keyPressed == Qt::Key_Down){
+        advanceToTheNextPhrase();
+    }
+
 }
 
 void ReadingExperiment::appendEyeTrackerData(const EyeTrackerData &data,
@@ -229,7 +250,7 @@ QList<qint32> ReadingExperiment::calculateWordAndCharacterPostion(qint32 x, qint
 
     // Character and word position are determined ONLY through the x value. In case
     // the y value is taken into account in the future, it was also added as a parameter, although unused.
-    Q_UNUSED(y);
+    Q_UNUSED(y)
 
     qint32 charIndex = m->getCharIndex(x);
     qint32 wordIndex = -1;

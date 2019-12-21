@@ -25,7 +25,7 @@ class Experiment : public QWidget
 public:
 
     // The constructor will set up the basic background view for the widget.
-    explicit Experiment(QWidget *parent = 0);
+    explicit Experiment(QWidget *parent = nullptr);
 
     // Used to determine how the experiment
     typedef enum {ER_NORMAL, ER_ABORTED, ER_FAILURE, ER_WARNING} ExperimentResult;
@@ -57,8 +57,14 @@ public:
     // Whenever not in mouse mode the cursor should be hidden
     void hideCursor() {this->setCursor(Qt::BlankCursor);}
 
+    // Keyboard press handling function
+    void keyboardKeyPressed(int keyboardKey);
+
     // FOR DEBUGGING ONLY
     void setupFreqCheck(ConfigurationManager *c, QString fileName) { dataFile = fileName; config = c; }
+
+    // Image required for VR Display
+    QImage getVRDisplayImage() const;
 
 signals:
 
@@ -70,8 +76,11 @@ signals:
     void calibrationRequest();
 
     // Used for drawing images and following the eyes in the second monitor.
-    void updateBackground(const QPixmap &pixmap);
+    void updateBackground(const QPixmap &pixmap);    
     void updateEyePositions(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
+
+    // Signal that provides VR with the image to show.
+    void updateVRDisplay();
 
 
 public slots:
@@ -131,6 +140,12 @@ protected:
 
     // Saving the data to the disk.
     bool saveDataToHardDisk();
+
+    // Control flag for VR logic changes
+    bool vrEnabled;
+
+    // So that the logic of handling keys can be implemente by each experiment.
+    virtual void keyPressHandler(int keyPressed);
 
 };
 

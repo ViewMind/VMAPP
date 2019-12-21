@@ -11,6 +11,9 @@ Experiment::Experiment(QWidget *parent) : QWidget(parent)
 
     // Bye default data needs to be saved.
     debugMode = false;
+
+    // By default VR is disabled
+    vrEnabled = false;
 }
 
 void Experiment::setupView(){
@@ -34,6 +37,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     config = c;
     error = "";
     workingDirectory = c->getString(CONFIG_PATIENT_DIRECTORY);
+    vrEnabled = c->getBool(CONFIG_VR_ENABLED);
 
     // Loading the experiment configuration file.
     //qWarning() << "Reading the configuration file" << config->getString(CONFIG_EXP_CONFIG_FILE);
@@ -241,8 +245,20 @@ bool Experiment::saveDataToHardDisk(){
     return true;
 }
 
+QImage Experiment::getVRDisplayImage() const{
+    return manager->getQImage();
+}
+
+void Experiment::keyboardKeyPressed(int keyboardKey){
+    keyPressHandler(keyboardKey);
+}
+
 void Experiment::keyPressEvent(QKeyEvent *event){
-    Q_UNUSED(event);
+    keyPressHandler(event->key());
+}
+
+void Experiment::keyPressHandler(int keyPressed){
+    Q_UNUSED(keyPressed)
     //    // FOR ALL Experiments:
     //    //   ESC = Abort
     //    //   C   = Request Calibration

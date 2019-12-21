@@ -1,19 +1,20 @@
-#include "targettest.h"
+#include "CalibrationTargets.h"
 
-TargetTest::TargetTest()
+CalibrationTargets::CalibrationTargets()
 {
     canvas = nullptr;
     leftEye = nullptr;
     rightEye = nullptr;
 }
 
-void TargetTest::initialize(qint32 screenw, qint32 screenh){
+void CalibrationTargets::initialize(qint32 screenw, qint32 screenh){
 
+    if (canvas != nullptr) return;
     canvas = new QGraphicsScene(0,0,screenw,screenh);
     canvas->setBackgroundBrush(QBrush(Qt::gray));
 }
 
-QImage TargetTest::getClearScreen(){
+QImage CalibrationTargets::getClearScreen(){
     canvas->clear();
     canvas->setBackgroundBrush(QBrush(Qt::gray));
     QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
@@ -22,7 +23,7 @@ QImage TargetTest::getClearScreen(){
     return image;
 }
 
-QImage TargetTest::setSingleTarget(qint32 x, qint32 y){
+QImage CalibrationTargets::setSingleTarget(qint32 x, qint32 y){
     canvas->clear();
 
     qreal R = K_LARGE_D*canvas->sceneRect().width()/2;
@@ -44,7 +45,7 @@ QImage TargetTest::setSingleTarget(qint32 x, qint32 y){
 
 }
 
-void TargetTest::setTargetTest(){
+void CalibrationTargets::setTargetTest(){
     canvas->clear();
 
     qint32 screenw = static_cast<qint32>(canvas->sceneRect().width());
@@ -90,7 +91,7 @@ void TargetTest::setTargetTest(){
     rightEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,255,0,100)));
 }
 
-QImage TargetTest::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly){
+QImage CalibrationTargets::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly){
     if (!canvas) return QImage();
 
     leftEye->setPos(lx-r,ly-r);
@@ -102,14 +103,14 @@ QImage TargetTest::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32
     return image;
 }
 
-void TargetTest::saveCanvasToTestImageFile(){
+void CalibrationTargets::saveCanvasToTestImageFile(){
     QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
     QPainter painter( &image );
     canvas->render( &painter );
     image.save("test.png");
 }
 
-TargetTest::~TargetTest(){
+CalibrationTargets::~CalibrationTargets(){
 
 }
 

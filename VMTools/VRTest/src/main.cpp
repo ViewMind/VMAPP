@@ -2,10 +2,13 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "control.h"
+#include "qimagedisplay.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");
 
     QApplication app(argc, argv);
 

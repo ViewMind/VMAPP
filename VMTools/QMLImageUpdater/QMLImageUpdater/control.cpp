@@ -9,7 +9,15 @@ Control::Control(QObject *parent) : QObject(parent)
 }
 
 QImage Control::image() const{
-    return currentImage;
+
+    QImage test = QImage(currentImage);
+    QPainter painter(&test);
+    painter.setBrush(QBrush(QColor(255,0,0,100)));
+    qreal R = currentImage.width()*0.2;
+    painter.drawEllipse(currentImage.width()/2 - R, currentImage.height()/2 - R, 2*R, 2*R);
+    return test;
+
+    //return currentImage;
 }
 
 void Control::goToNextImage(){

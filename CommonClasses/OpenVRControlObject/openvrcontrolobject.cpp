@@ -312,7 +312,7 @@ void OpenVRControlObject::setImage(QImage *image){
     glid_Texture = openGLTexture->textureId();
 }
 
-bool OpenVRControlObject::isItRunning(){
+bool OpenVRControlObject::isRendering(){
     return timer.isActive();
 }
 

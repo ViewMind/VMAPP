@@ -73,6 +73,10 @@ bool ReadingParser::parseReadingDescription(const QString &contents){
             return false;
         }
 
+        if (p.getPhrase().size() > 50){
+            qDebug() << "PHRASE OVER 50 in LENGTH: " << p.getPhrase();
+        }
+
         phrases << p;
     }
 

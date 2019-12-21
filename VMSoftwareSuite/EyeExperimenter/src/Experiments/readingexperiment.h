@@ -16,18 +16,18 @@
 class ReadingExperiment : public Experiment
 {
 public:
-    ReadingExperiment(QWidget *parent = 0);
-    ~ReadingExperiment();
-    bool startExperiment(ConfigurationManager *c);
-    void togglePauseExperiment();
+    ReadingExperiment(QWidget *parent = nullptr);
+    ~ReadingExperiment() override;
+    bool startExperiment(ConfigurationManager *c) override;
+    void togglePauseExperiment() override;
     bool loadConfiguration(const QString &fileName);
 
 public slots:
-    void newEyeDataAvailable(const EyeTrackerData &data);
+    void newEyeDataAvailable(const EyeTrackerData &data) override;
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
+    void mousePressEvent(QMouseEvent *event) override;
+    void keyPressHandler(int keyPressed) override;
 
 private:
 

@@ -20,7 +20,8 @@ void ReadingManager::init(ConfigurationManager *c){
 
     // Fixing the question font
     questionFont.setFamily("Courier New");
-    questionFont.setPointSize(20);
+    //questionFont.setPointSize(20);
+    questionFont.setPointSize(c->getInt(CONFIG_READING_FONT_SIZE));
     questionFont.setItalic(false);
     questionFont.setBold(false);
 
@@ -131,7 +132,7 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
         escapeX = WScreen - (xpos + phraseToShow->boundingRect().width());
         escapeX = xpos + phraseToShow->boundingRect().width() + escapeX/2;
         escapeY = HScreen - (ypos + phraseToShow->boundingRect().height());
-        escapeY = ypos + phraseToShow->boundingRect().height() + escapeY/2;
+        escapeY = ypos + phraseToShow->boundingRect().height() + escapeY*config->getReal(CONFIG_READING_ESCAPE_POINT_Y_K);
         escapePoint->setPos(escapeX,escapeY);
 
         // Y position calculation for the start reading point

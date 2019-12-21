@@ -29,7 +29,7 @@ public:
 
     void setImage(QImage *image);
     void setScreenColor(QColor color);
-    bool isItRunning();
+    bool isRendering();
     void stopRendering();
     QSize getRecommendedSize();
 

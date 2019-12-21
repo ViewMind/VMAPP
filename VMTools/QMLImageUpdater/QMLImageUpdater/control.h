@@ -6,6 +6,7 @@
 #include <QGraphicsTextItem>
 #include <QPainter>
 #include <QDebug>
+#include <QBrush>
 
 class Control : public QObject
 {
