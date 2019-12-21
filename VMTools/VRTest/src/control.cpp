@@ -167,9 +167,6 @@ void Control::testEyeTracking(){
 
 ////////////////////////////////////////////////// Rendering.
 
-//void Control::onExperimentImageChanged(){
-//    onRequestUpdate();
-//}
 
 void Control::onRequestUpdate(){
     if (renderState != RENDERING_NONE){

@@ -18,9 +18,10 @@ void ReadingManager::init(ConfigurationManager *c){
     // Default font
     questionFont = QFont("Mono",23,QFont::Bold);
 
-    // Fixing the question font
-    questionFont.setFamily("Courier New");
+    // Fixing the question font    
+    //questionFont.setFamily("Courier New");
     //questionFont.setPointSize(20);
+    questionFont.setFamily(c->getString(CONFIG_READING_FONT_NAME));
     questionFont.setPointSize(c->getInt(CONFIG_READING_FONT_SIZE));
     questionFont.setItalic(false);
     questionFont.setBold(false);
@@ -29,7 +30,8 @@ void ReadingManager::init(ConfigurationManager *c){
     QFontMetrics metrics(questionFont);
 
     // Since the font is monospaced the width of A is the same as that of any other character.
-    charWidth = metrics.width(QChar('A'));
+    //charWidth = metrics.width(QChar('A'));
+    charWidth = metrics.averageCharWidth();
 }
 
 bool ReadingManager::parseExpConfiguration(const QString &contents){
@@ -107,8 +109,8 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
     clearCanvas();
 
     QString mainPhrase;
-    qint32 xpos, ypos;
-    qint32 WScreen,HScreen;
+    qreal xpos, ypos;
+    qreal WScreen,HScreen;
     WScreen = canvas->width();
     HScreen = canvas->height();
 
@@ -130,16 +132,16 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
 
         // Caculating escape point coordinates.
         escapeX = WScreen - (xpos + phraseToShow->boundingRect().width());
-        escapeX = xpos + phraseToShow->boundingRect().width() + escapeX/2;
+        escapeX = xpos + phraseToShow->boundingRect().width() + escapeX*config->getReal(CONFIG_READING_ESCAPE_POINT_XY_K);
         escapeY = HScreen - (ypos + phraseToShow->boundingRect().height());
-        escapeY = ypos + phraseToShow->boundingRect().height() + escapeY*config->getReal(CONFIG_READING_ESCAPE_POINT_Y_K);
+        escapeY = ypos + phraseToShow->boundingRect().height() + escapeY*config->getReal(CONFIG_READING_ESCAPE_POINT_XY_K);
         escapePoint->setPos(escapeX,escapeY);
 
         // Y position calculation for the start reading point
-        qint32 yposp = ypos + phraseToShow->boundingRect().height()/2;
+        qreal yposp = ypos + phraseToShow->boundingRect().height()/2;
 
         // Creating a screen to hide the phrase.
-        canvas->addRect(0,0,WScreen,HScreen,QPen(),QBrush(Qt::gray));
+        canvas->addRect(0,0,WScreen,HScreen,QPen(Qt::gray),QBrush(Qt::gray));
 
         // This dot should appear about in the middle of the first letter.
         startPoint = canvas->addEllipse(0,0,2*R,2*R,QPen(QBrush(Qt::black),2),QBrush(Qt::red));
@@ -163,7 +165,7 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
         validClickAreas.clear();
 
         // First the text items are created.
-        qint32 summedWidth = 0;
+        qreal summedWidth = 0;
         qint32 NOptions = phrases.at(currentQuestion).getNofOptions();
         for (qint32 i = 1; i < phrases.at(currentQuestion).size(); i++){
             QString option = phrases.at(currentQuestion).getFollowUpAt(i);
@@ -175,23 +177,24 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
         }
 
         // Now the options are drawn, surrounded by a thick, red rectangle and equally spaced, 10% Screen height, below the phrase
-        qint32 spaceBetweenOptions = (WScreen - summedWidth)/(NOptions+1);
-        qint32 x = 0;
-        qint32 y = ypos + phraseToShow->boundingRect().height() + 0.1*HScreen;
+        qreal spaceBetweenOptions = (WScreen - summedWidth)/(NOptions+1);
+        qreal x = 0;
+        qreal y = ypos + phraseToShow->boundingRect().height() + 0.1*HScreen;
         for (qint32 i = 0; i < NOptions; i++){
 
             // Drawing the rectangle on the bottom of the option;
             x = x + spaceBetweenOptions;
 
             //qWarning() << "Drawing rectangle i" << i << "at" << x << "for option" << list.at(i)->text();
-
-            QRect r(0,0,list.at(i)->boundingRect().width() + 2*AIR,list.at(i)->boundingRect().height() + 2*AIR);
+            qint32 rW = static_cast<qint32>(list.at(i)->boundingRect().width() + 2*AIR);
+            qint32 rH = static_cast<qint32>(list.at(i)->boundingRect().height() + 2*AIR);
+            QRect r(0,0,rW,rH);
             QGraphicsRectItem *ri =  canvas->addRect(r);
             ri->setPen(QPen(QBrush(Qt::red),2));
             ri->setPos(x,y);
 
             // Translation is required to the rectangle is positioned correctly on the screen.
-            r.translate(x,y);
+            r.translate(static_cast<qint32>(x),static_cast<qint32>(y));
             validClickAreas << r;
 
             // The text is positioned in the center of the rectangle and brought to the forefront.
@@ -218,7 +221,7 @@ qint32 ReadingManager::isPointContainedInAClickArea(const QPoint &point){
 
 qint32 ReadingManager::getCharIndex(qint32 x){
     if ((x > phraseToShow->pos().x()) && (x < phraseToShow->pos().x() + phraseToShow->boundingRect().width())){
-        return (x - phraseToShow->pos().x())/charWidth;
+        return static_cast<qint32>((x - phraseToShow->pos().x())/charWidth);
     }
     return -1;
 }

@@ -27,10 +27,10 @@ public:
     ReadingParser::Phrase getPhrase(qint32 index) const { return phrases.at(index);}
     void drawPhrase(QuestionState qstate, qint32 currentQuestion, bool simpleDraw = false);
     bool drawPhrase(const QString &idStr);
-    qint32 getEscapeX() const { return escapeX; }
-    qint32 getEscapeY() const { return escapeY; }
-    qint32 getCurrentTargetX() const { return currentTargetX; }
-    qint32 getCurrentTargetY() const { return currentTargetY; }
+    qint32 getEscapeX() const { return static_cast<qint32>(escapeX); }
+    qint32 getEscapeY() const { return static_cast<qint32>(escapeY); }
+    qint32 getCurrentTargetX() const { return static_cast<qint32>(currentTargetX); }
+    qint32 getCurrentTargetY() const { return static_cast<qint32>(currentTargetY); }
     qint32 getValidClickAreaSize() const { return validClickAreas.size(); }
     qint32 isPointContainedInAClickArea(const QPoint &point);
     qint32 getCharIndex(qint32 x);
@@ -57,11 +57,10 @@ private:
 
     // The radious of the dot that marks where the next sentence is going to start.
     // and where the escape point is.
-    qreal R;
-    qint32 escapeX, escapeY;
+    qreal escapeX, escapeY;
 
     // These variables hold where the subject SHOULD Look to advance
-    qint32 currentTargetX, currentTargetY;
+    qreal currentTargetX, currentTargetY;
 
     // When options are presented this list contains the clickable options
     QList<QRect> validClickAreas;

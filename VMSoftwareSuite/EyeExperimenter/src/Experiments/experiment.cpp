@@ -257,6 +257,15 @@ void Experiment::keyPressEvent(QKeyEvent *event){
     keyPressHandler(event->key());
 }
 
+void Experiment::updateSecondMonitorORHMD(){
+    if (vrEnabled){
+        emit(updateVRDisplay());
+    }
+    else if (debugMode){
+        emit(updateBackground(manager->getImage()));
+    }
+}
+
 void Experiment::keyPressHandler(int keyPressed){
     Q_UNUSED(keyPressed)
     //    // FOR ALL Experiments:

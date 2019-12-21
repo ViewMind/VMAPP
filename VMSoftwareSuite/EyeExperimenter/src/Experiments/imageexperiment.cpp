@@ -36,8 +36,10 @@ bool ImageExperiment::startExperiment(ConfigurationManager *c){
     drawCurrentImage();
     stateTimer.setInterval(TIME_START_CROSS);
     stateTimer.start();
-    this->show();
-    this->activateWindow();
+    if (!vrEnabled){
+        this->show();
+        this->activateWindow();
+    }
 
     return true;
 
@@ -57,7 +59,7 @@ void ImageExperiment::drawCurrentImage(){
     if ((trialState == TSB_TRANSITION) || (trialState == TSB_FINISH)){
         //qWarning() << "DRAWING: Transition" << currentTrial;
         m->drawClear();
-        emit(updateBackground(m->getImage()));
+        updateSecondMonitorORHMD();
         return;
     }
 
@@ -207,7 +209,7 @@ void ImageExperiment::nextState(){
 
 void ImageExperiment::newImage(QString name, qint32 isTrial){
 
-    ignoreData = true;    
+    ignoreData = true;
     QVariantList dataS;
     dataS  << name
            << isTrial; // 1 if it is test and 0 if it is show.

@@ -115,7 +115,8 @@
 #define   CONFIG_TIMESTRING                             "timestring"
 #define   CONFIG_VR_ENABLED                             "vr_enabled"
 #define   CONFIG_READING_FONT_SIZE                      "reading_font_size"
-#define   CONFIG_READING_ESCAPE_POINT_Y_K               "reading_escape_point_y_k"
+#define   CONFIG_READING_FONT_NAME                      "reading_font_name"
+#define   CONFIG_READING_ESCAPE_POINT_XY_K              "reading_escape_point_xy_k"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
