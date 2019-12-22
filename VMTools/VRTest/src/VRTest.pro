@@ -39,7 +39,8 @@ SOURCES += \
         qimagedisplay.cpp
 
 RESOURCES += qml.qrc \
-    expdata.qrc
+    expdata.qrc \
+    images.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

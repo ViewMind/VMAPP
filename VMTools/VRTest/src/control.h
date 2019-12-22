@@ -7,6 +7,7 @@
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/experiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.h"
+#include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.h"
 #include "../../../CommonClasses/common.h"
 
 class Control : public QObject
@@ -23,8 +24,10 @@ public:
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE void startReadingExperiment(QString lang);
     Q_INVOKABLE void startBindingExperiment(bool isBound,qint32 targetNum, bool areTargetsSmall);
+    Q_INVOKABLE void startFieldingExperiment();
     Q_INVOKABLE void initialize();
     Q_INVOKABLE void loadLastCalibration();
+    Q_INVOKABLE void loadViewMindWaitScreen();
 
     // The image to be shown.
     QImage image() const;
@@ -42,7 +45,7 @@ public slots:
 
 private:
 
-    typedef enum { RENDERING_NONE, RENDERING_TARGET_TEST, RENDERING_EXPERIMENT } RenderState;
+    typedef enum { RENDERING_NONE, RENDERING_TARGET_TEST, RENDERING_EXPERIMENT, RENDER_WAIT_SCREEN } RenderState;
 
     OpenVRControlObject *openvrco;
     CalibrationTargets tt;

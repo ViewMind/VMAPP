@@ -141,7 +141,7 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
         qreal yposp = ypos + phraseToShow->boundingRect().height()/2;
 
         // Creating a screen to hide the phrase.
-        canvas->addRect(0,0,WScreen,HScreen,QPen(Qt::gray),QBrush(Qt::gray));
+        canvas->addRect(0,0,WScreen,HScreen,QPen(QColor(Qt::gray).darker(110)),QBrush(QColor(Qt::gray).darker(110)));
 
         // This dot should appear about in the middle of the first letter.
         startPoint = canvas->addEllipse(0,0,2*R,2*R,QPen(QBrush(Qt::black),2),QBrush(Qt::red));

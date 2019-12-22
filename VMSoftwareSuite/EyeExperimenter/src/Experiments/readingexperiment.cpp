@@ -11,7 +11,7 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
 
     outputDataFile = QString(FILE_OUTPUT_READING) + "_" + c->getString(CONFIG_READING_EXP_LANG);
     if (c->getBool(CONFIG_VR_ENABLED)){
-        c->addKeyValuePair(CONFIG_READING_FONT_SIZE,25);
+        c->addKeyValuePair(CONFIG_READING_FONT_SIZE,32);
         c->addKeyValuePair(CONFIG_READING_ESCAPE_POINT_XY_K,0.10);
         c->addKeyValuePair(CONFIG_READING_FONT_NAME,"Mono");
     }

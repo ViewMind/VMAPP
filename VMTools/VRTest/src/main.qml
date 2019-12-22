@@ -90,6 +90,17 @@ Window {
                 }
 
 
+                Button {
+                    id: testViewMindWaitScreen
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "View Mind Wait Screen"
+                    onClicked: {
+                        control.loadViewMindWaitScreen();
+                    }
+                }
+
+
             }
 
             Row{
@@ -135,6 +146,7 @@ Window {
                     height: rectBase.elementHeight
                     text: "Start Fielding"
                     onClicked: {
+                        control.startFieldingExperiment();
                     }
                 }
 

@@ -42,6 +42,35 @@ QImage Control::image() const{
     return displayImage;
 }
 
+void Control::loadViewMindWaitScreen(){
+    QColor base(Qt::white);
+    base = base.darker(110);
+
+    displayImage = QImage(":/viewmind.png");
+    if (displayImage.isNull()){
+        qDebug() << "Loaded null image";
+        return;
+    }
+    QSize s = openvrco->getRecommendedSize();
+    openvrco->setScreenColor(base);
+    displayImage = displayImage.scaled(s.width(),s.height(),Qt::KeepAspectRatio);
+
+    QImage canvas (s.width(), s.height(), QImage::Format_RGB32);
+    QPainter painter(&canvas);
+    painter.fillRect(0,0,s.width(),s.height(),QBrush(base));
+    qreal xoffset = (s.width() - displayImage.width())/2;
+    qreal yoffset = (s.height() - displayImage.height())/2;
+
+    QRectF source(0,0,displayImage.width(),displayImage.height());
+    QRectF target(xoffset,yoffset,displayImage.width(),displayImage.height());
+    painter.drawImage(target,displayImage,source);
+    painter.end();
+    displayImage = canvas;
+
+
+    displayImage.save("test.png");
+    renderState = RENDER_WAIT_SCREEN;
+}
 
 ////////////////////////////////////////////////// Keyboard press listener
 void Control::keyboardKeyPressed(int key){
@@ -79,7 +108,7 @@ void Control::startReadingExperiment(QString lang){
 
 
     renderState = RENDERING_EXPERIMENT;
-    openvrco->setScreenColor(QColor(Qt::gray));
+    openvrco->setScreenColor(QColor(Qt::gray).darker(110));
     experiment->startExperiment(&configExperiments);
 
 }
@@ -127,6 +156,39 @@ void Control::startBindingExperiment(bool isBound, qint32 targetNum, bool areTar
     renderState = RENDERING_EXPERIMENT;
     openvrco->setScreenColor(QColor(Qt::gray));
     experiment->startExperiment(&configExperiments);
+}
+
+void Control::startFieldingExperiment(){
+    if (experiment != nullptr) delete experiment;
+    experiment = new FieldingExperiment();
+
+    QString expFileName =  ":/experiment_data/fielding.dat";
+
+    // Connecting the eyetracker to teh experiment.
+    configExperiments.clear();
+    QSize s = openvrco->getRecommendedSize();
+    qreal w = static_cast<qreal>(s.width());
+    qreal h = static_cast<qreal>(s.height());
+    connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
+    connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
+    connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
+
+    // Configuring the experiment.
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+    configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
+    configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,expFileName);
+    configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+    configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
+    configExperiments.addKeyValuePair(CONFIG_YPX_2_MM,0.20);
+    configExperiments.addKeyValuePair(CONFIG_XPX_2_MM,0.20);
+
+    renderState = RENDERING_EXPERIMENT;
+    openvrco->setScreenColor(QColor(Qt::black));
+    experiment->startExperiment(&configExperiments);
+
 }
 
 void Control::onExperimentFinished(const Experiment::ExperimentResult &result){
@@ -204,6 +266,9 @@ QImage Control::generateHMDImage(){
         painter.setBrush(QBrush(QColor(0,0,255,100)));
         painter.drawEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
         return image;
+    }
+    if (renderState == RENDER_WAIT_SCREEN){
+        return displayImage;
     }
     else return QImage();
 }

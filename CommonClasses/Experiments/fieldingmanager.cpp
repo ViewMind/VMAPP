@@ -85,27 +85,27 @@ void FieldingManager::drawBackground(){
     qreal kx = config->getReal(CONFIG_XPX_2_MM);
     qreal ky = config->getReal(CONFIG_YPX_2_MM);
 
-    qint32 WScreen = AREA_WIDTH/kx;
-    qint32 HScreen = AREA_HEIGHT/ky;
-    qint32 generalOffsetX = (ScreenResolutionWidth - WScreen)/2;
-    qint32 generalOffsetY = (ScreenResolutionHeight - HScreen)/2;
+    qreal WScreen = AREA_WIDTH/kx;
+    qreal HScreen = AREA_HEIGHT/ky;
+    qreal generalOffsetX = (ScreenResolutionWidth - WScreen)/2;
+    qreal generalOffsetY = (ScreenResolutionHeight - HScreen)/2;
 
     // Background
     canvas->addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
 
     // Rectangle origins in order, in order
     rectangleLocations.clear();
-    rectangleLocations << QPoint(generalOffsetX+RECT_0_X/kx,generalOffsetY+RECT_0_Y/ky);
-    rectangleLocations << QPoint(generalOffsetX+RECT_1_X/kx,generalOffsetY+RECT_1_Y/ky);
-    rectangleLocations << QPoint(generalOffsetX+RECT_2_X/kx,generalOffsetY+RECT_2_Y/ky);
-    rectangleLocations << QPoint(generalOffsetX+RECT_3_X/kx,generalOffsetY+RECT_3_Y/ky);
-    rectangleLocations << QPoint(generalOffsetX+RECT_4_X/kx,generalOffsetY+RECT_4_Y/ky);
-    rectangleLocations << QPoint(generalOffsetX+RECT_5_X/kx,generalOffsetY+RECT_5_Y/ky);
+    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_0_X/kx),static_cast<qint32>(generalOffsetY+RECT_0_Y/ky));
+    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_1_X/kx),static_cast<qint32>(generalOffsetY+RECT_1_Y/ky));
+    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_2_X/kx),static_cast<qint32>(generalOffsetY+RECT_2_Y/ky));
+    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_3_X/kx),static_cast<qint32>(generalOffsetY+RECT_3_Y/ky));
+    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_4_X/kx),static_cast<qint32>(generalOffsetY+RECT_4_Y/ky));
+    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_5_X/kx),static_cast<qint32>(generalOffsetY+RECT_5_Y/ky));
 
     // Adding the rectangles to the scene
     for (qint32 i = 0; i < rectangleLocations.size(); i++){
         QGraphicsRectItem *rect = canvas->addRect(0,0,RECT_WIDTH/kx,RECT_HEIGHT/ky,
-                                                          QPen(QBrush(Qt::white),2),
+                                                          QPen(QBrush(Qt::white),6),
                                                           QBrush(Qt::black));
         rect->setPos(rectangleLocations.at(i));
     }
@@ -134,8 +134,8 @@ void FieldingManager::drawBackground(){
     letterFont.setBold(true);
 
     gText1 = canvas->addSimpleText("1",letterFont);
-    qint32 x = (ScreenResolutionWidth - gText1->boundingRect().width())/2;
-    qint32 y = (ScreenResolutionHeight - gText1->boundingRect().height())/2;
+    qreal x = (ScreenResolutionWidth - gText1->boundingRect().width())/2;
+    qreal y = (ScreenResolutionHeight - gText1->boundingRect().height())/2;
     gText1->setPos(x,y);
     gText1->setPen(QPen(Qt::white));
     gText1->setBrush(QBrush(Qt::white));

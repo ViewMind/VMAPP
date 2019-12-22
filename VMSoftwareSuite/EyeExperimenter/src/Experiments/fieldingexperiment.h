@@ -32,18 +32,18 @@ public:
                   TSF_SHOW_BLANK_2,
                   TSF_SHOW_BLANK_1} TrialStateFielding;
 
-    FieldingExperiment(QWidget *parent = 0);
+    FieldingExperiment(QWidget *parent = nullptr);
 
     // Reimplementation of virtual functions
-    bool startExperiment(ConfigurationManager *c);
-    void togglePauseExperiment();
+    bool startExperiment(ConfigurationManager *c) override;
+    void togglePauseExperiment() override;
 
 public slots:
-    void newEyeDataAvailable(const EyeTrackerData &data);
+    void newEyeDataAvailable(const EyeTrackerData &data) override;
     void onTimeOut();
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
+    void keyPressHandler(int keyPressed) override;
 
 private:
 

@@ -3,7 +3,7 @@
 FieldingExperiment::FieldingExperiment(QWidget *parent):Experiment(parent){
 
     manager = new FieldingManager();
-    m = (FieldingManager*)manager;
+    m = dynamic_cast<FieldingManager*>(manager);
     expHeader = HEADER_FIELDING_EXPERIMENT;
     outputDataFile = FILE_OUTPUT_FIELDING;
 
@@ -29,8 +29,10 @@ bool FieldingExperiment::startExperiment(ConfigurationManager *c){
 
     drawCurrentImage();
 
-    this->show();
-    this->activateWindow();
+    if (!vrEnabled){
+        this->show();
+        this->activateWindow();
+    }
 
     return true;
 
@@ -97,7 +99,7 @@ void FieldingExperiment::drawPauseImage(){
 
     gview->scene()->clear();
     QString mainPhrase="Press any key to continue";
-    qint32 xpos, ypos;
+    qreal xpos, ypos;
 
     // Chaging the current target point to escape point
     QGraphicsSimpleTextItem *phraseToShow = gview->scene()->addSimpleText(mainPhrase,QFont());
@@ -150,7 +152,7 @@ void FieldingExperiment::drawCurrentImage(){
                 state = STATE_PAUSED;
                 stateTimer.stop();
                 drawPauseImage();
-                emit(updateBackground(m->getImage()));
+                updateSecondMonitorORHMD();
                 return;
             }
 
@@ -164,7 +166,7 @@ void FieldingExperiment::drawCurrentImage(){
         break;
     }
 
-    emit(updateBackground(m->getImage()));
+    updateSecondMonitorORHMD();
 }
 
 bool FieldingExperiment::finalizeExperiment(){
@@ -180,20 +182,21 @@ void FieldingExperiment::togglePauseExperiment(){
     // Pause is not managed here, for this experiment.
 }
 
-void FieldingExperiment::keyPressEvent(QKeyEvent *event){
+void FieldingExperiment::keyPressHandler(int keyPressed){
     // Making sure the experiment can be aborted, but any other key is ignored.
-    if (event->key() == Qt::Key_Escape){
+    if (keyPressed == Qt::Key_Escape){
         experimenteAborted();
         return;
     }
-	else{
+    else{
         if (state == STATE_PAUSED){
             state = STATE_RUNNING;
             gview->scene()->clear();
             m->drawBackground();
+            updateSecondMonitorORHMD();
             nextState();
         }
-	}
+    }
 }
 
 void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
@@ -260,7 +263,6 @@ void FieldingExperiment::addTrialHeader(){
 
     ignoreData = false;
 }
-
 
 qint32 FieldingExperiment::currentImageToImageIndex(){
     qint32 imageInTrialID;
