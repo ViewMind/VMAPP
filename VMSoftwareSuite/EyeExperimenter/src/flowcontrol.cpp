@@ -9,9 +9,11 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *
     connected = false;
     calibrated = false;
     experiment = nullptr;
+    openvrco = nullptr;
     monitor = nullptr;
     demoTransaction = false;
     reprocessRequest = false;
+    renderState = RENDERING_NONE;
     this->setVisible(false);
 
     uimap = ui;
@@ -29,6 +31,45 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *
     reportTextDataIndexes << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION << CONFIG_RESULTS_EXECUTIVE_PROCESSES << CONFIG_RESULTS_WORKING_MEMORY
                           << CONFIG_RESULTS_RETRIEVAL_MEMORY << CONFIG_RESULTS_BINDING_CONVERSION_INDEX << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
 
+    // Creating the OpenVR Object if so defined.
+    if (c->getBool(CONFIG_VR_ENABLED)){
+        openvrco = new OpenVRControlObject(this);
+        connect(openvrco,SIGNAL(requestUpdate()),this,SLOT(onRequestUpdate()));
+
+        // Intializing the OpenVR Solution.
+        if (!openvrco->startRendering()){
+            logger.appendError("OpenVRControl Object intilization failed. Will not be creating the wait screen");
+            return;
+        }
+
+        // If rendering was started, is now stopped so as not to consume resources.
+        openvrco->stopRendering();
+
+        // Create the wait screen only once
+        waitScreenBaseColor = QColor(Qt::gray);
+        waitScreenBaseColor = waitScreenBaseColor;
+
+        QImage logo(":/CommonClasses/PNGWriter/report_text/viewmind.png");
+        if (logo.isNull()){
+            logger.appendError("The loaded wait screen image is null");
+            return;
+        }
+        QSize s = openvrco->getRecommendedSize();
+        openvrco->setScreenColor(waitScreenBaseColor);
+        logo = logo.scaled(s.width(),s.height(),Qt::KeepAspectRatio);
+
+        waitScreen = QImage(s.width(), s.height(), QImage::Format_RGB32);
+        QPainter painter(&waitScreen);
+        painter.fillRect(0,0,s.width(),s.height(),QBrush(waitScreenBaseColor));
+        qreal xoffset = (s.width() - logo.width())/2;
+        qreal yoffset = (s.height() - logo.height())/2;
+
+        QRectF source(0,0,logo.width(),logo.height());
+        QRectF target(xoffset,yoffset,logo.width(),logo.height());
+        painter.drawImage(target,logo,source);
+        painter.end();
+    }
+
     /// TEST FOR FREQ CHECK
     // configuration->addKeyValuePair(CONFIG_PATIENT_UID,"1242673082_0000_P0005");
     // doFrequencyAnalysis("reading_es_2_2019_03_22_20_59.dat");
@@ -40,22 +81,33 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *
 void FlowControl::resolutionCalculations(){
     QDesktopWidget *desktop = QApplication::desktop();
     // This line will assume that the current screen is the one where the experiments will be drawn.
-    QRect screen = desktop->screenGeometry(desktop->screenNumber());    
-    configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,screen.width());
-    configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
 
-    // Debugging screen calculation
-//    qDebug() << "FLOWCONTROL: Resolution Calculations: Detected Screens";
-//    for (qint32 i = 0; i < desktop->screenCount(); i++){
-//        qDebug() << desktop->screenGeometry(desktop->screen(i));
-//    }
-//    qDebug() << "==========================================";
+    if (openvrco != nullptr){
+        // This menas the resolution for drawing should be the one recommende by OpenVR.
+        QSize s = openvrco->getRecommendedSize();
+        configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH, s.width());
+        configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,s.height());
+    }
+    else{
+        /// Depracated code.
+        /// QRect screen = desktop->screenGeometry(desktop->screenNumber());
+
+        QList<QScreen*> screens = QGuiApplication::screens();
+        QRect screen = screens.at(desktop->screenNumber())->geometry();
+
+        configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH, screen.width());
+        configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
+    }
+
 }
 
 void FlowControl::setupSecondMonitor(){
 
-    QDesktopWidget *desktop = QApplication::desktop();
-    if (desktop->screenCount() < 2) {
+    /// Depracated code
+    /// QDesktopWidget *desktop = QApplication::desktop();
+    QList<QScreen*> screens = QGuiApplication::screens();
+
+    if (screens.size() < 2) {
         // There is nothing to do as there is no second monitor.
         if (monitor == nullptr) return;
         // In case the monitor was disconnected.
@@ -77,11 +129,25 @@ void FlowControl::setupSecondMonitor(){
     // Creating the second monitor.
     if (!configuration->getBool(CONFIG_DUAL_MONITOR_MODE)) return;
 
-    // Setting up the monitor
-    QRect secondScreen = desktop->screenGeometry(1);
+    // Setting up the monitor. Assuming 1 is the SECONDARY MONITOR.
+    QRect secondScreen = screens.at(1)->geometry();
     monitor = new MonitorScreen(Q_NULLPTR,secondScreen,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
 }
 
+void FlowControl::keyboardKeyPressed(int key){
+    if (experiment != nullptr){
+        experiment->keyboardKeyPressed(key);
+    }
+}
+
+void FlowControl::stopRenderingVR(){
+    if (openvrco != nullptr){
+        openvrco->stopRendering();
+    }
+    if (eyeTracker != nullptr){
+        eyeTracker->enableUpdating(false); // This is specially important to stop the VIVE EYE Poller
+    }
+}
 
 ////////////////////////////// REPORT REQUEST FUNCTIONS ///////////////////////////////////////
 
@@ -368,6 +434,42 @@ void FlowControl::onDisconnectionFinished(){
 
 ////////////////////////////// FLOW CONTROL FUNCTIONS ///////////////////////////////////////
 
+void FlowControl::onRequestUpdate(){
+    if (renderState == RENDERING_EXPERIMENT){
+        if (eyeTracker == nullptr) {
+            logger.appendWarning("VR Update Request: Rendering experiment with a non existant eyeTracker object");
+            return;
+        }
+        if (experiment == nullptr) {
+            logger.appendWarning("VR Update Request: Rendering experiment with a non existant experiment object");
+            return;
+        }
+        EyeTrackerData data = eyeTracker->getLastData();
+        QImage image = experiment->getVRDisplayImage();
+        displayImage = image;
+        QPainter painter(&displayImage);
+        qreal r = 0.01*displayImage.width();
+        painter.setBrush(QBrush(QColor(0,255,0,100)));
+        painter.drawEllipse(static_cast<qint32>(data.xLeft-r),static_cast<qint32>(data.yLeft-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
+        painter.setBrush(QBrush(QColor(0,0,255,100)));
+        painter.drawEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
+        openvrco->setImage(&image);
+        emit(newImageAvailable());
+    }
+    if (renderState == RENDER_WAIT_SCREEN){
+        if (displayImage != waitScreen){
+            displayImage = waitScreen;
+            openvrco->setScreenColor(waitScreenBaseColor);
+            openvrco->setImage(&displayImage);
+            emit(newImageAvailable());
+        }
+    }
+}
+
+QImage FlowControl::image() const{
+    return displayImage;
+}
+
 void FlowControl::eyeTrackerChanged(){
     if (eyeTracker != nullptr){
         if (experiment != nullptr){
@@ -405,13 +507,18 @@ void FlowControl::connectToEyeTracker(){
         //qWarning() << "Creating the Open Gaze ET";
         eyeTracker = new OpenGazeInterface(this,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
     }
+    else if (eyeTrackerSelected == CONFIG_P_ET_HTCVIVEEYEPRO){
+        QSize s = openvrco->getRecommendedSize();
+        eyeTracker = new HTCViveEyeProEyeTrackingInterface(this,s.width(),s.height());
+    }
     else{
         logger.appendError("Selected unknown EyeTracker: " + eyeTrackerSelected);
         return;
     }
 
-    logger.appendStandard("Connecting to EyeTracker....");
+    logger.appendStandard("Connecting to EyeTracker: " + eyeTrackerSelected + "....");
     connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
+    connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),eyeTracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
     eyeTracker->connectToEyeTracker();
 }
 
@@ -420,31 +527,54 @@ void FlowControl::calibrateEyeTracker(){
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "";
     calibrated = false;
-    //qWarning() << "CALIBRATION STARTED";
 
     // Making sure the right eye is used, in both the calibration and the experiment.
-    eyeTracker->setEyeToTransmit(configuration->getInt(CONFIG_VALID_EYE));
+    eyeTracker->setEyeToTransmit(static_cast<quint8>(configuration->getInt(CONFIG_VALID_EYE)));
+
+    // Required during calibration.
+    renderState = RENDERING_NONE;
 
     logger.appendStandard("Calibrating the eyetracker....");
+    if (openvrco != nullptr) {
+        if (!openvrco->startRendering()){
+            qDebug() << "Failed to start rendering upon calibration";
+        }
+        else{
+            openvrco->setScreenColor(QColor(Qt::gray));
+        }
+    }
+
+    if (configuration->getBool(CONFIG_VR_ENABLED)) eyeTracker->enableUpdating(true); // To ensure that eyetracking data is gathered.
     eyeTracker->calibrate(calibrationParams);
 }
 
 void FlowControl::onEyeTrackerControl(quint8 code){
     //qWarning() << "ON EYETRACKER CONTROL" << code;
+
+    if (eyeTracker == nullptr){
+        logger.appendError("Possible crash alert: Entering onEyeTrackerControl with a null pointer eyeTracker object");
+    }
+
     switch(code){
     case EyeTrackerInterface::ET_CODE_CALIBRATION_ABORTED:
         logger.appendWarning("EyeTracker Control: Calibration aborted");
         calibrated = false;
+        if (configuration->getBool(CONFIG_VR_ENABLED)) eyeTracker->enableUpdating(false);
+        renderState = RENDER_WAIT_SCREEN;
         emit(calibrationDone(false));
         break;
     case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
         logger.appendStandard("EyeTracker Control: Calibration done successfully");
         calibrated = true;
+        if (configuration->getBool(CONFIG_VR_ENABLED)) eyeTracker->enableUpdating(false);
+        renderState = RENDER_WAIT_SCREEN;
         emit(calibrationDone(true));
         break;
     case EyeTrackerInterface::ET_CODE_CALIBRATION_FAILED:
         logger.appendError("EyeTracker Control: Calibration Failed");
         calibrated = false;
+        if (configuration->getBool(CONFIG_VR_ENABLED)) eyeTracker->enableUpdating(false);
+        renderState = RENDER_WAIT_SCREEN;
         emit(calibrationDone(false));
         break;
     case EyeTrackerInterface::ET_CODE_CONNECTION_FAIL:
@@ -460,6 +590,11 @@ void FlowControl::onEyeTrackerControl(quint8 code){
     case EyeTrackerInterface::ET_CODE_DISCONNECTED_FROM_ET:
         logger.appendError("EyeTracker Control: Disconnected from EyeTracker");
         connected = false;
+        break;
+    case EyeTrackerInterface::ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE:
+        displayImage = eyeTracker->getCalibrationImage();
+        openvrco->setImage(&displayImage);
+        emit(newImageAvailable());
         break;
     }
 }
@@ -484,23 +619,27 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,readingQuestions);
         experiment = new ReadingExperiment();
         background = QBrush(Qt::gray);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
         break;
     case EXP_BINDING_BC:
         logger.appendStandard("STARTING BINDING BC EXPERÏMENT");
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(true));
         experiment = new ImageExperiment(true);
         background = QBrush(Qt::gray);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
         break;
     case EXP_BINDING_UC:
         logger.appendStandard("STARTING BINDING UC EXPERÏMENT");
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,getBindingExperiment(false));
         experiment = new ImageExperiment(false);
         background = QBrush(Qt::gray);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
         break;
     case EXP_FIELDNG:
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/fielding.dat");
         experiment = new FieldingExperiment();
         background = QBrush(Qt::black);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
         break;
     default:
         logger.appendError("Unknown experiment was selected " + QString::number(experimentID));
@@ -516,10 +655,10 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     // Making sure that that both experiment signals are connected.
     // Eyetracker should be connected by this point.
     connect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
-    //connect(experiment,&Experiment::calibrationRequest,this,&FlowControl::requestCalibration);
     connect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
+    connect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
 
-    if (monitor != nullptr){
+    if ( (monitor != nullptr) && (!configuration->getBool(CONFIG_VR_ENABLED)) ){
         connect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
         connect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
         monitor->setBackgroundBrush(background);
@@ -539,6 +678,14 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
             monitor->show();
         }
         else monitor->hide();
+    }
+
+    if (openvrco != nullptr){
+        if (!openvrco->startRendering()){
+            logger.appendError("Could not start rendering upon starritn experiment");
+            return false;
+        }
+        renderState = RENDERING_EXPERIMENT;
     }
 
     return true;
@@ -577,24 +724,29 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     frequencyErrorsPresent = false;
     if (experimentIsOk){
         if (!configuration->getBool(CONFIG_DEMO_MODE) && !configuration->getBool(CONFIG_USE_MOUSE)){
-            if (!experiment->doFrequencyCheck()){
-                logger.appendError(experiment->getError());
-                experimentIsOk = false;
-                frequencyErrorsPresent = true;
-            }
+            qDebug() << "IN FLOW CONTROL. ON EXPERIMENT FINISHED. FREQUENCY ERROR CHECK HAS BEEN DISABLED";
+//            if (!experiment->doFrequencyCheck()){
+//                logger.appendError(experiment->getError());
+//                experimentIsOk = false;
+//                frequencyErrorsPresent = true;
+//            }
         }
     }
 
     // Destroying the experiment and reactivating the start experiment.
     disconnect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
-    //disconnect(experiment,&Experiment::calibrationRequest,this,&FlowControl::requestCalibration);
     disconnect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
+    disconnect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
+
     if (monitor != nullptr){
         disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
         disconnect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
     }
     delete experiment;
     experiment = nullptr;
+
+    // This should make the user of the HMD see the wait screen until the next experiment.
+    renderState = RENDER_WAIT_SCREEN;
 
     // Notifying the QML.
     emit(experimentHasFinished());
@@ -642,7 +794,6 @@ void FlowControl::moveProcessedFilesToProcessedFolder(const QStringList &fileSet
         }
     }
 }
-
 
 void FlowControl::moveFileToArchivedFileFolder(const QString &filename){
     QString patdir = DIRNAME_RAWDATA;
@@ -822,8 +973,8 @@ void FlowControl::doFrequencyAnalysis(const QString &filename){
         fcp.periodMin                        = configuration->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
         fcp.maxAllowedFreqGlitchesPerTrial   = configuration->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
         fcp.maxAllowedPercentOfInvalidValues = configuration->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
-        fcp.minNumberOfDataItems             = configuration->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
-        fcp.maxAllowedFailedTrials           = configuration->getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
+        fcp.minNumberOfDataItems             = configuration->getInt(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+        fcp.maxAllowedFailedTrials           = configuration->getInt(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
 
         fres.analysisValid(fcp);
         freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";

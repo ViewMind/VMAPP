@@ -62,8 +62,8 @@ Rectangle {
 
     VMErrorDialog{
         id: errorDialog
-        x: (parent.width-width)/2
-        y: (parent.height-height)/2
+        x: (mainWindow.width-width)/2
+        y: (mainWindow.height-height)/2
     }
 
     id: viewBase

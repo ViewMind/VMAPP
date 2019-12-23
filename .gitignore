@@ -41,6 +41,11 @@ VMTools/QtDX11Test/debug/
 VMTools/QtDX11Test/exe/
 VMTools/VRTest/exe/
 
+VMSoftwareSuite/EyeExperimenter/exe64/*.dll
+VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata
+VMSoftwareSuite/EyeExperimenter/exe64/dbbkp
+
+
 VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager
 VMTools/RawDataServer/bin/LOGDIR/
 VMTools/RawDataServer/bin/RawDataServer

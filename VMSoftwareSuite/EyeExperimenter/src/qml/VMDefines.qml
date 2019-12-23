@@ -65,6 +65,7 @@ Item{
     readonly property string vmCONFIG_P_LANG_EN: "English"
     readonly property string vmCONFIG_P_ET_MOUSE: "Mouse"
     readonly property string vmCONFIG_P_ET_REDM: "REDm"
+    readonly property string vmCONFIG_P_ET_HTCVIVEEYEPRO: "HTCVIVEEyePro"
     readonly property string vmCONFIG_DOCTOR_UID : "doctor_uid"
     readonly property string vmCONFIG_PATIENT_UID: "patient_uid"
     readonly property string vmCONFIG_BINDING_TARGET_SMALL: "binding_target_small"
@@ -73,4 +74,5 @@ Item{
     readonly property string vmCONFIG_USE_MOUSE: "use_mouse"
     readonly property string vmCONFIG_READING_EXP_LANG: "reading_exp_lang"
     readonly property string vmCONFIG_PATIENT_DISPLAYID: "patient_displayid"
+    readonly property string vmCONFIG_VR_ENABLED: "vr_enabled"
 }

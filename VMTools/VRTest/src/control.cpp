@@ -9,7 +9,7 @@ Control::Control(QObject *parent) : QObject(parent)
 }
 
 void Control::initialize(){
-    if (!openvrco->isRendering()) openvrco->start();
+    if (!openvrco->isRendering()) openvrco->startRendering();
     QSize s = openvrco->getRecommendedSize();
     eyetracker = new HTCViveEyeProEyeTrackingInterface(this,s.width(),s.height());
     connect(eyetracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));

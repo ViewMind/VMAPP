@@ -20,6 +20,7 @@ VMBase {
         onExperimentHasFinished:{
             if (!flowControl.isExperimentEndOk()){
                 var titleMsg
+                swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
                 if (flowControl.areThereFrequencyErrorsPresent()){
                     vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
                     titleMsg = viewHome.getErrorTitleAndMessage("error_freq_check");
@@ -39,7 +40,10 @@ VMBase {
                     return;
                 }
             }
-            if (advanceCurrentExperiment()){
+            else{
+                viewVRDisplay.finishedStudySucessfully();
+            }
+            if (advanceCurrentExperiment()){                
                 btnContinue.enabled = true;
                 swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
             }
@@ -94,6 +98,7 @@ VMBase {
         case vmExpIndexBindingBC:
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
+                viewVRDisplay.vmStudyTitle = vmSlideTitle;
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
                 //vmSlideAnimation = "qrc:/images/bound_3.gif"
                 slideViewer.imgScale = 1.3;
@@ -101,6 +106,7 @@ VMBase {
             }
             else{
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC");
+                viewVRDisplay.vmStudyTitle = vmSlideTitle;
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
                 //vmSlideAnimation = "qrc:/images/bound.gif"
                 slideViewer.imgScale = 1.3;
@@ -112,6 +118,7 @@ VMBase {
         case vmExpIndexBindingUC:
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
+                viewVRDisplay.vmStudyTitle = vmSlideTitle;
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
                 //vmSlideAnimation = "qrc:/images/unbound_3.gif"
                 slideViewer.imgScale = 1.3;
@@ -129,6 +136,7 @@ VMBase {
             break;
         case vmExpIndexReading:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemReading");
+            viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");
             //vmSlideAnimation = "qrc:/images/reading.gif"
             //slideAnimation.visible = false;
@@ -138,6 +146,7 @@ VMBase {
             break;
         case vmExpIndexFielding:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");
+            viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
             vmSlideAnimation = ""
             break;
@@ -228,6 +237,25 @@ VMBase {
 
     function changeBindingTitles(use3){
         experimentTracker.changeBindingTitles(use3);
+    }
+
+    function startNextStudy(){
+        // Setting up the second monitor, if necessary.
+        flowControl.setupSecondMonitor();
+
+        // Starting the experiment.
+        var index = viewStudyStart.vmCurrentExperimentIndex;
+        if (!flowControl.startNewExperiment(viewStudyStart.vmSelectedExperiments[index])){
+            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
+            titleMsg = viewHome.getErrorTitleAndMessage("error_programming");
+            vmErrorDiag.vmErrorMessage = titleMsg[1];
+            vmErrorDiag.vmErrorTitle = titleMsg[0];
+            vmErrorDiag.open();
+            return;
+        }
+        else{
+            console.log("Started the new experiment");
+        }
     }
 
     // The experiment tracker
@@ -335,19 +363,11 @@ VMBase {
         anchors.bottomMargin: mainWindow.height*0.058
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-
-            // Setting up the second monitor, if necessary.
-            flowControl.setupSecondMonitor();
-
-            // Starting the experiment.
-            var index = viewStudyStart.vmCurrentExperimentIndex;
-            if (!flowControl.startNewExperiment(viewStudyStart.vmSelectedExperiments[index])){
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
-                titleMsg = viewHome.getErrorTitleAndMessage("error_programming");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
-                return;
+            if (loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET) === vmDefines.vmCONFIG_P_ET_HTCVIVEEYEPRO){
+                swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
+            }
+            else {
+                startNextStudy();
             }
         }
     }

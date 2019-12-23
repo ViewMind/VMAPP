@@ -21,6 +21,11 @@ viewhome_btnGetStarted = GET STARTED;
 #********************************* DOCTOR MENU *********************************
 viewdrmenu_mode = Mode;
 
+#********************************* VIEW VR SCREEN *********************************
+viewvrscreen_btnStartExperiment  = START STUDY;
+viewvrscreen_btnStopExperiment   = STOP STUDY; 
+viewvrscreen_btnStartCalibration = CALIBRATE;
+
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Before starting please fill the information below;
 viewsettings_diagTitle = CONFIGURE SETTINGS;

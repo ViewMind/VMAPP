@@ -23,6 +23,12 @@ RESOURCES += qml.qrc \
     agreements.qrc
 
 SOURCES += main.cpp \
+    ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
+    ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
+    ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
+    EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
+    EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
+    EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.cpp \
     loader.cpp \
     uiconfigmap.cpp \
     flowcontrol.cpp \
@@ -59,6 +65,24 @@ SOURCES += main.cpp \
 
 
 HEADERS += \
+    ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h \
+    ../../../CommonClasses/OpenVRControlObject/openvr.h \
+    ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
+    ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
+    EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
+    EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_Enums.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_Eye.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_EyeDataType.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_EyeData_v1.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_EyeData_v2.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_Eye_Calibration_Enums.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_Lip.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_LipData_v1.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_LipData_v2.h \
+    EyeTrackerInterface/HTCVIVEEyePro/sranipal/ViveSR_Enums.h \
+    EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.h \
     loader.h \
     eye_experimenter_defines.h \
     flowcontrol.h \
@@ -108,5 +132,9 @@ contains(DEFINES, USE_IVIEW) {
              EyeTrackerInterface/RED/redinterface.h
 
 }
+
+LIBS += -L$$PWD/lib -lSRanipal
+LIBS += -L$$PWD/../../../CommonClasses/OpenVRControlObject/libs -lopenvr_api
+
 
 

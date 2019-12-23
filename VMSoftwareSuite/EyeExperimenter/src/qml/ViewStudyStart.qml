@@ -399,9 +399,13 @@ VMBase {
                     loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,readlang,false);
 
                     viewPresentExperimet.setTracker(vmSelectedExperiments);
-                    swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart
                     vmCurrentExperimentIndex = -1;
                     viewPresentExperimet.advanceCurrentExperiment()
+                    if (loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET) === vmDefines.vmCONFIG_P_ET_HTCVIVEEYEPRO){
+                        swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
+                        viewVRDisplay.disableStartStudyButton(); // To enforce first calibraton.
+                    }
+                    else swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart
                 }
                 else{
                     labelNoInstructionSetError.visible = true;

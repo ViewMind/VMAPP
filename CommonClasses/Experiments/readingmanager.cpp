@@ -48,6 +48,8 @@ bool ReadingManager::parseExpConfiguration(const QString &contents){
     expectedIDs = parser.getExpectedIDs();
 
     if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
+    qDebug() << "READING MANAGER FORCING DEMO LENGTH";
+    enableDemoMode();
     return true;
 
 }

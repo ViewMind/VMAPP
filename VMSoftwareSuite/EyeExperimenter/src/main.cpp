@@ -5,18 +5,25 @@
 #include <QApplication>
 
 #include "../../../CommonClasses/LogInterface/loginterface.h"
+#include "../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h"
 #include "loader.h"
 #include "flowcontrol.h"
 
 // Global Configuration
-ConfigurationManager configuration;
-CountryStruct countries;
+static ConfigurationManager configuration;
+static CountryStruct countries;
 
 int main(int argc, char *argv[])
 {
 
+    qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");
+
     //QGuiApplication app(argc, argv);
     QApplication app(argc,argv);
+
+    // These are used to avoid a warning.
+    app.setOrganizationName("ViewMind");
+    app.setOrganizationDomain("ViewMind");
 
     // Checking that there isn't another instance of an application running.
     LogInterface logger;

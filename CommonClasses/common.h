@@ -143,6 +143,7 @@
 #define   CONFIG_P_ET_MOUSE                             "Mouse"
 #define   CONFIG_P_ET_REDM                              "REDm"
 #define   CONFIG_P_ET_GP3HD                             "GP3HD"
+#define   CONFIG_P_ET_HTCVIVEEYEPRO                     "HTCVIVEEyePro"
 #define   CONFIG_P_DMBNG_ACTION_CHECK                   "check"
 #define   CONFIG_P_DMBNG_ACTION_STORE                   "store"
 #define   CONFIG_P_DBMNG_ACTION_PATDATA                 "patdata"

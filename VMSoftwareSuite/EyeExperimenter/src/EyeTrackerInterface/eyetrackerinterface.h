@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QString>
+#include <QImage>
+#include <QMatrix4x4>
 #include "eyetrackerdata.h"
 #include "../../../CommonClasses/common.h"
 
@@ -11,14 +13,15 @@ class EyeTrackerInterface : public QObject
     Q_OBJECT
 public:
 
-    static const quint8 ET_CODE_CALIBRATION_DONE     = 0;
-    static const quint8 ET_CODE_CALIBRATION_ABORTED  = 1;
-    static const quint8 ET_CODE_CALIBRATION_FAILED   = 2;
-    static const quint8 ET_CODE_CONNECTION_SUCCESS   = 3;
-    static const quint8 ET_CODE_CONNECTION_FAIL      = 4;
-    static const quint8 ET_CODE_DISCONNECTED_FROM_ET = 5;
+    static const quint8 ET_CODE_CALIBRATION_DONE                = 0;
+    static const quint8 ET_CODE_CALIBRATION_ABORTED             = 1;
+    static const quint8 ET_CODE_CALIBRATION_FAILED              = 2;
+    static const quint8 ET_CODE_CONNECTION_SUCCESS              = 3;
+    static const quint8 ET_CODE_CONNECTION_FAIL                 = 4;
+    static const quint8 ET_CODE_DISCONNECTED_FROM_ET            = 5;
+    static const quint8 ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE = 6;
 
-    explicit EyeTrackerInterface(QObject *parent = 0, qreal width = 1, qreal height = 1);
+    explicit EyeTrackerInterface(QObject *parent = nullptr, qreal width = 1, qreal height = 1);
 
     virtual void connectToEyeTracker();
 
@@ -28,7 +31,14 @@ public:
 
     virtual void calibrate(EyeTrackerCalibrationParameters params);
 
+    QImage getCalibrationImage() const;
+
     void setEyeToTransmit(quint8 eye) {eyeToTransmit = eye;}
+
+    EyeTrackerData getLastData() const;
+
+public slots:
+    virtual void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l);
 
 signals:
     void newDataAvailable(EyeTrackerData data);
@@ -48,6 +58,12 @@ protected:
     // The resolution, in case it is required by the
     qreal screenWidth;
     qreal screenHeight;
+
+    // Calibration image if this needs to be displayed.
+    QImage calibrationImage;
+
+    // The last available data
+    EyeTrackerData lastData;
 
     // Shorcut functions for clarity.
     bool canUseLeft() const {return ((eyeToTransmit == EYE_BOTH) || (eyeToTransmit == EYE_L));}

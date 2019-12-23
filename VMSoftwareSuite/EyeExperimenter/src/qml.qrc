@@ -53,5 +53,6 @@
         <file>qml/ViewMedicalRecordList.qml</file>
         <file>qml/VMMedRecordEntry.qml</file>
         <file>qml/VMFolderButton.qml</file>
+        <file>qml/ViewVRDisplay.qml</file>
     </qresource>
 </RCC>

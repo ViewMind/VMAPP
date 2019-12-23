@@ -20,6 +20,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
+
     // Eye Data processing parameters
     cv[CONFIG_READING_PX_TOL] = cmd;
     cv[CONFIG_MOVING_WINDOW_DISP] = cmd;
@@ -63,6 +64,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[CONFIG_ENABLE_LOCAL_DB_BKP] = cmd;
     cv[CONFIG_ENABLE_GAZE_FOLLOWING] = cmd;
+    cv[CONFIG_VR_ENABLED] = cmd;
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
@@ -88,6 +90,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_DUAL_MONITOR_MODE] = cmd;
     cv[CONFIG_DEMO_MODE] = cmd;
     cv[CONFIG_USE_MOUSE] = cmd;
+
 
     // Merging the settings or loading the default configuration.
     settings.setupVerification(cv);
@@ -132,22 +135,22 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     // Resetting the medical institution, just in case
     lim.resetMedicalInstitutionForAllDoctors(configuration->getString(CONFIG_INST_UID));
 
+    // Making sure VR Enabled is set.
+    if (!configuration->containsKeyword(CONFIG_VR_ENABLED))  configuration->addKeyValuePair(CONFIG_VR_ENABLED,false);
+    if (configuration->getBool(CONFIG_VR_ENABLED)){
+        configuration->addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_HTCVIVEEYEPRO);
+    }
+
     // FOR DEBUGGING
-    //lim.printDBToConsole();
-    //QStringList headers; headers << "A" << "B";
-    //lim.saveIDTable("IDTABLE.csv",headers);
+    // lim.printDBToConsole();
+    // QStringList headers; headers << "A" << "B";
+    // lim.saveIDTable("IDTABLE.csv",headers);
 
 #ifdef USE_IVIEW
     QString expectedET = CONFIG_P_ET_REDM;
 #else
     QString expectedET = CONFIG_P_ET_GP3HD;
 #endif
-
-    if (configuration->getString(CONFIG_EYETRACKER_CONFIGURED) != expectedET){
-        logger.appendError("Wrong ET in the configuration file: Was expecting " + expectedET + " but found: " + configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
-        loadingError = true;
-        return;
-    }
 
     // Checking which ET should be used: Mouse or the one in the configuration file.
     if (configuration->getBool(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
@@ -472,7 +475,7 @@ void Loader::generateIDTable(const QString &urlPath){
 }
 
 QString Loader::getNumberOfEvalsString(bool onlyEvals){
-    qint32 N = lim.getRemainingEvals();    
+    qint32 N = lim.getRemainingEvals();
     QString ans;
     if (N == -1) ans =  getStringForKey("viewhome_remEvalsUnlimited");
     else ans = QString::number(N);

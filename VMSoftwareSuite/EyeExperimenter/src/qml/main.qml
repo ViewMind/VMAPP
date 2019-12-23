@@ -25,6 +25,7 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
         //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
+        //swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
     }
 
 
@@ -63,8 +64,9 @@ Window {
         readonly property int vmIndexCalibrationStart: 8
         readonly property int vmIndexCalibrationDone: 9
         readonly property int vmIndexPresentExperiment: 10
-        readonly property int vmIndexResults: 11
-        readonly property int vmIndexStudyDone: 12
+        readonly property int vmIndexVRDisplay: 11
+        readonly property int vmIndexResults: 12
+        readonly property int vmIndexStudyDone: 13
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -151,6 +153,13 @@ Window {
         }
 
         Item{
+            ViewVRDisplay {
+                id: viewVRDisplay
+                anchors.fill: parent
+            }
+        }
+
+        Item{
             ViewResults{
                 id: viewResults
                 anchors.fill: parent
@@ -184,7 +193,8 @@ Window {
                 // This will laod patients which will also trigger the search for unprocessed information.
                 //viewPatList.test();
                 //viewPatList.openAskPasswordDialog();
-                viewPatList.loadPatients();
+                flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
+                viewPatList.loadPatients();                
                 break;
             case vmIndexShowReports:
                 viewShowReports.loadReportsForPatient();
@@ -206,6 +216,11 @@ Window {
 
         }
 
+    }
+
+    onClosing:{
+        console.log("On window closing");
+        flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
     }
 
 }

@@ -9,6 +9,8 @@ VMBase {
     Connections{
         target: flowControl
         onConnectedToEyeTracker:{
+            if (swiperControl.currentIndex != swiperControl.vmIndexCalibrationStart) return;
+            console.log("Connected to eyetracker in ViewCalibration")
             var titleMsg;
             if (!flowControl.isConnected()){
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
@@ -22,6 +24,8 @@ VMBase {
             flowControl.calibrateEyeTracker();
         }
         onCalibrationDone: {
+            if (swiperControl.currentIndex != swiperControl.vmIndexCalibrationStart) return;
+            console.log("Calibration done in ViewCalibration")
             var titleMsg;
             if (!flowControl.isCalibrated()){
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;

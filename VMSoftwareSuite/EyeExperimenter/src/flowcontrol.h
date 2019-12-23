@@ -6,6 +6,7 @@
 #include <QProcess>
 #include <QtMath>
 #include <QFileDialog>
+#include <QScreen>
 
 #include <iostream>
 
@@ -14,6 +15,7 @@
 #include "../../../CommonClasses/DatFileInfo/datfileinfoindir.h"
 #include "../../../CommonClasses/PNGWriter/repfileinfo.h"
 #include "../../../CommonClasses/PNGWriter/imagereportdrawer.h"
+#include "../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
 
 #include "Experiments/readingexperiment.h"
 #include "Experiments/imageexperiment.h"
@@ -23,6 +25,7 @@
 
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
 #include "EyeTrackerInterface/GazePoint/opengazeinterface.h"
+#include "EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
 
 #include "monitorscreen.h"
 #include "uiconfigmap.h"
@@ -34,9 +37,12 @@
 class FlowControl : public QWidget
 {
     Q_OBJECT
+
+    Q_PROPERTY(QImage image READ image NOTIFY newImageAvailable)
+
 public:
     explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr, UIConfigMap *ui = nullptr);
-    FlowControl::~FlowControl();
+    ~FlowControl();
     Q_INVOKABLE void connectToEyeTracker();
     Q_INVOKABLE void calibrateEyeTracker();
     Q_INVOKABLE bool startNewExperiment(qint32 experimentID);
@@ -66,6 +72,11 @@ public:
     Q_INVOKABLE void requestDataReprocessing(const QString &reportName, const QString &fileList, const QString &evaluationID);
     Q_INVOKABLE qint32 numberOfEvaluationsReceived() { return sslDataProcessingClient->getNumberOfEvaluations(); }
     Q_INVOKABLE QStringList getDiagnosticClass();
+    Q_INVOKABLE void keyboardKeyPressed(int key);
+    Q_INVOKABLE void stopRenderingVR();
+
+    // The image to be shown.
+    QImage image() const;
 
 signals:
 
@@ -86,6 +97,9 @@ signals:
     void reportGenerationRequested();
     void reportGenerationDone();
 
+    // Signal to update QML Image on screen.
+    void newImageAvailable();
+
 public slots:
 
     // When an experiment finishes.
@@ -101,10 +115,17 @@ public slots:
     void onFileSetEmitted(const QStringList &fileSetAndName, const QString &evaluationID);
 
 private slots:
+
     // The function that actually draws the report
     void drawReport();
 
+    // Slot that requests new image to draw from the OpenVR Control Object
+    void onRequestUpdate();
+
 private:
+
+    // Render state allows to define what to send to the HMD when using the VR Solution.
+    typedef enum { RENDERING_NONE, RENDERING_EXPERIMENT, RENDER_WAIT_SCREEN} RenderState;
 
     // Delays saving the report until the wait dialog can be shown.
     QTimer delayTimer;
@@ -117,6 +138,17 @@ private:
 
     // The currently selected eyetracker
     EyeTrackerInterface *eyeTracker;
+
+    // Open VR Control object if VR is ENABLED.
+    OpenVRControlObject *openvrco;
+
+    // Definining the render state for VR
+    RenderState renderState;
+
+    // Display image used when using VR Solution. And the Wait Screen.
+    QImage displayImage;
+    QImage waitScreen;
+    QColor waitScreenBaseColor;
 
     // The Log interface
     LogInterface logger;

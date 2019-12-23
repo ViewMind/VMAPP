@@ -219,6 +219,8 @@ bool BindingParser::parseBindingExperiment(const QString &contents, Configuratio
     }
 
     if (config->getBool(CONFIG_DEMO_MODE)) demoModeList(numberToLeave);
+    qDebug() << "BINDING PARSER FORCING DEMO LENGTH";
+    demoModeList(numberToLeave);
 
     return true;
 }

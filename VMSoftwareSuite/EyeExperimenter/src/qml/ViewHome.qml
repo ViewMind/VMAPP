@@ -39,6 +39,7 @@ VMBase {
         viewStudyDone.updateText();
         viewMedRecordList.updateText();
         viewMedicalInformation.updateText();
+        viewVRDisplay.updateText();
     }
 
 

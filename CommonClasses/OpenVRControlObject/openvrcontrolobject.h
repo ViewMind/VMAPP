@@ -25,7 +25,7 @@ public:
     explicit OpenVRControlObject(QObject *parent = nullptr);
     ~OpenVRControlObject() override;
 
-    void start();
+    bool startRendering();
 
     void setImage(QImage *image);
     void setScreenColor(QColor color);

@@ -165,14 +165,15 @@ bool OpenVRControlObject::initialization(){
 
 ////////////////////////////////////////// RENDER FUNCTIONS
 
-void OpenVRControlObject::start(){
+bool OpenVRControlObject::startRendering(){
 
     if (!initialization()){
-        logger.appendError("Intialization failed. Not starting OpengGL/OpenVR Thread");
-        return;
+        logger.appendError("Intialization failed. Not rendering anything");
+        return false;
     }
 
     timer.start(REFRESH_RATE_IN_MS);
+    return true;
 }
 
 void OpenVRControlObject::renderToEye(qint32 whichEye){
