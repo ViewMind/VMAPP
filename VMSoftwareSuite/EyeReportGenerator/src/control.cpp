@@ -54,11 +54,17 @@ Control::Control(QObject *parent) : QObject(parent)
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[CONFIG_VR_ENABLED]            = cmd;
 
-    // This should actually be mandatory. But older clients will never send for it.
+    // These should actually be mandatory. But older clients will never send for it.
     cmd.clear();
     cmd.optional = true;
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL] = cmd;
+
+    cmd.clear();
+    cmd.optional = true;
+    cmd.type = ConfigurationManager::VT_REAL;
+    cv[CONFIG_FIELDING_XPX_2_MM] = cmd;
+    cv[CONFIG_FIELDING_YPX_2_MM] = cmd;
 
     configuration.setupVerification(cv);
 

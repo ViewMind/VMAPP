@@ -38,6 +38,7 @@ VMTools/PupilLabsDemo/
 VMTools/QtDX11Test/debug/
 VMTools/QtDX11Test/exe/
 VMTools/VRTest/exe/
+VMTools/LocalDBPrinter/bin/
 
 VMSoftwareSuite/EyeExperimenter/exe64/*.dll
 VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata
