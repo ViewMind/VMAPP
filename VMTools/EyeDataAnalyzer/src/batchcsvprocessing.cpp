@@ -190,7 +190,7 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
         rdp.separateInfoByTag(dfps.filePath,HEADER_IMAGE_EXPERIMENT,&data,&exp);
     }
 
-    processor->setFieldingMarginInMM(config.getReal(CONFIG_MARGIN_TARGET_HIT));
+    processor->setFieldingMargin(config.getReal(CONFIG_MARGIN_TARGET_HIT));
     processor->setMonitorGeometry(mgeo);
     processor->setMovingWindowParameters(mwp);
     processor->calculateWindowSize();

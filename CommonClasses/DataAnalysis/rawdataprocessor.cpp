@@ -432,7 +432,7 @@ RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *proces
         emit(appendMessage(msg,MSG_TYPE_STD));
     }
 
-    processor->setFieldingMarginInMM(config->getReal(CONFIG_MARGIN_TARGET_HIT));
+    processor->setFieldingMargin(config->getReal(CONFIG_MARGIN_TARGET_HIT));
     processor->setMonitorGeometry(mgeo);
     processor->setMovingWindowParameters(mwp);
     processor->calculateWindowSize();

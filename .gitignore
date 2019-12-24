@@ -10,13 +10,11 @@
 *.~*
 *.exe
 
-VMTools/BindingDesigner/exe/
-VMTools/EyeDataAnalyzer/exe/
-VMTools/BindingDesigner/outputs/*
-VMTools/EyeTrackerFollower/exe/
-VMTools/LocalDBPrinter/
-VMTools/LocalDBPrinter/exe/
-VMTools/MassBindingFixationDrawer/exe/
+
+VMTools/EyeDataAnalyzer/exe64/QRC/
+VMTools/EyeDataAnalyzer/exe64/*.dll
+VMTools/EyeDataAnalyzer/exe64/work/
+
 VMTools/QMLImageUpdater/exe/
 
 VMSoftwareSuite/EyeServer/exe

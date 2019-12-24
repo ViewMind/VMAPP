@@ -48,6 +48,9 @@ private:
     // Margin for hit detection
     qreal dH, dW;
 
+    // Drawing constants. Transform the fix measurmente to monitor or HMD sizes.
+    qreal fieldingKx, fieldingKy;
+
 };
 
 #endif // EDPFIELDING_H

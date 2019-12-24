@@ -54,7 +54,7 @@ public:
     void setPixelsInSacadicLatency(qint32 p){pixelsInSacadicLatency = p;}
 
     // Setting the Fielding margin
-    void setFieldingMarginInMM(qint32 fm) {fieldingMarginInMM = fm;}
+    void setFieldingMargin(qint32 fm) {fieldingMargin = fm;}
 
     QString getOuputMatrixFileName() const { return outputFile; }
 
@@ -100,7 +100,7 @@ protected:
     MonitorGeometry monitorGeometry;
 
     // Fielding margin used to estimate if the subjected "looked at" the correct target.
-    qreal fieldingMarginInMM;
+    qreal fieldingMargin;
 
     // The object to calculate the fixation
     MovingWindowAlgorithm mwa;

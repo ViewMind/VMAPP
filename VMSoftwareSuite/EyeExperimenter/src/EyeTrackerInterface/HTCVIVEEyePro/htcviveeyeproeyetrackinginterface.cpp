@@ -50,7 +50,8 @@ void HTCViveEyeProEyeTrackingInterface::onCalibrationTimerTimeout(){
                 emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
                 return;
             }
-            eyetracker.saveCalibrationCoefficients("coeffs.kof");
+            /// Used for debugging
+            /// eyetracker.saveCalibrationCoefficients("coeffs.kof");
             emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
         }
     }

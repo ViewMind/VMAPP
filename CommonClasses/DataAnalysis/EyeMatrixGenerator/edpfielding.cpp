@@ -27,8 +27,14 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
     QString lastID = "";
 
     // X and Y margin for look detection
-    dH = fieldingMarginInMM/monitorGeometry.YmmToPxRatio;
-    dW = fieldingMarginInMM/monitorGeometry.XmmToPxRatio;
+    qreal k = fieldingMargin/200.0; // This is divided by a 100 to get it to number between 0 and 1 and divided by two to get half of that.
+    fieldingKx = config->getReal(CONFIG_FIELDING_XPX_2_MM);
+    fieldingKy = config->getReal(CONFIG_FIELDING_YPX_2_MM);
+    dH = static_cast<qreal>(RECT_HEIGHT/fieldingKx)*k/2; //Here it is divided by two because this "much is added to each side"
+    dW = static_cast<qreal>(RECT_WIDTH/fieldingKy)*k/2;
+
+    qDebug() << "dH and dW" << dH << dW;
+
     qreal targetX, targetY;
 
     for(int i = 0; i < lines.size(); i++){
@@ -147,10 +153,10 @@ bool EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
     Fixations fR = mwa.computeFixations(data,FIELDING_XR,FIELDING_YR,FIELDING_TI);
 
     // Calculating value ranges to check if the subject "looked at" the target.
-    qreal minX = targetX - (qreal)(RECT_WIDTH)/2 - dW;
-    qreal minY = targetY - (qreal)(RECT_HEIGHT)/2 - dH;
-    qreal maxX = targetX + (qreal)(RECT_WIDTH)/2 + dW;
-    qreal maxY = targetY + (qreal)(RECT_HEIGHT)/2 + dH;
+    qreal minX = targetX - static_cast<qreal>(RECT_WIDTH/fieldingKx)/2 - dW;
+    qreal minY = targetY - static_cast<qreal>(RECT_HEIGHT/fieldingKy)/2 - dH;
+    qreal maxX = targetX + static_cast<qreal>(RECT_WIDTH/fieldingKy)/2 + dW;
+    qreal maxY = targetY + static_cast<qreal>(RECT_HEIGHT/fieldingKy)/2 + dH;
 
     eyeFixations.left.append(fL);
     eyeFixations.right.append(fR);

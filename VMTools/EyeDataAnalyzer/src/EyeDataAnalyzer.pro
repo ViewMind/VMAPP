@@ -28,6 +28,7 @@ OBJECTS_DIR = OBJS
 RCC_DIR = QRC
 
 SOURCES += \
+    ../../../CommonClasses/Experiments/fieldingparser.cpp \
         main.cpp \
         eyedataanalyzer.cpp \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
@@ -62,6 +63,7 @@ SOURCES += \
     idtablediag.cpp
 
 HEADERS += \
+    ../../../CommonClasses/Experiments/fieldingparser.h \
         eyedataanalyzer.h \
     ../../../CommonClasses/common.h \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \

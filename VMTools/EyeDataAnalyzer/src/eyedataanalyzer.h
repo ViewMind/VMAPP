@@ -14,7 +14,7 @@
 #include <QMetaEnum>
 
 
-#define COMPILE_FOR_PRODUCTION
+//#define COMPILE_FOR_PRODUCTION
 
 #ifdef COMPILE_FOR_PRODUCTION
 #define  SERVER_IP                     "18.220.30.34"  // Production server
@@ -23,7 +23,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "6.2.0"
+#define   PROGRAM_VERSION              "7.0.0" //6.2.0
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 
@@ -54,7 +54,7 @@ class EyeDataAnalyzer : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit EyeDataAnalyzer(QWidget *parent = 0);
+    explicit EyeDataAnalyzer(QWidget *parent = nullptr);
     ~EyeDataAnalyzer();
 
 public slots:
