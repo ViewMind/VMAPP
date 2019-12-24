@@ -169,6 +169,9 @@ void RawDataProcessor::run(){
         dateForReport = datInfo.date + "_" + datInfo.hour;
         reportInfoText << "f";
 
+        bool temp = generateFDBFile(dataFielding,fielding.getEyeFixations(),true);
+        freqErrorsOK = freqErrorsOK && temp;
+
         studyID << "fd" + tagRet.version;
         emit(appendMessage("Fielding CSV GENERATED",MSG_TYPE_STD));    }
 
