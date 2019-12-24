@@ -47,7 +47,6 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *
 
         // Create the wait screen only once
         waitScreenBaseColor = QColor(Qt::gray);
-        waitScreenBaseColor = waitScreenBaseColor;
 
         QImage logo(":/CommonClasses/PNGWriter/report_text/viewmind.png");
         if (logo.isNull()){
@@ -141,6 +140,7 @@ void FlowControl::keyboardKeyPressed(int key){
 }
 
 void FlowControl::stopRenderingVR(){
+    //qDebug() << "On FlowControl::stopRenderingVR()";
     if (openvrco != nullptr){
         openvrco->stopRendering();
     }
@@ -523,6 +523,9 @@ void FlowControl::connectToEyeTracker(){
 }
 
 void FlowControl::calibrateEyeTracker(){
+
+    //qDebug() << "In FlowControl::calibrateEyeTracker";
+
     EyeTrackerCalibrationParameters calibrationParams;
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "";
@@ -544,12 +547,14 @@ void FlowControl::calibrateEyeTracker(){
         }
     }
 
+    //qDebug() << "In FlowwControl::calibrateEyeTracker, is VR ENABLED?"  <<configuration->getBool(CONFIG_VR_ENABLED);
+
     if (configuration->getBool(CONFIG_VR_ENABLED)) eyeTracker->enableUpdating(true); // To ensure that eyetracking data is gathered.
     eyeTracker->calibrate(calibrationParams);
 }
 
 void FlowControl::onEyeTrackerControl(quint8 code){
-    //qWarning() << "ON EYETRACKER CONTROL" << code;
+    //qDebug() << "ON FlowControl::EYETRACKER CONTROL" << code;
 
     if (eyeTracker == nullptr){
         logger.appendError("Possible crash alert: Entering onEyeTrackerControl with a null pointer eyeTracker object");
@@ -636,7 +641,16 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
         break;
     case EXP_FIELDNG:
+        logger.appendStandard("STARTING FIELDING (N BACK TRACE)");
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/fielding.dat");
+        if (configuration->getBool(CONFIG_VR_ENABLED)){
+            configuration->addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,0.2);
+            configuration->addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,0.2);
+        }
+        else{
+            configuration->addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,configuration->getReal(CONFIG_XPX_2_MM));
+            configuration->addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,configuration->getReal(CONFIG_YPX_2_MM));
+        }
         experiment = new FieldingExperiment();
         background = QBrush(Qt::black);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
@@ -724,12 +738,12 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     frequencyErrorsPresent = false;
     if (experimentIsOk){
         if (!configuration->getBool(CONFIG_DEMO_MODE) && !configuration->getBool(CONFIG_USE_MOUSE)){
-            qDebug() << "IN FLOW CONTROL. ON EXPERIMENT FINISHED. FREQUENCY ERROR CHECK HAS BEEN DISABLED";
-//            if (!experiment->doFrequencyCheck()){
-//                logger.appendError(experiment->getError());
-//                experimentIsOk = false;
-//                frequencyErrorsPresent = true;
-//            }
+            //            qDebug() << "IN FLOW CONTROL. ON EXPERIMENT FINISHED. FREQUENCY ERROR CHECK HAS BEEN DISABLED";
+            if (!experiment->doFrequencyCheck()){
+                logger.appendError(experiment->getError());
+                experimentIsOk = false;
+                frequencyErrorsPresent = true;
+            }
         }
     }
 
@@ -968,14 +982,18 @@ void FlowControl::doFrequencyAnalysis(const QString &filename){
     else {
 
         FreqAnalysis::FreqCheckParameters fcp;
-        fcp.fexpected                        = configuration->getReal(CONFIG_SAMPLE_FREQUENCY);
-        fcp.periodMax                        = configuration->getReal(CONFIG_TOL_MAX_PERIOD_TOL);
-        fcp.periodMin                        = configuration->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
-        fcp.maxAllowedFreqGlitchesPerTrial   = configuration->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
-        fcp.maxAllowedPercentOfInvalidValues = configuration->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
-        fcp.minNumberOfDataItems             = configuration->getInt(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
-        fcp.maxAllowedFailedTrials           = configuration->getInt(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
-
+        fcp.fexpected                             = configuration->getReal(CONFIG_SAMPLE_FREQUENCY);
+        fcp.periodMax                             = configuration->getReal(CONFIG_TOL_MAX_PERIOD_TOL);
+        fcp.periodMin                             = configuration->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
+        fcp.maxAllowedFreqGlitchesPerTrial        = configuration->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
+        fcp.maxAllowedPercentOfInvalidValues      = configuration->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
+        fcp.maxAllowedFailedTrials                = configuration->getInt(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
+        if (!filename.startsWith(FILE_OUTPUT_FIELDING)){
+            fcp.minNumberOfDataItems                  = configuration->getInt(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+        }
+        else{
+            fcp.minNumberOfDataItems                = configuration->getInt(CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL);
+        }
         fres.analysisValid(fcp);
         freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";
         freqReport = freqReport + fres.errorList.join("\n   ");

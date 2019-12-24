@@ -1,7 +1,6 @@
 #ifndef FIELDINGDRAW_H
 #define FIELDINGDRAW_H
 
-#include "experimentdatapainter.h"
 #include <QGraphicsLineItem>
 #include <QGraphicsSimpleTextItem>
 #include <QGraphicsEllipseItem>
@@ -9,6 +8,9 @@
 #include <QTextStream>
 #include <QFile>
 #include <QSet>
+
+#include "fieldingparser.h"
+#include "experimentdatapainter.h"
 
 // Constants for drawing the squares, cross and target on the screen for fielding
 // These values are the physical dimensions of the targets in mm.
@@ -47,12 +49,6 @@ public:
     // Draw states for the Fielding experiments
     typedef enum {DS_CROSS, DS_CROSS_TARGET, DS_1, DS_2, DS_3} DrawState;
 
-    // Definition of structures used to load the sequences for each trial.
-    struct Trial{
-        QString id;
-        QList<qint32> sequence;
-    };
-
     // Constructor
     FieldingManager();
 
@@ -78,12 +74,15 @@ public:
     QPoint getTargetPoint(qint32 trial, qint32 image) const;
 
     // Getting an indivual trial.
-    Trial getTrial(qint32 i) const { return fieldingTrials.at(i);}
+    FieldingParser::Trial getTrial(qint32 i) const { return fieldingTrials.at(i);}
+
+    // Drawing the pause text
+    void drawPauseScreen();
 
 private:
 
     // The list of trials
-    QList<Trial> fieldingTrials;
+    QList<FieldingParser::Trial> fieldingTrials;
 
     // List of the rectangle final positions, used to postion the target base on rectangle id
     QList<QPoint> rectangleLocations;

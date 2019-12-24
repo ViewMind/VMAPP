@@ -36,7 +36,10 @@ bool CalibrationLeastSquares::computeCalibrationCoeffs(QList<CalibrationData> ca
 
     for (int i = 0; i < calibrationData.size(); i++){
         CalibrationData d = calibrationData.at(i);
-        if (!d.isValid()) return false;
+        if (!d.isValid()) {
+            ///qDebug() << "Calibration failed because a calibration data contains less that two values. Which means that NO DATA was gathered for a given calibration point";
+            return false;
+        }
 
         // Getting the calibraton point.
         //QPoint point(static_cast<qint32>(d.xl.first()),static_cast<qint32>(d.yl.first()));

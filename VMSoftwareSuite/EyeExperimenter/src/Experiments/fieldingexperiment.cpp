@@ -93,28 +93,6 @@ void FieldingExperiment::nextState(){
     drawCurrentImage();
 }
 
-
-// Function that draws pause text
-void FieldingExperiment::drawPauseImage(){
-
-    gview->scene()->clear();
-    QString mainPhrase="Press any key to continue";
-    qreal xpos, ypos;
-
-    // Chaging the current target point to escape point
-    QGraphicsSimpleTextItem *phraseToShow = gview->scene()->addSimpleText(mainPhrase,QFont());
-    phraseToShow->setPen(QPen(Qt::black));
-    phraseToShow->setBrush(QBrush(Qt::black));
-    xpos = (this->geometry().width() - phraseToShow->boundingRect().width())/2;
-    ypos = (this->geometry().height() - phraseToShow->boundingRect().height())/2;
-    phraseToShow->setPos(xpos,ypos);
-
-    // Nothing more to do.
-    return;
-
-}
-
-
 void FieldingExperiment::onTimeOut(){
     stateTimer.stop();
     nextState();
@@ -151,8 +129,9 @@ void FieldingExperiment::drawCurrentImage(){
             if (state == STATE_RUNNING){
                 state = STATE_PAUSED;
                 stateTimer.stop();
-                drawPauseImage();
+                m->drawPauseScreen();
                 updateSecondMonitorORHMD();
+                qDebug() << "Pausing wihth current trial" << currentTrial;
                 return;
             }
 
@@ -170,11 +149,17 @@ void FieldingExperiment::drawCurrentImage(){
 }
 
 bool FieldingExperiment::finalizeExperiment(){
+    //qDebug() << currentTrial << m->size();
     if (currentTrial < m->size()) return false;
     stateTimer.stop();
     state = STATE_STOPPED;
-    if (error.isEmpty()) emit(experimentEndend(ER_NORMAL));
-    else emit(experimentEndend(ER_WARNING));
+    ExperimentResult er;
+    if (error.isEmpty()) er = ER_NORMAL;
+    else er = ER_WARNING;
+    if (!saveDataToHardDisk()){
+        emit(experimentEndend(ER_FAILURE));
+    }
+    else emit(experimentEndend(er));
     return true;
 }
 
@@ -191,7 +176,6 @@ void FieldingExperiment::keyPressHandler(int keyPressed){
     else{
         if (state == STATE_PAUSED){
             state = STATE_RUNNING;
-            gview->scene()->clear();
             m->drawBackground();
             updateSecondMonitorORHMD();
             nextState();
@@ -210,26 +194,16 @@ void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
-    QFile file(dataFile);
-    if (!file.open(QFile::Append)){
-        error = "Could not open data file " + dataFile + " for appending data.";
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_FAILURE));
-    }
-
-    QTextStream writer(&file);
-    writer.setCodec(COMMON_TEXT_CODEC);
-
-    // Adding the data row.
-    writer << data.time << " "
-           << data.xRight << " "
-           << data.yRight << " "
-           << data.xLeft << " "
-           << data.yLeft << " "
-           << data.pdRight << " "
-           << data.pdLeft << "\n";
-
-    file.close();
+    // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
+    QVariantList dataS;
+    dataS << data.time
+           << data.xRight
+           << data.yRight
+           << data.xLeft
+           << data.yLeft
+           << data.pdRight
+           << data.pdLeft;
+    etData << QVariant(dataS);
 
 }
 
@@ -237,29 +211,17 @@ void FieldingExperiment::addTrialHeader(){
 
     ignoreData = true;
 
-    QFile file(dataFile);
-    if (!file.open(QFile::Append)){
-        error = "Could not open data file " + dataFile + " for appending data.";
-        state = STATE_STOPPED;
-        emit(experimentEndend(ER_FAILURE));
-    }
-
-    QTextStream writer(&file);
-    writer.setCodec(COMMON_TEXT_CODEC);
-
     QPoint currentTarget = m->getTargetPoint(currentTrial,currentImage);
 
     qint32 imageInTrialID = currentImageToImageIndex();
 
-    // Saving the trial id, the image number and the center location of the target.
-    writer << m->getTrial(currentTrial).id << " "
-           << imageInTrialID << " "
-           << currentTarget.x() + TARGET_R + TARGET_OFFSET_X << " "
-           << currentTarget.y() + TARGET_R + TARGET_OFFSET_Y << "\n";
-
-    file.close();
-
     // Saving the current image.
+    QVariantList dataS;
+    dataS  << m->getTrial(currentTrial).id
+           << imageInTrialID
+           << currentTarget.x() + TARGET_R + TARGET_OFFSET_X
+           << currentTarget.y() + TARGET_R + TARGET_OFFSET_Y;
+    etData << QVariant(dataS);
 
     ignoreData = false;
 }

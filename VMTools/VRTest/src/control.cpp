@@ -182,8 +182,10 @@ void Control::startFieldingExperiment(){
     configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
     configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
     configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
-    configExperiments.addKeyValuePair(CONFIG_YPX_2_MM,0.20);
-    configExperiments.addKeyValuePair(CONFIG_XPX_2_MM,0.20);
+    configExperiments.addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,0.20);
+    configExperiments.addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,0.20);
+    configExperiments.addKeyValuePair(CONFIG_FIELDING_PAUSE_TEXT,"Press any key to continue");
+
 
     renderState = RENDERING_EXPERIMENT;
     openvrco->setScreenColor(QColor(Qt::black));

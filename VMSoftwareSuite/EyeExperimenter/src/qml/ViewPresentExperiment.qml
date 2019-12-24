@@ -148,7 +148,9 @@ VMBase {
             vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
-            vmSlideAnimation = ""
+            slideDescription.visible = false;
+            slideViewer.imgScale = 1.3;
+            setSlideImages("reading_" + loader.getConfigurationString(vmDefines.vmCONFIG_READING_EXP_LANG),3);
             break;
         }
     }

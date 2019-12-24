@@ -10,6 +10,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
     filesReading.clear();
     filesBindingBC.clear();
     filesBindingUC.clear();
+    filesFielding.clear();
 
     // STEP 1: Creating the structure with just the .dat information.
     QStringList filters;
@@ -22,6 +23,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
     QStringList orderReading;
     QStringList orderBindingBC;
     QStringList orderBindingUC;
+    QStringList orderFielding;
 
     for (qint32 i = 0; i < fileList.size(); i++){
 
@@ -31,6 +33,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
         if (fname.startsWith(FILE_OUTPUT_READING)) insertIntoListAccordingToOrder(fname,&filesReading,&orderReading);
         else if (fname.startsWith(FILE_OUTPUT_BINDING_BC)) insertIntoListAccordingToOrder(fname,&filesBindingBC,&orderBindingBC);
         else if (fname.startsWith(FILE_OUTPUT_BINDING_UC)) insertIntoListAccordingToOrder(fname,&filesBindingUC,&orderBindingUC);
+        else if (fname.startsWith(FILE_OUTPUT_FIELDING)) insertIntoListAccordingToOrder(fname,&filesFielding,&orderFielding);
 
     }
 }
@@ -39,6 +42,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
 bool DatFileInfoInDir::hasPendingReports() const {
     //qWarning() << "HAS PENDING REPORTS" << filesReading << filesBindingBC << filesBindingUC;
     if (!filesReading.isEmpty()) return true;
+    if (!filesFielding.isEmpty()) return true;
     if (!filesBindingBC.isEmpty() && !filesBindingUC.isEmpty()){
         // This should return true ONLY if for at least one BC file there is a compatible UC file.
         for (qint32 i = 0; i < filesBindingBC.size(); i++){
@@ -63,6 +67,10 @@ QStringList DatFileInfoInDir::getBindingBCFileList() const{
 
 QStringList DatFileInfoInDir::getBindingUCFileList() const {
     return getFileList(filesBindingUC);
+}
+
+QStringList DatFileInfoInDir::getFieldingFileList() const{
+    return getFileList(filesFielding);
 }
 
 QStringList DatFileInfoInDir::getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC){
@@ -91,8 +99,8 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const QStringList &fileLis
     ReportGenerationStruct repgen;
     repgen.clear();
 
-    QList<QStringList> allLists;
-    allLists << filesReading << filesBindingBC << filesBindingUC;
+//    QList<QStringList> allLists;
+//    allLists << filesReading << filesBindingBC << filesBindingUC << filesFielding;
 
     for (qint32 i = 0; i < fileList.size(); i++){
         if (fileList.at(i).startsWith(FILE_OUTPUT_READING)){
@@ -106,6 +114,10 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const QStringList &fileLis
         else if (fileList.at(i).startsWith(FILE_OUTPUT_BINDING_UC)){
             filesBindingUC << fileList.at(i);
             repgen.bindingUCFileIndex = filesBindingUC.size() -1;
+        }
+        else if (fileList.at(i).startsWith(FILE_OUTPUT_FIELDING)){
+            filesFielding << fileList.at(i);
+            repgen.fieldingFileIndex = filesFielding.size() - 1;
         }
     }
 
@@ -143,6 +155,14 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
         ans << uc.fileName << bc.fileName;
     }
 
+    if (repgen.fieldingFileIndex != -1){
+        DatInfo fielding_file = getFieldingInformation(filesFielding.at(repgen.fieldingFileIndex));
+        if (expectedReportName.isEmpty()) expectedReportName = FILE_REPORT_NAME;
+        // Extra info and date must have matched for these two files to have been selected.
+        expectedReportName = expectedReportName + "_N" + fielding_file.extraInfo + fielding_file.validEye;
+        ans << fielding_file.fileName;
+    }
+
     if (!expectedReportName.isEmpty()){
         expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
         ans.prepend(expectedReportName);
@@ -159,6 +179,8 @@ QString DatFileInfoInDir::getDatFileNameFromSelectionDialogIndex(qint32 index, q
         return filesBindingBC.at(index);
     case LIST_INDEX_BINDING_UC:
         return filesBindingUC.at(filesBindingUCValidIndexes.at(index));
+    case LIST_INDEX_FIELDING:
+        return filesFielding.at(index);
     }
     return "";
 }
@@ -194,6 +216,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getDatFileInformation(const QString 
     if (file.startsWith(FILE_OUTPUT_BINDING_BC)) return getBindingFileInformation(file);
     else if (file.startsWith(FILE_OUTPUT_BINDING_UC)) return getBindingFileInformation(file);
     else if (file.startsWith(FILE_OUTPUT_READING)) return getReadingInformation(file);
+    else if (file.startsWith(FILE_OUTPUT_FIELDING)) return getFieldingInformation(file);
     else return DatInfo();
 }
 
@@ -289,6 +312,33 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getReadingInformation(const QString 
         ans.hour = parts.at(6) + "_" + parts.at(7);
         ans.basename = parts.at(0);
         ans.code = "R" + ans.extraInfo +  ans.validEye + " - " + parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3) + " " + parts.at(6) + ":" + parts.at(7) + fmark;
+        ans.orderString = parts.at(3) + parts.at(4) + parts.at(5) + parts.at(5) + parts.at(6);
+    }
+    ans.category = ans.category + ans.extraInfo;
+
+    return ans;
+}
+
+DatFileInfoInDir::DatInfo DatFileInfoInDir::getFieldingInformation(const QString &fieldingFile){
+
+    QStringList parts = fieldingFile.split(".",QString::SkipEmptyParts);
+    QString baseName = parts.first();
+
+    QString fmark = "";
+    if (parts.last() == "datf") fmark = " (FE)";
+
+    parts = baseName.split("_",QString::SkipEmptyParts);
+    DatInfo ans;
+    ans.extraInfo = "";
+    ans.fileName = fieldingFile;
+    ans.category = "NB";
+
+    if (parts.size() == 7){
+        ans.date = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
+        ans.hour = parts.at(5) + "_" + parts.at(6);
+        ans.validEye = parts.at(1);
+        ans.basename = parts.at(0);
+        ans.code = "NB" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
         ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
     }
     ans.category = ans.category + ans.extraInfo;

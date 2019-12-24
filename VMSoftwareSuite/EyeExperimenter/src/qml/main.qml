@@ -219,7 +219,7 @@ Window {
     }
 
     onClosing:{
-        console.log("On window closing");
+        //console.log("On window closing");
         flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
     }
 

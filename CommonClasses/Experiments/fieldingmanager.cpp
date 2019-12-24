@@ -12,61 +12,14 @@ void FieldingManager::enableDemoMode(){
 
 bool FieldingManager::parseExpConfiguration(const QString &contents){
 
-    // Generating the contents from the phrases
-    QStringList lines = contents.split('\n',QString::KeepEmptyParts);
-
-    fieldingTrials.clear();
-
-    // Needed to check for unique ids.
-    QSet<QString> uniqueIDs;
-
-    // Checking the size of the first line to see if it is a version string.
-    qint32 startI = 0;
-    QString possibleHeader = lines.first();
-    QStringList headerParts = possibleHeader.split(" ",QString::SkipEmptyParts);
-    if (headerParts.size() == 1){
-        // Version string pesent
-        startI = 1;
-        versionString = headerParts.first();
+    FieldingParser parser;
+    if (!parser.parseFieldingExperiment(contents)){
+        error = parser.getError();
+        return false;
     }
 
-    for (qint32 i = startI; i < lines.size(); i++){
-
-        if (lines.at(i).isEmpty()) continue;
-
-        QStringList tokens = lines.at(i).split(' ',QString::SkipEmptyParts);
-        if (tokens.size() != 4){
-            error = "Invalid line: " + lines.at(i) + " should only have 4 items separated by space, the id and three numbers";
-            return false;
-        }
-
-        Trial t;
-        t.id = tokens.first();
-
-        // If the id was defined before, its an error. Otherwise we add it to the ids found list.
-        if (uniqueIDs.contains(t.id)){
-            error = "Cannot use the same id twice: " + t.id + " has already been found";
-            return false;
-        }
-        uniqueIDs << t.id;
-
-        for (qint32 j =1; j < tokens.size(); j++){
-            bool ok;
-            qint32 value = tokens.at(j).toInt(&ok);
-            if (!ok){
-                error = "In line: " + lines.at(i) + ", " + tokens.at(j) + " is not a valid integer";
-                return false;
-            }
-            if ((value < 0) || (value > 5)){
-                error = "In line: " + lines.at(i) + ", " + tokens.at(j) + " is not an integer between 0 and 5";
-                return false;
-            }
-            t.sequence << value;
-        }
-
-        fieldingTrials << t;
-
-    }
+    fieldingTrials = parser.getParsedTrials();
+    versionString = parser.getVersionString();
 
     if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
 
@@ -82,8 +35,8 @@ void FieldingManager::init(ConfigurationManager *c){
 
 void FieldingManager::drawBackground(){
 
-    qreal kx = config->getReal(CONFIG_XPX_2_MM);
-    qreal ky = config->getReal(CONFIG_YPX_2_MM);
+    qreal kx = config->getReal(CONFIG_FIELDING_XPX_2_MM);
+    qreal ky = config->getReal(CONFIG_FIELDING_YPX_2_MM);
 
     qreal WScreen = AREA_WIDTH/kx;
     qreal HScreen = AREA_HEIGHT/ky;
@@ -91,6 +44,7 @@ void FieldingManager::drawBackground(){
     qreal generalOffsetY = (ScreenResolutionHeight - HScreen)/2;
 
     // Background
+    canvas->clear();
     canvas->addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
 
     // Rectangle origins in order, in order
@@ -217,4 +171,31 @@ void FieldingManager::setTargetPosition(qint32 trial, qint32 image){
 
 QPoint FieldingManager::getTargetPoint(qint32 trial, qint32 image) const{
     return rectangleLocations.at(fieldingTrials.at(trial).sequence.at(image));
+}
+
+void FieldingManager::drawPauseScreen(){
+
+    canvas->clear();    
+    QString pauseText = config->getString(CONFIG_FIELDING_PAUSE_TEXT);
+    qreal xpos, ypos;
+
+    canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::black)));
+
+    QFont font;
+    if (config->getBool(CONFIG_VR_ENABLED)){
+        font = QFont("Mono",32);
+    }
+    else{
+        font = QFont("Courier New",20);
+    }
+
+    // Chaging the current target point to escape point
+    QGraphicsSimpleTextItem *phraseToShow = canvas->addSimpleText(pauseText,font);
+    phraseToShow->setPen(QPen(QColor(Qt::white)));
+    phraseToShow->setBrush(QBrush(QColor(Qt::white)));
+    xpos = (canvas->width() - phraseToShow->boundingRect().width())/2;
+    ypos = (canvas->height() - phraseToShow->boundingRect().height())/2;
+    phraseToShow->setPos(xpos,ypos);
+    phraseToShow->setZValue(1);
+
 }

@@ -91,7 +91,7 @@ void HTCViveEyeProEyeTrackingInterface::calibrate(EyeTrackerCalibrationParameter
 
 void HTCViveEyeProEyeTrackingInterface::enableUpdating(bool enable){
     if (enable && !eyetracker.isRunning()) eyetracker.start();
-    else eyetracker.stop();
+    else if (!enable) eyetracker.stop();
 }
 
 void HTCViveEyeProEyeTrackingInterface::disconnectFromEyeTracker(){

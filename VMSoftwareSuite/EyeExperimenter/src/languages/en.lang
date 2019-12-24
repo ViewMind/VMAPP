@@ -97,6 +97,7 @@ viewstudystart_targetOptions = Large|Small;
 viewstudystart_labelSelPatient = Selected Patient;
 viewstudystart_labelSelSubject = Selected Subject;
 viewstudystart_labelReadingLanguge = Reading language;
+viewstudystart_fieldingPauseText = Press any when ready;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Doctor selection;
@@ -272,6 +273,7 @@ viewselectdata_labelSubTitle = Select the studies that will be included in the r
 viewselectdata_labelColReading = Reading;
 viewselectdata_labelColBindingUC = New Colours;
 viewselectdata_labelColBindingBC = Colour Combinations;
+viewselectdata_labelFielding = N-Back Test;
 viewselectdata_labelNoUse = Do not use for report;
 viewselectdata_labelSelectOption = Select data file;
 viewselectdata_labelEvals = Available Evaluations;

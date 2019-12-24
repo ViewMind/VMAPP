@@ -83,7 +83,7 @@ VMBase {
 
     Rectangle{
         id: backgroundPatientName
-        width: mainWindow.width*0.416
+        width: mainWindow.width*0.6
         height: mainWindow.height*0.058
         radius: 5
         color: "#ebf3fa"
@@ -177,7 +177,7 @@ VMBase {
             id: cboxFielding
             vmText: loader.getStringForKey(keysearch+"cboxFielding");
             vmFont: robotoR.name
-            visible: false
+            //visible: false
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
                 if (cboxFielding.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_FIELDING);

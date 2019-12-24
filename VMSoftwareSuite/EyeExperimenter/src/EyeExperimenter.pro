@@ -24,6 +24,7 @@ RESOURCES += qml.qrc \
 
 SOURCES += main.cpp \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
+    ../../../CommonClasses/Experiments/fieldingparser.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
@@ -66,6 +67,7 @@ SOURCES += main.cpp \
 
 HEADERS += \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h \
+    ../../../CommonClasses/Experiments/fieldingparser.h \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \

@@ -31,6 +31,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_MARGIN_TARGET_HIT] = cmd;
     cv[CONFIG_BINDING_ALG_VERSION] = cmd;
     cv[CONFIG_READING_ALG_VERSION] = cmd;
+    cv[CONFIG_FIELDING_ALG_VERSION] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_REAL;
@@ -40,6 +41,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES] = cmd;
     cv[CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL] = cmd;
     cv[CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS] = cmd;
+    cv[CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL] = cmd;
 
     // Timeouts for connections.
     cv[CONFIG_CONNECTION_TIMEOUT] = cmd;
@@ -163,6 +165,10 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
         return;
     }
 
+    // Setting the pause text for fielding
+    configuration->addKeyValuePair(CONFIG_FIELDING_PAUSE_TEXT,language.getString("viewstudystart_fieldingPauseText"));
+    //qDebug() << "Pause text" << configuration->getString(CONFIG_FIELDING_PAUSE_TEXT);
+
     // Making sure the second monitor is DISABLED if the configuration string has disabled it.
     if (uimap->getSecondMonitorOption() == "D"){
         configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
@@ -244,9 +250,7 @@ QStringList Loader::getErrorMessageForCode(quint8 code){
     default:
         // The default error message is the time out message
         return language.getStringList("error_db_timeout");
-        break;
     }
-    return QStringList();
 }
 
 QStringList Loader::getFileListForPatient(QString patuid, qint32 type){
@@ -272,7 +276,7 @@ bool Loader::getConfigurationBoolean(const QString &key){
     if (configuration->containsKeyword(key)){
         return configuration->getBool(key);
     }
-    else return "";
+    else return false;
 }
 
 void Loader::setSettingsValue(const QString &key, const QVariant &var){
@@ -511,6 +515,9 @@ void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
             break;
         case LIST_INDEX_BINDING_BC:
             reportGenerationStruct.bindingBCFileIndex = index;
+            break;
+        case LIST_INDEX_FIELDING:
+            reportGenerationStruct.fieldingFileIndex = index;
             break;
         }
     }

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
-#include "./EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
+#include "../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/experiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.h"

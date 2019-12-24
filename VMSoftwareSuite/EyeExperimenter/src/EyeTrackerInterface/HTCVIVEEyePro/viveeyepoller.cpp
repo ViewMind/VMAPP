@@ -39,6 +39,8 @@ void VIVEEyePoller::run(){
     qreal pl = 0.0, pr = 0.0;
     timestampTimer.start();
 
+    //qDebug() << "VIVE EYE POLLER ENABLED";
+
     while (keepGoing) {
         int result = ViveSR::anipal::Eye::GetEyeData(&eye_data);
         if (result == ViveSR::Error::WORK) {
@@ -149,6 +151,11 @@ bool VIVEEyePoller::calibrationDone(){
 
 }
 
+void VIVEEyePoller::stop(){
+    keepGoing = false;
+    //qDebug() << "VIVE EYE Poller Was Disabled";
+}
+
 void VIVEEyePoller::saveCalibrationCoefficients(const QString &file){
     eyeCorrectionCoeffs.saveCalibrationCoefficients(file);
 }
@@ -172,6 +179,7 @@ void VIVEEyePoller::newCalibrationPoint(qint32 xtarget, qint32 ytarget){
         calibrationPointData.clear();
     }
     else{
+        //qDebug() << "New calibration point on VIVE EYE Poller Adding calibration data of size" << currentCalibrationData.eyeData.size();
         calibrationPointData << currentCalibrationData;
     }
     //qDebug() << "New calibration point" << xtarget << ytarget;

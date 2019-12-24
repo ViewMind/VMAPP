@@ -24,8 +24,10 @@ public:
     struct AlgorithmVersions{
         qint32 readingAlg;
         qint32 bindingAlg;
+        qint32 fieldingAlg;
         QString binding_code;
         QString reading_code;
+        QString fielding_code;
     };
 
     RepFileInfo();

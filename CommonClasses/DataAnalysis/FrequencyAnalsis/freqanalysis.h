@@ -7,12 +7,14 @@
 #include "../../../CommonClasses/common.h"
 #include "../../../CommonClasses/Experiments/readingparser.h"
 #include "../../../CommonClasses/Experiments/bindingparser.h"
+#include "../../../CommonClasses/Experiments/fieldingparser.h"
 
 #define  FILE_BINDING  "binding"
 
 // The number of data sets which are tests and should NOT factor into the frequency analysis, as they will be discarded.
 #define  TEST_DATA_SETS_READING    10
 #define  TEST_DATA_SETS_BINDING    20
+#define  TEST_DATA_SETS_FIELDING   10 ///TODO CHECK IF this value is right.!!!!
 
 class FreqAnalysis
 {
@@ -25,7 +27,7 @@ public:
         qreal maxAllowedFreqGlitchesPerTrial;
         qint32 maxAllowedFailedTrials;
         qint32 minNumberOfDataItems;
-        qreal maxAllowedPercentOfInvalidValues;
+        qreal maxAllowedPercentOfInvalidValues;        
         QString toString(const QString tab = "") const { return
                       tab + "Period should be in ["  + QString::number(periodMin) + ", " + QString::number(periodMax)+ "] ms\n"
                     + tab + "Maximum % of Frequency Glitches allowed in a trial: " + QString::number(maxAllowedFreqGlitchesPerTrial) + "\n"
@@ -84,6 +86,7 @@ private:
 
     FreqAnalysisResult performReadingAnalyis();
     FreqAnalysisResult performBindingAnalyis();
+    FreqAnalysisResult performFieldingAnalyis();
 
 };
 

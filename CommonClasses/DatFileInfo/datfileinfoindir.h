@@ -8,8 +8,9 @@
 #define   LIST_INDEX_READING     0
 #define   LIST_INDEX_BINDING_BC  1
 #define   LIST_INDEX_BINDING_UC  2
+#define   LIST_INDEX_FIELDING    3
 
-#define   LIST_NUMBER_OF_LISTS   3
+#define   LIST_NUMBER_OF_LISTS   4
 
 class DatFileInfoInDir
 {
@@ -40,8 +41,8 @@ public:
         qint32 readingFileIndex;
         qint32 bindingBCFileIndex;
         qint32 bindingUCFileIndex;
-        void clear() { readingFileIndex = -1; bindingBCFileIndex = -1;
-                       bindingUCFileIndex = -1; }
+        qint32 fieldingFileIndex;
+        void clear() { readingFileIndex = -1; bindingBCFileIndex = -1; bindingUCFileIndex = -1; fieldingFileIndex = -1;}
     };
 
     DatFileInfoInDir();
@@ -53,6 +54,7 @@ public:
     QStringList getReadingFileList() const;
     QStringList getBindingBCFileList() const;
     QStringList getBindingUCFileList() const;
+    QStringList getFieldingFileList() const;
     QStringList getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC);
     QStringList getFileSetAndReportName(const ReportGenerationStruct &repgen) const;
     QStringList getFileSetAndReportName(const QStringList &fileList);
@@ -63,6 +65,7 @@ public:
     static DatInfo getDatFileInformation(const QString &file);
     static DatInfo getBindingFileInformation(const QString &bindingFile);
     static DatInfo getReadingInformation(const QString &readingFile);
+    static DatInfo getFieldingInformation(const QString &readingFile);
     static qint32 getValidEyeForDatList(const QStringList &list);
 
 
@@ -72,6 +75,7 @@ private:
 
     // File lists by type.
     QStringList   filesReading;
+    QStringList   filesFielding;
     QStringList   filesBindingBC;
     QStringList   filesBindingUC;
     QList<qint32> filesBindingUCValidIndexes;

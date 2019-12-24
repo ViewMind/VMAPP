@@ -9,6 +9,7 @@ Dialog {
     readonly property int vmLIST_INDEX_READING: 0
     readonly property int vmLIST_INDEX_BINDING_BC: 1
     readonly property int vmLIST_INDEX_BINDING_UC: 2
+    readonly property int vmLIST_INDEX_FIELDING: 3
 
     readonly property int vmSEL_NOT_SELECTED:     0
     readonly property int vmSEL_SELECTED_VALID:   1
@@ -20,6 +21,8 @@ Dialog {
     width: mainWindow.width*0.546
     height:  mainWindow.height*0.942
     closePolicy: Popup.NoAutoClose
+
+    property double vmHeightForDatSelector: mainWindow.height*0.09 //0.115
 
     MouseArea {
         anchors.fill: parent
@@ -42,6 +45,7 @@ Dialog {
         reading.clearSelection();
         bindingBC.clearSelection();
         bindingUC.clearSelection();
+        fielding.clearSelection();
         btnGenerate.enabled = false;
         loader.operateOnRepGenStruct(-1,-1);
 
@@ -49,6 +53,10 @@ Dialog {
         var readingFiles = loader.getFileListForPatient("",vmLIST_INDEX_READING);
         readingFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
         reading.setModelList(readingFiles);
+
+        var fieldingFiles = loader.getFileListForPatient("",vmLIST_INDEX_FIELDING);
+        fieldingFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
+        fielding.setModelList(fieldingFiles);
 
         var bbcFiles = loader.getFileListForPatient("",vmLIST_INDEX_BINDING_BC);
         bbcFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
@@ -61,7 +69,6 @@ Dialog {
         diagTitle.text = loader.getStringForKey(keybase+"labelTitle") + " - " + patname;
 
     }
-
 
     function readingSelectionChanged(index){
         // Since it's not possible to unselect once selected, the generate button is enabled.
@@ -94,6 +101,11 @@ Dialog {
         loader.operateOnRepGenStruct(index,vmLIST_INDEX_BINDING_UC)
     }
 
+    function fieldingSelectionChanged(index){
+        enableGenerateButtonCheck();
+        if (index > 0) loader.operateOnRepGenStruct(index-1,vmLIST_INDEX_FIELDING)
+    }
+
     function enableGenerateButtonCheck(){
 
         var selectedType = [];
@@ -104,6 +116,9 @@ Dialog {
         else if ((bindingBC.vmCurrentIndex > 0) && (bindingUC.vmCurrentIndex >= 0)) selectedType.push(vmSEL_SELECTED_VALID)
         else selectedType.push(vmSEL_SELECTED_INVALID);
 
+        if (fielding.vmCurrentIndex > 0) selectedType.push(vmSEL_SELECTED_VALID);
+        else selectedType.push(vmSEL_NOT_SELECTED);
+
         btnGenerate.enabled = false;
         for (var i = 0; i < selectedType.length; i++){
             if (selectedType[i] === vmSEL_SELECTED_INVALID) {
@@ -111,7 +126,6 @@ Dialog {
                 return;
             }
             if (selectedType[i] === vmSEL_SELECTED_VALID) btnGenerate.enabled = true;
-
         }
     }
 
@@ -139,7 +153,7 @@ Dialog {
         text: loader.getStringForKey(keybase+"labelTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: mainWindow.height*0.101
+        anchors.topMargin: mainWindow.height*0.08
     }
 
     // The number of available evaluations
@@ -191,7 +205,7 @@ Dialog {
             vmTitle: loader.getStringForKey(keybase+"labelColReading");
             vmPlaceHolderText: loader.getStringForKey(keybase+"labelSelectOption");
             width: mainWindow.width*0.312
-            height: mainWindow.height*0.115
+            height: vmHeightForDatSelector
             z: 10
             onVmCurrentIndexChanged: {
                 readingSelectionChanged(reading.vmCurrentIndex);
@@ -210,13 +224,34 @@ Dialog {
             }
         }
 
+
+        VMDatSelection{
+            id: fielding
+            vmTitle: loader.getStringForKey(keybase+"labelFielding");
+            vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
+            width: mainWindow.width*0.312
+            height: vmHeightForDatSelector
+            z: 9
+            onVmCurrentIndexChanged: {
+                fieldingSelectionChanged(fielding.vmCurrentIndex);
+            }
+            onArchiveRequested: {
+                viewDatSelectionDiag.close();
+                viewPatList.configureShowMessageForArchive(vmLIST_INDEX_FIELDING,indexInList-1)
+            }
+            onFrequencyAnalysisRequested: {
+                viewDatSelectionDiag.close();
+                viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_FIELDING,indexInList-1)
+            }
+        }
+
         VMDatSelection{
             id: bindingBC;
             vmTitle: loader.getStringForKey(keybase+"labelColBindingBC");
             vmPlaceHolderText: loader.getStringForKey(keybase+"labelSelectOption");
             width: mainWindow.width*0.312
-            height: mainWindow.height*0.115
-            z: 9
+            height: vmHeightForDatSelector
+            z: 8
             onVmCurrentIndexChanged: {
                 bindingBCSelectionChanged(bindingBC.vmCurrentIndex);
             }
@@ -239,8 +274,8 @@ Dialog {
             vmTitle: loader.getStringForKey(keybase+"labelColBindingUC");
             vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
             width: mainWindow.width*0.312
-            height: mainWindow.height*0.115
-            z: 8
+            height: vmHeightForDatSelector
+            z: 7
             onVmCurrentIndexChanged: {
                 bindingUCSelectionChanged(bindingUC.vmCurrentIndex);
             }

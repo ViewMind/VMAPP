@@ -71,6 +71,7 @@ viewpatientreg_errorExists = Este paciente existe bajo este doctor;
 viewpatientreg_labelAssignedDoctor = Asignar a doctor;
 viewpatientreg_labelProtocol = Protocolo;
 viewpatientreg_labelFormativeYears = Años de formación;
+viewstudystart_fieldingPauseText = Presione cualquier tecla cuando se encuentre listo;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Estudios Oculares;
@@ -272,6 +273,7 @@ viewselectdata_labelSubTitle = Seleccionar los estudios que desea incluir en un 
 viewselectdata_labelColReading = Lectura;
 viewselectdata_labelColBindingUC = Nuevos Colores;
 viewselectdata_labelColBindingBC = Combinación de Colores;
+viewselectdata_labelFielding = Evaluación N-Back;
 viewselectdata_labelNoUse = No utilizar en reporte;
 viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_labelEvals = Evaluaciones disponibles;

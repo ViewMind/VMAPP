@@ -93,9 +93,6 @@ protected:
     // The manager for the experiment
     ExperimentDataPainter *manager;
 
-    // Used to detect the ESC ending the experiment.
-    void keyPressEvent(QKeyEvent *event);
-
     // The configuration structure
     ConfigurationManager *config;
 

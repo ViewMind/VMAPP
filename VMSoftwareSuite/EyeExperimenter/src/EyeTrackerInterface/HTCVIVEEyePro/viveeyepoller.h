@@ -27,7 +27,7 @@ public:
     VIVEEyePoller();    
     bool initalizeEyeTracking();
     void run() override;
-    void stop() { keepGoing = false; }
+    void stop();
     EyeTrackerData getLastData() {return lastData;}
     bool isRunning() { return keepGoing;  }
     void setProjectionMatrices(quint8 whichEye, QMatrix4x4 p);

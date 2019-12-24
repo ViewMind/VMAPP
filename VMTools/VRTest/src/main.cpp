@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "control.h"
-#include "qimagedisplay.h"
+#include "../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h"
 
 int main(int argc, char *argv[])
 {

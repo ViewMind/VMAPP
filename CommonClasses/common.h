@@ -95,6 +95,7 @@
 #define   CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL  "tol_min_number_of_data_items_in_trial"
 #define   CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES      "tol_max_percent_of_invalid_values"
 #define   CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS       "tol_num_allowed_of_failed_data_sets"
+#define   CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL      "tol_min_num_of_pts_in_fielding_trial"
 #define   CONFIG_PROTOCOL_NAME                          "protocol_name"
 #define   CONFIG_EYEEXP_NUMBER                          "eyeexp_number"
 #define   CONFIG_ENABLE_LOCAL_DB_BKP                    "enable_local_db_bkp"
@@ -102,6 +103,7 @@
 #define   CONFIG_PATIENT_DISPLAYID                      "patient_displayid"
 #define   CONFIG_READING_ALG_VERSION                    "reading_algorithm_version"
 #define   CONFIG_BINDING_ALG_VERSION                    "binding_algorithm_version"
+#define   CONFIG_FIELDING_ALG_VERSION                   "fielding_algorithm_version"
 #define   CONFIG_RESULT_ENTRY_ID                        "result_entry_id"
 #define   CONFIG_LAUCHER_CONNECT_TIMEOUT                "launcher_connect_timeout"
 #define   CONFIG_LAUCHER_DOWNLOAD_TIMEOUT               "launcher_download_timeout"
@@ -117,6 +119,9 @@
 #define   CONFIG_READING_FONT_SIZE                      "reading_font_size"
 #define   CONFIG_READING_FONT_NAME                      "reading_font_name"
 #define   CONFIG_READING_ESCAPE_POINT_XY_K              "reading_escape_point_xy_k"
+#define   CONFIG_FIELDING_PAUSE_TEXT                    "fielding_pause_text"
+#define   CONFIG_FIELDING_XPX_2_MM                      "fielding_xpx_2_mm"
+#define   CONFIG_FIELDING_YPX_2_MM                      "fielding_ypx_2_mm"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -132,6 +137,7 @@
 #define   CONFIG_RESULTS_UC_PREDICTED_GROUP             "uc_predicted_group"
 #define   CONFIG_RESULTS_READ_PREDICTED_DETERIORATION   "reading_predicted_deterioration"
 #define   CONFIG_RESULTS_BINDING_CONVERSION_INDEX       "binding_conversion_index"
+#define   CONFIG_RESULTS_FIELDING_MAIN_INDEX            "fielding_main_index"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"

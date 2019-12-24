@@ -255,9 +255,6 @@ void Experiment::keyboardKeyPressed(int keyboardKey){
     keyPressHandler(keyboardKey);
 }
 
-void Experiment::keyPressEvent(QKeyEvent *event){
-    keyPressHandler(event->key());
-}
 
 void Experiment::updateSecondMonitorORHMD(){
     if (vrEnabled){
