@@ -49,6 +49,17 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_DEMO_MODE]             = cmd;
     cv[CONFIG_REPROCESS_REQUEST]     = cmd;
 
+    cmd.clear();
+    cmd.optional = true;
+    cmd.type = ConfigurationManager::VT_BOOL;
+    cv[CONFIG_VR_ENABLED]            = cmd;
+
+    // This should actually be mandatory. But older clients will never send for it.
+    cmd.clear();
+    cmd.optional = true;
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL] = cmd;
+
     configuration.setupVerification(cv);
 
     // Adding the version to the log file

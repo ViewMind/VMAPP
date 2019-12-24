@@ -137,7 +137,6 @@
 #define   CONFIG_RESULTS_UC_PREDICTED_GROUP             "uc_predicted_group"
 #define   CONFIG_RESULTS_READ_PREDICTED_DETERIORATION   "reading_predicted_deterioration"
 #define   CONFIG_RESULTS_BINDING_CONVERSION_INDEX       "binding_conversion_index"
-#define   CONFIG_RESULTS_FIELDING_MAIN_INDEX            "fielding_main_index"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"
@@ -209,6 +208,7 @@
 // Versions of the processing algorithm
 #define   EYE_REP_GEN_READING_ALGORITHM_VERSION          1
 #define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          2
+#define   EYE_REP_GEN_FIELDING_ALGORITHM_VERSION         0
 
 // DB Managers possible answers
 #define   EYEDBMNG_ANS_OK                                0

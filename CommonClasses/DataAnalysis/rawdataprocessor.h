@@ -97,7 +97,7 @@ private:
 
     void generateReportFile(const ConfigurationManager &res, const QString &repFileCode , bool freqErrorsOk);
 
-    bool generateFDBFile(const QString &datFile, const FixationList &fixList);
+    bool generateFDBFile(const QString &datFile, const FixationList &fixList, bool isFielding);
 
     QString getVersionForBindingExperiment(bool bound);
 

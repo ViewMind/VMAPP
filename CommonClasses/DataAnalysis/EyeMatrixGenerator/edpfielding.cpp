@@ -98,7 +98,6 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
     }
     return true;
 
-
 }
 
 bool EDPFielding::initializeFieldingDataMatrix(){

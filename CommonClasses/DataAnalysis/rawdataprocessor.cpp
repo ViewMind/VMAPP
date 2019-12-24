@@ -21,11 +21,9 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
         dataBindingUC = currentDir + "/" + config->getString(CONFIG_FILE_BIDING_UC);
     else dataBindingUC = "";
 
-    //    if (config->containsKeyword(CONFIG_FILE_FIELDING))
-    //        dataFielding = currentDir + "/" + config->getString(CONFIG_FILE_FIELDING);
-    //    else dataFielding = "";
-
-    dataFielding = "";
+    if (config->containsKeyword(CONFIG_FILE_FIELDING))
+        dataFielding = currentDir + "/" + config->getString(CONFIG_FILE_FIELDING);
+    else dataFielding = "";
 
     matrixBindingBC = "";
     matrixReading = "";
@@ -79,7 +77,7 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
         barGraphOptionsFromFixationList(reading.getEyeFixations(),dataReading);
-        bool temp = generateFDBFile(dataReading,reading.getEyeFixations());
+        bool temp = generateFDBFile(dataReading,reading.getEyeFixations(),false);
         freqErrorsOK = freqErrorsOK && temp;
 
         QString report = rdataProcessor.processReading(matrixReading);
@@ -111,7 +109,7 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_BIDING_BC] = imagesBC.getEyeFixations();
         barGraphOptionsFromFixationList(imagesBC.getEyeFixations(),dataBindingBC);
-        bool temp = generateFDBFile(dataBindingBC,imagesBC.getEyeFixations());
+        bool temp = generateFDBFile(dataBindingBC,imagesBC.getEyeFixations(),false);
         freqErrorsOK = freqErrorsOK && temp;
 
         EDPImages imagesUC(config);
@@ -121,7 +119,7 @@ void RawDataProcessor::run(){
 
         fixations[CONFIG_P_EXP_BIDING_UC] = imagesUC.getEyeFixations();
         barGraphOptionsFromFixationList(imagesUC.getEyeFixations(),dataBindingUC);
-        temp = generateFDBFile(dataBindingUC,imagesUC.getEyeFixations());
+        temp = generateFDBFile(dataBindingUC,imagesUC.getEyeFixations(),false);
         freqErrorsOK = freqErrorsOK && temp;
 
         EDPImages::BindingAnswers bcans = imagesBC.getExperimentAnswers();
@@ -157,22 +155,22 @@ void RawDataProcessor::run(){
         }
     }
 
-    //    if (!dataFielding.isEmpty()) {
-    //        emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
-    //        EDPFielding fielding(config);
-    //        tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
-    //        matrixFielding = tagRet.filePath;
-    //        fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
-    //        QString report = rdataProcessor.processFielding(matrixFielding,fielding.getNumberOfTrials());
+    if (!dataFielding.isEmpty()) {
+        emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
+        EDPFielding fielding(config);
+        tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
+        matrixFielding = tagRet.filePath;
 
-    //        //if (!tagRet.freqCheckErrors) freqErrorsOK = false;
+        fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
+        /// TODO ADD FIELDING PROCESSING
 
-    //        if (!report.isEmpty()){
-    //            studyID << "fd" + tagRet.version;
-    //            emit(appendMessage(report,MSG_TYPE_STD));
-    //        }
-    //        else emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
-    //    }
+        QFileInfo info(dataFielding);
+        DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getFieldingInformation(info.baseName());
+        dateForReport = datInfo.date + "_" + datInfo.hour;
+        reportInfoText << "f";
+
+        studyID << "fd" + tagRet.version;
+        emit(appendMessage("Fielding CSV GENERATED",MSG_TYPE_STD));    }
 
     // Generating the report based on available data.
     if (reportInfoText.isEmpty()){
@@ -259,7 +257,7 @@ void RawDataProcessor::run(){
 
 }
 
-bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationList &fixList){
+bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationList &fixList, bool isFielding){
 
     //qWarning() << "FDB WITH" << datFile;
 
@@ -278,7 +276,12 @@ bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
     fcp.periodMin                        = config->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
     fcp.maxAllowedFreqGlitchesPerTrial   = config->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
     fcp.maxAllowedPercentOfInvalidValues = config->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
-    fcp.minNumberOfDataItems             = config->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+    if (isFielding){
+        fcp.minNumberOfDataItems             = config->getReal(CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL);
+    }
+    else{
+        fcp.minNumberOfDataItems             = config->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+    }
     fcp.maxAllowedFailedTrials           = config->getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
     fres.analysisValid(fcp);
 
@@ -306,7 +309,12 @@ bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
     freqTolParams << "HAP:" + config->getString(CONFIG_TOL_MAX_PERIOD_TOL);
     freqTolParams << "LAP:" + config->getString(CONFIG_TOL_MIN_PERIOD_TOL);
     freqTolParams << "HFG:" + config->getString(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
-    freqTolParams << "LNI:" + config->getString(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+    if (isFielding){
+        freqTolParams << "LNI:" + config->getString(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+    }
+    else{
+        freqTolParams << "LNI:" + config->getString(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+    }
     freqTolParams << "HPI:" + config->getString(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
     freqTolParams << "AFD:" + config->getString(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
 
@@ -380,6 +388,10 @@ void RawDataProcessor::generateReportFile(const ConfigurationManager &res, const
         results.addKeyValuePair(CONFIG_BINDING_ALG_VERSION,EYE_REP_GEN_BINDING_ALGORITHM_VERSION);
     }
 
+    if (results.containsKeyword(CONFIG_FILE_FIELDING)){
+        results.addKeyValuePair(CONFIG_FIELDING_ALG_VERSION,EYE_REP_GEN_FIELDING_ALGORITHM_VERSION);
+    }
+
     // Removing patient directory as it contains sensitive information
     results.removeKey(CONFIG_PATIENT_DIRECTORY);
 
@@ -388,7 +400,6 @@ void RawDataProcessor::generateReportFile(const ConfigurationManager &res, const
 
     // Saving the results to disk.
     results.saveToFile(reportFileOutput,COMMON_TEXT_CODEC);
-
 
 }
 
@@ -409,6 +420,16 @@ RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *proces
     if (!tagRet.ok){
         tagRet.filePath = "";
         return tagRet;
+    }
+
+    // VR Constants. Should be kept the same for ANY VR Implementations.
+    if (config->getBool(CONFIG_VR_ENABLED) && config->containsKeyword(CONFIG_VR_ENABLED)){
+        mgeo.distanceToMonitorInMilimiters = MonitorGeometry::VR_VIEW_DISTANCE_TO_MONITOR;
+        mgeo.XmmToPxRatio                  = MonitorGeometry::VR_VIEW_WIDTH/config->getReal(CONFIG_RESOLUTION_WIDTH);
+        mgeo.YmmToPxRatio                  = MonitorGeometry::VR_VIEW_HEIGHT/config->getReal(CONFIG_RESOLUTION_HEIGHT);
+        QString msg = "->  Using VR Constants for geometry calculations. W = ";
+        msg = msg + config->getString(CONFIG_RESOLUTION_WIDTH) + ". H = " + config->getString(CONFIG_RESOLUTION_HEIGHT);
+        emit(appendMessage(msg,MSG_TYPE_STD));
     }
 
     processor->setFieldingMarginInMM(config->getReal(CONFIG_MARGIN_TARGET_HIT));

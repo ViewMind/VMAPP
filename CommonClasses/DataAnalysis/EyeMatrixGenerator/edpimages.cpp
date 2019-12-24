@@ -25,7 +25,7 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
     config->addKeyValuePair(CONFIG_DEMO_MODE,false);
     if (!parser.parseBindingExperiment(eyeFixations.experimentDescription,
                                        config,
-                                       config->getReal(CONFIG_RESOLUTION_WIDTH),config->getReal(CONFIG_RESOLUTION_WIDTH),
+                                       config->getReal(CONFIG_RESOLUTION_WIDTH),config->getReal(CONFIG_RESOLUTION_HEIGHT),
                                        0)){
         error = "Error parsing binding experiment: " + parser.getError();
         return false;
