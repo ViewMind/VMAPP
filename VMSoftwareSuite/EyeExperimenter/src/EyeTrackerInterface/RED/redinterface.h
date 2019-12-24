@@ -26,9 +26,6 @@ private slots:
 
 private:
     QTimer pollTimer;
-
-    EyeTrackerData lastData;
-
     QString num2Error(int result);
 
 };

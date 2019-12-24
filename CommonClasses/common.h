@@ -122,6 +122,10 @@
 #define   CONFIG_FIELDING_PAUSE_TEXT                    "fielding_pause_text"
 #define   CONFIG_FIELDING_XPX_2_MM                      "fielding_xpx_2_mm"
 #define   CONFIG_FIELDING_YPX_2_MM                      "fielding_ypx_2_mm"
+#define   CONFIG_PRIMARY_MONITOR_WIDTH                  "primary_monitor_width"
+#define   CONFIG_PRIMARY_MONITOR_HEIGHT                 "primary_monitor_height"
+#define   CONFIG_VR_RECOMMENDED_WIDTH                   "vr_recommended_width"
+#define   CONFIG_VR_RECOMMENDED_HEIGHT                  "vr_recommended_height"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

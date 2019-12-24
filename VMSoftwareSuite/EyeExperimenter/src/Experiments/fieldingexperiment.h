@@ -50,9 +50,6 @@ private:
     // Handle to the fielding manager.
     FieldingManager *m;
 
-    // Pause for the middle of the experiments.
-    bool Paused;
-
     // The current state of the experiment
     TrialStateFielding tstate;
 

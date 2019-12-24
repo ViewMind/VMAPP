@@ -169,6 +169,16 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     configuration->addKeyValuePair(CONFIG_FIELDING_PAUSE_TEXT,language.getString("viewstudystart_fieldingPauseText"));
     //qDebug() << "Pause text" << configuration->getString(CONFIG_FIELDING_PAUSE_TEXT);
 
+    // Fielding requires special drawing constants to be seen right in the HMD.
+    if (configuration->getBool(CONFIG_VR_ENABLED)){
+        configuration->addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,0.2);
+        configuration->addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,0.2);
+    }
+    else{
+        configuration->addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,configuration->getReal(CONFIG_XPX_2_MM));
+        configuration->addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,configuration->getReal(CONFIG_YPX_2_MM));
+    }
+
     // Making sure the second monitor is DISABLED if the configuration string has disabled it.
     if (uimap->getSecondMonitorOption() == "D"){
         configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);

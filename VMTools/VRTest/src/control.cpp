@@ -96,12 +96,17 @@ void Control::startReadingExperiment(QString lang){
 
     // Configuring the experiment.
     configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
-    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
-    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+
+    configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_HTCVIVEEYEPRO);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1920);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,1080);
+    configExperiments.addKeyValuePair(CONFIG_VR_RECOMMENDED_WIDTH,w);
+    configExperiments.addKeyValuePair(CONFIG_VR_RECOMMENDED_HEIGHT,h);
+
     configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
     configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,QString(":/experiment_data/Reading_") + lang + ".dat");
     configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
-    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,true);
     configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
     configExperiments.addKeyValuePair(CONFIG_READING_EXP_LANG,lang);
     configExperiments.addKeyValuePair(CONFIG_READING_PX_TOL,60);

@@ -20,6 +20,15 @@ void Experiment::setupView(){
     // Making this window frameless and making sure it stays on top.
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
 
+    if (vrEnabled){
+        config->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,config->getReal(CONFIG_VR_RECOMMENDED_WIDTH));
+        config->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,config->getReal(CONFIG_VR_RECOMMENDED_HEIGHT));
+    }
+    else{
+        config->addKeyValuePair(CONFIG_RESOLUTION_WIDTH,config->getReal(CONFIG_PRIMARY_MONITOR_WIDTH));
+        config->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,config->getReal(CONFIG_PRIMARY_MONITOR_HEIGHT));
+    }
+
     // Finding the current desktop resolution
     this->setGeometry(0,0,
                       static_cast<qint32>(config->getReal(CONFIG_RESOLUTION_WIDTH)),
@@ -39,7 +48,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     config = c;
     error = "";
     workingDirectory = c->getString(CONFIG_PATIENT_DIRECTORY);
-    vrEnabled = c->getBool(CONFIG_VR_ENABLED);
+    vrEnabled = (c->getString(CONFIG_EYETRACKER_CONFIGURED) == CONFIG_P_ET_HTCVIVEEYEPRO) && (!c->getBool(CONFIG_USE_MOUSE));
 
     // Loading the experiment configuration file.
     //qWarning() << "Reading the configuration file" << config->getString(CONFIG_EXP_CONFIG_FILE);
@@ -58,8 +67,8 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     expfile.close();
 
     // Initializing the graphical interface and passing on the configuration.
-    manager->init(c);
-    setupView();
+    setupView();  /// WARNING: Setup view needs to come BEFORE manager intialization as it contians the resolution intialization.
+    manager->init(c);    
     this->gview->setScene(manager->getCanvas());
 
     // Configuring the experimet
@@ -255,6 +264,9 @@ void Experiment::keyboardKeyPressed(int keyboardKey){
     keyPressHandler(keyboardKey);
 }
 
+void Experiment::keyPressEvent(QKeyEvent *event){
+    keyPressHandler(event->key());
+}
 
 void Experiment::updateSecondMonitorORHMD(){
     if (vrEnabled){
@@ -267,18 +279,4 @@ void Experiment::updateSecondMonitorORHMD(){
 
 void Experiment::keyPressHandler(int keyPressed){
     Q_UNUSED(keyPressed)
-    //    // FOR ALL Experiments:
-    //    //   ESC = Abort
-    //    //   C   = Request Calibration
-    //    switch (event->key()){
-    //    case Qt::Key_Escape:
-    //        state = STATE_STOPPED;
-    //        this->hide();
-    //        emit (experimentEndend(ER_ABORTED));
-    //        break;
-    //    case Qt::Key_C:
-    //        state = STATE_PAUSED;
-    //        emit(calibrationRequest());
-    //        break;
-    //    }
 }

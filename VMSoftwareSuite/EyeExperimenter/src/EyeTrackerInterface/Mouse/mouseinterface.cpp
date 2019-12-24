@@ -89,6 +89,8 @@ void MouseInterface::on_pollTimer_Up(){
     dataToSend.pdRight = 0;
     dataToSend.pdLeft = 0;
 
+    lastData = dataToSend;
+
     emit (newDataAvailable(dataToSend));
 
 }

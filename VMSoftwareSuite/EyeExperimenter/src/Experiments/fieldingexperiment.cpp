@@ -7,8 +7,6 @@ FieldingExperiment::FieldingExperiment(QWidget *parent):Experiment(parent){
     expHeader = HEADER_FIELDING_EXPERIMENT;
     outputDataFile = FILE_OUTPUT_FIELDING;
 
-    // Used for the pause in the middle.
-    Paused=0;
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&FieldingExperiment::onTimeOut);

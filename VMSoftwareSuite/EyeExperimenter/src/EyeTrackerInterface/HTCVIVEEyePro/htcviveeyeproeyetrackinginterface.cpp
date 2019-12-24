@@ -23,6 +23,14 @@ void HTCViveEyeProEyeTrackingInterface::updateProjectionMatrices(QMatrix4x4 r, Q
 }
 
 void HTCViveEyeProEyeTrackingInterface::onNewData(EyeTrackerData etd){
+    if (!canUseLeft()){
+        etd.xLeft = 0;
+        etd.yLeft = 0;
+    }
+    if (!canUseRight()){
+        etd.xRight = 0;
+        etd.yRight = 0;
+    }
     lastData = etd;
     emit(newDataAvailable(etd));
 }

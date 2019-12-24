@@ -125,7 +125,7 @@ void ImageExperiment::keyPressHandler(int keyPressed){
         experimenteAborted();
         return;
     }
-    else if(keyPressed == Qt::Key_Right) {
+    else if(keyPressed == Qt::Key_N) {
         nextState();
         return;
     }

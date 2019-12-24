@@ -29,7 +29,7 @@ Rectangle {
         vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
         var parts = vmDrName.split("(");
         vmDrName = parts[0];
-        vmSelectedET = "Eyetracker: " + loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET);
+        vmSelectedET = "ET: " + loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET);
         vmSelectedLang = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE);
         vmDemoMode = loader.getStringForKey("viewdrmenu_mode") + ": "
         if (loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE)) vmDemoMode = vmDemoMode + "Demo";

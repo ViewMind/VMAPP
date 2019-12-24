@@ -10,7 +10,10 @@ ReadingExperiment::ReadingExperiment(QWidget *parent):Experiment(parent)
 bool ReadingExperiment::startExperiment(ConfigurationManager *c){
 
     outputDataFile = QString(FILE_OUTPUT_READING) + "_" + c->getString(CONFIG_READING_EXP_LANG);
-    if (c->getBool(CONFIG_VR_ENABLED)){
+
+    // I need to compute the VR Enabled condition BEFORE initializing the experiment as the these values are
+    // needed for the manager intialization inside the start experiment call.
+    if ((c->getString(CONFIG_EYETRACKER_CONFIGURED) == CONFIG_P_ET_HTCVIVEEYEPRO) && (!c->getBool(CONFIG_USE_MOUSE))){
         c->addKeyValuePair(CONFIG_READING_FONT_SIZE,32);
         c->addKeyValuePair(CONFIG_READING_ESCAPE_POINT_XY_K,0.10);
         c->addKeyValuePair(CONFIG_READING_FONT_NAME,"Mono");
@@ -20,7 +23,6 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
         c->addKeyValuePair(CONFIG_READING_ESCAPE_POINT_XY_K,0.5);
         c->addKeyValuePair(CONFIG_READING_FONT_NAME,"Courier New");
     }
-
 
     if (!Experiment::startExperiment(c)) return false;
 
@@ -188,12 +190,7 @@ void ReadingExperiment::keyPressHandler(int keyPressed){
 
     // In the question state, the advance must be with the mouse click.
     // Otherwise the space bar advances the question.
-    if ((qstate != ReadingManager::QS_QUESTION) && (keyPressed == Qt::Key_Right)){
-        advanceToTheNextPhrase();
-    }
-
-    // FOR QUICK MOVEMENT. COMMENT OUT
-    if (keyPressed == Qt::Key_Down){
+    if ((qstate != ReadingManager::QS_QUESTION) && (keyPressed == Qt::Key_N)){
         advanceToTheNextPhrase();
     }
 

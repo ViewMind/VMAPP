@@ -81,21 +81,18 @@ void FlowControl::resolutionCalculations(){
     QDesktopWidget *desktop = QApplication::desktop();
     // This line will assume that the current screen is the one where the experiments will be drawn.
 
+    /// Depracated code.
+    /// QRect screen = desktop->screenGeometry(desktop->screenNumber());
+    QList<QScreen*> screens = QGuiApplication::screens();
+    QRect screen = screens.at(desktop->screenNumber())->geometry();
+    configuration->addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,screen.width());
+    configuration->addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,screen.height());
+
     if (openvrco != nullptr){
         // This menas the resolution for drawing should be the one recommende by OpenVR.
         QSize s = openvrco->getRecommendedSize();
-        configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH, s.width());
-        configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,s.height());
-    }
-    else{
-        /// Depracated code.
-        /// QRect screen = desktop->screenGeometry(desktop->screenNumber());
-
-        QList<QScreen*> screens = QGuiApplication::screens();
-        QRect screen = screens.at(desktop->screenNumber())->geometry();
-
-        configuration->addKeyValuePair(CONFIG_RESOLUTION_WIDTH, screen.width());
-        configuration->addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,screen.height());
+        configuration->addKeyValuePair(CONFIG_VR_RECOMMENDED_WIDTH, s.width());
+        configuration->addKeyValuePair(CONFIG_VR_RECOMMENDED_HEIGHT,s.height());
     }
 
 }
@@ -253,7 +250,7 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
               // Processing Parameters
            << CONFIG_MOVING_WINDOW_DISP << CONFIG_MIN_FIXATION_LENGTH << CONFIG_SAMPLE_FREQUENCY
            << CONFIG_DISTANCE_2_MONITOR << CONFIG_XPX_2_MM << CONFIG_YPX_2_MM
-           << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT
+           << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT << CONFIG_FIELDING_XPX_2_MM << CONFIG_FIELDING_YPX_2_MM
            << CONFIG_REPORT_FILENAME << CONFIG_PROTOCOL_NAME << CONFIG_VR_ENABLED
               // Frequency check parameters
            << CONFIG_TOL_MAX_PERIOD_TOL << CONFIG_TOL_MIN_PERIOD_TOL
@@ -653,14 +650,6 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     case EXP_FIELDNG:
         logger.appendStandard("STARTING FIELDING (N BACK TRACE)");
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/fielding.dat");
-        if (configuration->getBool(CONFIG_VR_ENABLED)){
-            configuration->addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,0.2);
-            configuration->addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,0.2);
-        }
-        else{
-            configuration->addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,configuration->getReal(CONFIG_XPX_2_MM));
-            configuration->addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,configuration->getReal(CONFIG_YPX_2_MM));
-        }
         experiment = new FieldingExperiment();
         background = QBrush(Qt::black);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));

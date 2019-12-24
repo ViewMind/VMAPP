@@ -102,10 +102,10 @@ void VIVEEyePoller::updateEyeTrackerData(CalibrationLeastSquares::EyeInputData e
     //    lastData.xRight = static_cast<qint32>(eyeCorrectionCoeffs.xr.m*eyeData + eyeCorrectionCoeffs.xr.b);
     //    lastData.yLeft = static_cast<qint32>(eyeCorrectionCoeffs.yl.m*yl + eyeCorrectionCoeffs.yl.b);
     //    lastData.yRight = static_cast<qint32>(eyeCorrectionCoeffs.yr.m*yr + eyeCorrectionCoeffs.yr.b);
-    lastData.xLeft = static_cast<qint32>(eyeData.xl);
-    lastData.xRight = static_cast<qint32>(eyeData.xr);
-    lastData.yLeft = static_cast<qint32>(eyeData.yl);
-    lastData.yRight = static_cast<qint32>(eyeData.yr);
+    lastData.xLeft = qMax(0,static_cast<qint32>(eyeData.xl));
+    lastData.xRight = qMax(0,static_cast<qint32>(eyeData.xr));
+    lastData.yLeft = qMax(0,static_cast<qint32>(eyeData.yl));
+    lastData.yRight = qMax(0,static_cast<qint32>(eyeData.yr));
 
     lastData.pdLeft = pl;
     lastData.pdRight = pr;

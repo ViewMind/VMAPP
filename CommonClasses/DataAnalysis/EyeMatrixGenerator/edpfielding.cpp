@@ -30,10 +30,10 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
     qreal k = fieldingMargin/200.0; // This is divided by a 100 to get it to number between 0 and 1 and divided by two to get half of that.
     fieldingKx = config->getReal(CONFIG_FIELDING_XPX_2_MM);
     fieldingKy = config->getReal(CONFIG_FIELDING_YPX_2_MM);
-    dH = static_cast<qreal>(RECT_HEIGHT/fieldingKx)*k/2; //Here it is divided by two because this "much is added to each side"
-    dW = static_cast<qreal>(RECT_WIDTH/fieldingKy)*k/2;
+    dH = static_cast<qreal>(RECT_HEIGHT/fieldingKx)*k; //Here it is divided by two because this "much is added to each side"
+    dW = static_cast<qreal>(RECT_WIDTH/fieldingKy)*k;
 
-    qDebug() << "dH and dW" << dH << dW;
+    //qDebug() << "dH and dW" << dH << dW;
 
     qreal targetX, targetY;
 

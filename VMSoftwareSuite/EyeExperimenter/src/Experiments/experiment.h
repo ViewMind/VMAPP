@@ -144,6 +144,8 @@ protected:
     // So that the logic of handling keys can be implemente by each experiment.
     virtual void keyPressHandler(int keyPressed);
 
+    void keyPressEvent(QKeyEvent *event) override;
+
     // Update Image or HMD Logic is the same for all experiments
     void updateSecondMonitorORHMD();
 

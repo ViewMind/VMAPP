@@ -10,6 +10,7 @@ void ExperimentDataPainter::init(ConfigurationManager *c){
     ScreenResolutionHeight = c->getReal(CONFIG_RESOLUTION_HEIGHT);
     ScreenResolutionWidth = c->getReal(CONFIG_RESOLUTION_WIDTH);
     canvas = new QGraphicsScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
+    qDebug() << "Experiment data painter. Scene Rect" << canvas->sceneRect();
     R = 0.007*ScreenResolutionWidth;
     config = c;
 }

@@ -15,7 +15,7 @@ class OpenGazeInterface: public EyeTrackerInterface
     Q_OBJECT
 
 public:
-    OpenGazeInterface(QObject *parent = 0, qreal width = 1, qreal height = 1);
+    OpenGazeInterface(QObject *parent = nullptr, qreal width = 1, qreal height = 1);
     ~OpenGazeInterface();
     void connectToEyeTracker();
     void enableUpdating(bool enable);
