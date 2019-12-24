@@ -7,6 +7,7 @@ Item {
     property string vmTime: ""
     property string vmReading: ""
     property string vmBinding: ""
+    property string vmFielding: ""
     property string vmReportName: ""
     property bool vmIsUpToDate: true
     property string vmFileList: ""
@@ -16,7 +17,7 @@ Item {
     readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
-    width: viewReport.columnWidth*3
+    width: viewReport.columnWidth*5
 
     signal reprocessReport(var reportName)
 
@@ -86,13 +87,31 @@ Item {
     }
 
     Rectangle {
-        id: statusRectText
+        id: fieldingRect
         color: vmRepSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
         border.width: mainWindow.width*0.002
         height: vmHeight
         width: viewReport.columnWidth
         anchors.left: bindingRect.right
+        anchors.top: parent.top
+        Text {
+            font.family: viewHome.gothamR.name
+            font.pixelSize: vmFontSize
+            text: vmFielding
+            color: vmRepSelected? "#ffffff" : "#000000"
+            anchors.centerIn: parent
+        }
+    }
+
+    Rectangle {
+        id: statusRectText
+        color: vmRepSelected? "#4984b3" : "#ffffff"
+        border.color: "#EDEDEE"
+        border.width: mainWindow.width*0.002
+        height: vmHeight
+        width: viewReport.columnWidth
+        anchors.left: fieldingRect.right
         anchors.top: parent.top
         visible: (vmIsUpToDate || (vmDate === viewResults.vmDEMO_DATE))
         Text {

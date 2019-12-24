@@ -64,7 +64,7 @@ void SSLDataProcessingClient::connectToServer(bool isDemoMode, const QString &ol
     if (eyeGenConf.containsKeyword(CONFIG_FILE_BIDING_UC)){
         if (!isDemoMode) {
             if (!txDP.addFile(datDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC),DataPacket::DPFI_BINDING_UC)){
-                log.appendError("On creating the DataPacket, could not get Binding BC File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC));
+                log.appendError("On creating the DataPacket, could not get Binding UC File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_BIDING_UC));
             }
         }
         else txDP.addFile(":/demo_data/binding_uc_2_l_2_2010_03_06_10_03.dat",DataPacket::DPFI_BINDING_UC);
@@ -72,10 +72,19 @@ void SSLDataProcessingClient::connectToServer(bool isDemoMode, const QString &ol
     if (eyeGenConf.containsKeyword(CONFIG_FILE_READING)){
         if (!isDemoMode) {
             if(!txDP.addFile(datDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_READING),DataPacket::DPFI_READING)){
-                log.appendError("On creating the DataPacket, could not get Binding BC File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_READING));
+                log.appendError("On creating the DataPacket, could not get Reading File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_READING));
             }
         }
         else txDP.addFile(":/demo_data/reading_2_2010_06_03_10_15.dat",DataPacket::DPFI_READING);
+    }
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_FIELDING)){
+        if (!isDemoMode) {
+            if(!txDP.addFile(datDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_FIELDING),DataPacket::DPFI_FIELDING)){
+                log.appendError("On creating the DataPacket, could not get Fielding File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_FIELDING));
+            }
+        }
+        // TODO Add Fielding DEMO!
+        // else txDP.addFile(":/demo_data/reading_2_2010_06_03_10_15.dat",DataPacket::DPFI_READING);
     }
 
     // Requesting connection and ack
@@ -297,6 +306,9 @@ void SSLDataProcessingClient::on_timeOut(){
         break;
     case CS_WAIT_FOR_REPORT:
         log.appendError("Server generated report did not arrive before expected time. Closing connection");
+        break;
+    default:
+        log.appendError("SSLDataProcessing Client: Time out called in unexpected state " + QString::number(clientState));
         break;
     }    
     socket->disconnectFromHost();

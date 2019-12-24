@@ -26,6 +26,10 @@ Item {
     }
 
     function setISODate(text){
+        if (text === "") {
+            clear();
+            return;
+        }
         var parts = text.split("-")
         var dateText = parts[2] + "/" + parts[1] + "/" +parts[0];
         labelText.visible = true;

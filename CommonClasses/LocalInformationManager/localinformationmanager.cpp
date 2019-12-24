@@ -534,6 +534,25 @@ void LocalInformationManager::setRemainingEvals(qint32 remevals){
     backupDB();
 }
 
+bool LocalInformationManager::isDataMissingForPatient(const QString &patuid){
+    QVariantMap allPatientData = localDB.value(PATIENT_DATA).toMap();
+    if (!allPatientData.contains(patuid)){
+        log.appendError("Asking for missing data for non existant patient: " + patuid);
+        return true;
+    }
+
+    QVariantMap patientMap = allPatientData.value(patuid).toMap();
+    // Check for the date
+    if (patientMap.value(TPATDATA_COL_BIRTHDATE).toString().isEmpty()) return true;
+    if (!patientMap.contains(TPATDATA_COL_FORMATIVE_YEARS)) return true;
+    if (patientMap.value(TPATDATA_COL_FORMATIVE_YEARS).toInt() < 0) return true;
+    QString g = patientMap.value(TPATDATA_COL_SEX).toString();
+    if ((g != "M") && (g != "F")) return true;
+
+    return false;
+
+}
+
 LocalInformationManager::DisplayLists LocalInformationManager::getDoctorList(bool forceShow){
     DisplayLists ans;
     QStringList uids = localDB.value(DOCTOR_DATA).toMap().keys();

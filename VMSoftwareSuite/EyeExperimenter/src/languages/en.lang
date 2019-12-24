@@ -202,6 +202,7 @@ viewshowreports_diagTabDate = Date;
 viewshowreports_diagTabTime = Time;
 viewshowreports_diagTabReading = Reading;
 viewshowreports_diagTabBinding = Colors;
+viewshowreports_diagTabFielding = N-Back;
 viewshowreports_diagTabStatus = Status;
 viewshowreports_diagBtnView = VIEW;
 viewshowreports_diagBtnBack = BACK;
@@ -338,6 +339,12 @@ viewmedrec_btnBack   = BACK;
 viewmedrec_btnView   = VIEW;
 
 #********************************* ERROR MESSAGES *********************************
+viewpatientlist_missing_data_title = Missing Data;
+viewpatientlist_missing_data_msg = Birthdate, gender and years of study must be filled before<br>a report can be requested;
+viewpatientlist_btnEdit  = EDIT;
+viewpatientlist_btnClose = CLOSE;
+
+#********************************* ERROR MESSAGES *********************************
 # Error messages are split into title
 error_loading_config = Program cannot continue|A fatal error has occurred loading the configuration.<br>The program will close now; 
 error_patient_dir = Patient folder|Could not create the patient directory;
@@ -353,7 +360,6 @@ error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracke
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
 error_db_timeout = Connection time out|Too much time was spent waiting for the sever to respond<br>Please try again<br>If the problem persists, contact ViewMind in order to solve this problem;
 error_launcher_update = Restart required|In 5 seconds the program will close. Please restart it;
-
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Apply Changes|The program must be restarted to apply the selected changes;

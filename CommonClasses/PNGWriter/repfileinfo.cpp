@@ -28,100 +28,56 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         QString basename = parts.at(0);
         parts = basename.split("_");
 
+        QString date;
+        QString reading       = "N/A";
+        QString binding       = "N/A";
+        QString fielding      = "N/A";
+        QString reading_code  = "";
+        QString binding_code  = "";
+        QString fielding_code = "";
 
-        if ((parts.size() < 5) || (parts.size() > 8)){
+        if (parts.size() < 6){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");
             continue;
         }
 
-        QString date;
-        QString reading;
-        QString binding;
-        QString reading_code = "";
-        QString binding_code = "";
+        qint32 mm    = parts.size()-1;
+        qint32 hh    = mm-1;
+        qint32 dd    = hh-1;
+        qint32 MM    = dd-1;
+        qint32 yyyy  = MM-1;
 
-        // Setting the date, time, reading and binding message
-        switch (parts.size()){
-        case 5:
-            // OLD FORMAT JUST READING OR BINDING BUT NOT BOTH
-            if (parts.at(1).toUpper().contains('R')){
-                reading = parts.at(1);
-                binding = "N/A";
-                // This is very old. Before ther could be more than one study per day. So just the date is used a code.
-                reading_code = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
-            }
-            else{
-                reading = "N/A";
-                binding = parts.at(1);
-                // This is very old. Before ther could be more than one study per day. So just the date is used a code.
-                binding_code = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
-            }
-            date = parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2);
-            break;
-        case 6:
-            // OLD FORMAT READING AND BINDING
-            reading = parts.at(1);
-            binding = parts.at(2);
-            date = parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3);
-            reading_code = parts.at(3) + "_" + parts.at(4) + "_" + parts.at(5);
-            binding_code = reading_code;
-            break;
-        case 7:
-            // Information can be reading or binding
-            if (parts.at(1).contains('R')){
-                reading = parts.at(1);
-                binding = "N/A";
-                reading_code = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4) + "_" + parts.at(5) + "_" + parts.at(6);
-                // Checking the languange and the eye count.
-                if (reading.size() == 4){
-                    QString lang = reading.mid(1,2);
-                    lang = lang.toLower();
-                    QString eyes = reading.mid(3,1);
-                    reading_code = lang + "_" + eyes + "_" + reading_code;
-                }
-            }
-            else{
-                reading = "N/A";
-                binding = parts.at(1);
-                binding_code = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
-
-                // Checking the binding parameters type.
-                if (binding.size() == 4){
-                    QString num_targets = binding.mid(1,1);
-                    QString size = binding.mid(2,1);
-                    QString eyes = binding.mid(3,1);
-                    binding_code = num_targets + "_" + size + "_" + eyes + "_" + binding_code;
-                }
-            }
-            date = parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + " " + parts.at(5) + ":" + parts.at(6);
-            break;
-        case 8:
-            // The first is the report and the second one is the binding
-            reading = parts.at(1);
-            binding = parts.at(2);
-            date    = parts.at(5) + "/" + parts.at(4) + "/" + parts.at(3) + " " + parts.at(6) + ":" + parts.at(7);
-
-            reading_code = parts.at(3) + "_" + parts.at(4) + "_" + parts.at(5);
-            binding_code = reading_code;
-
-            // Checking the languange and the eye count.
-            if (reading.size() == 4){
+        date = parts.at(dd) + "/" + parts.at(MM) + "/" + parts.at(yyyy) + " " + parts.at(hh) + ":" + parts.at(mm);
+        QString baseCode = reading_code = parts.at(yyyy) + "_" + parts.at(MM) + "_" + parts.at(dd);
+        for (int i = 1; i < yyyy; i++){
+            if (parts.at(i).startsWith("R")){
+                // Reading.
+                reading = parts.at(i);
                 QString lang = reading.mid(1,2);
                 lang = lang.toLower();
                 QString eyes = reading.mid(3,1);
-                reading_code = lang + "_" + eyes + "_" + reading_code;
+                reading_code = lang + "_" + eyes + "_" + baseCode;
             }
-
-            // Checking the binding parameters type.
-            if (binding.size() == 4){
+            else if (parts.at(i).startsWith("B")){
+                // Binding
+                binding = parts.at(i);
                 QString num_targets = binding.mid(1,1);
                 QString size = binding.mid(2,1);
                 QString eyes = binding.mid(3,1);
-                binding_code = num_targets + "_" + size + "_" + eyes + "_" + binding_code;
+                binding_code = num_targets + "_" + size + "_" + eyes + "_" + baseCode;
             }
-
-            break;
+            else if (parts.at(i).startsWith("N")){
+                // Fielding
+                fielding = parts.at(i);
+                QString eyes = fielding.mid(1,1);
+                fielding_code = eyes + "_" + baseCode;
+            }
+            else{
+                logger.appendWarning("Unrecognized experiment descriptor in report filename: " + parts.at(i) + " in " + repfile);
+                continue;
+            }
         }
+
 
         // Parsing the results file.
         ConfigurationManager config;
@@ -150,10 +106,11 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
             }
         }
 
-        //qWarning() << "Adding info from" << repFiles.at(i)  << " and date is" << date;
+        /// TODO add valid Fielding CHECKs.
 
         alg_ver.binding_code = binding_code;
         alg_ver.reading_code = reading_code;
+        alg_ver.fielding_code = fielding_code;
         FileList flist = isReportUpToDate(directory, repfile,alg_ver);
 
         QVariantMap info;
@@ -162,6 +119,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         info[KEY_INDEX] = i;
         info[KEY_READING] = reading;
         info[KEY_REPNAME] = repfile;
+        info[KEY_FIELDING] = fielding;
         info[KEY_SELFLAG] = false;
         info[KEY_ISUPTODATE] = flist.isUpToDate;
         info[KEY_FILELIST] = flist.fileList.join("|");
@@ -233,8 +191,8 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
 
                     if (matches.size() > 1){
                         logger.appendWarning("Searching for processed files to match reading code: " + algver.reading_code
-                                            + " but found more than one match in processed directory " + processed_data_dir
-                                            + ". Matches were: " + matches.join(", ") + ". Will use newest file: " + matches.first());
+                                             + " but found more than one match in processed directory " + processed_data_dir
+                                             + ". Matches were: " + matches.join(", ") + ". Will use newest file: " + matches.first());
                     }
 
                     // All good.
@@ -245,7 +203,7 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
                 }
                 else{
                     logger.appendError("Searching for processed files to match reading code: " + algver.reading_code
-                                                                              + " but found no matches in processed directory " + processed_data_dir);
+                                       + " but found no matches in processed directory " + processed_data_dir);
                     ans.isUpToDate = true;
                 }
             }
@@ -308,8 +266,8 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
 
                         temp << bclist.first() << uclist.first();
                         logger.appendError("Searching for processed files to match binding code: " + algver.binding_code
-                                                                    + " but found more than two matches in processed directory " + processed_data_dir
-                                                                    + ". Matches were: " + matches.join(", ") + ". Will use: " + temp.join(", "));
+                                           + " but found more than two matches in processed directory " + processed_data_dir
+                                           + ". Matches were: " + matches.join(", ") + ". Will use: " + temp.join(", "));
                         matches.clear();
                         matches = temp;
                     }
@@ -342,10 +300,20 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
                 }
                 else{
                     logger.appendError("Searching for processed files to match binding code: " + algver.binding_code
-                                                                              + " but found no matches in processed directory " + processed_data_dir);
+                                       + " but found no matches in processed directory " + processed_data_dir);
                     ans.isUpToDate = true;
                 }
             }
+        }
+    }
+
+    /////// FIELDING
+    /// All fielding reports will allways have algorithm version have new data.
+    if (repfile.containsKeyword(CONFIG_FIELDING_ALG_VERSION)){
+        qint32 version = repfile.getInt(CONFIG_FIELDING_ALG_VERSION);
+        if (version < algver.fieldingAlg){
+            ans.fileList << repfile.getString(CONFIG_FILE_FIELDING);
+            ans.isUpToDate = false;
         }
     }
 

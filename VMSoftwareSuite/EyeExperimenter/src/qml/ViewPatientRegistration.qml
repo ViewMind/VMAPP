@@ -68,7 +68,8 @@ VMBase {
 
         // The formative years.
         if ("formative_years" in patInfo){
-            labelFormativeYears.setText(patInfo.formative_years);
+            if (patInfo.formative_years >= 0)
+                labelFormativeYears.setText(patInfo.formative_years);
         }
 
         cbConsent.checked = true;
@@ -143,6 +144,7 @@ VMBase {
         }
 
     }
+
 
     // Title and subtitle
     Text {
@@ -400,7 +402,7 @@ VMBase {
                     formative_years: labelFormativeYears.vmEnteredText
                 };
 
-                if (labelFormativeYears.vmEnteredText === "") dbDataReq.formative_years = 0;
+                if (labelFormativeYears.vmEnteredText === "") dbDataReq.formative_years = -1;
                 else{
                     var value = parseInt(labelFormativeYears.vmEnteredText)
                     if (isNaN(value) || (value < 0)){

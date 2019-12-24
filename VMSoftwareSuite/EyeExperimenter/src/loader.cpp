@@ -501,6 +501,11 @@ bool Loader::prepareMedicalRecordFiles(const QString &patid){
     return true;
 }
 
+bool Loader::verifyNoMissingDataOnPatient(const QString &patid){
+    //qDebug() << "Is data missing for patient " << patid << lim.isDataMissingForPatient(patid);
+    return !lim.isDataMissingForPatient(patid);
+}
+
 //******************************************* Report Realated Functions ***********************************************
 
 void Loader::operateOnRepGenStruct(qint32 index, qint32 type){

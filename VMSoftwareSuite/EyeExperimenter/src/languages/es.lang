@@ -71,7 +71,6 @@ viewpatientreg_errorExists = Este paciente existe bajo este doctor;
 viewpatientreg_labelAssignedDoctor = Asignar a doctor;
 viewpatientreg_labelProtocol = Protocolo;
 viewpatientreg_labelFormativeYears = Años de formación;
-viewstudystart_fieldingPauseText = Presione cualquier tecla cuando se encuentre listo;
 
 #********************************* START STUDY SCREEN *********************************
 viewstudystart_labelTitle = Estudios Oculares;
@@ -98,6 +97,7 @@ viewstudystart_targetOptions = Grande|Pequeños;
 viewstudystart_labelSelPatient = Paciente Seleccionado;
 viewstudystart_labelSelSubject = Sujeto Seleccionado;
 viewstudystart_labelReadingLanguge = Lengua de lectura;
+viewstudystart_fieldingPauseText = Presione cualquier tecla cuando se encuentre listo;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Selección del Doctor;
@@ -202,6 +202,7 @@ viewshowreports_diagTabDate = Fecha;
 viewshowreports_diagTabTime = Hora;
 viewshowreports_diagTabReading = Lectura;
 viewshowreports_diagTabBinding = Colores;
+viewshowreports_diagTabFielding = N-Back;
 viewshowreports_diagTabStatus = Estado;
 viewshowreports_diagBtnView = VER;
 viewshowreports_diagBtnBack = ATRAS;
@@ -337,6 +338,12 @@ viewmedrec_headerMain = Ficha Médica;
 viewmedrec_btnBack  = ATRAS;
 viewmedrec_btnView  = VER;
 
+#********************************* MISSIGN DATA DIALOG *********************************
+viewpatientlist_missing_data_title = Faltan datos;
+viewpatientlist_missing_data_msg = La fecha de nacimiento, el sexo y los años de estudios deben <br> ser ingreasados antes de poder pedir un reporte;
+viewpatientlist_btnEdit = EDITAR;
+viewpatientlist_btnClose = CERRAR;
+
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title by a |
 error_loading_config = El programa no<br>puede continuar|Un error crítico ha ocurrido al cargar la<br>configuración. El programa se cerrará;
@@ -353,7 +360,6 @@ error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker en
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
 error_db_timeout = Se excedió el tiempo<br>de espera|El servidor tardó demasiado en responder<br>Por favor, inténtelo nuevamente<br>Si el problema persiste, contacte a ViewMind para resolverlo;
 error_launcher_update = Se debe reiniciar|En 5 segundos el programa se cerrará. Por favor reinicielo.;
-
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Efectuar los cambios|Los cambios que realizó requieren que se reinicie el programa;

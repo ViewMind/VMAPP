@@ -15,7 +15,7 @@ class SSLDataProcessingClient: public SSLClient
 
 public:
 
-    SSLDataProcessingClient(QObject *parent = 0, ConfigurationManager *c = nullptr);
+    SSLDataProcessingClient(QObject *parent = nullptr, ConfigurationManager *c = nullptr);
     ~SSLDataProcessingClient();
 
     // Main interface function. The only one required. Everything after this point is predefined.
@@ -25,7 +25,7 @@ public:
     void sendMedicalRecordData(const QString &patuid);
 
     // Obtaining code allows for more precise messages.
-    quint8 getProcessingCode() {return processingACKCode;}
+    qint32 getProcessingCode() {return processingACKCode;}
     qint32 getNumberOfEvaluations() {return numberOfEvals;}
 
 private slots:
@@ -45,7 +45,7 @@ private:
     ClientState clientState;
 
     // The last processing code.
-    quint8 processingACKCode;
+    qint32 processingACKCode;
 
     // The number of evaluations returned.
     qint32 numberOfEvals;

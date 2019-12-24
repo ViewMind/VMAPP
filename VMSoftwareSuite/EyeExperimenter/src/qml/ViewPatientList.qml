@@ -286,6 +286,80 @@ VMBase {
         }
     }
 
+    Dialog {
+        id: missingDataDialog;
+        modal: true
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.5
+
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectMissingDataDiag
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        // The missing data title
+        Text {
+            id: diagMissingDataTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43*viewHome.vmScale
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.128
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: loader.getStringForKey(keybase+"missing_data_title");
+        }
+
+        // The instruction text
+        Text {
+            id: diagMissingDataMessage
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13*viewHome.vmScale
+            anchors.top:  diagMissingDataTitle.bottom
+            anchors.topMargin: mainWindow.height*0.038
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: loader.getStringForKey(keybase+"missing_data_msg");
+        }
+
+        Row {
+            id: missingDiagButtonRow
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: parent.height*0.05;
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: mainWindow.width*0.04;
+            VMButton{
+                id: btnEdit
+                vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
+                vmText: loader.getStringForKey(keybase+"btnEdit");
+                vmFont: gothamM.name
+                onClicked: {
+                    missingDataDialog.close();
+                    viewPatientReg.loadPatientInformation();
+                    swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
+                }
+            }
+            VMButton{
+                id: btnCloseMissingDiag
+                vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
+                vmText: loader.getStringForKey(keybase+"btnClose");
+                vmFont: gothamM.name
+                onClicked: {
+                    missingDataDialog.close();
+                }
+            }
+        }
+
+    }
+
+
     FileDialog {
         id: fileDialog
         title: loader.getStringForKey("viewhome_tableIDtitle");
@@ -760,11 +834,18 @@ VMBase {
                 model: patientList
                 delegate: VMPatientEntry {
                     onFetchReport: {
+                        var patuid = patientList.get(index).vmPatientUID;
                         patientListView.currentIndex = index;
-                        viewDatSelectionDiag.open();
+                        if (loader.verifyNoMissingDataOnPatient(patuid)){
+                            patientListView.currentIndex = index;
+                            viewDatSelectionDiag.open();
+                        }
+                        else{
+                            missingDataDialog.open();
+                        }
                     }
                     onUpdateMedicalRecords: {
-                        var patuid = patientList.get(index).vmPatientUID;
+                        var patuid = patientList.get(index).vmPatientUID;                        
                         if (!loader.prepareMedicalRecordFiles(patuid)){
                             vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM; // This is not a server comm error but the progam does not need to close.
                             var titleMsg = viewHome.getErrorTitleAndMessage("error_programming");
@@ -783,7 +864,7 @@ VMBase {
                 }
                 onCurrentIndexChanged: {
                     for (var i = 0; i < model.count; i++){
-                        if (i != currentIndex){
+                        if (i !== currentIndex){
                             patientList.setProperty(i,"vmIsSelected",false)
                         }
                     }

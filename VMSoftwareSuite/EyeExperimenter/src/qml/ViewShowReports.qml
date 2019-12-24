@@ -9,7 +9,7 @@ VMBase {
     readonly property string keybase: "viewshowreports_"
     readonly property int repTableWidth: width*0.7
     readonly property int repTableHeight: height*0.4
-    readonly property int columnWidth: repTableWidth/4
+    readonly property int columnWidth: repTableWidth/5
 
     // The two properties that must be set when checking this.
     property string vmPatientDirectory: ""
@@ -149,6 +149,25 @@ VMBase {
         }
 
         Rectangle {
+            id: headerFielding
+            color: "#adadad"
+            border.width: mainWindow.width*0.002
+            border.color: "#EDEDEE"
+            radius: 4
+            width: columnWidth
+            height: parent.height
+            Text {
+                id: fieldingText
+                text: loader.getStringForKey(keybase+"diagTabFielding");
+                width: parent.width
+                font.family: gothamB.name
+                font.pixelSize: 15*viewHome.vmScale
+                horizontalAlignment: Text.AlignHCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        Rectangle {
             id: headerStatus
             color: "#adadad"
             border.width: mainWindow.width*0.002
@@ -195,6 +214,7 @@ VMBase {
                     vmItemIndex: index
                     vmIsUpToDate: uptodate
                     vmFileList: filelist
+                    vmFielding: fielding
                     onReprocessReport: {
                         //console.log("Requested reprocessing of report: " + vmReportName + " and FileList is: " + vmFileList)
                         swiperControl.currentIndex = swiperControl.vmIndexPatientList;

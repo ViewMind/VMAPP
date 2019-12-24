@@ -254,11 +254,12 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
            << CONFIG_MOVING_WINDOW_DISP << CONFIG_MIN_FIXATION_LENGTH << CONFIG_SAMPLE_FREQUENCY
            << CONFIG_DISTANCE_2_MONITOR << CONFIG_XPX_2_MM << CONFIG_YPX_2_MM
            << CONFIG_LATENCY_ESCAPE_RAD << CONFIG_MARGIN_TARGET_HIT
-           << CONFIG_REPORT_FILENAME << CONFIG_PROTOCOL_NAME
+           << CONFIG_REPORT_FILENAME << CONFIG_PROTOCOL_NAME << CONFIG_VR_ENABLED
               // Frequency check parameters
            << CONFIG_TOL_MAX_PERIOD_TOL << CONFIG_TOL_MIN_PERIOD_TOL
            << CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL << CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL
            << CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES << CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS
+           << CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL
               // Record keeping parameters.
            << CONFIG_INST_ETSERIAL;
 
@@ -372,6 +373,15 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
         }
         else if (fileSet.at(i).startsWith(FILE_OUTPUT_BINDING_UC)){
             error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_FILE_BIDING_UC,fileSet.at(i));
+            if (!error.isEmpty()){
+                logger.appendError("WRITING EYE REP GEN FILE: " + error);
+                sslTransactionAllOk = false;
+                emit(sslTransactionFinished());
+                return;
+            }
+        }
+        if (fileSet.at(i).startsWith(FILE_OUTPUT_FIELDING)){
+            error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_FILE_FIELDING,fileSet.at(i));
             if (!error.isEmpty()){
                 logger.appendError("WRITING EYE REP GEN FILE: " + error);
                 sslTransactionAllOk = false;

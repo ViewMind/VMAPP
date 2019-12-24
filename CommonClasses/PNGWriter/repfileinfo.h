@@ -12,6 +12,7 @@
 #define KEY_DATE        "date"
 #define KEY_READING     "reading"
 #define KEY_BINDING     "binding"
+#define KEY_FIELDING    "fielding"
 #define KEY_INDEX       "repname"
 #define KEY_SELFLAG     "vmRepSelected"
 #define KEY_ISUPTODATE  "uptodate"

@@ -67,6 +67,7 @@ public:
     void saveIDTable(const QString &fileName, const QStringList &tableHeaders);
     qint32 getRemainingEvals() const;
     void setRemainingEvals(qint32 remevals);
+    bool isDataMissingForPatient(const QString &patuid);
 
     // Cleaning medical records update flags
     void cleanMedicalRecordUpdateFlag(const QString &patid);

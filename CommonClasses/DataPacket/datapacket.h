@@ -32,7 +32,7 @@ public:
     static const quint8 DPFI_DB_VALUE                                 = 12;
     static const quint8 DPFI_DB_MEDICAL_RECORD_FILE                   = 13;
     static const quint8 DPFI_DB_ERROR                                 = 14;
-    //static const quint8 DPFI_DB_SET_ACK                               = 15;
+    static const quint8 DPFI_FIELDING                                 = 15;
     static const quint8 DPFI_DB_INST_PASSWORD                         = 16;
     static const quint8 DPFI_DB_INST_UID                              = 17;
     static const quint8 DPFI_DB_ET_SERIAL                             = 18;
