@@ -47,6 +47,8 @@ public:
     };
 
     bool computeCalibrationCoeffs(QList<CalibrationData> calibrationData);
+    bool isRightEyeCalibrated();
+    bool isLeftEyeCalibrated();
     EyeCorrectionCoeffs getCalculatedCoeficients() const;
 
 private:

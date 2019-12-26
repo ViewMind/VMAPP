@@ -344,6 +344,10 @@ viewpatientlist_missing_data_msg = La fecha de nacimiento, el sexo y los años d
 viewpatientlist_btnEdit = EDITAR;
 viewpatientlist_btnClose = CERRAR;
 
+#********************************* WAIT SCREEN MESSAGES *********************************
+waitscreenmsg_calibrationEnd = La calibración ha finalizdo;
+waitscreenmsg_studyEnd = Ha finalizado el estudio;
+
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title by a |
 error_loading_config = El programa no<br>puede continuar|Un error crítico ha ocurrido al cargar la<br>configuración. El programa se cerrará;
