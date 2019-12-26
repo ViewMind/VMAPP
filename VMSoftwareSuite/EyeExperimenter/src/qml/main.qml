@@ -26,7 +26,11 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
         //swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
+        //swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
+
+        //viewVRDisplay.testCalibrationFailedDialog();
     }
+
 
 
     // The configurations dialog.

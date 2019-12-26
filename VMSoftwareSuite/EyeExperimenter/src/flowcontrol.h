@@ -47,7 +47,9 @@ public:
     Q_INVOKABLE void calibrateEyeTracker();
     Q_INVOKABLE bool startNewExperiment(qint32 experimentID);
     Q_INVOKABLE bool isConnected() const { return connected; }
-    Q_INVOKABLE bool isCalibrated() const { return calibrated; }
+    Q_INVOKABLE bool isCalibrated() const;
+    Q_INVOKABLE bool isRightEyeCalibrated() const;
+    Q_INVOKABLE bool isLeftEyeCalibrated() const;
     Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
     Q_INVOKABLE bool areThereFrequencyErrorsPresent() const {return frequencyErrorsPresent;}
     Q_INVOKABLE void setupSecondMonitor();
@@ -66,7 +68,7 @@ public:
     Q_INVOKABLE void prepareSelectedReportIteration();
     Q_INVOKABLE QVariantMap nextSelectedReportItem();
     Q_INVOKABLE QStringList getSelectedReportInfo();
-    Q_INVOKABLE quint8 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
+    Q_INVOKABLE qint32 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
     Q_INVOKABLE void moveFileToArchivedFileFolder(const QString &filename);
     Q_INVOKABLE void doFrequencyAnalysis(const QString &filename);
     Q_INVOKABLE void requestDataReprocessing(const QString &reportName, const QString &fileList, const QString &evaluationID);
@@ -74,6 +76,7 @@ public:
     Q_INVOKABLE QStringList getDiagnosticClass();
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE void stopRenderingVR();
+    Q_INVOKABLE void generateWaitScreen(const QString &message);
 
     // The image to be shown.
     QImage image() const;
@@ -148,6 +151,8 @@ private:
     // Display image used when using VR Solution. And the Wait Screen.
     QImage displayImage;
     QImage waitScreen;
+    QImage logo;  // the viewmind logo.
+    QFont waitFont;
     QColor waitScreenBaseColor;
 
     // The Log interface
@@ -177,8 +182,10 @@ private:
     // Flags to avoid reconnecting during recalibration
     bool connected;
 
-    // Flag to check if the eyetracker is calibrated or not
+    // Flag to check if the eyetracker is calibrated or not. And if not which eye failed.
     bool calibrated;
+    bool rightEyeCalibrated;
+    bool leftEyeCalibrated;
 
     // Binary status for the end of an experiment.
     bool experimentIsOk;

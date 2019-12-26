@@ -119,6 +119,15 @@ viewcalibstart_viewTitle = Calibración;
 viewcalibstart_viewSubTitle = Para proceder, el EyeTracker se debe calibrar;
 viewcalibstart_btnStart = COMENZAR CALIBRACIÓN;
 
+#********************************* CALIBRATION FAILED DIALOG *********************************
+viewcalibfailed_viewTitle = Error en la Calibracion;
+viewcalibfailed_viewSubTitle = Resultado de cada Ojo;
+viewcalibfailed_msgFailed = FALLO;
+viewcalibfailed_msgOK     = OK;
+viewcalibfailed_leftEye   = Ojo Izquierdo;
+viewcalibfailed_rightEye  = Ojo Derecho;
+viewcalibfailed_btnRetry  = REINTENTAR;
+
 #********************************* CALIBRATION DONE SCREEN DIALOG *********************************
 viewcalibdone_viewTitle = FIN DE LA CALIBRACIÓN;
 viewcalibdone_btnContinue = FINALIZAR CALIBRACIÓN;
@@ -160,6 +169,7 @@ No serán consideradas en los resultados.;
 viewpresentexp_fieldingExp = Explicación de la Evaluación <br><b>N-Back</b>;
 
 viewpresentexp_btnContinue = COMENZAR EVALUACIÓN;
+viewpresentexp_btnBack = VOLVER;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_title = Lista de Pacientes;

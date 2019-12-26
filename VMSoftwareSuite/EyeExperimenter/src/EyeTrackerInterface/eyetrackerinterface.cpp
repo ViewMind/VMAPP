@@ -5,6 +5,7 @@ EyeTrackerInterface::EyeTrackerInterface(QObject *parent, qreal width, qreal hei
     qRegisterMetaType<EyeTrackerData>("EyeTrackerData");
     screenHeight = height;
     screenWidth = width;
+    calibrationFailureType = ETCFT_UNKNOWN;
 }
 
 
@@ -33,4 +34,8 @@ QImage EyeTrackerInterface::getCalibrationImage() const{
 
 EyeTrackerData EyeTrackerInterface::getLastData() const{
     return lastData;
+}
+
+EyeTrackerInterface::ETCalibrationFailureType EyeTrackerInterface::getCalibrationFailureType() const{
+    return calibrationFailureType;
 }

@@ -28,6 +28,18 @@ bool VIVEEyePoller::initalizeEyeTracking(){
 
 }
 
+bool VIVEEyePoller::isRightEyeCalibrated(){
+    if (isCalibrating) return false;
+    if (!isCalibrated) return false;
+    return eyeCorrectionCoeffs.isRightEyeCalibrated();
+}
+
+bool VIVEEyePoller::isLeftEyeCalibrate(){
+    if (isCalibrating) return false;
+    if (!isCalibrated) return false;
+    return eyeCorrectionCoeffs.isLeftEyeCalibrated();
+}
+
 void VIVEEyePoller::run(){
 
     ViveSR::anipal::Eye::EyeData eye_data;
@@ -122,6 +134,8 @@ void VIVEEyePoller::updateEyeTrackerData(CalibrationLeastSquares::EyeInputData e
 
     lastData.pdLeft = pl;
     lastData.pdRight = pr;
+
+    //qDebug() << "LAST DATA IS NOW" << lastData.toString() << "INPUT WAS" << eyeData.xl << eyeData.yl << eyeData.xr << eyeData.yr;
 }
 
 void VIVEEyePoller::resetEyeCorrectionCoeffs(){
@@ -146,10 +160,10 @@ bool VIVEEyePoller::calibrationDone(){
     eyeCorrectionCoeffs = cls.getCalculatedCoeficients();
 
     qDebug() << "Printing calibration coefficients";
-    qDebug() << eyeCorrectionCoeffs.xr.m << eyeCorrectionCoeffs.xr.b;
-    qDebug() << eyeCorrectionCoeffs.xl.m << eyeCorrectionCoeffs.xl.b;
-    qDebug() << eyeCorrectionCoeffs.yr.m << eyeCorrectionCoeffs.yr.b;
-    qDebug() << eyeCorrectionCoeffs.yl.m << eyeCorrectionCoeffs.yl.b;
+    qDebug() << "XR" << eyeCorrectionCoeffs.xr.m << eyeCorrectionCoeffs.xr.b << eyeCorrectionCoeffs.xr.valid;
+    qDebug() << "XL" << eyeCorrectionCoeffs.xl.m << eyeCorrectionCoeffs.xl.b << eyeCorrectionCoeffs.xl.valid;
+    qDebug() << "YR" << eyeCorrectionCoeffs.yr.m << eyeCorrectionCoeffs.yr.b << eyeCorrectionCoeffs.yr.valid;
+    qDebug() << "YL" << eyeCorrectionCoeffs.yl.m << eyeCorrectionCoeffs.yl.b << eyeCorrectionCoeffs.yl.valid;
 
     isCalibrated = true;
 

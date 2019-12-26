@@ -37,6 +37,9 @@ public:
     void saveCalibrationCoefficients(const QString &file);
     void loadCalibrationCoefficients(const QString &file);
     void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l);
+    bool isRightEyeCalibrated();
+    bool isLeftEyeCalibrate();
+
 
 signals:
     void newEyeData(EyeTrackerData data);

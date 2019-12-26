@@ -228,7 +228,7 @@ VMBase {
         anchors.top: labelEyeMsg.bottom
         anchors.topMargin: mainWindow.height*0.007
         anchors.left: labelInstruction2.left
-        vmEnabled: false
+        vmEnabled: true
         z:2
         Component.onCompleted: {
             cbEyeMsg.setModelList(loader.getStringListForKey(keysearch+"labelEyeType"));

@@ -54,5 +54,6 @@
         <file>qml/VMMedRecordEntry.qml</file>
         <file>qml/VMFolderButton.qml</file>
         <file>qml/ViewVRDisplay.qml</file>
+        <file>qml/VMCalibrationFailedDialog.qml</file>
     </qresource>
 </RCC>

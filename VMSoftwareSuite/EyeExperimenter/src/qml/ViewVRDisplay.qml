@@ -7,11 +7,6 @@ VMBase {
 
     id: viewVRDisplay
 
-    //    function resetButtonStates(){
-    //        btnStartStopStudy.text = loader.getStringForKey(keysearch + "btnStartExperiment")
-    //        btnStartStopStudy.enabled = true;
-    //        btnCalibrate.enabled = true;
-    //    }
 
     function disableStartStudyButton(){
         btnStartStudy.enabled = false;
@@ -23,6 +18,12 @@ VMBase {
         btnStartStudy.enabled = true;
         btnCalibrate.enabled = true;
         swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
+    }
+
+    function testCalibrationFailedDialog(){
+        calibrationFailedDialog.vmLeftEyePassed = true;
+        calibrationFailedDialog.vmRightEyePassed = false;
+        calibrationFailedDialog.open();
     }
 
     readonly property string keysearch: "viewvrscreen_"
@@ -39,7 +40,7 @@ VMBase {
         target: flowControl
         onConnectedToEyeTracker:{
             if (swiperControl.currentIndex != swiperControl.vmIndexVRDisplay) return;
-            console.log("Connected to eyetracker in ViewVRDisplay")
+            //console.log("Connected to eyetracker in ViewVRDisplay")
             var titleMsg;
             if (!flowControl.isConnected()){
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
@@ -55,22 +56,27 @@ VMBase {
         }
         onCalibrationDone: {
             if (swiperControl.currentIndex != swiperControl.vmIndexVRDisplay) return;
-            console.log("Calibration done in ViewVRDisplay")
+            //console.log("Calibration done in ViewVRDisplay")
             var titleMsg;
             if (!flowControl.isCalibrated()){
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
-                titleMsg = viewHome.getErrorTitleAndMessage("error_et_calibrate");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
+                calibrationFailedDialog.vmLeftEyePassed = flowControl.isLeftEyeCalibrated();
+                calibrationFailedDialog.vmRightEyePassed = flowControl.isRightEyeCalibrated();
+                calibrationFailedDialog.open();
                 btnCalibrate.enabled = true;
                 return;
             }
+            flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
             btnCalibrate.enabled = true;
             btnStartStudy.enabled = true;
             btnStartStudy.visible = true;
         }
 
+    }
+
+    VMCalibrationFailedDialog{
+        id: calibrationFailedDialog
+        x: (mainWindow.width-width)/2
+        y: (mainWindow.height-height)/2
     }
 
     // The title of this slide should be the current experiment

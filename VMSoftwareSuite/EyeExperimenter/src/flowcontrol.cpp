@@ -8,6 +8,8 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *
     eyeTracker = nullptr;
     connected = false;
     calibrated = false;
+    rightEyeCalibrated  = false;
+    leftEyeCalibrated = false;
     experiment = nullptr;
     openvrco = nullptr;
     monitor = nullptr;
@@ -48,30 +50,53 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c, UIConfigMap *
         // Create the wait screen only once
         waitScreenBaseColor = QColor(Qt::gray);
 
-        QImage logo(":/CommonClasses/PNGWriter/report_text/viewmind.png");
+        logo = QImage(":/CommonClasses/PNGWriter/report_text/viewmind.png");
         if (logo.isNull()){
             logger.appendError("The loaded wait screen image is null");
             return;
         }
-        QSize s = openvrco->getRecommendedSize();
-        openvrco->setScreenColor(waitScreenBaseColor);
-        logo = logo.scaled(s.width(),s.height(),Qt::KeepAspectRatio);
 
-        waitScreen = QImage(s.width(), s.height(), QImage::Format_RGB32);
-        QPainter painter(&waitScreen);
-        painter.fillRect(0,0,s.width(),s.height(),QBrush(waitScreenBaseColor));
-        qreal xoffset = (s.width() - logo.width())/2;
-        qreal yoffset = (s.height() - logo.height())/2;
+        waitFont = QFont("Mono",32);
 
-        QRectF source(0,0,logo.width(),logo.height());
-        QRectF target(xoffset,yoffset,logo.width(),logo.height());
-        painter.drawImage(target,logo,source);
-        painter.end();
+        // We start with a blank wait screen.
+        generateWaitScreen("");
+
     }
 
     /// TEST FOR FREQ CHECK
     // configuration->addKeyValuePair(CONFIG_PATIENT_UID,"1242673082_0000_P0005");
     // doFrequencyAnalysis("reading_es_2_2019_03_22_20_59.dat");
+
+}
+
+void FlowControl::generateWaitScreen(const QString &message){
+
+    if (openvrco == nullptr) return;
+
+    QFontMetrics fmetrics(waitFont);
+    QRect btextrect = fmetrics.boundingRect(message);
+
+    QSize s = openvrco->getRecommendedSize();
+    openvrco->setScreenColor(waitScreenBaseColor);
+    logo = logo.scaled(s.width(),s.height(),Qt::KeepAspectRatio);
+
+    waitScreen = QImage(s.width(), s.height(), QImage::Format_RGB32);
+    QPainter painter(&waitScreen);
+    painter.fillRect(0,0,s.width(),s.height(),QBrush(waitScreenBaseColor));
+    qreal xoffset = (s.width() - logo.width())/2;
+    qreal yoffset = (s.height() - logo.height())/2;
+
+    QRectF source(0,0,logo.width(),logo.height());
+    QRectF target(xoffset,yoffset,logo.width(),logo.height());
+    painter.drawImage(target,logo,source);
+
+    // Drawing the text, below the image.
+    painter.setPen(QColor(Qt::black));
+    painter.setFont(waitFont);
+    xoffset = (s.width() - btextrect.width())/2;
+    yoffset = yoffset + logo.height() + btextrect.height()*2;
+    painter.drawText(static_cast<qint32>(xoffset),static_cast<qint32>(yoffset),message);
+    painter.end();
 
 }
 
@@ -537,6 +562,8 @@ void FlowControl::calibrateEyeTracker(){
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "";
     calibrated = false;
+    rightEyeCalibrated  = false;
+    leftEyeCalibrated = false;
 
     // Making sure the right eye is used, in both the calibration and the experiment.
     eyeTracker->setEyeToTransmit(static_cast<quint8>(configuration->getInt(CONFIG_VALID_EYE)));
@@ -560,6 +587,18 @@ void FlowControl::calibrateEyeTracker(){
     eyeTracker->calibrate(calibrationParams);
 }
 
+bool FlowControl::isCalibrated() const{
+    return calibrated;
+}
+
+bool FlowControl::isRightEyeCalibrated() const{
+    return rightEyeCalibrated;
+}
+
+bool FlowControl::isLeftEyeCalibrated() const{
+    return leftEyeCalibrated;
+}
+
 void FlowControl::onEyeTrackerControl(quint8 code){
     //qDebug() << "ON FlowControl::EYETRACKER CONTROL" << code;
 
@@ -580,14 +619,42 @@ void FlowControl::onEyeTrackerControl(quint8 code){
         calibrated = true;
         if (configuration->getBool(CONFIG_VR_ENABLED)) eyeTracker->enableUpdating(false);
         renderState = RENDER_WAIT_SCREEN;
-        emit(calibrationDone(true));
-        break;
-    case EyeTrackerInterface::ET_CODE_CALIBRATION_FAILED:
-        logger.appendError("EyeTracker Control: Calibration Failed");
-        calibrated = false;
-        if (configuration->getBool(CONFIG_VR_ENABLED)) eyeTracker->enableUpdating(false);
-        renderState = RENDER_WAIT_SCREEN;
-        emit(calibrationDone(false));
+        switch (eyeTracker->getCalibrationFailureType()){
+        case EyeTrackerInterface::ETCFT_NONE:
+            calibrated = true;
+            rightEyeCalibrated  = true;
+            leftEyeCalibrated = true;
+            break;
+        case EyeTrackerInterface::ETCFT_UNKNOWN:
+            calibrated = false;
+            rightEyeCalibrated  = false;
+            leftEyeCalibrated = false;
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_BOTH:
+            calibrated = false;
+            rightEyeCalibrated  = false;
+            leftEyeCalibrated = false;
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_LEFT:
+            rightEyeCalibrated  = true;
+            leftEyeCalibrated = false;
+            if (configuration->getInt(CONFIG_VALID_EYE) == EYE_L){
+                // The eye that failed was the one that was configured.
+                calibrated = false;
+            }
+            else calibrated = true;
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_RIGHT:
+            rightEyeCalibrated  = false;
+            leftEyeCalibrated = true;
+            if (configuration->getInt(CONFIG_VALID_EYE) == EYE_R){
+                // The eye that failed was the one that was configured.
+                calibrated = false;
+            }
+            else calibrated = true;
+            break;
+        }
+        emit(calibrationDone(calibrated));
         break;
     case EyeTrackerInterface::ET_CODE_CONNECTION_FAIL:
         logger.appendError("EyeTracker Control: Connection to EyeTracker Failed");

@@ -119,6 +119,15 @@ viewcalibstart_viewTitle = Calibration;
 viewcalibstart_viewSubTitle = In order to proceed the eye tracker must be calibrated.;
 viewcalibstart_btnStart = START CALIBRATION;
 
+#********************************* CALIBRATION FAILED DIALOG *********************************
+viewcalibfailed_viewTitle = Calibration Error;
+viewcalibfailed_viewSubTitle = Result for each eye;
+viewcalibfailed_msgFailed = FAILED;
+viewcalibfailed_msgOK     = OK;
+viewcalibfailed_leftEye   = Left Eye;
+viewcalibfailed_rightEye  = Right Eye;
+viewcalibfailed_btnRetry  = RETRY;
+
 #********************************* CALIBRATION DONE SCREEN DIALOG *********************************
 viewcalibdone_viewTitle = CALIBRATION DONE;
 viewcalibdone_btnContinue = END CALIBRATION;
@@ -160,6 +169,7 @@ They won't be considered in the results.;
 viewpresentexp_fieldingExp = Explanation of the<br><b>N-Back </b> study;
 
 viewpresentexp_btnContinue = START EVALUATION;
+viewpresentexp_btnBack = BACK;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_title = Patient List;

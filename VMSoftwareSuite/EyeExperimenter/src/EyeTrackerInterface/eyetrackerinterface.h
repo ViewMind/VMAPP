@@ -15,11 +15,12 @@ public:
 
     static const quint8 ET_CODE_CALIBRATION_DONE                = 0;
     static const quint8 ET_CODE_CALIBRATION_ABORTED             = 1;
-    static const quint8 ET_CODE_CALIBRATION_FAILED              = 2;
-    static const quint8 ET_CODE_CONNECTION_SUCCESS              = 3;
-    static const quint8 ET_CODE_CONNECTION_FAIL                 = 4;
-    static const quint8 ET_CODE_DISCONNECTED_FROM_ET            = 5;
-    static const quint8 ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE = 6;
+    static const quint8 ET_CODE_CONNECTION_SUCCESS              = 2;
+    static const quint8 ET_CODE_CONNECTION_FAIL                 = 3;
+    static const quint8 ET_CODE_DISCONNECTED_FROM_ET            = 4;
+    static const quint8 ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE = 5;
+
+    typedef enum {ETCFT_FAILED_LEFT, ETCFT_FAILED_RIGHT, ETCFT_FAILED_BOTH, ETCFT_NONE ,ETCFT_UNKNOWN}  ETCalibrationFailureType;
 
     explicit EyeTrackerInterface(QObject *parent = nullptr, qreal width = 1, qreal height = 1);
 
@@ -30,6 +31,8 @@ public:
     virtual void disconnectFromEyeTracker();
 
     virtual void calibrate(EyeTrackerCalibrationParameters params);
+
+    ETCalibrationFailureType getCalibrationFailureType() const;
 
     QImage getCalibrationImage() const;
 
@@ -61,6 +64,9 @@ protected:
 
     // Calibration image if this needs to be displayed.
     QImage calibrationImage;
+
+    // Code that defines which eye failed the calibration.
+    ETCalibrationFailureType calibrationFailureType;
 
     // The last available data
     EyeTrackerData lastData;

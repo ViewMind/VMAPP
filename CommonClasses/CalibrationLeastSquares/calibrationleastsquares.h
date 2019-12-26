@@ -42,13 +42,13 @@ public:
         LinearCoeffs xl;
         LinearCoeffs yl;
         EyeInputData computeCorrections(EyeInputData input);
+        bool isRightEyeCalibrated();
+        bool isLeftEyeCalibrated();
         void saveCalibrationCoefficients(const QString &file);
         void loadCalibrationCoefficients(const QString &file);
     };
 
     bool computeCalibrationCoeffs(QList<CalibrationData> calibrationData);
-    bool isRightEyeCalibrated();
-    bool isLeftEyeCalibrated();
     EyeCorrectionCoeffs getCalculatedCoeficients() const;
 
 private:

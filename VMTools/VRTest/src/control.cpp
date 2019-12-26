@@ -2,7 +2,7 @@
 
 Control::Control(QObject *parent) : QObject(parent)
 {
-    openvrco = new OpenVRControlObject(this);        
+    openvrco = new OpenVRControlObject(this);
     connect(openvrco,SIGNAL(requestUpdate()),this,SLOT(onRequestUpdate()));
     renderState = RENDERING_NONE;
     experiment = nullptr;
@@ -14,6 +14,7 @@ void Control::initialize(){
     eyetracker = new HTCViveEyeProEyeTrackingInterface(this,s.width(),s.height());
     connect(eyetracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
     connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),eyetracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
+    eyetracker->setEyeToTransmit(EYE_BOTH);
     eyetracker->connectToEyeTracker();
 }
 
@@ -46,9 +47,10 @@ void Control::loadViewMindWaitScreen(){
     QColor base(Qt::white);
     base = base.darker(110);
 
-    QString message = "This ia test message. When something has finished"
+    QString message = "This ia test message. When something has finished";
+    //message = "";
     
-    QFont waitFont("Mono",30);
+    QFont waitFont("Mono",32);
     QFontMetrics fmetrics(waitFont);
     QRect btextrect = fmetrics.boundingRect(message);
     
@@ -64,22 +66,24 @@ void Control::loadViewMindWaitScreen(){
     QImage canvas (s.width(), s.height(), QImage::Format_RGB32);
     QPainter painter(&canvas);
     painter.fillRect(0,0,s.width(),s.height(),QBrush(base));
-            
-    // X and Y values for the text. 
-    qreal xoffset = (s.width() - btextrect.width())/2;
-    qreal yoffset = (s.height() - btextrect.height())/2;
-    
-    painter.setPen(QColor(Qt::black));
-    painter.drawText(xoffset,yoffset,message);
-    
-    // X and Y Values for the image
+
+    // X and Y values for the text.
     qreal xoffset = (s.width() - displayImage.width())/2;
     qreal yoffset = (s.height() - displayImage.height())/2;
-    yoffset = yoffset - btextrect.height();  // Image above the text. 
-
+    
     QRectF source(0,0,displayImage.width(),displayImage.height());
     QRectF target(xoffset,yoffset,displayImage.width(),displayImage.height());
     painter.drawImage(target,displayImage,source);
+
+
+    // Drawing the text, below the image.
+    painter.setPen(QColor(Qt::black));
+    painter.setFont(waitFont);
+    xoffset = (s.width() - btextrect.width())/2;
+    yoffset = yoffset + displayImage.height() + btextrect.height()*2;
+    painter.drawText(static_cast<qint32>(xoffset),static_cast<qint32>(yoffset),message);
+
+
     painter.end();
     displayImage = canvas;
 
@@ -166,8 +170,8 @@ void Control::startBindingExperiment(bool isBound, qint32 targetNum, bool areTar
     configExperiments.addKeyValuePair(CONFIG_YPX_2_MM,0.25);
     configExperiments.addKeyValuePair(CONFIG_XPX_2_MM,0.25);
 
-//    configExperiments.addKeyValuePair(CONFIG_YPX_2_MM,0.2);
-//    configExperiments.addKeyValuePair(CONFIG_XPX_2_MM,0.2);
+    //    configExperiments.addKeyValuePair(CONFIG_YPX_2_MM,0.2);
+    //    configExperiments.addKeyValuePair(CONFIG_XPX_2_MM,0.2);
 
     configExperiments.addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,areTargetsSmall);
     configExperiments.addKeyValuePair(CONFIG_BINDING_NUMBER_OF_TARGETS,targetNum);
@@ -231,9 +235,44 @@ void Control::onEyeTrackerControl(quint8 code){
         openvrco->setImage(&displayImage);
         emit(newImageAvailable());
         qDebug() << "CALIBRATION SUCESSFULL";
+
+        switch (eyetracker->getCalibrationFailureType()){
+        case EyeTrackerInterface::ETCFT_NONE:
+            qDebug() << "Calibration Failure NONE";
+            break;
+        case EyeTrackerInterface::ETCFT_UNKNOWN:
+            qDebug() << "Calibration Failure UNKNOWN";
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_BOTH:
+            qDebug() << "Calibration Failure BOTH";
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_LEFT:
+            qDebug() << "Calibration Failure LEFT";
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_RIGHT:
+            qDebug() << "Calibration Failure RIGHT";
+            break;
+        }
         break;
     case EyeTrackerInterface::ET_CODE_CALIBRATION_FAILED:
         qDebug() << "CALIBRATION FAILED";
+        switch (eyetracker->getCalibrationFailureType()){
+        case EyeTrackerInterface::ETCFT_NONE:
+            qDebug() << "Calibration Failure NONE";
+            break;
+        case EyeTrackerInterface::ETCFT_UNKNOWN:
+            qDebug() << "Calibration Failure UNKNOWN";
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_BOTH:
+            qDebug() << "Calibration Failure BOTH";
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_LEFT:
+            qDebug() << "Calibration Failure LEFT";
+            break;
+        case EyeTrackerInterface::ETCFT_FAILED_RIGHT:
+            qDebug() << "Calibration Failure RIGHT";
+            break;
+        }
         break;
     case EyeTrackerInterface::ET_CODE_CONNECTION_SUCCESS:
         qDebug() << "EyeTracking is running";
@@ -266,7 +305,7 @@ void Control::onRequestUpdate(){
     if (renderState != RENDERING_NONE){
         QImage image = generateHMDImage();  // This function will generate the image to the HMD and update displayImage for the screen.
         openvrco->setImage(&image);
-        emit(newImageAvailable());        
+        emit(newImageAvailable());
     }
 }
 
@@ -274,8 +313,9 @@ void Control::onRequestUpdate(){
 QImage Control::generateHMDImage(){
     if (renderState == RENDERING_TARGET_TEST){
         EyeTrackerData data = eyetracker->getLastData();
+        //qDebug() << "GENIMAGE: LAST DATA IS" << data.toString();
         displayImage = tt.renderCurrentPosition(data.xRight,data.yRight,data.xLeft,data.yLeft);
-        return displayImage;        
+        return displayImage;
     }
     if (renderState == RENDERING_EXPERIMENT){
         EyeTrackerData data = eyetracker->getLastData();

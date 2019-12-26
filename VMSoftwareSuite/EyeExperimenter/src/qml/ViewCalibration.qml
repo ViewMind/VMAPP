@@ -9,8 +9,8 @@ VMBase {
     Connections{
         target: flowControl
         onConnectedToEyeTracker:{
-            if (swiperControl.currentIndex != swiperControl.vmIndexCalibrationStart) return;
-            console.log("Connected to eyetracker in ViewCalibration")
+            if (swiperControl.currentIndex !== swiperControl.vmIndexCalibrationStart) return;
+            //console.log("Connected to eyetracker in ViewCalibration")
             var titleMsg;
             if (!flowControl.isConnected()){
                 vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
@@ -24,15 +24,15 @@ VMBase {
             flowControl.calibrateEyeTracker();
         }
         onCalibrationDone: {
-            if (swiperControl.currentIndex != swiperControl.vmIndexCalibrationStart) return;
-            console.log("Calibration done in ViewCalibration")
+            if (swiperControl.currentIndex !== swiperControl.vmIndexCalibrationStart) return;
+            //console.log("Calibration done in ViewCalibration")
             var titleMsg;
             if (!flowControl.isCalibrated()){
-                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CONNECT_ET;
-                titleMsg = viewHome.getErrorTitleAndMessage("error_et_calibrate");
-                vmErrorDiag.vmErrorMessage = titleMsg[1];
-                vmErrorDiag.vmErrorTitle = titleMsg[0];
-                vmErrorDiag.open();
+                calibrationFailedDialog.vmLeftEyePassed = flowControl.isLeftEyeCalibrated();
+                calibrationFailedDialog.vmRightEyePassed = flowControl.isRightEyeCalibrated();
+                viewCalibrationStartDiag.close();
+                calibrationFailedDialog.open();
+                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
                 return;
             }
             else{
@@ -48,6 +48,12 @@ VMBase {
     }
 
     readonly property string keysearch: "viewcalibstart_"
+
+    VMCalibrationFailedDialog{
+        id: calibrationFailedDialog
+        x: (mainWindow.width-width)/2
+        y: (mainWindow.height-height)/2
+    }
 
     Dialog {
 

@@ -55,11 +55,36 @@ void HTCViveEyeProEyeTrackingInterface::onCalibrationTimerTimeout(){
         else{
             calibrationImage = calibrationTargets.getClearScreen();
             if (!eyetracker.calibrationDone()){
-                emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
+                // This means that BOTH eyes failed to gather data.
+                calibrationFailureType = ETCFT_FAILED_BOTH;
+                emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
                 return;
             }
             /// Used for debugging
             /// eyetracker.saveCalibrationCoefficients("coeffs.kof");
+
+            if (eyetracker.isRightEyeCalibrated()){
+                if (eyetracker.isLeftEyeCalibrate()){
+                    // Both eyes are ok
+                    calibrationFailureType = ETCFT_NONE;
+                }
+                else{
+                    // Right Eye OK. Left Failed
+                    calibrationFailureType = ETCFT_FAILED_LEFT;
+                }
+            }
+            else{
+                if (eyetracker.isLeftEyeCalibrate()){
+                    // Right Eye Failed. Left OK
+                    calibrationFailureType = ETCFT_FAILED_RIGHT;
+                }
+                else{
+                    // Enough data for both, but no coefficients could be computed. Not sure if tthis is possible but putting the possibility just in case.
+                    calibrationFailureType = ETCFT_FAILED_BOTH;
+                    return;
+                }
+            }
+
             emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
         }
     }
@@ -85,6 +110,8 @@ void HTCViveEyeProEyeTrackingInterface::calibrate(EyeTrackerCalibrationParameter
         calibrationPointIndex = -1;
         isWaiting = false;
         calibrationTimer.start(CALIBRATION_WAIT);
+
+        calibrationFailureType = ETCFT_UNKNOWN;
 
         eyetracker.start();
 

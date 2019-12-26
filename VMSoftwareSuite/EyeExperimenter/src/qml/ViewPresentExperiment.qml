@@ -9,7 +9,6 @@ VMBase {
 
     property string vmSlideTitle: "NO TITLE SET";
     property string vmSlideExplanation: "No explanation set";
-    //property string vmSlideAnimation: "";
 
     function enableContinue(){
         btnContinue.enabled = true;
@@ -21,6 +20,7 @@ VMBase {
             if (!flowControl.isExperimentEndOk()){
                 var titleMsg
                 swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
+                flowControl.generateWaitScreen("");
                 if (flowControl.areThereFrequencyErrorsPresent()){
                     vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
                     titleMsg = viewHome.getErrorTitleAndMessage("error_freq_check");
@@ -30,7 +30,7 @@ VMBase {
                     btnContinue.enabled = false;
                     return;
                 }
-                else{
+                else{                    
                     vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
                     titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
                     vmErrorDiag.vmErrorMessage = titleMsg[1];
@@ -41,9 +41,10 @@ VMBase {
                 }
             }
             else{
+                flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + ": " + vmSlideTitle);
                 viewVRDisplay.finishedStudySucessfully();
             }
-            if (advanceCurrentExperiment()){                
+            if (advanceCurrentExperiment()){
                 btnContinue.enabled = true;
                 swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
             }
@@ -255,9 +256,7 @@ VMBase {
             vmErrorDiag.open();
             return;
         }
-        else{
-            console.log("Started the new experiment");
-        }
+
     }
 
     // The experiment tracker
@@ -334,17 +333,6 @@ VMBase {
         anchors.leftMargin: mainWindow.width*0.139
     }
 
-//    AnimatedImage {
-//        id: slideAnimation
-//        source: vmSlideAnimation
-//        anchors.top: slideTitle.bottom
-//        anchors.topMargin: mainWindow.height*0.099
-//        //anchors.right: parent.right
-//        //anchors.rightMargin: mainWindow.width*0.141
-//        anchors.horizontalCenter: parent.horizontalCenter
-//        //scale: 1.5
-//    }
-
     VMSlideViewer {
         id: slideViewer
         height: parent.height*0.5
@@ -355,23 +343,40 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
-    VMButton{
-        id: btnContinue
-        vmText: loader.getStringForKey(keysearch + "btnContinue")
-        vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
-        vmInvertColors: true
-        vmFont: viewPresentExperiment.gothamM.name
+    Row {
+        id: buttonRow
         anchors.bottom: parent.bottom
         anchors.bottomMargin: mainWindow.height*0.058
         anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: {
-            if (loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET) === vmDefines.vmCONFIG_P_ET_HTCVIVEEYEPRO){
-                swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
-            }
-            else {
-                startNextStudy();
+        spacing: mainWindow.width*0.04
+
+        VMButton{
+            id: btnBack
+            vmText: loader.getStringForKey(keysearch + "btnBack")
+            vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
+            vmInvertColors: true
+            vmFont: viewPresentExperiment.gothamM.name
+            onClicked: {
+                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
             }
         }
+
+        VMButton{
+            id: btnContinue
+            vmText: loader.getStringForKey(keysearch + "btnContinue")
+            vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
+            vmInvertColors: true
+            vmFont: viewPresentExperiment.gothamM.name
+            onClicked: {
+                if (loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET) === vmDefines.vmCONFIG_P_ET_HTCVIVEEYEPRO){
+                    swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
+                }
+                else {
+                    startNextStudy();
+                }
+            }
+        }
+
     }
 
 

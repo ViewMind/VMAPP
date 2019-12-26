@@ -134,7 +134,7 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
         }
 
         // Send only if there was any valid data.
-        if (send){            
+        if (send){
             data.time = static_cast<qint32>(cmd.getField(GPF_TIME).toDouble()*1000); // (Transforming seconds into ms);
             //qWarning() << "Original time stamp of" << cmd.getField(GPF_TIME).toDouble() << "timedata" << data.time;
             lastData = data;
@@ -164,6 +164,23 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             //qWarning() << "Total" << total  << "LEFT VALID" << leftValid << "RIGHT VALID" << rightValid
             //           << "Can use left: " << canUseLeft() << "Can use right: " << canUseRight() << "Eye To Transmit" << eyeToTransmit;
 
+            if (total != leftValid){
+                if (total != rightValid){
+                    calibrationFailureType = ETCFT_FAILED_BOTH;
+                }
+                else{
+                    calibrationFailureType = ETCFT_FAILED_LEFT;
+                }
+            }
+            else{
+                if (total != rightValid){
+                    calibrationFailureType = ETCFT_FAILED_RIGHT;
+                }
+                else{
+                    calibrationFailureType = ETCFT_NONE;
+                }
+            }
+
             if (canUseLeft() && (total != leftValid)){
                 logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for left eye: " + QString::number(leftValid) + " out of " + QString::number(total));
                 sendOk = false;
@@ -180,19 +197,20 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             closeWindow.setEnableCommand(GPC_CALIBRATE_SHOW,false);
             socket->write(closeWindow.prepareCommandToSend());
             //qWarning() << "SENDING THE CALIBRATION FINISH COMMAND" << sendOk;
-            if (sendOk) emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
-            else emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
+            emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+
         }
     }
 }
 //*************************** Eye Interface Functions ************************************************
 void OpenGazeInterface::calibrate(EyeTrackerCalibrationParameters params){
-    Q_UNUSED(params);
+    Q_UNUSED(params)
     OpenGazeCommand cmd;
     cmd.setEnableCommand(GPC_CALIBRATE_SHOW,true);
     socket->write(cmd.prepareCommandToSend());
     cmd.setEnableCommand(GPC_CALIBRATE_START,true);
     socket->write(cmd.prepareCommandToSend());
+    calibrationFailureType = ETCFT_NONE;
     eventDetecter->showMaximized();
 }
 

@@ -77,11 +77,11 @@ bool CalibrationLeastSquares::computeCalibrationCoeffs(QList<CalibrationData> ca
 }
 
 
-bool CalibrationLeastSquares::isRightEyeCalibrated(){
+bool CalibrationLeastSquares::EyeCorrectionCoeffs::isRightEyeCalibrated(){
    return xr.valid && yr.valid;
 }
 
-bool CalibrationLeastSquares::isLeftEyeCalibrated(){
+bool CalibrationLeastSquares::EyeCorrectionCoeffs::isLeftEyeCalibrated(){
    return xl.valid && yl.valid;
 }
 
@@ -91,6 +91,8 @@ CalibrationLeastSquares::EyeCorrectionCoeffs CalibrationLeastSquares::getCalcula
 
 CalibrationLeastSquares::LinearCoeffs CalibrationLeastSquares::LeastSquaresData::computeLinearCoeffs(){
     LinearCoeffs lc;
+    lc.m = 0;
+    lc.b = 0;
 
     // Computing the matrix coefficients
     qreal m11 = 0;
@@ -129,6 +131,13 @@ CalibrationLeastSquares::LinearCoeffs CalibrationLeastSquares::LeastSquaresData:
     lc.b = im11*t1 + im12*t2;
     lc.m = im21*t1 + im22*t2;
 
+    // Making doubly sure No NaN appears in the results.
+    if (qIsNaN(lc.m) || qIsNaN(lc.b)){
+        lc.valid = false;
+        lc.m = 0;
+        lc.b = 0;
+    }
+
     return lc;
 }
 
@@ -137,6 +146,14 @@ CalibrationLeastSquares::EyeInputData CalibrationLeastSquares::EyeCorrectionCoef
     input.xr = xr.m*input.xr + xr.b;
     input.yl = yl.m*input.yl + yl.b;
     input.yr = yr.m*input.yr + yr.b;
+
+    // Making triple sure there are non NaN nubmers.
+    if (qIsNaN(input.xl)) input.xl = 0;
+    if (qIsNaN(input.xr)) input.xr = 0;
+    if (qIsNaN(input.yl)) input.yl = 0;
+    if (qIsNaN(input.yr)) input.yr = 0;
+
+
     return input;
 }
 

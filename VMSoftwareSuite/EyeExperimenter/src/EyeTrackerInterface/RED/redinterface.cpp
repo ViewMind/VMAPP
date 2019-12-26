@@ -58,7 +58,8 @@ void REDInterface::calibrate(EyeTrackerCalibrationParameters params){
 
     if (result != RET_SUCCESS){
         logger.appendError("SMI REDM: Setting up calibration. " + num2Error(result));
-        emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
+        calibrationFailureType = ETCFT_UNKNOWN;
+        emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
         return;
     }
 
@@ -66,7 +67,8 @@ void REDInterface::calibrate(EyeTrackerCalibrationParameters params){
 
     if (result != RET_SUCCESS){
         logger.appendError("SMI REDM: During calibration. " + num2Error(result));
-        emit(eyeTrackerControl(ET_CODE_CALIBRATION_FAILED));
+        calibrationFailureType = ETCFT_UNKNOWN;
+        emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
         return;
     }
 
@@ -80,6 +82,7 @@ void REDInterface::calibrate(EyeTrackerCalibrationParameters params){
         }
     }
 
+    calibrationFailureType = ETCFT_NONE;
     emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
 }
 

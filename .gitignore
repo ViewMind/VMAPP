@@ -38,7 +38,6 @@ VMSoftwareSuite/EyeExperimenter/exe64/launcher/
 VMSoftwareSuite/EyeServerMonitor/bin/otherdlls/
 VMSoftwareSuite/EyeExperimenter/exe64/HTC_License
 VMSoftwareSuite/EyeExperimenter/exe64/clean.bat
-VMSoftwareSuite/EyeExperimenter/exe64/configuration
 VMSoftwareSuite/EyeExperimenter/exe64/configuration.old
 VMSoftwareSuite/EyeExperimenter/exe64/configuration_anti
 VMSoftwareSuite/EyeExperimenter/exe64/configuration_axis
@@ -48,6 +47,20 @@ VMSoftwareSuite/EyeExperimenter/exe64/settings
 VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata_antioquia/
 VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata_axis/
 VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata_vm/
+VMSoftwareSuite/EyeExperimenter/exe64/Qt/
+VMSoftwareSuite/EyeExperimenter/exe64/QtGraphicalEffects/
+VMSoftwareSuite/EyeExperimenter/exe64/QtQml/
+VMSoftwareSuite/EyeExperimenter/exe64/QtQuick.2/
+VMSoftwareSuite/EyeExperimenter/exe64/QtQuick/
+VMSoftwareSuite/EyeExperimenter/exe64/bearer/
+VMSoftwareSuite/EyeExperimenter/exe64/iconengines/
+VMSoftwareSuite/EyeExperimenter/exe64/imageformats/
+VMSoftwareSuite/EyeExperimenter/exe64/platforms/
+VMSoftwareSuite/EyeExperimenter/exe64/qmltooling/
+VMSoftwareSuite/EyeExperimenter/exe64/scenegraph/
+VMSoftwareSuite/EyeExperimenter/exe64/styles/
+VMSoftwareSuite/EyeExperimenter/exe64/translations/
+
 
 VMSoftwareSuite/EyeServerMonitor/bin/HTC_License
 VMTools/PupilLabsDemo/
