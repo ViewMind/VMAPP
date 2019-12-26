@@ -76,6 +76,15 @@ bool CalibrationLeastSquares::computeCalibrationCoeffs(QList<CalibrationData> ca
     return true;
 }
 
+
+bool CalibrationLeastSquares::isRightEyeCalibrated(){
+   return xr.valid && yr.valid;
+}
+
+bool CalibrationLeastSquares::isLeftEyeCalibrated(){
+   return xl.valid && yl.valid;
+}
+
 CalibrationLeastSquares::EyeCorrectionCoeffs CalibrationLeastSquares::getCalculatedCoeficients() const{
     return coeffs;
 }

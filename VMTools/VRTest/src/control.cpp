@@ -46,6 +46,12 @@ void Control::loadViewMindWaitScreen(){
     QColor base(Qt::white);
     base = base.darker(110);
 
+    QString message = "This ia test message. When something has finished"
+    
+    QFont waitFont("Mono",30);
+    QFontMetrics fmetrics(waitFont);
+    QRect btextrect = fmetrics.boundingRect(message);
+    
     displayImage = QImage(":/viewmind.png");
     if (displayImage.isNull()){
         qDebug() << "Loaded null image";
@@ -58,15 +64,24 @@ void Control::loadViewMindWaitScreen(){
     QImage canvas (s.width(), s.height(), QImage::Format_RGB32);
     QPainter painter(&canvas);
     painter.fillRect(0,0,s.width(),s.height(),QBrush(base));
+            
+    // X and Y values for the text. 
+    qreal xoffset = (s.width() - btextrect.width())/2;
+    qreal yoffset = (s.height() - btextrect.height())/2;
+    
+    painter.setPen(QColor(Qt::black));
+    painter.drawText(xoffset,yoffset,message);
+    
+    // X and Y Values for the image
     qreal xoffset = (s.width() - displayImage.width())/2;
     qreal yoffset = (s.height() - displayImage.height())/2;
+    yoffset = yoffset - btextrect.height();  // Image above the text. 
 
     QRectF source(0,0,displayImage.width(),displayImage.height());
     QRectF target(xoffset,yoffset,displayImage.width(),displayImage.height());
     painter.drawImage(target,displayImage,source);
     painter.end();
     displayImage = canvas;
-
 
     displayImage.save("test.png");
     renderState = RENDER_WAIT_SCREEN;

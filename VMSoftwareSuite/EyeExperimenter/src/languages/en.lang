@@ -344,6 +344,10 @@ viewpatientlist_missing_data_msg = Birthdate, gender and years of study must be 
 viewpatientlist_btnEdit  = EDIT;
 viewpatientlist_btnClose = CLOSE;
 
+#********************************* WAIT SCREEN MESSAGES *********************************
+waitscreenmsg_calibrationEnd = Calibration has ended;
+waitscreenmsg_studyEnd = You have completed the study;
+
 #********************************* ERROR MESSAGES *********************************
 # Error messages are split into title
 error_loading_config = Program cannot continue|A fatal error has occurred loading the configuration.<br>The program will close now; 

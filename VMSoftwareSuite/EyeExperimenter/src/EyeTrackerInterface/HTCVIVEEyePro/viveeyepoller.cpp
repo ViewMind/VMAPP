@@ -64,12 +64,25 @@ void VIVEEyePoller::run(){
             vecL = pLe*vecL;
             vecR = pRe*vecR;
 
-            areValid = (vecL.z() != 0.0f) && (vecR.z() != 0.0f);
+            areValid = (vecL.z() != 0.0f) || (vecR.z() != 0.0f);
+            
             if (areValid){
-                eyeData.xl = static_cast<qreal>(vecL.x())/static_cast<qreal>(vecL.z());
-                eyeData.xr = static_cast<qreal>(vecR.x())/static_cast<qreal>(vecR.z());
-                eyeData.yl = static_cast<qreal>(vecL.y())/static_cast<qreal>(vecL.z());
-                eyeData.yr = static_cast<qreal>(vecR.y())/static_cast<qreal>(vecR.z());
+                if (vecL.z() != 0.0f){
+                   eyeData.xl = static_cast<qreal>(vecL.x())/static_cast<qreal>(vecL.z());
+                   eyeData.yl = static_cast<qreal>(vecL.y())/static_cast<qreal>(vecL.z());
+                }
+                else{
+                   eyeData.xl = 0;
+                   eyeData.yl = 0;
+                }
+                if (vecR.z() != 0.0f){
+                   eyeData.xr = static_cast<qreal>(vecR.x())/static_cast<qreal>(vecR.z());                
+                   eyeData.yr = static_cast<qreal>(vecR.y())/static_cast<qreal>(vecR.z());
+                }
+                else{
+                   eyeData.xr = 0;
+                   eyeData.yr = 0;                 
+                }
             }
 
             if (isCalibrating && shouldStoreCalibrationData && areValid ){

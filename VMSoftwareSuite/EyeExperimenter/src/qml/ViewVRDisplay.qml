@@ -22,6 +22,7 @@ VMBase {
         btnStartStudy.visible = true;
         btnStartStudy.enabled = true;
         btnCalibrate.enabled = true;
+        swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
     }
 
     readonly property string keysearch: "viewvrscreen_"
