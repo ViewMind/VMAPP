@@ -11,9 +11,9 @@
 *.exe
 
 
-VMTools/EyeDataAnalyzer/exe64/QRC/
-VMTools/EyeDataAnalyzer/exe64/*.dll
-VMTools/EyeDataAnalyzer/exe64/work/
+VMTools/EyeDataAnalyzer/exe64
+VMTools/EyeDataAnalyzer/exe64
+VMTools/EyeDataAnalyzer/exe64
 
 VMTools/QMLImageUpdater/exe/
 
@@ -32,48 +32,15 @@ VMSoftwareSuite/EyeUpdateServer/bin/EyeUpdateServerMonitor
 VMSoftwareSuite/EyeUpdateServer/bin/etdir/
 VMSoftwareSuite/EyeUpdateServer/bin/mail.php
 VMSoftwareSuite/EyeUpdateServer/bin/LOGDIR/
-VMSoftwareSuite/EyeExperimenter/exe64/*.cpp
-VMSoftwareSuite/EyeExperimenter/exe64/QRC
-VMSoftwareSuite/EyeExperimenter/exe64/launcher/
-VMSoftwareSuite/EyeServerMonitor/bin/otherdlls/
-VMSoftwareSuite/EyeExperimenter/exe64/HTC_License
-VMSoftwareSuite/EyeExperimenter/exe64/clean.bat
-VMSoftwareSuite/EyeExperimenter/exe64/configuration.old
-VMSoftwareSuite/EyeExperimenter/exe64/configuration_anti
-VMSoftwareSuite/EyeExperimenter/exe64/configuration_axis
-VMSoftwareSuite/EyeExperimenter/exe64/configuration_vm
-VMSoftwareSuite/EyeExperimenter/exe64/otherdlls/
-VMSoftwareSuite/EyeExperimenter/exe64/settings
-VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata_antioquia/
-VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata_axis/
-VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata_vm/
-VMSoftwareSuite/EyeExperimenter/exe64/Qt/
-VMSoftwareSuite/EyeExperimenter/exe64/QtGraphicalEffects/
-VMSoftwareSuite/EyeExperimenter/exe64/QtQml/
-VMSoftwareSuite/EyeExperimenter/exe64/QtQuick.2/
-VMSoftwareSuite/EyeExperimenter/exe64/QtQuick/
-VMSoftwareSuite/EyeExperimenter/exe64/bearer/
-VMSoftwareSuite/EyeExperimenter/exe64/iconengines/
-VMSoftwareSuite/EyeExperimenter/exe64/imageformats/
-VMSoftwareSuite/EyeExperimenter/exe64/platforms/
-VMSoftwareSuite/EyeExperimenter/exe64/qmltooling/
-VMSoftwareSuite/EyeExperimenter/exe64/scenegraph/
-VMSoftwareSuite/EyeExperimenter/exe64/styles/
-VMSoftwareSuite/EyeExperimenter/exe64/translations/
+VMSoftwareSuite/EyeExperimenter/exe64
+VMSoftwareSuite/EyeExperimenter/exe64/
 
-
-VMSoftwareSuite/EyeServerMonitor/bin/HTC_License
 VMTools/PupilLabsDemo/
 VMTools/QtDX11Test/debug/
 VMTools/QtDX11Test/exe/
 VMTools/VRTest/exe/
 VMTools/LocalDBPrinter/bin/
 VMTools/EyeDataAnalyzer/exe/
-
-VMSoftwareSuite/EyeExperimenter/exe64/*.dll
-VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata
-VMSoftwareSuite/EyeExperimenter/exe64/dbbkp
-
 
 VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager
 VMTools/RawDataServer/bin/LOGDIR/
@@ -87,7 +54,6 @@ VMSoftwareSuite/EyeReportGenerator/bin/OBJS
 VMSoftwareSuite/EyeReportGenerator/bin/QRC
 VMSoftwareSuite/EyeReportGenerator/bin/EyeReportGen
 VMSoftwareSuite/EyeReportGenerator/bin/res/workdir/
-
 
 VMSoftwareSuite/EyeExperimenter/exe32
 
@@ -103,7 +69,3 @@ Scripts/server_scripts/05InformationDownload/rawdata/
 Scripts/php/composer.json
 Scripts/php/composer.lock
 Scripts/php/vendor/
-
-
-
-

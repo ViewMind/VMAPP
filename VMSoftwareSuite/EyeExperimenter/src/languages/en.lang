@@ -169,7 +169,7 @@ They won't be considered in the results.;
 viewpresentexp_fieldingExp = Explanation of the<br><b>N-Back </b> study;
 
 viewpresentexp_btnContinue = START EVALUATION;
-viewpresentexp_btnBack = BACK;
+viewpresentexp_btnBack = BACK TO STUDY SETTINGS;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_title = Patient List;

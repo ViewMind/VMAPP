@@ -206,6 +206,7 @@ Window {
             case vmIndexStudyStart:
                 viewStudyStart.setPatientName();
                 viewStudyStart.setDefaultSelections();
+                viewVRDisplay.startStudy();
                 break;
             case vmIndexResults:
                 viewResults.fillFieldsFromReportInfo();

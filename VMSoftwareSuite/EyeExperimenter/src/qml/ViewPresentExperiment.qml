@@ -151,7 +151,7 @@ VMBase {
             vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
             slideDescription.visible = false;
             slideViewer.imgScale = 1.3;
-            setSlideImages("reading_" + loader.getConfigurationString(vmDefines.vmCONFIG_READING_EXP_LANG),3);
+            setSlideImages("fielding",1);
             break;
         }
     }
@@ -353,7 +353,7 @@ VMBase {
         VMButton{
             id: btnBack
             vmText: loader.getStringForKey(keysearch + "btnBack")
-            vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
+            vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
             vmInvertColors: true
             vmFont: viewPresentExperiment.gothamM.name
             onClicked: {
@@ -364,7 +364,7 @@ VMBase {
         VMButton{
             id: btnContinue
             vmText: loader.getStringForKey(keysearch + "btnContinue")
-            vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
+            vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
             vmInvertColors: true
             vmFont: viewPresentExperiment.gothamM.name
             onClicked: {

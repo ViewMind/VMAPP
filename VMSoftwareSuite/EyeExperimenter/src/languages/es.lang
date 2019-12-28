@@ -169,7 +169,7 @@ No serán consideradas en los resultados.;
 viewpresentexp_fieldingExp = Explicación de la Evaluación <br><b>N-Back</b>;
 
 viewpresentexp_btnContinue = COMENZAR EVALUACIÓN;
-viewpresentexp_btnBack = VOLVER;
+viewpresentexp_btnBack = VOLVER A SELECCION DE ESTUDIOS;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_title = Lista de Pacientes;

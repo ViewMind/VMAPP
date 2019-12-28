@@ -20,6 +20,12 @@ VMBase {
         swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
     }
 
+    function startStudy(){
+        btnStartStudy.enabled = false;
+        btnStartStudy.visible = true;
+        btnCalibrate.enabled = true;
+    }
+
     function testCalibrationFailedDialog(){
         calibrationFailedDialog.vmLeftEyePassed = true;
         calibrationFailedDialog.vmRightEyePassed = false;
