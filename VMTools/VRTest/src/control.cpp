@@ -47,12 +47,13 @@ void Control::loadViewMindWaitScreen(){
     QColor base(Qt::white);
     base = base.darker(110);
 
-    QString message = "This ia test message. When something has finished";
-    //message = "";
+    QString message = "This ia test message\nWhen something has finished";
+    message = "La calibración ha finalizdo";
     
     QFont waitFont("Mono",32);
     QFontMetrics fmetrics(waitFont);
     QRect btextrect = fmetrics.boundingRect(message);
+
     
     displayImage = QImage(":/viewmind.png");
     if (displayImage.isNull()){
@@ -80,9 +81,15 @@ void Control::loadViewMindWaitScreen(){
     painter.setPen(QColor(Qt::black));
     painter.setFont(waitFont);
     xoffset = (s.width() - btextrect.width())/2;
-    yoffset = yoffset + displayImage.height() + btextrect.height()*2;
-    painter.drawText(static_cast<qint32>(xoffset),static_cast<qint32>(yoffset),message);
+    yoffset = yoffset + displayImage.height() + btextrect.height();
 
+    QRect targetTextRect(0,static_cast<qint32>(yoffset),s.width(),static_cast<qint32>(btextrect.height()*2.2));
+
+    //message = "La calibración ha finalizdo"; targetTextRect = QRect(0,2390,1532,107);
+
+    qDebug() << targetTextRect;
+
+    painter.drawText(targetTextRect,Qt::AlignCenter,message);
 
     painter.end();
     displayImage = canvas;
@@ -236,26 +243,6 @@ void Control::onEyeTrackerControl(quint8 code){
         emit(newImageAvailable());
         qDebug() << "CALIBRATION SUCESSFULL";
 
-        switch (eyetracker->getCalibrationFailureType()){
-        case EyeTrackerInterface::ETCFT_NONE:
-            qDebug() << "Calibration Failure NONE";
-            break;
-        case EyeTrackerInterface::ETCFT_UNKNOWN:
-            qDebug() << "Calibration Failure UNKNOWN";
-            break;
-        case EyeTrackerInterface::ETCFT_FAILED_BOTH:
-            qDebug() << "Calibration Failure BOTH";
-            break;
-        case EyeTrackerInterface::ETCFT_FAILED_LEFT:
-            qDebug() << "Calibration Failure LEFT";
-            break;
-        case EyeTrackerInterface::ETCFT_FAILED_RIGHT:
-            qDebug() << "Calibration Failure RIGHT";
-            break;
-        }
-        break;
-    case EyeTrackerInterface::ET_CODE_CALIBRATION_FAILED:
-        qDebug() << "CALIBRATION FAILED";
         switch (eyetracker->getCalibrationFailureType()){
         case EyeTrackerInterface::ETCFT_NONE:
             qDebug() << "Calibration Failure NONE";

@@ -41,7 +41,7 @@ VMBase {
                 }
             }
             else{
-                flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + ": " + vmSlideTitle);
+                flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + vmSlideTitle);
                 viewVRDisplay.finishedStudySucessfully();
             }
             if (advanceCurrentExperiment()){

@@ -93,9 +93,11 @@ void FlowControl::generateWaitScreen(const QString &message){
     // Drawing the text, below the image.
     painter.setPen(QColor(Qt::black));
     painter.setFont(waitFont);
-    xoffset = (s.width() - btextrect.width())/2;
-    yoffset = yoffset + logo.height() + btextrect.height()*2;
-    painter.drawText(static_cast<qint32>(xoffset),static_cast<qint32>(yoffset),message);
+    xoffset = (s.width() - btextrect.width())/2;    
+    yoffset = yoffset + logo.height() + btextrect.height();
+    QRect targetTextRect(0,static_cast<qint32>(yoffset),s.width(),static_cast<qint32>(btextrect.height()*2.2));
+    painter.drawText(targetTextRect,Qt::AlignCenter,message);
+
     painter.end();
 
 }
