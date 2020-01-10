@@ -34,6 +34,12 @@ VMSoftwareSuite/EyeUpdateServer/bin/mail.php
 VMSoftwareSuite/EyeUpdateServer/bin/LOGDIR/
 VMSoftwareSuite/EyeExperimenter/exe64
 VMSoftwareSuite/EyeExperimenter/exe64/
+VMSoftwareSuite/EyeServerMonitor/bin/
+VMTools/BindingDesigner/outputs/
+VMTools/EyeTrackerFollower/exe/
+VMTools/LocalDBPrinter/exe/
+VMTools/MassBindingFixationDrawer/exe/
+
 
 VMTools/PupilLabsDemo/
 VMTools/QtDX11Test/debug/

@@ -93,7 +93,7 @@ void FlowControl::generateWaitScreen(const QString &message){
     // Drawing the text, below the image.
     painter.setPen(QColor(Qt::black));
     painter.setFont(waitFont);
-    xoffset = (s.width() - btextrect.width())/2;    
+    xoffset = (s.width() - btextrect.width())/2;
     yoffset = yoffset + logo.height() + btextrect.height();
     QRect targetTextRect(0,static_cast<qint32>(yoffset),s.width(),static_cast<qint32>(btextrect.height()*2.2));
     painter.drawText(targetTextRect,Qt::AlignCenter,message);
@@ -539,7 +539,7 @@ void FlowControl::connectToEyeTracker(){
 #endif
     else if (eyeTrackerSelected == CONFIG_P_ET_GP3HD){
         //qWarning() << "Creating the Open Gaze ET";
-        eyeTracker = new OpenGazeInterface(this,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
+        eyeTracker = new OpenGazeInterface(this,configuration->getReal(CONFIG_PRIMARY_MONITOR_WIDTH),configuration->getReal(CONFIG_PRIMARY_MONITOR_HEIGHT));
     }
     else if (eyeTrackerSelected == CONFIG_P_ET_HTCVIVEEYEPRO){
         QSize s = openvrco->getRecommendedSize();
@@ -552,7 +552,8 @@ void FlowControl::connectToEyeTracker(){
 
     logger.appendStandard("Connecting to EyeTracker: " + eyeTrackerSelected + "....");
     connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
-    connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),eyeTracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
+    if (openvrco != nullptr)
+        connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),eyeTracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
     eyeTracker->connectToEyeTracker();
 }
 

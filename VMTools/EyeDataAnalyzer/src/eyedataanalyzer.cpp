@@ -44,8 +44,8 @@ EyeDataAnalyzer::EyeDataAnalyzer(QWidget *parent) :
     patNameMng.loadPatNameDB();
     //patNameMng.printMap();
 
-    //switchViews(VIEW_1_PROCESSING_VIEW);
-    switchViews(VIEW_0_DATABASE_VIEW);
+    switchViews(VIEW_1_PROCESSING_VIEW);
+    //switchViews(VIEW_0_DATABASE_VIEW);
     currentDirectory = WORK_DIR;
     processDirectory();
 
