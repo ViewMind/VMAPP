@@ -765,7 +765,7 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
 
     if (openvrco != nullptr){
         if (!openvrco->startRendering()){
-            logger.appendError("Could not start rendering upon starritn experiment");
+            logger.appendError("Could not start rendering upon starting experiment");
             return false;
         }
         renderState = RENDERING_EXPERIMENT;

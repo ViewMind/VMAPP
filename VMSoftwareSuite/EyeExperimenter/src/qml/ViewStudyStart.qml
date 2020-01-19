@@ -314,7 +314,7 @@ VMBase {
         anchors.leftMargin: mainWindow.width*0.013
         vmMaxDisplayItems: 3
         z:2
-        Component.onCompleted: cbReadingLang.setModelList(["English", "Español", "Deutsche", "Français"])
+        Component.onCompleted: cbReadingLang.setModelList(["English", "Español", "Deutsche", "Français","Íslensku"])
     }
 
     // An error message.
@@ -394,6 +394,9 @@ VMBase {
                         break;
                     case 3:
                         readlang = "fr";
+                        break;
+                    case 4:
+                        readlang = "is";
                         break;
                     }
                     loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,readlang,false);

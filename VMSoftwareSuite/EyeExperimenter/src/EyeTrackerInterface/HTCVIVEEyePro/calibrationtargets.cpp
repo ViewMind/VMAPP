@@ -33,8 +33,8 @@ QImage CalibrationTargets::setSingleTarget(qint32 x, qint32 y){
     qreal xf = x - R;
     qreal yf = y - R;
 
-    QGraphicsEllipseItem *circle = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(Qt::darkBlue));
-    QGraphicsEllipseItem *innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::yellow));
+    QGraphicsEllipseItem *circle = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(QColor("#81b2d2")));
+    QGraphicsEllipseItem *innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::white));
     circle->setPos(xf,yf);
     innerCircle->setPos(xf+offset,yf+offset);
 

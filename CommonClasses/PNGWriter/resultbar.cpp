@@ -58,6 +58,8 @@ QString ResultBar::ResultBarCodes::code2String(const BarSegmentColorCode &bscc){
 
 QString ResultBar::ResultBarCodes::getDiagnosisClass() const {    
 
+    qDebug() << "idc exp idba rm wm" << idxIDC << idxEXP << idxIDBA << idxRM << idxWM;
+
     if ((idxIDC == BSCC_GREEN) &&
             (idxEXP == BSCC_GREEN) &&
             (idxIDBA == BSCC_GREEN) &&
