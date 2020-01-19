@@ -93,7 +93,7 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
 
         // Make it MS to ensure that it works with the all data processign capabilities.
         data.timeUnit = EyeTrackerData::TU_MS;
-        bool send = false;
+        bool send = false;        
 
         // Condition for left eye
         if ((cmd.getField(GPF_LPOGV) == "1") && canUseLeft()){

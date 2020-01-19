@@ -63,6 +63,8 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // Nothing should be done if the state is NOT running.
     if (state != STATE_RUNNING) return;
 
+    //qDebug() << "READING DATA: " << data.toString();
+
     // Determining what character the user is looking at.
     qint32 x,y;
     QList<qint32> indL, indR;
