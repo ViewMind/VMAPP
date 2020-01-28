@@ -133,12 +133,12 @@ sid_mf<-sid[sid[,3]!=1,]
 
 
 #structure of a ("id","sn","nw","wn","let","dur")
-a_fsl<-a[sid[,1],]
-for (i in 1:dim(sid_mf)[1]){
-  #if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0 
-  a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
-}
-a<-a_fsl;rm(a_fsl)
+# a_fsl<-a[sid[,1],]
+# for (i in 1:dim(sid_mf)[1]){
+#   if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0 
+#   a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
+# }
+# a<-a_fsl;rm(a_fsl)
 
 dim(a)
 
