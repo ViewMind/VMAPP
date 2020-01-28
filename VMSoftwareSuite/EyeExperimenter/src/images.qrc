@@ -99,5 +99,8 @@
         <file>images/reading_fr/1.gif</file>
         <file>images/reading_fr/2.gif</file>
         <file>images/fielding/0.gif</file>
+        <file>images/reading_is/0.gif</file>
+        <file>images/reading_is/1.gif</file>
+        <file>images/reading_is/2.gif</file>
     </qresource>
 </RCC>

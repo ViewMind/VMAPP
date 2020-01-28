@@ -1,7 +1,7 @@
 #ifndef EYE_EXPERIMENTER_DEFINES_H
 #define EYE_EXPERIMENTER_DEFINES_H
 
-#define   EXPERIMENTER_VERSION_NUMBER                          "13.0.2"  // Previous 13.0.1
+#define   EXPERIMENTER_VERSION_NUMBER                          "13.0.4"  // Previous 13.0.3
 #ifdef USE_IVIEW
 #define   EXPERIMENTER_VERSION                          EXPERIMENTER_VERSION_NUMBER " - SMI"
 #else

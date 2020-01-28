@@ -19,14 +19,15 @@ server_address = 192.168.1.10;
 #                INSTITUTION CONFIGURATION             #
 #------------------------------------------------------#
 
-inst_pass = 4abb9ec4b1224c47a3f90a29ec43a6967cb00516b33275a1fd0cdd29618b82ba;
-eyeexp_number = 0001;
-inst_et_serial = 77H02705-00M;
-inst_name = Novartis;
-inst_uid = 989302458;
+# Password: =mrUG:aU8U
+inst_pass = d5f7514e82a0733a57cee1ee14b1d032b06bb57f2e02267801a435cb52db0d17;
+eyeexp_number = 0000;
+inst_et_serial = 0000;
+inst_name = Test Institution;
+inst_uid = 0;
 enable_local_db_bkp = true;
-configure_options = SIYN3D;
-vr_enabled = true;
+configure_options = SINN2E;
+vr_enabled = false;
 
 #------------------------------------------------------#
 #                   READING CONFIGS                    #
@@ -40,7 +41,7 @@ reading_px_tol_for_target = 80;
 #------------------------------------------------------#
 
 moving_window_max_dispersion = 100;      #px
-sample_frequency             = 120;      #Hz
+sample_frequency             = 150;      #Hz
 minimum_fixation_length      =  50;      #ms
 distance_to_monitor          =  60;      #cm. ????
 latency_escape_radious       =  80;      #px

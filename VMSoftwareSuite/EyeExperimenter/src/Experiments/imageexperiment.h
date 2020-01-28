@@ -10,7 +10,7 @@
 #include "../../../CommonClasses/Experiments/bindingmanager.h"
 
 // Timer constants
-#define   TIME_START_CROSS                              250
+#define   TIME_START_CROSS                              2000//250
 #define   TIME_IMAGE_1                                  2000
 #define   TIME_WHITE_TRANSITION                         900
 #define   TIME_IMAGE_2_TIMEOUT                          10000

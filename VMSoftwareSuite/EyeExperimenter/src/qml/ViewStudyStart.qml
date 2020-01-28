@@ -20,10 +20,10 @@ VMBase {
 
     }
 
-    function setDefaultSelections(){
-        cboxReading.vmOn = true;
+    function setDefaultSelections(){        
         cboxBindingBC.vmOn = true;
         cboxBindingUC.vmOn = true;
+        cboxReading.vmOn = true;
     }
 
     function testPresentExperimentScreen(){

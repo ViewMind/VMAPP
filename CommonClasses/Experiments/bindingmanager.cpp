@@ -63,7 +63,7 @@ void BindingManager::init(ConfigurationManager *c){
     HScreen = canvas->height();
 
     // Calculating the points for the cross
-    qreal delta = 0.01*WScreen;
+    qreal delta = 0.05*WScreen;
     line0.setP1(QPointF(WScreen/2 - delta,HScreen/2 - delta));
     line0.setP2(QPointF(WScreen/2 + delta,HScreen/2 + delta));
     line1.setP1(QPointF(WScreen/2 + delta,HScreen/2 - delta));
@@ -73,8 +73,8 @@ void BindingManager::init(ConfigurationManager *c){
 
 void BindingManager::drawCenter(){
     clearCanvas();
-    canvas->addLine(line0,QPen(QBrush(Qt::red),2));
-    canvas->addLine(line1,QPen(QBrush(Qt::red),2));
+    canvas->addLine(line0,QPen(QBrush(Qt::red),4));
+    canvas->addLine(line1,QPen(QBrush(Qt::red),4));
 }
 
 void BindingManager::drawTrial(qint32 currentTrial, bool show){
