@@ -10,6 +10,8 @@ Item {
     height: mainWindow.height*0.058
     z: 0
 
+    signal enterPressed();
+
     Rectangle {
         id: lineEditRect
         anchors.fill: parent
@@ -50,6 +52,12 @@ Item {
         width: lineEditRect.width
         echoMode: TextInput.Password;
         onActiveFocusChanged: if (!activeFocus) vmFocus = false;
+        Keys.onEnterPressed: {
+            enterPressed();
+        }
+        Keys.onReturnPressed: {
+            enterPressed();
+        }
     }
 
     Text{

@@ -3,6 +3,7 @@
 const qreal MonitorGeometry::VR_VIEW_WIDTH               = 2000.0;
 const qreal MonitorGeometry::VR_VIEW_HEIGHT              = 2000.0;
 const qreal MonitorGeometry::VR_VIEW_DISTANCE_TO_MONITOR = 2000.0;
+const qreal MonitorGeometry::SACADE_NORM_CONSTANT        = 20.0;
 
 EDPBase::EDPBase(ConfigurationManager *c)
 {
@@ -80,7 +81,7 @@ void EDPBase::SacadeAmplitudeCalculator::reset(){
     lastY = -1;
 }
 
-qreal EDPBase::SacadeAmplitudeCalculator::calculateSacadeAmplitude(qreal x, qreal y, const MonitorGeometry &monitorGeometry){
+qreal EDPBase::SacadeAmplitudeCalculator::calculateSacadeAmplitudeOLD(qreal x, qreal y, const MonitorGeometry &monitorGeometry){
     qreal sacade = 0;
     if ((lastX > -1) && (lastY > -1)){
         // Calculating the sacade
@@ -88,6 +89,20 @@ qreal EDPBase::SacadeAmplitudeCalculator::calculateSacadeAmplitude(qreal x, qrea
         qreal yINmm = (lastY - y)*monitorGeometry.YmmToPxRatio;
         qreal delta = qSqrt(qPow(xINmm,2) + qPow(yINmm,2));
         sacade = qAtan(delta/monitorGeometry.distanceToMonitorInMilimiters)*180.0/3.141516;
+    }
+    lastX = x;
+    lastY = y;
+    return sacade;
+}
+
+qreal EDPBase::SacadeAmplitudeCalculator::calculateSacadeAmplitude(qreal x, qreal y, const MonitorGeometry &monitorGeometry){
+    qreal sacade = 0;
+    if ((lastX > -1) && (lastY > -1)){
+        // Calculating the sacade
+        qreal normX = (lastX - x)*MonitorGeometry::SACADE_NORM_CONSTANT/monitorGeometry.resolutionWidth;
+        qreal normY = (lastY - y)*MonitorGeometry::SACADE_NORM_CONSTANT/monitorGeometry.resolutionHeight;
+        sacade = qSqrt(qPow(normX,2) + qPow(normY,2));
+        //qDebug() << "SACADE: (" << lastX << "-" << x << ") && (" << lastY << "-" << y << ") RES" << monitorGeometry.resolutionWidth << monitorGeometry.resolutionHeight;
     }
     lastX = x;
     lastY = y;

@@ -37,12 +37,15 @@ public:
         QString filePath;
     };
 
-    RawDataProcessor(QObject *parent = 0);
+    RawDataProcessor(QObject *parent = nullptr);
 
     // The first method is used when calling the program automatically by another program. The second one when used to directly process the file.
     void initialize(ConfigurationManager *c);
     QString getReportFileOutput() const {return reportFileOutput; }
     QHash<QString,FixationList> getFixations() const {return fixations;}
+
+    // Access to the configuration manager. (Required to get the Width and Height once the file is processed).
+    ConfigurationManager * getConfiguration() const { return config; }
 
     // The actual processing function
     void run();

@@ -23,7 +23,7 @@
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "7.0.0" //6.2.0
+#define   PROGRAM_VERSION              "7.1.1" //7.1.0
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 

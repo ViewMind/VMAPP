@@ -52,6 +52,22 @@ Dialog {
         }
     }
 
+    function logInAttempt(){
+        if (setCurrentDoctor()){
+            if (loader.isDoctorPasswordCorrect(drPassword.getText())){
+                // Updating the text of the doctor menu.
+                viewHome.updateDrMenuText();
+                viewDoctorSelection.close();
+                viewPatList.vmShowAll = false;
+                swiperControl.currentIndex = swiperControl.vmIndexPatientList
+                drPassword.vmErrorMsg = "";
+            }
+            else{
+                drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drwrongpass");;
+            }
+        }
+    }
+
 
     onOpened: {
         instPassword.clear();
@@ -173,6 +189,7 @@ Dialog {
         anchors.left: rowProfileAndAdd.left
         anchors.top: rowProfileAndAdd.bottom
         anchors.topMargin: mainWindow.height*0.072
+        onEnterPressed: logInAttempt();
     }
 
     Row {
@@ -217,19 +234,7 @@ Dialog {
         anchors.bottomMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            if (setCurrentDoctor()){
-                if (loader.isDoctorPasswordCorrect(drPassword.getText())){
-                    // Updating the text of the doctor menu.
-                    viewHome.updateDrMenuText();
-                    viewDoctorSelection.close();
-                    viewPatList.vmShowAll = false;
-                    swiperControl.currentIndex = swiperControl.vmIndexPatientList
-                    drPassword.vmErrorMsg = "";
-                }
-                else{
-                    drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drwrongpass");;
-                }
-            }
+            logInAttempt();
         }
     }
 

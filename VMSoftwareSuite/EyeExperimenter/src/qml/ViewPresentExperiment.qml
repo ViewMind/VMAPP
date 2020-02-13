@@ -127,7 +127,8 @@ VMBase {
             }
             else{
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC");
-                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
+                viewVRDisplay.vmStudyTitle = vmSlideTitle;
+                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");                
                 //vmSlideAnimation = "qrc:/images/unbound.gif"
                 slideViewer.imgScale = 1.3;
                 setSlideImages("unbound",15);

@@ -10,13 +10,13 @@ viewhome_remEvalsUnlimited = Ilimitadas;
 viewhome_tableDID   = Identificarodor de Sujeto;
 viewhome_tableHPUID   = Identificarodor de ViewMind;
 viewhome_tableIDtitle = Por favor seleccione donde guardar la planilla de identificadores;
-viewhome_slideTitle = Comenzar su evaluación;
+viewhome_slideTitle = Bienvenido a EyeExplorer;
 viewhome_description = Utilizando Seguimiento Ocular de alta precisión, en <br>
 <b>una prueba estándar, no invasiva de 10 minutos</b>, podemos <br>
 detectar Dificultades Cognitivas Leves y predecir <br>
 el comienzo de Síndrome de Alzheimer y otras demencias, <br>
 años antes de que sus síntomas sean visibles.;
-viewhome_btnGetStarted = COMENZAR;
+viewhome_btnGetStarted = INGRESAR;
 
 #********************************* DOCTOR MENU *********************************
 viewdrmenu_mode = Modo;
@@ -73,7 +73,7 @@ viewpatientreg_labelProtocol = Protocolo;
 viewpatientreg_labelFormativeYears = Años de formación;
 
 #********************************* START STUDY SCREEN *********************************
-viewstudystart_labelTitle = Estudios Oculares;
+viewstudystart_labelTitle = Selección de Estudios;
 viewstudystart_labelSubTitle = Configure los estudios que se realizarán;
 viewstudystart_cbPatientSelection = Seleccione uno de los pacientes del doctor;
 viewstudystart_cbSubjectSelection = Seleccione uno de los sujetos del doctor;

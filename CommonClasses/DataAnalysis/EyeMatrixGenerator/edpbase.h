@@ -15,10 +15,13 @@ struct MonitorGeometry{
     static const qreal VR_VIEW_WIDTH;
     static const qreal VR_VIEW_HEIGHT;
     static const qreal VR_VIEW_DISTANCE_TO_MONITOR;
+    static const qreal SACADE_NORM_CONSTANT;
 
     qreal XmmToPxRatio;
     qreal YmmToPxRatio;
     qreal distanceToMonitorInMilimiters;
+    qreal resolutionWidth;
+    qreal resolutionHeight;
 };
 
 class EDPBase: public QObject
@@ -125,6 +128,8 @@ protected:
         qreal lastX;
         qreal lastY;
         void reset();
+        // This function is left for legacy reasons along with all the pareamters used to compute it.
+        qreal calculateSacadeAmplitudeOLD(qreal x, qreal y, const MonitorGeometry &monitorGeometry);
         qreal calculateSacadeAmplitude(qreal x, qreal y, const MonitorGeometry &monitorGeometry);
     };
 

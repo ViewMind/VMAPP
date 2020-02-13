@@ -435,6 +435,9 @@ RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *proces
         emit(appendMessage(msg,MSG_TYPE_STD));
     }
 
+    mgeo.resolutionWidth = config->getReal(CONFIG_RESOLUTION_WIDTH);
+    mgeo.resolutionHeight = config->getReal(CONFIG_RESOLUTION_HEIGHT);
+
     processor->setFieldingMargin(config->getReal(CONFIG_MARGIN_TARGET_HIT));
     processor->setMonitorGeometry(mgeo);
     processor->setMovingWindowParameters(mwp);

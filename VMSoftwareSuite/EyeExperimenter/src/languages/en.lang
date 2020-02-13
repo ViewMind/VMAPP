@@ -10,13 +10,13 @@ viewhome_remEvalsUnlimited = Unlimited;
 viewhome_tableIDtitle = Please select where to save the identifier spreadsheet;
 viewhome_tableDID   = Subject Identifier;
 viewhome_tableHPUID   = ViewMind Identifier;
-viewhome_slideTitle = Start your evaluation;
+viewhome_slideTitle = Welcome to EyeExplorer;
 viewhome_description = Using high-precision Eye-Tracking, in <b> a 10-minutes, <br>
 non-invasive and standarized test</b>, we are able to detect <br>
 Mild Cognitive Impairment and to predict the onset of <br>
 Alzheimer's Disease and other dementias, years before <br>
 symptoms are visible.;
-viewhome_btnGetStarted = GET STARTED;
+viewhome_btnGetStarted = LOG IN;
 
 #********************************* DOCTOR MENU *********************************
 viewdrmenu_mode = Mode;
@@ -73,7 +73,7 @@ viewpatientreg_labelProtocol = Protocol;
 viewpatientreg_labelFormativeYears = Years of education;
 
 #********************************* START STUDY SCREEN *********************************
-viewstudystart_labelTitle = Eye Studies;
+viewstudystart_labelTitle = Study Design;
 viewstudystart_labelSubTitle = Configure the studies to perform;
 viewstudystart_cbPatientSelection = Select one of the doctor's patient;
 viewstudystart_cbSubjectSelection = Select one of the doctor's subject;

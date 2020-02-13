@@ -171,6 +171,7 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
     mwp.maxDispersion                  = config.getInt(CONFIG_MOVING_WINDOW_DISP);
     mwp.minimumFixationLength          = config.getReal(CONFIG_MIN_FIXATION_LENGTH);
     mwp.sampleFrequency                = config.getReal(CONFIG_SAMPLE_FREQUENCY);
+
     mwp.calculateWindowSize();
 
     QString exp;
@@ -189,6 +190,9 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
         processor = new EDPImages(&config);
         rdp.separateInfoByTag(dfps.filePath,HEADER_IMAGE_EXPERIMENT,&data,&exp);
     }
+
+    mgeo.resolutionHeight =  rdp.getConfiguration()->getReal(CONFIG_RESOLUTION_HEIGHT);
+    mgeo.resolutionWidth  =  rdp.getConfiguration()->getReal(CONFIG_RESOLUTION_WIDTH);
 
     processor->setFieldingMargin(config.getReal(CONFIG_MARGIN_TARGET_HIT));
     processor->setMonitorGeometry(mgeo);
