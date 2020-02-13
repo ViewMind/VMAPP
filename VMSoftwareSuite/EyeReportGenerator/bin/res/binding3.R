@@ -13,6 +13,8 @@ library(gdata)
 
 rm(list=ls())  #Remove workspace
 
+#### NOTEBOOK ########
+
 args = commandArgs(trailingOnly=TRUE)
 
 if (length(args) != 3) {
@@ -26,7 +28,7 @@ if (length(args) != 3) {
 setwd("./res")
 
 
-BC_AXIS<-read.csv(args[1])  #MENDEZ
+BC_AXIS<-read.csv(args[1]) 
 
 
 head(BC_AXIS)
@@ -71,7 +73,7 @@ bs$dur<-as.numeric(bs$dur)
 dim(bs)
 idx<-which(bs$dur <50)
 length(idx)
-#bs<-bs[-idx,]
+bs<-bs[-idx,]
 #
 
 
@@ -100,7 +102,7 @@ bs<-bs[-idx,]
 
 
 
-idx<-which(bs$is_trial=="0")
+idx<-which(bs$is_trial=="1")
 length(idx)
 bs<-bs[-idx,]
 
@@ -127,7 +129,7 @@ tail(a3)
 
 
 rm(as)
-rm(b1s)
+#rm(b1s)
 rm(bs)
 rm(idx)
 rm(BC_AXIS)
@@ -144,10 +146,31 @@ library(healthcareai)
 
 m1 <- load_models("binding3_model.RDS")
 
+idx<-which(a3$type=="UC")
+length(idx)
+a3<-a3[-idx,]
+
+str(a3)
+
+a3$gaze<-as.numeric(a3$gaze)
+a3$gaze<-log(a3$gaze)
+a3$score<-as.numeric(a3$score)
+
+a3$nf<-as.numeric(a3$nf)
+
 ###############################################################################################
-a4 <- ddply(a3, .(Condition,subj_id,type), summarise,  mao = mean(sacc_ampl),
+a4 <- ddply(a3, .(Condition,subj_id), summarise,  mao = mean(sacc_ampl),
             mpupila = mean(pupila), mgaze = mean(gaze)
-            , mnf = mean(nf),mscore = mean(score))
+            , mnf = mean(nf),mscore = mean(score),sdao = sd(sacc_ampl),sdgaze = sd(gaze))
+
+
+str(a4)
+head(a4)
+a4$mao<-round(a4$mao,digits=2)
+a4$mpupila<-round(a4$mpupila,digits=2)
+a4$mgaze<-round(a4$mgaze,digits=2)
+a4$mnf<-round(a4$mnf,digits=2)
+a4$mscore<-round(a4$mscore,digits=2)
 
 #a4$mgaze<-log(a4$mgaze)
 
@@ -155,15 +178,19 @@ a4$Deterioro <-ifelse(a4$Condition== "CONTROL", "NO", "SI")
 
 a4$Deterioro<-as.factor(a4$Deterioro)
 
+dim(a4)
 head(a4)
+a311 <- a4[,c(2,10)]
 
-a311 <- a4[,c(2,3,9)]
+a411 <- (a4[,c(3,5,6,7,8,9)])
 
-a411 <- (a4[,c(4,5,6,7,8)])
+
 
 
 
 a6<-cbind(a311,a411)
+
+a6$mscore<-(a6$mscore*100)/32
 
 str(a6)
 
@@ -172,7 +199,7 @@ m3<-predict(m1, a6, outcome_groups = 5)
 
 m3
 
-#write.table(m3, args[3]) #acá setea el directorio de tu maquina
+#write.table(m3, "C:/Users/gerar/Dropbox/Machine learning/BINDING_gazepoint/PRUEBA_COLO/3L/m3L.txt") #acá setea el directorio de tu maquina
 binding_output <- paste0(               "bc_predicted_deterioration = ",m3$predicted_Deterioro[1], ";\n")
 binding_output <- paste0(binding_output,"uc_predicted_deterioration = ",m3$predicted_Deterioro[2], ";\n")
 binding_output <- paste0(binding_output,"bc_predicted_group = ",m3$predicted_group[1], ";\n")
