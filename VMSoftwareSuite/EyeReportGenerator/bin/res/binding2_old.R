@@ -19,16 +19,17 @@ args = commandArgs(trailingOnly=TRUE)
 
 if (length(args) != 3) {
    print(args[1])
-   stop(paste0("Binding Script requires 3 and only 3 argurments. Found: ",length(args)), call.=FALSE)
-   print(args[1])
    print(args[2])
    print(args[3])
-   print(args[4])   
+   print(args[4])
+   stop(paste0("Binding Script requires 3 and only 3 argurments. Found: ",length(args)), call.=FALSE)
 }
 
 setwd("./res")
 
+
 BC_AXIS<-read.csv(args[1]) 
+
 
 head(BC_AXIS)
 dim(BC_AXIS)
@@ -38,6 +39,8 @@ names(BC_AXIS) <- c("subj_id", "trial_id", "is_trial","trial_name","trial_type",
 BC<-BC_AXIS
 
 UC_AXIS<-read.csv(args[2])
+
+#UC_AXIS<-read.csv("binding_uc_2_l_2_2019_12_21_17_46_gerardo_VR.csv")  #gerardo VR
 
 dim(UC_AXIS)
 
@@ -176,8 +179,6 @@ dim(a4)
 a311 <- a4[,c(2,8)]
 
 a411 <- (a4[,c(3,4,5,6,7)])
-
-
 
 a6<-cbind(a311,a411)
 
