@@ -10,6 +10,7 @@ Dialog {
     readonly property int vmLIST_INDEX_BINDING_BC: 1
     readonly property int vmLIST_INDEX_BINDING_UC: 2
     readonly property int vmLIST_INDEX_FIELDING: 3
+    readonly property int vmLIST_INDEX_NBACKRT: 4
 
     readonly property int vmSEL_NOT_SELECTED:     0
     readonly property int vmSEL_SELECTED_VALID:   1
@@ -22,7 +23,7 @@ Dialog {
     height:  mainWindow.height*0.942
     closePolicy: Popup.NoAutoClose
 
-    property double vmHeightForDatSelector: mainWindow.height*0.09 //0.115
+    property double vmHeightForDatSelector: mainWindow.height*0.07 //0.115
 
     MouseArea {
         anchors.fill: parent
@@ -57,6 +58,10 @@ Dialog {
         var fieldingFiles = loader.getFileListForPatient("",vmLIST_INDEX_FIELDING);
         fieldingFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
         fielding.setModelList(fieldingFiles);
+
+        var nbackrtFiles = loader.getFileListForPatient("",vmLIST_INDEX_NBACKRT);
+        nbackrtFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
+        nbackrt.setModelList(nbackrtFiles);
 
         var bbcFiles = loader.getFileListForPatient("",vmLIST_INDEX_BINDING_BC);
         bbcFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
@@ -106,6 +111,11 @@ Dialog {
         if (index > 0) loader.operateOnRepGenStruct(index-1,vmLIST_INDEX_FIELDING)
     }
 
+    function nbackrtSelectionChanged(index){
+        enableGenerateButtonCheck();
+        if (index > 0) loader.operateOnRepGenStruct(index-1,vmLIST_INDEX_NBACKRT);
+    }
+
     function enableGenerateButtonCheck(){
 
         var selectedType = [];
@@ -117,6 +127,9 @@ Dialog {
         else selectedType.push(vmSEL_SELECTED_INVALID);
 
         if (fielding.vmCurrentIndex > 0) selectedType.push(vmSEL_SELECTED_VALID);
+        else selectedType.push(vmSEL_NOT_SELECTED);
+
+        if (nbackrt.vmCurrentIndex > 0) selectedType.push(vmSEL_SELECTED_VALID);
         else selectedType.push(vmSEL_NOT_SELECTED);
 
         btnGenerate.enabled = false;
@@ -226,32 +239,12 @@ Dialog {
 
 
         VMDatSelection{
-            id: fielding
-            vmTitle: loader.getStringForKey(keybase+"labelFielding");
-            vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
-            width: mainWindow.width*0.312
-            height: vmHeightForDatSelector
-            z: 9
-            onVmCurrentIndexChanged: {
-                fieldingSelectionChanged(fielding.vmCurrentIndex);
-            }
-            onArchiveRequested: {
-                viewDatSelectionDiag.close();
-                viewPatList.configureShowMessageForArchive(vmLIST_INDEX_FIELDING,indexInList-1)
-            }
-            onFrequencyAnalysisRequested: {
-                viewDatSelectionDiag.close();
-                viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_FIELDING,indexInList-1)
-            }
-        }
-
-        VMDatSelection{
             id: bindingBC;
             vmTitle: loader.getStringForKey(keybase+"labelColBindingBC");
             vmPlaceHolderText: loader.getStringForKey(keybase+"labelSelectOption");
             width: mainWindow.width*0.312
             height: vmHeightForDatSelector
-            z: 8
+            z: 9
             onVmCurrentIndexChanged: {
                 bindingBCSelectionChanged(bindingBC.vmCurrentIndex);
             }
@@ -275,7 +268,7 @@ Dialog {
             vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
             width: mainWindow.width*0.312
             height: vmHeightForDatSelector
-            z: 7
+            z: 8
             onVmCurrentIndexChanged: {
                 bindingUCSelectionChanged(bindingUC.vmCurrentIndex);
             }
@@ -286,6 +279,46 @@ Dialog {
             onFrequencyAnalysisRequested: {
                 viewDatSelectionDiag.close();
                 viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_UC,indexInList)
+            }
+        }
+
+        VMDatSelection{
+            id: fielding
+            vmTitle: loader.getStringForKey(keybase+"labelFielding");
+            vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
+            width: mainWindow.width*0.312
+            height: vmHeightForDatSelector
+            z: 7
+            onVmCurrentIndexChanged: {
+                fieldingSelectionChanged(fielding.vmCurrentIndex);
+            }
+            onArchiveRequested: {
+                viewDatSelectionDiag.close();
+                viewPatList.configureShowMessageForArchive(vmLIST_INDEX_FIELDING,indexInList-1)
+            }
+            onFrequencyAnalysisRequested: {
+                viewDatSelectionDiag.close();
+                viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_FIELDING,indexInList-1)
+            }
+        }
+
+        VMDatSelection{
+            id: nbackrt
+            vmTitle: loader.getStringForKey(keybase+"labelNBackRT");
+            vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
+            width: mainWindow.width*0.312
+            height: vmHeightForDatSelector
+            z: 6
+            onVmCurrentIndexChanged: {
+                nbackrtSelectionChanged(nbackrt.vmCurrentIndex);
+            }
+            onArchiveRequested: {
+                viewDatSelectionDiag.close();
+                viewPatList.configureShowMessageForArchive(vmLIST_INDEX_NBACKRT,indexInList-1)
+            }
+            onFrequencyAnalysisRequested: {
+                viewDatSelectionDiag.close();
+                viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_NBACKRT,indexInList-1)
             }
         }
 

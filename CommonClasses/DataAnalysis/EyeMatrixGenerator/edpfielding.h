@@ -62,8 +62,7 @@ private:
     void appendDataToFieldingMatrix(const DataMatrix &data,
                                     const QString &trialID,
                                     const QString &imgID,
-                                    const qreal &targetX,
-                                    const qreal &targetY);
+                                    const qint32 &targetBoxID);
 
     // The response time structures are used for easy computation of the response times.
     void computeResponseTimes(ResponseTimeStruct *responseTimeStruct);
@@ -73,6 +72,9 @@ private:
 
     // Actually saving the stored data to a file on disk.
     bool finalizeFieldingDataMatrix();
+
+    // Parser for the fielding data
+    FieldingParser parser;
 
     // The center of the screen to measure sacadic latency.
     qreal centerX,centerY;
@@ -85,6 +87,13 @@ private:
 
     // Center margins
     qreal centerMinX, centerMaxX, centerMinY, centerMaxY;
+
+    // The target box tollerance as a function of which box I'm looking.
+    QList<qreal> tolForTargetBox;
+    QList<qreal> targetBoxX;
+    QList<qreal> targetBoxY;
+    qreal targetBoxWidth;
+    qreal targetBoxHeight;
 
     // Drawing constants. Transform the fix measurmente to monitor or HMD sizes.
     qreal fieldingKx, fieldingKy;

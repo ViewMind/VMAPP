@@ -27,6 +27,7 @@ SOURCES += main.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
+    Experiments/nbackrtexperiment.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.cpp \
@@ -71,6 +72,7 @@ HEADERS += \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
+    Experiments/nbackrtexperiment.h \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
     EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
     EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal.h \

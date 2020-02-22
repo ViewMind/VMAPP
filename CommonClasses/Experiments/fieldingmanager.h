@@ -12,42 +12,12 @@
 #include "fieldingparser.h"
 #include "experimentdatapainter.h"
 
-// Constants for drawing the squares, cross and target on the screen for fielding
-// These values are the physical dimensions of the targets in mm.
-#define   AREA_WIDTH                                    256
-#define   AREA_HEIGHT                                   192
-#define   RECT_WIDTH                                    163/4
-#define   RECT_HEIGHT                                   155/4
-#define   RECT_0_X                                      200/4
-#define   RECT_0_Y                                      76/4
-#define   RECT_1_X                                      660/4
-#define   RECT_1_Y                                      76/4
-#define   RECT_2_X                                      830/4
-#define   RECT_2_Y                                      306/4
-#define   RECT_3_X                                      660/4
-#define   RECT_3_Y                                      536/4
-#define   RECT_4_X                                      200/4
-#define   RECT_4_Y                                      536/4
-#define   RECT_5_X                                      30/4
-#define   RECT_5_Y                                      306/4
-#define   TARGET_R                                      42/4
-#define   TARGET_OFFSET_X                               39/4
-#define   TARGET_OFFSET_Y                               35/4
-#define   CROSS_P0_X                                    511/4
-#define   CROSS_P0_Y                                    362/4
-#define   CROSS_P1_X                                    533/4
-#define   CROSS_P1_Y                                    383/4
-#define   CROSS_P2_X                                    511/4
-#define   CROSS_P2_Y                                    405/4
-#define   CROSS_P3_X                                    490/4
-#define   CROSS_P3_Y                                    383/4
-
 class FieldingManager: public ExperimentDataPainter
 {
 public:
 
     // Draw states for the Fielding experiments
-    typedef enum {DS_CROSS, DS_CROSS_TARGET, DS_1, DS_2, DS_3} DrawState;
+    typedef enum {DS_CROSS, DS_CROSS_TARGET, DS_1, DS_2, DS_3, DS_TARGET_BOX_ONLY} DrawState;
 
     // Constructor
     FieldingManager();
@@ -76,6 +46,12 @@ public:
     // Getting an indivual trial.
     FieldingParser::Trial getTrial(qint32 i) const { return fieldingTrials.at(i);}
 
+    // Gets the expected hit sequence for a given trial
+    QList<qint32> getExpectedTargetSequenceForTrial(qint32 trial) const;
+
+    // Auxiliary function that check if a point is in a given target box
+    bool isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const;
+
     // Drawing the pause text
     void drawPauseScreen();
 
@@ -94,6 +70,9 @@ private:
     QGraphicsSimpleTextItem *gText1;
     QGraphicsSimpleTextItem *gText2;
     QGraphicsSimpleTextItem *gText3;
+
+    // The actual target boxes.
+    QList<QRectF> targetBoxes;
 
     void enableDemoMode();
 

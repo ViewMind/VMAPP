@@ -20,6 +20,7 @@
 #include "Experiments/readingexperiment.h"
 #include "Experiments/imageexperiment.h"
 #include "Experiments/fieldingexperiment.h"
+#include "Experiments/nbackrtexperiment.h"
 
 #include "sslclient/ssldataprocessingclient.h"
 

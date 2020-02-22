@@ -30,7 +30,7 @@ VMBase {
                     btnContinue.enabled = false;
                     return;
                 }
-                else{                    
+                else{
                     vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
                     titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
                     vmErrorDiag.vmErrorMessage = titleMsg[1];
@@ -83,6 +83,9 @@ VMBase {
         case vmExpIndexFielding:
             itemFielding.vmTrackerItemState = state;
             break;
+        case vmExpIndexNBackRT:
+            itemNBackRT.vmTrackerItemState = state;
+            break;
         }
     }
 
@@ -128,7 +131,7 @@ VMBase {
             else{
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");                
+                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
                 //vmSlideAnimation = "qrc:/images/unbound.gif"
                 slideViewer.imgScale = 1.3;
                 setSlideImages("unbound",15);
@@ -154,7 +157,16 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("fielding",1);
             break;
+        case vmExpIndexNBackRT:
+            vmSlideTitle = loader.getStringForKey(keysearch+"itemNBackRT");
+            viewVRDisplay.vmStudyTitle = vmSlideTitle;
+            vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
+            slideDescription.visible = false;
+            slideViewer.imgScale = 1.3;
+            setSlideImages("fielding",1);
+            break;
         }
+
     }
 
     function setTracker(list){
@@ -164,6 +176,7 @@ VMBase {
         itemBindingUC.visible = false
         itemReading.visible = false
         itemFielding.visible = false
+        itemNBackRT.visible = false
 
         // Calculated the widths of the enabled items
         var accWidth = 0
@@ -188,6 +201,9 @@ VMBase {
             case vmExpIndexFielding:
                 accWidth = enableTrackItem(itemFielding,i,accWidth,L);
                 break;
+            case vmExpIndexNBackRT:
+                accWidth = enableTrackItem(itemNBackRT,i,accWidth,L)
+                break;
             }
         }
 
@@ -209,6 +225,9 @@ VMBase {
                 break;
             case vmExpIndexFielding:
                 x = setEnabledItemX(itemFielding,x,spacing);
+                break;
+            case vmExpIndexNBackRT:
+                x = setEnabledItemX(itemNBackRT,x,spacing);
                 break;
             }
         }
@@ -251,9 +270,9 @@ VMBase {
         var index = viewStudyStart.vmCurrentExperimentIndex;
         if (!flowControl.startNewExperiment(viewStudyStart.vmSelectedExperiments[index])){
             vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
-            titleMsg = viewHome.getErrorTitleAndMessage("error_programming");
-            vmErrorDiag.vmErrorMessage = titleMsg[1];
-            vmErrorDiag.vmErrorTitle = titleMsg[0];
+            var titleAndMsg = viewHome.getErrorTitleAndMessage("error_programming");
+            vmErrorDiag.vmErrorMessage = titleAndMsg[1];
+            vmErrorDiag.vmErrorTitle = titleAndMsg[0];
             vmErrorDiag.open();
             return;
         }
@@ -303,6 +322,12 @@ VMBase {
         VMExperimentTrackerItem {
             id: itemFielding
             vmText: loader.getStringForKey(keysearch + "itemFielding")
+            vmFont: viewPresentExperiment.robotoM.name
+        }
+
+        VMExperimentTrackerItem {
+            id: itemNBackRT
+            vmText: loader.getStringForKey(keysearch + "itemNBackRT");
             vmFont: viewPresentExperiment.robotoM.name
         }
 

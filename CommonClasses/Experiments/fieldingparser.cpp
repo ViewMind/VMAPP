@@ -17,6 +17,38 @@ QString FieldingParser::getVersionString() const{
     return versionString;
 }
 
+qint32 FieldingParser::getTargetBoxForImageNumber(const QString &trialID, qint32 imgNum) const{
+    qint32 ans = -1;
+    for (qint32 i = 0; i < fieldingTrials.size(); i++){
+        if (fieldingTrials.at(i).id == trialID){
+            switch (imgNum) {
+            case 1:
+                ans = fieldingTrials.at(i).sequence.at(0);
+                break;
+            case 2:
+                ans = fieldingTrials.at(i).sequence.at(1);
+                break;
+            case 3:
+                ans = fieldingTrials.at(i).sequence.at(2);
+                break;
+            case 5:
+                ans = fieldingTrials.at(i).sequence.at(2);
+                break;
+            case 6:
+                ans = fieldingTrials.at(i).sequence.at(1);
+                break;
+            case 7:
+                ans = fieldingTrials.at(i).sequence.at(0);
+                break;
+            default:
+                break;
+            }
+            return ans;
+        }
+    }
+    return ans;
+}
+
 bool FieldingParser::parseFieldingExperiment(const QString &contents){
 
     // Generating the contents from the phrases

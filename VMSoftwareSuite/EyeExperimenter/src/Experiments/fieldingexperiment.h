@@ -3,7 +3,6 @@
 
 #include <QTimer>
 #include <QSet>
-#include <QGraphicsPixmapItem>
 
 #include "experiment.h"
 #include "../../../CommonClasses/Experiments/fieldingmanager.h"

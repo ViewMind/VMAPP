@@ -21,9 +21,16 @@ VMBase {
     }
 
     function setDefaultSelections(){        
-        cboxBindingBC.vmOn = true;
-        cboxBindingUC.vmOn = true;
-        cboxReading.vmOn = true;
+//        cboxBindingBC.vmOn = true;
+//        cboxBindingUC.vmOn = true;
+//        cboxReading.vmOn = true;
+//        cboxFielding.vmOn = false;
+
+        cboxBindingBC.vmOn = false;
+        cboxBindingUC.vmOn = false;
+        cboxReading.vmOn = false;
+        cboxFielding.vmOn = true;
+
     }
 
     function testPresentExperimentScreen(){
@@ -224,7 +231,7 @@ VMBase {
     /////////////////////// Which Eye to use
     VMComboBox2{
         id: cbEyeMsg
-        width: (backgroundPatientName.width - 16)/4
+        width: (backgroundPatientName.width - 16)/5
         anchors.top: labelEyeMsg.bottom
         anchors.topMargin: mainWindow.height*0.007
         anchors.left: labelInstruction2.left
@@ -317,6 +324,30 @@ VMBase {
         Component.onCompleted: cbReadingLang.setModelList(["English", "Español", "Deutsche", "Français","Íslensku"])
     }
 
+    /////////////////////// N Back Test Type
+    Text {
+        id: labelNbackType
+        font.family: robotoB.name
+        font.pixelSize: 13*viewHome.vmScale
+        width: cbNumberOfTargets.width
+        anchors.top: labelEyeMsg.top
+        anchors.left: cbNbackType.left
+        color: "#554545"
+        text: loader.getStringForKey(keysearch+"labelNBackType");
+    }
+
+    VMComboBox2{
+        id: cbNbackType
+        width: cbEyeMsg.width
+        anchors.top: labelNTargets.bottom
+        anchors.topMargin: mainWindow.height*0.007
+        anchors.left: cbTargetSize.right
+        anchors.leftMargin: mainWindow.width*0.013
+        vmMaxDisplayItems: 3
+        z:2
+        Component.onCompleted: cbNbackType.setModelList(["MS", "RT"])
+    }
+
     // An error message.
     Text{
         id: labelNoInstructionSetError
@@ -370,7 +401,10 @@ VMBase {
                         vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
                     }
                     else if (idList[i] === vmDefines.vmCONFIG_P_EXP_FIELDING){
-                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
+                        if (cbNbackType.vmCurrentIndex == 0)
+                           vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
+                        else
+                           vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackRT);
                     }
                 }
 

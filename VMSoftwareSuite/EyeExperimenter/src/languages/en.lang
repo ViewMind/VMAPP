@@ -97,6 +97,7 @@ viewstudystart_targetOptions = Large|Small;
 viewstudystart_labelSelPatient = Selected Patient;
 viewstudystart_labelSelSubject = Selected Subject;
 viewstudystart_labelReadingLanguge = Reading language;
+viewstudystart_labelNBackType = NBack Type;
 viewstudystart_fieldingPauseText = Press any when ready;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
@@ -138,7 +139,8 @@ viewpresentexp_itemBindingUC = Identify New Colours;
 viewpresentexp_itemBindingBC = Identify Colour Combinations;
 viewpresentexp_itemBindingUC3 = Identify New Colours;
 viewpresentexp_itemBindingBC3 = Identify Colour Combinations;
-viewpresentexp_itemFielding = N-Back Evaluation;
+viewpresentexp_itemFielding = N-Back Evaluation Type MS;
+viewpresentexp_itemNBackRT  = N-Back Evaluation Type RT;
 
 viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
 When your gaze is located on the dot, it will vanish<br>
@@ -212,7 +214,7 @@ viewshowreports_diagTabDate = Date;
 viewshowreports_diagTabTime = Time;
 viewshowreports_diagTabReading = Reading;
 viewshowreports_diagTabBinding = Colors;
-viewshowreports_diagTabFielding = N-Back;
+viewshowreports_diagTabFielding = N-Back (MS);
 viewshowreports_diagTabStatus = Status;
 viewshowreports_diagBtnView = VIEW;
 viewshowreports_diagBtnBack = BACK;
@@ -284,7 +286,8 @@ viewselectdata_labelSubTitle = Select the studies that will be included in the r
 viewselectdata_labelColReading = Reading;
 viewselectdata_labelColBindingUC = New Colours;
 viewselectdata_labelColBindingBC = Colour Combinations;
-viewselectdata_labelFielding = N-Back Test;
+viewselectdata_labelFielding = N-Back MS Type;
+viewselectdata_labelNBackRT  = N-Back RT Type;
 viewselectdata_labelNoUse = Do not use for report;
 viewselectdata_labelSelectOption = Select data file;
 viewselectdata_labelEvals = Available Evaluations;

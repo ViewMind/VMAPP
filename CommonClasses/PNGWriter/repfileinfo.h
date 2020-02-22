@@ -13,6 +13,7 @@
 #define KEY_READING     "reading"
 #define KEY_BINDING     "binding"
 #define KEY_FIELDING    "fielding"
+#define KEY_NBACKRT     "nbackrt"
 #define KEY_INDEX       "repname"
 #define KEY_SELFLAG     "vmRepSelected"
 #define KEY_ISUPTODATE  "uptodate"
@@ -26,9 +27,11 @@ public:
         qint32 readingAlg;
         qint32 bindingAlg;
         qint32 fieldingAlg;
+        qint32 nbackrtAlg;
         QString binding_code;
         QString reading_code;
         QString fielding_code;
+        QString nbackrt_code;
     };
 
     RepFileInfo();

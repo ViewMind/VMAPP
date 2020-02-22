@@ -32,9 +32,11 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         QString reading       = "N/A";
         QString binding       = "N/A";
         QString fielding      = "N/A";
+        QString nbackrt       = "N/A";
         QString reading_code  = "";
         QString binding_code  = "";
         QString fielding_code = "";
+        QString nbackrt_code  = "";
 
         if (parts.size() < 6){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");
@@ -66,8 +68,14 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
                 QString eyes = binding.mid(3,1);
                 binding_code = num_targets + "_" + size + "_" + eyes + "_" + baseCode;
             }
+            else if (parts.at(i).startsWith("T")){
+                // NBack Trace RT Type
+                nbackrt = parts.at(i);
+                QString eyes = fielding.mid(1,1);
+                nbackrt_code = eyes + "_" + baseCode;
+            }
             else if (parts.at(i).startsWith("N")){
-                // Fielding
+                // Fielding MS Type
                 fielding = parts.at(i);
                 QString eyes = fielding.mid(1,1);
                 fielding_code = eyes + "_" + baseCode;
@@ -120,6 +128,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         info[KEY_READING] = reading;
         info[KEY_REPNAME] = repfile;
         info[KEY_FIELDING] = fielding;
+        info[KEY_NBACKRT] = nbackrt;
         info[KEY_SELFLAG] = false;
         info[KEY_ISUPTODATE] = flist.isUpToDate;
         info[KEY_FILELIST] = flist.fileList.join("|");
@@ -313,6 +322,14 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
         qint32 version = repfile.getInt(CONFIG_FIELDING_ALG_VERSION);
         if (version < algver.fieldingAlg){
             ans.fileList << repfile.getString(CONFIG_FILE_FIELDING);
+            ans.isUpToDate = false;
+        }
+    }
+
+    if (repfile.containsKeyword(CONFIG_NBACKRT_ALG_VERSION)){
+        qint32 version = repfile.getInt(CONFIG_NBACKRT_ALG_VERSION);
+        if (version < algver.nbackrtAlg){
+            ans.fileList << repfile.getString(CONFIG_FILE_NBACKRT);
             ans.isUpToDate = false;
         }
     }

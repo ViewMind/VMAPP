@@ -80,6 +80,7 @@
 #define   CONFIG_FILE_BIDING_BC                         "file_binding_bc"
 #define   CONFIG_FILE_READING                           "file_reading"
 #define   CONFIG_FILE_FIELDING                          "file_fielding"
+#define   CONFIG_FILE_NBACKRT                           "file_nbackrt"
 #define   CONFIG_LIST_DONE_EXPERIMENTS                  "list_done_experiments"
 #define   CONFIG_INST_NAME                              "inst_name"
 #define   CONFIG_INST_UID                               "inst_uid"
@@ -104,6 +105,7 @@
 #define   CONFIG_READING_ALG_VERSION                    "reading_algorithm_version"
 #define   CONFIG_BINDING_ALG_VERSION                    "binding_algorithm_version"
 #define   CONFIG_FIELDING_ALG_VERSION                   "fielding_algorithm_version"
+#define   CONFIG_NBACKRT_ALG_VERSION                    "nbackrt_algorithm_version"
 #define   CONFIG_RESULT_ENTRY_ID                        "result_entry_id"
 #define   CONFIG_LAUCHER_CONNECT_TIMEOUT                "launcher_connect_timeout"
 #define   CONFIG_LAUCHER_DOWNLOAD_TIMEOUT               "launcher_download_timeout"
@@ -163,6 +165,7 @@
 #define   EXP_BINDING_UC                                2
 #define   EXP_BINDING_BC                                3
 #define   EXP_FIELDNG                                   4
+#define   EXP_NBACKRT                                   5
 
 // Base names for common files shared accross multiple apps.
 #define   FILE_CONFIGURATION                            "configuration"
@@ -171,6 +174,7 @@
 #define   FILE_OUTPUT_BINDING_UC                        "binding_uc"
 #define   FILE_OUTPUT_BINDING_BC                        "binding_bc"
 #define   FILE_OUTPUT_FIELDING                          "fielding"
+#define   FILE_OUTPUT_NBACKRT                           "nbackrt"
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
 #define   FILE_EYE_REP_GEN_CONFIGURATION                "eye_rep_gen_conf"
@@ -192,6 +196,7 @@
 #define   HEADER_READING_EXPERIMENT                     "#READING"
 #define   HEADER_IMAGE_EXPERIMENT                       "#IMAGE"
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
+#define   HEADER_FIELDING_NBACKRT                       "#NBACKRT"
 
 // Codes indicating the type of update transaction
 #define   UPDATE_CHECK_GP_CODE                           "cgp"
@@ -214,6 +219,7 @@
 #define   EYE_REP_GEN_READING_ALGORITHM_VERSION          1
 #define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          3
 #define   EYE_REP_GEN_FIELDING_ALGORITHM_VERSION         0
+#define   EYE_REP_GEN_NBACKRT_ALGORITHM_VERSION          0
 
 // DB Managers possible answers
 #define   EYEDBMNG_ANS_OK                                0

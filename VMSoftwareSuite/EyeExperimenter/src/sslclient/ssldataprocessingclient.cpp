@@ -83,8 +83,13 @@ void SSLDataProcessingClient::connectToServer(bool isDemoMode, const QString &ol
                 log.appendError("On creating the DataPacket, could not get Fielding File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_FIELDING));
             }
         }
-        // TODO Add Fielding DEMO!
-        // else txDP.addFile(":/demo_data/reading_2_2010_06_03_10_15.dat",DataPacket::DPFI_READING);
+    }
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_NBACKRT)){
+        if (!isDemoMode){
+            if(!txDP.addFile(datDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_NBACKRT),DataPacket::DPFI_NBACKRT)){
+                log.appendError("On creating the DataPacket, could not get NBack RT File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_NBACKRT));
+            }
+        }
     }
 
     // Requesting connection and ack

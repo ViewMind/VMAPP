@@ -243,5 +243,4 @@ qint32 FieldingExperiment::currentImageToImageIndex(){
     }
 
     return imageInTrialID;
-
 }

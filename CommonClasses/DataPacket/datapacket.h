@@ -54,7 +54,7 @@ public:
     static const quint8 DPFI_RAW_DATA_CONTENT                         = 34;
     static const quint8 DPFI_LOCAL_DB_BKP                             = 35;
     static const quint8 DPFI_PUID_LIST                                = 36;
-    //static const quint8 DPFI_PATNAME_LIST                             = 37;
+    static const quint8 DPFI_NBACKRT                                  = 37;
     static const quint8 DPFI_SERIALIZED_DB                            = 38;
     static const quint8 DPFI_OLD_REP_FILE                             = 39;
     static const quint8 DPFI_DOCTOR_FILE                              = 40;

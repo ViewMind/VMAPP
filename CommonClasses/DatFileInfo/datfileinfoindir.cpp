@@ -11,6 +11,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
     filesBindingBC.clear();
     filesBindingUC.clear();
     filesFielding.clear();
+    filesNBackRT.clear();
 
     // STEP 1: Creating the structure with just the .dat information.
     QStringList filters;
@@ -24,6 +25,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
     QStringList orderBindingBC;
     QStringList orderBindingUC;
     QStringList orderFielding;
+    QStringList orderNBackRT;
 
     for (qint32 i = 0; i < fileList.size(); i++){
 
@@ -34,6 +36,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
         else if (fname.startsWith(FILE_OUTPUT_BINDING_BC)) insertIntoListAccordingToOrder(fname,&filesBindingBC,&orderBindingBC);
         else if (fname.startsWith(FILE_OUTPUT_BINDING_UC)) insertIntoListAccordingToOrder(fname,&filesBindingUC,&orderBindingUC);
         else if (fname.startsWith(FILE_OUTPUT_FIELDING)) insertIntoListAccordingToOrder(fname,&filesFielding,&orderFielding);
+        else if (fname.startsWith(FILE_OUTPUT_NBACKRT)) insertIntoListAccordingToOrder(fname,&filesNBackRT,&orderFielding);
 
     }
 }
@@ -43,6 +46,7 @@ bool DatFileInfoInDir::hasPendingReports() const {
     //qWarning() << "HAS PENDING REPORTS" << filesReading << filesBindingBC << filesBindingUC;
     if (!filesReading.isEmpty()) return true;
     if (!filesFielding.isEmpty()) return true;
+    if (!filesNBackRT.isEmpty()) return true;
     if (!filesBindingBC.isEmpty() && !filesBindingUC.isEmpty()){
         // This should return true ONLY if for at least one BC file there is a compatible UC file.
         for (qint32 i = 0; i < filesBindingBC.size(); i++){
@@ -73,6 +77,10 @@ QStringList DatFileInfoInDir::getFieldingFileList() const{
     return getFileList(filesFielding);
 }
 
+QStringList DatFileInfoInDir::getNBackRTFileList() const{
+    return getFileList(filesNBackRT);
+}
+
 QStringList DatFileInfoInDir::getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC){
     return getBindingUCFileListCompatibleWithSelectedBC(selectedBC,&filesBindingUCValidIndexes);
 }
@@ -99,8 +107,8 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const QStringList &fileLis
     ReportGenerationStruct repgen;
     repgen.clear();
 
-//    QList<QStringList> allLists;
-//    allLists << filesReading << filesBindingBC << filesBindingUC << filesFielding;
+    //    QList<QStringList> allLists;
+    //    allLists << filesReading << filesBindingBC << filesBindingUC << filesFielding;
 
     for (qint32 i = 0; i < fileList.size(); i++){
         if (fileList.at(i).startsWith(FILE_OUTPUT_READING)){
@@ -118,6 +126,10 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const QStringList &fileLis
         else if (fileList.at(i).startsWith(FILE_OUTPUT_FIELDING)){
             filesFielding << fileList.at(i);
             repgen.fieldingFileIndex = filesFielding.size() - 1;
+        }
+        else if (fileList.at(i).startsWith(FILE_OUTPUT_NBACKRT)){
+            filesNBackRT << fileList.at(i);
+            repgen.nbackrtFileIndex = filesNBackRT.size()-1;
         }
     }
 
@@ -170,6 +182,21 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
         }
     }
 
+    if (repgen.nbackrtFileIndex != -1){
+        DatInfo fielding_file = getNBackRTInformation(filesNBackRT.at(repgen.nbackrtFileIndex));
+        if (expectedReportName.isEmpty()) expectedReportName = FILE_REPORT_NAME;
+        // Extra info and date must have matched for these two files to have been selected.
+        expectedReportName = expectedReportName + "_T" + fielding_file.extraInfo + fielding_file.validEye;
+        ans << fielding_file.fileName;
+        if (date.isEmpty() || (date < fielding_file.date)) {
+            date = fielding_file.date;
+            time = fielding_file.hour;
+        }
+        else if ((date == fielding_file.date) && (time < fielding_file.hour)){
+            time = fielding_file.hour;
+        }
+    }
+
     if (!expectedReportName.isEmpty()){
         expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
         ans.prepend(expectedReportName);
@@ -188,6 +215,8 @@ QString DatFileInfoInDir::getDatFileNameFromSelectionDialogIndex(qint32 index, q
         return filesBindingUC.at(filesBindingUCValidIndexes.at(index));
     case LIST_INDEX_FIELDING:
         return filesFielding.at(index);
+    case LIST_INDEX_NBACKRT:
+        return filesNBackRT.at(index);
     }
     return "";
 }
@@ -224,6 +253,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getDatFileInformation(const QString 
     else if (file.startsWith(FILE_OUTPUT_BINDING_UC)) return getBindingFileInformation(file);
     else if (file.startsWith(FILE_OUTPUT_READING)) return getReadingInformation(file);
     else if (file.startsWith(FILE_OUTPUT_FIELDING)) return getFieldingInformation(file);
+    else if (file.startsWith(FILE_OUTPUT_NBACKRT)) return getNBackRTInformation(file);
     else return DatInfo();
 }
 
@@ -233,7 +263,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getBindingFileInformation(const QStr
 
     QString codePrefix;
     if (bindingFile.contains("bc")) codePrefix = "BC";
-    else codePrefix = "UC";    
+    else codePrefix = "UC";
 
     QString baseName = parts.first();
     QString fmark = "";
@@ -338,6 +368,33 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getFieldingInformation(const QString
     DatInfo ans;
     ans.extraInfo = "";
     ans.fileName = fieldingFile;
+    ans.category = "NB";
+
+    if (parts.size() == 7){
+        ans.date = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
+        ans.hour = parts.at(5) + "_" + parts.at(6);
+        ans.validEye = parts.at(1);
+        ans.basename = parts.at(0);
+        ans.code = "NB" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
+        ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
+    }
+    ans.category = ans.category + ans.extraInfo;
+
+    return ans;
+}
+
+DatFileInfoInDir::DatInfo DatFileInfoInDir::getNBackRTInformation(const QString &nbackrtFile){
+
+    QStringList parts = nbackrtFile.split(".",QString::SkipEmptyParts);
+    QString baseName = parts.first();
+
+    QString fmark = "";
+    if (parts.last() == "datf") fmark = " (FE)";
+
+    parts = baseName.split("_",QString::SkipEmptyParts);
+    DatInfo ans;
+    ans.extraInfo = "";
+    ans.fileName = nbackrtFile;
     ans.category = "NB";
 
     if (parts.size() == 7){

@@ -413,6 +413,15 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
                 return;
             }
         }
+        if (fileSet.at(i).startsWith(FILE_OUTPUT_NBACKRT)){
+            error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_FILE_NBACKRT,fileSet.at(i));
+            if (!error.isEmpty()){
+                logger.appendError("WRITING EYE REP GEN FILE: " + error);
+                sslTransactionAllOk = false;
+                emit(sslTransactionFinished());
+                return;
+            }
+        }
     }
 
     if (!demoTransaction) fileSetSentToProcess = fileSet;
@@ -718,9 +727,16 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
         break;
     case EXP_FIELDNG:
-        logger.appendStandard("STARTING FIELDING (N BACK TRACE)");
+        logger.appendStandard("STARTING N BACK TRACE FOR MS");
         configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/fielding.dat");
         experiment = new FieldingExperiment();
+        background = QBrush(Qt::black);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+        break;
+    case EXP_NBACKRT:
+        logger.appendStandard("STARTING NBACK TRACE FOR RESPONSE TIME");
+        configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/fielding.dat");
+        experiment = new NBackRTExperiment();
         background = QBrush(Qt::black);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
         break;
@@ -764,11 +780,13 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     }
 
     if (openvrco != nullptr){
-        if (!openvrco->startRendering()){
-            logger.appendError("Could not start rendering upon starting experiment");
-            return false;
+        if (configuration->getString(CONFIG_SELECTED_ET) != CONFIG_P_ET_MOUSE){
+            if (!openvrco->startRendering()){
+                logger.appendError("Could not start rendering upon starting experiment");
+                return false;
+            }
+            renderState = RENDERING_EXPERIMENT;
         }
-        renderState = RENDERING_EXPERIMENT;
     }
 
     return true;

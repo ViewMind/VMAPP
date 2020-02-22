@@ -8,6 +8,7 @@ Item {
     property string vmReading: ""
     property string vmBinding: ""
     property string vmFielding: ""
+    property string vmNBackRT: ""
     property string vmReportName: ""
     property bool vmIsUpToDate: true
     property string vmFileList: ""
@@ -105,13 +106,31 @@ Item {
     }
 
     Rectangle {
-        id: statusRectText
+        id: nbackRTRect
         color: vmRepSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
         border.width: mainWindow.width*0.002
         height: vmHeight
         width: viewReport.columnWidth
         anchors.left: fieldingRect.right
+        anchors.top: parent.top
+        Text {
+            font.family: viewHome.gothamR.name
+            font.pixelSize: vmFontSize
+            text: vmNBackRT
+            color: vmRepSelected? "#ffffff" : "#000000"
+            anchors.centerIn: parent
+        }
+    }
+
+    Rectangle {
+        id: statusRectText
+        color: vmRepSelected? "#4984b3" : "#ffffff"
+        border.color: "#EDEDEE"
+        border.width: mainWindow.width*0.002
+        height: vmHeight
+        width: viewReport.columnWidth
+        anchors.left: nbackRTRect.right
         anchors.top: parent.top
         visible: (vmIsUpToDate || (vmDate === viewResults.vmDEMO_DATE))
         Text {

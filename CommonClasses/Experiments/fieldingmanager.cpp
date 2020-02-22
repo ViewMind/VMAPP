@@ -56,12 +56,16 @@ void FieldingManager::drawBackground(){
     rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_4_X/kx),static_cast<qint32>(generalOffsetY+RECT_4_Y/ky));
     rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_5_X/kx),static_cast<qint32>(generalOffsetY+RECT_5_Y/ky));
 
-    // Adding the rectangles to the scene
+
+    // Adding the rectangles to the scene and computing the target boxes
+    qreal targetBoxWidth = RECT_WIDTH/kx;
+    qreal targetBoxHeight = RECT_HEIGHT/ky;
     for (qint32 i = 0; i < rectangleLocations.size(); i++){
-        QGraphicsRectItem *rect = canvas->addRect(0,0,RECT_WIDTH/kx,RECT_HEIGHT/ky,
+        QGraphicsRectItem *rect = canvas->addRect(0,0,targetBoxWidth,targetBoxHeight,
                                                           QPen(QBrush(Qt::white),6),
                                                           QBrush(Qt::black));
         rect->setPos(rectangleLocations.at(i));
+        targetBoxes << QRectF(rectangleLocations.at(i).x(),rectangleLocations.at(i).y(),targetBoxWidth,targetBoxHeight);
     }
 
     // Adding the cross
@@ -148,6 +152,14 @@ void FieldingManager::setDrawState(DrawState ds){
         gCrossLine1->setZValue(1);
         gTarget->setZValue(1);
         break;
+    case DS_TARGET_BOX_ONLY:
+        gText1->setZValue(-1);
+        gText2->setZValue(-1);
+        gText3->setZValue(-1);
+        gCrossLine0->setZValue(-1);
+        gCrossLine1->setZValue(-1);
+        gTarget->setZValue(-1);
+        break;
     }
 }
 
@@ -171,6 +183,21 @@ void FieldingManager::setTargetPosition(qint32 trial, qint32 image){
 
 QPoint FieldingManager::getTargetPoint(qint32 trial, qint32 image) const{
     return rectangleLocations.at(fieldingTrials.at(trial).sequence.at(image));
+}
+
+QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial) const{
+    QList<qint32> hits;
+    QList<qint32> sequence = fieldingTrials.at(trial).sequence;
+    for (qint32 i = sequence.size()-1; i >= 0; i--){
+        hits << sequence.at(i);
+    }
+    return hits;
+}
+
+bool FieldingManager::isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const{
+    if ((targetBox < 0) || (targetBox >= targetBoxes.size())) return  false;
+    qDebug() << "CHECKING IF TARGET BOX" << targetBoxes.at(targetBox) << "contains" << x << y;
+    return targetBoxes.at(targetBox).contains(x,y);
 }
 
 void FieldingManager::drawPauseScreen(){

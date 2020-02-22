@@ -97,6 +97,7 @@ viewstudystart_targetOptions = Grande|Pequeños;
 viewstudystart_labelSelPatient = Paciente Seleccionado;
 viewstudystart_labelSelSubject = Sujeto Seleccionado;
 viewstudystart_labelReadingLanguge = Lengua de lectura;
+viewstudystart_labelNBackType = Tipo de NBack;
 viewstudystart_fieldingPauseText = Presione cualquier tecla cuando se encuentre listo;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
@@ -138,7 +139,8 @@ viewpresentexp_itemBindingUC = Identificación de Nuevos Colores;
 viewpresentexp_itemBindingBC = Identificación de Combinaciones de Colores;
 viewpresentexp_itemBindingUC3 = Identificación de Nuevos Colores;
 viewpresentexp_itemBindingBC3 = Identificación de Combinaciones de Colores;
-viewpresentexp_itemFielding = Evaluación N-Back;
+viewpresentexp_itemFielding = Evaluación N-Back Tipo MS;
+viewpresentexp_itemNBackRT  = Evaluación N-Back Tipo RT;
 
 viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
 Cuando su mira se encuentre ubicada sobre el punto, este desaparecerá <br>
@@ -212,7 +214,8 @@ viewshowreports_diagTabDate = Fecha;
 viewshowreports_diagTabTime = Hora;
 viewshowreports_diagTabReading = Lectura;
 viewshowreports_diagTabBinding = Colores;
-viewshowreports_diagTabFielding = N-Back;
+viewshowreports_diagTabFielding = N-Back (MS);
+viewshowreports_diagTabNBackRT  = N-Back (RT);
 viewshowreports_diagTabStatus = Estado;
 viewshowreports_diagBtnView = VER;
 viewshowreports_diagBtnBack = ATRAS;
@@ -284,7 +287,8 @@ viewselectdata_labelSubTitle = Seleccionar los estudios que desea incluir en un 
 viewselectdata_labelColReading = Lectura;
 viewselectdata_labelColBindingUC = Nuevos Colores;
 viewselectdata_labelColBindingBC = Combinación de Colores;
-viewselectdata_labelFielding = Evaluación N-Back;
+viewselectdata_labelFielding = Evaluación N-Back Tipo MS;
+viewselectdata_labelNBackRT  = Evaluación N-Back Tipo RT;
 viewselectdata_labelNoUse = No utilizar en reporte;
 viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_labelEvals = Evaluaciones disponibles;
