@@ -212,7 +212,7 @@
 
 // Versions of the processing algorithm
 #define   EYE_REP_GEN_READING_ALGORITHM_VERSION          1
-#define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          2
+#define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          3
 #define   EYE_REP_GEN_FIELDING_ALGORITHM_VERSION         0
 
 // DB Managers possible answers
