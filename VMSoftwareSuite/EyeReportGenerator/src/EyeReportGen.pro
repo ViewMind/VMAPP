@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
     ../../../CommonClasses/Experiments/readingparser.cpp \
     ../../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.cpp \
-    ../../../CommonClasses/Experiments/fieldingparser.cpp
+    ../../../CommonClasses/Experiments/fieldingparser.cpp \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.cpp
 
 HEADERS  += \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
@@ -53,7 +54,8 @@ HEADERS  += \
     ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../../CommonClasses/Experiments/readingparser.h \
     ../../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h \
-    ../../../CommonClasses/Experiments/fieldingparser.h
+    ../../../CommonClasses/Experiments/fieldingparser.h \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.h
 
 RESOURCES += \
     bargraphs.qrc

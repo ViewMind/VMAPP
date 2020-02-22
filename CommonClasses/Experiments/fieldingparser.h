@@ -70,6 +70,7 @@ public:
     QString getError() const;
     QString getVersionString() const;
     qint32 getTargetBoxForImageNumber(const QString &trialID, qint32 imgNum) const;
+    QList<qint32> getSequenceForTrial(const QString &trialID);
 
 private:
     QString error;

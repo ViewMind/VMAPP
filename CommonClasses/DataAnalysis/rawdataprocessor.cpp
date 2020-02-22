@@ -25,10 +25,15 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
         dataFielding = currentDir + "/" + config->getString(CONFIG_FILE_FIELDING);
     else dataFielding = "";
 
+    if (config->containsKeyword(CONFIG_FILE_NBACKRT))
+        dataNBackRT = currentDir + "/" + config->getString(CONFIG_FILE_NBACKRT);
+    else dataNBackRT = "";
+
     matrixBindingBC = "";
     matrixReading = "";
     matrixFielding = "";
     matrixBindingUC = "";
+    matrixNBackRT = "";
 
     mgeo.distanceToMonitorInMilimiters = config->getReal(CONFIG_DISTANCE_2_MONITOR)*10;
     mgeo.XmmToPxRatio                  = config->getReal(CONFIG_XPX_2_MM);
@@ -173,7 +178,29 @@ void RawDataProcessor::run(){
         freqErrorsOK = freqErrorsOK && temp;
 
         studyID << "fd" + tagRet.version;
-        emit(appendMessage("Fielding CSV GENERATED",MSG_TYPE_STD));    }
+        emit(appendMessage("Fielding CSV GENERATED",MSG_TYPE_STD));
+    }
+
+    if (!dataNBackRT.isEmpty()) {
+        emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
+        EDPNBackRT nbackrt(config);
+        tagRet = csvGeneration(&nbackrt,"NBack RT",dataFielding,HEADER_FIELDING_EXPERIMENT);
+        matrixFielding = tagRet.filePath;
+
+        fixations[CONFIG_P_EXP_NBACKRT] = nbackrt.getEyeFixations();
+        /// TODO ADD NBACK RT PROCESSING
+
+        QFileInfo info(dataNBackRT);
+        DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getNBackRTInformation(info.baseName());
+        dateForReport = datInfo.date + "_" + datInfo.hour;
+        reportInfoText << "t";
+
+        bool temp = generateFDBFile(dataNBackRT,nbackrt.getEyeFixations(),true);
+        freqErrorsOK = freqErrorsOK && temp;
+
+        studyID << "rt" + tagRet.version;
+        emit(appendMessage("NBack RT CSV GENERATED",MSG_TYPE_STD));
+    }
 
     // Generating the report based on available data.
     if (reportInfoText.isEmpty()){

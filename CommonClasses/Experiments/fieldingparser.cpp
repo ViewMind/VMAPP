@@ -49,6 +49,16 @@ qint32 FieldingParser::getTargetBoxForImageNumber(const QString &trialID, qint32
     return ans;
 }
 
+
+QList<qint32> FieldingParser::getSequenceForTrial(const QString &trialID){
+    for (qint32 i = 0; i < fieldingTrials.size(); i++){
+        if (fieldingTrials.at(i).id == trialID){
+            return fieldingTrials.at(i).sequence;
+        }
+    }
+    return QList<qint32>();
+}
+
 bool FieldingParser::parseFieldingExperiment(const QString &contents){
 
     // Generating the contents from the phrases

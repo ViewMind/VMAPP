@@ -14,7 +14,8 @@
 // The number of data sets which are tests and should NOT factor into the frequency analysis, as they will be discarded.
 #define  TEST_DATA_SETS_READING    10
 #define  TEST_DATA_SETS_BINDING    20
-#define  TEST_DATA_SETS_FIELDING   10 ///TODO CHECK IF this value is right.!!!!
+#define  TEST_DATA_SETS_FIELDING   10
+#define  TEST_DATA_SETS_NBACKRT    10
 
 class FreqAnalysis
 {
@@ -88,9 +89,10 @@ private:
     QStringList separateHeaderFromData(QString *error, const QString &header);
     qreal calculateFrequency(const QList<qreal> &times, QList<TimePair> *dtimes);
 
-    FreqAnalysisResult performReadingAnalyis();
-    FreqAnalysisResult performBindingAnalyis();
-    FreqAnalysisResult performFieldingAnalyis();
+    FreqAnalysisResult performReadingAnalysis();
+    FreqAnalysisResult performBindingAnalysis();
+    FreqAnalysisResult performFieldingAnalysis();
+    FreqAnalysisResult performNBackRTAnalysis();
 
 };
 
