@@ -56,17 +56,21 @@ public:
 
     struct FreqAnalysisResult {
         QStringList errorList;
+        QString fileError;
         QStringList individualErrorList;
         qreal averageFrequency;
         qint32 expectedNumberOfDataSets;
         QList<FreqAnalyisDataSet> freqAnalysisForEachDataSet;
         qint32 numberOfDataSetsWithLittleDataPoints;
-        qint32 numberOfDataSetsWithTooManyFreqGlitches;
+        qint32 numberOfDataSetsWithTooManyFreqGlitches;        
         void analysisValid(const FreqCheckParameters p);
     };
 
     FreqAnalysis();
     FreqAnalysisResult analyzeFile(const QString &fname, qreal timeUnitInSeconds = 1e-3);
+
+    // General call to frequency analysis, so that it is always called from the same place
+    static FreqAnalysisResult doFrequencyAnalysis(ConfigurationManager *config, const QString &fileName);
 
 
 private:

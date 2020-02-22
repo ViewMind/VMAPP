@@ -115,7 +115,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::analyzeFile(const QString &fname,
         firstNDataSetsToFilter = TEST_DATA_SETS_FIELDING;
     }
     else{
-        far.errorList << "Unrecognized file name. Cannot perform frequency analysis";
+        far.fileError = "Unrecognized file name. Cannot perform frequency analysis";
         return far;
     }
 
@@ -489,7 +489,6 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performFieldingAnalyis(){
     return far;
 }
 
-
 qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<TimePair> *dtimes){
     qreal freqsAcc = 0;
     qreal freqCounter = 0;
@@ -508,3 +507,36 @@ qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<TimePair
     return freqsAcc/freqCounter;
 }
 
+
+///////////////////////////////////////// STATIC CALL TO PERFORM A FREQUENCY ANALYSIS ///////////////////////////////
+
+FreqAnalysis::FreqAnalysisResult FreqAnalysis::doFrequencyAnalysis(ConfigurationManager *config, const QString &fileName){
+    FreqAnalysis freqChecker;
+    FreqAnalysis::FreqAnalysisResult fres;
+    fres = freqChecker.analyzeFile(fileName);
+
+    if (!fres.fileError.isEmpty()){
+        return fres;
+    }
+
+    QFileInfo info(fileName);
+    bool isFielding = info.baseName().startsWith(CONFIG_P_EXP_FIELDING) || info.baseName().startsWith(CONFIG_P_EXP_NBACKRT);
+
+    FreqAnalysis::FreqCheckParameters fcp;
+    fcp.fexpected                        = config->getReal(CONFIG_SAMPLE_FREQUENCY);
+    fcp.periodMax                        = config->getReal(CONFIG_TOL_MAX_PERIOD_TOL);
+    fcp.periodMin                        = config->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
+    fcp.maxAllowedFreqGlitchesPerTrial   = config->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
+    fcp.maxAllowedPercentOfInvalidValues = config->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
+    if (isFielding){
+        fcp.minNumberOfDataItems         = config->getInt(CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL);
+    }
+    else{
+        fcp.minNumberOfDataItems         = config->getInt(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
+    }
+    fcp.maxAllowedFailedTrials           = config->getInt(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
+    fres.analysisValid(fcp);
+
+    return fres;
+
+}

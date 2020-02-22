@@ -13,6 +13,11 @@
 #define   FIELDING_PR                                   5
 #define   FIELDING_PL                                   6
 
+// Defines used to indentified critical outptut columns in the CSV
+#define   CSV_TRIALID                                   1
+#define   CSV_IMGNUM                                    2
+#define   CSV_RESP_TIME                                 8
+
 // Warning threshold for low number of data points. Unused for now
 // #define   FIELDING_WARNING_NUM_DATAPOINTS               6
 
@@ -29,15 +34,45 @@ public:
 
 private:
 
+
+    struct MinMaxTimeStamp {
+        qreal crossTime;
+        qreal firstHit;
+        qreal lastHit;
+        qreal timeToStore;
+        void reset(){
+            crossTime = -1;
+            firstHit = -1;
+            lastHit = -1;
+            timeToStore = -1;
+        }
+        QString toString() const {
+            return "Cross Time: " + QString::number(crossTime) + ". First/Last Hit: " + QString::number(firstHit) + "/" + QString::number(lastHit) + ". To Store: "
+                    + QString::number(timeToStore);
+        }
+    };
+
+    typedef  QHash< QString, MinMaxTimeStamp > FieldingTrialTimes;
+    typedef  QHash< QString, FieldingTrialTimes > ResponseTimeStruct;
+
     // Initialization of the data matrix (header row)
-    bool initializeFieldingDataMatrix();
+    void initializeFieldingDataMatrix();
 
     // Adding the data of each image.
-    bool appendDataToFieldingMatrix(const DataMatrix &data,
+    void appendDataToFieldingMatrix(const DataMatrix &data,
                                     const QString &trialID,
                                     const QString &imgID,
                                     const qreal &targetX,
                                     const qreal &targetY);
+
+    // The response time structures are used for easy computation of the response times.
+    void computeResponseTimes(ResponseTimeStruct *responseTimeStruct);
+
+    // Filling the computed response times. The parameter is used as a pointer to save the data in the same structure and avoid a deep copy
+    void fillResponseTimes(QList<QStringList> *pdata, ResponseTimeStruct *respTimeStruct);
+
+    // Actually saving the stored data to a file on disk.
+    bool finalizeFieldingDataMatrix();
 
     // The center of the screen to measure sacadic latency.
     qreal centerX,centerY;
@@ -48,8 +83,19 @@ private:
     // Margin for hit detection
     qreal dH, dW;
 
+    // Center margins
+    qreal centerMinX, centerMaxX, centerMinY, centerMaxY;
+
     // Drawing constants. Transform the fix measurmente to monitor or HMD sizes.
     qreal fieldingKx, fieldingKy;
+
+    // Temporarily store all processed data separated for eye.
+    QStringList csvHeader;
+    QList<QStringList> ldata;
+    QList<QStringList> rdata;
+
+    ResponseTimeStruct lResponseTimeStruct;
+    ResponseTimeStruct rResponseTimeStruct;
 
 };
 

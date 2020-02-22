@@ -68,7 +68,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
 
     // Initializing the graphical interface and passing on the configuration.
     setupView();  /// WARNING: Setup view needs to come BEFORE manager intialization as it contians the resolution intialization.
-    manager->init(c);    
+    manager->init(c);
     this->gview->setScene(manager->getCanvas());
 
     // Configuring the experimet
@@ -114,37 +114,22 @@ bool Experiment::startExperiment(ConfigurationManager *c){
 }
 
 bool Experiment::doFrequencyCheck(){
-    FreqAnalysis freqChecker;
+
     FreqAnalysis::FreqAnalysisResult fres;
-    fres = freqChecker.analyzeFile(dataFile);
+    fres = FreqAnalysis::doFrequencyAnalysis(config,dataFile);
 
     QString freqReport;
     bool ans = true;
 
-    if (!fres.errorList.isEmpty()){
+    if (!fres.fileError.isEmpty()){
         freqReport = "FREQ ANALYSIS ERROR: \n   " + fres.errorList.join("\n   ");
         ans = false;
     }
-    else {
-
-        FreqAnalysis::FreqCheckParameters fcp;
-        fcp.fexpected                        = config->getReal(CONFIG_SAMPLE_FREQUENCY);
-        fcp.periodMax                        = config->getReal(CONFIG_TOL_MAX_PERIOD_TOL);
-        fcp.periodMin                        = config->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
-        fcp.maxAllowedFreqGlitchesPerTrial   = config->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
-        fcp.maxAllowedPercentOfInvalidValues = config->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
-        fcp.minNumberOfDataItems             = config->getInt(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
-        fcp.maxAllowedFailedTrials           = config->getInt(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
-
-        fres.analysisValid(fcp);
-
-        if (!fres.errorList.isEmpty()){
-            freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";
-            freqReport = freqReport + fres.errorList.join("\n   ");
-            freqReport = freqReport  + "\n   Individual Freq Errors:\n   " + fres.individualErrorList.join("\n   ");
-            ans = false;
-        }
-
+    else if (!fres.errorList.isEmpty()){
+        freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";
+        freqReport = freqReport + fres.errorList.join("\n   ");
+        freqReport = freqReport  + "\n   Individual Freq Errors:\n   " + fres.individualErrorList.join("\n   ");
+        ans = false;
     }
 
     // If there was aproblem with the frequency check, the frequency report is saved to its own log. This way the common

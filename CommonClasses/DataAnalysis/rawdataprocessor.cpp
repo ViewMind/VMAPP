@@ -264,29 +264,13 @@ bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
 
     //qWarning() << "FDB WITH" << datFile;
 
-    FreqAnalysis freqChecker;
     FreqAnalysis::FreqAnalysisResult fres;
-    fres = freqChecker.analyzeFile(datFile);
+    fres = FreqAnalysis::doFrequencyAnalysis(config,datFile);
 
-    if (!fres.errorList.isEmpty()){
-        emit(appendMessage("Error while doing freq analysis for FDB file (" + datFile + "): " + fres.errorList.join("<br>   "),MSG_TYPE_ERR));
+    if (!fres.fileError.isEmpty()){
+        emit(appendMessage("Error while doing freq analysis for FDB file (" + datFile + "): " + fres.fileError,MSG_TYPE_ERR));
         return true;
     }
-
-    FreqAnalysis::FreqCheckParameters fcp;
-    fcp.fexpected                        = config->getReal(CONFIG_SAMPLE_FREQUENCY);
-    fcp.periodMax                        = config->getReal(CONFIG_TOL_MAX_PERIOD_TOL);
-    fcp.periodMin                        = config->getReal(CONFIG_TOL_MIN_PERIOD_TOL);
-    fcp.maxAllowedFreqGlitchesPerTrial   = config->getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
-    fcp.maxAllowedPercentOfInvalidValues = config->getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
-    if (isFielding){
-        fcp.minNumberOfDataItems             = config->getReal(CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL);
-    }
-    else{
-        fcp.minNumberOfDataItems             = config->getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
-    }
-    fcp.maxAllowedFailedTrials           = config->getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
-    fres.analysisValid(fcp);
 
     bool freqError = datFile.endsWith(".datf");
     if (freqError == fres.errorList.isEmpty()){

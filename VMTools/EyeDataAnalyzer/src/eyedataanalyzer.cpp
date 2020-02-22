@@ -663,6 +663,10 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
         processingParameters.addKeyValuePair(CONFIG_FILE_BIDING_UC,fileToProcess);
         fixationHashName = CONFIG_P_EXP_BIDING_UC;
     }
+    else if (fileToProcess.startsWith(FILE_OUTPUT_FIELDING)){
+        processingParameters.addKeyValuePair(CONFIG_FILE_FIELDING,fileToProcess);
+        fixationHashName = CONFIG_P_EXP_FIELDING;
+    }
     else{
         logForProcessing.appendError("Unrecognized file type: " + fileToProcess);
         return;
@@ -713,41 +717,30 @@ void EyeDataAnalyzer::on_pgFrequencyAnalsis_clicked()
     }
 
     QString fileToProcess = currentDirectory + "/" + ui->lwDatFiles->currentItem()->text();
-
-    FreqAnalysis freqChecker;
-    FreqAnalysis::FreqAnalysisResult fres;
-    fres = freqChecker.analyzeFile(fileToProcess);
-
     QString freqReport;
 
     bool ok;
-    ConfigurationManager processingParameters = createProcessingConfiguration(&ok);
+    ConfigurationManager processingParameters = createProcessingConfiguration(&ok);        
     if (!ok) return;
 
-    if (!fres.errorList.isEmpty()){
+    FreqAnalysis::FreqAnalysisResult fres;
+    fres = FreqAnalysis::doFrequencyAnalysis(&processingParameters,fileToProcess);
+
+
+    if (!fres.fileError.isEmpty()){
         freqReport = "FREQ ANALYSIS ERROR: \n   " + fres.errorList.join("\n   ");
     }
     else {
-
-        FreqAnalysis::FreqCheckParameters fcp;
-        fcp.fexpected                        = processingParameters.getReal(CONFIG_SAMPLE_FREQUENCY);
-        fcp.periodMax                        = processingParameters.getReal(CONFIG_TOL_MAX_PERIOD_TOL);
-        fcp.periodMin                        = processingParameters.getReal(CONFIG_TOL_MIN_PERIOD_TOL);
-        fcp.maxAllowedFreqGlitchesPerTrial   = processingParameters.getReal(CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL);
-        fcp.maxAllowedPercentOfInvalidValues = processingParameters.getReal(CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES);
-        fcp.minNumberOfDataItems             = processingParameters.getReal(CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL);
-        fcp.maxAllowedFailedTrials           = processingParameters.getReal(CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS);
-
-        fres.analysisValid(fcp);
-
-
         freqReport = "FREQ ANALYSIS REPORT: Avg Frequency: " + QString::number(fres.averageFrequency) + "\n   ";
         freqReport = freqReport + "Will Result in Frequency Error: ";
+
+        //qDebug() << "Error list after freq analysis is " << fres.errorList.size();
+
         if (fres.errorList.isEmpty()) freqReport = freqReport + " NO\n   ";
         else freqReport = freqReport + " YES\n   ";
+
         freqReport = freqReport + fres.errorList.join("\n   ");
         freqReport = freqReport  + "\n   Individual Freq Errors:\n   " + fres.individualErrorList.join("\n   ");
-
     }
 
     // Saving the frequency log.
