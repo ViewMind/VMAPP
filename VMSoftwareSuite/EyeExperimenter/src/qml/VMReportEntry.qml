@@ -150,7 +150,7 @@ Item {
         height: vmHeight
         width: viewReport.columnWidth
         vmFont: viewHome.gothamM.name
-        anchors.left: bindingRect.right
+        anchors.left: nbackRTRect.right
         anchors.top: parent.top
         onClicked: {
             vmReportEntry.reprocessReport(vmReportName)

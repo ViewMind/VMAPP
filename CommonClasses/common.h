@@ -196,7 +196,7 @@
 #define   HEADER_READING_EXPERIMENT                     "#READING"
 #define   HEADER_IMAGE_EXPERIMENT                       "#IMAGE"
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
-#define   HEADER_FIELDING_NBACKRT                       "#NBACKRT"
+#define   HEADER_NBACKRT_EXPERIMENT                     "#NBACKRT"
 
 // Codes indicating the type of update transaction
 #define   UPDATE_CHECK_GP_CODE                           "cgp"

@@ -196,7 +196,7 @@ QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial) c
 
 bool FieldingManager::isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const{
     if ((targetBox < 0) || (targetBox >= targetBoxes.size())) return  false;
-    qDebug() << "CHECKING IF TARGET BOX" << targetBoxes.at(targetBox) << "contains" << x << y;
+    //qDebug() << "CHECKING IF TARGET BOX" << targetBoxes.at(targetBox) << "contains" << x << y;
     return targetBoxes.at(targetBox).contains(x,y);
 }
 

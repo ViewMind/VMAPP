@@ -10,8 +10,8 @@
 // Timer timess
 #define   TIME_TRANSITION                               500
 #define   TIME_TARGET                                   250
-//#define   TIME_OUT_BLANKS                               1500
-#define   TIME_OUT_BLANKS                               15000 // For DEBUG gives mouse more time for test
+#define   TIME_OUT_BLANKS                               1500
+//#define   TIME_OUT_BLANKS                               15000 // For DEBUG gives mouse more time for test
 
 // Possible pauses for the fielding experiment
 #define   PAUSE_TRIAL_1                                 32

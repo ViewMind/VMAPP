@@ -4,9 +4,8 @@ NBackRTExperiment::NBackRTExperiment(QWidget *parent):Experiment(parent){
 
     manager = new FieldingManager();
     m = dynamic_cast<FieldingManager*>(manager);
-    expHeader = HEADER_FIELDING_EXPERIMENT;
-    outputDataFile = FILE_OUTPUT_FIELDING;
-
+    expHeader = HEADER_NBACKRT_EXPERIMENT;
+    outputDataFile = FILE_OUTPUT_NBACKRT;
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&NBackRTExperiment::onTimeOut);
@@ -66,11 +65,13 @@ void NBackRTExperiment::nextState(){
         tstate = TSF_SHOW_BLANKS;
         trialRecognitionSequence.clear();
         trialRecognitionSequence = m->getExpectedTargetSequenceForTrial(currentTrial);
+        addTrialHeader();
         stateTimer.setInterval(TIME_OUT_BLANKS);
         break;
     case TSF_SHOW_BLANKS:
         tstate = TSF_START;
         currentTrial++;
+        if (finalizeExperiment()) return;
         stateTimer.setInterval(TIME_TRANSITION);
     }
 
@@ -194,7 +195,7 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (tstate == TSF_SHOW_BLANKS){
         if (trialRecognitionSequence.isEmpty()) onTimeOut();   // This if should NEVER be true but weird stuff happens with timers, so it's better to be safe than sorry.
 
-        qDebug() << "TARGET SHOULD BE" << trialRecognitionSequence.first() << ". POINT" << data.xLeft << data.yLeft;
+        //qDebug() << "TARGET SHOULD BE" << trialRecognitionSequence.first() << ". POINT" << data.xLeft << data.yLeft;
 
         if (m->isPointInTargetBox(data.xRight,data.yRight,trialRecognitionSequence.first()) ||
             m->isPointInTargetBox(data.xLeft,data.yLeft,trialRecognitionSequence.first())){
