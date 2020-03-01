@@ -116,6 +116,9 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
         else conversionIndex = ucindex;
     }
 
+    qDebug() << "BINDING INDEXES";
+    qDebug() << bcgroup << ucgroup << bcindex << ucindex << conversionIndex;
+
     results.addKeyValuePair(CONFIG_RESULTS_BINDING_CONVERSION_INDEX,conversionIndex);
 
     QString report = "RESULTS (Always using Right EYE):<br>";
