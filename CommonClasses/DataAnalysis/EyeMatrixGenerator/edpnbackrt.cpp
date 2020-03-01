@@ -46,13 +46,14 @@ bool EDPNBackRT::doEyeDataProcessing(const QString &data){
     qreal targetBoxWidth = RECT_WIDTH/fieldingKx;
     qreal targetBoxHeight = RECT_HEIGHT/fieldingKy;
 
-    targetBoxes.clear();
+    QList<QRectF> targetBoxes;
     targetBoxes << QRectF(generalOffsetX+RECT_0_X/fieldingKx,generalOffsetY+RECT_0_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
     targetBoxes << QRectF(generalOffsetX+RECT_1_X/fieldingKx,generalOffsetY+RECT_1_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
     targetBoxes << QRectF(generalOffsetX+RECT_2_X/fieldingKx,generalOffsetY+RECT_2_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
     targetBoxes << QRectF(generalOffsetX+RECT_3_X/fieldingKx,generalOffsetY+RECT_3_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
     targetBoxes << QRectF(generalOffsetX+RECT_4_X/fieldingKx,generalOffsetY+RECT_4_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
     targetBoxes << QRectF(generalOffsetX+RECT_5_X/fieldingKx,generalOffsetY+RECT_5_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
+    targetHitSearcher.setTargetBoxes(targetBoxes);
 
 
     // This will have all the data from a single image.
@@ -79,16 +80,18 @@ bool EDPNBackRT::doEyeDataProcessing(const QString &data){
         // The data is contained between lines that have four tokens (id imageNumber)
         if ( (tokens.size() == 2) ){
 
+            //qDebug() << "This row is a header";
+
             // Saving stored data
             if (!imageData.isEmpty()){
 
                 // Adding data to matrix
-                //qWarning() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
+                //qDebug() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
 
                 appendDataToFieldingMatrix(imageData,id,imageNumber,trialSequence);
 
                 // Clearing the image data
-                //qWarning() << "CLEARING";
+                //qDebug() << "CLEARING";
                 imageData.clear();
             }
 
@@ -110,31 +113,41 @@ bool EDPNBackRT::doEyeDataProcessing(const QString &data){
             continue;
         }
 
+        //qDebug() << "Adding another row of image data" << tokens;
+
         // If the program got here, this is another row for image data.
         DataRow row;
         for (qint32 i = 0; i < tokens.size(); i++){
             row << tokens.at(i).toDouble();
         }
+        //qDebug() << "Finished adding the last row";
         if (!imageData.isEmpty()){
             if (imageData.last().size() != row.size()){
                 error = "Something is wrong with the data format. Different size rows in the data matrix from line: " + line;
+                //qDebug() << "Returning false";
                 return false;
             }
         }
         imageData << row;
+
+        //qDebug() << "Finished adding the row of image data";
     }
+
+    //qDebug() << "Finished all lines";
 
     // Saving stored data of the last image.
     if (!imageData.isEmpty()){
 
         // Adding data to matrix
-        //qWarning() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
+        //qDebug() << "Adding data to matrix of size" << imageData.size() << "for ID" << lastID;
         appendDataToFieldingMatrix(imageData,id,imageNumber,trialSequence);
 
         // Clearing the image data
-        //qWarning() << "CLEARING";
+        //qDebug() << "CLEARING";
         imageData.clear();
     }
+
+    //qDebug() << "Returning after finalizing";
 
     return finalizeFieldingDataMatrix();
 
@@ -147,11 +160,13 @@ void EDPNBackRT::initializeFieldingDataMatrix(){
               << "imgnum"       //2
               << "target"       //3
               << "target_hit"   //4
-              << "dur"          //5
-              << "ojoDI"        //6
-              << "latSac"       //7
-              << "amp_sacada"   //8
-              << "resp_time";   //9
+              << "trial_seq"    //5
+              << "seq_comp"     //6
+              << "dur"          //7
+              << "ojoDI"        //8
+              << "latSac"       //9
+              << "amp_sacada"   //10
+              << "resp_time";   //11
 
 }
 
@@ -183,9 +198,9 @@ bool EDPNBackRT::finalizeFieldingDataMatrix(){
 
 
 void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
-                                             const QString &trialID,
-                                             const QString &imgID,
-                                             QList<qint32> trialSequence){
+                                            const QString &trialID,
+                                            const QString &imgID,
+                                            const QList<qint32> &trialSequence){
 
     qreal freqCheck = calculateSamplingFrequency(data,FIELDING_TI);
     qreal freq = config->getReal(CONFIG_SAMPLE_FREQUENCY);
@@ -206,11 +221,11 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     eyeFixations.trialID.append(id);
 
 
-//    // Computing maximum and minimum values to check whether a fixation is IN or OUT.
-//    qreal minX = targetBoxX.at(trialSequence);
-//    qreal minY = targetBoxY.at(trialSequence);
-//    qreal maxX = targetBoxX.at(trialSequence) + targetBoxWidth;
-//    qreal maxY = targetBoxY.at(trialSequence) + targetBoxHeight;
+    //    // Computing maximum and minimum values to check whether a fixation is IN or OUT.
+    //    qreal minX = targetBoxX.at(trialSequence);
+    //    qreal minY = targetBoxY.at(trialSequence);
+    //    qreal maxX = targetBoxX.at(trialSequence) + targetBoxWidth;
+    //    qreal maxY = targetBoxY.at(trialSequence) + targetBoxHeight;
 
     // The sacade latency is considered the first outside the given radious within the center of the image.
     qreal sacLatL = 0;
@@ -237,59 +252,33 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     }
 
     SacadeAmplitudeCalculator sac;
-    sac.reset();
+    TargetHitSearcherReturn targetHitSearcherReturn;
+    targetHitSearcher.setNewTrial(trialID,trialSequence);
 
+    QStringList trialSeqStr;
+    for (qint32 i = 0; i < trialSequence.size(); i++){
+        trialSeqStr << QString::number(trialSequence.at(i));
+    }
+
+    sac.reset();
+    targetHitSearcher.reset();
+
+    qDebug() << "LEFT EYE" << trialID << "Num FIX: " << fL.size();
     for (qint32 i = 0; i < fL.size(); i++){
 
         // Computing the expected target and the target hit parameter for the image.
         Fixation f = fL.at(i);
-        qint32 imgNum = imgID.toInt();
-        QString expected_target;
-        QString isIn;
-
-        if ((imgNum >= 1) && (imgNum <= 3)){
-            // These are the images that show the red dots.
-            qint32 expTarget = trialSequence.at(imgNum-1);
-            expected_target = QString::number(expTarget);
-            if (targetBoxes.at(expTarget).contains(f.x,f.y)) isIn = "1";
-            else isIn = "0";
-        }
-        else if (imgNum == 4){
-            // We need to detect if the fixation sequence, here is correct.
-            // The expected target is the allwasy the last in the sequence.
-            if (trialSequence.isEmpty()){
-                expected_target = "N/A";
-                isIn = "0";
-            }
-            else{
-                qint32 expTarget = trialSequence.last();
-                expected_target = QString::number(expTarget);
-                // Checking if it hits ANY targets.
-                isIn = "0";
-                for (qint32 i = 0; i < targetBoxes.size(); i++){
-                    if (targetBoxes.at(i).contains(f.x,f.y)){
-                        // Checking if this is the same as the expected target
-                        if (expTarget == i){
-                            // We remove only the LAST expected target in the trial sequence.
-                            trialSequence.removeLast();
-                            isIn = "1";
-                        }
-                        else{
-                            // This means there WAS a HIT but it was NOT the expected target. Sequence is broken, there will be no more hits.
-                            trialSequence.clear();
-                        }
-                        break;
-                    }
-                }
-            }
-        }
+        qDebug() << "CHECKING FIXATION" << i;
+        targetHitSearcherReturn = targetHitSearcher.isHit(f.x,f.y,imgID);
 
         QStringList left;
         left << subjectIdentifier
              << trialID
              << imgID
-             << expected_target
-             << isIn
+             << targetHitSearcherReturn.targetHit
+             << targetHitSearcherReturn.isIn
+             << trialSeqStr.join("|")
+             << targetHitSearcherReturn.sequenceCompleted
              << QString::number(f.duration)
              << "0"
              << QString::number(sacLatL)
@@ -301,58 +290,24 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
 
     //qDebug() << "SAVING LEFT"  << trialID << imgID << "->" << mmts.toString();
 
+    targetHitSearcher.reset();
     sac.reset();
 
+    qDebug() << "RIGHT EYE" << trialID << "Num FIX: " << fR.size();
     for (qint32 i = 0; i < fR.size(); i++){
         // Computing the expected target and the target hit parameter for the image.
         Fixation f = fR.at(i);
-        qint32 imgNum = imgID.toInt();
-        QString expected_target;
-        QString isIn;
-
-        if ((imgNum >= 1) && (imgNum <= 3)){
-            // These are the images that show the red dots.
-            qint32 expTarget = trialSequence.at(imgNum-1);
-            expected_target = QString::number(expTarget);
-            if (targetBoxes.at(expTarget).contains(f.x,f.y)) isIn = "1";
-            else isIn = "0";
-        }
-        else if (imgNum == 4){
-            // We need to detect if the fixation sequence, here is correct.
-            // The expected target is the allwasy the last in the sequence.
-            if (trialSequence.isEmpty()){
-                expected_target = "N/A";
-                isIn = "0";
-            }
-            else{
-                qint32 expTarget = trialSequence.last();
-                expected_target = QString::number(expTarget);
-                // Checking if it hits ANY targets.
-                isIn = "0";
-                for (qint32 i = 0; i < targetBoxes.size(); i++){
-                    if (targetBoxes.at(i).contains(f.x,f.y)){
-                        // Checking if this is the same as the expected target
-                        if (expTarget == i){
-                            // We remove only the LAST expected target in the trial sequence.
-                            trialSequence.removeLast();
-                            isIn = "1";
-                        }
-                        else{
-                            // This means there WAS a HIT but it was NOT the expected target. Sequence is broken, there will be no more hits.
-                            trialSequence.clear();
-                        }
-                        break;
-                    }
-                }
-            }
-        }
+        qDebug() << "CHECKING FIXATION" << i;
+        targetHitSearcherReturn = targetHitSearcher.isHit(f.x,f.y,imgID);
 
         QStringList right;
         right << subjectIdentifier
               << trialID
               << imgID
-              << expected_target
-              << isIn
+              << targetHitSearcherReturn.targetHit
+              << targetHitSearcherReturn.isIn
+              << trialSeqStr.join("|")
+              << targetHitSearcherReturn.sequenceCompleted
               << QString::number(f.duration)
               << "1"
               << QString::number(sacLatR)
@@ -360,9 +315,118 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
               << "N/A";
         rdata << right;
 
-
     }
 
     //qDebug() << "SAVING RIGHT"  << trialID << imgID << "->" << mmts.toString();
+
+}
+
+/////////////////////////////////////// Class that maintains the logic for searching target hits in the fixations.
+
+void EDPNBackRT::TargetHitSearcher::setNewTrial(const QString &id, const QList<qint32> trialSeq){
+    trialID = id;
+    trialSequence = trialSeq;
+}
+
+void EDPNBackRT::TargetHitSearcher::setTargetBoxes(const QList<QRectF> &tBoxes){
+    targetBoxes = tBoxes;
+}
+
+void EDPNBackRT::TargetHitSearcher::reset(){
+    expectedTargetIndexInSequence = 2;
+}
+
+EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x, qreal y, const QString &imgID) {
+    qint32 imgNum = imgID.toInt();
+    TargetHitSearcherReturn ans;
+    QString isIn;
+    qint32 target_hit = -1;
+    ans.sequenceCompleted = "0";
+
+    // Finding which target, if any, was hit by the fixation.
+    for (qint32 i = 0; i < targetBoxes.size(); i++){
+        if (targetBoxes.at(i).contains(x,y)){
+            target_hit = i;
+            break;
+        }
+    }
+
+    if ((imgNum >= 1) && (imgNum <= 3)){
+        // These are the images that show the red dots.
+        qint32 expTarget = trialSequence.at(imgNum-1);
+        if (target_hit == expTarget) isIn = "1";
+        else isIn = "0";
+    }
+    else if (imgNum == 4){
+        // We need to detect if the fixation sequence, here is correct.
+        // The expected target is the allwasy the last in the sequence.
+        if (expectedTargetIndexInSequence == -1){
+            isIn = "0";
+        }
+        else{
+            // Checking if it hits ANY targets.
+            isIn = "0";
+            qDebug() << trialID << "- CHECKING FIXATION" << x << y;
+            // Checking if this is the same as the expected target
+            qDebug() << trialID << "- TARGET HIT" << target_hit << "Expected Target Index" << expectedTargetIndexInSequence << "SEQ:" <<  trialSequence;
+            switch (expectedTargetIndexInSequence) {
+            case 2:
+                // Expecting the first target in the sequence.
+                if (trialSequence.at(2) == target_hit){
+                    // All good we move to the next one.
+                    expectedTargetIndexInSequence = 1;
+                    isIn = "1";
+                }
+                else{
+                    // Sequence is already broken
+                    expectedTargetIndexInSequence = -1;
+                    isIn = "0";
+                }
+                break;
+            case 1:
+                // This could be either next one or the one at two.
+                if (trialSequence.at(1) == target_hit){
+                    expectedTargetIndexInSequence = 0;
+                    isIn = "1";
+                }
+                else if (trialSequence.at(2) == target_hit){
+                    // Fixating on previous point. No hit. No brocken sequence
+                    isIn = "0";
+                }
+                else if (target_hit != -1){ // Fixations not in targets are not a problem.
+                    // Sequence is broken.
+                    expectedTargetIndexInSequence = -1;
+                    isIn = "0";
+                }
+                break;
+            case 0:
+                // This could either be the last one or the one at one.
+                if (trialSequence.at(0) == target_hit){
+                    qDebug() << "SEQUENCE COMPLETED";
+                    ans.sequenceCompleted = "1";
+                    expectedTargetIndexInSequence = -1;
+                    isIn = "1";
+                }
+                else if (trialSequence.at(1) == target_hit){
+                    // Fixating on previous point. No hit. No brocken sequence
+                    isIn = "0";
+                }
+                else if (target_hit != -1){ // Fixations not in targets are not a problem.
+                    // Sequence is broken.
+                    expectedTargetIndexInSequence = -1;
+                    isIn = "0";
+                }
+                break;
+            default:
+                // This is a -1, nothing to do.
+                break;
+            }
+        }
+    }
+
+    ans.isIn = isIn;
+    if (target_hit < 0)  ans.targetHit = "N/A";
+    else ans.targetHit = QString::number(target_hit);
+    return ans;
 
 }

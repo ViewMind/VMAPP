@@ -24,6 +24,14 @@ bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
     stateTimer.setInterval(TIME_TRANSITION);
     stateTimer.start();
 
+    // Computing the minimum number of hits to count as a fixation.
+    MovingWindowParameters mwp;
+    mwp.sampleFrequency = c->getReal(CONFIG_SAMPLE_FREQUENCY);
+    mwp.minimumFixationLength = c->getReal(CONFIG_MIN_FIXATION_LENGTH);
+    mwp.calculateWindowSize();
+    trialRecognitionMachine.setNumberOfDataHit(mwp.getStartWindowSize());
+    qDebug() << "Miniminum number of data points computed" << mwp.getStartWindowSize();
+
     drawCurrentImage();
 
     if (!vrEnabled){
@@ -63,8 +71,7 @@ void NBackRTExperiment::nextState(){
         break;
     case TSF_SHOW_DOT_3:
         tstate = TSF_SHOW_BLANKS;
-        trialRecognitionSequence.clear();
-        trialRecognitionSequence = m->getExpectedTargetSequenceForTrial(currentTrial);
+        trialRecognitionMachine.reset(m->getExpectedTargetSequenceForTrial(currentTrial));
         addTrialHeader();
         stateTimer.setInterval(TIME_OUT_BLANKS);
         break;
@@ -193,17 +200,49 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     etData << QVariant(dataS);
 
     if (tstate == TSF_SHOW_BLANKS){
-        if (trialRecognitionSequence.isEmpty()) onTimeOut();   // This if should NEVER be true but weird stuff happens with timers, so it's better to be safe than sorry.
-
-        //qDebug() << "TARGET SHOULD BE" << trialRecognitionSequence.first() << ". POINT" << data.xLeft << data.yLeft;
-
-        if (m->isPointInTargetBox(data.xRight,data.yRight,trialRecognitionSequence.first()) ||
-            m->isPointInTargetBox(data.xLeft,data.yLeft,trialRecognitionSequence.first())){
-            trialRecognitionSequence.removeFirst();
-            if (trialRecognitionSequence.isEmpty()){
-                onTimeOut();
-            }
+        if (trialRecognitionMachine.isSequenceOver(data.xRight,data.yRight,data.xLeft,data.yLeft,m)){
+            onTimeOut();
         }
     }
 
+}
+
+
+/////////////////////////////////////////// TRIAL RECOGNITION MACHINE
+void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &trialRecogSeq){
+    rTrialRecognitionSequence = trialRecogSeq;
+    lTrialRecognitionSequence = trialRecogSeq;
+    rHitCount = 0;
+    lHitCount = 0;
+}
+
+void NBackRTExperiment::TrialRecognitionMachine::setNumberOfDataHit(qint32 n){
+    numberOfDataHits = n;
+}
+
+bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(qreal rX, qreal rY, qreal lX, qreal lY, FieldingManager *m){
+
+    if (rTrialRecognitionSequence.isEmpty()) return true;
+    if (lTrialRecognitionSequence.isEmpty()) return true;
+
+    if (m->isPointInTargetBox(rX,rY,rTrialRecognitionSequence.first())){
+        rHitCount++;
+        if (rHitCount == numberOfDataHits){
+            rTrialRecognitionSequence.removeFirst();
+            rHitCount = 0;
+            if (rTrialRecognitionSequence.isEmpty()) return true;
+        }
+    }
+
+    if (m->isPointInTargetBox(lX,lY,lTrialRecognitionSequence.first())){
+        lHitCount++;
+        if (lHitCount == numberOfDataHits){
+            lTrialRecognitionSequence.removeFirst();
+            lHitCount = 0;
+            if (lTrialRecognitionSequence.isEmpty()) return true;
+        }
+    }
+
+
+    return false;
 }

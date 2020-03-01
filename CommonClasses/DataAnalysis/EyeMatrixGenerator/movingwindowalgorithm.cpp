@@ -62,7 +62,7 @@ Fixations MovingWindowAlgorithm::computeFixations(const DataMatrix &data, qint32
         // would be shorter than the minimum fixation. So the algorithm ends here.
         if (endIndex >= data.size()) break;
 
-        //qWarning() << "START WINDOW" << parameters.getStartWindowSize() << ". DIFF IS" << data.at(endIndex).at(tI) -  data.at(startIndex).at(tI);
+        //qDebug() << "START WINDOW" << parameters.getStartWindowSize() << ". DIFF IS" << data.at(endIndex).at(tI) -  data.at(startIndex).at(tI);
 
         // Getting the start window dispersion limits
         mmX = findDispLimits(data,xI,startIndex,endIndex);
@@ -129,7 +129,14 @@ Fixation MovingWindowAlgorithm::calculateFixationPoint(const DataMatrix &data,
     f.fixStart = data.at(startI).at(tI);
     f.fixEnd   = data.at(endI).at(tI);
     f.duration = f.fixEnd - f.fixStart;
-    //qWarning() << "CENTROID" << f.x << f.y << "." << "DURATION" << f.duration;
+//    qDebug() << "CENTROID" << f.x << f.y << "." << "DURATION" << f.duration << "Number of data points used: " << (endI-startI+1) << "Minimum number of data points" << parameters.getStartWindowSize();
+//    if ((endI-startI+1) == parameters.getStartWindowSize()){
+//        QList<qreal> templist;
+//        for (qint32 i = startI; i <= endI; i++){
+//            templist << data.at(i).at(tI);
+//        }
+//        qDebug() << "TIME POINTS USED IN FIXATION" << templist;
+//    }
 
     // Finally the indexes are stored.
     f.indexFixationStart = startI;

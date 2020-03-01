@@ -28,6 +28,25 @@ public:
 
 private:
 
+    struct TargetHitSearcherReturn{
+        QString targetHit;
+        QString isIn;
+        QString sequenceCompleted;
+    };
+
+    struct TargetHitSearcher {
+    public:
+        void setTargetBoxes(const QList<QRectF> &tBoxes);
+        void setNewTrial(const QString &id, const QList<qint32> trialSeq);
+        TargetHitSearcherReturn isHit(qreal x, qreal y, const QString &imgID);
+        void reset();
+    private:
+        QString trialID;
+        QList<QRectF> targetBoxes;
+        QList<qint32> trialSequence;
+        qint32 expectedTargetIndexInSequence;
+    };
+
     // Initialization of the data matrix (header row)
     void initializeFieldingDataMatrix();
 
@@ -35,7 +54,7 @@ private:
     void appendDataToFieldingMatrix(const DataMatrix &data,
                                     const QString &trialID,
                                     const QString &imgID,
-                                    QList<qint32> trialSequence);
+                                    const QList<qint32> &trialSequence);
 
 
     // Actually saving the stored data to a file on disk.
@@ -56,8 +75,8 @@ private:
     // Center margins
     qreal centerMinX, centerMaxX, centerMinY, centerMaxY;
 
-    // The target box tollerance as a function of which box I'm looking.
-    QList<QRectF> targetBoxes;
+    // Target Hit Searcher object
+    TargetHitSearcher targetHitSearcher;
 
     // Drawing constants. Transform the fix measurmente to monitor or HMD sizes.
     qreal fieldingKx, fieldingKy;

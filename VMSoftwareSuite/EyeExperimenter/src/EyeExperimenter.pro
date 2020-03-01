@@ -24,6 +24,7 @@ RESOURCES += qml.qrc \
 
 SOURCES += main.cpp \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
@@ -68,6 +69,7 @@ SOURCES += main.cpp \
 
 HEADERS += \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \

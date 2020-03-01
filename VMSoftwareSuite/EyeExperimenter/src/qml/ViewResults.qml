@@ -33,10 +33,10 @@ VMBase {
             var map = flowControl.nextSelectedReportItem();
             done = !("vmTitleText" in map);
             if (!done){
-                //console.log("================= APPENDING =====================");
-                //for (var key in map){
-                //    console.log("   " + key + ": " + map[key]);
-                //}
+//                console.log("================= APPENDING =====================");
+//                for (var key in map){
+//                    console.log("   " + key + ": " + map[key]);
+//                }
                 map.vmDiagClassTitle = ""
                 map.vmDisclaimer = ""
                 map.vmDiagnosisClass = ""

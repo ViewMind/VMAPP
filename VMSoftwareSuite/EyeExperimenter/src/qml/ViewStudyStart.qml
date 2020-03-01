@@ -21,15 +21,14 @@ VMBase {
     }
 
     function setDefaultSelections(){        
-//        cboxBindingBC.vmOn = true;
-//        cboxBindingUC.vmOn = true;
-//        cboxReading.vmOn = true;
-//        cboxFielding.vmOn = false;
-
-        cboxBindingBC.vmOn = false;
-        cboxBindingUC.vmOn = false;
-        cboxReading.vmOn = false;
-        cboxFielding.vmOn = true;
+        cboxBindingBC.vmOn = true;
+        cboxBindingUC.vmOn = true;
+        cboxReading.vmOn = true;
+        cboxFielding.vmOn = false;
+//        cboxBindingBC.vmOn = false;
+//        cboxBindingUC.vmOn = false;
+//        cboxReading.vmOn = false;
+//        cboxFielding.vmOn = true;
 
     }
 

@@ -28,6 +28,7 @@ OBJECTS_DIR = OBJS
 RCC_DIR = QRC
 
 SOURCES += \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
         main.cpp \
         eyedataanalyzer.cpp \
@@ -63,6 +64,7 @@ SOURCES += \
     idtablediag.cpp
 
 HEADERS += \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
         eyedataanalyzer.h \
     ../../../CommonClasses/common.h \
