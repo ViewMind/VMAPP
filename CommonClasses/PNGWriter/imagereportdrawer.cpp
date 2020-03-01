@@ -101,8 +101,8 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
             d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
             d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
             d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
-            d.resultBar.setResultType(CONFIG_RESULTS_BINDING_CONVERSION_INDEX);
-            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX));
+            d.resultBar.setResultType(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
+            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE));
             d.value = d.resultBar.getValue();
             data2Show << d;
             diagClassFinder.setIDX(d.resultBar);
@@ -484,7 +484,7 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
 
     // Calculating the segment bars.
     QStringList colorScale;
-    qint32 resBarSize = d.resultBar.getValues().size();
+    qint32 resBarSize = d.resultBar.getSegmentBarCutOffValues().size();
 
     if (resBarSize == 4) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
     else if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_RED;

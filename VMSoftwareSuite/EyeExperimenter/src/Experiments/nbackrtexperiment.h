@@ -6,11 +6,12 @@
 
 #include "experiment.h"
 #include "../../../CommonClasses/Experiments/fieldingmanager.h"
+#include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
 // Timer timess
 #define   TIME_TRANSITION                               500
 #define   TIME_TARGET                                   250
-#define   TIME_OUT_BLANKS                               1500
+#define   TIME_OUT_BLANKS                               2000
 //#define   TIME_OUT_BLANKS                               15000 // For DEBUG gives mouse more time for test
 
 // Possible pauses for the fielding experiment
@@ -41,6 +42,19 @@ private:
                   TSF_SHOW_DOT_3,
                   TSF_SHOW_BLANKS} TrialStateNBackRT;
 
+    struct TrialRecognitionMachine {
+        void setNumberOfDataHit(qint32 n);
+        void reset(const QList<qint32> &trialRecogSeq);
+        bool isSequenceOver(qreal rX, qreal rY, qreal lX, qreal lY, FieldingManager *m);
+    private:
+        QList<qint32> rTrialRecognitionSequence;
+        QList<qint32> lTrialRecognitionSequence;
+        qint32 rHitCount;
+        qint32 lHitCount;
+        qint32 numberOfDataHits;
+        qint32 hitCount;
+    };
+
     // Handle to the fielding manager. Can be used for this experiment as well.
     FieldingManager *m;
 
@@ -52,7 +66,7 @@ private:
     qint32 currentImage;
 
     // Used as a state machine to count down correct hits, for the follow through logic.
-    QList<qint32> trialRecognitionSequence;
+    TrialRecognitionMachine trialRecognitionMachine;
 
     // The timer and the counter.
     QTimer stateTimer;

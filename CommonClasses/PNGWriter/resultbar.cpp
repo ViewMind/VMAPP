@@ -102,37 +102,37 @@ QString ResultBar::ResultBarCodes::toString(const QString &joiner) const {
 bool ResultBar::setResultType(const QString &resultType){
 
     resType = resultType;
-    values.clear();
+    segmentBarCuttOffValues.clear();
 
     //qDebug() << "Setting result type to" << resultType;
 
     if (resultType == CONFIG_RESULTS_READ_PREDICTED_DETERIORATION){
-        values << 0 << 30 << 60;
+        segmentBarCuttOffValues << 0 << 30 << 60;
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_EXECUTIVE_PROCESSES){
         // values << -4 << 18 << 40 << 62;
-        largerBetter = false;
+        // largerBetter = false;
         // Values are inverted so that larger values are better.
-        //values << 50 << 60 << 70 << 80;
-        values << 28 << 36 << 44 << 51;
+        // values << 50 << 60 << 70 << 80;
+        segmentBarCuttOffValues << 28 << 36 << 44 << 51;
         largerBetter = false;
     }
     else if (resultType == CONFIG_RESULTS_WORKING_MEMORY){
-        values << 50 << 60 << 70 << 80;
+        segmentBarCuttOffValues << 50 << 60 << 70 << 80;
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_RETRIEVAL_MEMORY){
-        values << 1 << 5 << 9 << 13;
+        segmentBarCuttOffValues << 1 << 5 << 9 << 13;
         largerBetter = true;
     }
     else if (resultType == CONFIG_RESULTS_BINDING_CONVERSION_INDEX){
-        values << 0 << 26 << 52;
+        segmentBarCuttOffValues << 0 << 20 << 40;
         largerBetter = true;
     }
-    else if (resultType == CONFIG_RESULTS_BEHAVIOURAL_RESPONSE){
+    else if (resultType == CONFIG_RESULTS_BEHAVIOURAL_RESPONSE){        
+        segmentBarCuttOffValues << 12 << 22 << 32;
         largerBetter = true;
-        values << 12 << 22 << 32;
     }
     else{
         return false;
@@ -166,7 +166,7 @@ void ResultBar::setValue(const QVariant &varvalue){
     if (resType == CONFIG_RESULTS_BEHAVIOURAL_RESPONSE){
         QVariantList bc_uc = varvalue.toList();
         //First value is BC ans and second is UC ans
-        if (bc_uc.size() != 2) value = -1;
+        if (bc_uc.size() != 2) realValue = -1;
         else realValue = bc_uc.first().toDouble();
     }
     else realValue = varvalue.toReal();
@@ -178,8 +178,8 @@ void ResultBar::setValue(const QVariant &varvalue){
     calcvalue = value;
     int result = 0;
     result = 0;
-    for (qint32 i = 0; i < values.size()-1; i++){
-        if (calcvalue < values.at(i)){
+    for (qint32 i = 0; i < segmentBarCuttOffValues.size()-1; i++){
+        if (calcvalue < segmentBarCuttOffValues.at(i)){
             break;
         }
         result = i;
@@ -187,7 +187,7 @@ void ResultBar::setValue(const QVariant &varvalue){
 
     // If larger is better then the indexes are inverted as 0 represents green which is good and 2 represents red.
     if (largerBetter){
-        if (values.size() == 4){
+        if (segmentBarCuttOffValues.size() == 4){
             if (result == 0) result = 2;
             else if (result == 2) result = 0;
         }
@@ -197,13 +197,11 @@ void ResultBar::setValue(const QVariant &varvalue){
         }
     }
 
-
-
     segmentBarIndex = result;
     // qDebug() << "Segment Bar Index" << result << " values size " << values.size();
 
     // Setting the bar type;
-    if (values.size() == 4){
+    if (segmentBarCuttOffValues.size() == 4){
         // 3 Segment bar
         switch (segmentBarIndex) {
         case 0:

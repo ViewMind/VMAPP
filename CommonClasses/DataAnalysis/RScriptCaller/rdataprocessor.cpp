@@ -108,19 +108,22 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
     QString ucgroup = results.getString(CONFIG_RESULTS_UC_PREDICTED_GROUP);
     qreal conversionIndex;
 
-    if (bcgroup == ucgroup){
-        conversionIndex = qMin(bcindex,ucindex);
-    }
-    else {
-        if (bcgroup == "NO") conversionIndex = bcindex;
-        else conversionIndex = ucindex;
-    }
+    conversionIndex = bcindex;
+
+//    OLD CODE. HAS BECOME OBSOLETE
+//    if (bcgroup == ucgroup){
+//        conversionIndex = qMin(bcindex,ucindex);
+//    }
+//    else {
+//        if (bcgroup == "NO") conversionIndex = bcindex;
+//        else conversionIndex = ucindex;
+//    }
 
     results.addKeyValuePair(CONFIG_RESULTS_BINDING_CONVERSION_INDEX,conversionIndex);
 
     QString report = "RESULTS (Always using Right EYE):<br>";
     report = report + "BC Group: " + bcgroup + "BC Index: " + QString::number(bcindex);
-    report = report + "UC Group: " + ucindex + "UC Index: " + QString::number(ucindex);
+    report = report + "UC Group: " + ucgroup + "UC Index: " + QString::number(ucindex);
     report = report + "Predicted deterioration: " + QString::number(conversionIndex);
 
     return report;

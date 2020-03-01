@@ -19,6 +19,9 @@ bool FixationDrawer::prepareToDrawFixations(const QString &expID, ConfigurationM
     else if (expID == CONFIG_P_EXP_FIELDING){
         manager = new FieldingManager();
     }
+    else if (expID == CONFIG_P_EXP_NBACKRT){
+        manager = new FieldingManager();
+    }
     else{
         error = "Unkonwn experiment ID: " + expID;
         return false;
@@ -91,6 +94,30 @@ bool FixationDrawer::drawFixations(const FixationList &flist){
                 else{
                     m->setDrawState(FieldingManager::DS_1);
                 }
+            }
+            // Constructing the image name
+            QString imageName = trialID + "_" + imgID;
+            //... and drawing the fixations on the image.
+            drawFixationOnImage(imageName,flist.left.at(i),flist.right.at(i));
+        }
+    }
+    else if (experimentID == CONFIG_P_EXP_NBACKRT){
+        FieldingManager *m = (FieldingManager *)manager;
+        for (qint32 i = 0; i < flist.trialID.size(); i++){
+
+            QString imgID = flist.trialID.at(i).first();
+            QString trialID = flist.trialID.at(i).last();
+
+            qint32 imgNumber = imgID.toInt();
+            if (imgNumber < 4){
+                m->setDrawState(FieldingManager::DS_CROSS_TARGET);
+                if (!m->setTargetPositionFromTrialName(trialID,imgNumber-1)){
+                    error = "FIELDING: Could not find trial with name " + trialID + " for drawing the fixations";
+                    return false;
+                }
+            }
+            else{
+                m->setDrawState(FieldingManager::DS_TARGET_BOX_ONLY);
             }
             // Constructing the image name
             QString imageName = trialID + "_" + imgID;

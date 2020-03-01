@@ -43,6 +43,7 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
     mwp.minimumFixationLength          = config->getReal(CONFIG_MIN_FIXATION_LENGTH);
     mwp.sampleFrequency                = config->getReal(CONFIG_SAMPLE_FREQUENCY);
     mwp.calculateWindowSize();
+
 }
 
 
@@ -78,6 +79,7 @@ void RawDataProcessor::run(){
         emit(appendMessage("========== STARTED READING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPReading reading(config);
         tagRet = csvGeneration(&reading,"Reading",dataReading,HEADER_READING_EXPERIMENT);
+        if (!tagRet.ok) return;
         matrixReading = tagRet.filePath;
 
         fixations[CONFIG_P_EXP_READING] = reading.getEyeFixations();
@@ -110,6 +112,7 @@ void RawDataProcessor::run(){
         // This function generates the tag for the DB but ALSO sets whether the targets use are small or large.
         QString bindingVersion = getVersionForBindingExperiment(true);
         tagRet = csvGeneration(&imagesBC,"Binding BC",dataBindingBC,HEADER_IMAGE_EXPERIMENT);
+        if (!tagRet.ok) return;
         matrixBindingBC = tagRet.filePath;
 
         fixations[CONFIG_P_EXP_BIDING_BC] = imagesBC.getEyeFixations();
@@ -125,6 +128,7 @@ void RawDataProcessor::run(){
         fixations[CONFIG_P_EXP_BIDING_UC] = imagesUC.getEyeFixations();
         barGraphOptionsFromFixationList(imagesUC.getEyeFixations(),dataBindingUC);
         temp = generateFDBFile(dataBindingUC,imagesUC.getEyeFixations(),false);
+        if (!tagRet.ok) return;
         freqErrorsOK = freqErrorsOK && temp;
 
         EDPImages::BindingAnswers bcans = imagesBC.getExperimentAnswers();
@@ -164,6 +168,7 @@ void RawDataProcessor::run(){
         emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
         EDPFielding fielding(config);
         tagRet = csvGeneration(&fielding,"Fielding",dataFielding,HEADER_FIELDING_EXPERIMENT);
+        if (!tagRet.ok) return;
         matrixFielding = tagRet.filePath;
 
         fixations[CONFIG_P_EXP_FIELDING] = fielding.getEyeFixations();
@@ -182,9 +187,10 @@ void RawDataProcessor::run(){
     }
 
     if (!dataNBackRT.isEmpty()) {
-        emit(appendMessage("========== STARTED FIELDING PROCESSING ==========",MSG_TYPE_SUCC));
+        emit(appendMessage("========== STARTED NBACK RT PROCESSING ==========",MSG_TYPE_SUCC));
         EDPNBackRT nbackrt(config);
-        tagRet = csvGeneration(&nbackrt,"NBack RT",dataFielding,HEADER_FIELDING_EXPERIMENT);
+        tagRet = csvGeneration(&nbackrt,"NBack RT",dataNBackRT,HEADER_NBACKRT_EXPERIMENT);
+        if (!tagRet.ok) return;
         matrixFielding = tagRet.filePath;
 
         fixations[CONFIG_P_EXP_NBACKRT] = nbackrt.getEyeFixations();
@@ -449,7 +455,7 @@ RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *proces
     mgeo.resolutionWidth = config->getReal(CONFIG_RESOLUTION_WIDTH);
     mgeo.resolutionHeight = config->getReal(CONFIG_RESOLUTION_HEIGHT);
 
-    processor->setFieldingMargin(config->getReal(CONFIG_MARGIN_TARGET_HIT));
+    processor->setFieldingMargin(static_cast<qint32>(config->getReal(CONFIG_MARGIN_TARGET_HIT)));
     processor->setMonitorGeometry(mgeo);
     processor->setMovingWindowParameters(mwp);
     processor->calculateWindowSize();
@@ -460,6 +466,7 @@ RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *proces
 
     emit(appendMessage("-> Generating  " + id + " CSV file",0));
     if (!processor->doEyeDataProcessing(data)){
+        tagRet.ok = false;
         emit(appendMessage("ERROR: " + processor->getError(),2));
     }
     else{

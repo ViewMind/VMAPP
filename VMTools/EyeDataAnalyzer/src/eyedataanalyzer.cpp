@@ -374,6 +374,9 @@ void EyeDataAnalyzer::on_timeOut(){
     case CS_GETTING_DB_BKP:
         logForDB.appendError("Timeout while getting DB Bkp");
         break;
+    default:
+        logForDB.appendError("Timeout in an unexpected connection state");
+        break;
     }
     waitDiag->close();
 }
@@ -667,6 +670,10 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
         processingParameters.addKeyValuePair(CONFIG_FILE_FIELDING,fileToProcess);
         fixationHashName = CONFIG_P_EXP_FIELDING;
     }
+    else if (fileToProcess.startsWith(FILE_OUTPUT_NBACKRT)){
+        processingParameters.addKeyValuePair(CONFIG_FILE_NBACKRT,fileToProcess);
+        fixationHashName = CONFIG_P_EXP_NBACKRT;
+    }
     else{
         logForProcessing.appendError("Unrecognized file type: " + fileToProcess);
         return;
@@ -820,6 +827,12 @@ void EyeDataAnalyzer::on_pbDATFiles_clicked()
         else if (fileToProcess.startsWith(FILE_OUTPUT_BINDING_UC)){
             config.addKeyValuePair(CONFIG_FILE_BIDING_UC,fileToProcess);
         }
+        else if (fileToProcess.startsWith(FILE_OUTPUT_FIELDING)){
+            config.addKeyValuePair(CONFIG_FILE_FIELDING,fileToProcess);
+        }
+        else if (fileToProcess.startsWith(FILE_OUTPUT_NBACKRT)){
+            config.addKeyValuePair(CONFIG_FILE_NBACKRT,fileToProcess);
+        }
     }
 
     overWriteCurrentConfigurationWith(config,false);
@@ -866,7 +879,7 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
     processingParameters.addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,outputPath);
 
     ImageReportDrawer reportDrawer;
-    reportDrawer.drawReport(dataSet,&processingParameters,"B");
+    reportDrawer.drawReport(dataSet,&processingParameters,"I");
 
     if (QFile(outputPath).exists()){
         logForProcessing.appendSuccess("Generated image report at: " + outputPath);
@@ -881,8 +894,6 @@ void EyeDataAnalyzer::on_pbClearLog_clicked()
 {
     ui->pteDBOutputLog->setPlainText("");
 }
-
-
 
 void EyeDataAnalyzer::on_pbUnifiedCSV_clicked()
 {
@@ -948,7 +959,7 @@ void EyeDataAnalyzer::on_pbIDTable_clicked()
 
     csv << header.join(",");
 
-    for (qint32 i = 0; i < dbpuids.size(); i++){;
+    for (qint32 i = 0; i < dbpuids.size(); i++){
         ConfigurationManager t =  patNameMng.getPatientIDInfoFromDBPUID(dbpuids.at(i));
         QStringList row;
         if(cols.DBPUID){

@@ -939,6 +939,9 @@ void FlowControl::prepareSelectedReportIteration(){
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
 
+    qDebug() << "Preparing report";
+    qDebug() << report;
+
     ConfigurationManager text = ImageReportDrawer::loadReportText(configuration->getString(CONFIG_REPORT_LANGUAGE));
     QStringList titles = text.getStringList(DR_CONFG_RESULTS_NAME);
     QStringList explanations = text.getStringList(DR_CONFG_RES_CLARIFICATION);

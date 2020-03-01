@@ -35,16 +35,16 @@ public:
     qint32 getSegmentBarIndex() const {return segmentBarIndex;}
     QString getValue() const;
     qint32 getValueAsNumber() const {return value;}
-    QList<qint32> getValues() const {return values;}
+    QList<qint32> getSegmentBarCutOffValues() const {return segmentBarCuttOffValues;}
     bool isLargerBetter() const {return largerBetter;}
-    bool hasTwoSections() const {return (values.size() == 3);}
+    bool hasTwoSections() const {return (segmentBarCuttOffValues.size() == 3);}
     QString getResultConfigured() const {return resType;}
     BarSegmentColorCode getBarSegmentColorCode() const { return bscc; }
 
 
 private:
     QString resType;
-    QList<qint32> values;
+    QList<qint32> segmentBarCuttOffValues;
     qint32 segmentBarIndex;
     qint32 value;
     bool largerBetter;
