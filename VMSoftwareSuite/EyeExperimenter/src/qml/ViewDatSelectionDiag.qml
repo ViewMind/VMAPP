@@ -47,6 +47,7 @@ Dialog {
         bindingBC.clearSelection();
         bindingUC.clearSelection();
         fielding.clearSelection();
+        nbackrt.clearSelection();
         btnGenerate.enabled = false;
         loader.operateOnRepGenStruct(-1,-1);
 

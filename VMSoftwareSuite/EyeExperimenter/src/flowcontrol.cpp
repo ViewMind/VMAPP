@@ -234,7 +234,6 @@ void FlowControl::requestDataReprocessing(const QString &reportName, const QStri
 
 void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QString &evaluationID){
 
-    //qWarning() << "Processing File Set: " << fileSetAndName;
 
     if (fileSetAndName.isEmpty() && !demoTransaction){
         //qWarning() << "File name set is empty";
@@ -242,6 +241,11 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
         return;
     }
 
+    if (fileSetAndName.isEmpty()){
+        logger.appendError("Attempting to generate a report but emitted file set is empty.");
+        emit(sslTransactionFinished());
+        return;
+    }
 
     // The first value is the expected report name.
     QStringList fileSet = fileSetAndName;
@@ -939,8 +943,8 @@ void FlowControl::prepareSelectedReportIteration(){
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
 
-    qDebug() << "Preparing report";
-    qDebug() << report;
+    //qDebug() << "Preparing report";
+    //qDebug() << report;
 
     ConfigurationManager text = ImageReportDrawer::loadReportText(configuration->getString(CONFIG_REPORT_LANGUAGE));
     QStringList titles = text.getStringList(DR_CONFG_RESULTS_NAME);

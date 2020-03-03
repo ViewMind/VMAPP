@@ -211,8 +211,74 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     }
 
     // Calculating the fixations for each eye.;
+#ifdef ENABLE_MWA_DEBUG
+    mwa.setLog("mwa_offline.log");
+    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". LEFT FIXATIONS");
+#endif
     Fixations fL = mwa.computeFixations(data,FIELDING_XL,FIELDING_YL,FIELDING_TI);
+#ifdef ENABLE_MWA_DEBUG
+    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". RIGHT FIXATIONS");
+#endif
     Fixations fR = mwa.computeFixations(data,FIELDING_XR,FIELDING_YR,FIELDING_TI);
+
+//    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
+//    // Computing fixation online and comparing the results.
+//    Fixations fL2, fR2;
+//    Fixation workF;
+//#ifdef ENABLE_MWA_DEBUG
+//    mwa.setLog("mwa_online.log");
+//    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". LEFT FIXATIONS");
+//#endif
+//    mwa.finalizeOnlineFixationCalculation(); // Making sure that everything is reset.
+//    for (qint32 i = 0; i  < data.size(); i++){
+//        workF = mwa.calculateFixationsOnline(data.at(i).at(FIELDING_XL),data.at(i).at(FIELDING_YL),data.at(i).at(FIELDING_TI));
+//        if (workF.isValid()) fL2 << workF;
+//    }
+//    workF = mwa.finalizeOnlineFixationCalculation();
+//    if (workF.isValid()) fL2 << workF;
+
+//#ifdef ENABLE_MWA_DEBUG
+//    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". RIGHT FIXATIONS");
+//#endif
+//    for (qint32 i = 0; i  < data.size(); i++){
+//        workF = mwa.calculateFixationsOnline(data.at(i).at(FIELDING_XR),data.at(i).at(FIELDING_YR),data.at(i).at(FIELDING_TI));
+//        if (workF.isValid()) fR2 << workF;
+//    }
+//    workF = mwa.finalizeOnlineFixationCalculation();
+//    if (workF.isValid()) fR2 << workF;
+
+//    qDebug() <<  "TRIAL ID" << trialID << "IMG" << imgID;
+//    qint32 size = qMax(fL.size(),fL2.size());
+//    if (fL.size() != fL2.size()){
+//        qDebug() << "FL SIZE DIFFERENCE. OFFLINE" << fL.size() << "ONLINE" << fL2.size();
+//        for (qint32 i = 0; i < size; i++){
+//            QString s = QString::number(i) + ". ";
+//            if (i < fL.size()){
+//                s = s + "OFFLINE: " + fL.at(i).toString();
+//            }
+//            else{
+//                s = s + "OFFLINE: N/A";
+//            }
+//            s  = s + ". ";
+//            if (i < fL2.size()){
+//                s = s + "ONLINE: " + fL2.at(i).toString();
+//            }
+//            else{
+//                s = s + "ONLINE: N/A";
+//            }
+//            qDebug().noquote() << s;
+//        }
+//    }
+//    else{
+//        // Same amount.
+//        for (qint32 i = 0; i < size; i++){
+//            if (!fL.at(i).isSame(fL2.at(i))){
+//                qDebug().noquote() << "DIFF AT" << i << "OFFLINE" << fL.at(i).toString() << "ONLINE" << fL2.at(i).toString();
+//            }
+//        }
+//    }
+//    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
+
 
     eyeFixations.left.append(fL);
     eyeFixations.right.append(fR);
@@ -263,12 +329,12 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     sac.reset();
     targetHitSearcher.reset();
 
-    qDebug() << "LEFT EYE" << trialID << "Num FIX: " << fL.size();
+    //qDebug() << "LEFT EYE" << trialID << "Num FIX: " << fL.size();
     for (qint32 i = 0; i < fL.size(); i++){
 
         // Computing the expected target and the target hit parameter for the image.
         Fixation f = fL.at(i);
-        qDebug() << "CHECKING FIXATION" << i;
+        //qDebug() << "CHECKING FIXATION" << i;
         targetHitSearcherReturn = targetHitSearcher.isHit(f.x,f.y,imgID);
 
         QStringList left;
@@ -293,11 +359,11 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     targetHitSearcher.reset();
     sac.reset();
 
-    qDebug() << "RIGHT EYE" << trialID << "Num FIX: " << fR.size();
+    //qDebug() << "RIGHT EYE" << trialID << "Num FIX: " << fR.size();
     for (qint32 i = 0; i < fR.size(); i++){
         // Computing the expected target and the target hit parameter for the image.
         Fixation f = fR.at(i);
-        qDebug() << "CHECKING FIXATION" << i;
+        //qDebug() << "CHECKING FIXATION" << i;
         targetHitSearcherReturn = targetHitSearcher.isHit(f.x,f.y,imgID);
 
         QStringList right;
@@ -366,9 +432,9 @@ EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x
         else{
             // Checking if it hits ANY targets.
             isIn = "0";
-            qDebug() << trialID << "- CHECKING FIXATION" << x << y;
+            //qDebug() << trialID << "- CHECKING FIXATION" << x << y;
             // Checking if this is the same as the expected target
-            qDebug() << trialID << "- TARGET HIT" << target_hit << "Expected Target Index" << expectedTargetIndexInSequence << "SEQ:" <<  trialSequence;
+            //qDebug() << trialID << "- TARGET HIT" << target_hit << "Expected Target Index" << expectedTargetIndexInSequence << "SEQ:" <<  trialSequence;
             switch (expectedTargetIndexInSequence) {
             case 2:
                 // Expecting the first target in the sequence.
@@ -402,7 +468,7 @@ EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x
             case 0:
                 // This could either be the last one or the one at one.
                 if (trialSequence.at(0) == target_hit){
-                    qDebug() << "SEQUENCE COMPLETED";
+                    //qDebug() << "SEQUENCE COMPLETED";
                     ans.sequenceCompleted = "1";
                     expectedTargetIndexInSequence = -1;
                     isIn = "1";

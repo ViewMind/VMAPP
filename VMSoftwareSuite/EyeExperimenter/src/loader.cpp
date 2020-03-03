@@ -534,6 +534,9 @@ void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
         case LIST_INDEX_FIELDING:
             reportGenerationStruct.fieldingFileIndex = index;
             break;
+        case LIST_INDEX_NBACKRT:
+            reportGenerationStruct.nbackrtFileIndex = index;
+            break;
         }
     }
 }
@@ -632,7 +635,7 @@ void Loader::onFileSetRequested(){
     // Setting the protocol ID
     QVariantMap patdata = lim.getPatientInfo(patuid);
     configuration->addKeyValuePair(CONFIG_PROTOCOL_NAME,patdata.value(TPATDATA_NONCOL_PROTOCOL).toString());
-    fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);
+    fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);    
     emit(fileSetReady(fileSet,getEvaluationID("")));
 }
 

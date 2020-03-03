@@ -1,6 +1,12 @@
 #ifndef MOVINGWINDOWALGORITHM_H
 #define MOVINGWINDOWALGORITHM_H
 
+//#define ENABLE_MWA_DEBUG
+
+#ifdef ENABLE_MWA_DEBUG
+#include "../../LogInterface/loginterface.h"
+#endif
+
 #include <QtMath>
 #include <QList>
 #include <QDebug>
@@ -17,6 +23,8 @@ struct Fixation{
     qint32 indexFixationStart;
     qint32 indexFixationEnd;
 
+    bool isValid() const { return ((indexFixationEnd >= 0) && (indexFixationStart >= 0)); }
+
     // Checks if the fixation fall in a given range.
     bool isIn(qreal minX, qreal maxX, qreal minY, qreal maxY) const {
         bool ans = (minX <= x);
@@ -24,6 +32,20 @@ struct Fixation{
         ans = ans && (minY <= y);
         ans = ans && (y <= maxY);
         return ans;
+    }
+
+    bool isSame(const Fixation &f) const {
+        if (x != f.x) return false;
+        if (y != f.y) return false;
+        if (duration != f.duration) return false;
+        if (fixStart != f.fixStart) return false;
+        if (fixEnd  != f.fixEnd) return false;
+        return true;
+    }
+
+    QString toString() const {
+        return "(" + QString::number(x) + "," + QString::number(y) + "). "
+                + QString::number(fixEnd) + " - " + QString::number(fixStart) + " = " + QString::number(duration);
     }
 
 };
@@ -72,8 +94,17 @@ public:
     // tI indicates the time column.
     Fixations computeFixations(const DataMatrix &data, qint32 xI, qint32 yI, qint32 tI);
 
+    // Uses the exact same algorithm to compute the fixation with one data point at a time.
+    Fixation calculateFixationsOnline(qreal x, qreal y, qreal timeStamp);
+    Fixation finalizeOnlineFixationCalculation();
+
     // Simple access to the parameters of the moving window algorithm
     MovingWindowParameters parameters;
+
+#ifdef ENABLE_MWA_DEBUG
+    void setLog(const QString &fileName) { logger.setLogFileLocation(fileName); }
+    void logMessage(const QString &s) { logger.appendStandard(s); }
+#endif
 
 private:
 
@@ -81,13 +112,34 @@ private:
         qreal min;
         qreal max;
         qreal diff() const {return max-min;}
+        QString toString() const { return "[" + QString::number(min) + "," + QString::number(max) + "]"; }
     };
+
+    struct DataPoint{
+        qreal x;
+        qreal y;
+        qreal timestamp;
+        QString toString() const { return "@" + QString::number(timestamp) + "(" + QString::number(x) + "," + QString::number(y) + ")"; }
+    };
+
+    // Compute the actual fixation based on matrix data.
+    Fixation calculateFixationPoint(const DataMatrix &data, qint32 xI, qint32 yI, qint32 startI, qint32 endI, qint32 tI);
 
     // Find the maximum and minimum fo the start window.
     MinMax findDispLimits(const DataMatrix &data, qint32 col, qint32 startI, qint32 endI) const;
 
-    // Calculates the fixation point.
-    Fixation calculateFixationPoint(const DataMatrix &data, qint32 xI, qint32 yI, qint32 startI, qint32 endI, qint32 tI);
+    // Online versions of the helper functions for cuputinf fixations
+    void onlineFindDispLimits();
+    Fixation onlineCalcuationOfFixationPoint();
+
+    // Online calculation fixation data structures.
+    QList<DataPoint> onlinePointsForFixation;
+    MinMax onlineMMMY;
+    MinMax onlineMMMX;
+
+#ifdef ENABLE_MWA_DEBUG
+    LogInterface logger;
+#endif
 
 };
 
