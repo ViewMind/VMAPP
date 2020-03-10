@@ -25,6 +25,7 @@ bool FieldingExperiment::startExperiment(ConfigurationManager *c){
     stateTimer.setInterval(TIME_TRANSITION);
     stateTimer.start();
 
+    m->drawBackground();
     drawCurrentImage();
 
     if (!vrEnabled){

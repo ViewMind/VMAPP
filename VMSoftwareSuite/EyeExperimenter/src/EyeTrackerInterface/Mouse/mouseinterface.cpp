@@ -60,6 +60,7 @@ void MouseInterface::on_pollTimer_Up(){
     dataToSend.time = dataToSend.time + TIMEOUT*1000;
 
     QPoint point = QCursor::pos();
+    //qDebug() << point;
     if (isBeingCalibrated){
         if (calibrationScreen->isInCalibrationPoint(point.x(),point.y())){
             isCalibrated = true;

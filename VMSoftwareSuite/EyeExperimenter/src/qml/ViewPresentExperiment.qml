@@ -86,6 +86,9 @@ VMBase {
         case vmExpIndexNBackRT:
             itemNBackRT.vmTrackerItemState = state;
             break;
+        case vmExpIndexParkinson:
+            itemParkinson.vmTrackerItemState = state;
+            break;
         }
     }
 
@@ -165,8 +168,15 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("fielding",1);
             break;
+        case vmExpIndexParkinson:
+            vmSlideTitle = loader.getStringForKey(keysearch+"itemParkinson");
+            viewVRDisplay.vmStudyTitle = vmSlideTitle;
+            vmSlideExplanation = "";
+            slideDescription.visible = false;
+            slideViewer.imgScale = 1.3;
+            setSlideImages("fielding",1);
+            break;
         }
-
     }
 
     function setTracker(list){
@@ -177,6 +187,7 @@ VMBase {
         itemReading.visible = false
         itemFielding.visible = false
         itemNBackRT.visible = false
+        itemParkinson.visible = false
 
         // Calculated the widths of the enabled items
         var accWidth = 0
@@ -204,6 +215,9 @@ VMBase {
             case vmExpIndexNBackRT:
                 accWidth = enableTrackItem(itemNBackRT,i,accWidth,L)
                 break;
+            case vmExpIndexParkinson:
+                accWidth = enableTrackItem(itemParkinson,i,accWidth,L);
+                break;
             }
         }
 
@@ -228,6 +242,9 @@ VMBase {
                 break;
             case vmExpIndexNBackRT:
                 x = setEnabledItemX(itemNBackRT,x,spacing);
+                break;
+            case vmExpIndexParkinson:
+                x = setEnabledItemX(itemParkinson,x,spacing);
                 break;
             }
         }
@@ -328,6 +345,12 @@ VMBase {
         VMExperimentTrackerItem {
             id: itemNBackRT
             vmText: loader.getStringForKey(keysearch + "itemNBackRT");
+            vmFont: viewPresentExperiment.robotoM.name
+        }
+
+        VMExperimentTrackerItem {
+            id: itemParkinson
+            vmText: loader.getStringForKey(keysearch + "itemParkinson");
             vmFont: viewPresentExperiment.robotoM.name
         }
 

@@ -410,7 +410,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performFieldingAnalysis(){
 
     // The first line is the resolution
     QStringList lines = content.split("\n");
-    if (!parser.parseFieldingExperiment(header)){
+    if (!parser.parseFieldingExperiment(header,1,1,1,1)){
         far.errorList << "PARSING FIELDING DESCRIPTION: " + parser.getError();
     }
     far.expectedNumberOfDataSets = parser.getParsedTrials().size();
@@ -517,7 +517,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performNBackRTAnalysis(){
 
     // The first line is the resolution
     QStringList lines = content.split("\n");
-    if (!parser.parseFieldingExperiment(header)){
+    if (!parser.parseFieldingExperiment(header,1,1,1,1)){
         far.errorList << "PARSING NBACK RT DESCRIPTION: " + parser.getError();
     }
     far.expectedNumberOfDataSets = parser.getParsedTrials().size();

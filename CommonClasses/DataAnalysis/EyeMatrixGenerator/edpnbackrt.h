@@ -42,7 +42,7 @@ private:
         void reset();
     private:
         QString trialID;
-        QList<QRectF> targetBoxes;
+        QList<QRectF> hitTargetBoxes;
         QList<qint32> trialSequence;
         qint32 expectedTargetIndexInSequence;
     };
@@ -69,17 +69,11 @@ private:
     // The number of trials
     qint32 numberOfTrials;
 
-    // Margin for hit detection
-    qreal dH, dW;
-
     // Center margins
     qreal centerMinX, centerMaxX, centerMinY, centerMaxY;
 
     // Target Hit Searcher object
     TargetHitSearcher targetHitSearcher;
-
-    // Drawing constants. Transform the fix measurmente to monitor or HMD sizes.
-    qreal fieldingKx, fieldingKy;
 
     // Temporarily store all processed data separated for eye.
     QStringList csvHeader;

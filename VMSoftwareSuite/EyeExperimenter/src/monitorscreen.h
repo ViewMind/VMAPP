@@ -7,11 +7,9 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 #include "../../../CommonClasses/common.h"
-#include "../../../CommonClasses/Experiments/readingmanager.h"
-#include "../../../CommonClasses/Experiments/fieldingmanager.h"
-#include "../../../CommonClasses/Experiments/bindingmanager.h"
-
+#include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
 class MonitorScreen : public QWidget
 {
@@ -25,25 +23,26 @@ signals:
 public slots:
     void updateBackground(const QPixmap &image);
     void updateEyePositions(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
+    void addFixations(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
+    void addMessages(const QString &message, bool append);
 
 private:
     QGraphicsView *gview;    
-    ReadingManager reading;
-    BindingManager binding;
-    FieldingManager fielding;
 
     // The graphical items
     QGraphicsPixmapItem *background;
     QGraphicsEllipseItem *leftEyeTracker;
     QGraphicsEllipseItem *rightEyeTracker;
+    QList<QGraphicsEllipseItem*> rightEyeFixations;
+    QList<QGraphicsEllipseItem*> leftEyeFixations;
+    QGraphicsSimpleTextItem* messages;
     qreal R;
 
     // Geomtric constants for scaling and offsetting.
     qreal targetWidth;
     qreal targetHeight;
     qreal scaleX;
-    qreal scaleY
-    ;
+    qreal scaleY;
 
 };
 

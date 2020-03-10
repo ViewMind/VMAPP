@@ -10,69 +10,28 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
     initializeFieldingDataMatrix();
 
     // Parsing the fielding experiment.
-    if (!parser.parseFieldingExperiment(eyeFixations.experimentDescription)){
+    if (!parser.parseFieldingExperiment(eyeFixations.experimentDescription,config->getReal(CONFIG_RESOLUTION_WIDTH),config->getReal(CONFIG_RESOLUTION_HEIGHT),
+                                        config->getReal(CONFIG_FIELDING_XPX_2_MM),config->getReal(CONFIG_FIELDING_YPX_2_MM))){
         error = "Error parsing fielding experiment: " + parser.getError();
         return false;
     }
 
+
     QStringList lines = data.split("\n");
+    hitTargetBoxes = parser.getHitTargetBoxes();
 
-    // X and Y margin for look detection
-    qreal k = fieldingMargin/200.0; // This is divided by a 100 to get it to number between 0 and 1 and divided by two to get half of that.
-    fieldingKx = config->getReal(CONFIG_FIELDING_XPX_2_MM);
-    fieldingKy = config->getReal(CONFIG_FIELDING_YPX_2_MM);
-    dH = static_cast<qreal>(RECT_HEIGHT/fieldingKx)*k;
-    dW = static_cast<qreal>(RECT_WIDTH/fieldingKy)*k;
-
-    qreal WScreen = AREA_WIDTH/fieldingKx;
-    qreal HScreen = AREA_HEIGHT/fieldingKy;
-    qreal generalOffsetX = (config->getReal(CONFIG_RESOLUTION_WIDTH) - WScreen)/2;
-    qreal generalOffsetY = (config->getReal(CONFIG_RESOLUTION_HEIGHT) - HScreen)/2;
-
+    qreal hitW = hitTargetBoxes.first().width();
+    qreal hitH = hitTargetBoxes.first().height();
 
     // The center is the actual center of the screen.
     centerX = config->getReal(CONFIG_RESOLUTION_WIDTH)/2;
     centerY = config->getReal(CONFIG_RESOLUTION_HEIGHT)/2;
 
-    centerMinX = centerX - static_cast<qreal>(RECT_WIDTH/fieldingKx)/2 - dW;
-    centerMinY = centerY - static_cast<qreal>(RECT_HEIGHT/fieldingKy)/2 - dH;
-    centerMaxX = centerX + static_cast<qreal>(RECT_WIDTH/fieldingKy)/2 + dW;
-    centerMaxY = centerY + static_cast<qreal>(RECT_HEIGHT/fieldingKy)/2 + dH;
-
-
-    // The tolerance distances are computed as 1/8 of the distance from the center to the closest point to a target square.
-
-    // First step is to compute all top left corners of target squares.
-    targetBoxX.clear(); targetBoxY.clear();
-    targetBoxX << 0 << 0 << 0 << 0 << 0 << 0;
-    targetBoxY << 0 << 0 << 0 << 0 << 0 << 0;
-
-    targetBoxX[0] = generalOffsetX+RECT_0_X/fieldingKx;
-    targetBoxY[0] = generalOffsetY+RECT_0_Y/fieldingKy;
-    targetBoxX[1] = generalOffsetX+RECT_1_X/fieldingKx;
-    targetBoxY[1] = generalOffsetY+RECT_1_Y/fieldingKy;
-    targetBoxX[2] = generalOffsetX+RECT_2_X/fieldingKx;
-    targetBoxY[2] = generalOffsetY+RECT_2_Y/fieldingKy;
-    targetBoxX[3] = generalOffsetX+RECT_3_X/fieldingKx;
-    targetBoxY[3] = generalOffsetY+RECT_3_Y/fieldingKy;
-    targetBoxX[4] = generalOffsetX+RECT_4_X/fieldingKx;
-    targetBoxY[4] = generalOffsetY+RECT_4_Y/fieldingKy;
-    targetBoxX[5] = generalOffsetX+RECT_5_X/fieldingKx;
-    targetBoxY[5] = generalOffsetY+RECT_5_Y/fieldingKy;
-
-    // The geometry of the target Box.
-    targetBoxWidth = RECT_WIDTH/fieldingKx;
-    targetBoxHeight = RECT_HEIGHT/fieldingKy;
-
-    // So for squares 0,1,4 and 3 they have one value and for squares 5 and 2 it is another. Here will compute both.
-    // Since the distance from the centers to target boxes 0,1,4 and 3 are the same, they are computed using ONLY the info for target box 3.
-    qreal d3 = sqrt((targetBoxX.at(3)-centerX)*(targetBoxX.at(3)-centerX) + (targetBoxY.at(3)-centerY)*(targetBoxY.at(3)-centerY));
-
-    // Since the distnace from the center to the target boxes 5 and 2 is the same, it is computed based only on target 5 box.
-    qreal d5 = centerX - (targetBoxX.at(5) + targetBoxWidth);
-
-    // Saving the tolerances for the computations.
-    tolForTargetBox << d3 << d3 << d5 << d3 << d3 << d5;
+    // Using the width and height of the target hit box to detect the center.
+    centerMinX = centerX - hitW/2.0;
+    centerMinY = centerY - hitH/2.0;
+    centerMaxX = centerX + hitW/2.0;
+    centerMaxY = centerY + hitH/2.0;
 
     // This will have all the data from a single image.
     DataMatrix imageData;
@@ -295,16 +254,6 @@ void EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
     id << imgID << trialID;
     eyeFixations.trialID.append(id);
 
-    // Getting the target box index.
-    //The tolerance should be the 8th part of the distance between the center and target box
-    qreal d = tolForTargetBox.at(targetBoxID)/8;
-
-    // Computing maximum and minimum values to check whether a fixation is IN or OUT.
-    qreal minX = targetBoxX.at(targetBoxID) - d;
-    qreal minY = targetBoxY.at(targetBoxID) - d;
-    qreal maxX = targetBoxX.at(targetBoxID) + d + targetBoxWidth;
-    qreal maxY = targetBoxY.at(targetBoxID) - d + targetBoxHeight;
-
     // The sacade latency is considered the first outside the given radious within the center of the image.
     qreal sacLatL = 0;
     qreal sacLatR = 0;
@@ -342,8 +291,11 @@ void EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
 
     for (qint32 i = 0; i < fL.size(); i++){
 
-        if (fL.at(i).isIn(minX,maxX,minY,maxY)) isIn = 1;
+        if (hitTargetBoxes.at(targetBoxID).contains(fL.at(i).x,fL.at(i).y)) isIn = 1;
         else isIn = 0;
+
+//        if (fL.at(i).isIn(minX,maxX,minY,maxY)) isIn = 1;
+//        else isIn = 0;
 
         QStringList left;
         left << subjectIdentifier
@@ -388,7 +340,8 @@ void EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
 
     for (qint32 i = 0; i < fR.size(); i++){
 
-        if (fR.at(i).isIn(minX,maxX,minY,maxY)) isIn = 1;
+        //if (fR.at(i).isIn(minX,maxX,minY,maxY)) isIn = 1;
+        if (hitTargetBoxes.at(targetBoxID).contains(fR.at(i).x,fR.at(i).y)) isIn = 1;
         else isIn = 0;
 
         QStringList right;

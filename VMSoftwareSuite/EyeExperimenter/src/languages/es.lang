@@ -82,6 +82,7 @@ viewstudystart_cboxReading = Lectura;
 viewstudystart_cboxBindingUC = Nuevos Colores;
 viewstudystart_cboxBindingBC = Combinación de Colores;
 viewstudystart_cboxFielding = N-Back Test;
+viewstudystart_cboxParkinson = Laberinto;
 viewstudystart_labelSelectStudy = Seleccione estudios;
 viewstudystart_labelInstruction = Elija las evaluaciones en el orden en el cual el paciente las tomará;
 viewstudystart_labelInstruction2 = Configure los parámetros de los estudios;
@@ -141,6 +142,7 @@ viewpresentexp_itemBindingUC3 = Identificación de Nuevos Colores;
 viewpresentexp_itemBindingBC3 = Identificación de Combinaciones de Colores;
 viewpresentexp_itemFielding = Evaluación N-Back Tipo MS;
 viewpresentexp_itemNBackRT  = Evaluación N-Back Tipo RT;
+viewpresentexp_itemParkinson = Laberinto Parkinson;
 
 viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
 Cuando su mira se encuentre ubicada sobre el punto, este desaparecerá <br>

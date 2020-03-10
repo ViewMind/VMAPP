@@ -25,6 +25,7 @@ VMBase {
         cboxBindingUC.vmOn = true;
         cboxReading.vmOn = true;
         cboxFielding.vmOn = false;
+        cboxParkinson.vmOn = false;
 //        cboxBindingBC.vmOn = false;
 //        cboxBindingUC.vmOn = false;
 //        cboxReading.vmOn = false;
@@ -190,6 +191,19 @@ VMBase {
                 else multipleSelectionShow.removeItemByID(vmDefines.vmCONFIG_P_EXP_FIELDING)
             }
         }
+
+        VMToggleButton{
+            id: cboxParkinson
+            vmText: loader.getStringForKey(keysearch+"cboxParkinson");
+            vmFont: robotoR.name
+            //visible: false
+            onVmOnChanged: {
+                labelNoInstructionSetError.visible = false;
+                if (cboxParkinson.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_PARKINSON);
+                else multipleSelectionShow.removeItemByID(vmDefines.vmCONFIG_P_EXP_PARKINSON)
+            }
+        }
+
     }
 
 
@@ -404,6 +418,9 @@ VMBase {
                            vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
                         else
                            vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackRT);
+                    }
+                    else if (idList[i] === vmDefines.vmCONFIG_P_EXP_PARKINSON){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexParkinson);
                     }
                 }
 

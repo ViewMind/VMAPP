@@ -10,51 +10,29 @@ bool EDPNBackRT::doEyeDataProcessing(const QString &data){
     initializeFieldingDataMatrix();
 
     // Parsing the fielding experiment.
-    if (!parser.parseFieldingExperiment(eyeFixations.experimentDescription)){
+    if (!parser.parseFieldingExperiment(eyeFixations.experimentDescription,
+                                        config->getReal(CONFIG_RESOLUTION_WIDTH),config->getReal(CONFIG_RESOLUTION_HEIGHT),
+                                        config->getReal(CONFIG_FIELDING_XPX_2_MM),config->getReal(CONFIG_FIELDING_YPX_2_MM))){
         error = "Error parsing n back rt experiment: " + parser.getError();
         return false;
     }
 
     QStringList lines = data.split("\n");
+    QList<QRectF> tBoxes = parser.getHitTargetBoxes();
+    qreal hitW = tBoxes.first().width();
+    qreal hitH = tBoxes.first().height();
 
     // X and Y margin for look detection
-    qreal k = fieldingMargin/200.0; // This is divided by a 100 to get it to number between 0 and 1 and divided by two to get half of that.
-    fieldingKx = config->getReal(CONFIG_FIELDING_XPX_2_MM);
-    fieldingKy = config->getReal(CONFIG_FIELDING_YPX_2_MM);
-    dH = static_cast<qreal>(RECT_HEIGHT/fieldingKx)*k;
-    dW = static_cast<qreal>(RECT_WIDTH/fieldingKy)*k;
-
-    qreal WScreen = AREA_WIDTH/fieldingKx;
-    qreal HScreen = AREA_HEIGHT/fieldingKy;
-    qreal generalOffsetX = (config->getReal(CONFIG_RESOLUTION_WIDTH) - WScreen)/2;
-    qreal generalOffsetY = (config->getReal(CONFIG_RESOLUTION_HEIGHT) - HScreen)/2;
-
-
     // The center is the actual center of the screen.
     centerX = config->getReal(CONFIG_RESOLUTION_WIDTH)/2;
     centerY = config->getReal(CONFIG_RESOLUTION_HEIGHT)/2;
 
-    centerMinX = centerX - static_cast<qreal>(RECT_WIDTH/fieldingKx)/2 - dW;
-    centerMinY = centerY - static_cast<qreal>(RECT_HEIGHT/fieldingKy)/2 - dH;
-    centerMaxX = centerX + static_cast<qreal>(RECT_WIDTH/fieldingKy)/2 + dW;
-    centerMaxY = centerY + static_cast<qreal>(RECT_HEIGHT/fieldingKy)/2 + dH;
+    centerMinX = centerX - hitW/2.0;
+    centerMinY = centerY - hitH/2.0;
+    centerMaxX = centerX + hitW/2.0;
+    centerMaxY = centerY + hitH/2.0;
 
-
-    // The tolerance distances are computed as 1/8 of the distance from the center to the closest point to a target square.
-
-    // Computign the target boxes
-    qreal targetBoxWidth = RECT_WIDTH/fieldingKx;
-    qreal targetBoxHeight = RECT_HEIGHT/fieldingKy;
-
-    QList<QRectF> targetBoxes;
-    targetBoxes << QRectF(generalOffsetX+RECT_0_X/fieldingKx,generalOffsetY+RECT_0_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_1_X/fieldingKx,generalOffsetY+RECT_1_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_2_X/fieldingKx,generalOffsetY+RECT_2_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_3_X/fieldingKx,generalOffsetY+RECT_3_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_4_X/fieldingKx,generalOffsetY+RECT_4_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_5_X/fieldingKx,generalOffsetY+RECT_5_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetHitSearcher.setTargetBoxes(targetBoxes);
-
+    targetHitSearcher.setTargetBoxes(tBoxes);
 
     // This will have all the data from a single image.
     DataMatrix imageData;
@@ -395,7 +373,7 @@ void EDPNBackRT::TargetHitSearcher::setNewTrial(const QString &id, const QList<q
 }
 
 void EDPNBackRT::TargetHitSearcher::setTargetBoxes(const QList<QRectF> &tBoxes){
-    targetBoxes = tBoxes;
+    hitTargetBoxes = tBoxes;
 }
 
 void EDPNBackRT::TargetHitSearcher::reset(){
@@ -410,8 +388,8 @@ EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x
     ans.sequenceCompleted = "0";
 
     // Finding which target, if any, was hit by the fixation.
-    for (qint32 i = 0; i < targetBoxes.size(); i++){
-        if (targetBoxes.at(i).contains(x,y)){
+    for (qint32 i = 0; i < hitTargetBoxes.size(); i++){
+        if (hitTargetBoxes.at(i).contains(x,y)){
             target_hit = i;
             break;
         }
