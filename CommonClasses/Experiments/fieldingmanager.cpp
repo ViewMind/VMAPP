@@ -13,13 +13,17 @@ void FieldingManager::enableDemoMode(){
 bool FieldingManager::parseExpConfiguration(const QString &contents){
 
     FieldingParser parser;
-    if (!parser.parseFieldingExperiment(contents)){
+    if (!parser.parseFieldingExperiment(contents,ScreenResolutionWidth,ScreenResolutionHeight,
+                                        config->getReal(CONFIG_FIELDING_XPX_2_MM),
+                                        config->getReal(CONFIG_FIELDING_YPX_2_MM))){
         error = parser.getError();
         return false;
     }
 
-    fieldingTrials = parser.getParsedTrials();
-    versionString = parser.getVersionString();
+    fieldingTrials  = parser.getParsedTrials();
+    versionString   = parser.getVersionString();
+    hitTargetBoxes  = parser.getHitTargetBoxes();
+    drawTargetBoxes = parser.getDrawTargetBoxes();
 
     if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
 
@@ -30,7 +34,7 @@ bool FieldingManager::parseExpConfiguration(const QString &contents){
 void FieldingManager::init(ConfigurationManager *c){
     ExperimentDataPainter::init(c);
     clearCanvas();
-    drawBackground();    
+    drawBackground();
 }
 
 void FieldingManager::drawBackground(){
@@ -38,43 +42,35 @@ void FieldingManager::drawBackground(){
     qreal kx = config->getReal(CONFIG_FIELDING_XPX_2_MM);
     qreal ky = config->getReal(CONFIG_FIELDING_YPX_2_MM);
 
-    qreal WScreen = AREA_WIDTH/kx;
-    qreal HScreen = AREA_HEIGHT/ky;
-    qreal generalOffsetX = (ScreenResolutionWidth - WScreen)/2;
-    qreal generalOffsetY = (ScreenResolutionHeight - HScreen)/2;
+    qreal centerX = ScreenResolutionWidth/2;
+    qreal centerY = ScreenResolutionHeight/2;
 
     // Background
     canvas->clear();
     canvas->addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
 
-    // Rectangle origins in order, in order
-    rectangleLocations.clear();
-    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_0_X/kx),static_cast<qint32>(generalOffsetY+RECT_0_Y/ky));
-    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_1_X/kx),static_cast<qint32>(generalOffsetY+RECT_1_Y/ky));
-    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_2_X/kx),static_cast<qint32>(generalOffsetY+RECT_2_Y/ky));
-    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_3_X/kx),static_cast<qint32>(generalOffsetY+RECT_3_Y/ky));
-    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_4_X/kx),static_cast<qint32>(generalOffsetY+RECT_4_Y/ky));
-    rectangleLocations << QPoint(static_cast<qint32>(generalOffsetX+RECT_5_X/kx),static_cast<qint32>(generalOffsetY+RECT_5_Y/ky));
+    for (qint32 i = 0; i < drawTargetBoxes.size(); i++){
+#ifdef ENABLE_DRAW_OF_HIT_TARGET_BOXES
+        QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitTargetBoxes.at(i).width(),hitTargetBoxes.at(i).height(),
+                                                   QPen(QBrush(Qt::green),2),
+                                                   QBrush(Qt::black));
+        rect2->setPos(hitTargetBoxes.at(i).x(),hitTargetBoxes.at(i).y());
+#endif
 
-
-    // Adding the rectangles to the scene and computing the target boxes
-    qreal targetBoxWidth = RECT_WIDTH/kx;
-    qreal targetBoxHeight = RECT_HEIGHT/ky;
-    for (qint32 i = 0; i < rectangleLocations.size(); i++){
-        QGraphicsRectItem *rect = canvas->addRect(0,0,targetBoxWidth,targetBoxHeight,
-                                                          QPen(QBrush(Qt::white),6),
-                                                          QBrush(Qt::black));
-        rect->setPos(rectangleLocations.at(i));
-        targetBoxes << QRectF(rectangleLocations.at(i).x(),rectangleLocations.at(i).y(),targetBoxWidth,targetBoxHeight);
+        QGraphicsRectItem *rect = canvas->addRect(0,0,drawTargetBoxes.at(i).width(),drawTargetBoxes.at(i).height(),
+                                                  QPen(QBrush(Qt::white),6),
+                                                  QBrush(Qt::black));
+        rect->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
     }
 
     // Adding the cross
-    gCrossLine0 = canvas->addLine(CROSS_P0_X/kx+generalOffsetX,CROSS_P0_Y/ky+generalOffsetY,
-                                          CROSS_P2_X/kx+generalOffsetX,CROSS_P2_Y/ky+generalOffsetY,
-                                          QPen(QBrush(Qt::white),4));
-    gCrossLine1 = canvas->addLine(CROSS_P1_X/kx+generalOffsetX,CROSS_P1_Y/ky+generalOffsetY,
-                                          CROSS_P3_X/kx+generalOffsetX,CROSS_P3_Y/ky+generalOffsetY,
-                                          QPen(QBrush(Qt::white),4));
+    qreal halfLine = ScreenResolutionWidth*K_CROSS_LINE_LENGTH/2.0;
+    gCrossLine0 = canvas->addLine(centerX-halfLine,centerY,
+                                  centerX+halfLine,centerY,
+                                  QPen(QBrush(Qt::white),4));
+    gCrossLine1 = canvas->addLine(centerX,centerY-halfLine,
+                                  centerX,centerY+halfLine,
+                                  QPen(QBrush(Qt::white),4));
 
     gCrossLine0->setZValue(-1);
     gCrossLine1->setZValue(-1);
@@ -178,11 +174,13 @@ bool FieldingManager::setTargetPositionFromTrialName(const QString &trial, qint3
 }
 
 void FieldingManager::setTargetPosition(qint32 trial, qint32 image){
-    gTarget->setPos(rectangleLocations.at(fieldingTrials.at(trial).sequence.at(image)));
+    QRectF r = drawTargetBoxes.at(fieldingTrials.at(trial).sequence.at(image));
+    gTarget->setPos(r.x(),r.y());
 }
 
 QPoint FieldingManager::getTargetPoint(qint32 trial, qint32 image) const{
-    return rectangleLocations.at(fieldingTrials.at(trial).sequence.at(image));
+    QRectF r = drawTargetBoxes.at(fieldingTrials.at(trial).sequence.at(image));
+    return QPoint(static_cast<qint32>(r.x()),static_cast<qint32>(r.y()));
 }
 
 QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial) const{
@@ -195,14 +193,14 @@ QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial) c
 }
 
 bool FieldingManager::isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const{
-    if ((targetBox < 0) || (targetBox >= targetBoxes.size())) return  false;
+    if ((targetBox < 0) || (targetBox >= hitTargetBoxes.size())) return  false;
     //qDebug() << "CHECKING IF TARGET BOX" << targetBoxes.at(targetBox) << "contains" << x << y;
-    return targetBoxes.at(targetBox).contains(x,y);
+    return hitTargetBoxes.at(targetBox).contains(x,y);
 }
 
 void FieldingManager::drawPauseScreen(){
 
-    canvas->clear();    
+    canvas->clear();
     QString pauseText = config->getString(CONFIG_FIELDING_PAUSE_TEXT);
     qreal xpos, ypos;
 

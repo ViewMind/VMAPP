@@ -18,6 +18,7 @@ Rectangle {
     readonly property int vmExpIndexBindingBC:  3;
     readonly property int vmExpIndexFielding:   4;
     readonly property int vmExpIndexNBackRT:    5;
+    readonly property int vmExpIndexParkinson:  6;
 
     property alias vmErrorDiag: errorDialog
 

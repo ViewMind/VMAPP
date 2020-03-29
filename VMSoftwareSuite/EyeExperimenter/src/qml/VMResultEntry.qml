@@ -71,7 +71,8 @@ Item {
 
     VMResultBar{
         id: resultBar
-        x: 300
+        anchors.right: parent.right
+        anchors.rightMargin: mainWindow.width*0.12
         vmTwoSection: vmHasTwoSections
         anchors.verticalCenter: parent.verticalCenter
         vmIndicatorInSection: vmResBarIndicator

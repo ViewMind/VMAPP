@@ -82,21 +82,11 @@ private:
     // The number of trials
     qint32 numberOfTrials;
 
-    // Margin for hit detection
-    qreal dH, dW;
-
     // Center margins
     qreal centerMinX, centerMaxX, centerMinY, centerMaxY;
 
     // The target box tollerance as a function of which box I'm looking.
-    QList<qreal> tolForTargetBox;
-    QList<qreal> targetBoxX;
-    QList<qreal> targetBoxY;
-    qreal targetBoxWidth;
-    qreal targetBoxHeight;
-
-    // Drawing constants. Transform the fix measurmente to monitor or HMD sizes.
-    qreal fieldingKx, fieldingKy;
+    QList<QRectF> hitTargetBoxes;
 
     // Temporarily store all processed data separated for eye.
     QStringList csvHeader;

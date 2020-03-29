@@ -139,6 +139,8 @@ void FlowControl::setupSecondMonitor(){
             if (experiment != nullptr){
                 disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
                 disconnect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
+                disconnect(experiment,&Experiment::addFixations,monitor,&MonitorScreen::addFixations);
+                disconnect(experiment,&Experiment::addDebugMessage,monitor,&MonitorScreen::addMessages);
             }
             delete monitor;
             monitor = nullptr;
@@ -154,7 +156,7 @@ void FlowControl::setupSecondMonitor(){
 
     // Setting up the monitor. Assuming 1 is the SECONDARY MONITOR.
     QRect secondScreen = screens.at(1)->geometry();
-    monitor = new MonitorScreen(Q_NULLPTR,secondScreen,configuration->getReal(CONFIG_RESOLUTION_WIDTH),configuration->getReal(CONFIG_RESOLUTION_HEIGHT));
+    monitor = new MonitorScreen(Q_NULLPTR,secondScreen,configuration->getReal(CONFIG_PRIMARY_MONITOR_WIDTH),configuration->getReal(CONFIG_PRIMARY_MONITOR_HEIGHT));
 }
 
 void FlowControl::keyboardKeyPressed(int key){
@@ -234,7 +236,6 @@ void FlowControl::requestDataReprocessing(const QString &reportName, const QStri
 
 void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QString &evaluationID){
 
-    //qWarning() << "Processing File Set: " << fileSetAndName;
 
     if (fileSetAndName.isEmpty() && !demoTransaction){
         //qWarning() << "File name set is empty";
@@ -242,6 +243,11 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
         return;
     }
 
+    if (fileSetAndName.isEmpty()){
+        logger.appendError("Attempting to generate a report but emitted file set is empty.");
+        emit(sslTransactionFinished());
+        return;
+    }
 
     // The first value is the expected report name.
     QStringList fileSet = fileSetAndName;
@@ -740,6 +746,13 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         background = QBrush(Qt::black);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
         break;
+    case EXP_PARKINSON:
+        logger.appendStandard("STARTING PARKINSON MAZE");
+        configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/parkinson.dat");
+        experiment = new ParkinsonExperiment();
+        background = QBrush(Qt::black);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+        break;
     default:
         logger.appendError("Unknown experiment was selected " + QString::number(experimentID));
         return false;
@@ -760,6 +773,8 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     if ( (monitor != nullptr) && (!configuration->getBool(CONFIG_VR_ENABLED)) ){
         connect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
         connect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
+        connect(experiment,&Experiment::addFixations,monitor,&MonitorScreen::addFixations);
+        connect(experiment,&Experiment::addDebugMessage,monitor,&MonitorScreen::addMessages);
         monitor->setBackgroundBrush(background);
     }
 
@@ -842,6 +857,8 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     if (monitor != nullptr){
         disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
         disconnect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
+        disconnect(experiment,&Experiment::addFixations,monitor,&MonitorScreen::addFixations);
+        disconnect(experiment,&Experiment::addDebugMessage,monitor,&MonitorScreen::addMessages);
     }
     delete experiment;
     experiment = nullptr;
@@ -939,8 +956,8 @@ void FlowControl::prepareSelectedReportIteration(){
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
 
-    qDebug() << "Preparing report";
-    qDebug() << report;
+    //qDebug() << "Preparing report";
+    //qDebug() << report;
 
     ConfigurationManager text = ImageReportDrawer::loadReportText(configuration->getString(CONFIG_REPORT_LANGUAGE));
     QStringList titles = text.getStringList(DR_CONFG_RESULTS_NAME);

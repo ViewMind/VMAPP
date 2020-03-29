@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QList>
+#include <QPoint>
+#include <QRectF>
 
 // Constants for drawing the squares, cross and target on the screen for fielding
 // These values are the physical dimensions of the targets in mm.
@@ -24,34 +26,25 @@
 //               -------                -------
              
 
-#define   AREA_WIDTH                                    256
-#define   AREA_HEIGHT                                   192
 #define   RECT_WIDTH                                    163/4
 #define   RECT_HEIGHT                                   155/4
-#define   RECT_0_X                                      200/4
-#define   RECT_0_Y                                      76/4
-#define   RECT_1_X                                      660/4
-#define   RECT_1_Y                                      76/4
-#define   RECT_2_X                                      830/4
-#define   RECT_2_Y                                      306/4
-#define   RECT_3_X                                      660/4
-#define   RECT_3_Y                                      536/4
-#define   RECT_4_X                                      200/4
-#define   RECT_4_Y                                      536/4
-#define   RECT_5_X                                      30/4
-#define   RECT_5_Y                                      306/4
 #define   TARGET_R                                      42/4
 #define   TARGET_OFFSET_X                               39/4
 #define   TARGET_OFFSET_Y                               35/4
-#define   CROSS_P0_X                                    511/4
-#define   CROSS_P0_Y                                    362/4
-#define   CROSS_P1_X                                    533/4
-#define   CROSS_P1_Y                                    383/4
-#define   CROSS_P2_X                                    511/4
-#define   CROSS_P2_Y                                    405/4
-#define   CROSS_P3_X                                    490/4
-#define   CROSS_P3_Y                                    383/4
 
+#define   K_HORIZONAL_MARGIN                            0.06
+#define   K_SPACE_BETWEEN_BOXES                         0.09
+#define   K_VERTICAL_MARGIN                             0.06
+
+#define   K_CROSS_LINE_LENGTH                           0.05
+
+
+// These constants were derived by measuring the with and heigth of the squares in a FullHD 22 inch monitor
+// And eyeballing 1.5 cm margin around the target box. The proportion will be maintained no matter the size or where it is drawn
+// by using a proportion instead of a constant.
+
+#define   TARGET_BOX_EX_W                               1.5/6.0
+#define   TARGET_BOX_EX_H                               1.5/5.6
 
 
 class FieldingParser
@@ -65,18 +58,24 @@ public:
     };
 
     FieldingParser();
-    bool parseFieldingExperiment(const QString &contents);
+    bool parseFieldingExperiment(const QString &contents, qreal resolutionWidth, qreal resolutionHeight, qreal x_px_2_mm, qreal y_px_2_mm);
     QList<Trial> getParsedTrials() const;
     QString getError() const;
     QString getVersionString() const;
     qint32 getTargetBoxForImageNumber(const QString &trialID, qint32 imgNum) const;
     QList<qint32> getSequenceForTrial(const QString &trialID);
+    QList<QRectF> getDrawTargetBoxes() const;
+    QList<QRectF> getHitTargetBoxes() const;
 
 private:
     QString error;
     QList<Trial> fieldingTrials;
     QString versionString;
-
+    // The coordinates a dimensions for the target boxes to be drawn.
+    QList<QRectF> drawTargetBoxes;
+    // The coordinates and dimensions for the target boxes to recognize when they are hit.
+    QList<QRectF> hitTargetBoxes;
 };
 
 #endif // FIELDINGPARSER_H
+

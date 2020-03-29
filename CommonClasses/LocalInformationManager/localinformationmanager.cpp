@@ -80,6 +80,7 @@ QStringList LocalInformationManager::getFileListForPatient(const QString &patuid
     case LIST_INDEX_BINDING_BC: return patientReportInformation.value(patuid).getBindingBCFileList();
     case LIST_INDEX_BINDING_UC: return patientReportInformation.value(patuid).getBindingUCFileList();
     case LIST_INDEX_FIELDING: return patientReportInformation.value(patuid).getFieldingFileList();
+    case LIST_INDEX_NBACKRT: return patientReportInformation.value(patuid).getNBackRTFileList();
     default: return QStringList();
     }
 }

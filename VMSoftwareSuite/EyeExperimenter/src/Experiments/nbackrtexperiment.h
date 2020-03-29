@@ -8,11 +8,12 @@
 #include "../../../CommonClasses/Experiments/fieldingmanager.h"
 #include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
+//#define MANUAL_TRIAL_PASS
+
 // Timer timess
 #define   TIME_TRANSITION                               500
 #define   TIME_TARGET                                   250
-#define   TIME_OUT_BLANKS                               2000
-//#define   TIME_OUT_BLANKS                               15000 // For DEBUG gives mouse more time for test
+#define   TIME_OUT_BLANKS                               3000
 
 // Possible pauses for the fielding experiment
 #define   PAUSE_TRIAL_1                                 32
@@ -43,16 +44,18 @@ private:
                   TSF_SHOW_BLANKS} TrialStateNBackRT;
 
     struct TrialRecognitionMachine {
-        void setNumberOfDataHit(qint32 n);
+        void configure(MovingWindowParameters mwp);
         void reset(const QList<qint32> &trialRecogSeq);
-        bool isSequenceOver(qreal rX, qreal rY, qreal lX, qreal lY, FieldingManager *m);
+        bool isSequenceOver(qreal rX, qreal rY, qreal lX, qreal lY, FieldingManager *m, qreal timeStamp);
+        Fixation rightLastFixation;
+        Fixation leftLastFixation;
+        QString getMessages() const { return messages.join("\n"); }
     private:
+        MovingWindowAlgorithm rMWA;
+        MovingWindowAlgorithm lMWA;
         QList<qint32> rTrialRecognitionSequence;
         QList<qint32> lTrialRecognitionSequence;
-        qint32 rHitCount;
-        qint32 lHitCount;
-        qint32 numberOfDataHits;
-        qint32 hitCount;
+        QStringList messages;
     };
 
     // Handle to the fielding manager. Can be used for this experiment as well.

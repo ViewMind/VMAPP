@@ -78,6 +78,8 @@ signals:
     // Used for drawing images and following the eyes in the second monitor.
     void updateBackground(const QPixmap &pixmap);    
     void updateEyePositions(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
+    void addFixations(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
+    void addDebugMessage(const QString &message, bool append);
 
     // Signal that provides VR with the image to show.
     void updateVRDisplay();

@@ -183,17 +183,17 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
     }
 
     if (repgen.nbackrtFileIndex != -1){
-        DatInfo fielding_file = getNBackRTInformation(filesNBackRT.at(repgen.nbackrtFileIndex));
+        DatInfo nbackrt_file = getNBackRTInformation(filesNBackRT.at(repgen.nbackrtFileIndex));
         if (expectedReportName.isEmpty()) expectedReportName = FILE_REPORT_NAME;
         // Extra info and date must have matched for these two files to have been selected.
-        expectedReportName = expectedReportName + "_T" + fielding_file.extraInfo + fielding_file.validEye;
-        ans << fielding_file.fileName;
-        if (date.isEmpty() || (date < fielding_file.date)) {
-            date = fielding_file.date;
-            time = fielding_file.hour;
+        expectedReportName = expectedReportName + "_T" + nbackrt_file.extraInfo + nbackrt_file.validEye;
+        ans << nbackrt_file.fileName;
+        if (date.isEmpty() || (date < nbackrt_file.date)) {
+            date = nbackrt_file.date;
+            time = nbackrt_file.hour;
         }
-        else if ((date == fielding_file.date) && (time < fielding_file.hour)){
-            time = fielding_file.hour;
+        else if ((date == nbackrt_file.date) && (time < nbackrt_file.hour)){
+            time = nbackrt_file.hour;
         }
     }
 

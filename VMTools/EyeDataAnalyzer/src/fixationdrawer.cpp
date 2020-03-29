@@ -71,6 +71,7 @@ bool FixationDrawer::drawFixations(const FixationList &flist){
     }
     else if (experimentID == CONFIG_P_EXP_FIELDING){
         FieldingManager *m = (FieldingManager *)manager;
+        m->drawBackground();
         for (qint32 i = 0; i < flist.trialID.size(); i++){
 
             QString imgID = flist.trialID.at(i).first();
@@ -103,6 +104,8 @@ bool FixationDrawer::drawFixations(const FixationList &flist){
     }
     else if (experimentID == CONFIG_P_EXP_NBACKRT){
         FieldingManager *m = (FieldingManager *)manager;
+        m->drawBackground();
+
         for (qint32 i = 0; i < flist.trialID.size(); i++){
 
             QString imgID = flist.trialID.at(i).first();

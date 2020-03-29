@@ -28,10 +28,12 @@ bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
     MovingWindowParameters mwp;
     mwp.sampleFrequency = c->getReal(CONFIG_SAMPLE_FREQUENCY);
     mwp.minimumFixationLength = c->getReal(CONFIG_MIN_FIXATION_LENGTH);
+    mwp.maxDispersion = c->getReal(CONFIG_MOVING_WINDOW_DISP);
     mwp.calculateWindowSize();
-    trialRecognitionMachine.setNumberOfDataHit(mwp.getStartWindowSize());
-    qDebug() << "Miniminum number of data points computed" << mwp.getStartWindowSize();
+    trialRecognitionMachine.configure(mwp);
+    //qDebug() << "Miniminum number of data points computed" << mwp.getStartWindowSize();
 
+    m->drawBackground();
     drawCurrentImage();
 
     if (!vrEnabled){
@@ -82,7 +84,11 @@ void NBackRTExperiment::nextState(){
         stateTimer.setInterval(TIME_TRANSITION);
     }
 
+#ifdef MANUAL_TRIAL_PASS
+    if (tstate != TSF_SHOW_BLANKS) stateTimer.start();
+#else
     stateTimer.start();
+#endif
     drawCurrentImage();
 }
 
@@ -152,7 +158,10 @@ void NBackRTExperiment::keyPressHandler(int keyPressed){
         return;
     }
     else{
-        if (state == STATE_PAUSED){
+        if ((keyPressed == Qt::Key_N) && (state == STATE_RUNNING) && (tstate == TSF_SHOW_BLANKS)){
+            onTimeOut();
+        }
+        else if (state == STATE_PAUSED){
             state = STATE_RUNNING;
             m->drawBackground();
             updateSecondMonitorORHMD();
@@ -191,17 +200,39 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
     QVariantList dataS;
     dataS << data.time
-           << data.xRight
-           << data.yRight
-           << data.xLeft
-           << data.yLeft
-           << data.pdRight
-           << data.pdLeft;
+          << data.xRight
+          << data.yRight
+          << data.xLeft
+          << data.yLeft
+          << data.pdRight
+          << data.pdLeft;
     etData << QVariant(dataS);
 
+    //qDebug() << "X,Y" << data.xRight << data.xLeft;
+
     if (tstate == TSF_SHOW_BLANKS){
-        if (trialRecognitionMachine.isSequenceOver(data.xRight,data.yRight,data.xLeft,data.yLeft,m)){
+        bool isOver = trialRecognitionMachine.isSequenceOver(data.xRight,data.yRight,data.xLeft,data.yLeft,m,data.time);
+        qint32 rx, ry, lx, ly; rx = -1; ry = -1; lx = -1; ly = -1;
+        if (trialRecognitionMachine.leftLastFixation.isValid()){
+            lx = static_cast<qint32>(trialRecognitionMachine.leftLastFixation.x);
+            ly = static_cast<qint32>(trialRecognitionMachine.leftLastFixation.y);
+        }
+        if (trialRecognitionMachine.rightLastFixation.isValid()){
+            rx = static_cast<qint32>(trialRecognitionMachine.rightLastFixation.x);
+            ry = static_cast<qint32>(trialRecognitionMachine.rightLastFixation.y);
+        }
+        emit(addFixations(rx,ry,lx,ly));
+        emit(addDebugMessage(trialRecognitionMachine.getMessages(),false));
+        if (isOver){
+#ifdef MANUAL_TRIAL_PASS
+            emit(addDebugMessage(trialRecognitionMachine.getMessages() + "\nEND",false));
+#else
+            emit(addDebugMessage(trialRecognitionMachine.getMessages(),false));
             onTimeOut();
+#endif
+        }
+        else{
+            emit(addDebugMessage(trialRecognitionMachine.getMessages(),false));
         }
     }
 
@@ -210,39 +241,55 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
 /////////////////////////////////////////// TRIAL RECOGNITION MACHINE
 void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &trialRecogSeq){
+    //qDebug() << "NEEEEEEEEEEEEEEEEEXXXXXXXXXXXXXXXTTTTTTTTTTTTTTTTTTTTTT";
     rTrialRecognitionSequence = trialRecogSeq;
     lTrialRecognitionSequence = trialRecogSeq;
-    rHitCount = 0;
-    lHitCount = 0;
+    rMWA.finalizeOnlineFixationCalculation();
+    lMWA.finalizeOnlineFixationCalculation();
+    messages.clear();
+    messages << "MWS: " + QString::number(rMWA.parameters.getStartWindowSize());
+    QString seq = "SEQ: ";
+    for (qint32 i = 0; i < trialRecogSeq.size(); i++){
+        seq = seq + QString::number(trialRecogSeq.at(i)) + " ";
+    }
+    messages << seq;
 }
 
-void NBackRTExperiment::TrialRecognitionMachine::setNumberOfDataHit(qint32 n){
-    numberOfDataHits = n;
+void NBackRTExperiment::TrialRecognitionMachine::configure(MovingWindowParameters mwp){
+    mwp.calculateWindowSize();
+    rMWA.parameters = mwp;
+    lMWA.parameters = mwp;
 }
 
-bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(qreal rX, qreal rY, qreal lX, qreal lY, FieldingManager *m){
+bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(qreal rX, qreal rY, qreal lX, qreal lY, FieldingManager *m, qreal timeStamp){
+
+    Fixation r = rMWA.calculateFixationsOnline(rX,rY,timeStamp);
+    Fixation l = lMWA.calculateFixationsOnline(lX,lY,timeStamp);
+
+    rightLastFixation = r;
+    leftLastFixation = l;
 
     if (rTrialRecognitionSequence.isEmpty()) return true;
     if (lTrialRecognitionSequence.isEmpty()) return true;
 
-    if (m->isPointInTargetBox(rX,rY,rTrialRecognitionSequence.first())){
-        rHitCount++;
-        if (rHitCount == numberOfDataHits){
+    if (r.isValid()){
+        if (m->isPointInTargetBox(r.x,r.y,rTrialRecognitionSequence.first())){
+            //qDebug() << "Fixation" << r.toString() << "inside box" << rTrialRecognitionSequence.first();
+            messages << "RFIX IN: " + QString::number(rTrialRecognitionSequence.first());
             rTrialRecognitionSequence.removeFirst();
-            rHitCount = 0;
-            if (rTrialRecognitionSequence.isEmpty()) return true;
         }
     }
 
-    if (m->isPointInTargetBox(lX,lY,lTrialRecognitionSequence.first())){
-        lHitCount++;
-        if (lHitCount == numberOfDataHits){
-            lTrialRecognitionSequence.removeFirst();
-            lHitCount = 0;
-            if (lTrialRecognitionSequence.isEmpty()) return true;
+
+    if (l.isValid()){
+        if (m->isPointInTargetBox(l.x,l.y,lTrialRecognitionSequence.first())){
+            messages << "LFIX IN: " + QString::number(lTrialRecognitionSequence.first());
+            lTrialRecognitionSequence.removeFirst();            
         }
     }
 
+    if (rTrialRecognitionSequence.isEmpty()) return true;
+    if (lTrialRecognitionSequence.isEmpty()) return true;
 
     return false;
 }

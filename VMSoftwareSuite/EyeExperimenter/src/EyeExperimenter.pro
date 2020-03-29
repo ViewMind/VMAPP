@@ -26,9 +26,12 @@ SOURCES += main.cpp \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
+    ../../../CommonClasses/Experiments/parkinsonmanager.cpp \
+    ../../../CommonClasses/Experiments/parkinsonparser.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
     Experiments/nbackrtexperiment.cpp \
+    Experiments/parkinsonexperiment.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.cpp \
@@ -71,10 +74,13 @@ HEADERS += \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
+    ../../../CommonClasses/Experiments/parkinsonmanager.h \
+    ../../../CommonClasses/Experiments/parkinsonparser.h \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
     Experiments/nbackrtexperiment.h \
+    Experiments/parkinsonexperiment.h \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
     EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
     EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal.h \

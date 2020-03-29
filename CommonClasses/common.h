@@ -150,6 +150,7 @@
 #define   CONFIG_P_EXP_BIDING_UC                        "binding_uc"
 #define   CONFIG_P_EXP_BIDING_BC                        "binding_bc"
 #define   CONFIG_P_EXP_READING                          "reading"
+#define   CONFIG_P_EXP_PARKINSON                        "parkinson"
 #define   CONFIG_P_LANG_ES                              "Spanish"
 #define   CONFIG_P_LANG_EN                              "English"
 #define   CONFIG_P_ET_MOUSE                             "Mouse"
@@ -166,6 +167,7 @@
 #define   EXP_BINDING_BC                                3
 #define   EXP_FIELDNG                                   4
 #define   EXP_NBACKRT                                   5
+#define   EXP_PARKINSON                                 6
 
 // Base names for common files shared accross multiple apps.
 #define   FILE_CONFIGURATION                            "configuration"
@@ -175,6 +177,7 @@
 #define   FILE_OUTPUT_BINDING_BC                        "binding_bc"
 #define   FILE_OUTPUT_FIELDING                          "fielding"
 #define   FILE_OUTPUT_NBACKRT                           "nbackrt"
+#define   FILE_OUTPUT_PARKINSON                         "parkinson"
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
 #define   FILE_EYE_REP_GEN_CONFIGURATION                "eye_rep_gen_conf"
@@ -197,6 +200,7 @@
 #define   HEADER_IMAGE_EXPERIMENT                       "#IMAGE"
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
 #define   HEADER_NBACKRT_EXPERIMENT                     "#NBACKRT"
+#define   HEADER_PARKINSON_EXPERIMENT                   "#PARKINSON"
 
 // Codes indicating the type of update transaction
 #define   UPDATE_CHECK_GP_CODE                           "cgp"

@@ -23,7 +23,7 @@ inst_et_serial = 0000;
 inst_name = Test Institution;
 inst_uid = 0;
 enable_local_db_bkp = true;
-configure_options = PINN2D;
+configure_options = PINN2E;
 vr_enabled = false;
 
 

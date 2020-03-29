@@ -233,7 +233,8 @@ VMBase {
                     vmItemIndex: index
                     vmIsUpToDate: uptodate
                     vmFileList: filelist
-                    vmFielding: nbackrt
+                    vmFielding: fielding
+                    vmNBackRT:  nbackrt
                     onReprocessReport: {
                         //console.log("Requested reprocessing of report: " + vmReportName + " and FileList is: " + vmFileList)
                         swiperControl.currentIndex = swiperControl.vmIndexPatientList;
@@ -242,7 +243,7 @@ VMBase {
                 }
                 onCurrentIndexChanged: {
                     for (var i = 0; i < model.count; i++){
-                        if (i != currentIndex){
+                        if (i !== currentIndex){
                             reportList.setProperty(i,"vmRepSelected",false);
                         }
                     }

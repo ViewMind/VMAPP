@@ -61,6 +61,7 @@ Item{
     readonly property string vmCONFIG_P_EXP_BIDING_UC: "binding_uc"
     readonly property string vmCONFIG_P_EXP_BIDING_BC: "binding_bc"
     readonly property string vmCONFIG_P_EXP_READING: "reading"
+    readonly property string vmCONFIG_P_EXP_PARKINSON: "parkinson"
     readonly property string vmCONFIG_P_LANG_ES: "Spanish"
     readonly property string vmCONFIG_P_LANG_EN: "English"
     readonly property string vmCONFIG_P_ET_MOUSE: "Mouse"

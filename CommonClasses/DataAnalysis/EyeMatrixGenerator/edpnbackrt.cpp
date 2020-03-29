@@ -10,51 +10,29 @@ bool EDPNBackRT::doEyeDataProcessing(const QString &data){
     initializeFieldingDataMatrix();
 
     // Parsing the fielding experiment.
-    if (!parser.parseFieldingExperiment(eyeFixations.experimentDescription)){
+    if (!parser.parseFieldingExperiment(eyeFixations.experimentDescription,
+                                        config->getReal(CONFIG_RESOLUTION_WIDTH),config->getReal(CONFIG_RESOLUTION_HEIGHT),
+                                        config->getReal(CONFIG_FIELDING_XPX_2_MM),config->getReal(CONFIG_FIELDING_YPX_2_MM))){
         error = "Error parsing n back rt experiment: " + parser.getError();
         return false;
     }
 
     QStringList lines = data.split("\n");
+    QList<QRectF> tBoxes = parser.getHitTargetBoxes();
+    qreal hitW = tBoxes.first().width();
+    qreal hitH = tBoxes.first().height();
 
     // X and Y margin for look detection
-    qreal k = fieldingMargin/200.0; // This is divided by a 100 to get it to number between 0 and 1 and divided by two to get half of that.
-    fieldingKx = config->getReal(CONFIG_FIELDING_XPX_2_MM);
-    fieldingKy = config->getReal(CONFIG_FIELDING_YPX_2_MM);
-    dH = static_cast<qreal>(RECT_HEIGHT/fieldingKx)*k;
-    dW = static_cast<qreal>(RECT_WIDTH/fieldingKy)*k;
-
-    qreal WScreen = AREA_WIDTH/fieldingKx;
-    qreal HScreen = AREA_HEIGHT/fieldingKy;
-    qreal generalOffsetX = (config->getReal(CONFIG_RESOLUTION_WIDTH) - WScreen)/2;
-    qreal generalOffsetY = (config->getReal(CONFIG_RESOLUTION_HEIGHT) - HScreen)/2;
-
-
     // The center is the actual center of the screen.
     centerX = config->getReal(CONFIG_RESOLUTION_WIDTH)/2;
     centerY = config->getReal(CONFIG_RESOLUTION_HEIGHT)/2;
 
-    centerMinX = centerX - static_cast<qreal>(RECT_WIDTH/fieldingKx)/2 - dW;
-    centerMinY = centerY - static_cast<qreal>(RECT_HEIGHT/fieldingKy)/2 - dH;
-    centerMaxX = centerX + static_cast<qreal>(RECT_WIDTH/fieldingKy)/2 + dW;
-    centerMaxY = centerY + static_cast<qreal>(RECT_HEIGHT/fieldingKy)/2 + dH;
+    centerMinX = centerX - hitW/2.0;
+    centerMinY = centerY - hitH/2.0;
+    centerMaxX = centerX + hitW/2.0;
+    centerMaxY = centerY + hitH/2.0;
 
-
-    // The tolerance distances are computed as 1/8 of the distance from the center to the closest point to a target square.
-
-    // Computign the target boxes
-    qreal targetBoxWidth = RECT_WIDTH/fieldingKx;
-    qreal targetBoxHeight = RECT_HEIGHT/fieldingKy;
-
-    QList<QRectF> targetBoxes;
-    targetBoxes << QRectF(generalOffsetX+RECT_0_X/fieldingKx,generalOffsetY+RECT_0_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_1_X/fieldingKx,generalOffsetY+RECT_1_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_2_X/fieldingKx,generalOffsetY+RECT_2_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_3_X/fieldingKx,generalOffsetY+RECT_3_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_4_X/fieldingKx,generalOffsetY+RECT_4_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetBoxes << QRectF(generalOffsetX+RECT_5_X/fieldingKx,generalOffsetY+RECT_5_Y/fieldingKy,targetBoxWidth,targetBoxHeight);
-    targetHitSearcher.setTargetBoxes(targetBoxes);
-
+    targetHitSearcher.setTargetBoxes(tBoxes);
 
     // This will have all the data from a single image.
     DataMatrix imageData;
@@ -211,8 +189,74 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     }
 
     // Calculating the fixations for each eye.;
+#ifdef ENABLE_MWA_DEBUG
+    mwa.setLog("mwa_offline.log");
+    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". LEFT FIXATIONS");
+#endif
     Fixations fL = mwa.computeFixations(data,FIELDING_XL,FIELDING_YL,FIELDING_TI);
+#ifdef ENABLE_MWA_DEBUG
+    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". RIGHT FIXATIONS");
+#endif
     Fixations fR = mwa.computeFixations(data,FIELDING_XR,FIELDING_YR,FIELDING_TI);
+
+//    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
+//    // Computing fixation online and comparing the results.
+//    Fixations fL2, fR2;
+//    Fixation workF;
+//#ifdef ENABLE_MWA_DEBUG
+//    mwa.setLog("mwa_online.log");
+//    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". LEFT FIXATIONS");
+//#endif
+//    mwa.finalizeOnlineFixationCalculation(); // Making sure that everything is reset.
+//    for (qint32 i = 0; i  < data.size(); i++){
+//        workF = mwa.calculateFixationsOnline(data.at(i).at(FIELDING_XL),data.at(i).at(FIELDING_YL),data.at(i).at(FIELDING_TI));
+//        if (workF.isValid()) fL2 << workF;
+//    }
+//    workF = mwa.finalizeOnlineFixationCalculation();
+//    if (workF.isValid()) fL2 << workF;
+
+//#ifdef ENABLE_MWA_DEBUG
+//    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". RIGHT FIXATIONS");
+//#endif
+//    for (qint32 i = 0; i  < data.size(); i++){
+//        workF = mwa.calculateFixationsOnline(data.at(i).at(FIELDING_XR),data.at(i).at(FIELDING_YR),data.at(i).at(FIELDING_TI));
+//        if (workF.isValid()) fR2 << workF;
+//    }
+//    workF = mwa.finalizeOnlineFixationCalculation();
+//    if (workF.isValid()) fR2 << workF;
+
+//    qDebug() <<  "TRIAL ID" << trialID << "IMG" << imgID;
+//    qint32 size = qMax(fL.size(),fL2.size());
+//    if (fL.size() != fL2.size()){
+//        qDebug() << "FL SIZE DIFFERENCE. OFFLINE" << fL.size() << "ONLINE" << fL2.size();
+//        for (qint32 i = 0; i < size; i++){
+//            QString s = QString::number(i) + ". ";
+//            if (i < fL.size()){
+//                s = s + "OFFLINE: " + fL.at(i).toString();
+//            }
+//            else{
+//                s = s + "OFFLINE: N/A";
+//            }
+//            s  = s + ". ";
+//            if (i < fL2.size()){
+//                s = s + "ONLINE: " + fL2.at(i).toString();
+//            }
+//            else{
+//                s = s + "ONLINE: N/A";
+//            }
+//            qDebug().noquote() << s;
+//        }
+//    }
+//    else{
+//        // Same amount.
+//        for (qint32 i = 0; i < size; i++){
+//            if (!fL.at(i).isSame(fL2.at(i))){
+//                qDebug().noquote() << "DIFF AT" << i << "OFFLINE" << fL.at(i).toString() << "ONLINE" << fL2.at(i).toString();
+//            }
+//        }
+//    }
+//    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
+
 
     eyeFixations.left.append(fL);
     eyeFixations.right.append(fR);
@@ -263,12 +307,12 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     sac.reset();
     targetHitSearcher.reset();
 
-    qDebug() << "LEFT EYE" << trialID << "Num FIX: " << fL.size();
+    //qDebug() << "LEFT EYE" << trialID << "Num FIX: " << fL.size();
     for (qint32 i = 0; i < fL.size(); i++){
 
         // Computing the expected target and the target hit parameter for the image.
         Fixation f = fL.at(i);
-        qDebug() << "CHECKING FIXATION" << i;
+        //qDebug() << "CHECKING FIXATION" << i;
         targetHitSearcherReturn = targetHitSearcher.isHit(f.x,f.y,imgID);
 
         QStringList left;
@@ -293,11 +337,11 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     targetHitSearcher.reset();
     sac.reset();
 
-    qDebug() << "RIGHT EYE" << trialID << "Num FIX: " << fR.size();
+    //qDebug() << "RIGHT EYE" << trialID << "Num FIX: " << fR.size();
     for (qint32 i = 0; i < fR.size(); i++){
         // Computing the expected target and the target hit parameter for the image.
         Fixation f = fR.at(i);
-        qDebug() << "CHECKING FIXATION" << i;
+        //qDebug() << "CHECKING FIXATION" << i;
         targetHitSearcherReturn = targetHitSearcher.isHit(f.x,f.y,imgID);
 
         QStringList right;
@@ -329,7 +373,7 @@ void EDPNBackRT::TargetHitSearcher::setNewTrial(const QString &id, const QList<q
 }
 
 void EDPNBackRT::TargetHitSearcher::setTargetBoxes(const QList<QRectF> &tBoxes){
-    targetBoxes = tBoxes;
+    hitTargetBoxes = tBoxes;
 }
 
 void EDPNBackRT::TargetHitSearcher::reset(){
@@ -344,8 +388,8 @@ EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x
     ans.sequenceCompleted = "0";
 
     // Finding which target, if any, was hit by the fixation.
-    for (qint32 i = 0; i < targetBoxes.size(); i++){
-        if (targetBoxes.at(i).contains(x,y)){
+    for (qint32 i = 0; i < hitTargetBoxes.size(); i++){
+        if (hitTargetBoxes.at(i).contains(x,y)){
             target_hit = i;
             break;
         }
@@ -366,9 +410,9 @@ EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x
         else{
             // Checking if it hits ANY targets.
             isIn = "0";
-            qDebug() << trialID << "- CHECKING FIXATION" << x << y;
+            //qDebug() << trialID << "- CHECKING FIXATION" << x << y;
             // Checking if this is the same as the expected target
-            qDebug() << trialID << "- TARGET HIT" << target_hit << "Expected Target Index" << expectedTargetIndexInSequence << "SEQ:" <<  trialSequence;
+            //qDebug() << trialID << "- TARGET HIT" << target_hit << "Expected Target Index" << expectedTargetIndexInSequence << "SEQ:" <<  trialSequence;
             switch (expectedTargetIndexInSequence) {
             case 2:
                 // Expecting the first target in the sequence.
@@ -402,7 +446,7 @@ EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x
             case 0:
                 // This could either be the last one or the one at one.
                 if (trialSequence.at(0) == target_hit){
-                    qDebug() << "SEQUENCE COMPLETED";
+                    //qDebug() << "SEQUENCE COMPLETED";
                     ans.sequenceCompleted = "1";
                     expectedTargetIndexInSequence = -1;
                     isIn = "1";

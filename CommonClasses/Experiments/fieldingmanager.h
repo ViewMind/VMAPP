@@ -12,6 +12,8 @@
 #include "fieldingparser.h"
 #include "experimentdatapainter.h"
 
+//#define ENABLE_DRAW_OF_HIT_TARGET_BOXES
+
 class FieldingManager: public ExperimentDataPainter
 {
 public:
@@ -60,9 +62,6 @@ private:
     // The list of trials
     QList<FieldingParser::Trial> fieldingTrials;
 
-    // List of the rectangle final positions, used to postion the target base on rectangle id
-    QList<QPoint> rectangleLocations;
-
     // Graphical items shown in the screen
     QGraphicsEllipseItem    *gTarget;
     QGraphicsLineItem       *gCrossLine0;
@@ -71,8 +70,9 @@ private:
     QGraphicsSimpleTextItem *gText2;
     QGraphicsSimpleTextItem *gText3;
 
-    // The actual target boxes.
-    QList<QRectF> targetBoxes;
+    // The actual target boxes. (To recognize a hit AND to be drawn)
+    QList<QRectF> hitTargetBoxes;
+    QList<QRectF> drawTargetBoxes;
 
     void enableDemoMode();
 

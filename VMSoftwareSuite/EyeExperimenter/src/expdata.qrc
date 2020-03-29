@@ -10,5 +10,6 @@
         <file>experiment_data/Reading_es.dat</file>
         <file>experiment_data/Reading_fr.dat</file>
         <file>experiment_data/Reading_is.dat</file>
+        <file>experiment_data/parkinson.dat</file>
     </qresource>
 </RCC>
