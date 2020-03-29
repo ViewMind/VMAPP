@@ -9,6 +9,7 @@
  * *********************************************/
 
 #include <QThread>
+#include <QDebug>
 
 #include "EyeMatrixGenerator/edpreading.h"
 #include "EyeMatrixGenerator/edpimages.h"
