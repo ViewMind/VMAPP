@@ -43,6 +43,7 @@ Control::Control(QObject *parent) : QObject(parent)
     cv[CONFIG_FILE_BIDING_UC]        = cmd;
     cv[CONFIG_FILE_READING]          = cmd;
     cv[CONFIG_FILE_FIELDING]         = cmd;
+    cv[CONFIG_FILE_NBACKRT]          = cmd;
     cv[CONFIG_INST_ETSERIAL]         = cmd;
     cv[CONFIG_RESULT_ENTRY_ID]       = cmd;
     cv[CONFIG_TRANSACTION_ID]        = cmd;
