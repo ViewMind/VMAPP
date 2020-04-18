@@ -583,10 +583,46 @@ QString Loader::checkForChangeLog(){
     reader.setCodec(COMMON_TEXT_CODEC);
     QString content = reader.readAll();
     if (content.size() < 4) return "";
-    else return content;
+
+    // Getting only the last N Updates
+    // MAX_UPDATES_TO_SHOW
+    int updateCounter = 0;
+    bool enableCounter = false;
+    QStringList lines = content.split("\n");
+    content = "";
+    while (!lines.isEmpty()){
+
+        QString line = lines.first();
+        lines.removeFirst();
+        line = line.trimmed();
+
+        if (!line.startsWith("-")){
+            // The logic is like this: Lines that do not start with "-" are update titles.
+            // It's necessary to add everything that comes after the line until another line
+            // that does not start with "-" to actually "add" an update to the variable.
+            if (enableCounter) {
+                enableCounter = false;
+                updateCounter++;
+            }
+            else{
+                enableCounter = true;
+            }
+        }
+
+        if (updateCounter == MAX_UPDATES_TO_SHOW){
+            break;
+        }
+        else{
+            //qDebug() << updateCounter << ": ->" << line;
+            content = content + line + "\n";
+        }
+    }
+
+    return content;
 }
 
 bool Loader::clearChangeLogFile(){
+    // return false;  // FOR DEBUGGING CHANGELOG WINDOW
     QDir dir(DIRNAME_LAUNCHER);
     QStringList filter;
     filter << QString(FILE_CHANGELOG_UPDATER) + "*";

@@ -32,6 +32,7 @@ private:
         QString targetHit;
         QString isIn;
         QString sequenceCompleted;
+        QString nback;
     };
 
     struct TargetHitSearcher {

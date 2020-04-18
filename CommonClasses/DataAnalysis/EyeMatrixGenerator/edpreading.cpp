@@ -31,7 +31,12 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
 
         QString line = lines.at(i);
 
+        line = line.trimmed();
+        if (line.isEmpty()) continue;
+
         QStringList tokens = line.split(' ',QString::SkipEmptyParts);
+
+        //qDebug() << "Processing line" << line << "Token size " << tokens.size();
 
         QString id = tokens.first().trimmed();
 
@@ -147,8 +152,11 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
     }
 
     // Calculating the fixations for each eye.;
+
     Fixations fL = mwa.computeFixations(data,READ_XL,READ_YL,READ_TI);
     Fixations fR = mwa.computeFixations(data,READ_XR,READ_YR,READ_TI);
+
+    //qDebug() << "Processing" << imgID << "LF: " << fL.size() << "RF: " << fR.size() << "from " << data.size() << " rows";
 
     // Number of fixations for each Eye.
     QString nfL = QString::number(fL.size());

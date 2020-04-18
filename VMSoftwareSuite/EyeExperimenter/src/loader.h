@@ -14,6 +14,7 @@
 #include "countries.h"
 #include "uiconfigmap.h"
 
+#define  MAX_UPDATES_TO_SHOW  3
 
 class Loader : public QObject
 {

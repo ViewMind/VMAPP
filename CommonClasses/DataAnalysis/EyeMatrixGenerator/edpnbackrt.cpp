@@ -133,18 +133,19 @@ bool EDPNBackRT::doEyeDataProcessing(const QString &data){
 
 void EDPNBackRT::initializeFieldingDataMatrix(){
 
-    csvHeader << "suj"       //0
+    csvHeader << "suj"          //0
               << "idtrial"      //1
               << "imgnum"       //2
               << "target"       //3
               << "target_hit"   //4
-              << "trial_seq"    //5
-              << "seq_comp"     //6
-              << "dur"          //7
-              << "ojoDI"        //8
-              << "latSac"       //9
-              << "amp_sacada"   //10
-              << "resp_time";   //11
+              << "nback"        //5
+              << "trial_seq"    //6
+              << "seq_comp"     //7
+              << "dur"          //8
+              << "ojoDI"        //9
+              << "latSac"       //10
+              << "amp_sacada"   //11
+              << "resp_time";   //12
 
 }
 
@@ -199,63 +200,63 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
 #endif
     Fixations fR = mwa.computeFixations(data,FIELDING_XR,FIELDING_YR,FIELDING_TI);
 
-//    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
-//    // Computing fixation online and comparing the results.
-//    Fixations fL2, fR2;
-//    Fixation workF;
-//#ifdef ENABLE_MWA_DEBUG
-//    mwa.setLog("mwa_online.log");
-//    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". LEFT FIXATIONS");
-//#endif
-//    mwa.finalizeOnlineFixationCalculation(); // Making sure that everything is reset.
-//    for (qint32 i = 0; i  < data.size(); i++){
-//        workF = mwa.calculateFixationsOnline(data.at(i).at(FIELDING_XL),data.at(i).at(FIELDING_YL),data.at(i).at(FIELDING_TI));
-//        if (workF.isValid()) fL2 << workF;
-//    }
-//    workF = mwa.finalizeOnlineFixationCalculation();
-//    if (workF.isValid()) fL2 << workF;
+    //    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
+    //    // Computing fixation online and comparing the results.
+    //    Fixations fL2, fR2;
+    //    Fixation workF;
+    //#ifdef ENABLE_MWA_DEBUG
+    //    mwa.setLog("mwa_online.log");
+    //    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". LEFT FIXATIONS");
+    //#endif
+    //    mwa.finalizeOnlineFixationCalculation(); // Making sure that everything is reset.
+    //    for (qint32 i = 0; i  < data.size(); i++){
+    //        workF = mwa.calculateFixationsOnline(data.at(i).at(FIELDING_XL),data.at(i).at(FIELDING_YL),data.at(i).at(FIELDING_TI));
+    //        if (workF.isValid()) fL2 << workF;
+    //    }
+    //    workF = mwa.finalizeOnlineFixationCalculation();
+    //    if (workF.isValid()) fL2 << workF;
 
-//#ifdef ENABLE_MWA_DEBUG
-//    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". RIGHT FIXATIONS");
-//#endif
-//    for (qint32 i = 0; i  < data.size(); i++){
-//        workF = mwa.calculateFixationsOnline(data.at(i).at(FIELDING_XR),data.at(i).at(FIELDING_YR),data.at(i).at(FIELDING_TI));
-//        if (workF.isValid()) fR2 << workF;
-//    }
-//    workF = mwa.finalizeOnlineFixationCalculation();
-//    if (workF.isValid()) fR2 << workF;
+    //#ifdef ENABLE_MWA_DEBUG
+    //    mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". RIGHT FIXATIONS");
+    //#endif
+    //    for (qint32 i = 0; i  < data.size(); i++){
+    //        workF = mwa.calculateFixationsOnline(data.at(i).at(FIELDING_XR),data.at(i).at(FIELDING_YR),data.at(i).at(FIELDING_TI));
+    //        if (workF.isValid()) fR2 << workF;
+    //    }
+    //    workF = mwa.finalizeOnlineFixationCalculation();
+    //    if (workF.isValid()) fR2 << workF;
 
-//    qDebug() <<  "TRIAL ID" << trialID << "IMG" << imgID;
-//    qint32 size = qMax(fL.size(),fL2.size());
-//    if (fL.size() != fL2.size()){
-//        qDebug() << "FL SIZE DIFFERENCE. OFFLINE" << fL.size() << "ONLINE" << fL2.size();
-//        for (qint32 i = 0; i < size; i++){
-//            QString s = QString::number(i) + ". ";
-//            if (i < fL.size()){
-//                s = s + "OFFLINE: " + fL.at(i).toString();
-//            }
-//            else{
-//                s = s + "OFFLINE: N/A";
-//            }
-//            s  = s + ". ";
-//            if (i < fL2.size()){
-//                s = s + "ONLINE: " + fL2.at(i).toString();
-//            }
-//            else{
-//                s = s + "ONLINE: N/A";
-//            }
-//            qDebug().noquote() << s;
-//        }
-//    }
-//    else{
-//        // Same amount.
-//        for (qint32 i = 0; i < size; i++){
-//            if (!fL.at(i).isSame(fL2.at(i))){
-//                qDebug().noquote() << "DIFF AT" << i << "OFFLINE" << fL.at(i).toString() << "ONLINE" << fL2.at(i).toString();
-//            }
-//        }
-//    }
-//    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
+    //    qDebug() <<  "TRIAL ID" << trialID << "IMG" << imgID;
+    //    qint32 size = qMax(fL.size(),fL2.size());
+    //    if (fL.size() != fL2.size()){
+    //        qDebug() << "FL SIZE DIFFERENCE. OFFLINE" << fL.size() << "ONLINE" << fL2.size();
+    //        for (qint32 i = 0; i < size; i++){
+    //            QString s = QString::number(i) + ". ";
+    //            if (i < fL.size()){
+    //                s = s + "OFFLINE: " + fL.at(i).toString();
+    //            }
+    //            else{
+    //                s = s + "OFFLINE: N/A";
+    //            }
+    //            s  = s + ". ";
+    //            if (i < fL2.size()){
+    //                s = s + "ONLINE: " + fL2.at(i).toString();
+    //            }
+    //            else{
+    //                s = s + "ONLINE: N/A";
+    //            }
+    //            qDebug().noquote() << s;
+    //        }
+    //    }
+    //    else{
+    //        // Same amount.
+    //        for (qint32 i = 0; i < size; i++){
+    //            if (!fL.at(i).isSame(fL2.at(i))){
+    //                qDebug().noquote() << "DIFF AT" << i << "OFFLINE" << fL.at(i).toString() << "ONLINE" << fL2.at(i).toString();
+    //            }
+    //        }
+    //    }
+    //    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
 
 
     eyeFixations.left.append(fL);
@@ -307,6 +308,12 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     sac.reset();
     targetHitSearcher.reset();
 
+    // Computing response time only on image type 4.
+    QString responseTime = "N/A";
+    if (imgID == "4"){
+        responseTime = QString::number(data.last().at(FIELDING_TI) - data.first().at(FIELDING_TI));
+    }
+
     //qDebug() << "LEFT EYE" << trialID << "Num FIX: " << fL.size();
     for (qint32 i = 0; i < fL.size(); i++){
 
@@ -321,13 +328,14 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
              << imgID
              << targetHitSearcherReturn.targetHit
              << targetHitSearcherReturn.isIn
+             << targetHitSearcherReturn.nback
              << trialSeqStr.join("|")
              << targetHitSearcherReturn.sequenceCompleted
              << QString::number(f.duration)
              << "0"
              << QString::number(sacLatL)
              << QString::number(sac.calculateSacadeAmplitude(f.x,f.y,monitorGeometry))
-             << "N/A";
+             << responseTime;
         ldata << left;
 
     }
@@ -349,14 +357,15 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
               << trialID
               << imgID
               << targetHitSearcherReturn.targetHit
-              << targetHitSearcherReturn.isIn
+              << targetHitSearcherReturn.isIn              
+              << targetHitSearcherReturn.nback
               << trialSeqStr.join("|")
               << targetHitSearcherReturn.sequenceCompleted
               << QString::number(f.duration)
               << "1"
               << QString::number(sacLatR)
               << QString::number(sac.calculateSacadeAmplitude(f.x,f.y,monitorGeometry))
-              << "N/A";
+              << responseTime;
         rdata << right;
 
     }
@@ -383,9 +392,10 @@ void EDPNBackRT::TargetHitSearcher::reset(){
 EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x, qreal y, const QString &imgID) {
     qint32 imgNum = imgID.toInt();
     TargetHitSearcherReturn ans;
-    QString isIn;
     qint32 target_hit = -1;
     ans.sequenceCompleted = "0";
+    ans.isIn = "0";
+    ans.nback = "N/A";
 
     // Finding which target, if any, was hit by the fixation.
     for (qint32 i = 0; i < hitTargetBoxes.size(); i++){
@@ -398,77 +408,24 @@ EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x
     if ((imgNum >= 1) && (imgNum <= 3)){
         // These are the images that show the red dots.
         qint32 expTarget = trialSequence.at(imgNum-1);
-        if (target_hit == expTarget) isIn = "1";
-        else isIn = "0";
+        if (target_hit == expTarget) ans.isIn = "1";
     }
     else if (imgNum == 4){
         // We need to detect if the fixation sequence, here is correct.
         // The expected target is the allwasy the last in the sequence.
-        if (expectedTargetIndexInSequence == -1){
-            isIn = "0";
-        }
-        else{
-            // Checking if it hits ANY targets.
-            isIn = "0";
-            //qDebug() << trialID << "- CHECKING FIXATION" << x << y;
-            // Checking if this is the same as the expected target
-            //qDebug() << trialID << "- TARGET HIT" << target_hit << "Expected Target Index" << expectedTargetIndexInSequence << "SEQ:" <<  trialSequence;
-            switch (expectedTargetIndexInSequence) {
-            case 2:
-                // Expecting the first target in the sequence.
-                if (trialSequence.at(2) == target_hit){
-                    // All good we move to the next one.
-                    expectedTargetIndexInSequence = 1;
-                    isIn = "1";
-                }
-                else{
-                    // Sequence is already broken
-                    expectedTargetIndexInSequence = -1;
-                    isIn = "0";
-                }
-                break;
-            case 1:
-                // This could be either next one or the one at two.
-                if (trialSequence.at(1) == target_hit){
-                    expectedTargetIndexInSequence = 0;
-                    isIn = "1";
-                }
-                else if (trialSequence.at(2) == target_hit){
-                    // Fixating on previous point. No hit. No brocken sequence
-                    isIn = "0";
-                }
-                else if (target_hit != -1){ // Fixations not in targets are not a problem.
-                    // Sequence is broken.
-                    expectedTargetIndexInSequence = -1;
-                    isIn = "0";
-                }
-                break;
-            case 0:
-                // This could either be the last one or the one at one.
-                if (trialSequence.at(0) == target_hit){
-                    //qDebug() << "SEQUENCE COMPLETED";
+        if (expectedTargetIndexInSequence > -1){
+            ans.isIn = "0";
+            if (trialSequence.at(expectedTargetIndexInSequence) == target_hit){
+                ans.nback = QString::number(expectedTargetIndexInSequence+1);
+                expectedTargetIndexInSequence--;
+                ans.isIn = "1";
+                if (expectedTargetIndexInSequence == -1){
                     ans.sequenceCompleted = "1";
-                    expectedTargetIndexInSequence = -1;
-                    isIn = "1";
                 }
-                else if (trialSequence.at(1) == target_hit){
-                    // Fixating on previous point. No hit. No brocken sequence
-                    isIn = "0";
-                }
-                else if (target_hit != -1){ // Fixations not in targets are not a problem.
-                    // Sequence is broken.
-                    expectedTargetIndexInSequence = -1;
-                    isIn = "0";
-                }
-                break;
-            default:
-                // This is a -1, nothing to do.
-                break;
             }
         }
     }
 
-    ans.isIn = isIn;
     if (target_hit < 0)  ans.targetHit = "N/A";
     else ans.targetHit = QString::number(target_hit);
     return ans;

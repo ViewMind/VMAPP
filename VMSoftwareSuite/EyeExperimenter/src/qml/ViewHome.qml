@@ -104,7 +104,7 @@ VMBase {
     Dialog {
         id: showTextDialog;
         modal: true
-        width: mainWindow.width*0.48
+        width: mainWindow.width*0.6
         height: mainWindow.height*0.87
 
         property string vmContent: ""
