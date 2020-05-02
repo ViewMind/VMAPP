@@ -1,6 +1,6 @@
 -- MySQL dump 10.16  Distrib 10.2.10-MariaDB, for Linux (x86_64)
 --
--- Host: localhost    Database: viewmind_dashboard_users
+-- Host: localhost    Database: viewmind_dashboard
 -- ------------------------------------------------------
 -- Server version	10.2.10-MariaDB
 
@@ -16,12 +16,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `viewmind_dashboard_users`
+-- Current Database: `viewmind_dashboard`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `viewmind_dashboard_users` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `viewmind_dashboard` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
-USE `viewmind_dashboard_users`;
+USE `viewmind_dashboard`;
 
 --
 -- Table structure for table `tMonthCounters`

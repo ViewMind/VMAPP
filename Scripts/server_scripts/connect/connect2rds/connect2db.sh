@@ -36,7 +36,7 @@ elif [[ $1 == "rootpatdata" ]]; then
 elif [[ $1 == "rootdash" ]]; then
    HOST="viewmind-dashboard$HOSTADDRESS"
    USER="root"
-   PASSWD="65fjnd621nf35"
+   PASSWD="vimiroot"
 else
    echo "Unrecognized RDS: $1"
    exit
