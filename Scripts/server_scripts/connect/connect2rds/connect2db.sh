@@ -34,7 +34,7 @@ elif [[ $1 == "rootpatdata" ]]; then
    USER="root"
    PASSWD="vimiroot"   
 elif [[ $1 == "rootdash" ]]; then
-   HOST="viewmind-dashboard"
+   HOST="viewmind-dashboard$HOSTADDRESS"
    USER="root"
    PASSWD="65fjnd621nf35"
 else
