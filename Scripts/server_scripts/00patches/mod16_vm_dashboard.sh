@@ -7,12 +7,14 @@ if [[ $1 == "prod" ]]; then
    DB_RES_HOST="viewminddb$BASE_HOST_NAME"
    DB_ID_HOST="viewmind-id$BASE_HOST_NAME"
    DB_PATDATA_HOST="viewmind-patdata$BASE_HOST_NAME"
+   DB_DASHBOARD_HOST="viewmind-dashboard$BASE_HOST_NAME"
    PASSWD="vimiroot"
 else
    BASE_HOST_NAME=""
    DB_RES_HOST="localhost"
    DB_ID_HOST="localhost"
    DB_PATDATA_HOST="localhost"
+   DB_DASHBOARD_HOST="localhost"
    PASSWD="givnar"
 fi
 
@@ -29,7 +31,7 @@ export MYSQL_PWD=$PASSWD
 
 echo ">> APPLYING PATCH 16"
 
-mysql -h $DB_PATDATA_HOST -u $USER -P $PORT --database=$DB_DASHBOARD_NAME < sql_scripts/mod16_vm_dashboard.sql
+mysql -h $DB_DASHBOARD_HOST -u $USER -P $PORT --database=$DB_DASHBOARD_NAME < sql_scripts/mod16_vm_dashboard.sql
 
 echo "Finished"
 
