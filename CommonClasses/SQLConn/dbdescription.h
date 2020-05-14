@@ -55,6 +55,7 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TABLE_PLACEDPRODUCTS                    "tPlacedProducts"
 #define  TABLE_FDATA                             "tFData"
 #define  TABLE_PERFORMANCE                       "tPerformance"
+#define  TABLE_EVALUATIONS                       "tEvaluations"
 
 #define  TABLE_PATDATA                           "tPatientData"
 #define  TABLE_MEDICAL_RECORDS                   "tMedicalRecords"
@@ -148,8 +149,6 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TINST_COL_KEYID                         "keyid"
 #define  TINST_COL_UID                           "uid"
 #define  TINST_COL_NAME                          "name"
-#define  TINST_COL_HASHPASS                      "hashpass"
-#define  TINST_COL_EVALS                         "evaluations"
 #define  TINST_COL_FNAME                         "firstname"
 #define  TINST_COL_LNAME                         "lastname"
 #define  TINST_COL_ADDRESS                       "address"
@@ -157,19 +156,10 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TINST_COL_EMAIL                         "email"
 #define  TINST_COL_ENABLED                       "enabled"
 
-// Column names for the placed product table.
-#define  TPLACED_PROD_COL_KEYID                  "keyid"
-#define  TPLACED_PROD_COL_INSTITUTION            "institution"
-#define  TPLACED_PROD_COL_PRODUCT                "product"
-#define  TPLACED_PROD_COL_PRODSN                 "product_serialnum"
-#define  TPLACED_PROD_COL_SOFTVER                "software_version"
-#define  TPLACED_PROD_COL_PCMODEL                "pc_model"
-#define  TPLACED_PROD_COL_PCSERIALNUM            "pc_serialnum"
-#define  TPLACED_PROD_COL_ETBRAND                "etbrand"
-#define  TPLACED_PROD_COL_ETMODEL                "etmodel"
-#define  TPLACED_PROD_COL_ETSERIAL               "etserial"
-#define  TPLACED_PROD_COL_CHINRESTMODEL          "chinrest_model"
-#define  TPLACED_PROD_COL_CHINRESTSN             "chinrest_serialnum"
+// Column names for the production table in the dashboard database.
+#define  TPROD_COL_KEYID                         "keyid"
+#define  TPROD_COL_INSTITUTION                   "linked_institution"
+#define  TPROD_COL_PRODUCT_SN                    "product_sn"
 
 // Column names for the FData Table.
 #define  TFDATA_COL_KEYID                        "keyid"
@@ -185,5 +175,10 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TPERF_COL_KEYID                         "keyid"
 #define  TPERF_COL_TIMESTRING                    "timestring"
 #define  TPERF_COL_EYE_RESULT                    "teye_result"
+
+// Column names for the tEvaluations Table
+#define  TEVALS_COL_KEYID                        "keyid"
+#define  TEVALS_COL_INSTITUTION                  "institution"
+#define  TEVALS_COL_EVALUATIONS                  "evaluations"
 
 #endif //DBDESCRIPTION_H

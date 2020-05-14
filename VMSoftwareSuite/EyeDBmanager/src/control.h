@@ -13,7 +13,7 @@
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 
 #define EYE_DB_MNG_NAME      "EyeDBManager"
-#define EYE_DB_MNG_VERSION   "1.1.0" // Previous 1.0.1
+#define EYE_DB_MNG_VERSION   "1.2.0" // Previous 1.1.0
 #define FILE_DB_LOG          "dblog.log"
 
 #define DB_FINISH_ACTION_COMMIT   0
@@ -53,6 +53,7 @@ private:
     DBInterface dbConnBase;
     DBInterface dbConnID;
     DBInterface dbConnPatData;
+    DBInterface dbConnDash;
 
     // For saving to the output
     qint32 numberOfRemaingEvaluations;
@@ -67,7 +68,7 @@ private:
     void storePatientData();
 
     // Common to al DB related stuff at the end.
-    void finishUp(quint8 commitBase, quint8 commitID, quint8 commitPatData, qint32 code);
+    void finishUp(quint8 commitBase, quint8 commitID, quint8 commitPatData, quint8 commitDash, qint32 code);
 
 };
 
