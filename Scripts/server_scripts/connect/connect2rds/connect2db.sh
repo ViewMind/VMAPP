@@ -33,10 +33,16 @@ elif [[ $1 == "rootpatdata" ]]; then
    HOST="viewmind-patdata$HOSTADDRESS";
    USER="root"
    PASSWD="vimiroot"   
+elif [[ $1 == "rootdash" ]]; then
+   HOST="viewmind-dashboard$HOSTADDRESS"
+   USER="root"
+   PASSWD="vimiroot"
 else
    echo "Unrecognized RDS: $1"
    exit
 fi
+
+
 
 export MYSQL_PWD=$PASSWD
 mysql -h $HOST -P $PORT -u $USER
