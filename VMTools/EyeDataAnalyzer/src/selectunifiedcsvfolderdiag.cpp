@@ -39,3 +39,15 @@ QString SelectUnifiedCSVFolderDiag::getDirectory() const{
 qint64 SelectUnifiedCSVFolderDiag::getMaxDayDiffForMedRecs() const{
     return ui->leMedRecsDays->text().toInt();
 }
+
+qint32 SelectUnifiedCSVFolderDiag::getMaximumDispParameters() const{
+    qint32 ans = ui->leMaxDispValue->text().toInt();
+    if (ui->cbEnableMaxDispParameter->isChecked()) return ans;
+    else return -1;
+}
+
+void SelectUnifiedCSVFolderDiag::on_cbEnableMaxDispParameter_stateChanged(int arg1)
+{
+    Q_UNUSED(arg1)
+    ui->leMaxDispValue->setEnabled(ui->cbEnableMaxDispParameter->isChecked());
+}

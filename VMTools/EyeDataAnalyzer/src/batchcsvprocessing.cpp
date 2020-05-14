@@ -14,9 +14,14 @@ BatchCSVProcessing::BatchCSVProcessing()
                   "RMN_RAmyg" <<  "RMN_RCorThick"  <<  "RMN_REntCort"  <<  "RMN_RHip" <<
                   "RMN_TotCertCort" <<  "RMN_TotGrayMatt"  <<  "RMN_TotWhiteMatt";
     headerMedRec << "medical_record_date" << "years_formation" << mrListMeds <<  mrListEvals << mrListRNM;
+
     // PATCH TO REMOVE COMMAS FROM HEADER
     headerMedRec[4] = "Cannabinoides_CBD_THC_otros";
     maxDayDiff = 60;
+
+    // Default value for global maximum dispersion is -1 indicating not to use.
+    maximumDispersionWindow = -1;
+
 }
 
 
@@ -168,7 +173,15 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
     mgeo.XmmToPxRatio                  = config.getReal(CONFIG_XPX_2_MM);
     mgeo.YmmToPxRatio                  = config.getReal(CONFIG_YPX_2_MM);
 
-    mwp.maxDispersion                  = config.getInt(CONFIG_MOVING_WINDOW_DISP);
+
+    if (maximumDispersionWindow == -1){
+        mwp.maxDispersion              = config.getInt(CONFIG_MOVING_WINDOW_DISP);
+    }
+    else{
+        qDebug() << "Using forced dispersion of"  << maximumDispersionWindow;
+        mwp.maxDispersion              = maximumDispersionWindow;
+    }
+
     mwp.minimumFixationLength          = config.getReal(CONFIG_MIN_FIXATION_LENGTH);
     mwp.sampleFrequency                = config.getReal(CONFIG_SAMPLE_FREQUENCY);
 
@@ -194,7 +207,7 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
     mgeo.resolutionHeight =  rdp.getConfiguration()->getReal(CONFIG_RESOLUTION_HEIGHT);
     mgeo.resolutionWidth  =  rdp.getConfiguration()->getReal(CONFIG_RESOLUTION_WIDTH);
 
-    processor->setFieldingMargin(config.getReal(CONFIG_MARGIN_TARGET_HIT));
+    processor->setFieldingMargin(config.getInt(CONFIG_MARGIN_TARGET_HIT));
     processor->setMonitorGeometry(mgeo);
     processor->setMovingWindowParameters(mwp);
     processor->calculateWindowSize();

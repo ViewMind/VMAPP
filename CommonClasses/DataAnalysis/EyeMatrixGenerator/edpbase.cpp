@@ -12,6 +12,12 @@ EDPBase::EDPBase(ConfigurationManager *c)
     mwa.parameters.maxDispersion = 30;
     mwa.parameters.minimumFixationLength = 50;
     mwa.parameters.sampleFrequency = 120;
+    if (c->containsKeyword(CONFIG_RESOLUTION_SCALING)){
+        resolutionScaling = c->getReal(CONFIG_RESOLUTION_SCALING);
+    }
+    else{
+        resolutionScaling = 1;
+    }
     eyeFixations.clear();
 }
 
@@ -25,6 +31,7 @@ void EDPBase::configure(const QString &fileName, const QString &exp){
     subjectIdentifier = pname.baseName();
     outputFile = workingDirectory + "/" + info.baseName() + ".csv";
     eyeFixations.experimentDescription = exp;
+
 }
 
 /************************** Auxiliary functions*******************************/
@@ -108,3 +115,31 @@ qreal EDPBase::SacadeAmplitudeCalculator::calculateSacadeAmplitude(qreal x, qrea
     lastY = y;
     return sacade;
 }
+
+DataMatrix EDPBase::resolutionScaleDataMatrix(const DataMatrix &matrix, qint32 xl, qint32 yl, qint32 xr, qint32 yr){
+    if (resolutionScaling > 1){
+        DataMatrix ans;
+        for (qint32 i = 0; i < matrix.size(); i++){
+            DataRow row = matrix.at(i);
+            //qDebug() << "INPUT" << row;
+
+            // Right
+            qreal x = row.at(xr)*resolutionScaling/monitorGeometry.resolutionWidth;
+            qreal y = row.at(yr)*resolutionScaling/monitorGeometry.resolutionHeight;
+            row.replace(xr,x);
+            row.replace(yr,y);
+
+            // LEFT
+            x = row.at(xl)*resolutionScaling/monitorGeometry.resolutionWidth;
+            y = row.at(yl)*resolutionScaling/monitorGeometry.resolutionHeight;
+            row.replace(xl,x);
+            row.replace(yl,y);
+
+            //qDebug() << "OUTPUT" << row;
+            ans << row;
+        }
+        return ans;
+    }
+    else return matrix;
+}
+

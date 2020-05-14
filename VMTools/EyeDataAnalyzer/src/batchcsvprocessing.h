@@ -17,6 +17,7 @@ public:
     void setDBConnect(PatientNameMapManager *db) { patdata = db;}
     void setMedicalRecordsMaxDayDiff(qint64 ddiff)  {maxDayDiff = ddiff;}
     void setWorkingDir(const QString &dir, qint32 id2use) { workingDirectory = dir; idToUse = id2use;}
+    void setGlobalMaximumDispersionParameter(const qint32 md) {maximumDispersionWindow = md;}
     void run();
 
     QStringList getErrors() const {return errors;}
@@ -42,6 +43,7 @@ private:
 
     QString workingDirectory;
     qint32 idToUse;
+    qint32 maximumDispersionWindow;
 
     // Information on how to process a file.
     QHash<QString, QList<DatFileProcessingStruct> > processingList;

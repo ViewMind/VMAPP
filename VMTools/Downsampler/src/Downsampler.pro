@@ -36,6 +36,7 @@ SOURCES += \
     ../../../CommonClasses/Experiments/readingparser.cpp \
     ../../../CommonClasses/LogInterface/loginterface.cpp \
     datasetdownsampler.cpp \
+    eyetribeascextractor.cpp \
     frequencyanddispersionsweeper.cpp \
     main.cpp \
     eyedatadownsampler.cpp
@@ -58,6 +59,7 @@ HEADERS += \
     ../../../CommonClasses/common.h \
     datasetdownsampler.h \
     eyedatadownsampler.h \
+    eyetribeascextractor.h \
     frequencyanddispersionsweeper.h
 
 FORMS += \

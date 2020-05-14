@@ -39,7 +39,7 @@ VMTools/BindingDesigner/outputs/
 VMTools/EyeTrackerFollower/exe/
 VMTools/LocalDBPrinter/exe/
 VMTools/MassBindingFixationDrawer/exe/
-
+VMTools/Downsampler/bin/
 
 VMTools/PupilLabsDemo/
 VMTools/QtDX11Test/debug/

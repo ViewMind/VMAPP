@@ -74,6 +74,9 @@ public:
     qreal sampleFrequency;        // In hertz
     qreal maxDispersion;          // In pixels
     qreal minimumFixationLength;  // In miliseconds
+//    qreal resolutionScaling;      // Scale the input x and y values to this value, according to resolution.
+//    qreal resolutionWidth;        // Maximum Resolution on X, for resolution scaling
+//    qreal resolutionHeight;       // Maximum Resolution on Y, for resolution scaling
     qint32 getStartWindowSize() const {return minimumWindowSize;}
     void calculateWindowSize(){
         qreal sampleRateInMs = 1000.0/sampleFrequency;

@@ -152,7 +152,6 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
     }
 
     // Calculating the fixations for each eye.;
-
     Fixations fL = mwa.computeFixations(data,READ_XL,READ_YL,READ_TI);
     Fixations fR = mwa.computeFixations(data,READ_XR,READ_YR,READ_TI);
 

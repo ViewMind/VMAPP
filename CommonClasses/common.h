@@ -128,6 +128,7 @@
 #define   CONFIG_PRIMARY_MONITOR_HEIGHT                 "primary_monitor_height"
 #define   CONFIG_VR_RECOMMENDED_WIDTH                   "vr_recommended_width"
 #define   CONFIG_VR_RECOMMENDED_HEIGHT                  "vr_recommended_height"
+#define   CONFIG_RESOLUTION_SCALING                     "resolution_scaling"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

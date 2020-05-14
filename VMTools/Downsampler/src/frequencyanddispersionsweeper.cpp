@@ -119,7 +119,7 @@ void FrequencyAndDispersionSweeper::run(){
         }
 
         // Do the Max Dispersion Sweep.
-        results = doMaxDispersionSweep(dsd.getOutputDownSampledFile());
+        results = doMaxDispersionSweep(dsd.getOutputDownSampledFile(),sweepParameters.resolutionScaling);
         totalNumerOfFixations << results;
 
         // Saving to file
@@ -130,7 +130,7 @@ void FrequencyAndDispersionSweeper::run(){
     }
 
     // Processing the original file last.
-    results = doMaxDispersionSweep(originalFileName);
+    results = doMaxDispersionSweep(originalFileName,sweepParameters.resolutionScaling);
     totalNumerOfFixations << results;
 
     // Saving to file
@@ -143,7 +143,7 @@ void FrequencyAndDispersionSweeper::run(){
 }
 
 
-QList<qint32> FrequencyAndDispersionSweeper::doMaxDispersionSweep(const QString &fileName){
+QList<qint32> FrequencyAndDispersionSweeper::doMaxDispersionSweep(const QString &fileName, qreal resolutionScaling){
 
     QList<qint32> ans;
 
@@ -168,6 +168,7 @@ QList<qint32> FrequencyAndDispersionSweeper::doMaxDispersionSweep(const QString 
     // Setting the resolution in the eye rep gen conf.
     eyeRepGenConf.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,rdi.resolution.width());
     eyeRepGenConf.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,rdi.resolution.height());
+    eyeRepGenConf.addKeyValuePair(CONFIG_RESOLUTION_SCALING,resolutionScaling);
 
     // Required for configuring the processors
     MonitorGeometry mgeo;

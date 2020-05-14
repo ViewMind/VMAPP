@@ -7,6 +7,7 @@
 #include <QMessageBox>
 
 #include "datasetdownsampler.h"
+#include "eyetribeascextractor.h"
 #include "frequencyanddispersionsweeper.h"
 
 QT_BEGIN_NAMESPACE
@@ -27,12 +28,18 @@ protected:
 
 private slots:
     void on_mdSweeper_finished();
+    void on_ascExtractor_finished();
     void on_pbMDAndFrequencySweep_clicked();
+
+    void on_actionTester_Action_triggered();
+
+    void on_actionASC_CSV_Match_Up_triggered();
 
 private:
     Ui::EyeDataDownSampler *ui;    
     FrequencyAndDispersionSweeper::SweepParameters sweepParams;
     FrequencyAndDispersionSweeper sweeper;
+    EyeTribeASCExtractor ascExtractor;
 
 };
 #endif // EYEDATADOWNSAMPLER_H

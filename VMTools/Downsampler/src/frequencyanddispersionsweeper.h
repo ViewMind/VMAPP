@@ -19,6 +19,7 @@ public:
         int frequencyStep;
         int startMaxDispersionValue;
         int endMaxDispersionValue;
+        qreal resolutionScaling;
     };
 
     FrequencyAndDispersionSweeper();
@@ -42,7 +43,7 @@ private:
     QList<qint32> maxDispersionList;
     QList< QList<qint32> > totalNumerOfFixations;
 
-    QList<qint32> doMaxDispersionSweep(const QString &fileName);
+    QList<qint32> doMaxDispersionSweep(const QString &fileName, qreal resolutionScaling);
 
 };
 

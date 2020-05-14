@@ -911,6 +911,7 @@ void EyeDataAnalyzer::on_pbUnifiedCSV_clicked()
     waitDiag->open();
     batchProcessor.setWorkingDir(selectedDir,diag.getDisplayIDCode());
     batchProcessor.setMedicalRecordsMaxDayDiff(diag.getMaxDayDiffForMedRecs());
+    batchProcessor.setGlobalMaximumDispersionParameter(diag.getMaximumDispParameters());
     batchProcessor.start();
 
 }

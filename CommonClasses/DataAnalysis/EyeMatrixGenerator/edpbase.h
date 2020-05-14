@@ -8,6 +8,7 @@
 #include <QDebug>
 #include "movingwindowalgorithm.h"
 #include "../../ConfigurationManager/configurationmanager.h"
+#include "../../common.h"
 
 struct MonitorGeometry{
 
@@ -117,6 +118,9 @@ protected:
     // Auxiliary function that counts how many zeros there are in the column col, between start and end rows.
     qint32 countZeros(const DataMatrix &data, qint32 col, qint32 startRow, qint32 endRow, qreal tol = 1e-6) const;
 
+    // Resolution scaling. If this values is greater than 1, then each x, y value is normalized to this value using the X and Y resolution, for computing the fixations.
+    qreal resolutionScaling;
+
     // Filtering function to remove spurious data.
     struct FilterReturn{
         QString removedLines;
@@ -138,6 +142,9 @@ protected:
 
     // Calculate the sampling frequency.
     qreal calculateSamplingFrequency (const DataMatrix &eventData, qint32 timeCol);
+
+    // Do resolution scaling on data matrix.
+    DataMatrix resolutionScaleDataMatrix(const DataMatrix &matrix, qint32 xl, qint32 yl, qint32 xr, qint32 yr);
 
 };
 
