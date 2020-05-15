@@ -274,8 +274,8 @@ void Control::checkMode(){
                 ) b ON a.product_sn = b.product_sn AND a.keyid = b.keyid AND a.linked_institution = ";
 
     serial_check_query = serial_check_query + instID;
+    serial_check_query = serial_check_query + " AND a.product_sn = '" + etserial + "'";
     columns << "product_sn";
-
 
     if (!dbConnDash.specialQuery(serial_check_query,columns)){
         log.appendError("When querying serial number for institituion: " + dbConnBase.getError());
