@@ -1,4 +1,3 @@
-
 library(memisc)
 library(MASS)
 library(lme4)
@@ -8,8 +7,10 @@ library(plyr)
 library(scales)
 library(reshape2)
 library(reshape)
-
+library(gtable)
 library(gdata)
+library(data.table)
+
 
 rm(list=ls())  #Remove workspace
 
@@ -28,122 +29,165 @@ if (length(args) != 3) {
 
 setwd("./res")
 
-BC_AXIS<-read.csv(args[1]) 
+BC<-read.csv(args[1]) 
 
-head(BC_AXIS)
-dim(BC_AXIS)
-BC_AXIS<-BC_AXIS[,c(1:13,26,27)]
-names(BC_AXIS) <- c("subj_id", "trial_id", "is_trial","trial_name","trial_type", "response", "dur", "eye",  "blinks", "sacc_ampl",  "pupila","gaze","nf","timeline","score")
+head(BC)
+tail(BC)
 
-BC<-BC_AXIS
+dim(BC)
+BC<-BC[,c(1:15,28,29)]
+names(BC) <- c("id","age","subj_id", "trial_id", "is_trial","trial_name","trial_type", "response", "dur", "eye",  "blinks", "sacc_ampl",  "pupila","gaze","nf","timeline","score")
 
-UC_AXIS<-read.csv(args[2])
+table(BC$is_trial)
+head(BC)
 
-dim(UC_AXIS)
 
-UC_AXIS<-UC_AXIS[,c(1:13,26,27)]
+UC<-read.csv(args[2])
 
-names(UC_AXIS) <- c("subj_id", "trial_id", "is_trial","trial_name","trial_type", "response", "dur", "eye",  "blinks", "sacc_ampl",  "pupila","gaze","nf","timeline","score")
-UC<-UC_AXIS
-head(UC_AXIS)
+dim(UC)
+head(UC)
+UC<-UC[,c(1:15,28,29)]
 
+names(UC) <- c("id","age","subj_id", "trial_id", "is_trial","trial_name","trial_type", "response", "dur", "eye",  "blinks", "sacc_ampl",  "pupila","gaze","nf","timeline","score")
+str(UC)
+
+table(BC$subj_id)
+table(UC$subj_id)
 
 BC$type<-NA
 BC$type<-"BC"
 
 
-BC$Condition<-"AD"
+
+
+
+BC$Condition<-"CONTROL"
 
 
 
 UC$type<-NA
 UC$type<-"UC"
-head(UC)
+
+UC$Condition<-"CONTROL"
 
 
-UC$Condition<-"AD"
 
 
 
-bs<-rbind(BC,UC)
+
+r<-rbind(BC,UC)
+r$gaze<-as.numeric(r$gaze)
+
 rm(BC)
 rm(UC)
 
 
-bs$dur<-as.numeric(bs$dur)
-dim(bs)
-idx<-which(bs$dur <50)
+
+
+r$score<-as.numeric(r$score)
+
+
+
+
+head(r)
+
+dim(r)
+
+idx<-which(r$dur <50)
 length(idx)
-#bs<-bs[-idx,]
-#
+r<-r[-idx,]
+
+r$sacc_ampl<-as.numeric(r$sacc_ampl)
+r$gaze<-as.numeric(r$gaze)
+r$nf<-as.numeric(r$nf)
+r$timeline<-as.numeric(r$timeline)
+r$pupila<-as.numeric(r$pupila)
+r$score<-as.numeric(r$score)
 
 
-bs$trial_id<-as.numeric(bs$trial_id)
-idx<-which(bs$trial_id==0)
+r$trial_id<-as.numeric(r$trial_id)
+idx<-which(r$trial_id==0)
 length(idx)
-bs<-bs[-idx,] 
+r<-r[-idx,] 
 
-bs$type<-as.factor(bs$type)
-bs$is_trial<-as.factor(bs$is_trial)
 
+str(r)
+#describe(b)
+levels(r$trial_id)
+r$type<-as.factor(r$type)
+r$is_trial<-as.factor(r$is_trial)
+r$eye<-as.factor(r$eye)
 
 
 #eye = 0 IZQUIERDO
-idx<-which(bs$eye=="0") #trabajamos con el ojo DERECHO, como en lectura.
+idx<-which(r$eye=="0") #trabajamos con el ojo DERECHO, como en lectura.
 length(idx)
-bs<-bs[-idx,]
+r<-r[-idx,]
 
 
-
-
-
-
-#b$pupila<-b$pupila/423
-
-
-
-
-idx<-which(bs$is_trial=="1")
+str(r)
+idx<-which(r$timeline >4000)
 length(idx)
-bs<-bs[-idx,]
-
-
-
-idx<-which(bs$type=="UC")
+#as<-as[-idx,]
+idx<-which(r$timeline<"0")
 length(idx)
-bs<-bs[-idx,]
-###########################################################################################
+#as3<-as3[-idx,]
+
+dim(r)
+
+as<-r
+
+table(as$Condition)
+
+as$Condition<-as.factor(as$Condition)
+
+
+rm(r)
 
 
 
 
-head(bs)
-
-as<-bs
 
 
-head(as)
-tail(as)
+as_1<-as
 
 
+#as$Condition1[as$Condition == "CONTROL"]<- "1"
 
-
-
-a3<-as
-
-tail(a3)
+head(as_1)  
+dim(as_1)
 
 
 
+as_1$age<-as.factor(as_1$age)
 
-rm(as)
-#rm(b1s)
-rm(bs)
-rm(idx)
-rm(BC_AXIS)
-rm(UC_AXIS)
+str(as_1)
 
-###################################################################################
+table(as_1$trial_id)
+table(as_1$age)
+
+idx<-which(as_1$type=="UC")
+length(idx)
+as_1<-as_1[-idx,]
+
+idx<-which(as_1$is_trial=="1")
+length(idx)
+as_1<-as_1[-idx,]
+table(as_1$type)
+str(as_1)
+#as_1$gaze<-log(as_1$gaze)
+
+
+
+as_1$score<-(as_1$score*100)/32
+
+
+head(as_1)
+tail(as_1)
+
+table(as_1$Condition)
+
+
 
 
 #
@@ -154,37 +198,64 @@ library(healthcareai)
 
 m1 <- load_models("binding2_model.RDS")
 
-###############################################################################################
-a4 <- ddply(a3, .(Condition,subj_id), summarise,  mao = mean(sacc_ampl),
-            mpupila = mean(pupila), mgaze = mean(gaze)
-            , mnf = mean(nf),mscore = mean(score))
-
-#a4$mgaze<-log(a4$mgaze)
-
-a4$mao<-round(a4$mao,digits=1)
-a4$mpupila<-round(a4$mpupila,digits=1)
-a4$mgaze<-round(a4$mgaze,digits=1)
-a4$mnf<-round(a4$mnf,digits=1)
+head(as_1)
+a4 <- ddply(as_1, .(Condition,id), summarise,  mdur = mean(dur),msd = sd(dur),  mao = mean(sacc_ampl),
+            mpupila = mean(pupila),sdpupila = sd(pupila), mgaze = mean(gaze)
+            , mnf = mean(nf), sdnf = sd(nf),mscore = mean(score),sdao = sd(sacc_ampl),sdgaze = sd(gaze))
 
 
-a4$Deterioro <-ifelse(a4$Condition== "CONTROL", "NO", "SI")
-
-a4$Deterioro<-as.factor(a4$Deterioro)
-
+str(a4)
 head(a4)
-dim(a4)
-a311 <- a4[,c(2,8)]
+# a4$mao<-round(a4$mao,digits=2)
+# a4$mpupila<-round(a4$mpupila,digits=2)
+# a4$mgaze<-round(a4$mgaze,digits=2)
+# a4$mnf<-round(a4$mnf,digits=2)
+# a4$mscore<-round(a4$mscore,digits=2)
 
-a411 <- (a4[,c(3,4,5,6,7)])
 
 
 
-a6<-cbind(a311,a411)
 
-str(a6)
-head(a6)
 
-m3<-predict(m1, a6, outcome_groups = 5)
+
+
+a2<-a4
+
+
+
+# #######################################################
+a2$Deterioro <-ifelse(a2$Condition== "CONTROL", "NO", "YES")
+
+a2$Deterioro<-as.factor(a2$Deterioro)
+
+#a2$mgaze<-log(a2$mgaze)
+#a2$mgaze<-round(a2$mgaze,digits=2)
+
+#library(keras)
+library(dplyr)
+
+
+head(a2)
+tail(a2)
+dim(a2)
+#View(a2[,])
+# ..$ id     : Factor w/ 68 levels "","test protocol_0002",..: 
+#   ..$ mao    : num(0) 
+# ..$ mpupila: num(0) 
+# ..$ mnf    : num(0) 
+# ..$ sdnf   : num(0) 
+# ..$ mscore : num(0) 
+# ..$ sdao   : num(0) 
+a31 <- a2[,c(2,14)]
+
+a41 <- (a2[,c(3,5,6,7,8,10,11,12,13)])
+
+
+a5<-cbind(a31,a41)
+
+
+
+m3<-predict(m1, a5, outcome_groups = 2)
 
 m3
 

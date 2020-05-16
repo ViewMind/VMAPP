@@ -8,7 +8,7 @@
 #include "../../ConfigurationManager/configurationmanager.h"
 #include "../../common.h"
 
-#define  RSCRIPT_READING    "res/reading.R"
+#define  RSCRIPT_READING    "res/reading_es.R"
 #define  RSCRIPT_BINDING2   "res/binding2.R"
 #define  RSCRIPT_BINDING3   "res/binding3.R"
 #define  RSCRIPT_RUNNABLE   "Rscript"

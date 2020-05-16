@@ -69,6 +69,19 @@ Control::Control(QObject *parent) : QObject(parent)
 
     configuration.setupVerification(cv);
 
+    // Creating a log file so that each transaction is different.
+    QString logFileName = QTime::currentTime().toString("HH_mm_ss_zzz");
+    logFileName = logFileName + ".html";
+
+    QDir(".").mkdir(EYE_DIR_LOG);
+    if (!QDir(EYE_DIR_LOG).exists()){
+        log.setLogFileLocation(logFileName);
+        log.appendError("Could not create LOG dir");
+    }
+    else{
+        log.setLogFileLocation(EYE_DIR_LOG + QString("/") + logFileName);
+    }
+
     // Adding the version to the log file
     log.appendStandard(QString(EYE_REP_GEN_NAME) + " - " + QString(EYE_REP_GEN_VERSION));
 

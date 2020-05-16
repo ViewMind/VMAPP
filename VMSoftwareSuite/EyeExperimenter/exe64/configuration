@@ -8,8 +8,8 @@ x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
 # Production Server Address
-# server_address = 18.220.30.34;
-server_address = 192.168.1.10;
+server_address = 18.220.30.34;
+#server_address = 192.168.1.10;
 
 
 #------------------------------------------------------#
@@ -19,7 +19,8 @@ server_address = 192.168.1.10;
 # Password: =mrUG:aU8U
 inst_pass = d5f7514e82a0733a57cee1ee14b1d032b06bb57f2e02267801a435cb52db0d17;
 eyeexp_number = 0000;
-inst_et_serial = 3-20200511-190303;
+#inst_et_serial = 3-20200511-190303;
+inst_et_serial = 3-20200514-141614;
 inst_name = Test Institution;
 inst_uid = 0;
 enable_local_db_bkp = true;

@@ -7,7 +7,8 @@
 #include "../../../CommonClasses/DataAnalysis/rawdataprocessor.h"
 
 #define   EYE_REP_GEN_NAME                              "EyeRepGenerator"
-#define   EYE_REP_GEN_VERSION                           "8.1.0" //8.0.0
+#define   EYE_DIR_LOG                                   "LOGS"
+#define   EYE_REP_GEN_VERSION                           "8.1.1" //8.1.0
 
 class Control : public QObject
 {

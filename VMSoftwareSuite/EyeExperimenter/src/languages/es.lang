@@ -205,7 +205,7 @@ viewpatientlist_view_yours = Ver Sus Pacientes;
 viewpatientlist_view_all_subject = Ver Todos los Sujetos;
 viewpatientlist_view_yours_subject = Sujeto;
 viewpatientlist_filter = Buscar;
-viewpatientlist_archive_msg=Archivar|Se encuentra por archivar los datos de un estudio. Si procede la información permanecerá en la computadora<br>pero no podrá ser enviada a procesar en el futuro<br>¿Desea Continuar?|Si|No;
+viewpatientlist_archive_msg=Archivar|Se encuentra por archivar los datos de un estudio.<br>Si procede la información permanecerá en la computadora<br>pero no podrá ser enviada a procesar en el futuro<br>¿Desea Continuar?|Si|No;
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
@@ -361,7 +361,7 @@ viewpatientlist_btnEdit = EDITAR;
 viewpatientlist_btnClose = CERRAR;
 
 #********************************* WAIT SCREEN MESSAGES *********************************
-waitscreenmsg_calibrationEnd = La calibración ha finalizdo;
+waitscreenmsg_calibrationEnd = La calibración ha finalizado;
 waitscreenmsg_studyEnd = Ha finalizado el estudio;
 
 #********************************* ERROR MESSAGES *********************************
@@ -376,7 +376,7 @@ error_no_ssl = SSL no se detectó|No se detectaron las bibliotecas de SSL<br>No 
 error_server_comm = Conexión no disponible|No se pudo establecer un vinculo con servidor.<br><b>Si no hay conexión es posible utilizar el program en modo fuera de línea</b>.<br>El manual de usuario lista las limitaciones del uso en el modo fuera de línea;
 error_freq_check = Error de Frequencia|Hubo un problema al obtener los datos del ET<br>Los resultados pueden no ser confiables<br>Por favor contacte a ViewMind para obtener ayuda.;
 error_db_server_error = Error en el Servidor|Se ha detectado un problema con el servidor<br>Por favor cotacte al equipo de ViewMind para resolverlo;
-error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor cotacte al equipo de ViewMind para resolverlo;
+error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker enviados son incorrectos<br>Por favor contacte al equipo de ViewMind para resolverlo;
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
 error_db_timeout = Se excedió el tiempo<br>de espera|El servidor tardó demasiado en responder<br>Por favor, inténtelo nuevamente<br>Si el problema persiste, contacte a ViewMind para resolverlo;
 error_launcher_update = Se debe reiniciar|En 5 segundos el programa se cerrará. Por favor reinicielo.;

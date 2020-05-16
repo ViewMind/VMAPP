@@ -22,7 +22,15 @@ QString RDataProcessor::processReading(const QString &readingFile){
     arguments << workDirectory + "/" + QString(FILE_R_OUT_TEMPRDA);
     arguments << outputconf;
 
-    QProcess::execute(RSCRIPT_RUNNABLE,arguments);
+    qint32 processRetCode = QProcess::execute(RSCRIPT_RUNNABLE,arguments);
+
+    if (processRetCode != 0){
+        error = "RPROCESSOR: Running the script with the arguments: "
+                + arguments.join(",") + " has FAILED. Ret Code: "
+                + QString::number(processRetCode);
+        return "";
+    }
+
 
     if (!checkAndMerge(outputconf)) return "";
 
@@ -91,7 +99,15 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
     arguments << ucfile;
     arguments << outputconf;
 
-    QProcess::execute(RSCRIPT_RUNNABLE,arguments);
+    qint32 processRetCode = QProcess::execute(RSCRIPT_RUNNABLE,arguments);
+
+    //qDebug() << "Process returned " << processRetCode;
+    if (processRetCode != 0){
+        error = "RPROCESSOR: Running the script with the arguments: "
+                + arguments.join(",") + " has FAILED. Ret Code: "
+                + QString::number(processRetCode);
+        return "";
+    }
 
     //qDebug() << "BINDING RUN:" << RSCRIPT_RUNNABLE << rScriptToCall << bcfile << ucfile << outputconf;
 

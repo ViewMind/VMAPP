@@ -153,8 +153,10 @@ bool EDPImages::doEyeDataProcessing(const QString &data){
 
 void EDPImages::initializeImageDataMatrix(){
 
-    QStringList header;
-    header << "suj"
+    QStringList header;    
+    header << "placeholder_id"
+           << "age"
+           << "suj"
            << "trial_id"
            << "is_trial"
            << "trial_name"
@@ -280,7 +282,9 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
 
     for (qint32 i = 0; i < fL.size(); i++){
         QStringList writer;
-        writer << subjectIdentifier << ","
+        writer << "N/A" << ","
+               << config->getString(CONFIG_PATIENT_AGE) << ","
+               << subjectIdentifier << ","
                << trial_id << ","
                << isTrial << ","
                << trialName << ","
@@ -307,7 +311,9 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
     sac.reset();
     for (qint32 i = 0; i < fR.size(); i++){
         QStringList writer;
-        writer << subjectIdentifier << ","
+        writer << "N/A" << ","
+               << config->getString(CONFIG_PATIENT_AGE) << ","
+               << subjectIdentifier << ","
                << trial_id << ","
                << isTrial << ","
                << trialName << ","

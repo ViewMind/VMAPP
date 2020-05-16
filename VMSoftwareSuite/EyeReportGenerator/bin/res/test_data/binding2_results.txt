@@ -1,0 +1,2 @@
+"Deterioro" "predicted_Deterioro" "predicted_group" "id" "mdur" "mao" "mpupila" "sdpupila" "mgaze" "sdnf" "mscore" "sdao" "sdgaze"
+"1" "NO" 0.924 "NO" "Eldo Schumacher" 141.415300546448 2.01709392349727 3.03838991803279 0.239822064682882 1651.37704918033 2.21297374326547 90.625 2.68472708817861 156.614245290718

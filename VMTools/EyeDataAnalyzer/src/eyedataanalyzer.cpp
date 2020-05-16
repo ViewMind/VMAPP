@@ -617,18 +617,15 @@ void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
     processor.run();
     QString outputFile = currentDirectory + "/output.html";
     htmlWriter.write(outputFile,"Data Analyizer - " + QString(PROGRAM_VERSION));
-    logForProcessing.appendSuccess("Processing done: Output at: " + outputFile);
-    logForProcessing.appendSuccess("Current Report is: : "  + processor.getReportFileOutput());
+    if (QFile(processor.getReportFileOutput()).exists()){
+        logForProcessing.appendSuccess("Processing done: Output at: " + processor.getReportFileOutput());
+        logForProcessing.appendSuccess("Check output.html log for more information");
+    }
+    else{
+        logForProcessing.appendError("Something went wrong. No file was generated");
+        logForProcessing.appendError("Check html log for more information");
+    }
 
-//    // Generating the graphs.
-//    QString graphFile = currentDirectory + "/graphs.html";
-//    BarGrapher bgrapher;
-//    for (qint32 i = 0; i < processor.getBarGraphOptions().size(); i++){
-//        bgrapher.addGraphToDo(processor.getBarGraphOptions().at(i));
-//    }
-//    if (!bgrapher.createBarGraphHTML(graphFile)){
-//        logForProcessing.appendError("When creating fix graphs: " + bgrapher.getLastError());
-//    }
 }
 
 void EyeDataAnalyzer::on_pbDrawFixations_clicked()

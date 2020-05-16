@@ -1,12 +1,20 @@
+library(healthcareai)
+
 library(memisc)
 library(MASS)
+library(lme4)
 library(grid)
 library(ggplot2)
 library(plyr)
 library(scales)
 library(reshape2)
 library(reshape)
-library(healthcareai)
+
+library(gdata)
+
+
+rm(list=ls())  #Remove workspace
+
 
 parseq_fast<-function(a)
 {
@@ -16,8 +24,8 @@ parseq_fast<-function(a)
   tmp <- which(diff!=0)
   b <- cbind(c(1,tmp+1), c(tmp, la))
   b <- cbind(b, b[,2]-b[,1]+1)
-
 }
+
 
 args = commandArgs(trailingOnly=TRUE)
 if (length(args) != 3) {
@@ -26,23 +34,66 @@ if (length(args) != 3) {
 
 setwd("./res")
 
+sss<-read.csv(args[1])  #yo_09_05_2020
+dim(sss)
+
+summary(sss)
+
+#ernie<-read.csv("ernie.csv")  #yo_09_05_2020
+
+#summary(ernie)
+
+#bs3<-rbind(sss,ernie)
+
+bs3<-(sss)
+#head(bs3)
+#table(bs3$age)
+#as.data.frame(table(bs3$display_id))
+
+bs3<-bs3[,c(1:18)]
+
+bs3$Condition<-"NA"
+bs3$Condition<-as.factor(bs3$Condition)
+
+
+
+names(bs3)<-c("id_","age","suj","sujnum","sn","trial","fixn","screenpos","wn","let","dur","nw","eye", "pupila","blink","ao","gaze","nf","Condition")
+table(bs3$id)
+
+str(bs3)
+summary(bs3)
+bs3$Condition<-as.numeric(bs3$Condition)
+
+############################
+bs3$Condition<-"CONTROL"
+
+
+
+a<-(bs3)
+
+
+rm(bs3)
+
+
+library(healthcareai)
+
 
 #ofile <- ("PACIENTE_NN_R.rda")   #### INTRODUCR NOMBRE DEL PACIENTE!!!!!!!!!
-ofile <- (args[2])  
 
-#a<-read.csv("reading_2_2019_03_26_09_24.csv") # se puede usar si se instal? en el CPU "strawbe
-a<-read.csv(args[1]) 
+table(a$eye)
+idx<-which(a$eye=="0")
+#a<-a[-idx,]
 
-head(a)
-#names(a)<-c("name","id","sn","trial","fixnr","screenpos","wn","let","dur","nw","eye")
-names(a)<-c("subj_id","id","sn","trial","fixn","screenpos","wn","let","dur","nw","eye", "pupila","blink","ao","gaze","nf","fixY")
 dim(a)
-
-
-
 head(a)
+
+str(a)
+a$trial<-as.numeric(a$trial)
+a$dur<-as.numeric(a$dur)
+a$gaze<-as.numeric(a$gaze)
+a$nw<-as.numeric(a$nw)
 #a<-a[,2:12]
-a<-a[,2:17]
+#a<-a[,2:17]
 a$let<-round(a$let)
 
 tail(a)
@@ -61,11 +112,15 @@ a<-a[-idx,]
 
 dim(a)
 
-
-# 1   1  1  1  2  2  2    3    3
-# NA  0 -9  0  1  0 -9    1    0
-# NA NA  9 -9 -1  1  9   -10   1
-
+# 
+# # 1   1  1  1  2  2  2    3    3
+# # NA  0 -9  0  1  0 -9    1    0
+# # NA NA  9 -9 -1  1  9   -10   1
+# 
+str(a)
+a$id<-as.numeric(a$id)
+a$sn<-as.numeric(a$sn)
+a$eye<-as.numeric(a$eye)
 pid<-a$id*1000+a$sn*100+a$eye
 sid<-c(NA,diff(pid))
 length(pid)
@@ -95,18 +150,12 @@ a<- a[-idx,]
 
 
 
-tail(a)
-
-# delete sentences 75 135 198 no predictabilities
-#idx<-which(a$sn==75 | a$sn==135 | a$sn==198 | a$sn==175)
-#a<-a[-idx,]
-#head(a);dim(a)
 
 #------------------------------------
 
 
-aL<-a[a$eye==0,c("id","sn","nw","wn","let","dur","pupila","gaze","nf","ao")]
-aR<-a[a$eye==1,c("id","sn","nw","wn","let","dur","pupila","gaze","nf","ao")]
+aL<-a[a$eye==0,c("id_","id","sn","nw","wn","let","dur","pupila","gaze","nf","ao","Condition")]
+aR<-a[a$eye==1,c("id_","id","sn","nw","wn","let","dur","pupila","gaze","nf","ao","Condition")]
 #aL<-a[a$eye==0,c("id","sn","nw","wn","let","dur", "Condition")]
 #aR<-a[a$eye==1,c("id","sn","nw","wn","let","dur", "Condition")]
 dim(aR)
@@ -119,10 +168,6 @@ for (ijk in 1:2) {
   if (ijk==2) {a <- aR  # Left or right eye      
   }
 }  
-head(a)
-
-tail(a)
-dim(a)
 
 # --- Matrix a ---------------------------------------------------------------------------
 # glueing together fixations on the same letter
@@ -131,14 +176,14 @@ sid<-parseq_fast(asnl)
 asnl[is.nan(asnl)]<--1
 sid_mf<-sid[sid[,3]!=1,]
 
-
+#
 #structure of a ("id","sn","nw","wn","let","dur")
-# a_fsl<-a[sid[,1],]
-# for (i in 1:dim(sid_mf)[1]){
-#   if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0 
-#   a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
-# }
-# a<-a_fsl;rm(a_fsl)
+a_fsl<-a[sid[,1],]
+for (i in 1:dim(sid_mf)[1]){
+  #   #if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0
+  #   a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
+}
+a<-a_fsl;rm(a_fsl)
 
 dim(a)
 
@@ -177,26 +222,6 @@ t1<-proc.time()
 print(t1-t0)
 # ----------------------------------------------------------------------------------------
 
-# Remove sentences with max 2 fixated words 
-sid <- a[,1,1]*1000 + a[,2,1]
-six <- parseq_fast(sid)
-badsent <- which(six[,3]<=2) 
-dim(a)
-
-# ----------------------------------------------------------------------------------------
-
-if (length(badsent) > 0)
-{
-  badfix2 <- c()
-  for (i in 1:length(badsent))
-  {
-    badfix2 <- c(badfix2, six[badsent[i],1]:six[badsent[i],2])
-  }
-  a <- a[-badfix2, , ];
-  nrow(a)
-}
-
-head(a)
 # # --- outgoing amplitude and relative fixation position ---------------------------------- -->
 #a$ao 	<- c(diff(a$wb+a$let), NA) -->
 pq 	<- parseq_fast(a$id*1000 + a$sn) 
@@ -251,43 +276,12 @@ a[c(pq[,2],pq[,2]-1),c("wn4.x", "let4", "ao4", "o4")] <- NA
 #str(a)
 # ----------------------------------------------------------------------------------------
 
+#View(a4)
 
-# --- add index for skipping prior (s1) and subsequent (s2) word -------------------------
-# 0=no skip, 1=skip
-# Skipping word n-1 (s1) and word n+1 (s2)
-#a$s1 <- a$ao1-(1/a$l1+1)-(a$let+1)
-#a$s1[a$s1 >= 0] <- 1
-#a$s1[a$s1 <  0] <- 0
-#
-#a$s2 <- a$ao-(1/a$l2+1)-(1/a$l-a$let)
-#a$s2[a$s2 <  1] <- 0
-#a$s2[a$s2 >= 1] <- 1
+mean(a$dur)
 
 
 
-dim(a)
-save(a,file=ofile)
-
-
-#rm(list=ls())
-
-
-parseq_fast<-function(a)
-{
-  la = length(a)
-  dim(a) <- c(la,1)
-  diff <- a[2:la,]-a[1:la-1,]
-  tmp <- which(diff!=0)
-  b <- cbind(c(1,tmp+1), c(tmp, la))
-  b <- cbind(b, b[,2]-b[,1]+1)
-}
-
-
-
-#load("PACIENTE_NN_R.rda")
-load(ofile)
-
-head(a)
 dim(a)
 #a[100:150,1:12]
 
@@ -341,8 +335,6 @@ dim(a)
 head(a)
 str(a)
 
-aL$Condition<-NA
-aL$Condition<-"AD"
 aL$Condition<-as.factor(aL$Condition)
 
 
@@ -353,10 +345,6 @@ aL$id<-as.numeric(aL$id)
 sid<-aL$id*1000+aL$sn  
 six<-parseq_fast(sid)           # Start and n of fix for each sentence
 
-dim(aL)
-head(aL)
-tail(aL)
-table(aL$sn)
 
 firstpL_h=c()                  # Firstpass fixations = 1 (left eye)
 for (i in 1:nrow(six))
@@ -429,15 +417,14 @@ regR  <- which(aL$wn>aL$wn1.x & aL$wn>aL$wn2.x)
 regBv <- intersect(regL,regR)  
 
 
+xL <- which(aL$wn>aL$wn1.x & aL$wn<aL$wn2.x)
 
-xL <- which(aL$wn>aL$wn1.x & aL$wn<aL$wn2.x & aL$wn==aL$wn) 
 
 xL1st <- intersect(firstpL,xL) 
 length(xL1st) 
 #xxx<-a[xL1st,] 
 
 
-table(aL$sn)
 
 a1<-aL
 dim(a1)
@@ -446,7 +433,7 @@ a2<-aL[firstpL, ]
 first<-length(firstpL)/nrow(aL)
 first
 
-dim(a2)
+#dim(a2)
 
 a3<-aL[xL1st, ]       #singlefix
 dim(a3)
@@ -458,245 +445,12 @@ dim(a4)
 multi<-length(morepL)/nrow(aL)
 multi
 
-
-
-head(aL)
-aL<-aL[,c(1,2,3,4,5,6,7,8,9,10,32)]
-
-
-
-
-# 
-# #setwd("C:/Users/gerar/Dropbox/Machine learning/READING_eyelink")  # HP
-#
-#
-# #setwd("C:/Users/usuario/Dropbox/Machine learning/READING_eyelink")  # UNS
-#
-# #load("reading_for_deeplearning.rda")
-# #load("reading_for_deeplearning_TRIAL.rda")   #armado con "selecting_means.r"
-#load("reading_for_deeplearning_ID.rda")
-#load("reading_for_deeplearning_ID.rda")
-# load("reading_for_HEALTHCAREAI_ID.rda")
-# 
-# table(a1$id)
-# #idx<-which(a1$id=="22"|a1$id=="5"|a1$id=="10"|a1$id=="29"|a1$id=="33"|a1$id=="69")
-# 
-# 
-# 
-# #View(a1[1:80,])
-# 
-# a1$id<-as.numeric(a1$id)
-# idx<-which(a1$id >= "65"|a1$id=="48")
-# length(idx)
-# a1<-a1[-idx,]
-# a1$id<-as.factor(a1$id)
-# 
-# head(a1)
-# 
-# 
-# 
-# head(a1)
-# 
-# 
-# 
-# a1<-a1[,c(1,2,3,5,7,9,11,12,13,14,15)]
-# 
-# 
-# str(a1)
-# 
-# a1$Condition<-as.factor(a1$Condition)
-# 
-# a1$TOTAL<-as.numeric(a1$TOTAL)
-# a1$FPF<-as.numeric(a1$FPF)
-# a1$SF<-as.numeric(a1$SF)
-# a1$MF<-as.numeric(a1$MF)
-# 
-# 
-# a1$FPF_<-a1$FPF/a1$TOTAL
-# #a1$FPF_ <- data.frame((a1$FPF_))
-# #a1$FPF_ <- melt(a1$FPF_) 
-# 
-# a1$SF_<-a1$SF/a1$TOTAL
-# #a1$SF_ <- data.frame((a1$SF_))
-# #a1$SF_ <- melt(a1$SF_) 
-# 
-# a1$MF_<-a1$MF/a1$TOTAL
-# #a1$MF_ <- data.frame((a1$MF_))
-# #a1$MF_ <- melt(a1$MF_) 
-# 
-# aggregate(a1$TOTAL,by=list(a1$Condition),mean)
-# aggregate(a1$FPF,by=list(a1$Condition),mean)
-# aggregate(a1$SF,by=list(a1$Condition),mean)
-# aggregate(a1$MF,by=list(a1$Condition),mean)
-# 
-# 
-# 
-# 
-# head(a1)
-# dim(a1)
-# a1<-a1[,c(1,2,3,4,5,6,12,13,14)]
-# 
-# a2<-a1
-# 
-# #a2[,4:7] <- scale(a2[,c(4:7)])
-# summary(a2)
-# 
-# #a2[, c(4,10)][is.na(a2[, c(4,10)])] <- 1
-# 
-# a2$mdur<-log(a2$mdur)
-# a2$mgaze<-log(a2$mgaze)
-# 
-# a2$Deterioro <-ifelse(a1$Condition== "CONTROL", "NO", "SI")
-# 
-# a2$Deterioro<-as.factor(a2$Deterioro)
-# 
-# library(healthcareai)
-# 
-# 
-# #######################################################
-# 
-# head(a2)
-# dim(a2)
-# a3 <- a2[,c(2,10)]
-# head(a3)
-# 
-# 
-# 
-# a4 <- (a2[,3:9])
-# 
-# #a4 <- scale(a2[,3:10],center=TRUE)
-# #a4 <- scale(a2[,3:7])
-# 
-# a5<-cbind(a3,a4)
-# 
-# summary(a5)
-# str(a5)
-# 
-# #View(a5[1:60,])
-# 
-# #m1 <- machine_learn(a5, id, outcome = Condition)
-# 
-# m1 <- machine_learn(a5, id, outcome = Deterioro)
-# 
-# 
-# # interpret(m1) %>%
-# #   plot()
-# # 
-# # summary(m1)
-# 
-# 
-# evaluate(m1, all_models = TRUE)
-# 
-# m2 <- predict(m1, outcome_groups = 5)
-# #m2 <- predict(m1, outcome_groups = .021)
-# #m2 <- predict(m1)
-# View(m2[1:60,])
-# 
-# get_thresholds(m1, optimize = "acc")
-# 
-# get_thresholds(m1) %>%plot()
-# 
-# # is greater than the threshold
-# #install.packages("magrittr") # only needed the first time you use it
-# 
-# library(tidyverse)
-# 
-# class_predictions <-predict(m1)  %>%
-# 
-#   mutate(predicted_class_Deterioro = case_when
-#          (predicted_Deterioro > optimal_threshold ~ "Y",
-#          predicted_Deterioro<= optimal_threshold ~ "N"))
-# 
-# #m2 <- predict(m1, newdata= a2[1:40,])
-# m2
-# evaluate(m2)
-# plot(m2)
-# m2[1:20,]
-# m2[20:30,]
-# m2[30:40,]
-# 
-# m2[40:50,]
-# m2[50:60,]
-# 
-# get_variable_importance(m1) %>%
-#   plot()
-# 
-# explore(m1) %>%
-#   plot()
-# 
-# 
-# test_predictions <-
-#   predict(m1,
-#           risk_groups = c(low = 30, moderate = 40, high = 20, extreme = 10)
-#   )
-# # > Prepping data based on provided recipe
-# test_predictions[1:20,]
-# test_predictions[25:40,]
-# View(test_predictions[1:60,])
-# 
-# 
-# class_preds <- predict(m1,  outcome_groups = 10)
-# table(actual = class_preds$Deterioro, predicted = class_preds$predicted_group)
-# 
-# 
-# 
-# View(class_preds[1:60,])
-# 
-# get_cutoffs(class_preds)
-# 
-# plot(class_preds)
-# 
-# 
-# View(predict(m1) %>%
-#        arrange(desc(predicted_Deterioro)) %>%
-#        mutate(action = case_when(
-#          row_number() <= 3 ~ "admit",
-#          row_number() <= 8 ~ "treat",
-#          TRUE ~ "discharge"
-#        )) %>%
-#        select(predicted_Deterioro, action, everything()))
-# 
-
-#options(max.print=25000)
-#
-# aaa<- predict(m1,
-#         risk_groups = c("risk acceptable" = 90, "risk too high" = 10)) %>%
-#   filter(predicted_group == "risk acceptable") %>%
-#   #  filter(predicted_group == "risk too high") %>%
-#
-#   top_n(n = 50, wt = predicted_Deterioro)
-#
-#
-#
-# View(aaa[1:60,])
-
-#
-# #save_models(m1, file = "my_models_reading.RDS")
-
-models_reading <- load_models("my_models_reading.RDS")
+#############################
+#################################################
+####################################################################################
 
 
 
-#####################################################################################
-################################################################################################
-
-
-
-
-
-
-###############################################################################################
-
-#Condition id     mdur     sddur      mao     sdao      mwn     sdwn    mgaze   sdgaze TOTAL FPF SF  MF
-
-aL<-aL[,c(1,2,4,6,8,9,10,11)]
-head(aL)
-
-idx<-which(aL$ao =="0")
-
-aL$ao[aL$ao =="0"]<-"1"
-aL$ao[is.na(aL$ao=="0")] = 1
-aL
 
 aL$id<-as.factor(aL$id)
 aL$sn<-as.factor(aL$sn)
@@ -705,9 +459,12 @@ aL$dur<-as.numeric(aL$dur)
 aL$gaze<-as.numeric(aL$gaze)
 aL$nf<-as.numeric(aL$nf)
 aL$ao<-as.numeric(aL$ao)
+head(aL)
+
 
 a10 <- ddply(aL, .(Condition,id), summarise, mdur = mean(dur),sddur=sd(dur), mao = mean(ao),
-            sdao=sd(ao), mwn = mean(wn),sdwn=sd(wn), mgaze = mean(gaze),sdgaze=sd(gaze))
+             sdao=sd(ao), mwn = mean(wn),sdwn=sd(wn), mgaze = mean(gaze),sdgaze=sd(gaze))
+
 a10$mdur<-round(a10$mdur)
 a10$mao<-round(a10$mao)
 a10$mwn<-round(a10$mwn)
@@ -753,19 +510,22 @@ a10$MF <- DF[match(paste(a4$id),paste(DF$id)),"TOTAL"]
 
 
 
- a10$FPF_<-a10$FPF/a10$TOTAL
+a10$FPF_<-a10$FPF/a10$TOTAL*100
 # #a1$FPF_ <- data.frame((a1$FPF_))
 # #a1$FPF_ <- melt(a1$FPF_) 
 # 
- a10$SF_<-a10$SF/a10$TOTAL
+a10$SF_<-a10$SF/a10$TOTAL*100
 # #a1$SF_ <- data.frame((a1$SF_))
 # #a1$SF_ <- melt(a1$SF_) 
 # 
- a10$MF_<-a10$MF/a10$TOTAL
+a10$MF_<-a10$MF/a10$TOTAL*100
 # #a1$MF_ <- data.frame((a1$MF_))
 # #a1$MF_ <- melt(a1$MF_) 
 
 head(a10)
+
+
+
 
 
 a10$mdur<-log(a10$mdur)
@@ -790,31 +550,52 @@ a10$SF<-as.numeric(a10$SF)
 a10$MF<-as.numeric(a10$MF)
 
 head(a10)
+dim(a10)
+
+
+
+
+models_reading <- load_models("reading_es_model.RDS")
+
+
+
+#####################################################################################
+################################################################################################
+
+
+
+
+###############################################################################################
+
+#Condition id     mdur     sddur      mao     sdao      mwn     sdwn    mgaze   sdgaze TOTAL FPF SF  MF
+
+head(a10)
+str(a10)
+head(a10)
 
 reading_output <- paste0(               "attentional_processes = ", a10$TOTAL, ";\n")
-reading_output <- paste0(reading_output,"executive_proceseses = ",  a10$MF_*100, ";\n")
-reading_output <- paste0(reading_output,"working_memory = ",        a10$FPF_*100, ";\n")
-reading_output <- paste0(reading_output,"retrieval_memory = ",      a10$SF_*100, ";\n")
+reading_output <- paste0(reading_output,"executive_proceseses = ",  a10$MF_, ";\n")
+reading_output <- paste0(reading_output,"working_memory = ",        a10$FPF_, ";\n")
+reading_output <- paste0(reading_output,"retrieval_memory = ",      a10$SF_, ";\n")
 
-a10<-a10[,c(2,3,5,7,9,15,16,17,18)]
-
-
-a3111 <- a10[,c(1,9)]
+a3111 <- a10[,c(2,18)]
 
 str(a10)
-a4111 <- (a10[,2:8])
+a4111 <- (a10[,c(3,4,7:10,15:17)])
 
 a60<-cbind(a3111,a4111)
 
-
+head(a60)
 m3<-predict(models_reading, a60, outcome_groups = 5)
 
 m3
 
+#write.table(m3, "C:/Users/gerar/Dropbox/Machine learning/READING GAZEPOINT/reading_0.20.txt") #acá setea el directorio de tu maquina
 reading_output <- paste0(reading_output,"reading_predicted_deterioration = ",m3$predicted_Deterioro, ";\n")
 
 fileConn<-file(args[3])
 writeLines(reading_output, fileConn)
 close(fileConn)
+
 
 

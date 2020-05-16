@@ -116,7 +116,9 @@ bool EDPReading::initializeReadingDataMatrix(){
     QTextStream writer(&file);
 
     QStringList header;
-    header << "suj"
+    header << "placeholder_id"
+           << "age"
+           << "suj"
            << "sujnum"
            << "oracion"
            << "trial"
@@ -203,8 +205,9 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
                                           READ_PL,
                                           fL.at(i).indexFixationStart,
                                           fL.at(i).indexFixationEnd);
-
-        writer << subjectIdentifier << ","
+        writer << "N/A" << ","
+               << config->getString(CONFIG_PATIENT_AGE) << ","
+               << subjectIdentifier << ","
                << "1,"
                << imgID << ","
                << imgID << ","
@@ -247,7 +250,9 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
                                           fR.at(i).indexFixationEnd);
 
 
-        writer << subjectIdentifier << ","
+        writer << "N/A" << ","
+               << config->getString(CONFIG_PATIENT_AGE) << ","
+               << subjectIdentifier << ","
                << "1,"
                << imgID << ","
                << imgID << ","
