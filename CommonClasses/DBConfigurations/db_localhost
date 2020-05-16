@@ -19,5 +19,12 @@ db_patdata_user   = vmpatdata;
 db_patdata_port   = 3306;
 db_patdata_host   = localhost;
 
+# Configuration for the dashboard database
+db_dash_name   = viewmind_dashboard;
+db_dash_passwd = 2019vmDashboard;
+db_dash_user   = dashboard_user;
+db_dash_port   = 3306;
+db_dash_host   = localhost;
+
 # The S3 address
 s3_address = viewmind-raw-eye-data;

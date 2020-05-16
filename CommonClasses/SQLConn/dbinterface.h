@@ -9,6 +9,7 @@
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QTextStream>
+#include <QStringList>
 
 #include "dbdescription.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"

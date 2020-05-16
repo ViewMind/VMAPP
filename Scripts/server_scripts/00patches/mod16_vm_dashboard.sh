@@ -30,8 +30,11 @@ PORT=3306
 export MYSQL_PWD=$PASSWD
 
 echo ">> APPLYING PATCH 16"
-
+# Applying both patches. 
+echo "Dashboard patch"
 mysql -h $DB_DASHBOARD_HOST -u $USER -P $PORT --database=$DB_DASHBOARD_NAME < sql_scripts/mod16_vm_dashboard.sql
+#echo "Data patch"
+#mysql -h $DB_RES_HOST       -u $USER -P $PORT --database=$DB_RES_NAME < sql_scripts/mod16_vm_data.sql
 
 echo "Finished"
 

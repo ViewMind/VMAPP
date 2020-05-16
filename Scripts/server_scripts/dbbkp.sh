@@ -10,7 +10,7 @@ if [[ $1 == "prod" ]]; then
    DNS="18.220.30.34"
    USER="ec2-user"
    DEST="./bkpProd"
-   declare -a DB_NAMES=("viewmind_data" "viewmind_id" "viewmind_patdata")
+   declare -a DB_NAMES=("viewmind_data" "viewmind_id" "viewmind_patdata" "viewmind_dashboard")
    PREFIX="prod"
 elif [[ $1 == "dev" ]]; then
    DNS="18.191.142.5"
@@ -22,8 +22,8 @@ else
    echo "Only options are prod or dev"
 fi
 
-declare -a HOST_NAMES=("viewminddb" "viewmind-id" "viewmind-patdata")   
-declare -a FILE_NAMES=("res" "id" "patdata")
+declare -a HOST_NAMES=("viewminddb" "viewmind-id" "viewmind-patdata" "viewmind-dashboard")   
+declare -a FILE_NAMES=("res" "id" "patdata" "dashboard")
 
 clear
 

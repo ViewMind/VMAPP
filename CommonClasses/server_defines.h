@@ -2,8 +2,8 @@
 #define SERVER_DEFINES_H
 
 //  Defines that control which of the configuration files is used for the databse. ONLY 1 should be active at the time.
-#define   SERVER_LOCALHOST
-//#define   SERVER_PRODUCTION
+//#define   SERVER_LOCALHOST
+#define   SERVER_PRODUCTION
 
 #define   COMMON_PATH_FOR_DB_CONFIGURATIONS             ":/CommonClasses/DBConfigurations/"
 
@@ -34,11 +34,18 @@
 #define   CONFIG_PATDATA_DBPASSWORD                     "db_patdata_passwd"
 #define   CONFIG_PATDATA_DBPORT                         "db_patdata_port"
 
+#define   CONFIG_DASH_DBUSER                            "db_dash_user"
+#define   CONFIG_DASH_DBNAME                            "db_dash_name"
+#define   CONFIG_DASH_DBHOST                            "db_dash_host"
+#define   CONFIG_DASH_DBPASSWORD                        "db_dash_passwd"
+#define   CONFIG_DASH_DBPORT                            "db_dash_port"
+
 #define   CONFIG_S3_ADDRESS                             "s3_address"
 
 #define   DB_NAME_BASE                                  "db_base"
 #define   DB_NAME_ID                                    "db_id"
 #define   DB_NAME_PATDATA                               "db_patdata"
+#define   DB_NAME_DASHBOARD                             "db_dashboard"
 
 #ifdef SERVER_LOCALHOST
    #define  ETDIR_PATH              "../../../VMSoftwareSuite/EyeUpdateServer/bin/etdir/"

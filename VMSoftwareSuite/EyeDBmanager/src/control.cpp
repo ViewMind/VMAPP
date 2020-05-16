@@ -95,12 +95,18 @@ void Control::run(){
     cv[CONFIG_PATDATA_DBPASSWORD] = cmd;
     cv[CONFIG_PATDATA_DBUSER] = cmd;
 
+    cv[CONFIG_DASH_DBHOST] = cmd;
+    cv[CONFIG_DASH_DBNAME] = cmd;
+    cv[CONFIG_DASH_DBPASSWORD] = cmd;
+    cv[CONFIG_DASH_DBUSER] = cmd;
+
     cv[CONFIG_S3_ADDRESS] = cmd;
 
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DBPORT] = cmd;
     cv[CONFIG_ID_DBPORT] = cmd;
     cv[CONFIG_PATDATA_DBPORT] = cmd;
+    cv[CONFIG_DASH_DBPORT] = cmd;
 
     dbconfigs.setupVerification(cv);
 
@@ -163,6 +169,13 @@ void Control::run(){
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
+    host = configuration.getString(CONFIG_DASH_DBHOST);
+    dbname = configuration.getString(CONFIG_DASH_DBNAME);
+    user = configuration.getString(CONFIG_DASH_DBUSER);
+    passwd = configuration.getString(CONFIG_DASH_DBPASSWORD);
+    port = configuration.getInt(CONFIG_DASH_DBPORT);
+    dbConnDash.setupDB(DB_NAME_DASHBOARD,host,dbname,user,passwd,port,logfile);
+
     log.appendStandard("Testing DB Connections...");
     if (!dbConnBase.open()){
         log.appendError("FAIL TEST CONNECTION DB BASE: " + dbConnBase.getError());
@@ -196,6 +209,18 @@ void Control::run(){
     }
     if (!dbConnPatData.hasTransactions()){
         log.appendError("DB Pat Data does not support Transactions!");
+        exitProgram(EYEDBMNG_ANS_DB_ERROR);
+        return;
+    }
+
+    if (!dbConnDash.open()){
+        log.appendError("FAIL TEST CONNECTION DB DASHBOARD: " + dbConnPatData.getError());
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        exitProgram(EYEDBMNG_ANS_DB_ERROR);
+        return;
+    }
+    if (!dbConnDash.hasTransactions()){
+        log.appendError("DB Dashboard does not support Transactions!");
         exitProgram(EYEDBMNG_ANS_DB_ERROR);
         return;
     }
@@ -234,57 +259,83 @@ void Control::checkMode(){
     QString condition;
     DBData data;
 
-    if (!dbConnBase.startTransaction()){
-        log.appendError("Could not start DB Transaction for Base DB");
-        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+    if (!dbConnDash.startTransaction()){
+        log.appendError("Could not start DB Transaction for Dash DB");
+        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
-    columns << TPLACED_PROD_COL_ETSERIAL;
-    condition = "(" + QString(TPLACED_PROD_COL_ETSERIAL) + " = '" + etserial + "') AND (" + QString(TPLACED_PROD_COL_INSTITUTION) + " = '" + instID + "')";
-    if (!dbConnBase.readFromDB(TABLE_PLACEDPRODUCTS,columns,condition)){
+    QString serial_check_query = "SELECT a.product_sn AS name\
+            FROM tProduction a\
+            INNER JOIN (\
+                SELECT product_sn, MAX(keyid) keyid\
+                FROM tProduction\
+                GROUP BY product_sn\
+                ) b ON a.product_sn = b.product_sn AND a.keyid = b.keyid AND a.linked_institution = ";
+
+    serial_check_query = serial_check_query + instID;
+    serial_check_query = serial_check_query + " AND a.product_sn = '" + etserial + "'";
+    columns << "product_sn";
+
+    if (!dbConnDash.specialQuery(serial_check_query,columns)){
         log.appendError("When querying serial number for institituion: " + dbConnBase.getError());
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+        return;
+
+    }
+
+    data = dbConnDash.getLastResult();
+
+    if (data.rows.size() != 1){
+        log.appendError("ProductSN |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + instID);
+        log.appendError("Numer of rows: " + QString::number(data.rows.size()));
+        log.appendError("Query is: " + serial_check_query);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_WRONG_SERIAL);
         return;
     }
 
-    //qWarning() << "Number of Evaluations: " << numevals << "Sent serial" << etserial;
-    data = dbConnBase.getLastResult();
-
-    // Checking the serial
-    if (data.rows.size() < 1){
-        log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + instID);
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_WRONG_SERIAL);
-        return;
-    }
     if (data.rows.first().size() != 1){
-        log.appendError("ETSerial |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + instID);
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_WRONG_SERIAL);
+        log.appendError("ProductSN |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + instID);
+        log.appendError("Numer of columns: " + QString::number(data.rows.first().size()));
+        log.appendError("Query is: " + serial_check_query);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_WRONG_SERIAL);
         return;
     }
+
+    if (data.rows.first().first() != etserial){
+        log.appendError("ProductSN |" + etserial + "| does not correspond to the serial registered for insitituion with UID " + instID);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_WRONG_SERIAL);
+        return;
+    }
+
+//    if (!dbConnBase.startTransaction()){
+//        log.appendError("Could not start DB Transaction for Base DB");
+//        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+//        return;
+//    }
 
     // Checking the number of evaluations
     columns.clear();
-    columns << TINST_COL_UID << TINST_COL_EVALS;
-    condition = QString(TINST_COL_UID) + " = '" + instID + "'";
-    if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,condition)){
-        log.appendError("When querying institution and number of evaluations: " + dbConnBase.getError());
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+    columns << TEVALS_COL_EVALUATIONS;
+    condition = QString(TEVALS_COL_INSTITUTION) + " = '" + instID + "'";
+    if (!dbConnDash.readFromDB(TABLE_EVALUATIONS,columns,condition)){
+        log.appendError("When querying institution and number of evaluations: " + dbConnDash.getError());
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
-    data = dbConnBase.getLastResult();
+    data = dbConnDash.getLastResult();
 
     if (data.rows.size() != 1){
         log.appendError("When querying the institution and number of evaluations: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1. UID: " + instID);
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
     // Checking the number of evaluations
-    if (data.rows.first().size() != 2){
-        log.appendError("When querying the institution and number of evaluations: Number of returned columns was " + QString::number(data.rows.first().size()) + " instead of 2. INST UID: " + instID);
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+    if (data.rows.first().size() != 1){
+        log.appendError("When querying the institution and number of evaluations: Number of returned columns was " + QString::number(data.rows.first().size()) + " instead of 1. INST UID: " + instID);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
@@ -294,12 +345,12 @@ void Control::checkMode(){
 
         if (numberOfRemaingEvaluations == 0 ){
             log.appendError("No evaluations remaining forinsitituion with UID " + instID);
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_NOEVALS);
+            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_NOEVALS);
             return;
         }
     }
 
-    finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_OK);
+    finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_OK);
 
 }
 
@@ -327,13 +378,13 @@ void Control::storeMode(const QString &action){
 
     if (!patdata.loadConfiguration(workingDirectory + "/" + QString(FILE_PATDATA_DB),COMMON_TEXT_CODEC)){
         log.appendError("Could not load pat data file: " + patdata.getError());
-        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
         return;
     }
 
     if (!docdata.loadConfiguration(workingDirectory + "/" + QString(FILE_DOCDATA_DB),COMMON_TEXT_CODEC)){
         log.appendError("Could not load doc data file: " + docdata.getError());
-        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
         return;
     }
 
@@ -354,7 +405,7 @@ void Control::storeMode(const QString &action){
         if (!reprocessRequest){
             if (filesToSave.isEmpty()){
                 log.appendError("Could not load any dat or datf files to send to S3: ");
-                finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+                finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
                 return;
             }
 
@@ -384,7 +435,7 @@ void Control::storeMode(const QString &action){
 
     if (!dbConnBase.readFromDB(TABLE_DOCTORS,columns,condition)){
         log.appendError("When querying the doctor information: " + dbConnBase.getError());
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
@@ -394,7 +445,7 @@ void Control::storeMode(const QString &action){
         // Using only the lastest dr info which should be the first.
         if (data.rows.first().size() != columns.size()){
             log.appendError("When getting doctor information " + QString::number(columns.size()) + " was requested. But got: " + QString::number(data.rows.first().size()));
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
         for (qint32 i = 0; i < columns.size(); i++){
@@ -411,7 +462,7 @@ void Control::storeMode(const QString &action){
         log.appendStandard("Adding information for doctor: " + druid);
         if (!dbConnBase.insertDB(TABLE_DOCTORS,columns,values,instID)){
             log.appendError("When adding doctor information: " + dbConnBase.getError());
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
     }
@@ -423,7 +474,7 @@ void Control::storeMode(const QString &action){
     condition = QString(TPATID_COL_UID) + " = '" + pat_hashed_id + "'";
     if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
         log.appendError("When obtaining patient PUID: " + dbConnID.getError());
-        finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+        finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
@@ -440,7 +491,7 @@ void Control::storeMode(const QString &action){
         values << pat_hashed_id ;
         if (!dbConnID.insertDB(TABLE_PATIENTD_IDS,columns,values,druid)){
             log.appendError("When adding patient ID information: " + dbConnID.getError());
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
 
@@ -451,7 +502,7 @@ void Control::storeMode(const QString &action){
 
         if (!dbConnID.readFromDB(TABLE_PATIENTD_IDS,columns,condition)){
             log.appendError("When inserted a new hashed patient id: " + dbConnID.getError());
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
 
@@ -469,7 +520,7 @@ void Control::storeMode(const QString &action){
         // If the code got here there was a problem with the query.
         if (problem){
             log.appendError("When obtaining newly created DB puid, unexpected dimensions for the query");
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
     }
@@ -479,7 +530,7 @@ void Control::storeMode(const QString &action){
         }
         else {
             log.appendError("When obtaining existing DB puid, Rows were returned but with not columns");
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
     }
@@ -506,7 +557,7 @@ void Control::storeMode(const QString &action){
 
         if (!dbConnPatData.readFromDB(TABLE_PATDATA,columns,condition)){
             log.appendError("When querying the patient information: " + dbConnPatData.getError());
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
         data = dbConnPatData.getLastResult();
@@ -515,7 +566,7 @@ void Control::storeMode(const QString &action){
 
             if (data.rows.first().size() != columns.size()){
                 log.appendError("When getting patient information " + QString::number(columns.size()) + " was requested. But got: " + QString::number(data.rows.first().size()));
-                finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+                finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
                 return;
             }
 
@@ -535,14 +586,14 @@ void Control::storeMode(const QString &action){
         log.appendStandard("Adding information for patient: " + pat_hashed_id);
         if (!dbConnPatData.insertDB(TABLE_PATDATA,columns,values,"DR: " + druid  + ", pat: " + pat_hashed_id)){
             log.appendError("When adding patient information: " + dbConnPatData.getError());
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_ROLLBACK,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
     }
 
     // In DEMO mode there is no need to do anything else.
     if (demoMode){
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
@@ -557,7 +608,7 @@ void Control::storeMode(const QString &action){
     ConfigurationManager eyeresultData;
     if (!eyeresultData.loadConfiguration(workingDirectory + "/" + QString(FILE_DBDATA_FILE),COMMON_TEXT_CODEC)){
         log.appendError("Loading DB Result data file: " + dbConnBase.getError());
-        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_FILE_ERROR);
+        finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
         return;
     }
 
@@ -575,14 +626,14 @@ void Control::storeMode(const QString &action){
 
     if (!dbConnBase.insertDB(TABLE_EYE_RESULTS,columns,values,logid)){
         log.appendError("Loading DB Result data file: " + dbConnBase.getError());
-        finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+        finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
     qint32 resultKeyID = dbConnBase.getNewestKeyid(TEYERES_COL_KEYID,TABLE_EYE_RESULTS);
     if (resultKeyID == -1){
         log.appendError("Getting the keyid of the result that was recently inserted: " + dbConnBase.getError());
-        finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+        finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
     }
 
@@ -592,7 +643,7 @@ void Control::storeMode(const QString &action){
     QStringList FDBFiles = QDir(workingDirectory).entryList(filters,QDir::Files);
     if (FDBFiles.isEmpty()){
         log.appendError("Could not load any FDB Files from directory: " + workingDirectory);
-        finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_FILE_ERROR);
+        finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
         return;
     }
 
@@ -601,7 +652,7 @@ void Control::storeMode(const QString &action){
         toDB.clear();
         if (!toDB.loadConfiguration(workingDirectory + "/" + FDBFiles.at(i),COMMON_TEXT_CODEC)){
             log.appendError("Could not load FDB File: " + toDB.getError());
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_FILE_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
             return;
         }
         values.clear();
@@ -614,7 +665,7 @@ void Control::storeMode(const QString &action){
         values << QString::number(resultKeyID);
         if (!dbConnBase.insertDB(TABLE_FDATA,columns,values,logid)){
             log.appendError("Inserting FDB File data: " + dbConnBase.getError());
-            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_ROLLBACK,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
     }
@@ -638,15 +689,18 @@ void Control::storeMode(const QString &action){
 
     if (!reprocessRequest && !demoMode){
 
+        // Starting the transaction.
+        dbConnDash.startTransaction();
+
         columns.clear();
-        columns << TINST_COL_EVALS;
-        QString condition = QString(TINST_COL_UID) + " = '" + instID + "'";
-        if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,condition)){
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+        columns << TEVALS_COL_EVALUATIONS;
+        QString condition = QString(TEVALS_COL_INSTITUTION) + " = '" + instID + "'";
+        if (!dbConnDash.readFromDB(TABLE_EVALUATIONS,columns,condition)){
+            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
 
-        DBData data = dbConnBase.getLastResult();
+        DBData data = dbConnDash.getLastResult();
 
         if (data.rows.size() != 1){
             log.appendError("Decreasing report count: Number of returned rows was " + QString::number(data.rows.size()) + " instead of 1, for UID: " + instID );
@@ -662,7 +716,7 @@ void Control::storeMode(const QString &action){
             // Checking the number of evaluations
             if ((numevals <= 0)){
                 log.appendError("Asked to decrease number of evaluations for " + instID + " when it is " + QString(numevals));
-                finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+                finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
                 return;
             }
 
@@ -673,9 +727,9 @@ void Control::storeMode(const QString &action){
 
             log.appendStandard("Decreased number of evaluations of instituition " + instID + " to " + QString::number(numevals));
 
-            if (!dbConnBase.updateDB(TABLE_INSTITUTION,columns,values,condition,logid)){
-                log.appendError("When saving new number of evaluations " + instID + " when it is " + QString(numevals) + ": " + dbConnBase.getError());
-                finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_DB_ERROR);
+            if (!dbConnDash.updateDB(TABLE_EVALUATIONS,columns,values,condition,logid)){
+                log.appendError("When saving new number of evaluations " + instID + " when it is " + QString(numevals) + ": " + dbConnDash.getError());
+                finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_ROLLBACK,EYEDBMNG_ANS_DB_ERROR);
                 return;
             }
 
@@ -791,7 +845,7 @@ void Control::storeMode(const QString &action){
         }
     }
 
-    finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_OK);
+    finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_OK);
 }
 
 
@@ -804,7 +858,7 @@ void Control::patDataStoreMode(const QString &puid, const QString &instUID){
 
     if (!medRecords.loadConfiguration(workingDirectory + "/" + QString(FILE_MEDRECORD_DB),COMMON_TEXT_CODEC)){
         log.appendError("Could not load medical records db file file: " + medRecords.getError());
-        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+        finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
         return;
     }
 
@@ -821,7 +875,7 @@ void Control::patDataStoreMode(const QString &puid, const QString &instUID){
         else{
             if (numberOrRecords != n){
                 log.appendError("Medical record number of records mismatch. Column : " + allkeys.at(i) + " has " +  QString::number(n) + " but previous columns had: " + QString::number(numberOrRecords));
-                finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+                finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
                 return;
             }
         }
@@ -854,44 +908,56 @@ void Control::patDataStoreMode(const QString &puid, const QString &instUID){
         log.appendStandard("Adding medical record " + QString::number(j+1) + " of " + QString::number(numberOrRecords));
         if (!dbConnPatData.insertDB(TABLE_MEDICAL_RECORDS,columns,values.at(j),instUID,true)){
             log.appendError("When adding medical record information: " + dbConnPatData.getError());
-            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
+            finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
             return;
         }
     }
 
     // If there were not problems we need to finish everything right now.
-    finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,EYEDBMNG_ANS_OK);
+    finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_OK);
 
 }
 
 
 
 /////////////////////////////////////////// CLEAN UP ///////////////////////////////////////////////////
-void Control::finishUp(quint8 commitBase, quint8 commitID, quint8 commitPatData, qint32 code){
+void Control::finishUp(quint8 commitBase,
+                       quint8 commitID,
+                       quint8 commitPatData,
+                       quint8 commitDash,
+                       qint32 code){
     if (commitBase == DB_FINISH_ACTION_COMMIT) {
-        if (!dbConnBase.commit()) log.appendWarning("FAILED Commit for DB Transaction transaction");
+        if (!dbConnBase.commit()) log.appendWarning("FAILED Commit for DB base transaction");
     }
     else if (commitBase == DB_FINISH_ACTION_ROLLBACK) {
-        if (!dbConnBase.doRollBack()) log.appendWarning("FAILED Rollback for DB Transaction transaction");
+        if (!dbConnBase.doRollBack()) log.appendWarning("FAILED Rollback for DB base transaction");
     }
 
     if (commitID == DB_FINISH_ACTION_COMMIT) {
-        if (!dbConnID.commit()) log.appendWarning("FAILED Commit for DB Transaction transaction");
+        if (!dbConnID.commit()) log.appendWarning("FAILED Commit for DB id transaction");
     }
     else if (commitID == DB_FINISH_ACTION_ROLLBACK) {
-        if (!dbConnID.doRollBack()) log.appendWarning("FAILED Rollback for DB Transaction transaction");
+        if (!dbConnID.doRollBack()) log.appendWarning("FAILED Rollback for DB id transaction");
     }
 
     if (commitPatData == DB_FINISH_ACTION_COMMIT){
-        if (!dbConnPatData.commit()) log.appendWarning("FAILED Commit for DB Transaction transaction");
+        if (!dbConnPatData.commit()) log.appendWarning("FAILED Commit for DB pat data transaction");
     }
-    else if (commitID == DB_FINISH_ACTION_ROLLBACK) {
-        if (!dbConnID.doRollBack()) log.appendWarning("FAILED Rollback for DB Transaction transaction");
+    else if (commitPatData == DB_FINISH_ACTION_ROLLBACK) {
+        if (!dbConnID.doRollBack()) log.appendWarning("FAILED Rollback for DB pat data transaction");
+    }
+
+    if (commitDash == DB_FINISH_ACTION_COMMIT){
+        if (!dbConnDash.commit()) log.appendWarning("FAILED Commit for DB dash transaction");
+    }
+    else if (commitDash == DB_FINISH_ACTION_ROLLBACK) {
+        if (!dbConnDash.doRollBack()) log.appendWarning("FAILED Rollback for DB dash transaction");
     }
 
     dbConnBase.close();
     dbConnID.close();
     dbConnPatData.close();
+    dbConnDash.close();
 
     exitProgram(code);
 }
