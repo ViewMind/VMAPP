@@ -27,7 +27,7 @@ if (length(args) != 3) {
 
 setwd("./res")
 
-BC_s<-read.csv(args[1]) 
+BC<-read.csv(args[1]) 
 
 head(BC)
 tail(BC)

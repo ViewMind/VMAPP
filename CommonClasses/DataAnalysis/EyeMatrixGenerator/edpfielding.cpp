@@ -45,7 +45,7 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
 
     //qDebug() << "dH and dW" << dH << dW;
 
-    qreal targetX, targetY;
+    //qreal targetX, targetY;
 
     for(int i = 0; i < lines.size(); i++){
 
@@ -80,9 +80,9 @@ bool EDPFielding::doEyeDataProcessing(const QString &data){
             id = tokens.first().trimmed();
             imageNumber = tokens.at(1).trimmed();
             QString number = tokens.at(2).trimmed();
-            targetX = number.toDouble();
+            //targetX = number.toDouble();
             number = tokens.at(3).trimmed();
-            targetY = number.toDouble();
+            //targetY = number.toDouble();
 
             if (lastID != id){
                 numberOfTrials++;
