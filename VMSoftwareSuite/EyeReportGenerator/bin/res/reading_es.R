@@ -26,13 +26,14 @@ parseq_fast<-function(a)
   b <- cbind(b, b[,2]-b[,1]+1)
 }
 
-
 args = commandArgs(trailingOnly=TRUE)
 if (length(args) != 3) {
    stop("Reading Script requires 3 and only 3 argurments", call.=FALSE)
 }
 
 setwd("./res")
+
+#sss<-read.csv("reading_en_2_2020_05_17_22_39.csv")  #yo_09_05_2020
 
 sss<-read.csv(args[1])  #yo_09_05_2020
 dim(sss)
@@ -59,6 +60,7 @@ bs3$Condition<-as.factor(bs3$Condition)
 
 names(bs3)<-c("id_","age","suj","sujnum","sn","trial","fixn","screenpos","wn","let","dur","nw","eye", "pupila","blink","ao","gaze","nf","Condition")
 table(bs3$id)
+table(bs3$eye)
 
 str(bs3)
 summary(bs3)
@@ -179,15 +181,36 @@ sid_mf<-sid[sid[,3]!=1,]
 #
 #structure of a ("id","sn","nw","wn","let","dur")
 a_fsl<-a[sid[,1],]
-for (i in 1:dim(sid_mf)[1]){
-  #   #if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0
-  #   a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
-}
+#for (i in 1:dim(sid_mf)[1]){
+#}
 a<-a_fsl;rm(a_fsl)
 
 dim(a)
+str(a)
+#'data.frame':	499 obs. of  12 variables:
+#  $ id_      : Factor w/ 1 level "AR25134823": 1 1 1 1 1 1 1 1 1 1 ...
+#$ id       : num  1 1 1 1 1 1 1 1 1 1 ...
+#$ sn       : num  16 16 16 16 16 16 16 21 21 21 ...
+#$ nw       : num  8 8 8 8 8 8 8 7 7 7 ...
+#$ wn       : num  1 2 4 4 5 5 7 1 1 2 ...
+#$ let      : num  3 6 13 12 16 15 25 2 4 8 ...
+#$ dur      : num  53 208 94 161 161 53 101 114 53 94 ...
+#$ pupila   : num  2.07 2.06 1.98 1.95 1.92 ...
+#$ gaze     : num  1146 1146 1146 1146 1146 ...
+#$ nf       : int  11 11 11 11 11 11 11 18 18 18 ...
+#$ ao       : num  1.743 0.649 3.1 1.387 1.054 ...
+#$ Condition: chr  "CONTROL" "CONTROL" "CONTROL" "CONTROL" ...
 
 head(a)
+
+#id_ id sn nw wn let dur  pupila gaze nf       ao Condition
+#304 AR25134823  1 16  8  1   3  53 2.07054 1146 11 1.742840   CONTROL
+#305 AR25134823  1 16  8  2   6 208 2.06344 1146 11 0.648534   CONTROL
+#306 AR25134823  1 16  8  4  13  94 1.98197 1146 11 3.100430   CONTROL
+#307 AR25134823  1 16  8  4  12 161 1.94928 1146 11 1.386910   CONTROL
+#308 AR25134823  1 16  8  4  12  54 1.93678 1146 11 0.455168   CONTROL
+#309 AR25134823  1 16  8  5  16 161 1.91619 1146 11 1.054480   CONTROL
+
 
 # 1) id 
 # 2) sent, 
@@ -279,9 +302,11 @@ a[c(pq[,2],pq[,2]-1),c("wn4.x", "let4", "ao4", "o4")] <- NA
 #View(a4)
 
 mean(a$dur)
+summary(a)
 
+#a<-a[,c(1:12,17)]
 
-
+head(a)
 dim(a)
 #a[100:150,1:12]
 
@@ -590,12 +615,9 @@ m3<-predict(models_reading, a60, outcome_groups = 5)
 
 m3
 
-#write.table(m3, "C:/Users/gerar/Dropbox/Machine learning/READING GAZEPOINT/reading_0.20.txt") #acá setea el directorio de tu maquina
 reading_output <- paste0(reading_output,"reading_predicted_deterioration = ",m3$predicted_Deterioro, ";\n")
 
 fileConn<-file(args[3])
 writeLines(reading_output, fileConn)
-close(fileConn)
-
-
-
+close(fileConn)     
+ 
