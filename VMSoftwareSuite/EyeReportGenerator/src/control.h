@@ -1,6 +1,7 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include <QDateTime>
 #include "../../../CommonClasses/common.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/HTMLWriter/htmlwriter.h"

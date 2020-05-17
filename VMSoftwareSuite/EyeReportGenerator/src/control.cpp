@@ -70,7 +70,7 @@ Control::Control(QObject *parent) : QObject(parent)
     configuration.setupVerification(cv);
 
     // Creating a log file so that each transaction is different.
-    QString logFileName = QTime::currentTime().toString("HH_mm_ss_zzz");
+    QString logFileName = QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm_ss_zzz");
     logFileName = logFileName + ".html";
 
     QDir(".").mkdir(EYE_DIR_LOG);
