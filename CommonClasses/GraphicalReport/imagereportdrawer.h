@@ -2,7 +2,9 @@
 #define IMAGEREPORTDRAWER_H
 
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "resultbar.h"
+#include "../../CommonClasses/common.h"
+#include "resultsegment.h"
+#include "diagonosislogic.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
@@ -27,18 +29,15 @@
 #define  DR_CONFG_PATIENT_AGE         "patient_age"
 #define  DR_CONFG_DATE                "date"
 #define  DR_CONFG_DATE_FORMAT         "date_format"
-#define  DR_CONFG_RESULT_TITLE        "result_title"
 #define  DR_CONFG_EXPLANATION_PT1     "explanation_pt1"
 #define  DR_CONFG_EXPLANATION_PT2     "explanation_pt2"
 #define  DR_CONFG_EXPLANATION_BOLD    "explanation_bold"
 #define  DR_CONFG_COLOR_EXPLANATION   "color_explanation"
-#define  DR_CONFG_RESULTS_NAME        "results_name"
 #define  DR_CONFG_MOTTO               "motto"
-#define  DR_CONFG_RESULT_RANGES       "result_ranges"
-#define  DR_CONFG_RES_CLARIFICATION   "results_clarification"
 #define  DR_CONFG_DISCLAIMER          "disclaimer"
 #define  DR_CONFG_DIAG_CLASS          "class_"
 #define  DR_CONFG_DIAGNOSIS_TITLE     "diag_class_title"
+#define  DR_CONFG_RESULT_TITLE        "result_title"
 
 // Drawing Scaling Control
 #define  MASTER_SCALE                  10
@@ -137,7 +136,7 @@ class ImageReportDrawer
 
 public:
     ImageReportDrawer();
-    bool drawReport(const QVariantMap &ds, ConfigurationManager *c, const QString &bindingCode = "I");
+    bool drawReport(const QVariantMap &ds, ConfigurationManager *c, const QString &bindingCode = "I", const QString &bindingDescription = "2");
 
     static ConfigurationManager loadReportText(QString lang);
     static QString cleanNewLines(QString text);
@@ -149,15 +148,11 @@ private:
     QHash<QString,QFont> fonts;
 
     struct ShowDatum{
-        QString name;
-        QString range;
-        QString value;
-        QString clarification;
+        ResultSegment rs;
         QGraphicsTextItem *gname;
         QGraphicsTextItem *grange;
         QGraphicsTextItem *gvalue;
         QGraphicsTextItem *gclarification;
-        ResultBar resultBar;
     };
 
     typedef QList<ShowDatum> ShowData;

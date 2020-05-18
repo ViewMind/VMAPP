@@ -1,0 +1,20 @@
+title_en = RETRIEVAL MEMORY;
+title_es = MEMORIA DE RECUPERACIÓN;
+
+explanation_en = Dorsolateral prefrontal cortex,
+Hippocampus,Subiculum;
+
+explanation_es = Corteza frontal Dorsolateral
+Hipocampo, Subiculum;
+
+range_text_en = Normal value GREATER than 8;
+
+range_text_es = Valor normal MAYOR a 8;
+
+cutoff_values = 2|5|8|11;
+
+smaller_better = false;
+
+associated_value = retrieval_memory;
+
+mult_by_100 = false;

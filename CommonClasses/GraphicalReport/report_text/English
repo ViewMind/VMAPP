@@ -13,21 +13,11 @@ were detected|Midly deficient functioning,
 not necessarily pathological|Completely deficient and/or
 pathological functioning;
 
-results_name = INDEX OF COGNITIVE IMPAIRMENT|EXECUTIVE PROCESSES|WORKING MEMORY|RETRIEVAL MEMORY|INDEX OF AMYLOID BETA PROTEIN CORRELATION|BEHAVIOURAL RESPONSE;
-
-results_clarification = Anterior cingulate cortex|Prefrontal cortex|Dorsolateral prefrontal cortex,
-Hippocampus,Subiculum|Locus Coeruleus and Superior colliculus
-Entorhinal and Perirhinal Cortex.
-Medial Temporal Lobe|Entorhinal and Perirhinal Cortex.
-Medial Temporal Lobe;
-
 motto = Cognitive Performace
 Evaluations through
 Eye-Tracking;
 
 date_format = MM/dd/yyyy;
-
-result_ranges = Normal value GREATER than 30|Normal value LOWER than 36|Normal value GREATER than 70|Normal value GREATER than 8|Normal value GREATER than 20|Normal value GREATER than 22;
 
 disclaimer = Diagnostic orientation results are an approximation. They should be expanded and verified with 
 studies considered appropriate by the diagnostician to measure performance/pathology;

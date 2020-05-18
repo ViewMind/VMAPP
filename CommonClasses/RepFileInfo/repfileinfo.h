@@ -18,6 +18,9 @@
 #define KEY_SELFLAG     "vmRepSelected"
 #define KEY_ISUPTODATE  "uptodate"
 #define KEY_FILELIST    "filelist"
+#define KEY_ORDERCODE   "ordercode"
+#define KEY_BIND_NUM    "bindnumtargets"
+#define KEY_FILENAME    "filename"
 
 class RepFileInfo
 {
@@ -39,6 +42,7 @@ public:
     void prepareIteration() {currentIterValue = 0;}
     QVariantMap nextReportInfo();
     QVariantMap getRepData(qint32 index) const {return repData.at(index);}
+    QVariantMap getRepFileInfo(qint32 index) const {return repFileInfo.at(index); }
     QVariantMap getRepData(const QString &fileName) const;
 
 private:
@@ -54,6 +58,7 @@ private:
     QList<QVariantMap> repData;
 
     FileList isReportUpToDate(const QString &directory, const QString &report_file, const AlgorithmVersions &algver);
+    void insertInOrderInReportList(const QVariantMap &info, const QVariantMap &data);
 
 };
 

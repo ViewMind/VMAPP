@@ -37,6 +37,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         QString binding_code  = "";
         QString fielding_code = "";
         QString nbackrt_code  = "";
+        QString num_targets   = "";
 
         if (parts.size() < 6){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");
@@ -50,7 +51,8 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         qint32 yyyy  = MM-1;
 
         date = parts.at(dd) + "/" + parts.at(MM) + "/" + parts.at(yyyy) + " " + parts.at(hh) + ":" + parts.at(mm);
-        QString baseCode = reading_code = parts.at(yyyy) + "_" + parts.at(MM) + "_" + parts.at(dd);
+        QString orderCode = parts.at(yyyy) + parts.at(MM) + parts.at(dd) + parts.at(hh) +  parts.at(mm);
+        QString baseCode = parts.at(yyyy) + "_" + parts.at(MM) + "_" + parts.at(dd);
         for (int i = 1; i < yyyy; i++){
             if (parts.at(i).startsWith("R")){
                 // Reading.
@@ -63,7 +65,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
             else if (parts.at(i).startsWith("B")){
                 // Binding
                 binding = parts.at(i);
-                QString num_targets = binding.mid(1,1);
+                num_targets = binding.mid(1,1);
                 QString size = binding.mid(2,1);
                 QString eyes = binding.mid(3,1);
                 binding_code = num_targets + "_" + size + "_" + eyes + "_" + baseCode;
@@ -132,13 +134,38 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         info[KEY_SELFLAG] = false;
         info[KEY_ISUPTODATE] = flist.isUpToDate;
         info[KEY_FILELIST] = flist.fileList.join("|");
+        info[KEY_ORDERCODE] = orderCode.toLongLong();
+        info[KEY_BIND_NUM]  = num_targets;
+        info[KEY_FILENAME]  = repfile;
 
         //qWarning() << "REP FILE: " << repfile << "FILE LIST: " << flist.fileList;
+        //qDebug() << "ORDER CODE FROM" << orderCode << " TO " << orderCode.toLongLong();
 
-        repFileInfo << info;
-        repData << data;
+        insertInOrderInReportList(info,data);
 
     }
+
+//    for (qint32 i = 0; i < repFileInfo.size(); i++){
+//        qDebug() << repFileInfo.at(i).value(KEY_ORDERCODE);
+//    }
+
+}
+
+void RepFileInfo::insertInOrderInReportList(const QVariantMap &info, const QVariantMap &data){
+
+    for (qint32 i = 0; i < repFileInfo.size(); i++){
+
+        if (info.value(KEY_ORDERCODE).toLongLong() > repFileInfo.at(i).value(KEY_ORDERCODE).toLongLong()){
+            repFileInfo.insert(i,info);
+            repData.insert(i,data);
+            return;
+        }
+
+    }
+
+    // If it got here, we need to insert it at the end.
+    repFileInfo << info;
+    repData << data;
 
 }
 

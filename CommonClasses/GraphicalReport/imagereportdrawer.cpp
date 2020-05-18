@@ -12,9 +12,10 @@ ImageReportDrawer::ImageReportDrawer()
 }
 
 
-bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c,const QString &bindingCode){
+bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c,const QString &bindingCode, const QString &bindingDescription){
 
     canvas->clear();
+    QString language = c->getString(CONFIG_REPORT_LANGUAGE);
     langData = loadReportText(c->getString(CONFIG_REPORT_LANGUAGE));
     loadFonts();
 
@@ -45,67 +46,49 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     /// TODO eliminate the dual fonts.
 
-    ResultBar::ResultBarCodes diagClassFinder;
+    DiagonosisLogic diagClassFinder;
     diagClassFinder.reset();
 
     if (doReading){
-        d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(0);
-        d.clarification = "";
-        d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(0);
-        d.resultBar.setResultType(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));        
-        d.value = d.resultBar.getValue();
-        data2Show << d;
-        diagClassFinder.setIDX(d.resultBar);
-
-        d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(1);
-        d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(1);
-        d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(0);
-        d.resultBar.setResultType(CONFIG_RESULTS_EXECUTIVE_PROCESSES);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_EXECUTIVE_PROCESSES));
-        d.value = d.resultBar.getValue();
-        data2Show << d;
-        diagClassFinder.setIDX(d.resultBar);
-
-        d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(2);
-        d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(2);
-        d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(1);
-        d.resultBar.setResultType(CONFIG_RESULTS_WORKING_MEMORY);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_WORKING_MEMORY));
-        d.value = d.resultBar.getValue();
-        data2Show << d;
-        diagClassFinder.setIDX(d.resultBar);
-
-        d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(3);
-        d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(3);
-        d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(2);
-        d.resultBar.setResultType(CONFIG_RESULTS_RETRIEVAL_MEMORY);
-        d.resultBar.setValue(ds.value(CONFIG_RESULTS_RETRIEVAL_MEMORY));
-        d.value = d.resultBar.getValue();
-        data2Show << d;
-        diagClassFinder.setIDX(d.resultBar);
+        QStringList toLoad;
+        toLoad << CONF_LOAD_RDINDEX << CONF_LOAD_EXECPROC << CONF_LOAD_WORKMEM << CONF_LOAD_RETMEM;
+        for (qint32 i = 0; i < toLoad.size(); i++){
+            ResultSegment rs;
+            rs.loadSegment(toLoad.at(i),language);
+            rs.setValue(ds.value(rs.getNameIndex()).toDouble());
+            diagClassFinder.setResultSegment(rs);
+            d.rs = rs;
+            data2Show << d;
+            //qDebug() << "Adding" << reportItems.last();
+        }
     }
 
     if (doMemEnc){
         if (bindingCode == "I"){
-            d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(4);
-            d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(4);
-            d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(3);
-            d.resultBar.setResultType(CONFIG_RESULTS_BINDING_CONVERSION_INDEX);
-            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX));
-            d.value = d.resultBar.getValue();
+            ResultSegment rs;
+            if (bindingDescription == "2"){
+                rs.loadSegment(CONF_LOAD_BINDIND2,language);
+            }
+            else if (bindingDescription == "3"){
+                rs.loadSegment(CONF_LOAD_BINDIND3,language);
+            }
+            rs.setValue(ds.value(rs.getNameIndex()).toDouble());
+            diagClassFinder.setResultSegment(rs);
+            d.rs = rs;
             data2Show << d;
-            diagClassFinder.setIDX(d.resultBar);
         }
         else if (bindingCode == "B"){
-            d.name  = langData.getStringList(DR_CONFG_RESULTS_NAME).at(5);
-            d.range = langData.getStringList(DR_CONFG_RESULT_RANGES).at(5);
-            d.clarification = langData.getStringList(DR_CONFG_RES_CLARIFICATION).at(4);
-            d.resultBar.setResultType(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE);
-            d.resultBar.setValue(ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE));
-            d.value = d.resultBar.getValue();
+            ResultSegment rs;
+            rs.loadSegment(CONF_LOAD_BEHAVE,language);
+            QVariantList l = ds.value(rs.getNameIndex()).toList();
+
+            //First value is BC ans and second is UC ans
+            if (l.size() != 2) rs.setValue(-1);
+            else rs.setValue(l.first().toDouble());
+
+            diagClassFinder.setResultSegment(rs);
+            d.rs = rs;
             data2Show << d;
-            diagClassFinder.setIDX(d.resultBar);
         }
     }
 
@@ -116,7 +99,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     // Adding the logo
     if (!c->getBool(CONFIG_REPORT_NO_LOGO)){
-        QImage logo(":/CommonClasses/PNGWriter/report_text/viewmind.png");
+        QImage logo(":/CommonClasses/GraphicalReport/report_text/viewmind.png");
         logo = logo.scaled(QSize(BANNER_LOGO_WIDTH,BANNER_LOGO_HEIGHT),Qt::KeepAspectRatio,Qt::SmoothTransformation);
         QGraphicsPixmapItem* logoItem = new QGraphicsPixmapItem(QPixmap::fromImage(logo));
         canvas->addItem(logoItem);
@@ -140,7 +123,6 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     canvas->addLine(xmottobar,motto->pos().y()-bar_overshoot,
                     xmottobar,motto->pos().y()+bar_overshoot+motto->boundingRect().height(),
                     mottoLinePen);
-
 
 //  Rect is now white, so there is no sense in drawing it.
 //    QGraphicsRectItem *bar1 = canvas->addRect(0,0,PAGE_WIDTH,BAR_PATIENT_BAR_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
@@ -170,7 +152,6 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     r->setDefaultTextColor(COLOR_FONT_DARK_GRAY);
     r->setPos ((PAGE_WIDTH - r->boundingRect().width())/2,
                (BAR_RESULTS_HEIGHT  - r->boundingRect().height())/2 +resultTitleBarYStart);
-
 
     //----------------------------------------- UPPERBAR TEXT ------------------------------------------------
 
@@ -260,6 +241,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     QFont fontSquares = fonts.value(FONT_BOOK);
     fontSquares.setPointSize(FONT_SIZE_SQUARES);
+
 //    yOffset1 = BAR_PATIENT_BAR_HEIGHT + BANNER_HEIGHT + PANEL_MARGIN_TOP;
 
 // OLD WAY of displaying the color explanations. Keeping as a comment just in case.
@@ -299,7 +281,6 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     }
 
-
     //----------------------------------------- RESULT LIST ------------------------------------------------
 
     QFont numberFont = fonts.value(FONT_LIGHT);
@@ -323,13 +304,13 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     for (qint32 i = 0; i < data2Show.size(); i++){
 
         ShowDatum d = data2Show.at(i);
-        d.gname = canvas->addText(d.name,resultTitleFont);
+        d.gname = canvas->addText(d.rs.getTitle(),resultTitleFont);
         d.gname->setDefaultTextColor(COLOR_FONT_RESULTS);
-        d.grange = canvas->addText(d.range,expFont);
+        d.grange = canvas->addText(d.rs.getRangeText(),expFont);
         d.grange->setDefaultTextColor(COLOR_FONT_RESULTS);
-        d.gvalue = canvas->addText(d.value,numberFont);
+        d.gvalue = canvas->addText(d.rs.getDisplayValue(),numberFont);
         d.gvalue->setDefaultTextColor(COLOR_FONT_RESULTS);
-        d.gclarification = canvas->addText(d.clarification,clarificationFont);
+        d.gclarification = canvas->addText(d.rs.getExplanation(),clarificationFont);
         d.gclarification->setDefaultTextColor(COLOR_FONT_RESULTS);
 
         data2Show[i] = d;
@@ -484,17 +465,17 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
 
     // Calculating the segment bars.
     QStringList colorScale;
-    qint32 resBarSize = d.resultBar.getSegmentBarCutOffValues().size();
+    qint32 resBarSize = d.rs.getNumberOfSegments();
 
-    if (resBarSize == 4) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
-    else if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_RED;
-    else qWarning() << "Res Bar Size is neither 3 or 4 it is" << resBarSize;
+    if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
+    else if (resBarSize == 2) colorScale << COLOR_GREEN << COLOR_RED;
+    else qWarning() << "Res Bar Size is neither 3 or 2 it is" << resBarSize;
 
     qreal R = RESULTS_SEGBAR_HEIGHT/2;
     QList<qreal> barSegments;
-    qreal barSegWidth = (qreal)RESULTS_SEGBAR_WIDTH/resBarSize;
-    for (qint32 i = 0; i < resBarSize-1; i++) barSegments << barSegWidth;
-    qreal indicator = d.resultBar.getSegmentBarIndex();
+    qreal barSegWidth = (qreal)RESULTS_SEGBAR_WIDTH/(resBarSize+1);
+    for (qint32 i = 0; i < resBarSize; i++) barSegments << barSegWidth;
+    qreal indicator = d.rs.getBarSegmentIndex();
 
     // Calculating the indicator, which should be in the middle of the corresponding segment.
     qreal indicatorOffset = (2*indicator + 1)*barSegWidth/2;
@@ -537,7 +518,7 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
 void ImageReportDrawer::loadFonts(){
 
     QStringList fontFileList;
-    QString base = ":/CommonClasses/PNGWriter/report_text/";
+    QString base = ":/CommonClasses/GraphicalReport/report_text/";
     fontFileList << FONT_BOLD
                  << FONT_BOOK
                  << FONT_MEDIUM
@@ -558,7 +539,7 @@ ConfigurationManager ImageReportDrawer::loadReportText(QString lang){
 
     ConfigurationManager langData;
 
-    QString path = ":/CommonClasses/PNGWriter/report_text/";
+    QString path = ":/CommonClasses/GraphicalReport/report_text/";
 
     if ((lang != CONFIG_P_LANG_ES) && (lang != CONFIG_P_LANG_EN)) lang = CONFIG_P_LANG_EN;
     path = path + lang;

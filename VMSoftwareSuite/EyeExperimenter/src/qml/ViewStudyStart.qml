@@ -184,7 +184,7 @@ VMBase {
             id: cboxFielding
             vmText: loader.getStringForKey(keysearch+"cboxFielding");
             vmFont: robotoR.name
-            //visible: false
+            visible: false
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
                 if (cboxFielding.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_FIELDING);
@@ -196,7 +196,7 @@ VMBase {
             id: cboxParkinson
             vmText: loader.getStringForKey(keysearch+"cboxParkinson");
             vmFont: robotoR.name
-            //visible: false
+            visible: false
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
                 if (cboxParkinson.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_PARKINSON);
@@ -346,6 +346,7 @@ VMBase {
         anchors.top: labelEyeMsg.top
         anchors.left: cbNbackType.left
         color: "#554545"
+        visible: false
         text: loader.getStringForKey(keysearch+"labelNBackType");
     }
 
@@ -357,6 +358,7 @@ VMBase {
         anchors.left: cbTargetSize.right
         anchors.leftMargin: mainWindow.width*0.013
         vmMaxDisplayItems: 3
+        visible: false
         z:2
         Component.onCompleted: cbNbackType.setModelList(["MS", "RT"])
     }

@@ -1,12 +1,19 @@
 <RCC>
     <qresource prefix="/">
-        <file>../../../CommonClasses/PNGWriter/report_text/English</file>
-        <file>../../../CommonClasses/PNGWriter/report_text/GothamBlackRegular.otf</file>
-        <file>../../../CommonClasses/PNGWriter/report_text/GothamBold.otf</file>
-        <file>../../../CommonClasses/PNGWriter/report_text/GothamBook.otf</file>
-        <file>../../../CommonClasses/PNGWriter/report_text/GothamLight.otf</file>
-        <file>../../../CommonClasses/PNGWriter/report_text/GothamMedium.otf</file>
-        <file>../../../CommonClasses/PNGWriter/report_text/Spanish</file>
-        <file>../../../CommonClasses/PNGWriter/report_text/viewmind.png</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/English</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamBlackRegular.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamBold.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamBook.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamLight.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamMedium.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/Spanish</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/viewmind.png</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/00_index_of_cognitive_impairment</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/01_executive_processes</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/02_working_memory</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/03_retrieval_memory</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/04_binding_index_2</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/05_binding_index_3</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/06_behavioral_conduct</file>
     </qresource>
 </RCC>

@@ -13,20 +13,11 @@ de funcionamiento relevante|Funcionamiento levemente deficiente,
 no necesariamente patológico|Funcionamiento completamente
 deficiente y/o patológico;
 
-results_name = ÍNDICE DE DETERIORO COGNITIVO|PROCESOS EJECUTIVOS|MEMORIA DE TRABAJO|MEMORIA DE RECUPERACIÓN|ÍNDICE DE DEPÓSITO BETA AMILOIDE|RESPUESTA CONDUCTUAL;
-
-results_clarification = Cortex del Cingulo Anterior|Corteza Prefrontal|Corteza frontal Dorsolateral
-Hipocampo, Subiculum|Locus Coeruleus y Coliculo superior.Corteza
-Entorrinal y Perirrinal. Lobulo Temporal Medio|Corteza Entorrinal y Perirrinal.
-Lobulo Temporal Medio;
-
 motto = Medición de Desempeño
 Cognitivo mediante
 Eye-Tracking;
 
 date_format = dd/MM/yyyy;
-
-result_ranges = Valor normal MAYOR a 30|Valor normal MENOR a 36|Valor normal MAYOR a 70|Valor normal MAYOR a 8|Valor normal MAYOR a 20|Valor normal MAYOR a 22;
 
 disclaimer = Resultados de orientación diagnóstica aproximada. Los mismos deben ser ampliados y ratificados
 con aquellos estudios que el profesional considere oportunos para medir desempeño/patología;

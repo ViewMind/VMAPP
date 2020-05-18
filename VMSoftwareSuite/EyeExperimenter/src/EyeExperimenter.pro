@@ -28,8 +28,12 @@ SOURCES += main.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
     ../../../CommonClasses/Experiments/parkinsonmanager.cpp \
     ../../../CommonClasses/Experiments/parkinsonparser.cpp \
+    ../../../CommonClasses/GraphicalReport/diagonosislogic.cpp \
+    ../../../CommonClasses/GraphicalReport/imagereportdrawer.cpp \
+    ../../../CommonClasses/GraphicalReport/resultsegment.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
+    ../../../CommonClasses/RepFileInfo/repfileinfo.cpp \
     Experiments/nbackrtexperiment.cpp \
     Experiments/parkinsonexperiment.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
@@ -46,11 +50,8 @@ SOURCES += main.cpp \
     ../../../CommonClasses/Experiments/readingmanager.cpp \
     ../../../CommonClasses/LogInterface/loginterface.cpp \
     ../../../CommonClasses/DataPacket/datapacket.cpp \
-    ../../../CommonClasses/PNGWriter/imagereportdrawer.cpp \
     ../../../CommonClasses/Experiments/bindingparser.cpp \
     ../../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
-    ../../../CommonClasses/PNGWriter/repfileinfo.cpp \
-    ../../../CommonClasses/PNGWriter/resultbar.cpp \
     ../../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
     ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
     ../../../CommonClasses/Experiments/readingparser.cpp \
@@ -76,9 +77,13 @@ HEADERS += \
     ../../../CommonClasses/Experiments/fieldingparser.h \
     ../../../CommonClasses/Experiments/parkinsonmanager.h \
     ../../../CommonClasses/Experiments/parkinsonparser.h \
+    ../../../CommonClasses/GraphicalReport/diagonosislogic.h \
+    ../../../CommonClasses/GraphicalReport/imagereportdrawer.h \
+    ../../../CommonClasses/GraphicalReport/resultsegment.h \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
+    ../../../CommonClasses/RepFileInfo/repfileinfo.h \
     Experiments/nbackrtexperiment.h \
     Experiments/parkinsonexperiment.h \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
@@ -124,12 +129,9 @@ HEADERS += \
     ../../../CommonClasses/common.h \
     ../../../CommonClasses/LogInterface/loginterface.h \
     ../../../CommonClasses/DataPacket/datapacket.h \
-    ../../../CommonClasses/PNGWriter/imagereportdrawer.h \
     ../../../CommonClasses/SQLConn/dbdescription.h \
     ../../../CommonClasses/Experiments/bindingparser.h \
     ../../../CommonClasses/DatFileInfo/datfileinfoindir.h \
-    ../../../CommonClasses/PNGWriter/repfileinfo.h \
-    ../../../CommonClasses/PNGWriter/resultbar.h \
     ../../../CommonClasses/LocalInformationManager/localinformationmanager.h \
     ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../../CommonClasses/Experiments/readingparser.h \

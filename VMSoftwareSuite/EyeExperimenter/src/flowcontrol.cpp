@@ -204,9 +204,10 @@ void FlowControl::drawReport(){
     delayTimer.stop();
     ImageReportDrawer drawer;
     QVariantMap repmap = reportsForPatient.getRepData(selectedReport);
+    QString bindingDesc = reportsForPatient.getRepFileInfo(selectedReport).value(KEY_BIND_NUM).toString();
     repmap[CONFIG_DOCTOR_NAME] = configuration->getString(CONFIG_DOCTOR_NAME);
     repmap[CONFIG_PATIENT_NAME] = configuration->getString(CONFIG_PATIENT_NAME);
-    if (!drawer.drawReport(repmap,configuration,uimap->getIndexBehavioral())){
+    if (!drawer.drawReport(repmap,configuration,uimap->getIndexBehavioral(),bindingDesc)){
         logger.appendError("Could not save the requested report file to: " + configuration->getString(CONFIG_IMAGE_REPORT_PATH));
     }
     emit(reportGenerationDone());
@@ -949,33 +950,41 @@ void FlowControl::moveFileToArchivedFileFolder(const QString &filename){
 void FlowControl::prepareSelectedReportIteration(){
     reportItems.clear();
 
-    /// DEBUG CODE
-    ///reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe32/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
-    ///selectedReport = 0;
+    /// DEBUG CODE FOR REPORT SHOW
+    // reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
+    // selectedReport = 9;
     /// END DEBUG CODE
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
 
+    //qDebug() << "LOADING DATA FOR: " << reportsForPatient.getRepFileInfo(selectedReport).value(KEY_FILENAME).toString();
+
     //qDebug() << "Preparing report";
     //qDebug() << report;
 
-    ConfigurationManager text = ImageReportDrawer::loadReportText(configuration->getString(CONFIG_REPORT_LANGUAGE));
-    QStringList titles = text.getStringList(DR_CONFG_RESULTS_NAME);
-    QStringList explanations = text.getStringList(DR_CONFG_RES_CLARIFICATION);
-    QStringList references = text.getStringList(DR_CONFG_RESULT_RANGES);
+    QString langCode = configuration->getString(CONFIG_REPORT_LANGUAGE);
+    ConfigurationManager text = ImageReportDrawer::loadReportText(langCode);
 
     diagnosisClassText.clear();
     diagnosisClassText << ImageReportDrawer::cleanNewLines(text.getString(DR_CONFG_DISCLAIMER));
-    resultBarSummary.reset();
+
+    DiagonosisLogic diagnosis;
 
     if (report.contains(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
         QString ans = report.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
         if ((ans != "nan") && (ans != "0")){
-            // Adding all the reading items.
-            QStringList reading;
-            reading << CONFIG_RESULTS_READ_PREDICTED_DETERIORATION << CONFIG_RESULTS_EXECUTIVE_PROCESSES
-                    << CONFIG_RESULTS_WORKING_MEMORY << CONFIG_RESULTS_RETRIEVAL_MEMORY;
-            addToReportItems(reading,report,titles,explanations,references);
+
+            QStringList toLoad;
+            toLoad << CONF_LOAD_RDINDEX << CONF_LOAD_EXECPROC << CONF_LOAD_WORKMEM << CONF_LOAD_RETMEM;
+            for (qint32 i = 0; i < toLoad.size(); i++){
+                ResultSegment rs;
+                rs.loadSegment(toLoad.at(i),langCode);
+                rs.setValue(report.value(rs.getNameIndex()).toDouble());
+                reportItems <<  rs.getMapForDisplay();
+                diagnosis.setResultSegment(rs);
+                //qDebug() << "Adding" << reportItems.last();
+            }
+
         }
 
     }
@@ -984,9 +993,31 @@ void FlowControl::prepareSelectedReportIteration(){
         QString ans = report.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX).toString();
         if ((ans != "nan") && (ans != "0")){
             QStringList binding;
-            if (uimap->getIndexBehavioral() == "I") binding << CONFIG_RESULTS_BINDING_CONVERSION_INDEX;
-            else if (uimap->getIndexBehavioral() == "B") binding << CONFIG_RESULTS_BEHAVIOURAL_RESPONSE;
-            addToReportItems(binding,report,titles,explanations,references);
+            if (uimap->getIndexBehavioral() == "I") {
+                ResultSegment rs;
+                if (reportsForPatient.getRepFileInfo(selectedReport).value(KEY_BIND_NUM).toInt() == 2){
+                    rs.loadSegment(CONF_LOAD_BINDIND2,langCode);
+                }
+                else if (reportsForPatient.getRepFileInfo(selectedReport).value(KEY_BIND_NUM).toInt() == 3){
+                    rs.loadSegment(CONF_LOAD_BINDIND3,langCode);
+                }
+                rs.setValue(report.value(rs.getNameIndex()).toDouble());
+                reportItems << rs.getMapForDisplay();
+                diagnosis.setResultSegment(rs);
+            }
+            else if (uimap->getIndexBehavioral() == "B"){
+                ResultSegment rs;
+                rs.loadSegment(CONF_LOAD_BEHAVE,langCode);
+                QVariantList l = report.value(rs.getNameIndex()).toList();
+
+                //First value is BC ans and second is UC ans
+                if (l.size() != 2) rs.setValue(-1);
+                else rs.setValue(l.first().toDouble());
+
+                reportItems << rs.getMapForDisplay();
+                diagnosis.setResultSegment(rs);
+
+            }
         }
     }
 
@@ -994,46 +1025,14 @@ void FlowControl::prepareSelectedReportIteration(){
 
     // Getting the diagnosis class.
     QString diag_class_key = DR_CONFG_DIAG_CLASS;
-    diag_class_key = diag_class_key + resultBarSummary.getDiagnosisClass();
+    diag_class_key = diag_class_key + diagnosis.getDiagnosisClass();
     //qDebug() << "DIAG CLASS SUMMARY:";
-    //qDebug().noquote() << "   " + resultBarSummary.toString("\n   ");
+    //qDebug().noquote() << "   " + diagnosis.getDebugString("\n   ");
     //qDebug() << "RESULT" << diag_class_key;
     //diag_class_key = "class_2";
     diagnosisClassText <<  ImageReportDrawer::cleanNewLines(text.getString(diag_class_key)) << text.getString(DR_CONFG_DIAGNOSIS_TITLE);
 
 
-}
-
-void FlowControl::addToReportItems(const QStringList &items, const QVariantMap &report, const QStringList &titles,
-                                   const QStringList &explanations, const QStringList &references){
-
-
-    for (qint32 i = 0; i < items.size(); i++){
-        QVariantMap map;
-        qint32 index = reportTextDataIndexes.indexOf(items.at(i));
-        ResultBar bar;
-
-        bar.setResultType(items.at(i));
-        bar.setValue(report.value(items.at(i)));
-
-        // Adding the bar segment to determine the diagnosis class.
-        resultBarSummary.setIDX(bar);
-
-        qint32 indicator = bar.getSegmentBarIndex();
-
-        map["vmTitleText"] = titles.at(index);
-        if (index == 0) map ["vmExpText"] = "";
-        else{
-            QString exp = explanations.at(index-1);
-            exp = exp.replace("/n","<br>");
-            map["vmExpText"] = exp;
-        }
-        map["vmRefText"] = references.at(index);
-        map["vmResValue"] = bar.getValue();
-        map["vmResBarIndicator"] = QString::number(indicator);
-        map["vmHasTwoSections"] = bar.hasTwoSections();
-        reportItems << map;
-    }
 }
 
 QStringList FlowControl::getDiagnosticClass(){

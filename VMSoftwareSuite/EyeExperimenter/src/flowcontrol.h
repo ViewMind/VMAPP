@@ -13,8 +13,9 @@
 #include "../../../CommonClasses/common.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/DatFileInfo/datfileinfoindir.h"
-#include "../../../CommonClasses/PNGWriter/repfileinfo.h"
-#include "../../../CommonClasses/PNGWriter/imagereportdrawer.h"
+#include "../../../CommonClasses/RepFileInfo/repfileinfo.h"
+#include "../../../CommonClasses/GraphicalReport/imagereportdrawer.h"
+#include "../../../CommonClasses/GraphicalReport/diagonosislogic.h"
 #include "../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
 
 #include "Experiments/readingexperiment.h"
@@ -179,7 +180,6 @@ private:
     QList<QVariantMap> reportItems;
     QStringList reportTextDataIndexes;
     QStringList diagnosisClassText;
-    ResultBar::ResultBarCodes resultBarSummary;
 
     // Flags to avoid reconnecting during recalibration
     bool connected;
@@ -209,9 +209,6 @@ private:
 
     // Helper function to selecte expanded binding files.
     QString getBindingExperiment(bool bc);
-
-    // Add data to report items
-    void addToReportItems(const QStringList &items, const QVariantMap &report, const QStringList &titles, const QStringList &explanations, const QStringList &references);
 
     // The country codes and the function to load them
     QStringList countryList;
