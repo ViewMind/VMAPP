@@ -221,8 +221,8 @@
 #define   IDMAP_ID_UID                                  "uid"
 
 // Versions of the processing algorithm
-#define   EYE_REP_GEN_READING_ALGORITHM_VERSION          1
-#define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          3
+#define   EYE_REP_GEN_READING_ALGORITHM_VERSION          2
+#define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          4
 #define   EYE_REP_GEN_FIELDING_ALGORITHM_VERSION         0
 #define   EYE_REP_GEN_NBACKRT_ALGORITHM_VERSION          0
 
