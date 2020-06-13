@@ -374,20 +374,20 @@ QVariantMap RepFileInfo::nextReportInfo() {
     else return QVariantMap();
 }
 
-QVariantMap RepFileInfo::getRepData(const QString &fileName) const{
+QVariantMap RepFileInfo::getRepData(const QString &fileName, qint32 *index) const{
 
     QFileInfo info(fileName);
     QString toSearch = info.baseName() + "." + info.suffix();
 
-    qint32 index = -1;
+    *index = -1;
     for (qint32 i = 0; i < repFileInfo.size(); i++){
         if (repFileInfo.at(i).value(KEY_REPNAME).toString() == toSearch){
-            index = i;
+            *index = i;
             break;
         }
     }
 
-    if (index == -1) return QVariantMap();
-    return repData.at(index);
+    if (*index == -1) return QVariantMap();
+    return repData.at(*index);
 
 }

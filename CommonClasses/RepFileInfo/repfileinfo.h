@@ -43,7 +43,7 @@ public:
     QVariantMap nextReportInfo();
     QVariantMap getRepData(qint32 index) const {return repData.at(index);}
     QVariantMap getRepFileInfo(qint32 index) const {return repFileInfo.at(index); }
-    QVariantMap getRepData(const QString &fileName) const;
+    QVariantMap getRepData(const QString &fileName, qint32 *index) const;
 
 private:
 

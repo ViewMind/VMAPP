@@ -161,7 +161,7 @@ void NBackRTExperiment::keyPressHandler(int keyPressed){
         if ((keyPressed == Qt::Key_N) && (state == STATE_RUNNING) && (tstate == TSF_SHOW_BLANKS)){
             onTimeOut();
         }
-        else if (state == STATE_PAUSED){
+        else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
             state = STATE_RUNNING;
             m->drawBackground();
             updateSecondMonitorORHMD();

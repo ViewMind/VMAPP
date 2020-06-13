@@ -30,6 +30,9 @@ RCC_DIR = QRC
 SOURCES += \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
+    ../../../CommonClasses/GraphicalReport/diagonosislogic.cpp \
+    ../../../CommonClasses/GraphicalReport/resultsegment.cpp \
+    languageselectiondialog.cpp \
         main.cpp \
         eyedataanalyzer.cpp \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
@@ -46,10 +49,9 @@ SOURCES += \
     ../../../CommonClasses/Experiments/fieldingmanager.cpp \
     ../../../CommonClasses/Experiments/readingmanager.cpp \
     ../../../CommonClasses/HTMLWriter/htmlwriter.cpp \
-    ../../../CommonClasses/PNGWriter/imagereportdrawer.cpp \
+    ../../../CommonClasses/GraphicalReport/imagereportdrawer.cpp \
     ../../../CommonClasses/Experiments/bindingparser.cpp \
-    ../../../CommonClasses/PNGWriter/repfileinfo.cpp \
-    ../../../CommonClasses/PNGWriter/resultbar.cpp \
+    ../../../CommonClasses/RepFileInfo/repfileinfo.cpp \
     ../../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
     ../../../CommonClasses/Experiments/readingparser.cpp \
     ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
@@ -66,6 +68,8 @@ SOURCES += \
 HEADERS += \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
+    ../../../CommonClasses/GraphicalReport/diagonosislogic.h \
+    ../../../CommonClasses/GraphicalReport/resultsegment.h \
         eyedataanalyzer.h \
     ../../../CommonClasses/common.h \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
@@ -82,14 +86,14 @@ HEADERS += \
     ../../../CommonClasses/Experiments/fieldingmanager.h \
     ../../../CommonClasses/Experiments/readingmanager.h \
     ../../../CommonClasses/HTMLWriter/htmlwriter.h \
-    ../../../CommonClasses/PNGWriter/imagereportdrawer.h \
+    ../../../CommonClasses/GraphicalReport/imagereportdrawer.h \
     ../../../CommonClasses/Experiments/bindingparser.h \
-    ../../../CommonClasses/PNGWriter/repfileinfo.h \
-    ../../../CommonClasses/PNGWriter/resultbar.h \
+    ../../../CommonClasses/RepFileInfo/repfileinfo.h \
     ../../../CommonClasses/DatFileInfo/datfileinfoindir.h \
     ../../../CommonClasses/Experiments/readingparser.h \
     ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../../CommonClasses/DataPacket/datapacket.h \
+    languageselectiondialog.h \
     waitdialog.h \
     ../../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h \
     patientnamemapmanager.h \
@@ -101,6 +105,7 @@ HEADERS += \
 
 FORMS += \
         eyedataanalyzer.ui \
+    languageselectiondialog.ui \
     waitdialog.ui \
     selectunifiedcsvfolderdiag.ui \
     idtablediag.ui

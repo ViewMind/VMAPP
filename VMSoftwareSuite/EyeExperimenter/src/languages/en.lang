@@ -99,7 +99,7 @@ viewstudystart_labelSelPatient = Selected Patient;
 viewstudystart_labelSelSubject = Selected Subject;
 viewstudystart_labelReadingLanguge = Reading language;
 viewstudystart_labelNBackType = NBack Type;
-viewstudystart_fieldingPauseText = Press any key when you are ready;
+viewstudystart_fieldingPauseText = Press any "G" when you are ready;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Doctor selection;
