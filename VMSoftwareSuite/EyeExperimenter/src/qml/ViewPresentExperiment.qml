@@ -10,6 +10,8 @@ VMBase {
     property string vmSlideTitle: "NO TITLE SET";
     property string vmSlideExplanation: "No explanation set";
 
+    property bool experimentInProgress: false;
+
     function enableContinue(){
         btnContinue.enabled = true;
     }
@@ -17,6 +19,7 @@ VMBase {
     Connections{
         target: flowControl
         onExperimentHasFinished:{
+            btnContinue.enabled = true;
             if (!flowControl.isExperimentEndOk()){
                 var titleMsg
                 swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
@@ -280,6 +283,7 @@ VMBase {
     }
 
     function startNextStudy(){
+
         // Setting up the second monitor, if necessary.
         flowControl.setupSecondMonitor();
 
@@ -417,6 +421,7 @@ VMBase {
             vmInvertColors: true
             vmFont: viewPresentExperiment.gothamM.name
             onClicked: {
+                btnContinue.enabled = false;
                 if (loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET) === vmDefines.vmCONFIG_P_ET_HTCVIVEEYEPRO){
                     swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
                 }

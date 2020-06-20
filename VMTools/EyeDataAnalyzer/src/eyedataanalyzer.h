@@ -34,8 +34,8 @@
 
 #include "../../../CommonClasses/HTMLWriter/htmlwriter.h"
 #include "../../../CommonClasses/DataAnalysis/rawdataprocessor.h"
-#include "../../../CommonClasses/PNGWriter/imagereportdrawer.h"
-#include "../../../CommonClasses/PNGWriter/repfileinfo.h"
+#include "../../../CommonClasses/GraphicalReport/imagereportdrawer.h"
+#include "../../../CommonClasses/RepFileInfo/repfileinfo.h"
 #include "../../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
 #include "../../../CommonClasses/DataPacket/datapacket.h"
 #include "fixationdrawer.h"
@@ -44,6 +44,7 @@
 #include "batchcsvprocessing.h"
 #include "selectunifiedcsvfolderdiag.h"
 #include "idtablediag.h"
+#include "languageselectiondialog.h"
 
 namespace Ui {
 class EyeDataAnalyzer;
@@ -86,20 +87,6 @@ public slots:
 
     void on_pbGenerateReport_clicked();
 
-public slots:
-
-    // SSL and TCP Related slots
-    void on_encryptedSuccess();
-    void on_socketError(QAbstractSocket::SocketError error);
-    void on_readyRead();
-    void on_sslErrors(const QList<QSslError> &errors);
-    void on_socketStateChanged(QAbstractSocket::SocketState state);
-
-    // Timer
-    void on_timeOut();
-
-
-private slots:
     void on_pbGetData_clicked();
 
     void on_pbClearLog_clicked();
@@ -115,6 +102,19 @@ private slots:
     void on_pbVMIDTableInfo_clicked();
 
     void on_pbGetMedicalRecords_clicked();
+
+public slots:
+
+    // SSL and TCP Related slots
+    void on_encryptedSuccess();
+    void on_socketError(QAbstractSocket::SocketError error);
+    void on_readyRead();
+    void on_sslErrors(const QList<QSslError> &errors);
+    void on_socketStateChanged(QAbstractSocket::SocketState state);
+
+    // Timer
+    void on_timeOut();
+
 
 private:
 

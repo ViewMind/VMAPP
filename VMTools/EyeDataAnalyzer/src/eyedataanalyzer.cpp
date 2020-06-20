@@ -848,6 +848,11 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
         return;
     }
 
+    LanguageSelectionDialog diag;
+    if (!diag.exec()){
+        return;
+    }
+
     logForProcessing.appendStandard("Generating PNG Report ...");
 
     bool ok;
@@ -860,11 +865,19 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
 
     // It's useless here, but required by the function.
     RepFileInfo::AlgorithmVersions algver;
-    algver.bindingAlg = 1;
-    algver.readingAlg = 1;
+    algver.bindingAlg  = 1;
+    algver.readingAlg  = 1;
+    algver.nbackrtAlg  = 1;
+    algver.fieldingAlg = 1;
 
     repInfoOnDir.setDirectory(currentDirectory,algver);
-    QVariantMap dataSet = repInfoOnDir.getRepData(selectedReport);
+    qint32 selectedIndex;
+    QVariantMap dataSet = repInfoOnDir.getRepData(selectedReport,&selectedIndex);
+    QVariantMap repInfo = repInfoOnDir.getRepFileInfo(selectedIndex);
+
+    //qDebug() << "Rep info @" << selectedIndex;
+    //qDebug() << repInfo;
+
     if (dataSet.isEmpty()){
         logForProcessing.appendError("Could not load data on report file: " + selectedReport);
         return;
@@ -875,8 +888,11 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
     QString outputPath = currentDirectory + "/" + info.baseName() + ".png";
     processingParameters.addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,outputPath);
 
+    processingParameters.addKeyValuePair(CONFIG_REPORT_LANGUAGE,diag.getLanguage());
+
+
     ImageReportDrawer reportDrawer;
-    reportDrawer.drawReport(dataSet,&processingParameters,"I");
+    reportDrawer.drawReport(dataSet,&processingParameters,"I",repInfo.value(KEY_BIND_NUM).toString());
 
     if (QFile(outputPath).exists()){
         logForProcessing.appendSuccess("Generated image report at: " + outputPath);

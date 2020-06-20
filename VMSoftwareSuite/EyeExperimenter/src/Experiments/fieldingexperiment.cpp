@@ -173,7 +173,7 @@ void FieldingExperiment::keyPressHandler(int keyPressed){
         return;
     }
     else{
-        if (state == STATE_PAUSED){
+        if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
             state = STATE_RUNNING;
             m->drawBackground();
             updateSecondMonitorORHMD();

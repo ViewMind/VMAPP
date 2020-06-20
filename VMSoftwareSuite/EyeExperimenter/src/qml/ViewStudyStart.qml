@@ -184,7 +184,7 @@ VMBase {
             id: cboxFielding
             vmText: loader.getStringForKey(keysearch+"cboxFielding");
             vmFont: robotoR.name
-            visible: false
+            visible: true
             onVmOnChanged: {
                 labelNoInstructionSetError.visible = false;
                 if (cboxFielding.vmOn) multipleSelectionShow.addItem(vmText,vmDefines.vmCONFIG_P_EXP_FIELDING);
@@ -346,7 +346,7 @@ VMBase {
         anchors.top: labelEyeMsg.top
         anchors.left: cbNbackType.left
         color: "#554545"
-        visible: false
+        visible: true
         text: loader.getStringForKey(keysearch+"labelNBackType");
     }
 
@@ -358,7 +358,7 @@ VMBase {
         anchors.left: cbTargetSize.right
         anchors.leftMargin: mainWindow.width*0.013
         vmMaxDisplayItems: 3
-        visible: false
+        visible: true
         z:2
         Component.onCompleted: cbNbackType.setModelList(["MS", "RT"])
     }
