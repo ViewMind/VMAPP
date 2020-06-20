@@ -271,6 +271,7 @@ using Eye-Tracking technique<br><br>
 The result of each function analyzed, is stated in <br>
 the following code:;
 
+viewresults_labelSquareBlue = Function above average;
 viewresults_labelSquareGreen = No relevant functional problems were detected;
 viewresults_labelSquareYellow = Mildly deficient functioning, not necessarily <br>pathological;
 viewresults_labelSquareRed = Completely deficient and/or pathological <br>functioning;

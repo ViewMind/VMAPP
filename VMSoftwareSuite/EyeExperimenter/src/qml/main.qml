@@ -16,7 +16,7 @@ Window {
         minimumWidth = width;
         maximumWidth = width;
 
-        swiperControl.currentIndex = swiperControl.vmIndexHome;
+        //swiperControl.currentIndex = swiperControl.vmIndexHome;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;

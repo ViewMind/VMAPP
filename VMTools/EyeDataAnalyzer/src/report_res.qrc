@@ -15,5 +15,12 @@
         <file>../../../CommonClasses/GraphicalReport/report_text/04_binding_index_2</file>
         <file>../../../CommonClasses/GraphicalReport/report_text/05_binding_index_3</file>
         <file>../../../CommonClasses/GraphicalReport/report_text/06_behavioral_conduct</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/07_nbackrt_num_fix_enc</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/08_nbackrt_num_fix_ret</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/09_nbackrt_inhib_proc</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/10_nbackrt_seq_complete</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/11_nbackrt_target_hit</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/12_nbackrt_mean_resp_time</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/13_nbackrt_mean_sac_amp</file>
     </qresource>
 </RCC>

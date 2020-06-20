@@ -271,6 +271,7 @@ de la técnica de seguimiento ocular.<br><br>
 El resultado de cada función analizada <br>
 se muestra en el siguiente código:;
 
+viewresults_labelSquareBlue = Funcionamiento por encima del promedio;
 viewresults_labelSquareGreen = No se encontraron problemas funcionales relevantes;
 viewresults_labelSquareYellow = Funcionamiento ligeramente deficiente, no es <br>necesariamente patológico.;
 viewresults_labelSquareRed = Funcionamiento patológico completamente deficiente <br> y/o patológico.;

@@ -1,0 +1,19 @@
+title_en = BEHAVIOURAL RESPONSE;
+title_es = RESPUESTA CONDUCTUAL;
+
+explanation_en = Entorhinal and Perirhinal Cortex.
+Medial Temporal Lobe;
+
+explanation_es = Corteza Entorrinal y Perirrinal.
+Lobulo Temporal Medio;
+
+range_text_en = Normal value GREATER than 4.1;
+range_text_es = Valor normal MAYOR a 4.1;
+
+cutoff_values = 1.9|2.9|4|6|8;
+
+smaller_better = false;
+
+associated_value = mean_saccade_amplitude;
+
+mult_by_100 = false;

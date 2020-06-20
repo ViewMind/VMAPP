@@ -44,7 +44,8 @@
 
 // Dimensions
 #define  PAGE_WIDTH                    595*MASTER_SCALE
-#define  PAGE_HEIGHT                   842*MASTER_SCALE
+//#define  PAGE_HEIGHT                   842*MASTER_SCALE
+#define  PAGE_HEIGHT                   842*2*MASTER_SCALE // Two pages one next to the other.
 //#define  PAGE_HEIGHT                   942*MASTER_SCALE
 //#define  BANNER_HEIGHT                 108*MASTER_SCALE
 #define  BANNER_HEIGHT                 98*MASTER_SCALE
@@ -99,6 +100,7 @@
 #define  COLOR_GREEN                   "#049948"
 #define  COLOR_YELLOW                  "#e5b42c"
 #define  COLOR_RED                     "#cb2026"
+#define  COLOR_BLUE                    "#00557f"
 
 #define  COLOR_LINE_SEP                "#4f504f"
 

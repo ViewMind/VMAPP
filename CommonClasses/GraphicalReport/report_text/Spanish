@@ -8,9 +8,14 @@ explanation_pt1 = A continuación se presenta la interpretación de los datos ob
 explanation_pt2 = mediante la técnica de Eye Tracking<br><br>Para cada función analizada, el resultado se indica según el siguiente código:;
 explanation_bold = evaluación neurocognitiva;
 
-color_explanation = No se han detectado problemas
-de funcionamiento relevante|Funcionamiento levemente deficiente,
-no necesariamente patológico|Funcionamiento completamente
+color_explanation = Funcionamiento
+superior a
+la media|No se han detectado
+problemas
+de funcionamiento relevante|Funcionamiento
+levemente deficiente,
+no necesariamente patológico|Funcionamiento
+completamente
 deficiente y/o patológico;
 
 motto = Medición de Desempeño

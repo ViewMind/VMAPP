@@ -6,13 +6,20 @@
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 
-#define  CONF_LOAD_RDINDEX     ":/CommonClasses/GraphicalReport/report_text/00_index_of_cognitive_impairment"
-#define  CONF_LOAD_EXECPROC    ":/CommonClasses/GraphicalReport/report_text/01_executive_processes"
-#define  CONF_LOAD_WORKMEM     ":/CommonClasses/GraphicalReport/report_text/02_working_memory"
-#define  CONF_LOAD_RETMEM      ":/CommonClasses/GraphicalReport/report_text/03_retrieval_memory"
-#define  CONF_LOAD_BINDIND2    ":/CommonClasses/GraphicalReport/report_text/04_binding_index_2"
-#define  CONF_LOAD_BINDIND3    ":/CommonClasses/GraphicalReport/report_text/05_binding_index_3"
-#define  CONF_LOAD_BEHAVE      ":/CommonClasses/GraphicalReport/report_text/06_behavioral_conduct"
+#define  CONF_LOAD_RDINDEX                ":/CommonClasses/GraphicalReport/report_text/00_index_of_cognitive_impairment"
+#define  CONF_LOAD_EXECPROC               ":/CommonClasses/GraphicalReport/report_text/01_executive_processes"
+#define  CONF_LOAD_WORKMEM                ":/CommonClasses/GraphicalReport/report_text/02_working_memory"
+#define  CONF_LOAD_RETMEM                 ":/CommonClasses/GraphicalReport/report_text/03_retrieval_memory"
+#define  CONF_LOAD_BINDIND2               ":/CommonClasses/GraphicalReport/report_text/04_binding_index_2"
+#define  CONF_LOAD_BINDIND3               ":/CommonClasses/GraphicalReport/report_text/05_binding_index_3"
+#define  CONF_LOAD_BEHAVE                 ":/CommonClasses/GraphicalReport/report_text/06_behavioral_conduct"
+#define  CONF_LOAD_NBRT_FIX_ENC           ":/CommonClasses/GraphicalReport/report_text/07_nbackrt_num_fix_enc"
+#define  CONF_LOAD_NBRT_FIX_RET           ":/CommonClasses/GraphicalReport/report_text/08_nbackrt_num_fix_ret"
+#define  CONF_LOAD_NBRT_INHIB_PROC        ":/CommonClasses/GraphicalReport/report_text/09_nbackrt_inhib_proc"
+#define  CONF_LOAD_NBRT_SEQ_COMPLETE      ":/CommonClasses/GraphicalReport/report_text/10_nbackrt_seq_complete"
+#define  CONF_LOAD_NBRT_TARGET_HIT        ":/CommonClasses/GraphicalReport/report_text/11_nbackrt_target_hit"
+#define  CONF_LOAD_NBRT_MEAN_RESP_TIME    ":/CommonClasses/GraphicalReport/report_text/12_nbackrt_mean_resp_time"
+#define  CONF_LOAD_NBRT_MEAN_SAC_AMP      ":/CommonClasses/GraphicalReport/report_text/13_nbackrt_mean_sac_amp"
 
 #define  RS_CODE_TITLE          "title_"
 #define  RS_CODE_EXPLANATION    "explanation_"
@@ -26,7 +33,7 @@ class ResultSegment
 {
 public:
     ResultSegment();
-    typedef enum {BSCC_NONE,BSCC_RED,BSCC_GREEN,BSCC_YELLOW} BarSegmentColorCode;
+    typedef enum {BSCC_NONE,BSCC_RED,BSCC_GREEN,BSCC_YELLOW, BSCC_BLUE} BarSegmentColorCode;
     bool loadSegment(const QString &conf, const QString &language);
 
     void setValue(const qreal &val);

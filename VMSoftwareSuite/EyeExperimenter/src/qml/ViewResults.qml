@@ -279,7 +279,7 @@ VMBase {
         border.color: "#ededee"
         radius: 2
         width: mainWindow.width*0.301
-        height: mainWindow.height*0.358
+        height: mainWindow.height*0.38
         anchors.top: rectInfoPatient.bottom
         anchors.topMargin: mainWindow.height*0.028
         anchors.left: title.left
@@ -294,7 +294,33 @@ VMBase {
             anchors.left: parent.left
             anchors.leftMargin: mainWindow.width*0.023
             anchors.top: parent.top
-            anchors.topMargin: mainWindow.height*0.042
+            anchors.topMargin: mainWindow.height*0.022
+        }
+
+
+        // Blue rect and text.
+
+        Rectangle{
+            id: rectBlue
+            width: mainWindow.width*0.012
+            height: mainWindow.height*0.022
+            color: "#00557f"
+            anchors.left: parent.left
+            anchors.leftMargin: mainWindow.width*0.023
+            anchors.top: labelExp.bottom
+            anchors.topMargin: mainWindow.height*0.017
+        }
+
+        Text{
+            id: labelSquareBlue
+            textFormat: Text.RichText
+            color: "#737577"
+            text: loader.getStringForKey(keysearch+"labelSquareBlue");
+            font.family: robotoR.name
+            font.pixelSize: 12*viewHome.vmScale
+            anchors.left: rectBlue.right
+            anchors.leftMargin: mainWindow.width*0.008
+            anchors.top: rectBlue.top
         }
 
         // Green rect and text
@@ -305,7 +331,7 @@ VMBase {
             color: "#009949"
             anchors.left: parent.left
             anchors.leftMargin: mainWindow.width*0.023
-            anchors.top: labelExp.bottom
+            anchors.top: rectBlue.bottom
             anchors.topMargin: mainWindow.height*0.017
         }
 

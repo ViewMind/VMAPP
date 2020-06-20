@@ -60,14 +60,7 @@ void ResultSegment::setValue(const qreal &val){
 
     // If larger is better then the indexes are inverted as 0 represents green which is good and 2 represents red.
     if (!smallerBetter){
-        if (cuttoffValues.size() == 4){
-            if (result == 0) result = 2;
-            else if (result == 2) result = 0;
-        }
-        else{
-            if (result == 0) result = 1;
-            else if (result == 1) result = 0;
-        }
+       result = (cuttoffValues.size() - 2) - result;
     }
 
     // Setting the bar type;
@@ -81,6 +74,24 @@ void ResultSegment::setValue(const qreal &val){
             barColorCode = BSCC_YELLOW;
             break;
         case 2:
+            barColorCode = BSCC_RED;
+            break;
+        default:
+            break;
+        }
+    }
+    else if (cuttoffValues.size() == 5){
+        switch (result) {
+        case 0:
+            barColorCode = BSCC_BLUE;
+            break;
+        case 1:
+            barColorCode = BSCC_GREEN;
+            break;
+        case 2:
+            barColorCode = BSCC_YELLOW;
+            break;
+        case 3:
             barColorCode = BSCC_RED;
             break;
         default:
@@ -138,6 +149,8 @@ QString ResultSegment::code2String(const BarSegmentColorCode &bscc){
         return "RED";
     case BSCC_YELLOW:
         return "YELLOW";
+    case BSCC_BLUE:
+        return "BLUE";
     }
     return "UNKNOWN";
 }
@@ -152,7 +165,7 @@ QVariantMap ResultSegment::getMapForDisplay() const{
     map["vmRefText"] = rangeText;
     map["vmResValue"] = getDisplayValue();
     map["vmResBarIndicator"] = QString::number(segmentIndicator);
-    map["vmHasTwoSections"] = (cuttoffValues.size() == 3);
+    map["vmNumOfSegements"] = cuttoffValues.size() -1;
 
 return map;
 

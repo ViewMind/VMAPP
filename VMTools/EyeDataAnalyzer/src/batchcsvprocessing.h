@@ -61,7 +61,7 @@ private:
     // Fill the processing list
     void recursiveFillProcessingList(const QString &dir);
 
-    QString generateLocalCSV(DatFileProcessingStruct dfps, bool isReading);
+    QString generateLocalCSV(DatFileProcessingStruct dfps, int exp_type);
     QString appendCSV(const QString &fileToAppend, const DatFileProcessingStruct &dfps, const QString &csvdata);
     QStringList getClosestMedicalRecord(const QString &dbpuid, const QString &studyDate);
 

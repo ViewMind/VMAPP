@@ -1,0 +1,17 @@
+title_en = SEQUENCE COMPLETION;
+title_es = SECUENCIAS COMPLETADAS;
+
+explanation_en = ;
+
+explanation_es = ;
+
+range_text_en = Normal value GREATER than 58;
+range_text_es = Valor normal MAYOR a 58;
+
+cutoff_values = 32|45|58|76|94;
+
+smaller_better = false;
+
+associated_value = correct_complete_sequence_percent;
+
+mult_by_100 = false;

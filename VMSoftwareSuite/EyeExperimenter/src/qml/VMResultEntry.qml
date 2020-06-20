@@ -6,6 +6,10 @@ Item {
     width: mainWindow.width*0.45
     height: (vmDiagClassTitle == "")? mainWindow.height*0.152 : mainWindow.height*0.261
 
+    readonly property var vmBarColorArray2: ["#009949","#ca2026"]
+    readonly property var vmBarColorArray3: ["#009949","#e4b32c","#ca2026"]
+    readonly property var vmBarColorArray4: ["#00557f", "#009949","#e4b32c","#ca2026"]
+
     //        width: mainWindow.width*0.45
     //        height: mainWindow.height*0.261
 
@@ -73,9 +77,16 @@ Item {
         id: resultBar
         anchors.right: parent.right
         anchors.rightMargin: mainWindow.width*0.12
-        vmTwoSection: vmHasTwoSections
         anchors.verticalCenter: parent.verticalCenter
-        vmIndicatorInSection: vmResBarIndicator
+        vmColorArray: {
+            switch (vmNumOfSegements){
+                case 2: return vmBarColorArray2;
+                case 3: return vmBarColorArray3;
+                case 4: return vmBarColorArray4;
+            }
+        }
+        vmIndicator: vmResBarIndicator
+
     }
 
     /////////////////////////////// Diagnosis class rectangle

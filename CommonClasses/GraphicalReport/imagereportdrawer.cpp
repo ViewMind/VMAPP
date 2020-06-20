@@ -26,6 +26,12 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         if ((str != "0") && (str != "nan")) doReading = true;
     }
 
+    bool doNBack = false;
+    if (ds.contains(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC)){
+        QString str = ds.value(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC).toString();
+        if ((str != "0") && (str != "nan")) doNBack = true;
+    }
+
     bool doMemEnc = false;
     if (bindingCode == "I"){
         if (ds.contains(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
@@ -89,6 +95,21 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
             diagClassFinder.setResultSegment(rs);
             d.rs = rs;
             data2Show << d;
+        }
+    }
+
+    if (doNBack){
+        QStringList toLoad;
+        toLoad << CONF_LOAD_NBRT_FIX_ENC << CONF_LOAD_NBRT_FIX_RET << CONF_LOAD_NBRT_INHIB_PROC << CONF_LOAD_NBRT_SEQ_COMPLETE
+                  << CONF_LOAD_NBRT_TARGET_HIT << CONF_LOAD_NBRT_MEAN_RESP_TIME << CONF_LOAD_NBRT_MEAN_SAC_AMP;
+        for (qint32 i = 0; i < toLoad.size(); i++){
+            ResultSegment rs;
+            rs.loadSegment(toLoad.at(i),language);
+            rs.setValue(ds.value(rs.getNameIndex()).toDouble());
+            diagClassFinder.setResultSegment(rs);
+            d.rs = rs;
+            data2Show << d;
+            //qDebug() << "Adding" << reportItems.last();
         }
     }
 
@@ -217,18 +238,10 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     QStringList tempStringList = langData.getString(DR_CONFG_EXPLANATION_PT2).split("<br>");
 
-//    OLD TEXT. Keeping as comment just in case
-//    QString html = "<span " + fontDescription + "font-family:" + expFont.family() + "\";>";
-//    html = html + langData.getString(DR_CONFG_EXPLANATION_PT1) + "</span>";
-//    html = html + "<span " + fontDescription + "font-family:" + fonts.value(FONT_BLACK).family() + "\";> "
-//            + langData.getString(DR_CONFG_EXPLANATION_BOLD) + " </span>";
-//    html = html + "<span " + fontDescription + "font-family:" + expFont.family() + "\";>";
-//    html = html + langData.getString(DR_CONFG_EXPLANATION_PT2) + "</span>";
     QString html = "<span " + fontDescription + "font-family:" + expFont.family() + "\";>";
     html = html + tempStringList.last() + "</span>";
 
     exp->setHtml(html);
-//    exp->setTextWidth(PANEL_EXP_TEXT_WIDTH);
 
     yOffset1 = BAR_PATIENT_BAR_HEIGHT + BANNER_HEIGHT + PANEL_MARGIN_TOP;
     exp->setPos(PANEL_MARGIN_LEFT,yOffset1);
@@ -237,31 +250,10 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     qreal colorTableXOffset = PANEL_MARGIN_LEFT;
     QStringList DescColors = langData.getStringList(DR_CONFG_COLOR_EXPLANATION);
     QStringList ColorScale;
-    ColorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
+    ColorScale << COLOR_BLUE << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
 
     QFont fontSquares = fonts.value(FONT_BOOK);
     fontSquares.setPointSize(FONT_SIZE_SQUARES);
-
-//    yOffset1 = BAR_PATIENT_BAR_HEIGHT + BANNER_HEIGHT + PANEL_MARGIN_TOP;
-
-// OLD WAY of displaying the color explanations. Keeping as a comment just in case.
-//    for (qint32 i = 0; i < ColorScale.size(); i++){
-
-//        QPen pen(QColor(ColorScale.at(i)));
-
-//        // Adding the square
-//        QGraphicsRectItem *rect = canvas->addRect(0,0,PANEL_SQUARE_SIDE,PANEL_SQUARE_SIDE,pen,QBrush(QColor(ColorScale.at(i))));
-//        rect->setPos(colorTableXOffset,yOffset1);
-
-//        // Adding the text.
-//        QGraphicsTextItem *desc = canvas->addText(DescColors.at(i),fontSquares);
-//        desc->setDefaultTextColor(COLOR_FONT_EXPLANATION);
-//        qreal y = yOffset1 + (rect->boundingRect().height() - desc->boundingRect().height())/2;
-//        desc->setPos(colorTableXOffset+rect->boundingRect().width() + PANEL_SQUARE_TO_TEXT_SPACE,y);
-
-//        yOffset1 = yOffset1 + rect->boundingRect().height() + PANEL_SQUARE_BUFFER_SPACE;
-
-//    }
 
     qreal xPos = colorTableXOffset;
     yOffset1 = yOffset1 + PANEL_MARGIN_TOP + exp->boundingRect().height();
@@ -412,42 +404,6 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     disclaimerText->setTextWidth(diagContentWidth);
     disclaimerText->setPos(diagXStart,yDisclaimer);
 
-//    // Adding the disclaimer text.
-//    QGraphicsTextItem *disclaimer =  canvas->addText(langData.getString(DR_CONFG_DISCLAIMER));
-//    clarificationFont.setItalic(true);
-//    disclaimer->setTextWidth(rectWidth*0.9);
-//    QTextBlockFormat format;
-//    format.setAlignment(Qt::AlignHCenter);
-//    QTextCursor cursor = disclaimer->textCursor();
-//    cursor.select(QTextCursor::Document);
-//    cursor.mergeBlockFormat(format);
-//    cursor.clearSelection();
-//    disclaimer->setTextCursor(cursor);
-//    disclaimer->setFont(clarificationFont);
-//    disclaimer->setPos(BAR_PATIENT_BAR_MARGIN_LEFT + 0.05*rectWidth,topBoxMargin);
-
-//    // Adding the diagnosis text
-//    qreal diagTopMargin = topBoxMargin + disclaimer->boundingRect().height() + 0.08*RESULTS_DIAG_BOX_HEIGHT;
-//    QString diagTextContent = langData.getString(DR_CONFG_DIAG_CLASS + diagClassFinder.getDiagnosisClass());
-//    //diagTextContent = langData.getString("class_4");
-//    diagTextContent = cleanNewLines(diagTextContent);
-//    //qDebug() << diagTextContent;
-//    QGraphicsTextItem *diagText = canvas->addText(diagTextContent);
-
-//    QFont diagTextFont = fonts.value(FONT_BOLD);
-//    diagTextFont.setPointSize(FONT_SIZE_RESULT_RANGE);
-
-//    diagText->setTextWidth(rectWidth*0.9);
-//    diagText->setDefaultTextColor(COLOR_FONT_RESULTS);
-//    cursor = diagText->textCursor();
-//    cursor.select(QTextCursor::Document);
-//    cursor.mergeBlockFormat(format);
-//    cursor.clearSelection();
-//    diagText->setTextCursor(cursor);
-//    diagText->setFont(diagTextFont);
-//    diagText->setPos(BAR_PATIENT_BAR_MARGIN_LEFT + 0.05*rectWidth,diagTopMargin);
-
-
 
     //----------------------------------------- SAVING PIC ------------------------------------------------
 
@@ -468,8 +424,9 @@ void ImageReportDrawer::drawSegmentBarLengthsAndIndicators(const ShowDatum &d, q
     qint32 resBarSize = d.rs.getNumberOfSegments();
 
     if (resBarSize == 3) colorScale << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
+    else if (resBarSize == 4) colorScale << COLOR_BLUE << COLOR_GREEN << COLOR_YELLOW << COLOR_RED;
     else if (resBarSize == 2) colorScale << COLOR_GREEN << COLOR_RED;
-    else qWarning() << "Res Bar Size is neither 3 or 2 it is" << resBarSize;
+    else qWarning() << "Res Bar Size is neither 4, 3 or 2 it is" << resBarSize;
 
     qreal R = RESULTS_SEGBAR_HEIGHT/2;
     QList<qreal> barSegments;

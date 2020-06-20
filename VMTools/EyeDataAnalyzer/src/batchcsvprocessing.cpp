@@ -55,13 +55,21 @@ void BatchCSVProcessing::run(){
 
         QString outputCSVFile = workingDirectory + "/" + cats.at(i) + ".csv";
         QString outputCSVContents = "";
-        bool isReading = cats.at(i).contains("RD");
+        int expType = -1;
+        if (cats.at(i).contains("RD")) expType = EXP_READING;
+        else if (cats.at(i).contains("BC")) expType = EXP_BINDING_BC;
+        else if (cats.at(i).contains("UC")) expType = EXP_BINDING_UC;
+        else if (cats.at(i).contains("NB")) expType = EXP_NBACKRT;
+        else {
+            qDebug() << "Unknown category: " + cats.at(i);
+            errors << "Unknown category: " + cats.at(i);
+        }
 
         for (qint32 j = 0; j < processingList.value(cats.at(i)).size(); j++){
 
             DatFileProcessingStruct dfps = processingList.value(cats.at(i)).value(j);
             //qWarning() << "Generating csv for file" << dfps.filePath << ". ISREADING" << isReading;
-            QString csvFile = generateLocalCSV(dfps,isReading);
+            QString csvFile = generateLocalCSV(dfps,expType);
             if (csvFile.isEmpty()) continue;
 
             //qWarning() << "Appending data of file" << csvFile;
@@ -159,7 +167,7 @@ QStringList BatchCSVProcessing::getClosestMedicalRecord(const QString &dbpuid, c
     return ans;
 }
 
-QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessingStruct dfps, bool isReading){
+QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessingStruct dfps, int exp_type){
     ConfigurationManager config;
     if (!config.loadConfiguration(dfps.configurationFile,COMMON_TEXT_CODEC)){
         errors << "Error Loading configuration: " << config.getError();
@@ -195,13 +203,22 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
     RawDataProcessor rdp;
     rdp.initialize(&config);
 
-    if (isReading){
+
+    if (exp_type == EXP_READING){
         processor = new EDPReading(&config);
         rdp.separateInfoByTag(dfps.filePath,HEADER_READING_EXPERIMENT,&data,&exp);
     }
-    else{
+    else if ((exp_type == EXP_BINDING_UC) || (exp_type == EXP_BINDING_BC)){
         processor = new EDPImages(&config);
         rdp.separateInfoByTag(dfps.filePath,HEADER_IMAGE_EXPERIMENT,&data,&exp);
+    }
+    else if (exp_type == EXP_NBACKRT){
+        processor = new EDPNBackRT(&config);
+        rdp.separateInfoByTag(dfps.filePath,HEADER_NBACKRT_EXPERIMENT,&data,&exp);
+    }
+    else{
+        errors << "Unsuported experiment type for mass csv generator: " + QString::number(exp_type);
+        return "";
     }
 
     mgeo.resolutionHeight =  rdp.getConfiguration()->getReal(CONFIG_RESOLUTION_HEIGHT);
@@ -245,7 +262,7 @@ QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const DatFile
     QTextStream reader(&inFile);
     reader.setCodec(COMMON_TEXT_CODEC);
     QString allcsv = reader.readAll();
-    inFile.close();;
+    inFile.close();
 
 
     QStringList lines = allcsv.split("\n");

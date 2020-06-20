@@ -951,8 +951,8 @@ void FlowControl::prepareSelectedReportIteration(){
     reportItems.clear();
 
     /// DEBUG CODE FOR REPORT SHOW
-    // reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
-    // selectedReport = 9;
+    //reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
+    //selectedReport = 0;
     /// END DEBUG CODE
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
@@ -973,7 +973,6 @@ void FlowControl::prepareSelectedReportIteration(){
     if (report.contains(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION)){
         QString ans = report.value(CONFIG_RESULTS_ATTENTIONAL_PROCESSES).toString();
         if ((ans != "nan") && (ans != "0")){
-
             QStringList toLoad;
             toLoad << CONF_LOAD_RDINDEX << CONF_LOAD_EXECPROC << CONF_LOAD_WORKMEM << CONF_LOAD_RETMEM;
             for (qint32 i = 0; i < toLoad.size(); i++){
@@ -984,9 +983,7 @@ void FlowControl::prepareSelectedReportIteration(){
                 diagnosis.setResultSegment(rs);
                 //qDebug() << "Adding" << reportItems.last();
             }
-
         }
-
     }
 
     if (report.contains(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
@@ -1017,6 +1014,22 @@ void FlowControl::prepareSelectedReportIteration(){
                 reportItems << rs.getMapForDisplay();
                 diagnosis.setResultSegment(rs);
 
+            }
+        }
+    }
+
+    if (report.contains(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC)){
+        QString ans = report.value(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC).toString();
+        if ((ans != "nan") && (ans != "0")){
+            QStringList toLoad;
+            toLoad << CONF_LOAD_NBRT_FIX_ENC << CONF_LOAD_NBRT_FIX_RET << CONF_LOAD_NBRT_INHIB_PROC << CONF_LOAD_NBRT_SEQ_COMPLETE
+                      << CONF_LOAD_NBRT_TARGET_HIT << CONF_LOAD_NBRT_MEAN_RESP_TIME << CONF_LOAD_NBRT_MEAN_SAC_AMP;
+            for (qint32 i = 0; i < toLoad.size(); i++){
+                ResultSegment rs;
+                rs.loadSegment(toLoad.at(i),langCode);
+                rs.setValue(report.value(rs.getNameIndex()).toDouble());
+                reportItems <<  rs.getMapForDisplay();
+                diagnosis.setResultSegment(rs);
             }
         }
     }

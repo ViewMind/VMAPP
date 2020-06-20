@@ -8,9 +8,13 @@ explanation_pt1 = The following report is an interpretation of the data obtained
 explanation_pt2 = performed using Eye-Tracking technique<br><br>The result of each function analyzed, is stated in the following code:;
 explanation_bold = neurocognitive evaluation;
 
-color_explanation = No relevant functional problems
-were detected|Midly deficient functioning,
-not necessarily pathological|Completely deficient and/or
+color_explanation = Function above
+average|No relevant functional
+problems
+were detected|Midly deficient
+functioning, not
+necessarily pathological|Completely deficient
+and/or
 pathological functioning;
 
 motto = Cognitive Performace

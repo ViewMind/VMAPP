@@ -360,7 +360,7 @@ VMBase {
         vmMaxDisplayItems: 3
         visible: true
         z:2
-        Component.onCompleted: cbNbackType.setModelList(["MS", "RT"])
+        Component.onCompleted: cbNbackType.setModelList(["RT", "MS"])
     }
 
     // An error message.
@@ -416,7 +416,7 @@ VMBase {
                         vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
                     }
                     else if (idList[i] === vmDefines.vmCONFIG_P_EXP_FIELDING){
-                        if (cbNbackType.vmCurrentIndex == 0)
+                        if (cbNbackType.vmCurrentIndex == 1)
                            vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
                         else
                            vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackRT);
