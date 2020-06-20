@@ -30,6 +30,7 @@ VMSoftwareSuite/EyeUpdateServer/OBJS
 VMSoftwareSuite/EyeUpdateServer/bin/EyeUpdateServer
 VMSoftwareSuite/EyeUpdateServer/bin/EyeUpdateServerMonitor
 VMSoftwareSuite/EyeUpdateServer/bin/etdir/
+VMSoftwareSuite/EyeReportGenerator/bin/res/test_data/nback_rt_output
 VMSoftwareSuite/EyeUpdateServer/bin/mail.php
 VMSoftwareSuite/EyeUpdateServer/bin/LOGDIR/
 VMSoftwareSuite/EyeExperimenter/exe64

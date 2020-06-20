@@ -19,6 +19,18 @@ EDPBase::EDPBase(ConfigurationManager *c)
         resolutionScaling = 1;
     }
     eyeFixations.clear();
+
+    if (c->getInt(CONFIG_VALID_EYE) == 0){
+        // This means that the left Eye Was Used.
+        eyeLeftCSV  = "1";
+        eyeRightCSV = "0";
+    }
+    else{
+        // Either the right eye or both eyes were used, so the regular numebering is used.
+        eyeLeftCSV  = "0";
+        eyeRightCSV = "1";
+    }
+
 }
 
 void EDPBase::configure(const QString &fileName, const QString &exp){

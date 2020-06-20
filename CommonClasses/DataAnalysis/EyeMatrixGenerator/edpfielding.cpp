@@ -303,7 +303,7 @@ void EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
              << imgID
              << QString::number(isIn)
              << QString::number(fL.at(i).duration)
-             << "0"
+             << eyeLeftCSV
              << QString::number(sacLatL)
              << QString::number(sac.calculateSacadeAmplitude(fL.at(i).x,fL.at(i).y,monitorGeometry))
              << "N/A";
@@ -350,7 +350,7 @@ void EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
               << imgID
               << QString::number(isIn)
               << QString::number(fR.at(i).duration)
-              << "1"
+              << eyeRightCSV
               << QString::number(sacLatR)
               << QString::number(sac.calculateSacadeAmplitude(fR.at(i).x,fR.at(i).y,monitorGeometry))
               << "N/A";

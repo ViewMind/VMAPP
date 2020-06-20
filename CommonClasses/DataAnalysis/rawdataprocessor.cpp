@@ -191,21 +191,28 @@ void RawDataProcessor::run(){
         EDPNBackRT nbackrt(config);
         tagRet = csvGeneration(&nbackrt,"NBack RT",dataNBackRT,HEADER_NBACKRT_EXPERIMENT);
         if (!tagRet.ok) return;
-        matrixFielding = tagRet.filePath;
+        matrixNBackRT = tagRet.filePath;
 
         fixations[CONFIG_P_EXP_NBACKRT] = nbackrt.getEyeFixations();
-        /// TODO ADD NBACK RT PROCESSING
+        barGraphOptionsFromFixationList(nbackrt.getEyeFixations(),dataNBackRT);
+        bool temp = generateFDBFile(dataNBackRT,nbackrt.getEyeFixations(),false);
+        freqErrorsOK = freqErrorsOK && temp;
+
+        QString report = rdataProcessor.processNBackRT(matrixNBackRT);
 
         QFileInfo info(dataNBackRT);
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getNBackRTInformation(info.baseName());
         dateForReport = datInfo.date + "_" + datInfo.hour;
         reportInfoText << "t";
 
-        bool temp = generateFDBFile(dataNBackRT,nbackrt.getEyeFixations(),true);
-        freqErrorsOK = freqErrorsOK && temp;
-
-        studyID << "rt" + tagRet.version;
-        emit(appendMessage("NBack RT CSV GENERATED",MSG_TYPE_STD));
+        if (!report.isEmpty()){
+            studyID << "nbrt" + tagRet.version;
+            emit(appendMessage(report,MSG_TYPE_STD));
+        }
+        else {
+            emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
+            return;
+        }
     }
 
     // Generating the report based on available data.
@@ -683,6 +690,51 @@ void RawDataProcessor::barGraphOptionsFromFixationList(const FixationList &fixli
         QFileInfo info(fileName);
         bgo[0].title = "Fixations on Reading Sentences longer than 7 for : " + info.baseName();
         bgo[1].title = "Fixations on Reading Sentences shorter or equal to 7 for: " + info.baseName();
+    }
+    else if (fileName.contains(CONFIG_P_EXP_NBACKRT)){
+        bgo << BarGrapher::BarGraphOptions();  // The number of fixation during the three parts of the encoding
+        bgo << BarGrapher::BarGraphOptions();  // The number of fixations during the the retrieval.
+
+        for (qint32 i = 0; i < 2; i++){
+            bgo[i].width = 1280;
+            bgo[i].height = 720;
+            bgo[i].associatedFileName = fileName;
+            bgo[i].drawValuesOnBars = false;
+            bgo[i].fontSize = 12;
+            bgo[i].ylabel = "Number of Total Unfiltered Fixations";
+            bgo[i].associatedFileName = fileName;
+            bgo[i].colors << "#2022a2" << "#a21d3c";
+            bgo[i].dataSets << QList<qreal>() << QList<qreal>();
+            bgo[i].legend << "Left Eye" << "Right Eye";
+        }
+
+        qint32 nFixL, nFixR;
+        nFixL = 0; nFixR = 0;
+
+        for (qint32 i = 0; i < fixlist.trialID.size(); i++){
+            QStringList l = fixlist.trialID.at(i);
+            // This check should always pass. However if for some future bug the list does not contain any values the code inside would crash the program
+            if (l.size() == 2){
+                if (l.first() == "4"){
+                    bgo[0].dataSets[EYE_L].append(nFixL);
+                    bgo[0].dataSets[EYE_R].append(nFixR);
+                    bgo[0].xtext << l.last();
+                    nFixL = 0;
+                    nFixR = 0;
+                    bgo[1].dataSets[EYE_L].append(fixlist.left.at(i).size());
+                    bgo[1].dataSets[EYE_R].append(fixlist.right.at(i).size());
+                    bgo[1].xtext << l.last();
+                }
+                else{
+                   nFixR = nFixR + fixlist.right.at(i).size();
+                   nFixL = nFixL + fixlist.left.at(i).size();
+                }
+            }
+        }
+        QFileInfo info(fileName);
+        bgo[0].title = "Fixations on NBACK RT Encoding for : " + info.baseName();
+        bgo[1].title = "Fixations on NBACK RT Retrieval for: " + info.baseName();
+
     }
     else{
         emit(appendMessage("BarGraph Option Creator: Unknown file type: " + fileName,MSG_TYPE_ERR));

@@ -5,6 +5,56 @@ RDataProcessor::RDataProcessor()
     workDirectory = "";
 }
 
+QString RDataProcessor::processNBackRT(const QString &nbackrtFile){
+    error = "";
+    QFileInfo nbackrt_file (nbackrtFile);
+    if (!nbackrt_file.exists()){
+        error = "RPROCESSOR: NBack RT file: " + nbackrtFile + "does not exist";
+        return "";
+    }
+
+    QString outputconf = workDirectory + "/" + QString(FILE_R_OUT_NBACKRT);
+
+    QStringList arguments;
+    arguments << RSCRIPT_NBACKRT;
+    arguments << nbackrtFile;
+    arguments << outputconf;
+
+    qint32 processRetCode = QProcess::execute(RSCRIPT_RUNNABLE,arguments);
+
+    if (processRetCode != 0){
+        error = "RPROCESSOR: Running the script with the arguments: "
+                + arguments.join(",") + " has FAILED. Ret Code: "
+                + QString::number(processRetCode);
+        return "";
+    }
+
+
+    if (!checkAndMerge(outputconf)) return "";
+
+    QString report = "<br>NBACK RT RESULTS:<br>";
+
+    // Saving the DB Data
+    dbdata.insert(TEYERES_COL_NBRT_FIX_ENC,results.getInt(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC));
+    dbdata.insert(TEYERES_COL_NBRT_FIX_RET,results.getInt(CONFIG_RESULTS_NBACKRT_NUM_FIX_RET));
+    dbdata.insert(TEYERES_COL_NBRT_INHIB_PROB,results.getReal(CONFIG_RESULTS_NBACKRT_INHIBITORY_PROBLEMS));
+    dbdata.insert(TEYERES_COL_NBRT_SEQ_COMPLETE,results.getReal(CONFIG_RESULTS_NBACKRT_SEQ_COMPLETE));
+    dbdata.insert(TEYERES_COL_NBRT_TARGET_HIT,results.getReal(CONFIG_RESULTS_NBACKRT_TARGET_HIT));
+    dbdata.insert(TEYERES_COL_NBRT_MEAN_RESP_TIME,results.getReal(CONFIG_RESULTS_NBACKRT_MEAN_RESP_TIME));
+    dbdata.insert(TEYERES_COL_NBRT_MEAN_SAC_AMP,results.getReal(CONFIG_RESULTS_NBACKRT_MEAN_SAC_AMP));
+
+    // Text report
+    report = report + "Number of Fixations in Encoding: " + results.getString(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC)  + "<br>";
+    report = report + "Number of Fixations in Retrieval: " + results.getString(CONFIG_RESULTS_NBACKRT_NUM_FIX_RET)  + "<br>";
+    report = report + "Percent of Inhibitory Problems: " + results.getString(CONFIG_RESULTS_NBACKRT_INHIBITORY_PROBLEMS)  + "<br>";
+    report = report + "Percent of Complete Sequences: " + results.getString(CONFIG_RESULTS_NBACKRT_SEQ_COMPLETE)  + "<br>";
+    report = report + "Percent of Target Hits: " + results.getString(CONFIG_RESULTS_NBACKRT_TARGET_HIT)  + "<br>";
+    report = report + "Mean Response Time: " + results.getString(CONFIG_RESULTS_NBACKRT_MEAN_RESP_TIME)  + "<br>";
+    report = report + "Mean Saccade Amplitude: " + results.getString(CONFIG_RESULTS_NBACKRT_MEAN_SAC_AMP)  + "<br>";
+
+    return report;
+
+}
 
 QString RDataProcessor::processReading(const QString &readingFile){
     error = "";
@@ -19,7 +69,6 @@ QString RDataProcessor::processReading(const QString &readingFile){
     QStringList arguments;
     arguments << RSCRIPT_READING;
     arguments << readingFile;
-    arguments << workDirectory + "/" + QString(FILE_R_OUT_TEMPRDA);
     arguments << outputconf;
 
     qint32 processRetCode = QProcess::execute(RSCRIPT_RUNNABLE,arguments);

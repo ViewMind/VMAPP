@@ -102,6 +102,8 @@ void Control::run(){
     }
     QString configFile = arguments.last();
 
+    //qDebug() << "RUNNING With configFile: " << configFile;
+
     // Attempting to load the configuration.
     if (!configuration.loadConfiguration(configFile,COMMON_TEXT_CODEC)){
         log.appendError("Configuration file errors:<br>"+configuration.getError());

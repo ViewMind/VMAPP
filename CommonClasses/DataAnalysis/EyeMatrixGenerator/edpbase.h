@@ -94,6 +94,9 @@ protected:
     // Filtered lines list.
     QStringList filteredLinesList;
 
+    // The string that identifies each Eye. This is used in order to force the active Eye to be one always.
+    QString eyeRightCSV, eyeLeftCSV;
+
     // Used to store processed data in order to do a frequency analysis.
     QList<DataMatrix> eventData;
 

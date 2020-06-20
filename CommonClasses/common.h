@@ -144,6 +144,13 @@
 #define   CONFIG_RESULTS_UC_PREDICTED_GROUP             "uc_predicted_group"
 #define   CONFIG_RESULTS_READ_PREDICTED_DETERIORATION   "reading_predicted_deterioration"
 #define   CONFIG_RESULTS_BINDING_CONVERSION_INDEX       "binding_conversion_index"
+#define   CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC            "number_of_fixations_enc"
+#define   CONFIG_RESULTS_NBACKRT_NUM_FIX_RET            "number_of_fixations_ret"
+#define   CONFIG_RESULTS_NBACKRT_INHIBITORY_PROBLEMS    "inhibitory_problems_percent"
+#define   CONFIG_RESULTS_NBACKRT_SEQ_COMPLETE           "correct_complete_sequence_percent"
+#define   CONFIG_RESULTS_NBACKRT_TARGET_HIT             "correct_target_hit_percent"
+#define   CONFIG_RESULTS_NBACKRT_MEAN_RESP_TIME         "mean_response_time"
+#define   CONFIG_RESULTS_NBACKRT_MEAN_SAC_AMP           "mean_saccade_amplitude"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"
@@ -158,6 +165,8 @@
 #define   CONFIG_P_ET_REDM                              "REDm"
 #define   CONFIG_P_ET_GP3HD                             "GP3HD"
 #define   CONFIG_P_ET_HTCVIVEEYEPRO                     "HTCVIVEEyePro"
+
+// Parameters to pass to the DB Manager and tell it what to do.
 #define   CONFIG_P_DMBNG_ACTION_CHECK                   "check"
 #define   CONFIG_P_DMBNG_ACTION_STORE                   "store"
 #define   CONFIG_P_DBMNG_ACTION_PATDATA                 "patdata"

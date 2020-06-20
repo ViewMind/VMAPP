@@ -144,6 +144,13 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TEYERES_COL_READ_COG_IMPAIR             "cognitive_impairment_index"
 #define  TEYERES_COL_EVALUATION_ID               "evaluation_id"
 #define  TEYERES_COL_CLIENT_STUDY_DATE           "client_study_date"
+#define  TEYERES_COL_NBRT_FIX_ENC                "nbrt_fix_enc"
+#define  TEYERES_COL_NBRT_FIX_RET                "nbrt_fix_ret"
+#define  TEYERES_COL_NBRT_INHIB_PROB             "nbrt_inhib_prob"
+#define  TEYERES_COL_NBRT_SEQ_COMPLETE           "nbrt_seq_complete"
+#define  TEYERES_COL_NBRT_TARGET_HIT             "nbrt_target_hit"
+#define  TEYERES_COL_NBRT_MEAN_RESP_TIME         "nbrt_mean_resp_time"
+#define  TEYERES_COL_NBRT_MEAN_SAC_AMP           "nbrt_mean_sac_amp"
 
 // Columnn names for the institituion table
 #define  TINST_COL_KEYID                         "keyid"

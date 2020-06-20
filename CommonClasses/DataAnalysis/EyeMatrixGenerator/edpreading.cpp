@@ -217,8 +217,8 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
                << pos << ","
                << fL.at(i).duration << ","
                   // The length of the sentece is alwasy the same so the value of the first row is taken, only.
-               << data.first().at(READ_SL)
-               << ",0" << ","
+               << data.first().at(READ_SL) << ","
+               << eyeLeftCSV << ","
                << pup << ","
                << countZeros(data,READ_PL,fL.at(i).indexFixationStart,fL.at(i).indexFixationEnd) << ","
                << sac.calculateSacadeAmplitude(fL.at(i).x,fL.at(i).y,monitorGeometry) << ","
@@ -262,8 +262,8 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
                << pos << ","
                << fR.at(i).duration << ","
                   // The length of the sentece is alwasy the same so the value of the first row is taken, only.
-               << data.first().at(READ_SL)
-               << ",1" << ","
+               << data.first().at(READ_SL) << ","
+               << eyeRightCSV << ","
                << pup << ","
                << countZeros(data,READ_PR,fR.at(i).indexFixationStart,fR.at(i).indexFixationEnd) << ","
                << sac.calculateSacadeAmplitude(fR.at(i).x,fR.at(i).y,monitorGeometry) << ","

@@ -27,8 +27,8 @@ parseq_fast<-function(a)
 }
 
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 3) {
-   stop("Reading Script requires 3 and only 3 argurments", call.=FALSE)
+if (length(args) != 2) {
+   stop("Reading Script requires 2 and only 2 argurments", call.=FALSE)
 }
 
 setwd("./res")
@@ -617,7 +617,7 @@ m3
 
 reading_output <- paste0(reading_output,"reading_predicted_deterioration = ",m3$predicted_Deterioro, ";\n")
 
-fileConn<-file(args[3])
+fileConn<-file(args[2])
 writeLines(reading_output, fileConn)
 close(fileConn)     
  

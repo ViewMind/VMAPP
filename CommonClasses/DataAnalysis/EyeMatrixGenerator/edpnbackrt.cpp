@@ -265,7 +265,6 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     id << imgID << trialID;
     eyeFixations.trialID.append(id);
 
-
     //    // Computing maximum and minimum values to check whether a fixation is IN or OUT.
     //    qreal minX = targetBoxX.at(trialSequence);
     //    qreal minY = targetBoxY.at(trialSequence);
@@ -332,7 +331,7 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
              << trialSeqStr.join("|")
              << targetHitSearcherReturn.sequenceCompleted
              << QString::number(f.duration)
-             << "0"
+             << eyeLeftCSV
              << QString::number(sacLatL)
              << QString::number(sac.calculateSacadeAmplitude(f.x,f.y,monitorGeometry))
              << responseTime;
@@ -362,7 +361,7 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
               << trialSeqStr.join("|")
               << targetHitSearcherReturn.sequenceCompleted
               << QString::number(f.duration)
-              << "1"
+              << eyeRightCSV
               << QString::number(sacLatR)
               << QString::number(sac.calculateSacadeAmplitude(f.x,f.y,monitorGeometry))
               << responseTime;
