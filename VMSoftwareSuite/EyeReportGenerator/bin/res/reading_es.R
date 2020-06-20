@@ -13,7 +13,6 @@ library(gdata)
 
 rm(list=ls())  #Remove workspace
 
-
 parseq_fast<-function(a)
 {
   la = length(a)
@@ -24,7 +23,6 @@ parseq_fast<-function(a)
   b <- cbind(b, b[,2]-b[,1]+1)
 }
 
-
 args = commandArgs(trailingOnly=TRUE)
 if (length(args) != 2) {
    stop("Reading Script requires 2 and only 2 argurments", call.=FALSE)
@@ -32,8 +30,7 @@ if (length(args) != 2) {
 
 setwd("./res")
 
-
-sss<-read.csv(args[1])  #yo_09_05_2020
+sss<-read.csv(args[1])  
 dim(sss)
 
 bs3<-sss
@@ -170,10 +167,10 @@ sid_mf<-sid[sid[,3]!=1,]
 #
 #structure of a ("id","sn","nw","wn","let","dur")
 a_fsl<-a[sid[,1],]
-for (i in 1:dim(sid_mf)[1]){
+#for (i in 1:dim(sid_mf)[1]){
   #   #if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0
   #   a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
-}
+#}
 a<-a_fsl;rm(a_fsl)
 
 dim(a)
@@ -585,7 +582,6 @@ reading_output <- paste0(reading_output,"reading_predicted_deterioration = ",m3$
 
 fileConn<-file(args[2])
 writeLines(reading_output, fileConn)
-close(fileConn)     
- 
+close(fileConn)   
 
 
