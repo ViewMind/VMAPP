@@ -12,12 +12,7 @@ library(gdata)
 
 
 #### NOTEBOOK ########
-
-
-# setwd("C:/Users/gerar/Dropbox/N_back_RT/para colo")  #HP
-
 rm(list=ls())  #Remove workspace
-
 setwd("./res")
 
 args = commandArgs(trailingOnly=TRUE)
@@ -42,14 +37,11 @@ b$amp_sacada<-as.numeric(b$amp_sacada)
 
 dim(b)
 head(b)
-#b<-b[,1:15]  #sacar # si la matriz tiene más de 15 columnas
-
 names(b) <- c("suj","trial_id", "imagenN","target","target_hit","nback","trial_seq","seq_comp","dur", "eye", "latsac", "ao","respT")
 
 b$imagenN<-as.factor(b$imagenN)
 
 
-str(b)
 
 
 table(b$resp_time)
@@ -58,9 +50,9 @@ tail(b)
 table(b$eye)
 table(b$trial_id)
 #eye = 0 IZQUIERDO
-idx<-which(b$eye=="0") #trabajamos con el ojo DERECHO, como en lectura.
+idx<-which(b$eye=="1") #trabajamos con el ojo DERECHO, como en lectura.
 length(idx)
-b<-b[-idx,]
+b<-b[idx,]
 
 idx<-which(b$dur<50) 
 length(idx)
@@ -81,6 +73,7 @@ table(b$imagenN,b$target_hit)
 str(b)
 levels(b$imagenN)
 table(b$imagenN)
+table(b$target)
 table(b$eye)
 table(b$target_hit)
 table(b$seq_comp)
@@ -88,39 +81,51 @@ b$trial_id<-as.factor(b$trial_id)
 
 head(b)
 tail(b)
-#View(b)
 b$respT<-as.numeric(as.character(b$respT))
 
-summary(b)
-dim(b)
+
 Number_of_fixations_RET<-which(b$imagenN=="4")
 length(Number_of_fixations_RET)
 
 Number_of_fixations_ENC<-which(b$imagenN!="4")
 length(Number_of_fixations_ENC)
+pruebaENC<-b[Number_of_fixations_ENC,]
+pruebaENC$target
+table(pruebaENC$target,pruebaENC$imagenN)
+b$trial_id<-as.factor(b$trial_id)
 
-
-a4 <- ddply(b, .(suj,trial_id,imagenN,target,target_hit,nback,seq_comp), summarise,  mdur = mean(dur),
+b$target<-as.numeric(b$target)
+a4 <- ddply(b, .(suj,trial_id,imagenN,target,target_hit,seq_comp), summarise,
             mlatsac = mean(latsac),mrespT = mean(respT),mao = mean(ao),Nfixations=length(suj))
 
-str(a4)
+#                        mlatsac = mean(latsac),mrespT = mean(respT),mao = mean(ao),Nfixations=length(suj))
+
+
 
 a4$Nfixations<-as.numeric(a4$Nfixations)
 
-#View(a4)
 
 
-
+###################################
 #calculo problemas inhibitorios
 idx<-which(a4$imagenN=="4")
 a4_ENC<-a4[-idx,]   #Me quedo con ENCODING
 #View(a4_ENC)
-idx<-which(a4_ENC$target_hit=="0")
-a4_ENC_INH<-a4_ENC[-idx,]  #Me quedo con aquellos targets donde NO DEBERIA haber fijado en el ENCODING (fijaciones sobre punto rojo)
+table((a4_ENC$target_hit))
+table((a4_ENC$target))
+
+b$imagenN<-as.numeric(b$imagenN)
 
 
+a4_ENC$target<-as.numeric(a4_ENC$target)
+idx<-which(a4_ENC$target < 6)
+
+a4_ENC_INH<-a4_ENC[idx,]  #Me quedo con aquellos targets donde NO DEBERIA haber fijado en el ENCODING (fijaciones sobre punto rojo)
+#table((a4_ENC$target))
+
+###########################
 str(a4_ENC)
-
+############################################
 
 a4_ENC$target<-as.numeric(a4_ENC$target)
 Inhibitory_problems_Percent<-(nrow(a4_ENC_INH)*100)/nrow(a4_ENC)
@@ -136,15 +141,6 @@ a4_RET<-b[-idx,] #me quedo con decodificación o RETRIEVAL
 
 
 #a4_RET$respT<-as.numeric(as.character(a4_RET$respT))
-
-
-a4[1:50,]
-
-str(a4_RET)
-table(a4_RET$respT)
-head(a4_RET)
-
-str(a4_RET)
 summary(a4_RET)
 
 mean_saccade_amplitude<-mean(a4_RET$ao)   #
@@ -158,7 +154,7 @@ mean_Response_Time<-mean(a4_RET$respT)
 mean_Response_Time
 
 
-n_back_Percent<-table(a4_RET$nback)*100/86
+#n_back_Percent<-table(a4_RET$nback)*100/86
 
 
 idx<-which(a4_RET$target_hit=="0") 
@@ -172,19 +168,22 @@ mean_SAC
 table(a4$suj)
 
 #correct_target_hit_Percent<-(nrow(a4_RET_TH)*100)/nrow(a4_RET) 
-
-correct_target_hit_Percent<-((nrow(a4_RET_TH))*100)/258 # cantidad de trials para responder (86 trial x 3 imagenes)
+correct_target_hit_Percent<-((nrow(a4_RET_TH))*100)/261 # cantidad de trials para responder (87 trial x 3 imagenes)
 correct_target_hit_Percent  #Cantidad de sujetos analizados
 
 idx<-which(a4_RET$seq_comp=="1") 
 length(idx)
 a4_RET_1<-a4_RET[idx,]
 
-correct_complete_sequence_Percent<-(nrow(a4_RET_1)*100)/86 
+correct_complete_sequence_Percent<-(nrow(a4_RET_1)*100)/87 
 correct_complete_sequence_Percent
 
 
-head(b)
+
+
+#incorrect targer_hit me dará "Working memory error %"
+#diferencia entre nback 0, 1 y 2 (o 5, 6, 7) me dará "working memory effect". No debería haber diferencia.
+
 
 nrow(b)
 length(Number_of_fixations_ENC) #Number_of_fixations_encoding  #cantidad de fijaciones que hace para levantar info en "encoding" .
@@ -196,10 +195,14 @@ correct_complete_sequence_Percent # cantidad de secuencias completas. Working me
 mean_Response_Time  # Velocidad para hacer tareas y desarrollo de estrategia de búsqueda eficiente,
 mean_saccade_amplitude # amplitud de la sacada. Funcionamiento subcortical
 
+#mean_latencia_sacadica 
+
+
 prueba<-cbind(length(Number_of_fixations_ENC),length(Number_of_fixations_RET),Inhibitory_problems_Percent,
               correct_target_hit_Percent,correct_complete_sequence_Percent,mean_Response_Time,
               mean_saccade_amplitude)
 prueba
+
 
 nbackrt_output <- paste0(               "number_of_fixations_enc = ",            length(Number_of_fixations_ENC), ";\n")
 nbackrt_output <- paste0(nbackrt_output,"number_of_fixations_ret = ",            length(Number_of_fixations_RET), ";\n")
@@ -210,12 +213,8 @@ nbackrt_output <- paste0(nbackrt_output,"mean_response_time = ",                
 nbackrt_output <- paste0(nbackrt_output,"mean_saccade_amplitude = ",             prueba[7], ";\n")
 
 fileConn<-file(args[2])
-#fileConn<-file("nbackrt_results")
 writeLines(nbackrt_output, fileConn)
-close(fileConn)     
- 
+close(fileConn) 
 
 
 
-
-#write.table(prueba, "C:/Users/gerar/Dropbox/N_back_RT/para colo/prueba_n-back_RT.txt") #acá setea el directorio de tu maquina

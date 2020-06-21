@@ -1,2 +1,0 @@
-"" "" "Inhibitory_problems_Percent" "correct_target_hit_Percent" "correct_complete_sequence_Percent" "mean_Response_Time" "mean_saccade_amplitude"
-"1" 278 462 0 92.2480620155039 84.8837209302326 1975.2316017316 6.67724567813853

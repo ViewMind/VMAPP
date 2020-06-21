@@ -13,6 +13,7 @@ library(gdata)
 
 rm(list=ls())  #Remove workspace
 
+
 parseq_fast<-function(a)
 {
   la = length(a)
@@ -23,6 +24,7 @@ parseq_fast<-function(a)
   b <- cbind(b, b[,2]-b[,1]+1)
 }
 
+
 args = commandArgs(trailingOnly=TRUE)
 if (length(args) != 2) {
    stop("Reading Script requires 2 and only 2 argurments", call.=FALSE)
@@ -30,7 +32,8 @@ if (length(args) != 2) {
 
 setwd("./res")
 
-sss<-read.csv(args[1])  
+
+sss<-read.csv(args[1])  #yo_09_05_2020
 dim(sss)
 
 bs3<-sss
@@ -43,9 +46,9 @@ bs3<-bs3[,c(1:18)]
 bs3$Condition<-"NA"
 bs3$Condition<-as.factor(bs3$Condition)
 
+head(bs3)
 
-
-names(bs3)<-c("id_","age","suj","sujnum","sn","trial","fixn","screenpos","wn","let","dur","nw","eye", "pupila","blink","ao","gaze","nf","Condition")
+names(bs3)<-c("id_","age","suj","id","sn","trial","fixn","screenpos","wn","let","dur","nw","eye", "pupila","blink","ao","gaze","nf","Condition")
 table(bs3$id)
 
 str(bs3)
@@ -167,10 +170,10 @@ sid_mf<-sid[sid[,3]!=1,]
 #
 #structure of a ("id","sn","nw","wn","let","dur")
 a_fsl<-a[sid[,1],]
-#for (i in 1:dim(sid_mf)[1]){
+for (i in 1:dim(sid_mf)[1]){
   #   #if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0
   #   a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
-#}
+}
 a<-a_fsl;rm(a_fsl)
 
 dim(a)
@@ -545,6 +548,7 @@ dim(a10)
 
 models_reading <- load_models("reading_es_model.RDS")
 
+#models_reading <- load_models("my_models_reading_ESPAÑOL.RDS")
 
 
 #####################################################################################
@@ -582,6 +586,7 @@ reading_output <- paste0(reading_output,"reading_predicted_deterioration = ",m3$
 
 fileConn<-file(args[2])
 writeLines(reading_output, fileConn)
-close(fileConn)   
+close(fileConn)     
+ 
 
 
