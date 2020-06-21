@@ -1,5 +1,5 @@
 library(healthcareai)
-
+library(dplyr)
 library(memisc)
 library(MASS)
 library(lme4)
@@ -39,7 +39,6 @@ names(BC) <- c("id","age","subj_id", "trial_id", "is_trial","trial_name","trial_
 table(BC$is_trial)
 head(BC)
 
-
 UC<-read.csv(args[2])
 
 dim(UC)
@@ -54,6 +53,9 @@ table(UC$subj_id)
 
 BC$type<-NA
 BC$type<-"BC"
+
+
+
 
 
 BC$Condition<-"CONTROL"
@@ -127,9 +129,12 @@ table(bs$is_trial)
 
 table(bs$eye)
 #eye = 0 IZQUIERDO
+
+bs = filter(bs, eye != "0" )
+
 idx<-which(bs$eye=="0") #trabajamos con el ojo DERECHO, como en lectura.
 length(idx)
-bs<-bs[-idx,]
+#bs<-bs[-idx,]
 
 
 idx<-which(bs$timeline >4000)
@@ -183,6 +188,10 @@ a4$Condition1<-as.factor(a4$Condition1)
 a2<-a4
 
 
+
+
+
+
 # #######################################################
 a2$Deterioro <-ifelse(a2$Condition1== "CONTROL", "NO", "SI")
 
@@ -202,7 +211,12 @@ a41 <- (a2[,c(3,7,8,10,11,12,13)])
 
 a5<-cbind(a31,a41)
 
+
+
+
 m1 <- load_models("binding3_model.RDS")
+
+
 
 m4<-predict(m1, a5, outcome_groups = 2)
 

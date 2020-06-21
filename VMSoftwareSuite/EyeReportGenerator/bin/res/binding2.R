@@ -4,6 +4,7 @@ library(lme4)
 library(grid)
 library(ggplot2)
 library(plyr)
+library(dplyr)
 library(scales)
 library(reshape2)
 library(reshape)
@@ -110,19 +111,18 @@ idx<-which(r$trial_id==0)
 length(idx)
 r<-r[-idx,] 
 
-
 str(r)
 #describe(b)
 levels(r$trial_id)
 r$type<-as.factor(r$type)
 r$is_trial<-as.factor(r$is_trial)
 r$eye<-as.factor(r$eye)
-
+r = filter(r, eye != "0" )
 
 #eye = 0 IZQUIERDO
 idx<-which(r$eye=="0") #trabajamos con el ojo DERECHO, como en lectura.
 length(idx)
-r<-r[-idx,]
+#r<-r[-idx,]
 
 
 str(r)
@@ -143,10 +143,6 @@ as$Condition<-as.factor(as$Condition)
 
 
 rm(r)
-
-
-
-
 
 
 as_1<-as
@@ -187,14 +183,10 @@ tail(as_1)
 
 table(as_1$Condition)
 
-
-
-
 #
 #install.packages("healthcareai")
 library(healthcareai)
 #packageVersion("healthcareai")
-
 
 m1 <- load_models("binding2_model.RDS")
 
