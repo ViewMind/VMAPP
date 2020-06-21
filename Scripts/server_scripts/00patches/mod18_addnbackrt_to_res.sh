@@ -28,7 +28,8 @@ export MYSQL_PWD=$PASSWD
 
 echo ">> APPLYING PATCH 15"
 
-mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "ALTER TABLE tEyeResults ADD nbrt_fix_enc INT;
+mysql -h $DB_RES_HOST -u $USER -P $PORT --database=$DB_RES_NAME -e "ALTER TABLE tFData MODIFY eye_fixation_counts VARCHAR(10000);
+                                                                    ALTER TABLE tEyeResults ADD nbrt_fix_enc INT;
                                                                     ALTER TABLE tEyeResults ADD nbrt_fix_ret INT;
                                                                     ALTER TABLE tEyeResults ADD nbrt_inhib_prob FLOAT;
                                                                     ALTER TABLE tEyeResults ADD nbrt_seq_complete FLOAT;
