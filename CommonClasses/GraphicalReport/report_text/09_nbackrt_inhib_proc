@@ -8,7 +8,7 @@ explanation_es = ;
 range_text_en = Normal value LESS than 2;
 range_text_es = Valor normal MENOR a 2;
 
-cutoff_values = 0|1|2|4|5;
+cutoff_values = 0|3|18|45|60;
 
 smaller_better = true;
 
