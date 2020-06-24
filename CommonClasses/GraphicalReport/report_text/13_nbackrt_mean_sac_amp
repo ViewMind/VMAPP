@@ -1,11 +1,9 @@
-title_en = BEHAVIOURAL RESPONSE;
-title_es = RESPUESTA CONDUCTUAL;
+title_en = VISUAL EXPLORATION EFFICIENCY;
+title_es = EFICIENCIA EN EXPLORACIÓN VISUAL;
 
-explanation_en = Entorhinal and Perirhinal Cortex.
-Medial Temporal Lobe;
+explanation_en = ;
 
-explanation_es = Corteza Entorrinal y Perirrinal.
-Lobulo Temporal Medio;
+explanation_es = ;
 
 range_text_en = Normal value GREATER than 4.1;
 range_text_es = Valor normal MAYOR a 4.1;

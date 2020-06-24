@@ -207,8 +207,8 @@ prueba
 nbackrt_output <- paste0(               "number_of_fixations_enc = ",            length(Number_of_fixations_ENC), ";\n")
 nbackrt_output <- paste0(nbackrt_output,"number_of_fixations_ret = ",            length(Number_of_fixations_RET), ";\n")
 nbackrt_output <- paste0(nbackrt_output,"inhibitory_problems_percent = ",        prueba[3], ";\n")
-nbackrt_output <- paste0(nbackrt_output,"correct_complete_sequence_percent = ",  prueba[4], ";\n")
-nbackrt_output <- paste0(nbackrt_output,"correct_target_hit_percent = ",         prueba[5], ";\n")
+nbackrt_output <- paste0(nbackrt_output,"correct_target_hit_percent = ",         prueba[4], ";\n")
+nbackrt_output <- paste0(nbackrt_output,"correct_complete_sequence_percent = ",  prueba[5], ";\n")
 nbackrt_output <- paste0(nbackrt_output,"mean_response_time = ",                 prueba[6], ";\n")
 nbackrt_output <- paste0(nbackrt_output,"mean_saccade_amplitude = ",             prueba[7], ";\n")
 

@@ -5,8 +5,8 @@ explanation_en = ;
 
 explanation_es = ;
 
-range_text_en = Normal value LESS than 2;
-range_text_es = Valor normal MENOR a 2;
+range_text_en = Normal value LESS than 18;
+range_text_es = Valor normal MENOR a 18;
 
 cutoff_values = 0|3|18|45|60;
 
