@@ -398,7 +398,8 @@ EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x
 
     // Finding which target, if any, was hit by the fixation.
     for (qint32 i = 0; i < hitTargetBoxes.size(); i++){
-        if (hitTargetBoxes.at(i).contains(x,y)){
+        //if (hitTargetBoxes.at(i).contains(x,y)){
+        if (FieldingParser::isHitInTargetBox(hitTargetBoxes,i,x,y)){
             target_hit = i;
             break;
         }

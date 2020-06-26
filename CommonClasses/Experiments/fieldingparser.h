@@ -32,6 +32,13 @@
 #define   TARGET_OFFSET_X                               39/4
 #define   TARGET_OFFSET_Y                               35/4
 
+#define   TARGET_BOX_0                                  0
+#define   TARGET_BOX_1                                  1
+#define   TARGET_BOX_2                                  2
+#define   TARGET_BOX_3                                  3
+#define   TARGET_BOX_4                                  4
+#define   TARGET_BOX_5                                  5
+
 #define   K_HORIZONAL_MARGIN                            0.06
 #define   K_SPACE_BETWEEN_BOXES                         0.09
 #define   K_VERTICAL_MARGIN                             0.06
@@ -66,6 +73,9 @@ public:
     QList<qint32> getSequenceForTrial(const QString &trialID);
     QList<QRectF> getDrawTargetBoxes() const;
     QList<QRectF> getHitTargetBoxes() const;
+
+    // Logic used to determine if a fixation is "in" the target box or not.
+    static bool isHitInTargetBox(const QList<QRectF> &hitTargetBoxes, qint32 tbID, qreal x, qreal y);
 
 private:
     QString error;

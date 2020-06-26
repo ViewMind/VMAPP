@@ -57,6 +57,26 @@ qint32 FieldingParser::getTargetBoxForImageNumber(const QString &trialID, qint32
     return ans;
 }
 
+bool FieldingParser::isHitInTargetBox(const QList<QRectF> &hitTargetBoxes, qint32 targetBox, qreal x, qreal y){
+    if ((targetBox < 0) || (targetBox >= hitTargetBoxes.size())) return  false;
+    //qDebug() << "CHECKING IF TARGET BOX" << targetBoxes.at(targetBox) << "contains" << x << y;
+
+    // The only acurate cumputation of target hit will be done with boxes 5 and 2.
+    if ((targetBox == TARGET_BOX_5) || (targetBox == TARGET_BOX_2)){
+        return hitTargetBoxes.at(targetBox).contains(x,y);
+    }
+
+    // All other boxes get half a squre of leeway.
+    if (hitTargetBoxes.at(targetBox).contains(x,y)) return true;
+
+    qreal leeway = hitTargetBoxes.at(targetBox).height()/2;
+
+    if (hitTargetBoxes.at(targetBox).contains(x,y+leeway)) return true;
+    if (hitTargetBoxes.at(targetBox).contains(x,y-leeway)) return true;
+
+    return false;
+}
+
 
 QList<qint32> FieldingParser::getSequenceForTrial(const QString &trialID){
     for (qint32 i = 0; i < fieldingTrials.size(); i++){
