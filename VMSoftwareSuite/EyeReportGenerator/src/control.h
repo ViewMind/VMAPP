@@ -9,7 +9,7 @@
 
 #define   EYE_REP_GEN_NAME                              "EyeRepGenerator"
 #define   EYE_DIR_LOG                                   "LOGS"
-#define   EYE_REP_GEN_VERSION                           "8.2.0" //8.1.1
+#define   EYE_REP_GEN_VERSION                           "8.2.1" //8.2.0
 
 class Control : public QObject
 {
