@@ -102,5 +102,6 @@
         <file>images/reading_is/0.gif</file>
         <file>images/reading_is/1.gif</file>
         <file>images/reading_is/2.gif</file>
+        <file>images/white_arrow.png</file>
     </qresource>
 </RCC>

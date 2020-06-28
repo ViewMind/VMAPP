@@ -100,6 +100,8 @@ viewstudystart_labelSelSubject = Selected Subject;
 viewstudystart_labelReadingLanguge = Reading language;
 viewstudystart_labelNBackType = NBack Type;
 viewstudystart_fieldingPauseText = Press any "G" when you are ready;
+viewstudystart_labelChoose = Choose the evaluations;
+viewstudystart_labelEvaluations = Evaluation to run;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Doctor selection;
@@ -292,6 +294,9 @@ viewselectdata_labelColBindingUC = New Colours;
 viewselectdata_labelColBindingBC = Colour Combinations;
 viewselectdata_labelFielding = N-Back MS Type;
 viewselectdata_labelNBackRT  = N-Back RT Type;
+viewselectdata_labelStudySelection = Select Study;
+viewselectdata_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type;
+viewselectdata_labeFileView = Report for studies;
 viewselectdata_labelNoUse = Do not use for report;
 viewselectdata_labelSelectOption = Select data file;
 viewselectdata_labelEvals = Available Evaluations;

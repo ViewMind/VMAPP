@@ -22,7 +22,7 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
         //swiperControl.currentIndex = swiperControl.vmIndexResults;
-        //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
+        swiperControl.currentIndex = swiperControl.vmIndexShowReports;
         //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
         //swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
@@ -194,11 +194,9 @@ Window {
             case vmIndexPatientList:
                 //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"0_0000_D0000");
                 //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
-                // This will laod patients which will also trigger the search for unprocessed information.
-                //viewPatList.test();
-                //viewPatList.openAskPasswordDialog();
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewPatList.loadPatients();                
+                //viewPatList.test();
                 break;
             case vmIndexShowReports:
                 viewShowReports.loadReportsForPatient();

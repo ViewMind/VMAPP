@@ -14,6 +14,7 @@ VMBase {
     property bool vmShowAll: false;
     property string vmPatIDForMedRecSync: ""
 
+
     Connections {
         target: flowControl
         onSslTransactionFinished:{
@@ -378,6 +379,7 @@ VMBase {
         y: (parent.height - height)/2
         x: (parent.width - width)/2
     }
+    property alias vmDatSelector: viewDatSelectionDiag
 
     ListModel {
         id: patientList
@@ -524,6 +526,19 @@ VMBase {
         showMsgDialog.vmNoButtonLabel = parts[3];
         showMsgDialog.open();
     }
+
+//    function test(){
+//        var index = 0;
+//        var patuid = patientList.get(index).vmPatientUID;
+//        patientListView.currentIndex = index;
+//        if (loader.verifyNoMissingDataOnPatient(patuid)){
+//            patientListView.currentIndex = index;
+//            viewDatSelectionDiag.open();
+//        }
+//        else{
+//            missingDataDialog.open();
+//        }
+//    }
 
     // The Doctor Information Title and subtitle
     Text {
