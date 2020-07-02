@@ -211,7 +211,7 @@ viewpatientlist_archive_msg=Archivar|Se encuentra por archivar los datos de un e
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
-viewshowreports_diagViewRepSubTitle = Doble click en el reporte para ver los resultados;
+viewshowreports_diagViewRepSubTitle = Resumen del contenido de los reportes;
 viewshowreports_diagPatientName = Paciente;
 viewshowreports_diagSubjectID = Sujeto;
 viewshowreports_diagTabDate = Fecha;
@@ -226,6 +226,7 @@ viewshowreports_diagBtnBack = ATRAS;
 viewshowreports_diagViewRepSubject = SUBJETO;
 viewshowreports_diagViewRepPatient = PACIENTE;
 viewshowreports_diagReprocess = ACTUALIZAR;
+viewshowreports_labelInformation = Contenidos del Reporte;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;

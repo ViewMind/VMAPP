@@ -22,7 +22,7 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
         //swiperControl.currentIndex = swiperControl.vmIndexResults;
-        swiperControl.currentIndex = swiperControl.vmIndexShowReports;
+        //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
         //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
         //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
         //swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;

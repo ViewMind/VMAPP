@@ -18,12 +18,13 @@ Button{
         id: rectArea
         radius: width*0.15
         border.color: "#ffffff"
-        color: pressed ? "#4984b3" : "#297fca"
+        color: enabled?( pressed ? "#4984b3" : "#297fca") : "#eaeaea"
         anchors.fill: parent
     }
     contentItem: Image{
         anchors.centerIn: parent
         source: "qrc:/images/white_arrow.png"
+        scale: 0.6
         transformOrigin: Item.Center
         rotation: vmRotate? 0 : 180
     }

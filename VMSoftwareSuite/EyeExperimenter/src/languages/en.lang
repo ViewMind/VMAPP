@@ -211,7 +211,7 @@ viewpatientlist_archive_msg=Archive|You are about to archive the data from a stu
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reports;
-viewshowreports_diagViewRepSubTitle = Double click on the report to see results;
+viewshowreports_diagViewRepSubTitle =  Report content summary;
 viewshowreports_diagPatientName = Patient;
 viewshowreports_diagSubjectID = Subject;
 viewshowreports_diagTabDate = Date;
@@ -226,6 +226,7 @@ viewshowreports_diagBtnBack = BACK;
 viewshowreports_diagViewRepSubject = SUBJECT;
 viewshowreports_diagViewRepPatient = PATIENT;
 viewshowreports_diagReprocess = UPDATE;
+viewshowreports_labelInformation = Report Contents;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Doctor's Profile;
