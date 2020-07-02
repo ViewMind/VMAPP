@@ -25,7 +25,7 @@ VMBase {
 
     function setDefaultSelections(){
         var studyList = loader.getStringListForKey("viewselectdata_studyList");
-        vmListOfSelectedStudies = [];
+        vmListOfStudiesToSelect = [];
         vmListOfSelectedStudies = [];
         for (var i = 0; i < studyList.length; i++){
             vmListOfStudiesToSelect.push({"vmStudyName" : studyList[i], "vmIsSelected" : false, "vmStudyID" : i, "vmIndex": i})
@@ -155,44 +155,13 @@ VMBase {
         var objsToMove = [];
 
         var obj = source.splice(selectedIndex,1)[0]
-        objsToMove.push(obj);
-
-        var studyIDToSearch = -1;
-        if (obj.vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC){
-            studyIDToSearch = viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC;
-        }
-        else if (obj.vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC){
-            studyIDToSearch = viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC;
-        }
-
-        // Searching for all the other ID's that need to me moved at the same time.
-        if (studyIDToSearch !== -1){
-            i = 0;
-            while(i < source.length){
-                if (source[i].vmStudyID === studyIDToSearch){
-                    var temp = source.splice(i,1)[0]
-                    objsToMove.push(temp);
-                }
-                else{
-                    i++;
-                }
-            }
-        }
-
-        if (objsToMove.length > 1){
-            objsToMove = sortByStudyIndex(objsToMove)
-        }
 
         // Making the insertion in the destination list.
         if (makeSelected){
-            for (i = 0; i < objsToMove.length; i++){
-                dest.push(objsToMove[i]);
-            }
+            dest.push(obj);
         }
         else{
-            for (i = 0; i < objsToMove.length; i++){
-                insertStudyInOrder(objsToMove[i]);
-            }
+            insertStudyInOrder(obj);
         }
 
         // Finally reindexing both lists
@@ -201,6 +170,9 @@ VMBase {
 
         if (vmListOfSelectedStudies.length > 0) btnStart.enabled = true;
         else btnStart.enabled = false;
+
+        if (vmListOfSelectedStudies.length >= 4) btnAddStudy.enabled = false;
+        else btnAddStudy.enabled = true;
 
     }
 
@@ -559,10 +531,10 @@ VMBase {
                         vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
                     }
                     else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_FIELDING){
-                            vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexFielding);
                     }
                     else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_NBACKRT){
-                            vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackRT);
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackRT);
                     }
                 }
 
