@@ -23,14 +23,24 @@ QString RDataProcessor::processNBackRT(const QString &nbackrtFile){
     qint32 processRetCode = QProcess::execute(RSCRIPT_RUNNABLE,arguments);
 
     if (processRetCode != 0){
-        error = "RPROCESSOR: Running the script with the arguments: "
+        warning = "RPROCESSOR: Running the script with the arguments: "
                 + arguments.join(",") + " has FAILED. Ret Code: "
                 + QString::number(processRetCode);
-        return "";
+        //return "";
+        results.addKeyValuePair(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_NBACKRT_NUM_FIX_RET,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_NBACKRT_INHIBITORY_PROBLEMS,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_NBACKRT_SEQ_COMPLETE,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_NBACKRT_TARGET_HIT,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_NBACKRT_MEAN_RESP_TIME,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_NBACKRT_MEAN_SAC_AMP,"N/A");
+    }
+    else{
+        if (!checkAndMerge(outputconf)) return "";
     }
 
 
-    if (!checkAndMerge(outputconf)) return "";
+
 
     QString report = "<br>NBACK RT RESULTS:<br>";
 
@@ -64,7 +74,7 @@ QString RDataProcessor::processReading(const QString &readingFile){
         return "";
     }
 
-    QString outputconf = workDirectory + "/" + QString(FILE_R_OUT_READING);;
+    QString outputconf = workDirectory + "/" + QString(FILE_R_OUT_READING);
 
     QStringList arguments;
     arguments << RSCRIPT_READING;
@@ -87,9 +97,6 @@ QString RDataProcessor::processReading(const QString &readingFile){
     else{
         if (!checkAndMerge(outputconf)) return "";
     }
-
-
-
 
     QString report = "<br>READING RESULTS:<br>";
 
@@ -160,17 +167,21 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
 
     //qDebug() << "Process returned " << processRetCode;
     if (processRetCode != 0){
-        error = "RPROCESSOR: Running the script with the arguments: "
+        warning = "RPROCESSOR: Running the script with the arguments: "
                 + arguments.join(",") + " has FAILED. Ret Code: "
                 + QString::number(processRetCode);
-        return "";
+        results.addKeyValuePair(CONFIG_RESULTS_BC_PREDICTED_DETERIORATION,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_UC_PREDICTED_DETERIORATION,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_BC_PREDICTED_GROUP,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_UC_PREDICTED_GROUP,"N/A");
+    }
+    else{
+        if (!checkAndMerge(outputconf)){
+            return "";
+        }
     }
 
     //qDebug() << "BINDING RUN:" << RSCRIPT_RUNNABLE << rScriptToCall << bcfile << ucfile << outputconf;
-
-    if (!checkAndMerge(outputconf)){
-        return "";
-    }
 
     qreal bcindex = results.getReal(CONFIG_RESULTS_BC_PREDICTED_DETERIORATION);
     qreal ucindex = results.getReal(CONFIG_RESULTS_UC_PREDICTED_DETERIORATION);
@@ -183,8 +194,8 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
 
     conversionIndex = bcindex;
 
-    qDebug() << "BINDING INDEXES";
-    qDebug() << bcgroup << ucgroup << bcindex << ucindex << conversionIndex;
+    //qDebug() << "BINDING INDEXES";
+    //qDebug() << bcgroup << ucgroup << bcindex << ucindex << conversionIndex;
 
     results.addKeyValuePair(CONFIG_RESULTS_BINDING_CONVERSION_INDEX,conversionIndex);
 

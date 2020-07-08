@@ -88,6 +88,9 @@ void RawDataProcessor::run(){
         freqErrorsOK = freqErrorsOK && temp;
 
         QString report = rdataProcessor.processReading(matrixReading);
+        if (!rdataProcessor.getWarning().isEmpty()){
+            emit(appendMessage(rdataProcessor.getWarning(),MSG_TYPE_WARN));
+        }
 
         QFileInfo info(dataReading);
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getReadingInformation(info.baseName());
@@ -145,6 +148,9 @@ void RawDataProcessor::run(){
         bindingAns[TEYERES_COL_UCTESTWRONGANS] = ucans.testWrong;
 
         QString report = rdataProcessor.processBinding(matrixBindingBC,matrixBindingUC,bcans.correct,ucans.correct);
+        if (!rdataProcessor.getWarning().isEmpty()){
+            emit(appendMessage(rdataProcessor.getWarning(),MSG_TYPE_WARN));
+        }
 
         // The code needs to be saved only once as it should be the same for both BC and UC.
         QFileInfo info(dataBindingBC);
@@ -199,6 +205,9 @@ void RawDataProcessor::run(){
         freqErrorsOK = freqErrorsOK && temp;
 
         QString report = rdataProcessor.processNBackRT(matrixNBackRT);
+        if (!rdataProcessor.getWarning().isEmpty()){
+            emit(appendMessage(rdataProcessor.getWarning(),MSG_TYPE_WARN));
+        }
 
         QFileInfo info(dataNBackRT);
         DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getNBackRTInformation(info.baseName());
