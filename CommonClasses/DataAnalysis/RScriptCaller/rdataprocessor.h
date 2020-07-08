@@ -30,12 +30,14 @@ public:
     QString processNBackRT(const QString &nbackrtFile);
 
     QString getError() const {return error;}
+    QString getWarning() const {return warning;}
 
     ConfigurationManager getResults() const {return results;}
     QHash<QString,qreal> getDBData() const {return dbdata;}
 
 private:
     QString error;
+    QString warning;
     ConfigurationManager results;
     QString workDirectory;
     QHash<QString,qreal> dbdata;

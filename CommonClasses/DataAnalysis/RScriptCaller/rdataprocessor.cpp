@@ -74,14 +74,22 @@ QString RDataProcessor::processReading(const QString &readingFile){
     qint32 processRetCode = QProcess::execute(RSCRIPT_RUNNABLE,arguments);
 
     if (processRetCode != 0){
-        error = "RPROCESSOR: Running the script with the arguments: "
+        warning = "RPROCESSOR: Running the script with the arguments: "
                 + arguments.join(",") + " has FAILED. Ret Code: "
                 + QString::number(processRetCode);
-        return "";
+        //return "";
+        results.addKeyValuePair(CONFIG_RESULTS_ATTENTIONAL_PROCESSES,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_WORKING_MEMORY,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_EXECUTIVE_PROCESSES,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_RETRIEVAL_MEMORY,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION,"N/A");
+    }
+    else{
+        if (!checkAndMerge(outputconf)) return "";
     }
 
 
-    if (!checkAndMerge(outputconf)) return "";
+
 
     QString report = "<br>READING RESULTS:<br>";
 
@@ -174,15 +182,6 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
     qreal conversionIndex;
 
     conversionIndex = bcindex;
-
-//    OLD CODE. HAS BECOME OBSOLETE
-//    if (bcgroup == ucgroup){
-//        conversionIndex = qMin(bcindex,ucindex);
-//    }
-//    else {
-//        if (bcgroup == "NO") conversionIndex = bcindex;
-//        else conversionIndex = ucindex;
-//    }
 
     qDebug() << "BINDING INDEXES";
     qDebug() << bcgroup << ucgroup << bcindex << ucindex << conversionIndex;
