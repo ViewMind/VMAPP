@@ -100,6 +100,8 @@ viewstudystart_labelSelSubject = Sujeto Seleccionado;
 viewstudystart_labelReadingLanguge = Lengua de lectura;
 viewstudystart_labelNBackType = Tipo de NBack;
 viewstudystart_fieldingPauseText = Presione "G" cuando se encuentre listo;
+viewstudystart_labelChoose = Elija los estudios;
+viewstudystart_labelEvaluations = Estudios a realizar;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Selección del Doctor;
@@ -209,7 +211,7 @@ viewpatientlist_archive_msg=Archivar|Se encuentra por archivar los datos de un e
 
 #********************************* SHOW REPORTS *********************************
 viewshowreports_diagViewRepTitle = Reportes;
-viewshowreports_diagViewRepSubTitle = Doble click en el reporte para ver los resultados;
+viewshowreports_diagViewRepSubTitle = Resumen del contenido de los reportes;
 viewshowreports_diagPatientName = Paciente;
 viewshowreports_diagSubjectID = Sujeto;
 viewshowreports_diagTabDate = Fecha;
@@ -224,6 +226,7 @@ viewshowreports_diagBtnBack = ATRAS;
 viewshowreports_diagViewRepSubject = SUBJETO;
 viewshowreports_diagViewRepPatient = PACIENTE;
 viewshowreports_diagReprocess = ACTUALIZAR;
+viewshowreports_labelInformation = Contenidos del Reporte;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Doctor;
@@ -293,6 +296,9 @@ viewselectdata_labelColBindingBC = Combinación de Colores;
 viewselectdata_labelFielding = Evaluación N-Back Tipo MS;
 viewselectdata_labelNBackRT  = Evaluación N-Back Tipo RT;
 viewselectdata_labelNoUse = No utilizar en reporte;
+viewselectdata_labelStudySelection = Seleccione un estudio;
+viewselectdata_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT;
+viewselectdata_labeFileView = Reporte para los estudios;
 viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_labelEvals = Evaluaciones disponibles;
 viewselectdata_btnDelete = Archivar;

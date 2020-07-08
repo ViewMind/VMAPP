@@ -10,6 +10,9 @@ Item {
     property bool vmFilledDisplay: false
     property bool vmEnabled: true
     property int vmCurrentIndex: -1;
+    property bool vmHideFAButton: false
+    property bool vmHideArchiveButton: false
+    property bool vmNoFillOnSelection: false
     readonly property int vmDatItemHeight: 60
 
 
@@ -39,7 +42,6 @@ Item {
         id: modelList
     }
 
-
     MouseArea {
         id: mouseTitleDetector
         anchors.fill: parent
@@ -59,15 +61,31 @@ Item {
         }
     }
 
+    function setSelected(indexInList){
+        vmCurrentIndex = indexInList;
+        listContainer.visible = false;
+        vmSelection = modelList.get(indexInList).vmDisplayText;
+        updateDisplay();
+    }
+
+    function getCurrentlyTextAt(indexInList){
+        return modelList.get(indexInList).vmDisplayText;
+    }
+
     Rectangle {
         id: titleBox
         anchors.fill: parent
         border.width: mainWindow.width*0.001
         border.color: vmEnabled? "#3096ef" : "#888889"
         color: {
-            if (!vmEnabled) return "#ffffff"
-            else if (vmFilledDisplay) return "#87B3D0"
-            else return "#ffffff"
+            if (vmNoFillOnSelection){
+                return "#ffffff"
+            }
+            else{
+                if (!vmEnabled) return "#ffffff"
+                else if (vmFilledDisplay) return "#87B3D0"
+                else return "#ffffff"
+            }
         }
 
         Column {
@@ -83,9 +101,14 @@ Item {
                 font.pixelSize: 13*viewHome.vmScale
                 text: vmTitle
                 color: {
-                    if (!vmEnabled) return "#888889"
-                    else if (vmFilledDisplay) return "#ffffff"
-                    else return "#000000"
+                    if (vmNoFillOnSelection){
+                        return "#000000"
+                    }
+                    else{
+                        if (!vmEnabled) return "#888889"
+                        else if (vmFilledDisplay) return "#ffffff"
+                        else return "#000000"
+                    }
                 }
             }
 
@@ -95,9 +118,14 @@ Item {
                 font.pixelSize: 12*viewHome.vmScale
                 text: (vmSelection === "")? vmPlaceHolderText : vmSelection
                 color: {
-                    if (!vmEnabled) return "#888889"
-                    else if (vmFilledDisplay) return "#ffffff"
-                    else return "#000000"
+                    if (vmNoFillOnSelection){
+                        return "#000000"
+                    }
+                    else{
+                        if (!vmEnabled) return "#888889"
+                        else if (vmFilledDisplay) return "#ffffff"
+                        else return "#000000"
+                    }
                 }
             }
 
@@ -136,7 +164,7 @@ Item {
             }
             ctx.closePath();
             if (!vmEnabled) ctx.fillStyle = "#888889"
-            else if (vmFilledDisplay) ctx.fillStyle = "#ffffff"
+            else if (vmFilledDisplay && !vmNoFillOnSelection) ctx.fillStyle = "#ffffff"
             else ctx.fillStyle = "#2873b4"
             ctx.fill();
         }
@@ -185,10 +213,7 @@ Item {
                         archiveRequested(indexInList)
                     }
                     onSelectionMade: {
-                        vmCurrentIndex = indexInList;
-                        listContainer.visible = false;
-                        vmSelection = displayText;
-                        updateDisplay();
+                        setSelected(indexInList)
                     }
                     onFrequencyAnalysis: {
                         frequencyAnalysisRequested(indexInList)

@@ -55,5 +55,8 @@
         <file>qml/VMFolderButton.qml</file>
         <file>qml/ViewVRDisplay.qml</file>
         <file>qml/VMCalibrationFailedDialog.qml</file>
+        <file>qml/VMDatSelectedEntry.qml</file>
+        <file>qml/VMStudyEntry.qml</file>
+        <file>qml/VMArrowButton.qml</file>
     </qresource>
 </RCC>

@@ -52,6 +52,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: mainWindow.width*0.016
         hoverEnabled: true;
+        visible: !vmHideArchiveButton
 
         onHoveredChanged: {
            if (hovered){
@@ -97,6 +98,7 @@ Rectangle {
         anchors.right: archiveButton.right
         anchors.rightMargin: mainWindow.width*0.039
         hoverEnabled: true;
+        visible: !vmHideFAButton
 
         onHoveredChanged: {
            if (hovered){

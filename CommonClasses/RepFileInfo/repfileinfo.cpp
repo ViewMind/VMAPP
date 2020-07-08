@@ -29,15 +29,16 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         parts = basename.split("_");
 
         QString date;
-        QString reading       = "N/A";
-        QString binding       = "N/A";
-        QString fielding      = "N/A";
-        QString nbackrt       = "N/A";
+        QString reading       = "-";
+        QString binding       = "-";
+        QString fielding      = "-";
+        QString nbackrt       = "-";
         QString reading_code  = "";
         QString binding_code  = "";
         QString fielding_code = "";
         QString nbackrt_code  = "";
         QString num_targets   = "";
+        QString reportContents = "";
 
         if (parts.size() < 6){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");

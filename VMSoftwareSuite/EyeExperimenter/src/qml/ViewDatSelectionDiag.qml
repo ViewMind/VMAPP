@@ -6,17 +6,19 @@ import QtQuick.Dialogs 1.1
 Dialog {
 
 
-    readonly property int vmLIST_INDEX_READING: 0
+    readonly property int vmLIST_INDEX_READING:    0
     readonly property int vmLIST_INDEX_BINDING_BC: 1
     readonly property int vmLIST_INDEX_BINDING_UC: 2
-    readonly property int vmLIST_INDEX_FIELDING: 3
-    readonly property int vmLIST_INDEX_NBACKRT: 4
-
-    readonly property int vmSEL_NOT_SELECTED:     0
-    readonly property int vmSEL_SELECTED_VALID:   1
-    readonly property int vmSEL_SELECTED_INVALID: 2
+    readonly property int vmLIST_INDEX_FIELDING:   3
+    readonly property int vmLIST_INDEX_NBACKRT:    4
 
     readonly property string keybase: "viewselectdata_"
+
+    property var vmDatSelection: [];
+    property var vmStudiesList: [];
+    property bool vmBlockDatSelectionChanged: false
+    property int vmCurrentlySelectedStudy: -1
+
     id: viewSelectDatForReport
     modal: true
     width: mainWindow.width*0.546
@@ -41,106 +43,104 @@ Dialog {
         }
     }
 
+    ListModel{
+        id: selectedDatList;
+    }
+
     onOpened: {
         loader.reloadPatientDatInformation();
-        reading.clearSelection();
-        bindingBC.clearSelection();
-        bindingUC.clearSelection();
-        fielding.clearSelection();
-        nbackrt.clearSelection();
         btnGenerate.enabled = false;
         loader.operateOnRepGenStruct(-1,-1);
+        vmDatSelection = [];
+        vmCurrentlySelectedStudy = vmLIST_INDEX_READING;
 
-        // Loading the dat lists.
-        var readingFiles = loader.getFileListForPatient("",vmLIST_INDEX_READING);
-        readingFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
-        reading.setModelList(readingFiles);
+        // Loading the Studies List
+        vmStudiesList = loader.getStringListForKey(keybase+"studyList");
+        studySelection.setModelList(vmStudiesList);
+        for (var i = 0; i < vmStudiesList.length; i++){
+            vmDatSelection.push(-1);
+        }
+        studySelection.setSelected(vmLIST_INDEX_READING);
 
-        var fieldingFiles = loader.getFileListForPatient("",vmLIST_INDEX_FIELDING);
-        fieldingFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
-        fielding.setModelList(fieldingFiles);
+        fillDatSelector(vmCurrentlySelectedStudy);
 
-        var nbackrtFiles = loader.getFileListForPatient("",vmLIST_INDEX_NBACKRT);
-        nbackrtFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
-        nbackrt.setModelList(nbackrtFiles);
-
-        var bbcFiles = loader.getFileListForPatient("",vmLIST_INDEX_BINDING_BC);
-        bbcFiles.unshift(loader.getStringForKey(keybase+"labelNoUse"));
-        bindingBC.setModelList(bbcFiles);
-
-        bindingBC.vmEnabled = false;
-        bindingUC.vmEnabled = false;
+        selectedDatList.clear();
 
         var patname = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
         diagTitle.text = loader.getStringForKey(keybase+"labelTitle") + " - " + patname;
 
     }
 
-    function readingSelectionChanged(index){
-        // Since it's not possible to unselect once selected, the generate button is enabled.
-        enableGenerateButtonCheck();
-        if (index > 0) loader.operateOnRepGenStruct(index-1,vmLIST_INDEX_READING)
-        bindingBC.vmEnabled = true;
-    }
-
-    function bindingBCSelectionChanged(index){
-        // When this is clicked, the generate button is automatically disabled because this means
-        // that any UC selection is cleared.
-        bindingUC.clearSelection();
-        enableGenerateButtonCheck();
-        if (index <= 0) {
-            bindingUC.vmEnabled = false;
-            return;
-        }
-        var bindingUCFiles = loader.getFileListCompatibleWithSelectedBC("",index-1);
-        if (bindingUCFiles.length > 0){
-            bindingUC.setModelList(bindingUCFiles)
-            loader.operateOnRepGenStruct(index-1,vmLIST_INDEX_BINDING_BC)
-            bindingUC.vmEnabled = true;
-        }
-        else bindingUC.vmEnabled = false;
-    }
-
-    function bindingUCSelectionChanged(index){
-        // When this is clicked then the generate button is enabled, as only valid options are shown.
-        enableGenerateButtonCheck();
-        loader.operateOnRepGenStruct(index,vmLIST_INDEX_BINDING_UC)
-    }
-
-    function fieldingSelectionChanged(index){
-        enableGenerateButtonCheck();
-        if (index > 0) loader.operateOnRepGenStruct(index-1,vmLIST_INDEX_FIELDING)
-    }
-
-    function nbackrtSelectionChanged(index){
-        enableGenerateButtonCheck();
-        if (index > 0) loader.operateOnRepGenStruct(index-1,vmLIST_INDEX_NBACKRT);
-    }
-
-    function enableGenerateButtonCheck(){
-
-        var selectedType = [];
-        if (reading.vmCurrentIndex > 0) selectedType.push(vmSEL_SELECTED_VALID)
-        else selectedType.push(vmSEL_NOT_SELECTED);
-
-        if ((bindingBC.vmCurrentIndex <= 0) && (bindingUC.vmCurrentIndex < 0)) selectedType.push(vmSEL_NOT_SELECTED);
-        else if ((bindingBC.vmCurrentIndex > 0) && (bindingUC.vmCurrentIndex >= 0)) selectedType.push(vmSEL_SELECTED_VALID)
-        else selectedType.push(vmSEL_SELECTED_INVALID);
-
-        if (fielding.vmCurrentIndex > 0) selectedType.push(vmSEL_SELECTED_VALID);
-        else selectedType.push(vmSEL_NOT_SELECTED);
-
-        if (nbackrt.vmCurrentIndex > 0) selectedType.push(vmSEL_SELECTED_VALID);
-        else selectedType.push(vmSEL_NOT_SELECTED);
-
-        btnGenerate.enabled = false;
-        for (var i = 0; i < selectedType.length; i++){
-            if (selectedType[i] === vmSEL_SELECTED_INVALID) {
-                btnGenerate.enabled = false;
-                return;
+    function getFileList(i){
+        var fileList = [];
+        if (i === vmLIST_INDEX_BINDING_UC){
+            if (vmDatSelection[vmLIST_INDEX_BINDING_BC] !== -1){
+               fileList = loader.getFileListCompatibleWithSelectedBC("",vmDatSelection[vmLIST_INDEX_BINDING_BC])
             }
-            if (selectedType[i] === vmSEL_SELECTED_VALID) btnGenerate.enabled = true;
         }
+        else{
+           fileList = loader.getFileListForPatient("",i);
+        }
+        return fileList;
+    }
+
+    function fillDatSelector(index){
+
+        var filelist = [];
+        vmBlockDatSelectionChanged = true;
+        vmCurrentlySelectedStudy = index;
+        //console.log("Changing currently selected study to " + index)
+        datSelector.clearSelection();
+        var selIndex = vmDatSelection[index];
+        datSelector.visible = true;
+        datSelector.vmTitle = vmStudiesList[index];
+
+        filelist = getFileList(index);
+        filelist.unshift(loader.getStringForKey(keybase+"labelNoUse"));
+
+        datSelector.setModelList(filelist);
+        if (selIndex !== -1){
+            datSelector.setSelected(selIndex+1);
+        }
+        vmBlockDatSelectionChanged = false;
+
+    }
+
+    function datSelectorSelectionChanged(newIndex){
+
+        //selectedDatList.append({"vmDatSelected": datSelector.getCurrentlyTextAt(newIndex)});
+        if (vmBlockDatSelectionChanged) return;
+
+        //console.log("Dat selection changed for " + vmCurrentlySelectedStudy);
+        newIndex = newIndex - 1;
+        vmDatSelection[vmCurrentlySelectedStudy] = newIndex;
+
+        // If BC is changed, uc is unselected.
+        if (vmCurrentlySelectedStudy == vmLIST_INDEX_BINDING_BC){
+            vmDatSelection[vmLIST_INDEX_BINDING_UC] = -1;
+        }
+
+        selectedDatList.clear();
+
+        // Adding all the values that have been selected.
+        var enableGenerateReportBtn = false;
+        for (var i = 0; i < vmDatSelection.length; i++){
+            if (vmDatSelection[i] !== -1){
+                enableGenerateReportBtn = true
+                var fileList = getFileList(i);
+                selectedDatList.append({"vmDatSelected": fileList[vmDatSelection[i]]});
+            }
+        }
+
+        // This just check that there is at least one selected report
+        if (enableGenerateReportBtn){
+            enableGenerateReportBtn = false;
+            // Checking that either there is no binding selected or that they are both un selected.
+            if ((vmDatSelection[vmLIST_INDEX_BINDING_BC] !== -1) && (vmDatSelection[vmLIST_INDEX_BINDING_UC] !== -1)) enableGenerateReportBtn = true;
+            else if ((vmDatSelection[vmLIST_INDEX_BINDING_BC] === -1) && (vmDatSelection[vmLIST_INDEX_BINDING_UC] === -1)) enableGenerateReportBtn = true;
+        }
+
+        btnGenerate.enabled = enableGenerateReportBtn
     }
 
     function archiveFile(which,index){
@@ -206,124 +206,92 @@ Dialog {
         }
     }
 
-    Column {
-
+    VMDatSelection{
+        id: studySelection;
+        vmTitle: loader.getStringForKey(keybase+"labelStudySelection");
+        vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
+        width: mainWindow.width*0.312
+        height: vmHeightForDatSelector
+        z: 10
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: subTitle.bottom
         anchors.topMargin: mainWindow.height*0.028
-        spacing: mainWindow.height*0.043
-        z: 10
-
-        VMDatSelection{
-            id: reading;
-            vmTitle: loader.getStringForKey(keybase+"labelColReading");
-            vmPlaceHolderText: loader.getStringForKey(keybase+"labelSelectOption");
-            width: mainWindow.width*0.312
-            height: vmHeightForDatSelector
-            z: 10
-            onVmCurrentIndexChanged: {
-                readingSelectionChanged(reading.vmCurrentIndex);
-            }
-            onArchiveRequested: {
-                if (indexInList > 0){
-                    viewDatSelectionDiag.close();
-                    viewPatList.configureShowMessageForArchive(vmLIST_INDEX_READING,indexInList-1)
-                }
-            }
-            onFrequencyAnalysisRequested: {
-                if (indexInList > 0){
-                    viewDatSelectionDiag.close();
-                    viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_READING,indexInList-1)
-                }
-            }
+        vmHideArchiveButton: true
+        vmHideFAButton: true
+        vmNoFillOnSelection: true
+        onVmCurrentIndexChanged: {
+            fillDatSelector(vmCurrentIndex);
         }
-
-
-        VMDatSelection{
-            id: bindingBC;
-            vmTitle: loader.getStringForKey(keybase+"labelColBindingBC");
-            vmPlaceHolderText: loader.getStringForKey(keybase+"labelSelectOption");
-            width: mainWindow.width*0.312
-            height: vmHeightForDatSelector
-            z: 9
-            onVmCurrentIndexChanged: {
-                bindingBCSelectionChanged(bindingBC.vmCurrentIndex);
-            }
-            onArchiveRequested: {
-                if (indexInList > 0){
-                    viewDatSelectionDiag.close();
-                    viewPatList.configureShowMessageForArchive(vmLIST_INDEX_BINDING_BC,indexInList-1)
-                }
-            }
-            onFrequencyAnalysisRequested: {
-                if (indexInList > 0){
-                    viewDatSelectionDiag.close();
-                    viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_BC,indexInList-1)
-                }
-            }
-        }
-
-        VMDatSelection{
-            id: bindingUC;
-            vmTitle: loader.getStringForKey(keybase+"labelColBindingUC");
-            vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
-            width: mainWindow.width*0.312
-            height: vmHeightForDatSelector
-            z: 8
-            onVmCurrentIndexChanged: {
-                bindingUCSelectionChanged(bindingUC.vmCurrentIndex);
-            }
-            onArchiveRequested: {
-                viewDatSelectionDiag.close();
-                viewPatList.configureShowMessageForArchive(vmLIST_INDEX_BINDING_UC,indexInList)
-            }
-            onFrequencyAnalysisRequested: {
-                viewDatSelectionDiag.close();
-                viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_BINDING_UC,indexInList)
-            }
-        }
-
-        VMDatSelection{
-            id: fielding
-            vmTitle: loader.getStringForKey(keybase+"labelFielding");
-            vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
-            width: mainWindow.width*0.312
-            height: vmHeightForDatSelector
-            z: 7
-            onVmCurrentIndexChanged: {
-                fieldingSelectionChanged(fielding.vmCurrentIndex);
-            }
-            onArchiveRequested: {
-                viewDatSelectionDiag.close();
-                viewPatList.configureShowMessageForArchive(vmLIST_INDEX_FIELDING,indexInList-1)
-            }
-            onFrequencyAnalysisRequested: {
-                viewDatSelectionDiag.close();
-                viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_FIELDING,indexInList-1)
-            }
-        }
-
-        VMDatSelection{
-            id: nbackrt
-            vmTitle: loader.getStringForKey(keybase+"labelNBackRT");
-            vmPlaceHolderText:  loader.getStringForKey(keybase+"labelSelectOption");
-            width: mainWindow.width*0.312
-            height: vmHeightForDatSelector
-            z: 6
-            onVmCurrentIndexChanged: {
-                nbackrtSelectionChanged(nbackrt.vmCurrentIndex);
-            }
-            onArchiveRequested: {
-                viewDatSelectionDiag.close();
-                viewPatList.configureShowMessageForArchive(vmLIST_INDEX_NBACKRT,indexInList-1)
-            }
-            onFrequencyAnalysisRequested: {
-                viewDatSelectionDiag.close();
-                viewSelectDatForReport.doFrequencyAnalysis(vmLIST_INDEX_NBACKRT,indexInList-1)
-            }
-        }
-
     }
+
+    VMDatSelection{
+        id: datSelector;
+        vmTitle: loader.getStringForKey(keybase+"labelColReading");
+        vmPlaceHolderText: loader.getStringForKey(keybase+"labelSelectOption");
+        width: mainWindow.width*0.312
+        height: vmHeightForDatSelector
+        anchors.left: studySelection.left
+        anchors.top: studySelection.bottom
+        anchors.topMargin: mainWindow.height*0.028 // mainWindow.height*0.043
+        z: 9
+        onVmCurrentIndexChanged: {
+            datSelectorSelectionChanged(vmCurrentIndex);
+        }
+        onArchiveRequested: {
+            if (indexInList > 0){
+                viewDatSelectionDiag.close();
+                viewPatList.configureShowMessageForArchive(vmCurrentlySelectedStudy,indexInList-1)
+            }
+        }
+        onFrequencyAnalysisRequested: {
+            if (indexInList > 0){
+                viewDatSelectionDiag.close();
+                viewSelectDatForReport.doFrequencyAnalysis(vmCurrentlySelectedStudy,indexInList-1)
+            }
+        }
+    }
+
+    Text {
+        id: datSelectedTitle
+        font.pixelSize: 11*viewHome.vmScale
+        font.family: gothamR.name
+        color: "#cfcfcf"
+        text: loader.getStringForKey(keybase+"labeFileView");
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: datSelector.bottom
+        anchors.topMargin: mainWindow.height*0.06
+    }
+
+    Rectangle {
+        id: fileViewListBackground
+        color: "#ffffff"
+        border.width: mainWindow.width*0.001
+        border.color: "#3096ef"
+        radius: 4
+        anchors.top: datSelectedTitle.bottom
+        anchors.topMargin:  mainWindow.height*0.015
+        anchors.left: datSelector.left
+        width: datSelector.width
+        height: vmHeightForDatSelector*4;
+
+        ScrollView {
+            id: tableArea
+            anchors.fill: parent
+            clip: true
+            ListView {
+                id: selectedDatListView
+                anchors.fill: parent
+                model: selectedDatList
+                delegate: VMDatSelectedEntry {
+                    height: fileViewListBackground.height/4
+                    width: parent.width
+                }
+                onCurrentIndexChanged: {
+                }
+            }
+        }
+    }
+
 
     // Buttons
     Row{
@@ -353,6 +321,10 @@ Dialog {
             vmFont: viewHome.gothamM.name
             enabled: false
             onClicked: {
+                // Storing all the information in the Report Generator Struct and calling the processing.
+                for (var i = 0; i < vmDatSelection.length; i++){
+                    loader.operateOnRepGenStruct(vmDatSelection[i],i);
+                }
                 viewPatList.requestReportToServer(0)
                 viewSelectDatForReport.close();
             }

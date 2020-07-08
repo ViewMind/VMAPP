@@ -8,8 +8,8 @@ x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
 # Production Server Address
-server_address = 18.220.30.34;
-#server_address = 192.168.1.10;
+#server_address = 18.220.30.34;
+server_address = 192.168.1.10;
 
 
 #------------------------------------------------------#

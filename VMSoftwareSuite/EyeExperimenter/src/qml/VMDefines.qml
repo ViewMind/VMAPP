@@ -1,7 +1,6 @@
 import QtQuick 2.0
 
 Item{
-
     /// TODO: CLEAN UP Most of these are not used.
     readonly property string vmCONFIG_PATIENT_DIRECTORY: "patient_directory"
     readonly property string vmCONFIG_DOCTOR_NAME: "doctor_name"
