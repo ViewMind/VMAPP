@@ -36,7 +36,7 @@ bool OpenVRControlObject::initializeVR(){
     vr::HmdError peError;
     vrSystem = vr::VR_Init( &peError, vr::VRApplication_Scene );
     if ( peError != vr::VRInitError_None ){
-        logger.appendError("Error intializing VR");
+        logger.appendError("Error intializing VR. Error code: " + QString::number(peError));
         return false;
     }
 
