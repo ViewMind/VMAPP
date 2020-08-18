@@ -65,3 +65,5 @@ SELECT DISTINCT protocol FROM tEyeResults WHERE doctorid LIKE '989302458%';
 PARAMETERS: the date of the last search and the instiution ID. 
 SELECT DISTINCT puid, protocol from tEyeResults where study_date > '0000-00-00' AND doctorid LIKE '989302458%'
 
+
+fe32ab36a8d2bdc9e611861c473eaa825f2bdc3d2afa7242dea92d81653af6ff88ec79649a48f4bc95e65a84f7703494575f2c18974dd80bee8b0b2eb7d713f9

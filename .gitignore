@@ -76,3 +76,6 @@ Scripts/server_scripts/05InformationDownload/rawdata/
 Scripts/php/composer.json
 Scripts/php/composer.lock
 Scripts/php/vendor/
+
+Scripts/inst_data_available/EyeReportGen
+Scripts/inst_data_available/OUTPUTS

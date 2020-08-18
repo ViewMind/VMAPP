@@ -1,14 +1,54 @@
 <?php
    include("config.php");
    include("log_manager.php");
+   include("fast_config_interpreter.php");
+   
+   /////////////////////////////////// Directory cleanup function
+   function directoryCleanUp($dir,$to_leave){
+      $file_list = scandir($dir);
+      for ($f = 0; $f < count($file_list); $f++){
+         $spath = $file_list[$f];
+         if (($spath == ".") || ($spath == "..")) continue;
+         $path = $dir . "/" . $spath;
+         
+         $parts = explode(".",$spath);
+         $delete = false;
+         if (count($parts) != 2){
+            $delete = true;
+         }
+         else{
+            $ext = $parts[1];
+            //echo "Extension $ext\n";
+            if (!in_array($ext,$to_leave)) $delete = true;
+         }
+         
+         if ($delete){
+            //echo "DELETING $path\n";
+            unlink($path);
+         }
+                  
+      }
+   }
+   
+   
+//    $work_dir = "OUTPUTS/989302458/MTHLGY0002/8782bdba8c18a53673f4826c333be16adf52b30f68ed300d69c97d71c32ae7d132c077391c5718a425406cc3933d30e91fa4e059faec5fcb634bf4c3168275e7/2020_05_27_20_25_23/";   
+//    directoryCleanUp($work_dir,$config["ext_leave_on_cleanup"]);   
+//    return;
    
    /////////////////////////////////// Database and log setup 
    $date = new DateTime();
    $logfile = $date->format('Y_m_d_H_i_s') . ".log";         
    $logger = new LogManager($logfile);
    
+   $previous_date_file = "previous_dates.json";
+   
+   // Starting from scratch.
+   $logger->logProgress("Deleting output dir");
+   shell_exec("rm -rf OUTPUTS");
+   
    if ($config["run_local"]){
       $logger->logProgress("LOCAL RUN ...");
+      $local_key      = 1;
       $data_host      = "localhost";
       $data_name      = $config["dbconfig"]["db_data_name"];
       $data_user      = $config["dbconfig"]["db_data_user"];
@@ -20,6 +60,7 @@
    }
    else{
       $logger->logProgress("SERVER RUN ...");
+      $local_key      = 0;
       $data_host      = $config["dbconfig"]["db_data_host"];
       $data_name      = $config["dbconfig"]["db_data_name"];
       $data_user      = $config["dbconfig"]["db_data_user"];
@@ -50,8 +91,8 @@
    
    /////////////////////////////////// Previous Date Loading
    $previous_sync_dates = array();
-   if (is_file("previous_dates.json")){
-      $json = file_get_contents("previous_dates.json");
+   if (is_file($previous_date_file)){
+      $json = file_get_contents($previous_date_file);
       $previous_sync_dates = json_decode($json);
    }
    
@@ -72,14 +113,14 @@
        }
        
        // Getting the last update date. 
-       $previous_date = '0000-00-00';
+       $previous_date = '2020-04-01';
        if (array_key_exists($inst_uid,$previous_sync_dates)){
-          $previous_date = $previous_dates[$inst_uid];
-          $logger->logProgress("   Getting data from $previous_date");
+          $previous_date = $previous_dates[$inst_uid];          
        }
        else{
           $logger->logProgress("   First time sync");
        }
+       $logger->logProgress("   Getting data from $previous_date");
        
        // Saving current date. 
        $date = new DateTime();
@@ -122,9 +163,99 @@
           $uid_data[$row["keyid"]]["hash"] = $row["uid"];
        }
        
+       // Copying and processing each directory.
+       $counter = 0;
+       foreach ($uid_data as $puid => $uid){          
+          $hashuid  = $uid["hash"];
+          $protocol = $uid["protocol"];
+          
+          $protocol = str_replace(" ","_",$protocol);
+          $inst_protocol_repo = "$inst_dir/$protocol";
+          
+          if (!is_dir($inst_protocol_repo)){
+             mkdir($inst_protocol_repo,0755,true);
+          }
+                    
+          //$logger->logProgress("   OUPUT REP: $inst_dir/$protocol");
+          
+          // Download the information. 
+          $cmd =  "./dl_s3_data.sh $local_key $inst_protocol_repo $hashuid";
+          $logger->logProgress("   DL CMD: $cmd");
+          shell_exec($cmd);          
+          
+          // Listing work directories directories. 
+          $work_dirs = scandir("$inst_protocol_repo/$hashuid");
+          //var_dump($work_dirs);
+          
+          for ($d = 2; $d < count($work_dirs); $d++){
+             $work_dir = "$inst_protocol_repo/$hashuid/" .  $work_dirs[$d];
+             $eye_rep_config = $work_dir . "/eye_rep_gen_conf";
+             if (!is_file($eye_rep_config)) {
+                // PATCH DUE to old bug that some times generated eye_rep_gen_conf. instead of eye_rep_gen_conf. 
+                $eye_rep_config = $eye_rep_config . ".";
+                if (!is_file($eye_rep_config)) {
+                   $logger->logError("   SKIPPING work dir due to not finding eye rep gen conf: $eye_rep_config");
+                   continue;
+                }
+             }
+             
+             $conf = new FastConfigInterpreter($eye_rep_config);
+             
+             $conf->removeField("data_saved_to_db_flag");
+             $conf->saveToHDD();
+             
+             // Running the EyeReportGenerator. 
+             $cmd = "cd EyeReportGen; ./EyeReportGen  ../$eye_rep_config";
+             $logger->logProgress("   PROC COMMAND: $cmd");
+             shell_exec($cmd);
+             
+             // Directory cleanup
+             directoryCleanUp($work_dir,$config["ext_leave_on_cleanup"]);
+             
+             // Seeing if the report was generated. 
+             $repfilename = $work_dir . "/" . $conf->getValueForKey("report_filename");
+             
+             if (!is_file($repfilename)) {
+                $logger->logError("   Could not create report file $repfilename");
+                continue;
+             }
+             
+             // Leaving only report keys.
+             $keys_to_leave = array_keys($config["report_variable_names"]);
+             $report = new FastConfigInterpreter($repfilename);
+             $report->leaveOnlyKeys($keys_to_leave);
+             
+             // Replacing the keys with the final names.
+             $report->replaceKeys($config["report_variable_names"]);
+             
+             // Finally saving the resport to HDD.
+             $report->saveToHDD();
+             
+          }
+          
+          // DEBUG CODE:
+          $counter++;
+          if ($counter == 2){
+             break;
+          }
+                    
+       }
        
+       $logger->logProgress("   Finshed Data Processing. Starting Information Transfer");
+       $cmd = "./transfer.sh $inst_dir $IP $inst_user";
+       $logger->logProgress("   TRANSFER CMD: $cmd");
+       shell_exec($cmd);          
+           
    }
    
-   $logger->logProgress("Finished");
+   // Saving last checkpoint. 
+   $logger->logProgress("Saving last checkpoint");
+   $fid = fopen($previous_date_file,"w");
+   fwrite($fid,json_encode($previous_sync_dates));
+   fclose($fid);
    
+   // The actual synching. 
+   
+   $logger->logProgress("Finished");
+      
 ?>
