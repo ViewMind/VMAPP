@@ -93,7 +93,7 @@
    $previous_sync_dates = array();
    if (is_file($previous_date_file)){
       $json = file_get_contents($previous_date_file);
-      $previous_sync_dates = json_decode($json);
+      $previous_sync_dates = json_decode($json,true);
    }
    
    /////////////////////////////////// Iterating over all institutions to get.
