@@ -115,7 +115,7 @@
        // Getting the last update date. 
        $previous_date = '2020-04-01';
        if (array_key_exists($inst_uid,$previous_sync_dates)){
-          $previous_date = $previous_dates[$inst_uid];          
+          $previous_date = $previous_sync_dates[$inst_uid];          
        }
        else{
           $logger->logProgress("   First time sync");
