@@ -1,0 +1,69 @@
+aws s3 ls s3://viewmind-raw-eye-data
+
+-> Allow 18.220.30.34
+-> Deny  18.191.235.11
+ACCOUNT ID 075933739023
+
+{
+  "Id": "Policy1597688726696",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1597688722240",
+      "Action": "s3:*",
+      "Effect": "Deny",
+      "Resource": "arn:aws:s3:::viewmind-raw-eye-data",
+      "Condition": {
+        "ArnEquals": {
+          "aws:SourceIp": "18.191.235.11"
+        }
+      },
+      "Principal": {
+        "AWS": [
+          "075933739023"
+        ]
+      }
+    }
+  ]
+}
+
+vpc-0678798c1b54497b2
+
+
+Allow access to only this.
+vpc-4ac89122
+989302458
+
+
+Edit Edit
+Copy Copy
+Delete Delete
+989302458_0000_D0000
+test protocol
+
+Edit Edit
+Copy Copy
+Delete Delete
+989302458_0000_D0000
+test reading only
+
+Edit Edit
+Copy Copy
+Delete Delete
+989302458_0001_D0000
+MTHLGY0002
+
+Edit Edit
+Copy Copy
+Delete Delete
+989302458_0001_D0000
+TEST
+
+
+SELECT DISTINCT protocol FROM tEyeResults WHERE doctorid LIKE '989302458%';
+
+PARAMETERS: the date of the last search and the instiution ID. 
+SELECT DISTINCT puid, protocol from tEyeResults where study_date > '0000-00-00' AND doctorid LIKE '989302458%'
+
+
+fe32ab36a8d2bdc9e611861c473eaa825f2bdc3d2afa7242dea92d81653af6ff88ec79649a48f4bc95e65a84f7703494575f2c18974dd80bee8b0b2eb7d713f9
