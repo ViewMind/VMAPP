@@ -83,6 +83,7 @@ viewstudystart_cboxBindingUC = Nuevos Colores;
 viewstudystart_cboxBindingBC = Combinación de Colores;
 viewstudystart_cboxFielding = N-Back Test;
 viewstudystart_cboxParkinson = Laberinto;
+viewstudystart_cboxGoNoGo    = Tarea Go NoGo;
 viewstudystart_labelSelectStudy = Seleccione estudios;
 viewstudystart_labelInstruction = Elija las evaluaciones en el orden en el cual el paciente las tomará;
 viewstudystart_labelInstruction2 = Configure los parámetros de los estudios;
@@ -145,6 +146,7 @@ viewpresentexp_itemBindingBC3 = Identificación de Combinaciones de Colores;
 viewpresentexp_itemFielding = Evaluación N-Back Tipo MS;
 viewpresentexp_itemNBackRT  = Evaluación N-Back Tipo RT;
 viewpresentexp_itemParkinson = Laberinto Parkinson;
+viewpresentexp_itemGoNoGo    = Tarea Go NoGo;
 
 viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
 Cuando su mira se encuentre ubicada sobre el punto, este desaparecerá <br>
@@ -297,7 +299,7 @@ viewselectdata_labelFielding = Evaluación N-Back Tipo MS;
 viewselectdata_labelNBackRT  = Evaluación N-Back Tipo RT;
 viewselectdata_labelNoUse = No utilizar en reporte;
 viewselectdata_labelStudySelection = Seleccione un estudio;
-viewselectdata_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT;
+viewselectdata_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT|Go NoGo;
 viewselectdata_labeFileView = Reporte para los estudios;
 viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_labelEvals = Evaluaciones disponibles;

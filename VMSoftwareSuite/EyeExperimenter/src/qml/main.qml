@@ -196,7 +196,6 @@ Window {
                 //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewPatList.loadPatients();                
-                //viewPatList.test();
                 break;
             case vmIndexShowReports:
                 viewShowReports.loadReportsForPatient();

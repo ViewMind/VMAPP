@@ -4,11 +4,16 @@
 #include <QObject>
 #include "../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
+#include "../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/Mouse/mouseinterface.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/experiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.h"
+#include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/gonogoexperiment.h"
 #include "../../../CommonClasses/common.h"
+
+// When enabling design mode. the mouse will be automatically selected as an EyeTracker and full screen will be used for experiment selection.
+#define DESIGN_MODE_ENABLED
 
 class Control : public QObject
 {
@@ -25,6 +30,7 @@ public:
     Q_INVOKABLE void startReadingExperiment(QString lang);
     Q_INVOKABLE void startBindingExperiment(bool isBound,qint32 targetNum, bool areTargetsSmall);
     Q_INVOKABLE void startFieldingExperiment();
+    Q_INVOKABLE void startGoNoGoExperiment();
     Q_INVOKABLE void initialize();
     Q_INVOKABLE void loadLastCalibration();
     Q_INVOKABLE void loadViewMindWaitScreen();
@@ -49,7 +55,11 @@ private:
 
     OpenVRControlObject *openvrco;
     CalibrationTargets tt;
+#ifndef DESIGN_MODE_ENABLED
     HTCViveEyeProEyeTrackingInterface *eyetracker;
+#else
+    MouseInterface *eyetracker;
+#endif
 
     RenderState renderState;
     QImage displayImage;

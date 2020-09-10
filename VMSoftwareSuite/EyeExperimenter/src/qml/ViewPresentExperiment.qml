@@ -92,6 +92,9 @@ VMBase {
         case vmExpIndexParkinson:
             itemParkinson.vmTrackerItemState = state;
             break;
+        case vmExpIndexGoNoGo:
+            itemGoNoGo.vmTrackerItemState = state;
+            break;
         }
     }
 
@@ -179,7 +182,17 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("fielding",1);
             break;
+        case vmExpIndexGoNoGo:
+            vmSlideTitle = loader.getStringForKey(keysearch+"itemGoNoGo");
+            viewVRDisplay.vmStudyTitle = vmSlideTitle;
+            vmSlideExplanation = "";
+            slideDescription.visible = false;
+            slideViewer.imgScale = 1.3;
+            setSlideImages("gonogo",5);
+            break;
         }
+
+
     }
 
     function setTracker(list){
@@ -191,6 +204,7 @@ VMBase {
         itemFielding.visible = false
         itemNBackRT.visible = false
         itemParkinson.visible = false
+        itemGoNoGo.visible = false;
 
         // Calculated the widths of the enabled items
         var accWidth = 0
@@ -221,6 +235,9 @@ VMBase {
             case vmExpIndexParkinson:
                 accWidth = enableTrackItem(itemParkinson,i,accWidth,L);
                 break;
+            case vmExpIndexGoNoGo:
+                accWidth = enableTrackItem(itemGoNoGo,i,accWidth,L);
+                break;
             }
         }
 
@@ -248,6 +265,9 @@ VMBase {
                 break;
             case vmExpIndexParkinson:
                 x = setEnabledItemX(itemParkinson,x,spacing);
+                break;
+            case vmExpIndexGoNoGo:
+                x = setEnabledItemX(itemGoNoGo,x,spacing);
                 break;
             }
         }
@@ -356,6 +376,11 @@ VMBase {
             id: itemParkinson
             vmText: loader.getStringForKey(keysearch + "itemParkinson");
             vmFont: viewPresentExperiment.robotoM.name
+        }
+
+        VMExperimentTrackerItem {
+            id: itemGoNoGo
+            vmText: loader.getStringForKey(keysearch + "itemGoNoGo")
         }
 
     }

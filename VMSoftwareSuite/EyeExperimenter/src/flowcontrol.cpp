@@ -754,6 +754,13 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         background = QBrush(Qt::black);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
         break;
+    case EXP_GONOGO:
+        logger.appendStandard("STARTING GO - NO GO");
+        configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/go_no_go.dat");
+        experiment = new GoNoGoExperiment();
+        background = QBrush(Qt::gray);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+        break;
     default:
         logger.appendError("Unknown experiment was selected " + QString::number(experimentID));
         return false;
@@ -806,7 +813,6 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
     }
 
     return true;
-
 }
 
 void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
@@ -1023,7 +1029,7 @@ void FlowControl::prepareSelectedReportIteration(){
         if ((ans != "nan") && (ans != "0")){
             QStringList toLoad;
             toLoad << CONF_LOAD_NBRT_FIX_ENC << CONF_LOAD_NBRT_FIX_RET << CONF_LOAD_NBRT_INHIB_PROC << CONF_LOAD_NBRT_SEQ_COMPLETE
-                      << CONF_LOAD_NBRT_TARGET_HIT << CONF_LOAD_NBRT_MEAN_RESP_TIME << CONF_LOAD_NBRT_MEAN_SAC_AMP;
+                   << CONF_LOAD_NBRT_TARGET_HIT << CONF_LOAD_NBRT_MEAN_RESP_TIME << CONF_LOAD_NBRT_MEAN_SAC_AMP;
             for (qint32 i = 0; i < toLoad.size(); i++){
                 ResultSegment rs;
                 rs.loadSegment(toLoad.at(i),langCode);

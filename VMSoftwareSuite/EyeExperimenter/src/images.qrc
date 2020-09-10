@@ -103,5 +103,10 @@
         <file>images/reading_is/1.gif</file>
         <file>images/reading_is/2.gif</file>
         <file>images/white_arrow.png</file>
+        <file>images/gonogo/0.gif</file>
+        <file>images/gonogo/1.gif</file>
+        <file>images/gonogo/2.gif</file>
+        <file>images/gonogo/3.gif</file>
+        <file>images/gonogo/4.gif</file>
     </qresource>
 </RCC>

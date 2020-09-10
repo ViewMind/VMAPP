@@ -83,6 +83,7 @@ viewstudystart_cboxBindingUC = New Colours;
 viewstudystart_cboxBindingBC = Colour Combinations;
 viewstudystart_cboxFielding = N-Back Test;
 viewstudystart_cboxParkinson = Maze;
+viewstudystart_cboxGoNoGo    = Go NoGo Task;
 viewstudystart_labelSelectStudy = Select studies;
 viewstudystart_labelInstruction = Choose the evaluations in the order the patient will be taking them;
 viewstudystart_labelInstruction2 = Configure studies parameters;
@@ -145,6 +146,7 @@ viewpresentexp_itemBindingBC3 = Identify Colour Combinations;
 viewpresentexp_itemFielding = N-Back Evaluation Type MS;
 viewpresentexp_itemNBackRT  = N-Back Evaluation Type RT;
 viewpresentexp_itemParkinson = Parkinson Maze;
+viewpresentexp_itemGoNoGo    = Go NoGo Task;
 
 viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
 When your gaze is located on the dot, it will vanish<br>
@@ -296,7 +298,7 @@ viewselectdata_labelColBindingBC = Colour Combinations;
 viewselectdata_labelFielding = N-Back MS Type;
 viewselectdata_labelNBackRT  = N-Back RT Type;
 viewselectdata_labelStudySelection = Select Study;
-viewselectdata_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type;
+viewselectdata_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type|Go NoGo;
 viewselectdata_labeFileView = Report for studies;
 viewselectdata_labelNoUse = Do not use for report;
 viewselectdata_labelSelectOption = Select data file;

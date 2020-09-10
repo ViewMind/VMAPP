@@ -34,6 +34,10 @@ void MouseInterface::disconnectFromEyeTracker(){
     pollTimer.stop();
 }
 
+void MouseInterface::mouseSetCalibrationToTrue(){
+    isCalibrated = true;
+}
+
 void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
     Q_UNUSED(params)
     isBeingCalibrated = true;

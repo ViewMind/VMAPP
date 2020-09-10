@@ -178,6 +178,7 @@
 #define   EXP_FIELDNG                                   4
 #define   EXP_NBACKRT                                   5
 #define   EXP_PARKINSON                                 6
+#define   EXP_GONOGO                                    7
 
 // Base names for common files shared accross multiple apps.
 #define   FILE_CONFIGURATION                            "configuration"
@@ -188,6 +189,7 @@
 #define   FILE_OUTPUT_FIELDING                          "fielding"
 #define   FILE_OUTPUT_NBACKRT                           "nbackrt"
 #define   FILE_OUTPUT_PARKINSON                         "parkinson"
+#define   FILE_OUTPUT_GONOGO                            "gonogo"
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
 #define   FILE_EYE_REP_GEN_CONFIGURATION                "eye_rep_gen_conf"
@@ -211,6 +213,7 @@
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
 #define   HEADER_NBACKRT_EXPERIMENT                     "#NBACKRT"
 #define   HEADER_PARKINSON_EXPERIMENT                   "#PARKINSON"
+#define   HEADER_GONOGO_EXPERIMENT                      "#GONOGO"
 
 // Codes indicating the type of update transaction
 #define   UPDATE_CHECK_GP_CODE                           "cgp"
@@ -234,6 +237,7 @@
 #define   EYE_REP_GEN_BINDING_ALGORITHM_VERSION          4
 #define   EYE_REP_GEN_FIELDING_ALGORITHM_VERSION         0
 #define   EYE_REP_GEN_NBACKRT_ALGORITHM_VERSION          0
+#define   EYE_REP_GEN_GONOGO_ALGORITHM_VERSION           0
 
 // DB Managers possible answers
 #define   EYEDBMNG_ANS_OK                                0

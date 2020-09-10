@@ -536,6 +536,9 @@ VMBase {
                     else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_NBACKRT){
                         vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackRT);
                     }
+                    else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexGoNoGo);
+                    }
                 }
 
                 if (vmSelectedExperiments.length > 0){

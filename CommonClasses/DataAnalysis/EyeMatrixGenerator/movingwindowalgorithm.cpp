@@ -217,6 +217,11 @@ Fixation MovingWindowAlgorithm::finalizeOnlineFixationCalculation(){
     fixation.indexFixationEnd = -1;
     fixation.indexFixationStart = -1;
 
+    if (parameters.getStartWindowSize() <= 0) {
+        qDebug() << "Online fixation algorithm with zero starting window size";
+        return fixation;
+    }
+
     if (onlinePointsForFixation.size() >= parameters.getStartWindowSize()){
         fixation = onlineCalcuationOfFixationPoint();
 #ifdef ENABLE_MWA_DEBUG
@@ -319,6 +324,11 @@ void MovingWindowAlgorithm::onlineFindDispLimits(){
     onlineMMMX.min = 0;
     onlineMMMY.max = 0;
     onlineMMMY.min = 0;
+
+    if (parameters.getStartWindowSize() <= 0) {
+        qDebug() << "Online fixation algorithm with zero starting window size";
+        return;
+    }
 
     // This check should not be necessary, but done just in case.
     if (onlinePointsForFixation.size() < parameters.getStartWindowSize()) return;

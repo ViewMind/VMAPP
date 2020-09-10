@@ -16,12 +16,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
         ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+        ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.cpp \
         ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
         ../../../CommonClasses/Experiments/bindingmanager.cpp \
         ../../../CommonClasses/Experiments/bindingparser.cpp \
         ../../../CommonClasses/Experiments/experimentdatapainter.cpp \
         ../../../CommonClasses/Experiments/fieldingmanager.cpp \
         ../../../CommonClasses/Experiments/fieldingparser.cpp \
+        ../../../CommonClasses/Experiments/gonogomanager.cpp \
+        ../../../CommonClasses/Experiments/gonogoparser.cpp \
         ../../../CommonClasses/Experiments/readingmanager.cpp \
         ../../../CommonClasses/Experiments/readingparser.cpp \
         ../../../CommonClasses/LogInterface/loginterface.cpp \
@@ -29,11 +32,14 @@ SOURCES += \
         ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/experiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.cpp \
+        ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/gonogoexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.cpp \
+        ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/Mouse/calibrationarea.cpp \
+        ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/Mouse/mouseinterface.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/eyetrackerdata.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/eyetrackerinterface.cpp \
         control.cpp \
@@ -51,8 +57,6 @@ QML_DESIGNER_IMPORT_PATH =
 
 QMAKE_CXXFLAGS_WARN_OFF = -Wfloat-equal
 
-
-
 CONFIG -= debug_and_release
 MOC_DIR = MOCS
 OBJECTS_DIR = OBJS
@@ -66,12 +70,15 @@ RCC_DIR = QRC
 HEADERS += \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h \
     ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../../CommonClasses/Experiments/bindingmanager.h \
     ../../../CommonClasses/Experiments/bindingparser.h \
     ../../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../../CommonClasses/Experiments/fieldingmanager.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
+    ../../../CommonClasses/Experiments/gonogomanager.h \
+    ../../../CommonClasses/Experiments/gonogoparser.h \
     ../../../CommonClasses/Experiments/readingmanager.h \
     ../../../CommonClasses/Experiments/readingparser.h \
     ../../../CommonClasses/LogInterface/loginterface.h \
@@ -81,6 +88,7 @@ HEADERS += \
     ../../../CommonClasses/common.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/experiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.h \
+    ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/gonogoexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
@@ -97,9 +105,12 @@ HEADERS += \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_LipData_v2.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/sranipal/ViveSR_Enums.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.h \
+    ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/Mouse/calibrationarea.h \
+    ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/Mouse/mouseinterface.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/eyetrackerdata.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/eyetrackerinterface.h \
     control.h
 
 LIBS += -L$$PWD/lib -lSRanipal
 LIBS += -L$$PWD/../../../CommonClasses/OpenVRControlObject/libs -lopenvr_api
+

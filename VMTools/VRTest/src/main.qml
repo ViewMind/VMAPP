@@ -6,9 +6,10 @@ import com.qml 1.0
 
 Window {
     visible: true
-    width: 1920
-    height: 1080
+    ///width: 1920
+    //height: 1080
     title: qsTr("Qt-QML-VR Tester")
+    visibility: Window.Maximized
 
     Connections{
         target: control
@@ -65,7 +66,7 @@ Window {
                     height: rectBase.elementHeight
                     text: "Start Calibration"
                     onClicked: {
-                        control.startCalibration();                        
+                        control.startCalibration();
                     }
                 }
 
@@ -147,6 +148,16 @@ Window {
                     text: "Start Fielding"
                     onClicked: {
                         control.startFieldingExperiment();
+                    }
+                }
+
+                Button {
+                    id: startGoNoGo
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start Go No Go"
+                    onClicked: {
+                        control.startGoNoGoExperiment();
                     }
                 }
 

@@ -2,13 +2,23 @@
 
 Control::Control(QObject *parent) : QObject(parent)
 {
+#ifndef DESIGN_MODE_ENABLED
     openvrco = new OpenVRControlObject(this);
     connect(openvrco,SIGNAL(requestUpdate()),this,SLOT(onRequestUpdate()));
     renderState = RENDERING_NONE;
+#else
+    eyetracker = new MouseInterface();
+    connect(eyetracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
+    eyetracker->setEyeToTransmit(EYE_BOTH);
+    eyetracker->connectToEyeTracker();
+    eyetracker->mouseSetCalibrationToTrue();
+    eyetracker->enableUpdating(true);
+#endif
     experiment = nullptr;
 }
 
 void Control::initialize(){
+#ifndef DESIGN_MODE_ENABLED
     if (!openvrco->isRendering()) openvrco->startRendering();
     QSize s = openvrco->getRecommendedSize();
     eyetracker = new HTCViveEyeProEyeTrackingInterface(this,s.width(),s.height());
@@ -16,25 +26,30 @@ void Control::initialize(){
     connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),eyetracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
     eyetracker->setEyeToTransmit(EYE_BOTH);
     eyetracker->connectToEyeTracker();
+#endif
 }
 
 ////////////////////////////////////////////////// Calibration Functions.
 
 void Control::startCalibration(){
+#ifndef DESIGN_MODE_ENABLED
     renderState = RENDERING_NONE;
     openvrco->setScreenColor(QColor(Qt::gray));
     EyeTrackerCalibrationParameters params;
     params.forceCalibration = true;
     params.name = "";
     eyetracker->calibrate(params);
+#endif
 }
 
 void Control::loadLastCalibration(){
+#ifndef DESIGN_MODE_ENABLED
     EyeTrackerCalibrationParameters params;
     params.forceCalibration = false;
     params.name = "coeffs.kof";
     eyetracker->calibrate(params);
     eyetracker->enableUpdating(true);
+#endif
 }
 
 ////////////////////////////////////////////////// Update display image
@@ -113,21 +128,29 @@ void Control::startReadingExperiment(QString lang){
 
     // Connecting the eyetracker to teh experiment.
     configExperiments.clear();
-    QSize s = openvrco->getRecommendedSize();
-    qreal w = static_cast<qreal>(s.width());
-    qreal h = static_cast<qreal>(s.height());
     connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
     connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
     connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
 
     // Configuring the experiment.
+#ifndef DESIGN_MODE_ENABLED
     configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
-
     configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_HTCVIVEEYEPRO);
-    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1920);
-    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,1080);
+    QSize s = openvrco->getRecommendedSize();
+    qreal w = static_cast<qreal>(s.width());
+    qreal h = static_cast<qreal>(s.height());
     configExperiments.addKeyValuePair(CONFIG_VR_RECOMMENDED_WIDTH,w);
     configExperiments.addKeyValuePair(CONFIG_VR_RECOMMENDED_HEIGHT,h);
+    openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1920);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,1080);
+#else
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,false);
+    configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_MOUSE);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,768);
+#endif
+
 
     configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
     configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,QString(":/experiment_data/Reading_") + lang + ".dat");
@@ -137,10 +160,12 @@ void Control::startReadingExperiment(QString lang){
     configExperiments.addKeyValuePair(CONFIG_READING_EXP_LANG,lang);
     configExperiments.addKeyValuePair(CONFIG_READING_PX_TOL,60);
 
+    renderState = RENDERING_EXPERIMENT;    
+    //experiment->startExperiment(&configExperiments);
+    if (!experiment->startExperiment(&configExperiments)){
+        qDebug() << "Experiment Start Error: " + experiment->getError();
+    }
 
-    renderState = RENDERING_EXPERIMENT;
-    openvrco->setScreenColor(QColor(Qt::gray).darker(110));
-    experiment->startExperiment(&configExperiments);
 
 }
 
@@ -157,21 +182,34 @@ void Control::startBindingExperiment(bool isBound, qint32 targetNum, bool areTar
 
     // Connecting the eyetracker to teh experiment.
     configExperiments.clear();
-    QSize s = openvrco->getRecommendedSize();
-    qreal w = static_cast<qreal>(s.width());
-    qreal h = static_cast<qreal>(s.height());
     connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
     connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
     connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
 
     // Configuring the experiment.
-    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+
+#ifndef DESIGN_MODE_ENABLED
+    QSize s = openvrco->getRecommendedSize();
+    qreal w = static_cast<qreal>(s.width());
+    qreal h = static_cast<qreal>(s.height());
     configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
     configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+    openvrco->setScreenColor(QColor(Qt::gray));
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+#else
+    configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_MOUSE);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,false);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,true);
+#endif
+
     configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
     configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,expFileName);
     configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
-    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
     configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
 
     configExperiments.addKeyValuePair(CONFIG_YPX_2_MM,0.25);
@@ -183,9 +221,7 @@ void Control::startBindingExperiment(bool isBound, qint32 targetNum, bool areTar
     configExperiments.addKeyValuePair(CONFIG_BINDING_TARGET_SMALL,areTargetsSmall);
     configExperiments.addKeyValuePair(CONFIG_BINDING_NUMBER_OF_TARGETS,targetNum);
 
-
     renderState = RENDERING_EXPERIMENT;
-    openvrco->setScreenColor(QColor(Qt::gray));
     experiment->startExperiment(&configExperiments);
 }
 
@@ -197,36 +233,101 @@ void Control::startFieldingExperiment(){
 
     // Connecting the eyetracker to teh experiment.
     configExperiments.clear();
-    QSize s = openvrco->getRecommendedSize();
-    qreal w = static_cast<qreal>(s.width());
-    qreal h = static_cast<qreal>(s.height());
     connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
     connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
     connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
 
-    // Configuring the experiment.
-    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+
+#ifndef DESIGN_MODE_ENABLED
+    QSize s = openvrco->getRecommendedSize();
+    qreal w = static_cast<qreal>(s.width());
+    qreal h = static_cast<qreal>(s.height());
     configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
     configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+    openvrco->setScreenColor(QColor(Qt::black));
+#else
+    configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_MOUSE);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,false);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,true);
+#endif
+
+    // Configuring the experiment.
+
     configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
     configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,expFileName);
-    configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
-    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+    configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);    
     configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
     configExperiments.addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,0.20);
     configExperiments.addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,0.20);
     configExperiments.addKeyValuePair(CONFIG_FIELDING_PAUSE_TEXT,"Press any key to continue");
 
+    renderState = RENDERING_EXPERIMENT;    
+    if (!experiment->startExperiment(&configExperiments)){
+        qDebug() << "Experiment Start Error: " + experiment->getError();
+    }
+
+}
+
+void Control::startGoNoGoExperiment(){
+    if (experiment != nullptr) delete experiment;
+    experiment = new GoNoGoExperiment();
+
+    QString expFileName =  ":/experiment_data/go_no_go.dat";
+
+    // Connecting the eyetracker to teh experiment.
+    configExperiments.clear();
+    connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
+    connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
+    connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
+
+#ifndef DESIGN_MODE_ENABLED
+    QSize s = openvrco->getRecommendedSize();
+    qreal w = static_cast<qreal>(s.width());
+    qreal h = static_cast<qreal>(s.height());
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+    openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+    configExperiments.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,120);
+    configExperiments.addKeyValuePair(CONFIG_MIN_FIXATION_LENGTH,50);
+    configExperiments.addKeyValuePair(CONFIG_MOVING_WINDOW_DISP,100);
+#else
+    configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_MOUSE);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,false);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,true);
+#endif
+
+    // Configuring the experiment.
+
+    configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
+    configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,expFileName);
+    configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
+    configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
+    configExperiments.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,120);
+    configExperiments.addKeyValuePair(CONFIG_MIN_FIXATION_LENGTH,50);
+    configExperiments.addKeyValuePair(CONFIG_MOVING_WINDOW_DISP,105);
 
     renderState = RENDERING_EXPERIMENT;
-    openvrco->setScreenColor(QColor(Qt::black));
-    experiment->startExperiment(&configExperiments);
-
+    if (!experiment->startExperiment(&configExperiments)){
+        qDebug() << "Experiment Start Error: " + experiment->getError();
+    }
 }
 
 void Control::onExperimentFinished(const Experiment::ExperimentResult &result){
     qDebug() << "Experiment finished: "  <<  result;
     renderState = RENDERING_NONE;
+    experiment->hide();
 }
 
 

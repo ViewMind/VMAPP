@@ -78,6 +78,7 @@ bool Experiment::startExperiment(ConfigurationManager *c){
         return false;
     }
 
+
     // The output data file is set.
     if (!saveData) outputDataFile = "demo" + outputDataFile;
     dataFile = workingDirectory + "/" + outputDataFile + "_" + config->getString(CONFIG_VALID_EYE) + "_"
@@ -93,12 +94,14 @@ bool Experiment::startExperiment(ConfigurationManager *c){
         }
     }
 
+
     // Creating the header of the data file. This will tell the EyeDataProcessor how to treat the data.
     if (!file.open(QFile::WriteOnly)){
         error = "Could not open data file " + dataFile + " for appending data.";
         emit(experimentEndend(ER_FAILURE));
         return false;
     }
+
 
     if (!saveData) return true;
     QTextStream writer(&file);

@@ -26,6 +26,8 @@ SOURCES += main.cpp \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
+    ../../../CommonClasses/Experiments/gonogomanager.cpp \
+    ../../../CommonClasses/Experiments/gonogoparser.cpp \
     ../../../CommonClasses/Experiments/parkinsonmanager.cpp \
     ../../../CommonClasses/Experiments/parkinsonparser.cpp \
     ../../../CommonClasses/GraphicalReport/diagonosislogic.cpp \
@@ -34,6 +36,7 @@ SOURCES += main.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
     ../../../CommonClasses/RepFileInfo/repfileinfo.cpp \
+    Experiments/gonogoexperiment.cpp \
     Experiments/nbackrtexperiment.cpp \
     Experiments/parkinsonexperiment.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
@@ -75,6 +78,8 @@ HEADERS += \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
+    ../../../CommonClasses/Experiments/gonogomanager.h \
+    ../../../CommonClasses/Experiments/gonogoparser.h \
     ../../../CommonClasses/Experiments/parkinsonmanager.h \
     ../../../CommonClasses/Experiments/parkinsonparser.h \
     ../../../CommonClasses/GraphicalReport/diagonosislogic.h \
@@ -84,6 +89,7 @@ HEADERS += \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
     ../../../CommonClasses/RepFileInfo/repfileinfo.h \
+    Experiments/gonogoexperiment.h \
     Experiments/nbackrtexperiment.h \
     Experiments/parkinsonexperiment.h \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \

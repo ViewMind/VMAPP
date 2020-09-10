@@ -23,6 +23,8 @@ public:
 
     void calibrate(EyeTrackerCalibrationParameters params);
 
+    void mouseSetCalibrationToTrue();
+
     ~MouseInterface();
 
 private slots:
