@@ -79,8 +79,10 @@ Dialog {
                fileList = loader.getFileListCompatibleWithSelectedBC("",vmDatSelection[vmLIST_INDEX_BINDING_BC])
             }
         }
-        else{
+        else{            
            fileList = loader.getFileListForPatient("",i);
+           //console.log("Got File List of");
+           //console.log(fileList);
         }
         return fileList;
     }

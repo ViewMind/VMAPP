@@ -63,6 +63,21 @@ bool GoNoGoManager::drawCross(){
     return false;
 }
 
+void GoNoGoManager::drawTrialByID(const QString &id){
+
+    setVisibilityToElementList(gRLArrow,false);
+    setVisibilityToElementList(gRRArrow,false);
+    setVisibilityToElementList(gGRArrow,false);
+    setVisibilityToElementList(gGLArrow,false);
+
+    for (qint32 i = 0; i < gonogoTrials.size(); i++){
+        if (id == gonogoTrials.at(i).id){
+            trialIndex = i;
+            drawCurrentTrial();
+        }
+    }
+}
+
 void GoNoGoManager::drawCurrentTrial(){
 
     setVisibilityToElementList(gCross,false);

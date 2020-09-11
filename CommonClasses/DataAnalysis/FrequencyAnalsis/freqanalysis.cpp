@@ -118,6 +118,10 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::analyzeFile(const QString &fname,
         far = performNBackRTAnalysis();
         firstNDataSetsToFilter = TEST_DATA_SETS_NBACKRT;
     }
+    else if (parts.first() == FILE_OUTPUT_GONOGO){
+        far = performGoNoGoAnalysis();
+        firstNDataSetsToFilter = TEST_DATA_SETS_GONOGO;
+    }
     else{
         far.fileError = "Unrecognized file name. Cannot perform frequency analysis";
         return far;
@@ -599,6 +603,107 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performNBackRTAnalysis(){
     far.averageFrequency = freqAcc/static_cast<qreal>(freqAccCounter);
     return far;
 }
+
+FreqAnalysis::FreqAnalysisResult FreqAnalysis::performGoNoGoAnalysis(){
+    FreqAnalysisResult far;
+
+    QString local_error;
+    QStringList contentAndHeader = separateHeaderFromData(&local_error,HEADER_GONOGO_EXPERIMENT);
+    if (!local_error.isEmpty()){
+        far.errorList << local_error;
+        return far;
+    }
+
+    QString header = contentAndHeader.first();
+    QString content = contentAndHeader.last();
+    contentAndHeader.clear();
+
+    if (content.isEmpty()) {
+        far.errorList << "No content found";
+        return far;
+    }
+
+    // Parsing the reading parameters
+    GoNoGoParser parser;
+
+    // The first line is the resolution
+    QStringList lines = content.split("\n");
+    if (!parser.parseGoNoGoExperiment(header,1,1)){
+        far.errorList << "PARSING GO NO GO RT DESCRIPTION: " + parser.getError();
+    }
+    far.expectedNumberOfDataSets = parser.getTrials().size();
+
+    // Parsing the experiment data.
+    QHash<QString, QList<qreal> > dataSetTimes;
+    QHash<QString, QStringList > invalidTimes;
+
+    QString name;
+    for (qint32 i = 1; i < lines.size(); i++){
+
+        if (lines.at(i).trimmed().isEmpty()) continue;
+
+        QStringList parts = lines.at(i).split(" ",QString::SkipEmptyParts);
+
+        // Trial description line has only two parts. But the second part is only a description of the trial.
+        if (parts.size() == 2){
+            name = parts.at(0);
+            continue;
+        }
+        else if (parts.size() != 7){
+            far.errorList << "Go No Go line :" + lines.at(i) + " does not have 7 parts";
+            return far;
+        }
+
+        QString time = parts.at(0);
+        bool ok;
+        qreal value = time.toDouble(&ok);
+        if (ok){
+            dataSetTimes[name].append(value);
+        }
+        else{
+            invalidTimes[name].append(time);
+        }
+    }
+
+    // Doing the frequency analysis per data set;
+
+    qreal freqAcc = 0;
+    qreal freqAccCounter = 0;
+    for (qint32 i = 0; i < parser.getTrials().size(); i++){
+
+        QString name = parser.getTrials().at(i).id;
+
+        FreqAnalyisDataSet faDataSet;
+        QList<qreal> times = dataSetTimes.value(name);
+
+        faDataSet.numberOfDataPoints = times.size();
+        faDataSet.trialName = name;
+
+        if (times.size() < 2){
+            faDataSet.averageFrequency = 0;
+            faDataSet.duration = 0;
+            faDataSet.expectedNumberOfDataPoints = 0;
+        }
+        else {
+            QList<TimePair> dtimes;
+            faDataSet.averageFrequency = calculateFrequency(times,&dtimes);
+            freqAcc = freqAcc + faDataSet.averageFrequency;
+            freqAccCounter++;
+            faDataSet.diffTimes = dtimes;
+            faDataSet.duration = times.last() - times.first();
+            qreal TinMS = 1000.0/faDataSet.averageFrequency;
+            faDataSet.expectedNumberOfDataPoints = faDataSet.duration/TinMS;
+            faDataSet.numberOfDataPoints = times.size();
+            faDataSet.invalidValues = invalidTimes.value(name);
+        }
+
+        far.freqAnalysisForEachDataSet << faDataSet;
+
+    }
+    far.averageFrequency = freqAcc/static_cast<qreal>(freqAccCounter);
+    return far;
+}
+
 
 qreal FreqAnalysis::calculateFrequency(const QList<qreal> &times, QList<TimePair> *dtimes){
     qreal freqsAcc = 0;

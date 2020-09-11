@@ -28,8 +28,11 @@ OBJECTS_DIR = OBJS
 RCC_DIR = QRC
 
 SOURCES += \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpgonogo.cpp \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
+    ../../../CommonClasses/Experiments/gonogomanager.cpp \
+    ../../../CommonClasses/Experiments/gonogoparser.cpp \
     ../../../CommonClasses/GraphicalReport/diagonosislogic.cpp \
     ../../../CommonClasses/GraphicalReport/resultsegment.cpp \
     languageselectiondialog.cpp \
@@ -66,8 +69,11 @@ SOURCES += \
     idtablediag.cpp
 
 HEADERS += \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpgonogo.h \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
+    ../../../CommonClasses/Experiments/gonogomanager.h \
+    ../../../CommonClasses/Experiments/gonogoparser.h \
     ../../../CommonClasses/GraphicalReport/diagonosislogic.h \
     ../../../CommonClasses/GraphicalReport/resultsegment.h \
         eyedataanalyzer.h \

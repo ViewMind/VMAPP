@@ -671,6 +671,10 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
         processingParameters.addKeyValuePair(CONFIG_FILE_NBACKRT,fileToProcess);
         fixationHashName = CONFIG_P_EXP_NBACKRT;
     }
+    else if (fileToProcess.startsWith(FILE_OUTPUT_GONOGO)){
+        processingParameters.addKeyValuePair(CONFIG_FILE_GONOGO,fileToProcess);
+        fixationHashName = CONFIG_P_EXP_GONOGO;
+    }
     else{
         logForProcessing.appendError("Unrecognized file type: " + fileToProcess);
         return;

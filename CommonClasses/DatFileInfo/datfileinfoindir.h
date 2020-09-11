@@ -10,8 +10,9 @@
 #define   LIST_INDEX_BINDING_UC  2
 #define   LIST_INDEX_FIELDING    3
 #define   LIST_INDEX_NBACKRT     4
+#define   LIST_INDEX_GONOGO      5
 
-#define   LIST_NUMBER_OF_LISTS   5
+#define   LIST_NUMBER_OF_LISTS   6
 
 class DatFileInfoInDir
 {
@@ -44,7 +45,9 @@ public:
         qint32 bindingUCFileIndex;
         qint32 fieldingFileIndex;
         qint32 nbackrtFileIndex;
-        void clear() { readingFileIndex = -1; bindingBCFileIndex = -1; bindingUCFileIndex = -1; fieldingFileIndex = -1; nbackrtFileIndex = -1;}
+        qint32 gonogoFileIndex;
+        void clear() { readingFileIndex = -1; bindingBCFileIndex = -1; bindingUCFileIndex = -1;
+                       fieldingFileIndex = -1; nbackrtFileIndex = -1; gonogoFileIndex = -1;}
     };
 
     DatFileInfoInDir();
@@ -58,6 +61,7 @@ public:
     QStringList getBindingUCFileList() const;
     QStringList getFieldingFileList() const;
     QStringList getNBackRTFileList() const;
+    QStringList getGoNoGoFileList() const;
     QStringList getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC);
     QStringList getFileSetAndReportName(const ReportGenerationStruct &repgen) const;
     QStringList getFileSetAndReportName(const QStringList &fileList);
@@ -70,6 +74,7 @@ public:
     static DatInfo getReadingInformation(const QString &readingFile);
     static DatInfo getFieldingInformation(const QString &readingFile);
     static DatInfo getNBackRTInformation(const QString &nbackrtFile);
+    static DatInfo getGoNoGoInformation(const QString &gonogoFile);
     static qint32 getValidEyeForDatList(const QStringList &list);
 
 
@@ -83,6 +88,7 @@ private:
     QStringList   filesBindingBC;
     QStringList   filesBindingUC;
     QStringList   filesNBackRT;
+    QStringList   filesGoNoGo;
     QList<qint32> filesBindingUCValidIndexes;
 
     // Generalization that only gets any of the code lists for file lists.

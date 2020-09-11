@@ -8,6 +8,7 @@
 #include "../../../CommonClasses/Experiments/readingparser.h"
 #include "../../../CommonClasses/Experiments/bindingparser.h"
 #include "../../../CommonClasses/Experiments/fieldingparser.h"
+#include "../../../CommonClasses/Experiments/gonogoparser.h"
 
 #define  FILE_BINDING  "binding"
 
@@ -16,6 +17,7 @@
 #define  TEST_DATA_SETS_BINDING    20
 #define  TEST_DATA_SETS_FIELDING   10
 #define  TEST_DATA_SETS_NBACKRT    10
+#define  TEST_DATA_SETS_GONOGO     10
 
 class FreqAnalysis
 {
@@ -93,6 +95,7 @@ private:
     FreqAnalysisResult performBindingAnalysis();
     FreqAnalysisResult performFieldingAnalysis();
     FreqAnalysisResult performNBackRTAnalysis();
+    FreqAnalysisResult performGoNoGoAnalysis();
 
 };
 

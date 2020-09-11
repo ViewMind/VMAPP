@@ -22,6 +22,9 @@ bool FixationDrawer::prepareToDrawFixations(const QString &expID, ConfigurationM
     else if (expID == CONFIG_P_EXP_NBACKRT){
         manager = new FieldingManager();
     }
+    else if (expID == CONFIG_P_EXP_GONOGO){
+        manager = new GoNoGoManager();
+    }
     else{
         error = "Unkonwn experiment ID: " + expID;
         return false;
@@ -127,6 +130,25 @@ bool FixationDrawer::drawFixations(const FixationList &flist){
             //... and drawing the fixations on the image.
             drawFixationOnImage(imageName,flist.left.at(i),flist.right.at(i));
         }
+    }
+    else if (experimentID == CONFIG_P_EXP_GONOGO){
+        GoNoGoManager *m = (GoNoGoManager *)manager;
+
+        for (qint32 i = 0; i < flist.trialID.size(); i++){
+
+            QString trialID = flist.trialID.at(i).first();
+
+            m->drawTrialByID(trialID);
+
+            // Constructing the image name
+            QString imageName = trialID;
+            //... and drawing the fixations on the image.
+            drawFixationOnImage(imageName,flist.left.at(i),flist.right.at(i));
+        }
+    }
+    else {
+        error = "Unknown experiment for which to draw fixations: " + experimentID;
+        return false;
     }
 
     return true;

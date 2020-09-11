@@ -29,11 +29,17 @@ void RawDataProcessor::initialize(ConfigurationManager *c){
         dataNBackRT = currentDir + "/" + config->getString(CONFIG_FILE_NBACKRT);
     else dataNBackRT = "";
 
+    if (config->containsKeyword(CONFIG_FILE_GONOGO)){
+        dataGoNoGo = currentDir + "/" + config->getString(CONFIG_FILE_GONOGO);
+    }
+    else dataGoNoGo = "";
+
     matrixBindingBC = "";
     matrixReading = "";
     matrixFielding = "";
     matrixBindingUC = "";
     matrixNBackRT = "";
+    matrixGoNoGo = "";
 
     mgeo.distanceToMonitorInMilimiters = config->getReal(CONFIG_DISTANCE_2_MONITOR)*10;
     mgeo.XmmToPxRatio                  = config->getReal(CONFIG_XPX_2_MM);
@@ -224,6 +230,20 @@ void RawDataProcessor::run(){
         }
     }
 
+    if (!dataGoNoGo.isEmpty()){
+        emit(appendMessage("========== STARTED GO-NO GO PROCESSING ==========",MSG_TYPE_SUCC));
+        EDPGoNoGo gonogo(config);
+        tagRet = csvGeneration(&gonogo,"Go-No Go",dataGoNoGo,HEADER_GONOGO_EXPERIMENT);
+        if (!tagRet.ok) return;
+        matrixGoNoGo = tagRet.filePath;
+
+        fixations[CONFIG_P_EXP_GONOGO] = gonogo.getEyeFixations();
+        barGraphOptionsFromFixationList(gonogo.getEyeFixations(),dataGoNoGo);
+        bool temp = generateFDBFile(dataGoNoGo,gonogo.getEyeFixations(),false);
+        freqErrorsOK = freqErrorsOK && temp;
+
+    }
+
     // Generating the report based on available data.
     if (reportInfoText.isEmpty()){
         emit(appendMessage("Nothing selected to process. Exiting." + reportFileOutput,MSG_TYPE_STD));
@@ -327,6 +347,8 @@ bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
         emit(appendMessage("Difference in frequency check results (" + datFile + "): But found" + fres.errorList.join("<br>   "),MSG_TYPE_ERR));
     }
 
+    //qDebug() << "Will do frequency analysis with fixation list of" << fixList.trialID.size();
+
     // Info on the file name.
     QFileInfo info(datFile);
 
@@ -360,6 +382,7 @@ bool RawDataProcessor::generateFDBFile(const QString &datFile, const FixationLis
         QStringList left, right;
         for (qint32 i = 0; i < fixList.trialID.size(); i++){
             QString name = fixList.trialID.at(i).join("_");
+            //qDebug() << "Fix Count Value iteration " << name;
             left << name + ":" + QString::number(fixList.left.at(i).size());
             right << name + ":" + QString::number(fixList.right.at(i).size());
         }
@@ -735,8 +758,8 @@ void RawDataProcessor::barGraphOptionsFromFixationList(const FixationList &fixli
                     bgo[1].xtext << l.last();
                 }
                 else{
-                   nFixR = nFixR + fixlist.right.at(i).size();
-                   nFixL = nFixL + fixlist.left.at(i).size();
+                    nFixR = nFixR + fixlist.right.at(i).size();
+                    nFixL = nFixL + fixlist.left.at(i).size();
                 }
             }
         }
@@ -744,6 +767,32 @@ void RawDataProcessor::barGraphOptionsFromFixationList(const FixationList &fixli
         bgo[0].title = "Fixations on NBACK RT Encoding for : " + info.baseName();
         bgo[1].title = "Fixations on NBACK RT Retrieval for: " + info.baseName();
 
+    }
+    else if (fileName.contains(CONFIG_P_EXP_GONOGO)){
+        bgo << BarGrapher::BarGraphOptions();
+
+        bgo[0].width = 1280;
+        bgo[0].height = 720;
+        bgo[0].associatedFileName = fileName;
+        bgo[0].drawValuesOnBars = false;
+        bgo[0].fontSize = 12;
+        bgo[0].ylabel = "Number of Total Unfiltered Fixations";
+        bgo[0].associatedFileName = fileName;
+        bgo[0].colors << "#2022a2" << "#a21d3c";
+        bgo[0].dataSets << QList<qreal>() << QList<qreal>();
+        bgo[0].legend << "Left Eye" << "Right Eye";
+
+        for (qint32 i = 0; i < fixlist.trialID.size(); i++){
+            QStringList l = fixlist.trialID.at(i);
+            // This check should alwasy pass. However if for some future bug the list does not contain any values the code inside would crash the program
+            if (l.size() == 2){
+                bgo[0].dataSets[EYE_L].append(fixlist.left.at(i).size());
+                bgo[0].dataSets[EYE_R].append(fixlist.right.at(i).size());
+                bgo[0].xtext << l.first();
+            }
+        }
+        QFileInfo info(fileName);
+        bgo[0].title = "Fixations on Go No Go Trials : " + info.baseName();
     }
     else{
         emit(appendMessage("BarGraph Option Creator: Unknown file type: " + fileName,MSG_TYPE_ERR));

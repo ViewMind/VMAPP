@@ -24,6 +24,7 @@ public:
 
     // Will return false if the last trial drawn was the last.
     bool drawCross();
+    void drawTrialByID(const QString &id);
     void drawCurrentTrial();
 
     QString getCurrentTrialHeader() const;

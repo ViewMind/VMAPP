@@ -24,7 +24,8 @@ inst_name = Test Institution;
 inst_uid = 0;
 enable_local_db_bkp = true;
 configure_options = PINN2E;
-vr_enabled = true;
+#vr_enabled = true;
+vr_enabled = false;
 
 
 #------------------------------------------------------#
@@ -38,8 +39,10 @@ reading_px_tol_for_target = 80;
 #     CONFIGURATION FOR EYE DATA PROCESSING            #
 #------------------------------------------------------#
 
-moving_window_max_dispersion = 105;      #px
-sample_frequency             = 120;      #Hz
+# moving_window_max_dispersion = 105;      #px
+# sample_frequency             = 120;      #Hz
+moving_window_max_dispersion = 194;      #px
+sample_frequency             = 150;      #Hz
 minimum_fixation_length      =  50;      #ms
 distance_to_monitor          =  60;      #cm. ????
 latency_escape_radious       =  80;      #px

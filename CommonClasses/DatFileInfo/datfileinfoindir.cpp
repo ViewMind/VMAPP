@@ -12,6 +12,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
     filesBindingUC.clear();
     filesFielding.clear();
     filesNBackRT.clear();
+    filesGoNoGo.clear();
 
     // STEP 1: Creating the structure with just the .dat information.
     QStringList filters;
@@ -25,7 +26,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
     QStringList orderBindingBC;
     QStringList orderBindingUC;
     QStringList orderFielding;
-    QStringList orderNBackRT;
+    QStringList orderGoNoGo;
 
     for (qint32 i = 0; i < fileList.size(); i++){
 
@@ -37,6 +38,7 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
         else if (fname.startsWith(FILE_OUTPUT_BINDING_UC)) insertIntoListAccordingToOrder(fname,&filesBindingUC,&orderBindingUC);
         else if (fname.startsWith(FILE_OUTPUT_FIELDING)) insertIntoListAccordingToOrder(fname,&filesFielding,&orderFielding);
         else if (fname.startsWith(FILE_OUTPUT_NBACKRT)) insertIntoListAccordingToOrder(fname,&filesNBackRT,&orderFielding);
+        else if (fname.startsWith(FILE_OUTPUT_GONOGO)) insertIntoListAccordingToOrder(fname,&filesGoNoGo,&orderGoNoGo);
 
     }
 }
@@ -47,6 +49,7 @@ bool DatFileInfoInDir::hasPendingReports() const {
     if (!filesReading.isEmpty()) return true;
     if (!filesFielding.isEmpty()) return true;
     if (!filesNBackRT.isEmpty()) return true;
+    if (!filesGoNoGo.isEmpty()) return true;
     if (!filesBindingBC.isEmpty() && !filesBindingUC.isEmpty()){
         // This should return true ONLY if for at least one BC file there is a compatible UC file.
         for (qint32 i = 0; i < filesBindingBC.size(); i++){
@@ -79,6 +82,10 @@ QStringList DatFileInfoInDir::getFieldingFileList() const{
 
 QStringList DatFileInfoInDir::getNBackRTFileList() const{
     return getFileList(filesNBackRT);
+}
+
+QStringList DatFileInfoInDir::getGoNoGoFileList() const{
+    return getFileList(filesGoNoGo);
 }
 
 QStringList DatFileInfoInDir::getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC){
@@ -130,6 +137,10 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const QStringList &fileLis
         else if (fileList.at(i).startsWith(FILE_OUTPUT_NBACKRT)){
             filesNBackRT << fileList.at(i);
             repgen.nbackrtFileIndex = filesNBackRT.size()-1;
+        }
+        else if (fileList.at(i).startsWith(FILE_OUTPUT_GONOGO)){
+            filesGoNoGo << fileList.at(i);
+            repgen.gonogoFileIndex = filesGoNoGo.size()-1;
         }
     }
 
@@ -197,6 +208,21 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
         }
     }
 
+    if (repgen.gonogoFileIndex != -1){
+        DatInfo gonogo_file = getGoNoGoInformation(filesGoNoGo.at(repgen.gonogoFileIndex));
+        if (expectedReportName.isEmpty()) expectedReportName = FILE_REPORT_NAME;
+        // Extra info and date must have matched for these two files to have been selected.
+        expectedReportName = expectedReportName + "_G" + gonogo_file.extraInfo + gonogo_file.validEye;
+        ans << gonogo_file.fileName;
+        if (date.isEmpty() || (date < gonogo_file.date)) {
+            date = gonogo_file.date;
+            time = gonogo_file.hour;
+        }
+        else if ((date == gonogo_file.date) && (time < gonogo_file.hour)){
+            time = gonogo_file.hour;
+        }
+    }
+
     if (!expectedReportName.isEmpty()){
         expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
         ans.prepend(expectedReportName);
@@ -217,6 +243,8 @@ QString DatFileInfoInDir::getDatFileNameFromSelectionDialogIndex(qint32 index, q
         return filesFielding.at(index);
     case LIST_INDEX_NBACKRT:
         return filesNBackRT.at(index);
+    case LIST_INDEX_GONOGO:
+        return filesGoNoGo.at(index);
     }
     return "";
 }
@@ -254,6 +282,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getDatFileInformation(const QString 
     else if (file.startsWith(FILE_OUTPUT_READING)) return getReadingInformation(file);
     else if (file.startsWith(FILE_OUTPUT_FIELDING)) return getFieldingInformation(file);
     else if (file.startsWith(FILE_OUTPUT_NBACKRT)) return getNBackRTInformation(file);
+    else if (file.startsWith(FILE_OUTPUT_GONOGO)) return getGoNoGoInformation(file);
     else return DatInfo();
 }
 
@@ -403,6 +432,32 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getNBackRTInformation(const QString 
         ans.validEye = parts.at(1);
         ans.basename = parts.at(0);
         ans.code = "NB" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
+        ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
+    }
+    ans.category = ans.category + ans.extraInfo;
+
+    return ans;
+}
+
+DatFileInfoInDir::DatInfo DatFileInfoInDir::getGoNoGoInformation(const QString &gonogoFile){
+    QStringList parts = gonogoFile.split(".",QString::SkipEmptyParts);
+    QString baseName = parts.first();
+
+    QString fmark = "";
+    if (parts.last() == "datf") fmark = " (FE)";
+
+    parts = baseName.split("_",QString::SkipEmptyParts);
+    DatInfo ans;
+    ans.extraInfo = "";
+    ans.fileName = gonogoFile;
+    ans.category = "GN";
+
+    if (parts.size() == 7){
+        ans.date = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
+        ans.hour = parts.at(5) + "_" + parts.at(6);
+        ans.validEye = parts.at(1);
+        ans.basename = parts.at(0);
+        ans.code = "GN" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
         ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
     }
     ans.category = ans.category + ans.extraInfo;

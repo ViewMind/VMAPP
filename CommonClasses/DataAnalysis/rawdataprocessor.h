@@ -15,6 +15,7 @@
 #include "EyeMatrixGenerator/edpimages.h"
 #include "EyeMatrixGenerator/edpfielding.h"
 #include "EyeMatrixGenerator/edpnbackrt.h"
+#include "EyeMatrixGenerator/edpgonogo.h"
 #include "../../CommonClasses/DataAnalysis/RScriptCaller/rdataprocessor.h"
 #include "../../CommonClasses/DatFileInfo/datfileinfoindir.h"
 #include "../../CommonClasses/DataAnalysis/BarGrapher/bargrapher.h"
@@ -74,6 +75,7 @@ private:
     QString dataBindingBC;
     QString dataFielding;
     QString dataNBackRT;
+    QString dataGoNoGo;
 
     // The matrix file
     QString matrixReading;
@@ -81,6 +83,7 @@ private:
     QString matrixBindingBC;
     QString matrixFielding;
     QString matrixNBackRT;
+    QString matrixGoNoGo;
 
     // Required for configuring the processors
     MonitorGeometry mgeo;

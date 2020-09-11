@@ -1091,7 +1091,7 @@ void FlowControl::doFrequencyAnalysis(const QString &filename){
     FreqAnalysis::FreqAnalysisResult fres;
 
     // Froming path
-    QString pathToFile = QString(DIRNAME_RAWDATA) + "/" + configuration->getString(CONFIG_PATIENT_UID) + "/" + filename;
+    QString pathToFile = QString(DIRNAME_RAWDATA) + "/" + configuration->getString(CONFIG_PATIENT_UID) + "/" + filename;        
     fres = FreqAnalysis::doFrequencyAnalysis(configuration,pathToFile);
 
 

@@ -8,7 +8,7 @@
 #include "../../../CommonClasses/Experiments/gonogomanager.h"
 #include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
-#define  GONOGO_TIME_CROSS      200
+#define  GONOGO_TIME_CROSS      500
 #define  GONOGO_TIME_ESTIMULUS  1000
 
 class GoNoGoExperiment: public Experiment

@@ -5,6 +5,7 @@
 #include "../../../CommonClasses/Experiments/readingmanager.h"
 #include "../../../CommonClasses/Experiments/bindingmanager.h"
 #include "../../../CommonClasses/Experiments/fieldingmanager.h"
+#include "../../../CommonClasses/Experiments/gonogomanager.h"
 #include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
 class FixationDrawer
