@@ -150,7 +150,7 @@ void GoNoGoManager::drawAllElements(){
     QGraphicsLineItem *green_arrow = canvas->addLine(left_x0,centerY,right_x0,centerY,QPen(QColor(GONOGO_GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
 
     // Offset to build indicators
-    qreal ka = sqrt(2)*indicator_line_length/2;
+    qreal ka = qSqrt(2)*indicator_line_length/2;
 
     // Red Left Arrow
     QGraphicsLineItem *red_left_arrow_ind_up = canvas->addLine(left_x0,centerY,left_x0+ka,centerY-ka,QPen(QColor(GONOGO_RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));

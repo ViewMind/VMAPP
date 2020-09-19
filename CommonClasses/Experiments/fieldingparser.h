@@ -5,6 +5,7 @@
 #include <QList>
 #include <QPoint>
 #include <QRectF>
+#include <QSet>
 
 // Constants for drawing the squares, cross and target on the screen for fielding
 // These values are the physical dimensions of the targets in mm.
