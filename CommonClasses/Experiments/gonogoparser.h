@@ -5,6 +5,7 @@
 #include <QList>
 #include <QPoint>
 #include <QRectF>
+#include <QSet>
 
 #define  GONOGO_TRIAL_TYPE_RLEFT   0
 #define  GONOGO_TRIAL_TYPE_GLEFT   1

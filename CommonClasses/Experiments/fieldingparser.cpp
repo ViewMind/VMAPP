@@ -97,7 +97,7 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents,
     fieldingTrials.clear();
 
     // Needed to check for unique ids.
-    QSet<QString> uniqueIDs;
+    QSet<QString> uniqueIDs;    
 
     // Checking the size of the first line to see if it is a version string.
     qint32 startI = 0;

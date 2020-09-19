@@ -35,6 +35,7 @@ bool GoNoGoParser::parseGoNoGoExperiment(const QString &contents, const qreal &r
 
     // Making sure the name is unique.
     QSet<QString> uniqueIDs;
+    QSet<int> test;
 
     // Possible trial type descriptions
     QStringList trialTypes;

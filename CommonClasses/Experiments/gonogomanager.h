@@ -8,6 +8,7 @@
 #include <QTextStream>
 #include <QFile>
 #include <QSet>
+#include <QtMath>
 
 #include "gonogoparser.h"
 #include "experimentdatapainter.h"
