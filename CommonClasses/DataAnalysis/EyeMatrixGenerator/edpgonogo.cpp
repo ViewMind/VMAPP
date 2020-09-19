@@ -38,6 +38,21 @@ bool EDPGoNoGo::doEyeDataProcessing(const QString &data){
     numberOfTrials = 0;
     QString lastID = "";
 
+    // Computing the total experiment time.
+    qreal totalExperimentTime = 0;
+    qreal experimentStart = -1;
+    for(int i = 0; i < lines.size(); i++){
+        QString line = lines.at(i);
+        QStringList tokens = line.split(' ',QString::SkipEmptyParts);
+        if ( (tokens.size() != 2) ){
+            // This is  data line.
+            if (experimentStart == -1) experimentStart = tokens.at(GONOGO_TI).toDouble();
+            else totalExperimentTime = tokens.at(GONOGO_TI).toDouble();
+        }
+    }
+    //qDebug() << "GONOGO Start Time" << experimentStart << " End Time" << totalExperimentTime;
+    totalExperimentTime = totalExperimentTime - experimentStart;
+
     for(int i = 0; i < lines.size(); i++){
 
         QString line = lines.at(i);
@@ -57,7 +72,7 @@ bool EDPGoNoGo::doEyeDataProcessing(const QString &data){
                     return false;
                 }
 
-                appendDataToGoNoGoMatrix(imageData,id,answerArray.at(trialType));
+                appendDataToGoNoGoMatrix(imageData,id,answerArray.at(trialType),trialType,totalExperimentTime);
 
                 // Clearing the image data
                 //qWarning() << "CLEARING";
@@ -105,7 +120,7 @@ bool EDPGoNoGo::doEyeDataProcessing(const QString &data){
             return false;
         }
 
-        appendDataToGoNoGoMatrix(imageData,id,answerArray.at(trialType));
+        appendDataToGoNoGoMatrix(imageData,id,answerArray.at(trialType),trialType,totalExperimentTime);
 
         imageData.clear();
     }
@@ -143,19 +158,28 @@ bool EDPGoNoGo::finalizeCSVFile(){
 
 
 void EDPGoNoGo::initializeGoNoGoDataMatrix(){
-    csvHeader << "suj"          //0
-              << "idtrial"      //1
-              << "target_hit"   //3
-              << "dur"          //4
-              << "ojoDI"        //5
-              << "latSac"       //6
-              << "amp_sacada"   //7
-              << "resp_time";   //8
+    csvHeader << "suj"
+              << "idtrial"
+              << "target_hit"
+              << "dur"
+              << "ojoDI"
+              << "latSac"
+              << "amp_sacada"
+              << "resp_time"
+              << "pupil_size"
+              << "num_trial_fix"
+              << "gazing"
+              << "num_center_fix"
+              << "total_study_time"
+              << "arrow_type"
+              << "trial_type";
 }
 
 void EDPGoNoGo::appendDataToGoNoGoMatrix(const DataMatrix &data,
                                          const QString &trialID,
-                                         const qint32 &targetBoxID){
+                                         const qint32 &targetBoxID,
+                                         const qint32 &trialType,
+                                         const qreal &totalExperimentTime){
 
     qreal freqCheck = calculateSamplingFrequency(data,GONOGO_TI);
     qreal freq = config->getReal(CONFIG_SAMPLE_FREQUENCY);
@@ -169,8 +193,8 @@ void EDPGoNoGo::appendDataToGoNoGoMatrix(const DataMatrix &data,
     QStringList id;
     id << trialID;
     eyeFixations.trialID.append(id);
-    addDataToOneEye(data,EYE_L,trialID,targetBoxID,&ldata);
-    addDataToOneEye(data,EYE_R,trialID,targetBoxID,&rdata);
+    addDataToOneEye(data,EYE_L,trialID,targetBoxID,&ldata,trialType,totalExperimentTime);
+    addDataToOneEye(data,EYE_R,trialID,targetBoxID,&rdata,trialType,totalExperimentTime);
 
 }
 
@@ -178,19 +202,23 @@ void EDPGoNoGo::addDataToOneEye(const DataMatrix &data,
                                 qint32 eyeID,
                                 const QString &trialID,
                                 const qint32 &targetBoxID,
-                                QList<QStringList> *list){
+                                QList<QStringList> *list,
+                                const qint32 &trialType,
+                                const qreal &totalExperimentTime){
 
-    qint32 xEyeID, yEyeID;
+    qint32 xEyeID, yEyeID, pupilID;
     QString eyeStringID;
     if (eyeID == EYE_L){
         eyeStringID = eyeLeftCSV;
         xEyeID = GONOGO_XL;
         yEyeID = GONOGO_YL;
+        pupilID = GONOGO_PL;
     }
     else if (eyeID == EYE_R){
         eyeStringID = eyeRightCSV;
         xEyeID = GONOGO_XR;
         yEyeID = GONOGO_YR;
+        pupilID = GONOGO_PR;
     }
 
     qreal startTime = data.first().at(GONOGO_TI);
@@ -198,6 +226,22 @@ void EDPGoNoGo::addDataToOneEye(const DataMatrix &data,
     qreal sacLat = 0;
 
     Fixations fix = mwa.computeFixations(data,xEyeID,yEyeID,GONOGO_TI);
+
+    // Computing the
+    //   average pupil size
+    //   the gazing.
+    //   the number of fixation in the "center" ( using the same criterie for sacadic latency to estimate the number of fixation in the center target )
+    QList<qreal> pupilSizes;
+    qreal gazing = 0;
+    qint32 fixInCenter = 0;
+    for (qint32 i = 0; i < fix.size(); i++){
+        pupilSizes << averageColumnOfMatrix(data,pupilID,fix.at(i).indexFixationStart,fix.at(i).indexFixationEnd);
+        gazing = gazing + fix.at(i).duration;
+        qreal sqrD = qPow(fix.at(i).x - centerX,2)+qPow(fix.at(i).y - centerY,2);
+        if (sqrD <= sqrTol){
+            fixInCenter++;
+        }
+    }
 
     if (eyeID == EYE_L){
         eyeFixations.left.append(fix);
@@ -224,10 +268,16 @@ void EDPGoNoGo::addDataToOneEye(const DataMatrix &data,
         if (hitTargetBoxes.at(targetBoxID).contains(fix.at(i).x,fix.at(i).y)){
             qreal fixTime = (fix.at(i).fixStart + fix.at(i).fixEnd)/2;
             respTime = QString::number(fixTime - startTime);
+            break;
         }
     }
 
     qint32 isIn;
+
+    QString arrow_type = "R";
+    if ((trialType == GONOGO_TRIAL_TYPE_GLEFT) || (trialType == GONOGO_TRIAL_TYPE_GRIGHT)){
+        arrow_type = "G";
+    }
 
     for (qint32 i = 0; i < fix.size(); i++){
 
@@ -242,9 +292,15 @@ void EDPGoNoGo::addDataToOneEye(const DataMatrix &data,
              << eyeStringID //ojoDI
              << QString::number(sacLat) // sacadic latency.
              << QString::number(sac.calculateSacadeAmplitude(fix.at(i).x,fix.at(i).y,monitorGeometry)) // sacade amplitude.
-             << respTime; // response time.
+             << respTime // response time.
+             << QString::number(pupilSizes.at(i))
+             << QString::number(fix.size())
+             << QString::number(gazing)
+             << QString::number(fixInCenter)
+             << QString::number(totalExperimentTime)
+             << arrow_type
+             << QString::number(trialType);
         list->append(eyed);
-
     }
 }
 

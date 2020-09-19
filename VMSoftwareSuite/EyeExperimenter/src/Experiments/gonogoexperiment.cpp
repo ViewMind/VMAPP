@@ -20,6 +20,8 @@ void GoNoGoExperiment::onTimeOut(){
     case GNGS_CROSS:
         //qDebug() << "DRAWING TRIAL";
         m->drawCurrentTrial();        
+        rMWA.finalizeOnlineFixationCalculation();
+        lMWA.finalizeOnlineFixationCalculation();
         stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
         stateTimer.start();
         gngState = GNGS_ESTIMULUS;
@@ -111,6 +113,7 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (r.isValid()){
         if (m->isPointInSideCorrectTargetForCurrentTrial(r.x,r.y)){
+            qDebug() << "END TRIAL " <<  m->getCurrentTrialHeader()  << " RIGHT FIX @"  << data.time;
             onTimeOut();
             return;
         }
@@ -118,6 +121,7 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (l.isValid()){
         if (m->isPointInSideCorrectTargetForCurrentTrial(l.x,l.y)){
+            qDebug() << "END TRIAL " <<  m->getCurrentTrialHeader()  << " LEFT FIX @"  << data.time;
             onTimeOut();
             return;
         }

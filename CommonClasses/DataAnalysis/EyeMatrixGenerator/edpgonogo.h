@@ -32,7 +32,9 @@ private:
     // Adding the data of each image.
     void appendDataToGoNoGoMatrix(const DataMatrix &data,
                                   const QString &trialID,
-                                  const qint32 &targetBoxID);
+                                  const qint32 &targetBoxID,
+                                  const qint32 &trialType,
+                                  const qreal &totalExperimentTime);
 
     // Parse experiment description and get target hit boxes.
     GoNoGoParser parser;
@@ -54,8 +56,9 @@ private:
     void addDataToOneEye(const DataMatrix &data,
                          qint32 eyeID,
                          const QString &trialID,
-                         const qint32 &targetBoxID,
-                         QList<QStringList> *list);
+                         const qint32 &targetBoxID, QList<QStringList> *list,
+                         const qint32 &trialType,
+                         const qreal &totalExperimentTime);
 
     // Write the actual CSV file.
     bool finalizeCSVFile();

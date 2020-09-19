@@ -26,6 +26,8 @@ void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p
 
         FreqAnalyisDataSet fads = freqAnalysisForEachDataSet.at(i);
 
+        //qDebug() << "FreqAnalyisDataSet" << fads.trialName << fads.diffTimes.size();
+
         if (fads.diffTimes.isEmpty()){
             tempErrorList << "Data set " + fads.trialName + " does not have ANY data points";
             numberOfDataSetsWithLittleDataPoints++;
@@ -472,6 +474,7 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performFieldingAnalysis(){
             faDataSet.trialName = name;
 
             if (times.size() < 2){
+                faDataSet.diffTimes.clear();
                 faDataSet.averageFrequency = 0;
                 faDataSet.duration = 0;
                 faDataSet.expectedNumberOfDataPoints = 0;
@@ -667,6 +670,14 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performGoNoGoAnalysis(){
 
     // Doing the frequency analysis per data set;
 
+
+//    qDebug() << "FREQ ANALYSIS GO NO GO DATA SET SIZES";
+//    QStringList keys = dataSetTimes.keys();
+//    keys.sort();
+//    for (qint32 i = 0; i < keys.size(); i++){
+//        qDebug() << keys.at(i) << ":"  << dataSetTimes.value(keys.at(i)).size();
+//    }
+
     qreal freqAcc = 0;
     qreal freqAccCounter = 0;
     for (qint32 i = 0; i < parser.getTrials().size(); i++){
@@ -676,10 +687,13 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performGoNoGoAnalysis(){
         FreqAnalyisDataSet faDataSet;
         QList<qreal> times = dataSetTimes.value(name);
 
+        //qDebug() << name << ":" << times.size();
+
         faDataSet.numberOfDataPoints = times.size();
         faDataSet.trialName = name;
 
         if (times.size() < 2){
+            //qDebug() << "NO DATA FOR" << name;
             faDataSet.averageFrequency = 0;
             faDataSet.duration = 0;
             faDataSet.expectedNumberOfDataPoints = 0;

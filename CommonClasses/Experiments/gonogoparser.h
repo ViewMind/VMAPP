@@ -14,7 +14,7 @@
 // Draw constants need to be here for computations when manager is not available.
 #define  GONOGO_SIDE_MARGIN               0.05   // Percent of resolution width
 #define  GONOGO_TARGET_SIZE               0.03   // Percent of resolution width
-#define  GONOGO_TARGET_TOL                0.04   // Percent of resolution width
+#define  GONOGO_TARGET_TOL                0.20   // Percent of resolution width
 #define  GONOGO_ARROW_LENGTH              0.1    // Percent of resolution width
 #define  GONOGO_ARROW_INDICATOR_LENGTH    0.4    // Percent of arrow length
 #define  GONOGO_CROSS_LINE_LENGTH         0.1    // Percent of resolution width/height.
