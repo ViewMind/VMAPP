@@ -28,6 +28,10 @@ VMBase {
         resultsList.clear();
         flowControl.prepareSelectedReportIteration();
 
+        var studyNameList = loader.getStringListForKey(keysearch+"studyNames");
+        //var studyNameList = loader.getStringListForKey("viewresults_studyNames")
+        //console.log(studyNameList);
+
         var done = false;
         while (!done){
             var map = flowControl.nextSelectedReportItem();
@@ -37,6 +41,13 @@ VMBase {
 //                for (var key in map){
 //                    console.log("   " + key + ": " + map[key]);
 //                }
+
+                // This hack is necessry, because the flowControl class doesn't have access to the language files
+                // required to give studies their proper names.
+                if (map.vmIsStudyTitle){
+                    map.vmTitleText = studyNameList[map.vmTitleText].toUpperCase();
+                }
+
                 map.vmDiagClassTitle = ""
                 map.vmDisclaimer = ""
                 map.vmDiagnosisClass = ""

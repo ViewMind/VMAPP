@@ -161,12 +161,13 @@ QVariantMap ResultSegment::getMapForDisplay() const{
     map["vmTitleText"] = title;
     QString exp = explanation;
     exp = exp.replace("/n","<br>");
-    map ["vmExpText"] = exp;
+    map["vmExpText"] = exp;
     map["vmRefText"] = rangeText;
     map["vmResValue"] = getDisplayValue();
     map["vmResBarIndicator"] = QString::number(segmentIndicator);
     map["vmNumOfSegements"] = cuttoffValues.size() -1;
+    map["vmIsStudyTitle"] = false;
 
-return map;
+    return map;
 
 }

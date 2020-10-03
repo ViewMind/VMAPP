@@ -279,10 +279,31 @@ void EDPGoNoGo::addDataToOneEye(const DataMatrix &data,
         arrow_type = "G";
     }
 
+    qint32 nonCorrectTargetHitBoxID;
+    if (targetBoxID == 0) nonCorrectTargetHitBoxID = 1;
+    else nonCorrectTargetHitBoxID = 0;
+
     for (qint32 i = 0; i < fix.size(); i++){
 
-        if (hitTargetBoxes.at(targetBoxID).contains(fix.at(i).x,fix.at(i).y)) isIn = 1;
-        else isIn = 0;
+        // Target hit logic. First we check if fixation is in center
+        qreal sqrD = qPow(fix.at(i).x - centerX,2)+qPow(fix.at(i).y - centerY,2);
+        if (sqrD <= sqrTol){
+            isIn = 0;
+        }
+        else if (hitTargetBoxes.at(targetBoxID).contains(fix.at(i).x,fix.at(i).y)) isIn = 1;
+        else if (hitTargetBoxes.at(nonCorrectTargetHitBoxID).contains(fix.at(i).x,fix.at(i).y)) isIn = -1;
+        else if (targetBoxID == 0){
+            // The correct target Box is the Left One. So isIN will be zero if x is between the arrow and the left target box
+            // which means it's x value should be LOWER than the half of the screen or centerX
+            if (fix.at(i).x < centerX) isIn = 0;
+            else isIn = -1;
+        }
+        else { // targetBox is 1.
+            // The correct target Box is the Right One. So isIN will be zero if x is between the arrow and the right target box
+            // which means it's x value should be LARGER than the half of the screen or centerX
+            if (fix.at(i).x > centerX) isIn = 0;
+            else isIn = -1;
+        }
 
         QStringList eyed;
         eyed << subjectIdentifier // suj

@@ -281,7 +281,9 @@ viewresults_labelSquareGreen = No se encontraron problemas funcionales relevante
 viewresults_labelSquareYellow = Funcionamiento ligeramente deficiente, no es <br>necesariamente patológico.;
 viewresults_labelSquareRed = Funcionamiento patológico completamente deficiente <br> y/o patológico.;
 
-viewresults_save_report = Guardar reporte;
+viewresults_studyNames = ERROR|Lectura|Colores|Colores|N-Back MS|N-Back RT|Parkinson|Go/No Go;
+
+viewresults_save_report = Elija el directorio donde se guarda el reporte;
 
 viewresults_diagWaitTitle = Generando Reporte; 
 viewresults_diagWaitMessage = Espere un momento;

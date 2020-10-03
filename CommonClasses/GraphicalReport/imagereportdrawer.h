@@ -38,14 +38,17 @@
 #define  DR_CONFG_DIAG_CLASS          "class_"
 #define  DR_CONFG_DIAGNOSIS_TITLE     "diag_class_title"
 #define  DR_CONFG_RESULT_TITLE        "result_title"
+#define  DR_CONFG_STUDY_READING       "reading_study"
+#define  DR_CONFG_STUDY_NBACKRT       "nbackrt_study"
+#define  DR_CONFG_STUDY_COLORS        "colors_study"
 
 // Drawing Scaling Control
 #define  MASTER_SCALE                  10
 
 // Dimensions
 #define  PAGE_WIDTH                    595*MASTER_SCALE
-//#define  PAGE_HEIGHT                   842*MASTER_SCALE
-#define  PAGE_HEIGHT                   842*2*MASTER_SCALE // Two pages one next to the other.
+#define  PAGE_HEIGHT                   842*MASTER_SCALE
+//#define  PAGE_HEIGHT                   842*2*MASTER_SCALE // Two pages one next to the other.
 //#define  PAGE_HEIGHT                   942*MASTER_SCALE
 //#define  BANNER_HEIGHT                 108*MASTER_SCALE
 #define  BANNER_HEIGHT                 98*MASTER_SCALE
@@ -138,7 +141,7 @@ class ImageReportDrawer
 
 public:
     ImageReportDrawer();
-    bool drawReport(const QVariantMap &ds, ConfigurationManager *c, const QString &bindingCode = "I", const QString &bindingDescription = "2");
+    bool drawReport(const QVariantMap &ds, ConfigurationManager *c, qint32 studyPage, const QString &bindingCode = "I", const QString &bindingDescription = "2");
 
     static ConfigurationManager loadReportText(QString lang);
     static QString cleanNewLines(QString text);

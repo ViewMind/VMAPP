@@ -18,6 +18,10 @@ no necesariamente patológico|Funcionamiento
 completamente
 deficiente y/o patológico;
 
+reading_study = LECTURA;
+nbackrt_study = NBACK RT;
+colors_study = COLORES;
+
 motto = Medición de Desempeño
 Cognitivo mediante
 Eye-Tracking;

@@ -26,7 +26,13 @@ QList<qint32> GoNoGoParser::getCorrectAnswerArray() const{
 }
 
 bool GoNoGoParser::parseGoNoGoExperiment(const QString &contents, const qreal &resolutionWidth, const qreal &resolutionHeight){
+
+
     QStringList lines = contents.split('\n',QString::SkipEmptyParts);
+    if (lines.isEmpty()){
+        error = "No lines in experiment description";
+        return false;
+    }
     trials.clear();
 
     // The first line should be the version string.

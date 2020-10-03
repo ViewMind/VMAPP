@@ -476,6 +476,13 @@ RawDataProcessor::TagParseReturn RawDataProcessor::csvGeneration(EDPBase *proces
 
     tagRet = separateInfoByTag(dataFile,header,&data,&exp);
 
+    //qDebug() << "SEPARATED" << dataFile;
+    //qDebug() << "BEFORE";
+    //qDebug() << "DATA" << data;
+    //qDebug() << "AFTER";
+    //qDebug() << "EXP" << exp;
+
+
     if (!tagRet.ok){
         tagRet.filePath = "";
         return tagRet;
@@ -585,14 +592,32 @@ RawDataProcessor::TagParseReturn RawDataProcessor::separateInfoByTag(const QStri
             else explist << line;
         }
         else{
+            //qDebug() << line;
             datalist << line;
+            //qDebug() << datalist.size();
         }
     }
+
+    QString temp;
+
+    if (datalist.size() > 0){
+        temp = datalist.first();
+        for (qint32 i = 1; i < datalist.size(); i++){
+            //qDebug() << i << datalist.at(i);
+            temp = temp  + "\n" + datalist.at(i);
+            //qDebug() << i << temp;
+        }
+    }
+    //qDebug() << temp;
 
     if (getResolutionToConfig(datalist.first())){
         datalist.removeFirst();
     }
+
+    //qDebug() << "Joining a Data List";
+    //qDebug() << "JOINING"  << datalist;
     *data       = datalist.join('\n');
+    *data       = temp;
     *experiment = explist.join('\n');
 
     if (tagFound == 2){
