@@ -47,6 +47,9 @@ private:
     // The target box for each of the targets.
     QList<QRectF> hitTargetBoxes;
 
+    // The target box to see if a fixation is "on" the arrow.
+    QRectF arrowTargetBox;
+
     // The number of trials
     qint32 numberOfTrials;
 

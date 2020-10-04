@@ -35,6 +35,7 @@ public:
 private:
     QList<GoNoGoParser::Trial> gonogoTrials;
     QList<QRectF> targetBoxes;
+    QRectF arrowTargetBox;
     QList<qint32> answerArray;
 
     void enableDemoMode() override;

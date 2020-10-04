@@ -39,11 +39,13 @@ bool GoNoGoManager::parseExpConfiguration(const QString &contents){
     gonogoTrials = parser.getTrials();
     versionString = parser.getVersionString();
     targetBoxes = parser.getTargetBoxes();
+    arrowTargetBox = parser.getArrowTargetBox();
     answerArray = parser.getCorrectAnswerArray();
 
     // For DEBUG only
     //canvas->addRect(targetBoxes.at(0));
     //canvas->addRect(targetBoxes.at(1));
+    //canvas->addRect(arrowTargetBox);
 
     if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
 

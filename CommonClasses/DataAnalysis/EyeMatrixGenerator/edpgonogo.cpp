@@ -25,6 +25,7 @@ bool EDPGoNoGo::doEyeDataProcessing(const QString &data){
 
     QStringList lines = data.split("\n");
     hitTargetBoxes = parser.getTargetBoxes();
+    arrowTargetBox = parser.getArrowTargetBox();
 
     // This will have all the data from a single image.
     DataMatrix imageData;
@@ -285,11 +286,7 @@ void EDPGoNoGo::addDataToOneEye(const DataMatrix &data,
 
     for (qint32 i = 0; i < fix.size(); i++){
 
-        // Target hit logic. First we check if fixation is in center
-        qreal sqrD = qPow(fix.at(i).x - centerX,2)+qPow(fix.at(i).y - centerY,2);
-        if (sqrD <= sqrTol){
-            isIn = 0;
-        }
+        if (arrowTargetBox.contains(fix.at(i).x,fix.at(i).y)) isIn = 0;
         else if (hitTargetBoxes.at(targetBoxID).contains(fix.at(i).x,fix.at(i).y)) isIn = 1;
         else if (hitTargetBoxes.at(nonCorrectTargetHitBoxID).contains(fix.at(i).x,fix.at(i).y)) isIn = -1;
         else if (targetBoxID == 0){
