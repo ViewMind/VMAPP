@@ -39,11 +39,13 @@ bool GoNoGoManager::parseExpConfiguration(const QString &contents){
     gonogoTrials = parser.getTrials();
     versionString = parser.getVersionString();
     targetBoxes = parser.getTargetBoxes();
+    arrowTargetBox = parser.getArrowTargetBox();
     answerArray = parser.getCorrectAnswerArray();
 
     // For DEBUG only
     //canvas->addRect(targetBoxes.at(0));
     //canvas->addRect(targetBoxes.at(1));
+    //canvas->addRect(arrowTargetBox);
 
     if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
 
@@ -186,6 +188,6 @@ bool GoNoGoManager::isPointInSideCorrectTargetForCurrentTrial(qreal x, qreal y) 
     if (trialIndex <= 0) return false;
     if (trialIndex > gonogoTrials.size()) return false;
     qint32 targetRectIndex = answerArray.at(gonogoTrials.at(trialIndex-1).type);
-    //qDebug() << "Checking if " << x << y << " is in " << targetBoxes.at(targetRectIndex) << ". Trial of Type" << gonogoTrials.at(trialIndex-1).type;
+    //qDebug() << "Checking target box " << targetBoxes.at(targetRectIndex) << ". Trial of Type" << gonogoTrials.at(trialIndex-1).type;
     return targetBoxes.at(targetRectIndex).contains(x,y);
 }

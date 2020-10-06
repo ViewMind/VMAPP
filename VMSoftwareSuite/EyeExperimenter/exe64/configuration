@@ -8,8 +8,8 @@ x_px_mm                               = 0.25;   # mm/px
 y_px_mm                               = 0.25;   # mm/px
 
 # Production Server Address
-#server_address = 18.220.30.34;
-server_address = 192.168.1.10;
+server_address = 18.220.30.34;
+#server_address = 192.168.1.10;
 
 
 #------------------------------------------------------#
@@ -24,7 +24,6 @@ inst_name = Test Institution;
 inst_uid = 0;
 enable_local_db_bkp = true;
 configure_options = PINN2E;
-#vr_enabled = true;
 vr_enabled = false;
 
 
@@ -39,9 +38,7 @@ reading_px_tol_for_target = 80;
 #     CONFIGURATION FOR EYE DATA PROCESSING            #
 #------------------------------------------------------#
 
-# moving_window_max_dispersion = 105;      #px
-# sample_frequency             = 120;      #Hz
-moving_window_max_dispersion = 194;      #px
+moving_window_max_dispersion = 197;      #px
 sample_frequency             = 150;      #Hz
 minimum_fixation_length      =  50;      #ms
 distance_to_monitor          =  60;      #cm. ????
@@ -55,20 +52,31 @@ fielding_algorithm_version   =  0;
 #             FREQUENCY CHECK PARAMETERS               #
 #------------------------------------------------------#
 
+## The allowed deviation from the base period
+# tol_max_allowed_period                   = 12;  # ms
+# tol_min_allowed_period                   = 6;  # ms
+#
+## IMPORTANT: The percent of data points that contain glitches that will be tolerated in a data set. 
+# tol_max_fglitches_in_trial               = 20;   # %  
+#
+## Minimun number of points required in a set to be valid.
+# tol_min_number_of_data_items_in_trial    = 50; # Absolute number
+# tol_min_num_of_pts_in_fielding_trial     = 18; # Absolute number
+#
+## Percent of the total number of points (in the entire study) that were not valid numbers.
+# tol_max_percent_of_invalid_values        = 3;   # %
+# tol_num_allowed_of_failed_data_sets      = 7;   # Absolute number
+
+##################### VALUES FOR GAZEPOINT
 # The allowed deviation from the base period
-tol_max_allowed_period                   = 12;  # ms
-tol_min_allowed_period                   = 6;  # ms
-
-# IMPORTANT: The percent of data points that contain glitches that will be tolerated in a data set. 
-tol_max_fglitches_in_trial               = 20;   # %  
-
-# Minimun number of points required in a set to be valid.
-tol_min_number_of_data_items_in_trial    = 50; # Absolute number
+tol_max_allowed_period                   = 8;  # ms
+tol_min_allowed_period                   = 4;  # msglitches that will be tolerated in a data set. 
+tol_max_fglitches_in_trial               = 20; # %  
+tol_min_number_of_data_items_in_trial    = 80; # Absolute number
+tol_max_percent_of_invalid_values        = 3;  # %
+tol_num_allowed_of_failed_data_sets      = 7;  # Absolute number
 tol_min_num_of_pts_in_fielding_trial     = 18; # Absolute number
 
-# Percent of the total number of points (in the entire study) that were not valid numbers.
-tol_max_percent_of_invalid_values        = 3;   # %
-tol_num_allowed_of_failed_data_sets      = 7;   # Absolute number
 
 #------------------------------------------------------#
 #             TIME OUTS FOR TCP/CONNECTIONS            #

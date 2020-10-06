@@ -32,7 +32,6 @@ VMBase {
                 calibrationFailedDialog.vmRightEyePassed = flowControl.isRightEyeCalibrated();
                 viewCalibrationStartDiag.close();
                 calibrationFailedDialog.open();
-                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
                 return;
             }
             else{

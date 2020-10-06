@@ -101,6 +101,7 @@ Dialog {
         anchors.bottomMargin: mainWindow.height*0.061
         onClicked: {
             viewCalibrationFailedDiag.close();
+            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
         }
     }
 

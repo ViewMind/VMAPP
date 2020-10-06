@@ -4,16 +4,23 @@ Item {
 
     id: vmResultEntry
     width: mainWindow.width*0.45
-    height: (vmDiagClassTitle == "")? mainWindow.height*0.152 : mainWindow.height*0.261
+    height: (vmIsStudyTitle)? ( mainWindow.height*0.08 ) : ( (vmDiagClassTitle == "")? mainWindow.height*0.152 : mainWindow.height*0.261 )
 
     readonly property var vmBarColorArray2: ["#009949","#ca2026"]
     readonly property var vmBarColorArray3: ["#009949","#e4b32c","#ca2026"]
     readonly property var vmBarColorArray4: ["#00557f", "#009949","#e4b32c","#ca2026"]
 
-    //        width: mainWindow.width*0.45
-    //        height: mainWindow.height*0.261
 
     /////////////////////////////// Normal Results
+
+    Rectangle{
+        id: backgroundRect
+        color: "#EDEDEE"
+        anchors.centerIn: parent
+        height: parent.height
+        width: parent.width
+        visible: vmIsStudyTitle
+    }
 
     Text{
         id: titleText
@@ -21,12 +28,25 @@ Item {
         color: "#505050"
         text: vmTitleText
         font.family: viewHome.gothamM.name
-        font.pixelSize: 14*viewHome.vmScale
+        font.pixelSize:  14*viewHome.vmScale
         anchors.left: parent.left
-        anchors.top: parent.top
+        anchors.top:  parent.top
         anchors.leftMargin: mainWindow.width*0.013
-        anchors.topMargin: mainWindow.height*0.02
+        anchors.topMargin:  mainWindow.height*0.02
+        visible: !vmIsStudyTitle
     }
+
+    Text {
+        id: studyNameText
+        textFormat: Text.RichText
+        color: "#505050"
+        text: vmTitleText
+        font.family: viewHome.gothamB.name
+        font.pixelSize: 18*viewHome.vmScale
+        anchors.centerIn: parent
+        visible: vmIsStudyTitle
+    }
+
 
     Rectangle{
         id: itemDivision
@@ -35,6 +55,7 @@ Item {
         color: "#d3d3d4"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
+        //visible: !vmIsStudyTitle
     }
 
     Text{
@@ -60,6 +81,7 @@ Item {
         anchors.bottom: itemDivision.top
         anchors.bottomMargin: mainWindow.height*0.014
         anchors.left: titleText.left
+        visible: !vmIsStudyTitle
     }
 
     Text{
@@ -71,6 +93,7 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: mainWindow.width*0.024
         anchors.verticalCenter: parent.verticalCenter
+        visible: !vmIsStudyTitle
     }
 
     VMResultBar{
@@ -86,7 +109,7 @@ Item {
             }
         }
         vmIndicator: vmResBarIndicator
-
+        visible: !vmIsStudyTitle
     }
 
     /////////////////////////////// Diagnosis class rectangle

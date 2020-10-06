@@ -21,12 +21,22 @@ QList<QRectF> GoNoGoParser::getTargetBoxes() const{
     return targetBoxes;
 }
 
+QRectF GoNoGoParser::getArrowTargetBox() const{
+    return arrowTargetBox;
+}
+
 QList<qint32> GoNoGoParser::getCorrectAnswerArray() const{
     return answerArray;
 }
 
 bool GoNoGoParser::parseGoNoGoExperiment(const QString &contents, const qreal &resolutionWidth, const qreal &resolutionHeight){
+
+
     QStringList lines = contents.split('\n',QString::SkipEmptyParts);
+    if (lines.isEmpty()){
+        error = "No lines in experiment description";
+        return false;
+    }
     trials.clear();
 
     // The first line should be the version string.
@@ -57,6 +67,32 @@ bool GoNoGoParser::parseGoNoGoExperiment(const QString &contents, const qreal &r
     QRectF rightTarget(resolutionWidth*(1-GONOGO_SIDE_MARGIN) - diameter + xOffset,cY-r,diameter,diameter);
     targetBoxes.clear();
     targetBoxes << leftTarget << rightTarget;
+
+    // Computing the arrow target box.
+    qreal centerX = resolutionWidth/2;
+    qreal centerY = resolutionHeight/2;
+    qreal line_length = resolutionWidth*GONOGO_CROSS_LINE_LENGTH;
+    qreal indicator_line_length = GONOGO_INDICATOR_LINE_LENGTH*line_length;
+
+    // Arrow x coordinates of the main trunk
+    qreal left_x0 = centerX-line_length/2;
+    qreal right_x0 = centerX+line_length/2;
+
+    // Offset to build indicators (45 degree line of the arrow ends)
+    qreal ka = qSqrt(2)*indicator_line_length/2;
+
+    // Using information above to actually compute the arrow target box.
+    qreal arrowWidth = (right_x0 - left_x0);
+    qreal arrowHeight = 2*ka;
+    qreal arrowTargetBoxW = arrowWidth*GONOGO_ARROW_TARGET_BOX_WMARGIN;
+    qreal arrowTargetBoxH = arrowHeight*GONOGO_ARROW_TARGET_BOX_HMARGIN;
+
+    //qDebug() << arrowTargetBoxH << arrowHeight;
+
+    arrowTargetBox = QRectF(left_x0 - ((arrowTargetBoxW - arrowWidth)/2),
+                            centerY - ka - ((arrowTargetBoxH - arrowHeight)/2),
+                            arrowTargetBoxW,
+                            arrowTargetBoxH);
 
     answerArray.clear();
     answerArray << 1;  // Answer to Red Left is to Look Right.

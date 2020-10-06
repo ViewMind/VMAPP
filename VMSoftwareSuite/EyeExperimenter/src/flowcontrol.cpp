@@ -207,15 +207,29 @@ void FlowControl::drawReport(){
     QString bindingDesc = reportsForPatient.getRepFileInfo(selectedReport).value(KEY_BIND_NUM).toString();
     repmap[CONFIG_DOCTOR_NAME] = configuration->getString(CONFIG_DOCTOR_NAME);
     repmap[CONFIG_PATIENT_NAME] = configuration->getString(CONFIG_PATIENT_NAME);
-    if (!drawer.drawReport(repmap,configuration,uimap->getIndexBehavioral(),bindingDesc)){
-        logger.appendError("Could not save the requested report file to: " + configuration->getString(CONFIG_IMAGE_REPORT_PATH));
+
+    QString reportDirectory = configuration->getString(CONFIG_IMAGE_REPORT_PATH);
+    QString currentReport = reportsForPatient.getRepFileInfo(selectedReport).value(KEY_FILENAME).toString();
+    QString pageBaseName = currentReport.split(".").first();
+
+    QList<qint32> studyIDs;
+    studyIDs << EXP_READING << EXP_BINDING_BC << EXP_NBACKRT;
+
+    // Generating a page for each study.
+    for (qint32 i = 0; i < studyIDs.size(); i++){
+        configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,reportDirectory + "/" + pageBaseName + "_" + QString::number(i) + ".png");
+        if (!drawer.drawReport(repmap,configuration,studyIDs.at(i),uimap->getIndexBehavioral(),bindingDesc)){
+            logger.appendError("Could not save the requested report file to: " + configuration->getString(CONFIG_IMAGE_REPORT_PATH));
+        }
     }
+
+
     emit(reportGenerationDone());
 }
 
 void FlowControl::saveReportAs(const QString &title){
-    QString newFileName = QFileDialog::getSaveFileName(nullptr,title,"","*.png");
-    //QString newFileName = "test.png";
+    QString newFileName = QFileDialog::getExistingDirectory(nullptr,title,"");
+    //qDebug() << newFileName;
     if (newFileName.isEmpty()) return;
     configuration->addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,newFileName);
     emit(reportGenerationRequested());
@@ -981,6 +995,16 @@ void FlowControl::prepareSelectedReportIteration(){
         if ((ans != "nan") && (ans != "0")){
             QStringList toLoad;
             toLoad << CONF_LOAD_RDINDEX << CONF_LOAD_EXECPROC << CONF_LOAD_WORKMEM << CONF_LOAD_RETMEM;
+
+            // The very first Item is the experiment Title.
+            QVariantMap map;
+            map["vmTitleText"] = EXP_READING;
+            map["vmExpText"] = "";
+            map["vmRefText"] = "";
+            map["vmResValue"] = "";
+            map["vmIsStudyTitle"] = true;
+            reportItems << map;
+
             for (qint32 i = 0; i < toLoad.size(); i++){
                 ResultSegment rs;
                 rs.loadSegment(toLoad.at(i),langCode);
@@ -995,7 +1019,16 @@ void FlowControl::prepareSelectedReportIteration(){
     if (report.contains(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
         QString ans = report.value(CONFIG_RESULTS_BINDING_CONVERSION_INDEX).toString();
         if ((ans != "nan") && (ans != "0")){
-            QStringList binding;
+
+            // The very first Item is the experiment Title.
+            QVariantMap map;
+            map["vmTitleText"] = EXP_BINDING_BC;
+            map["vmExpText"] = "";
+            map["vmRefText"] = "";
+            map["vmResValue"] = "";
+            map["vmIsStudyTitle"] = true;
+            reportItems << map;
+
             if (uimap->getIndexBehavioral() == "I") {
                 ResultSegment rs;
                 if (reportsForPatient.getRepFileInfo(selectedReport).value(KEY_BIND_NUM).toInt() == 2){
@@ -1030,6 +1063,16 @@ void FlowControl::prepareSelectedReportIteration(){
             QStringList toLoad;
             toLoad << CONF_LOAD_NBRT_FIX_ENC << CONF_LOAD_NBRT_FIX_RET << CONF_LOAD_NBRT_INHIB_PROC << CONF_LOAD_NBRT_SEQ_COMPLETE
                    << CONF_LOAD_NBRT_TARGET_HIT << CONF_LOAD_NBRT_MEAN_RESP_TIME << CONF_LOAD_NBRT_MEAN_SAC_AMP;
+
+            // The very first Item is the experiment Title.
+            QVariantMap map;
+            map["vmTitleText"] = EXP_NBACKRT;
+            map["vmExpText"] = "";
+            map["vmRefText"] = "";
+            map["vmResValue"] = "";
+            map["vmIsStudyTitle"] = true;
+            reportItems << map;
+
             for (qint32 i = 0; i < toLoad.size(); i++){
                 ResultSegment rs;
                 rs.loadSegment(toLoad.at(i),langCode);

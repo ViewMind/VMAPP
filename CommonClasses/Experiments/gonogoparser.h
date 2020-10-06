@@ -6,6 +6,8 @@
 #include <QPoint>
 #include <QRectF>
 #include <QSet>
+#include <QtMath>
+#include <QDebug>
 
 #define  GONOGO_TRIAL_TYPE_RLEFT   0
 #define  GONOGO_TRIAL_TYPE_GLEFT   1
@@ -15,13 +17,15 @@
 // Draw constants need to be here for computations when manager is not available.
 #define  GONOGO_SIDE_MARGIN               0.05   // Percent of resolution width
 #define  GONOGO_TARGET_SIZE               0.03   // Percent of resolution width
-#define  GONOGO_TARGET_TOL                0.04   // Percent of resolution width
+#define  GONOGO_TARGET_TOL                0.20   // Percent of resolution width
 #define  GONOGO_ARROW_LENGTH              0.1    // Percent of resolution width
 #define  GONOGO_ARROW_INDICATOR_LENGTH    0.4    // Percent of arrow length
 #define  GONOGO_CROSS_LINE_LENGTH         0.1    // Percent of resolution width/height.
 #define  GONOGO_TARGET_LINE_WIDTH         0.1    // Percent of the diameter.
 #define  GONOGO_LINE_WIDTH                0.1    // Percent of the line length.
 #define  GONOGO_INDICATOR_LINE_LENGTH     0.3    // Percent of the line length
+#define  GONOGO_ARROW_TARGET_BOX_WMARGIN  2.2    // Multiplier to the arrow width
+#define  GONOGO_ARROW_TARGET_BOX_HMARGIN  4.5    // Multiplier to the arrow height
 #define  GONOGO_RED_ARROW_COLOR           "#cc1f1f"
 #define  GONOGO_GREEN_ARROW_COLOR         "#28ab14"
 
@@ -42,6 +46,7 @@ public:
     QString getError() const;
     QString getVersionString() const;
     QList<QRectF> getTargetBoxes() const;
+    QRectF getArrowTargetBox() const;
     QList<qint32> getCorrectAnswerArray() const;
 
 private:
@@ -49,6 +54,7 @@ private:
     QString versionString;
     QString error;
     QList<QRectF> targetBoxes;
+    QRectF arrowTargetBox;
     QList<qint32> answerArray;
 
 };

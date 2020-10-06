@@ -17,6 +17,10 @@ necessarily pathological|Completely deficient
 and/or
 pathological functioning;
 
+reading_study = READING;
+nbackrt_study = NBACK RT;
+colors_study = COLORS;
+
 motto = Cognitive Performace
 Evaluations through
 Eye-Tracking;

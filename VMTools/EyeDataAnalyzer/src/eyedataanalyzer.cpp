@@ -607,12 +607,15 @@ void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
     QDir wdir(processingParameters.getString(CONFIG_PATIENT_DIRECTORY));
     processingParameters.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,wdir.absolutePath());
 
+    //qDebug() << processingParameters.getMap();
+
     if (!ok) return;
     // Third step, processing the data.
     RawDataProcessor processor(this);
     htmlWriter.reset();
     connect(&processor,SIGNAL(appendMessage(QString,qint32)),this,SLOT(onProcessorMessage(QString,qint32)));
     processor.initialize(&processingParameters);
+
     logForProcessing.appendStandard("Processing started...");
     processor.run();
     QString outputFile = currentDirectory + "/output.html";
@@ -684,6 +687,9 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
     htmlWriter.reset();
     connect(&processor,SIGNAL(appendMessage(QString,qint32)),this,SLOT(onProcessorMessage(QString,qint32)));
     processor.initialize(&processingParameters);
+
+    //qDebug() << processingParameters.getMap();
+
     logForProcessing.appendStandard("Processing started...");
     processor.run();
     FixationList fix = processor.getFixations().value(fixationHashName);
@@ -699,10 +705,15 @@ void EyeDataAnalyzer::on_pbDrawFixations_clicked()
         return;
     }
 
+    //qDebug() << "PREPARING TO DRAW";
+
     if (!fdrawer.prepareToDrawFixations(fixationHashName,&processingParameters,fix.experimentDescription,outputDir)){
         logForProcessing.appendError("Error drawing fixation for experiment " + fixationHashName + ". Error is: " + fdrawer.getError());
         return;
     }
+
+    //qDebug() << "DRAWING FIXATION";
+
     if (!fdrawer.drawFixations(fix)){
         logForProcessing.appendError("Error drawing fixation for experiment " + fixationHashName + ". Error is: " + fdrawer.getError());
         return;
@@ -889,20 +900,28 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
 
     // Setting the image report name
     QFileInfo info(selectedReport);
-    QString outputPath = currentDirectory + "/" + info.baseName() + ".png";
-    processingParameters.addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,outputPath);
+
+    // Preparing to genrate all pages.
+    QList<qint32> studyIDs;
+    studyIDs << EXP_READING << EXP_BINDING_BC << EXP_NBACKRT;
+
+    ImageReportDrawer reportDrawer;
+    QString tempRepDir = "report_directory";
+    QString outputPath = currentDirectory + "/" + tempRepDir;
+    QDir(currentDirectory).mkdir(tempRepDir);
 
     processingParameters.addKeyValuePair(CONFIG_REPORT_LANGUAGE,diag.getLanguage());
 
-
-    ImageReportDrawer reportDrawer;
-    reportDrawer.drawReport(dataSet,&processingParameters,"I",repInfo.value(KEY_BIND_NUM).toString());
-
-    if (QFile(outputPath).exists()){
-        logForProcessing.appendSuccess("Generated image report at: " + outputPath);
-    }
-    else{
-        logForProcessing.appendError("Could not generate PNG report");
+    // Generating a page for each study.
+    for (qint32 i = 0; i < studyIDs.size(); i++){
+        processingParameters.addKeyValuePair(CONFIG_IMAGE_REPORT_PATH,outputPath + "/" +  info.baseName() + "_" + QString::number(i) + ".png");
+        qDebug() << "Caling Draw Report" << studyIDs.at(i);
+        if (!reportDrawer.drawReport(dataSet,&processingParameters,studyIDs.at(i),"I",repInfo.value(KEY_BIND_NUM).toString())){
+            logForProcessing.appendError("Could not generate PNG report");
+        }
+        else{
+            logForProcessing.appendSuccess("Generated image report at: " + processingParameters.getString(CONFIG_IMAGE_REPORT_PATH));
+        }
     }
 
 }

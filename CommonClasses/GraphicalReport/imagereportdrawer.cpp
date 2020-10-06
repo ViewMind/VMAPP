@@ -12,7 +12,7 @@ ImageReportDrawer::ImageReportDrawer()
 }
 
 
-bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c,const QString &bindingCode, const QString &bindingDescription){
+bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *c, qint32 studyPage, const QString &bindingCode, const QString &bindingDescription){
 
     canvas->clear();
     QString language = c->getString(CONFIG_REPORT_LANGUAGE);
@@ -25,12 +25,16 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         QString str = ds.value(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION).toString();
         if ((str != "0") && (str != "nan")) doReading = true;
     }
+    // If this ia reading page and there is no reading results don't do anything.
+    else if (studyPage == EXP_READING) return true;
 
     bool doNBack = false;
     if (ds.contains(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC)){
         QString str = ds.value(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC).toString();
         if ((str != "0") && (str != "nan")) doNBack = true;
     }
+    // If this is an NBack RT page and there is no NBack RT results don't do anything.
+    else if (studyPage == EXP_NBACKRT) return true;
 
     bool doMemEnc = false;
     if (bindingCode == "I"){
@@ -44,6 +48,24 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
             QString str = ds.value(CONFIG_RESULTS_BEHAVIOURAL_RESPONSE).toString();
             if ((str != "0") && (str != "nan")) doMemEnc = true;
         }
+    }
+    // If this is an Colors page and there is no Colors Result results don't do anything.
+    if ((!doMemEnc) && ((studyPage == EXP_BINDING_BC) || (studyPage == EXP_BINDING_BC))) return true;
+
+    QString resultStudyName = "";
+    switch(studyPage){
+    case EXP_BINDING_BC:
+        resultStudyName = langData.getString(DR_CONFG_STUDY_COLORS);
+        break;
+    case EXP_BINDING_UC:
+        resultStudyName = langData.getString(DR_CONFG_STUDY_COLORS);
+        break;
+    case EXP_READING:
+        resultStudyName = langData.getString(DR_CONFG_STUDY_READING);
+        break;
+    case EXP_NBACKRT:
+        resultStudyName = langData.getString(DR_CONFG_STUDY_NBACKRT);
+        break;
     }
 
     //----------------------------------- GENERATING SHOW STRUCTURES ----------------------------------------------
@@ -64,7 +86,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
             rs.setValue(ds.value(rs.getNameIndex()).toDouble());
             diagClassFinder.setResultSegment(rs);
             d.rs = rs;
-            data2Show << d;
+            if (studyPage == EXP_READING) data2Show << d;
             //qDebug() << "Adding" << reportItems.last();
         }
     }
@@ -81,7 +103,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
             rs.setValue(ds.value(rs.getNameIndex()).toDouble());
             diagClassFinder.setResultSegment(rs);
             d.rs = rs;
-            data2Show << d;
+            if ((studyPage == EXP_BINDING_BC) || (studyPage == EXP_BINDING_BC)) data2Show << d;
         }
         else if (bindingCode == "B"){
             ResultSegment rs;
@@ -94,21 +116,21 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
             diagClassFinder.setResultSegment(rs);
             d.rs = rs;
-            data2Show << d;
+            if ((studyPage == EXP_BINDING_BC) || (studyPage == EXP_BINDING_BC)) data2Show << d;
         }
     }
 
     if (doNBack){
         QStringList toLoad;
         toLoad << CONF_LOAD_NBRT_FIX_ENC << CONF_LOAD_NBRT_FIX_RET << CONF_LOAD_NBRT_INHIB_PROC << CONF_LOAD_NBRT_SEQ_COMPLETE
-                  << CONF_LOAD_NBRT_TARGET_HIT << CONF_LOAD_NBRT_MEAN_RESP_TIME << CONF_LOAD_NBRT_MEAN_SAC_AMP;
+               << CONF_LOAD_NBRT_TARGET_HIT << CONF_LOAD_NBRT_MEAN_RESP_TIME << CONF_LOAD_NBRT_MEAN_SAC_AMP;
         for (qint32 i = 0; i < toLoad.size(); i++){
             ResultSegment rs;
             rs.loadSegment(toLoad.at(i),language);
             rs.setValue(ds.value(rs.getNameIndex()).toDouble());
             diagClassFinder.setResultSegment(rs);
             d.rs = rs;
-            data2Show << d;
+            if (studyPage == EXP_NBACKRT) data2Show << d;
             //qDebug() << "Adding" << reportItems.last();
         }
     }
@@ -145,9 +167,9 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
                     xmottobar,motto->pos().y()+bar_overshoot+motto->boundingRect().height(),
                     mottoLinePen);
 
-//  Rect is now white, so there is no sense in drawing it.
-//    QGraphicsRectItem *bar1 = canvas->addRect(0,0,PAGE_WIDTH,BAR_PATIENT_BAR_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
-//    bar1->setPos(0,BANNER_HEIGHT);
+    //  Rect is now white, so there is no sense in drawing it.
+    //    QGraphicsRectItem *bar1 = canvas->addRect(0,0,PAGE_WIDTH,BAR_PATIENT_BAR_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
+    //    bar1->setPos(0,BANNER_HEIGHT);
 
     QGraphicsLineItem *lineSep1 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
     lineSep1->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,BANNER_HEIGHT);
@@ -155,8 +177,8 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     QGraphicsLineItem *lineSep2 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
     lineSep2->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT);
 
-//    QGraphicsRectItem *panel = canvas->addRect(0,0,PAGE_WIDTH,PANEL_HEIGHT,QPen(),QBrush(QColor(COLOR_LIGHT_GRAY)));
-//    panel->setPos(0,BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT);
+    //    QGraphicsRectItem *panel = canvas->addRect(0,0,PAGE_WIDTH,PANEL_HEIGHT,QPen(),QBrush(QColor(COLOR_LIGHT_GRAY)));
+    //    panel->setPos(0,BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT);
 
     //QGraphicsRectItem *bar2 = canvas->addRect(0,0,PAGE_WIDTH,BAR_RESULTS_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
     qint32 resultTitleBarYStart = BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT+PANEL_HEIGHT;
@@ -169,7 +191,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     QFont resultTitleFont = fonts.value(FONT_BOLD);
     resultTitleFont.setPointSize(FONT_SIZE_RESULT_TITLE);
-    QGraphicsTextItem *r = canvas->addText(langData.getString(DR_CONFG_RESULT_TITLE),resultTitleFont);
+    QGraphicsTextItem *r = canvas->addText(langData.getString(DR_CONFG_RESULT_TITLE) + ": " + resultStudyName,resultTitleFont);
     r->setDefaultTextColor(COLOR_FONT_DARK_GRAY);
     r->setPos ((PAGE_WIDTH - r->boundingRect().width())/2,
                (BAR_RESULTS_HEIGHT  - r->boundingRect().height())/2 +resultTitleBarYStart);
@@ -278,14 +300,14 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     QFont numberFont = fonts.value(FONT_LIGHT);
     numberFont.setPointSize(FONT_SIZE_RESULT_VALUE);
 
-    QFont resultNameFont = fonts.value(FONT_MEDIUM);
-    resultNameFont.setPointSize(FONT_SIZE_RESULT_NAME);
+//    QFont resultNameFont = fonts.value(FONT_MEDIUM);
+//    resultNameFont.setPointSize(FONT_SIZE_RESULT_NAME);
 
     QFont clarificationFont = fonts.value(FONT_LIGHT);
     clarificationFont.setPointSize(FONT_SIZE_RESULT_EXP);
 
-    QFont paramRange     = fonts.value(FONT_BOOK);
-    paramRange.setPointSize(FONT_SIZE_RESULT_RANGE);
+//    QFont paramRange     = fonts.value(FONT_BOOK);
+//    paramRange.setPointSize(FONT_SIZE_RESULT_RANGE);
 
     qreal dataXOffset = RESULTS_MARGIN_LEFT;
     qreal maxNameHeight = 0;

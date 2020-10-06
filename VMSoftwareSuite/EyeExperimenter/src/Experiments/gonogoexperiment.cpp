@@ -20,6 +20,8 @@ void GoNoGoExperiment::onTimeOut(){
     case GNGS_CROSS:
         //qDebug() << "DRAWING TRIAL";
         m->drawCurrentTrial();        
+        rMWA.finalizeOnlineFixationCalculation();
+        lMWA.finalizeOnlineFixationCalculation();
         stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
         stateTimer.start();
         gngState = GNGS_ESTIMULUS;
@@ -107,17 +109,21 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // Checking if there is a fixation inside the correct target.
     //qDebug() << data.toString();
     Fixation r = rMWA.calculateFixationsOnline(data.xRight,data.yRight,static_cast<qreal>(data.time));
-    Fixation l = lMWA.calculateFixationsOnline(data.xLeft,data.xLeft,static_cast<qreal>(data.time));
+    Fixation l = lMWA.calculateFixationsOnline(data.xLeft,data.yLeft,static_cast<qreal>(data.time));
 
     if (r.isValid()){
+        //qDebug() << "RFIX" << r.toString();
         if (m->isPointInSideCorrectTargetForCurrentTrial(r.x,r.y)){
+            //qDebug() << "END TRIAL " <<  m->getCurrentTrialHeader()  << " RIGHT FIX @"  << data.time;
             onTimeOut();
             return;
         }
     }
 
     if (l.isValid()){
+        //qDebug() << "LFIX" << l.toString();
         if (m->isPointInSideCorrectTargetForCurrentTrial(l.x,l.y)){
+            //qDebug() << "END TRIAL " <<  m->getCurrentTrialHeader()  << " LEFT FIX @"  << data.time;
             onTimeOut();
             return;
         }

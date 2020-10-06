@@ -31,11 +31,12 @@ bool FixationDrawer::prepareToDrawFixations(const QString &expID, ConfigurationM
     }
 
     // Common initialization of the manager
-    manager->init(c);
+    manager->init(c);    
     if (!manager->parseExpConfiguration(expDescription)){
         error = "PARSE ERROR: " + manager->getError();
         return false;
     }
+
 
     experimentID = expID;
     outputImageDirectory = outDir;

@@ -78,7 +78,7 @@ viewstudystart_labelSubTitle = Configure the studies to perform;
 viewstudystart_cbPatientSelection = Select one of the doctor's patient;
 viewstudystart_cbSubjectSelection = Select one of the doctor's subject;
 viewstudystart_btnAddPatient = Add a new patient;
-viewstudystart_cboxReading = Reading;
+viewstudystart_cboxReading   = Reading;
 viewstudystart_cboxBindingUC = New Colours;
 viewstudystart_cboxBindingBC = Colour Combinations;
 viewstudystart_cboxFielding = N-Back Test;
@@ -281,7 +281,9 @@ viewresults_labelSquareGreen = No relevant functional problems were detected;
 viewresults_labelSquareYellow = Mildly deficient functioning, not necessarily <br>pathological;
 viewresults_labelSquareRed = Completely deficient and/or pathological <br>functioning;
 
-viewresults_save_report = Save report;
+viewresults_studyNames = ERROR|Reading|Colors|Colors|N-Back MS|N-Back RT|Parkinson|Go/No Go;
+
+viewresults_save_report = Select directory to save the report;
 
 viewresults_diagWaitTitle = Generating Report; 
 viewresults_diagWaitMessage = Please, wait for a moment;
