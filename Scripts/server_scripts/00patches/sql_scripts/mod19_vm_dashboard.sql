@@ -7,5 +7,7 @@ CREATE TABLE tTrainedUsers (
                             name                  VARCHAR(255),
                             email                 VARCHAR(255),
                             is_trained            TINYINT,
-                            birth_date            DATE
+                            birth_date            DATE,
+                            mod_last              TIMESTAMP,
+                            mod_user              VARCHAR(255)                            
                            );
