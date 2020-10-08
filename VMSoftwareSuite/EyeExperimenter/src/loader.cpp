@@ -61,6 +61,12 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_INST_PASSWORD] = cmd;
     cv[CONFIG_CONFIGURE_STRING] = cmd;
 
+    // Labeling Information
+    cmd.clear();
+    cv[CONFIG_LABELLING_MANUFACTURE_DATE] = cmd;
+    cv[CONFIG_LABELLING_SERIAL_NUMBER] = cmd;
+    cv[CONFIG_LABELLING_AUTHORIZATION_UID] = cmd;
+
     cmd.clear();
     cmd.optional = true;
     cmd.type = ConfigurationManager::VT_BOOL;

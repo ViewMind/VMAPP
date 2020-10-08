@@ -130,6 +130,9 @@
 #define   CONFIG_VR_RECOMMENDED_WIDTH                   "vr_recommended_width"
 #define   CONFIG_VR_RECOMMENDED_HEIGHT                  "vr_recommended_height"
 #define   CONFIG_RESOLUTION_SCALING                     "resolution_scaling"
+#define   CONFIG_LABELLING_MANUFACTURE_DATE             "labeling_manufacture_date"
+#define   CONFIG_LABELLING_SERIAL_NUMBER                "labeling_serial_number"
+#define   CONFIG_LABELLING_AUTHORIZATION_UID            "labeling_unique_authorization_number"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

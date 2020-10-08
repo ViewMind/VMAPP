@@ -108,5 +108,12 @@
         <file>images/gonogo/2.gif</file>
         <file>images/gonogo/3.gif</file>
         <file>images/gonogo/4.gif</file>
+        <file>images/labeling/ce_mark.jpg</file>
+        <file>images/labeling/date_of_manufacture.jpg</file>
+        <file>images/labeling/ec_rep.jpg</file>
+        <file>images/labeling/inst_uso.jpg</file>
+        <file>images/labeling/manufacturer.jpg</file>
+        <file>images/labeling/serial_number.jpg</file>
+        <file>images/labeling/reference.jpg</file>
     </qresource>
 </RCC>

@@ -39,6 +39,10 @@ public:
     Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
     Q_INVOKABLE QStringList getFileListForPatient(QString patuid, qint32 type);
     Q_INVOKABLE QStringList getFileListCompatibleWithSelectedBC(QString patuid, qint32 selectedBC);
+    Q_INVOKABLE QString getVersionNumber() const {return EXPERIMENTER_VERSION_NUMBER;}
+    Q_INVOKABLE QString getManufactureDate() const {return configuration->getString(CONFIG_LABELLING_MANUFACTURE_DATE);}
+    Q_INVOKABLE QString getSerialNumber() const {return configuration->getString(CONFIG_LABELLING_SERIAL_NUMBER);}
+    Q_INVOKABLE QString getUniqueAuthorizationNumber() const {return configuration->getString(CONFIG_LABELLING_AUTHORIZATION_UID);}
 
     //******************** Configuration Functions ***************************
     Q_INVOKABLE QString getConfigurationString(const QString &key);

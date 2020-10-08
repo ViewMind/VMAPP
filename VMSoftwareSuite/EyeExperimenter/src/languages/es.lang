@@ -45,6 +45,14 @@ viewsettings_diagEnableViewAll = Habilitar ver todos los pacientes;
 viewsettings_diagDisableViewAll = Deshabilitar ver todos los pacientes;
 viewsettings_diagLabelEnableViewAll = Habilitación de ver a todos los pacientes;
 viewsettings_diagWrongPass = Contraseña incorrecta;
+viewsettings_diagAbout = Acerca de ...;
+
+#********************************* LABELING DIALOG *********************************
+labeling_company_info      = VIEWMIND S.A.|Av. Belgrano Nro. 758, Ciudad de Sunchales, Santa Fe, Argentina|D.T. Ing. Matias Shulz - M.P.1-3105-9|info@viewmind.ai - www.viewmind.ai;
+labeling_representative    = DATOS DEL REPRESENTANTE;
+labeling_name              = EyeExplorer (Screening & Assesment/Neurocoginitive Evaluations);
+labeling_read_instructions = LEER LAS INSTRUCCIONES DE FUNCIONAMIENTO;
+labeling_authorized_use    = AUTORIZADO POR ANMAT: PM-2478-1|Uso exclusivo a profesionales e instituciones sanitarias.;
 
 #********************************* PATIENT'S REGISTRATION SCREEN *********************************
 viewpatientreg_viewTitle = Registro de paciente;
