@@ -46,13 +46,15 @@
 
 #define   K_CROSS_LINE_LENGTH                           0.05
 
-
 // These constants were derived by measuring the with and heigth of the squares in a FullHD 22 inch monitor
 // And eyeballing 1.5 cm margin around the target box. The proportion will be maintained no matter the size or where it is drawn
 // by using a proportion instead of a constant.
 
 #define   TARGET_BOX_EX_W                               1.5/6.0
 #define   TARGET_BOX_EX_H                               1.5/5.6
+
+#define   MAX_SEQUENCE_LENGTH                           20
+#define   OLD_SEQUENCE_LENGTH                           3
 
 
 class FieldingParser

@@ -1,23 +1,55 @@
 #include "nbackrtexperiment.h"
 
-NBackRTExperiment::NBackRTExperiment(QWidget *parent):Experiment(parent){
+NBackRTExperiment::NBackRTExperiment(QWidget *parent, NBackType nbt):Experiment(parent){
 
     manager = new FieldingManager();
     m = dynamic_cast<FieldingManager*>(manager);
-    expHeader = HEADER_NBACKRT_EXPERIMENT;
-    outputDataFile = FILE_OUTPUT_NBACKRT;
+    nbackType = nbt;
+
+    switch(nbt){
+    case NBT_DEFAULT:
+        expHeader = HEADER_NBACKRT_EXPERIMENT;
+        outputDataFile = FILE_OUTPUT_NBACKRT;
+        break;
+    case NBT_VARIABLE_SPEED:
+        expHeader = HEADER_NBACK_VARIABLE_SPEED_EXPERIMENT;
+        outputDataFile = FILE_OUTPUT_NBACKRT;
+        break;
+    }
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&NBackRTExperiment::onTimeOut);
 }
 
 bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
+
+    switch(nbackType){
+    case NBT_VARIABLE_SPEED:
+        nbackVSStruct.minHoldTime              = c->getInt(CONFIG_NBACKVS_MIN_HOLD_TIME);
+        nbackVSStruct.maxHoldTime              = c->getInt(CONFIG_NBACKVS_MAX_HOLD_TIME);
+        nbackVSStruct.stepHoldTime             = c->getInt(CONFIG_NBACKVS_STEP_HOLD_TIME);
+        nbackVSStruct.startHoldTime            = c->getInt(CONFIG_NBACKVS_START_HOLD_TIME);
+        nbackVSStruct.numberOfTrialsForChange  = c->getInt(CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE);
+        outputDataFile = outputDataFile + "_" + nbackVSStruct.getCode();
+        break;
+    case NBT_DEFAULT:
+        // Variable Speed configuration for DEFAULT NBACK RT.
+        nbackVSStruct.minHoldTime              = TIME_TARGET;
+        nbackVSStruct.maxHoldTime              = TIME_TARGET;
+        nbackVSStruct.stepHoldTime             = 0;
+        nbackVSStruct.startHoldTime            = TIME_TARGET;
+        nbackVSStruct.numberOfTrialsForChange  = 0;
+        break;
+    }
+
     if (!Experiment::startExperiment(c)) return false;
 
     currentImage = 0;
     currentTrial = 0;
     error = "";
     ignoreData = false;
+
+    nbackVSStruct.resetVSStateMachine();
 
     state = STATE_RUNNING;
     tstate = TSF_START;
@@ -46,6 +78,11 @@ bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
 }
 
 void NBackRTExperiment::onTimeOut(){
+
+    if (tstate == TSF_SHOW_BLANKS){
+        nbackVSStruct.adjustSpeedAndTargets();
+    }
+
     stateTimer.stop();
     nextState();
 }
@@ -57,19 +94,19 @@ void NBackRTExperiment::nextState(){
         tstate = TSF_SHOW_DOT_1;
         currentImage = 0;
         addTrialHeader();
-        stateTimer.setInterval(TIME_TARGET);
+        stateTimer.setInterval(nbackVSStruct.getCurrentHoldTime());
         break;
     case TSF_SHOW_DOT_1:
         tstate = TSF_SHOW_DOT_2;
         currentImage = 1;
         addTrialHeader();
-        stateTimer.setInterval(TIME_TARGET);
+        stateTimer.setInterval(nbackVSStruct.getCurrentHoldTime());
         break;
     case TSF_SHOW_DOT_2:
         tstate = TSF_SHOW_DOT_3;
         currentImage = 2;
         addTrialHeader();
-        stateTimer.setInterval(TIME_TARGET);
+        stateTimer.setInterval(nbackVSStruct.getCurrentHoldTime());
         break;
     case TSF_SHOW_DOT_3:
         tstate = TSF_SHOW_BLANKS;
@@ -228,6 +265,7 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
             emit(addDebugMessage(trialRecognitionMachine.getMessages() + "\nEND",false));
 #else
             emit(addDebugMessage(trialRecognitionMachine.getMessages(),false));
+            nbackVSStruct.wasSequenceCompleted = true;
             onTimeOut();
 #endif
         }
@@ -240,8 +278,7 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
 
 /////////////////////////////////////////// TRIAL RECOGNITION MACHINE
-void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &trialRecogSeq){
-    //qDebug() << "NEEEEEEEEEEEEEEEEEXXXXXXXXXXXXXXXTTTTTTTTTTTTTTTTTTTTTT";
+void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &trialRecogSeq){    
     rTrialRecognitionSequence = trialRecogSeq;
     lTrialRecognitionSequence = trialRecogSeq;
     rMWA.finalizeOnlineFixationCalculation();
@@ -284,7 +321,7 @@ bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(qreal rX, qreal 
     if (l.isValid()){
         if (m->isPointInTargetBox(l.x,l.y,lTrialRecognitionSequence.first())){
             messages << "LFIX IN: " + QString::number(lTrialRecognitionSequence.first());
-            lTrialRecognitionSequence.removeFirst();            
+            lTrialRecognitionSequence.removeFirst();
         }
     }
 
@@ -292,4 +329,99 @@ bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(qreal rX, qreal 
     if (lTrialRecognitionSequence.isEmpty()) return true;
 
     return false;
+}
+
+/////////////////////////////////////////// VARIABLE SPEED STRUCT FUNCTIONS
+QString NBackRTExperiment::VariableSpeedAndTargetNumberConfig::getCode() const {
+    QString code = "";
+    code = code + QString::number(minHoldTime)   + "-";
+    code = code + QString::number(maxHoldTime)   + "-";
+    code = code + QString::number(stepHoldTime)  + "-";
+    code = code + QString::number(startHoldTime) + "-" ;
+    code = code + QString::number(numberOfTrialsForChange) + "-";
+    code = code + QString::number(minTargetNumber) + "-";
+    code = code + QString::number(maxTargetNumber) + "-";
+    code = code + QString::number(startTargetNumber);
+    return code;
+}
+
+void NBackRTExperiment::VariableSpeedAndTargetNumberConfig::adjustSpeedAndTargets(){
+
+    if (wasSequenceCompleted){
+        successfulConsecutiveSequences++;
+        failedConsecutiveSequences = 0;
+        if (successfulConsecutiveSequences == numberOfTrialsForChange){
+            successfulConsecutiveSequences = 0;
+
+            if (stepHoldTime != 0){
+                if (currentHoldTime > minHoldTime){
+                    currentHoldTime = qMax(currentHoldTime-stepHoldTime,minHoldTime);
+                }
+            }
+
+            if (maxTargetNumber > minTargetNumber){
+                if (currentTargetNumber < maxTargetNumber){
+                    currentTargetNumber++;
+                }
+            }
+
+        }
+    }
+    else{
+        successfulConsecutiveSequences = 0;
+        failedConsecutiveSequences++;
+        if (failedConsecutiveSequences == numberOfTrialsForChange){
+            failedConsecutiveSequences = 0;
+
+            if (stepHoldTime != 0){
+                if (currentHoldTime < maxHoldTime){
+                    currentHoldTime = qMin(currentHoldTime+stepHoldTime,maxHoldTime);
+                }
+            }
+
+            if (maxTargetNumber > minTargetNumber){
+                if (currentTargetNumber < maxTargetNumber){
+                    currentTargetNumber++;
+                }
+            }
+
+        }
+    }
+
+    wasSequenceCompleted = false;
+}
+
+qint32 NBackRTExperiment::VariableSpeedAndTargetNumberConfig::adjustVariable(qint32 min, qint32 max, qint32 step, qint32 current){
+    if (wasSequenceCompleted){
+        successfulConsecutiveSequences++;
+        failedConsecutiveSequences = 0;
+        if (successfulConsecutiveSequences == numberOfTrialsForChange){
+            successfulConsecutiveSequences = 0;
+            if (current > min){
+                current = qMax(current-step,min);
+            }
+        }
+    }
+    else{
+        successfulConsecutiveSequences = 0;
+        failedConsecutiveSequences++;
+        if (failedConsecutiveSequences == numberOfTrialsForChange){
+            failedConsecutiveSequences = 0;
+            if (current < max){
+                current = qMin(current+step,max);
+            }
+        }
+    }
+    return current;
+}
+
+qint32 NBackRTExperiment::VariableSpeedAndTargetNumberConfig::getCurrentHoldTime() const{
+    return currentHoldTime;
+}
+
+void NBackRTExperiment::VariableSpeedAndTargetNumberConfig::resetVSStateMachine(){
+    failedConsecutiveSequences = 0;
+    successfulConsecutiveSequences = 0;
+    currentHoldTime = startHoldTime;
+    wasSequenceCompleted = false;
 }

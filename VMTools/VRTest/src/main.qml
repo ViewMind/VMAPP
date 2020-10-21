@@ -152,16 +152,6 @@ Window {
                 }
 
                 Button {
-                    id: startNBackRT
-                    width: rectBase.elementWidth
-                    height: rectBase.elementHeight
-                    text: "Start NBack RT"
-                    onClicked: {
-                        control.startNBackRTExperiment();
-                    }
-                }
-
-                Button {
                     id: startGoNoGo
                     width: rectBase.elementWidth
                     height: rectBase.elementHeight
@@ -216,6 +206,149 @@ Window {
 
             }
 
+            Row{
+
+                id: nbackRow
+                spacing: 0.01*parent.width
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Button {
+                    id: startNBackRT
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start NBack RT"
+                    onClicked: {
+                        control.startNBackRTExperiment();
+                    }
+                }
+
+                Column{
+                    id: nbackrtMinHoldTime
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 5
+                    property alias text: rect4.text
+
+                    Text{
+                        text: "Min Hold Time"
+                    }
+                    Rectangle{
+                        id: rect4
+                        color: "#aaaaaa"
+                        width: startBinding.width
+                        height: startBinding.height
+
+                        property alias text: text4.text
+
+                        TextInput {
+                            id: text4
+                            anchors.centerIn: parent
+                            text: "100";
+                        }
+                    }
+
+                }
+
+                Column{
+                    id: nbackrtMaxHoldTime
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 5
+                    property alias text: rect3.text
+
+                    Text{
+                        text: "Max Hold Time"
+                    }
+                    Rectangle{
+                        id: rect3
+                        color: "#aaaaaa"
+                        width: startBinding.width
+                        height: startBinding.height
+
+                        property alias text: text3.text
+
+                        TextInput {
+                            id: text3
+                            anchors.centerIn: parent
+                            text: "1000";
+                        }
+                    }
+                }
+
+                Column{
+                    id: nbackrtStepHoldTime
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 5
+                    property alias text: rect2.text
+
+                    Text{
+                        text: "Step Hold Time"
+                    }
+                    Rectangle{
+                        id: rect2
+                        color: "#aaaaaa"
+                        width: startBinding.width
+                        height: startBinding.height
+
+                        property alias text: text2.text
+
+                        TextInput {
+                            id: text2
+                            anchors.centerIn: parent
+                            text: "100";
+                        }
+                    }
+                }
+
+                Column{
+                    id: nbackrtStartHoldTime
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 5
+                    property alias text: rect1.text
+
+                    Text{
+                        text: "Start Hold Time"
+                    }
+                    Rectangle{
+                        id: rect1
+                        color: "#aaaaaa"
+                        width: startBinding.width
+                        height: startBinding.height
+
+                        property alias text: text1.text
+
+                        TextInput {
+                            id: text1
+                            anchors.centerIn: parent
+                            text: "500";
+                        }
+                    }
+                }
+
+                Column{
+                    id: nbackrtConsecutiveTrialsForChange
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 5
+                    property alias text: rect.text
+
+                    Text{
+                        text: "Cosecutive number of trials for change"
+                    }
+                    Rectangle{
+                        id: rect
+                        color: "#aaaaaa"
+                        width: startBinding.width
+                        height: startBinding.height
+
+                        property alias text: text.text
+
+                        TextInput {
+                            id: text
+                            anchors.centerIn: parent
+                            text: "3";
+                        }
+                    }
+
+                }
+            }
         }
 
         Keys.onPressed: {

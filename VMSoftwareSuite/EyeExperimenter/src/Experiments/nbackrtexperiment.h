@@ -22,7 +22,10 @@
 class NBackRTExperiment: public Experiment
 {
 public:
-    NBackRTExperiment(QWidget *parent = nullptr);
+
+    typedef enum {NBT_DEFAULT, NBT_VARIABLE_SPEED} NBackType;
+
+    NBackRTExperiment(QWidget *parent = nullptr, NBackType nbt = NBT_DEFAULT);
 
     // Reimplementation of virtual functions
     bool startExperiment(ConfigurationManager *c) override;
@@ -57,6 +60,40 @@ private:
         QList<qint32> lTrialRecognitionSequence;
         QStringList messages;
     };
+
+    struct VariableSpeedAndTargetNumberConfig {
+        // Configuration Parameters.
+        qint32 minHoldTime;
+        qint32 maxHoldTime;
+        qint32 stepHoldTime;
+        qint32 startHoldTime;
+        qint32 numberOfTrialsForChange;
+
+        qint32 minTargetNumber;
+        qint32 maxTargetNumber;
+        qint32 startTargetNumber;
+        qint32 currentTargetNumber;
+
+        bool wasSequenceCompleted;
+
+        void resetVSStateMachine();
+        void adjustSpeedAndTargets();
+        QString getCode() const;
+        qint32 getCurrentHoldTime() const;
+
+    private:
+        qint32 successfulConsecutiveSequences;
+        qint32 failedConsecutiveSequences;
+        qint32 currentHoldTime;
+        qint32 adjustVariable(qint32 min, qint32 max, qint32 step, qint32 current);
+
+    };
+
+    // The NBack type.
+    NBackType nbackType;
+
+    // Structure for variable speed version.
+    VariableSpeedAndTargetNumberConfig nbackVSStruct;
 
     // Handle to the fielding manager. Can be used for this experiment as well.
     FieldingManager *m;

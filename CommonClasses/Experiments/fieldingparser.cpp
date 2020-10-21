@@ -109,13 +109,28 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents,
         versionString = headerParts.first();
     }
 
+    qint32 sizeCheck = 0;
+    if (versionString == "v1"){
+        sizeCheck = OLD_SEQUENCE_LENGTH+1;
+    }
+    else if (versionString == "v2"){
+        sizeCheck = MAX_SEQUENCE_LENGTH+1;
+    }
+    else{
+        error = "Unknown fielding description version: " + versionString;
+    }
+
+
     for (qint32 i = startI; i < lines.size(); i++){
 
         if (lines.at(i).isEmpty()) continue;
 
         QStringList tokens = lines.at(i).split(' ',QString::SkipEmptyParts);
-        if (tokens.size() != 4){
-            error = "Invalid line: " + lines.at(i) + " should only have 4 items separated by space, the id and three numbers";
+
+
+        if (tokens.size() != sizeCheck){
+            error = "Invalid line: " + lines.at(i) + " should only have " + QString::number(sizeCheck) + " items separated by space, the id and "
+                    + QString::number(MAX_SEQUENCE_LENGTH) +  " numbers. Version: " + versionString;
             return false;
         }
 
@@ -169,6 +184,7 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents,
     y1 = y0;
     y3 = resolutionHeight*(1-K_VERTICAL_MARGIN) - targetBoxHeight;
     y4 = y3;
+
 
 
     // Rectangle origins in order, in order
