@@ -133,6 +133,7 @@
 #define   CONFIG_LABELLING_MANUFACTURE_DATE             "labeling_manufacture_date"
 #define   CONFIG_LABELLING_SERIAL_NUMBER                "labeling_serial_number"
 #define   CONFIG_LABELLING_AUTHORIZATION_UID            "labeling_unique_authorization_number"
+#define   CONFIG_DEFAULT_READING_LANGUAGE               "default_reading_study_language"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"

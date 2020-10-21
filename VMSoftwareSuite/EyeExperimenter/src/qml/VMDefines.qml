@@ -75,4 +75,5 @@ Item{
     readonly property string vmCONFIG_READING_EXP_LANG: "reading_exp_lang"
     readonly property string vmCONFIG_PATIENT_DISPLAYID: "patient_displayid"
     readonly property string vmCONFIG_VR_ENABLED: "vr_enabled"
+    readonly property string vmCONFIG_DEFAULT_READING_LANGUAGE: "default_reading_study_language"
 }

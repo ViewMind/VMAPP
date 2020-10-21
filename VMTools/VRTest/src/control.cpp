@@ -274,6 +274,54 @@ void Control::startFieldingExperiment(){
 
 }
 
+void Control::startNBackRTExperiment() {
+    if (experiment != nullptr) delete experiment;
+    experiment = new NBackRTExperiment();
+
+    QString expFileName =  ":/experiment_data/fielding.dat";
+
+    // Connecting the eyetracker to teh experiment.
+    configExperiments.clear();
+    connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
+    connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
+    connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
+
+
+#ifndef DESIGN_MODE_ENABLED
+    QSize s = openvrco->getRecommendedSize();
+    qreal w = static_cast<qreal>(s.width());
+    qreal h = static_cast<qreal>(s.height());
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+    openvrco->setScreenColor(QColor(Qt::black));
+#else
+    configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_MOUSE);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,false);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,true);
+#endif
+
+    // Configuring the experiment.
+
+    configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
+    configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,expFileName);
+    configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
+    configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
+    configExperiments.addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,0.20);
+    configExperiments.addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,0.20);
+    configExperiments.addKeyValuePair(CONFIG_FIELDING_PAUSE_TEXT,"Press any key to continue");
+
+    renderState = RENDERING_EXPERIMENT;
+    if (!experiment->startExperiment(&configExperiments)){
+        qDebug() << "Experiment Start Error: " + experiment->getError();
+    }
+}
+
 void Control::startGoNoGoExperiment(){
     if (experiment != nullptr) delete experiment;
     experiment = new GoNoGoExperiment();

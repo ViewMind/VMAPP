@@ -50,17 +50,27 @@ void FieldingManager::drawBackground(){
     canvas->addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
 
     for (qint32 i = 0; i < drawTargetBoxes.size(); i++){
-#ifdef ENABLE_DRAW_OF_HIT_TARGET_BOXES
-        QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitTargetBoxes.at(i).width(),hitTargetBoxes.at(i).height(),
+#ifdef ENABLE_DRAW_OF_HIT_TARGET_BOXES        
+
+        QRectF hitBoxToDraw = hitTargetBoxes.at(i);
+        if ((i != TARGET_BOX_5) && (i != TARGET_BOX_2)){
+            hitBoxToDraw.setY(hitBoxToDraw.top()-hitBoxToDraw.height()/2);
+            hitBoxToDraw.setHeight(hitBoxToDraw.height()*2);
+        }
+
+        QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
                                                    QPen(QBrush(Qt::green),2),
                                                    QBrush(Qt::black));
-        rect2->setPos(hitTargetBoxes.at(i).x(),hitTargetBoxes.at(i).y());
+
+        rect2->setPos(hitBoxToDraw.x(),hitBoxToDraw.y());
 #endif
 
         QGraphicsRectItem *rect = canvas->addRect(0,0,drawTargetBoxes.at(i).width(),drawTargetBoxes.at(i).height(),
                                                   QPen(QBrush(Qt::white),6),
                                                   QBrush(Qt::black));
         rect->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
+
+
     }
 
     // Adding the cross

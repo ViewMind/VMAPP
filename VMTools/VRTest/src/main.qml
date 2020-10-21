@@ -152,6 +152,16 @@ Window {
                 }
 
                 Button {
+                    id: startNBackRT
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start NBack RT"
+                    onClicked: {
+                        control.startNBackRTExperiment();
+                    }
+                }
+
+                Button {
                     id: startGoNoGo
                     width: rectBase.elementWidth
                     height: rectBase.elementHeight

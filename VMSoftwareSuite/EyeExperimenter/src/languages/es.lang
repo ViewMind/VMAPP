@@ -50,7 +50,7 @@ viewsettings_diagAbout = Acerca de ...;
 #********************************* LABELING DIALOG *********************************
 labeling_company_info      = VIEWMIND S.A.|Av. Belgrano Nro. 758, Ciudad de Sunchales, Santa Fe, Argentina|D.T. Ing. Matias Shulz - M.P.1-3105-9|info@viewmind.ai - www.viewmind.ai;
 labeling_representative    = DATOS DEL REPRESENTANTE;
-labeling_name              = EyeExplorer (Screening & Assesment/Neurocoginitive Evaluations);
+labeling_name              = EyeExplorer;
 labeling_read_instructions = LEER LAS INSTRUCCIONES DE FUNCIONAMIENTO;
 labeling_authorized_use    = AUTORIZADO POR ANMAT: PM-2478-1|Uso exclusivo a profesionales e instituciones sanitarias.;
 
@@ -111,6 +111,8 @@ viewstudystart_labelNBackType = Tipo de NBack;
 viewstudystart_fieldingPauseText = Presione "G" cuando se encuentre listo;
 viewstudystart_labelChoose = Elija los estudios;
 viewstudystart_labelEvaluations = Estudios a realizar;
+viewstudystart_labelPatientConditionsCB = Evaluaciones recomendadas según patología;
+viewstudystart_patient_conditions = Diseño personalizado|Deterioro Cognitivo Leve (DCL)|DCL-Amnésico|Enfermedad de Alzheimer Leve|Enfermedad de Alzheimer Asintomático|Depresión Mayor|Esclerosis Múltiple|Deficit Atencional|Enfermedad de Parkinson|Demencia Frontotemporal|Alteraciones Cognitivas por COVID-19;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Selección del Doctor;

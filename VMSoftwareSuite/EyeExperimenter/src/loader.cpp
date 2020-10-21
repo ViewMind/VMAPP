@@ -91,7 +91,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
 
     // The strings.
     cv[CONFIG_REPORT_LANGUAGE] = cmd;
-    cv[CONFIG_DEFAULT_COUNTRY] = cmd;
+    cv[CONFIG_DEFAULT_COUNTRY] = cmd;    
 
     // The booleans
     cmd.type = ConfigurationManager::VT_BOOL;
@@ -99,6 +99,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_DEMO_MODE] = cmd;
     cv[CONFIG_USE_MOUSE] = cmd;
 
+    // The ints
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_DEFAULT_READING_LANGUAGE] = cmd;
 
     // Merging the settings or loading the default configuration.
     settings.setupVerification(cv);
