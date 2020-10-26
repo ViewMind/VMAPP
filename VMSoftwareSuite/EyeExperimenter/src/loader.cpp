@@ -33,6 +33,13 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_READING_ALG_VERSION] = cmd;
     cv[CONFIG_FIELDING_ALG_VERSION] = cmd;
 
+    // NBACK VS Parameters
+    cv[CONFIG_NBACKVS_MAX_HOLD_TIME] = cmd;
+    cv[CONFIG_NBACKVS_MIN_HOLD_TIME] = cmd;
+    cv[CONFIG_NBACKVS_STEP_HOLD_TIME] = cmd;
+    cv[CONFIG_NBACKVS_START_HOLD_TIME] = cmd;
+    cv[CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE] = cmd;
+
     cmd.clear();
     cmd.type = ConfigurationManager::VT_REAL;
     cv[CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL] = cmd;
@@ -60,6 +67,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_INST_UID] = cmd;
     cv[CONFIG_INST_PASSWORD] = cmd;
     cv[CONFIG_CONFIGURE_STRING] = cmd;
+
 
     // Labeling Information
     cmd.clear();
@@ -545,6 +553,12 @@ void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
             break;
         case LIST_INDEX_NBACKRT:
             reportGenerationStruct.nbackrtFileIndex = index;
+            break;
+        case LIST_INDEX_GONOGO:
+            reportGenerationStruct.gonogoFileIndex = index;
+            break;
+        case LIST_INDEX_NBACKVS:
+            reportGenerationStruct.nbackvsFileIndex = index;
             break;
         }
     }

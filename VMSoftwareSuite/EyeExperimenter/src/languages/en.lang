@@ -113,6 +113,7 @@ viewstudystart_labelChoose = Choose the evaluations;
 viewstudystart_labelEvaluations = Evaluation to run;
 viewstudystart_labelPatientConditionsCB = Recommended Evaluations By Pathology;
 viewstudystart_patient_conditions = Custom study|Mild Cognitive Impairment (MCI)|Amnestic MCI|Mild Alzheimer's Disease|Asymptomatic Alzheimer's Disease|Major Depression|Multiple Sclerosis|ADHD|Parkinson's Disease|Frontotemporal Dementia|COVID-19 Cognitive Alterations;
+viewstudystart_labelNumberOfNBackTargets = Number of Targets;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Doctor selection;
@@ -157,6 +158,7 @@ viewpresentexp_itemFielding = N-Back Evaluation Type MS;
 viewpresentexp_itemNBackRT  = N-Back Evaluation Type RT;
 viewpresentexp_itemParkinson = Parkinson Maze;
 viewpresentexp_itemGoNoGo    = Go NoGo Task;
+viewpresentexp_itemNBackVS   = N-Back Type RT For Training;
 
 viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
 When your gaze is located on the dot, it will vanish<br>
@@ -310,7 +312,7 @@ viewselectdata_labelColBindingBC = Colour Combinations;
 viewselectdata_labelFielding = N-Back MS Type;
 viewselectdata_labelNBackRT  = N-Back RT Type;
 viewselectdata_labelStudySelection = Select Study;
-viewselectdata_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type|Go NoGo;
+viewselectdata_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type|Go NoGo|N-Back RT For Training;
 viewselectdata_labeFileView = Report for studies;
 viewselectdata_labelNoUse = Do not use for report;
 viewselectdata_labelSelectOption = Select data file;

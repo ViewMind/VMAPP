@@ -95,6 +95,9 @@ VMBase {
         case vmExpIndexGoNoGo:
             itemGoNoGo.vmTrackerItemState = state;
             break;
+        case vmExpIndexNBackVS:
+            itemNBackVS.vmTrackerItemState = state;
+            break;
         }
     }
 
@@ -190,6 +193,14 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("gonogo",5);
             break;
+        case vmExpIndexNBackVS:
+            vmSlideTitle = loader.getStringForKey(keysearch+"itemNBackVS");
+            viewVRDisplay.vmStudyTitle = vmSlideTitle;
+            vmSlideExplanation = "";
+            slideDescription.visible = false;
+            slideViewer.imgScale = 1.3;
+            setSlideImages("fielding",1);
+            break;
         }
 
 
@@ -205,6 +216,7 @@ VMBase {
         itemNBackRT.visible = false
         itemParkinson.visible = false
         itemGoNoGo.visible = false;
+        itemNBackVS.visible = false;
 
         // Calculated the widths of the enabled items
         var accWidth = 0
@@ -238,6 +250,9 @@ VMBase {
             case vmExpIndexGoNoGo:
                 accWidth = enableTrackItem(itemGoNoGo,i,accWidth,L);
                 break;
+            case vmExpIndexNBackVS:
+                accWidth = enableTrackItem(itemNBackVS,accWidth,L);
+                break;
             }
         }
 
@@ -268,6 +283,9 @@ VMBase {
                 break;
             case vmExpIndexGoNoGo:
                 x = setEnabledItemX(itemGoNoGo,x,spacing);
+                break;
+            case vmExpIndexNBackVS:
+                x = setEnabledItemX(itemNBackVS,x,spacing);
                 break;
             }
         }
@@ -381,6 +399,11 @@ VMBase {
         VMExperimentTrackerItem {
             id: itemGoNoGo
             vmText: loader.getStringForKey(keysearch + "itemGoNoGo")
+        }
+
+        VMExperimentTrackerItem {
+            id: itemNBackVS
+            vmText: loader.getStringForKey(keysearch + "itemNBackVS")
         }
 
     }

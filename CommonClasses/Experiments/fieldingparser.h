@@ -53,7 +53,7 @@
 #define   TARGET_BOX_EX_W                               1.5/6.0
 #define   TARGET_BOX_EX_H                               1.5/5.6
 
-#define   MAX_SEQUENCE_LENGTH                           20
+#define   MAX_SEQUENCE_LENGTH                           6
 #define   OLD_SEQUENCE_LENGTH                           3
 
 

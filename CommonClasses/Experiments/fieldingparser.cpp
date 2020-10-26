@@ -106,7 +106,7 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents,
     if (headerParts.size() == 1){
         // Version string pesent
         startI = 1;
-        versionString = headerParts.first();
+        versionString = headerParts.first().trimmed();
     }
 
     qint32 sizeCheck = 0;
@@ -118,6 +118,7 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents,
     }
     else{
         error = "Unknown fielding description version: " + versionString;
+        return false;
     }
 
 

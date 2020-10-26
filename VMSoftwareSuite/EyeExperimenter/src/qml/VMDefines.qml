@@ -76,4 +76,5 @@ Item{
     readonly property string vmCONFIG_PATIENT_DISPLAYID: "patient_displayid"
     readonly property string vmCONFIG_VR_ENABLED: "vr_enabled"
     readonly property string vmCONFIG_DEFAULT_READING_LANGUAGE: "default_reading_study_language"
+    readonly property string vmCONFIG_NBACKVS_SEQUENCE_LENGTH: "nbackvs_sequence_length"
 }

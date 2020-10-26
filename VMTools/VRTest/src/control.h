@@ -32,7 +32,7 @@ public:
     Q_INVOKABLE void startBindingExperiment(bool isBound,qint32 targetNum, bool areTargetsSmall);
     Q_INVOKABLE void startFieldingExperiment();
     Q_INVOKABLE void startGoNoGoExperiment();
-    Q_INVOKABLE void startNBackRTExperiment();
+    Q_INVOKABLE void startNBackRTExperiment(qint32 numTargets, qint32 nbacktype);
     Q_INVOKABLE void initialize();
     Q_INVOKABLE void loadLastCalibration();
     Q_INVOKABLE void loadViewMindWaitScreen();

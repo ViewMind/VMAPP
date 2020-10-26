@@ -9,7 +9,7 @@ import random;
 
 input_path = "../../VMSoftwareSuite/EyeExperimenter/src/experiment_data/fielding_only3.dat"
 output_path = "../../VMSoftwareSuite/EyeExperimenter/src/experiment_data/fielding.dat"
-EXPAND_TO = 20;
+EXPAND_TO = 6;
 
 h = open(input_path,'r');
 
@@ -19,7 +19,7 @@ new_trials = [];
 line = h.readline();
 line = h.readline();
 
-new_trials.append("v1");
+new_trials.append("v2");
 
 while line:
     #print(line);

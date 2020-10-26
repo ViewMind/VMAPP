@@ -598,26 +598,11 @@ RawDataProcessor::TagParseReturn RawDataProcessor::separateInfoByTag(const QStri
         }
     }
 
-    QString temp;
-
-    if (datalist.size() > 0){
-        temp = datalist.first();
-        for (qint32 i = 1; i < datalist.size(); i++){
-            //qDebug() << i << datalist.at(i);
-            temp = temp  + "\n" + datalist.at(i);
-            //qDebug() << i << temp;
-        }
-    }
-    //qDebug() << temp;
-
     if (getResolutionToConfig(datalist.first())){
         datalist.removeFirst();
     }
 
-    //qDebug() << "Joining a Data List";
-    //qDebug() << "JOINING"  << datalist;
     *data       = datalist.join('\n');
-    *data       = temp;
     *experiment = explist.join('\n');
 
     if (tagFound == 2){

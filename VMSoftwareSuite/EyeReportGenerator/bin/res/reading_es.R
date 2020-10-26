@@ -136,7 +136,7 @@ head(a);dim(a)
 
 # delete wn==-1 or 0 (words right to the last word)
 idx<-which(a$wn<=0)
-a<- a[-idx,]
+# a<- a[-idx,]
 # head(a);dim(a)
 
 
@@ -165,15 +165,8 @@ for (ijk in 1:2) {
 asnl<-a$id*1000000000+a$sn*10000+a$wn*100+a$let
 sid<-parseq_fast(asnl)
 asnl[is.nan(asnl)]<--1
-sid_mf<-sid[sid[,3]!=1,]
 
-#
-#structure of a ("id","sn","nw","wn","let","dur")
 a_fsl<-a[sid[,1],]
-for (i in 1:dim(sid_mf)[1]){
-  #   #if length(which(is.nan(a$let[sid[i,1]:sid[i,2]])))!=0
-  #   a_fsl$dur[i]<-sum(a$dur[sid[i,1]:sid[i,2]])
-}
 a<-a_fsl;rm(a_fsl)
 
 dim(a)

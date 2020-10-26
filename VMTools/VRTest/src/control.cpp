@@ -274,9 +274,13 @@ void Control::startFieldingExperiment(){
 
 }
 
-void Control::startNBackRTExperiment() {
+void Control::startNBackRTExperiment(qint32 numTargets, qint32 nbacktype) {
     if (experiment != nullptr) delete experiment;
-    experiment = new NBackRTExperiment();
+
+    NBackRTExperiment::NBackType nbt = NBackRTExperiment::NBT_DEFAULT;
+    if (nbacktype == 0) nbt = NBackRTExperiment::NBT_VARIABLE_SPEED;
+
+    experiment = new NBackRTExperiment(nullptr,nbt);
 
     QString expFileName =  ":/experiment_data/fielding.dat";
 
@@ -296,6 +300,10 @@ void Control::startNBackRTExperiment() {
     configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
     configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
     openvrco->setScreenColor(QColor(Qt::black));
+    // Values for Mouse EyeTracker
+    configExperiments.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,120);
+    configExperiments.addKeyValuePair(CONFIG_MIN_FIXATION_LENGTH,50);
+    configExperiments.addKeyValuePair(CONFIG_MOVING_WINDOW_DISP,190);
 #else
     configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_MOUSE);
     configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1366);
@@ -304,10 +312,15 @@ void Control::startNBackRTExperiment() {
     configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);
     configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,false);
     configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,true);
+    // Values for Mouse EyeTracker
+    configExperiments.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,120);
+    configExperiments.addKeyValuePair(CONFIG_MIN_FIXATION_LENGTH,50);
+    configExperiments.addKeyValuePair(CONFIG_MOVING_WINDOW_DISP,105);
 #endif
 
-    // Configuring the experiment.
 
+
+    // Configuring the experiment.
     configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
     configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,expFileName);
     configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
@@ -315,6 +328,18 @@ void Control::startNBackRTExperiment() {
     configExperiments.addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,0.20);
     configExperiments.addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,0.20);
     configExperiments.addKeyValuePair(CONFIG_FIELDING_PAUSE_TEXT,"Press any key to continue");
+
+    // Configure NBack Parameters.
+    configExperiments.addKeyValuePair(CONFIG_NBACKVS_MAX_HOLD_TIME,250);
+    //configExperiments.addKeyValuePair(CONFIG_NBACKVS_MAX_HOLD_TIME,700);
+    configExperiments.addKeyValuePair(CONFIG_NBACKVS_MIN_HOLD_TIME,50);
+    //configExperiments.addKeyValuePair(CONFIG_NBACKVS_START_HOLD_TIME,250);
+    //configExperiments.addKeyValuePair(CONFIG_NBACKVS_START_HOLD_TIME,700);
+    configExperiments.addKeyValuePair(CONFIG_NBACKVS_STEP_HOLD_TIME,50);
+    configExperiments.addKeyValuePair(CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE,2);
+
+    configExperiments.addKeyValuePair(CONFIG_NBACKVS_SEQUENCE_LENGTH,numTargets);
+
 
     renderState = RENDERING_EXPERIMENT;
     if (!experiment->startExperiment(&configExperiments)){

@@ -14,6 +14,8 @@
 #define   TIME_TRANSITION                               500
 #define   TIME_TARGET                                   250
 #define   TIME_OUT_BLANKS                               3000
+//#define   TIME_OUT_BLANKS                               3000000
+#define   DEFAULT_NUMBER_OF_TARGETS                     3
 
 // Possible pauses for the fielding experiment
 #define   PAUSE_TRIAL_1                                 32
@@ -41,9 +43,7 @@ protected:
 private:
     // State machine states for Fielding
     typedef enum {TSF_START,
-                  TSF_SHOW_DOT_1,
-                  TSF_SHOW_DOT_2,
-                  TSF_SHOW_DOT_3,
+                  TSF_SHOW_TARGET,
                   TSF_SHOW_BLANKS} TrialStateNBackRT;
 
     struct TrialRecognitionMachine {
@@ -69,23 +69,18 @@ private:
         qint32 startHoldTime;
         qint32 numberOfTrialsForChange;
 
-        qint32 minTargetNumber;
-        qint32 maxTargetNumber;
-        qint32 startTargetNumber;
-        qint32 currentTargetNumber;
+        qint32 numberOfTargets;
 
         bool wasSequenceCompleted;
 
         void resetVSStateMachine();
-        void adjustSpeedAndTargets();
-        QString getCode() const;
+        void adjustSpeed();
         qint32 getCurrentHoldTime() const;
 
     private:
         qint32 successfulConsecutiveSequences;
         qint32 failedConsecutiveSequences;
         qint32 currentHoldTime;
-        qint32 adjustVariable(qint32 min, qint32 max, qint32 step, qint32 current);
 
     };
 
@@ -93,7 +88,7 @@ private:
     NBackType nbackType;
 
     // Structure for variable speed version.
-    VariableSpeedAndTargetNumberConfig nbackVSStruct;
+    VariableSpeedAndTargetNumberConfig nbackConfig;
 
     // Handle to the fielding manager. Can be used for this experiment as well.
     FieldingManager *m;

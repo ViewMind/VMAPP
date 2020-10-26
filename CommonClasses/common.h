@@ -139,6 +139,7 @@
 #define   CONFIG_NBACKVS_STEP_HOLD_TIME                 "nbackvs_step_hold_time"
 #define   CONFIG_NBACKVS_START_HOLD_TIME                "nbackvs_start_hold_time"
 #define   CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE         "nbackvs_ntrial_for_step_change"
+#define   CONFIG_NBACKVS_SEQUENCE_LENGTH                "nbackvs_sequence_length"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -190,6 +191,7 @@
 #define   EXP_NBACKRT                                   5
 #define   EXP_PARKINSON                                 6
 #define   EXP_GONOGO                                    7
+#define   EXP_NBACKVS                                   8
 
 // Base names for common files shared accross multiple apps.
 #define   FILE_CONFIGURATION                            "configuration"
@@ -224,7 +226,7 @@
 #define   HEADER_IMAGE_EXPERIMENT                       "#IMAGE"
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
 #define   HEADER_NBACKRT_EXPERIMENT                     "#NBACKRT"
-#define   HEADER_NBACK_VARIABLE_SPEED_EXPERIMENT        "#NBACK_VARIABLE_SPEED"
+#define   HEADER_NBACK_VARIABLE_SPEED_EXPERIMENT        "#NBACKVS"
 #define   HEADER_PARKINSON_EXPERIMENT                   "#PARKINSON"
 #define   HEADER_GONOGO_EXPERIMENT                      "#GONOGO"
 

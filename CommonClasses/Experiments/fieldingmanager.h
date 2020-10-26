@@ -49,7 +49,7 @@ public:
     FieldingParser::Trial getTrial(qint32 i) const { return fieldingTrials.at(i);}
 
     // Gets the expected hit sequence for a given trial
-    QList<qint32> getExpectedTargetSequenceForTrial(qint32 trial) const;
+    QList<qint32> getExpectedTargetSequenceForTrial(qint32 trial, qint32 targetNum) const;
 
     // Auxiliary function that check if a point is in a given target box
     bool isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const;

@@ -218,136 +218,25 @@ Window {
                     height: rectBase.elementHeight
                     text: "Start NBack RT"
                     onClicked: {
-                        control.startNBackRTExperiment();
+                        control.startNBackRTExperiment(cbSeqLengthNback.currentIndex+3,cbNBackType.currentIndex);
                     }
                 }
 
-                Column{
-                    id: nbackrtMinHoldTime
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 5
-                    property alias text: rect4.text
-
-                    Text{
-                        text: "Min Hold Time"
-                    }
-                    Rectangle{
-                        id: rect4
-                        color: "#aaaaaa"
-                        width: startBinding.width
-                        height: startBinding.height
-
-                        property alias text: text4.text
-
-                        TextInput {
-                            id: text4
-                            anchors.centerIn: parent
-                            text: "100";
-                        }
-                    }
-
+                ComboBox {
+                    id: cbSeqLengthNback
+                    width: startBinding.width
+                    height: startBinding.height
+                    model: [ "3", "4", "5", "6"];
                 }
 
-                Column{
-                    id: nbackrtMaxHoldTime
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 5
-                    property alias text: rect3.text
 
-                    Text{
-                        text: "Max Hold Time"
-                    }
-                    Rectangle{
-                        id: rect3
-                        color: "#aaaaaa"
-                        width: startBinding.width
-                        height: startBinding.height
-
-                        property alias text: text3.text
-
-                        TextInput {
-                            id: text3
-                            anchors.centerIn: parent
-                            text: "1000";
-                        }
-                    }
+                ComboBox {
+                    id: cbNBackType
+                    width: startBinding.width
+                    height: startBinding.height
+                    model: [ "Training" , "Standard"];
                 }
 
-                Column{
-                    id: nbackrtStepHoldTime
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 5
-                    property alias text: rect2.text
-
-                    Text{
-                        text: "Step Hold Time"
-                    }
-                    Rectangle{
-                        id: rect2
-                        color: "#aaaaaa"
-                        width: startBinding.width
-                        height: startBinding.height
-
-                        property alias text: text2.text
-
-                        TextInput {
-                            id: text2
-                            anchors.centerIn: parent
-                            text: "100";
-                        }
-                    }
-                }
-
-                Column{
-                    id: nbackrtStartHoldTime
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 5
-                    property alias text: rect1.text
-
-                    Text{
-                        text: "Start Hold Time"
-                    }
-                    Rectangle{
-                        id: rect1
-                        color: "#aaaaaa"
-                        width: startBinding.width
-                        height: startBinding.height
-
-                        property alias text: text1.text
-
-                        TextInput {
-                            id: text1
-                            anchors.centerIn: parent
-                            text: "500";
-                        }
-                    }
-                }
-
-                Column{
-                    id: nbackrtConsecutiveTrialsForChange
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 5
-                    property alias text: rect.text
-
-                    Text{
-                        text: "Cosecutive number of trials for change"
-                    }
-                    Rectangle{
-                        id: rect
-                        color: "#aaaaaa"
-                        width: startBinding.width
-                        height: startBinding.height
-
-                        property alias text: text.text
-
-                        TextInput {
-                            id: text
-                            anchors.centerIn: parent
-                            text: "3";
-                        }
-                    }
-
-                }
             }
         }
 

@@ -88,6 +88,10 @@ QStringList DatFileInfoInDir::getGoNoGoFileList() const{
     return getFileList(filesGoNoGo);
 }
 
+QStringList DatFileInfoInDir::getNBackVSFileList() const {
+    return getFileList(filesNBackVS);
+}
+
 QStringList DatFileInfoInDir::getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC){
     return getBindingUCFileListCompatibleWithSelectedBC(selectedBC,&filesBindingUCValidIndexes);
 }
@@ -223,6 +227,21 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
         }
     }
 
+    if (repgen.nbackvsFileIndex != -1){
+        DatInfo nbackvs_file = getNBackVSInformation(filesNBackVS.at(repgen.nbackvsFileIndex));
+        if (expectedReportName.isEmpty()) expectedReportName = FILE_REPORT_NAME;
+        // Extra info and date must have matched for these two files to have been selected.
+        expectedReportName = expectedReportName + "_G" + nbackvs_file.extraInfo + nbackvs_file.validEye;
+        ans << nbackvs_file.fileName;
+        if (date.isEmpty() || (date < nbackvs_file.date)) {
+            date = nbackvs_file.date;
+            time = nbackvs_file.hour;
+        }
+        else if ((date == nbackvs_file.date) && (time < nbackvs_file.hour)){
+            time = nbackvs_file.hour;
+        }
+    }
+
     if (!expectedReportName.isEmpty()){
         expectedReportName = expectedReportName + "_" + date + "_" + time + ".rep";
         ans.prepend(expectedReportName);
@@ -245,6 +264,8 @@ QString DatFileInfoInDir::getDatFileNameFromSelectionDialogIndex(qint32 index, q
         return filesNBackRT.at(index);
     case LIST_INDEX_GONOGO:
         return filesGoNoGo.at(index);
+    case LIST_INDEX_NBACKVS:
+        return filesNBackVS.at(index);
     }
     return "";
 }
@@ -397,7 +418,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getFieldingInformation(const QString
     DatInfo ans;
     ans.extraInfo = "";
     ans.fileName = fieldingFile;
-    ans.category = "NB";
+    ans.category = "MS";
 
     if (parts.size() == 7){
         ans.date = parts.at(2) + "_" + parts.at(3) + "_" + parts.at(4);
@@ -458,6 +479,33 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getGoNoGoInformation(const QString &
         ans.validEye = parts.at(1);
         ans.basename = parts.at(0);
         ans.code = "GN" + ans.validEye + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
+        ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
+    }
+    ans.category = ans.category + ans.extraInfo;
+
+    return ans;
+}
+
+DatFileInfoInDir::DatInfo DatFileInfoInDir::getNBackVSInformation(const QString &nbackvsFile){
+    QStringList parts = nbackvsFile.split(".",QString::SkipEmptyParts);
+    QString baseName = parts.first();
+
+    QString fmark = "";
+    if (parts.last() == "datf") fmark = " (FE)";
+
+    parts = baseName.split("_",QString::SkipEmptyParts);
+    DatInfo ans;
+    ans.extraInfo = "";
+    ans.fileName = nbackvsFile;
+    ans.category = "NV";
+
+    if (parts.size() == 8){
+        ans.date = parts.at(3) + "_" + parts.at(4) + "_" + parts.at(5);
+        ans.hour = parts.at(6) + "_" + parts.at(7);
+        ans.validEye = parts.at(2);
+        ans.basename = parts.at(0);
+        ans.extraInfo = parts.at(1);
+        ans.code = "NV" + ans.extraInfo + " "  + ans.validEye +  + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
         ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
     }
     ans.category = ans.category + ans.extraInfo;

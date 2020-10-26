@@ -89,6 +89,16 @@ wait_db_data_timeout       = 60;   # seconds
 launcher_connect_timeout   = 10;   # seconds
 launcher_download_timeout  = 80;   # seconds
 
+#------------------------------------------------------#
+#                NBACK VS PARAMETERS                   #
+#------------------------------------------------------#
+
+nbackvs_min_hold_time          = 50;
+nbackvs_max_hold_time          = 250;
+nbackvs_step_hold_time         = 50;
+nbackvs_start_hold_time        = 250; 
+nbackvs_ntrial_for_step_change = 2;
+
 
 #------------------------------------------------------#
 #                   Labeling Info                      #

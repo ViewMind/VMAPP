@@ -114,6 +114,7 @@ VMBase {
         columnReadingLanguage.visible = false;
         columnTargetQuatity.visible = false;
         columnTargetSize.visible = false;
+        columnNumberOfNBackTargets.visible = false;
 
         if (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_READING){
             columnReadingLanguage.visible = true;
@@ -121,6 +122,9 @@ VMBase {
         else if ((currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC) || (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC)){
             columnTargetQuatity.visible = true;
             columnTargetSize.visible = true;
+        }
+        else if (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_NBACKVS){
+            columnNumberOfNBackTargets.visible = true;
         }
 
         fillList(vmListOfStudiesToSelect,studySelectList, false);
@@ -601,6 +605,27 @@ VMBase {
         }
 
         Column {
+            id: columnNumberOfNBackTargets
+            spacing: mainWindow.height*0.019
+            visible: false
+            Text {
+                id: labelNumberOfNBackTargets
+                font.family: robotoB.name
+                font.pixelSize: 13*viewHome.vmScale
+                width: cbNumberOfTargets.width
+                color: "#554545"
+                text: loader.getStringForKey(keysearch+"labelNumberOfNBackTargets");
+            }
+
+            VMComboBox2{
+                id: cbNumberOfNBAckTargets
+                width: cbEyeMsg.width
+                z:2
+                Component.onCompleted: cbNumberOfNBAckTargets.setModelList(["3","4","5","6"])
+            }
+        }
+
+        Column {
             id: columnReadingLanguage
             spacing: mainWindow.height*0.019
             visible: false
@@ -683,14 +708,18 @@ VMBase {
                     else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO){
                         vmSelectedExperiments.push(viewPatientReg.vmExpIndexGoNoGo);
                     }
+                    else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_NBACKVS){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackVS);
+                    }
                 }
 
                 if (vmSelectedExperiments.length > 0){
 
                     // All is good, so the parameters are set.
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.vmCurrentIndex,false);
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.vmCurrentText,false);
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.vmCurrentIndex == 1),false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.vmCurrentIndex);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.vmCurrentText);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.vmCurrentIndex == 1));
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_NBACKVS_SEQUENCE_LENGTH,(cbNumberOfNBAckTargets.vmCurrentIndex+3));
 
                     var readlang;
                     switch(cbReadingLang.vmCurrentIndex){
@@ -710,7 +739,7 @@ VMBase {
                         readlang = "is";
                         break;
                     }
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,readlang,false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,readlang);
 
                     viewPresentExperimet.setTracker(vmSelectedExperiments);
                     vmCurrentExperimentIndex = -1;
