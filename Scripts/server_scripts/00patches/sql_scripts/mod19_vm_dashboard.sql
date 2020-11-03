@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS tTrainedUsers;
 -- Custom strings table
 CREATE TABLE tTrainedUsers (     
                             keyid                 INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                            trained_user_id       INT,
                             profesion             VARCHAR(255),
                             name                  VARCHAR(255),
                             email                 VARCHAR(255),

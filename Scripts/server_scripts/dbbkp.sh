@@ -32,7 +32,6 @@ DB_BASE_HOST=".cdqlb2rkfdvi.us-east-2.rds.amazonaws.com"
 DB_PORT="3306"
 DB_USER="root"
 DB_PASS="vimiroot"
-KEY="/home/ariela/Dropbox/ViewMindData/awspem/aws_ec2_first_time.pem"
 
 # The base backup name
 DB_BKP=$PREFIX"_$(date +"%Y_%m_%d_%H_%M").sql"
@@ -52,12 +51,12 @@ for (( i=0; i<$total; i++ )); do
    DELETEBKP="rm $FNAME"
    
    echo ">> CREATING THE BKP For $DB_NAME named: $FNAME"
-   ssh -i $KEY $USER@$DNS "$CREATEBKP"
+   ssh $USER@$DNS "$CREATEBKP"
    # Copying it here
    echo ">> COPYING THE BKP: $FNAME to $DEST"
-   scp -i $KEY $USER@$DNS:$FNAME $DEST
+   scp $USER@$DNS:$FNAME $DEST
    echo ">> DELETING THE ORIGINAL BKP"
-   ssh -i $KEY $USER@$DNS "$DELETEBKP"
+   ssh $USER@$DNS "$DELETEBKP"
    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>> DONE!"
    
    # Restoring to the local database.
