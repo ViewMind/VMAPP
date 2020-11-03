@@ -23,7 +23,9 @@ VMBase {
 
     }
 
+    // This is the second function that is called when entering study start.
     function setDefaultSelections(){
+
         var studyList = loader.getStringListForKey("viewselectdata_studyList");
         vmListOfStudiesToSelect = [];
         vmListOfSelectedStudies = [];
@@ -112,6 +114,7 @@ VMBase {
         columnReadingLanguage.visible = false;
         columnTargetQuatity.visible = false;
         columnTargetSize.visible = false;
+        columnNumberOfNBackTargets.visible = false;
 
         if (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_READING){
             columnReadingLanguage.visible = true;
@@ -119,6 +122,9 @@ VMBase {
         else if ((currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC) || (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC)){
             columnTargetQuatity.visible = true;
             columnTargetSize.visible = true;
+        }
+        else if (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_NBACKVS){
+            columnNumberOfNBackTargets.visible = true;
         }
 
         fillList(vmListOfStudiesToSelect,studySelectList, false);
@@ -176,6 +182,97 @@ VMBase {
 
     }
 
+    function studyDesignChangeTriggered(){
+
+        // Clearing the selected studies list.
+        while (vmListOfSelectedStudies.length > 0){
+            vmListOfSelectedStudies[0].vmIsSelected = true;
+            moveFromOneListToAnother(false);
+        }
+
+        //vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_FIELDING
+
+        var studiesToAdd = [];
+
+        // Now selecting the studies based on then the current selection.
+        switch (cbStudyDesign.vmCurrentIndex){
+        case 1: // MCI
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_READING,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO];
+            break;
+        case 2: // Amnestic MCI
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO];
+
+            cbTargetSize.setSelection(0); // Large
+            cbNumberOfTargets.setSelection(0); // Two Targets.
+            break;
+        case 3: // Mild Alzheimer's
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO];
+
+            cbTargetSize.setSelection(0); // Large
+            cbNumberOfTargets.setSelection(0); // Two Targets.
+            break;
+        case 4: // Asymptomatic Alzheimer's
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_NBACKRT];
+
+            cbTargetSize.setSelection(0); // Large
+            cbNumberOfTargets.setSelection(1); // Three Targets.
+            break;
+        case 5: // Major Depression
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_NBACKRT];
+
+            cbTargetSize.setSelection(0); // Large
+            cbNumberOfTargets.setSelection(0); // Two Targets.
+            break;
+        case 6: // MS
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_READING,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_FIELDING];
+            break;
+        case 7: // ADHD
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_NBACKRT,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO];
+            break;
+        case 8: // Parkinson
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_NBACKRT,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO];
+            break;
+        case 9: // Frontotemporal Disease
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_NBACKRT,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO];
+            break;
+        case 10: // COVID-19
+            studiesToAdd = [viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_BC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_BINDING_UC,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_NBACKRT,
+                            viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO];
+
+            cbTargetSize.setSelection(0); // Large
+            cbNumberOfTargets.setSelection(0); // Two Targets.
+
+            break;
+        }
+
+        // Adding all the studies associated with the condition.
+        for (var i = 0; i < studiesToAdd.length; i++){
+            for (var j = 0; j < vmListOfStudiesToSelect.length; j++){
+                if (vmListOfStudiesToSelect[j].vmStudyID === studiesToAdd[i]){
+                    vmListOfStudiesToSelect[j].vmIsSelected = true;
+                    moveFromOneListToAnother(true);
+                    break;
+                }
+            }
+        }
+
+    }
+
     ListModel{
         id: studySelectList
     }
@@ -208,41 +305,80 @@ VMBase {
         text: loader.getStringForKey(keysearch+"labelSubTitle");
     }
 
-    // Message for study selection
-    Text {
-        id: labelSelPatient
-        font.family: robotoB.name
-        font.pixelSize: 15*viewHome.vmScale
-        color: "#000000"
-        text: {
-            if (uimap.getStructure() === "P") return loader.getStringForKey(keysearch+"labelSelPatient");
-            if (uimap.getStructure() === "S") return loader.getStringForKey(keysearch+"labelSelSubject");
-        }
-
+    Row {
+        id: patientAndConditionSelectionRow
+        spacing:  mainWindow.width*0.005
         anchors.top: viewSubTitle.bottom
         anchors.topMargin: mainWindow.height*0.032
-        anchors.left: backgroundPatientName.left
-    }
-
-    Rectangle{
-        id: backgroundPatientName
-        width: mainWindow.width*0.6
-        height: mainWindow.height*0.058
-        radius: 5
-        color: "#ebf3fa"
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: labelSelPatient.bottom
-        anchors.topMargin: mainWindow.height*0.019
+        z:2
 
-        Text {
-            id: labelPatientName
-            font.family: robotoR.name
-            font.pixelSize: 15*viewHome.vmScale
-            color: "#58595b"
-            anchors.verticalCenter: backgroundPatientName.verticalCenter
-            text: "";
-            anchors.left: backgroundPatientName.left
-            anchors.leftMargin: mainWindow.width*0.008
+        Column {
+            id: patientNameColumn
+            spacing: mainWindow.height*0.019
+            width: mainWindow.width*0.3
+
+            Text {
+                id: labelSelPatient
+                font.family: robotoB.name
+                font.pixelSize: 15*viewHome.vmScale
+                color: "#000000"
+                text: {
+                    if (uimap.getStructure() === "P") return loader.getStringForKey(keysearch+"labelSelPatient");
+                    if (uimap.getStructure() === "S") return loader.getStringForKey(keysearch+"labelSelSubject");
+                }
+
+            }
+
+            Rectangle{
+                id: backgroundPatientName
+                width: parent.width
+                height: cbStudyDesign.height
+                radius: 5
+                color: "#ebf3fa"
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Text {
+                    id: labelPatientName
+                    font.family: robotoR.name
+                    font.pixelSize: 15*viewHome.vmScale
+                    color: "#58595b"
+                    anchors.verticalCenter: backgroundPatientName.verticalCenter
+                    text: "";
+                    anchors.left: backgroundPatientName.left
+                    anchors.leftMargin: mainWindow.width*0.008
+                }
+
+            }
+        }
+
+        Column {
+            id: studyDesignColumn
+            spacing: mainWindow.height*0.019
+            width: patientNameColumn.width
+
+            Text {
+                id: labelStudyDesignCB
+                font.family: robotoB.name
+                font.pixelSize: 15*viewHome.vmScale
+                color: "#000000"
+                text: loader.getStringForKey(keysearch+"labelPatientConditionsCB");
+            }
+
+            VMComboBox2{
+                id: cbStudyDesign
+                width: parent.width
+                vmEnabled: true
+                z:2
+                Component.onCompleted: {
+                    cbStudyDesign.setModelList(loader.getStringListForKey(keysearch+"patient_conditions"));
+                }
+                onSelectionChanged: {
+                    studyDesignChangeTriggered();
+                }
+            }
+
+
         }
 
     }
@@ -250,9 +386,9 @@ VMBase {
     Row{
         id: rowStudySelection
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: backgroundPatientName.bottom
+        anchors.top: patientAndConditionSelectionRow.bottom
         anchors.topMargin: mainWindow.height*0.019
-        spacing: (backgroundPatientName.width - (studySelectBackground.width + studySelectedBackground.width + btnAddStudy.width))/2
+        spacing: (patientAndConditionSelectionRow.width - (studySelectBackground.width + studySelectedBackground.width + btnAddStudy.width))/2
 
         Column {
             id: studySelectColumn
@@ -397,14 +533,14 @@ VMBase {
                 id: labelEyeMsg
                 font.family: robotoB.name
                 font.pixelSize: 13*viewHome.vmScale
-                width: (backgroundPatientName.width - 16)/5
+                width: (patientAndConditionSelectionRow.width - 16)/5
                 color: "#554545"
                 text: loader.getStringForKey(keysearch+"labelEyeMsg");
             }
 
             VMComboBox2{
                 id: cbEyeMsg
-                width: (backgroundPatientName.width - 16)/5
+                width: (patientAndConditionSelectionRow.width - 16)/5
                 vmEnabled: true
                 z:2
                 Component.onCompleted: {
@@ -469,6 +605,27 @@ VMBase {
         }
 
         Column {
+            id: columnNumberOfNBackTargets
+            spacing: mainWindow.height*0.019
+            visible: false
+            Text {
+                id: labelNumberOfNBackTargets
+                font.family: robotoB.name
+                font.pixelSize: 13*viewHome.vmScale
+                width: cbNumberOfTargets.width
+                color: "#554545"
+                text: loader.getStringForKey(keysearch+"labelNumberOfNBackTargets");
+            }
+
+            VMComboBox2{
+                id: cbNumberOfNBAckTargets
+                width: cbEyeMsg.width
+                z:2
+                Component.onCompleted: cbNumberOfNBAckTargets.setModelList(["3","4","5","6"])
+            }
+        }
+
+        Column {
             id: columnReadingLanguage
             spacing: mainWindow.height*0.019
             visible: false
@@ -486,7 +643,19 @@ VMBase {
                 width: cbEyeMsg.width
                 vmMaxDisplayItems: 3
                 z:2
-                Component.onCompleted: cbReadingLang.setModelList(["English", "Español", "Deutsche", "Français","Íslensku"])
+                Component.onCompleted: {
+                    cbReadingLang.setModelList(["English", "Español", "Deutsche", "Français","Íslensku"])
+
+                    // Loading the last study language.
+                    var index = loader.getConfigurationString(vmDefines.vmCONFIG_DEFAULT_READING_LANGUAGE)
+                    if (index !== ""){
+                        cbReadingLang.setSelection(index);
+                    }
+
+                }
+                onSelectionChanged: {
+                    loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_READING_LANGUAGE,cbReadingLang.vmCurrentIndex);
+                }
             }
         }
 
@@ -539,14 +708,18 @@ VMBase {
                     else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_GONOGO){
                         vmSelectedExperiments.push(viewPatientReg.vmExpIndexGoNoGo);
                     }
+                    else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_NBACKVS){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackVS);
+                    }
                 }
 
                 if (vmSelectedExperiments.length > 0){
 
                     // All is good, so the parameters are set.
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.vmCurrentIndex,false);
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.vmCurrentText,false);
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.vmCurrentIndex == 1),false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_VALID_EYE,cbEyeMsg.vmCurrentIndex);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,cbNumberOfTargets.vmCurrentText);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_TARGET_SMALL,(cbTargetSize.vmCurrentIndex == 1));
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_NBACKVS_SEQUENCE_LENGTH,(cbNumberOfNBAckTargets.vmCurrentIndex+3));
 
                     var readlang;
                     switch(cbReadingLang.vmCurrentIndex){
@@ -566,7 +739,7 @@ VMBase {
                         readlang = "is";
                         break;
                     }
-                    loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,readlang,false);
+                    loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,readlang);
 
                     viewPresentExperimet.setTracker(vmSelectedExperiments);
                     vmCurrentExperimentIndex = -1;

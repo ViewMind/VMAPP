@@ -29,6 +29,8 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
 
         //viewVRDisplay.testCalibrationFailedDialog();
+
+        //viewAbout.open();
     }
 
 
@@ -41,6 +43,12 @@ Window {
         onUpdateMenus: {
             viewHome.updateDrMenuText();
         }
+    }
+
+    ViewAbout{
+        id: viewAbout
+        x: (parent.width - viewSettings.width)/2
+        y: (parent.height - viewSettings.height)/2
     }
 
     ViewDoctorSelection {

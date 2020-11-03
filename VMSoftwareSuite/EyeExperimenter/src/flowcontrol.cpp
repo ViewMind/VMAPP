@@ -775,6 +775,13 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
         break;
+    case EXP_NBACKVS:
+        logger.appendStandard("STARTING N BACK RT FOR TRAINING");
+        configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/fielding.dat");
+        experiment = new NBackRTExperiment(nullptr,NBackRTExperiment::NBT_VARIABLE_SPEED);
+        background = QBrush(Qt::gray);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+        break;
     default:
         logger.appendError("Unknown experiment was selected " + QString::number(experimentID));
         return false;

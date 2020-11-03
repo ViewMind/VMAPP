@@ -130,6 +130,16 @@
 #define   CONFIG_VR_RECOMMENDED_WIDTH                   "vr_recommended_width"
 #define   CONFIG_VR_RECOMMENDED_HEIGHT                  "vr_recommended_height"
 #define   CONFIG_RESOLUTION_SCALING                     "resolution_scaling"
+#define   CONFIG_LABELLING_MANUFACTURE_DATE             "labeling_manufacture_date"
+#define   CONFIG_LABELLING_SERIAL_NUMBER                "labeling_serial_number"
+#define   CONFIG_LABELLING_AUTHORIZATION_UID            "labeling_unique_authorization_number"
+#define   CONFIG_DEFAULT_READING_LANGUAGE               "default_reading_study_language"
+#define   CONFIG_NBACKVS_MIN_HOLD_TIME                  "nbackvs_min_hold_time"
+#define   CONFIG_NBACKVS_MAX_HOLD_TIME                  "nbackvs_max_hold_time"
+#define   CONFIG_NBACKVS_STEP_HOLD_TIME                 "nbackvs_step_hold_time"
+#define   CONFIG_NBACKVS_START_HOLD_TIME                "nbackvs_start_hold_time"
+#define   CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE         "nbackvs_ntrial_for_step_change"
+#define   CONFIG_NBACKVS_SEQUENCE_LENGTH                "nbackvs_sequence_length"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -181,6 +191,7 @@
 #define   EXP_NBACKRT                                   5
 #define   EXP_PARKINSON                                 6
 #define   EXP_GONOGO                                    7
+#define   EXP_NBACKVS                                   8
 
 // Base names for common files shared accross multiple apps.
 #define   FILE_CONFIGURATION                            "configuration"
@@ -190,6 +201,7 @@
 #define   FILE_OUTPUT_BINDING_BC                        "binding_bc"
 #define   FILE_OUTPUT_FIELDING                          "fielding"
 #define   FILE_OUTPUT_NBACKRT                           "nbackrt"
+#define   FILE_OUTPUT_NBACK_VARIABLE_SPEED              "nbackvs"
 #define   FILE_OUTPUT_PARKINSON                         "parkinson"
 #define   FILE_OUTPUT_GONOGO                            "gonogo"
 #define   FILE_REPORT_NAME                              "report"
@@ -214,6 +226,7 @@
 #define   HEADER_IMAGE_EXPERIMENT                       "#IMAGE"
 #define   HEADER_FIELDING_EXPERIMENT                    "#FIELDING"
 #define   HEADER_NBACKRT_EXPERIMENT                     "#NBACKRT"
+#define   HEADER_NBACK_VARIABLE_SPEED_EXPERIMENT        "#NBACKVS"
 #define   HEADER_PARKINSON_EXPERIMENT                   "#PARKINSON"
 #define   HEADER_GONOGO_EXPERIMENT                      "#GONOGO"
 

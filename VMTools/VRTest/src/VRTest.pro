@@ -34,6 +34,7 @@ SOURCES += \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/gonogoexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.cpp \
+        ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/nbackrtexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
@@ -90,6 +91,7 @@ HEADERS += \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/gonogoexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.h \
+    ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/nbackrtexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \

@@ -206,6 +206,38 @@ Window {
 
             }
 
+            Row{
+
+                id: nbackRow
+                spacing: 0.01*parent.width
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Button {
+                    id: startNBackRT
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start NBack RT"
+                    onClicked: {
+                        control.startNBackRTExperiment(cbSeqLengthNback.currentIndex+3,cbNBackType.currentIndex);
+                    }
+                }
+
+                ComboBox {
+                    id: cbSeqLengthNback
+                    width: startBinding.width
+                    height: startBinding.height
+                    model: [ "3", "4", "5", "6"];
+                }
+
+
+                ComboBox {
+                    id: cbNBackType
+                    width: startBinding.width
+                    height: startBinding.height
+                    model: [ "Training" , "Standard"];
+                }
+
+            }
         }
 
         Keys.onPressed: {

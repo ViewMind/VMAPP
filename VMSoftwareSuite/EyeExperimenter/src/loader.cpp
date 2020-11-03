@@ -33,6 +33,13 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_READING_ALG_VERSION] = cmd;
     cv[CONFIG_FIELDING_ALG_VERSION] = cmd;
 
+    // NBACK VS Parameters
+    cv[CONFIG_NBACKVS_MAX_HOLD_TIME] = cmd;
+    cv[CONFIG_NBACKVS_MIN_HOLD_TIME] = cmd;
+    cv[CONFIG_NBACKVS_STEP_HOLD_TIME] = cmd;
+    cv[CONFIG_NBACKVS_START_HOLD_TIME] = cmd;
+    cv[CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE] = cmd;
+
     cmd.clear();
     cmd.type = ConfigurationManager::VT_REAL;
     cv[CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL] = cmd;
@@ -61,6 +68,13 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_INST_PASSWORD] = cmd;
     cv[CONFIG_CONFIGURE_STRING] = cmd;
 
+
+    // Labeling Information
+    cmd.clear();
+    cv[CONFIG_LABELLING_MANUFACTURE_DATE] = cmd;
+    cv[CONFIG_LABELLING_SERIAL_NUMBER] = cmd;
+    cv[CONFIG_LABELLING_AUTHORIZATION_UID] = cmd;
+
     cmd.clear();
     cmd.optional = true;
     cmd.type = ConfigurationManager::VT_BOOL;
@@ -85,7 +99,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
 
     // The strings.
     cv[CONFIG_REPORT_LANGUAGE] = cmd;
-    cv[CONFIG_DEFAULT_COUNTRY] = cmd;
+    cv[CONFIG_DEFAULT_COUNTRY] = cmd;    
 
     // The booleans
     cmd.type = ConfigurationManager::VT_BOOL;
@@ -93,6 +107,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_DEMO_MODE] = cmd;
     cv[CONFIG_USE_MOUSE] = cmd;
 
+    // The ints
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_DEFAULT_READING_LANGUAGE] = cmd;
 
     // Merging the settings or loading the default configuration.
     settings.setupVerification(cv);
@@ -536,6 +553,12 @@ void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
             break;
         case LIST_INDEX_NBACKRT:
             reportGenerationStruct.nbackrtFileIndex = index;
+            break;
+        case LIST_INDEX_GONOGO:
+            reportGenerationStruct.gonogoFileIndex = index;
+            break;
+        case LIST_INDEX_NBACKVS:
+            reportGenerationStruct.nbackvsFileIndex = index;
             break;
         }
     }

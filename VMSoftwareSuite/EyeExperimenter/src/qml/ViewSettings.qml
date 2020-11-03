@@ -241,6 +241,7 @@ Dialog {
 
     }
 
+
     VMButton{
         id: diagBtnOK
         vmFont: viewHome.gothamM.name
@@ -256,6 +257,22 @@ Dialog {
             }
         }
     }
+
+    VMButton{
+        id: diagBtnAbout
+        vmFont: viewHome.gothamM.name
+        vmSize: [140, 49]
+        vmInvertColors: true
+        vmText: loader.getStringForKey(keybase+"diagAbout");
+        anchors.top: viewAllEnableRow.bottom
+        anchors.topMargin: mainWindow.height*0.065
+        anchors.right: diagDBDefaultCountry.right
+        onClicked: {
+            viewSettings.close();
+            viewAbout.open();
+        }
+    }
+
 
     MessageDialog {
         id: restartRequiredDiag

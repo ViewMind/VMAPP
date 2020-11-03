@@ -50,17 +50,27 @@ void FieldingManager::drawBackground(){
     canvas->addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
 
     for (qint32 i = 0; i < drawTargetBoxes.size(); i++){
-#ifdef ENABLE_DRAW_OF_HIT_TARGET_BOXES
-        QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitTargetBoxes.at(i).width(),hitTargetBoxes.at(i).height(),
+#ifdef ENABLE_DRAW_OF_HIT_TARGET_BOXES        
+
+        QRectF hitBoxToDraw = hitTargetBoxes.at(i);
+        if ((i != TARGET_BOX_5) && (i != TARGET_BOX_2)){
+            hitBoxToDraw.setY(hitBoxToDraw.top()-hitBoxToDraw.height()/2);
+            hitBoxToDraw.setHeight(hitBoxToDraw.height()*2);
+        }
+
+        QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
                                                    QPen(QBrush(Qt::green),2),
                                                    QBrush(Qt::black));
-        rect2->setPos(hitTargetBoxes.at(i).x(),hitTargetBoxes.at(i).y());
+
+        rect2->setPos(hitBoxToDraw.x(),hitBoxToDraw.y());
 #endif
 
         QGraphicsRectItem *rect = canvas->addRect(0,0,drawTargetBoxes.at(i).width(),drawTargetBoxes.at(i).height(),
                                                   QPen(QBrush(Qt::white),6),
                                                   QBrush(Qt::black));
         rect->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
+
+
     }
 
     // Adding the cross
@@ -174,6 +184,10 @@ bool FieldingManager::setTargetPositionFromTrialName(const QString &trial, qint3
 }
 
 void FieldingManager::setTargetPosition(qint32 trial, qint32 image){
+
+    // Check to fix a small bug when using a sequence of six, when changing to a new image image number will be 6 and the following instruction will break.
+    if (image >= fieldingTrials.at(trial).sequence.size()) return;
+
     QRectF r = drawTargetBoxes.at(fieldingTrials.at(trial).sequence.at(image));
     gTarget->setPos(r.x(),r.y());
 }
@@ -183,9 +197,10 @@ QPoint FieldingManager::getTargetPoint(qint32 trial, qint32 image) const{
     return QPoint(static_cast<qint32>(r.x()),static_cast<qint32>(r.y()));
 }
 
-QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial) const{
+QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial, qint32 targetNum) const{
     QList<qint32> hits;
-    QList<qint32> sequence = fieldingTrials.at(trial).sequence;
+    QList<qint32> sequence = fieldingTrials.at(trial).sequence.mid(0,targetNum);
+
     for (qint32 i = sequence.size()-1; i >= 0; i--){
         hits << sequence.at(i);
     }

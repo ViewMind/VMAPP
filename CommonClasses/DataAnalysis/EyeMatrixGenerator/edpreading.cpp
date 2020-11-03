@@ -69,6 +69,7 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
 
         // If the code got here, this is just another row to process.
         DataRow row;
+
         for (qint32 i = 1; i < tokens.size(); i++){
             row << tokens.at(i).toDouble();
         }
@@ -81,6 +82,7 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
 
         // Applying the filter
         if ((row.at(READ_TI) < filterValue) || (filterValue <= 0)){
+            //qDebug() <<  "ADDING ROW" << row;
             imageData << row;
         }
         else{
@@ -167,6 +169,7 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
     QString gazeL = QString::number(getGaze(fL));
     QString gazeR = QString::number(getGaze(fR));
 
+
     // The second value of the ID is the sentence length, as it is necessary later on.
     QStringList id;
     id << imgID << QString::number(data.first().at(READ_SL));
@@ -228,6 +231,7 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
         writer << "\n";
     }
 
+
     sac.reset();
     for (qint32 i = 0; i < fR.size(); i++){
 
@@ -274,6 +278,7 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
     }
 
     file.close();
+
     return true;
 }
 

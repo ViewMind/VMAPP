@@ -22,6 +22,8 @@ Item {
         setSelection(0)
     }
 
+    signal selectionChanged();
+
     ListModel {
         id: modelList
     }
@@ -135,6 +137,7 @@ Item {
                         hoverEnabled: true
                         onClicked: {
                             setSelection(vmIndex);
+                            selectionChanged();
                         }
                     }
 
