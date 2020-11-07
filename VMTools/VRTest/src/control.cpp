@@ -144,11 +144,13 @@ void Control::startReadingExperiment(QString lang){
     openvrco->setScreenColor(QColor(Qt::gray).darker(110));
     configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1920);
     configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,1080);
+    configExperiments.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,120);
 #else
     configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,false);
     configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_MOUSE);
     configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1366);
     configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,120);
 #endif
 
 
@@ -396,6 +398,81 @@ void Control::startGoNoGoExperiment(){
         qDebug() << "Experiment Start Error: " + experiment->getError();
     }
 }
+
+void Control::startPerceptionExperiment(bool isTraining){
+    if (experiment != nullptr) delete experiment;
+    experiment = new PerceptionExperiment();
+
+    QString expFileName =  ":/experiment_data/perception_study.dat";
+
+    // Connecting the eyetracker to teh experiment.
+    configExperiments.clear();
+    connect(eyetracker,SIGNAL(newDataAvailable(EyeTrackerData)),experiment,SLOT(newEyeDataAvailable(EyeTrackerData)));
+    connect(experiment,SIGNAL(updateVRDisplay()),this,SLOT(onRequestUpdate()));
+    connect(experiment,&Experiment::experimentEndend,this,&Control::onExperimentFinished);
+
+    configExperiments.addKeyValuePair(CONFIG_PERCEPTION_IS_TRAINING,isTraining);
+
+#ifndef DESIGN_MODE_ENABLED
+    QSize s = openvrco->getRecommendedSize();
+    qreal w = static_cast<qreal>(s.width());
+    qreal h = static_cast<qreal>(s.height());
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,w);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,h);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,true);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,false);
+    openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+    configExperiments.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,120);
+    configExperiments.addKeyValuePair(CONFIG_MIN_FIXATION_LENGTH,50);
+    configExperiments.addKeyValuePair(CONFIG_MOVING_WINDOW_DISP,100);
+#else
+    configExperiments.addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_MOUSE);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_PRIMARY_MONITOR_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_WIDTH,1366);
+    configExperiments.addKeyValuePair(CONFIG_RESOLUTION_HEIGHT,768);
+    configExperiments.addKeyValuePair(CONFIG_VR_ENABLED,false);
+    configExperiments.addKeyValuePair(CONFIG_USE_MOUSE,true);
+#endif
+
+    // Configuring the experiment.
+
+    configExperiments.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,"outputs");
+    configExperiments.addKeyValuePair(CONFIG_EXP_CONFIG_FILE,expFileName);
+    configExperiments.addKeyValuePair(CONFIG_DEMO_MODE,false);
+    configExperiments.addKeyValuePair(CONFIG_VALID_EYE,2);
+    configExperiments.addKeyValuePair(CONFIG_SAMPLE_FREQUENCY,120);
+    configExperiments.addKeyValuePair(CONFIG_MIN_FIXATION_LENGTH,50);
+    configExperiments.addKeyValuePair(CONFIG_MOVING_WINDOW_DISP,105);
+
+    QStringList errlist;
+    QVariantMap file_types_and_mp_ids = Experiment::checkForMultiPartIdentifiers(configExperiments.getString(CONFIG_PATIENT_DIRECTORY),&errlist);
+    if (!errlist.isEmpty()){
+        for (qint32 i = 0; i < errlist.size(); i++){
+            qDebug() << "ERROR check for mp id: " + errlist.at(i);
+        }
+        return;
+    }
+
+    //qDebug() << "Check multi map" << file_types_and_mp_ids;
+
+    QString perceptionIndex = QString::number(LIST_INDEX_PERCEPTION);
+    if (file_types_and_mp_ids.contains(perceptionIndex)){
+        QVariantList list = file_types_and_mp_ids.value(perceptionIndex).toList();
+        qDebug() << list.size();
+        configExperiments.addKeyValuePair(CONFIG_PERCEPTION_MP_CURRENT_IDENTIFIER,list.last().toString());
+        configExperiments.addKeyValuePair(CONFIG_PERCEPTION_MP_CURRENT_STUDY_FILE,list.first().toString());
+    }
+
+
+    //return;
+
+    renderState = RENDERING_EXPERIMENT;
+    if (!experiment->startExperiment(&configExperiments)){
+        qDebug() << "Experiment Start Error: " + experiment->getError();
+    }
+}
+
 
 void Control::onExperimentFinished(const Experiment::ExperimentResult &result){
     qDebug() << "Experiment finished: "  <<  result;

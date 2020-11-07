@@ -114,6 +114,15 @@ viewstudystart_labelEvaluations = Estudios a realizar;
 viewstudystart_labelPatientConditionsCB = Evaluaciones recomendadas según patología;
 viewstudystart_patient_conditions = Diseño personalizado|Deterioro Cognitivo Leve (DCL)|DCL-Amnésico|Enfermedad de Alzheimer Leve|Enfermedad de Alzheimer Asintomático|Depresión Mayor|Esclerosis Múltiple|Deficit Atencional|Enfermedad de Parkinson|Demencia Frontotemporal|Alteraciones Cognitivas por COVID-19;
 viewstudystart_labelNumberOfNBackTargets = Número de Objetivos;
+viewstudystart_confirmMPFinalize = ¿Confirma que desea finalizar el estudio?<br>Esto hará que los datos actuales puedan ser procesados sin finalizar todas las partes;
+viewstudystart_confirmMPRestart  = ¿Confirma que desea reiniciar el estudio?<br>Los datos para este estudio se perderán;
+viewstudystart_mpActionResume = Realizar parte N de T;
+viewstudystart_mpActionStartOver = Comenzar Nuevamente;
+viewstudystart_mpActionFinalize = Finalizar Estudio;
+viewstudystart_labelActions = Opciones multi parte;
+viewstudystart_labelPerceptionType = Seleccione tipo de estudio;
+viewstudystart_perceptionTypeOptions = Entrenamiento|Rehabilitación;
+
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Selección del Doctor;
@@ -159,6 +168,7 @@ viewpresentexp_itemNBackRT  = Evaluación N-Back Tipo RT;
 viewpresentexp_itemParkinson = Laberinto Parkinson;
 viewpresentexp_itemGoNoGo    = Tarea Go NoGo;
 viewpresentexp_itemNBackVS   = N-Back Type RT Para Entrenamiento;
+viewpresentexp_itemPerception = Estudio de Percepción;
 
 viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
 Cuando su mira se encuentre ubicada sobre el punto, este desaparecerá <br>
@@ -313,7 +323,7 @@ viewselectdata_labelFielding = Evaluación N-Back Tipo MS;
 viewselectdata_labelNBackRT  = Evaluación N-Back Tipo RT;
 viewselectdata_labelNoUse = No utilizar en reporte;
 viewselectdata_labelStudySelection = Seleccione un estudio;
-viewselectdata_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT|Go NoGo|Evaluación N-Back RT de Entrenamiento;
+viewselectdata_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT|Go NoGo|Evaluación N-Back RT de Entrenamiento|Percepción;
 viewselectdata_labeFileView = Reporte para los estudios;
 viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_labelEvals = Evaluaciones disponibles;

@@ -24,6 +24,7 @@
 #include "Experiments/nbackrtexperiment.h"
 #include "Experiments/parkinsonexperiment.h"
 #include "Experiments/gonogoexperiment.h"
+#include "Experiments/perceptionexperiment.h"
 
 #include "sslclient/ssldataprocessingclient.h"
 

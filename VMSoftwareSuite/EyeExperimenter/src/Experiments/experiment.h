@@ -19,6 +19,11 @@
 #include "../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
 #include "../../../CommonClasses/common.h"
 
+#define  MULTI_PART_FILE_STUDY_IDENTIFIER      "===>>"
+#define  EXTRA_EXTENSION_FOR_MULTI_PART_FILES  "mp"
+
+#define  PERCEPTION_STUDY_LAST_MULTI_PART_IDENTIFIER  "7"   // This means that the study will end upon doing it 8 times (0 through 8).
+
 class Experiment : public QWidget
 {
     Q_OBJECT
@@ -65,6 +70,16 @@ public:
 
     // Image required for VR Display
     QImage getVRDisplayImage() const;
+
+    // Will check the patient directory for multi part identifiers (.mp file studies) and return a map with
+    // the study type and the last part identifier.
+    static QVariantMap checkForMultiPartIdentifiers(const QString &patientDirectory, QStringList *errorList);
+
+    // Will remove .mp from the file name. Returns error if there was any.
+    static QString finalizeMultiPartStudyFile(const QString &studyFileName);
+
+    // Will add the .mp to the file name. Returns an error if there was any.
+    static QString makeStudyMultiPart(QString *studyFileName);
 
 signals:
 
@@ -142,6 +157,10 @@ protected:
 
     // Control flag for VR logic changes
     bool vrEnabled;
+
+    // Multi Part Identifier. Basically the name number or ID that is used to identify a PART of an experiment that requires multiple sessions.
+    // Will be set to empty if meaningless.
+    QString multiPartIdentifier;
 
     // So that the logic of handling keys can be implemente by each experiment.
     virtual void keyPressHandler(int keyPressed);

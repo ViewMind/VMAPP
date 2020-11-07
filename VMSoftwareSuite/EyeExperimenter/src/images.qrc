@@ -115,5 +115,8 @@
         <file>images/labeling/manufacturer.jpg</file>
         <file>images/labeling/serial_number.jpg</file>
         <file>images/labeling/reference.jpg</file>
+        <file>images/perception/0.gif</file>
+        <file>images/perception/1.gif</file>
+        <file>images/perception/2.gif</file>
     </qresource>
 </RCC>

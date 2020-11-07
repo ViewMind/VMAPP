@@ -79,3 +79,5 @@ Scripts/php/vendor/
 
 Scripts/inst_data_available/EyeReportGen
 Scripts/inst_data_available/OUTPUTS
+
+VMSoftwareSuite/EyeExperimenter/src/experiment_data/perception_study.dat.short

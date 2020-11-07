@@ -77,4 +77,7 @@ Item{
     readonly property string vmCONFIG_VR_ENABLED: "vr_enabled"
     readonly property string vmCONFIG_DEFAULT_READING_LANGUAGE: "default_reading_study_language"
     readonly property string vmCONFIG_NBACKVS_SEQUENCE_LENGTH: "nbackvs_sequence_length"
+    readonly property string vmCONFIG_PERCEPTION_IS_TRAINING: "perception_is_training"
+    readonly property string vmCONFIG_PERCEPTION_MP_CURRENT_IDENTIFIER: "perception_mulit_part_study_current_id"
+    readonly property string vmCONFIG_PERCEPTION_MP_CURRENT_STUDY_FILE: "perception_mulit_part_study_current_study_file"        
 }

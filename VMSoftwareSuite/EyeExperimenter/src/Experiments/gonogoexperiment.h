@@ -9,7 +9,7 @@
 #include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
 #define  GONOGO_TIME_CROSS      1000
-#define  GONOGO_TIME_ESTIMULUS  1000
+#define  GONOGO_TIME_ESTIMULUS  1500
 
 class GoNoGoExperiment: public Experiment
 {
@@ -25,6 +25,7 @@ public slots:
     void onTimeOut();
 
 protected:
+
     void keyPressHandler(int keyPressed) override;
 
     typedef enum {GNGS_CROSS, GNGS_ESTIMULUS} GoNoGoState;

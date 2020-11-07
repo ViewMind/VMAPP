@@ -13,7 +13,7 @@ void QImageDisplay::setImage(const QImage &image){
 
 void QImageDisplay::keyPressEvent(QKeyEvent *event){
     QQuickPaintedItem::keyPressEvent(event);
-    qDebug() << "ImageDisplayKeyPressed" << event->key();
+    //qDebug() << "ImageDisplayKeyPressed" << event->key();
 }
 
 QImage QImageDisplay::getImage() const{

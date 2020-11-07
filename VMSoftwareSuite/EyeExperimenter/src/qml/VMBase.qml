@@ -13,14 +13,15 @@ Rectangle {
     readonly property alias robotoR: robottoReg
     readonly property alias vmDefines: masterDefines
 
-    readonly property int vmExpIndexReading:    1;
-    readonly property int vmExpIndexBindingUC:  2;
-    readonly property int vmExpIndexBindingBC:  3;
-    readonly property int vmExpIndexFielding:   4;
-    readonly property int vmExpIndexNBackRT:    5;
-    readonly property int vmExpIndexParkinson:  6;
-    readonly property int vmExpIndexGoNoGo:     7;
-    readonly property int vmExpIndexNBackVS:    8;
+    readonly property int vmExpIndexReading:     1;
+    readonly property int vmExpIndexBindingUC:   2;
+    readonly property int vmExpIndexBindingBC:   3;
+    readonly property int vmExpIndexFielding:    4;
+    readonly property int vmExpIndexNBackRT:     5;
+    readonly property int vmExpIndexParkinson:   6;
+    readonly property int vmExpIndexGoNoGo:      7;
+    readonly property int vmExpIndexNBackVS:     8;
+    readonly property int vmExpIndexPerception:  9;
 
     property alias vmErrorDiag: errorDialog
 

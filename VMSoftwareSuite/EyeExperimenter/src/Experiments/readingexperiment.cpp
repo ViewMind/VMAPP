@@ -26,6 +26,9 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
 
     if (!Experiment::startExperiment(c)) return false;
 
+    eyeSelector.setTargetCountForSelection(c->getReal(CONFIG_SAMPLE_FREQUENCY)*TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS);
+    eyeSelector.reset();
+
     // Setting the first question.
     currentQuestion = 0;
 
@@ -100,7 +103,19 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
                          m->getPhrase(currentQuestion).getSizeInWords());
     }
 
-    if (qstate == ReadingManager::QS_QUESTION) return;
+    // On a question a test needs to be done to know if the option has been selected with the gaze.
+    if (qstate == ReadingManager::QS_QUESTION){
+        m->highlightOption(QPoint(x,y));
+        qint32 selected = eyeSelector.isSelectionMade(x,y);
+        if (selected != -1){
+            // Saving the answer.
+            saveAnswer(selected+1);
+
+            // Advancing to next phrase or information.
+            advanceToTheNextPhrase();
+        }
+        return;
+    }
 
     if (isPointWithInTolerance(x,y)){
         advanceToTheNextPhrase();
@@ -110,7 +125,11 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 void ReadingExperiment::advanceToTheNextPhrase(){
 
     if ((qstate == ReadingManager::QS_QUESTION) || (qstate == ReadingManager::QS_PHRASE)){
-        // I move on to the next question only I'm in a question or phrase qstate.
+
+        // Reset the selection state machine.
+        eyeSelector.reset();
+
+        // I move on to the next question only I'm in a question or phrase qstate.        
         if (currentQuestion < m->size()-1){
             currentQuestion++;
         }
@@ -131,6 +150,9 @@ void ReadingExperiment::advanceToTheNextPhrase(){
 
     // And the next phrase is drawn.
     m->drawPhrase(qstate,currentQuestion);
+    if (qstate == ReadingManager::QS_QUESTION){
+        eyeSelector.setTargetBoxes(m->getOptionTargetBoxes());
+    }
 
     updateSecondMonitorORHMD();
 }
@@ -164,23 +186,6 @@ void ReadingExperiment::determineQuestionState(){
         break;
     }
 
-}
-
-void ReadingExperiment::mousePressEvent(QMouseEvent *event){
-
-    // The logic here should only be run if this a question and the experiment is running.
-    if ((state != STATE_RUNNING) || (qstate != ReadingManager::QS_QUESTION)) return;
-
-    if (event->button() == Qt::LeftButton){
-        qint32 where = m->isPointContainedInAClickArea(event->pos());
-        if (where != -1){
-            // Saving the answer.
-            saveAnswer(where+1);
-
-            // Advancing to next phrase or information.
-            advanceToTheNextPhrase();
-        }
-    }
 }
 
 void ReadingExperiment::keyPressHandler(int keyPressed){
@@ -230,10 +235,11 @@ void ReadingExperiment::saveAnswer(qint32 selected){
     // Format: Image ID, time stamp for right and left.
     ReadingParser::Phrase p = m->getPhrase(currentQuestion);
     QVariantList dataS;
-    dataS << p.zeroPadID() << " "
-           << p.getFollowUpQuestion() << " -> "
-           << p.getFollowUpAt(selected) << "\n";
-    etData << dataS;
+    dataS << p.zeroPadID()
+          << p.getFollowUpQuestion() << " -> "
+          << p.getFollowUpAt(selected);
+
+    etData << QVariant(dataS);
 }
 
 
@@ -257,3 +263,5 @@ QList<qint32> ReadingExperiment::calculateWordAndCharacterPostion(qint32 x, qint
 
 ReadingExperiment::~ReadingExperiment(){
 }
+
+

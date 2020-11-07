@@ -321,6 +321,38 @@ void Loader::setAgeForCurrentPatient(){
     configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);
 }
 
+QVariantMap Loader::getMultiPartStudies(){
+    QStringList errlist;
+    QVariantMap file_types_and_mp_ids = Experiment::checkForMultiPartIdentifiers(configuration->getString(CONFIG_PATIENT_DIRECTORY),&errlist);
+    if (!errlist.isEmpty()){
+        for (qint32 i = 0; i < errlist.size(); i++){
+            logger.appendError("Checking for Multi Part ids: " + errlist.at(i));
+        }
+        return QVariantMap();
+    }
+    return file_types_and_mp_ids;
+
+}
+
+void Loader::deleteMultiPartFile(const QString &fileName){
+
+    QString actualfileName = configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + fileName;
+
+    if (!QFile::remove(actualfileName)){
+        logger.appendError("Failed to remove multi part file: " + fileName);
+    }
+}
+
+void Loader::finalizeMultiPartFile(const QString &fileName){
+
+   QString actualfileName = configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + fileName;
+
+   QString error = Experiment::finalizeMultiPartStudyFile(actualfileName);
+   if (!error.isEmpty()){
+       logger.appendError("Failed to finalize multi part file: " + error);
+   }
+}
+
 //*********************************************** Local DB Functions ******************************************************
 
 bool Loader::createPatientDirectory(){

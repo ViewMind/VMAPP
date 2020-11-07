@@ -161,6 +161,23 @@ Window {
                     }
                 }
 
+                Button {
+                    id: startPerception
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    text: "Start Perception"
+                    onClicked: {
+                        control.startPerceptionExperiment((cbPerceptionType.currentIndex == 0));
+                    }
+                }
+
+                ComboBox {
+                    id: cbPerceptionType
+                    width: rectBase.elementWidth
+                    height: rectBase.elementHeight
+                    model: [ "Training", "Rehab" ];
+                }
+
             }
 
             Row{

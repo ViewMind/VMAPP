@@ -65,7 +65,7 @@ bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
     mwp.maxDispersion = c->getReal(CONFIG_MOVING_WINDOW_DISP);
     mwp.calculateWindowSize();
 
-    qDebug() << "MWP" << mwp.sampleFrequency << mwp.minimumFixationLength << mwp.maxDispersion << mwp.getStartWindowSize();
+    //qDebug() << "MWP" << mwp.sampleFrequency << mwp.minimumFixationLength << mwp.maxDispersion << mwp.getStartWindowSize();
 
     trialRecognitionMachine.configure(mwp);
     //qDebug() << "Miniminum number of data points computed" << mwp.getStartWindowSize();
