@@ -782,6 +782,14 @@ bool FlowControl::startNewExperiment(qint32 experimentID){
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
         break;
+    case EXP_PERCEPTION:
+        logger.appendStandard("STARTING PERCEPTION");
+        configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/perception_study.dat");
+        experiment = new PerceptionExperiment(nullptr);
+        background = QBrush(Qt::gray);
+        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+        break;
+
     default:
         logger.appendError("Unknown experiment was selected " + QString::number(experimentID));
         return false;

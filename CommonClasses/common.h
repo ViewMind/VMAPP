@@ -140,6 +140,9 @@
 #define   CONFIG_NBACKVS_START_HOLD_TIME                "nbackvs_start_hold_time"
 #define   CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE         "nbackvs_ntrial_for_step_change"
 #define   CONFIG_NBACKVS_SEQUENCE_LENGTH                "nbackvs_sequence_length"
+#define   CONFIG_PERCEPTION_IS_TRAINING                 "perception_is_training"
+#define   CONFIG_PERCEPTION_MP_CURRENT_IDENTIFIER       "perception_mulit_part_study_current_id"
+#define   CONFIG_PERCEPTION_MP_CURRENT_STUDY_FILE       "perception_mulit_part_study_current_study_file"
 
 // Result values for the Result EyeReport Generator File
 #define   CONFIG_RESULTS_ATTENTIONAL_PROCESSES          "attentional_processes"
@@ -171,12 +174,25 @@
 #define   CONFIG_P_EXP_READING                          "reading"
 #define   CONFIG_P_EXP_PARKINSON                        "parkinson"
 #define   CONFIG_P_EXP_GONOGO                           "gonogo"
+#define   CONFIG_P_EXP_PERCEPTION                       "perception"
 #define   CONFIG_P_LANG_ES                              "Spanish"
 #define   CONFIG_P_LANG_EN                              "English"
 #define   CONFIG_P_ET_MOUSE                             "Mouse"
 #define   CONFIG_P_ET_REDM                              "REDm"
 #define   CONFIG_P_ET_GP3HD                             "GP3HD"
 #define   CONFIG_P_ET_HTCVIVEEYEPRO                     "HTCVIVEEyePro"
+#define   CONFIG_P_PERCEPTION_REHAB                     "R"
+#define   CONFIG_P_PERCEPTION_TRAINING                  "T"
+
+// Numeric IDs for the exeperiments
+#define   LIST_INDEX_READING                            0
+#define   LIST_INDEX_BINDING_BC                         1
+#define   LIST_INDEX_BINDING_UC                         2
+#define   LIST_INDEX_FIELDING                           3
+#define   LIST_INDEX_NBACKRT                            4
+#define   LIST_INDEX_GONOGO                             5
+#define   LIST_INDEX_NBACKVS                            6
+#define   LIST_INDEX_PERCEPTION                         7
 
 // Parameters to pass to the DB Manager and tell it what to do.
 #define   CONFIG_P_DMBNG_ACTION_CHECK                   "check"
@@ -192,6 +208,7 @@
 #define   EXP_PARKINSON                                 6
 #define   EXP_GONOGO                                    7
 #define   EXP_NBACKVS                                   8
+#define   EXP_PERCEPTION                                9
 
 // Base names for common files shared accross multiple apps.
 #define   FILE_CONFIGURATION                            "configuration"
@@ -204,6 +221,7 @@
 #define   FILE_OUTPUT_NBACK_VARIABLE_SPEED              "nbackvs"
 #define   FILE_OUTPUT_PARKINSON                         "parkinson"
 #define   FILE_OUTPUT_GONOGO                            "gonogo"
+#define   FILE_OUTPUT_PERCEPTION                        "perception"
 #define   FILE_REPORT_NAME                              "report"
 #define   FILE_DBDATA_FILE                              "dbdata.dbf"
 #define   FILE_EYE_REP_GEN_CONFIGURATION                "eye_rep_gen_conf"
@@ -229,6 +247,7 @@
 #define   HEADER_NBACK_VARIABLE_SPEED_EXPERIMENT        "#NBACKVS"
 #define   HEADER_PARKINSON_EXPERIMENT                   "#PARKINSON"
 #define   HEADER_GONOGO_EXPERIMENT                      "#GONOGO"
+#define   HEADER_PERCEPTION_EXPERIMENT                  "#PERCEPTION"
 
 // Codes indicating the type of update transaction
 #define   UPDATE_CHECK_GP_CODE                           "cgp"
@@ -253,6 +272,8 @@
 #define   EYE_REP_GEN_FIELDING_ALGORITHM_VERSION         0
 #define   EYE_REP_GEN_NBACKRT_ALGORITHM_VERSION          0
 #define   EYE_REP_GEN_GONOGO_ALGORITHM_VERSION           0
+#define   EYE_REP_GEN_NBACKVS_ALGORITHM_VERSION          0
+#define   EYE_REP_GEN_PERCEPTION_ALGORITHM_VERSION       0
 
 // DB Managers possible answers
 #define   EYEDBMNG_ANS_OK                                0

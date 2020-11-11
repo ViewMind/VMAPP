@@ -165,6 +165,7 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
         // The options should be drawn.
         QList<QGraphicsSimpleTextItem*> list;
         validClickAreas.clear();
+        rectButtonPointers.clear();
 
         // First the text items are created.
         qreal summedWidth = 0;
@@ -190,7 +191,7 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
             //qWarning() << "Drawing rectangle i" << i << "at" << x << "for option" << list.at(i)->text();
             qint32 rW = static_cast<qint32>(list.at(i)->boundingRect().width() + 2*AIR);
             qint32 rH = static_cast<qint32>(list.at(i)->boundingRect().height() + 2*AIR);
-            QRect r(0,0,rW,rH);
+            QRectF r(0,0,rW,rH);
             QGraphicsRectItem *ri =  canvas->addRect(r);
             ri->setPen(QPen(QBrush(Qt::red),2));
             ri->setPos(x,y);
@@ -198,6 +199,7 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
             // Translation is required to the rectangle is positioned correctly on the screen.
             r.translate(static_cast<qint32>(x),static_cast<qint32>(y));
             validClickAreas << r;
+            rectButtonPointers << ri;
 
             // The text is positioned in the center of the rectangle and brought to the forefront.
             list.at(i)->setPos(x+AIR,y+AIR);
@@ -212,13 +214,20 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
 
 }
 
-qint32 ReadingManager::isPointContainedInAClickArea(const QPoint &point){
-    for (qint32 i = 0; i < validClickAreas.size(); i++){
+QList<QRectF> ReadingManager::getOptionTargetBoxes() const{
+    return validClickAreas;
+}
+
+void ReadingManager::highlightOption(const QPoint &point){
+    for (qint32 i = 0; i < rectButtonPointers.size(); i++){
+        QGraphicsRectItem *r = rectButtonPointers.at(i);
         if (validClickAreas.at(i).contains(point)){
-            return i;
+            r->setBrush(QBrush(QColor(Qt::gray).lighter(150)));
+        }
+        else{
+            r->setBrush(QColor(Qt::gray));
         }
     }
-    return -1;
 }
 
 qint32 ReadingManager::getCharIndex(qint32 x){

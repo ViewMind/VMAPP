@@ -11,7 +11,9 @@
 #include <QFontMetrics>
 #include "experiment.h"
 #include "../../../CommonClasses/Experiments/readingmanager.h"
+#include "../../../CommonClasses/EyeSelector/eyeselector.h"
 
+#define  TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS   2
 
 class ReadingExperiment : public Experiment
 {
@@ -26,13 +28,15 @@ public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
 
 protected:
-    void mousePressEvent(QMouseEvent *event) override;
     void keyPressHandler(int keyPressed) override;
 
 private:
 
     // Handle to the Reading manager
     ReadingManager *m;
+
+    // Selection state machine for selecting answers with eyes.
+    EyeSelector eyeSelector;
 
     // The current state.
     ReadingManager::QuestionState qstate;

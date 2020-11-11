@@ -50,6 +50,9 @@ public:
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
     Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var) {configuration->addKeyValuePair(key,var);}
     Q_INVOKABLE void setAgeForCurrentPatient();
+    Q_INVOKABLE QVariantMap getMultiPartStudies();
+    Q_INVOKABLE void deleteMultiPartFile(const QString &fileName);
+    Q_INVOKABLE void finalizeMultiPartFile(const QString &fileName);
 
     //******************** Local DB Functions ***************************
     Q_INVOKABLE bool createPatientDirectory();

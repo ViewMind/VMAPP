@@ -12,5 +12,6 @@
         <file>experiment_data/Reading_is.dat</file>
         <file>experiment_data/parkinson.dat</file>
         <file>experiment_data/go_no_go.dat</file>
+        <file>experiment_data/perception_study.dat</file>
     </qresource>
 </RCC>

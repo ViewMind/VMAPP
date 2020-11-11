@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
         ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+        ../../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
         ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.cpp \
         ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
         ../../../CommonClasses/Experiments/bindingmanager.cpp \
@@ -25,8 +26,11 @@ SOURCES += \
         ../../../CommonClasses/Experiments/fieldingparser.cpp \
         ../../../CommonClasses/Experiments/gonogomanager.cpp \
         ../../../CommonClasses/Experiments/gonogoparser.cpp \
+        ../../../CommonClasses/Experiments/perceptionmanager.cpp \
+        ../../../CommonClasses/Experiments/perceptionparser.cpp \
         ../../../CommonClasses/Experiments/readingmanager.cpp \
         ../../../CommonClasses/Experiments/readingparser.cpp \
+        ../../../CommonClasses/EyeSelector/eyeselector.cpp \
         ../../../CommonClasses/LogInterface/loginterface.cpp \
         ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
         ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
@@ -35,6 +39,7 @@ SOURCES += \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/gonogoexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/nbackrtexperiment.cpp \
+        ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/perceptionexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
         ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
@@ -71,6 +76,7 @@ RCC_DIR = QRC
 HEADERS += \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.h \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../../CommonClasses/DatFileInfo/datfileinfoindir.h \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h \
     ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../../CommonClasses/Experiments/bindingmanager.h \
@@ -80,8 +86,11 @@ HEADERS += \
     ../../../CommonClasses/Experiments/fieldingparser.h \
     ../../../CommonClasses/Experiments/gonogomanager.h \
     ../../../CommonClasses/Experiments/gonogoparser.h \
+    ../../../CommonClasses/Experiments/perceptionmanager.h \
+    ../../../CommonClasses/Experiments/perceptionparser.h \
     ../../../CommonClasses/Experiments/readingmanager.h \
     ../../../CommonClasses/Experiments/readingparser.h \
+    ../../../CommonClasses/EyeSelector/eyeselector.h \
     ../../../CommonClasses/LogInterface/loginterface.h \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
@@ -92,6 +101,7 @@ HEADERS += \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/gonogoexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/imageexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/nbackrtexperiment.h \
+    ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/perceptionexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/readingexperiment.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
     ../../../VMSoftwareSuite/EyeExperimenter/src/EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \

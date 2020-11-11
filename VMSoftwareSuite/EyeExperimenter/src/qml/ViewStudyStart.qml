@@ -1,5 +1,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.3
+import QtGraphicalEffects 1.0
+import QtQuick.Dialogs 1.0
 
 VMBase {
 
@@ -14,16 +16,126 @@ VMBase {
     property var vmListOfStudiesToSelect: []
     property var vmListOfSelectedStudies: [];
 
+    property var vmMultiPartStudies: [];
+
+    property var vmCurrentMultiPartStudyFile: ""
+    property var vmCurrentSelectedStudyName: ""
+
+    Dialog {
+
+        readonly property int vmMP_ACTION_FINALIZE: 1;
+        readonly property int vmMP_ACTION_DELETE: 2;
+
+        property string vmMsgTitle: ""
+        property string vmMsgText: ""
+        property int vmAction: 0
+
+        id: multiPartActionConfirmDiag;
+        modal: true
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.362
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectmultiPartActionConfirmDiag
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        VMDialogCloseButton {
+            id: btnClose
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.032
+            anchors.right: parent.right
+            anchors.rightMargin: mainWindow.width*0.02
+            onClicked: {
+                multiPartActionConfirmDiag.close();
+            }
+        }
+
+        // The title is the study name.
+        Text {
+            id: multiPartActionConfirmTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43*viewHome.vmScale
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.072
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: multiPartActionConfirmDiag.vmMsgTitle
+        }
+
+        // The instruction text
+        Text {
+            id: multiPartActionConfirmMessage
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13*viewHome.vmScale
+            textFormat: Text.RichText
+            anchors.top:  multiPartActionConfirmTitle.bottom
+            anchors.topMargin: mainWindow.height*0.029
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: multiPartActionConfirmDiag.vmMsgText
+        }
+
+        VMButton{
+            id: btnNegative
+            height: mainWindow.height*0.058
+            vmText: "No"
+            vmFont: viewHome.gothamM.name
+            vmInvertColors: true
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: mainWindow.height*0.029
+            anchors.left: parent.left
+            anchors.leftMargin: mainWindow.width*0.039
+            onClicked: {
+                multiPartActionConfirmDiag.close();
+            }
+        }
+
+        VMButton{
+            id: btnPositive
+            height: mainWindow.height*0.058
+            vmText: "OK"
+            vmFont: viewHome.gothamM.name
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: mainWindow.height*0.029
+            anchors.right: parent.right
+            anchors.rightMargin: mainWindow.width*0.039
+            onClicked: {
+                if (multiPartActionConfirmDiag.vmAction === multiPartActionConfirmDiag.vmMP_ACTION_DELETE){
+                   loader.deleteMultiPartFile(vmCurrentMultiPartStudyFile)
+                   swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+                   multiPartActionConfirmDiag.close();
+                }
+                else if (multiPartActionConfirmDiag.vmAction === multiPartActionConfirmDiag.vmMP_ACTION_FINALIZE){
+                   loader.finalizeMultiPartFile(vmCurrentMultiPartStudyFile)
+                   swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+                   multiPartActionConfirmDiag.close();
+                }
+                else{
+                   multiPartActionConfirmDiag.close();
+                }
+            }
+        }
+
+    }
+
+
     function setPatientName(){
         var name = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_NAME);
         var uid = loader.getConfigurationString(vmDefines.vmCONFIG_PATIENT_UID);
         var patData = loader.getCurrentPatientInformation();
         if (uimap.getStructure() === "P") labelPatientName.text = patData.firstname + " " + patData.lastname + " (" + patData.displayID + ")";
         else if (uimap.getStructure() === "S") labelPatientName.text = patData.displayID;
-
     }
 
     // This is the second function that is called when entering study start.
+    // Is also used to populate the vmMultiPartStudies structure.
     function setDefaultSelections(){
 
         var studyList = loader.getStringListForKey("viewselectdata_studyList");
@@ -35,6 +147,9 @@ VMBase {
         fillList(vmListOfStudiesToSelect,studySelectList);
         fillList(vmListOfSelectedStudies,studySelectedList);
         btnStart.enabled = false;
+
+        vmMultiPartStudies = loader.getMultiPartStudies();
+
     }
 
     function fillList(objArray,list, clear){
@@ -104,10 +219,12 @@ VMBase {
         if (isStudyList){
             vmListOfStudiesToSelect[currentIndex].vmIsSelected = true;
             currentStudy = vmListOfStudiesToSelect[currentIndex].vmStudyID;
+            viewStudyStart.vmCurrentSelectedStudyName = vmListOfStudiesToSelect[currentIndex].vmStudyName
         }
         else{
             vmListOfSelectedStudies[currentIndex].vmIsSelected = true;
             currentStudy = vmListOfSelectedStudies[currentIndex].vmStudyID;
+            viewStudyStart.vmCurrentSelectedStudyName = vmListOfSelectedStudies[currentIndex].vmStudyName
         }
 
         // Making everything invisible
@@ -115,6 +232,10 @@ VMBase {
         columnTargetQuatity.visible = false;
         columnTargetSize.visible = false;
         columnNumberOfNBackTargets.visible = false;
+        columnOfMultiStudiesOptions.visible = false;
+        columnOfPerceptionType.visible = false;
+
+        vmCurrentMultiPartStudyFile = "";
 
         if (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_READING){
             columnReadingLanguage.visible = true;
@@ -125,6 +246,30 @@ VMBase {
         }
         else if (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_NBACKVS){
             columnNumberOfNBackTargets.visible = true;
+        }
+        else if (currentStudy === viewPatList.vmDatSelector.vmLIST_INDEX_PERCEPTION){
+
+            columnOfPerceptionType.visible = true;
+
+            if (currentStudy in vmMultiPartStudies){
+
+                columnOfMultiStudiesOptions.visible = true;
+
+                // The first value is the file name, the second is the last study part identifier and the third the total number of parts.
+                vmCurrentMultiPartStudyFile   = vmMultiPartStudies[currentStudy][0];
+                var lastPart                  = parseInt(vmMultiPartStudies[currentStudy][1]);
+                var totalParts                = vmMultiPartStudies[currentStudy][2];
+
+                var action_resume = loader.getStringForKey(keysearch+"mpActionResume");
+
+                // I need to add two becuase the last part is the tag of the last part so the next one is +1 but the first one should be 1 and not 0 so +2
+                action_resume = action_resume.replace("N",lastPart+2);
+                action_resume = action_resume.replace("T",totalParts);
+
+                cbOfMultiStudiesOptions.setModelList([action_resume, loader.getStringForKey(keysearch+"mpActionStartOver"), loader.getStringForKey(keysearch+"mpActionFinalize")]);
+
+            }
+
         }
 
         fillList(vmListOfStudiesToSelect,studySelectList, false);
@@ -659,6 +804,60 @@ VMBase {
             }
         }
 
+        Column {
+            id: columnOfMultiStudiesOptions
+            spacing: mainWindow.height*0.019
+            visible: false
+            Text {
+                id: labelOfMultiStudiesOptions
+                font.family: robotoB.name
+                font.pixelSize: 13*viewHome.vmScale
+                width: cbNumberOfTargets.width
+                color: "#554545"
+                text: loader.getStringForKey(keysearch+"labelActions");
+            }
+
+            VMComboBox2{
+                id: cbOfMultiStudiesOptions
+                width: cbEyeMsg.width
+                z:2
+                onSelectionChanged: {
+                    multiPartActionConfirmDiag.vmMsgTitle = viewStudyStart.vmCurrentSelectedStudyName
+                    if (cbOfMultiStudiesOptions.vmCurrentIndex == 1){
+                        multiPartActionConfirmDiag.vmAction = multiPartActionConfirmDiag.vmMP_ACTION_DELETE;
+                        multiPartActionConfirmDiag.vmMsgText = loader.getStringForKey(keysearch + "confirmMPRestart")
+                        multiPartActionConfirmDiag.open()
+                    }
+                    else if (cbOfMultiStudiesOptions.vmCurrentIndex == 2){
+                        multiPartActionConfirmDiag.vmAction = multiPartActionConfirmDiag.vmMP_ACTION_FINALIZE;
+                        multiPartActionConfirmDiag.vmMsgText = loader.getStringForKey(keysearch + "confirmMPFinalize")
+                        multiPartActionConfirmDiag.open()
+                    }
+                }
+            }
+        }
+
+        Column {
+            id: columnOfPerceptionType
+            spacing: mainWindow.height*0.019
+            visible: false
+            Text {
+                id: labelOfPerceptionType
+                font.family: robotoB.name
+                font.pixelSize: 13*viewHome.vmScale
+                width: cbNumberOfTargets.width
+                color: "#554545"
+                text: loader.getStringForKey(keysearch+"labelPerceptionType");
+            }
+
+            VMComboBox2{
+                id: cbOfPerceptionType
+                width: cbEyeMsg.width
+                z:2
+                Component.onCompleted: cbOfPerceptionType.setModelList(loader.getStringListForKey(keysearch+"perceptionTypeOptions"));
+            }
+        }
+
     }
 
     // Buttons
@@ -710,6 +909,21 @@ VMBase {
                     }
                     else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_NBACKVS){
                         vmSelectedExperiments.push(viewPatientReg.vmExpIndexNBackVS);
+                    }
+                    else if (vmListOfSelectedStudies[i].vmStudyID === viewPatList.vmDatSelector.vmLIST_INDEX_PERCEPTION){
+                        vmSelectedExperiments.push(viewPatientReg.vmExpIndexPerception);
+
+                        if (viewPatList.vmDatSelector.vmLIST_INDEX_PERCEPTION in vmMultiPartStudies){
+
+                            var filename                  = vmMultiPartStudies[viewPatList.vmDatSelector.vmLIST_INDEX_PERCEPTION][0];
+                            var lastPart                  = vmMultiPartStudies[viewPatList.vmDatSelector.vmLIST_INDEX_PERCEPTION][1];
+
+                            loader.setValueForConfiguration(vmDefines.vmCONFIG_PERCEPTION_MP_CURRENT_STUDY_FILE,filename);
+                            loader.setValueForConfiguration(vmDefines.vmCONFIG_PERCEPTION_MP_CURRENT_IDENTIFIER,lastPart);
+                        }
+
+                        loader.setValueForConfiguration(vmDefines.vmCONFIG_PERCEPTION_IS_TRAINING,(cbOfPerceptionType.vmCurrentIndex === 0));
+
                     }
                 }
 

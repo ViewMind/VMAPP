@@ -8,6 +8,8 @@
 #include "readingparser.h"
 #include "experimentdatapainter.h"
 
+#define  SELECTED_BACKGROUND_COLOR                "#f2ead3"
+
 class ReadingManager: public ExperimentDataPainter
 {
 public:
@@ -32,9 +34,10 @@ public:
     qint32 getCurrentTargetX() const { return static_cast<qint32>(currentTargetX); }
     qint32 getCurrentTargetY() const { return static_cast<qint32>(currentTargetY); }
     qint32 getValidClickAreaSize() const { return validClickAreas.size(); }
-    qint32 isPointContainedInAClickArea(const QPoint &point);
+    void highlightOption(const QPoint &point);
     qint32 getCharIndex(qint32 x);
     QString getDescription() const {return description;}
+    QList<QRectF> getOptionTargetBoxes() const;
 
 private:
 
@@ -63,7 +66,8 @@ private:
     qreal currentTargetX, currentTargetY;
 
     // When options are presented this list contains the clickable options
-    QList<QRect> validClickAreas;
+    QList<QRectF> validClickAreas;
+    QList<QGraphicsRectItem*> rectButtonPointers;
 
     // Used to provide some area extra around an option so as to provide a larger clickable target
     const qint32 AIR = 20;

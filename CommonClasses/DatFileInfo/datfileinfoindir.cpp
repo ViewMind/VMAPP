@@ -27,6 +27,9 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
     QStringList orderBindingUC;
     QStringList orderFielding;
     QStringList orderGoNoGo;
+    QStringList orderNBackVS;
+    QStringList orderNBackRT;
+    QStringList orderPerception;
 
     for (qint32 i = 0; i < fileList.size(); i++){
 
@@ -37,8 +40,10 @@ void DatFileInfoInDir::setDatDirectory(const QString &dir)
         else if (fname.startsWith(FILE_OUTPUT_BINDING_BC)) insertIntoListAccordingToOrder(fname,&filesBindingBC,&orderBindingBC);
         else if (fname.startsWith(FILE_OUTPUT_BINDING_UC)) insertIntoListAccordingToOrder(fname,&filesBindingUC,&orderBindingUC);
         else if (fname.startsWith(FILE_OUTPUT_FIELDING)) insertIntoListAccordingToOrder(fname,&filesFielding,&orderFielding);
-        else if (fname.startsWith(FILE_OUTPUT_NBACKRT)) insertIntoListAccordingToOrder(fname,&filesNBackRT,&orderFielding);
+        else if (fname.startsWith(FILE_OUTPUT_NBACKRT)) insertIntoListAccordingToOrder(fname,&filesNBackRT,&orderNBackRT);
+        else if (fname.startsWith(FILE_OUTPUT_NBACK_VARIABLE_SPEED)) insertIntoListAccordingToOrder(fname,&filesNBackVS,&orderNBackVS);
         else if (fname.startsWith(FILE_OUTPUT_GONOGO)) insertIntoListAccordingToOrder(fname,&filesGoNoGo,&orderGoNoGo);
+        else if (fname.startsWith(FILE_OUTPUT_PERCEPTION)) insertIntoListAccordingToOrder(fname,&filesPerception,&orderPerception);
 
     }
 }
@@ -50,6 +55,8 @@ bool DatFileInfoInDir::hasPendingReports() const {
     if (!filesFielding.isEmpty()) return true;
     if (!filesNBackRT.isEmpty()) return true;
     if (!filesGoNoGo.isEmpty()) return true;
+    if (!filesPerception.isEmpty()) return true;
+    if (!filesNBackVS.isEmpty()) return true;
     if (!filesBindingBC.isEmpty() && !filesBindingUC.isEmpty()){
         // This should return true ONLY if for at least one BC file there is a compatible UC file.
         for (qint32 i = 0; i < filesBindingBC.size(); i++){
@@ -90,6 +97,10 @@ QStringList DatFileInfoInDir::getGoNoGoFileList() const{
 
 QStringList DatFileInfoInDir::getNBackVSFileList() const {
     return getFileList(filesNBackVS);
+}
+
+QStringList DatFileInfoInDir::getPerceptionFileList() const{
+    return getFileList(filesPerception);
 }
 
 QStringList DatFileInfoInDir::getBindingUCFileListCompatibleWithSelectedBC(qint32 selectedBC){
@@ -145,6 +156,14 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const QStringList &fileLis
         else if (fileList.at(i).startsWith(FILE_OUTPUT_GONOGO)){
             filesGoNoGo << fileList.at(i);
             repgen.gonogoFileIndex = filesGoNoGo.size()-1;
+        }
+        else if (fileList.at(i).startsWith(FILE_OUTPUT_NBACK_VARIABLE_SPEED)){
+            filesNBackVS << fileList.at(i);
+            repgen.nbackvsFileIndex = filesNBackVS.size()-1;
+        }
+        else if (fileList.at(i).startsWith(FILE_OUTPUT_PERCEPTION)){
+            filesPerception << fileList.at(i);
+            repgen.perceptionFileIndex = filesPerception.size()-1;
         }
     }
 
@@ -231,7 +250,7 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
         DatInfo nbackvs_file = getNBackVSInformation(filesNBackVS.at(repgen.nbackvsFileIndex));
         if (expectedReportName.isEmpty()) expectedReportName = FILE_REPORT_NAME;
         // Extra info and date must have matched for these two files to have been selected.
-        expectedReportName = expectedReportName + "_G" + nbackvs_file.extraInfo + nbackvs_file.validEye;
+        expectedReportName = expectedReportName + "_V" + nbackvs_file.extraInfo + nbackvs_file.validEye;
         ans << nbackvs_file.fileName;
         if (date.isEmpty() || (date < nbackvs_file.date)) {
             date = nbackvs_file.date;
@@ -239,6 +258,21 @@ QStringList DatFileInfoInDir::getFileSetAndReportName(const ReportGenerationStru
         }
         else if ((date == nbackvs_file.date) && (time < nbackvs_file.hour)){
             time = nbackvs_file.hour;
+        }
+    }
+
+    if (repgen.perceptionFileIndex != -1){
+        DatInfo perception_file = getNBackVSInformation(filesPerception.at(repgen.perceptionFileIndex));
+        if (expectedReportName.isEmpty()) expectedReportName = FILE_REPORT_NAME;
+        // Extra info and date must have matched for these two files to have been selected.
+        expectedReportName = expectedReportName + "_P" + perception_file.extraInfo + perception_file.validEye;
+        ans << perception_file.fileName;
+        if (date.isEmpty() || (date < perception_file.date)) {
+            date = perception_file.date;
+            time = perception_file.hour;
+        }
+        else if ((date == perception_file.date) && (time < perception_file.hour)){
+            time = perception_file.hour;
         }
     }
 
@@ -266,6 +300,8 @@ QString DatFileInfoInDir::getDatFileNameFromSelectionDialogIndex(qint32 index, q
         return filesGoNoGo.at(index);
     case LIST_INDEX_NBACKVS:
         return filesNBackVS.at(index);
+    case LIST_INDEX_PERCEPTION:
+        return filesPerception.at(index);
     }
     return "";
 }
@@ -304,6 +340,7 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getDatFileInformation(const QString 
     else if (file.startsWith(FILE_OUTPUT_FIELDING)) return getFieldingInformation(file);
     else if (file.startsWith(FILE_OUTPUT_NBACKRT)) return getNBackRTInformation(file);
     else if (file.startsWith(FILE_OUTPUT_GONOGO)) return getGoNoGoInformation(file);
+    else if (file.startsWith(FILE_OUTPUT_PERCEPTION)) return getPerceptionInformation(file);
     else return DatInfo();
 }
 
@@ -506,6 +543,33 @@ DatFileInfoInDir::DatInfo DatFileInfoInDir::getNBackVSInformation(const QString 
         ans.basename = parts.at(0);
         ans.extraInfo = parts.at(1);
         ans.code = "NV" + ans.extraInfo + " "  + ans.validEye +  + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
+        ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
+    }
+    ans.category = ans.category + ans.extraInfo;
+
+    return ans;
+}
+
+DatFileInfoInDir::DatInfo DatFileInfoInDir::getPerceptionInformation(const QString &perceptionFile){
+    QStringList parts = perceptionFile.split(".",QString::SkipEmptyParts);
+    QString baseName = parts.first();
+
+    QString fmark = "";
+    if (parts.last() == "datf") fmark = " (FE)";
+
+    parts = baseName.split("_",QString::SkipEmptyParts);
+    DatInfo ans;
+    ans.extraInfo = "";
+    ans.fileName = perceptionFile;
+    ans.category = "PE";
+
+    if (parts.size() == 8){
+        ans.date = parts.at(3) + "_" + parts.at(4) + "_" + parts.at(5);
+        ans.hour = parts.at(6) + "_" + parts.at(7);
+        ans.validEye = parts.at(2);
+        ans.basename = parts.at(0);
+        ans.extraInfo = parts.at(1);
+        ans.code = "PE" + ans.extraInfo + " "  + ans.validEye +  + " - " + parts.at(4) + "/" + parts.at(3) + "/" + parts.at(2) + fmark;
         ans.orderString = parts.at(2) + parts.at(3) + parts.at(4) + parts.at(5) + parts.at(6);
     }
     ans.category = ans.category + ans.extraInfo;

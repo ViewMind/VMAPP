@@ -30,6 +30,9 @@ SOURCES += main.cpp \
     ../../../CommonClasses/Experiments/gonogoparser.cpp \
     ../../../CommonClasses/Experiments/parkinsonmanager.cpp \
     ../../../CommonClasses/Experiments/parkinsonparser.cpp \
+    ../../../CommonClasses/Experiments/perceptionmanager.cpp \
+    ../../../CommonClasses/Experiments/perceptionparser.cpp \
+    ../../../CommonClasses/EyeSelector/eyeselector.cpp \
     ../../../CommonClasses/GraphicalReport/diagonosislogic.cpp \
     ../../../CommonClasses/GraphicalReport/imagereportdrawer.cpp \
     ../../../CommonClasses/GraphicalReport/resultsegment.cpp \
@@ -39,6 +42,7 @@ SOURCES += main.cpp \
     Experiments/gonogoexperiment.cpp \
     Experiments/nbackrtexperiment.cpp \
     Experiments/parkinsonexperiment.cpp \
+    Experiments/perceptionexperiment.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.cpp \
@@ -82,6 +86,9 @@ HEADERS += \
     ../../../CommonClasses/Experiments/gonogoparser.h \
     ../../../CommonClasses/Experiments/parkinsonmanager.h \
     ../../../CommonClasses/Experiments/parkinsonparser.h \
+    ../../../CommonClasses/Experiments/perceptionmanager.h \
+    ../../../CommonClasses/Experiments/perceptionparser.h \
+    ../../../CommonClasses/EyeSelector/eyeselector.h \
     ../../../CommonClasses/GraphicalReport/diagonosislogic.h \
     ../../../CommonClasses/GraphicalReport/imagereportdrawer.h \
     ../../../CommonClasses/GraphicalReport/resultsegment.h \
@@ -92,6 +99,7 @@ HEADERS += \
     Experiments/gonogoexperiment.h \
     Experiments/nbackrtexperiment.h \
     Experiments/parkinsonexperiment.h \
+    Experiments/perceptionexperiment.h \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.h \
     EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
     EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal.h \

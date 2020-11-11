@@ -60,6 +60,10 @@ bool Experiment::startExperiment(ConfigurationManager *c){
     }
 
     bool saveData = !(config->getBool(CONFIG_DEMO_MODE) || config->getBool(CONFIG_USE_MOUSE));
+    /// FOR DEBUGGING ONLY
+    //saveData = true;
+    //qDebug() << "Experiment::startExperiment: REMOVE FORCE saveData = true LINE";
+    ///
 
     QTextStream reader(&expfile);
     reader.setCodec(COMMON_TEXT_CODEC);
@@ -78,39 +82,50 @@ bool Experiment::startExperiment(ConfigurationManager *c){
         return false;
     }
 
+    multiPartIdentifier = "";
 
-    // The output data file is set.
-    if (!saveData) outputDataFile = "demo" + outputDataFile;
-    dataFile = workingDirectory + "/" + outputDataFile + "_" + config->getString(CONFIG_VALID_EYE) + "_"
-            + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm") + ".dat";
+    // This if needs to be reproduced for all possible multi part experiments.
+    if (c->containsKeyword(CONFIG_PERCEPTION_MP_CURRENT_IDENTIFIER)){
+        multiPartIdentifier = c->getString(CONFIG_PERCEPTION_MP_CURRENT_IDENTIFIER);
+        dataFile = workingDirectory + "/" + c->getString(CONFIG_PERCEPTION_MP_CURRENT_STUDY_FILE);
+    }
 
-    // Deleting the data file if it exists, otherwise the new data will be appended to the old data.
-    QFile file(dataFile);
-    if (file.exists()){
-        if (!file.remove()){
-            error = "Could not delete existing data file at: " + dataFile + ". Please make sure the location is writeble.";
-            emit (experimentEndend(ER_FAILURE));
+    // The file is created ONLY when it's not part of a Multi Part File
+
+    if (multiPartIdentifier.isEmpty()){
+        // The output data file is set.
+        if (!saveData) outputDataFile = "demo" + outputDataFile;
+        dataFile = workingDirectory + "/" + outputDataFile + "_" + config->getString(CONFIG_VALID_EYE) + "_"
+                + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm") + ".dat";
+
+        // Deleting the data file if it exists, otherwise the new data will be appended to the old data.
+        QFile file(dataFile);
+        if (file.exists()){
+            if (!file.remove()){
+                error = "Could not delete existing data file at: " + dataFile + ". Please make sure the location is writeble.";
+                emit (experimentEndend(ER_FAILURE));
+                return false;
+            }
+        }
+
+
+        // Creating the header of the data file. This will tell the EyeDataProcessor how to treat the data.
+        if (!file.open(QFile::WriteOnly)){
+            error = "Could not open data file " + dataFile + " for appending data.";
+            emit(experimentEndend(ER_FAILURE));
             return false;
         }
+
+
+        if (!saveData) return true;
+        QTextStream writer(&file);
+        writer.setCodec(COMMON_TEXT_CODEC);
+        writer << expHeader + " " + manager->getVersion() << "\n"
+               << contents << "\n"
+               << expHeader << "\n"
+               << config->getReal(CONFIG_RESOLUTION_WIDTH) << " " << config->getReal(CONFIG_RESOLUTION_HEIGHT) << "\n";
+        file.close();
     }
-
-
-    // Creating the header of the data file. This will tell the EyeDataProcessor how to treat the data.
-    if (!file.open(QFile::WriteOnly)){
-        error = "Could not open data file " + dataFile + " for appending data.";
-        emit(experimentEndend(ER_FAILURE));
-        return false;
-    }
-
-
-    if (!saveData) return true;
-    QTextStream writer(&file);
-    writer.setCodec(COMMON_TEXT_CODEC);
-    writer << expHeader + " " + manager->getVersion() << "\n"
-           << contents << "\n"
-           << expHeader << "\n"
-           << config->getReal(CONFIG_RESOLUTION_WIDTH) << " " << config->getReal(CONFIG_RESOLUTION_HEIGHT) << "\n";
-    file.close();
 
     return true;
 
@@ -244,6 +259,7 @@ bool Experiment::saveDataToHardDisk(){
     return true;
 }
 
+
 QImage Experiment::getVRDisplayImage() const{
     return manager->getQImage();
 }
@@ -268,3 +284,123 @@ void Experiment::updateSecondMonitorORHMD(){
 void Experiment::keyPressHandler(int keyPressed){
     Q_UNUSED(keyPressed)
 }
+
+
+////////////////////// Static Functions for Handling Multi Part Studies.
+
+QVariantMap Experiment::checkForMultiPartIdentifiers(const QString &patientDirectory, QStringList *errorList){
+
+    QVariantMap ans;
+
+    QHash<QString,QString> possibleExperimentsThatAreMultiPart;
+    QHash<QString,qint32> totalNumberOfPartsPerStudy;
+
+    // These should a list of all possible studies that are multi part as well as their expected total parts.
+    possibleExperimentsThatAreMultiPart[FILE_OUTPUT_PERCEPTION] = QString::number(LIST_INDEX_PERCEPTION);
+    totalNumberOfPartsPerStudy[FILE_OUTPUT_PERCEPTION] = QString(PERCEPTION_STUDY_LAST_MULTI_PART_IDENTIFIER).toInt() + 1;
+
+    // Until they are finalized, multi part experiment will all end with .mp (after the .dat).
+    QStringList name_filters;
+    name_filters << QString("*.") + EXTRA_EXTENSION_FOR_MULTI_PART_FILES;
+
+    QStringList mp_files = QDir(patientDirectory).entryList(name_filters,QDir::Files);
+
+    for (qint32 i = 0; i < mp_files.size(); i++){
+
+        QString filename = mp_files.at(i);
+        QStringList filename_parts = filename.split("_");
+
+        // If the first part of the study name is one of the possible experiments that are multi part ..
+        if (possibleExperimentsThatAreMultiPart.contains(filename_parts.first())){
+
+            QFile actualFile(patientDirectory + "/" + filename);
+            if (!actualFile.open(QFile::ReadOnly)) {
+                if (errorList != nullptr){
+                    errorList->append("Could not open " + actualFile.fileName() + " for reading");
+                }
+                continue;
+            }
+
+            // Then all content is read.
+            QTextStream reader(&actualFile);
+            QStringList all_lines = reader.readAll().split("\n");
+            actualFile.close();
+
+            // And we search for the last occurrence of the MULTI_PART_FILE_STUDY_IDENTIFIER and save it's value to the map.
+            // In a multi part file this should be the very first NON empty line starting from the end of the file.
+            for (qint32 i = all_lines.size()-1; i >= 0; i--){
+
+                if (all_lines.at(i).isEmpty()) continue;
+
+                if (all_lines.at(i).startsWith(MULTI_PART_FILE_STUDY_IDENTIFIER)){
+
+                    // Part identifier should ALL be the same, a line witht the format: MULTI_PART_FILE_STUDY_IDENTIFIER some_string_with_no_spaces
+
+                    QStringList part_identifier = all_lines.at(i).split(" ",QString::SkipEmptyParts);
+                    //qDebug() << "SPLITTING Last line " << all_lines.at(i) << " INTO " << part_identifier;
+                    QVariantList data;
+
+                    // Saving the name is necessary in order to actually know to which file to save the data for the next study.
+                    data << filename << part_identifier.last() << totalNumberOfPartsPerStudy.value(filename_parts.first());
+                    QString exp_id = possibleExperimentsThatAreMultiPart.value(filename_parts.first());
+                    //ans[filename_parts.first()] = data;
+                    ans[exp_id] = data;
+
+                }
+                else{
+                    if (errorList != nullptr){
+                        errorList->append("For file " + actualFile.fileName() + " the last non empty line of the file did NOT contain the multi part identifier. Skipping");
+                    }
+                }
+
+                // After the first non empty line the break is mandatory. Either the last line was MP indentifier or the file has the wrong format.
+                break;
+            }
+
+        }
+
+    }
+
+    return ans;
+}
+
+QString Experiment::finalizeMultiPartStudyFile(const QString &studyFileName){
+
+    if (!QFile(studyFileName).exists()){
+        return "File " + studyFileName + " does not exist";
+    }
+
+    // Creating the new name
+    QStringList fileName_with_dot_separated_parts = studyFileName.split(".");
+    if (fileName_with_dot_separated_parts.last() == EXTRA_EXTENSION_FOR_MULTI_PART_FILES){
+        fileName_with_dot_separated_parts.removeLast();
+        QString newFileName = fileName_with_dot_separated_parts.join(".");
+        if (!QFile::rename(studyFileName,newFileName)){
+            return "File renaming for " + studyFileName + "to" + newFileName  + " has failed";
+        }
+    }
+    else{
+        return "File " + studyFileName + " does not appear to be a multi part study file";
+    }
+
+    return "";
+
+}
+
+QString Experiment::makeStudyMultiPart(QString *studyFileName){
+
+    if (!QFile(*studyFileName).exists()){
+        return "File " + *studyFileName + " does not exist";
+    }
+
+    QString newFileName = *studyFileName + "." + QString(EXTRA_EXTENSION_FOR_MULTI_PART_FILES);
+
+    if (!QFile::rename(*studyFileName,newFileName)){
+        return "File renaming for " + *studyFileName + "to" + newFileName  + " has failed";
+    }
+
+    *studyFileName = newFileName;
+
+    return "";
+}
+

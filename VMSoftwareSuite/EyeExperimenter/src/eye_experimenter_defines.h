@@ -1,7 +1,7 @@
 #ifndef EYE_EXPERIMENTER_DEFINES_H
 #define EYE_EXPERIMENTER_DEFINES_H
 
-#define   EXPERIMENTER_VERSION_NUMBER                          "15.4.0"  // Previous 15.3.0
+#define   EXPERIMENTER_VERSION_NUMBER                          "15.5.0"  // Previous 15.4.1
 #ifdef USE_IVIEW
 #define   EXPERIMENTER_VERSION                          EXPERIMENTER_VERSION_NUMBER " - SMI"
 #else

@@ -10,5 +10,6 @@
         <file>experiment_data/Reading_es.dat</file>
         <file>experiment_data/Reading_fr.dat</file>
         <file>experiment_data/go_no_go.dat</file>
+        <file>experiment_data/perception_study.dat</file>
     </qresource>
 </RCC>

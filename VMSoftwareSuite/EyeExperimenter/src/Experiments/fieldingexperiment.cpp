@@ -130,7 +130,7 @@ void FieldingExperiment::drawCurrentImage(){
                 stateTimer.stop();
                 m->drawPauseScreen();
                 updateSecondMonitorORHMD();
-                qDebug() << "Pausing wihth current trial" << currentTrial;
+                //qDebug() << "Pausing wihth current trial" << currentTrial;
                 return;
             }
 

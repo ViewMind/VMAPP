@@ -159,11 +159,11 @@ bool VIVEEyePoller::calibrationDone(){
     }
     eyeCorrectionCoeffs = cls.getCalculatedCoeficients();
 
-    qDebug() << "Printing calibration coefficients";
-    qDebug() << "XR" << eyeCorrectionCoeffs.xr.m << eyeCorrectionCoeffs.xr.b << eyeCorrectionCoeffs.xr.valid;
-    qDebug() << "XL" << eyeCorrectionCoeffs.xl.m << eyeCorrectionCoeffs.xl.b << eyeCorrectionCoeffs.xl.valid;
-    qDebug() << "YR" << eyeCorrectionCoeffs.yr.m << eyeCorrectionCoeffs.yr.b << eyeCorrectionCoeffs.yr.valid;
-    qDebug() << "YL" << eyeCorrectionCoeffs.yl.m << eyeCorrectionCoeffs.yl.b << eyeCorrectionCoeffs.yl.valid;
+//    qDebug() << "Printing calibration coefficients";
+//    qDebug() << "XR" << eyeCorrectionCoeffs.xr.m << eyeCorrectionCoeffs.xr.b << eyeCorrectionCoeffs.xr.valid;
+//    qDebug() << "XL" << eyeCorrectionCoeffs.xl.m << eyeCorrectionCoeffs.xl.b << eyeCorrectionCoeffs.xl.valid;
+//    qDebug() << "YR" << eyeCorrectionCoeffs.yr.m << eyeCorrectionCoeffs.yr.b << eyeCorrectionCoeffs.yr.valid;
+//    qDebug() << "YL" << eyeCorrectionCoeffs.yl.m << eyeCorrectionCoeffs.yl.b << eyeCorrectionCoeffs.yl.valid;
 
     isCalibrated = true;
 

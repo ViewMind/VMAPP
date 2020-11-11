@@ -13,6 +13,7 @@ Dialog {
     readonly property int vmLIST_INDEX_NBACKRT:    4
     readonly property int vmLIST_INDEX_GONOGO:     5
     readonly property int vmLIST_INDEX_NBACKVS:    6
+    readonly property int vmLIST_INDEX_PERCEPTION: 7
 
     readonly property string keybase: "viewselectdata_"
 

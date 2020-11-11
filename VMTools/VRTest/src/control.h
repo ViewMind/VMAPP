@@ -11,6 +11,7 @@
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/fieldingexperiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/gonogoexperiment.h"
 #include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/nbackrtexperiment.h"
+#include "../../../VMSoftwareSuite/EyeExperimenter/src/Experiments/perceptionexperiment.h"
 #include "../../../CommonClasses/common.h"
 
 // When enabling design mode. the mouse will be automatically selected as an EyeTracker and full screen will be used for experiment selection.
@@ -33,6 +34,7 @@ public:
     Q_INVOKABLE void startFieldingExperiment();
     Q_INVOKABLE void startGoNoGoExperiment();
     Q_INVOKABLE void startNBackRTExperiment(qint32 numTargets, qint32 nbacktype);
+    Q_INVOKABLE void startPerceptionExperiment(bool isTraining);
     Q_INVOKABLE void initialize();
     Q_INVOKABLE void loadLastCalibration();
     Q_INVOKABLE void loadViewMindWaitScreen();
