@@ -6,6 +6,7 @@ if [ $# != 1 ]; then
    echo "2 -> Binding 2"
    echo "3 -> Binding 3"
    echo "4 -> NBack RT"
+   echo "5 -> GoNoGo"
    exit
 fi
 
@@ -29,6 +30,10 @@ elif [[ $1 == 4 ]]; then
    RSCRIPT="res/nback_rt.R"
    OUTPUT="test_scripts/comparison_nback_rt_output" 
    INPUT="test_scripts/reference_data/reference_nbackrt.csv"   
+elif [[ $1 == 5 ]]; then
+   RSCRIPT="res/gonogo.R"
+   OUTPUT="test_scripts/comparison_gonogo_output" 
+   INPUT="test_scripts/reference_data/reference_gonogo.csv"             
 else
    echo "Unrecognized parameter $1. Exiting"
    exit

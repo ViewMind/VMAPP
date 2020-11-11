@@ -1,2 +1,6 @@
-"Deterioro" "predicted_Deterioro" "predicted_group" "id" "mdur" "sddur" "mwn" "sdwn" "mgaze" "sdgaze" "FPF_" "SF_" "MF_"
-"1" "NO" 0.772 "NO" "1" 4.45434729625351 3.84290863758986 4 1.80958486608011 7.22620901010067 5.65431567784882 70.3406813627254 6.2124248496994 29.6593186372746
+attentional_processes = 527;
+executive_proceseses = 33.2068311195446;
+working_memory = 66.7931688804554;
+retrieval_memory = 6.07210626185958;
+reading_predicted_deterioration = 0.712;
+
