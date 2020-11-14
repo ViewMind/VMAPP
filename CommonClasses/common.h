@@ -107,6 +107,7 @@
 #define   CONFIG_BINDING_ALG_VERSION                    "binding_algorithm_version"
 #define   CONFIG_FIELDING_ALG_VERSION                   "fielding_algorithm_version"
 #define   CONFIG_NBACKRT_ALG_VERSION                    "nbackrt_algorithm_version"
+#define   CONFIG_GONOGO_ALG_VERSION                     "gonogo_algorithm_version"
 #define   CONFIG_RESULT_ENTRY_ID                        "result_entry_id"
 #define   CONFIG_LAUCHER_CONNECT_TIMEOUT                "launcher_connect_timeout"
 #define   CONFIG_LAUCHER_DOWNLOAD_TIMEOUT               "launcher_download_timeout"
@@ -165,6 +166,11 @@
 #define   CONFIG_RESULTS_NBACKRT_TARGET_HIT             "correct_target_hit_percent"
 #define   CONFIG_RESULTS_NBACKRT_MEAN_RESP_TIME         "mean_response_time"
 #define   CONFIG_RESULTS_NBACKRT_MEAN_SAC_AMP           "mean_saccade_amplitude"
+#define   CONFIG_RESULTS_GNG_SPEED_PROCESSING           "gonogo_speed_processing"
+#define   CONFIG_RESULTS_GNG_DMT_FACILITATE             "gonogo_dmt_facilitate"
+#define   CONFIG_RESULTS_GNG_DMT_INTERFERENCE           "gonogo_dmt_interference"
+#define   CONFIG_RESULTS_GNG_PIP_FACILITATE             "gonogo_pip_facilitate"
+#define   CONFIG_RESULTS_GNG_PIP_INTERFERENCE           "gonogo_pip_interference"
 
 // Parameters for some of the configurations
 #define   CONFIG_P_EXP_FIELDING                         "fielding"

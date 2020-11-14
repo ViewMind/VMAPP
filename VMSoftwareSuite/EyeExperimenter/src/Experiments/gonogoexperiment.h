@@ -9,7 +9,7 @@
 #include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
 #define  GONOGO_TIME_CROSS      1000
-#define  GONOGO_TIME_ESTIMULUS  1500
+#define  GONOGO_TIME_ESTIMULUS  2000
 
 class GoNoGoExperiment: public Experiment
 {

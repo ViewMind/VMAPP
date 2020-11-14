@@ -1,0 +1,19 @@
+title_en = DECISION MAKING TIME ON A TASK WITH INTERFERENCE;
+title_es = TIEMPO TOMA DE DECISIÓN EN TAREA CON INTERFERENCIA;
+
+explanation_en = ;
+
+explanation_es = ;
+
+range_text_en = Normal value LESS than 695.5;
+range_text_es = Valor normal MENOR a 695.5;
+
+cutoff_values = 607|695.5|784|872.5;
+
+smaller_better = true;
+
+associated_value = gonogo_dmt_interference;
+
+mult_by_100 = false;
+
+round_for_display = false;

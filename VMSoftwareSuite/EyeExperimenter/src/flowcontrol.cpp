@@ -993,7 +993,6 @@ void FlowControl::prepareSelectedReportIteration(){
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
 
     //qDebug() << "LOADING DATA FOR: " << reportsForPatient.getRepFileInfo(selectedReport).value(KEY_FILENAME).toString();
-
     //qDebug() << "Preparing report";
     //qDebug() << report;
 
@@ -1096,6 +1095,35 @@ void FlowControl::prepareSelectedReportIteration(){
                 diagnosis.setResultSegment(rs);
             }
         }
+    }
+
+    if (report.contains(CONFIG_RESULTS_GNG_SPEED_PROCESSING)){
+        QString ans = report.value(CONFIG_RESULTS_GNG_SPEED_PROCESSING).toString();
+        if ((ans != "nan") && (ans != "0")){
+            QStringList toLoad;
+            toLoad << CONF_LOAD_GNG_SPEED_PROCESSING << CONF_LOAD_GNG_DMT_FACILITATE << CONF_LOAD_GNG_INTERFERENCE
+                   << CONF_LOAD_GNG_DMT_FACILITATE << CONF_LOAD_GNG_DMT_INTERFERENCE
+                   << CONF_LOAD_GNG_PIP_FACILITATE << CONF_LOAD_GNG_PIP_INTERFERENCE;
+
+            // The very first Item is the experiment Title.
+            QVariantMap map;
+            map["vmTitleText"] = EXP_GONOGO;
+            map["vmExpText"] = "";
+            map["vmRefText"] = "";
+            map["vmResValue"] = "";
+            map["vmIsStudyTitle"] = true;
+            reportItems << map;
+
+            for (qint32 i = 0; i < toLoad.size(); i++){
+                ResultSegment rs;
+                rs.loadSegment(toLoad.at(i),langCode);
+                rs.setValue(report.value(rs.getNameIndex()).toDouble());
+                reportItems <<  rs.getMapForDisplay();
+                diagnosis.setResultSegment(rs);
+            }
+
+        }
+
     }
 
     selectedReportItemIterator = 0;

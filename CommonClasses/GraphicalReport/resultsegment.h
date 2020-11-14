@@ -20,6 +20,12 @@
 #define  CONF_LOAD_NBRT_TARGET_HIT        ":/CommonClasses/GraphicalReport/report_text/11_nbackrt_target_hit"
 #define  CONF_LOAD_NBRT_MEAN_RESP_TIME    ":/CommonClasses/GraphicalReport/report_text/12_nbackrt_mean_resp_time"
 #define  CONF_LOAD_NBRT_MEAN_SAC_AMP      ":/CommonClasses/GraphicalReport/report_text/13_nbackrt_mean_sac_amp"
+#define  CONF_LOAD_GNG_DMT_FACILITATE     ":/CommonClasses/GraphicalReport/report_text/14_gng_dmt_facilitate"
+#define  CONF_LOAD_GNG_DMT_INTERFERENCE   ":/CommonClasses/GraphicalReport/report_text/15_gng_dmt_interference"
+#define  CONF_LOAD_GNG_PIP_FACILITATE     ":/CommonClasses/GraphicalReport/report_text/16_gng_pip_facilitate"
+#define  CONF_LOAD_GNG_PIP_INTERFERENCE   ":/CommonClasses/GraphicalReport/report_text/17_gng_pip_interference"
+#define  CONF_LOAD_GNG_SPEED_PROCESSING   ":/CommonClasses/GraphicalReport/report_text/18_gng_speed_processing"
+
 
 #define  RS_CODE_TITLE          "title_"
 #define  RS_CODE_EXPLANATION    "explanation_"
@@ -28,6 +34,7 @@
 #define  RS_CODE_SMALLER_BETTER "smaller_better"
 #define  RS_CODE_MULT_BY_100    "mult_by_100"
 #define  RS_CODE_VALUE          "associated_value"
+#define  RS_ROUND_FOR_DISPLAY   "round_for_display"
 
 class ResultSegment
 {
@@ -65,9 +72,10 @@ private:
     QList<qreal> cuttoffValues;
     bool smallerBetter;
     bool multBy100;
+    bool roundForDisplay;
 
     qreal value;
-    qint32 displayValue;
+    QString displayValue;
 
     QHash<QString,QString> langCodes;
 

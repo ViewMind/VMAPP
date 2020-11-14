@@ -884,6 +884,7 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
     algver.readingAlg  = 1;
     algver.nbackrtAlg  = 1;
     algver.fieldingAlg = 1;
+    algver.gonogoAlg   = 1;
 
     repInfoOnDir.setDirectory(currentDirectory,algver);
     qint32 selectedIndex;
@@ -903,7 +904,7 @@ void EyeDataAnalyzer::on_pbGenerateReport_clicked()
 
     // Preparing to genrate all pages.
     QList<qint32> studyIDs;
-    studyIDs << EXP_READING << EXP_BINDING_BC << EXP_NBACKRT;
+    studyIDs << EXP_READING << EXP_BINDING_BC << EXP_NBACKRT << EXP_GONOGO;
 
     ImageReportDrawer reportDrawer;
     QString tempRepDir = "report_directory";

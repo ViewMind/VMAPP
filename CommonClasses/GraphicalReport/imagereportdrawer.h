@@ -41,6 +41,7 @@
 #define  DR_CONFG_STUDY_READING       "reading_study"
 #define  DR_CONFG_STUDY_NBACKRT       "nbackrt_study"
 #define  DR_CONFG_STUDY_COLORS        "colors_study"
+#define  DR_CONFG_STUDY_GONOGO        "gonogo_study"
 
 // Drawing Scaling Control
 #define  MASTER_SCALE                  10

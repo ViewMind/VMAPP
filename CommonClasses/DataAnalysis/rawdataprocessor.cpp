@@ -242,6 +242,25 @@ void RawDataProcessor::run(){
         bool temp = generateFDBFile(dataGoNoGo,gonogo.getEyeFixations(),false);
         freqErrorsOK = freqErrorsOK && temp;
 
+        QString report = rdataProcessor.processGoNoGo(matrixGoNoGo);
+        if (!rdataProcessor.getWarning().isEmpty()){
+            emit(appendMessage(rdataProcessor.getWarning(),MSG_TYPE_WARN));
+        }
+
+        QFileInfo info(dataGoNoGo);
+        DatFileInfoInDir::DatInfo datInfo = DatFileInfoInDir::getGoNoGoInformation(info.baseName());
+        dateForReport = datInfo.date + "_" + datInfo.hour;
+        reportInfoText << "g";
+
+        if (!report.isEmpty()){
+            studyID << "gng" + tagRet.version;
+            emit(appendMessage(report,MSG_TYPE_STD));
+        }
+        else {
+            emit(appendMessage(rdataProcessor.getError(),MSG_TYPE_ERR));
+            return;
+        }
+
     }
 
     // Generating the report based on available data.
@@ -450,6 +469,15 @@ void RawDataProcessor::generateReportFile(const ConfigurationManager &res, const
     if (results.containsKeyword(CONFIG_FILE_FIELDING)){
         results.addKeyValuePair(CONFIG_FIELDING_ALG_VERSION,EYE_REP_GEN_FIELDING_ALGORITHM_VERSION);
     }
+
+    if (results.containsKeyword(CONFIG_FILE_NBACKRT)){
+        results.addKeyValuePair(CONFIG_NBACKRT_ALG_VERSION,EYE_REP_GEN_NBACKRT_ALGORITHM_VERSION);
+    }
+
+    if (results.containsKeyword(CONFIG_FILE_GONOGO)){
+        results.addKeyValuePair(CONFIG_GONOGO_ALG_VERSION,EYE_REP_GEN_GONOGO_ALGORITHM_VERSION);
+    }
+
 
     // Removing patient directory as it contains sensitive information
     results.removeKey(CONFIG_PATIENT_DIRECTORY);

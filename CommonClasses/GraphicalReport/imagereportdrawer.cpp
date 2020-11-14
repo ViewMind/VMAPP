@@ -36,6 +36,13 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     // If this is an NBack RT page and there is no NBack RT results don't do anything.
     else if (studyPage == EXP_NBACKRT) return true;
 
+    bool doGoNoGo = false;
+    if (ds.contains(CONFIG_RESULTS_GNG_SPEED_PROCESSING)){
+        QString str = ds.value(CONFIG_RESULTS_GNG_SPEED_PROCESSING).toString();
+        if ((str != "0") && (str != "nan")) doGoNoGo = true;
+    }
+    else if (studyPage == EXP_GONOGO) return true;
+
     bool doMemEnc = false;
     if (bindingCode == "I"){
         if (ds.contains(CONFIG_RESULTS_BINDING_CONVERSION_INDEX)){
@@ -65,6 +72,9 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
         break;
     case EXP_NBACKRT:
         resultStudyName = langData.getString(DR_CONFG_STUDY_NBACKRT);
+        break;
+    case EXP_GONOGO:
+        resultStudyName = langData.getString(DR_CONFG_STUDY_GONOGO);
         break;
     }
 
@@ -134,6 +144,23 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
             //qDebug() << "Adding" << reportItems.last();
         }
     }
+
+    if (doGoNoGo){
+        QStringList toLoad;
+        toLoad << CONF_LOAD_GNG_SPEED_PROCESSING
+               << CONF_LOAD_GNG_DMT_FACILITATE << CONF_LOAD_GNG_DMT_INTERFERENCE
+               << CONF_LOAD_GNG_PIP_FACILITATE << CONF_LOAD_GNG_PIP_INTERFERENCE;
+        for (qint32 i = 0; i < toLoad.size(); i++){
+            ResultSegment rs;
+            rs.loadSegment(toLoad.at(i),language);
+            rs.setValue(ds.value(rs.getNameIndex()).toDouble());
+            diagClassFinder.setResultSegment(rs);
+            d.rs = rs;
+            if (studyPage == EXP_GONOGO) data2Show << d;
+            //qDebug() << "Adding" << reportItems.last();
+        }
+    }
+
 
     //----------------------------------------- BACKGROUNDS ------------------------------------------------
 

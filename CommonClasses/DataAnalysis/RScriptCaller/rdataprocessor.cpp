@@ -39,9 +39,6 @@ QString RDataProcessor::processNBackRT(const QString &nbackrtFile){
         if (!checkAndMerge(outputconf)) return "";
     }
 
-
-
-
     QString report = "<br>NBACK RT RESULTS:<br>";
 
     // Saving the DB Data
@@ -63,6 +60,60 @@ QString RDataProcessor::processNBackRT(const QString &nbackrtFile){
     report = report + "Mean Saccade Amplitude: " + results.getString(CONFIG_RESULTS_NBACKRT_MEAN_SAC_AMP)  + "<br>";
 
     return report;
+
+}
+
+QString RDataProcessor::processGoNoGo(const QString &gonogoFile){
+
+    error = "";
+    QFileInfo gonogo_file (gonogoFile);
+    if (!gonogo_file.exists()){
+        error = "RPROCESSOR: GoNoGo file: " + gonogoFile + "does not exist";
+        return "";
+    }
+
+    QString outputconf = workDirectory + "/" + QString(FILE_R_OUT_GONOGO);
+
+    QStringList arguments;
+    arguments << RSCRIPT_GONOGO;
+    arguments << gonogoFile;
+    arguments << outputconf;
+
+    qint32 processRetCode = QProcess::execute(RSCRIPT_RUNNABLE,arguments);
+
+    if (processRetCode != 0){
+        warning = "RPROCESSOR: Running the script with the arguments: "
+                + arguments.join(",") + " has FAILED. Ret Code: "
+                + QString::number(processRetCode);
+        //return "";
+        results.addKeyValuePair(CONFIG_RESULTS_GNG_DMT_FACILITATE,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_GNG_DMT_INTERFERENCE,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_GNG_PIP_FACILITATE,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_GNG_PIP_INTERFERENCE,"N/A");
+        results.addKeyValuePair(CONFIG_RESULTS_GNG_SPEED_PROCESSING,"N/A");
+    }
+    else{
+        if (!checkAndMerge(outputconf)) return "";
+    }
+
+    QString report = "<br>GONOGO RESULTS:<br>";
+
+    // Saving the DB Data
+    dbdata.insert(TEYERES_COL_GNG_DMT_FACILITATE,results.getReal(CONFIG_RESULTS_GNG_DMT_FACILITATE));
+    dbdata.insert(TEYERES_COL_GNG_DMT_INTERFERENCE,results.getReal(CONFIG_RESULTS_GNG_DMT_INTERFERENCE));
+    dbdata.insert(TEYERES_COL_GNG_PIP_FACILIATATE,results.getReal(CONFIG_RESULTS_GNG_PIP_FACILITATE));
+    dbdata.insert(TEYERES_COL_GNG_PIP_INTERFERENCE,results.getReal(CONFIG_RESULTS_GNG_PIP_INTERFERENCE));
+    dbdata.insert(TEYERES_COL_GNG_SPEED_PROCESSING,results.getReal(CONFIG_RESULTS_GNG_SPEED_PROCESSING));
+
+    // Text report
+    report = report + "Decision Making Time - Facilitate: " + results.getString(CONFIG_RESULTS_GNG_DMT_FACILITATE)  + "<br>";
+    report = report + "Decision Making Time - Interference: " + results.getString(CONFIG_RESULTS_GNG_DMT_INTERFERENCE)  + "<br>";
+    report = report + "Percentage of Inhibitory Processes - Facilitation: " + results.getString(CONFIG_RESULTS_GNG_PIP_FACILITATE)  + "<br>";
+    report = report + "Percentage of Inhibitory Processes - Interference: " + results.getString(CONFIG_RESULTS_GNG_PIP_INTERFERENCE)  + "<br>";
+    report = report + "Speed Processing: " + results.getString(CONFIG_RESULTS_GNG_SPEED_PROCESSING)  + "<br>";
+
+    return report;
+
 
 }
 

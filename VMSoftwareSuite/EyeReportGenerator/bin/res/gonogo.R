@@ -166,28 +166,11 @@ colnames=c("Speed_Processing","Facilitation","Interference","Decision_making_tim
 
 
 gonogo_output <- paste0(               "gonogo_speed_processing = ",           Speed_Processing, ";\n")
-gonogo_output <- paste0(gonogo_output, "gonogo_facilitation = ",               Facilitation, ";\n")
-gonogo_output <- paste0(gonogo_output, "gonogo_interference = ",               Interference, ";\n")
 gonogo_output <- paste0(gonogo_output, "gonogo_dmt_facilitate = ",             Decision_making_time_Facilitate, ";\n")
 gonogo_output <- paste0(gonogo_output, "gonogo_dmt_interference = ",           Decision_making_time_Interference, ";\n")
 gonogo_output <- paste0(gonogo_output, "gonogo_pip_facilitate = ",             Percentage_Inhibition_processes_Facilitation, ";\n")
 gonogo_output <- paste0(gonogo_output, "gonogo_pip_interference = ",           Percentage_Inhibition_processes_Interference, ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"number_of_fixations_ret = ",            length(Number_of_fixations_RET), ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"inhibitory_problems_percent = ",        prueba[3], ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"correct_target_hit_percent = ",         prueba[4], ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"correct_complete_sequence_percent = ",  prueba[5], ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"mean_response_time = ",                 prueba[6], ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"mean_saccade_amplitude = ",             prueba[7], ";\n")
-
-
-# nbackrt_output <- paste0(               "number_of_fixations_enc = ",            length(Number_of_fixations_ENC), ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"number_of_fixations_ret = ",            length(Number_of_fixations_RET), ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"inhibitory_problems_percent = ",        prueba[3], ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"correct_target_hit_percent = ",         prueba[4], ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"correct_complete_sequence_percent = ",  prueba[5], ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"mean_response_time = ",                 prueba[6], ";\n")
-# nbackrt_output <- paste0(nbackrt_output,"mean_saccade_amplitude = ",             prueba[7], ";\n")
-# 
+ 
 fileConn<-file(args[2])
 writeLines(gonogo_output, fileConn)
 close(fileConn) 

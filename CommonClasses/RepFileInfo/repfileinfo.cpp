@@ -33,12 +33,14 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         QString binding       = "-";
         QString fielding      = "-";
         QString nbackrt       = "-";
+        QString gonogo        = "-";
         QString reading_code  = "";
         QString binding_code  = "";
-        QString fielding_code = "";
+        QString fielding_code = "";        
         QString nbackrt_code  = "";
+        QString gonogo_code   = "";
         QString num_targets   = "";
-        QString reportContents = "";
+        //QString reportContents = "";
 
         if (parts.size() < 6){
             logger.appendWarning("Unrecognized rep file format: " + repfile + ". Old format?");
@@ -74,7 +76,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
             else if (parts.at(i).startsWith("T")){
                 // NBack Trace RT Type
                 nbackrt = parts.at(i);
-                QString eyes = fielding.mid(1,1);
+                QString eyes = nbackrt.mid(1,1);
                 nbackrt_code = eyes + "_" + baseCode;
             }
             else if (parts.at(i).startsWith("N")){
@@ -82,6 +84,11 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
                 fielding = parts.at(i);
                 QString eyes = fielding.mid(1,1);
                 fielding_code = eyes + "_" + baseCode;
+            }
+            else if (parts.at(i).startsWith("G")){
+                gonogo = parts.at(i);
+                QString eyes = gonogo.mid(1,1);
+                gonogo_code = eyes + "_" + baseCode;
             }
             else{
                 logger.appendWarning("Unrecognized experiment descriptor in report filename: " + parts.at(i) + " in " + repfile);
@@ -112,7 +119,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         if (data.contains(CONFIG_RESULTS_MEMORY_ENCODING)){
             QString memenc = data.value(CONFIG_RESULTS_MEMORY_ENCODING).toString();
             if ((memenc == "0") || (memenc == "nan")){
-                // All reading results are invalid in this case.
+                // All results are invalid in this case.
                 binding = "N/A";
             }
         }
@@ -132,6 +139,7 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         info[KEY_REPNAME] = repfile;
         info[KEY_FIELDING] = fielding;
         info[KEY_NBACKRT] = nbackrt;
+        info[KEY_GONOGO] = gonogo;
         info[KEY_SELFLAG] = false;
         info[KEY_ISUPTODATE] = flist.isUpToDate;
         info[KEY_FILELIST] = flist.fileList.join("|");
@@ -354,10 +362,20 @@ RepFileInfo::FileList RepFileInfo::isReportUpToDate(const QString &directory, co
         }
     }
 
+    /////// NBACK RT
     if (repfile.containsKeyword(CONFIG_NBACKRT_ALG_VERSION)){
         qint32 version = repfile.getInt(CONFIG_NBACKRT_ALG_VERSION);
         if (version < algver.nbackrtAlg){
             ans.fileList << repfile.getString(CONFIG_FILE_NBACKRT);
+            ans.isUpToDate = false;
+        }
+    }
+
+    /////// GO NO GO
+    if (repfile.containsKeyword(CONFIG_GONOGO_ALG_VERSION)){
+        qint32 version = repfile.getInt(CONFIG_GONOGO_ALG_VERSION);
+        if (version < algver.gonogoAlg){
+            ans.fileList << repfile.getString(CONFIG_FILE_GONOGO);
             ans.isUpToDate = false;
         }
     }

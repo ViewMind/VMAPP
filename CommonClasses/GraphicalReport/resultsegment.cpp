@@ -26,10 +26,20 @@ bool ResultSegment::loadSegment(const QString &conf, const QString &language){
     multBy100     = data.getBool(RS_CODE_MULT_BY_100);
     nameIndex     = data.getString(RS_CODE_VALUE);
 
+    if (data.containsKeyword(RS_ROUND_FOR_DISPLAY)){
+        roundForDisplay = data.getBool(RS_ROUND_FOR_DISPLAY);
+    }
+    else{
+        roundForDisplay = true;
+    }
+
     barColorCode = BSCC_NONE;
 
     cuttoffValues.clear();
     QStringList temp = data.getStringList(RS_CODE_CUTOFF_VALUES);
+
+    //qDebug() << "Value list" << temp;
+
     for (qint32 i = 0; i < temp.size(); i++){
         cuttoffValues << temp.at(i).toDouble();
     }
@@ -41,18 +51,37 @@ bool ResultSegment::loadSegment(const QString &conf, const QString &language){
 void ResultSegment::setValue(const qreal &val){
 
     value = val;
+    qreal compareValue;
 
     if (multBy100){
-        displayValue = qRound(value*100);
+        if (roundForDisplay){
+            qint32 temp = qRound(value*100);
+            displayValue = QString::number(temp);
+            compareValue = temp;
+        }
+        else{
+            displayValue = QString::number(value*100,'f',2);
+            compareValue = value*100;
+        }
     }
     else{
-        displayValue = qRound(value);
+        if (roundForDisplay){
+            qint32 temp = qRound(value);
+            displayValue = QString::number(temp);
+            compareValue = temp;
+        }
+        else{
+            displayValue = QString::number(value,'f',2);
+            compareValue = value;
+        }
     }
+
+    //qDebug() << "DISPLAY VALUE" << displayValue << val << roundForDisplay;
 
     int result = 0;
     result = 0;
     for (qint32 i = 0; i < cuttoffValues.size()-1; i++){
-        if (displayValue < cuttoffValues.at(i)){
+        if (compareValue < cuttoffValues.at(i)){
             break;
         }
         result = i;
@@ -60,7 +89,7 @@ void ResultSegment::setValue(const qreal &val){
 
     // If larger is better then the indexes are inverted as 0 represents green which is good and 2 represents red.
     if (!smallerBetter){
-       result = (cuttoffValues.size() - 2) - result;
+        result = (cuttoffValues.size() - 2) - result;
     }
 
     // Setting the bar type;
@@ -120,7 +149,7 @@ QString ResultSegment::getExplanation() const{
 }
 
 QString ResultSegment::getDisplayValue() const{
-    return QString::number(displayValue);
+    return displayValue;
 }
 
 QString ResultSegment::getNameIndex() const{
