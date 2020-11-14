@@ -152,8 +152,6 @@ inline static void printDBDataList(const QList<DBData> &dbdata){
 #define  TEYERES_COL_NBRT_MEAN_RESP_TIME         "nbrt_mean_resp_time"
 #define  TEYERES_COL_NBRT_MEAN_SAC_AMP           "nbrt_mean_sac_amp"
 #define  TEYERES_COL_GNG_SPEED_PROCESSING        "gng_speed_processing"
-#define  TEYERES_COL_GNG_FACILITATION            "gng_facilitation"
-#define  TEYERES_COL_GNG_INTERFERENCE            "gng_interference"
 #define  TEYERES_COL_GNG_DMT_INTERFERENCE        "gng_dmt_interference"
 #define  TEYERES_COL_GNG_DMT_FACILITATE          "gng_dmt_facilitate"
 #define  TEYERES_COL_GNG_PIP_FACILIATATE         "gng_pip_faciliatate"

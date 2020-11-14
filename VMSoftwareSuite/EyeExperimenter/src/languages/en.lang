@@ -244,6 +244,7 @@ viewshowreports_diagTabReading = Reading;
 viewshowreports_diagTabBinding = Colors;
 viewshowreports_diagTabFielding = N-Back (MS);
 viewshowreports_diagTabNBackRT  = N-Back (RT);
+viewshowreports_diagTabGoNoGo   = Go No-Go;
 viewshowreports_diagTabStatus = Status;
 viewshowreports_diagBtnView = VIEW;
 viewshowreports_diagBtnBack = BACK;

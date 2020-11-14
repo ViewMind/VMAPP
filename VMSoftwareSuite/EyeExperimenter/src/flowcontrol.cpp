@@ -182,6 +182,8 @@ void FlowControl::prepareForReportListIteration(const QString &patientDirectory)
     RepFileInfo::AlgorithmVersions algver;
     algver.bindingAlg = configuration->getInt(CONFIG_BINDING_ALG_VERSION);
     algver.readingAlg = configuration->getInt(CONFIG_READING_ALG_VERSION);
+    algver.nbackrtAlg = configuration->getInt(CONFIG_NBACKRT_ALG_VERSION);
+    algver.gonogoAlg  = configuration->getInt(CONFIG_GONOGO_ALG_VERSION);
     reportsForPatient.setDirectory(patientDirectory,algver);
     reportsForPatient.prepareIteration();
 }
@@ -436,6 +438,15 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
         }
         if (fileSet.at(i).startsWith(FILE_OUTPUT_NBACKRT)){
             error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_FILE_NBACKRT,fileSet.at(i));
+            if (!error.isEmpty()){
+                logger.appendError("WRITING EYE REP GEN FILE: " + error);
+                sslTransactionAllOk = false;
+                emit(sslTransactionFinished());
+                return;
+            }
+        }
+        if (fileSet.at(i).startsWith(FILE_OUTPUT_GONOGO)){
+            error = ConfigurationManager::setValue(expgenfile,COMMON_TEXT_CODEC,CONFIG_FILE_GONOGO,fileSet.at(i));
             if (!error.isEmpty()){
                 logger.appendError("WRITING EYE REP GEN FILE: " + error);
                 sslTransactionAllOk = false;
@@ -1101,7 +1112,7 @@ void FlowControl::prepareSelectedReportIteration(){
         QString ans = report.value(CONFIG_RESULTS_GNG_SPEED_PROCESSING).toString();
         if ((ans != "nan") && (ans != "0")){
             QStringList toLoad;
-            toLoad << CONF_LOAD_GNG_SPEED_PROCESSING << CONF_LOAD_GNG_DMT_FACILITATE << CONF_LOAD_GNG_INTERFERENCE
+            toLoad << CONF_LOAD_GNG_SPEED_PROCESSING
                    << CONF_LOAD_GNG_DMT_FACILITATE << CONF_LOAD_GNG_DMT_INTERFERENCE
                    << CONF_LOAD_GNG_PIP_FACILITATE << CONF_LOAD_GNG_PIP_INTERFERENCE;
 

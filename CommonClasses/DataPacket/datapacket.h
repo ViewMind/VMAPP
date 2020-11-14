@@ -62,6 +62,7 @@ public:
     static const quint8 DPFI_NUM_EVALS                                = 42;
     static const quint8 DPFI_VMID_TABLE                               = 43;
     static const quint8 DPFI_REQUEST_FIELD                            = 44;
+    static const quint8 DPFI_GONOGO                                   = 45;
 
     static const quint8 DATABUFFER_RESULT_NOT_DONE                    = 0;
     static const quint8 DATABUFFER_RESULT_ERROR                       = 1;

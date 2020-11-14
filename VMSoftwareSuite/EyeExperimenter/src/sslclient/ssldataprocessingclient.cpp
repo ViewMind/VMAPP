@@ -91,6 +91,13 @@ void SSLDataProcessingClient::connectToServer(bool isDemoMode, const QString &ol
             }
         }
     }
+    if (eyeGenConf.containsKeyword(CONFIG_FILE_GONOGO)){
+        if (!isDemoMode){
+            if (!txDP.addFile(datDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_GONOGO),DataPacket::DPFI_GONOGO)){
+                log.appendError("On creating the DataPacket, could not get NBack RT File: " + patientDirectory + "/" + eyeGenConf.getString(CONFIG_FILE_NBACKRT));
+            }
+        }
+    }
 
     // Requesting connection and ack
     socket->connectToHostEncrypted(config->getString(CONFIG_SERVER_ADDRESS),TCP_PORT_DATA_PROCESSING);

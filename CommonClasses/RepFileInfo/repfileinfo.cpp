@@ -129,6 +129,8 @@ void RepFileInfo::setDirectory(const QString &directory, AlgorithmVersions alg_v
         alg_ver.binding_code = binding_code;
         alg_ver.reading_code = reading_code;
         alg_ver.fielding_code = fielding_code;
+        alg_ver.nbackrt_code = nbackrt_code;
+        alg_ver.gonogo_code = gonogo_code;
         FileList flist = isReportUpToDate(directory, repfile,alg_ver);
 
         QVariantMap info;

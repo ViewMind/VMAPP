@@ -76,6 +76,7 @@ HEADERS += \
     ../../../CommonClasses/Experiments/gonogoparser.h \
     ../../../CommonClasses/GraphicalReport/diagonosislogic.h \
     ../../../CommonClasses/GraphicalReport/resultsegment.h \
+    ../../../CommonClasses/SQLConn/dbdescription.h \
         eyedataanalyzer.h \
     ../../../CommonClasses/common.h \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \

@@ -22,5 +22,10 @@
         <file>../../../CommonClasses/GraphicalReport/report_text/11_nbackrt_target_hit</file>
         <file>../../../CommonClasses/GraphicalReport/report_text/12_nbackrt_mean_resp_time</file>
         <file>../../../CommonClasses/GraphicalReport/report_text/13_nbackrt_mean_sac_amp</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/14_gng_dmt_facilitate</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/15_gng_dmt_interference</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/16_gng_pip_facilitate</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/17_gng_pip_interference</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/18_gng_speed_processing</file>
     </qresource>
 </RCC>

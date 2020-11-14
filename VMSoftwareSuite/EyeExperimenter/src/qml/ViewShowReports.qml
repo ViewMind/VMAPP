@@ -71,6 +71,10 @@ VMBase {
         html = html + "<b>" +  loader.getStringForKey(keybase+"diagTabNBackRT") + "</b> :" + map["nbackrt"]
         html = html + "</li>"
 
+        html = html + "<li>"
+        html = html + "<b>" +  loader.getStringForKey(keybase+"diagTabGoNoGo") + "</b> :" + map["gonogo"]
+        html = html + "</li>"
+
         html = html + "</ul>"
 
         return html;
