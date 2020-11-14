@@ -192,6 +192,7 @@ void ProcessingSocket::dbMngCheck(ProcessState state){
 void ProcessingSocket::on_eyeDBMngFinished(qint32 status){
 
     // Loading the configuration to make sure all is ok.
+    // log.appendStandard("DEBUG DB MNG FINISHED");
     ConfigurationManager dbmngComm;
     if (!dbmngComm.loadConfiguration(workingDir + "/" + QString(FILE_DBMNG_COMM_FILE),COMMON_TEXT_CODEC)){
         log.appendError("Could not load dbmng comm file after the DBMNG finished");

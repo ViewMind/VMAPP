@@ -6,6 +6,6 @@ rm -rf QRC
 rm -rf MOCS_L
 rm -rf OBJS_L
 rm -rf QRC_L
-m Makefile
+rm Makefile
 rm EyeServer
 rm EyeServerMonitor
