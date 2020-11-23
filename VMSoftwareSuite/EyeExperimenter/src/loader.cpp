@@ -32,6 +32,8 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cv[CONFIG_BINDING_ALG_VERSION] = cmd;
     cv[CONFIG_READING_ALG_VERSION] = cmd;
     cv[CONFIG_FIELDING_ALG_VERSION] = cmd;
+    cv[CONFIG_NBACKRT_ALG_VERSION] = cmd;
+    cv[CONFIG_GONOGO_ALG_VERSION] = cmd;
 
     // NBACK VS Parameters
     cv[CONFIG_NBACKVS_MAX_HOLD_TIME] = cmd;

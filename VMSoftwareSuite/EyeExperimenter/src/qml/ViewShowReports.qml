@@ -201,13 +201,9 @@ VMBase {
                         delegate: VMReportEntry {
                             vmReportName: repname
                             vmDate: date
-                            vmReading: reading
-                            vmBinding: binding
                             vmItemIndex: index
                             vmIsUpToDate: uptodate
                             vmFileList: filelist
-                            vmFielding: fielding
-                            vmNBackRT:  nbackrt
                             onReprocessReport: {
                                 //console.log("Requested reprocessing of report: " + vmReportName + " and FileList is: " + vmFileList)
                                 swiperControl.currentIndex = swiperControl.vmIndexPatientList;

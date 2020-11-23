@@ -27,6 +27,7 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
     if (!Experiment::startExperiment(c)) return false;
 
     eyeSelector.setTargetCountForSelection(c->getReal(CONFIG_SAMPLE_FREQUENCY)*TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS);
+    eyeSelector.setBehaviour(EyeSelector::EBS_CUMULATIVE);
     eyeSelector.reset();
 
     // Setting the first question.
@@ -61,10 +62,11 @@ void ReadingExperiment::togglePauseExperiment(){
 }
 
 void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
-    Experiment::newEyeDataAvailable(data);
 
     // Nothing should be done if the state is NOT running.
     if (state != STATE_RUNNING) return;
+
+    Experiment::newEyeDataAvailable(data);
 
     //qDebug() << "READING DATA: " << data.toString();
 

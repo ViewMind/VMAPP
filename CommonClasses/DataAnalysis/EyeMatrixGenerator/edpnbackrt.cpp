@@ -77,6 +77,15 @@ bool EDPNBackRT::doEyeDataProcessing(const QString &data){
             id = tokens.first().trimmed();
             imageNumber = tokens.at(1).trimmed();
             trialSequence = parser.getSequenceForTrial(id);
+
+            // The new description of the Fielding experiment uses 6 targets, because NBACKVS can have up to six targets.
+            // However for NBACK RT we only need the first 3.
+            if ((trialSequence.size() == NBACK_EXP_DESCRIPTION_NUM_OF_TARGETS)){
+                while (trialSequence.size() > NBACK_RT_NUM_OF_TARGETS){
+                    trialSequence.pop_back();
+                }
+            }
+
             if (trialSequence.size() != 3){
                 error = "Error trying to get sequence for N Back RT trial : " + id +  ". Got a sequence of size " + QString::number(trialSequence.size());
                 return false;

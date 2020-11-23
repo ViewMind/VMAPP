@@ -215,7 +215,7 @@ void FlowControl::drawReport(){
     QString pageBaseName = currentReport.split(".").first();
 
     QList<qint32> studyIDs;
-    studyIDs << EXP_READING << EXP_BINDING_BC << EXP_NBACKRT;
+    studyIDs << EXP_READING << EXP_BINDING_BC << EXP_NBACKRT << EXP_GONOGO;
 
     // Generating a page for each study.
     for (qint32 i = 0; i < studyIDs.size(); i++){
@@ -333,6 +333,10 @@ void FlowControl::onFileSetEmitted(const QStringList &fileSetAndName, const QStr
 
         eyerepgen.addKeyValuePair(CONFIG_REPROCESS_REQUEST,true);
         eyerepgen.addKeyValuePair(CONFIG_DEMO_MODE,false);
+
+        // Forcing the new ET SERIAL just in case the configuration has an old one.
+        eyerepgen.addKeyValuePair(CONFIG_INST_ETSERIAL,configuration->getString(CONFIG_INST_ETSERIAL));
+        eyerepgen.addKeyValuePair(CONFIG_MOVING_WINDOW_DISP,configuration->getReal(CONFIG_MOVING_WINDOW_DISP));
 
         if (!eyerepgen.saveToFile(expgenfile,COMMON_TEXT_CODEC)){
             logger.appendError("WRITING EYE REP GEN FILE in reprocessing: " + expgenfile + ", could not open file for writing");
@@ -997,8 +1001,8 @@ void FlowControl::prepareSelectedReportIteration(){
     reportItems.clear();
 
     /// DEBUG CODE FOR REPORT SHOW
-    //reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
-    //selectedReport = 0;
+    ///reportsForPatient.setDirectory("C:/Users/Viewmind/Documents/viewmind_projects/VMSoftwareSuite/EyeExperimenter/exe64/viewmind_etdata/0_0000_P0000",RepFileInfo::AlgorithmVersions());
+    ///selectedReport = 0;
     /// END DEBUG CODE
 
     QVariantMap report = reportsForPatient.getRepData(selectedReport);
