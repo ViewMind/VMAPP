@@ -415,7 +415,7 @@ void Control::storeMode(const QString &action){
                 cmd = cmd + " " + workingDirectory + "/" + filesToSave.at(i) + " ";
                 cmd = cmd + "s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + filesToSave.at(i) + " ";
                 cmd = cmd + S3_PARMETERS;
-                QProcess::execute(cmd);
+                QProcess::execute(cmd,QStringList());
                 log.appendStandard("Running S3 Command: " + cmd);
             }
         }
@@ -679,7 +679,7 @@ void Control::storeMode(const QString &action){
             cmd = cmd + " " + eyerepgenconf + " ";
             cmd = cmd + " s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + QString(FILE_EYE_REP_GEN_CONFIGURATION);
             cmd = cmd + " " + S3_PARMETERS;
-            QProcess::execute(cmd);
+            QProcess::execute(cmd,QStringList());
             log.appendStandard("Running S3 Command for flag update: " + cmd);
         }
         else{

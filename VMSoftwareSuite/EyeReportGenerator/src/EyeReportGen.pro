@@ -17,6 +17,8 @@ CONFIG     += console
 
 SOURCES += main.cpp\
     ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpgonogo.cpp \
+    ../../../CommonClasses/Experiments/gonogoparser.cpp \
     control.cpp \
     ../../../CommonClasses/LogInterface/loginterface.cpp \
     ../../../CommonClasses/DataAnalysis/rawdataprocessor.cpp \
@@ -37,6 +39,8 @@ SOURCES += main.cpp\
 
 HEADERS  += \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpgonogo.h \
+    ../../../CommonClasses/Experiments/gonogoparser.h \
     ../../../CommonClasses/common.h \
     control.h \
     ../../../CommonClasses/LogInterface/loginterface.h \
