@@ -7,7 +7,7 @@ FreqAnalysis::FreqAnalysis()
 
 void FreqAnalysis::FreqAnalysisResult::analysisValid(const FreqCheckParameters p){
 
-    errorList.clear();
+    //errorList.clear();
 
     qint32 fglitches = 0;
     qreal totalNumberOfDataPoints = 0;
@@ -129,6 +129,11 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::analyzeFile(const QString &fname,
         return far;
     }
 
+    if (far.freqAnalysisForEachDataSet.size() <= firstNDataSetsToFilter){
+        far.errorList << "Number of data for frequency analysis is less than the number to filter";
+        return far;
+    }
+
     // Filtering out the fist N data sets.
     for (qint32 i = 0; i < firstNDataSetsToFilter; i++){
         far.freqAnalysisForEachDataSet.pop_front();
@@ -196,11 +201,14 @@ FreqAnalysis::FreqAnalysisResult FreqAnalysis::performReadingAnalysis(){
     QHash<QString, QList<qreal> > dataSetTimes;
     QHash<QString, QStringList > invalidTimes;
 
-    // TODO: FIRST LINE IS RESOLUTION
+    // FIRST LINE IS RESOLUTION
     QStringList lines = content.split("\n");
     for (qint32 i = 1; i < lines.size(); i++){
 
         if (lines.at(i).trimmed().isEmpty()) continue;
+
+        // Answer lines are not analyzed.
+        if (lines.at(i).contains("->")) continue;
 
         QStringList parts = lines.at(i).split(" ",QString::SkipEmptyParts);
         if (parts.size() != 13){

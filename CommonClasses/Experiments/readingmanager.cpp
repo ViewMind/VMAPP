@@ -87,11 +87,7 @@ bool ReadingManager::drawPhrase(const QString &idStr){
 
 void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bool simpleDraw){
 
-    //qWarning() << "Drawing the phrase";
-
     if ( ((qstate == QS_PHRASE) || (qstate == QS_INFORMATION)) && !simpleDraw){
-
-        //qWarning() << "Showing the phrase";
 
         // Should simply bring the escape point and phrase forward, while hiding the start point.
         phraseToShow->setZValue(10);
@@ -209,7 +205,6 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
             x = x + list.at(i)->boundingRect().width() + 2*AIR;
 
         }
-        //qWarning() << "Done drawing options";
     }
 
 }
@@ -219,6 +214,9 @@ QList<QRectF> ReadingManager::getOptionTargetBoxes() const{
 }
 
 void ReadingManager::highlightOption(const QPoint &point){
+
+    if (rectButtonPointers.size() != validClickAreas.size()) return;
+
     for (qint32 i = 0; i < rectButtonPointers.size(); i++){
         QGraphicsRectItem *r = rectButtonPointers.at(i);
         if (validClickAreas.at(i).contains(point)){

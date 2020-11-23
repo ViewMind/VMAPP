@@ -1,7 +1,7 @@
 ﻿Language: Spanish
 Description: Conjunto de oraciones y preguntas minimalista, en español.
 ######
-v2
+v3
 1:  Los niños disfrutaron del paseo mucho más que yo.| 
 2:  Mucho ruido y pocas nueces.|
 3:  De lo que no se sabe es mejor callar.| ¿Qué es prudente hacer? , Observar, Mentir, Callar
@@ -44,7 +44,7 @@ v2
 148:El oro es un metal muy codiciado.|
 151:Algunos días el cielo está todo estrellado.|
 154:Juan tiene muy poca visión en ambos ojos.| 
-157:El patrón le ordenó a la criada callarse.| ¿Qué le ordenó el patrón?, Irse, Callarse, Desnudarse
+157:El patrón le ordenó a la criada callarse.|
 159:Él se encontró con María el otro día.|
 162:En su casa siempre hacen comidas muy elaboradas.|
 172:Los loros comieron la plantación de maiz.|

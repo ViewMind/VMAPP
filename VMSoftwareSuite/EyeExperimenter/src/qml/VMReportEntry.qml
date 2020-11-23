@@ -5,10 +5,6 @@ Item {
     id: vmReportEntry
     property string vmDate: ""
     property string vmTime: ""
-    property string vmReading: ""
-    property string vmBinding: ""
-    property string vmFielding: ""
-    property string vmNBackRT: ""
     property string vmReportName: ""
     property bool vmIsUpToDate: true
     property string vmFileList: ""
@@ -52,77 +48,6 @@ Item {
         }
     }
 
-//    Rectangle {
-//        id: readingRect
-//        color: vmRepSelected? "#4984b3" : "#ffffff"
-//        border.color: "#EDEDEE"
-//        border.width: mainWindow.width*0.002
-//        height: vmHeight
-//        width: viewReport.columnWidth
-//        anchors.left: dateRect.right
-//        anchors.top: parent.top
-//        Text {
-//            font.family: viewHome.gothamR.name
-//            font.pixelSize: vmFontSize
-//            text: vmReading
-//            color: vmRepSelected? "#ffffff" : "#000000"
-//            anchors.centerIn: parent
-//        }
-//    }
-
-//    Rectangle {
-//        id: bindingRect
-//        color: vmRepSelected? "#4984b3" : "#ffffff"
-//        border.color: "#EDEDEE"
-//        border.width: mainWindow.width*0.002
-//        height: vmHeight
-//        width: viewReport.columnWidth
-//        anchors.left: readingRect.right
-//        anchors.top: parent.top
-//        Text {
-//            font.family: viewHome.gothamR.name
-//            font.pixelSize: vmFontSize
-//            text: vmBinding
-//            color: vmRepSelected? "#ffffff" : "#000000"
-//            anchors.centerIn: parent
-//        }
-//    }
-
-//    Rectangle {
-//        id: fieldingRect
-//        color: vmRepSelected? "#4984b3" : "#ffffff"
-//        border.color: "#EDEDEE"
-//        border.width: mainWindow.width*0.002
-//        height: vmHeight
-//        width: viewReport.columnWidth
-//        anchors.left: bindingRect.right
-//        anchors.top: parent.top
-//        Text {
-//            font.family: viewHome.gothamR.name
-//            font.pixelSize: vmFontSize
-//            text: vmFielding
-//            color: vmRepSelected? "#ffffff" : "#000000"
-//            anchors.centerIn: parent
-//        }
-//    }
-
-//    Rectangle {
-//        id: nbackRTRect
-//        color: vmRepSelected? "#4984b3" : "#ffffff"
-//        border.color: "#EDEDEE"
-//        border.width: mainWindow.width*0.002
-//        height: vmHeight
-//        width: viewReport.columnWidth
-//        anchors.left: fieldingRect.right
-//        anchors.top: parent.top
-//        Text {
-//            font.family: viewHome.gothamR.name
-//            font.pixelSize: vmFontSize
-//            text: vmNBackRT
-//            color: vmRepSelected? "#ffffff" : "#000000"
-//            anchors.centerIn: parent
-//        }
-//    }
 
     Rectangle {
         id: statusRectText

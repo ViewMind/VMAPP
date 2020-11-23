@@ -56,6 +56,9 @@
 #define   MAX_SEQUENCE_LENGTH                           6
 #define   OLD_SEQUENCE_LENGTH                           3
 
+#define  NBACK_EXP_DESCRIPTION_NUM_OF_TARGETS           6
+#define  NBACK_RT_NUM_OF_TARGETS                        3
+#define  NBACK_MS_NUM_OF_TARGETS                        3
 
 class FieldingParser
 {

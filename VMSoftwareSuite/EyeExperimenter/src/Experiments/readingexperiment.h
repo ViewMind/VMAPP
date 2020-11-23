@@ -13,7 +13,7 @@
 #include "../../../CommonClasses/Experiments/readingmanager.h"
 #include "../../../CommonClasses/EyeSelector/eyeselector.h"
 
-#define  TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS   2
+#define  TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS   1
 
 class ReadingExperiment : public Experiment
 {
