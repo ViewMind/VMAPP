@@ -26,7 +26,7 @@ public:
     explicit Control(QObject *parent = nullptr);
 
     // Starts the application functionality.
-    void ruEnn();
+    void run();
 
 signals:
     // Singal used ot indicate that the processing is done.
