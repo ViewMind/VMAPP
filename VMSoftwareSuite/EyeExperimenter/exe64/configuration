@@ -103,6 +103,6 @@ nbackvs_ntrial_for_step_change = 2;
 #                   Labeling Info                      #
 #------------------------------------------------------#
 
-labeling_manufacture_date           = 07/10/2020;   
+labeling_manufacture_date           = 02-12-2020;   
 labeling_serial_number              = 0-00000000-000000;
-labeling_unique_authorization_number = XXXX;
+labeling_unique_authorization_number =     ;
