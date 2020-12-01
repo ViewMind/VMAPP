@@ -21,6 +21,9 @@ VMBase {
     property var vmCurrentMultiPartStudyFile: ""
     property var vmCurrentSelectedStudyName: ""
 
+    //property var vmDisabledStudies: [ viewPatList.vmDatSelector.vmLIST_INDEX_FIELDING,  viewPatList.vmDatSelector.vmLIST_INDEX_NBACKVS,  viewPatList.vmDatSelector.vmLIST_INDEX_PERCEPTION];
+    property var vmDisabledStudies: [];
+
     Dialog {
 
         readonly property int vmMP_ACTION_FINALIZE: 1;
@@ -141,7 +144,14 @@ VMBase {
         var studyList = loader.getStringListForKey("viewselectdata_studyList");
         vmListOfStudiesToSelect = [];
         vmListOfSelectedStudies = [];
+
+        //console.log("Will check with " + vmDisabledStudies);
+
         for (var i = 0; i < studyList.length; i++){
+            if (vmDisabledStudies.includes(i)) {
+                //console.log(i + " is in disabled");
+                continue;
+            }
             vmListOfStudiesToSelect.push({"vmStudyName" : studyList[i], "vmIsSelected" : false, "vmStudyID" : i, "vmIndex": i})
         }
         fillList(vmListOfStudiesToSelect,studySelectList);
