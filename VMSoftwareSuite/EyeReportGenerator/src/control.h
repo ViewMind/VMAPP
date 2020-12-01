@@ -9,7 +9,15 @@
 
 #define   EYE_REP_GEN_NAME                              "EyeRepGenerator"
 #define   EYE_DIR_LOG                                   "LOGS"
-#define   EYE_REP_GEN_VERSION                           "8.3.0" //8.2.0
+#define   EYE_REP_GEN_VERSION                           "8.3.1" //8.3.1
+
+/****************************************************************************
+ * Version: 8.3.1 23/11/2020
+ * -> Added the capabilities of processing go no go files.
+ * -> Fixed frequency checking in reading with question 
+ *  
+ * 
+ *****************************************************************************/
 
 class Control : public QObject
 {
