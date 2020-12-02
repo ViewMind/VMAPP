@@ -1,0 +1,34 @@
+ViewmindID: 075933739023
+IAM User: ariel.arelovich
+aws profile: viewmind
+
+
+Ports 
+RawDataServer - 54918
+EyeServer     - 54912
+EyeSQLServer  - 54915
+
+Load Balancing requires target groups. 
+1 Target Group for Processing
+1 Target Group for Server Requests. 
+
+AutoScaling group is to ensure that machines are never out of commission. 
+
+DB root users: admin
+vm-data: MtrmGDo0khG7wJMYZOu8
+vm-dashboard: QNwsTVA82KnVC5WFU1cK
+vm-patdata: nT0sro3AH7UuGD2THAjg
+vm-id: RnhFr8qwY6lJtdoIBHZM
+
+When selecting a VPC for RDS it needs to have subnets in at least two availability zones. 
+
+Interal IP Distribution. 
+Public Subnet CIDR
+US-EAST-2a: 10.100.100.0/24
+US-EAST-2b: 10.100.101.0/24
+RDS Subnet CIDR
+US-EAST-2a: 10.100.16.0/20
+US-EAST-2b: 10.100.48.0/20
+EC2 Subnet CIDR
+US-EAST-2a: 10.100.0.0/20
+US-EAST-2b: 10.100.32.0/20
