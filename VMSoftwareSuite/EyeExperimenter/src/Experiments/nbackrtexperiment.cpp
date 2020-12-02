@@ -106,7 +106,7 @@ void NBackRTExperiment::nextState(){
         if (currentImage == nbackConfig.numberOfTargets){
             tstate = TSF_SHOW_BLANKS;
             trialRecognitionMachine.reset(m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets));
-            qDebug() << "EXPECTED SEQUENCE FOR TRIAL" << m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets);
+            //qDebug() << "EXPECTED SEQUENCE FOR TRIAL" << m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets);
             addTrialHeader();
             stateTimer.setInterval(TIME_OUT_BLANKS);
         }
@@ -132,11 +132,11 @@ void NBackRTExperiment::nextState(){
 
 void NBackRTExperiment::drawCurrentImage(){
 
-    qDebug() << 5;
+    //qDebug() << 5;
 
     m->setTargetPosition(currentTrial,currentImage);
 
-    qDebug() << 7;
+    //qDebug() << 7;
 
     switch (tstate){
     case TSF_SHOW_BLANKS:
@@ -155,7 +155,7 @@ void NBackRTExperiment::drawCurrentImage(){
                 stateTimer.stop();
                 m->drawPauseScreen();
                 updateSecondMonitorORHMD();
-                qDebug() << "Pausing wihth current trial" << currentTrial;
+                //qDebug() << "Pausing wihth current trial" << currentTrial;
                 return;
             }
 
@@ -167,7 +167,7 @@ void NBackRTExperiment::drawCurrentImage(){
 
     updateSecondMonitorORHMD();
 
-    qDebug() << 6;
+    //qDebug() << 6;
 }
 
 bool NBackRTExperiment::finalizeExperiment(){
