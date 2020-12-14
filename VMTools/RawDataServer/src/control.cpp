@@ -10,9 +10,31 @@ Control::Control(QObject *parent):QObject(parent)
     cmd.clear();
     cv[RAW_DATA_SERVER_PASSWORD] = cmd;
 
+    // Database configuration
+    cmd.clear();
+    cv[CONFIG_DBPASSWORD] = cmd;
+    cv[CONFIG_DBUSER] = cmd;
+
+    cv[CONFIG_PATDATA_DBHOST] = cmd;
+    cv[CONFIG_PATDATA_DBNAME] = cmd;
+
+    cv[CONFIG_ID_DBHOST] = cmd;
+    cv[CONFIG_ID_DBNAME] = cmd;
+
+    cv[CONFIG_DATA_DBHOST] = cmd;
+    cv[CONFIG_DATA_DBNAME] = cmd;
+
+    cmd.type = ConfigurationManager::VT_INT;
+    cv[CONFIG_DATA_DBPORT] = cmd;
+    cv[CONFIG_ID_DBPORT] = cmd;
+    cv[CONFIG_PATDATA_DBPORT] = cmd;
+
     cmd.clear();
     cmd.type = ConfigurationManager::VT_BOOL;
     cv[RAW_DATA_SERVER_DELWORKDIR] = cmd;
+
+    cmd.clear();
+    cv[CONFIG_ETDIR_PATH] = cmd;
 
     config.setupVerification(cv);
 
@@ -24,9 +46,6 @@ Control::Control(QObject *parent):QObject(parent)
 
 void Control::startServer(){
 
-    QString configurationFile = COMMON_PATH_FOR_DB_CONFIGURATIONS;
-    qint32 definitions = 0;
-
     QDir(".").mkdir(DIRNAME_SERVER_LOGS);
     if (!QDir(DIRNAME_SERVER_LOGS).exists()){
         logger.appendError("Could not find or create the log directory");
@@ -35,71 +54,14 @@ void Control::startServer(){
         return;
     }
 
-    ConfigurationManager dbconfigs;
-
-#ifdef SERVER_LOCALHOST
-    configurationFile = configurationFile + "db_localhost";
-    definitions++;
-#endif
-#ifdef SERVER_PRODUCTION
-    configurationFile = configurationFile + "db_production";
-    definitions++;
-#endif
-
-    if (definitions != 1){
-        logger.appendError("The number of DB Configuration files is " + QString::number(definitions) + " instead of 1");
+    if (!config.loadConfiguration(CONFIG_FILE,COMMON_TEXT_CODEC)){
+        QString error = config.getError();
+        error = error.replace("<br>","\n");
+        logger.appendError("Configuration file errors:\n"+error);
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         emit(exitRequested());
         return;
     }
-
-    // Creating the configuration verifier
-    ConfigurationManager::CommandVerifications cv;
-    ConfigurationManager::Command cmd;
-
-    // DB configuration is all strings.
-    cmd.clear();
-    cv[CONFIG_DBHOST] = cmd;
-    cv[CONFIG_DBNAME] = cmd;
-    cv[CONFIG_DBPASSWORD] = cmd;
-    cv[CONFIG_DBUSER] = cmd;
-
-    cv[CONFIG_ID_DBHOST] = cmd;
-    cv[CONFIG_ID_DBNAME] = cmd;
-    cv[CONFIG_ID_DBPASSWORD] = cmd;
-    cv[CONFIG_ID_DBUSER] = cmd;
-
-    cv[CONFIG_PATDATA_DBHOST] = cmd;
-    cv[CONFIG_PATDATA_DBNAME] = cmd;
-    cv[CONFIG_PATDATA_DBPASSWORD] = cmd;
-    cv[CONFIG_PATDATA_DBUSER] = cmd;
-
-    cv[CONFIG_S3_ADDRESS] = cmd;
-
-    cmd.type = ConfigurationManager::VT_INT;
-    cv[CONFIG_DBPORT] = cmd;
-    cv[CONFIG_ID_DBPORT] = cmd;
-    cv[CONFIG_PATDATA_DBPORT] = cmd;
-
-    dbconfigs.setupVerification(cv);
-
-    // Database configuration files
-    if (!dbconfigs.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
-        logger.appendError("DB Configuration file errors:<br>"+dbconfigs.getError());
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        emit(exitRequested());
-        return;
-    }
-
-    if (!config.loadConfiguration(FILE_RAW_DATA_SERVER_CONF,COMMON_TEXT_CODEC)){
-        logger.appendError("Configuration file errors:<br>"+config.getError());
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        emit(exitRequested());
-        return;
-    }
-
-    // Joining the two configuration files
-    config.merge(dbconfigs);
 
     if (!QSslSocket::supportsSsl()){
         logger.appendError("No support for SSL found. Cannot continue");
@@ -114,26 +76,23 @@ void Control::startServer(){
     DBInterface dbConnPatData;
 
     // Initializing the database connections.
-    QString host = config.getString(CONFIG_DBHOST);
-    QString dbname = config.getString(CONFIG_DBNAME);
     QString user = config.getString(CONFIG_DBUSER);
     QString passwd = config.getString(CONFIG_DBPASSWORD);
-    quint16 port = config.getInt(CONFIG_DBPORT);
+
+    QString host = config.getString(CONFIG_DATA_DBHOST);
+    QString dbname = config.getString(CONFIG_DATA_DBNAME);
+    quint16 port = config.getInt(CONFIG_DATA_DBPORT);
     dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,"");
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = config.getString(CONFIG_ID_DBHOST);
     dbname = config.getString(CONFIG_ID_DBNAME);
-    user = config.getString(CONFIG_ID_DBUSER);
-    passwd = config.getString(CONFIG_ID_DBPASSWORD);
     port = config.getInt(CONFIG_ID_DBPORT);
     dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,"");
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = config.getString(CONFIG_PATDATA_DBHOST);
     dbname = config.getString(CONFIG_PATDATA_DBNAME);
-    user = config.getString(CONFIG_PATDATA_DBUSER);
-    passwd = config.getString(CONFIG_PATDATA_DBPASSWORD);
     port = config.getInt(CONFIG_PATDATA_DBPORT);
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"");
 
@@ -161,6 +120,7 @@ void Control::startServer(){
         return;
     }
     dbConnPatData.close();
+    logger.appendStandard("DB Connection test succesfull");
 
     // Listen for new connections.
     connect(listener,&SSLListener::newConnection,this,&Control::on_newConnection);
@@ -172,8 +132,8 @@ void Control::startServer(){
     }
 
     // Checking the ET directory exists
-    if (!QDir(ETDIR_PATH).exists()){
-        logger.appendError("ETDIR Directory could not be found at: " + QString(ETDIR_PATH));
+    if (!QDir(config.getString(CONFIG_ETDIR_PATH)).exists()){
+        logger.appendError("ETDIR Directory could not be found at: " + config.getString(CONFIG_ETDIR_PATH));
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         emit(exitRequested());
         return;

@@ -5,3 +5,10 @@
 
 # Time outs (in seconds) for waiting for the client to send the report data
 data_request_time_out = 180; # Seconds
+
+eyeprocessor_path = /home/ariel/repos/viewmind_projects/VMSoftwareSuite/EyeReportGenerator/bin/EyeReportGen;
+eyedbmanager_path = /home/ariel/repos/viewmind_projects/VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager;
+
+# Server Values.
+# eyeprocessor_path = /home/ec2-user/EyeReportGenerator/EyeReportGen;
+# eyedbmanager_path = /home/ec2-user/EyeDBmanager/EyeDBmanager;

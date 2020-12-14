@@ -12,26 +12,23 @@ RawDataServerSocket::RawDataServerSocket(QSslSocket *newSocket, quint64 id, Conf
 
     // Creating the DATABASE Connections.
     // Initializing the database connections.
-    QString host = config->getString(CONFIG_DBHOST);
-    QString dbname = config->getString(CONFIG_DBNAME);
     QString user = config->getString(CONFIG_DBUSER);
     QString passwd = config->getString(CONFIG_DBPASSWORD);
-    quint16 port = config->getInt(CONFIG_DBPORT);
+
+    QString host = config->getString(CONFIG_DATA_DBHOST);
+    QString dbname = config->getString(CONFIG_DATA_DBNAME);
+    quint16 port = config->getInt(CONFIG_DATA_DBPORT);
     dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,"",false);
     dbInstanceNames << dbConnBase.getInstanceName();
 
     host = config->getString(CONFIG_ID_DBHOST);
     dbname = config->getString(CONFIG_ID_DBNAME);
-    user = config->getString(CONFIG_ID_DBUSER);
-    passwd = config->getString(CONFIG_ID_DBPASSWORD);
     port = config->getInt(CONFIG_ID_DBPORT);
     dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,"",false);
     dbInstanceNames << dbConnID.getInstanceName();
 
     host = config->getString(CONFIG_PATDATA_DBHOST);
     dbname = config->getString(CONFIG_PATDATA_DBNAME);
-    user = config->getString(CONFIG_PATDATA_DBUSER);
-    passwd = config->getString(CONFIG_PATDATA_DBPASSWORD);
     port = config->getInt(CONFIG_PATDATA_DBPORT);
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"",false);
     dbInstanceNames << dbConnPatData.getInstanceName();
@@ -400,7 +397,7 @@ void RawDataServerSocket::oprLocalDBBkp(){
 
     // Password checks out. Searching for the existance of the Backup.
     QString instUID = rx.getField(DataPacket::DPFI_LOCAL_DB_BKP).data.toString();
-    QString instEDirname = ETDIR_PATH + QString("/") + instUID;
+    QString instEDirname = config->getString(CONFIG_ETDIR_PATH) + "/" + instUID;
     QStringList dirsInInstPath = QDir(instEDirname).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot);
 
     log.appendStandard("Requested local DB for institution: " + instUID);

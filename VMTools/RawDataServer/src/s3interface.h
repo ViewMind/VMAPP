@@ -11,11 +11,7 @@
 
 #define SERVER_OUTPUT_FILE        "temp_output_file"
 #define SERVER_WORK_DIR           "work"
-
-#ifdef SERVER_LOCALHOST
 #define SSH_USER_DNS              "ec2-user@18.191.142.5"
-#define SSH_KEY_LOCATION          "/home/ariela/Dropbox/ViewMindData/awspem/aws_ec2_first_time.pem"
-#endif
 
 
 class S3Interface
@@ -43,6 +39,8 @@ private:
     QString s3Address;
 
     bool runShellCommands(const QStringList &shellCommands);
+
+    bool runningLocally;
 
 };
 

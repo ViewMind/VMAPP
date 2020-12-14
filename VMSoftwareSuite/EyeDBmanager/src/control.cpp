@@ -52,23 +52,13 @@ void Control::run(){
     // Joining the data.
     configuration.merge(eyeRepGenConf);
 
-    // Doing the DB checks.
-    QString configurationFile = COMMON_PATH_FOR_DB_CONFIGURATIONS;
-    qint32 definitions = 0;
+    // Getting the local configurations.
+    QString configurationFile = CONFIG_FILE;
 
     ConfigurationManager dbconfigs;
 
-#ifdef SERVER_LOCALHOST
-    configurationFile = configurationFile + "db_localhost";
-    definitions++;
-#endif
-#ifdef SERVER_PRODUCTION
-    configurationFile = configurationFile + "db_production";
-    definitions++;
-#endif
-
-    if (definitions != 1){
-        log.appendError("The number of DB Configuration files is " + QString::number(definitions) + " instead of 1");
+    if (!QFile::exists(configurationFile)){
+        log.appendError("Configuration file does noe exist: " + configurationFile + " instead of 1");
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         exitProgram(EYEDBMNG_ANS_PARAM_ERROR);
         return;
@@ -80,30 +70,25 @@ void Control::run(){
 
     // DB configuration is all strings.
     cmd.clear();
-    cv[CONFIG_DBHOST] = cmd;
-    cv[CONFIG_DBNAME] = cmd;
     cv[CONFIG_DBPASSWORD] = cmd;
     cv[CONFIG_DBUSER] = cmd;
 
+    cv[CONFIG_DATA_DBHOST] = cmd;
+    cv[CONFIG_DATA_DBNAME] = cmd;
+
     cv[CONFIG_ID_DBHOST] = cmd;
     cv[CONFIG_ID_DBNAME] = cmd;
-    cv[CONFIG_ID_DBPASSWORD] = cmd;
-    cv[CONFIG_ID_DBUSER] = cmd;
 
     cv[CONFIG_PATDATA_DBHOST] = cmd;
     cv[CONFIG_PATDATA_DBNAME] = cmd;
-    cv[CONFIG_PATDATA_DBPASSWORD] = cmd;
-    cv[CONFIG_PATDATA_DBUSER] = cmd;
 
     cv[CONFIG_DASH_DBHOST] = cmd;
     cv[CONFIG_DASH_DBNAME] = cmd;
-    cv[CONFIG_DASH_DBPASSWORD] = cmd;
-    cv[CONFIG_DASH_DBUSER] = cmd;
 
     cv[CONFIG_S3_ADDRESS] = cmd;
 
     cmd.type = ConfigurationManager::VT_INT;
-    cv[CONFIG_DBPORT] = cmd;
+    cv[CONFIG_DATA_DBPORT] = cmd;
     cv[CONFIG_ID_DBPORT] = cmd;
     cv[CONFIG_PATDATA_DBPORT] = cmd;
     cv[CONFIG_DASH_DBPORT] = cmd;
@@ -111,7 +96,7 @@ void Control::run(){
     dbconfigs.setupVerification(cv);
 
     // Database configuration files
-    if (!dbconfigs.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
+    if (!dbconfigs.loadConfiguration(CONFIG_FILE,COMMON_TEXT_CODEC)){
         log.appendError("DB Configuration file errors:<br>"+dbconfigs.getError());
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         exitProgram(EYEDBMNG_ANS_FILE_ERROR);
@@ -145,34 +130,29 @@ void Control::run(){
     }
 
     // Initializing the database connections.
-    QString host = configuration.getString(CONFIG_DBHOST);
-    QString dbname = configuration.getString(CONFIG_DBNAME);
     QString user = configuration.getString(CONFIG_DBUSER);
     QString passwd = configuration.getString(CONFIG_DBPASSWORD);
-    quint16 port = configuration.getInt(CONFIG_DBPORT);
+
+    QString host = configuration.getString(CONFIG_DATA_DBHOST);
+    QString dbname = configuration.getString(CONFIG_DATA_DBNAME);
+    quint16 port = configuration.getInt(CONFIG_DATA_DBPORT);
     dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = configuration.getString(CONFIG_ID_DBHOST);
     dbname = configuration.getString(CONFIG_ID_DBNAME);
-    user = configuration.getString(CONFIG_ID_DBUSER);
-    passwd = configuration.getString(CONFIG_ID_DBPASSWORD);
     port = configuration.getInt(CONFIG_ID_DBPORT);
     dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = configuration.getString(CONFIG_PATDATA_DBHOST);
     dbname = configuration.getString(CONFIG_PATDATA_DBNAME);
-    user = configuration.getString(CONFIG_PATDATA_DBUSER);
-    passwd = configuration.getString(CONFIG_PATDATA_DBPASSWORD);
     port = configuration.getInt(CONFIG_PATDATA_DBPORT);
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = configuration.getString(CONFIG_DASH_DBHOST);
     dbname = configuration.getString(CONFIG_DASH_DBNAME);
-    user = configuration.getString(CONFIG_DASH_DBUSER);
-    passwd = configuration.getString(CONFIG_DASH_DBPASSWORD);
     port = configuration.getInt(CONFIG_DASH_DBPORT);
     dbConnDash.setupDB(DB_NAME_DASHBOARD,host,dbname,user,passwd,port,logfile);
 

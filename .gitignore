@@ -83,3 +83,5 @@ Scripts/inst_data_available/OUTPUTS
 VMSoftwareSuite/EyeExperimenter/src/experiment_data/perception_study.dat.short
 
 Scripts/php/*.csv
+*local_flag_file
+

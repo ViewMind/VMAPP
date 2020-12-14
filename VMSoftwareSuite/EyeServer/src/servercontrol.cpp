@@ -7,6 +7,9 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
     ConfigurationManager::CommandVerifications cv;
     ConfigurationManager::Command cmd;
 
+    cv[CONFIG_EYEPROCESSOR_PATH] = cmd;
+    cv[CONFIG_EYEDBMANAGER_PATH] = cmd;
+
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
@@ -24,7 +27,7 @@ void ServerControl::startServer(){
         return;
     }
 
-    if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
+    if (!config.loadConfiguration(CONFIG_FILE,COMMON_TEXT_CODEC)){
         log.appendError("Could not load configuration file: " + config.getError());
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         emit(exitRequested());

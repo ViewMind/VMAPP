@@ -36,7 +36,6 @@ HEADERS += \
     ../../../CommonClasses/server_defines.h \
     control.h
 
-RESOURCES += \
-    configurations.qrc
+RESOURCES +=
 
 
