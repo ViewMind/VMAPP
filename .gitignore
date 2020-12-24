@@ -84,4 +84,8 @@ VMSoftwareSuite/EyeExperimenter/src/experiment_data/perception_study.dat.short
 
 Scripts/php/*.csv
 *local_flag_file
+*local_config
+*.cnf
+
+Scripts/php/privileges*
 

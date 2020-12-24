@@ -42,13 +42,15 @@ QString RDataProcessor::processNBackRT(const QString &nbackrtFile){
     QString report = "<br>NBACK RT RESULTS:<br>";
 
     // Saving the DB Data
-    dbdata.insert(TEYERES_COL_NBRT_FIX_ENC,results.getInt(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC));
-    dbdata.insert(TEYERES_COL_NBRT_FIX_RET,results.getInt(CONFIG_RESULTS_NBACKRT_NUM_FIX_RET));
-    dbdata.insert(TEYERES_COL_NBRT_INHIB_PROB,results.getReal(CONFIG_RESULTS_NBACKRT_INHIBITORY_PROBLEMS));
-    dbdata.insert(TEYERES_COL_NBRT_SEQ_COMPLETE,results.getReal(CONFIG_RESULTS_NBACKRT_SEQ_COMPLETE));
-    dbdata.insert(TEYERES_COL_NBRT_TARGET_HIT,results.getReal(CONFIG_RESULTS_NBACKRT_TARGET_HIT));
-    dbdata.insert(TEYERES_COL_NBRT_MEAN_RESP_TIME,results.getReal(CONFIG_RESULTS_NBACKRT_MEAN_RESP_TIME));
-    dbdata.insert(TEYERES_COL_NBRT_MEAN_SAC_AMP,results.getReal(CONFIG_RESULTS_NBACKRT_MEAN_SAC_AMP));
+    QVariantMap nbrt_data;
+    nbrt_data.insert(TEYERES_JSON_NAME_NBRT_FIX_ENC,results.getInt(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC));
+    nbrt_data.insert(TEYERES_JSON_NAME_NBRT_FIX_RET,results.getInt(CONFIG_RESULTS_NBACKRT_NUM_FIX_RET));
+    nbrt_data.insert(TEYERES_JSON_NAME_NBRT_INHIB_PROB,results.getReal(CONFIG_RESULTS_NBACKRT_INHIBITORY_PROBLEMS));
+    nbrt_data.insert(TEYERES_JSON_NAME_NBRT_SEQ_COMPLETE,results.getReal(CONFIG_RESULTS_NBACKRT_SEQ_COMPLETE));
+    nbrt_data.insert(TEYERES_JSON_NAME_NBRT_TARGET_HIT,results.getReal(CONFIG_RESULTS_NBACKRT_TARGET_HIT));
+    nbrt_data.insert(TEYERES_JSON_NAME_NBRT_MEAN_RESP_TIME,results.getReal(CONFIG_RESULTS_NBACKRT_MEAN_RESP_TIME));
+    nbrt_data.insert(TEYERES_JSON_NAME_NBRT_MEAN_SAC_AMP,results.getReal(CONFIG_RESULTS_NBACKRT_MEAN_SAC_AMP));
+    dbdata.insert(TEYERES_JSON_EXP_GROUP_NBACKRT,nbrt_data);
 
     // Text report
     report = report + "Number of Fixations in Encoding: " + results.getString(CONFIG_RESULTS_NBACKRT_NUM_FIX_ENC)  + "<br>";
@@ -99,11 +101,13 @@ QString RDataProcessor::processGoNoGo(const QString &gonogoFile){
     QString report = "<br>GONOGO RESULTS:<br>";
 
     // Saving the DB Data
-    dbdata.insert(TEYERES_COL_GNG_DMT_FACILITATE,results.getReal(CONFIG_RESULTS_GNG_DMT_FACILITATE));
-    dbdata.insert(TEYERES_COL_GNG_DMT_INTERFERENCE,results.getReal(CONFIG_RESULTS_GNG_DMT_INTERFERENCE));
-    dbdata.insert(TEYERES_COL_GNG_PIP_FACILIATATE,results.getReal(CONFIG_RESULTS_GNG_PIP_FACILITATE));
-    dbdata.insert(TEYERES_COL_GNG_PIP_INTERFERENCE,results.getReal(CONFIG_RESULTS_GNG_PIP_INTERFERENCE));
-    dbdata.insert(TEYERES_COL_GNG_SPEED_PROCESSING,results.getReal(CONFIG_RESULTS_GNG_SPEED_PROCESSING));
+    QVariantMap gng_data;
+    gng_data.insert(TEYERES_JSON_NAME_GNG_DMT_FACILITATE,results.getReal(CONFIG_RESULTS_GNG_DMT_FACILITATE));
+    gng_data.insert(TEYERES_JSON_NAME_GNG_DMT_INTERFERENCE,results.getReal(CONFIG_RESULTS_GNG_DMT_INTERFERENCE));
+    gng_data.insert(TEYERES_JSON_NAME_GNG_PIP_FACILIATATE,results.getReal(CONFIG_RESULTS_GNG_PIP_FACILITATE));
+    gng_data.insert(TEYERES_JSON_NAME_GNG_PIP_INTERFERENCE,results.getReal(CONFIG_RESULTS_GNG_PIP_INTERFERENCE));
+    gng_data.insert(TEYERES_JSON_NAME_GNG_SPEED_PROCESSING,results.getReal(CONFIG_RESULTS_GNG_SPEED_PROCESSING));
+    dbdata.insert(TEYERES_JSON_EXP_GROUP_GONOGO,gng_data);
 
     // Text report
     report = report + "Decision Making Time - Facilitate: " + results.getString(CONFIG_RESULTS_GNG_DMT_FACILITATE)  + "<br>";
@@ -157,11 +161,13 @@ QString RDataProcessor::processReading(const QString &readingFile){
     qint32 single  = results.getReal(CONFIG_RESULTS_RETRIEVAL_MEMORY)*total/100;
 
     // Saving the DB Data to the right eye, by default, even if it is the right eye
-    dbdata.insert(TEYERES_COL_RDFSTEPFIXR,first);
-    dbdata.insert(TEYERES_COL_RDMSTEPFIXR,multi);
-    dbdata.insert(TEYERES_COL_RDSSTEPFIXR,single);
-    dbdata.insert(TEYERES_COL_RDTOTALFIXR,total);
-    dbdata.insert(TEYERES_COL_READ_COG_IMPAIR,results.getReal(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));
+    QVariantMap rd_data;
+    rd_data.insert(TEYERES_JSON_NAME_RDFSTEPFIXR,first);
+    rd_data.insert(TEYERES_JSON_NAME_RDMSTEPFIXR,multi);
+    rd_data.insert(TEYERES_JSON_NAME_RDSSTEPFIXR,single);
+    rd_data.insert(TEYERES_JSON_NAME_RDTOTALFIXR,total);
+    rd_data.insert(TEYERES_JSON_NAME_READ_COG_IMPAIR,results.getReal(CONFIG_RESULTS_READ_PREDICTED_DETERIORATION));
+    dbdata.insert(TEYERES_JSON_EXP_GROUP_READING,rd_data);
 
     // Report text for Left Eye
     report = report + "Total number of fixations: " + QString::number(total)  + "<br>";
@@ -236,8 +242,11 @@ QString RDataProcessor::processBinding(const QString &bcfile, const QString &ucf
 
     qreal bcindex = results.getReal(CONFIG_RESULTS_BC_PREDICTED_DETERIORATION);
     qreal ucindex = results.getReal(CONFIG_RESULTS_UC_PREDICTED_DETERIORATION);
-    dbdata.insert(TEYERES_COL_BIND_INDEX_BC,bcindex);
-    dbdata.insert(TEYERES_COL_BIND_INDEX_UC,ucindex);
+
+    QVariantMap bd_data;
+    bd_data.insert(TEYERES_JSON_NAME_BIND_INDEX_BC,bcindex);
+    bd_data.insert(TEYERES_JSON_NAME_BIND_INDEX_UC,ucindex);
+    dbdata.insert(TEYERES_JSON_EXP_GROUP_BINDING,bd_data);
 
     QString bcgroup = results.getString(CONFIG_RESULTS_BC_PREDICTED_GROUP);
     QString ucgroup = results.getString(CONFIG_RESULTS_UC_PREDICTED_GROUP);

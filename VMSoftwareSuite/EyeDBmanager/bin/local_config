@@ -1,5 +1,20 @@
 #--------------------------------------------------------------------------------------#
-#                        EyeDBManager Configuration File                               #
+#                        EyeServer Configuration File                                  #
+#--------------------------------------------------------------------------------------#
+
+
+# Time outs (in seconds) for waiting for the client to send the report data
+data_request_time_out = 180; # Seconds
+
+eyeprocessor_path = /home/ariel/repos/viewmind_projects/VMSoftwareSuite/EyeReportGenerator/bin/EyeReportGen;
+eyedbmanager_path = /home/ariel/repos/viewmind_projects/VMSoftwareSuite/EyeDBmanager/bin/EyeDBmanager;
+
+# Server Values.
+# eyeprocessor_path = /home/ec2-user/EyeReportGenerator/EyeReportGen;
+# eyedbmanager_path = /home/ec2-user/EyeDBmanager/EyeDBmanager;
+
+#--------------------------------------------------------------------------------------#
+#                        EyeDBManager Configuration                                    #
 #--------------------------------------------------------------------------------------#
 
 # Configuration for Base DB Connection
@@ -20,9 +35,11 @@ db_patdata_host   = localhost;
 db_patdata_name   = viewmind_patdata;
 db_patdata_port   = 3306;
 
+# Configuration for the viewmind dashboard database
+db_dash_host   = localhost;
+db_dash_name   = viewmind_dashboard;
+db_dash_port   = 3306;
 
 # The S3 address
 s3_address = viewmind-raw-eye-data;
 
-# Changes configuration of php mailer for use from local laptop or production server. 
-php_mailer_local = true;

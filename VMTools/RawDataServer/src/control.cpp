@@ -24,10 +24,14 @@ Control::Control(QObject *parent):QObject(parent)
     cv[CONFIG_DATA_DBHOST] = cmd;
     cv[CONFIG_DATA_DBNAME] = cmd;
 
+    cv[CONFIG_DASH_DBHOST] = cmd;
+    cv[CONFIG_DASH_DBNAME] = cmd;
+
     cmd.type = ConfigurationManager::VT_INT;
     cv[CONFIG_DATA_DBPORT] = cmd;
     cv[CONFIG_ID_DBPORT] = cmd;
     cv[CONFIG_PATDATA_DBPORT] = cmd;
+    cv[CONFIG_DASH_DBPORT] = cmd;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_BOOL;
@@ -74,6 +78,7 @@ void Control::startServer(){
     DBInterface dbConnBase;
     DBInterface dbConnID;
     DBInterface dbConnPatData;
+    DBInterface dbConnDash;
 
     // Initializing the database connections.
     QString user = config.getString(CONFIG_DBUSER);
@@ -95,6 +100,11 @@ void Control::startServer(){
     dbname = config.getString(CONFIG_PATDATA_DBNAME);
     port = config.getInt(CONFIG_PATDATA_DBPORT);
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"");
+
+    host = config.getString(CONFIG_DASH_DBHOST);
+    dbname = config.getString(CONFIG_DASH_DBNAME);
+    port = config.getInt(CONFIG_DASH_DBPORT);
+    dbConnDash.setupDB(DB_NAME_DASHBOARD,host,dbname,user,passwd,port,"");
 
     logger.appendStandard("Testing DB Connections...");
     if (!dbConnBase.open()){
@@ -120,6 +130,16 @@ void Control::startServer(){
         return;
     }
     dbConnPatData.close();
+
+    if (!dbConnDash.open()){
+        logger.appendError("FAIL TEST CONNECTION DB DASH: " + dbConnDash.getError());
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        emit(exitRequested());
+        return;
+    }
+    dbConnDash.close();
+
+
     logger.appendStandard("DB Connection test succesfull");
 
     // Listen for new connections.

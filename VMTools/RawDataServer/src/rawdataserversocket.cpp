@@ -33,6 +33,13 @@ RawDataServerSocket::RawDataServerSocket(QSslSocket *newSocket, quint64 id, Conf
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"",false);
     dbInstanceNames << dbConnPatData.getInstanceName();
 
+    host = config->getString(CONFIG_DASH_DBHOST);
+    dbname = config->getString(CONFIG_DASH_DBNAME);
+    port = config->getInt(CONFIG_DASH_DBPORT);
+    dbConnDash.setupDB(DB_NAME_DASHBOARD,host,dbname,user,passwd,port,"",false);
+    dbInstanceNames << dbConnDash.getInstanceName();
+
+
     // Customized log file.
     log.setLogFileLocation(QString(DIRNAME_SERVER_LOGS) + "/" + transactionID);
     log.appendStandard("Created connection id: " + transactionID + " with address " + sslSocket->peerAddress().toString());
@@ -66,6 +73,7 @@ void RawDataServerSocket::on_disconnected(){
             dbConnBase.close();
             dbConnID.close();
             dbConnPatData.close();
+            dbConnDash.close();
             emit(socketDone(ID));
         }
         disconnectReceived = true;
@@ -75,6 +83,7 @@ void RawDataServerSocket::on_disconnected(){
         dbConnBase.close();
         dbConnID.close();
         dbConnPatData.close();
+        dbConnDash.close();
         emit(socketDone(ID));
     }
 }
@@ -632,21 +641,21 @@ void RawDataServerSocket::oprInstList(){
     QStringList ans;
     QStringList columns;
 
-    if (!dbConnBase.open()){
-        log.appendError("Getting institutions names and uids, could not open DB CON BASE: " + dbConnBase.getError());
+    if (!dbConnDash.open()){
+        log.appendError("Getting institutions names and uids, could not open DB CON DASH: " + dbConnDash.getError());
         sendErrorMessage("Internal DB Open ERROR");
         return;
     }
 
     columns << TINST_COL_ENABLED << TINST_COL_UID << TINST_COL_NAME;
 
-    if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,"")){
-        log.appendError("Getting institutions names and uids: " + dbConnBase.getError());
+    if (!dbConnDash.readFromDB(TABLE_INSTITUTION,columns,"")){
+        log.appendError("Getting institutions names and uids: " + dbConnDash.getError());
         sendErrorMessage("Internal DB Query ERROR");
         return;
     }
 
-    DBData res = dbConnBase.getLastResult();
+    DBData res = dbConnDash.getLastResult();
 
     for (qint32 i = 0; i < res.rows.size(); i++){
 

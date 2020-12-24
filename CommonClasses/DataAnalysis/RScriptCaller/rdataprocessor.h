@@ -3,6 +3,7 @@
 
 #include <QProcess>
 #include <QFileInfo>
+#include <QJsonValue>
 
 #include "../../SQLConn/dbdescription.h"
 #include "../../ConfigurationManager/configurationmanager.h"
@@ -36,14 +37,15 @@ public:
     QString getWarning() const {return warning;}
 
     ConfigurationManager getResults() const {return results;}
-    QHash<QString,qreal> getDBData() const {return dbdata;}
+    QVariantMap getDBData() const {return dbdata;}
 
 private:
     QString error;
     QString warning;
     ConfigurationManager results;
     QString workDirectory;
-    QHash<QString,qreal> dbdata;
+    //QHash<QString,qreal> dbdata;
+    QVariantMap dbdata;
     bool checkAndMerge(const QString &outputconf);
 };
 

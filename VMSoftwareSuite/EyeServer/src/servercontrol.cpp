@@ -4,16 +4,7 @@ ServerControl::ServerControl(QObject *parent) : QObject(parent)
 {
 
     // Creating the configuration verifier
-    ConfigurationManager::CommandVerifications cv;
-    ConfigurationManager::Command cmd;
-
-    cv[CONFIG_EYEPROCESSOR_PATH] = cmd;
-    cv[CONFIG_EYEDBMANAGER_PATH] = cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_INT;
-    cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
-
+    ConfigurationManager::CommandVerifications cv = getLocalConfigVerifications();
     config.setupVerification(cv);
 
 }

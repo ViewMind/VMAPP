@@ -28,11 +28,12 @@ void DBInterface::setupDB(const QString &instanceName, const QString &host, cons
 }
 
 bool DBInterface::open(){
-    //qWarning() << "Opening DB Connection with " << dbConnection.userName() << dbConnection.password();
-    if (!dbConnection.open()){
+    //qWarning() << "Opening DB Connection with " << dbConnection.userName() << dbConnection.password() << dbConnection.databaseName() << dbConnection.port() << dbConnection.hostName();
+    if (!dbConnection.open()){        
         error = dbConnection.lastError().text();
         return false;
     }
+    //qWarning() << "ERROR:" << dbConnection.lastError().text();
     return true;
 }
 

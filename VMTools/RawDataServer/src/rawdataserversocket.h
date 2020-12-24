@@ -42,6 +42,8 @@ private:
     DBInterface dbConnBase;
     DBInterface dbConnID;
     DBInterface dbConnPatData;
+    DBInterface dbConnDash;
+
     QString verifcationPassword;
     ConfigurationManager *config;
     QStringList dbInstanceNames;

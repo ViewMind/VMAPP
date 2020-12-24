@@ -20,5 +20,10 @@ db_patdata_host   = localhost;
 db_patdata_name   = viewmind_patdata;
 db_patdata_port   = 3306;
 
+# Configuration for the viewmind dashboard database
+db_dash_host   = localhost;
+db_dash_name   = viewmind_dashboard;
+db_dash_port   = 3306;
+
 # Path to the ET Dir. 
 etdir_path = ../../../VMSoftwareSuite/EyeUpdateServer/bin/etdir/;

@@ -10,6 +10,8 @@
 
 #include <QThread>
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 #include "EyeMatrixGenerator/edpreading.h"
 #include "EyeMatrixGenerator/edpimages.h"

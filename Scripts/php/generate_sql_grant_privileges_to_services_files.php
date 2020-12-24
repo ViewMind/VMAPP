@@ -5,7 +5,7 @@
   $DB_DASH     = "viewmind_dashboard";
   $DB_PATDATA  = "viewmind_patdata";
   
-  $HOST        = "localhost";
+  $HOST        = "%";
   
   $SERVICE_EYE_DB_MANAGER     = "srvc_eye_db_manager";
   $PASS_SRV_EYE_DB_MANAGER    = "2!PL0iJ34YK@0c%!ls0d";
@@ -33,11 +33,6 @@
   $TABLE_EYE_RESULTS          = "tEyeResults";
   $TABLE_FDATA                = "tFData";          
   $TABLE_PERFORMANCE          = "tPerformance";    
-  $TABLE_RESULTS_BINDING      = "tResultsBinding"; 
-  $TABLE_RESULTS_GONOGO       = "tResultsGoNoGo";
-  $TABLE_RESULTS_NBACKRT      = "tResultsNBackRT"; 
-  $TABLE_RESULTS_READING      = "tResultsReading"; 
-  $TABLE_STUDIES_IN_REPORT    = "tStudiesInReport";
   
   $TABLE_PATIENT_IDS          = "tPatientIDs";
   
@@ -60,19 +55,16 @@
   $srv["table_privileges"][$DB_DATA][$TABLE_EYE_RESULTS]         = [$PRIV_INSERT,$PRIV_SELECT];
   $srv["table_privileges"][$DB_DATA][$TABLE_FDATA]               = [$PRIV_INSERT];
   $srv["table_privileges"][$DB_DATA][$TABLE_PERFORMANCE]         = [$PRIV_INSERT,$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_BINDING]     = [$PRIV_INSERT,$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_GONOGO]      = [$PRIV_INSERT,$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_NBACKRT]     = [$PRIV_INSERT,$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_READING]     = [$PRIV_INSERT,$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_STUDIES_IN_REPORT]   = [$PRIV_INSERT];
+  
+  $srv["table_privileges"][$DB_DASH][$TABLE_PRODUCTION]          = [$PRIV_SELECT];
                                                                  
-  $srv["table_privileges"][$DB_DASH][$TABLE_EVALUATIONS]         = [$PRIV_SELECT];
+  $srv["table_privileges"][$DB_DASH][$TABLE_EVALUATIONS]         = [$PRIV_SELECT,$PRIV_UPDATE];
   $srv["table_privileges"][$DB_DASH][$TABLE_INSTITUTIONS]        = [$PRIV_SELECT];
                                                                  
-  $srv["table_privileges"][$DB_PATID][$TABLE_PATIENT_IDS]        = [$PRIV_INSERT];
+  $srv["table_privileges"][$DB_PATID][$TABLE_PATIENT_IDS]        = [$PRIV_SELECT,$PRIV_INSERT];
                                                                  
-  $srv["table_privileges"][$DB_PATDATA][$TABLE_MEDICAL_RECORDS]  = [$PRIV_INSERT];
-  $srv["table_privileges"][$DB_PATDATA][$TABLE_PATIENT_DATA]     = [$PRIV_INSERT];
+  $srv["table_privileges"][$DB_PATDATA][$TABLE_MEDICAL_RECORDS]  = [$PRIV_SELECT,$PRIV_INSERT];
+  $srv["table_privileges"][$DB_PATDATA][$TABLE_PATIENT_DATA]     = [$PRIV_SELECT,$PRIV_INSERT];
   
   $services[] = $srv;
   
@@ -96,11 +88,6 @@
   $srv["table_privileges"][$DB_DATA][$TABLE_EYE_RESULTS]            = [$PRIV_SELECT];
   $srv["table_privileges"][$DB_DATA][$TABLE_FDATA]                  = [$PRIV_SELECT];
   $srv["table_privileges"][$DB_DATA][$TABLE_PERFORMANCE]            = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_BINDING]        = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_GONOGO]         = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_NBACKRT]        = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_READING]        = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_STUDIES_IN_REPORT]      = [$PRIV_SELECT];  
 
   $services[] = $srv;
     
@@ -112,16 +99,13 @@
   $srv["table_privileges"][$DB_DATA][$TABLE_EYE_RESULTS]            = [$PRIV_SELECT];
   $srv["table_privileges"][$DB_DATA][$TABLE_FDATA]                  = [$PRIV_SELECT];
   $srv["table_privileges"][$DB_DATA][$TABLE_PERFORMANCE]            = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_BINDING]        = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_GONOGO]         = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_NBACKRT]        = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_RESULTS_READING]        = [$PRIV_SELECT];
-  $srv["table_privileges"][$DB_DATA][$TABLE_STUDIES_IN_REPORT]      = [$PRIV_SELECT];  
   
   $srv["table_privileges"][$DB_PATID][$TABLE_PATIENT_IDS]           = [$PRIV_SELECT];
                                                                     
   $srv["table_privileges"][$DB_PATDATA][$TABLE_MEDICAL_RECORDS]     = [$PRIV_SELECT];
   $srv["table_privileges"][$DB_PATDATA][$TABLE_PATIENT_DATA]        = [$PRIV_SELECT];
+  
+  $srv["table_privileges"][$DB_DASH][$TABLE_INSTITUTIONS]           = [$PRIV_SELECT];
   
   $services[] = $srv;  
   
@@ -135,7 +119,7 @@
   
   foreach ($services as $srv){
  
-     $user["DROP"]   = "DROP USER IF EXISTS '" . $srv["mysql_user"] . "'@'$HOST';";
+     $user["DROP"]   = "DROP USER IF EXISTS '" . $srv["mysql_user"] . "'@'$HOST';\n" . "DROP USER IF EXISTS '" . $srv["mysql_user"] . "'@'localhost';\n";
      $user["CREATE"] = "CREATE USER '" . $srv["mysql_user"] . "'@'$HOST' IDENTIFIED BY '" . $srv["mysql_pass"] . "';";
      
      foreach ($srv["table_privileges"] as $db_name => $tables){
@@ -154,50 +138,59 @@
   }
   
   if ($flag_local){
-    // Locally there are N Database in the same server all of them starting with iv_
-    $fid = fopen("privileges.sql","w");
-    
-    // Adding only the drop and creation statements at first.
-    foreach ($sql_statements as $db_name => $users){
-      foreach($users as $user => $struct){
-         fwrite($fid,$struct["DROP"] . "\n");
-         fwrite($fid,"FLUSH PRIVILEGES;\n");
-         fwrite($fid,$struct["CREATE"] . "\n");
-      }
-    }
-    
-    // Now adding all privileges. 
-    foreach ($sql_statements as $db_name => $users){
-      foreach($users as $user => $struct){
-         fwrite($fid,implode("\n",$struct["GRANTS"]) . "\n");
-      }
-    }    
-    
-    fclose($fid);
-  }
+  
+     echo "Universal Host\n";  
+  
+     echo "Running Locally\n";
+     // Locally there are N Database in the same server all of them starting with iv_
+     $priv_file = "privileges.sql";
+     $fid = fopen($priv_file,"w");
+     
+     // Adding only the drop and creation statements at first.
+     foreach ($sql_statements as $db_name => $users){
+       foreach($users as $user => $struct){
+          fwrite($fid,$struct["DROP"] . "\n");
+          fwrite($fid,"FLUSH PRIVILEGES;\n");
+          fwrite($fid,$struct["CREATE"] . "\n");
+       }
+     }
+     
+     // Now adding all privileges. 
+     foreach ($sql_statements as $db_name => $users){
+       foreach($users as $user => $struct){
+          fwrite($fid,implode("\n",$struct["GRANTS"]) . "\n");
+       }
+     }    
+     
+     $cnf = "viewmind_data.cnf";
+     $cmd = "mysql --defaults-extra-file=$cnf < $priv_file";
+     echo "Running MySQL cmd: $cmd\n";
+     shell_exec($cmd);       
+     fclose($fid);
+  }  
   else{
-    // Remotely each Database can even be in their own separate server. We need a file for each server (Database).
-    
-    foreach ($sql_statements as $db_name => $users){
-    
-      $fid = fopen("privileges-$db_name.sql","w");
-    
-      foreach($users as $user => $struct){
-         fwrite($fid,$struct["DROP"] . "\n");
-         fwrite($fid,"FLUSH PRIVILEGES;\n");
-         fwrite($fid,$struct["CREATE"] . "\n");
-         fwrite($fid,implode("\n",$struct["GRANTS"]) . "\n");
-      }
-      
-      fclose($fid);
-    }
-    
-  
+     
+     echo "Separate Host\n";  
+     
+     // Remotely each Database can even be in their own separate server. We need a file for each server (Database).    
+     foreach ($sql_statements as $db_name => $users){
+     
+       $priv_file = "privileges-$db_name.sql";       
+       $fid = fopen($priv_file,"w");  
+       foreach($users as $user => $struct){
+          fwrite($fid,$struct["DROP"] . "\n");
+          fwrite($fid,"FLUSH PRIVILEGES;\n");
+          fwrite($fid,$struct["CREATE"] . "\n");
+          fwrite($fid,implode("\n",$struct["GRANTS"]) . "\n");
+       }    
+       fclose($fid);
+       
+       $cnf = $db_name . ".cnf";
+       $cmd = "mysql --defaults-extra-file=$cnf < $priv_file";
+       echo "Running MySQL cmd: $cmd\n";
+       shell_exec($cmd);  
+     }
   }
-  
-  //var_dump($sql_statements);
-  
-  
-  
+
   
 ?>

@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------------------------#
-#                        EyeServer Configuration File                           #
+#                        EyeServer Configuration File                                  #
 #--------------------------------------------------------------------------------------#
 
 
@@ -12,3 +12,34 @@ eyedbmanager_path = /home/ariel/repos/viewmind_projects/VMSoftwareSuite/EyeDBman
 # Server Values.
 # eyeprocessor_path = /home/ec2-user/EyeReportGenerator/EyeReportGen;
 # eyedbmanager_path = /home/ec2-user/EyeDBmanager/EyeDBmanager;
+
+#--------------------------------------------------------------------------------------#
+#                        EyeDBManager Configuration                                    #
+#--------------------------------------------------------------------------------------#
+
+# Configuration for Base DB Connection
+db_user           = srvc_eye_db_manager;
+db_passwd         = 2!PL0iJ34YK@0c%!ls0d;
+
+db_data_host      = localhost;
+db_data_name      = viewmind_data;
+db_data_port      = 3306;
+
+# Configuration for ID DB.
+db_id_host        = localhost;
+db_id_name        = viewmind_id;
+db_id_port        = 3306;
+
+# Configuration for the viewmind patient data database
+db_patdata_host   = localhost;
+db_patdata_name   = viewmind_patdata;
+db_patdata_port   = 3306;
+
+# Configuration for the viewmind dashboard database
+db_dash_host   = localhost;
+db_dash_name   = viewmind_dashboard;
+db_dash_port   = 3306;
+
+# The S3 address
+s3_address = viewmind-raw-eye-data;
+

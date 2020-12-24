@@ -33,6 +33,7 @@ void Control::run(){
     }
 
     QString log_file_path = QString(DIRNAME_SERVER_LOGS) + "/" + configuration.getString(CONFIG_TRANSACTION_ID);
+    //qDebug() << "Log PATH" << log_file_path;
     log.setLogFileLocation(log_file_path);
 
     QString tID  = "DBMNG_" + configuration.getString(CONFIG_TRANSACTION_ID);
@@ -65,38 +66,11 @@ void Control::run(){
     }
 
     // Creating the configuration verifier
-    ConfigurationManager::CommandVerifications cv;
-    ConfigurationManager::Command cmd;
-
-    // DB configuration is all strings.
-    cmd.clear();
-    cv[CONFIG_DBPASSWORD] = cmd;
-    cv[CONFIG_DBUSER] = cmd;
-
-    cv[CONFIG_DATA_DBHOST] = cmd;
-    cv[CONFIG_DATA_DBNAME] = cmd;
-
-    cv[CONFIG_ID_DBHOST] = cmd;
-    cv[CONFIG_ID_DBNAME] = cmd;
-
-    cv[CONFIG_PATDATA_DBHOST] = cmd;
-    cv[CONFIG_PATDATA_DBNAME] = cmd;
-
-    cv[CONFIG_DASH_DBHOST] = cmd;
-    cv[CONFIG_DASH_DBNAME] = cmd;
-
-    cv[CONFIG_S3_ADDRESS] = cmd;
-
-    cmd.type = ConfigurationManager::VT_INT;
-    cv[CONFIG_DATA_DBPORT] = cmd;
-    cv[CONFIG_ID_DBPORT] = cmd;
-    cv[CONFIG_PATDATA_DBPORT] = cmd;
-    cv[CONFIG_DASH_DBPORT] = cmd;
-
+    ConfigurationManager::CommandVerifications cv = getLocalConfigVerifications();
     dbconfigs.setupVerification(cv);
 
     // Database configuration files
-    if (!dbconfigs.loadConfiguration(CONFIG_FILE,COMMON_TEXT_CODEC)){
+    if (!dbconfigs.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
         log.appendError("DB Configuration file errors:<br>"+dbconfigs.getError());
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         exitProgram(EYEDBMNG_ANS_FILE_ERROR);
@@ -258,7 +232,7 @@ void Control::checkMode(){
     columns << "product_sn";
 
     if (!dbConnDash.specialQuery(serial_check_query,columns)){
-        log.appendError("When querying serial number for institituion: " + dbConnBase.getError());
+        log.appendError("When querying serial number for institituion: " + dbConnDash.getError());
         finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
 

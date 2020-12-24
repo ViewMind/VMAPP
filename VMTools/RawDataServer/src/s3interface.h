@@ -12,6 +12,7 @@
 #define SERVER_OUTPUT_FILE        "temp_output_file"
 #define SERVER_WORK_DIR           "work"
 #define SSH_USER_DNS              "ec2-user@18.191.142.5"
+#define LOCAL_FLAG_FILE           "local_flag_file"
 
 
 class S3Interface

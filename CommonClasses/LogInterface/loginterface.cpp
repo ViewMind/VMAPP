@@ -62,7 +62,11 @@ void LogInterface::appendMessage(const QString &msg, MessageType type){
 
     QFile file(logFile);
 
-    if (!file.open(QFile::Append)) return;
+    if (!file.open(QFile::Append)) {
+        qDebug() << "CANNOT OPEN LOG FILE" << logFile;
+        qDebug() << "MESSAGE: " << msg;
+        return;
+    }
 
     // Prepare the message
     QString s = QDateTime::currentDateTime().toString("dd/MM/yyyy - hh:mm:ss");
