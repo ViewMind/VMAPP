@@ -579,7 +579,7 @@ void RawDataServerSocket::oprProcessRequest(){
     QStringList hashes = puidHashMap.keys();
     QStringList downloadedDirectories;
 
-    S3Interface s3;
+    S3Interface s3(&log);
     s3.setS3Bin(VIEWMIND_DATA_REPO);
 
     for (qint32 i = 0; i < hashes.size(); i++){

@@ -369,8 +369,22 @@ void Control::storeMode(const QString &action){
                 cmd = cmd + " " + workingDirectory + "/" + filesToSave.at(i) + " ";
                 cmd = cmd + "s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + filesToSave.at(i) + " ";
                 cmd = cmd + S3_PARMETERS;
-                QProcess::execute(cmd,QStringList());
+
                 log.appendStandard("Running S3 Command: " + cmd);
+
+                QProcess process;
+                process.start("sh",QStringList() << "-c" << cmd);
+                process.closeReadChannel(QProcess::StandardOutput);
+                process.closeReadChannel(QProcess::StandardError);
+                process.waitForFinished(60000000);
+                qint32 result = process.exitCode();
+
+                if (result != 0){
+                   log.appendError("AWS S3 Copy Failed. Exited with code: " + QString::number(result));
+                   finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+                   return;
+                }
+
             }
         }
     }

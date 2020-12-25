@@ -1,7 +1,8 @@
 #include "s3interface.h"
 
-S3Interface::S3Interface()
+S3Interface::S3Interface(LogInterface *l)
 {
+    log = l;
     runningLocally =  QFile::exists(LOCAL_FLAG_FILE);
 }
 
@@ -26,9 +27,8 @@ void S3Interface::copyRecursively(const QString &path, const QString outputPath)
 
 
 bool S3Interface::runShellCommands(const QStringList &shellCommands){
-    LogInterface log;
     for (qint32 i = 0; i < shellCommands.size(); i++){
-        log.appendStandard("AWS CP DIR: RUNNING COMMAND: " + shellCommands.at(i));
+        log->appendStandard("AWS CP DIR: RUNNING COMMAND: " + shellCommands.at(i));
         QProcess process;
 //        process.start(shellCommands.at(i));
         process.start("sh",QStringList() << "-c" << shellCommands.at(i));
@@ -37,7 +37,7 @@ bool S3Interface::runShellCommands(const QStringList &shellCommands){
         process.waitForFinished(60000000);
         qint32 result = process.exitCode();
         if (result != 0){
-           log.appendError("AWS CP DIR: COMMAND RESULT IS: " + QString::number(result));
+           log->appendError("AWS CP DIR: COMMAND RESULT IS: " + QString::number(result));
            return false;
         }
     }
@@ -62,10 +62,9 @@ S3Interface::S3LSReturn S3Interface::listInPath(const QString &path){
 
     if (!runShellCommands(cmdList)) return ans;
 
-    LogInterface log;
     QFile file(SERVER_OUTPUT_FILE);
     if (!file.open(QFile::ReadOnly)) {
-        log.appendError("AWS LIST: Could not open temp output file for reading");
+        log->appendError("AWS LIST: Could not open temp output file for reading");
         return ans;
     }
     QTextStream reader(&file);
@@ -93,7 +92,7 @@ S3Interface::S3LSReturn S3Interface::listInPath(const QString &path){
             ans.times << parts.at(1);
         }
         else{
-            log.appendError("AWS LIST: UNRECOGNIZED AWS LS Entry format: " + lines.at(i));
+            log->appendError("AWS LIST: UNRECOGNIZED AWS LS Entry format: " + lines.at(i));
         }
     }
 
