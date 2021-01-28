@@ -78,6 +78,7 @@
   $srv["table_privileges"][$DB_DASH][$TABLE_PURCHASES]              = [$PRIV_INSERT,$PRIV_SELECT];
   $srv["table_privileges"][$DB_DASH][$TABLE_STRINGS]                = [$PRIV_INSERT,$PRIV_SELECT];
   $srv["table_privileges"][$DB_DASH][$TABLE_SUPPLIERS]              = [$PRIV_INSERT,$PRIV_SELECT];
+  $srv["table_privileges"][$DB_DASH][$TABLE_STOCK_MP]               = [$PRIV_INSERT,$PRIV_SELECT];
   $srv["table_privileges"][$DB_DASH][$TABLE_TECHNICAL_ASSISTANCE]   = [$PRIV_INSERT,$PRIV_SELECT];  
   $srv["table_privileges"][$DB_DASH][$TABLE_TRAINED_USERS]          = [$PRIV_INSERT,$PRIV_SELECT];
   $srv["table_privileges"][$DB_DASH][$TABLE_USERS]                  = [$PRIV_INSERT,$PRIV_SELECT,$PRIV_UPDATE];  

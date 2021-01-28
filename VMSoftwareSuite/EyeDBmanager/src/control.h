@@ -25,6 +25,12 @@
 #define  S3_BUCKET           ""
 #define  TIME_FORMAT_STRING  "yyyy_MM_dd_hh_mm_ss"
 
+/****************************************************************************
+ * Version  1.2.0 25/12/2020
+ * -> DB configuration is loaded from a local file 
+ * -> Changed way of executing AWS commands so that it's possible to know if it failed. 
+ *****************************************************************************/
+
 class Control : public QObject
 {
     Q_OBJECT
