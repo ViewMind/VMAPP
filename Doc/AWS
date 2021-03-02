@@ -1,0 +1,70 @@
+ViewmindID: 075933739023
+IAM User: ariel.arelovich
+aws profile: viewmind
+
+Ports 
+RawDataServer - 54918
+EyeServer     - 54912
+EyeSQLServer  - 54915
+
+54918,54912,54915
+
+Load Balancing requires target groups. 
+1 Target Group for Processing
+1 Target Group for Server Requests. 
+
+AutoScaling group is to ensure that machines are never out of commission. 
+
+DB root users: admin
+vm-data: MtrmGDo0khG7wJMYZOu8
+vm-dashboard: QNwsTVA82KnVC5WFU1cK
+vm-patdata: nT0sro3AH7UuGD2THAjg
+vm-id: RnhFr8qwY6lJtdoIBHZM
+
+When selecting a VPC for RDS it needs to have subnets in at least two availability zones. 
+
+Interal IP Distribution. 
+Public Subnet CIDR
+US-EAST-2a: 10.100.100.0/24
+US-EAST-2b: 10.100.101.0/24
+RDS Subnet CIDR
+US-EAST-2a: 10.100.16.0/20
+US-EAST-2b: 10.100.48.0/20
+EC2 Subnet CIDR
+US-EAST-2a: 10.100.0.0/20
+US-EAST-2b: 10.100.32.0/20
+
+
+Current Infrastrucute consist of 
+1 VPC (ViewMindMain) Containing the following subnets
+   2 Private RDS Subnets (Routes to)
+      Connection to a NAT Gateway (MainNATGateWay)
+      Connection from a Managed Prefix List (pl-7ba54012) to an endpoint (which is a gateway point fro com.amazonaws.us-east-2.s3).    
+   2 Private EC2 Subnets. (Routes to) 
+      Connection to a NAT Gateway (MainNATGateWay)
+      Connection from a Managed Prefix List (pl-7ba54012) to an endpoint (which is a gateway point fro com.amazonaws.us-east-2.s3).
+   2 Public subnets:
+      Connection to an Internet Gateway. 
+Security groups for granting access to the both RDS databases and EC2 Instnaces
+1 EC2 Server processing instance in one of the EC2 Private Subnets
+1 EC2 Web Server instance in one of the EC2 Private Subnets
+1 EC2 Bastion (with public IP, as entry point in the system)
+
+4 RDS Instances in the private RDS subnets only accessible (through proper security groups) by the three EC2 instances mentioned above. 
+
+The objective for this is to only have two entry points in the system. The bastion for console access only for whitelisted IPs
+And two public facing Load Balancers. 
+1) For Handling Processing Requests.
+2) For Handling the Web Server
+      
+The problem is in 1). Each processing server runs three separate applications on three different ports: 54918,54912,54915
+My client application creates an SSL connection server-running application and then interchanged custom made packets of information. The processing server will communicate with RDS databases.
+
+In order to use a Load Balancer we need to create a Target Group of EC2 Instances. And then point the Load Balancer to that target group.
+However I don't know how to create the Load Balancer/Target Group so that it will forward all traffic for those three ports "as is" into the processing server.
+This is issue 1.
+However I'm currently stuck in issue 2. In order for Load Balancer to actually start sending traffic to EC2 instances in our target group, it needs to pass a healthcheck, which includes some kind of http response. These seem to pass naturally when the EC2 instance is hosting a web server, however since this is a custom application and not web server I can't get the healthchecks to pass. 
+
+The objective is to add, in the future, more Processing Servers to the Target Group pointed by the load balancer, hence creating scalability. 
+
+What I would need is help on how to configure load balancing for our custom application. 

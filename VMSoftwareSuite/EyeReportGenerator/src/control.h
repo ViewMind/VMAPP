@@ -15,8 +15,6 @@
  * Version: 8.3.1 23/11/2020
  * -> Added the capabilities of processing go no go files.
  * -> Fixed frequency checking in reading with question 
- *  
- * 
  *****************************************************************************/
 
 class Control : public QObject
