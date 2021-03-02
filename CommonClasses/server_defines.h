@@ -4,7 +4,7 @@
 #include "ConfigurationManager/configurationmanager.h"
 //  Defines that control which of the configuration files is used for the databse. ONLY 1 should be active at the time.
 //  #define   SERVER_LOCALHOST
-//  #define   SERVER_PRODUCTION
+#define   SERVER_PRODUCTION
 
 
 //  Defines that control which of the configuration files is used for the databse. ONLY 1 should be active at the time.
