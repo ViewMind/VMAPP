@@ -11,6 +11,10 @@
          $date = new DateTime();
          $this->runID = "RUN_". $date->format('Y_m_d_H_i_s');         
       }   
+      
+      function getLogFile(){
+         $this->logfile;
+      }
             
       function logError($info){
          $date = new DateTime();

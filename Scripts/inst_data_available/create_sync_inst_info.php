@@ -37,7 +37,8 @@
    
    /////////////////////////////////// Database and log setup 
    $date = new DateTime();
-   $logfile = $date->format('Y_m_d_H_i_s') . ".log";         
+   //$logfile = $date->format('Y_m_d_H_i_s') . ".log";         
+   $logfile = ""; // This makes sure no file is created. 
    $logger = new LogManager($logfile);
    
    $previous_date_file = "previous_dates.json";
@@ -181,7 +182,8 @@
           // Download the information. 
           $cmd =  "./dl_s3_data.sh $local_key $inst_protocol_repo $hashuid";
           $logger->logProgress("   DL CMD: $cmd");
-          shell_exec($cmd);          
+          $shell_output = shell_exec($cmd);          
+          $logger->logProgress("   STD CMD OUTPUT:\n" . $shell_output);
           
           // Listing work directories directories. 
           $work_dirs = scandir("$inst_protocol_repo/$hashuid");
@@ -207,7 +209,8 @@
              // Running the EyeReportGenerator. 
              $cmd = "cd EyeReportGen; ./EyeReportGen  ../$eye_rep_config";
              $logger->logProgress("   PROC COMMAND: $cmd");
-             shell_exec($cmd);
+             $shell_output = shell_exec($cmd);
+             $logger->logProgress("   STD CMD OUTPUT:\n" . $shell_output);
              
              // Directory cleanup
              directoryCleanUp($work_dir,$config["ext_leave_on_cleanup"]);
@@ -244,7 +247,8 @@
        $logger->logProgress("   Finshed Data Processing. Starting Information Transfer");
        $cmd = "./transfer.sh $inst_dir $IP $inst_user";
        $logger->logProgress("   TRANSFER CMD: $cmd");
-       shell_exec($cmd);          
+       $shell_output = shell_exec($cmd);  
+       $logger->logProgress("   STD CMD OUTPUT:\n" . $shell_output);
            
    }
    

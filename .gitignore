@@ -88,4 +88,17 @@ Scripts/php/*.csv
 *.cnf
 
 Scripts/php/privileges*
+Scripts/php/db_configure/
+Scripts/php/local_flag_file
+Scripts/php/privileges-viewmind_dashboard.sql
+Scripts/php/privileges-viewmind_data.sql
+Scripts/php/privileges-viewmind_id.sql
+Scripts/php/privileges-viewmind_patdata.sql
+Scripts/php/viewmind_dashboard.cnf
+Scripts/php/viewmind_data.cnf
+Scripts/php/viewmind_id.cnf
+Scripts/php/viewmind_patdata.cnf
+VMTools/RawDataServer/bin/local_config
+VMTools/RawDataServer/bin/local_flag_file
+
 

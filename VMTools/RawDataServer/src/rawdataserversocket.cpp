@@ -591,17 +591,22 @@ void RawDataServerSocket::oprProcessRequest(){
     }
 
     ///////////////// Processing the resulting files in order to send them.
-    log.appendStandard("Processing the downloaded files in order to send them ...");
+    log.appendStandard("Processing the downloaded files in order to send them ... (" + QString::number(downloadedDirectories.size()) + ") downloaded directories");
     FileLister fileLister;
     QStringList fileNames;
     QStringList fileContents;
 
     for (qint32 i = 0; i < downloadedDirectories.size(); i++){
         QString dir = QString(SERVER_WORK_DIR) + "/" + downloadedDirectories.at(i);
+        log.appendStandard("Downloaded directory: " + downloadedDirectories.at(i));
         if (QDir(dir).exists()){
             fileLister.listFileInDirectory(dir);
             QStringList fileList = fileLister.getFileList();
+            log.appendStandard("Adding files of dir " + dir + ":" + fileList.join("|"));
             fileNames << fileList;
+        }
+        else{
+            log.appendError("Downloaded directory " + dir + " does not exist");
         }
     }
 

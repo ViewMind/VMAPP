@@ -10,6 +10,7 @@ void S3Interface::copyRecursively(const QString &path, const QString outputPath)
 
     QString aws_command;
     aws_command = "aws s3 cp --recursive " + s3Address + "/" + path + " " + QString(SERVER_WORK_DIR)  + "/" + outputPath;
+    qDebug() << aws_command;
 
     QStringList shellComamnds;
 
