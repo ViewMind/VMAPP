@@ -17,13 +17,15 @@
 #define COMPILE_FOR_PRODUCTION
 
 #ifdef COMPILE_FOR_PRODUCTION
-#define  SERVER_IP                     "18.220.30.34"  // Production server
+//#define  SERVER_IP                     "18.220.30.34"  // Production server
+//#define  SERVER_IP                     "3.139.105.122"  // Production server
+#define  SERVER_IP                     "Processing-14c715cbd0a3b953.elb.us-east-2.amazonaws.com"
 #else
-#define  SERVER_IP                     "192.168.1.10"  // Local server
+#define  SERVER_IP                     "192.168.1.12"  // Local server
 #endif
 
 #define   PROGRAM_NAME                 "EyeDataAnalyzer"
-#define   PROGRAM_VERSION              "8.7.1" //8.7.0
+#define   PROGRAM_VERSION              "8.7.2" //8.7.1
 #define   WORK_DIR                     "work"
 #define   FILE_DEFAULT_VALUES          "default_values"
 

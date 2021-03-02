@@ -52,7 +52,6 @@ void BatchCSVProcessing::run(){
     qint32 counter = 0;
     for (qint32 i = 0; i < cats.size(); i++){
 
-
         QString outputCSVFile = workingDirectory + "/" + cats.at(i) + ".csv";
         QString outputCSVContents = "";
         int expType = -1;
@@ -60,10 +59,13 @@ void BatchCSVProcessing::run(){
         else if (cats.at(i).contains("BC")) expType = EXP_BINDING_BC;
         else if (cats.at(i).contains("UC")) expType = EXP_BINDING_UC;
         else if (cats.at(i).contains("NB")) expType = EXP_NBACKRT;
+        else if (cats.at(i).contains("GN")) expType = EXP_GONOGO;
         else {
             qDebug() << "Unknown category: " + cats.at(i);
             errors << "Unknown category: " + cats.at(i);
         }
+
+        if (expType == -1) continue;
 
         for (qint32 j = 0; j < processingList.value(cats.at(i)).size(); j++){
 
@@ -216,6 +218,10 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
         processor = new EDPNBackRT(&config);
         rdp.separateInfoByTag(dfps.filePath,HEADER_NBACKRT_EXPERIMENT,&data,&exp);
     }
+    else if (exp_type == EXP_GONOGO){
+        processor = new EDPGoNoGo(&config);
+        rdp.separateInfoByTag(dfps.filePath,HEADER_GONOGO_EXPERIMENT,&data,&exp);
+    }
     else{
         errors << "Unsuported experiment type for mass csv generator: " + QString::number(exp_type);
         return "";
@@ -337,6 +343,11 @@ void BatchCSVProcessing::recursiveFillProcessingList(const QString &dir){
 
             DatFileInfoInDir::DatInfo dinfo = DatFileInfoInDir::getDatFileInformation(datfiles.at(i));
             processingList[dinfo.category].append(s);
+
+            if (dinfo.category == "MS"){
+                qDebug() << datfiles.at(i) << "@" << dir;
+            }
+
         }
 
     }

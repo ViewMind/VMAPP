@@ -247,7 +247,7 @@ void EyeDataAnalyzer::on_readyRead(){
             }
 
             for (qint32 i = 0; i < fileNames.size(); i++){
-                //logForDB.appendSuccess("Downloaded File: " + fileNames.at(i));
+                logForDB.appendSuccess("Downloaded File: " + fileNames.at(i));
                 QString path = fileNames.at(i);
                 path = path.replace(WORK_DIR,institution);
                 QStringList pathparts = path.split("/");
