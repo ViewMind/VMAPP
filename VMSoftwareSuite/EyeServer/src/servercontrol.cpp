@@ -3,9 +3,6 @@
 ServerControl::ServerControl(QObject *parent) : QObject(parent)
 {
 
-    // Creating the configuration verifier
-    ConfigurationManager::CommandVerifications cv = getLocalConfigVerifications();
-    config.setupVerification(cv);
 
 }
 
@@ -18,11 +15,19 @@ void ServerControl::startServer(){
         return;
     }
 
-    if (!config.loadConfiguration(CONFIG_FILE,COMMON_TEXT_CODEC)){
-        log.appendError("Could not load configuration file: " + config.getError());
+    bool shouldExit = false;
+    config = LoadLocalConfiguration(&log,&shouldExit);
+    if (shouldExit){
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         emit(exitRequested());
         return;
+    }
+
+    if (config.getBool(CONFIG_PRODUCTION_FLAG)){
+        log.appendStandard("Configured for Production");
+    }
+    else{
+        log.appendStandard("Configured for Local Host");
     }
 
     log.appendStandard("Starting eye processing server...");

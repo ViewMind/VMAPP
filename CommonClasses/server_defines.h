@@ -2,10 +2,8 @@
 #define SERVER_DEFINES_H
 
 #include "ConfigurationManager/configurationmanager.h"
-//  Defines that control which of the configuration files is used for the databse. ONLY 1 should be active at the time.
-//  #define   SERVER_LOCALHOST
-#define   SERVER_PRODUCTION
-
+#include "LogInterface/loginterface.h"
+#include <iostream>
 
 //  Defines that control which of the configuration files is used for the databse. ONLY 1 should be active at the time.
 #define   CONFIG_FILE                                   "local_config"
@@ -46,12 +44,19 @@
 #define   CONFIG_EYEDBMANAGER_PATH                      "eyedbmanager_path"
 #define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
 
+#define   CONFIG_PRODUCTION_FLAG                        "production_flag"
+
 #define   DB_NAME_BASE                                  "db_base"
 #define   DB_NAME_ID                                    "db_id"
 #define   DB_NAME_PATDATA                               "db_patdata"
 #define   DB_NAME_DASHBOARD                             "db_dashboard"
 
-static ConfigurationManager::CommandVerifications getLocalConfigVerifications(){
+//#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+static inline ConfigurationManager LoadLocalConfiguration(LogInterface *logger, bool *shouldExit){
+
+    *shouldExit = false;
+
     ConfigurationManager::CommandVerifications cv;
     ConfigurationManager::Command cmd;
 
@@ -87,7 +92,32 @@ static ConfigurationManager::CommandVerifications getLocalConfigVerifications(){
     cv[CONFIG_DASH_DBPORT] = cmd;
     cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
 
-    return cv;
+    cmd.type = ConfigurationManager::VT_BOOL;
+    cv[CONFIG_PRODUCTION_FLAG] = cmd;
+
+    ConfigurationManager configuration;
+    QString configurationFile = CONFIG_FILE;
+
+    if (!QFile::exists(configurationFile)){
+        logger->appendError("Configuration file does not exist: " + configurationFile + " instead of 1");
+        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        *shouldExit = true;
+        return configuration;
+    }
+
+    // Creating the configuration verifier
+
+    configuration.setupVerification(cv);
+
+    // Loading the configuration file
+    if (!configuration.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
+        logger->appendError("Loading configuration file:\n"+configuration.getError());
+        *shouldExit = true;
+    }
+
+    return configuration;
+
 }
+//#pragma GCC diagnostic pop
 
 #endif // SERVER_DEFINES_H

@@ -54,31 +54,24 @@ void Control::run(){
     configuration.merge(eyeRepGenConf);
 
     // Getting the local configurations.
-    QString configurationFile = CONFIG_FILE;
-
-    ConfigurationManager dbconfigs;
-
-    if (!QFile::exists(configurationFile)){
-        log.appendError("Configuration file does noe exist: " + configurationFile + " instead of 1");
+    bool shouldExit = false;
+    ConfigurationManager dbconfigs = LoadLocalConfiguration(&log,&shouldExit);
+    if (shouldExit){
         std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
         exitProgram(EYEDBMNG_ANS_PARAM_ERROR);
         return;
     }
 
-    // Creating the configuration verifier
-    ConfigurationManager::CommandVerifications cv = getLocalConfigVerifications();
-    dbconfigs.setupVerification(cv);
-
-    // Database configuration files
-    if (!dbconfigs.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
-        log.appendError("DB Configuration file errors:<br>"+dbconfigs.getError());
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        exitProgram(EYEDBMNG_ANS_FILE_ERROR);
-        return;
-    }
-
     // Joining the two configuration files
     configuration.merge(dbconfigs);
+
+    if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+        log.appendStandard("Configured for Production");
+    }
+    else{
+        log.appendStandard("Configured for Local Host");
+    }
+
 
     // Attempting to create/open the log file
     QString logfile = FILE_DB_LOG;
@@ -765,13 +758,14 @@ void Control::storeMode(const QString &action){
         writer.setCodec(COMMON_TEXT_CODEC);
 
         writer << "<?php\n";
-#ifdef SERVER_PRODUCTION
-        writer << "require '/home/ec2-user/composer/vendor/autoload.php';\n";
-        writer << "require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';\n";
-#else
-        writer << "use PHPMailer\\PHPMailer\\PHPMailer;\n";
-        writer << "require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';\n";
-#endif
+        if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+            writer << "require '/home/ec2-user/composer/vendor/autoload.php';\n";
+            writer << "require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';\n";
+        }
+        else{
+            writer << "use PHPMailer\\PHPMailer\\PHPMailer;\n";
+            writer << "require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';\n";
+        }
 
         writer << "$mail = new PHPMailer;\n";
         writer << "$mail->isSMTP();\n";
@@ -782,10 +776,10 @@ void Control::storeMode(const QString &action){
         writer << "$mail->Subject = 'ViewMind Frequency Check Alert From: " + instName + "';\n";
         writer << "$mail->addAddress('ariel.arelovich@viewmind.com.ar', 'Ariel Arelovich');\n";
 
-#ifdef SERVER_PRODUCTION
-        writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
-        writer << "$mail->addAddress('gerardofernandez480@gmail.com ', 'Gerardo Fernandez');\n";
-#endif
+        if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+            writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
+            writer << "$mail->addAddress('gerardofernandez480@gmail.com ', 'Gerardo Fernandez');\n";
+        }
 
         // The HTML-formatted body of the email
         writer << "$mail->Body = '<h3>Frequency problems detected from Institituion: " + instName + "</h3>\n<h3>Details</h3>" + body + "';\n";
