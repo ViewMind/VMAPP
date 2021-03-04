@@ -19,12 +19,12 @@
    
    echo "CREATING NEW COLUMN.....\n";
    
-   // Adding a new column to the tEyeResults table. 
-   $sql = "ALTER TABLE tEyeResults DROP IF EXISTS results";
-   if (!mysqli_query($con,$sql)){
-      echo "DBERROR: " . mysqli_error($con) . " FROM $sql\n";
-      return;
-   }
+//    // Adding a new column to the tEyeResults table. 
+//    $sql = "ALTER TABLE tEyeResults DROP IF EXISTS results";
+//    if (!mysqli_query($con,$sql)){
+//       echo "DBERROR: " . mysqli_error($con) . " FROM $sql\n";
+//       return;
+//    }
    
    
    // Adding a new column to the tEyeResults table. 
