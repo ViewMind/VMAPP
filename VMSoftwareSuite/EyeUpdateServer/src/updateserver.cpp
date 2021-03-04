@@ -56,6 +56,7 @@ void UpdateServer::on_newConnection(){
 
     if (!socket->isValid()) {
         log.appendError("ERROR: Could not cast incomming socket connection");
+        if (socket != nullptr) delete socket;
         return;
     }
 

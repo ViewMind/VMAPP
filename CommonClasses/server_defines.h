@@ -43,6 +43,7 @@
 #define   CONFIG_EYEPROCESSOR_PATH                      "eyeprocessor_path"
 #define   CONFIG_EYEDBMANAGER_PATH                      "eyedbmanager_path"
 #define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
+#define   CONFIG_UPDATE_REPO_PATH                       "etdir_path"
 
 #define   CONFIG_PRODUCTION_FLAG                        "production_flag"
 
