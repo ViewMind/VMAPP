@@ -28,9 +28,5 @@ void ServerControl::startServer(){
         log.appendStandard("Configured for Local Host");
     }
     log.appendStandard("Starting update server...");
-
-    updateServer.startServer(&config);
-
-    log.appendStandard("Starting update server...");
     updateServer.startServer(&config);
 }
