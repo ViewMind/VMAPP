@@ -22,6 +22,7 @@ public:
     void setGraphicalLogInterface() {graphicalLogInterface = true;}
     void setID(const QString &identifier) {id = identifier;}
     void setLogFileLocation(const QString &logfile);
+    QString getLogLocation() const { return logFile; }
 
     // Append messages according to type
     void appendError(const QString &msg);

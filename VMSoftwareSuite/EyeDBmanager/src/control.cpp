@@ -56,9 +56,8 @@ void Control::run(){
     // Getting the local configurations.
     bool shouldExit = false;
     ConfigurationManager dbconfigs = LoadLocalConfiguration(&log,&shouldExit);
-    if (shouldExit){
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        exitProgram(EYEDBMNG_ANS_PARAM_ERROR);
+    if (shouldExit){        
+        exitProgram(EYEDBMNG_ANS_PARAM_ERROR);        
         return;
     }
 

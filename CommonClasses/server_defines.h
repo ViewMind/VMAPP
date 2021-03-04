@@ -100,7 +100,7 @@ static inline ConfigurationManager LoadLocalConfiguration(LogInterface *logger, 
 
     if (!QFile::exists(configurationFile)){
         logger->appendError("Configuration file does not exist: " + configurationFile + " instead of 1");
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
+        std::cout << "ABNORMAL EXIT: Please check the log file: " << logger->getLogLocation().toStdString()  << std::endl;
         *shouldExit = true;
         return configuration;
     }
