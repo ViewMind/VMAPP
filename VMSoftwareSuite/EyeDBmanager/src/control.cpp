@@ -720,11 +720,11 @@ void Control::storeMode(const QString &action){
         columns << TINST_COL_NAME;
         QString condition = QString(TINST_COL_UID) + " = '" + instID + "'";
         QString instName = instID;
-        if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,condition)){
-            log.appendError("Getting inst name for " + instName + ": " + dbConnBase.getError());
+        if (!dbConnDash.readFromDB(TABLE_INSTITUTION,columns,condition)){
+            log.appendError("Getting inst name for " + instName + ": " + dbConnDash.getError());
         }
         else{
-            DBData data = dbConnBase.getLastResult();
+            DBData data = dbConnDash.getLastResult();
             if (data.rows.size() != 1){
                 log.appendError("Getting inst name for email, rows size " + QString::number(data.rows.size()) + " instead of 1, for UID: " + instID );
             }
