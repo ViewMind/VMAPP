@@ -717,8 +717,8 @@ void Control::storeMode(const QString &action){
         log.appendStandard("Sending frequency error mail");
 
         columns.clear();
-        columns << TINST_COL_NAME;
-        QString condition = QString(TINST_COL_UID) + " = '" + instID + "'";
+        columns << TINST_COL_NAME << TINST_COL_KEYID;
+        QString condition = QString(TINST_COL_UID) + " = '" + instID + "' ORDER BY " + QString(TINST_COL_KEYID) + " LIMIT 1";
         QString instName = instID;
         if (!dbConnDash.readFromDB(TABLE_INSTITUTION,columns,condition)){
             log.appendError("Getting inst name for " + instName + ": " + dbConnDash.getError());
