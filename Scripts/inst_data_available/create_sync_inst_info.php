@@ -165,7 +165,7 @@
        }
        
        // Copying and processing each directory.
-       $counter = 0;
+
        foreach ($uid_data as $puid => $uid){          
           $hashuid  = $uid["hash"];
           $protocol = $uid["protocol"];
@@ -234,14 +234,7 @@
              // Finally saving the resport to HDD.
              $report->saveToHDD();
              
-          }
-          
-          // DEBUG CODE:
-          $counter++;
-          if ($counter == 2){
-             break;
-          }
-                    
+          }                    
        }
        
        $logger->logProgress("   Finshed Data Processing. Starting Information Transfer");
