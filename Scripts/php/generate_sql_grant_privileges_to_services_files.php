@@ -16,6 +16,9 @@
   $SERVICE_RAW_DATA_SERVER    = "srvc_rawdata_server";
   $PASS_SRV_RAW_DATA_SERVER   = "_VBg55!WjIh=3700tdI?";
   
+  $SERVICE_INSTITUTION_SYNC   = "srvc_institution_sync";
+  $PASS_SRV_INSTITUTION_SYNC  = "Uugv03=*#7Qk5Z7HxE!5";
+
   $TABLE_COMPLAINTS           = "tComplaints";         
   $TABLE_EVALUATIONS          = "tEvaluations";        
   $TABLE_INSTITUTIONS         = "tInstitutions";       
@@ -109,6 +112,14 @@
   $srv["table_privileges"][$DB_DASH][$TABLE_INSTITUTIONS]           = [$PRIV_SELECT];
   
   $services[] = $srv;  
+
+  $srv = array();
+  $srv["mysql_user"] = $SERVICE_INSTITUTION_SYNC;
+  $srv["mysql_pass"] = $PASS_SRV_INSTITUTION_SYNC;
+
+  $srv["table_privileges"][$DB_DATA][$TABLE_EYE_RESULTS]            = [$PRIV_SELECT];
+  $srv["table_privileges"][$DB_PATID][$TABLE_PATIENT_IDS]           = [$PRIV_SELECT];
+
   
   $flag_local = is_file("local_flag_file");
   
