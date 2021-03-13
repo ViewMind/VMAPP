@@ -89,7 +89,7 @@
    mysqli_query($con_patid,"SET NAMES 'utf8'");
 
    /////////////////////////////////// Getting the current path.
-   $CURRENT_PATH = shell_exec("pwd .");
+   $CURRENT_PATH = trim(shell_exec("pwd ."));
 
    /////////////////////////////////// Checking the existance and path of the EyeReportGenerator. 
    $eye_rep_gen_path = $config["eye_rep_gen_path"];
@@ -230,8 +230,8 @@
                 $eye_rep_config = $eye_rep_config . ".";
                 if (!is_file($eye_rep_config)) {
                    $logger->logError("   SKIPPING work dir due to not finding eye rep gen conf: $eye_rep_config");
-                   //continue;
-                   return;
+                   continue;
+                   //return;
                 }
              }
              
