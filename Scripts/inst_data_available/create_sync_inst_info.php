@@ -41,7 +41,6 @@
    /////////////////////////////////// Database and log setup 
    $date = new DateTime();
    $logfile = $date->format('Y_m_d_H_i_s') . "_routputs.log";         
-   $logfile = ""; // This makes sure no file is created. 
    $logger = new LogManager("");
    $logROutputs = new LogManager($logfile);
    $logROutputs->suppressOutput();
