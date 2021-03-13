@@ -220,6 +220,11 @@
              $logger->logProgress("WARNING: SKIPPING due to empty directory: $inst_protocol_repo/$hashuid");
              continue;
           }
+
+          if (count($work_dirs) < 3){
+            $logger->logProgress("NO STUDY WARNING: Directory $inst_protocol_repo/$hashuid seems to have no studies");
+            continue;
+          }
           
           // Required for full path creation
           for ($d = 2; $d < count($work_dirs); $d++){
