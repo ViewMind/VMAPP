@@ -44,6 +44,7 @@
    $logfile = ""; // This makes sure no file is created. 
    $logger = new LogManager("");
    $logROutputs = new LogManager($logfile);
+   $logROutputs->suppressOutput();
    
    $previous_date_file = "previous_dates.json";
    
