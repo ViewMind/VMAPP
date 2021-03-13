@@ -101,4 +101,7 @@ Scripts/php/viewmind_patdata.cnf
 VMTools/RawDataServer/bin/local_config
 VMTools/RawDataServer/bin/local_flag_file
 
+Scripts/inst_data_available/config.php
+Scripts/inst_data_available/config_remote.php
+Scripts/inst_data_available/*.json
 
