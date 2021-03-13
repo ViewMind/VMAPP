@@ -119,7 +119,7 @@
 
   $srv["table_privileges"][$DB_DATA][$TABLE_EYE_RESULTS]            = [$PRIV_SELECT];
   $srv["table_privileges"][$DB_PATID][$TABLE_PATIENT_IDS]           = [$PRIV_SELECT];
-
+  $services[] = $srv;  
   
   $flag_local = is_file("local_flag_file");
   
