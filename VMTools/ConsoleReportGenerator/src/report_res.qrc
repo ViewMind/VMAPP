@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../../../CommonClasses/GraphicalReport/report_text/English</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamBlackRegular.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamBold.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamBook.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamLight.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/GothamMedium.otf</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/Spanish</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/viewmind.png</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/00_index_of_cognitive_impairment</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/01_executive_processes</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/02_working_memory</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/03_retrieval_memory</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/04_binding_index_2</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/05_binding_index_3</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/06_behavioral_conduct</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/07_nbackrt_num_fix_enc</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/08_nbackrt_num_fix_ret</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/09_nbackrt_inhib_proc</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/10_nbackrt_seq_complete</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/11_nbackrt_target_hit</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/12_nbackrt_mean_resp_time</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/13_nbackrt_mean_sac_amp</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/14_gng_dmt_facilitate</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/15_gng_dmt_interference</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/16_gng_pip_facilitate</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/17_gng_pip_interference</file>
+        <file>../../../CommonClasses/GraphicalReport/report_text/18_gng_speed_processing</file>
+    </qresource>
+</RCC>

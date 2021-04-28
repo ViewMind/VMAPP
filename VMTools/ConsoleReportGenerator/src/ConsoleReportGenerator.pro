@@ -33,3 +33,4 @@ HEADERS += \
 
 RESOURCES += \
     report_res.qrc \
+    test_report.qrc

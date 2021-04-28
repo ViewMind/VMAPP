@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
     qDebug() << "Loading the test report";
     ConfigurationManager report;
-    report.loadConfiguration("test.rep",COMMON_TEXT_CODEC);
+    report.loadConfiguration(":/test.rep",COMMON_TEXT_CODEC);
     QVariantMap ds = report.getMap();
 
     qDebug() << "Drawing the report";
