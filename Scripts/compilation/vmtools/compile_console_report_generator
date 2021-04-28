@@ -8,6 +8,7 @@ OUTPUT=$BASE_DIR"/ConsoleReportGenerator/bin"
 
 # Changing the work directory.
 echo "===================== CHANGING DIR TO: $OUTPUT ====================="
+mkdir -p $OUTPUT
 cd $OUTPUT
 
 echo "===================== CLEANING ====================="
