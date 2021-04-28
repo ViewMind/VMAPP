@@ -2,7 +2,7 @@
 
 # Constants to change in order to change compilation.
 BASE_DIR="/home/ec2-user/viewmind_projects/VMTools"
-SRC_DIR=$BASE_DIR"/ConsoleReportGenerator/src" /home/ariel/repos/viewmind_projects/VMTools/
+SRC_DIR=$BASE_DIR"/ConsoleReportGenerator/src"
 APPNAME="ConsoleReportGenerator"
 OUTPUT=$BASE_DIR"/ConsoleReportGenerator/bin"
 
