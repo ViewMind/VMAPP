@@ -35,5 +35,6 @@ int main(int argc, char *argv[])
 
     qDebug() << "Finished";
 
-    return a.exec();
+    //return a.exec();
+    return 0;
 }
