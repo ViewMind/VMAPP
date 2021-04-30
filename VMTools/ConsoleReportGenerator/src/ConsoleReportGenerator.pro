@@ -11,6 +11,7 @@ SOURCES += \
         ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
         ../../../CommonClasses/GraphicalReport/diagonosislogic.cpp \
         ../../../CommonClasses/GraphicalReport/imagereportdrawer.cpp \
+        ../../../CommonClasses/GraphicalReport/reportimagespdf.cpp \
         ../../../CommonClasses/GraphicalReport/resultsegment.cpp \
         main.cpp
 
@@ -28,6 +29,7 @@ HEADERS += \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ../../../CommonClasses/GraphicalReport/diagonosislogic.h \
     ../../../CommonClasses/GraphicalReport/imagereportdrawer.h \
+    ../../../CommonClasses/GraphicalReport/reportimagespdf.h \
     ../../../CommonClasses/GraphicalReport/resultsegment.h \
     ../../../CommonClasses/common.h
 
