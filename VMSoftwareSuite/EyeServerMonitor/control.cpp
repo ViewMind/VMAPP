@@ -7,6 +7,20 @@ Control::Control(QObject *parent):QObject(parent)
     connect(&eyeServer,&QProcess::readyReadStandardError,this,&Control::onReadyReadStandardError);
     connect(&eyeServer,&QProcess::readyReadStandardOutput,this,&Control::onReadyReadStandardOutput);
     logger.setLogFileLocation("eyemonitor.log");
+
+    bool shouldExit = false;
+    configuration = LoadLocalConfiguration(&logger,&shouldExit);
+    if (shouldExit){
+        exit(0);
+    }
+
+    if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+        logger.appendStandard("Configured for Production");
+    }
+    else{
+        logger.appendStandard("Configured for Local Host");
+    }
+
     sendingMail = false;
 }
 
@@ -59,13 +73,14 @@ void Control::sendMail(const QString &err){
     QTextStream writer(&phpFile);
 
     writer << "<?php\n";
-#ifdef SERVER_PRODUCTION
-    writer << "require '/home/ec2-user/composer/vendor/autoload.php';\n";
-    writer << "require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';\n";
-#else
-    writer << "use PHPMailer\\PHPMailer\\PHPMailer;\n";
-    writer << "require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';\n";
-#endif
+    if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+        writer << "require '/home/ec2-user/composer/vendor/autoload.php';\n";
+        writer << "require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';\n";
+    }
+    else{
+        writer << "use PHPMailer\\PHPMailer\\PHPMailer;\n";
+        writer << "require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';\n";
+    }
 
     writer << "$mail = new PHPMailer;\n";
     writer << "$mail->isSMTP();\n";
@@ -75,9 +90,9 @@ void Control::sendMail(const QString &err){
     writer << "$mail->Host = 'email-smtp.us-east-1.amazonaws.com';\n";
     writer << "$mail->Subject = 'ViewMind EyeServer Stopped Working';\n";
     writer << "$mail->addAddress('aarelovich@gmail.com', 'Ariel Arelovich');\n";
-#ifdef SERVER_PRODUCTION
-    writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
-#endif
+    if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+        writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
+    }
     // The HTML-formatted body of the email
     writer << "$mail->Body = '" + err + "';\n";
     writer << "$mail->SMTPAuth = true;\n";

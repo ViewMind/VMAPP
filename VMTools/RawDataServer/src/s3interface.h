@@ -11,11 +11,8 @@
 
 #define SERVER_OUTPUT_FILE        "temp_output_file"
 #define SERVER_WORK_DIR           "work"
-
-#ifdef SERVER_LOCALHOST
-#define SSH_USER_DNS              "ec2-user@18.191.142.5"
-#define SSH_KEY_LOCATION          "/home/ariela/Dropbox/ViewMindData/awspem/aws_ec2_first_time.pem"
-#endif
+#define SSH_USER_DNS              "ec2-user@18.220.30.34"
+#define LOCAL_FLAG_FILE           "local_flag_file"
 
 
 class S3Interface
@@ -30,7 +27,7 @@ public:
         QList<quint64> sizes;
     };
 
-    S3Interface();
+    S3Interface(LogInterface *l);
     void setS3Bin(const QString &s3bin) {s3Address = "s3://" + s3bin;}
 
     // Commands.
@@ -42,7 +39,11 @@ public:
 private:
     QString s3Address;
 
+    LogInterface *log;
+
     bool runShellCommands(const QStringList &shellCommands);
+
+    bool runningLocally;
 
 };
 

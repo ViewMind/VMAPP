@@ -7,8 +7,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
-#include "../../../CommonClasses/server_defines.h"
-#include "../../../CommonClasses/LogInterface/loginterface.h"
+#include "../../CommonClasses/server_defines.h"
+#include "../../CommonClasses/LogInterface/loginterface.h"
 
 class Control : public QObject
 {
@@ -29,6 +29,7 @@ signals:
 private:
     QProcess eyeServer;
     LogInterface logger;
+    ConfigurationManager configuration;
     bool sendingMail;
     void sendMail(const QString &err);
 };

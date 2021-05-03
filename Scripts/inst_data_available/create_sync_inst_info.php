@@ -2,6 +2,14 @@
    include("config.php");
    include("log_manager.php");
    include("fast_config_interpreter.php");
+
+   //////////////////////////////////// CONSTANTS
+
+   const TABLE_EYERESULTS       = "tEyeResults";
+   const COL_EYERES_PUID        = "puid";
+   const COL_EYERES_PROTOCOL    = "protocol";
+   const COL_EYERES_STUDY_DATE  = "study_date";
+   const COL_EYERES_DOCTORID    = "doctorid";
    
    /////////////////////////////////// Directory cleanup function
    function directoryCleanUp($dir,$to_leave){
@@ -25,51 +33,42 @@
          if ($delete){
             //echo "DELETING $path\n";
             unlink($path);
-         }
-                  
+         }                  
       }
    }
    
    
-//    $work_dir = "OUTPUTS/989302458/MTHLGY0002/8782bdba8c18a53673f4826c333be16adf52b30f68ed300d69c97d71c32ae7d132c077391c5718a425406cc3933d30e91fa4e059faec5fcb634bf4c3168275e7/2020_05_27_20_25_23/";   
-//    directoryCleanUp($work_dir,$config["ext_leave_on_cleanup"]);   
-//    return;
-   
    /////////////////////////////////// Database and log setup 
    $date = new DateTime();
-   //$logfile = $date->format('Y_m_d_H_i_s') . ".log";         
-   $logfile = ""; // This makes sure no file is created. 
-   $logger = new LogManager($logfile);
+   $logfile = $date->format('Y_m_d_H_i_s') . "_routputs.log";         
+   $logger = new LogManager("");
+   $logROutputs = new LogManager($logfile);
+   $logROutputs->suppressOutput();
    
    $previous_date_file = "previous_dates.json";
    
    // Starting from scratch.
    $logger->logProgress("Deleting output dir");
    shell_exec("rm -rf OUTPUTS");
+
+   // Setting the variables for MYSQL Connection.
+   $data_user      = $config["dbconfig"]["db_user"];
+   $data_passwd    = $config["dbconfig"]["db_passwd"];
+   $data_name      = $config["dbconfig"]["db_data_name"];
+   $data_host      = $config["dbconfig"]["db_data_host"];
+
+   $patid_user     = $config["dbconfig"]["db_user"];
+   $patid_passwd   = $config["dbconfig"]["db_passwd"];
+   $patid_name     = $config["dbconfig"]["db_patid_name"];
+   $patid_host     = $config["dbconfig"]["db_patid_host"];
    
    if ($config["run_local"]){
       $logger->logProgress("LOCAL RUN ...");
-      $local_key      = 1;
-      $data_host      = "localhost";
-      $data_name      = $config["dbconfig"]["db_data_name"];
-      $data_user      = $config["dbconfig"]["db_data_user"];
-      $data_passwd    = $config["dbconfig"]["db_data_passwd"];
-      $patid_host     = "localhost";
-      $patid_name     = $config["dbconfig"]["db_patid_name"];
-      $patid_user     = $config["dbconfig"]["db_patid_user"];
-      $patid_passwd   = $config["dbconfig"]["db_patid_passwd"];
+      $local_key      = TRUE;
    }
    else{
       $logger->logProgress("SERVER RUN ...");
-      $local_key      = 0;
-      $data_host      = $config["dbconfig"]["db_data_host"];
-      $data_name      = $config["dbconfig"]["db_data_name"];
-      $data_user      = $config["dbconfig"]["db_data_user"];
-      $data_passwd    = $config["dbconfig"]["db_data_passwd"];
-      $patid_host     = $config["dbconfig"]["db_patid_host"];
-      $patid_name     = $config["dbconfig"]["db_patid_name"];
-      $patid_user     = $config["dbconfig"]["db_patid_user"];
-      $patid_passwd   = $config["dbconfig"]["db_patid_passwd"];
+      $local_key      = FALSE;
    }
    
    // Creating the DB connections. 
@@ -84,11 +83,34 @@
       $logger->logError("Cannot establish connection to ID DB. Error code: " . mysqli_connect_errno());
       exit;
    }      
-   
-   
+      
    // Ensuring the encoding we get back. 
    mysqli_query($con_data,"SET NAMES 'utf8'");
    mysqli_query($con_patid,"SET NAMES 'utf8'");
+
+   /////////////////////////////////// Getting the current path.
+   $CURRENT_PATH = trim(shell_exec("pwd ."));
+
+   /////////////////////////////////// Checking the existance and path of the EyeReportGenerator. 
+   $eye_rep_gen_path = $config["eye_rep_gen_path"];
+   $eye_rep_gen_bin  = "$eye_rep_gen_path/EyeReportGen";
+   $eye_rep_gen_res  = "$eye_rep_gen_path/res";
+   
+   if (is_dir($eye_rep_gen_path)){
+      if (!is_dir($eye_rep_gen_res)){
+         $logger->logError("EyeReportGenerator res path is not a directory: $eye_rep_gen_res. Aborting");
+         return;   
+      }
+
+      if (!is_file($eye_rep_gen_bin)){
+         $logger->logError("EyeReportGenerator binary not found: $eye_rep_gen_bin. Aborting");
+         return;   
+      }
+   }
+   else{
+      $logger->logError("EyeReportGenerator path is not a directory: $eye_rep_gen_path. Aborting");
+      return;
+   }
    
    /////////////////////////////////// Previous Date Loading
    $previous_sync_dates = array();
@@ -128,7 +150,8 @@
        $previous_sync_dates[$inst_uid] = $date->format('Y-m-d');
        
        // Actually listing the studies. 
-       $sql = "SELECT DISTINCT puid, protocol from tEyeResults where study_date > '$previous_date' AND doctorid LIKE '$inst_uid%'";           
+       $sql = "SELECT DISTINCT " . COL_EYERES_PUID . "," . COL_EYERES_PROTOCOL . " from " . TABLE_EYERESULTS 
+              . " WHERE " . COL_EYERES_STUDY_DATE . " > '$previous_date' AND " . COL_EYERES_DOCTORID . " LIKE '$inst_uid%'";           
        $res = mysqli_query($con_data,$sql);
        if (!$res){
           $logger->logError("DB Error: " . mysqli_error($con_data) . " on query " . $sql . "\n");
@@ -146,9 +169,9 @@
        while ($row = mysqli_fetch_array($res,MYSQLI_ASSOC)){   
           $uid["hash"] = "";
           $protocol = "no_protocol";
-          if (($row["protocol"] != "") && ($row["protocol"] != null)) $protocol = $row["protocol"];
-          $uid["protocol"] = $protocol;
-          $uid_data[$row["puid"]] = $uid;
+          if (($row[COL_EYERES_PROTOCOL] != "") && ($row[COL_EYERES_PROTOCOL] != null)) $protocol = $row[COL_EYERES_PROTOCOL];
+          $uid[COL_EYERES_PROTOCOL] = $protocol;
+          $uid_data[$row[COL_EYERES_PUID]] = $uid;
        }
        
        // Getting the info for the puid huid map
@@ -165,10 +188,10 @@
        }
        
        // Copying and processing each directory.
-       $counter = 0;
+
        foreach ($uid_data as $puid => $uid){          
           $hashuid  = $uid["hash"];
-          $protocol = $uid["protocol"];
+          $protocol = $uid[COL_EYERES_PROTOCOL];
           
           $protocol = str_replace(" ","_",$protocol);
           $inst_protocol_repo = "$inst_dir/$protocol";
@@ -180,17 +203,32 @@
           //$logger->logProgress("   OUPUT REP: $inst_dir/$protocol");
           
           // Download the information. 
-          $cmd =  "./dl_s3_data.sh $local_key $inst_protocol_repo $hashuid";
+          $cmd = "aws s3 cp s3://viewmind-raw-eye-data/$hashuid $inst_protocol_repo/$hashuid --recursive";
           $logger->logProgress("   DL CMD: $cmd");
-          $shell_output = shell_exec($cmd);          
-          $logger->logProgress("   STD CMD OUTPUT:\n" . $shell_output);
+          if ($local_key){
+             $logger->logProgress("LOCALLY: Just outputting command\n   -> $cmd");
+          }
+          else{
+             $shell_output = shell_exec($cmd);          
+             $logger->logProgress("   STD CMD OUTPUT:\n" . $shell_output);  
+          }
           
           // Listing work directories directories. 
           $work_dirs = scandir("$inst_protocol_repo/$hashuid");
           //var_dump($work_dirs);
+          if (empty($work_dirs)){
+             $logger->logProgress("WARNING: SKIPPING due to empty directory: $inst_protocol_repo/$hashuid");
+             continue;
+          }
+
+          if (count($work_dirs) < 3){
+            $logger->logProgress("NO STUDY WARNING: Directory $inst_protocol_repo/$hashuid seems to have no studies");
+            continue;
+          }
           
+          // Required for full path creation
           for ($d = 2; $d < count($work_dirs); $d++){
-             $work_dir = "$inst_protocol_repo/$hashuid/" .  $work_dirs[$d];
+             $work_dir = "$CURRENT_PATH/$inst_protocol_repo/$hashuid/" .  $work_dirs[$d];
              $eye_rep_config = $work_dir . "/eye_rep_gen_conf";
              if (!is_file($eye_rep_config)) {
                 // PATCH DUE to old bug that some times generated eye_rep_gen_conf. instead of eye_rep_gen_conf. 
@@ -198,6 +236,7 @@
                 if (!is_file($eye_rep_config)) {
                    $logger->logError("   SKIPPING work dir due to not finding eye rep gen conf: $eye_rep_config");
                    continue;
+                   //return;
                 }
              }
              
@@ -207,10 +246,11 @@
              $conf->saveToHDD();
              
              // Running the EyeReportGenerator. 
-             $cmd = "cd EyeReportGen; ./EyeReportGen  ../$eye_rep_config";
+             $cmd = "cd $eye_rep_gen_path; ./EyeReportGen  $eye_rep_config > " . $logROutputs->getLogFile() . " 2>&1 ";
              $logger->logProgress("   PROC COMMAND: $cmd");
-             $shell_output = shell_exec($cmd);
-             $logger->logProgress("   STD CMD OUTPUT:\n" . $shell_output);
+             $logROutputs->logProgress("EXECUTED COMMAND: $cmd\n\n=====================>");
+             $shell_output = shell_exec($cmd);             
+             $logROutputs->logProgress("=========================================================================================");
              
              // Directory cleanup
              directoryCleanUp($work_dir,$config["ext_leave_on_cleanup"]);
@@ -234,20 +274,15 @@
              // Finally saving the resport to HDD.
              $report->saveToHDD();
              
-          }
-          
-          // DEBUG CODE:
-          $counter++;
-          if ($counter == 2){
-             break;
-          }
-                    
+          }                    
        }
        
        $logger->logProgress("   Finshed Data Processing. Starting Information Transfer");
-       $cmd = "./transfer.sh $inst_dir $IP $inst_user";
+       $cmd = "scp -r $inst_dir root@$IP:/home/$inst_user; ssh root@$IP \"chown -R $inst_user:$inst_user /home/$inst_user\"";
        $logger->logProgress("   TRANSFER CMD: $cmd");
-       $shell_output = shell_exec($cmd);  
+       if (!$local_key){
+         $shell_output = shell_exec($cmd);  
+       }       
        $logger->logProgress("   STD CMD OUTPUT:\n" . $shell_output);
            
    }

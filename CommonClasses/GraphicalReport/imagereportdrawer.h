@@ -44,14 +44,11 @@
 #define  DR_CONFG_STUDY_GONOGO        "gonogo_study"
 
 // Drawing Scaling Control
-#define  MASTER_SCALE                  10
+#define  MASTER_SCALE                  1//10
 
 // Dimensions
 #define  PAGE_WIDTH                    595*MASTER_SCALE
 #define  PAGE_HEIGHT                   842*MASTER_SCALE
-//#define  PAGE_HEIGHT                   842*2*MASTER_SCALE // Two pages one next to the other.
-//#define  PAGE_HEIGHT                   942*MASTER_SCALE
-//#define  BANNER_HEIGHT                 108*MASTER_SCALE
 #define  BANNER_HEIGHT                 98*MASTER_SCALE
 #define  BANNER_LOGO_HEIGHT            31*MASTER_SCALE
 #define  BANNER_LOGO_WIDTH             146*MASTER_SCALE
@@ -63,7 +60,9 @@
 #define  BAR_PATIENT_BAR_HEIGHT        48*MASTER_SCALE
 #define  BAR_PATIENT_BAR_MARGIN_LEFT   38*MASTER_SCALE
 #define  BAR_PATIENT_BAR_MARGIN_RIGHT  38*MASTER_SCALE
-//#define  PANEL_HEIGHT                  146*MASTER_SCALE
+
+#define  SEPARATOR_LINE_WIDTH          1*MASTER_SCALE
+
 #define  PANEL_HEIGHT                  66*MASTER_SCALE
 #define  PANEL_EXP_TEXT_WIDTH          280*MASTER_SCALE
 #define  PANEL_SQUARES_EXP_WIDTH       183*MASTER_SCALE
@@ -71,7 +70,7 @@
 #define  PANEL_MARGIN_RIGHT            38*MASTER_SCALE
 #define  PANEL_HOR_BUFFER_SPACE        49*MASTER_SCALE
 #define  PANEL_SQUARE_BUFFER_SPACE     15*MASTER_SCALE
-//#define  PANEL_MARGIN_TOP              30*MASTER_SCALE
+
 #define  PANEL_MARGIN_TOP              10*MASTER_SCALE
 #define  PANEL_MARGIN_BOTTOM           45*MASTER_SCALE
 #define  PANEL_SQUARE_SIDE             14*MASTER_SCALE
@@ -82,7 +81,7 @@
 #define  RESULTS_MARGIN_BOTTOM         48*MASTER_SCALE
 #define  RESULTS_MARGIN_LEFT           38*MASTER_SCALE
 #define  RESULTS_MARGIN_RIGHT          38*MASTER_SCALE
-//#define  RESULTS_SEP_LINE_SPACE        10*MASTER_SCALE
+
 #define  RESULTS_SEP_LINE_SPACE        5*MASTER_SCALE
 #define  RESULTS_NAME_COL_WIDTH        257*MASTER_SCALE
 #define  RESULTS_NUMBER_COL_WIDTH      83*MASTER_SCALE

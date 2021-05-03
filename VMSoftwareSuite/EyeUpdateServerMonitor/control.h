@@ -29,6 +29,7 @@ signals:
 private:
     QProcess eyeServer;
     LogInterface logger;
+    ConfigurationManager configuration;
     bool sendingMail;
     void sendMail(const QString &err);
 };

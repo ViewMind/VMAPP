@@ -206,7 +206,6 @@ void ProcessingSocket::on_eyeDBMngFinished(qint32 status){
     if (dbmngComm.containsKeyword(CONFIG_DBMNG_RESULT)){
         dbmngAns = dbmngComm.getInt(CONFIG_DBMNG_RESULT);
     }
-
     if (pstate == PS_WAIT_DBMNG_CHECK){
 
         if (dbmngAns != EYEDBMNG_ANS_OK){
@@ -423,6 +422,7 @@ QString ProcessingSocket::stateToString(){
 
 void ProcessingSocket::sendCodeToClient(qint32 code, const QString repFile){
     DataPacket tx;
+    //qDebug() << "Sending processing ack code" << code;
     tx.addValue(code,DataPacket::DPFI_PROCESSING_ACK);
 
     if (!repFile.isEmpty()){

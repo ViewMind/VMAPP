@@ -33,6 +33,7 @@ void Control::run(){
     }
 
     QString log_file_path = QString(DIRNAME_SERVER_LOGS) + "/" + configuration.getString(CONFIG_TRANSACTION_ID);
+    //qDebug() << "Log PATH" << log_file_path;
     log.setLogFileLocation(log_file_path);
 
     QString tID  = "DBMNG_" + configuration.getString(CONFIG_TRANSACTION_ID);
@@ -52,74 +53,24 @@ void Control::run(){
     // Joining the data.
     configuration.merge(eyeRepGenConf);
 
-    // Doing the DB checks.
-    QString configurationFile = COMMON_PATH_FOR_DB_CONFIGURATIONS;
-    qint32 definitions = 0;
-
-    ConfigurationManager dbconfigs;
-
-#ifdef SERVER_LOCALHOST
-    configurationFile = configurationFile + "db_localhost";
-    definitions++;
-#endif
-#ifdef SERVER_PRODUCTION
-    configurationFile = configurationFile + "db_production";
-    definitions++;
-#endif
-
-    if (definitions != 1){
-        log.appendError("The number of DB Configuration files is " + QString::number(definitions) + " instead of 1");
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        exitProgram(EYEDBMNG_ANS_PARAM_ERROR);
-        return;
-    }
-
-    // Creating the configuration verifier
-    ConfigurationManager::CommandVerifications cv;
-    ConfigurationManager::Command cmd;
-
-    // DB configuration is all strings.
-    cmd.clear();
-    cv[CONFIG_DBHOST] = cmd;
-    cv[CONFIG_DBNAME] = cmd;
-    cv[CONFIG_DBPASSWORD] = cmd;
-    cv[CONFIG_DBUSER] = cmd;
-
-    cv[CONFIG_ID_DBHOST] = cmd;
-    cv[CONFIG_ID_DBNAME] = cmd;
-    cv[CONFIG_ID_DBPASSWORD] = cmd;
-    cv[CONFIG_ID_DBUSER] = cmd;
-
-    cv[CONFIG_PATDATA_DBHOST] = cmd;
-    cv[CONFIG_PATDATA_DBNAME] = cmd;
-    cv[CONFIG_PATDATA_DBPASSWORD] = cmd;
-    cv[CONFIG_PATDATA_DBUSER] = cmd;
-
-    cv[CONFIG_DASH_DBHOST] = cmd;
-    cv[CONFIG_DASH_DBNAME] = cmd;
-    cv[CONFIG_DASH_DBPASSWORD] = cmd;
-    cv[CONFIG_DASH_DBUSER] = cmd;
-
-    cv[CONFIG_S3_ADDRESS] = cmd;
-
-    cmd.type = ConfigurationManager::VT_INT;
-    cv[CONFIG_DBPORT] = cmd;
-    cv[CONFIG_ID_DBPORT] = cmd;
-    cv[CONFIG_PATDATA_DBPORT] = cmd;
-    cv[CONFIG_DASH_DBPORT] = cmd;
-
-    dbconfigs.setupVerification(cv);
-
-    // Database configuration files
-    if (!dbconfigs.loadConfiguration(configurationFile,COMMON_TEXT_CODEC)){
-        log.appendError("DB Configuration file errors:<br>"+dbconfigs.getError());
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        exitProgram(EYEDBMNG_ANS_FILE_ERROR);
+    // Getting the local configurations.
+    bool shouldExit = false;
+    ConfigurationManager dbconfigs = LoadLocalConfiguration(&log,&shouldExit);
+    if (shouldExit){        
+        exitProgram(EYEDBMNG_ANS_PARAM_ERROR);        
         return;
     }
 
     // Joining the two configuration files
     configuration.merge(dbconfigs);
+
+    if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+        log.appendStandard("Configured for Production");
+    }
+    else{
+        log.appendStandard("Configured for Local Host");
+    }
+
 
     // Attempting to create/open the log file
     QString logfile = FILE_DB_LOG;
@@ -145,34 +96,29 @@ void Control::run(){
     }
 
     // Initializing the database connections.
-    QString host = configuration.getString(CONFIG_DBHOST);
-    QString dbname = configuration.getString(CONFIG_DBNAME);
     QString user = configuration.getString(CONFIG_DBUSER);
     QString passwd = configuration.getString(CONFIG_DBPASSWORD);
-    quint16 port = configuration.getInt(CONFIG_DBPORT);
+
+    QString host = configuration.getString(CONFIG_DATA_DBHOST);
+    QString dbname = configuration.getString(CONFIG_DATA_DBNAME);
+    quint16 port = configuration.getInt(CONFIG_DATA_DBPORT);
     dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = configuration.getString(CONFIG_ID_DBHOST);
     dbname = configuration.getString(CONFIG_ID_DBNAME);
-    user = configuration.getString(CONFIG_ID_DBUSER);
-    passwd = configuration.getString(CONFIG_ID_DBPASSWORD);
     port = configuration.getInt(CONFIG_ID_DBPORT);
     dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = configuration.getString(CONFIG_PATDATA_DBHOST);
     dbname = configuration.getString(CONFIG_PATDATA_DBNAME);
-    user = configuration.getString(CONFIG_PATDATA_DBUSER);
-    passwd = configuration.getString(CONFIG_PATDATA_DBPASSWORD);
     port = configuration.getInt(CONFIG_PATDATA_DBPORT);
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,logfile);
     //qWarning() << "Connection information: " + user + "@" + host + " with passwd " + passwd + ", port: " + QString::number(port) + " to db: " + dbname;
 
     host = configuration.getString(CONFIG_DASH_DBHOST);
     dbname = configuration.getString(CONFIG_DASH_DBNAME);
-    user = configuration.getString(CONFIG_DASH_DBUSER);
-    passwd = configuration.getString(CONFIG_DASH_DBPASSWORD);
     port = configuration.getInt(CONFIG_DASH_DBPORT);
     dbConnDash.setupDB(DB_NAME_DASHBOARD,host,dbname,user,passwd,port,logfile);
 
@@ -278,7 +224,7 @@ void Control::checkMode(){
     columns << "product_sn";
 
     if (!dbConnDash.specialQuery(serial_check_query,columns)){
-        log.appendError("When querying serial number for institituion: " + dbConnBase.getError());
+        log.appendError("When querying serial number for institituion: " + dbConnDash.getError());
         finishUp(DB_FINISH_ACTION_COMMIT,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_DB_ERROR);
         return;
 
@@ -415,8 +361,22 @@ void Control::storeMode(const QString &action){
                 cmd = cmd + " " + workingDirectory + "/" + filesToSave.at(i) + " ";
                 cmd = cmd + "s3://" + configuration.getString(CONFIG_S3_ADDRESS) + "/" + pat_hashed_id + "/" + configuration.getString(CONFIG_TIMESTAMP) + "/" + filesToSave.at(i) + " ";
                 cmd = cmd + S3_PARMETERS;
-                QProcess::execute(cmd,QStringList());
+
                 log.appendStandard("Running S3 Command: " + cmd);
+
+                QProcess process;
+                process.start("sh",QStringList() << "-c" << cmd);
+                process.closeReadChannel(QProcess::StandardOutput);
+                process.closeReadChannel(QProcess::StandardError);
+                process.waitForFinished(60000000);
+                qint32 result = process.exitCode();
+
+                if (result != 0){
+                   log.appendError("AWS S3 Copy Failed. Exited with code: " + QString::number(result));
+                   finishUp(DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,DB_FINISH_ACTION_CLOSE,EYEDBMNG_ANS_FILE_ERROR);
+                   return;
+                }
+
             }
         }
     }
@@ -757,14 +717,14 @@ void Control::storeMode(const QString &action){
         log.appendStandard("Sending frequency error mail");
 
         columns.clear();
-        columns << TINST_COL_NAME;
-        QString condition = QString(TINST_COL_UID) + " = '" + instID + "'";
+        columns << TINST_COL_NAME << TINST_COL_KEYID;
+        QString condition = QString(TINST_COL_UID) + " = '" + instID + "' ORDER BY " + QString(TINST_COL_KEYID) + " LIMIT 1";
         QString instName = instID;
-        if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,condition)){
-            log.appendError("Getting inst name for " + instName + ": " + dbConnBase.getError());
+        if (!dbConnDash.readFromDB(TABLE_INSTITUTION,columns,condition)){
+            log.appendError("Getting inst name for " + instName + ": " + dbConnDash.getError());
         }
         else{
-            DBData data = dbConnBase.getLastResult();
+            DBData data = dbConnDash.getLastResult();
             if (data.rows.size() != 1){
                 log.appendError("Getting inst name for email, rows size " + QString::number(data.rows.size()) + " instead of 1, for UID: " + instID );
             }
@@ -797,13 +757,14 @@ void Control::storeMode(const QString &action){
         writer.setCodec(COMMON_TEXT_CODEC);
 
         writer << "<?php\n";
-#ifdef SERVER_PRODUCTION
-        writer << "require '/home/ec2-user/composer/vendor/autoload.php';\n";
-        writer << "require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';\n";
-#else
-        writer << "use PHPMailer\\PHPMailer\\PHPMailer;\n";
-        writer << "require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';\n";
-#endif
+        if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+            writer << "require '/home/ec2-user/composer/vendor/autoload.php';\n";
+            writer << "require '/home/ec2-user/composer/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';\n";
+        }
+        else{
+            writer << "use PHPMailer\\PHPMailer\\PHPMailer;\n";
+            writer << "require '/home/ariela/repos/viewmind_projects/Scripts/php/vendor/autoload.php';\n";
+        }
 
         writer << "$mail = new PHPMailer;\n";
         writer << "$mail->isSMTP();\n";
@@ -814,10 +775,10 @@ void Control::storeMode(const QString &action){
         writer << "$mail->Subject = 'ViewMind Frequency Check Alert From: " + instName + "';\n";
         writer << "$mail->addAddress('ariel.arelovich@viewmind.com.ar', 'Ariel Arelovich');\n";
 
-#ifdef SERVER_PRODUCTION
-        writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
-        writer << "$mail->addAddress('gerardofernandez480@gmail.com ', 'Gerardo Fernandez');\n";
-#endif
+        if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
+            writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
+            writer << "$mail->addAddress('gerardofernandez480@gmail.com ', 'Gerardo Fernandez');\n";
+        }
 
         // The HTML-formatted body of the email
         writer << "$mail->Body = '<h3>Frequency problems detected from Institituion: " + instName + "</h3>\n<h3>Details</h3>" + body + "';\n";

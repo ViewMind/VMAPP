@@ -165,7 +165,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     //----------------------------------------- BACKGROUNDS ------------------------------------------------
 
     // Backgrounds
-    canvas->addRect(0,0,PAGE_WIDTH,BANNER_HEIGHT,QPen(),QBrush(QColor(COLOR_BANNER)));
+    // canvas->addRect(0,0,PAGE_WIDTH,BANNER_HEIGHT,QPen(),QBrush(QColor(COLOR_BANNER)));
 
     // Adding the logo
     if (!c->getBool(CONFIG_REPORT_NO_LOGO)){
@@ -198,10 +198,10 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     //    QGraphicsRectItem *bar1 = canvas->addRect(0,0,PAGE_WIDTH,BAR_PATIENT_BAR_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
     //    bar1->setPos(0,BANNER_HEIGHT);
 
-    QGraphicsLineItem *lineSep1 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
+    QGraphicsLineItem *lineSep1 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),SEPARATOR_LINE_WIDTH));
     lineSep1->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,BANNER_HEIGHT);
 
-    QGraphicsLineItem *lineSep2 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
+    QGraphicsLineItem *lineSep2 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),SEPARATOR_LINE_WIDTH));
     lineSep2->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT);
 
     //    QGraphicsRectItem *panel = canvas->addRect(0,0,PAGE_WIDTH,PANEL_HEIGHT,QPen(),QBrush(QColor(COLOR_LIGHT_GRAY)));
@@ -210,10 +210,10 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     //QGraphicsRectItem *bar2 = canvas->addRect(0,0,PAGE_WIDTH,BAR_RESULTS_HEIGHT,QPen(),QBrush(QColor(COLOR_BAR_GRAY)));
     qint32 resultTitleBarYStart = BANNER_HEIGHT+BAR_PATIENT_BAR_HEIGHT+PANEL_HEIGHT;
 
-    QGraphicsLineItem *lineSep3 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
+    QGraphicsLineItem *lineSep3 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),SEPARATOR_LINE_WIDTH));
     lineSep3->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,resultTitleBarYStart);
 
-    QGraphicsLineItem *lineSep4 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),10));
+    QGraphicsLineItem *lineSep4 = canvas->addLine(0,0,PAGE_WIDTH-BAR_PATIENT_BAR_MARGIN_LEFT-BAR_PATIENT_BAR_MARGIN_RIGHT,0,QPen(QBrush(COLOR_LINE_SEP),SEPARATOR_LINE_WIDTH));
     lineSep4->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,resultTitleBarYStart+BAR_RESULTS_HEIGHT);
 
     QFont resultTitleFont = fonts.value(FONT_BOLD);
@@ -409,7 +409,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
     qreal topBoxMargin = yOffset+0.06*RESULTS_DIAG_BOX_HEIGHT;
 
     QGraphicsRectItem *diagnosisBox = canvas->addRect(0,0,rectWidth,RESULTS_DIAG_BOX_HEIGHT,
-                                                      QPen(QBrush(COLOR_FONT_RESULTS),6),QBrush());
+                                                      QPen(QBrush(COLOR_FONT_RESULTS),SEPARATOR_LINE_WIDTH),QBrush());
     diagnosisBox->setPos(BAR_PATIENT_BAR_MARGIN_LEFT,yOffset);
 
     qreal diagMarginK = 0.03;
@@ -439,7 +439,7 @@ bool ImageReportDrawer::drawReport(const QVariantMap &ds, ConfigurationManager *
 
     // Adding the divider.
     qreal yposDiagDiv = diagTopMargin + diagText->boundingRect().height() + 0.04*RESULTS_DIAG_BOX_HEIGHT;
-    QGraphicsLineItem *diagDivLine = canvas->addLine(diagXStart,yposDiagDiv,diagXStart+diagContentWidth,yposDiagDiv,QPen(QBrush(COLOR_FONT_RESULTS),6));
+    QGraphicsLineItem *diagDivLine = canvas->addLine(diagXStart,yposDiagDiv,diagXStart+diagContentWidth,yposDiagDiv,QPen(QBrush(COLOR_FONT_RESULTS),SEPARATOR_LINE_WIDTH));
 
     // Adding the disclaimer
     qreal yDisclaimer = yposDiagDiv + diagDivLine->boundingRect().height() + 0.04*RESULTS_DIAG_BOX_HEIGHT;

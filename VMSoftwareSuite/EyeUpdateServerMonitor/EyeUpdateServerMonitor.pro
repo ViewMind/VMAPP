@@ -20,10 +20,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
+    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     control.cpp \
-    ../../../CommonClasses/LogInterface/loginterface.cpp \
+    ../../CommonClasses/LogInterface/loginterface.cpp \
 
 HEADERS += \
+    ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     control.h \
-    ../../../CommonClasses/server_defines.h \
-    ../../../CommonClasses/LogInterface/loginterface.h
+    ../../CommonClasses/server_defines.h \
+    ../../CommonClasses/LogInterface/loginterface.h

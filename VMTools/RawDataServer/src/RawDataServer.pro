@@ -58,6 +58,5 @@ HEADERS += \
     rawdataserversocket.h
 
 RESOURCES += \
-    configurations.qrc \
     certificates.qrc
 

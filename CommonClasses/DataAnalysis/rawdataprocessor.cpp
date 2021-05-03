@@ -144,14 +144,14 @@ void RawDataProcessor::run(){
         EDPImages::BindingAnswers ucans = imagesUC.getExperimentAnswers();
 
         // Saving the binding answers
-        bindingAns[TEYERES_COL_BCCORRECT] = bcans.correct;
-        bindingAns[TEYERES_COL_BCWRONGANS] = bcans.wrong;
-        bindingAns[TEYERES_COL_BCTESTCORRECTANS] = bcans.testCorrect;
-        bindingAns[TEYERES_COL_BCTESTWRONGANS] = bcans.testWrong;
-        bindingAns[TEYERES_COL_UCCORRECT] = ucans.correct;
-        bindingAns[TEYERES_COL_UCWRONGANS] = ucans.wrong;
-        bindingAns[TEYERES_COL_UCTESTCORRECTANS] = ucans.testCorrect;
-        bindingAns[TEYERES_COL_UCTESTWRONGANS] = ucans.testWrong;
+        bindingAns[TEYERES_JSON_NAME_BCCORRECT] = bcans.correct;
+        bindingAns[TEYERES_JSON_NAME_BCWRONGANS] = bcans.wrong;
+        bindingAns[TEYERES_JSON_NAME_BCTESTCORRECTANS] = bcans.testCorrect;
+        bindingAns[TEYERES_JSON_NAME_BCTESTWRONGANS] = bcans.testWrong;
+        bindingAns[TEYERES_JSON_NAME_UCCORRECT] = ucans.correct;
+        bindingAns[TEYERES_JSON_NAME_UCWRONGANS] = ucans.wrong;
+        bindingAns[TEYERES_JSON_NAME_UCTESTCORRECTANS] = ucans.testCorrect;
+        bindingAns[TEYERES_JSON_NAME_UCTESTWRONGANS] = ucans.testWrong;
 
         QString report = rdataProcessor.processBinding(matrixBindingBC,matrixBindingUC,bcans.correct,ucans.correct);
         if (!rdataProcessor.getWarning().isEmpty()){
@@ -299,16 +299,22 @@ void RawDataProcessor::run(){
     writer.setCodec(COMMON_TEXT_CODEC);
 
     // Joining all data that goes to the DB.
-    QHash<QString,qreal> dbdata = rdataProcessor.getDBData();
-    QStringList bansKeys = bindingAns.keys();
-    for (qint32 i = 0; i < bansKeys.size(); i++){
-        dbdata[bansKeys.at(i)] = bindingAns.value(bansKeys.at(i));
+    QVariantMap dbdata = rdataProcessor.getDBData();
+    if (dbdata.contains(TEYERES_JSON_EXP_GROUP_BINDING)){
+        QStringList bansKeys = bindingAns.keys();
+        QVariantMap bindingMap = dbdata.value(TEYERES_JSON_EXP_GROUP_BINDING).toMap();
+        for (qint32 i = 0; i < bansKeys.size(); i++){
+            bindingMap[bansKeys.at(i)] = bindingAns.value(bansKeys.at(i));
+        }
+        dbdata[TEYERES_JSON_EXP_GROUP_BINDING] = bindingMap;
     }
 
-    QStringList cols = dbdata.keys();
-    for (qint32 i = 0; i < cols.size(); i++){
-        writer << cols.at(i) + " = " + QString::number(dbdata.value(cols.at(i))) + ";\n";
-    }
+    //qDebug() << "DATA RAW" << dbdata;
+    //qDebug() << "JSON" << QJsonValue::fromVariant(dbdata);
+    //qDebug() << "JSON STRING" << QString(QJsonDocument::fromVariant(dbdata).toJson());
+
+    writer << TEYERES_COL_RESULTS << " = " << QString(QJsonDocument::fromVariant(dbdata).toJson()) + ";\n";
+
     QString ferrorvalue;
     if (freqErrorsOK) ferrorvalue = "0";
     else ferrorvalue = "1";

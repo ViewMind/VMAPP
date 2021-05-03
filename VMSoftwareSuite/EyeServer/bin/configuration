@@ -1,7 +1,0 @@
-#--------------------------------------------------------------------------------------#
-#                        EyeServer Configuration File                           #
-#--------------------------------------------------------------------------------------#
-
-
-# Time outs (in seconds) for waiting for the client to send the report data
-data_request_time_out = 180; # Seconds

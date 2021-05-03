@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Constants to change in order to change compilation.
+BASE_DIR="/home/ec2-user/viewmind_projects/VMTools"
+SRC_DIR=$BASE_DIR"/ConsoleReportGenerator/src"
+APPNAME="ConsoleReportGenerator"
+OUTPUT=$BASE_DIR"/ConsoleReportGenerator/bin"
+
+# Changing the work directory.
+echo "===================== CHANGING DIR TO: $OUTPUT ====================="
+mkdir -p $OUTPUT
+cd $OUTPUT
+
+echo "===================== CLEANING ====================="
+rm -f $APPNAME Makefile
+
+echo "===================== CALLIING QMAKE ====================="
+qmake-qt5 $SRC_DIR -spec linux-g++
+make qmake_all
+if [[ -f "Makefile" ]]; then
+   echo "===================== CALLIING MAKE ====================="
+   make
+   if [[ -f $APPNAME ]]; then
+      echo "FINISHED"
+   else
+      echo "MAKE FAILED"
+   fi
+else
+   echo "QMAKE FAILED"
+fi
+

@@ -36,7 +36,7 @@ bool UpdateServer::startServer(ConfigurationManager *c){
 
     config = c;
     if (!listener->listen(QHostAddress::Any,TCP_PORT_UPDATE_SERVER)){
-        log.appendError("ERROR : Could not start SQL SSL Server: " + listener->errorString());
+        log.appendError("ERROR : Could not start Update SSL Server: " + listener->errorString());
         return false;
     }
 
@@ -56,6 +56,7 @@ void UpdateServer::on_newConnection(){
 
     if (!socket->isValid()) {
         log.appendError("ERROR: Could not cast incomming socket connection");
+        if (socket != nullptr) delete socket;
         return;
     }
 

@@ -4,16 +4,26 @@
    
       private $logfile;
       private $runID;
+      private $output_enable;
    
       function __construct($logFile){
          $this->logfile = $logFile;
           // Initializing RUN ID.
          $date = new DateTime();
          $this->runID = "RUN_". $date->format('Y_m_d_H_i_s');         
+         $this->output_enable = true;
       }   
       
       function getLogFile(){
-         $this->logfile;
+         return $this->logfile;
+      }
+
+      function suppressOutput(){
+         $this->output_enable = false;
+      }
+
+      function enableOutput(){
+         $this->output_enable = true;
       }
             
       function logError($info){
@@ -26,8 +36,8 @@
                fwrite($handle,$info);
                fclose($handle);                           
             }
-         }    
-         echo $info;
+         }   
+         if ($this->output_enable) echo $info;
       }
       
       function logProgress($info){ 
@@ -42,7 +52,7 @@
                fclose($handle);                           
             }
          }          
-         echo $info;
+         if ($this->output_enable) echo $info;
       }   
       
    }

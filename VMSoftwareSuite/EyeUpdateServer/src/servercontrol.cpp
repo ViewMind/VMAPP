@@ -3,15 +3,6 @@
 ServerControl::ServerControl(QObject *parent) : QObject(parent)
 {
 
-    // Creating the configuration verifier
-    ConfigurationManager::CommandVerifications cv;
-    ConfigurationManager::Command cmd;
-
-    cmd.clear();
-    cmd.type = ConfigurationManager::VT_INT;
-    cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
-
-    config.setupVerification(cv);
 
 }
 
@@ -24,13 +15,18 @@ void ServerControl::startServer(){
         return;
     }
 
-    if (!config.loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
-        log.appendError("Configuration file errors:<br>"+config.getError());
-        std::cout << "ABNORMAL EXIT: Please check the log file" << std::endl;
-        emit(exitRequested());
-        return;
+    bool shouldExit = false;
+    config = LoadLocalConfiguration(&log,&shouldExit);
+    if (shouldExit){
+        exit(0);
     }
 
+    if (config.getBool(CONFIG_PRODUCTION_FLAG)){
+        log.appendStandard("Configured for Production");
+    }
+    else{
+        log.appendStandard("Configured for Local Host");
+    }
     log.appendStandard("Starting update server...");
     updateServer.startServer(&config);
 }

@@ -12,29 +12,33 @@ RawDataServerSocket::RawDataServerSocket(QSslSocket *newSocket, quint64 id, Conf
 
     // Creating the DATABASE Connections.
     // Initializing the database connections.
-    QString host = config->getString(CONFIG_DBHOST);
-    QString dbname = config->getString(CONFIG_DBNAME);
     QString user = config->getString(CONFIG_DBUSER);
     QString passwd = config->getString(CONFIG_DBPASSWORD);
-    quint16 port = config->getInt(CONFIG_DBPORT);
+
+    QString host = config->getString(CONFIG_DATA_DBHOST);
+    QString dbname = config->getString(CONFIG_DATA_DBNAME);
+    quint16 port = config->getInt(CONFIG_DATA_DBPORT);
     dbConnBase.setupDB(DB_NAME_BASE,host,dbname,user,passwd,port,"",false);
     dbInstanceNames << dbConnBase.getInstanceName();
 
     host = config->getString(CONFIG_ID_DBHOST);
     dbname = config->getString(CONFIG_ID_DBNAME);
-    user = config->getString(CONFIG_ID_DBUSER);
-    passwd = config->getString(CONFIG_ID_DBPASSWORD);
     port = config->getInt(CONFIG_ID_DBPORT);
     dbConnID.setupDB(DB_NAME_ID,host,dbname,user,passwd,port,"",false);
     dbInstanceNames << dbConnID.getInstanceName();
 
     host = config->getString(CONFIG_PATDATA_DBHOST);
     dbname = config->getString(CONFIG_PATDATA_DBNAME);
-    user = config->getString(CONFIG_PATDATA_DBUSER);
-    passwd = config->getString(CONFIG_PATDATA_DBPASSWORD);
     port = config->getInt(CONFIG_PATDATA_DBPORT);
     dbConnPatData.setupDB(DB_NAME_PATDATA,host,dbname,user,passwd,port,"",false);
     dbInstanceNames << dbConnPatData.getInstanceName();
+
+    host = config->getString(CONFIG_DASH_DBHOST);
+    dbname = config->getString(CONFIG_DASH_DBNAME);
+    port = config->getInt(CONFIG_DASH_DBPORT);
+    dbConnDash.setupDB(DB_NAME_DASHBOARD,host,dbname,user,passwd,port,"",false);
+    dbInstanceNames << dbConnDash.getInstanceName();
+
 
     // Customized log file.
     log.setLogFileLocation(QString(DIRNAME_SERVER_LOGS) + "/" + transactionID);
@@ -69,6 +73,7 @@ void RawDataServerSocket::on_disconnected(){
             dbConnBase.close();
             dbConnID.close();
             dbConnPatData.close();
+            dbConnDash.close();
             emit(socketDone(ID));
         }
         disconnectReceived = true;
@@ -78,6 +83,7 @@ void RawDataServerSocket::on_disconnected(){
         dbConnBase.close();
         dbConnID.close();
         dbConnPatData.close();
+        dbConnDash.close();
         emit(socketDone(ID));
     }
 }
@@ -400,7 +406,7 @@ void RawDataServerSocket::oprLocalDBBkp(){
 
     // Password checks out. Searching for the existance of the Backup.
     QString instUID = rx.getField(DataPacket::DPFI_LOCAL_DB_BKP).data.toString();
-    QString instEDirname = ETDIR_PATH + QString("/") + instUID;
+    QString instEDirname = config->getString(CONFIG_ETDIR_PATH) + "/" + instUID;
     QStringList dirsInInstPath = QDir(instEDirname).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot);
 
     log.appendStandard("Requested local DB for institution: " + instUID);
@@ -573,7 +579,7 @@ void RawDataServerSocket::oprProcessRequest(){
     QStringList hashes = puidHashMap.keys();
     QStringList downloadedDirectories;
 
-    S3Interface s3;
+    S3Interface s3(&log);
     s3.setS3Bin(VIEWMIND_DATA_REPO);
 
     for (qint32 i = 0; i < hashes.size(); i++){
@@ -585,17 +591,22 @@ void RawDataServerSocket::oprProcessRequest(){
     }
 
     ///////////////// Processing the resulting files in order to send them.
-    log.appendStandard("Processing the downloaded files in order to send them ...");
+    log.appendStandard("Processing the downloaded files in order to send them ... (" + QString::number(downloadedDirectories.size()) + ") downloaded directories");
     FileLister fileLister;
     QStringList fileNames;
     QStringList fileContents;
 
     for (qint32 i = 0; i < downloadedDirectories.size(); i++){
         QString dir = QString(SERVER_WORK_DIR) + "/" + downloadedDirectories.at(i);
+        log.appendStandard("Downloaded directory: " + downloadedDirectories.at(i));
         if (QDir(dir).exists()){
             fileLister.listFileInDirectory(dir);
             QStringList fileList = fileLister.getFileList();
+            log.appendStandard("Adding files of dir " + dir + ":" + fileList.join("|"));
             fileNames << fileList;
+        }
+        else{
+            log.appendError("Downloaded directory " + dir + " does not exist");
         }
     }
 
@@ -635,21 +646,21 @@ void RawDataServerSocket::oprInstList(){
     QStringList ans;
     QStringList columns;
 
-    if (!dbConnBase.open()){
-        log.appendError("Getting institutions names and uids, could not open DB CON BASE: " + dbConnBase.getError());
+    if (!dbConnDash.open()){
+        log.appendError("Getting institutions names and uids, could not open DB CON DASH: " + dbConnDash.getError());
         sendErrorMessage("Internal DB Open ERROR");
         return;
     }
 
     columns << TINST_COL_ENABLED << TINST_COL_UID << TINST_COL_NAME;
 
-    if (!dbConnBase.readFromDB(TABLE_INSTITUTION,columns,"")){
-        log.appendError("Getting institutions names and uids: " + dbConnBase.getError());
+    if (!dbConnDash.readFromDB(TABLE_INSTITUTION,columns,"")){
+        log.appendError("Getting institutions names and uids: " + dbConnDash.getError());
         sendErrorMessage("Internal DB Query ERROR");
         return;
     }
 
-    DBData res = dbConnBase.getLastResult();
+    DBData res = dbConnDash.getLastResult();
 
     for (qint32 i = 0; i < res.rows.size(); i++){
 

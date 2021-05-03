@@ -13,7 +13,7 @@
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 
 #define EYE_DB_MNG_NAME      "EyeDBManager"
-#define EYE_DB_MNG_VERSION   "1.2.0" // Previous 1.1.0
+#define EYE_DB_MNG_VERSION   "1.2.1"
 #define FILE_DB_LOG          "dblog.log"
 
 #define DB_FINISH_ACTION_COMMIT   0
@@ -24,6 +24,14 @@
 #define  S3_PARMETERS        "--quiet"
 #define  S3_BUCKET           ""
 #define  TIME_FORMAT_STRING  "yyyy_MM_dd_hh_mm_ss"
+
+/****************************************************************************
+ * Version  1.2.1 03/03/2021
+ * -> Removal of dependency of SERVER_PRODUCTION/SERVER_LOCALHOST Macro.
+ * Version  1.2.0 25/12/2020
+ * -> DB configuration is loaded from a local file 
+ * -> Changed way of executing AWS commands so that it's possible to know if it failed. 
+ *****************************************************************************/
 
 class Control : public QObject
 {

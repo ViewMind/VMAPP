@@ -4,3 +4,9 @@
 
 # Time outs (in seconds) for waiting for the client to send the hash exe data. 
 data_request_time_out = 180; # Seconds
+
+# The path for the et directory. 
+etdir_path = ../../../VMSoftwareSuite/EyeUpdateServer/bin/etdir/;
+
+# Server Value.
+# etdir_path = "../EyeUpdateServer/etdir/";
