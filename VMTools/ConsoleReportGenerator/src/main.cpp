@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
         qDebug() << "PDF ERROR" << pdf_gen.getError();
         qDebug() << "STD OUT" << pdf_gen.getStdOutput();
         qDebug() << "STD ERR" << pdf_gen.getStdError();
+        qDebug() << "CMD" << pdf_gen.getCmd();
     }
     else{
         qDebug() << "ALL OK";

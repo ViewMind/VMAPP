@@ -65,6 +65,11 @@ private:
     QString appendCSV(const QString &fileToAppend, const DatFileProcessingStruct &dfps, const QString &csvdata);
     QStringList getClosestMedicalRecord(const QString &dbpuid, const QString &studyDate);
 
+    // Most CSVs when loaded come with an empty line at the bottom.
+    // In order to make sure no valuable information is actually deleted this checks for the presence of anything other
+    // than , in the line.
+    bool isEmptyCSVLine(QString csvline);
+
 };
 
 #endif // BATCHCSVPROCESSING_H

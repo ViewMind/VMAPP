@@ -2,6 +2,8 @@
 
 EDPNBackRT::EDPNBackRT(ConfigurationManager *c):EDPBase(c)
 {
+    // Setting the target search logic to be appropiate for RT
+    targetHitSearcher.setTargetHitLogic(TargetHitSearcher::THL_RT);
 }
 
 bool EDPNBackRT::doEyeDataProcessing(const QString &data){
@@ -274,12 +276,6 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     id << imgID << trialID;
     eyeFixations.trialID.append(id);
 
-    //    // Computing maximum and minimum values to check whether a fixation is IN or OUT.
-    //    qreal minX = targetBoxX.at(trialSequence);
-    //    qreal minY = targetBoxY.at(trialSequence);
-    //    qreal maxX = targetBoxX.at(trialSequence) + targetBoxWidth;
-    //    qreal maxY = targetBoxY.at(trialSequence) + targetBoxHeight;
-
     // The sacade latency is considered the first outside the given radious within the center of the image.
     qreal sacLatL = 0;
     qreal sacLatR = 0;
@@ -305,7 +301,7 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     }
 
     SacadeAmplitudeCalculator sac;
-    TargetHitSearcherReturn targetHitSearcherReturn;
+    TargetHitSearcher::TargetHitSearcherReturn targetHitSearcherReturn;
     targetHitSearcher.setNewTrial(trialID,trialSequence);
 
     QStringList trialSeqStr;
@@ -382,61 +378,4 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
 
 }
 
-/////////////////////////////////////// Class that maintains the logic for searching target hits in the fixations.
 
-void EDPNBackRT::TargetHitSearcher::setNewTrial(const QString &id, const QList<qint32> trialSeq){
-    trialID = id;
-    trialSequence = trialSeq;
-}
-
-void EDPNBackRT::TargetHitSearcher::setTargetBoxes(const QList<QRectF> &tBoxes){
-    hitTargetBoxes = tBoxes;
-}
-
-void EDPNBackRT::TargetHitSearcher::reset(){
-    expectedTargetIndexInSequence = 2;
-}
-
-EDPNBackRT::TargetHitSearcherReturn EDPNBackRT::TargetHitSearcher::isHit(qreal x, qreal y, const QString &imgID) {
-    qint32 imgNum = imgID.toInt();
-    TargetHitSearcherReturn ans;
-    qint32 target_hit = -1;
-    ans.sequenceCompleted = "0";
-    ans.isIn = "0";
-    ans.nback = "N/A";
-
-    // Finding which target, if any, was hit by the fixation.
-    for (qint32 i = 0; i < hitTargetBoxes.size(); i++){
-        //if (hitTargetBoxes.at(i).contains(x,y)){
-        if (FieldingParser::isHitInTargetBox(hitTargetBoxes,i,x,y)){
-            target_hit = i;
-            break;
-        }
-    }
-
-    if ((imgNum >= 1) && (imgNum <= 3)){
-        // These are the images that show the red dots.
-        qint32 expTarget = trialSequence.at(imgNum-1);
-        if (target_hit == expTarget) ans.isIn = "1";
-    }
-    else if (imgNum == 4){
-        // We need to detect if the fixation sequence, here is correct.
-        // The expected target is the allwasy the last in the sequence.
-        if (expectedTargetIndexInSequence > -1){
-            ans.isIn = "0";
-            if (trialSequence.at(expectedTargetIndexInSequence) == target_hit){
-                ans.nback = QString::number(expectedTargetIndexInSequence+1);
-                expectedTargetIndexInSequence--;
-                ans.isIn = "1";
-                if (expectedTargetIndexInSequence == -1){
-                    ans.sequenceCompleted = "1";
-                }
-            }
-        }
-    }
-
-    if (target_hit < 0)  ans.targetHit = "N/A";
-    else ans.targetHit = QString::number(target_hit);
-    return ans;
-
-}

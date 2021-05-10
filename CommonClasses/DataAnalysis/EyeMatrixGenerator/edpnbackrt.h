@@ -4,6 +4,7 @@
 #include <QRectF>
 
 #include "edpbase.h"
+#include "targethitsearcher.h"
 #include "../../Experiments/fieldingmanager.h"
 
 // Defines for fielding experiment raw data file
@@ -27,26 +28,6 @@ public:
     qint32 getNumberOfTrials() const {return numberOfTrials;}
 
 private:
-
-    struct TargetHitSearcherReturn{
-        QString targetHit;
-        QString isIn;
-        QString sequenceCompleted;
-        QString nback;
-    };
-
-    struct TargetHitSearcher {
-    public:
-        void setTargetBoxes(const QList<QRectF> &tBoxes);
-        void setNewTrial(const QString &id, const QList<qint32> trialSeq);
-        TargetHitSearcherReturn isHit(qreal x, qreal y, const QString &imgID);
-        void reset();
-    private:
-        QString trialID;
-        QList<QRectF> hitTargetBoxes;
-        QList<qint32> trialSequence;
-        qint32 expectedTargetIndexInSequence;
-    };
 
     // Initialization of the data matrix (header row)
     void initializeFieldingDataMatrix();

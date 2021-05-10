@@ -16,6 +16,10 @@ QString ReportImagesPDF::getStdOutput() const{
     return stdOut;
 }
 
+QString ReportImagesPDF::getCmd() const{
+    return cmd;
+}
+
 bool ReportImagesPDF::createPDF(const QString &inputDirectory, QString outputPDF){
 
     error = "";
@@ -60,8 +64,15 @@ bool ReportImagesPDF::createPDF(const QString &inputDirectory, QString outputPDF
     arguments << outputPDF;
 
     QProcess pdfmerge;
-    pdfmerge.start(PDF_GEN_APPLICATION,arguments);
+
+#ifdef Q_OS_WIN
+    arguments.prepend("convert");
+#endif
+
+    pdfmerge.start(PDF_GEN_APPLICATION,arguments);        
     bool all_good = pdfmerge.waitForFinished();
+
+    this->cmd = QString(PDF_GEN_APPLICATION) + " " + arguments.join(" ");
 
     this->stdErr = QString(pdfmerge.readAllStandardError());
     this->stdOut = QString(pdfmerge.readAllStandardOutput());
@@ -72,7 +83,11 @@ bool ReportImagesPDF::createPDF(const QString &inputDirectory, QString outputPDF
         }
         else{
             // The only way to know the error is to print the output.
-            error = "PDF creationg failed";
+            QMetaEnum metaEnumError = QMetaEnum::fromType<QProcess::ProcessError>();
+            QMetaEnum metaEnumState = QMetaEnum::fromType<QProcess::ProcessState>();
+            error = "PDF creationg failed with exit code of " + QString::number(pdfmerge.exitCode());
+            error = error + ". QProcess Error: " + metaEnumError.valueToKey(pdfmerge.error());
+            error = error + ". QProcess State: " + metaEnumState.valueToKey(pdfmerge.state());
         }
         return false;
     }

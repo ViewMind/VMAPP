@@ -60,6 +60,7 @@ void BatchCSVProcessing::run(){
         else if (cats.at(i).contains("UC")) expType = EXP_BINDING_UC;
         else if (cats.at(i).contains("NB")) expType = EXP_NBACKRT;
         else if (cats.at(i).contains("GN")) expType = EXP_GONOGO;
+        else if (cats.at(i).contains("MS")) expType = EXP_FIELDNG;
         else {
             qDebug() << "Unknown category: " + cats.at(i);
             errors << "Unknown category: " + cats.at(i);
@@ -222,6 +223,10 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
         processor = new EDPGoNoGo(&config);
         rdp.separateInfoByTag(dfps.filePath,HEADER_GONOGO_EXPERIMENT,&data,&exp);
     }
+    else if (exp_type == EXP_FIELDNG){
+        processor = new EDPFielding(&config);
+        rdp.separateInfoByTag(dfps.filePath,HEADER_FIELDING_EXPERIMENT,&data,&exp);
+    }
     else{
         errors << "Unsuported experiment type for mass csv generator: " + QString::number(exp_type);
         return "";
@@ -271,15 +276,16 @@ QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const DatFile
     inFile.close();
 
 
-    QStringList lines = allcsv.split("\n");
-    if (lines.size() <= 1) {
+    QStringList lines = allcsv.split("\n");    
+    if (lines.size() <= 2) {
         errors << "CSV File " + fileToAppend + " had 1 or less lines";
         return csvdata;
     }
+    if (isEmptyCSVLine(lines.last())){
+        lines.removeLast();
+    }
 
-    // Getting medical record information.
-
-
+    // Getting medical record information and appending it to adjunct columns
     QStringList csvLines;
     if (csvdata.isEmpty()) csvLines << "display_id,age,"+lines.first() + "," + headerMedRec.join(",");
     else csvLines << csvdata;
@@ -292,6 +298,13 @@ QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const DatFile
 
     return csvLines.join("\n");
 
+}
+
+bool BatchCSVProcessing::isEmptyCSVLine(QString csvline){
+    QString test = csvline.replace(",","");
+    test = test.trimmed();
+    if (test == "") return true;
+    else return false;
 }
 
 void BatchCSVProcessing::recursiveFillProcessingList(const QString &dir){

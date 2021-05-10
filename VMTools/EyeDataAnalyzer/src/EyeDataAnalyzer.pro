@@ -30,6 +30,7 @@ RCC_DIR = QRC
 SOURCES += \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpgonogo.cpp \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.cpp \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/targethitsearcher.cpp \
     ../../../CommonClasses/Experiments/fieldingparser.cpp \
     ../../../CommonClasses/Experiments/gonogomanager.cpp \
     ../../../CommonClasses/Experiments/gonogoparser.cpp \
@@ -71,6 +72,7 @@ SOURCES += \
 HEADERS += \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpgonogo.h \
     ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/edpnbackrt.h \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/targethitsearcher.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
     ../../../CommonClasses/Experiments/gonogomanager.h \
     ../../../CommonClasses/Experiments/gonogoparser.h \

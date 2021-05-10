@@ -2,6 +2,7 @@
 #define EDPFIELDING_H
 
 #include "edpbase.h"
+#include "targethitsearcher.h"
 #include "../../Experiments/fieldingmanager.h"
 
 // Defines for fielding experiment raw data file
@@ -35,25 +36,25 @@ public:
 private:
 
 
-    struct MinMaxTimeStamp {
-        qreal crossTime;
-        qreal firstHit;
-        qreal lastHit;
-        qreal timeToStore;
-        void reset(){
-            crossTime = -1;
-            firstHit = -1;
-            lastHit = -1;
-            timeToStore = -1;
-        }
-        QString toString() const {
-            return "Cross Time: " + QString::number(crossTime) + ". First/Last Hit: " + QString::number(firstHit) + "/" + QString::number(lastHit) + ". To Store: "
-                    + QString::number(timeToStore);
-        }
-    };
+//    struct MinMaxTimeStamp {
+//        qreal crossTime;
+//        qreal firstHit;
+//        qreal lastHit;
+//        qreal timeToStore;
+//        void reset(){
+//            crossTime = -1;
+//            firstHit = -1;
+//            lastHit = -1;
+//            timeToStore = -1;
+//        }
+//        QString toString() const {
+//            return "Cross Time: " + QString::number(crossTime) + ". First/Last Hit: " + QString::number(firstHit) + "/" + QString::number(lastHit) + ". To Store: "
+//                    + QString::number(timeToStore);
+//        }
+//    };
 
-    typedef  QHash< QString, MinMaxTimeStamp > FieldingTrialTimes;
-    typedef  QHash< QString, FieldingTrialTimes > ResponseTimeStruct;
+//    typedef  QHash< QString, MinMaxTimeStamp > FieldingTrialTimes;
+//    typedef  QHash< QString, FieldingTrialTimes > ResponseTimeStruct;
 
     // Initialization of the data matrix (header row)
     void initializeFieldingDataMatrix();
@@ -62,13 +63,13 @@ private:
     void appendDataToFieldingMatrix(const DataMatrix &data,
                                     const QString &trialID,
                                     const QString &imgID,
-                                    const qint32 &targetBoxID);
+                                    const QList<qint32> &trialSequence);
 
-    // The response time structures are used for easy computation of the response times.
-    void computeResponseTimes(ResponseTimeStruct *responseTimeStruct);
+//    // The response time structures are used for easy computation of the response times.
+//    void computeResponseTimes(ResponseTimeStruct *responseTimeStruct);
 
-    // Filling the computed response times. The parameter is used as a pointer to save the data in the same structure and avoid a deep copy
-    void fillResponseTimes(QList<QStringList> *pdata, ResponseTimeStruct *respTimeStruct);
+//    // Filling the computed response times. The parameter is used as a pointer to save the data in the same structure and avoid a deep copy
+//    void fillResponseTimes(QList<QStringList> *pdata, ResponseTimeStruct *respTimeStruct);
 
     // Actually saving the stored data to a file on disk.
     bool finalizeFieldingDataMatrix();
@@ -85,16 +86,19 @@ private:
     // Center margins
     qreal centerMinX, centerMaxX, centerMinY, centerMaxY;
 
-    // The target box tollerance as a function of which box I'm looking.
-    QList<QRectF> hitTargetBoxes;
+//    // The target box tollerance as a function of which box I'm looking.
+//    QList<QRectF> hitTargetBoxes;
+
+    // Used to compute the target hit logic.
+    TargetHitSearcher targetHitSearcher;
 
     // Temporarily store all processed data separated for eye.
     QStringList csvHeader;
     QList<QStringList> ldata;
     QList<QStringList> rdata;
 
-    ResponseTimeStruct lResponseTimeStruct;
-    ResponseTimeStruct rResponseTimeStruct;
+//    ResponseTimeStruct lResponseTimeStruct;
+//    ResponseTimeStruct rResponseTimeStruct;
 
 };
 

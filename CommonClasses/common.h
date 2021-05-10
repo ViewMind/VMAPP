@@ -58,6 +58,7 @@
 #define   CONFIG_CONNECTION_TIMEOUT                     "connection_time_out"
 #define   CONFIG_WAIT_REPORT_TIMEOUT                    "wait_report_timeout"
 #define   CONFIG_WAIT_DBDATA_TIMEOUT                    "wait_db_data_timeout"
+#define   CONFIG_DATA_REQUEST_TIMEOUT                   "data_request_time_out"
 #define   CONFIG_RESOLUTION_WIDTH                       "config_resolution_width"
 #define   CONFIG_RESOLUTION_HEIGHT                      "config_resolution_height"
 #define   CONFIG_SELECTED_ET                            "selected_eyetracker"

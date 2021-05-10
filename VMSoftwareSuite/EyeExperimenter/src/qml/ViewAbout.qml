@@ -45,6 +45,7 @@ Dialog {
         font.family: viewHome.gothamB.name
         color: "#297FCA"
         text: "EyeExperimenter  - " +  loader.getVersionNumber();
+        //text: "EyeExperimenter  - 15.2.0";
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: mainWindow.height*0.101
@@ -239,7 +240,10 @@ Dialog {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.leftMargin: parent.width*0.05
-                    text: loader.getStringListForKey("labeling_representative")
+                    text: {
+                        var list = loader.getStringListForKey("labeling_representative");
+                        return list.join("\n")
+                    }
                 }
             }
 

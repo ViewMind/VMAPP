@@ -49,7 +49,7 @@ viewsettings_diagAbout = About ...;
 
 #********************************* LABELING DIALOG *********************************
 labeling_company_info      = VIEWMIND S.A.|Av. Belgrano Nro. 758, City of Sunchales, Santa Fe, Argentina|D.T. Ing. Matias Shulz - M.P.1-3105-9|info@viewmind.ai - www.viewmind.ai;
-labeling_representative    = ViewMind S.à.r.l;
+labeling_representative    = ViewMind S.à.r.l|House of Biohealth, 27 Rue Henri Koch, 4354 Esch-sur-Alzette, Luxemburgo;
 labeling_name              = EyeExplorer;
 labeling_read_instructions = READ ALL INSTRUCTIONS IN MANUAL;
 labeling_authorized_use    = AUTHORIZED BY ANMAT: PM-2478-1|For exclusive use of medical professionals and institutions.;

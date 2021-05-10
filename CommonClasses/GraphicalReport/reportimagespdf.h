@@ -4,13 +4,18 @@
 #include <QProcess>
 #include <QDir>
 #include <QFileInfo>
+#include <QMetaEnum>
 
 /*****************************************************************
  * Attempts to use the convert command of imagemagick
  * to create a PDF out of all the images in the input directory
  * **************************************************************/
 
+#ifdef Q_OS_WIN
+#define  PDF_GEN_APPLICATION    "magick"
+#else
 #define  PDF_GEN_APPLICATION    "convert"
+#endif
 
 class ReportImagesPDF
 {
@@ -22,11 +27,13 @@ public:
     QString getStdOutput() const;
     QString getStdError() const;
     QString getError() const;
+    QString getCmd() const;
 
 private:
     QString stdOut;
     QString stdErr;
     QString error;
+    QString cmd;
 
 };
 
