@@ -773,11 +773,11 @@ void Control::storeMode(const QString &action){
         writer << "$mail->Password = 'BHGWozyNwZoHjvUAhL8d7H9FC/H4RBNfh564MnKZRKj/';\n";
         writer << "$mail->Host = 'email-smtp.us-east-1.amazonaws.com';\n";
         writer << "$mail->Subject = 'ViewMind Frequency Check Alert From: " + instName + "';\n";
-        writer << "$mail->addAddress('ariel.arelovich@viewmind.com.ar', 'Ariel Arelovich');\n";
+        writer << "$mail->addAddress('ariel.arelovich@viewmind.ai', 'Ariel Arelovich');\n";
 
         if (configuration.getBool(CONFIG_PRODUCTION_FLAG)){
-            writer << "$mail->addAddress('matias.shulz@viewmind.com.ar', 'Matias Shulz');\n";
-            writer << "$mail->addAddress('gerardofernandez480@gmail.com ', 'Gerardo Fernandez');\n";
+            writer << "$mail->addAddress('matias.shulz@viewmind.ai', 'Matias Shulz');\n";
+            writer << "$mail->addAddress('gerardo.fernandez@viewmind.ai', 'Gerardo Fernandez');\n";
         }
 
         // The HTML-formatted body of the email
