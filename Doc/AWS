@@ -15,12 +15,6 @@ Load Balancing requires target groups.
 
 AutoScaling group is to ensure that machines are never out of commission. 
 
-DB root users: admin
-vm-data: MtrmGDo0khG7wJMYZOu8
-vm-dashboard: QNwsTVA82KnVC5WFU1cK
-vm-patdata: nT0sro3AH7UuGD2THAjg
-vm-id: RnhFr8qwY6lJtdoIBHZM
-
 When selecting a VPC for RDS it needs to have subnets in at least two availability zones. 
 
 Interal IP Distribution. 

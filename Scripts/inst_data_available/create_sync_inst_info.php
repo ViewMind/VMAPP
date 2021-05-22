@@ -37,6 +37,25 @@
       }
    }
    
+   /////////////////////////////////// Check remote IP connection help. 
+   function checkIPConnection($ip,$logger){    
+
+      $cmd = "ssh-keygen -R $ip 2> /dev/null";
+      shell_exec($cmd);
+      $cmd = "ssh-keyscan -H $ip 2> /dev/null >> ~/.ssh/known_hosts";
+      shell_exec($cmd);
+      $cmd = "ssh root@$ip 'if [[ -d /etc  ]]; then echo \"PASS\"; fi'";   
+      $pass = shell_exec($cmd);
+      if (trim($pass) == "PASS"){
+         //$logger->logProgress("ENABLED IP: $ip");
+         return true;
+      }
+      else{
+         $logger->logWarning("FAILED IP: $ip. Returned |$pass|");
+         return false;
+      }
+
+   }   
    
    /////////////////////////////////// Database and log setup 
    $date = new DateTime();
@@ -126,6 +145,11 @@
        $inst_uid  = $sync_institutions[$i]["institution_uid"];
        $inst_user = $sync_institutions[$i]["institution_user"];
        $IP        = $sync_institutions[$i]["IP"];
+       
+       if (!checkIPConnection($IP,$logger)){
+          $logger->logError("$IP connection failed. Aborting");
+          exit();
+       }
        
        $logger->logProgress("INSTITUTION $inst_uid ($inst_user)");
        

@@ -105,4 +105,5 @@ VMTools/RawDataServer/bin/local_flag_file
 Scripts/inst_data_available/config.php
 Scripts/inst_data_available/config_remote.php
 Scripts/inst_data_available/*.json
+VMTools/QtRestClient/bin/
 
