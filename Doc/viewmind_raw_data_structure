@@ -1,0 +1,99 @@
+====================== GENERAL STRUCTURE
+S["trial_list"] = Specified below
+
+S["metadata"]["version"]               = Numbered version of this structure. 
+S["metadata"]["hour"]                  = hh_mm_ss or hh_mm
+S["metadata"]["date"]                  = yyyy_MM_dd
+S["metadata"]["institution_id"]        = The number
+S["metadata"]["institution_id"]        = The instance from 0000 to 9999
+S["metadata"]["institution_name"]      = The name
+S["metadata"]["institution_key"]       = To know what the secret is in our backend
+S["metadata"]["institution_secret"]    = The actual hash key
+S["metadata"]["study_configuration"]   = Depends on the study. 
+
+S["experiment_description"] = "Giant string with the experiment description"
+
+S["subject"]["name"]
+S["subject"]["lastname"]
+S["subject"]["years_formation"]
+S["subject"]["instituion_provided_id"]
+S["subject"]["birtdate"]
+S["subject"]["birthcountry"]
+S["subject"]["gender"]
+S["subject"]["local_id"]
+
+S["application_user"]["test_taker"]    = Strucutre app_user_data
+S["application_user"]["responsable"]  = Strucutre app_user_data
+
+S["processing_parameters"]        // TBD
+S["frequency_check_parameters"]   // TBD
+
+====================== APP_USER_DATA
+ud["local_id"]
+ud["name"]
+ud["lastname"]
+ud["email"]
+
+====================== STUDY CONFIGURATIONS 
+S["metadata"]["study_configuration"]["valid_eye"] = "Left|Right|Both"
+
+-> Reading 
+S["metadata"]["study_configuration"]["language"] = "German|Spanish|French|English|Iselandic"
+
+-> Binding
+S["metadata"]["study_configuration"]["number_targets"] = "2|3"
+S["metadata"]["study_configuration"]["target_size"] = "Large|Small"
+S["metadata"]["study_configuration"]["binding_type"] = "bound|unbound"
+
+-> Nback VS
+S["metadata"]["study_configuration"]["number_targets"] = "3|4|5|6"
+
+-> Perception
+S["metadata"]["study_configuration"]["training_type"] = "Training|Rehab"
+S["metadata"]["study_configuration"]["study_part"] = "1|2|3|4|5|6|7|8"
+
+====================== READING
+S["trial_list"]["unique"] = List of Trials
+
+Each trial has the structure
+Trial["ID"] = TRIAL_ID
+Trial["data"]["unique"]["raw_data""]  = {} // array of value vector.
+Trial["trial_list"]["unique"][TRIAL_ID]["sentence"] = "The sentence being read"
+Trial["trial_list"]["unique"][TRIAL_ID]["response"]  = Selected response (If applicable). When it is raw data is empty. 
+
+
+====================== BINDING
+S["trial_list"]["bound"/"unbound"] = List of Trials
+
+Trial["ID"] = TRIAL_ID
+Trial["data"]["encoding_#/retrieval_#"]["raw_data""] = {} // array of value vector.
+Trial["response"] = "Same/Different"
+
+# = 1 always.
+
+====================== NBACK RT/MS/VS
+S["trial_list"]["unique"] = List of Trials
+
+Trial["ID"] = TRIAL_ID
+Trial["data"]["encoding_#"/"retrieval_#"]["raw_data""] = {};
+
+In RT
+   Enconding: # in (1,2,3)
+   Retrieval  # is 0
+In MS
+   Enconding: # in (1,2,3)
+   Retrieval  # is (1,2,3)
+In VS
+   Enconding: # in (1,2,3,4,5,6)
+   Retrieval  # is 0
+
+ 
+====================== Go No-Go
+S["trial_list"]["unique"][TRIAL_ID] = List of Trials
+
+Trial["ID"] = TRIAL_ID
+Trial["data"]["unique"]["raw_data""] = {};
+Trial["trial_type"]  = One of trialTypes << "R<-" << "G<-" << "R->" <<  "G->";
+
+
+
