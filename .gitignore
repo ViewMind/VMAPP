@@ -108,5 +108,9 @@ Scripts/inst_data_available/*.json
 VMTools/QtRestClient/bin/
 VMTools/RawJSONDataDev/bin/
 
+Backend/*.txt
+Backend/*.json
+Backend/*.csv
+
 
 
