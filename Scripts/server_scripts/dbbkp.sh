@@ -1,67 +1,67 @@
- #!/bin/bash
+#!/bin/bash
 
-if [[ $# != 1 ]]; then
-   echo "Only one parameter required"
-   exit
-fi
+BASTION_IP="3.139.215.159"
+BASTION_USER_NAME="ec2-user"
+BASTION_SRC_FOLDER="/home/ec2-user/viewmind_projects/Scripts/AWS"
+BASTION_WORK_DIR="$BASTION_SRC_FOLDER/SQL_BKPS"
 
-# Server type parameters
-if [[ $1 == "prod" ]]; then
-   DNS="18.220.30.34"
-   USER="ec2-user"
-   DEST="./bkpProd"
-   declare -a DB_NAMES=("viewmind_data" "viewmind_id" "viewmind_patdata" "viewmind_dashboard")
-   PREFIX="prod"
-elif [[ $1 == "dev" ]]; then
-   DNS="18.191.142.5"
-   USER="ec2-user"
-   DEST="./bkpDev"
-   declare -a DB_NAMES=("viewmind_develop" "viewmind_id_dev" "viewmind_patdata_dev")
-   PREFIX="dev"
-else
-   echo "Only options are prod or dev"
-fi
+#CURRENT_FOLDER=$(date +"%Y_%m_%d_%H_%M")
+CURRENT_FOLDER="2021_05_24_16_33"
 
-declare -a HOST_NAMES=("viewminddb" "viewmind-id" "viewmind-patdata" "viewmind-dashboard")   
-declare -a FILE_NAMES=("res" "id" "patdata" "dashboard")
+BASTION_BKP_DIR="$BASTION_WORK_DIR/$CURRENT_FOLDER" 
+DEST="bkpProd"
 
-clear
+# Array of database names to Backup. 
+declare -a DB_NAMES=("viewmind_data" "viewmind_id" "viewmind_patdata" "viewmind_dashboard")
+declare -a CNF_FILES=("vm-data.cnf"  "vm-id.cnf"   "vm-patdata.cnf"    "vm-dashboard.cnf")
 
-# MYSQL PARAMETERS
-DB_BASE_HOST=".cdqlb2rkfdvi.us-east-2.rds.amazonaws.com"
-DB_PORT="3306"
-DB_USER="root"
-DB_PASS="vimiroot"
+# Prepraing remote
+echo "Preparing remote ..."
+CLEAN_CMD="rm -rf $BASTION_WORK_DIR; mkdir -p $BASTION_BKP_DIR"
+ssh $BASTION_USER_NAME@$BASTION_IP "$CLEAN_CMD"
 
-# The base backup name
-DB_BKP=$PREFIX"_$(date +"%Y_%m_%d_%H_%M").sql"
-LOCALPASS="givnar"
-LOCALUSER="root"
+echo "Doing DB Backups"
 
+# Connect to the Bastion and do the Backups.
 total=${#DB_NAMES[@]}
 for (( i=0; i<$total; i++ )); do
    
-   DB_NAME=${DB_NAMES[$i]}   
-   FNAME=${FILE_NAMES[$i]}   
-   FNAME=$FNAME"_"$DB_BKP
-   DB_HOST=${HOST_NAMES[$i]}   
-   DB_HOST=$DB_HOST$DB_BASE_HOST
-   
-   CREATEBKP="mysqldump -h $DB_HOST -P $DB_PORT -u $DB_USER -p\"$DB_PASS\" --databases $DB_NAME > $FNAME"
-   DELETEBKP="rm $FNAME"
-   
-   echo ">> CREATING THE BKP For $DB_NAME named: $FNAME"
-   ssh $USER@$DNS "$CREATEBKP"
-   # Copying it here
-   echo ">> COPYING THE BKP: $FNAME to $DEST"
-   scp $USER@$DNS:$FNAME $DEST
-   echo ">> DELETING THE ORIGINAL BKP"
-   ssh $USER@$DNS "$DELETEBKP"
-   echo ">>>>>>>>>>>>>>>>>>>>>>>>>>> DONE!"
-   
-   # Restoring to the local database.
-   echo ">> RESTORING TO BKP: $FNAME TO LOCAL DB: $DB_NAME"
-   mysql -u $LOCALUSER -p"$LOCALPASS" $DB_NAME < $DEST/$FNAME  
+   # The database to backup.
+   DB_NAME=${DB_NAMES[$i]}
+
+   # The credentials file
+   CNF=${CNF_FILES[$i]}
+
+   CNF="$BASTION_SRC_FOLDER/CNF/$CNF"
+
+   # Output file name is the dababase name + sql
+   BKP_FILE_NAME="$BASTION_BKP_DIR/$DB_NAME.sql"
+
+   # Database backup command. 
+   BKP_CMD="mysqldump --defaults-extra-file=$CNF $DB_NAME > $BKP_FILE_NAME"
+
+   # Running the command. 
+   echo "   Backing up DB: $DB_NAME"
+   # ssh $BASTION_USER_NAME@$BASTION_IP "$BKP_CMD"
    
 done
 
+echo "Copying bkp directory locally..."
+scp -r $BASTION_USER_NAME@$BASTION_IP:$BASTION_BKP_DIR $DEST 
+
+echo "Restoring backups locally ... "
+for (( i=0; i<$total; i++ )); do
+      
+   # The database to backup.
+   DB_NAME=${DB_NAMES[$i]}
+
+   # The corresponding backup file.
+   SQL_FILE="$DEST/$CURRENT_FOLDER/$DB_NAME.sql"
+
+   # Running the command.
+   echo "   Restoring $DB_NAME locally ..."   
+   mysql --defaults-extra-file=local.cnf $DB_NAME < $SQL_FILE
+
+done
+
+echo "Finished"

@@ -12,49 +12,6 @@
 #include <QTextStream>
 #include "../DatFileInfo/datfileinfoindir.h"
 
-//// The top level fields of the JSON structure for ANY experiment.
-//#define MAIN_FIELD_EXPERIMENT_DESCRIPTION      "experiment_description"
-//#define MAIN_FIELD_RAW_DATA_SETS               "raw_data_sets"
-//#define MAIN_FIELD_SUBJECT_DATA                "subject_data"
-//#define MAIN_FIELD_PROCESSING_PARAMETERS       "processing_parameters"
-//#define MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS  "frequency_check_parameters"
-//#define MAIN_FIELD_METADATA                    "meta_data";
-
-//// Common subfields of the JSON Structure for ANY experiments.
-//#define FIELD_XR                               "xr"
-//#define FIELD_YR                               "yr"
-//#define FIELD_XL                               "xl"
-//#define FIELD_YL                               "yl"
-//#define FIELD_PUPIL_L                          "pl"
-//#define FIELD_PUPIL_R                          "pr"
-
-//#define FIELD_STUDY_TYPE                       "study_type"
-//#define FIELD_VERSION                          "version"
-//#define FIELD_RESOLUTION                       "resolution"
-//#define FIELD_DATE                             "date"
-//#define FIELD_HOUR                             "hour"
-//#define FIELD_VALID_EYE                        "valid_eye";
-//#define FIELD_STUDY_CONFIGURATION              "study_configuration"
-//#define FIELD_FREQUENCY_CHECK_FLAG             "frequecy_check_flag"
-//#define FIELD_FREQUENCY_CHECK_REPORT           "frequecy_check_reports"
-
-//// Specific fields for individual studies.
-//#define FIELD_READING_LANGUAGE                 "language"
-
-//// Specific Parameters
-//#define CURRENT_JSON_VERSION_STRUCTURE         "1";
-//#define VALID_EYE_LEFT                         "left"
-//#define VALID_EYE_RIGHT                        "right"
-//#define VALID_EYE_BOTH                         "both";
-
-//// Study types
-//#define  STUDY_READING                         "Reading"
-//#define  STUDY_BINDING                         "Binding"
-//#define  STUDY_NBACKMS                         "NBack MS"
-//#define  STUDY_NBACKRT                         "NBack RT"
-//#define  STUDY_NBACKVS                         "NBack VS"
-//#define  STUDY_GONOGO                          "Go-No Go"
-//#define  STUDY_PERCEPTION                      "Perception"
 
 // Fields specific for each experiment.
 class RawDataContainer
@@ -121,8 +78,7 @@ public:
         MF_INSTITUTION_NAME,
         MF_INSTITUTION_KEY,
         MF_INSTITUTION_INSTANCE,
-        MF_INSTITUTION_SECRET,
-        MF_STUDY_CONFIGURATION,
+        MF_PROCESSING_PARAMETER_KEY
     } MetadataField;
 
     typedef enum {
@@ -133,14 +89,15 @@ public:
         SF_BIRTHDATE,
         SF_BIRHTCOUNTRY,
         SF_GENDER,
+        SF_AGE,
         SF_LOCAL_ID
     } SubjectField;
 
     typedef enum {
-        SF_NAME,
-        SF_LASTNAME,
-        SF_EMAIL,
-        SF_LOCAL_ID
+        AUF_NAME,
+        AUF_LASTNAME,
+        AUF_EMAIL,
+        AUF_LOCAL_ID
     } AppUserField;
 
     typedef enum {
@@ -190,17 +147,37 @@ public:
     } TrialField;
 
     typedef enum {
+        STF_TRIAL_LIST,
+        STF_STUDY_CONFIGURATION,
+        STF_EXPERIMENT_DESCRIPTION,
+        STF_VERSION
+    } StudiesField;
+
+    typedef enum {
+        PP_RESOLUTION_WIDTH,
+        PP_RESOLUTION_HEIGHT,
+        PP_NBACK_HITBOXES,
+        PP_GONOGO_HITBOXES
+    } ProcessingParameterField;
+
+    typedef enum {
         DSF_RAW_DATA
     } DataSetField;
 
     typedef QMap<StudyConfigurationParameters,StudyConfigurationValue> StudyConfiguration;
     typedef QMap<TrialField,QString> TrialConfiguration;
+    typedef QMap<MetadataField,QString> Metadata;
+    typedef QMap<SubjectField,QString> SubjectData;
+    typedef QMap<AppUserField,QString> ApplicationUserData;
+    typedef QMap<ProcessingParameterField,QVariant> ProcessingParameters;
 
     /**
-     * @brief getJSONString
-     * @return The UTF-8 JSON enconded string representing all the stored internal data
+     * @brief saveJSONFile The UTF-8 JSON enconded string representing all the stored internal data, is saved to the file passed as a parameter.
+     * @param file_name Where to save the file
+     * @param pretty_print If true prints a human readable JSON (use only for debugging).
+     * @return True if the file was generated, false otherwise. Error will contain the error message.
      */
-    QString getJSONString() const;
+    bool saveJSONFile(const QString &file_name, bool pretty_print = false);
 
     /**
      * @brief getError
@@ -208,19 +185,35 @@ public:
      */
     QString getError() const;
 
-    bool setStudy(const StudyType &study, const StudyConfiguration &studyConfiguration);
+    ////////////////////////// ATTACHMENT DATA RELATED FUNCTIONS
+    bool setMetadata(const Metadata &metadata);
+    bool setApplicationUserData(const AppUserType &type, const ApplicationUserData &au_data);
+    bool setSubjectData(const SubjectData & subject_data);
+
+    ////////////////////////// CUSTOM FIELDS
+    void addCustomMetadataFields(const QString field_name, const QString field_value);
+
+    bool setProcessingParameters(const ProcessingParameters &pp);
+
+    ////////////////////////// STUDY SETUP RELATED FUNCTIONS
+
+    bool addStudy(const StudyType &study, const StudyConfiguration &studyConfiguration, const QString &experimentDescription, const QString &version);
+
+    bool setCurrentStudy(const StudyType &study);
+
+    void setCurrentTrialListType(const TrialListType &tlt);
 
     bool addNewTrial(const QString &trial_id, const TrialConfiguration &trial_configuration);
 
-    void addNewDataSet(const DataSetType &data_set_type);
+    void setCurrentDataSet(const DataSetType &data_set_type);
 
-    void finalizeDataSet();
+    void addNewRawDataVector(const QVariantMap &raw_data_vector);
 
     void finalizeTrial(const QString &reponse = "");
 
-    void finalizeStudy();
+    void finalizeDataSet();
 
-    void addNewRawDataVector(const QVariantMap &raw_data_vector);
+    bool finalizeStudy();
 
     /**
      * @brief GenerateStdRawDataVector Geneates a valid vector that can be inserted with add NewRawDataVector. Ensuring coherence. Standar all EyeTracking values.
@@ -232,7 +225,7 @@ public:
      * @param pl Left Eye Pupil size.
      * @return A Raw data vector in the form of a map.
      */
-    static QVariantMap GenerateStdRawDataVector(float xr, float yr, float xl, float yl, float pr, float pl);
+    static QVariantMap GenerateStdRawDataVector(float timestamp, float xr, float yr, float xl, float yl, float pr, float pl);
     /**
      * @brief GenerateReadingRawDataVector Geneates a valid vector that can be inserted with add NewRawDataVector. Ensuring coherence. Standar all EyeTracking values. Includes specific Reading study data.
      * @param xr Right Eye X Coordinate
@@ -247,65 +240,74 @@ public:
      * @param word_l Word index for the left eye.
      * @return
      */
-    static QVariantMap GenerateReadingRawDataVector(float xr, float yr, float xl, float yl, float pr, float pl, float char_r, float char_l, float word_r, float word_l);
+    static QVariantMap GenerateReadingRawDataVector(float timestamp, float xr, float yr, float xl, float yl, float pr, float pl, float char_r, float char_l, float word_r, float word_l);
 
 private:
     QVariantMap data;
     QString error;
 
-    // Variables required to know what to create.
+    // Variables where information is stored as it is being gerated . On finalization they are passed on to the permanent structure.
     QVariantList currentTrialList;
     QVariantMap currentTrial;
-    QVariantMap currentDataSet;
-
-    // Where the actuall values will be stored.
+    QVariantMap currentDataSetMap;
     QVariantList currentRawDataList;
 
+    // Names and identification for currently selected study.
     QString currentTrialListType;
     QString currentDataSetType;
-
     StudyType currentlySelectedStudy;
-    StudyConfiguration currentStudyConfiguration;
 
     /**
-     * @brief configureReadingStudy Individual study configuration functions
+     * @brief configureReadingStudy Sets all necessary configuration values for a reading experiment
      * @param params The map for the study parameters to be configured.
-     * @return True if there was no error. False otherwise. Error variable contains the error
+     * @param studyConfiguration The current configuration map which will be modifed and returned with the actual configuration parameters.
+     * @return The studyConfiguration map with values ready to be inserted in general studies structure. Error will not be empty if there was an error.
      */
-    bool configureReadingStudy(const StudyConfiguration &params);
+    QVariantMap configureReadingStudy(const StudyConfiguration &params, QVariantMap studyConfiguration);
+    QVariantMap configureBindingStudy(const StudyConfiguration &params, QVariantMap studyConfiguration);
 
     // All initialization functions
     static QMap<StudyType,const char*> initStudyTypeMap();
     static QMap<StudyConfigurationParameters,const char*> initStudyParametersMap();
     static QMap<StudyConfigurationValue,const char*> initStudyValuesMap();
-    static QMap<TrialListType,const char*> initDataSetListTypesMap();
+    static QMap<TrialListType,const char*> initTrialListTypesMap();
     static QMap<ValueVectorParameter,const char*> initValueVectorParameters();
     static QMap<DataSetType,const char*> initDataSetTypesMap();
     static QMap<TrialField,const char*> initTrialFieldsMap();
-    static QMap<DataSetField,const char*> initDataSetFieldsMap();
+    static QMap<DataSetField,const char*> initDataSetFieldsMap();    
+    static QMap<MetadataField,const char*> initMetadataFieldMap();
+    static QMap<SubjectField,const char*> initSubjectFieldMap();
+    static QMap<AppUserField,const char*> initAppUserFieldMap();
+    static QMap<AppUserType,const char*> initAppUserTypeMap();
+    static QMap<StudiesField,const char*> initStudiesFieldMap();
+    static QMap<ProcessingParameterField,const char*>initProcessingParametersMap();
 
 
     // These maps map each enum type to string
     static const QMap<StudyType,const char*> mapStudyType;
     static const QMap<StudyConfigurationParameters,const char*> mapStudyParmeters;
     static const QMap<StudyConfigurationValue,const char*> mapStudyValues;
-    static const QMap<TrialListType,const char*> mapDataSetListTypes;
+    static const QMap<TrialListType,const char*> mapTrialListTypes;
     static const QMap<ValueVectorParameter,const char*> mapValueVectorParameters;
     static const QMap<DataSetType,const char*> mapDataSetTypes;
     static const QMap<TrialField,const char*> mapTrialFields;
-    static const QMap<DataSetField,const char*> mapDataSetFields;
-
+    static const QMap<DataSetField,const char*> mapDataSetFields;    
+    static const QMap<MetadataField,const char *> mapMetadataField;
+    static const QMap<SubjectField,const char *>  mapSubjectField;
+    static const QMap<AppUserField,const char *>  mapAppUserField;
+    static const QMap<AppUserType,const char *>   mapAppUserType;
+    static const QMap<StudiesField,const char*>   mapStudiesField;
+    static const QMap<ProcessingParameterField,const char*> mapProcessingParameterField;
 
     // The main fields in ANY study container.
-    static const char *MAIN_FIELD_EXPERIMENT_DESCRIPTION;
-    static const char *MAIN_FIELD_TRIAL_LIST;
     static const char *MAIN_FIELD_SUBJECT_DATA;
     static const char *MAIN_FIELD_PROCESSING_PARAMETERS;
     static const char *MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS;
+    static const char *MAIN_FIELD_APPLICATION_USER;
     static const char *MAIN_FIELD_METADATA;
+    static const char *MAIN_FIELD_STUDIES;
 
     // Constant strings to be used in all structures.
-    static const char *FIELD_VERSION;
     static const char *CURRENT_JSON_STRUCT_VERSION;
 
 
