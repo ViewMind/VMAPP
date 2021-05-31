@@ -1,0 +1,5 @@
+api/INSTITUTION_ID/users
+   -> List of all users associated with the institution as an associative array
+      internal_id : name     
+                    email
+      

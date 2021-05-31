@@ -10,7 +10,9 @@
 *.~*
 *.exe
 *.pem
-
+*local_flag_file
+*local_config
+*.cnf
 
 VMTools/EyeDataAnalyzer/exe64
 VMTools/QMLImageUpdater/exe/
@@ -84,9 +86,6 @@ Scripts/inst_data_available/OUTPUTS
 VMSoftwareSuite/EyeExperimenter/src/experiment_data/perception_study.dat.short
 
 Scripts/php/*.csv
-*local_flag_file
-*local_config
-*.cnf
 
 Scripts/php/privileges*
 Scripts/php/db_configure/
@@ -111,6 +110,7 @@ VMTools/RawJSONDataDev/bin/
 Backend/*.txt
 Backend/*.json
 Backend/*.csv
-
+Backend/db_managment/make_dbconfig.php
+Backend/00mng/copy_api.sh
 
 
