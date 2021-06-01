@@ -202,6 +202,14 @@ bool EDPImages::saveDataToFile(){
     QTextStream writer(&file);
     writer << csvLines.join("\n");
     file.close();
+
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            return finalizeRawDataFile();
+        }
+    }
+
     return true;
 }
 
@@ -216,6 +224,13 @@ bool EDPImages::appendDataToImageMatrix(const DataMatrix &data,
         samplingFrequencyCheck << "Binding Frequency Check failed at: " + trialName + "_" + isTrial
                                   + ". Expected Frequency is " + QString::number(freq)
                                   + ". Measured: " + QString::number(freqCheck);
+    }
+
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            appendToRawDataCSVFile(data,trialName,isTrial,IMAGE_TI,IMAGE_YR,IMAGE_XL,IMAGE_XR,IMAGE_YL);
+        }
     }
 
     qreal slideStart = data.first().at(IMAGE_TI);

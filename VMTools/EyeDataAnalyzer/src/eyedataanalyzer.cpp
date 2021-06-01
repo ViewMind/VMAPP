@@ -607,6 +607,9 @@ void EyeDataAnalyzer::on_pbAnalyzeData_clicked()
     QDir wdir(processingParameters.getString(CONFIG_PATIENT_DIRECTORY));
     processingParameters.addKeyValuePair(CONFIG_PATIENT_DIRECTORY,wdir.absolutePath());
 
+    // Enabling the generation of the raw data CSV.
+    processingParameters.addKeyValuePair(CONFIG_SAVE_RAW_DATA_CSV,true);
+
     //qDebug() << processingParameters.getMap();
 
     if (!ok) return;

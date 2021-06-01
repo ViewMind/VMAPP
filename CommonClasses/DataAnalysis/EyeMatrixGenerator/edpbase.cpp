@@ -42,6 +42,10 @@ void EDPBase::configure(const QString &fileName, const QString &exp){
     // Creating the image output directory if it doesn't exist
     subjectIdentifier = pname.baseName();
     outputFile = workingDirectory + "/" + info.baseName() + ".csv";
+    rawDataCSVOutput = workingDirectory + "/" + info.baseName() + "_raw_data.csv";
+    QStringList raw_data_header;
+    raw_data_header << "subject" << "trial_id" << "trial_part" << "timestamp" << "xr" << "yr" << "xl" << "yl" << "distance";
+    rawDataCSVLines << raw_data_header.join(",");
     eyeFixations.experimentDescription = exp;
 
 }
@@ -155,3 +159,43 @@ DataMatrix EDPBase::resolutionScaleDataMatrix(const DataMatrix &matrix, qint32 x
     else return matrix;
 }
 
+
+/************************** Append Data to Raw Data Matrix *******************************/
+void EDPBase::appendToRawDataCSVFile(const DataMatrix &matrix, const QString &id_trial, const QString &trial_part, qint32 col_timesamp, qint32 col_xr, qint32 col_xl, qint32 col_yr, qint32 col_yl){
+    for (qint32 i = 0; i < matrix.size(); i++){
+        QStringList row;
+        row << subjectIdentifier;
+        row << id_trial;
+        row << trial_part;
+        row << QString::number(matrix.at(i).at(col_timesamp));
+        row << QString::number(matrix.at(i).at(col_xr));
+        row << QString::number(matrix.at(i).at(col_yr));
+        row << QString::number(matrix.at(i).at(col_xl));
+        row << QString::number(matrix.at(i).at(col_yl));
+        qreal diff = (matrix.at(i).at(col_xr) - matrix.at(i).at(col_xl))*(matrix.at(i).at(col_xr) - matrix.at(i).at(col_xl));
+        diff = diff + (matrix.at(i).at(col_yr) - matrix.at(i).at(col_yl))*(matrix.at(i).at(col_yr) - matrix.at(i).at(col_yl));
+        diff = qSqrt(diff);
+        row << QString::number(diff);
+        rawDataCSVLines << row.join(",");
+    }
+}
+
+bool EDPBase::finalizeRawDataFile(){
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            QFile rawfile(rawDataCSVOutput);
+            if (rawfile.exists()){
+                rawfile.remove();
+            }
+
+            if (!rawfile.open(QFile::WriteOnly)){
+                error = "Could not open " + rawDataCSVOutput + " for writing";
+                return false;
+            }
+            QTextStream raw_writer(&rawfile);
+            raw_writer << rawDataCSVLines.join("\n");
+            rawfile.close();
+        }
+    }
+    return true;
+}

@@ -23,7 +23,8 @@ int main(int argc, char *argv[]){
     QString secret                  = "f2a494289f40f2a8408fdf3e71bba0c81e7d0f83d2ef510a54216315c2968999aba6a004aa0072e87d7479181496544fab46233d5afb715e1b4a1fd447116d5b17df8fb07f3e9b70fca3265f05c2b58a327901a0676ee4db3afc973254213b15a245e745faed70960d97259b5d15872ddf7988dcc743328a3287dcc947266028";
 
     QString test_file               = "my_test_file.json";
-    QString APIURL                  = "http://localhost/vmapi";
+    //QString APIURL                  = "http://localhost/vmapi";
+    QString APIURL                  = "http://192.168.1.12/vmapi";
     //QString endpoint                = "hola/juan/de/los";
     QString endpoint                = "/portal_users/getallmedical/1";
     QString imageFile               = "/home/web/dashboard-complete/docs/images/layout.png";
@@ -69,11 +70,11 @@ int main(int argc, char *argv[]){
         return 0;
     }
 
-    // And now let's append an image file
-    if (!rest_controller.appendFileForRequest(imageFile,"image")){
-        qDebug() << "Error appending file: " << rest_controller.getErrors();
-        return 0;
-    }
+//    // And now let's append an image file
+//    if (!rest_controller.appendFileForRequest(imageFile,"image")){
+//        qDebug() << "Error appending file: " << rest_controller.getErrors();
+//        return 0;
+//    }
 
     // Lets append the data
     rest_controller.setPOSTDataToSend(data);    

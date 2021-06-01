@@ -62,6 +62,8 @@ public:
 
     QString getOuputMatrixFileName() const { return outputFile; }
 
+    QString getRawDataCSVFileName() const { return rawDataCSVOutput; }
+
     QStringList getFilteredLines() const {return filteredLinesList;}
 
     FixationList getEyeFixations() const {return eyeFixations;}
@@ -84,6 +86,10 @@ protected:
 
     // The output file
     QString outputFile;
+
+    // The raw CSV data.
+    QString rawDataCSVOutput;
+    QStringList rawDataCSVLines;
 
     // The error message
     QString error;
@@ -148,6 +154,10 @@ protected:
 
     // Do resolution scaling on data matrix.
     DataMatrix resolutionScaleDataMatrix(const DataMatrix &matrix, qint32 xl, qint32 yl, qint32 xr, qint32 yr);
+
+    void appendToRawDataCSVFile(const DataMatrix &matrix, const QString &id_trial, const QString &trial_part, qint32 col_timesamp, qint32 col_xr, qint32 xl, qint32 yr, qint32 yl);
+
+    bool finalizeRawDataFile();
 
 };
 

@@ -195,6 +195,13 @@ bool EDPFielding::finalizeFieldingDataMatrix(){
 
     file.close();
 
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            return finalizeRawDataFile();
+        }
+    }
+
     return true;
 }
 
@@ -263,6 +270,13 @@ void EDPFielding::appendDataToFieldingMatrix(const DataMatrix &data,
         samplingFrequencyCheck << "NBack MS Frequency Check failed at: " + imgID
                                   + ". Expected Frequency is " + QString::number(freq)
                                   + ". Measured: " + QString::number(freqCheck);
+    }
+
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            appendToRawDataCSVFile(data,trialID,imgID,FIELDING_TI,FIELDING_XR,FIELDING_XL,FIELDING_YR,FIELDING_YL);
+        }
     }
 
     // Calculating the fixations for each eye.;
