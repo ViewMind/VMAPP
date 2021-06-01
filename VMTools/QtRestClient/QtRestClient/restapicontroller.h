@@ -11,6 +11,8 @@
 #include <QJsonDocument>
 #include <QFile>
 #include <QHttpMultiPart>
+#include <QDateTime>
+#include <iostream>
 
 class RESTAPIController: public QObject
 {
@@ -61,6 +63,10 @@ public:
     // Otherwise the json string of the data to send + all the files + endpoint_and_parameters is used.
     QByteArray getPayload() const;
 
+    // Adds a salt field to the current data to send and sets it to the current time stamp to the second
+    // WARNING any field named "salt" will be over written. If setJSONData is called, salt will be lost.
+    void addSalt();
+
     // Errors if there were any.
     QStringList getErrors() const;
 
@@ -89,6 +95,10 @@ private:
 
     // Used to create the finalized URL from the base API, the endpoint and whatever parameters were used.
     void makeEndpointAndParameters();
+
+    void stringifyData();
+
+    static const char * SALT_FIELD;
 
 };
 

@@ -18,19 +18,6 @@ class TableInstitution extends TableBaseClass {
    const COL_ENABLED              = "enabled";
    const COL_PHONE_NUMBER         = "phone_number";
 
-   // const COLUMN_TYPE_MAP = [
-   //    self::COL_KEYID             => "i",
-   //    self::COL_INSTITUTION_NAME  => "s",
-   //    self::COL_INSTITUTION_ID    => "i",
-   //    self::COL_EMAIL             => "s",
-   //    self::COL_ADDRESS           => "s",
-   //    self::COL_STATE_OR_PROVINCE => "s",
-   //    self::COL_COUNTRY           => "s",
-   //    self::COL_POSTAL_CODE       => "s",
-   //    self::COL_ENABLED           => "i",
-   //    self::COL_PHONE_NUMBER      => "s"
-   // ];
-
    function __construct(PDO $con){
       parent::__construct($con);
    }

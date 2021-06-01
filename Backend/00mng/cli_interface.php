@@ -25,7 +25,7 @@ function readAndVerifyData($required_parameters,$section_name){
    }
 
    // Checking that all required parameters are present. 
-   echo "Printint input parameters:\n";
+   echo "Printing input parameters for '$section_name':\n";
    $params = array();
    foreach ($required_parameters as $p){
       if (!array_key_exists($p,$config[$section_name])){

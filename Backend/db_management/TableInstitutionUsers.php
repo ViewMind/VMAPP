@@ -21,5 +21,14 @@ class TableInstitutionUsers extends TableBaseClass {
       return $this->insertionOperation($params,"Link portal user to institution");
    }
 
+   function getUsersForInstitution($institution){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution)){
+         $this->error = "Getting all users for institution $institution: " . $select->getError();
+         return false;
+      }
+      return $this->simpleSelect(array(),$select);
+   }
+
 }
 ?>

@@ -7,12 +7,17 @@ include_once ("../db_management/TablePlacedProducts.php");
 include_once ("../db_management/TablePortalUsers.php");
 include_once ("../db_management/TableSecrets.php");
 
-///////////////////////// INPUT PARAMETERS //////////////////////////////
-$params[TableInstitution::COL_EMAIL] = "ariel.arelovich@viewmind.ai";
-$params[TableInstitution::COL_INSTITUTION_NAME] = "Test Institution";
-// Can add more below.
-////////////////////////////////////////////////////////////////////////
 
+include("cli_interface.php");
+
+$section_name = "create_institution";
+$required = [TableInstitution::COL_EMAIL, 
+TableInstitution::COL_INSTITUTION_NAME
+];
+
+$params = readAndVerifyData($required,$section_name);
+
+/////////////////////////////////////////////
 $dbcon = new DBCon();
 if ($dbcon->getError() != ""){
    echo "Error creating db connection: " . $dbcon->getError();

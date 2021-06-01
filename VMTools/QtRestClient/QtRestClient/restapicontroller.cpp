@@ -10,6 +10,8 @@
 #include <QFile>
 #include <QHttpMultiPart>
 
+const char * RESTAPIController::SALT_FIELD = "salt";
+
 RESTAPIController::RESTAPIController(QObject *parent):QObject(parent)
 {
     reply = nullptr;
@@ -53,6 +55,7 @@ bool RESTAPIController::setPOSTDataToSend(const QVariantMap &map){
         return false;
     }
     dataToSend = map;
+    stringifyData();
     return true;
 }
 
@@ -60,6 +63,21 @@ void RESTAPIController::setJSONData(const QVariantMap &json){
     filesToSend.clear();
     sendDataAsJSON = true;
     dataToSend = json;
+    stringifyData();
+}
+
+void RESTAPIController::stringifyData(){
+    // When hashing, the dataToSend is treated as a JSON string.
+    // When sending this over POST to the web sever, the server wlll interpret all values as strings
+    // However if the values were set as, numbers, for example the JSON string here will not contain quotation marks around the values and hence
+    // The JSON string in of these values in the web server will be different. Hashes will then be different as well.
+    // When computing the JSON string of the POST received array there WILL be quotation marks, allways.
+    // In order to force quotation marks HERE, we force all values to be strings.
+    // That's the point of this loop.
+    QStringList keys = dataToSend.keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        dataToSend[keys.at(i)] = dataToSend.value(keys.at(i)).toString();
+    }
 }
 
 void RESTAPIController::addHeaderToRequest(const QString &headerName, const QString &headerValue){
@@ -175,7 +193,9 @@ bool RESTAPIController::sendPOSTRequest() {
     QString address = baseAPIURL + "/" + endPointAndParameters;
     QUrl url(address);
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    if (sendDataAsJSON){
+       request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    }
 
     // Adding the specifed headers.
     QStringList headerNames = headers.keys();
@@ -226,16 +246,46 @@ void RESTAPIController::makeEndpointAndParameters(){
 
 QByteArray RESTAPIController::getPayload() const{
     QByteArray payload;
+    payload = endPointAndParameters.toUtf8();
+
     if (sendDataAsJSON){
         // Only the data to send is used.
         QJsonDocument json = QJsonDocument::fromVariant(dataToSend);
         QString json_string = QString(json.toJson());
         payload = json_string.toUtf8();
     }
+    else{
+        // In this case data will part of the $_POST structure so it can't be added straight up.
+        QJsonDocument json = QJsonDocument::fromVariant(dataToSend);
+        QString json_string = QString(json.toJson(QJsonDocument::Compact));
+        //std::cout << json_string.toStdString() << std::endl;
+        payload = payload + json_string.toUtf8();
+
+        // We also the the files to send as part of the payload.
+        if (!filesToSend.isEmpty()){
+            // Adding each file as aprt of the HTTP multi part post.
+            QStringList file_keys = filesToSend.keys();
+            for (qint32 i = 0; i < file_keys.size(); i++){
+
+                QString file_key = file_keys.at(i);
+                QString filename = filesToSend.value(file_key);
+
+                QFile file(filename);
+                if(!file.open(QIODevice::ReadOnly)){
+                    continue;
+                }
+
+                payload = payload + file.readAll();
+                file.close();
+            }
+        }
+    }
+
+    // std::cout << payload.toStdString() << std::endl;
 
     // Concatenating the end point and parameters.
     // qDebug() << endPointAndParameters;
-    payload = payload + endPointAndParameters.toUtf8();
+    // payload = payload + endPointAndParameters.toUtf8();
 
     return payload;
 }
@@ -247,6 +297,11 @@ void RESTAPIController::gotReply(){
         errors << reply->errorString();
     }
     emit(gotReplyData());
+}
+
+
+void RESTAPIController::addSalt(){
+    dataToSend[SALT_FIELD] = QDateTime::currentDateTime().toString("dd_MM_yyyy_hh_mm_ss_zzz");
 }
 
 bool RESTAPIController::didReplyHaveAnError() const{

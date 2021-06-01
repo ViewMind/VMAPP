@@ -1,5 +1,8 @@
 <?php
 
+include ("SelectOperation.php");
+include_once (__DIR__ . "/../common/echo_out.php");
+
 class TableBaseClass {
 
    // All tables will have keyid column.
@@ -57,6 +60,11 @@ class TableBaseClass {
       return $this->last_inserted;
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   /**
+    * @brief A general insertion operation where params is an associative array of column names and values. 
+    */
 
    protected function insertionOperation($params,$customized_message){
 
@@ -90,6 +98,12 @@ class TableBaseClass {
 
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   /**
+    * @brief Check if a row exists with a given value in a given column. 
+    */
+
    protected function verifyExistsRow($col_to_search,$value){
 
       if (!in_array($col_to_search,$this->valid_columns)){
@@ -99,6 +113,7 @@ class TableBaseClass {
 
       $this->error = "";
       $sql = "SELECT EXISTS(SELECT * from " . static::class::TABLE_NAME . " WHERE $col_to_search = :$col_to_search) AS result";
+
       $params = array();
       $params[$col_to_search] = $value;
 
@@ -116,6 +131,66 @@ class TableBaseClass {
       return true;      
 
    }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   /**
+    * SELECT operation on the table. 
+    */
+
+   protected function simpleSelect($cols_to_get, SelectOperation $operation){
+
+      $this->error = "";
+
+      if (count($cols_to_get) == 0){
+         // Empty column list means get all. 
+         $cols_to_get = ["*"];
+      }
+      else{
+          // Checking the validity of all the columns to get.
+          foreach ($cols_to_get as $col) {
+              if (!in_array($col, $this->valid_columns)) {
+                  $this->error = "$col is not a column of table " . static::class::TABLE_NAME;
+                  return false;
+              }
+          }
+      }
+
+      // Checking the validity of the columns in the where clause. 
+      foreach ($operation->getColumnsUsed() as $col){
+         if (!in_array($col,$this->valid_columns)){
+            $this->error = "$col is not a column of table " . static::class::TABLE_NAME;
+            return false;
+         }
+      }
+
+      // Creating the SQL Statement. 
+      $sql = "SELECT " . implode(",",$cols_to_get) . " FROM " . static::class::TABLE_NAME . " WHERE " . $operation->makeWhereClause();
+      //echoOut($sql,true);
+      //echoOut($operation->getBindParameterArray(),true);
+
+      try {
+         $stmt = $this->con->prepare($sql);
+         $stmt->execute($operation->getBindParameterArray());
+         $ans = array();
+         while($row = $stmt->fetch()){
+            $ans[] = $row;
+         } 
+         return $ans;
+      }
+      catch (PDOException $e){
+         $this->error = "Select failure: " . $e->getMessage() . ". SQL: $sql";
+         return false;
+      }      
+      
+      return true;       
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+   
+   /**
+    * @brief Makes sure all colums that should be there exist and that all columns that should NOT be there don't. 
+    */
 
    protected function validateInputArray($associative_array_column_name_value, $operation_name){
       

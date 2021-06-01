@@ -30,9 +30,9 @@
 
   $srv["table_privileges"][TableInstitution::IN_DB][TableInstitution::TABLE_NAME]                         = [$PRIV_SELECT];
   $srv["table_privileges"][TableInstitutionUsers::IN_DB][TableInstitutionUsers::TABLE_NAME]               = [$PRIV_SELECT];
-  $srv["table_privileges"][TablePlacedProducts::IN_DB][TablePlacedProducts::TABLE_NAME]                     = [$PRIV_SELECT];
-  $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                           = [$PRIV_SELECT];
-  $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                   = [$PRIV_SELECT];
+  $srv["table_privileges"][TablePlacedProducts::IN_DB][TablePlacedProducts::TABLE_NAME]                   = [$PRIV_SELECT];
+  $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                         = [$PRIV_SELECT];
+  $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT];
   
   $services[] = $srv;
 
@@ -42,10 +42,14 @@
 
   $srv["table_privileges"][TableInstitution::IN_DB][TableInstitution::TABLE_NAME]                         = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TableInstitutionUsers::IN_DB][TableInstitutionUsers::TABLE_NAME]               = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
-  $srv["table_privileges"][TablePlacedProducts::IN_DB][TablePlacedProducts::TABLE_NAME]                     = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
-  $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                           = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
-  $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                   = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TablePlacedProducts::IN_DB][TablePlacedProducts::TABLE_NAME]                   = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                         = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $services[] = $srv;
+  
+  //TODO Portal User (Used by the portal webpage)
+  
+  //TODO API User (Used by the portal
   
   $flag_local = is_file("local_flag_file");
   

@@ -5,7 +5,7 @@ class RouteParser {
    private $error;
    private $route_parts;
    private $parameters;
-   private $endpointAndParameters;
+   private $endpoints_and_parameters;
 
    function __constructor(){
       $this->route_parts = array();
@@ -39,11 +39,11 @@ class RouteParser {
       }
       $this->route_parts = $temp;
 
-      $this->endpointAndParameters = implode("/",$temp);
+      $this->endpoints_and_parameters = implode("/",$temp);
       
       // Parsing the parameters if they exist.
       if ($parameters != ""){
-         $this->endpointAndParameters = $this->endpointAndParameters . "?" . $parameters;
+         $this->endpoints_and_parameters = $this->endpoints_and_parameters . "?" . $parameters;
          $parameters = explode("&",$parameters);
          foreach($parameters as $p){
             $name_and_value = explode("=",$p);
@@ -72,7 +72,7 @@ class RouteParser {
    }
    
    function getEndpointAndParameters(){
-      return $this->endpointAndParameters;
+      return $this->endpoints_and_parameters;
    }
 
    function getParameters(){

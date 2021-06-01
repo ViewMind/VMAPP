@@ -16,19 +16,6 @@ CREATE TABLE institution (
 );
 
 
-CREATE TABLE portal_users (
-   keyid                    INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-   name                     VARCHAR(255),
-   lastname                 VARCHAR(255),
-   email                    VARCHAR(255),
-   passwd                   VARCHAR(255),
-   creation_token           TEXT,
-   creation_date            TIMESTAMP DEFAULT CURRENT_DATE,
-   user_role                TINYINT DEFAULT 0,
-   enabled                  TINYINT DEFAULT 1,
-   unique(email)
-);
-
 CREATE TABLE institution_users (
    keyid                    INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
    portal_user              INT UNSIGNED,
@@ -88,6 +75,7 @@ CREATE TABLE secrets (
    institution_id           INT UNSIGNED,    
    institution_instance     INT UNSIGNED,
    secret                   VARCHAR(512),
+   permissions              LONGTEXT,
    enabled                  TINYINT DEFAULT 1
 );
 
@@ -105,16 +93,19 @@ CREATE TABLE subjects (
    institution_id            INT UNSIGNED
 );
 
-CREATE TABLE API_users (
-   keyid                     INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-   name                      VARCHAR(255),
-   last_name                 VARCHAR(255),   
-   email                     VARCHAR(255),
-   company                   VARCHAR(255),
-   created                   TIMESTAMP DEFAULT CURRENT_DATE,
-   username                  VARCHAR(255),
-   pass_word                 VARCHAR(255),
-   token                     VARCHAR(512),
-   token_expiration          TIMESTAMP,
-   permissions               LONGTEXT
+CREATE TABLE portal_users (
+   keyid                    INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+   name                     VARCHAR(255),
+   lastname                 VARCHAR(255),
+   email                    VARCHAR(255),
+   passwd                   VARCHAR(255),
+   company                  VARCHAR(255),
+   creation_token           VARCHAR(512),
+   creation_date            TIMESTAMP DEFAULT CURRENT_DATE,
+   token                    VARCHAR(512),
+   token_expiration         TIMESTAMP,
+   permissions              LONGTEXT,
+   user_role                TINYINT,
+   enabled                  TINYINT DEFAULT 1,
+   unique(email)
 );

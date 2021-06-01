@@ -1,5 +1,56 @@
-api/INSTITUTION_ID/users
-   -> List of all users associated with the institution as an associative array
-      internal_id : name     
-                    email
+The API will function as three part address (always) followed by parameters if necessary. Always with POST.
+
+The parts will be OBJECT/OPERATION/INDENTIFIER?other_parameters
+
+So for example getting all doctors for an institution will look like
+portal_users/getall/insitution_id
+
+And getting all rawdata from a given institution in a given timeframe will be
+rawdata/download/institution?from=date&to=date
+
+In the same way permissions can be specified like so: For each object. 
+{
+   "object" : [ "operation_1",  "operation_2", ....]   
+}
+
+
+VMClients have the following permissions: 
+{ 
+   "portal_users": [ "getall" ],
+   "reports" : ["generate"]   
+}
+==================================== API Spec.
+
+-> OBJECT: portal_users
+      OPERATION: getall
+         IDENTIFIER: institution_id
+            Will return a associative array with the key the internal user key and the value another associative array with full name and email.
+            
+-> OBJECT: institution
+      OPERATION: list.
+         IDENTIFIER: portal_user
+            Will return a list of the institution data that the portal_user can see. 
+            
+-> OBJECT: reports
+      OPERATION: generate
+         IDENTIFIER: portal_user
+            Will trigger the report processing to generate intermediate and final values all in one JSON file. 
+            Returns an error code and nothing more.
       
+      OPERATION: list
+         IDENTIFIER: portal_user_id
+            PARAMETERS: institution_id
+               Returns a list of reports and associated patients for the institution. If portal user role is Admin, all will be shown together with linked portal portal_users. 
+               Otherwise this column is omitted and only those linked to the portal_user are shown. 
+               
+      OPERATION: get
+         IDENTIFIER: portal_user_id
+            PARAMETERS: report_id
+               Returns all the data of the specific report and associated subject data. 
+               
+            
+-> OBJECT: rawdata
+      OPERATION: download
+         IDENTIFIER: institution_id
+            PARAMETERS: from and to. (Start and End Date).
+               Will copy all requested data from S3 (queries aside) to a directory. Compress it and send it back. 

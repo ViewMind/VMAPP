@@ -19,22 +19,24 @@ TablePortalUsers::COL_USER_ROLE];
 $params = readAndVerifyData($required,$section_name);
 
 $dbcon = new DBCon();
-if ($dbcon->getError() != ""){
-   echo "Error creating db connection: " . $dbcon->getError();
-   exit();
-}
-
-$con = $dbcon->dbOpenConnection(DBCon::DB_MAIN,DBCon::DB_SERVICE_ADMIN);
-if ($con == NULL){
+$con_secure = $dbcon->dbOpenConnection(DBCon::DB_SECURE,DBCon::DB_SERVICE_ADMIN);
+if ($con_secure == NULL){
    echo "Error creating db connection: " . $dbcon->getError() . "\n";
    exit();
 }
+
+$con_main = $dbcon->dbOpenConnection(DBCon::DB_MAIN,DBCon::DB_SERVICE_ADMIN);
+if ($con_main == NULL){
+   echo "Error creating db connection: " . $dbcon->getError() . "\n";
+   exit();
+}
+
 
 echo "Verifying institution existance\n";
 
 $inst_id = $params[TableInstitutionUsers::COL_INSTITUTION_ID];
 
-$table_inst = new TableInstitution($con);
+$table_inst = new TableInstitution($con_main);
 $ans = $table_inst->exists($inst_id);
 if ($ans === false){
    echo "Error verifying on institution's existance: " . $table_inst->getError();
@@ -50,7 +52,7 @@ else{
    }
 }
 
-$portal_user = new TablePortalUsers($con);
+$portal_user = new TablePortalUsers($con_secure);
 $role = $params[TablePortalUsers::COL_USER_ROLE];
 unset($params[TableInstitutionUsers::COL_INSTITUTION_ID]);
 
@@ -74,7 +76,7 @@ else{
    echo "Created user: " . $user_id  . "\n";
 }
 
-$table_inst_users = new TableInstitutionUsers($con);
+$table_inst_users = new TableInstitutionUsers($con_main);
 $ans = $table_inst_users->linkUserToInstitution($user_id,$inst_id);
 if ($ans === FALSE){
    echo "Failed linking $user_id and $inst_id: " . $table_inst_users->getError() . "\n";   
