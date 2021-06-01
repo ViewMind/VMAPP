@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
     QString test_file               = "my_test_file.json";
     QString APIURL                  = "http://localhost/vmapi";
     //QString endpoint                = "hola/juan/de/los";
-    QString endpoint                = "/portal_users/getall/1";
+    QString endpoint                = "/portal_users/getallmedical/1";
     QString imageFile               = "/home/web/dashboard-complete/docs/images/layout.png";
     QVariantMap URLParameters;
 

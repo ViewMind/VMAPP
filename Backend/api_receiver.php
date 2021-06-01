@@ -69,6 +69,9 @@ $identifier = $route_parts[2];
 if (array_key_exists($object,$permissions)){
    
    // It means that there are permissions for this object. Next is the operator.
+
+   // echoOut($permissions[$object]);
+
    if (in_array($operation,$permissions[$object])){
 
       if (!array_key_exists($object,ROUTING)){
@@ -86,7 +89,7 @@ if (array_key_exists($object,$permissions)){
 
       if (!method_exists($operating_object,$operation)){
          // Method not implemented yet. 
-         $res[ResponseFields::MESSAGE] = "Endpoint $object/$identifier not implemented yet";
+         $res[ResponseFields::MESSAGE] = "Endpoint $object/$operation not implemented yet";
          $res[ResponseFields::HTTP_CODE] = 500;
          http_response_code(500);
          echo json_encode($res);
@@ -108,7 +111,7 @@ if (array_key_exists($object,$permissions)){
    }
    else{
       // Access denied. 
-      $res[ResponseFields::MESSAGE] = "Access denied to endpoint $object/$identifier";
+      $res[ResponseFields::MESSAGE] = "Access denied to endpoint $object/$operation";
       $res[ResponseFields::HTTP_CODE] = 403;
       http_response_code(403);
       echo json_encode($res);

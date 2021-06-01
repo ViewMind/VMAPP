@@ -7,16 +7,18 @@ include_once (__DIR__ . "/../db_management/TableInstitutionUsers.php");
 
 class ObjectPortalUsers extends ObjectBaseClass{
 
+
    function __construct($service){
       parent::__construct($service);
    }
 
-   function getall($identifier,$parameters){
+   function getallmedical($identifier,$parameters){
 
       // WE first need to get the list of IDs form the Institution - User ID table. 
       $tiu = new TableInstitutionUsers($this->con_main);
       $ans = $tiu->getUsersForInstitution($identifier);
       if ($ans === false){
+         $this->suggested_http_code = 500;
          $this->error = "Getting ids for institution $identifier users: " . $tiu->getError();
          return false;
       }
@@ -29,8 +31,9 @@ class ObjectPortalUsers extends ObjectBaseClass{
 
       // Then we map those to the info. 
       $tpu = new TablePortalUsers($this->con_secure);
-      $ans = $tpu->getAllNamesForIDList($user_ids);
+      $ans = $tpu->getAllNamesForIDList($user_ids,[TablePortalUsers::ROLE_MEDICAL, TablePortalUsers::ROLE_INTITUTION_ADMIN]);
       if ($ans === false){
+         $this->suggested_http_code = 500;
          $this->error = "Getting names for userids for institution $identifier: " . $tpu->getError();
          return false;
       }

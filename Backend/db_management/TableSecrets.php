@@ -25,7 +25,7 @@ class TableSecrets extends TableBaseClass {
 
    // Stadard permissions for a VMClient. 
    private const VMCLIENT_PERMISSIONS = [
-      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::GETALL ],
+      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::GETALLMEDICAL ],
       APIEndpoints::REPORTS      => [ ReportOperations::GENERATE ]
    ];   
 

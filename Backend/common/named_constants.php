@@ -51,7 +51,7 @@
    }
 
    abstract class PortalUserOperations extends TypedString {
-      const GETALL                 = "getall";
+      const GETALLMEDICAL           = "getallmedical";
    }
 
    abstract class InstitutionOperations extends TypedString {

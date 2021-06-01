@@ -22,9 +22,9 @@ VMClients have the following permissions:
 ==================================== API Spec.
 
 -> OBJECT: portal_users
-      OPERATION: getall
+      OPERATION: getallmedical
          IDENTIFIER: institution_id
-            Will return a associative array with the key the internal user key and the value another associative array with full name and email.
+            Will return a associative array with the key the internal user key and the value another associative array with full name and email. Only medical and admin users. 
             
 -> OBJECT: institution
       OPERATION: list.
