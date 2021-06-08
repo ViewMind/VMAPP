@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
     QString test_file               = "my_test_file.json";
     QString APIURL                  = "http://localhost/vmapi";
     //QString endpoint                = "hola/juan/de/los";
-    QString endpoint                = "/portal_users/getallmedical/1";
+    QString endpoint                = "/institution/operating_information/1?ppkey=gazepoint";
     QString imageFile               = "/home/web/dashboard-complete/docs/images/layout.png";
     QVariantMap URLParameters;
 
@@ -44,42 +44,42 @@ int main(int argc, char *argv[]){
     data.insert("institution_id",1);
     data.insert("institution_instance",0);
 
-    QVariantMap testdata;
-    testdata.insert("Name","Ariel Ñoño");
-    testdata.insert("Age","38");
-    QVariantMap Hobbies;
-    Hobbies.insert("Modelling","mediocre");
-    Hobbies.insert("Drawing","bad");
-    Hobbies.insert("Singing","Beareable");
-    testdata.insert("Hobbies",Hobbies);
+//    QVariantMap testdata;
+//    testdata.insert("Name","Ariel Ñoño");
+//    testdata.insert("Age","38");
+//    QVariantMap Hobbies;
+//    Hobbies.insert("Modelling","mediocre");
+//    Hobbies.insert("Drawing","bad");
+//    Hobbies.insert("Singing","Beareable");
+//    testdata.insert("Hobbies",Hobbies);
 
-    QJsonDocument json = QJsonDocument::fromVariant(testdata);
-    QFile file(test_file);
-    if (!file.open(QFile::WriteOnly)){
-        qDebug() << "Could not create the test file. Exiting";
-        return 0;
-    }
-    QTextStream writer(&file);
-    writer << QString(json.toJson());
-    file.close();
+//    QJsonDocument json = QJsonDocument::fromVariant(testdata);
+//    QFile file(test_file);
+//    if (!file.open(QFile::WriteOnly)){
+//        qDebug() << "Could not create the test file. Exiting";
+//        return 0;
+//    }
+//    QTextStream writer(&file);
+//    writer << QString(json.toJson());
+//    file.close();
 
-    // Lets append the file.
-    if (!rest_controller.appendFileForRequest(test_file,"MyFileKey")){
-        qDebug() << "Error appending file: " << rest_controller.getErrors();
-        return 0;
-    }
+//    // Lets append the file.
+//    if (!rest_controller.appendFileForRequest(test_file,"MyFileKey")){
+//        qDebug() << "Error appending file: " << rest_controller.getErrors();
+//        return 0;
+//    }
 
-    // And now let's append an image file
-    if (!rest_controller.appendFileForRequest(imageFile,"image")){
-        qDebug() << "Error appending file: " << rest_controller.getErrors();
-        return 0;
-    }
+//    // And now let's append an image file
+//    if (!rest_controller.appendFileForRequest(imageFile,"image")){
+//        qDebug() << "Error appending file: " << rest_controller.getErrors();
+//        return 0;
+//    }
 
     // Lets append the data
-    rest_controller.setPOSTDataToSend(data);    
+    rest_controller.setPOSTDataToSend(data);
 
     // Appending the data as JSON makes it igonre all both previous add ons, but thats the intention.
-    // rest_controller.setJSONData(data);
+    //rest_controller.setJSONData(data);
 
     // Adding salt to ensure uniqueness of signature.
     rest_controller.addSalt();
@@ -104,17 +104,17 @@ int main(int argc, char *argv[]){
         qDebug() << "Error in the request";
         qDebug() << rest_controller.getErrors();
         QByteArray raw_reply = rest_controller.getReplyData();
-        std::cout << QString(raw_reply).toStdString() << std::endl;
+        QJsonParseError json_error;
+        QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);
+        std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
     }
     else{
         QByteArray raw_reply = rest_controller.getReplyData();
         if (endpoint != "get/pdf"){
-            std::cout << QString(raw_reply).toStdString() << std::endl;
-            //        qDebug() << "The output";
-            //        QTextCodec* codec = QTextCodec::codecForLocale();
-            //        QTextDecoder* decoder = codec->makeDecoder();
-            //        QString text = decoder->toUnicode(raw_reply);
-            //        qDebug() << text;
+            //std::cout << QString(raw_reply).toStdString() << std::endl;
+            QJsonParseError json_error;
+            QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);
+            std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
         }
         else{
             // This should be a pdf.

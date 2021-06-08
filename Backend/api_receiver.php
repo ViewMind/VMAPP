@@ -16,6 +16,7 @@ include_once ("api_management/RouteParser.php");
 include_once ("api_management/AuthManager.php");
 include_once ("db_management/TableSecrets.php");
 include_once ("api_management/ObjectPortalUsers.php");
+include_once ("api_management/ObjectInstitution.php");
 
 //////////////////////////////////// TOKENIZING THE ROUTE ////////////////////////////////
 $route_parser = new RouteParser();

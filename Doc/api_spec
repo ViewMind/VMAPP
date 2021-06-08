@@ -30,6 +30,13 @@ VMClients have the following permissions:
       OPERATION: list.
          IDENTIFIER: portal_user
             Will return a list of the institution data that the portal_user can see. 
+
+-> OBJECT: institution
+      OPERATION: operating_information
+        IDENTIFIER:: institution_id
+            PARAMETERS: ppkey
+               Returns the list of portal users associated with the institutions and the processing parameters associated with ppkey. 
+               EXAMPLE: institution/operating_information/1?ppkey=htcviveeyepro
             
 -> OBJECT: reports
       OPERATION: generate

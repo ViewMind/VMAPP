@@ -29,6 +29,7 @@
          $this->dbuser = "";
          $this->files = $files;
          $this->permissions = array();
+         $this->http_code = 500; // If I forget the code, then it is a server error.
          
          // We need to verify that the authentication field is present .... 
          if (!array_key_exists(HeaderFields::AUTH_TYPE,$headers)){
@@ -50,6 +51,7 @@
             $array = [HeaderFields::SIGNATURE, HeaderFields::AUTHENTICATION ];
             foreach ($array as $header) {
                if (!array_key_exists($header, $headers)) {
+                   $this->http_code = 401; // Authentication problem. 
                    $this->error = "Missing $header header for selected authentication method";
                    return;
                }
@@ -58,6 +60,7 @@
             $array = [POSTFields::INSTITUTION_ID, POSTFields::INSTITUION_INSTANCE ];
             foreach ($array as $field) {
                if (!array_key_exists($field, $post_data)) {
+                   $this->http_code = 401; // Authentication problem. 
                    $this->error = "Missing POST field $field for selected authentication method";
                    return;
                }

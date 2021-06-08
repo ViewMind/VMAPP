@@ -6,6 +6,7 @@
   include ("../db_management/TablePlacedProducts.php");
   include ("../db_management/TablePortalUsers.php");
   include ("../db_management/TableSecrets.php");
+  include ("../db_management/TableProcessingParameters.php");
 
   // Loading the database configuration to create. 
   $dbcon = new DBCon();
@@ -33,6 +34,7 @@
   $srv["table_privileges"][TablePlacedProducts::IN_DB][TablePlacedProducts::TABLE_NAME]                   = [$PRIV_SELECT];
   $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                         = [$PRIV_SELECT];
   $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT];
+  $srv["table_privileges"][TableProcessingParameters::IN_DB][TableProcessingParameters::TABLE_NAME]       = [$PRIV_SELECT];
   
   $services[] = $srv;
 
@@ -44,6 +46,7 @@
   $srv["table_privileges"][TableInstitutionUsers::IN_DB][TableInstitutionUsers::TABLE_NAME]               = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TablePlacedProducts::IN_DB][TablePlacedProducts::TABLE_NAME]                   = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                         = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableProcessingParameters::IN_DB][TableProcessingParameters::TABLE_NAME]       = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $services[] = $srv;
   

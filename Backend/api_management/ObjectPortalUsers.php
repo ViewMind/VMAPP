@@ -14,6 +14,11 @@ class ObjectPortalUsers extends ObjectBaseClass{
 
    function getallmedical($identifier,$parameters){
 
+      if ($identifier == ""){
+         $this->error = "Empty institution identifier.";
+         return false;
+      }
+
       // WE first need to get the list of IDs form the Institution - User ID table. 
       $tiu = new TableInstitutionUsers($this->con_main);
       $ans = $tiu->getUsersForInstitution($identifier);
@@ -21,6 +26,10 @@ class ObjectPortalUsers extends ObjectBaseClass{
          $this->suggested_http_code = 500;
          $this->error = "Getting ids for institution $identifier users: " . $tiu->getError();
          return false;
+      }
+      // If the answer is empty, it is just that there are no users for this institution 
+      if (empty($ans)){
+         return array();
       }
 
       // Transforming result into a list of ids. 
@@ -40,12 +49,13 @@ class ObjectPortalUsers extends ObjectBaseClass{
 
       //echoOut($ans,true);
 
-      // We create the final structure.
-      foreach ($ans as $row){
-         $ans[$row[TablePortalUsers::COL_KEYID]] = array();
-         $ans[$row[TablePortalUsers::COL_KEYID]]["name"] = $row[TablePortalUsers::COL_NAME] . " " . $row[TablePortalUsers::COL_LASTNAME];
-         $ans[$row[TablePortalUsers::COL_KEYID]]["email"] = $row[TablePortalUsers::COL_EMAIL];
-      }
+      // // We create the final structure.
+      // $ret = array();
+      // foreach ($ans as $row){
+      //    $ret[$row[TablePortalUsers::COL_KEYID]] = array();
+      //    $ret[$row[TablePortalUsers::COL_KEYID]]["name"] = $row[TablePortalUsers::COL_NAME] . " " . $row[TablePortalUsers::COL_LASTNAME];
+      //    $ret[$row[TablePortalUsers::COL_KEYID]]["email"] = $row[TablePortalUsers::COL_EMAIL];
+      // }
 
       return $ans;
 
