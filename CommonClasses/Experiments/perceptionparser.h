@@ -1,16 +1,8 @@
 #ifndef PERCEPTIONPARSER_H
 #define PERCEPTIONPARSER_H
 
-#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-
-#define  K_WIDTH_MARGIN             0.16
-#define  NUMBER_OF_ELEMENTS_PER_ROW 5
-#define  NUMBER_OF_ELEMENTS_PER_COL 5
-#define  YES_NO_FONT_SIZE           32
-#define  AIR_YES_NO_TEXT_W          4    // Bouding rect of text is multiplied by this to generate surrounding frame's width.
-#define  AIR_YES_NO_TEXT_H          2    // Bouding rect of text is multiplied by this to generate surrounding frame's height.
-#define  MARGIN_YES_NO_TEXT         0.15 // Width percent.
+#include "../eyetracker_defines.h"
 
 class PerceptionParser
 {

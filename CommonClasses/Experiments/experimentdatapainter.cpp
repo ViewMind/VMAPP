@@ -6,13 +6,13 @@ ExperimentDataPainter::ExperimentDataPainter()
     gazeUpdateEnabled = false;
 }
 
-void ExperimentDataPainter::init(ConfigurationManager *c){
-    ScreenResolutionHeight = c->getReal(CONFIG_RESOLUTION_HEIGHT);
-    ScreenResolutionWidth = c->getReal(CONFIG_RESOLUTION_WIDTH);
+void ExperimentDataPainter::init(qreal display_resolution_width, qreal display_resolution_height){
+    ScreenResolutionHeight = display_resolution_width; //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_HEIGHT);
+    ScreenResolutionWidth = display_resolution_height;  //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_WIDTH);
     canvas = new QGraphicsScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
     //qDebug() << "Experiment data painter. Scene Rect" << canvas->sceneRect();
     R = 0.007*ScreenResolutionWidth;
-    config = c;
+    //config = c;
 }
 
 void ExperimentDataPainter::updateGazePosition(){
@@ -21,8 +21,14 @@ void ExperimentDataPainter::updateGazePosition(){
     leftEyeTracker->setPos(gazeXl-R,gazeYl-R);
 }
 
+void ExperimentDataPainter::configure(const QVariantMap &configuration){
+    Q_UNUSED(configuration);
+}
+
 void ExperimentDataPainter::updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl){
-    if (!config->getBool(CONFIG_ENABLE_GAZE_FOLLOWING)) return;
+#ifndef ENABLE_GAZE_FOLLOW
+    return;
+#endif
     gazeXl = xl;
     gazeXr = xr;
     gazeYl = yl;
@@ -32,7 +38,9 @@ void ExperimentDataPainter::updateGazePoints(qreal xr, qreal xl, qreal yr, qreal
 
 void ExperimentDataPainter::redrawGazePoints(){
 
-    if (!config->getBool(CONFIG_ENABLE_GAZE_FOLLOWING)) return;
+#ifndef ENABLE_GAZE_FOLLOW
+    return;
+#endif
 
     // Recreating the eye followers
     leftEyeTracker = canvas->addEllipse(0,0,2*R,2*R,QPen(),QBrush(QColor(0,0,255,100)));

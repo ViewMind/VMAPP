@@ -1,39 +1,46 @@
 #include "nbackrtexperiment.h"
 
-NBackRTExperiment::NBackRTExperiment(QWidget *parent, NBackType nbt):Experiment(parent){
+const qint32 NBackRTExperiment::TIME_TRANSITION =                              500;
+const qint32 NBackRTExperiment::TIME_TARGET =                                  250;
+const qint32 NBackRTExperiment::TIME_OUT_BLANKS =                              3000;
+const qint32 NBackRTExperiment::DEFAULT_NUMBER_OF_TARGETS =                    3;
+
+// Possible pauses for the fielding experiment
+const qint32 NBackRTExperiment::PAUSE_TRIAL_1 =                                32;
+const qint32 NBackRTExperiment::PAUSE_TRIAL_2 =                                64;
+
+const qint32 NBackRTExperiment::NBACKVS_MIN_HOLD_TIME =                        50;
+const qint32 NBackRTExperiment::NBACKVS_MAX_HOLD_TIME =                        250;
+const qint32 NBackRTExperiment::NBACKVS_STEP_HOLD_TIME =                       50;
+const qint32 NBackRTExperiment::NBACKVS_START_HOLD_TIME =                      250;
+const qint32 NBackRTExperiment::NBACKVS_NTRIAL_FOR_STEP_CHANGE =               2;
+
+
+NBackRTExperiment::NBackRTExperiment(QString study_type, QWidget *parent):Experiment(parent){
 
     manager = new FieldingManager();
     m = dynamic_cast<FieldingManager*>(manager);
-    nbackType = nbt;
-
-    switch(nbt){
-    case NBT_DEFAULT:
-        expHeader = HEADER_NBACKRT_EXPERIMENT;
-        outputDataFile = FILE_OUTPUT_NBACKRT;
-        break;
-    case NBT_VARIABLE_SPEED:
-        expHeader = HEADER_NBACK_VARIABLE_SPEED_EXPERIMENT;
-        outputDataFile = FILE_OUTPUT_NBACK_VARIABLE_SPEED;
-        break;
-    }
+    studyType = study_type;
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&NBackRTExperiment::onTimeOut);
+
+
 }
 
-bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
+bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
+                                        const QVariantMap &studyConfig, bool useMouse,
+                                        QVariantMap pp){
 
-    switch(nbackType){
-    case NBT_VARIABLE_SPEED:
-        nbackConfig.minHoldTime              = c->getInt(CONFIG_NBACKVS_MIN_HOLD_TIME);
-        nbackConfig.maxHoldTime              = c->getInt(CONFIG_NBACKVS_MAX_HOLD_TIME);
-        nbackConfig.stepHoldTime             = c->getInt(CONFIG_NBACKVS_STEP_HOLD_TIME);
-        nbackConfig.startHoldTime            = c->getInt(CONFIG_NBACKVS_START_HOLD_TIME);
-        nbackConfig.numberOfTrialsForChange  = c->getInt(CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE);
-        nbackConfig.numberOfTargets          = c->getInt(CONFIG_NBACKVS_SEQUENCE_LENGTH);
-        outputDataFile = outputDataFile + "_" + QString::number(nbackConfig.numberOfTargets);
-        break;
-    case NBT_DEFAULT:
+    if (studyType == RDC::Study::NBACKVS){
+        nbackConfig.minHoldTime              = NBACKVS_MIN_HOLD_TIME;
+        nbackConfig.maxHoldTime              = NBACKVS_MAX_HOLD_TIME;
+        nbackConfig.stepHoldTime             = NBACKVS_STEP_HOLD_TIME;
+        nbackConfig.startHoldTime            = NBACKVS_START_HOLD_TIME;
+        nbackConfig.numberOfTrialsForChange  = NBACKVS_NTRIAL_FOR_STEP_CHANGE;
+        nbackConfig.numberOfTargets          = studyConfig.value(RDC::StudyParameter::NUMBER_TARGETS).toInt();
+    }
+    else{
         // Variable Speed configuration for DEFAULT NBACK RT.
         nbackConfig.minHoldTime              = TIME_TARGET;
         nbackConfig.maxHoldTime              = TIME_TARGET;
@@ -41,10 +48,33 @@ bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
         nbackConfig.startHoldTime            = TIME_TARGET;
         nbackConfig.numberOfTrialsForChange  = 0;
         nbackConfig.numberOfTargets          = DEFAULT_NUMBER_OF_TARGETS;
-        break;
+
     }
 
-    if (!Experiment::startExperiment(c)) return false;
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)){
+        emit(experimentEndend(ER_FAILURE));
+        return false;
+    }
+
+    QVariantMap config;
+    config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,(Globals::EyeTracker::IS_VR && (!useMouse)));
+    if (studyConfig.value(RDC::StudyParameter::LANGUAGE).toString() == RDC::UILanguage::SPANISH){
+        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
+    }
+    else{
+        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
+    }
+    m->configure(config);
+
+    // The processing parameters requires the hitboxes that are going to be used, so they are added before they are set.
+    pp = addHitboxesToProcessingParameters(pp);
+    if (!rawdata.setProcessingParameters(pp)){
+        error = "Failed setting processing parameters on Reading: " + rawdata.getError();
+        emit(experimentEndend(ER_FAILURE));
+    }
+
+    // There is only one trial list type on a NBack experiment.
+    rawdata.setCurrentTrialListType(RDC::TrialListType::UNIQUE);
 
     currentImage = 0;
     currentTrial = 0;
@@ -60,9 +90,9 @@ bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
 
     // Computing the minimum number of hits to count as a fixation.
     MovingWindowParameters mwp;
-    mwp.sampleFrequency = c->getReal(CONFIG_SAMPLE_FREQUENCY);
-    mwp.minimumFixationLength = c->getReal(CONFIG_MIN_FIXATION_LENGTH);
-    mwp.maxDispersion = c->getReal(CONFIG_MOVING_WINDOW_DISP);
+    mwp.sampleFrequency = pp.value(RDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
+    mwp.minimumFixationLength =  pp.value(RDC::ProcessingParameter::MIN_FIXATION_DURATION).toReal();
+    mwp.maxDispersion =  pp.value(RDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
     mwp.calculateWindowSize();
 
     //qDebug() << "MWP" << mwp.sampleFrequency << mwp.minimumFixationLength << mwp.maxDispersion << mwp.getStartWindowSize();
@@ -73,7 +103,7 @@ bool NBackRTExperiment::startExperiment(ConfigurationManager *c){
     m->drawBackground();
     drawCurrentImage();
 
-    if (!vrEnabled){
+    if (!Globals::EyeTracker::IS_VR || (useMouse)){
         this->show();
         this->activateWindow();
     }
@@ -98,24 +128,47 @@ void NBackRTExperiment::nextState(){
     case TSF_START:
         tstate = TSF_SHOW_TARGET;
         currentImage = 0;
-        addTrialHeader();
         stateTimer.setInterval(nbackConfig.getCurrentHoldTime());
+
+        if (!addNewTrial()){
+            stateTimer.stop();
+            emit(experimentEndend(ER_FAILURE));
+            return;
+        }
+        currentDataSetType = RDC::DataSetType::ENCODING_1;
+        rawdata.setCurrentDataSet(currentDataSetType);
+
         break;
     case TSF_SHOW_TARGET:
+
+        // End the previous data set.
+        rawdata.finalizeDataSet();
         currentImage++;
         if (currentImage == nbackConfig.numberOfTargets){
+
+            // Retrieval will begin
+            rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_1);
+
             tstate = TSF_SHOW_BLANKS;
             trialRecognitionMachine.reset(m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets));
             //qDebug() << "EXPECTED SEQUENCE FOR TRIAL" << m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets);
-            addTrialHeader();
             stateTimer.setInterval(TIME_OUT_BLANKS);
         }
         else {
-            addTrialHeader();
+
+            // WE compute the next data set type
+            nextEncodingDataSetType();
+            rawdata.setCurrentDataSet(currentDataSetType);
+
             stateTimer.setInterval(nbackConfig.getCurrentHoldTime());
         }
         break;
     case TSF_SHOW_BLANKS:
+
+        // We can now finalize the dataset and the trial
+        rawdata.finalizeDataSet();
+        rawdata.finalizeTrial("");
+
         tstate = TSF_START;
         currentTrial++;
         if (finalizeExperiment()) return;
@@ -175,18 +228,26 @@ bool NBackRTExperiment::finalizeExperiment(){
     if (currentTrial < m->size()) return false;
     stateTimer.stop();
     state = STATE_STOPPED;
+
     ExperimentResult er;
     if (error.isEmpty()) er = ER_NORMAL;
     else er = ER_WARNING;
+
+    // Finalizing the study. NBacks are not multi part.
+    bool ans;
+    ans = rawdata.finalizeStudy();
+    ans = ans & rawdata.markStudyAsFinalized(studyType);
+    if (!ans){
+        error = "Failed on NBack RT/VS study finalization: " + rawdata.getError();
+        emit (experimentEndend(ER_FAILURE));
+        return false;
+    }
+
     if (!saveDataToHardDisk()){
         emit(experimentEndend(ER_FAILURE));
     }
     else emit(experimentEndend(er));
     return true;
-}
-
-void NBackRTExperiment::togglePauseExperiment(){
-    // Pause is not managed here, for this experiment.
 }
 
 void NBackRTExperiment::keyPressHandler(int keyPressed){
@@ -208,29 +269,6 @@ void NBackRTExperiment::keyPressHandler(int keyPressed){
     }
 }
 
-void NBackRTExperiment::addTrialHeader(){
-
-    ignoreData = true;
-    qint32 imageInTrialID = currentImage+1;
-
-//    if (tstate == TSF_SHOW_BLANKS) imageInTrialID = 4;
-//    else imageInTrialID = currentImage+1;
-
-    // Saving the current image.
-    QVariantList dataS;
-    dataS  << m->getTrial(currentTrial).id
-           << imageInTrialID;
-           //<< currentImage;
-
-    if (nbackType == NBT_VARIABLE_SPEED){
-        dataS << nbackConfig.getCurrentHoldTime();
-    }
-
-    etData << QVariant(dataS);
-
-    ignoreData = false;
-
-}
 
 void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
@@ -244,16 +282,7 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (data.isLeftZero() && data.isRightZero()) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    QVariantList dataS;
-    dataS << data.time
-          << data.xRight
-          << data.yRight
-          << data.xLeft
-          << data.yLeft
-          << data.pdRight
-          << data.pdLeft;
-
-    etData << QVariant(dataS);
+    rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
 
     //qDebug() << "X,Y" << data.xRight << data.xLeft;
 
@@ -285,6 +314,63 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     }
 
 
+}
+
+QVariantMap NBackRTExperiment::addHitboxesToProcessingParameters(QVariantMap pp){
+    QList<QRectF> hitBoxes = m->getHitTargetBoxes();
+
+    QVariantList modHitBoxes;
+    for (qint32 i = 0; i < hitBoxes.size(); i++){
+
+        qreal x,y,w,h;
+        QVariantList hitbox;
+
+        x = hitBoxes.at(i).x();
+        w = hitBoxes.at(i).width();
+        y = hitBoxes.at(i).y();
+        h = hitBoxes.at(i).height();
+
+        hitbox << x << y << w << h;
+        // Casting is necessary otherwise the operation appends a list to the list.
+        // Then the JSON is interpreted as one long list instead of serveral lists of 4 values.
+        modHitBoxes << (QVariant) hitbox;
+    }
+
+    // Store them as part of the processing parameters.
+    pp.insert(RDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);
+    return pp;
+}
+
+
+void NBackRTExperiment::nextEncodingDataSetType(){
+    // A very very complicated way of doing a counter due to the way I defined the data set types as enum.
+    // But at least is clean.
+    if (currentDataSetType ==  RDC::DataSetType::ENCODING_1){
+        currentDataSetType = RDC::DataSetType::ENCODING_2;
+    }
+    else if (currentDataSetType ==  RDC::DataSetType::ENCODING_2){
+        currentDataSetType = RDC::DataSetType::ENCODING_3;
+    }
+    else if (currentDataSetType ==  RDC::DataSetType::ENCODING_3){
+        currentDataSetType = RDC::DataSetType::ENCODING_4;
+    }
+    else if (currentDataSetType ==  RDC::DataSetType::ENCODING_4){
+        currentDataSetType = RDC::DataSetType::ENCODING_5;
+    }
+    else if (currentDataSetType ==  RDC::DataSetType::ENCODING_5){
+        currentDataSetType = RDC::DataSetType::ENCODING_6;
+    }
+}
+
+bool NBackRTExperiment::addNewTrial(){
+    QString type = m->getFullSequenceAsString(currentTrial);
+    currentTrialID = QString::number(currentTrial);
+
+    if (!rawdata.addNewTrial(currentTrialID,type)){
+        error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
+        return false;
+    }
+    return true;
 }
 
 

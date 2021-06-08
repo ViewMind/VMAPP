@@ -10,7 +10,8 @@ public:
         if (COUNTRY_CODE.size() != 0) return;
         /// TODO: Get the country list in spanish.
         if (inEnglish) {
-            COUNTRY_LIST <<  "Afghanistan" << "Åland Islands" << "Albania" << "Algeria" << "American Samoa" << "Andorra" << "Angola" << "Anguilla" << "Antarctica"
+            COUNTRY_LIST  << "No Countyr"
+                          << "Afghanistan" << "Åland Islands" << "Albania" << "Algeria" << "American Samoa" << "Andorra" << "Angola" << "Anguilla" << "Antarctica"
                           << "Antigua and Barbuda" << "Argentina" << "Armenia" << "Aruba" << "Australia" << "Austria" << "Azerbaijan" << "Bahamas" << "Bahrain"
                           << "Bangladesh" << "Barbados" << "Belarus" << "Belgium" << "Belize" << "Benin" << "Bermuda" << "Bhutan" << "Bolivia, Plurinational State of"
                           << "Bonaire, Sint Eustatius and Saba" << "Bosnia and Herzegovina" << "Botswana" << "Bouvet Island" << "Brazil" << "British Indian Ocean Territory"
@@ -43,7 +44,8 @@ public:
         }
         else {
             // Only other language is spanish
-            COUNTRY_LIST << "Afganistán" << "Islas Aland" << "Albania" << "Argelia" << "Samoa Americana" << "Andorra" << "Angola" << "Anguila" << "Antártico"
+            COUNTRY_LIST << "Ningún pais"
+                         << "Afganistán" << "Islas Aland" << "Albania" << "Argelia" << "Samoa Americana" << "Andorra" << "Angola" << "Anguila" << "Antártico"
                          << "Antigua y Barbuda" << "Argentina" << "Armenia" << "Aruba" << "Australia" << "Austria" << "Azerbaiyán" << "Bahamas" << "Bahréin"
                          << "Bangladesh" << "Barbados" << "Bielorrusia" << "Bélgica" << "Belice" << "Benín" << "Bermudas" << "Bután" << "Bolivia"
                          << "Bonaire, San Eustaquio y Saba" << "Bosnia y Herzegovina" << "Botsuana" << "Isla Bouvet" << "Brasil"
@@ -78,7 +80,8 @@ public:
                          << "Zimbabue";
         }
 
-        COUNTRY_CODE <<	"AF" <<	"AX" <<	"AL" <<	"DZ" <<	"AS" <<	"AD" <<	"AO" <<	"AI" <<	"AQ" <<	"AG" <<	"AR" <<	"AM" <<	"AW" <<	"AU" <<	"AT" <<	"AZ"
+        COUNTRY_CODE << "ZZ"
+                     <<	"AF" <<	"AX" <<	"AL" <<	"DZ" <<	"AS" <<	"AD" <<	"AO" <<	"AI" <<	"AQ" <<	"AG" <<	"AR" <<	"AM" <<	"AW" <<	"AU" <<	"AT" <<	"AZ"
                      <<	"BS" <<	"BH" <<	"BD" <<	"BB" <<	"BY" <<	"BE" <<	"BZ" <<	"BJ" <<	"BM" <<	"BT" <<	"BO" <<	"BQ" <<	"BA" <<	"BW" <<	"BV" <<	"BR"
                      <<	"IO" <<	"BN" <<	"BG" <<	"BF" <<	"BI" <<	"KH" <<	"CM" <<	"CA" <<	"CV" <<	"KY" <<	"CF" <<	"TD" <<	"CL" <<	"CN" <<	"CX" <<	"CC"
                      <<	"CO" <<	"KM" <<	"CG" <<	"CD" <<	"CK" <<	"CR" <<	"CI" <<	"HR" <<	"CU" <<	"CW" <<	"CY" <<	"CZ" <<	"DK" <<	"DJ" <<	"DM" <<	"DO"

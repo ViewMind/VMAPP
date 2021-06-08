@@ -1,7 +1,30 @@
 #include "fieldingmanager.h"
 
-FieldingManager::FieldingManager(){
+#ifdef EYETRACKER_HTCVIVEPRO
+const qreal FieldingManager::TARGET_R =                                   52.5;
+const qreal FieldingManager::TARGET_OFFSET_X =                            48.75;
+const qreal FieldingManager::TARGET_OFFSET_Y =                            43.75;
+const qreal FieldingManager::K_CROSS_LINE_LENGTH =                        0.05;
+#endif
 
+#ifdef EYETRACKER_GAZEPOINT
+const qreal FieldingManager::TARGET_R =                                   42;
+const qreal FieldingManager::TARGET_OFFSET_X =                            39;
+const qreal FieldingManager::TARGET_OFFSET_Y =                            39;
+const qreal FieldingManager::K_CROSS_LINE_LENGTH =                        0.05;
+#endif
+
+const char * FieldingManager::CONFIG_IS_VR_BEING_USED  = "is_VR_used";
+const char * FieldingManager::CONFIG_PAUSE_TEXT_LANG   = "pause_text_lang";
+
+const char * FieldingManager::LANG_EN = "EN";
+const char * FieldingManager::LANG_ES = "ES";
+
+const char * FieldingManager::PAUSE_TEXT_SPANISH = "Presione \"G\" cuando se encuentre listo";
+const char * FieldingManager::PAUSE_TEXT_ENGLISH = "Press any \"G\" when you are ready";
+
+FieldingManager::FieldingManager(){
+    vr_being_used = false;
 }
 
 void FieldingManager::enableDemoMode(){
@@ -13,9 +36,7 @@ void FieldingManager::enableDemoMode(){
 bool FieldingManager::parseExpConfiguration(const QString &contents){
 
     FieldingParser parser;
-    if (!parser.parseFieldingExperiment(contents,ScreenResolutionWidth,ScreenResolutionHeight,
-                                        config->getReal(CONFIG_FIELDING_XPX_2_MM),
-                                        config->getReal(CONFIG_FIELDING_YPX_2_MM))){
+    if (!parser.parseFieldingExperiment(contents,ScreenResolutionWidth,ScreenResolutionHeight)){
         error = parser.getError();
         return false;
     }
@@ -25,22 +46,23 @@ bool FieldingManager::parseExpConfiguration(const QString &contents){
     hitTargetBoxes  = parser.getHitTargetBoxes();
     drawTargetBoxes = parser.getDrawTargetBoxes();
 
-    if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
-
     return true;
 
 }
 
-void FieldingManager::init(ConfigurationManager *c){
-    ExperimentDataPainter::init(c);
+void FieldingManager::configure(const QVariantMap &config){
+    vr_being_used = config.value(CONFIG_IS_VR_BEING_USED,false).toBool();
+    if (config.value(CONFIG_PAUSE_TEXT_LANG).toString() == LANG_ES) pauseText = PAUSE_TEXT_SPANISH;
+    else pauseText = PAUSE_TEXT_ENGLISH;
+}
+
+void FieldingManager::init(qreal display_resolution_width, qreal display_resolution_height){
+    ExperimentDataPainter::init(display_resolution_width,display_resolution_height);
     clearCanvas();
     drawBackground();
 }
 
 void FieldingManager::drawBackground(){
-
-    qreal kx = config->getReal(CONFIG_FIELDING_XPX_2_MM);
-    qreal ky = config->getReal(CONFIG_FIELDING_YPX_2_MM);
 
     qreal centerX = ScreenResolutionWidth/2;
     qreal centerY = ScreenResolutionHeight/2;
@@ -86,9 +108,9 @@ void FieldingManager::drawBackground(){
     gCrossLine1->setZValue(-1);
 
     // Adding the target
-    gTarget = canvas->addEllipse(TARGET_OFFSET_X/kx,
-                                 TARGET_OFFSET_Y/ky,
-                                 TARGET_R*2/kx,TARGET_R*2/ky,
+    gTarget = canvas->addEllipse(TARGET_OFFSET_X,
+                                 TARGET_OFFSET_Y,
+                                 TARGET_R*2,TARGET_R*2,
                                  QPen(),QBrush(Qt::red));
 
     // Adding the text
@@ -207,20 +229,29 @@ QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial, q
     return hits;
 }
 
+QString FieldingManager::getFullSequenceAsString(qint32 trial){
+    QList<qint32> sequence = fieldingTrials.at(trial).sequence;
+    QStringList strnumbers;
+    for (qint32 i = 0; i < sequence.size(); i++){
+        strnumbers << QString::number(sequence.at(i));
+    }
+    return strnumbers.join(" ");
+}
+
 bool FieldingManager::isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const{
-   return FieldingParser::isHitInTargetBox(hitTargetBoxes,targetBox,x,y);
+    //return FieldingParser::isHitInTargetBox(hitTargetBoxes,targetBox,x,y);
+    return hitTargetBoxes.at(targetBox).contains(x,y);
 }
 
 void FieldingManager::drawPauseScreen(){
 
     canvas->clear();
-    QString pauseText = config->getString(CONFIG_FIELDING_PAUSE_TEXT);
     qreal xpos, ypos;
 
     canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::black)));
 
     QFont font;
-    if (config->getBool(CONFIG_VR_ENABLED)){
+    if (vr_being_used){
         font = QFont("Mono",32);
     }
     else{

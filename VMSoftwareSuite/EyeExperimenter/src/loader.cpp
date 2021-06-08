@@ -1,93 +1,42 @@
 #include "loader.h"
 
-Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UIConfigMap *ui) : QObject(parent)
+const char * Loader::FILENAME_BASE_READING = "reading";
+const char * Loader::FILENAME_BASE_BINDING = "binding";
+const char * Loader::FILENAME_BASE_NBACKVS = "nbackvs";
+const char * Loader::FILENAME_BASE_NBACKRT = "nbackrt";
+const char * Loader::FILENAME_BASE_NBACKMS = "nbackms";
+const char * Loader::FILENAME_BASE_PERCEPTION = "perception";
+const char * Loader::FILENAME_BASE_GONOGO = "gonogo";
+
+Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
 {
+
+    // Connecting the API Client slot.
+    connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
+
 
     // Loading the configuration file and checking for the must have configurations
     // The data is this file should NEVER change. Its values should be fixed.
     ConfigurationManager::CommandVerifications cv;
     ConfigurationManager::Command cmd;
 
-    uimap = ui;
-
     loadingError = false;
     configuration = c;
 
     cmd.clear();
-    cmd.type = ConfigurationManager::VT_REAL;
-    cv[CONFIG_XPX_2_MM] = cmd;
-    cv[CONFIG_YPX_2_MM] = cmd;
-
-    cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
-
-    // Eye Data processing parameters
-    cv[CONFIG_READING_PX_TOL] = cmd;
-    cv[CONFIG_MOVING_WINDOW_DISP] = cmd;
-    cv[CONFIG_MIN_FIXATION_LENGTH] = cmd;
-    cv[CONFIG_SAMPLE_FREQUENCY] = cmd;
-    cv[CONFIG_DISTANCE_2_MONITOR] = cmd;
-    cv[CONFIG_LATENCY_ESCAPE_RAD] = cmd;
-    cv[CONFIG_MARGIN_TARGET_HIT] = cmd;
-    cv[CONFIG_BINDING_ALG_VERSION] = cmd;
-    cv[CONFIG_READING_ALG_VERSION] = cmd;
-    cv[CONFIG_FIELDING_ALG_VERSION] = cmd;
-    cv[CONFIG_NBACKRT_ALG_VERSION] = cmd;
-    cv[CONFIG_GONOGO_ALG_VERSION] = cmd;
-
-    // NBACK VS Parameters
-    cv[CONFIG_NBACKVS_MAX_HOLD_TIME] = cmd;
-    cv[CONFIG_NBACKVS_MIN_HOLD_TIME] = cmd;
-    cv[CONFIG_NBACKVS_STEP_HOLD_TIME] = cmd;
-    cv[CONFIG_NBACKVS_START_HOLD_TIME] = cmd;
-    cv[CONFIG_NBACKVS_NTRIAL_FOR_STEP_CHANGE] = cmd;
+    cv[Globals::VMConfig::INSTITUTION_ID] = cmd;
+    cv[Globals::VMConfig::INSTANCE_NUMBER] = cmd;
 
     cmd.clear();
-    cmd.type = ConfigurationManager::VT_REAL;
-    cv[CONFIG_TOL_MAX_FGLITECHES_IN_TRIAL] = cmd;
-    cv[CONFIG_TOL_MAX_PERIOD_TOL] = cmd;
-    cv[CONFIG_TOL_MIN_PERIOD_TOL] = cmd;
-    cv[CONFIG_TOL_MAX_PERCENT_OF_INVALID_VALUES] = cmd;
-    cv[CONFIG_TOL_MIN_NUMBER_OF_DATA_ITEMS_IN_TRIAL] = cmd;
-    cv[CONFIG_TOL_NUM_ALLOWED_FAILED_DATA_SETS] = cmd;
-    cv[CONFIG_TOL_NUM_MIN_PTS_IN_FIELDING_TRIAL] = cmd;
-
-    // Timeouts for connections.
-    cv[CONFIG_CONNECTION_TIMEOUT] = cmd;
-    cv[CONFIG_DATA_REQUEST_TIMEOUT] = cmd;
-    cv[CONFIG_WAIT_DBDATA_TIMEOUT] = cmd;
-    cv[CONFIG_WAIT_REPORT_TIMEOUT] = cmd;
-    cv[CONFIG_LAUCHER_CONNECT_TIMEOUT] = cmd;
-    cv[CONFIG_LAUCHER_DOWNLOAD_TIMEOUT] = cmd;
-
-    // Server address and the default country.
-    cmd.clear();
-    cv[CONFIG_SERVER_ADDRESS] = cmd;
-    cv[CONFIG_EYEEXP_NUMBER] = cmd;
-    cv[CONFIG_INST_NAME] = cmd;
-    cv[CONFIG_INST_ETSERIAL] = cmd;
-    cv[CONFIG_INST_UID] = cmd;
-    cv[CONFIG_INST_PASSWORD] = cmd;
-    cv[CONFIG_CONFIGURE_STRING] = cmd;
-
-
-    // Labeling Information
-    cmd.clear();
-    cv[CONFIG_LABELLING_MANUFACTURE_DATE] = cmd;
-    cv[CONFIG_LABELLING_SERIAL_NUMBER] = cmd;
-    cv[CONFIG_LABELLING_AUTHORIZATION_UID] = cmd;
-
-    cmd.clear();
-    cmd.optional = true;
-    cmd.type = ConfigurationManager::VT_BOOL;
-    cv[CONFIG_ENABLE_LOCAL_DB_BKP] = cmd;
-    cv[CONFIG_ENABLE_GAZE_FOLLOWING] = cmd;
-    cv[CONFIG_VR_ENABLED] = cmd;
+    cmd.type = ConfigurationManager::VT_STRING;
+    cv[Globals::VMConfig::INSTANCE_KEY] = cmd;
+    cv[Globals::VMConfig::INSTANCE_HASH_KEY] = cmd;
+    cv[Globals::VMConfig::INSTITUTION_NAME] = cmd;
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
-    if (!configuration->loadConfiguration(FILE_CONFIGURATION,COMMON_TEXT_CODEC)){
-        qWarning() << "Could not load config file";
+    if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION,Globals::Share::TEXT_CODEC)){
         logger.appendError("Errors loading the configuration file: " + configuration->getError());
         // The program should not be able to continue after loading the language.
         loadingError = true;
@@ -100,112 +49,80 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs, UICo
     cmd.optional = true; // All settings are optional.
 
     // The strings.
-    cv[CONFIG_REPORT_LANGUAGE] = cmd;
-    cv[CONFIG_DEFAULT_COUNTRY] = cmd;    
+    cv[Globals::VMPreferences::DEFAULT_COUNTRY] = cmd;
+    cv[Globals::VMPreferences::UI_LANGUAGE]     = cmd;
 
     // The booleans
     cmd.type = ConfigurationManager::VT_BOOL;
-    cv[CONFIG_DUAL_MONITOR_MODE] = cmd;
-    cv[CONFIG_DEMO_MODE] = cmd;
-    cv[CONFIG_USE_MOUSE] = cmd;
+    cv[Globals::VMPreferences::DUAL_MONITOR_MODE] = cmd;
+    cv[Globals::VMPreferences::DEMO_MODE] = cmd;
+    cv[Globals::VMPreferences::USE_MOUSE] = cmd;
 
     // The ints
     cmd.type = ConfigurationManager::VT_INT;
-    cv[CONFIG_DEFAULT_READING_LANGUAGE] = cmd;
+    cv[Globals::VMPreferences::DEFAULT_READING_LANGUAGE] = cmd;
 
     // Merging the settings or loading the default configuration.
     settings.setupVerification(cv);
-    if (!settings.loadConfiguration(FILE_SETTINGS,COMMON_TEXT_CODEC)){
-        logger.appendError("Errors loading the settings file: " + settings.getError());
-        // Settings files should not have unwanted key words
-        loadingError = true;
+    if (QFile(Globals::Paths::SETTINGS).exists()){
+        if (!settings.loadConfiguration(Globals::Paths::SETTINGS,Globals::Share::TEXT_CODEC)){
+            logger.appendError("Errors loading the settings file: " + settings.getError());
+            // Settings files should not have unwanted key words
+            loadingError = true;
+        }
+        else{
+            configuration->merge(settings);
+        }
     }
     else{
-        configuration->merge(settings);
+        // We don't need to save the settings file as the function only loads those settings that weren't set.
+        loadDefaultConfigurations();
     }
-    loadDefaultConfigurations();
 
+    // The country to to country code map.
     countries = cs;
-    changeLanguage();
 
+    // Change the language array.
+    changeLanguage();
     if (loadingError) return;
 
-#ifdef USE_IVIEW
-    configuration->addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_REDM);
-#else
-    configuration->addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_GP3HD);
-#endif
-
     // Must make sure that the data directory exists
-    QDir rawdata(DIRNAME_RAWDATA);
+    QDir rawdata(Globals::Paths::WORK_DIRECTORY);
     if (!rawdata.exists()){
-        if (!QDir(".").mkdir(DIRNAME_RAWDATA)){
+        if (!QDir(".").mkdir(Globals::Paths::WORK_DIRECTORY)){
             logger.appendError("Cannot create viewmind_data directory");
             loadingError = true;
             return;
         }
     }
 
-    // Creating the local configuration manager, and loading the local DB.
-    lim.setDirectory(QString(DIRNAME_RAWDATA), configuration->getString(CONFIG_EYEEXP_NUMBER), configuration->getString(CONFIG_INST_UID));
-
-    // Creating the db backup directory if it does not exist.
-    QDir(".").mkdir(DIRNAME_DBBKP);
-    lim.enableBackups(DIRNAME_DBBKP);
-
-    // Resetting the medical institution, just in case
-    lim.resetMedicalInstitutionForAllDoctors(configuration->getString(CONFIG_INST_UID));
-
-    // Making sure VR Enabled is set.
-    if (!configuration->containsKeyword(CONFIG_VR_ENABLED))  configuration->addKeyValuePair(CONFIG_VR_ENABLED,false);
-    if (configuration->getBool(CONFIG_VR_ENABLED)){
-        configuration->addKeyValuePair(CONFIG_EYETRACKER_CONFIGURED,CONFIG_P_ET_HTCVIVEEYEPRO);
-    }
-
-    // FOR DEBUGGING
-    // lim.printDBToConsole();
-    // QStringList headers; headers << "A" << "B";
-    // lim.saveIDTable("IDTABLE.csv",headers);
-
-#ifdef USE_IVIEW
-    QString expectedET = CONFIG_P_ET_REDM;
-#else
-    QString expectedET = CONFIG_P_ET_GP3HD;
-#endif
-
-    // Checking which ET should be used: Mouse or the one in the configuration file.
-    if (configuration->getBool(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
-    else configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
-
-    // Loading the configuration UI.
-    if (!ui->setConfigurationString(configuration->getString(CONFIG_CONFIGURE_STRING))){
-        logger.appendError("Loading ui configuration string: " + ui->getError());
+    if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,Globals::Debug::PRETTY_PRINT_JSON,Globals::Debug::DISABLE_DB_CHECKSUM)){
+        logger.appendError("Could not set local db file: " + localDB.getError());
         loadingError = true;
         return;
     }
 
-    // Setting the pause text for fielding
-    configuration->addKeyValuePair(CONFIG_FIELDING_PAUSE_TEXT,language.getString("viewstudystart_fieldingPauseText"));
-    //qDebug() << "Pause text" << configuration->getString(CONFIG_FIELDING_PAUSE_TEXT);
+    /// TODO send a request for processing parameters and doctors. Put up a sign.
 
-    // Fielding requires special drawing constants to be seen right in the HMD.
-    if (configuration->getBool(CONFIG_VR_ENABLED)){
-        configuration->addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,0.2);
-        configuration->addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,0.2);
+    if (localDB.processingParametersPresent()){
+        QVariantMap pp = localDB.getProcessingParameters();
+        configuration->addKeyValuePair(Globals::Share::MAX_DISPERSION_SIZE,pp.value(LocalDB::PP_MAX_DISPERSION_SIZE).toInt());
+        configuration->addKeyValuePair(Globals::Share::MINIMUM_FIX_DURATION,pp.value(LocalDB::PP_MINIMUM_FIX_DURATION).toInt());
+        configuration->addKeyValuePair(Globals::Share::SAMPLE_FREQUENCY,pp.value(LocalDB::PP_SAMPLE_FREQUENCY).toInt());
     }
     else{
-        configuration->addKeyValuePair(CONFIG_FIELDING_XPX_2_MM,configuration->getReal(CONFIG_XPX_2_MM));
-        configuration->addKeyValuePair(CONFIG_FIELDING_YPX_2_MM,configuration->getReal(CONFIG_YPX_2_MM));
+        logger.appendError("Processing parameters are not present in local database. Will not be able to do any studies");
     }
 
-    // Making sure the second monitor is DISABLED if the configuration string has disabled it.
-    if (uimap->getSecondMonitorOption() == "D"){
-        configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
-    }
+    // Configuring the API Client.
+    apiclient.configure(configuration->getString(Globals::VMConfig::INSTITUTION_ID),
+                        configuration->getString(Globals::VMConfig::INSTANCE_NUMBER),
+                        configuration->getString(Globals::VMConfig::INSTANCE_KEY),
+                        configuration->getString(Globals::VMConfig::INSTANCE_HASH_KEY));
 
 }
 
-//*********************************************** UI Functions ******************************************************
+//////////////////////////////////////////////////////// UI Functions ////////////////////////////////////////////////////////
 
 QString Loader::getStringForKey(const QString &key){
     if (language.containsKeyword(key)){
@@ -221,31 +138,9 @@ QStringList Loader::getStringListForKey(const QString &key){
     else return QStringList();
 }
 
-bool Loader::checkETChange(){
-    // Returns true if ET has been changed is required.
-    if (configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) != CONFIG_P_ET_MOUSE)){
-        // Mouse was configured, but mouse is not the selected ET. Switching to mouse.
-        configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
-        return true;
-    }
-    else if (!configuration->getBool(CONFIG_USE_MOUSE) && (configuration->getString(CONFIG_SELECTED_ET) == CONFIG_P_ET_MOUSE)){
-        // Mouse was NOT configured but it IS the selected ET. Switching to configured ET.
-        configuration->addKeyValuePair(CONFIG_SELECTED_ET,configuration->getString(CONFIG_EYETRACKER_CONFIGURED));
-        return true;
-    }
-    return false;
-}
-
-QRect Loader::frameSize(QObject *window)
-{
-    QQuickWindow *qw = qobject_cast<QQuickWindow *>(window);
-    if(qw)
-        return qw->frameGeometry();
-    return QRect();
-}
 
 int Loader::getDefaultCountry(bool offset){
-    QString countryCode = configuration->getString(CONFIG_DEFAULT_COUNTRY);
+    QString countryCode = configuration->getString(Globals::VMPreferences::DEFAULT_COUNTRY);
     if (countryCode.isEmpty()) return 0;
     int ans = countries->getIndexFromCode(countryCode);
     if (offset){
@@ -258,41 +153,50 @@ int Loader::getDefaultCountry(bool offset){
     }
 }
 
-QString Loader::loadTextFile(const QString &fileName){
-    QFile file(fileName);
-    if (!file.open(QFile::ReadOnly)) return "";
-    QTextStream reader(&file);
-    QString ans = reader.readAll();
-    file.close();
-    return ans;
+bool Loader::getLoaderError() const {
+    return loadingError;
 }
 
-QStringList Loader::getErrorMessageForCode(quint8 code){
-    //qWarning() << "GETTING ERROR MESSAGE FOR CODE" << code;
-    switch (code) {
-    case EYESERVER_RESULT_SERVER_ERROR:
-        return language.getStringList("error_db_server_error");
-    case EYESERVER_RESULT_NOEVALS:
-        return language.getStringList("error_db_outofevals");
-    case EYESERVER_RESULT_WRONG_SERIAL:
-        return language.getStringList("error_db_wrongetserial");
-    default:
-        // The default error message is the time out message
-        return language.getStringList("error_db_timeout");
-    }
+QString Loader::getWindowTilteVersion(){
+    return Globals::Share::EXPERIMENTER_VERSION;
 }
 
-QStringList Loader::getFileListForPatient(QString patuid, qint32 type){
-    if (patuid.isEmpty()) patuid = configuration->getString(CONFIG_PATIENT_UID);
-    return lim.getFileListForPatient(patuid,type);
+QStringList Loader::getCountryList() {
+    return countries->getCountryList();
 }
 
-QStringList Loader::getFileListCompatibleWithSelectedBC(QString patuid, qint32 selectedBC){
-    if (patuid.isEmpty()) patuid = configuration->getString(CONFIG_PATIENT_UID);
-    return lim.getBindingUCFileListCompatibleWithSelectedBC(patuid,selectedBC);
+QStringList Loader::getCountryCodeList() {
+    return countries->getCodeList();
 }
 
-//*********************************************** Configuration Functions ******************************************************
+QString Loader::getCountryCodeForCountry(const QString &country) {
+    return countries->getCodeForCountry(country);
+}
+
+int Loader::getCountryIndexFromCode(const QString &code) {
+    return countries->getIndexFromCode(code);
+}
+
+QString Loader::getVersionNumber() const {
+    return Globals::Share::EXPERIMENTER_VERSION_NUMBER;
+}
+
+QString Loader::getManufactureDate() const {
+    //return configuration->getString(Globals::VMPreferences::LABELLING_MANUFACTURE_DATE);
+    return Globals::Labeling::MANUFACTURE_DATE;
+}
+
+QString Loader::getSerialNumber() const {
+    //return configuration->getString(Globals::VMPreferences::LABELLING_SERIAL_NUMBER);
+    return Globals::Labeling::SERIAL_NUMBER;
+}
+
+QString Loader::getUniqueAuthorizationNumber() const {
+    //return configuration->getString(Globals::VMPreferences::LABELLING_AUTHORIZATION_UID);
+    return Globals::Labeling::AUTHORIZATION_UID;
+}
+
+////////////////////////////////////////////////////////  CONFIGURATION FUNCTIONS  ////////////////////////////////////////////////////////
 
 QString Loader::getConfigurationString(const QString &key){
     if (configuration->containsKeyword(key)){
@@ -309,435 +213,372 @@ bool Loader::getConfigurationBoolean(const QString &key){
 }
 
 void Loader::setSettingsValue(const QString &key, const QVariant &var){
-    ConfigurationManager::setValue(FILE_SETTINGS,COMMON_TEXT_CODEC,key,var.toString(),configuration);
+    ConfigurationManager::setValue(Globals::Paths::SETTINGS,Globals::Share::TEXT_CODEC,key,var.toString(),configuration);
 }
 
-void Loader::setAgeForCurrentPatient(){
-    QString birthDate = lim.getFieldForPatient(configuration->getString(CONFIG_PATIENT_UID),TPATDATA_COL_BIRTHDATE);
-    QDate bdate = QDate::fromString(birthDate,"yyyy-MM-dd");
-    QDate currentDate =  QDate::currentDate();
-    int currentAge = currentDate.year() - bdate.year();
-    if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ) {
-        currentAge--;
-    }
-    configuration->addKeyValuePair(CONFIG_PATIENT_AGE,currentAge);
+void Loader::setValueForConfiguration(const QString &key, const QVariant &var) {
+    configuration->addKeyValuePair(key,var);
 }
 
-QVariantMap Loader::getMultiPartStudies(){
-    QStringList errlist;
-    QVariantMap file_types_and_mp_ids = Experiment::checkForMultiPartIdentifiers(configuration->getString(CONFIG_PATIENT_DIRECTORY),&errlist);
-    if (!errlist.isEmpty()){
-        for (qint32 i = 0; i < errlist.size(); i++){
-            logger.appendError("Checking for Multi Part ids: " + errlist.at(i));
-        }
-        return QVariantMap();
-    }
-    return file_types_and_mp_ids;
+//////////////////////////////////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////////////////////////////////
 
-}
+bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig){
 
-void Loader::deleteMultiPartFile(const QString &fileName){
-
-    QString actualfileName = configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + fileName;
-
-    if (!QFile::remove(actualfileName)){
-        logger.appendError("Failed to remove multi part file: " + fileName);
-    }
-}
-
-void Loader::finalizeMultiPartFile(const QString &fileName){
-
-   QString actualfileName = configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + fileName;
-
-   QString error = Experiment::finalizeMultiPartStudyFile(actualfileName);
-   if (!error.isEmpty()){
-       logger.appendError("Failed to finalize multi part file: " + error);
-   }
-}
-
-//*********************************************** Local DB Functions ******************************************************
-
-bool Loader::createPatientDirectory(){
-
-    // Creating the doctor directory.
-    QString patientuid = configuration->getString(CONFIG_PATIENT_UID);
-    QString patdirPath = QString(DIRNAME_RAWDATA) + "/" + patientuid;
-    if (!QDir(patdirPath).exists()){
-        QDir baseDir(DIRNAME_RAWDATA);
-        baseDir.mkdir(patientuid);
-    }
-
-    if (!QDir(patdirPath).exists()){
-        logger.appendError("Could not create patient dir " + patientuid + " in directory");
+    if (!studyconfig.contains(Globals::StudyConfiguration::UNIQUE_STUDY_ID)){
+        logger.appendError("While creating a subject study file, Study Configuration Map does not contain " + Globals::StudyConfiguration::UNIQUE_STUDY_ID + " field. Cannot determine study");
         return false;
     }
 
-    configuration->addKeyValuePair(CONFIG_PATIENT_DIRECTORY,patdirPath);
+    // The first part of the name is base on the study type.
+    qint32 selectedStudy = studyconfig.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt();
+    QString filename;
+
+    bool new_file = true;
+    QMap<QString,QString> ongoing_studies;
+    QStringList trialtypelist;
+    QString perception_part;
+
+    QVariantMap sc;
+
+    switch(selectedStudy){
+    case Globals::StudyConfiguration::INDEX_BINDING_UC:
+        filename = FILENAME_BASE_BINDING;
+        // We need to check for ongoing studies with just BC.
+        ongoing_studies = findOngoingStudyFileNames(studyconfig);
+        if (ongoing_studies.contains(RDC::TrialListType::BOUND)){
+            // An ongoing study requires unbound
+            filename = ongoing_studies.value(RDC::TrialListType::UNBOUND);
+            new_file = false;
+        }
+        break;
+    case Globals::StudyConfiguration::INDEX_BINDING_BC:
+        filename = FILENAME_BASE_BINDING;
+        // We need to check for ongoing studies with just BC.
+        ongoing_studies = findOngoingStudyFileNames(studyconfig);
+        if (ongoing_studies.contains(RDC::TrialListType::BOUND)){
+            // An ongoing study requires unbound
+            filename = ongoing_studies.value(RDC::TrialListType::UNBOUND);
+            new_file = false;
+        }
+        break;
+    case Globals::StudyConfiguration::INDEX_GONOGO:
+        filename = FILENAME_BASE_GONOGO;
+        break;
+    case Globals::StudyConfiguration::INDEX_NBACKMS:
+        filename = FILENAME_BASE_NBACKMS;
+        break;
+    case Globals::StudyConfiguration::INDEX_NBACKRT:
+        filename = FILENAME_BASE_NBACKRT;
+        break;
+    case Globals::StudyConfiguration::INDEX_NBACKVS:
+        filename = FILENAME_BASE_NBACKVS;
+        break;
+    case Globals::StudyConfiguration::INDEX_PERCEPTION:
+        filename = FILENAME_BASE_PERCEPTION;
+
+        // This is the part of the perception study that we require.
+        perception_part = studyconfig.value(RDC::StudyParameter::PERCEPTION_PART).toString();
+
+        // We need to check for ongoing studies with just BC.
+        ongoing_studies = findOngoingStudyFileNames(studyconfig);
+        trialtypelist = ongoing_studies.keys();
+
+        for (qint32 i = 0; i < trialtypelist.size(); i++){
+            if (trialtypelist.at(i) == perception_part){
+                filename = ongoing_studies.value(trialtypelist.at(i));
+                new_file = false;
+            }
+        }
+
+        break;
+    case Globals::StudyConfiguration::INDEX_READING:
+        filename = FILENAME_BASE_READING;
+        break;
+    default:
+        logger.appendError("Trying to create study file for an unknown study: " + QString::number(selectedStudy));
+        break;
+    }
+
+    if (!new_file){
+        // All is done we just need to set it as the current one.
+        logger.appendStandard("Continuging study in file " + filename);
+        configuration->addKeyValuePair(Globals::Share::PATIENT_STUDY_FILE,filename);
+        return true;
+    }
+
+    // Second part is the time stamp.
+    QString date = QDateTime::currentDateTime().toString("dd/MM/yyyy");
+    QString hour = QDateTime::currentDateTime().toString("HH:mm");
+    filename = filename + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm") + ".json";
+
+    // Creating the metadata.
+    QVariantMap metadata;
+    metadata.insert(RDC::MetadataField::DATE,date);
+    metadata.insert(RDC::MetadataField::HOUR,hour);
+    metadata.insert(RDC::MetadataField::INSTITUTION_ID,configuration->getString(Globals::VMConfig::INSTITUTION_ID));
+    metadata.insert(RDC::MetadataField::INSTITUTION_INSTANCE,configuration->getString(Globals::VMConfig::INSTANCE_NUMBER));
+    metadata.insert(RDC::MetadataField::INSTITUTION_KEY,configuration->getString(Globals::VMConfig::INSTANCE_KEY));
+    metadata.insert(RDC::MetadataField::INSTITUTION_NAME,configuration->getString(Globals::VMConfig::INSTITUTION_NAME));
+    metadata.insert(RDC::MetadataField::MOUSE_USED,configuration->getString(Globals::VMPreferences::USE_MOUSE));
+    metadata.insert(RDC::MetadataField::PROC_PARAMETER_KEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+
+    // Creating the subject data
+    QVariantMap subject_data;
+    subject_data.insert(RDC::SubjectField::AGE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_AGE));
+    subject_data.insert(RDC::SubjectField::BIRTH_COUNTRY,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHCOUNTRY));
+    subject_data.insert(RDC::SubjectField::BIRTH_DATE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHDATE));
+    subject_data.insert(RDC::SubjectField::GENDER,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_GENDER));
+    subject_data.insert(RDC::SubjectField::INSTITUTION_PROVIDED_ID,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_INSTITUTION_ID));
+    subject_data.insert(RDC::SubjectField::LASTNAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_LASTNAME));
+    subject_data.insert(RDC::SubjectField::LOCAL_ID,configuration->getString(Globals::Share::PATIENT_UID));
+    subject_data.insert(RDC::SubjectField::NAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_NAME));
+    subject_data.insert(RDC::SubjectField::YEARS_FORMATION,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_YEARS_FORMATION));
+
+    // We store this information the raw data container and leave it ready for the study to start.
+    RawDataContainer rdc;
+    if (!rdc.setSubjectData(subject_data)){
+        logger.appendError("Failed setting subject data to new study. Reason: " + rdc.getError());
+        return false;
+    }
+    if (!rdc.setMetadata(metadata)){
+        logger.appendError("Failed setting study metadata to new study. Reason: " + rdc.getError());
+        return false;
+    }
+
+    if (!rdc.saveJSONFile(filename,Globals::Debug::PRETTY_PRINT_JSON)){
+        logger.appendError("Failed on createing new study file: " + filename + ". Reason: " + rdc.getError());
+        return false;
+    }
+
+    // Finally we set this as the current work file
+    configuration->addKeyValuePair(Globals::Share::PATIENT_STUDY_FILE,filename);
 
     return true;
+
 }
 
-QStringList Loader::generatePatientLists(const QString &filter, bool showAll){
-    nameInfoList.clear();
-    //qWarning() << "GENERATE PATIENT LIST " << showAll;
-    if (showAll) nameInfoList = lim.getPatientListForDoctor("",filter);
-    else nameInfoList = lim.getPatientListForDoctor(configuration->getString(CONFIG_DOCTOR_UID),filter);
-    return nameInfoList.patientNames;
+////////////////////////////////////////////////////////////////// EVALUATOR FUNCTIONS //////////////////////////////////////////////////////////////////
+void Loader::logOut(){
+    configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,"");
 }
 
-QString Loader::getDoctorUIDByIndex(qint32 selectedIndex){
-    if ((selectedIndex > -1) && (selectedIndex < nameInfoList.doctorUIDs.size())){
-        return nameInfoList.doctorUIDs.at(selectedIndex);
-    }
-    else return "";
+bool Loader::isLoggedIn(){
+    if (!configuration->containsKeyword(Globals::Share::CURRENTLY_LOGGED_EVALUATOR)) return false;
+    return (configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR) != "");
 }
 
-qint32 Loader::getIndexOfDoctor(QString uid){
-    if (uid.isEmpty()) uid = configuration->getString(CONFIG_DOCTOR_UID);
-    return nameInfoList.doctorUIDs.indexOf(uid);
+bool Loader::checkIfEvaluatorEmailExists(const QString &username) const{
+    return localDB.checkEvaluatorExists(username);
 }
 
-bool Loader::isDoctorValidated(qint32 selectedIndex){
-    QString uid;
-    if (selectedIndex == -1) uid = configuration->getString(CONFIG_DOCTOR_UID);
-    else uid = getDoctorUIDByIndex(selectedIndex);
-    return lim.isDoctorValid(uid);
-}
+void Loader::addOrModifyEvaluator(const QString &email, const QString &oldemail ,const QString &password, const QString &name, const QString &lastname){
 
-bool Loader::isDoctorPasswordEmpty(qint32 selectedIndex){
-    QString uid = getDoctorUIDByIndex(selectedIndex);
-    //qWarning() << "Password for UID" << uid << " is " << lim.getDoctorPassword(uid) << ". Is empty: " <<  lim.getDoctorPassword(uid).isEmpty();
-    return lim.getDoctorPassword(uid).isEmpty();
-}
+    // If it doesn't exist it will get an empty map. We check it with the current email as it is the the one that will change.
+    QVariantMap map = localDB.getEvaluatorData(oldemail);
 
-bool Loader::isDoctorPasswordCorrect(const QString &password){
-    QString hashpass = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
-    QString storedPassword = lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID));
-    if (storedPassword.isEmpty()) return true;
-    if (storedPassword == hashpass) return true;
-    // Checking against the institution password
-    return (hashpass == configuration->getString(CONFIG_INST_PASSWORD));
-}
+    map[LocalDB::APPUSER_LASTNAME] = lastname;
+    map[LocalDB::APPUSER_NAME]     = name;
 
-void Loader::addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide){
-
-    // The data for the country must be changed as well as the UID must be generated.
-    QString uid = dbdata.value(TDOCTOR_COL_UID).toString();
-
-    if (uid.isEmpty()){
-        // This is a new doctor
-        uid = lim.newDoctorID();
-        uid = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + uid;
+    // We store the data.
+    if (!localDB.addOrModifyEvaluator(email,oldemail,map)){
+        logger.appendError("While adding evaluator " + email + " with data " + name + " " + lastname + " (" + email + "): " + localDB.getError() );
+        return;
     }
 
-    QStringList columns;
-    QStringList values;
-
-    // The passoword for the doctor ONLY goes into the local DB, it needs to be removed from the data.
     if (password != ""){
-        // The password needs to be overwritten.
-        password = QString(QCryptographicHash::hash(password.toUtf8(),QCryptographicHash::Sha256).toHex());
+        // Password is only updated when it's not empty. It's the responsiblity of the calling code to ensure a non empty password on creation.
+        // qDebug() << "Setting password for " << email << " as " << password;
+        localDB.setPasswordForEvaluator(email,password);
     }
 
-    // Converting the QVariantMap to a double string list
-    columns = dbdata.keys();
-    for (qint32 i = 0; i < columns.size(); i++){
-        values << dbdata.value(columns.at(i)).toString();
-    }
-
-    // Adding the medical institution
-    columns << TDOCTOR_COL_MEDICAL_INST;
-    values << configuration->getString(CONFIG_INST_UID);
-
-    // Saving data locally.
-    lim.addDoctorData(uid,columns,values,password,hide);
 
 }
 
-void Loader::addNewPatientToDB(QVariantMap dbdata){
-
-    // Making necessary adjustments
-    if (dbdata.value(TPATDATA_COL_PUID).toString().isEmpty()){
-        QString uid = lim.newPatientID();
-        uid = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + uid;
-        dbdata[TPATDATA_COL_PUID] = uid;
-        QString protocol = dbdata[TPATDATA_NONCOL_PROTOCOL].toString();
-        if (!protocol.isEmpty()) dbdata[TPATDATA_NONCOL_DISPLAYID] = protocol + "_" + dbdata[TPATDATA_NONCOL_DISPLAYID].toString();
-    }
-
-    // Transforming the date format.
-    QString date = dbdata.value(TPATDATA_COL_BIRTHDATE).toString();
-    QStringList dateParts = date.split("/");
-    if (dateParts.size() == 3){
-        // Since the date format is given by the program, I can trust that the split will have 3 parts. Setting the ISO Date.
-        date = dateParts.at(2) + "-" + dateParts.at(1) + "-" + dateParts.at(0);
-        dbdata[TPATDATA_COL_BIRTHDATE] = date;
-    }
-    else{
-        date = "0000-00-00";
-    }
-
-    QString countryCode = countries->getCodeForCountry(dbdata.value(TPATDATA_COL_BIRTHCOUNTRY).toString());
-    dbdata[TPATDATA_COL_BIRTHCOUNTRY] = countryCode;
-
-    // Insertion date.
-    dbdata[TPATDATA_COL_DATE_INS] = "TIMESTAMP(NOW())";
-
-    QStringList columns;
-    QStringList values;
-
-    QStringList allColumns;
-    QStringList allValues;
-
-    columns = dbdata.keys();
-    for (qint32 i = 0; i < columns.size(); i++){
-        values << dbdata.value(columns.at(i)).toString();
-    }
-
-    //dbClient->appendSET(TABLE_PATIENTS_REQ_DATA,columns,values);
-    allColumns = columns;
-    allValues = values;
-
-    // Adding the optional data, plus the mandaotory data.
-    lim.addPatientData(dbdata.value(TPATDATA_COL_PUID).toString(),configuration->getString(CONFIG_DOCTOR_UID),allColumns,allValues);
-
-}
-
-void Loader::addPatientMedicalRecord(QVariantMap medRecord, qint32 recordIndex){
-    QString patuid = configuration->getString(CONFIG_PATIENT_UID);
-    lim.addPatientMedicalRecord(patuid,medRecord,recordIndex);
-}
-
-bool Loader::verifyInstitutionPassword(const QString &instPass){
-    QString hasshedPassword = QString(QCryptographicHash::hash(instPass.toUtf8(),QCryptographicHash::Sha256).toHex());
-    return (configuration->getString(CONFIG_INST_PASSWORD) == hasshedPassword);
-}
-
-bool Loader::requestDrValidation(const QString &instPassword, qint32 selectedDr){
-    // Storing the hasshed password for later comparison
-    QString drUIDtoValidate = getDoctorUIDByIndex(selectedDr);
-    if (verifyInstitutionPassword(instPassword)){
-        lim.validateDoctor(drUIDtoValidate);
+bool Loader::evaluatorLogIn(const QString &username, const QString &password){
+    if ( localDB.passwordCheck(username,password) ){
+        configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
         return true;
     }
     return false;
 }
 
-void Loader::updateCurrentDoctorAndPatientDBFiles(){
-    QString patid = configuration->getString(CONFIG_PATIENT_UID);
-    QString druid = configuration->getString(CONFIG_DOCTOR_UID);
-    if (!lim.createPatAndDrDBFiles(patid,druid)){
-        logger.appendError("There was a problem updating the current doctor and patient files in directory for patient and doctor: " + patid + " and " + druid);
+void Loader::updateCurrentEvaluator(const QString &username){
+    configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
+}
+
+QVariantMap Loader::getCurrentEvaluatorInfo() const{
+    return localDB.getEvaluatorData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
+}
+
+QStringList Loader::getLoginEmails() const {
+    return localDB.getUsernameEmails();
+}
+
+////////////////////////////////////////////////////////////////// SUBJECT FUNCTIONS //////////////////////////////////////////////////////////////////
+
+void Loader::addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
+                                const QString &age, const QString &birthdate, const QString &birthCountry,
+                                const QString &gender, qint32 formative_years){
+
+    //qDebug() << "Entering with suid" << suid;
+
+    if (suid == ""){
+        // We need to generate a new internal id.
+        suid = configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "_" + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER) + "_"
+                + QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz");
+        //qDebug() << "Computed new suid" << suid;
+    }
+
+    // If a birthdate is provided, the age is computed
+    QString saveage;
+    if ((birthdate != "") && (age == "")){
+        // We are expecting the ISO date.
+        QDate bdate = QDate::fromString(birthdate,"yyyy-MM-dd");
+        QDate currentDate= QDate::currentDate();    // gets the current date
+        int currentAge = currentDate.year() - bdate.year();
+        if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ){
+            currentAge--;
+        }
+        saveage = QString::number(currentAge);
+    }
+    else saveage = age;
+
+    // Getting the country code.
+
+
+    // Create a map for the data as is. The caller function is reponsible for data verification.
+    QVariantMap map;
+    map[LocalDB::SUBJECT_AGE] = saveage;
+    map[LocalDB::SUBJECT_BIRTHCOUNTRY] = countries->getCodeForCountry(birthCountry);
+    map[LocalDB::SUBJECT_BIRTHDATE] = birthdate;
+    map[LocalDB::SUBJECT_INSTITUTION_ID] = institution_id;
+    map[LocalDB::SUBJECT_LASTNAME] = lastname;
+    map[LocalDB::SUBJECT_NAME] = name;
+    map[LocalDB::SUBJECT_YEARS_FORMATION] = formative_years;
+    map[LocalDB::SUBJECT_GENDER] = gender;
+
+    // Adding the data to the local database.
+    if (!localDB.addOrModifySubject(suid,map)){
+        logger.appendError("While adding subject " + suid + " with data " + name + " " + lastname + " (" + institution_id + "): " + localDB.getError() );
     }
 }
 
-void Loader::generateIDTable(const QString &urlPath){
-    QUrl url(urlPath);
-    QString fileName = url.toLocalFile();
-    QStringList headers;
-    headers << getStringForKey("viewhome_tableDID") << getStringForKey("viewhome_tableHPUID");
-    lim.saveIDTable(fileName,headers);
+QVariantMap Loader::filterSubjectList(const QString &filter){
+    return localDB.getDisplaySubjectList(filter);
 }
 
-QString Loader::getNumberOfEvalsString(bool onlyEvals){
-    qint32 N = lim.getRemainingEvals();
-    QString ans;
-    if (N == -1) ans =  getStringForKey("viewhome_remEvalsUnlimited");
-    else ans = QString::number(N);
+bool Loader::setSelectedSubject(const QString &suid){
 
-    if (!onlyEvals) ans = getStringForKey("viewhome_remEvals") + ": " + ans;
+    // Set the id of the currently selected patient.
+    configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,suid);
 
-    return ans;
-}
+    // Creating the patient id
+    QString patdirPath = QString(Globals::Paths::WORK_DIRECTORY) + "/" + suid;
+    if (!QDir(patdirPath).exists()){
+        QDir baseDir(Globals::Paths::WORK_DIRECTORY);
+        baseDir.mkdir(suid);
+    }
 
-void Loader::setNumberOfEvaluations(qint32 numevals){
-    if (numevals < -1) return;
-    lim.setRemainingEvals(numevals);
-}
+    if (!QDir(patdirPath).exists()){
+        logger.appendError("Could not create patient dir " + suid + " in directory");
+        return false;
+    }
 
-bool Loader::prepareMedicalRecordFiles(const QString &patid){
-    QString drid  = configuration->getString(CONFIG_DOCTOR_UID);
-    if (!lim.createPatAndDrDBFiles(patid,drid)) return false;
-    if (!lim.createUpdateMedicalDBFile(patid)) return false;
+    configuration->addKeyValuePair(Globals::Share::PATIENT_DIRECTORY,patdirPath);
     return true;
+
 }
 
-bool Loader::verifyNoMissingDataOnPatient(const QString &patid){
-    //qDebug() << "Is data missing for patient " << patid << lim.isDataMissingForPatient(patid);
-    return !lim.isDataMissingForPatient(patid);
-}
-
-//******************************************* Report Realated Functions ***********************************************
-
-void Loader::operateOnRepGenStruct(qint32 index, qint32 type){
-    if ((type == -1) && (index == -1)) reportGenerationStruct.clear();
-    else {
-        switch(type){
-        case LIST_INDEX_READING:
-            reportGenerationStruct.readingFileIndex = index;
-            break;
-        case LIST_INDEX_BINDING_UC:
-            reportGenerationStruct.bindingUCFileIndex = index;
-            break;
-        case LIST_INDEX_BINDING_BC:
-            reportGenerationStruct.bindingBCFileIndex = index;
-            break;
-        case LIST_INDEX_FIELDING:
-            reportGenerationStruct.fieldingFileIndex = index;
-            break;
-        case LIST_INDEX_NBACKRT:
-            reportGenerationStruct.nbackrtFileIndex = index;
-            break;
-        case LIST_INDEX_GONOGO:
-            reportGenerationStruct.gonogoFileIndex = index;
-            break;
-        case LIST_INDEX_NBACKVS:
-            reportGenerationStruct.nbackvsFileIndex = index;
-            break;
-        }
+void Loader::setStudyMarkerFor(const QString &study, const QString &value){
+    if (!localDB.addStudyMarkerForSubject(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR),study,value)){
+        logger.appendError("Failed in setting study marker: " + localDB.getError());
     }
 }
 
-QString Loader::getDatFileNameFromIndex(qint32 index, QString patuid, qint32 type){
-    if (patuid.isEmpty()) patuid = configuration->getString(CONFIG_PATIENT_UID);
-    return lim.getDatFileFromIndex(patuid,index,type);
+QString Loader::getStudyMarkerFor(const QString &study){
+    return localDB.getMarkerForStudy(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR),study).toString();
 }
 
-void Loader::reloadPatientDatInformation(){
-    lim.fillPatientDatInformation(configuration->getString(CONFIG_PATIENT_UID));
+QVariantMap Loader::getCurrentSubjectInfo(){
+    //    QVariantMap a = localDB.getSubjectData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
+    //    qDebug() << a;
+    return localDB.getSubjectData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
 }
 
-QString Loader::getEvaluationID(const QString &existingFile){
+void Loader::clearSubjectSelection(){
+    configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,"");
+}
 
-    if (!existingFile.isEmpty()){
-        // This is an existing report and so we try to get the new evaluation ID from the existing report. Otherwise a new one is generated.
-        ConfigurationManager existingRep;
-        if (!existingRep.loadConfiguration(configuration->getString(CONFIG_PATIENT_DIRECTORY) + "/" + existingFile,COMMON_TEXT_CODEC)){
-            logger.appendError("Trying to get Evaluation ID from existing report: " + existingRep.getError());
-        }
-        else{
-            if (existingRep.containsKeyword(CONFIG_RESULT_ENTRY_ID)){
-                return existingRep.getString(CONFIG_RESULT_ENTRY_ID);
-            }
+
+////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
+QList<QVariantMap> Loader::getReportsForLoggedEvaluator(){
+    QStringList directory_list = QDir(Globals::Paths::WORK_DIRECTORY).entryList(QStringList(),QDir::Dirs,QDir::Name);
+    QString current_evaluator = configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
+    QStringList errors;
+    QList<QVariantMap> studiesToAnalyze;
+    for (qint32 i = 0; i < directory_list.size(); i++){
+        studiesToAnalyze << SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom(QString(Globals::Paths::WORK_DIRECTORY) + "/" + directory_list.at(i),current_evaluator,&errors);
+    }
+    if (!errors.isEmpty()){
+        logger.appendError("Errors found scanning work directory for user " + current_evaluator);
+        for (qint32 i = 0; i < errors.size(); i++){
+            logger.appendError("   " + errors.at(i));
         }
     }
 
-    // If no previous report was set and/or no ID was found in previous report, a new one is generated.
-    QString evalID = lim.newEvaluationID();
-    evalID = configuration->getString(CONFIG_INST_UID) + "_" + configuration->getString(CONFIG_EYEEXP_NUMBER) + "_" + evalID;
-    return evalID;
+    // Sort the generated list by the order code before returning it (chronologically).
+    SubjectDirScanner::sortSubjectDataListByOrder(&studiesToAnalyze);
+    return studiesToAnalyze;
+
+}
+////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
+
+void Loader::requestOperatingInfo(){
+    if (!apiclient.requestOperatingInfo()){
+        logger.appendError("Request operating info error: "  + apiclient.getError());
+    }
 }
 
 
-//******************************************* Updater Related Functions ***********************************************
-
-QString Loader::checkForChangeLog(){
-    QString filePath = "launcher/" + QString (FILE_CHANGELOG_UPDATER) + "_"  + configuration->getString(CONFIG_REPORT_LANGUAGE);
-    //qWarning() << "Searching for changelog" << filePath;
-    QFile file(filePath);
-    if (!file.open(QFile::ReadOnly)) return "";
-    QTextStream reader(&file);
-    reader.setCodec(COMMON_TEXT_CODEC);
-    QString content = reader.readAll();
-    if (content.size() < 4) return "";
-
-    // Getting only the last N Updates
-    // MAX_UPDATES_TO_SHOW
-    int updateCounter = 0;
-    bool enableCounter = false;
-    QStringList lines = content.split("\n");
-    content = "";
-    while (!lines.isEmpty()){
-
-        QString line = lines.first();
-        lines.removeFirst();
-        line = line.trimmed();
-
-        if (!line.startsWith("-")){
-            // The logic is like this: Lines that do not start with "-" are update titles.
-            // It's necessary to add everything that comes after the line until another line
-            // that does not start with "-" to actually "add" an update to the variable.
-            if (enableCounter) {
-                enableCounter = false;
-                updateCounter++;
-            }
-            else{
-                enableCounter = true;
-            }
+void Loader::receivedRequest(){
+    if (!apiclient.getError().isEmpty()){
+        logger.appendError("Error Receiving Request :"  + apiclient.getError());
+    }
+    else{
+        QVariantMap ret = apiclient.getMapDataReturned();
+        Globals::Debug::prettpPrintQVariantMap(ret);
+        if (!localDB.setMedicInformationFromRemote(ret.value(APINames::MAIN_DATA).toMap())){
+            logger.appendError("Failed to set medical professionals info from server: " + localDB.getError());
         }
-
-        if (updateCounter == MAX_UPDATES_TO_SHOW){
-            break;
-        }
-        else{
-            //qDebug() << updateCounter << ": ->" << line;
-            content = content + line + "\n";
+        if (!localDB.setProcessingParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
+            logger.appendError("Failed to set processing parameters from server: " + localDB.getError());
         }
     }
-
-    return content;
+    emit(finishedRequest());
 }
 
-bool Loader::clearChangeLogFile(){
-    // return false;  // FOR DEBUGGING CHANGELOG WINDOW
-    QDir dir(DIRNAME_LAUNCHER);
-    QStringList filter;
-    filter << QString(FILE_CHANGELOG_UPDATER) + "*";
-    QStringList allchangelogs = dir.entryList(filter,QDir::Files);
-    for (qint32 i = 0; i < allchangelogs.size(); i++){
-        QFile file(QString(DIRNAME_LAUNCHER) + "/" + allchangelogs.at(i));
-        file.remove();
-    }
+////////////////////////////////////////////////////////////////// PROTOCOL FUNCTIONS //////////////////////////////////////////////////////////////////
 
-    QFile newLauncher(QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_NEW_LAUCHER_FILE));
-    return newLauncher.exists();
+bool Loader::addProtocol(const QString &p) {
+    return localDB.addProtocol(p);
+}
+void Loader::deleteProtocol(const QString &p) {
+    if (!localDB.removeProtocol(p)){
+        logger.appendError("Error while deleting protocol: " + localDB.getError());
+    }
 }
 
-void Loader::replaceEyeLauncher(){
-    QString newfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_NEW_LAUCHER_FILE);
-    QString oldfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_OLD_LAUCHER_FILE);
-    QString currentfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_EYE_LAUCHER_FILE);
-
-    // Backing up current
-    QFile(oldfile).remove();
-    if (!QFile::copy(currentfile,oldfile)){
-        logger.appendError("Failed to backup EyeLauncherClient from " + currentfile + " to " + oldfile);
-        QCoreApplication::quit();
-    }
-
-    // Replacing the current with the new
-    QFile(currentfile).remove();
-    if (!QFile::copy(newfile,currentfile)){
-        logger.appendError("Failed to update EyeLauncherClient from " + newfile + " to " + currentfile);
-        QCoreApplication::quit();
-    }
-
-    // Removing the new file
-    if (!QFile(newfile).remove()){
-        logger.appendError("Could not remove new EyeLauncherClient file: " + newfile);
-    }
-
-    QCoreApplication::quit();
+QStringList Loader::getProtocolList() {
+    return localDB.getProtocolList();
 }
 
-//******************************************* SLOTS ***********************************************
-void Loader::onFileSetRequested(){
-    QStringList fileSet;
-    QString patuid = configuration->getString(CONFIG_PATIENT_UID);
 
-    // Setting the protocol ID
-    QVariantMap patdata = lim.getPatientInfo(patuid);
-    configuration->addKeyValuePair(CONFIG_PROTOCOL_NAME,patdata.value(TPATDATA_NONCOL_PROTOCOL).toString());
-    fileSet = lim.getReportNameAndFileSet(patuid,reportGenerationStruct);    
-    emit(fileSetReady(fileSet,getEvaluationID("")));
-}
-
-//******************************************* Private Auxiliary Functions ***********************************************
+////////////////////////////////////////////////////////////////// PRIVATE FUNCTIONS //////////////////////////////////////////////////////////////////
 
 void Loader::changeLanguage(){
-    QString lang = configuration->getString(CONFIG_REPORT_LANGUAGE);
-    if (lang == CONFIG_P_LANG_ES){
-        if (!language.loadConfiguration(":/languages/es.lang",COMMON_TEXT_CODEC)){
+    QString lang = configuration->getString(Globals::VMPreferences::UI_LANGUAGE);
+    if (lang == Globals::UILanguage::ES){
+        if (!language.loadConfiguration(":/languages/es.lang",Globals::Share::TEXT_CODEC)){
             // In a stable program this should NEVER happen.
             logger.appendError("CANNOT LOAD ES LANG FILE: " + language.getError());
             loadingError = true;
@@ -746,7 +587,7 @@ void Loader::changeLanguage(){
     }
     else{
         // Defaults to english
-        if (!language.loadConfiguration(":/languages/en.lang",COMMON_TEXT_CODEC)){
+        if (!language.loadConfiguration(":/languages/en.lang",Globals::Share::TEXT_CODEC)){
             // In a stable program this should NEVER happen.
             logger.appendError("CANNOT LOAD EN LANG FILE: " + language.getError());
             loadingError = true;
@@ -757,16 +598,235 @@ void Loader::changeLanguage(){
 
 void Loader::loadDefaultConfigurations(){
 
-    if (!configuration->containsKeyword(CONFIG_DEFAULT_COUNTRY)) configuration->addKeyValuePair(CONFIG_DEFAULT_COUNTRY,"AR");
-    if (!configuration->containsKeyword(CONFIG_DEMO_MODE)) configuration->addKeyValuePair(CONFIG_DEMO_MODE,false);
-    if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)) configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
-    if (!configuration->containsKeyword(CONFIG_USE_MOUSE)) configuration->addKeyValuePair(CONFIG_USE_MOUSE,true);
-    if (!configuration->containsKeyword(CONFIG_SELECTED_ET)) configuration->addKeyValuePair(CONFIG_SELECTED_ET,CONFIG_P_ET_MOUSE);
-    if (!configuration->containsKeyword(CONFIG_DUAL_MONITOR_MODE)) configuration->addKeyValuePair(CONFIG_DUAL_MONITOR_MODE,false);
-    if (!configuration->containsKeyword(CONFIG_REPORT_LANGUAGE)) configuration->addKeyValuePair(CONFIG_REPORT_LANGUAGE,CONFIG_P_LANG_EN);
+    if (!configuration->containsKeyword(Globals::VMPreferences::UI_LANGUAGE)) configuration->addKeyValuePair(Globals::VMPreferences::UI_LANGUAGE,Globals::UILanguage::EN);
+    if (!configuration->containsKeyword(Globals::VMPreferences::DEFAULT_COUNTRY)) configuration->addKeyValuePair(Globals::VMPreferences::DEFAULT_COUNTRY,"AR");
+    if (!configuration->containsKeyword(Globals::VMPreferences::DEMO_MODE)) configuration->addKeyValuePair(Globals::VMPreferences::DEMO_MODE,false);
+    if (!configuration->containsKeyword(Globals::VMPreferences::USE_MOUSE)) configuration->addKeyValuePair(Globals::VMPreferences::USE_MOUSE,true);
+    if (!configuration->containsKeyword(Globals::VMPreferences::DUAL_MONITOR_MODE)) configuration->addKeyValuePair(Globals::VMPreferences::DUAL_MONITOR_MODE,false);
+    if (!configuration->containsKeyword(Globals::VMPreferences::DEFAULT_READING_LANGUAGE)) configuration->addKeyValuePair(Globals::VMPreferences::DEFAULT_READING_LANGUAGE,0);
 
 }
+
+QMap<QString, QString> Loader::findOngoingStudyFileNames(QVariantMap study_config){
+
+    QStringList filters; filters << "*.json";
+    QStringList filelist = QDir(configuration->getString(Globals::Share::PATIENT_DIRECTORY)).entryList(filters,QDir::Files,QDir::Name);
+
+    QMap<QString,QString> ans;
+
+    for (qint32 i = 0; i < filelist.size(); i++){
+
+        // Only a few studies are multi part. So we check for one fo those before loading.
+        if (filelist.at(i).contains(FILENAME_BASE_BINDING)){
+
+            RawDataContainer rdc;
+            if (!rdc.loadFromJSONFile(configuration->getString(Globals::Share::PATIENT_DIRECTORY) + "/" + filelist.at(i))){
+                logger.appendError("Error loading JSON File for ongoing analysis: " + rdc.getError());
+                continue;
+            }
+
+            // We can assume that, given the file name, the only study is a binding study.
+            if (!rdc.isStudyOngoing(RDC::Study::BINDING)){
+                // Check for errors just in case
+                if (!rdc.getError().isEmpty()){
+                    logger.appendError("Error getting binding study status from JSON file: " + rdc.getError() + " from file "
+                                       + configuration->getString(Globals::Share::PATIENT_DIRECTORY) + "/" + filelist.at(i));
+                }
+                continue;
+            }
+
+            // The study is ongiong. Next we check that less than 24 hours have passed in order to make it viable.
+
+            QStringList study_datetime = rdc.getMetaDataDateTime();
+            QDateTime dt = QDateTime::fromString(study_datetime.first() + " " + study_datetime.last(), "yyyy-MM-dd HH:mm");
+
+            // And now we check that the study configuration is the same.
+            QVariantMap sc = rdc.getStudyConfiguration(RDC::Study::BINDING);
+            bool aresame = true;
+            aresame = aresame && (sc.value(RDC::StudyParameter::VALID_EYE).toString() == study_config.value(RDC::StudyParameter::VALID_EYE).toString());
+            aresame = aresame && (sc.value(RDC::StudyParameter::NUMBER_TARGETS).toString() == study_config.value(RDC::StudyParameter::NUMBER_TARGETS).toString());
+            aresame = aresame && (sc.value(RDC::StudyParameter::TARGET_SIZE).toString() == study_config.value(RDC::StudyParameter::TARGET_SIZE).toString());
+
+            // They were configured differently.
+            if (!aresame) continue;
+
+            if (dt.secsTo(QDateTime::currentDateTime()) < NUMBER_SECONDS_IN_A_DAY){
+                QStringList list = rdc.getTrialListTypesForStudy(RDC::Study::BINDING);
+
+                // If it's an ongoing trial, as it should be, then from the list either bound or unboudn is missing.
+                if (list.size() != 1){
+                    logger.appendError("Error getting the trial list types for binding in ongoing analysis. Got a list of size " + QString::number(list.size())
+                                       +  ". Ongoing binding should not have more than 1.  RawDatacontainer error: " + rdc.getError());
+                    continue;
+                }
+
+                if (list.contains(RDC::TrialListType::BOUND)){
+                    ans[RDC::TrialListType::UNBOUND] = filelist.at(i);
+                }
+                else if (list.contains(RDC::TrialListType::UNBOUND)){
+                    ans[RDC::TrialListType::BOUND] = filelist.at(i);
+                }
+                else {
+                    logger.appendError("Error on ongoing analysis for binding got a trial list tyep that was neither bound or unbound: " + list.first());
+                }
+
+            }
+
+        }
+        else if (filelist.at(i).contains(FILENAME_BASE_PERCEPTION)){
+
+            RawDataContainer rdc;
+            if (!rdc.loadFromJSONFile(configuration->getString(Globals::Share::PATIENT_DIRECTORY) + "/" + filelist.at(i))){
+                logger.appendError("Error loading JSON File for ongoing analysis: " + rdc.getError());
+                continue;
+            }
+
+            // We can assume that, given the file name, the only study is a binding study.
+            if (!rdc.isStudyOngoing(RDC::Study::PERCEPTION)){
+                // Check for errors just in case
+                if (!rdc.getError().isEmpty()){
+                    logger.appendError("Error getting perception study status from JSON file: " + rdc.getError() + " from file "
+                                       + configuration->getString(Globals::Share::PATIENT_DIRECTORY) + "/" + filelist.at(i));
+                }
+                continue;
+            }
+
+            // The study is ongiong. Next we check that less than 24 hours have passed in order to make it viable.
+
+            QStringList study_datetime = rdc.getMetaDataDateTime();
+            QDateTime dt = QDateTime::fromString(study_datetime.first() + " " + study_datetime.last(), "yyyy-MM-dd HH:mm");
+
+            // And now we check that the study configuration is the same.
+            QVariantMap sc = rdc.getStudyConfiguration(RDC::Study::PERCEPTION);
+            bool aresame = true;
+            aresame = aresame && (sc.value(RDC::StudyParameter::VALID_EYE) == study_config.value(RDC::StudyParameter::VALID_EYE));
+            aresame = aresame && (sc.value(RDC::StudyParameter::PERCEPTION_TYPE) == study_config.value(RDC::StudyParameter::PERCEPTION_TYPE));
+
+            // If they are not configured the same, then we move on.
+            if (!aresame) continue;
+
+            if (dt.secsTo(QDateTime::currentDateTime()) < NUMBER_SECONDS_IN_A_DAY){
+                QStringList list = rdc.getTrialListTypesForStudy(RDC::Study::PERCEPTION);
+
+                // If it's an ongoing trial, as it should be, then from the list either bound or unboudn is missing.
+                if ((list.size() < 1) || (list.size() >= NUMBER_OF_PERCEPTION_PARTS)){
+                    logger.appendError("Error getting the trial list types for perception in ongoing analysis. Got a list of size " + QString::number(list.size())
+                                       +  ". Ongoing  perception should have between 1 and 7.  RawDatacontainer error: " + rdc.getError());
+                    continue;
+                }
+
+                QStringList perception_parts = RDC::PerceptionPart::valid;
+                for (qint32 j = 0; j < perception_parts.size();  j++){
+                    if (!list.contains(perception_parts.at(j))){
+                        ans[perception_parts.at(j)] = filelist.at(i);
+                    }
+                }
+
+            }
+
+        }
+    }
+    return ans;
+}
+
 
 Loader::~Loader(){
 
 }
+
+
+
+
+
+//******************************************* Updater Related Functions ***********************************************
+
+//QString Loader::checkForChangeLog(){
+//    QString filePath = "launcher/" + QString (FILE_CHANGELOG_UPDATER) + "_"  + configuration->getString(Globals::VMPreferences::REPORT_LANGUAGE);
+//    //qWarning() << "Searching for changelog" << filePath;
+//    QFile file(filePath);
+//    if (!file.open(QFile::ReadOnly)) return "";
+//    QTextStream reader(&file);
+//    reader.setCodec(COMMON_TEXT_CODEC);
+//    QString content = reader.readAll();
+//    if (content.size() < 4) return "";
+
+//    // Getting only the last N Updates
+//    // MAX_UPDATES_TO_SHOW
+//    int updateCounter = 0;
+//    bool enableCounter = false;
+//    QStringList lines = content.split("\n");
+//    content = "";
+//    while (!lines.isEmpty()){
+
+//        QString line = lines.first();
+//        lines.removeFirst();
+//        line = line.trimmed();
+
+//        if (!line.startsWith("-")){
+//            // The logic is like this: Lines that do not start with "-" are update titles.
+//            // It's necessary to add everything that comes after the line until another line
+//            // that does not start with "-" to actually "add" an update to the variable.
+//            if (enableCounter) {
+//                enableCounter = false;
+//                updateCounter++;
+//            }
+//            else{
+//                enableCounter = true;
+//            }
+//        }
+
+//        if (updateCounter == MAX_UPDATES_TO_SHOW){
+//            break;
+//        }
+//        else{
+//            //qDebug() << updateCounter << ": ->" << line;
+//            content = content + line + "\n";
+//        }
+//    }
+
+//    return content;
+//}
+
+//bool Loader::clearChangeLogFile(){
+//    // return false;  // FOR DEBUGGING CHANGELOG WINDOW
+//    QDir dir(DIRNAME_LAUNCHER);
+//    QStringList filter;
+//    filter << QString(FILE_CHANGELOG_UPDATER) + "*";
+//    QStringList allchangelogs = dir.entryList(filter,QDir::Files);
+//    for (qint32 i = 0; i < allchangelogs.size(); i++){
+//        QFile file(QString(DIRNAME_LAUNCHER) + "/" + allchangelogs.at(i));
+//        file.remove();
+//    }
+
+//    QFile newLauncher(QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_NEW_LAUCHER_FILE));
+//    return newLauncher.exists();
+//}
+
+//void Loader::replaceEyeLauncher(){
+//    QString newfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_NEW_LAUCHER_FILE);
+//    QString oldfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_OLD_LAUCHER_FILE);
+//    QString currentfile = QString(DIRNAME_LAUNCHER) + "/" + QString(FILE_EYE_LAUCHER_FILE);
+
+//    // Backing up current
+//    QFile(oldfile).remove();
+//    if (!QFile::copy(currentfile,oldfile)){
+//        logger.appendError("Failed to backup EyeLauncherClient from " + currentfile + " to " + oldfile);
+//        QCoreApplication::quit();
+//    }
+
+//    // Replacing the current with the new
+//    QFile(currentfile).remove();
+//    if (!QFile::copy(newfile,currentfile)){
+//        logger.appendError("Failed to update EyeLauncherClient from " + newfile + " to " + currentfile);
+//        QCoreApplication::quit();
+//    }
+
+//    // Removing the new file
+//    if (!QFile(newfile).remove()){
+//        logger.appendError("Could not remove new EyeLauncherClient file: " + newfile);
+//    }
+
+//    QCoreApplication::quit();
+//}
+
+

@@ -14,6 +14,7 @@ Item {
     property int vmMaxOptions: 10;
     property bool vmFocus: false
     property bool vmEnabled: true
+    property int vmNoLabelHeight: 10
 
     function filter(){
         // Creating the model list
@@ -26,7 +27,7 @@ Item {
                if (i < vmValues.length) data = vmValues[i];
                modelList.append({"vmText": vmList[i], "vmData": data, "vmIndex": count});
                count++;
-               if (count == vmMaxOptions) break;
+               if (count === vmMaxOptions) break;
            }
         }
 
@@ -61,9 +62,13 @@ Item {
         }
     }
 
+    height: (vmNoLabelHeight + labelText.height)*1.8
+
     Rectangle {
         id: lineEditRect
-        anchors.fill: parent
+        width: parent.width
+        height: vmNoLabelHeight
+        anchors.centerIn: parent
         color: "#ebf3fa"
         border.width: mainWindow.width*0.0
     }

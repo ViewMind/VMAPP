@@ -7,14 +7,12 @@ Rectangle {
     id: container
     property string vmFont: "Mono"
     property string vmDrName: "NO NAME";
-    property string vmSelectedET: "";
-    property string vmSelectedLang: "";
     property string vmDemoMode: "";    
 
     z: -10
     height: {
-        if (uimap.getStructure() === "P") return mainWindow.height*0.681
-        else if (uimap.getStructure() === "S") return mainWindow.height*0.768
+        var air = mainWindow.height*0.026;
+        return (textContainer.height + btnChangeDoctorInfo.height + btnChangeSettingMouseArea.height + btnProtocolsRect.height + mainDivisor.height*2 + 4*air)*1.2
     }
     color: "#ffffff"
 
@@ -26,18 +24,13 @@ Rectangle {
     signal hideMenu();
 
     function updateText(){
-        vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-        var parts = vmDrName.split("(");
-        vmDrName = parts[0];
-        vmSelectedET = "ET: " + loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET);
-        vmSelectedLang = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE);
+        var evaluator = loader.getCurrentEvaluatorInfo();
+        vmDrName = evaluator.lastname + ",\n" + evaluator.name
         vmDemoMode = loader.getStringForKey("viewdrmenu_mode") + ": "
-        if (loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE)) vmDemoMode = vmDemoMode + "Demo";
+        if (loader.getConfigurationBoolean("use_mouse")) vmDemoMode = vmDemoMode + "Demo";
         else vmDemoMode = vmDemoMode + "Normal"
         // Checking if the doctor is validated
-        if (loader.isDoctorValidated(-1)) btnProtocols.enabled = true;
-        else btnProtocols.enabled = false;
-        labETNumEvals.text = loader.getNumberOfEvalsString(false);
+        btnProtocols.enabled = true;
     }
 
     Rectangle{
@@ -109,79 +102,56 @@ Rectangle {
         anchors.topMargin: mainWindow.height*0.016
     }
 
-    // Language name
-    Text{
-        id: labLang
-        color: "#88B2D0"
-        text: vmSelectedLang
-        font.family: gothamRegular.name
-        font.pixelSize: 13*viewHome.vmScale
-        anchors.left: parent.left
-        anchors.leftMargin: mainWindow.width*0.023
-        anchors.top: divDemoMode.bottom
-        anchors.topMargin: mainWindow.height*0.016
-    }
+//    // Language name
+//    Text{
+//        id: labLang
+//        color: "#88B2D0"
+//        text: vmSelectedLang
+//        font.family: gothamRegular.name
+//        font.pixelSize: 13*viewHome.vmScale
+//        anchors.left: parent.left
+//        anchors.leftMargin: mainWindow.width*0.023
+//        anchors.top: divDemoMode.bottom
+//        anchors.topMargin: mainWindow.height*0.016
+//    }
 
-    // Language divisor
-    Rectangle{
-        id: divLang
-        color: "#88B2D0"
-        width: parent.width*0.8
-        height: mainWindow.height*0.001
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: labLang.bottom
-        anchors.topMargin: mainWindow.height*0.016
-    }
+//    // Language divisor
+//    Rectangle{
+//        id: divLang
+//        color: "#88B2D0"
+//        width: parent.width*0.8
+//        height: mainWindow.height*0.001
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        anchors.top: labLang.bottom
+//        anchors.topMargin: mainWindow.height*0.016
+//    }
 
-    // Eye tracker selected
-    Text{
-        id: labETSel
-        color: "#88B2D0"
-        text: vmSelectedET
-        font.family: gothamRegular.name
-        font.pixelSize: 13*viewHome.vmScale
-        anchors.left: parent.left
-        anchors.leftMargin: mainWindow.width*0.023
-        anchors.top: divLang.bottom
-        anchors.topMargin: mainWindow.height*0.016
-    }
+//    // Eye tracker selected
+//    Text{
+//        id: labETSel
+//        color: "#88B2D0"
+//        text: vmSelectedET
+//        font.family: gothamRegular.name
+//        font.pixelSize: 13*viewHome.vmScale
+//        anchors.left: parent.left
+//        anchors.leftMargin: mainWindow.width*0.023
+//        anchors.top: divLang.bottom
+//        anchors.topMargin: mainWindow.height*0.016
+//    }
 
-    // Eye tracker selected divisor
-    Rectangle{
-        id: divETSel
-        color: "#88B2D0"
-        width: parent.width*0.8
-        height: mainWindow.height*0.001
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: labETSel.bottom
-        anchors.topMargin: mainWindow.height*0.016
-    }
+//    // Eye tracker selected divisor
+//    Rectangle{
+//        id: divETSel
+//        color: "#88B2D0"
+//        width: parent.width*0.8
+//        height: mainWindow.height*0.001
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        anchors.top: labETSel.bottom
+//        anchors.topMargin: mainWindow.height*0.016
+//    }
 
-    // Eye tracker selected
-    Text{
-        id: labETNumEvals
-        color: "#88B2D0"
-        text: loader.getNumberOfEvalsString(false);
-        font.family: gothamRegular.name
-        font.pixelSize: 13*viewHome.vmScale
-        anchors.left: parent.left
-        anchors.leftMargin: mainWindow.width*0.023
-        anchors.top: divETSel.bottom
-        anchors.topMargin: mainWindow.height*0.016
-    }
 
-    // Eye tracker selected divisor
-    Rectangle{
-        id: divETNumEvals
-        color: "#88B2D0"
-        width: parent.width*0.8
-        height: mainWindow.height*0.001
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: labETNumEvals.bottom
-        anchors.topMargin: mainWindow.height*0.016
-    }
-
-    // The button is a mouse area otherwise the menu exists.
+    // The button is a mouse area otherwise the menu exits.
     MouseArea{
         id: btnChangeSettingMouseArea
         width: parent.width*0.9
@@ -203,7 +173,7 @@ Rectangle {
             }
 
         }
-        anchors.top: divETNumEvals.bottom
+        anchors.top: divDemoMode.bottom
         anchors.topMargin: mainWindow.height*0.026
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
@@ -238,7 +208,6 @@ Rectangle {
         anchors.topMargin: mainWindow.height*0.026
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            viewDrInfo.clearAllFields();
             viewDrInfo.loadDoctorInformation();
             swiperControl.currentIndex = swiperControl.vmIndexDrProfile;
         }
@@ -247,43 +216,10 @@ Rectangle {
 
     // The button is a mouse area otherwise the menu exists.
     MouseArea{
-        id: btnTableIDs
-        width: parent.width*0.9
-        height: mainWindow.height*0.055
-        Rectangle {
-            id: btnTableIDsRect
-            anchors.fill: parent
-            radius: 3
-            color: (btnTableIDs.pressed)? "ff0000" : "#ffffff"
-            border.color: btnTableIDs.enabled? "#BCBEC0" : "#dadcde"
-            Text{
-                anchors.centerIn: btnTableIDsRect
-                font.family: gothamM.name
-                font.pixelSize: 13*viewHome.vmScale
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                text: loader.getStringForKey("viewhome_btnTableID");
-                color: btnTableIDs.enabled? "#BCBEC0" : "#dadcde"
-            }
-
-        }
-        anchors.top: btnChangeDoctorInfo.bottom
-        anchors.topMargin: mainWindow.height*0.026
-        anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: {
-            viewPatList.openAskPasswordDialog();
-        }
-    }
-
-    // The button is a mouse area otherwise the menu exists.
-    MouseArea{
         id: btnProtocols
         width: parent.width*0.9
         height: mainWindow.height*0.055
-        visible: {
-            if (uimap.getStructure() === "P") return false
-            else if (uimap.getStructure() === "S") return true
-        }
+        visible: true
         Rectangle {
             id: btnProtocolsRect
             anchors.fill: parent
@@ -301,7 +237,7 @@ Rectangle {
             }
 
         }
-        anchors.top: btnTableIDs.bottom
+        anchors.top: btnChangeDoctorInfo.bottom
         anchors.topMargin: mainWindow.height*0.026
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {

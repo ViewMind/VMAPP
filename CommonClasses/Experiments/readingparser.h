@@ -5,9 +5,7 @@
 #include <QTextStream>
 #include <QFile>
 #include <QDebug>
-
-#define   READING_COMMENT_STRING                        "######"
-#define   PAD_LENGTH_FOR_ID                             4
+#include "../eyetracker_defines.h"
 
 class ReadingParser
 {
@@ -66,6 +64,9 @@ private:
     QString versionString;
     Phrases phrases;
     QString error;
+
+    static const char * READING_COMMENT_STRING;
+    static const qint32 PAD_LENGTH_FOR_ID;
 
 
 };

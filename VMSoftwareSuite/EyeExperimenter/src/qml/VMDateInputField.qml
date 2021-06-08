@@ -19,8 +19,11 @@ Item {
 
     height: mainWindow.height*0.058
 
+    signal hasFocus();
+
     function clear(){
         labelText.visible = false;
+        vmErrorMsg = ""
         lineEdit.text = vmPlaceHolder + " - (" + vmDateFormat + ")"
         vmEnteredText = "";
     }
@@ -97,6 +100,7 @@ Item {
         onActiveFocusChanged: {
             if (activeFocus){
                 vmErrorMsg = "";
+                hasFocus();
                 if (vmCalendarInput){
                     calendarPopUp.visible = true;
                     lineEdit.text = "";

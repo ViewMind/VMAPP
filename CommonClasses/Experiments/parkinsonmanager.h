@@ -12,7 +12,7 @@ public:
 
     // Reimplemented functions for common interface.
     bool parseExpConfiguration(const QString &contents);
-    void init(ConfigurationManager *c);
+    void init(qreal display_resolution_width, qreal display_resolution_height);
     qint32 size() const { return 1; }
     qreal  sizeToProcess() const { return 1; }
 

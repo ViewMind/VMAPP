@@ -17,10 +17,7 @@ RESOURCES += qml.qrc \
     fonts.qrc \
     images.qrc \
     languages.qrc \
-    expdata.qrc \
-    demo_data.qrc \
-    report_text.qrc \
-    agreements.qrc
+    expdata.qrc
 
 SOURCES += main.cpp \
     ../../../CommonClasses/CalibrationLeastSquares/calibrationleastsquares.cpp \
@@ -33,12 +30,10 @@ SOURCES += main.cpp \
     ../../../CommonClasses/Experiments/perceptionmanager.cpp \
     ../../../CommonClasses/Experiments/perceptionparser.cpp \
     ../../../CommonClasses/EyeSelector/eyeselector.cpp \
-    ../../../CommonClasses/GraphicalReport/diagonosislogic.cpp \
-    ../../../CommonClasses/GraphicalReport/imagereportdrawer.cpp \
-    ../../../CommonClasses/GraphicalReport/resultsegment.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
-    ../../../CommonClasses/RepFileInfo/repfileinfo.cpp \
+    ../../../CommonClasses/RawDataContainer/rawdatacontainer.cpp \
+    ../../../CommonClasses/RestAPIController/restapicontroller.cpp \
     Experiments/gonogoexperiment.cpp \
     Experiments/nbackrtexperiment.cpp \
     Experiments/parkinsonexperiment.cpp \
@@ -46,9 +41,10 @@ SOURCES += main.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/calibrationtargets.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
     EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.cpp \
+    apiclient.cpp \
     loader.cpp \
-    uiconfigmap.cpp \
     flowcontrol.cpp \
+    localdb.cpp \
     monitorscreen.cpp \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     ../../../CommonClasses/Experiments/bindingmanager.cpp \
@@ -56,14 +52,8 @@ SOURCES += main.cpp \
     ../../../CommonClasses/Experiments/fieldingmanager.cpp \
     ../../../CommonClasses/Experiments/readingmanager.cpp \
     ../../../CommonClasses/LogInterface/loginterface.cpp \
-    ../../../CommonClasses/DataPacket/datapacket.cpp \
     ../../../CommonClasses/Experiments/bindingparser.cpp \
-    ../../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
-    ../../../CommonClasses/LocalInformationManager/localinformationmanager.cpp \
-    ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.cpp \
     ../../../CommonClasses/Experiments/readingparser.cpp \
-    ../../../CommonClasses/VariantMapSerializer/variantmapserializer.cpp \
-    sslclient/ssldataprocessingclient.cpp \
     EyeTrackerInterface/GazePoint/eventdetection.cpp \
     EyeTrackerInterface/GazePoint/opengazecommand.cpp \
     EyeTrackerInterface/GazePoint/opengazeinterface.cpp \
@@ -75,7 +65,7 @@ SOURCES += main.cpp \
     Experiments/fieldingexperiment.cpp \
     Experiments/imageexperiment.cpp \
     Experiments/readingexperiment.cpp \
-    sslclient/sslclient.cpp
+    subjectdirscanner.cpp
 
 
 HEADERS += \
@@ -89,13 +79,13 @@ HEADERS += \
     ../../../CommonClasses/Experiments/perceptionmanager.h \
     ../../../CommonClasses/Experiments/perceptionparser.h \
     ../../../CommonClasses/EyeSelector/eyeselector.h \
-    ../../../CommonClasses/GraphicalReport/diagonosislogic.h \
-    ../../../CommonClasses/GraphicalReport/imagereportdrawer.h \
-    ../../../CommonClasses/GraphicalReport/resultsegment.h \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
-    ../../../CommonClasses/RepFileInfo/repfileinfo.h \
+    ../../../CommonClasses/RawDataContainer/RDC.h \
+    ../../../CommonClasses/RawDataContainer/rawdatacontainer.h \
+    ../../../CommonClasses/RestAPIController/restapicontroller.h \
+    ../../../CommonClasses/eyetracker_defines.h \
     Experiments/gonogoexperiment.h \
     Experiments/nbackrtexperiment.h \
     Experiments/parkinsonexperiment.h \
@@ -114,12 +104,13 @@ HEADERS += \
     EyeTrackerInterface/HTCVIVEEyePro/sranipal/SRanipal_LipData_v2.h \
     EyeTrackerInterface/HTCVIVEEyePro/sranipal/ViveSR_Enums.h \
     EyeTrackerInterface/HTCVIVEEyePro/viveeyepoller.h \
+    apiclient.h \
+    eyexperimenter_defines.h \
     loader.h \
-    eye_experimenter_defines.h \
     flowcontrol.h \
+    localdb.h \
     monitorscreen.h \
     countries.h \
-    uiconfigmap.h \
     EyeTrackerInterface/eyetrackerdata.h \
     EyeTrackerInterface/eyetrackerinterface.h \
     EyeTrackerInterface/Mouse/calibrationarea.h \
@@ -131,25 +122,15 @@ HEADERS += \
     Experiments/fieldingexperiment.h \
     Experiments/imageexperiment.h \
     Experiments/readingexperiment.h \
-    sslclient/sslclient.h \
-    sslclient/ssldataprocessingclient.h \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
-    ../../../CommonClasses/common.h \
-    ../../../CommonClasses/common.h \
     ../../../CommonClasses/Experiments/bindingmanager.h \
     ../../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../../CommonClasses/Experiments/fieldingmanager.h \
     ../../../CommonClasses/Experiments/readingmanager.h \
-    ../../../CommonClasses/common.h \
     ../../../CommonClasses/LogInterface/loginterface.h \
-    ../../../CommonClasses/DataPacket/datapacket.h \
-    ../../../CommonClasses/SQLConn/dbdescription.h \
     ../../../CommonClasses/Experiments/bindingparser.h \
-    ../../../CommonClasses/DatFileInfo/datfileinfoindir.h \
-    ../../../CommonClasses/LocalInformationManager/localinformationmanager.h \
-    ../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h \
     ../../../CommonClasses/Experiments/readingparser.h \
-    ../../../CommonClasses/VariantMapSerializer/variantmapserializer.h
+    subjectdirscanner.h
 
 contains(DEFINES, USE_IVIEW) {
   LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI

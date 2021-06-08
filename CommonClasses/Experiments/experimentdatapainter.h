@@ -6,8 +6,8 @@
 #include <QPainter>
 #include <QDesktopWidget>
 #include <QApplication>
-#include "../common.h"
 #include "../ConfigurationManager/configurationmanager.h"
+#include "../eyetracker_defines.h"
 
 // Number of actual trials to have in demo mode
 #define   NUMBER_OF_TRIALS_IN_DEMO_MODE                 3
@@ -20,7 +20,8 @@ public:
 
     // Basic functions to reimplement.
     virtual bool parseExpConfiguration(const QString &contents){ Q_UNUSED(contents) return false;}
-    virtual void init(ConfigurationManager *c);
+    virtual void init(qreal display_resolution_width, qreal display_resolution_height);
+    virtual void configure(const QVariantMap &configuration);
     virtual qint32 size() const {return 0;}
     virtual qreal sizeToProcess() const {return 0;}
 
@@ -56,7 +57,7 @@ protected:
     // The expected ids for the experiment
     QList<QStringList> expectedIDs;
 
-    ConfigurationManager *config;
+    //ConfigurationManager *config;
     QGraphicsScene *canvas;
     QString error;
     QString versionString;

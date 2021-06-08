@@ -1,15 +1,22 @@
 #include "perceptionexperiment.h"
 
+
+const qint32 PerceptionExperiment::HOLD_TIME_FOR_ANS_SELECTION = 1;     // Seconds
+const qint32 PerceptionExperiment::HOLD_TIME_CROSS_ONLY        = 500;   // ms.
+const qint32 PerceptionExperiment::HOLD_TIME_YES_NO_REHAB      = 3000;  // ms.
+const qint32 PerceptionExperiment::HOLD_TIME_YES_NO_TRAIN      = 2000;  // ms.
+const qint32 PerceptionExperiment::HOLD_TIME_TRI_REHAB         = 700;   // ms
+const qint32 PerceptionExperiment::HOLD_TIME_TRI_TRAIN         = 300;   // ms
+
 PerceptionExperiment::PerceptionExperiment(QWidget *parent):Experiment(parent)
 {
     manager = new PerceptionManager();
     m = dynamic_cast<PerceptionManager*>(manager);
 
-    expHeader = HEADER_PERCEPTION_EXPERIMENT;
-    outputDataFile = FILE_OUTPUT_PERCEPTION;
-
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&PerceptionExperiment::onTimeOut);
+
+    studyType = RDC::Study::PERCEPTION;
 
 }
 
@@ -20,9 +27,8 @@ void PerceptionExperiment::onTimeOut(){
     if ( m->getPerceptionTrialState() == PerceptionManager::PTS_YES_OR_NO){
         if (!wasAnswerSet){
             // Time out with no answer.
-            QVariantList dataS;
-            dataS  << "ANS -1";
-            etData << QVariant(dataS);
+            rawdata.finalizeDataSet();
+            rawdata.finalizeTrial("-1");
         }
     }
 
@@ -33,42 +39,55 @@ void PerceptionExperiment::onTimeOut(){
         if (error.isEmpty()) er = ER_NORMAL;
         else er = ER_WARNING;
 
-        // Adding the part identifier to the file.
-        QString mp_id = MULTI_PART_FILE_STUDY_IDENTIFIER;
-        mp_id = mp_id + " " + multiPartIdentifier;
+        bool ans;
+        ans = rawdata.finalizeStudy();
 
-        QVariantList dataS;
-        dataS  << mp_id;
-        etData << QVariant(dataS);
+        // We check that ALL parts are present to finalize study.
+        QStringList all_parts;
+        all_parts << RDC::TrialListType::PERCEPTION_1 << RDC::TrialListType::PERCEPTION_2 << RDC::TrialListType::PERCEPTION_3 << RDC::TrialListType::PERCEPTION_4
+                     << RDC::TrialListType::PERCEPTION_5 << RDC::TrialListType::PERCEPTION_6 << RDC::TrialListType::PERCEPTION_7 << RDC::TrialListType::PERCEPTION_8;
+
+        QStringList present_parts = rawdata.getTrialListTypesForStudy(studyType);
+
+        bool not_finished = false;
+        for (qint32 i = 0; i < all_parts.size(); i++){
+            if (!present_parts.contains(all_parts.at(i))){
+                not_finished = true;
+                break;
+            }
+        }
+
+        if (!not_finished){
+            ans = ans & rawdata.markStudyAsFinalized(studyType);
+        }
+
+        if (!ans){
+            error = "Failed on Reading study finalization: " + rawdata.getError();
+            emit (experimentEndend(ER_FAILURE));
+            return;
+        }
 
         if (!saveDataToHardDisk()){
             emit(experimentEndend(ER_FAILURE));
         }
-        else {
-
-           if (multiPartIdentifier == PERCEPTION_STUDY_LAST_MULTI_PART_IDENTIFIER){
-               // The study has finished. We need to finalize it.
-               QString temp = finalizeMultiPartStudyFile(dataFile);
-               if (!temp.isEmpty()){
-                   error = "[Perception Stuydy] Failed to finalize study: " + temp;
-                   er = ER_FAILURE;
-               }
-           }
-
-           emit(experimentEndend(er));
-
+        else{
+            emit(experimentEndend(er));
         }
     }
     else{
         PerceptionManager::PerceptionTrialState pts = m->getPerceptionTrialState();
-        QVariantList dataS;
 
         switch (pts) {
         case PerceptionManager::PTS_CROSS_ONLY:
 
-            // Saving the header.
-            dataS  << m->getCurrentTrialHeader();
-            etData << QVariant(dataS);
+            // Creating the new trial.
+            if (!addNewTrial()){
+                stateTimer.stop();
+                emit(experimentEndend(ER_FAILURE));
+                return;
+            }
+            rawdata.setCurrentDataSet(RDC::DataSetType::UNIQUE);
+
 
             stateTimer.start(HOLD_TIME_CROSS_ONLY);
             break;
@@ -96,92 +115,38 @@ void PerceptionExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (pts == PerceptionManager::PTS_TRIANGLES){
         // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-        QVariantList dataS;
-        dataS << data.time
-              << data.xRight
-              << data.yRight
-              << data.xLeft
-              << data.yLeft
-              << data.pdRight
-              << data.pdLeft;
-        etData << QVariant(dataS);
+        rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
     }
     else if (pts == PerceptionManager::PTS_YES_OR_NO){
-       m->highlightSelection(data.avgX(),data.avgY());
-       qint32 selectedAns = eyeSelector.isSelectionMade(data.avgX(),data.avgY());
-       if (selectedAns != -1){
-           // Saving the answer
-           QVariantList dataS;
-           dataS  << "ANS " + QString::number(selectedAns);
-           etData << QVariant(dataS);
-           wasAnswerSet = true;
-           onTimeOut();
-       }
+        m->highlightSelection(data.avgX(),data.avgY());
+        qint32 selectedAns = eyeSelector.isSelectionMade(data.avgX(),data.avgY());
+        if (selectedAns != -1){
+            // Saving the answer
+            rawdata.finalizeDataSet();
+            rawdata.finalizeTrial(QString::number(selectedAns));
+            wasAnswerSet = true;
+            onTimeOut();
+        }
     }
 
 }
 
-bool PerceptionExperiment::startExperiment(ConfigurationManager *c){
+bool PerceptionExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
+                                           const QVariantMap &studyConfig, bool useMouse,
+                                           QVariantMap pp){
 
-    // Adding to the file the parameter for perception study type.
-    if (c->getBool(CONFIG_PERCEPTION_IS_TRAINING)){
-        outputDataFile = outputDataFile + "_" + CONFIG_P_PERCEPTION_TRAINING;
+    bool isTraining = (studyConfig.value(RDC::StudyParameter::PERCEPTION_TYPE) == RDC::PerceptionType::TRAINING);
+
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)) return false;
+
+    QVariantMap configuration;
+    if (studyConfig.value(RDC::StudyParameter::LANGUAGE).toString() == RDC::UILanguage::SPANISH){
+        configuration.insert(PerceptionManager::CONFIGURE_YES_WORD,"SI");
     }
     else{
-        outputDataFile = outputDataFile + "_" + CONFIG_P_PERCEPTION_REHAB;
+        configuration.insert(PerceptionManager::CONFIGURE_YES_WORD,"YES");
     }
-
-    bool isTraining = c->getBool(CONFIG_PERCEPTION_IS_TRAINING);
-
-    if (!Experiment::startExperiment(c)) return false;
-
-    // We need to check if this is the first part of the multi part file
-    if (multiPartIdentifier.isEmpty()){
-        QString temp = makeStudyMultiPart(&dataFile);
-        if (!temp.isEmpty()){
-            error = "[Perception Study] Making the Study Multi File got error: " + temp;
-            return false;
-        }
-        multiPartIdentifier = "0";
-    }
-    else{
-
-        // In this case we need to make sure that type (Training or Rehab) is the same regardless of configuration. We get that from file name.
-        // Which was over written in the Experiment::startExperiment
-        QFileInfo info(dataFile);
-        QStringList name_parts = info.baseName().split("_",QString::SkipEmptyParts);
-        //qDebug() << name_parts;
-        QString type = "";
-
-        if (name_parts.size() > 2){
-            type = name_parts.at(1);
-        }
-        else{
-            error = "Could not determine perception study type from file name "  + dataFile;
-            return false;
-        }
-
-        if (type == CONFIG_P_PERCEPTION_REHAB){
-            isTraining = false;
-        }
-        else if (type == CONFIG_P_PERCEPTION_TRAINING){
-            isTraining = true;
-        }
-        else{
-            error = "Could not determine the perception study from filename with: "  + type;
-            return false;
-        }
-
-        // Current part is the last part +1
-        bool ok = false;
-        qint32 temp = multiPartIdentifier.toInt(&ok);
-        if (!ok){
-            error = "[Perception Study] Unexpected multi part identifier: " + multiPartIdentifier;
-            return false;
-        }
-        temp++;
-        multiPartIdentifier = QString::number(temp);
-    }
+    m->configure(configuration);
 
     error = "";
 
@@ -191,12 +156,9 @@ bool PerceptionExperiment::startExperiment(ConfigurationManager *c){
     m->drawNextTrialState();
 
     // Adding the header for the first trial.
-    QVariantList dataS;
-    dataS  << m->getCurrentTrialHeader();
-    etData << QVariant(dataS);
 
     eyeSelector.reset();
-    eyeSelector.setTargetCountForSelection(HOLD_TIME_FOR_ANS_SELECTION*c->getReal(CONFIG_SAMPLE_FREQUENCY));
+    eyeSelector.setTargetCountForSelection(HOLD_TIME_FOR_ANS_SELECTION*pp.value(RDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal());
     eyeSelector.setTargetBoxes(m->getYesAndNoTargetBoxes());
 
     if (isTraining){
@@ -212,7 +174,7 @@ bool PerceptionExperiment::startExperiment(ConfigurationManager *c){
 
     stateTimer.start(HOLD_TIME_CROSS_ONLY);
 
-    if (!vrEnabled){
+    if (!Globals::EyeTracker::IS_VR || (useMouse)){
         this->show();
         this->activateWindow();
     }
@@ -222,8 +184,28 @@ bool PerceptionExperiment::startExperiment(ConfigurationManager *c){
 }
 
 
-void PerceptionExperiment::togglePauseExperiment(){
-    // Pause is not managed here, for this experiment.
+
+bool PerceptionExperiment::addNewTrial(){
+    QString type = "";
+    QString temp = m->getCurrentTrialHeader();
+    QStringList parts = temp.split(" ");
+    // Header is the ID TYPE COL ROW
+    if (parts.size() != 4){
+        error = "Expected the trial header " + temp + " to have 4 tokens and not " + QString::number(parts.size());
+        return false;
+    }
+
+
+    // The first token is the id and the rest are the type.
+    currentTrialID = parts.first();
+    parts.removeFirst();
+    type = parts.join(" ");
+
+    if (!rawdata.addNewTrial(currentTrialID,type)){
+        error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
+        return false;
+    }
+    return true;
 }
 
 void PerceptionExperiment::keyPressHandler(int keyPressed){

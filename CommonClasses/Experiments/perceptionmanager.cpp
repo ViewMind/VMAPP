@@ -1,11 +1,19 @@
 #include "perceptionmanager.h"
 
+const qreal  PerceptionManager::K_WIDTH_MARGIN             = 0.16;
+const qint32 PerceptionManager::NUMBER_OF_ELEMENTS_PER_ROW = 5;
+const qint32 PerceptionManager::NUMBER_OF_ELEMENTS_PER_COL = 5;
+const qreal  PerceptionManager::YES_NO_FONT_SIZE           = 32;
+const qreal  PerceptionManager::AIR_YES_NO_TEXT_W          = 4;    // Bouding rect of text is multiplied by this to generate surrounding frame's width.
+const qreal  PerceptionManager::AIR_YES_NO_TEXT_H          = 2;    // Bouding rect of text is multiplied by this to generate surrounding frame's height.
+const qreal  PerceptionManager::MARGIN_YES_NO_TEXT         = 0.15; // Width percent.
+
+const char * PerceptionManager::CONFIGURE_YES_WORD = "yes_word";
+
 PerceptionManager::PerceptionManager()
 {
 
 }
-
-
 
 bool PerceptionManager::parseExpConfiguration(const QString &contents){
     PerceptionParser parser;
@@ -17,22 +25,19 @@ bool PerceptionManager::parseExpConfiguration(const QString &contents){
 
     perceptionTrials = parser.getTrials();
 
-    if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
+    //if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
 
     return true;
 
 }
 
 
-void PerceptionManager::init(ConfigurationManager *c){
-    ExperimentDataPainter::init(c);
+void PerceptionManager::init(qreal display_resolution_width, qreal display_resolution_height){
+    ExperimentDataPainter::init(display_resolution_width,display_resolution_height);
     clearCanvas();
     canvas->setBackgroundBrush(QBrush(Qt::gray));
 
     noText = "NO";
-    if (c->getString(CONFIG_REPORT_LANGUAGE) == CONFIG_P_LANG_ES) yesText = "SI";
-    else yesText = "YES";
-
 
     // Generating the bounding rects.
     QFont yesOrNo = QFont("Arial",YES_NO_FONT_SIZE,QFont::Bold);
@@ -54,6 +59,15 @@ void PerceptionManager::init(ConfigurationManager *c){
     yesAndNoTargetBoxes <<  QRectF(x_yes_box,y_box,box_w,box_h); // 1 is YES.
 
 
+}
+
+void PerceptionManager::configure(const QVariantMap &configuration){
+    if (configuration.contains(CONFIGURE_YES_WORD)){
+        yesText = configuration.value(CONFIGURE_YES_WORD).toString();
+    }
+    else{
+        yesText = "YES";
+    }
 }
 
 qint32 PerceptionManager::size() const{

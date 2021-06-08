@@ -15,6 +15,9 @@ Item {
     height: mainWindow.height*0.058
     z: 0
 
+    signal enterPressed();
+    signal hasFocus();
+
     Rectangle {
         id: lineEditRect
         anchors.fill: parent
@@ -38,7 +41,11 @@ Item {
     function clear(){
         labelText.visible = false;
         lineEdit.text = vmPlaceHolder
+        vmErrorMsg = ""
         vmEnteredText = "";
+        if (vmIsPasswordField){
+            lineEdit.echoMode = TextInput.Normal;
+        }
     }
 
     function setText(text){
@@ -60,17 +67,28 @@ Item {
         verticalAlignment: TextInput.AlignVCenter
         leftPadding: 0
         width: lineEditRect.width
-        echoMode: (vmIsPasswordField)? TextInput.PasswordEchoOnEdit : TextInput.Normal;
+        echoMode: ((vmIsPasswordField) && (vmEnteredText !== ""))? TextInput.Password : TextInput.Normal;
         onActiveFocusChanged: {
             if (activeFocus){
                 vmErrorMsg = "";
+                hasFocus();
                 if (vmEnteredText === ""){
                     // Removing the placeholder and making the labelText visible
                     lineEdit.text = "";
                     labelText.visible = true;
                 }
+                if (vmIsPasswordField){
+                    echoMode = TextInput.Password;
+                }
+            }            
+            else{
+                vmFocus = false;
+                if (vmIsPasswordField){
+                    if (vmEnteredText === ""){
+                        echoMode = TextInput.Normal;
+                    }
+                }
             }
-            else vmFocus = false;
         }
 
         onEditingFinished: {
@@ -94,6 +112,21 @@ Item {
                     lineEdit.text = vmPlaceHolder
                 }
             }
+        }
+//        onTextChanged: {
+//            vmEnteredText = lineEdit.text
+//            if ((vmIsPasswordField) && (vmEnteredText !== "")){
+//                echoMode = TextInput.Password;
+//            }
+//            else {
+//                echoMode = TextInput.Normal;
+//            }
+//        }
+        Keys.onEnterPressed: {
+            enterPressed();
+        }
+        Keys.onReturnPressed: {
+            enterPressed();
         }
     }
 

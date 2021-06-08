@@ -1,13 +1,26 @@
 #include "readingmanager.h"
 
+#ifdef EYETRACKER_HTCVIVEPRO
+const int ReadingManager::VR_READING_FONT_SIZE           = 32;
+const qreal ReadingManager::VR_READING_ESCAPE_POINT_XY_K = 0.10;
+const char *ReadingManager::VR_READING_FONT_NAME     = "Mono";
+#endif
+
+const int ReadingManager::READING_FONT_SIZE           = 20;
+const qreal ReadingManager::READING_ESCAPE_POINT_XY_K = 0.5;
+const char *ReadingManager::READING_FONT_NAME     = "Courier New";
+
+const char * ReadingManager::SELECTED_BACKGROUND_COLOR = "#f2ead3";
+const char * ReadingManager::CONFIG_IS_USING_VR = "vr_enabled";
+
 ReadingManager::ReadingManager()
 {
     description = "";
 }
 
-void ReadingManager::init(ConfigurationManager *c){
+void ReadingManager::init(qreal display_resolution_width, qreal display_resolution_height){
 
-    ExperimentDataPainter::init(c);
+    ExperimentDataPainter::init(display_resolution_width,display_resolution_height);
 
     // Setting the background brush.
     canvas->setBackgroundBrush(QBrush(Qt::gray));
@@ -15,14 +28,23 @@ void ReadingManager::init(ConfigurationManager *c){
     // Setting the radious and the default positions.
     R = 0.01*canvas->width();
 
+}
+
+void ReadingManager::configure(const QVariantMap &configuration){
     // Default font
     questionFont = QFont("Mono",23,QFont::Bold);
 
-    // Fixing the question font    
-    //questionFont.setFamily("Courier New");
-    //questionFont.setPointSize(20);
-    questionFont.setFamily(c->getString(CONFIG_READING_FONT_NAME));
-    questionFont.setPointSize(c->getInt(CONFIG_READING_FONT_SIZE));
+    // Fixing the question font
+    if (configuration.value(CONFIG_IS_USING_VR).toBool()){
+        questionFont.setFamily(VR_READING_FONT_NAME);
+        questionFont.setPointSize(VR_READING_FONT_SIZE);
+        escape_point_k = VR_READING_ESCAPE_POINT_XY_K;
+    }
+    else{
+        questionFont.setFamily(READING_FONT_NAME);
+        questionFont.setPointSize(READING_FONT_SIZE);
+        escape_point_k = READING_ESCAPE_POINT_XY_K;
+    }
     questionFont.setItalic(false);
     questionFont.setBold(false);
 
@@ -47,7 +69,7 @@ bool ReadingManager::parseExpConfiguration(const QString &contents){
     phrases = parser.getPhrases();
     expectedIDs = parser.getExpectedIDs();
 
-    if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
+    //if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
     //qDebug() << "READING MANAGER FORCING DEMO LENGTH";
     //enableDemoMode();
     return true;
@@ -106,6 +128,7 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
     // Any other state the phrase needs to be drawn.
     clearCanvas();
 
+
     QString mainPhrase;
     qreal xpos, ypos;
     qreal WScreen,HScreen;
@@ -130,9 +153,9 @@ void ReadingManager::drawPhrase(QuestionState qstate, qint32 currentQuestion, bo
 
         // Caculating escape point coordinates.
         escapeX = WScreen - (xpos + phraseToShow->boundingRect().width());
-        escapeX = xpos + phraseToShow->boundingRect().width() + escapeX*config->getReal(CONFIG_READING_ESCAPE_POINT_XY_K);
+        escapeX = xpos + phraseToShow->boundingRect().width() + escapeX*escape_point_k;
         escapeY = HScreen - (ypos + phraseToShow->boundingRect().height());
-        escapeY = ypos + phraseToShow->boundingRect().height() + escapeY*config->getReal(CONFIG_READING_ESCAPE_POINT_XY_K);
+        escapeY = ypos + phraseToShow->boundingRect().height() + escapeY*escape_point_k;
         escapePoint->setPos(escapeX,escapeY);
 
         // Y position calculation for the start reading point

@@ -27,9 +27,7 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
         //swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
         //swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
-
         //viewVRDisplay.testCalibrationFailedDialog();
-
         //viewAbout.open();
     }
 
@@ -68,17 +66,13 @@ Window {
         readonly property int vmIndexHome: 0
         readonly property int vmIndexDrProfile: 1
         readonly property int vmIndexPatientList: 2
-        readonly property int vmIndexShowReports: 3
-        readonly property int vmIndexStudyStart: 4
-        readonly property int vmIndexPatientReg: 5
-        readonly property int vmIndexMedicalRecordList: 6
-        readonly property int vmIndexMedicalInformation: 7
-        readonly property int vmIndexCalibrationStart: 8
-        readonly property int vmIndexCalibrationDone: 9
-        readonly property int vmIndexPresentExperiment: 10
-        readonly property int vmIndexVRDisplay: 11
-        readonly property int vmIndexResults: 12
-        readonly property int vmIndexStudyDone: 13
+        readonly property int vmIndexStudyStart: 3
+        readonly property int vmIndexPatientReg: 4
+        readonly property int vmIndexCalibrationStart: 5
+        readonly property int vmIndexCalibrationDone: 6
+        readonly property int vmIndexPresentExperiment: 7
+        readonly property int vmIndexVRDisplay: 8
+        readonly property int vmIndexStudyDone: 9
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -109,13 +103,6 @@ Window {
         }
 
         Item{
-            ViewShowReports{
-                id: viewShowReports
-                anchors.fill: parent
-            }
-        }
-
-        Item{
             ViewStudyStart{
                 id: viewStudyStart
                 anchors.fill: parent
@@ -129,19 +116,6 @@ Window {
             }
         }
 
-        Item{
-            ViewMedicalRecordList{
-                id: viewMedRecordList
-                anchors.fill: parent
-            }
-        }
-
-        Item{
-            ViewMedicalInformation{
-                id: viewMedicalInformation
-                anchors.fill: parent
-            }
-        }
 
         Item{
             ViewCalibration{
@@ -171,12 +145,6 @@ Window {
             }
         }
 
-        Item{
-            ViewResults{
-                id: viewResults
-                anchors.fill: parent
-            }
-        }
 
         Item{
             ViewStudyDone{
@@ -188,6 +156,9 @@ Window {
         onCurrentIndexChanged: {
 
             switch(currentIndex){
+            case vmIndexHome:
+                loader.logOut();
+                break;
             case vmIndexCalibrationStart:
                 viewCalibrationStart.openDiag()
                 break;
@@ -206,23 +177,11 @@ Window {
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewPatList.loadPatients();                
                 break;
-            case vmIndexShowReports:
-                viewShowReports.loadReportsForPatient();
-                break;
             case vmIndexStudyStart:
                 viewStudyStart.setPatientName();
                 viewStudyStart.setDefaultSelections();
                 viewVRDisplay.startStudy();
                 break;
-            case vmIndexResults:
-                viewResults.fillFieldsFromReportInfo();
-                break
-            case vmIndexMedicalRecordList:
-                viewMedRecordList.loadPatientRecordList();
-                break;
-//            case vmIndexStudyDone:
-//                //viewStudyDone.openDiag();
-//                break;
             }
 
         }

@@ -22,63 +22,36 @@ Dialog {
         }
     }
 
+
+    function logInAttempt(){
+        //if (loader.evaluatorLogIn(labelDrProfile.vmCurrentText,drPassword.getText())){
+        if (loader.evaluatorLogIn("aarelovich@gmail.com","1234")){
+            // Updating the text of the doctor menu.
+            viewHome.updateDrMenuText();
+            viewDoctorSelection.close();
+            swiperControl.currentIndex = swiperControl.vmIndexPatientList
+            drPassword.vmErrorMsg = "";
+        }
+        else{
+            drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drwrongpass");;
+        }
+    }
+
     function updateDrProfile(){
-        loader.loadDoctorSelectionInformation();
-        var ans = loader.getDoctorNameList();
+        var ans = loader.getLoginEmails();
+        //console.log(ans);
         ans.unshift(loader.getStringForKey(keybase+"labelDrProfile"));
         labelDrProfile.setModelList(ans)
         labelDrProfile.vmCurrentIndex = 0;
     }
 
-    function setCurrentDoctor(){
-        if ((labelDrProfile.vmCurrentIndex === 0) || (labelDrProfile.vmListSize === 0)){
-            labelDrProfile.vmErrorMsg = loader.getStringForKey(keybase+"labelNoDrError");
-            return false;
-        }
-        else{            
-            var name = labelDrProfile.vmCurrentText;
-            var uid = loader.getDoctorUIDByIndex(labelDrProfile.vmCurrentIndex-1)
-
-            // Cleaning the name
-            var parts = name.split("(");
-            name = parts[0];
-
-            //console.log("Setting current doctor to " + name + " and " + uid);
-
-            //console.log("Setting the DOCTOR UID to: " + uid);
-            loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_UID,uid);
-            loader.setValueForConfiguration(vmDefines.vmCONFIG_DOCTOR_NAME,name);
-            return true;
-        }
-    }
-
-    function logInAttempt(){
-        if (setCurrentDoctor()){
-            if (loader.isDoctorPasswordCorrect(drPassword.getText())){
-                // Updating the text of the doctor menu.
-                viewHome.updateDrMenuText();
-                viewDoctorSelection.close();
-                viewPatList.vmShowAll = false;
-                swiperControl.currentIndex = swiperControl.vmIndexPatientList
-                drPassword.vmErrorMsg = "";
-            }
-            else{
-                drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drwrongpass");;
-            }
-        }
-    }
-
 
     onOpened: {
-        instPassword.clear();
+        //labelDrProfile.clear();
         drPassword.clear();
-        //instPassword.setText("3n5YPEfz");
         updateDrProfile();
     }
 
-    VMDefines{
-        id: vmDefines
-    }
 
     // Creating the close button
     VMDialogCloseButton {
@@ -134,38 +107,21 @@ Dialog {
         anchors.horizontalCenter: parent.horizontalCenter
         z: 1
 
+        //        VMTextDataInput {
+        //            id: labelDrProfile
+        //            width: mainWindow.width*0.273
+        //            height: mainWindow.height*0.043
+        //            vmFont: viewHome.robotoR.name
+        //            vmPlaceHolder: "Email"
+        //        }
+
         // The selection box and the add button
         VMComboBox2{
             id: labelDrProfile
             width: mainWindow.width*0.273
             onVmCurrentIndexChanged: {
-                if (vmCurrentIndex > 0){
-                    if (!loader.isDoctorValidated(vmCurrentIndex-1)){
-                        vmErrorMsg = loader.getStringForKey(keybase+"novalid_msg");
-                        instPassRow.visible = true;
-                    }
-                    else {
-                        instPassRow.visible = false;
-                        instPassword.vmErrorMsg = "";
-                        vmErrorMsg = "";
-                    }
-
-
-                    drPassword.setText("");
-                    if (loader.isDoctorPasswordEmpty(vmCurrentIndex-1)){
-                        //console.log("Setting the error message: " + loader.getStringForKey(keybase+"drnopass"));
-                        drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drnopass");
-                    }
-                    else{
-                        drPassword.vmErrorMsg = "";
-                    }
-
-                }
-                else {
-                    vmErrorMsg = "";
-                    instPassRow.visible = false;
-                    drPassword.vmErrorMsg = "";
-                }                
+                vmErrorMsg = "";
+                drPassword.vmErrorMsg = "";
             }
         }
 
@@ -176,6 +132,8 @@ Dialog {
             onClicked: {
                 viewDoctorSelection.close();
                 viewDrInfo.clearAllFields();
+                loader.logOut();
+                viewDrInfo.newEvaluator();
                 swiperControl.currentIndex = swiperControl.vmIndexDrProfile;
             }
         }
@@ -192,38 +150,6 @@ Dialog {
         onEnterPressed: logInAttempt();
     }
 
-    Row {
-        id: instPassRow
-        anchors.left: rowProfileAndAdd.left
-        anchors.top: drPassword.bottom
-        anchors.topMargin: mainWindow.height*0.087
-        spacing: mainWindow.width*0.008
-
-        VMPasswordField{
-            id: instPassword
-            vmLabelText: loader.getStringForKey(keybase+"labelInstPassword");
-            width: labelDrProfile.width
-        }
-
-        VMButton{
-            id: btnValidate
-            height: labelDrProfile.height
-            vmText: loader.getStringForKey(keybase+"btnValidate");
-            vmFont: viewHome.gothamM.name
-            width: mainWindow.width*0.062
-            anchors.bottom: instPassword.bottom
-            onClicked: {
-                if (!loader.requestDrValidation(instPassword.getText(),labelDrProfile.vmCurrentIndex-1)){
-                    instPassword.vmErrorMsg = loader.getStringForKey(keybase+"instpassword_wrong");
-                }
-                else{
-                    instPassRow.visible = false;
-                    instPassword.vmErrorMsg = "";
-                    viewDoctorSelection.close();
-                }
-            }
-        }
-    }
 
     VMButton{
         id: btnOk

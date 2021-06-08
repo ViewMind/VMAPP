@@ -8,8 +8,6 @@
 #include "readingparser.h"
 #include "experimentdatapainter.h"
 
-#define  SELECTED_BACKGROUND_COLOR                "#f2ead3"
-
 class ReadingManager: public ExperimentDataPainter
 {
 public:
@@ -21,7 +19,8 @@ public:
 
     // Reimplemented functions for common interface.
     bool parseExpConfiguration(const QString &contents);
-    void init(ConfigurationManager *c);
+    void init(qreal display_resolution_width, qreal display_resolution_height);
+    void configure(const QVariantMap &configuration);
     qint32 size() const {return phrases.size();}
     qreal  sizeToProcess() const {return size();}
 
@@ -38,6 +37,9 @@ public:
     qint32 getCharIndex(qint32 x);
     QString getDescription() const {return description;}
     QList<QRectF> getOptionTargetBoxes() const;
+
+    // Configuration key for VR Enabled which is necesssary to determine font type and size. (When using mouse the monitor is used).
+    static const char * CONFIG_IS_USING_VR;
 
 private:
 
@@ -73,6 +75,22 @@ private:
     const qint32 AIR = 20;
 
     void enableDemoMode();
+
+    // Values selected from
+    qreal escape_point_k;
+    qint32 font_size;
+    QString font_name;
+
+    // VR vs Monitor dependant constants.
+    static const int VR_READING_FONT_SIZE;
+    static const qreal VR_READING_ESCAPE_POINT_XY_K;
+    static const char *VR_READING_FONT_NAME;
+
+    static const int READING_FONT_SIZE;
+    static const qreal READING_ESCAPE_POINT_XY_K;
+    static const char *READING_FONT_NAME;
+
+    static const char * SELECTED_BACKGROUND_COLOR;
 
 };
 

@@ -6,6 +6,7 @@
 #include <QPoint>
 #include <QRectF>
 #include <QSet>
+#include "../eyetracker_defines.h"
 
 // Constants for drawing the squares, cross and target on the screen for fielding
 // These values are the physical dimensions of the targets in mm.
@@ -25,40 +26,7 @@
 //               |  4  |                |  3  |
 //               |     |                |     |
 //               -------                -------
-             
 
-#define   RECT_WIDTH                                    163/4
-#define   RECT_HEIGHT                                   155/4
-#define   TARGET_R                                      42/4
-#define   TARGET_OFFSET_X                               39/4
-#define   TARGET_OFFSET_Y                               35/4
-
-#define   TARGET_BOX_0                                  0
-#define   TARGET_BOX_1                                  1
-#define   TARGET_BOX_2                                  2
-#define   TARGET_BOX_3                                  3
-#define   TARGET_BOX_4                                  4
-#define   TARGET_BOX_5                                  5
-
-#define   K_HORIZONAL_MARGIN                            0.06
-#define   K_SPACE_BETWEEN_BOXES                         0.09
-#define   K_VERTICAL_MARGIN                             0.06
-
-#define   K_CROSS_LINE_LENGTH                           0.05
-
-// These constants were derived by measuring the with and heigth of the squares in a FullHD 22 inch monitor
-// And eyeballing 1.5 cm margin around the target box. The proportion will be maintained no matter the size or where it is drawn
-// by using a proportion instead of a constant.
-
-#define   TARGET_BOX_EX_W                               1.5/6.0
-#define   TARGET_BOX_EX_H                               1.5/5.6
-
-#define   MAX_SEQUENCE_LENGTH                           6
-#define   OLD_SEQUENCE_LENGTH                           3
-
-#define  NBACK_EXP_DESCRIPTION_NUM_OF_TARGETS           6
-#define  NBACK_RT_NUM_OF_TARGETS                        3
-#define  NBACK_MS_NUM_OF_TARGETS                        3
 
 class FieldingParser
 {
@@ -71,7 +39,7 @@ public:
     };
 
     FieldingParser();
-    bool parseFieldingExperiment(const QString &contents, qreal resolutionWidth, qreal resolutionHeight, qreal x_px_2_mm, qreal y_px_2_mm);
+    bool parseFieldingExperiment(const QString &contents, qreal resolutionWidth, qreal resolutionHeight);
     QList<Trial> getParsedTrials() const;
     QString getError() const;
     QString getVersionString() const;
@@ -91,6 +59,40 @@ private:
     QList<QRectF> drawTargetBoxes;
     // The coordinates and dimensions for the target boxes to recognize when they are hit.
     QList<QRectF> hitTargetBoxes;
+
+    // Parsing constants.
+    static const qint32 TARGET_BOX_0 =  0;
+    static const qint32 TARGET_BOX_1 =  1;
+    static const qint32 TARGET_BOX_2 =  2;
+    static const qint32 TARGET_BOX_3 =  3;
+    static const qint32 TARGET_BOX_4 =  4;
+    static const qint32 TARGET_BOX_5 =  5;
+
+    static const qint32 MAX_SEQUENCE_LENGTH = 6;
+    static const qint32 OLD_SEQUENCE_LENGTH = 3;
+
+    static const qint32 NBACK_EXP_DESCRIPTION_NUM_OF_TARGETS = 6;
+    static const qint32 NBACK_RT_NUM_OF_TARGETS = 3;
+    static const qint32 NBACK_MS_NUM_OF_TARGETS = 3;
+
+    // Drawing constants.
+    static const qreal RECT_WIDTH;
+    static const qreal RECT_HEIGHT;
+    static const qreal TARGET_R;
+    static const qreal TARGET_OFFSET_X;
+    static const qreal TARGET_OFFSET_Y;
+
+    static const qreal K_HORIZONAL_MARGIN;
+    static const qreal K_SPACE_BETWEEN_BOXES;
+    static const qreal K_VERTICAL_MARGIN;
+
+    // These constants were derived by measuring the with and heigth of the squares in a FullHD 22 inch monitor
+    // And eyeballing 1.5 cm margin around the target box. The proportion will be maintained no matter the size or where it is drawn
+    // by using a proportion instead of a constant.
+    static const qreal TARGET_BOX_EX_W;
+    static const qreal TARGET_BOX_EX_H;
+
+
 };
 
 #endif // FIELDINGPARSER_H

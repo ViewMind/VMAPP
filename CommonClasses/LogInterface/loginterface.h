@@ -9,9 +9,6 @@
 // The log file name
 #define   LOG_FILE_LOG                                  "logfile.log"
 
-// Defining text codec for all text files.
-#define   COMMON_TEXT_CODEC                             "UTF-8"
-
 class LogInterface: public QObject
 {
     Q_OBJECT

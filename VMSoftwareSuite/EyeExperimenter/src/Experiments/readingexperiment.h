@@ -13,15 +13,16 @@
 #include "../../../CommonClasses/Experiments/readingmanager.h"
 #include "../../../CommonClasses/EyeSelector/eyeselector.h"
 
-#define  TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS   1
+
 
 class ReadingExperiment : public Experiment
 {
 public:
     ReadingExperiment(QWidget *parent = nullptr);
     ~ReadingExperiment() override;
-    bool startExperiment(ConfigurationManager *c) override;
-    void togglePauseExperiment() override;
+    bool startExperiment(const QString &workingDir, const QString &experimentFile,
+                         const QVariantMap studyConfig, bool useMouse,
+                         QVariantMap pp);
     bool loadConfiguration(const QString &fileName);
 
 public slots:
@@ -44,6 +45,9 @@ private:
     // The pointer to the current question.
     qint32 currentQuestion;
 
+    // When answering a question the answer get stored in here.
+    QString response;
+
     // Advances the state machine.
     void determineQuestionState();
 
@@ -55,19 +59,18 @@ private:
 
     // The function that actually writes the data to the HDD. Returns false if there is a problem.
     void appendEyeTrackerData(const EyeTrackerData &data,
-                          qint32 wordIndexR,
-                          qint32 characterIndexR,
-                          qint32 wordIndexL,
-                          qint32 characterIndexL,
-                          qint32 sentenceLength);
-
-    // Save selected answer in multiple choice question
-    void saveAnswer(qint32 selected);
+                              qint32 wordIndexR,
+                              qint32 characterIndexR,
+                              qint32 wordIndexL,
+                              qint32 characterIndexL);
 
     // Create eye fixation matrix, called at the end of the experiment.
     bool createEyeFixationMatrix();
 
     QList<qint32> calculateWordAndCharacterPostion(qint32 x, qint32 y);
+
+    static const qreal READING_HIT_TOLERANCE;
+    static const qint32 TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS;
 
 };
 

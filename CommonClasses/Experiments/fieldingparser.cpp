@@ -1,5 +1,29 @@
 #include "fieldingparser.h"
 
+#ifdef EYETRACKER_HTCVIVEPRO
+const qreal FieldingParser::RECT_WIDTH =                               203.75; //163/4;
+const qreal FieldingParser::RECT_HEIGHT =                              193.75; //155/4;
+
+const qreal FieldingParser::K_HORIZONAL_MARGIN =                         0.06;
+const qreal FieldingParser::K_SPACE_BETWEEN_BOXES =                      0.09;
+const qreal FieldingParser::K_VERTICAL_MARGIN =                          0.06;
+
+const qreal FieldingParser::TARGET_BOX_EX_W =                            0.25;  //1.5/6.0;
+const qreal FieldingParser::TARGET_BOX_EX_H =                            0.268; //1.5/5.6;
+#endif
+
+#ifdef EYETRACKER_GAZEPOINT
+const qreal FieldingParser::RECT_WIDTH =                                163.0; //163/4;
+const qreal FieldingParser::RECT_HEIGHT =                               155.0; //155/4;
+
+const qreal FieldingParser::K_HORIZONAL_MARGIN =                         0.06;
+const qreal FieldingParser::K_SPACE_BETWEEN_BOXES =                      0.09;
+const qreal FieldingParser::K_VERTICAL_MARGIN =                          0.06;
+
+const qreal FieldingParser::TARGET_BOX_EX_W =                            0.25;  //1.5/6.0;
+const qreal FieldingParser::TARGET_BOX_EX_H =                            0.268; //1.5/5.6;
+#endif
+
 FieldingParser::FieldingParser()
 {
 
@@ -87,9 +111,7 @@ QList<qint32> FieldingParser::getSequenceForTrial(const QString &trialID){
     return QList<qint32>();
 }
 
-bool FieldingParser::parseFieldingExperiment(const QString &contents,
-                                             qreal resolutionWidth, qreal resolutionHeight,
-                                             qreal x_px_2_mm, qreal y_px_2_mm){
+bool FieldingParser::parseFieldingExperiment(const QString &contents, qreal resolutionWidth, qreal resolutionHeight){
 
     // Generating the contents from the phrases
     QStringList lines = contents.split('\n',QString::KeepEmptyParts);
@@ -97,7 +119,7 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents,
     fieldingTrials.clear();
 
     // Needed to check for unique ids.
-    QSet<QString> uniqueIDs;    
+    QSet<QString> uniqueIDs;
 
     // Checking the size of the first line to see if it is a version string.
     qint32 startI = 0;
@@ -163,11 +185,8 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents,
     }
 
     // Computing the drawn target box locations and the hit target boxes
-    qreal kx = x_px_2_mm;
-    qreal ky = y_px_2_mm;
-
-    qreal targetBoxWidth = (RECT_WIDTH/kx);
-    qreal targetBoxHeight = (RECT_HEIGHT/ky);
+    qreal targetBoxWidth = (RECT_WIDTH);
+    qreal targetBoxHeight = (RECT_HEIGHT);
 
     qreal x0, x1, x2, x3, x4, x5;
     qreal y0, y1, y2, y3, y4, y5;
@@ -207,9 +226,27 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents,
 
     for (qint32 i = 0; i < rectangleLocations.size(); i++){
         drawTargetBoxes << QRectF(rectangleLocations.at(i).x(),rectangleLocations.at(i).y(),targetBoxWidth,targetBoxHeight);
-        hitTargetBoxes << QRectF(rectangleLocations.at(i).x()-targetBoxIncreasedMarginWidth,rectangleLocations.at(i).y()-targetBoxIncreasedMarginHeight,
-                              targetBoxWidthEX,targetBoxHeightEX);
+        //hitTargetBoxes << QRectF(rectangleLocations.at(i).x()-targetBoxIncreasedMarginWidth,rectangleLocations.at(i).y()-targetBoxIncreasedMarginHeight,targetBoxWidthEX,targetBoxHeightEX);
     }
+
+    for (qint32 i = 0; i < rectangleLocations.size(); i++){
+        qreal x = rectangleLocations.at(i).x()-targetBoxIncreasedMarginWidth;
+        qreal y = rectangleLocations.at(i).y()-targetBoxIncreasedMarginHeight;
+        qreal w = targetBoxWidthEX;
+        qreal h = targetBoxHeightEX;
+
+        /// PATCH: All boxes except 2 and 5 were to have the target box increased by half it's size.
+        if ((i == TARGET_BOX_5) || (i == TARGET_BOX_2)){
+            hitTargetBoxes << QRectF(x,y,w,h);
+        }
+        else{
+            qreal leeway = h/2;
+            h = 2*h;
+            y = y - leeway;
+            hitTargetBoxes << QRectF(x,y,w,h);
+        }
+    }
+
 
     return true;
 

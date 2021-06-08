@@ -13,7 +13,9 @@ class ParkinsonExperiment: public Experiment
 public:
     ParkinsonExperiment(QWidget *parent = nullptr);
     ~ParkinsonExperiment();
-    bool startExperiment(ConfigurationManager *c);
+    bool startExperiment(const QString &workingDir, const QString &experimentFile,
+                         const QVariantMap studyConfig, bool useMouse,
+                         QVariantMap pp);
     void togglePauseExperiment();
 
 public slots:

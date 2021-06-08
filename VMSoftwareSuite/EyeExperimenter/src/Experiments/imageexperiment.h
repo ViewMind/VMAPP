@@ -23,12 +23,14 @@ public:
     // State machine states for Binding trials
     typedef enum {TSB_CENTER_CROSS,TSB_SHOW,TSB_TRANSITION,TSB_TEST,TSB_FINISH} TrialStateBinding;
 
-    ImageExperiment(bool bound, QWidget *parent = nullptr);
+    ImageExperiment(QWidget *parent = nullptr);
     ~ImageExperiment() override;
 
     // Reimplementation of virtual functions
-    bool startExperiment(ConfigurationManager *c) override;
-    void togglePauseExperiment() override;
+    bool startExperiment(const QString &workingDir, const QString &experimentFile,
+                         const QVariantMap &studyConfig,
+                         bool useMouse,
+                         QVariantMap pp) override;
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -52,9 +54,6 @@ private:
     // Used to define a state machine for the experiment
     TrialStateBinding trialState;
 
-    // Check if the experiment is bound or unbound
-    bool isBound;
-
     // This will indicate the current image.
     qint32 currentTrial;
     bool atLast;
@@ -75,9 +74,8 @@ private:
     // Advance to the next image
     bool advanceTrial();
 
-    // Functions to append data to the file.
-    void newImage(QString name, qint32 isTrial);
-    void addAnswer(QString ans = "");
+    // RawDataContainer Management for adding a new trial.
+    bool addNewTrial();
 
 };
 

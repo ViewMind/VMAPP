@@ -8,26 +8,8 @@
 #include <QSet>
 #include <QtMath>
 #include <QDebug>
+#include "../eyetracker_defines.h"
 
-#define  GONOGO_TRIAL_TYPE_RLEFT   0
-#define  GONOGO_TRIAL_TYPE_GLEFT   1
-#define  GONOGO_TRIAL_TYPE_RRIGHT  2
-#define  GONOGO_TRIAL_TYPE_GRIGHT  3
-
-// Draw constants need to be here for computations when manager is not available.
-#define  GONOGO_SIDE_MARGIN               0.05   // Percent of resolution width
-#define  GONOGO_TARGET_SIZE               0.03   // Percent of resolution width
-#define  GONOGO_TARGET_TOL                0.20   // Percent of resolution width
-#define  GONOGO_ARROW_LENGTH              0.1    // Percent of resolution width
-#define  GONOGO_ARROW_INDICATOR_LENGTH    0.4    // Percent of arrow length
-#define  GONOGO_CROSS_LINE_LENGTH         0.1    // Percent of resolution width/height.
-#define  GONOGO_TARGET_LINE_WIDTH         0.1    // Percent of the diameter.
-#define  GONOGO_LINE_WIDTH                0.1    // Percent of the line length.
-#define  GONOGO_INDICATOR_LINE_LENGTH     0.3    // Percent of the line length
-#define  GONOGO_ARROW_TARGET_BOX_WMARGIN  2.2    // Multiplier to the arrow width
-#define  GONOGO_ARROW_TARGET_BOX_HMARGIN  4.5    // Multiplier to the arrow height
-#define  GONOGO_RED_ARROW_COLOR           "#cc1f1f"
-#define  GONOGO_GREEN_ARROW_COLOR         "#28ab14"
 
 class GoNoGoParser
 {
@@ -37,6 +19,24 @@ public:
         QString id;
         qint32 type;
     };
+
+    static const qint32 TRIAL_TYPE_RLEFT;
+    static const qint32 TRIAL_TYPE_GLEFT;
+    static const qint32 TRIAL_TYPE_RRIGHT;
+    static const qint32 TRIAL_TYPE_GRIGHT;
+    static const QStringList TrialTypeList;
+
+    static const qreal SIDE_MARGIN;
+    static const qreal TARGET_SIZE;
+    static const qreal TARGET_TOL;
+    static const qreal ARROW_LENGTH;
+    static const qreal ARROW_INDICATOR_LENGTH;
+    static const qreal CROSS_LINE_LENGTH;
+    static const qreal TARGET_LINE_WIDTH;
+    static const qreal LINE_WIDTH;
+    static const qreal INDICATOR_LINE_LENGTH;
+    static const qreal ARROW_TARGET_BOX_WMARGIN;
+    static const qreal ARROW_TARGET_BOX_HMARGIN;
 
     GoNoGoParser();
 
@@ -48,6 +48,7 @@ public:
     QList<QRectF> getTargetBoxes() const;
     QRectF getArrowTargetBox() const;
     QList<qint32> getCorrectAnswerArray() const;
+    QString getTrialTypeByIndex(qint32 index_of_type);
 
 private:
     QList<Trial> trials;
@@ -56,6 +57,7 @@ private:
     QList<QRectF> targetBoxes;
     QRectF arrowTargetBox;
     QList<qint32> answerArray;
+
 
 };
 

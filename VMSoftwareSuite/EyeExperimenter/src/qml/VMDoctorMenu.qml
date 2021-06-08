@@ -12,9 +12,8 @@ Rectangle {
     property string vmDrName: "NO NAME";
 
     function updateText(){
-        vmDrName = loader.getConfigurationString(vmDefines.vmCONFIG_DOCTOR_NAME);
-        var parts = vmDrName.split("(");
-        vmDrName = parts[0];
+        var evaluator = loader.getCurrentEvaluatorInfo();
+        vmDrName = evaluator.lastname + ",\n" + evaluator.name
     }
 
     Text{

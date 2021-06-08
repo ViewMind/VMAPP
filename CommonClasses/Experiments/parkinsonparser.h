@@ -3,12 +3,10 @@
 
 #include <QList>
 #include <QString>
+#include "../eyetracker_defines.h"
 
 #define MAZE_SEPARATOR        "#=======>"
 
-#define MAZE_AREA_H_IN_MM     170.0
-#define MAZE_AREA_W_IN_MM     240.0
-#define SQUARE_SIDE_IN_MM     10.0
 
 class ParkinsonParser
 {
@@ -36,7 +34,7 @@ public:
     };
 
     ParkinsonParser();
-    bool parseParkinsonExperiment(const QString &contents, qreal screenWidth, qreal screenHeight, qreal xpx2MM, qreal ypx2MM);
+    bool parseParkinsonExperiment(const QString &contents, qreal screenWidth, qreal screenHeight);
 
     QString getError() const {return error;}
     QList<ParkinsonMaze> getMazes() const {return mazes;}
@@ -47,6 +45,14 @@ private:
     QString error;
     QString versionString;
     QList<ParkinsonMaze> mazes;
+
+    static float MAZE_AREA_H;
+    static float MAZE_AREA_W;
+    static float SQUARE_SIDE_X;
+    static float SQUARE_SIDE_Y;
+
+
+
 };
 
 #endif // PARKINSONPARSER_H

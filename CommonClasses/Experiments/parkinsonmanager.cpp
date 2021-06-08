@@ -15,9 +15,7 @@ ParkinsonParser::ParkinsonMaze ParkinsonManager::getCurrentMaze() const{
 bool ParkinsonManager::parseExpConfiguration(const QString &contents){
 
     ParkinsonParser parser;
-    if (!parser.parseParkinsonExperiment(contents,
-                                         canvas->width(),canvas->height(),
-                                         config->getReal(CONFIG_XPX_2_MM),config->getReal(CONFIG_YPX_2_MM))){
+    if (!parser.parseParkinsonExperiment(contents,canvas->width(),canvas->height())){
         error = parser.getError();
         return false;
     }
@@ -27,12 +25,12 @@ bool ParkinsonManager::parseExpConfiguration(const QString &contents){
 
     currentMaze = 0;
 
-    if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
+    // if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
     return true;
 }
 
-void ParkinsonManager::init(ConfigurationManager *c){
-    ExperimentDataPainter::init(c);
+void ParkinsonManager::init(qreal display_resolution_width, qreal display_resolution_height){
+    ExperimentDataPainter::init(display_resolution_width,display_resolution_height);
 
     // Setting the background brush.
     canvas->setBackgroundBrush(QBrush(Qt::gray));

@@ -16,8 +16,9 @@
 #include "../monitorscreen.h"
 #include "../EyeTrackerInterface/eyetrackerdata.h"
 #include "../../../CommonClasses/Experiments/experimentdatapainter.h"
-#include "../../../CommonClasses/DataAnalysis/FrequencyAnalsis/freqanalysis.h"
-#include "../../../CommonClasses/common.h"
+#include "../../../CommonClasses/RawDataContainer/rawdatacontainer.h"
+#include "../../../CommonClasses/LogInterface/loginterface.h"
+#include "../eyexperimenter_defines.h"
 
 #define  MULTI_PART_FILE_STUDY_IDENTIFIER      "===>>"
 #define  EXTRA_EXTENSION_FOR_MULTI_PART_FILES  "mp"
@@ -39,13 +40,14 @@ public:
     typedef enum {STATE_RUNNING, STATE_PAUSED, STATE_STOPPED} ExperimentState;
 
     // This is starts the experiment in a basically autonomous way.
-    virtual bool startExperiment(ConfigurationManager *c);
+    virtual bool startExperiment(const QString &workingDir,
+                                 const QString &experimentFile,
+                                 const QVariantMap &studyConfig,
+                                 bool useMouse,
+                                 QVariantMap pp);
 
     // Used to stop the experiment for any reason, like calibration
     virtual void togglePauseExperiment();
-
-    // To verify that the data was gathered correctly.
-    bool doFrequencyCheck();
 
     // To obtain the experiment state
     ExperimentState getExperimentState() const {return state;}
@@ -65,21 +67,8 @@ public:
     // Keyboard press handling function
     void keyboardKeyPressed(int keyboardKey);
 
-    // FOR DEBUGGING ONLY
-    void setupFreqCheck(ConfigurationManager *c, QString fileName) { dataFile = fileName; config = c; }
-
     // Image required for VR Display
     QImage getVRDisplayImage() const;
-
-    // Will check the patient directory for multi part identifiers (.mp file studies) and return a map with
-    // the study type and the last part identifier.
-    static QVariantMap checkForMultiPartIdentifiers(const QString &patientDirectory, QStringList *errorList);
-
-    // Will remove .mp from the file name. Returns error if there was any.
-    static QString finalizeMultiPartStudyFile(const QString &studyFileName);
-
-    // Will add the .mp to the file name. Returns an error if there was any.
-    static QString makeStudyMultiPart(QString *studyFileName);
 
 signals:
 
@@ -110,23 +99,23 @@ protected:
     // The manager for the experiment
     ExperimentDataPainter *manager;
 
-    // The configuration structure
-    ConfigurationManager *config;
+    // Where the data will be stored.
+    RawDataContainer rawdata;
+
+    // The set of processing parameters is checked.
+    // QVariantMap proc_params;
+
+    // Cofiguration for the current Study
+    QVariantMap studyConfiguration;
+
+    // This is the study type flag which will be set by eaach individual study.
+    QString studyType;
 
     // The pointer to the GraphicsView where the drawing and showing will take place.
     QGraphicsView *gview;
 
     // Deterimine if the experiment is running
     ExperimentState state;
-
-    // The experiment header to save to the data file
-    QString expHeader;
-
-    // The base name for the data output file
-    QString outputDataFile;
-
-    // The formatted data received from the ET.
-    QVariantList etData;
 
     // Error message
     QString error;
@@ -141,7 +130,7 @@ protected:
     bool debugMode;
 
     // Sets up the view given the configuration
-    void setupView();
+    void setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height);
 
     // Steps for aborted experiment
     void experimenteAborted();
@@ -149,18 +138,11 @@ protected:
     // Move the garbage data file to the aborted directory, returns the new file name, or empty if there was an error
     QString moveDataFileToAborted();
 
-    // This will change the extension of a dat file to a datf file. This will mark the file a having had frequency errors.
-    QString changeFileExtensionToDatF();
-
     // Saving the data to the disk.
     bool saveDataToHardDisk();
 
-    // Control flag for VR logic changes
-    bool vrEnabled;
-
-    // Multi Part Identifier. Basically the name number or ID that is used to identify a PART of an experiment that requires multiple sessions.
-    // Will be set to empty if meaningless.
-    QString multiPartIdentifier;
+    // Variables necessary for raw data insertion control.
+    QString currentTrialID;
 
     // So that the logic of handling keys can be implemente by each experiment.
     virtual void keyPressHandler(int keyPressed);
@@ -169,6 +151,9 @@ protected:
 
     // Update Image or HMD Logic is the same for all experiments
     void updateSecondMonitorORHMD();
+
+    // Takes the study type and configuration and produces the internal experiment description.
+    QString getExperimentDescriptionFile() const;
 
 };
 

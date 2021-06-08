@@ -30,6 +30,10 @@ VMClients have the following permissions:
       OPERATION: list.
          IDENTIFIER: portal_user
             Will return a list of the institution data that the portal_user can see. 
+      OPERATION: request_processing_parameters.
+         IDENTIFIER: set id
+            Will return a JSON file with the processing parameters. Will contain frequency check as well. 
+			
             
 -> OBJECT: reports
       OPERATION: generate

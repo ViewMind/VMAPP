@@ -74,31 +74,28 @@ VMBase {
 
     function setStateOfItem(index,state){
         switch (index){
-        case vmExpIndexBindingBC:
+        case viewStudyStart.vmINDEX_BINDING_BC:
             itemBindingBC.vmTrackerItemState = state;
             break;
-        case vmExpIndexBindingUC:
+        case viewStudyStart.vmINDEX_BINDING_UC:
             itemBindingUC.vmTrackerItemState = state;
             break;
-        case vmExpIndexReading:
+        case viewStudyStart.vmINDEX_READING:
             itemReading.vmTrackerItemState = state;
             break;
-        case vmExpIndexFielding:
+        case viewStudyStart.vmINDEX_NBACKMS:
             itemFielding.vmTrackerItemState = state;
             break;
-        case vmExpIndexNBackRT:
+        case viewStudyStart.vmINDEX_NBACKRT:
             itemNBackRT.vmTrackerItemState = state;
             break;
-        case vmExpIndexParkinson:
-            itemParkinson.vmTrackerItemState = state;
-            break;
-        case vmExpIndexGoNoGo:
+        case viewStudyStart.vmINDEX_GONOGO:
             itemGoNoGo.vmTrackerItemState = state;
             break;
-        case vmExpIndexNBackVS:
+        case viewStudyStart.vmINDEX_NBACKVS:
             itemNBackVS.vmTrackerItemState = state;
             break;
-        case vmExpIndexPerception:
+        case viewStudyStart.vmINDEX_PERCEPTION:
             itemPerception.vmTrackerItemState = state;
             break;
         }
@@ -114,7 +111,7 @@ VMBase {
 
     function setPropertiesForExperiment(index){
         switch(index){
-        case vmExpIndexBindingBC:
+        case viewStudyStart.vmINDEX_BINDING_BC:
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
@@ -134,7 +131,7 @@ VMBase {
             //slideAnimation.visible = false;
             slideDescription.visible = false;
             break;
-        case vmExpIndexBindingUC:
+        case viewStudyStart.vmINDEX_BINDING_UC:
             if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
@@ -154,7 +151,7 @@ VMBase {
             //slideAnimation.visible = false;
             slideDescription.visible = false;
             break;
-        case vmExpIndexReading:
+        case viewStudyStart.vmINDEX_READING:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemReading");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");
@@ -164,7 +161,7 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("reading_" + loader.getConfigurationString(vmDefines.vmCONFIG_READING_EXP_LANG),3);
             break;
-        case vmExpIndexFielding:
+        case viewStudyStart.vmINDEX_NBACKMS:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
@@ -172,7 +169,7 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("fielding",1);
             break;
-        case vmExpIndexNBackRT:
+        case viewStudyStart.vmINDEX_NBACKRT:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemNBackRT");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
@@ -180,15 +177,7 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("fielding",1);
             break;
-        case vmExpIndexParkinson:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemParkinson");
-            viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = "";
-            slideDescription.visible = false;
-            slideViewer.imgScale = 1.3;
-            setSlideImages("fielding",1);
-            break;
-        case vmExpIndexGoNoGo:
+        case viewStudyStart.vmINDEX_GONOGO:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemGoNoGo");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = "";
@@ -196,7 +185,7 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("gonogo",5);
             break;
-        case vmExpIndexNBackVS:
+        case viewStudyStart.vmINDEX_NBACKVS:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemNBackVS");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = "";
@@ -204,7 +193,7 @@ VMBase {
             slideViewer.imgScale = 1.3;
             setSlideImages("fielding",1);
             break;
-        case vmExpIndexPerception:
+        case viewStudyStart.vmINDEX_PERCEPTION:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemPerception");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = "";
@@ -239,32 +228,30 @@ VMBase {
         var L = list.length;
 
         for (var i = 0; i < L; i++){
-            switch (list[i]){
-            case vmExpIndexBindingBC:
+
+            switch (list[i][viewStudyStart.vmUNIQUE_STUDY_ID]){
+            case viewStudyStart.vmINDEX_BINDING_BC: //viewStudyStart.vmINDEX_BINDING_BC:
                 accWidth = enableTrackItem(itemBindingBC,i,accWidth,L);
                 break;
-            case vmExpIndexBindingUC:
+            case viewStudyStart.vmINDEX_BINDING_UC: //viewStudyStart.vmINDEX_BINDING_UC:
                 accWidth = enableTrackItem(itemBindingUC,i,accWidth,L);
                 break;
-            case vmExpIndexReading:
+            case viewStudyStart.vmINDEX_READING: //viewStudyStart.vmINDEX_READING:
                 accWidth = enableTrackItem(itemReading,i,accWidth,L);
                 break;
-            case vmExpIndexFielding:
+            case viewStudyStart.vmINDEX_NBACKMS: //viewStudyStart.vmINDEX_NBACKMS:
                 accWidth = enableTrackItem(itemFielding,i,accWidth,L);
                 break;
-            case vmExpIndexNBackRT:
+            case viewStudyStart.vmINDEX_NBACKRT: //viewStudyStart.vmINDEX_NBACKRT:
                 accWidth = enableTrackItem(itemNBackRT,i,accWidth,L)
                 break;
-            case vmExpIndexParkinson:
-                accWidth = enableTrackItem(itemParkinson,i,accWidth,L);
-                break;
-            case vmExpIndexGoNoGo:
+            case viewStudyStart.vmINDEX_GONOGO: //viewStudyStart.vmINDEX_GONOGO:
                 accWidth = enableTrackItem(itemGoNoGo,i,accWidth,L);
                 break;
-            case vmExpIndexNBackVS:
+            case viewStudyStart.vmINDEX_NBACKVS: //viewStudyStart.vmINDEX_NBACKVS:
                 accWidth = enableTrackItem(itemNBackVS,accWidth,L);
                 break;
-            case vmExpIndexPerception:
+            case viewStudyStart.vmINDEX_PERCEPTION: //viewStudyStart.vmINDEX_PERCEPTION:
                 accWidth = enableTrackItem(itemPerception,accWidth,L);
                 break;
             }
@@ -276,32 +263,29 @@ VMBase {
         x = (mainWindow.width - x)/2;
         //console.log("Start x is " + x)
         for (i = 0; i < L; i++){
-            switch (list[i]){
-            case vmExpIndexBindingBC:
+            switch (list[i][viewStudyStart.vmUNIQUE_STUDY_ID]){
+            case viewStudyStart.vmINDEX_BINDING_BC:
                 x = setEnabledItemX(itemBindingBC,x,spacing);
                 break;
-            case vmExpIndexBindingUC:
+            case viewStudyStart.vmINDEX_BINDING_UC:
                 x = setEnabledItemX(itemBindingUC,x,spacing);
                 break;
-            case vmExpIndexReading:
+            case viewStudyStart.vmINDEX_READING:
                 x = setEnabledItemX(itemReading,x,spacing);
                 break;
-            case vmExpIndexFielding:
+            case viewStudyStart.vmINDEX_NBACKMS:
                 x = setEnabledItemX(itemFielding,x,spacing);
                 break;
-            case vmExpIndexNBackRT:
+            case viewStudyStart.vmINDEX_NBACKRT:
                 x = setEnabledItemX(itemNBackRT,x,spacing);
                 break;
-            case vmExpIndexParkinson:
-                x = setEnabledItemX(itemParkinson,x,spacing);
-                break;
-            case vmExpIndexGoNoGo:
+            case viewStudyStart.vmINDEX_GONOGO:
                 x = setEnabledItemX(itemGoNoGo,x,spacing);
                 break;
-            case vmExpIndexNBackVS:
+            case viewStudyStart.vmINDEX_NBACKVS:
                 x = setEnabledItemX(itemNBackVS,x,spacing);
                 break;
-            case vmExpIndexPerception:
+            case viewStudyStart.vmINDEX_PERCEPTION:
                 x = setEnabledItemX(itemPerception,x,spacing);
                 break;
             }
@@ -319,10 +303,10 @@ VMBase {
         viewStudyStart.vmCurrentExperimentIndex++;
         // If this is not the first experiment set the current experiment as done.
         if (index !== -1){
-            setStateOfItem(viewStudyStart.vmSelectedExperiments[index],itemReading.vmTRACKER_ITEM_STATE_DONE)
+            setStateOfItem(viewStudyStart.vmSelectedExperiments[index][viewStudyStart.vmUNIQUE_STUDY_ID],itemReading.vmTRACKER_ITEM_STATE_DONE)
         }
         // The new experiment is selected as done.
-        index = viewStudyStart.vmSelectedExperiments[viewStudyStart.vmCurrentExperimentIndex];
+        index = viewStudyStart.vmSelectedExperiments[viewStudyStart.vmCurrentExperimentIndex][viewStudyStart.vmUNIQUE_STUDY_ID];
         setStateOfItem(index,itemReading.vmTRACKER_ITEM_STATE_CURRENT)
 
         // Properties are set to the values of the curent experiment
@@ -344,9 +328,22 @@ VMBase {
 
         // Starting the experiment.
         var index = viewStudyStart.vmCurrentExperimentIndex;
+
+        // Creating and or selecting the patient study file
+        var titleAndMsg;
+        if (!loader.createSubjectStudyFile(viewStudyStart.vmSelectedExperiments[index])){
+            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
+            titleAndMsg = viewHome.getErrorTitleAndMessage("error_programming");
+            vmErrorDiag.vmErrorMessage = titleAndMsg[1];
+            vmErrorDiag.vmErrorTitle = titleAndMsg[0];
+            vmErrorDiag.open();
+            return;
+        }
+
+        // Actually starting the experiment.
         if (!flowControl.startNewExperiment(viewStudyStart.vmSelectedExperiments[index])){
             vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
-            var titleAndMsg = viewHome.getErrorTitleAndMessage("error_programming");
+            titleAndMsg = viewHome.getErrorTitleAndMessage("error_programming");
             vmErrorDiag.vmErrorMessage = titleAndMsg[1];
             vmErrorDiag.vmErrorTitle = titleAndMsg[0];
             vmErrorDiag.open();
@@ -492,7 +489,7 @@ VMBase {
             vmFont: viewPresentExperiment.gothamM.name
             onClicked: {
                 btnContinue.enabled = false;
-                if (loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET) === vmDefines.vmCONFIG_P_ET_HTCVIVEEYEPRO){
+                if (!loader.getConfigurationBoolean("use_mouse") && loader.getConfigurationBoolean("vr_enabled")){
                     swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
                 }
                 else {

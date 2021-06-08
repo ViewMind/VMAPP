@@ -1,19 +1,42 @@
 #include "fieldingexperiment.h"
 
+const qint32 FieldingExperiment::TIME_TRANSITION =                              500;
+const qint32 FieldingExperiment::TIME_TARGET =                                  250;
+const qint32 FieldingExperiment::TIME_CONDITION =                               500;
+
+// Possible pauses for the fielding experiment
+const qint32 FieldingExperiment::PAUSE_TRIAL_1 =                                32;
+const qint32 FieldingExperiment::PAUSE_TRIAL_2 =                                64;
+
+
 FieldingExperiment::FieldingExperiment(QWidget *parent):Experiment(parent){
 
     manager = new FieldingManager();
     m = dynamic_cast<FieldingManager*>(manager);
-    expHeader = HEADER_FIELDING_EXPERIMENT;
-    outputDataFile = FILE_OUTPUT_FIELDING;
 
+    studyType = RDC::Study::NBACKMS;
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&FieldingExperiment::onTimeOut);
 }
 
-bool FieldingExperiment::startExperiment(ConfigurationManager *c){
-    if (!Experiment::startExperiment(c)) return false;
+bool FieldingExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
+                                         const QVariantMap &studyConfig, bool useMouse,
+                                         QVariantMap pp){
+
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)) return false;
+
+    rawdata.setCurrentTrialListType(RDC::TrialListType::UNIQUE);
+    QVariantMap config;
+    config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,(Globals::EyeTracker::IS_VR && (!useMouse)));
+    if (studyConfig.value(RDC::StudyParameter::LANGUAGE).toString() == RDC::UILanguage::SPANISH){
+        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
+    }
+    else{
+        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
+    }
+    m->configure(config);
+
 
     currentImage = 0;
     currentTrial = 0;
@@ -25,10 +48,19 @@ bool FieldingExperiment::startExperiment(ConfigurationManager *c){
     stateTimer.setInterval(TIME_TRANSITION);
     stateTimer.start();
 
+    if (!addNewTrial()){
+        stateTimer.stop();
+        emit(experimentEndend(ER_FAILURE));
+        return false;
+    }
+
+    // Start enconding 1
+    rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_1);
+
     m->drawBackground();
     drawCurrentImage();
 
-    if (!vrEnabled){
+    if (!Globals::EyeTracker::IS_VR || (useMouse)){
         this->show();
         this->activateWindow();
     }
@@ -41,49 +73,91 @@ void FieldingExperiment::nextState(){
 
     switch (tstate){
     case TSF_SHOW_BLANK_1:
+
+        // End retrieval 3. And trial.
+        rawdata.finalizeDataSet();
+        rawdata.finalizeTrial("");
+
         currentTrial++;
         if (finalizeExperiment()) return;
         tstate = TSF_START;
         stateTimer.setInterval(TIME_TRANSITION);
         break;
     case TSF_SHOW_BLANK_2:
+
+        // End retrieval 2
+        rawdata.finalizeDataSet();
+        // Start retrieval 3
+        rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_3);
+
         tstate = TSF_SHOW_BLANK_1;
         currentImage = 0;
-        addTrialHeader();
         stateTimer.setInterval(TIME_CONDITION);
         break;
     case TSF_SHOW_BLANK_3:
+
+        // End Retrieval 1
+        rawdata.finalizeDataSet();
+        // Start Retrieval 2
+        rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_2);
+
         tstate = TSF_SHOW_BLANK_2;
         currentImage = 1;
-        addTrialHeader();
         stateTimer.setInterval(TIME_CONDITION);
         break;
     case TSF_SHOW_DOT_1:
+
+        // End Enconding 1
+        rawdata.finalizeDataSet();
+        // Start enconding 2
+        rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_1);
+
         tstate = TSF_SHOW_DOT_2;
         currentImage = 1;
-        addTrialHeader();
         stateTimer.setInterval(TIME_TARGET);
         break;
+
     case TSF_SHOW_DOT_2:
+
+        // End Enconding 2
+        rawdata.finalizeDataSet();
+        // Start enconding 3
+        rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_3);
+
         tstate = TSF_SHOW_DOT_3;
         currentImage = 2;
-        addTrialHeader();
         stateTimer.setInterval(TIME_TARGET);
         break;
     case TSF_SHOW_DOT_3:
+
+        // End Encondinng 3.
+        rawdata.finalizeDataSet();
+
         tstate = TSF_TRANSITION;
         stateTimer.setInterval(TIME_TRANSITION);
         break;
     case TSF_START:
+
+        if (!addNewTrial()){
+            stateTimer.stop();
+            emit(experimentEndend(ER_FAILURE));
+            return;
+        }
+
+        // Start enconding 1
+        rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_1);
+
         tstate = TSF_SHOW_DOT_1;
         currentImage = 0;
-        addTrialHeader();
         stateTimer.setInterval(TIME_TARGET);
         break;
     case TSF_TRANSITION:
+
+        // Start Retrieval 1
+        rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_1);
+
         tstate = TSF_SHOW_BLANK_3;
         currentImage = 2;
-        addTrialHeader();
         stateTimer.setInterval(TIME_CONDITION);
         break;
     }
@@ -152,9 +226,22 @@ bool FieldingExperiment::finalizeExperiment(){
     if (currentTrial < m->size()) return false;
     stateTimer.stop();
     state = STATE_STOPPED;
+
+    bool ans;
+    ans = rawdata.finalizeStudy();
+    ans = ans & rawdata.markStudyAsFinalized(studyType);
+    if (!ans){
+        error = "Failed on NBackMS study finalization: " + rawdata.getError();
+        emit (experimentEndend(ER_FAILURE));
+        return false;
+    }
+
     ExperimentResult er;
     if (error.isEmpty()) er = ER_NORMAL;
     else er = ER_WARNING;
+
+
+
     if (!saveDataToHardDisk()){
         emit(experimentEndend(ER_FAILURE));
     }
@@ -162,9 +249,6 @@ bool FieldingExperiment::finalizeExperiment(){
     return true;
 }
 
-void FieldingExperiment::togglePauseExperiment(){
-    // Pause is not managed here, for this experiment.
-}
 
 void FieldingExperiment::keyPressHandler(int keyPressed){
     // Making sure the experiment can be aborted, but any other key is ignored.
@@ -194,54 +278,44 @@ void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (data.isLeftZero() && data.isRightZero()) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    QVariantList dataS;
-    dataS << data.time
-           << data.xRight
-           << data.yRight
-           << data.xLeft
-           << data.yLeft
-           << data.pdRight
-           << data.pdLeft;
-    etData << QVariant(dataS);
+    rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
 
 }
 
-void FieldingExperiment::addTrialHeader(){
 
-    ignoreData = true;
+QVariantMap FieldingExperiment::addHitboxesToProcessingParameters(QVariantMap pp){
+    QList<QRectF> hitBoxes = m->getHitTargetBoxes();
 
-    QPoint currentTarget = m->getTargetPoint(currentTrial,currentImage);
+    QVariantList modHitBoxes;
+    for (qint32 i = 0; i < hitBoxes.size(); i++){
 
-    qint32 imageInTrialID = currentImageToImageIndex();
+        qreal x,y,w,h;
+        QVariantList hitbox;
 
-    // Saving the current image.
-    QVariantList dataS;
-    dataS  << m->getTrial(currentTrial).id
-           << imageInTrialID
-           << currentTarget.x() + TARGET_R + TARGET_OFFSET_X
-           << currentTarget.y() + TARGET_R + TARGET_OFFSET_Y;
-    etData << QVariant(dataS);
+        x = hitBoxes.at(i).x();
+        w = hitBoxes.at(i).width();
+        y = hitBoxes.at(i).y();
+        h = hitBoxes.at(i).height();
 
-    ignoreData = false;
-}
-
-qint32 FieldingExperiment::currentImageToImageIndex(){
-    qint32 imageInTrialID;
-
-    switch (tstate){
-    case TSF_SHOW_BLANK_1:
-        imageInTrialID = 7; // This is the sixth image in the sequence
-        break;
-    case TSF_SHOW_BLANK_2:
-        imageInTrialID = 6; // This is the fifth image in the sequence
-        break;
-    case TSF_SHOW_BLANK_3:
-        imageInTrialID = 5; // This is the fourth image in the sequence
-        break;
-    default:
-        imageInTrialID = currentImage+1;
-        break;
+        hitbox << x << y << w << h;
+        // Casting is necessary otherwise the operation appends a list to the list.
+        // Then the JSON is interpreted as one long list instead of serveral lists of 4 values.
+        modHitBoxes << (QVariant) hitbox;
     }
 
-    return imageInTrialID;
+    // Store them as part of the processing parameters.
+    pp.insert(RDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);
+    return pp;
+}
+
+
+bool FieldingExperiment::addNewTrial(){
+    QString type = m->getFullSequenceAsString(currentTrial);
+    currentTrialID = QString::number(currentTrial);
+
+    if (!rawdata.addNewTrial(currentTrialID,type)){
+        error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
+        return false;
+    }
+    return true;
 }

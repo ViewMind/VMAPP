@@ -8,21 +8,16 @@
 #include "../../../CommonClasses/Experiments/perceptionmanager.h"
 #include "../../../CommonClasses/EyeSelector/eyeselector.h"
 
-#define  HOLD_TIME_FOR_ANS_SELECTION 1     // Seconds
-#define  HOLD_TIME_CROSS_ONLY        500   // ms.
-#define  HOLD_TIME_YES_NO_REHAB      3000  // ms.
-#define  HOLD_TIME_YES_NO_TRAIN      2000  // ms.
-#define  HOLD_TIME_TRI_REHAB         700   // ms
-#define  HOLD_TIME_TRI_TRAIN         300   // ms
-
 class PerceptionExperiment: public Experiment
 {
 public:
     PerceptionExperiment(QWidget *parent = nullptr);
 
     // Reimplementation of virtual functions
-    bool startExperiment(ConfigurationManager *c) override;
-    void togglePauseExperiment() override;
+    bool startExperiment(const QString &workingDir, const QString &experimentFile,
+                         const QVariantMap &studyConfig, bool useMouse,
+                         QVariantMap pp) override;
+
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -47,6 +42,16 @@ private:
 
     // To select the yes or no
     EyeSelector eyeSelector;
+
+    // Adding a new trial to the raw data structure
+    bool addNewTrial();
+
+    static const qint32 HOLD_TIME_FOR_ANS_SELECTION;
+    static const qint32 HOLD_TIME_CROSS_ONLY;
+    static const qint32 HOLD_TIME_YES_NO_REHAB;
+    static const qint32 HOLD_TIME_YES_NO_TRAIN;
+    static const qint32 HOLD_TIME_TRI_REHAB;
+    static const qint32 HOLD_TIME_TRI_TRAIN;
 
 };
 

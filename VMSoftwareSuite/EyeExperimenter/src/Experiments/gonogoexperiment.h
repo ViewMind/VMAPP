@@ -17,8 +17,9 @@ public:
     GoNoGoExperiment(QWidget *parent = nullptr);
 
     // Reimplementation of virtual functions
-    bool startExperiment(ConfigurationManager *c) override;
-    void togglePauseExperiment() override;
+    bool startExperiment(const QString &workingDir, const QString &experimentFile,
+                         const QVariantMap &studyConfig,
+                         bool useMouse, QVariantMap pp) override;
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -38,12 +39,12 @@ protected:
     // When to ignore data.
     bool ignoreData;
 
-    // Separator for each trial.
-    void addTrialHeader();
-
     // For fixation recognition.
     MovingWindowAlgorithm rMWA;
     MovingWindowAlgorithm lMWA;
+
+    QVariantMap setGoNoGoTargetBoxes(QVariantMap pp);
+    bool addNewTrial();
 
 
 };

@@ -6,7 +6,8 @@
 #include <QImage>
 #include <QMatrix4x4>
 #include "eyetrackerdata.h"
-#include "../../../CommonClasses/common.h"
+#include "../../../../CommonClasses/LogInterface/loginterface.h"
+#include "../../../../CommonClasses/RawDataContainer/RDC.h"
 
 class EyeTrackerInterface : public QObject
 {
@@ -36,7 +37,7 @@ public:
 
     QImage getCalibrationImage() const;
 
-    void setEyeToTransmit(quint8 eye) {eyeToTransmit = eye;}
+    void setEyeToTransmit(QString eye);
 
     EyeTrackerData getLastData() const;
 
@@ -56,7 +57,7 @@ protected:
     LogInterface logger;
 
     // Which EyeDataToTransmit
-    quint8 eyeToTransmit;
+    QString eyeToTransmit;
 
     // The resolution, in case it is required by the
     qreal screenWidth;
@@ -72,8 +73,8 @@ protected:
     EyeTrackerData lastData;
 
     // Shorcut functions for clarity.
-    bool canUseLeft() const {return ((eyeToTransmit == EYE_BOTH) || (eyeToTransmit == EYE_L));}
-    bool canUseRight() const {return ((eyeToTransmit == EYE_BOTH) || (eyeToTransmit == EYE_R));}
+    bool canUseLeft() const {return ((eyeToTransmit == RDC::Eye::BOTH) || (eyeToTransmit == RDC::Eye::LEFT));}
+    bool canUseRight() const {return ((eyeToTransmit == RDC::Eye::BOTH) || (eyeToTransmit == RDC::Eye::RIGHT));}
 };
 
 #endif // EYETRACKERINTERFACE_H

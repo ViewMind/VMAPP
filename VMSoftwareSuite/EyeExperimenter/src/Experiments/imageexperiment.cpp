@@ -1,42 +1,60 @@
 #include "imageexperiment.h"
 
-ImageExperiment::ImageExperiment(bool bound, QWidget *parent):Experiment(parent){
+ImageExperiment::ImageExperiment(QWidget *parent):Experiment(parent){
 
     manager = new BindingManager();
     m = (BindingManager*) manager;
-    expHeader = HEADER_IMAGE_EXPERIMENT;
-    if (bound) outputDataFile = FILE_OUTPUT_BINDING_BC;
-    else outputDataFile = FILE_OUTPUT_BINDING_UC;
 
     // Connecting the timer time out with the time out function.
-    //connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::onTimeOut);
     connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::nextState);
 
-    // Binding type.
-    isBound = bound;
+    studyType = RDC::Study::BINDING;
 
 }
 
-bool ImageExperiment::startExperiment(ConfigurationManager *c){
+bool ImageExperiment::startExperiment(const QString &workingDir, const QString &experimentFile, const QVariantMap &studyConfig, bool useMouse, QVariantMap pp){
 
-    outputDataFile = outputDataFile + "_" + QString::number(c->getInt(CONFIG_BINDING_NUMBER_OF_TARGETS));
-    if (c->getBool(CONFIG_BINDING_TARGET_SMALL)) outputDataFile = outputDataFile + "_s";
-    else outputDataFile = outputDataFile + "_l";
+    // We need to set up the target size before parsing.
+    QVariantMap config;
+    config.insert(BindingManager::CONFIG_USE_SMALL_TARGETS,
+                  (studyConfig.value(RDC::StudyParameter::TARGET_SIZE).toString() == RDC::BindingTargetSize::SMALL));
+    m->configure(config);
 
-    if (!Experiment::startExperiment(c)) return false;
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)) return false;
 
+    // No extra processing parameters required so we set it.
+    if (!rawdata.setProcessingParameters(pp)){
+        error = "Failed setting processing parameters on Reading: " + rawdata.getError();
+        emit(experimentEndend(ER_FAILURE));
+    }
+
+    // We set the trial list to the proper binding type.
+    if (studyConfig.value(RDC::StudyParameter::BINDING_TYPE).toString() == RDC::BindingType::BOUND){
+        rawdata.setCurrentTrialListType(RDC::TrialListType::BOUND);
+    }
+    else{
+        rawdata.setCurrentTrialListType(RDC::TrialListType::UNBOUND);
+    }
+
+    // Setup data gathering.
     // If there were no problems the experiment can begin.
     currentTrial = 0;
     error = "";
     state = STATE_RUNNING;
     atLast = false;
     ignoreData = false;
-    newImage(m->getTrial(currentTrial).name,0);
     trialState = TSB_CENTER_CROSS;
+
+    // Adding a new trial for the first time.
+    if (!addNewTrial()){
+        emit(experimentEndend(ER_FAILURE));
+        return false;
+    }
+
     drawCurrentImage();
     stateTimer.setInterval(TIME_START_CROSS);
     stateTimer.start();
-    if (!vrEnabled){
+    if (!Globals::EyeTracker::IS_VR || (useMouse)){
         this->show();
         this->activateWindow();
     }
@@ -82,18 +100,12 @@ bool ImageExperiment::advanceTrial(){
 
     if (currentTrial < m->size()-1){
         currentTrial++;
-        // Adding the entry in the file
-        newImage(m->getTrial(currentTrial).name,0);
         return true;
     }
-    // This is done.
+
     state = STATE_STOPPED;
     stateTimer.stop();
     return false;
-}
-
-void ImageExperiment::togglePauseExperiment(){
-    // This experiment cannot be paused so the implementation here is simply empty.
 }
 
 void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
@@ -105,16 +117,7 @@ void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
-    // Adding the data row.
-    QVariantList dataS;
-    dataS  << data.time
-           << data.xRight
-           << data.yRight
-           << data.xLeft
-           << data.yLeft
-           << data.pdRight
-           << data.pdLeft;
-    etData << QVariant(dataS);
+    rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
 
 }
 
@@ -160,6 +163,13 @@ void ImageExperiment::nextState(){
     switch (trialState){
     case TSB_CENTER_CROSS:
         trialState = TSB_SHOW;
+
+        // Enconding begins.
+        if (!addNewTrial()){
+            emit(experimentEndend(ER_FAILURE));
+            return;
+        }
+
         stateTimer.setInterval(TIME_IMAGE_1);
         stateTimer.start();
         drawCurrentImage();
@@ -173,12 +183,35 @@ void ImageExperiment::nextState(){
             stateTimer.start();
         }
         else{
+
+            // This is done.
+            if (!rawdata.finalizeStudy()){
+                error = "Failed on Binding study finalization: " + rawdata.getError();
+                emit(experimentEndend(ER_FAILURE));
+                return;
+            }
+
+            // We need to check if both binding bc AND bingin UC are part of this file, otherwise it is ongoing.
+           QStringList trial_list_types = rawdata.getTrialListTypesForStudy(studyType);
+            if (trial_list_types.contains(RDC::TrialListType::BOUND) && trial_list_types.contains(RDC::TrialListType::UNBOUND)){
+                if (!rawdata.markStudyAsFinalized(studyType)){
+                    error = "Failed on Marking Binding study as finalized: " + rawdata.getError();
+                    emit(experimentEndend(ER_FAILURE));
+                    return;
+                }
+            }
+
+
             if (!saveDataToHardDisk()) emit(experimentEndend(ER_FAILURE));
             else emit(experimentEndend(ER_NORMAL));
         }
         return;
     case TSB_SHOW:
-        //qWarning() << "ENTER: SHOW" << currentTrial;
+        //qWarning() << "ENTER: SHOW" << currentTrial;        
+
+        // Encoding Ends.
+        rawdata.finalizeDataSet();
+
         trialState = TSB_TRANSITION;
         drawCurrentImage();
         stateTimer.setInterval(TIME_WHITE_TRANSITION);
@@ -187,7 +220,11 @@ void ImageExperiment::nextState(){
     case TSB_TEST:
         //qWarning() << "ENTER: TEST" << currentTrial;
         trialState = TSB_FINISH;
-        addAnswer(answer);
+
+        // Retrieval Ends.
+        rawdata.finalizeDataSet();
+        rawdata.finalizeTrial(answer);
+
         drawCurrentImage();
         stateTimer.setInterval(TIME_FINISH);
         stateTimer.start();
@@ -195,8 +232,11 @@ void ImageExperiment::nextState(){
     case TSB_TRANSITION:
         //qWarning() << "ENTER: TRANSITION" << currentTrial;
         trialState = TSB_TEST;
+
+        // Retrieval begins. We start the new dataset.
+        rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_1);
+
         answer = "N/A";
-        newImage(m->getTrial(currentTrial).name,1);
         drawCurrentImage();
         stateTimer.setInterval(TIME_IMAGE_2_TIMEOUT);
         stateTimer.start();
@@ -206,28 +246,22 @@ void ImageExperiment::nextState(){
 
 }
 
-// -------------------- DATA WRITING FUNCTIONS -----------------------
+bool ImageExperiment::addNewTrial(){
+    QString type = "";
+    currentTrialID = m->getTrial(currentTrial).name;
 
-void ImageExperiment::newImage(QString name, qint32 isTrial){
+    if (currentTrialID.toUpper().contains("SAME")) type = "S";
+    else if (currentTrialID.toUpper().contains("DIFFERENT")) type = "D";
 
-    ignoreData = true;
-    QVariantList dataS;
-    dataS  << name
-           << isTrial; // 1 if it is test and 0 if it is show.
-    etData << QVariant(dataS);
-    ignoreData = false;
-
+    if (!rawdata.addNewTrial(currentTrialID,type)){
+        error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
+        return false;
+    }
+    rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_1);
+    return true;
 }
 
-void ImageExperiment::addAnswer(QString ans){
 
-    ignoreData = true;
-    QVariantList dataS;
-    dataS << m->getTrial(currentTrial).name + "->" + ans;
-    etData << QVariant(dataS);
-    ignoreData = false;
-
-}
 
 ImageExperiment::~ImageExperiment(){
 }

@@ -61,6 +61,7 @@ viewpatientreg_viewSubTitle = Por favor, complete la siguiente información;
 viewpatientreg_labelName = Nombre;
 viewpatientreg_labelLastName = Apellido;
 viewpatientreg_labelBirthDate = Fecha de nacimiento;
+viewpatientreg_labelAge = Edad;
 viewpatientreg_labelGender = Género;
 viewpatientreg_labelCountry = Pais;
 viewpatientreg_labelCity = Ciudad;
@@ -71,6 +72,7 @@ viewpatientreg_labelConsent = Acepto las <a href="terms_of_use">Condiciones de U
 viewpatientreg_btnCancel = CANCELAR;
 viewpatientreg_btnContinue = ACEPTAR;
 viewpatientreg_errorEmpty = No puede estar vacío;
+viewpatientreg_errorCannotBothEmpty = Ambos campos no pueden quedar vacios;
 viewpatientreg_errorNoAccept = Se debe acepatar las Condiciones de Uso y la Poítica de Privacidad;
 viewpatientreg_errorInvalidNum = El valor ingresado no es un número válido;
 viewpatientreg_terms_of_use = Condiciones de Uso;
@@ -123,11 +125,10 @@ viewstudystart_labelActions = Opciones multi parte;
 viewstudystart_labelPerceptionType = Seleccione tipo de estudio;
 viewstudystart_perceptionTypeOptions = Entrenamiento|Rehabilitación;
 
-
 #********************************* DOCTOR SELECTION DIALOG *********************************
-viewdrsel_viewTitle = Selección del Doctor;
-viewdrsel_viewSubTitle = Seleccione un perfíl de Doctor o agregue uno nuevo;
-viewdrsel_labelDrProfile = Perfil de Doctor;
+viewdrsel_viewTitle = Ingreso Evaluador;
+viewdrsel_viewSubTitle = Ingrese a su perfíl o cree uno nuevo;
+viewdrsel_labelDrProfile = Seleccione un Evaluador;
 viewdrsel_btnAddProfile = Agregar Perfil;
 viewdrsel_btnOk = INGRESAR;
 viewdrsel_labelNoDrError = Por favor, seleccion un perfíl de doctor antes de continuar;
@@ -210,7 +211,9 @@ viewpatientlist_headerPatient = Paciente;
 viewpatientlist_headerSubject = Sujeto;
 viewpatientlist_headerStatus = Estado;
 viewpatientlist_headerDoctor = Doctor;
+viewpatientlist_headerCreationDate = Fecha de Creación;
 viewpatientlist_headerSynch = Ficha Médica;
+viewpatientlist_btnReports = Enviar estudios;
 viewpatientlist_statusOK = OK;
 viewpatientlist_statusRepPending = Reportes pendientes;
 viewpatientlist_statusUpload = Enviar;
@@ -254,7 +257,7 @@ viewshowreports_diagReprocess = ACTUALIZAR;
 viewshowreports_labelInformation = Contenidos del Reporte;
 
 #********************************* DOCTOR INFORMATION *********************************
-viewdrinfo_title = Perfíl del Doctor;
+viewdrinfo_title = Perfíl del Evaluador;
 viewdrinfo_subtitle = Por favor, complete la siguiente información;
 viewdrinfo_labelName = Nombre;
 viewdrinfo_labelLastName = Apellido;
@@ -275,7 +278,7 @@ viewdrinfo_verify_password = Verifique Contraseña;
 viewdrinfo_password_match = Las contraseñas no coinciden;
 viewdrinfo_disable = Deshabilitar doctor;
 viewdrinfo_disable_warning = Advertencia|Una vez desahbilitado doctor y validado el cambio, no es posible deshacerlo<br>Desea continuar?;
-viewdrinfo_drexists = Este Doctor ya existe;
+viewdrinfo_drexists = Este email ya esta en uso;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = El estudio ha finalizado;
@@ -324,7 +327,7 @@ viewselectdata_labelFielding = Evaluación N-Back Tipo MS;
 viewselectdata_labelNBackRT  = Evaluación N-Back Tipo RT;
 viewselectdata_labelNoUse = No utilizar en reporte;
 viewselectdata_labelStudySelection = Seleccione un estudio;
-viewselectdata_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT|Go NoGo|Evaluación N-Back RT de Entrenamiento|Percepción;
+viewselectdata_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT|Evaluación N-Back RT de Entrenamiento|Percepción|Go NoGo;
 viewselectdata_labeFileView = Reporte para los estudios;
 viewselectdata_labelSelectOption = Seleccionar registro;
 viewselectdata_labelEvals = Evaluaciones disponibles;
@@ -419,3 +422,4 @@ error_launcher_update = Se debe reiniciar|En 5 segundos el programa se cerrará.
 msg_change_lang = Efectuar los cambios|Los cambios que realizó requieren que se reinicie el programa;
 msg_request_report = Procesando...|Por favor espere mientras se obtiene la información del reporte;
 msg_report_generation = Generando reporte|En un instante su informe estará listo...;
+msg_get_info_online = Sincronizando ...|Descargando información del portal, por favor espere;

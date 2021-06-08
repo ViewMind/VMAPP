@@ -22,7 +22,8 @@ public:
 
     // Basic functions to reimplement.
     bool parseExpConfiguration(const QString &contents);
-    void init(ConfigurationManager *c);
+    void init(qreal display_resolution_width, qreal display_resolution_height);
+    void configure(const QVariantMap &configuration);
     qint32 size() const { return parser.getTrials().size();}
     qreal sizeToProcess() const { return parser.getTrials().size()*2;}
 
@@ -44,16 +45,19 @@ public:
     // Get the info on one trial.
     BindingParser::BindingTrial getTrial(qint32 trial) {return parser.getTrials().at(trial);}
 
-private:
+    // The number of targets is set simply by selectig which experimet file to parse.
+    static const char * CONFIG_USE_SMALL_TARGETS;
 
-    // For debugging
-    LogInterface logger;
+private:
 
     // Lines used to draw a cross in the center of the screen
     QLineF line0, line1;
 
     // The class that actually parses the experiment description.
     BindingParser parser;
+
+    // Use small targets or not
+    bool smallTargets;
 
     void enableDemoMode();
 

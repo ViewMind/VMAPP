@@ -4,21 +4,52 @@
 *                                                                                                                                                                                   *
 *************************************************************************************************************************************************************************************
 
+====================== How To use The RawDataContainer Class.
+
+/////// These can be done in any order. 
+-> Create a study configuration        (Flow Control)
+-> Create the subject data             (Loader)
+-> Create the metadata                 (Loader)
+-> Create the processing parameters    (FlowControl) // Resolution and NBackHit/GoNoGo Hit Boxes
+-> Add the study (with the study configuration); We always with it's status as ongoing. 
+///////    
+-> setCurrentStudy
+-> setCurrentTrialListType -> This will dependo con study configuration. 
+-> For Each Trial 
+     addNewTrial
+     For each dataset required:     
+        setCurrentDataSet
+           For each datapoint we addNewRawDataVector
+        finalizeDataSet
+     finalizeTrial
+-> finalizeStudy()
+-> markStudyAsFinalized() // For binding this means both are present. For perception all 8 parts are present.  
+
+
+We are going to need a loader function that creates the file/select the file with the subject_data/metadata. 
+
+
+
 ====================== GENERAL STRUCTURE
 
-S["studies"][STUDY_NAME]["trial_list"] = Specified below
-S["studies"][STUDY_NAME]["study_configuration"] = Depends on the study. 
+S["studies"][STUDY_NAME]["trial_list"]             = Specified below
+S["studies"][STUDY_NAME]["status"]                 = finalized|ongoing   This will tell the system whether the study is ready to be sent to process or not. For example a Binding wiht only ONE of its parts. 
+S["studies"][STUDY_NAME]["study_configuration"]    = Depends on the study. 
 S["studies"][STUDY_NAME]["experiment_description"] = "Giant string with the experiment description"
-S["studies"][STUDY_NAME]["version"] = The study version. 
+S["studies"][STUDY_NAME]["version"]                = The study version.
+S["studies"][STUDY_NAME]["abbreviation"]           = 2 To 4 letter version of the study name. 
+S["studies"][STUDY_NAME]["code"]                   = Sythesis of the study configuration (Used for display mostly)
 
-S["metadata"]["version"]               = Numbered version of this structure. 
-S["metadata"]["hour"]                  = hh_mm_ss or hh_mm
-S["metadata"]["date"]                  = yyyy_MM_dd
-S["metadata"]["institution_id"]        = The number
-S["metadata"]["institution_id"]        = The instance from 0000 to 9999
-S["metadata"]["institution_name"]      = The name
-S["metadata"]["institution_key"]       = To know what the secret is in our backend
+S["metadata"]["version"]                        = Numbered version of this structure. 
+S["metadata"]["hour"]                           = hh_mm
+S["metadata"]["date"]                           = yyyy_MM_dd
+S["metadata"]["institution_id"]                 = The number
+S["metadata"]["institution_id"]                 = The instance from 0000 to 9999
+S["metadata"]["institution_name"]               = The name
+S["metadata"]["institution_key"]                = To know what the secret is in our backend
 S["metadata"]["processing_parameters_key"]      = key to database row with the current set of processing parameters. 
+S["metadata"]["protocol"]                       = protocol name if any;
+S["metadata"]["mouse_used"]                     = if it's true this can't be sent to processs. 
 
 S["subject"]["name"]
 S["subject"]["lastname"]
@@ -30,8 +61,8 @@ S["subject"]["gender"]
 S["subject"]["age"] // When birth date is not provided. This is is NOT stored in the DB. 
 S["subject"]["local_id"]
 
-S["application_user"]["test_taker"]   = Strucutre app_user_data
-S["application_user"]["responsable"]  = Strucutre app_user_data
+S["application_user"]["evaluator"]   = Strucutre app_user_data
+S["application_user"]["medic"]  = Strucutre app_user_data
 
 S["processing_parameters"]["resolution_height"]
 S["processing_parameters"]["resolution_width"]
@@ -42,8 +73,8 @@ S["processing_parameters"]["go_no_go_hitboxes"] = [4 Value Vector, representing 
 S["frequency_check_parameters"]   // TBD
 
 ====================== APP_USER_DATA
-ud["local_id"]
-ud["viewmind_id"]
+ud["local_id"]      // local id for the evaluator is the username. A medic does not have a local id
+ud["viewmind_id"]   // Datbase named. Filled in server obtained from synching. A medic has one and an evaluator doesn't. 
 ud["name"]
 ud["lastname"]
 ud["email"]
@@ -109,6 +140,7 @@ S["studies"][STUDY_NAME]["trial_list"]["bound"/"unbound"] = List of Trials
 
 Trial["ID"] = TRIAL_ID
 Trial["data"]["encoding_#/retrieval_#"]["raw_data""] = {} // array of value vector.
+Trial["trial_type"] = Same or differrent
 Trial["response"] = "S"/"D"/"N/A"
 
 # = 1 always.

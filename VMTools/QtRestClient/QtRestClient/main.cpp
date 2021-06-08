@@ -13,7 +13,8 @@
 #include <QMessageAuthenticationCode>
 #include <QDataStream>
 #include <iostream>
-#include "restapicontroller.h"
+//#include "restapicontroller.h"
+#include "../../../CommonClasses/RestAPIController/restapicontroller.h"
 
 int main(int argc, char *argv[]){
     QCoreApplication a(argc, argv);
@@ -26,12 +27,13 @@ int main(int argc, char *argv[]){
     //QString APIURL                  = "http://localhost/vmapi";
     QString APIURL                  = "http://192.168.1.12/vmapi";
     //QString endpoint                = "hola/juan/de/los";
-    QString endpoint                = "/portal_users/getallmedical/1";
+    //QString endpoint                = "/institution/operating_information/1?ppkey=gazepoint";
+    QString endpoint                = "/institution/operating_information/1";
     QString imageFile               = "/home/web/dashboard-complete/docs/images/layout.png";
     QVariantMap URLParameters;
 
     // Let's add some parameters to the URL
-    //URLParameters.insert("paramA","3736");
+    URLParameters.insert("ppkey","gazepoint");
     //URLParameters.insert("paramB","somethign_wicked");
 
     RESTAPIController rest_controller;
@@ -45,30 +47,30 @@ int main(int argc, char *argv[]){
     data.insert("institution_id",1);
     data.insert("institution_instance",0);
 
-    QVariantMap testdata;
-    testdata.insert("Name","Ariel Ñoño");
-    testdata.insert("Age","38");
-    QVariantMap Hobbies;
-    Hobbies.insert("Modelling","mediocre");
-    Hobbies.insert("Drawing","bad");
-    Hobbies.insert("Singing","Beareable");
-    testdata.insert("Hobbies",Hobbies);
+//    QVariantMap testdata;
+//    testdata.insert("Name","Ariel Ñoño");
+//    testdata.insert("Age","38");
+//    QVariantMap Hobbies;
+//    Hobbies.insert("Modelling","mediocre");
+//    Hobbies.insert("Drawing","bad");
+//    Hobbies.insert("Singing","Beareable");
+//    testdata.insert("Hobbies",Hobbies);
 
-    QJsonDocument json = QJsonDocument::fromVariant(testdata);
-    QFile file(test_file);
-    if (!file.open(QFile::WriteOnly)){
-        qDebug() << "Could not create the test file. Exiting";
-        return 0;
-    }
-    QTextStream writer(&file);
-    writer << QString(json.toJson());
-    file.close();
+//    QJsonDocument json = QJsonDocument::fromVariant(testdata);
+//    QFile file(test_file);
+//    if (!file.open(QFile::WriteOnly)){
+//        qDebug() << "Could not create the test file. Exiting";
+//        return 0;
+//    }
+//    QTextStream writer(&file);
+//    writer << QString(json.toJson());
+//    file.close();
 
-    // Lets append the file.
-    if (!rest_controller.appendFileForRequest(test_file,"MyFileKey")){
-        qDebug() << "Error appending file: " << rest_controller.getErrors();
-        return 0;
-    }
+//    // Lets append the file.
+//    if (!rest_controller.appendFileForRequest(test_file,"MyFileKey")){
+//        qDebug() << "Error appending file: " << rest_controller.getErrors();
+//        return 0;
+//    }
 
 //    // And now let's append an image file
 //    if (!rest_controller.appendFileForRequest(imageFile,"image")){
@@ -77,7 +79,7 @@ int main(int argc, char *argv[]){
 //    }
 
     // Lets append the data
-    rest_controller.setPOSTDataToSend(data);    
+//    rest_controller.setPOSTDataToSend(data);
 
     // Appending the data as JSON makes it igonre all both previous add ons, but thats the intention.
     // rest_controller.setJSONData(data);

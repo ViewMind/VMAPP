@@ -27,24 +27,22 @@ int main(int argc, char *argv[])
 
     // Checking that there isn't another instance of an application running.
     LogInterface logger;
-    QSystemSemaphore semaphore(SEMAPHORE_NAME, 1);  // create semaphore
-    semaphore.acquire();                            // Raise the semaphore, barring other instances to work with shared memory
-    QSharedMemory sharedMemory(SHAREDMEMORY_NAME);  // Create a copy of the shared memory
-    bool isRunning;                                 // variable to test the already running application
-    if (sharedMemory.attach()){                     // We are trying to attach a copy of the shared memory to an existing segment
-        isRunning = true;                           // If successful, it determines that there is already a running instance
+    QSystemSemaphore semaphore(Globals::Share::SEMAPHORE_NAME, 1);  // create semaphore
+    semaphore.acquire();                                            // Raise the semaphore, barring other instances to work with shared memory
+    QSharedMemory sharedMemory(Globals::Share::SHAREDMEMORY_NAME);  // Create a copy of the shared memory
+    bool isRunning;                                                 // variable to test the already running application
+    if (sharedMemory.attach()){                                     // We are trying to attach a copy of the shared memory to an existing segment
+        isRunning = true;                                           // If successful, it determines that there is already a running instance
     }else{
-        sharedMemory.create(1);                     // Otherwise allocate 1 byte of memory
-        isRunning = false;                          // And determines that another instance is not running
+        sharedMemory.create(1);                                     // Otherwise allocate 1 byte of memory
+        isRunning = false;                                          // And determines that another instance is not running
     }
     semaphore.release();
 
-    UIConfigMap configmap;
 
-    Loader loader(nullptr,&configuration,&countries,&configmap);
+    Loader loader(nullptr,&configuration,&countries);
     if (isRunning){
         logger.appendError("Another instance of the application was detected. Exiting");
-        loader.clearChangeLogFile();
         return 0;
     }
 
@@ -55,15 +53,11 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     // Laods all language related data
-    FlowControl flowControl(nullptr,&configuration,&configmap);
+    FlowControl flowControl(nullptr,&configuration);
 
-    // Doing the connections for communication between the classes
-    QObject::connect(&loader,SIGNAL(fileSetReady(QStringList,QString)),&flowControl,SLOT(onFileSetEmitted(QStringList,QString)));
-    QObject::connect(&flowControl,SIGNAL(requestFileSet()),&loader,SLOT(onFileSetRequested()));
 
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);
-    engine.rootContext()->setContextProperty("uimap", &configmap);
 
     // Rendering the QML files
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));

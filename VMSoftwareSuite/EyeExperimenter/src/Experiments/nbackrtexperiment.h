@@ -10,28 +10,17 @@
 
 //#define MANUAL_TRIAL_PASS
 
-// Timer timess
-#define   TIME_TRANSITION                               500
-#define   TIME_TARGET                                   250
-#define   TIME_OUT_BLANKS                               3000
-//#define   TIME_OUT_BLANKS                               3000000
-#define   DEFAULT_NUMBER_OF_TARGETS                     3
-
-// Possible pauses for the fielding experiment
-#define   PAUSE_TRIAL_1                                 32
-#define   PAUSE_TRIAL_2                                 64
-
 class NBackRTExperiment: public Experiment
 {
 public:
 
-    typedef enum {NBT_DEFAULT, NBT_VARIABLE_SPEED} NBackType;
-
-    NBackRTExperiment(QWidget *parent = nullptr, NBackType nbt = NBT_DEFAULT);
+    NBackRTExperiment(QString study_type, QWidget *parent = nullptr);
 
     // Reimplementation of virtual functions
-    bool startExperiment(ConfigurationManager *c) override;
-    void togglePauseExperiment() override;
+    bool startExperiment(const QString &workingDir, const QString &experimentFile,
+                         const QVariantMap &studyConfig, bool useMouse,
+                         QVariantMap pp) override;
+
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -84,9 +73,6 @@ private:
 
     };
 
-    // The NBack type.
-    NBackType nbackType;
-
     // Structure for variable speed version.
     VariableSpeedAndTargetNumberConfig nbackConfig;
 
@@ -99,6 +85,7 @@ private:
     // Variables to define which sequence and which image to show
     qint32 currentTrial;
     qint32 currentImage;
+    QString currentDataSetType;
 
     // Used as a state machine to count down correct hits, for the follow through logic.
     TrialRecognitionMachine trialRecognitionMachine;
@@ -118,11 +105,28 @@ private:
     // Last steps if experiment has ended. Returns false if the experiment is still going.
     bool finalizeExperiment();
 
-    // Adding the header for the trial data.
-    void addTrialHeader();
-
     // Shows in screen the message "Presione una tecla para seguir" for 32 and 64 trials pauses
     void drawPauseImage();
+
+    // Timer timess
+    static const qint32 TIME_TRANSITION;
+    static const qint32 TIME_TARGET;
+    static const qint32 TIME_OUT_BLANKS;
+    static const qint32 DEFAULT_NUMBER_OF_TARGETS;
+
+    // Possible pauses for the fielding experiment
+    static const qint32 PAUSE_TRIAL_1;
+    static const qint32 PAUSE_TRIAL_2;
+
+    static const qint32 NBACKVS_MIN_HOLD_TIME;
+    static const qint32 NBACKVS_MAX_HOLD_TIME;
+    static const qint32 NBACKVS_STEP_HOLD_TIME;
+    static const qint32 NBACKVS_START_HOLD_TIME;
+    static const qint32 NBACKVS_NTRIAL_FOR_STEP_CHANGE;
+
+    QVariantMap addHitboxesToProcessingParameters(QVariantMap pp);
+    void nextEncodingDataSetType();
+    bool addNewTrial();
 
 };
 

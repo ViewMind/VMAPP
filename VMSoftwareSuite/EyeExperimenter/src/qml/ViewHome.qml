@@ -9,8 +9,15 @@ VMBase {
     height: mainWindow.height
 
     readonly property double vmScale: mainWindow.width/1280;
-
     readonly property string keysearch: "viewhome_"
+
+    Connections {
+        target: loader
+        onFinishedRequest: {
+            connectionDialog.close();
+        }
+    }
+
 
     function getErrorTitleAndMessage(keyid){
         var res = loader.getStringListForKey(keyid);
@@ -31,14 +38,10 @@ VMBase {
         viewCalibrationStart.updateText();
         viewPatientReg.updateText()
         viewPresentExperimet.updateText()
-        viewResults.updateText()
         viewStudyStart.updateText()
         viewPatList.updateText()
         viewDrInfo.updateText();
-        viewShowReports.updateText();
         viewStudyDone.updateText();
-        viewMedRecordList.updateText();
-        viewMedicalInformation.updateText();
         viewVRDisplay.updateText();
     }
 
@@ -65,39 +68,6 @@ VMBase {
             return;
         }
 
-        // SSL Check is done right now
-        if (!flowControl.checkSSLAvailability()){
-            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_NO_SSL;
-            titleMsg = viewHome.getErrorTitleAndMessage("error_no_ssl");
-            vmErrorDiag.vmErrorMessage = titleMsg[1];
-            vmErrorDiag.vmErrorTitle = titleMsg[0];
-            vmErrorDiag.open();
-            return;
-        }
-
-        // Loading the Dr Options.
-        viewDrSelection.updateDrProfile();
-
-        // Checking for changelog
-        var content = loader.checkForChangeLog();
-        if (content !== ""){
-            var lines = content.split("\n");
-            showTextDialog.vmTitle = lines[0];
-            lines.shift();
-            content = lines.join("\n");
-            showTextDialog.vmContent = content;
-            showTextDialog.open();
-        }
-
-        if (loader.clearChangeLogFile()){
-            titleMsg = viewHome.getErrorTitleAndMessage("error_launcher_update");
-            restartDialog.vmContent = titleMsg[1];
-            restartDialog.vmTitle = titleMsg[0];
-            restartDialog.open();
-            closeTimer.start()
-        }
-
-        //testErrorDiag("error_db_outofevals",-1);
     }
 
     // Dialog used to show a wall of text.
@@ -221,6 +191,67 @@ VMBase {
 
     }
 
+
+    Dialog {
+
+        property string vmTitle: "TITLE"
+        property string vmMessage: "MESSAGE"
+
+        id: connectionDialog;
+        modal: true
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.87
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectConnectionDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        // The instruction text
+        Text {
+            id: diagConnectionTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43*viewHome.vmScale
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.128
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: connectionDialog.vmTitle
+        }
+
+
+        // The instruction text
+        Text {
+            id: diagMessage
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13*viewHome.vmScale
+            anchors.top:  diagConnectionTitle.bottom
+            anchors.topMargin: mainWindow.height*0.038
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text:  connectionDialog.vmMessage;
+            z: 2 // Sometimes the border of the image covers the text. This fixes it.
+        }
+
+        AnimatedImage {
+            id: slideAnimation
+            source: "qrc:/images/LOADING.gif"
+            anchors.top: diagMessage.bottom
+            anchors.topMargin: mainWindow.height*0.043
+            anchors.horizontalCenter: parent.horizontalCenter
+            scale: viewHome.vmScale
+            visible: true
+        }
+
+    }
+
     Timer {
         id: closeTimer;
         interval: 5000
@@ -302,22 +333,6 @@ VMBase {
         text: loader.getStringForKey(keysearch+"slideTitle");
     }
 
-//    // The explanation
-//    Text{
-//        id: description
-//        textFormat: Text.RichText
-//        font.pixelSize: 16
-//        font.family: robotoR.name
-//        color: "#297fca"
-//        text: loader.getStringForKey(keysearch+"description");
-//        anchors{
-//            top: slideTitle.bottom
-//            topMargin: mainWindow.height*0.058
-//            left: headDesign.right
-//            leftMargin: mainWindow.width*0.059
-//        }
-//    }
-
     VMButton{
         id: btnGetStarted
         vmText: loader.getStringForKey(keysearch+"btnGetStarted");
@@ -329,7 +344,13 @@ VMBase {
             topMargin: mainWindow.height*0.033
         }
         onClicked: {
-            viewDrSelection.open();
+            var title_and_text = loader.getStringListForKey("msg_get_info_online");
+            //console.log(title_and_text);
+            connectionDialog.vmMessage = title_and_text[1];
+            connectionDialog.vmTitle = title_and_text[0];
+            connectionDialog.open();
+            loader.requestOperatingInfo();
+            //viewDrSelection.open();
         }
     }
 }

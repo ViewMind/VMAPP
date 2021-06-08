@@ -1,5 +1,8 @@
 #include "readingparser.h"
 
+const char * ReadingParser::READING_COMMENT_STRING = "######";
+const qint32 ReadingParser::PAD_LENGTH_FOR_ID = 4;
+
 ReadingParser::ReadingParser()
 {
 

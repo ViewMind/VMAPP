@@ -8,112 +8,90 @@
 #include <QSharedMemory>
 #include <QCoreApplication>
 
-#include "../../../CommonClasses/LocalInformationManager/localinformationmanager.h"
+#include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "Experiments/experiment.h"
-#include "eye_experimenter_defines.h"
+#include "eyexperimenter_defines.h"
 #include "countries.h"
-#include "uiconfigmap.h"
+#include "localdb.h"
+#include "subjectdirscanner.h"
+#include "apiclient.h"
 
-#define  MAX_UPDATES_TO_SHOW  3
+#define  MAX_UPDATES_TO_SHOW        3
+#define  NUMBER_SECONDS_IN_A_DAY    86400
+#define  NUMBER_OF_PERCEPTION_PARTS 8
+
 
 class Loader : public QObject
 {
     Q_OBJECT
 public:
-    explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr, CountryStruct *cs = nullptr, UIConfigMap *ui = nullptr);
+    explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr, CountryStruct *cs = nullptr);
     ~Loader();
 
-    //******************** UI Functions ***************************
+    //////////////////////////// UI Functions ////////////////////////////
     Q_INVOKABLE QString getStringForKey(const QString &key);
     Q_INVOKABLE QStringList getStringListForKey(const QString &key);
-    Q_INVOKABLE bool getLoaderError() const {return loadingError; }
-    Q_INVOKABLE bool checkETChange();
-    Q_INVOKABLE QString getWindowTilteVersion(){ return EXPERIMENTER_VERSION; }
-    Q_INVOKABLE QRect frameSize(QObject *window);
-    Q_INVOKABLE QStringList getCountryList() {return countries->getCountryList();}
-    Q_INVOKABLE QStringList getCountryCodeList() {return countries->getCodeList();}
-    Q_INVOKABLE int getDefaultCountry(bool offset = true);
-    Q_INVOKABLE QString getCountryCodeForCountry(const QString &country) { return countries->getCodeForCountry(country); }
-    Q_INVOKABLE int getCountryIndexFromCode(const QString &code) { return countries->getIndexFromCode(code); }
-    Q_INVOKABLE QString loadTextFile(const QString &fileName);
-    Q_INVOKABLE QStringList getErrorMessageForCode(quint8 code);
-    Q_INVOKABLE QStringList getFileListForPatient(QString patuid, qint32 type);
-    Q_INVOKABLE QStringList getFileListCompatibleWithSelectedBC(QString patuid, qint32 selectedBC);
-    Q_INVOKABLE QString getVersionNumber() const {return EXPERIMENTER_VERSION_NUMBER;}
-    Q_INVOKABLE QString getManufactureDate() const {return configuration->getString(CONFIG_LABELLING_MANUFACTURE_DATE);}
-    Q_INVOKABLE QString getSerialNumber() const {return configuration->getString(CONFIG_LABELLING_SERIAL_NUMBER);}
-    Q_INVOKABLE QString getUniqueAuthorizationNumber() const {return configuration->getString(CONFIG_LABELLING_AUTHORIZATION_UID);}
+    Q_INVOKABLE bool getLoaderError() const;
 
-    //******************** Configuration Functions ***************************
+    Q_INVOKABLE QString getWindowTilteVersion();
+    Q_INVOKABLE QStringList getCountryList();
+    Q_INVOKABLE QStringList getCountryCodeList();
+    Q_INVOKABLE int getDefaultCountry(bool offset = true);
+    Q_INVOKABLE QString getCountryCodeForCountry(const QString &country);
+    Q_INVOKABLE int getCountryIndexFromCode(const QString &code);
+
+    Q_INVOKABLE QString getVersionNumber() const;
+    Q_INVOKABLE QString getManufactureDate() const;
+    Q_INVOKABLE QString getSerialNumber() const;
+    Q_INVOKABLE QString getUniqueAuthorizationNumber() const;
+
+    //////////////////////////// EVALUATOR RELATED FUNCTIONS ////////////////////////////
+    Q_INVOKABLE void logOut();
+    Q_INVOKABLE bool isLoggedIn();
+    Q_INVOKABLE bool checkIfEvaluatorEmailExists(const QString &username) const;
+    Q_INVOKABLE void addOrModifyEvaluator(const QString &email, const QString &oldemail, const QString &password, const QString &name, const QString &lastname);
+    Q_INVOKABLE bool evaluatorLogIn(const QString &username, const QString &password);
+    Q_INVOKABLE void updateCurrentEvaluator(const QString &username);
+    Q_INVOKABLE QVariantMap getCurrentEvaluatorInfo() const;
+    Q_INVOKABLE QStringList getLoginEmails() const;
+
+    //////////////////////////// SUBJECT REALATED FUNCTIONS ////////////////////////////
+    Q_INVOKABLE void addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
+                                        const QString &age, const QString &birthdate, const QString &birthCountry,
+                                        const QString &gender, qint32 formative_years);
+
+    Q_INVOKABLE QVariantMap filterSubjectList(const QString &filter);
+    Q_INVOKABLE bool setSelectedSubject(const QString &suid);    
+    Q_INVOKABLE void setStudyMarkerFor(const QString &study, const QString &value);
+    Q_INVOKABLE QString getStudyMarkerFor(const QString &study);
+    Q_INVOKABLE QVariantMap getCurrentSubjectInfo();
+    Q_INVOKABLE void clearSubjectSelection();
+
+    //////////////////////////// CONFIGURATION FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getConfigurationString(const QString &key);
     Q_INVOKABLE bool getConfigurationBoolean(const QString &key);
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
-    Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var) {configuration->addKeyValuePair(key,var);}
-    Q_INVOKABLE void setAgeForCurrentPatient();
-    Q_INVOKABLE QVariantMap getMultiPartStudies();
-    Q_INVOKABLE void deleteMultiPartFile(const QString &fileName);
-    Q_INVOKABLE void finalizeMultiPartFile(const QString &fileName);
+    Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var);
 
-    //******************** Local DB Functions ***************************
-    Q_INVOKABLE bool createPatientDirectory();
-    Q_INVOKABLE QStringList generatePatientLists(const QString &filter = "", bool showAll = false);
-    Q_INVOKABLE QStringList getPatientUIDLists() {return nameInfoList.patientUIDs;}
-    Q_INVOKABLE QStringList getPatientIsOKList() {return nameInfoList.patientISOKList; }
-    Q_INVOKABLE QStringList getPatientMedRecUpToDateList() {return nameInfoList.patientMedRecsUpToDateList;}
-    Q_INVOKABLE void loadDoctorSelectionInformation() { nameInfoList = lim.getDoctorList(); }
-    Q_INVOKABLE QStringList getDoctorNameList() {return nameInfoList.doctorNames; }
-    Q_INVOKABLE QStringList getDoctorUIDList() {return nameInfoList.doctorUIDs; }
-    Q_INVOKABLE QStringList getPatientDisplayIDList() { return nameInfoList.patientDisplayIDs; }
-    Q_INVOKABLE QString getDoctorUIDByIndex(qint32 selectedIndex);
-    Q_INVOKABLE qint32 getIndexOfDoctor(QString uid);
-    Q_INVOKABLE bool isDoctorValidated(qint32 selectedIndex);
-    Q_INVOKABLE bool isDoctorPasswordEmpty(qint32 selectedIndex);
-    Q_INVOKABLE bool isDoctorPasswordCorrect(const QString &password);
-    Q_INVOKABLE bool doesCurrentDoctorHavePassword() { return !lim.getDoctorPassword(configuration->getString(CONFIG_DOCTOR_UID)).isEmpty(); }
-    Q_INVOKABLE QVariantMap getCurrentDoctorInformation() {return lim.getDoctorInfo(configuration->getString(CONFIG_DOCTOR_UID));}
-    Q_INVOKABLE QVariantMap getCurrentPatientInformation() {return lim.getPatientInfo(configuration->getString(CONFIG_PATIENT_UID));}
-    Q_INVOKABLE void addNewDoctorToDB(QVariantMap dbdata, QString password, bool hide);
-    Q_INVOKABLE void addNewPatientToDB(QVariantMap dbdata);
-    Q_INVOKABLE void addPatientMedicalRecord(QVariantMap medRecord, qint32 recordIndex);
-    Q_INVOKABLE bool requestDrValidation(const QString &instPassword, qint32 selectedDr);
-    Q_INVOKABLE bool verifyInstitutionPassword(const QString &instPass);
-    Q_INVOKABLE QString getWorkingDirectory() const {return lim.getWorkDirectory();}
-    Q_INVOKABLE bool getViewAllFlag() const {return lim.getViewAllFlag(); }
-    Q_INVOKABLE void setViewAllFlag(bool flag) {lim.setViewAllFlag(flag); }
-    Q_INVOKABLE void updateCurrentDoctorAndPatientDBFiles();
-    Q_INVOKABLE void generateIDTable(const QString &urlPath);
-    Q_INVOKABLE QString getNumberOfEvalsString(bool onlyEvals = false);
-    Q_INVOKABLE void setNumberOfEvaluations(qint32 numevals);
-    Q_INVOKABLE bool prepareMedicalRecordFiles(const QString &patid);
-    Q_INVOKABLE void cleanMedicalRecordUpdateList(const QString &patid) { lim.cleanMedicalRecordUpdateFlag(patid); }
-    Q_INVOKABLE bool verifyNoMissingDataOnPatient(const QString &patid);
+    //////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////
+    Q_INVOKABLE bool createSubjectStudyFile(const QVariantMap &studyconfig);
 
-    //******************** Protocol related functions ***************************
-    Q_INVOKABLE bool addProtocol(const QString &p) { return lim.addProtocol(p); }
-    Q_INVOKABLE void deleteProtocol(const QString &p) { lim.deleteProtocol(p); }
-    Q_INVOKABLE QStringList getProtocolList(bool full) { return lim.getProtocolList(full); }
+    ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
+    Q_INVOKABLE QList<QVariantMap> getReportsForLoggedEvaluator();
 
-    //******************** Report Related Functions ***************************
-    Q_INVOKABLE QString getEvaluationID(const QString &existingFile);
-    Q_INVOKABLE void operateOnRepGenStruct(qint32 index, qint32 type);
-    Q_INVOKABLE QString getDatFileNameFromIndex(qint32 index, QString patuid, qint32 type);
-    Q_INVOKABLE void reloadPatientDatInformation();
+    ////////////////////////// API REQUESTS ////////////////////////////
+    Q_INVOKABLE void requestOperatingInfo();
 
-    //******************** Updater Related Functions **************************
-    Q_INVOKABLE bool clearChangeLogFile();
-    Q_INVOKABLE QString checkForChangeLog();
-    Q_INVOKABLE void replaceEyeLauncher();
+    //////////////////////////// PROTOCOL RELATED FUNCTIONS ////////////////////////////
+    Q_INVOKABLE bool addProtocol(const QString &p);
+    Q_INVOKABLE void deleteProtocol(const QString &p);
+    Q_INVOKABLE QStringList getProtocolList();
 
 signals:
-    void synchDone();
+    void finishedRequest();
 
-    // Signal to FlowControl, indicating the next file set to process.
-    void fileSetReady(const QStringList &fileSet, const QString &evaluationID);
-
-
-public slots:
-    // Request of the flow control for the next set of files to process.
-    void onFileSetRequested();
+private slots:
+    void receivedRequest();
 
 private:
 
@@ -122,26 +100,35 @@ private:
     ConfigurationManager *configuration;
     ConfigurationManager language;
 
-    // To control data
-    LocalInformationManager lim;
-
-    // UI Config Map
-    UIConfigMap *uimap;
+    // The local database
+    LocalDB localDB;
 
     // The list of countries and their codes.
     CountryStruct *countries;
-
-    // The list that holds list names and corresponding uids
-    LocalInformationManager::DisplayLists nameInfoList;
-
-    // Stores the data selected for processing.
-    DatFileInfoInDir::ReportGenerationStruct reportGenerationStruct;
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();
 
     // Sets the language for program.
     void changeLanguage();
+
+    APIClient apiclient;
+
+    static const char * FILENAME_BASE_READING;
+    static const char * FILENAME_BASE_BINDING;
+    static const char * FILENAME_BASE_NBACKVS;
+    static const char * FILENAME_BASE_NBACKRT;
+    static const char * FILENAME_BASE_NBACKMS;
+    static const char * FILENAME_BASE_GONOGO;
+    static const char * FILENAME_BASE_PERCEPTION;
+
+    /**
+     * @brief findOngoingStudyFileNames
+     * @param study_config the study configuration to match.
+     * @details This will search for status "ongoing" files in the patient directory, that match the study configuration and time critera that depends on each study. If it finds one it will return the expected trial list type for it's next expected trial list type.
+     * @return A Map. For each expected trial list type, what file does it belong to. If more than one the most recent one is used.
+     */
+    QMap<QString,QString> findOngoingStudyFileNames(QVariantMap study_config);
 
 };
 

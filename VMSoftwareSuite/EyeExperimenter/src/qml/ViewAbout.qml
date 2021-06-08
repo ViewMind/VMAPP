@@ -31,10 +31,6 @@ Dialog {
         }
     }
 
-    VMDefines{
-        id: vmDefines
-    }
-
     onOpened: {
     }
 

@@ -1,32 +1,43 @@
 #include "readingexperiment.h"
 
+#ifdef EYETRACKER_HTCVIVEPRO
+const qreal ReadingExperiment::READING_HIT_TOLERANCE = 80;
+const qint32 ReadingExperiment::TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS = 1;
+#endif
+
+#ifdef EYETRACKER_GAZEPOINT
+const qreal ReadingExperiment::READING_HIT_TOLERANCE = 80;
+const qint32 ReadingExperiment::TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS = 1;
+#endif
+
+
 ReadingExperiment::ReadingExperiment(QWidget *parent):Experiment(parent)
 {
     manager = new ReadingManager();
     m = dynamic_cast<ReadingManager*>(manager);
-    expHeader = HEADER_READING_EXPERIMENT;    
+    studyType = RDC::Study::READING;
 }
 
-bool ReadingExperiment::startExperiment(ConfigurationManager *c){
+bool ReadingExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
+                                        const QVariantMap studyConfig, bool useMouse, QVariantMap pp){
 
-    outputDataFile = QString(FILE_OUTPUT_READING) + "_" + c->getString(CONFIG_READING_EXP_LANG);
 
-    // I need to compute the VR Enabled condition BEFORE initializing the experiment as the these values are
-    // needed for the manager intialization inside the start experiment call.
-    if ((c->getString(CONFIG_EYETRACKER_CONFIGURED) == CONFIG_P_ET_HTCVIVEEYEPRO) && (!c->getBool(CONFIG_USE_MOUSE))){
-        c->addKeyValuePair(CONFIG_READING_FONT_SIZE,32);
-        c->addKeyValuePair(CONFIG_READING_ESCAPE_POINT_XY_K,0.10);
-        c->addKeyValuePair(CONFIG_READING_FONT_NAME,"Mono");
-    }
-    else{
-        c->addKeyValuePair(CONFIG_READING_FONT_SIZE,20);
-        c->addKeyValuePair(CONFIG_READING_ESCAPE_POINT_XY_K,0.5);
-        c->addKeyValuePair(CONFIG_READING_FONT_NAME,"Courier New");
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)) return false;
+
+    // No extra processing parameters required so we set it.
+    if (!rawdata.setProcessingParameters(pp)){
+        error = "Failed setting processing parameters on Reading: " + rawdata.getError();
+        emit(experimentEndend(ER_FAILURE));
     }
 
-    if (!Experiment::startExperiment(c)) return false;
+    rawdata.setCurrentTrialListType(RDC::TrialListType::UNIQUE);
 
-    eyeSelector.setTargetCountForSelection(c->getReal(CONFIG_SAMPLE_FREQUENCY)*TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS);
+    // Configure for VR or no values.
+    QVariantMap config;
+    config.insert(ReadingManager::CONFIG_IS_USING_VR,(Globals::EyeTracker::IS_VR && (!useMouse)));
+    m->configure(config);
+
+    eyeSelector.setTargetCountForSelection(pp.value(RDC::ProcessingParameter::SAMPLE_FREQUENCY).toInt()*TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS);
     eyeSelector.setBehaviour(EyeSelector::EBS_CUMULATIVE);
     eyeSelector.reset();
 
@@ -35,30 +46,31 @@ bool ReadingExperiment::startExperiment(ConfigurationManager *c){
 
     // Allways start drawing the point.
     qstate = ReadingManager::ReadingManager::QS_POINT;
+    currentTrialID = "";
 
     // This window is shown and given focus.
-    if (!vrEnabled) this->show();
+    if (!Globals::EyeTracker::IS_VR || (useMouse)) this->show();
 
     // The current state is running.
     state = STATE_RUNNING;
     m->drawPhrase(qstate,currentQuestion);
 
+    // We add the new trial and dataset (in reading they are the same thing)
+    ReadingParser::Phrase phrase = m->getPhrase(currentQuestion);
+    currentTrialID = QString::number(phrase.getID());
+    if (!rawdata.addNewTrial(currentTrialID,phrase.getPhrase())){
+        error = "Failed to add new trial " + currentTrialID + ": " + rawdata.getError();
+        emit(ER_FAILURE);
+        return false;
+    }
+
+    // Now we set the unique dataset.
+    rawdata.setCurrentDataSet(RDC::DataSetType::UNIQUE);
+
     updateSecondMonitorORHMD();
 
     return true;
 
-}
-
-void ReadingExperiment::togglePauseExperiment(){
-    Experiment::togglePauseExperiment();
-
-    // Hiding the window, if the experiment was paused.
-    if (state != STATE_RUNNING){
-        this->hide();
-    }
-    else{
-        this->show();
-    }
 }
 
 void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
@@ -101,17 +113,19 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     // Data is ONLY saved when looking at a phrase.
     if (qstate == ReadingManager::QS_PHRASE){
-        appendEyeTrackerData(data,indR.first(),indR.last(),indL.first(),indL.last(),
-                         m->getPhrase(currentQuestion).getSizeInWords());
+        appendEyeTrackerData(data,indR.first(),indR.last(),indL.first(),indL.last());
     }
 
     // On a question a test needs to be done to know if the option has been selected with the gaze.
+    response = "";
     if (qstate == ReadingManager::QS_QUESTION){
         m->highlightOption(QPoint(x,y));
         qint32 selected = eyeSelector.isSelectionMade(x,y);
         if (selected != -1){
+
             // Saving the answer.
-            saveAnswer(selected+1);
+            ReadingParser::Phrase p = m->getPhrase(currentQuestion);
+            response = p.getFollowUpAt(selected+1);
 
             // Advancing to next phrase or information.
             advanceToTheNextPhrase();
@@ -131,12 +145,39 @@ void ReadingExperiment::advanceToTheNextPhrase(){
         // Reset the selection state machine.
         eyeSelector.reset();
 
+        // Finalize both the data set and the trial.
+        rawdata.finalizeDataSet();
+        rawdata.finalizeTrial(response);
+
         // I move on to the next question only I'm in a question or phrase qstate.        
         if (currentQuestion < m->size()-1){
             currentQuestion++;
+
+            // We just finished a question so now we advance.
+            ReadingParser::Phrase phrase = m->getPhrase(currentQuestion);
+            currentTrialID = QString::number(phrase.getID());
+
+            if (!rawdata.addNewTrial(currentTrialID,phrase.getPhrase())){
+                error = "Failed to add new trial " + currentTrialID + ": " + rawdata.getError();
+                emit(ER_FAILURE);
+                return;
+            }
+
+
         }
         else{
             state = STATE_STOPPED;
+
+            // Finalizing the study and marking it as finalized. Reading has no other parts.
+            bool ans;
+            ans = rawdata.finalizeStudy();
+            ans = ans & rawdata.markStudyAsFinalized(studyType);
+            if (!ans){
+                error = "Failed on Reading study finalization: " + rawdata.getError();
+                emit (experimentEndend(ER_FAILURE));
+                return;
+            }
+
             if (!saveDataToHardDisk()){
                 emit (experimentEndend(ER_FAILURE));
                 return;
@@ -161,9 +202,8 @@ void ReadingExperiment::advanceToTheNextPhrase(){
 
 bool ReadingExperiment::isPointWithInTolerance(int x, int y){
 
-    qint32 tol = config->getInt(CONFIG_READING_PX_TOL);
-    if (qAbs(x-m->getCurrentTargetX()) < tol){
-        if (qAbs(y-m->getCurrentTargetY()) < tol){
+    if (qAbs(x-m->getCurrentTargetX()) < READING_HIT_TOLERANCE){
+        if (qAbs(y-m->getCurrentTargetY()) < READING_HIT_TOLERANCE){
             return true;
         }
     }
@@ -209,39 +249,17 @@ void ReadingExperiment::appendEyeTrackerData(const EyeTrackerData &data,
                                              qint32 wordIndexR,
                                              qint32 characterIndexR,
                                              qint32 wordIndexL,
-                                             qint32 characterIndexL,
-                                             qint32 sentenceLength){
+                                             qint32 characterIndexL){
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    QVariantList dataS;
-    dataS << m->getPhrase(currentQuestion).zeroPadID() << " "
-           << data.time
-           << data.xRight
-           << data.yRight
-           << data.xLeft
-           << data.yLeft
-           << wordIndexR+1
-           << characterIndexR+1
-           << wordIndexL+1
-           << characterIndexL+1
-           << sentenceLength
-           << data.pdRight
-           << data.pdLeft;
-    etData << QVariant(dataS);
-}
+    rawdata.addNewRawDataVector(RawDataContainer::GenerateReadingRawDataVector(data.time,
+                                                                               data.xRight,data.yRight ,data.xLeft,data.yLeft,
+                                                                               data.pdRight,data.pdLeft,
+                                                                               characterIndexR,characterIndexL,
+                                                                               wordIndexR,wordIndexL));
 
-void ReadingExperiment::saveAnswer(qint32 selected){
-
-    // Format: Image ID, time stamp for right and left.
-    ReadingParser::Phrase p = m->getPhrase(currentQuestion);
-    QVariantList dataS;
-    dataS << p.zeroPadID()
-          << p.getFollowUpQuestion() << " -> "
-          << p.getFollowUpAt(selected);
-
-    etData << QVariant(dataS);
 }
 
 

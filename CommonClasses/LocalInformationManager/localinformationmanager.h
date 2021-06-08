@@ -7,7 +7,6 @@
 #include <QDataStream>
 #include <QCryptographicHash>
 
-#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/SQLConn/dbdescription.h"

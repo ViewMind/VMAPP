@@ -9,13 +9,8 @@ Dialog {
     property bool vmInvalidRepoError: false;
     property string vmLoadLanguage: "";
     property string vmDefaultCountry: "";
-    property bool vmOfflineModeStatus: false;
     property bool vmRestartRequired: false;
-
-    // Indexes for the list and to identify the eys.
-    readonly property int vmEYE_L:    0
-    readonly property int vmEYE_R:    1
-    readonly property int vmEYE_BOTH: 2
+    property bool vmPreviousMouseCheckValue: false
 
     signal updateMenus();
 
@@ -39,18 +34,6 @@ Dialog {
         layer.effect: DropShadow{
             radius: 5
         }
-    }
-
-
-    VMDefines{
-        id: vmDefines
-    }
-
-    onOpened: {
-        if (loader.getViewAllFlag()) diagBtnEnableViewAll.vmText = loader.getStringForKey(keybase+"diagDisableViewAll");
-        else diagBtnEnableViewAll.vmText = loader.getStringForKey(keybase+"diagEnableViewAll");
-        instPassword.setText("");
-        instPassword.vmErrorMsg = "";
     }
 
     // The configure settings title
@@ -94,7 +77,7 @@ Dialog {
         id: diagDBDefaultCountry
         width: mainWindow.width*0.344
         height: mainWindow.height*0.043
-        z: 1
+        z: 2
         vmList: loader.getCountryList()
         vmValues: loader.getCountryCodeList()
         anchors.top: diagLabelDefaultCountry.bottom
@@ -129,7 +112,7 @@ Dialog {
         Component.onCompleted: {
             var langs = ["English", "Spanish"]
             diagCBLang.setModelList(langs)
-            var lang = loader.getConfigurationString(vmDefines.vmCONFIG_REPORT_LANGUAGE)
+            var lang = loader.getConfigurationString("ui_language")
             for (var i = 0; i < langs.length; i++){
                 if (langs[i] === lang){
                     vmLoadLanguage = lang;
@@ -155,32 +138,15 @@ Dialog {
     // The double monitor, demo mode and use mouse selections
 
     VMCheckBox{
-        id: diagCboxDemo
-        text: loader.getStringForKey(keybase+"diagCboxDemo");
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 13*viewHome.vmScale
-        anchors.top: diagLabelET.bottom
-        anchors.topMargin: mainWindow.height*0.029
-        anchors.left: diagDBDefaultCountry.left
-        checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE);
-    }
-
-    VMCheckBox{
         id: diagCboxDualMonitor
         text: loader.getStringForKey(keybase+"diagCboxDualMonitor");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
-        anchors.top: diagCboxDemo.top
+        anchors.top: diagLabelET.bottom
         anchors.left: diagCboxUseMouse.right
         anchors.leftMargin: mainWindow.width*0.016
-        visible: {
-            if (uimap.getSecondMonitorOption() === "E") return true;
-            else if (uimap.getSecondMonitorOption() === "D") return false;
-        }
-        checked: {
-            if (uimap.getSecondMonitorOption() === "E") return loader.getConfigurationBoolean(vmDefines.vmCONFIG_DUAL_MONITOR_MODE);
-            else if (uimap.getSecondMonitorOption() === "D") return false;
-        }
+        visible: false
+        checked:  loader.getConfigurationBoolean("dual_monitor_mode");
     }
 
     VMCheckBox{
@@ -188,67 +154,24 @@ Dialog {
         text: loader.getStringForKey(keybase+"diagCboxUseMouse");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
-        anchors.top: diagCboxDemo.top
-        anchors.left: diagCboxDemo.right
+        anchors.top: diagLabelET.bottom
+        anchors.topMargin: mainWindow.height*0.022
+        anchors.left: diagDBDefaultCountry.left
         anchors.leftMargin: mainWindow.width*0.016
-        checked: loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)
+        checked: {
+           vmPreviousMouseCheckValue = loader.getConfigurationBoolean("use_mouse");
+           return vmPreviousMouseCheckValue;
+        }
         visible: true
     }
-
-    Text {
-        id: diagLabelEnableViewAll
-        text: loader.getStringForKey(keybase+"diagLabelEnableViewAll");
-        font.family: viewHome.robotoB.name
-        font.pixelSize: 13*viewHome.vmScale
-        font.bold: true
-        anchors.top: diagCboxUseMouse.bottom
-        anchors.topMargin: mainWindow.height*0.029
-        anchors.left: diagDBDefaultCountry.left
-    }
-
-    Row{
-        id: viewAllEnableRow
-        anchors.left: diagCBLang.left
-        anchors.top: diagLabelEnableViewAll.bottom
-        anchors.topMargin: mainWindow.height*0.029
-        spacing: 10
-
-        VMPasswordField{
-            id: instPassword
-            vmLabelText: loader.getStringForKey(keybase+"diagInstPassword");
-            width: mainWindow.width*0.117
-        }
-
-        VMButton{
-            id: diagBtnEnableViewAll
-            vmFont: viewHome.gothamM.name
-            vmSize: [mainWindow.width*0.195, mainWindow.height*0.043]
-            vmText: ""
-            onClicked: {
-
-                if (loader.verifyInstitutionPassword(instPassword.getText())){
-                    var current = loader.getViewAllFlag();
-                    loader.setViewAllFlag(!current)
-                    viewSettings.close();
-                }
-                else{
-                    instPassword.vmErrorMsg = loader.getStringForKey(keybase + "diagWrongPass")
-                }
-
-            }
-            anchors.bottom: instPassword.bottom
-        }
-
-    }
-
 
     VMButton{
         id: diagBtnOK
         vmFont: viewHome.gothamM.name
         vmSize: [120, 49]
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
-        anchors.top: viewAllEnableRow.bottom
-        anchors.topMargin: mainWindow.height*0.065
+        anchors.bottom: parent.bottom;
+        anchors.bottomMargin: mainWindow.height*0.02;
         anchors.left: diagDBDefaultCountry.left
         onClicked: {
             if (checkAllOk()) close();
@@ -264,8 +187,8 @@ Dialog {
         vmSize: [140, 49]
         vmInvertColors: true
         vmText: loader.getStringForKey(keybase+"diagAbout");
-        anchors.top: viewAllEnableRow.bottom
-        anchors.topMargin: mainWindow.height*0.065
+        anchors.bottom: parent.bottom;
+        anchors.bottomMargin: mainWindow.height*0.02;
         anchors.right: diagDBDefaultCountry.right
         onClicked: {
             viewSettings.close();
@@ -291,11 +214,10 @@ Dialog {
 
         // Saving the settings.
         var newCountry = loader.getCountryCodeForCountry(diagDBDefaultCountry.vmCurrentText);
-        loader.setSettingsValue(vmDefines.vmCONFIG_REPORT_LANGUAGE,diagCBLang.vmCurrentText);
-        loader.setSettingsValue(vmDefines.vmCONFIG_DUAL_MONITOR_MODE,diagCboxDualMonitor.checked);
-        loader.setSettingsValue(vmDefines.vmCONFIG_DEMO_MODE,diagCboxDemo.checked);
-        loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_COUNTRY,newCountry);
-        loader.setSettingsValue(vmDefines.vmCONFIG_USE_MOUSE,diagCboxUseMouse.checked);
+
+        loader.setSettingsValue("ui_language",diagCBLang.vmCurrentText);
+        loader.setSettingsValue("default_country",newCountry);
+        loader.setSettingsValue("use_mouse",diagCboxUseMouse.checked);
 
         // Signal to update dropdown menu information.
         updateMenus();
@@ -306,7 +228,7 @@ Dialog {
         }
         else{
             // Check if et changed.
-            if (loader.checkETChange()){
+            if (vmPreviousMouseCheckValue !== diagCboxUseMouse.checked){
                 flowControl.eyeTrackerChanged()
             }
         }

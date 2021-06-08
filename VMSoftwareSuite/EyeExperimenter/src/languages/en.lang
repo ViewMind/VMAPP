@@ -61,6 +61,7 @@ viewpatientreg_viewSubTitle = Please complete the information below;
 viewpatientreg_labelName = Name;
 viewpatientreg_labelLastName = Last name;
 viewpatientreg_labelBirthDate = Birth date;
+viewpatientreg_labelAge = Age;
 viewpatientreg_labelGender = Gender;
 viewpatientreg_labelCountry = Country;
 viewpatientreg_labelCity = City;
@@ -71,6 +72,7 @@ viewpatientreg_labelConsent = I accept the <a href="terms_of_use">Terms Of Use</
 viewpatientreg_btnCancel = CANCEL;
 viewpatientreg_btnContinue = ACCEPT;
 viewpatientreg_errorEmpty = Cannot be empty;
+viewpatientreg_errorCannotBothEmpty = Both fields cannot be empty;
 viewpatientreg_errorNoAccept = You must accept the Terms of Use and the Privacy Policy;
 viewpatientreg_errorInvalidNum = The value entered is not a valid number;
 viewpatientreg_terms_of_use = Terms Of Use;
@@ -123,11 +125,10 @@ viewstudystart_labelActions = Multi part study options;
 viewstudystart_labelPerceptionType = Select study type;
 viewstudystart_perceptionTypeOptions = Training|Rehabilitation;
 
-
 #********************************* DOCTOR SELECTION DIALOG *********************************
-viewdrsel_viewTitle = Doctor selection;
-viewdrsel_viewSubTitle = Select Doctor's profile or add a new one;
-viewdrsel_labelDrProfile = Doctor's profile;
+viewdrsel_viewTitle = Evaluator Login;
+viewdrsel_viewSubTitle = Login to your profile or create a new one;
+viewdrsel_labelDrProfile = Select Evaluator;
 viewdrsel_btnAddProfile = Add a profile;
 viewdrsel_btnOk = LOGIN;
 viewdrsel_labelNoDrError = Please select a doctor's profile in order to continue;
@@ -210,7 +211,9 @@ viewpatientlist_headerPatient = Patient;
 viewpatientlist_headerSubject = Subject;
 viewpatientlist_headerStatus = Status;
 viewpatientlist_headerDoctor = Doctor;
+viewpatientlist_headerCreationDate = Creation Date;
 viewpatientlist_headerSynch  = Medical Record;
+viewpatientlist_btnReports = Send Studies;
 viewpatientlist_statusOK = OK;
 viewpatientlist_statusRepPending = Reports Pending;
 viewpatientlist_statusUpload = Upload;
@@ -254,7 +257,7 @@ viewshowreports_diagReprocess = UPDATE;
 viewshowreports_labelInformation = Report Contents;
 
 #********************************* DOCTOR INFORMATION *********************************
-viewdrinfo_title = Doctor's Profile;
+viewdrinfo_title = Evaluator Profile;
 viewdrinfo_subtitle = Please fill the information below;
 viewdrinfo_labelName = Name;
 viewdrinfo_labelLastName = Last name;
@@ -275,7 +278,7 @@ viewdrinfo_verify_password = Verify Password;
 viewdrinfo_password_match = The passwords do not match;
 viewdrinfo_disable = Disable doctor;
 viewdrinfo_disable_warning = Warning|Once disabled and validated, it is not possible to go undo<br>Continue anyway?;
-viewdrinfo_drexists = Doctor already exists;
+viewdrinfo_drexists = Email is already being used;
 
 #********************************* EXPERIMENT DONE SCREEN *********************************
 viewexpdone_title = The study has concluded;
@@ -323,7 +326,7 @@ viewselectdata_labelColBindingBC = Colour Combinations;
 viewselectdata_labelFielding = N-Back MS Type;
 viewselectdata_labelNBackRT  = N-Back RT Type;
 viewselectdata_labelStudySelection = Select Study;
-viewselectdata_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type|Go NoGo|N-Back RT For Training|Perception Study;
+viewselectdata_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type|N-Back RT For Training|Perception Study|Go NoGo;
 viewselectdata_labeFileView = Report for studies;
 viewselectdata_labelNoUse = Do not use for report;
 viewselectdata_labelSelectOption = Select data file;
@@ -419,3 +422,4 @@ error_launcher_update = Restart required|In 5 seconds the program will close. Pl
 msg_change_lang = Apply Changes|The program must be restarted to apply the selected changes;
 msg_request_report = Processing...|Please wait while the report information is obtained;
 msg_report_generation = Generating report|Your report will be ready shortly...;
+msg_get_info_online = Synching ...|Retrieving portal information, please wait;

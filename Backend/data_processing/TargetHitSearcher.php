@@ -90,6 +90,7 @@ class TargetHitSearcher {
       // Ignored in the RT logic. ONly used for the MS logic.
       $this->all_MS_target_hits = array();
       // This will be ignored in the MS logic. Only used for RT logic.
+      // TODO For variable number of targets, the intialization needs to be adjusted to NUMBER of targets - 1.
       $this->expected_target_index_in_sequence = 2;
    }
 

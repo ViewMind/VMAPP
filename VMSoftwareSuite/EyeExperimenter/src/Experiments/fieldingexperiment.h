@@ -7,16 +7,6 @@
 #include "experiment.h"
 #include "../../../CommonClasses/Experiments/fieldingmanager.h"
 
-// Timer timess
-#define   TIME_TRANSITION                               500
-#define   TIME_TARGET                                   250
-#define   TIME_CONDITION                                500
-//#define   TIMER_TIME_INTERVAL                           10
-
-// Possible pauses for the fielding experiment
-#define   PAUSE_TRIAL_1                                 32
-#define   PAUSE_TRIAL_2                                 64
-
 class FieldingExperiment : public Experiment
 {
 public:
@@ -34,8 +24,11 @@ public:
     FieldingExperiment(QWidget *parent = nullptr);
 
     // Reimplementation of virtual functions
-    bool startExperiment(ConfigurationManager *c) override;
-    void togglePauseExperiment() override;
+    bool startExperiment(const QString &workingDir, const QString &experimentFile,
+                         const QVariantMap &studyConfig, bool useMouse,
+                         QVariantMap pp) override;
+
+
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -56,6 +49,8 @@ private:
     qint32 currentTrial;
     qint32 currentImage;
 
+    QString currentDataSetType;
+
     // The timer and the counter.
     QTimer stateTimer;
 
@@ -71,14 +66,21 @@ private:
     // Last steps if experiment has ended. Returns false if the experiment is still going.
     bool finalizeExperiment();
 
-    // Adding the header for the trial data.
-    void addTrialHeader();
-
-    // Convenience function to transform the currentImage index to a number between 1 and 6 representing the sequence
-    qint32 currentImageToImageIndex();
-
     // Shows in screen the message "Presione una tecla para seguir" for 32 and 64 trials pauses
     void drawPauseImage();
+
+    QVariantMap addHitboxesToProcessingParameters(QVariantMap pp);
+    bool addNewTrial();
+
+    // Timer timess
+    static const qint32 TIME_TRANSITION;
+    static const qint32 TIME_TARGET;
+    static const qint32 TIME_CONDITION;
+    //static const qint32 TIMER_TIME_INTERVAL                           10
+
+    // Possible pauses for the fielding experiment
+    static const qint32 PAUSE_TRIAL_1;
+    static const qint32 PAUSE_TRIAL_2;
     
 };
 

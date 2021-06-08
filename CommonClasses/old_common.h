@@ -23,10 +23,6 @@
 #define   DIRNAME_SERVER_WORKDIR                        "OUTPUTS"
 #define   DIRNAME_SERVER_LOGS                           "LOGDIR"
 
-// The semaphore name. To prevent multiple instances for the same application
-#define   SEMAPHORE_NAME                                "viewind_eyeexperimenter_semaphore"
-#define   SHAREDMEMORY_NAME                             "viewind_eyeexperimenter_shared_memory"
-
 // Configuration key values (cmd names in the configuration file)
 #define   CONFIG_PATIENT_DIRECTORY                      "patient_directory"
 #define   CONFIG_DOCTOR_NAME                            "doctor_name"
@@ -130,9 +126,6 @@
 #define   CONFIG_VR_RECOMMENDED_WIDTH                   "vr_recommended_width"
 #define   CONFIG_VR_RECOMMENDED_HEIGHT                  "vr_recommended_height"
 #define   CONFIG_RESOLUTION_SCALING                     "resolution_scaling"
-#define   CONFIG_LABELLING_MANUFACTURE_DATE             "labeling_manufacture_date"
-#define   CONFIG_LABELLING_SERIAL_NUMBER                "labeling_serial_number"
-#define   CONFIG_LABELLING_AUTHORIZATION_UID            "labeling_unique_authorization_number"
 #define   CONFIG_DEFAULT_READING_LANGUAGE               "default_reading_study_language"
 #define   CONFIG_NBACKVS_MIN_HOLD_TIME                  "nbackvs_min_hold_time"
 #define   CONFIG_NBACKVS_MAX_HOLD_TIME                  "nbackvs_max_hold_time"

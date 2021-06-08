@@ -1,5 +1,19 @@
 #include "parkinsonparser.h"
 
+#ifdef EYETRACKER_GAZEPOINT
+float ParkinsonParser::MAZE_AREA_H = 170.0;
+float ParkinsonParser::MAZE_AREA_W = 240.0;
+float ParkinsonParser::SQUARE_SIDE_X = 40.0;
+float ParkinsonParser::SQUARE_SIDE_Y = 40.0;
+#endif
+
+#ifdef EYETRACKER_HTCVIVEPRO
+    float ParkinsonParser::MAZE_AREA_H = 170.0;
+    float ParkinsonParser::MAZE_AREA_W = 240.0;
+    float ParkinsonParser::SQUARE_SIDE_X = 40.0;
+    float ParkinsonParser::SQUARE_SIDE_Y = 40.0;
+#endif
+
 ParkinsonParser::ParkinsonParser()
 {
 
@@ -28,7 +42,7 @@ void ParkinsonParser::ParkinsonMaze::sortTargetsAndComputeCoordinates(){
 }
 
 
-bool ParkinsonParser::parseParkinsonExperiment(const QString &contents, qreal screenWidth, qreal screenHeight, qreal xpx2MM, qreal ypx2MM){
+bool ParkinsonParser::parseParkinsonExperiment(const QString &contents, qreal screenWidth, qreal screenHeight){
 
     QStringList lines = contents.split("\n");
     QList< QList<ParkinsonSquareType> > maze;
@@ -45,8 +59,8 @@ bool ParkinsonParser::parseParkinsonExperiment(const QString &contents, qreal sc
     descriptorMap["BB"] = PST_WALL;
     descriptorMap["AA"] = PST_ARROW;
 
-    qint32 squareSideY = static_cast<qint32>(SQUARE_SIDE_IN_MM/ypx2MM);
-    qint32 squareSideX = static_cast<qint32>(SQUARE_SIDE_IN_MM/xpx2MM);
+    qint32 squareSideY = static_cast<qint32>(SQUARE_SIDE_Y);
+    qint32 squareSideX = static_cast<qint32>(SQUARE_SIDE_X);
 
     error = "";
 

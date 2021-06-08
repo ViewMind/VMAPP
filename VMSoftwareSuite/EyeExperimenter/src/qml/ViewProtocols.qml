@@ -29,7 +29,7 @@ Dialog {
     }
 
     onOpened: {
-        var list =  loader.getProtocolList(false);
+        var list =  loader.getProtocolList();
         list.unshift(loader.getStringForKey(keybase+"optionSelectProtocol"))
         console.log(list);
         cbProtocolToDelete.setModelList(list);
@@ -38,10 +38,6 @@ Dialog {
         labelNewProtocol.clear()
     }
 
-
-    VMDefines{
-        id: vmDefines
-    }
 
     // The configure settings title
     Text {

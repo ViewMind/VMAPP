@@ -1,5 +1,7 @@
 #include "bindingmanager.h"
 
+const char * BindingManager::CONFIG_USE_SMALL_TARGETS = "use_small_targets";
+
 BindingManager::BindingManager()
 {
     canvas = nullptr;
@@ -53,11 +55,12 @@ bool BindingManager::drawFlags(const QString &trialName, bool show){
 
 }
 
-void BindingManager::init(ConfigurationManager *c){
-    ExperimentDataPainter::init(c);
+void BindingManager::init(qreal display_resolution_width, qreal display_resolution_height){
+    ExperimentDataPainter::init(display_resolution_width,display_resolution_height);
 
     canvas->setBackgroundBrush(QBrush(Qt::gray));
 
+    // Old code. These are obviously the same values as the parameters.
     qreal WScreen, HScreen;
     WScreen = canvas->width();
     HScreen = canvas->height();
@@ -69,6 +72,12 @@ void BindingManager::init(ConfigurationManager *c){
     line1.setP1(QPointF(WScreen/2 + delta,HScreen/2 - delta));
     line1.setP2(QPointF(WScreen/2 - delta,HScreen/2 + delta));
 
+}
+
+void BindingManager::configure(const QVariantMap &configuration){
+    if (configuration.contains(CONFIG_USE_SMALL_TARGETS)){
+        smallTargets = configuration.value(CONFIG_USE_SMALL_TARGETS).toBool();
+    }
 }
 
 void BindingManager::drawCenter(){
@@ -95,7 +104,7 @@ void BindingManager::enableDemoMode(){
 }
 
 bool BindingManager::parseExpConfiguration(const QString &contents){    
-    bool ans = parser.parseBindingExperiment(contents,config,ScreenResolutionWidth,ScreenResolutionHeight,NUMBER_OF_TRIALS_IN_DEMO_MODE);
+    bool ans = parser.parseBindingExperiment(contents,smallTargets,ScreenResolutionWidth,ScreenResolutionHeight);
     versionString = parser.getVersionString();
     expectedIDs = parser.getExpectedIDs();
     error = parser.getError();

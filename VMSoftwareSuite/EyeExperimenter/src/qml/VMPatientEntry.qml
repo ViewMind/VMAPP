@@ -5,19 +5,23 @@ Item {
     id: vmPatientEntry
 
     property int vmPatientColWidth: headerPatient.width
-    property int vmStatusColWidth: headerStatus.width
-    property int vmDoctorColWidth: headerDoctor.width
-    property int vmMedRectColWidth: headerMedRecs.width
+    property int vmPatientCreationDateWidth: headerCreationDate.width
+    property int vmPatientIDWidth: headerID.width
 
     readonly property int vmHeight: mainWindow.height*0.043
     readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
-    width: vmPatientColWidth + vmStatusColWidth
+    width: vmPatientColWidth + vmPatientCreationDateWidth + vmPatientIDWidth
 
-    signal fetchReport(int index)
-    signal updateMedicalRecords(int index)
-
+    MouseArea {
+        id: selectArea
+        anchors.fill: parent
+        onClicked: {
+            vmIsSelected = true;
+            patientListView.currentIndex = vmItemIndex
+        }
+    }
 
     Rectangle {
 
@@ -29,22 +33,19 @@ Item {
         width: vmPatientColWidth
         anchors.left: parent.left
         anchors.top: parent.top
-        MouseArea {
-            id: selectArea
-            anchors.fill: parent
-            onClicked: {
-                vmIsSelected = true;
-                patientListView.currentIndex = vmItemIndex
-            }
-        }
+//        MouseArea {
+//            id: selectArea
+//            anchors.fill: parent
+//            onClicked: {
+//                vmIsSelected = true;
+//                patientListView.currentIndex = vmItemIndex
+//            }
+//        }
         Text {
             id: patientText
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: {
-               if (uimap.getStructure() === "P") return vmPatientName + " (" +  vmDisplayID + ")"
-               else return vmDisplayID
-            }
+            text: name + " " + lastname
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
@@ -52,96 +53,45 @@ Item {
         }
     }
 
+
     Rectangle {
-        id: doctorRect
-        color: "#ffffff"
+        id: patientIDRect
+        color: vmIsSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
         border.width: mainWindow.width*0.002
         height: vmHeight
-        width: vmDoctorColWidth
+        width: vmPatientIDWidth
         anchors.left: patientRect.right
         anchors.top: parent.top
-        visible: (vmDrName !== "")
+        visible: true
         Text {
-            id: doctorText
+            id: idText
+            color: vmIsSelected? "#ffffff" : "#000000"
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: vmDrName
+            text: supplied_institution_id
             anchors.centerIn: parent
         }
     }
 
     Rectangle {
-        id: statusRect
-        color: "#ffffff"
+        id: creationDateRect
+        color: vmIsSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
         border.width: mainWindow.width*0.002
         height: vmHeight
-        width: vmStatusColWidth
-        anchors.left: {
-            if (doctorRect.visible) return doctorRect.right
-            else return patientRect.right;
-        }
+        width: vmPatientCreationDateWidth
+        anchors.left: patientIDRect.right;
         anchors.top: parent.top
-        visible: vmIsOk
+        visible: true
         Text {
-            id: statusText
+            id: creationDateText
+            color: vmIsSelected? "#ffffff" : "#000000"
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: loader.getStringForKey("viewpatientlist_statusOK")
+            text: creation_date
             anchors.centerIn: parent
         }
     }
 
-    VMButton {
-        id: btnFetchReport
-        visible: !vmIsOk
-        enabled: vmEnableGenRepButon
-        vmText: loader.getStringForKey("viewpatientlist_statusRepPending")
-        height: vmHeight
-        width: vmStatusColWidth
-        vmFont: viewHome.gothamM.name
-        anchors.left: {
-            if (doctorRect.visible) return doctorRect.right
-            else return patientRect.right;
-        }
-        anchors.top: parent.top
-        onClicked: {
-            vmPatientEntry.fetchReport(vmItemIndex);
-        }
-    }
-
-    Rectangle {
-        id: medRecRect
-        color: "#ffffff"
-        border.color: "#EDEDEE"
-        border.width: mainWindow.width*0.002
-        height: vmHeight
-        width: vmMedRectColWidth
-        anchors.left: statusRect.right
-        anchors.top: parent.top
-        visible: vmMedRecUpToDate
-        Text {
-            id: medRectText
-            font.family: viewHome.gothamR.name
-            font.pixelSize: vmFontSize
-            text: loader.getStringForKey("viewpatientlist_statusOK")
-            anchors.centerIn: parent
-        }
-    }
-
-    VMButton {
-        id: btnSendMedRec
-        visible: !vmMedRecUpToDate
-        enabled: vmEnableGenRepButon
-        vmText: loader.getStringForKey("viewpatientlist_statusUpload")
-        height: vmHeight
-        width: vmMedRectColWidth
-        vmFont: viewHome.gothamM.name
-        anchors.left: statusRect.right
-        anchors.top: parent.top
-        onClicked: {
-            vmPatientEntry.updateMedicalRecords(vmItemIndex);
-        }
-    }
 }

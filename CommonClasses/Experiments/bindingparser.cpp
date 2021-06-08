@@ -11,33 +11,49 @@
 
 // Dimensions for drawing the target flags. The dimensions are in mm so that they can be drawn the same size independently of the screen resolution.
 // The parser creates the structure that defines how the values will be drawn. That's why it is here.
-static const qreal LARGE_BINDING_TARGET_SIDE =              45.25;
-static const qreal LARGE_BINDING_TARGET_HS =                1.0;
-static const qreal LARGE_BINDING_TARGET_HL =                11.75;
-static const qreal LARGE_BINDING_TARGET_VS =                6.00;
-static const qreal LARGE_BINDING_TARGET_VL =                16.0;
+/// TODO: Replace scaled values with % of screen size to make the CONFIG_XK and CONFIG_YK dissappear.
+const qreal BindingParser::LARGE_BINDING_TARGET_SIDE =              45.25;
+const qreal BindingParser::LARGE_BINDING_TARGET_HS =                1.0;
+const qreal BindingParser::LARGE_BINDING_TARGET_HL =                11.75;
+const qreal BindingParser::LARGE_BINDING_TARGET_VS =                6.00;
+const qreal BindingParser::LARGE_BINDING_TARGET_VL =                16.0;
 
-static const qreal LARGE_BINDING_GRID_SPACING_X_2FLAGS =    128.0;
-static const qreal LARGE_BINDING_GRID_SPACING_X_3FLAGS =    64.0;
-static const qreal LARGE_BINDING_GRID_SPACING_Y =           48.0;
+const qreal BindingParser::LARGE_BINDING_GRID_SPACING_X_2FLAGS =    128.0;
+const qreal BindingParser::LARGE_BINDING_GRID_SPACING_X_3FLAGS =    64.0;
+const qreal BindingParser::LARGE_BINDING_GRID_SPACING_Y =           48.0;
 
-static const qreal SMALL_BINDING_TARGET_SIDE =              10.0;
-static const qreal SMALL_BINDING_TARGET_HS =                0.25;
-static const qreal SMALL_BINDING_TARGET_HL =                2.6;
-static const qreal SMALL_BINDING_TARGET_VS =                1.33;
-static const qreal SMALL_BINDING_TARGET_VL =                3.54;
+const qreal BindingParser::SMALL_BINDING_TARGET_SIDE =              10.0;
+const qreal BindingParser::SMALL_BINDING_TARGET_HS =                0.25;
+const qreal BindingParser::SMALL_BINDING_TARGET_HL =                2.6;
+const qreal BindingParser::SMALL_BINDING_TARGET_VS =                1.33;
+const qreal BindingParser::SMALL_BINDING_TARGET_VL =                3.54;
 
-static const qreal SMALL_BINDING_GRID_SPACING_X_2FLAGS =    20.0;
-static const qreal SMALL_BINDING_GRID_SPACING_X_3FLAGS =    20.0;
-static const qreal SMALL_BINDING_GRID_SPACING_Y =           20.0;
+const qreal BindingParser::SMALL_BINDING_GRID_SPACING_X_2FLAGS =    20.0;
+const qreal BindingParser::SMALL_BINDING_GRID_SPACING_X_3FLAGS =    20.0;
+const qreal BindingParser::SMALL_BINDING_GRID_SPACING_Y =           20.0;
+
+// XK and YK, originally represented  the px to mm ratio, horizontally and vertically respectively in a monitor
+// They are now left as scaling and adjustment constants to make the squares have the right size in each
+// eyetracking helmet to use.
+
+#ifdef EYETRACKER_HTCVIVEPRO
+const qreal BindingParser::CONFIG_XK =                              0.25;
+const qreal BindingParser::CONFIG_YK =                              0.25;
+#endif
+
+#ifdef EYETRACKER_GAZEPOINT
+const qreal BindingParser::CONFIG_XK =                              0.25;
+const qreal BindingParser::CONFIG_YK =                              0.25;
+#endif
+
 
 BindingParser::BindingParser()
 {
 }
 
 
-void BindingParser::demoModeList(qint32 numberToLeave){
-    while (trials.size() > numberToLeave){
+void BindingParser::demoModeList(qint32 number_to_leave){
+    while (trials.size() > number_to_leave){
         trials.removeLast();
     }
 }
@@ -53,9 +69,8 @@ BindingParser::BindingTrial BindingParser::getTrialByName(const QString &id) con
     return trial;
 }
 
-bool BindingParser::parseBindingExperiment(const QString &contents, ConfigurationManager *config,
-                                           qreal ScreenResolutionWidth, qreal ScreenResolutionHeight,
-                                           qint32 numberToLeave){
+bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmall,
+                                           qreal ScreenResolutionWidth, qreal ScreenResolutionHeight){
     bool legacyDescription = false;
 
     // Splitting into lines.
@@ -65,17 +80,6 @@ bool BindingParser::parseBindingExperiment(const QString &contents, Configuratio
     /// TODO: Remove this when it is safe.
     QStringList tokens;
     tokens = lines.first().split(' ',QString::SkipEmptyParts);
-
-    // Checking for the must have values.
-    if (!config->containsKeyword(CONFIG_XPX_2_MM)){
-        error = "Configuration file requires the horizontal pixel to mm ratio: x_px_mm";
-        return false;
-    }
-
-    if (!config->containsKeyword(CONFIG_YPX_2_MM)){
-        error = "Configuration file requires the vertical pixel to mm ratio: y_px_mm";
-        return false;
-    }
 
     int horizontalGridPoints = 2; // Initialization done just o avoid a warning
 
@@ -110,22 +114,22 @@ bool BindingParser::parseBindingExperiment(const QString &contents, Configuratio
     drawStructure.ypos.clear();
 
     // Loading the draw structure
-    DrawValues drawValues = loadDrawStructure(config->getBool(CONFIG_BINDING_TARGET_SMALL));
+    DrawValues drawValues = loadDrawStructure(useSmall);
 
     if (!legacyDescription){
 
         // The mm values are transformed to pixels and the math is only once to define the possible target positions.
-        drawStructure.FlagSideH = drawValues.side/config->getReal(CONFIG_XPX_2_MM);
-        drawStructure.FlagSideV = drawValues.side/config->getReal(CONFIG_YPX_2_MM);
-        drawStructure.HSBorder  = drawValues.hs/config->getReal(CONFIG_XPX_2_MM);
-        drawStructure.VLBorder  = drawValues.vl/config->getReal(CONFIG_XPX_2_MM);
-        drawStructure.HLBorder  = drawValues.hl/config->getReal(CONFIG_YPX_2_MM);
-        drawStructure.VSBorder  = drawValues.vs/config->getReal(CONFIG_YPX_2_MM);
+        drawStructure.FlagSideH = drawValues.side/CONFIG_XK;
+        drawStructure.FlagSideV = drawValues.side/CONFIG_YK;
+        drawStructure.HSBorder  = drawValues.hs/CONFIG_XK;
+        drawStructure.VLBorder  = drawValues.vl/CONFIG_XK;
+        drawStructure.HLBorder  = drawValues.hl/CONFIG_YK;
+        drawStructure.VSBorder  = drawValues.vs/CONFIG_YK;
 
-        qreal Gxpx = drawValues.gx/config->getReal(CONFIG_XPX_2_MM);
-        qreal Gypx = drawValues.gy/config->getReal(CONFIG_YPX_2_MM);
-        qreal Sx = drawValues.side/config->getReal(CONFIG_XPX_2_MM);
-        qreal Sy = drawValues.side/config->getReal(CONFIG_YPX_2_MM);
+        qreal Gxpx = drawValues.gx/CONFIG_XK;
+        qreal Gypx = drawValues.gy/CONFIG_YK;
+        qreal Sx = drawValues.side/CONFIG_XK;
+        qreal Sy = drawValues.side/CONFIG_YK;
 
         // Total horizontal space required by the placement grid
         qreal Wx = Gxpx*(horizontalGridPoints-1) + Sx;
@@ -217,10 +221,6 @@ bool BindingParser::parseBindingExperiment(const QString &contents, Configuratio
         i = i + 7;
 
     }
-
-    if (config->getBool(CONFIG_DEMO_MODE)) demoModeList(numberToLeave);
-    //qDebug() << "BINDING PARSER FORCING DEMO LENGTH";
-    //demoModeList(numberToLeave);
 
     return true;
 }

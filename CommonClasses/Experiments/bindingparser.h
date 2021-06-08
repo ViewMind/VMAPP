@@ -1,8 +1,8 @@
 #ifndef BINDINGPARSER_H
 #define BINDINGPARSER_H
 
-#include "../../CommonClasses/common.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../eyetracker_defines.h"
 #include <QColor>
 #include <QtMath>
 
@@ -95,7 +95,7 @@ public:
 
     // Main interface to use this class for the Binding manager or simply to get info on the experiments.
     BindingParser();
-    bool parseBindingExperiment(const QString &contents, ConfigurationManager *config, qreal ScreenResolutionWidth, qreal ScreenResolutionHeight, qint32 numberToLeave);
+    bool parseBindingExperiment(const QString &contents, bool useSmall, qreal ScreenResolutionWidth, qreal ScreenResolutionHeight);
     QString getError() const {return error;}
     FlagDrawStructure getDrawStructure() const {return drawStructure;}
     qint32 getNumberOfTargets() const {return numberOfTargets;}
@@ -104,7 +104,7 @@ public:
     BindingTrial getTrialByName(const QString &id) const;
     QList<BindingTrial> getTrialList() const {return trials;}
     QList<QStringList> getExpectedIDs() const {return expectedIDs;}
-    void demoModeList(qint32 numberToLeave);
+    void demoModeList(qint32 number_to_leave);
 
 
 private:
@@ -143,6 +143,41 @@ private:
     bool parseColors(const QString &line, BindingTrial *trial, bool background, bool show);
     bool legacyParser(const QString &contents);
     DrawValues loadDrawStructure(bool targetsSmall);
+
+
+    static const qreal  LARGE_BINDING_TARGET_SIDE;
+    static const qreal  LARGE_BINDING_TARGET_HS;
+    static const qreal  LARGE_BINDING_TARGET_HL;
+    static const qreal  LARGE_BINDING_TARGET_VS;
+    static const qreal  LARGE_BINDING_TARGET_VL;
+
+    static const qreal  LARGE_BINDING_GRID_SPACING_X_2FLAGS;
+    static const qreal  LARGE_BINDING_GRID_SPACING_X_3FLAGS;
+    static const qreal  LARGE_BINDING_GRID_SPACING_Y;
+
+    static const qreal  SMALL_BINDING_TARGET_SIDE;
+    static const qreal  SMALL_BINDING_TARGET_HS;
+    static const qreal  SMALL_BINDING_TARGET_HL;
+    static const qreal  SMALL_BINDING_TARGET_VS;
+    static const qreal  SMALL_BINDING_TARGET_VL;
+
+    static const qreal  SMALL_BINDING_GRID_SPACING_X_2FLAGS;
+    static const qreal  SMALL_BINDING_GRID_SPACING_X_3FLAGS;
+    static const qreal  SMALL_BINDING_GRID_SPACING_Y;
+
+    // XK and YK, originally represented  the px to mm ratio, horizontally and vertically respectively in a monitor
+    // They are now left as scaling and adjustment constants to make the squares have the right size in each
+    // eyetracking helmet to use.
+
+    #ifdef EYETRACKER_HTCVIVEPRO
+    static const qreal  CONFIG_XK;
+    static const qreal  CONFIG_YK;
+    #endif
+
+    #ifdef EYETRACKER_GAZEPOINT
+    static const qreal  CONFIG_XK =                              0.25;
+    static const qreal  CONFIG_YK =                              0.25;
+    #endif
 
 
 };

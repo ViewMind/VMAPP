@@ -10,13 +10,9 @@
 
 #include <iostream>
 
-#include "../../../CommonClasses/common.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../../CommonClasses/DatFileInfo/datfileinfoindir.h"
-#include "../../../CommonClasses/RepFileInfo/repfileinfo.h"
-#include "../../../CommonClasses/GraphicalReport/imagereportdrawer.h"
-#include "../../../CommonClasses/GraphicalReport/diagonosislogic.h"
 #include "../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
+#include "../../../CommonClasses/RawDataContainer/rawdatacontainer.h"
 
 #include "Experiments/readingexperiment.h"
 #include "Experiments/imageexperiment.h"
@@ -26,18 +22,13 @@
 #include "Experiments/gonogoexperiment.h"
 #include "Experiments/perceptionexperiment.h"
 
-#include "sslclient/ssldataprocessingclient.h"
-
 #include "EyeTrackerInterface/Mouse/mouseinterface.h"
 #include "EyeTrackerInterface/GazePoint/opengazeinterface.h"
 #include "EyeTrackerInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
 
 #include "monitorscreen.h"
-#include "uiconfigmap.h"
+#include "eyexperimenter_defines.h"
 
-#ifdef USE_IVIEW
-#include "EyeTrackerInterface/RED/redinterface.h"
-#endif
 
 class FlowControl : public QWidget
 {
@@ -46,39 +37,19 @@ class FlowControl : public QWidget
     Q_PROPERTY(QImage image READ image NOTIFY newImageAvailable)
 
 public:
-    explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr, UIConfigMap *ui = nullptr);
+    explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     ~FlowControl();
     Q_INVOKABLE void connectToEyeTracker();
-    Q_INVOKABLE void calibrateEyeTracker();
-    Q_INVOKABLE bool startNewExperiment(qint32 experimentID);
+    Q_INVOKABLE void calibrateEyeTracker(quint8 eye_to_use);
+    Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
     Q_INVOKABLE bool isConnected() const { return connected; }
     Q_INVOKABLE bool isCalibrated() const;
     Q_INVOKABLE bool isRightEyeCalibrated() const;
     Q_INVOKABLE bool isLeftEyeCalibrated() const;
     Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
-    Q_INVOKABLE bool areThereFrequencyErrorsPresent() const {return frequencyErrorsPresent;}
     Q_INVOKABLE void setupSecondMonitor();
     Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
-    Q_INVOKABLE bool checkSSLAvailability() {return sslDataProcessingClient->sslEnabled();}
-    Q_INVOKABLE void requestReportData();
-    Q_INVOKABLE void sendMedicalRecordsToServer(const QString &patid);
-    Q_INVOKABLE bool isSSLTransactionOK() const {return sslTransactionAllOk;}
-    Q_INVOKABLE void saveReport();
-    Q_INVOKABLE void saveReportAs(const QString &title);
-    Q_INVOKABLE void startDemoTransaction();
-    Q_INVOKABLE void prepareForReportListIteration(const QString &patientDirectory);
-    Q_INVOKABLE QVariantMap nextReportInList();
-    Q_INVOKABLE void setReportIndex(qint32 id) { selectedReport = id; }
-    Q_INVOKABLE void prepareSelectedReportIteration();
-    Q_INVOKABLE QVariantMap nextSelectedReportItem();
-    Q_INVOKABLE QStringList getSelectedReportInfo();
-    Q_INVOKABLE qint32 getSSLTransactionError() {return sslDataProcessingClient->getProcessingCode();}
-    Q_INVOKABLE void moveFileToArchivedFileFolder(const QString &filename);
-    Q_INVOKABLE void doFrequencyAnalysis(const QString &filename);
-    Q_INVOKABLE void requestDataReprocessing(const QString &reportName, const QString &fileList, const QString &evaluationID);
-    Q_INVOKABLE qint32 numberOfEvaluationsReceived() { return sslDataProcessingClient->getNumberOfEvaluations(); }
-    Q_INVOKABLE QStringList getDiagnosticClass();
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE void stopRenderingVR();
     Q_INVOKABLE void generateWaitScreen(const QString &message);
@@ -91,19 +62,9 @@ signals:
     // This tells QML that the experiment has finished.
     void experimentHasFinished();
 
-    // Transaction finished.
-    void sslTransactionFinished();
-
     // Signals to indicate all is good.
     void connectedToEyeTracker(bool ok);
     void calibrationDone(bool ok);
-
-    // Requesting file set to process.
-    void requestFileSet();
-
-    // Used to signal the UI to open the dialog to wait for the report generation.
-    void reportGenerationRequested();
-    void reportGenerationDone();
 
     // Signal to update QML Image on screen.
     void newImageAvailable();
@@ -113,19 +74,11 @@ public slots:
     // When an experiment finishes.
     void on_experimentFinished(const Experiment::ExperimentResult & er);
 
-    // When an SSL Transaction finishes
-    void onDisconnectionFinished();
-
     // Eye tracker control changes
     void onEyeTrackerControl(quint8 code);
 
-    // For receiving information to send to the server
-    void onFileSetEmitted(const QStringList &fileSetAndName, const QString &evaluationID);
 
 private slots:
-
-    // The function that actually draws the report
-    void drawReport();
 
     // Slot that requests new image to draw from the OpenVR Control Object
     void onRequestUpdate();
@@ -140,6 +93,9 @@ private:
 
     // The second screen for monitoring the experiments.
     MonitorScreen *monitor;
+
+    // Selected eye for doing an study
+    QString selected_eye_to_use;
 
     // The currently selected experiment
     Experiment *experiment;
@@ -163,25 +119,8 @@ private:
     // The Log interface
     LogInterface logger;
 
-    // The sslclient to send the information process request.
-    SSLDataProcessingClient *sslDataProcessingClient;
-
     // The configuration structure
     ConfigurationManager *configuration;
-
-    // The UI configuration map
-    UIConfigMap *uimap;
-
-    // The list of files generated in the current experiment run.
-    QStringList currentRunFiles;
-
-    // The report list for a given directory and required selection index and iteration values.
-    qint32 selectedReport;
-    qint32 selectedReportItemIterator;
-    RepFileInfo reportsForPatient;
-    QList<QVariantMap> reportItems;
-    QStringList reportTextDataIndexes;
-    QStringList diagnosisClassText;
 
     // Flags to avoid reconnecting during recalibration
     bool connected;
@@ -194,32 +133,23 @@ private:
     // Binary status for the end of an experiment.
     bool experimentIsOk;
 
-    // Flag to indicate frequency errors and use the appropiate message.
-    bool frequencyErrorsPresent;
-
-    // Flag to check on transaction status
-    bool sslTransactionAllOk;
-
-    // Flag used to generate demo transaction
-    bool demoTransaction;
-
-    // Flag to indicate transaction is reprocessing previous data.
-    bool reprocessRequest;
-
-    // The patient id whose medical record got synched up.
-    QString patientIDMedicalRecordUpdate;
-
-    // Helper function to selecte expanded binding files.
-    QString getBindingExperiment(bool bc);
+    // Checks that all mandatory data parameters have been set.
+    bool checkAllProcessingParameters();
 
     // The country codes and the function to load them
     QStringList countryList;
     QStringList countryCodes;
     void fillCountryList();
 
-    // Moves successfully processed files to the corresponding processed folder.
-    QStringList fileSetSentToProcess;
-    void moveProcessedFilesToProcessedFolder(const QStringList &fileSet);
+    // The name of the files.
+    static const char *STUDY_FILE_READING;
+    static const char *STUDY_FILE_BINDING;
+    static const char *STUDY_FILE_NBACKMS;
+    static const char *STUDY_FILE_NBACKRT;
+    static const char *STUDY_FILE_PERCEPTION;
+    static const char *STUDY_FILE_GONOGO;
+
+
 
 };
 

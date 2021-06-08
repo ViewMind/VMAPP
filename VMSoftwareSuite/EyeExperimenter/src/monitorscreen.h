@@ -8,7 +8,6 @@
 #include <QApplication>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
-#include "../../../CommonClasses/common.h"
 #include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
 class MonitorScreen : public QWidget
