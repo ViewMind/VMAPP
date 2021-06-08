@@ -183,6 +183,13 @@ bool EDPNBackRT::finalizeFieldingDataMatrix(){
 
     file.close();
 
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            return finalizeRawDataFile();
+        }
+    }
+
     return true;
 }
 
@@ -210,6 +217,13 @@ void EDPNBackRT::appendDataToFieldingMatrix(const DataMatrix &data,
     mwa.logMessage("TRIAL " + trialID + " - " + imgID + ". RIGHT FIXATIONS");
 #endif
     Fixations fR = mwa.computeFixations(data,FIELDING_XR,FIELDING_YR,FIELDING_TI);
+
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            appendToRawDataCSVFile(data,trialID,imgID,FIELDING_TI,FIELDING_YR,FIELDING_XL,FIELDING_XR,FIELDING_YL);
+        }
+    }
 
     //    ///////////////////////////// THIS CODE IS FOR DEBUGGING THE ONLINE FIXATION ALGORITHM
     //    // Computing fixation online and comparing the results.

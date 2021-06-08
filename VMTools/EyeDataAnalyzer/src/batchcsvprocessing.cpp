@@ -53,7 +53,9 @@ void BatchCSVProcessing::run(){
     for (qint32 i = 0; i < cats.size(); i++){
 
         QString outputCSVFile = workingDirectory + "/" + cats.at(i) + ".csv";
+        QString rawDataCSVFile = workingDirectory + "/" + cats.at(i) + "_raw_data.csv";
         QString outputCSVContents = "";
+        QString rawDataCSVContents = "";
         int expType = -1;
         if (cats.at(i).contains("RD")) expType = EXP_READING;
         else if (cats.at(i).contains("BC")) expType = EXP_BINDING_BC;
@@ -72,11 +74,18 @@ void BatchCSVProcessing::run(){
 
             DatFileProcessingStruct dfps = processingList.value(cats.at(i)).value(j);
             //qWarning() << "Generating csv for file" << dfps.filePath << ". ISREADING" << isReading;
-            QString csvFile = generateLocalCSV(dfps,expType);
+            QStringList fileNames = generateLocalCSV(dfps,expType);
+            QString csvFile = "";
+            QString rawDataFile = "";
+            if (fileNames.size() == 2){
+                csvFile = fileNames.first();
+                rawDataFile = fileNames.last();
+            }
             if (csvFile.isEmpty()) continue;
 
             //qWarning() << "Appending data of file" << csvFile;
-            outputCSVContents = appendCSV(csvFile,dfps,outputCSVContents);
+            outputCSVContents = appendCSV(csvFile,dfps,outputCSVContents,false);
+            rawDataCSVContents = appendCSV(rawDataFile,dfps,rawDataCSVContents,true);
 
             counter++;
             qint32 percent = counter*100/total;
@@ -96,6 +105,20 @@ void BatchCSVProcessing::run(){
             messages << "Generated output file " + outputCSVFile;
         }
         else errors << "No content to fill file " << outputCSVFile;
+
+        if (!rawDataCSVContents.isEmpty()){
+            QFile outFile(rawDataCSVFile);
+            if (!outFile.open(QFile::WriteOnly)){
+                errors << "Could not open raw data csv " + rawDataCSVFile + " for appending";
+                continue;
+            }
+            QTextStream writer(&outFile);
+            writer << rawDataCSVContents;
+            outFile.close();
+            messages << "Generated raw data file " + rawDataCSVFile;
+        }
+        // No sense in reporting the error as only Go - No Go usess this right now.
+        //else errors << "No content to fill raw data file" << rawDataCSVContents;
 
 
 
@@ -170,12 +193,15 @@ QStringList BatchCSVProcessing::getClosestMedicalRecord(const QString &dbpuid, c
     return ans;
 }
 
-QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessingStruct dfps, int exp_type){
+QStringList BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessingStruct dfps, int exp_type){
     ConfigurationManager config;
+    QStringList ans;
     if (!config.loadConfiguration(dfps.configurationFile,COMMON_TEXT_CODEC)){
         errors << "Error Loading configuration: " << config.getError();
-        return "";
+        return ans;
     }
+
+    config.addKeyValuePair(CONFIG_SAVE_RAW_DATA_CSV,true);
 
     MonitorGeometry mgeo;
     MovingWindowParameters mwp;
@@ -200,7 +226,6 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
 
     QString exp;
     QString data;
-    QString genCSV;
 
     EDPBase *processor;
     RawDataProcessor rdp;
@@ -229,7 +254,7 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
     }
     else{
         errors << "Unsuported experiment type for mass csv generator: " + QString::number(exp_type);
-        return "";
+        return ans;
     }
 
     mgeo.resolutionHeight =  rdp.getConfiguration()->getReal(CONFIG_RESOLUTION_HEIGHT);
@@ -245,23 +270,24 @@ QString BatchCSVProcessing::generateLocalCSV(BatchCSVProcessing::DatFileProcessi
     if (!data.isEmpty()){
         if (!processor->doEyeDataProcessing(data)){
             errors << processor->getError();
-            return "";
+            return ans;
         }
 
-        genCSV = processor->getOuputMatrixFileName();
+        ans << processor->getOuputMatrixFileName();
+        ans << processor->getRawDataCSVFileName();
+
     }
     else{
         //qWarning() << "Could not get any data from" << dfps.filePath;
         messages << "EMPTY FILE: " + dfps.filePath;
-        genCSV = "";
     }
 
     delete processor;
-    return genCSV;
+    return ans;
 
 }
 
-QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const DatFileProcessingStruct &dfps, const QString &csvdata){
+QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const DatFileProcessingStruct &dfps, const QString &csvdata, bool simpleAppend){
 
 
     // Reading the input file.
@@ -276,7 +302,7 @@ QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const DatFile
     inFile.close();
 
 
-    QStringList lines = allcsv.split("\n");    
+    QStringList lines = allcsv.split("\n");
     if (lines.size() <= 2) {
         errors << "CSV File " + fileToAppend + " had 1 or less lines";
         return csvdata;
@@ -287,13 +313,25 @@ QString BatchCSVProcessing::appendCSV(const QString &fileToAppend, const DatFile
 
     // Getting medical record information and appending it to adjunct columns
     QStringList csvLines;
-    if (csvdata.isEmpty()) csvLines << "display_id,age,"+lines.first() + "," + headerMedRec.join(",");
-    else csvLines << csvdata;
 
-    QStringList medicalRecord = getClosestMedicalRecord(dfps.dbpuid,dfps.studyDate);
+    if (!simpleAppend){
+        if (csvdata.isEmpty()) csvLines << "display_id,age,"+lines.first() + "," + headerMedRec.join(",");
+        else csvLines << csvdata;
 
-    for (qint32 i = 1; i < lines.size(); i++){
-        csvLines << dfps.displayID + "," + dfps.age  + "," + lines.at(i) + "," + medicalRecord.join(",");
+        QStringList medicalRecord = getClosestMedicalRecord(dfps.dbpuid,dfps.studyDate);
+
+        for (qint32 i = 1; i < lines.size(); i++){
+            csvLines << dfps.displayID + "," + dfps.age  + "," + lines.at(i) + "," + medicalRecord.join(",");
+        }
+    }
+    else{
+        if (csvdata.isEmpty()) csvLines << ",display_id,age" + lines.first();
+        else csvLines << csvdata;
+
+        for (qint32 i = 1; i < lines.size(); i++){
+            csvLines << dfps.displayID + "," + dfps.age  + "," + lines.at(i);
+        }
+
     }
 
     return csvLines.join("\n");

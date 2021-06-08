@@ -43,6 +43,7 @@
 #define   CONFIG_MARGIN_TARGET_HIT                      "margin_target_hit"
 #define   CONFIG_EXP_LIST                               "experiments"
 #define   CONFIG_READING_PX_TOL                         "reading_px_tol_for_target"
+#define   CONFIG_SAVE_RAW_DATA_CSV                      "save_raw_data_csv"
 #define   CONFIG_DUAL_MONITOR_MODE                      "dual_monitor_mode"
 #define   CONFIG_EXP_CONFIG_FILE                        "exp_config_file"
 #define   CONFIG_DATA_OUTPUT_FILE                       "data_output_file"

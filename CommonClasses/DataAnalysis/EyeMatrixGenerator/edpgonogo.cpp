@@ -154,6 +154,8 @@ bool EDPGoNoGo::finalizeCSVFile(){
 
     file.close();
 
+    finalizeRawDataFile();
+
     return true;
 }
 
@@ -189,6 +191,13 @@ void EDPGoNoGo::appendDataToGoNoGoMatrix(const DataMatrix &data,
                                   + ". Expected Frequency is " + QString::number(freq)
                                   + ". Measured: " + QString::number(freqCheck);
 
+    }
+
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            appendToRawDataCSVFile(data,trialID,"N/A",GONOGO_TI,GONOGO_XR,GONOGO_XL,GONOGO_YR,GONOGO_YL);
+        }
     }
 
     QStringList id;

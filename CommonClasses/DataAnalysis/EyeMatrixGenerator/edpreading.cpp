@@ -99,6 +99,13 @@ bool EDPReading::doEyeDataProcessing(const QString &data){
         //qWarning() << "DONE";
     }
 
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            return finalizeRawDataFile();
+        }
+    }
+
     return true;
 
 }
@@ -158,6 +165,13 @@ bool EDPReading::appendDataToReadingMatrix(const DataMatrix &data, const QString
     // Calculating the fixations for each eye.;
     Fixations fL = mwa.computeFixations(data,READ_XL,READ_YL,READ_TI);
     Fixations fR = mwa.computeFixations(data,READ_XR,READ_YR,READ_TI);
+
+    // If enabled raw data file is created.
+    if (config->containsKeyword(CONFIG_SAVE_RAW_DATA_CSV)){
+        if (config->getBool(CONFIG_SAVE_RAW_DATA_CSV)){
+            appendToRawDataCSVFile(data,imgID,"N/A",READ_TI,READ_YR,READ_XL,READ_XR,READ_YL);
+        }
+    }
 
     //qDebug() << "Processing" << imgID << "LF: " << fL.size() << "RF: " << fR.size() << "from " << data.size() << " rows";
 
