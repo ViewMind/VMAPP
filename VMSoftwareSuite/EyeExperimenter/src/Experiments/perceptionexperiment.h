@@ -11,7 +11,7 @@
 class PerceptionExperiment: public Experiment
 {
 public:
-    PerceptionExperiment(QWidget *parent = nullptr);
+    PerceptionExperiment(QWidget *parent = nullptr, const QString &studyType = "");
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,

@@ -141,15 +141,6 @@ private:
     QStringList countryCodes;
     void fillCountryList();
 
-    // The name of the files.
-    static const char *STUDY_FILE_READING;
-    static const char *STUDY_FILE_BINDING;
-    static const char *STUDY_FILE_NBACKMS;
-    static const char *STUDY_FILE_NBACKRT;
-    static const char *STUDY_FILE_PERCEPTION;
-    static const char *STUDY_FILE_GONOGO;
-
-
 
 };
 

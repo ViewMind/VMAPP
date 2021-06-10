@@ -76,7 +76,8 @@ Dialog {
     VMAutoCompleteComboBox{
         id: diagDBDefaultCountry
         width: mainWindow.width*0.344
-        height: mainWindow.height*0.043
+        //height: mainWindow.height*0.043
+        vmNoLabelHeight: mainWindow.height*0.043
         z: 2
         vmList: loader.getCountryList()
         vmValues: loader.getCountryCodeList()

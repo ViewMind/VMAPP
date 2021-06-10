@@ -7,8 +7,8 @@ ExperimentDataPainter::ExperimentDataPainter()
 }
 
 void ExperimentDataPainter::init(qreal display_resolution_width, qreal display_resolution_height){
-    ScreenResolutionHeight = display_resolution_width; //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_HEIGHT);
-    ScreenResolutionWidth = display_resolution_height;  //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_WIDTH);
+    ScreenResolutionHeight = display_resolution_height; ; //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_HEIGHT);
+    ScreenResolutionWidth = display_resolution_width;  //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_WIDTH);
     canvas = new QGraphicsScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
     //qDebug() << "Experiment data painter. Scene Rect" << canvas->sceneRect();
     R = 0.007*ScreenResolutionWidth;
@@ -24,6 +24,7 @@ void ExperimentDataPainter::updateGazePosition(){
 void ExperimentDataPainter::configure(const QVariantMap &configuration){
     Q_UNUSED(configuration);
 }
+
 
 void ExperimentDataPainter::updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl){
 #ifndef ENABLE_GAZE_FOLLOW

@@ -15,8 +15,17 @@ Item {
 
     function setModelList(list){
         modelList.clear()
+        //console.log("====================================");
         for (var i = 0; i < list.length; i++){
-            modelList.append({"vmText": list[i], "vmIndex": i});
+            //console.log(JSON.stringify(list[i]));
+            if (typeof list[i] === 'object'){
+                //console.log("Is array");
+                modelList.append({"vmText": list[i]["value"], "vmIndex": i, "vmMetadata" : list[i]["metadata"]});
+            }
+            else{
+                //console.log("Is not array");
+                modelList.append({"vmText": list[i], "vmIndex": i});
+            }
         }
         vmListSize = list.length
         setSelection(0)

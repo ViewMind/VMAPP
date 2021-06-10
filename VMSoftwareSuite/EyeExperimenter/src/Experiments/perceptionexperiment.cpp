@@ -8,15 +8,13 @@ const qint32 PerceptionExperiment::HOLD_TIME_YES_NO_TRAIN      = 2000;  // ms.
 const qint32 PerceptionExperiment::HOLD_TIME_TRI_REHAB         = 700;   // ms
 const qint32 PerceptionExperiment::HOLD_TIME_TRI_TRAIN         = 300;   // ms
 
-PerceptionExperiment::PerceptionExperiment(QWidget *parent):Experiment(parent)
+PerceptionExperiment::PerceptionExperiment(QWidget *parent, const QString &studyType):Experiment(parent,studyType)
 {
     manager = new PerceptionManager();
     m = dynamic_cast<PerceptionManager*>(manager);
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&PerceptionExperiment::onTimeOut);
-
-    studyType = RDC::Study::PERCEPTION;
 
 }
 
@@ -44,10 +42,10 @@ void PerceptionExperiment::onTimeOut(){
 
         // We check that ALL parts are present to finalize study.
         QStringList all_parts;
-        all_parts << RDC::TrialListType::PERCEPTION_1 << RDC::TrialListType::PERCEPTION_2 << RDC::TrialListType::PERCEPTION_3 << RDC::TrialListType::PERCEPTION_4
-                     << RDC::TrialListType::PERCEPTION_5 << RDC::TrialListType::PERCEPTION_6 << RDC::TrialListType::PERCEPTION_7 << RDC::TrialListType::PERCEPTION_8;
+        all_parts << RDC::Study::PERCEPTION_1 << RDC::Study::PERCEPTION_2 << RDC::Study::PERCEPTION_3 << RDC::Study::PERCEPTION_4
+                     << RDC::Study::PERCEPTION_5 << RDC::Study::PERCEPTION_6 << RDC::Study::PERCEPTION_7 << RDC::Study::PERCEPTION_8;
 
-        QStringList present_parts = rawdata.getTrialListTypesForStudy(studyType);
+        QStringList present_parts = rawdata.getStudies();
 
         bool not_finished = false;
         for (qint32 i = 0; i < all_parts.size(); i++){
@@ -58,7 +56,7 @@ void PerceptionExperiment::onTimeOut(){
         }
 
         if (!not_finished){
-            ans = ans & rawdata.markStudyAsFinalized(studyType);
+            rawdata.markFileAsFinalized();
         }
 
         if (!ans){

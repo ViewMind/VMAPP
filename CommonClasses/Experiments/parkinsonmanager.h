@@ -21,12 +21,12 @@ public:
     // Drawing the mazes.
     bool drawCurrentMaze();
 
+    void enableDemoMode();
+
 private:
 
     QList<ParkinsonParser::ParkinsonMaze> mazes;
     qint32 currentMaze;
-
-    void enableDemoMode();
 
     void drawMaze(const ParkinsonParser::ParkinsonMaze &maze);
 

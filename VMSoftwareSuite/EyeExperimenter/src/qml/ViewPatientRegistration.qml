@@ -12,6 +12,7 @@ VMBase {
     readonly property string keysearch: "viewpatientreg_"
     property bool vmIsNew: true;
     property string patientUID: "";
+    property var vmMedicsModelList: []
 
     function loadPatientInformation(){
         var patInfo = loader.getCurrentSubjectInfo();
@@ -28,6 +29,17 @@ VMBase {
         var index = loader.getDefaultCountry(false);
         labelCountry.setCurrentIndex(index);
 
+        // Filling the dr list.
+        var medics = loader.getMedicList();
+        vmMedicsModelList = [];
+
+        var medic_instruction = loader.getStringForKey(keysearch + "labelAssignedDoctor")
+        vmMedicsModelList.push({ "value" : medic_instruction, "metadata" : "-1" });
+        for (var key in medics){
+            vmMedicsModelList.push({ "value" : medics[key], "metadata" : key });
+        }
+        labelPreferredDoctor.setModelList(vmMedicsModelList);
+
         // Resetting the patient UID to erase any previous one.
         patientUID = "";
 
@@ -37,15 +49,27 @@ VMBase {
             labelLastName.setText(patInfo.lastname);
             labelInstitutionProvidedID.setText(patInfo.supplied_institution_id)
             labelAge.setText(patInfo.age);
+
             // Setting the gender
             if (patInfo.gender === "M") labelGender.setSelection(1);
             else if (patInfo.gender === "F") labelGender.setSelection(2);
+
             // Setting the country.
             index = loader.getCountryIndexFromCode(patInfo.birthcountry);
             labelCountry.setCurrentIndex(index);
+
             // The birth date
             labelBirthDate.setISODate(patInfo.birthdate);
             if (patInfo.years_formation >= 0) labelFormativeYears.setText(patInfo.years_formation);
+
+            // Setting the preffered doctor selection.
+            for (var i in vmMedicsModelList){
+                // console.log("Comparing " + vmMedicsModelList[i]["metadata"] + " to " + patInfo.assigned_medic);
+                if (vmMedicsModelList[i]["metadata"] === String(patInfo.assigned_medic)){
+                    labelPreferredDoctor.setSelection(i);
+                    break;
+                }
+            }
         }
 
     }
@@ -222,6 +246,10 @@ VMBase {
                 z: 2
                 id: labelPreferredDoctor
                 width: parent.width - labelGender.width - parent.spacing
+//                onVmCurrentIndexChanged: {
+//                    console.log("Current index: " + vmCurrentIndex);
+//                    console.log("Selected keyid: " + vmMedicsModelList[vmCurrentIndex]["metadata"]);
+//                }
             }
 
         }
@@ -309,7 +337,7 @@ VMBase {
                                           labelName.vmEnteredText,labelLastName.vmEnteredText,
                                           labelInstitutionProvidedID.vmEnteredText,labelAge.vmEnteredText,
                                           bdate,labelCountry.vmCurrentText,labelGender.vmCurrentText,
-                                          labelFormativeYears.vmEnteredText)
+                                          labelFormativeYears.vmEnteredText,vmMedicsModelList[labelPreferredDoctor.vmCurrentIndex]["metadata"])
                 swiperControl.currentIndex = swiperControl.vmIndexPatientList;
 
             }
@@ -321,72 +349,4 @@ VMBase {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//    Dialog {
-//        id: showTextDialog;
-//        modal: true
-//        width: mainWindow.width*0.48
-//        height: mainWindow.height*0.87
 
-//        property string vmContent: ""
-//        property string vmTitle: ""
-
-//        y: (parent.height - height)/2
-//        x: (parent.width - width)/2
-//        closePolicy: Popup.NoAutoClose
-
-//        contentItem: Rectangle {
-//            id: rectDialog
-//            anchors.fill: parent
-//            layer.enabled: true
-//            layer.effect: DropShadow{
-//                radius: 5
-//            }
-//        }
-
-//        Text {
-//            id: diagTitle
-//            font.family: viewHome.gothamB.name
-//            font.pixelSize: 43*viewHome.vmScale
-//            anchors.top: parent.top
-//            anchors.topMargin: mainWindow.height*0.029
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            color: "#297fca"
-//            text: showTextDialog.vmTitle
-
-//        }
-//        ScrollView {
-//            id: idScrollView
-//            width: showTextDialog.width*0.9;
-//            contentWidth: width
-//            height: showTextDialog.height*0.62;
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            anchors.top : diagTitle.bottom
-//            anchors.topMargin: mainWindow.height*0.058
-//            clip: true
-//            //horizontalScrollBarPolicy : Qt.ScrollBarAlwaysOff
-//            TextEdit {
-//                id: idContent
-//                width: parent.width;
-//                height: parent.height;
-//                font.family: robotoR.name
-//                font.pixelSize: 13*viewHome.vmScale
-//                readOnly: true
-//                text: showTextDialog.vmContent
-//                wrapMode: Text.Wrap
-//            }
-//        }
-
-//        VMButton{
-//            id: btnClose
-//            height: mainWindow.height*0.072
-//            vmText: "OK";
-//            vmFont: viewHome.gothamM.name
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            anchors.bottom: parent.bottom
-//            anchors.bottomMargin: 20;
-//            onClicked: {
-//                showTextDialog.close();
-//            }
-//        }
-
-//    }

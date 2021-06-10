@@ -20,10 +20,10 @@
 #include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "../eyexperimenter_defines.h"
 
-#define  MULTI_PART_FILE_STUDY_IDENTIFIER      "===>>"
-#define  EXTRA_EXTENSION_FOR_MULTI_PART_FILES  "mp"
+//#define  MULTI_PART_FILE_STUDY_IDENTIFIER      "===>>"
+//#define  EXTRA_EXTENSION_FOR_MULTI_PART_FILES  "mp"
 
-#define  PERCEPTION_STUDY_LAST_MULTI_PART_IDENTIFIER  "7"   // This means that the study will end upon doing it 8 times (0 through 8).
+//#define  PERCEPTION_STUDY_LAST_MULTI_PART_IDENTIFIER  "7"   // This means that the study will end upon doing it 8 times (0 through 8).
 
 class Experiment : public QWidget
 {
@@ -31,7 +31,7 @@ class Experiment : public QWidget
 public:
 
     // The constructor will set up the basic background view for the widget.
-    explicit Experiment(QWidget *parent = nullptr);
+    explicit Experiment(QWidget *parent = nullptr, const QString &studyType = "");
 
     // Used to determine how the experiment
     typedef enum {ER_NORMAL, ER_ABORTED, ER_FAILURE, ER_WARNING} ExperimentResult;
@@ -45,9 +45,6 @@ public:
                                  const QVariantMap &studyConfig,
                                  bool useMouse,
                                  QVariantMap pp);
-
-    // Used to stop the experiment for any reason, like calibration
-    virtual void togglePauseExperiment();
 
     // To obtain the experiment state
     ExperimentState getExperimentState() const {return state;}

@@ -11,15 +11,14 @@ const qint32 ReadingExperiment::TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS = 1;
 #endif
 
 
-ReadingExperiment::ReadingExperiment(QWidget *parent):Experiment(parent)
+ReadingExperiment::ReadingExperiment(QWidget *parent, const QString &studyType):Experiment(parent,studyType)
 {
     manager = new ReadingManager();
     m = dynamic_cast<ReadingManager*>(manager);
-    studyType = RDC::Study::READING;
 }
 
 bool ReadingExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                        const QVariantMap studyConfig, bool useMouse, QVariantMap pp){
+                                        const QVariantMap &studyConfig, bool useMouse, QVariantMap pp){
 
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)) return false;
@@ -29,8 +28,6 @@ bool ReadingExperiment::startExperiment(const QString &workingDir, const QString
         error = "Failed setting processing parameters on Reading: " + rawdata.getError();
         emit(experimentEndend(ER_FAILURE));
     }
-
-    rawdata.setCurrentTrialListType(RDC::TrialListType::UNIQUE);
 
     // Configure for VR or no values.
     QVariantMap config;
@@ -49,7 +46,11 @@ bool ReadingExperiment::startExperiment(const QString &workingDir, const QString
     currentTrialID = "";
 
     // This window is shown and given focus.
-    if (!Globals::EyeTracker::IS_VR || (useMouse)) this->show();
+    //qDebug() << useMouse << Globals::EyeTracker::IS_VR;
+    if (!Globals::EyeTracker::IS_VR || (useMouse)){
+        this->show();
+        this->activateWindow();
+    }
 
     // The current state is running.
     state = STATE_RUNNING;
@@ -169,14 +170,12 @@ void ReadingExperiment::advanceToTheNextPhrase(){
             state = STATE_STOPPED;
 
             // Finalizing the study and marking it as finalized. Reading has no other parts.
-            bool ans;
-            ans = rawdata.finalizeStudy();
-            ans = ans & rawdata.markStudyAsFinalized(studyType);
-            if (!ans){
+            if (!rawdata.finalizeStudy()){
                 error = "Failed on Reading study finalization: " + rawdata.getError();
                 emit (experimentEndend(ER_FAILURE));
                 return;
             }
+            rawdata.markFileAsFinalized();
 
             if (!saveDataToHardDisk()){
                 emit (experimentEndend(ER_FAILURE));

@@ -12,6 +12,10 @@ class TableBaseClass {
    const TABLE_NAME = "table_name";
    const IN_DB      = "in_db";
 
+   // Order directions
+   const ORDER_DESC = "DESC";
+   const ORDER_ASC  = "ASC";
+
    // A map that maps each column to a type required by the bind statement. Will be overwritten by each Child. 
    // const  COLUMN_TYPE_MAP = [];
 
@@ -138,7 +142,7 @@ class TableBaseClass {
     * SELECT operation on the table. 
     */
 
-   protected function simpleSelect($cols_to_get, SelectOperation $operation){
+   protected function simpleSelect($cols_to_get, SelectOperation $operation, $order_by = "", $order_direction = "ASC" ,$limit = -1){
 
       $this->error = "";
 
@@ -166,6 +170,23 @@ class TableBaseClass {
 
       // Creating the SQL Statement. 
       $sql = "SELECT " . implode(",",$cols_to_get) . " FROM " . static::class::TABLE_NAME . " WHERE " . $operation->makeWhereClause();
+
+      // Adding ordering and limit parameters if issued. 
+      if ($order_by != ""){
+         if (!in_array($order_by,$this->valid_columns)){
+            $this->error = "$order_by order by column is not a column of table " . static::class::TABLE_NAME;
+            return false;
+         }   
+         $sql = $sql . " ORDER BY  $order_by";  
+         if (($order_direction != self::ORDER_ASC) && ($order_direction != self::ORDER_DESC)){
+            $this->error = "Invalid order direction for ORDER BY: $order_direction " . static::class::TABLE_NAME;
+            return false;
+         }
+      } 
+      if ($limit > -1){
+         $sql = $sql . " LIMIT $limit";
+      }
+
       //echoOut($sql,true);
       //echoOut($operation->getBindParameterArray(),true);
 

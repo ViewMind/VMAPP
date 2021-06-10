@@ -24,24 +24,13 @@ VMBase {
                 var titleMsg
                 swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
                 flowControl.generateWaitScreen("");
-                if (flowControl.areThereFrequencyErrorsPresent()){
-                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
-                    titleMsg = viewHome.getErrorTitleAndMessage("error_freq_check");
-                    vmErrorDiag.vmErrorMessage = titleMsg[1];
-                    vmErrorDiag.vmErrorTitle = titleMsg[0];
-                    vmErrorDiag.open();
-                    btnContinue.enabled = false;
-                    return;
-                }
-                else{
-                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
-                    titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
-                    vmErrorDiag.vmErrorMessage = titleMsg[1];
-                    vmErrorDiag.vmErrorTitle = titleMsg[0];
-                    vmErrorDiag.open();
-                    btnContinue.enabled = false;
-                    return;
-                }
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_EXP_END_ERROR;
+                titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                btnContinue.enabled = false;
+                return;
             }
             else{
                 flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + vmSlideTitle);
@@ -109,10 +98,11 @@ VMBase {
         slideViewer.setImageList(slides);
     }
 
-    function setPropertiesForExperiment(index){
+    function setPropertiesForExperiment(study_config){
+        var index = study_config[viewStudyStart.vmUNIQUE_STUDY_ID];
         switch(index){
         case viewStudyStart.vmINDEX_BINDING_BC:
-            if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
+            if (study_config[viewStudyStart.vmSCP_NUMBER_OF_TARGETS] === viewStudyStart.vmSCV_BINDING_TARGETS_3){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
@@ -132,7 +122,7 @@ VMBase {
             slideDescription.visible = false;
             break;
         case viewStudyStart.vmINDEX_BINDING_UC:
-            if (loader.getConfigurationString(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS) === "3"){
+            if (study_config[viewStudyStart.vmSCP_NUMBER_OF_TARGETS] === viewStudyStart.vmSCV_BINDING_TARGETS_3){
                 vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
                 vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
@@ -159,7 +149,24 @@ VMBase {
             //slideAnimation.visible = false;
             slideDescription.visible = false;
             slideViewer.imgScale = 1.3;
-            setSlideImages("reading_" + loader.getConfigurationString(vmDefines.vmCONFIG_READING_EXP_LANG),3);
+
+            var readlang = study_config[viewStudyStart.vmSCP_LANGUAGE];
+            if (readlang === viewStudyStart.vmSCV_LANG_DE){
+                setSlideImages("reading_de",3);
+            }
+            else if (readlang === viewStudyStart.vmSCV_LANG_ES){
+                setSlideImages("reading_es",3);
+            }
+            else if (readlang === viewStudyStart.vmSCV_LANG_IS){
+                setSlideImages("reading_is",3);
+            }
+            else if (readlang === viewStudyStart.vmSCV_LANG_FR){
+                setSlideImages("reading_fr",3);
+            }
+            else if (readlang === viewStudyStart.vmSCV_LANG_EN){
+                setSlideImages("reading_en",3);
+            }
+
             break;
         case viewStudyStart.vmINDEX_NBACKMS:
             vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");
@@ -310,7 +317,7 @@ VMBase {
         setStateOfItem(index,itemReading.vmTRACKER_ITEM_STATE_CURRENT)
 
         // Properties are set to the values of the curent experiment
-        setPropertiesForExperiment(index);
+        setPropertiesForExperiment(viewStudyStart.vmSelectedExperiments[viewStudyStart.vmCurrentExperimentIndex]);
 
         // Not done with the sequence.
         return false
@@ -331,7 +338,8 @@ VMBase {
 
         // Creating and or selecting the patient study file
         var titleAndMsg;
-        if (!loader.createSubjectStudyFile(viewStudyStart.vmSelectedExperiments[index])){
+        //console.log(JSON.stringify(viewStudyStart.vmSelectedExperiments));
+        if (!loader.createSubjectStudyFile(viewStudyStart.vmSelectedExperiments[index],viewStudyStart.vmSelectedMedic,viewStudyStart.vmSelectedProtocol)){
             vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
             titleAndMsg = viewHome.getErrorTitleAndMessage("error_programming");
             vmErrorDiag.vmErrorMessage = titleAndMsg[1];

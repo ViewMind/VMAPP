@@ -43,6 +43,12 @@
       const DATA          = "data";
    }
 
+   abstract class ResponseDataSubFields extends TypedString {
+      const MEDICS        = "medics";
+      const PROC_PARAMS   = "proc_params";
+      const FREQ_PARAMS   = "freq_params";
+   }
+
    abstract class APIEndpoints extends TypedString {
       const PORTAL_USERS           = "portal_users";
       const REPORTS                = "reports";
@@ -52,10 +58,16 @@
 
    abstract class PortalUserOperations extends TypedString {
       const GETALLMEDICAL           = "getallmedical";
+      const OPERATING_INFO          = "operating_information";
+   }
+
+   abstract class URLParameterNames extends TypedString {
+      const PPKEY                   = "ppkey";
    }
 
    abstract class InstitutionOperations extends TypedString {
       const LIST                   = "list";
+      const OPR_INFO               = "operating_information";
    }
 
    abstract class ReportOperations extends TypedString {

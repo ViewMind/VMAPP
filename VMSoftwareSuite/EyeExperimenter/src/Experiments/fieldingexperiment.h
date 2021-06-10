@@ -21,7 +21,7 @@ public:
                   TSF_SHOW_BLANK_2,
                   TSF_SHOW_BLANK_1} TrialStateFielding;
 
-    FieldingExperiment(QWidget *parent = nullptr);
+    FieldingExperiment(QWidget *parent = nullptr, const QString &studyType = "");
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,

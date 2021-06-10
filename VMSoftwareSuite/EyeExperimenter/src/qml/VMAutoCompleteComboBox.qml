@@ -62,7 +62,10 @@ Item {
         }
     }
 
-    height: (vmNoLabelHeight + labelText.height)*1.8
+    height: {
+        if (vmLabel != "") return (vmNoLabelHeight + labelText.height)*1.8
+        else return vmNoLabelHeight;
+    }
 
     Rectangle {
         id: lineEditRect

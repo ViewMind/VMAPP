@@ -26,11 +26,25 @@ Dialog {
     function logInAttempt(){
         //if (loader.evaluatorLogIn(labelDrProfile.vmCurrentText,drPassword.getText())){
         if (loader.evaluatorLogIn("aarelovich@gmail.com","1234")){
+
             // Updating the text of the doctor menu.
             viewHome.updateDrMenuText();
             viewDoctorSelection.close();
-            swiperControl.currentIndex = swiperControl.vmIndexPatientList
             drPassword.vmErrorMsg = "";
+
+            /*********************************************
+             * FOR DEBUGGING
+             *********************************************/
+
+            loader.setSelectedSubject("1_0_20210606090711350");
+            viewStudyStart.vmSelectedMedic = "7";
+            viewStudyStart.vmSelectedProtocol = "";
+
+            /*************************************************/
+
+            //swiperControl.currentIndex = swiperControl.vmIndexPatientList
+            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+
         }
         else{
             drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drwrongpass");;

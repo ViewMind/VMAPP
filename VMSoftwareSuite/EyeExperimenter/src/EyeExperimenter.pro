@@ -85,6 +85,7 @@ HEADERS += \
     ../../../CommonClasses/RawDataContainer/RDC.h \
     ../../../CommonClasses/RawDataContainer/rawdatacontainer.h \
     ../../../CommonClasses/RestAPIController/restapicontroller.h \
+    ../../../CommonClasses/debug.h \
     ../../../CommonClasses/eyetracker_defines.h \
     Experiments/gonogoexperiment.h \
     Experiments/nbackrtexperiment.h \

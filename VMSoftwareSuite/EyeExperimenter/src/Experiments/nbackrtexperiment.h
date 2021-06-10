@@ -14,7 +14,7 @@ class NBackRTExperiment: public Experiment
 {
 public:
 
-    NBackRTExperiment(QString study_type, QWidget *parent = nullptr);
+    NBackRTExperiment(QWidget *parent = nullptr, const QString &studyType = "");
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,

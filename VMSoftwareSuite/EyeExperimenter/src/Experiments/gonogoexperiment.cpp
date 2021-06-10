@@ -1,10 +1,9 @@
 #include "gonogoexperiment.h"
 
-GoNoGoExperiment::GoNoGoExperiment(QWidget *parent):Experiment(parent)
+GoNoGoExperiment::GoNoGoExperiment(QWidget *parent, const QString &studyType):Experiment(parent,studyType)
 {
     manager = new GoNoGoManager();
     m = dynamic_cast<GoNoGoManager*>(manager);
-    studyType = RDC::Study::GONOGO;
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&GoNoGoExperiment::onTimeOut);
@@ -40,15 +39,13 @@ void GoNoGoExperiment::onTimeOut(){
         if (!m->drawCross()){
 
             // Experiment is finished and marking as such. No ongoing for go no go.
-            bool ans;
-            ans = rawdata.finalizeStudy();
-            ans = ans && rawdata.markStudyAsFinalized(studyType);
-            if (!ans){
+            if (!rawdata.finalizeStudy()){
                 error = "Failed on GoNoGo finalization because: " + rawdata.getError();
                 emit(experimentEndend(ER_FAILURE));
                 stateTimer.stop();
                 return;
             }
+            rawdata.markFileAsFinalized();
 
             stateTimer.stop();
             state = STATE_STOPPED;
@@ -81,7 +78,6 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
     }
 
     // Go No Go only has 1 type of trial list.
-    rawdata.setCurrentTrialListType(RDC::TrialListType::UNIQUE);
     pp = setGoNoGoTargetBoxes(pp);
     if (!rawdata.setProcessingParameters(pp)){
         emit(experimentEndend(ER_FAILURE));
@@ -172,13 +168,15 @@ void GoNoGoExperiment::keyPressHandler(int keyPressed){
 bool GoNoGoExperiment::addNewTrial(){
     QString temp = m->getCurrentTrialHeader();
     QStringList parts = temp.split(" ");
-    if (parts.size() == 2){
+    if (parts.size() > 2){
         error = "Got more than two parts when splitting the trial header: " + temp + " for GoNOGo";
         return false;
     }
 
+    qint32 trial_id = parts.last().toInt();
+    QString trial_type = GoNoGoParser::TrialTypeList.at(trial_id);
 
-    if (!rawdata.addNewTrial(parts.first(),parts.last().trimmed())){
+    if (!rawdata.addNewTrial(parts.first(),trial_type)){
         error = "Failed in creating go no for trial for header " + temp + ":  " + rawdata.getError();
         return false;
     }

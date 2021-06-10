@@ -11,6 +11,9 @@
 
 namespace Globals{
 
+   const qint32 NUMBER_SECONDS_IN_A_DAY = 86400;
+   const qint32 NUMBER_OF_PERCEPTION_PARTS = 8;
+
    namespace Labeling{
        static const QString MANUFACTURE_DATE = "07/10/2020";
        static const QString SERIAL_NUMBER = "0-00000000-000000";
@@ -43,6 +46,7 @@ namespace Globals{
       static const QString DEFAULT_COUNTRY = "default_country";
       static const QString DUAL_MONITOR_MODE = "dual_monitor_mode";
       static const QString DEFAULT_READING_LANGUAGE = "default_reading_study_language";
+      static const QString LAST_SELECTED_PROTOCOL = "last_selected_protocol";
    }
    
    
@@ -63,14 +67,10 @@ namespace Globals{
    
    namespace Debug {
       static const bool PRETTY_PRINT_JSON     = true;
+      static const bool PRETTY_PRINT_JSON_DB  = false;
       static const bool SHORT_STUDIES         = true;
       static const bool DISABLE_DB_CHECKSUM   = true;
       static const bool USE_LOCAL_API_ADDRESS = true;
-      static void prettpPrintQVariantMap(const QVariantMap &map){
-          QJsonDocument json = QJsonDocument::fromVariant(map);
-          QByteArray data  = json.toJson(QJsonDocument::Indented);
-          std::cout << QString(data).toStdString() << std::endl;
-      }
    }
       
    namespace UILanguage {
@@ -95,6 +95,16 @@ namespace Globals{
        static const QString MINIMUM_FIX_DURATION = "minimum_fix_duration";
        static const QString SAMPLE_FREQUENCY = "sample_frequency";
        static const char *  TEXT_CODEC = "UTF-8";
+   }
+
+   namespace BaseFileNames {
+       static const QString READING = "reading";
+       static const QString BINDING = "binding";
+       static const QString NBACKVS = "nbackvs";
+       static const QString NBACKRT = "nbackrt";
+       static const QString NBACKMS = "nbackms";
+       static const QString PERCEPTION = "perception";
+       static const QString GONOGO = "gonogo";
    }
  
 }

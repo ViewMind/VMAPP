@@ -9,12 +9,10 @@ const qint32 FieldingExperiment::PAUSE_TRIAL_1 =                                
 const qint32 FieldingExperiment::PAUSE_TRIAL_2 =                                64;
 
 
-FieldingExperiment::FieldingExperiment(QWidget *parent):Experiment(parent){
+FieldingExperiment::FieldingExperiment(QWidget *parent, const QString &studyType):Experiment(parent,studyType){
 
     manager = new FieldingManager();
     m = dynamic_cast<FieldingManager*>(manager);
-
-    studyType = RDC::Study::NBACKMS;
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&FieldingExperiment::onTimeOut);
@@ -26,7 +24,6 @@ bool FieldingExperiment::startExperiment(const QString &workingDir, const QStrin
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)) return false;
 
-    rawdata.setCurrentTrialListType(RDC::TrialListType::UNIQUE);
     QVariantMap config;
     config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,(Globals::EyeTracker::IS_VR && (!useMouse)));
     if (studyConfig.value(RDC::StudyParameter::LANGUAGE).toString() == RDC::UILanguage::SPANISH){
@@ -110,7 +107,7 @@ void FieldingExperiment::nextState(){
         // End Enconding 1
         rawdata.finalizeDataSet();
         // Start enconding 2
-        rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_1);
+        rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_2);
 
         tstate = TSF_SHOW_DOT_2;
         currentImage = 1;
@@ -227,14 +224,12 @@ bool FieldingExperiment::finalizeExperiment(){
     stateTimer.stop();
     state = STATE_STOPPED;
 
-    bool ans;
-    ans = rawdata.finalizeStudy();
-    ans = ans & rawdata.markStudyAsFinalized(studyType);
-    if (!ans){
+    if (!rawdata.finalizeStudy()){
         error = "Failed on NBackMS study finalization: " + rawdata.getError();
         emit (experimentEndend(ER_FAILURE));
         return false;
     }
+    rawdata.markFileAsFinalized();
 
     ExperimentResult er;
     if (error.isEmpty()) er = ER_NORMAL;

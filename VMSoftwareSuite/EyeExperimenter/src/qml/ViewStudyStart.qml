@@ -29,11 +29,11 @@ VMBase {
     // Study configuration parameter values
     readonly property string vmSCV_BINDING_TARGETS_2:        "2";
     readonly property string vmSCV_BINDING_TARGETS_3:        "3";
-    readonly property string vmSCV_BINDING_TARGETS_LARGE:    "Large";
-    readonly property string vmSCV_BINDING_TARGETS_SMALL:    "Small";
-    readonly property string vmSCV_EYE_BOTH:                 "Both";
-    readonly property string vmSCV_EYE_LEFT:                 "Left";
-    readonly property string vmSCV_EYE_RIGHT:                "Right";
+    readonly property string vmSCV_BINDING_TARGETS_LARGE:    "large";
+    readonly property string vmSCV_BINDING_TARGETS_SMALL:    "small";
+    readonly property string vmSCV_EYE_BOTH:                 "both";
+    readonly property string vmSCV_EYE_LEFT:                 "left";
+    readonly property string vmSCV_EYE_RIGHT:                "right";
     readonly property string vmSCV_LANG_DE:                  "German";
     readonly property string vmSCV_LANG_ES:                  "Spanish";
     readonly property string vmSCV_LANG_FR:                  "French";
@@ -41,8 +41,8 @@ VMBase {
     readonly property string vmSCV_LANG_IS:                  "Iselandic";
     readonly property string vmSCV_BINDING_TYPE_BOUND:       "bound";
     readonly property string vmSCV_BINDING_TYPE_UNBOUND:     "unbound";
-    readonly property string vmSCV_PERCEPTION_TYPE_TRAINING: "Training";
-    readonly property string vmSCV_PERCEPTION_TYPE_REHAB:    "Rehab";
+    readonly property string vmSCV_PERCEPTION_TYPE_TRAINING: "training";
+    readonly property string vmSCV_PERCEPTION_TYPE_REHAB:    "rehab";
     readonly property string vmSCV_NBACKVS_TARGETS_3:        "3";
     readonly property string vmSCV_NBACKVS_TARGETS_4:        "4";
     readonly property string vmSCV_NBACKVS_TARGETS_5:        "5";
@@ -80,7 +80,11 @@ VMBase {
     //property var vmCurrentMultiPartStudyFile: ""
     property var vmCurrentSelectedStudyName: ""
 
-    property var vmDisabledStudies: [];
+    property var vmDisabledStudies: [vmINDEX_NBACKVS, vmINDEX_PERCEPTION];
+
+    property string vmSelectedProtocol: ""
+    property int vmSelectedMedic: -1
+
 
 
     function setPatientName(){
@@ -161,22 +165,6 @@ VMBase {
             }
         }
         return objArray;
-    }
-
-    function testPresentExperimentScreen(){
-
-        // Testing READING Screen
-        //vmSelectedExperiments.push(viewPatientReg.vmExpIndexReading);
-        //loader.setValueForConfiguration(vmDefines.vmCONFIG_READING_EXP_LANG,"de",false);
-        vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingBC);
-        //vmSelectedExperiments.push(viewPatientReg.vmExpIndexBindingUC);
-        loader.setValueForConfiguration(vmDefines.vmCONFIG_BINDING_NUMBER_OF_TARGETS,"2",false);
-
-        // Testing Binding Screen
-
-        viewPresentExperimet.setTracker(vmSelectedExperiments);
-        vmCurrentExperimentIndex = -1;
-        viewPresentExperimet.advanceCurrentExperiment()
     }
 
     function selectionChanged(currentIndex, isStudyList){
@@ -739,7 +727,7 @@ VMBase {
 
                 }
                 onSelectionChanged: {
-                    loader.setSettingsValue(vmDefines.vmCONFIG_DEFAULT_READING_LANGUAGE,cbReadingLang.vmCurrentIndex);
+                    loader.setSettingsValue("default_reading_study_language",cbReadingLang.vmCurrentIndex);
                 }
             }
         }
@@ -815,19 +803,23 @@ VMBase {
 
                 vmSelectedExperiments = [];
 
+                //console.log(JSON.stringify(vmListOfSelectedStudies));
 
                 for (var i = 0; i < vmListOfSelectedStudies.length; i++){
 
-                    var configuration_study_map;
+                    var configuration_study_map = {};
                     configuration_study_map[vmUNIQUE_STUDY_ID] = vmListOfSelectedStudies[i].vmStudyID;
 
                     // Setting the selected EYE.
                     switch (cbEyeMsg.vmCurrentIndex){
-                    case 0: configuration_study_map[vmSCP_EYES] = vmSCV_EYE_LEFT;
+                    case 0:
+                        configuration_study_map[vmSCP_EYES] = vmSCV_EYE_LEFT;
                         break;
-                    case 1: configuration_study_map[vmSCP_EYES] = vmSCV_EYE_RIGHT;
+                    case 1:
+                        configuration_study_map[vmSCP_EYES] = vmSCV_EYE_RIGHT;
                         break;
-                    case 2: configuration_study_map[vmSCP_EYES] = vmSCV_EYE_BOTH;
+                    case 2:
+                        configuration_study_map[vmSCP_EYES] = vmSCV_EYE_BOTH;
                         break;
                     }
 
@@ -885,15 +877,19 @@ VMBase {
                     }
 
                     // We push the selected configuration
+                    //console.log(JSON.stringify(configuration_study_map));
                     vmSelectedExperiments.push(configuration_study_map);
 
                 }
 
+                //console.log("STUDY START WITH:")
+                //console.log(JSON.stringify(vmSelectedExperiments));
                 if (vmSelectedExperiments.length > 0){
                     viewPresentExperimet.setTracker(vmSelectedExperiments);
                     vmCurrentExperimentIndex = -1;
                     viewPresentExperimet.advanceCurrentExperiment()
-                    if (loader.getConfigurationString(vmDefines.vmCONFIG_SELECTED_ET) === vmDefines.vmCONFIG_P_ET_HTCVIVEEYEPRO){
+                    viewCalibrationStart.vmSelectedEye = cbEyeMsg.vmCurrentIndex;
+                    if (!loader.getConfigurationBoolean("use_mouse")){
                         swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
                         viewVRDisplay.disableStartStudyButton(); // To enforce first calibraton.
                     }
@@ -907,111 +903,4 @@ VMBase {
         }
     }
 }
-
-
-
-//    Dialog {
-
-//        readonly property int vmMP_ACTION_FINALIZE: 1;
-//        readonly property int vmMP_ACTION_DELETE: 2;
-
-//        property string vmMsgTitle: ""
-//        property string vmMsgText: ""
-//        property int vmAction: 0
-
-//        id: multiPartActionConfirmDiag;
-//        modal: true
-//        width: mainWindow.width*0.48
-//        height: mainWindow.height*0.362
-//        y: (parent.height - height)/2
-//        x: (parent.width - width)/2
-//        closePolicy: Popup.NoAutoClose
-
-//        contentItem: Rectangle {
-//            id: rectmultiPartActionConfirmDiag
-//            anchors.fill: parent
-//            layer.enabled: true
-//            layer.effect: DropShadow{
-//                radius: 5
-//            }
-//        }
-
-//        VMDialogCloseButton {
-//            id: btnClose
-//            anchors.top: parent.top
-//            anchors.topMargin: mainWindow.height*0.032
-//            anchors.right: parent.right
-//            anchors.rightMargin: mainWindow.width*0.02
-//            onClicked: {
-//                multiPartActionConfirmDiag.close();
-//            }
-//        }
-
-//        // The title is the study name.
-//        Text {
-//            id: multiPartActionConfirmTitle
-//            font.family: viewHome.gothamB.name
-//            font.pixelSize: 43*viewHome.vmScale
-//            anchors.top: parent.top
-//            anchors.topMargin: mainWindow.height*0.072
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            color: "#297fca"
-//            text: multiPartActionConfirmDiag.vmMsgTitle
-//        }
-
-//        // The instruction text
-//        Text {
-//            id: multiPartActionConfirmMessage
-//            font.family: viewHome.robotoR.name
-//            font.pixelSize: 13*viewHome.vmScale
-//            textFormat: Text.RichText
-//            anchors.top:  multiPartActionConfirmTitle.bottom
-//            anchors.topMargin: mainWindow.height*0.029
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            text: multiPartActionConfirmDiag.vmMsgText
-//        }
-
-//        VMButton{
-//            id: btnNegative
-//            height: mainWindow.height*0.058
-//            vmText: "No"
-//            vmFont: viewHome.gothamM.name
-//            vmInvertColors: true
-//            anchors.bottom: parent.bottom
-//            anchors.bottomMargin: mainWindow.height*0.029
-//            anchors.left: parent.left
-//            anchors.leftMargin: mainWindow.width*0.039
-//            onClicked: {
-//                multiPartActionConfirmDiag.close();
-//            }
-//        }
-
-//        VMButton{
-//            id: btnPositive
-//            height: mainWindow.height*0.058
-//            vmText: "OK"
-//            vmFont: viewHome.gothamM.name
-//            anchors.bottom: parent.bottom
-//            anchors.bottomMargin: mainWindow.height*0.029
-//            anchors.right: parent.right
-//            anchors.rightMargin: mainWindow.width*0.039
-//            onClicked: {
-//                if (multiPartActionConfirmDiag.vmAction === multiPartActionConfirmDiag.vmMP_ACTION_DELETE){
-//                    loader.deleteMultiPartFile(vmCurrentMultiPartStudyFile)
-//                    swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-//                    multiPartActionConfirmDiag.close();
-//                }
-//                else if (multiPartActionConfirmDiag.vmAction === multiPartActionConfirmDiag.vmMP_ACTION_FINALIZE){
-//                    loader.finalizeMultiPartFile(vmCurrentMultiPartStudyFile)
-//                    swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-//                    multiPartActionConfirmDiag.close();
-//                }
-//                else{
-//                    multiPartActionConfirmDiag.close();
-//                }
-//            }
-//        }
-
-//    }
-
 

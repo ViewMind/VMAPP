@@ -11,7 +11,7 @@ class ParkinsonExperiment: public Experiment
 {
 
 public:
-    ParkinsonExperiment(QWidget *parent = nullptr);
+    ParkinsonExperiment(QWidget *parent = nullptr, const QString &studyType = "");
     ~ParkinsonExperiment();
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
                          const QVariantMap studyConfig, bool useMouse,

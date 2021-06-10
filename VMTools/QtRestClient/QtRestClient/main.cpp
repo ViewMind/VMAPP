@@ -24,10 +24,7 @@ int main(int argc, char *argv[]){
     QString secret                  = "f2a494289f40f2a8408fdf3e71bba0c81e7d0f83d2ef510a54216315c2968999aba6a004aa0072e87d7479181496544fab46233d5afb715e1b4a1fd447116d5b17df8fb07f3e9b70fca3265f05c2b58a327901a0676ee4db3afc973254213b15a245e745faed70960d97259b5d15872ddf7988dcc743328a3287dcc947266028";
 
     QString test_file               = "my_test_file.json";
-    //QString APIURL                  = "http://localhost/vmapi";
     QString APIURL                  = "http://192.168.1.12/vmapi";
-    //QString endpoint                = "hola/juan/de/los";
-    //QString endpoint                = "/institution/operating_information/1?ppkey=gazepoint";
     QString endpoint                = "/institution/operating_information/1";
     QString imageFile               = "/home/web/dashboard-complete/docs/images/layout.png";
     QVariantMap URLParameters;
@@ -79,10 +76,10 @@ int main(int argc, char *argv[]){
 //    }
 
     // Lets append the data
-//    rest_controller.setPOSTDataToSend(data);
+    rest_controller.setPOSTDataToSend(data);
 
     // Appending the data as JSON makes it igonre all both previous add ons, but thats the intention.
-    // rest_controller.setJSONData(data);
+    //rest_controller.setJSONData(data);
 
     // Adding salt to ensure uniqueness of signature.
     rest_controller.addSalt();
@@ -107,17 +104,17 @@ int main(int argc, char *argv[]){
         qDebug() << "Error in the request";
         qDebug() << rest_controller.getErrors();
         QByteArray raw_reply = rest_controller.getReplyData();
-        std::cout << QString(raw_reply).toStdString() << std::endl;
+        QJsonParseError json_error;
+        QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);
+        std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
     }
     else{
         QByteArray raw_reply = rest_controller.getReplyData();
         if (endpoint != "get/pdf"){
-            std::cout << QString(raw_reply).toStdString() << std::endl;
-            //        qDebug() << "The output";
-            //        QTextCodec* codec = QTextCodec::codecForLocale();
-            //        QTextDecoder* decoder = codec->makeDecoder();
-            //        QString text = decoder->toUnicode(raw_reply);
-            //        qDebug() << text;
+            //std::cout << QString(raw_reply).toStdString() << std::endl;
+            QJsonParseError json_error;
+            QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);
+            std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
         }
         else{
             // This should be a pdf.

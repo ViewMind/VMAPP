@@ -27,6 +27,7 @@ const char * LocalDB::SUBJECT_CREATION_DATE   = "creation_date";
 const char * LocalDB::SUBJECT_GENDER          = "gender";
 const char * LocalDB::SUBJECT_STUDY_MARKERS   = "subject_study_markers";
 const char * LocalDB::SUBJECT_LOCAL_ID        = "local_id";
+const char * LocalDB::SUBJECT_ASSIGNED_MEDIC  = "assigned_medic";
 
 // "Bookmark" fields
 const char * LocalDB::MARKER_VALUE            = "marker_value";
@@ -215,7 +216,8 @@ bool LocalDB::setPasswordForEvaluator(const QString &email, const QString &plain
     return saveAndBackup();
 }
 
-QString LocalDB::getSubjectFieldValue(const QString &subject_id,const QString &field){
+QString LocalDB::getSubjectFieldValue(const QString &subject_id,const QString &field) const {
+    //qDebug() << "Searching for " << subject_id << "field" << field;
     if (data.value(MAIN_SUBJECT_DATA).toMap().contains(subject_id)){
         return data.value(MAIN_SUBJECT_DATA).toMap().value(subject_id).toMap().value(field).toString();
     }
@@ -260,33 +262,41 @@ bool LocalDB::setMedicInformationFromRemote(const QVariantMap &response){
         return false;
     }
 
-    QVariantMap allmedics = response.value(APINames::Medics::NAME).toMap();
-    QStringList keyids = allmedics.keys();
+    QVariantList allmedics = response.value(APINames::Medics::NAME).toList();
 
-    QStringList tocheck; tocheck << APINames::Medics::EMAIL << APINames::Medics::FULLNAME;
+    QStringList tocheck; tocheck << APINames::Medics::EMAIL << APINames::Medics::FNAME << APINames::Medics::KEYID << APINames::Medics::LASTNAME;
 
     QVariantMap local_medics = data.value(MAIN_MEDICS).toMap();
 
-    for (qint32 i = 0; i < keyids.size(); i++){
+    for (qint32 i = 0; i < allmedics.size(); i++){
 
-        QVariantMap temp = allmedics.value(keyids.at(i)).toMap();
+        QVariantMap temp = allmedics.at(i).toMap();
 
         for (qint32 i = 0; i < tocheck.size(); i++){
             if (!temp.contains(tocheck.at(i))){
-                error = "Medical record " + keyids.at(i) + " is missing field: " + tocheck.at(i);
+                error = "Medical record " + Debug::QVariantMapToString(temp) + " is missing field: " + tocheck.at(i);
                 return false;
             }
         }
 
         QVariantMap medic;
+        QString keyid = temp.value(APINames::Medics::KEYID).toString();
         medic.insert(APPUSER_EMAIL,temp.value(APINames::Medics::EMAIL));
-        medic.insert(APPUSER_LASTNAME,"");
-        medic.insert(APPUSER_NAME,temp.value(APINames::Medics::FULLNAME));
+        medic.insert(APPUSER_LASTNAME,temp.value(APINames::Medics::LASTNAME));
+        medic.insert(APPUSER_NAME,temp.value(APINames::Medics::FNAME));
         medic.insert(APPUSER_PASSWORD,"");
-        medic.insert(APPUSER_VIEWMIND_ID, keyids.at(i));
-        local_medics[keyids.at(i)] = medic;
+        medic.insert(APPUSER_VIEWMIND_ID, keyid);
+        //qDebug() << "Storing at keyid" << keyid;
+        //std::cout << "##############################" << std::endl;
+        //std::cout << "Keyid " << keyid.toStdString() << std::endl;
+        //Globals::Debug::prettpPrintQVariantMap(temp);
+        //std::cout << "------------------------------" << std::endl;
+        local_medics[keyid] = medic;
 
     }
+
+    //qDebug() << "Printing store of local medics";
+    //Globals::Debug::prettpPrintQVariantMap(local_medics);
 
     data[MAIN_MEDICS] = local_medics;
     return saveAndBackup();
@@ -311,7 +321,7 @@ bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &respo
             error = "Unknown server side processing parameter " + serverkeys.at(i);
             return false;
         }
-        shouldBeThere.removeOne(conversion.value(serverkeys.at(i)));
+        shouldBeThere.removeOne(serverkeys.at(i));
     }
 
     if (!shouldBeThere.isEmpty()){
@@ -364,6 +374,24 @@ QVariantMap LocalDB::getDisplaySubjectList(QString filter){
     return ans;
 }
 
+QVariantMap LocalDB::getMedicDisplayList() const {
+    QVariantMap ans;
+    QStringList keys = data.value(MAIN_MEDICS).toMap().keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        QVariantMap medicinfo = data.value(MAIN_MEDICS).toMap().value(keys.at(i)).toMap();
+        ans[keys.at(i)] = medicinfo.value(APPUSER_LASTNAME).toString() + ", " + medicinfo.value(APPUSER_NAME).toString();
+    }
+    return ans;
+}
+
+QVariantMap LocalDB::getMedicData(const QString &key) const{
+
+    //qDebug() << "Getting medic info " << key;
+    //Debug::prettpPrintQVariantMap(data.value(MAIN_MEDICS).toMap());
+
+    return data.value(MAIN_MEDICS).toMap().value(key).toMap();
+}
+
 QStringList LocalDB::getUsernameEmails() const {
     return data.value(MAIN_EVALUATOR_DATA).toMap().keys();
 }
@@ -381,14 +409,19 @@ bool LocalDB::filterMatchSubject(const QVariantMap &subject, const QString &filt
 
 bool LocalDB::saveAndBackup(){
 
+    // Computing the hash with no checksum and then storing the checksum.
+    QString previoushash = data.value(MAIN_CHECKSUM).toString();
+    data[MAIN_CHECKSUM] = computeDataHash();
+
+    // If hashes are the same, then nothing changed and there is no point in saving and or creating another backup.
+    if (data.value(MAIN_CHECKSUM).toString() == previoushash) return true;
+
+    // Opening the file for writing.
     QFile file (dbfile);
     if (!file.open(QFile::WriteOnly)){
         error = "Could not DB open " + file.fileName() + " for writing";
         return false;
     }
-
-    // Computing the hash with no checksum and then storing the checksum.
-    data[MAIN_CHECKSUM] = computeDataHash();
 
     // Converting to a compact JSON Array
     QJsonDocument json = QJsonDocument::fromVariant(data);

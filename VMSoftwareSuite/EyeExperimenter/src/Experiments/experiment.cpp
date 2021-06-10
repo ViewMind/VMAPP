@@ -1,6 +1,7 @@
 #include "experiment.h"
 
-Experiment::Experiment(QWidget *parent) : QWidget(parent)
+
+Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(parent)
 {
 
     // The Experiment is created in the stopped state.
@@ -12,13 +13,15 @@ Experiment::Experiment(QWidget *parent) : QWidget(parent)
     // Bye default data needs to be saved.
     debugMode = false;
 
+    this->studyType = studyType;
+
 }
 
 void Experiment::setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height){
     // Making this window frameless and making sure it stays on top.
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
 
-    // Finding the current desktop resolution
+    // Setting the geometry to the current desktop resolution.
     this->setGeometry(0,0,monitor_resolution_width,monitor_resolution_height);
 
     // Creating a graphics widget and adding it to the layout
@@ -41,7 +44,7 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     error = "";
     workingDirectory = workingDir;
     studyConfiguration = studyConfig;
-    dataFile = workingDir + "/" + experimentFile;
+    dataFile = experimentFile;
 
     // Loading the experiment configuration file.
     QFile expfile(getExperimentDescriptionFile());
@@ -61,13 +64,6 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     setupView(pp.value(RDC::ProcessingParameter::RESOLUTION_WIDTH).toInt(),pp.value(RDC::ProcessingParameter::RESOLUTION_HEIGHT).toInt());
     manager->init(pp.value(RDC::ProcessingParameter::RESOLUTION_WIDTH).toInt(),pp.value(RDC::ProcessingParameter::RESOLUTION_HEIGHT).toInt());
     this->gview->setScene(manager->getCanvas());
-
-    // Configuring the data conllection.
-    if (!rawdata.addStudy(studyType,studyConfig,contents,manager->getVersion())){
-        error = "Configuring data collection: " + rawdata.getError();
-        emit (experimentEndend(ER_FAILURE));
-        return false;
-    }
 
     // Configuring the experimet
     if (!manager->parseExpConfiguration(contents)){
@@ -90,6 +86,14 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
         return false;
     }
 
+
+    // Adding the study to the raw data container.
+    if (!rawdata.addStudy(studyType,studyConfig,contents,manager->getVersion())){
+        error = "Adding the study type: " + rawdata.getError();
+        emit (experimentEndend(ER_FAILURE));
+        return false;
+    }
+
     // The processing parameters now need to be stored. Any processing parameters need to have been set BEFORE calling this function.
     if (!rawdata.setProcessingParameters(pp)){
         error = "Failed to set the processing parameters for " + dataFile + ". Reason: " + rawdata.getError();
@@ -97,24 +101,23 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
         return false;
     }
 
+    //qDebug() << "Processing parameters";
+    //Debug::prettpPrintQVariantMap(pp);
+
     // Last thing to do is to actually set the current study to the study type
     if (!rawdata.setCurrentStudy(studyType)){
+        error = "Failed setting current study of " + studyType + ". Reason: " + rawdata.getError();
         emit(experimentEndend(ER_FAILURE));
         return false;
+    }
+
+    if (Globals::Debug::SHORT_STUDIES){
+        manager->enableDemoMode();
     }
 
     return true;
 }
 
-// If the experiment is in a stopped state this function does nothing.
-void Experiment::togglePauseExperiment(){
-    if (state == STATE_RUNNING){
-        state = STATE_PAUSED;
-    }
-    else if (state == STATE_PAUSED){
-        state = STATE_RUNNING;
-    }
-}
 
 void Experiment::newEyeDataAvailable(const EyeTrackerData &data){
     emit(updateEyePositions(data.xRight,data.yRight,data.xLeft,data.yLeft));
@@ -132,6 +135,21 @@ void Experiment::experimenteAborted(){
 }
 
 QString Experiment::moveDataFileToAborted(){
+
+    // Before moving we need to check if the file has finalized studies.
+    RawDataContainer rdc;
+    if (!rdc.loadFromJSONFile(dataFile)){
+        error = "Could not load experiment data file " + dataFile + " from disk to check wheter it can be deleted or not";
+        return "";
+    }
+
+    // Checking the if there are nay studies in it.
+    if (rdc.getStudies().size() > 0){
+        // This means that it was saved before and hence we need to simply not save in order to not loose any data.
+        // We return the curent data path so as to avoid an experiment failed message.
+        return dataFile;
+    }
+
     QString abortDir;
     QDir(workingDirectory).mkdir(Globals::Paths::SUBJECT_DIR_ABORTED);
     abortDir = workingDirectory + "/" + QString(Globals::Paths::SUBJECT_DIR_ABORTED);
@@ -164,14 +182,20 @@ bool Experiment::saveDataToHardDisk(){
 QString Experiment::getExperimentDescriptionFile() const{
     QString lang;
 
-    if (studyType == RDC::Study::BINDING){
+    if (studyType == RDC::Study::BINDING_UC){
         if (studyConfiguration.value(RDC::StudyParameter::NUMBER_TARGETS).toString() == RDC::BindingTargetCount::TWO){
-            if (studyConfiguration.value(RDC::StudyParameter::BINDING_TYPE).toString() == RDC::BindingType::BOUND) return ":/experiment_data/bc.dat";
-            else return ":/experiment_data/uc.dat";
+            return ":/experiment_data/uc.dat";
         }
         else{
-            if (studyConfiguration.value(RDC::StudyParameter::BINDING_TYPE).toString() == RDC::BindingType::BOUND) return ":/experiment_data/bc_3.dat";
-            else return ":/experiment_data/uc_3.dat";
+            return ":/experiment_data/uc_3.dat";
+        }
+    }
+    else if (studyType == RDC::Study::BINDING_BC){
+        if (studyConfiguration.value(RDC::StudyParameter::NUMBER_TARGETS).toString() == RDC::BindingTargetCount::TWO){
+            return ":/experiment_data/bc.dat";
+        }
+        else{
+            return ":/experiment_data/bc_3.dat";
         }
     }
     else if (studyType == RDC::Study::GONOGO){
@@ -186,7 +210,7 @@ QString Experiment::getExperimentDescriptionFile() const{
     else if (studyType == RDC::Study::NBACKVS){
         return ":/experiment_data/fielding.dat";
     }
-    else if (studyType == RDC::Study::PERCEPTION){
+    else if (studyType.contains(RDC::MultiPartStudyBaseName::PERCEPTION)){
         return ":/experiment_data/perception_study.dat";
     }
     else if (studyType == RDC::Study::READING){
@@ -200,10 +224,10 @@ QString Experiment::getExperimentDescriptionFile() const{
             lang = "es";
         }
         else if (studyConfiguration.value(RDC::StudyParameter::LANGUAGE) == RDC::ReadingLanguage::ISELANDIC){
-            lang = "fr";
+            lang = "is";
         }
         else if (studyConfiguration.value(RDC::StudyParameter::LANGUAGE) == RDC::ReadingLanguage::FRENCH){
-            lang = "is";
+            lang = "fr";
         }
         return ":/experiment_data/Reading_" + lang + ".dat";
     }

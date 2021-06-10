@@ -13,7 +13,9 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QSet>
+#include <QDebug>
 #include "RDC.h"
+#include "../debug.h"
 
 // Fields specific for each experiment.
 class RawDataContainer
@@ -53,8 +55,6 @@ public:
 
     bool setCurrentStudy(const QString &study);
 
-    bool setCurrentTrialListType(const QString &tlt);
-
     bool addNewTrial(const QString &trial_id, const QString &type);
 
     bool setCurrentDataSet(const QString &data_set_type);
@@ -67,7 +67,8 @@ public:
 
     bool finalizeStudy();
 
-    bool markStudyAsFinalized(const QString &studyname);
+    void markFileAsFinalized();
+
 
     /**
      * @brief GenerateStdRawDataVector Geneates a valid vector that can be inserted with add NewRawDataVector. Ensuring coherence. Standar all EyeTracking values.
@@ -97,15 +98,14 @@ public:
     static QVariantMap GenerateReadingRawDataVector(float timestamp, float xr, float yr, float xl, float yl, float pr, float pl, float char_r, float char_l, float word_r, float word_l);
 
     ////////////////////////// FUNCTION FOR READING DATA. ONLY WHAT IS ABSOLUTELY NECESSARY.
-    QStringList getStudies();
+    QStringList getStudies() ;
     QString getStudyStatus(const QString &study);
-    QVariantMap getStudyConfiguration(const QString study_type);
-    QString getStudyCode(const QString &study);
-    QStringList getMetaDataDateTime();  // Returns a display string and then a string that cna be used for sorting. The list always has two values.
+    QString getMetadaStatus() ;
+    QVariantMap getStudyConfiguration(const QString study_type) ;
+    QString getStudyCode(const QString &study) ;
+    QStringList getMetaDataDateTime() ;  // Returns a display string and then a string that cna be used for sorting. The list always has two values.
     QVariantMap getApplicationUserData(const QString &type);
     QVariantMap getSubjectData();
-
-    bool isStudyOngoing(const QString &st);
     QStringList getTrialListTypesForStudy(const QString &st);
 
 
@@ -120,7 +120,6 @@ private:
     QVariantList currentRawDataList;
 
     // Names and identification for currently selected study.
-    QString currentTrialListType;
     QString currentDataSetType;
     QString currentlySelectedStudy;
 
@@ -142,10 +141,6 @@ private:
 
     // Constant strings to be used in all structures.
     static QString CURRENT_JSON_STRUCT_VERSION;
-
-    // Values for study status.
-    static QString STUDY_STATUS_ONGOING;
-    static QString STUDY_STATUS_FINALIZED;
 
 
 };

@@ -37,6 +37,7 @@ public:
     qint32 getCharIndex(qint32 x);
     QString getDescription() const {return description;}
     QList<QRectF> getOptionTargetBoxes() const;
+    void enableDemoMode() override;
 
     // Configuration key for VR Enabled which is necesssary to determine font type and size. (When using mouse the monitor is used).
     static const char * CONFIG_IS_USING_VR;
@@ -73,8 +74,6 @@ private:
 
     // Used to provide some area extra around an option so as to provide a larger clickable target
     const qint32 AIR = 20;
-
-    void enableDemoMode();
 
     // Values selected from
     qreal escape_point_k;

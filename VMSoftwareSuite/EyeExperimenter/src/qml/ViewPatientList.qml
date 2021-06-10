@@ -11,6 +11,162 @@ VMBase {
     readonly property real vmTableHeight: 0.33*mainWindow.height
     readonly property string keybase: "viewpatientlist_"
 
+
+    Dialog {
+        id: studyPreSetup;
+        modal: true
+        width: mainWindow.width*0.5
+        height: mainWindow.height*0.5
+
+        property var doctorList: []
+        property var protocolList: []
+
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        function fillComboBoxes(){
+            var medics = loader.getMedicList();
+            doctorList = [];
+
+            var medic_instruction = loader.getStringForKey(keybase + "destinatary")
+            doctorList.push({ "value" : medic_instruction, "metadata" : "-1" });
+            for (var key in medics){
+                doctorList.push({ "value" : medics[key], "metadata" : key });
+            }
+            doctorSelection.setModelList(doctorList);
+
+            protocolList = loader.getProtocolList();
+            protocolList.unshift(loader.getStringForKey(keybase  + "protocol_inst"));
+            protocolSelection.setModelList(protocolList);
+
+            // Setting the selected doctor for the current patient.
+            var preferred_doctor = loader.getCurrentlySelectedAssignedDoctor();
+            //console.log("Preffered doctor: " + preferred_doctor);
+            for (var i in doctorList){
+                if (doctorList[i]["metadata"] === preferred_doctor){
+                    doctorSelection.setSelection(i);
+                    break;
+                }
+            }
+
+            // Setting the last selected protocol
+            var selectedprotocol = loader.getConfigurationString("last_selected_protocol");
+            //console.log("Selected protocol: " + selectedprotocol);
+            for (i = 0; i < protocolList.length; i++){
+                if (protocolList[i] === selectedprotocol){
+                    protocolSelection.setSelection(i);
+                }
+            }
+
+        }
+
+        Column {
+
+            id: selectionColumn
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: parent.height*0.2
+            spacing: parent.height*0.1
+            z: 3
+
+            Column {
+
+                id: doctorSelectionColumn
+                spacing: parent.height*0.02
+                z: 4
+
+                Text{
+                    id: labelDoctor
+                    text: loader.getStringForKey(keybase + "doctor") + " " +  loader.getInstitutionName();
+                    color:  "#297fca"
+                    font.family: viewHome.gothamM.name
+                    font.pixelSize: 16*viewHome.vmScale
+                    anchors.left: parent.left
+                }
+
+                VMComboBox2 {
+                    id: doctorSelection
+                    z: 4
+                    width: studyPreSetup.width*0.8
+                }
+
+            }
+
+            Column {
+
+                id: protocolSelectionColumn
+                spacing: parent.height*0.02
+
+                Text{
+                    id: labelProtocol
+                    text: loader.getStringForKey(keybase + "protocol")
+                    color:  "#297fca"
+                    font.family: viewHome.gothamM.name
+                    font.pixelSize: 16*viewHome.vmScale
+                    anchors.left: parent.left
+                }
+
+                VMComboBox2 {
+                    id: protocolSelection
+                    z: 3
+                    width: studyPreSetup.width*0.8
+                }
+
+            }
+
+        }
+
+
+        // Buttons
+        Row{
+            id: buttonRowDiag
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: parent.height*0.058
+            spacing: parent.width*0.3
+
+            VMButton{
+                id: btnBackDiag
+                height: mainWindow.height*0.072
+                vmText: loader.getStringForKey(keybase+"btnBack");
+                vmFont: viewHome.gothamM.name
+                vmInvertColors: true
+                onClicked: {
+                    studyPreSetup.close()
+                }
+            }
+
+            VMButton{
+                id: btnStartDiag
+                height: mainWindow.height*0.072
+                vmText: loader.getStringForKey(keybase+"btnStart");
+                vmFont: viewHome.gothamM.name
+                enabled: doctorSelection.vmCurrentIndex > 0;
+                onClicked: {
+                    // SET the protocol and the doctor.
+                    if (protocolSelection.vmCurrentIndex > 0 ) viewStudyStart.vmSelectedProtocol = protocolSelection.vmCurrentText
+                    else viewStudyStart.vmSelectedProtocol = "";
+                    viewStudyStart.vmSelectedMedic = studyPreSetup.doctorList[doctorSelection.vmCurrentIndex]["metadata"]
+                    loader.setSettingsValue("last_selected_protocol",protocolSelection.vmCurrentText);
+                    studyPreSetup.close();
+                    swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+                }
+            }
+        }
+
+    }
+
+
     ListModel {
         id: patientList
     }
@@ -343,373 +499,11 @@ VMBase {
             enabled: patientListView.currentIndex !== -1
             onClicked: {
                 setCurrentPatient();
-                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+                //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+                studyPreSetup.fillComboBoxes();
+                studyPreSetup.open();
             }
         }
     }
 
 }
-
-
-///////////////////////////////////////////////////// OLD COMMENTED CODE ////////////////////////////////////////////////////////
-
-//        Rectangle {
-//            id: headerDoctor
-//            color: "#ffffff"
-//            border.width: mainWindow.width*0.002
-//            border.color: "#EDEDEE"
-//            radius: 4
-//            width: {
-//                if (vmShowAll) return 0.27*vmTableWidth;
-//                else return 0;
-//            }
-//            visible: vmShowAll
-//            height: parent.height
-//            Text {
-//                id: doctorText
-//                text: loader.getStringForKey(keybase+"headerDoctor");
-//                width: parent.width
-//                font.family: gothamB.name
-//                font.pixelSize: 15*viewHome.vmScale
-//                horizontalAlignment: Text.AlignHCenter
-//                anchors.verticalCenter: parent.verticalCenter
-//            }
-//        }
-
-//        Rectangle {
-//            id: headerStatus
-//            color: "#ffffff"
-//            border.width: mainWindow.width*0.002
-//            border.color: "#EDEDEE"
-//            radius: 4
-//            width: {
-//                if (vmShowAll) 0.18*vmTableWidth;
-//                else return 0.2*vmTableWidth;
-//            }
-//            height: parent.height
-//            Text {
-//                id: statusText
-//                text: loader.getStringForKey(keybase+"headerStatus");
-//                width: parent.width
-//                font.family: gothamB.name
-//                font.pixelSize: 15*viewHome.vmScale
-//                horizontalAlignment: Text.AlignHCenter
-//                anchors.verticalCenter: parent.verticalCenter
-//            }
-//        }
-
-//        Rectangle {
-//            id: headerMedRecs
-//            color: "#ffffff"
-//            border.width: mainWindow.width*0.002
-//            border.color: "#EDEDEE"
-//            radius: 4
-//            width: {
-//                if (vmShowAll) 0.15*vmTableWidth;
-//                else return 0.2*vmTableWidth;
-//            }
-//            height: parent.height
-//            Text {
-//                id: medicalRecordText
-//                text: loader.getStringForKey(keybase+"headerSynch");
-//                width: parent.width
-//                font.family: gothamB.name
-//                font.pixelSize: 15*viewHome.vmScale
-//                horizontalAlignment: Text.AlignHCenter
-//                anchors.verticalCenter: parent.verticalCenter
-//            }
-//        }
-
-
-
-//    Connections {
-//        target: flowControl
-//        onSslTransactionFinished:{
-//            connectionDialog.close();
-//            if (!flowControl.isSSLTransactionOK()){
-//                // console.log("SSL Eye Server Transaction Error Code: " + flowControl.getSSLTransactionError());
-//                var errorTitleMsg = loader.getErrorMessageForCode(flowControl.getSSLTransactionError());
-//                if (errorTitleMsg.length === 2){ // If the code was all ok but the transaction was NOT ok, then it was a communications error.
-//                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROC_ACK;
-//                    vmErrorDiag.vmErrorMessage = errorTitleMsg[1];
-//                    vmErrorDiag.vmErrorTitle = errorTitleMsg[0];
-//                    vmErrorDiag.open();
-//                    return;
-//                }
-//                else{
-//                    vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_SERVER_COMM;
-//                    var titleMsg = viewHome.getErrorTitleAndMessage("error_server_comm");
-//                    vmErrorDiag.vmErrorMessage = titleMsg[1];
-//                    vmErrorDiag.vmErrorTitle = titleMsg[0];
-//                    vmErrorDiag.open();
-//                    return;
-//                }
-//            }
-//            else{
-//                if (vmPatIDForMedRecSync === ""){
-//                    loader.setNumberOfEvaluations(flowControl.numberOfEvaluationsReceived());
-//                    viewDatSelectionDiag.updateNumberOfEvals();
-//                }
-//                else {
-//                    loader.cleanMedicalRecordUpdateList(vmPatIDForMedRecSync)
-//                    vmPatIDForMedRecSync = ""
-//                }
-//                updateText();
-//                loadPatients();
-//            }
-//        }
-//    }
-
-//    Dialog {
-
-//        property string vmTitle: "TITLE"
-//        property string vmMessage: "MESSAGE"
-
-//        id: connectionDialog;
-//        modal: true
-//        width: mainWindow.width*0.48
-//        height: mainWindow.height*0.87
-//        y: (parent.height - height)/2
-//        x: (parent.width - width)/2
-//        closePolicy: Popup.NoAutoClose
-
-//        contentItem: Rectangle {
-//            id: rectDialog
-//            anchors.fill: parent
-//            layer.enabled: true
-//            layer.effect: DropShadow{
-//                radius: 5
-//            }
-//        }
-
-//        // The instruction text
-//        Text {
-//            id: diagTitle
-//            font.family: viewHome.gothamB.name
-//            font.pixelSize: 43*viewHome.vmScale
-//            anchors.top: parent.top
-//            anchors.topMargin: mainWindow.height*0.128
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            color: "#297fca"
-//            text: connectionDialog.vmTitle
-//        }
-
-//        // The instruction text
-//        Text {
-//            id: diagMessage
-//            font.family: viewHome.robotoR.name
-//            font.pixelSize: 13*viewHome.vmScale
-//            anchors.top:  diagTitle.bottom
-//            anchors.topMargin: mainWindow.height*0.038
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            color: "#297fca"
-//            text: connectionDialog.vmMessage
-//        }
-
-//        AnimatedImage {
-//            id: slideAnimation
-//            source: "qrc:/images/LOADING.gif"
-//            anchors.top: diagMessage.bottom
-//            anchors.topMargin: mainWindow.height*0.043
-//            x: (parent.width - slideAnimation.width)/2;
-//            scale: viewHome.vmScale
-//        }
-
-//    }
-
-//    Dialog {
-
-//        property string vmMsgTitle: ""
-//        property string vmMsgText: ""
-//        property bool vmRequireAns: false
-//        property string vmYesButtonLabel: ""
-//        property string vmNoButtonLabel: ""
-//        property var vmParameters: []
-
-//        id: showMsgDialog;
-//        modal: true
-//        width: mainWindow.width*0.48
-//        height: mainWindow.height*0.362
-//        y: (parent.height - height)/2
-//        x: (parent.width - width)/2
-//        closePolicy: Popup.NoAutoClose
-
-//        contentItem: Rectangle {
-//            id: rectShowMsgDialog
-//            anchors.fill: parent
-//            layer.enabled: true
-//            layer.effect: DropShadow{
-//                radius: 5
-//            }
-//        }
-
-//        VMDialogCloseButton {
-//            id: btnClose
-//            anchors.top: parent.top
-//            anchors.topMargin: mainWindow.height*0.032
-//            anchors.right: parent.right
-//            anchors.rightMargin: mainWindow.width*0.02
-//            onClicked: {
-//                showMsgDialog.close();
-//            }
-//        }
-
-//        // The instruction text
-//        Text {
-//            id: showMsgDialogTitle
-//            font.family: viewHome.gothamB.name
-//            font.pixelSize: 43*viewHome.vmScale
-//            anchors.top: parent.top
-//            anchors.topMargin: mainWindow.height*0.072
-//            anchors.left: parent.left
-//            anchors.leftMargin: mainWindow.width*0.016
-//            color: "#297fca"
-//            text: showMsgDialog.vmMsgTitle
-//        }
-
-//        // The instruction text
-//        Text {
-//            id: showMsgDialogMessage
-//            font.family: viewHome.robotoR.name
-//            font.pixelSize: 13*viewHome.vmScale
-//            textFormat: Text.RichText
-//            anchors.top:  showMsgDialogTitle.bottom
-//            anchors.topMargin: mainWindow.height*0.029
-//            anchors.left: showMsgDialogTitle.left
-//            text: showMsgDialog.vmMsgText
-//        }
-
-//        VMButton{
-//            id: btnNegative
-//            height: mainWindow.height*0.058
-//            vmText: showMsgDialog.vmNoButtonLabel
-//            vmFont: viewHome.gothamM.name
-//            vmInvertColors: true
-//            visible: showMsgDialog.vmRequireAns
-//            anchors.bottom: parent.bottom
-//            anchors.bottomMargin: mainWindow.height*0.029
-//            anchors.left: parent.left
-//            anchors.leftMargin: mainWindow.width*0.039
-//            onClicked: {
-//                showMsgDialog.vmRequireAns = false;
-//                showMsgDialog.close();
-//            }
-//        }
-
-//        VMButton{
-//            id: btnPositive
-//            height: mainWindow.height*0.058
-//            vmText: showMsgDialog.vmYesButtonLabel
-//            vmFont: viewHome.gothamM.name
-//            visible: showMsgDialog.vmRequireAns
-//            anchors.bottom: parent.bottom
-//            anchors.bottomMargin: mainWindow.height*0.029
-//            anchors.right: parent.right
-//            anchors.rightMargin: mainWindow.width*0.039
-//            onClicked: {
-//                showMsgDialog.vmRequireAns = false;
-//                showMsgDialog.close();
-//                viewDatSelectionDiag.archiveFile(showMsgDialog.vmParameters[0],showMsgDialog.vmParameters[1]);
-//            }
-//        }
-
-//    }
-
-//    Dialog {
-
-//        property string vmDrName : ""
-
-//        id: askPasswordDialog;
-//        modal: true
-//        width: mainWindow.width*0.48
-//        height: mainWindow.height*0.406
-//        y: (parent.height - height)/2
-//        x: (parent.width - width)/2
-//        closePolicy: Popup.NoAutoClose
-
-//        contentItem: Rectangle {
-//            id: rectPassDialog
-//            anchors.fill: parent
-//            layer.enabled: true
-//            layer.effect: DropShadow{
-//                radius: 5
-//            }
-//        }
-
-//        VMDialogCloseButton {
-//            id: btnClosePass
-//            anchors.top: parent.top
-//            anchors.topMargin: mainWindow.height*0.032
-//            anchors.right: parent.right
-//            anchors.rightMargin: mainWindow.width*0.02
-//            onClicked: {
-//                askPasswordDialog.close();
-//            }
-//        }
-
-//        // The instruction text
-//        Text {
-//            id: diagPassTitle
-//            font.family: viewHome.gothamB.name
-//            font.pixelSize: 30*viewHome.vmScale
-//            anchors.top: parent.top
-//            anchors.topMargin: mainWindow.height*0.072
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            color: "#297fca"
-//            text:  loader.getStringForKey("viewhome_btnTableID");
-//        }
-
-//        VMPasswordField{
-//            id: passwordInput
-//            anchors.bottom: btnCheckPassword.top
-//            anchors.bottomMargin: mainWindow.height*0.043
-//            anchors.horizontalCenter: parent.horizontalCenter;
-//            width: diagPassTitle.width*1.5;
-//            vmLabelText: loader.getStringForKey("viewdrsel_labelInstPassword");
-//        }
-
-//        VMButton{
-//            id: btnCheckPassword
-//            height: mainWindow.height*0.072
-//            vmText: "OK";
-//            vmFont: viewHome.gothamM.name
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            anchors.bottom: parent.bottom
-//            anchors.bottomMargin: mainWindow.height*0.043
-//            onClicked:{
-//                if (loader.verifyInstitutionPassword(passwordInput.getText())){
-//                    askPasswordDialog.close();
-//                    fileDialog.open();
-//                }
-//                else{
-//                    passwordInput.vmErrorMsg =  loader.getStringForKey("viewdrsel_instpassword_wrong");
-//                }
-//            }
-//        }
-
-//        onOpened: {
-//            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-//            passwordInput.setText("");
-//            passwordInput.vmErrorMsg = "";
-//        }
-//    }
-
-
-//    function showMessage(msg){
-//        var list = loader.getStringListForKey(keybase+msg);
-//        showMsgDialog.vmMsgText = list[1];
-//        showMsgDialog.vmMsgTitle = list[0];
-//        showMsgDialog.open();
-//    }
-
-
-//    function configureShowMessageForArchive(which,index){
-//        showMsgDialog.vmRequireAns = true;
-//        showMsgDialog.vmParameters = [which, index];
-//        var parts = loader.getStringListForKey(keybase+"archive_msg");
-//        showMsgDialog.vmMsgTitle = parts[0];
-//        showMsgDialog.vmMsgText = parts[1];
-//        showMsgDialog.vmYesButtonLabel = parts[2];
-//        showMsgDialog.vmNoButtonLabel = parts[3];
-//        showMsgDialog.open();
-//    }

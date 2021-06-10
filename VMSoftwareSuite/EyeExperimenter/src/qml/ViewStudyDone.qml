@@ -97,15 +97,6 @@ VMBase {
                 onClicked: {
                     studyDoneDiag.close();
                     swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-                    if (loader.getConfigurationBoolean(vmDefines.vmCONFIG_DEMO_MODE) || loader.getConfigurationBoolean(vmDefines.vmCONFIG_USE_MOUSE)){
-                        viewPatList.startDemoTransaction();
-                    }
-                    else{
-                        // One is passed as a parameter to force the used of the files in the current run files.
-                        //viewPatList.requestReportToServer(1);
-                        viewPatList.openDatSelectionDialog();
-                    }
-
                 }
             }
         }
@@ -140,9 +131,9 @@ VMBase {
         id: headDesign
         source: "qrc:/images/ILUSTRACION.png"
         anchors.horizontalCenter: parent.horizontalCenter
-//        anchors.top: message.bottom
-//        anchors.topMargin: mainWindow.height*0.022
-//        scale: viewHome.vmScale
+        //        anchors.top: message.bottom
+        //        anchors.topMargin: mainWindow.height*0.022
+        //        scale: viewHome.vmScale
     }
 
 
@@ -155,10 +146,7 @@ VMBase {
         anchors.bottomMargin: mainWindow.height*0.072
         width: mainWindow.width*0.156
         onClicked: {
-            if (loader.isDoctorValidated(-1)){
-                openDiag();                
-            }
-            else swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         }
     }
 

@@ -1,14 +1,12 @@
 #include "imageexperiment.h"
 
-ImageExperiment::ImageExperiment(QWidget *parent):Experiment(parent){
+ImageExperiment::ImageExperiment(QWidget *parent, const QString &studyType):Experiment(parent,studyType){
 
     manager = new BindingManager();
     m = (BindingManager*) manager;
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::nextState);
-
-    studyType = RDC::Study::BINDING;
 
 }
 
@@ -26,14 +24,6 @@ bool ImageExperiment::startExperiment(const QString &workingDir, const QString &
     if (!rawdata.setProcessingParameters(pp)){
         error = "Failed setting processing parameters on Reading: " + rawdata.getError();
         emit(experimentEndend(ER_FAILURE));
-    }
-
-    // We set the trial list to the proper binding type.
-    if (studyConfig.value(RDC::StudyParameter::BINDING_TYPE).toString() == RDC::BindingType::BOUND){
-        rawdata.setCurrentTrialListType(RDC::TrialListType::BOUND);
-    }
-    else{
-        rawdata.setCurrentTrialListType(RDC::TrialListType::UNBOUND);
     }
 
     // Setup data gathering.
@@ -192,13 +182,9 @@ void ImageExperiment::nextState(){
             }
 
             // We need to check if both binding bc AND bingin UC are part of this file, otherwise it is ongoing.
-           QStringList trial_list_types = rawdata.getTrialListTypesForStudy(studyType);
-            if (trial_list_types.contains(RDC::TrialListType::BOUND) && trial_list_types.contains(RDC::TrialListType::UNBOUND)){
-                if (!rawdata.markStudyAsFinalized(studyType)){
-                    error = "Failed on Marking Binding study as finalized: " + rawdata.getError();
-                    emit(experimentEndend(ER_FAILURE));
-                    return;
-                }
+           QStringList studylist = rawdata.getStudies();
+            if (studylist.contains(RDC::Study::BINDING_BC) && studylist.contains(RDC::Study::BINDING_UC)){
+                rawdata.markFileAsFinalized();
             }
 
 

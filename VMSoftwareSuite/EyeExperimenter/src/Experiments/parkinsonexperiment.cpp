@@ -1,6 +1,6 @@
 #include "parkinsonexperiment.h"
 
-ParkinsonExperiment::ParkinsonExperiment(QWidget *parent):Experiment(parent)
+ParkinsonExperiment::ParkinsonExperiment(QWidget *parent, const QString &studyType):Experiment(parent,studyType)
 {
     manager = new ParkinsonManager();
     m = dynamic_cast<ParkinsonManager*>(manager);

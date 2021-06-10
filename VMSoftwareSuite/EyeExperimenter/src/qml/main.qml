@@ -7,6 +7,7 @@ Window {
     visible: true
     title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()    
     visibility: Window.Maximized
+    //flags: Qt.WindowTitleHint|Qt.WindowCloseButtonHint|Qt.WindowSystemMenuHint;
 
     Component.onCompleted: {        
         flowControl.resolutionCalculations();
@@ -171,9 +172,6 @@ Window {
                 viewPresentExperimet.enableContinue();
                 break;
             case vmIndexPatientList:
-                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_UID,"0_0000_D0000");
-                //loader.setValueForConfiguration(viewHome.vmDefines.vmCONFIG_DOCTOR_NAME,"Test Doctor");
-                //console.log("COMMENT on main.qml set doctor name and directory")
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewPatList.loadPatients();                
                 break;

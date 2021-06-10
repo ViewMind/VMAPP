@@ -6,6 +6,8 @@ VMBase {
 
     id: viewCalibrationStart
 
+    property int vmSelectedEye;
+
     Connections{
         target: flowControl
         onConnectedToEyeTracker:{
@@ -21,7 +23,7 @@ VMBase {
                 return;
             }
             // All is good so the calibration is requested.
-            flowControl.calibrateEyeTracker();
+            flowControl.calibrateEyeTracker(vmSelectedEye);
         }
         onCalibrationDone: {
             if (swiperControl.currentIndex !== swiperControl.vmIndexCalibrationStart) return;
@@ -117,7 +119,7 @@ VMBase {
             anchors.topMargin: mainWindow.height*0.061
             onClicked: {
                 if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
-                else flowControl.calibrateEyeTracker();
+                else flowControl.calibrateEyeTracker(vmSelectedEye);
             }
         }
 

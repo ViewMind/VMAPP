@@ -25,9 +25,15 @@ public:
     virtual qint32 size() const {return 0;}
     virtual qreal sizeToProcess() const {return 0;}
 
+    // For debugging
+    void setShortStudy();
+
     // For on-screen gaze tracking.
     void updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl);
     void redrawGazePoints();
+
+    // Trims the number of trials to number in demo mode.
+    virtual void enableDemoMode(){}
 
     QPixmap getImage() const;
     QImage getQImage() const;
@@ -61,9 +67,6 @@ protected:
     QGraphicsScene *canvas;
     QString error;
     QString versionString;
-
-    // Trims the number of trials to number in demo mode.
-    virtual void enableDemoMode(){}
 
 };
 

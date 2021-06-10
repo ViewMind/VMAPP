@@ -45,6 +45,8 @@ public:
     // Get the info on one trial.
     BindingParser::BindingTrial getTrial(qint32 trial) {return parser.getTrials().at(trial);}
 
+    void enableDemoMode();
+
     // The number of targets is set simply by selectig which experimet file to parse.
     static const char * CONFIG_USE_SMALL_TARGETS;
 
@@ -58,8 +60,6 @@ private:
 
     // Use small targets or not
     bool smallTargets;
-
-    void enableDemoMode();
 
 };
 

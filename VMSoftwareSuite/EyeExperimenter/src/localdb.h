@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QTextStream>
 #include <QDebug>
+#include "../../../CommonClasses/debug.h"
 
 
 namespace APINames {
@@ -29,9 +30,12 @@ namespace APINames {
    }
 
    namespace Medics {
-      static const char * NAME = "medics";
-      static const char * FULLNAME = "name";
-      static const char * EMAIL = "email";
+      static const char * NAME     = "medics";
+      static const char * FNAME    = "name";
+      static const char * LASTNAME = "lastname";
+      static const char * ROLE     = "user_role";
+      static const char * KEYID    = "keyid";
+      static const char * EMAIL    = "email";
    }
 
 }
@@ -68,6 +72,7 @@ public:
     static const char * SUBJECT_GENDER;
     static const char * SUBJECT_STUDY_MARKERS;
     static const char * SUBJECT_LOCAL_ID;  // <- This is the local key as well.
+    static const char * SUBJECT_ASSIGNED_MEDIC;
 
     // Marker for each subject
     static const char * MARKER_VALUE;
@@ -102,7 +107,7 @@ public:
     bool checkEvaluatorExists(const QString &evaluator) const;
 
     // Returns, if it exists, the value of a particular field for a given subject.
-    QString getSubjectFieldValue(const QString &subject_id, const QString &field);
+    QString getSubjectFieldValue(const QString &subject_id, const QString &field) const;
 
     // Returns the complte map data for a given evaluator.
     QVariantMap getEvaluatorData(const QString &evaluator) const;
@@ -112,6 +117,12 @@ public:
 
     // Returns a list with display data of all subjects that match the filter.
     QVariantMap getDisplaySubjectList(QString filter);
+
+    // Returns a list of doctors to display
+    QVariantMap getMedicDisplayList() const;
+
+    // Gets full medic data map.
+    QVariantMap getMedicData(const QString &key) const;
 
     // List the emails of all evaluators.
     QStringList getUsernameEmails() const;

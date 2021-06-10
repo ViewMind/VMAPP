@@ -16,11 +16,10 @@ const qint32 NBackRTExperiment::NBACKVS_START_HOLD_TIME =                      2
 const qint32 NBackRTExperiment::NBACKVS_NTRIAL_FOR_STEP_CHANGE =               2;
 
 
-NBackRTExperiment::NBackRTExperiment(QString study_type, QWidget *parent):Experiment(parent){
+NBackRTExperiment::NBackRTExperiment(QWidget *parent, const QString &studyType):Experiment(parent,studyType){
 
     manager = new FieldingManager();
     m = dynamic_cast<FieldingManager*>(manager);
-    studyType = study_type;
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&NBackRTExperiment::onTimeOut);
@@ -72,9 +71,6 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         error = "Failed setting processing parameters on Reading: " + rawdata.getError();
         emit(experimentEndend(ER_FAILURE));
     }
-
-    // There is only one trial list type on a NBack experiment.
-    rawdata.setCurrentTrialListType(RDC::TrialListType::UNIQUE);
 
     currentImage = 0;
     currentTrial = 0;
@@ -234,14 +230,12 @@ bool NBackRTExperiment::finalizeExperiment(){
     else er = ER_WARNING;
 
     // Finalizing the study. NBacks are not multi part.
-    bool ans;
-    ans = rawdata.finalizeStudy();
-    ans = ans & rawdata.markStudyAsFinalized(studyType);
-    if (!ans){
+    if (!rawdata.finalizeStudy()){
         error = "Failed on NBack RT/VS study finalization: " + rawdata.getError();
         emit (experimentEndend(ER_FAILURE));
         return false;
     }
+    rawdata.markFileAsFinalized();
 
     if (!saveDataToHardDisk()){
         emit(experimentEndend(ER_FAILURE));

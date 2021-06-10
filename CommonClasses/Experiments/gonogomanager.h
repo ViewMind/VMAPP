@@ -32,6 +32,8 @@ public:
 
     bool isPointInSideCorrectTargetForCurrentTrial(qreal x, qreal y) const;
 
+    void enableDemoMode() override;
+
     QRectF getArrowBox() const;
     QList<QRectF> getLeftAndRightHitBoxes() const;
 
@@ -41,7 +43,6 @@ private:
     QRectF arrowTargetBox;
     QList<qint32> answerArray;
 
-    void enableDemoMode() override;
     void drawAllElements();
 
     QList<QGraphicsItem*>  gCross;

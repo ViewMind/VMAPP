@@ -18,11 +18,17 @@
 class ReadingExperiment : public Experiment
 {
 public:
-    ReadingExperiment(QWidget *parent = nullptr);
+    ReadingExperiment(QWidget *parent = nullptr, const QString &studyType = "");
     ~ReadingExperiment() override;
+//    bool startExperiment(const QString &workingDir, const QString &experimentFile,
+//                         const QVariantMap studyConfig, bool useMouse,
+//                         QVariantMap pp) override;
+
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
-                         const QVariantMap studyConfig, bool useMouse,
-                         QVariantMap pp);
+                                     const QVariantMap &studyConfig,
+                                     bool useMouse,
+                                     QVariantMap pp) override;
+
     bool loadConfiguration(const QString &fileName);
 
 public slots:

@@ -3,6 +3,7 @@
 
 #include <QDir>
 #include "../../../CommonClasses/RawDataContainer/rawdatacontainer.h"
+#include "eyexperimenter_defines.h"
 
 class SubjectDirScanner
 {
@@ -27,10 +28,30 @@ public:
 
     SubjectDirScanner();
 
-    static QList<QVariantMap> scanSubjectDirectoryForEvalutionsFrom(const QString & directory, const QString &evalutor_username, QStringList *errorLst);
+    // Sets up basinc info on what to scan.
+    void setup(const QString &workdir, const QString &loggedUser);
 
-    // Sorting method is a simple BubbleSort because the number of data should never be mare than maybe a dozen or so.
+    // Scans the setup directory for evaluations belongin to the setup user
+    QList<QVariantMap> scanSubjectDirectoryForEvalutionsFrom();
+
+    // The function searches for binding study files that are missing study, either UC or BC by the evaluator, in the set up direcotry, and that match the study configuration
+    // Returns the newest file, if it finds it. Empty string otherwise.
+    QString findIncompleteBindingStudies(const QString &missing_study, const QVariantMap study_configuration);
+
+    // Searches for a perception study
+    QString findIncompletedPerceptionStudy(const qint32 missing_part, const QVariantMap &study_configuration);
+
+    // Returns the last error message.
+    QString getError() const;
+
+    // Sorting method is a simple BubbleSort because the number of data should never be large.
     static void sortSubjectDataListByOrder(QList<QVariantMap> *list);
+
+private:
+    QString workDirectory;
+    QString loggedInUser;
+    QString error;
+
 
 };
 

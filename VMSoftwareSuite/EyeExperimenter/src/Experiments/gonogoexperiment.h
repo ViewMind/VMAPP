@@ -14,7 +14,7 @@
 class GoNoGoExperiment: public Experiment
 {
 public:
-    GoNoGoExperiment(QWidget *parent = nullptr);
+    GoNoGoExperiment(QWidget *parent = nullptr, const QString &studyType = "");
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,

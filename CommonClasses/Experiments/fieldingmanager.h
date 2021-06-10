@@ -63,6 +63,8 @@ public:
     // Drawing the pause text
     void drawPauseScreen();
 
+    void enableDemoMode();
+
     static const char * CONFIG_IS_VR_BEING_USED;
     static const char * CONFIG_PAUSE_TEXT_LANG;
 
@@ -96,8 +98,6 @@ private:
 
     static const char * PAUSE_TEXT_SPANISH;
     static const char * PAUSE_TEXT_ENGLISH;
-
-    void enableDemoMode();
 
 };
 

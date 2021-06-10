@@ -1,7 +1,9 @@
 #ifndef RDC_H
 #define RDC_H
 
+#include <QVariantMap>
 #include <QStringList>
+#include <iostream>
 
 namespace RDC {
 
@@ -14,7 +16,6 @@ namespace RDC {
         }
     }
 
-
     namespace Eye {
        static const QString LEFT = "left";
        static const QString RIGHT = "right";
@@ -26,18 +27,41 @@ namespace RDC {
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
     }
 
+    namespace MultiPartStudyBaseName {
+        static const QString BINDING      = "Binding";
+        static const QString PERCEPTION   = "Perception";
+    }
+
     namespace Study{
-       static const QString BINDING    =   "Binding";
-       static const QString GONOGO     =   "Go No-Go";
-       static const QString NBACKMS    =   "NBack MS";
-       static const QString NBACKRT    =   "NBack RT";
-       static const QString NBACKVS    =   "NBack VS";
-       static const QString PERCEPTION =   "Perception";
-       static const QString READING    =   "Reading";    
-       static const QStringList valid{READING,BINDING,NBACKMS,NBACKRT,NBACKVS,PERCEPTION,GONOGO};
+       static const QString READING      = "Reading";
+       static const QString BINDING_BC   = MultiPartStudyBaseName::BINDING + " BC";
+       static const QString BINDING_UC   = MultiPartStudyBaseName::BINDING + " UC";
+       static const QString NBACKMS      = "NBack MS";
+       static const QString NBACKRT      = "NBack RT";
+       static const QString NBACKVS      = "NBack VS";
+       static const QString GONOGO       = "Go No-Go";
+       static const QString PERCEPTION_1 = MultiPartStudyBaseName::PERCEPTION + " 1";
+       static const QString PERCEPTION_2 = MultiPartStudyBaseName::PERCEPTION + " 2";
+       static const QString PERCEPTION_3 = MultiPartStudyBaseName::PERCEPTION + " 3";
+       static const QString PERCEPTION_4 = MultiPartStudyBaseName::PERCEPTION + " 4";
+       static const QString PERCEPTION_5 = MultiPartStudyBaseName::PERCEPTION + " 5";
+       static const QString PERCEPTION_6 = MultiPartStudyBaseName::PERCEPTION + " 6";
+       static const QString PERCEPTION_7 = MultiPartStudyBaseName::PERCEPTION + " 7";
+       static const QString PERCEPTION_8 = MultiPartStudyBaseName::PERCEPTION + " 8";
+       static const QStringList valid{READING,BINDING_BC,BINDING_UC,NBACKMS,NBACKRT,NBACKVS,GONOGO,PERCEPTION_1,PERCEPTION_2,PERCEPTION_3,PERCEPTION_4,PERCEPTION_5,PERCEPTION_6,PERCEPTION_7,PERCEPTION_8};
        static QString validate(const QString &str) { return RDC::validate(str,valid,"Study"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
+       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+    }
+
+    namespace StatusType {
+       static const QString FINALIZED  = "finalized";
+       static const QString ONGOING    = "ongoing";
+       static const QStringList valid{FINALIZED,ONGOING};
+       static QString validate(const QString &str) { return RDC::validate(str,valid,"Study Status"); }
+       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
     }
  
@@ -46,10 +70,9 @@ namespace RDC {
        static const QString LANGUAGE           = "language";
        static const QString NUMBER_TARGETS     = "number_targets";
        static const QString TARGET_SIZE        = "target_size";
-       static const QString BINDING_TYPE       = "binding_type";
-       static const QString PERCEPTION_PART    = "perception_part";
        static const QString PERCEPTION_TYPE    = "perception_type";
-       static const QStringList valid{VALID_EYE,LANGUAGE,NUMBER_TARGETS,TARGET_SIZE,BINDING_TYPE,PERCEPTION_PART,PERCEPTION_TYPE};
+       static const QString PERCEPTION_PART    = "perception_part";
+       static const QStringList valid{VALID_EYE,LANGUAGE,NUMBER_TARGETS,TARGET_SIZE,PERCEPTION_TYPE,PERCEPTION_PART};
        static QString validate(const QString &str) { return RDC::validate(str,valid,"Study Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
@@ -67,8 +90,8 @@ namespace RDC {
     }
     
     namespace BindingTargetSize {
-       static const QString LARGE = "Large";
-       static const QString SMALL = "Small";
+       static const QString LARGE = "large";
+       static const QString SMALL = "small";
        static const QStringList valid{LARGE,SMALL};
        static QString validate(const QString &str) { return RDC::validate(str,valid,"Binding Target Size"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
@@ -98,17 +121,7 @@ namespace RDC {
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
     }
-    
-    namespace BindingType{
-       static const QString BOUND   = "bound";
-       static const QString UNBOUND = "unbound";
-       static const QStringList valid{BOUND,UNBOUND};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Binding Type"); }  
-       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
-       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
-       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
-    }
-     
+        
     namespace NBackVSTargetCount {
        static const QString THREE = "3";
        static const QString FOUR  = "4";
@@ -122,8 +135,8 @@ namespace RDC {
     }
     
     namespace PerceptionType {
-       static const QString TRAINING = "Training";
-       static const QString REHAB    = "Rehab";
+       static const QString TRAINING = "training";
+       static const QString REHAB    = "rehab";
        static const QStringList valid{TRAINING,REHAB};
        static QString validate(const QString &str) { return RDC::validate(str,valid,"Perception Type"); }   
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
@@ -131,42 +144,7 @@ namespace RDC {
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
     }
     
-    namespace PerceptionPart{
-       static const QString ONE    = "1";
-       static const QString TWO    = "2";     
-       static const QString THREE  = "3";    
-       static const QString FOUR   = "4";
-       static const QString FIVE   = "5";
-       static const QString SIX    = "6";
-       static const QString SEVEN  = "7";
-       static const QString EIGHT  = "8";    
-       static const QStringList valid{ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Pereception Part"); }  
-       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
-       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
-       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
-    }
-    
-    namespace TrialListType {
-       static const QString BOUND = "bound";    
-       static const QString UNBOUND = "unbound";
-       static const QString UNIQUE = "unique";
-       static const QString PERCEPTION_1 = "perception_1";
-       static const QString PERCEPTION_2 = "perception_2";
-       static const QString PERCEPTION_3 = "perception_3";
-       static const QString PERCEPTION_4 = "perception_4";
-       static const QString PERCEPTION_5 = "perception_5";
-       static const QString PERCEPTION_6 = "perception_6";
-       static const QString PERCEPTION_7 = "perception_7";
-       static const QString PERCEPTION_8 = "perception_8";
-       static const QStringList valid{BOUND,UNBOUND,UNIQUE,PERCEPTION_1,PERCEPTION_2,PERCEPTION_3,PERCEPTION_4,PERCEPTION_5,PERCEPTION_6,PERCEPTION_7,PERCEPTION_8};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Trial List Type"); }  
-       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
-       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
-       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
-    }
-    
-    
+
     namespace DataVectorField {
        static const QString TIMESTAMP = "ts";
        static const QString CHAR_L = "cl";
@@ -232,14 +210,15 @@ namespace RDC {
     namespace MetadataField {
        static const QString DATE = "date";
        static const QString HOUR = "hour";
+       static const QString STATUS = "status";
        static const QString INSTITUTION_ID = "institution_id";
        static const QString INSTITUTION_INSTANCE = "institution_instance";
-       static const QString INSTITUTION_KEY = "institution_key";
        static const QString INSTITUTION_NAME = "institution_name";
        static const QString VERSION = "version";
        static const QString PROC_PARAMETER_KEY = "processing_parameters_key";
        static const QString MOUSE_USED = "mouse_used";
-       static const QStringList valid{DATE,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_KEY,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,MOUSE_USED};
+       static const QString PROTOCOL = "protocol";
+       static const QStringList valid{DATE,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,MOUSE_USED,PROTOCOL,STATUS};
        static QString validate(const QString &str) { return RDC::validate(str,valid,"Metadata Field"); }  
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
@@ -290,14 +269,16 @@ namespace RDC {
     
     
     namespace StudyField {
+       static const QString DATE                   = "date";
+       static const QString HOUR                   = "hour";
        static const QString EXPERIMENT_DESCRIPTION = "experiment_description";
-       static const QString STUDY_CONFIGURATION = "study_configuration";
-       static const QString TRIAL_LIST = "trial_list";
-       static const QString VERSION = "version";
-       static const QString STATUS = "status";
-       static const QString ABBREVIATION = "abbreviation";
-       static const QString CONFIG_CODE = "config_code";
-       static const QStringList valid{EXPERIMENT_DESCRIPTION,STUDY_CONFIGURATION,TRIAL_LIST,VERSION,STATUS,ABBREVIATION,CONFIG_CODE};
+       static const QString STUDY_CONFIGURATION    = "study_configuration";
+       static const QString TRIAL_LIST             = "trial_list";
+       static const QString VERSION                = "version";
+       static const QString STATUS                 = "status";
+       static const QString ABBREVIATION           = "abbreviation";
+       static const QString CONFIG_CODE            = "config_code";
+       static const QStringList valid{DATE,HOUR,EXPERIMENT_DESCRIPTION,STUDY_CONFIGURATION,TRIAL_LIST,VERSION,STATUS,ABBREVIATION,CONFIG_CODE};
        static QString validate(const QString &str) { return RDC::validate(str,valid,"Study Field"); }  
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

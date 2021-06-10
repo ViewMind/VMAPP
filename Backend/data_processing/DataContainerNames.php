@@ -122,7 +122,6 @@ abstract class TrialFields extends TypedString
    const DATA                                    = "data";
    const ID                                      = "ID";
    const RESPONSE                                = "response";
-   const SENTENCE                                = "sentence";
    const TRIAL_TYPE                              = "trial_type";
    const TRIAL_VALUES                            = "trial_values";
 }

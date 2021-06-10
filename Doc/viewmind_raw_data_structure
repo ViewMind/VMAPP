@@ -14,7 +14,6 @@
 -> Add the study (with the study configuration); We always with it's status as ongoing. 
 ///////    
 -> setCurrentStudy
--> setCurrentTrialListType -> This will dependo con study configuration. 
 -> For Each Trial 
      addNewTrial
      For each dataset required:     
@@ -25,7 +24,6 @@
 -> finalizeStudy()
 -> markStudyAsFinalized() // For binding this means both are present. For perception all 8 parts are present.  
 
-
 We are going to need a loader function that creates the file/select the file with the subject_data/metadata. 
 
 
@@ -33,23 +31,24 @@ We are going to need a loader function that creates the file/select the file wit
 ====================== GENERAL STRUCTURE
 
 S["studies"][STUDY_NAME]["trial_list"]             = Specified below
-S["studies"][STUDY_NAME]["status"]                 = finalized|ongoing   This will tell the system whether the study is ready to be sent to process or not. For example a Binding wiht only ONE of its parts. 
+S["studies"][STUDY_NAME]["status"]                 = finalized|ongoing   
 S["studies"][STUDY_NAME]["study_configuration"]    = Depends on the study. 
 S["studies"][STUDY_NAME]["experiment_description"] = "Giant string with the experiment description"
 S["studies"][STUDY_NAME]["version"]                = The study version.
 S["studies"][STUDY_NAME]["abbreviation"]           = 2 To 4 letter version of the study name. 
 S["studies"][STUDY_NAME]["code"]                   = Sythesis of the study configuration (Used for display mostly)
 
-S["metadata"]["version"]                        = Numbered version of this structure. 
-S["metadata"]["hour"]                           = hh_mm
-S["metadata"]["date"]                           = yyyy_MM_dd
-S["metadata"]["institution_id"]                 = The number
-S["metadata"]["institution_id"]                 = The instance from 0000 to 9999
-S["metadata"]["institution_name"]               = The name
-S["metadata"]["institution_key"]                = To know what the secret is in our backend
-S["metadata"]["processing_parameters_key"]      = key to database row with the current set of processing parameters. 
-S["metadata"]["protocol"]                       = protocol name if any;
-S["metadata"]["mouse_used"]                     = if it's true this can't be sent to processs. 
+S["metadata"]["version"]                           = Numbered version of this structure. 
+S["metadata"]["status"]                            = ongoing|finalized
+S["metadata"]["hour"]                              = hh_mm       -> This represents the creation of the file
+S["metadata"]["date"]                              = yyyy_MM_dd  ->
+S["metadata"]["institution_id"]                    = The number
+S["metadata"]["institution_id"]                    = The instance from 0000 to 9999
+S["metadata"]["institution_name"]                  = The name
+S["metadata"]["institution_key"]                   = To know what the secret is in our backend
+S["metadata"]["processing_parameters_key"]         = key to database row with the current set of processing parameters. 
+S["metadata"]["protocol"]                          = protocol name if any;
+S["metadata"]["mouse_used"]                        = if it's true this can't be sent to processs. 
 
 S["subject"]["name"]
 S["subject"]["lastname"]
@@ -103,9 +102,7 @@ S["studies"]["Perception"]["study_configuration"]["study_part"] = "1|2|3|4|5|6|7
 
 ====================== STRUCTURE FOR ALL STUDIES 
 
-S["studies"][STUDY_NAME]["trial_list"][TRIAL_LIST_TYPE] =[] List of Trial Structs. 
-
-TRIAL_LIST_TYPE =  Can be unique, bound, or unbound. 
+S["studies"][STUDY_NAME]["trial_list"] =[] List of Trial Structs. 
 
 Each Trial Struct. 
 Trial["ID"] = TRIAL_ID
@@ -113,20 +110,16 @@ Trial["data"][DATA_SET_TYPE][DATA_SET_FIELD] = Where the actual data is stored.
 Trial["custom_fields_depend_on_study"] = Self explanatory.
 Trial["response"] = If the trial ends in a response, this is recorded here. 
 
-
-
 DATA_SET_TYPE = Is used to recognize the different data sets on each experiment. Reading has only once, hence "unique", but binding has encoding_1 and retrieval_1. 
 
 DATA_SET_FIELD = "raw_data" is used for the raw data container. 
-
-
 
 1) When data set finishes, finalizeDataSet(). and if necessary create new dataset
 2) When all the data sets are finished we finalizeTrial("the_response") and if necessary create a new trial. 
 
 
 ====================== READING
-S["studies"][STUDY_NAME]["trial_list"]["unique"] = List of Trials
+S["studies"][STUDY_NAME]["trial_list"]= List of Trials
 
 Each trial has the structure
 Trial["ID"] = TRIAL_ID
@@ -172,7 +165,7 @@ Trial["trial_type"]  = One of trialTypes << "R<-" << "G<-" << "R->" <<  "G->";
 
 *************************************************************************************************************************************************************************************
 *                                                                                                                                                                                   *
-*                                                                  PROCESSED DATA CONTAINER                                                                                         *
+*                                                                  PROCESSED DATA CONTAINER (REVIEW)                                                                                   *
 *                                                                                                                                                                                   *
 *************************************************************************************************************************************************************************************
 
@@ -185,8 +178,8 @@ s["metadata"]["patient_age"] = From raw data. // Eye rep gen conf.
 
 s["studies"][STUDY_NAME]["finalized_results"] = map with the named values of each results from RProcessing.
 s["studies"][STUDY_NAME]["valid_eye"] = the valid eye used in the study. 
-s["studies"][STUDY_NAME]["trial_list"][TRIAL_LIST_TYPE]["fixations_l"]
-s["studies"][STUDY_NAME]["trial_list"][TRIAL_LIST_TYPE]["fixations_r"]
+s["studies"][STUDY_NAME]["trial_list"]["fixations_l"]
+s["studies"][STUDY_NAME]["trial_list"]["fixations_r"]
 s["studies"][STUDY_NAME]["trial_list"][TRIAL_LIST_TYPE]["data"]["duration"] = duration of the trial experiment. 
 
 
@@ -205,16 +198,16 @@ Trial["response"]  = Selected response (If applicable). When it is raw data is e
 
 ====================== NBack RT Trial Structure
 Trial["ID"] = TRIAL_ID
-Trial["data"]["unique"]["fixations""]  = {} // array of value vectors. Should include all fixation dependant values. 
+Trial["data"]["enconding_#/retrieval_#"]["fixations""]  = {} // array of value vectors. Should include all fixation dependant values. 
 Trial["data"]["unique"]["data_set_values"]["duration"] = The duration of the data set. 
 Trial["trial_values"]["seq_complete_l"] The index of the fixation that completed the sequence in the trial for the left eye.
 Trial["trial_values"]["seq_complete_r"] The index of the fixation that completed the sequence in the trial for the right eye.
 Trial["trial_type"] = "The sequence of 3 to 6 values describing the study. All values between 0 and 5 as there are only 6 possible hit boxes"
 Trial["response"] = "" 
 
-====================== Binding Trial Structure
+====================== Binding UC/BC Trial Structure
 Trial["ID"] = TRIAL_ID
-Trial["data"]["unique"]["fixations""]  = {} // array of value vectors. Should include all fixation dependant values. 
+Trial["data"]["encoding_1/retrieval_1"]["fixations""]  = {} // array of value vectors. Should include all fixation dependant values. 
 Trial["trial_type"] = Same or differrent
 Trial["response"] = S D or N/A depending on button pressed or if not button was pressed. 
 

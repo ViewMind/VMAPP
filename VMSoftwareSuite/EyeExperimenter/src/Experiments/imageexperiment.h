@@ -23,7 +23,7 @@ public:
     // State machine states for Binding trials
     typedef enum {TSB_CENTER_CROSS,TSB_SHOW,TSB_TRANSITION,TSB_TEST,TSB_FINISH} TrialStateBinding;
 
-    ImageExperiment(QWidget *parent = nullptr);
+    ImageExperiment(QWidget *parent = nullptr, const QString &studyType = "");
     ~ImageExperiment() override;
 
     // Reimplementation of virtual functions

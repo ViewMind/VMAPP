@@ -14,7 +14,9 @@ VMBase {
     Connections {
         target: loader
         onFinishedRequest: {
+            // Close the connection dialog and open the user selection dialog.
             connectionDialog.close();
+            viewDrSelection.open();
         }
     }
 
@@ -350,7 +352,7 @@ VMBase {
             connectionDialog.vmTitle = title_and_text[0];
             connectionDialog.open();
             loader.requestOperatingInfo();
-            //viewDrSelection.open();
+            //
         }
     }
 }

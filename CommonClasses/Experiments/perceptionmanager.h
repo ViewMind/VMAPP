@@ -34,11 +34,11 @@ public:
 
     void highlightSelection(qreal x, qreal y);
 
+    void enableDemoMode() override;
+
 private:
 
     QList<PerceptionParser::PerceptionTrial> perceptionTrials;
-    void enableDemoMode() override;
-
     void drawTrial(qint32 trial_index);
 
     PerceptionTrialState currentTrialState;
