@@ -172,13 +172,6 @@ abstract class SubjectFields extends TypedString {
    const LOCAL_ID                                = "local_id";
 }
    
-abstract class TrialListTypes extends TypedString
-{
-   const BOUND                                   = "bound";
-   const UNBOUND                                 = "unbound";
-   const UNIQUE                                  = "unique";
-}
-
 abstract class DataSetTypes extends TypedString
 {
    const ENCODING_1                             = "encoding_1";
@@ -191,7 +184,6 @@ abstract class DataSetTypes extends TypedString
    const RETRIEVAL_2                            = "reterieval_2";
    const RETRIEVAL_3                            = "reterieval_3";
    const UNIQUE                                 = "unique";   
-
 }
 
 abstract class GoNoGoTargetBoxes {

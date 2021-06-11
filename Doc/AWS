@@ -67,13 +67,6 @@ What I would need is help on how to configure load balancing for our custom appl
 3) RDS Instance for vm_main   (534sY=17ZyzAoM:q+=Y2) 
 4) RDS Instance for vm_secure (bTW90?5$m%zpM$084hVG)
 
-TEST.
-array(1) {
-  ["47f5f5255208e55dd6147bdbb38a23a1b4d00c51b7c49002408a7cf03bc46e0da49390f044fc201bf7ed153cbacdb4e335ca793cf171dbb1cfee717745eff78b"]=>
-  string(256) "788ec095f99e4984f05c08d9ab0ae41d1b0b4d7f2e16f217b4a341f0824a802cd19f3070128d9ea67df39abe4964eb918384bccf2965bdfdba0ab9688ee8dbf5030ea23693a8da9315311ad46500255f5cc664554ea71ef9b054c6e4bfd22e4af964b5b1ccac85dd9522f55bd8a1c84470750b68069ab6cfc108c9d90a48cfd7"
-}
-
-
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RECEPEE
 

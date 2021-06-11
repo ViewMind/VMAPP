@@ -27,31 +27,32 @@ CREATE TABLE product_processing_parameters (
    keyid                    INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
    product                  VARCHAR(255),
    processing_parameters    TEXT,
-   frequency_parameters     TEXT
+   qc_parameters            TEXT
 );
 
 
 CREATE TABLE evaluations (
    keyid                    INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
    portal_user              INT UNSIGNED,
-   study_id                 VARCHAR(255),
+   study_type               VARCHAR(255),
    study_date               DATE,
    processing_date          DATE DEFAULT CURRENT_TIMESTAMP,
+   institution_id           INT UNSIGNED,
+   institution_instance     INT UNSIGNED,
    subject_id               INT UNSIGNED,
    protocol                 VARCHAR(255),
-   frequency_error_flag     TINYINT DEFAULT 0,
    results                  LONGTEXT
 );   
 
-CREATE TABLE frequency_analysis_data (
-   keyid                    INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-   frequency_parameters     LONGTEXT,
-   no_points_set_count      INT UNSIGNED,
-   gliched_set_count        INT UNSIGNED,
-   frequency_error_flag     TINYINT DEFAULT 0,
-   eye_fixation_counts      LONGTEXT,
-   filename                 VARCHAR(255),
-   evaluation_id            INT UNSIGNED
+CREATE TABLE evaluation_quality_control (
+   keyid                              INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+   qc_parameters                      LONGTEXT,
+   points_per_trial                   LONGTEXT,
+   fixations_per_trial                LONGTEXT,
+   glitches_per_trial                 LONGTEXT,
+   avg_frequency_per_trial            LONGTEXT,
+   filename                           VARCHAR(255),
+   evaluation_id                      INT UNSIGNED
 );
 
 DROP DATABASE IF EXISTS vm_secure;
@@ -88,9 +89,9 @@ CREATE TABLE subjects (
    age                       TINYINT UNSIGNED,
    years_formation           TINYINT UNSIGNED,
    internal_id               VARCHAR(255),
-   local_id                  VARCHAR(255),
-   portal_user               INT UNSIGNED,
-   institution_id            INT UNSIGNED
+   institution_id            INT UNSIGNED,
+   instance_number           INT UNSIGNED,
+   timestamp_id              INT UNSIGNED
 );
 
 CREATE TABLE portal_users (

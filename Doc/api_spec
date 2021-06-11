@@ -30,12 +30,6 @@ VMClients have the following permissions:
       OPERATION: list.
          IDENTIFIER: portal_user
             Will return a list of the institution data that the portal_user can see. 
-<<<<<<< HEAD
-      OPERATION: request_processing_parameters.
-         IDENTIFIER: set id
-            Will return a JSON file with the processing parameters. Will contain frequency check as well. 
-			
-=======
 
 -> OBJECT: institution
       OPERATION: operating_information
@@ -43,13 +37,25 @@ VMClients have the following permissions:
             PARAMETERS: ppkey
                Returns the list of portal users associated with the institutions and the processing parameters associated with ppkey. 
                EXAMPLE: institution/operating_information/1?ppkey=htcviveeyepro
->>>>>>> master
             
 -> OBJECT: reports
       OPERATION: generate
-         IDENTIFIER: portal_user
-            Will trigger the report processing to generate intermediate and final values all in one JSON file. 
-            Returns an error code and nothing more.
+         IDENTIFIER: institutution_id
+            Will trigger the whole report processing.
+            1) DB Update of Subject data, if necessary.
+            2) Whatever checks are necessary (such as institution and instance existance, evaluations remaining)
+            3) First pass at JSON File 
+                - Computes fixation
+                - Computes other metadata for each trial or trial set.
+                - Sets other metadata such as the processing date (maybe the processing location?).
+            4) Computing all Quality check values based on the frequency check parameters. 
+            4) CSV Creation.
+            5) R Processing. 
+            6) Second pass at the JSON file that stores all results into the JSON 
+            7) DB Storage of all appropiate results. 
+            8) With the keyid form the evaluations table store, the JSON file in the S3. 
+
+            
       
       OPERATION: list
          IDENTIFIER: portal_user_id

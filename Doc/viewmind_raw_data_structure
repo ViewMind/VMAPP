@@ -1,6 +1,6 @@
 *************************************************************************************************************************************************************************************
 *                                                                                                                                                                                   *
-*                                                                        RAW DATA CONTAINER                                                                                         *
+*                                                                        DATA CONTAINER                                                                                             *
 *                                                                                                                                                                                   *
 *************************************************************************************************************************************************************************************
 
@@ -37,18 +37,21 @@ S["studies"][STUDY_NAME]["experiment_description"] = "Giant string with the expe
 S["studies"][STUDY_NAME]["version"]                = The study version.
 S["studies"][STUDY_NAME]["abbreviation"]           = 2 To 4 letter version of the study name. 
 S["studies"][STUDY_NAME]["code"]                   = Sythesis of the study configuration (Used for display mostly)
+S["studies"][STUDY_NAME]["finalized_results"]      = map with the named values of each results from R- Processing.
 
 S["metadata"]["version"]                           = Numbered version of this structure. 
 S["metadata"]["status"]                            = ongoing|finalized
 S["metadata"]["hour"]                              = hh_mm       -> This represents the creation of the file
 S["metadata"]["date"]                              = yyyy_MM_dd  ->
 S["metadata"]["institution_id"]                    = The number
-S["metadata"]["institution_id"]                    = The instance from 0000 to 9999
+S["metadata"]["institution_number"]                = The instance from 0000 to 9999
 S["metadata"]["institution_name"]                  = The name
 S["metadata"]["institution_key"]                   = To know what the secret is in our backend
 S["metadata"]["processing_parameters_key"]         = key to database row with the current set of processing parameters. 
 S["metadata"]["protocol"]                          = protocol name if any;
 S["metadata"]["mouse_used"]                        = if it's true this can't be sent to processs. 
+S["metadata"]["processing_date"]                   = Processing date (server time)
+S["metadata"]["processing_hour"]                   = Processing hour (server time)
 
 S["subject"]["name"]
 S["subject"]["lastname"]
@@ -63,13 +66,21 @@ S["subject"]["local_id"]
 S["application_user"]["evaluator"]   = Strucutre app_user_data
 S["application_user"]["medic"]  = Strucutre app_user_data
 
+S["processing_parameters"]["min_fixation_duration"]
+S["processing_parameters"]["max_dispersion_window"]
+S["processing_parameters"]["sample_frequency"]
 S["processing_parameters"]["resolution_height"]
 S["processing_parameters"]["resolution_width"]
 S["processing_parameters"]["nback_hitboxes"] = List of 6 hitboxes representing the screen rectangles for checking if a fixation is there. 
 A hitbox is represented by {x: y: w: h:} and the values might be DIFFERNT than the draw values. 
 S["processing_parameters"]["go_no_go_hitboxes"] = [4 Value Vector, representing the hitbox] x 3; The order is Arrow, Left, Right
 
-S["frequency_check_parameters"]   // TBD
+S["qc_parameters"][min_successive_timestamp_difference]  = value;
+S["qc_parameters"][max_successive_timestamp_difference]  = value;
+S["qc_parameters"][STUDY][min_points_per_trial] = value
+S["qc_parameters"][STUDY][min_fixations_per_trial] = value
+S["qc_parameters"][STUDY][max_recommended_glitches] = value
+S["qc_parameters"][STUDY][avg_frequecy_per_trial] = value
 
 ====================== APP_USER_DATA
 ud["local_id"]      // local id for the evaluator is the username. A medic does not have a local id
@@ -78,8 +89,44 @@ ud["name"]
 ud["lastname"]
 ud["email"]
 
+====================== Raw Data Vector Fields
+v["ts"] = Timestamp 
+v["cl"] = READING: Left char index
+v["cr"] = READING: Right char index
+v["pl"] = left pupil size
+v["pr"] = right pupil size
+v["wl"] = READING: Left word index
+v["wr"] = READING: Right word index
+v["xl"] = x coordinate left eye
+v["xr"] = x coordinate right eye
+v["yl"] = y coordinate left eye
+v["yr"] = y coordinate right eye
+
+====================== Fixation Vector Fields
+
+v["x"] = The x coordinate of the fixation.
+v["y"] = The y coordinate of the fixation.
+v["duration"] = The duration (end_time-start_time)
+v["start_time"] = When the fixation starts
+v["end_time"] = When it ends
+v["start_index"] = The index of the raw data list of where it starts. 
+v["end_index"] = The index of the raw data list of where it ends. 
+v["time"] = "When" the fixation happens. This is is the average of the start and end time. 
+v["sac_amp"] = The saccadic amplitude. 
+v["word"] = READING: The index of the word where the fixation fell
+v["char"] = READING: The index of the char where the fixation fell
+v["pupil"] = The size of the pupil in the fixation (average of the pupil size values in the fixation). 
+v["zero_pupil"] = The number of times the pupil value was zero during the fixation. 
+v["timeline"] = The start time of the fixation minus the start time of the dataset. Basically it is the when the fixation starts in the time frame of the data set. 
+v["nback"] = Computed by the target hit logic of the NBack. 
+v["is_in"] = Computed by the target hit logic of the NBack/GoNoGo. If the fixation hit the target it was supposed to hit. 
+v["target_hit"] = Computed by the target hit logic of the NBack/GoNoGo. What the fixation hit regardless of what it was supposed to hit, if anything. 
+
+
+
 ====================== STUDY CONFIGURATIONS 
-S["studies"][STUDY_NAME]["study_configuration"]["valid_eye"] = "Left|Right|Both"
+S["studies"][STUDY_NAME]["study_configuration"]["valid_eye"] = "left|right|both"
+
 
 -> Reading 
 S["studies"]["Reading"]["study_configuration"]["language"] = "German|Spanish|French|English|Iselandic"
@@ -87,137 +134,96 @@ S["studies"]["Reading"]["study_configuration"]["language"] = "German|Spanish|Fre
 -> Binding
 S["studies"]["Binding"]["study_configuration"]["number_targets"] = "2|3"
 S["studies"]["Binding"]["study_configuration"]["target_size"] = "Large|Small"
-S["studies"]["Binding"]["study_configuration"]["binding_type"] = "bound|unbound"
-
--> All NBacks
-S["studies"]["NBack VS"]["study_configuration"]["hitbox_geometry"] = 
-
 
 -> Nback VS
 S["studies"]["NBack VS"]["study_configuration"]["number_targets"] = "3|4|5|6"
 
 -> Perception
-S["studies"]["Perception"]["study_configuration"]["training_type"] = "Training|Rehab"
-S["studies"]["Perception"]["study_configuration"]["study_part"] = "1|2|3|4|5|6|7|8"
+S["studies"]["Perception"]["study_configuration"]["training_type"] = "training|rehab"
 
-====================== STRUCTURE FOR ALL STUDIES 
+-> NBack MS or RT don't have any specific configuration 
+-> Go No Go does not have any specific configuration. 
 
-S["studies"][STUDY_NAME]["trial_list"] =[] List of Trial Structs. 
+====================== TRIAL STRUCTURE FOR ALL STUDIES 
+
+S["studies"][STUDY_NAME]["trial_list"] = [] List of Trial Structs. 
+S["studies"][STUDY_NAME]["duration"]   = The duration of the study.  (Computed Server Side). 
 
 Each Trial Struct. 
 Trial["ID"] = TRIAL_ID
-Trial["data"][DATA_SET_TYPE][DATA_SET_FIELD] = Where the actual data is stored. 
-Trial["custom_fields_depend_on_study"] = Self explanatory.
+Trial["trial_type"] = Some sort of description of the trial. 
+Trial["data"][DATA_SET_TYPE]["raw_data"] = Where the actual data is stored.
+Trial["data"][DATA_SET_TYPE]["fixations_l"] = Computed fixations for the left eye
+Trial["data"][DATA_SET_TYPE]["fixations_r"] = Computed fixations for the right eye.
+
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"] = Values which are data set dependant.
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["gaze_l"] = The sum of all fixation durations for the left eye in the data set. 
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["gaze_r"] = The sum of all fixation durations for the right eye in the data set. 
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["sac_lat_l"] = The sacadic latency for the left eye in the data set
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["sac_lat_r"] = The sacadic latency for the left eye in the data set
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["fix_in_center_l"] = The number of fixation in the center of the screen using the same tolerance as the sac_lat, left eye
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["fix_in_center_r"] = The number of fixation in the center of the screen using the same tolerance as the sac_lat, right eye
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["response_time_l"] = The time since the start of the data set until a L-fixation hits a given target box (not all studies compute it).
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["response_time_R"] = The time since the start of the data set until a R-fixation hits a given target box (not all studies compute it).
+
+
+Trial["computed_trial_values"] = Values which are Trial dependant
 Trial["response"] = If the trial ends in a response, this is recorded here. 
-
-DATA_SET_TYPE = Is used to recognize the different data sets on each experiment. Reading has only once, hence "unique", but binding has encoding_1 and retrieval_1. 
-
-DATA_SET_FIELD = "raw_data" is used for the raw data container. 
 
 1) When data set finishes, finalizeDataSet(). and if necessary create new dataset
 2) When all the data sets are finished we finalizeTrial("the_response") and if necessary create a new trial. 
 
+====================== SPECFIC TRIAL STRUCTURE FOR READING
 
-====================== READING
-S["studies"][STUDY_NAME]["trial_list"]= List of Trials
-
-Each trial has the structure
 Trial["ID"] = TRIAL_ID
-Trial["data"]["unique"]["raw_data""]  = {} // array of value vector.
-Trial["sentence"] = "The sentence being read"
-Trial["response"]  = Selected response (If applicable). When it is raw data is empty. 
+Trial["trial_type"] = "The sentence being read"
+Trial["response"]  = Selected response (If applicable). When it is raw data and fixations are empty.
 
+DATA_SET_TYPE is unique;
 
 ====================== BINDING
-S["studies"][STUDY_NAME]["trial_list"]["bound"/"unbound"] = List of Trials
+
+Binding has an extra study field which is binding_score. 
+S["studies"][STUDY_NAME]["binding_score"]["test_correct"] = correct answers from test phase. 
+S["studies"][STUDY_NAME]["binding_score"]["test_wrong"]   = wrong answers from test phase
+S["studies"][STUDY_NAME]["binding_score"]["correct"]      = correct answers from trial phase
+S["studies"][STUDY_NAME]["binding_score"]["wrong"]        = wrong answers from trial phase
 
 Trial["ID"] = TRIAL_ID
-Trial["data"]["encoding_#/retrieval_#"]["raw_data""] = {} // array of value vector.
 Trial["trial_type"] = Same or differrent
 Trial["response"] = "S"/"D"/"N/A"
 
-# = 1 always.
+DATA_SET_TYPE is enconding_1 and retrieval_1 for each trial. 
 
 ====================== NBACK RT/MS/VS
 S["studies"][STUDY_NAME]["trial_list"]["unique"] = List of Trials
 
 Trial["ID"] = TRIAL_ID
-Trial["data"]["encoding_#"/"retrieval_#"]["raw_data""] = {};
-Trial["trial_type"] = The sequence in the description. 
+Trial["trial_type"] = "The sequence of 3 to 6 values describing the study. All values between 0 and 5 as there are only 6 possible hit boxes"
+Trial["computed_trial_values"]["seq_complete_l"] = The index of the fixation that completed the sequence in the trial for the left eye. 
+Trial["computed_trial_values"]["seq_complete_r"] = The index of the fixation that completed the sequence in the trial for the right eye. 
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["duration"] = "The duration of each datset"
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["response_time_l"] = The time since the start of the data set until a L-fixation hits a given target box
+Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["response_time_R"] = The time since the start of the data set until a R-fixation hits a given target box
 
-In RT
+In RT DATA_SET_TYPE:
    Enconding: # in (1,2,3)
-   Retrieval  # is 0
-In MS
+   Retrieval  # is 1
+In MS DATA_SET_TYPE:
    Enconding: # in (1,2,3)
    Retrieval  # is (1,2,3)
-In VS
+In VS DATA_SET_TYPE:
    Enconding: # in (1,2,3,4,5,6)
-   Retrieval  # is 0
+   Retrieval  # is 1
 
  
 ====================== Go No-Go
-S["studies"][STUDY_NAME]["trial_list"]["unique"][TRIAL_ID] = List of Trials
-
 Trial["ID"] = TRIAL_ID
-Trial["data"]["unique"]["raw_data""] = {};
 Trial["trial_type"]  = One of trialTypes << "R<-" << "G<-" << "R->" <<  "G->";
 
-*************************************************************************************************************************************************************************************
-*                                                                                                                                                                                   *
-*                                                                  PROCESSED DATA CONTAINER (REVIEW)                                                                                   *
-*                                                                                                                                                                                   *
-*************************************************************************************************************************************************************************************
+// COMPLETE THE DOCUMENTATION
 
-s["metadata"]["date"] = processing date
-s["metadata"]["hour"] = processing hour
-s["metadata"] = From raw data
-s["metadata"]["subject_identifier"] = Basically a time stamp. Kept for old compliance. 
-s["metadata"]["patient_age"] = From raw data. // Eye rep gen conf. 
-
-
-s["studies"][STUDY_NAME]["finalized_results"] = map with the named values of each results from RProcessing.
-s["studies"][STUDY_NAME]["valid_eye"] = the valid eye used in the study. 
-s["studies"][STUDY_NAME]["trial_list"]["fixations_l"]
-s["studies"][STUDY_NAME]["trial_list"]["fixations_r"]
-s["studies"][STUDY_NAME]["trial_list"][TRIAL_LIST_TYPE]["data"]["duration"] = duration of the trial experiment. 
-
-
-====================== Trial Structs (t)
-s["studies"][STUDY_NAME]["trial_list"][TRIAL_LIST_TYPE]["list"][i] = RawData structure with added values (any value that is the same for the entire trial). Study dependant. 
-
-
-====================== READING Trial Structure
-
-Each trial has the structure
-Trial["ID"] = TRIAL_ID
-Trial["data"]["unique"]["fixations""]  = {} // array of value vectors. Should include all fixation dependant values. 
-Trial["data"]["unique"]["data_set_values"]  = Vector value for computations done for each data set. 
-Trial["sentence"] = "The sentence being read"
-Trial["response"]  = Selected response (If applicable). When it is raw data is empty. 
-
-====================== NBack RT Trial Structure
-Trial["ID"] = TRIAL_ID
-Trial["data"]["enconding_#/retrieval_#"]["fixations""]  = {} // array of value vectors. Should include all fixation dependant values. 
-Trial["data"]["unique"]["data_set_values"]["duration"] = The duration of the data set. 
-Trial["trial_values"]["seq_complete_l"] The index of the fixation that completed the sequence in the trial for the left eye.
-Trial["trial_values"]["seq_complete_r"] The index of the fixation that completed the sequence in the trial for the right eye.
-Trial["trial_type"] = "The sequence of 3 to 6 values describing the study. All values between 0 and 5 as there are only 6 possible hit boxes"
-Trial["response"] = "" 
-
-====================== Binding UC/BC Trial Structure
-Trial["ID"] = TRIAL_ID
-Trial["data"]["encoding_1/retrieval_1"]["fixations""]  = {} // array of value vectors. Should include all fixation dependant values. 
-Trial["trial_type"] = Same or differrent
-Trial["response"] = S D or N/A depending on button pressed or if not button was pressed. 
-
-====================== Binding Trial List Value
-s["studies"][STUDY_NAME]["trial_list"][TRIAL_LIST_TYPE]["data"]["binding_score"] = Binding Score Structure. (bss)
-
-bss["test_correct"] = correct answers from test phase. 
-bss["test_wrong"]   = wrong answers from test phase
-bss["correct"]      = correct answers from trial phase
-bss["wrong"]        = wrong answers from trial phase
+DATA_SET_TYPE is unique. 
 
 
 
