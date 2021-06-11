@@ -62,3 +62,119 @@ However I'm currently stuck in issue 2. In order for Load Balancer to actually s
 The objective is to add, in the future, more Processing Servers to the Target Group pointed by the load balancer, hence creating scalability. 
 
 What I would need is help on how to configure load balancing for our custom application. 
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RECEPEE
+
+OBJECTIVES
+1) EC2 Instance for WebServer In a Private Subnet
+2) EC2 Instance for APIServer In a Private Subnet. -> This will also de the processing. 
+3) RDS Instance for vm_main   (534sY=17ZyzAoM:q+=Y2) 
+4) RDS Instance for vm_secure (bTW90?5$m%zpM$084hVG)
+5) Interal IP Distribution. 
+
+   
+1 VPC (ViewMindMain) Containing the following subnets
+   2 Private RDS Subnets (Routes to)
+      Connection to a NAT Gateway (MainNATGateWay)
+      Connection from a Managed Prefix List (pl-7ba54012) to an endpoint (which is a gateway point fro com.amazonaws.us-east-2.s3).    
+   2 Private EC2 Subnets. (Routes to) 
+      Connection to a NAT Gateway (MainNATGateWay)
+      Connection from a Managed Prefix List (pl-7ba54012) to an endpoint (which is a gateway point fro com.amazonaws.us-east-2.s3).
+   2 Public subnets:
+      Connection to an Internet Gateway. 
+Security groups for granting access to the both RDS databases and EC2 Instnaces
+1 EC2 Bastion (with public IP, as entry point in the system)
+
+
+
+VPC:
+- Main VPC CIDR: 10.100.0.0/16. 
+
+Subnets:
+   Public Subnet CIDR
+      REGIONa: 10.100.100.0/24
+      REGIONb: 10.100.101.0/24
+   RDS Subnet CIDR
+      REGIONa: 10.100.16.0/20
+      REGIONb: 10.100.48.0/20
+   EC2 Subnet CIDR
+      REGIONa: 10.100.0.0/20
+      REGIONb: 10.100.32.0/20
+   
+Security Groups:
+- Bastion: Allow my IP on TCP Port 22. Must be switchable via script. 
+- LoadBalancerWeb: Allows port 80 and 443 connections from anywhere. (Two rules for each. One for source 0.0.0.0/0 and another form ::0).
+- DatabaseAccess: Empty security Group.
+- Database: Allows the group DatabaseAccess access to TCP port 3306.
+- BastionAccess: Allows the group Bastion access to TCP port 22 for ssh. 
+
+Internet Gateways
+- Create 1 attached to the Main VPC. 
+
+NAT Gateways
+- Create 1 Attached to the public subnet in REGIONa. (It should have an elastic IP address).
+
+Managed Prefix Lists
+- Create a Manged prefix list to com.amazonaws.REGION.s3 (It might be auto created)
+
+Route Tables
+- Create a Route Table for each private subnet. 
+  Each Route Table will have 3 entries.
+  1) TARGET: Local. DESTINATION: 10.100.0.0/16 (Automatically added and cannot be changed)
+  2) TARGET: The NAT Gateway. DESTINATION: 0.0.0.0/0
+  Associate the Route Table with its respective subnet. So Route Table RDSa will be associated with Subnet RDSa.
+  
+- For the Public Subnet
+  Create a single Route Table and associate both public subnets to it. 
+  DESTINATION: 10.100.0.0/16 TARGET: local  (Automatically added and cannot be changed)
+  0.0.0.0/0 DESTINATION: The Internet Gateway.
+  
+Endpoint
+- Create an endpoint. 
+  Service: is com.amazonaws.REGION.s3
+  Type: Gateway
+  When given the option associate with all the Routes for private subnets.
+
+Bastion Creation
+ - Use the create VPC
+ - Use a Public Subnet
+ - Should have Bastion and DatabaseAccess security groups. 
+ 
+ Server Creation
+ - Use the created VPC
+ - Use the a Private Subnet (EC2 subnet)
+ - Use BastionAccess and DatabaseAccess. So it can access the databases and it can be accessed by the Bastion. 
+ - If WebServer also add LoadBalancerWeb
+ 
+ RDS Creation
+ - MySQL
+ - Select the database type.
+ - Select the created VPC
+ - VPC security group Database
+ 
+ Command to install amazon linux extras.
+ sudo amazon-linux-extras install php8.0
+  
+Still to Figure Out.
+- Two Load Balancers
+  1 - First will go to the APIServer. It will be the address used by the VMClient and partnes. 
+  2 - Second will go to the WebServer. It will be used by For the Portal. 
+  
+  
+So current load balancer:
+
+Has this DNS Name: 
+Dashboard-855980398.us-east-2.elb.amazonaws.com
+And a CNAME record in WIX com. for dashboard.viewmind.ai.
+
+  
+
+
+
+
+   
+   
+
+
+

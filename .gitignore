@@ -112,6 +112,7 @@ Backend/*.json
 Backend/*.csv
 Backend/db_managment/make_dbconfig.php
 Backend/00mng/copy_api.sh
+Backend/00mng/privileges*.sql
 VMTools/QtRestClient/exe/
 
 
