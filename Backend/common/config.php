@@ -54,6 +54,8 @@ foreach ($parameter_groups as $name => $required){
 // All was good we define config.
 define("CONFIG",$config);
 
+//error_log("CONFIG ARRAY KEYS: " . implode(" , ",array_keys($config)));
+
 /**
  * Function for bugging out. 
  */

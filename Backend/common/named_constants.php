@@ -12,10 +12,11 @@
       const NAME              = "general_config";
 
       // The list of required parameters. 
-      const REQUIRED          = [];
+      const REQUIRED          = [ValueGeneral::API_PARTS_TO_REMOVE];
    }
 
    abstract class ValueGeneral extends TypedString {
+      const API_PARTS_TO_REMOVE  = "api_route_parts_to_remove";
    }
 
    abstract class HeaderFields extends TypedString {

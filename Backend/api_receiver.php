@@ -21,7 +21,7 @@ include_once ("api_management/ObjectInstitution.php");
 //////////////////////////////////// TOKENIZING THE ROUTE ////////////////////////////////
 $route_parser = new RouteParser();
 
-if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],2)){
+if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],CONFIG[ParameterGeneral::NAME][ValueGeneral::API_PARTS_TO_REMOVE])){
    $error = $route_parser->getError();
    $code = 400; // This was a client error 
    $res[ResponseFields::MESSAGE] = $error;
