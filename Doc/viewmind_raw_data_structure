@@ -38,6 +38,7 @@ S["studies"][STUDY_NAME]["version"]                = The study version.
 S["studies"][STUDY_NAME]["abbreviation"]           = 2 To 4 letter version of the study name. 
 S["studies"][STUDY_NAME]["code"]                   = Sythesis of the study configuration (Used for display mostly)
 S["studies"][STUDY_NAME]["finalized_results"]      = map with the named values of each results from R- Processing.
+S["studies"][STUDY_NAME]["quality_control"]        = Quality control struct. See below.
 
 S["metadata"]["version"]                           = Numbered version of this structure. 
 S["metadata"]["status"]                            = ongoing|finalized
@@ -71,8 +72,7 @@ S["processing_parameters"]["max_dispersion_window"]
 S["processing_parameters"]["sample_frequency"]
 S["processing_parameters"]["resolution_height"]
 S["processing_parameters"]["resolution_width"]
-S["processing_parameters"]["nback_hitboxes"] = List of 6 hitboxes representing the screen rectangles for checking if a fixation is there. 
-A hitbox is represented by {x: y: w: h:} and the values might be DIFFERNT than the draw values. 
+S["processing_parameters"]["nback_hitboxes"] = List of 6 hitboxes representing the screen rectangles for checking if a fixation is there. A hitbox is represented by {x: y: w: h:} and the values might be DIFFERNT than the draw values. 
 S["processing_parameters"]["go_no_go_hitboxes"] = [4 Value Vector, representing the hitbox] x 3; The order is Arrow, Left, Right
 
 S["qc_parameters"][min_successive_timestamp_difference]  = value;
@@ -89,7 +89,16 @@ ud["name"]
 ud["lastname"]
 ud["email"]
 
-====================== Raw Data Vector Fields
+====================== QUALITY CONTROL STRUCTURE
+
+S["studies"][STUDY_NAME]["quality_control"]["points_per_trial"]      = for each of the trial presented in study, the number of data points gathered. (bar graph) 
+S["studies"][STUDY_NAME]["quality_control"]["fixations_per_trial_l"] = for each trial the number of fixation in that trial with the left eye. (bar graph)
+S["studies"][STUDY_NAME]["quality_control"]["fixations_per_trial_r"] = for each trial the number of fixation in that trial with the right eye. (bar graph)
+S["studies"][STUDY_NAME]["quality_control"]["glitches_per_trial"]    = number of frequency glitches per trial (bar graph).
+S["studies"][STUDY_NAME]["quality_control"]["avg_freq_per_trial"]    = The average frequency in the trial. (line graph). 
+S["studies"][STUDY_NAME]["quality_control"]["avearge_frequency"]     = The average frequency in the study. 
+
+====================== RAW DATA VECTOR FIELDS
 v["ts"] = Timestamp 
 v["cl"] = READING: Left char index
 v["cr"] = READING: Right char index
@@ -102,11 +111,11 @@ v["xr"] = x coordinate right eye
 v["yl"] = y coordinate left eye
 v["yr"] = y coordinate right eye
 
-====================== Fixation Vector Fields
+====================== FIXATION VECTOR FIELDS
 
 v["x"] = The x coordinate of the fixation.
 v["y"] = The y coordinate of the fixation.
-v["duration"] = The duration (end_time-start_time)
+v["duration"] = The duration (end_time - start_time)
 v["start_time"] = When the fixation starts
 v["end_time"] = When it ends
 v["start_index"] = The index of the raw data list of where it starts. 
@@ -121,7 +130,6 @@ v["timeline"] = The start time of the fixation minus the start time of the datas
 v["nback"] = Computed by the target hit logic of the NBack. 
 v["is_in"] = Computed by the target hit logic of the NBack/GoNoGo. If the fixation hit the target it was supposed to hit. 
 v["target_hit"] = Computed by the target hit logic of the NBack/GoNoGo. What the fixation hit regardless of what it was supposed to hit, if anything. 
-
 
 
 ====================== STUDY CONFIGURATIONS 
