@@ -61,32 +61,21 @@ However I'm currently stuck in issue 2. In order for Load Balancer to actually s
 
 The objective is to add, in the future, more Processing Servers to the Target Group pointed by the load balancer, hence creating scalability. 
 
-What I would need is help on how to configure load balancing for our custom application. 
+What I would need is help on how to configure load balancing for our custom application.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3) RDS Instance for vm_main   (534sY=17ZyzAoM:q+=Y2) 
+4) RDS Instance for vm_secure (bTW90?5$m%zpM$084hVG)
+
+TEST.
+array(1) {
+  ["47f5f5255208e55dd6147bdbb38a23a1b4d00c51b7c49002408a7cf03bc46e0da49390f044fc201bf7ed153cbacdb4e335ca793cf171dbb1cfee717745eff78b"]=>
+  string(256) "788ec095f99e4984f05c08d9ab0ae41d1b0b4d7f2e16f217b4a341f0824a802cd19f3070128d9ea67df39abe4964eb918384bccf2965bdfdba0ab9688ee8dbf5030ea23693a8da9315311ad46500255f5cc664554ea71ef9b054c6e4bfd22e4af964b5b1ccac85dd9522f55bd8a1c84470750b68069ab6cfc108c9d90a48cfd7"
+}
+
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RECEPEE
-
-OBJECTIVES
-1) EC2 Instance for WebServer In a Private Subnet
-2) EC2 Instance for APIServer In a Private Subnet. -> This will also de the processing. 
-3) RDS Instance for vm_main   (534sY=17ZyzAoM:q+=Y2) 
-4) RDS Instance for vm_secure (bTW90?5$m%zpM$084hVG)
-5) Interal IP Distribution. 
-
-   
-1 VPC (ViewMindMain) Containing the following subnets
-   2 Private RDS Subnets (Routes to)
-      Connection to a NAT Gateway (MainNATGateWay)
-      Connection from a Managed Prefix List (pl-7ba54012) to an endpoint (which is a gateway point fro com.amazonaws.us-east-2.s3).    
-   2 Private EC2 Subnets. (Routes to) 
-      Connection to a NAT Gateway (MainNATGateWay)
-      Connection from a Managed Prefix List (pl-7ba54012) to an endpoint (which is a gateway point fro com.amazonaws.us-east-2.s3).
-   2 Public subnets:
-      Connection to an Internet Gateway. 
-Security groups for granting access to the both RDS databases and EC2 Instnaces
-1 EC2 Bastion (with public IP, as entry point in the system)
-
-
 
 VPC:
 - Main VPC CIDR: 10.100.0.0/16. 
@@ -156,19 +145,30 @@ Bastion Creation
  Command to install amazon linux extras.
  sudo amazon-linux-extras install php8.0
   
-Still to Figure Out.
 - Two Load Balancers
   1 - First will go to the APIServer. It will be the address used by the VMClient and partnes. 
   2 - Second will go to the WebServer. It will be used by For the Portal. 
   
-  
-So current load balancer:
+For each of the web servers
+1) Install httpd, php
+2) Then install php8.0 with sudo amazon-linux-extras install php8.0
+3) Using ACM create a new certificate for *.viewmind.ai
+   a) Use WIX.com (our DNS manager) to verify the certificate (using DNS verification)
+   b) Then add a new name assocation for the new webserver. For example sommething-somethingelse.viewmind.ai
+4) Create a new target group adding the webserver to that target group. 
+5) Create a new load balancer:
+   - When creating the load balancer they need to be associated with both public subnets. 
+   - Add two listners the one in port 80 redircts to the 443
+   - The 443 will redirect to one of the webservers
+   - Associate the loadbalancer with the target group above.  
+By now the server should be accessible from the web. 
 
-Has this DNS Name: 
-Dashboard-855980398.us-east-2.elb.amazonaws.com
-And a CNAME record in WIX com. for dashboard.viewmind.ai.
+For the next webserver the only step that is NOT necessary is to create a new ACM certificate. However step 3b must be repeated. s
+
 
   
+  
+
 
 
 

@@ -20,11 +20,15 @@ int main(int argc, char *argv[]){
     QCoreApplication a(argc, argv);
 
 
-    QString key                     = "2142cb83472a49d646b9bc2955bc9df4486ea47d2a4edf1e254d20d29b1e0a2a42a259e04de87336f65aea0c73d31677e9cf9ad4529b67d55f4b193ab88f9913";
-    QString secret                  = "f2a494289f40f2a8408fdf3e71bba0c81e7d0f83d2ef510a54216315c2968999aba6a004aa0072e87d7479181496544fab46233d5afb715e1b4a1fd447116d5b17df8fb07f3e9b70fca3265f05c2b58a327901a0676ee4db3afc973254213b15a245e745faed70960d97259b5d15872ddf7988dcc743328a3287dcc947266028";
+    //QString key                     = "2142cb83472a49d646b9bc2955bc9df4486ea47d2a4edf1e254d20d29b1e0a2a42a259e04de87336f65aea0c73d31677e9cf9ad4529b67d55f4b193ab88f9913";
+    //QString secret                  = "f2a494289f40f2a8408fdf3e71bba0c81e7d0f83d2ef510a54216315c2968999aba6a004aa0072e87d7479181496544fab46233d5afb715e1b4a1fd447116d5b17df8fb07f3e9b70fca3265f05c2b58a327901a0676ee4db3afc973254213b15a245e745faed70960d97259b5d15872ddf7988dcc743328a3287dcc947266028";
+
+    QString key                     = "47f5f5255208e55dd6147bdbb38a23a1b4d00c51b7c49002408a7cf03bc46e0da49390f044fc201bf7ed153cbacdb4e335ca793cf171dbb1cfee717745eff78b";
+    QString secret                  = "788ec095f99e4984f05c08d9ab0ae41d1b0b4d7f2e16f217b4a341f0824a802cd19f3070128d9ea67df39abe4964eb918384bccf2965bdfdba0ab9688ee8dbf5030ea23693a8da9315311ad46500255f5cc664554ea71ef9b054c6e4bfd22e4af964b5b1ccac85dd9522f55bd8a1c84470750b68069ab6cfc108c9d90a48cfd7";
 
     QString test_file               = "my_test_file.json";
-    QString APIURL                  = "http://192.168.1.12/vmapi";
+    //QString APIURL                  = "http://192.168.1.12/vmapi";
+    QString APIURL                  = "https://eu-api.viewmind.ai/";
     QString endpoint                = "/institution/operating_information/1";
     QString imageFile               = "/home/web/dashboard-complete/docs/images/layout.png";
     QVariantMap URLParameters;
@@ -83,6 +87,8 @@ int main(int argc, char *argv[]){
 
     // Adding salt to ensure uniqueness of signature.
     rest_controller.addSalt();
+
+    //qDebug() << rest_controller.getPayload();
 
     QString auth_string = QMessageAuthenticationCode::hash(rest_controller.getPayload(), secret.toUtf8(), QCryptographicHash::Sha3_512).toHex();
 

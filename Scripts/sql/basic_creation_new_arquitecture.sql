@@ -36,7 +36,7 @@ CREATE TABLE evaluations (
    portal_user              INT UNSIGNED,
    study_id                 VARCHAR(255),
    study_date               DATE,
-   processing_date          DATE DEFAULT CURRENT_DATE,
+   processing_date          DATE DEFAULT CURRENT_TIMESTAMP,
    subject_id               INT UNSIGNED,
    protocol                 VARCHAR(255),
    frequency_error_flag     TINYINT DEFAULT 0,
@@ -101,7 +101,7 @@ CREATE TABLE portal_users (
    passwd                   VARCHAR(255),
    company                  VARCHAR(255),
    creation_token           VARCHAR(512),
-   creation_date            TIMESTAMP DEFAULT CURRENT_DATE,
+   creation_date            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    token                    VARCHAR(512),
    token_expiration         TIMESTAMP,
    permissions              LONGTEXT,
@@ -109,3 +109,4 @@ CREATE TABLE portal_users (
    enabled                  TINYINT DEFAULT 1,
    unique(email)
 );
+
