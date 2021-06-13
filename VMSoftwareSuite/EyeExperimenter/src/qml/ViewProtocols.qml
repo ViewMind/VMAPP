@@ -31,7 +31,7 @@ Dialog {
     onOpened: {
         var list =  loader.getProtocolList();
         list.unshift(loader.getStringForKey(keybase+"optionSelectProtocol"))
-        console.log(list);
+        //console.log(list);
         cbProtocolToDelete.setModelList(list);
         labelNewProtocol.vmErrorMsg = "";
         cbProtocolToDelete.vmErrorMsg = "";

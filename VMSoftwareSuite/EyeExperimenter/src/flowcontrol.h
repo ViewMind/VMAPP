@@ -12,7 +12,7 @@
 
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
-#include "../../../CommonClasses/RawDataContainer/rawdatacontainer.h"
+#include "../../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 
 #include "Experiments/readingexperiment.h"
 #include "Experiments/imageexperiment.h"

@@ -32,7 +32,7 @@ SOURCES += main.cpp \
     ../../../CommonClasses/EyeSelector/eyeselector.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
-    ../../../CommonClasses/RawDataContainer/rawdatacontainer.cpp \
+    ../../../CommonClasses/RawDataContainer/viewminddatacontainer.cpp \
     ../../../CommonClasses/RestAPIController/restapicontroller.cpp \
     Experiments/gonogoexperiment.cpp \
     Experiments/nbackrtexperiment.cpp \
@@ -82,8 +82,8 @@ HEADERS += \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
     ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
-    ../../../CommonClasses/RawDataContainer/RDC.h \
-    ../../../CommonClasses/RawDataContainer/rawdatacontainer.h \
+    ../../../CommonClasses/RawDataContainer/VMDC.h \
+    ../../../CommonClasses/RawDataContainer/viewminddatacontainer.h \
     ../../../CommonClasses/RestAPIController/restapicontroller.h \
     ../../../CommonClasses/debug.h \
     ../../../CommonClasses/eyetracker_defines.h \

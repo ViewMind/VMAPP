@@ -26,6 +26,7 @@ void PerceptionExperiment::onTimeOut(){
         if (!wasAnswerSet){
             // Time out with no answer.
             rawdata.finalizeDataSet();
+            finalizeOnlineFixations();
             rawdata.finalizeTrial("-1");
         }
     }
@@ -42,8 +43,8 @@ void PerceptionExperiment::onTimeOut(){
 
         // We check that ALL parts are present to finalize study.
         QStringList all_parts;
-        all_parts << RDC::Study::PERCEPTION_1 << RDC::Study::PERCEPTION_2 << RDC::Study::PERCEPTION_3 << RDC::Study::PERCEPTION_4
-                     << RDC::Study::PERCEPTION_5 << RDC::Study::PERCEPTION_6 << RDC::Study::PERCEPTION_7 << RDC::Study::PERCEPTION_8;
+        all_parts << VMDC::Study::PERCEPTION_1 << VMDC::Study::PERCEPTION_2 << VMDC::Study::PERCEPTION_3 << VMDC::Study::PERCEPTION_4
+                     << VMDC::Study::PERCEPTION_5 << VMDC::Study::PERCEPTION_6 << VMDC::Study::PERCEPTION_7 << VMDC::Study::PERCEPTION_8;
 
         QStringList present_parts = rawdata.getStudies();
 
@@ -84,7 +85,7 @@ void PerceptionExperiment::onTimeOut(){
                 emit(experimentEndend(ER_FAILURE));
                 return;
             }
-            rawdata.setCurrentDataSet(RDC::DataSetType::UNIQUE);
+            rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
 
 
             stateTimer.start(HOLD_TIME_CROSS_ONLY);
@@ -113,7 +114,8 @@ void PerceptionExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (pts == PerceptionManager::PTS_TRIANGLES){
         // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-        rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+        rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+        computeOnlineFixations(data);
     }
     else if (pts == PerceptionManager::PTS_YES_OR_NO){
         m->highlightSelection(data.avgX(),data.avgY());
@@ -121,6 +123,7 @@ void PerceptionExperiment::newEyeDataAvailable(const EyeTrackerData &data){
         if (selectedAns != -1){
             // Saving the answer
             rawdata.finalizeDataSet();
+            finalizeOnlineFixations();
             rawdata.finalizeTrial(QString::number(selectedAns));
             wasAnswerSet = true;
             onTimeOut();
@@ -133,12 +136,12 @@ bool PerceptionExperiment::startExperiment(const QString &workingDir, const QStr
                                            const QVariantMap &studyConfig, bool useMouse,
                                            QVariantMap pp){
 
-    bool isTraining = (studyConfig.value(RDC::StudyParameter::PERCEPTION_TYPE) == RDC::PerceptionType::TRAINING);
+    bool isTraining = (studyConfig.value(VMDC::StudyParameter::PERCEPTION_TYPE) == VMDC::PerceptionType::TRAINING);
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)) return false;
 
     QVariantMap configuration;
-    if (studyConfig.value(RDC::StudyParameter::LANGUAGE).toString() == RDC::UILanguage::SPANISH){
+    if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
         configuration.insert(PerceptionManager::CONFIGURE_YES_WORD,"SI");
     }
     else{
@@ -156,7 +159,7 @@ bool PerceptionExperiment::startExperiment(const QString &workingDir, const QStr
     // Adding the header for the first trial.
 
     eyeSelector.reset();
-    eyeSelector.setTargetCountForSelection(HOLD_TIME_FOR_ANS_SELECTION*pp.value(RDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal());
+    eyeSelector.setTargetCountForSelection(HOLD_TIME_FOR_ANS_SELECTION*pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal());
     eyeSelector.setTargetBoxes(m->getYesAndNoTargetBoxes());
 
     if (isTraining){

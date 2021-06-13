@@ -1,6 +1,6 @@
 *************************************************************************************************************************************************************************************
 *                                                                                                                                                                                   *
-*                                                                        DATA CONTAINER                                                                                             *
+*                                                                   VIEWMIND DATA CONTAINER                                                                                         *
 *                                                                                                                                                                                   *
 *************************************************************************************************************************************************************************************
 
@@ -113,6 +113,8 @@ v["yr"] = y coordinate right eye
 
 ====================== FIXATION VECTOR FIELDS
 
+
+// Computed by the Client
 v["x"] = The x coordinate of the fixation.
 v["y"] = The y coordinate of the fixation.
 v["duration"] = The duration (end_time - start_time)
@@ -121,15 +123,17 @@ v["end_time"] = When it ends
 v["start_index"] = The index of the raw data list of where it starts. 
 v["end_index"] = The index of the raw data list of where it ends. 
 v["time"] = "When" the fixation happens. This is is the average of the start and end time. 
-v["sac_amp"] = The saccadic amplitude. 
 v["word"] = READING: The index of the word where the fixation fell
 v["char"] = READING: The index of the char where the fixation fell
 v["pupil"] = The size of the pupil in the fixation (average of the pupil size values in the fixation). 
 v["zero_pupil"] = The number of times the pupil value was zero during the fixation. 
+
+// Computed in the server. 
 v["timeline"] = The start time of the fixation minus the start time of the dataset. Basically it is the when the fixation starts in the time frame of the data set. 
 v["nback"] = Computed by the target hit logic of the NBack. 
 v["is_in"] = Computed by the target hit logic of the NBack/GoNoGo. If the fixation hit the target it was supposed to hit. 
 v["target_hit"] = Computed by the target hit logic of the NBack/GoNoGo. What the fixation hit regardless of what it was supposed to hit, if anything. 
+v["sac_amp"] = The saccadic amplitude. 
 
 
 ====================== STUDY CONFIGURATIONS 

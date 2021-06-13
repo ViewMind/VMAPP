@@ -31,13 +31,13 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
                                         const QVariantMap &studyConfig, bool useMouse,
                                         QVariantMap pp){
 
-    if (studyType == RDC::Study::NBACKVS){
+    if (studyType == VMDC::Study::NBACKVS){
         nbackConfig.minHoldTime              = NBACKVS_MIN_HOLD_TIME;
         nbackConfig.maxHoldTime              = NBACKVS_MAX_HOLD_TIME;
         nbackConfig.stepHoldTime             = NBACKVS_STEP_HOLD_TIME;
         nbackConfig.startHoldTime            = NBACKVS_START_HOLD_TIME;
         nbackConfig.numberOfTrialsForChange  = NBACKVS_NTRIAL_FOR_STEP_CHANGE;
-        nbackConfig.numberOfTargets          = studyConfig.value(RDC::StudyParameter::NUMBER_TARGETS).toInt();
+        nbackConfig.numberOfTargets          = studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt();
     }
     else{
         // Variable Speed configuration for DEFAULT NBACK RT.
@@ -57,7 +57,7 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
 
     QVariantMap config;
     config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,(Globals::EyeTracker::IS_VR && (!useMouse)));
-    if (studyConfig.value(RDC::StudyParameter::LANGUAGE).toString() == RDC::UILanguage::SPANISH){
+    if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
         config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
     }
     else{
@@ -83,18 +83,6 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     tstate = TSF_START;
     stateTimer.setInterval(TIME_TRANSITION);
     stateTimer.start();
-
-    // Computing the minimum number of hits to count as a fixation.
-    MovingWindowParameters mwp;
-    mwp.sampleFrequency = pp.value(RDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
-    mwp.minimumFixationLength =  pp.value(RDC::ProcessingParameter::MIN_FIXATION_DURATION).toReal();
-    mwp.maxDispersion =  pp.value(RDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
-    mwp.calculateWindowSize();
-
-    //qDebug() << "MWP" << mwp.sampleFrequency << mwp.minimumFixationLength << mwp.maxDispersion << mwp.getStartWindowSize();
-
-    trialRecognitionMachine.configure(mwp);
-    //qDebug() << "Miniminum number of data points computed" << mwp.getStartWindowSize();
 
     m->drawBackground();
     drawCurrentImage();
@@ -131,7 +119,7 @@ void NBackRTExperiment::nextState(){
             emit(experimentEndend(ER_FAILURE));
             return;
         }
-        currentDataSetType = RDC::DataSetType::ENCODING_1;
+        currentDataSetType = VMDC::DataSetType::ENCODING_1;
         rawdata.setCurrentDataSet(currentDataSetType);
 
         break;
@@ -139,11 +127,12 @@ void NBackRTExperiment::nextState(){
 
         // End the previous data set.
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
         currentImage++;
         if (currentImage == nbackConfig.numberOfTargets){
 
             // Retrieval will begin
-            rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_1);
+            rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
             tstate = TSF_SHOW_BLANKS;
             trialRecognitionMachine.reset(m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets));
@@ -163,6 +152,7 @@ void NBackRTExperiment::nextState(){
 
         // We can now finalize the dataset and the trial
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
         rawdata.finalizeTrial("");
 
         tstate = TSF_START;
@@ -276,22 +266,24 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (data.isLeftZero() && data.isRightZero()) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+
+    computeOnlineFixations(data);
 
     //qDebug() << "X,Y" << data.xRight << data.xLeft;
 
     if (tstate == TSF_SHOW_BLANKS){
-        bool isOver = trialRecognitionMachine.isSequenceOver(data.xRight,data.yRight,data.xLeft,data.yLeft,m,data.time);
-        qint32 rx, ry, lx, ly; rx = -1; ry = -1; lx = -1; ly = -1;
-        if (trialRecognitionMachine.leftLastFixation.isValid()){
-            lx = static_cast<qint32>(trialRecognitionMachine.leftLastFixation.x);
-            ly = static_cast<qint32>(trialRecognitionMachine.leftLastFixation.y);
-        }
-        if (trialRecognitionMachine.rightLastFixation.isValid()){
-            rx = static_cast<qint32>(trialRecognitionMachine.rightLastFixation.x);
-            ry = static_cast<qint32>(trialRecognitionMachine.rightLastFixation.y);
-        }
-        emit(addFixations(rx,ry,lx,ly));
+        bool isOver = trialRecognitionMachine.isSequenceOver(lastFixationR,lastFixationL,m);
+//        qint32 rx, ry, lx, ly; rx = -1; ry = -1; lx = -1; ly = -1;
+//        if (trialRecognitionMachine.leftLastFixation.isValid()){
+//            lx = static_cast<qint32>(trialRecognitionMachine.leftLastFixation.x);
+//            ly = static_cast<qint32>(trialRecognitionMachine.leftLastFixation.y);
+//        }
+//        if (trialRecognitionMachine.rightLastFixation.isValid()){
+//            rx = static_cast<qint32>(trialRecognitionMachine.rightLastFixation.x);
+//            ry = static_cast<qint32>(trialRecognitionMachine.rightLastFixation.y);
+//        }
+        emit(addFixations(lastFixationR.x,lastFixationR.y,lastFixationL.x,lastFixationL.y));
         emit(addDebugMessage(trialRecognitionMachine.getMessages(),false));
         if (isOver){
 #ifdef MANUAL_TRIAL_PASS
@@ -331,7 +323,7 @@ QVariantMap NBackRTExperiment::addHitboxesToProcessingParameters(QVariantMap pp)
     }
 
     // Store them as part of the processing parameters.
-    pp.insert(RDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);
+    pp.insert(VMDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);
     return pp;
 }
 
@@ -339,20 +331,20 @@ QVariantMap NBackRTExperiment::addHitboxesToProcessingParameters(QVariantMap pp)
 void NBackRTExperiment::nextEncodingDataSetType(){
     // A very very complicated way of doing a counter due to the way I defined the data set types as enum.
     // But at least is clean.
-    if (currentDataSetType ==  RDC::DataSetType::ENCODING_1){
-        currentDataSetType = RDC::DataSetType::ENCODING_2;
+    if (currentDataSetType ==  VMDC::DataSetType::ENCODING_1){
+        currentDataSetType = VMDC::DataSetType::ENCODING_2;
     }
-    else if (currentDataSetType ==  RDC::DataSetType::ENCODING_2){
-        currentDataSetType = RDC::DataSetType::ENCODING_3;
+    else if (currentDataSetType ==  VMDC::DataSetType::ENCODING_2){
+        currentDataSetType = VMDC::DataSetType::ENCODING_3;
     }
-    else if (currentDataSetType ==  RDC::DataSetType::ENCODING_3){
-        currentDataSetType = RDC::DataSetType::ENCODING_4;
+    else if (currentDataSetType ==  VMDC::DataSetType::ENCODING_3){
+        currentDataSetType = VMDC::DataSetType::ENCODING_4;
     }
-    else if (currentDataSetType ==  RDC::DataSetType::ENCODING_4){
-        currentDataSetType = RDC::DataSetType::ENCODING_5;
+    else if (currentDataSetType ==  VMDC::DataSetType::ENCODING_4){
+        currentDataSetType = VMDC::DataSetType::ENCODING_5;
     }
-    else if (currentDataSetType ==  RDC::DataSetType::ENCODING_5){
-        currentDataSetType = RDC::DataSetType::ENCODING_6;
+    else if (currentDataSetType ==  VMDC::DataSetType::ENCODING_5){
+        currentDataSetType = VMDC::DataSetType::ENCODING_6;
     }
 }
 
@@ -372,8 +364,6 @@ bool NBackRTExperiment::addNewTrial(){
 void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &trialRecogSeq){    
     rTrialRecognitionSequence = trialRecogSeq;
     lTrialRecognitionSequence = trialRecogSeq;
-    rMWA.finalizeOnlineFixationCalculation();
-    lMWA.finalizeOnlineFixationCalculation();
     messages.clear();
     messages << "MWS: " + QString::number(rMWA.parameters.getStartWindowSize());
     QString seq = "SEQ: ";
@@ -383,16 +373,8 @@ void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &tria
     messages << seq;
 }
 
-void NBackRTExperiment::TrialRecognitionMachine::configure(MovingWindowParameters mwp){
-    mwp.calculateWindowSize();
-    rMWA.parameters = mwp;
-    lMWA.parameters = mwp;
-}
 
-bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(qreal rX, qreal rY, qreal lX, qreal lY, FieldingManager *m, qreal timeStamp){
-
-    Fixation r = rMWA.calculateFixationsOnline(rX,rY,timeStamp);
-    Fixation l = lMWA.calculateFixationsOnline(lX,lY,timeStamp);
+bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &r, const Fixation &l, FieldingManager *m){
 
     rightLastFixation = r;
     leftLastFixation = l;

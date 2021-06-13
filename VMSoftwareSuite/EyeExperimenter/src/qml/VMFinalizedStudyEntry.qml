@@ -2,42 +2,38 @@ import QtQuick 2.0
 
 Item {
 
-    id: vmPatientEntry
-
-    property int vmPatientColWidth: headerPatient.width
-    property int vmPatientCreationDateWidth: headerCreationDate.width
-    property int vmPatientIDWidth: headerID.width
+    id: vmFinalizedStudyEntry
 
     readonly property int vmHeight: mainWindow.height*0.043
     readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
-    width: vmPatientColWidth + vmPatientCreationDateWidth + vmPatientIDWidth
+    width: dateRect.width + subjectRect.width + studyRect.width + doctorRect.width
 
     MouseArea {
         id: selectArea
         anchors.fill: parent
         onClicked: {
             vmIsSelected = true;
-            patientListView.currentIndex = vmItemIndex
+            studyListView.currentIndex = vmItemIndex
         }
     }
 
     Rectangle {
 
-        id: patientRect
+        id: dateRect
         color: vmIsSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
         border.width: mainWindow.width*0.002
         height: vmHeight
-        width: vmPatientColWidth
+        width: headerDate.width
         anchors.left: parent.left
         anchors.top: parent.top
         Text {
-            id: patientText
+            id: dateText
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: name + " " + lastname
+            text: date
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
@@ -47,41 +43,64 @@ Item {
 
 
     Rectangle {
-        id: patientIDRect
+        id: subjectRect
         color: vmIsSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
         border.width: mainWindow.width*0.002
         height: vmHeight
-        width: vmPatientIDWidth
-        anchors.left: patientRect.right
+        width: headerSubject.width
+        anchors.left: dateRect.right
         anchors.top: parent.top
         visible: true
         Text {
-            id: idText
+            id: subjectText
             color: vmIsSelected? "#ffffff" : "#000000"
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: supplied_institution_id
+            text: {
+                if (subject_name !== " ") return subject_name;
+                else return subject_insitution_id;
+            }
             anchors.centerIn: parent
         }
     }
 
     Rectangle {
-        id: creationDateRect
+        id: studyRect
         color: vmIsSelected? "#4984b3" : "#ffffff"
         border.color: "#EDEDEE"
         border.width: mainWindow.width*0.002
         height: vmHeight
-        width: vmPatientCreationDateWidth
-        anchors.left: patientIDRect.right;
+        width: headerStudy.width
+        anchors.left: subjectRect.right;
         anchors.top: parent.top
         visible: true
         Text {
-            id: creationDateText
+            id: studyText
             color: vmIsSelected? "#ffffff" : "#000000"
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: creation_date
+            text: type
+            anchors.centerIn: parent
+        }
+    }
+
+    Rectangle {
+        id: doctorRect
+        color: vmIsSelected? "#4984b3" : "#ffffff"
+        border.color: "#EDEDEE"
+        border.width: mainWindow.width*0.002
+        height: vmHeight
+        width: headerDoctor.width
+        anchors.left: studyRect.right;
+        anchors.top: parent.top
+        visible: true
+        Text {
+            id: doctorText
+            color: vmIsSelected? "#ffffff" : "#000000"
+            font.family: viewHome.gothamR.name
+            font.pixelSize: vmFontSize
+            text: medic_name
             anchors.centerIn: parent
         }
     }

@@ -22,7 +22,7 @@ void GoNoGoExperiment::onTimeOut(){
             stateTimer.stop();
             return;
         }
-        rawdata.setCurrentDataSet(RDC::DataSetType::UNIQUE);
+        rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
 
         //qDebug() << "DRAWING TRIAL";
         m->drawCurrentTrial();        
@@ -34,6 +34,7 @@ void GoNoGoExperiment::onTimeOut(){
         break;
     case GNGS_ESTIMULUS:
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
         rawdata.finalizeTrial("");
 
         if (!m->drawCross()){
@@ -88,21 +89,10 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
 
     state = STATE_RUNNING;
 
-    MovingWindowParameters mwp;
-    mwp.sampleFrequency = pp.value(RDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
-    mwp.minimumFixationLength =  pp.value(RDC::ProcessingParameter::MIN_FIXATION_DURATION).toReal();
-    mwp.maxDispersion =  pp.value(RDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
-    mwp.calculateWindowSize();
-
-    rMWA.parameters = mwp;
-    lMWA.parameters = mwp;
-
     m->drawCross();
     stateTimer.setInterval(GONOGO_TIME_CROSS);
     stateTimer.start();
     gngState = GNGS_CROSS;
-    rMWA.finalizeOnlineFixationCalculation();
-    lMWA.finalizeOnlineFixationCalculation();
 
     if (!Globals::EyeTracker::IS_VR || (useMouse)){
         this->show();
@@ -125,25 +115,24 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (data.isLeftZero() && data.isRightZero()) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
 
     // Checking if there is a fixation inside the correct target.
     //qDebug() << data.toString();
-    Fixation r = rMWA.calculateFixationsOnline(data.xRight,data.yRight,static_cast<qreal>(data.time));
-    Fixation l = lMWA.calculateFixationsOnline(data.xLeft,data.yLeft,static_cast<qreal>(data.time));
+    computeOnlineFixations(data);
 
-    if (r.isValid()){
+    if (lastFixationR.isValid()){
         //qDebug() << "RFIX" << r.toString();
-        if (m->isPointInSideCorrectTargetForCurrentTrial(r.x,r.y)){
+        if (m->isPointInSideCorrectTargetForCurrentTrial(lastFixationR.x,lastFixationR.y)){
             //qDebug() << "END TRIAL " <<  m->getCurrentTrialHeader()  << " RIGHT FIX @"  << data.time;
             onTimeOut();
             return;
         }
     }
 
-    if (l.isValid()){
+    if (lastFixationL.isValid()){
         //qDebug() << "LFIX" << l.toString();
-        if (m->isPointInSideCorrectTargetForCurrentTrial(l.x,l.y)){
+        if (m->isPointInSideCorrectTargetForCurrentTrial(lastFixationL.x,lastFixationL.y)){
             //qDebug() << "END TRIAL " <<  m->getCurrentTrialHeader()  << " LEFT FIX @"  << data.time;
             onTimeOut();
             return;
@@ -198,7 +187,7 @@ QVariantMap GoNoGoExperiment::setGoNoGoTargetBoxes(QVariantMap pp){
     target_box_vector << left_and_right.at(1).x() << left_and_right.at(1).y() << left_and_right.at(1).width() << left_and_right.at(1).height();
     target_boxes << (QVariant) target_box_vector;
 
-    pp.insert(RDC::ProcessingParameter::GONOGO_HITBOXES,target_boxes);
+    pp.insert(VMDC::ProcessingParameter::GONOGO_HITBOXES,target_boxes);
     return pp;
 
 }

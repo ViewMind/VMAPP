@@ -246,7 +246,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
         filename = Globals::BaseFileNames::BINDING;
 
         // We need to check for ongoing studies with just BC.
-        incomplete_study = sdc.findIncompleteBindingStudies(RDC::Study::BINDING_UC,studyconfig);
+        incomplete_study = sdc.findIncompleteBindingStudies(VMDC::Study::BINDING_UC,studyconfig);
         if (sdc.getError() != ""){
             logger.appendError("While scanning for incomplete binding files: " + sdc.getError());
             return false;
@@ -262,7 +262,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
         filename = Globals::BaseFileNames::BINDING;
 
         // We need to check for ongoing studies with just BC.
-        incomplete_study = sdc.findIncompleteBindingStudies(RDC::Study::BINDING_BC,studyconfig);
+        incomplete_study = sdc.findIncompleteBindingStudies(VMDC::Study::BINDING_BC,studyconfig);
         if (sdc.getError() != ""){
             logger.appendError("While scanning for incomplete binding files: " + sdc.getError());
             return false;
@@ -291,7 +291,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
         filename = Globals::BaseFileNames::PERCEPTION;
 
         // This is the part of the perception study that we require.
-        percepetion_part = studyconfig.value(RDC::StudyParameter::PERCEPTION_PART).toInt();
+        percepetion_part = studyconfig.value(VMDC::StudyParameter::PERCEPTION_PART).toInt();
 
         // We need to check for ongoing studies with not all the parts.
         incomplete_study =  sdc.findIncompletedPerceptionStudy(percepetion_part,studyconfig);
@@ -326,54 +326,55 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
     }
 
     // Second part of the actuall file name is the time stamp.
-    QString date = QDateTime::currentDateTime().toString("dd/MM/yyyy");
-    QString hour = QDateTime::currentDateTime().toString("HH:mm");
+    QString date = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+    QString hour = QDateTime::currentDateTime().toString("HH:mm:ss");
     filename = filename + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm") + ".json";
 
     // Creating the metadata.
     QVariantMap metadata;
-    metadata.insert(RDC::MetadataField::DATE,date);
-    metadata.insert(RDC::MetadataField::HOUR,hour);
-    metadata.insert(RDC::MetadataField::INSTITUTION_ID,configuration->getString(Globals::VMConfig::INSTITUTION_ID));
-    metadata.insert(RDC::MetadataField::INSTITUTION_INSTANCE,configuration->getString(Globals::VMConfig::INSTANCE_NUMBER));
-    metadata.insert(RDC::MetadataField::INSTITUTION_NAME,configuration->getString(Globals::VMConfig::INSTITUTION_NAME));
-    metadata.insert(RDC::MetadataField::MOUSE_USED,configuration->getString(Globals::VMPreferences::USE_MOUSE));
-    metadata.insert(RDC::MetadataField::PROC_PARAMETER_KEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
-    metadata.insert(RDC::MetadataField::STATUS,RDC::StatusType::ONGOING);
-    metadata.insert(RDC::MetadataField::PROTOCOL,protocol);
+    metadata.insert(VMDC::MetadataField::DATE,date);
+    metadata.insert(VMDC::MetadataField::HOUR,hour);
+    metadata.insert(VMDC::MetadataField::INSTITUTION_ID,configuration->getString(Globals::VMConfig::INSTITUTION_ID));
+    metadata.insert(VMDC::MetadataField::INSTITUTION_INSTANCE,configuration->getString(Globals::VMConfig::INSTANCE_NUMBER));
+    metadata.insert(VMDC::MetadataField::INSTITUTION_NAME,configuration->getString(Globals::VMConfig::INSTITUTION_NAME));
+    metadata.insert(VMDC::MetadataField::MOUSE_USED,configuration->getString(Globals::VMPreferences::USE_MOUSE));
+    metadata.insert(VMDC::MetadataField::PROC_PARAMETER_KEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+    metadata.insert(VMDC::MetadataField::STATUS,VMDC::StatusType::ONGOING);
+    metadata.insert(VMDC::MetadataField::PROTOCOL,protocol);
+
 
     // Creating the subject data
     QVariantMap subject_data;
-    subject_data.insert(RDC::SubjectField::AGE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_AGE));
-    subject_data.insert(RDC::SubjectField::BIRTH_COUNTRY,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHCOUNTRY));
-    subject_data.insert(RDC::SubjectField::BIRTH_DATE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHDATE));
-    subject_data.insert(RDC::SubjectField::GENDER,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_GENDER));
-    subject_data.insert(RDC::SubjectField::INSTITUTION_PROVIDED_ID,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_INSTITUTION_ID));
-    subject_data.insert(RDC::SubjectField::LASTNAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_LASTNAME));
-    subject_data.insert(RDC::SubjectField::LOCAL_ID,configuration->getString(Globals::Share::PATIENT_UID));
-    subject_data.insert(RDC::SubjectField::NAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_NAME));
-    subject_data.insert(RDC::SubjectField::YEARS_FORMATION,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_YEARS_FORMATION));
+    subject_data.insert(VMDC::SubjectField::AGE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_AGE));
+    subject_data.insert(VMDC::SubjectField::BIRTH_COUNTRY,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHCOUNTRY));
+    subject_data.insert(VMDC::SubjectField::BIRTH_DATE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHDATE));
+    subject_data.insert(VMDC::SubjectField::GENDER,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_GENDER));
+    subject_data.insert(VMDC::SubjectField::INSTITUTION_PROVIDED_ID,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_INSTITUTION_ID));
+    subject_data.insert(VMDC::SubjectField::LASTNAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_LASTNAME));
+    subject_data.insert(VMDC::SubjectField::LOCAL_ID,configuration->getString(Globals::Share::PATIENT_UID));
+    subject_data.insert(VMDC::SubjectField::NAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_NAME));
+    subject_data.insert(VMDC::SubjectField::YEARS_FORMATION,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_YEARS_FORMATION));
 
     // Setting the evaluator info. We do it here becuase it is required for the data file comparisons.
     QVariantMap evaluator;
     QVariantMap evaluator_local_data = localDB.getEvaluatorData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
-    evaluator.insert(RDC::AppUserField::EMAIL,evaluator_local_data.value(LocalDB::APPUSER_EMAIL));
-    evaluator.insert(RDC::AppUserField::NAME,evaluator_local_data.value(LocalDB::APPUSER_NAME));
-    evaluator.insert(RDC::AppUserField::LASTNAME,evaluator_local_data.value(LocalDB::APPUSER_LASTNAME));
-    evaluator.insert(RDC::AppUserField::LOCAL_ID,"");
-    evaluator.insert(RDC::AppUserField::VIEWMIND_ID,"");
+    evaluator.insert(VMDC::AppUserField::EMAIL,evaluator_local_data.value(LocalDB::APPUSER_EMAIL));
+    evaluator.insert(VMDC::AppUserField::NAME,evaluator_local_data.value(LocalDB::APPUSER_NAME));
+    evaluator.insert(VMDC::AppUserField::LASTNAME,evaluator_local_data.value(LocalDB::APPUSER_LASTNAME));
+    evaluator.insert(VMDC::AppUserField::LOCAL_ID,"");
+    evaluator.insert(VMDC::AppUserField::VIEWMIND_ID,"");
 
     // Setting the selected doctor info.
     QVariantMap medic_to_store;
     QVariantMap medic_local_data = localDB.getMedicData(QString::number(medic));
-    medic_to_store.insert(RDC::AppUserField::EMAIL,medic_local_data.value(LocalDB::APPUSER_EMAIL));
-    medic_to_store.insert(RDC::AppUserField::NAME,medic_local_data.value(LocalDB::APPUSER_NAME));
-    medic_to_store.insert(RDC::AppUserField::LASTNAME,medic_local_data.value(LocalDB::APPUSER_LASTNAME));
-    medic_to_store.insert(RDC::AppUserField::LOCAL_ID,"");
-    medic_to_store.insert(RDC::AppUserField::VIEWMIND_ID,medic_local_data.value(LocalDB::APPUSER_VIEWMIND_ID));
+    medic_to_store.insert(VMDC::AppUserField::EMAIL,medic_local_data.value(LocalDB::APPUSER_EMAIL));
+    medic_to_store.insert(VMDC::AppUserField::NAME,medic_local_data.value(LocalDB::APPUSER_NAME));
+    medic_to_store.insert(VMDC::AppUserField::LASTNAME,medic_local_data.value(LocalDB::APPUSER_LASTNAME));
+    medic_to_store.insert(VMDC::AppUserField::LOCAL_ID,"");
+    medic_to_store.insert(VMDC::AppUserField::VIEWMIND_ID,medic_local_data.value(LocalDB::APPUSER_VIEWMIND_ID));
 
     // We store this information the raw data container and leave it ready for the study to start.
-    RawDataContainer rdc;
+    ViewMindDataContainer rdc;
     if (!rdc.setSubjectData(subject_data)){
         logger.appendError("Failed setting subject data to new study. Reason: " + rdc.getError());
         return false;
@@ -383,12 +384,12 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
         return false;
     }
 
-    if (!rdc.setApplicationUserData(RDC::AppUserType::EVALUATOR,evaluator)){
+    if (!rdc.setApplicationUserData(VMDC::AppUserType::EVALUATOR,evaluator)){
         logger.appendError("Failed to store evaluator data: " + rdc.getError());
         return false;
     }
 
-    if (!rdc.setApplicationUserData(RDC::AppUserType::MEDIC,medic_to_store)){
+    if (!rdc.setApplicationUserData(VMDC::AppUserType::MEDIC,medic_to_store)){
         logger.appendError("Failed to store medic data: " + rdc.getError());
         return false;
     }
@@ -568,29 +569,27 @@ QVariantMap Loader::getMedicList() const {
 }
 
 ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
-QList<QVariantMap> Loader::getReportsForLoggedEvaluator(){
-    QStringList directory_list = QDir(Globals::Paths::WORK_DIRECTORY).entryList(QStringList(),QDir::Dirs,QDir::Name);
+QVariantMap Loader::getReportsForLoggedEvaluator(){
+    QStringList directory_list = QDir(Globals::Paths::WORK_DIRECTORY).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot,QDir::Name);
     QString current_evaluator = configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
-    QStringList errors;
     QList<QVariantMap> studiesToAnalyze;
 
     SubjectDirScanner sdc;
 
+    //qDebug() << "Will analyze list of directories" << directory_list;
 
     for (qint32 i = 0; i < directory_list.size(); i++){
-        sdc.setup(configuration->getString(Globals::Share::PATIENT_UID),current_evaluator);
+
+        sdc.setup(Globals::Paths::WORK_DIRECTORY + "/" + directory_list.at(i),current_evaluator);
         studiesToAnalyze << sdc.scanSubjectDirectoryForEvalutionsFrom();
-    }
-    if (!errors.isEmpty()){
-        logger.appendError("Errors found scanning work directory for user " + current_evaluator);
-        for (qint32 i = 0; i < errors.size(); i++){
-            logger.appendError("   " + errors.at(i));
+        if (!sdc.getError().isEmpty()){
+            logger.appendError("Error while analyzig " + sdc.getSetDirectory() + " for finished studies: " + sdc.getError());
         }
+        //qDebug() << "Added " << sdc.getSetDirectory() << " and now we have " << studiesToAnalyze.size();
     }
 
     // Sort the generated list by the order code before returning it (chronologically).
-    SubjectDirScanner::sortSubjectDataListByOrder(&studiesToAnalyze);
-    return studiesToAnalyze;
+    return SubjectDirScanner::sortSubjectDataListByOrder(studiesToAnalyze);
 
 }
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////

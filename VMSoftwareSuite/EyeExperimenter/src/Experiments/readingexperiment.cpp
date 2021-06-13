@@ -34,7 +34,7 @@ bool ReadingExperiment::startExperiment(const QString &workingDir, const QString
     config.insert(ReadingManager::CONFIG_IS_USING_VR,(Globals::EyeTracker::IS_VR && (!useMouse)));
     m->configure(config);
 
-    eyeSelector.setTargetCountForSelection(pp.value(RDC::ProcessingParameter::SAMPLE_FREQUENCY).toInt()*TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS);
+    eyeSelector.setTargetCountForSelection(pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toInt()*TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS);
     eyeSelector.setBehaviour(EyeSelector::EBS_CUMULATIVE);
     eyeSelector.reset();
 
@@ -66,7 +66,7 @@ bool ReadingExperiment::startExperiment(const QString &workingDir, const QString
     }
 
     // Now we set the unique dataset.
-    rawdata.setCurrentDataSet(RDC::DataSetType::UNIQUE);
+    rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
 
     updateSecondMonitorORHMD();
 
@@ -149,6 +149,7 @@ void ReadingExperiment::advanceToTheNextPhrase(){
         // Finalize both the data set and the trial.
         rawdata.finalizeDataSet();
         rawdata.finalizeTrial(response);
+        finalizeOnlineFixations();
 
         // I move on to the next question only I'm in a question or phrase qstate.        
         if (currentQuestion < m->size()-1){
@@ -252,8 +253,10 @@ void ReadingExperiment::appendEyeTrackerData(const EyeTrackerData &data,
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
+    computeOnlineFixations(data,characterIndexL,wordIndexL,characterIndexR,wordIndexR);
+
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    rawdata.addNewRawDataVector(RawDataContainer::GenerateReadingRawDataVector(data.time,
+    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateReadingRawDataVector(data.time,
                                                                                data.xRight,data.yRight ,data.xLeft,data.yLeft,
                                                                                data.pdRight,data.pdLeft,
                                                                                characterIndexR,characterIndexL,

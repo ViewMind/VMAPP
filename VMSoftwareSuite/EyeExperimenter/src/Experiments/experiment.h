@@ -16,7 +16,7 @@
 #include "../monitorscreen.h"
 #include "../EyeTrackerInterface/eyetrackerdata.h"
 #include "../../../CommonClasses/Experiments/experimentdatapainter.h"
-#include "../../../CommonClasses/RawDataContainer/rawdatacontainer.h"
+#include "../../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 #include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "../eyexperimenter_defines.h"
 
@@ -97,7 +97,7 @@ protected:
     ExperimentDataPainter *manager;
 
     // Where the data will be stored.
-    RawDataContainer rawdata;
+    ViewMindDataContainer rawdata;
 
     // The set of processing parameters is checked.
     // QVariantMap proc_params;
@@ -126,6 +126,12 @@ protected:
     // Flag used to indicate that debug mode is enabled. To be used to print auxiliary data.
     bool debugMode;
 
+    // Online fixation computation.
+    Fixation lastFixationL;
+    Fixation lastFixationR;
+    MovingWindowAlgorithm rMWA;
+    MovingWindowAlgorithm lMWA;
+
     // Sets up the view given the configuration
     void setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height);
 
@@ -151,6 +157,18 @@ protected:
 
     // Takes the study type and configuration and produces the internal experiment description.
     QString getExperimentDescriptionFile() const;
+
+    // Finalizes and restes the state machine for computing online fixations.
+    void finalizeOnlineFixations();
+
+    // Feeds data to the online fixation maching. If a fixation is computed, it is stored in the rawdata structure.
+    // The last two parameters are reading ONLY.
+    void computeOnlineFixations(const EyeTrackerData &data, qreal l_schar = 0, qreal l_word = 0, qreal r_schar = 0, qreal r_word = 0);
+
+    // Transform the fixation struct into a the valid struct expected by the ViewMind Data Container.
+    QVariantMap fixationToVariantMap(const Fixation &f);
+
+
 
 };
 

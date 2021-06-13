@@ -198,7 +198,6 @@ viewpresentexp_btnContinue = COMENZAR EVALUACIÓN;
 viewpresentexp_btnBack = VOLVER A SELECCION DE ESTUDIOS;
 
 #********************************* PATIENT LIST *********************************
-viewpatientlist_title = Lista de Pacientes;
 viewpatientlist_titleSubject = Lista de Sujetos;
 viewpatientlist_subtitleSubject = Seleccione un sujeto para estudio; 
 viewpatientlist_headerSubject = Sujeto;
@@ -212,25 +211,16 @@ viewpatientlist_protocol = Protocolo;
 viewpatientlist_destinatary = Seleccionar quien solicitó el estudio;
 viewpatientlist_protocol_inst = Seleccione el protocolo para el estudio (opcional);
 
-#********************************* SHOW REPORTS *********************************
-viewshowreports_diagViewRepTitle = Reportes;
-viewshowreports_diagViewRepSubTitle = Resumen del contenido de los reportes;
-viewshowreports_diagPatientName = Paciente;
-viewshowreports_diagSubjectID = Sujeto;
-viewshowreports_diagTabDate = Fecha;
-viewshowreports_diagTabTime = Hora;
-viewshowreports_diagTabReading = Lectura;
-viewshowreports_diagTabBinding = Colores;
-viewshowreports_diagTabFielding = N-Back (MS);
-viewshowreports_diagTabNBackRT  = N-Back (RT);
-viewshowreports_diagTabGoNoGo   = Go No-Go;
-viewshowreports_diagTabStatus = Estado;
-viewshowreports_diagBtnView = VER;
-viewshowreports_diagBtnBack = ATRAS;
-viewshowreports_diagViewRepSubject = SUBJETO;
-viewshowreports_diagViewRepPatient = PACIENTE;
-viewshowreports_diagReprocess = ACTUALIZAR;
-viewshowreports_labelInformation = Contenidos del Reporte;
+#********************************* SHOW FINISHED STUDIES *********************************
+viewfinishedstudies_title = Generar Reportes;
+viewfinishedstudies_subtitle = Seleccione estudios a enviar y generar reportes;
+viewfinishedstudies_headerDate = Fecha;
+viewfinishedstudies_headerSubject = Sujeto;
+viewfinishedstudies_headerStudy = Estudio;
+viewfinishedstudies_headerDoctor = Doctor;
+viewfinishedstudies_btnBack = ATRAC;
+viewfinishedstudies_btnQC   = QC;
+viewfinishedstudies_btnSend = ENVIAR;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Evaluador;

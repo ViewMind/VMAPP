@@ -211,25 +211,16 @@ viewpatientlist_protocol = Protocol;
 viewpatientlist_destinatary = Select who requested the study; 
 viewpatientlist_protocol_inst = Select the protocol for this study (optional);
 
-#********************************* SHOW REPORTS *********************************
-viewshowreports_diagViewRepTitle = Reports;
-viewshowreports_diagViewRepSubTitle =  Report content summary;
-viewshowreports_diagPatientName = Patient;
-viewshowreports_diagSubjectID = Subject;
-viewshowreports_diagTabDate = Date;
-viewshowreports_diagTabTime = Time;
-viewshowreports_diagTabReading = Reading;
-viewshowreports_diagTabBinding = Colors;
-viewshowreports_diagTabFielding = N-Back (MS);
-viewshowreports_diagTabNBackRT  = N-Back (RT);
-viewshowreports_diagTabGoNoGo   = Go No-Go;
-viewshowreports_diagTabStatus = Status;
-viewshowreports_diagBtnView = VIEW;
-viewshowreports_diagBtnBack = BACK;
-viewshowreports_diagViewRepSubject = SUBJECT;
-viewshowreports_diagViewRepPatient = PATIENT;
-viewshowreports_diagReprocess = UPDATE;
-viewshowreports_labelInformation = Report Contents;
+#********************************* SHOW FINISHED STUDIES *********************************
+viewfinishedstudies_title = Generate Reports;
+viewfinishedstudies_subtitle = Select studies to send and generate the reports;
+viewfinishedstudies_headerDate = Date;
+viewfinishedstudies_headerSubject = Subject;
+viewfinishedstudies_headerStudy = Study;
+viewfinishedstudies_headerDoctor = Doctor;
+viewfinishedstudies_btnBack = BACK;
+viewfinishedstudies_btnQC   = QC;
+viewfinishedstudies_btnSend = SEND;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Evaluator Profile;

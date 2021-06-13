@@ -26,7 +26,7 @@ bool FieldingExperiment::startExperiment(const QString &workingDir, const QStrin
 
     QVariantMap config;
     config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,(Globals::EyeTracker::IS_VR && (!useMouse)));
-    if (studyConfig.value(RDC::StudyParameter::LANGUAGE).toString() == RDC::UILanguage::SPANISH){
+    if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
         config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
     }
     else{
@@ -52,7 +52,7 @@ bool FieldingExperiment::startExperiment(const QString &workingDir, const QStrin
     }
 
     // Start enconding 1
-    rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_1);
+    rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
 
     m->drawBackground();
     drawCurrentImage();
@@ -73,6 +73,7 @@ void FieldingExperiment::nextState(){
 
         // End retrieval 3. And trial.
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
         rawdata.finalizeTrial("");
 
         currentTrial++;
@@ -84,8 +85,9 @@ void FieldingExperiment::nextState(){
 
         // End retrieval 2
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
         // Start retrieval 3
-        rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_3);
+        rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_3);
 
         tstate = TSF_SHOW_BLANK_1;
         currentImage = 0;
@@ -95,8 +97,9 @@ void FieldingExperiment::nextState(){
 
         // End Retrieval 1
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
         // Start Retrieval 2
-        rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_2);
+        rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_2);
 
         tstate = TSF_SHOW_BLANK_2;
         currentImage = 1;
@@ -106,8 +109,9 @@ void FieldingExperiment::nextState(){
 
         // End Enconding 1
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
         // Start enconding 2
-        rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_2);
+        rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_2);
 
         tstate = TSF_SHOW_DOT_2;
         currentImage = 1;
@@ -118,8 +122,9 @@ void FieldingExperiment::nextState(){
 
         // End Enconding 2
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
         // Start enconding 3
-        rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_3);
+        rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_3);
 
         tstate = TSF_SHOW_DOT_3;
         currentImage = 2;
@@ -129,6 +134,7 @@ void FieldingExperiment::nextState(){
 
         // End Encondinng 3.
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
 
         tstate = TSF_TRANSITION;
         stateTimer.setInterval(TIME_TRANSITION);
@@ -142,7 +148,7 @@ void FieldingExperiment::nextState(){
         }
 
         // Start enconding 1
-        rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_1);
+        rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
 
         tstate = TSF_SHOW_DOT_1;
         currentImage = 0;
@@ -151,7 +157,7 @@ void FieldingExperiment::nextState(){
     case TSF_TRANSITION:
 
         // Start Retrieval 1
-        rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_1);
+        rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
         tstate = TSF_SHOW_BLANK_3;
         currentImage = 2;
@@ -273,7 +279,9 @@ void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (data.isLeftZero() && data.isRightZero()) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+
+    computeOnlineFixations(data);
 
 }
 
@@ -299,7 +307,7 @@ QVariantMap FieldingExperiment::addHitboxesToProcessingParameters(QVariantMap pp
     }
 
     // Store them as part of the processing parameters.
-    pp.insert(RDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);
+    pp.insert(VMDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);
     return pp;
 }
 

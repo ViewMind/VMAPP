@@ -22,10 +22,17 @@ struct Fixation{
     qreal fixEnd;
     qint32 indexFixationStart;
     qint32 indexFixationEnd;
+    qreal pupil;
+    qreal time;
+    qint32 pupilZeroCount;
+
+    // Explicit for reading.
+    qreal sentence_char;
+    qreal sentence_word;
 
     bool isValid() const { return ((indexFixationEnd >= 0) && (indexFixationStart >= 0)); }
 
-    // Checks if the fixation fall in a given range.
+    // Checks if the fixation falls in a given range.
     bool isIn(qreal minX, qreal maxX, qreal minY, qreal maxY) const {
         bool ans = (minX <= x);
         ans = ans && (x <= maxX);
@@ -98,7 +105,7 @@ public:
     Fixations computeFixations(const DataMatrix &data, qint32 xI, qint32 yI, qint32 tI);
 
     // Uses the exact same algorithm to compute the fixation with one data point at a time.
-    Fixation calculateFixationsOnline(qreal x, qreal y, qreal timeStamp);
+    Fixation calculateFixationsOnline(qreal x, qreal y, qreal timeStamp, qreal pupil, qreal schar = 0, qreal word = 0);
     Fixation finalizeOnlineFixationCalculation();
 
     // Simple access to the parameters of the moving window algorithm
@@ -122,6 +129,10 @@ private:
         qreal x;
         qreal y;
         qreal timestamp;
+        qreal pupil;
+        // Used only for reading.
+        qreal word;
+        qreal schar;
         QString toString() const { return "@" + QString::number(timestamp) + "(" + QString::number(x) + "," + QString::number(y) + ")"; }
     };
 
@@ -139,6 +150,8 @@ private:
     QList<DataPoint> onlinePointsForFixation;
     MinMax onlineMMMY;
     MinMax onlineMMMX;
+
+    static const qreal PUPIL_ZERO_TOL;
 
 #ifdef ENABLE_MWA_DEBUG
     LogInterface logger;

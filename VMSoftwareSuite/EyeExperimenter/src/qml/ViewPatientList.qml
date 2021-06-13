@@ -97,6 +97,7 @@ VMBase {
                 VMComboBox2 {
                     id: doctorSelection
                     z: 4
+                    vmMaxDisplayItems: 3
                     width: studyPreSetup.width*0.8
                 }
 
@@ -119,6 +120,7 @@ VMBase {
                 VMComboBox2 {
                     id: protocolSelection
                     z: 3
+                    vmMaxDisplayItems: 3
                     width: studyPreSetup.width*0.8
                 }
 
@@ -286,19 +288,6 @@ VMBase {
             }
         }
 
-        //        VMFolderButton{
-        //            id: btnMedRecord
-        //            height: mainWindow.height*0.043
-        //            anchors.verticalCenter: parent.verticalCenter
-        //            anchors.left: btnEditPatient.right
-        //            anchors.leftMargin: 10;
-        //            enabled: patientListView.currentIndex !== -1
-        //            onClicked: {
-        //                swiperControl.currentIndex = swiperControl.vmIndexMedicalRecordList
-        //            }
-        //        }
-
-
         VMButton{
             id: btnReports
             height: mainWindow.height*0.043
@@ -309,7 +298,8 @@ VMBase {
             anchors.right: parent.right
             anchors.rightMargin: mainWindow.width*0.016
             onClicked: {
-                console.log("It needs to go to the send reports screen")
+                viewFinishedStudies.loadEvaluatorStudies();
+                swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies;
             }
         }
 

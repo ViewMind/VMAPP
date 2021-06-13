@@ -11,7 +11,7 @@ const char * SubjectDirScanner::EVALUATOR_NAME = "evaluator_name";
 const char * SubjectDirScanner::EVALUATOR_ID = "evaluator_id";
 const char * SubjectDirScanner::MEDIC_NAME = "medic_name";
 const char * SubjectDirScanner::MEDIC_ID = "medic_id";
-const char * SubjectDirScanner::ORDER_CODE = "medic_id";
+const char * SubjectDirScanner::ORDER_CODE = "order_code";
 
 
 SubjectDirScanner::SubjectDirScanner()
@@ -27,6 +27,10 @@ void SubjectDirScanner::setup(const QString &workdir, const QString &loggedUser)
 
 QString SubjectDirScanner::getError() const {
     return error;
+}
+
+QString SubjectDirScanner::getSetDirectory() const {
+    return workDirectory;
 }
 
 ///////////////////////////////////// SCANNING FOR EVALUATIONS //////////////////////////////////////////////
@@ -46,7 +50,8 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
     for (qint32 i = 0; i < json_files.size(); i++){
 
         QString filename = workDirectory + "/" + json_files.at(i);
-        RawDataContainer rdc;
+        //qDebug() << "Analyzing JSON file" << filename;
+        ViewMindDataContainer rdc;
         QVariantMap map;
 
         // We try to laod the JSON File and if it fails, the error field is all that is added to the map.
@@ -56,24 +61,32 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
         }
 
         // Getting the evaluator.
-        QVariantMap evaluator = rdc.getApplicationUserData(RDC::AppUserType::EVALUATOR);
+        QVariantMap evaluator = rdc.getApplicationUserData(VMDC::AppUserType::EVALUATOR);
         if (evaluator.isEmpty()){
             error = "Error on " + filename  + " getting evaluator data " + rdc.getError();
             return ans;
         }
 
         // We only add those that are from a given evaluator. (or if they have errors so that we can see them).
-        if (evaluator.value(RDC::AppUserField::LOCAL_ID).toString() != loggedInUser) continue;
+        if (evaluator.value(VMDC::AppUserField::EMAIL).toString() != loggedInUser) continue;
 
         // Getting the studies.
         QStringList list = rdc.getStudies();
+        //qDebug() << "Study list" << list;
         // Each file should only contain 1 Study.
-        if (list.size() != 1){
-            error =  "File does not contain 1 study but: " + QString::number(list.size());
+        if (list.empty()){
+            error =  "File does not contain a study";
             return ans;
         }
         QString study = list.first();
+        QString study_type = study;
+        if (study.contains(VMDC::MultiPartStudyBaseName::BINDING)) study_type = VMDC::MultiPartStudyBaseName::BINDING;
+        else if (study.contains(VMDC::MultiPartStudyBaseName::PERCEPTION)) study_type = VMDC::MultiPartStudyBaseName::PERCEPTION;
 
+        //qDebug() << "Selected study" << study;
+
+        // Making sure the file is finalized.
+        if (rdc.getMetadaStatus() != VMDC::StatusType::FINALIZED) continue;
 
         QString status = rdc.getMetadaStatus();
         if (status == ""){
@@ -88,7 +101,8 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
         }
 
         list = rdc.getMetaDataDateTime();
-        if (list.size() != 3){
+        //qDebug() << "List date time" << list;
+        if (list.size() != 4){
             error =  "Error on " + filename  + " getting study date time " + rdc.getError();
             return ans;
         }
@@ -99,31 +113,33 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
             return ans;
         }
 
-        QVariantMap medic = rdc.getApplicationUserData(RDC::AppUserType::MEDIC);
+        QVariantMap medic = rdc.getApplicationUserData(VMDC::AppUserType::MEDIC);
         if (medic.isEmpty()){
             error =  "Error on " + filename  + " getting medic data " + rdc.getError();
             return ans;
         }
 
         // Required for computing the order code: A string that allows chronological ordering.
-        QDateTime dt = QDateTime::fromString(list.first(),"dd/MM/yyyy HH:mm");
-
+        //qDebug() << "Full date" << list.first();
 
         // We've loaded the JSON File, now we try to get the raw data.
         map[STATUS] = status;
         map[CODE]  = study_code;
         map[DATE] = list.first();
-        map[TYPE] = study;
-        map[DISPLAY_ID] = subdata.value(RDC::SubjectField::LOCAL_ID).toString();
-        map[SUBJECT_INSTITUTION_ID] = subdata.value(RDC::SubjectField::INSTITUTION_PROVIDED_ID).toString();
-        map[SUBJECT_NAME] = subdata.value(RDC::SubjectField::NAME).toString() + " " + subdata.value(RDC::SubjectField::LASTNAME).toString();
-        map[EVALUATOR_NAME] = evaluator.value(RDC::SubjectField::NAME).toString() + " " + evaluator.value(RDC::AppUserField::LASTNAME).toString();
-        map[EVALUATOR_ID] = evaluator.value(RDC::AppUserField::LOCAL_ID).toString();
-        map[MEDIC_NAME] = medic.value(RDC::AppUserField::NAME).toString() + " " + medic.value(RDC::AppUserField::LASTNAME).toString();
-        map[MEDIC_ID] = medic.value(RDC::AppUserField::VIEWMIND_ID).toString();
-        map[ORDER_CODE] = dt.toString("yyyyMMddHHmm");
+        map[TYPE] = study_type;
+        map[DISPLAY_ID] = subdata.value(VMDC::SubjectField::LOCAL_ID).toString();
+        map[SUBJECT_INSTITUTION_ID] = subdata.value(VMDC::SubjectField::INSTITUTION_PROVIDED_ID).toString();
+        map[SUBJECT_NAME] = subdata.value(VMDC::SubjectField::NAME).toString() + " " + subdata.value(VMDC::SubjectField::LASTNAME).toString();
+        map[EVALUATOR_NAME] = evaluator.value(VMDC::SubjectField::NAME).toString() + " " + evaluator.value(VMDC::AppUserField::LASTNAME).toString();
+        map[EVALUATOR_ID] = evaluator.value(VMDC::AppUserField::LOCAL_ID).toString();
+        map[MEDIC_NAME] = medic.value(VMDC::AppUserField::NAME).toString() + " " + medic.value(VMDC::AppUserField::LASTNAME).toString();
+        map[MEDIC_ID] = medic.value(VMDC::AppUserField::VIEWMIND_ID).toString();
+        map[ORDER_CODE] = list.last();
+        //qDebug() << "Adding order code" << map.value(ORDER_CODE).toString();
         ans << map;
     }
+
+    //qDebug() << "Returning list with " << ans.size();
 
     return ans;
 
@@ -138,11 +154,11 @@ QString SubjectDirScanner::findIncompleteBindingStudies(const QString &missing_s
 
 
     QString study_present;
-    if (missing_study == RDC::Study::BINDING_BC){
-        study_present = RDC::Study::BINDING_UC;
+    if (missing_study == VMDC::Study::BINDING_BC){
+        study_present = VMDC::Study::BINDING_UC;
     }
-    else if (missing_study == RDC::Study::BINDING_UC){
-        study_present = RDC::Study::BINDING_BC;
+    else if (missing_study == VMDC::Study::BINDING_UC){
+        study_present = VMDC::Study::BINDING_BC;
     }
     else{
         error = "Finding incomplet Binding files: Invalid study to be missing " + missing_study;
@@ -154,7 +170,7 @@ QString SubjectDirScanner::findIncompleteBindingStudies(const QString &missing_s
         // We only need to check binding files.
         if (filelist.at(i).contains(Globals::BaseFileNames::BINDING)){
 
-            RawDataContainer rdc;
+            ViewMindDataContainer rdc;
             if (!rdc.loadFromJSONFile(workDirectory + "/" + filelist.at(i))){
                 error = "Error loading JSON File for ongoing analysis: " + rdc.getError();
                 return "";
@@ -173,7 +189,7 @@ QString SubjectDirScanner::findIncompleteBindingStudies(const QString &missing_s
             }
 
             // The study has what we need. Next we check that the evaluator is the same. A study cannot be continued by a different evaluator as it is signed.
-            if (rdc.getApplicationUserData(RDC::AppUserType::EVALUATOR).value(RDC::AppUserField::EMAIL).toString() != loggedInUser){
+            if (rdc.getApplicationUserData(VMDC::AppUserType::EVALUATOR).value(VMDC::AppUserField::EMAIL).toString() != loggedInUser){
                 //qDebug() << "Moving on due to being different evaluators";
                 continue;
             }
@@ -192,9 +208,9 @@ QString SubjectDirScanner::findIncompleteBindingStudies(const QString &missing_s
 //            qDebug() << "Comparing loaded value with passed parameter";
 //            Debug::prettpPrintQVariantMap(sc);
 //            Debug::prettpPrintQVariantMap(study_configuration);
-            aresame = aresame && (sc.value(RDC::StudyParameter::VALID_EYE).toString() == study_configuration.value(RDC::StudyParameter::VALID_EYE).toString());
-            aresame = aresame && (sc.value(RDC::StudyParameter::NUMBER_TARGETS).toString() == study_configuration.value(RDC::StudyParameter::NUMBER_TARGETS).toString());
-            aresame = aresame && (sc.value(RDC::StudyParameter::TARGET_SIZE).toString() == study_configuration.value(RDC::StudyParameter::TARGET_SIZE).toString());
+            aresame = aresame && (sc.value(VMDC::StudyParameter::VALID_EYE).toString() == study_configuration.value(VMDC::StudyParameter::VALID_EYE).toString());
+            aresame = aresame && (sc.value(VMDC::StudyParameter::NUMBER_TARGETS).toString() == study_configuration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString());
+            aresame = aresame && (sc.value(VMDC::StudyParameter::TARGET_SIZE).toString() == study_configuration.value(VMDC::StudyParameter::TARGET_SIZE).toString());
 
 //            qDebug() << "Are the same" << aresame;
 
@@ -223,16 +239,16 @@ QString SubjectDirScanner::findIncompletedPerceptionStudy(const qint32 missing_p
 
     QStringList studies_that_must_be_contained;
     for (qint32 i = 1; i < missing_part; i++){
-        studies_that_must_be_contained << RDC::MultiPartStudyBaseName::PERCEPTION + " " + QString::number(i);
+        studies_that_must_be_contained << VMDC::MultiPartStudyBaseName::PERCEPTION + " " + QString::number(i);
     }
 
-    QString next_part =  RDC::MultiPartStudyBaseName::PERCEPTION + " " + QString::number(missing_part);
+    QString next_part =  VMDC::MultiPartStudyBaseName::PERCEPTION + " " + QString::number(missing_part);
 
     for (qint32 i = 0; i < filelist.size(); i++){
 
         if (filelist.at(i).contains(Globals::BaseFileNames::PERCEPTION)){
 
-            RawDataContainer rdc;
+            ViewMindDataContainer rdc;
             if (!rdc.loadFromJSONFile(workDirectory + "/" + filelist.at(i))){
                 error = "Error loading JSON File for ongoing analysis: " + rdc.getError();
                 return "";
@@ -244,7 +260,7 @@ QString SubjectDirScanner::findIncompletedPerceptionStudy(const qint32 missing_p
             if (dt.secsTo(QDateTime::currentDateTime()) > Globals::NUMBER_SECONDS_IN_A_DAY) continue;
 
             // The study has what we need. Next we check that the evaluator is the same. A study cannot be continued by a different evaluator as it is signed.
-            if (rdc.getApplicationUserData(RDC::AppUserType::EVALUATOR).value(RDC::AppUserField::EMAIL).toString() != loggedInUser){
+            if (rdc.getApplicationUserData(VMDC::AppUserType::EVALUATOR).value(VMDC::AppUserField::EMAIL).toString() != loggedInUser){
                 //qDebug() << "Moving on due to being different evaluators";
                 continue;
             }
@@ -259,13 +275,13 @@ QString SubjectDirScanner::findIncompletedPerceptionStudy(const qint32 missing_p
             // We check that these are all perception studies and that they are all of the same type.
             bool aresame = true;
             for (qint32 j = 0; j < studies.size(); j++){
-                if (!studies.contains(RDC::MultiPartStudyBaseName::PERCEPTION)){
+                if (!studies.contains(VMDC::MultiPartStudyBaseName::PERCEPTION)){
                     error = "Found perceptio file with a wrong study name: " + studies.at(j);
                     return "";
                 }
                 QVariantMap sc = rdc.getStudyConfiguration(studies_that_must_be_contained.at(j));
-                aresame = aresame && (sc.value(RDC::StudyParameter::VALID_EYE) == study_configuration.value(RDC::StudyParameter::VALID_EYE));
-                aresame = aresame && (sc.value(RDC::StudyParameter::PERCEPTION_TYPE) == study_configuration.value(RDC::StudyParameter::PERCEPTION_TYPE));
+                aresame = aresame && (sc.value(VMDC::StudyParameter::VALID_EYE) == study_configuration.value(VMDC::StudyParameter::VALID_EYE));
+                aresame = aresame && (sc.value(VMDC::StudyParameter::PERCEPTION_TYPE) == study_configuration.value(VMDC::StudyParameter::PERCEPTION_TYPE));
                 if (!aresame) break;
             }
 
@@ -290,17 +306,28 @@ QString SubjectDirScanner::findIncompletedPerceptionStudy(const qint32 missing_p
 
 ///////////////////////////////////// STATIC SORTING FUNCTION //////////////////////////////////////////////
 
-void SubjectDirScanner::sortSubjectDataListByOrder(QList<QVariantMap> *list){
+QVariantMap SubjectDirScanner::sortSubjectDataListByOrder(QList<QVariantMap> list){
+
+    // First we sort by order code.
     bool swapDone = true;
     while (swapDone){
         swapDone = false;
-        for (qint32 i = 0; i < list->size()-1; i++){
-            if (list->at(i).value(ORDER_CODE).toString() > list->at(i+1).value(ORDER_CODE).toString()){
-                QVariantMap map = list->at(i);
-                list->replace(i,list->at(i+1));
-                list->replace(i+1,map);
+        for (qint32 i = 0; i < list.size()-1; i++){
+            if (list.at(i).value(ORDER_CODE).toString() > list.at(i+1).value(ORDER_CODE).toString()){
+                QVariantMap map = list.at(i);
+                list.replace(i,list.at(i+1));
+                list.replace(i+1,map);
                 swapDone = true;
             }
         }
     }
+
+    // Then we form a map. When iteratin through the map, it should do it in order code, since it's alphebetical.
+    QVariantMap ans;
+    //qDebug() << "After sorting list size" << list.size();
+    for (qint32 i = 0; i < list.size(); i++){
+        ans.insert(list.at(i).value(ORDER_CODE).toString(),list.at(i));
+    }
+    //qDebug() << "Returning a map of size" << ans.size();
+    return ans;
 }

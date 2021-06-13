@@ -2,14 +2,7 @@
 
 APIClient::APIClient(QObject *parent) : QObject(parent)
 {
-
-    if (Globals::Debug::USE_LOCAL_API_ADDRESS){
-        API = API_DBUG;
-    }
-    else{
-        API = API_PRODCUTION;
-    }
-
+    API = Globals::API_URL;
     rest_controller.setBaseAPI(API);
     connect(&rest_controller,&RESTAPIController::gotReplyData,this,&APIClient::gotReply);
 

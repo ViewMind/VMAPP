@@ -8,9 +8,6 @@
 #include "../../../CommonClasses/Experiments/gonogomanager.h"
 #include "../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h"
 
-#define  GONOGO_TIME_CROSS      1000
-#define  GONOGO_TIME_ESTIMULUS  2000
-
 class GoNoGoExperiment: public Experiment
 {
 public:
@@ -39,9 +36,9 @@ protected:
     // When to ignore data.
     bool ignoreData;
 
-    // For fixation recognition.
-    MovingWindowAlgorithm rMWA;
-    MovingWindowAlgorithm lMWA;
+    // Constants
+    static const qint32 GONOGO_TIME_CROSS     = 1000;
+    static const qint32 GONOGO_TIME_ESTIMULUS = 2000;
 
     QVariantMap setGoNoGoTargetBoxes(QVariantMap pp);
     bool addNewTrial();

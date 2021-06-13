@@ -15,7 +15,7 @@ bool ImageExperiment::startExperiment(const QString &workingDir, const QString &
     // We need to set up the target size before parsing.
     QVariantMap config;
     config.insert(BindingManager::CONFIG_USE_SMALL_TARGETS,
-                  (studyConfig.value(RDC::StudyParameter::TARGET_SIZE).toString() == RDC::BindingTargetSize::SMALL));
+                  (studyConfig.value(VMDC::StudyParameter::TARGET_SIZE).toString() == VMDC::BindingTargetSize::SMALL));
     m->configure(config);
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse,pp)) return false;
@@ -107,7 +107,8 @@ void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
-    rawdata.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    computeOnlineFixations(data);
 
 }
 
@@ -183,7 +184,7 @@ void ImageExperiment::nextState(){
 
             // We need to check if both binding bc AND bingin UC are part of this file, otherwise it is ongoing.
            QStringList studylist = rawdata.getStudies();
-            if (studylist.contains(RDC::Study::BINDING_BC) && studylist.contains(RDC::Study::BINDING_UC)){
+            if (studylist.contains(VMDC::Study::BINDING_BC) && studylist.contains(VMDC::Study::BINDING_UC)){
                 rawdata.markFileAsFinalized();
             }
 
@@ -197,6 +198,7 @@ void ImageExperiment::nextState(){
 
         // Encoding Ends.
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
 
         trialState = TSB_TRANSITION;
         drawCurrentImage();
@@ -209,6 +211,8 @@ void ImageExperiment::nextState(){
 
         // Retrieval Ends.
         rawdata.finalizeDataSet();
+        finalizeOnlineFixations();
+
         rawdata.finalizeTrial(answer);
 
         drawCurrentImage();
@@ -220,7 +224,7 @@ void ImageExperiment::nextState(){
         trialState = TSB_TEST;
 
         // Retrieval begins. We start the new dataset.
-        rawdata.setCurrentDataSet(RDC::DataSetType::RETRIEVAL_1);
+        rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
         answer = "N/A";
         drawCurrentImage();
@@ -243,7 +247,7 @@ bool ImageExperiment::addNewTrial(){
         error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
         return false;
     }
-    rawdata.setCurrentDataSet(RDC::DataSetType::ENCODING_1);
+    rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
     return true;
 }
 

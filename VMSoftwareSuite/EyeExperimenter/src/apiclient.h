@@ -47,9 +47,6 @@ private:
     QString error;
     QVariantMap retdata;
 
-    const QString API_DBUG = "http://192.168.1.12/vmapi";
-    const QString API_PRODCUTION = "https:://eu.viewmind.ai/vmapi"; // This is a fantasy. Don't know the actuall finished address, right now.
-
     // The actual endpoints.
     const QString ENDPOINT_MEDIC_LIST       = "/portal_users/getallmedical";
     const QString ENDPOINT_OPERATING_INFO   = "/institution/operating_information";

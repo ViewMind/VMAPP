@@ -5,7 +5,7 @@
 #include <QStringList>
 #include <iostream>
 
-namespace RDC {
+namespace VMDC {
 
     static QString validate(const QString &str, const QStringList &possibilities, const char * type){
         if (possibilities.contains(str)){
@@ -21,7 +21,7 @@ namespace RDC {
        static const QString RIGHT = "right";
        static const QString BOTH = "both";
        static const QStringList valid{LEFT, RIGHT, BOTH};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Eye"); }
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Eye"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -49,7 +49,7 @@ namespace RDC {
        static const QString PERCEPTION_7 = MultiPartStudyBaseName::PERCEPTION + " 7";
        static const QString PERCEPTION_8 = MultiPartStudyBaseName::PERCEPTION + " 8";
        static const QStringList valid{READING,BINDING_BC,BINDING_UC,NBACKMS,NBACKRT,NBACKVS,GONOGO,PERCEPTION_1,PERCEPTION_2,PERCEPTION_3,PERCEPTION_4,PERCEPTION_5,PERCEPTION_6,PERCEPTION_7,PERCEPTION_8};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Study"); }
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -59,7 +59,7 @@ namespace RDC {
        static const QString FINALIZED  = "finalized";
        static const QString ONGOING    = "ongoing";
        static const QStringList valid{FINALIZED,ONGOING};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Study Status"); }
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study Status"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -73,7 +73,7 @@ namespace RDC {
        static const QString PERCEPTION_TYPE    = "perception_type";
        static const QString PERCEPTION_PART    = "perception_part";
        static const QStringList valid{VALID_EYE,LANGUAGE,NUMBER_TARGETS,TARGET_SIZE,PERCEPTION_TYPE,PERCEPTION_PART};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Study Parameter"); }
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -83,7 +83,7 @@ namespace RDC {
        static const QString TWO    = "2";
        static const QString THREE  = "3";
        static const QStringList valid{TWO,THREE};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Binding Target Count"); }
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Binding Target Count"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -93,7 +93,7 @@ namespace RDC {
        static const QString LARGE = "large";
        static const QString SMALL = "small";
        static const QStringList valid{LARGE,SMALL};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Binding Target Size"); }
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Binding Target Size"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -103,7 +103,7 @@ namespace RDC {
        static const QString SPANISH   = "Spanish";
        static const QString ENGLISH   = "English";
        static const QStringList valid{SPANISH,ENGLISH};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"UI Language"); }
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"UI Language"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -116,7 +116,7 @@ namespace RDC {
        static const QString ENGLISH   = "English";
        static const QString ISELANDIC = "Iselandic";
        static const QStringList valid{GERMAN,SPANISH,FRENCH,ENGLISH,ISELANDIC};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Reading Language"); }
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Reading Language"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -128,7 +128,7 @@ namespace RDC {
        static const QString FIVE  = "5";
        static const QString SIX   = "6";
        static const QStringList valid{THREE,FOUR,FIVE,SIX};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"NBackVS Target Count"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"NBackVS Target Count"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -138,7 +138,7 @@ namespace RDC {
        static const QString TRAINING = "training";
        static const QString REHAB    = "rehab";
        static const QStringList valid{TRAINING,REHAB};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Perception Type"); }   
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Perception Type"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
@@ -158,17 +158,38 @@ namespace RDC {
        static const QString Y_L = "yl";
        static const QString Y_R = "yr";
        static const QStringList valid{TIMESTAMP,CHAR_L,CHAR_R,PUPIL_L,PUPIL_R,WORD_L,WORD_R,X_L,X_R,Y_L,Y_R};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Data Vector Field"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Data Vector Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
     }
+
+    namespace FixationVectorField {
+       static const QString X = "x";
+       static const QString Y = "y";
+       static const QString DURATION = "duration";
+       static const QString START_TIME = "start_time";
+       static const QString END_TIME = "end_time";
+       static const QString START_INDEX = "start_index";
+       static const QString END_INDEX = "end_index";
+       static const QString TIME = "time";
+       static const QString WORD = "word";
+       static const QString CHAR = "char";
+       static const QString PUPIL = "pupil";
+       static const QString ZERO_PUPIL = "zero_pupil";
+       static const QStringList valid{X,Y,DURATION,START_TIME,END_TIME,START_INDEX,END_INDEX,TIME,WORD,CHAR,PUPIL,ZERO_PUPIL};
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Fixation Vector Field"); }
+       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
+       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+    }
     
-    
-    namespace DataStudyField {
+    namespace DataSetField {
        static const QString RAW_DATA = "raw_data";
-       static const QStringList valid{RAW_DATA};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Data Study Field"); }  
+       static const QString FIXATION_L = "fixation_l";
+       static const QString FIXATION_R = "fixation_r";
+       static const QStringList valid{RAW_DATA, FIXATION_L, FIXATION_R};
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Data Study Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
@@ -187,7 +208,7 @@ namespace RDC {
        static const QString RETRIEVAL_3 = "reterieval_3";
        static const QString UNIQUE      = "unique";
        static const QStringList valid{ENCODING_1,ENCODING_2,ENCODING_3,ENCODING_4,ENCODING_5,ENCODING_6,RETRIEVAL_1,RETRIEVAL_2,RETRIEVAL_3,UNIQUE};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Data Set Type"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Data Set Type"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
@@ -200,7 +221,7 @@ namespace RDC {
        static const QString TRIAL_TYPE = "trial_type";
        static const QString ID         = "ID";
        static const QStringList valid{DATA,RESPONSE,TRIAL_TYPE,ID};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Trial Field"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Trial Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
@@ -218,8 +239,8 @@ namespace RDC {
        static const QString PROC_PARAMETER_KEY = "processing_parameters_key";
        static const QString MOUSE_USED = "mouse_used";
        static const QString PROTOCOL = "protocol";
-       static const QStringList valid{DATE,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,MOUSE_USED,PROTOCOL,STATUS};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Metadata Field"); }  
+       static const QStringList valid{DATE,HOUR,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,MOUSE_USED,PROTOCOL,STATUS};
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Metadata Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
@@ -236,7 +257,7 @@ namespace RDC {
        static const QString LOCAL_ID = "local_id";
        static const QString NAME = "name";
        static const QStringList valid{NAME,BIRTH_COUNTRY,BIRTH_DATE,YEARS_FORMATION,GENDER,AGE,INSTITUTION_PROVIDED_ID,LASTNAME,LOCAL_ID};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Subject Field"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Subject Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
@@ -250,7 +271,7 @@ namespace RDC {
        static const QString LOCAL_ID = "local_id";
        static const QString VIEWMIND_ID ="viewmind_id";
        static const QStringList valid{NAME,LASTNAME,LOCAL_ID,EMAIL,VIEWMIND_ID};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"App User Field"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"App User Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
@@ -261,7 +282,7 @@ namespace RDC {
        static const QString EVALUATOR = "evaluator";
        static const QString MEDIC = "medic";
        static const QStringList valid{MEDIC,EVALUATOR};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"App User Type"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"App User Type"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
@@ -279,7 +300,7 @@ namespace RDC {
        static const QString ABBREVIATION           = "abbreviation";
        static const QString CONFIG_CODE            = "config_code";
        static const QStringList valid{DATE,HOUR,EXPERIMENT_DESCRIPTION,STUDY_CONFIGURATION,TRIAL_LIST,VERSION,STATUS,ABBREVIATION,CONFIG_CODE};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Study Field"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
@@ -295,7 +316,7 @@ namespace RDC {
        static const QString MAX_DISPERSION_WINDOW = "max_dispersion_window";
        static const QString SAMPLE_FREQUENCY = "sample_frequency";
        static const QStringList valid{RESOLUTION_HEIGHT,RESOLUTION_WIDTH,NBACK_HITBOXES,GONOGO_HITBOXES,MIN_FIXATION_DURATION,MAX_DISPERSION_WINDOW,SAMPLE_FREQUENCY};
-       static QString validate(const QString &str) { return RDC::validate(str,valid,"Processing Parameter"); }  
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Processing Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       

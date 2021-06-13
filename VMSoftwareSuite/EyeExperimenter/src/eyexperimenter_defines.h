@@ -6,13 +6,27 @@
 #include <QJsonObject>
 #include <iostream>
 
-///////////////////////// ONLY ONE OF THESE SHOULD BE ENABLED: EYE TRACKER USED BY THE SYSTEM SELECTION //////////////////////////
+///////////////////////// ONLY ONE OF THESE SHOULD BE ENABLED: DEFINES WHICH SERVER WILL BE USED BY THE API //////////////////////////
+//#define CLIENT_REGION_EU
+//#define CLIENT_REGION_US
+
 #include "../../../CommonClasses/eyetracker_defines.h"
 
 namespace Globals{
 
    const qint32 NUMBER_SECONDS_IN_A_DAY = 86400;
    const qint32 NUMBER_OF_PERCEPTION_PARTS = 8;
+
+#ifdef CLIENT_REGION_EU
+   const QString API_URL = "https://eu-api.viewmind.ai";
+   const QString REGION  = "EU";
+#elif CLIENT_REGION_US
+   const QString API_URL = "https://us-api.viewmind.ai";
+   const QString REGION  = "US";
+#else
+   const QString API_URL = "http://192.168.1.12/vmapi";
+   const QString REGION  = "Debug";
+#endif
 
    namespace Labeling{
        static const QString MANUFACTURE_DATE = "07/10/2020";
@@ -24,7 +38,7 @@ namespace Globals{
    namespace Paths {
       static const QString WORK_DIRECTORY = "viewmind_etdata";
       static const QString LOCALDB = "viewmind_etdata/localdb.dat";
-      static const QString DBBKPDIR = "viewmind_etdata/dbbkp";
+      static const QString DBBKPDIR = "dbbkp";
       static const QString CONFIGURATION = "vmconfiguration";
       static const QString SETTINGS = "vmsettings";
       static const QString PROCESSING_PARAMETERS = "vmpp";
@@ -69,8 +83,8 @@ namespace Globals{
       static const bool PRETTY_PRINT_JSON     = true;
       static const bool PRETTY_PRINT_JSON_DB  = false;
       static const bool SHORT_STUDIES         = true;
-      static const bool DISABLE_DB_CHECKSUM   = true;
-      static const bool USE_LOCAL_API_ADDRESS = true;
+      static const bool DISABLE_DB_CHECKSUM   = false;
+      static const bool SHOW_MOUSE_STUDY      = true;
    }
       
    namespace UILanguage {
@@ -80,7 +94,7 @@ namespace Globals{
    
    namespace Share {
        static const QString EXPERIMENTER_VERSION_NUMBER = "16.0.0";
-       static const QString EXPERIMENTER_VERSION = EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME;
+       static const QString EXPERIMENTER_VERSION = EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + REGION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
        static const QString PATIENT_UID = "patient_uid";

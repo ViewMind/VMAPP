@@ -79,7 +79,7 @@ public:
     Q_INVOKABLE bool createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic, const QString &protocol);
 
     ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
-    Q_INVOKABLE QList<QVariantMap> getReportsForLoggedEvaluator();
+    Q_INVOKABLE QVariantMap getReportsForLoggedEvaluator();
 
     ////////////////////////// API REQUESTS ////////////////////////////
     Q_INVOKABLE void requestOperatingInfo();

@@ -68,12 +68,13 @@ Window {
         readonly property int vmIndexDrProfile: 1
         readonly property int vmIndexPatientList: 2
         readonly property int vmIndexStudyStart: 3
-        readonly property int vmIndexPatientReg: 4
-        readonly property int vmIndexCalibrationStart: 5
-        readonly property int vmIndexCalibrationDone: 6
-        readonly property int vmIndexPresentExperiment: 7
-        readonly property int vmIndexVRDisplay: 8
-        readonly property int vmIndexStudyDone: 9
+        readonly property int vmIndexFinishedStudies: 4
+        readonly property int vmIndexPatientReg: 5
+        readonly property int vmIndexCalibrationStart: 6
+        readonly property int vmIndexCalibrationDone: 7
+        readonly property int vmIndexPresentExperiment: 8
+        readonly property int vmIndexVRDisplay: 9
+        readonly property int vmIndexStudyDone: 10
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -106,6 +107,13 @@ Window {
         Item{
             ViewStudyStart{
                 id: viewStudyStart
+                anchors.fill: parent
+            }
+        }
+
+        Item {
+            ViewFinishedStudies {
+                id: viewFinishedStudies
                 anchors.fill: parent
             }
         }

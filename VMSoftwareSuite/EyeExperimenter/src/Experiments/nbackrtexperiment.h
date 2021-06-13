@@ -36,9 +36,8 @@ private:
                   TSF_SHOW_BLANKS} TrialStateNBackRT;
 
     struct TrialRecognitionMachine {
-        void configure(MovingWindowParameters mwp);
         void reset(const QList<qint32> &trialRecogSeq);
-        bool isSequenceOver(qreal rX, qreal rY, qreal lX, qreal lY, FieldingManager *m, qreal timeStamp);
+        bool isSequenceOver(const Fixation &r, const Fixation &l, FieldingManager *m);
         Fixation rightLastFixation;
         Fixation leftLastFixation;
         QString getMessages() const { return messages.join("\n"); }

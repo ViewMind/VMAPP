@@ -1,11 +1,11 @@
-#include "rawdatacontainer.h"
+#include "viewminddatacontainer.h"
 
-RawDataContainer::RawDataContainer()
+ViewMindDataContainer::ViewMindDataContainer()
 {
     error = "";
 }
 
-bool RawDataContainer::saveJSONFile(const QString &file_name, bool pretty_print){
+bool ViewMindDataContainer::saveJSONFile(const QString &file_name, bool pretty_print){
     QJsonDocument json = QJsonDocument::fromVariant(data);
 
     QFile file(file_name);
@@ -23,7 +23,7 @@ bool RawDataContainer::saveJSONFile(const QString &file_name, bool pretty_print)
     return true;
 }
 
-bool RawDataContainer::loadFromJSONFile(const QString &file_name){
+bool ViewMindDataContainer::loadFromJSONFile(const QString &file_name){
 
     if (!QFile(file_name).exists()){
         error = "Trying to load " + file_name + " that doesn't exist";
@@ -49,13 +49,13 @@ bool RawDataContainer::loadFromJSONFile(const QString &file_name){
     return true;
 }
 
-QString RawDataContainer::getError() const{
+QString ViewMindDataContainer::getError() const{
     return error;
 }
 
 ///////////////////////////////////////////////// READING DATA FUNCTIONS /////////////////////////////////////////////////////////////////////////
 
-QStringList RawDataContainer::getStudies() {
+QStringList ViewMindDataContainer::getStudies() {
     QStringList ans;
     QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES;
     if (!checkHiearchyChain(hierarchy)) return ans;
@@ -63,34 +63,34 @@ QStringList RawDataContainer::getStudies() {
     return ans;
 }
 
-QString RawDataContainer::getStudyStatus(const QString &study){
-    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study << RDC::StudyField::STATUS;
+QString ViewMindDataContainer::getStudyStatus(const QString &study){
+    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study << VMDC::StudyField::STATUS;
     if (!checkHiearchyChain(hierarchy)) return "";
-    return data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(RDC::StudyField::STATUS).toString();
+    return data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::STATUS).toString();
 }
 
-QString RawDataContainer::getMetadaStatus(){
-    QStringList hierarchy; hierarchy << MAIN_FIELD_METADATA << RDC::MetadataField::STATUS;
+QString ViewMindDataContainer::getMetadaStatus(){
+    QStringList hierarchy; hierarchy << MAIN_FIELD_METADATA << VMDC::MetadataField::STATUS;
     if (!checkHiearchyChain(hierarchy)) return "";
-    return data.value(MAIN_FIELD_METADATA).toMap().value(RDC::MetadataField::STATUS).toString();
+    return data.value(MAIN_FIELD_METADATA).toMap().value(VMDC::MetadataField::STATUS).toString();
 }
 
-QVariantMap RawDataContainer::getStudyConfiguration(const QString study){
+QVariantMap ViewMindDataContainer::getStudyConfiguration(const QString study){
     QVariantMap sc;
-    QString check = RDC::Study::validate(study);
+    QString check = VMDC::Study::validate(study);
 
     if (check != ""){
         error = "Attempting to get study configuration: " + check;
         return sc;
     }
-    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study << RDC::StudyField::STUDY_CONFIGURATION;
+    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study << VMDC::StudyField::STUDY_CONFIGURATION;
     if (!checkHiearchyChain(hierarchy)) return sc;
-    return data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(RDC::StudyField::STUDY_CONFIGURATION).toMap();
+    return data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::STUDY_CONFIGURATION).toMap();
 }
 
-QString RawDataContainer::getStudyCode(const QString &study) {
+QString ViewMindDataContainer::getStudyCode(const QString &study) {
 
-    QString check = RDC::Study::validate(study);
+    QString check = VMDC::Study::validate(study);
 
     if (check != ""){
         error = "Attempting to get study configuration: " + check;
@@ -100,28 +100,28 @@ QString RawDataContainer::getStudyCode(const QString &study) {
     QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study;
     if (!checkHiearchyChain(hierarchy)) return "";
 
-    QString code = data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(RDC::StudyField::ABBREVIATION).toString();
-    code = code + data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(RDC::StudyField::CONFIG_CODE).toString();
+    QString code = data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::ABBREVIATION).toString();
+    code = code + data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::CONFIG_CODE).toString();
     return code;
 
 }
 
-QStringList RawDataContainer::getMetaDataDateTime(){
+QStringList ViewMindDataContainer::getMetaDataDateTime(){
     QStringList hierarchy; hierarchy << MAIN_FIELD_METADATA;
     if (!checkHiearchyChain(hierarchy)) return QStringList();
 
-    QString date = data.value(MAIN_FIELD_METADATA).toMap().value(RDC::MetadataField::DATE).toString();
-    QString hour = data.value(MAIN_FIELD_METADATA).toMap().value(RDC::MetadataField::HOUR).toString();
-    QDateTime dt = QDateTime::fromString(date + " " + hour,"yyyy-MM-dd HH:mm");
+    QString date = data.value(MAIN_FIELD_METADATA).toMap().value(VMDC::MetadataField::DATE).toString();
+    QString hour = data.value(MAIN_FIELD_METADATA).toMap().value(VMDC::MetadataField::HOUR).toString();
+    QDateTime dt = QDateTime::fromString(date + " " + hour,"yyyy-MM-dd HH:mm:ss");
     QStringList ans; ans << dt.toString("dd/MM/yyyy HH:mm");
-    ans << date << hour;
+    ans << date << hour << dt.toString("yyyyMMddHHmmss");
     return ans;
 }
 
-QVariantMap RawDataContainer::getApplicationUserData(const QString &type) {
+QVariantMap ViewMindDataContainer::getApplicationUserData(const QString &type) {
 
     QVariantMap ret;
-    QString check = RDC::AppUserType::validate(type);
+    QString check = VMDC::AppUserType::validate(type);
 
     if (check != ""){
         error = "Attempting to get application user data: " + check;
@@ -134,7 +134,7 @@ QVariantMap RawDataContainer::getApplicationUserData(const QString &type) {
     return ret;
 }
 
-QVariantMap RawDataContainer::getSubjectData() {
+QVariantMap ViewMindDataContainer::getSubjectData() {
     QStringList hierarchy; hierarchy << MAIN_FIELD_SUBJECT_DATA;
     if (!checkHiearchyChain(hierarchy)) return QVariantMap();
     return data.value(MAIN_FIELD_SUBJECT_DATA).toMap();
@@ -143,12 +143,12 @@ QVariantMap RawDataContainer::getSubjectData() {
 
 ///////////////////////////////////////////////// SETTING DATA FUNCTIONS /////////////////////////////////////////////////////////////////////////
 
-bool RawDataContainer::setMetadata(const QVariantMap &metadata){
+bool ViewMindDataContainer::setMetadata(const QVariantMap &metadata){
     QStringList mandatory;
-    mandatory = RDC::MetadataField::valid;
+    mandatory = VMDC::MetadataField::valid;
 
     // Version should not be a mandatory field as it is set here.
-    mandatory.removeOne(RDC::MetadataField::VERSION);
+    mandatory.removeOne(VMDC::MetadataField::VERSION);
 
     QStringList keys = metadata.keys();
     for (qint32 i = 0; i < mandatory.size(); i++){
@@ -167,34 +167,34 @@ bool RawDataContainer::setMetadata(const QVariantMap &metadata){
     //Debug::prettpPrintQVariantMap(current_metada);
 
     // Checking for valid status.
-    QString check = RDC::StatusType::validate(current_metada.value(RDC::MetadataField::STATUS).toString());
+    QString check = VMDC::StatusType::validate(current_metada.value(VMDC::MetadataField::STATUS).toString());
     if (!check.isEmpty()){
         error = "Error setting metadata. Reason: " + check;
         return false;
     }
 
     // Ensuring the proper version.
-    current_metada[RDC::MetadataField::VERSION] = CURRENT_JSON_STRUCT_VERSION;
+    current_metada[VMDC::MetadataField::VERSION] = CURRENT_JSON_STRUCT_VERSION;
 
     // Saving as metadata
     data[MAIN_FIELD_METADATA] = current_metada;
     return true;
 }
 
-void RawDataContainer::addCustomMetadataFields(const QString field_name, const QString field_value){
+void ViewMindDataContainer::addCustomMetadataFields(const QString field_name, const QString field_value){
     QVariantMap current_metada = data.value(MAIN_FIELD_METADATA).toMap();
     current_metada.insert(field_name,field_value);
     data[MAIN_FIELD_METADATA] = current_metada;
 }
 
-bool RawDataContainer::setProcessingParameters(const QVariantMap &pp){
+bool ViewMindDataContainer::setProcessingParameters(const QVariantMap &pp){
 
     // All processing parameters will be considered mandatory.
     QStringList mandatory;
-    mandatory << RDC::ProcessingParameter::MAX_DISPERSION_WINDOW
-              << RDC::ProcessingParameter::MIN_FIXATION_DURATION
-              << RDC::ProcessingParameter::RESOLUTION_HEIGHT
-              << RDC::ProcessingParameter::RESOLUTION_WIDTH;
+    mandatory << VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW
+              << VMDC::ProcessingParameter::MIN_FIXATION_DURATION
+              << VMDC::ProcessingParameter::RESOLUTION_HEIGHT
+              << VMDC::ProcessingParameter::RESOLUTION_WIDTH;
 
     QStringList keys = pp.keys();
     for (qint32 i = 0; i < mandatory.size(); i++){
@@ -205,7 +205,7 @@ bool RawDataContainer::setProcessingParameters(const QVariantMap &pp){
     }
 
     // There could be keys that are not supposed to be here. We check.
-    QString check = RDC::ProcessingParameter::validateList(keys);
+    QString check = VMDC::ProcessingParameter::validateList(keys);
     if (check != "") {
         error = "While validating processing parameter list: " + check;
         return false;
@@ -221,7 +221,7 @@ bool RawDataContainer::setProcessingParameters(const QVariantMap &pp){
 }
 
 
-bool RawDataContainer::setCurrentStudy(const QString &study){
+bool ViewMindDataContainer::setCurrentStudy(const QString &study){
 
     if (!data.value(MAIN_FIELD_STUDIES).toMap().contains(study)){
         error = study + " has not been configured for this container";
@@ -231,6 +231,8 @@ bool RawDataContainer::setCurrentStudy(const QString &study){
     currentlySelectedStudy = study;
     currentDataSetMap.clear();
     currentRawDataList.clear();
+    currentLFixationVectorL.clear();
+    currentLFixationVectorR.clear();
     currentTrial.clear();
     currentTrialList.clear();
 
@@ -238,11 +240,11 @@ bool RawDataContainer::setCurrentStudy(const QString &study){
 
 }
 
-bool RawDataContainer::setSubjectData(const QVariantMap &subject_data){
+bool ViewMindDataContainer::setSubjectData(const QVariantMap &subject_data){
 
     //RDC::prettpPrintQVariantMap(data);
 
-    QStringList fields = RDC::SubjectField::valid;
+    QStringList fields = VMDC::SubjectField::valid;
 
     QVariantMap map;
 
@@ -259,17 +261,17 @@ bool RawDataContainer::setSubjectData(const QVariantMap &subject_data){
     return true;
 }
 
-bool RawDataContainer::setApplicationUserData(const QString &type, const QVariantMap &au_data){
+bool ViewMindDataContainer::setApplicationUserData(const QString &type, const QVariantMap &au_data){
 
     //RDC::prettpPrintQVariantMap(data);
 
-    QString check = RDC::AppUserType::validate(type);
+    QString check = VMDC::AppUserType::validate(type);
     if (check != ""){
         error = "Attempting to set application user data: " + check;
         return false;
     }
 
-    QStringList fields = RDC::AppUserField::valid;
+    QStringList fields = VMDC::AppUserField::valid;
     QVariantMap map;
 
     // Will treat all fields as mandatory.
@@ -290,10 +292,10 @@ bool RawDataContainer::setApplicationUserData(const QString &type, const QVarian
     return true;
 }
 
-bool RawDataContainer::addStudy(const QString &study, const QVariantMap &studyConfiguration, const QString &experimentDescription, const QString &version){
+bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &studyConfiguration, const QString &experimentDescription, const QString &version){
 
     error = "";
-    QString check = RDC::Study::validate(study);
+    QString check = VMDC::Study::validate(study);
     if (check != ""){
         error = "While adding study: " + check;
         return false;
@@ -301,35 +303,35 @@ bool RawDataContainer::addStudy(const QString &study, const QVariantMap &studyCo
 
     QStringList parameters_to_check;
     QMap<QString,QStringList> valid_parameter_values;
-    valid_parameter_values[RDC::StudyParameter::VALID_EYE] = RDC::Eye::valid;
+    valid_parameter_values[VMDC::StudyParameter::VALID_EYE] = VMDC::Eye::valid;
 
     // Computing the time stamp fields
     QString date = QDateTime::currentDateTime().toString("dd/MM/yyyy");
     QString hour = QDateTime::currentDateTime().toString("HH:mm");
 
     // Set the list of the parameters to check depending on study.
-    if ((study == RDC::Study::BINDING_BC) || (study == RDC::Study::BINDING_UC)){
-        valid_parameter_values[RDC::StudyParameter::NUMBER_TARGETS] = RDC::BindingTargetCount::valid;
-        valid_parameter_values[RDC::StudyParameter::TARGET_SIZE] = RDC::BindingTargetSize::valid;
+    if ((study == VMDC::Study::BINDING_BC) || (study == VMDC::Study::BINDING_UC)){
+        valid_parameter_values[VMDC::StudyParameter::NUMBER_TARGETS] = VMDC::BindingTargetCount::valid;
+        valid_parameter_values[VMDC::StudyParameter::TARGET_SIZE] = VMDC::BindingTargetSize::valid;
     }
-    else if (study == RDC::Study::READING){
-        valid_parameter_values[ RDC::StudyParameter::LANGUAGE] = RDC::ReadingLanguage::valid;
+    else if (study == VMDC::Study::READING){
+        valid_parameter_values[ VMDC::StudyParameter::LANGUAGE] = VMDC::ReadingLanguage::valid;
     }
-    else if (study == RDC::Study::GONOGO){
+    else if (study == VMDC::Study::GONOGO){
 
     }
-    else if (study == RDC::Study::NBACKMS){
+    else if (study == VMDC::Study::NBACKMS){
 
     }
-    else if (study == RDC::Study::NBACKRT){
+    else if (study == VMDC::Study::NBACKRT){
 
     }
-    else if (study == RDC::Study::NBACKVS){
-        valid_parameter_values[RDC::StudyParameter::NUMBER_TARGETS] = RDC::NBackVSTargetCount::valid;
+    else if (study == VMDC::Study::NBACKVS){
+        valid_parameter_values[VMDC::StudyParameter::NUMBER_TARGETS] = VMDC::NBackVSTargetCount::valid;
     }
-    else if ( (study == RDC::Study::PERCEPTION_1) || (study == RDC::Study::PERCEPTION_2) || (study == RDC::Study::PERCEPTION_3) || (study == RDC::Study::PERCEPTION_4) ||
-              (study == RDC::Study::PERCEPTION_5) || (study == RDC::Study::PERCEPTION_6) || (study == RDC::Study::PERCEPTION_7) || (study == RDC::Study::PERCEPTION_8) ){
-        valid_parameter_values[RDC::StudyParameter::PERCEPTION_TYPE] = RDC::PerceptionType::valid;
+    else if ( (study == VMDC::Study::PERCEPTION_1) || (study == VMDC::Study::PERCEPTION_2) || (study == VMDC::Study::PERCEPTION_3) || (study == VMDC::Study::PERCEPTION_4) ||
+              (study == VMDC::Study::PERCEPTION_5) || (study == VMDC::Study::PERCEPTION_6) || (study == VMDC::Study::PERCEPTION_7) || (study == VMDC::Study::PERCEPTION_8) ){
+        valid_parameter_values[VMDC::StudyParameter::PERCEPTION_TYPE] = VMDC::PerceptionType::valid;
     }
 
     // Now we validate both the that all parameters are there and their values.
@@ -353,9 +355,9 @@ bool RawDataContainer::addStudy(const QString &study, const QVariantMap &studyCo
     QVariantMap studyToConfigure;
 
     QString config_code;
-    QString eye = finalStudyConfiguration.value(RDC::StudyParameter::VALID_EYE).toString();
-    if (eye == RDC::Eye::LEFT) config_code = "L";
-    else if (eye == RDC::Eye::RIGHT) config_code = "R";
+    QString eye = finalStudyConfiguration.value(VMDC::StudyParameter::VALID_EYE).toString();
+    if (eye == VMDC::Eye::LEFT) config_code = "L";
+    else if (eye == VMDC::Eye::RIGHT) config_code = "R";
     else config_code = "B";
 
     //studyToConfigure[RDC::StudyParameter::VALID_EYE] = mapStudyValues.value(studyConfiguration[SCP_EYES]);
@@ -363,46 +365,46 @@ bool RawDataContainer::addStudy(const QString &study, const QVariantMap &studyCo
     // Specific study configurations.
     QString abbreviation;
 
-    if (study == RDC::Study::BINDING_BC){
-        config_code = config_code + finalStudyConfiguration.value(RDC::StudyParameter::NUMBER_TARGETS).toString() +
-                finalStudyConfiguration.value(RDC::StudyParameter::TARGET_SIZE).toString().mid(0,1).toUpper();
+    if (study == VMDC::Study::BINDING_BC){
+        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString() +
+                finalStudyConfiguration.value(VMDC::StudyParameter::TARGET_SIZE).toString().mid(0,1).toUpper();
         abbreviation = "bc";
     }
-    else if (study == RDC::Study::BINDING_UC){
-        config_code = config_code + finalStudyConfiguration.value(RDC::StudyParameter::NUMBER_TARGETS).toString() +
-                finalStudyConfiguration.value(RDC::StudyParameter::TARGET_SIZE).toString().mid(0,1).toUpper();
+    else if (study == VMDC::Study::BINDING_UC){
+        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString() +
+                finalStudyConfiguration.value(VMDC::StudyParameter::TARGET_SIZE).toString().mid(0,1).toUpper();
         abbreviation = "uc";
     }
-    else if (study == RDC::Study::READING){
-        config_code = config_code + finalStudyConfiguration.value(RDC::StudyParameter::LANGUAGE).toString().mid(0,2).toUpper();
+    else if (study == VMDC::Study::READING){
+        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::LANGUAGE).toString().mid(0,2).toUpper();
         abbreviation = "rd";
     }
-    else if (study == RDC::Study::GONOGO){
+    else if (study == VMDC::Study::GONOGO){
         abbreviation = "gn";
     }
-    else if (study == RDC::Study::NBACKMS){
+    else if (study == VMDC::Study::NBACKMS){
         abbreviation = "ms";
     }
-    else if (study == RDC::Study::NBACKRT){
+    else if (study == VMDC::Study::NBACKRT){
         abbreviation = "rt";
     }
-    else if (study == RDC::Study::NBACKVS){
-        config_code = config_code + finalStudyConfiguration.value(RDC::StudyParameter::NUMBER_TARGETS).toString();
+    else if (study == VMDC::Study::NBACKVS){
+        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString();
         abbreviation = "vs";
     }
-    else if (study.contains(RDC::MultiPartStudyBaseName::PERCEPTION)){
-        valid_parameter_values[RDC::StudyParameter::PERCEPTION_TYPE] = RDC::PerceptionType::valid;
-        config_code = config_code + finalStudyConfiguration.value(RDC::StudyParameter::PERCEPTION_TYPE).toString().mid(0,1).toUpper();
+    else if (study.contains(VMDC::MultiPartStudyBaseName::PERCEPTION)){
+        valid_parameter_values[VMDC::StudyParameter::PERCEPTION_TYPE] = VMDC::PerceptionType::valid;
+        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::PERCEPTION_TYPE).toString().mid(0,1).toUpper();
     }
 
-    studyToConfigure.insert(RDC::StudyField::DATE,date);
-    studyToConfigure.insert(RDC::StudyField::HOUR,hour);
-    studyToConfigure.insert(RDC::StudyField::EXPERIMENT_DESCRIPTION,experimentDescription);
-    studyToConfigure.insert(RDC::StudyField::VERSION,version);
-    studyToConfigure.insert(RDC::StudyField::CONFIG_CODE,config_code);
-    studyToConfigure.insert(RDC::StudyField::ABBREVIATION,abbreviation);
-    studyToConfigure.insert(RDC::StudyField::STUDY_CONFIGURATION,finalStudyConfiguration);
-    studyToConfigure.insert(RDC::StudyField::STATUS,RDC::StatusType::ONGOING);
+    studyToConfigure.insert(VMDC::StudyField::DATE,date);
+    studyToConfigure.insert(VMDC::StudyField::HOUR,hour);
+    studyToConfigure.insert(VMDC::StudyField::EXPERIMENT_DESCRIPTION,experimentDescription);
+    studyToConfigure.insert(VMDC::StudyField::VERSION,version);
+    studyToConfigure.insert(VMDC::StudyField::CONFIG_CODE,config_code);
+    studyToConfigure.insert(VMDC::StudyField::ABBREVIATION,abbreviation);
+    studyToConfigure.insert(VMDC::StudyField::STUDY_CONFIGURATION,finalStudyConfiguration);
+    studyToConfigure.insert(VMDC::StudyField::STATUS,VMDC::StatusType::ONGOING);
 
     studies.insert(study,studyToConfigure);
 
@@ -416,23 +418,25 @@ bool RawDataContainer::addStudy(const QString &study, const QVariantMap &studyCo
 }
 
 
-void RawDataContainer::markFileAsFinalized(){
+void ViewMindDataContainer::markFileAsFinalized(){
     QVariantMap metadata = data.value(MAIN_FIELD_METADATA).toMap();
-    metadata[RDC::MetadataField::STATUS] = RDC::StatusType::FINALIZED;
+    metadata[VMDC::MetadataField::STATUS] = VMDC::StatusType::FINALIZED;
     data[MAIN_FIELD_METADATA] = metadata;
 }
 
 ////////////////////////////////////// CREATING HIEARARCHY //////////////////////////////////////
 
-bool RawDataContainer::addNewTrial(const QString &trial_id, const QString &type){
+bool ViewMindDataContainer::addNewTrial(const QString &trial_id, const QString &type){
     currentTrial.clear();
     currentRawDataList.clear();
+    currentLFixationVectorL.clear();
+    currentLFixationVectorR.clear();
 
     // All trials have a data subfield.
-    currentTrial.insert(RDC::TrialField::ID,trial_id);
-    currentTrial.insert(RDC::TrialField::DATA,QVariantMap());
-    currentTrial.insert(RDC::TrialField::TRIAL_TYPE,type);
-    currentTrial.insert(RDC::TrialField::RESPONSE,"");
+    currentTrial.insert(VMDC::TrialField::ID,trial_id);
+    currentTrial.insert(VMDC::TrialField::DATA,QVariantMap());
+    currentTrial.insert(VMDC::TrialField::TRIAL_TYPE,type);
+    currentTrial.insert(VMDC::TrialField::RESPONSE,"");
 
     if (type == "") {
         error = "Trial Type cannot be empty";
@@ -442,8 +446,8 @@ bool RawDataContainer::addNewTrial(const QString &trial_id, const QString &type)
     return true;
 }
 
-bool RawDataContainer::setCurrentDataSet(const QString &data_set_type){
-    QString check = RDC::DataSetType::validate(data_set_type);
+bool ViewMindDataContainer::setCurrentDataSet(const QString &data_set_type){
+    QString check = VMDC::DataSetType::validate(data_set_type);
     if (check != ""){
         error = "While setting the data set type: " + check;
         return false;
@@ -452,27 +456,31 @@ bool RawDataContainer::setCurrentDataSet(const QString &data_set_type){
     return true;
 }
 
-void RawDataContainer::finalizeDataSet(){
+void ViewMindDataContainer::finalizeDataSet(){
 
     QVariantMap currentDataSetRawData;
 
     // Creating the raw data field in the data set where the actual data is stored.
-    currentDataSetRawData.insert(RDC::DataStudyField::RAW_DATA,currentRawDataList);
+    currentDataSetRawData.insert(VMDC::DataSetField::RAW_DATA,currentRawDataList);
+    currentDataSetRawData.insert(VMDC::DataSetField::FIXATION_L,currentLFixationVectorL);
+    currentDataSetRawData.insert(VMDC::DataSetField::FIXATION_R,currentLFixationVectorR);
 
     // Setting the current data set to its defined type.
     currentDataSetMap.insert(currentDataSetType,currentDataSetRawData);
 
     // Clearing the data that was just added.
     currentRawDataList.clear();
+    currentLFixationVectorL.clear();
+    currentLFixationVectorR.clear();
 
 }
 
-void RawDataContainer::finalizeTrial(const QString &response){
+void ViewMindDataContainer::finalizeTrial(const QString &response){
     // All trials must contain a response. Even if empty.
-    currentTrial[RDC::TrialField::RESPONSE] = response;
+    currentTrial[VMDC::TrialField::RESPONSE] = response;
 
     // Saving the data sets to the trial data field.
-    currentTrial.insert(RDC::TrialField::DATA,currentDataSetMap);
+    currentTrial.insert(VMDC::TrialField::DATA,currentDataSetMap);
 
     // Adding the trial to the trial list.
     currentTrialList << currentTrial;
@@ -481,7 +489,7 @@ void RawDataContainer::finalizeTrial(const QString &response){
     currentTrial.clear();
 }
 
-bool RawDataContainer::finalizeStudy(){
+bool ViewMindDataContainer::finalizeStudy(){
 
     // Getting the current study structure from the current studies list.
     QString studyName =currentlySelectedStudy;
@@ -495,8 +503,8 @@ bool RawDataContainer::finalizeStudy(){
     QVariantMap study = studies.value(studyName).toMap();
 
     // Storing the trial list for the study.
-    study.insert(RDC::StudyField::TRIAL_LIST,currentTrialList);
-    study.insert(RDC::StudyField::STATUS,RDC::StatusType::FINALIZED);
+    study.insert(VMDC::StudyField::TRIAL_LIST,currentTrialList);
+    study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
 
     //qDebug() << "Finalizing Study" << studyName << " of value " << currentlySelectedStudy;
 
@@ -507,21 +515,30 @@ bool RawDataContainer::finalizeStudy(){
     currentDataSetMap.clear();
     currentTrial.clear();
     currentRawDataList.clear();
+    currentLFixationVectorL.clear();
+    currentLFixationVectorR.clear();
     currentTrialList.clear();
 
     return true;
 
 }
 
-void RawDataContainer::addNewRawDataVector(const QVariantMap &raw_data_vector){
+void ViewMindDataContainer::addNewRawDataVector(const QVariantMap &raw_data_vector){
     // This should be checked, however in order to optimize peformance (just in case) no check is done. As long as
     // the vector is correctly constructed once all checks will always pass.
     currentRawDataList << raw_data_vector;
 }
 
+void ViewMindDataContainer::addFixationVectorL(const QVariantMap &fixation_vector){
+    currentLFixationVectorL << fixation_vector;
+}
+
+void ViewMindDataContainer::addFixationVectorR(const QVariantMap &fixation_vector){
+    currentLFixationVectorR << fixation_vector;
+}
 
 ////////////////////////////////////// HIEARCHY CHECK FUNCTION //////////////////////////////////////
-bool RawDataContainer::checkHiearchyChain(const QStringList &hieararchy) {
+bool ViewMindDataContainer::checkHiearchyChain(const QStringList &hieararchy) {
     QVariantMap map = data;
     QString last = "";
     for (qint32 i = 0; i < hieararchy.size(); i++){
@@ -541,36 +558,36 @@ bool RawDataContainer::checkHiearchyChain(const QStringList &hieararchy) {
 
 ////////////////////////////////////// Generate Vector Functions //////////////////////////////////////
 
-QVariantMap RawDataContainer::GenerateReadingRawDataVector(float timestamp, float xr, float yr, float xl, float yl, float pr, float pl, float char_r, float char_l, float word_r, float word_l){
-    QVariantMap vector = RawDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl);
-    vector.insert(RDC::DataVectorField::CHAR_L,char_l);
-    vector.insert(RDC::DataVectorField::CHAR_R,char_r);
-    vector.insert(RDC::DataVectorField::WORD_L,word_l);
-    vector.insert(RDC::DataVectorField::WORD_R,word_r);
+QVariantMap ViewMindDataContainer::GenerateReadingRawDataVector(float timestamp, float xr, float yr, float xl, float yl, float pr, float pl, float char_r, float char_l, float word_r, float word_l){
+    QVariantMap vector = ViewMindDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl);
+    vector.insert(VMDC::DataVectorField::CHAR_L,char_l);
+    vector.insert(VMDC::DataVectorField::CHAR_R,char_r);
+    vector.insert(VMDC::DataVectorField::WORD_L,word_l);
+    vector.insert(VMDC::DataVectorField::WORD_R,word_r);
     return vector;
 }
 
-QVariantMap RawDataContainer::GenerateStdRawDataVector(float timestamp, float xr, float yr, float xl, float yl, float pr, float pl){
+QVariantMap ViewMindDataContainer::GenerateStdRawDataVector(float timestamp, float xr, float yr, float xl, float yl, float pr, float pl){
     QVariantMap vector;
-    vector.insert(RDC::DataVectorField::TIMESTAMP,timestamp);
-    vector.insert(RDC::DataVectorField::X_L,xl);
-    vector.insert(RDC::DataVectorField::X_R,xr);
-    vector.insert(RDC::DataVectorField::Y_L,yl);
-    vector.insert(RDC::DataVectorField::Y_R,yr);
-    vector.insert(RDC::DataVectorField::PUPIL_L,pl);
-    vector.insert(RDC::DataVectorField::PUPIL_R,pr);
+    vector.insert(VMDC::DataVectorField::TIMESTAMP,timestamp);
+    vector.insert(VMDC::DataVectorField::X_L,xl);
+    vector.insert(VMDC::DataVectorField::X_R,xr);
+    vector.insert(VMDC::DataVectorField::Y_L,yl);
+    vector.insert(VMDC::DataVectorField::Y_R,yr);
+    vector.insert(VMDC::DataVectorField::PUPIL_L,pl);
+    vector.insert(VMDC::DataVectorField::PUPIL_R,pr);
     return vector;
 
 }
 
 ////////////////////////////////////// STATIC STRING INITIALIZATION //////////////////////////////////////
 
-QString RawDataContainer::MAIN_FIELD_SUBJECT_DATA                = "subject";
-QString RawDataContainer::MAIN_FIELD_PROCESSING_PARAMETERS       = "processing_parameters";
-QString RawDataContainer::MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS  = "frequency_check_parameters";
-QString RawDataContainer::MAIN_FIELD_METADATA                    = "metadata";
-QString RawDataContainer::MAIN_FIELD_APPLICATION_USER            = "application_user";
-QString RawDataContainer::MAIN_FIELD_STUDIES                     = "studies";
+QString ViewMindDataContainer::MAIN_FIELD_SUBJECT_DATA                = "subject";
+QString ViewMindDataContainer::MAIN_FIELD_PROCESSING_PARAMETERS       = "processing_parameters";
+QString ViewMindDataContainer::MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS  = "frequency_check_parameters";
+QString ViewMindDataContainer::MAIN_FIELD_METADATA                    = "metadata";
+QString ViewMindDataContainer::MAIN_FIELD_APPLICATION_USER            = "application_user";
+QString ViewMindDataContainer::MAIN_FIELD_STUDIES                     = "studies";
 
-QString RawDataContainer::CURRENT_JSON_STRUCT_VERSION            = "1";
+QString ViewMindDataContainer::CURRENT_JSON_STRUCT_VERSION            = "1";
 

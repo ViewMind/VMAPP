@@ -1,5 +1,5 @@
-#ifndef RAWDATACONTAINER_H
-#define RAWDATACONTAINER_H
+#ifndef VIEWMINDDATACONTAINER_H
+#define VIEWMINDDATACONTAINER_H
 
 /**
  * @brief The RawDataContainer class
@@ -14,14 +14,14 @@
 #include <QDateTime>
 #include <QSet>
 #include <QDebug>
-#include "RDC.h"
+#include "VMDC.h"
 #include "../debug.h"
 
 // Fields specific for each experiment.
-class RawDataContainer
+class ViewMindDataContainer
 {
 public:
-    RawDataContainer();
+    ViewMindDataContainer();
 
     /**
      * @brief saveJSONFile The UTF-8 JSON enconded string representing all the stored internal data, is saved to the file passed as a parameter.
@@ -60,6 +60,10 @@ public:
     bool setCurrentDataSet(const QString &data_set_type);
 
     void addNewRawDataVector(const QVariantMap &raw_data_vector);
+
+    void addFixationVectorL(const QVariantMap &fixation_vector);
+
+    void addFixationVectorR(const QVariantMap &fixation_vector);
 
     void finalizeTrial(const QString &reponse = "");
 
@@ -118,6 +122,8 @@ private:
     QVariantMap currentTrial;
     QVariantMap currentDataSetMap;
     QVariantList currentRawDataList;
+    QVariantList currentLFixationVectorL;
+    QVariantList currentLFixationVectorR;
 
     // Names and identification for currently selected study.
     QString currentDataSetType;
@@ -145,4 +151,4 @@ private:
 
 };
 
-#endif // RAWDATACONTAINER_H
+#endif // VIEWMINDDATACONTAINER_H

@@ -1,5 +1,7 @@
 #include "movingwindowalgorithm.h"
 
+const qreal MovingWindowAlgorithm::PUPIL_ZERO_TOL = 1e-6;
+
 MovingWindowAlgorithm::MovingWindowAlgorithm()
 {
 }
@@ -140,13 +142,13 @@ Fixations MovingWindowAlgorithm::computeFixations(const DataMatrix &data, qint32
 }
 
 
-Fixation MovingWindowAlgorithm::calculateFixationsOnline(qreal x, qreal y, qreal timeStamp){
+Fixation MovingWindowAlgorithm::calculateFixationsOnline(qreal x, qreal y, qreal timeStamp, qreal pupil, qreal schar, qreal word){
     Fixation fixation;
     fixation.indexFixationEnd = -1;
     fixation.indexFixationStart = -1;
 
     // Creating the data point and adding it to the list.
-    DataPoint p; p.x = x; p.y = y; p.timestamp = timeStamp;
+    DataPoint p; p.x = x; p.y = y; p.timestamp = timeStamp; p.pupil = pupil; p.schar = schar; p.word = word;
     onlinePointsForFixation << p;
 
     // If there are not enough points to consider a fixation, then there is no fixation.
@@ -278,16 +280,28 @@ Fixation MovingWindowAlgorithm::onlineCalcuationOfFixationPoint(){
     Fixation f;
     f.x = 0;
     f.y = 0;
+    f.pupil = 0;
+    f.pupilZeroCount = 0;
+    f.sentence_char = 0;
+    f.sentence_word = 0;
     for (qint32 i = 0; i < onlinePointsForFixation.size(); i++){
         f.x = f.x + onlinePointsForFixation.at(i).x;
         f.y = f.y + onlinePointsForFixation.at(i).y;
+        f.pupil = f.pupil + onlinePointsForFixation.at(i).pupil;
+        f.sentence_char = f.sentence_char + onlinePointsForFixation.at(i).schar;
+        f.sentence_word = f.sentence_word + onlinePointsForFixation.at(i).word;
+        if (qAbs(f.pupil) < PUPIL_ZERO_TOL){
+            f.pupilZeroCount++;
+        }
     }
     qreal size = onlinePointsForFixation.size();
     f.x = f.x/size;
     f.y = f.y/size;
+    f.pupil = f.pupil/size;
     f.fixStart = onlinePointsForFixation.first().timestamp;
     f.fixEnd   = onlinePointsForFixation.last().timestamp;
     f.duration = f.fixEnd - f.fixStart;
+    f.time = (f.fixStart + f.fixEnd)/2;
     f.indexFixationEnd = 0;
     f.indexFixationStart = 0;
     return f;

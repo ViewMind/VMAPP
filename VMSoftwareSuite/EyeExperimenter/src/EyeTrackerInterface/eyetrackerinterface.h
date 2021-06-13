@@ -7,7 +7,7 @@
 #include <QMatrix4x4>
 #include "eyetrackerdata.h"
 #include "../../../../CommonClasses/LogInterface/loginterface.h"
-#include "../../../../CommonClasses/RawDataContainer/RDC.h"
+#include "../../../../CommonClasses/RawDataContainer/VMDC.h"
 
 class EyeTrackerInterface : public QObject
 {
@@ -73,8 +73,8 @@ protected:
     EyeTrackerData lastData;
 
     // Shorcut functions for clarity.
-    bool canUseLeft() const {return ((eyeToTransmit == RDC::Eye::BOTH) || (eyeToTransmit == RDC::Eye::LEFT));}
-    bool canUseRight() const {return ((eyeToTransmit == RDC::Eye::BOTH) || (eyeToTransmit == RDC::Eye::RIGHT));}
+    bool canUseLeft() const {return ((eyeToTransmit == VMDC::Eye::BOTH) || (eyeToTransmit == VMDC::Eye::LEFT));}
+    bool canUseRight() const {return ((eyeToTransmit == VMDC::Eye::BOTH) || (eyeToTransmit == VMDC::Eye::RIGHT));}
 };
 
 #endif // EYETRACKERINTERFACE_H

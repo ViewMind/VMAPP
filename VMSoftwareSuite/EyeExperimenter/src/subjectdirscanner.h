@@ -2,7 +2,7 @@
 #define SUBJECTDIRSCANNER_H
 
 #include <QDir>
-#include "../../../CommonClasses/RawDataContainer/rawdatacontainer.h"
+#include "../../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 #include "eyexperimenter_defines.h"
 
 class SubjectDirScanner
@@ -44,8 +44,11 @@ public:
     // Returns the last error message.
     QString getError() const;
 
+    // Returns the workDirectory that was set in setup.
+    QString getSetDirectory() const;
+
     // Sorting method is a simple BubbleSort because the number of data should never be large.
-    static void sortSubjectDataListByOrder(QList<QVariantMap> *list);
+    static QVariantMap sortSubjectDataListByOrder(QList<QVariantMap> list);
 
 private:
     QString workDirectory;

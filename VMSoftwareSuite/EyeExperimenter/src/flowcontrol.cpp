@@ -254,7 +254,7 @@ void FlowControl::calibrateEyeTracker(quint8 eye_to_use){
     leftEyeCalibrated = false;
 
     // Making sure the right eye is used, in both the calibration and the experiment.
-    selected_eye_to_use = RDC::Eye::fromInt(eye_to_use);
+    selected_eye_to_use = VMDC::Eye::fromInt(eye_to_use);
     eyeTracker->setEyeToTransmit(selected_eye_to_use);
 
     //qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
@@ -329,7 +329,7 @@ void FlowControl::onEyeTrackerControl(quint8 code){
         case EyeTrackerInterface::ETCFT_FAILED_LEFT:
             rightEyeCalibrated  = true;
             leftEyeCalibrated = false;
-            if (selected_eye_to_use == RDC::Eye::LEFT){
+            if (selected_eye_to_use == VMDC::Eye::LEFT){
                 // The eye that failed was the one that was configured.
                 calibrated = false;
             }
@@ -338,7 +338,7 @@ void FlowControl::onEyeTrackerControl(quint8 code){
         case EyeTrackerInterface::ETCFT_FAILED_RIGHT:
             rightEyeCalibrated  = false;
             leftEyeCalibrated = true;
-            if (selected_eye_to_use == RDC::Eye::RIGHT){
+            if (selected_eye_to_use == VMDC::Eye::RIGHT){
                 // The eye that failed was the one that was configured.
                 calibrated = false;
             }
@@ -388,32 +388,32 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     switch (study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt()){
     case Globals::StudyConfiguration::INDEX_READING:
         logger.appendStandard("STARTING READING EXPERIMENT");
-        experiment = new ReadingExperiment(nullptr,RDC::Study::READING);
+        experiment = new ReadingExperiment(nullptr,VMDC::Study::READING);
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
         break;
 
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
         logger.appendStandard("STARTING BINDING BC EXPERÏMENT");
-        experiment = new ImageExperiment(nullptr,RDC::Study::BINDING_BC);
+        experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_BC);
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
         logger.appendStandard("STARTING BINDING UC EXPERÏMENT");
-        experiment = new ImageExperiment(nullptr,RDC::Study::BINDING_UC);
+        experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_UC);
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
         break;
     case Globals::StudyConfiguration::INDEX_NBACKMS:
         logger.appendStandard("STARTING N BACK TRACE FOR MS");
-        experiment = new FieldingExperiment(nullptr,RDC::Study::NBACKMS);
+        experiment = new FieldingExperiment(nullptr,VMDC::Study::NBACKMS);
         background = QBrush(Qt::black);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
         break;
     case Globals::StudyConfiguration::INDEX_NBACKRT:
         logger.appendStandard("STARTING NBACK TRACE FOR RESPONSE TIME");
-        experiment = new NBackRTExperiment(nullptr,RDC::Study::NBACKRT);
+        experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKRT);
         background = QBrush(Qt::black);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
         break;
@@ -426,19 +426,19 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         //        break;
     case Globals::StudyConfiguration::INDEX_GONOGO:
         logger.appendStandard("STARTING GO - NO GO");
-        experiment = new GoNoGoExperiment(nullptr,RDC::Study::GONOGO);
+        experiment = new GoNoGoExperiment(nullptr,VMDC::Study::GONOGO);
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
         break;
     case Globals::StudyConfiguration::INDEX_NBACKVS:
         logger.appendStandard("STARTING N BACK VS");
-        experiment = new NBackRTExperiment(nullptr,RDC::Study::NBACKVS);
+        experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKVS);
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
         break;
     case Globals::StudyConfiguration::INDEX_PERCEPTION:
         logger.appendStandard("STARTING PERCEPTION");
-        finalStudyName = RDC::MultiPartStudyBaseName::PERCEPTION + " " + study_config.value(RDC::StudyParameter::PERCEPTION_PART).toString();
+        finalStudyName = VMDC::MultiPartStudyBaseName::PERCEPTION + " " + study_config.value(VMDC::StudyParameter::PERCEPTION_PART).toString();
         experiment = new PerceptionExperiment(nullptr,finalStudyName);
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
@@ -480,17 +480,17 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     QVariantMap pp;
     if (!checkAllProcessingParameters()) return false;
 
-    pp.insert(RDC::ProcessingParameter::MAX_DISPERSION_WINDOW,configuration->getInt(Globals::Share::MAX_DISPERSION_SIZE));
-    pp.insert(RDC::ProcessingParameter::MIN_FIXATION_DURATION,configuration->getInt(Globals::Share::MINIMUM_FIX_DURATION));
-    pp.insert(RDC::ProcessingParameter::SAMPLE_FREQUENCY,configuration->getInt(Globals::Share::SAMPLE_FREQUENCY));
+    pp.insert(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW,configuration->getInt(Globals::Share::MAX_DISPERSION_SIZE));
+    pp.insert(VMDC::ProcessingParameter::MIN_FIXATION_DURATION,configuration->getInt(Globals::Share::MINIMUM_FIX_DURATION));
+    pp.insert(VMDC::ProcessingParameter::SAMPLE_FREQUENCY,configuration->getInt(Globals::Share::SAMPLE_FREQUENCY));
     if (configuration->getBool(Globals::VMPreferences::USE_MOUSE)){
-        pp.insert(RDC::ProcessingParameter::RESOLUTION_HEIGHT,configuration->getInt(Globals::Share::MONITOR_RESOLUTION_HEIGHT));
-        pp.insert(RDC::ProcessingParameter::RESOLUTION_WIDTH,configuration->getInt(Globals::Share::MONITOR_RESOLUTION_WIDTH));
+        pp.insert(VMDC::ProcessingParameter::RESOLUTION_HEIGHT,configuration->getInt(Globals::Share::MONITOR_RESOLUTION_HEIGHT));
+        pp.insert(VMDC::ProcessingParameter::RESOLUTION_WIDTH,configuration->getInt(Globals::Share::MONITOR_RESOLUTION_WIDTH));
     }
     else{
         // The display study resolution needs to be used when using the helmet (if no helmet both values are identical and hence there is no issue).
-        pp.insert(RDC::ProcessingParameter::RESOLUTION_HEIGHT,configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-        pp.insert(RDC::ProcessingParameter::RESOLUTION_WIDTH,configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH));
+        pp.insert(VMDC::ProcessingParameter::RESOLUTION_HEIGHT,configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
+        pp.insert(VMDC::ProcessingParameter::RESOLUTION_WIDTH,configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH));
     }
 
     //qDebug() << "Configuration";

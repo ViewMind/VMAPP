@@ -44,5 +44,7 @@
         <file>qml/VMStudyEntry.qml</file>
         <file>qml/VMArrowButton.qml</file>
         <file>qml/ViewAbout.qml</file>
+        <file>qml/ViewFinishedStudies.qml</file>
+        <file>qml/VMFinalizedStudyEntry.qml</file>
     </qresource>
 </RCC>

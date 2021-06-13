@@ -24,7 +24,7 @@ Dialog {
 
 
     function logInAttempt(){
-        //if (loader.evaluatorLogIn(labelDrProfile.vmCurrentText,drPassword.getText())){
+//        if (loader.evaluatorLogIn(labelDrProfile.vmCurrentText,drPassword.getText())){
         if (loader.evaluatorLogIn("aarelovich@gmail.com","1234")){
 
             // Updating the text of the doctor menu.
@@ -39,11 +39,16 @@ Dialog {
             loader.setSelectedSubject("1_0_20210606090711350");
             viewStudyStart.vmSelectedMedic = "7";
             viewStudyStart.vmSelectedProtocol = "";
+            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+            //viewFinishedStudies.loadEvaluatorStudies();
+            //swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies;
+            return;
 
             /*************************************************/
 
-            //swiperControl.currentIndex = swiperControl.vmIndexPatientList
-            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+
+
+//            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
 
         }
         else{

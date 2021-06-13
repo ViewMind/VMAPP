@@ -6,11 +6,11 @@ EyeTrackerInterface::EyeTrackerInterface(QObject *parent, qreal width, qreal hei
     screenHeight = height;
     screenWidth = width;
     calibrationFailureType = ETCFT_UNKNOWN;
-    eyeToTransmit = RDC::Eye::BOTH;
+    eyeToTransmit = VMDC::Eye::BOTH;
 }
 
 void EyeTrackerInterface::setEyeToTransmit(QString eye){
-    if (RDC::Eye::validate(eye) == ""){
+    if (VMDC::Eye::validate(eye) == ""){
         eyeToTransmit = eye;
     }
 }
