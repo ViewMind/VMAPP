@@ -2,15 +2,28 @@
 
 include_once ("../common/TypedString.php");
 
+abstract class MultiPartStudyBaseName extends TypedString {
+   const BINDING                                 = "Binding";
+   const PERCEPTION                              = "Perception";
+}
+
 abstract class StudyTypes extends TypedString
 {
-   const BINDING                                 = "Binding";
+   const BINDING_BC                              =  MultiPartStudyBaseName::BINDING + " BC";
+   const BINDING_UC                              = "Binding UC";
    const GONOGO                                  = "Go No-Go";
    const NBACKMS                                 = "NBack MS";
    const NBACKRT                                 = "NBack RT";
-   const NBACKVS                                 = "NBack VS";
-   const PERCEPTION                              = "Perception";
+   const NBACKVS                                 = "NBack VS";   
    const READING                                 = "Reading";
+   const PERCEPTION_1                            = "Perception 1";
+   const PERCEPTION_2                            = "Perception 2";
+   const PERCEPTION_3                            = "Perception 3";
+   const PERCEPTION_4                            = "Perception 4";
+   const PERCEPTION_5                            = "Perception 5";
+   const PERCEPTION_6                            = "Perception 6";
+   const PERCEPTION_7                            = "Perception 7";
+   const PERCEPTION_8                            = "Perception 8";
 }
 
 abstract class EyeType extends TypedString
@@ -19,8 +32,6 @@ abstract class EyeType extends TypedString
    const LEFT                                    = "Left";
    const RIGHT                                   = "Right";
 }
-
-
 
 abstract class ProcessingParameter extends TypedString
 {
@@ -33,6 +44,20 @@ abstract class ProcessingParameter extends TypedString
    const NBACK_HITBOXES                          = "nback_hitboxes";
    const GONOGO_HITBOXES                         = "go_no_go_hitboxes";
 }
+
+abstract class QualityControlParamterGlobal extends TypedString 
+{
+   const MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE    = "min_successive_timestamp_difference";
+   const MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE    = "max_successive_timestamp_difference";
+   const MAX_GLITCHES                           = "max_recommended_glitches" ;
+}
+
+abstract class QualityControlParamterStudy extends TypedString
+{
+   const MIN_POINTS_PER_TRIAL                   = "min_points_per_trial";
+   const MIN_FIX_PER_TRIAL                      = "min_fixations_per_trial";
+}
+
 
 abstract class RawDataVectorFields
 {
@@ -77,6 +102,7 @@ abstract class MainFields extends TypedString
    const PROCESSING_PARAMETERS                   = "processing_parameters";
    const METADATA                                = "metadata";
    const SUBJECT                                 = "subject";
+   const QC_PARAMETERS                           = "qc_parameters";
 }
 
 abstract class DataSetFields extends TypedString

@@ -10,7 +10,7 @@ class TableProcessingParameters extends TableBaseClass {
 
    const COL_PRODUCT              = "product";
    const COL_PROC_PARAM           = "processing_parameters";
-   const COL_FREQ_PARAM           = "frequency_parameters";
+   const COL_FREQ_PARAM           = "qc_parameters";
 
    function __construct(PDO $con){
       parent::__construct($con);

@@ -77,10 +77,9 @@ S["processing_parameters"]["go_no_go_hitboxes"] = [4 Value Vector, representing 
 
 S["qc_parameters"][min_successive_timestamp_difference]  = value;
 S["qc_parameters"][max_successive_timestamp_difference]  = value;
+S["qc_parameters"][max_recommended_glitches] = value // This is global because it should be a percent. So it's independant on the number of points. 
 S["qc_parameters"][STUDY][min_points_per_trial] = value
 S["qc_parameters"][STUDY][min_fixations_per_trial] = value
-S["qc_parameters"][STUDY][max_recommended_glitches] = value
-S["qc_parameters"][STUDY][avg_frequecy_per_trial] = value
 
 ====================== APP_USER_DATA
 ud["local_id"]      // local id for the evaluator is the username. A medic does not have a local id
