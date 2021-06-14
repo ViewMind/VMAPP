@@ -16,6 +16,8 @@ PerceptionExperiment::PerceptionExperiment(QWidget *parent, const QString &study
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&PerceptionExperiment::onTimeOut);
 
+    metaStudyType = VMDC::MultiPartStudyBaseName::PERCEPTION;
+
 }
 
 

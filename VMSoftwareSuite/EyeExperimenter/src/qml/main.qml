@@ -75,6 +75,7 @@ Window {
         readonly property int vmIndexPresentExperiment: 8
         readonly property int vmIndexVRDisplay: 9
         readonly property int vmIndexStudyDone: 10
+        readonly property int vmIndexViewQC: 11
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -162,6 +163,13 @@ Window {
             }
         }
 
+        Item {
+            ViewQC {
+                id: viewQC
+                anchors.fill: parent
+            }
+        }
+
         onCurrentIndexChanged: {
 
             switch(currentIndex){
@@ -182,6 +190,9 @@ Window {
             case vmIndexPatientList:
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewPatList.loadPatients();                
+                break;
+            case vmIndexViewQC:
+                viewQC.loadStudiesAndGraphs()
                 break;
             case vmIndexStudyStart:
                 viewStudyStart.setPatientName();

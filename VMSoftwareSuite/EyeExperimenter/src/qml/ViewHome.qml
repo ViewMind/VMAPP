@@ -46,6 +46,7 @@ VMBase {
         viewStudyDone.updateText();
         viewVRDisplay.updateText();
         viewFinishedStudies.updateText()
+        viewQC.updateText();
     }
 
 

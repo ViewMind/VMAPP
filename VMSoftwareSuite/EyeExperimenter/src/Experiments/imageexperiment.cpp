@@ -8,6 +8,8 @@ ImageExperiment::ImageExperiment(QWidget *parent, const QString &studyType):Expe
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::nextState);
 
+    metaStudyType = VMDC::MultiPartStudyBaseName::BINDING;
+
 }
 
 bool ImageExperiment::startExperiment(const QString &workingDir, const QString &experimentFile, const QVariantMap &studyConfig, bool useMouse, QVariantMap pp){

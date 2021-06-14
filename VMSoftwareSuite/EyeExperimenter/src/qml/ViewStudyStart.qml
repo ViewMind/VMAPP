@@ -96,7 +96,7 @@ VMBase {
     // This is the second function that is called when entering study start.
     function setDefaultSelections(){
 
-        var studyList = loader.getStringListForKey("viewselectdata_studyList");
+        var studyList = loader.getStringListForKey(keysearch + "studyList");
         vmListOfStudiesToSelect = [];
         vmListOfSelectedStudies = [];
 

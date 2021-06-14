@@ -81,15 +81,15 @@ namespace Globals{
    
    namespace Debug {
       static const bool PRETTY_PRINT_JSON     = true;
-      static const bool PRETTY_PRINT_JSON_DB  = false;
-      static const bool SHORT_STUDIES         = true;
-      static const bool DISABLE_DB_CHECKSUM   = false;
+      static const bool PRETTY_PRINT_JSON_DB  = true;
+      static const bool SHORT_STUDIES         = false;
+      static const bool DISABLE_DB_CHECKSUM   = true;
       static const bool SHOW_MOUSE_STUDY      = true;
    }
       
    namespace UILanguage {
-      static const QString EN = "en";
-      static const QString ES = "en";
+      static const QString EN = "English";
+      static const QString ES = "Spanish";
    } 
    
    namespace Share {
@@ -108,6 +108,7 @@ namespace Globals{
        static const QString MAX_DISPERSION_SIZE = "max_dispersion_size";
        static const QString MINIMUM_FIX_DURATION = "minimum_fix_duration";
        static const QString SAMPLE_FREQUENCY = "sample_frequency";
+       static const QString SELECTED_STUDY = "selected_study";
        static const char *  TEXT_CODEC = "UTF-8";
    }
 

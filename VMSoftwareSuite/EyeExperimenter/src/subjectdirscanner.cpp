@@ -12,7 +12,7 @@ const char * SubjectDirScanner::EVALUATOR_ID = "evaluator_id";
 const char * SubjectDirScanner::MEDIC_NAME = "medic_name";
 const char * SubjectDirScanner::MEDIC_ID = "medic_id";
 const char * SubjectDirScanner::ORDER_CODE = "order_code";
-
+const char * SubjectDirScanner::FILE_PATH = "file_path";
 
 SubjectDirScanner::SubjectDirScanner()
 {
@@ -135,6 +135,7 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
         map[MEDIC_NAME] = medic.value(VMDC::AppUserField::NAME).toString() + " " + medic.value(VMDC::AppUserField::LASTNAME).toString();
         map[MEDIC_ID] = medic.value(VMDC::AppUserField::VIEWMIND_ID).toString();
         map[ORDER_CODE] = list.last();
+        map[FILE_PATH] = filename;
         //qDebug() << "Adding order code" << map.value(ORDER_CODE).toString();
         ans << map;
     }

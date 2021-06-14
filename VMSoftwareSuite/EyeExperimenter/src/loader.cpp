@@ -116,6 +116,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     //Globals::Debug::prettpPrintQVariantMap(configuration->getMap());
 
+    // For debugging
+    this->setCurrentStudyFileForQC("viewmind_etdata/1_0_20210606090711350/nbackms_2021_06_14_08_32.json");
+
 }
 
 //////////////////////////////////////////////////////// UI Functions ////////////////////////////////////////////////////////
@@ -592,6 +595,25 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
     return SubjectDirScanner::sortSubjectDataListByOrder(studiesToAnalyze);
 
 }
+
+
+void Loader::setCurrentStudyFileForQC(const QString &file){
+    configuration->addKeyValuePair(Globals::Share::SELECTED_STUDY,file);
+    if (!qc.setVMContainterFile(file)){
+        logger.appendError("Failed setting selected study to:  " + file + ". Reason: " + qc.getError());
+    }
+}
+
+QStringList Loader::getStudyList() const {
+    return qc.getStudyList();
+}
+
+QVariantMap Loader::getStudyGraphData(const QString &study, qint32 selectedGraph){
+
+    //QString
+
+}
+
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
 
 void Loader::requestOperatingInfo(){
@@ -613,6 +635,9 @@ void Loader::receivedRequest(){
         }
         if (!localDB.setProcessingParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
             logger.appendError("Failed to set processing parameters from server: " + localDB.getError());
+        }
+        if (!localDB.setQCParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
+            logger.appendError("Failed to set QC parameters from server: " + localDB.getError());
         }
     }
     emit(finishedRequest());

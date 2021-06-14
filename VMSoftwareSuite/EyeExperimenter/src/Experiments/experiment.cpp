@@ -14,6 +14,7 @@ Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(pare
     debugMode = false;
 
     this->studyType = studyType;
+    metaStudyType = studyType;
 
 }
 
@@ -318,5 +319,4 @@ void Experiment::updateSecondMonitorORHMD(){
 void Experiment::keyPressHandler(int keyPressed){
     Q_UNUSED(keyPressed)
 }
-
 

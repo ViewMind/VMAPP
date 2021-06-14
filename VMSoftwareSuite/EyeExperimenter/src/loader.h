@@ -16,6 +16,7 @@
 #include "localdb.h"
 #include "subjectdirscanner.h"
 #include "apiclient.h"
+#include "qualitycontrol.h"
 
 
 class Loader : public QObject
@@ -80,6 +81,9 @@ public:
 
     ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
     Q_INVOKABLE QVariantMap getReportsForLoggedEvaluator();
+    Q_INVOKABLE void setCurrentStudyFileForQC(const QString &file);
+    Q_INVOKABLE QStringList getStudyList() const;
+    Q_INVOKABLE QVariantMap getStudyGraphData(const QString &study, qint32 selectedGraph);
 
     ////////////////////////// API REQUESTS ////////////////////////////
     Q_INVOKABLE void requestOperatingInfo();
@@ -107,6 +111,9 @@ private:
 
     // The local database
     LocalDB localDB;
+
+    // Quality Control Computations
+    QualityControl qc;
 
     // The list of countries and their codes.
     CountryStruct *countries;

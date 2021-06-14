@@ -140,6 +140,14 @@ QVariantMap ViewMindDataContainer::getSubjectData() {
     return data.value(MAIN_FIELD_SUBJECT_DATA).toMap();
 }
 
+QVariantMap ViewMindDataContainer::getProcessingParameters() const {
+    return data.value(MAIN_FIELD_PROCESSING_PARAMETERS).toMap();
+}
+
+QVariantMap ViewMindDataContainer::getQCParameters() const {
+    return data.value(MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS).toMap();
+}
+
 
 ///////////////////////////////////////////////// SETTING DATA FUNCTIONS /////////////////////////////////////////////////////////////////////////
 
@@ -221,6 +229,26 @@ bool ViewMindDataContainer::setProcessingParameters(const QVariantMap &pp){
 }
 
 
+bool ViewMindDataContainer::setQCVector(const QString &studyName, const QString &qcfield, const QVariantList &vector){
+    QString check = VMDC::QCFields::validate(qcfield);
+    if (check != ""){
+        error = "Setting QC Vector: " + check;
+        return false;
+    }
+    QStringList hieararchy; hieararchy << MAIN_FIELD_STUDIES << studyName;
+    if (!checkHiearchyChain(hieararchy)) return false;
+
+    QVariantMap studies = data.value(MAIN_FIELD_STUDIES).toMap();
+    QVariantMap study = studies.value(studyName).toMap();
+    QVariantMap qc = study.value(VMDC::StudyField::QUALITY_CONTROL).toMap();
+    qc[qcfield] = vector;
+    study[VMDC::StudyField::QUALITY_CONTROL] = qc;
+    studies[studyName] = study;
+    data[MAIN_FIELD_STUDIES] = studies;
+    return true;
+}
+
+
 bool ViewMindDataContainer::setCurrentStudy(const QString &study){
 
     if (!data.value(MAIN_FIELD_STUDIES).toMap().contains(study)){
@@ -291,6 +319,8 @@ bool ViewMindDataContainer::setApplicationUserData(const QString &type, const QV
 
     return true;
 }
+
+///////////////////////////////////////////////// FILLING CONTAINER FUNCTIONS /////////////////////////////////////////////////////////////////////////
 
 bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &studyConfiguration, const QString &experimentDescription, const QString &version){
 
@@ -424,7 +454,7 @@ void ViewMindDataContainer::markFileAsFinalized(){
     data[MAIN_FIELD_METADATA] = metadata;
 }
 
-////////////////////////////////////// CREATING HIEARARCHY //////////////////////////////////////
+
 
 bool ViewMindDataContainer::addNewTrial(const QString &trial_id, const QString &type){
     currentTrial.clear();
@@ -536,6 +566,16 @@ void ViewMindDataContainer::addFixationVectorL(const QVariantMap &fixation_vecto
 void ViewMindDataContainer::addFixationVectorR(const QVariantMap &fixation_vector){
     currentLFixationVectorR << fixation_vector;
 }
+
+
+///////////////////////////////////////////////// READING DATA FROM CONTAINER FUNCTIONS /////////////////////////////////////////////////////////////////////////
+QVariantList ViewMindDataContainer::getStudyTrialList(const QString &study){
+    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study <<  VMDC::StudyField::TRIAL_LIST;
+    if (!checkHiearchyChain(hierarchy)) return QVariantList();
+    return data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::TRIAL_LIST).toList();
+}
+
+
 
 ////////////////////////////////////// HIEARCHY CHECK FUNCTION //////////////////////////////////////
 bool ViewMindDataContainer::checkHiearchyChain(const QStringList &hieararchy) {

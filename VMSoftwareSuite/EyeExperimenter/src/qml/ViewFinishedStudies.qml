@@ -202,25 +202,16 @@ VMBase {
             }
         }
 
+
         VMButton{
-            id: btnQC
+            id: btnSend
             height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keybase+"btnQC");
             vmFont: viewHome.gothamM.name
             enabled: studyListView.currentIndex !== -1
             onClicked: {
-
-            }
-        }
-
-        VMButton{
-            id: btnSend
-            height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keybase+"btnSend");
-            vmFont: viewHome.gothamM.name
-            enabled: studyListView.currentIndex !== -1
-            onClicked: {
-
+                loader.setCurrentStudyFileForQC(studiesList.get(studyListView.currentIndex).file_path);
+                swiperControl.currentIndex = swiperControl.vmIndexViewQC;
             }
         }
     }

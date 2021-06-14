@@ -108,6 +108,9 @@ protected:
     // This is the study type flag which will be set by eaach individual study.
     QString studyType;
 
+    // If a study type is 1 of a a multy study part this contains the overall name. Otherwise it's the same as studyType.
+    QString metaStudyType;
+
     // The pointer to the GraphicsView where the drawing and showing will take place.
     QGraphicsView *gview;
 
@@ -167,6 +170,7 @@ protected:
 
     // Transform the fixation struct into a the valid struct expected by the ViewMind Data Container.
     QVariantMap fixationToVariantMap(const Fixation &f);
+
 
 
 

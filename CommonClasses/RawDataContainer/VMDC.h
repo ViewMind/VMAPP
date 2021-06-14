@@ -30,6 +30,13 @@ namespace VMDC {
     namespace MultiPartStudyBaseName {
         static const QString BINDING      = "Binding";
         static const QString PERCEPTION   = "Perception";
+        static const QStringList valid{BINDING, PERCEPTION};
+        static QString getMetaStudy(const QString & study){
+            for (qint32 i = 0; i < valid.size(); i++){
+                if (study.contains(valid.at(i))) return valid.at(i);
+            }
+            return study;
+        }
     }
 
     namespace Study{
@@ -299,7 +306,8 @@ namespace VMDC {
        static const QString STATUS                 = "status";
        static const QString ABBREVIATION           = "abbreviation";
        static const QString CONFIG_CODE            = "config_code";
-       static const QStringList valid{DATE,HOUR,EXPERIMENT_DESCRIPTION,STUDY_CONFIGURATION,TRIAL_LIST,VERSION,STATUS,ABBREVIATION,CONFIG_CODE};
+       static const QString QUALITY_CONTROL        = "quality_control";
+       static const QStringList valid{DATE,HOUR,EXPERIMENT_DESCRIPTION,STUDY_CONFIGURATION,TRIAL_LIST,VERSION,STATUS,ABBREVIATION,CONFIG_CODE,QUALITY_CONTROL};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
@@ -320,6 +328,41 @@ namespace VMDC {
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
+    }
+
+    namespace QCGlobalParameters {
+        static const QString MIN_TIMESTAMP_DIFF = "min_successive_timestamp_difference";
+        static const QString MAX_TIMESTAMP_DIFF = "max_successive_timestamp_difference";
+        static const QString MIN_GLITCHES       = "max_recommended_glitches";
+        static const QStringList valid{MIN_TIMESTAMP_DIFF,MAX_TIMESTAMP_DIFF,MIN_GLITCHES};
+        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Global QC Parameter"); }
+        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
+        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+    }
+
+    namespace QCStudyParameters {
+        static const QString MIN_POINTS_PER_TRIAL = "min_points_per_trial";
+        static const QString MIN_FIXS_PER_TRIAL = "min_fixations_per_trial";
+        static const QStringList valid{MIN_POINTS_PER_TRIAL,MIN_FIXS_PER_TRIAL};
+        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study QC Parameter"); }
+        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
+        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+    }
+
+    namespace QCFields {
+        static const QString POINTS = "points_per_trial";
+        static const QString FIXATIONS_L = "fixations_per_trial_l";
+        static const QString FIXATIONS_R = "fixations_per_trial_r";
+        static const QString GLITCHES = "glitches_per_trial";
+        static const QString AVG_FREQ = "avg_freq_per_trial";
+        static const QString N_DATASETS = "number_of_datasets";
+        static const QStringList valid{POINTS,FIXATIONS_L,FIXATIONS_R,GLITCHES,AVG_FREQ,N_DATASETS};
+        static QString validate(const QString &str) { return VMDC::validate(str,valid,"QC Computed Values"); }
+        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
+        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
     }
 
 }

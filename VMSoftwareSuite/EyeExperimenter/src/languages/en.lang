@@ -119,6 +119,7 @@ viewstudystart_mpActionFinalize = Finalize Study;
 viewstudystart_labelActions = Multi part study options;
 viewstudystart_labelPerceptionType = Select study type;
 viewstudystart_perceptionTypeOptions = Training|Rehabilitation;
+viewstudystart_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type|N-Back RT For Training|Perception Study|Go NoGo;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Evaluator Login;
@@ -255,51 +256,38 @@ viewexpdone_viewTitle = Congratulations!;
 viewexpdone_labelMessage = You have successfully completed ViewMind's Neurocognitive Evaluations;
 viewexpdone_btnContinue = FINALIZE EVALUATION;
 
-#********************************* RESULTS SCREEN *********************************
-viewresults_title = Results;
-viewresults_labelPatient = Patient;
-viewresults_labelSubject = Subject;
-viewresults_labelAge = Age;
-viewresults_labelDate = Date;
-viewresults_labelDrName = Doctor's Name;
-viewresults_labelExp = The following is the interpretation of the data<br> 
-obtained through a neurocognitive evaluation performed <br>
-using Eye-Tracking technique<br><br>
-The result of each function analyzed, is stated in <br>
-the following code:;
+#********************************* QC SCREEN *********************************
+viewQC_Title = Quality Control Check;
+viewQC_SubPoints = Number of Data Points per Trial;
+viewQC_SubFixationsR = Number of Fixations of Right Eye per Trial;
+viewQC_SubFixationsL = Number of Fixations of Right Eye per Trial;
+viewQC_SubGlitches = Number of Glitches per Trial;
+viewQC_SubFrequency = Average Sample Rate Per Trial;
+viewQC_Study = Study;
+viewQC_StudyNameMap = 
+Reading|Reading|
+Binding BC|Colour Combinations| 
+Binding UC|New Colurs|
+NBack MS|N-Back MS|
+NBack RT|N-Back RT|
+NBack VS|N-Back VS|
+Go No-Go|Go NoGo|
+Perception 1|Perception 1|
+Perception 2|Perception 2|
+Perception 3|Perception 3|
+Perception 4|Perception 4|
+Perception 5|Perception 5|
+Perception 6|Perception 6|
+Perception 7|Perception 7|
+Perception 8|Perception 8;
+viewQC_GraphTitle = Graphs;
+viewQC_GraphPoints = Data Points;
+viewQC_GraphFixationsL = Fixations (L);
+viewQC_GraphFixationsR = Fixations (R);
+viewQC_GraphFreq = Sample Rate;
+viewQC_btnSend = SEND;
+viewQC_btnBack = BACK;
 
-viewresults_labelSquareBlue = Function above average;
-viewresults_labelSquareGreen = No relevant functional problems were detected;
-viewresults_labelSquareYellow = Mildly deficient functioning, not necessarily <br>pathological;
-viewresults_labelSquareRed = Completely deficient and/or pathological <br>functioning;
-
-viewresults_studyNames = ERROR|Reading|Colors|Colors|N-Back MS|N-Back RT|Parkinson|Go/No Go;
-
-viewresults_save_report = Select directory to save the report;
-
-viewresults_diagWaitTitle = Generating Report; 
-viewresults_diagWaitMessage = Please, wait for a moment;
-
-viewresults_btnDownload = DOWNLOAD;
-viewresults_btnFinalize = BACK;
-
-#********************************* SELECT DAT SCREEN *********************************
-viewselectdata_labelTitle = Report Generation;
-viewselectdata_labelSubTitle = Select the studies that will be included in the report;
-viewselectdata_labelColReading = Reading;
-viewselectdata_labelColBindingUC = New Colours;
-viewselectdata_labelColBindingBC = Colour Combinations;
-viewselectdata_labelFielding = N-Back MS Type;
-viewselectdata_labelNBackRT  = N-Back RT Type;
-viewselectdata_labelStudySelection = Select Study;
-viewselectdata_studyList = Reading|Colour Combinations|New Colours|N-Back MS Type|N-Back RT Type|N-Back RT For Training|Perception Study|Go NoGo;
-viewselectdata_labeFileView = Report for studies;
-viewselectdata_labelNoUse = Do not use for report;
-viewselectdata_labelSelectOption = Select data file;
-viewselectdata_labelEvals = Available Evaluations;
-viewselectdata_btnDelete = Archive;
-viewselectdata_btnCancel = CANCEL;
-viewselectdata_btnGenReport = GENERATE REPORT;
 
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Medical Protocols;

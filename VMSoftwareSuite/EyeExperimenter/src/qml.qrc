@@ -46,5 +46,7 @@
         <file>qml/ViewAbout.qml</file>
         <file>qml/ViewFinishedStudies.qml</file>
         <file>qml/VMFinalizedStudyEntry.qml</file>
+        <file>qml/ViewQC.qml</file>
+        <file>qml/VMSelectorRect.qml</file>
     </qresource>
 </RCC>

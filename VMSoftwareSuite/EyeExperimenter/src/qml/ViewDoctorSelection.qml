@@ -37,18 +37,19 @@ Dialog {
              *********************************************/
 
             loader.setSelectedSubject("1_0_20210606090711350");
-            viewStudyStart.vmSelectedMedic = "7";
-            viewStudyStart.vmSelectedProtocol = "";
-            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+            //viewStudyStart.vmSelectedMedic = "1";
+            //viewStudyStart.vmSelectedProtocol = "";
+            //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
             //viewFinishedStudies.loadEvaluatorStudies();
-            //swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies;
+            //swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies
+            swiperControl.currentIndex = swiperControl.vmIndexViewQC;
             return;
 
             /*************************************************/
 
 
 
-//            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
 
         }
         else{

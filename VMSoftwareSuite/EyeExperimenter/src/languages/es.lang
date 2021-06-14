@@ -119,6 +119,7 @@ viewstudystart_mpActionFinalize = Finalizar Estudio;
 viewstudystart_labelActions = Opciones multi parte;
 viewstudystart_labelPerceptionType = Seleccione tipo de estudio;
 viewstudystart_perceptionTypeOptions = Entrenamiento|Rehabilitación;
+viewstudystart_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT|Evaluación N-Back RT de Entrenamiento|Percepción|Go NoGo;
 
 #********************************* DOCTOR SELECTION DIALOG *********************************
 viewdrsel_viewTitle = Ingreso Evaluador;
@@ -255,51 +256,41 @@ viewexpdone_viewTitle = ¡Felicitaciones!;
 viewexpdone_labelMessage = Ha concluido exitosamente las Evaluaciones NeuroCognitivas de ViewMind;
 viewexpdone_btnContinue = FINALIZAR EVALUACIÓN;
 
-#********************************* RESULTS SCREEN *********************************
-viewresults_title = Resultados;
-viewresults_labelPatient = Paciente;
-viewresults_labelSubject = Sujeto;
-viewresults_labelAge = Edad;
-viewresults_labelDate = Fecha;
-viewresults_labelDrName = Nombre del doctor;
-viewresults_labelExp = La siguiente es una interpretación de los datos obtenidos <br>
-a través una evaluación neurocognitiva realizada a través <br>
-de la técnica de seguimiento ocular.<br><br>
-El resultado de cada función analizada <br>
-se muestra en el siguiente código:;
+#********************************* QC SCREEN *********************************
+viewQC_Title = Control de Calidad;
+viewQC_SubPoints = Número de Puntos de Datos por Ensayo;
+viewQC_SubFixationsR = Número of Fijaciones del Ojo Derecho por Ensayo;
+viewQC_SubFixationsL = Número of Fijaciones del Ojo Izquierdo por Ensayo;
+viewQC_SubGlitches = Número de Fallas por Ensayo;
+viewQC_SubFrequency = Velocidad de Sampleo Promedio por Ensayo;
+viewQC_Study = Estudio;
+viewQC_StudyNameMap = 
+Reading|Lectura|
+Binding BC|Combinación de Colores| 
+Binding UC|Nuevos Colores|
+NBack MS|N-Back Tipo MS|
+NBack RT|N-Back Tipo RT|
+NBack VS|N-Back RT de Entranamiento|
+Go No-Go|Go NoGo|
+Perception 1|Percepción 1|
+Perception 2|Percepción 2|
+Perception 3|Percepción 3|
+Perception 4|Percepción 4|
+Perception 5|Percepción 5|
+Perception 6|Percepción 6|
+Perception 7|Percepción 7|
+Perception 8|Percepción 8;
+viewQC_GraphTitle = Gráficos;
+viewQC_GraphPoints = Puntos de Datos;
+viewQC_GraphFixationsL = Fijaciones (I);
+viewQC_GraphFixationsR = Fijaciones (D);
+viewQC_GraphFreq = Velocidad de Sampleo;
+viewQC_GraphGlitches = Fallas de Sampleo;
+viewQC_btnSend = ENVIAR;
+viewQC_btnBack = VOLVER;
 
-viewresults_labelSquareBlue = Funcionamiento por encima del promedio;
-viewresults_labelSquareGreen = No se encontraron problemas funcionales relevantes;
-viewresults_labelSquareYellow = Funcionamiento ligeramente deficiente, no es <br>necesariamente patológico.;
-viewresults_labelSquareRed = Funcionamiento patológico completamente deficiente <br> y/o patológico.;
 
-viewresults_studyNames = ERROR|Lectura|Colores|Colores|N-Back MS|N-Back RT|Parkinson|Go/No Go;
 
-viewresults_save_report = Elija el directorio donde se guarda el reporte;
-
-viewresults_diagWaitTitle = Generando Reporte; 
-viewresults_diagWaitMessage = Espere un momento;
-
-viewresults_btnDownload = DESCARGAR;
-viewresults_btnFinalize = VOLVER;
-
-#********************************* SELECT DAT SCREEN *********************************
-viewselectdata_labelTitle = Generación de Reportes;
-viewselectdata_labelSubTitle = Seleccionar los estudios que desea incluir en un reporte;
-viewselectdata_labelColReading = Lectura;
-viewselectdata_labelColBindingUC = Nuevos Colores;
-viewselectdata_labelColBindingBC = Combinación de Colores;
-viewselectdata_labelFielding = Evaluación N-Back Tipo MS;
-viewselectdata_labelNBackRT  = Evaluación N-Back Tipo RT;
-viewselectdata_labelNoUse = No utilizar en reporte;
-viewselectdata_labelStudySelection = Seleccione un estudio;
-viewselectdata_studyList = Lectura|Combinación de Colores|Nuevos Colores|Evaluación N-Back Tipo MS|Evaluación N-Back Tipo RT|Evaluación N-Back RT de Entrenamiento|Percepción|Go NoGo;
-viewselectdata_labeFileView = Reporte para los estudios;
-viewselectdata_labelSelectOption = Seleccionar registro;
-viewselectdata_labelEvals = Evaluaciones disponibles;
-viewselectdata_btnDelete = Archivar;
-viewselectdata_btnCancel = CANCELAR;
-viewselectdata_btnGenReport = GENERAR REPORTE;
 
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Protocolos Médicos;

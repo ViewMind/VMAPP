@@ -25,6 +25,7 @@ public:
     static const char * MEDIC_NAME;
     static const char * MEDIC_ID;
     static const char * ORDER_CODE;
+    static const char * FILE_PATH;
 
     SubjectDirScanner();
 

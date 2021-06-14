@@ -65,6 +65,7 @@ SOURCES += main.cpp \
     Experiments/fieldingexperiment.cpp \
     Experiments/imageexperiment.cpp \
     Experiments/readingexperiment.cpp \
+    qualitycontrol.cpp \
     subjectdirscanner.cpp
 
 
@@ -131,6 +132,7 @@ HEADERS += \
     ../../../CommonClasses/LogInterface/loginterface.h \
     ../../../CommonClasses/Experiments/bindingparser.h \
     ../../../CommonClasses/Experiments/readingparser.h \
+    qualitycontrol.h \
     subjectdirscanner.h
 
 contains(DEFINES, USE_IVIEW) {

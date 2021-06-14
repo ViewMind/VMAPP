@@ -49,7 +49,9 @@ public:
 
     bool setProcessingParameters(const QVariantMap &pp);
 
-    ////////////////////////// FUNCTION FOR ADDING STUDY DATA.
+    bool setQCVector(const QString &study, const QString &qcfield ,const QVariantList &vector);
+
+    ////////////////////////// FUNCTIONS FOR ADDING STUDY DATA.
 
     bool addStudy(const QString &study, const QVariantMap &studyConfiguration, const QString &experimentDescription, const QString &version);
 
@@ -72,6 +74,10 @@ public:
     bool finalizeStudy();
 
     void markFileAsFinalized();
+
+    ////////////////////////// FUNCTIONS FOR GETTING STUDY DATA.
+    QVariantList getStudyTrialList(const QString &study);
+
 
 
     /**
@@ -110,7 +116,8 @@ public:
     QStringList getMetaDataDateTime() ;  // Returns a display string and then a string that cna be used for sorting. The list always has two values.
     QVariantMap getApplicationUserData(const QString &type);
     QVariantMap getSubjectData();
-    QStringList getTrialListTypesForStudy(const QString &st);
+    QVariantMap getProcessingParameters() const;
+    QVariantMap getQCParameters() const;
 
 
 private:

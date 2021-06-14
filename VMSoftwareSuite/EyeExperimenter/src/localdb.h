@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include "../../../CommonClasses/debug.h"
+#include "../../../CommonClasses/RawDataContainer/VMDC.h"
 
 
 namespace APINames {
@@ -52,6 +53,7 @@ public:
     static const char * MAIN_CHECKSUM;
     static const char * MAIN_MEDICS;
     static const char * MAIN_PROCESSING_PARAMETERS;
+    static const char * MAIN_QC_PARAMETERS;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -147,6 +149,9 @@ public:
 
     // Set the processing parameters from the server side response.
     bool setProcessingParametersFromServerResponse(const QVariantMap &response);
+
+    // Set the qc parameters from the server side response.
+    bool setQCParametersFromServerResponse(const QVariantMap &response);
 
     // Set the medical info from the database.
     bool setMedicInformationFromRemote(const QVariantMap &response);
