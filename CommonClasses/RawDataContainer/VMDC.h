@@ -333,8 +333,8 @@ namespace VMDC {
     namespace QCGlobalParameters {
         static const QString MIN_TIMESTAMP_DIFF = "min_successive_timestamp_difference";
         static const QString MAX_TIMESTAMP_DIFF = "max_successive_timestamp_difference";
-        static const QString MIN_GLITCHES       = "max_recommended_glitches";
-        static const QStringList valid{MIN_TIMESTAMP_DIFF,MAX_TIMESTAMP_DIFF,MIN_GLITCHES};
+        static const QString MAX_GLITCHES       = "max_recommended_glitches";
+        static const QStringList valid{MIN_TIMESTAMP_DIFF,MAX_TIMESTAMP_DIFF,MAX_GLITCHES};
         static QString validate(const QString &str) { return VMDC::validate(str,valid,"Global QC Parameter"); }
         static qint32 toInt(const QString &str) {return valid.indexOf(str); }
         static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
