@@ -150,7 +150,7 @@ if ($study == StudyTypes::GONOGO){
 
    // Map the trial description to the index of the hitbox in the processing parameters. 
    $map_trial_desc_to_targe_box_index["R<-"] = GoNoGoTargetBoxes::RIGHT;   // The right box
-   $map_trial_desc_to_targe_box_index["G<-"] = GoNoGoTargetBoxes::LEFT;   // The left box. 
+   $map_trial_desc_to_targe_box_index["G<-"] = GoNoGoTargetBoxes::LEFT;    // The left box. 
    $map_trial_desc_to_targe_box_index["R->"] = GoNoGoTargetBoxes::LEFT;
    $map_trial_desc_to_targe_box_index["G->"] = GoNoGoTargetBoxes::RIGHT;      
 

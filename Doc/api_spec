@@ -41,22 +41,47 @@ VMClients have the following permissions:
 -> OBJECT: reports
       OPERATION: generate
          IDENTIFIER: institutution_id
-            Will trigger the whole report processing.
-            1) DB Update of Subject data, if necessary.
-            2) Whatever checks are necessary (such as institution and instance existance, evaluations remaining)
-            3) First pass at JSON File 
-                - Computes fixation
-                - Computes other metadata for each trial or trial set.
-                - Sets other metadata such as the processing date (maybe the processing location?).
-            4) Computing all Quality check values based on the frequency check parameters. 
-            4) CSV Creation.
-            5) R Processing. 
-            6) Second pass at the JSON file that stores all results into the JSON 
-            7) DB Storage of all appropiate results. 
-            8) With the keyid form the evaluations table store, the JSON file in the S3. 
+               PARAMETERS: instance
+               Will trigger the whole report processing.
+               1) DB Update of Subject data, if necessary.
+               2) Whatever checks are necessary 
+               3) First pass at JSON File 
+                   - Computes fixation based values. 
+                   - Computes other metadata for each trial or trial set.
+                   - Sets other metadata such as the processing date (maybe the processing location?).
+               4) CSV Creation.
+               5) R Processing. 
+               6) Second pass at the JSON file that stores all results into the JSON 
+               7) DB Storage of all appropiate results. 
+               8) With the keyid form the evaluations table store, the JSON file in the S3. 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            
-      
+There 3 Tiers Of Processing.
+
+1) Procesing at the data set level
+   - Compute the go GoNoGo Fixation values. (modifies the input fixation list).
+   - Comnpute the dataset values. Returns value map. and requires as intput the raw data list, the fixation list and, if GoNoGo, it's hitboxes. 
+2) Processng at the Trial Level
+   - If NBACK (RT/MS) computeFixationBasedNBackValues  Modifies a fixation map that contains all fixations for each of the data sets, that is passed as a parameter. 
+     This adds fields to the fixation vector. 
+     Then we also compute the fixation index in the last dataset where the sequence is completed.    
+3) Processing at the Study Level.
+  - Duration of the study as the highest timestamp - lowest time stamp. 
+  - If Binding we compute the binding score. 
+ 
+ 
+We need to get a trial. Modify its values. and set it back
+The final processi level (3) can be done over the entire structure. 
+               
+               
+               
+               
+               
+               
+               
+               
+   
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
       OPERATION: list
          IDENTIFIER: portal_user_id
             PARAMETERS: institution_id

@@ -132,16 +132,16 @@ class TargetHitSearcher {
    private function isHitRT($data_set_type,$ans){
 
       switch ($data_set_type){
-         case DataSetTypes::ENCODING_1:
+         case DataSetType::ENCODING_1:
             if ($ans[self::RET_TARGET_HIT] == $this->trial_sequence[0]) $ans[self::RET_IS_IN] = 1;
             break;
-         case DataSetTypes::ENCODING_2:
+         case DataSetType::ENCODING_2:
             if ($ans[self::RET_TARGET_HIT] == $this->trial_sequence[1]) $ans[self::RET_IS_IN] = 1;
             break;
-         case DataSetTypes::ENCODING_3:
+         case DataSetType::ENCODING_3:
             if ($ans[self::RET_TARGET_HIT] == $this->trial_sequence[2]) $ans[self::RET_IS_IN] = 1;
             break;
-         case DataSetTypes::RETRIEVAL_1:
+         case DataSetType::RETRIEVAL_1:
             // We need to detect if the fixation sequence, here is correct.
             // The expected target is the allwasy the last in the sequence.            
             if ($this->expected_target_index_in_sequence > -1){
@@ -165,30 +165,30 @@ class TargetHitSearcher {
    private function isHitMS($data_set_type,$ans){
 
       switch ($data_set_type){
-         case DataSetTypes::ENCODING_1:
+         case DataSetType::ENCODING_1:
             // These are the images that show the red dots.
             if ($ans[self::RET_TARGET_HIT] == $this->trial_sequence[0]) $ans[self::RET_IS_IN] = 1;
             $this->expected_target_index_in_sequence = -1;
             break;
-         case DataSetTypes::ENCODING_2:
+         case DataSetType::ENCODING_2:
             // These are the images that show the red dots.
             if ($ans[self::RET_TARGET_HIT] == $this->trial_sequence[1]) $ans[self::RET_IS_IN] = 1;
             $this->expected_target_index_in_sequence = -1;
             break;
-         case DataSetTypes::ENCODING_3:
+         case DataSetType::ENCODING_3:
             // These are the images that show the red dots.
             if ($ans[self::RET_TARGET_HIT] == $this->trial_sequence[2]) $ans[self::RET_IS_IN] = 1;
             $this->expected_target_index_in_sequence = -1;
             break;
-         case DataSetTypes::RETRIEVAL_1:
+         case DataSetType::RETRIEVAL_1:
             // The target should hit the last target
             $this->expected_target_index_in_sequence = 2;
             break;
-         case DataSetTypes::RETRIEVAL_2:
+         case DataSetType::RETRIEVAL_2:
             // This should hit the second target.
             $this->expected_target_index_in_sequence = 1;
             break;
-         case DataSetTypes::RETRIEVAL_3:
+         case DataSetType::RETRIEVAL_3:
             // This should hit the first target.
             $this->expected_target_index_in_sequence = 0;
             break;
@@ -204,7 +204,7 @@ class TargetHitSearcher {
          }
       }
 
-      if ($data_set_type == DataSetTypes::RETRIEVAL_3){
+      if ($data_set_type == DataSetType::RETRIEVAL_3){
          if (count($this->all_MS_target_hits)){
             // This means all targets were hit and in ther right sequence so we can consider the sequence complete.
             $ans[self::RET_SEQ_COMPLETED] = 1;
@@ -242,31 +242,33 @@ class TargetHitSearcher {
 
    static function findFirstFixationThatHits(&$hitbox, &$fixation_list){
       for ($i = 0; $i < count($fixation_list); $i++){
-         if (TargetHitSearcher::isHitInBox($hitbox,$fixation_list[$i][FixationVectorFields::X],$fixation_list[$i][FixationVectorFields::Y])){
+         if (TargetHitSearcher::isHitInBox($hitbox,$fixation_list[$i][FixationVectorField::X],$fixation_list[$i][FixationVectorField::Y])){
             return $i;
          }
       }
       return -1;
    }
 
-   static function computeFixationBasedNBackValues(&$fixation_list_map, $hit_boxes , $trial_sequence, $study){
+   static function computeFixationBasedNBackValues(&$trial, $hit_boxes , $trial_sequence, $study){
 
       $ans[self::COMPUTE_RET_ERROR]    = "";
-      $ans[self::COMPUTE_RET_SEQ_COMPLETE] = -1;
+      $fix_list_names = [DataSetField::FIXATIONS_L, DataSetField::FIXATIONS_R];
+      $ans[DataSetField::FIXATIONS_L][self::COMPUTE_RET_SEQ_COMPLETE] = -1;
+      $ans[DataSetField::FIXATIONS_R][self::COMPUTE_RET_SEQ_COMPLETE] = -1;
    
       $ths = new TargetHitSearcher();
       $data_set_order = array();
    
-      if ($study == StudyTypes::NBACKMS){
-         $data_set_order = [DataSetTypes::ENCODING_1,DataSetTypes::ENCODING_2,DataSetTypes::ENCODING_3,DataSetTypes::RETRIEVAL_1,DataSetTypes::RETRIEVAL_2,DataSetTypes::RETRIEVAL_3];
+      if ($study == Study::NBACKMS){
+         $data_set_order = [DataSetType::ENCODING_1,DataSetType::ENCODING_2,DataSetType::ENCODING_3,DataSetType::RETRIEVAL_1,DataSetType::RETRIEVAL_2,DataSetType::RETRIEVAL_3];
          $ths->setTargetLogic(TargetHitSearcher::TARGET_HIT_LOGIC_MS);
       }
-      else if ($study == StudyTypes::NBACKRT){
-         $data_set_order = [DataSetTypes::ENCODING_1,DataSetTypes::ENCODING_2,DataSetTypes::ENCODING_3,DataSetTypes::RETRIEVAL_1];
+      else if ($study == Study::NBACKRT){
+         $data_set_order = [DataSetType::ENCODING_1,DataSetType::ENCODING_2,DataSetType::ENCODING_3,DataSetType::RETRIEVAL_1];
          $ths->setTargetLogic(TargetHitSearcher::TARGET_HIT_LOGIC_RT);
       }
       else{
-         $ans[self::COMPUTE_RET_ERROR] =  "Unrecoginzed study for target searcher $study";
+         $ans[self::COMPUTE_RET_ERROR] =  "Unrecoginzed study for fixation based NBack values: $study";
          return $ans;
       }
    
@@ -282,33 +284,35 @@ class TargetHitSearcher {
          return $ans;
       }
    
-      foreach ($data_set_order as $data_set){
-         $fixation_list = $fixation_list_map[$data_set];
-         //echo "   DATASET: $data_set\n";
-         for ($i = 0; $i < count($fixation_list); $i++){
-            //echo "      FIX: (" . $fixation_list[$i][FixationVectorFields::X] . ","  . $fixation_list[$i][FixationVectorFields::Y] . ")\n";
-            //$ths->dbugState("      ");
-            $result = $ths->isHit($fixation_list[$i][FixationVectorFields::X],$fixation_list[$i][FixationVectorFields::Y],$data_set);
-            //echo "      RESULT: TARGET HIT: " . $result[self::RET_TARGET_HIT] . ". IS IN: " . $result[self::RET_IS_IN] . "\n";
-            //$ths->dbugState("      ");
-            if ($result[self::RET_ERROR] != ""){
-               $ans[self::COMPUTE_RET_ERROR] = "Error computing ISHIT values for fixation $i for $data_set: " . $ans[self::RET_ERROR];
-               return $ans;
-            }
+      foreach ($fix_list_names as $fix_list) {
+         foreach ($data_set_order as $data_set) {
+             $fixation_list = $trial[TrialField::DATA][$data_set][$fix_list];
+             //echo "   DATASET: $data_set\n";
+             for ($i = 0; $i < count($fixation_list); $i++) {
+                 //echo "      FIX: (" . $fixation_list[$i][FixationVectorField::X] . ","  . $fixation_list[$i][FixationVectorField::Y] . ")\n";
+                 //$ths->dbugState("      ");
+                 $result = $ths->isHit($fixation_list[$i][FixationVectorField::X], $fixation_list[$i][FixationVectorField::Y], $data_set);
+                 //echo "      RESULT: TARGET HIT: " . $result[self::RET_TARGET_HIT] . ". IS IN: " . $result[self::RET_IS_IN] . "\n";
+                 //$ths->dbugState("      ");
+                 if ($result[self::RET_ERROR] != "") {
+                     $ans[self::COMPUTE_RET_ERROR] = "Error computing ISHIT values for fixation $i for $data_set and $fix_list: " . $ans[self::RET_ERROR];
+                     return $ans;
+                 }
 
-            $fixation_list[$i][FixationVectorFields::NBACK]       = $result[self::RET_NBACK];     
-            $fixation_list[$i][FixationVectorFields::IS_IN]       = $result[self::RET_IS_IN];       // This basically is a flag to detect wheter the fixation was in the target of interest, where interst is based on the context
-            $fixation_list[$i][FixationVectorFields::TARGET_HIT]  = $result[self::RET_TARGET_HIT];  // This is the ID of the target hit if one was hit.
+                 $fixation_list[$i][FixationVectorField::NBACK]       = $result[self::RET_NBACK];
+                 $fixation_list[$i][FixationVectorField::IS_IN]       = $result[self::RET_IS_IN];       // This basically is a flag to detect wheter the fixation was in the target of interest, where interst is based on the context
+                 $fixation_list[$i][FixationVectorField::TARGET_HIT]  = $result[self::RET_TARGET_HIT];  // This is the ID of the target hit if one was hit.
 
-            if ($result[self::RET_SEQ_COMPLETED] == 1){
-               $ans[self::COMPUTE_RET_SEQ_COMPLETE] = $i; // Saving the data set is not necessary as it's always the last one. 
-            }
+               if ($result[self::RET_SEQ_COMPLETED] == 1) {
+                     $ans[$fix_list][self::COMPUTE_RET_SEQ_COMPLETE] = $i; // Saving the data set is not necessary as it's always the last one.
+               }
+             }
+             // Storing the new values. 
+             $fixation_list = $trial[TrialField::DATA][$data_set][$fix_list] = $fixation_list;
          }
-         $fixation_list_map[$data_set] = $fixation_list;
       }
    
       return $ans;
-   
    }   
 
    static function nonAdjustedTargetBoxes($adjusted_target_boxes){
@@ -327,8 +331,8 @@ class TargetHitSearcher {
    static function computeFixationHitsGoNoGo(&$hitboxes, &$fixations, $correct_target_box, $centerX){
       for ($i = 0; $i < count($fixations); $i++){
          $f = $fixations[$i];
-         $is_in = TargetHitSearcher::hitLogicForGoNoGo($hitboxes,$f[FixationVectorFields::X],$f[FixationVectorFields::Y],$correct_target_box,$centerX);
-         $f[FixationVectorFields::IS_IN] = $is_in;
+         $is_in = TargetHitSearcher::hitLogicForGoNoGo($hitboxes,$f[FixationVectorField::X],$f[FixationVectorField::Y],$correct_target_box,$centerX);
+         $f[FixationVectorField::IS_IN] = $is_in;
          $fixations[$i] = $f;
       }
    }

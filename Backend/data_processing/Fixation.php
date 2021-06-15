@@ -8,45 +8,45 @@ class Fixation{
 
    static function CreateFixationFromDataSet(&$dataset, $start_index, $end_index, $eye, $compute_reading_parameters = false){
 
-      if ($eye == EyeType::LEFT){
-         $x_lab = RawDataVectorFields::XL;
-         $y_lab = RawDataVectorFields::YL;
-         $p_lab = RawDataVectorFields::PUPIL_L;
-         $w     = RawDataVectorFields::WORD_L;
-         $c     = RawDataVectorFields::CHAR_L;
+      if ($eye == Eye::LEFT){
+         $x_lab = DataVectorField::XL;
+         $y_lab = DataVectorField::YL;
+         $p_lab = DataVectorField::PUPIL_L;
+         $w     = DataVectorField::WORD_L;
+         $c     = DataVectorField::CHAR_L;
       }
-      else if ($eye == EyeType::RIGHT){
-         $x_lab = RawDataVectorFields::XR;
-         $y_lab = RawDataVectorFields::YR;
-         $p_lab = RawDataVectorFields::PUPIL_R;
-         $w     = RawDataVectorFields::WORD_R;
-         $c     = RawDataVectorFields::CHAR_R;
+      else if ($eye == Eye::RIGHT){
+         $x_lab = DataVectorField::XR;
+         $y_lab = DataVectorField::YR;
+         $p_lab = DataVectorField::PUPIL_R;
+         $w     = DataVectorField::WORD_R;
+         $c     = DataVectorField::CHAR_R;
       }
 
-      $fix[FixationVectorFields::X]           = 0;
-      $fix[FixationVectorFields::Y]           = 0;
-      $fix[FixationVectorFields::PUPIL]       = 0;      
-      $fix[FixationVectorFields::DURATION]    = 0;
-      $fix[FixationVectorFields::START_INDEX] = $start_index;
-      $fix[FixationVectorFields::START_TIME]  = $dataset[$start_index][RawDataVectorFields::TIMESTAMP];
-      $fix[FixationVectorFields::END_INDEX]   = $end_index;
-      $fix[FixationVectorFields::END_TIME]    = $dataset[$end_index][RawDataVectorFields::TIMESTAMP];
+      $fix[FixationVectorField::X]           = 0;
+      $fix[FixationVectorField::Y]           = 0;
+      $fix[FixationVectorField::PUPIL]       = 0;      
+      $fix[FixationVectorField::DURATION]    = 0;
+      $fix[FixationVectorField::START_INDEX] = $start_index;
+      $fix[FixationVectorField::START_TIME]  = $dataset[$start_index][DataVectorField::TIMESTAMP];
+      $fix[FixationVectorField::END_INDEX]   = $end_index;
+      $fix[FixationVectorField::END_TIME]    = $dataset[$end_index][DataVectorField::TIMESTAMP];
 
       if ($compute_reading_parameters){
-         $fix[FixationVectorFields::WORD] = 0;
-         $fix[FixationVectorFields::CHAR] = 0;
+         $fix[FixationVectorField::WORD] = 0;
+         $fix[FixationVectorField::CHAR] = 0;
       }
 
       $counter = 0;
       $zero_counter = 0;
       for ($i = $start_index; $i <= $end_index; $i++){
-         $fix[FixationVectorFields::X]     = $fix[FixationVectorFields::X] + $dataset[$i][$x_lab];
-         $fix[FixationVectorFields::Y]     = $fix[FixationVectorFields::Y] + $dataset[$i][$y_lab];
-         $fix[FixationVectorFields::PUPIL] = $fix[FixationVectorFields::PUPIL] + $dataset[$i][$p_lab];
+         $fix[FixationVectorField::X]     = $fix[FixationVectorField::X] + $dataset[$i][$x_lab];
+         $fix[FixationVectorField::Y]     = $fix[FixationVectorField::Y] + $dataset[$i][$y_lab];
+         $fix[FixationVectorField::PUPIL] = $fix[FixationVectorField::PUPIL] + $dataset[$i][$p_lab];
 
          if ($compute_reading_parameters){
-            $fix[FixationVectorFields::WORD] = $fix[FixationVectorFields::WORD] + $dataset[$i][$w];
-            $fix[FixationVectorFields::CHAR] = $fix[FixationVectorFields::CHAR] + $dataset[$i][$c];   
+            $fix[FixationVectorField::WORD] = $fix[FixationVectorField::WORD] + $dataset[$i][$w];
+            $fix[FixationVectorField::CHAR] = $fix[FixationVectorField::CHAR] + $dataset[$i][$c];   
          }
 
          $counter++;
@@ -58,18 +58,18 @@ class Fixation{
 
       }
 
-      $fix[FixationVectorFields::X] = $fix[FixationVectorFields::X]/$counter;
-      $fix[FixationVectorFields::Y] = $fix[FixationVectorFields::Y]/$counter;
-      $fix[FixationVectorFields::PUPIL] = $fix[FixationVectorFields::PUPIL]/$counter;
+      $fix[FixationVectorField::X] = $fix[FixationVectorField::X]/$counter;
+      $fix[FixationVectorField::Y] = $fix[FixationVectorField::Y]/$counter;
+      $fix[FixationVectorField::PUPIL] = $fix[FixationVectorField::PUPIL]/$counter;
       if ($compute_reading_parameters){
-         $fix[FixationVectorFields::WORD] = $fix[FixationVectorFields::WORD]/$counter;
-         $fix[FixationVectorFields::CHAR] = $fix[FixationVectorFields::CHAR]/$counter;   
+         $fix[FixationVectorField::WORD] = $fix[FixationVectorField::WORD]/$counter;
+         $fix[FixationVectorField::CHAR] = $fix[FixationVectorField::CHAR]/$counter;   
       }      
 
-      $fix[FixationVectorFields::ZERO_PUPIL] = $zero_counter;
+      $fix[FixationVectorField::ZERO_PUPIL] = $zero_counter;
 
-      $fix[FixationVectorFields::DURATION]    = $fix[FixationVectorFields::END_TIME] - $fix[FixationVectorFields::START_TIME];
-      $fix[FixationVectorFields::TIME]        = ($fix[FixationVectorFields::END_TIME] + $fix[FixationVectorFields::START_TIME])/2;
+      $fix[FixationVectorField::DURATION]    = $fix[FixationVectorField::END_TIME] - $fix[FixationVectorField::START_TIME];
+      $fix[FixationVectorField::TIME]        = ($fix[FixationVectorField::END_TIME] + $fix[FixationVectorField::START_TIME])/2;
 
       return $fix;
 
