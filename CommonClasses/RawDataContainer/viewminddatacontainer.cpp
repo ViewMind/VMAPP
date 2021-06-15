@@ -289,6 +289,11 @@ bool ViewMindDataContainer::setSubjectData(const QVariantMap &subject_data){
     return true;
 }
 
+void ViewMindDataContainer::setQCParameters(const QVariantMap &qcparams){
+    // This assumes that the parameters have already been checked.
+    data[MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS] = qcparams;
+}
+
 bool ViewMindDataContainer::setApplicationUserData(const QString &type, const QVariantMap &au_data){
 
     //RDC::prettpPrintQVariantMap(data);
@@ -624,7 +629,7 @@ QVariantMap ViewMindDataContainer::GenerateStdRawDataVector(float timestamp, flo
 
 QString ViewMindDataContainer::MAIN_FIELD_SUBJECT_DATA                = "subject";
 QString ViewMindDataContainer::MAIN_FIELD_PROCESSING_PARAMETERS       = "processing_parameters";
-QString ViewMindDataContainer::MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS  = "frequency_check_parameters";
+QString ViewMindDataContainer::MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS  = "qc_parameters";
 QString ViewMindDataContainer::MAIN_FIELD_METADATA                    = "metadata";
 QString ViewMindDataContainer::MAIN_FIELD_APPLICATION_USER            = "application_user";
 QString ViewMindDataContainer::MAIN_FIELD_STUDIES                     = "studies";

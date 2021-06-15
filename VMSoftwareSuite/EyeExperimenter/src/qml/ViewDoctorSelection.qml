@@ -42,8 +42,8 @@ Dialog {
             //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
             //viewFinishedStudies.loadEvaluatorStudies();
             //swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies
-            swiperControl.currentIndex = swiperControl.vmIndexViewQC;
-            return;
+            //swiperControl.currentIndex = swiperControl.vmIndexViewQC;
+            //return;
 
             /*************************************************/
 

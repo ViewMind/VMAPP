@@ -61,7 +61,8 @@ void MouseInterface::on_pollTimer_Up(){
 
     // Time is the time stamp in millisecond since the connection to the server started.
     // Time in microseconds.
-    dataToSend.time = dataToSend.time + TIMEOUT*1000;
+   //  dataToSend.time = dataToSend.time + TIMEOUT*1000;
+    dataToSend.time = dataToSend.time + TIMEOUT;
 
     QPoint point = QCursor::pos();
     //qDebug() << point;

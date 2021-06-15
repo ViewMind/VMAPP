@@ -463,6 +463,10 @@ QStringList LocalDB::getUsernameEmails() const {
     return data.value(MAIN_EVALUATOR_DATA).toMap().keys();
 }
 
+QVariantMap LocalDB::getQCParameters() const {
+    return data.value(MAIN_QC_PARAMETERS).toMap();
+}
+
 bool LocalDB::filterMatchSubject(const QVariantMap &subject, const QString &filter){
     if (filter == "") return true;
     QString name = subject.value(SUBJECT_NAME).toString().toLower();

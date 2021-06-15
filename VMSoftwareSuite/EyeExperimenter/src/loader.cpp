@@ -96,7 +96,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
         return;
     }
 
-    /// TODO send a request for processing parameters and doctors. Put up a sign.
 
     if (localDB.processingParametersPresent()){
         QVariantMap pp = localDB.getProcessingParameters();
@@ -117,7 +116,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     //Globals::Debug::prettpPrintQVariantMap(configuration->getMap());
 
     // For debugging
-    this->setCurrentStudyFileForQC("viewmind_etdata/1_0_20210606090711350/nbackms_2021_06_14_08_32.json");
+    // this->setCurrentStudyFileForQC("viewmind_etdata/1_0_20210606090711350/nbackms_2021_06_14_08_32.json");
 
 }
 
@@ -322,7 +321,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
     filename = Globals::Paths::WORK_DIRECTORY + "/" + configuration->getString(Globals::Share::PATIENT_UID) + "/" + filename;
 
     if (!new_file){
-        // All is done we just need to set it as the current one.                
+        // All is done we just need to set it as the current one.
         logger.appendStandard("Continuing study in file " + filename);
         configuration->addKeyValuePair(Globals::Share::PATIENT_STUDY_FILE,filename);
         return true;
@@ -376,8 +375,14 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
     medic_to_store.insert(VMDC::AppUserField::LOCAL_ID,"");
     medic_to_store.insert(VMDC::AppUserField::VIEWMIND_ID,medic_local_data.value(LocalDB::APPUSER_VIEWMIND_ID));
 
+    // Setting the QC Parameters that will be used.
+    QVariantMap qc = localDB.getQCParameters();
+
     // We store this information the raw data container and leave it ready for the study to start.
     ViewMindDataContainer rdc;
+
+    rdc.setQCParameters(qc);
+
     if (!rdc.setSubjectData(subject_data)){
         logger.appendError("Failed setting subject data to new study. Reason: " + rdc.getError());
         return false;
@@ -610,7 +615,19 @@ QStringList Loader::getStudyList() const {
 
 QVariantMap Loader::getStudyGraphData(const QString &study, qint32 selectedGraph){
 
-    //QString
+    //qDebug() << "Entered with" << study << "and" << selectedGraph;
+
+    QString sgraph = "";
+    if ((selectedGraph >= 0) && (selectedGraph < VMDC::QCFields::valid.size())){
+        sgraph = VMDC::QCFields::valid.at(selectedGraph);
+    }
+    else return QVariantMap();
+
+    //qDebug() << "Entered with" << study << "and" << sgraph;
+
+    QVariantMap allgraphsforStudy = qc.getGraphDataAndReferenceDataForStudy(study);
+    return allgraphsforStudy.value(sgraph).toMap();
+
 
 }
 

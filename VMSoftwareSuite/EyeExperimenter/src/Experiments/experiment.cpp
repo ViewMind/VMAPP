@@ -102,6 +102,20 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
         return false;
     }
 
+    QString validEye = studyConfig.value(VMDC::StudyParameter::VALID_EYE).toString();
+    if (validEye == VMDC::Eye::BOTH){
+        leftEyeEnabled = true;
+        rightEyeEnabled = true;
+    }
+    else if (validEye == VMDC::Eye::RIGHT){
+        leftEyeEnabled = false;
+        rightEyeEnabled = true;
+    }
+    else if (validEye == VMDC::Eye::LEFT){
+        leftEyeEnabled = true;
+        rightEyeEnabled = false;
+    }
+
     //qDebug() << "Processing parameters";
     //Debug::prettpPrintQVariantMap(pp);
 
@@ -196,7 +210,7 @@ void Experiment::finalizeOnlineFixations(){
     if (lastFixationR.isValid()){
         rawdata.addFixationVectorR(fixationToVariantMap(lastFixationR));
     }
-    if (lastFixationR.isValid()){
+    if (lastFixationL.isValid()){
         rawdata.addFixationVectorR(fixationToVariantMap(lastFixationL));
     }
 }
@@ -205,11 +219,11 @@ void Experiment::computeOnlineFixations(const EyeTrackerData &data, qreal l_scha
     lastFixationR = rMWA.calculateFixationsOnline(data.xRight,data.yRight,static_cast<qreal>(data.time),data.pdRight,r_schar,r_word);
     lastFixationL = lMWA.calculateFixationsOnline(data.xLeft,data.yLeft,static_cast<qreal>(data.time),data.pdLeft,l_schar,l_word);
 
-    if (lastFixationR.isValid()){
+    if (lastFixationR.isValid() && rightEyeEnabled){
         rawdata.addFixationVectorR(fixationToVariantMap(lastFixationR));
     }
 
-    if (lastFixationL.isValid()){
+    if (lastFixationL.isValid() && leftEyeEnabled){
         rawdata.addFixationVectorL(fixationToVariantMap(lastFixationL));
     }
 }

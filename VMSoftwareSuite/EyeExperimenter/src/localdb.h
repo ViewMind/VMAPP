@@ -129,6 +129,9 @@ public:
     // List the emails of all evaluators.
     QStringList getUsernameEmails() const;
 
+    // Get the QC Parameters as they came in from the server
+    QVariantMap getQCParameters() const;
+
     // Adds a "bookmark" for multi part studies. The bookmark has two parts a value and a time stamp. If the bookmark exists it is simply overwritten and the time stamp updated.
     bool addStudyMarkerForSubject(const QString &suid, const QString &study, const QString &value);
 

@@ -43,6 +43,7 @@ public:
     bool setMetadata(const QVariantMap &metadata);
     bool setApplicationUserData(const QString &type, const QVariantMap &au_data);
     bool setSubjectData(const QVariantMap &subject_data);
+    void setQCParameters(const QVariantMap &qcparams);
 
     ////////////////////////// CUSTOM FIELDS
     void addCustomMetadataFields(const QString field_name, const QString field_value);

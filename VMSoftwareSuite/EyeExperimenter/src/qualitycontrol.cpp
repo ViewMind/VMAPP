@@ -60,6 +60,8 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
     qreal glitch_percent = qc.value(VMDC::QCGlobalParameters::MIN_GLITCHES).toReal()/100;
 
     QVariantMap qcStudy = qc.value(metaStudyName).toMap();
+    //qDebug() << "QC Values for" << metaStudyName;
+    //Debug::prettpPrintQVariantMap(qc);
     qreal min_points_per_trial = qcStudy.value(VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL).toReal();
     qreal min_fix_per_trial    = qcStudy.value(VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL).toReal();
 
@@ -107,6 +109,7 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
                for (qint32 k = 1; k < rawData.size(); k++){
                    qreal ts = rawData.at(k).toMap().value(VMDC::DataVectorField::TIMESTAMP).toReal();
                    qreal diff = ts - timestamp;
+                   timestamp = ts;
 
                    periodAcc = periodAcc + diff;
 
@@ -122,7 +125,9 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
 
         // For each dataset we use 1 less than the number of points in the raw data of that dataset to compute period.
         // Hence the number of datasets is subsctracted from the number of points in the trial.
+        //qDebug() << periodAcc;
         periodAcc = periodAcc / (pointsInTrial - dataset_names.size());
+        //qDebug() << periodAcc;
 
         pointsPerTrial << pointsInTrial;
         refPointsPerTrial << min_points_per_trial;
@@ -136,6 +141,7 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
         refGlitches << glitch_percent*(pointsInTrial-dataset_names.size());
 
         avgFreqPerTrial << 1000.0/periodAcc; // The 1000 is because the period is in ms.
+        //qDebug() << "Sample freq" << sample_freq;
         refFreq << sample_freq;
     }
 

@@ -99,9 +99,6 @@ protected:
     // Where the data will be stored.
     ViewMindDataContainer rawdata;
 
-    // The set of processing parameters is checked.
-    // QVariantMap proc_params;
-
     // Cofiguration for the current Study
     QVariantMap studyConfiguration;
 
@@ -116,6 +113,10 @@ protected:
 
     // Deterimine if the experiment is running
     ExperimentState state;
+
+    // The eye used for the experiment.
+    bool leftEyeEnabled;
+    bool rightEyeEnabled;
 
     // Error message
     QString error;

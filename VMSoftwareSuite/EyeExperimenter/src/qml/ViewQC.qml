@@ -18,39 +18,7 @@ VMBase {
 
     property var vmStudyNameMap: []
     property var vmStdStudyNameByIndex: [];
-
-    //    function testGraph(){
-    //        var k = 0;
-    //        var scale;
-    //        var graphType;
-    //        var ref;
-    //        if (qcGraphsView.currentIndex >= 0){
-    //            k = qcGraphsView.currentIndex;
-    //            if ((qcGraphsView.currentIndex % 2) === 0){
-    //                scale = (k+1)*100
-    //                graphType = "bar";
-    //            }
-    //            else{
-    //                scale = (k+1)*20;
-    //                graphType = "line";
-    //            }
-    //        }
-
-    //        var phase = k*3.1415/3;
-
-    //        var npoints = 50;
-    //        var interval = 2*3.1415/npoints;
-    //        graph.vmDataPoints = [];
-    //        graph.vmGraphType = graphType
-    //        for (var i = 0; i < npoints; i++){
-    //            graph.vmDataPoints.push(scale*Math.sin(interval*i + k)+scale);
-    //            var mod;
-    //            if ((i % 2) === 0) mod = 0.5;
-    //            else mod = -0.5;
-    //            graph.vmRefDataPoints.push(1 + mod);
-    //        }
-    //        graph.graph();
-    //    }
+    property var vmSubTitleList: [];
 
     function loadStudiesAndGraphs(){
 
@@ -61,6 +29,14 @@ VMBase {
                     loader.getStringForKey(keysearch+"GraphFixationsR"),
                     loader.getStringForKey(keysearch+"GraphGlitches"),
                     loader.getStringForKey(keysearch+"GraphFreq"),
+                ];
+
+        vmSubTitleList = [
+                    loader.getStringForKey(keysearch+"SubPoints"),
+                    loader.getStringForKey(keysearch+"SubFixationsL"),
+                    loader.getStringForKey(keysearch+"SubFixationsR"),
+                    loader.getStringForKey(keysearch+"SubGlitches"),
+                    loader.getStringForKey(keysearch+"SubFrequency"),
                 ];
 
         qcGraphList.clear();
@@ -95,20 +71,45 @@ VMBase {
         }
 
         qcGraphList.setProperty(0,"vmIsSelected",true)
-        //qcStudyView.currentIndex = 0;
+        qcStudyView.currentIndex = 0;
         qcStudyList.setProperty(0,"vmIsSelected",true)
-        //qcGraphsView.currentIndex = 0;
-
+        qcGraphsView.currentIndex = 0;
+        //loadGraph();
     }
 
 
-function loadGraph(){
-    var selectedStudy = vmStdStudyNameByIndex[qcStudyView.currentIndex];
-    var selectedGraph = qcGraphsView.currentIndex;
+    function loadGraph(){
+        //console.log("Called log graph");
+        var selectedStudy = vmStdStudyNameByIndex[qcStudyView.currentIndex];
+        var selectedGraph = qcGraphsView.currentIndex;
+        var data = loader.getStudyGraphData(selectedStudy,selectedGraph);
+        //console.log(JSON.stringify(data));
+
+        if (selectedGraph === vmINDEX_FREQ){
+            graph.vmGraphType = "line";
+        }
+        else{
+            graph.vmGraphType = "bar";
+        }
+
+        viewSubTitle.text = vmSubTitleList[qcGraphsView.currentIndex];
+
+        graph.vmDataPoints = data["GraphData"];
+        graph.vmRefDataPoints = data["REFData"];
+        graph.graph();
+
+//                // Debug Code;
+//                graph.vmGraphType = "line";
+//                graph.vmDataPoints = [];
+//                graph.vmRefDataPoints = [];
+//                for (var i = 0; i < 50; i++){
+//                    graph.vmDataPoints.push(125);
+//                    graph.vmRefDataPoints.push(120);
+//                }
+//                graph.graph();
 
 
-
-}
+    }
 
 
     // Title and subtitle
@@ -194,6 +195,7 @@ function loadGraph(){
                             qcStudyList.setProperty(i,"vmIsSelected",false)
                         }
                     }
+                    loadGraph();
                 }
             }
         }
@@ -235,9 +237,7 @@ function loadGraph(){
                     qcGraphList.setProperty(i,"vmIsSelected",false)
                 }
             }
-
-            //testGraph();
-            //graph.graph();
+            loadGraph();
         }
 
     }
@@ -344,13 +344,15 @@ function loadGraph(){
             ctx.strokeStyle = vmAxisColor
             ctx.setLineDash([]); // No dash lines.
             ctx.lineWidth = width*vmLineWidth;
-            // Draw the horizontal axis.
+            // Draw the vertical axis.
             ctx.moveTo(air_w/2,height-air_h/2);
             ctx.lineTo(air_w/2,air_h/2);
-            // Draw the vertical axis.
+            // Draw the horizontal axis.
             ctx.moveTo(air_w/2,height-air_h/2);
             ctx.lineTo(width-air_w/2,height-air_h/2);
             ctx.stroke();
+
+            //console.log("Horizontal AXIS @" + (height-air_h/2));
 
             // Computing the extremes
             var minmax = getExtremesFromDataPoints();
@@ -437,15 +439,15 @@ function loadGraph(){
                 // Starting x value
                 x = ((1-vmGraphEffectiveWidth)/2)*width*vmGraphWidth + air_w/2
                 xStart = x;
-                xInterval = width*vmGraphWidth/(vmDataPoints.length-1);
+                xInterval = width*vmGraphWidth*vmGraphEffectiveWidth/(vmDataPoints.length);
 
                 ctx.moveTo(x,verticalScale*vmDataPoints[0] + verticalOffset);
 
                 for (i = 1; i < vmDataPoints.length; i++){
+                    x = x + xInterval
                     y = verticalScale*vmDataPoints[i] + verticalOffset;
                     ctx.lineTo(x,y);
                     ctx.moveTo(x,y);
-                    x = x + xInterval
                 }
                 ctx.stroke();
 
@@ -456,33 +458,42 @@ function loadGraph(){
 
                 // Computing the yTickPostion;
                 yTickInterval = (highestValue - lowestValue)/(vmNYLabels+1);
-                yLabel = yTickInterval;
+                yLabel = yTickInterval + lowestValue;
+                //console.log("yTickInterval" + yTickInterval);
                 for (i = 0; i < vmNYLabels; i++){
                     yTickValues.push(yLabel.toFixed(2));
                     yTickPositions.push(verticalScale*yLabel + verticalOffset);
                     yLabel = yLabel + yTickInterval;
+                    //console.log("yLabel " + yLabel);
                 }
 
             }
 
             ///////////////////////////////////////////////// DRAWING THE REFERENCE //////////////////////////////////////////////////////
             // After doing the graph we do the reference.
-            // Refrence is a dotted line in each segment.
             ctx.beginPath();
             ctx.strokeStyle = vmRefLineColor;
             //ctx.setLineDash([2,1,2])
             x = xStart;
-            for (i = 0; i < vmDataPoints.length; i++){
-                if (vmGraphType == "bar"){
+            if (vmGraphType == "bar"){
+                for (i = 0; i < vmRefDataPoints.length; i++){
                     y = vmRefDataPoints[i]*verticalScale
                     y = air_h/2 + (effectiveHeight - verticalScale*y)
+                    ctx.moveTo(x,y)
+                    ctx.lineTo(x+xInterval,y);
+                    x = x + xInterval;
                 }
-                else{
+            }
+            else {
+                y = vmRefDataPoints[0]*verticalScale + verticalOffset;
+                ctx.moveTo(x,y);
+                for (i = 1; i < vmRefDataPoints.length; i++){
+                    x = x + xInterval;
                     y = vmRefDataPoints[i]*verticalScale + verticalOffset;
+                    //console.log("Line REF y: " + y);
+                    ctx.lineTo(x,y);
+                    ctx.moveTo(x,y)
                 }
-                ctx.moveTo(x,y)
-                ctx.lineTo(x+xInterval,y);
-                x = x + xInterval;
             }
             ctx.stroke();
 
