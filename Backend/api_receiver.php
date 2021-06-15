@@ -12,11 +12,19 @@ include("./common/config.php");
 if (empty(CONFIG)) return; // This means that there was an error loading the configuration file. 
 
 include_once ("common/echo_out.php");
+include_once ("common/log_manager.php");
 include_once ("api_management/RouteParser.php");
 include_once ("api_management/AuthManager.php");
 include_once ("db_management/TableSecrets.php");
 include_once ("api_management/ObjectPortalUsers.php");
 include_once ("api_management/ObjectInstitution.php");
+
+//////////////////////////////////// LOG SETUP ////////////////////////////////
+$auth_log = new LogManager(CONFIG[ParameterGeneral::NAME][ValueGeneral::AUTH_LOG_LOCATION]);
+$auth_log->setSource($_SERVER['REMOTE_ADDR']);
+
+$route_log = new LogManager(CONFIG[ParameterGeneral::NAME][ValueGeneral::ROUTING_LOG_LOCATION]);
+$route_log->setSource($_SERVER['REMOTE_ADDR']);
 
 //////////////////////////////////// TOKENIZING THE ROUTE ////////////////////////////////
 $route_parser = new RouteParser();
@@ -25,6 +33,7 @@ if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],CONFIG[ParameterGeneral:
    $error = $route_parser->getError();
    $code = 400; // This was a client error 
    $res[ResponseFields::MESSAGE] = $error;
+   $route_log->logError($error);
    $res[ResponseFields::HTTP_CODE] = $code;
    http_response_code($code);
    echo json_encode($res);
@@ -41,13 +50,13 @@ $message = $raw_data . $route_parser->getEndpointAndParameters();
 
 $auth_mng = new AuthManager($headers,$_POST,$_FILES);
 if (!$auth_mng->authenticate($message)){
-   $res[ResponseFields::MESSAGE] = $auth_mng->getError();
+   $res[ResponseFields::MESSAGE] = $auth_mng->getReturnableError();
    $res[ResponseFields::HTTP_CODE] = $auth_mng->getSuggestedHTTPCode();
+   $auth_log->logError($auth_mng->getError());
    http_response_code($auth_mng->getSuggestedHTTPCode());
    echo json_encode($res);
    return;
 }
-
 
 //////////////////////////////////// ROUTING ////////////////////////////////
 $permissions = $auth_mng->getPermissions();
@@ -56,7 +65,9 @@ $route_parts = $route_parser->getRouteParts();
 
 if (count($route_parts) != 3){
    // Badly formed endpoint. 
-   $res[ResponseFields::MESSAGE] = "Badly formed endpoint " . $route_parser->getEndpointAndParameters();
+   $error = "Badly formed endpoint " . $route_parser->getEndpointAndParameters();
+   $res[ResponseFields::MESSAGE] = $error;
+   $route_log->logError($error);
    $res[ResponseFields::HTTP_CODE] = 400; // This was a client error
    http_response_code(400);
    echo json_encode($res);
@@ -78,6 +89,7 @@ if (array_key_exists($object,$permissions)){
       if (!array_key_exists($object,ROUTING)){
          // Not implemented yer
          $res[ResponseFields::MESSAGE] = "Endpoint $object is not yet implemented";
+         $route_log->logError($res[ResponseFields::MESSAGE]);
          $res[ResponseFields::HTTP_CODE] = 500;
          http_response_code(500);
          echo json_encode($res);
@@ -90,19 +102,22 @@ if (array_key_exists($object,$permissions)){
 
       if (!method_exists($operating_object,$operation)){
          // Method not implemented yet. 
-         $res[ResponseFields::MESSAGE] = "Endpoint $object/$operation not implemented yet";
+         $res[ResponseFields::MESSAGE] = "Endpoint $object/$operation does not exist";
+         $route_log->logError($res[ResponseFields::MESSAGE]);
          $res[ResponseFields::HTTP_CODE] = 500;
          http_response_code(500);
          echo json_encode($res);
          return;   
       }
 
+      // Calling the object and the operation with the data. 
+      // $operating_object->setFileData($_FILES);
       $ans = $operating_object->$operation($identifier,$route_parser->getParameters());
       
       if ($ans === false){
          // Something went wrong. 
          $res[ResponseFields::MESSAGE] = $operating_object->getError();
-         //$res[ResponseFields::MESSAGE] = "WTF";
+         $route_log->logError($res[ResponseFields::MESSAGE]);
          $res[ResponseFields::HTTP_CODE] = 500;
          http_response_code(500);
          echo json_encode($res);
@@ -113,6 +128,7 @@ if (array_key_exists($object,$permissions)){
    else{
       // Access denied. 
       $res[ResponseFields::MESSAGE] = "Access denied to endpoint $object/$operation";
+      $route_log->logError($res[ResponseFields::MESSAGE]);
       $res[ResponseFields::HTTP_CODE] = 403;
       http_response_code(403);
       echo json_encode($res);
@@ -122,6 +138,7 @@ if (array_key_exists($object,$permissions)){
 else{
    // Access denied. 
    $res[ResponseFields::MESSAGE] = "Access denied to endpoint $object";
+   $route_log->logError($res[ResponseFields::MESSAGE]);
    $res[ResponseFields::HTTP_CODE] = 403;
    http_response_code(403);
    echo json_encode($res);
@@ -135,12 +152,6 @@ $res[ResponseFields::HTTP_CODE] = 200;
 http_response_code(200);
 echo json_encode($res);
 return;
-
-// echoOut("Files",true);
-// echoOut($_FILES,true);
-// // Post Checking
-// echoOut("Post Checking",true);
-// echoOut($_POST,true);
 
 // How to return a file 
 // $route = $route_parser->getRouteParts();

@@ -81,7 +81,7 @@ class FixationDataGenerator {
     * @brief Computing the fixation for a given dat set. 
     */
 
-   function computeFixationsForDataSet(&$dataset, $which_eye, $is_reading_study = false){
+   function computeFixationsForDataSet(&$raw_data_list, $which_eye, $is_reading_study = false){
 
       $fixations = array();
 
@@ -94,15 +94,15 @@ class FixationDataGenerator {
       $mmy[self::MM_MAX] = 0;
       $mmy[self::MM_MIN] = 0;
 
-      $data_set_length = count($dataset);
+      $data_set_length = count($raw_data_list);
 
-      if ($which_eye == EyeType::LEFT){
-         $xlabel = RawDataVectorFields::XL;
-         $ylabel = RawDataVectorFields::YL;
+      if ($which_eye == Eye::LEFT){
+         $xlabel = DataVectorField::XL;
+         $ylabel = DataVectorField::YL;
       }
-      else if ($which_eye == EyeType::RIGHT){
-         $xlabel = RawDataVectorFields::XR;
-         $ylabel = RawDataVectorFields::YR;
+      else if ($which_eye == Eye::RIGHT){
+         $xlabel = DataVectorField::XR;
+         $ylabel = DataVectorField::YR;
       }
       else{
          $this->error = "Unknown eye paratemeter $which_eye";
@@ -118,8 +118,8 @@ class FixationDataGenerator {
         // would be shorter than the minimum fixation. So the algorithm ends here.
         if ($end_index >= $data_set_length) break; 
         
-        $mmx = $this->findDispersionLimits($dataset,$start_index,$end_index,$xlabel);
-        $mmy = $this->findDispersionLimits($dataset,$start_index,$end_index,$ylabel);
+        $mmx = $this->findDispersionLimits($raw_data_list,$start_index,$end_index,$xlabel);
+        $mmy = $this->findDispersionLimits($raw_data_list,$start_index,$end_index,$ylabel);
 
         while ($this->dispersion($mmx,$mmy) <= $this->max_dispersion_window){
 
@@ -129,21 +129,21 @@ class FixationDataGenerator {
 
            if ($end_index >= $data_set_length){
               // This was the final fixation.
-              $fixations[] = Fixation::CreateFixationFromDataSet($dataset,$start_index,$end_index-1,$which_eye,$is_reading_study);
+              $fixations[] = Fixation::CreateFixationFromDataSet($raw_data_list,$start_index,$end_index-1,$which_eye,$is_reading_study);
               return $fixations;
            }
 
            // A new data point is added as part of the fixation
-           $mmx[self::MM_MAX] = max($mmx[self::MM_MAX],$dataset[$end_index][$xlabel]);
-           $mmx[self::MM_MIN] = min($mmx[self::MM_MIN],$dataset[$end_index][$xlabel]);           
-           $mmy[self::MM_MAX] = max($mmy[self::MM_MAX],$dataset[$end_index][$ylabel]);
-           $mmy[self::MM_MIN] = min($mmy[self::MM_MIN],$dataset[$end_index][$ylabel]);   
+           $mmx[self::MM_MAX] = max($mmx[self::MM_MAX],$raw_data_list[$end_index][$xlabel]);
+           $mmx[self::MM_MIN] = min($mmx[self::MM_MIN],$raw_data_list[$end_index][$xlabel]);           
+           $mmy[self::MM_MAX] = max($mmy[self::MM_MAX],$raw_data_list[$end_index][$ylabel]);
+           $mmy[self::MM_MIN] = min($mmy[self::MM_MIN],$raw_data_list[$end_index][$ylabel]);   
         }
 
         // If the code, got here, it means the new point is NOT part of the fixation.
         if ($window_expanded){
            // This means that the current window IS a fixation.
-           $fixations[] = Fixation::CreateFixationFromDataSet($dataset,$start_index,$end_index-1,$which_eye, $is_reading_study);
+           $fixations[] = Fixation::CreateFixationFromDataSet($raw_data_list,$start_index,$end_index-1,$which_eye, $is_reading_study);
            $start_index = $end_index;
         }
         else{
@@ -157,9 +157,9 @@ class FixationDataGenerator {
    }
 
    /**
-    * @brief computes all values which are unique for each data se. 
+    * @brief computes all values which are unique for each data set. 
     */
-   function computeDataSetValues(&$dataset, &$fix_l, &$fix_r, &$hitbox){
+   function computeDataSetValues(&$raw_data_list, &$fix_l, &$fix_r, &$hitbox){
 
       // All values to compute
       $data_set_values[DataSetComputedValues::DURATION] = 0;
@@ -174,12 +174,12 @@ class FixationDataGenerator {
       $data_set_values[DataSetComputedValues::RESPONSE_TIME_R] = 0;
 
       // Duration is the difference between timestamps of the first and last values of the dataset. 
-      $last = count($dataset) - 1;
-      $data_set_values[DataSetComputedValues::DURATION] = $dataset[$last][RawDataVectorFields::TIMESTAMP] - $dataset[0][RawDataVectorFields::TIMESTAMP];
+      $last = count($raw_data_list) - 1;
+      $data_set_values[DataSetComputedValues::DURATION] = $raw_data_list[$last][DataVectorField::TIMESTAMP] - $raw_data_list[0][DataVectorField::TIMESTAMP];
 
       // Sacadic latency
-      $data_set_values[DataSetComputedValues::SAC_LAT_L] = $this->computeSacadicLatency($dataset,EyeType::LEFT);
-      $data_set_values[DataSetComputedValues::SAC_LAT_R] = $this->computeSacadicLatency($dataset,EyeType::RIGHT);
+      $data_set_values[DataSetComputedValues::SAC_LAT_L] = $this->computeSacadicLatency($raw_data_list,Eye::LEFT);
+      $data_set_values[DataSetComputedValues::SAC_LAT_R] = $this->computeSacadicLatency($raw_data_list,Eye::RIGHT);
 
       // Gazing: The sum of all fixation lengts for each eye. 
       $data_set_values[DataSetComputedValues::GAZE_L] = $this->computeGaze($fix_l);
@@ -193,10 +193,10 @@ class FixationDataGenerator {
       if (count($hitbox) == 4){
          $index = TargetHitSearcher::findFirstFixationThatHits($hitbox,$fix_l);
          if ($index == -1) $data_set_values[DataSetComputedValues::RESPONSE_TIME_L] = "N/A";
-         else $data_set_values[DataSetComputedValues::RESPONSE_TIME_L] = $fix_l[$index][FixationVectorFields::TIME] - $dataset[0][RawDataVectorFields::TIMESTAMP];
+         else $data_set_values[DataSetComputedValues::RESPONSE_TIME_L] = $fix_l[$index][FixationVectorField::TIME] - $raw_data_list[0][DataVectorField::TIMESTAMP];
          $index = TargetHitSearcher::findFirstFixationThatHits($hitbox,$fix_r);
          if ($index == -1) $data_set_values[DataSetComputedValues::RESPONSE_TIME_R] = "N/A";
-         else $data_set_values[DataSetComputedValues::RESPONSE_TIME_R] = $fix_r[$index][FixationVectorFields::TIME] - $dataset[0][RawDataVectorFields::TIMESTAMP];
+         else $data_set_values[DataSetComputedValues::RESPONSE_TIME_R] = $fix_r[$index][FixationVectorField::TIME] - $raw_data_list[0][DataVectorField::TIMESTAMP];
       }
 
       return $data_set_values;
@@ -213,53 +213,53 @@ class FixationDataGenerator {
          $sacade = 0;
 
          if (($last_x > -1) && ($last_y > -1)){
-            $normX = ($last_x - $fixations[$i][FixationVectorFields::X])*self::SNC/$this->resolution_width;
-            $normY = ($last_y - $fixations[$i][FixationVectorFields::Y])*self::SNC/$this->resolution_height;
+            $normX = ($last_x - $fixations[$i][FixationVectorField::X])*self::SNC/$this->resolution_width;
+            $normY = ($last_y - $fixations[$i][FixationVectorField::Y])*self::SNC/$this->resolution_height;
             $sacade = sqrt($normX*$normX + $normY*$normY);
          }
 
-         $last_x = $fixations[$i][FixationVectorFields::X];
-         $last_y = $fixations[$i][FixationVectorFields::Y];
+         $last_x = $fixations[$i][FixationVectorField::X];
+         $last_y = $fixations[$i][FixationVectorField::Y];
          
          // The sacade amplitude
-         $fixations[$i][FixationVectorFields::SAC_AMP] = $sacade;       
+         $fixations[$i][FixationVectorField::SAC_AMP] = $sacade;       
 
          // The timeline. 
-         $fixations[$i][FixationVectorFields::TIMELINE] = $fixations[$i][FixationVectorFields::START_TIME] - $start_time; 
+         $fixations[$i][FixationVectorField::TIMELINE] = $fixations[$i][FixationVectorField::START_TIME] - $start_time; 
       }
    }
 
-   private function computeGaze(&$dataset){
+   private function computeGaze(&$raw_data_list){
       $gaze = 0;
-      foreach ($dataset as $f){
-         $gaze = $gaze + $f[FixationVectorFields::DURATION];         
+      foreach ($raw_data_list as $f){
+         $gaze = $gaze + $f[FixationVectorField::DURATION];         
       }
       return $gaze;
    }
 
-   private function computeSacadicLatency(&$dataset, $eye){
+   private function computeSacadicLatency(&$raw_data_list, $eye){
       $sac_lat = 0;
-      if ($eye == EyeType::LEFT){
-         $x = RawDataVectorFields::XL;
-         $y = RawDataVectorFields::YL;
+      if ($eye == Eye::LEFT){
+         $x = DataVectorField::XL;
+         $y = DataVectorField::YL;
       }
       else{
-         $x = RawDataVectorFields::XR;
-         $y = RawDataVectorFields::YR;
+         $x = DataVectorField::XR;
+         $y = DataVectorField::YR;
       }
 
-      $start_time = $dataset[0][RawDataVectorFields::TIMESTAMP];
+      $start_time = $raw_data_list[0][DataVectorField::TIMESTAMP];
 
-      for ($i = 0; $i < count($dataset); $i++){
+      for ($i = 0; $i < count($raw_data_list); $i++){
          
-         $diffx = $dataset[$i][$x] - $this->screen_center_x;
+         $diffx = $raw_data_list[$i][$x] - $this->screen_center_x;
          $diffx = $diffx*$diffx;
 
-         $diffy = $dataset[$i][$y] - $this->screen_center_y;
+         $diffy = $raw_data_list[$i][$y] - $this->screen_center_y;
          $diffy = $diffy*$diffy;
 
          if (($diffx+$diffy) > $this->sqr_sac_lat_tol){
-            $sac_lat = $dataset[$i][RawDataVectorFields::TIMESTAMP] - $start_time;
+            $sac_lat = $raw_data_list[$i][DataVectorField::TIMESTAMP] - $start_time;
             break;
          }
       }
@@ -270,8 +270,8 @@ class FixationDataGenerator {
    private function computeNumberOfFixationInCenter(&$fix){
       $counter = 0;
 
-      $x = FixationVectorFields::X;
-      $y = FixationVectorFields::Y;
+      $x = FixationVectorField::X;
+      $y = FixationVectorField::Y;
 
       for ($i = 0; $i < count($fix); $i++){
          
@@ -289,20 +289,19 @@ class FixationDataGenerator {
       return $counter;            
    }
 
-
    private function dispersion($mmx, $mmy){
       $dispersion = $mmx[self::MM_MAX] - $mmx[self::MM_MIN];
       $dispersion = $dispersion + ($mmy[self::MM_MAX] - $mmy[self::MM_MIN]);
       return $dispersion;
    }
 
-   private function findDispersionLimits(&$dataset, $start_index, $end_index, $value_name){
-       $mm[self::MM_MAX] = $dataset[$start_index][$value_name];
-       $mm[self::MM_MIN] = $dataset[$start_index][$value_name];
+   private function findDispersionLimits(&$raw_data_list, $start_index, $end_index, $value_name){
+       $mm[self::MM_MAX] = $raw_data_list[$start_index][$value_name];
+       $mm[self::MM_MIN] = $raw_data_list[$start_index][$value_name];
 
        for ($i = $start_index+1; $i <= $end_index; $i++) {
-           $mm[self::MM_MAX] = max($mm[self::MM_MAX], $dataset[$i][$value_name]);
-           $mm[self::MM_MIN] = min($mm[self::MM_MIN], $dataset[$i][$value_name]);
+           $mm[self::MM_MAX] = max($mm[self::MM_MAX], $raw_data_list[$i][$value_name]);
+           $mm[self::MM_MIN] = min($mm[self::MM_MIN], $raw_data_list[$i][$value_name]);
        }
 
        return $mm;

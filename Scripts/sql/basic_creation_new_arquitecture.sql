@@ -47,11 +47,7 @@ CREATE TABLE evaluations (
 CREATE TABLE evaluation_quality_control (
    keyid                              INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
    qc_parameters                      LONGTEXT,
-   points_per_trial                   LONGTEXT,
-   fixations_per_trial                LONGTEXT,
-   glitches_per_trial                 LONGTEXT,
-   avg_frequency_per_trial            LONGTEXT,
-   filename                           VARCHAR(255),
+   qc_graphs                          LONGTEXT,
    evaluation_id                      INT UNSIGNED
 );
 
@@ -91,7 +87,8 @@ CREATE TABLE subjects (
    internal_id               VARCHAR(255),
    institution_id            INT UNSIGNED,
    instance_number           INT UNSIGNED,
-   timestamp_id              INT UNSIGNED
+   timestamp_id              INT UNSIGNED,
+   lastest                   TIYINT UNSIGNED DEFAULT 0
 );
 
 CREATE TABLE portal_users (

@@ -26,8 +26,6 @@
 
 We are going to need a loader function that creates the file/select the file with the subject_data/metadata. 
 
-
-
 ====================== GENERAL STRUCTURE
 
 S["studies"][STUDY_NAME]["trial_list"]             = Specified below

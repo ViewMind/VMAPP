@@ -139,6 +139,135 @@ class TableBaseClass {
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
    /**
+    * INSERTS only when the values are different from the current lastest information of the item. 
+    */
+
+   protected function insertOnUpdatedInfo($cols_to_compare,$unique_item_id,$unique_item_column,$latest_column){
+
+      $this->error;
+
+      $cols_to_check = array_keys($cols_to_compare);
+      $cols_to_check[] = $unique_item_column;
+      $cols_to_check[] = $latest_column;
+      
+      // Checking the validity of all the columns to get.
+      foreach ($cols_to_compare as $col) {
+         if (!in_array($col, $this->valid_columns)) {
+            $this->error = "$col is not a column of table " . static::class::TABLE_NAME;
+            return false;
+         }
+      }
+      
+      $cols_to_compare[] = self::COL_KEYID;
+
+      // Doing a select query on the $unique_item_column assuming there is only one $latest column.
+      $sql = "SELECT " . implode(",",$cols_to_compare) . " FROM " . static::class::TABLE_NAME . " WHERE " . $latest_column . " = :latest AND $unique_item_column = $:uid";
+      
+      $bind["latest"] = 1;
+      $bind["uid"]    = $unique_item_id;
+      
+      try {
+         $stmt = $this->con->prepare($sql);
+         $stmt->execute($bind);
+         $ans = array();
+         while($row = $stmt->fetch()){
+            $latest[] = $row;
+         } 
+         return $ans;
+      }
+      catch (PDOException $e){
+         $this->error = "Select failure: " . $e->getMessage() . ". SQL: $sql";
+         return false;
+      }      
+
+      // Checking there is only one answer:
+      if (count($latest) > 1){
+         $this->error = "Insert On Update Info: More than one row in " . static::class::TABLE_NAME . " for unique ID: $unique_item_id";
+         return false;
+      }
+
+      // Checking there is something, at all,
+      $previous_keyid = "";
+      // Default value of true in case there was nothing there before. 
+      $should_insert = true;
+
+      if (count($latest) == 1){
+
+         // If we got here, there was something before. 
+         $should_insert = false;
+
+         // Getting the previous row identifier and clearing it from the array. 
+         $previous_keyid = $latest[self::COL_KEYID];
+         unset($latest[self::COL_KEYID]); 
+
+         // Now we do the comparison. 
+         foreach ($latest as $col => $value){
+            if ($value != $cols_to_compare[$col]){
+               $should_insert = true;
+               break;
+            }
+         }
+
+      }
+
+      // We move onto the insertion, if necessary. 
+      if ($should_insert) {
+      
+         // Creating the placeholders for the statement as column names with : so that the straight params can be used. 
+         $placeholders = array();
+         
+         // We need to make sure that we insert the lastest value fo the column and the unique item id. 
+         $columns_to_insert[$unique_item_column] = $unique_item_id;
+         $columns_to_insert[$latest_column] = 1;
+
+         $columns_to_insert = array_keys($cols_to_compare);
+         foreach ($columns_to_insert as $p){
+            $placeholders[] = ":$p";
+         }
+   
+         // Creating the sql string.
+         $sql =  "INSERT INTO " . static::class::TABLE_NAME .  " (" . implode(",",$columns_to_insert) . ") VALUES (" . implode(",",$placeholders) . ")";
+   
+         try {
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute($cols_to_compare);
+            $this->last_inserted[] = $this->con->lastInsertId();
+         }
+         catch (PDOException $e){
+            $this->error = "Insertion failure for Insert On Update Info: " . $e->getMessage() . ". SQL: $sql";
+            return false;
+         }      
+                  
+      }
+
+      // Finally, if there WAS an insertion AND there WAS previous information we insert the last row. 
+      if ($should_insert && ($previous_keyid != "")){
+
+         $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . $latest_column . " = :latest WHERE $unique_item_column = :uid";
+         $bind["latest"] = 0;
+         $bind["uid"]    = $previous_keyid;
+
+         try {
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute($bind);
+            $ans = array();
+            while($row = $stmt->fetch()){
+               $latest[] = $row;
+            } 
+            return $ans;
+         }
+         catch (PDOException $e){
+            $this->error = "Update failure on Insert On Update Inf: " . $e->getMessage() . ". SQL: $sql";
+            return false;
+         }         
+
+      }
+
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   /**
     * SELECT operation on the table. 
     */
 

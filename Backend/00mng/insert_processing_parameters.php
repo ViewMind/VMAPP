@@ -25,6 +25,7 @@ $name = "gazepoint";
 $pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 197;
 $pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
 $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 150;
+$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
 
 $fp = array();
 $fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;
@@ -32,24 +33,24 @@ $fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 9;
 $fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; 
 
 // Reading parameters 
-$fp[StudyTypes::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
-$fp[StudyTypes::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 150;
+$fp[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
+$fp[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 150;
 
 // Reading parameters 
 $fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
 $fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 150;
 
 // NBack RT
-$fp[StudyTypes::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[StudyTypes::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 30;
+$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 30;
 
 // NBack MS 
-$fp[StudyTypes::NBACKMS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[StudyTypes::NBACKMS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 30;
+$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 30;
 
 // Go No Go parameters 
-$fp[StudyTypes::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[StudyTypes::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 100;
+$fp[Study::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 100;
 
 
 $ans = $tpp->addProductParameters($name,$pp,$fp);
@@ -63,6 +64,7 @@ $name = "htcviveeyepro";
 $pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 105;
 $pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
 $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;
+$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
 
 $fp = array();
 $fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;
@@ -70,24 +72,24 @@ $fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 9;
 $fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; 
 
 // Reading parameters 
-$fp[StudyTypes::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
-$fp[StudyTypes::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
+$fp[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
+$fp[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
 
 // Reading parameters 
 $fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
 $fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
 
 // NBack RT
-$fp[StudyTypes::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[StudyTypes::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
+$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
 
 // NBack MS 
-$fp[StudyTypes::NBACKMS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[StudyTypes::NBACKMS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
+$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
 
 // Go No Go parameters 
-$fp[StudyTypes::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[StudyTypes::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 80;
+$fp[Study::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 80;
 
 $tpp->addProductParameters($name,$pp,$fp);
 if ($ans === FALSE){

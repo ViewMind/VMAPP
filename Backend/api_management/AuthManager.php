@@ -9,6 +9,7 @@
       
       private $headers;      
       private $error;
+      private $returnable_error;
       private $auth_type;
       private $institution_id;
       private $institution_instance;
@@ -30,6 +31,7 @@
          $this->files = $files;
          $this->permissions = array();
          $this->http_code = 500; // If I forget the code, then it is a server error.
+         $this->returnable_error = "";
          
          // We need to verify that the authentication field is present .... 
          if (!array_key_exists(HeaderFields::AUTH_TYPE,$headers)){
@@ -88,6 +90,11 @@
          return $this->error;
       }
 
+      function getReturnableError(){
+         if ($this->returnable_error == "") return $this->error;
+         return $this->returnable_error;
+      }
+
       function getPermissions(){
          return $this->permissions;
       }
@@ -127,6 +134,7 @@
       private function authenticateSignature(&$message){
          $signature = $this->headers[HeaderFields::SIGNATURE];
          $client_key = $this->headers[HeaderFields::AUTHENTICATION];
+         $this->returnable_error = "";
 
          // We need to get the secret from the appropiate table. 
          $dbcon = new DBCon();
@@ -134,6 +142,7 @@
          if ($con_secure == NULL){
             $this->http_code = 500;
             $this->error = "Error creating db connection: " . $dbcon->getError();
+            $this->returnable_error = ReturnableError::DATABASE_CON;
             return false;
          }
 
@@ -142,6 +151,7 @@
          if ($key_secret_permissions === false){
             $this->http_code = 500;
             $this->error = "Could not get key and secret: " . $table_secrets->getError();
+            $this->returnable_error = ReturnableError::DATABASE_QUERY;
             return false;
          }
 
@@ -160,6 +170,7 @@
             $this->http_code = 500; // This should not happen. It's our problem. 
             $this->error = "Permissions array is badly formed. JSON Decode error: " . json_last_error_msg() . "\nPermissions String: " 
             . $key_secret_permissions[0][TableSecrets::COL_PERMISSIONS];
+            $this->returnable_error = ReturnableError::DATABASE_QUERY;
             return false;
          }
 

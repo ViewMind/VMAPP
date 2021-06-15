@@ -1,0 +1,2 @@
+"Speed_Processing" "Facilitation" "Interference" "Decision_making_time_Facilitate" "Decision_making_time_Interference" "Percentage_Inhibition_processes_Facilitation" "Percentage_Inhibition_processes_Interference"
+"1" 1.69883333333333 138 154 471.008771929825 509.942148760331 0 0.038961038961039

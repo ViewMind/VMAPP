@@ -2,14 +2,13 @@
 
 include_once ("DataContainerNames.php");
 
-class RawDataInterpreter {
+class ViewMindDataContainer {
    
    private $error;
    private $data;
    private $available_studies;
 
    private $current_study;
-   private $current_trial_list_type;
    private $current_number_of_trials;
    private $available_data_sets;
 
@@ -37,19 +36,16 @@ class RawDataInterpreter {
          return false;
       }
 
-      // Figuring out studies the structure.
-      if (!array_key_exists(MainFields::STUDIES,$this->data)){
-         $this->error = "No studies field in data";
-         return false;
+      $main_fields = MainFields::getConstList();
+
+      foreach ($main_fields as $main_field){
+         if (!array_key_exists($main_field,$this->data)){
+            $this->error = "No $main_field field in data";
+            return false;
+         }   
       }
 
       $this->available_studies = array_keys($this->data[MainFields::STUDIES]);
-
-      // Checking that metadata exists.
-      if (!array_key_exists(MainFields::METADATA,$this->data)){
-         $this->error = "No metada field was found in the data";
-         return false;
-      }
 
       return true;
    }
@@ -59,7 +55,7 @@ class RawDataInterpreter {
    }
 
    function getSubjectDataValue($subject_field){
-      if (!SubjectFields::validate($subject_field)){
+      if (!SubjectField::validate($subject_field)){
          $this->error = "$subject_field is an invalid subject field";
          return "";
       }
@@ -79,7 +75,7 @@ class RawDataInterpreter {
    }
 
    function getMetaDataField($metada_field){
-      if (!MetadaFields::validate($metada_field)){
+      if (!MetadataField::validate($metada_field)){
          $this->error = "$metada_field is an invalid metadata field";
          return "";
       }
@@ -102,9 +98,9 @@ class RawDataInterpreter {
       return $this->current_number_of_trials;
    }
 
-   function setProcessingParameters($pp){
-      $this->data[MainFields::PROCESSING_PARAMETERS] = $pp;
-   }
+   // function setProcessingParameters($pp){
+   //    $this->data[MainFields::PROCESSING_PARAMETERS] = $pp;
+   // }
 
    function getProcessingParameters(){
       if (array_key_exists(MainFields::PROCESSING_PARAMETERS,$this->data)){
@@ -113,7 +109,7 @@ class RawDataInterpreter {
       else return array();
    }
 
-   function setRawDataAccessPathForTrialList($study, $trial_list_type){
+   function setRawDataAccessPathForStudy($study){
 
       $this->current_study = "";
       $this->current_trial_list_type = "";
@@ -123,30 +119,24 @@ class RawDataInterpreter {
          return false;
       }
 
-      if (!array_key_exists(StudyFields::TRIAL_LIST,$this->data[MainFields::STUDIES][$study])){
+      if (!array_key_exists(StudyField::TRIAL_LIST,$this->data[MainFields::STUDIES][$study])){
          $this->error = "Unable to find the trial list field for the selected study of $study";
          return false;
       }
 
-      if (!array_key_exists($trial_list_type,$this->data[MainFields::STUDIES][$study][StudyFields::TRIAL_LIST])){
-         $this->error = "Unable to find the trial list type $trial_list_type for the selected study of $study";
-         return false;
-      }      
-
-      $this->current_number_of_trials = count($this->data[MainFields::STUDIES][$study][StudyFields::TRIAL_LIST][$trial_list_type]);
+      $this->current_number_of_trials = count($this->data[MainFields::STUDIES][$study][StudyField::TRIAL_LIST]);
 
       if ($this->current_number_of_trials > 0){
-         if (!array_key_exists(TrialFields::DATA,$this->data[MainFields::STUDIES][$study][StudyFields::TRIAL_LIST][$trial_list_type][0])){
-            $this->error = "Unable to find the data field of the first trial for the $study with trial list type of $trial_list_type";
+         if (!array_key_exists(TrialField::DATA,$this->data[MainFields::STUDIES][$study][StudyField::TRIAL_LIST][0])){
+            $this->error = "Unable to find the data field of the first trial for the $study";
             return false;
          }             
       }
 
       $this->current_study = $study;
-      $this->current_trial_list_type = $trial_list_type;
 
       // This does assume that ALL trials in the list contains the same DataSets (as the ones in the first one) which SHOULD always be the case. 
-      $this->available_data_sets = array_keys($this->data[MainFields::STUDIES][$this->current_study][StudyFields::TRIAL_LIST][$this->current_trial_list_type][0][TrialFields::DATA]);
+      $this->available_data_sets = array_keys($this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][0][TrialField::DATA]);
       //var_dump($this->available_data_sets);
 
       return true;
@@ -159,17 +149,17 @@ class RawDataInterpreter {
          return false;
       }
       
-      if (!array_key_exists(StudyFields::STUDY_CONFIGURATION,$this->data[MainFields::STUDIES][$this->current_study])){
+      if (!array_key_exists(StudyField::STUDY_CONFIGURATION,$this->data[MainFields::STUDIES][$this->current_study])){
          $this->error = "Study " . $this->current_study . " does not have a study configuration field";
          return "";
       }
 
-      if (!array_key_exists(StudyConfigurationFields::VALID_EYE,$this->data[MainFields::STUDIES][$this->current_study][StudyFields::STUDY_CONFIGURATION])){
+      if (!array_key_exists(StudyParameter::VALID_EYE,$this->data[MainFields::STUDIES][$this->current_study][StudyField::STUDY_CONFIGURATION])){
          $this->error = "Configuration for study " . $this->current_study . " does not have a valid eye field";
          return "";
       }
 
-      return $this->data[MainFields::STUDIES][$this->current_study][StudyFields::STUDY_CONFIGURATION][StudyConfigurationFields::VALID_EYE];
+      return $this->data[MainFields::STUDIES][$this->current_study][StudyField::STUDY_CONFIGURATION][StudyParameter::VALID_EYE];
 
    }
 
@@ -194,8 +184,14 @@ class RawDataInterpreter {
          return array();
       }
 
-      return $this->data[MainFields::STUDIES][$this->current_study][StudyFields::TRIAL_LIST][$this->current_trial_list_type][$trial_index][TrialFields::DATA][$data_set_type][DataSetFields::RAW_DATA];
+      return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index][TrialField::DATA][$data_set_type][DataSetField::RAW_DATA];
    }
+
+   // function getFixationList($data_set_type, $trial_index, $eye){
+   //    if (!Eye::validate($eye)){
+   //       $this->error = "Current study has "
+   //    }
+   // }
 
    function getTrial($trial_index){
 
@@ -209,8 +205,9 @@ class RawDataInterpreter {
          return array();
       }
 
-      return $this->data[MainFields::STUDIES][$this->current_study][StudyFields::TRIAL_LIST][$this->current_trial_list_type][$trial_index];
+      return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index];
    }   
+
 
 }
 
