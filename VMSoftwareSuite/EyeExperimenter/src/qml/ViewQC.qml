@@ -96,6 +96,7 @@ VMBase {
 
         graph.vmDataPoints = data["GraphData"];
         graph.vmRefDataPoints = data["REFData"];
+        //console.log("Setting ref to" + JSON.stringify(data["REFData"]));
         graph.graph();
 
 //                // Debug Code;
@@ -370,6 +371,7 @@ VMBase {
             var yTickValues = [];
             var yTickInterval;
             var yLabel;
+            var barWidth
             var effectiveWidth;
             var effectiveHeight;
             var verticalOffset;
@@ -384,7 +386,7 @@ VMBase {
                 effectiveHeight = height*vmGraphHeight;
                 var totalAmountOfWhiteSpace = effectiveWidth*vmBarGraphWhiteSpaceTotal;
                 var spaceBetweenBars = totalAmountOfWhiteSpace/(vmDataPoints.length-1);
-                var barWidth = (effectiveWidth - totalAmountOfWhiteSpace)/vmDataPoints.length;
+                barWidth = (effectiveWidth - totalAmountOfWhiteSpace)/vmDataPoints.length;
                 verticalScale = height*vmGraphHeight/highestValue;
 
                 // We start adding the bars. So we first compute where our x starts.
@@ -439,7 +441,7 @@ VMBase {
                 // Starting x value
                 x = ((1-vmGraphEffectiveWidth)/2)*width*vmGraphWidth + air_w/2
                 xStart = x;
-                xInterval = width*vmGraphWidth*vmGraphEffectiveWidth/(vmDataPoints.length);
+                xInterval = effectiveWidth/(vmDataPoints.length-1);
 
                 ctx.moveTo(x,verticalScale*vmDataPoints[0] + verticalOffset);
 
@@ -478,9 +480,10 @@ VMBase {
             if (vmGraphType == "bar"){
                 for (i = 0; i < vmRefDataPoints.length; i++){
                     y = vmRefDataPoints[i]*verticalScale
-                    y = air_h/2 + (effectiveHeight - verticalScale*y)
+                    //console.log("Bar ref y pos " + y);
+                    //y = air_h/2 + (effectiveHeight - verticalScale*y)
                     ctx.moveTo(x,y)
-                    ctx.lineTo(x+xInterval,y);
+                    ctx.lineTo(x+barWidth,y);
                     x = x + xInterval;
                 }
             }

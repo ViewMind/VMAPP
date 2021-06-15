@@ -68,7 +68,7 @@ namespace Globals{
       // These values NEED to match the ViewStudyStart definitions.
       static const QString UNIQUE_STUDY_ID = "unique_study_id";
        
-      // Unique value index for each experiment = 
+      // Unique value index for each experiment, as selectable by the evaluator
       static const qint32 INDEX_READING = 0;
       static const qint32 INDEX_BINDING_BC = 1;
       static const qint32 INDEX_BINDING_UC = 2;
@@ -82,7 +82,7 @@ namespace Globals{
    namespace Debug {
       static const bool PRETTY_PRINT_JSON     = true;
       static const bool PRETTY_PRINT_JSON_DB  = true;
-      static const bool SHORT_STUDIES         = false;
+      static const bool SHORT_STUDIES         = true;
       static const bool DISABLE_DB_CHECKSUM   = true;
       static const bool SHOW_MOUSE_STUDY      = true;
    }

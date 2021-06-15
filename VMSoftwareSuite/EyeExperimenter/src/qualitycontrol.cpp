@@ -166,6 +166,11 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
         return false;
     }
 
+    if (!rawdata.setQCVector(studyType,VMDC::QCFields::GLITCHES,glitchesPerTrial)){
+        error = "Setting glitches qc: " + rawdata.getError();
+        return false;
+    }
+
     QVariantList tempndata; tempndata << ndatasets;
     if (!rawdata.setQCVector(studyType,VMDC::QCFields::N_DATASETS,tempndata)){
         error = "Setting n datasets qc: " + rawdata.getError();

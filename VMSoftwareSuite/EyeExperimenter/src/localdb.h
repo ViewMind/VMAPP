@@ -21,9 +21,6 @@ namespace APINames {
 
    namespace ProcParams {
       static const char * NAME = "proc_params";
-      static const char * MAX_DISPERSION_WINDOW = "max_dispersion_window";
-      static const char * MINIMUM_FIXATION_LENGTH = "minimum_fixation_length";
-      static const char * SAMPLE_FREQUENCY = "sample_frequency";
    }
 
    namespace FreqParams{
