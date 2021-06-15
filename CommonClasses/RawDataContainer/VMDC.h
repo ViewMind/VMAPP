@@ -259,7 +259,7 @@ namespace VMDC {
        static const QString YEARS_FORMATION = "years_formation";
        static const QString GENDER = "gender";
        static const QString AGE = "age";
-       static const QString INSTITUTION_PROVIDED_ID = "instituion_provided_id";
+       static const QString INSTITUTION_PROVIDED_ID = "institution_provided_id";
        static const QString LASTNAME = "lastname";
        static const QString LOCAL_ID = "local_id";
        static const QString NAME = "name";
