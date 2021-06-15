@@ -311,10 +311,11 @@ bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &respo
     }
 
     QStringList shouldBeThere;
-    shouldBeThere << APINames::ProcParams::MAX_DISPERSION_WINDOW << APINames::ProcParams::MINIMUM_FIXATION_LENGTH << APINames::ProcParams::SAMPLE_FREQUENCY;
+    shouldBeThere = VMDC::ProcessingParameter::valid;
+    shouldBeThere << VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW << VMDC::ProcessingParameter::LATENCY_ESCAPE_RADIOUS
+                  << VMDC::ProcessingParameter::MIN_FIXATION_DURATION << VMDC::ProcessingParameter::SAMPLE_FREQUENCY;
 
     QVariantMap pp = response.value(APINames::ProcParams::NAME).toMap();
-    QVariantMap localpp;
 
     QStringList serverkeys = pp.keys();
     for (qint32 i = 0; i < serverkeys.size(); i++){
@@ -330,11 +331,7 @@ bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &respo
         return false;
     }
 
-    localpp.insert(PP_MAX_DISPERSION_SIZE,pp.value(APINames::ProcParams::MAX_DISPERSION_WINDOW));
-    localpp.insert(PP_MINIMUM_FIX_DURATION,pp.value(APINames::ProcParams::MINIMUM_FIXATION_LENGTH));
-    localpp.insert(PP_SAMPLE_FREQUENCY,pp.value(APINames::ProcParams::SAMPLE_FREQUENCY));
-
-    data[MAIN_PROCESSING_PARAMETERS] = localpp;
+    data[MAIN_PROCESSING_PARAMETERS] = pp;
     return saveAndBackup();
 }
 

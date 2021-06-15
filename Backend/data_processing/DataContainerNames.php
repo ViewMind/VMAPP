@@ -156,8 +156,8 @@ abstract class MetadataField extends TypedString
    const INSTITUTION_NAME                        = "institution_name";
    const VERSION                                 = "version";
    const PROCESSING_PARAMETER_KEY                = "processing_parameters_key";   
-   const PROCESSING_MOUSE_USED                   = "mouse_used";   
-   const PROCESSING_PROTOCOL                     = "protocol";   
+   const MOUSE_USED                              = "mouse_used";   
+   const PROTOCOL                                = "protocol";   
 }
 
 abstract class SubjectField extends TypedString {
@@ -276,10 +276,6 @@ abstract class BindingScore extends TypedString {
    const CORRECT                                 = "correct";
    const WRONG                                   = "wrong";
 }
-
-
-
-
 
 abstract class GoNoGoTargetBoxes {
    const ARROW  = 0;
