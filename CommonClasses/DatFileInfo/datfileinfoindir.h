@@ -2,7 +2,7 @@
 #define DATFILEINFO_H
 
 #include <QDir>
-#include "../common.h"
+#include "../old_common.h"
 #include "../LogInterface/loginterface.h"
 
 class DatFileInfoInDir

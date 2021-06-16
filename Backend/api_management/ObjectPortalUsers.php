@@ -24,6 +24,7 @@ class ObjectPortalUsers extends ObjectBaseClass{
       $ans = $tiu->getUsersForInstitution($identifier);
       if ($ans === false){
          $this->suggested_http_code = 500;
+         $this->returnable_error = "Could not get information on the users for this institution";
          $this->error = "Getting ids for institution $identifier users: " . $tiu->getError();
          return false;
       }
@@ -43,6 +44,7 @@ class ObjectPortalUsers extends ObjectBaseClass{
       $ans = $tpu->getAllNamesForIDList($user_ids,[TablePortalUsers::ROLE_MEDICAL, TablePortalUsers::ROLE_INTITUTION_ADMIN]);
       if ($ans === false){
          $this->suggested_http_code = 500;
+         $this->returnable_error = "Could not get information on the users for this institution";
          $this->error = "Getting names for userids for institution $identifier: " . $tpu->getError();
          return false;
       }

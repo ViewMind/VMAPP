@@ -19,7 +19,9 @@ define("CONFIG_FILE",__DIR__."/config.cnf");
 
 // Pameter groups that must be present in the configuration file. 
 $parameter_groups = [ 
-   ParameterGeneral::NAME => ParameterGeneral::REQUIRED
+   GlobalConfigGeneral::GROUP_NAME => GlobalConfigGeneral::getConstList(["GROUP_NAME"]),
+   GlobalConfigLogs::GROUP_NAME => GlobalConfigLogs::getConstList(["GROUP_NAME"]),
+   GlobalConfigProcResources::GROUP_NAME => GlobalConfigProcResources::getConstList(["GROUP_NAME"])
 ];
 
 // Checking that this is so. 

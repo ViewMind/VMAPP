@@ -57,7 +57,7 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
 
     qreal max_diff = qc.value(VMDC::QCGlobalParameters::MAX_TIMESTAMP_DIFF).toReal();
     qreal min_diff = qc.value(VMDC::QCGlobalParameters::MIN_TIMESTAMP_DIFF).toReal();
-    qreal glitch_percent = qc.value(VMDC::QCGlobalParameters::MIN_GLITCHES).toReal()/100;
+    qreal glitch_percent = qc.value(VMDC::QCGlobalParameters::MAX_GLITCHES).toReal()/100;
 
     QVariantMap qcStudy = qc.value(metaStudyName).toMap();
     //qDebug() << "QC Values for" << metaStudyName;

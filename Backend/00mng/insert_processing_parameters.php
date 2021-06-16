@@ -28,15 +28,15 @@ $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 150;
 $pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
 
 $fp = array();
-$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;
-$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 9;
+$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 5;
+$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 8;
 $fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; 
 
 // Reading parameters 
 $fp[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
 $fp[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 150;
 
-// Reading parameters 
+// Binding parameters 
 $fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
 $fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 150;
 
@@ -68,7 +68,7 @@ $pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
 
 $fp = array();
 $fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;
-$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 9;
+$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 10;
 $fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; 
 
 // Reading parameters 

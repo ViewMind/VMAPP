@@ -23,9 +23,15 @@
       return implode(",", array_values($oClass->getConstants()));
    }
 
-   static function getConstList(){
+   static function getConstList($skip = array()){
       $oClass = new ReflectionClass(static::class);
-      return array_values($oClass->getConstants());
+      $associative_array = $oClass->getConstants();
+      if (empty($skip)) return array_values($associative_array);
+      $ret = array();
+      foreach ($associative_array as $name => $value){
+         if (!in_array($name,$skip)) $ret[] = $value;
+      }
+      return $ret;
    }
    
    }

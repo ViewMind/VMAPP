@@ -311,6 +311,7 @@ class TableBaseClass {
             $this->error = "Invalid order direction for ORDER BY: $order_direction " . static::class::TABLE_NAME;
             return false;
          }
+         $sql = $sql . " " . $order_direction;  
       } 
       if ($limit > -1){
          $sql = $sql . " LIMIT $limit";

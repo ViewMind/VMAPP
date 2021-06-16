@@ -40,6 +40,9 @@ CREATE TABLE evaluations (
    institution_id           INT UNSIGNED,
    institution_instance     INT UNSIGNED,
    subject_id               INT UNSIGNED,
+   evaluator_email          VARCHAR(255),
+   evaluator_name           VARCHAR(255),
+   evaluator_lastname       VARCHAR(255),
    protocol                 VARCHAR(255),
    results                  LONGTEXT
 );   

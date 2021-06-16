@@ -403,7 +403,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
     }
 
     if (!rdc.saveJSONFile(filename,Globals::Debug::PRETTY_PRINT_JSON)){
-        logger.appendError("Failed on createing new study file: " + filename + ". Reason: " + rdc.getError());
+        logger.appendError("Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
         return false;
     }
 

@@ -22,8 +22,6 @@
       private $permissions;
       private $dbuser;
 
-      const FILE_STRUCT_TMP_NAME           = "tmp_name";
-
       public function __construct($headers, $post_data, $files){
          $this->headers = $headers;
          $this->error = "";
@@ -185,9 +183,37 @@
          // We first need to append the raw data of the post. 
          $message = $message . $this->post_raw_data;
 
-         // Then we append the raw file data. 
+         // Then we append the raw file data. AND check no errors. If there are errors there is no point in moving on. 
          foreach ($this->files as $fkey => $fstruct){
-            $message = $message . file_get_contents($fstruct[self::FILE_STRUCT_TMP_NAME]);
+            $message = $message . file_get_contents($fstruct[FileStructNames::TMP_LOCATION]);
+            
+            if ($fstruct[FileStructNames::ERROR] != UPLOAD_ERR_OK){
+
+               switch ($fstruct[FileStructNames::ERROR]){
+                  case UPLOAD_ERR_CANT_WRITE:
+                     $this->error = "Failed to write upload to disk";
+                     break;
+                  case UPLOAD_ERR_EXTENSION:
+                     $this->error = "PHP Extension stopped file upload";
+                     break;
+                  case UPLOAD_ERR_FORM_SIZE:
+                     $this->error = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
+                     break;
+                  case UPLOAD_ERR_PARTIAL:
+                     $this->error = "The uploaded file was only partially uploaded";
+                     break;
+                  case UPLOAD_ERR_NO_TMP_DIR:
+                     $this->error = "Missing temporary folder for file upload";
+                     break;
+                  case UPLOAD_ERR_EXTENSION:
+                     $this->error = "PHP Extension stopped file upload";
+                     break;
+               }
+
+               $this->http_code = 500;
+               return false;
+            }
+
          }
 
          //echoOut($message,true);

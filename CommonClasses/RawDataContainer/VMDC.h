@@ -193,8 +193,8 @@ namespace VMDC {
     
     namespace DataSetField {
        static const QString RAW_DATA = "raw_data";
-       static const QString FIXATION_L = "fixation_l";
-       static const QString FIXATION_R = "fixation_r";
+       static const QString FIXATION_L = "fixations_l";
+       static const QString FIXATION_R = "fixations_r";
        static const QStringList valid{RAW_DATA, FIXATION_L, FIXATION_R};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Data Study Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }

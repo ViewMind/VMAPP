@@ -11,6 +11,7 @@ class ViewMindDataContainer {
    private $current_study;
    private $current_number_of_trials;
    private $available_data_sets;
+   private $file_location;
 
    function __construct(){
    }
@@ -46,7 +47,16 @@ class ViewMindDataContainer {
       }
 
       $this->available_studies = array_keys($this->data[MainFields::STUDIES]);
+      $this->file_location = $raw_data_file;
 
+      return true;
+   }
+
+   function save(){
+      $fid = fopen($this->file_location,"w+");
+      if ($fid === false) return false;
+      fwrite($fid,json_encode($this->data,JSON_PRETTY_PRINT));
+      fclose($fid);
       return true;
    }
 
@@ -94,6 +104,25 @@ class ViewMindDataContainer {
 
    }   
 
+   function getStudyField($field){
+
+      if (!StudyField::validate($field)){
+         $this->error = "$field is an invalid study field field";
+         return "";
+      }
+
+      if (!array_key_exists($field,$this->data[MainFields::STUDIES][$this->current_study])){
+         $this->error = "$field does not exist for study " . $this->current_study;
+         return "";
+      }
+
+      if ($this->current_study == ""){
+         $this->error = "Current study has not been set";
+         return false;
+      }
+      return $this->data[MainFields::STUDIES][$this->current_study][$field];
+   }
+
    function getNumberOfTrials() {
       return $this->current_number_of_trials;
    }
@@ -112,7 +141,6 @@ class ViewMindDataContainer {
    function setRawDataAccessPathForStudy($study){
 
       $this->current_study = "";
-      $this->current_trial_list_type = "";
 
       if (!in_array($study,$this->available_studies)){
          $this->error = "$study is not an available studies. Available studies are: " . implode(",",$this->available_studies);
@@ -163,6 +191,7 @@ class ViewMindDataContainer {
 
    }
 
+
    function getAvailableDataSetsForSelectedStudy(){
       return $this->available_data_sets;
    }
@@ -187,11 +216,96 @@ class ViewMindDataContainer {
       return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index][TrialField::DATA][$data_set_type][DataSetField::RAW_DATA];
    }
 
-   // function getFixationList($data_set_type, $trial_index, $eye){
-   //    if (!Eye::validate($eye)){
-   //       $this->error = "Current study has "
+   function getTrialList(){
+      if ($this->current_study == ""){
+         $this->error = "Current study has not been set";
+         return false;
+      }
+      return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST];
+   }
+
+   function setTrialList($trial_list){
+      if ($this->current_study == ""){
+         $this->error = "Current study has not been set";
+         return false;
+      }      
+      $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST] = $trial_list;
+      return true;
+   }
+
+   function setStudyComputedValues($study_values){
+      if ($this->current_study == ""){
+         $this->error = "Current study has not been set";
+         return false;
+      }
+      // No check is done as this function should only be called after processing is done.       
+
+      $expected_study_fields = [StudyField::DURATION, StudyField::BINDING_SCORE];
+
+      foreach ($study_values as $study_field_name => $value) {
+         if (!in_array($study_field_name,$expected_study_fields)){
+            $this->error = "Study Field $study_field_name is not allowed to be set";
+            return false;
+         }
+         $this->data[MainFields::STUDIES][$this->current_study][$study_field_name] = $value;
+      }
+      return true;      
+   }
+
+
+   // function getFixationListsFromTrial($trial_index, $data_set_type, $eye){
+      
+   //    if ($this->current_study == ""){
+   //       $this->error = "Current study has not been set";
+   //       return false;
    //    }
+
+   //    if ($trial_index >= $this->current_number_of_trials){
+   //       $this->error = "Out of bonds trial index $trial_index. The maximum number of trials is " . $this->current_number_of_trials;
+   //       return false;
+   //    }
+
+   //    if (!in_array($data_set_type,$this->available_data_sets)){
+   //       $this->error = "Asking for fixation lists for data set $data_set_type which is not available for current study " . $this->current_study;
+   //       return false;
+   //    }
+
+   //    if ($eye == Eye::LEFT){
+   //       $to_get = DataSetField::FIXATIONS_L;
+   //    }
+   //    else if ($eye == Eye::RIGHT){
+   //       $to_get = DataSetField::FIXATIONS_R;
+   //    }
+   //    else{
+   //       $this->error = "Invalid Eye parameter $eye for getting fixation lists";
+   //       return false;
+   //    }
+
+   //    return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index][TrialField::DATA][$data_set_type][$to_get];
+
    // }
+
+
+   // function getValuesForDataSetFromTrial($trial_index, $data_set_type){
+      
+   //    if ($this->current_study == ""){
+   //       $this->error = "Current study has not been set";
+   //       return false;
+   //    }
+
+   //    if ($trial_index >= $this->current_number_of_trials){
+   //       $this->error = "Out of bonds trial index $trial_index. The maximum number of trials is " . $this->current_number_of_trials;
+   //       return false;
+   //    }
+
+   //    if (!in_array($data_set_type,$this->available_data_sets)){
+   //       $this->error = "Asking for data set values for data set $data_set_type which is not available for current study " . $this->current_study;
+   //       return false;
+   //    }
+
+   //    return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index][TrialField::DATA][$data_set_type][DataSetField::DATA_SET_VALUES];
+
+   // }   
 
    function getTrial($trial_index){
 
@@ -202,11 +316,26 @@ class ViewMindDataContainer {
 
       if ($trial_index >= $this->current_number_of_trials){
          $this->error = "Out of bonds trial index $trial_index. The maximum number of trials is " . $this->current_number_of_trials;
-         return array();
+         return false;
       }
 
       return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index];
    }   
+
+   // function setTrial($trial,$trial_index){
+
+   //    if ($this->current_study == ""){
+   //       $this->error = "Current study has not been set";
+   //       return false;
+   //    }
+
+   //    if ($trial_index >= $this->current_number_of_trials){
+   //       $this->error = "Out of bonds trial index $trial_index. The maximum number of trials is " . $this->current_number_of_trials;
+   //       return array();
+   //    }
+
+   //    return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index] = $trial;      
+   // }
 
 
 }

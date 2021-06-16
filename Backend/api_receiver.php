@@ -18,18 +18,22 @@ include_once ("api_management/AuthManager.php");
 include_once ("db_management/TableSecrets.php");
 include_once ("api_management/ObjectPortalUsers.php");
 include_once ("api_management/ObjectInstitution.php");
+include_once ("api_management/ObjectReports.php");
 
 //////////////////////////////////// LOG SETUP ////////////////////////////////
-$auth_log = new LogManager(CONFIG[ParameterGeneral::NAME][ValueGeneral::AUTH_LOG_LOCATION]);
+$auth_log = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::AUTH_LOG_LOCATION]);
 $auth_log->setSource($_SERVER['REMOTE_ADDR']);
 
-$route_log = new LogManager(CONFIG[ParameterGeneral::NAME][ValueGeneral::ROUTING_LOG_LOCATION]);
+$route_log = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::ROUTING_LOG_LOCATION]);
 $route_log->setSource($_SERVER['REMOTE_ADDR']);
+
+$base_log = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::BASE_STD_LOG]);
+$base_log->setSource($_SERVER['REMOTE_ADDR']);
 
 //////////////////////////////////// TOKENIZING THE ROUTE ////////////////////////////////
 $route_parser = new RouteParser();
 
-if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],CONFIG[ParameterGeneral::NAME][ValueGeneral::API_PARTS_TO_REMOVE])){
+if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],CONFIG[GlobalConfigGeneral::GROUP_NAME][GlobalConfigGeneral::API_PARTS_TO_REMOVE])){
    $error = $route_parser->getError();
    $code = 400; // This was a client error 
    $res[ResponseFields::MESSAGE] = $error;
@@ -88,7 +92,7 @@ if (array_key_exists($object,$permissions)){
 
       if (!array_key_exists($object,ROUTING)){
          // Not implemented yer
-         $res[ResponseFields::MESSAGE] = "Endpoint $object is not yet implemented";
+         $res[ResponseFields::MESSAGE] = "Endpoint $object does not exist";
          $route_log->logError($res[ResponseFields::MESSAGE]);
          $res[ResponseFields::HTTP_CODE] = 500;
          http_response_code(500);
@@ -116,8 +120,8 @@ if (array_key_exists($object,$permissions)){
       
       if ($ans === false){
          // Something went wrong. 
-         $res[ResponseFields::MESSAGE] = $operating_object->getError();
-         $route_log->logError($res[ResponseFields::MESSAGE]);
+         $base_log->logError($operating_object->getError());
+         $res[ResponseFields::MESSAGE] = $operating_object->getReturnableError();
          $res[ResponseFields::HTTP_CODE] = 500;
          http_response_code(500);
          echo json_encode($res);

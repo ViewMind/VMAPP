@@ -211,7 +211,7 @@ void Experiment::finalizeOnlineFixations(){
         rawdata.addFixationVectorR(fixationToVariantMap(lastFixationR));
     }
     if (lastFixationL.isValid()){
-        rawdata.addFixationVectorR(fixationToVariantMap(lastFixationL));
+        rawdata.addFixationVectorL(fixationToVariantMap(lastFixationL));
     }
 }
 

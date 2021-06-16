@@ -190,7 +190,8 @@ class FixationDataGenerator {
       $data_set_values[DataSetComputedValues::FIX_IN_CENTER_R] = $this->computeNumberOfFixationInCenter($fix_r);
 
       // A hitbox is a 4 Value vector. 
-      if (count($hitbox) == 4){
+      //echo "Hibtobx count is " . count($hitbox) . "\n";
+      if (count($hitbox) == 4){         
          $index = TargetHitSearcher::findFirstFixationThatHits($hitbox,$fix_l);
          if ($index == -1) $data_set_values[DataSetComputedValues::RESPONSE_TIME_L] = "N/A";
          else $data_set_values[DataSetComputedValues::RESPONSE_TIME_L] = $fix_l[$index][FixationVectorField::TIME] - $raw_data_list[0][DataVectorField::TIMESTAMP];

@@ -7,16 +7,25 @@ include_once ("TargetHitSearcher.php");
 class Processing
 {
    // Maps the trial type description to the right answer on a GoNoGo Trial (In GoNoGo DataSet = Trial)
-   static const GONOGO_ANSWER_MAP = [
+   const GONOGO_ANSWER_MAP = [
       "R<-" => GoNoGoTargetBoxes::RIGHT,   // The right box
       "G<-" => GoNoGoTargetBoxes::LEFT,    // The left box. 
       "R->" => GoNoGoTargetBoxes::LEFT,
       "G->" => GoNoGoTargetBoxes::RIGHT         
    ];
 
+   const CSV_FUNCTION_MAP = [
+      Study::GONOGO => "gonogoCSV",
+      Study::NBACKRT => "nbackrtCSV",
+      Study::READING => "readingCSV",
+      Study::BINDING_UC => "bindingCSV",
+      Study::BINDING_UC => "bindingCSV"
+   ];
+
    private $error;
    private $processing_parameters;
    private FixationDataGenerator $fdg;
+   private $study_values;
 
    // The function will require several processing parameters, so they are the argument for it's constructor.  
    function __construct($pp){
@@ -24,16 +33,19 @@ class Processing
 
       $this->error = "";
 
-      $fdg = new FixationDataGenerator();
+      $this->fdg = new FixationDataGenerator();
 
-      if (!$fdg->setProcessingParameters($pp)){
-         $this->error =  "Setting processing parameters in the fixation data generator provided the followig error: " . $fdg->getError() . "\n";
-         exit();
+      if (!$this->fdg->setProcessingParameters($pp)){
+         $this->error =  "Setting processing parameters in the fixation data generator provided the followig error: " . $this->fdg->getError() . "\n";
       }      
    }
 
    function getError(){
       return $this->error;
+   }
+
+   function getStudyComputedValues() {
+      return $this->study_values;
    }
 
   /**
@@ -78,7 +90,7 @@ class Processing
              return false;
          }
          $target_hit_box_index = self::GONOGO_ANSWER_MAP[$trial_description];
-         //$target_hit_box = $hit_boxes[$target_hit_box_index];
+         $target_hit_box = $hit_boxes[$target_hit_box_index];
      
          // Computing the go no go  hit logic fo each fixations.
          TargetHitSearcher::computeFixationHitsGoNoGo($hit_boxes, $fix_l, $target_hit_box_index, $centerX);
@@ -88,7 +100,7 @@ class Processing
       // General value computations. 
 
       // Computing values which are for the data set. 
-      $data_set_values = $this->fdg->computeDataSetValues($dataset, $fix_l, $fix_r, $target_hit_box);
+      $data_set_values = $this->fdg->computeDataSetValues($raw_data, $fix_l, $fix_r, $target_hit_box);
 
       // Computing values for each fixation. 
       $this->fdg->computeFixationDependantValues($fix_l, $start_time);
@@ -126,7 +138,7 @@ class Processing
 
       foreach ($trial[TrialField::DATA] as $data_set_type => $dataset){
          if (!$this->processDataSet($dataset,$study,$trial_type)){
-            $this->error = "Trial " . $trial[TrialField::ID] . " had an error whiel processing dataset $data_set_type: " . $this->error;
+            $this->error = "Trial " . $trial[TrialField::ID] . " had an error while processing dataset $data_set_type: " . $this->error;
             return false;
          }
 
@@ -179,6 +191,8 @@ class Processing
 
    public function processStudy(&$trial_list, $study){
 
+      if ($this->error != "") return false;
+
       if (count($trial_list) == 0){
          $this->error = "Study $study has an empty trial list";
          return false;
@@ -199,7 +213,7 @@ class Processing
       $end_study_timestamp = -1;
       
       // Values computed at a study level. 
-      $study_values = array();
+      $this->study_values = array();
 
       $first_trial = $trial_list[0];
       $last_trial  = $trial_list[count($trial_list)-1];      
@@ -208,6 +222,7 @@ class Processing
       // Getting the smallest timestamp. 
       foreach ($datasets as $dataset){         
          if (count($first_trial[TrialField::DATA][$dataset][DataSetField::RAW_DATA]) == 0)  continue;
+         
          if (($study_start_timestamp == -1) || ($study_start_timestamp > $first_trial[TrialField::DATA][$dataset][DataSetField::RAW_DATA][0][DataVectorField::TIMESTAMP])) {
             $study_start_timestamp = $first_trial[TrialField::DATA][$dataset][DataSetField::RAW_DATA][0][DataVectorField::TIMESTAMP];
          }
@@ -216,20 +231,25 @@ class Processing
       // Getting the largest time stamp
       foreach ($datasets as $dataset){         
          $cnt = count($last_trial[TrialField::DATA][$dataset][DataSetField::RAW_DATA]);
+         
          if ($cnt == 0)  continue;
 
          if (($end_study_timestamp == -1) || ($end_study_timestamp < $last_trial[TrialField::DATA][$dataset][DataSetField::RAW_DATA][$cnt-1][DataVectorField::TIMESTAMP])) {
-            $end_study_timestamp = $first_trial[TrialField::DATA][$dataset][DataSetField::RAW_DATA][$cnt-1][DataVectorField::TIMESTAMP];
+            $end_study_timestamp = $last_trial[TrialField::DATA][$dataset][DataSetField::RAW_DATA][$cnt-1][DataVectorField::TIMESTAMP];
          }
       }
 
-      $study_values[StudyComputedValue::DURATION] = $end_study_timestamp - $study_start_timestamp;
+      $this->study_values[StudyComputedValue::DURATION] = $end_study_timestamp - $study_start_timestamp;
 
       // Specific Binding computations
       if (($study == Study::BINDING_BC) || ($study == Study::BINDING_UC)){
    
          //echo "TrialID: " . $trial[TrialFields::ID] . ". Trial Type |" . $trial_type . "|. Response: |" . $trial[TrialFields::RESPONSE] . "|\n";
          $binding_score = array();
+         $binding_score[BindingScore::TEST_CORRECT] = 0;
+         $binding_score[BindingScore::TEST_WRONG] = 0;
+         $binding_score[BindingScore::CORRECT] = 0;
+         $binding_score[BindingScore::WRONG] = 0;
 
          for ($i = 0; $i < count($trial_list); $i++) {
 
@@ -252,7 +272,7 @@ class Processing
             }
          }
 
-         $study_values[StudyComputedValue::BINDING_SCORE] = $binding_score;
+         $this->study_values[StudyComputedValue::BINDING_SCORE] = $binding_score;
    
       }      
 

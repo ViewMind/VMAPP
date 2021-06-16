@@ -15,10 +15,12 @@ RCC_DIR = QRC
 SOURCES += \
         ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
         ../../../CommonClasses/DatFileInfo/datfileinfoindir.cpp \
+        ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.cpp \
         ../../../CommonClasses/Experiments/fieldingparser.cpp \
         ../../../CommonClasses/Experiments/gonogoparser.cpp \
         ../../../CommonClasses/RawDataContainer/datfiletorawdatacontainer.cpp \
-        ../../../CommonClasses/RawDataContainer/rawdatacontainer.cpp \
+        ../../../CommonClasses/RawDataContainer/viewminddatacontainer.cpp \
+        ../../../VMSoftwareSuite/EyeExperimenter/src/qualitycontrol.cpp \
         main.cpp
 
 # Default rules for deployment.
@@ -29,8 +31,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ../../../CommonClasses/DatFileInfo/datfileinfoindir.h \
+    ../../../CommonClasses/DataAnalysis/EyeMatrixGenerator/movingwindowalgorithm.h \
     ../../../CommonClasses/Experiments/fieldingparser.h \
     ../../../CommonClasses/Experiments/gonogoparser.h \
+    ../../../CommonClasses/RawDataContainer/VMDC.h \
     ../../../CommonClasses/RawDataContainer/datfiletorawdatacontainer.h \
-    ../../../CommonClasses/RawDataContainer/rawdatacontainer.h \
-    ../../../CommonClasses/common.h
+    ../../../CommonClasses/RawDataContainer/viewminddatacontainer.h \
+    ../../../CommonClasses/common.h \
+    ../../../CommonClasses/eyetracker_defines.h \
+    ../../../VMSoftwareSuite/EyeExperimenter/src/qualitycontrol.h

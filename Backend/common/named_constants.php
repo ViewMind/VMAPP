@@ -7,31 +7,26 @@
     * REQUIRED constant array, even if it's empty.     
     */
 
-   abstract class ParameterGeneral extends TypedString{
-
-      const NAME              = "general_config";
-
-      // The list of required parameters. 
-      const REQUIRED          = [ValueGeneral::API_PARTS_TO_REMOVE, 
-                                 ValueGeneral::API_GENERAL_LOG_LOCATION,
-                                 ValueGeneral::AUTH_LOG_LOCATION,
-                                 ValueGeneral::PROCESSING_LOG_LOCATION,
-                                 ValueGeneral::ROUTING_LOG_LOCATION,
-                                 ValueGeneral::R_SCRIPTS_REPO,
-                                 ValueGeneral::PROCESSING_WORK_DIRECTORY
-                               ];
+   abstract class GlobalConfigGeneral extends TypedString{
+      const GROUP_NAME                  = "general_config";
+      const API_PARTS_TO_REMOVE         = "api_route_parts_to_remove";
    }
 
-   abstract class ValueGeneral extends TypedString {
-      const API_PARTS_TO_REMOVE         = "api_route_parts_to_remove";
+   abstract class GlobalConfigLogs extends TypedString {
+      const GROUP_NAME                  = "logs";
       const PROCESSING_LOG_LOCATION     = "processing_log_location";
       const AUTH_LOG_LOCATION           = "auth_log_location";
       const API_GENERAL_LOG_LOCATION    = "api_logs";
-      const ROUTING_LOG_LOCATION        = "routing_log";
-      const R_SCRIPTS_REPO              = "r_repo";
-      const PROCESSING_WORK_DIRECTORY   = "processing_work_dir";
+      const ROUTING_LOG_LOCATION        = "routing_log";            
+      const BASE_STD_LOG                = "base_std_log";
    }
 
+   abstract class GlobalConfigProcResources extends TypedString {
+      const GROUP_NAME                  = "processing_resources";  
+      const PROCESSING_WORK_DIRECTORY   = "processing_work_dir";
+      const R_SCRIPTS_REPO              = "r_repo";
+   }
+ 
    abstract class HeaderFields extends TypedString {
       const AUTH_TYPE                   = "AuthType";
       const AUTHORIZATION               = "Authorization";
@@ -94,6 +89,14 @@
    abstract class ReturnableError extends TypedString {
       const DATABASE_QUERY   = "Database query error";      
       const DATABASE_CON     = "Database connection error";
+   }
+
+   abstract class FileStructNames extends TypedString {
+      const FILE_TO_PROCESS  = "FileToProcess";
+      const TMP_LOCATION     = "tmp_name";
+      const ACTUAL_FILE_NAME = "name";
+      const FILE_SIZE        = "size";
+      const ERROR            = "error";
    }
 
    

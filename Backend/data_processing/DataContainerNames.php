@@ -1,6 +1,6 @@
 <?php
 
-include_once ("../common/TypedString.php");
+include_once (__DIR__ . "/../common/TypedString.php");
 
 abstract class Eye extends TypedString
 {
@@ -199,6 +199,8 @@ abstract class StudyField extends TypedString
    const ABBREVIATION                            = "abbreviation";
    const CONFIG_CODE                             = "config_code";
    const QUALITY_CONTROL                         = "quality_control";
+   const DURATION                                = "duration";
+   const BINDING_SCORE                           = "binding_score";
 }
 
 

@@ -9,6 +9,10 @@ class CSVComparer {
 
    private $columns;
    private $difference_list;
+   private $group_count_columns;
+   private $group_count_columns_indexes;
+   private $group_count_analysis;
+   private $group_printing_indexes;
 
    function __construct(){
       $this->reset();
@@ -21,6 +25,58 @@ class CSVComparer {
 
    function getDifferenceList(){
       return $this->difference_list;
+   }
+
+   function setGroupCountColumns($cols){
+      $this->group_count_columns = $cols;
+   }
+
+   function getGroupAnalysis(){
+      return $this->group_count_analysis;
+   }
+
+   function getGroupAnalysisReport(){
+      $this->group_printing_indexes = array();
+      $names = array_keys($this->group_count_analysis);
+
+      // This will break if not both files have the same combo. 
+      $road = array();
+      $this->fillPrintingIndexes($this->group_count_analysis[$names[0]],$road);
+
+      $report = "";
+
+      foreach ($this->group_printing_indexes as $printing_index_array){
+         $report = $report . implode(" => ",$printing_index_array) . " | ";
+
+         foreach ($names as $name){
+            $temp = $this->group_count_analysis[$name];
+            foreach ($printing_index_array as $pi){
+               $temp = $temp[$pi];
+            }   
+
+            $report = $report . $name . ": "  . $temp . ". ";
+         }
+         $report = $report . "\n";
+      }
+
+      return $report;
+
+   }
+
+   private function fillPrintingIndexes($map,$road){
+      foreach ($map as $name => $array){         
+
+         $temp = $road;
+         $temp[] = $name;
+
+         if (is_array($array)){            
+            $this->fillPrintingIndexes($array,$temp);
+         }
+         else{
+            //echo implode(" => ",$temp) . ": " . $array . "\n";
+            $this->group_printing_indexes[] = $temp;
+         }
+      }
    }
 
    // By default is $n_tolerance is zero then values are compared as STRINGS.
@@ -48,6 +104,8 @@ class CSVComparer {
 
       $cc = count($this->columns);
 
+      $this->groupAnalysisSetup($name_for_a,$name_for_b);
+
       $n = count($a);
       // We skip the comparison of the header. 
       for ($i = 1; $i < $n; $i++){
@@ -55,6 +113,9 @@ class CSVComparer {
          $row_a = explode(",",$a[$i]);
          $row_b = explode(",",$b[$i]);
          
+         $this->groupAnalysis($row_a,$name_for_a);
+         $this->groupAnalysis($row_b,$name_for_b);
+
          $nca = count($row_a);
          $ncb = count($row_b);
 
@@ -108,6 +169,62 @@ class CSVComparer {
 
       return "";
    }
+
+   private function groupAnalysisSetup($name_a,$name_b){
+      
+      if (empty($this->group_count_columns)) return;
+      
+      $this->group_count_columns_indexes = array();
+      
+      $this->group_count_analysis = array();
+      $this->group_count_analysis[$name_a] = array();
+      $this->group_count_analysis[$name_b] = array();
+      
+      for ($i = 0; $i < count($this->columns); $i++){
+         if (in_array($this->columns[$i][self::CMP_NAME],$this->group_count_columns)){
+            $this->group_count_columns_indexes[] = $i;
+         }
+      }
+   }
+
+   private function groupAnalysis($row,$name){
+      if (empty($this->group_count_columns)) return;
+      $values = array();
+      foreach ($this->group_count_columns_indexes as $col_index){
+         $values[] = $row[$col_index];
+      }
+
+      if (empty($values)){
+         echo "Group analysis enabled but empty values for $name\n";
+         exit();
+      }
+
+      $this->groupAdd($this->group_count_analysis[$name],$values,0);
+   }
+
+
+   private function groupAdd(&$map, $value_array, $array_index){
+      $value = $value_array[$array_index];
+      $is_last = (count($value_array)-1) == $array_index;
+
+      if ($is_last){
+         if (!array_key_exists($value, $map)) {
+            $map[$value] = 1;
+         }
+         else{
+            $map[$value]++;
+         }
+      }
+      else{
+         if (!array_key_exists($value, $map)) {
+            $map[$value] = array();
+         }         
+         $array_index++;
+         $this->groupAdd($map[$value],$value_array,$array_index);
+      }      
+   }
+
+
 
    private function eliminateEmptyRows(&$rowlist){
       $last = count($rowlist)-1;
@@ -219,7 +336,7 @@ $tol = 0.01;
 //$file_a = "/home/ariel/repos/viewmind_projects/VMSoftwareSuite/EyeReportGenerator/bin/res/test_scripts/reference_data/reference_gonogo.csv";
 $file_a = "/home/ariel/Workspace/Viewmind/vm_data/gonogo/ref_test/gonogo_2_2020_11_09_15_05.csv";
 $name_for_a = "REF";
-$file_b = "/home/ariel/repos/viewmind_projects/Backend/test_gonogo.csv";
+$file_b = "/home/ariel/repos/viewmind_projects/Backend/LOGS/work/1_0_2021_06_16_16_07_42/go_no-go_gonogo_2020_11_09_15_05.csv";
 $name_for_b = "NEW";
 
 $csv_comparer->addComparisonColumn("suj",true,0);
@@ -238,9 +355,14 @@ $csv_comparer->addComparisonColumn("total_study_time",false,0);
 $csv_comparer->addComparisonColumn("arrow_type",false,0);
 $csv_comparer->addComparisonColumn("trial_type",false,0);
 
+$csv_comparer->setGroupCountColumns(["idtrial","ojoDI"]);
+
 if (!$csv_comparer->compareCSVs($file_a,$name_for_a,$file_b,$name_for_b)){
    echo "FAILED\n";
    var_dump($csv_comparer->getDifferenceList());
+   //var_dump($csv_comparer->getGroupAnalysis());
+   $report = $csv_comparer->getGroupAnalysisReport();
+   echo "\nGROUP REPORT\n$report\n";
 }
 else{
    echo "EQUAL\n";

@@ -1,185 +1,288 @@
 #include "datfiletorawdatacontainer.h"
 
-DatFileToRawDataContainer::DatFileToRawDataContainer()
+DatFileToViewMindDataContainer::DatFileToViewMindDataContainer()
 {
 
 }
 
-QString DatFileToRawDataContainer::getError() const {
+QString DatFileToViewMindDataContainer::getError() const {
     return error;
 }
 
-RawDataContainer DatFileToRawDataContainer::fromDatFile(const QString &dat_file, const ConfigurationManager &configmng){
+QString DatFileToViewMindDataContainer::getFinalStudyFileName() const {
+    return finalFileStudyName;
+}
+
+bool DatFileToViewMindDataContainer::fromDatFile(const QString &dat_file, const ConfigurationManager &configmng, ViewMindDataContainer *rdc){
 
     error = "";
-    RawDataContainer rdc;
 
     QFileInfo info(dat_file);
 
     DatFileInfoInDir::DatInfo dat_info = DatFileInfoInDir::getDatFileInformation(info.baseName());
     if (dat_info.category == ""){
         error = "Could not determine the study type for " + dat_file;
-        return rdc;
+        return false;
     }
 
-    // Valid Eye Conversion. The code used for the eyes correspond to the string location in this list.
-    QList<RawDataContainer::StudyConfigurationValue> eyes; eyes << RawDataContainer::SCV_EYE_LEFT << RawDataContainer::SCV_EYE_RIGHT << RawDataContainer::SCV_EYE_BOTH;
+    QString parameter_key = "gazepoint";
+    QVariantMap qc; QVariantMap perStudy;
 
-    RawDataContainer::StudyConfiguration study_configuration;
-    study_configuration.insert(RawDataContainer::SCP_EYES,eyes.at(dat_info.validEye.toInt()));
+#ifdef EYETRACKER_GAZEPOINT
+    parameter_key = "gazepoint";
+    qc[VMDC::QCGlobalParameters::MAX_TIMESTAMP_DIFF] = 8;
+    qc[VMDC::QCGlobalParameters::MIN_TIMESTAMP_DIFF] = 5;
+    qc[VMDC::QCGlobalParameters::MAX_GLITCHES] = 20;
+
+    // Reading
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 3;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 150;
+    qc.insert(VMDC::Study::READING,perStudy);
+
+    // Binding
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 3;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 150;
+    qc.insert(VMDC::MultiPartStudyBaseName::BINDING,perStudy);
 
 
-    RawDataContainer::SubjectData subject_data;
-    subject_data.insert(RawDataContainer::SF_AGE,"");
-    subject_data.insert(RawDataContainer::SF_INSTITUTION_PROVIDED_ID,"");
-    subject_data.insert(RawDataContainer::SF_BIRHTCOUNTRY,"");
-    subject_data.insert(RawDataContainer::SF_BIRTHDATE,"");
-    subject_data.insert(RawDataContainer::SF_GENDER,"");
-    subject_data.insert(RawDataContainer::SF_LASTNAME,"");
-    subject_data.insert(RawDataContainer::SF_NAME,"");
-    subject_data.insert(RawDataContainer::SF_YEARS_FORMATION,"");
-    subject_data.insert(RawDataContainer::SF_LOCAL_ID,"");
+    // NBack RT
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 2;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 30;
+    qc.insert(VMDC::Study::NBACKRT,perStudy);
 
-    if (configmng.containsKeyword(CONFIG_PATIENT_AGE)){
-        subject_data.insert(RawDataContainer::SF_AGE,configmng.getString(CONFIG_PATIENT_AGE));
+    // NBack MS
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 2;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 30;
+    qc.insert(VMDC::Study::NBACKMS,perStudy);
+
+    // Go No Go
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 2;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 100;
+    qc.insert(VMDC::Study::GONOGO,perStudy);
+
+    if (configmng.getInt("sample_frequency") != 150){
+        error = "Wrong Sample Frequency " + configmng.getString("sample_frequency") + " expected 150 for GazePoint";
+        return false;
     }
-    if (!rdc.setSubjectData(subject_data)){
-        error = "Could not set subject data" + rdc.getError();
-        return rdc;
+
+
+#endif
+#ifdef EYETRACKER_HTCVIVEPRO
+
+    parameter_key = "htcviveeyepro";
+
+    qc[VMDC::QCGlobalParameters::MAX_TIMESTAMP_DIFF] = 10;
+    qc[VMDC::QCGlobalParameters::MIN_TIMESTAMP_DIFF] = 6;
+    qc[VMDC::QCGlobalParameters::MAX_GLITCHES] = 20;
+
+    // Reading
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 3;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 120;
+    qc.insert(VMDC::Study::READING,perStudy);
+
+    // Binding
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 3;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 120;
+    qc.insert(VMDC::MultiPartStudyBaseName::BINDING,perStudy);
+
+    // NBack RT
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 2;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 25;
+    qc.insert(VMDC::Study::NBACKRT,perStudy);
+
+    // NBack MS
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 2;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 25;
+    qc.insert(VMDC::Study::NBACKMS,perStudy);
+
+    // Go No Go
+    perStudy[VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL] = 2;
+    perStudy[VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL] = 80;
+    qc.insert(VMDC::Study::GONOGO,perStudy);
+
+    if (configmng.getInt("sample_frequency") != 120){
+        error = "Wrong Sample Frequency " + configmng.getString("sample_frequency") + " expected 120 for HTCViveEyePro";
+        return false;
+    }
+
+#endif
+
+    // Creating the metadata.
+    QVariantMap metadata;
+    QStringList parts = dat_info.date.split("_");
+    metadata.insert(VMDC::MetadataField::DATE,parts.join("-"));
+    parts = dat_info.hour.split("_");
+    metadata.insert(VMDC::MetadataField::HOUR,parts.join(":") + ":00"); // Need to add the seconds.
+    metadata.insert(VMDC::MetadataField::INSTITUTION_ID,1);
+    metadata.insert(VMDC::MetadataField::INSTITUTION_INSTANCE,0);
+    metadata.insert(VMDC::MetadataField::INSTITUTION_NAME,"");
+    metadata.insert(VMDC::MetadataField::MOUSE_USED,"false");
+    metadata.insert(VMDC::MetadataField::PROC_PARAMETER_KEY,parameter_key);
+    metadata.insert(VMDC::MetadataField::STATUS,VMDC::StatusType::FINALIZED);
+    metadata.insert(VMDC::MetadataField::PROTOCOL,configmng.getString("protocol_name"));
+
+    finalFileStudyName = dat_info.date + "_" + dat_info.hour + ".json";
+
+
+    // Creating the subject data
+    QVariantMap subject_data;
+    subject_data.insert(VMDC::SubjectField::AGE,configmng.getString("patient_age"));
+    subject_data.insert(VMDC::SubjectField::BIRTH_COUNTRY,"");
+    subject_data.insert(VMDC::SubjectField::BIRTH_DATE,"");
+    subject_data.insert(VMDC::SubjectField::GENDER,"");
+    subject_data.insert(VMDC::SubjectField::INSTITUTION_PROVIDED_ID,"");
+    subject_data.insert(VMDC::SubjectField::LASTNAME,"");
+    subject_data.insert(VMDC::SubjectField::LOCAL_ID,"unknown_id");
+    subject_data.insert(VMDC::SubjectField::NAME,"");
+    subject_data.insert(VMDC::SubjectField::YEARS_FORMATION,"");
+
+    // Setting the evaluator info. We do it here becuase it is required for the data file comparisons.
+    QVariantMap evaluator;
+    evaluator.insert(VMDC::AppUserField::EMAIL,"ariel.arelovich@viewmind.ai");
+    evaluator.insert(VMDC::AppUserField::NAME,"Ariel");
+    evaluator.insert(VMDC::AppUserField::LASTNAME,"Arelovich");
+    evaluator.insert(VMDC::AppUserField::LOCAL_ID,"0");
+    evaluator.insert(VMDC::AppUserField::VIEWMIND_ID,"0");
+
+    // Setting the selected doctor info.
+    QVariantMap medic_to_store;
+    medic_to_store.insert(VMDC::AppUserField::EMAIL,"jorozco@gmail.com");
+    medic_to_store.insert(VMDC::AppUserField::NAME,"Javier");
+    medic_to_store.insert(VMDC::AppUserField::LASTNAME,"Orozco");
+    medic_to_store.insert(VMDC::AppUserField::LOCAL_ID,"0");
+    medic_to_store.insert(VMDC::AppUserField::VIEWMIND_ID,"1");
+
+    // Setting all the values.
+    rdc->setQCParameters(qc);
+    rdc->setSubjectData(subject_data);
+    rdc->setMetadata(metadata);
+    rdc->setApplicationUserData(VMDC::AppUserType::EVALUATOR,evaluator);
+    rdc->setApplicationUserData(VMDC::AppUserType::MEDIC,medic_to_store);
+
+    // Loading the processing parameters.
+    QVariantMap pp;
+    pp.insert(VMDC::ProcessingParameter::SAMPLE_FREQUENCY,configmng.getReal("sample_frequency"));
+    pp.insert(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW,configmng.getReal("moving_window_max_dispersion"));
+    pp.insert(VMDC::ProcessingParameter::MIN_FIXATION_DURATION,configmng.getReal("minimum_fixation_length"));
+    pp.insert(VMDC::ProcessingParameter::LATENCY_ESCAPE_RADIOUS,configmng.getReal("latency_escape_radious"));
+
+    QVariantMap study_configuration;
+    QString selectedEye = VMDC::Eye::fromInt(configmng.getInt("valid_eye"));
+    study_configuration.insert(VMDC::StudyParameter::VALID_EYE,selectedEye);
+    if (selectedEye == VMDC::Eye::LEFT){
+        rightEyeEnabled = false;
+        leftEyeEnabled = true;
+    }
+    else if (selectedEye == VMDC::Eye::RIGHT){
+        rightEyeEnabled = true;
+        leftEyeEnabled = false;
     }
 
     QString header;
-    RawDataContainer::StudyType st;
-    RawDataContainer::TrialListType tlt;
+    QString st;
 
     QString code = dat_info.category.mid(0,2);
     if (code == "RD"){
         if (dat_info.extraInfo == "EN"){
-            study_configuration.insert(RawDataContainer::SCP_LANGUAGE,RawDataContainer::SCV_LANG_EN);
+            study_configuration.insert(VMDC::StudyParameter::LANGUAGE,VMDC::ReadingLanguage::ENGLISH);
         }
         else if (dat_info.extraInfo == "ES"){
-            study_configuration.insert(RawDataContainer::SCP_LANGUAGE,RawDataContainer::SCV_LANG_ES);
+            study_configuration.insert(VMDC::StudyParameter::LANGUAGE,VMDC::ReadingLanguage::SPANISH);
         }
         else if (dat_info.extraInfo == "DE"){
-            study_configuration.insert(RawDataContainer::SCP_LANGUAGE,RawDataContainer::SCV_LANG_DE);
+            study_configuration.insert(VMDC::StudyParameter::LANGUAGE,VMDC::ReadingLanguage::GERMAN);
         }
         else if (dat_info.extraInfo == "IS"){
-            study_configuration.insert(RawDataContainer::SCP_LANGUAGE,RawDataContainer::SCV_LANG_IS);
+            study_configuration.insert(VMDC::StudyParameter::LANGUAGE,VMDC::ReadingLanguage::ISELANDIC);
         }
         else if (dat_info.extraInfo == "FR"){
-            study_configuration.insert(RawDataContainer::SCP_LANGUAGE,RawDataContainer::SCV_LANG_FR);
+            study_configuration.insert(VMDC::StudyParameter::LANGUAGE,VMDC::ReadingLanguage::FRENCH);
         }
         else{
             error = "Unrecognized reading languange: " + dat_info.extraInfo;
-            return rdc;
+            return false;
         }
-        header = HEADER_READING_EXPERIMENT;
-        st = RawDataContainer::STUDY_READING;
-        tlt = RawDataContainer::TLT_UNIQUE;
+        header = "#READING";
+        finalFileStudyName = "reading_" + finalFileStudyName;
+        st = VMDC::Study::READING;
     }
     else if ((code == "UC") || (code == "BC")){
 
-
         if (code == "BC"){
-            study_configuration.insert(RawDataContainer::SCP_BINDING_TYPE,RawDataContainer::SCV_BINDING_TYPE_BOUND);
-            tlt = RawDataContainer::TLT_BOUND;
+            st = VMDC::Study::BINDING_BC;
         }
         else{
-            study_configuration.insert(RawDataContainer::SCP_BINDING_TYPE,RawDataContainer::SCV_BINDING_TYPE_UNBOUND);
-            tlt = RawDataContainer::TLT_UNBOUND;
+            st = VMDC::Study::BINDING_UC;
         }
+
+        finalFileStudyName = "binding" + finalFileStudyName;
 
         if (dat_info.extraInfo.size() != 2){
             error = "Expected extra info of a binding file two have only 2 characters: " + dat_info.extraInfo;
-            return rdc;
+            return false;
         }
 
-        if (dat_info.extraInfo.at(0) == '2') study_configuration.insert(RawDataContainer::SCP_NUMBER_OF_TARGETS,RawDataContainer::SCV_BINDING_TARGETS_2);
-        else if (dat_info.extraInfo.at(0) == '3') study_configuration.insert(RawDataContainer::SCP_NUMBER_OF_TARGETS,RawDataContainer::SCV_BINDING_TARGETS_3);
+        if (dat_info.extraInfo.at(0) == '2') study_configuration.insert(VMDC::StudyParameter::NUMBER_TARGETS,VMDC::BindingTargetCount::TWO);
+        else if (dat_info.extraInfo.at(0) == '3') study_configuration.insert(VMDC::StudyParameter::NUMBER_TARGETS,VMDC::BindingTargetCount::THREE);
         else{
             error = QString("Unknown number of targets from extra info: ") + dat_info.extraInfo.at(0);
-            return rdc;
+            return false;
         }
 
-        if (dat_info.extraInfo.at(1) == 'l') study_configuration.insert(RawDataContainer::SCP_TARGET_SIZE,RawDataContainer::SCV_BINDING_TARGETS_LARGE);
-        else if (dat_info.extraInfo.at(1) == 's') study_configuration.insert(RawDataContainer::SCP_NUMBER_OF_TARGETS,RawDataContainer::SCV_BINDING_TARGETS_SMALL);
+        if (dat_info.extraInfo.at(1) == 'l') study_configuration.insert(VMDC::StudyParameter::TARGET_SIZE,VMDC::BindingTargetSize::LARGE);
+        else if (dat_info.extraInfo.at(1) == 's') study_configuration.insert(VMDC::StudyParameter::TARGET_SIZE,VMDC::BindingTargetSize::SMALL);
         else{
             error = QString("Unknown target size from extra info: ") + dat_info.extraInfo.at(0);
-            return rdc;
+            return false;
         }
 
-        header = HEADER_IMAGE_EXPERIMENT;
-        st = RawDataContainer::STUDY_BINDING;
+        header = "#IMAGE";
 
     }
     else if (code == "NB"){
         // NBack RT study.
-        st = RawDataContainer::STUDY_NBACKRT;
-        header = HEADER_NBACKRT_EXPERIMENT;
-        tlt = RawDataContainer::TLT_UNIQUE;
+        st = VMDC::Study::NBACKRT;
+        header = "#NBACKRT";
+        finalFileStudyName = "nbackrt_" + finalFileStudyName;
     }
     else if (code == "GN"){
-        st = RawDataContainer::STUDY_GONOGO;
-        header = HEADER_GONOGO_EXPERIMENT;
-        tlt = RawDataContainer::TLT_UNIQUE;
+        st = VMDC::Study::GONOGO;
+        header = "#GONOGO";
+        finalFileStudyName = "gonogo_" + finalFileStudyName;
     }
     else{
         error = "Unrecognized code " + code + " from " + dat_file;
-        return rdc;
+        return false;
     }
 
     QStringList more_study_info = separateStudyDescriptionFromData(dat_file,header);
     // Answer is: version << expDescription << resolution << rawData;
     if (more_study_info.size() != 4) {
-        return rdc;
+        return false;
     }
 
     QString resolution = more_study_info.at(2);
     QStringList w_and_h = resolution.split(" ",Qt::SkipEmptyParts);
     if (w_and_h.size() != 2){
         error = "Invalid resolution string " + resolution;
-        return rdc;
+        return false;
     }
 
     // Setting the metadata.
-    RawDataContainer::Metadata metadata;
-    metadata.insert(RawDataContainer::MF_DATE,dat_info.date);
-    metadata.insert(RawDataContainer::MF_HOUR,dat_info.hour);
-    metadata.insert(RawDataContainer::MF_INSTITUTION_ID,"");
-    metadata.insert(RawDataContainer::MF_INSTITUTION_INSTANCE,"");
-    metadata.insert(RawDataContainer::MF_INSTITUTION_KEY,"");
-    metadata.insert(RawDataContainer::MF_INSTITUTION_NAME,"");
-    metadata.insert(RawDataContainer::MF_PROCESSING_PARAMETER_KEY,"0");
-    if (!rdc.setMetadata(metadata)){
-        error = "Setting the metadata: " + rdc.getError();
-        return rdc;
-    }
-
-    RawDataContainer::ProcessingParameters pp;
-    pp.insert(RawDataContainer::PP_RESOLUTION_WIDTH,w_and_h.first().trimmed());
-    pp.insert(RawDataContainer::PP_RESOLUTION_HEIGHT,w_and_h.last().trimmed());
+    pp.insert(VMDC::ProcessingParameter::RESOLUTION_HEIGHT,w_and_h.last().trimmed());
+    pp.insert(VMDC::ProcessingParameter::RESOLUTION_WIDTH,w_and_h.first().trimmed());
 
     // In case they are needed as numbers.
     qreal rw = w_and_h.first().trimmed().toDouble();
     qreal rh = w_and_h.last().trimmed().toDouble();
 
-    if (st == RawDataContainer::STUDY_NBACKRT){
+    if (st == VMDC::Study::NBACKRT){
         // We need to get the target boxes.
-        bool vr = false;
-        qreal xpx2mm = 0.25;
-        qreal ypx2mm = 0.25;
-        if (configmng.containsKeyword(CONFIG_VR_ENABLED)){
-            vr = configmng.getBool(CONFIG_VR_ENABLED);
-        }
-        if (vr){
-            xpx2mm = 0.2;
-            ypx2mm = 0.2;
-        }
 
         FieldingParser parser;
-        if (!parser.parseFieldingExperiment(more_study_info.at(0) + "\n" + more_study_info.at(1),rw,rh,xpx2mm,ypx2mm)){
+        if (!parser.parseFieldingExperiment(more_study_info.at(0) + "\n" + more_study_info.at(1),rw,rh)){
             error = "Parsing fielding experiment: " + parser.getError();
-            return rdc;
+            return false;
         }
 
         // Computing the hitboxes
@@ -197,7 +300,7 @@ RawDataContainer DatFileToRawDataContainer::fromDatFile(const QString &dat_file,
 
             x = hitBoxes.at(i).x();
             w = hitBoxes.at(i).width();
-            if ((i == TARGET_BOX_2) || (i == TARGET_BOX_5)){
+            if ((i == 2) || (i == 5)){
                 y = hitBoxes.at(i).y();
                 h = hitBoxes.at(i).height();
             }
@@ -214,13 +317,13 @@ RawDataContainer DatFileToRawDataContainer::fromDatFile(const QString &dat_file,
         }
 
         // Store them as part of the processing parameters.
-        pp.insert(RawDataContainer::PP_NBACK_HITBOXES,modHitBoxes);
+        pp.insert(VMDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);
     }
-    else if (st == RawDataContainer::STUDY_GONOGO){
+    else if (st == VMDC::Study::GONOGO){
         GoNoGoParser gngparser;
         if (!gngparser.parseGoNoGoExperiment(more_study_info.at(0) + "\n" + more_study_info.at(1),rw,rh)){
             error = "Error parsing go no go experiment: " + gngparser.getError();
-            return rdc;
+            return false;
         }
 
         QRectF arrow = gngparser.getArrowTargetBox();
@@ -237,60 +340,121 @@ RawDataContainer DatFileToRawDataContainer::fromDatFile(const QString &dat_file,
         target_box_vector << left_and_right.at(1).x() << left_and_right.at(1).y() << left_and_right.at(1).width() << left_and_right.at(1).height();
         target_boxes << (QVariant) target_box_vector;
 
-        pp.insert(RawDataContainer::PP_GONOGO_HITBOXES,target_boxes);
+        pp.insert(VMDC::ProcessingParameter::GONOGO_HITBOXES,target_boxes);
     }
 
-
-    if (!rdc.setProcessingParameters(pp)){
-        error = "Setting the processing parameters : " + rdc.getError();
-        return rdc;
+    if (!rdc->setProcessingParameters(pp)){
+        error = "Setting the processing parameters : " + rdc->getError();
+        return false;
     }
 
-    if (!rdc.addStudy(st,study_configuration,more_study_info.at(1),more_study_info.at(0))){
-        error = "Setting the study: " + rdc.getError();
-        return rdc;
+    if (!rdc->addStudy(st,study_configuration,more_study_info.at(1),more_study_info.at(0))){
+        error = "Setting the study: " + rdc->getError();
+        return false;
     }
 
-    rdc = parseStudyData(more_study_info.at(3),more_study_info.at(1),st,rdc,tlt);
+    // Setup fixation computation.
+    MovingWindowParameters mwp;
+    mwp.sampleFrequency = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
+    mwp.minimumFixationLength =  pp.value(VMDC::ProcessingParameter::MIN_FIXATION_DURATION).toReal();
+    mwp.maxDispersion =  pp.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
+    mwp.calculateWindowSize();
 
-    return rdc;
+    rMWA.parameters = mwp;
+    lMWA.parameters = mwp;
+
+    // And resetting just in case.
+    rMWA.finalizeOnlineFixationCalculation();
+    lMWA.finalizeOnlineFixationCalculation();
+
+    parseStudyData(more_study_info.at(3),more_study_info.at(1),st,rdc);
+
+    return true;
 
 }
 
-RawDataContainer DatFileToRawDataContainer::parseStudyData(const QString &raw_data,
-                                                           const QString &exp,
-                                                           RawDataContainer::StudyType st,
-                                                           RawDataContainer rdc,
-                                                           RawDataContainer::TrialListType tlt){
-    switch(st){
-    case RawDataContainer::STUDY_READING:
-        rdc = parseReading(raw_data,exp,rdc);
-        break;
-    case RawDataContainer::STUDY_BINDING:
-        rdc = parseBinding(raw_data,rdc,tlt);
-        break;
-    case RawDataContainer::STUDY_GONOGO:
-        rdc = parseGoNoGo(raw_data,rdc);
-        break;
-    case RawDataContainer::STUDY_NBACKMS:
-        error = "NBackMS parsing unimplemented";
-        break;
-    case RawDataContainer::STUDY_NBACKRT:
-        rdc = parseNBackRT(raw_data,exp,rdc);
-        break;
-    case RawDataContainer::STUDY_NBACKVS:
-        error = "NBackVS parsing unimplemented";
-        break;
-    case RawDataContainer::STUDY_PERCEPTION:
-        error = "Perception parsing unimplemented";
-        break;
+void DatFileToViewMindDataContainer::parseStudyData(const QString &raw_data,
+                                                                     const QString &exp,
+                                                                     QString st,
+                                                                     ViewMindDataContainer *rdc){
+
+    if ( st ==  VMDC::Study::READING) {
+        parseReading(raw_data,exp,rdc);
     }
-    return rdc;
+    else if ( st ==  VMDC::Study::BINDING_BC) {
+        parseBinding(raw_data,rdc,true);
+    }
+    else if ( st ==  VMDC::Study::BINDING_UC) {
+        parseBinding(raw_data,rdc,false);
+    }
+    else if ( st ==  VMDC::Study::NBACKRT) {
+        parseGoNoGo(raw_data,rdc);
+    }
+    else if ( st ==  VMDC::Study::GONOGO) {
+        parseGoNoGo(raw_data,rdc);
+    }
+    else{
+        error = "Unknown study to parse " + st;
+    }
+
+}
+////////////////////////////////////////////// FIXATION CALCULATION FUNCTIONS ////////////////////////////////////////////
+
+void DatFileToViewMindDataContainer::finalizeOnlineFixations(ViewMindDataContainer *rawdata){
+    lastFixationR = rMWA.finalizeOnlineFixationCalculation();
+    lastFixationL = lMWA.finalizeOnlineFixationCalculation();
+    if (lastFixationR.isValid()){
+        rawdata->addFixationVectorR(fixationToVariantMap(lastFixationR));
+    }
+    if (lastFixationL.isValid()){
+        rawdata->addFixationVectorL(fixationToVariantMap(lastFixationL));
+    }
+}
+
+void DatFileToViewMindDataContainer::computeOnlineFixations(ViewMindDataContainer *rawdata, const QVariantMap &data, qreal l_schar, qreal l_word, qreal r_schar, qreal r_word){
+
+    qreal xr = data.value(VMDC::DataVectorField::X_R).toReal();
+    qreal yr = data.value(VMDC::DataVectorField::Y_R).toReal();
+    qreal pr = data.value(VMDC::DataVectorField::PUPIL_R).toReal();
+    qreal ts = data.value(VMDC::DataVectorField::TIMESTAMP).toReal();
+    qreal xl = data.value(VMDC::DataVectorField::X_L).toReal();
+    qreal yl = data.value(VMDC::DataVectorField::Y_L).toReal();
+    qreal pl = data.value(VMDC::DataVectorField::PUPIL_L).toReal();
+
+    lastFixationR = rMWA.calculateFixationsOnline(xr,yr,ts,pr,r_schar,r_word);
+    lastFixationL = lMWA.calculateFixationsOnline(xl,yl,ts,pl,l_schar,l_word);
+
+    if (lastFixationR.isValid() && rightEyeEnabled){
+        rawdata->addFixationVectorR(fixationToVariantMap(lastFixationR));
+    }
+
+    if (lastFixationL.isValid() && leftEyeEnabled){
+        rawdata->addFixationVectorL(fixationToVariantMap(lastFixationL));
+    }
+}
+
+QVariantMap DatFileToViewMindDataContainer::fixationToVariantMap(const Fixation &f){
+    QVariantMap map;
+    map.insert(VMDC::FixationVectorField::X,f.x);
+    map.insert(VMDC::FixationVectorField::Y,f.y);
+    map.insert(VMDC::FixationVectorField::DURATION,f.duration);
+    map.insert(VMDC::FixationVectorField::TIME,f.time);
+    map.insert(VMDC::FixationVectorField::START_TIME,f.fixStart);
+    map.insert(VMDC::FixationVectorField::END_TIME,f.fixEnd);
+    map.insert(VMDC::FixationVectorField::START_INDEX,f.indexFixationStart);
+    map.insert(VMDC::FixationVectorField::END_INDEX,f.indexFixationEnd);
+    map.insert(VMDC::FixationVectorField::PUPIL,f.pupil);
+    map.insert(VMDC::FixationVectorField::ZERO_PUPIL,f.pupilZeroCount);
+    if (studyType == VMDC::Study::READING){
+        map.insert(VMDC::FixationVectorField::CHAR,f.sentence_char);
+        map.insert(VMDC::FixationVectorField::WORD,f.sentence_word);
+    }
+    return map;
 }
 
 ////////////////////////////////////////////// PROCESSING FUNCTIONS ////////////////////////////////////////////
 
-RawDataContainer DatFileToRawDataContainer::parseReading(const QString &raw_data, const QString &exp, RawDataContainer rdc){
+void DatFileToViewMindDataContainer::parseReading(const QString &raw_data, const QString &exp, ViewMindDataContainer *rdc){
 
     // Creating the id -> sentence map.
     QStringList lines = exp.split("\n",Qt::SkipEmptyParts);
@@ -299,7 +463,7 @@ RawDataContainer DatFileToRawDataContainer::parseReading(const QString &raw_data
         QStringList parts = lines.at(i).split(":",Qt::SkipEmptyParts);
         if (parts.size() != 2){
             error = "Unexpected sentece in reading experiment: " + lines.at(i);
-            return rdc;
+            return;
         }
         QString id_str = parts.first();
         while (id_str.size() < 4) id_str = "0" + id_str;
@@ -307,10 +471,9 @@ RawDataContainer DatFileToRawDataContainer::parseReading(const QString &raw_data
     }
 
     // Now parsing the actual experiment data.
-    rdc.setCurrentStudy(RawDataContainer::STUDY_READING);
+    rdc->setCurrentStudy(VMDC::Study::READING);
 
     // Setting the trial list type which, for reading, is always unique.
-    rdc.setCurrentTrialListType(RawDataContainer::TLT_UNIQUE);
 
     QString current_trial_id = "";
     lines = raw_data.split("\n",Qt::SkipEmptyParts);
@@ -324,27 +487,27 @@ RawDataContainer DatFileToRawDataContainer::parseReading(const QString &raw_data
         if (id != current_trial_id){
             if (current_trial_id != ""){
                 // This is a new trial. So we finalize the dataset.
-                rdc.finalizeDataSet();
+                finalizeOnlineFixations(rdc);
+                rdc->finalizeDataSet();
                 // And we finalize the trial.
-                rdc.finalizeTrial();
+                rdc->finalizeTrial();
             }
 
             // We need to create a new trial.
-            RawDataContainer::TrialConfiguration tconfig;
-            tconfig.insert(RawDataContainer::TF_SENTENCE,sentences.value(id));
             size = sentences.value(id).split(" ",Qt::SkipEmptyParts).size();
 
-            if (!rdc.addNewTrial(id,tconfig)){
-                error = "Error creating new trial for " + id  + " on line " + lines.at(i) + ". Error was: " + rdc.getError();
-                return rdc;
+            if (!rdc->addNewTrial(id,sentences.value(id))){
+                error = "Error creating new trial for " + id  + " on line " + lines.at(i) + ". Error was: " + rdc->getError();
+                return;
             }
 
-            rdc.setCurrentDataSet(RawDataContainer::DST_UNIQUE);
+            rdc->setCurrentDataSet(VMDC::DataSetType::UNIQUE);
+
         }
 
         if (!sentences.contains(id)){
             error = "Found data with id " + id + " which does not belong to a sentence id. Line: " + lines.at(i);
-            return rdc;
+            return;
         }
 
         current_trial_id = id;
@@ -361,7 +524,7 @@ RawDataContainer DatFileToRawDataContainer::parseReading(const QString &raw_data
             // Checking on size.
             if (line_parts.size() != 13){
                 error = "Badly formatted data line for reading on line: " + lines.at(i);
-                return rdc;
+                return;
             }
 
             float timestamp,xr,yr,xl,yl,pr,pl,char_r,char_l,word_r,word_l;
@@ -381,30 +544,35 @@ RawDataContainer DatFileToRawDataContainer::parseReading(const QString &raw_data
             if (line_parts.at(10).toInt() != size){
                 error = "Length for sentence is set as " + line_parts.at(10) + " however sentence has " + QString::number(size);
                 error = error + "\nSENTENCE: " + sentences.value(id);
-                return rdc;
+                return;
             }
 
             // We add the data vector.
-            rdc.addNewRawDataVector(RawDataContainer::GenerateReadingRawDataVector(timestamp,xr,yr,xl,yl,pr,pl,char_r,char_l,word_r,word_l));
+            QVariantMap vector = ViewMindDataContainer::GenerateReadingRawDataVector(timestamp,xr,yr,xl,yl,pr,pl,char_r,char_l,word_r,word_l);
+            computeOnlineFixations(rdc,vector,char_l,word_l,char_r,word_r);
+            rdc->addNewRawDataVector(vector);
 
         }
     }
 
     // Finalize the last data set and response.
-    rdc.finalizeDataSet();
-    rdc.finalizeTrial();
+    finalizeOnlineFixations(rdc);
+    rdc->finalizeDataSet();
+    rdc->finalizeTrial();
 
     // And then finalizing the study.
-    if (!rdc.finalizeStudy()){
-        error = "Finalizing Study: " + rdc.getError();
+    if (!rdc->finalizeStudy()){
+        error = "Finalizing Study: " + rdc->getError();
     }
 
-    return rdc;
+    rdc->markFileAsFinalized();
+
+    return;
 }
 
 //////////////////////////////////////// NBACKRT
 
-RawDataContainer DatFileToRawDataContainer::parseNBackRT(const QString &raw_data, const QString &exp, RawDataContainer rdc){
+void DatFileToViewMindDataContainer::parseNBackRT(const QString &raw_data, const QString &exp, ViewMindDataContainer *rdc){
 
     QStringList explines = exp.split("\n",Qt::SkipEmptyParts);
     QMap<QString,QString> trialDesc;
@@ -419,16 +587,15 @@ RawDataContainer DatFileToRawDataContainer::parseNBackRT(const QString &raw_data
     }
 
     // Now parsing the actual experiment data.
-    rdc.setCurrentStudy(RawDataContainer::STUDY_NBACKRT);
+    rdc->setCurrentStudy(VMDC::Study::NBACKRT);
 
     // Setting the trial list type which, for reading, is always unique.
-    rdc.setCurrentTrialListType(RawDataContainer::TLT_UNIQUE);
 
-    QMap<QString,RawDataContainer::DataSetType> trialPartToDataSetType;
-    trialPartToDataSetType["1"] = RawDataContainer::DST_ENCODING_1;
-    trialPartToDataSetType["2"] = RawDataContainer::DST_ENCODING_2;
-    trialPartToDataSetType["3"] = RawDataContainer::DST_ENCODING_3;
-    trialPartToDataSetType["4"] = RawDataContainer::DST_RETRIEVAL_1;
+    QMap<QString,QString> trialPartToDataSetType;
+    trialPartToDataSetType["1"] = VMDC::DataSetType::ENCODING_1;
+    trialPartToDataSetType["2"] = VMDC::DataSetType::ENCODING_2;
+    trialPartToDataSetType["3"] = VMDC::DataSetType::ENCODING_3;
+    trialPartToDataSetType["4"] = VMDC::DataSetType::RETRIEVAL_1;
 
     QStringList lines = raw_data.split("\n",Qt::SkipEmptyParts);
     QString current_trial = "";
@@ -442,34 +609,33 @@ RawDataContainer DatFileToRawDataContainer::parseNBackRT(const QString &raw_data
             QString trialPart = tokens.last().trimmed();
 
             if (current_trial != ""){
-                rdc.finalizeDataSet();
+                finalizeOnlineFixations(rdc);
+                rdc->finalizeDataSet();
             }
 
             if (trialID != current_trial){
 
                 if (current_trial != ""){
-                    rdc.finalizeTrial();
+                    rdc->finalizeTrial();
                 }
 
                 if (!trialDesc.contains(trialID)){
                     error = "Found trial id in NBackRT not found in description: " + trialID + " on line " + lines.at(i);
-                    return rdc;
+                    return;
                 }
 
-                RawDataContainer::TrialConfiguration tconfig;
-                tconfig.insert(RawDataContainer::TF_TRIAL_TYPE,trialDesc.value(trialID));
-                if (!rdc.addNewTrial(trialID,tconfig)){
-                    error = "Error creating new trial for " + trialID  + " on line " + lines.at(i) + ". Error was: " + rdc.getError();
-                    return rdc;
+                if (!rdc->addNewTrial(trialID,trialDesc.value(trialID))){
+                    error = "Error creating new trial for " + trialID  + " on line " + lines.at(i) + ". Error was: " + rdc->getError();
+                    return;
                 }
             }
 
             if (!trialPartToDataSetType.contains(trialPart)){
                 error = "Unrecognized trial part " + trialPart + " for NBack RT: " + lines.at(i);
-                return rdc;
+                return;
             }
 
-            rdc.setCurrentDataSet(trialPartToDataSetType.value(trialPart));
+            rdc->setCurrentDataSet(trialPartToDataSetType.value(trialPart));
 
             current_trial = trialID;
         }
@@ -482,44 +648,48 @@ RawDataContainer DatFileToRawDataContainer::parseNBackRT(const QString &raw_data
             yl = tokens.at(4).toDouble();
             pr = tokens.at(5).toDouble();
             pl = tokens.at(6).toDouble();
-            rdc.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl));
+            QVariantMap vector = ViewMindDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl);
+            computeOnlineFixations(rdc,vector);
+            rdc->addNewRawDataVector(vector);
         }
         else{
             error = "Badly formed for NBack RT: " + lines.at(i);
-            return rdc;
+            return;
         }
     }
 
     // Finalize the last data set and response.
-    rdc.finalizeDataSet();
-    rdc.finalizeTrial();
+    finalizeOnlineFixations(rdc);
+    rdc->finalizeDataSet();
+    rdc->finalizeTrial();
 
     // And then finalizing the study.
-    if (!rdc.finalizeStudy()){
-        error = "Finalizing Study: " + rdc.getError();
+    if (!rdc->finalizeStudy()){
+        error = "Finalizing Study: " + rdc->getError();
     }
 
-    return rdc;
+    return;
 
 }
 
 
 //////////////////////////////////////// Binding
-RawDataContainer DatFileToRawDataContainer::parseBinding(const QString &raw_data, RawDataContainer rdc, RawDataContainer::TrialListType tlt){
+void DatFileToViewMindDataContainer::parseBinding(const QString &raw_data, ViewMindDataContainer *rdc, bool isBC){
 
     // Now parsing the actual experiment data.
-    if (!rdc.setCurrentStudy(RawDataContainer::STUDY_BINDING)){
-        error = "Could not set current study: " + rdc.getError();
-        return rdc;
-    }
+    QString study;
+    if (isBC) study = VMDC::Study::BINDING_BC;
+    else study = VMDC::Study::BINDING_UC;
 
-    // Setting the trial list type which, for binding can be either bound or unbound
-    rdc.setCurrentTrialListType(tlt);
+    if (!rdc->setCurrentStudy(study)){
+        error = "Could not set current study: " + rdc->getError();
+        return;
+    }
 
     QStringList lines = raw_data.split("\n",Qt::SkipEmptyParts);
     QString current_trial = "";
-    RawDataContainer::DataSetType current_data_set;
-    //current_data_set = RawDataContainer::DST_ENCODING_1;
+    QString current_data_set;
+    //current_data_set = VMDC::DataSetType::ENCODING_1;
     bool trial_finalized = false;
 
     for (qint32 i =0; i < lines.size(); i++){
@@ -533,36 +703,35 @@ RawDataContainer DatFileToRawDataContainer::parseBinding(const QString &raw_data
                 QString trialID = tokens.first().trimmed();
                 QString trialPart = tokens.last().trimmed();
 
-                if (trialPart == "0") current_data_set = RawDataContainer::DST_ENCODING_1;
-                else if (trialPart == "1") current_data_set = RawDataContainer::DST_RETRIEVAL_1;
+                if (trialPart == "0") current_data_set = VMDC::DataSetType::ENCODING_1;
+                else if (trialPart == "1") current_data_set = VMDC::DataSetType::RETRIEVAL_1;
                 else{
                     error = "Bad trial part in Binding header for data set: " + lines.at(i);
-                    return rdc;
+                    return;
                 }
 
 
-                if (current_data_set == RawDataContainer::DST_ENCODING_1){
+                if (current_data_set == VMDC::DataSetType::ENCODING_1){
 
                     QString type = "";
                     if (trialID.toUpper().contains("SAME")) type = "S";
                     else if (trialID.toUpper().contains("DIFFERENT")) type = "D";
                     else{
                         error = "Binding trial header, could not determine the trial type: " + lines.at(i);
-                        return rdc;
+                        return;
                     }
 
                     // Add a new trial.
-                    RawDataContainer::TrialConfiguration tconfig;
-                    tconfig.insert(RawDataContainer::TF_TRIAL_TYPE,type);
-                    if (!rdc.addNewTrial(trialID,tconfig)){
-                        error = "Binding creating a new trial: " + rdc.getError();
-                        return rdc;
+                    if (!rdc->addNewTrial(trialID,type)){
+                        error = "Binding creating a new trial: " + rdc->getError();
+                        return;
                     }
-                    rdc.setCurrentDataSet(RawDataContainer::DST_ENCODING_1);
+                    rdc->setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
                 }
                 else {
-                    rdc.finalizeDataSet(); // Finalize the previous encoding.
-                    rdc.setCurrentDataSet(RawDataContainer::DST_RETRIEVAL_1);
+                    finalizeOnlineFixations(rdc);
+                    rdc->finalizeDataSet(); // Finalize the previous encoding.
+                    rdc->setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
                 }
 
 
@@ -577,7 +746,11 @@ RawDataContainer DatFileToRawDataContainer::parseBinding(const QString &raw_data
                 yl = tokens.at(4).toDouble();
                 pr = tokens.at(5).toDouble();
                 pl = tokens.at(6).toDouble();
-                rdc.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl));
+
+                QVariantMap vector = ViewMindDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl);
+                computeOnlineFixations(rdc,vector);
+
+                rdc->addNewRawDataVector(vector);
             }
         }
         // This line contains a ->
@@ -585,10 +758,11 @@ RawDataContainer DatFileToRawDataContainer::parseBinding(const QString &raw_data
             QStringList tokens = lines.at(i).split("->",Qt::SkipEmptyParts);
             if (tokens.size() != 2){
                 error = "Bad answer line in binding data:  " + lines.at(i);
-                return rdc;
+                return;
             }
-            rdc.finalizeDataSet(); // Finalize the retrieval data set
-            rdc.finalizeTrial(tokens.last()); // Finalize trial.
+            finalizeOnlineFixations(rdc);
+            rdc->finalizeDataSet(); // Finalize the retrieval data set
+            rdc->finalizeTrial(tokens.last()); // Finalize trial.
             trial_finalized = true;
         }
 
@@ -598,25 +772,26 @@ RawDataContainer DatFileToRawDataContainer::parseBinding(const QString &raw_data
         error = "Something went wrong when parsing binding info. The file did not end with a user response";
     }
 
-    if (!rdc.finalizeStudy()){
-        error = "Finalizing Study: " + rdc.getError();
+    if (!rdc->finalizeStudy()){
+        error = "Finalizing Study: " + rdc->getError();
     }
 
-    return rdc;
+    // TODO Mark as finalized if both files are present
+
+    return;
 }
 
 
 //////////////////////////////////////// GoNoGo
-RawDataContainer DatFileToRawDataContainer::parseGoNoGo(const QString &raw_data, RawDataContainer rdc){
+void DatFileToViewMindDataContainer::parseGoNoGo(const QString &raw_data, ViewMindDataContainer *rdc){
 
     // Now parsing the actual experiment data.
-    if (!rdc.setCurrentStudy(RawDataContainer::STUDY_GONOGO)){
-        error = "Could not set current study: " + rdc.getError();
-        return rdc;
+    if (!rdc->setCurrentStudy(VMDC::Study::GONOGO)){
+        error = "Could not set current study: " + rdc->getError();
+        return;
     }
 
     // Setting the trial list type which, for gonogo is always unique.
-    rdc.setCurrentTrialListType(RawDataContainer::TLT_UNIQUE);
 
     QStringList trialTypes;
     trialTypes << "R<-" << "G<-" << "R->" <<  "G->";
@@ -629,8 +804,9 @@ RawDataContainer DatFileToRawDataContainer::parseGoNoGo(const QString &raw_data,
         QStringList tokens = lines.at(i).split(" ",Qt::SkipEmptyParts);
         if (tokens.size() == 2){
             if (current_trial != ""){
-                rdc.finalizeDataSet();
-                rdc.finalizeTrial();
+                this->finalizeOnlineFixations(rdc);
+                rdc->finalizeDataSet();
+                rdc->finalizeTrial();
             }
             current_trial = tokens.first();
 
@@ -641,17 +817,15 @@ RawDataContainer DatFileToRawDataContainer::parseGoNoGo(const QString &raw_data,
             }
             else{
                 error = "Unknown trial type index: " + tokens.last() + ". From line: " + lines.at(i);
-                return rdc;
+                return;
             }
 
-            RawDataContainer::TrialConfiguration tconfig;
-            tconfig.insert(RawDataContainer::TF_TRIAL_TYPE,type);
-            if (!rdc.addNewTrial(tokens.first().trimmed(),tconfig)){
-                error = "Error creating new GoNoGo trial: " + rdc.getError();
-                return rdc;
+            if (!rdc->addNewTrial(tokens.first().trimmed(),type)){
+                error = "Error creating new GoNoGo trial: " + rdc->getError();
+                return;
             }
 
-            rdc.setCurrentDataSet(RawDataContainer::DST_UNIQUE);
+            rdc->setCurrentDataSet(VMDC::DataSetType::UNIQUE);
         }
         else if (tokens.size() == 7){
             float timestamp,xr,yr,xl,yl,pr,pl;
@@ -663,31 +837,34 @@ RawDataContainer DatFileToRawDataContainer::parseGoNoGo(const QString &raw_data,
             pr = tokens.at(5).toDouble();
             pl = tokens.at(6).toDouble();
             // We add the data vector.
-            rdc.addNewRawDataVector(RawDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl));
+            QVariantMap rawDataVector = ViewMindDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl);
+            this->computeOnlineFixations(rdc,rawDataVector);
+            rdc->addNewRawDataVector(rawDataVector);
         }
         else{
             error = "Badly formatted GoNoGo line " + lines.at(i);
-            return rdc;
+            return;
         }
 
     }
 
-    rdc.finalizeDataSet();
-    rdc.finalizeTrial();
+    this->finalizeOnlineFixations(rdc);
+    rdc->finalizeDataSet();
+    rdc->finalizeTrial();
 
-    if (!rdc.finalizeStudy()){
-        error = "Finalizing Study: " + rdc.getError();
+    if (!rdc->finalizeStudy()){
+        error = "Finalizing Study: " + rdc->getError();
     }
 
-    return rdc;
+    return;
 
 }
 
 ////////////////////////////////////////////// SEPARATE RAW DATA FILE FROM HEADER ////////////////////////////////////////////
 
-QStringList DatFileToRawDataContainer::separateStudyDescriptionFromData(const QString &file_path, const QString &header){
+QStringList DatFileToViewMindDataContainer::separateStudyDescriptionFromData(const QString &file_path, const QString &header){
 
-    QString codec = DatFileToRawDataContainer::checkCodecForFile(file_path);
+    QString codec = DatFileToViewMindDataContainer::checkCodecForFile(file_path);
     if (codec == "") codec = "UTF-8";
 
     QFile file(file_path);
@@ -755,7 +932,7 @@ QStringList DatFileToRawDataContainer::separateStudyDescriptionFromData(const QS
 
 
 ////////////////////////////////////////////////////// CHECK CODEC FOR FILE ////////////////////////////////////////////
-QString DatFileToRawDataContainer::checkCodecForFile(const QString &file){
+QString DatFileToViewMindDataContainer::checkCodecForFile(const QString &file){
 
     QString ans = "";
 
