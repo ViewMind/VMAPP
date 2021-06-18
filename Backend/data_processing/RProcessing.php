@@ -12,44 +12,6 @@ abstract class RScriptNames {
    const READING_ES_SCRIPT    = "reading_es.R";   
 }
 
-// if [[ $1 == 1 ]]; then
-   // echo "RUNNING READING ES TEST ...."
-   // RSCRIPT="res/reading_es.R"
-   // OUTPUT="test_scripts/comparison_reading_output" 
-   // INPUT="test_scripts/reference_data/reference_reading_es.csv"   
-// elif [[ $1 == 2 ]]; then 
-   // echo "RUNNING BINDING 2 TEST ...."
-   // RSCRIPT="res/binding2.R"
-   // OUTPUT="test_scripts/comparison_binding2_output"
-   // INPUT="test_scripts/reference_data/reference_binding_bc_2.csv test_scripts/reference_data/reference_binding_uc_2.csv"
-// elif [[ $1 == 3 ]]; then 
-   // echo "RUNNING BINDING 3 TEST ...."
-   // RSCRIPT="res/binding3.R"
-   // OUTPUT="test_scripts/comparison_binding3_output"
-   // INPUT="test_scripts/reference_data/reference_binding_bc_3.csv test_scripts/reference_data/reference_binding_uc_3.csv"
-// elif [[ $1 == 4 ]]; then 
-   // echo "RUNNING NBACK RT TEST ...."
-   // RSCRIPT="res/nback_rt.R"
-   // OUTPUT="test_scripts/comparison_nback_rt_output" 
-   // INPUT="test_scripts/reference_data/reference_nbackrt.csv"   
-// elif [[ $1 == 5 ]]; then
-   // RSCRIPT="res/gonogo.R"
-   // OUTPUT="test_scripts/comparison_gonogo_output" 
-   // INPUT="test_scripts/reference_data/reference_gonogo.csv"             
-// else
-   // echo "Unrecognized parameter $1. Exiting"
-   // exit
-// fi
-// 
-// # Switchting to bin directory.
-// cd ../../
-// 
-// # Making sure the output does not exist
-// rm $OUTPUT 2> /dev/null
-// 
-// # Running the test. 
-// Rscript $RSCRIPT $INPUT $OUTPUT
-
 function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
 
    $studies = $vmdc->getAvailableStudies();
@@ -58,10 +20,12 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
    // Setting up paths. 
    $output = "$workdir/routput";
    $rscript = "";
+   $expected_output_fields = array();
 
    if ($study == Study::READING){
       $input  = $csv_array[Study::READING];
       $rscript = RScriptNames::READING_ES_SCRIPT;
+      $expected_output_fields = ReadingResults::getConstList();
    }
    else if (($study == Study::BINDING_BC) || ($study == Study::BINDING_UC)){
       $input  = $csv_array[Study::BINDING_BC] . " " . $csv_array[Study::BINDING_UC];
@@ -73,21 +37,26 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
       if ($study_config[StudyParameter::NUMBER_TARGETS]  == BindingTargetCount::THREE) $rscript = RScriptNames::BINDING_3_SCRIPT;
       else if ($study_config[StudyParameter::NUMBER_TARGETS]  == BindingTargetCount::TWO) $rscript = RScriptNames::BINDING_2_SCRIPT;
       else return "Could not determine proper binding processing script from number of targets: " . $study_config[StudyParameter::NUMBER_TARGETS];
+
+      $expected_output_fields = BindingResults::getConstList();
+
    }
    else if ($study == Study::NBACKRT){
       $input  = $csv_array[Study::NBACKRT];
       $rscript = RScriptNames::NBACKRT_SCRIPT;
+      $expected_output_fields = NBackRTResults::getConstList();
    }
    else if ($study == Study::GONOGO){
       $input  = $csv_array[Study::GONOGO];
       $rscript = RScriptNames::GONOGO_SCRIPT;
+      $expected_output_fields = GoNoGoResults::getConstList();
    }
    else{
       return "Unknown R Processing Study: $study";
    }
 
    $rdirectory = CONFIG[GlobalConfigProcResources::GROUP_NAME][GlobalConfigProcResources::R_SCRIPTS_REPO];
-   $cmd = "cd $rdirectory; Rscript $rscript $input $output";
+   $cmd = "cd $rdirectory; Rscript $rscript $input $output 2>&1";
    $temp = $cmd . "\n============================================================\n";   
    $routput = array();
    exec($cmd,$routput,$retval);
@@ -95,8 +64,29 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
    $temp = $temp . implode("\n",$routput);
 
    if (!is_file($output)) return "Failed to create output for R processing with command $temp";
-   else return "";
+   else {
+      // Last step is to save the finalized results to the our JSON struture, first making sure there no more or no less values other than those expected. 
+
+      $results = parse_ini_file($output);
+      foreach ($results as $name => $value){
+         if (!in_array($name,$expected_output_fields)){
+            return "Unexpected result field $name for $study";
+         }
+         else {
+            if (($key = array_search($name, $expected_output_fields)) !== false) {
+               unset($expected_output_fields[$key]);
+           }      
+         }
+      }
+
+      if (!empty($expected_output_fields)){
+         return "Missing the following result fields for study $study: " . implode(",",$expected_output_fields);
+      }
+
+      $vmdc->setFinalizedResults($results);
+
+      return "";
+   }
 
 }
-
 ?>

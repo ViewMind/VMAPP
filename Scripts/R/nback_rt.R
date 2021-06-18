@@ -13,7 +13,7 @@ library(gdata)
 
 #### NOTEBOOK ########
 rm(list=ls())  #Remove workspace
-setwd("./res")
+#setwd("./res")
 
 args = commandArgs(trailingOnly=TRUE)
 if (length(args) != 2) {

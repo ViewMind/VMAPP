@@ -25,7 +25,7 @@ if (length(args) != 3) {
    stop(paste0("Binding Script requires 3 and only 3 argurments. Found: ",length(args)), call.=FALSE)
 }
 
-setwd("./res")
+# setwd("./res")
 
 BC<-read.csv(args[1]) 
 

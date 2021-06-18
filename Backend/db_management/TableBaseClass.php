@@ -151,21 +151,23 @@ class TableBaseClass {
       $cols_to_check[] = $latest_column;
       
       // Checking the validity of all the columns to get.
-      foreach ($cols_to_compare as $col) {
+      foreach ($cols_to_check as $col) {
          if (!in_array($col, $this->valid_columns)) {
             $this->error = "$col is not a column of table " . static::class::TABLE_NAME;
             return false;
          }
       }
       
-      $cols_to_compare[] = self::COL_KEYID;
+      $cols_to_check[] = self::COL_KEYID;
 
       // Doing a select query on the $unique_item_column assuming there is only one $latest column.
-      $sql = "SELECT " . implode(",",$cols_to_compare) . " FROM " . static::class::TABLE_NAME . " WHERE " . $latest_column . " = :latest AND $unique_item_column = $:uid";
+      $sql = "SELECT " . implode(",",$cols_to_check) . " FROM " . static::class::TABLE_NAME 
+      . " WHERE " . $latest_column . " = :latest AND $unique_item_column = :uid";
       
       $bind["latest"] = 1;
       $bind["uid"]    = $unique_item_id;
       
+      $latest = array();
       try {
          $stmt = $this->con->prepare($sql);
          $stmt->execute($bind);
@@ -173,7 +175,6 @@ class TableBaseClass {
          while($row = $stmt->fetch()){
             $latest[] = $row;
          } 
-         return $ans;
       }
       catch (PDOException $e){
          $this->error = "Select failure: " . $e->getMessage() . ". SQL: $sql";
@@ -196,13 +197,16 @@ class TableBaseClass {
          // If we got here, there was something before. 
          $should_insert = false;
 
+         // Transforming from one element list to associative array.
+         $latest = $latest[0];
+
          // Getting the previous row identifier and clearing it from the array. 
          $previous_keyid = $latest[self::COL_KEYID];
          unset($latest[self::COL_KEYID]); 
 
          // Now we do the comparison. 
-         foreach ($latest as $col => $value){
-            if ($value != $cols_to_compare[$col]){
+         foreach ($cols_to_compare as $col => $value){
+            if ($value != $latest[$col]){
                $should_insert = true;
                break;
             }
@@ -217,8 +221,8 @@ class TableBaseClass {
          $placeholders = array();
          
          // We need to make sure that we insert the lastest value fo the column and the unique item id. 
-         $columns_to_insert[$unique_item_column] = $unique_item_id;
-         $columns_to_insert[$latest_column] = 1;
+         $cols_to_compare[$unique_item_column] = $unique_item_id;
+         $cols_to_compare[$latest_column] = 1;
 
          $columns_to_insert = array_keys($cols_to_compare);
          foreach ($columns_to_insert as $p){
@@ -243,9 +247,13 @@ class TableBaseClass {
       // Finally, if there WAS an insertion AND there WAS previous information we insert the last row. 
       if ($should_insert && ($previous_keyid != "")){
 
-         $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . $latest_column . " = :latest WHERE $unique_item_column = :uid";
+         $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . $latest_column . " = :latest WHERE " . self::COL_KEYID . " = :keyid";
+         
+         $bind = array();
          $bind["latest"] = 0;
-         $bind["uid"]    = $previous_keyid;
+         $bind["keyid"]  = $previous_keyid;
+
+         //echo "Doing $sql WITH Previous Keyid $previous_keyid\n";
 
          try {
             $stmt = $this->con->prepare($sql);
@@ -370,10 +378,6 @@ class TableBaseClass {
 
       return true;
    }
-
-   
-
-
 }
 
 ?>

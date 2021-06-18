@@ -50,7 +50,7 @@
 
          // The message is complimented with the source, if available. 
          if ($this->source != ""){
-            $info = $this->source . " -> ";
+            $info = $this->source . " -> " . $info;
          }
 
          // The actual message is formed.

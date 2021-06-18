@@ -5,13 +5,22 @@ const char * QualityControl::REF_DATA   = "REFData";
 
 QualityControl::QualityControl()
 {
+    verifyFileIntegrity = true;
+}
 
+void QualityControl::disableCheckSumVerification(){
+    verifyFileIntegrity = false;
 }
 
 void QualityControl::run(){
 
     if (!rawdata.loadFromJSONFile(originalFileName)){
         error = "Could not load the raw data file: " + originalFileName + ". Reason: " + rawdata.getError();
+        return;
+    }
+
+    if (!rawdata.verifyChecksumHash()){
+        error = "Checksum verification changed in the raw data file";
         return;
     }
 

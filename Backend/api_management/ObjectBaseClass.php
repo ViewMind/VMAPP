@@ -17,9 +17,10 @@ class ObjectBaseClass{
    protected $con_main;
    protected $con_secure;
 
-   //protected $base_logger;
+   // This might contain valueable information required by the functions. 
+   protected $headers;
 
-   function __construct($srv_name){
+   function __construct($srv_name, $headers){
       $this->error = "";         
       $this->returnable_error = "";
       $this->suggested_http_code = 200;
@@ -37,7 +38,7 @@ class ObjectBaseClass{
       }         
 
       // Creating the base log than can be used for genralities. 
-      //$base_logger = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::BASE_STD_LOG]);
+      $this->headers = $headers;
 
    }
    

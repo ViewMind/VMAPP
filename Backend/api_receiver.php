@@ -102,7 +102,7 @@ if (array_key_exists($object,$permissions)){
 
       // Creating an object of the proper class.
       $class = ROUTING[$object];
-      $operating_object = new $class($dbuser);
+      $operating_object = new $class($dbuser,$headers);
 
       if (!method_exists($operating_object,$operation)){
          // Method not implemented yet. 

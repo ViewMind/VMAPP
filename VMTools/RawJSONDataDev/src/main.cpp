@@ -57,11 +57,12 @@ int main(int argc, char *argv[])
 
         // File is saved, doing Quality Control.
         QualityControl qc;
-        if (!qc.setVMContainterFile(jsonFileName)){
+        qc.setVMContainterFile(jsonFileName);
+        qc.run();
+        if (!qc.getError().isEmpty()){
             std::cout << "QC Failed: " << qc.getError().toStdString() << std::endl;
             return 0;
         }
-
 
         std::cout << "Done, now zipping ... "<< std::endl;
 

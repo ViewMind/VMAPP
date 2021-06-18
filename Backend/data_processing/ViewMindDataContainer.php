@@ -37,7 +37,8 @@ class ViewMindDataContainer {
          return false;
       }
 
-      $main_fields = MainFields::getConstList();
+      $skip = ["FINALIZED_RESULTS"];
+      $main_fields = MainFields::getConstList($skip);
 
       foreach ($main_fields as $main_field){
          if (!array_key_exists($main_field,$this->data)){
@@ -53,6 +54,8 @@ class ViewMindDataContainer {
    }
 
    function save(){
+      // The data is hashed before saving. 
+      $this->data[MainFields::CHECKSUM] = $this->computeHash();
       $fid = fopen($this->file_location,"w+");
       if ($fid === false) return false;
       fwrite($fid,json_encode($this->data,JSON_PRETTY_PRINT));
@@ -81,7 +84,14 @@ class ViewMindDataContainer {
       }
 
       return $this->data[MainFields::SUBJECT][$subject_field];
+   }
 
+   function getAllSubjectData(){
+      if (!array_key_exists(MainFields::SUBJECT,$this->data)){
+         $this->error = "The main field subject does not exist";
+         return array();
+      }
+      return $this->data[MainFields::SUBJECT];
    }
 
    function getMetaDataField($metada_field){
@@ -127,9 +137,31 @@ class ViewMindDataContainer {
       return $this->current_number_of_trials;
    }
 
-   // function setProcessingParameters($pp){
-   //    $this->data[MainFields::PROCESSING_PARAMETERS] = $pp;
-   // }
+   function verifyChecksum(){
+      if (!array_key_exists(MainFields::CHECKSUM,$this->data)) {
+         $this->error = "No checksum field";
+         return false;
+      }      
+      
+      // The current hash needs to be stored as the computation deletes it. 
+      $hash = $this->data[MainFields::CHECKSUM];
+      
+      $computed_hash = $this->computeHash();
+      
+      // Previous hash is restored. 
+      $this->data[MainFields::CHECKSUM] = $hash;
+      
+      if (!hash_equals($hash,$computed_hash)){
+         $this->error = "Computed hash $computed_hash and verification $hash hash differ";
+         return false;
+      }
+      return true;
+   }
+
+   private function computeHash(){
+      $this->data[MainFields::CHECKSUM] = "*";
+      return hash("sha3-512",json_encode($this->data));
+   }
 
    function getProcessingParameters(){
       if (array_key_exists(MainFields::PROCESSING_PARAMETERS,$this->data)){
@@ -191,6 +223,43 @@ class ViewMindDataContainer {
 
    }
 
+   function getAppUser($user){
+      if (!AppUserType::validate($user)){
+         $this->error = "App Type user is invalid: $user";
+         return false;
+      }
+      if (!array_key_exists($user,$this->data[MainFields::APPLICATION_USER])){
+         $this->error = "Missing application user main field in data";
+         return false;
+      }
+      return $this->data[MainFields::APPLICATION_USER][$user];
+   }
+
+   function setFinalizedResults($results){
+      $this->data[MainFields::FINALIZED_RESULTS] = $results;
+   }
+
+   function getFinalizedResultString(){
+      if (!array_key_exists(MainFields::FINALIZED_RESULTS,$this->data)) return "";
+      return json_encode($this->data[MainFields::FINALIZED_RESULTS]);
+   }
+
+   function getInsertableQualityControlParametersString(){
+      if (array_key_exists(MainFields::QC_PARAMETERS,$this->data)){
+         return json_encode($this->data[MainFields::QC_PARAMETERS]);
+      }
+      return "";
+   }
+
+   function getInsertableQualityControlGraphValuesString(){
+      $ans = array();
+      foreach ($this->available_studies as $study){
+         $ans[$study] = array();
+         if (!array_key_exists(StudyField::QUALITY_CONTROL,$this->data[MainFields::STUDIES][$study])) continue;
+         $ans[$study] = $this->data[MainFields::STUDIES][$study][StudyField::QUALITY_CONTROL];
+      }
+      return json_encode($ans);
+   }
 
    function getAvailableDataSetsForSelectedStudy(){
       return $this->available_data_sets;
@@ -252,61 +321,6 @@ class ViewMindDataContainer {
       return true;      
    }
 
-
-   // function getFixationListsFromTrial($trial_index, $data_set_type, $eye){
-      
-   //    if ($this->current_study == ""){
-   //       $this->error = "Current study has not been set";
-   //       return false;
-   //    }
-
-   //    if ($trial_index >= $this->current_number_of_trials){
-   //       $this->error = "Out of bonds trial index $trial_index. The maximum number of trials is " . $this->current_number_of_trials;
-   //       return false;
-   //    }
-
-   //    if (!in_array($data_set_type,$this->available_data_sets)){
-   //       $this->error = "Asking for fixation lists for data set $data_set_type which is not available for current study " . $this->current_study;
-   //       return false;
-   //    }
-
-   //    if ($eye == Eye::LEFT){
-   //       $to_get = DataSetField::FIXATIONS_L;
-   //    }
-   //    else if ($eye == Eye::RIGHT){
-   //       $to_get = DataSetField::FIXATIONS_R;
-   //    }
-   //    else{
-   //       $this->error = "Invalid Eye parameter $eye for getting fixation lists";
-   //       return false;
-   //    }
-
-   //    return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index][TrialField::DATA][$data_set_type][$to_get];
-
-   // }
-
-
-   // function getValuesForDataSetFromTrial($trial_index, $data_set_type){
-      
-   //    if ($this->current_study == ""){
-   //       $this->error = "Current study has not been set";
-   //       return false;
-   //    }
-
-   //    if ($trial_index >= $this->current_number_of_trials){
-   //       $this->error = "Out of bonds trial index $trial_index. The maximum number of trials is " . $this->current_number_of_trials;
-   //       return false;
-   //    }
-
-   //    if (!in_array($data_set_type,$this->available_data_sets)){
-   //       $this->error = "Asking for data set values for data set $data_set_type which is not available for current study " . $this->current_study;
-   //       return false;
-   //    }
-
-   //    return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index][TrialField::DATA][$data_set_type][DataSetField::DATA_SET_VALUES];
-
-   // }   
-
    function getTrial($trial_index){
 
       if ($this->current_study == ""){
@@ -321,22 +335,6 @@ class ViewMindDataContainer {
 
       return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index];
    }   
-
-   // function setTrial($trial,$trial_index){
-
-   //    if ($this->current_study == ""){
-   //       $this->error = "Current study has not been set";
-   //       return false;
-   //    }
-
-   //    if ($trial_index >= $this->current_number_of_trials){
-   //       $this->error = "Out of bonds trial index $trial_index. The maximum number of trials is " . $this->current_number_of_trials;
-   //       return array();
-   //    }
-
-   //    return $this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][$trial_index] = $trial;      
-   // }
-
 
 }
 

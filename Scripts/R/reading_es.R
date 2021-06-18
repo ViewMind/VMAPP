@@ -30,7 +30,7 @@ if (length(args) != 2) {
    stop("Reading Script requires 2 and only 2 argurments", call.=FALSE)
 }
 
-setwd("./res")
+#setwd("./res")
 
 
 sss<-read.csv(args[1])  #yo_09_05_2020

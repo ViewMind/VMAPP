@@ -28,7 +28,7 @@ if (length(args) != 3) {
    print(args[4])   
 }
 
-setwd("./res")
+#setwd("./res")
 
 BC<-read.csv(args[1]) 
 

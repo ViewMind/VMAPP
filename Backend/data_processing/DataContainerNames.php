@@ -200,9 +200,41 @@ abstract class StudyField extends TypedString
    const CONFIG_CODE                             = "config_code";
    const QUALITY_CONTROL                         = "quality_control";
    const DURATION                                = "duration";
-   const BINDING_SCORE                           = "binding_score";
+   const BINDING_SCORE                           = "binding_score";   
 }
 
+abstract class BindingResults extends TypedString {
+   const BC_PREDICTED_DETERIORATION              =  "bc_predicted_deterioration";
+   const UC_PREDICTED_DETERIORATION              =  "uc_predicted_deterioration";
+   const BC_PREDICTED_GROUP                      =  "bc_predicted_group";
+   const UC_PREDICTED_GROUP                      =  "uc_predicted_group";
+}
+
+abstract class ReadingResults extends TypedString {
+   const ATTENTIONAL_PROCESSES                   = "attentional_processes";
+   const EXECUTIVE_PROCESESES                    = "executive_proceseses";
+   const WORKING_MEMORY                          = "working_memory";
+   const RETRIEVAL_MEMORY                        = "retrieval_memory";
+   const READING_PREDICTED_DETERIORATION         = "reading_predicted_deterioration";   
+}
+
+abstract class GoNoGoResults extends TypedString {
+   const SPEED_PROCESSING                        = "gonogo_speed_processing";
+   const DMT_FACILITATE                          = "gonogo_dmt_facilitate";
+   const DMT_INTERFERENCE                        = "gonogo_dmt_interference";
+   const PIP_FACILITATE                          = "gonogo_pip_facilitate";
+   const PIP_INTERFERENCE                        = "gonogo_pip_interference";
+}
+
+abstract class NBackRTResults extends TypedString {
+   const NUMBER_OF_FIXATIONS_ENC                 = "number_of_fixations_enc";
+   const NUMBER_OF_FIXATIONS_RET                 = "number_of_fixations_ret";
+   const INHIBITORY_PROBLEMS_PERCENT             = "inhibitory_problems_percent";
+   const CORRECT_TARGET_HIT_PERCENT              = "correct_target_hit_percent";
+   const CORRECT_COMPLETE_SEQUENCE_PERCENT       = "correct_complete_sequence_percent";
+   const MEAN_RESPONSE_TIME                      = "mean_response_time";
+   const MEAN_SACCADE_AMPLITUDE                  = "mean_saccade_amplitude";
+}
 
 abstract class ProcessingParameter extends TypedString
 {
@@ -247,6 +279,8 @@ abstract class MainFields extends TypedString
    const SUBJECT                                 = "subject";
    const QC_PARAMETERS                           = "qc_parameters";
    const APPLICATION_USER                        = "application_user";
+   const CHECKSUM                                = "hash";
+   const FINALIZED_RESULTS                       = "finalized_results";
 }
 
 
@@ -284,5 +318,7 @@ abstract class GoNoGoTargetBoxes {
    const LEFT   = 1;
    const RIGHT  = 2;
 }
+
+
 
 ?>

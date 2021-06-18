@@ -27,6 +27,13 @@
       const R_SCRIPTS_REPO              = "r_repo";
    }
  
+   abstract class GlobalConfigS3 extends TypedString {
+      const GROUP_NAME                = "S3";
+      const PROFILE                   = "profile";
+      const BUCKET                    = "bucket";
+      const ECHO_ONLY                 = "echo_only";      
+   }
+
    abstract class HeaderFields extends TypedString {
       const AUTH_TYPE                   = "AuthType";
       const AUTHORIZATION               = "Authorization";

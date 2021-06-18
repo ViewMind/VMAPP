@@ -14,6 +14,7 @@
 #include <QDateTime>
 #include <QSet>
 #include <QDebug>
+#include <QCryptographicHash>
 #include "VMDC.h"
 #include "../debug.h"
 
@@ -38,6 +39,10 @@ public:
      * @return The last error message from any operation done. Empty if no error.
      */
     QString getError() const;
+
+    ////////////////////////// HASH REALATED FUNCTIONS
+    void setChecksumHash();
+    bool verifyChecksumHash();
 
     ////////////////////////// ATTACHMENT DATA RELATED FUNCTIONS
     bool setMetadata(const QVariantMap &metadata);
@@ -153,6 +158,7 @@ private:
      */
     bool checkHiearchyChain(const QStringList &hieararchy);
 
+    QString computeCheckSumHash();
 
     // The main fields in ANY study container.
     static QString MAIN_FIELD_SUBJECT_DATA;
@@ -161,6 +167,7 @@ private:
     static QString MAIN_FIELD_APPLICATION_USER;
     static QString MAIN_FIELD_METADATA;
     static QString MAIN_FIELD_STUDIES;
+    static QString MAIN_FIELD_HASH;
 
     // Constant strings to be used in all structures.
     static QString CURRENT_JSON_STRUCT_VERSION;

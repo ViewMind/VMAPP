@@ -8,8 +8,8 @@ include_once (__DIR__ . "/../db_management/TableInstitutionUsers.php");
 class ObjectPortalUsers extends ObjectBaseClass{
 
 
-   function __construct($service){
-      parent::__construct($service);
+   function __construct($service,$headers){
+      parent::__construct($service,$headers);
    }
 
    function getallmedical($identifier,$parameters){

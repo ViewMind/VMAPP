@@ -35,7 +35,6 @@ S["studies"][STUDY_NAME]["experiment_description"] = "Giant string with the expe
 S["studies"][STUDY_NAME]["version"]                = The study version.
 S["studies"][STUDY_NAME]["abbreviation"]           = 2 To 4 letter version of the study name. 
 S["studies"][STUDY_NAME]["code"]                   = Sythesis of the study configuration (Used for display mostly)
-S["studies"][STUDY_NAME]["finalized_results"]      = map with the named values of each results from R- Processing.
 S["studies"][STUDY_NAME]["quality_control"]        = Quality control struct. See below.
 
 S["metadata"]["version"]                           = Numbered version of this structure. 
@@ -51,6 +50,8 @@ S["metadata"]["protocol"]                          = protocol name if any;
 S["metadata"]["mouse_used"]                        = if it's true this can't be sent to processs. 
 S["metadata"]["processing_date"]                   = Processing date (server time)
 S["metadata"]["processing_hour"]                   = Processing hour (server time)
+
+S["finalized_results"]                             = map with the named values of each results from R- Processing.
 
 S["subject"]["name"]
 S["subject"]["lastname"]

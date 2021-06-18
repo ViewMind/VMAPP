@@ -6,6 +6,10 @@ ViewMindDataContainer::ViewMindDataContainer()
 }
 
 bool ViewMindDataContainer::saveJSONFile(const QString &file_name, bool pretty_print){
+
+    // Compute the hash every time before saving
+    setChecksumHash();
+
     QJsonDocument json = QJsonDocument::fromVariant(data);
 
     QFile file(file_name);
@@ -51,6 +55,26 @@ bool ViewMindDataContainer::loadFromJSONFile(const QString &file_name){
 
 QString ViewMindDataContainer::getError() const{
     return error;
+}
+
+///////////////////////////////////////////////// CHECKSUM RELATED FUNCTIONS /////////////////////////////////////////////////////////////////////////
+void ViewMindDataContainer::setChecksumHash(){
+    data[MAIN_FIELD_HASH] = computeCheckSumHash();
+}
+
+bool ViewMindDataContainer::verifyChecksumHash(){
+    QString previous_hash = data.value(MAIN_FIELD_HASH).toString();
+    QString hash = computeCheckSumHash();
+    data[MAIN_FIELD_HASH] = previous_hash;
+    return (hash == previous_hash);
+}
+
+QString ViewMindDataContainer::computeCheckSumHash(){
+    data[MAIN_FIELD_HASH] = "";
+    QJsonDocument json = QJsonDocument::fromVariant(data);
+    QString hash;
+    hash = QString(QCryptographicHash::hash(json.toJson(QJsonDocument::Compact),QCryptographicHash::Sha3_512).toHex());
+    return hash;
 }
 
 ///////////////////////////////////////////////// READING DATA FUNCTIONS /////////////////////////////////////////////////////////////////////////
@@ -644,6 +668,7 @@ QString ViewMindDataContainer::MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS  = "qc_para
 QString ViewMindDataContainer::MAIN_FIELD_METADATA                    = "metadata";
 QString ViewMindDataContainer::MAIN_FIELD_APPLICATION_USER            = "application_user";
 QString ViewMindDataContainer::MAIN_FIELD_STUDIES                     = "studies";
+QString ViewMindDataContainer::MAIN_FIELD_HASH                        = "hash";
 
 QString ViewMindDataContainer::CURRENT_JSON_STRUCT_VERSION            = "1";
 

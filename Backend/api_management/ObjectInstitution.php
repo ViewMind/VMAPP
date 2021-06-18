@@ -8,8 +8,8 @@ class ObjectInstitution extends ObjectBaseClass{
 
    private ObjectPortalUsers $portal_users;
 
-   function __construct($service){
-      parent::__construct($service);
+   function __construct($service,$headers){
+      parent::__construct($service,$headers);
       $this->portal_users = new ObjectPortalUsers($service);
    }
 

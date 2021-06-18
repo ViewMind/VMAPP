@@ -111,7 +111,12 @@ int main(int argc, char *argv[]){
         QByteArray raw_reply = rest_controller.getReplyData();
         QJsonParseError json_error;
         QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);
-        std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
+        if (json_error.error != QJsonParseError::NoError){
+            qDebug() << raw_reply;
+        }
+        else{
+           std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
+        }
     }
     else{
         QByteArray raw_reply = rest_controller.getReplyData();
@@ -121,7 +126,7 @@ int main(int argc, char *argv[]){
             QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);            
             if (json_error.error != QJsonParseError::NoError){
                 std::cout << "Could not parse JSON Ouput. Reason: " << json_error.errorString().toStdString() << std::endl;
-                qDebug() << raw_reply;
+                std::cout << raw_reply.toStdString() << std::endl;
             }
             else{
                 std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;

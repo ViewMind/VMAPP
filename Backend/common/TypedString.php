@@ -1,4 +1,5 @@
 <?php
+
    abstract class TypedString {
    
    static function validate($string) {

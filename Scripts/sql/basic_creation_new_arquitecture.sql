@@ -39,20 +39,16 @@ CREATE TABLE evaluations (
    processing_date          DATE DEFAULT CURRENT_TIMESTAMP,
    institution_id           INT UNSIGNED,
    institution_instance     INT UNSIGNED,
-   subject_id               INT UNSIGNED,
+   subject_id               VARCHAR(255),
    evaluator_email          VARCHAR(255),
    evaluator_name           VARCHAR(255),
    evaluator_lastname       VARCHAR(255),
    protocol                 VARCHAR(255),
-   results                  LONGTEXT
+   qc_parameters            LONGTEXT,
+   qc_graphs                LONGTEXT,   
+   results                  LONGTEXT  
 );   
 
-CREATE TABLE evaluation_quality_control (
-   keyid                              INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-   qc_parameters                      LONGTEXT,
-   qc_graphs                          LONGTEXT,
-   evaluation_id                      INT UNSIGNED
-);
 
 DROP DATABASE IF EXISTS vm_secure;
 CREATE DATABASE vm_secure;
@@ -90,8 +86,9 @@ CREATE TABLE subjects (
    internal_id               VARCHAR(255),
    institution_id            INT UNSIGNED,
    instance_number           INT UNSIGNED,
-   timestamp_id              INT UNSIGNED,
-   lastest                   TIYINT UNSIGNED DEFAULT 0
+   unique_id                 VARCHAR(40),
+   gender                    VARCHAR(10),
+   lastest                   TINYINT UNSIGNED DEFAULT 0
 );
 
 CREATE TABLE portal_users (

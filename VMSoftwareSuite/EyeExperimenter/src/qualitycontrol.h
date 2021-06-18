@@ -24,6 +24,9 @@ public:
 
     QString getSetFileName() const;
 
+    // Should only be used for debugging.
+    void disableCheckSumVerification();
+
 private:
 
     ViewMindDataContainer rawdata;
@@ -35,6 +38,8 @@ private:
     QVariantMap qualityControlData;
 
     QStringList availableStudies;
+
+    bool verifyFileIntegrity;
 
     static const char * GRAPH_DATA;
     static const char * REF_DATA;
