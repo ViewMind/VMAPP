@@ -1,10 +1,8 @@
 #include "readingmanager.h"
 
-#ifdef EYETRACKER_HTCVIVEPRO
 const int ReadingManager::VR_READING_FONT_SIZE           = 32;
 const qreal ReadingManager::VR_READING_ESCAPE_POINT_XY_K = 0.10;
 const char *ReadingManager::VR_READING_FONT_NAME     = "Mono";
-#endif
 
 const int ReadingManager::READING_FONT_SIZE           = 20;
 const qreal ReadingManager::READING_ESCAPE_POINT_XY_K = 0.5;

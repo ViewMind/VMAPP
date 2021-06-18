@@ -1,15 +1,20 @@
 #ifndef QUALITYCONTROL_H
 #define QUALITYCONTROL_H
 
+#include <QThread>
 #include "../../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 #include "eyexperimenter_defines.h"
 
-class QualityControl
+class QualityControl: public QThread
 {
+    Q_OBJECT
+
 public:
     QualityControl();
 
-    bool setVMContainterFile(const QString &file);
+    void run();
+
+    void setVMContainterFile(const QString &file);
 
     QStringList getStudyList() const;
 
@@ -17,9 +22,12 @@ public:
 
     QString getError() const;
 
+    QString getSetFileName() const;
+
 private:
 
     ViewMindDataContainer rawdata;
+
     QString originalFileName;
 
     QString error;

@@ -34,12 +34,6 @@ const char * LocalDB::SUBJECT_ASSIGNED_MEDIC  = "assigned_medic";
 const char * LocalDB::MARKER_VALUE            = "marker_value";
 const char * LocalDB::MARKER_TIME             = "marker_time";
 
-// Processing parameters loaded from the web
-const char * LocalDB::PP_MAX_DISPERSION_SIZE  = "max_window_dispersion_size";
-const char * LocalDB::PP_MINIMUM_FIX_DURATION = "minimum_fixation_duration";
-const char * LocalDB::PP_SAMPLE_FREQUENCY     = "sample_frequency";
-
-
 
 LocalDB::LocalDB()
 {
@@ -311,7 +305,6 @@ bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &respo
     }
 
     QStringList shouldBeThere;
-    shouldBeThere = VMDC::ProcessingParameter::valid;
     shouldBeThere << VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW << VMDC::ProcessingParameter::LATENCY_ESCAPE_RADIOUS
                   << VMDC::ProcessingParameter::MIN_FIXATION_DURATION << VMDC::ProcessingParameter::SAMPLE_FREQUENCY;
 

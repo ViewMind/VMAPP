@@ -5,6 +5,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QVariantMap>
+#include <QProcess>
+#include <QFileInfo>
 #include <QMessageAuthenticationCode>
 #include "../../../CommonClasses/RestAPIController/restapicontroller.h"
 #include "eyexperimenter_defines.h"
@@ -15,6 +17,9 @@ class APIClient : public QObject
 public:
     explicit APIClient(QObject *parent = nullptr);
 
+    static const qint32 API_OPERATING_INFO = 1;
+    static const qint32 API_REQUEST_REPORT = 2;
+
     // Parameters required for configuration. Numbers must be used and sent as strings anyways. So string parameters are accepted.
     void configure(const QString &institution_id,
                    const QString &instance_number,
@@ -24,10 +29,16 @@ public:
     // Request the list of medical professionals associated with this institution.
     bool requestOperatingInfo();
 
+    // Request processing for report.
+    bool requestReportProcessing(const QString &jsonFile);
+
     QString getError() const;
 
     // Returning the parsed information.
     QVariantMap getMapDataReturned() const;
+
+    // Get the last type of request.
+    qint32 getLastRequestType() const;
 
 signals:
     void requestFinish();
@@ -46,13 +57,15 @@ private:
     QString secret;
     QString error;
     QVariantMap retdata;
+    qint32 lastRequest;
 
-    // The actual endpoints.
-    const QString ENDPOINT_MEDIC_LIST       = "/portal_users/getallmedical";
-    const QString ENDPOINT_OPERATING_INFO   = "/institution/operating_information";
+    // The actual endpoints.    
+    const QString ENDPOINT_OPERATING_INFO    = "/institution/operating_information";
+    const QString ENDPOINT_REPORT_GENERATION = "/reports/generate";
 
     // URL parameters.
     const QString URLPARAM_PPKEY            = "ppkey";
+    const QString URLPARAM_INSTANCE         = "instance";
 
     // Header values.
     const QString HEADER_AUTHTYPE           = "AuthType";
@@ -64,6 +77,11 @@ private:
     const QString POST_FIELD_INSTITUTION_ID       = "institution_id";
     const QString POST_FIELD_INSTITUTION_INSTANCE = "institution_instance";
 
+    // Key for the $_FILES structure.
+    const QString FILE_KEY                        = "FileToProcess";
+
+    // Command for compressor.
+    const QString TAR_EXE                         = "tar.exe";
 
 
     // Signs the message and sends the request.

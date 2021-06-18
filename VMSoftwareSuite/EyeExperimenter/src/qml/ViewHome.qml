@@ -10,13 +10,16 @@ VMBase {
 
     readonly property double vmScale: mainWindow.width/1280;
     readonly property string keysearch: "viewhome_"
+    readonly property int vmAPI_OPINFO_REQUEST: 1
 
     Connections {
         target: loader
         onFinishedRequest: {
             // Close the connection dialog and open the user selection dialog.
-            connectionDialog.close();
-            viewDrSelection.open();
+            if (loader.getLastAPIRequest() === vmAPI_OPINFO_REQUEST){
+                connectionDialog.close();
+                viewDrSelection.open();
+            }
         }
     }
 
@@ -194,7 +197,6 @@ VMBase {
         }
 
     }
-
 
     Dialog {
 

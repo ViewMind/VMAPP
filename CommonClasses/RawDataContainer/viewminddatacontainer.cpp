@@ -459,6 +459,17 @@ void ViewMindDataContainer::markFileAsFinalized(){
     data[MAIN_FIELD_METADATA] = metadata;
 }
 
+void ViewMindDataContainer::clearTrialFieldsFromEachStudy(){
+    // This is used to create a "just the header file" for quick loading of information.
+    QStringList allstudies = data.value(MAIN_FIELD_STUDIES).toMap().keys();
+    QVariantMap allstudymaps = data.value(MAIN_FIELD_STUDIES).toMap();
+    for (qint32  i = 0; i < allstudies.size(); i++){
+        QVariantMap study = allstudymaps.value(allstudies.at(i)).toMap();
+        study[VMDC::StudyField::TRIAL_LIST] = QVariantMap();
+        allstudymaps[allstudies.at(i)] = study;
+    }
+    data[MAIN_FIELD_STUDIES] = allstudymaps;
+}
 
 
 bool ViewMindDataContainer::addNewTrial(const QString &trial_id, const QString &type){

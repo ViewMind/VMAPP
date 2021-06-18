@@ -12,6 +12,10 @@ QVariantMap APIClient::getMapDataReturned() const {
     return retdata;
 }
 
+qint32 APIClient::getLastRequestType() const {
+    return lastRequest;
+}
+
 void APIClient::configure(const QString &institution_id, const QString &instance_number, const QString &key, const QString &hash_code){
     this->institution_id = institution_id;
     this->instance_number = instance_number;
@@ -35,7 +39,75 @@ bool APIClient::requestOperatingInfo(){
     rest_controller.setPOSTDataToSend(postdata);
 
     rest_controller.setURLParameters(map);
+
+    lastRequest = API_OPERATING_INFO;
+
     return sendRequest();
+}
+
+bool APIClient::requestReportProcessing(const QString &jsonFile){
+
+    // Before sending the file must be compressed. We use tar.exe.
+
+
+
+    // First we need to get the working directory.
+    QFileInfo info(jsonFile);
+
+    QString directory = info.absolutePath();
+    QString basename = info.baseName();
+
+    QString localJSON = basename + ".json";
+    QString zipfile =  basename + ".zip";
+
+    QStringList arguments;
+    arguments << "-c";
+    arguments << "-z";
+    arguments << "-f";
+    arguments << zipfile;
+    arguments << localJSON;
+
+    //qDebug() << "jsonFile" << jsonFile << "zip" << zipfile;
+
+    QProcess tar;
+    tar.setWorkingDirectory(directory);
+    tar.start(TAR_EXE,arguments);
+    tar.waitForFinished();
+
+    qint32 exit_code = tar.exitCode();
+
+    zipfile = directory + "/" + zipfile;
+
+    if (!QFile(zipfile).exists()){
+        error = "Could not zip the input file " + jsonFile + ". Exit code for TAR.exe is: " + QString::number(exit_code);
+        return false;
+    }
+
+    // Doing the actual request.
+    // Clearing everything but the URL.
+    rest_controller.resetRequest();
+
+    // Forming the URL
+    rest_controller.setAPIEndpoint(ENDPOINT_REPORT_GENERATION + "/" + institution_id);
+    QVariantMap map;
+    map.insert(URLPARAM_INSTANCE,instance_number);
+
+    // Setting the required post data.
+    QVariantMap postdata;
+    postdata.insert(POST_FIELD_INSTITUTION_ID,institution_id);
+    postdata.insert(POST_FIELD_INSTITUTION_INSTANCE,instance_number);
+    rest_controller.setPOSTDataToSend(postdata);
+
+    rest_controller.setURLParameters(map);
+
+    if (!rest_controller.appendFileForRequest(zipfile,FILE_KEY)){
+        error = "Could not append ZIP File " + zipfile + " for request. Reason: " + rest_controller.getErrors().join("\n");
+        return false;
+    }
+
+    lastRequest = API_REQUEST_REPORT;
+    return sendRequest();
+
 }
 
 QString APIClient::getError() const{

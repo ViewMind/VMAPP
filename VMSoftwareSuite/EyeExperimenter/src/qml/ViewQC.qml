@@ -16,6 +16,8 @@ VMBase {
     readonly property int vmINDEX_GLITCHES: 3
     readonly property int vmINDEX_FREQ: 4
 
+    readonly property int vmAPI_REPORT_REQUEST: 2
+
     property var vmStudyNameMap: []
     property var vmStdStudyNameByIndex: [];
     property var vmSubTitleList: [];
@@ -77,7 +79,6 @@ VMBase {
         //loadGraph();
     }
 
-
     function loadGraph(){
         //console.log("Called log graph");
         var selectedStudy = vmStdStudyNameByIndex[qcStudyView.currentIndex];
@@ -99,16 +100,75 @@ VMBase {
         //console.log("Setting ref to" + JSON.stringify(data["REFData"]));
         graph.graph();
 
-//                // Debug Code;
-//                graph.vmGraphType = "line";
-//                graph.vmDataPoints = [];
-//                graph.vmRefDataPoints = [];
-//                for (var i = 0; i < 50; i++){
-//                    graph.vmDataPoints.push(125);
-//                    graph.vmRefDataPoints.push(120);
-//                }
-//                graph.graph();
+    }
 
+    Connections {
+        target: loader
+        onFinishedRequest: {
+            // Close the connection dialog and open the user selection dialog.
+            connectionDialog.close();
+            if (loader.getLastAPIRequest() === vmAPI_REPORT_REQUEST)
+               swiperControl.currentIndex = swiperControl.vmIndexPatientList;
+        }
+    }
+
+    Dialog {
+
+        property string vmTitle: "TITLE"
+        property string vmMessage: "MESSAGE"
+
+        id: connectionDialog;
+        modal: true
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.87
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectConnectionDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        // The instruction text
+        Text {
+            id: diagConnectionTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43*viewHome.vmScale
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.128
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: connectionDialog.vmTitle
+        }
+
+
+        // The instruction text
+        Text {
+            id: diagMessage
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13*viewHome.vmScale
+            anchors.top:  diagConnectionTitle.bottom
+            anchors.topMargin: mainWindow.height*0.038
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text:  connectionDialog.vmMessage;
+            z: 2 // Sometimes the border of the image covers the text. This fixes it.
+        }
+
+        AnimatedImage {
+            id: slideAnimation
+            source: "qrc:/images/LOADING.gif"
+            anchors.top: diagMessage.bottom
+            anchors.topMargin: mainWindow.height*0.043
+            anchors.horizontalCenter: parent.horizontalCenter
+            scale: viewHome.vmScale
+            visible: true
+        }
 
     }
 
@@ -479,8 +539,8 @@ VMBase {
             x = xStart;
             if (vmGraphType == "bar"){
                 for (i = 0; i < vmRefDataPoints.length; i++){
-                    y = vmRefDataPoints[i]*verticalScale
-                    //console.log("Bar ref y pos " + y);
+                    y = air_h/2 + (effectiveHeight - vmRefDataPoints[i]*verticalScale);
+                    //console.log("Bar ref y pos " + y + " from " + vmRefDataPoints[i]);
                     //y = air_h/2 + (effectiveHeight - verticalScale*y)
                     ctx.moveTo(x,y)
                     ctx.lineTo(x+barWidth,y);
@@ -493,7 +553,7 @@ VMBase {
                 for (i = 1; i < vmRefDataPoints.length; i++){
                     x = x + xInterval;
                     y = vmRefDataPoints[i]*verticalScale + verticalOffset;
-                    //console.log("Line REF y: " + y);
+                    //console.log("Line REF y: " + y + " from " + vmRefDataPoints[i]);
                     ctx.lineTo(x,y);
                     ctx.moveTo(x,y)
                 }
@@ -578,7 +638,8 @@ VMBase {
             vmText: "SEND";
             vmFont: viewHome.gothamM.name
             onClicked: {
-
+                loader.sendStudy();
+                connectionDialog.open();
             }
         }
     }

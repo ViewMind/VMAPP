@@ -8,25 +8,28 @@ QualityControl::QualityControl()
 
 }
 
-bool QualityControl::setVMContainterFile(const QString &file){
-    //qDebug() << "Setting file" << file;
+void QualityControl::run(){
 
-    if (!rawdata.loadFromJSONFile(file)){
-        error = "Could not load the raw data file: " + file + ". Reason: " + rawdata.getError();
-        return false;
+    if (!rawdata.loadFromJSONFile(originalFileName)){
+        error = "Could not load the raw data file: " + originalFileName + ". Reason: " + rawdata.getError();
+        return;
     }
-    originalFileName = file;
+
     availableStudies = rawdata.getStudies();
     qualityControlData.clear();
 
     for (qint32 i = 0; i < availableStudies.size(); i++){
         QString study = availableStudies.at(i);
         QString metaStudy = VMDC::MultiPartStudyBaseName::getMetaStudy(study);
-        /// TODO: This is might be inefficient becuase we compute AND SAVE the info every time the file is selected for analysis.
-        if (!computeQualityControlVectors(study,metaStudy)) return false;
+        if (!computeQualityControlVectors(study,metaStudy)) return;
     }
 
-    return true;
+    return;
+}
+
+void QualityControl::setVMContainterFile(const QString &file){
+    originalFileName = file;
+    this->start();
 }
 
 
@@ -42,6 +45,10 @@ QStringList QualityControl::getStudyList() const {
 
 QString QualityControl::getError() const {
     return error;
+}
+
+QString QualityControl::getSetFileName() const {
+    return originalFileName;
 }
 
 
@@ -64,6 +71,8 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
     //Debug::prettpPrintQVariantMap(qc);
     qreal min_points_per_trial = qcStudy.value(VMDC::QCStudyParameters::MIN_POINTS_PER_TRIAL).toReal();
     qreal min_fix_per_trial    = qcStudy.value(VMDC::QCStudyParameters::MIN_FIXS_PER_TRIAL).toReal();
+
+    //qDebug() << "min points per trial" << min_points_per_trial;
 
     QVariantList pointsPerTrial;
     QVariantList refPointsPerTrial;
@@ -112,6 +121,8 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
                    timestamp = ts;
 
                    periodAcc = periodAcc + diff;
+
+                   //qDebug() << min_diff << diff <<  max_diff;
 
                    if ((diff > max_diff) || (diff < min_diff)){
                        // This is a glitch.

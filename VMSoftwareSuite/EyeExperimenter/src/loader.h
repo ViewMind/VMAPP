@@ -7,6 +7,7 @@
 #include <QSystemSemaphore>
 #include <QSharedMemory>
 #include <QCoreApplication>
+#include <QElapsedTimer>
 
 #include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -87,6 +88,8 @@ public:
 
     ////////////////////////// API REQUESTS ////////////////////////////
     Q_INVOKABLE void requestOperatingInfo();
+    Q_INVOKABLE void sendStudy();
+    Q_INVOKABLE qint32 getLastAPIRequest();
 
     //////////////////////////// PROTOCOL RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE bool addProtocol(const QString &p);
@@ -95,9 +98,11 @@ public:
 
 signals:
     void finishedRequest();
+    void qualityControlDone();
 
 private slots:
     void receivedRequest();
+    void qualityControlFinished();
 
 private:
 

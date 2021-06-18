@@ -43,11 +43,15 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
     }
 
     // Searching for all JSON files.
-    QStringList nameFilters; nameFilters << "*.json";
+    QStringList nameFilters; nameFilters << "*.idx";
     QStringList json_files = QDir(workDirectory).entryList(nameFilters,QDir::Files);
     if (json_files.empty()) return ans;
 
     for (qint32 i = 0; i < json_files.size(); i++){
+
+        QFileInfo info(json_files.at(i));
+        QString actualFile = info.baseName() + ".json";
+        actualFile = workDirectory + "/" + actualFile;
 
         QString filename = workDirectory + "/" + json_files.at(i);
         //qDebug() << "Analyzing JSON file" << filename;
@@ -135,7 +139,7 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
         map[MEDIC_NAME] = medic.value(VMDC::AppUserField::NAME).toString() + " " + medic.value(VMDC::AppUserField::LASTNAME).toString();
         map[MEDIC_ID] = medic.value(VMDC::AppUserField::VIEWMIND_ID).toString();
         map[ORDER_CODE] = list.last();
-        map[FILE_PATH] = filename;
+        map[FILE_PATH] = actualFile;
         //qDebug() << "Adding order code" << map.value(ORDER_CODE).toString();
         ans << map;
     }

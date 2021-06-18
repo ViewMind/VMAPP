@@ -175,8 +175,8 @@ private:
     #endif
 
     #ifdef EYETRACKER_GAZEPOINT
-    static const qreal  CONFIG_XK =                              0.25;
-    static const qreal  CONFIG_YK =                              0.25;
+    static const qreal  CONFIG_XK;
+    static const qreal  CONFIG_YK;
     #endif
 
 

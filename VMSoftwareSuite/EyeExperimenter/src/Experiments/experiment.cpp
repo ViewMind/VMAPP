@@ -137,6 +137,16 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     mwp.maxDispersion =  pp.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
     mwp.calculateWindowSize();
 
+    if ((mwp.getStartWindowSize() <= 0) || (mwp.sampleFrequency <= 0) || (mwp.minimumFixationLength <= 0) || (mwp.maxDispersion <= 0)){
+        error = "Invalid processing parameeters for MWA. MFL: " + QString::number(mwp.minimumFixationLength)
+                + "\nSF: " + QString::number(mwp.sampleFrequency)
+                + "\nMD: " + QString::number(mwp.maxDispersion);
+        emit(experimentEndend(ER_FAILURE));
+        return false;
+    }
+
+    Debug::prettpPrintQVariantMap(pp);
+
     rMWA.parameters = mwp;
     lMWA.parameters = mwp;
 
@@ -249,7 +259,20 @@ QVariantMap Experiment::fixationToVariantMap(const Fixation &f){
 
 
 bool Experiment::saveDataToHardDisk(){
-    return rawdata.saveJSONFile(dataFile,Globals::Debug::PRETTY_PRINT_JSON);
+
+    // We need to create both the actual file AND the idx file. The idx file contains the EXACT same same information but with out the trial field list of each study.
+    // Hence it is much much lighter to quickly load for information reference.
+    QFileInfo info(dataFile);
+    QString basename = info.baseName();
+    QString idxFile = workingDirectory + "/" + basename + ".idx";
+
+    bool ans = rawdata.saveJSONFile(dataFile,Globals::Debug::PRETTY_PRINT_JSON);
+    if (!ans) return false;
+
+    rawdata.clearTrialFieldsFromEachStudy();
+    ans = rawdata.saveJSONFile(idxFile,Globals::Debug::PRETTY_PRINT_JSON);
+
+    return ans;
 }
 
 QString Experiment::getExperimentDescriptionFile() const{

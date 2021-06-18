@@ -6,7 +6,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
-
+    connect(&qc,&QualityControl::finished,this,&Loader::qualityControlFinished);
 
     // Loading the configuration file and checking for the must have configurations
     // The data is this file should NEVER change. Its values should be fixed.
@@ -99,9 +99,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     if (localDB.processingParametersPresent()){
         QVariantMap pp = localDB.getProcessingParameters();
-        configuration->addKeyValuePair(Globals::Share::MAX_DISPERSION_SIZE,pp.value(LocalDB::PP_MAX_DISPERSION_SIZE).toInt());
-        configuration->addKeyValuePair(Globals::Share::MINIMUM_FIX_DURATION,pp.value(LocalDB::PP_MINIMUM_FIX_DURATION).toInt());
-        configuration->addKeyValuePair(Globals::Share::SAMPLE_FREQUENCY,pp.value(LocalDB::PP_SAMPLE_FREQUENCY).toInt());
+        configuration->addKeyValuePair(Globals::Share::MAX_DISPERSION_SIZE,pp.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toInt());
+        configuration->addKeyValuePair(Globals::Share::MINIMUM_FIX_DURATION,pp.value(VMDC::ProcessingParameter::MIN_FIXATION_DURATION).toInt());
+        configuration->addKeyValuePair(Globals::Share::SAMPLE_FREQUENCY,pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toInt());
     }
     else{
         logger.appendError("Processing parameters are not present in local database. Will not be able to do any studies");
@@ -585,7 +585,9 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
     SubjectDirScanner sdc;
 
     //qDebug() << "Will analyze list of directories" << directory_list;
+    QElapsedTimer timer;
 
+    timer.start();
     for (qint32 i = 0; i < directory_list.size(); i++){
 
         sdc.setup(Globals::Paths::WORK_DIRECTORY + "/" + directory_list.at(i),current_evaluator);
@@ -595,6 +597,7 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
         }
         //qDebug() << "Added " << sdc.getSetDirectory() << " and now we have " << studiesToAnalyze.size();
     }
+    qDebug() << timer.elapsed() << "ms";
 
     // Sort the generated list by the order code before returning it (chronologically).
     return SubjectDirScanner::sortSubjectDataListByOrder(studiesToAnalyze);
@@ -604,9 +607,7 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
 
 void Loader::setCurrentStudyFileForQC(const QString &file){
     configuration->addKeyValuePair(Globals::Share::SELECTED_STUDY,file);
-    if (!qc.setVMContainterFile(file)){
-        logger.appendError("Failed setting selected study to:  " + file + ". Reason: " + qc.getError());
-    }
+    qc.setVMContainterFile(file); // This will start processing in a separate thread.
 }
 
 QStringList Loader::getStudyList() const {
@@ -631,6 +632,16 @@ QVariantMap Loader::getStudyGraphData(const QString &study, qint32 selectedGraph
 
 }
 
+void Loader::qualityControlFinished(){
+    if (qc.getError() != ""){
+        logger.appendError("Failed setting selected study to:  " + qc.getSetFileName() + ". Reason: " + qc.getError());
+    }
+    else{
+        emit(qualityControlDone());
+    }
+}
+
+
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
 
 void Loader::requestOperatingInfo(){
@@ -639,22 +650,39 @@ void Loader::requestOperatingInfo(){
     }
 }
 
+void Loader::sendStudy(){
+
+    if (!apiclient.requestReportProcessing(configuration->getString(Globals::Share::SELECTED_STUDY))){
+        logger.appendError("Requesting study report generation: " + apiclient.getError());
+        emit(finishedRequest());
+    }
+
+}
+
+qint32 Loader::getLastAPIRequest(){
+    return apiclient.getLastRequestType();
+}
 
 void Loader::receivedRequest(){
     if (!apiclient.getError().isEmpty()){
         logger.appendError("Error Receiving Request :"  + apiclient.getError());
     }
     else{
-        QVariantMap ret = apiclient.getMapDataReturned();
-        //Globals::Debug::prettpPrintQVariantMap(ret);
-        if (!localDB.setMedicInformationFromRemote(ret.value(APINames::MAIN_DATA).toMap())){
-            logger.appendError("Failed to set medical professionals info from server: " + localDB.getError());
+        if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO){
+            QVariantMap ret = apiclient.getMapDataReturned();
+            Debug::prettpPrintQVariantMap(ret);
+            if (!localDB.setMedicInformationFromRemote(ret.value(APINames::MAIN_DATA).toMap())){
+                logger.appendError("Failed to set medical professionals info from server: " + localDB.getError());
+            }
+            if (!localDB.setProcessingParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
+                logger.appendError("Failed to set processing parameters from server: " + localDB.getError());
+            }
+            if (!localDB.setQCParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
+                logger.appendError("Failed to set QC parameters from server: " + localDB.getError());
+            }
         }
-        if (!localDB.setProcessingParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
-            logger.appendError("Failed to set processing parameters from server: " + localDB.getError());
-        }
-        if (!localDB.setQCParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
-            logger.appendError("Failed to set QC parameters from server: " + localDB.getError());
+        else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
+            logger.appendSuccess("Study file was successfully sent");
         }
     }
     emit(finishedRequest());

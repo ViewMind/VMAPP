@@ -11,6 +11,78 @@ VMBase {
     readonly property real vmTableHeight: 0.5*mainWindow.height
     readonly property string keybase: "viewfinishedstudies_"
 
+    Connections {
+        target: loader
+        onQualityControlDone: {
+            // Close the connection dialog and open the user selection dialog.
+            processingQCDialog.close();
+            swiperControl.currentIndex = swiperControl.vmIndexViewQC;
+        }
+    }
+
+    Dialog {
+
+        property string vmTitle: "TITLE"
+        property string vmMessage: "MESSAGE"
+
+        id: processingQCDialog;
+        modal: true
+        width: mainWindow.width*0.48
+        height: mainWindow.height*0.87
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectConnectionDialog
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        // The instruction text
+        Text {
+            id: diagConnectionTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 43*viewHome.vmScale
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.128
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: connectionDialog.vmTitle
+        }
+
+
+        // The instruction text
+        Text {
+            id: diagMessage
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13*viewHome.vmScale
+            anchors.top:  diagConnectionTitle.bottom
+            anchors.topMargin: mainWindow.height*0.038
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text:  connectionDialog.vmMessage;
+            z: 2 // Sometimes the border of the image covers the text. This fixes it.
+        }
+
+        AnimatedImage {
+            id: slideAnimation
+            source: "qrc:/images/LOADING.gif"
+            anchors.top: diagMessage.bottom
+            anchors.topMargin: mainWindow.height*0.043
+            anchors.horizontalCenter: parent.horizontalCenter
+            scale: viewHome.vmScale
+            visible: true
+        }
+
+    }
+
+
+
+
     ListModel {
         id: studiesList
     }
@@ -211,7 +283,8 @@ VMBase {
             enabled: studyListView.currentIndex !== -1
             onClicked: {
                 loader.setCurrentStudyFileForQC(studiesList.get(studyListView.currentIndex).file_path);
-                swiperControl.currentIndex = swiperControl.vmIndexViewQC;
+                //swiperControl.currentIndex = swiperControl.vmIndexViewQC;
+                processingQCDialog.open();
             }
         }
     }

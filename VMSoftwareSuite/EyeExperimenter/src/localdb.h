@@ -77,11 +77,6 @@ public:
     static const char * MARKER_VALUE;
     static const char * MARKER_TIME;
 
-    // Processing parameters required for fixation computation.
-    static const char * PP_MAX_DISPERSION_SIZE;
-    static const char * PP_MINIMUM_FIX_DURATION;
-    static const char * PP_SAMPLE_FREQUENCY;
-
 
     // Constructor
     LocalDB();

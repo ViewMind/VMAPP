@@ -76,9 +76,7 @@ public:
 
     void markFileAsFinalized();
 
-    ////////////////////////// FUNCTIONS FOR GETTING STUDY DATA.
-    QVariantList getStudyTrialList(const QString &study);
-
+    void clearTrialFieldsFromEachStudy();
 
 
     /**
@@ -109,15 +107,26 @@ public:
     static QVariantMap GenerateReadingRawDataVector(float timestamp, float xr, float yr, float xl, float yl, float pr, float pl, float char_r, float char_l, float word_r, float word_l);
 
     ////////////////////////// FUNCTION FOR READING DATA. ONLY WHAT IS ABSOLUTELY NECESSARY.
+    QVariantList getStudyTrialList(const QString &study);
+
     QStringList getStudies() ;
+
     QString getStudyStatus(const QString &study);
+
     QString getMetadaStatus() ;
+
     QVariantMap getStudyConfiguration(const QString study_type) ;
+
     QString getStudyCode(const QString &study) ;
+
     QStringList getMetaDataDateTime() ;  // Returns a display string and then a string that cna be used for sorting. The list always has two values.
+
     QVariantMap getApplicationUserData(const QString &type);
+
     QVariantMap getSubjectData();
+
     QVariantMap getProcessingParameters() const;
+
     QVariantMap getQCParameters() const;
 
 
