@@ -47,10 +47,7 @@ bool APIClient::requestOperatingInfo(){
 
 bool APIClient::requestReportProcessing(const QString &jsonFile){
 
-    // Before sending the file must be compressed. We use tar.exe.
-
-
-
+    // Before sending the file must be compressed. We use tar.exe.   
     // First we need to get the working directory.
     QFileInfo info(jsonFile);
 

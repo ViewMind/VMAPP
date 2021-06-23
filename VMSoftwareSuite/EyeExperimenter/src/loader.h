@@ -85,6 +85,8 @@ public:
     Q_INVOKABLE void setCurrentStudyFileForQC(const QString &file);
     Q_INVOKABLE QStringList getStudyList() const;
     Q_INVOKABLE QVariantMap getStudyGraphData(const QString &study, qint32 selectedGraph);
+    Q_INVOKABLE bool qualityControlFailed() const;
+    Q_INVOKABLE qint32 wasThereAnProcessingUploadError() const;
 
     ////////////////////////// API REQUESTS ////////////////////////////
     Q_INVOKABLE void requestOperatingInfo();
@@ -123,12 +125,17 @@ private:
     // The list of countries and their codes.
     CountryStruct *countries;
 
+    // Flag for checking uplaod error
+    qint32 processingUploadError;
+
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();
 
     // Sets the language for program.
     void changeLanguage();
 
+    static const qint32 FAIL_CODE_NONE = 0;
+    static const qint32 FAIL_CODE_SERVER_ERROR = 2;
 
 
 };

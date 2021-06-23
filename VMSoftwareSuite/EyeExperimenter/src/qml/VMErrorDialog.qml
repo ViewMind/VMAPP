@@ -5,17 +5,6 @@ import QtGraphicalEffects 1.0
 Dialog {
 
     // The possible errors
-    readonly property int vmERROR_LOAD_CONFIG: 1
-    readonly property int vmERROR_CREATING_PDIR: 2
-    readonly property int vmERROR_CONNECT_ET: 3
-    readonly property int vmERROR_PROG_ERROR: 4
-    readonly property int vmERROR_EXP_END_ERROR: 5
-    readonly property int vmERROR_SERVER_COMM: 6
-    readonly property int vmERROR_NO_SSL: 7
-    readonly property int vmERROR_PROC_ACK: 8
-    readonly property int vmERROR_FREQ_ERR: 9
-    readonly property int vmERROR_LAUNCHER_UPDATE: 10
-
     property string vmErrorTitle: "Error Ocurred"
     property string vmErrorMessage: "An error has ocurred"
     property string vmErrorButtonMsg: "OK";
@@ -90,35 +79,7 @@ Dialog {
         anchors.topMargin: mainWindow.height*0.058
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            errorHandling()
-        }
-    }
-
-    function errorHandling(){
-        switch(vmErrorCode){
-        case vmERROR_CONNECT_ET:
-            // Should just close this dialog.
             close();
-            break;
-        case vmERROR_EXP_END_ERROR:
-            close()
-            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-            break;
-        case vmERROR_SERVER_COMM:
-            close();
-            break;
-        case vmERROR_NO_SSL:
-            close();
-            break;
-        case vmERROR_PROC_ACK:
-            close();
-            break;
-        case vmERROR_FREQ_ERR:
-            close();
-            break;
-        default:
-            Qt.quit();
-            break;
         }
     }
 
