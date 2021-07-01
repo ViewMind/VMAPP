@@ -36,7 +36,7 @@ function readingCSV(ViewMindDataContainer $input, $output_file){
    $csv_rows[] = implode(",",$headers);
    $data_set_type = DataSetType::UNIQUE;      
 
-   if (!$input->setRawDataAccessPathForStudy(Study::GONOGO)){
+   if (!$input->setRawDataAccessPathForStudy(Study::READING)){
       return "Error setting the active study in the procssed data container: " . $input->getError();
    }
 
@@ -82,7 +82,7 @@ function readingCSV(ViewMindDataContainer $input, $output_file){
       }
       
       // Error check is NOT necessary here as the check in the previous get includes the same thing checked here. 
-      $data_set_computed_values = $input->getValuesForDataSetFromTrial($trial,$data_set_type);
+      $data_set_computed_values = $trial[TrialField::DATA][$data_set_type][DataSetField::DATA_SET_VALUES];
       
       // The number of fixations in the data set is a value. 
       

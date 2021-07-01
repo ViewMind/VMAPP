@@ -15,7 +15,13 @@ function echoOut($var,$dbug = false){
       }
       else echo $out;
    }
+}
 
+function vardumpIntoVar($var){
+   ob_start();
+   var_dump($var);
+   $text = ob_get_clean();
+   return $text;   
 }
 
 

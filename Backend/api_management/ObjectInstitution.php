@@ -2,6 +2,8 @@
 
 include_once ("ObjectPortalUsers.php");
 include_once (__DIR__ . "/../db_management/TableProcessingParameters.php");
+include_once (__DIR__ . "/../db_management/TableInstitution.php");
+include_once (__DIR__ . "/../db_management/TableInstitutionUsers.php");
 include_once (__DIR__ . "/../common/named_constants.php");
 
 class ObjectInstitution extends ObjectBaseClass{
@@ -10,7 +12,7 @@ class ObjectInstitution extends ObjectBaseClass{
 
    function __construct($service,$headers){
       parent::__construct($service,$headers);
-      $this->portal_users = new ObjectPortalUsers($service);
+      $this->portal_users = new ObjectPortalUsers($service,$headers);
    }
 
    function operating_information($identifier,$parameters){
@@ -66,6 +68,41 @@ class ObjectInstitution extends ObjectBaseClass{
       }
 
       return $ret;
+
+   }
+
+   function list($identifier,$parameters){
+
+      if ($this->error != "") return false;
+
+      // The $identifier in this case should be a portal user. 
+      $tiu = new TableInstitutionUsers($this->con_main);
+      $ti  = new TableInstitution($this->con_main);
+
+      $ans = $tiu->getInstitutionsForUser($identifier);
+      if ($ans === FALSE){
+         $this->error = "Failed getting institutions for user. Reason: " . $tiu->getError();
+         return false;
+      }
+
+      $id_list = array();
+      foreach ($ans as $inst_id_row){
+         $id_list[] = $inst_id_row[TableInstitutionUsers::COL_INSTITUTION_ID];
+      }
+
+      if (empty($id_list)){
+         $this->error = "No institutions found for user $identifier";
+         return false;
+      }
+
+      // We get the actual institution information.
+      $ans = $ti->getInstitutionInformationFor($id_list);
+      if ($ans === FALSE){
+         $this->error = "Failed getting institution information for user. Reason: " . $ti->getError();
+         return false;
+      }
+
+      return $ans;
 
    }
 

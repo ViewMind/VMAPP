@@ -26,6 +26,14 @@ VMClients have the following permissions:
          IDENTIFIER: institution_id
             Will return a associative array with the key the internal user key and the value another associative array with full name and email. Only medical and admin users. 
             
+-> OBJECT: portal_users
+      OPERATION: enable
+         IDENTIFIER: email
+            PARAMETERS: enable_token
+               This is a very special endpoint as it is the ONLY endpoint that does NOT go through the authentication process. 
+               What this does is verify that the email exists, that the token passed as a parameter exists as well and, if it's not too old, the user gets enabled.
+               For this to work the user must have been previously been created. 
+            
 -> OBJECT: institution
       OPERATION: list.
          IDENTIFIER: portal_user
@@ -54,30 +62,6 @@ VMClients have the following permissions:
                6) Second pass at the JSON file that stores all results into the JSON 
                7) DB Storage of all appropiate results. 
                8) With the keyid form the evaluations table store, the JSON file in the S3. 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-There 3 Tiers Of Processing.
-
-1) Procesing at the data set level
-   - Compute the go GoNoGo Fixation values. (modifies the input fixation list).
-   - Comnpute the dataset values. Returns value map. and requires as intput the raw data list, the fixation list and, if GoNoGo, it's hitboxes. 
-2) Processng at the Trial Level
-   - If NBACK (RT/MS) computeFixationBasedNBackValues  Modifies a fixation map that contains all fixations for each of the data sets, that is passed as a parameter. 
-     This adds fields to the fixation vector. 
-     Then we also compute the fixation index in the last dataset where the sequence is completed.    
-3) Processing at the Study Level.
-  - Duration of the study as the highest timestamp - lowest time stamp. 
-  - If Binding we compute the binding score. 
- 
- 
-We need to get a trial. Modify its values. and set it back
-The final processi level (3) can be done over the entire structure. 
-               
-               
-               
-               
-               
-               
                
                
    

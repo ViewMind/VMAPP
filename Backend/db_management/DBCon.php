@@ -6,6 +6,7 @@ class DBCon {
    // The Database services. 
    const DB_SERVICE_DP                     = "srv_dp";
    const DB_SERVICE_ADMIN                  = "srv_admin";
+   const DB_SERVICE_PARTNERS               = "srv_partner";
 
    // The Databasse Names
    const DB_MAIN                           = "vm_main";
@@ -36,7 +37,8 @@ class DBCon {
 
    
    private const SRV_ARRAY = [self::DB_SERVICE_DP, 
-                              self::DB_SERVICE_ADMIN
+                              self::DB_SERVICE_ADMIN,
+                              self::DB_SERVICE_PARTNERS
    ];
 
    private const DB_ARRAY  = [self::DB_MAIN,
@@ -68,8 +70,9 @@ class DBCon {
 
       // Checking that the file can be correctly interpreted. 
       $this->credentials = json_decode(file_get_contents($file_to_load),true);
-      if (is_array($this->credentials)){
+      if (!is_array($this->credentials)){
          $this->error = "Fail decoding credentials file: " . json_last_error_msg();
+         return;
       }
 
       // Checking all the main fields are present. 

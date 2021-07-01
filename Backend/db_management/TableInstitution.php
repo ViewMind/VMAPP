@@ -38,6 +38,17 @@ class TableInstitution extends TableBaseClass {
 
    }
 
+   function getInstitutionInformationFor($list_of_ids){
+
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_KEYID,$list_of_ids)){
+         $this->error = "Could not create select operation for getting institution information for id list: " . implode(",",$list_of_ids);
+      }
+
+      return $this->simpleSelect(array(),$select);
+
+   }
+
 
 
 }

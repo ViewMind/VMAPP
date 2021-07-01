@@ -33,7 +33,7 @@ class ViewMindDataContainer {
       $this->data = json_decode(file_get_contents($raw_data_file),true);
 
       if (json_last_error() != JSON_ERROR_NONE){
-         $this->error = "Could not decode $raw_data_file. JSON Error: " + json_last_error_msg();
+         $this->error = "Could not decode $raw_data_file. JSON Error: " . json_last_error_msg();
          return false;
       }
 

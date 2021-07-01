@@ -1,11 +1,22 @@
 <?php
-
-//////////////////////////////////// HEADERS ////////////////////////////////
-// header("Access-Control-Allow-Origin: *");  // Anyone can access
+header("Access-Control-Allow-Origin: *");  // Anyone can access
 header("Content-Type: application/json; charset=UTF-8"); // Will return json data. 
-// header("Access-Control-Allow-Methods: POST");
-// header("Access-Control-Max-Age: 3600");
-// header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authentication, AuthType");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Max-Age: 3600");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authentication, Authorization , AuthType");
+
+// CORS INSANITY ..... Required for the preflight request. 
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+// Is this a pre-flight request (the request method is OPTIONS)? Then start output buffering.
+if ($requestMethod === 'OPTIONS') {
+    ob_start();
+}
+// If this is a pre-flight request (the request method is OPTIONS)? Then flush the output buffer and exit.
+if ($requestMethod === 'OPTIONS') {
+    ob_end_flush();
+    exit();
+}
+// END OF CORS INSANITY .....
 
 //////////////////////////////////// INCLUDES ////////////////////////////////
 include("./common/config.php");
@@ -44,6 +55,29 @@ if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],CONFIG[GlobalConfigGener
    return;
 }
 
+//////////////////////////////////// CATCHING ENABLE USER REQUESTS ////////////////////////////////
+$route_parts = $route_parser->getRouteParts();
+
+if (count($route_parts) == 3){
+   // Any number other than 3 it's not of interest to us. 
+   if ($route_parts[0] == APIEndpoints::PORTAL_USERS){
+      if ($route_parts[1] == PortalUserOperations::ENABLE){         
+         $email = $route_parts[2];
+         $parameters = $route_parser->getParameters();
+         //var_dump($parameters);
+         if (array_key_exists(URLParameterNames::ENABLE_TOKEN,$parameters)){
+            $ans = AuthManager::EnableUser($email,$parameters[URLParameterNames::ENABLE_TOKEN]);
+            if ($ans[ResponseFields::HTTP_CODE] != 200){
+               $auth_log->logError("Failed to enable $email: Reason: " . $ans[ResponseFields::CODE]);
+            }            
+            http_response_code($ans[ResponseFields::HTTP_CODE]);
+            echo json_encode($ans);
+            return;            
+         }         
+      }
+   }
+}
+
 //////////////////////////////////// AUTENTICATION OF REQUEST ////////////////////////////////
 // Getting all headers. 
 $headers = getallheaders();
@@ -62,16 +96,32 @@ if (!$auth_mng->authenticate($message)){
    return;
 }
 
+if (!$auth_mng->shouldDoOperation()){
+   // The endopoint should be ignored. For now the only time this happens is when a login operation is used to generate the authentication token.
+   $res[ResponseFields::DATA]["token"] = $auth_mng->getAuthToken();
+   $res[ResponseFields::DATA]["id"]    = $auth_mng->getUserID();
+   $res[ResponseFields::MESSAGE] = "";
+   $res[ResponseFields::HTTP_CODE] = 200;
+   http_response_code(200);
+   echo json_encode($res);
+   return;
+}
+
+
 //////////////////////////////////// ROUTING ////////////////////////////////
 $permissions = $auth_mng->getPermissions();
 $dbuser      = $auth_mng->getServiceDBUser();
-$route_parts = $route_parser->getRouteParts();
+
+// ALL Endopoints are composed of 3 parts: 
+// The first part is the OBJECT (the main target of whateve we are goona do)
+// The second part is the OPERATION (what it is that we actually want to do)
+// The third part is the IDENTIFIER (mainly onto what we are going to operate)
 
 if (count($route_parts) != 3){
    // Badly formed endpoint. 
    $error = "Badly formed endpoint " . $route_parser->getEndpointAndParameters();
    $res[ResponseFields::MESSAGE] = $error;
-   $route_log->logError($error);
+   $route_log->logError($error . ". RouteParts: " . vardumpIntoVar($route_parts));
    $res[ResponseFields::HTTP_CODE] = 400; // This was a client error
    http_response_code(400);
    echo json_encode($res);
@@ -122,8 +172,8 @@ if (array_key_exists($object,$permissions)){
          // Something went wrong. 
          $base_log->logError($operating_object->getError());
          $res[ResponseFields::MESSAGE] = $operating_object->getReturnableError();
-         $res[ResponseFields::HTTP_CODE] = 500;
-         http_response_code(500);
+         $res[ResponseFields::HTTP_CODE] = $operating_object->getSugesstedHTTPCode();
+         http_response_code($operating_object->getSugesstedHTTPCode());
          echo json_encode($res);
          return;           
       }
@@ -142,7 +192,7 @@ if (array_key_exists($object,$permissions)){
 else{
    // Access denied. 
    $res[ResponseFields::MESSAGE] = "Access denied to endpoint $object";
-   $route_log->logError($res[ResponseFields::MESSAGE]);
+   $route_log->logError($res[ResponseFields::MESSAGE] . ". Route Parts: " . vardumpIntoVar($route_parts) . " Permissions: " . vardumpIntoVar($permissions));
    $res[ResponseFields::HTTP_CODE] = 403;
    http_response_code(403);
    echo json_encode($res);

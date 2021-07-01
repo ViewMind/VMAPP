@@ -44,7 +44,7 @@
    abstract class AuthValues extends TypedString {
       const VMCLIENT                    = "VMClient";
       const VMPARTNER                   = "VMPartner";
-      const BASIC                       = "Basic";
+      const VMLOGIN                     = "Login";
    }  
 
    abstract class POSTFields extends TypedString{
@@ -75,11 +75,13 @@
    abstract class PortalUserOperations extends TypedString {
       const GETALLMEDICAL           = "getallmedical";
       const OPERATING_INFO          = "operating_information";
+      const ENABLE                  = "enable";
    }
 
    abstract class URLParameterNames extends TypedString {
       const PPKEY                   = "ppkey";
       const INSTANCE                = "instance";
+      const ENABLE_TOKEN            = "enable_token";
    }
 
    abstract class InstitutionOperations extends TypedString {

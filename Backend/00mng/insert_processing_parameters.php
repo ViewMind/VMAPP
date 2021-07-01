@@ -97,6 +97,45 @@ if ($ans === FALSE){
    return;
 }
 
+// HTC Vive Eye Pro. 
+$name = "hpomnicent";
+$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 105;
+$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
+$pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;
+$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
+
+$fp = array();
+$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;
+$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 10;
+$fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; 
+
+// Reading parameters 
+$fp[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
+$fp[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
+
+// Reading parameters 
+$fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
+$fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
+
+// NBack RT
+$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
+
+// NBack MS 
+$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
+
+// Go No Go parameters 
+$fp[Study::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
+$fp[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 80;
+
+$tpp->addProductParameters($name,$pp,$fp);
+if ($ans === FALSE){
+   echo "Failed on inserting $name: " . $tpp->getError() . "\n";
+   return;
+}
+
+
 echo "Finished\n";
 
 

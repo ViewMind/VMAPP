@@ -30,5 +30,13 @@ class TableInstitutionUsers extends TableBaseClass {
       return $this->simpleSelect(array(),$select);
    }
 
+   function getInstitutionsForUser($user_id){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_PORTAL_USER,$user_id)){
+         $this->error = "Getting the insitution ids for user $user_id: " . $select->getError();
+      }
+      return $this->simpleSelect([self::COL_INSTITUTION_ID],$select);
+   }
+
 }
 ?>

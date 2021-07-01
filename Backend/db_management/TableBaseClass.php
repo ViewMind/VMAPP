@@ -105,6 +105,47 @@ class TableBaseClass {
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
    /**
+    * @brief General update of a value set on a specific row value. 
+    */
+
+   protected function updateOperation($params,$customized_message,$col_on_update,$value_on_update){
+      
+      $this->error = "";
+      $this->last_inserted = array();
+      
+      if (!$this->validateInputArray($params,$customized_message)) return false;
+      
+      if (!in_array($col_on_update,$this->valid_columns)){
+         $this->error = "On update column $col_on_update is not a valid column for table " . static::class::TABLE_NAME;
+         return false;
+      }
+
+      $updates = array();
+      foreach ($params as $col_name => $value){
+         $updates[] = "$col_name = :$col_name";
+      }
+
+      $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",",$updates) . " WHERE $col_on_update = :$col_on_update";
+      $params[$col_on_update] = $value_on_update;
+
+      try {
+         $stmt = $this->con->prepare($sql);
+         $stmt->execute($params);
+         $this->last_inserted[] = $this->con->lastInsertId();
+      }
+      catch (PDOException $e){
+         $this->error = "Insertion failure for $customized_message: " . $e->getMessage() . ". SQL: $sql";
+         return false;
+      }      
+      
+      // Insertion does not return anything
+      return array();      
+      
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   /**
     * @brief Check if a row exists with a given value in a given column. 
     */
 
