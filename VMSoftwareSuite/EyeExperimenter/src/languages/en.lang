@@ -222,6 +222,8 @@ viewfinishedstudies_headerDoctor = Doctor;
 viewfinishedstudies_btnBack = BACK;
 viewfinishedstudies_btnQC   = QC;
 viewfinishedstudies_btnSend = SEND;
+viewfinishedstudies_waitTitle = Quality Control;
+viewfinishedstudies_waitSubTitle = Please wait while the proper verifications are run;
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Evaluator Profile;
@@ -264,6 +266,8 @@ viewQC_SubFixationsL = Number of Fixations of Right Eye per Trial;
 viewQC_SubGlitches = Number of Glitches per Trial;
 viewQC_SubFrequency = Average Sample Rate Per Trial;
 viewQC_Study = Study;
+viewQC_WaitTitle = Plese wait ...;
+viewQC_WaitSubtitle = Information is being sent to our servers;
 viewQC_StudyNameMap = 
 Reading|Reading|
 Binding BC|Colour Combinations| 
@@ -285,6 +289,7 @@ viewQC_GraphPoints = Data Points;
 viewQC_GraphFixationsL = Fixations (L);
 viewQC_GraphFixationsR = Fixations (R);
 viewQC_GraphFreq = Sample Rate;
+viewQC_GraphGlitches = Sampling Glitches;
 viewQC_btnSend = SEND;
 viewQC_btnBack = BACK;
 
@@ -371,6 +376,7 @@ error_db_wrongetserial = Incorrect Serial Number|The data sent for the EyeTracke
 error_db_outofevals = Out of Evaluations|All the evaluations allotted to this Institution have been used<br>Please contact ViewMind in order to solve this issue;
 error_db_timeout = Connection time out|Too much time was spent waiting for the sever to respond<br>Please try again<br>If the problem persists, contact ViewMind in order to solve this problem;
 error_launcher_update = Restart required|In 5 seconds the program will close. Please restart it;
+error_qc_verification_failed = Quality Control Failed|The study file is likely corrupted<br>Please contact ViewMind for support;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Apply Changes|The program must be restarted to apply the selected changes;

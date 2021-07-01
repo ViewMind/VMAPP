@@ -636,21 +636,25 @@ void Loader::qualityControlFinished(){
     if (qc.getError() != ""){
         logger.appendError("Failed setting selected study to:  " + qc.getSetFileName() + ". Reason: " + qc.getError());
     }
-    else{
-        emit(qualityControlDone());
-    }
+    emit(qualityControlDone());
+}
+
+bool Loader::qualityControlFailed() const {
+    return !qc.getError().isEmpty();
 }
 
 
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
 
 void Loader::requestOperatingInfo(){
+    processingUploadError = FAIL_CODE_NONE;
     if (!apiclient.requestOperatingInfo()){
         logger.appendError("Request operating info error: "  + apiclient.getError());
     }
 }
 
 void Loader::sendStudy(){
+    processingUploadError = FAIL_CODE_NONE;
 
     if (!apiclient.requestReportProcessing(configuration->getString(Globals::Share::SELECTED_STUDY))){
         logger.appendError("Requesting study report generation: " + apiclient.getError());
@@ -665,6 +669,7 @@ qint32 Loader::getLastAPIRequest(){
 
 void Loader::receivedRequest(){
     if (!apiclient.getError().isEmpty()){
+        processingUploadError = FAIL_CODE_SERVER_ERROR;
         logger.appendError("Error Receiving Request :"  + apiclient.getError());
     }
     else{
@@ -681,11 +686,15 @@ void Loader::receivedRequest(){
                 logger.appendError("Failed to set QC parameters from server: " + localDB.getError());
             }
         }
-        else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
+        else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){            
             logger.appendSuccess("Study file was successfully sent");
         }
     }
     emit(finishedRequest());
+}
+
+qint32 Loader::wasThereAnProcessingUploadError() const {
+    return processingUploadError;
 }
 
 ////////////////////////////////////////////////////////////////// PROTOCOL FUNCTIONS //////////////////////////////////////////////////////////////////

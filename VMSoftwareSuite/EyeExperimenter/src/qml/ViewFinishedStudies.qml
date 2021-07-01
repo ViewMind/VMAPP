@@ -16,14 +16,23 @@ VMBase {
         onQualityControlDone: {
             // Close the connection dialog and open the user selection dialog.
             processingQCDialog.close();
+
+            if (loader.qualityControlFailed()){
+                var titleMsg = viewHome.getErrorTitleAndMessage("error_qc_verification_failed");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
+
             swiperControl.currentIndex = swiperControl.vmIndexViewQC;
         }
     }
 
     Dialog {
 
-        property string vmTitle: "TITLE"
-        property string vmMessage: "MESSAGE"
+        property string vmTitle: loader.getStringForKey(keybase+"waitTitle")
+        property string vmMessage: loader.getStringForKey(keybase+"waitSubTitle")
 
         id: processingQCDialog;
         modal: true
@@ -51,7 +60,7 @@ VMBase {
             anchors.topMargin: mainWindow.height*0.128
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
-            text: connectionDialog.vmTitle
+            text: processingQCDialog.vmTitle
         }
 
 
@@ -64,7 +73,7 @@ VMBase {
             anchors.topMargin: mainWindow.height*0.038
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
-            text:  connectionDialog.vmMessage;
+            text:  processingQCDialog.vmMessage;
             z: 2 // Sometimes the border of the image covers the text. This fixes it.
         }
 
@@ -79,8 +88,6 @@ VMBase {
         }
 
     }
-
-
 
 
     ListModel {

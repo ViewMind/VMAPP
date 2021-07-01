@@ -27,6 +27,8 @@ public:
     // Should only be used for debugging.
     void disableCheckSumVerification();
 
+    bool checkFileIntegrity();
+
 private:
 
     ViewMindDataContainer rawdata;

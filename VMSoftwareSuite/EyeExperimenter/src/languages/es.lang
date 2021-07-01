@@ -222,6 +222,9 @@ viewfinishedstudies_headerDoctor = Doctor;
 viewfinishedstudies_btnBack = ATRAS;
 viewfinishedstudies_btnQC   = QC;
 viewfinishedstudies_btnSend = ENVIAR;
+viewfinishedstudies_waitTitle = Control de Calidad;
+viewfinishedstudies_waitSubTitle = Aguarde mientra se realizan las verificaciones;
+
 
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Evaluador;
@@ -264,6 +267,8 @@ viewQC_SubFixationsL = Número of Fijaciones del Ojo Izquierdo por Ensayo;
 viewQC_SubGlitches = Número de Fallas por Ensayo;
 viewQC_SubFrequency = Velocidad de Sampleo Promedio por Ensayo;
 viewQC_Study = Estudio;
+viewQC_WaitTitle = Por favor espere ...;
+viewQC_WaitSubtitle = La información está siendo enviada a nuestros servidores;
 viewQC_StudyNameMap = 
 Reading|Lectura|
 Binding BC|Combinación de Colores| 
@@ -288,8 +293,6 @@ viewQC_GraphFreq = Velocidad de Sampleo;
 viewQC_GraphGlitches = Fallas de Sampleo;
 viewQC_btnSend = ENVIAR;
 viewQC_btnBack = VOLVER;
-
-
 
 
 #********************************* PROTOCOLSCREEN SCREEN *********************************
@@ -374,6 +377,8 @@ error_db_wrongetserial = Número de Serie Incorrecto|Los datos del EyeTracker en
 error_db_outofevals = Sin evaluaciones<br>disponibles|Las evaluaciones asignadas a esta Institución se han utilizado<br>Por favor contacte a ViewMind para resolverlo;
 error_db_timeout = Se excedió el tiempo<br>de espera|El servidor tardó demasiado en responder<br>Por favor, inténtelo nuevamente<br>Si el problema persiste, contacte a ViewMind para resolverlo;
 error_launcher_update = Se debe reiniciar|En 5 segundos el programa se cerrará. Por favor reinicielo.;
+error_qc_verification_failed = El Control de Calidad Falló|Es posible que el archivo de estudio esté corrupto<br>Por favor, cotacte al sorporte de ViewMind;
+error_corrupt_file = Archivo corrupto|El archivo no puede ser enviado a procesamiento por que esta corrupto;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Efectuar los cambios|Los cambios que realizó requieren que se reinicie el programa;

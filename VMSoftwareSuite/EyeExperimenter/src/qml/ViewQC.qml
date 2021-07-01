@@ -18,6 +18,9 @@ VMBase {
 
     readonly property int vmAPI_REPORT_REQUEST: 2
 
+    readonly property int vmFAIL_CODE_NONE: 0
+    readonly property int vmFAIL_CODE_SERVER: 2
+
     property var vmStudyNameMap: []
     property var vmStdStudyNameByIndex: [];
     property var vmSubTitleList: [];
@@ -107,6 +110,18 @@ VMBase {
         onFinishedRequest: {
             // Close the connection dialog and open the user selection dialog.
             connectionDialog.close();
+
+            var failCode = loader.wasThereAnProcessingUploadError();
+
+            if ( failCode !== vmFAIL_CODE_NONE ){
+
+                var titleMsg = viewHome.getErrorTitleAndMessage("error_db_server_error");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                return;
+            }
+
             if (loader.getLastAPIRequest() === vmAPI_REPORT_REQUEST)
                swiperControl.currentIndex = swiperControl.vmIndexPatientList;
         }
@@ -114,8 +129,8 @@ VMBase {
 
     Dialog {
 
-        property string vmTitle: "TITLE"
-        property string vmMessage: "MESSAGE"
+        property string vmTitle: loader.getStringForKey(keysearch+"WaitTitle")
+        property string vmMessage: loader.getStringForKey(keysearch+"WaitSubtitle")
 
         id: connectionDialog;
         modal: true

@@ -12,12 +12,18 @@ void QualityControl::disableCheckSumVerification(){
     verifyFileIntegrity = false;
 }
 
+bool QualityControl::checkFileIntegrity(){
+    return rawdata.verifyChecksumHash();
+}
+
 void QualityControl::run(){
 
     if (!rawdata.loadFromJSONFile(originalFileName)){
         error = "Could not load the raw data file: " + originalFileName + ". Reason: " + rawdata.getError();
         return;
     }
+
+    //rawdata.setChecksumHash();
 
     if (!rawdata.verifyChecksumHash()){
         error = "Checksum verification changed in the raw data file";
