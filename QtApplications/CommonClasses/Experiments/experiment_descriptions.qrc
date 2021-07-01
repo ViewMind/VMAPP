@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>binding/descriptions/bc.dat</file>
+        <file>binding/descriptions/bc_3.dat</file>
+        <file>binding/descriptions/uc.dat</file>
+        <file>binding/descriptions/uc_3.dat</file>
+        <file>gonogo/descriptions/go_no_go.dat</file>
+        <file>nbackfamiliy/descriptions/fielding.dat</file>
+        <file>parkinson/descriptions/parkinson.dat</file>
+        <file>perception/descriptions/perception_study.dat</file>
+        <file>reading/descriptions/Reading_de.dat</file>
+        <file>reading/descriptions/Reading_en.dat</file>
+        <file>reading/descriptions/Reading_es.dat</file>
+        <file>reading/descriptions/Reading_fr.dat</file>
+        <file>reading/descriptions/Reading_is.dat</file>
+    </qresource>
+</RCC>

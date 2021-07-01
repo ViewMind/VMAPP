@@ -179,6 +179,7 @@ Trial["data"][DATA_SET_TYPE]["computed_data_set_values"]["response_time_R"] = Th
 
 Trial["computed_trial_values"] = Values which are Trial dependant
 Trial["response"] = If the trial ends in a response, this is recorded here. 
+Trial["correct_response"] = If the trial expects an answer, the right answer is stored here. 
 
 1) When data set finishes, finalizeDataSet(). and if necessary create new dataset
 2) When all the data sets are finished we finalizeTrial("the_response") and if necessary create a new trial. 
