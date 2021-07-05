@@ -10,6 +10,9 @@
   include ("../db_management/TableEvaluations.php");
   include ("../db_management/TableSubject.php");
 
+  // Setting the pointer location for db conf
+  DBCon::setPointerLocation("configs");  
+
   // Loading the database configuration to create. 
   $dbcon = new DBCon();
   if ($dbcon->getError() != ""){
