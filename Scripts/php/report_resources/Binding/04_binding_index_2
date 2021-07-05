@@ -1,0 +1,18 @@
+title_en = INDEX OF AMYLOID BETA PROTEIN CORRELATION;
+title_es = ÍNDICE DE DEPÓSITO BETA AMILOIDE;
+
+explanation_en = Locus Coeruleus and Superior colliculus|Entorhinal and Perirhinal Cortex. Medial Temporal Lobe;
+
+explanation_es = Locus Coeruleus y Coliculo superior.Corteza|Entorrinal y Perirrinal. Lobulo Temporal Medio;
+
+range_text_en = Normal value GREATER than 67;
+range_text_es = Valor normal MAYOR a 67;
+
+cutoff_values = 0|67|134;
+
+smaller_better = false;
+
+associated_value = binding_conversion_index;
+
+mult_by_100 = true;
+

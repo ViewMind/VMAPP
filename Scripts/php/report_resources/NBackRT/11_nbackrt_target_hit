@@ -1,0 +1,17 @@
+title_en = TARGET HIT;
+title_es = ACIERTOS A OBJETIVOS;
+
+explanation_en = ;
+
+explanation_es = ;
+
+range_text_en = Normal value GREATER than 60;
+range_text_es = Valor normal MAYOR a 60;
+
+cutoff_values = 40|50|60|81|100;
+
+smaller_better = false;
+
+associated_value = correct_target_hit_percent;
+
+mult_by_100 = false;
