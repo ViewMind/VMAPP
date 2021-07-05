@@ -31,6 +31,16 @@ include_once ("api_management/ObjectPortalUsers.php");
 include_once ("api_management/ObjectInstitution.php");
 include_once ("api_management/ObjectReports.php");
 include_once ("api_management/ObjectSubjects.php");
+include_once ("healthcheck.php");
+
+//////////////////////////////////// AWS HELTHCHECK ////////////////////////////////
+if (isHealthCheck($_SERVER['REMOTE_ADDR'])){
+   $res[ResponseFields::MESSAGE] = "Recognized IP: " . $_SERVER['REMOTE_ADDR'] . " as healthcheck";
+   $res[ResponseFields::HTTP_CODE] = 200;
+   http_response_code(200);
+   echo json_encode($res);
+   return;
+}
 
 //////////////////////////////////// LOG SETUP ////////////////////////////////
 $auth_log = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::AUTH_LOG_LOCATION]);

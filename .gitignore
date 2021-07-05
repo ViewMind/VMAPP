@@ -46,6 +46,7 @@ Scripts/inst_data_available/config_remote.php
 Scripts/inst_data_available/*.json
 
 VMPortal/Backend/*.txt
+VMPortal/Backend/valid_ips
 VMPortal/Backend/*.json
 VMPortal/Backend/*.csv
 VMPortal/Backend/db_managment/make_dbconfig.php
