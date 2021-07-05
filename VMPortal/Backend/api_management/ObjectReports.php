@@ -326,7 +326,7 @@ class ObjectReports extends ObjectBaseClass
          return false;            
       }
       
-      $aws_command = "aws s3 $zipfile s3://$aws_bucket/$base_file_name.zip --profile $aws_profile 2>&1";
+      $aws_command = "aws s3 cp $zipfile s3://$aws_bucket/$base_file_name.zip --profile $aws_profile 2>&1";
       $logger->logProgress("AWS CP CMD: $aws_command");
 
       //echoOut(CONFIG[GlobalConfigS3::GROUP_NAME],true);
