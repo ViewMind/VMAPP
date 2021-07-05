@@ -10,7 +10,7 @@ include_once ("../db_management/TableSecrets.php");
 include_once ("../db_management/TableProcessingParameters.php");
 
 //include("cli_interface.php");
-
+DBCon::setPointerLocation("configs");  
 $dbcon = new DBCon();
 $con_main = $dbcon->dbOpenConnection(DBCon::DB_MAIN,DBCon::DB_SERVICE_ADMIN);
 if ($con_main == NULL){
@@ -18,7 +18,7 @@ if ($con_main == NULL){
    exit();
 }
 
-DBCon::setPointerLocation("configs");  
+
 $tpp = new TableProcessingParameters($con_main);
 
 // Gazepoint
