@@ -38,6 +38,7 @@
          // We need to verify that the authentication field is present .... 
          if (!array_key_exists(HeaderFields::AUTH_TYPE,$headers)){            
             $this->error = "Missing AuthType field in headers";
+            $this->http_code = 200;
             return;
          }
 

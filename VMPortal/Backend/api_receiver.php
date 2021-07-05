@@ -101,7 +101,10 @@ $auth_mng = new AuthManager($headers,$_POST,$_FILES);
 if (!$auth_mng->authenticate($message)){
    $res[ResponseFields::MESSAGE] = $auth_mng->getReturnableError();
    $res[ResponseFields::HTTP_CODE] = $auth_mng->getSuggestedHTTPCode();
-   $auth_log->logError($auth_mng->getError());
+   // PATCH this is done to avoid filling the logs with the annoything missing AuthType Message from the AWS healthchecks. 
+   if ($res[ResponseFields::HTTP_CODE] != 200) {
+      $auth_log->logError($auth_mng->getError());
+   }
    http_response_code($auth_mng->getSuggestedHTTPCode());
    echo json_encode($res);
    return;
