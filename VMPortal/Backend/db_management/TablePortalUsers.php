@@ -95,7 +95,16 @@ class TablePortalUsers extends TableBaseClass {
       $params[self::COL_CREATION_TOKEN] = $token;
       $params[self::COL_ENABLED] = self::PENDING; // All users are created with a pending status. 
 
-      return $this->insertionOperation($params,"Adding a Portal User");
+      $ans = $this->insertionOperation($params,"Adding a Portal User");
+      if ($ans === FALSE) return;
+
+      // We need to return the creation Token.
+      $select = new SelectOperation();
+      $cols_to_get = [self::COL_CREATION_TOKEN];
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$params[self::COL_EMAIL]);
+
+      return $this->simpleSelect($cols_to_get,$select);
+
 
    }
 

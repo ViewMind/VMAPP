@@ -12,6 +12,7 @@ $required = [TableSecrets::COL_INSTITUTION_ID,
 TableSecrets::COL_INSTITUTION_INSTANCE
 ];
 
+DBCon::setPointerLocation("configs");  
 $params = readAndVerifyData($required,$section_name);
 
 /////////////////////////////////////////////

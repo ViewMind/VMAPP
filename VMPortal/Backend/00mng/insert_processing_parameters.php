@@ -18,6 +18,7 @@ if ($con_main == NULL){
    exit();
 }
 
+DBCon::setPointerLocation("configs");  
 $tpp = new TableProcessingParameters($con_main);
 
 // Gazepoint

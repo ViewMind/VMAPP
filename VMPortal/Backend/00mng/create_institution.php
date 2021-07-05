@@ -15,6 +15,7 @@ $required = [TableInstitution::COL_EMAIL,
 TableInstitution::COL_INSTITUTION_NAME
 ];
 
+DBCon::setPointerLocation("configs");  
 $params = readAndVerifyData($required,$section_name);
 
 /////////////////////////////////////////////

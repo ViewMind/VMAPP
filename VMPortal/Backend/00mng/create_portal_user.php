@@ -14,8 +14,10 @@ $required = [TablePortalUsers::COL_EMAIL,
 TablePortalUsers::COL_NAME, 
 TablePortalUsers::COL_LASTNAME, 
 TableInstitutionUsers::COL_INSTITUTION_ID,
-TablePortalUsers::COL_USER_ROLE];
+TablePortalUsers::COL_USER_ROLE,
+TablePortalUsers::COL_PASSWD];
 
+DBCon::setPointerLocation("configs");  
 $params = readAndVerifyData($required,$section_name);
 
 $dbcon = new DBCon();
@@ -52,6 +54,10 @@ else{
    }
 }
 
+// Hashing the password. 
+$password = password_hash($params[TablePortalUsers::COL_PASSWD], PASSWORD_BCRYPT, ["cost" => 10]);
+$params[TablePortalUsers::COL_PASSWD] = $password;
+
 $portal_user = new TablePortalUsers($con_secure);
 $role = $params[TablePortalUsers::COL_USER_ROLE];
 unset($params[TableInstitutionUsers::COL_INSTITUTION_ID]);
@@ -74,6 +80,13 @@ if ($ans === false){
 else{
    $user_id = $portal_user->getLastInserted()[0];
    echo "Created user: " . $user_id  . "\n";
+
+   $creation_token = $ans[0][TablePortalUsers::COL_CREATION_TOKEN];
+
+   echo "Enable Endpoint:\n";
+   $email = $params[TablePortalUsers::COL_EMAIL];
+   echo "portal_users/enable/$email?enable_token=$creation_token\n";
+
 }
 
 $table_inst_users = new TableInstitutionUsers($con_main);
