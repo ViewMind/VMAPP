@@ -99,7 +99,7 @@ if ($ans === FALSE){
 }
 
 // HTC Vive Eye Pro. 
-$name = "hpomnicent";
+$name = "hpomnicept";
 $pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 105;
 $pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
 $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;
