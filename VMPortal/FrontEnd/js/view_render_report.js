@@ -224,7 +224,7 @@ function renderReport(noimages){
    metrics.setFontDefinition(DEF_FONT_GOTHAM_BOLD);
    
    var bb = metrics.getTextDimensions(titleText);
-   console.log(bb);
+   //console.log(bb);
    var air_title = bb.h*0.8;
    var xtitle = xMargin + (widthPageUse - bb.w)/2;
    var ytitle = topBannerHeight + nameDisplayHeight + colorExpHeight + air_title;
@@ -300,8 +300,8 @@ function renderHeader(rp){
    // Adding the logo
    var logoW = rp.w*0.2;
    if (!rp.noimages){
-      //svg = svg + '<image xlink:href="' + VIEWMIND_LOGO_BASE_64  + '" width="' + logoW + '" height = "' + rp.h + '" " x = "' + rp.x + '" y = "' + rp.y + '"/>\n'    
-      svg = svg + '<image id="svg_viewmind_logo" href="resources/viewmind.png" width="' + logoW + '" height = "' + rp.h + '" " x = "' + rp.x + '" y = "' + rp.y + '"/>\n'
+      svg = svg + '<image xlink:href="' + VIEWMIND_LOGO_BASE_64  + '" width="' + logoW + '" height = "' + rp.h + '" " x = "' + rp.x + '" y = "' + rp.y + '"/>\n'    
+      //svg = svg + '<image id="svg_viewmind_logo" href="resources/viewmind.png" width="' + logoW + '" height = "' + rp.h + '" " x = "' + rp.x + '" y = "' + rp.y + '"/>\n'
    }
 
    // Adding the Motto.

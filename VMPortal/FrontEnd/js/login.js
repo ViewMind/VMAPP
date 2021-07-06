@@ -44,6 +44,7 @@ function receivedInstitutionInfo(data){
 
     if (data.message != "OK"){
         document.getElementById("error_message").innerHTML = data.message;
+        WaitDialog.close();
         return;
     }
 
