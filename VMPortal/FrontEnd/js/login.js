@@ -43,7 +43,7 @@ function receivedInstitutionInfo(data){
     //console.log(JSON.stringify(data));
 
     if (data.message != "OK"){
-        document.getElementById("error_message").innerHTML = this.response.message;
+        document.getElementById("error_message").innerHTML = data.message;
         return;
     }
 
