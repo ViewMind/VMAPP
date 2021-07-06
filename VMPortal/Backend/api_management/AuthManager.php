@@ -26,7 +26,6 @@
       private $user_info;
 
       public function __construct($headers, $post_data, $files){
-         $this->headers = $headers;
          $this->error = "";
          $this->dbuser = "";
          $this->files = $files;
@@ -34,6 +33,12 @@
          $this->http_code = 500; // If I forget the code, then it is a server error.
          $this->returnable_error = "";
          $this->should_do_operation = true;
+
+         // This is to solve a problem where for an unknown reason AWS Apache changes the Header Casing and hence they are not recognized. 
+         foreach ($headers as $headername => $value){
+            $this->headers[strtolower($headername)] = $value;
+         }
+         $headers = $this->headers;
          
          // We need to verify that the authentication field is present .... 
          if (!array_key_exists(HeaderFields::AUTH_TYPE,$headers)){            
@@ -134,6 +139,10 @@
 
       function getUserInfo(){
          return $this->user_info;
+      }
+
+      function getStandarizedHeaders(){
+         return $this->headers;
       }
 
       function authenticate($message = ""){

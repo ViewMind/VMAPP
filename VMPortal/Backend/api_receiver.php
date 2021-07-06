@@ -100,6 +100,9 @@ if (!$auth_mng->authenticate($message)){
    return;
 }
 
+// Standarized headers to lower case. 
+$headers = $auth_mng->getStandarizedHeaders();
+
 if (!$auth_mng->shouldDoOperation()){
    // The endopoint should be ignored. For now the only time this happens is when a login operation is used to generate the authentication token.
    $res[ResponseFields::DATA]["token"] = $auth_mng->getAuthToken();

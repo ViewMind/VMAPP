@@ -35,10 +35,10 @@
    }
 
    abstract class HeaderFields extends TypedString {
-      const AUTH_TYPE                   = "AuthType";
-      const AUTHORIZATION               = "Authorization";
-      const AUTHENTICATION              = "Authentication";
-      const SIGNATURE                   = "Signature";
+      const AUTH_TYPE                   = "authtype";
+      const AUTHORIZATION               = "authorization";
+      const AUTHENTICATION              = "authentication";
+      const SIGNATURE                   = "signature";
    }
   
    abstract class AuthValues extends TypedString {
