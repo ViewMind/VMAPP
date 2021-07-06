@@ -105,8 +105,9 @@ function getConfigurationFromServer(){
 }
 
 // If the global values have not been loaded, they are. 
-function checkConfig(){
-   if (sessionStorage.getItem(GLOBALS.SESSION_KEYS.API ) === null){
+function checkConfig(force){
+   if (force === undefined) force = false;
+   if ((sessionStorage.getItem(GLOBALS.SESSION_KEYS.API ) === null) || (force)){
       getConfigurationFromServer();
    }
 }
