@@ -1,0 +1,55 @@
+ <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    </head>
+    <body>
+       <div id="container" style="background-color: blue;">
+           <img src="viewmind.png" id="theimage">;
+       </div>
+       <div id="container2" style="background-color: rgb(0, 255, 0);">
+           <canvas id="thecanvas"></canvas>
+       </div>
+    </div>       
+    </body>
+
+    <script>
+        img = document.getElementById("theimage");
+        onload = function() {
+           //console.log("onload");
+           var tosave = "VIEWMIND_LOGO_BASE_64 = '";
+           var canvas = document.createElement("canvas");
+           canvas.width = img.width;
+           canvas.height = img.height;
+           //console.log("Dimensions: " + img.width + "x" + img.height);
+           var ctx = canvas.getContext("2d");
+           ctx.drawImage(img, 0, 0);
+           var dataURL = canvas.toDataURL("image/png");    
+           tosave = tosave + dataURL + "'";
+           
+           var blob = new Blob([tosave], { type: "text/plain;charset=utf-8" });
+
+        };           
+        // var canvas = document.getElementById("thecanvas");
+        // canvas.width = img.width;
+        // canvas.height = img.height;
+
+        // console.log("Dimensions: " + img.width + "x" + img.height);
+
+        // // Copy the image contents to the canvas
+        // var ctx = canvas.getContext("2d");
+        // ctx.drawImage(img, 0, 0);
+
+        // Get the data-URL formatted image
+        // Firefox supports PNG and JPEG. You could check img.src to
+        // guess the original format, but be aware the using "image/jpg"
+        // will re-encode the image.
+        //var dataURL = canvas.toDataURL("image/png");    
+        //console.log(dataURL.length);
+    </script>
+
+
+
+</html>

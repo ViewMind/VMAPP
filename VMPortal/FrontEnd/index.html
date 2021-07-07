@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        
+        <title>ViewMind Portal</title>
+        
+        <link href="css/data_table_styles.css" rel="stylesheet" />
+        <link href="css/styles.css" rel="stylesheet" />
+
+        <!-- All plugins -->
+        <script src="resources/jquery-3.6.0.min.js"></script>    
+        <script src="resources/fontawsome.js"></script>        
+        <script src="resources/jspdf.umd.min.js"></script>               
+        <script src="resources/simple-datatables.js"></script>   
+
+        <!-- Page Required Scripts -->
+        <script src="js/access_constants.js"></script>
+        <script src="js/svgtopdfgenerator.js"></script>
+        <script src="js/svgfontmetrics.js"></script>
+        <script src="js/svgmultilinetext.js"></script>
+        <script src="js/resultBar.js"></script>
+        <script src="js/resultSegment.js"></script>
+        <script src="resources/report_reference.js"></script>
+        <script src="js/api_functions.js"></script>
+        <script src="js/common.js"></script>
+        <script src="js/view_index.js"></script>
+        <script src="js/view_subject_list.js"></script>
+        <script src="js/view_report_list.js"></script>
+        <script src="js/view_render_report.js"></script>
+        <script src="js/view_account.js"></script>
+
+    </head>
+    <body class="sb-nav-fixed">
+
+        <!-- Checking that the basic configuration of the server is loaded -->
+        <script>checkConfig(false)</script>
+        <!-- Checking that we are logged in -->
+        <script>Token.checkLogIn()</script>
+        
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            
+            <!-- <a class="navbar-brand ps-3" href="index.html">ViewMind</a> -->
+            <img src="resources/logo_white.webp">
+            
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+                <ul class="navbar-nav d-none d-md-inline-block ms-auto me-0 me-md-3 my-2 my-md-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="vm-user-name" > 
+                            <i class="fas fa-user fa-fw" style="margin-right: 2%;"></i>
+                            <span id="display_user_name"></span>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="index.html?goto=myaccount">My Account</a></li>
+                        <li><hr class="dropdown-divider"/></li>
+                        <li><a class="dropdown-item" style = "cursor: pointer;" onclick="logOut()">Logout</a></li>
+                    </ul>
+
+                </li>
+            </ul>
+        </nav>
+
+        <div id="layoutSidenav">
+
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav" style="margin-top: 10%;">
+                            
+                            
+                            <a class="nav-link collapsed" href="" data-bs-toggle="collapse" data-bs-target="#collapseAccounts" aria-expanded="false" aria-controls="collapseAccounts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-house-user"></i></div>
+                                My Account
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseAccounts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="index.html?goto=myaccount">Modify</a>
+                                </nav>
+                            </div>
+                                                        
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseInstitutions" aria-expanded="false" aria-controls="collapseInstitutions">
+                                <div class="sb-nav-link-icon"><i class="fas fa-university"></i></div>
+                                Institutions
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseInstitutions" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav" id = "side_bar_institution_list">
+                                    <a class="nav-link" href="">Institution 1</a>
+                                    <a class="nav-link" href="">Institution 2</a>
+                                </nav>
+                            </div>
+
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4" id = "main_title"> Some title </h1>
+                        <ol class="breadcrumb mb-4" id="main_trail"></ol>
+                        <div class="container-fluid px-0" id = "main_contents">
+                        </div>
+                    </div>
+                </main>
+
+                <footer class="py-4 bg-light mt-auto vm-gray">
+                    <div class="container-fluid px-4 vm-gray">
+                        <div class="d-flex align-items-center justify-content-between small vm-gray">
+                            <div class="text-muted vm-gray">Copyright &copy; ViewMind 2021</div>
+                        </div>
+                    </div>
+                </footer>
+
+                <!-- Modal: Wait For Dialog -->
+                <div class="modal fade" id="waitDialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="waitDialogText"></h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                </div>   
+
+                <!-- Modal: Error Dialog -->
+                <div class="modal fade" id="errorDialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="errorTitle"></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="errorMainBody"></div>
+                        </div>
+                    </div>
+                </div>                   
+
+            </div>
+        
+        </div>
+
+        <script src="boostrap/js/bootstrap.bundle.min.js"></script> 
+        <!-- Fonts as base64 are required to embed in SVG so that it can then be turned into PDF -->
+        <script src="resources/embedded_fonts.js"></script>         
+        <!-- ViewMind Logo as base64 is required to embed in SVG so that it can then be turned into PDF -->
+        <script src="resources/viewmind_logo_as_base_64.js"></script> 
+        <script src="js/router.js"></script>       
+
+        <!-- Setting the user name and the Navigation Bar of The institutions -->
+        <script>
+            window.jsPDF = window.jspdf.jsPDF; // Required for JS PDF to work
+            Route();
+            generateSideBarInstitutionList(); 
+            setUserName();
+        </script>
+
+    </body>
+</html>

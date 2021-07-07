@@ -1,0 +1,16 @@
+title_en = INDEX OF COGNITIVE IMPAIRMENT;
+title_es = ÍNDICE DE DETERIORO COGNITIVO;
+
+explanation_en =;
+explanation_es =;
+
+range_text_en = Normal value GREATER than 48;
+range_text_es = Valor normal MAYOR a 48;
+
+cutoff_values = 0|48|96;
+
+smaller_better = false;
+
+associated_value = reading_predicted_deterioration;
+
+mult_by_100 = true;

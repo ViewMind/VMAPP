@@ -26,6 +26,20 @@ VMClients have the following permissions:
          IDENTIFIER: institution_id
             Will return a associative array with the key the internal user key and the value another associative array with full name and email. Only medical and admin users. 
             
+-> OBJECT: portal_users
+      OPERATION: enable
+         IDENTIFIER: email
+            PARAMETERS: enable_token
+               This is a very special endpoint as it is the ONLY endpoint that does NOT go through the authentication process. 
+               What this does is verify that the email exists, that the token passed as a parameter exists as well and, if it's not too old, the user gets enabled.
+               For this to work the user must have been previously been created. 
+
+-> OBJECT: portal_users
+      OPERATION: modify_own
+         IDENTIFIER: email
+            PARAMETERS: Modification parameters. 
+              The user is allowed to modify basic info: his name, last name, company he works for and his password. 
+               
 -> OBJECT: institution
       OPERATION: list.
          IDENTIFIER: portal_user
@@ -54,44 +68,14 @@ VMClients have the following permissions:
                6) Second pass at the JSON file that stores all results into the JSON 
                7) DB Storage of all appropiate results. 
                8) With the keyid form the evaluations table store, the JSON file in the S3. 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-There 3 Tiers Of Processing.
-
-1) Procesing at the data set level
-   - Compute the go GoNoGo Fixation values. (modifies the input fixation list).
-   - Comnpute the dataset values. Returns value map. and requires as intput the raw data list, the fixation list and, if GoNoGo, it's hitboxes. 
-2) Processng at the Trial Level
-   - If NBACK (RT/MS) computeFixationBasedNBackValues  Modifies a fixation map that contains all fixations for each of the data sets, that is passed as a parameter. 
-     This adds fields to the fixation vector. 
-     Then we also compute the fixation index in the last dataset where the sequence is completed.    
-3) Processing at the Study Level.
-  - Duration of the study as the highest timestamp - lowest time stamp. 
-  - If Binding we compute the binding score. 
- 
- 
-We need to get a trial. Modify its values. and set it back
-The final processi level (3) can be done over the entire structure. 
                
-               
-               
-               
-               
-               
-               
-               
-   
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
       OPERATION: list
-         IDENTIFIER: portal_user_id
-            PARAMETERS: institution_id
-               Returns a list of reports and associated patients for the institution. If portal user role is Admin, all will be shown together with linked portal portal_users. 
-               Otherwise this column is omitted and only those linked to the portal_user are shown. 
+         IDENTIFIER: subject_id
+               Returns a list of reports for a given subject. No actual quality control or report data is returned. But only if the user_id is the user of the reports. 
                
       OPERATION: get
-         IDENTIFIER: portal_user_id
-            PARAMETERS: report_id
-               Returns all the data of the specific report and associated subject data. 
+         IDENTIFIER: report_id
+               Returns the report data an QC data for that specific report. But only if the report is associated with the portal user. 
                
             
 -> OBJECT: rawdata
@@ -99,3 +83,10 @@ The final processi level (3) can be done over the entire structure.
          IDENTIFIER: institution_id
             PARAMETERS: from and to. (Start and End Date).
                Will copy all requested data from S3 (queries aside) to a directory. Compress it and send it back. 
+               
+               
+-> OBJECT: subjects
+      OPERATION: list
+         IDENTIFIER: institution_id
+            PARAMETERS: pp (portal user)
+               Lists all the subjects that have reports associated with the portal user pp from the Institution with the ID institution_id

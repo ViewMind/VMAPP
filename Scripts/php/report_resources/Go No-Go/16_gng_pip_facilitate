@@ -1,0 +1,19 @@
+title_en = FACILITATED TASK INDEX;
+title_es = ÍNDICE DE TAREA FACILITADA;
+
+explanation_en = ;
+
+explanation_es = ;
+
+range_text_en = Normal value LESS than 0.11;
+range_text_es = Valor normal MENOR a 0.11;
+
+cutoff_values = 0.07|0.11|0.15|0.19;
+
+smaller_better = true;
+
+associated_value = gonogo_pip_facilitate;
+
+round_for_display = false;
+
+mult_by_100 = false;

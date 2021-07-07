@@ -1,0 +1,19 @@
+title_en = FACILITATED TASK TIME;
+title_es = TIEMPO EN TAREA FACILITADA;
+
+explanation_en = ;
+
+explanation_es = ;
+
+range_text_en = Normal value LESS than 710.6;
+range_text_es = Valor normal MENOR a 710.6;
+
+cutoff_values = 593|710.6|828.2|945.8;
+
+smaller_better = true;
+
+associated_value = gonogo_dmt_facilitate;
+
+mult_by_100 = false;
+
+round_for_display = false;
