@@ -12,7 +12,6 @@ class ResultSegment {
    divStrokeWidth = 1;
 
    // Some constants. They are no supposed to be changed. 
-   #FONT_REFERENCE_VALUE_EM = 1.7;
    #FONT_COLOR              = "#505150";
    #CENTER_LINE_FOR_SUB_POS = 0.45; //% of height. 
    #AIR_TOP                 = 0.08 //% of height.
@@ -40,14 +39,15 @@ class ResultSegment {
       svg = svg + '   <rect x="' + this.x + '" y = "' + this.y + '" width = "' + this.w + '" height = "' + this.h + '" fill = "' + this.backgroundColor + '"/>\n'
       var x,y;
 
-      // Rendering the subtitle
-      var font = ' font: ' + (this.#FONT_REFERENCE_VALUE_EM) + 'em GothamBold '
+      // Rendering the title
+      var font_base_size = (this.h)*0.1;
+      var font = ' font: ' + font_base_size+ 'px GothamBold '
       x = this.x + this.w*this.#AIR_MARGIN_LEFT;
       y = this.y + this.h*this.#AIR_TOP;
       svg = svg + '   <text x = "' + x + '" y = "' + y + '" style = "' +  font + '" dominant-baseline = "hanging" fill = "' + this.#FONT_COLOR + '">' + this.segmentTitle  + '</text>\n'
 
       // segment subtitle might be 1 or two lines. Checking. 
-      font = ' font: ' + (this.#FONT_REFERENCE_VALUE_EM*0.7) + 'em GothamBook '
+      font = ' font: ' + (font_base_size*0.7) + 'px GothamBook '
       var subtitle_lines = this.segmentSubtitle.split("\n");
       if (subtitle_lines.length == 1){
          x = this.x + this.w*this.#AIR_MARGIN_LEFT;
@@ -65,13 +65,13 @@ class ResultSegment {
       // The reference text. 
       x = this.x + this.w*this.#AIR_MARGIN_LEFT;
       y = this.y + this.h - this.h*this.#AIR_BOTTOM
-      font = ' font: ' + (this.#FONT_REFERENCE_VALUE_EM*0.8) + 'em GothamBold '
+      font = ' font: ' + (font_base_size*0.8) + 'px GothamBold '
       svg = svg + '   <text x = "' + x + '" y = "' + y + '" style = "' + font + '" dominant-baseline = "auto" fill = "' + this.#FONT_COLOR + '">' + this.segmentRefereceText  + '</text>\n'
 
       // Rendering the value
       x = this.x + this.w - this.w*this.#AIR_MARGIN_RIGHT;
       y = this.y + this.h/2;
-      font = ' font: ' + (this.#FONT_REFERENCE_VALUE_EM*2) + 'em GothamBold '
+      font = ' font: ' + (font_base_size*2) + 'px GothamBold '
       svg = svg + '   <text x = "' + x + '" y = "' + y + '" style = "' + font + '" dominant-baseline = "middle" fill = "' + this.#FONT_COLOR + '" text-anchor="end">' + this.displayValue()  + '</text>\n'
 
       // Now drawing the result bar. 

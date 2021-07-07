@@ -7,6 +7,9 @@ var DEF_FONT_GOTHAM_BOLD;
 var DEF_FONT_GOTHAM_BOOK;
 var DEF_FONT_GOTHAM_MEDIUM;
 
+// For generating the PDF. 
+var svg2pdf = new SVG2PDFGenerator("report-svg","onPDFGenDone");
+
 function loadViewRenderReport(){
 
    var sname = getSubjectDisplayID();
@@ -54,7 +57,7 @@ function loadViewRenderReport(){
                     </div>\
                     <div class="col-lg-1"></div>\
                     <div class="col-lg-3">\
-                       <button type="button" style = "width: 100%" class="btn btn-outline-dark" id="btnPrintPDF">PDF</button>\
+                       <button type="button" style = "width: 100%" class="btn btn-outline-dark" id="btnPrintPDF" onclick="printReportAsPDF()">PDF</button>\
                     </div>\
                  </div>\
               </div>\
@@ -111,62 +114,17 @@ function onGetReportData(response){
    
 }
 
-function printReportAsPDF(W,H){
+function printReportAsPDF(){
+   svg2pdf.generatePDF();
+}
 
-   // var vmlogo = document.getElementById("svg_viewmind_logo");
-   // console.log(vmlogo);
-   // console.log(vmlogo.getAttribute("width"));
-   // console.log(vmlogo.getAttribute("height"));
-   // console.log(vmlogo.getAttribute("x"));
-   // console.log(vmlogo.getAttribute("y"));
-
-   renderReport(true)
-
-   var svg = document.getElementById("report-svg");   
-   var svgData = new XMLSerializer().serializeToString( svg );
-
-   //console.log(svgData)
-
-   var canvas = document.createElement("canvas");
-   canvas.width = W;
-   canvas.height = H;
-   var ctx = canvas.getContext("2d");
-
-   // Internally display the image. 
-   var img = document.createElement( "img" );
-
-   //console.log(btoa(svgData));
-    
-   img.setAttribute( "src", "data:image/svg+xml;base64," + btoa( svgData ) );
-   
-   img.onload = function() {
-      // Need to redraw the images. 
-      renderReport(false);
-
-      ctx.drawImage( img, 0, 0 );
-      var imgData = canvas.toDataURL('image/png');
-      let doc = new jsPDF();
-      var PAGE_WIDTH  = doc.internal.pageSize.getWidth();
-      var PAGE_HEIGHT = doc.internal.pageSize.getHeight();      
-      doc.addImage(imgData, 'PNG', 0, 0, PAGE_WIDTH, PAGE_HEIGHT,"","FAST");
-
-      var logoW = 0.2*PAGE_WIDTH;
-      var logoH = logoW*1191/4236; // This is the aspect ratio of the original image. I could not find ANY other way to make this work. 
-      var xlogo = 0.05*PAGE_WIDTH;
-      var ylogo = 0.03*PAGE_HEIGHT;
-
-      // Adding the logo. 
-      doc.addImage(VIEWMIND_LOGO_BASE_64,'PNG',xlogo,ylogo,logoW,logoH,"","FAST");
-
-      doc.save("report.pdf");  
-   };   
-
-   img.onerror = function() {
-      console.log("There was an error loading the image");
+function onPDFGenDone(){
+   if (!svg2pdf.wasSuccessful()){
+      ErrorDialog.open("PDF Generation","Unable to generate PDF");
    }
 }
 
-function renderReport(noimages){
+function renderReport(){
 
    // The 0.98 is patch. As the value is a bit larger than the actual with of the card container, by about 2% than the actual value I want. 
    var W = document.getElementById("svg-container").clientWidth*0.98; 
@@ -201,9 +159,8 @@ function renderReport(noimages){
    renderParameters.h = topBannerHeight;
    renderParameters.backgroundColor = backgroundColor;
    renderParameters.divStokeWidth = divStrokeWidth;
-   renderParameters.refFontSize = 1; // in em. 
-   renderParameters.noimages = noimages;
-
+   renderParameters.refFontSize = 1; 
+   renderParameters.pageHeight = H;
    report = report + renderHeader(renderParameters);
 
    renderParameters.y = topBannerHeight;
@@ -220,7 +177,7 @@ function renderReport(noimages){
    var titleText =  REPORT_REFERENCE[lang][ACCESS.REPTEXT.RESULTS] + ": " + reportReference["study_title_" + lang];
    ///console.log(titleText)
    var metrics = new SVGFontMetrics("svg-container");
-   metrics.setFontSize(renderParameters.refFontSize*1.3 + "em");
+   metrics.setFontSize(0.014*H + "px");
    metrics.setFontDefinition(DEF_FONT_GOTHAM_BOLD);
    
    var bb = metrics.getTextDimensions(titleText);
@@ -288,6 +245,8 @@ function renderReport(noimages){
 
    report = report + "</svg>"   
 
+   //console.log(report);
+
    document.getElementById("svg-container").innerHTML = report;
 
 }
@@ -299,15 +258,12 @@ function renderHeader(rp){
 
    // Adding the logo
    var logoW = rp.w*0.2;
-   if (!rp.noimages){
-      svg = svg + '<image xlink:href="' + VIEWMIND_LOGO_BASE_64  + '" width="' + logoW + '" height = "' + rp.h + '" " x = "' + rp.x + '" y = "' + rp.y + '"/>\n'    
-      //svg = svg + '<image id="svg_viewmind_logo" href="resources/viewmind.png" width="' + logoW + '" height = "' + rp.h + '" " x = "' + rp.x + '" y = "' + rp.y + '"/>\n'
-   }
+   svg = svg + '<image href="resources/viewmind.png" width="' + logoW + '" height = "' + rp.h + '" x = "' + rp.x + '" y = "' + rp.y + '"/>\n'
 
    // Adding the Motto.
    var lang = document.getElementById("langSelector").value;
    motto = new SVGMultiLineText(REPORT_REFERENCE[lang][ACCESS.REPTEXT.MOTTO],"svg-container");
-   motto.setFontSize(rp.refFontSize*1.2 + "em")
+   motto.setFontSize(0.012*rp.pageHeight + "px")
    motto.setFontDefinition(DEF_FONT_GOTHAM_BOLD)
    motto.setLineSpace(0.4);
 
@@ -338,7 +294,7 @@ function renderReportNames(rp){
    svg = svg + '<rect x="' + rp.x + '" y = "' + rp.y + '" width = "' + rp.w + '" height = "' + rp.h + '" fill = "' + rp.backgroundColor + '"/>\n'   
 
    metrics = new SVGFontMetrics("svg-container");
-   metrics.setFontSize(rp.refFontSize*1.2 + "em")
+   metrics.setFontSize(0.010*rp.pageHeight + "px")
    metrics.setFontDefinition(DEF_FONT_GOTHAM_BOLD);
 
    // The color of the text
@@ -427,7 +383,7 @@ function renderColorReference(rp){
    var greatestHeight = 0;
    for (var i = 0; i < colors.length; i++){
       var mlinet = new SVGMultiLineText(texts[i],"svg-container");
-      mlinet.setFontSize(rp.refFontSize*1.1 + "em")
+      mlinet.setFontSize(0.010*rp.pageHeight + "px")
       mlinet.setFontDefinition(DEF_FONT_GOTHAM_BOLD)
       mlinet.setLineSpace(0.4);   
       mlines.push(mlinet);
