@@ -45,7 +45,8 @@ CREATE TABLE evaluations (
    evaluator_lastname       VARCHAR(255),
    protocol                 VARCHAR(255),
    qc_parameters            LONGTEXT,
-   qc_graphs                LONGTEXT,   
+   qc_graphs                LONGTEXT,  
+   file_link                VARCHAR(255), 
    results                  LONGTEXT  
 );   
 

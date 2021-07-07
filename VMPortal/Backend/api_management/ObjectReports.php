@@ -40,7 +40,7 @@ class ObjectReports extends ObjectBaseClass
       shell_exec("mkdir -p $workdir/$base_proc_name");
       $workdir = "$workdir/$base_proc_name";
       if (!is_dir($workdir)){
-         $this->http_response_code = 500;
+         $this->suggested_http_code = 500;
          $this->error = "Processing directory error";
          $logger->logError("Failed in creating the work directory at $workdir");
          return false;
@@ -50,7 +50,7 @@ class ObjectReports extends ObjectBaseClass
 
       // First we verify that the parameter and identifier match the post fields. 
       if (!array_key_exists(URLParameterNames::INSTANCE,$parameters)){
-         $this->http_response_code = 401;
+         $this->suggested_http_code = 401;
          $this->error = "Missing URL parameters";
          $logger->logError("URL instance parameter is missing");
          return false;
@@ -58,14 +58,14 @@ class ObjectReports extends ObjectBaseClass
       
       $instance = $parameters[URLParameterNames::INSTANCE];
       if ($_POST[POSTFields::INSTITUION_INSTANCE] != $instance){
-         $this->http_response_code = 401;
+         $this->suggested_http_code = 401;
          $this->error = "URL Instance mistmatch";
          $logger->logError("The URL instance for the accessing was " . $_POST[POSTFields::INSTITUION_INSTANCE] . " but $instance was used as a parameter");
          return false;
       }
       
       if ($_POST[POSTFields::INSTITUTION_ID] != $institution){
-         $this->http_response_code = 401;
+         $this->suggested_http_code = 401;
          $this->error = "URL Instance mistmatch";
          $logger->logError("The URL institution for the accessing was " . $_POST[POSTFields::INSTITUTION_ID] . " but $institution was used as an identifier");
          return false;         
@@ -282,6 +282,10 @@ class ObjectReports extends ObjectBaseClass
       // We get the evaluator data
       $evaluator = $vmdc->getAppUser(AppUserType::EVALUATOR);
 
+      // Generate the file zipped file name. 
+      $d = new DateTime();
+      $compressed_filename = $d->format("Y_m_d_H_i_s_u") . ".zip";      
+
       // Set all corresponding fields. 
       $evaluation[TableEvaluations::COL_STUDY_TYPE]  = $study_type;
       $evaluation[TableEvaluations::COL_PORTAL_USER] = $uid;
@@ -295,7 +299,7 @@ class ObjectReports extends ObjectBaseClass
       $evaluation[TableEvaluations::COL_PROTOCOL] = $vmdc->getMetaDataField(MetadataField::PROTOCOL);
       $evaluation[TableEvaluations::COL_RESULTS] = $vmdc->getFinalizedResultString();
       $evaluation[TableEvaluations::COL_QC_GRAPHS] = $vmdc->getInsertableQualityControlGraphValuesString();
-      $evaluation[TableEvaluations::COL_QC_PARAMS] = $vmdc->getInsertableQualityControlParametersString();
+      $evaluation[TableEvaluations::COL_FILE_LINK] = $compressed_filename;
 
       $te = new TableEvaluations($this->con_main);
       $ans= $te->addEvaluation($evaluation);
@@ -315,10 +319,11 @@ class ObjectReports extends ObjectBaseClass
       $aws_bucket  = CONFIG[GlobalConfigS3::GROUP_NAME][GlobalConfigS3::BUCKET];
 
       // It is necessary to generate the zip file again. 
-      $compress_cmd = "cd $workdir; tar -c -z -f $evaluation_id.zip $json_filename";
+      $compress_cmd = "cd $workdir; tar -c -z -f $compressed_filename $json_filename";
+      $logger->logProgress("TAR CMD: $compress_cmd");
       $output = shell_exec($compress_cmd);
       
-      $zipfile = $workdir . "/" . $evaluation_id . ".zip";
+      $zipfile = $workdir . "/" .$compressed_filename;
       if (!is_file($zipfile)){
          $this->suggested_http_code = 500;
          $this->error = "Failed to generate compressed file";
@@ -326,8 +331,7 @@ class ObjectReports extends ObjectBaseClass
          return false;            
       }
       
-      //$aws_command = "aws s3 cp $zipfile s3://$aws_bucket/$base_file_name.zip --profile $aws_profile 2>&1";
-      $aws_command = "aws s3 cp $zipfile s3://$aws_bucket/$base_file_name.zip 2>&1";
+      $aws_command = "aws s3 cp $zipfile s3://$aws_bucket/$zipfile 2>&1";
       $logger->logProgress("AWS CP CMD: $aws_command");
 
       //echoOut(CONFIG[GlobalConfigS3::GROUP_NAME],true);

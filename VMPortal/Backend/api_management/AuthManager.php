@@ -181,7 +181,7 @@
          $tpu = new TablePortalUsers($con_secure);
 
          // Getting the user info for the appropiate email. 
-         $ans = $tpu->getInfoForUser($this->username);
+         $ans = $tpu->getInfoForUser($this->username,true);
          if ($ans === FALSE){
             $this->http_code = 500;
             $this->error = "Error while getting information for " . $this->username . ": " . $tpu->getError();
@@ -348,7 +348,7 @@
          }
 
          $tu = new TablePortalUsers($con_secure);
-         $ans = $tu->getInfoForUser($this->user_id);
+         $ans = $tu->getInfoForUser($this->user_id,true);
          if ($ans === FALSE){
             $this->error = "Failed in authentication of partner " . $this->user_id . ". Reason: " . $tu->getError();
             return false;
