@@ -225,7 +225,6 @@ viewfinishedstudies_btnSend = ENVIAR;
 viewfinishedstudies_waitTitle = Control de Calidad;
 viewfinishedstudies_waitSubTitle = Aguarde mientra se realizan las verificaciones;
 
-
 #********************************* DOCTOR INFORMATION *********************************
 viewdrinfo_title = Perfíl del Evaluador;
 viewdrinfo_subtitle = Por favor, complete la siguiente información;
@@ -379,6 +378,7 @@ error_db_timeout = Se excedió el tiempo<br>de espera|El servidor tardó demasia
 error_launcher_update = Se debe reiniciar|En 5 segundos el programa se cerrará. Por favor reinicielo.;
 error_qc_verification_failed = El Control de Calidad Falló|Es posible que el archivo de estudio esté corrupto<br>Por favor, cotacte al sorporte de ViewMind;
 error_corrupt_file = Archivo corrupto|El archivo no puede ser enviado a procesamiento por que esta corrupto;
+error_vr_init_failed = Falla en al iniciar VR|No podrá realizar estudios<br>Por favor contacte al equipo de asistencia de ViewMind;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Efectuar los cambios|Los cambios que realizó requieren que se reinicie el programa;

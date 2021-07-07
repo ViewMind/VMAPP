@@ -10,6 +10,7 @@ VMBase {
     readonly property real vmTableWidth: 0.70*mainWindow.width
     readonly property real vmTableHeight: 0.33*mainWindow.height
     readonly property string keybase: "viewpatientlist_"
+    property bool disableStudyStart: false;
 
 
     Dialog {
@@ -196,13 +197,19 @@ VMBase {
             patientList.append(map);
         }
 
-        //        for (var i = 0; i < patientNameList.length; i++){
-        //            var map = patientNameList[i];
-        //            map["vmIsSelected"] = false;
-        //            patientList.append(map);
-        //        }
-
         patientListView.currentIndex = -1;
+
+        if (!flowControl.isVROk()){
+            btnStart.enabled = false;
+            disableStudyStart = true;
+            vmErrorDiag.vmErrorCode = vmErrorDiag.vmErrorCodeNotClose;
+            var titleMsg = viewHome.getErrorTitleAndMessage("error_vr_init_failed");
+            vmErrorDiag.vmErrorMessage = titleMsg[1];
+            vmErrorDiag.vmErrorTitle = titleMsg[0];
+            vmErrorDiag.open();
+            return;
+        }
+
     }
 
     function setCurrentPatient(){
@@ -215,7 +222,7 @@ VMBase {
         //viewMedicalInformation.vmPatientName = displayName;
 
         if (!loader.setSelectedSubject(patientList.get(patientListView.currentIndex).local_id)){
-            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_CREATING_PDIR;
+            vmErrorDiag.vmErrorCode = vmErrorDiag.vmErrorCodeNotClose;
             var titleMsg = viewHome.getErrorTitleAndMessage("error_patient_dir");
             vmErrorDiag.vmErrorMessage = titleMsg[1];
             vmErrorDiag.vmErrorTitle = titleMsg[0];
@@ -486,7 +493,7 @@ VMBase {
             height: mainWindow.height*0.072
             vmText: loader.getStringForKey(keybase+"btnStart");
             vmFont: viewHome.gothamM.name
-            enabled: patientListView.currentIndex !== -1
+            enabled: (patientListView.currentIndex !== -1) && (!disableStudyStart)
             onClicked: {
                 setCurrentPatient();
                 //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;

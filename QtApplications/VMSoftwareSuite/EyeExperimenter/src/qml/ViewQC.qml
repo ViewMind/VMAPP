@@ -115,7 +115,8 @@ VMBase {
 
             var failCode = loader.wasThereAnProcessingUploadError();
 
-            if ( failCode !== vmFAIL_CODE_NONE ){
+            // This check needs to be done ONLY when on this screen.
+            if (( failCode !== vmFAIL_CODE_NONE ) && (swiperControl.currentIndex == swiperControl.vmIndexViewQC)){
 
                 var titleMsg = viewHome.getErrorTitleAndMessage("error_db_server_error");
                 vmErrorDiag.vmErrorMessage = titleMsg[1];

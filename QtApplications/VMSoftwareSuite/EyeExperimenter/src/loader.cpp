@@ -145,7 +145,7 @@ bool Loader::getLoaderError() const {
 }
 
 QString Loader::getWindowTilteVersion(){
-    return Globals::Share::EXPERIMENTER_VERSION;
+    return Globals::Share::EXPERIMENTER_VERSION + " - " + configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
 }
 
 QStringList Loader::getCountryList() {
@@ -352,7 +352,9 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
 
     // Setting the evaluator info. We do it here becuase it is required for the data file comparisons.
     QVariantMap evaluator;
+    //qDebug() << "Creating study file for evaluator" << configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
     QVariantMap evaluator_local_data = localDB.getEvaluatorData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
+    //Debug::prettpPrintQVariantMap(evaluator_local_data);
     evaluator.insert(VMDC::AppUserField::EMAIL,evaluator_local_data.value(LocalDB::APPUSER_EMAIL));
     evaluator.insert(VMDC::AppUserField::NAME,evaluator_local_data.value(LocalDB::APPUSER_NAME));
     evaluator.insert(VMDC::AppUserField::LASTNAME,evaluator_local_data.value(LocalDB::APPUSER_LASTNAME));
@@ -463,7 +465,7 @@ void Loader::addOrModifyEvaluator(const QString &email, const QString &oldemail 
 
 bool Loader::evaluatorLogIn(const QString &username, const QString &password){
     if ( localDB.passwordCheck(username,password) ){
-        configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
+        configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);        
         return true;
     }
     return false;
@@ -471,6 +473,7 @@ bool Loader::evaluatorLogIn(const QString &username, const QString &password){
 
 void Loader::updateCurrentEvaluator(const QString &username){
     configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
+    //Debug::prettpPrintQVariantMap(localDB.getEvaluatorData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR)));
 }
 
 QVariantMap Loader::getCurrentEvaluatorInfo() const{
@@ -568,13 +571,11 @@ QString Loader::getStudyMarkerFor(const QString &study){
 }
 
 QVariantMap Loader::getCurrentSubjectInfo(){
-    //    QVariantMap a = localDB.getSubjectData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
-    //    qDebug() << a;
     return localDB.getSubjectData(configuration->getString(Globals::Share::PATIENT_UID));
 }
 
 void Loader::clearSubjectSelection(){
-    configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,"");
+    configuration->addKeyValuePair(Globals::Share::PATIENT_UID,"");
 }
 
 QString Loader::getCurrentlySelectedAssignedDoctor() const {
@@ -699,6 +700,7 @@ void Loader::receivedRequest(){
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){            
             logger.appendSuccess("Study file was successfully sent");
+            if (!Globals::Debug::DISABLE_RM_SENT_STUDIES) moveProcessedFiletToProcessedDirectory();
         }
     }
     emit(finishedRequest());
@@ -706,6 +708,47 @@ void Loader::receivedRequest(){
 
 qint32 Loader::wasThereAnProcessingUploadError() const {
     return processingUploadError;
+}
+
+void Loader::moveProcessedFiletToProcessedDirectory(){
+    QString sentFile = configuration->getString(Globals::Share::SELECTED_STUDY);
+    // Getting the patient directory.
+    QFileInfo info(sentFile);
+    QString patientWorkingDirectory = info.path();
+    QString baseFileName = info.baseName();
+
+    // Creating the processed directory.
+    QDir(patientWorkingDirectory).mkdir(ExperimentGlobals::SUBJECT_DIR_SENT);
+    QString processedDir = patientWorkingDirectory + "/" + ExperimentGlobals::SUBJECT_DIR_SENT;
+    if (!QDir(processedDir).exists()){
+        logger.appendError("Failed to create patient sent directory at: " + processedDir);
+        return;
+    }
+
+    // Moving the idx file
+    QString idxFile = patientWorkingDirectory + "/" +baseFileName + ".idx";
+    QString jsonFile = patientWorkingDirectory + "/" +baseFileName + ".json";
+
+    if (!QFile::copy(idxFile,processedDir + "/" + baseFileName + ".idx")){
+        logger.appendError("Failed to move " + baseFileName + " idx file from " + patientWorkingDirectory + " to " + processedDir);
+        return;
+    }
+
+    // Movign the JSON File.
+    if (!QFile::copy(jsonFile,processedDir + "/" + baseFileName + ".json")){
+        logger.appendError("Failed to move " + baseFileName + " json file from " + patientWorkingDirectory + " to " + processedDir);
+        return;
+    }
+
+    // Cleaning up the file.
+    if (!QFile(idxFile).remove()){
+        logger.appendError("Failed to remove idx file: " + idxFile);
+    }
+
+    if (!QFile(jsonFile).remove()){
+        logger.appendError("Failed to remove json file: " + jsonFile);
+    }
+
 }
 
 ////////////////////////////////////////////////////////////////// PROTOCOL FUNCTIONS //////////////////////////////////////////////////////////////////

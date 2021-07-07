@@ -377,6 +377,7 @@ error_db_outofevals = Out of Evaluations|All the evaluations allotted to this In
 error_db_timeout = Connection time out|Too much time was spent waiting for the sever to respond<br>Please try again<br>If the problem persists, contact ViewMind in order to solve this problem;
 error_launcher_update = Restart required|In 5 seconds the program will close. Please restart it;
 error_qc_verification_failed = Quality Control Failed|The study file is likely corrupted<br>Please contact ViewMind for support;
+error_vr_init_failed = VR Intialization Failed|You will not be able to do any studies<br>Please contact the ViewMind Support Team for assistance;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Apply Changes|The program must be restarted to apply the selected changes;

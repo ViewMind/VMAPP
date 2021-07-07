@@ -21,7 +21,7 @@ namespace Globals {
 
 #ifdef EYETRACKER_HPOMNICENT
    namespace EyeTracker {
-      static const QString NAME = "HP Omnicent";
+      static const QString NAME = "HP Omnicept";
       static const bool ENABLE_GAZE_FOLLOW = true;
       static const bool IS_VR = true;
       static const QString PROCESSING_PARAMETER_KEY = "hpomnicept";
