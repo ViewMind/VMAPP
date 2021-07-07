@@ -15,7 +15,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     monitor = nullptr;
     renderState = RENDERING_NONE;
     this->setVisible(false);
-
+    vrOK = false;
 
     // Creating the OpenVR Object if so defined.
     if (Globals::EyeTracker::IS_VR){
@@ -27,6 +27,8 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
             logger.appendError("OpenVRControl Object intilization failed. Will not be creating the wait screen");
             return;
         }
+
+        vrOK = true;
 
         // If rendering was started, is now stopped so as not to consume resources.
         openvrco->stopRendering();
@@ -46,7 +48,12 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
         generateWaitScreen("");
 
     }
+    else vrOK = true;
 
+}
+
+bool FlowControl::isVROk() const{
+    return vrOK;
 }
 
 void FlowControl::generateWaitScreen(const QString &message){

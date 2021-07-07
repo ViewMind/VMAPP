@@ -71,6 +71,8 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
             return ans;
         }
 
+        //qDebug() << "comparing " <<  evaluator.value(VMDC::AppUserField::EMAIL).toString() << loggedInUser;
+
         // We only add those that are from a given evaluator. (or if they have errors so that we can see them).
         if (evaluator.value(VMDC::AppUserField::EMAIL).toString() != loggedInUser) continue;
 

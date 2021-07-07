@@ -25,16 +25,16 @@ int main(int argc, char *argv[]){
 
     QString test_file               = "my_test_file.json";
     //QString APIURL                  = "http://192.168.1.12/vmapi";
-    QString APIURL                  = "http://localhost/vmapi";
-    //QString APIURL                  = "https://eu-api.viewmind.ai/";
-    //QString endpoint                = "/institution/operating_information/1";
-    QString endpoint                = "/reports/generate/1";
+    //QString APIURL                  = "http://localhost/vmapi";
+    QString APIURL                  = "https://eu-api.viewmind.ai/";
+    QString endpoint                = "/institution/operating_information/1";
+    //QString endpoint                = "/reports/generate/1";
     QString zipfile                 = "/home/ariel/repos/viewmind_projects/VMTools/RawJSONDataDev/bin/binding2019_12_19_12_54.zip";
     QVariantMap URLParameters;
 
     // Let's add some parameters to the URL
-    //URLParameters.insert("ppkey","gazepoint");
-    URLParameters.insert("instance",0);
+    URLParameters.insert("ppkey","gazepoint");
+    //URLParameters.insert("instance",0);
 
     RESTAPIController rest_controller;
     rest_controller.setBaseAPI(APIURL);
@@ -66,11 +66,11 @@ int main(int argc, char *argv[]){
 //    writer << QString(json.toJson());
 //    file.close();
 
-    // Lets append the file.
-    if (!rest_controller.appendFileForRequest(zipfile,"FileToProcess")){
-        qDebug() << "Error appending file: " << rest_controller.getErrors();
-        return 0;
-    }
+//    // Lets append the file.
+//    if (!rest_controller.appendFileForRequest(zipfile,"FileToProcess")){
+//        qDebug() << "Error appending file: " << rest_controller.getErrors();
+//        return 0;
+//    }
 
 //    // And now let's append an image file
 //    if (!rest_controller.appendFileForRequest(imageFile,"image")){

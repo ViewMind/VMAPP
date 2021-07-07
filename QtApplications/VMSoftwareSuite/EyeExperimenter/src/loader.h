@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QUrl>
+#include <QFileInfo>
 #include <QQuickWindow>
 #include <QSystemSemaphore>
 #include <QSharedMemory>
@@ -134,9 +135,11 @@ private:
     // Sets the language for program.
     void changeLanguage();
 
+    // Moves sent files to the processed directory
+    void moveProcessedFiletToProcessedDirectory();
+
     static const qint32 FAIL_CODE_NONE = 0;
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
-
 
 };
 

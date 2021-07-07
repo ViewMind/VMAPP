@@ -113,7 +113,7 @@ QString APIClient::getError() const{
 
 
 void APIClient::gotReply(){
-    retdata.clear();;
+    retdata.clear();
     QByteArray raw_reply = rest_controller.getReplyData();
     if (rest_controller.didReplyHaveAnError()){
         error = "Request reply had errors:\n   " + rest_controller.getErrors().join("\n   ");

@@ -48,7 +48,12 @@ void Control::testEyeTracking(){
         ct.setTargetTest();
     }
     else{
-        if (!openvrco->isRendering()) openvrco->startRendering();
+        if (!openvrco->isRendering()) {
+            if (!openvrco->startRendering()){
+                qDebug() << "Failed to start rendering";
+                return;
+            }
+        }
         QSize s = getRenderingSize();
         ct.initialize(s.width(),s.height());
 
@@ -75,7 +80,13 @@ void Control::testEyeTracking(){
 void Control::startCalibration(){
     if (selectedEyeTracker == ET_HP_REBERV){
 
-        if (!openvrco->isRendering()) openvrco->startRendering();
+        if (!openvrco->isRendering()) {
+            if (!openvrco->startRendering()){
+                qDebug() << "Failed to start rendering";
+                return;
+            }
+        }
+
         // CRITICAL: Using the rendering size must be obtained AFTER we start rendering.
         QSize s = getRenderingSize();
 

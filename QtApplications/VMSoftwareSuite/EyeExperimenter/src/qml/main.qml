@@ -172,6 +172,8 @@ Window {
 
         onCurrentIndexChanged: {
 
+            //console.log("Switching to" + currentIndex);
+
             switch(currentIndex){
             case vmIndexHome:
                 loader.logOut();

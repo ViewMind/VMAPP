@@ -16,7 +16,9 @@ VMBase {
         target: loader
         onFinishedRequest: {
             // Close the connection dialog and open the user selection dialog.
+            //console.log("Finished request")
             if (loader.getLastAPIRequest() === vmAPI_OPINFO_REQUEST){
+                //console.log("Last request was an OP INFO call")
                 connectionDialog.close();
                 viewDrSelection.open();
             }

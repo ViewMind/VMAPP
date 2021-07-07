@@ -53,6 +53,7 @@ public:
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE void stopRenderingVR();
     Q_INVOKABLE void generateWaitScreen(const QString &message);
+    Q_INVOKABLE bool isVROk() const;
 
     // The image to be shown.
     QImage image() const;
@@ -105,6 +106,9 @@ private:
 
     // Open VR Control object if VR is ENABLED.
     OpenVRControlObject *openvrco;
+
+    // Flag if the open vr object could be properly initialized.
+    bool vrOK;
 
     // Definining the render state for VR
     RenderState renderState;
