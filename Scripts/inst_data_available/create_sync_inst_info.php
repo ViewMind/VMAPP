@@ -160,7 +160,7 @@
        }
        
        // Getting the last update date. 
-       $previous_date = '2020-04-01';
+       $previous_date = '2017-04-01';
        if (array_key_exists($inst_uid,$previous_sync_dates)){
           $previous_date = $previous_sync_dates[$inst_uid];          
        }
@@ -227,7 +227,7 @@
           //$logger->logProgress("   OUPUT REP: $inst_dir/$protocol");
           
           // Download the information. 
-          $cmd = "aws s3 cp s3://viewmind-raw-eye-data/$hashuid $inst_protocol_repo/$hashuid --recursive";
+          $cmd = "aws s3 cp s3://viewmind-raw-eye-data/$hashuid $inst_protocol_repo/$puid --recursive";
           $logger->logProgress("   DL CMD: $cmd");
           if ($local_key){
              $logger->logProgress("LOCALLY: Just outputting command\n   -> $cmd");
