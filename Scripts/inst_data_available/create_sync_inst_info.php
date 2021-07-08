@@ -302,7 +302,7 @@
        }
        
        $logger->logProgress("   Finshed Data Processing. Starting Information Transfer");
-       $cmd = "scp -r $inst_dir root@$IP:/home/$inst_user; ssh root@$IP \"chown -R $inst_user:$inst_user /home/$inst_user\"";
+       $cmd = "scp -r $inst_dir root@$IP:/home/complete/$inst_user; ssh root@$IP \"chown -R $inst_user:$inst_user /home/complete/$inst_user\"";
        $logger->logProgress("   TRANSFER CMD: $cmd");
        if (!$local_key){
          $shell_output = shell_exec($cmd);  
