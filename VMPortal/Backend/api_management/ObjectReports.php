@@ -298,6 +298,7 @@ class ObjectReports extends ObjectBaseClass
       $evaluation[TableEvaluations::COL_SUBJECT_ID] = $subject[TableSubject::COL_UNIQUE_ID];
       $evaluation[TableEvaluations::COL_PROTOCOL] = $vmdc->getMetaDataField(MetadataField::PROTOCOL);
       $evaluation[TableEvaluations::COL_RESULTS] = $vmdc->getFinalizedResultString();
+      $evaluation[TableEvaluations::COL_QC_PARAMS] = $vmdc->getQCParametersAsJSONString();
       $evaluation[TableEvaluations::COL_QC_GRAPHS] = $vmdc->getInsertableQualityControlGraphValuesString();
       $evaluation[TableEvaluations::COL_FILE_LINK] = $compressed_filename;
 

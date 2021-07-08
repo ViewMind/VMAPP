@@ -202,6 +202,10 @@ class ViewMindDataContainer {
       return true;
    }
 
+   function getQCParametersAsJSONString(){
+      return json_encode($this->data[MainFields::QC_PARAMETERS]);
+   }
+
    function getValidEyeForCurrentStudy(){
 
       if ($this->current_study == ""){
