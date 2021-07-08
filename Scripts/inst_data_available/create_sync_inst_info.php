@@ -238,21 +238,21 @@
           }
           
           // Listing work directories directories. 
-          $work_dirs = scandir("$inst_protocol_repo/$hashuid");
+          $work_dirs = scandir("$inst_protocol_repo/$puid");
           //var_dump($work_dirs);
           if (empty($work_dirs)){
-             $logger->logProgress("WARNING: SKIPPING due to empty directory: $inst_protocol_repo/$hashuid");
+             $logger->logProgress("WARNING: SKIPPING due to empty directory: $inst_protocol_repo/$puid");
              continue;
           }
 
           if (count($work_dirs) < 3){
-            $logger->logProgress("NO STUDY WARNING: Directory $inst_protocol_repo/$hashuid seems to have no studies");
+            $logger->logProgress("NO STUDY WARNING: Directory $inst_protocol_repo/$puid seems to have no studies");
             continue;
           }
           
           // Required for full path creation
           for ($d = 2; $d < count($work_dirs); $d++){
-             $work_dir = "$CURRENT_PATH/$inst_protocol_repo/$hashuid/" .  $work_dirs[$d];
+             $work_dir = "$CURRENT_PATH/$inst_protocol_repo/$puid/" .  $work_dirs[$d];
              $eye_rep_config = $work_dir . "/eye_rep_gen_conf";
              if (!is_file($eye_rep_config)) {
                 // PATCH DUE to old bug that some times generated eye_rep_gen_conf. instead of eye_rep_gen_conf. 
