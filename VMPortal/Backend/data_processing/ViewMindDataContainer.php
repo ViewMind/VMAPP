@@ -118,12 +118,12 @@ class ViewMindDataContainer {
 
       if (!StudyField::validate($field)){
          $this->error = "$field is an invalid study field field";
-         return "";
+         return false;
       }
 
       if (!array_key_exists($field,$this->data[MainFields::STUDIES][$this->current_study])){
          $this->error = "$field does not exist for study " . $this->current_study;
-         return "";
+         return false;
       }
 
       if ($this->current_study == ""){
@@ -204,6 +204,14 @@ class ViewMindDataContainer {
 
    function getQCParametersAsJSONString(){
       return json_encode($this->data[MainFields::QC_PARAMETERS]);
+   }
+
+   function getStudyConfigAsJSONString(){
+      $ret = array();
+      foreach ($this->available_studies as $study){
+         $ret[$study] = $this->data[MainFields::STUDIES][$study][StudyField::STUDY_CONFIGURATION];
+      }
+      return json_encode($ret);
    }
 
    function getValidEyeForCurrentStudy(){
@@ -324,6 +332,7 @@ class ViewMindDataContainer {
       }
       return true;      
    }
+
 
    function getTrial($trial_index){
 

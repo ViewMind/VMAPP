@@ -300,6 +300,7 @@ class ObjectReports extends ObjectBaseClass
       $evaluation[TableEvaluations::COL_RESULTS] = $vmdc->getFinalizedResultString();
       $evaluation[TableEvaluations::COL_QC_PARAMS] = $vmdc->getQCParametersAsJSONString();
       $evaluation[TableEvaluations::COL_QC_GRAPHS] = $vmdc->getInsertableQualityControlGraphValuesString();
+      $evaluation[TableEvaluations::COL_STUDY_CONFIG] = $vmdc->getStudyConfigAsJSONString();
       $evaluation[TableEvaluations::COL_FILE_LINK] = $compressed_filename;
 
       $te = new TableEvaluations($this->con_main);

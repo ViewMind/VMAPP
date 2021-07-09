@@ -149,7 +149,7 @@ class Processing
       // Specific NBack computations
       if (($study == Study::NBACKRT) || ($study == Study::NBACKMS)){
 
-         $hit_boxes = $this->processing_parameters[ProcessingParameter::GONOGO_HITBOXES];
+         $hit_boxes = $this->processing_parameters[ProcessingParameter::NBACK_HITBOXES];
    
          //echo "L Fixations Trial ID: " . $trial[TrialFields::ID] . "\n";
          $result = TargetHitSearcher::computeFixationBasedNBackValues($trial,$hit_boxes ,$trial_type,$study);
@@ -161,6 +161,7 @@ class Processing
          //var_dump($result);
          $trial_values[TrialComputedValueTypes::COMPLETE_SEQUENCE_FIXATION_L] = $result[DataSetField::FIXATIONS_L][TargetHitSearcher::COMPUTE_RET_SEQ_COMPLETE];   
          $trial_values[TrialComputedValueTypes::COMPLETE_SEQUENCE_FIXATION_R] = $result[DataSetField::FIXATIONS_R][TargetHitSearcher::COMPUTE_RET_SEQ_COMPLETE];
+         $trial[TrialField::TRIAL_VALUES] = $trial_values;
       }
       
       // // Specific Binding computations
@@ -239,7 +240,7 @@ class Processing
          }
       }
 
-      $this->study_values[StudyComputedValue::DURATION] = $end_study_timestamp - $study_start_timestamp;
+      $this->study_values[StudyField::DURATION] = $end_study_timestamp - $study_start_timestamp;
 
       // Specific Binding computations
       if (($study == Study::BINDING_BC) || ($study == Study::BINDING_UC)){
@@ -272,7 +273,7 @@ class Processing
             }
          }
 
-         $this->study_values[StudyComputedValue::BINDING_SCORE] = $binding_score;
+         $this->study_values[StudyField::BINDING_SCORE] = $binding_score;
    
       }      
 

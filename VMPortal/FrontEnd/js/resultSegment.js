@@ -40,7 +40,7 @@ class ResultSegment {
       var x,y;
 
       // Rendering the title
-      var font_base_size = (this.h)*0.1;
+      var font_base_size = (this.h)*0.15;
       var font = ' font: ' + font_base_size+ 'px GothamBold '
       x = this.x + this.w*this.#AIR_MARGIN_LEFT;
       y = this.y + this.h*this.#AIR_TOP;

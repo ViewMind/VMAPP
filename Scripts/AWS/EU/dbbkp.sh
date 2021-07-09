@@ -1,8 +1,8 @@
 #!/bin/bash
 
-BASTION_IP="3.139.215.159"
+BASTION_IP="3.122.211.57"
 BASTION_USER_NAME="ec2-user"
-BASTION_SRC_FOLDER="/home/ec2-user/viewmind_projects/Scripts/AWS"
+BASTION_SRC_FOLDER="/home/ec2-user/"
 BASTION_WORK_DIR="$BASTION_SRC_FOLDER/SQL_BKPS"
 
 CURRENT_FOLDER=$(date +"%Y_%m_%d_%H_%M")
@@ -12,8 +12,8 @@ BASTION_BKP_DIR="$BASTION_WORK_DIR/$CURRENT_FOLDER"
 DEST="bkpProd"
 
 # Array of database names to Backup. 
-declare -a DB_NAMES=("viewmind_data" "viewmind_id" "viewmind_patdata" "viewmind_dashboard")
-declare -a CNF_FILES=("vm-data.cnf"  "vm-id.cnf"   "vm-patdata.cnf"    "vm-dashboard.cnf")
+declare -a DB_NAMES=("vm_main" "vm_secure")
+declare -a CNF_FILES=("vm_main.cnf"  "vm_secure.cnf")
 
 # Prepraing remote
 echo "Preparing remote ..."
@@ -42,7 +42,7 @@ for (( i=0; i<$total; i++ )); do
 
    # Running the command. 
    echo "   Backing up DB: $DB_NAME"
-   # ssh $BASTION_USER_NAME@$BASTION_IP "$BKP_CMD"
+   ssh $BASTION_USER_NAME@$BASTION_IP "$BKP_CMD"
    
 done
 
@@ -57,6 +57,9 @@ for (( i=0; i<$total; i++ )); do
 
    # The corresponding backup file.
    SQL_FILE="$DEST/$CURRENT_FOLDER/$DB_NAME.sql"
+   
+   # Replace the enconding name. 
+   sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' $SQL_FILE
 
    # Running the command.
    echo "   Restoring $DB_NAME locally ..."   

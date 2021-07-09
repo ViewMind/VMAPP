@@ -31,7 +31,8 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
       $input  = $csv_array[Study::BINDING_BC] . " " . $csv_array[Study::BINDING_UC];
 
       // No checks are done, because they were done previous to calling this function. 
-      $vmdc->setRawDataAccessPathForStudy($study);
+      $study = Study::BINDING_BC;
+      $vmdc->setRawDataAccessPathForStudy(Study::BINDING_BC); // This is the one we need for the binding score, later on. 
       $study_config = $vmdc->getStudyField(StudyField::STUDY_CONFIGURATION);
 
       if ($study_config[StudyParameter::NUMBER_TARGETS]  == BindingTargetCount::THREE) $rscript = RScriptNames::BINDING_3_SCRIPT;
@@ -83,10 +84,32 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
          return "Missing the following result fields for study $study: " . implode(",",$expected_output_fields);
       }
 
+      // Some studies require extra steps after R Processing.
+      $ans = ExtraProcessing($vmdc,$results,$study);
+      if ($ans != "") return $ans;
+
+      // Then we finally set the results. 
       $vmdc->setFinalizedResults($results);
 
       return "";
    }
 
 }
+
+
+function ExtraProcessing(ViewMindDataContainer &$vmdc, &$results, $study){
+   
+   if (($study == Study::BINDING_BC)){
+      // At this instance on the Binding Requires an extra processing step
+      // which basically boils down to the BC Correct answer score to the report. 
+      $binding_score = $vmdc->getStudyField(StudyField::BINDING_SCORE);
+      if ($binding_score === FALSE){
+         return "Could not get the BC Binding Score. Reason: " . $vmdc->getError();
+      }
+      $results[FinalizedStudyNames::BINDING_BEHAVIOURAL_RESPONSE] = $binding_score[BindingScore::CORRECT];
+   }
+
+   return "";
+}
+
 ?>

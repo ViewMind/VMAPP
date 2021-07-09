@@ -301,11 +301,6 @@ abstract class TrialComputedValueTypes extends TypedString {
    const COMPLETE_SEQUENCE_FIXATION_R            = "seq_complete_r";
 }
 
-abstract class StudyComputedValue extends TypedString {
-   const DURATION                                = "duration";
-   const BINDING_SCORE                           = "binding_score";
-}
-
 abstract class BindingScore extends TypedString {
    const TEST_CORRECT                            = "test_correct";
    const TEST_WRONG                              = "test_wrong";
