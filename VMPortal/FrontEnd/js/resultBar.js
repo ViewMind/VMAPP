@@ -138,6 +138,12 @@ var ResultBar = {
    
     computeSegmentIndicator: function (value, break_points,higher_better){
    
+
+      // console.log(value)
+      // console.log(break_points)
+      // console.log(higher_better)
+      // console.log("=====>")
+
       var resBarIndex = -1;
       for (var i = 0; i < break_points.length; i++){
          if (value < break_points[i]){
