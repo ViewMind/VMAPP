@@ -24,8 +24,8 @@ Dialog {
 
 
     function logInAttempt(){
-        if (loader.evaluatorLogIn(labelDrProfile.vmCurrentText,drPassword.getText())){
-//        if (loader.evaluatorLogIn("aarelovich@gmail.com","1234")){
+//        if (loader.evaluatorLogIn(labelDrProfile.vmCurrentText,drPassword.getText())){
+        if (loader.evaluatorLogIn("aarelovich@gmail.com","1234")){
 
             // Updating the text of the doctor menu.
             viewHome.updateDrMenuText();

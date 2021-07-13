@@ -36,9 +36,13 @@ Rectangle {
     Rectangle{
         id: textContainer
         height: vmBanner.height
-        width: parent.width - imgDrAvatar.width
+        width: parent.width
         anchors.left: parent.left
         anchors.top: parent.top
+
+        onWidthChanged: repositionImage()
+        onHeightChanged: repositionImage()
+
         Text{
             id: doctorsName
             anchors.fill: parent
@@ -49,14 +53,20 @@ Rectangle {
             color: "#88B2D0"
             font.family: vmFont
         }
-    }
 
-    Image {
-        id: imgDrAvatar
-        source: "qrc:/images/AVATAR_CELESTE.png"
-        anchors.verticalCenter: textContainer.verticalCenter
-        anchors.left: textContainer.right
-        anchors.leftMargin: -20
+        Image {
+            id: imgDrAvatar
+            source: "qrc:/images/AVATAR_CELESTE.png"
+            scale: viewHome.vmScale
+            transformOrigin: Item.TopLeft
+            onScaleChanged: textContainer.repositionImage()
+        }
+
+        function repositionImage(){
+            imgDrAvatar.y = (textContainer.height - imgDrAvatar.height*viewHome.vmScale)/2
+            imgDrAvatar.x = textContainer.width - imgDrAvatar.width*viewHome.vmScale - 0.05*textContainer.width;
+        }
+
     }
 
     MouseArea{

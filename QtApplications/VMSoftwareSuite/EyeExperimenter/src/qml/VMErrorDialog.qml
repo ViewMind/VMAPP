@@ -19,6 +19,9 @@ Dialog {
     height: mainWindow.height*0.87
     closePolicy: Popup.NoAutoClose
 
+    onWidthChanged: repositionImage();
+    onHeightChanged: repositionImage();
+
     contentItem: Rectangle {
         id: rectDialog
         anchors.fill: parent
@@ -67,10 +70,11 @@ Dialog {
     Image{
         id: diagImage
         source: "qrc:/images/ERROR_ILUS.png"
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top:  diagMessage.bottom
-        anchors.topMargin: mainWindow.height*0.051
         scale: viewHome.vmScale
+        transformOrigin: Item.TopLeft
+        onScaleChanged: {
+            repositionImage();
+        }
     }
 
     // The Ok.
@@ -79,13 +83,18 @@ Dialog {
         vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
         vmText: vmErrorButtonMsg
         vmFont: gothamM.name
-        anchors.top: diagImage.bottom
-        anchors.topMargin: mainWindow.height*0.058
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: mainWindow.height*0.06
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             close();
             if (vmErrorCode == vmErrorCodeClose) Qt.quit()
         }
+    }
+
+    function repositionImage(){
+        diagImage.x = (errorDiag.width - diagImage.width*viewHome.vmScale)/2;
+        diagImage.y = (errorDiag.height - diagImage.height*viewHome.vmScale)/2;
     }
 
 

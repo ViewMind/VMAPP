@@ -97,7 +97,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     }
 
 
-    if (localDB.processingParametersPresent()){
+    if (!localDB.processingParametersPresent()){
         logger.appendWarning("Processing parameters are not present in local database. Will not be able to do any studies");
     }
 

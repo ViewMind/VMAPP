@@ -222,6 +222,14 @@ VMBase {
             }
         }
 
+        onWidthChanged: {
+            connectionDialog.repositionSlideAnimation();
+        }
+
+        onHeightChanged: {
+            connectionDialog.repositionSlideAnimation();
+        }
+
         // The instruction text
         Text {
             id: diagConnectionTitle
@@ -251,11 +259,17 @@ VMBase {
         AnimatedImage {
             id: slideAnimation
             source: "qrc:/images/LOADING.gif"
-            anchors.top: diagMessage.bottom
-            anchors.topMargin: mainWindow.height*0.043
-            anchors.horizontalCenter: parent.horizontalCenter
             scale: viewHome.vmScale
             visible: true
+            transformOrigin: Item.TopLeft
+            onScaleChanged: {
+                connectionDialog.repositionSlideAnimation();
+            }
+        }
+
+        function repositionSlideAnimation(){
+            slideAnimation.y = (connectionDialog.height - slideAnimation.height*vmScale)/2
+            slideAnimation.x = (connectionDialog.width - slideAnimation.width*viewHome.vmScale)/2
         }
 
     }
@@ -286,14 +300,19 @@ VMBase {
     Image {
         id: headDesign
         source: "qrc:/images/ILUSTRACION.png"
-        anchors{
-            left: parent.left
-            leftMargin: mainWindow.width*0.113
-            bottom: parent.bottom
-            bottomMargin: mainWindow.height*0.277
-        }
         scale: vmScale
+        transformOrigin: Item.TopLeft
+        onScaleChanged: {
+
+            // Scaling makes it a bit unpredictable where the anchors are located so the x and y position are corrected here.
+            headDesign.y = (mainWindow.height - headDesign.height*vmScale)/2
+            headDesign.x = mainWindow.width*0.05
+
+            // Also the title's x position is computed accordingly
+            slideTitle.x = headDesign.x + headDesign.width*vmScale + mainWindow.width*0.058
+        }
     }
+
 
     // The configure settings button
     Button {
@@ -335,8 +354,6 @@ VMBase {
         font.pixelSize: 43*viewHome.vmScale
         anchors.top:  vmBanner.bottom
         anchors.topMargin: mainWindow.height*0.307
-        anchors.left: headDesign.right
-        anchors.leftMargin: mainWindow.width*0.058
         color: "#297fca"
         text: loader.getStringForKey(keysearch+"slideTitle");
     }
@@ -345,9 +362,8 @@ VMBase {
         id: btnGetStarted
         vmText: loader.getStringForKey(keysearch+"btnGetStarted");
         vmFont: gothamM.name
+        x: slideTitle.x
         anchors{
-            left: headDesign.right
-            leftMargin: mainWindow.width*0.058
             top: slideTitle.bottom
             topMargin: mainWindow.height*0.033
         }
@@ -358,7 +374,6 @@ VMBase {
             connectionDialog.vmTitle = title_and_text[0];
             connectionDialog.open();
             loader.requestOperatingInfo();
-            //
         }
     }
 }

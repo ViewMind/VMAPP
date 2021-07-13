@@ -169,7 +169,7 @@ Dialog {
     VMButton{
         id: diagBtnOK
         vmFont: viewHome.gothamM.name
-        vmSize: [120, 49]
+        vmSize: [mainWindow.width*0.09, mainWindow.height*0.068]
         vmText: loader.getStringForKey(keybase+"diagBtnOK");
         anchors.bottom: parent.bottom;
         anchors.bottomMargin: mainWindow.height*0.02;
@@ -185,7 +185,7 @@ Dialog {
     VMButton{
         id: diagBtnAbout
         vmFont: viewHome.gothamM.name
-        vmSize: [140, 49]
+        vmSize: [mainWindow.width*0.09, mainWindow.height*0.068]
         vmInvertColors: true
         vmText: loader.getStringForKey(keybase+"diagAbout");
         anchors.bottom: parent.bottom;

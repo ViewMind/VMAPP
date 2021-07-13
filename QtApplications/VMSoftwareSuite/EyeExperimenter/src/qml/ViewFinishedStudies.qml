@@ -42,6 +42,14 @@ VMBase {
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
 
+        onWidthChanged: {
+            processingQCDialog.repositionSlideAnimation()
+        }
+
+        onHeightChanged: {
+            processingQCDialog.repositionSlideAnimation();
+        }
+
         contentItem: Rectangle {
             id: rectConnectionDialog
             anchors.fill: parent
@@ -75,16 +83,24 @@ VMBase {
             color: "#297fca"
             text:  processingQCDialog.vmMessage;
             z: 2 // Sometimes the border of the image covers the text. This fixes it.
+            onScaleChanged: {
+                processingQCDialog.repositionSlideAnimation()
+            }
         }
 
         AnimatedImage {
             id: slideAnimation
             source: "qrc:/images/LOADING.gif"
-            anchors.top: diagMessage.bottom
-            anchors.topMargin: mainWindow.height*0.043
-            anchors.horizontalCenter: parent.horizontalCenter
             scale: viewHome.vmScale
             visible: true
+            onScaleChanged: {
+                processingQCDialog.repositionSlideAnimation()
+            }
+        }
+
+        function repositionSlideAnimation(){
+            slideAnimation.y = (processingQCDialog.height - slideAnimation.height*vmScale)/2
+            slideAnimation.x = (processingQCDialog.width - slideAnimation.width*viewHome.vmScale)/2
         }
 
     }

@@ -3,11 +3,11 @@ import QtQuick.Controls 2.3
 
 Button{
 
-    id: vmPlusButton
+    id: vmPencilButton
     height: mainWindow.height*0.058
     width:  4*height/3;
 
-    scale: vmPlusButton.pressed? 0.8:1
+    scale: vmPencilButton.pressed? 0.8:1
 
     property double vmStickWidth: width*0.08
     property double vmStickLength: height*0.5
@@ -18,20 +18,31 @@ Button{
         }
     }
 
+    onWidthChanged: repositionPencil()
+    onHeightChanged: repositionPencil()
+
     background: Rectangle {
         id: rectArea
         radius: 6
-        border.color: enabled? (vmPlusButton.pressed ? "#4984b3" : "#297FCA") : ("#bcbec0")
-        color: enabled? (vmPlusButton.pressed ? "#4984b3" : "#297FCA") : "#bcbec0"
+        border.color: enabled? (vmPencilButton.pressed ? "#4984b3" : "#297FCA") : ("#bcbec0")
+        color: enabled? (vmPencilButton.pressed ? "#4984b3" : "#297FCA") : "#bcbec0"
         anchors.fill: parent
     }
     contentItem: Item{
-        id: plus
-        anchors.centerIn: parent
+        id: pencil
+        anchors.fill: parent
         Image {
-            id: headDesign
+            id: pencilImage
             source: "qrc:/images/edit_icon.png"
-            anchors.centerIn: parent
+            scale: viewHome.vmScale
+            transformOrigin: Item.TopLeft
+            onScaleChanged: vmPencilButton.repositionPencil();
         }
     }
+
+    function repositionPencil() {
+        pencilImage.x = (vmPencilButton.width - pencilImage.width*viewHome.vmScale)/2
+        pencilImage.y = (vmPencilButton.height - pencilImage.height*viewHome.vmScale)/2
+    }
+
 }

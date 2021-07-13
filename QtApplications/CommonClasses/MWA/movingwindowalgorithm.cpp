@@ -292,12 +292,17 @@ Fixation MovingWindowAlgorithm::onlineCalcuationOfFixationPoint(){
     f.pupilZeroCount = 0;
     f.sentence_char = 0;
     f.sentence_word = 0;
+    qint32 valid_chars = 0;
     for (qint32 i = 0; i < onlinePointsForFixation.size(); i++){
         f.x = f.x + onlinePointsForFixation.at(i).x;
         f.y = f.y + onlinePointsForFixation.at(i).y;
         f.pupil = f.pupil + onlinePointsForFixation.at(i).pupil;
-        f.sentence_char = f.sentence_char + onlinePointsForFixation.at(i).schar;
-        f.sentence_word = f.sentence_word + onlinePointsForFixation.at(i).word;
+        // We need to make sure that in a reading experiment these are valid (fall within the sentence). They will be -1 if they are not.
+        if (onlinePointsForFixation.at(i).schar >= 0){
+            valid_chars++;
+            f.sentence_char = f.sentence_char + onlinePointsForFixation.at(i).schar;
+            f.sentence_word = f.sentence_word + onlinePointsForFixation.at(i).word;
+        }
         if (qAbs(f.pupil) < PUPIL_ZERO_TOL){
             f.pupilZeroCount++;
         }
@@ -306,6 +311,16 @@ Fixation MovingWindowAlgorithm::onlineCalcuationOfFixationPoint(){
     f.x = f.x/size;
     f.y = f.y/size;
     f.pupil = f.pupil/size;
+
+    if (valid_chars > 0){
+        f.sentence_char = f.sentence_char/valid_chars;
+        f.sentence_word = f.sentence_word/valid_chars;
+    }
+    else {
+        f.sentence_char = 0;
+        f.sentence_word = 0;
+    }
+
     f.fixStart = onlinePointsForFixation.first().timestamp;
     f.fixEnd   = onlinePointsForFixation.last().timestamp;
     f.duration = f.fixEnd - f.fixStart;

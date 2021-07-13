@@ -24,6 +24,9 @@ void APIClient::configure(const QString &institution_id, const QString &instance
 }
 
 bool APIClient::requestOperatingInfo(){
+
+    error = "";
+
     // Clearing everything but the URL.
     rest_controller.resetRequest();
 
@@ -46,6 +49,9 @@ bool APIClient::requestOperatingInfo(){
 }
 
 bool APIClient::requestReportProcessing(const QString &jsonFile){
+
+
+    error = "";
 
     // Before sending the file must be compressed. We use tar.exe.   
     // First we need to get the working directory.

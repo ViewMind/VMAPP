@@ -16,6 +16,9 @@ Rectangle {
         vmDrName = evaluator.lastname + ",\n" + evaluator.name
     }
 
+    onWidthChanged: repositionImage();
+    onHeightChanged: repositionImage();
+
     Text{
         id: doctorsName
         text: vmDrName;
@@ -24,14 +27,16 @@ Rectangle {
         font.pixelSize: 13*viewHome.vmScale
         color: "#ffffff"
         verticalAlignment: Text.AlignVCenter
-        anchors.left: imgDrAvatar.right;
-        anchors.leftMargin: mainWindow.width*0.016
     }
 
     Image {
         id: imgDrAvatar
         source: "qrc:/images/AVATAR_MEDICO.png"
-        anchors.verticalCenter: parent.verticalCenter
+        scale: viewHome.vmScale
+        transformOrigin: Item.TopLeft
+        onScaleChanged: {
+            repositionImage();
+        }
     }
 
     MouseArea{
@@ -39,5 +44,11 @@ Rectangle {
         onClicked: {
             showMenu()
         }
+    }
+
+    function repositionImage(){
+        imgDrAvatar.x = 0;
+        imgDrAvatar.y = (container.height - imgDrAvatar.height*viewHome.vmScale)/2;
+        doctorsName.x = mainWindow.width*0.016 + imgDrAvatar.width*viewHome.vmScale;
     }
 }

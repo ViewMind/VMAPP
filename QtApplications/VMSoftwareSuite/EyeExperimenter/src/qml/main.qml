@@ -28,6 +28,7 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
         //swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
         //swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
+        //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
         //viewVRDisplay.testCalibrationFailedDialog();
         //viewAbout.open();
     }
@@ -205,11 +206,6 @@ Window {
 
         }
 
-    }
-
-    onClosing:{
-        //console.log("On window closing");
-        flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
     }
 
 }

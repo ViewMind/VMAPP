@@ -143,6 +143,14 @@ VMBase {
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
 
+        onWidthChanged: {
+            connectionDialog.repositionSlideAnimation();
+        }
+
+        onHeightChanged: {
+            connectionDialog.repositionSlideAnimation();
+        }
+
         contentItem: Rectangle {
             id: rectConnectionDialog
             anchors.fill: parent
@@ -181,11 +189,16 @@ VMBase {
         AnimatedImage {
             id: slideAnimation
             source: "qrc:/images/LOADING.gif"
-            anchors.top: diagMessage.bottom
-            anchors.topMargin: mainWindow.height*0.043
-            anchors.horizontalCenter: parent.horizontalCenter
-            scale: viewHome.vmScale
+            scale: viewHome.vmScale            
             visible: true
+            onScaleChanged: {
+                connectionDialog.repositionSlideAnimation();
+            }
+        }
+
+        function repositionSlideAnimation(){
+            slideAnimation.y = (connectionDialog.height - slideAnimation.height*vmScale)/2
+            slideAnimation.x = (connectionDialog.width - slideAnimation.width*viewHome.vmScale)/2
         }
 
     }
