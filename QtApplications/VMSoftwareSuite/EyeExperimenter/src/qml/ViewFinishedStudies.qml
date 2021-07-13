@@ -83,15 +83,13 @@ VMBase {
             color: "#297fca"
             text:  processingQCDialog.vmMessage;
             z: 2 // Sometimes the border of the image covers the text. This fixes it.
-            onScaleChanged: {
-                processingQCDialog.repositionSlideAnimation()
-            }
         }
 
         AnimatedImage {
             id: slideAnimation
             source: "qrc:/images/LOADING.gif"
             scale: viewHome.vmScale
+            transformOrigin: Item.TopLeft
             visible: true
             onScaleChanged: {
                 processingQCDialog.repositionSlideAnimation()
@@ -99,7 +97,7 @@ VMBase {
         }
 
         function repositionSlideAnimation(){
-            slideAnimation.y = (processingQCDialog.height - slideAnimation.height*vmScale)/2
+            slideAnimation.y = (processingQCDialog.height - slideAnimation.height*viewHome.vmScale)/2
             slideAnimation.x = (processingQCDialog.width - slideAnimation.width*viewHome.vmScale)/2
         }
 
@@ -305,7 +303,7 @@ VMBase {
             vmFont: viewHome.gothamM.name
             enabled: studyListView.currentIndex !== -1
             onClicked: {
-                loader.setCurrentStudyFileForQC(studiesList.get(studyListView.currentIndex).file_path);
+                //loader.setCurrentStudyFileForQC(studiesList.get(studyListView.currentIndex).file_path);
                 //swiperControl.currentIndex = swiperControl.vmIndexViewQC;
                 processingQCDialog.open();
             }

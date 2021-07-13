@@ -7,8 +7,11 @@ Rectangle {
     color: "#EDEDEE"
 
     readonly property int vmTRACKER_ITEM_STATE_DONE:    0
-    readonly property int vmTRACKER_ITEM_STATE_NOTDONE: 1
+    readonly property int vmTRACKER_ITEM_STATE_NOTDONE: 1    
     readonly property int vmTRACKER_ITEM_STATE_CURRENT: 2
+
+
+    readonly property double vmSpaceBetweenNumberAndTitle: 0.005
 
     property int vmOrderInTracker: 1
     property int vmTrackerItemState: vmTRACKER_ITEM_STATE_NOTDONE
@@ -17,10 +20,14 @@ Rectangle {
     property string vmText: "Text"
 
     function getWidth(){
-        var ans = number.width + experiment.width
+        var scaling = (vmTrackerItemState == vmTRACKER_ITEM_STATE_DONE)? viewHome.vmScale*0.8 : viewHome.vmScale*0.46
+        var ans = number.width*scaling + experiment.width + mainWindow.width**vmSpaceBetweenNumberAndTitle
         if (!vmIsLast) ans = ans + separator.width;
         return ans;
     }
+
+    onHeightChanged: resizeAndReposition();
+    onWidthChanged: resizeAndReposition();
 
     function getImageSrc(){
         var src = "qrc:/images/0"
@@ -43,8 +50,20 @@ Rectangle {
     Image{
        id: number
        source: getImageSrc()
-       scale: (vmTrackerItemState == vmTRACKER_ITEM_STATE_DONE)? 0.8 : 0.46
-       anchors.verticalCenter: parent.verticalCenter
+       scale: (vmTrackerItemState == vmTRACKER_ITEM_STATE_DONE)? viewHome.vmScale*0.8 : viewHome.vmScale*0.46
+       transformOrigin: Item.TopLeft
+       onScaleChanged: trackerItem.resizeAndReposition();
+    }
+
+    function resizeAndReposition(){
+        var scaling = (vmTrackerItemState == vmTRACKER_ITEM_STATE_DONE)? viewHome.vmScale*0.8 : viewHome.vmScale*0.46
+        number.y = (trackerItem.height - number.height*scaling)/2
+        number.x = 0
+        experiment.x = number.width*scaling + mainWindow.width*vmSpaceBetweenNumberAndTitle;
+        //console.log(vmText)
+        //console.log("Tracker W" + trackerItem.width  + " End of Experimet at: " + (experiment.x + experiment.width));
+        separator.width = (trackerItem.width - (experiment.x + experiment.width))*0.9
+        separator.x = experiment.x + experiment.width + trackerItem.width*0.01
     }
 
     Text{
@@ -54,8 +73,6 @@ Rectangle {
         font.pixelSize: 14*viewHome.vmScale
         color: (vmTrackerItemState == vmTRACKER_ITEM_STATE_NOTDONE)? "#bcbec0" : "#000000"
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: number.right
-        anchors.leftMargin: (vmTrackerItemState == vmTRACKER_ITEM_STATE_DONE)? 3 : -5
     }
 
     // The separator
@@ -66,8 +83,6 @@ Rectangle {
         color: "#d5d6d7"
         visible: !vmIsLast
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: experiment.right
-        anchors.leftMargin: mainWindow.width*0.014
     }
 
 }

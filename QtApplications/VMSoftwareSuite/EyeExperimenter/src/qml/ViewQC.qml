@@ -189,7 +189,8 @@ VMBase {
         AnimatedImage {
             id: slideAnimation
             source: "qrc:/images/LOADING.gif"
-            scale: viewHome.vmScale            
+            transformOrigin: Item.TopLeft
+            scale: viewHome.vmScale
             visible: true
             onScaleChanged: {
                 connectionDialog.repositionSlideAnimation();
@@ -197,7 +198,7 @@ VMBase {
         }
 
         function repositionSlideAnimation(){
-            slideAnimation.y = (connectionDialog.height - slideAnimation.height*vmScale)/2
+            slideAnimation.y = (connectionDialog.height - slideAnimation.height*viewHome.vmScale)/2
             slideAnimation.x = (connectionDialog.width - slideAnimation.width*viewHome.vmScale)/2
         }
 

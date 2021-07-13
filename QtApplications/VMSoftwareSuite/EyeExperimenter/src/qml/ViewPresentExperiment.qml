@@ -7,6 +7,8 @@ VMBase {
 
     readonly property string keysearch: "viewpresentexp_"
 
+    readonly property double vmExpTrackerItemWidth: mainWindow.width/5;
+
     property string vmSlideTitle: "NO TITLE SET";
     property string vmSlideExplanation: "No explanation set";
 
@@ -51,13 +53,13 @@ VMBase {
         if (place === 0) item.vmTrackerItemState = item.vmTRACKER_ITEM_STATE_CURRENT;
         if (place === listLength-1) item.vmIsLast = true;
         else item.vmIsLast = false
-        accWidth = accWidth + item.getWidth()
+        accWidth = accWidth + item.width
         return accWidth
     }
 
     function setEnabledItemX(item,x,spacing){
         item.x = x;
-        x = item.getWidth() + x + spacing
+        x = item.width + x + spacing
         return x
     }
 
@@ -229,7 +231,7 @@ VMBase {
         var accWidth = 0
 
         // Spacing defined by the designer
-        var spacing = 18;
+        var spacing = mainWindow.width*0.01;
 
         // The number of items in the list.
         var L = list.length;
@@ -266,7 +268,7 @@ VMBase {
 
         // Once the list was passed once the offset is calculated:
         //console.log("Accum w " + accWidth + "L " + L + " and spacign " + spacing + " p.w " + mainWindow.width)
-        var x = accWidth + (L-1)*spacing
+        var x = vmExpTrackerItemWidth*L + (L-1)*spacing
         x = (mainWindow.width - x)/2;
         //console.log("Start x is " + x)
         for (i = 0; i < L; i++){
@@ -385,12 +387,14 @@ VMBase {
             id: itemReading
             vmText: loader.getStringForKey(keysearch + "itemReading")
             vmFont: viewPresentExperiment.robotoM.name
+            width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemBindingUC
             vmText: loader.getStringForKey(keysearch + "itemBindingUC")
             vmFont: viewPresentExperiment.robotoM.name
+            width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
@@ -398,34 +402,40 @@ VMBase {
             vmText: loader.getStringForKey(keysearch + "itemBindingBC")
             vmFont: viewPresentExperiment.robotoM.name
             vmIsLast: false
+            width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemFielding
             vmText: loader.getStringForKey(keysearch + "itemFielding")
             vmFont: viewPresentExperiment.robotoM.name
+            width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemNBackRT
             vmText: loader.getStringForKey(keysearch + "itemNBackRT");
             vmFont: viewPresentExperiment.robotoM.name
+            width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemParkinson
             vmText: loader.getStringForKey(keysearch + "itemParkinson");
             vmFont: viewPresentExperiment.robotoM.name
+            width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemGoNoGo
             vmText: loader.getStringForKey(keysearch + "itemGoNoGo")
+            width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemNBackVS
             vmText: loader.getStringForKey(keysearch + "itemNBackVS")
+            width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
