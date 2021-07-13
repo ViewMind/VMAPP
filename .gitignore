@@ -44,8 +44,10 @@ Scripts/php/viewmind_patdata.cnf
 Scripts/inst_data_available/config.php
 Scripts/inst_data_available/config_remote.php
 Scripts/inst_data_available/*.json
+Scripts/AWS/EU/bkpProd/
 
 VMPortal/Backend/*.txt
+VMPortal/Backend/00mng/vmconfiguration
 VMPortal/Backend/valid_ips
 VMPortal/Backend/*.json
 VMPortal/Backend/*.csv

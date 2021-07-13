@@ -40,7 +40,7 @@ class ResultSegment {
       var x,y;
 
       // Rendering the title
-      var font_base_size = (this.h)*0.1;
+      var font_base_size = (this.h)*0.15;
       var font = ' font: ' + font_base_size+ 'px GothamBold '
       x = this.x + this.w*this.#AIR_MARGIN_LEFT;
       y = this.y + this.h*this.#AIR_TOP;
@@ -72,7 +72,8 @@ class ResultSegment {
       x = this.x + this.w - this.w*this.#AIR_MARGIN_RIGHT;
       y = this.y + this.h/2;
       font = ' font: ' + (font_base_size*2) + 'px GothamBold '
-      svg = svg + '   <text x = "' + x + '" y = "' + y + '" style = "' + font + '" dominant-baseline = "middle" fill = "' + this.#FONT_COLOR + '" text-anchor="end">' + this.displayValue()  + '</text>\n'
+      var dispValue = this.displayValue();
+      svg = svg + '   <text x = "' + x + '" y = "' + y + '" style = "' + font + '" dominant-baseline = "middle" fill = "' + this.#FONT_COLOR + '" text-anchor="end">' + dispValue  + '</text>\n'
 
       // Now drawing the result bar. 
       var resBar = {};
@@ -81,7 +82,7 @@ class ResultSegment {
       resBar.x = this.x + this.w*0.5
       resBar.y = this.y + this.h/2 - resBar.h/2
       resBar.n = this.valueBreakPoints.length+1;
-      resBar.indicator = ResultBar.computeSegmentIndicator(this.value,this.valueBreakPoints,this.isHigherBetter);
+      resBar.indicator = ResultBar.computeSegmentIndicator(dispValue,this.valueBreakPoints,this.isHigherBetter);
 
       svg = svg + ResultBar.resultBar(resBar);
 

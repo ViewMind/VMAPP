@@ -115,6 +115,10 @@
       const ERROR            = "error";
    }
 
+   abstract class FinalizedStudyNames extends TypedString {
+      // This is the the ONLY one we need to refer by name in the backend. So the otheres are not added. 
+      const BINDING_BEHAVIOURAL_RESPONSE = "behavioural_response";
+   }
    
 
 ?>

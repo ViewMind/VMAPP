@@ -30,6 +30,7 @@ ACCESS.EVALUATIONS.EVALUATOR_LASTNAME   =  "evaluator_lastname";
 ACCESS.EVALUATIONS.PROTOCOL             =  "protocol";
 ACCESS.EVALUATIONS.RESULTS              =  "results";
 ACCESS.EVALUATIONS.QC_PARAMS            =  "qc_parameters";
+ACCESS.EVALUATIONS.STUDY_CONFIG         =  "study_configuration";
 ACCESS.EVALUATIONS.QC_GRAPHS            =  "qc_graphs";
 
 ACCESS.PORTALUSER = {}

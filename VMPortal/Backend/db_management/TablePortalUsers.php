@@ -38,7 +38,7 @@ class TablePortalUsers extends TableBaseClass {
    private const TOKEN_LENGTH      = 512;
    private const AUTH_TOKEN_LENGTH = 512;
    private const AUTH_TOKEN_DURATION = 60; // minutes. 
-   private const CREATION_LINK_MAX_TIME = 10; // hours
+   private const CREATION_LINK_MAX_TIME = 1; // hours
 
    private $generated_auth_token;
 
@@ -108,7 +108,7 @@ class TablePortalUsers extends TableBaseClass {
 
    }
 
-   function getInfoForUser($email_or_id){
+   function getInfoForUser($email_or_id, bool $enabled_only){
       $cols_to_get = array();
 
       $operation = new SelectOperation();
@@ -118,6 +118,9 @@ class TablePortalUsers extends TableBaseClass {
       else{
          $ans = $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$email_or_id);
       }
+
+      if ($enabled_only)
+         $ans = $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ENABLED);
 
       if ($ans === false){
          $this->error = "Getting Info For User: " . $operation->getError();
@@ -185,7 +188,7 @@ class TablePortalUsers extends TableBaseClass {
       /// 2) If all OK in 1, then clear the creation token
       /// 3) Set the enabled flag from PENDING to ENABLE. 
 
-      $info = $this->getInfoForUser($email);
+      $info = $this->getInfoForUser($email,false);
       if ($info === FALSE){
          $this->error = "Could not get info on user $email for confirmation: " . $this->error;
          return false;

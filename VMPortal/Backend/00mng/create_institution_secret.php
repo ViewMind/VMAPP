@@ -44,14 +44,41 @@ if ($exists[0] == 0){
    exit();
 }
 
+// Getting the institution name
+$inst_info = $table_inst->getInstitutionInformationFor([$params[TableSecrets::COL_INSTITUTION_ID]]);
+if ($inst_info === FALSE){
+   echo "Could not get the institution name for institution " . $params[TableSecrets::COL_INSTITUTION_ID]  . "\n";
+   exit();
+}
+
+$name = $inst_info[0][TableInstitution::COL_INSTITUTION_NAME];
+
 $secret = $table_secrets->createNewSecret($params[TableSecrets::COL_INSTITUTION_ID],$params[TableSecrets::COL_INSTITUTION_INSTANCE]);
 if ($secret === false){
    echo "Could not generate secret: " . $table_secrets->getError();
    exit();
 }
 else{
-   echo "Generated Secret:\n";
-   var_dump($secret);
+   //echo "Generated Secret:\n";
+   //var_dump($secret);
+
+   $configuration_file_contents = "";
+   $configuration_file_contents = $configuration_file_contents . "institution_id = " . $params[TableSecrets::COL_INSTITUTION_ID] . ";\n";
+   $configuration_file_contents = $configuration_file_contents . "instance_number = " . $params[TableSecrets::COL_INSTITUTION_INSTANCE] . ";\n";
+   $configuration_file_contents = $configuration_file_contents . "institution_name = " . $name . ";\n";
+   foreach ($secret as $key => $value){
+      $configuration_file_contents = $configuration_file_contents . "instance_key = $key;\n";
+      $configuration_file_contents = $configuration_file_contents . "instance_hash_key = $value;\n";
+   }
+   
+   echo "Link File Contents:\n";
+   echo "$configuration_file_contents";
+   
+   $fid = fopen("vmconfiguration","w");
+   fwrite($fid,$configuration_file_contents);
+   fclose($fid);
+   
+
 }
 
 

@@ -29,7 +29,7 @@
                                                 <label for="inputEmail">Email address</label>
                                             </div>
                                             <div class="form-floating mb-3">
-                                                <input class="form-control" id="password" type="password" placeholder="Password"/>
+                                                <input class="form-control" id="password" type="password" placeholder="Password" onkeypress="handle(event)"/>
                                                 <label for="inputPassword">Password</label>
                                             </div>
                                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
@@ -78,6 +78,15 @@
         <script src = "js/common.js"></script>
         <script src = "js/login.js"></script>
         <script>checkConfig(true)</script>
+
+        <script>
+            function handle(e){
+                if(e.keyCode === 13){
+                    e.preventDefault(); // Ensure it is only this code that runs
+                    attemptLogin();
+                }
+            }
+        </script>        
 
         <!-- <script src="js/scripts.js"></script> -->
     </body>

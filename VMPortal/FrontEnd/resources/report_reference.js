@@ -38,7 +38,8 @@ var REPORT_REFERENCE =
             "range_text_es": "Valor normal MAYOR a 67",
             "cutoff_values": "0|67|134",
             "smaller_better": "false",
-            "associated_value": "binding_conversion_index",
+            "number_targets": "2",
+            "associated_value": "bc_predicted_deterioration",
             "mult_by_100": "true"
         },
         "05_binding_index_3": {
@@ -50,7 +51,8 @@ var REPORT_REFERENCE =
             "range_text_es": "Valor normal MAYOR a 62",
             "cutoff_values": "0|62|124",
             "smaller_better": "false",
-            "associated_value": "binding_conversion_index",
+            "number_targets": "3",
+            "associated_value": "bc_predicted_deterioration",
             "mult_by_100": "true"
         },
         "06_behavioral_conduct": {
@@ -135,7 +137,7 @@ var REPORT_REFERENCE =
             "round_for_display": "false"
         }
     },
-    "NBackRT": {
+    "NBack RT": {
         "study_title_en": "NBACK RT",
         "study_title_es": "NBACK RT",
         "07_nbackrt_num_fix_enc": {

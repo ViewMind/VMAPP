@@ -1,4 +1,5 @@
 var displayResults;
+var studyConfiguration;
 var reportReference;
 var studyDate;  // required for the report generation. 
 
@@ -99,9 +100,11 @@ function onGetReportData(response){
    }
 
    // Stored for global reference. 
-   reportReference = REPORT_REFERENCE[study_type];
-   displayResults  = JSON.parse(results[ACCESS.EVALUATIONS.RESULTS]);
-   studyDate       = results[ACCESS.EVALUATIONS.STUDY_DATE]
+   reportReference    = REPORT_REFERENCE[study_type];
+   displayResults     = JSON.parse(results[ACCESS.EVALUATIONS.RESULTS]);
+   studyConfiguration = JSON.parse(results[ACCESS.EVALUATIONS.STUDY_CONFIG]);
+   //console.log("Study config: " + results[ACCESS.EVALUATIONS.STUDY_CONFIG]);
+   studyDate          = results[ACCESS.EVALUATIONS.STUDY_DATE]
 
    // Getting the reference text and values
    //console.log(JSON.stringify(response));
@@ -144,7 +147,7 @@ function renderReport(){
    // Computing layout values
    var xMargin = W*0.05;
    var widthPageUse = W*0.90;
-   var resultSegmentHeight = H*0.13;
+   var resultSegmentHeight = H*0.09;
    var topBannerHeight = H*0.12
    var nameDisplayHeight = H*0.07;
    var colorExpHeight = H*0.1;
@@ -202,6 +205,9 @@ function renderReport(){
       if (key.includes("study_title")) continue;
 
       var ref = reportReference[key]
+
+      // We check if this a segment bar that we actually need to draw.
+      if (!validForConfiguration(ref)) continue;
 
       var rs = new ResultSegment();
       rs.segmentRefereceText = ref[ACCESS.RESSEG.RANGE_TEXT + lang];
@@ -373,7 +379,7 @@ function renderColorReference(rp){
 
    var mlines = [];
    
-   var spaceBetween = rp.w*0.06;
+   var spaceBetween = rp.w*0.08;
    var spaceBetweenSquareAndText = rp.w*0.01;
    var xval = rp.x;
    var yval = rp.y + vair + bb.h + vair;
@@ -415,3 +421,25 @@ function renderColorReference(rp){
    return svg;
 }
 
+/**
+ * @brief The function will check that ANY of the parameters of the study configuration are present in the refsettings. If they are they need to match to return true
+ * otherwise, it will return false. If NONE are present it will also return true. It will return 
+ * @param {The reference parameters to configure a result segment} refsettings 
+ */
+
+function validForConfiguration(refsettings){
+   for (study in studyConfiguration){
+      //console.log("Study" + study);
+      for (key in studyConfiguration[study]){
+         //console.log("Checking if key " + key + " is in " + JSON.stringify(refsettings));
+         if (key in refsettings){
+            //console.log("Comparing " + studyConfiguration[study][key] + " with " + refsettings[key]);
+            if (studyConfiguration[study][key] != refsettings[key]){
+               // Only one mismatch is enought to return false. 
+               return false;
+            }
+         }
+      }
+   }
+   return true;
+}
