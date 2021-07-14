@@ -66,6 +66,10 @@ void RESTAPIController::setJSONData(const QVariantMap &json){
     stringifyData();
 }
 
+QMap<QString,QString> RESTAPIController::getResponseHeaders() const{
+    return responseHeaders;
+}
+
 void RESTAPIController::stringifyData(){
     // When hashing, the dataToSend is treated as a JSON string.
     // When sending this over POST to the web sever, the server wlll interpret all values as strings
@@ -291,6 +295,17 @@ QByteArray RESTAPIController::getPayload() const{
 
 void RESTAPIController::gotReply(){
     replyData = reply->readAll();
+
+    // Saving Headers
+    QList<QNetworkReply::RawHeaderPair> temp = reply->rawHeaderPairs();
+    responseHeaders.clear();
+    for (qint32 i = 0; i < temp.size(); i++){
+        QNetworkReply::RawHeaderPair pair = temp.at(i);
+        QString key = QString::fromUtf8(pair.first);
+        QString value = QString::fromUtf8(pair.second);
+        responseHeaders[key] = value;
+    }
+
     if (reply->error() != QNetworkReply::NoError){
         errorInReply = true;
         errors << reply->errorString();

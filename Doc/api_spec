@@ -49,8 +49,19 @@ VMClients have the following permissions:
       OPERATION: operating_information
         IDENTIFIER:: institution_id
             PARAMETERS: ppkey
-               Returns the list of portal users associated with the institutions and the processing parameters associated with ppkey. 
-               EXAMPLE: institution/operating_information/1?ppkey=htcviveeyepro
+            PARAMETERS: version
+            PARAMETERS: instance
+               Returns the list of portal users associated with the institution, the processing parameters associated with ppkey, and also if there is a newer version of the application.  
+               For the query to be successful the identifier and instance number need to match those sent for the signature. 
+               EXAMPLE: institution/operating_information/1?instance=0?ppkey=htcviveeyepro&version=1.0.0
+               
+      OPERATION: getupdate
+         IDENTIFIER: instituion_id
+            PARAMETERS: instance
+               Will return the app.zip file which is specified in the update tale for the institution and instance. Both of those need to match the values in the POST request. 
+            
+            
+            
             
 -> OBJECT: reports
       OPERATION: generate

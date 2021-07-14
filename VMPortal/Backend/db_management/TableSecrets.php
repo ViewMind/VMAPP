@@ -15,6 +15,7 @@ class TableSecrets extends TableBaseClass {
    const COL_INSTITUTION_INSTANCE  = "institution_instance";
    const COL_SECRET                = "secret";
    const COL_ENABLED               = "enabled";
+   const COL_UNIQUE_ID             = "unique_id";
    const COL_PERMISSIONS           = "permissions";
 
    const ROW_ENABLED               = 1;
@@ -26,7 +27,7 @@ class TableSecrets extends TableBaseClass {
    // Stadard permissions for a VMClient. 
    private const VMCLIENT_PERMISSIONS = [
       APIEndpoints::REPORTS      => [ ReportOperations::GENERATE ],
-      APIEndpoints::INSTITUTION  => [ InstitutionOperations::OPR_INFO ]
+      APIEndpoints::INSTITUTION  => [ InstitutionOperations::OPR_INFO, InstitutionOperations::GET_UPDATE ],
    ];   
 
    function __construct($con){
@@ -91,6 +92,20 @@ class TableSecrets extends TableBaseClass {
       }
       return $ans;
 
+   }
+
+
+   function getPermissionsFrom($unique_ids){
+      $cols_to_get = [self::COL_KEYID, self::COL_UNIQUE_ID , self::COL_PERMISSIONS];
+      $select = new SelectOperation();
+      $select->addConditionToANDList(SelectColumnComparison::IN,self::COL_UNIQUE_ID,$unique_ids);
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED);
+      return $this->simpleSelect($cols_to_get,$select);
+   }
+
+   function resetBasicClientPermissions(){
+      $params[self::COL_PERMISSIONS] = json_encode(self::VMCLIENT_PERMISSIONS);
+      return $this->updateOperation($params,"On Resetting Secret's Basic Client Permissions Permissions",self::COL_ENABLED,self::ROW_ENABLED);
    }
 
 }

@@ -20,21 +20,25 @@ int main(int argc, char *argv[]){
     QCoreApplication a(argc, argv);
 
 
-    QString key                     = "b1074e66a5a9822969bf769d435b49ef347a18c01ef058f732ecd3a13aa45c6c286d13378c4e2fbb91c0089912e4c842fc9dee557af2c19be46fecd94b18e176";
-    QString secret                  = "14568c6a792eb5caee4cd18f5c5d8ea5d24ee3c1334909961beeb61b038466a24362a0e3f6e03f0b06950335d8a9b8e58d91675dd3ed6e836301a39bccf8673e08f2e7ca757430548dd8368ec15119c9989b65b35be6458d9ee1ff62a8edd5242b7db5723b2071328df38d544175d100efcb92e4b4ccf09c2bb4cf6f5b01449c";
+    QString key                     = "2a119e8e0f1e95a02b3b3520a9bca8f1e7f1621c070fce57a9b6f3bcd1f13ebdba10fd9720beb7862fd4134b18d97bb0e95d618e98660b01b3d75df264c6e371";
+    QString secret                  = "1522352f8e0326d4fb301e5ff9336ec382a064e16694dbdaf1b62fdb14981bd7e6f7b6cbb0ef7ca4e5abde496908d0f1e238a679b68a5ccd82d6046e09c9ae12c6633b055921128cca6c88ec7169cff60916fb4badbd89a32cf85945c2be919ed89f8453eea3e9c82f1cdbefc1e22b35f2d34af0d5ff9ccc63af2b498dc88a43";
 
     QString test_file               = "my_test_file.json";
     //QString APIURL                  = "http://192.168.1.12/vmapi";
     //QString APIURL                  = "http://localhost/vmapi";
-    QString APIURL                  = "https://eu-api.viewmind.ai/";
-    QString endpoint                = "/institution/operating_information/1";
+    QString APIURL                  = "http://localhost/tests/";
+    //QString APIURL                  = "https://eu-api.viewmind.ai/";
+    //QString endpoint                = "/institution/operating_information/1";
+    //QString endpoint                = "/institution/getupdate/1";
+    QString endpoint                = "getfile.php";
     //QString endpoint                = "/reports/generate/1";
     QString zipfile                 = "/home/ariel/repos/viewmind_projects/VMTools/RawJSONDataDev/bin/binding2019_12_19_12_54.zip";
     QVariantMap URLParameters;
 
     // Let's add some parameters to the URL
-    URLParameters.insert("ppkey","gazepoint");
-    //URLParameters.insert("instance",0);
+    //URLParameters.insert("ppkey","gazepoint");
+    URLParameters.insert("instance",0);
+    //URLParameters.insert("version","16.1.0");
 
     RESTAPIController rest_controller;
     rest_controller.setBaseAPI(APIURL);
@@ -120,10 +124,46 @@ int main(int argc, char *argv[]){
     }
     else{
         QByteArray raw_reply = rest_controller.getReplyData();
-        if (endpoint != "get/pdf"){
+        qDebug() << "Size of reply: " << raw_reply.size();
+        QMap<QString,QString> rheaders = rest_controller.getResponseHeaders();
+        QString searchFor = "Content-Disposition";
+
+        if (rheaders.contains(searchFor)){
+            // Getting the file name.
+            QString filename = "";
+            QString content_disposition = rheaders.value(searchFor);
+            QStringList parts = content_disposition.split(";");
+            for (qint32 i = 0; i < parts.size(); i++){
+                if (parts.at(i).contains("filename")){
+                    QStringList key_value = parts.at(i).split("=");
+                    filename = key_value.last();
+                    break;
+                }
+            }
+
+            if (filename.isEmpty()){
+                qDebug() << "Could not determine filename";
+                return 0;
+            }
+
+            QFile receivedFile(filename);
+            if (!receivedFile.open(QFile::WriteOnly)){
+                qDebug() << "Could not open " + receivedFile.fileName() + " for writing";
+                return 0;
+            }
+            QDataStream fileWriter(&receivedFile);
+            qDebug() << "Raw Reply Size" << raw_reply.size();
+            //fileWriter << raw_reply;
+            fileWriter.writeRawData(raw_reply.constData(), raw_reply.size());
+            receivedFile.close();
+            std::cout << "Created " << receivedFile.fileName().toStdString() << std::endl;
+            qDebug() << "Receive file size: " << receivedFile.size();
+
+        }
+        else{
             //std::cout << QString(raw_reply).toStdString() << std::endl;
             QJsonParseError json_error;
-            QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);            
+            QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);
             if (json_error.error != QJsonParseError::NoError){
                 std::cout << "Could not parse JSON Ouput. Reason: " << json_error.errorString().toStdString() << std::endl;
                 std::cout << raw_reply.toStdString() << std::endl;
@@ -132,18 +172,17 @@ int main(int argc, char *argv[]){
                 std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
             }
         }
-        else{
-            // This should be a pdf.
-            QFile pdffile("downloaded.pdf");
-            if (!pdffile.open(QFile::WriteOnly)){
-                qDebug() << "Could not open " + pdffile.fileName() + " for writing";
-                return 0;
-            }
-            QDataStream pdfwriter(&pdffile);
-            pdfwriter << raw_reply;
-            pdffile.close();
-            std::cout << "Created " << pdffile.fileName().toStdString();
-        }
+
+//            // This should be a pdf.
+//            QFile pdffile("downloaded.pdf");
+//            if (!pdffile.open(QFile::WriteOnly)){
+//                qDebug() << "Could not open " + pdffile.fileName() + " for writing";
+//                return 0;
+//            }
+//            QDataStream pdfwriter(&pdffile);
+//            pdfwriter << raw_reply;
+//            pdffile.close();
+//            std::cout << "Created " << pdffile.fileName().toStdString();
     }
 
     return 0;

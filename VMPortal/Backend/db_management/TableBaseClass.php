@@ -112,6 +112,7 @@ class TableBaseClass {
       
       $this->error = "";
       $this->last_inserted = array();
+
       
       if (!$this->validateInputArray($params,$customized_message)) return false;
       
@@ -125,8 +126,24 @@ class TableBaseClass {
          $updates[] = "$col_name = :$col_name";
       }
 
-      $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",",$updates) . " WHERE $col_on_update = :$col_on_update";
-      $params[$col_on_update] = $value_on_update;
+      if (is_array($value_on_update)){
+         // This means that we need to update several rows. 
+         $list_to_update = array();
+         $counter = 0;
+         foreach ($value_on_update as $value){
+            $name = $col_on_update . "_" . $counter;
+            $list_to_update[] = ":$name";
+            $params[$name] = $value;
+            $counter++;
+         }
+
+         $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",", $updates) . " WHERE $col_on_update IN (" . implode(",",$list_to_update) . ")";
+      }
+      else{
+         // Simple update. 1 row. 
+         $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",", $updates) . " WHERE $col_on_update = :$col_on_update";
+         $params[$col_on_update] = $value_on_update;
+      }
 
       try {
          $stmt = $this->con->prepare($sql);

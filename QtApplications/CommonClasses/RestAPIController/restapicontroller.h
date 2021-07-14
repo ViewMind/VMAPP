@@ -70,6 +70,8 @@ public:
     // Errors if there were any.
     QStringList getErrors() const;
 
+    QMap<QString,QString> getResponseHeaders() const;
+
 private slots:
     void gotReply();
 
@@ -90,6 +92,7 @@ private:
     QNetworkReply *reply;
     QByteArray replyData;
     QMap<QString, QString> headers;
+    QMap<QString,QString> responseHeaders;
     bool errorInReply;
     bool sendDataAsJSON;
 

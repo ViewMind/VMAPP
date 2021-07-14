@@ -37,7 +37,8 @@ $parameter_groups = [
    GlobalConfigGeneral::GROUP_NAME => GlobalConfigGeneral::getConstList(["GROUP_NAME"]),
    GlobalConfigLogs::GROUP_NAME => GlobalConfigLogs::getConstList(["GROUP_NAME"]),
    GlobalConfigProcResources::GROUP_NAME => GlobalConfigProcResources::getConstList(["GROUP_NAME"]),
-   GlobalConfigS3::GROUP_NAME => GlobalConfigS3::getConstList(["GROUP_NAME"])
+   GlobalConfigS3::GROUP_NAME => GlobalConfigS3::getConstList(["GROUP_NAME"]),
+   GlobalConfigUpdateResources::GROUP_NAME => GlobalConfigUpdateResources::getConstList(["GROUP_NAME"])
 ];
 
 // Checking that this is so. 

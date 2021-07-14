@@ -26,6 +26,11 @@
       const PROCESSING_WORK_DIRECTORY   = "processing_work_dir";
       const R_SCRIPTS_REPO              = "r_repo";
    }
+
+   abstract class GlobalConfigUpdateResources extends TypedString {
+      const GROUP_NAME                 = "update_resources";
+      const UPDATE_REPO                = "update_repo";
+   }
  
    abstract class GlobalConfigS3 extends TypedString {
       const GROUP_NAME                = "S3";
@@ -60,9 +65,11 @@
    }
 
    abstract class ResponseDataSubFields extends TypedString {
-      const MEDICS        = "medics";
-      const PROC_PARAMS   = "proc_params";
-      const FREQ_PARAMS   = "freq_params";
+      const MEDICS           = "medics";
+      const PROC_PARAMS      = "proc_params";
+      const FREQ_PARAMS      = "freq_params";
+      const UPDATE_ET_CHANGE = "update_et_change";
+      const UPDATE_VERSION   = "update_version";
    }
 
    abstract class APIEndpoints extends TypedString {
@@ -85,11 +92,13 @@
       const INSTANCE                = "instance";
       const ENABLE_TOKEN            = "enable_token";
       const PORTAL_USER             = "pp";
+      const VERSION                 = "version";
    }
 
    abstract class InstitutionOperations extends TypedString {
       const LIST                   = "list";
       const OPR_INFO               = "operating_information";
+      const GET_UPDATE             = "getupdate";
    }
 
    abstract class ReportOperations extends TypedString {
@@ -113,6 +122,12 @@
       const ACTUAL_FILE_NAME = "name";
       const FILE_SIZE        = "size";
       const ERROR            = "error";
+   }
+
+   abstract class EyeTrackerCodes extends TypedString {
+      const HP_OMNICEPT      = "hpomnicept";
+      const HTC_VIVE_EYE_PRO = "htcviveeyepro";
+      const GAZEPOINT        = "gazepoint";
    }
 
    abstract class FinalizedStudyNames extends TypedString {

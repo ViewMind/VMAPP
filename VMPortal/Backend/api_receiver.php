@@ -180,7 +180,7 @@ if (array_key_exists($object,$permissions)){
       
       if ($ans === false){
          // Something went wrong. 
-         error_log("Returning when something went wrong. Sending code: " . $operating_object->getSugesstedHTTPCode() . " and message " . $operating_object->getReturnableError());
+         // error_log("Returning when something went wrong. Sending code: " . $operating_object->getSugesstedHTTPCode() . " and message " . $operating_object->getReturnableError());
          $base_log->logError($operating_object->getError());
          $res[ResponseFields::MESSAGE] = $operating_object->getReturnableError();
          $res[ResponseFields::HTTP_CODE] = $operating_object->getSugesstedHTTPCode();
@@ -210,13 +210,37 @@ else{
    return;
 }
 
-// If the system got here all went well. 
-$res[ResponseFields::DATA] = $ans;
-$res[ResponseFields::MESSAGE] = "OK";
-$res[ResponseFields::HTTP_CODE] = 200;
-http_response_code(200);
-echo json_encode($res);
-return;
+// Two possible answers here. We either need to return a file, in which case the response to this will be the file path, or we don't.
+$file_path_to_return = $operating_object->getFileToReturn();
+
+if ($file_path_to_return != ""){
+
+   // Wiil assume that the file has an extension that will determine it's type. 
+   $path_parts = pathinfo($file_path_to_return);
+   $extension = $path_parts["extension"];
+   $basename = $path_parts["basename"];
+
+   header("Content-Type: application/$extension");
+   header("Content-Transfer-Encoding: Binary");
+   header("Content-Length:".filesize($file_path_to_return));
+   header("Content-Disposition: attachment; filename=$basename");
+  
+   // Cleaning what's going to be outputted. Otherwise the file might be corrupted. 
+   ob_clean();
+   flush();
+   readfile($file_path_to_return);   
+   exit();
+
+}
+else{
+   // If the system got here all went well.
+   $res[ResponseFields::DATA] = $ans;
+   $res[ResponseFields::MESSAGE] = "OK";
+   $res[ResponseFields::HTTP_CODE] = 200;
+   http_response_code(200);
+   echo json_encode($res);
+   return;
+}
 
 // How to return a file 
 // $route = $route_parser->getRouteParts();

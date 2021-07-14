@@ -9,6 +9,7 @@
   include ("../db_management/TableProcessingParameters.php");
   include ("../db_management/TableEvaluations.php");
   include ("../db_management/TableSubject.php");
+  include ("../db_management/TableUpdates.php");
 
   // Setting the pointer location for db conf
   DBCon::setPointerLocation("configs");  
@@ -42,6 +43,7 @@
   $srv["table_privileges"][TableProcessingParameters::IN_DB][TableProcessingParameters::TABLE_NAME]       = [$PRIV_SELECT];
   $srv["table_privileges"][TableEvaluations::IN_DB][TableEvaluations::TABLE_NAME]                         = [$PRIV_INSERT];
   $srv["table_privileges"][TableSubject::IN_DB][TableSubject::TABLE_NAME]                                 = [$PRIV_INSERT, $PRIV_SELECT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableUpdates::IN_DB][TableUpdates::TABLE_NAME]                                 = [$PRIV_SELECT];
   
   $services[] = $srv;
 
@@ -55,6 +57,7 @@
   $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                         = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TableProcessingParameters::IN_DB][TableProcessingParameters::TABLE_NAME]       = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableUpdates::IN_DB][TableUpdates::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $services[] = $srv;
   
 

@@ -23,10 +23,14 @@ class ObjectBaseClass{
    // The permission might be required for any of the inhereted objects.
    protected $permissions;
 
+   // The path of the file to return, if any. 
+   protected $file_path_to_return;
+
    function __construct($srv_name, $headers){
       $this->error = "";         
       $this->returnable_error = "";
       $this->suggested_http_code = 200;
+      $this->file_path_to_return = "";
 
       // Creating the connections. 
       $dbcon = new DBCon();      
@@ -63,9 +67,11 @@ class ObjectBaseClass{
       }
       else return $this->returnable_error;
    }
-   
-   protected function getConnectionToDatabase($db){
+
+   function getFileToReturn(){
+      return $this->file_path_to_return;
    }
+   
 }
 
 ?>
