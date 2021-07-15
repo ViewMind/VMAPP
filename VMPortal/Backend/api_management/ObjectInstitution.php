@@ -178,7 +178,7 @@ class ObjectInstitution extends ObjectBaseClass{
 
    function getupdate($identifier,$parameters){
       // We verify that the proper URL parameters were used. 
-      $expected = [URLParameterNames::INSTANCE];
+      $expected = [URLParameterNames::INSTANCE, URLParameterNames::REGION];
 
       foreach ($expected as $p) {
           if (!array_key_exists($p, $parameters)) {
@@ -190,6 +190,7 @@ class ObjectInstitution extends ObjectBaseClass{
       }
 
       $inst_number = $parameters[URLParameterNames::INSTANCE];
+      $region      = $parameters[URLParameterNames::REGION];
 
       $institution_id = $_POST[POSTFields::INSTITUTION_ID];
       $institution_instance = $_POST[POSTFields::INSTITUION_INSTANCE];
@@ -225,7 +226,7 @@ class ObjectInstitution extends ObjectBaseClass{
       $version =  $version_info[0][TableUpdates::COL_VERSION_STRING];
       $etkey   =  $version_info[0][TableUpdates::COL_EYETRACKER_KEY];
 
-      $this->file_path_to_return = $update_repo . "/$etkey/$version/" . self::ApplicationFileName;
+      $this->file_path_to_return = $update_repo . "$region/$etkey/$version/" . self::ApplicationFileName;
 
       if (!is_file($this->file_path_to_return)){
          $this->suggested_http_code = 500;

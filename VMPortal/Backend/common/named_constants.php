@@ -93,6 +93,7 @@
       const ENABLE_TOKEN            = "enable_token";
       const PORTAL_USER             = "pp";
       const VERSION                 = "version";
+      const REGION                  = "region";
    }
 
    abstract class InstitutionOperations extends TypedString {
