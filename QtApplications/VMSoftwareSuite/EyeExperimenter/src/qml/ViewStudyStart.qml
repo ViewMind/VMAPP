@@ -69,8 +69,6 @@ VMBase {
     readonly property int vmINDEX_PERCEPTION:                 6
     readonly property int vmINDEX_GONOGO:                     7
 
-
-    readonly property string keysearch: "viewstudystart_"
     property var vmSelectedExperiments: []
     property int vmCurrentExperimentIndex: 0
 
@@ -96,7 +94,7 @@ VMBase {
     // This is the second function that is called when entering study start.
     function setDefaultSelections(){
 
-        var studyList = loader.getStringListForKey(keysearch + "studyList");
+        var studyList = loader.getStringListForKey("viewstudystart_studyList");
         vmListOfStudiesToSelect = [];
         vmListOfSelectedStudies = [];
 
@@ -380,7 +378,7 @@ VMBase {
         anchors.topMargin: mainWindow.height*0.032
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#297fca"
-        text: loader.getStringForKey(keysearch+"labelTitle");
+        text: loader.getStringForKey("viewstudystart_labelTitle");
     }
 
     Text {
@@ -391,7 +389,7 @@ VMBase {
         anchors.topMargin: mainWindow.height*0.016
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#bcbec0"
-        text: loader.getStringForKey(keysearch+"labelSubTitle");
+        text: loader.getStringForKey("viewstudystart_labelSubTitle");
     }
 
     Row {
@@ -412,7 +410,7 @@ VMBase {
                 font.family: robotoB.name
                 font.pixelSize: 15*viewHome.vmScale
                 color: "#000000"
-                text: loader.getStringForKey(keysearch+"labelSelSubject");
+                text: loader.getStringForKey("viewstudystart_labelSelSubject");
             }
 
             Rectangle{
@@ -447,7 +445,7 @@ VMBase {
                 font.family: robotoB.name
                 font.pixelSize: 15*viewHome.vmScale
                 color: "#000000"
-                text: loader.getStringForKey(keysearch+"labelPatientConditionsCB");
+                text: loader.getStringForKey("viewstudystart_labelPatientConditionsCB");
             }
 
             VMComboBox2{
@@ -456,7 +454,7 @@ VMBase {
                 vmEnabled: true
                 z:2
                 Component.onCompleted: {
-                    cbStudyDesign.setModelList(loader.getStringListForKey(keysearch+"patient_conditions"));
+                    cbStudyDesign.setModelList(loader.getStringListForKey("viewstudystart_patient_conditions"));
                 }
                 onSelectionChanged: {
                     studyDesignChangeTriggered();
@@ -485,7 +483,7 @@ VMBase {
                 font.pixelSize: 12*viewHome.vmScale
                 anchors.horizontalCenter: studySelectColumn.horizontalCenter
                 color: "#bcbec0"
-                text: loader.getStringForKey(keysearch+"labelChoose");
+                text: loader.getStringForKey("viewstudystart_labelChoose");
             }
 
             Rectangle {
@@ -554,7 +552,7 @@ VMBase {
                 font.pixelSize: 12*viewHome.vmScale
                 anchors.horizontalCenter: studySelectedColumn.horizontalCenter
                 color: "#bcbec0"
-                text: loader.getStringForKey(keysearch+"labelEvaluations");
+                text: loader.getStringForKey("viewstudystart_labelEvaluations");
             }
 
             Rectangle {
@@ -599,7 +597,7 @@ VMBase {
         anchors.top: rowStudySelection.bottom
         anchors.topMargin:  mainWindow.height*0.010
         color: "#000000"
-        text: loader.getStringForKey(keysearch+"labelInstruction2");
+        text: loader.getStringForKey("viewstudystart_labelInstruction2");
     }
 
     Row {
@@ -620,7 +618,7 @@ VMBase {
                 font.pixelSize: 13*viewHome.vmScale
                 width: (patientAndConditionSelectionRow.width - 16)/5
                 color: "#554545"
-                text: loader.getStringForKey(keysearch+"labelEyeMsg");
+                text: loader.getStringForKey("viewstudystart_labelEyeMsg");
             }
 
             VMComboBox2{
@@ -629,7 +627,7 @@ VMBase {
                 vmEnabled: true
                 z:2
                 Component.onCompleted: {
-                    cbEyeMsg.setModelList(loader.getStringListForKey(keysearch+"labelEyeType"));
+                    cbEyeMsg.setModelList(loader.getStringListForKey("viewstudystart_labelEyeType"));
                     cbEyeMsg.setSelection(2)
                 }
             }
@@ -646,7 +644,7 @@ VMBase {
                 font.pixelSize: 13*viewHome.vmScale
                 width: cbNumberOfTargets.width
                 color: "#554545"
-                text: loader.getStringForKey(keysearch+"labelNTargets");
+                text: loader.getStringForKey("viewstudystart_labelNTargets");
             }
 
             VMComboBox2 {
@@ -667,14 +665,14 @@ VMBase {
                 font.pixelSize: 13*viewHome.vmScale
                 width: cbNumberOfTargets.width
                 color: "#554545"
-                text: loader.getStringForKey(keysearch+"labelTargetSize");
+                text: loader.getStringForKey("viewstudystart_labelTargetSize");
             }
 
             VMComboBox2{
                 id: cbTargetSize
                 width: cbEyeMsg.width
                 z:2
-                Component.onCompleted: cbTargetSize.setModelList(loader.getStringListForKey(keysearch+"targetOptions"))
+                Component.onCompleted: cbTargetSize.setModelList(loader.getStringListForKey("viewstudystart_targetOptions"))
             }
         }
 
@@ -688,7 +686,7 @@ VMBase {
                 font.pixelSize: 13*viewHome.vmScale
                 width: cbNumberOfTargets.width
                 color: "#554545"
-                text: loader.getStringForKey(keysearch+"labelNumberOfNBackTargets");
+                text: loader.getStringForKey("viewstudystart_labelNumberOfNBackTargets");
             }
 
             VMComboBox2{
@@ -709,7 +707,7 @@ VMBase {
                 font.pixelSize: 13*viewHome.vmScale
                 width: cbNumberOfTargets.width
                 color: "#554545"
-                text: loader.getStringForKey(keysearch+"labelReadingLanguge");
+                text: loader.getStringForKey("viewstudystart_labelReadingLanguge");
             }
 
             VMComboBox2{
@@ -743,7 +741,7 @@ VMBase {
                 font.pixelSize: 13*viewHome.vmScale
                 width: cbNumberOfTargets.width
                 color: "#554545"
-                text: loader.getStringForKey(keysearch+"labelActions");
+                text: loader.getStringForKey("viewstudystart_labelActions");
             }
 
             VMComboBox2{
@@ -763,14 +761,14 @@ VMBase {
                 font.pixelSize: 13*viewHome.vmScale
                 width: cbNumberOfTargets.width
                 color: "#554545"
-                text: loader.getStringForKey(keysearch+"labelPerceptionType");
+                text: loader.getStringForKey("viewstudystart_labelPerceptionType");
             }
 
             VMComboBox2{
                 id: cbOfPerceptionType
                 width: cbEyeMsg.width
                 z:2
-                Component.onCompleted: cbOfPerceptionType.setModelList(loader.getStringListForKey(keysearch+"perceptionTypeOptions"));
+                Component.onCompleted: cbOfPerceptionType.setModelList(loader.getStringListForKey("viewstudystart_perceptionTypeOptions"));
             }
         }
 
@@ -787,7 +785,7 @@ VMBase {
         VMButton{
             id: btnBack
             height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keysearch+"btnBack");
+            vmText: loader.getStringForKey("viewstudystart_btnBack");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             onClicked: {
@@ -798,7 +796,7 @@ VMBase {
         VMButton{
             id: btnStart
             height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keysearch+"btnStart");
+            vmText: loader.getStringForKey("viewstudystart_btnStart");
             vmFont: viewHome.gothamM.name
             onClicked: {
 

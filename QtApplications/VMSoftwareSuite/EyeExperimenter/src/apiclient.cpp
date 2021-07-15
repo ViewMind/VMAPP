@@ -1,5 +1,7 @@
 #include "apiclient.h"
 
+const QString APIClient::TAR_EXE = "tar.exe";
+
 APIClient::APIClient(QObject *parent) : QObject(parent)
 {
     API = Globals::API_URL;
@@ -16,11 +18,13 @@ qint32 APIClient::getLastRequestType() const {
     return lastRequest;
 }
 
-void APIClient::configure(const QString &institution_id, const QString &instance_number, const QString &key, const QString &hash_code){
+void APIClient::configure(const QString &institution_id, const QString &instance_number, const QString &version, const QString &region, const QString &key, const QString &hash_code){
     this->institution_id = institution_id;
     this->instance_number = instance_number;
     this->key = key;
+    this->version = version;
     this->secret = hash_code;
+    this->region = region;
 }
 
 bool APIClient::requestOperatingInfo(){
@@ -34,6 +38,8 @@ bool APIClient::requestOperatingInfo(){
     rest_controller.setAPIEndpoint(ENDPOINT_OPERATING_INFO + "/" + institution_id);
     QVariantMap map;
     map.insert(URLPARAM_PPKEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+    map.insert(URLPARAM_VERSION,this->version);
+    map.insert(URLPARAM_INSTANCE,instance_number);    
 
     // Setting the required post data.
     QVariantMap postdata;
@@ -50,10 +56,9 @@ bool APIClient::requestOperatingInfo(){
 
 bool APIClient::requestReportProcessing(const QString &jsonFile){
 
-
     error = "";
 
-    // Before sending the file must be compressed. We use tar.exe.   
+    // Before sending the file must be compressed. We use tar.exe.
     // First we need to get the working directory.
     QFileInfo info(jsonFile);
 
@@ -113,12 +118,48 @@ bool APIClient::requestReportProcessing(const QString &jsonFile){
 
 }
 
+bool APIClient::requestUpdate(const QString &pathToSaveAFile){
+    error = "";
+
+    // Clearing everything but the URL.
+    rest_controller.resetRequest();
+
+    // Forming the URL
+    rest_controller.setAPIEndpoint(ENDPOINT_GET_UPDATE + "/" + institution_id);
+    QVariantMap map;
+    map.insert(URLPARAM_INSTANCE,instance_number);
+    map.insert(URLPARAM_REGION,region);
+
+    // Setting the required post data.
+    QVariantMap postdata;
+    postdata.insert(POST_FIELD_INSTITUTION_ID,institution_id);
+    postdata.insert(POST_FIELD_INSTITUTION_INSTANCE,instance_number);    
+    rest_controller.setPOSTDataToSend(postdata);
+
+    rest_controller.setURLParameters(map);
+
+    lastRequest = API_REQUEST_UPDATE;
+
+    // Where the file will be saved.
+    this->pathToSaveAFile = pathToSaveAFile;
+
+    return sendRequest();
+}
+
 QString APIClient::getError() const{
     return error;
 }
 
 
 void APIClient::gotReply(){
+
+    //    QByteArray raw_reply = rest_controller.getReplyData();
+    //    QMap<QString,QString> rheaders = rest_controller.getResponseHeaders();
+    //    QString searchFor = "Content-Disposition";
+
+
+
+
     retdata.clear();
     QByteArray raw_reply = rest_controller.getReplyData();
     if (rest_controller.didReplyHaveAnError()){
@@ -126,14 +167,57 @@ void APIClient::gotReply(){
         error = error + "\nRaw Reply Data: " +  QString(raw_reply);
     }
     else {
-        QJsonParseError json_error;
-        QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
-        if (doc.isNull()){
-            error = "Error decoding JSON Data: " + json_error.errorString();
-            error = error + "\nRaw Reply Data: " +  QString(raw_reply);
+        if (lastRequest != API_REQUEST_UPDATE){
+            QJsonParseError json_error;
+            QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
+            if (doc.isNull()){
+                error = "Error decoding JSON Data: " + json_error.errorString();
+                error = error + "\nRaw Reply Data: " +  QString(raw_reply);
+            }
+            else{
+                retdata = doc.object().toVariantMap();
+            }
         }
         else{
-            retdata = doc.object().toVariantMap();
+            // The raw reply is a file to be saved.
+            QMap<QString,QString> rheaders = rest_controller.getResponseHeaders();
+            QString searchFor = "Content-Disposition";
+            if (rheaders.contains(searchFor)){
+                // Getting the file name.
+                QString filename = "";
+                QString content_disposition = rheaders.value(searchFor);
+                QStringList parts = content_disposition.split(";");
+                for (qint32 i = 0; i < parts.size(); i++){
+                    if (parts.at(i).contains("filename")){
+                        QStringList key_value = parts.at(i).split("=");
+                        filename = key_value.last();
+                        break;
+                    }
+                }
+
+                if (filename.isEmpty()){
+                    error = "Content-dispostion header did not contain a filename as expected";
+                    return;
+                }
+
+                filename = this->pathToSaveAFile + "/" + filename;
+
+                QFile receivedFile(filename);
+                if (!receivedFile.open(QFile::WriteOnly)){
+                    error = "Could not open " + receivedFile.fileName() + " for writing";
+                    return;
+                }
+
+                QDataStream fileWriter(&receivedFile);
+                //qDebug() << "Raw Reply Size" << raw_reply.size();
+                fileWriter.writeRawData(raw_reply.constData(), raw_reply.size());
+                receivedFile.close();
+                //qDebug() << "Receive file size: " << receivedFile.size();
+            }
+            else{
+                error = "Expected header Content-Dispostion, but such header was not found";
+            }
+
         }
     }
     emit(requestFinish());

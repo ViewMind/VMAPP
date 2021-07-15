@@ -1,13 +1,16 @@
 #include "localdb.h"
 
 // Main fields.
-const char * LocalDB::MAIN_EVALUATOR_DATA        = "evaluators";
-const char * LocalDB::MAIN_SUBJECT_DATA          = "subjects";
-const char * LocalDB::MAIN_PROTOCOL              = "main_protocol";
-const char * LocalDB::MAIN_CHECKSUM              = "hash_checksum";
-const char * LocalDB::MAIN_PROCESSING_PARAMETERS = "processing_parameters";
-const char * LocalDB::MAIN_MEDICS                = "medics";
-const char * LocalDB::MAIN_QC_PARAMETERS         = "qc_parameters";
+const char * LocalDB::MAIN_EVALUATOR_DATA                    = "evaluators";
+const char * LocalDB::MAIN_SUBJECT_DATA                      = "subjects";
+const char * LocalDB::MAIN_PROTOCOL                          = "main_protocol";
+const char * LocalDB::MAIN_CHECKSUM                          = "hash_checksum";
+const char * LocalDB::MAIN_PROCESSING_PARAMETERS             = "processing_parameters";
+const char * LocalDB::MAIN_MEDICS                            = "medics";
+const char * LocalDB::MAIN_QC_PARAMETERS                     = "qc_parameters";
+const char * LocalDB::MAIN_APP_VERSION                       = "app_version";
+const char * LocalDB::MAIN_APP_UPDATE_DELAY_COUNTER          = "update_delay_counter";
+
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -41,6 +44,39 @@ LocalDB::LocalDB()
 
 QString LocalDB::getError() const {
     return error;
+}
+
+bool LocalDB::setApplicationVersion(const QString &version){
+    if (this->data.contains(MAIN_APP_VERSION)){
+        if (this->data.value(MAIN_APP_VERSION).toString() != version){
+            this->data[MAIN_APP_VERSION] = version;
+            this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = MAX_ALLOWED_UPDATE_DELAYS;
+            saveAndBackup();
+            return true;
+        }
+    }
+    else{
+        this->data[MAIN_APP_VERSION] = version;
+        this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = MAX_ALLOWED_UPDATE_DELAYS;
+        return false;
+        saveAndBackup();
+    }
+    return false;
+}
+
+
+qint32 LocalDB::getRemainingUpdateDelays() const{
+    if (this->data.contains(MAIN_APP_UPDATE_DELAY_COUNTER)) return this->data.value(MAIN_APP_UPDATE_DELAY_COUNTER).toInt();
+    else return 0;
+}
+
+void LocalDB::deniedUpdate(){
+     if (this->data.contains(MAIN_APP_UPDATE_DELAY_COUNTER)){
+         qint32 counter = this->data.value(MAIN_APP_UPDATE_DELAY_COUNTER).toInt();
+         counter--;
+         this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = counter;
+         saveAndBackup();
+     }
 }
 
 bool LocalDB::setDBFile(const QString &dbfile, const QString &bkp_dir, bool pretty_print_db, bool disable_checksum){

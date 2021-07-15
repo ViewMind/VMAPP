@@ -5,7 +5,6 @@ import QtQuick.Dialogs 1.1
 
 Dialog {
 
-    readonly property string keybase: "viewprotocol_"
     id: viewProtocols
     modal: true
     width: mainWindow.width*0.48
@@ -30,7 +29,7 @@ Dialog {
 
     onOpened: {
         var list =  loader.getProtocolList();
-        list.unshift(loader.getStringForKey(keybase+"optionSelectProtocol"))
+        list.unshift(loader.getStringForKey("viewprotocol_optionSelectProtocol"))
         //console.log(list);
         cbProtocolToDelete.setModelList(list);
         labelNewProtocol.vmErrorMsg = "";
@@ -45,7 +44,7 @@ Dialog {
         font.pixelSize: 18*viewHome.vmScale
         font.family: viewHome.gothamB.name
         color: "#297FCA"
-        text: loader.getStringForKey(keybase+"diagTitle");
+        text: loader.getStringForKey("viewprotocol_diagTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: mainWindow.height*0.101
@@ -59,7 +58,7 @@ Dialog {
         anchors.topMargin: mainWindow.height*0.019
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#5499d5"
-        text: loader.getStringForKey(keybase+"diagSubTitle");
+        text: loader.getStringForKey("viewprotocol_diagSubTitle");
     }
 
     // Creating the close button
@@ -86,7 +85,7 @@ Dialog {
         VMTextDataInput{
             id: labelNewProtocol
             width: parent.width*0.7
-            vmPlaceHolder: loader.getStringForKey(keybase+"labelNewProtocol");
+            vmPlaceHolder: loader.getStringForKey("viewprotocol_labelNewProtocol");
             anchors.bottom: parent.bottom
         }
 
@@ -95,13 +94,13 @@ Dialog {
             height: labelNewProtocol.height
             vmFont: viewHome.gothamM.name
             width: parent.width - labelNewProtocol.width - rowAddProtocols.spacing
-            vmText: loader.getStringForKey(keybase+"btnAdd");
+            vmText: loader.getStringForKey("viewprotocol_btnAdd");
             anchors.bottom: parent.bottom
             onClicked: {
                 if (loader.addProtocol(labelNewProtocol.vmEnteredText)){
                     viewProtocols.close();
                 }
-                else labelNewProtocol.vmErrorMsg =  loader.getStringForKey(keybase+"msgExists");
+                else labelNewProtocol.vmErrorMsg =  loader.getStringForKey("viewprotocol_msgExists");
             }
         }
     }
@@ -129,7 +128,7 @@ Dialog {
             vmFont: viewHome.gothamM.name
             width: btnAdd.width
             height: btnAdd.height
-            vmText: loader.getStringForKey(keybase+"btnDelete");
+            vmText: loader.getStringForKey("viewprotocol_btnDelete");
             anchors.bottom: parent.bottom
             onClicked: {
                 if (cbProtocolToDelete.vmCurrentIndex > 0){
@@ -138,7 +137,7 @@ Dialog {
                         viewProtocols.close();
                     }
                     else{
-                        cbProtocolToDelete.vmErrorMsg =  loader.getStringForKey(keybase+"msgPressAgainToDelete");
+                        cbProtocolToDelete.vmErrorMsg =  loader.getStringForKey("viewprotocol_msgPressAgainToDelete");
                     }
                 }
             }

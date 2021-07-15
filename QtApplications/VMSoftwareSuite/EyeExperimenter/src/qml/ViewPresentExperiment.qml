@@ -5,8 +5,6 @@ VMBase {
 
     id: viewPresentExperiment
 
-    readonly property string keysearch: "viewpresentexp_"
-
     readonly property double vmExpTrackerItemWidth: mainWindow.width/5;
 
     property string vmSlideTitle: "NO TITLE SET";
@@ -105,17 +103,17 @@ VMBase {
         switch(index){
         case viewStudyStart.vmINDEX_BINDING_BC:
             if (study_config[viewStudyStart.vmSCP_NUMBER_OF_TARGETS] === viewStudyStart.vmSCV_BINDING_TARGETS_3){
-                vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC3");
+                vmSlideTitle = loader.getStringForKey("viewpresentexp_itemBindingBC3");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
+                vmSlideExplanation = loader.getStringForKey("viewpresentexp_bindingBCExp");
                 //vmSlideAnimation = "qrc:/images/bound_3.gif"
                 slideViewer.imgScale = 1.3;
                 setSlideImages("bound3",15);
             }
             else{
-                vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingBC");
+                vmSlideTitle = loader.getStringForKey("viewpresentexp_itemBindingBC");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingBCExp");
+                vmSlideExplanation = loader.getStringForKey("viewpresentexp_bindingBCExp");
                 //vmSlideAnimation = "qrc:/images/bound.gif"
                 slideViewer.imgScale = 1.3;
                 setSlideImages("bound",15);
@@ -125,17 +123,17 @@ VMBase {
             break;
         case viewStudyStart.vmINDEX_BINDING_UC:
             if (study_config[viewStudyStart.vmSCP_NUMBER_OF_TARGETS] === viewStudyStart.vmSCV_BINDING_TARGETS_3){
-                vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC3");
+                vmSlideTitle = loader.getStringForKey("viewpresentexp_itemBindingUC3");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
+                vmSlideExplanation = loader.getStringForKey("viewpresentexp_bindingUCExp");
                 //vmSlideAnimation = "qrc:/images/unbound_3.gif"
                 slideViewer.imgScale = 1.3;
                 setSlideImages("unbound3",15);
             }
             else{
-                vmSlideTitle = loader.getStringForKey(keysearch+"itemBindingUC");
+                vmSlideTitle = loader.getStringForKey("viewpresentexp_itemBindingUC");
                 viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey(keysearch+"bindingUCExp");
+                vmSlideExplanation = loader.getStringForKey("viewpresentexp_bindingUCExp");
                 //vmSlideAnimation = "qrc:/images/unbound.gif"
                 slideViewer.imgScale = 1.3;
                 setSlideImages("unbound",15);
@@ -144,9 +142,9 @@ VMBase {
             slideDescription.visible = false;
             break;
         case viewStudyStart.vmINDEX_READING:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemReading");
+            vmSlideTitle = loader.getStringForKey("viewpresentexp_itemReading");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = loader.getStringForKey(keysearch+"readingExp");
+            vmSlideExplanation = loader.getStringForKey("viewpresentexp_readingExp");
             //vmSlideAnimation = "qrc:/images/reading.gif"
             //slideAnimation.visible = false;
             slideDescription.visible = false;
@@ -171,23 +169,23 @@ VMBase {
 
             break;
         case viewStudyStart.vmINDEX_NBACKMS:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemFielding");
+            vmSlideTitle = loader.getStringForKey("viewpresentexp_itemFielding");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
+            vmSlideExplanation = loader.getStringForKey("viewpresentexp_fieldingExp");
             slideDescription.visible = false;
             slideViewer.imgScale = 1.3;
             setSlideImages("fielding",1);
             break;
         case viewStudyStart.vmINDEX_NBACKRT:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemNBackRT");
+            vmSlideTitle = loader.getStringForKey("viewpresentexp_itemNBackRT");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = loader.getStringForKey(keysearch+"fieldingExp");
+            vmSlideExplanation = loader.getStringForKey("viewpresentexp_fieldingExp");
             slideDescription.visible = false;
             slideViewer.imgScale = 1.3;
             setSlideImages("fielding",1);
             break;
         case viewStudyStart.vmINDEX_GONOGO:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemGoNoGo");
+            vmSlideTitle = loader.getStringForKey("viewpresentexp_itemGoNoGo");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = "";
             slideDescription.visible = false;
@@ -195,7 +193,7 @@ VMBase {
             setSlideImages("gonogo",5);
             break;
         case viewStudyStart.vmINDEX_NBACKVS:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemNBackVS");
+            vmSlideTitle = loader.getStringForKey("viewpresentexp_itemNBackVS");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = "";
             slideDescription.visible = false;
@@ -203,7 +201,7 @@ VMBase {
             setSlideImages("fielding",1);
             break;
         case viewStudyStart.vmINDEX_PERCEPTION:
-            vmSlideTitle = loader.getStringForKey(keysearch+"itemPerception");
+            vmSlideTitle = loader.getStringForKey("viewpresentexp_itemPerception");
             viewVRDisplay.vmStudyTitle = vmSlideTitle;
             vmSlideExplanation = "";
             slideDescription.visible = false;
@@ -374,32 +372,32 @@ VMBase {
 
         function changeBindingTitles(use3){
             if (use3){
-                itemBindingUC.vmText = loader.getStringForKey(keysearch + "itemBindingUC3");
-                itemBindingBC.vmText = loader.getStringForKey(keysearch + "itemBindingBC3");
+                itemBindingUC.vmText = loader.getStringForKey("viewpresentexp_itemBindingUC3");
+                itemBindingBC.vmText = loader.getStringForKey("viewpresentexp_itemBindingBC3");
             }
             else{
-                itemBindingUC.vmText = loader.getStringForKey(keysearch + "itemBindingUC");
-                itemBindingBC.vmText = loader.getStringForKey(keysearch + "itemBindingBC");
+                itemBindingUC.vmText = loader.getStringForKey("viewpresentexp_itemBindingUC");
+                itemBindingBC.vmText = loader.getStringForKey("viewpresentexp_itemBindingBC");
             }
         }
 
         VMExperimentTrackerItem {
             id: itemReading
-            vmText: loader.getStringForKey(keysearch + "itemReading")
+            vmText: loader.getStringForKey("viewpresentexp_itemReading")
             vmFont: viewPresentExperiment.robotoM.name
             width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemBindingUC
-            vmText: loader.getStringForKey(keysearch + "itemBindingUC")
+            vmText: loader.getStringForKey("viewpresentexp_itemBindingUC")
             vmFont: viewPresentExperiment.robotoM.name
             width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemBindingBC
-            vmText: loader.getStringForKey(keysearch + "itemBindingBC")
+            vmText: loader.getStringForKey("viewpresentexp_itemBindingBC")
             vmFont: viewPresentExperiment.robotoM.name
             vmIsLast: false
             width: vmExpTrackerItemWidth
@@ -407,40 +405,40 @@ VMBase {
 
         VMExperimentTrackerItem {
             id: itemFielding
-            vmText: loader.getStringForKey(keysearch + "itemFielding")
+            vmText: loader.getStringForKey("viewpresentexp_itemFielding")
             vmFont: viewPresentExperiment.robotoM.name
             width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemNBackRT
-            vmText: loader.getStringForKey(keysearch + "itemNBackRT");
+            vmText: loader.getStringForKey("viewpresentexp_itemNBackRT");
             vmFont: viewPresentExperiment.robotoM.name
             width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemParkinson
-            vmText: loader.getStringForKey(keysearch + "itemParkinson");
+            vmText: loader.getStringForKey("viewpresentexp_itemParkinson");
             vmFont: viewPresentExperiment.robotoM.name
             width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemGoNoGo
-            vmText: loader.getStringForKey(keysearch + "itemGoNoGo")
+            vmText: loader.getStringForKey("viewpresentexp_itemGoNoGo")
             width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemNBackVS
-            vmText: loader.getStringForKey(keysearch + "itemNBackVS")
+            vmText: loader.getStringForKey("viewpresentexp_itemNBackVS")
             width: vmExpTrackerItemWidth
         }
 
         VMExperimentTrackerItem {
             id: itemPerception
-            vmText: loader.getStringForKey(keysearch + "itemPerception");
+            vmText: loader.getStringForKey("viewpresentexp_itemPerception");
         }
 
     }
@@ -490,7 +488,7 @@ VMBase {
 
         VMButton{
             id: btnBack
-            vmText: loader.getStringForKey(keysearch + "btnBack")
+            vmText: loader.getStringForKey("viewpresentexp_btnBack")
             vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
             vmInvertColors: true
             vmFont: viewPresentExperiment.gothamM.name
@@ -501,7 +499,7 @@ VMBase {
 
         VMButton{
             id: btnContinue
-            vmText: loader.getStringForKey(keysearch + "btnContinue")
+            vmText: loader.getStringForKey("viewpresentexp_btnContinue")
             vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
             vmInvertColors: true
             vmFont: viewPresentExperiment.gothamM.name

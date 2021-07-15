@@ -101,11 +101,19 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
         logger.appendWarning("Processing parameters are not present in local database. Will not be able to do any studies");
     }
 
+    // Setting the current version and check if it changed. If it did this is a first time run.
+    firstTimeRun = localDB.setApplicationVersion(Globals::Share::EXPERIMENTER_VERSION_NUMBER);
+
     // Configuring the API Client.
     apiclient.configure(configuration->getString(Globals::VMConfig::INSTITUTION_ID),
                         configuration->getString(Globals::VMConfig::INSTANCE_NUMBER),
+                        Globals::Share::EXPERIMENTER_VERSION_NUMBER,
+                        Globals::REGION,
                         configuration->getString(Globals::VMConfig::INSTANCE_KEY),
                         configuration->getString(Globals::VMConfig::INSTANCE_HASH_KEY));
+
+    // Update cleanup.
+    QFile::remove("../" + Globals::Paths::UPDATE_SCRIPT);
 
 }
 
@@ -185,6 +193,64 @@ QString Loader::getUniqueAuthorizationNumber() const {
 
 QString Loader::getInstitutionName() const {
     return configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
+}
+
+////////////////////////////////////////////////////////  UPDATE FUNCTIONS  ////////////////////////////////////////////////////////
+
+QString Loader::getNewUpdateVersionAvailable() const{
+    return newVersionAvailable;
+}
+
+qint32 Loader::getRemainingUpdateDenials() const{
+    return localDB.getRemainingUpdateDelays();
+}
+
+void Loader::updateDenied(){
+    localDB.deniedUpdate();
+}
+
+void Loader::startUpdate(){
+    processingUploadError = FAIL_CODE_NONE;
+    if (!apiclient.requestUpdate("../")){
+        logger.appendError("Request updated download error: "  + apiclient.getError());
+    }
+}
+
+
+bool Loader::isFirstTimeRun() const{
+    return firstTimeRun;
+}
+
+QStringList Loader::getLatestVersionChanges(){
+    QString name = Globals::Paths::CHANGELOG_LOCATION + "/" + Globals::Paths::CHANGELOG_BASE;
+    name = name  + configuration->getString(Globals::VMPreferences::UI_LANGUAGE) + ".txt";
+    QFile changelogFile(name);
+    if (!changelogFile.open(QFile::ReadOnly)){
+        logger.appendError("Could not open changelog file " + changelogFile.fileName() + " for reading");
+        return QStringList();
+    }
+    QTextStream reader(&changelogFile);
+    reader.setCodec(Globals::Share::TEXT_CODEC);
+    QString content = reader.readAll();
+    changelogFile.close();
+    QStringList allVersions = content.split("|",QString::SkipEmptyParts);
+    // The first version should be the latest.
+    if (allVersions.size() < 1){
+        logger.appendError("Something went wrong when parsing the changelog file " + changelogFile.fileName() + ". Could not split between versions using |");
+        return QStringList();
+    }
+    QString lastVersion = allVersions.first();
+    QStringList allLines = lastVersion.split("\n");
+
+    // The first line is the title.
+    QString title = allLines.first();
+    allLines.removeFirst();
+
+    // All the rest are the body.
+    QString body = allLines.join("\n");
+
+    QStringList ret; ret << title << body;
+    return ret;
 }
 
 ////////////////////////////////////////////////////////  CONFIGURATION FUNCTIONS  ////////////////////////////////////////////////////////
@@ -465,7 +531,7 @@ void Loader::addOrModifyEvaluator(const QString &email, const QString &oldemail 
 
 bool Loader::evaluatorLogIn(const QString &username, const QString &password){
     if ( localDB.passwordCheck(username,password) ){
-        configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);        
+        configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
         return true;
     }
     return false;
@@ -659,7 +725,10 @@ bool Loader::qualityControlFailed() const {
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
 
 void Loader::requestOperatingInfo(){
+
+    newVersionAvailable = "";
     processingUploadError = FAIL_CODE_NONE;
+
     if (!apiclient.requestOperatingInfo()){
         logger.appendError("Request operating info error: "  + apiclient.getError());
     }
@@ -680,6 +749,7 @@ qint32 Loader::getLastAPIRequest(){
 }
 
 void Loader::receivedRequest(){
+
     if (!apiclient.getError().isEmpty()){
         processingUploadError = FAIL_CODE_SERVER_ERROR;
         logger.appendError("Error Receiving Request :"  + apiclient.getError());
@@ -687,20 +757,74 @@ void Loader::receivedRequest(){
     else{
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO){
             QVariantMap ret = apiclient.getMapDataReturned();
-            //Debug::prettpPrintQVariantMap(ret);
-            if (!localDB.setMedicInformationFromRemote(ret.value(APINames::MAIN_DATA).toMap())){
+
+            QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
+
+            if (!localDB.setMedicInformationFromRemote(mainData)){
                 logger.appendError("Failed to set medical professionals info from server: " + localDB.getError());
             }
-            if (!localDB.setProcessingParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
+            if (!localDB.setProcessingParametersFromServerResponse(mainData)){
                 logger.appendError("Failed to set processing parameters from server: " + localDB.getError());
             }
-            if (!localDB.setQCParametersFromServerResponse(ret.value(APINames::MAIN_DATA).toMap())){
+            if (!localDB.setQCParametersFromServerResponse(mainData)){
                 logger.appendError("Failed to set QC parameters from server: " + localDB.getError());
             }
+
+            //Debug::prettpPrintQVariantMap(mainData);
+
+            // Checking for updates.
+            if (mainData.contains(APINames::UpdateParams::UPDATE_VERSION)) {
+                newVersionAvailable = mainData.value(APINames::UpdateParams::UPDATE_VERSION).toString();
+                if (mainData.contains(APINames::UpdateParams::UPDATE_ET_CHANGE)){
+                    newVersionAvailable = newVersionAvailable + " - " + mainData.value(APINames::UpdateParams::UPDATE_ET_CHANGE).toString();
+                }
+            }
+
+            if (!newVersionAvailable.isEmpty()){
+                logger.appendStandard("Update Available: " + newVersionAvailable);
+            }
+
+
         }
-        else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){            
+        else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
             logger.appendSuccess("Study file was successfully sent");
             if (!Globals::Debug::DISABLE_RM_SENT_STUDIES) moveProcessedFiletToProcessedDirectory();
+        }
+        else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_UPDATE){
+            QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
+            if (QFile::exists(expectedPath)){
+                logger.appendSuccess("Received update succesfully. Unzipping");
+
+                // Just to test the update script.
+//                updater.start();
+
+                QDir dir(".");
+                dir.cdUp();
+
+                // Untarring the exe file.
+                QProcess process;
+                QStringList arguments;
+                arguments << "-xvzf" <<  dir.path() + "/" +  Globals::Paths::UPDATE_PACKAGE << "-C"  << dir.path();
+                process.setProcessChannelMode(QProcess::MergedChannels);
+                process.start(APIClient::TAR_EXE,arguments);
+
+                if (!process.waitForFinished()){
+                    QString output = QString::fromUtf8(process.readAllStandardOutput());
+                    logger.appendError("Untarring failed with " + process.errorString() + ". Tar output:\n" + output);
+                }
+
+                if (!QFile::exists("../" + Globals::Paths::UPDATE_SCRIPT)){
+                    QString output = QString::fromUtf8(process.readAllStandardOutput());
+                    logger.appendError("Failed to to uncompressed update file. Tar output:\n" + output);
+                }
+                else{
+                    updater.start();
+                }
+
+            }
+            else{
+                logger.appendError("The download apparently succeded but the file is not where it was expected: " + expectedPath);
+            }
         }
     }
     emit(finishedRequest());

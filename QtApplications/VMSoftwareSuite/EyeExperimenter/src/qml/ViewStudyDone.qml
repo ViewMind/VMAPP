@@ -8,8 +8,6 @@ VMBase {
     width: viewCalibrationStart.vmWIDTH
     height: viewCalibrationStart.vmHEIGHT
 
-    readonly property string keysearch: "viewexpdone_"
-
     function openDiag(){
         studyDoneDiag.open();
     }
@@ -54,7 +52,7 @@ VMBase {
             anchors.topMargin: mainWindow.height*0.128
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#297fca"
-            text: loader.getStringForKey(keysearch+"title");
+            text: loader.getStringForKey("viewexpdone_title");
         }
 
         // The question.
@@ -65,7 +63,7 @@ VMBase {
             anchors.top:  diagTitle.bottom
             anchors.centerIn: parent
             color: "#454545"
-            text: loader.getStringForKey(keysearch+"question");
+            text: loader.getStringForKey("viewexpdone_question");
         }
 
         Row{
@@ -79,7 +77,7 @@ VMBase {
                 id: btnBack
                 height: mainWindow.height*0.072
                 width: mainWindow.width*0.141
-                vmText: loader.getStringForKey(keysearch+"goback");
+                vmText: loader.getStringForKey("viewexpdone_goback");
                 vmFont: viewHome.gothamM.name
                 vmInvertColors: true
                 onClicked: {
@@ -92,7 +90,7 @@ VMBase {
                 id: btnYes
                 height: mainWindow.height*0.072
                 width: mainWindow.width*0.141
-                vmText: loader.getStringForKey(keysearch+"yes");
+                vmText: loader.getStringForKey("viewexpdone_yes");
                 vmFont: viewHome.gothamM.name
                 onClicked: {
                     studyDoneDiag.close();
@@ -111,7 +109,7 @@ VMBase {
         anchors.topMargin: mainWindow.height*0.067
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
-        text: loader.getStringForKey(keysearch+"viewTitle");
+        text: loader.getStringForKey("viewexpdone_viewTitle");
     }
 
 
@@ -123,7 +121,7 @@ VMBase {
         anchors.top:  viewTitle.bottom
         anchors.topMargin: mainWindow.height*0.022
         anchors.horizontalCenter: parent.horizontalCenter
-        text: loader.getStringForKey(keysearch+"labelMessage");
+        text: loader.getStringForKey("viewexpdone_labelMessage");
     }
 
     // The head graph
@@ -139,7 +137,7 @@ VMBase {
 
     VMButton{
         id: btnContinue
-        vmText: loader.getStringForKey(keysearch+"btnContinue");
+        vmText: loader.getStringForKey("viewexpdone_btnContinue");
         vmFont: gothamM.name
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

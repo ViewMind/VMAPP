@@ -9,7 +9,6 @@ VMBase {
 
     readonly property real vmTableWidth: 0.70*mainWindow.width
     readonly property real vmTableHeight: 0.5*mainWindow.height
-    readonly property string keybase: "viewfinishedstudies_"
 
     Connections {
         target: loader
@@ -31,8 +30,8 @@ VMBase {
 
     Dialog {
 
-        property string vmTitle: loader.getStringForKey(keybase+"waitTitle")
-        property string vmMessage: loader.getStringForKey(keybase+"waitSubTitle")
+        property string vmTitle: loader.getStringForKey("viewfinishedstudies_waitTitle")
+        property string vmMessage: loader.getStringForKey("viewfinishedstudies_waitSubTitle")
 
         id: processingQCDialog;
         modal: true
@@ -139,7 +138,7 @@ VMBase {
         font.pixelSize: 43*viewHome.vmScale
         font.family: gothamB.name
         color: "#297FCA"
-        text: loader.getStringForKey(keybase+"title");
+        text: loader.getStringForKey("viewfinishedstudies_title");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: vmBanner.bottom
         anchors.topMargin: mainWindow.height*0.043
@@ -150,7 +149,7 @@ VMBase {
         font.pixelSize: 11*viewHome.vmScale
         font.family: gothamR.name
         color: "#cfcfcf"
-        text: loader.getStringForKey(keybase+"subtitle");
+        text: loader.getStringForKey("viewfinishedstudies_subtitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: title.bottom
         anchors.topMargin: mainWindow.height*0.016
@@ -175,7 +174,7 @@ VMBase {
             height: parent.height
             Text {
                 id: dateText
-                text: loader.getStringForKey(keybase+"headerDate");
+                text: loader.getStringForKey("viewfinishedstudies_headerDate");
                 width: parent.width
                 font.family: gothamB.name
                 font.pixelSize: 15*viewHome.vmScale
@@ -194,7 +193,7 @@ VMBase {
             height: parent.height
             Text {
                 id: subjectText
-                text: loader.getStringForKey(keybase+"headerSubject");
+                text: loader.getStringForKey("viewfinishedstudies_headerSubject");
                 width: parent.width
                 font.family: gothamB.name
                 font.pixelSize: 15*viewHome.vmScale
@@ -213,7 +212,7 @@ VMBase {
             height: parent.height
             Text {
                 id: studyText
-                text: loader.getStringForKey(keybase+"headerStudy");
+                text: loader.getStringForKey("viewfinishedstudies_headerStudy");
                 width: parent.width
                 font.family: gothamB.name
                 font.pixelSize: 15*viewHome.vmScale
@@ -232,7 +231,7 @@ VMBase {
             height: parent.height
             Text {
                 id: assignedDoctor
-                text: loader.getStringForKey(keybase+"headerDoctor");
+                text: loader.getStringForKey("viewfinishedstudies_headerDoctor");
                 width: parent.width
                 font.family: gothamB.name
                 font.pixelSize: 15*viewHome.vmScale
@@ -287,7 +286,7 @@ VMBase {
         VMButton{
             id: btnBack
             height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keybase+"btnBack");
+            vmText: loader.getStringForKey("viewfinishedstudies_btnBack");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             onClicked: {
@@ -299,7 +298,7 @@ VMBase {
         VMButton{
             id: btnSend
             height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keybase+"btnQC");
+            vmText: loader.getStringForKey("viewfinishedstudies_btnQC");
             vmFont: viewHome.gothamM.name
             enabled: studyListView.currentIndex !== -1
             onClicked: {

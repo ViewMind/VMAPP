@@ -27,6 +27,11 @@ namespace APINames {
       static const char * NAME = "freq_params";
    }
 
+   namespace UpdateParams{
+      static const char * UPDATE_ET_CHANGE = "update_et_change";
+      static const char * UPDATE_VERSION   = "update_version";
+   }
+
    namespace Medics {
       static const char * NAME     = "medics";
       static const char * FNAME    = "name";
@@ -51,6 +56,8 @@ public:
     static const char * MAIN_MEDICS;
     static const char * MAIN_PROCESSING_PARAMETERS;
     static const char * MAIN_QC_PARAMETERS;
+    static const char * MAIN_APP_VERSION;
+    static const char * MAIN_APP_UPDATE_DELAY_COUNTER;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -157,8 +164,18 @@ public:
     // Get the protocol list
     QStringList getProtocolList() const;
 
-    // Error string. For loggin purposes.
+    // Error string. For logging purposes.
     QString getError() const;
+
+    // Sets the current version. If it exists and it's different it returns true. Otherwise it returns false. Allows simple check to know when a version changed.
+    // Also if version change (or was created) update postpone counter is reset.
+    bool setApplicationVersion(const QString &version);
+
+    // Decreases the number of times remaining an update can be delayed.
+    void deniedUpdate();
+
+    // Returns the number of times remaining that the user can say NO to an update. 0 if it doesn't exist.
+    qint32 getRemainingUpdateDelays() const;
 
 
 private:
@@ -177,6 +194,9 @@ private:
 
     // Used to verify data integrity.
     QString computeDataHash();
+
+    // The maximum number of times an update can be delayed before the user is forced to update.
+    const qint32 MAX_ALLOWED_UPDATE_DELAYS = 3;
 
 };
 

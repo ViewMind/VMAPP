@@ -12,8 +12,6 @@ VMBase {
         viewCalibrationDoneDiag.open()
     }
 
-    readonly property string keysearch: "viewcalibdone_"
-
     Dialog {
 
         id: viewCalibrationDoneDiag
@@ -34,13 +32,16 @@ VMBase {
             }
         }
 
+        onWidthChanged: repositionImage();
+        onHeightChanged: repositionImage();
+
         // The configure settings title
         Text {
             id: viewTitle
             font.pixelSize: 18*viewHome.vmScale
             font.family: viewCalibrationDone.gothamB.name
             color: "#297FCA"
-            text: loader.getStringForKey(keysearch+"viewTitle");
+            text: loader.getStringForKey("viewcalibdone_viewTitle");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: mainWindow.height*0.179
@@ -50,16 +51,23 @@ VMBase {
         Image {
             id: imgCalibration
             source: "qrc:/images/CALIBRACION.png"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: viewTitle.bottom
-            anchors.topMargin: mainWindow.height*0.069
+            scale: viewHome.vmScale
+            transformOrigin: Item.TopLeft
+            onScaleChanged: {
+                viewCalibrationDoneDiag.repositionImage();
+            }
+        }
+
+        function repositionImage(){
+            imgCalibration.x = (viewCalibrationDone.width - imgCalibration.width*viewHome.vmScale)/2;
+            imgCalibration.y = viewTitle.y + viewTitle.height + mainWindow.height*0.069;
         }
 
         VMButton{
             id: btnContinue
             vmFont: gothamM.name
             vmSize: [mainWindow.width*0.140, mainWindow.height*0.072]
-            vmText: loader.getStringForKey(keysearch+"btnContinue");
+            vmText: loader.getStringForKey("viewcalibdone_btnContinue");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: imgCalibration.bottom
             anchors.topMargin: mainWindow.height*0.069

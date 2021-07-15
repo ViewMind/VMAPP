@@ -8,7 +8,6 @@ VMBase {
     width: viewDoctorInformation.vmWIDTH
     height: viewDoctorInformation.vmHEIGHT
 
-    readonly property string keybase: "viewdrinfo_"
     property string oldemail: ""
 
     function clearAllFields(){
@@ -53,22 +52,22 @@ VMBase {
 
     function checkAndSave(){
         if (labelPassword.getText() !== labelVerifyPassword.getText()){
-            labelPassword.vmErrorMsg = loader.getStringForKey(keybase + "password_match");
+            labelPassword.vmErrorMsg = loader.getStringForKey("viewdrinfo_password_match");
             return;
         }
 
         if (labelName.vmEnteredText === ""){
-            labelName.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
+            labelName.vmErrorMsg = loader.getStringForKey("viewdrinfo_errorEmpty");
             return;
         }
 
         if (labelLastName.vmEnteredText === ""){
-            labelLastName.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
+            labelLastName.vmErrorMsg = loader.getStringForKey("viewdrinfo_errorEmpty");
             return;
         }
 
         if (labelMail.vmEnteredText === ""){
-            labelMail.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
+            labelMail.vmErrorMsg = loader.getStringForKey("viewdrinfo_errorEmpty");
             return;
         }
 
@@ -77,11 +76,11 @@ VMBase {
         if (oldemail === ""){
             // If the old email is empty this is a new user. In this case the password cannot be empty.
             if (labelPassword.getText() === ""){
-                labelPassword.vmErrorMsg = loader.getStringForKey(keybase + "errorEmpty");
+                labelPassword.vmErrorMsg = loader.getStringForKey("viewdrinfo_errorEmpty");
                 return;
             }
             if (loader.checkIfEvaluatorEmailExists(labelMail.vmEnteredText)){
-                labelMail.vmErrorMsg = loader.getStringForKey(keybase + "drexists");
+                labelMail.vmErrorMsg = loader.getStringForKey("viewdrinfo_drexists");
                 return;
             }
         }
@@ -89,7 +88,7 @@ VMBase {
             if (oldemail != labelMail.vmEnteredText){
                 // The evaluator want to change it's email and hence, we need to verify it's not overstepping on another user
                 if (loader.checkIfEvaluatorEmailExists(labelMail.vmEnteredText)){
-                    labelMail.vmErrorMsg = loader.getStringForKey(keybase + "drexists");
+                    labelMail.vmErrorMsg = loader.getStringForKey("viewdrinfo_drexists");
                     return;
                 }
             }
@@ -109,7 +108,7 @@ VMBase {
         font.pixelSize: 43*viewHome.vmScale
         font.family: gothamB.name
         color: "#297FCA"
-        text: loader.getStringForKey(keybase+"title");
+        text: loader.getStringForKey("viewdrinfo_title");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: vmBanner.bottom
         anchors.topMargin: mainWindow.height*0.043
@@ -120,7 +119,7 @@ VMBase {
         font.pixelSize: 11*viewHome.vmScale
         font.family: gothamR.name
         color: "#cfcfcf"
-        text: loader.getStringForKey(keybase+"subtitle");
+        text: loader.getStringForKey("viewdrinfo_subtitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: diagTitle.bottom
         anchors.topMargin: mainWindow.height*0.015
@@ -141,35 +140,35 @@ VMBase {
         VMTextDataInput{
             id: labelName
             width: parent.width
-            vmPlaceHolder: loader.getStringForKey(keybase+"labelName");
+            vmPlaceHolder: loader.getStringForKey("viewdrinfo_labelName");
             Keys.onTabPressed: labelLastName.vmFocus = true;
         }
 
         VMTextDataInput{
             id: labelLastName
             width: parent.width
-            vmPlaceHolder: loader.getStringForKey(keybase+"labelLastName");
+            vmPlaceHolder: loader.getStringForKey("viewdrinfo_labelLastName");
             Keys.onTabPressed: labelMail.vmFocus = true;
         }
 
         VMTextDataInput{
             id: labelMail
             width: parent.width
-            vmPlaceHolder: loader.getStringForKey(keybase+"labelMail");
+            vmPlaceHolder: loader.getStringForKey("viewdrinfo_labelMail");
             Keys.onTabPressed: labelPassword.vmFocus = true;
         }
 
         VMPasswordField{
             id: labelPassword;
             width: parent.width
-            vmLabelText: loader.getStringForKey(keybase+"password");
+            vmLabelText: loader.getStringForKey("viewdrinfo_password");
             Keys.onTabPressed: labelVerifyPassword.vmFocus = true;
         }
 
         VMPasswordField{
             id: labelVerifyPassword
             width: parent.width
-            vmLabelText: loader.getStringForKey(keybase+"verify_password");
+            vmLabelText: loader.getStringForKey("viewdrinfo_verify_password");
             Keys.onTabPressed: labelName.vmFocus = true;
         }
 
@@ -187,7 +186,7 @@ VMBase {
         VMButton{
             id: btnBack
             height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keybase+"btnBack");
+            vmText: loader.getStringForKey("viewdrinfo_btnBack");
             vmFont: gothamM.name
             vmInvertColors: true
             onClicked: {
@@ -202,7 +201,7 @@ VMBase {
 
         VMButton{
             id: btnSave
-            vmText: loader.getStringForKey(keybase+"btnSave");
+            vmText: loader.getStringForKey("viewdrinfo_btnSave");
             vmFont: gothamM.name
             onClicked: {
                 checkAndSave();
@@ -254,7 +253,7 @@ VMBase {
 //            anchors.left: parent.left
 //            anchors.leftMargin: mainWindow.width*0.015
 //            color: "#297fca"
-//            text: loader.getStringListForKey(keybase + "disable_warning")[0];
+//            text: loader.getStringListForKey("viewdrinfo_disable_warning")[0];
 //        }
 
 //        // The instruction text
@@ -266,7 +265,7 @@ VMBase {
 //            anchors.top:  showMsgDialogTitle.bottom
 //            anchors.topMargin: mainWindow.height*0.028
 //            anchors.left: showMsgDialogTitle.left
-//            text: loader.getStringListForKey(keybase + "disable_warning")[1];
+//            text: loader.getStringListForKey("viewdrinfo_disable_warning")[1];
 //        }
 
 //        // Buttons

@@ -5,7 +5,6 @@ import QtQuick.Dialogs 1.1
 
 Dialog {
 
-    readonly property string keybase: "viewsettings_"
     property bool vmInvalidRepoError: false;
     property string vmLoadLanguage: "";
     property string vmDefaultCountry: "";
@@ -42,7 +41,7 @@ Dialog {
         font.pixelSize: 18*viewHome.vmScale
         font.family: viewHome.gothamB.name
         color: "#297FCA"
-        text: loader.getStringForKey(keybase+"diagTitle");
+        text: loader.getStringForKey("viewsettings_diagTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: mainWindow.height*0.101
@@ -64,7 +63,7 @@ Dialog {
     // Combo box for selecting the default country.
     Text {
         id: diagLabelDefaultCountry
-        text: loader.getStringForKey(keybase+"diagLabelDefaultCountry");
+        text: loader.getStringForKey("viewsettings_diagLabelDefaultCountry");
         font.family: viewHome.robotoB.name
         font.pixelSize: 13*viewHome.vmScale
         font.bold: true
@@ -94,7 +93,7 @@ Dialog {
     // Combo box for language selection and label
     Text {
         id: diagLabelLang
-        text: loader.getStringForKey(keybase+"diagLabelLang");
+        text: loader.getStringForKey("viewsettings_diagLabelLang");
         font.family: viewHome.robotoB.name
         font.pixelSize: 13*viewHome.vmScale
         font.bold: true
@@ -127,7 +126,7 @@ Dialog {
     // Combo box for eyetracker selection and label
     Text {
         id: diagLabelET
-        text: loader.getStringForKey(keybase+"diagLabelET");
+        text: loader.getStringForKey("viewsettings_diagLabelET");
         font.family: viewHome.robotoB.name
         font.pixelSize: 13*viewHome.vmScale
         font.bold: true
@@ -140,7 +139,7 @@ Dialog {
 
     VMCheckBox{
         id: diagCboxDualMonitor
-        text: loader.getStringForKey(keybase+"diagCboxDualMonitor");
+        text: loader.getStringForKey("viewsettings_diagCboxDualMonitor");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top: diagLabelET.bottom
@@ -152,7 +151,7 @@ Dialog {
 
     VMCheckBox{
         id: diagCboxUseMouse
-        text: loader.getStringForKey(keybase+"diagCboxUseMouse");
+        text: loader.getStringForKey("viewsettings_diagCboxUseMouse");
         font.family: viewHome.robotoR.name
         font.pixelSize: 13*viewHome.vmScale
         anchors.top: diagLabelET.bottom
@@ -170,7 +169,7 @@ Dialog {
         id: diagBtnOK
         vmFont: viewHome.gothamM.name
         vmSize: [mainWindow.width*0.09, mainWindow.height*0.068]
-        vmText: loader.getStringForKey(keybase+"diagBtnOK");
+        vmText: loader.getStringForKey("viewsettings_diagBtnOK");
         anchors.bottom: parent.bottom;
         anchors.bottomMargin: mainWindow.height*0.02;
         anchors.left: diagDBDefaultCountry.left
@@ -187,7 +186,7 @@ Dialog {
         vmFont: viewHome.gothamM.name
         vmSize: [mainWindow.width*0.09, mainWindow.height*0.068]
         vmInvertColors: true
-        vmText: loader.getStringForKey(keybase+"diagAbout");
+        vmText: loader.getStringForKey("viewsettings_diagAbout");
         anchors.bottom: parent.bottom;
         anchors.bottomMargin: mainWindow.height*0.02;
         anchors.right: diagDBDefaultCountry.right

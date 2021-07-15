@@ -8,7 +8,7 @@
 #include "../../../CommonClasses/Experiments/experiment.h"
 
 ///////////////////////// ONLY ONE OF THESE SHOULD BE ENABLED: DEFINES WHICH SERVER WILL BE USED BY THE API //////////////////////////
-//#define CLIENT_REGION_EU
+#define CLIENT_REGION_EU
 //#define CLIENT_REGION_US
 
 #include "../../../CommonClasses/eyetracker_defines.h"
@@ -43,7 +43,10 @@ namespace Globals{
       static const QString CONFIGURATION = "vmconfiguration";
       static const QString SETTINGS = "vmsettings";
       static const QString PROCESSING_PARAMETERS = "vmpp";
-      static const QString SUBJECT_DIR_ABORTED = "unfinished";
+      static const QString UPDATE_PACKAGE = "app.zip";
+      static const QString UPDATE_SCRIPT  = "update.bat";
+      static const QString CHANGELOG_LOCATION = "changelog";
+      static const QString CHANGELOG_BASE = "changelog_";
    }
    
    namespace VMConfig {
@@ -84,7 +87,7 @@ namespace Globals{
       static const bool DISABLE_DB_CHECKSUM     = false;
       static const bool SHOW_MOUSE_STUDY        = true;
       static const bool SHOW_EYE_POSITION       = false;
-      static const bool DISABLE_RM_SENT_STUDIES = true;
+      static const bool DISABLE_RM_SENT_STUDIES = false;
       static const bool PRETTY_PRINT_JSON_DB    = false;
    }
       
@@ -94,12 +97,12 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "16.0.1";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "16.1.0";
        static const QString EXPERIMENTER_VERSION = EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + REGION
                + (ExperimentGlobals::SHORT_STUDIES ? " - SHORT STUDIES" : "")
                + (Debug::DISABLE_DB_CHECKSUM ? " - NO CHECKSUM" : "") +
                + (Debug::PRETTY_PRINT_JSON_DB ? " - CLEAR_DB" : "")
-               + (Debug::DISABLE_RM_SENT_STUDIES ? " - NO RM STUDIES" : "") ;
+               + (Debug::DISABLE_RM_SENT_STUDIES ? " - NO RM STUDIES" : "");
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
        static const QString PATIENT_UID = "patient_uid";

@@ -12,8 +12,6 @@ Dialog {
     x: (parent.width - width)/2
     closePolicy: Popup.NoAutoClose
 
-    readonly property string keysearch: "viewcalibfailed_"
-
     property bool vmLeftEyePassed: false
     property bool vmRightEyePassed: false
 
@@ -32,7 +30,7 @@ Dialog {
         font.pixelSize: 43*viewHome.vmScale
         font.family: viewCalibrationStart.gothamB.name
         color: "#297FCA"
-        text: loader.getStringForKey(keysearch+"viewTitle");
+        text: loader.getStringForKey("viewcalibfailed_viewTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: mainWindow.height*0.124
@@ -43,7 +41,7 @@ Dialog {
         font.pixelSize: 13*viewHome.vmScale
         font.family: viewCalibrationStart.robotoR.name
         color: "#297FCA"
-        text: loader.getStringForKey(keysearch+"viewSubTitle");
+        text: loader.getStringForKey("viewcalibfailed_viewSubTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: viewTitle.bottom
         anchors.topMargin: mainWindow.height*0.040
@@ -66,9 +64,9 @@ Dialog {
                 else return "#5da655";
             }
             text: {
-                var res = loader.getStringForKey(keysearch+"leftEye") + ": ";
-                if (vmLeftEyePassed) res = res + loader.getStringForKey(keysearch+"msgOK")
-                else res = res + loader.getStringForKey(keysearch+"msgFailed")
+                var res = loader.getStringForKey("viewcalibfailed_leftEye") + ": ";
+                if (vmLeftEyePassed) res = res + loader.getStringForKey("viewcalibfailed_msgOK")
+                else res = res + loader.getStringForKey("viewcalibfailed_msgFailed")
                 return res
             }
         }
@@ -82,9 +80,9 @@ Dialog {
                 else return "#5da655";
             }
             text: {
-                var res = loader.getStringForKey(keysearch+"rightEye") + ": ";
-                if (vmRightEyePassed) res = res + loader.getStringForKey(keysearch+"msgOK")
-                else res = res + loader.getStringForKey(keysearch+"msgFailed")
+                var res = loader.getStringForKey("viewcalibfailed_rightEye") + ": ";
+                if (vmRightEyePassed) res = res + loader.getStringForKey("viewcalibfailed_msgOK")
+                else res = res + loader.getStringForKey("viewcalibfailed_msgFailed")
                 return res
             }
         }
@@ -95,7 +93,7 @@ Dialog {
         id: btnRetry
         vmFont: gothamM.name
         vmSize: [mainWindow.width*0.148, mainWindow.height*0.072]
-        vmText: loader.getStringForKey(keysearch+"btnRetry");
+        vmText: loader.getStringForKey("viewcalibfailed_btnRetry");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: mainWindow.height*0.061

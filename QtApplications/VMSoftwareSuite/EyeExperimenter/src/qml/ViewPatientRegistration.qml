@@ -9,7 +9,6 @@ VMBase {
     width: viewPatientRegistration.vmWIDTH
     height: viewPatientRegistration.vmHEIGHT
 
-    readonly property string keysearch: "viewpatientreg_"
     property bool vmIsNew: true;
     property string patientUID: "";
     property var vmMedicsModelList: []
@@ -33,7 +32,7 @@ VMBase {
         var medics = loader.getMedicList();
         vmMedicsModelList = [];
 
-        var medic_instruction = loader.getStringForKey(keysearch + "labelAssignedDoctor")
+        var medic_instruction = loader.getStringForKey("viewpatientreg_labelAssignedDoctor")
         vmMedicsModelList.push({ "value" : medic_instruction, "metadata" : "-1" });
         for (var key in medics){
             vmMedicsModelList.push({ "value" : medics[key], "metadata" : key });
@@ -92,7 +91,7 @@ VMBase {
         anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#3fa2f7"
-        text: loader.getStringForKey(keysearch+"viewTitleSubject");
+        text: loader.getStringForKey("viewpatientreg_viewTitleSubject");
     }
 
     Text {
@@ -103,7 +102,7 @@ VMBase {
         anchors.topMargin: mainWindow.height*0.019
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#5499d5"
-        text: loader.getStringForKey(keysearch+"viewSubTitle");
+        text: loader.getStringForKey("viewpatientreg_viewSubTitle");
     }
 
     Text {
@@ -115,7 +114,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#ca2026"
         visible: false
-        text: loader.getStringForKey(keysearch+"errorNoAccept");
+        text: loader.getStringForKey("viewpatientreg_errorNoAccept");
     }
 
 
@@ -136,7 +135,7 @@ VMBase {
             VMTextDataInput{
                 id: labelName
                 width: parent.width/2 - parent.spacing
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelName");
+                vmPlaceHolder: loader.getStringForKey("viewpatientreg_labelName");
                 Keys.onTabPressed: labelLastName.vmFocus = true;
                 onHasFocus: clearAllErrors();
             }
@@ -144,7 +143,7 @@ VMBase {
             VMTextDataInput{
                 id: labelLastName
                 width: labelName.width
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelLastName");
+                vmPlaceHolder: loader.getStringForKey("viewpatientreg_labelLastName");
                 Keys.onTabPressed: labelAge.vmFocus = true;
                 onHasFocus: clearAllErrors();
             }
@@ -161,7 +160,7 @@ VMBase {
             VMTextDataInput {
                 id: labelAge
                 width: mainWindow.width*0.113
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelAge");
+                vmPlaceHolder: loader.getStringForKey("viewpatientreg_labelAge");
                 anchors.verticalCenter: parent.verticalCenter
                 Keys.onTabPressed: labelBirthDate.vmFocus = true;
                 onHasFocus: clearAllErrors();
@@ -171,7 +170,7 @@ VMBase {
                 id: labelBirthDate
                 width: parent.width - labelAge.width - parent.spacing
                 //vmCalendarInput: true
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelBirthDate");
+                vmPlaceHolder: loader.getStringForKey("viewpatientreg_labelBirthDate");
                 anchors.verticalCenter: parent.verticalCenter
                 Keys.onTabPressed: labelFormativeYears.vmFocus = true;
                 onHasFocus: clearAllErrors();
@@ -189,7 +188,7 @@ VMBase {
             VMTextDataInput {
                 id: labelFormativeYears
                 width: labelAge.width
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelFormativeYears");
+                vmPlaceHolder: loader.getStringForKey("viewpatientreg_labelFormativeYears");
                 Keys.onTabPressed: labelInstitutionProvidedID.vmFocus = true;
                 onHasFocus: clearAllErrors();
             }
@@ -197,7 +196,7 @@ VMBase {
             VMTextDataInput{
                 id: labelInstitutionProvidedID
                 width: labelBirthDate.width
-                vmPlaceHolder: loader.getStringForKey(keysearch+"labelDocument_number");
+                vmPlaceHolder: loader.getStringForKey("viewpatientreg_labelDocument_number");
                 Keys.onTabPressed: labelAssignedDoctor.vmFocus = true;
                 onHasFocus: clearAllErrors();
             }
@@ -215,7 +214,7 @@ VMBase {
                 width: parent.width
                 vmNoLabelHeight: mainWindow.height*0.043
                 z: 10
-                vmLabel: loader.getStringForKey(keysearch+"labelCountry")
+                vmLabel: loader.getStringForKey("viewpatientreg_labelCountry")
                 vmList: loader.getCountryList()
                 vmValues: loader.getCountryCodeList()
                 onVmValuesChanged: labelCountry.setCurrentIndex(loader.getDefaultCountry(false))
@@ -239,7 +238,7 @@ VMBase {
                 z: 2
                 id: labelGender
                 width: mainWindow.width*0.113
-                Component.onCompleted: labelGender.setModelList([loader.getStringForKey(keysearch+"labelGender"), "M", "F"])
+                Component.onCompleted: labelGender.setModelList([loader.getStringForKey("viewpatientreg_labelGender"), "M", "F"])
             }
 
             VMComboBox2 {
@@ -266,7 +265,7 @@ VMBase {
         VMButton{
             id: btnBack
             height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keysearch+"btnCancel");
+            vmText: loader.getStringForKey("viewpatientreg_btnCancel");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             onClicked: {
@@ -276,32 +275,32 @@ VMBase {
 
         VMButton{
             id: btnSave
-            vmText: loader.getStringForKey(keysearch+"btnContinue");
+            vmText: loader.getStringForKey("viewpatientreg_btnContinue");
             vmFont: viewHome.gothamM.name
             onClicked: {
 
                 if (labelFormativeYears.vmEnteredText === ""){
-                    labelFormativeYears.vmErrorMsg = loader.getStringForKey(keysearch + "errorEmpty");
+                    labelFormativeYears.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorEmpty");
                     return
                 }
                 else{
                     var value = parseInt(labelFormativeYears.vmEnteredText)
                     if (isNaN(value) || (value < 0)){
-                        labelFormativeYears.vmErrorMsg = loader.getStringForKey(keysearch + "errorInvalidNum");
+                        labelFormativeYears.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorInvalidNum");
                         return
                     }
                 }
 
                 if ((labelBirthDate.vmEnteredText === "") && (labelAge.vmEnteredText === "")){
-                    labelBirthDate.vmErrorMsg = loader.getStringForKey(keysearch + "errorCannotBothEmpty");
-                    labelAge.vmErrorMsg = loader.getStringForKey(keysearch + "errorCannotBothEmpty");
+                    labelBirthDate.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorCannotBothEmpty");
+                    labelAge.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorCannotBothEmpty");
                     return;
                 }
 
                 if (labelAge.vmEnteredText != ""){
                     value = parseInt(labelAge.vmEnteredText)
                     if (isNaN(value) || (value < 0)){
-                        labelAge.vmErrorMsg = loader.getStringForKey(keysearch + "errorInvalidNum");
+                        labelAge.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorInvalidNum");
                         return
                     }
                 }
@@ -322,13 +321,13 @@ VMBase {
                 // If the institution provided ID is empty, then the name and lastname is a must. Otherwise, the can be empty.
                 if (labelInstitutionProvidedID.vmEnteredText === ""){
                     if (labelName.vmEnteredText === ""){
-                        labelName.vmErrorMsg = loader.getStringForKey(keysearch + "errorCannotBothEmpty");
-                        labelInstitutionProvidedID.vmErrorMsg = loader.getStringForKey(keysearch + "errorCannotBothEmpty");
+                        labelName.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorCannotBothEmpty");
+                        labelInstitutionProvidedID.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorCannotBothEmpty");
                         return;
                     }
                     else if (labelLastName.vmEnteredText === ""){
-                        labelLastName.vmErrorMsg = loader.getStringForKey(keysearch + "errorCannotBothEmpty");
-                        labelInstitutionProvidedID.vmErrorMsg = loader.getStringForKey(keysearch + "errorCannotBothEmpty");
+                        labelLastName.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorCannotBothEmpty");
+                        labelInstitutionProvidedID.vmErrorMsg = loader.getStringForKey("viewpatientreg_errorCannotBothEmpty");
                         return
                     }
                 }
