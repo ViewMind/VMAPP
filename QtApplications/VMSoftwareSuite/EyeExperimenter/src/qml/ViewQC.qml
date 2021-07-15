@@ -7,7 +7,6 @@ VMBase {
     id: viewStudyDone
     width: viewCalibrationStart.vmWIDTH
     height: viewCalibrationStart.vmHEIGHT
-    readonly property string keysearch: "viewQC_"
 
     // The order of the graphs.
     readonly property int vmINDEX_GRAPH_POINTS: 0
@@ -29,19 +28,19 @@ VMBase {
 
         // Selecting the different types of graphps.
         var buttonList = [
-                    loader.getStringForKey(keysearch+"GraphPoints"),
-                    loader.getStringForKey(keysearch+"GraphFixationsL"),
-                    loader.getStringForKey(keysearch+"GraphFixationsR"),
-                    loader.getStringForKey(keysearch+"GraphGlitches"),
-                    loader.getStringForKey(keysearch+"GraphFreq"),
+                    loader.getStringForKey("viewQC_GraphPoints"),
+                    loader.getStringForKey("viewQC_GraphFixationsL"),
+                    loader.getStringForKey("viewQC_GraphFixationsR"),
+                    loader.getStringForKey("viewQC_GraphGlitches"),
+                    loader.getStringForKey("viewQC_GraphFreq"),
                 ];
 
         vmSubTitleList = [
-                    loader.getStringForKey(keysearch+"SubPoints"),
-                    loader.getStringForKey(keysearch+"SubFixationsL"),
-                    loader.getStringForKey(keysearch+"SubFixationsR"),
-                    loader.getStringForKey(keysearch+"SubGlitches"),
-                    loader.getStringForKey(keysearch+"SubFrequency"),
+                    loader.getStringForKey("viewQC_SubPoints"),
+                    loader.getStringForKey("viewQC_SubFixationsL"),
+                    loader.getStringForKey("viewQC_SubFixationsR"),
+                    loader.getStringForKey("viewQC_SubGlitches"),
+                    loader.getStringForKey("viewQC_SubFrequency"),
                 ];
 
         qcGraphList.clear();
@@ -50,7 +49,7 @@ VMBase {
         }
 
         // Creating the study name language map
-        var nameList = loader.getStringListForKey(keysearch + "StudyNameMap");
+        var nameList = loader.getStringListForKey("viewQC_StudyNameMap");
         vmStudyNameMap = [];
         var key;
         for (i = 0; i < nameList.length; i++){
@@ -132,8 +131,8 @@ VMBase {
 
     Dialog {
 
-        property string vmTitle: loader.getStringForKey(keysearch+"WaitTitle")
-        property string vmMessage: loader.getStringForKey(keysearch+"WaitSubtitle")
+        property string vmTitle: loader.getStringForKey("viewQC_WaitTitle")
+        property string vmMessage: loader.getStringForKey("viewQC_WaitSubtitle")
 
         id: connectionDialog;
         modal: true
@@ -214,7 +213,7 @@ VMBase {
         anchors.topMargin: mainWindow.height*0.032
         anchors.horizontalCenter: parent.horizontalCenter
         color: "#297fca"
-        text: loader.getStringForKey(keysearch + "Title");
+        text: loader.getStringForKey("viewQC_Title");
     }
 
     Text {
@@ -252,7 +251,7 @@ VMBase {
 
         Text {
             id: studyNameText
-            text: loader.getStringForKey(keysearch+"Study");
+            text: loader.getStringForKey("viewQC_Study");
             width: parent.width
             font.family: gothamB.name
             font.pixelSize: 15*viewHome.vmScale
@@ -306,7 +305,7 @@ VMBase {
         anchors.bottom: qcGraphsView.top
         Text {
             id: graphTitleText
-            text: loader.getStringForKey(keysearch+"GraphTitle");
+            text: loader.getStringForKey("viewQC_GraphTitle");
             width: parent.width
             font.family: gothamB.name
             font.pixelSize: 15*viewHome.vmScale
@@ -639,8 +638,6 @@ VMBase {
             for (i = 0; i < yTickPositions.length; i++){
                 ctx.fillText(yTickValues[i],xTextValue,yTickPositions[i]);
             }
-
-
         }
 
     }
@@ -656,7 +653,7 @@ VMBase {
         VMButton{
             id: btnBack
             height: mainWindow.height*0.072
-            vmText: "BACK"//loader.getStringForKey(keybase+"btnBack");
+            vmText: loader.getStringForKey("viewQC_btnBack");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             onClicked: {
@@ -667,7 +664,7 @@ VMBase {
         VMButton{
             id: btnSend
             height: mainWindow.height*0.072
-            vmText: "SEND";
+            vmText: loader.getStringForKey("viewQC_btnSend");
             vmFont: viewHome.gothamM.name
             onClicked: {
                 loader.sendStudy();

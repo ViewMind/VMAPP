@@ -18,6 +18,7 @@
 #include "subjectdirscanner.h"
 #include "apiclient.h"
 #include "qualitycontrol.h"
+#include "updater.h"
 
 
 class Loader : public QObject
@@ -44,6 +45,15 @@ public:
     Q_INVOKABLE QString getSerialNumber() const;
     Q_INVOKABLE QString getUniqueAuthorizationNumber() const;
     Q_INVOKABLE QString getInstitutionName() const;
+
+    //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
+
+    Q_INVOKABLE QString getNewUpdateVersionAvailable() const;
+    Q_INVOKABLE qint32 getRemainingUpdateDenials() const;
+    Q_INVOKABLE void updateDenied();
+    Q_INVOKABLE void startUpdate();
+    Q_INVOKABLE bool isFirstTimeRun() const;
+    Q_INVOKABLE QStringList getLatestVersionChanges();
 
     //////////////////////////// EVALUATOR RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE void logOut();
@@ -114,11 +124,17 @@ private:
     ConfigurationManager *configuration;
     ConfigurationManager language;
 
+    // String that stores the new version of the application if one is avaible. For display.
+    QString newVersionAvailable;
+
     // The API communication client.
     APIClient apiclient;
 
     // The local database
     LocalDB localDB;
+
+    // Flag that indicates that it's the first time running this particular version of the application.
+    bool firstTimeRun;
 
     // Quality Control Computations
     QualityControl qc;
@@ -128,6 +144,9 @@ private:
 
     // Flag for checking uplaod error
     qint32 processingUploadError;
+
+    // In order for the update to function properly the system command that calls the update script needs to be started in a separate thread.
+    Updater updater;
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();

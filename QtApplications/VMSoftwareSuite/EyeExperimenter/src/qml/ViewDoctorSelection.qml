@@ -5,8 +5,6 @@ import QtQuick.Dialogs 1.1
 
 Dialog {
 
-    readonly property string keybase: "viewdrsel_"
-
     id: viewDoctorSelection
     modal: true
     width: mainWindow.width*0.511
@@ -53,14 +51,14 @@ Dialog {
 
         }
         else{
-            drPassword.vmErrorMsg = loader.getStringForKey(keybase+"drwrongpass");;
+            drPassword.vmErrorMsg = loader.getStringForKey("viewdrsel_drwrongpass");;
         }
     }
 
     function updateDrProfile(){
         var ans = loader.getLoginEmails();
         //console.log(ans);
-        ans.unshift(loader.getStringForKey(keybase+"labelDrProfile"));
+        ans.unshift(loader.getStringForKey("viewdrsel_labelDrProfile"));
         labelDrProfile.setModelList(ans)
         labelDrProfile.vmCurrentIndex = 0;
     }
@@ -101,7 +99,7 @@ Dialog {
         font.pixelSize: 40*viewHome.vmScale
         font.family: viewHome.gothamB.name
         color: "#297FCA"
-        text: loader.getStringForKey(keybase+"viewTitle");
+        text: loader.getStringForKey("viewdrsel_viewTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: drPic.bottom
         anchors.topMargin: mainWindow.height*0.022
@@ -112,7 +110,7 @@ Dialog {
         font.pixelSize: 11*viewHome.vmScale
         font.family: viewHome.gothamR.name
         color: "#969696"
-        text: loader.getStringForKey(keybase+"viewSubTitle");
+        text: loader.getStringForKey("viewdrsel_viewSubTitle");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: diagTitle.bottom
         anchors.topMargin: mainWindow.height*0.014
@@ -162,7 +160,7 @@ Dialog {
 
     VMPasswordField{
         id: drPassword
-        vmLabelText: loader.getStringForKey(keybase+"drpassword");
+        vmLabelText: loader.getStringForKey("viewdrsel_drpassword");
         width: labelDrProfile.width
         anchors.left: rowProfileAndAdd.left
         anchors.top: rowProfileAndAdd.bottom
@@ -174,7 +172,7 @@ Dialog {
     VMButton{
         id: btnOk
         height: mainWindow.height*0.072
-        vmText: loader.getStringForKey(keybase+"btnOk");
+        vmText: loader.getStringForKey("viewdrsel_btnOk");
         vmFont: viewHome.gothamM.name
         anchors.bottom: parent.bottom
         anchors.bottomMargin: mainWindow.height*0.043

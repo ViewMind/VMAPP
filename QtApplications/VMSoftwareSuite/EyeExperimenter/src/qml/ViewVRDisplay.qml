@@ -32,7 +32,6 @@ VMBase {
         calibrationFailedDialog.open();
     }
 
-    readonly property string keysearch: "viewvrscreen_"
     property string vmStudyTitle: "NO TITLE SET"
 
     Connections{
@@ -117,7 +116,7 @@ VMBase {
 
         VMButton{
             id: btnStartStudy
-            vmText: loader.getStringForKey(keysearch + "btnStartExperiment")
+            vmText: loader.getStringForKey("viewvrscreen_btnStartExperiment")
             vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
             vmInvertColors: true
             vmFont: viewVRDisplay.gothamM.name
@@ -131,7 +130,7 @@ VMBase {
 
         VMButton{
             id: btnStopStudy
-            vmText: loader.getStringForKey(keysearch + "btnStopExperiment")
+            vmText: loader.getStringForKey("viewvrscreen_btnStopExperiment")
             vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
             vmInvertColors: true
             vmFont: viewVRDisplay.gothamM.name
@@ -145,7 +144,7 @@ VMBase {
 
         VMButton{
             id: btnCalibrate
-            vmText: loader.getStringForKey(keysearch + "btnStartCalibration")
+            vmText: loader.getStringForKey("viewvrscreen_btnStartCalibration")
             vmSize: [mainWindow.width*0.141, mainWindow.height*0.072]
             vmInvertColors: true
             vmFont: viewVRDisplay.gothamM.name

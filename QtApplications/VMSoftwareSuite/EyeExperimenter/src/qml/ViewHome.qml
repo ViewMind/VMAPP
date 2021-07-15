@@ -9,8 +9,8 @@ VMBase {
     height: mainWindow.height
 
     readonly property double vmScale: mainWindow.width/1280;
-    readonly property string keysearch: "viewhome_"
     readonly property int vmAPI_OPINFO_REQUEST: 1
+    readonly property int vmAPI_UPDATE_REQUEST: 3
 
     Connections {
         target: loader
@@ -19,6 +19,19 @@ VMBase {
             //console.log("Finished request")
             if (loader.getLastAPIRequest() === vmAPI_OPINFO_REQUEST){
                 //console.log("Last request was an OP INFO call")
+                connectionDialog.close();
+
+                if (loader.getNewUpdateVersionAvailable() !== ""){
+                    //console.log("New version Available " + loader.getNewUpdateVersionAvailable())
+                    updateRequestDialog.vmVersion = loader.getNewUpdateVersionAvailable()
+                    updateRequestDialog.open();
+                }
+                else {
+                    viewDrSelection.open();
+                }
+            }
+            else if (loader.getLastAPIRequest() === vmAPI_UPDATE_REQUEST){
+                // If the application got here, we move on. But it means that the update failed.
                 connectionDialog.close();
                 viewDrSelection.open();
             }
@@ -75,6 +88,15 @@ VMBase {
             viewHome.vmErrorDiag.vmErrorTitle = titleMsg[0];
             viewHome.vmErrorDiag.open();
             return;
+        }
+
+        // If this is the first time running this version the changes are shown.
+        if (loader.isFirstTimeRun()){
+            var title_and_body = loader.getLatestVersionChanges();
+            if (title_and_body.length !== 2) return;
+            showTextDialog.vmTitle = title_and_body[0];
+            showTextDialog.vmContent = title_and_body[1];
+            showTextDialog.open();
         }
 
     }
@@ -150,6 +172,7 @@ VMBase {
 
     }
 
+    // Dialog to show the restart message.
     Dialog {
         id: restartDialog;
         modal: true
@@ -200,6 +223,7 @@ VMBase {
 
     }
 
+    // Wait dialog for synching up.
     Dialog {
 
         property string vmTitle: "TITLE"
@@ -274,13 +298,96 @@ VMBase {
 
     }
 
-    Timer {
-        id: closeTimer;
-        interval: 5000
-        repeat: false
-        onTriggered: {
-            loader.replaceEyeLauncher();
+    // Update request dialog.
+    Dialog {
+        id: updateRequestDialog;
+        modal: true
+        width: mainWindow.width*0.6
+        height: mainWindow.height*0.5
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        property string vmVersion: "0.0.0"
+
+        contentItem: Rectangle {
+            id: rectUpdateRequestDiag
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
         }
+
+        // The instruction text
+        Text {
+            id: updateRequestTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 33*viewHome.vmScale
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.128
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: loader.getStringForKey("viewhome_updateTitle") + " " + updateRequestDialog.vmVersion;
+        }
+
+
+        // The instruction text
+        Text {
+            id: updateRequestMessge
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13*viewHome.vmScale
+            anchors.top:  updateRequestTitle.bottom
+            anchors.topMargin: parent.height*0.1
+            anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
+            color:  "#5f5f5f"
+            text:  {
+                var N = loader.getRemainingUpdateDenials();
+                var message = loader.getStringForKey("viewhome_updateQuestion");
+                message = message.replace("=N=",N);
+                if (N === 0) btnNo.enabled = false;
+                return message;
+            }
+        }
+
+        VMButton{
+            id: btnNo
+            vmFont: viewHome.gothamM.name
+            vmSize: [parent.width*0.15, parent.height*0.15]
+            vmText: loader.getStringForKey("viewhome_updateNo");
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: parent.width*0.05
+            anchors.bottomMargin: parent.height*0.05;
+            onClicked: {
+                loader.updateDenied();
+                updateRequestDialog.close();
+                viewDrSelection.open();
+            }
+        }
+
+        VMButton{
+            id: btnYes
+            vmFont: viewHome.gothamM.name
+            vmSize: [parent.width*0.15, parent.height*0.15]
+            vmText: loader.getStringForKey("viewhome_updateYes");
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.rightMargin: parent.width*0.05
+            anchors.bottomMargin: parent.height*0.05;
+            onClicked: {
+                updateRequestDialog.close();
+                var title_and_text = loader.getStringListForKey("msg_get_update");
+                //console.log(title_and_text);
+                connectionDialog.vmMessage = title_and_text[1];
+                connectionDialog.vmTitle = title_and_text[0];
+                connectionDialog.open();
+                loader.startUpdate();
+            }
+        }
+
+
     }
 
     // ViewMind Logo
@@ -334,7 +441,7 @@ VMBase {
             anchors.centerIn: btnConfSettingsRect
             font.family: gothamM.name
             font.pixelSize: 13*viewHome.vmScale
-            text: loader.getStringForKey(keysearch+"btnConfSettings");
+            text: loader.getStringForKey("viewhome_btnConfSettings");
             color: "#88b2d0"
         }
         anchors{
@@ -355,12 +462,12 @@ VMBase {
         anchors.top:  vmBanner.bottom
         anchors.topMargin: mainWindow.height*0.307
         color: "#297fca"
-        text: loader.getStringForKey(keysearch+"slideTitle");
+        text: loader.getStringForKey("viewhome_slideTitle");
     }
 
     VMButton{
         id: btnGetStarted
-        vmText: loader.getStringForKey(keysearch+"btnGetStarted");
+        vmText: loader.getStringForKey("viewhome_btnGetStarted");
         vmFont: gothamM.name
         x: slideTitle.x
         anchors{
@@ -376,4 +483,6 @@ VMBase {
             loader.requestOperatingInfo();
         }
     }
+
+
 }

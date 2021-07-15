@@ -17,6 +17,11 @@ detectar Dificultades Cognitivas Leves y predecir <br>
 el comienzo de Síndrome de Alzheimer y otras demencias, <br>
 años antes de que sus síntomas sean visibles.;
 viewhome_btnGetStarted = INGRESAR;
+viewhome_updateTitle = Actualización Disponible: ;
+viewhome_updateQuestion = ¿Desea bajar e instalar la actualización ahora?<br>Puede posponer la actualización =N= veces mas;
+viewhome_updateYes = SI;
+viewhome_updateNo  = NO;
+
 
 #********************************* DOCTOR MENU *********************************
 viewdrmenu_mode = Modo;
@@ -385,3 +390,4 @@ msg_change_lang = Efectuar los cambios|Los cambios que realizó requieren que se
 msg_request_report = Procesando...|Por favor espere mientras se obtiene la información del reporte;
 msg_report_generation = Generando reporte|En un instante su informe estará listo...;
 msg_get_info_online = Sincronizando ...|Descargando información del portal, por favor espere;
+msg_get_update = Espere por favor ...|Se está descargando la actualización. Esto puede llevar algunos minutos;

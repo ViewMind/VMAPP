@@ -48,8 +48,6 @@ VMBase {
         viewCalibrationStartDiag.open()
     }
 
-    readonly property string keysearch: "viewcalibstart_"
-
     VMCalibrationFailedDialog{
         id: calibrationFailedDialog
         x: (mainWindow.width-width)/2
@@ -65,6 +63,9 @@ VMBase {
         y: (parent.height - height)/2
         x: (parent.width - width)/2
         closePolicy: Popup.NoAutoClose
+
+        onWidthChanged: repositionImage();
+        onHeightChanged: repositionImage();
 
         // The Drop shadow
         contentItem: Rectangle {
@@ -82,7 +83,7 @@ VMBase {
             font.pixelSize: 43*viewHome.vmScale
             font.family: viewCalibrationStart.gothamB.name
             color: "#297FCA"
-            text: loader.getStringForKey(keysearch+"viewTitle");
+            text: loader.getStringForKey("viewcalibstart_viewTitle");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: mainWindow.height*0.124
@@ -94,7 +95,7 @@ VMBase {
             font.pixelSize: 13*viewHome.vmScale
             font.family: viewCalibrationStart.robotoR.name
             color: "#297FCA"
-            text: loader.getStringForKey(keysearch+"viewSubTitle");
+            text: loader.getStringForKey("viewcalibstart_viewSubTitle");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: viewTitle.bottom
             anchors.topMargin: mainWindow.height*0.040
@@ -104,16 +105,24 @@ VMBase {
         Image {
             id: imgEye
             source: "qrc:/images/OJO.png"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: viewSubTitle.bottom
-            anchors.topMargin: mainWindow.height*0.054
+            scale: viewHome.vmScale
+            transformOrigin: Item.TopLeft
+            onScaleChanged: {
+                viewCalibrationStartDiag.repositionImage();
+            }
         }
+
+        function repositionImage(){
+            imgEye.x = (viewCalibrationStartDiag.width - imgEye.width*viewHome.vmScale)/2;
+            imgEye.y = viewSubTitle.y + viewSubTitle.height + mainWindow.height*0.054;
+        }
+
 
         VMButton{
             id: btnStart
             vmFont: gothamM.name            
             vmSize: [mainWindow.width*0.148, mainWindow.height*0.072]
-            vmText: loader.getStringForKey(keysearch+"btnStart");
+            vmText: loader.getStringForKey("viewcalibstart_btnStart");
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: imgEye.bottom
             anchors.topMargin: mainWindow.height*0.061

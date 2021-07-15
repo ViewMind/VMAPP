@@ -9,7 +9,6 @@ VMBase {
 
     readonly property real vmTableWidth: 0.70*mainWindow.width
     readonly property real vmTableHeight: 0.33*mainWindow.height
-    readonly property string keybase: "viewpatientlist_"
     property bool disableStudyStart: false;
 
 
@@ -39,7 +38,7 @@ VMBase {
             var medics = loader.getMedicList();
             doctorList = [];
 
-            var medic_instruction = loader.getStringForKey(keybase + "destinatary")
+            var medic_instruction = loader.getStringForKey("viewpatientlist_destinatary")
             doctorList.push({ "value" : medic_instruction, "metadata" : "-1" });
             for (var key in medics){
                 doctorList.push({ "value" : medics[key], "metadata" : key });
@@ -47,7 +46,7 @@ VMBase {
             doctorSelection.setModelList(doctorList);
 
             protocolList = loader.getProtocolList();
-            protocolList.unshift(loader.getStringForKey(keybase  + "protocol_inst"));
+            protocolList.unshift(loader.getStringForKey("viewpatientlist_protocol_inst"));
             protocolSelection.setModelList(protocolList);
 
             // Setting the selected doctor for the current patient.
@@ -88,7 +87,7 @@ VMBase {
 
                 Text{
                     id: labelDoctor
-                    text: loader.getStringForKey(keybase + "doctor") + " " +  loader.getInstitutionName();
+                    text: loader.getStringForKey("viewpatientlist_doctor") + " " +  loader.getInstitutionName();
                     color:  "#297fca"
                     font.family: viewHome.gothamM.name
                     font.pixelSize: 16*viewHome.vmScale
@@ -111,7 +110,7 @@ VMBase {
 
                 Text{
                     id: labelProtocol
-                    text: loader.getStringForKey(keybase + "protocol")
+                    text: loader.getStringForKey("viewpatientlist_protocol")
                     color:  "#297fca"
                     font.family: viewHome.gothamM.name
                     font.pixelSize: 16*viewHome.vmScale
@@ -141,7 +140,7 @@ VMBase {
             VMButton{
                 id: btnBackDiag
                 height: mainWindow.height*0.072
-                vmText: loader.getStringForKey(keybase+"btnBack");
+                vmText: loader.getStringForKey("viewpatientlist_btnBack");
                 vmFont: viewHome.gothamM.name
                 vmInvertColors: true
                 onClicked: {
@@ -152,7 +151,7 @@ VMBase {
             VMButton{
                 id: btnStartDiag
                 height: mainWindow.height*0.072
-                vmText: loader.getStringForKey(keybase+"btnStart");
+                vmText: loader.getStringForKey("viewpatientlist_btnStart");
                 vmFont: viewHome.gothamM.name
                 enabled: doctorSelection.vmCurrentIndex > 0;
                 onClicked: {
@@ -239,7 +238,7 @@ VMBase {
         font.pixelSize: 43*viewHome.vmScale
         font.family: gothamB.name
         color: "#297FCA"
-        text: loader.getStringForKey(keybase+"titleSubject");
+        text: loader.getStringForKey("viewpatientlist_titleSubject");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: vmBanner.bottom
         anchors.topMargin: mainWindow.height*0.043
@@ -250,7 +249,7 @@ VMBase {
         font.pixelSize: 11*viewHome.vmScale
         font.family: gothamR.name
         color: "#cfcfcf"
-        text: loader.getStringForKey(keybase+"subtitleSubject");
+        text: loader.getStringForKey("viewpatientlist_subtitleSubject");
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: title.bottom
         anchors.topMargin: mainWindow.height*0.016
@@ -298,7 +297,7 @@ VMBase {
         VMButton{
             id: btnReports
             height: mainWindow.height*0.043
-            vmText: loader.getStringForKey(keybase+"btnReports");
+            vmText: loader.getStringForKey("viewpatientlist_btnReports");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             anchors.verticalCenter: parent.verticalCenter
@@ -331,7 +330,7 @@ VMBase {
             id: filter
             font.pixelSize: 13*viewHome.vmScale
             font.family: viewHome.gothamM.name
-            text: loader.getStringForKey(keybase+"filter");
+            text: loader.getStringForKey("viewpatientlist_filter");
             color: "#297fca"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
@@ -386,7 +385,7 @@ VMBase {
             height: parent.height
             Text {
                 id: patientText
-                text:loader.getStringForKey(keybase+"headerSubject");
+                text:loader.getStringForKey("viewpatientlist_headerSubject");
                 width: parent.width
                 font.family: gothamB.name
                 font.pixelSize: 15*viewHome.vmScale
@@ -424,7 +423,7 @@ VMBase {
             height: parent.height
             Text {
                 id: creationDateText
-                text: loader.getStringForKey(keybase+"headerCreationDate");
+                text: loader.getStringForKey("viewpatientlist_headerCreationDate");
                 width: parent.width
                 font.family: gothamB.name
                 font.pixelSize: 15*viewHome.vmScale
@@ -480,7 +479,7 @@ VMBase {
         VMButton{
             id: btnBack
             height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keybase+"btnBack");
+            vmText: loader.getStringForKey("viewpatientlist_btnBack");
             vmFont: viewHome.gothamM.name
             vmInvertColors: true
             onClicked: {
@@ -491,7 +490,7 @@ VMBase {
         VMButton{
             id: btnStart
             height: mainWindow.height*0.072
-            vmText: loader.getStringForKey(keybase+"btnStart");
+            vmText: loader.getStringForKey("viewpatientlist_btnStart");
             vmFont: viewHome.gothamM.name
             enabled: (patientListView.currentIndex !== -1) && (!disableStudyStart)
             onClicked: {

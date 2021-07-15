@@ -10,19 +10,20 @@ SET VERSION=1.0.0
 SET CURRENT_DIR=%cd%
 
 :: Local Paths
-SET APP_DIRECTORY=App
+SET APP_DIRECTORY=EyeExperimenter
 SET NEW_APP_DIR_NAME=%APP_DIRECTORY%_
 SET BKP_DIR=%APP_DIRECTORY%_bkp
+SET PKG_NAME=app.zip
 
 :: Full pathds
-SET FULL_PATH_APP_DIR=%CURRENT_DIR%\%APP_DIRECTORY%
-SET FULL_PATH_NEW_APP_DIR=%CURRENT_DIR%\%NEW_APP_DIR_NAME%
+SET FULL_PATH_APP_DIR=%CURRENT_DIR%\%BKP_DIR%
+SET FULL_PATH_NEW_APP_DIR=%CURRENT_DIR%\%APP_DIRECTORY%
 :: SET FULL_PATH_BKP_APP_DIR=%CURRENT_DIR%\%BKP_DIR%
 
 SET VMET_DATA=viewmind_etdata
 SET VMCONFINGS=vmconfiguration
 SET VMSETTINGS=vmsettings
-SET EXE=App.exe
+SET EXE=EyeExperimenter.exe
 SET LOG=updatelog_file.log
 
 
@@ -30,10 +31,9 @@ ECHO ======================================================
 ECHO =        VIEWMIND SELF UPDATE. Version %VERSION%         =
 ECHO ======================================================
 ECHO -Viewmind Self Update. Version %VERSION% > %LOG%
+ECHO -Date: %date%
 
-:: Waiting 2 seconds just in case. 
 ECHO Getting somethings ready ...
-TIMEOUT 2 /nobreak > nul
 
 :: Killing the current task. 
 taskkill/im %EXE%
@@ -45,6 +45,30 @@ if %ERRORLEVEL% neq 0 (
       exit
    )
    ECHO - Application %EXE% was not found, moving on. >> %LOG%
+)
+
+:: Waiting a few seconds to ensure the OS Frees up the directory. 
+TIMEOUT 5 /nobreak > nul
+
+:: We start with renaming as it is the most crucial steip.
+:: Renaming the current location to be the backup location. 
+RENAME %APP_DIRECTORY% %BKP_DIR%
+ECHO -Renaming current application directory to be backup: RENAME %APP_DIRECTORY% %BKP_DIR% >> %LOG%
+if %ERRORLEVEL% neq 0 (
+   echo Updated failed: Please contact Viewmind Support
+   echo - The following error was encountered when renaming the current directory to backup: %ERRORLEVEL% >> %LOG%
+   PAUSE
+   exit
+)
+
+:: Renaming the new location to be the current location. 
+RENAME %NEW_APP_DIR_NAME% %APP_DIRECTORY%
+ECHO -Renaming new application directory to be current: RENAME %NEW_APP_DIR_NAME% %APP_DIRECTORY% >> %LOG%
+if %ERRORLEVEL% neq 0 (
+   echo Updated failed: Please contact Viewmind Support
+   echo - The following error was encountered when renaming the new directory to current: %ERRORLEVEL% >> %LOG%
+   PAUSE
+   exit
 )
 
 :: Doing the copying. 
@@ -90,31 +114,11 @@ if %ERRORLEVEL% neq 0 (
 ECHO -Deleting backup location: rmdir %BKP_DIR% >> %LOG%
 rmdir /s /q %BKP_DIR% > NUL
 
-:: Renaming the current location to be the backup location. 
-RENAME %APP_DIRECTORY% %BKP_DIR%
-ECHO -Renaming current application directory to be backup: RENAME %APP_DIRECTORY% %BKP_DIR% >> %LOG%
-if %ERRORLEVEL% neq 0 (
-   echo Updated failed: Please contact Viewmind Support
-   echo - The following error was encountered when renaming the current directory to backup: %ERRORLEVEL% >> %LOG%
-   PAUSE
-   exit
-)
-
-:: Renaming the new location to be the current location. 
-RENAME %NEW_APP_DIR_NAME% %APP_DIRECTORY%
-ECHO -Renaming new application directory to be current: RENAME %NEW_APP_DIR_NAME% %APP_DIRECTORY% >> %LOG%
-if %ERRORLEVEL% neq 0 (
-   echo Updated failed: Please contact Viewmind Support
-   echo - The following error was encountered when renaming the new directory to current: %ERRORLEVEL% >> %LOG%
-   PAUSE
-   exit
-)
+:: Removing the package
+ECHO -Deleting the downloaded package: DEL %PKG_NAME% >> %LOG%
+DEL %PKG_NAME%
+echo Finished
 
 :: Finally the application is restarted. 
 cd %APP_DIRECTORY%
 START %EXE%
-
-echo Finished
-echo Update finalized with success starting the new application >> %LOG%
-exit
-

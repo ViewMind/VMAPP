@@ -17,12 +17,18 @@ class APIClient : public QObject
 public:
     explicit APIClient(QObject *parent = nullptr);
 
+    // Command for compressor.
+    static const QString TAR_EXE;
+
     static const qint32 API_OPERATING_INFO = 1;
     static const qint32 API_REQUEST_REPORT = 2;
+    static const qint32 API_REQUEST_UPDATE = 3;
 
     // Parameters required for configuration. Numbers must be used and sent as strings anyways. So string parameters are accepted.
     void configure(const QString &institution_id,
                    const QString &instance_number,
+                   const QString &version,
+                   const QString &region,
                    const QString &key,
                    const QString &hash_code);
 
@@ -31,6 +37,9 @@ public:
 
     // Request processing for report.
     bool requestReportProcessing(const QString &jsonFile);
+
+    // Resquest the download of the update file.
+    bool requestUpdate(const QString &pathToSaveAFile);
 
     QString getError() const;
 
@@ -54,18 +63,24 @@ private:
     QString key;
     QString institution_id;
     QString instance_number;
+    QString region;
+    QString version;
     QString secret;
     QString error;
+    QString pathToSaveAFile;
     QVariantMap retdata;
     qint32 lastRequest;
 
     // The actual endpoints.    
     const QString ENDPOINT_OPERATING_INFO    = "/institution/operating_information";
+    const QString ENDPOINT_GET_UPDATE        = "/institution/getupdate";
     const QString ENDPOINT_REPORT_GENERATION = "/reports/generate";
 
     // URL parameters.
     const QString URLPARAM_PPKEY            = "ppkey";
     const QString URLPARAM_INSTANCE         = "instance";
+    const QString URLPARAM_VERSION          = "version";
+    const QString URLPARAM_REGION           = "region";
 
     // Header values.
     const QString HEADER_AUTHTYPE           = "AuthType";
@@ -79,10 +94,6 @@ private:
 
     // Key for the $_FILES structure.
     const QString FILE_KEY                        = "FileToProcess";
-
-    // Command for compressor.
-    const QString TAR_EXE                         = "tar.exe";
-
 
     // Signs the message and sends the request.
     bool sendRequest();

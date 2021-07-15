@@ -67,7 +67,8 @@ SOURCES += main.cpp \
     flowcontrol.cpp \
     localdb.cpp \
     qualitycontrol.cpp \
-    subjectdirscanner.cpp
+    subjectdirscanner.cpp \
+    updater.cpp
 
 
 HEADERS += \
@@ -124,7 +125,8 @@ HEADERS += \
     localdb.h \
     countries.h \
     qualitycontrol.h \
-    subjectdirscanner.h
+    subjectdirscanner.h \
+    updater.h
 
 #contains(DEFINES, USE_IVIEW) {
 #  LIBS += -L$$PWD/EyeTrackerInterface/RED/ -liViewXAPI

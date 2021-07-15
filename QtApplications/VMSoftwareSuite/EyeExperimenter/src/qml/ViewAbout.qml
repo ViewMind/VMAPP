@@ -5,9 +5,7 @@ import QtQuick.Dialogs 1.1
 
 Dialog {
 
-    readonly property string keybase: "viewabout_"
     property string vmLoadLanguage: "";
-
 
     id: viewAbout
     modal: true

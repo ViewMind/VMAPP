@@ -17,6 +17,10 @@ Mild Cognitive Impairment and to predict the onset of <br>
 Alzheimer's Disease and other dementias, years before <br>
 symptoms are visible.;
 viewhome_btnGetStarted = LOG IN;
+viewhome_updateTitle = Update Available: ;
+viewhome_updateQuestion = Would you like to download and install the update now?<br>You can postpone this update =N= more times;
+viewhome_updateYes = YES;
+viewhome_updateNo  = NO;
 
 #********************************* DOCTOR MENU *********************************
 viewdrmenu_mode = Mode;
@@ -384,3 +388,4 @@ msg_change_lang = Apply Changes|The program must be restarted to apply the selec
 msg_request_report = Processing...|Please wait while the report information is obtained;
 msg_report_generation = Generating report|Your report will be ready shortly...;
 msg_get_info_online = Synching ...|Retrieving portal information, please wait;
+msg_get_update = Please wait ...|Dowloading update file. This might take a few minutes;
