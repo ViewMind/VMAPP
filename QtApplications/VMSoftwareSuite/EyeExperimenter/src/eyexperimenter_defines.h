@@ -97,7 +97,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "16.1.0";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "16.1.1";
        static const QString EXPERIMENTER_VERSION = EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + REGION
                + (ExperimentGlobals::SHORT_STUDIES ? " - SHORT STUDIES" : "")
                + (Debug::DISABLE_DB_CHECKSUM ? " - NO CHECKSUM" : "") +

@@ -115,6 +115,17 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Update cleanup.
     QFile::remove("../" + Globals::Paths::UPDATE_SCRIPT);
 
+
+//    // DebugCode
+//    QString todbug = "viewmind_etdata/1_0_20210707202158295/reading_2021_07_09_07_52.json";
+//    QString output = "debug.csv";
+//    QStringList list; list << VMDC::DataVectorField::WORD_L << VMDC::DataVectorField::WORD_R;
+//    ViewMindDataContainer tvmdc;
+//    if (!tvmdc.loadFromJSONFile(todbug)){
+//        qDebug() << "Load failed";
+//    }
+//    tvmdc.printRawDataCSV(output,VMDC::Study::READING,list);
+
 }
 
 //////////////////////////////////////////////////////// UI Functions ////////////////////////////////////////////////////////

@@ -265,7 +265,11 @@ void ReadingExperiment::appendEyeTrackerData(const EyeTrackerData &data,
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
-    computeOnlineFixations(data,characterIndexL,wordIndexL,characterIndexR,wordIndexR);
+    computeOnlineFixations(data,
+                           characterIndexL+1,
+                           wordIndexL+1,
+                           characterIndexR+1,
+                           wordIndexR+1);
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
     rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateReadingRawDataVector(data.time,
