@@ -352,16 +352,16 @@ class TargetHitSearcher {
       if (TargetHitSearcher::isHitInBox($hitboxes[$non_correct_box],$x,$y)) return -1;
 
       if ($correct_target_box == GoNoGoTargetBoxes::LEFT){
-         // The correct target Box is the Left One. So isIN will be zero if x is between the arrow and the left target box
-         // which means it's x value should be LOWER than the half of the screen or centerX
-         if ($x < $centerX) return 0;
-         else return -1;
+         // The correct target Box is the Left One. So isIN will be 2 if x is between the arrow and the left target box
+         // which means it's x value should be LOWER than the half of the screen or centerX. Otherwise is -2.
+         if ($x < $centerX) return 2;
+         else return -2;
       }
       else { // $correct_target_box should be RIGHT.
-         // The correct target Box is the Right One. So isIN will be zero if x is between the arrow and the right target box
-         // which means it's x value should be LARGER than the half of the screen or centerX
-         if ($x > $centerX) return 0;
-         else return -1;
+         // The correct target Box is the Right One. So isIN will be 2 if x is between the arrow and the right target box
+         // which means it's x value should be LARGER than the half of the screen or centerX. Otherwise is 2
+         if ($x > $centerX) return 2;
+         else return -2;
       }      
       
    }

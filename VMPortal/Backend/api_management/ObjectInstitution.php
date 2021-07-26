@@ -226,7 +226,7 @@ class ObjectInstitution extends ObjectBaseClass{
       $version =  $version_info[0][TableUpdates::COL_VERSION_STRING];
       $etkey   =  $version_info[0][TableUpdates::COL_EYETRACKER_KEY];
 
-      $this->file_path_to_return = $update_repo . "$region/$etkey/$version/" . self::ApplicationFileName;
+      $this->file_path_to_return = $update_repo . "/$region/$etkey/$version/" . self::ApplicationFileName;
 
       if (!is_file($this->file_path_to_return)){
          $this->suggested_http_code = 500;
