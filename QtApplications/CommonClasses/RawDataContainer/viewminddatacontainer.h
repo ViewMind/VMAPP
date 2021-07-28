@@ -83,6 +83,9 @@ public:
 
     void clearTrialFieldsFromEachStudy();
 
+    ////////////////////////// DEBUGGING FUNCTION
+    void printRawDataCSV(const QString &filename, const QString &study, const QStringList whichRawDataValues);
+
 
     /**
      * @brief GenerateStdRawDataVector Geneates a valid vector that can be inserted with add NewRawDataVector. Ensuring coherence. Standar all EyeTracking values.

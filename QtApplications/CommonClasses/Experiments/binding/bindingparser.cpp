@@ -126,6 +126,8 @@ bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmal
         drawStructure.HLBorder  = drawValues.hl*ScreenResolutionWidth;
         drawStructure.VSBorder  = drawValues.vs*ScreenResolutionHeight;
 
+        qDebug() << "Flag Side H" << drawStructure.FlagSideH << "V" << drawStructure.FlagSideV << "@" << ScreenResolutionWidth << "x" << ScreenResolutionHeight;
+
         qreal Gxpx = drawValues.gx*ScreenResolutionWidth;
         qreal Gypx = drawValues.gy*ScreenResolutionHeight;
 

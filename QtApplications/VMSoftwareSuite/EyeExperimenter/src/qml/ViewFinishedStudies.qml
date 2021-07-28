@@ -302,7 +302,7 @@ VMBase {
             vmFont: viewHome.gothamM.name
             enabled: studyListView.currentIndex !== -1
             onClicked: {
-                //loader.setCurrentStudyFileForQC(studiesList.get(studyListView.currentIndex).file_path);
+                loader.setCurrentStudyFileForQC(studiesList.get(studyListView.currentIndex).file_path);
                 //swiperControl.currentIndex = swiperControl.vmIndexViewQC;
                 processingQCDialog.open();
             }
