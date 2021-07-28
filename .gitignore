@@ -13,6 +13,7 @@
 *local_flag_file
 *local_config
 *.cnf
+.kate-swp
 
 Doc/*.aux
 Doc/*.log
@@ -114,3 +115,11 @@ QtApplications/VMSoftwareSuite/EyeReportGenerator/bin/res/workdir/
 QtApplications/VMSoftwareSuite/EyeExperimenter/exe2019/viewmind_etdata*
 QtApplications/VMSoftwareSuite/EyeExperimenter/exe32
 QtApplications/VMSoftwareSuite/EyeExperimenter/EyeExperimenter/
+VMPortal/Backend/pdf_report_generation/node_modules/
+VMPortal/Backend/pdf_report_generation/package-lock.json
+VMPortal/Backend/pdf_report_generation/package.json
+VMPortal/Backend/pdf_report_generation/report.pdf
+VMPortal/Backend/pdf_report_generation/tests
+VMPortal/Backend/pdf_report_generation/resources/Montserrat/
+VMPortal/Backend/pdf_report_generation/resources/binding_report.pdf
+VMPortal/Backend/pdf_report_generation/resources/gonogo_report.pdf
