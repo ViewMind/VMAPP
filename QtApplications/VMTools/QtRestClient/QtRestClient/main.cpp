@@ -23,42 +23,55 @@ int main(int argc, char *argv[]){
     QString key                     = "2a119e8e0f1e95a02b3b3520a9bca8f1e7f1621c070fce57a9b6f3bcd1f13ebdba10fd9720beb7862fd4134b18d97bb0e95d618e98660b01b3d75df264c6e371";
     QString secret                  = "1522352f8e0326d4fb301e5ff9336ec382a064e16694dbdaf1b62fdb14981bd7e6f7b6cbb0ef7ca4e5abde496908d0f1e238a679b68a5ccd82d6046e09c9ae12c6633b055921128cca6c88ec7169cff60916fb4badbd89a32cf85945c2be919ed89f8453eea3e9c82f1cdbefc1e22b35f2d34af0d5ff9ccc63af2b498dc88a43";
 
-    QString test_file               = "my_test_file.json";
+    QString test_file                 = "my_test_file.json";
     //QString APIURL                  = "http://192.168.1.12/vmapi";
-    //QString APIURL                  = "http://localhost/vmapi";
-    QString APIURL                  = "http://localhost/tests/";
+    QString APIURL                    = "http://localhost/vmapi";
+    //QString APIURL                  = "http://localhost/tests/";
     //QString APIURL                  = "https://eu-api.viewmind.ai/";
     //QString endpoint                = "/institution/operating_information/1";
+    QString endpoint                  = "/portal_users/addnologpusers/1";
     //QString endpoint                = "/institution/getupdate/1";
-    QString endpoint                = "getfile.php";
+    //QString endpoint                = "getfile.php";
     //QString endpoint                = "/reports/generate/1";
-    QString zipfile                 = "/home/ariel/repos/viewmind_projects/VMTools/RawJSONDataDev/bin/binding2019_12_19_12_54.zip";
+    QString zipfile                   = "2021_07_19_20_19_43_912188.zip";
     QVariantMap URLParameters;
 
     // Let's add some parameters to the URL
     //URLParameters.insert("ppkey","gazepoint");
-    URLParameters.insert("instance",0);
-    //URLParameters.insert("version","16.1.0");
+    //URLParameters.insert("instance",0);
+    //URLParameters.insert("version","16.1.1");
 
     RESTAPIController rest_controller;
     rest_controller.setBaseAPI(APIURL);
 
     rest_controller.setAPIEndpoint(endpoint);
-    rest_controller.setURLParameters(URLParameters);
+    rest_controller.setURLParameters(URLParameters);    
 
     // Lets create a test file.
     QVariantMap data;
     data.insert("institution_id",1);
     data.insert("institution_instance",0);
+    data.insert("data","some data");
 
-//    QVariantMap testdata;
-//    testdata.insert("Name","Ariel Ñoño");
-//    testdata.insert("Age","38");
-//    QVariantMap Hobbies;
-//    Hobbies.insert("Modelling","mediocre");
-//    Hobbies.insert("Drawing","bad");
-//    Hobbies.insert("Singing","Beareable");
-//    testdata.insert("Hobbies",Hobbies);
+    QVariantMap testdata;
+    testdata.insert("institution_id","1");
+    testdata.insert("institution_instance","0");
+    testdata.insert("Doctor","Ariel Ñoño");
+    testdata.insert("email","some@somewhere.com");
+    QVariantList patients;
+    for (qint32 i = 0; i < 3; i++){
+        QVariantMap patient;
+        patient.insert("Name","Patient " + QString::number(i));
+        patient.insert("ID",QString::number(i));
+        patients << patient;
+    }
+    testdata.insert("Patients",patients);
+
+
+    //QJsonDocument json = QJsonDocument::fromVariant(testdata);
+    //QString s(json.toJson(QJsonDocument::Indented));
+    //std::cout << s.toStdString() << std::endl;
+    //data.insert("data",s);
 
 //    QJsonDocument json = QJsonDocument::fromVariant(testdata);
 //    QFile file(test_file);
@@ -70,7 +83,7 @@ int main(int argc, char *argv[]){
 //    writer << QString(json.toJson());
 //    file.close();
 
-//    // Lets append the file.
+    // Lets append the file.
 //    if (!rest_controller.appendFileForRequest(zipfile,"FileToProcess")){
 //        qDebug() << "Error appending file: " << rest_controller.getErrors();
 //        return 0;
@@ -85,13 +98,14 @@ int main(int argc, char *argv[]){
     // Lets append the data
     rest_controller.setPOSTDataToSend(data);
 
-    // Appending the data as JSON makes it igonre all both previous add ons, but thats the intention.
-    //rest_controller.setJSONData(data);
+    //Appending the data as JSON makes it igonre all both previous add ons, but thats the intention. (Destroys POST Data).
+    rest_controller.setJSONData(testdata);
 
     // Adding salt to ensure uniqueness of signature.
     rest_controller.addSalt();
 
-    //qDebug() << rest_controller.getPayload();
+    //std::cout << "Sending Payload: " << std::endl;
+    //std::cout << QString(rest_controller.getPayload()).toStdString() << std::endl;
 
     QString auth_string = QMessageAuthenticationCode::hash(rest_controller.getPayload(), secret.toUtf8(), QCryptographicHash::Sha3_512).toHex();
 
@@ -116,7 +130,7 @@ int main(int argc, char *argv[]){
         QJsonParseError json_error;
         QJsonDocument doc = QJsonDocument::fromJson(raw_reply,&json_error);
         if (json_error.error != QJsonParseError::NoError){
-            qDebug() << raw_reply;
+            std::cout << QString(raw_reply).toStdString() << std::endl;
         }
         else{
            std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;

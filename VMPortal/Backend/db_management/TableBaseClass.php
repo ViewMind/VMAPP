@@ -70,22 +70,81 @@ class TableBaseClass {
     * @brief A general insertion operation where params is an associative array of column names and values. 
     */
 
-   protected function insertionOperation($params,$customized_message){
+   protected function insertionOperation($params,$customized_message, $ignore = false){
 
       $this->error = "";
       $this->last_inserted = array();
       
       if (!$this->validateInputArray($params,$customized_message)) return false;
 
-      // Creating the placeholders for the statement as column names with : so that the straight params can be used. 
-      $placeholders = array();
-      $columns_to_insert = array_keys($params);
-      foreach ($columns_to_insert as $p){
-         $placeholders[] = ":$p";
+      // There are two possible types of inputs. The first has a each element of $params be an array, while the second one is that they are a single value.       
+      // Check the type
+      // 0 - All single
+      // 1 - All arrays single length
+      // 2 - Invalid. 
+      $valid = -1;
+      $count = 0;
+      foreach ($params as $key => $p){
+         if (is_array($p)){
+            if ($valid == -1) {
+               $valid = 1;
+               $count = count($p);
+            }
+            else if (($valid != 1) || (($count != count($p)))){
+               $valid = 2;
+               break;
+            }
+         }
+         else{
+            if ($valid == -1) {
+               $valid = 0;
+            }
+            else if ($valid != 0){
+               $valid = 2;
+               break;
+            }
+         }
       }
 
+      if ($valid == 2){
+         $this->error = "Parameters objects need to be either all arrays of the same size or single values";
+         return false;
+      }
+
+      // All is good. Setting up the ignore if necessary.
       // Creating the sql string.
-      $sql =  "INSERT INTO " . static::class::TABLE_NAME .  " (" . implode(",",$columns_to_insert) . ") VALUES (" . implode(",",$placeholders) . ")";
+      $ignore_str = "";
+      if ($ignore){
+         $ignore_str = "IGNORE";
+      }      
+
+      $placeholders = array();
+      $columns_to_insert = array_keys($params);
+
+      if ($valid == 0) {      
+         // Creating the placeholders for the statement as column names with : so that the straight params can be used.
+         foreach ($columns_to_insert as $p) {
+             $placeholders[] = ":$p";
+         }
+         $sql =  "INSERT $ignore_str INTO " . static::class::TABLE_NAME .  " (" . implode(",", $columns_to_insert) . ") VALUES (" . implode(",", $placeholders) . ")";
+      }
+      else {
+
+         // Each object in $params is an array in this case. is a list.
+         $new_params = array();
+         foreach ($columns_to_insert as $p) {
+            $temp = array();
+            for ($i = 0; $i < count($params[$p]); $i++){
+               $new_name =  "$p" . "_" . $i;
+               $temp[] = ":$new_name";
+               $new_params[$new_name] = $params[$p][$i];
+            }
+            $placeholders[] = "(" . implode(",",$temp) . ")";
+         }
+
+         $sql =  "INSERT $ignore_str INTO " . static::class::TABLE_NAME .  " (" . implode(",", $columns_to_insert) . ") VALUES " . implode(",", $placeholders);
+         $params = $new_params;
+      }
 
       try {
          $stmt = $this->con->prepare($sql);
@@ -105,7 +164,7 @@ class TableBaseClass {
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
    /**
-    * @brief General update of a value set on a specific row value. 
+    * @brief General update of a value set on a specific row value. If the $value_on_update is an array. It will update all rows where the values are those specified. 
     */
 
    protected function updateOperation($params,$customized_message,$col_on_update,$value_on_update){
@@ -159,6 +218,56 @@ class TableBaseClass {
       return array();      
       
    }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   /**
+    * @brief General update of a value set on rows met by conditions given by a SelectOperation Object. 
+    */
+
+    protected function simpleUpdate($params,$customized_message,SelectOperation $select){
+      
+      $this->error = "";
+      $this->last_inserted = array();
+
+      
+      if (!$this->validateInputArray($params,$customized_message)) return false;
+
+      // Checking the validity of the columns in the where clause. 
+      foreach ($select->getColumnsUsed() as $col){
+         if (!in_array($col,$this->valid_columns)){
+            $this->error = "$col is not a column of table " . static::class::TABLE_NAME;
+            return false;
+         }
+      }
+
+      $updates = array();
+      foreach ($params as $col_name => $value){
+         $updates[] = "$col_name = :$col_name";
+      }
+
+      $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",", $updates) . " WHERE " . $select->makeWhereClause();
+
+      $bind_from_select = $select->getBindParameterArray();
+      $params = array_merge($bind_from_select,$params);
+      var_dump($params);
+
+      try {
+         $stmt = $this->con->prepare($sql);
+         $stmt->execute($params);
+         $this->last_inserted[] = $this->con->lastInsertId();
+      }
+      catch (PDOException $e){
+         $this->error = "Insertion failure for $customized_message: " . $e->getMessage() . ". SQL: $sql";
+         return false;
+      }      
+      
+      // Insertion does not return anything
+      return array();      
+      
+   }    
+
+
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -372,6 +481,7 @@ class TableBaseClass {
       $sql = "SELECT $distinct" . implode(",",$cols_to_get) . " FROM " . static::class::TABLE_NAME . " WHERE " . $operation->makeWhereClause();
 
       //error_log($sql);
+      //error_log(json_encode($operation->getBindParameterArray()));
 
       // Adding ordering and limit parameters if issued. 
       if ($order_by != ""){

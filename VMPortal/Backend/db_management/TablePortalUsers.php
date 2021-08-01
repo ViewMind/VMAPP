@@ -21,6 +21,7 @@ class TablePortalUsers extends TableBaseClass {
    const COL_TOKEN             = "token";
    const COL_TOKEN_EXPIRATION  = "token_expiration";
    const COL_PERMISSIONS       = "permissions";
+   const COL_PARTNER_ID        = "partner_id";
    const COL_USER_ROLE         = "user_role";
    const COL_ENABLED           = "enabled";
 
@@ -28,11 +29,12 @@ class TablePortalUsers extends TableBaseClass {
    const ENABLED               = 1;
    const PENDING               = 2;
    const DISABLED              = 0;
+   const NOLOG                 = 3;
 
    // The possible roles for a portal user. 
    const ROLE_INTITUTION_ADMIN = 0;
    const ROLE_MEDICAL          = 1;
-   const ROLE_API_USER_ONLY    = 2;
+   //const ROLE_API_USER_ONLY    = 2;
 
    // String length for the activation token. 
    private const TOKEN_LENGTH      = 512;
@@ -232,6 +234,21 @@ class TablePortalUsers extends TableBaseClass {
       // $datetime2 = new DateTime('2014-02-11 05:36:56 AM');
       // $interval = $datetime1->diff($datetime2);
       // echo $interval->format('%h')." Hours ".$interval->format('%i')." Minutes";      
+
+   }
+
+   function addNonLoginParterUsers($insert){
+      
+      $insert[self::COL_PERMISSIONS] = "{}";
+      $insert[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
+      $insert[self::COL_ENABLED] = self::NOLOG;
+
+      //var_dump($insert);
+
+      $this->avoided = [self::COL_PASSWD, self::COL_TOKEN, self::COL_TOKEN_EXPIRATION, self::COL_CREATION_TOKEN, self::COL_KEYID];
+      $this->mandatory = [self::COL_EMAIL, self::COL_PARTNER_ID, self::COL_LASTNAME, self::COL_NAME, self::COL_PERMISSIONS, self::COL_USER_ROLE, self::COL_ENABLED];
+
+      return $this->insertionOperation($insert,"Inserting NonLoginPartner ",true);
 
    }
 

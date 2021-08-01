@@ -108,5 +108,23 @@ class TableSecrets extends TableBaseClass {
       return $this->updateOperation($params,"On Resetting Secret's Basic Client Permissions Permissions",self::COL_ENABLED,self::ROW_ENABLED);
    }
 
+   function getEnabledInstancesForInstitution($institution_id){
+
+      $select = new SelectOperation();
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED);
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution_id);
+      $cols_to_get = [self::COL_INSTITUTION_INSTANCE];
+      return $this->simpleSelect($cols_to_get,$select);
+
+   }
+
+   function setPermissionOnUniqueID($permissions, $unique_id){
+      $select = new SelectOperation();
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED);
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_UNIQUE_ID,$unique_id);
+      $params[self::COL_PERMISSIONS] = $permissions;
+      return $this->simpleUpdate($params,"Update Secret Permissions",$select);
+   }
+
 }
 ?>

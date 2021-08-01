@@ -24,8 +24,9 @@
       private $dbuser;
       private $should_do_operation;
       private $user_info;
+      private $json_data;
 
-      public function __construct($headers, $post_data, $files){
+      public function __construct($headers, $post_data, $files, &$raw_data){
          $this->error = "";
          $this->dbuser = "";
          $this->files = $files;
@@ -33,6 +34,9 @@
          $this->http_code = 500; // If I forget the code, then it is a server error.
          $this->returnable_error = "";
          $this->should_do_operation = true;
+         $this->json_data_sent = array();
+
+         //error_log(json_encode($post_data));
 
          // This is to solve a problem where for an unknown reason AWS Apache changes the Header Casing and hence they are not recognized. 
          foreach ($headers as $headername => $value){
@@ -67,17 +71,60 @@
                }
             }
 
+            // Institution ID can camo from either POST fields or JSON data Fields.
             $array = [POSTFields::INSTITUTION_ID, POSTFields::INSTITUION_INSTANCE ];
+            $missing_in_post = false;
+            $missing_in_data = false;
+            $raw_data_array = array();
             foreach ($array as $field) {
                if (!array_key_exists($field, $post_data)) {
-                   $this->http_code = 401; // Authentication problem. 
-                   $this->error = "Missing POST field $field for selected authentication method";
-                   return;
+                   $missing_in_post = true;
+                   break;
                }
             }
 
-            $this->institution_id = $post_data[POSTFields::INSTITUTION_ID];
-            $this->institution_instance = $post_data[POSTFields::INSTITUION_INSTANCE];
+            if ($missing_in_post){
+               // We attempt to get the fields by parsing the raw data, which is required by some operation that send a JSON.
+               $raw_data_array = json_decode($raw_data,true);
+               if (is_array($raw_data_array)){
+                  foreach ($array as $field) {
+                     if (!array_key_exists($field, $raw_data_array)) {
+                        $missing_in_data = true;
+                        break;
+                     }
+                  }                        
+               }
+               else $missing_in_data = true;
+            }
+
+            if (!$missing_in_post){
+               $this->institution_id = $post_data[POSTFields::INSTITUTION_ID];
+               $this->institution_instance = $post_data[POSTFields::INSTITUION_INSTANCE];   
+            }
+            else if (!$missing_in_data){
+               $this->institution_id = $raw_data_array[POSTFields::INSTITUTION_ID];
+               $this->institution_instance = $raw_data_array[POSTFields::INSTITUION_INSTANCE];
+               $this->json_data = $raw_data_array;
+            }
+            else{
+               $this->http_code = 401; // Authentication problem. 
+               $this->error = "Missing POST field $field for selected authentication method";
+               return;
+            }
+
+
+            if (!is_numeric(($this->institution_id))){
+               $this->http_code = 401;
+               $this->error = "Invalid institution value " . $this->institution_id;
+               return;
+            }
+
+            if (!is_numeric(($this->institution_instance))){
+               $this->http_code = 401;
+               $this->error = "Invalid institution instance " . $this->institution_instance;
+               return;
+            }
+
             $this->post_raw_data = json_encode($post_data);
 
          }
@@ -143,6 +190,10 @@
 
       function getStandarizedHeaders(){
          return $this->headers;
+      }
+
+      function getRawDataArray(){
+         return $this->json_data;
       }
 
       function authenticate($message = ""){
@@ -238,6 +289,8 @@
          $client_key = $this->headers[HeaderFields::AUTHENTICATION];
          $this->returnable_error = "";
 
+         //echo $message;
+
          // We need to get the secret from the appropiate table. 
          $dbcon = new DBCon();
          $con_secure = $dbcon->dbOpenConnection(DBCon::DB_SECURE,DBCon::DB_SERVICE_DP);
@@ -249,7 +302,9 @@
          }
 
          $table_secrets = new TableSecrets($con_secure);
+         //error_log("Getting secret key and permissions for " . $this->institution_id . "." . $this->institution_instance);
          $key_secret_permissions = $table_secrets->getKeySecretAndPermissions($this->institution_id,$this->institution_instance);
+         //error_log("GOT: " . json_encode($key_secret_permissions));
          if ($key_secret_permissions === false){
             $this->http_code = 500;
             $this->error = "Could not get key and secret: " . $table_secrets->getError();
@@ -284,8 +339,10 @@
          
          // Now we finallly compute the auth string. 
 
-         // We first need to append the raw data of the post. 
-         $message = $message . $this->post_raw_data;
+         // We first need to append the raw data of the post. But only if JSON data was not sent. Otherwise we are appending it twice. 
+         if (empty($this->json_data)) {
+             $message = $message . $this->post_raw_data;
+         }
 
          // Then we append the raw file data. AND check no errors. If there are errors there is no point in moving on. 
          foreach ($this->files as $fkey => $fstruct){
@@ -321,6 +378,7 @@
          }
 
          //echoOut($message,true);
+         //echo $message . "\n";
 
          $auth_string = hash_hmac('sha3-512', $message, $secret);
          if (!hash_equals($auth_string,$signature)){

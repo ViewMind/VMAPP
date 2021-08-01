@@ -36,9 +36,9 @@
   $srv["mysql_pass"] = $crendentials[DBcon::DBCNF_MAIN_SRV][DBCon::DB_SERVICE_DP][DBCon::DBCNF_SRV_PASSWORD];
 
   $srv["table_privileges"][TableInstitution::IN_DB][TableInstitution::TABLE_NAME]                         = [$PRIV_SELECT];
-  $srv["table_privileges"][TableInstitutionUsers::IN_DB][TableInstitutionUsers::TABLE_NAME]               = [$PRIV_SELECT];
+  $srv["table_privileges"][TableInstitutionUsers::IN_DB][TableInstitutionUsers::TABLE_NAME]               = [$PRIV_SELECT,$PRIV_INSERT];
   $srv["table_privileges"][TablePlacedProducts::IN_DB][TablePlacedProducts::TABLE_NAME]                   = [$PRIV_SELECT];
-  $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                         = [$PRIV_SELECT];
+  $srv["table_privileges"][TablePortalUsers::IN_DB][TablePortalUsers::TABLE_NAME]                         = [$PRIV_SELECT,$PRIV_INSERT];
   $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT];
   $srv["table_privileges"][TableProcessingParameters::IN_DB][TableProcessingParameters::TABLE_NAME]       = [$PRIV_SELECT];
   $srv["table_privileges"][TableEvaluations::IN_DB][TableEvaluations::TABLE_NAME]                         = [$PRIV_INSERT];

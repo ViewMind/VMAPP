@@ -37,14 +37,24 @@ public:
     bool setPOSTDataToSend(const QVariantMap &map);
 
     // Sets the JSON data to send in the request. This is NOT compatible with sending files and form data.
-    // It's either one or the other, but cannot be both. Setting this will clear the the files and form data to send.
+    // It's either one or the other, but cannot be both. Setting this will clear the the files and form data to send.   
     void setJSONData(const QVariantMap &json);
+
+    // Same as set JSON data, but simplified. The data is straight copied into the request.
+    // If set JSON data was called this will override it.
+    void setRawStringDataToSend(const QString &rawData);
 
     // Appending a file to send in the request.
     bool appendFileForRequest(const QString &file_path, const QString &file_key);
 
     // Seding the HTTP POST request with the whatever endopoints and parameteres we want.
     bool sendPOSTRequest();
+
+    // Seding the HTTP GET request with the whatever endopoints and parameteres we want.
+    bool sendGETRequest();
+
+    // Sets basic authentication for the API request.
+    void setBasicAuth(const QString &username, const QString &password);
 
     // Add headers with specific content to the HTTP request.
     void addHeaderToRequest(const QString &headerName, const QString &headerValue);
@@ -85,8 +95,12 @@ private:
     QVariantMap URLparameters;
     QString endPointAndParameters;
 
+    QString basicAuthUsername;
+    QString basicAuthPassword;
+
     QStringList errors;
     QVariantMap dataToSend;
+    QString dataToSendAsRawData;
     QMap<QString,QString> filesToSend;
     QNetworkAccessManager manager;
     QNetworkReply *reply;

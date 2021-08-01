@@ -85,9 +85,10 @@ $headers = getallheaders();
 
 // Generating the message in case it needs to be signed. 
 $raw_data = file_get_contents("php://input");
+//echo $raw_data . "\n";
 $message = $raw_data . $route_parser->getEndpointAndParameters();
 
-$auth_mng = new AuthManager($headers,$_POST,$_FILES);
+$auth_mng = new AuthManager($headers,$_POST,$_FILES,$raw_data);
 if (!$auth_mng->authenticate($message)){
    $res[ResponseFields::MESSAGE] = $auth_mng->getReturnableError();
    $res[ResponseFields::HTTP_CODE] = $auth_mng->getSuggestedHTTPCode();
@@ -161,7 +162,7 @@ if (array_key_exists($object,$permissions)){
 
       // Creating an object of the proper class.
       $class = ROUTING[$object];
-      $operating_object = new $class($dbuser,$headers);
+      $operating_object = new $class($dbuser,$headers, $auth_mng->getRawDataArray());
 
       if (!method_exists($operating_object,$operation)){
          // Method not implemented yet. 
@@ -176,6 +177,7 @@ if (array_key_exists($object,$permissions)){
       // Calling the object and the operation with the data. 
       // $operating_object->setFileData($_FILES);
       $operating_object->setPermissions($permissions);
+      $operating_object->setJSONData($auth_mng->getRawDataArray());
       $ans = $operating_object->$operation($identifier,$route_parser->getParameters());
       
       if ($ans === false){

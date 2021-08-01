@@ -85,6 +85,7 @@
       const OPERATING_INFO          = "operating_information";
       const MODIFY_OWN              = "modify_own";
       const ENABLE                  = "enable";
+      const ADD_NO_LOG_PUSERS       = "addnologpusers";
    }
 
    abstract class URLParameterNames extends TypedString {

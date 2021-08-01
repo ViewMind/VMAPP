@@ -28,12 +28,19 @@ class ObjectReports extends ObjectBaseClass
       ////////////// SET UP
 
       // Set the log for this opertion using the instituntion number and instance. 
-      $instance = $parameters[URLParameterNames::INSTANCE];
+      $instance = $_POST[POSTFields::INSTITUION_INSTANCE];
       $date = new DateTime();
       $base_proc_name =$institution ."_" . $instance . "_" . $date->format('Y_m_d_H_i_s'); 
       $log_file_name = $base_proc_name . ".log";
       $logger = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::PROCESSING_LOG_LOCATION] . "/" . $log_file_name);
       $logger->logProgress("Processing request from $institution - $instance");
+
+      if (!is_array($parameters)){
+         $this->suggested_http_code = 401;
+         $this->error = "Bad URL parameters";
+         $logger->logError("URL Parameters are not an array");
+         return false;         
+      }
 
       // Creating the work directory.
       $workdir = CONFIG[GlobalConfigProcResources::GROUP_NAME][GlobalConfigProcResources::PROCESSING_WORK_DIRECTORY];
@@ -57,10 +64,10 @@ class ObjectReports extends ObjectBaseClass
       }
       
       $instance = $parameters[URLParameterNames::INSTANCE];
-      if ($_POST[POSTFields::INSTITUION_INSTANCE] != $instance){
+      if ($parameters[URLParameterNames::INSTANCE] != $instance){
          $this->suggested_http_code = 401;
          $this->error = "URL Instance mistmatch";
-         $logger->logError("The URL instance for the accessing was " . $_POST[POSTFields::INSTITUION_INSTANCE] . " but $instance was used as a parameter");
+         $logger->logError("The URL instance for the accessing was $instance " . $parameters[URLParameterNames::INSTANCE] . " was used as a parameter");
          return false;
       }
       

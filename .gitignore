@@ -123,3 +123,5 @@ VMPortal/Backend/pdf_report_generation/tests
 VMPortal/Backend/pdf_report_generation/resources/Montserrat/
 VMPortal/Backend/pdf_report_generation/resources/binding_report.pdf
 VMPortal/Backend/pdf_report_generation/resources/gonogo_report.pdf
+QtApplications/VMTools/PartnerAPIDev/bin/
+

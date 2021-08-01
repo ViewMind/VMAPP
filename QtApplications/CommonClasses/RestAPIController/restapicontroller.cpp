@@ -63,7 +63,13 @@ void RESTAPIController::setJSONData(const QVariantMap &json){
     filesToSend.clear();
     sendDataAsJSON = true;
     dataToSend = json;
-    stringifyData();
+    //stringifyData();
+}
+
+void RESTAPIController::setRawStringDataToSend(const QString &rawData){
+    dataToSend.clear();
+    sendDataAsJSON = true;
+    dataToSendAsRawData = rawData;
 }
 
 QMap<QString,QString> RESTAPIController::getResponseHeaders() const{
@@ -84,6 +90,16 @@ void RESTAPIController::stringifyData(){
     }
 }
 
+
+void RESTAPIController::setBasicAuth(const QString &username, const QString &password){
+    basicAuthPassword = password;
+    basicAuthUsername = username;
+//    QString concatenated = username + ":" + password;
+//    QByteArray data = concatenated.toLocal8Bit().toBase64();
+//    QString headerData = "Basic " + data;
+//    request.setRawHeader("Authorization", headerData.toLocal8Bit());
+}
+
 void RESTAPIController::addHeaderToRequest(const QString &headerName, const QString &headerValue){
     headers[headerName] = headerValue;
 }
@@ -98,7 +114,13 @@ void RESTAPIController::resetRequest(){
     filesToSend.clear();
     replyData.clear();
     headers.clear();
+    basicAuthPassword = "";
+    basicAuthUsername = "";
     sendDataAsJSON = false;
+    URLparameters.clear();
+    dataToSendAsRawData = "";
+    endPointAndParameters.clear();
+    endpoint = "";
 }
 
 bool RESTAPIController::appendFileForRequest(const QString &file_path, const QString &file_key){
@@ -130,6 +152,7 @@ bool RESTAPIController::isRequestFinished() const{
 bool RESTAPIController::sendPOSTRequest() {
 
     errorInReply = false;
+    if (reply != nullptr) delete reply;
     replyData.clear();
 
     QHttpMultiPart *multipart = nullptr;
@@ -140,7 +163,6 @@ bool RESTAPIController::sendPOSTRequest() {
 
         // We create the request part with whatever data or files need to be sent.
         multipart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-
 
         if (reply != nullptr){
             delete reply;
@@ -154,6 +176,7 @@ bool RESTAPIController::sendPOSTRequest() {
                 QVariant value = dataToSend.value(key);
                 QHttpPart postpart;
                 postpart.setHeader(QNetworkRequest::ContentDispositionHeader, QString("form-data; name=\"" + key + "\""));
+                //postpart.setHeader(QNetworkRequest::ContentDispositionHeader, QString("application/x-www-form-urlencoded"));
                 postpart.setBody(value.toByteArray());
                 multipart->append(postpart);
             }
@@ -186,15 +209,23 @@ bool RESTAPIController::sendPOSTRequest() {
         }
 
     }
-    else{
-        // Seding data as JSON (-d in CURL command)
-        added_something = true;
-        QJsonDocument json = QJsonDocument::fromVariant(dataToSend);
-        jsonData = json.toJson();
+    else{        
+        // Seding data as JSON or string (-d in CURL command)
+        if (dataToSendAsRawData == ""){
+            added_something = true;
+            QJsonDocument json = QJsonDocument::fromVariant(dataToSend);
+            jsonData = json.toJson();
+        }
+        else{
+            added_something = true;
+            jsonData = dataToSendAsRawData.toUtf8();
+        }
     }
 
     // Building the url and sending the post request.
-    QString address = baseAPIURL + "/" + endPointAndParameters;
+    QString address = baseAPIURL;
+    if (endPointAndParameters != "") address = address + "/" + endPointAndParameters;
+    //qDebug() << "Setting the URL to" << address;
     QUrl url(address);
     QNetworkRequest request(url);
     if (sendDataAsJSON){
@@ -209,6 +240,15 @@ bool RESTAPIController::sendPOSTRequest() {
         request.setRawHeader(headerName.toUtf8(),headerValue.toUtf8());
     }
 
+    // A separate case is used if basic auth is required. This WILL override the Authorization field if it was set.
+    if (basicAuthUsername != ""){
+        QString concatenated = basicAuthUsername + ":" + basicAuthPassword;
+        QByteArray data = concatenated.toLocal8Bit().toBase64();
+        QString headerData = "Basic " + data;
+        //qDebug() << "Setting the Authorization header of Basic Auth to " << headerData;
+        request.setRawHeader("Authorization", headerData.toUtf8());
+    }
+
 
     // Sending something only if there is somthing to send.
     if (!added_something){
@@ -217,10 +257,11 @@ bool RESTAPIController::sendPOSTRequest() {
     }
     else{
         if (sendDataAsJSON){
-            reply = manager.post(request,jsonData);
+           //qDebug() << "Doing the post request sending data as JSON valued" << jsonData;
+           reply = manager.post(request,jsonData);
         }
         else{
-            reply = manager.post(request, multipart);
+           reply = manager.post(request,multipart);
         }
     }
 
@@ -230,6 +271,37 @@ bool RESTAPIController::sendPOSTRequest() {
     }
 
     return true;
+}
+
+bool RESTAPIController::sendGETRequest(){
+
+    if (reply != nullptr) delete reply;
+
+    // Building the url and sending the post request.
+    QString address = baseAPIURL;
+    if (endPointAndParameters != "") address = address + "/" + endPointAndParameters;
+    //qDebug() << "Setting the GET URL to" << address;
+    QUrl url(address);
+    QNetworkRequest request(url);
+
+    // Adding the specifed headers.
+    QStringList headerNames = headers.keys();
+    for (qint32 i = 0; i < headerNames.size(); i++){
+        QString headerName = headerNames.at(i);
+        QString headerValue = headers.value(headerName);
+        //qDebug() << headerName << headerValue;
+        request.setRawHeader(headerName.toUtf8(),headerValue.toUtf8());
+    }
+
+    reply = manager.get(request);
+
+    if (!connect(reply,&QNetworkReply::finished,this,&RESTAPIController::gotReply)){
+        errors << "Could not connect finished with slot gotReply";
+        return false;
+    }
+
+    return true;
+
 }
 
 void RESTAPIController::makeEndpointAndParameters(){
@@ -255,7 +327,7 @@ QByteArray RESTAPIController::getPayload() const{
         // Only the data to send is used.
         QJsonDocument json = QJsonDocument::fromVariant(dataToSend);
         QString json_string = QString(json.toJson());
-        payload = json_string.toUtf8();
+        payload = json_string.toUtf8() + payload;
     }
     else{
         // In this case data will part of the $_POST structure so it can't be added straight up.
@@ -295,6 +367,8 @@ QByteArray RESTAPIController::getPayload() const{
 
 void RESTAPIController::gotReply(){
     replyData = reply->readAll();
+
+    qDebug() << "GOT A REPLY REST API CONTROLLER";
 
     // Saving Headers
     QList<QNetworkReply::RawHeaderPair> temp = reply->rawHeaderPairs();

@@ -108,6 +108,77 @@ class ObjectPortalUsers extends ObjectBaseClass{
 
    }
 
+   function addnologpusers($identifier,$parameters){
+
+      // First we make sure that the institution idenfier matches the signature institution.
+      if (!array_key_exists(POSTFields::INSTITUTION_ID,$this->json_data)){
+         $this->suggested_http_code = 401;
+         $this->error = "Missing Institution ID in request data";
+         $this->returnable_error = "Missing request data";
+         return false;         
+      }
+
+      $institution_id = $this->json_data[POSTFields::INSTITUTION_ID];
+      if ($institution_id != $identifier){
+         $this->suggested_http_code = 401;
+         $this->error = "Institution in URL was $identifier but the sign in was done with institution $institution_id";
+         $this->returnable_error = "Badly formed URL";
+         return false;         
+      }
+
+      if (!array_key_exists("data",$this->json_data)){
+         $this->suggested_http_code = 401;
+         $this->error = "Missing 'data' field in the  in request data";
+         $this->returnable_error = "Missing request data";
+         return false;         
+      }      
+
+      $medics = $this->json_data["data"];
+      if (!is_array($medics)){
+         $this->suggested_http_code = 401;
+         $this->error = "The 'data' field in the request data is not an array";
+         $this->returnable_error = "Bad request data";
+         return false; 
+      }
+
+      // Thes are the columns expected in each item of the array;
+      //$columns = [TablePortalUsers::COL_EMAIL, TablePortalUsers::COL_NAME, TablePortalUsers::COL_LASTNAME, TablePortalUsers::COL_PARTNER_ID];
+      $tpu = new TablePortalUsers($this->con_secure);
+      $tiu = new TableInstitutionUsers($this->con_main);
+
+      $ret["inserted"] = 0;
+
+      foreach ($medics as $medic){
+
+         //var_dump($medic);
+
+         $ans = $tpu->addNonLoginParterUsers($medic);
+         if ($ans === FALSE){
+            $this->suggested_http_code = 500;
+            $this->error = "Error inserting non login partner user. Reason: " . $tpu->getError();
+            $this->returnable_error = "Internal server error";
+            return false;    
+         }
+         
+         $insert_id = $tpu->getLastInserted()[0];
+         if ($insert_id == 0) continue;
+
+         $ans = $tiu->linkUserToInstitution($insert_id,$institution_id);
+         if ($ans === FALSE){
+            $this->suggested_http_code = 500;
+            $this->error = "Error linking non login partner user $insert_id to institution $institution_id. Reason: " . $tiu->getError();
+            $this->returnable_error = "Internal server error";
+            return false;    
+         }
+
+         $ret["inserted"]++;
+
+      }
+
+      return $ret;
+
+   }
+
 
 }
 

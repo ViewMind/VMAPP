@@ -23,6 +23,13 @@ class ObjectInstitution extends ObjectBaseClass{
       // We verify that the proper URL parameters were used. 
       $expected = [URLParameterNames::PPKEY, URLParameterNames::INSTANCE, URLParameterNames::VERSION];
 
+      if (!is_array($parameters)){
+         $this->suggested_http_code = 401;
+         $this->returnable_error = "Missing url parameter";
+         $this->error = "operating information requires a parameter array but it didn't get one";
+         return false;
+      }
+
       foreach ($expected as $p) {
           if (!array_key_exists($p, $parameters)) {
               $this->suggested_http_code = 401;

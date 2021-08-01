@@ -26,6 +26,9 @@ class ObjectBaseClass{
    // The path of the file to return, if any. 
    protected $file_path_to_return;
 
+   // Data sent with the request. 
+   protected $json_data;
+
    function __construct($srv_name, $headers){
       $this->error = "";         
       $this->returnable_error = "";
@@ -44,9 +47,16 @@ class ObjectBaseClass{
          $this->error = "Error creating db connection: " . $dbcon->getError();
       }         
 
-      // Creating the base log than can be used for genralities. 
+      // Saving the headers for use if necessary.
       $this->headers = $headers;
 
+      // Storing the json_data (allready an array)
+      $this->json_data = array();
+
+   }
+
+   function setJSONData($jdata){
+      $this->json_data = $jdata;
    }
 
    function setPermissions($permissions){

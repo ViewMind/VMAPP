@@ -49,8 +49,6 @@ class TableInstitution extends TableBaseClass {
 
    }
 
-
-
 }
 
 ?>

@@ -29,7 +29,6 @@ if ($con_secure == NULL){
    exit();
 }
 
-
 /////////////////////////////////////////////
 $table_secrets = new TableSecrets($con_secure);
 $table_inst    = new TableInstitution($con_main);

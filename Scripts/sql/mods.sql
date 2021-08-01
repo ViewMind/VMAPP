@@ -17,3 +17,8 @@ CREATE TABLE updates (
 --vm_secure
 ALTER TABLE secrets ADD COLUMN unique_id VARCHAR(50);
 UPDATE secrets SET unique_id = CONCAT(institution_id,".",institution_instance);
+
+
+--------------------------------- 13/07/2021 ---------------------------------
+-- vm_secure
+ALTER TABLE portal_users ADD COLUMN partner_id VARCHAR(100) AFTER permissions;
