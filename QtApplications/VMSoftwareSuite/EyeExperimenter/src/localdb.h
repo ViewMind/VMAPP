@@ -58,6 +58,7 @@ public:
     static const char * MAIN_QC_PARAMETERS;
     static const char * MAIN_APP_VERSION;
     static const char * MAIN_APP_UPDATE_DELAY_COUNTER;
+    static const char * MAIN_DB_VERSION;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -84,12 +85,21 @@ public:
     static const char * MARKER_VALUE;
     static const char * MARKER_TIME;
 
+    static const qint32 LOCALDB_VERSION = 2;
+
 
     // Constructor
     LocalDB();
 
     // Sets the working file for the local DB and the backup directory, checking that they exists and loading the data if nencessary.
     bool setDBFile(const QString &dbfile, const QString &bkp_dir, bool pretty_print_db = false, bool disable_checksum = false);
+
+    // This replaces old keys used in the medic map to newer keys. Should basically be DEPRACATED in the next release version.
+    // Old medic keys are numbers, new ones are their email.
+    void replaceMedicKeys();
+
+    // Compares the value, if present of the DB version to the fixed current value to determine this. This will be false until saved for the very first time.
+    bool isVersionUpToDate() const;
 
     // Add or modify a subject. Modification ocurrs if the subject ID exists.
     bool addOrModifySubject(const QString &subject_id, QVariantMap subject_data);
@@ -115,6 +125,9 @@ public:
 
     // Returns, if exists, the map with all of the subject data.
     QVariantMap getSubjectData(const QString &subjectID) const;
+
+    // Searches the list of subjects for one with a matching internalID and retuns the information.
+    QVariantMap getSubjectDataByInternalID(const QString &internalID) const;
 
     // Returns a list with display data of all subjects that match the filter.
     QVariantMap getDisplaySubjectList(QString filter);

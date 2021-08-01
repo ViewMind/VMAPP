@@ -1,7 +1,6 @@
 #ifndef ORBITPARTNERAPI_H
 #define ORBITPARTNERAPI_H
 
-#include <QTest>
 #include <QJsonObject>
 #include "partnerapi.h"
 #include <iostream>
@@ -53,6 +52,8 @@ public:
 
     OrbitPartnerAPI();
     bool requestInformation(const QVariantMap &conf) override;
+    bool addMedicsAsAppUsers() const override;
+    bool addMedicsAsNonLoginUsers() const override;
     QString getPartnerType() const override;
 
 protected:

@@ -12,6 +12,8 @@
 
 #include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../../CommonClasses/RestAPIController/orbitpartnerapi.h"
+#include "../../../CommonClasses/RestAPIController/partnerapi.h"
 #include "eyexperimenter_defines.h"
 #include "countries.h"
 #include "localdb.h"
@@ -44,7 +46,11 @@ public:
     Q_INVOKABLE QString getManufactureDate() const;
     Q_INVOKABLE QString getSerialNumber() const;
     Q_INVOKABLE QString getUniqueAuthorizationNumber() const;
-    Q_INVOKABLE QString getInstitutionName() const;
+    Q_INVOKABLE QString getInstitutionName() const;    
+
+    //////////////////////////// PARTNER RELATED FUNCTIONS ////////////////////////////
+    Q_INVOKABLE QStringList getPartnerList() const;
+    Q_INVOKABLE void synchronizeToPartner(const QString &selectedPartner);
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
 
@@ -68,7 +74,7 @@ public:
     //////////////////////////// SUBJECT REALATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE void addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
                                         const QString &age, const QString &birthdate, const QString &birthCountry,
-                                        const QString &gender, qint32 formative_years, qint32 selectedMedic);
+                                        const QString &gender, qint32 formative_years, QString selectedMedic);
 
     Q_INVOKABLE QVariantMap filterSubjectList(const QString &filter);
     Q_INVOKABLE bool setSelectedSubject(const QString &suid);    
@@ -112,10 +118,12 @@ public:
 signals:
     void finishedRequest();
     void qualityControlDone();
+    void partnerSequenceDone(bool allok);
 
 private slots:
     void receivedRequest();
     void qualityControlFinished();
+    void partnerFinished();
 
 private:
 
@@ -148,6 +156,15 @@ private:
     // In order for the update to function properly the system command that calls the update script needs to be started in a separate thread.
     Updater updater;
 
+    // Stores the ini file information for partner connections. If the file exists.
+    QSettings *partners;
+
+    // The generic connection to a partner API.
+    PartnerAPI *partner_api;
+
+    // The last stage of the partner synchronization process. Actually does modifications to the localDB as needed.
+    void partnerSynchFinishProcess();
+
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();
 
@@ -157,6 +174,7 @@ private:
     // Moves sent files to the processed directory
     void moveProcessedFiletToProcessedDirectory();
 
+    // Processing errors.
     static const qint32 FAIL_CODE_NONE = 0;
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
 

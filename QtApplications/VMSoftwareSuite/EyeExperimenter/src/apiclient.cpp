@@ -146,6 +146,23 @@ bool APIClient::requestUpdate(const QString &pathToSaveAFile){
     return sendRequest();
 }
 
+bool APIClient::requestAdditionOfNonLoginPortalUsers(const QVariantList &pusers){
+    error = "";
+    rest_controller.resetRequest();
+    rest_controller.setAPIEndpoint(ENDPOINT_ADDNOLOGIN_MEDIC + "/" + institution_id);
+
+    QVariantMap data;
+    data.insert("institution_id","1");
+    data.insert("institution_instance","0");
+    data.insert("data",pusers);
+
+    rest_controller.setJSONData(data);
+
+    lastRequest = API_SYNC_PARTNER_MEDIC;
+
+    return sendRequest();
+}
+
 QString APIClient::getError() const{
     return error;
 }

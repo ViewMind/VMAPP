@@ -21,9 +21,16 @@ viewhome_updateTitle = Update Available: ;
 viewhome_updateQuestion = Would you like to download and install the update now?<br>You can postpone this update =N= more times;
 viewhome_updateYes = YES;
 viewhome_updateNo  = NO;
+viewhome_btnPartners = PARTNERS;
 
 #********************************* DOCTOR MENU *********************************
 viewdrmenu_mode = Mode;
+
+#********************************* PARTNER MENU *********************************
+viewpartner_title = Import External Data;
+viewpartner_subTitle = Select partner;
+viewpartner_btnImport = IMPORT;
+
 
 #********************************* VIEW VR SCREEN *********************************
 viewvrscreen_btnStartExperiment  = START STUDY;
@@ -382,10 +389,12 @@ error_db_timeout = Connection time out|Too much time was spent waiting for the s
 error_launcher_update = Restart required|In 5 seconds the program will close. Please restart it;
 error_qc_verification_failed = Quality Control Failed|The study file is likely corrupted<br>Please contact ViewMind for support;
 error_vr_init_failed = VR Intialization Failed|You will not be able to do any studies<br>Please contact the ViewMind Support Team for assistance;
+error_partner_failed = Process failed|Please try again later<br>If the problem persists, please contact ViewMind;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Apply Changes|The program must be restarted to apply the selected changes;
 msg_request_report = Processing...|Please wait while the report information is obtained;
 msg_report_generation = Generating report|Your report will be ready shortly...;
 msg_get_info_online = Synching ...|Retrieving portal information, please wait;
+msg_get_partner_data = Retrieving information ... | This may take a few minutes. Please wait;
 msg_get_update = Please wait ...|Dowloading update file. This might take a few minutes;

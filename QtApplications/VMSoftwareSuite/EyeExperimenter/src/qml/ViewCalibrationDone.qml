@@ -59,7 +59,7 @@ VMBase {
         }
 
         function repositionImage(){
-            imgCalibration.x = (viewCalibrationDone.width - imgCalibration.width*viewHome.vmScale)/2;
+            imgCalibration.x = (viewCalibrationDoneDiag.width - imgCalibration.width*viewHome.vmScale)/2;
             imgCalibration.y = viewTitle.y + viewTitle.height + mainWindow.height*0.069;
         }
 

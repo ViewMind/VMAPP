@@ -34,6 +34,8 @@ public:
 
     virtual bool requestInformation(const QVariantMap &configuration);
     virtual QString getPartnerType() const;
+    virtual bool addMedicsAsAppUsers() const;
+    virtual bool addMedicsAsNonLoginUsers() const;
 
     QVariantList getMedicInformation() const;
     QVariantList getRegisteredPatientInformation() const;

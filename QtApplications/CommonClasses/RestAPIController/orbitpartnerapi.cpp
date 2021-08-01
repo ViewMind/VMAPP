@@ -19,6 +19,15 @@ QString OrbitPartnerAPI::getPartnerType() const{
     return "Orbit";
 }
 
+bool OrbitPartnerAPI::addMedicsAsAppUsers() const{
+    return true;
+}
+
+bool OrbitPartnerAPI::addMedicsAsNonLoginUsers() const{
+    return true;
+}
+
+
 bool OrbitPartnerAPI::requestInformation(const QVariantMap &conf){
 
     QStringList requirements;
@@ -126,8 +135,6 @@ void OrbitPartnerAPI::onReplyReceived(){
                 //emails << email;
                 qint32 id = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::ID).toInt();
                 if (skip.contains(id)) continue;
-
-
 
                 medic[PartnerMedic::EMAIL]      = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::EMAIL);
                 medic[PartnerMedic::NAME]       = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::NAME);

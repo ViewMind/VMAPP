@@ -10,6 +10,7 @@ const char * LocalDB::MAIN_MEDICS                            = "medics";
 const char * LocalDB::MAIN_QC_PARAMETERS                     = "qc_parameters";
 const char * LocalDB::MAIN_APP_VERSION                       = "app_version";
 const char * LocalDB::MAIN_APP_UPDATE_DELAY_COUNTER          = "update_delay_counter";
+const char * LocalDB::MAIN_DB_VERSION                        = "local_db_version";
 
 
 // Evaluator fields
@@ -77,6 +78,46 @@ void LocalDB::deniedUpdate(){
          this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = counter;
          saveAndBackup();
      }
+}
+
+void LocalDB::replaceMedicKeys(){
+
+    QVariantMap medicMap = this->data.value(MAIN_MEDICS).toMap();
+    QVariantMap subjects = this->data.value(MAIN_SUBJECT_DATA).toMap();
+    QStringList oldkeys = medicMap.keys();
+    QStringList allsubjects = subjects.keys();
+
+    for (qint32 i = 0; i < oldkeys.size(); i++){
+
+        QVariantMap medic = medicMap.value(oldkeys.at(i)).toMap();
+        QString email = medic.value(APPUSER_EMAIL).toString();
+
+        //qDebug() << email << oldkeys.at(i);
+        if (email == oldkeys.at(i)) continue; // Otherwise this will remove all medics.
+        medicMap[email] = medic;
+        medicMap.remove(oldkeys.at(i));
+
+        for (qint32 j = 0; j < allsubjects.size(); j++){
+            QVariantMap subject = subjects.value(allsubjects.at(j)).toMap();
+            if (subject.value(SUBJECT_ASSIGNED_MEDIC).toString() == oldkeys.at(i)){
+                subject[SUBJECT_ASSIGNED_MEDIC] = email;
+                subjects[allsubjects.at(j)] = subject;
+            }
+        }
+
+    }
+
+    this->data[MAIN_MEDICS] = medicMap;
+    this->data[MAIN_SUBJECT_DATA] = subjects;
+
+    saveAndBackup();
+
+}
+
+bool LocalDB::isVersionUpToDate() const{
+    if (!this->data.contains(MAIN_DB_VERSION)) return false;
+    if (this->data.value(MAIN_DB_VERSION) != LOCALDB_VERSION) return false;
+    return true;
 }
 
 bool LocalDB::setDBFile(const QString &dbfile, const QString &bkp_dir, bool pretty_print_db, bool disable_checksum){
@@ -263,6 +304,18 @@ QVariantMap LocalDB::getSubjectData(const QString &subjectID) const{
     return data.value(MAIN_SUBJECT_DATA,QVariantMap()).toMap().value(subjectID,QVariantMap()).toMap();
 }
 
+QVariantMap LocalDB::getSubjectDataByInternalID(const QString &internalID) const{
+    QVariantMap subjects = data.value(MAIN_SUBJECT_DATA,QVariantMap()).toMap();
+    QStringList keys = subjects.keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        QVariantMap subj = subjects.value(keys.at(i)).toMap();
+        if (subj.value(SUBJECT_INSTITUTION_ID).toString() == internalID){
+            return subj;
+        }
+    }
+    return QVariantMap();
+}
+
 bool LocalDB::addProtocol(const QString &protocol){
     QStringList protocols = data.value(MAIN_PROTOCOL,QStringList()).toStringList();
     if (protocols.contains(protocol)) return false;
@@ -312,7 +365,8 @@ bool LocalDB::setMedicInformationFromRemote(const QVariantMap &response){
 
         QVariantMap medic;
         QString keyid = temp.value(APINames::Medics::KEYID).toString();
-        medic.insert(APPUSER_EMAIL,temp.value(APINames::Medics::EMAIL));
+        QString email = temp.value(APINames::Medics::EMAIL).toString();
+        medic.insert(APPUSER_EMAIL,email);
         medic.insert(APPUSER_LASTNAME,temp.value(APINames::Medics::LASTNAME));
         medic.insert(APPUSER_NAME,temp.value(APINames::Medics::FNAME));
         medic.insert(APPUSER_PASSWORD,"");
@@ -322,7 +376,7 @@ bool LocalDB::setMedicInformationFromRemote(const QVariantMap &response){
         //std::cout << "Keyid " << keyid.toStdString() << std::endl;
         //Globals::Debug::prettpPrintQVariantMap(temp);
         //std::cout << "------------------------------" << std::endl;
-        local_medics[keyid] = medic;
+        local_medics[email] = medic;
 
     }
 
@@ -363,7 +417,6 @@ bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &respo
     data[MAIN_PROCESSING_PARAMETERS] = pp;
     return saveAndBackup();
 }
-
 
 bool LocalDB::setQCParametersFromServerResponse(const QVariantMap &response){
 
@@ -508,6 +561,7 @@ bool LocalDB::saveAndBackup(){
 
     // Computing the hash with no checksum and then storing the checksum.
     QString previoushash = data.value(MAIN_CHECKSUM).toString();
+    data[MAIN_DB_VERSION] = LOCALDB_VERSION; // This is done always, just in case.
     data[MAIN_CHECKSUM] = computeDataHash();
 
     // If hashes are the same, then nothing changed and there is no point in saving and or creating another backup.

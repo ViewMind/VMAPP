@@ -19,6 +19,14 @@ bool PartnerAPI::requestInformation(const QVariantMap &configuration){
     return false;
 }
 
+bool PartnerAPI::addMedicsAsAppUsers() const{
+    return false;
+}
+
+bool PartnerAPI::addMedicsAsNonLoginUsers() const{
+    return false;
+}
+
 QVariantList PartnerAPI::getMedicInformation() const{
     return medics;
 }

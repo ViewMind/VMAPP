@@ -152,8 +152,12 @@ bool RESTAPIController::isRequestFinished() const{
 bool RESTAPIController::sendPOSTRequest() {
 
     errorInReply = false;
-    if (reply != nullptr) delete reply;
-    replyData.clear();
+    if (reply != nullptr) {
+        delete reply;
+        reply = nullptr;
+    }
+    //qDebug() << "sendingPostRequest";
+
 
     QHttpMultiPart *multipart = nullptr;
     QByteArray jsonData;
@@ -163,10 +167,6 @@ bool RESTAPIController::sendPOSTRequest() {
 
         // We create the request part with whatever data or files need to be sent.
         multipart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-
-        if (reply != nullptr){
-            delete reply;
-        }
 
         if (!dataToSend.isEmpty()){
             QStringList data_keys = dataToSend.keys();
@@ -270,6 +270,8 @@ bool RESTAPIController::sendPOSTRequest() {
         return false;
     }
 
+    //qDebug() << "Returning from sending post request";
+
     return true;
 }
 
@@ -368,7 +370,7 @@ QByteArray RESTAPIController::getPayload() const{
 void RESTAPIController::gotReply(){
     replyData = reply->readAll();
 
-    qDebug() << "GOT A REPLY REST API CONTROLLER";
+    //qDebug() << "GOT A REPLY REST API CONTROLLER";
 
     // Saving Headers
     QList<QNetworkReply::RawHeaderPair> temp = reply->rawHeaderPairs();

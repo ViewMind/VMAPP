@@ -318,6 +318,9 @@ VMBase {
                     return;
                 }
 
+                var gender = "";
+                if (labelGender.vmCurrentIndex > 0) gender = labelGender.vmCurrentText;
+
                 // If the institution provided ID is empty, then the name and lastname is a must. Otherwise, the can be empty.
                 if (labelInstitutionProvidedID.vmEnteredText === ""){
                     if (labelName.vmEnteredText === ""){
@@ -335,7 +338,7 @@ VMBase {
                 loader.addOrModifySubject(patientUID,
                                           labelName.vmEnteredText,labelLastName.vmEnteredText,
                                           labelInstitutionProvidedID.vmEnteredText,labelAge.vmEnteredText,
-                                          bdate,labelCountry.vmCurrentText,labelGender.vmCurrentText,
+                                          bdate,labelCountry.vmCurrentText,gender,
                                           labelFormativeYears.vmEnteredText,vmMedicsModelList[labelPreferredDoctor.vmCurrentIndex]["metadata"])
                 swiperControl.currentIndex = swiperControl.vmIndexPatientList;
 

@@ -115,6 +115,17 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Update cleanup.
     QFile::remove("../" + Globals::Paths::UPDATE_SCRIPT);
 
+    if (!localDB.isVersionUpToDate()){
+        localDB.replaceMedicKeys();
+    }
+
+    if (QFile::exists(Globals::Paths::PARTNERS)){
+        partners = new QSettings(Globals::Paths::PARTNERS,QSettings::IniFormat);
+        partners->setIniCodec(Globals::Share::TEXT_CODEC);
+        //qDebug() << partners->childGroups();
+    }
+    else partners = nullptr;
+    partner_api = nullptr;
 
 //    // DebugCode
 //    QString todbug = "viewmind_etdata/1_0_20210707202158295/reading_2021_07_09_07_52.json";
@@ -204,6 +215,108 @@ QString Loader::getUniqueAuthorizationNumber() const {
 
 QString Loader::getInstitutionName() const {
     return configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
+}
+
+////////////////////////////////////////////////////////  PARTNER FUNCTIONS  ////////////////////////////////////////////////////////
+
+QStringList Loader::getPartnerList() const{
+    if (partners != nullptr){
+        return partners->childGroups();
+    }
+    else return QStringList();
+}
+
+void Loader::synchronizeToPartner(const QString &selectedPartner){
+    if (partner_api != nullptr){
+        disconnect(partner_api,&PartnerAPI::finished,this,&Loader::partnerFinished);
+        delete partner_api;
+    }
+
+    if (selectedPartner == Globals::Partners::ORBIT){
+        // Creating the instance fo OrbitLabs as partner.
+        partner_api = new OrbitPartnerAPI();
+    }
+    else{
+        logger.appendError("Selected unimplemented partner: " + selectedPartner);
+        emit(partnerSequenceDone(false));
+    }
+
+    // Connecting to the right slot
+    connect(partner_api,&PartnerAPI::finished,this,&Loader::partnerFinished);
+
+    // The INI file group should be created so that all required configuration are present
+    // and have the matching key names as required by the class.
+    partners->beginGroup(selectedPartner);
+    QStringList keys = partners->allKeys();
+    QVariantMap config;
+    for (qint32 i = 0; i < keys.size(); i++){
+        config[keys.at(i)] = partners->value(keys.at(i));
+    }
+
+    if (!partner_api->requestInformation(config)){
+        logger.appendError("Failed in requesting information for partner: " + partner_api->getPartnerType() + ". Reason: " + partner_api->getError());
+        emit(partnerSequenceDone(false));
+    }
+
+}
+
+void Loader::partnerFinished(){
+    if (partner_api->getError() != ""){
+        logger.appendError("Failed in requesting information for partner: " + partner_api->getPartnerType() + ". Reason: " + partner_api->getError());
+        emit(partnerSequenceDone(false));
+        return;
+    }
+
+    if (partner_api->addMedicsAsNonLoginUsers()){
+        QVariantList doctors = partner_api->getMedicInformation();
+        if (!apiclient.requestAdditionOfNonLoginPortalUsers(doctors)){
+            logger.appendError("Failed on requesting the addition of NonLoginPortal Users: " + apiclient.getError());
+            emit(partnerSequenceDone(false));
+        }
+    }
+    else{
+        partnerSynchFinishProcess();
+    }
+
+}
+
+void Loader::partnerSynchFinishProcess(){
+
+    QVariantList doctors = partner_api->getMedicInformation();
+    QVariantList patients = partner_api->getRegisteredPatientInformation();
+
+    for (qint32 i = 0; i < patients.size(); i++){
+        QVariantMap patient = patients.at(i).toMap();
+        QString uid = patient.value(ParterPatient::PARTNER_UID).toString();
+        if (localDB.getSubjectDataByInternalID(uid).isEmpty()){
+            // New subject needs to be created.
+            Debug::prettpPrintQVariantMap(patient);
+            this->addOrModifySubject("",
+                                     patient.value(ParterPatient::NAME,"").toString(),
+                                     patient.value(ParterPatient::LASTNAME,"").toString(),
+                                     uid,
+                                     patient.value(ParterPatient::AGE,0).toString(),
+                                     patient.value(ParterPatient::BIRTHDATE,"").toString(),
+                                     patient.value(ParterPatient::NATIONALITY,"ZZ").toString(),
+                                     patient.value(ParterPatient::GENDER,"").toString(),
+                                     patient.value(ParterPatient::YEARS_FORMATION,0).toInt(),
+                                     patient.value(ParterPatient::PARTNER_MEDIC_ID).toString());
+        }
+    }
+
+    // If necessary we add the doctors as app users.
+    if (partner_api->addMedicsAsAppUsers()){
+         for (qint32 i = 0; i < doctors.size(); i++){
+             QVariantMap evaluator = doctors.at(i).toMap();
+             QString email = evaluator.value(PartnerMedic::EMAIL).toString();
+             QString name = evaluator.value(PartnerMedic::NAME).toString();
+             QString lastname = evaluator.value(PartnerMedic::LASTNAME).toString();
+             this->addOrModifyEvaluator(email,email,"1234",name,lastname);
+         }
+    }
+
+
+    emit(partnerSequenceDone(true));
 }
 
 ////////////////////////////////////////////////////////  UPDATE FUNCTIONS  ////////////////////////////////////////////////////////
@@ -565,7 +678,7 @@ QStringList Loader::getLoginEmails() const {
 
 void Loader::addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
                                 const QString &age, const QString &birthdate, const QString &birthCountry,
-                                const QString &gender, qint32 formative_years, qint32 selectedMedic){
+                                const QString &gender, qint32 formative_years, QString selectedMedic){
 
     //qDebug() << "Entering with suid" << suid;
 
@@ -740,6 +853,7 @@ void Loader::requestOperatingInfo(){
     newVersionAvailable = "";
     processingUploadError = FAIL_CODE_NONE;
 
+    //qDebug() << "Requesting Operating Info";
     if (!apiclient.requestOperatingInfo()){
         logger.appendError("Request operating info error: "  + apiclient.getError());
     }
@@ -764,6 +878,10 @@ void Loader::receivedRequest(){
     if (!apiclient.getError().isEmpty()){
         processingUploadError = FAIL_CODE_SERVER_ERROR;
         logger.appendError("Error Receiving Request :"  + apiclient.getError());
+        if (apiclient.getLastRequestType() == APIClient::API_SYNC_PARTNER_MEDIC){
+            emit(partnerSequenceDone(false));
+            return; // So we don't emit the finsihed request.
+        }
     }
     else{
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO){
@@ -836,6 +954,10 @@ void Loader::receivedRequest(){
             else{
                 logger.appendError("The download apparently succeded but the file is not where it was expected: " + expectedPath);
             }
+        }
+        else if (apiclient.getLastRequestType() == APIClient::API_SYNC_PARTNER_MEDIC){
+            partnerSynchFinishProcess();
+            return; // So we don't emit the finsihed request.
         }
     }
     emit(finishedRequest());

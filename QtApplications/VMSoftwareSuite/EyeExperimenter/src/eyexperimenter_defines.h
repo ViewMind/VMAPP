@@ -8,7 +8,7 @@
 #include "../../../CommonClasses/Experiments/experiment.h"
 
 ///////////////////////// ONLY ONE OF THESE SHOULD BE ENABLED: DEFINES WHICH SERVER WILL BE USED BY THE API //////////////////////////
-#define CLIENT_REGION_EU
+//#define CLIENT_REGION_EU
 //#define CLIENT_REGION_US
 
 #include "../../../CommonClasses/eyetracker_defines.h"
@@ -42,6 +42,7 @@ namespace Globals{
       static const QString DBBKPDIR = "dbbkp";
       static const QString CONFIGURATION = "vmconfiguration";
       static const QString SETTINGS = "vmsettings";
+      static const QString PARTNERS = "vmpartners";
       static const QString PROCESSING_PARAMETERS = "vmpp";
       static const QString UPDATE_PACKAGE = "app.zip";
       static const QString UPDATE_SCRIPT  = "update.bat";
@@ -66,8 +67,11 @@ namespace Globals{
       static const QString DEFAULT_READING_LANGUAGE = "default_reading_study_language";
       static const QString LAST_SELECTED_PROTOCOL = "last_selected_protocol";
    }
-   
-   
+
+   namespace Partners {
+      static const QString ORBIT = "Orbit Labs";
+   }
+      
    namespace StudyConfiguration {
       // These values NEED to match the ViewStudyStart definitions.
       static const QString UNIQUE_STUDY_ID = "unique_study_id";
@@ -84,11 +88,11 @@ namespace Globals{
    }
    
    namespace Debug {
-      static const bool DISABLE_DB_CHECKSUM     = false;
+      static const bool DISABLE_DB_CHECKSUM     = true;
       static const bool SHOW_MOUSE_STUDY        = true;
       static const bool SHOW_EYE_POSITION       = false;
       static const bool DISABLE_RM_SENT_STUDIES = false;
-      static const bool PRETTY_PRINT_JSON_DB    = false;
+      static const bool PRETTY_PRINT_JSON_DB    = true;
    }
       
    namespace UILanguage {
@@ -97,7 +101,8 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "16.1.1";
+       // Developing version 16.2.0
+       static const QString EXPERIMENTER_VERSION_NUMBER = "16.2.0";
        static const QString EXPERIMENTER_VERSION = EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + REGION
                + (ExperimentGlobals::SHORT_STUDIES ? " - SHORT STUDIES" : "")
                + (Debug::DISABLE_DB_CHECKSUM ? " - NO CHECKSUM" : "") +

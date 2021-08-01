@@ -21,10 +21,12 @@ viewhome_updateTitle = Actualización Disponible: ;
 viewhome_updateQuestion = ¿Desea bajar e instalar la actualización ahora?<br>Puede posponer la actualización =N= veces mas;
 viewhome_updateYes = SI;
 viewhome_updateNo  = NO;
-
+viewhome_btnPartners = VINCULACIÓN;
 
 #********************************* DOCTOR MENU *********************************
-viewdrmenu_mode = Modo;
+viewpartner_title = Importar Datos Externos;
+viewpartner_subTitle = Seleccionar vincualación;
+viewpartner_btnImport = IMPORTAR;
 
 #********************************* VIEW VR SCREEN *********************************
 viewvrscreen_btnStartExperiment  = COMENZAR ESTUDIO;
@@ -384,10 +386,12 @@ error_launcher_update = Se debe reiniciar|En 5 segundos el programa se cerrará.
 error_qc_verification_failed = El Control de Calidad Falló|Es posible que el archivo de estudio esté corrupto<br>Por favor, cotacte al sorporte de ViewMind;
 error_corrupt_file = Archivo corrupto|El archivo no puede ser enviado a procesamiento por que esta corrupto;
 error_vr_init_failed = Falla en al iniciar VR|No podrá realizar estudios<br>Por favor contacte al equipo de asistencia de ViewMind;
+error_partner_failed = El proceso falló|Por favor intente mas tarde<br>Si el problema continúa contacte a ViewMind;
 
 #********************************* INFORMATION MESSAGES *********************************
 msg_change_lang = Efectuar los cambios|Los cambios que realizó requieren que se reinicie el programa;
 msg_request_report = Procesando...|Por favor espere mientras se obtiene la información del reporte;
 msg_report_generation = Generando reporte|En un instante su informe estará listo...;
 msg_get_info_online = Sincronizando ...|Descargando información del portal, por favor espere;
+msg_get_partner_data = Bajadon información ... | Esto puede llevar algunos minutos. Por favor espere;
 msg_get_update = Espere por favor ...|Se está descargando la actualización. Esto puede llevar algunos minutos;

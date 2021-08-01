@@ -36,8 +36,17 @@ VMBase {
                 viewDrSelection.open();
             }
         }
+        onPartnerSequenceDone: {
+            connectionDialog.close();
+            if (!allok){
+                var titleMsg = viewHome.getErrorTitleAndMessage("error_partner_failed");
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmErrorCodeNotClose;
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+            }
+        }
     }
-
 
     function getErrorTitleAndMessage(keyid){
         var res = loader.getStringListForKey(keyid);
@@ -390,6 +399,95 @@ VMBase {
 
     }
 
+    // Partner dialog
+    Dialog {
+        id: partnerDialog;
+        modal: true
+        width: mainWindow.width*0.4
+        height: mainWindow.height*0.5
+        y: (parent.height - height)/2
+        x: (parent.width - width)/2
+        closePolicy: Popup.NoAutoClose
+
+        contentItem: Rectangle {
+            id: rectParterDiag
+            anchors.fill: parent
+            layer.enabled: true
+            layer.effect: DropShadow{
+                radius: 5
+            }
+        }
+
+        // The instruction text
+        Text {
+            id: partnerTitle
+            font.family: viewHome.gothamB.name
+            font.pixelSize: 33*viewHome.vmScale
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.05
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#297fca"
+            text: loader.getStringForKey("viewpartner_title");
+        }
+
+        Text {
+            id: partnerSubTitle
+            font.family: viewHome.robotoR.name
+            font.pixelSize: 13*viewHome.vmScale
+            anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
+            color:  "#dfdfdf"
+            anchors.top: partnerTitle.bottom
+            anchors.topMargin: mainWindow.height*0.02
+            text: loader.getStringForKey("viewpartner_subTitle");
+        }
+
+        VMComboBox2 {
+            id: partnerSelection;
+            width: parent.width*0.8;
+            vmMaxDisplayItems: 3
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: partnerSubTitle.bottom
+            anchors.topMargin: mainWindow.height*0.04
+            z:2
+            Component.onCompleted: {
+                partnerSelection.setModelList(loader.getPartnerList());
+            }
+
+        }
+
+        VMButton {
+            id: btnImport
+            vmText: loader.getStringForKey("viewpartner_btnImport");
+            vmFont: gothamM.name;
+            anchors.horizontalCenter: parent.horizontalCenter;
+            anchors.bottom: parent.bottom;
+            anchors.bottomMargin: mainWindow.height*0.05;
+            onClicked: {
+                partnerDialog.close();
+                var title_and_text = loader.getStringListForKey("msg_get_partner_data");
+                //console.log(title_and_text);
+                connectionDialog.vmMessage = title_and_text[1];
+                connectionDialog.vmTitle = title_and_text[0];
+                connectionDialog.open();
+                loader.synchronizeToPartner(partnerSelection.vmCurrentText);
+            }
+        }
+
+        // Creating the close button
+        VMDialogCloseButton {
+            id: btnPartnerClose
+            anchors.top: parent.top
+            anchors.topMargin: mainWindow.height*0.032
+            anchors.right: parent.right
+            anchors.rightMargin: mainWindow.width*0.019
+            onClicked: {
+                partnerDialog.close();
+            }
+        }
+
+    }
+
     // ViewMind Logo
     Image {
         id: logo
@@ -481,6 +579,20 @@ VMBase {
             connectionDialog.vmTitle = title_and_text[0];
             connectionDialog.open();
             loader.requestOperatingInfo();
+        }
+    }
+
+    VMButton {
+        id: btnPartners;
+        vmText: loader.getStringForKey("viewhome_btnPartners");
+        vmFont: gothamM.name;
+        anchors.bottom: parent.bottom;
+        anchors.right: parent.right;
+        anchors.bottomMargin: mainWindow.height*0.05;
+        anchors.rightMargin: mainWindow.width*0.02;
+        visible: (loader.getPartnerList().length > 0)
+        onClicked: {
+            partnerDialog.open();
         }
     }
 
