@@ -146,7 +146,7 @@ class ObjectPortalUsers extends ObjectBaseClass{
       $tpu = new TablePortalUsers($this->con_secure);
       $tiu = new TableInstitutionUsers($this->con_main);
 
-      $ret["inserted"] = 0;
+      $ret["inserted"] = array();
 
       foreach ($medics as $medic){
 
@@ -161,7 +161,7 @@ class ObjectPortalUsers extends ObjectBaseClass{
          }
          
          $insert_id = $tpu->getLastInserted()[0];
-         if ($insert_id == 0) continue;
+         if ($insert_id == 0) continue; // The user has already been created. 
 
          $ans = $tiu->linkUserToInstitution($insert_id,$institution_id);
          if ($ans === FALSE){
@@ -171,7 +171,7 @@ class ObjectPortalUsers extends ObjectBaseClass{
             return false;    
          }
 
-         $ret["inserted"]++;
+         $ret["inserted"][] = $medic[TablePortalUsers::COL_EMAIL];
 
       }
 
