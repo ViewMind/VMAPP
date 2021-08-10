@@ -1,7 +1,10 @@
 #!/bin/bash 
 
+base_path=$(cd ..; pwd)
+
 if [ $# != 1 ]; then
    echo "One and only one argument required. Possibilities: "
+   echo "Base Path: $base_path"
    echo "1 -> Reading Spanish"
    echo "2 -> Binding 2"
    echo "3 -> Binding 3"
@@ -17,14 +20,16 @@ if [[ $1 == 1 ]]; then
    INPUT="test_scripts/reference_data/reference_reading_es.csv"   
 elif [[ $1 == 2 ]]; then 
    echo "RUNNING BINDING 2 TEST ...."
-   RSCRIPT="binding2.R"
-   OUTPUT="test_scripts/comparison_binding2_output"
-   INPUT="test_scripts/reference_data/reference_binding_bc_2.csv test_scripts/reference_data/reference_binding_uc_2.csv"
+   RSCRIPT="$base_path/binding2.R"
+   OUTPUT="$base_path/test_scripts/comparison_binding2_output"
+   MODEL="$base_path/binding2_model.RDS"
+   INPUT="$base_path/test_scripts/reference_data/reference_binding_bc_2.csv $base_path/test_scripts/reference_data/reference_binding_uc_2.csv"
 elif [[ $1 == 3 ]]; then 
    echo "RUNNING BINDING 3 TEST ...."
-   RSCRIPT="binding3.R"
-   OUTPUT="test_scripts/comparison_binding3_output"
-   INPUT="test_scripts/reference_data/reference_binding_bc_3.csv test_scripts/reference_data/reference_binding_uc_3.csv"
+   RSCRIPT="$base_path/binding3.R"
+   OUTPUT="$base_path/test_scripts/comparison_binding3_output"
+   MODEL="$base_path/binding3_model.RDS"
+   INPUT="$base_path/test_scripts/reference_data/reference_binding_bc_3.csv $base_path/test_scripts/reference_data/reference_binding_uc_3.csv"
 elif [[ $1 == 4 ]]; then 
    echo "RUNNING NBACK RT TEST ...."
    RSCRIPT="nback_rt.R"
@@ -39,12 +44,8 @@ else
    exit
 fi
 
-# Switchting to bin directory.
-#cd ../../
-cd ../
-
 # Making sure the output does not exist
 rm $OUTPUT 2> /dev/null
 
 # Running the test. 
-Rscript $RSCRIPT $INPUT $OUTPUT
+Rscript $RSCRIPT $INPUT $MODEL $OUTPUT

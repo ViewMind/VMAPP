@@ -134,6 +134,41 @@ class TableUpdates extends TableBaseClass {
 
    }
 
+   function updateJustVersionOfList($update_list,$new_version){
+
+      $cols_to_get = [self::COL_INSTITUTION_ID, self::COL_INSTITUTION_INSTANCE, self::COL_EYETRACKER_KEY, self::COL_UNIQUE_ID];
+      $select = new SelectOperation();
+      $select->addConditionToANDList(SelectColumnComparison::IN,self::COL_UNIQUE_ID,$update_list);
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,1);
+
+      // WE get all the values that we must reinsert before we make the same set of 
+      $to_update = $this->simpleSelect($cols_to_get,$select);
+      if ($to_update === FALSE) return false;
+
+
+      // The exact same set of data is not set as invalid
+      $params[self::COL_VALID] = 0;
+      $ans = $this->simpleUpdate($params,"Updating old valid update rows to invalid",$select);
+      if ($ans === FALSE) return false;
+
+      // We reinsert the data with the new version and the valid value. 
+      $update_params = array();
+      foreach ($to_update as $item){
+         foreach ($item as $col => $value) {
+            if (!array_key_exists($col, $update_params)) {
+               $update_params[$col] = array();
+            }
+            $update_params[$col][] = $value;
+         }
+         $update_params[self::COL_VALID][] = 1;
+         $update_params[self::COL_VERSION_STRING][] = $new_version;
+      }
+
+      $ans = $this->insertionOperation($update_params,"Updating to new version $new_version");
+      return $ans;
+
+   }
+
 }
 
 ?>

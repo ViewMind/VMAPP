@@ -86,6 +86,9 @@ class TableBaseClass {
       $count = 0;
       foreach ($params as $key => $p){
          if (is_array($p)){
+
+            //echo count($p) . "\n";
+
             if ($valid == -1) {
                $valid = 1;
                $count = count($p);
@@ -96,6 +99,9 @@ class TableBaseClass {
             }
          }
          else{
+
+            //echo "Not an array\n";
+
             if ($valid == -1) {
                $valid = 0;
             }
@@ -103,6 +109,7 @@ class TableBaseClass {
                $valid = 2;
                break;
             }
+
          }
       }
 
@@ -131,10 +138,21 @@ class TableBaseClass {
       else {
 
          // Each object in $params is an array in this case. is a list.
+         // $new_params = array();
+         // foreach ($columns_to_insert as $p) {
+         //    $temp = array();
+         //    for ($i = 0; $i < count($params[$p]); $i++){
+         //       $new_name =  "$p" . "_" . $i;
+         //       $temp[] = ":$new_name";
+         //       $new_params[$new_name] = $params[$p][$i];
+         //    }
+         //    $placeholders[] = "(" . implode(",",$temp) . ")";
+         // }
+
          $new_params = array();
-         foreach ($columns_to_insert as $p) {
+         for ($i = 0; $i < $count; $i++){
             $temp = array();
-            for ($i = 0; $i < count($params[$p]); $i++){
+            foreach ($columns_to_insert as $p) {
                $new_name =  "$p" . "_" . $i;
                $temp[] = ":$new_name";
                $new_params[$new_name] = $params[$p][$i];
@@ -242,23 +260,24 @@ class TableBaseClass {
       }
 
       $updates = array();
+      $nparams = array();
       foreach ($params as $col_name => $value){
          $updates[] = "$col_name = :$col_name";
+         $nparams[":$col_name"] = $value;
       }
 
       $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",", $updates) . " WHERE " . $select->makeWhereClause();
 
       $bind_from_select = $select->getBindParameterArray();
-      $params = array_merge($bind_from_select,$params);
-      var_dump($params);
+      $nparams = array_merge($bind_from_select,$nparams);
+      //var_dump($nparams);
 
       try {
          $stmt = $this->con->prepare($sql);
-         $stmt->execute($params);
-         $this->last_inserted[] = $this->con->lastInsertId();
+         $stmt->execute($nparams);
       }
       catch (PDOException $e){
-         $this->error = "Insertion failure for $customized_message: " . $e->getMessage() . ". SQL: $sql";
+         $this->error = "Update failure for $customized_message: " . $e->getMessage() . ". SQL: $sql";
          return false;
       }      
       

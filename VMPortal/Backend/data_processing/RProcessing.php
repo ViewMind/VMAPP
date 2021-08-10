@@ -3,6 +3,9 @@
 include_once (__DIR__ . "/../common/named_constants.php");
 include_once (__DIR__ . "/../common/config.php");
 include_once ("ViewMindDataContainer.php");
+include_once ("value_category.php");
+
+const CURRENT_PDF_GEN_VERSION = 1;
 
 abstract class RScriptNames {
    const BINDING_2_SCRIPT     = "binding2.R";
@@ -12,20 +15,52 @@ abstract class RScriptNames {
    const READING_ES_SCRIPT    = "reading_es.R";   
 }
 
+abstract class CommonResultKeys {
+   const MEDIC = "medic";
+   const EVALUATOR = "evaluator";
+   const DATE = "date";
+   const AGE  = "age";
+   const PATIENT = "patient";
+   const REPORT_TYPE = "report_type";
+   const RESOLUTION = "resolution";
+   const PDF_GEN_VERSION = "pdf_gen_version";
+   const FIXATIONS = "fixations";
+}
+
+abstract class ReportTypes {
+   const BINDING_3 = "binding_3";
+   const BINDING_2 = "binding_2";
+}
+
+abstract class ModelNames {
+   const BINDING_3_MODEL      = "binding3_model.RDS";
+   const BINDING_2_MODEL      = "binding3_model.RDS";
+}
+
+abstract class TrialDisplayIndexes {
+   const BINDING_3            = [19 => "10", 29 => "20",  41 => "32"];
+   const BINDING_2            = [19 => "10", 29 => "20",  41 => "32"];
+   //const GONOGO               = [19 => "10", 34 => "25",  49 => "40", 64 => "55"];
+}
+
 function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
 
    $studies = $vmdc->getAvailableStudies();
    $study = $studies[0];
 
    // Setting up paths. 
-   $output = "$workdir/routput";
+   $output = "$workdir/routput.json";
    $rscript = "";
-   $expected_output_fields = array();
+   $model = "";
+   $report_type = "";
+   $valid_eye = "";
+   $fixation_trial_list = [];
 
    if ($study == Study::READING){
+      return "Unknown R Processing Study: $study";
       $input  = $csv_array[Study::READING];
       $rscript = RScriptNames::READING_ES_SCRIPT;
-      $expected_output_fields = ReadingResults::getConstList();
+      //$expected_output_fields = ReadingResults::getConstList();
    }
    else if (($study == Study::BINDING_BC) || ($study == Study::BINDING_UC)){
       $input  = $csv_array[Study::BINDING_BC] . " " . $csv_array[Study::BINDING_UC];
@@ -34,30 +69,48 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
       $study = Study::BINDING_BC;
       $vmdc->setRawDataAccessPathForStudy(Study::BINDING_BC); // This is the one we need for the binding score, later on. 
       $study_config = $vmdc->getStudyField(StudyField::STUDY_CONFIGURATION);
+      $valid_eye = $study_config[StudyParameter::VALID_EYE];
 
-      if ($study_config[StudyParameter::NUMBER_TARGETS]  == BindingTargetCount::THREE) $rscript = RScriptNames::BINDING_3_SCRIPT;
-      else if ($study_config[StudyParameter::NUMBER_TARGETS]  == BindingTargetCount::TWO) $rscript = RScriptNames::BINDING_2_SCRIPT;
+      if ($study_config[StudyParameter::NUMBER_TARGETS]  == BindingTargetCount::THREE) {
+         $rscript = RScriptNames::BINDING_3_SCRIPT;
+         $model = ModelNames::BINDING_3_MODEL;
+         $report_type = ReportTypes::BINDING_3;   
+         $fixation_trial_list = TrialDisplayIndexes::BINDING_3;      
+      }
+      else if ($study_config[StudyParameter::NUMBER_TARGETS]  == BindingTargetCount::TWO){
+          $rscript = RScriptNames::BINDING_2_SCRIPT;
+          $model = ModelNames::BINDING_2_MODEL;
+          $report_type = ReportTypes::BINDING_2;
+          $fixation_trial_list = TrialDisplayIndexes::BINDING_2;
+      }
       else return "Could not determine proper binding processing script from number of targets: " . $study_config[StudyParameter::NUMBER_TARGETS];
 
-      $expected_output_fields = BindingResults::getConstList();
+      //$expected_output_fields = BindingResults::getConstList();
 
    }
    else if ($study == Study::NBACKRT){
+      return "Unknown R Processing Study: $study";
       $input  = $csv_array[Study::NBACKRT];
       $rscript = RScriptNames::NBACKRT_SCRIPT;
-      $expected_output_fields = NBackRTResults::getConstList();
+      //$expected_output_fields = NBackRTResults::getConstList();
    }
    else if ($study == Study::GONOGO){
+      return "Unknown R Processing Study: $study";
       $input  = $csv_array[Study::GONOGO];
       $rscript = RScriptNames::GONOGO_SCRIPT;
-      $expected_output_fields = GoNoGoResults::getConstList();
+      //$expected_output_fields = GoNoGoResults::getConstList();
    }
    else{
       return "Unknown R Processing Study: $study";
    }
 
    $rdirectory = CONFIG[GlobalConfigProcResources::GROUP_NAME][GlobalConfigProcResources::R_SCRIPTS_REPO];
-   $cmd = "cd $rdirectory; Rscript $rscript $input $output 2>&1";
+   
+   // Computing the input parameters for the script
+   $rscript = $rdirectory . "/$rscript";
+   $model   = $rdirectory . "/$model";
+      
+   $cmd = "Rscript $rscript $input $model $output 2>&1";
    $temp = $cmd . "\n============================================================\n";   
    $routput = array();
    exec($cmd,$routput,$retval);
@@ -66,27 +119,33 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
 
    if (!is_file($output)) return "Failed to create output for R processing with command $temp";
    else {
+      
       // Last step is to save the finalized results to the our JSON struture, first making sure there no more or no less values other than those expected. 
 
-      $results = parse_ini_file($output);
-      foreach ($results as $name => $value){
-         if (!in_array($name,$expected_output_fields)){
-            return "Unexpected result field $name for $study";
-         }
-         else {
-            if (($key = array_search($name, $expected_output_fields)) !== false) {
-               unset($expected_output_fields[$key]);
-           }      
-         }
-      }
-
-      if (!empty($expected_output_fields)){
-         return "Missing the following result fields for study $study: " . implode(",",$expected_output_fields);
+      $results = json_decode(file_get_contents($output),true);
+      if (json_last_error() != JSON_ERROR_NONE){
+         return "Failed to decode JSON string of output file";
       }
 
       // Some studies require extra steps after R Processing.
-      $ans = ExtraProcessing($vmdc,$results,$study);
+      $ans = ExtraProcessing($vmdc,$results,$study,$valid_eye,$fixation_trial_list);
       if ($ans != "") return $ans;
+
+      // Adding the necessary metadata in order to generate the report.
+      $results[CommonResultKeys::AGE] = $vmdc->getSubjectDataValue(SubjectField::AGE);
+      $results[CommonResultKeys::PATIENT] = $vmdc->getSubjectDataValue(SubjectField::LASTNAME) . ", " . $vmdc->getSubjectDataValue(SubjectField::NAME);
+      $results[CommonResultKeys::DATE] = $vmdc->getMetaDataField(MetadataField::DATE);
+      $evaluator = $vmdc->getAppUser(AppUserType::EVALUATOR);
+      $medic = $vmdc->getAppUser(AppUserType::MEDIC);
+      $results[CommonResultKeys::EVALUATOR] =  $evaluator[AppUserField::LASTNAME] .  ", " . $evaluator[AppUserField::NAME];
+      $results[CommonResultKeys::MEDIC] =  $medic[AppUserField::LASTNAME] .  ", " . $medic[AppUserField::NAME];
+      $results[CommonResultKeys::PDF_GEN_VERSION] = CURRENT_PDF_GEN_VERSION;
+      $results[CommonResultKeys::REPORT_TYPE] = $report_type;
+
+      // Saving the final ourput version to disk. For reference. 
+      $fid = fopen($output,"w");
+      fwrite($fid,json_encode($results,JSON_PRETTY_PRINT));
+      fclose($fid);      
 
       // Then we finally set the results. 
       $vmdc->setFinalizedResults($results);
@@ -96,17 +155,56 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
 
 }
 
+function ExtraProcessing(ViewMindDataContainer &$vmdc, &$results, $study,  $valid_eye, $fixation_trial_list){
 
-function ExtraProcessing(ViewMindDataContainer &$vmdc, &$results, $study){
+   // We always get the Right fixations, as long as the selected eye is not the left one. 
+   $fix_to_get = DataSetField::FIXATIONS_R;
+   if ($valid_eye == Eye::LEFT) $fix_to_get = DataSetField::FIXATIONS_L;
+
+   // Getting the resolution which is required for fixation mapping on the reports.   
+   $pp = $vmdc->getProcessingParameters();
+   $resolution = [0,0];
+   $resolution[0] = $pp[ProcessingParameter::RESOLUTION_WIDTH];
+   $resolution[1] = $pp[ProcessingParameter::RESOLUTION_HEIGHT];
    
+   $results[CommonResultKeys::RESOLUTION] = $resolution;
+
+   $results[CommonResultKeys::FIXATIONS] = array();
+
+
    if (($study == Study::BINDING_BC)){
+      
       // At this instance on the Binding Requires an extra processing step
       // which basically boils down to the BC Correct answer score to the report. 
       $binding_score = $vmdc->getStudyField(StudyField::BINDING_SCORE);
       if ($binding_score === FALSE){
          return "Could not get the BC Binding Score. Reason: " . $vmdc->getError();
       }
+      
       $results[FinalizedStudyNames::BINDING_BEHAVIOURAL_RESPONSE] = $binding_score[BindingScore::CORRECT];
+
+      // So the fixation trial list is an associative array where the key is the actual index in the list of trials
+      // Where we need to get the fixations while the value is the string representaion of the trial number to display in the report. 
+      foreach ($fixation_trial_list as $trial_index => $display_trial_number){
+         $fixations = array();
+         $trial = $vmdc->getTrial($trial_index);
+
+         $set_to_get = [DataSetType::ENCODING_1, DataSetType::RETRIEVAL_1];
+         foreach ($set_to_get as $data_set_type_to_get){
+            
+            $allfix = $trial[TrialField::DATA][$data_set_type_to_get][$fix_to_get];
+            $fixations[$data_set_type_to_get] = array();
+
+            foreach ($allfix as $fix) {
+               $fixations[$data_set_type_to_get][] = [$fix[FixationVectorField::X], $fix[FixationVectorField::Y]];
+            }
+   
+         }
+
+         $results[CommonResultKeys::FIXATIONS][$display_trial_number] = $fixations;
+         
+      }
+
    }
 
    return "";

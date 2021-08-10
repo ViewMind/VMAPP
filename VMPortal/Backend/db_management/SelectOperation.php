@@ -69,6 +69,11 @@ class SelectOperation {
 
    function makeWhereClause(){
       if (empty($this->operation[self::OR]) && (empty($this->operation[self::AND]))) return "";
+      
+      $this->bind_param_array = array();
+      foreach ($this->column_appearce_counter as $col => $counter){
+         $this->column_appearce_counter[$col] = 0;
+      }
 
       // The OR list is processed first. 
       $or_list = "";

@@ -132,13 +132,17 @@ class TablePortalUsers extends TableBaseClass {
       return $this->simpleSelect($cols_to_get,$operation);
    }
 
-   function getAllNamesForIDList($id_list, $roles){
+   function getAllNamesForIDList($id_list, $roles, $enabled_status){
       $cols_to_get = [self::COL_KEYID, self::COL_EMAIL, self::COL_NAME, self::COL_LASTNAME, self::COL_USER_ROLE];
       $operation = new SelectOperation();
       $ans = $operation->addConditionToANDList(SelectColumnComparison::IN,self::COL_KEYID,$id_list);
       if (!empty($roles)) {
          // Roles are limited ONLY if the list is not empty. 
          $ans = $ans && $operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_USER_ROLE, $roles);
+      }
+      if (!empty($enabled_status)){
+         // Enable status is limited ONLY if the list is not empty. 
+         $ans = $ans && $operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_ENABLED, $enabled_status);
       }
       if ($ans === false){
          $this->error = "Creating Portal User ID List: " . $operation->getError();
