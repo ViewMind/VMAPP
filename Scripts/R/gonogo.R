@@ -8,7 +8,7 @@ library(plyr)
 library(scales)
 library(reshape2)
 library(reshape)
-
+library(jsonlite)
 library(gdata)
 
 
@@ -30,15 +30,28 @@ library(gdata)
 # 1    G     2.916667 0.1311396    525.2137 6.434115      121.5165   3.146649
 # 2    R     3.761308 0.1486889    563.5136 6.109360      120.7572   2.652945
 
-
-
-setwd("C:/Users/gerar/Dropbox/Machine learning/Go_no GO_gazepoint")  #HP
+# setwd("C:/Users/gerar/Dropbox/Machine learning/Go_no GO_gazepoint")  #HP
 
 
 #en azul va el ojo izquierdo
 #en rojo va el ojo derecho
 
 rm(list=ls())  #Remove workspace
+
+
+args = commandArgs(trailingOnly=TRUE)
+
+## Argument 1: CSV File
+## Argument 2: Output File. 
+
+if (length(args) != 2) {
+   stop(paste0("GoNoGo Script requires 2 and only 2 arguments. Found: ",length(args)), call.=FALSE)
+   print(args[1])  # CSV
+   print(args[2])  # output
+}
+
+csv_file<-args[1];
+output_file<-args[2];
 
 
 #0: Roja a la izquierda
@@ -63,7 +76,7 @@ rm(list=ls())  #Remove workspace
 
 
 
-b<-read.csv("gonogo_2_2020_11_09_15_05.csv") #gerardo
+b<-read.csv(csv_file) #gerardo
 
 
 b$idtrial<-as.factor(b$idtrial)
@@ -290,15 +303,16 @@ Reaction_time_in_Task_with_Interference
 Executive_Functions
 # Intervalo de Referencia =  Verde 1 - 320.  Amarillo 320 - 420.   Rojo mayor a 421
 
-
+print("============================================================")
 Processing_Speed  # 1.69
 Processing_Speed_Interference # 77.76 
 Processing_Speed_Facilitated  # 64.68
 Inhibitory_alterations_in_Task_with_Interference # 22.22
 Inhibitory_alterations_in_Facilitated_Task       # 0
 Reaction_time_Facilitated_Task        # 471 
-Inhibitory_alterations_in_Task_with_Interference # 509
+Reaction_time_in_Task_with_Interference # 509
 Executive_Functions  # 292
+print("============================================================")
 
 #sacada  =  Visual scanning while looking for targets
 #gazing  =  time to extract the whole picture of a trial
@@ -336,6 +350,31 @@ GoNOgo
 #gazing  =  time to extract the whole picture of a trial
 #fixation duration  = time for extracting relevant information in just once fixation
 
+
+write_json(x = list(
+      processing_speed               = unbox(Processing_Speed),
+      processing_speed_interference  = unbox(Processing_Speed_Interference),
+      processing_speed_facilitated   = unbox(Processing_Speed_Facilitated),
+      reaction_time_facilitated      = unbox(Reaction_time_Facilitated_Task),
+      reaction_time_interference     = unbox(Reaction_time_in_Task_with_Interference),
+      executive_functions            = unbox(Executive_Functions),
+      index_error_facilitated        = unbox(Inhibitory_alterations_in_Facilitated_Task),
+      index_error_interference       = unbox(Inhibitory_alterations_in_Task_with_Interference),
+      gaze_duration = list (
+         facilitated_task = c(GoNOgo[1,4],GoNOgo[1,5]),
+         inhibite_task = c(GoNOgo[2,4],GoNOgo[2,5])
+      ),
+      saccade = list (
+         facilitated_task = c(GoNOgo[1,2],GoNOgo[1,3]),
+         inhibite_task = c(GoNOgo[2,2],GoNOgo[2,3])
+      ),
+      duration = list (
+         facilitated_task = c(GoNOgo[1,6],GoNOgo[1,7]),
+         inhibite_task = c(GoNOgo[2,6],GoNOgo[2,7])
+      )
+      
+),pretty = T, path = output_file)
+#),pretty = T, path = "test.json")
 
 ### ##################
 ### 

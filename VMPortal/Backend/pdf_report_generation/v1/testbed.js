@@ -325,7 +325,7 @@ config.fixations = [
 ]
 //config.enable_legacy_scaling = true;
 
-console.log("Test Fixation")
+//console.log("Test Fixation")
 const testFix = new FixationDrawer(doc);
 testFix.render(config)
 

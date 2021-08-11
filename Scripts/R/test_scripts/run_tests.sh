@@ -36,9 +36,10 @@ elif [[ $1 == 4 ]]; then
    OUTPUT="test_scripts/comparison_nback_rt_output" 
    INPUT="test_scripts/reference_data/reference_nbackrt.csv"   
 elif [[ $1 == 5 ]]; then
-   RSCRIPT="gonogo.R"
-   OUTPUT="test_scripts/comparison_gonogo_output" 
-   INPUT="test_scripts/reference_data/reference_gonogo.csv"             
+   RSCRIPT="$base_path/gonogo.R"
+   MODEL=""
+   OUTPUT="$base_path/test_scripts/comparison_gonogo_output" 
+   INPUT="$base_path/test_scripts/reference_data/reference_gonogo.csv"             
 else
    echo "Unrecognized parameter $1. Exiting"
    exit

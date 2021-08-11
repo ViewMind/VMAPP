@@ -72,6 +72,7 @@
  * 
  */
  
+  $ret = array();
    $ret["uuid"] = "binding_2";
    $ret["categories"] = include("binding/categories_2T.php");
    

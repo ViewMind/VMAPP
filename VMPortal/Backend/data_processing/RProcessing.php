@@ -30,17 +30,18 @@ abstract class CommonResultKeys {
 abstract class ReportTypes {
    const BINDING_3 = "binding_3";
    const BINDING_2 = "binding_2";
+   const GONOGO    = "gonogo";
 }
 
 abstract class ModelNames {
    const BINDING_3_MODEL      = "binding3_model.RDS";
-   const BINDING_2_MODEL      = "binding3_model.RDS";
+   const BINDING_2_MODEL      = "binding3_model.RDS";   
 }
 
 abstract class TrialDisplayIndexes {
    const BINDING_3            = [19 => "10", 29 => "20",  41 => "32"];
    const BINDING_2            = [19 => "10", 29 => "20",  41 => "32"];
-   //const GONOGO               = [19 => "10", 34 => "25",  49 => "40", 64 => "55"];
+   const GONOGO               = [10 => "10", 25 => "25",  40 => "40", 55 => "55"];
 }
 
 function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
@@ -95,9 +96,11 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
       //$expected_output_fields = NBackRTResults::getConstList();
    }
    else if ($study == Study::GONOGO){
-      return "Unknown R Processing Study: $study";
       $input  = $csv_array[Study::GONOGO];
       $rscript = RScriptNames::GONOGO_SCRIPT;
+      $model = "";
+      $report_type = ReportTypes::GONOGO;
+      $fixation_trial_list = TrialDisplayIndexes::GONOGO;
       //$expected_output_fields = GoNoGoResults::getConstList();
    }
    else{
@@ -108,7 +111,7 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
    
    // Computing the input parameters for the script
    $rscript = $rdirectory . "/$rscript";
-   $model   = $rdirectory . "/$model";
+   if ($model != "") $model   = $rdirectory . "/$model";
       
    $cmd = "Rscript $rscript $input $model $output 2>&1";
    $temp = $cmd . "\n============================================================\n";   
@@ -203,6 +206,27 @@ function ExtraProcessing(ViewMindDataContainer &$vmdc, &$results, $study,  $vali
 
          $results[CommonResultKeys::FIXATIONS][$display_trial_number] = $fixations;
          
+      }
+
+   }
+   else if ($study == Study::GONOGO){
+
+
+      // So the fixation trial list is an associative array where the key is the actual index in the list of trials
+      // Where we need to get the fixations while the value is the string representaion of the trial number to display in the report. 
+      foreach ($fixation_trial_list as $trial_index => $display_trial_number) {
+          $fixations = array();
+          $trial = $vmdc->getTrial($trial_index);
+
+          $set_to_get = DataSetType::UNIQUE;
+ 
+          $allfix = $trial[TrialField::DATA][$set_to_get][$fix_to_get];
+
+          foreach ($allfix as $fix) {
+              $fixations[] = [$fix[FixationVectorField::X], $fix[FixationVectorField::Y]];
+          }
+
+          $results[CommonResultKeys::FIXATIONS][$display_trial_number] = $fixations;
       }
 
    }

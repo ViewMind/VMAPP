@@ -8,7 +8,7 @@
    ["EVALUATION: COLOR TASK - 2 TARGETS"],
    ["EVALUATION: COLOR TASK - 3 TARGETS"],
    ["COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS","OVERALL PERFORMANCE"],
-   ["GAZE DURATION","VISUAL SCANNING"],
+   ["VISUAL WORKING MEMORY ","VISUAL SCANNING"],
    ["FIXATION DURATION","NUMBER OF FIXATIONS"],
    ["FIXATION PLOTTING","COGNITIVELY HEALTHY CONTROL FIXATIONS PLOTTING"],
  ];
@@ -23,7 +23,7 @@
 
  $report["visual_search"]["title"]                    = "VISUAL SEARCH ";
  $report["visual_search"]["range_text"]               = "Normal value below 3.5";
- $report["gaze_dur"]["title"]                         = "GAZE DURATION";
+ $report["gaze_dur"]["title"]                         = "VISUAL WORKING MEMORY";
  $report["gaze_dur"]["range_text"]                    = "Normal value above 800";
  $report["int_mem_perf"]["title"]                     = "INTEGRATIVE MEMORY PERFORMANCE";
  $report["int_mem_perf"]["range_text"]                = "Normal value above 68";
@@ -61,14 +61,14 @@
  
  $report["overall_performance"]["text"] = "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex – Overall Performance Graph Interpretation.";
  $report["overall_performance"]["vertex"]["visual_search"]         = "Visual Search";
- $report["overall_performance"]["vertex"]["gaze_dur"]              = "Gaze Duration";
+ $report["overall_performance"]["vertex"]["gaze_dur"]              = "Visual Working Memory";
  $report["overall_performance"]["vertex"]["int_mem_perf"]          = "Integrative\nMemory";
  $report["overall_performance"]["vertex"]["assoc_mem_perf"]        = "Associative\nMemory";
  $report["overall_performance"]["vertex"]["exec_functions"]        = "Executive\nFunctions";
  $report["overall_performance"]["vertex"]["parahipocampal_region"] = "Parahipocampal\nregion";
 
- $report["gaze_duration"]["text"] = "The Gaze Duration graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages. For more\ninformation on how to interpret this graph, please refer to the ANNEX – Gaze Duration Graph\nInterpretation.";
- $report["gaze_duration"]["ylabel"] = "Gaze Duration";
+ $report["gaze_duration"]["text"] = "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages. For more\ninformation on how to interpret this graph, please refer to the ANNEX – Visual Working Memory\n Graph Interpretation.";
+ $report["gaze_duration"]["ylabel"] = "Visual Working Memory";
  $report["gaze_duration"]["graph_title"] = ["PATIENT","COGNITIVELY HEALTHY CONTROL"];
  $report["gaze_duration"]["xlabel"] = ["ENCODING", "RECOGNITION"];
  $report["gaze_duration"]["legend"] = ["Integrative Memory","Associative Memory"];

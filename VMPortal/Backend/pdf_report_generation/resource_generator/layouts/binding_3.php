@@ -91,6 +91,7 @@
  * 
  */
 
+   $ret = array();
    $ret["uuid"] = "binding_3";
    $ret["categories"] = include("binding/categories_3T.php");
    $ret["pdiag"] = include("binding/pdiag_logic_3T.php");

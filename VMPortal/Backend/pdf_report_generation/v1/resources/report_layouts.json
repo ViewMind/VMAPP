@@ -939,6 +939,175 @@
                 }
             }
         },
+        "pdiag": {
+            "variables": [
+                "parahipocampal_region",
+                "exec_func",
+                "int_mem_perf",
+                "assoc_mem_perf"
+            ],
+            "text_index": {
+                "red": {
+                    "red": {
+                        "red": {
+                            "red": 2,
+                            "yellow": 3,
+                            "green": 3
+                        },
+                        "yellow": {
+                            "red": 2,
+                            "yellow": 2,
+                            "green": 3
+                        },
+                        "green": {
+                            "red": 2,
+                            "yellow": 2,
+                            "green": 3
+                        }
+                    },
+                    "yellow": {
+                        "red": {
+                            "red": 2,
+                            "yellow": 3,
+                            "green": 3
+                        },
+                        "yellow": {
+                            "red": 2,
+                            "yellow": 1,
+                            "green": 3
+                        },
+                        "green": {
+                            "red": 2,
+                            "yellow": 7,
+                            "green": 7
+                        }
+                    },
+                    "green": {
+                        "red": {
+                            "red": 2,
+                            "yellow": 2,
+                            "green": 5
+                        },
+                        "yellow": {
+                            "red": 4,
+                            "yellow": 7,
+                            "green": 7
+                        },
+                        "green": {
+                            "red": 4,
+                            "yellow": 7,
+                            "green": 7
+                        }
+                    }
+                },
+                "yellow": {
+                    "red": {
+                        "red": {
+                            "red": 2,
+                            "yellow": 3,
+                            "green": 3
+                        },
+                        "yellow": {
+                            "red": 2,
+                            "yellow": 3,
+                            "green": 3
+                        },
+                        "green": {
+                            "red": 2,
+                            "yellow": 3,
+                            "green": 3
+                        }
+                    },
+                    "yellow": {
+                        "red": {
+                            "red": 2,
+                            "yellow": 7,
+                            "green": 7
+                        },
+                        "yellow": {
+                            "red": 7,
+                            "yellow": 6,
+                            "green": 6
+                        },
+                        "green": {
+                            "red": 7,
+                            "yellow": 6,
+                            "green": 6
+                        }
+                    },
+                    "green": {
+                        "red": {
+                            "red": 5,
+                            "yellow": 7,
+                            "green": 7
+                        },
+                        "yellow": {
+                            "red": 7,
+                            "yellow": 6,
+                            "green": 6
+                        },
+                        "green": {
+                            "red": 7,
+                            "yellow": 6,
+                            "green": 6
+                        }
+                    }
+                },
+                "green": {
+                    "red": {
+                        "red": {
+                            "red": 2,
+                            "yellow": 3,
+                            "green": 3
+                        },
+                        "yellow": {
+                            "red": 2,
+                            "yellow": 3,
+                            "green": 3
+                        },
+                        "green": {
+                            "red": 4,
+                            "yellow": 4,
+                            "green": 3
+                        }
+                    },
+                    "yellow": {
+                        "red": {
+                            "red": 2,
+                            "yellow": 7,
+                            "green": 7
+                        },
+                        "yellow": {
+                            "red": 7,
+                            "yellow": 6,
+                            "green": 6
+                        },
+                        "green": {
+                            "red": 7,
+                            "yellow": 6,
+                            "green": 6
+                        }
+                    },
+                    "green": {
+                        "red": {
+                            "red": 5,
+                            "yellow": 7,
+                            "green": 7
+                        },
+                        "yellow": {
+                            "red": 7,
+                            "yellow": 6,
+                            "green": 6
+                        },
+                        "green": {
+                            "red": 7,
+                            "yellow": 6,
+                            "green": 6
+                        }
+                    }
+                }
+            }
+        },
         "pages": [
             {
                 "title": [
@@ -1773,175 +1942,731 @@
                     }
                 ]
             }
-        ],
-        "pdiag": {
-            "variables": [
-                "parahipocampal_region",
-                "exec_func",
-                "int_mem_perf",
-                "assoc_mem_perf"
-            ],
-            "text_index": {
-                "red": {
-                    "red": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
-                        },
-                        "yellow": {
-                            "red": 2,
-                            "yellow": 2,
-                            "green": 3
-                        },
-                        "green": {
-                            "red": 2,
-                            "yellow": 2,
-                            "green": 3
-                        }
-                    },
-                    "yellow": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
-                        },
-                        "yellow": {
-                            "red": 2,
-                            "yellow": 1,
-                            "green": 3
-                        },
-                        "green": {
-                            "red": 2,
-                            "yellow": 7,
-                            "green": 7
-                        }
-                    },
-                    "green": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 2,
-                            "green": 5
-                        },
-                        "yellow": {
-                            "red": 4,
-                            "yellow": 7,
-                            "green": 7
-                        },
-                        "green": {
-                            "red": 4,
-                            "yellow": 7,
-                            "green": 7
-                        }
-                    }
+        ]
+    },
+    "gonogo": {
+        "categories": {
+            "processing_speed": {
+                "polygon": {
+                    "+1": "- 0.99*",
+                    "0": "0.99 1.88*",
+                    "-1": "1.88 1.91*",
+                    "-2": "1.92 1.95*",
+                    "-3": "1.95 +"
                 },
-                "yellow": {
-                    "red": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
-                        },
-                        "yellow": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
-                        },
-                        "green": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
-                        }
-                    },
-                    "yellow": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 7,
-                            "green": 7
-                        },
-                        "yellow": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
-                        },
-                        "green": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
-                        }
-                    },
-                    "green": {
-                        "red": {
-                            "red": 5,
-                            "yellow": 7,
-                            "green": 7
-                        },
-                        "yellow": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
-                        },
-                        "green": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
-                        }
-                    }
+                "color": {
+                    "green": "- 1.88*",
+                    "yellow": "1.88 1.95*",
+                    "red": "1.95 +"
+                }
+            },
+            "processing_speed_interference": {
+                "polygon": {
+                    "+1": "- 0.99*",
+                    "0": "0.99 1.83*",
+                    "-1": "1.83 1.87*",
+                    "-2": "1.87 1.90*",
+                    "-3": "1.90 +"
                 },
-                "green": {
-                    "red": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
-                        },
-                        "yellow": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
-                        },
-                        "green": {
-                            "red": 4,
-                            "yellow": 4,
-                            "green": 3
-                        }
-                    },
-                    "yellow": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 7,
-                            "green": 7
-                        },
-                        "yellow": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
-                        },
-                        "green": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
-                        }
-                    },
-                    "green": {
-                        "red": {
-                            "red": 5,
-                            "yellow": 7,
-                            "green": 7
-                        },
-                        "yellow": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
-                        },
-                        "green": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
-                        }
-                    }
+                "color": {
+                    "green": "- 1.83",
+                    "yellow": "1.83 1.90*",
+                    "red": "1.90 +"
+                }
+            },
+            "processing_speed_facilitated": {
+                "polygon": {
+                    "+1": "- 0.99*",
+                    "0": "0.99 1.75*",
+                    "-1": "1.75 1.80*",
+                    "-2": "1.80 1.85*",
+                    "-3": "1.85 +"
+                },
+                "color": {
+                    "green": "- 1.75*",
+                    "yellow": "1.75 1.85*",
+                    "red": "1.85 +"
+                }
+            },
+            "index_error_interference": {
+                "polygon": {
+                    "+1": "- 0.99*",
+                    "0": "0.02 0.31*",
+                    "-1": "0.31 0.36*",
+                    "-2": "0.37 0.40*",
+                    "-3": "1.85 +"
+                },
+                "color": {
+                    "green": "- 0.31*",
+                    "yellow": "0.31 0.40*",
+                    "red": "0.40 +"
+                }
+            },
+            "index_error_facilitated": {
+                "polygon": {
+                    "+1": "- 0.01*",
+                    "0": "0.02 0.15*",
+                    "-1": "0.15 0.19*",
+                    "-2": "0.19 0.25*",
+                    "-3": "0.25 +"
+                },
+                "color": {
+                    "green": "- 0.15*",
+                    "yellow": "0.15 0.25*",
+                    "red": "0.25 +"
+                }
+            },
+            "reaction_time_facilitated": {
+                "polygon": {
+                    "+1": "- 150*",
+                    "0": "150 784*",
+                    "-1": "784 825*",
+                    "-2": "825 873*",
+                    "-3": "873 +"
+                },
+                "color": {
+                    "green": "- 784*",
+                    "yellow": "784 873*",
+                    "red": "873 +"
+                }
+            },
+            "reaction_time_interference": {
+                "polygon": {
+                    "+1": "- 150*",
+                    "0": "150 829*",
+                    "-1": "829 850*",
+                    "-2": "850 946*",
+                    "-3": "947 +"
+                },
+                "color": {
+                    "green": "- 829*",
+                    "yellow": "829 946*",
+                    "red": "946 +"
+                }
+            },
+            "executive_functions": {
+                "polygon": {
+                    "+1": "- 100*",
+                    "0": "101 320*",
+                    "-1": "320 370*",
+                    "-2": "370 420*",
+                    "-3": "420 +"
+                },
+                "color": {
+                    "green": "- 320*",
+                    "yellow": "320 420*",
+                    "red": "420 +"
                 }
             }
-        }
+        },
+        "pages": [
+            {
+                "title": [
+                    {
+                        "text": "#gonogo.page_titles.0.0#",
+                        "py": 0
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "result_segment",
+                        "id": "processing_speed",
+                        "title": "#gonogo.processing_speed.title#",
+                        "range_text": "#gonogo.processing_speed.range_text#",
+                        "x": 0,
+                        "y": 0.01,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&processing_speed&",
+                        "color_code": "&indexes.color.processing_speed&",
+                        "nsegments": 3,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "result_segment",
+                        "id": "processing_speed_interference",
+                        "title": "#gonogo.processing_speed_interference.title#",
+                        "range_text": "#gonogo.processing_speed_interference.range_text#",
+                        "x": 0,
+                        "y": 0.108,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&processing_speed_interference&",
+                        "color_code": "&indexes.color.processing_speed_interference&",
+                        "nsegments": 3,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "result_segment",
+                        "id": "processing_speed_facilitated",
+                        "title": "#gonogo.processing_speed_facilitated.title#",
+                        "range_text": "#gonogo.processing_speed_facilitated.range_text#",
+                        "x": 0,
+                        "y": 0.20600000000000002,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&processing_speed_facilitated&",
+                        "color_code": "&indexes.color.processing_speed_facilitated&",
+                        "nsegments": 3,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#gonogo.reaction_time_facilitated.title#",
+                        "id": "reaction_time_facilitated",
+                        "range_text": "#gonogo.reaction_time_facilitated.range_text#",
+                        "x": 0,
+                        "y": 0.30400000000000005,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&reaction_time_facilitated&",
+                        "color_code": "&indexes.color.reaction_time_facilitated&",
+                        "nsegments": 3,
+                        "ndecimals": 0
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#gonogo.reaction_time_interference.title#",
+                        "range_text": "#gonogo.reaction_time_interference.range_text#",
+                        "id": "reaction_time_interference",
+                        "x": 0,
+                        "y": 0.402,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&reaction_time_interference&",
+                        "color_code": "&indexes.color.reaction_time_interference&",
+                        "nsegments": 3,
+                        "ndecimals": 0
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#gonogo.executive_functions.title#",
+                        "range_text": "#gonogo.executive_functions.range_text#",
+                        "id": "executive_functions",
+                        "x": 0,
+                        "y": 0.5,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&executive_functions&",
+                        "color_code": "&indexes.color.executive_functions&",
+                        "nsegments": 3,
+                        "ndecimals": 0
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#gonogo.index_error_facilitated.title#",
+                        "range_text": "#gonogo.index_error_facilitated.range_text#",
+                        "id": "index_error_facilitated",
+                        "x": 0,
+                        "y": 0.598,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&index_error_facilitated&",
+                        "color_code": "&indexes.color.index_error_facilitated&",
+                        "nsegments": 3,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#gonogo.index_error_interference.title#",
+                        "range_text": "#gonogo.index_error_interference.range_text#",
+                        "id": "index_error_interference",
+                        "x": 0,
+                        "y": 0.696,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&index_error_interference&",
+                        "color_code": "&indexes.color.index_error_interference&",
+                        "nsegments": 3,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "color_code",
+                        "id": "res_seg_color_code",
+                        "x": 0,
+                        "y": 0.85,
+                        "w": 1,
+                        "h": 0.15,
+                        "color_texts": "#gonogo.color_code.explanations#",
+                        "title": "#gonogo.color_code.title#"
+                    }
+                ]
+            },
+            {
+                "title": [
+                    {
+                        "text": "#gonogo.page_titles.1.0#",
+                        "py": 0
+                    },
+                    {
+                        "text": "#gonogo.page_titles.1.1#",
+                        "py": 0.55
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "bulleted_list",
+                        "id": "green_bullets",
+                        "x": 0,
+                        "y": 0.02,
+                        "title": "#gonogo.affected_areas.green#",
+                        "dynamic_bullets": {
+                            "basestring": "gonogo.affected_areas",
+                            "ref_color": "green",
+                            "variables": [
+                                "processing_speed",
+                                "processing_speed_interference",
+                                "processing_speed_facilitated",
+                                "reaction_time_facilitated",
+                                "reaction_time_interference",
+                                "executive_functions",
+                                "index_error_facilitated",
+                                "index_error_interference"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "bulleted_list",
+                        "id": "yellow_bullets",
+                        "x": 0,
+                        "y": [
+                            "green_bullets",
+                            0.02
+                        ],
+                        "title": "#gonogo.affected_areas.yellow#",
+                        "dynamic_bullets": {
+                            "basestring": "gonogo.affected_areas",
+                            "ref_color": "yellow",
+                            "variables": [
+                                "processing_speed",
+                                "processing_speed_interference",
+                                "processing_speed_facilitated",
+                                "reaction_time_facilitated",
+                                "reaction_time_interference",
+                                "executive_functions",
+                                "index_error_facilitated",
+                                "index_error_interference"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "bulleted_list",
+                        "id": "red_bullets",
+                        "x": 0,
+                        "y": [
+                            "yellow_bullets",
+                            0.02
+                        ],
+                        "title": "#gonogo.affected_areas.red#",
+                        "dynamic_bullets": {
+                            "basestring": "gonogo.affected_areas",
+                            "ref_color": "red",
+                            "variables": [
+                                "processing_speed",
+                                "processing_speed_interference",
+                                "processing_speed_facilitated",
+                                "reaction_time_facilitated",
+                                "reaction_time_interference",
+                                "executive_functions",
+                                "index_error_facilitated",
+                                "index_error_interference"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "text": "#gonogo.overall_performance.text#",
+                        "id": "overall_performance_explained",
+                        "x": 0,
+                        "y": 0.5700000000000001
+                    },
+                    {
+                        "type": "polygon_graph",
+                        "id": "polygon_graph",
+                        "x": 0.35,
+                        "y": 0.675,
+                        "w": 0.3,
+                        "levels": [
+                            "+1",
+                            "0",
+                            "-1",
+                            "-2"
+                        ],
+                        "separator": 1,
+                        "values": [
+                            "&indexes.polygon.processing_speed&",
+                            "&indexes.polygon.processing_speed_interference&",
+                            "&indexes.polygon.processing_speed_facilitated&",
+                            "&indexes.polygon.reaction_time_facilitated&",
+                            "&indexes.polygon.reaction_time_interference&",
+                            "&indexes.polygon.executive_functions&",
+                            "&indexes.polygon.index_error_facilitated&",
+                            "&indexes.polygon.index_error_interference&"
+                        ],
+                        "vertex_labels": [
+                            "#gonogo.overall_performance.vertex.processing_speed#",
+                            "#gonogo.overall_performance.vertex.processing_speed_interference#",
+                            "#gonogo.overall_performance.vertex.processing_speed_facilitated#",
+                            "#gonogo.overall_performance.vertex.reaction_time_interference#",
+                            "#gonogo.overall_performance.vertex.reaction_time_facilitated#",
+                            "#gonogo.overall_performance.vertex.executive_functions#",
+                            "#gonogo.overall_performance.vertex.index_error_facilitated#",
+                            "#gonogo.overall_performance.vertex.index_error_interference#"
+                        ]
+                    }
+                ]
+            },
+            {
+                "title": [
+                    {
+                        "text": "#gonogo.page_titles.2.0#",
+                        "py": 0
+                    },
+                    {
+                        "text": "#gonogo.page_titles.2.1#",
+                        "py": 0.5
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "single_4_pt_graph",
+                        "id": "gaze_duration_graph",
+                        "x": 0.3,
+                        "y": 0.02,
+                        "w": 0.4,
+                        "h": 0.3,
+                        "left_column_text": "#gonogo.gaze_duration.xlabel.0#",
+                        "right_column_text": "#gonogo.gaze_duration.xlabel.1#",
+                        "ylabel": "#gonogo.gaze_duration.ylabel#",
+                        "yunits": "",
+                        "legend_data_set_0": "#gonogo.gaze_duration.legend.0#",
+                        "legend_data_set_1": "#gonogo.gaze_duration.legend.1#",
+                        "data_set_left": [
+                            525.2137,
+                            6.434115,
+                            563.5136,
+                            6.10936
+                        ],
+                        "data_set_right": [
+                            "&gaze_duration.facilitated_task.0&",
+                            "&gaze_duration.facilitated_task.1&",
+                            "&gaze_duration.inhibite_task.0&",
+                            "&gaze_duration.inhibite_task.1&"
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "text": "#gonogo.gaze_duration.text#",
+                        "id": "gaze_duration_text",
+                        "x": 0,
+                        "y": [
+                            "gaze_duration_graph",
+                            0.05
+                        ]
+                    }
+                ]
+            },
+            {
+                "title": [
+                    {
+                        "text": "#gonogo.page_titles.3.0#",
+                        "py": 0
+                    },
+                    {
+                        "text": "#gonogo.page_titles.3.1#",
+                        "py": 0.5
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "single_4_pt_graph",
+                        "id": "saccadic_behaviour_graph",
+                        "x": 0.3,
+                        "y": 0.02,
+                        "w": 0.4,
+                        "h": 0.3,
+                        "left_column_text": "#gonogo.saccadic_behaviour.xlabel.0#",
+                        "right_column_text": "#gonogo.saccadic_behaviour.xlabel.1#",
+                        "ylabel": "#gonogo.saccadic_behaviour.ylabel#",
+                        "yunits": "",
+                        "legend_data_set_0": "#gonogo.saccadic_behaviour.legend.0#",
+                        "legend_data_set_1": "#gonogo.saccadic_behaviour.legend.1#",
+                        "data_set_left": [
+                            2.916667,
+                            0.1311396,
+                            3.761308,
+                            0.1486889
+                        ],
+                        "data_set_right": [
+                            "&saccade.facilitated_task.0&",
+                            "&saccade.facilitated_task.1&",
+                            "&saccade.inhibite_task.0&",
+                            "&saccade.inhibite_task.1&"
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "text": "#gonogo.saccadic_behaviour.text#",
+                        "id": "saccadic_behaviour_text",
+                        "x": 0,
+                        "y": [
+                            "saccadic_behaviour_graph",
+                            0.05
+                        ]
+                    },
+                    {
+                        "type": "single_4_pt_graph",
+                        "id": "fixation_duration_graph",
+                        "x": 0.3,
+                        "y": 0.52,
+                        "w": 0.4,
+                        "h": 0.3,
+                        "left_column_text": "#gonogo.fixation_duration.xlabel.0#",
+                        "right_column_text": "#gonogo.fixation_duration.xlabel.1#",
+                        "ylabel": "#gonogo.fixation_duration.ylabel#",
+                        "yunits": "",
+                        "legend_data_set_0": "#gonogo.fixation_duration.legend.0#",
+                        "legend_data_set_1": "#gonogo.fixation_duration.legend.1#",
+                        "data_set_left": [
+                            121.5165,
+                            3.146649,
+                            120.7572,
+                            2.65294
+                        ],
+                        "data_set_right": [
+                            "&duration.facilitated_task.0&",
+                            "&duration.facilitated_task.1&",
+                            "&duration.inhibite_task.0&",
+                            "&duration.inhibite_task.1&"
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "text": "#gonogo.fixation_duration.text#",
+                        "id": "fixation_duration_text",
+                        "x": 0,
+                        "y": [
+                            "fixation_duration_graph",
+                            0.05
+                        ]
+                    }
+                ]
+            },
+            {
+                "title": [
+                    {
+                        "text": "#gonogo.page_titles.4.0#",
+                        "py": 0
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "text",
+                        "text": "#gonogo.fixation_plotting.text#",
+                        "id": "fixation_plotting_text",
+                        "x": 0,
+                        "y": 0.02
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix11",
+                        "x": 0.17000000000000004,
+                        "y": 0.15,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "label": "#gonogo.fixation_plotting.row_1#",
+                        "title": "#gonogo.fixation_plotting.title_left#",
+                        "resolution": "&resolution&",
+                        "gonogo": "G->",
+                        "fixations": "&fixations.10&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix12",
+                        "x": 0.53,
+                        "y": 0.15,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "title": "#gonogo.fixation_plotting.title_right#",
+                        "resolution": [
+                            1366,
+                            768
+                        ],
+                        "gonogo": "G->",
+                        "fixations": [
+                            [
+                                592,
+                                439
+                            ],
+                            [
+                                606,
+                                429
+                            ],
+                            [
+                                649,
+                                412
+                            ],
+                            [
+                                1043,
+                                412
+                            ]
+                        ]
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix21",
+                        "x": 0.17000000000000004,
+                        "y": 0.33666666666666667,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "label": "#gonogo.fixation_plotting.row_2#",
+                        "resolution": "&resolution&",
+                        "gonogo": "R<-",
+                        "fixations": "&fixations.25&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix22",
+                        "x": 0.53,
+                        "y": 0.33666666666666667,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "resolution": [
+                            1366,
+                            768
+                        ],
+                        "gonogo": "R<-",
+                        "fixations": [
+                            [
+                                696,
+                                331
+                            ],
+                            [
+                                706,
+                                371
+                            ],
+                            [
+                                674,
+                                374
+                            ],
+                            [
+                                675,
+                                387
+                            ],
+                            [
+                                688,
+                                404
+                            ],
+                            [
+                                1168,
+                                396
+                            ]
+                        ]
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix31",
+                        "x": 0.17000000000000004,
+                        "y": 0.5233333333333333,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "label": "#gonogo.fixation_plotting.row_3#",
+                        "resolution": "&resolution&",
+                        "gonogo": "R->",
+                        "fixations": "&fixations.40&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix32",
+                        "x": 0.53,
+                        "y": 0.5233333333333333,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "resolution": [
+                            1366,
+                            768
+                        ],
+                        "gonogo": "R->",
+                        "fixations": [
+                            [
+                                637,
+                                373
+                            ],
+                            [
+                                657,
+                                395
+                            ],
+                            [
+                                631,
+                                441
+                            ],
+                            [
+                                653,
+                                443
+                            ],
+                            [
+                                145,
+                                417
+                            ]
+                        ]
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix41",
+                        "x": 0.17000000000000004,
+                        "y": 0.71,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "label": "#gonogo.fixation_plotting.row_4#",
+                        "resolution": "&resolution&",
+                        "gonogo": "G<-",
+                        "fixations": "&fixations.55&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix42",
+                        "x": 0.53,
+                        "y": 0.71,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "resolution": [
+                            1366,
+                            768
+                        ],
+                        "gonogo": "G<-",
+                        "fixations": [
+                            [
+                                663,
+                                376
+                            ],
+                            [
+                                676,
+                                400
+                            ],
+                            [
+                                676,
+                                427
+                            ],
+                            [
+                                625,
+                                392
+                            ],
+                            [
+                                617,
+                                407
+                            ],
+                            [
+                                619,
+                                419
+                            ],
+                            [
+                                93,
+                                398
+                            ]
+                        ]
+                    }
+                ]
+            }
+        ]
     }
 }

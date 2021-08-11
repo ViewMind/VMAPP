@@ -100,6 +100,8 @@ if ("pdiag" in layout_resource[report_type]){
 
 //console.log("PresumptiveDiagnosis index: " + report.presumptive_diagnosis);
 
+report.presumptive_diagnosis = 7;
+
 // Each variable is stored keyed by the resulting color categorization. 
 let variableColorCodes = {}
 
@@ -172,6 +174,9 @@ for (var page_number = 0; page_number < layout_pages.length; page_number++){
       }
       else if (item.type == "pdiag"){
          ret = LayoutParser.parsePresumptiveDiagnosis(doc,item,text_replacer);
+      }
+      else if (item.type == "single_4_pt_graph"){
+         ret = LayoutParser.parseSingle4DotGraph(doc,item,text_replacer);
       }
       else{
          console.log("WARNING: Unknown item type " + item.type);
