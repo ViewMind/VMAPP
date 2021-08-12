@@ -339,8 +339,8 @@ class ObjectReports extends ObjectBaseClass
          $logger->logError("Could not create zip file $zipfile from $json_filename.\nCMD Used: $compress_cmd\n OUTPUT:\n $output");
          return false;            
       }
-      
-      $aws_command = "aws s3 cp $zipfile s3://$aws_bucket/$zipfile 2>&1";
+
+      $aws_command = "aws s3 cp $zipfile s3://$aws_bucket/$compressed_filename 2>&1";
       $logger->logProgress("AWS CP CMD: $aws_command");
 
       //echoOut(CONFIG[GlobalConfigS3::GROUP_NAME],true);

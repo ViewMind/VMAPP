@@ -1,0 +1,22 @@
+{
+  "processing_speed": 1.6988,
+  "processing_speed_interference": 77.766,
+  "processing_speed_facilitated": 64.682,
+  "reaction_time_facilitated": 471.0088,
+  "reaction_time_interference": 509.9421,
+  "executive_functions": 292,
+  "index_error_facilitated": 0,
+  "index_error_interference": 22.2222,
+  "gaze_duration": {
+    "facilitated_task": [468.7101, 9.9292],
+    "inhibite_task": [504.974, 11.4551]
+  },
+  "saccade": {
+    "facilitated_task": [2.2104, 0.2331],
+    "inhibite_task": [2.3385, 0.2483]
+  },
+  "duration": {
+    "facilitated_task": [79.6159, 3.3657],
+    "inhibite_task": [84.3961, 3.2355]
+  }
+}

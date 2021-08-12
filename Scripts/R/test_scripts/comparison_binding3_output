@@ -1,0 +1,44 @@
+{
+  "visual_search": 1.4723,
+  "gaze_dur": 1800.4592,
+  "int_mem_perf": 68.75,
+  "assoc_mem_perf": 75,
+  "exec_func": 12.5968,
+  "parahipocampal_region": 80.057,
+  "bc": {
+    "gazing": {
+      "encoding": [1800.4592, 6.5093],
+      "retrieval": [1956.2903, 17.0764]
+    },
+    "saccade": {
+      "encoding": [1.4723, 0.1454],
+      "retrieval": [1.9257, 0.1621]
+    },
+    "duration": {
+      "encoding": [172.4018, 5.7736],
+      "retrieval": [163.3871, 5.0104]
+    },
+    "num_fixations": {
+      "encoding": [10.9033, 0.0896],
+      "retrieval": [12.5968, 0.1459]
+    }
+  },
+  "uc": {
+    "gazing": {
+      "encoding": [1780.4987, 7.47],
+      "retrieval": [1734.5813, 19.4222]
+    },
+    "saccade": {
+      "encoding": [1.7405, 0.1577],
+      "retrieval": [2.0501, 0.1751]
+    },
+    "duration": {
+      "encoding": [151.7224, 5.0005],
+      "retrieval": [146.2782, 4.2382]
+    },
+    "num_fixations": {
+      "encoding": [12.4394, 0.1039],
+      "retrieval": [12.4463, 0.1539]
+    }
+  }
+}

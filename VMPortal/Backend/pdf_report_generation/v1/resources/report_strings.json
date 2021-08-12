@@ -1,0 +1,331 @@
+{
+    "en": {
+        "binding": {
+            "page_titles": [
+                [
+                    "EVALUATION: COLOR TASK - 2 TARGETS"
+                ],
+                [
+                    "EVALUATION: COLOR TASK - 3 TARGETS"
+                ],
+                [
+                    "COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS",
+                    "OVERALL PERFORMANCE"
+                ],
+                [
+                    "VISUAL WORKING MEMORY ",
+                    "VISUAL SCANNING"
+                ],
+                [
+                    "FIXATION DURATION",
+                    "NUMBER OF FIXATIONS"
+                ],
+                [
+                    "FIXATION PLOTTING",
+                    "COGNITIVELY HEALTHY CONTROL FIXATIONS PLOTTING"
+                ]
+            ],
+            "color_code": {
+                "explanations": {
+                    "red": "Severe impairment\nand\/or pathological",
+                    "green": "No relevant problems\nwere encountered",
+                    "yellow": "Mild impairment, not\nnecessarily pathological"
+                },
+                "title": "For each cognitive function analyzed, the results are indicated by the following color coding:"
+            },
+            "visual_search": {
+                "title": "VISUAL SEARCH ",
+                "range_text": "Normal value below 3.5"
+            },
+            "gaze_dur": {
+                "title": "VISUAL WORKING MEMORY",
+                "range_text": "Normal value above 800"
+            },
+            "int_mem_perf": {
+                "title": "INTEGRATIVE MEMORY PERFORMANCE",
+                "range_text": "Normal value above 68"
+            },
+            "assoc_mem_perf": {
+                "title": "ASOCIATIVE MEMORY PERFORMANCE",
+                "range_text": "Normal value above 67"
+            },
+            "exec_functions": {
+                "title": "EXECUTIVE FUNCTIONS",
+                "range_text_3T": "Normal value below 16",
+                "range_text_2T": "Normal value below 11"
+            },
+            "parahipocampal_region": {
+                "title": "PARAHIPOCAMPAL REGION PRESERVATION",
+                "range_text_3T": "Normal value above 63",
+                "range_text_2T": "Normal value above 67"
+            },
+            "affected_areas": {
+                "green": "Preserved Cognitive Functions & Brain Areas:",
+                "yellow": "Mildly Impaired Cognitive Functions & Brain Areas:",
+                "red": "Severely Impaired and\/ or Pathological Cognitive Functions & Brain Areas:",
+                "visual_search": "Visual Search: Basal Ganglia, Superior Colicullus",
+                "gaze_dur": "Gaze: Lateral Parietal Cortex, Medial Prefrontal Cortex (mPFC), Anterior Superior\nTemporal Sulcus (aSTS) ",
+                "int_mem_perf": "Integrative Memory Functions: Enthorinal Cortex, Perirhinal Cortex",
+                "assoc_mem_perf": "Associative Memory Performance: Hipocampus",
+                "exec_func": "Executive Functions: Prefrontal Cortex",
+                "parahipocampal_region": "Parahipocampal Region"
+            },
+            "presumptive_diagnosis": {
+                "left_title": "Presumptive Diagnosis",
+                "right_title": "A.I. Performance Index",
+                "texts": {
+                    "1": "Probable Alzheimer's Disease. We recommend repeating\nthe Colors Test with 2 targets.",
+                    "2": "Generalized Cognitive and Brain Alteration. We recommend\nrepeating the Colors Test with 2 targets.",
+                    "3": "Probable Alzheimer's Disease",
+                    "4": "Inconclusive",
+                    "5": "Inconclusive Results. Please Check the quality of the\ndata gathered. We recommend to repeat the study.",
+                    "6": "Performance within normal values",
+                    "7": "Non Conclusive. We recommend repeating the study"
+                }
+            },
+            "overall_performance": {
+                "text": "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex \u2013 Overall Performance Graph Interpretation.",
+                "vertex": {
+                    "visual_search": "Visual Search",
+                    "gaze_dur": "Visual Working Memory",
+                    "int_mem_perf": "Integrative\nMemory",
+                    "assoc_mem_perf": "Associative\nMemory",
+                    "exec_functions": "Executive\nFunctions",
+                    "parahipocampal_region": "Parahipocampal\nregion"
+                }
+            },
+            "gaze_duration": {
+                "text": "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages. For more\ninformation on how to interpret this graph, please refer to the ANNEX \u2013 Visual Working Memory\n Graph Interpretation.",
+                "ylabel": "Visual Working Memory",
+                "graph_title": [
+                    "PATIENT",
+                    "COGNITIVELY HEALTHY CONTROL"
+                ],
+                "xlabel": [
+                    "ENCODING",
+                    "RECOGNITION"
+                ],
+                "legend": [
+                    "Integrative Memory",
+                    "Associative Memory"
+                ]
+            },
+            "visual_scanning": {
+                "text": "The Visual Scanning graph displays the patient\u2019s visual scanning capabilities while looking for targets,\nin both Encoding and Recognition stages. For more information on how to interpret this graph,\nplease refer to the ANNEX \u2013 Visual Scanning Interpretation.",
+                "ylabel": "Visual Scanning",
+                "graph_title": [
+                    "PATIENT",
+                    "COGNITIVELY HEALTHY CONTROL"
+                ],
+                "xlabel": [
+                    "ENCODING",
+                    "RECOGNITION"
+                ],
+                "legend": [
+                    "Integrative Memory",
+                    "Associative Memory"
+                ]
+            },
+            "fixation_duration": {
+                "text": "The Fixation Duration graph displays the average amount of time [ms] of the fixations performed by\nthe patient, in both Encoding and Recognition stages. For more information on how to interpret this\ngraph, please refer to the ANNEX \u2013 Fixation Duration Interpretation.",
+                "ylabel": "Fixation Duration",
+                "graph_title": [
+                    "PATIENT",
+                    "COGNITIVELY HEALTHY CONTROL"
+                ],
+                "xlabel": [
+                    "ENCODING",
+                    "RECOGNITION"
+                ],
+                "legend": [
+                    "Integrative Memory",
+                    "Associative Memory"
+                ]
+            },
+            "number_of_fixations": {
+                "text": "The Number of Fixations graph displays the number of fixations performed by the patient, in both\nEncoding and Recognition stages. For more information on how to interpret this graph, please refer\nto the ANNEX \u2013 Number of Fixations Interpretation.",
+                "ylabel": "Numbe of Fixations",
+                "graph_title": [
+                    "PATIENT",
+                    "COGNITIVELY HEALTHY CONTROL"
+                ],
+                "xlabel": [
+                    "ENCODING",
+                    "RECOGNITION"
+                ],
+                "legend": [
+                    "Integrative Memory",
+                    "Associative Memory"
+                ]
+            },
+            "fixation_plotting": {
+                "text": "The Fixations Plotting Chart displays the fixations performed by the patient, during the the trials 10, 20\nand 31 of the Encoding (left) and Recognition (Right) stages, in the Color Combination Test.",
+                "title_left": "ENCODING",
+                "title_right": "RECOGNITION",
+                "row_1": "Trial 10",
+                "row_2": "Trial 20",
+                "row_3": "Trial 32",
+                "control": {
+                    "text": "The Cognitively Healthy Control Fixations Plotting chart displays the fixations performed by a\nCognitively Healthy person, during the Encoding (left) and Recognition (Right) stages, in the Color\nCombination Test.",
+                    "label": "Example"
+                }
+            }
+        },
+        "common": {
+            "doctor": "Doctor",
+            "evaluator": "Evaluator",
+            "date": "Date",
+            "patient": "Patient",
+            "age": "Age",
+            "motto": "Meassurement of Cognitive of Performance and Related\nBrain Areas through Eye-Tracking"
+        },
+        "gonogo": {
+            "page_titles": [
+                [
+                    "EEVALUATION: GO\/NO GO TEST"
+                ],
+                [
+                    "COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS",
+                    "OVERALL PERFORMANCE"
+                ],
+                [
+                    "VISUAL WORKING MEMORY ",
+                    "STUDY DURATION"
+                ],
+                [
+                    "SACCADIC BEHAVIOR",
+                    "FIXATION DURATION"
+                ],
+                [
+                    "FIXATION PLOTTING"
+                ],
+                [
+                    "ANNEX"
+                ]
+            ],
+            "color_code": {
+                "explanations": {
+                    "red": "Severe impairment\nand\/or pathological",
+                    "green": "No relevant problems\nwere encountered",
+                    "yellow": "Mild impairment, not\nnecessarily pathological"
+                },
+                "title": "For each cognitive function analyzed, the results are indicated by the following color coding:"
+            },
+            "processing_speed": {
+                "title": "PROCESSING SPEED",
+                "range_text": "Normal value below 1.88"
+            },
+            "processing_speed_interference": {
+                "title": "PROCESSING SPEED INTERFERENCE",
+                "range_text": "Normal value below 1.83"
+            },
+            "processing_speed_facilitated": {
+                "title": "PROCESSING SPEED FACILITATED",
+                "range_text": "Normal value below 1.75"
+            },
+            "reaction_time_facilitated": {
+                "title": "REACTION TIME FACILITATED",
+                "range_text": "Normal value below 784"
+            },
+            "reaction_time_interference": {
+                "title": "REACTION TIME INTERFERENCE",
+                "range_text": "Normal value below 829"
+            },
+            "executive_functions": {
+                "title": "EXECUTIVE FUNCTIONS",
+                "range_text": "Normal value below 320"
+            },
+            "index_error_facilitated": {
+                "title": "INHIBITORY ALTERATIONS FACILITATED",
+                "range_text": "Normal value below 0.15"
+            },
+            "index_error_interference": {
+                "title": "INHIBITORY ALTERATIONS INTERFERENCE",
+                "range_text": "Normal value below 0.31"
+            },
+            "affected_areas": {
+                "green": "Preserved Cognitive Functions & Brain Areas:",
+                "yellow": "Mildly Impaired Cognitive Functions & Brain Areas:",
+                "red": "Severely Impaired and\/ or Pathological Cognitive Functions & Brain Areas:",
+                "processing_speed": "Processing Speed: Frontal Lobe",
+                "processing_speed_interference": "Processing Speed Interference: prefrontal cortex, caudate nucleus",
+                "processing_speed_facilitated": "Processing Speed Facilitated: Prefrontal Cortex",
+                "reaction_time_interference": "Reaction Time Interference: Medial Prefrontal Cortex (mPFC), Anterior, Posterior",
+                "reaction_time_facilitated": "Reaction Time Facilitated: Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus",
+                "executive_functions": "Executive Functions: Prefrontal Cortex",
+                "index_error_facilitated": "Inhibitory Alterations Facilitated: Right Inferior Frontal Gyrus (rIFG)",
+                "index_error_interference": "Inhibitory Alterations Interference: Caudal Inferior Frontal Gyrus (cIFG)"
+            },
+            "overall_performance": {
+                "text": "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex \u2013 Overall Performance Graph Interpretation.",
+                "vertex": {
+                    "processing_speed": "Processing Speed",
+                    "processing_speed_interference": "Processing Speed\nInterference",
+                    "processing_speed_facilitated": "Processing Speed\nFacilitated",
+                    "reaction_time_interference": "Reaction Time\nInterference",
+                    "reaction_time_facilitated": "Reaction Time\nFacilitated",
+                    "executive_functions": "Executive\nFunctions",
+                    "index_error_facilitated": "Inhibitory Alterations\nFacilitated",
+                    "index_error_interference": "Inhibitory Alterations\nInterference"
+                }
+            },
+            "gaze_duration": {
+                "text": "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages. For more\n information on how to interpret this graph, please refer to the ANNEX \u2013 Visual Working Meory\nGraph Interpretation.",
+                "ylabel": "Visual Working Memory",
+                "xlabel": [
+                    "CONTROL",
+                    "PATIENT"
+                ],
+                "legend": [
+                    "Facilitated Task",
+                    "Inhibitory Task"
+                ]
+            },
+            "study_duration": {
+                "text": "The Study Duration graph displays the average amount of time [ms] needed by the patient complete\nthe whole study, in both Encoding and Recognition stages. For more information on how to interpret\n this graph, please refer to the ANNEX \u2013 Study Duration Graph Interpretation",
+                "ylabel": "Study Duration",
+                "xlabel": [
+                    "CONTROL",
+                    "PATIENT"
+                ],
+                "legend": [
+                    "Facilitated Task",
+                    "Inhibitory Task"
+                ]
+            },
+            "saccadic_behaviour": {
+                "text": "The Saccadic Behavior graph displays the visual scanning capabilities while looking for targets, in\nboth Encoding and Recognition stages. For more information on how to interpret this graph, please\n refer to the ANNEX \u2013 Saccadic Behaviour Graph Interpretation.",
+                "ylabel": "Saccadic Behaviour",
+                "xlabel": [
+                    "CONTROL",
+                    "PATIENT"
+                ],
+                "legend": [
+                    "Facilitated Task",
+                    "Inhibitory Task"
+                ]
+            },
+            "fixation_duration": {
+                "text": "The Fixation Duration graph displays the time for extracting relevant information in just once fixation,\nin both Encoding and Recognition stages. For more information on how to interpret this graph, please\nrefer to the ANNEX \u2013 Gaze Duration Graph Interpretation.",
+                "ylabel": "Fixation Duration",
+                "xlabel": [
+                    "CONTROL",
+                    "PATIENT"
+                ],
+                "legend": [
+                    "Facilitated Task",
+                    "Inhibitory Task"
+                ]
+            },
+            "fixation_plotting": {
+                "text": "The following graphs contain the plotting of the fixations done by the patient (left column) and by a\ncognitively healthy control (right column) while completing the different tasks. Tasks with a green\narrow are referred as facilitated task and red arrows as tasks with interference.\n",
+                "title_left": "PATIENT",
+                "title_right": "CONTROL",
+                "row_1": "Trial 10",
+                "row_2": "Trial 25",
+                "row_3": "Trial 40",
+                "row_4": "Trial 55"
+            }
+        }
+    }
+}

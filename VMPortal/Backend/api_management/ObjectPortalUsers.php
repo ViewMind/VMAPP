@@ -41,7 +41,8 @@ class ObjectPortalUsers extends ObjectBaseClass{
 
       // Then we map those to the info. 
       $tpu = new TablePortalUsers($this->con_secure);
-      $ans = $tpu->getAllNamesForIDList($user_ids,[TablePortalUsers::ROLE_MEDICAL, TablePortalUsers::ROLE_INTITUTION_ADMIN]);
+      $enabled_status = [TablePortalUsers::ENABLED, TablePortalUsers::NOLOG];
+      $ans = $tpu->getAllNamesForIDList($user_ids,[TablePortalUsers::ROLE_MEDICAL, TablePortalUsers::ROLE_INTITUTION_ADMIN],$enabled_status);
       if ($ans === false){
          $this->suggested_http_code = 500;
          $this->returnable_error = "Could not get information on the users for this institution";

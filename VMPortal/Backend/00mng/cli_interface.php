@@ -1,5 +1,7 @@
 <?php
 
+include_once ("../db_management/TableSecrets.php");
+
 const INPUT_FILE = "input.cnf";
 
 function readAndVerifyData($required_parameters,$section_name){
@@ -51,6 +53,59 @@ function readAndVerifyData($required_parameters,$section_name){
    echo "\n"; 
    echo "Advancing ...\n";   
    return $params;
+}
+
+
+function expandShortInstanceListToConprenhensiveList($string_list, TableSecrets &$ts){
+   // Expanding into a list unique ids.
+   $list_to_adapt = explode(" ",$string_list);
+   $unique_ids = array();
+   foreach ($list_to_adapt as $uid){
+      $temp = explode(".",$uid);
+      if (count($temp) != 2){
+         echo "Error invalid Institution Instance ID format: $uid\n";
+         exit();
+      }
+      $institution = $temp[0];
+      $instance    = $temp[1];
+   
+      if (!is_numeric($institution)){
+         echo "Error invalid Institution Instance ID format: $uid\n";
+         exit();
+      }
+      
+   
+      if ($instance == "x"){
+   
+         // We need to get all the instances enabled by       
+         $ans = $ts->getEnabledInstancesForInstitution($institution);
+         if ($ans === FALSE){
+            echo "ERROR: " . $ts->getError() . "\n";
+            return false;
+            exit();
+         }
+   
+         foreach ($ans as $row){    
+            $unique_ids[] = $institution . "."  . $row[TableSecrets::COL_INSTITUTION_INSTANCE];
+         }
+   
+         continue;
+   
+      }
+      else if (!is_numeric($instance)){
+         echo "Error invalid Institution Instance ID format: $uid\n";
+         exit();
+      }
+   
+      // If it got here all checks out and we add it as is. 
+      $unique_ids[] = $uid;
+   
+   }
+   
+   // We make sure the array's are truly unique 
+   //var_dump($unique_ids);
+   $unique_ids = array_unique($unique_ids);   
+   return $unique_ids;
 }
 
 ?>
