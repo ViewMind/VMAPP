@@ -91,7 +91,7 @@ namespace Globals{
       static const bool DISABLE_DB_CHECKSUM     = true;
       static const bool SHOW_MOUSE_STUDY        = true;
       static const bool SHOW_EYE_POSITION       = false;
-      static const bool DISABLE_RM_SENT_STUDIES = false;
+      static const bool DISABLE_RM_SENT_STUDIES = true;
       static const bool PRETTY_PRINT_JSON_DB    = true;
    }
       

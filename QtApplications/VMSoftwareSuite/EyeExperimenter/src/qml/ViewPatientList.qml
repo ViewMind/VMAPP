@@ -158,6 +158,7 @@ VMBase {
                     // SET the protocol and the doctor.
                     if (protocolSelection.vmCurrentIndex > 0 ) viewStudyStart.vmSelectedProtocol = protocolSelection.vmCurrentText
                     else viewStudyStart.vmSelectedProtocol = "";
+                    //console.log(studyPreSetup.doctorList[doctorSelection.vmCurrentIndex]["metadata"]);
                     viewStudyStart.vmSelectedMedic = studyPreSetup.doctorList[doctorSelection.vmCurrentIndex]["metadata"]
                     loader.setSettingsValue("last_selected_protocol",protocolSelection.vmCurrentText);
                     studyPreSetup.close();

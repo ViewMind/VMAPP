@@ -69,8 +69,8 @@ VMBase {
             vmSize: [mainWindow.width*0.140, mainWindow.height*0.072]
             vmText: loader.getStringForKey("viewcalibdone_btnContinue");
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: imgCalibration.bottom
-            anchors.topMargin: mainWindow.height*0.069
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: mainWindow.height*0.061
             onClicked: {
                 viewCalibrationDoneDiag.close();
                 swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
