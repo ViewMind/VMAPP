@@ -267,16 +267,30 @@ void Loader::partnerFinished(){
         return;
     }
 
-    if (partner_api->addMedicsAsNonLoginUsers()){
-        QVariantList doctors = partner_api->getMedicInformation();
-        if (!apiclient.requestAdditionOfNonLoginPortalUsers(doctors)){
-            logger.appendError("Failed on requesting the addition of NonLoginPortal Users: " + apiclient.getError());
-            emit(partnerSequenceDone(false));
-        }
-    }
-    else{
-        partnerSynchFinishProcess();
-    }
+//    QVariantList doctors = partner_api->getMedicInformation();
+//    QVariantList patients = partner_api->getRegisteredPatientInformation();
+
+//    qDebug() << "Printing doctors";
+//    for (qint32 i = 0; i < doctors.size(); i++){
+//        Debug::prettpPrintQVariantMap(doctors.at(i).toMap());
+//    }
+
+//    qDebug()  << "Printing patients";
+//    for (qint32 i = 0; i < patients.size(); i++){
+//        Debug::prettpPrintQVariantMap(patients.at(i).toMap());
+//    }
+
+
+//    if (partner_api->addMedicsAsNonLoginUsers()){
+//        QVariantList doctors = partner_api->getMedicInformation();
+//        if (!apiclient.requestAdditionOfNonLoginPortalUsers(doctors)){
+//            logger.appendError("Failed on requesting the addition of NonLoginPortal Users: " + apiclient.getError());
+//            emit(partnerSequenceDone(false));
+//        }
+//    }
+//    else{
+//        partnerSynchFinishProcess();
+//    }
 
 }
 
@@ -407,7 +421,7 @@ bool Loader::isVREnabled() const{
 
 //////////////////////////////////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////////////////////////////////
 
-bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic, const QString &protocol){
+bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol){
 
     if (!studyconfig.contains(Globals::StudyConfiguration::UNIQUE_STUDY_ID)){
         logger.appendError("While creating a subject study file, Study Configuration Map does not contain " + Globals::StudyConfiguration::UNIQUE_STUDY_ID + " field. Cannot determine study");
@@ -553,7 +567,11 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic
 
     // Setting the selected doctor info.
     QVariantMap medic_to_store;
-    QVariantMap medic_local_data = localDB.getMedicData(QString::number(medic));
+    QVariantMap medic_local_data = localDB.getMedicData(medic);
+    if (medic_local_data.empty()){
+        logger.appendError("Failed to retrieve medic local data: " + medic);
+        return false;
+    }
     medic_to_store.insert(VMDC::AppUserField::EMAIL,medic_local_data.value(LocalDB::APPUSER_EMAIL));
     medic_to_store.insert(VMDC::AppUserField::NAME,medic_local_data.value(LocalDB::APPUSER_NAME));
     medic_to_store.insert(VMDC::AppUserField::LASTNAME,medic_local_data.value(LocalDB::APPUSER_LASTNAME));

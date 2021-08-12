@@ -124,8 +124,8 @@ VMBase {
             vmSize: [mainWindow.width*0.148, mainWindow.height*0.072]
             vmText: loader.getStringForKey("viewcalibstart_btnStart");
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: imgEye.bottom
-            anchors.topMargin: mainWindow.height*0.061
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: mainWindow.height*0.061
             onClicked: {
                 if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
                 else flowControl.calibrateEyeTracker(vmSelectedEye);

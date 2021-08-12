@@ -95,7 +95,8 @@ void OrbitPartnerAPI::onReplyReceived(){
         }
         else if (getState == GS_PHYSICIAN){
             //getState = GS_PHYSICIAN;
-            //std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
+            std::cout << "All physicans" << std::endl;
+            std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
 
             // Doctor list is inside the payload and rows
 
@@ -119,7 +120,7 @@ void OrbitPartnerAPI::onReplyReceived(){
             medics.clear();
             patients.clear();
             QSet<QString> emails;
-            QSet<qint32> skip; skip << 26 << 24 << 23;
+            //QSet<qint32> skip; skip << 26 << 24 << 23;
             for (qint32 i = 0; i < physician_list.size(); i++){
                 QVariantMap physician = physician_list.at(i).toMap();
                 QVariantMap medic;
@@ -134,7 +135,7 @@ void OrbitPartnerAPI::onReplyReceived(){
                 }
                 //emails << email;
                 qint32 id = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::ID).toInt();
-                if (skip.contains(id)) continue;
+                //if (skip.contains(id)) continue;
 
                 medic[PartnerMedic::EMAIL]      = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::EMAIL);
                 medic[PartnerMedic::NAME]       = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::NAME);
@@ -151,7 +152,7 @@ void OrbitPartnerAPI::onReplyReceived(){
                 QString endpoint = ENDPOINT_PATIENT;
                 endpoint.replace("{id}",medics.first().toMap().value(PartnerMedic::PARTNER_ID).toString());
                 api.addHeaderToRequest("Authorization", "Bearer " + token);
-                //qDebug() << "Setting endpoint" << endpoint;
+                std::cout << "Setting endpoint" << endpoint.toStdString() << std::endl;
                 api.setAPIEndpoint(endpoint);
                 api.sendGETRequest();
                 getState = GS_PATIENT;
@@ -168,8 +169,8 @@ void OrbitPartnerAPI::onReplyReceived(){
         else if (getState == GS_PATIENT){
             qint32 current_physican =  physician_index-1;
             QString email = medics.at(current_physican).toMap().value(PartnerMedic::EMAIL).toString();
-            //std::cout << "Patient for physician" << current_physican << std::endl;
-            //std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
+            std::cout << "Patient for physician" << current_physican << std::endl;
+            std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
 
             QStringList hiearchy; hiearchy << OrbitReturn::PhysicianList::PAYLOAD << OrbitReturn::PhysicianList::Payload::ROWS;
             QString missing;

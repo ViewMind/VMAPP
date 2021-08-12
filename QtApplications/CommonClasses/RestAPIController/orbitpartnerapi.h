@@ -18,14 +18,14 @@ namespace OrbitReturn {
           namespace Rows {
 
              namespace Physician {
-                static const QString ID       = "id";
+                static const QString ID       = "uid";
                 static const QString NAME     = "firstName";
                 static const QString LASTNAME = "lastName";
                 static const QString EMAIL    = "email";
              }
 
              namespace Patient {
-                static const QString ID       = "id";
+                static const QString ID       = "uid";
                 static const QString LASTNAME = "lastName";
                 static const QString NAME     = "firstName";
              }

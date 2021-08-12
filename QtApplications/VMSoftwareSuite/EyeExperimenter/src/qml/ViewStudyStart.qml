@@ -81,7 +81,7 @@ VMBase {
     property var vmDisabledStudies: [vmINDEX_NBACKVS, vmINDEX_PERCEPTION];
 
     property string vmSelectedProtocol: ""
-    property int vmSelectedMedic: -1
+    property string vmSelectedMedic: ""
 
 
 

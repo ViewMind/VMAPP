@@ -95,7 +95,7 @@ public:
     Q_INVOKABLE bool isVREnabled() const;
 
     //////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////
-    Q_INVOKABLE bool createSubjectStudyFile(const QVariantMap &studyconfig, qint32 medic, const QString &protocol);
+    Q_INVOKABLE bool createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol);
 
     ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
     Q_INVOKABLE QVariantMap getReportsForLoggedEvaluator();
