@@ -64,7 +64,24 @@ function onReceiveReportList(response){
 
 function goToReportViewPage(report_id){
 
-   sessionStorage.setItem(GLOBALS.PAGE_COMM.SELECTED_REPORT,report_id);
-   
-   window.location.href = "index.html?" + GLOBALS.ROUTING.PARAMS.GOTO + "=" + GLOBALS.ROUTING.PAGES.VIEWREPORT;
+   sessionStorage.setItem(GLOBALS.PAGE_COMM.SELECTED_REPORT,report_id);   
+   // window.location.href = "index.html?" + GLOBALS.ROUTING.PARAMS.GOTO + "=" + GLOBALS.ROUTING.PAGES.VIEWREPORT;
+   var lang = "en";
+   WaitDialog.open("Retrieving report PDF");
+   API.getReport(report_id,lang,"onGetReportPDF");   
+
+}
+
+function onGetReportPDF(response){
+   WaitDialog.close();
+   if (response.message != "OK"){
+      ErrorDialog.open("Server Error",response.message);
+      return;
+   }
+   else{
+      //console.log("Attempting to show PDF " + response.filename + " in a new tab");
+      var url = URL.createObjectURL(response.data);
+      
+      window.open("_blank").location = url;
+   }
 }

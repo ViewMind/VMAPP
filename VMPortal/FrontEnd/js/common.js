@@ -19,6 +19,7 @@ GLOBALS.PAGE_COMM.SELECTED_INSTITUTION_ID   = "selected_institution";
 GLOBALS.PAGE_COMM.SELECTED_INSTITUTION_NAME = "selected_institution_name";
 GLOBALS.PAGE_COMM.SELECTED_SUBJECT          = "selected_subject";
 GLOBALS.PAGE_COMM.SELECTED_REPORT           = "selected_report";
+GLOBALS.PAGE_COMM.SELECTED_PDF              = "selected_PDF";
 
 // For accessing the inst construct.
 GLOBALS.INST_LIST = {};
@@ -156,17 +157,22 @@ var Token = {
 /// Wait Dialog In case We neeed it.
 var WaitDialog = {
 
-   open: function(title){
-      document.getElementById(GLOBALS.HTML.WAIT_DIALOG.TEXT).innerHTML = title;
+   modal: undefined,
+
+   init: function(){
       var myModal = document.getElementById(GLOBALS.HTML.WAIT_DIALOG.MODAL);
-      var modal = new bootstrap.Modal(myModal);
-      modal.show(); 
+      this.modal = new bootstrap.Modal(myModal);
    },
 
-   close: function() {
-      var myModal = document.getElementById(GLOBALS.HTML.WAIT_DIALOG.MODAL);
-      var modal = new bootstrap.Modal(myModal);
-      modal.hide();
+   open: function(title){
+      document.getElementById(GLOBALS.HTML.WAIT_DIALOG.TEXT).innerHTML = title;
+      this.modal.show(); 
+   },
+
+   close: function() {      
+      //var myModal = document.getElementById(GLOBALS.HTML.WAIT_DIALOG.MODAL);
+      //var modal = new bootstrap.Modal(myModal);
+      this.modal.hide();
    }
 
 }
@@ -174,18 +180,21 @@ var WaitDialog = {
 /// Error dialog. Will show when an error occurs with the simplified server message. 
 var ErrorDialog  = {
 
+   modal: undefined,
+
+   init: function(){
+      var myModal = document.getElementById(GLOBALS.HTML.ERROR_DIALOG.MODAL);
+      this.modal = new bootstrap.Modal(myModal);
+   },
+
    open: function (title, text){
       document.getElementById(GLOBALS.HTML.ERROR_DIALOG.TITLE).innerHTML = title;
       document.getElementById(GLOBALS.HTML.ERROR_DIALOG.TEXT).innerHTML = "<p>" + text + "</p>";
-      var myModal = document.getElementById(GLOBALS.HTML.ERROR_DIALOG.MODAL);
-      var modal = new bootstrap.Modal(myModal);
-      modal.show();
+      this.modal.show();
    },
 
    close: function(){
-      var myModal = document.getElementById(GLOBALS.HTML.ERROR_DIALOG.MODAL);
-      var modal = new bootstrap.Modal(myModal);
-      modal.hide();
+      this.modal.hide();
    }
    
 }

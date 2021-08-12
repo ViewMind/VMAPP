@@ -388,6 +388,13 @@ class ObjectReports extends ObjectBaseClass
       $auth = explode(":",$auth);
       $portal_user = $auth[0];
 
+      if (!array_key_exists(URLParameterNames::LANGUAGE,$parameters)){
+         $this->suggested_http_code = 401;
+         $this->error = "Missing language parameter on PDF Report request";
+         $this->returnable_error = "Missing URL parameter for language";
+         return false;         
+      }
+
       $tev = new TableEvaluations($this->con_main);
 
       // If someone NOT authorized to get the information for this report they will either not authenticate (because the token and the user ide will be a mistmach)
@@ -395,7 +402,7 @@ class ObjectReports extends ObjectBaseClass
       $ans = $tev->getEvaluation($report_id,$portal_user);
       
       if ($ans === FALSE){
-         $this->suggested_http_code = 500;
+         $this->suggested_http_code = 401;
          $this->error = "Failed for getting the evaluation $report_id for user $portal_user. Reason: " . $tev->getError();
          $this->returnable_error = "Internal Server Error";
          return false;
@@ -407,8 +414,73 @@ class ObjectReports extends ObjectBaseClass
          $this->returnable_error = "You do not have permission to look at this report";
          return false;
       }
+     
+      $lang = $parameters[URLParameterNames::LANGUAGE];
 
-      return $ans;
+      // Creating the json report structure.
+      $report_row = $ans[0]; // Getting the report.
+      $report = json_decode($report_row[TableEvaluations::COL_RESULTS],true);
+      if (json_last_error() != JSON_ERROR_NONE){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed to decode report string: " . $report_row[TableEvaluations::COL_RESULTS] . " from $report_id with error: " . json_last_error_msg();
+         $this->returnable_error = "Internal Server Error";
+         return false;         
+      }
+
+      // Getting the report version. 
+      if (!array_key_exists(CommonResultKeys::PDF_GEN_VERSION,$report)){
+         $this->suggested_http_code = 401;
+         $this->error = "Requested report $report_id does not have a PDF Generator Version";
+         $this->returnable_error = "Invalid report format";
+         return false;
+      }
+
+      $version = $report[CommonResultKeys::PDF_GEN_VERSION];
+
+      // Now we create the work directory
+      $file_link = $report_row[TableEvaluations::COL_FILE_LINK];
+      $basename = str_replace(".zip","",$file_link); // Getting rid of the .zip file. 
+      $work_directory = CONFIG[GlobalConfigProcResources::GROUP_NAME][GlobalConfigProcResources::PDF_WORK_DIR];
+      $work_directory = $work_directory . "/" . $basename;
+      shell_exec("mkdir -p $work_directory");
+      if (!is_dir($work_directory)){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed to create work directory for PDF generation: $work_directory";
+         $this->returnable_error = "Internal Server Error";
+         return false;         
+      }
+
+      // We get the path for the PDF generation script and generate the strign for both the output error log and pdf output. 
+      $pdf_output = $work_directory . "/" . $basename . ".pdf";
+      $json_input = $work_directory . "/" . $basename . ".json";
+      $error_log  = $work_directory . "/error.log";
+      $pdf_js = CONFIG[GlobalConfigProcResources::GROUP_NAME][GlobalConfigProcResources::PDF_GEN_DIR] . "/v$version/pdf_report_generator.js";
+
+      // Actually saving the JS Input file into the work directory. 
+      $fid = fopen($json_input,"w");
+      fwrite($fid,json_encode($report,JSON_PRETTY_PRINT));
+      fclose($fid);
+
+      // Running the report generating command.
+      $cmd = "node $pdf_js $lang $json_input $pdf_output > $error_log 2>&1";
+      $output = array();
+      $retval = 0;
+      exec($cmd, $output,$retval);
+      
+      
+      if ($retval != 0){
+         $this->suggested_http_code = 500;
+         $this->error = $this->error .  "Error in report generation\n";
+         $this->error = $this->error .  "CMD: $cmd\n";
+         $this->error = $this->error .  "Error Log at: $error_log";
+         $this->returnable_error = "Failed to generate report. ";
+         return false;
+      }
+
+      // The PDF was generated successfully and it is now returned. 
+      $this->file_path_to_return = $pdf_output;
+   
+      return array();
 
 
    }

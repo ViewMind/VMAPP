@@ -1,7 +1,7 @@
 
 API = {
 
-  APICall: function(endpoint,callback) {
+  APICall: function(endpoint,callback,isBlob) {
      var xhr = new XMLHttpRequest();
      xhr.open('POST', endpoint, true);
      
@@ -12,14 +12,48 @@ API = {
      + ":" + sessionStorage.getItem(GLOBALS.SESSION_KEYS.TOKEN)
   
      xhr.setRequestHeader(GLOBALS.HEADERS_NAMES.AUTHORIZATION,auth_value);
+
+     var get_blob = false;
+         
+     if (isBlob !== undefined){
+       //console.log("isBlob is not undefined.")
+        if (isBlob === true){
+            get_blob = true;
+            //console.log("Setting get_blob to true")
+        }
+     }
+
+     if (get_blob){
+        xhr.responseType = "blob";
+        xhr.onload = function (e) {
+          if (this.status == 200){
+             var blob = e.currentTarget.response;
+             var contentDispo = e.currentTarget.getResponseHeader('Content-Disposition');
+             ///// https://stackoverflow.com/a/23054920/
+             var fileName = contentDispo.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1];
+             //console.log("Filename is: " + fileName);
+             var response = {};
+             response.message = "OK";
+             response.data = blob;
+             response.filename = fileName;
+             window[callback](response)
+          }
+          else{
+            var response = {};
+            response.message = "Something went wrong while retrieving the PDF";
+            window[callback](response)
+          }
+      }        
+     }
+     else{
+        xhr.responseType = "json";
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4) {
+             window[callback](this.response)
+          }
+        };
+     }
      
-     xhr.responseType = "json";
-     
-     xhr.onreadystatechange = function() {
-         if (xhr.readyState == 4) {
-          window[callback](this.response)
-         }
-     };
      xhr.send(null);
   },
 
@@ -47,10 +81,11 @@ API = {
 
   },
 
-  getReport: function (report_id, callback){
+  getReport: function (report_id, lang, callback){
     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
-    GLOBALS.ENDPOINTS.REPORTS.GET + "/" + report_id;
-    API.APICall(endpoint,callback);
+    GLOBALS.ENDPOINTS.REPORTS.GET + "/" + report_id + "?lang=" + lang;
+    //GLOBALS.ENDPOINTS.REPORTS.GET + "/" + report_id;
+    API.APICall(endpoint,callback,true);
   },
 
   modifyAccount: function(parameters,callback){

@@ -25,6 +25,8 @@
       const GROUP_NAME                  = "processing_resources";  
       const PROCESSING_WORK_DIRECTORY   = "processing_work_dir";
       const R_SCRIPTS_REPO              = "r_repo";
+      const PDF_WORK_DIR                = "pdf_work_dir";
+      const PDF_GEN_DIR                 = "pdf_generator";
    }
 
    abstract class GlobalConfigUpdateResources extends TypedString {
@@ -95,6 +97,7 @@
       const PORTAL_USER             = "pp";
       const VERSION                 = "version";
       const REGION                  = "region";
+      const LANGUAGE                = "lang";
    }
 
    abstract class InstitutionOperations extends TypedString {

@@ -16,10 +16,10 @@ function Route(){
       loadViewReportList();
       gotoIndex = false;
    }
-   else if (whereToGo == GLOBALS.ROUTING.PAGES.VIEWREPORT){
-      loadViewRenderReport();
-      gotoIndex = false;
-   }
+   // else if (whereToGo == GLOBALS.ROUTING.PAGES.VIEWREPORT){
+   //    loadViewRenderReport();
+   //    gotoIndex = false;
+   // }
    else if (whereToGo == GLOBALS.ROUTING.PAGES.USER_ACCOUNT){
       loadViewAccountData();
       gotoIndex = false;
