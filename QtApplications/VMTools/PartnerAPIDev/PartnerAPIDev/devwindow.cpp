@@ -45,42 +45,56 @@ void DevWindow::onFinished(){
     // Sending the Doctor data to the backend.
 
     QVariantList doctors = orbit.getMedicInformation();
+    QVariantList patients = orbit.getRegisteredPatientInformation();
 
-    // Setting up the API Client.
-    QString key                     = "2a119e8e0f1e95a02b3b3520a9bca8f1e7f1621c070fce57a9b6f3bcd1f13ebdba10fd9720beb7862fd4134b18d97bb0e95d618e98660b01b3d75df264c6e371";
-    QString secret                  = "1522352f8e0326d4fb301e5ff9336ec382a064e16694dbdaf1b62fdb14981bd7e6f7b6cbb0ef7ca4e5abde496908d0f1e238a679b68a5ccd82d6046e09c9ae12c6633b055921128cca6c88ec7169cff60916fb4badbd89a32cf85945c2be919ed89f8453eea3e9c82f1cdbefc1e22b35f2d34af0d5ff9ccc63af2b498dc88a43";
-    QString APIURL                  = "http://localhost/vmapi";
-    QString endpoint                = "/portal_users/addnologpusers/1";
-
-    apiclient.setBaseAPI(APIURL);
-    apiclient.setAPIEndpoint(endpoint);
-
-    QVariantMap data;
-    data.insert("institution_id","1");
-    data.insert("institution_instance","0");
-    data.insert("data",doctors);
-
-    apiclient.setJSONData(data);
-
-    // Adding salt to ensure uniqueness of signature.
-    apiclient.addSalt();
-
-    //std::cout << "Sending Payload: " << std::endl;
-    //std::cout << QString(apiclient.getPayload()).toStdString() << std::endl;
-
-    QString auth_string = QMessageAuthenticationCode::hash(apiclient.getPayload(), secret.toUtf8(), QCryptographicHash::Sha3_512).toHex();
-
-    // Adding headers to the request.
-    apiclient.addHeaderToRequest("AuthType","VMClient");
-    apiclient.addHeaderToRequest("Authentication",key);
-    apiclient.addHeaderToRequest("Signature",auth_string);
-
-    // Generate the request.
-    if (!apiclient.sendPOSTRequest()){
-        qDebug() << "Error sending POST request: " << apiclient.getErrors();
+    std::cout << "Printing Doctors" << std::endl;
+    for (qint32 i = 0; i < doctors.size(); i++){
+        Debug::prettpPrintQVariantMap(doctors.at(i).toMap());
     }
 
-    std::cout << "Sending Data to the Back End" << std::endl;
+    std::cout << "Printing Patients" << std::endl;
+    for (qint32 i = 0; i < patients.size(); i++){
+        Debug::prettpPrintQVariantMap(patients.at(i).toMap());
+    }
+
+    std::cout << "============================" << std::endl;
+
+
+//    // Setting up the API Client.
+//    QString key                     = "2a119e8e0f1e95a02b3b3520a9bca8f1e7f1621c070fce57a9b6f3bcd1f13ebdba10fd9720beb7862fd4134b18d97bb0e95d618e98660b01b3d75df264c6e371";
+//    QString secret                  = "1522352f8e0326d4fb301e5ff9336ec382a064e16694dbdaf1b62fdb14981bd7e6f7b6cbb0ef7ca4e5abde496908d0f1e238a679b68a5ccd82d6046e09c9ae12c6633b055921128cca6c88ec7169cff60916fb4badbd89a32cf85945c2be919ed89f8453eea3e9c82f1cdbefc1e22b35f2d34af0d5ff9ccc63af2b498dc88a43";
+//    QString APIURL                  = "http://localhost/vmapi";
+//    QString endpoint                = "/portal_users/addnologpusers/1";
+
+//    apiclient.setBaseAPI(APIURL);
+//    apiclient.setAPIEndpoint(endpoint);
+
+//    QVariantMap data;
+//    data.insert("institution_id","1");
+//    data.insert("institution_instance","0");
+//    data.insert("data",doctors);
+
+//    apiclient.setJSONData(data);
+
+//    // Adding salt to ensure uniqueness of signature.
+//    apiclient.addSalt();
+
+//    //std::cout << "Sending Payload: " << std::endl;
+//    //std::cout << QString(apiclient.getPayload()).toStdString() << std::endl;
+
+//    QString auth_string = QMessageAuthenticationCode::hash(apiclient.getPayload(), secret.toUtf8(), QCryptographicHash::Sha3_512).toHex();
+
+//    // Adding headers to the request.
+//    apiclient.addHeaderToRequest("AuthType","VMClient");
+//    apiclient.addHeaderToRequest("Authentication",key);
+//    apiclient.addHeaderToRequest("Signature",auth_string);
+
+//    // Generate the request.
+//    if (!apiclient.sendPOSTRequest()){
+//        qDebug() << "Error sending POST request: " << apiclient.getErrors();
+//    }
+
+//    std::cout << "Sending Data to the Back End" << std::endl;
 
 
 }

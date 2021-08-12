@@ -11,6 +11,7 @@ QT_END_NAMESPACE
 #include <QJsonObject>
 #include <QTimer>
 #include "../../../CommonClasses/RestAPIController/orbitpartnerapi.h"
+#include "../../../CommonClasses/debug.h"
 
 class DevWindow : public QMainWindow
 {

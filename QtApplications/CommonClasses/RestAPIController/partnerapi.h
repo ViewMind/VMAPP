@@ -11,6 +11,7 @@ static const QString NAME            = "name";
 static const QString LASTNAME        = "lastname";
 static const QString EMAIL           = "email";
 static const QString PARTNER_ID      = "partner_id";
+static const QString PARTNER_UID     = "partner_uid";
 }
 
 namespace ParterPatient {
@@ -36,10 +37,10 @@ public:
     virtual QString getPartnerType() const;
     virtual bool addMedicsAsAppUsers() const;
     virtual bool addMedicsAsNonLoginUsers() const;
+    virtual bool useEmailAsUID() const;
 
     QVariantList getMedicInformation() const;
     QVariantList getRegisteredPatientInformation() const;
-
 
     QString getError() const;
 

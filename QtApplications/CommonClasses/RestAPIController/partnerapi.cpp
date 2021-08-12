@@ -35,6 +35,10 @@ QVariantList PartnerAPI::getRegisteredPatientInformation() const {
     return patients;
 }
 
+bool PartnerAPI::useEmailAsUID() const{
+    return true;
+}
+
 QString PartnerAPI::getPartnerType() const {
     return "";
 }

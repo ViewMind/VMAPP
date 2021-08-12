@@ -18,14 +18,16 @@ namespace OrbitReturn {
           namespace Rows {
 
              namespace Physician {
-                static const QString ID       = "uid";
+                static const QString ID       = "id";
+                static const QString UID      = "uid";
                 static const QString NAME     = "firstName";
                 static const QString LASTNAME = "lastName";
                 static const QString EMAIL    = "email";
              }
 
              namespace Patient {
-                static const QString ID       = "uid";
+                static const QString ID       = "id";
+                static const QString UID      = "uid";
                 static const QString LASTNAME = "lastName";
                 static const QString NAME     = "firstName";
              }
@@ -54,6 +56,7 @@ public:
     bool requestInformation(const QVariantMap &conf) override;
     bool addMedicsAsAppUsers() const override;
     bool addMedicsAsNonLoginUsers() const override;
+    bool useEmailAsUID() const override;
     QString getPartnerType() const override;
 
 protected:
