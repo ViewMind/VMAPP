@@ -333,7 +333,8 @@
 
          if (!hash_equals($key,$client_key)){
             $this->http_code = 401; // Authentication problem. 
-            $this->error = "Authentication failed due key mismatch";
+            $this->returnable_error = "Authentication failed due key mismatch";
+            $this->error = "Authentication failed due key mismatch. DB Key: $key. Client provided key: $client_key from " . $this->institution_id . "." . $this->institution_instance;
             return false;
          }
          
