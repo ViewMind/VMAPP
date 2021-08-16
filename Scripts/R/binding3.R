@@ -245,22 +245,30 @@ a41 <- ddply(as_1, .(Condition,id,type), summarise,  mdur = mean(dur),msd = sd(d
              mpupila = mean(pupila),sdpupila = sd(pupila), mgaze = mean(gaze)
              , mnf = mean(nf), sdnf = sd(nf),mscore = mean(score),sdao = sd(sacc_ampl),sdgaze = sd(gaze))
 
-head(a41)
+#head(a41)
+#print("a41==========================================")
+#a41
 
-BUSQUEDA_VISUAL<-a41$mao[a41$type=="BC"] #<- VISUAL SEARCH == SUBCORTICAL -> BASAL GANGLIA, SUPERIOR COLICULLUS.
+# BUSQUEDA_VISUAL<-a41$mao[a41$type=="BC"] #<- VISUAL SEARCH == SUBCORTICAL -> BASAL GANGLIA, SUPERIOR COLICULLUS.
+BUSQUEDA_VISUAL<-a41[1,6]
 # Intervalo de Referencia =  1 - 3.5.   Verde 1 - 3.5.  Amarillo 3.6 - 7.   Rojo mayor a 7.1
 
-DURACION_MIRADA<-a41$mgaze[a41$type=="BC"] #  GAZE  == CORTICAL  ->lateral parietal cortex, the medial prefrontal cortex (mPFC) and the anterior superior temporal sulcus (aSTS) 
+#DURACION_MIRADA<-a41$mgaze[a41$type=="BC"] #  GAZE  == CORTICAL  ->lateral parietal cortex, the medial prefrontal cortex (mPFC) and the anterior superior temporal sulcus (aSTS) 
+DURACION_MIRADA<-a41[1,9] #  GAZE  == CORTICAL  ->lateral parietal cortex, the medial prefrontal cortex (mPFC) and the anterior superior temporal sulcus (aSTS) 
+# print("Duracion Mirada")
+# DURACION_MIRADA
 # Intervalo de Referencia =  800 - 2000.   Verde 800 - 2000.  Amarillo 799 - 400.   Rojo 399 - 1
 
 
 
-Integrative_memory_performance<-a41$mscore[a41$type=="BC"]  #Integrative memory performance  == score BC  -> corteza enthorinal, corteza perirhinal
+# Integrative_memory_performance<-a41$mscore[a41$type=="BC"]  #Integrative memory performance  == score BC  -> corteza enthorinal, corteza perirhinal
+Integrative_memory_performance<-a41[1,12]
 # Intervalo de Referencia =  63 - 100.   Verde 63 - 100.  Amarillo 59 - 62.   Rojo 40 - 58
 
 bs$score<-(bs$score*100)/32
 
 Asociative_memory_performance<-bs$score[bs$type=="UC"]  #Asociative memory performance  == score UC -> Hipocampo
+#Asociative_memory_performance<-a41[3,13]
 Asociative_memory_performance<-unique(Asociative_memory_performance)
 # Intervalo de Referencia =  67 - 100.   Verde 67 - 100.  Amarillo 66 - 58.   Rojo 40 - 57
 
@@ -279,20 +287,18 @@ a42MEAN_REC <- ddply(as_REC, .(Condition), summarise,   mnf = mean(nf))
 executive_Functions <- a42MEAN_REC$mnf #executive Functions == Number of fixations EN LA RECOGNITION
 # Intervalo de Referencia =  1 - 16.   Verde 1 - 16.  Amarillo 17 - 21.   Rojo 21 o m�s
 
-# PRESERVACION_PARAHIPOCAMPAL  #
-# BUSQUEDA_VISUAL #
-# DURACION_MIRADA  #
-# Integrative_memory_performance  #
-# Asociative_memory_performance  #
-# executive_Functions #
-# 
-# toJSON(x = c(executive_Functions,            
-#              BUSQUEDA_VISUAL,
-#              DURACION_MIRADA,
-#              Integrative_memory_performance,
-#              Asociative_memory_performance,
-#              executive_Functions,
-#              PRESERVACION_PARAHIPOCAMPAL), dataframe = 'rows', pretty = T)
+print("preservacion");
+PRESERVACION_PARAHIPOCAMPAL
+print("busqueda visual");
+BUSQUEDA_VISUAL
+print("duracion");
+DURACION_MIRADA
+print("int mem perf");
+Integrative_memory_performance
+print("assoc mem perf");
+Asociative_memory_performance
+print("exec func");
+executive_Functions
 
 
 T3 <- ddply(bs, .(Condition,type,is_trial_1), summarise,  mean_saccade = mean(sacc_ampl),SEsaccade = sd(sacc_ampl)/sqrt(length(sacc_ampl))

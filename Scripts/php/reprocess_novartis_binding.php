@@ -14,24 +14,27 @@
       "parahipocampal_region"      => "PARAHIPOCAMPAL REGION PRESERVATION",
       "bc.gazing.encoding"         => "INTEGRATIVE MEMORY VISUAL WORKING MEMORY DURING ENCODING",
       "uc.gazing.encoding"         => "ASSOCIATIVE MEMORY VISUAL WORKING MEMORY DURING ENCODING",
-      "bc.saccade.encoding"        => "INTEGRATIVE MEMORY VISUAL SCANNING DURING ENCODING",
-      "uc.saccade.encoding"        => "ASSOCIATIVE MEMORY VISUAL SCANNING DURING ENCODING",
+      "bc.saccade.encoding"        => "INTEGRATIVE MEMORY VISUAL SEARCH DURING ENCODING",
+      "uc.saccade.encoding"        => "ASSOCIATIVE MEMORY VISUAL SEARCH DURING ENCODING",
       "bc.duration.encoding"       => "INTEGRATIVE MEMORY FIXATION DURATION DURING ENCODING",
       "uc.duration.encoding"       => "ASSOCIATIVE MEMORY FIXATION DURATION DURING ENCODING",
-      "bc.num_fixations.encoding"  => "INTEGRATIVE MEMORY NUMBER OF FIXATIONS MEMORY DURING ENCODING",
-      "uc.num_fixations.encoding"  => "ASSOCIATIVE MEMORY NUMBER OF FIXATIONS MEMORY DURING ENCODING",
+      "bc.num_fixations.encoding"  => "INTEGRATIVE MEMORY EXECUTIVE FUNCTIONS MEMORY DURING ENCODING",
+      "uc.num_fixations.encoding"  => "ASSOCIATIVE MEMORY EXECUTIVE FUNCTIONS MEMORY DURING ENCODING",
       "bc.gazing.retrieval"        => "INTEGRATIVE MEMORY VISUAL WORKING MEMORY DURING RECOGNITION",
       "uc.gazing.retrieval"        => "ASSOCIATIVE MEMORY VISUAL WORKING MEMORY DURING RECOGNITION",
-      "bc.saccade.retrieval"       => "INTEGRATIVE MEMORY VISUAL SCANNING DURING RECOGNITION",
-      "uc.saccade.retrieval"       => "ASSOCIATIVE MEMORY VISUAL SCANNING DURING RECOGNITION",
+      "bc.saccade.retrieval"       => "INTEGRATIVE MEMORY VISUAL SEARCH DURING RECOGNITION",
+      "uc.saccade.retrieval"       => "ASSOCIATIVE MEMORY VISUAL SEARCH DURING RECOGNITION",
       "bc.duration.retrieval"      => "INTEGRATIVE MEMORY DURATION DURING RECOGNITION",
       "uc.duration.retrieval"      => "ASSOCIATIVE MEMORY DURATION DURING RECOGNITION",
-      "bc.num_fixations.retrieval" => "INTEGRATIVE MEMORY NUMBER OF FIXATIONS DURING RECOGNITION",
-      "uc.num_fixations.retrieval" => "ASSOCIATIVE MEMORY NUMBER OF FIXATIONS DURING RECOGNITION"
+      "bc.num_fixations.retrieval" => "INTEGRATIVE MEMORY EXECUTIVE FUNCTIONS DURING RECOGNITION",
+      "uc.num_fixations.retrieval" => "ASSOCIATIVE MEMORY EXECUTIVE FUNCTIONS DURING RECOGNITION"
    ];
 
    $to_remove = [ "BEHAVIOURAL RESPONSE" ,"INDEX OF AMYLOID BETA PROTEIN CORRELATION" ];
-   
+
+   $to_replace = ["INDEX OF COGNITIVE IMPAIRMENT" => 
+   "OVERALL INDEX OF COGNITIVE IMPAIRMENT"];
+
    $skip_processing = true;
 
    function recursiveFileSearchRun($dir,&$files){
@@ -200,10 +203,18 @@
          unset($report[$key]);
       }
 
+      // Everything that wasn't removed was reading. 
+      $reading = $report;
+      foreach ($report as $key => $value){
+         unset($report[$key]);
+      }
+      $report["READING"] = $reading;
+
       // var_dump($report);
       // echo "===============================\n";
 
       // Creating the new names 
+      $report["BINDING"] = array();
       foreach ($naming_map as $key => $name){
          $value = getValue($binding_variables,$key);
          if ($value === false){
@@ -214,27 +225,38 @@
          $repline = "";
          if (is_array($value)){
             //$repline = $name . " = " . $value[0] . " SE: " . $value[1] . ";";
-            $report[$name] = $value[0] . " SE: " . $value[1];
+            $report["BINDING"][$name] = '"' . $value[0] . " SE: " . $value[1] . '"';
          }
          else{
             //$repline = $name . " = " . $value . ";";
-            $report[$name] = $value;
+            $report["BINDING"][$name] = $value;
          }
          //echo $repline . "\n";
+      }
+
+      // Replacing names
+      foreach ($to_replace as $oldname => $newname) {
+         if (array_key_exists($oldname,$report)){
+            $report[$newname] = $report[$oldname];
+            unset($report[$oldname]);
+         }
       }
       
       // Recreating the ini file.
       $output_ini = "$dirname/report.ini";
       $lines = [];
-      foreach ($report as $key => $value){
-         $line = $key . " = " . $value . ";";
-         $lines[] = $line;
+      foreach ($report as $group => $group_array){
+         $lines[] = "[$group]";
+         foreach ($group_array as $key => $value) {
+             $line = $key . " = " . $value . ";";
+             $lines[] = $line;
+         }
       }
 
       $fid = fopen($output_ini,"w");
       fwrite($fid,implode("\n",$lines));
       fclose($fid);
-      echo "Generate output $output_ini\n";
+      //echo "Generate output $output_ini\n";
 
     }
 

@@ -51,6 +51,7 @@ class TableSecrets extends TableBaseClass {
       $p[self::COL_INSTITUTION_INSTANCE] = $instution_instance;
       $p[self::COL_SECRET_KEY] = $key;
       $p[self::COL_SECRET] = $secret;
+      $p[self::COL_UNIQUE_ID] = "$institution_id.$instution_instance";
       if (empty($permissions)) {
          // If the permissions are empty, the default vm client permissions are given. 
          $p[self::COL_PERMISSIONS] = json_encode(self::VMCLIENT_PERMISSIONS);
