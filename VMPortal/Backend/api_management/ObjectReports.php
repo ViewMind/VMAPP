@@ -419,7 +419,237 @@ class ObjectReports extends ObjectBaseClass
 
       // Creating the json report structure.
       $report_row = $ans[0]; // Getting the report.
+
+      return $this->generatePDFReport($lang,$report_row);
+
+   }
+
+   /**
+    * The difference between this function and the get is that this endpoint checks that the requested report belongs to the institution the user belogns to. 
+    */
+   function institutionPDF($report_id,$parameters){
+
+      $auth = $this->headers[HeaderFields::AUTHORIZATION];
+      $auth = explode(":",$auth);
+      $portal_user = $auth[0];      
+
+      // The portal user that requests the reports for this subject. 
+      $portal_user_id = $this->portal_user_unique_id;
+
+      if (!array_key_exists(URLParameterNames::LANGUAGE,$parameters)){
+         $this->suggested_http_code = 401;
+         $this->error = "Missing language parameter on PDF Report request";
+         $this->returnable_error = "Missing URL parameter for language";
+         return false;         
+      }
+
+      // Getting the list of institutions to which this user belongs. 
+      $tiu = new TableInstitutionUsers($this->con_main);
+      $ans = $tiu->getInstitutionsForUser($portal_user_id);
+      if ($ans === FALSE){
+         $this->suggested_http_code = 500;
+         $this->error = "While attetmpting to the get institutiosn for this user: " . $tiu->getError();
+         $this->returnable_error = "Failed report ownership verfication";
+         return false;
+      }
+
+      // Generating the list of institutions.
+      $institutions = array();
+      foreach ($ans as $row){
+         $institutions[] = $row[TableInstitutionUsers::COL_INSTITUTION_ID];
+      }
+
+      $tev = new TableEvaluations($this->con_main);
+
+      // If someone NOT authorized to get the information for this report they will either not authenticate (because the token and the user ide will be a mistmach)
+      // Or this will return empty because the specified report is NOT associated this institution and this evaluation.
+      $ans = $tev->getInstitutionEvaluation($report_id,$institutions);
+      
+      if ($ans === FALSE){
+         $this->suggested_http_code = 401;
+         $this->error = "Failed for getting the evaluation $report_id for user $portal_user for institutios: " . implode(",",$institutions) . " . Reason: " . $tev->getError();
+         $this->returnable_error = "Internal Server Error";
+         return false;
+      }
+
+      if (empty($ans)){
+         $this->suggested_http_code = 401;
+         $this->error = "User $portal_user attempted to access evaluation $report_id which is not linked to any of the instituions " . implode(",",$institutions);
+         $this->returnable_error = "You do not have permission to look at this report";
+         return false;
+      }
+     
+      $lang = $parameters[URLParameterNames::LANGUAGE];
+
+      // Creating the json report structure.
+      $report_row = $ans[0]; // Getting the report.
+
+      return $this->generatePDFReport($lang,$report_row);
+
+   }
+
+   function reportlist($identifer,$parameters){
+
+      // The $identifier is what we need to search form
+      // The parameter must tell if the search is via internal institution id (iuid) or vm id (vmid). 
+      // The other parameter is date range represented by to and from parameters 
+
+      // Getting the portal user and it's respective ID. 
+      $auth = $this->headers[HeaderFields::AUTHORIZATION];
+      $auth = explode(":",$auth);
+      $portal_user = $auth[0];    
+      $portal_user_id = $this->portal_user_unique_id;     
+
+      // Checking for mandatory parameters. 
+      $mandatory = [URLParameterNames::SEARCH_CRITERIA];
+      foreach ($mandatory as $parameter){
+         // First we verify that the parameter and identifier match the post fields. 
+         if (!array_key_exists($parameter,$parameters)){
+            $this->suggested_http_code = 401;
+            $this->error = "Missing mandatory URL parameter $parameter from user $portal_user";
+            $this->returnable_error = "Missing mandatory URL paramter $parameter";
+            return false;
+         }               
+      }
+
+      // Getting the user's institutions. 
+      $tiu = new TableInstitutionUsers($this->con_main);
+      $ans = $tiu->getInstitutionsForUser($portal_user_id);
+      if ($ans === FALSE){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed to the get institutiosn for $portal_user with id $portal_user_id. Reason: " . $tiu->getError();
+         $this->returnable_error = "Failed report ownership verfication";
+         return false;
+      }
+
+      // Generating the list of institutions.
+      $institutions = array();
+      foreach ($ans as $row){
+         $institutions[] = $row[TableInstitutionUsers::COL_INSTITUTION_ID];
+      }
+
+      if (empty($institutions)){
+         $this->suggested_http_code = 500;
+         $this->error = "Got no institutions for $portal_user with id $portal_user_id";
+         $this->returnable_error = "Failed report ownership verfication";
+         return false;         
+      }
+
+      // Next we check for a valid search criteria.
+      $search_criteria = $parameters[URLParameterNames::SEARCH_CRITERIA];
+
+      $vmids = array();
+
+      if ($search_criteria == URLSearchCriteria::IUID){
+
+         // We need to search for all user vmid's (that is subject's keyids) that match this institution and this UID. 
+         $search_subj = array();
+
+         $s["comparator"] = SelectColumnComparison::EQUAL;
+         $s["value"] = $identifer;
+         $search_subj[TableSubject::COL_INTERNAL_ID] = $s;
+
+         $s["comparator"] = SelectColumnComparison::IN;
+         $s["value"] = $institutions;
+         $search_subj[TableSubject::COL_INSTITUTION_ID] = $s; 
+
+         $ts = new TableSubject($this->con_secure);
+         $ans = $ts->search($search_subj);
+
+         if ($ans === FALSE){
+            $this->suggested_http_code = 500;
+            $this->returnable_error = "Failed to ascertain identity of $identifer";
+            $this->error = "IUID matching failed when attempted by $portal_user ($portal_user_id) from institutions: " . implode(",",$institutions) . ". Reason: " . $ts->getError();
+            return false;            
+         }
+
+         foreach ($ans as $row){
+            $vmids[] = $row[TableSubject::COL_UNIQUE_ID];
+         }
+
+
+      }
+      else if ($search_criteria != URLSearchCriteria::VMID){
+         $this->suggested_http_code = 401;
+         $this->returnable_error = "Unknown search criteria $search_criteria";
+         $this->error = "Unknown search criteria $search_criteria used by user $portal_user from institutions: " . implode(",",$institutions);
+         return false;         
+      }
+      else{
+         // When VMID is used the identifier is straight up.   
+         $vmids[] = $identifer; 
+      }
+
+      // At this point, we have the vmid's we need to search for. No we just need the date range. 
+      $minimum_date = new DateTime(date('c',"0"));  // The minimum date is initialized to the beginning of time (computer time, that is). 
+      $minimum_date = $minimum_date->format("Y-m-d H:i:s");
+
+      $maximum_date = new DateTime();
+      $maximum_date->add( new DateInterval('P1D') ); //P1D = Plus 1 Day.
+      $maximum_date = $maximum_date->format("Y-m-d H:i:s"); // Maximum date is tomorrow. 
+
+      //error_log(json_encode($parameters,JSON_PRETTY_PRINT));
+
+      if (array_key_exists(URLParameterNames::FROM,$parameters)){
+         // Start date was set and it is used instead of beginning of time. 
+         $secs = $parameters[URLParameterNames::FROM]/1000; // PHP requires seconds since the epoch, not ms. 
+         $minimum_date = new DateTime(date('c',$secs));
+         $minimum_date = $minimum_date->format("Y-m-d H:i:s");         
+      }
+
+      if (array_key_exists(URLParameterNames::TO,$parameters)){
+         // End date was set and it is used instead of tomorrow. 
+         $secs = $parameters[URLParameterNames::TO]/1000; // PHP requires seconds since the epoch, not ms. 
+         $maximum_date = new DateTime(date('c',$secs));
+         $maximum_date = $maximum_date->format("Y-m-d H:i:s");                  
+      }
+
+      $search = array();
+      $search[TableEvaluations::COL_SUBJECT_ID] = [
+         "comparator" => SelectColumnComparison::IN,
+         "value" => $vmids
+      ];
+      $search[TableEvaluations::COL_STUDY_DATE] = [
+         "comparator" => SelectColumnComparison::GTE,
+         "value" => $minimum_date
+      ];
+      $search[TableEvaluations::COL_STUDY_DATE] = [
+         "comparator" => SelectColumnComparison::LTE,
+         "value" => $maximum_date
+      ];
+
+      $te = new TableEvaluations($this->con_main);
+      $ans = $te->search($search);
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->returnable_error = "Failure executing the search ";
+         $this->error = "Failure while searching for evalutions for $portal_user from institutions: " . implode(",",$institutions) . " for ids: "  . implode(",",$vmids) . " in dates between $minimum_date and $maximum_date. Reason: " . $te->getError();
+         return false;         
+      }
+
+      $ret["start_date"] = $minimum_date;
+      $ret["end_date"] = $maximum_date;
+      $ret["result_count"] = count($ans);
+      $ret["searched_for"] = $identifer;
+      $ret["reports"] = [];
+      foreach ($ans as $row){
+         $report["id"] = $row[TableEvaluations::COL_KEYID];
+         $report["study_type"] = $row[TableEvaluations::COL_STUDY_TYPE];
+         $report["study_date"] = $row[TableEvaluations::COL_STUDY_DATE];
+         $report["processing_date"] = $row[TableEvaluations::COL_STUDY_DATE];
+         $report["evaluator"] = $row[TableEvaluations::COL_EVALUATOR_LASTNAME] . ", " . $row[TableEvaluations::COL_EVALUATOR_NAME];
+         $ret["reports"][] = $report;
+      }
+
+      return $ret;
+
+   }
+
+   private function generatePDFReport($lang, $report_row){
+
+      $report_id = $report_row[TableEvaluations::COL_KEYID];
       $report = json_decode($report_row[TableEvaluations::COL_RESULTS],true);
+
       if (json_last_error() != JSON_ERROR_NONE){
          $this->suggested_http_code = 500;
          $this->error = "Failed to decode report string: " . $report_row[TableEvaluations::COL_RESULTS] . " from $report_id with error: " . json_last_error_msg();
@@ -481,7 +711,6 @@ class ObjectReports extends ObjectBaseClass
       $this->file_path_to_return = $pdf_output;
    
       return array();
-
 
    }
 

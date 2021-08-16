@@ -260,20 +260,6 @@
                         }
                     },
                     {
-                        "id": "pdiag",
-                        "x": 0.010000000000000009,
-                        "y": 0.37000000000000005,
-                        "w": 0.98,
-                        "h": 0.12,
-                        "type": "pdiag",
-                        "text_base": "binding.presumptive_diagnosis.texts",
-                        "text_index": "&presumptive_diagnosis&",
-                        "value": "&parahipocampal_region&",
-                        "left_title": "#binding.presumptive_diagnosis.left_title#",
-                        "right_title": "#binding.presumptive_diagnosis.right_title#",
-                        "separator": 0.66
-                    },
-                    {
                         "type": "text",
                         "text": "#binding.overall_performance.text#",
                         "id": "overall_performance_explained",

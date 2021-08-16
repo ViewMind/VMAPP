@@ -216,11 +216,11 @@
                 "range_text": "Normal value below 1.88"
             },
             "processing_speed_interference": {
-                "title": "PROCESSING SPEED INTERFERENCE",
+                "title": "VISUAL WORKING MEMORY INTERFERENCE",
                 "range_text": "Normal value below 1.83"
             },
             "processing_speed_facilitated": {
-                "title": "PROCESSING SPEED FACILITATED",
+                "title": "VISUAL WORKING MEMORY FACILITATED",
                 "range_text": "Normal value below 1.75"
             },
             "reaction_time_facilitated": {

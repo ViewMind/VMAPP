@@ -29,6 +29,9 @@ class ObjectBaseClass{
    // Data sent with the request. 
    protected $json_data;
 
+   // The unique idenfifier for the user. Usefull in certain scenarios.
+   protected $portal_user_unique_id;
+
    function __construct($srv_name, $headers){
       $this->error = "";         
       $this->returnable_error = "";
@@ -61,6 +64,10 @@ class ObjectBaseClass{
 
    function setPermissions($permissions){
       $this->permissions = $permissions;
+   }
+
+   function setPortalUserUID($uid){
+      $this->portal_user_unique_id = $uid;
    }
    
    function getSugesstedHTTPCode(){

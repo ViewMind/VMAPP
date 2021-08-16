@@ -102,6 +102,17 @@ class TableEvaluations extends TableBaseClass {
       return $this->simpleSelect($columns_to_get,$select);
    }
 
+   function getInstitutionEvaluation($keyid,$institution_ids){
+      $columns_to_get = [];
+
+      $select = new SelectOperation();
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$keyid);
+      $select->addConditionToANDList(SelectColumnComparison::IN,self::COL_INSTITUTION_ID,$institution_ids);
+
+      $this->avoided = [];
+      return $this->simpleSelect($columns_to_get,$select);
+   }
+
 }
 
 ?>

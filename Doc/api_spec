@@ -86,7 +86,18 @@ VMClients have the following permissions:
                
       OPERATION: get
          IDENTIFIER: report_id
-               Returns the report data an QC data for that specific report. But only if the report is associated with the portal user. 
+               Generates the PDF report only if the portal user belongs to the institution for which the report belongs to. 
+               
+      OPERATION: reportlist
+         IDENTIFIER: search 
+            PARAMETERS:  search-criteria = [iuid|vmid]                         
+                         from = nullable epoch ms.
+                         to   = nullable epoch ms.
+               Lists all the subjects that have reports associated with the institution of the requesting user and that search matches either the vmid or the iuid (Institution UID).
+               Also searches from and to. If from is not present it is 0 (the beginning of time) if to is not present, it is today. 
+               The report id needs to be presented as well as the report type, the subject and the corresponding physician. 
+               example is reports/reportlist/000114?search-criteria=iuid?from=1651465&to=464464984
+                              
                
             
 -> OBJECT: rawdata
@@ -101,3 +112,7 @@ VMClients have the following permissions:
          IDENTIFIER: institution_id
             PARAMETERS: pp (portal user)
                Lists all the subjects that have reports associated with the portal user pp from the Institution with the ID institution_id
+               
+
+               
+

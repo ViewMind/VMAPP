@@ -408,31 +408,53 @@
          $tu = new TablePortalUsers($con_secure);
          $ans = $tu->getInfoForUser($this->user_id,true);
          if ($ans === FALSE){
+            $this->http_code = 500;
             $this->error = "Failed in authentication of partner " . $this->user_id . ". Reason: " . $tu->getError();
             return false;
          }
 
+         //error_log("We got info for user");
+
          if (count($ans) != 1){
+            $this->http_code = 401;
             $this->error = "Failed in authentication of partner " . $this->user_id . ". Reason could not find user with that id";
             return false;
          }
 
          $user_info = $ans[0];
 
+         //error_log("Found user with id");
+
          // Setting the permissions.
          $this->permissions = json_decode($user_info[TablePortalUsers::COL_PERMISSIONS],true);
+
+         // And storing any other user information that might be necessary. 
+         $this->user_info = $user_info;
+
+         if (json_last_error() != JSON_ERROR_NONE){
+            $this->http_code = 500;
+            $this->returnable_error = "Bad permissions";
+            $this->error = "Failed to decode JSON for permissiosn for user " . $this->user_id . ". JSON string: " . $user_info[TablePortalUsers::COL_PERMISSIONS];
+            return false;
+         }
          $this->dbuser = DBCon::DB_SERVICE_PARTNERS;
 
          if (!hash_equals($user_info[TablePortalUsers::COL_TOKEN],$this->token)){
+            $this->http_code = 401;
             $this->error = "Failed in authentication of partner " . $this->user_id . ". Reason: Invalid token";
             return false;
          }
 
+         //error_log("Token checks");
+
          $expiration = new DateTime($user_info[TablePortalUsers::COL_TOKEN_EXPIRATION]);
          if (new DateTime() > $expiration){
+            $this->http_code = 401;
             $this->error = "Failed in authentication of partner " . $this->user_id . ". Reason: Expired token";
             return false;
          }
+
+         //error_log("Expiration checks");
 
          return true;
 

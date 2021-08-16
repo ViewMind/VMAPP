@@ -64,6 +64,35 @@ class TableBaseClass {
       return $this->last_inserted;
    }
 
+
+   /**
+    * @brief A generic simple search that returls all columns of a table of a the rows matching the criteria. 
+    * @param search_params is an object where each key is a column and each value is an object with two keys:
+    * "comparator" and "value"
+    */
+
+   function search($search_params){
+
+      $select = new SelectOperation();
+      foreach ($search_params as $col => $comp_and_value){
+         if (!is_array($comp_and_value)){
+            $this->error = "Search operation requires each value of the object to be a two component object. For $col it's not an array.";
+            return false;
+         }
+         if (!array_key_exists("comparator",$comp_and_value) || !array_key_exists("value",$comp_and_value) ){
+            $this->error = "Search operation requires each value of the object to be a two component object. For $col either 'comparator' or 'value' is missing";
+            return false;
+         }
+         
+         $select->addConditionToANDList($comp_and_value["comparator"],$col,$comp_and_value["value"]);
+
+      }
+
+      return $this->simpleSelect([],$select);
+
+   }      
+
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
    /**

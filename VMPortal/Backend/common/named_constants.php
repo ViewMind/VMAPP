@@ -98,6 +98,15 @@
       const VERSION                 = "version";
       const REGION                  = "region";
       const LANGUAGE                = "lang";
+      const SEARCH_CRITERIA         = "search_criteria";
+      const FROM                    = "from";
+      const TO                      = "to";
+      const SEARCH                  = "search";
+   }
+
+   abstract class URLSearchCriteria extends TypedString {
+      const VMID                    = "vmid";
+      const IUID                    = "iuid";
    }
 
    abstract class InstitutionOperations extends TypedString {
@@ -110,6 +119,8 @@
       const GENERATE               = "generate";
       const LIST                   = "list";
       const GET                    = "get";
+      const REPORTLIST             = "reportlist";
+      const INST_PDF               = "institutionPDF";
    }
 
    abstract class SubjectOperations extends TypedString {

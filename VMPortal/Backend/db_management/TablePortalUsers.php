@@ -34,7 +34,7 @@ class TablePortalUsers extends TableBaseClass {
    // The possible roles for a portal user. 
    const ROLE_INTITUTION_ADMIN = 0;
    const ROLE_MEDICAL          = 1;
-   //const ROLE_API_USER_ONLY    = 2;
+   const ROLE_API_USER_ONLY    = 2;
 
    // String length for the activation token. 
    private const TOKEN_LENGTH      = 512;
@@ -61,6 +61,12 @@ class TablePortalUsers extends TableBaseClass {
       return $this->generated_auth_token;
    }
 
+   function addAPIUserOnly($params){
+      $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
+      $params[self::COL_ENABLED] = self::ENABLED;
+      return $this->addPortalUser($params);
+   }
+   
    function addMedicalRoleUser($params){
       if (!array_key_exists(self::COL_PERMISSIONS,$params)){
          // If permissions weren't provided, then standard permissions are set. 
@@ -82,10 +88,10 @@ class TablePortalUsers extends TableBaseClass {
    function addAPIOnlyUser($params){
       // When creating an api user only, the permissions NEED to be provided. 
       $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
-      return $this->addPortalUser($params);
+      return $this->addPortalUser($params,true);
    }
 
-   private function addPortalUser($params){
+   private function addPortalUser($params, $force_enabled = false){
 
       $this->mandatory = [self::COL_NAME, self::COL_LASTNAME, self::COL_EMAIL, self::COL_USER_ROLE, self::COL_PERMISSIONS];
       
@@ -95,7 +101,8 @@ class TablePortalUsers extends TableBaseClass {
       // Generate the enabling token. 
       $token = generateToken(self::TOKEN_LENGTH);
       $params[self::COL_CREATION_TOKEN] = $token;
-      $params[self::COL_ENABLED] = self::PENDING; // All users are created with a pending status. 
+      if ($force_enabled) $params[self::COL_ENABLED] = self::ENABLED;
+      else $params[self::COL_ENABLED] = self::PENDING; // All users are created with a pending status. 
 
       $ans = $this->insertionOperation($params,"Adding a Portal User");
       if ($ans === FALSE) return;
@@ -254,6 +261,18 @@ class TablePortalUsers extends TableBaseClass {
 
       return $this->insertionOperation($insert,"Inserting NonLoginPartner ",true);
 
+   }
+
+   function getUsersPermission($unique_id){
+      $select = new SelectOperation();
+      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$unique_id);
+      $cols_to_get = [self::COL_PERMISSIONS];
+      return $this->simpleSelect($cols_to_get,$select);
+   }
+   
+   function setUsersPermission($unique_id,$permissions){
+      $params[self::COL_PERMISSIONS] = $permissions;
+      return $this->updateOperation($params,"Setting Portal User Permissions",self::COL_EMAIL,$unique_id);
    }
 
 }
