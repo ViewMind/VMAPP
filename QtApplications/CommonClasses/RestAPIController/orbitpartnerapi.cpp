@@ -27,10 +27,6 @@ bool OrbitPartnerAPI::addMedicsAsNonLoginUsers() const{
     return true;
 }
 
-bool OrbitPartnerAPI::useEmailAsUID() const{
-    return false;
-}
-
 bool OrbitPartnerAPI::requestInformation(const QVariantMap &conf){
 
     QStringList requirements;
@@ -46,6 +42,7 @@ bool OrbitPartnerAPI::requestInformation(const QVariantMap &conf){
     key    = conf.value(OrbitPartnerAPI::KEY).toString();
     api_url = conf.value(OrbitPartnerAPI::API_URL).toString();
     auth_url = conf.value(OrbitPartnerAPI::AUTH_URL).toString();
+    institution_prefix = conf.value(PartnerAPIConf::INSTITUTION_ID).toString() + "_";
 
     api.setBaseAPI(auth_url);
     api.resetRequest();
@@ -130,7 +127,7 @@ void OrbitPartnerAPI::onReplyReceived(){
                 QVariantMap medic;
 
                 // We must make sure that the emails are unique. For orbit the uniquenes does not come from the email but the UID itself.
-                // So the UID is used as an "email" of sorts.
+                // So the UID is used as an "email" of sorts by preappending the institution number to ensure uniqueness in our DBs.
                 QString email = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::UID).toString();
                 if (emails.contains(email)){
                     error = "Physician list contains repeated unique identifier: " + email;
@@ -142,12 +139,10 @@ void OrbitPartnerAPI::onReplyReceived(){
                 //qint32 id = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::ID).toInt();
                 //if (skip.contains(id)) continue;
 
-                medic[PartnerMedic::EMAIL]       = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::EMAIL);
+                medic[PartnerMedic::EMAIL]       = institution_prefix + physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::UID).toString();
                 medic[PartnerMedic::NAME]        = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::NAME);
                 medic[PartnerMedic::LASTNAME]    = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::LASTNAME);
                 medic[PartnerMedic::PARTNER_ID]  = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::ID);
-                medic[PartnerMedic::PARTNER_UID] = physician.value(OrbitReturn::PhysicianList::Payload::Rows::Physician::UID);
-                //std::cout << "Adding medic " << medic.value(PartnerMedic::PARTNER_UID).toString().toStdString() << std::endl;
                 medics << medic;
             }
 
@@ -174,7 +169,7 @@ void OrbitPartnerAPI::onReplyReceived(){
         }
         else if (getState == GS_PATIENT){
             qint32 current_physican =  physician_index-1;
-            QString email = medics.at(current_physican).toMap().value(PartnerMedic::PARTNER_UID).toString();
+            QString email = medics.at(current_physican).toMap().value(PartnerMedic::EMAIL).toString();
             //std::cout << "Patient for physician" << current_physican << std::endl;
             //std::cout << QString(doc.toJson(QJsonDocument::Indented)).toStdString() << std::endl;
 

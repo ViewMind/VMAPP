@@ -6,12 +6,12 @@
 #include <QVariantMap>
 #include "restapicontroller.h"
 
+// These must correspond to column names in the DB, otherwise insertion will fail.
 namespace PartnerMedic {
 static const QString NAME            = "name";
 static const QString LASTNAME        = "lastname";
 static const QString EMAIL           = "email";
 static const QString PARTNER_ID      = "partner_id";
-static const QString PARTNER_UID     = "partner_uid";
 }
 
 namespace ParterPatient {
@@ -26,6 +26,10 @@ static const QString PARTNER_UID      = "internal_id";
 static const QString GENDER           = "gender";
 }
 
+namespace PartnerAPIConf {
+static const QString INSTITUTION_ID = "institution_id";
+}
+
 class PartnerAPI : public QObject
 {
     Q_OBJECT
@@ -37,7 +41,6 @@ public:
     virtual QString getPartnerType() const;
     virtual bool addMedicsAsAppUsers() const;
     virtual bool addMedicsAsNonLoginUsers() const;
-    virtual bool useEmailAsUID() const;
 
     QVariantList getMedicInformation() const;
     QVariantList getRegisteredPatientInformation() const;
