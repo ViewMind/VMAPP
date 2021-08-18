@@ -56,7 +56,6 @@ public:
     bool requestInformation(const QVariantMap &conf) override;
     bool addMedicsAsAppUsers() const override;
     bool addMedicsAsNonLoginUsers() const override;
-    bool useEmailAsUID() const override;
     QString getPartnerType() const override;
 
 protected:
@@ -73,6 +72,7 @@ private:
     QString api_url;
     QString auth_url;
     QString token;
+    QString institution_prefix;
 
     qint32 physicianIDIterationValue;
 

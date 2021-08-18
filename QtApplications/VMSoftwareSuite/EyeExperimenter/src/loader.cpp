@@ -97,6 +97,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     }
 
 
+
     if (!localDB.processingParametersPresent()){
         logger.appendWarning("Processing parameters are not present in local database. Will not be able to do any studies");
     }
@@ -122,7 +123,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     if (QFile::exists(Globals::Paths::PARTNERS)){
         partners = new QSettings(Globals::Paths::PARTNERS,QSettings::IniFormat);
         partners->setIniCodec(Globals::Share::TEXT_CODEC);
-        //qDebug() << partners->childGroups();
+
     }
     else partners = nullptr;
     partner_api = nullptr;
@@ -250,8 +251,13 @@ void Loader::synchronizeToPartner(const QString &selectedPartner){
     QStringList keys = partners->allKeys();
     QVariantMap config;
     for (qint32 i = 0; i < keys.size(); i++){
+        //qDebug() << keys.at(i) << partners->value(keys.at(i));
         config[keys.at(i)] = partners->value(keys.at(i));
     }
+    partners->endGroup();
+
+    // Institution number is alwasy added, in case the implementation requires it.
+    config[PartnerAPIConf::INSTITUTION_ID] = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
 
     if (!partner_api->requestInformation(config)){
         logger.appendError("Failed in requesting information for partner: " + partner_api->getPartnerType() + ". Reason: " + partner_api->getError());
@@ -267,30 +273,30 @@ void Loader::partnerFinished(){
         return;
     }
 
-//    QVariantList doctors = partner_api->getMedicInformation();
-//    QVariantList patients = partner_api->getRegisteredPatientInformation();
+    QVariantList doctors = partner_api->getMedicInformation();
+    QVariantList patients = partner_api->getRegisteredPatientInformation();
 
-//    qDebug() << "Printing doctors";
+//    std::cout << "Printing doctors" << std::endl;
 //    for (qint32 i = 0; i < doctors.size(); i++){
 //        Debug::prettpPrintQVariantMap(doctors.at(i).toMap());
 //    }
 
-//    qDebug()  << "Printing patients";
+//    std::cout  << "Printing patients" << std::endl;
 //    for (qint32 i = 0; i < patients.size(); i++){
 //        Debug::prettpPrintQVariantMap(patients.at(i).toMap());
 //    }
 
 
-//    if (partner_api->addMedicsAsNonLoginUsers()){
-//        QVariantList doctors = partner_api->getMedicInformation();
-//        if (!apiclient.requestAdditionOfNonLoginPortalUsers(doctors)){
-//            logger.appendError("Failed on requesting the addition of NonLoginPortal Users: " + apiclient.getError());
-//            emit(partnerSequenceDone(false));
-//        }
-//    }
-//    else{
-//        partnerSynchFinishProcess();
-//    }
+    if (partner_api->addMedicsAsNonLoginUsers()){
+        QVariantList doctors = partner_api->getMedicInformation();
+        if (!apiclient.requestAdditionOfNonLoginPortalUsers(doctors)){
+            logger.appendError("Failed on requesting the addition of NonLoginPortal Users: " + apiclient.getError());
+            emit(partnerSequenceDone(false));
+        }
+    }
+    else{
+        partnerSynchFinishProcess();
+    }
 
 }
 
@@ -304,7 +310,7 @@ void Loader::partnerSynchFinishProcess(){
         QString uid = patient.value(ParterPatient::PARTNER_UID).toString();
         if (localDB.getSubjectDataByInternalID(uid).isEmpty()){
             // New subject needs to be created.
-            Debug::prettpPrintQVariantMap(patient);
+            // Debug::prettpPrintQVariantMap(patient);
             this->addOrModifySubject("",
                                      patient.value(ParterPatient::NAME,"").toString(),
                                      patient.value(ParterPatient::LASTNAME,"").toString(),

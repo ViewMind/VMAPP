@@ -8,9 +8,10 @@
 #include "../../../CommonClasses/Experiments/experiment.h"
 
 ///////////////////////// ONLY ONE OF THESE SHOULD BE ENABLED: DEFINES WHICH SERVER WILL BE USED BY THE API //////////////////////////
-//#define CLIENT_REGION_EU
+#define CLIENT_REGION_EU
 //#define CLIENT_REGION_US
-
+//#define CLIENT_DEV_SERVER
+//#define LOCAL_DEBUG
 #include "../../../CommonClasses/eyetracker_defines.h"
 
 namespace Globals{
@@ -21,10 +22,16 @@ namespace Globals{
 #ifdef CLIENT_REGION_EU
    const QString API_URL = "https://eu-api.viewmind.ai";
    const QString REGION  = "EU";
-#elif CLIENT_REGION_US
+#endif
+#ifdef CLIENT_REGION_US
    const QString API_URL = "https://us-api.viewmind.ai";
    const QString REGION  = "US";
-#else
+#endif
+#ifdef CLIENT_DEV_SERVER
+   const QString API_URL = "https://testdev.viewmind.ai";
+   const QString REGION  = "REGION: DEV";
+#endif
+#ifdef LOCAL_DEBUG
    const QString API_URL = "http://192.168.1.12/vmapi";
    const QString REGION  = "REGION: Debug";
 #endif
@@ -88,11 +95,11 @@ namespace Globals{
    }
    
    namespace Debug {
-      static const bool DISABLE_DB_CHECKSUM     = true;
+      static const bool DISABLE_DB_CHECKSUM     = false;
       static const bool SHOW_MOUSE_STUDY        = true;
       static const bool SHOW_EYE_POSITION       = false;
-      static const bool DISABLE_RM_SENT_STUDIES = true;
-      static const bool PRETTY_PRINT_JSON_DB    = true;
+      static const bool DISABLE_RM_SENT_STUDIES = false;
+      static const bool PRETTY_PRINT_JSON_DB    = false;
    }
       
    namespace UILanguage {

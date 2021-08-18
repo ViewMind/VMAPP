@@ -152,8 +152,8 @@ bool APIClient::requestAdditionOfNonLoginPortalUsers(const QVariantList &pusers)
     rest_controller.setAPIEndpoint(ENDPOINT_ADDNOLOGIN_MEDIC + "/" + institution_id);
 
     QVariantMap data;
-    data.insert("institution_id","1");
-    data.insert("institution_instance","0");
+    data.insert("institution_id",institution_id);
+    data.insert("institution_instance",instance_number);
     data.insert("data",pusers);
 
     rest_controller.setJSONData(data);
