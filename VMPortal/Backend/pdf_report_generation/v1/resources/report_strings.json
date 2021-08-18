@@ -73,14 +73,22 @@
             "presumptive_diagnosis": {
                 "left_title": "Presumptive Diagnosis",
                 "right_title": "A.I. Performance Index",
-                "texts": {
-                    "1": "Probable Alzheimer's Disease. We recommend repeating\nthe Colors Test with 2 targets.",
-                    "2": "Generalized Cognitive and Brain Alteration. We recommend\nrepeating the Colors Test with 2 targets.",
-                    "3": "Probable Alzheimer's Disease",
-                    "4": "Inconclusive",
-                    "5": "Inconclusive Results. Please Check the quality of the\ndata gathered. We recommend to repeat the study.",
-                    "6": "Performance within normal values",
+                "texts_3T": {
+                    "1": "Generalized Cognitive and Brain Alteration. We recommend repeating the Colors Study with 2 targets.",
+                    "2": "Associative Memory and Cortical Alteration. We recommend repeating the Colors Study with 2 targets.",
+                    "3": "Probable Alzheimer's Disease. We recommend repeating the Colors Study with 2 targets.",
+                    "4": "Probable Alzheimer's Disease",
+                    "5": "Performance within normal values",
+                    "6": "Inconclusive Results. Please Check the quality of the data gathered. We recommend to repeat the study.",
                     "7": "Non Conclusive. We recommend repeating the study"
+                },
+                "texts_2T": {
+                    "1": "Generalized Cognitive and Brain Alteration.",
+                    "2": "Associative Memory and Cortical Alteration. We recommend repeating the study with 2 targets and adding the Go No-Go Study.",
+                    "3": "Probable Alzheimer's Disease. We recommend doing the Go No-Go Study.",
+                    "4": "Probable Alzheimer's Disease",
+                    "5": "Performance within normal values",
+                    "6": "Inconclusive Results. Please Check the quality of the data gathered. We recommend to repeat the study."
                 }
             },
             "overall_performance": {
@@ -182,7 +190,7 @@
         "gonogo": {
             "page_titles": [
                 [
-                    "EEVALUATION: GO\/NO GO TEST"
+                    "EVALUATION: GO\/NO GO TEST"
                 ],
                 [
                     "COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS",
@@ -197,7 +205,8 @@
                     "FIXATION DURATION"
                 ],
                 [
-                    "FIXATION PLOTTING"
+                    "FIXATION PLOTTING",
+                    "FIXATION CONTROL"
                 ],
                 [
                     "ANNEX"
@@ -216,11 +225,11 @@
                 "range_text": "Normal value below 1.88"
             },
             "processing_speed_interference": {
-                "title": "PROCESSING SPEED INTERFERENCE",
+                "title": "VISUAL WORKING MEMORY INTERFERENCE",
                 "range_text": "Normal value below 1.83"
             },
             "processing_speed_facilitated": {
-                "title": "PROCESSING SPEED FACILITATED",
+                "title": "VISUAL WORKING MEMORY FACILITATED",
                 "range_text": "Normal value below 1.75"
             },
             "reaction_time_facilitated": {
@@ -325,6 +334,82 @@
                 "row_2": "Trial 25",
                 "row_3": "Trial 40",
                 "row_4": "Trial 55"
+            }
+        },
+        "nbackrt": {
+            "page_titles": [
+                [
+                    "EVALUATION: NBACK RT"
+                ],
+                [
+                    "COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS",
+                    "OVERALL PERFORMANCE"
+                ],
+                [
+                    "FIXATION PLOTTING",
+                    "FIXATION EXAMPLE"
+                ]
+            ],
+            "color_code": {
+                "explanations": {
+                    "red": "Severe impairment\nand\/or pathological",
+                    "green": "No relevant problems\nwere encountered",
+                    "yellow": "Mild impairment, not\nnecessarily pathological",
+                    "blue": "Above avegerage\nPerformance"
+                },
+                "title": "For each cognitive function analyzed, the results are indicated by the following color coding:"
+            },
+            "visual_exploration_efficiency": {
+                "title": "VISUAL EXPLORATORY EFFICIENCY",
+                "range_text": "Normal value above 4"
+            },
+            "visual_working_memory": {
+                "title": "VISUAL WORKING MEMORY",
+                "range_text": "Normal value below 2400"
+            },
+            "correct_responses": {
+                "title": "CORRECT RESPONSES",
+                "range_text": "Normal value above 60"
+            },
+            "working_memory": {
+                "title": "WORKING MEMORY",
+                "range_text": "Normal value above 58"
+            },
+            "inhibitory_processes": {
+                "title": "INHIBITORY PROCESSES",
+                "range_text": "Normal value below 18"
+            },
+            "decoding_efficiency": {
+                "title": "DECODING EFFICIENCY",
+                "range_text": "Normal value below 650"
+            },
+            "enconding_efficiency": {
+                "title": "ENCODING EFFICIENCY",
+                "range_text": "Normal value below 260"
+            },
+            "overall_performance": {
+                "text": "Overall Performance",
+                "vertex": {
+                    "visual_exploration_efficiency": "Processing Speed",
+                    "visual_working_memory": "Processing Speed\nInterference",
+                    "correct_responses": "Reaction Time\nInterference",
+                    "working_memory": "Processing Speed\nFacilitated",
+                    "inhibitory_processes": "Reaction Time\nFacilitated",
+                    "decoding_efficiency": "Executive\nFunctions",
+                    "enconding_efficiency": "Inhibitory Alterations\nFacilitated"
+                }
+            },
+            "fixation_plotting": {
+                "text": "Fixation Plotting Text",
+                "title_left": "ENCODING",
+                "title_right": "RECOGNITION",
+                "row_1": "Trial 12",
+                "row_2": "Trial 50",
+                "row_3": "Trial 90",
+                "control": {
+                    "text": "Fixation Plotting Example",
+                    "label": "Example"
+                }
             }
         }
     }

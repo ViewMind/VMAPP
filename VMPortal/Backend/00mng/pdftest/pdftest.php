@@ -8,9 +8,6 @@
 
    $script = "$path/$version/pdf_report_generator.js";
    $lang = "en";
-   //$report_script = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/test_examples/example_gonogo.json";
-   //$report_script = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/test_examples/example_binding_3.json";
-   //$report_script = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/test_examples/example_binding_2.json";
    $pdfoutput   = "generated_report.pdf";
    $error_log = "error.log";
    

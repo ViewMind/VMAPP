@@ -15,7 +15,8 @@ TablePortalUsers::COL_NAME,
 TablePortalUsers::COL_LASTNAME, 
 TableInstitutionUsers::COL_INSTITUTION_ID,
 TablePortalUsers::COL_USER_ROLE,
-TablePortalUsers::COL_PASSWD];
+TablePortalUsers::COL_PASSWD
+];
 
 DBCon::setPointerLocation("configs");  
 $params = readAndVerifyData($required,$section_name);
@@ -32,7 +33,6 @@ if ($con_main == NULL){
    echo "Error creating db connection: " . $dbcon->getError() . "\n";
    exit();
 }
-
 
 echo "Verifying institution existance\n";
 
@@ -54,12 +54,22 @@ else{
    }
 }
 
+// If role API then an ID and password is generated. 
+$role = $params[TablePortalUsers::COL_USER_ROLE];
+if ($role == TablePortalUsers::ROLE_API_USER_ONLY){
+   $email = generateToken(128);   
+   $password = generateToken(256);
+   echo "Generated ID: $email\n";
+   echo "Generated Password: $password\n";
+   $params[TablePortalUsers::COL_PASSWD] = $password;
+   $params[TablePortalUsers::COL_EMAIL] = $email;
+}
+
 // Hashing the password. 
 $password = password_hash($params[TablePortalUsers::COL_PASSWD], PASSWORD_BCRYPT, ["cost" => 10]);
 $params[TablePortalUsers::COL_PASSWD] = $password;
 
 $portal_user = new TablePortalUsers($con_secure);
-$role = $params[TablePortalUsers::COL_USER_ROLE];
 unset($params[TableInstitutionUsers::COL_INSTITUTION_ID]);
 
 if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN) {
@@ -67,6 +77,9 @@ if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN) {
 }
 else if ($role == TablePortalUsers::ROLE_MEDICAL){
    $ans = $portal_user->addMedicalRoleUser($params);
+}
+else if ($role == TablePortalUsers::ROLE_API_USER_ONLY){
+   $ans = $portal_user->addAPIOnlyUser($params);
 }
 else{
    echo "Unknown role $role\n";

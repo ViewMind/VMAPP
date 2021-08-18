@@ -73,17 +73,18 @@
  */
  
   $ret = array();
-   $ret["uuid"] = "binding_2";
-   $ret["categories"] = include("binding/categories_2T.php");
-   
-   $pages = [];
-   $pages[] = include("binding/page1_2T.php");
-   $pages[] = include("binding/page2_3T.php");
-   $pages[] = include("binding/page3_2T.php");
-   $pages[] = include("binding/page4_2T.php");
-   $pages[] = include("binding/page5_2T.php");
+  $ret["uuid"] = "binding_2";
+  $ret["categories"] = include("binding/categories_2T.php");
+  $ret["pdiag"] = include("binding/pdiag_logic_2T.php");
   
-   $ret["pages"] = $pages;
-   return $ret;
+  $pages = [];
+  $pages[] = include("binding/page1_2T.php");
+  $pages[] = include("binding/page2_2T.php");
+  $pages[] = include("binding/page3_2T.php");
+  $pages[] = include("binding/page4_2T.php");
+  $pages[] = include("binding/page5_2T.php");
+
+  $ret["pages"] = $pages;
+  return $ret;
 
 ?>

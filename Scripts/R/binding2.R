@@ -289,27 +289,37 @@ tail(as)
 
 as$score<-(as$score*100)/32
 
-a41 <- ddply(as, .(Condition,id,type), summarise,  mdur = mean(dur),msd = sd(dur),  mao = mean(sacc_ampl),
+a41 <- ddply(as, .(Condition,id,type,is_trial), summarise,  mdur = mean(dur),msd = sd(dur),  mao = mean(sacc_ampl),
              mpupila = mean(pupila),sdpupila = sd(pupila), mgaze = mean(gaze)
              , mnf = mean(nf), sdnf = sd(nf),mscore = mean(score),sdao = sd(sacc_ampl),sdgaze = sd(gaze))
 
 unique(as$score,as$type)
 #which(as)
-head(a41)
+#head(a41)
 
-BUSQUEDA_VISUAL<-a41$mao[a41$type=="BC"] #<- VISUAL SEARCH == SUBCORTICAL -> BASAL GANGLIA, SUPERIOR COLICULLUS.
+print("A41")
+a41
+
+# BUSQUEDA_VISUAL<-a41$mao[a41$type=="BC"] #<- VISUAL SEARCH == SUBCORTICAL -> BASAL GANGLIA, SUPERIOR COLICULLUS.
+BUSQUEDA_VISUAL<-a41[1,7]
 # Intervalo de Referencia =  1 - 3.5.   Verde 1 - 3.5.  Amarillo 3.6 - 7.   Rojo mayor a 7.1
 
-DURACION_MIRADA<-a41$mgaze[a41$type=="BC"] #  GAZE  == CORTICAL  ->lateral parietal cortex, the medial prefrontal cortex (mPFC) and the anterior superior temporal sulcus (aSTS) 
+# DURACION_MIRADA<-a41$mgaze[a41$type=="BC"] #  GAZE  == CORTICAL  ->lateral parietal cortex, the medial prefrontal cortex (mPFC) and the anterior superior temporal sulcus (aSTS) 
+DURACION_MIRADA<-a41[1,10]
+#print("Duracion Mirada")
+#DURACION_MIRADA
+#a41
 # Intervalo de Referencia =  800 - 1900.   Verde 800 - 1900.  Amarillo 799 - 400.   Rojo 399 - 1
 
 
 
-Integrative_memory_performance<-a41$mscore[a41$type=="BC"]  #Integrative memory performance  == score BC  -> corteza enthorinal, corteza perirhinal
+# Integrative_memory_performance<-a41$mscore[a41$type=="BC"]  #Integrative memory performance  == score BC  -> corteza enthorinal,
+Integrative_memory_performance<-a41[1,13]  #corteza perirhinal
 # Intervalo de Referencia =  68 - 100.   Verde 68 - 100.  Amarillo 59 - 67.   Rojo 40 - 58
 
 
-Asociative_memory_performance<-a41$mscore[a41$type=="UC"]  #Asociative memory performance  == score UC -> Hipocampo
+#Asociative_memory_performance<-a41$mscore[a41$type=="UC"]  #Asociative memory performance  == score UC -> Hipocampo
+Asociative_memory_performance<-a41[3,13]
 # Intervalo de Referencia =  67 - 100.   Verde 67 - 100.  Amarillo 66 - 58.   Rojo 40 - 57
 
 idx<-which(as$is_trial=="0")
@@ -325,12 +335,18 @@ a42MEAN_REC <- ddply(as_REC, .(Condition), summarise,  mdur = mean(dur),msd = sd
 executive_Functions <- a42MEAN_REC$mnf #executive Functions == Number of fixations EN LA RECOGNITION
 # Intervalo de Referencia =  1 - 9.   Verde 1 - 9.  Amarillo 10 - 12.   Rojo 13 o más
 
-PRESERVACION_PARAHIPOCAMPAL  #0.994
-BUSQUEDA_VISUAL #2.67
-DURACION_MIRADA  #1882
-Integrative_memory_performance  #100
-Asociative_memory_performance  #96
-executive_Functions #8.6
+# print("preservacion");
+# PRESERVACION_PARAHIPOCAMPAL  #0.994
+# print("busqueda visual");
+# BUSQUEDA_VISUAL #2.67
+# print("duracion");
+# DURACION_MIRADA  #1882
+# print("int mem perf");
+# Integrative_memory_performance  #100
+# print("assoc mem perf");
+# Asociative_memory_performance  #96
+# print("exec func");
+# executive_Functions #8.6
 
 #prueba<-c(PRESERVACION_PARAHIPOCAMPAL,BUSQUEDA_VISUAL,DURACION_MIRADA,Integrative_memory_performance,Asociative_memory_performance,executive_Functions)
 #write.table(m3, "C:/Users/gerar/Dropbox/Machine learning/BINDING_gazepoint/PRUEBA_COLO/MachineLearning_3T2T_Reading_16_05_2020/sujeto2T.txt") #acá setea el directorio de tu maquina

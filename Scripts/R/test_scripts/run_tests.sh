@@ -32,9 +32,9 @@ elif [[ $1 == 3 ]]; then
    INPUT="$base_path/test_scripts/reference_data/reference_binding_bc_3.csv $base_path/test_scripts/reference_data/reference_binding_uc_3.csv"
 elif [[ $1 == 4 ]]; then 
    echo "RUNNING NBACK RT TEST ...."
-   RSCRIPT="nback_rt.R"
-   OUTPUT="test_scripts/comparison_nback_rt_output" 
-   INPUT="test_scripts/reference_data/reference_nbackrt.csv"   
+   RSCRIPT="$base_path/nbackrt.R"
+   OUTPUT="$base_path/test_scripts/comparison_nback_rt_output" 
+   INPUT="$base_path/test_scripts/reference_data/reference_nbackrt.csv"   
 elif [[ $1 == 5 ]]; then
    RSCRIPT="$base_path/gonogo.R"
    MODEL=""

@@ -11,7 +11,7 @@ abstract class RScriptNames {
    const BINDING_2_SCRIPT     = "binding2.R";
    const BINDING_3_SCRIPT     = "binding3.R";
    const GONOGO_SCRIPT        = "gonogo.R";
-   const NBACKRT_SCRIPT       = "nback_rt.R";
+   const NBACKRT_SCRIPT       = "nbackrt.R";
    const READING_ES_SCRIPT    = "reading_es.R";   
 }
 
@@ -31,6 +31,7 @@ abstract class ReportTypes {
    const BINDING_3 = "binding_3";
    const BINDING_2 = "binding_2";
    const GONOGO    = "gonogo";
+   const NBACKRT   = "nbackrt";
 }
 
 abstract class ModelNames {
@@ -42,6 +43,7 @@ abstract class TrialDisplayIndexes {
    const BINDING_3            = [19 => "10", 29 => "20",  41 => "32"];
    const BINDING_2            = [19 => "10", 29 => "20",  41 => "32"];
    const GONOGO               = [10 => "10", 25 => "25",  40 => "40", 55 => "55"];
+   const NBACKRT              = [13 => "12", 51 => "50",  91 => "90"];
 }
 
 function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
@@ -90,9 +92,11 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
 
    }
    else if ($study == Study::NBACKRT){
-      return "Unknown R Processing Study: $study";
       $input  = $csv_array[Study::NBACKRT];
       $rscript = RScriptNames::NBACKRT_SCRIPT;
+      $model = "";
+      $report_type = ReportTypes::NBACKRT;
+      $fixation_trial_list = TrialDisplayIndexes::NBACKRT;
       //$expected_output_fields = NBackRTResults::getConstList();
    }
    else if ($study == Study::GONOGO){
@@ -228,6 +232,43 @@ function ExtraProcessing(ViewMindDataContainer &$vmdc, &$results, $study,  $vali
 
           $results[CommonResultKeys::FIXATIONS][$display_trial_number] = $fixations;
       }
+
+   }
+   else if ($study == Study::NBACKRT){
+      // So the fixation trial list is an associative array where the key is the actual index in the list of trials
+      // Where we need to get the fixations while the value is the string representaion of the trial number to display in the report. 
+      // For NBack RT the fixation for encoding_1 are really for econding_1, encoding_2, and encoding_3
+
+
+      $sets_to_get = [
+         DataSetType::ENCODING_1 =>  [DataSetType::ENCODING_1, DataSetType::ENCODING_2, DataSetType::ENCODING_3], // Al econding are saved on the encondign 1 category. 
+         DataSetType::RETRIEVAL_1 => [ DataSetType::RETRIEVAL_1 ]
+      ];
+
+      foreach ($fixation_trial_list as $trial_index => $display_trial_number) {
+         $fixations = array();
+         $trial = $vmdc->getTrial($trial_index);
+
+         $results[CommonResultKeys::FIXATIONS][$display_trial_number] = array();
+
+         foreach ($sets_to_get as $name_to_save => $list_of_data_sets_to_add){
+
+            $fixations = array();
+            
+            // Adding all fixations for all data set types for this category, to the list. 
+            foreach ($list_of_data_sets_to_add as $data_set_type){
+               $allfix = $trial[TrialField::DATA][$data_set_type][$fix_to_get];
+               foreach ($allfix as $fix) {
+                  $fixations[] = [$fix[FixationVectorField::X], $fix[FixationVectorField::Y]];
+               }   
+
+            }
+            
+            // Saved as the fixations for this category. 
+            $results[CommonResultKeys::FIXATIONS][$display_trial_number][$name_to_save] = $fixations;
+
+         }
+     }      
 
    }
 

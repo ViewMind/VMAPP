@@ -91,23 +91,21 @@
  * 
  */
 
-   $ret = array();
-   $ret["uuid"] = "binding_3";
-   $ret["categories"] = include("binding/categories_3T.php");
-   $ret["pdiag"] = include("binding/pdiag_logic_3T.php");
-   
-   $pages = [];
-   $pages[] = include("binding/page1_3T.php");
-   $pages[] = include("binding/page2_3T.php");
-   $pages[] = include("binding/page3_3T.php");
-   $pages[] = include("binding/page4_3T.php");
-   $pages[] = include("binding/page5_3T.php");
+  $ret = array();
+  $ret["uuid"] = "binding_3";
+  $ret["categories"] = include("binding/categories_3T.php");
+  $ret["pdiag"] = include("binding/pdiag_logic_3T.php");
   
-   $ret["pages"] = $pages;
+  $pages = [];
+  $pages[] = include("binding/page1_3T.php");
+  $pages[] = include("binding/page2_3T.php");
+  $pages[] = include("binding/page3_3T.php");
+  $pages[] = include("binding/page4_3T.php");
+  $pages[] = include("binding/page5_3T.php");
 
-   //echo "Returning";
-   //echo json_encode($ret,JSON_PRETTY_PRINT);
-
-   return $ret;
+  $ret["pages"] = $pages;
+  //echo "Returning";
+  //echo json_encode($ret,JSON_PRETTY_PRINT);
+  return $ret;
 
 ?>

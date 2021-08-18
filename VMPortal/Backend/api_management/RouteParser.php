@@ -32,9 +32,6 @@ class RouteParser {
       // Splitting the route. 
       $temp = explode("/",$route);
       $temp2 = array();
-
-      
-
       // Removing skippable tokens from the beginning of the route. 
       while ((count($temp) > 0) && ($endpoints_tokens_to_skip > 0)){
          array_shift($temp);

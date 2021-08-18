@@ -128,3 +128,7 @@ VMPortal/Backend/pdf_report_generation/doc_and_examples/Montserrat/
 VMPortal/Backend/pdf_report_generation/v1/node_modules/
 VMPortal/Backend/pdf_report_generation/v1/testbed.pdf
 VMPortal/Backend/00mng/pdftest/test_pdf.ini
+VMPortal/Backend/00mng/pdftest/*.pdf
+Scripts/php/API_TEST/test/
+Scripts/php/generate_novartis_id_csv.php
+

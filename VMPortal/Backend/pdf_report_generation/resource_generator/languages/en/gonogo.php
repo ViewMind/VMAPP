@@ -4,11 +4,11 @@
  $report["uuid"] = "gonogo";
 
  $report["page_titles"] = [
-   ["EEVALUATION: GO/NO GO TEST"],
+   ["EVALUATION: GO/NO GO TEST"],
    ["COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS","OVERALL PERFORMANCE"],
    ["VISUAL WORKING MEMORY ","STUDY DURATION"],
    ["SACCADIC BEHAVIOR","FIXATION DURATION"],
-   ["FIXATION PLOTTING"],
+   ["FIXATION PLOTTING","FIXATION CONTROL"],
    ["ANNEX"],
  ];
 
@@ -20,12 +20,16 @@
 
  $report["color_code"]["title"] = "For each cognitive function analyzed, the results are indicated by the following color coding:";
 
+//  [17:15, 8/13/2021] Gerardo Fernandez: Visual_Working_memory_Interference <- Processing_Speed_Interference #prefrontal cortex, caudate nucleus 
+// Visual_Working_memory_Facilitated <- Processing_Speed_Facilitated  #prefrontal cortex
+// [17:16, 8/13/2021] Gerardo Fernandez: Visual_Working_memory_Interference <- Processing_Speed_Interference
+// [17:16, 8/13/2021] Gerardo Fernandez: Visual_Working_memory_Facilitated <- Processing_Speed_Facilitated
 
  $report["processing_speed"]["title"]                    = "PROCESSING SPEED";
  $report["processing_speed"]["range_text"]               = "Normal value below 1.88";
- $report["processing_speed_interference"]["title"]       = "PROCESSING SPEED INTERFERENCE";
+ $report["processing_speed_interference"]["title"]       = "VISUAL WORKING MEMORY INTERFERENCE";
  $report["processing_speed_interference"]["range_text"]  = "Normal value below 1.83";
- $report["processing_speed_facilitated"]["title"]        = "PROCESSING SPEED FACILITATED";
+ $report["processing_speed_facilitated"]["title"]        = "VISUAL WORKING MEMORY FACILITATED";
  $report["processing_speed_facilitated"]["range_text"]   = "Normal value below 1.75";
  $report["reaction_time_facilitated"]["title"]           = "REACTION TIME FACILITATED";
  $report["reaction_time_facilitated"]["range_text"]      = "Normal value below 784";

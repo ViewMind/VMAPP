@@ -45,6 +45,8 @@ $base_log->setSource($_SERVER['REMOTE_ADDR']);
 //////////////////////////////////// TOKENIZING THE ROUTE ////////////////////////////////
 $route_parser = new RouteParser();
 
+//error_log("REQUEST URL: " . $_SERVER['REQUEST_URI']);
+
 if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],CONFIG[GlobalConfigGeneral::GROUP_NAME][GlobalConfigGeneral::API_PARTS_TO_REMOVE])){
    $error = $route_parser->getError();
    $code = 400; // This was a client error 
@@ -58,6 +60,8 @@ if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],CONFIG[GlobalConfigGener
 
 //////////////////////////////////// CATCHING ENABLE USER REQUESTS ////////////////////////////////
 $route_parts = $route_parser->getRouteParts();
+
+//error_log(json_encode($route_parts,JSON_PRETTY_PRINT));
 
 if (count($route_parts) == 3){
    // Any number other than 3 it's not of interest to us. 
@@ -103,13 +107,22 @@ if (!$auth_mng->authenticate($message)){
 
 // Standarized headers to lower case. 
 $headers = $auth_mng->getStandarizedHeaders();
+$user_info = $auth_mng->getUserInfo();
+// if (!array_key_exists(TablePortalUsers::COL_KEYID,$user_info)){
+//    $res[ResponseFields::MESSAGE] = "Failed to ascertain user identification";
+//    $res[ResponseFields::HTTP_CODE] = $auth_mng->getSuggestedHTTPCode();   
+//    $auth_log->logError("Unable to get DB user information. User information does not contain keyid");
+//    http_response_code(500);
+//    echo json_encode($res);
+//    return;
+// }
 
 if (!$auth_mng->shouldDoOperation()){
    // The endopoint should be ignored. For now the only time this happens is when a login operation is used to generate the authentication token.
    $res[ResponseFields::DATA]["token"] = $auth_mng->getAuthToken();
-   $res[ResponseFields::DATA]["id"]    = $auth_mng->getUserInfo()[TablePortalUsers::COL_KEYID];
-   $res[ResponseFields::DATA]["fname"] = $auth_mng->getUserInfo()[TablePortalUsers::COL_NAME];
-   $res[ResponseFields::DATA]["lname"] = $auth_mng->getUserInfo()[TablePortalUsers::COL_LASTNAME];
+   $res[ResponseFields::DATA]["id"]    = $user_info[TablePortalUsers::COL_KEYID];
+   $res[ResponseFields::DATA]["fname"] = $user_info[TablePortalUsers::COL_NAME];
+   $res[ResponseFields::DATA]["lname"] = $user_info[TablePortalUsers::COL_LASTNAME];
    $res[ResponseFields::MESSAGE] = "OK";
    $res[ResponseFields::HTTP_CODE] = 200;
    http_response_code(200);
@@ -119,8 +132,12 @@ if (!$auth_mng->shouldDoOperation()){
 
 
 //////////////////////////////////// ROUTING ////////////////////////////////
-$permissions = $auth_mng->getPermissions();
-$dbuser      = $auth_mng->getServiceDBUser();
+$permissions     = $auth_mng->getPermissions();
+$dbuser          = $auth_mng->getServiceDBUser();
+$current_user_id = "";
+if (array_key_exists(TablePortalUsers::COL_KEYID, $user_info)) {
+   $current_user_id = $user_info[TablePortalUsers::COL_KEYID];
+}
 
 // ALL Endopoints are composed of 3 parts: 
 // The first part is the OBJECT (the main target of whateve we are goona do)
@@ -174,10 +191,12 @@ if (array_key_exists($object,$permissions)){
          return;   
       }
 
-      // Calling the object and the operation with the data. 
-      // $operating_object->setFileData($_FILES);
+      // Calling the object and the operation with the data, permissions and user identification (keyid, not username/email)
+
       $operating_object->setPermissions($permissions);
       $operating_object->setJSONData($auth_mng->getRawDataArray());
+      $operating_object->setPortalUserUID($current_user_id);
+
       $ans = $operating_object->$operation($identifier,$route_parser->getParameters());
       
       if ($ans === false){
