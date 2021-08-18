@@ -42,7 +42,7 @@ for (( i=0; i<$total; i++ )); do
 
    # Running the command. 
    echo "   Backing up DB: $DB_NAME"
-   # ssh $BASTION_USER_NAME@$BASTION_IP "$BKP_CMD"
+   ssh $BASTION_USER_NAME@$BASTION_IP "$BKP_CMD"
    
 done
 

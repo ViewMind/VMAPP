@@ -346,4 +346,21 @@ config.separator = 0.66
 
 const pbox = new PresumptiveDiagnosisBox(doc,config);
 
+page.createNewReportPage();
+config = {};
+config.resolution = [1532, 1704];
+config.boundingRect = {};
+config.boundingRect.x = effectiveArea.x + 2;
+config.boundingRect.y = effectiveArea.y + 2;
+config.boundingRect.w = 192;
+config.boundingRect.h = 108;
+config.nback = [3,4,2];
+//config.nback = [];
+config.fixations = [
+   [736, 898]
+];
+
+const nback = new FixationDrawer(doc);
+nback.render(config)
+
 doc.save("testbed.pdf");

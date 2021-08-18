@@ -79,6 +79,175 @@
                 }
             }
         },
+        "pdiag": {
+            "variables": [
+                "int_mem_perf",
+                "assoc_mem_perf",
+                "exec_func",
+                "parahipocampal_region"
+            ],
+            "text_index": {
+                "green": {
+                    "green": {
+                        "green": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
+                        },
+                        "yellow": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
+                        },
+                        "red": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
+                        }
+                    },
+                    "yellow": {
+                        "green": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
+                        },
+                        "yellow": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
+                        },
+                        "red": {
+                            "green": "5",
+                            "yellow": "2",
+                            "red": "1"
+                        }
+                    },
+                    "red": {
+                        "green": {
+                            "green": "2",
+                            "yellow": "2",
+                            "red": "3"
+                        },
+                        "yellow": {
+                            "green": "2",
+                            "yellow": "2",
+                            "red": "3"
+                        },
+                        "red": {
+                            "green": "2",
+                            "yellow": "2",
+                            "red": "2"
+                        }
+                    }
+                },
+                "yellow": {
+                    "green": {
+                        "green": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "4"
+                        },
+                        "yellow": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "4"
+                        },
+                        "red": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "4"
+                        }
+                    },
+                    "yellow": {
+                        "green": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "4"
+                        },
+                        "yellow": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
+                        },
+                        "red": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
+                        }
+                    },
+                    "red": {
+                        "green": {
+                            "green": "2",
+                            "yellow": "2",
+                            "red": "2"
+                        },
+                        "yellow": {
+                            "green": "2",
+                            "yellow": "3",
+                            "red": "2"
+                        },
+                        "red": {
+                            "green": "2",
+                            "yellow": "1",
+                            "red": "1"
+                        }
+                    }
+                },
+                "red": {
+                    "green": {
+                        "green": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
+                        },
+                        "yellow": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
+                        },
+                        "red": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
+                        }
+                    },
+                    "yellow": {
+                        "green": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
+                        },
+                        "yellow": {
+                            "green": "4",
+                            "yellow": "1",
+                            "red": "4"
+                        },
+                        "red": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
+                        }
+                    },
+                    "red": {
+                        "green": {
+                            "green": "6",
+                            "yellow": "1",
+                            "red": "1"
+                        },
+                        "yellow": {
+                            "green": "6",
+                            "yellow": "1",
+                            "red": "1"
+                        },
+                        "red": {
+                            "green": "6",
+                            "yellow": "1",
+                            "red": "1"
+                        }
+                    }
+                }
+            }
+        },
         "pages": [
             {
                 "title": [
@@ -258,6 +427,20 @@
                                 "parahipocampal_region"
                             ]
                         }
+                    },
+                    {
+                        "id": "pdiag",
+                        "x": 0.010000000000000009,
+                        "y": 0.37000000000000005,
+                        "w": 0.98,
+                        "h": 0.12,
+                        "type": "pdiag",
+                        "text_base": "binding.presumptive_diagnosis.texts_2T",
+                        "text_index": "&presumptive_diagnosis&",
+                        "value": "&parahipocampal_region&",
+                        "left_title": "#binding.presumptive_diagnosis.left_title#",
+                        "right_title": "#binding.presumptive_diagnosis.right_title#",
+                        "separator": 0.66
                     },
                     {
                         "type": "text",
@@ -927,168 +1110,168 @@
         },
         "pdiag": {
             "variables": [
-                "parahipocampal_region",
-                "exec_func",
                 "int_mem_perf",
-                "assoc_mem_perf"
+                "assoc_mem_perf",
+                "exec_func",
+                "parahipocampal_region"
             ],
             "text_index": {
-                "red": {
-                    "red": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
+                "green": {
+                    "green": {
+                        "green": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "7"
                         },
                         "yellow": {
-                            "red": 2,
-                            "yellow": 2,
-                            "green": 3
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "7"
                         },
-                        "green": {
-                            "red": 2,
-                            "yellow": 2,
-                            "green": 3
+                        "red": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "7"
                         }
                     },
                     "yellow": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
+                        "green": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
                         },
                         "yellow": {
-                            "red": 2,
-                            "yellow": 1,
-                            "green": 3
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "7"
                         },
-                        "green": {
-                            "red": 2,
-                            "yellow": 7,
-                            "green": 7
+                        "red": {
+                            "green": "5",
+                            "yellow": "2",
+                            "red": "1"
                         }
                     },
-                    "green": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 2,
-                            "green": 5
+                    "red": {
+                        "green": {
+                            "green": "6",
+                            "yellow": "6",
+                            "red": "3"
                         },
                         "yellow": {
-                            "red": 4,
-                            "yellow": 7,
-                            "green": 7
+                            "green": "6",
+                            "yellow": "6",
+                            "red": "3"
                         },
-                        "green": {
-                            "red": 4,
-                            "yellow": 7,
-                            "green": 7
+                        "red": {
+                            "green": "2",
+                            "yellow": "2",
+                            "red": "3"
                         }
                     }
                 },
                 "yellow": {
-                    "red": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
+                    "green": {
+                        "green": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "4"
                         },
                         "yellow": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "4"
                         },
-                        "green": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
+                        "red": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "4"
                         }
                     },
                     "yellow": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 7,
-                            "green": 7
+                        "green": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "4"
                         },
                         "yellow": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "3"
                         },
-                        "green": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
+                        "red": {
+                            "green": "5",
+                            "yellow": "5",
+                            "red": "1"
                         }
                     },
-                    "green": {
-                        "red": {
-                            "red": 5,
-                            "yellow": 7,
-                            "green": 7
+                    "red": {
+                        "green": {
+                            "green": "2",
+                            "yellow": "3",
+                            "red": "1"
                         },
                         "yellow": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
+                            "green": "2",
+                            "yellow": "3",
+                            "red": "1"
                         },
-                        "green": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
+                        "red": {
+                            "green": "2",
+                            "yellow": "1",
+                            "red": "1"
                         }
                     }
                 },
-                "green": {
-                    "red": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
+                "red": {
+                    "green": {
+                        "green": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
                         },
                         "yellow": {
-                            "red": 2,
-                            "yellow": 3,
-                            "green": 3
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
                         },
-                        "green": {
-                            "red": 4,
-                            "yellow": 4,
-                            "green": 3
+                        "red": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
                         }
                     },
                     "yellow": {
-                        "red": {
-                            "red": 2,
-                            "yellow": 7,
-                            "green": 7
+                        "green": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
                         },
                         "yellow": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
+                            "green": "4",
+                            "yellow": "1",
+                            "red": "4"
                         },
-                        "green": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
+                        "red": {
+                            "green": "4",
+                            "yellow": "4",
+                            "red": "4"
                         }
                     },
-                    "green": {
-                        "red": {
-                            "red": 5,
-                            "yellow": 7,
-                            "green": 7
+                    "red": {
+                        "green": {
+                            "green": "7",
+                            "yellow": "1",
+                            "red": "1"
                         },
                         "yellow": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
+                            "green": "7",
+                            "yellow": "1",
+                            "red": "1"
                         },
-                        "green": {
-                            "red": 7,
-                            "yellow": 6,
-                            "green": 6
+                        "red": {
+                            "green": "7",
+                            "yellow": "1",
+                            "red": "1"
                         }
                     }
                 }
@@ -1281,7 +1464,7 @@
                         "w": 0.98,
                         "h": 0.12,
                         "type": "pdiag",
-                        "text_base": "binding.presumptive_diagnosis.texts",
+                        "text_base": "binding.presumptive_diagnosis.texts_3T",
                         "text_index": "&presumptive_diagnosis&",
                         "value": "&parahipocampal_region&",
                         "left_title": "#binding.presumptive_diagnosis.left_title#",
@@ -2650,6 +2833,392 @@
                                 398
                             ]
                         ]
+                    }
+                ]
+            }
+        ]
+    },
+    "nbackrt": {
+        "categories": {
+            "visual_exploration_efficiency": {
+                "polygon": {
+                    "+1": "6* +",
+                    "0": "4* 6",
+                    "-1": "3.5* 4",
+                    "-2": "2.9* 3.5",
+                    "-3": "- 2.9"
+                },
+                "color": {
+                    "blue": "6* +",
+                    "green": "4* 6",
+                    "yellow": "2.9* 4",
+                    "red": "- 2.9"
+                }
+            },
+            "visual_working_memory": {
+                "polygon": {
+                    "+1": "- 1600*",
+                    "0": "1600 2400*",
+                    "-1": "2400 2550*",
+                    "-2": "2550 2700*",
+                    "-3": "2700 +"
+                },
+                "color": {
+                    "blue": "- 1600",
+                    "green": "1600* 2400",
+                    "yellow": "2400* 2700",
+                    "red": "2700* +"
+                }
+            },
+            "correct_responses": {
+                "polygon": {
+                    "+1": "- 82*",
+                    "0": "60* 82",
+                    "-1": "55* 60",
+                    "-2": "50* 55",
+                    "-3": "49 +"
+                },
+                "color": {
+                    "blue": "81* +",
+                    "green": "60 81",
+                    "yellow": "50 60*",
+                    "red": "- 50*"
+                }
+            },
+            "working_memory": {
+                "polygon": {
+                    "+1": "- 76*",
+                    "0": "58* 76",
+                    "-1": "49* 58",
+                    "-2": "45* 49",
+                    "-3": "45 +"
+                },
+                "color": {
+                    "blue": "76* +",
+                    "green": "58 76",
+                    "yellow": "45 58*",
+                    "red": "- 45*"
+                }
+            },
+            "inhibitory_processes": {
+                "polygon": {
+                    "+1": "- 3",
+                    "0": "3* 18*",
+                    "-1": "18 30*",
+                    "-2": "30 45*",
+                    "-3": "45 +"
+                },
+                "color": {
+                    "blue": "- 3*",
+                    "green": "3 18*",
+                    "yellow": "18 45",
+                    "red": "45* +"
+                }
+            },
+            "decoding_efficiency": {
+                "polygon": {
+                    "+1": "- 500",
+                    "0": "500* 650*",
+                    "-1": "650 800*",
+                    "-2": "800 990*",
+                    "-3": "990 +"
+                },
+                "color": {
+                    "blue": "- 500*",
+                    "green": "500 650*",
+                    "yellow": "650 990",
+                    "red": "990* +"
+                }
+            },
+            "enconding_efficiency": {
+                "polygon": {
+                    "+1": "- 259*",
+                    "0": "259 300*",
+                    "-1": "300 380*",
+                    "-2": "380 430*",
+                    "-3": "430 +"
+                },
+                "color": {
+                    "blue": "- 260*",
+                    "green": "260 300*",
+                    "yellow": "300 430",
+                    "red": "430* +"
+                }
+            }
+        },
+        "pages": [
+            {
+                "title": [
+                    {
+                        "text": "#nbackrt.page_titles.0.0#",
+                        "py": 0
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "result_segment",
+                        "id": "visual_exploration_efficiency",
+                        "title": "#nbackrt.visual_exploration_efficiency.title#",
+                        "range_text": "#nbackrt.visual_exploration_efficiency.range_text#",
+                        "x": 0,
+                        "y": 0.01,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&visual_exploration_efficiency&",
+                        "color_code": "&indexes.color.visual_exploration_efficiency&",
+                        "nsegments": 4,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "result_segment",
+                        "id": "visual_working_memory",
+                        "title": "#nbackrt.visual_working_memory.title#",
+                        "range_text": "#nbackrt.visual_working_memory.range_text#",
+                        "x": 0,
+                        "y": 0.108,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&visual_working_memory&",
+                        "color_code": "&indexes.color.visual_working_memory&",
+                        "nsegments": 4,
+                        "ndecimals": 0
+                    },
+                    {
+                        "type": "result_segment",
+                        "id": "correct_responses",
+                        "title": "#nbackrt.correct_responses.title#",
+                        "range_text": "#nbackrt.correct_responses.range_text#",
+                        "x": 0,
+                        "y": 0.20600000000000002,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&correct_responses&",
+                        "color_code": "&indexes.color.correct_responses&",
+                        "nsegments": 4,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#nbackrt.working_memory.title#",
+                        "id": "working_memory",
+                        "range_text": "#nbackrt.working_memory.range_text#",
+                        "x": 0,
+                        "y": 0.30400000000000005,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&working_memory&",
+                        "color_code": "&indexes.color.working_memory&",
+                        "nsegments": 4,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#nbackrt.inhibitory_processes.title#",
+                        "range_text": "#nbackrt.inhibitory_processes.range_text#",
+                        "id": "inhibitory_processes",
+                        "x": 0,
+                        "y": 0.402,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&inhibitory_processes&",
+                        "color_code": "&indexes.color.inhibitory_processes&",
+                        "nsegments": 4,
+                        "ndecimals": 2
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#nbackrt.decoding_efficiency.title#",
+                        "range_text": "#nbackrt.decoding_efficiency.range_text#",
+                        "id": "decoding_efficiency",
+                        "x": 0,
+                        "y": 0.5,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&decoding_efficiency&",
+                        "color_code": "&indexes.color.decoding_efficiency&",
+                        "nsegments": 4,
+                        "ndecimals": 0
+                    },
+                    {
+                        "type": "result_segment",
+                        "title": "#nbackrt.enconding_efficiency.title#",
+                        "range_text": "#nbackrt.enconding_efficiency.range_text#",
+                        "id": "enconding_efficiency",
+                        "x": 0,
+                        "y": 0.598,
+                        "w": 1,
+                        "h": 0.098,
+                        "value": "&enconding_efficiency&",
+                        "color_code": "&indexes.color.enconding_efficiency&",
+                        "nsegments": 4,
+                        "ndecimals": 0
+                    },
+                    {
+                        "type": "color_code",
+                        "id": "res_seg_color_code",
+                        "x": 0,
+                        "y": 0.85,
+                        "w": 1,
+                        "h": 0.15,
+                        "color_texts": "#nbackrt.color_code.explanations#",
+                        "title": "#nbackrt.color_code.title#"
+                    }
+                ]
+            },
+            {
+                "title": [
+                    {
+                        "text": "#nbackrt.page_titles.1.0#",
+                        "py": 0
+                    },
+                    {
+                        "text": "#nbackrt.page_titles.1.1#",
+                        "py": 0.55
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "text",
+                        "text": "#nbackrt.overall_performance.text#",
+                        "id": "overall_performance_explained",
+                        "x": 0,
+                        "y": 0.5700000000000001
+                    },
+                    {
+                        "type": "polygon_graph",
+                        "id": "polygon_graph",
+                        "x": 0.35,
+                        "y": 0.675,
+                        "w": 0.3,
+                        "levels": [
+                            "+1",
+                            "0",
+                            "-1",
+                            "-2"
+                        ],
+                        "separator": 1,
+                        "values": [
+                            "&indexes.polygon.visual_exploration_efficiency&",
+                            "&indexes.polygon.visual_working_memory&",
+                            "&indexes.polygon.correct_responses&",
+                            "&indexes.polygon.working_memory&",
+                            "&indexes.polygon.inhibitory_processes&",
+                            "&indexes.polygon.decoding_efficiency&",
+                            "&indexes.polygon.enconding_efficiency&"
+                        ],
+                        "vertex_labels": [
+                            "#nbackrt.overall_performance.vertex.visual_exploration_efficiency#",
+                            "#nbackrt.overall_performance.vertex.visual_working_memory#",
+                            "#nbackrt.overall_performance.vertex.correct_responses#",
+                            "#nbackrt.overall_performance.vertex.working_memory#",
+                            "#nbackrt.overall_performance.vertex.inhibitory_processes#",
+                            "#nbackrt.overall_performance.vertex.decoding_efficiency#",
+                            "#nbackrt.overall_performance.vertex.enconding_efficiency#"
+                        ]
+                    }
+                ]
+            },
+            {
+                "title": [
+                    {
+                        "text": "#nbackrt.page_titles.2.0#",
+                        "py": 0
+                    },
+                    {
+                        "text": "#nbackrt.page_titles.2.1#",
+                        "py": 0.7
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "text",
+                        "text": "#nbackrt.fixation_plotting.text#",
+                        "id": "fixation_plotting_text",
+                        "x": 0,
+                        "y": 0.02
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix11",
+                        "x": 0.17000000000000004,
+                        "y": 0.11,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "label": "#nbackrt.fixation_plotting.row_1#",
+                        "title": "#nbackrt.fixation_plotting.title_left#",
+                        "resolution": "&resolution&",
+                        "nbackrt": [],
+                        "fixations": "&fixations.12.encoding_1&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix12",
+                        "x": 0.53,
+                        "y": 0.11,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "title": "#nbackrt.fixation_plotting.title_right#",
+                        "resolution": "&resolution&",
+                        "nbackrt": [
+                            3,
+                            4,
+                            2
+                        ],
+                        "fixations": "&fixations.12.reterieval_1&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix21",
+                        "x": 0.17000000000000004,
+                        "y": 0.2966666666666667,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "label": "#nbackrt.fixation_plotting.row_2#",
+                        "resolution": "&resolution&",
+                        "nbackrt": [],
+                        "fixations": "&fixations.50.encoding_1&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix22",
+                        "x": 0.53,
+                        "y": 0.2966666666666667,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "resolution": "&resolution&",
+                        "nbackrt": [
+                            1,
+                            3,
+                            0
+                        ],
+                        "fixations": "&fixations.50.reterieval_1&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix31",
+                        "x": 0.17000000000000004,
+                        "y": 0.4833333333333334,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "label": "#nbackrt.fixation_plotting.row_3#",
+                        "resolution": "&resolution&",
+                        "nbackrt": [],
+                        "fixations": "&fixations.90.encoding_1&"
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "fix32",
+                        "x": 0.53,
+                        "y": 0.4833333333333334,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "resolution": "&resolution&",
+                        "nbackrt": [
+                            1,
+                            4,
+                            0
+                        ],
+                        "fixations": "&fixations.90.reterieval_1&"
                     }
                 ]
             }

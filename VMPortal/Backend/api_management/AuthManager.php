@@ -35,6 +35,7 @@
          $this->returnable_error = "";
          $this->should_do_operation = true;
          $this->json_data_sent = array();
+         $this->user_info = array();
 
          //error_log(json_encode($post_data));
 

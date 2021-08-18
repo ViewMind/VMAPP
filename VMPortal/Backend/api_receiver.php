@@ -107,13 +107,22 @@ if (!$auth_mng->authenticate($message)){
 
 // Standarized headers to lower case. 
 $headers = $auth_mng->getStandarizedHeaders();
+$user_info = $auth_mng->getUserInfo();
+// if (!array_key_exists(TablePortalUsers::COL_KEYID,$user_info)){
+//    $res[ResponseFields::MESSAGE] = "Failed to ascertain user identification";
+//    $res[ResponseFields::HTTP_CODE] = $auth_mng->getSuggestedHTTPCode();   
+//    $auth_log->logError("Unable to get DB user information. User information does not contain keyid");
+//    http_response_code(500);
+//    echo json_encode($res);
+//    return;
+// }
 
 if (!$auth_mng->shouldDoOperation()){
    // The endopoint should be ignored. For now the only time this happens is when a login operation is used to generate the authentication token.
    $res[ResponseFields::DATA]["token"] = $auth_mng->getAuthToken();
-   $res[ResponseFields::DATA]["id"]    = $auth_mng->getUserInfo()[TablePortalUsers::COL_KEYID];
-   $res[ResponseFields::DATA]["fname"] = $auth_mng->getUserInfo()[TablePortalUsers::COL_NAME];
-   $res[ResponseFields::DATA]["lname"] = $auth_mng->getUserInfo()[TablePortalUsers::COL_LASTNAME];
+   $res[ResponseFields::DATA]["id"]    = $user_info[TablePortalUsers::COL_KEYID];
+   $res[ResponseFields::DATA]["fname"] = $user_info[TablePortalUsers::COL_NAME];
+   $res[ResponseFields::DATA]["lname"] = $user_info[TablePortalUsers::COL_LASTNAME];
    $res[ResponseFields::MESSAGE] = "OK";
    $res[ResponseFields::HTTP_CODE] = 200;
    http_response_code(200);
@@ -125,7 +134,10 @@ if (!$auth_mng->shouldDoOperation()){
 //////////////////////////////////// ROUTING ////////////////////////////////
 $permissions     = $auth_mng->getPermissions();
 $dbuser          = $auth_mng->getServiceDBUser();
-$current_user_id = $auth_mng->getUserInfo()[TablePortalUsers::COL_KEYID];
+$current_user_id = "";
+if (array_key_exists(TablePortalUsers::COL_KEYID, $user_info)) {
+   $current_user_id = $user_info[TablePortalUsers::COL_KEYID];
+}
 
 // ALL Endopoints are composed of 3 parts: 
 // The first part is the OBJECT (the main target of whateve we are goona do)

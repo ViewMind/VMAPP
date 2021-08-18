@@ -6,7 +6,8 @@
    // This should be the same as the CSV column order. 
    $variables = ["int_mem_perf","assoc_mem_perf","exec_func","parahipocampal_region"];
    
-   $csv_input = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/reference_files/pdiag_3T_table.csv";
+   // The only difference with 3T in this CSV used as the input. But it has the same format and column ordering and nameing. 
+   $csv_input = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/reference_files/pdiag_2T_table.csv";
 
    $expected_count = 81;  // 4 Variables of 3 possibilities each give for 81 combinations.
 
@@ -15,7 +16,7 @@
    $lookup = array();
 
    if (!is_file($csv_input)){
-      echo "Could not find pdiag CSV file for Binding 3T: $csv_input\n";
+      echo "Could not find pdiag CSV file for Binding 2T: $csv_input\n";
       exit();
    }
 
@@ -44,7 +45,7 @@
    }
 
    if ($expected_count > 0){
-      echo "PDiag Binding 3T: Expected count is non zero after parsing: $expected_count\n";
+      echo "PDiag Binding 2T: Expected count is non zero after parsing: $expected_count\n";
       exit();
    }
    

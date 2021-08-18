@@ -96,11 +96,12 @@ if ("pdiag" in layout_resource[report_type]){
       process.exit(1);
    }
    report.presumptive_diagnosis = pdiag_index.index;
+   //console.log("PDIAG index is " + report.presumptive_diagnosis);
 }
 
 //console.log("PresumptiveDiagnosis index: " + report.presumptive_diagnosis);
 
-report.presumptive_diagnosis = 7;
+//report.presumptive_diagnosis = 7;
 
 // Each variable is stored keyed by the resulting color categorization. 
 let variableColorCodes = {}

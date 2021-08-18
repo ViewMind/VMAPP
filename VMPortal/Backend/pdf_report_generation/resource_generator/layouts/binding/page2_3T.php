@@ -59,7 +59,7 @@
    $item["w"] = $w;
    $item["h"] = $h;
    $item["type"]        = "pdiag";
-   $item["text_base"]   = "binding.presumptive_diagnosis.texts";
+   $item["text_base"]   = "binding.presumptive_diagnosis.texts_3T";
    $item["text_index"]  = "&presumptive_diagnosis&";
    $item["value"]       = "&parahipocampal_region&";
    $item["left_title"]  = "#binding.presumptive_diagnosis.left_title#";
