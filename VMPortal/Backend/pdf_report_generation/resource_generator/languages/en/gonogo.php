@@ -56,6 +56,19 @@
  $report["affected_areas"]["index_error_facilitated"]  = "Inhibitory Alterations Facilitated: Right Inferior Frontal Gyrus (rIFG)";
  $report["affected_areas"]["index_error_interference"]  = "Inhibitory Alterations Interference: Caudal Inferior Frontal Gyrus (cIFG)";
 
+ $report["presumptive_diagnosis"]["left_title"] = "Presumptive Diagnosis";
+ $report["presumptive_diagnosis"]["right_title"] = "A.I. Performance Index";
+ $report["presumptive_diagnosis"]["texts"] = [
+  1 => "Generalized Cognitive and Brain Alteration.",
+  2 => "Problems for controlling cognitive and motor responses.",
+  3 => "Delay when processing information.",
+  4 => "Problems for encoding and decoding information",
+  5 => "Performance within normal values",
+  6 => "Problems for focusing dynamically on a particular activity",
+];
+
+
+
  $report["overall_performance"]["text"] = "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex – Overall Performance Graph Interpretation.";
  $report["overall_performance"]["vertex"]["processing_speed"]                 = "Processing Speed";
  $report["overall_performance"]["vertex"]["processing_speed_interference"]    = "Processing Speed\nInterference";

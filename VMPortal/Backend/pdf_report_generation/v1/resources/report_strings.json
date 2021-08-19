@@ -74,21 +74,21 @@
                 "left_title": "Presumptive Diagnosis",
                 "right_title": "A.I. Performance Index",
                 "texts_3T": {
-                    "1": "Generalized Cognitive and Brain Alteration. We recommend repeating the Colors Study with 2 targets.",
-                    "2": "Associative Memory and Cortical Alteration. We recommend repeating the Colors Study with 2 targets.",
-                    "3": "Probable Alzheimer's Disease. We recommend repeating the Colors Study with 2 targets.",
+                    "1": "Generalized Cognitive and Brain Alteration.\nWe recommend repeating the Colors Study with 2 targets.",
+                    "2": "Associative Memory and Cortical Alteration.\nWe recommend repeating the Colors Study with 2 targets.",
+                    "3": "Probable Alzheimer's Disease.\nWe recommend repeating the Colors Study with 2 targets.",
                     "4": "Probable Alzheimer's Disease",
                     "5": "Performance within normal values",
-                    "6": "Inconclusive Results. Please Check the quality of the data gathered. We recommend to repeat the study.",
+                    "6": "Inconclusive Results. Please check the quality of the\ndata gathered. We recommend repeating the study.",
                     "7": "Non Conclusive. We recommend repeating the study"
                 },
                 "texts_2T": {
                     "1": "Generalized Cognitive and Brain Alteration.",
-                    "2": "Associative Memory and Cortical Alteration. We recommend repeating the study with 2 targets and adding the Go No-Go Study.",
-                    "3": "Probable Alzheimer's Disease. We recommend doing the Go No-Go Study.",
+                    "2": "Associative Memory and Cortical Alteration.\nWe recommend repeating the study with 2 targets and adding the Go No-Go Study.",
+                    "3": "Probable Alzheimer's Disease.\nWe recommend doing the Go No-Go Study.",
                     "4": "Probable Alzheimer's Disease",
                     "5": "Performance within normal values",
-                    "6": "Inconclusive Results. Please Check the quality of the data gathered. We recommend to repeat the study."
+                    "6": "Inconclusive Results. Please check the quality of the\ndata gathered. We recommend repeating the study."
                 }
             },
             "overall_performance": {
@@ -185,7 +185,8 @@
             "date": "Date",
             "patient": "Patient",
             "age": "Age",
-            "motto": "Meassurement of Cognitive of Performance and Related\nBrain Areas through Eye-Tracking"
+            "motto": "Measurement of Cognitive of Performance and Related\nBrain Areas through Eye-Tracking",
+            "range_text_sd": "SD"
         },
         "gonogo": {
             "page_titles": [
@@ -264,6 +265,18 @@
                 "executive_functions": "Executive Functions: Prefrontal Cortex",
                 "index_error_facilitated": "Inhibitory Alterations Facilitated: Right Inferior Frontal Gyrus (rIFG)",
                 "index_error_interference": "Inhibitory Alterations Interference: Caudal Inferior Frontal Gyrus (cIFG)"
+            },
+            "presumptive_diagnosis": {
+                "left_title": "Presumptive Diagnosis",
+                "right_title": "A.I. Performance Index",
+                "texts": {
+                    "1": "Generalized Cognitive and Brain Alteration.",
+                    "2": "Problems for controlling cognitive and motor responses.",
+                    "3": "Delay when processing information.",
+                    "4": "Problems for encoding and decoding information",
+                    "5": "Performance within normal values",
+                    "6": "Problems for focusing dynamically on a particular activity"
+                }
             },
             "overall_performance": {
                 "text": "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex \u2013 Overall Performance Graph Interpretation.",

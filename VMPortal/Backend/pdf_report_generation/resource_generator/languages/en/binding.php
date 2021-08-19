@@ -35,7 +35,7 @@
  $report["parahipocampal_region"]["title"]            = "PARAHIPOCAMPAL REGION PRESERVATION";
  $report["parahipocampal_region"]["range_text_3T"]    = "Normal value above 63";
  $report["parahipocampal_region"]["range_text_2T"]    = "Normal value above 67";
-
+ 
  $report["affected_areas"]["green"] = "Preserved Cognitive Functions & Brain Areas:";
  $report["affected_areas"]["yellow"] = "Mildly Impaired Cognitive Functions & Brain Areas:";
  $report["affected_areas"]["red"] = "Severely Impaired and/ or Pathological Cognitive Functions & Brain Areas:";
@@ -49,24 +49,23 @@
  $report["presumptive_diagnosis"]["left_title"] = "Presumptive Diagnosis";
  $report["presumptive_diagnosis"]["right_title"] = "A.I. Performance Index";
  $report["presumptive_diagnosis"]["texts_3T"] = [
-  1 => "Generalized Cognitive and Brain Alteration. We recommend repeating the Colors Study with 2 targets.",
-  2 => "Associative Memory and Cortical Alteration. We recommend repeating the Colors Study with 2 targets.",
-  3 => "Probable Alzheimer's Disease. We recommend repeating the Colors Study with 2 targets.",
+  1 => "Generalized Cognitive and Brain Alteration.\nWe recommend repeating the Colors Study with 2 targets.",
+  2 => "Associative Memory and Cortical Alteration.\nWe recommend repeating the Colors Study with 2 targets.",
+  3 => "Probable Alzheimer's Disease.\nWe recommend repeating the Colors Study with 2 targets.",
   4 => "Probable Alzheimer's Disease",
   5 => "Performance within normal values",
-  6 => "Inconclusive Results. Please Check the quality of the data gathered. We recommend to repeat the study.",
+  6 => "Inconclusive Results. Please check the quality of the\ndata gathered. We recommend repeating the study.",
   7 => "Non Conclusive. We recommend repeating the study",
 ];
 
 $report["presumptive_diagnosis"]["texts_2T"] = [
   1 => "Generalized Cognitive and Brain Alteration.",
-  2 => "Associative Memory and Cortical Alteration. We recommend repeating the study with 2 targets and adding the Go No-Go Study.",
-  3 => "Probable Alzheimer's Disease. We recommend doing the Go No-Go Study.",
+  2 => "Associative Memory and Cortical Alteration.\nWe recommend repeating the study with 2 targets and adding the Go No-Go Study.",
+  3 => "Probable Alzheimer's Disease.\nWe recommend doing the Go No-Go Study.",
   4 => "Probable Alzheimer's Disease",
   5 => "Performance within normal values",
-  6 => "Inconclusive Results. Please Check the quality of the data gathered. We recommend to repeat the study.",
+  6 => "Inconclusive Results. Please check the quality of the\ndata gathered. We recommend repeating the study.",
 ];
-
  
  $report["overall_performance"]["text"] = "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex – Overall Performance Graph Interpretation.";
  $report["overall_performance"]["vertex"]["visual_search"]         = "Visual Search";
