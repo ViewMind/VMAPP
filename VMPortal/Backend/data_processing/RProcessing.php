@@ -19,6 +19,7 @@ abstract class CommonResultKeys {
    const MEDIC = "medic";
    const EVALUATOR = "evaluator";
    const DATE = "date";
+   const HOUR = "hour";
    const AGE  = "age";
    const PATIENT = "patient";
    const REPORT_TYPE = "report_type";
@@ -142,6 +143,7 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
       $results[CommonResultKeys::AGE] = $vmdc->getSubjectDataValue(SubjectField::AGE);
       $results[CommonResultKeys::PATIENT] = $vmdc->getSubjectDataValue(SubjectField::LASTNAME) . ", " . $vmdc->getSubjectDataValue(SubjectField::NAME);
       $results[CommonResultKeys::DATE] = $vmdc->getMetaDataField(MetadataField::DATE);
+      $results[CommonResultKeys::HOUR] = $vmdc->getMetaDataField(MetadataField::HOUR);
       $evaluator = $vmdc->getAppUser(AppUserType::EVALUATOR);
       $medic = $vmdc->getAppUser(AppUserType::MEDIC);
       $results[CommonResultKeys::EVALUATOR] =  $evaluator[AppUserField::LASTNAME] .  ", " . $evaluator[AppUserField::NAME];
