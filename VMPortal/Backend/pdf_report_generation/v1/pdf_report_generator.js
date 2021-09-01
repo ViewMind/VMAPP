@@ -63,7 +63,12 @@ page_data.rightBoxData = {};
 
 page_data.leftBoxData[language.common.doctor] = report.medic;
 page_data.leftBoxData[language.common.evaluator] = report.evaluator;
-page_data.leftBoxData[language.common.date] = report.date;
+
+// Only a very very few early reports did not have the hour. This check is done in order to not invalidate them as accessing non existing field stops the nodejs execution. 
+let hour = "";
+if ("hour" in report) hour = report.hour;
+
+page_data.leftBoxData[language.common.date] = report.date + " " + hour;
 
 page_data.rightBoxData[language.common.patient] = report.patient;
 page_data.rightBoxData[language.common.age] = report.age;

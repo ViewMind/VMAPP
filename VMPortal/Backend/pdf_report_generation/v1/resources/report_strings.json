@@ -403,13 +403,13 @@
             "overall_performance": {
                 "text": "Overall Performance",
                 "vertex": {
-                    "visual_exploration_efficiency": "Processing Speed",
-                    "visual_working_memory": "Processing Speed\nInterference",
-                    "correct_responses": "Reaction Time\nInterference",
-                    "working_memory": "Processing Speed\nFacilitated",
-                    "inhibitory_processes": "Reaction Time\nFacilitated",
-                    "decoding_efficiency": "Executive\nFunctions",
-                    "enconding_efficiency": "Inhibitory Alterations\nFacilitated"
+                    "visual_exploration_efficiency": "Visual Exploration\nEfficiency",
+                    "visual_working_memory": "Visual Working\nMemory",
+                    "correct_responses": "Correct\nResponses",
+                    "working_memory": "Working\nMemory",
+                    "inhibitory_processes": "Inhibitory\nProcesses",
+                    "decoding_efficiency": "Decoding\nEfficiency",
+                    "enconding_efficiency": "Encoding\nEfficiency"
                 }
             },
             "fixation_plotting": {

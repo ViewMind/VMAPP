@@ -1,0 +1,82 @@
+{
+    "binding\/gp_files\/binding_bc_3_l_2_2019_04_02_09_54.dat": {
+        "code": "GazePoint",
+        "f": 150,
+        "resolution": [
+            1366,
+            768
+        ],
+        "converter": "LegacyBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/htc_files\/binding_bc_2_l_2_2020_11_25_20_58.dat": {
+        "code": "HTC Vive Eye Pro",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "LegacyBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/htc_files\/binding_bc_3_l_2_2020_07_14_19_38.dat": {
+        "code": "HTC Vive Eye Pro",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "LegacyBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/hp_files\/binding_2021_08_05_16_47.json": {
+        "code": "HP Reberv",
+        "f": 120,
+        "resolution": [
+            1158,
+            1188
+        ],
+        "converter": "JSONBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/eyelink_files\/Paolini.asc": {
+        "code": "EyeLink",
+        "f": 1000,
+        "resolution": [
+            1024,
+            768
+        ],
+        "converter": "ASCParser",
+        "md_to_fixation_method": "EyeLink"
+    },
+    "reading\/gp_files\/reading_2021_08_26_07_42.json": {
+        "code": "GazePoint",
+        "f": 150,
+        "resolution": [
+            1920,
+            1080
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/hp_files\/reading_2021_08_26_07_29.json": {
+        "code": "HP Reberv",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/smi_files\/jonatan_everti_reading_2018_09_18.dat": {
+        "code": "SMI",
+        "f": 120,
+        "resolution": [
+            1600,
+            900
+        ],
+        "converter": "LegacyReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    }
+}
