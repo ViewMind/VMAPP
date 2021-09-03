@@ -385,7 +385,11 @@
          $auth_string = hash_hmac('sha3-512', $message, $secret);
          if (!hash_equals($auth_string,$signature)){
             $this->http_code = 401; // Authentication problem. 
-            $this->error = "Authentication failed due signature mismatch";
+            $this->returnable_error = "Authentication failed due signature mismatch";
+            $msg = "DB Key: $key\n";
+            $msg = $msg . "Secret: $secret\n";
+            $msg = "Received key: $client_key\n";
+            $this->error = "KEY LOG:\n$msg";
             return false;
          }
 
