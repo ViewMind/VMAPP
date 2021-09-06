@@ -23,6 +23,7 @@ class RawDataProcessor {
    private $resolution;
    private $input_parser;
    private $fix_computation_method;
+   private $json_loaded_fixations;
 
    /**
     * Configures the processor to extract the raw data and to know which function to use to compute fixations. 
@@ -62,7 +63,9 @@ class RawDataProcessor {
          return true;
       }
       else if (($this->input_parser == InputFileParser::JSON_BINDING) || 
-               ($this->input_parser == InputFileParser::JSON_READING)) {
+               ($this->input_parser == InputFileParser::JSON_READING) || 
+               ($this->input_parser == InputFileParser::JSON_GONOGO)  || 
+               ($this->input_parser == InputFileParser::JSON_BINDING_BAD_LABEL) ){
          return $this->jsonRawDataParser();
       }
       else if ($this->input_parser == InputFileParser::LEGACY_BINDING){
@@ -394,15 +397,31 @@ class RawDataProcessor {
    private function jsonRawDataParser(){
 
       $trial_list = json_decode(file_get_contents($this->input_file),true);
+      $this->json_loaded_fixations = array();
+      $this->json_loaded_fixations["R"] = array();
+      $this->json_loaded_fixations["L"] = array();
 
       if ($this->input_parser == InputFileParser::JSON_READING) {
          $hiararchy_chain = ["studies","Reading","trial_list"];
          $trial_hieararchy_chains = [ ["data","unique","raw_data"] ];
+         $l_fix_chains = [ ["data","unique","fixation_l"] ];
+         $r_fix_chains = [ ["data","unique","fixation_l"] ];
+      }
+      else if ($this->input_parser == InputFileParser::JSON_BINDING_BAD_LABEL){         
+         $hiararchy_chain = ["studies","Binding BC","trial_list"];
+         $trial_hieararchy_chains = [ ["data","encoding_1","raw_data"],  ["data","reterieval_1","raw_data"]];
+         $l_fix_chains = [ ["data","unique","fixation_l"] ];
+         $r_fix_chains = [ ["data","unique","fixation_l"] ];
+
       }
       else if ($this->input_parser == InputFileParser::JSON_BINDING){         
          $hiararchy_chain = ["studies","Binding BC","trial_list"];
-         $trial_hieararchy_chains = [ ["data","encoding_1","raw_data"],  ["data","reterieval_1","raw_data"]];
+         $trial_hieararchy_chains = [ ["data","encoding_1","raw_data"],  ["data","retrieval_1","raw_data"]];
       }
+      else if ($this->input_parser == InputFileParser::JSON_GONOGO){         
+         $hiararchy_chain = ["studies","Go No-Go","trial_list"];
+         $trial_hieararchy_chains = [ ["data","unique","raw_data"] ];
+      }      
       else{
          $this->error = "Unknown file parser for data extraction on JSON: " . $this->input_parser;
          return false;

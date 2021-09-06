@@ -23,11 +23,13 @@ abstract class SamplingFrequency {
 }
 
 abstract class InputFileParser {
-   const LEGACY_BINDING = "LegacyBinding";
-   const LEGACY_READING = "LegacyReading";
-   const ASC_PARSER     = "ASCParser";
-   const JSON_READING   = "JSONReading";
-   const JSON_BINDING   = "JSONBinding";
+   const LEGACY_BINDING           = "LegacyBinding";
+   const LEGACY_READING           = "LegacyReading";
+   const ASC_PARSER               = "ASCParser";
+   const JSON_READING             = "JSONReading";
+   const JSON_BINDING_BAD_LABEL   = "JSONBindingBadLabel";
+   const JSON_BINDING             = "JSONBinding";
+   const JSON_GONOGO              = "JSONGoNoGO";
 }
 
 abstract class Resolutions {
@@ -37,6 +39,7 @@ abstract class Resolutions {
    const HP_HALF = [1158,1188];
    const HP_FULL = [2316,2376];
    const HTC = [1532,1704];
+   const HTC_BIG = [2452, 2208];
    const EYELINK = [1024,768];
 }
 

@@ -135,4 +135,7 @@ Scripts/php/generate_novartis_id_csv.php
 Scripts/php/fixation_analysis/reading/
 Scripts/php/fixation_analysis/work/
 Scripts/php/fixation_analysis/binding/
+Scripts/php/fixation_analysis/gonogo/
+Scripts/php/fixation_analysis/*.txt
+Scripts/php/fixation_analysis/metadata.json
 

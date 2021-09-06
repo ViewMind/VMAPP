@@ -388,7 +388,7 @@
             $this->returnable_error = "Authentication failed due signature mismatch";
             $msg = "DB Key: $key\n";
             $msg = $msg . "Secret: $secret\n";
-            $msg = "Received key: $client_key\n";
+            $msg = $msg . "Received key: $client_key\n";
             $this->error = "KEY LOG:\n$msg";
             return false;
          }

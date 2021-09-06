@@ -223,23 +223,23 @@
             },
             "processing_speed": {
                 "title": "PROCESSING SPEED",
-                "range_text": "Normal value below 1.88"
+                "range_text": "Normal value below 3.10"
             },
             "processing_speed_interference": {
                 "title": "VISUAL WORKING MEMORY INTERFERENCE",
-                "range_text": "Normal value below 1.83"
+                "range_text": "Normal value below 283"
             },
             "processing_speed_facilitated": {
                 "title": "VISUAL WORKING MEMORY FACILITATED",
-                "range_text": "Normal value below 1.75"
+                "range_text": "Normal value below 275"
             },
             "reaction_time_facilitated": {
                 "title": "REACTION TIME FACILITATED",
-                "range_text": "Normal value below 784"
+                "range_text": "Normal value below 1700"
             },
             "reaction_time_interference": {
                 "title": "REACTION TIME INTERFERENCE",
-                "range_text": "Normal value below 829"
+                "range_text": "Normal value below 1700"
             },
             "executive_functions": {
                 "title": "EXECUTIVE FUNCTIONS",

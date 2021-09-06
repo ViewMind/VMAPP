@@ -220,10 +220,10 @@
          $fixation = new Fixation();
 
          if (count($this->onlinePointsForFixation) >= $this->startWindowSize) {
-            if (($this->onlineMMX->diff() + $this->onlineMMY->diff()) > $this->maxDispersion) {
+            //if (($this->onlineMMX->diff() + $this->onlineMMY->diff()) > $this->maxDispersion) {
                //echo "Computing fix on finalization\n";
                $fixation->computeFixationFromPoints($this->onlinePointsForFixation);
-            }
+            //}
          }
 
          $this->onlinePointsForFixation = array();

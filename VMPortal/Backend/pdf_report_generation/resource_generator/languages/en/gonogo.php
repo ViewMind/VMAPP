@@ -26,15 +26,20 @@
 // [17:16, 8/13/2021] Gerardo Fernandez: Visual_Working_memory_Facilitated <- Processing_Speed_Facilitated
 
  $report["processing_speed"]["title"]                    = "PROCESSING SPEED";
- $report["processing_speed"]["range_text"]               = "Normal value below 1.88";
+ //$report["processing_speed"]["range_text"]               = "Normal value below 1.88";
+ $report["processing_speed"]["range_text"]               = "Normal value below 3.10";
  $report["processing_speed_interference"]["title"]       = "VISUAL WORKING MEMORY INTERFERENCE";
- $report["processing_speed_interference"]["range_text"]  = "Normal value below 1.83";
+ //$report["processing_speed_interference"]["range_text"]  = "Normal value below 1.83";
+ $report["processing_speed_interference"]["range_text"]  = "Normal value below 283";
  $report["processing_speed_facilitated"]["title"]        = "VISUAL WORKING MEMORY FACILITATED";
- $report["processing_speed_facilitated"]["range_text"]   = "Normal value below 1.75";
+ //$report["processing_speed_facilitated"]["range_text"]   = "Normal value below 1.75";
+ $report["processing_speed_facilitated"]["range_text"]   = "Normal value below 275";
  $report["reaction_time_facilitated"]["title"]           = "REACTION TIME FACILITATED";
- $report["reaction_time_facilitated"]["range_text"]      = "Normal value below 784";
+ //$report["reaction_time_facilitated"]["range_text"]      = "Normal value below 784";
+ $report["reaction_time_facilitated"]["range_text"]      = "Normal value below 1700";
  $report["reaction_time_interference"]["title"]          = "REACTION TIME INTERFERENCE";
- $report["reaction_time_interference"]["range_text"]     = "Normal value below 829";
+ //$report["reaction_time_interference"]["range_text"]     = "Normal value below 829";
+ $report["reaction_time_interference"]["range_text"]     = "Normal value below 1700";
  $report["executive_functions"]["title"]                 = "EXECUTIVE FUNCTIONS";
  $report["executive_functions"]["range_text"]            = "Normal value below 320";
  $report["index_error_facilitated"]["title"]             = "INHIBITORY ALTERATIONS FACILITATED";

@@ -1,107 +1,220 @@
 <?php
 
-   include_once ("online_fixations.php");
-
-   $input = "gonogo_2021_08_20_18_49_r_hp.csv";
-   
-   const CSV_TRIAL                 = 0;
-   const CSV_TIME                  = 1;
-   const CSV_X                     = 2;
-   const CSV_Y                     = 3;
-   const CSV_NP                    = 4;
-   const CSV_MINX                  = 5;
-   const CSV_MAXX                  = 6;
-   const CSV_MINY                  = 7;
-   const CSV_MAXY                  = 8;
-   const CSV_DISPX                 = 9;
-   const CSV_DISPY                 = 10;
-   const CSV_DISP                  = 11;
-   const CSV_MAX_DISP              = 12;
-   const CSV_DISP_BROKEN           = 13;
-   const CSV_FIX_X                 = 14;
-   const CSV_FIX_Y                 = 15;
-   const CSV_FIX_T                 = 16;
-   const CSV_FIX_D                 = 17;
-
-   $minimum_fixation_size = 50;
-   $sample_frequency = 120;
-
-   $lines = explode("\n",file_get_contents($input));
-   array_shift(($lines)); // Removing the header. 
-
-   // Gettting the maximum dispersion
-   $all_cols = explode(",",$lines[0]);
-   $max_dispersion = $all_cols[CSV_MAX_DISP];
-   echo "MAX DISPERSION: $max_dispersion\n";
+include_once("log_manager.php");
+include_once("online_fixations.php");
 
 
-   $onlineFix = new OnlineMovingWindowAlgorithm($max_dispersion,$sample_frequency,$minimum_fixation_size);
-
-   $last_trial = -1;
-   $fix_counter = 0;
-
-   foreach ($lines as $data_rows){
-
-      $cols = explode(",",$data_rows);
-      if (count($cols) < 10) continue;
-
-      $x = $cols[CSV_X];
-      $y = $cols[CSV_Y];
-      $time = $cols[CSV_TIME];
-      $trial = $cols[CSV_TRIAL];
-      $fix_x = $cols[CSV_FIX_X];
-
-      //echo "TIME $time\n";
+///////////////////////////// FUNCTIONS
+function hieararchyGet($array, $hieararchy){
+   $res["value"] = array();
+   $res["error"] = "";
+   foreach ($hieararchy as $key){
+      if (!is_array($array)){
+         $res["error"] = "When about to test for $key in hiearchy " . implode(",",$hieararchy) . " found that object is not an array";
+         return $res;
+      }
+      if (array_key_exists($key,$array)){
+         $array = $array[$key];
+      }
       
-      if ($fix_x != "N/A"){
-         $fix_y = $cols[CSV_FIX_Y];
-         $fix_d = $cols[CSV_FIX_D];            
+      else{
+         $res["error"] = "Could not find $key in hiearchy " . implode(",",$hieararchy);
+         return $res;
+      }
+   }
+   $res["value"] = $array;
+   return $res;
+}
+
+/**
+ * Computed fixations will be an array of Fixatation class while stored will be a simple object array. 
+ * We will assume that the computed fixationn is the reference. 
+ */
+
+function compareComputedVsStoredFixations($computed, $stored, $logger, $tab){
+   $N = count($computed);
+   $M = count($stored);
+   $S = max([$N,$M]);
+
+   $tol = 0.001;
+   $match = 0;
+
+   for ($i = 0; $i < $S; $i++){
+
+      if ($i < $N){
+         $cfix = $computed[$i];
+      }
+      else{
+         $sfix = $stored[$i];
+         $logger->logProgress($tab. "STORED FIXATION NOT COMPUTED: " . $sfix["x"] . ", " . $sfix["y"] . ", lasted: " . $sfix["duration"] . " @ " . $sfix["time"]);
+         continue;
+         //
+      }
+      
+      if ($i < $M){
+         $sfix = $stored[$i];
+      }
+      else{
+         //echo "===============\n";
+         $cfix = $computed[$i];
+         //var_dump($cfix);
+         $logger->logProgress($tab . "COMPUTED FIXATION NOT IN STORE: " . $cfix["x"] . ", " . $cfix["y"] . ", lasted: " . $cfix["duration"] . " @ " . $cfix["time"] );
+         //echo "===============\n";
+         continue;
       }
 
-
-      // Preparing the fixation. 
-      $fix = null;
-
-      if ($last_trial != $trial){
-         $last_trial = $trial;
-         $fix = $onlineFix->finalizeComputation();         
+      if ((abs($cfix["x"] - $sfix["x"]) > $tol) || (abs($cfix["y"] - $sfix["y"]) > $tol)){
+         $logger->logProgress($tab . "FIXATION MISMATCH ORDER $i:");
+         $logger->logProgress($tab . "   COMPUTED: " . $cfix["x"] . ", " . $cfix["y"] . ", lasted: " . $cfix["duration"] . " @ " . $cfix["time"]);
+         $logger->logProgress($tab . "   STORED  : " . $sfix["x"] . ", " . $sfix["y"] . ", lasted: " . $sfix["duration"] . " @ " . $sfix["time"]);
       }
-
-      $fix = $onlineFix->computeFixationsOnline($x, $y, $time);
-      echo $onlineFix->traceString($trial) . "\n";
-
-      if ($fix->valid){
-         if ($fix_x != "N/A") {
-            $f = new Fixation();
-            $f->duration = $fix_d;
-            $f->x = $fix_x;
-            $f->y = $fix_y;
-            $ans = $fix->compareFixation($f);
-            if ($ans != ""){
-               echo "BAD FIXATION: $ans\n";
-               exit();
-            }
-         }
-         else{
-            echo "Found fixation not found in reference at time $time\n";
-            exit();
-         }
-         $fix_counter++;         
-         $last_fixation = $fix;
-      }
-      else if ($fix_x != "N/A") {
-         if ($cols[CSV_DISP_BROKEN] == 1) {
-            echo "Missed Fixation with values $fix_x, $fix_y of $fix_d at time $time\n";
-            exit();
-         }
+      else{
+         $match++;         
       }
 
    }
 
-   echo "Number of fixations $fix_counter\n";
+   $logger->logProgress($tab . "FIX MATCH: Computed: $N. Stored: $M. Iterated over $S. Matched: $match");
+
+}
 
 
+/////////////////////////// LOG MANAGER DEFINITION
+$logname = "validation_log.txt";
+shell_exec("rm -f $logname");
+$logger = new LogManager($logname);
+$logger->enableOutput();
 
+/////////////////////////// FILE TO VALIDATE
+$input_file_to_validate = "gonogo/htc_files/gonogo_2021_09_02_18_23.json";
+$input_file_to_validate = "binding/hp_files/binding_2021_09_03_07_46.json";
+$input_file_to_validate = "gonogo/hp_files/gonogo_2021_09_06_07_33.json";
+$input_file_to_validate = "binding/hp_files/binding_2021_09_06_07_46.json";
 
+/////////////////////////// START
+$logger->logProgress("Validating File: $input_file_to_validate");
 
+if (!is_file($input_file_to_validate)){
+   $logger->logError("Invalid input file $input_file_to_validate");
+   exit();
+}
+
+// Loading the data. 
+$json = json_decode(file_get_contents($input_file_to_validate),true);
+
+// Hiararchy path or (hp) for everything.
+// Where to get processcing parameters. 
+$md_hp = ["processing_parameters","max_dispersion_window"];
+$sample_frequency_hp = ["processing_parameters","sample_frequency"];
+$minimum_fixation_window_hp = ["processing_parameters","minimum_fixation_length"];
+
+$study_keys = array_keys($json["studies"]);
+
+$res = hieararchyGet($json,$md_hp);
+if ($res["error"] != ""){
+   $logger->logError("Failed getting MD: " . $res["error"]);
+   exit();
+}
+$md = $res["value"];
+  
+$res = hieararchyGet($json,$sample_frequency_hp);
+if ($res["error"] != ""){
+   $logger->logError("Failed getting Sample Frequency: " . $res["error"]);
+   exit();
+}
+$sample_frequency = $res["value"];
+
+$res = hieararchyGet($json,$minimum_fixation_window_hp);
+if ($res["error"] != ""){
+   $logger->logError("Failed getting Minimum Fixation Window: " . $res["error"]);
+   exit();
+}
+$minimal_fixation_window = $res["value"];
+
+$logger->logProgress("Processing Parameters: MD: $md, F: $sample_frequency, Minimum Fixation Size: $minimal_fixation_window");
+$logger->logProgress("Studies Found: " . implode(",",$study_keys));
+
+/////////////////////////// PROCESSING EACH STUDY
+
+$onlineFixL = new OnlineMovingWindowAlgorithm($md,$sample_frequency,$minimal_fixation_window);
+$onlineFixR = new OnlineMovingWindowAlgorithm($md,$sample_frequency,$minimal_fixation_window);
+
+foreach ($study_keys as $study_name){
+   
+   $trial_liist = $json["studies"][$study_name]["trial_list"];
+   $logger->logProgress("   Verifying $study_name. Found " . count($trial_liist)  . " trials");
+
+   foreach ($trial_liist as $trial){
+      $data = $trial["data"];
+
+      $logger->logProgress("      Verifying Trial " . $trial["ID"]);
+
+      // Now this will have a number of data sets. And we need to process each one of those. 
+      foreach ($data as $dataset_name => $dataset){
+         // Each of these will have a raw data, and a fixation_l and fixation_r. 
+         $raw_data = $dataset["raw_data"];
+         $fixations_l = $dataset["fixations_l"];
+         $fixations_r = $dataset["fixations_r"];
+
+         $computed_fix_l = array();
+         $computed_fix_r = array();
+
+         foreach ($raw_data as $point){
+            $time = $point["ts"];
+            $xr   = $point["xr"];
+            $yr   = $point["yr"];
+            $yl   = $point["yl"];
+            $xl   = $point["xl"];
+            $fix = $onlineFixR->computeFixationsOnline($xr, $yr, $time);
+            if ($fix->valid) {
+               $f["x"] = $fix->x;
+               $f["y"] = $fix->y;
+               $f["time"] = $fix->time;
+               $f["duration"] = $fix->duration;
+               $computed_fix_r[] = $f;         
+            }
+            $fix = $onlineFixL->computeFixationsOnline($xl, $yl, $time);
+            if ($fix->valid) {
+               $f["x"] = $fix->x;
+               $f["y"] = $fix->y;
+               $f["time"] = $fix->time;
+               $f["duration"] = $fix->duration;
+               $computed_fix_l[] = $f;
+            }            
+         }
+
+         $fix = $onlineFixR->finalizeComputation();         
+         if ($fix->valid) {
+            $f["x"] = $fix->x;
+            $f["y"] = $fix->y;
+            $f["time"] = $fix->time;
+            $f["duration"] = $fix->duration;
+            $computed_fix_r[] = $f;
+         }
+         $fix = $onlineFixL->finalizeComputation();         
+         if ($fix->valid){
+            $f["x"] = $fix->x;
+            $f["y"] = $fix->y;
+            $f["time"] = $fix->time;
+            $f["duration"] = $fix->duration;
+            $computed_fix_l[] = $f;                     
+         } 
+
+         $logger->logProgress("         Verifying dataset: $dataset_name");
+
+         // Now that all fixations have been computed we do the comparison. 
+         $tab = "            ";
+
+         compareComputedVsStoredFixations($computed_fix_r,$fixations_r,$logger,$tab . "R: ");
+         compareComputedVsStoredFixations($computed_fix_l,$fixations_l,$logger,$tab . "L: ");
+         
+      }
+    
+
+   }
+
+}
+
+  
 ?> 
+

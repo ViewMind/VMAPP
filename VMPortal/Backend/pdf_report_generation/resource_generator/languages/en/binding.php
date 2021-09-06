@@ -110,4 +110,4 @@ $report["presumptive_diagnosis"]["texts_2T"] = [
  
  return $report;
 
-?> 
+?>

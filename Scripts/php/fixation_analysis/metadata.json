@@ -1,6 +1,6 @@
 {
     "binding\/gp_files\/binding_bc_3_l_2_2019_04_02_09_54.dat": {
-        "code": "GazePoint",
+        "code": "GazePoint - 3T - Novartis",
         "f": 150,
         "resolution": [
             1366,
@@ -9,8 +9,18 @@
         "converter": "LegacyBinding",
         "md_to_fixation_method": "MaximumDispersion"
     },
+    "binding\/gp_files\/binding_2021_09_03_07_04.json": {
+        "code": "GazePoint - 2T - NormRef",
+        "f": 150,
+        "resolution": [
+            1366,
+            768
+        ],
+        "converter": "JSONBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
     "binding\/htc_files\/binding_bc_2_l_2_2020_11_25_20_58.dat": {
-        "code": "HTC Vive Eye Pro",
+        "code": "HTC Vive Eye Pro2T - Novartis",
         "f": 120,
         "resolution": [
             1532,
@@ -20,7 +30,7 @@
         "md_to_fixation_method": "MaximumDispersion"
     },
     "binding\/htc_files\/binding_bc_3_l_2_2020_07_14_19_38.dat": {
-        "code": "HTC Vive Eye Pro",
+        "code": "HTC Vive Eye Pro3T - Novartis",
         "f": 120,
         "resolution": [
             1532,
@@ -29,12 +39,42 @@
         "converter": "LegacyBinding",
         "md_to_fixation_method": "MaximumDispersion"
     },
+    "binding\/htc_files\/binding_bc_2_l_2_2021_06_21_20_34.dat": {
+        "code": "HTC Vive Eye Pro2T - NovartisControl",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "LegacyBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/htc_files\/binding_2021_09_02_17_05.json": {
+        "code": "HTC Vive Eye Pro2T - NormRef",
+        "f": 120,
+        "resolution": [
+            2452,
+            2208
+        ],
+        "converter": "JSONBindingBadLabel",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
     "binding\/hp_files\/binding_2021_08_05_16_47.json": {
-        "code": "HP Reberv",
+        "code": "HP Reberv - 3T - First Test",
         "f": 120,
         "resolution": [
             1158,
             1188
+        ],
+        "converter": "JSONBindingBadLabel",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/hp_files\/binding_2021_09_03_07_46.json": {
+        "code": "HP Reberv - 2T-NormRef",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
         ],
         "converter": "JSONBinding",
         "md_to_fixation_method": "MaximumDispersion"
@@ -50,7 +90,7 @@
         "md_to_fixation_method": "EyeLink"
     },
     "reading\/gp_files\/reading_2021_08_26_07_42.json": {
-        "code": "GazePoint",
+        "code": "GazePoint - FHD",
         "f": 150,
         "resolution": [
             1920,
@@ -59,8 +99,28 @@
         "converter": "JSONReading",
         "md_to_fixation_method": "MaximumDispersion"
     },
+    "reading\/gp_files\/reading_2021_09_03_06_55.json": {
+        "code": "GazePoint - NormRef",
+        "f": 150,
+        "resolution": [
+            1366,
+            768
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
     "reading\/hp_files\/reading_2021_08_26_07_29.json": {
-        "code": "HP Reberv",
+        "code": "HP Reberv - FirstTest",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/hp_files\/reading_2021_09_03_07_56.json": {
+        "code": "HP Reberv - NormRef",
         "f": 120,
         "resolution": [
             2316,
@@ -77,6 +137,26 @@
             900
         ],
         "converter": "LegacyReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/htc_files\/reading_2021_09_02_16_44.json": {
+        "code": "HTC Vive Eye Pro - NormRef",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "gonogo\/htc_files\/gonogo_2021_09_02_18_23.json": {
+        "code": "HTC Vive Eye Pro - MatiasFirstTest",
+        "f": 120,
+        "resolution": [
+            1764,
+            1584
+        ],
+        "converter": "JSONGoNoGO",
         "md_to_fixation_method": "MaximumDispersion"
     }
 }
