@@ -194,7 +194,7 @@
                     "EVALUATION: GO\/NO GO TEST"
                 ],
                 [
-                    "COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS",
+                    "BRAIN AREA PERFORMANCE",
                     "OVERALL PERFORMANCE"
                 ],
                 [
@@ -258,13 +258,13 @@
                 "yellow": "Mildly Impaired Cognitive Functions & Brain Areas:",
                 "red": "Severely Impaired and\/ or Pathological Cognitive Functions & Brain Areas:",
                 "processing_speed": "Processing Speed: Frontal Lobe",
-                "processing_speed_interference": "Processing Speed Interference: prefrontal cortex, caudate nucleus",
-                "processing_speed_facilitated": "Processing Speed Facilitated: Prefrontal Cortex",
-                "reaction_time_interference": "Reaction Time Interference: Medial Prefrontal Cortex (mPFC), Anterior, Posterior",
-                "reaction_time_facilitated": "Reaction Time Facilitated: Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus",
-                "executive_functions": "Executive Functions: Prefrontal Cortex",
-                "index_error_facilitated": "Inhibitory Alterations Facilitated: Right Inferior Frontal Gyrus (rIFG)",
-                "index_error_interference": "Inhibitory Alterations Interference: Caudal Inferior Frontal Gyrus (cIFG)"
+                "processing_speed_interference": "Prefrontal cortex, caudate nucleus",
+                "processing_speed_facilitated": "Prefrontal Cortex",
+                "reaction_time_interference": "Medial Prefrontal Cortex (mPFC), Anterior, Posterior",
+                "reaction_time_facilitated": "Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus",
+                "executive_functions": "Prefrontal Cortex",
+                "index_error_facilitated": "Right Inferior Frontal Gyrus (rIFG)",
+                "index_error_interference": "Caudal Inferior Frontal Gyrus (cIFG)"
             },
             "presumptive_diagnosis": {
                 "left_title": "Presumptive Diagnosis",

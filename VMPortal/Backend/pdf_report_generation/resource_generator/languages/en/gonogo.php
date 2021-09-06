@@ -5,7 +5,7 @@
 
  $report["page_titles"] = [
    ["EVALUATION: GO/NO GO TEST"],
-   ["COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS","OVERALL PERFORMANCE"],
+   ["BRAIN AREA PERFORMANCE","OVERALL PERFORMANCE"],
    ["VISUAL WORKING MEMORY ","STUDY DURATION"],
    ["SACCADIC BEHAVIOR","FIXATION DURATION"],
    ["FIXATION PLOTTING","FIXATION CONTROL"],
@@ -53,13 +53,13 @@
  $report["affected_areas"]["red"] = "Severely Impaired and/ or Pathological Cognitive Functions & Brain Areas:";
  ////
  $report["affected_areas"]["processing_speed"] = "Processing Speed: Frontal Lobe";
- $report["affected_areas"]["processing_speed_interference"] = "Processing Speed Interference: prefrontal cortex, caudate nucleus";
- $report["affected_areas"]["processing_speed_facilitated"] = "Processing Speed Facilitated: Prefrontal Cortex";
- $report["affected_areas"]["reaction_time_interference"] = "Reaction Time Interference: Medial Prefrontal Cortex (mPFC), Anterior, Posterior";
- $report["affected_areas"]["reaction_time_facilitated"] = "Reaction Time Facilitated: Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus";
- $report["affected_areas"]["executive_functions"] = "Executive Functions: Prefrontal Cortex";
- $report["affected_areas"]["index_error_facilitated"]  = "Inhibitory Alterations Facilitated: Right Inferior Frontal Gyrus (rIFG)";
- $report["affected_areas"]["index_error_interference"]  = "Inhibitory Alterations Interference: Caudal Inferior Frontal Gyrus (cIFG)";
+ $report["affected_areas"]["processing_speed_interference"] = "Prefrontal cortex, caudate nucleus";
+ $report["affected_areas"]["processing_speed_facilitated"] = "Prefrontal Cortex";
+ $report["affected_areas"]["reaction_time_interference"] = "Medial Prefrontal Cortex (mPFC), Anterior, Posterior";
+ $report["affected_areas"]["reaction_time_facilitated"] = "Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus";
+ $report["affected_areas"]["executive_functions"] = "Prefrontal Cortex";
+ $report["affected_areas"]["index_error_facilitated"]  = "Right Inferior Frontal Gyrus (rIFG)";
+ $report["affected_areas"]["index_error_interference"]  = "Caudal Inferior Frontal Gyrus (cIFG)";
 
  $report["presumptive_diagnosis"]["left_title"] = "Presumptive Diagnosis";
  $report["presumptive_diagnosis"]["right_title"] = "A.I. Performance Index";
