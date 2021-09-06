@@ -28,6 +28,7 @@
    $cat["-3"]  = "5 +";
    $categories[$variable]["polygon"] = $cat;   
 
+   $cat = array();
    $cat["green"]  = "- 3.10*";
    $cat["yellow"] = "3.10 4.00*";
    $cat["red"]    = "4.00 +";
