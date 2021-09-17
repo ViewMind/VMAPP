@@ -76,6 +76,12 @@ class Processing
       $raw_data = $dataset[DataSetField::RAW_DATA];
       $fix_l    = $dataset[DataSetField::FIXATIONS_L];
       $fix_r    = $dataset[DataSetField::FIXATIONS_R];
+      if (count($raw_data) == 0){
+         // Some data sets might be empty. In this case, we should simply ignore and move on.
+         return true;
+         //$this->error = "Dataset for $study with trial description $trial_description contains no rawdata";
+         //return false;
+      }
       $start_time = $raw_data[0][DataVectorField::TIMESTAMP];
 
       // Specific Study Processing. 

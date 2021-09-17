@@ -2,8 +2,8 @@
 
 include_once (__DIR__ . "/../common/named_constants.php");
 include_once (__DIR__ . "/../common/config.php");
-include_once ("ViewMindDataContainer.php");
-include_once ("value_category.php");
+include_once (__DIR__. "/ViewMindDataContainer.php");
+//include_once (__DIR__. "/value_category.php");
 
 const CURRENT_PDF_GEN_VERSION = 1;
 

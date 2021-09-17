@@ -27,44 +27,82 @@
 //   // Rerence trials. Empty, means all. 
 //   $reference_trials = [1,2,4,5,6,7,9];
 //   $working_directory = "reading_eyelink_references";
-//   $md_of_interest = [40,50,60,197];
+//   $md_of_interest = [2,15];
 
-  /////////////////////////// SETTINGS USED FOR BINDING TEST
-  $file_list = [
-     "binding/hp_files/binding_2021_09_03_07_46.json",
-     //"binding/hp_files/binding_2021_08_05_16_47.json", // 3T
-     "binding/gp_files/binding_2021_09_03_07_04.json",
-     //"binding/gp_files/binding_bc_3_l_2_2019_04_02_09_54.dat", // 3T
-     "binding/htc_files/binding_2021_09_02_17_05.json",
-     "binding/htc_files/binding_bc_2_l_2_2021_06_21_20_34.dat"
-  ];
-  // For this binding test of the system, we just use the HP file as a reference. 
-  $reference_index = 1;
-  $md_for_reference = 197;
-  // Rerence trials. Empty, means all. 
-  $reference_trials = [];
-  $working_directory = "binding_tests";
-  $md_of_interest = [105,197];
-
-
-//   /////////////////////////// SETTINGS USED FOR SINGLE GONOGO
+//   /////////////////////////// SETTINGS USED FOR BINDING TEST
 //   $file_list = [
-//      "gonogo/htc_files/gonogo_2021_09_02_18_23.json"
+//      "binding/hp_files/binding_2021_09_03_07_46.json",
+//      "binding/hp_files/binding_2021_09_06_07_46.json",
+//      //"binding/hp_files/binding_2021_08_05_16_47.json", // 3T
+//      "binding/gp_files/binding_2021_09_03_07_04.json",
+//      "binding/gp_files/binding_2021_09_07_18_11.json",
+//      //"binding/gp_files/binding_bc_3_l_2_2019_04_02_09_54.dat", // 3T
+//      "binding/htc_files/binding_2021_09_02_17_05.json",
+//      "binding/htc_files/binding_bc_2_l_2_2021_06_21_20_34.dat"
 //   ];
 //   // For this binding test of the system, we just use the HP file as a reference. 
-//   $reference_index = 0;
-//   $md_for_reference = 105; // Optimal is 70. 
+//   //$reference_index = 0;
+//   //$md_for_reference = 2;
+//   $reference_index = 2;
+//   $md_for_reference = 15;
+    
 //   // Rerence trials. Empty, means all. 
 //   $reference_trials = [];
-//   $working_directory = "gonogo_single_test";
-//   $md_of_interest = [];
+//   //$working_directory = "binding_tests_hp_ref";
+//   $working_directory = "binding_tests_gp_ref";
+//   $md_of_interest = [2,15];
+
+
+//   /////////////////////////// SETTINGS FOR GO NO GO
+//   $file_list = [
+//      "gonogo/htc_files/gonogo_2021_09_02_18_23.json",
+//      "gonogo/htc_files/gonogo_2021_09_07_17_45.json",
+//      "gonogo/hp_files/gonogo_2021_09_06_07_33.json",
+//      "gonogo/hp_files/gonogo_2021_09_07_17_13.json",
+//      "gonogo/gp_files/gonogo_2021_09_07_18_02.json",
+//      "gonogo/gp_files/gonogo_2021_09_07_18_24.json",
+//   ];
+//   // For this binding test of the system, we just use the HP file as a reference. 
+//   $reference_index = 2;
+//   $md_for_reference = 2; // 2.5% For HP. 
+//   // Rerence trials. Empty, means all. 
+//   $reference_trials = [];
+//   $working_directory = "gonogo_full_run";
+//   $md_of_interest = [2,15]; 
+
+//   /////////////////////////// SETTINGS FOR NBACRT
+//   $file_list = [
+//      "nbackrt/htc_files/nbackrt_2021_09_07_17_38.json",
+//      "nbackrt/hp_files/nbackrt_2021_09_07_17_16.json",
+//      "nbackrt/gp_files/nbackrt_2021_09_07_18_18.json",
+//      "nbackrt/gp_files/nbackrt_2021_09_07_17_54.json",
+//   ];
+//   // For this binding test of the system, we just use the HP file as a reference. 
+//   $reference_index = 1;
+//   $md_for_reference = 2; // 2% For HP. 
+//   // Rerence trials. Empty, means all. 
+//   $reference_trials = [];
+//   $working_directory = "nbackrt_hp_ref";
+//   $md_of_interest = [2,15]; 
+
+  /////////////////////////// SETTINGS FOR SINGLE FILE
+  $file_list = [
+     "nbackrt/htc_files/nbackrt_2020_06_17_19_04.json",
+     "nbackrt/htc_files/nbackrt_2020_06_17_19_04.json",
+  ];
+  // For this binding test of the system, we just use the HP file as a reference. 
+  $reference_index = 0;
+  $md_for_reference = 3; // 2% For HP. 
+  // Rerence trials. Empty, means all. 
+  $reference_trials = [];
+  $working_directory = "single_shot";
+  $md_of_interest = [6.16197]; 
 
   ////////////////////////////////// MD SWEEP AND MERIT SETUP
 
-  $md_range = [20,500];
-  $md_step = 10;
+  $md_range = [2,70];
+  $md_step = 1;
   
-
   // Which merit figure is used to compute the best MD. Possibilities are SUMABS and RMS 
   //$merit_figure_to_use = "SUMABS";
   $merit_figure_to_use = "RMS";
@@ -121,7 +159,14 @@
      $logger->logError( "Failed to extract of reference data $ref_file: " . $reference->getError());
      exit();
   }
-  $reference->calculateFixations($md_for_reference);
+
+  $resolution = $reference->getResolution();
+  $base_for_md = max($resolution);
+  $res_code = implode("x",$resolution);  
+  $max_dipsersion_to_use = round($md_for_reference*$base_for_md/100);
+  $logger->logProgress("   Reference Resolution Used: $res_code. Base for MD: $base_for_md. Resulting PX Max Dispersion: $max_dipsersion_to_use");
+
+  $reference->calculateFixations($max_dipsersion_to_use);
 
   $reference_histogram = $reference->fixationDistribution($bin_size,$reference_trials);
 
@@ -149,14 +194,13 @@
       }
    
       $file = $file_list[$i];
-      $logger->logProgress("FILE: $file (" . $metadata[$file]["code"] . ")");
-      $logger->logProgress( "   Extracting raw data");
+      $logger->logProgress("FILE: $file (" . $metadata[$file]["code"] . ")");      
       
+      $logger->logProgress("   Extracting raw data");
       if (!array_key_exists($file,$metadata)){
          $logger->logError("ERROR: Could not find file $file in loaded metada");
          exit();
       }
-    
       $rdp = new RawDataProcessor();
       if ( !$rdp->setProcessingItem($file, $metadata[$file]) ){
          $logger->logError("   ERROR: Failed to set processing data of file $file: " . $rdp->getError());
@@ -167,7 +211,12 @@
          $logger->logError("   ERROR: Failed to set extracting raw data: " . $rdp->getError());
          exit();
       }
-   
+
+      $resolution = $rdp->getResolution();
+      $base_for_md = max($resolution);
+      $res_code = implode("x",$resolution);
+      $logger->logProgress("   Resolution Used: $res_code. Base for MD: $base_for_md");
+    
       $logger->logProgress("   Doing Fixation Sweep ...");
    
       
@@ -183,7 +232,9 @@
    
       foreach ($md_vector as $md){
 
-         if (!$rdp->calculateFixations($md)){
+         $max_dipsersion_to_use = round($md*$base_for_md/100);
+
+         if (!$rdp->calculateFixations($max_dipsersion_to_use)){
             $logger->logError("   ERROR: Fixation computations failed: " . $rdp->getError());
             exit();
          }
@@ -195,7 +246,7 @@
          }
 
          if (in_array($md,$md_of_interest)){
-            $logger->logProgress("   MD of Interest $md. Merit is: " . $merit["merit"]);
+            $logger->logProgress("   MD of Interest $md. Merit is: " . $merit["merit"] . " Actual PX MD: " . $max_dipsersion_to_use);
             $mds_to_plot[$md] = $merit;
          }
    
@@ -203,16 +254,17 @@
    
       }
 
-      $merit_history[$rdp->getName()] = $merit_array;   
+      $merit_history[$rdp->getName() . " - " . $res_code] = $merit_array;   
 
       // Adding the best merit array to the mds to plot.
       $mds_to_plot[$best_merit_md] = $best_merit_array;
 
-      $logger->logProgress("   BEST MD: $best_merit_md with a merit of " . $best_merit_array["merit"]);      
+      $px_best_md_value = round($best_merit_md*$base_for_md/100);
+      $logger->logProgress("   BEST MD: $best_merit_md % with a merit of " . $best_merit_array["merit"] . " (PX Value: $px_best_md_value)");      
 
       // This way the we plot the best and the merits of interest. 
       foreach ($mds_to_plot as $md => $merit_array) {
-          $logger->logProgress("      Creating Bar Graph For Comparison for $md");
+          $logger->logProgress("      Creating Bar Graph For Comparison for $md %");
           $graph = array();
           $graph["title"] = "Fixation Distribution Comparison for " . $rdp->getName() . " Using MD of $md";
           $graph["series"] = ["values" => $merit_array["values"], "reference" => $merit_array["ref"]];
@@ -226,14 +278,14 @@
           
           $graph["xvalues"] = $labels;
           $graph["xlabel"] = "Fixation Durations";
-          $graph["output_file"] = $fixation_distribution_location . "/" . $rdp->getName() . "bar_graph_$best$md.png";
+          $graph["output_file"] = $fixation_distribution_location . "/" . $rdp->getName() . "_" . $res_code  ."_bar_graph_$best$md.png";
           $bar_graph_file = "$working_directory/bar_graph.json";
           $fid = fopen($bar_graph_file, "w");
           fwrite($fid, json_encode($graph, JSON_PRETTY_PRINT));
           fclose($fid);
           shell_exec("python3 plot_bar_graph.py $bar_graph_file");
 
-          $logger->logProgress("      Creating Best MD Fixation Plots for $md");
+          $logger->logProgress("      Creating Best MD Fixation Plots for $md%");
           $rdp->calculateFixations($md); // No need to check for errors as this was one of the parameters used previously.
 
           $ppath = "$fixation_plots_location/MD_$best$md";

@@ -23,8 +23,17 @@ $temp["converter"] = InputFileParser::LEGACY_BINDING;
 $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
+$et_dir = "gp_files";
+$key = "$dir/$et_dir/binding_2021_09_07_18_11.json";
+$temp["code"] = ETCode::GP . " - 2T - NR";
+$temp["f"] = SamplingFrequency::GP;
+$temp["resolution"] = Resolutions::GP_FULL_HD;
+$temp["converter"] = InputFileParser::JSON_BINDING;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
 $key = "$dir/$et_dir/binding_2021_09_03_07_04.json";
-$temp["code"] = ETCode::GP . " - 2T - NormRef";
+$temp["code"] = ETCode::GP . " - 2T - NR";
 $temp["f"] = SamplingFrequency::GP;
 $temp["resolution"] = Resolutions::GP_HD;
 $temp["converter"] = InputFileParser::JSON_BINDING;
@@ -34,7 +43,7 @@ $metadata[$key] = $temp;
 ///////// HTC
 $et_dir = "htc_files";
 $key = "$dir/$et_dir/binding_bc_2_l_2_2020_11_25_20_58.dat";
-$temp["code"] = ETCode::HTC . "2T - Novartis";
+$temp["code"] = ETCode::HTC . "2T - Nov";
 $temp["f"] = SamplingFrequency::HTC;
 $temp["resolution"] = Resolutions::HTC;
 $temp["converter"] = InputFileParser::LEGACY_BINDING;
@@ -42,7 +51,7 @@ $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
 $key = "$dir/$et_dir/binding_bc_3_l_2_2020_07_14_19_38.dat";
-$temp["code"] = ETCode::HTC . "3T - Novartis";
+$temp["code"] = ETCode::HTC . "3T - Nov";
 $temp["f"] = SamplingFrequency::HTC;
 $temp["resolution"] = Resolutions::HTC;
 $temp["converter"] = InputFileParser::LEGACY_BINDING;
@@ -50,7 +59,7 @@ $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
 $key = "$dir/$et_dir/binding_bc_2_l_2_2021_06_21_20_34.dat";
-$temp["code"] = ETCode::HTC . "2T - NovartisControl";
+$temp["code"] = ETCode::HTC . "2T - NovCtrl";
 $temp["f"] = SamplingFrequency::HTC;
 $temp["resolution"] = Resolutions::HTC;  //1532 1704
 $temp["converter"] = InputFileParser::LEGACY_BINDING;
@@ -58,7 +67,7 @@ $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
 $key = "$dir/$et_dir/binding_2021_09_02_17_05.json";
-$temp["code"] = ETCode::HTC . "2T - NormRef";
+$temp["code"] = ETCode::HTC . "2T - NR";
 $temp["f"] = SamplingFrequency::HTC;
 $temp["resolution"] = Resolutions::HTC_BIG;
 $temp["converter"] = InputFileParser::JSON_BINDING_BAD_LABEL;
@@ -68,20 +77,31 @@ $metadata[$key] = $temp;
 ///////// HP
 $et_dir = "hp_files";
 $key = "$dir/$et_dir/binding_2021_08_05_16_47.json";
-$temp["code"] = ETCode::HP . " - 3T - First Test";
+$temp["code"] = ETCode::HP . " - 3T - FT";
 $temp["f"] = SamplingFrequency::HP;
 $temp["resolution"] = Resolutions::HP_HALF;
 $temp["converter"] = InputFileParser::JSON_BINDING_BAD_LABEL;
 $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
+
 $key = "$dir/$et_dir/binding_2021_09_03_07_46.json";
-$temp["code"] = ETCode::HP . " - 2T-NormRef";
+$temp["code"] = ETCode::HP . " - 2T-NR0";
 $temp["f"] = SamplingFrequency::HP;
 $temp["resolution"] = Resolutions::HP_FULL;
 $temp["converter"] = InputFileParser::JSON_BINDING;
 $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
+
+
+$key = "$dir/$et_dir/binding_2021_09_06_07_46.json";
+$temp["code"] = ETCode::HP . " - 2T-NR1";
+$temp["f"] = SamplingFrequency::HP;
+$temp["resolution"] = Resolutions::HP_FULL;
+$temp["converter"] = InputFileParser::JSON_BINDING;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
 
 ///////////////////////////////////////////////////// Reading
 $dir = "reading";
@@ -99,7 +119,7 @@ $metadata[$key] = $temp;
 ///////// GP
 $et_dir = "gp_files";
 $key = "$dir/$et_dir/reading_2021_08_26_07_42.json";
-$temp["code"] = ETCode::GP . " - FHD";
+$temp["code"] = ETCode::GP . " - NR0";
 $temp["f"] = SamplingFrequency::GP;
 $temp["resolution"] = Resolutions::GP_FULL_HD;
 $temp["converter"] = InputFileParser::JSON_READING;
@@ -107,7 +127,7 @@ $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
 $key = "$dir/$et_dir/reading_2021_09_03_06_55.json";
-$temp["code"] = ETCode::GP . " - NormRef";
+$temp["code"] = ETCode::GP . " - NR1";
 $temp["f"] = SamplingFrequency::GP;
 $temp["resolution"] = Resolutions::GP_HD;
 $temp["converter"] = InputFileParser::JSON_READING;
@@ -117,7 +137,7 @@ $metadata[$key] = $temp;
 ///////// HP
 $et_dir = "hp_files";
 $key = "$dir/$et_dir/reading_2021_08_26_07_29.json";
-$temp["code"] = ETCode::HP . " - FirstTest";
+$temp["code"] = ETCode::HP . " - NR0";
 $temp["f"] = SamplingFrequency::HP;
 $temp["resolution"] = Resolutions::HP_FULL;
 $temp["converter"] = InputFileParser::JSON_READING;
@@ -126,7 +146,7 @@ $metadata[$key] = $temp;
 
 $et_dir = "hp_files";
 $key = "$dir/$et_dir/reading_2021_09_03_07_56.json";
-$temp["code"] = ETCode::HP . " - NormRef";
+$temp["code"] = ETCode::HP . " - NR1";
 $temp["f"] = SamplingFrequency::HP;
 $temp["resolution"] = Resolutions::HP_FULL;
 $temp["converter"] = InputFileParser::JSON_READING;
@@ -146,7 +166,7 @@ $metadata[$key] = $temp;
 ///////// HTC
 $et_dir = "htc_files";
 $key = "$dir/$et_dir/reading_2021_09_02_16_44.json";
-$temp["code"] = ETCode::HTC . " - NormRef";
+$temp["code"] = ETCode::HTC . " - NR";
 $temp["f"] = SamplingFrequency::HTC;
 $temp["resolution"] = Resolutions::HTC;
 $temp["converter"] = InputFileParser::JSON_READING;
@@ -157,12 +177,114 @@ $metadata[$key] = $temp;
 
 ///////////////////////////////////////////////////// GoNoGo
 $dir = "gonogo";
+
+///////// HTC
 $et_dir = "htc_files";
+
 $key = "$dir/$et_dir/gonogo_2021_09_02_18_23.json";
-$temp["code"] = ETCode::HTC . " - MatiasFirstTest";
+$temp["code"] = ETCode::HTC . " - Mati";
 $temp["f"] = SamplingFrequency::HTC;
 $temp["resolution"] = [1764, 1584];
 $temp["converter"] = InputFileParser::JSON_GONOGO;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+$key = "$dir/$et_dir/gonogo_2021_09_07_17_45.json";
+$temp["code"] = ETCode::HTC . " - NR";
+$temp["f"] = SamplingFrequency::HTC;
+$temp["resolution"] = Resolutions::HTC_BIG;
+$temp["converter"] = InputFileParser::JSON_GONOGO;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+///////// GP
+$et_dir = "gp_files";
+
+$key = "$dir/$et_dir/gonogo_2021_09_07_18_02.json";
+$temp["code"] = ETCode::GP . " - NR";
+$temp["f"] = SamplingFrequency::GP;
+$temp["resolution"] = Resolutions::GP_HD;
+$temp["converter"] = InputFileParser::JSON_GONOGO;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+$key = "$dir/$et_dir/gonogo_2021_09_07_18_24.json";
+$temp["code"] = ETCode::GP . " - NR";
+$temp["f"] = SamplingFrequency::GP;
+$temp["resolution"] = Resolutions::GP_FULL_HD;
+$temp["converter"] = InputFileParser::JSON_GONOGO;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+///////// GP
+$et_dir = "hp_files";
+
+$key = "$dir/$et_dir/gonogo_2021_09_07_17_13.json";
+$temp["code"] = ETCode::HP . " - NR0";
+$temp["f"] = SamplingFrequency::HP;
+$temp["resolution"] = Resolutions::HP_FULL;
+$temp["converter"] = InputFileParser::JSON_GONOGO;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+$key = "$dir/$et_dir/gonogo_2021_09_06_07_33.json";
+$temp["code"] = ETCode::HP . " - NR1";
+$temp["f"] = SamplingFrequency::HP;
+$temp["resolution"] = Resolutions::HP_FULL;
+$temp["converter"] = InputFileParser::JSON_GONOGO;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+
+///////////////////////////////////////////////////// NBACKRT
+$dir = "nbackrt";
+
+///////// GP
+$et_dir = "gp_files";
+
+$key = "$dir/$et_dir/nbackrt_2021_09_07_17_54.json";
+$temp["code"] = ETCode::GP . " - NR";
+$temp["f"] = SamplingFrequency::GP;
+$temp["resolution"] = Resolutions::GP_HD;
+$temp["converter"] = InputFileParser::JSON_NBACKRT;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+$key = "$dir/$et_dir/nbackrt_2021_09_07_18_18.json";
+$temp["code"] = ETCode::GP . " - NR";
+$temp["f"] = SamplingFrequency::GP;
+$temp["resolution"] = Resolutions::GP_FULL_HD;
+$temp["converter"] = InputFileParser::JSON_NBACKRT;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+///////// HP
+$et_dir = "hp_files";
+
+$key = "$dir/$et_dir/nbackrt_2021_09_07_17_16.json";
+$temp["code"] = ETCode::HP . " - NR";
+$temp["f"] = SamplingFrequency::HP;
+$temp["resolution"] = Resolutions::HP_FULL;
+$temp["converter"] = InputFileParser::JSON_NBACKRT;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+///////// HTC
+$et_dir = "htc_files";
+
+$key = "$dir/$et_dir/nbackrt_2021_09_07_17_38.json";
+$temp["code"] = ETCode::HTC . " - NR";
+$temp["f"] = SamplingFrequency::HTC;
+$temp["resolution"] = Resolutions::HTC_BIG;
+$temp["converter"] = InputFileParser::JSON_NBACKRT;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
+$key = "$dir/$et_dir/nbackrt_2020_06_17_19_04.json";
+$temp["code"] = ETCode::HTC . " - LRP";
+$temp["f"] = SamplingFrequency::HTC;
+$temp["resolution"] = Resolutions::HTC;
+$temp["converter"] = InputFileParser::JSON_NBACKRT;
 $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 

@@ -1,10 +1,10 @@
 <?php
 abstract class ETCode
 {
-    const GP  = "GazePoint";
+    const GP  = "GP";
     const SMI = "SMI";
-    const HP  = "HP Reberv";
-    const HTC = "HTC Vive Eye Pro";
+    const HP  = "HP";
+    const HTC = "HTC";
     const EYELINK = "EyeLink";
 }
 
@@ -30,6 +30,7 @@ abstract class InputFileParser {
    const JSON_BINDING_BAD_LABEL   = "JSONBindingBadLabel";
    const JSON_BINDING             = "JSONBinding";
    const JSON_GONOGO              = "JSONGoNoGO";
+   const JSON_NBACKRT             = "JSONNBackRT";
 }
 
 abstract class Resolutions {

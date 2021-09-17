@@ -139,3 +139,8 @@ Scripts/php/fixation_analysis/gonogo/
 Scripts/php/fixation_analysis/*.txt
 Scripts/php/fixation_analysis/metadata.json
 
+Scripts/AWS/EU/test.sh
+Scripts/php/fixation_analysis/nbackrt/
+Scripts/php/reprocess_legacy_data/work/
+
+

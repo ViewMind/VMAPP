@@ -223,23 +223,23 @@
             },
             "processing_speed": {
                 "title": "PROCESSING SPEED",
-                "range_text": "Normal value below 3.10"
+                "range_text": "Normal value below 1.8"
             },
             "processing_speed_interference": {
                 "title": "VISUAL WORKING MEMORY INTERFERENCE",
-                "range_text": "Normal value below 283"
+                "range_text": "Normal value below 93"
             },
             "processing_speed_facilitated": {
                 "title": "VISUAL WORKING MEMORY FACILITATED",
-                "range_text": "Normal value below 275"
+                "range_text": "Normal value below 49"
             },
             "reaction_time_facilitated": {
                 "title": "REACTION TIME FACILITATED",
-                "range_text": "Normal value below 1700"
+                "range_text": "Normal value below 784"
             },
             "reaction_time_interference": {
                 "title": "REACTION TIME INTERFERENCE",
-                "range_text": "Normal value below 1700"
+                "range_text": "Normal value below 829"
             },
             "executive_functions": {
                 "title": "EXECUTIVE FUNCTIONS",
@@ -247,11 +247,11 @@
             },
             "index_error_facilitated": {
                 "title": "INHIBITORY ALTERATIONS FACILITATED",
-                "range_text": "Normal value below 0.15"
+                "range_text": "Normal value below 15"
             },
             "index_error_interference": {
                 "title": "INHIBITORY ALTERATIONS INTERFERENCE",
-                "range_text": "Normal value below 0.31"
+                "range_text": "Normal value below 31"
             },
             "affected_areas": {
                 "green": "Preserved Cognitive Functions & Brain Areas:",

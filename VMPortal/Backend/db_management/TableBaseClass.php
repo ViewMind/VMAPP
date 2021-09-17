@@ -580,7 +580,7 @@ class TableBaseClass {
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
    
    /**
-    * @brief Makes sure all colums that should be there exist and that all columns that should NOT be there don't. 
+    * @brief Makes sure all columns that should be there exist and that all columns that should NOT be there don't. 
     */
 
    protected function validateInputArray($associative_array_column_name_value, $operation_name){

@@ -177,7 +177,7 @@ table(b$target_hit[b$type=="G"])
 table(b$type)
 table(b$target_hit,b$type)
 
-idx<-which(b$target_hit=="-1")
+idx<-which(b$target_hit=="-2")
 ERROR<-b[idx,]
 
 Inhibitory_alterations_in_Facilitated_Task<-table(ERROR$target_hit[ERROR$type=="G"])/ (24) *100

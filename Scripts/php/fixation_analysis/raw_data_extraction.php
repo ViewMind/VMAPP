@@ -65,6 +65,7 @@ class RawDataProcessor {
       else if (($this->input_parser == InputFileParser::JSON_BINDING) || 
                ($this->input_parser == InputFileParser::JSON_READING) || 
                ($this->input_parser == InputFileParser::JSON_GONOGO)  || 
+               ($this->input_parser == InputFileParser::JSON_NBACKRT)  || 
                ($this->input_parser == InputFileParser::JSON_BINDING_BAD_LABEL) ){
          return $this->jsonRawDataParser();
       }
@@ -105,6 +106,10 @@ class RawDataProcessor {
 
    public function getName() {
       return $this->name;
+   }
+
+   public function getResolution(){
+      return $this->resolution;
    }
 
    /**
@@ -401,18 +406,30 @@ class RawDataProcessor {
       $this->json_loaded_fixations["R"] = array();
       $this->json_loaded_fixations["L"] = array();
 
+      // Resolution is overwritten by the whatever this loaded from the JSON file. 
+      $pp_key = "processing_parameters";
+      $resW = "resolution_width";
+      $resH = "resolution_height";
+      if (array_key_exists($pp_key, $trial_list)) {
+         $pp = $trial_list[$pp_key];
+         if (array_key_exists($resH,$pp) && array_key_exists($resW,$pp)){            
+            $this->resolution = [ $pp[$resW], $pp[$resH] ];
+         }
+         else{
+            echo "WARNING EITHER '$resH' or '$resW' is missing from $pp_key in " . $this->input_file . "\n";                     
+         }
+      }
+      else{
+         echo "WARNING: PROCESSING PARAMETERS KEY '$pp_key' NOT FOUND IN " . $this->input_file . "\n";         
+      }
+
       if ($this->input_parser == InputFileParser::JSON_READING) {
          $hiararchy_chain = ["studies","Reading","trial_list"];
          $trial_hieararchy_chains = [ ["data","unique","raw_data"] ];
-         $l_fix_chains = [ ["data","unique","fixation_l"] ];
-         $r_fix_chains = [ ["data","unique","fixation_l"] ];
       }
       else if ($this->input_parser == InputFileParser::JSON_BINDING_BAD_LABEL){         
          $hiararchy_chain = ["studies","Binding BC","trial_list"];
          $trial_hieararchy_chains = [ ["data","encoding_1","raw_data"],  ["data","reterieval_1","raw_data"]];
-         $l_fix_chains = [ ["data","unique","fixation_l"] ];
-         $r_fix_chains = [ ["data","unique","fixation_l"] ];
-
       }
       else if ($this->input_parser == InputFileParser::JSON_BINDING){         
          $hiararchy_chain = ["studies","Binding BC","trial_list"];
@@ -421,7 +438,11 @@ class RawDataProcessor {
       else if ($this->input_parser == InputFileParser::JSON_GONOGO){         
          $hiararchy_chain = ["studies","Go No-Go","trial_list"];
          $trial_hieararchy_chains = [ ["data","unique","raw_data"] ];
-      }      
+      }
+      else if ($this->input_parser == InputFileParser::JSON_NBACKRT){
+         $hiararchy_chain = ["studies","NBack RT","trial_list"];
+         $trial_hieararchy_chains = [ ["data","encoding_1","raw_data"],  ["data","encoding_2","raw_data"], ["data","encoding_3","raw_data"], ["data","retrieval_1","raw_data"] ];
+      }
       else{
          $this->error = "Unknown file parser for data extraction on JSON: " . $this->input_parser;
          return false;
@@ -493,8 +514,10 @@ class RawDataProcessor {
       
       $resolution_line = $i+1;
       
-      // Skipping the resolution line. 
+      // Storing resolution, overwritting preset value. 
       $res = $lines[$resolution_line];
+      $res = explode(" ",$res);
+      $this->resolution =  [$res[0], $res[1]];
       
       //echo "RESOLUTION $W x $H\n";
       
@@ -553,6 +576,8 @@ class RawDataProcessor {
       
       // Skipping the resolution
       $res = $lines[$resolution_line];
+      $res = explode(" ",$res);
+      $this->resolution =  [$res[0], $res[1]];
            
       $start = $resolution_line + 1;
       $trial_id = "";
