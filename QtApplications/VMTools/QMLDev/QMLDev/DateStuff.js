@@ -17,7 +17,12 @@ function getDateAndTime(){
     return dateObject.toLocaleString(Locale.ShortFormat)
 }
 
-function getDate(){
+function getDate2(){
     return dateObject.toLocaleDateString(Locale.ShortFormat)
+    //return dateObject.toLocaleDateString()
+
 }
 
+function getDate(){
+    return dateObject.toLocaleDateString()
+}

@@ -1,10 +1,11 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.3
+import QtQuick
+import QtQuick.Controls
 
 Button {
     id: vmCloseButton
-    width: mainWindow.width*0.016
-    height: mainWindow.height*0.029
+    width: mainWindow.width*0.009
+    height: mainWindow.height*0.018
+    hoverEnabled: false
     background: Rectangle {
         id: btnCloseRect
         color: "#ffffff"
@@ -34,9 +35,9 @@ Button {
             ctx.lineWidth = 2;
             ctx.lineCap = "round"
             ctx.moveTo(0,0);
-            ctx.lineTo(20,20);
-            ctx.moveTo(20,0);
-            ctx.lineTo(0,20);
+            ctx.lineTo(vmCloseButton.width,vmCloseButton.height);
+            ctx.moveTo(vmCloseButton.width,0);
+            ctx.lineTo(0,vmCloseButton.height);
             ctx.closePath();
             ctx.stroke();
         }

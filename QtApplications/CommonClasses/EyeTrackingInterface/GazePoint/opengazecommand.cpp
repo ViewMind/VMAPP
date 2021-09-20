@@ -39,7 +39,7 @@ QString OpenGazeCommand::fromString(const QString &fullcmd){
             }
         }
         else {
-            if (fullcmd.at(i) == "/" && (fullcmd.at(i+1) == '>')){
+            if (fullcmd.at(i) == '/' && (fullcmd.at(i+1) == '>')){
                 foundStartEnd++;
                 break;
             }
@@ -51,7 +51,7 @@ QString OpenGazeCommand::fromString(const QString &fullcmd){
     if (foundStartEnd != 2) return "Badly formatted command: " + fullcmd;
 
     // Split by spaces.
-    QStringList parts = cleanCommand.split(" ",QString::SkipEmptyParts);
+    QStringList parts = cleanCommand.split(" ",Qt::SkipEmptyParts);
 
     // There should AT LEAST be a cmd type AND an ID
     if (parts.size() < 2) return "There should at least be a command type and an ID: " + fullcmd;
@@ -65,7 +65,7 @@ QString OpenGazeCommand::fromString(const QString &fullcmd){
     qint32 start = 2;
     if (cmdType != GPCT_REC){
         QString idstr = parts.at(1);
-        QStringList idandvalue = idstr.split("=",QString::SkipEmptyParts);
+        QStringList idandvalue = idstr.split("=",Qt::SkipEmptyParts);
         if (idandvalue.size() != 2) return "ID field wrongly formatted: " + idstr + " in " + fullcmd;
         if (idandvalue.first() != "ID") return "ID field wrongly formatted: " + idstr + " in " + fullcmd;
         id = idandvalue.last();
@@ -81,7 +81,7 @@ QString OpenGazeCommand::fromString(const QString &fullcmd){
     // Now all the fields;
     for (qint32 i = start; i < parts.size(); i++){
         QString str = parts.at(i);
-        QStringList fieldandvalue = str.split("=",QString::SkipEmptyParts);
+        QStringList fieldandvalue = str.split("=",Qt::SkipEmptyParts);
         if (fieldandvalue.size() != 2) return "Field wrongly formatted: " + str + " in " + fullcmd;
         QString value = fieldandvalue.last();
         value = value.replace("\"","");

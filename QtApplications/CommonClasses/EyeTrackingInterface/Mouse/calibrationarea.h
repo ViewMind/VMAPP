@@ -2,8 +2,8 @@
 #define CALIBRATIONAREA_H
 
 #include <QDialog>
-#include <QDesktopWidget>
-#include <QApplication>
+//#include <QApplication>
+#include <QGuiApplication>
 #include <QKeyEvent>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -16,7 +16,7 @@ class CalibrationArea : public QDialog
 {
     Q_OBJECT
 public:
-    explicit CalibrationArea(QWidget *parent = 0);
+    explicit CalibrationArea(QWidget *parent = nullptr);
 
     // Advances to the next calibration point. Returns true ONLY when the calibration is done.
     bool isInCalibrationPoint(int x, int y);
@@ -26,8 +26,8 @@ signals:
     void calibrationCanceled();
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
-    void showEvent(QShowEvent *event);
+    void keyPressEvent(QKeyEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
 private:
     QGraphicsEllipseItem *calibrationTarget;

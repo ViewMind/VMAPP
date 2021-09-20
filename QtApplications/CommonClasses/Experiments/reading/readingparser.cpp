@@ -23,7 +23,7 @@ bool ReadingParser::parseReadingDescription(const QString &contents){
     }
 
     // Generating the contents from the phrases
-    QStringList lines = experimentData.split('\n',QString::SkipEmptyParts);
+    QStringList lines = experimentData.split('\n',Qt::SkipEmptyParts);
 
     // Checking if the first line is a version string with the presence of ":".
     qint32 startI = 0;
@@ -41,7 +41,7 @@ bool ReadingParser::parseReadingDescription(const QString &contents){
 
         Phrase p;
 
-        QStringList idAndQuestion = line.split(':',QString::SkipEmptyParts);
+        QStringList idAndQuestion = line.split(':',Qt::SkipEmptyParts);
         if (idAndQuestion.size() != 2){
             error = "There should only be 1 instance of : in the question " + line + " @ " + QString::number(i+1);
             return false;
@@ -57,16 +57,16 @@ bool ReadingParser::parseReadingDescription(const QString &contents){
             return false;
         }
 
-        QStringList qAndA = idAndQuestion.last().split("|",QString::SkipEmptyParts);
+        QStringList qAndA = idAndQuestion.last().split("|",Qt::SkipEmptyParts);
         p.setPhrase(qAndA.first().trimmed());
 
         QStringList expectedID;
         expectedID << sid;
-        expectedID << QString::number(p.getPhrase().split(" ",QString::SkipEmptyParts).size());
+        expectedID << QString::number(p.getPhrase().split(" ",Qt::SkipEmptyParts).size());
         expectedIDs << expectedID;
 
         if (qAndA.size() == 2){
-            QStringList options = qAndA.last().split(',',QString::SkipEmptyParts);
+            QStringList options = qAndA.last().split(',',Qt::SkipEmptyParts);
             for (qint32 j = 0; j < options.size(); j++){
                 QString option = options.at(j).trimmed();
                 bool isAns = false;

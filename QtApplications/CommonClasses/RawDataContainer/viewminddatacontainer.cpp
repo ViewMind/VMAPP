@@ -19,7 +19,6 @@ bool ViewMindDataContainer::saveJSONFile(const QString &file_name, bool pretty_p
     }
 
     QTextStream writer(&file);
-    writer.setCodec("UTF-8");
     if (pretty_print) writer << json.toJson(QJsonDocument::Indented);
     else writer << json.toJson(QJsonDocument::Compact);
     file.close();

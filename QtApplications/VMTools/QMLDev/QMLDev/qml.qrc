@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>VMComboBox.qml</file>
         <file>VMComboBox2.qml</file>
+        <file>DateStuff.js</file>
     </qresource>
 </RCC>

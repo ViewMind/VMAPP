@@ -9,7 +9,7 @@ PerceptionParser::PerceptionParser()
 bool PerceptionParser::parsePerceptionExperiment(const QString &contents){
     trials.clear();
 
-    QStringList lines = contents.split("\n",QString::SkipEmptyParts);
+    QStringList lines = contents.split("\n",Qt::SkipEmptyParts);
     qint32 gettingTrialLines = -1;
 
     // Very first line should be the version string
@@ -22,7 +22,7 @@ bool PerceptionParser::parsePerceptionExperiment(const QString &contents){
 
         if (gettingTrialLines < 0){
             // This should be a header.
-            QStringList header_tokens = line.split(" ",QString::SkipEmptyParts);
+            QStringList header_tokens = line.split(" ",Qt::SkipEmptyParts);
             if (header_tokens.size() != 4){
                 error = "Parsing line " + line + ", expecting a header with 4 tokens, but got: " + QString::number(header_tokens.size()) + " instead.";
                 return false;
@@ -37,7 +37,7 @@ bool PerceptionParser::parsePerceptionExperiment(const QString &contents){
         }
         else{
             QList<TriangleType> row;
-            QStringList desc = line.split(" ",QString::SkipEmptyParts);
+            QStringList desc = line.split(" ",Qt::SkipEmptyParts);
             if (desc.size() != 5){
                 error = "Parsing line " + line + ", was expecting trial description line, but number of tokes was wrong: " + QString::number(desc.size());
                 return false;

@@ -90,7 +90,6 @@ void LogInterface::appendMessage(const QString &msg, MessageType type){
 
     // Write the message
     QTextStream writer(&file);
-    writer.setCodec("UTF-8");
     writer << s << "\n";
     file.close();
 }

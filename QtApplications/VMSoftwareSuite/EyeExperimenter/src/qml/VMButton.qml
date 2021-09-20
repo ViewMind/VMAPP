@@ -1,5 +1,5 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
+import QtQuick
+import QtQuick.Controls
 
 Button{
 
@@ -13,6 +13,8 @@ Button{
 
     width: vmSize[0]
     height: vmSize[1]
+
+    text: vmText
 
     function determineColors(){
         if (vmButton.vmInvertColors){
@@ -47,6 +49,7 @@ Button{
     }
 
     scale: vmButton.pressed? 0.8:1
+    hoverEnabled: false
 
     Behavior on scale{
         NumberAnimation {

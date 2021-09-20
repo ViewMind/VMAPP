@@ -32,17 +32,28 @@ namespace Globals {
 int main(int argc, char *argv[])
 {
 
+    LogInterface logger;
+
     // We need to load the defines to configure the rest of hte application.
     ConfigurationManager defines;
-    if (!defines.loadConfiguration(":/configs/config.cnf",Globals::Share::TEXT_CODEC)){
-        qDebug() << "Could not load configuration file due to " << defines.getError();
+    if (!defines.loadConfiguration(Globals::Paths::APPSPEC)){
+        logger.appendError("Could not load configuration file due to " + defines.getError());
     }
     else{
-        Globals::SetUpEyeTrackerNameSpace(defines.getString("et"));
-        Globals::SetUpRegion(defines.getString("region"));
-        //qDebug() << Globals::EyeTracker::NAME << Globals::REGION;
+
+        if (!defines.containsKeyword(Globals::VMAppSpec::ET)){
+            logger.appendError("EyeTracker Specification is missing from app spect");
+            return 0;
+        }
+
+        if (!defines.containsKeyword(Globals::VMAppSpec::Region)){
+            logger.appendError("Application region is missing from app spect");
+            return 0;
+        }
+
+        Globals::SetUpEyeTrackerNameSpace(defines.getString(Globals::VMAppSpec::ET));
+        Globals::SetUpRegion(defines.getString(Globals::VMAppSpec::Region));
         Globals::SetExperimenterVersion(); // This basically will show the correct information in the title bar.
-        //qDebug() << Globals::Share::EXPERIMENTER_VERSION;
     }
 
     qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");
@@ -54,8 +65,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("ViewMind");
     app.setOrganizationDomain("ViewMind");
 
-    // Checking that there isn't another instance of an application running.
-    LogInterface logger;
+    // Checking that there isn't another instance of an application running.    
     QSystemSemaphore semaphore(Globals::Share::SEMAPHORE_NAME, 1);  // create semaphore
     semaphore.acquire();                                            // Raise the semaphore, barring other instances to work with shared memory
     QSharedMemory sharedMemory(Globals::Share::SHAREDMEMORY_NAME);  // Create a copy of the shared memory

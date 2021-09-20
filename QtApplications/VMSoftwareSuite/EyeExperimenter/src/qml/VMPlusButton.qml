@@ -1,5 +1,5 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
+import QtQuick
+import QtQuick.Controls
 
 Button{
 
@@ -18,6 +18,8 @@ Button{
             duration: 25
         }
     }
+
+    hoverEnabled: false
 
     background: Rectangle {
         id: rectArea
