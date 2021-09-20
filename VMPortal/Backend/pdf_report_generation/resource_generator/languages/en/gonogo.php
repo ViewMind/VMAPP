@@ -67,8 +67,6 @@
   6 => "Problems for focusing dynamically on a particular activity",
 ];
 
-
-
  $report["overall_performance"]["text"] = "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex – Overall Performance Graph Interpretation.";
  $report["overall_performance"]["vertex"]["processing_speed"]                 = "Processing Speed";
  $report["overall_performance"]["vertex"]["processing_speed_interference"]    = "Processing Speed\nInterference";
