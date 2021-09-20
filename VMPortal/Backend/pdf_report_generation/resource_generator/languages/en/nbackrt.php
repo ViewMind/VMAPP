@@ -34,13 +34,13 @@
  $report["enconding_efficiency"]["range_text"]                                   = "Normal value below 260";
 
  $report["overall_performance"]["text"] = "Overall Performance";
- $report["overall_performance"]["vertex"]["visual_exploration_efficiency"]       = "Processing Speed";
- $report["overall_performance"]["vertex"]["visual_working_memory"]               = "Processing Speed\nInterference";
- $report["overall_performance"]["vertex"]["correct_responses"]                   = "Reaction Time\nInterference";
- $report["overall_performance"]["vertex"]["working_memory"]                      = "Processing Speed\nFacilitated";
- $report["overall_performance"]["vertex"]["inhibitory_processes"]                = "Reaction Time\nFacilitated";
- $report["overall_performance"]["vertex"]["decoding_efficiency"]                 = "Executive\nFunctions";
- $report["overall_performance"]["vertex"]["enconding_efficiency"]                = "Inhibitory Alterations\nFacilitated";
+ $report["overall_performance"]["vertex"]["visual_exploration_efficiency"]       = "Visual Exploration\nEfficiency";
+ $report["overall_performance"]["vertex"]["visual_working_memory"]               = "Visual Working\nMemory";
+ $report["overall_performance"]["vertex"]["correct_responses"]                   = "Correct\nResponses";
+ $report["overall_performance"]["vertex"]["working_memory"]                      = "Working\nMemory";
+ $report["overall_performance"]["vertex"]["inhibitory_processes"]                = "Inhibitory\nProcesses";
+ $report["overall_performance"]["vertex"]["decoding_efficiency"]                 = "Decoding\nEfficiency";
+ $report["overall_performance"]["vertex"]["enconding_efficiency"]                = "Encoding\nEfficiency";
 
  $report["fixation_plotting"]["text"] = "Fixation Plotting Text";
  $report["fixation_plotting"]["title_left"] = "ENCODING";

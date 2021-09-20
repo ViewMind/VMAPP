@@ -6,7 +6,7 @@
    // This should be the same as the CSV column order. 
    $variables = ["int_mem_perf","assoc_mem_perf","exec_func","parahipocampal_region"];
    
-   $csv_input = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/reference_files/pdiag_3T_table.csv";
+   $csv_input = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/reference_files/pdiag_binding_3T.csv";
 
    $expected_count = 81;  // 4 Variables of 3 possibilities each give for 81 combinations.
 

@@ -91,6 +91,7 @@
    $cat["yellow"] = "45* 63";
    $cat["red"]    = "- 45";
    $categories[$variable]["color"] = $cat;  
+   $categories[$variable]["skip_sd"] = true; // The flag tells the parser script to skip the SD computation for this variable. 
 
    return $categories;
    

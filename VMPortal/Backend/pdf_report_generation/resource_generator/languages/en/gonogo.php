@@ -5,7 +5,7 @@
 
  $report["page_titles"] = [
    ["EVALUATION: GO/NO GO TEST"],
-   ["COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS","OVERALL PERFORMANCE"],
+   ["BRAIN AREA PERFORMANCE","OVERALL PERFORMANCE"],
    ["VISUAL WORKING MEMORY ","STUDY DURATION"],
    ["SACCADIC BEHAVIOR","FIXATION DURATION"],
    ["FIXATION PLOTTING","FIXATION CONTROL"],
@@ -26,11 +26,11 @@
 // [17:16, 8/13/2021] Gerardo Fernandez: Visual_Working_memory_Facilitated <- Processing_Speed_Facilitated
 
  $report["processing_speed"]["title"]                    = "PROCESSING SPEED";
- $report["processing_speed"]["range_text"]               = "Normal value below 1.88";
+ $report["processing_speed"]["range_text"]               = "Normal value below 1.8";
  $report["processing_speed_interference"]["title"]       = "VISUAL WORKING MEMORY INTERFERENCE";
- $report["processing_speed_interference"]["range_text"]  = "Normal value below 1.83";
+ $report["processing_speed_interference"]["range_text"]  = "Normal value below 93";
  $report["processing_speed_facilitated"]["title"]        = "VISUAL WORKING MEMORY FACILITATED";
- $report["processing_speed_facilitated"]["range_text"]   = "Normal value below 1.75";
+ $report["processing_speed_facilitated"]["range_text"]   = "Normal value below 49";
  $report["reaction_time_facilitated"]["title"]           = "REACTION TIME FACILITATED";
  $report["reaction_time_facilitated"]["range_text"]      = "Normal value below 784";
  $report["reaction_time_interference"]["title"]          = "REACTION TIME INTERFERENCE";
@@ -38,9 +38,9 @@
  $report["executive_functions"]["title"]                 = "EXECUTIVE FUNCTIONS";
  $report["executive_functions"]["range_text"]            = "Normal value below 320";
  $report["index_error_facilitated"]["title"]             = "INHIBITORY ALTERATIONS FACILITATED";
- $report["index_error_facilitated"]["range_text"]        = "Normal value below 0.15";
+ $report["index_error_facilitated"]["range_text"]        = "Normal value below 15";
  $report["index_error_interference"]["title"]            = "INHIBITORY ALTERATIONS INTERFERENCE";
- $report["index_error_interference"]["range_text"]       = "Normal value below 0.31";
+ $report["index_error_interference"]["range_text"]       = "Normal value below 31";
 
 
  $report["affected_areas"]["green"] = "Preserved Cognitive Functions & Brain Areas:";
@@ -48,13 +48,24 @@
  $report["affected_areas"]["red"] = "Severely Impaired and/ or Pathological Cognitive Functions & Brain Areas:";
  ////
  $report["affected_areas"]["processing_speed"] = "Processing Speed: Frontal Lobe";
- $report["affected_areas"]["processing_speed_interference"] = "Processing Speed Interference: prefrontal cortex, caudate nucleus";
- $report["affected_areas"]["processing_speed_facilitated"] = "Processing Speed Facilitated: Prefrontal Cortex";
- $report["affected_areas"]["reaction_time_interference"] = "Reaction Time Interference: Medial Prefrontal Cortex (mPFC), Anterior, Posterior";
- $report["affected_areas"]["reaction_time_facilitated"] = "Reaction Time Facilitated: Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus";
- $report["affected_areas"]["executive_functions"] = "Executive Functions: Prefrontal Cortex";
- $report["affected_areas"]["index_error_facilitated"]  = "Inhibitory Alterations Facilitated: Right Inferior Frontal Gyrus (rIFG)";
- $report["affected_areas"]["index_error_interference"]  = "Inhibitory Alterations Interference: Caudal Inferior Frontal Gyrus (cIFG)";
+ $report["affected_areas"]["processing_speed_interference"] = "Prefrontal cortex, caudate nucleus";
+ $report["affected_areas"]["processing_speed_facilitated"] = "Prefrontal Cortex";
+ $report["affected_areas"]["reaction_time_interference"] = "Medial Prefrontal Cortex (mPFC), Anterior, Posterior";
+ $report["affected_areas"]["reaction_time_facilitated"] = "Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus";
+ $report["affected_areas"]["executive_functions"] = "Prefrontal Cortex";
+ $report["affected_areas"]["index_error_facilitated"]  = "Right Inferior Frontal Gyrus (rIFG)";
+ $report["affected_areas"]["index_error_interference"]  = "Caudal Inferior Frontal Gyrus (cIFG)";
+
+ $report["presumptive_diagnosis"]["left_title"] = "Presumptive Diagnosis";
+ $report["presumptive_diagnosis"]["right_title"] = "A.I. Performance Index";
+ $report["presumptive_diagnosis"]["texts"] = [
+  1 => "Generalized Cognitive and Brain Alteration.",
+  2 => "Problems for controlling cognitive and motor responses.",
+  3 => "Delay when processing information.",
+  4 => "Problems for encoding and decoding information",
+  5 => "Performance within normal values",
+  6 => "Problems for focusing dynamically on a particular activity",
+];
 
  $report["overall_performance"]["text"] = "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex – Overall Performance Graph Interpretation.";
  $report["overall_performance"]["vertex"]["processing_speed"]                 = "Processing Speed";

@@ -241,6 +241,7 @@ if ($file_path_to_return != ""){
    $extension = $path_parts["extension"];
    $basename = $path_parts["basename"];
 
+   header("Access-Control-Expose-Headers: Content-Disposition"); // Required so the Content Disposition field can be read in the client. 
    header("Content-Type: application/$extension");
    header("Content-Transfer-Encoding: Binary");
    header("Content-Length:".filesize($file_path_to_return));

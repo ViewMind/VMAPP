@@ -4,10 +4,14 @@
    //$variables = ["parahipocampal_region","exec_func","int_mem_perf","assoc_mem_perf"];
    
    // This should be the same as the CSV column order. 
-   $variables = ["int_mem_perf","assoc_mem_perf","exec_func","parahipocampal_region"];
+   $variables = ["processing_speed","index_error_interference","index_error_facilitated","executive_functions"];
+   //processing speed,
+   //Inhibitory_alterations_in_Task_with_Interference,
+   //Inhibitory_alterations_in_Task_Facilitated,
+   //Executive Functions
    
-   // The only difference with 3T in this CSV used as the input. But it has the same format and column ordering and nameing. 
-   $csv_input = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/reference_files/pdiag_binding_2T.csv";
+   // Input CSV Table. . 
+   $csv_input = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation/doc_and_examples/reference_files/pdiag_gonogo.csv";
 
    $expected_count = 81;  // 4 Variables of 3 possibilities each give for 81 combinations.
 
@@ -16,7 +20,7 @@
    $lookup = array();
 
    if (!is_file($csv_input)){
-      echo "Could not find pdiag CSV file for Binding 2T: $csv_input\n";
+      echo "Could not find pdiag CSV file for GoNoGo: $csv_input\n";
       exit();
    }
 
@@ -34,18 +38,18 @@
       // Decreasing the count to make sure we account for all possibilities. 
       $expected_count--;
 
-      $int_mem_perf   = $cols[0];
-      $assoc_mem_perf = $cols[1];
-      $exec_func      = $cols[2];
-      $parah_region   = $cols[3];
-      $string_id      = $cols[4];
+      $proc_speed              = $cols[0];
+      $index_err_interf        = $cols[1];
+      $index_err_facilitated   = $cols[3];
+      $exec_func               = $cols[2];      
+      $string_id               = $cols[4];
 
-      $lookup[$int_mem_perf][$assoc_mem_perf][$exec_func][$parah_region] = $string_id;
+      $lookup[$proc_speed][$index_err_interf][$index_err_facilitated][$exec_func] = $string_id;
 
    }
 
    if ($expected_count > 0){
-      echo "PDiag Binding 2T: Expected count is non zero after parsing: $expected_count\n";
+      echo "PDiag GoNoGo: Expected count is non zero after parsing: $expected_count\n";
       exit();
    }
    

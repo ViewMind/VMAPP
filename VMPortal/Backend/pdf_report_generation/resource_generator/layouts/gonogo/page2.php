@@ -57,23 +57,24 @@
    ]; 
    $page["items"][] = $item;
 
-   // // Adding the presumptive diagnosis.
-   // $item = [];
-   // $w = 0.98;
-   // $h = 0.12;
-   // $item["id"]         = "pdiag";
-   // $item["x"] = (1 - $w)/2;
-   // $item["y"] = $ysubtitle - $h*1.5; 
-   // $item["w"] = $w;
-   // $item["h"] = $h;
-   // $item["type"]        = "pdiag";
-   // $item["text_base"]   = "binding.presumptive_diagnosis.texts";
-   // $item["text_index"]  = "&presumptive_diagnosis&";
-   // $item["value"]       = "&parahipocampal_region&";
-   // $item["left_title"]  = "#gonogo.presumptive_diagnosis.left_title#";
-   // $item["right_title"] = "#gonogo.presumptive_diagnosis.right_title#";
-   // $item["separator"]  = 0.66;   
-   // $page["items"][] = $item;
+   // Adding the presumptive diagnosis.
+   $item = [];
+   $w = 0.98;
+   $h = 0.12;
+   $item["id"]         = "pdiag";
+   $item["x"] = (1 - $w)/2;
+   $item["y"] = $ysubtitle - $h*1.35; 
+   $item["w"] = $w;
+   $item["h"] = $h;
+   $item["type"]        = "pdiag";
+   $item["text_base"]   = "gonogo.presumptive_diagnosis.texts";
+   $item["text_index"]  = "&presumptive_diagnosis&";
+   $item["value"]       = "0";
+   $item["left_title"]  = "#gonogo.presumptive_diagnosis.left_title#";
+   //$item["right_title"] = "#gonogo.presumptive_diagnosis.right_title#";
+   $item["right_title"] = ""; // This will not render the right hand side. 
+   $item["separator"]  = 0.66;   
+   $page["items"][] = $item;
 
    // Overall performance. 
    $item = [];

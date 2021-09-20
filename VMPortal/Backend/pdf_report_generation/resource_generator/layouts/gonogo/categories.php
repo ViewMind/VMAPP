@@ -6,81 +6,80 @@
    $cat = array();
    $variable = "processing_speed";   
    $cat["+1"]  = "- 0.99*";
-   $cat["0"]   = "0.99 1.88*";
-   $cat["-1"]  = "1.88 1.91*";
-   $cat["-2"]  = "1.92 1.95*";
-   $cat["-3"]  = "1.95 +";
+   $cat["0"]   = "0.99 1.80*";
+   $cat["-1"]  = "1.80 1.88*";
+   $cat["-2"]  = "1.88 1.93*";
+   $cat["-3"]  = "1.93 +";
    $categories[$variable]["polygon"] = $cat;
 
    $cat = array();
-   $cat["green"]  = "- 1.88*";
-   $cat["yellow"] = "1.88 1.95*";
-   $cat["red"]    = "1.95 +";
+   $cat["green"]  = "- 1.80*";
+   $cat["yellow"] = "1.80 1.93*";
+   $cat["red"]    = "1.93 +";
    $categories[$variable]["color"] = $cat;
 
    /////
    $cat = array();
    $variable = "processing_speed_interference";   
-   $cat["+1"]  = "- 0.99*";
-   $cat["0"]  = "0.99 1.83*";
-   $cat["-1"] = "1.83 1.87*";
-   $cat["-2"] = "1.87 1.90*";
-   $cat["-3"] = "1.90 +";
+   $cat["+1"]  = "- 49*";
+   $cat["0"]  = "49 93*";
+   $cat["-1"] = "93 103*";
+   $cat["-2"] = "100 110*";
+   $cat["-3"] = "110 +";
    $categories[$variable]["polygon"] = $cat;  
 
    $cat = array();
-   $cat["green"]  = "- 1.83";
-   $cat["yellow"] = "1.83 1.90*";
-   $cat["red"]    = "1.90 +";
+   $cat["green"]  = "- 93*";
+   $cat["yellow"] = "93 110*";
+   $cat["red"]    = "110 +";
    $categories[$variable]["color"] = $cat;   
 
    /////
    $cat = array();
    $variable = "processing_speed_facilitated";   
-   $cat["+1"]  = "- 0.99*";
-   $cat["0"]  = "0.99 1.75*";
-   $cat["-1"] = "1.75 1.80*";
-   $cat["-2"] = "1.80 1.85*";
-   $cat["-3"] = "1.85 +";
+   $cat["+1"]  = "- 49*";
+   $cat["0"]  = "49 85*";
+   $cat["-1"] = "85 99*";
+   $cat["-2"] = "99 105*";
+   $cat["-3"] = "105 +";
    $categories[$variable]["polygon"] = $cat;   
 
-
    $cat = array();
-   $cat["green"]  = "- 1.75*";
-   $cat["yellow"] = "1.75 1.85*";
-   $cat["red"]    = "1.85 +";
-   $categories[$variable]["color"] = $cat;   
+   $cat["green"]  = "- 85*";
+   $cat["yellow"] = "85 105*";
+   $cat["red"]    = "105 +";
+   $categories[$variable]["color"] = $cat;      
 
    /////
    $cat = array();
    $variable = "index_error_interference";   
-   $cat["+1"]  = "- 0.99*";
-   $cat["0"]  = "0.02 0.31*";
-   $cat["-1"] = "0.31 0.36*";
-   $cat["-2"] = "0.37 0.40*";
-   $cat["-3"] = "1.85 +";
+   $cat["+1"]  = "- 1*";
+   $cat["0"]  = "1 31*";
+   $cat["-1"] = "31 38*";
+   $cat["-2"] = "39 45*";
+   $cat["-3"] = "46 +";
    $categories[$variable]["polygon"] = $cat;   
 
    $cat = array();
-   $cat["green"]  = "- 0.31*";
-   $cat["yellow"] = "0.31 0.40*";
-   $cat["red"]    = "0.40 +";
-   $categories[$variable]["color"] = $cat;    
-
+   $cat["green"]  = "- 31*";
+   $cat["yellow"] = "31 45*";
+   $cat["red"]    = "45 +";
+   $categories[$variable]["color"] = $cat;   
+  
    /////
    $cat = array();
    $variable = "index_error_facilitated";   
-   $cat["+1"]  = "- 0.01*";
-   $cat["0"]  = "0.02 0.15*";
-   $cat["-1"] = "0.15 0.19*";
-   $cat["-2"] = "0.19 0.25*";
-   $cat["-3"] = "0.25 +";
+   $cat["+1"]  = "- 1*";
+   $cat["0"]  = "1 15*";
+   $cat["-1"] = "15 25*";
+   $cat["-2"] = "25 32*";
+   $cat["-3"] = "32 +";
    $categories[$variable]["polygon"] = $cat;   
 
    $cat = array();
-   $cat["green"]  = "- 0.15*";
-   $cat["yellow"] = "0.15 0.25*";
-   $cat["red"]    = "0.25 +";
+   $cat["green"]  = "- 15*";
+   $cat["yellow"] = "15 32*";
+   $cat["red"]    = "32 +";
    $categories[$variable]["color"] = $cat;  
 
    /////
@@ -97,7 +96,7 @@
    $cat["green"]  = "- 784*";
    $cat["yellow"] = "784 873*";
    $cat["red"]    = "873 +";
-   $categories[$variable]["color"] = $cat;    
+   $categories[$variable]["color"] = $cat;       
 
    /////
    $cat = array();
@@ -120,20 +119,18 @@
    $cat = array();
    $variable = "executive_functions";   
    $cat["+1"]  = "- 100*";
-   $cat["0"]  = "101 320*";
+   $cat["0"]  = "100 320*";
    $cat["-1"] = "320 370*";
    $cat["-2"] = "370 420*";
    $cat["-3"] = "420 +";
    $categories[$variable]["polygon"] = $cat;   
-
 
    $cat = array();
    $cat["green"]  = "- 320*";
    $cat["yellow"] = "320 420*";
    $cat["red"]    = "420 +";
    $categories[$variable]["color"] = $cat;     
-   
-  
+     
    return $categories;
    
 ?>

@@ -20,26 +20,26 @@ int main(int argc, char *argv[]){
     QCoreApplication a(argc, argv);
 
 
-    QString key                     = "2a119e8e0f1e95a02b3b3520a9bca8f1e7f1621c070fce57a9b6f3bcd1f13ebdba10fd9720beb7862fd4134b18d97bb0e95d618e98660b01b3d75df264c6e371";
-    QString secret                  = "1522352f8e0326d4fb301e5ff9336ec382a064e16694dbdaf1b62fdb14981bd7e6f7b6cbb0ef7ca4e5abde496908d0f1e238a679b68a5ccd82d6046e09c9ae12c6633b055921128cca6c88ec7169cff60916fb4badbd89a32cf85945c2be919ed89f8453eea3e9c82f1cdbefc1e22b35f2d34af0d5ff9ccc63af2b498dc88a43";
+    QString key                     = "58a3b6efb87046cffc32130750f51f057f5b82a6138c574cdf8c2df34291df88d0681185b0fbe1ad829607ec173920fe17d8d3a2980cc7342218f71ac6115f58";
+    QString secret                  = "d4c2b2f31022011176962021103ab004a7a430c5ff0aa6ad71410babf950ea331aa27133acffd5b6d308a49dca3cf09ffb98d6c2fd67de69b70d01910bb31921b6186d20f497da20140d51df786f33722c50564136c3924863add7b6d9f2963279f412237c772178e90b089699965f77a715785a5a52e6fee8ce3b9bf1807cf5";
 
     QString test_file                 = "my_test_file.json";
     //QString APIURL                  = "http://192.168.1.12/vmapi";
     QString APIURL                    = "http://localhost/vmapi";
     //QString APIURL                  = "http://localhost/tests/";
     //QString APIURL                  = "https://eu-api.viewmind.ai/";
-    //QString endpoint                = "/institution/operating_information/1";
-    QString endpoint                  = "/portal_users/addnologpusers/1";
+    QString endpoint                  = "/institution/operating_information/2";
+    //QString endpoint                = "/portal_users/addnologpusers/1";
     //QString endpoint                = "/institution/getupdate/1";
     //QString endpoint                = "getfile.php";
     //QString endpoint                = "/reports/generate/1";
-    QString zipfile                   = "2021_07_19_20_19_43_912188.zip";
+    //QString zipfile                 = "2021_07_19_20_19_43_912188.zip";
     QVariantMap URLParameters;
 
     // Let's add some parameters to the URL
-    //URLParameters.insert("ppkey","gazepoint");
-    //URLParameters.insert("instance",0);
-    //URLParameters.insert("version","16.1.1");
+    URLParameters.insert("ppkey","gazepoint");
+    URLParameters.insert("instance",0);
+    URLParameters.insert("version","16.3.0");
 
     RESTAPIController rest_controller;
     rest_controller.setBaseAPI(APIURL);
@@ -47,25 +47,25 @@ int main(int argc, char *argv[]){
     rest_controller.setAPIEndpoint(endpoint);
     rest_controller.setURLParameters(URLParameters);    
 
-    // Lets create a test file.
+    // Basic Post Data
     QVariantMap data;
-    data.insert("institution_id",1);
+    data.insert("institution_id",2);
     data.insert("institution_instance",0);
-    data.insert("data","some data");
+    // data.insert("data","some data");
 
-    QVariantMap testdata;
-    testdata.insert("institution_id","1");
-    testdata.insert("institution_instance","0");
-    testdata.insert("Doctor","Ariel Ñoño");
-    testdata.insert("email","some@somewhere.com");
-    QVariantList patients;
-    for (qint32 i = 0; i < 3; i++){
-        QVariantMap patient;
-        patient.insert("Name","Patient " + QString::number(i));
-        patient.insert("ID",QString::number(i));
-        patients << patient;
-    }
-    testdata.insert("Patients",patients);
+//    QVariantMap testdata;
+//    testdata.insert("institution_id","1");
+//    testdata.insert("institution_instance","0");
+//    testdata.insert("Doctor","Ariel Ñoño");
+//    testdata.insert("email","some@somewhere.com");
+//    QVariantList patients;
+//    for (qint32 i = 0; i < 3; i++){
+//        QVariantMap patient;
+//        patient.insert("Name","Patient " + QString::number(i));
+//        patient.insert("ID",QString::number(i));
+//        patients << patient;
+//    }
+//    testdata.insert("Patients",patients);
 
 
     //QJsonDocument json = QJsonDocument::fromVariant(testdata);
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]){
     rest_controller.setPOSTDataToSend(data);
 
     //Appending the data as JSON makes it igonre all both previous add ons, but thats the intention. (Destroys POST Data).
-    rest_controller.setJSONData(testdata);
+    //rest_controller.setJSONData(testdata);
 
     // Adding salt to ensure uniqueness of signature.
     rest_controller.addSalt();
