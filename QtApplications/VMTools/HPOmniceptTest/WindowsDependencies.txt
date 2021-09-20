@@ -1,0 +1,15 @@
+WinRuntimeInfo
+WinFileHelper
+WindowsRegistryConfig
+WinUuid
+WinFileSignatureValidator
+
+LNK2019: unresolved external symbol __imp_EqualSid 
+
+
+rpcproxy
+rpcexts
+Rpcns4
+RpcRT4
+runtimeobject
+fileextd

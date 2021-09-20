@@ -1,0 +1,16 @@
+title_en = WORKING MEMORY;
+title_es = MEMORIA DE TRABAJO;
+
+explanation_en = Prefrontal cortex;
+explanation_es = Corteza Prefrontal;
+
+range_text_en = Normal value GREATER than 70;
+range_text_es = Valor normal MAYOR a 70;
+
+cutoff_values = 50|60|70|80;
+
+smaller_better = false;
+
+associated_value = working_memory;
+
+mult_by_100 = false;

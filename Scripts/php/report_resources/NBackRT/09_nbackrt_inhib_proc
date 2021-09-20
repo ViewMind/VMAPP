@@ -1,0 +1,17 @@
+title_en = INHIBITORY PROCESSES;
+title_es = PROCESOS INHIBITORIOS;
+
+explanation_en = ;
+
+explanation_es = ;
+
+range_text_en = Normal value LESS than 18;
+range_text_es = Valor normal MENOR a 18;
+
+cutoff_values = 0|3|18|45|60;
+
+smaller_better = true;
+
+associated_value = inhibitory_problems_percent;
+
+mult_by_100 = false;

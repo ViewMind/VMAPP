@@ -1,0 +1,17 @@
+title_en = VISUAL EXPLORATION EFFICIENCY;
+title_es = EFICIENCIA EN EXPLORACIÓN VISUAL;
+
+explanation_en = ;
+
+explanation_es = ;
+
+range_text_en = Normal value GREATER than 4.1;
+range_text_es = Valor normal MAYOR a 4.1;
+
+cutoff_values = 1.9|2.9|4|6|8;
+
+smaller_better = false;
+
+associated_value = mean_saccade_amplitude;
+
+mult_by_100 = false;

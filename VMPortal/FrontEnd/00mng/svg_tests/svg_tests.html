@@ -1,0 +1,27 @@
+ <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <script src="embedded_fonts.js"></script>
+        <script src="jspdf.umd.min.js"></script>
+        <script src="tests.js"></script>
+    </head>
+    <body>
+       <div id="container">
+       </div>
+    </div>       
+
+
+    <script>
+      const DEF_FONT_GOTHAM_BOLD = "<style type='text/css'>@font-face {font-family: GothamBold; src: url('data:application/font-woff2;charset=utf-8;base64," + FONTS.GothamBold + "')}</style>"
+      const DEF_FONT_GOTHAM_BOOK = "<style type='text/css'>@font-face {font-family: GothamBook; src: url('data:application/font-woff2;charset=utf-8;base64," + FONTS.GothamBook + "')}</style>"
+      window.jsPDF = window.jspdf.jsPDF; // Required for JS PDF to work
+      generateSVG();
+      genPDF();
+    </script>
+
+    </body>
+
+</html>

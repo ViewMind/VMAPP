@@ -5,8 +5,8 @@ BASTION_USER_NAME="ec2-user"
 BASTION_SRC_FOLDER="/home/ec2-user/viewmind_projects/Scripts/AWS"
 BASTION_WORK_DIR="$BASTION_SRC_FOLDER/SQL_BKPS"
 
-#CURRENT_FOLDER=$(date +"%Y_%m_%d_%H_%M")
-CURRENT_FOLDER="2021_05_24_16_33"
+CURRENT_FOLDER=$(date +"%Y_%m_%d_%H_%M")
+#CURRENT_FOLDER="2021_05_24_16_33"
 
 BASTION_BKP_DIR="$BASTION_WORK_DIR/$CURRENT_FOLDER" 
 DEST="bkpProd"
@@ -42,7 +42,7 @@ for (( i=0; i<$total; i++ )); do
 
    # Running the command. 
    echo "   Backing up DB: $DB_NAME"
-   # ssh $BASTION_USER_NAME@$BASTION_IP "$BKP_CMD"
+   ssh $BASTION_USER_NAME@$BASTION_IP "$BKP_CMD"
    
 done
 

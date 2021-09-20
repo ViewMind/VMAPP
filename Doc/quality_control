@@ -1,0 +1,33 @@
+Quality control.
+
+Each study is composed of trials.  And each trial is composed of datasets.
+
+So each dataset has:
+   -- A minimum number of points (depends on the frequency)
+   -- Consecutive timestamp points must be within two values (min, max) at all times, and when they are not that's a glitch. 
+   
+Average Frequency for the entire study.
+
+So this necessitates the following values.
+min_successive_timestamp_difference
+max_successive_timestamp_difference
+
+Which means that, for each Data set we can compute the following graphs:
+1) Number of Points per Trial (one or the other, decide)
+2) Number of Fixation per Trial (or or the other). 
+3) Number of Frequency Glitches Per Trial
+4) Average Frequency For trial.
+
+So for each of these one graph with a suggested line of the recommended minimum value.
+
+So each study has 4 parameters. 
+And there is 2 which are study independant. 
+
+qc_parameters:
+   min_successive_timestamp_difference
+   max_successive_timestamp_difference
+   [Each Study]
+      min_points_per_trial
+      min_fixations_per_trial
+      max_recommended_glitches.
+      avg_frequecy_per_trial
