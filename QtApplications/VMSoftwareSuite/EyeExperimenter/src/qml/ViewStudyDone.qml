@@ -1,6 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 VMBase {
 
@@ -16,32 +16,11 @@ VMBase {
         studyDoneDiag.close();
     }
 
-    Dialog {
+    VMDialogBase {
 
         id: studyDoneDiag;
-        modal: true
         width: mainWindow.width*0.48
         height: mainWindow.height*0.87
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
-
-        contentItem: Rectangle {
-            id: rectDialog
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
-
-        VMDialogCloseButton {
-            id: btnClose
-            anchors.top: parent.top
-            anchors.topMargin: mainWindow.height*0.032
-            anchors.right: parent.right
-            anchors.rightMargin: mainWindow.width*0.02
-        }
 
         // The Title
         Text {

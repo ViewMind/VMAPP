@@ -1,6 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 import com.qml 1.0
 
 VMBase {
@@ -36,15 +36,15 @@ VMBase {
 
     Connections{
         target: flowControl
-        onNewImageAvailable: {
+        function onNewImageAvailable () {
             hmdView.image = flowControl.image;
         }
     }
 
     Connections{
         target: flowControl
-        onConnectedToEyeTracker:{
-            if (swiperControl.currentIndex != swiperControl.vmIndexVRDisplay) return;
+        function onConnectedToEyeTracker () {
+            if (swiperControl.currentIndex !== swiperControl.vmIndexVRDisplay) return;
             //console.log("Connected to eyetracker in ViewVRDisplay")
             var titleMsg;
             if (!flowControl.isConnected()){
@@ -59,8 +59,8 @@ VMBase {
             // All is good so the calibration is requested.
             flowControl.calibrateEyeTracker(viewCalibrationStart.vmSelectedEye);
         }
-        onCalibrationDone: {
-            if (swiperControl.currentIndex != swiperControl.vmIndexVRDisplay) return;
+        function onCalibrationDone() {
+            if (swiperControl.currentIndex !== swiperControl.vmIndexVRDisplay) return;
             //console.log("Calibration done in ViewVRDisplay")
             var titleMsg;
             if (!flowControl.isCalibrated()){

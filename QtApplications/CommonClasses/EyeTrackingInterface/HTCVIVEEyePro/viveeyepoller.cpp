@@ -62,7 +62,7 @@ void VIVEEyePoller::run(){
     previousSample[HTCVIVE::LeftEye] = eye;
     previousSample[HTCVIVE::RightEye] = eye;
 
-    qint64 previous = 0;
+    //qint64 previous = 0;
 
 
     while (keepGoing) {

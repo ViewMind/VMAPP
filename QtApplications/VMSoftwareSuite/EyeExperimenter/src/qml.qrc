@@ -50,5 +50,6 @@
         <file>qml/VMSelectorRect.qml</file>
         <file>qml/ObjectListSorter.js</file>
         <file>qml/DateLocalization.js</file>
+        <file>qml/VMDialogBase.qml</file>
     </qresource>
 </RCC>

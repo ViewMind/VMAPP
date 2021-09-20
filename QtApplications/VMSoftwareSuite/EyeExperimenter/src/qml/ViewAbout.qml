@@ -1,35 +1,21 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
-import QtQuick.Dialogs 1.1
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
-Dialog {
+
+VMDialogBase {
 
     property string vmLoadLanguage: "";
 
     id: viewAbout
-    modal: true
     width: mainWindow.width*0.48
-    height: mainWindow.height*0.812
-    closePolicy: Popup.NoAutoClose
+    height: mainWindow.height*0.812    
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
             focus = true
         }
-    }
-
-    contentItem: Rectangle {
-        id: rectDialog
-        anchors.fill: parent
-        layer.enabled: true
-        layer.effect: DropShadow{
-            radius: 5
-        }
-    }
-
-    onOpened: {
     }
 
     // The configure settings title

@@ -4,7 +4,6 @@
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
 #include <QPainter>
-#include <QDesktopWidget>
 #include <QApplication>
 #include "../ConfigurationManager/configurationmanager.h"
 #include "../eyetracker_defines.h"

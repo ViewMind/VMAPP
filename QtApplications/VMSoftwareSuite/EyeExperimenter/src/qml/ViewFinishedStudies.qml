@@ -1,7 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
-import QtQuick.Dialogs 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 VMBase {
 
@@ -12,7 +11,7 @@ VMBase {
 
     Connections {
         target: loader
-        onQualityControlDone: {
+        function onQualityControlDone () {
             // Close the connection dialog and open the user selection dialog.
             processingQCDialog.close();
 
@@ -28,18 +27,16 @@ VMBase {
         }
     }
 
-    Dialog {
+    VMDialogBase {
 
         property string vmTitle: loader.getStringForKey("viewfinishedstudies_waitTitle")
         property string vmMessage: loader.getStringForKey("viewfinishedstudies_waitSubTitle")
 
         id: processingQCDialog;
-        modal: true
+        vmNoCloseButton: true
+
         width: mainWindow.width*0.48
         height: mainWindow.height*0.87
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
 
         onWidthChanged: {
             processingQCDialog.repositionSlideAnimation()
@@ -47,15 +44,6 @@ VMBase {
 
         onHeightChanged: {
             processingQCDialog.repositionSlideAnimation();
-        }
-
-        contentItem: Rectangle {
-            id: rectConnectionDialog
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
         }
 
         // The instruction text
@@ -258,10 +246,11 @@ VMBase {
             id: tableArea
             anchors.fill: parent
             clip: true
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ListView {
                 id: studyListView
                 anchors.fill: parent
-                model: studiesList
+                model: studiesList                
                 delegate: VMFinalizedStudyEntry {
                 }
                 onCurrentIndexChanged: {

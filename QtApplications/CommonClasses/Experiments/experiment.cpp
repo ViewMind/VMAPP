@@ -59,7 +59,7 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     }
 
     QTextStream reader(&expfile);
-    reader.setCodec(ExperimentGlobals::TEXT_CODEC);
+    reader.setEncoding(QStringConverter::Utf8);
     QString contents = reader.readAll();
     expfile.close();
 

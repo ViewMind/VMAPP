@@ -33,6 +33,11 @@ namespace Globals{
    static QString API_URL = "";
    static QString REGION  = "";
 
+   namespace VMAppSpec {
+      static const QString ET = "et";
+      static const QString Region = "region";
+   }
+
    namespace Labeling{
        static const QString MANUFACTURE_DATE = "07/10/2020";
        static const QString SERIAL_NUMBER = "0-00000000-000000";
@@ -47,11 +52,12 @@ namespace Globals{
       static const QString CONFIGURATION = "vmconfiguration";
       static const QString SETTINGS = "vmsettings";
       static const QString PARTNERS = "vmpartners";
+      static const QString APPSPEC  = "vmappspec";
       static const QString PROCESSING_PARAMETERS = "vmpp";
       static const QString UPDATE_PACKAGE = "app.zip";
       static const QString UPDATE_SCRIPT  = "update.bat";
       static const QString CHANGELOG_LOCATION = "changelog";
-      static const QString CHANGELOG_BASE = "changelog_";
+      static const QString CHANGELOG_BASE = "changelog_";      
    }
    
    namespace VMConfig {
@@ -97,7 +103,7 @@ namespace Globals{
       static const bool SHOW_EYE_POSITION       = false;
       static const bool DISABLE_RM_SENT_STUDIES = false;
       static const bool PRETTY_PRINT_JSON_DB    = false;
-      static const bool DISABLE_UPDATE_CHECK    = true;
+      static const bool DISABLE_UPDATE_CHECK    = false;
    }
       
    namespace UILanguage {
@@ -106,7 +112,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "16.4.1";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "17.0.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
@@ -119,7 +125,6 @@ namespace Globals{
        static const QString MONITOR_RESOLUTION_WIDTH = "monitor_resolution_width";
        static const QString MONITOR_RESOLUTION_HEIGHT = "monitor_resolution_height";
        static const QString SELECTED_STUDY = "selected_study";
-       static const char *  TEXT_CODEC = "UTF-8";
    }
 
    static void SetUpRegion(const QString &region){

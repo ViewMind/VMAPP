@@ -49,7 +49,7 @@ public:
     typedef QHash<QString,Command> CommandVerifications;
 
     ConfigurationManager();
-    bool loadConfiguration(const QString &file, const char *textCodec, const QString readText = "");
+    bool loadConfiguration(const QString &file, const QString readText = "");
 
     // Used in order to add data and unify as the only configuration structure in a program
     void addKeyValuePair(const QString &name, const QVariant &value);
@@ -85,17 +85,17 @@ public:
     void merge(const ConfigurationManager &configmng);
 
     // Wrapper function to save a value from the configuration to a file in disc.
-    QString saveValueToFile(const QString &fileName, const char *textCode, const QString &key);
+    QString saveValueToFile(const QString &fileName, const QString &key);
 
     // Save complete configuration to file
-    bool saveToFile(const QString &fileName, const char *textCodec, const Delimiters &delimiters = Delimiters());
+    bool saveToFile(const QString &fileName, const Delimiters &delimiters = Delimiters());
 
     // Functions to get to and from map.
     QVariantMap getMap() const {QVariant temp; temp = data; return temp.toMap();}
     //void fromMap(const QVariantMap &map) {QVariant temp; temp = map; data = temp.toHash();}
 
     // Service function to replace a value in a configuration text file.
-    static QString setValue(const QString &fileName, const char *textCodec,
+    static QString setValue(const QString &fileName,
                             const QString &cmd,
                             const QString &value,
                             ConfigurationManager *configToChange = nullptr,

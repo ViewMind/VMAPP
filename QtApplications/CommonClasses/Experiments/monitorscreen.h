@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QGraphicsView>
-#include <QDesktopWidget>
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QGraphicsScene>

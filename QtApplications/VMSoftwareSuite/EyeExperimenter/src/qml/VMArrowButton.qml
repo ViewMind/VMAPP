@@ -1,10 +1,11 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
+import QtQuick
+import QtQuick.Controls
 
 Button{
 
     id: vmArrowButton
     scale: vmArrowButton.pressed? 0.8:1
+    hoverEnabled: false
 
     property bool vmRotate: false
 

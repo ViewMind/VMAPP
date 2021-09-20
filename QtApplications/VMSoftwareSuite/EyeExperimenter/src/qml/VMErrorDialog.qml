@@ -1,8 +1,8 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
-Dialog {
+VMDialogBase {
 
     // The possible errors
     property string vmErrorTitle: "Error Ocurred"
@@ -14,33 +14,14 @@ Dialog {
     readonly property int vmErrorCodeClose: 1
 
     id: errorDiag;
-    modal: true
     width: mainWindow.width*0.495
     height: mainWindow.height*0.87
-    closePolicy: Popup.NoAutoClose
 
     onWidthChanged: repositionImage();
     onHeightChanged: repositionImage();
 
-    contentItem: Rectangle {
-        id: rectDialog
-        anchors.fill: parent
-        layer.enabled: true
-        layer.effect: DropShadow{
-            radius: 5
-        }
-    }
-
-    VMDialogCloseButton {
-        id: btnClose
-        anchors.top: parent.top
-        anchors.topMargin: mainWindow.height*0.032
-        anchors.right: parent.right
-        anchors.rightMargin: mainWindow.width*0.02
-        onClicked: {
-            close();
-            if (vmErrorCode == vmErrorCodeClose) Qt.quit()
-        }
+    onCloseButtonPressed: {
+        if (vmErrorCode == vmErrorCodeClose) Qt.quit()
     }
 
     // The instruction text

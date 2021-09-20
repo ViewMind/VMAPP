@@ -1,7 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
-import QtQuick.Dialogs 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 import "ObjectListSorter.js" as OLS
 
 VMBase {
@@ -18,27 +17,14 @@ VMBase {
 
 
 
-    Dialog {
+    VMDialogBase {
         id: studyPreSetup;
-        modal: true
+        vmNoCloseButton: true
         width: mainWindow.width*0.5
         height: mainWindow.height*0.5
 
         property var doctorList: []
         property var protocolList: []
-
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
-
-        contentItem: Rectangle {
-            id: rectDialog
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
 
         function fillComboBoxes(){
             var medics = loader.getMedicList();
@@ -47,6 +33,7 @@ VMBase {
             var medic_instruction = loader.getStringForKey("viewpatientlist_destinatary")
             doctorList.push({ "value" : medic_instruction, "metadata" : "-1" });
             for (var key in medics){
+                //console.log(key + " => " + medics[key])
                 doctorList.push({ "value" : medics[key], "metadata" : key });
             }
             doctorSelection.setModelList(doctorList);
@@ -228,7 +215,7 @@ VMBase {
     }
 
     function setCurrentPatient(){
-        if (patientListView.currentIndex == -1) return;
+        if (patientListView.currentIndex === -1) return;
 
         //console.log("Pat name: " + patientList.get(patientListView.currentIndex).vmPatientName)
         //var displayName = patientList.get(patientListView.currentIndex).name + " " + patientList.get(patientListView.currentIndex).lastname;
@@ -303,7 +290,7 @@ VMBase {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: btnAddPatient.right
             anchors.leftMargin: 10;
-            enabled: patientListView.currentIndex !== -1
+            enabled: (patientListView.currentIndex !== -1)
             onClicked: {
                 viewPatientReg.loadPatientInformation();
                 swiperControl.currentIndex = swiperControl.vmIndexPatientReg
@@ -500,6 +487,7 @@ VMBase {
             id: tableArea
             anchors.fill: parent
             clip: true
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ListView {
                 id: patientListView
                 anchors.fill: parent

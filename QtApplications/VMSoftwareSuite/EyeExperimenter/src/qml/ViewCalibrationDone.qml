@@ -1,6 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 VMBase {
 
@@ -12,25 +12,14 @@ VMBase {
         viewCalibrationDoneDiag.open()
     }
 
-    Dialog {
+    VMDialogBase {
 
         id: viewCalibrationDoneDiag
-        modal: true
+        vmNoCloseButton: true
         width: mainWindow.width*0.479
         height: mainWindow.height*0.758
         y: (parent.height - height)/2
         x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
-
-        // The Drop shadow
-        contentItem: Rectangle {
-            id: rectDialog
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
 
         onWidthChanged: repositionImage();
         onHeightChanged: repositionImage();
@@ -77,18 +66,6 @@ VMBase {
             }
         }
 
-        // Creating the close button
-        VMDialogCloseButton {
-            id: btnClose
-            anchors.top: parent.top
-            anchors.topMargin: mainWindow.height*0.032
-            anchors.right: parent.right
-            anchors.rightMargin: mainWindow.width*0.019
-            onClicked: {
-                viewCalibrationDoneDiag.close()
-                swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
-            }
-        }
     }
 
 }

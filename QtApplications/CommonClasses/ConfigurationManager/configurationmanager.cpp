@@ -4,7 +4,7 @@ ConfigurationManager::ConfigurationManager()
 {
 }
 
-bool ConfigurationManager::loadConfiguration(const QString &file, const char* textCodec, const QString readText){
+bool ConfigurationManager::loadConfiguration(const QString &file, const QString readText){
 
     QString text;
     if (readText.isEmpty()){
@@ -16,7 +16,7 @@ bool ConfigurationManager::loadConfiguration(const QString &file, const char* te
 
         // Reading in all data and closing the file afterwards, using the provided text codec.
         QTextStream reader(&f);
-        reader.setCodec(textCodec);
+        reader.setEncoding(QStringConverter::Utf8);
         text = reader.readAll();
         f.close();
     }
@@ -333,11 +333,11 @@ void ConfigurationManager::merge(const ConfigurationManager &configmng){
 }
 
 
-QString ConfigurationManager::saveValueToFile(const QString &fileName, const char *textCode, const QString &key){
-    return setValue(fileName,textCode,key,data.value(key).toString());
+QString ConfigurationManager::saveValueToFile(const QString &fileName, const QString &key){
+    return setValue(fileName,key,data.value(key).toString());
 }
 
-bool ConfigurationManager::saveToFile(const QString &fileName, const char *textCodec, const Delimiters &delimiters){
+bool ConfigurationManager::saveToFile(const QString &fileName, const Delimiters &delimiters){
 
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly)) return false;
@@ -362,7 +362,7 @@ bool ConfigurationManager::saveToFile(const QString &fileName, const char *textC
     }
 
     QTextStream writer(&file);
-    writer.setCodec(textCodec);
+    writer.setEncoding(QStringConverter::Utf8);
     writer << save;
     file.close();
     return true;
@@ -370,7 +370,6 @@ bool ConfigurationManager::saveToFile(const QString &fileName, const char *textC
 }
 
 QString ConfigurationManager::setValue(const QString &fileName,
-                                       const char* textCodec,
                                        const QString &cmd,
                                        const QString &value, ConfigurationManager *configToChange,
                                        const Delimiters &delimiters){
@@ -393,19 +392,19 @@ QString ConfigurationManager::setValue(const QString &fileName,
 
     // Reading all the content
     QTextStream reader(&file);
-    reader.setCodec(textCodec);
+    reader.setEncoding(QStringConverter::Utf8);
     QString contents = reader.readAll();
     file.close();
 
     // Searching for the command, and then replacing it or adding it. However, we must make sure that the command is not in a comment.
-    qint32 i = 0;
+    qsizetype i = 0;
     bool done = false;
     while (!done){
         i = contents.indexOf(cmd,i,Qt::CaseSensitive);
         if (i == -1) break;
         // Checking that this is not in a comment.
         bool notfound = true;
-        for (qint32 j = i; j > 0; j--){
+        for (qsizetype j = i; j > 0; j--){
             if (contents.at(j) == delimiters.comment){
                 // this is in a comment.
                 i++;
@@ -428,7 +427,7 @@ QString ConfigurationManager::setValue(const QString &fileName,
     }
     else{
         // The command must be replaced, so the first ; after the cmd is located.
-        qint32 end = contents.indexOf(delimiters.statement,i);
+        qsizetype end = contents.indexOf(delimiters.statement,i);
         if (end == -1){
             return QString("Could not locate end of statement (") + delimiters.statement + QString("), for keyword ")
                     + cmd + " in file " + fileName;
@@ -443,7 +442,7 @@ QString ConfigurationManager::setValue(const QString &fileName,
     }
 
     QTextStream writer(&file2);
-    writer.setCodec(textCodec);
+    writer.setEncoding(QStringConverter::Utf8);
     writer << contents;
     file2.close();
 

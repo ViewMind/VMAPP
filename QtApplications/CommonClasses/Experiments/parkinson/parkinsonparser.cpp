@@ -77,7 +77,7 @@ bool ParkinsonParser::parseParkinsonExperiment(const QString &contents, qreal sc
 
         if (line.startsWith(MAZE_SEPARATOR)) {
 
-            QStringList parts = line.split(" ",QString::SkipEmptyParts);
+            QStringList parts = line.split(" ",Qt::SkipEmptyParts);
             if (parts.size() != 2){
                 error = "Error in maze title format: " + lines.at(i);
                 return false;
@@ -113,7 +113,7 @@ bool ParkinsonParser::parseParkinsonExperiment(const QString &contents, qreal sc
         }
         else {
 
-            QStringList squares = line.split("|",QString::SkipEmptyParts);
+            QStringList squares = line.split("|",Qt::SkipEmptyParts);
 
             // Checking column size consistency
             if (previousLineSize == 0) previousLineSize = squares.size();

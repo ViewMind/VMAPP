@@ -1,7 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
-import QtQuick.Dialogs 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 VMBase {
 
@@ -499,6 +498,7 @@ VMBase {
                     id: studySelectView
                     anchors.fill: parent
                     clip: true
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
                     ListView {
                         id: studySelectListView
                         anchors.fill: parent
@@ -568,6 +568,7 @@ VMBase {
                     id: studySelecedtView
                     anchors.fill: parent
                     clip: true
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
                     ListView {
                         id: studySelectedListView
                         anchors.fill: parent

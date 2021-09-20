@@ -97,13 +97,8 @@ void FlowControl::generateWaitScreen(const QString &message){
 ////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
 
 void FlowControl::resolutionCalculations(){
-    QDesktopWidget *desktop = QApplication::desktop();
-    // This line will assume that the current screen is the one where the experiments will be drawn.
 
-    /// Depracated code.
-    /// QRect screen = desktop->screenGeometry(desktop->screenNumber());
-    QList<QScreen*> screens = QGuiApplication::screens();
-    QRect screen = screens.at(desktop->screenNumber())->geometry();
+    QRect screen = QGuiApplication::primaryScreen()->geometry();
     configuration->addKeyValuePair(Globals::Share::MONITOR_RESOLUTION_WIDTH,screen.width());
     configuration->addKeyValuePair(Globals::Share::MONITOR_RESOLUTION_HEIGHT,screen.height());
 
