@@ -83,7 +83,7 @@
    $item["x"] = (1 - $poly_graph_w)/2;
    $item["y"] = $ysubtitle+0.125;
    $item["w"] = $poly_graph_w; // This is equivalent to the the l side of the graph.
-   $item["levels"] = ["+1","0","-1","-2"];
+   $item["levels"] = ["+1","0","-1","-2","-3"];
    $item["separator"] = 1;
    $item["values"] = [
     "&indexes.polygon.visual_search&",
