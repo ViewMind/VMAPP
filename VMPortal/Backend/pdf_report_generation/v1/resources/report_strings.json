@@ -74,21 +74,21 @@
                 "left_title": "Presumptive Diagnosis",
                 "right_title": "A.I. Performance Index",
                 "texts_3T": {
-                    "1": "Generalized Cognitive and Brain Alteration. We recommend repeating the Colors Study with 2 targets.",
-                    "2": "Associative Memory and Cortical Alteration. We recommend repeating the Colors Study with 2 targets.",
-                    "3": "Probable Alzheimer's Disease. We recommend repeating the Colors Study with 2 targets.",
+                    "1": "Generalized Cognitive and Brain Alteration.\nWe recommend repeating the Colors Study with 2 targets.",
+                    "2": "Associative Memory and Cortical Alteration.\nWe recommend repeating the Colors Study with 2 targets.",
+                    "3": "Probable Alzheimer's Disease.\nWe recommend repeating the Colors Study with 2 targets.",
                     "4": "Probable Alzheimer's Disease",
                     "5": "Performance within normal values",
-                    "6": "Inconclusive Results. Please Check the quality of the data gathered. We recommend to repeat the study.",
+                    "6": "Inconclusive Results. Please check the quality of the\ndata gathered. We recommend repeating the study.",
                     "7": "Non Conclusive. We recommend repeating the study"
                 },
                 "texts_2T": {
                     "1": "Generalized Cognitive and Brain Alteration.",
-                    "2": "Associative Memory and Cortical Alteration. We recommend repeating the study with 2 targets and adding the Go No-Go Study.",
-                    "3": "Probable Alzheimer's Disease. We recommend doing the Go No-Go Study.",
+                    "2": "Associative Memory and Cortical Alteration.\nWe recommend repeating the study with 2 targets and adding the Go No-Go Study.",
+                    "3": "Probable Alzheimer's Disease.\nWe recommend doing the Go No-Go Study.",
                     "4": "Probable Alzheimer's Disease",
                     "5": "Performance within normal values",
-                    "6": "Inconclusive Results. Please Check the quality of the data gathered. We recommend to repeat the study."
+                    "6": "Inconclusive Results. Please check the quality of the\ndata gathered. We recommend repeating the study."
                 }
             },
             "overall_performance": {
@@ -185,7 +185,8 @@
             "date": "Date",
             "patient": "Patient",
             "age": "Age",
-            "motto": "Meassurement of Cognitive of Performance and Related\nBrain Areas through Eye-Tracking"
+            "motto": "Measurement of Cognitive of Performance and Related\nBrain Areas through Eye-Tracking",
+            "range_text_sd": "SD"
         },
         "gonogo": {
             "page_titles": [
@@ -193,7 +194,7 @@
                     "EVALUATION: GO\/NO GO TEST"
                 ],
                 [
-                    "COGNITIVE PERFORMANCE AND RELATED BRAIN AREAS",
+                    "BRAIN AREA PERFORMANCE",
                     "OVERALL PERFORMANCE"
                 ],
                 [
@@ -222,15 +223,15 @@
             },
             "processing_speed": {
                 "title": "PROCESSING SPEED",
-                "range_text": "Normal value below 1.88"
+                "range_text": "Normal value below 1.8"
             },
             "processing_speed_interference": {
                 "title": "VISUAL WORKING MEMORY INTERFERENCE",
-                "range_text": "Normal value below 1.83"
+                "range_text": "Normal value below 93"
             },
             "processing_speed_facilitated": {
                 "title": "VISUAL WORKING MEMORY FACILITATED",
-                "range_text": "Normal value below 1.75"
+                "range_text": "Normal value below 49"
             },
             "reaction_time_facilitated": {
                 "title": "REACTION TIME FACILITATED",
@@ -246,24 +247,36 @@
             },
             "index_error_facilitated": {
                 "title": "INHIBITORY ALTERATIONS FACILITATED",
-                "range_text": "Normal value below 0.15"
+                "range_text": "Normal value below 15"
             },
             "index_error_interference": {
                 "title": "INHIBITORY ALTERATIONS INTERFERENCE",
-                "range_text": "Normal value below 0.31"
+                "range_text": "Normal value below 31"
             },
             "affected_areas": {
                 "green": "Preserved Cognitive Functions & Brain Areas:",
                 "yellow": "Mildly Impaired Cognitive Functions & Brain Areas:",
                 "red": "Severely Impaired and\/ or Pathological Cognitive Functions & Brain Areas:",
                 "processing_speed": "Processing Speed: Frontal Lobe",
-                "processing_speed_interference": "Processing Speed Interference: prefrontal cortex, caudate nucleus",
-                "processing_speed_facilitated": "Processing Speed Facilitated: Prefrontal Cortex",
-                "reaction_time_interference": "Reaction Time Interference: Medial Prefrontal Cortex (mPFC), Anterior, Posterior",
-                "reaction_time_facilitated": "Reaction Time Facilitated: Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus",
-                "executive_functions": "Executive Functions: Prefrontal Cortex",
-                "index_error_facilitated": "Inhibitory Alterations Facilitated: Right Inferior Frontal Gyrus (rIFG)",
-                "index_error_interference": "Inhibitory Alterations Interference: Caudal Inferior Frontal Gyrus (cIFG)"
+                "processing_speed_interference": "Prefrontal cortex, caudate nucleus",
+                "processing_speed_facilitated": "Prefrontal Cortex",
+                "reaction_time_interference": "Medial Prefrontal Cortex (mPFC), Anterior, Posterior",
+                "reaction_time_facilitated": "Medial Prefrontal Cortex (mPFC), Subthalamic Nucleus",
+                "executive_functions": "Prefrontal Cortex",
+                "index_error_facilitated": "Right Inferior Frontal Gyrus (rIFG)",
+                "index_error_interference": "Caudal Inferior Frontal Gyrus (cIFG)"
+            },
+            "presumptive_diagnosis": {
+                "left_title": "Presumptive Diagnosis",
+                "right_title": "A.I. Performance Index",
+                "texts": {
+                    "1": "Generalized Cognitive and Brain Alteration.",
+                    "2": "Problems for controlling cognitive and motor responses.",
+                    "3": "Delay when processing information.",
+                    "4": "Problems for encoding and decoding information",
+                    "5": "Performance within normal values",
+                    "6": "Problems for focusing dynamically on a particular activity"
+                }
             },
             "overall_performance": {
                 "text": "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex \u2013 Overall Performance Graph Interpretation.",
@@ -390,13 +403,13 @@
             "overall_performance": {
                 "text": "Overall Performance",
                 "vertex": {
-                    "visual_exploration_efficiency": "Processing Speed",
-                    "visual_working_memory": "Processing Speed\nInterference",
-                    "correct_responses": "Reaction Time\nInterference",
-                    "working_memory": "Processing Speed\nFacilitated",
-                    "inhibitory_processes": "Reaction Time\nFacilitated",
-                    "decoding_efficiency": "Executive\nFunctions",
-                    "enconding_efficiency": "Inhibitory Alterations\nFacilitated"
+                    "visual_exploration_efficiency": "Visual Exploration\nEfficiency",
+                    "visual_working_memory": "Visual Working\nMemory",
+                    "correct_responses": "Correct\nResponses",
+                    "working_memory": "Working\nMemory",
+                    "inhibitory_processes": "Inhibitory\nProcesses",
+                    "decoding_efficiency": "Decoding\nEfficiency",
+                    "enconding_efficiency": "Encoding\nEfficiency"
                 }
             },
             "fixation_plotting": {

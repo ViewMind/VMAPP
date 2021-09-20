@@ -8,7 +8,7 @@
 $ret = array();
 $ret["uuid"] = "gonogo";
 $ret["categories"] = include("gonogo/categories.php");
-//$ret["pdiag"] = include("binding/pdiag_logic_3T.php");
+$ret["pdiag"] = include("gonogo/pdiag_logic.php");
 
 $pages = [];
 $pages[] = include("gonogo/page1.php");

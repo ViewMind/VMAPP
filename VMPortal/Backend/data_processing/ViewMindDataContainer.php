@@ -196,6 +196,12 @@ class ViewMindDataContainer {
       $this->current_study = $study;
 
       // This does assume that ALL trials in the list contains the same DataSets (as the ones in the first one) which SHOULD always be the case. 
+
+      if (count($this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST]) == 0){
+         $this->error = "Trial list is empty for study $study";
+         return false;
+      }
+
       $this->available_data_sets = array_keys($this->data[MainFields::STUDIES][$this->current_study][StudyField::TRIAL_LIST][0][TrialField::DATA]);
       //var_dump($this->available_data_sets);
 

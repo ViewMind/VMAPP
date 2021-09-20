@@ -16,6 +16,69 @@
 * 
 */
 
+function computeStandardDeviations($categories){
+
+   $ret["sd"] = array();
+   $ret["error"] = "";
+
+   foreach ($categories as $variable_name => $array_of_categories){
+
+      if (array_key_exists("skip_sd",$array_of_categories)){
+         if ($array_of_categories["skip_sd"] === true){
+            echo "SD SKIP: $variable_name\n";
+            continue;
+         }
+      }
+
+      if (!array_key_exists("polygon",$array_of_categories)){
+         $ret["error"] = "polygon key is missing from the category $variable_name array";
+         return $ret;
+      }   
+
+      $polygon = $array_of_categories["polygon"];
+      if (!array_key_exists("-1",$polygon)){
+         $ret["error"] = "polygon for  $variable_name does not have the -1 label";
+         return $ret;
+      }
+
+      $values = $polygon["-1"];
+      $clean_range = str_replace("*","",$values); // Removing the * to indicate inclusion. 
+
+      if (str_contains($clean_range,"-")){
+         $ret["error"] = "Range in $variable_name contains -infinity symbol: " . $values;
+         return $ret;
+      }
+      else if (str_contains($clean_range,"+")){
+         $ret["error"] = "Range in $variable_name contains +infinity symbol: " . $values;
+         return $ret;
+      }
+
+
+      $min_max = explode(" ",$values);
+      if (count($min_max) != 2){
+         $ret["error"] = "Range in $variable_name provided with unexpected count of " . count($min_max) . ", the range is: " . $values;
+         return $ret;
+      }
+      $min = doubleval($min_max[0]);
+      $max = doubleval($min_max[1]);
+
+      if ($min >= $max){
+         $ret["error"] = "Standard deviation is 0 or negative for $values of $variable_name. Clean range $clean_range. MIN: $min. MAX: $max";
+         return $ret;
+      }
+
+      $sd = strval($max - $min);
+
+      //echo "SD is $max - $min = $sd\n";
+
+      $ret["sd"][$variable_name] = $sd;
+      
+   }
+
+   return $ret;
+
+}
+
 $output_file = "../v1/resources/report_layouts.json";
 $layout = array();
 $layout_path = "layouts";
@@ -35,6 +98,23 @@ foreach ($layout_files as $file){
       if (array_key_exists("uuid",$temp)){
          $uuid = $temp["uuid"];
          unset($temp["uuid"]);
+
+         // Computing the standar deviations for each category. 
+         if (array_key_exists("categories",$temp)){
+            $sd = computeStandardDeviations($temp["categories"]);
+            if ($sd["error"] != ""){
+               echo "Error in SD Computing for $uuid: " . $sd["error"] . "\n";
+               exit();
+            }
+         }
+         else{
+            echo "Error: $uuid does not have a categories key\n";
+            exit();
+         }
+
+         // Saving the computed standar deviations. 
+         $temp["standard_deviations"] = $sd["sd"];
+
          $layout[$uuid] = $temp;
       }
       else{

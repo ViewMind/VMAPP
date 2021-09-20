@@ -129,9 +129,9 @@ abstract class DataSetType extends TypedString
    const ENCODING_4                             = "encoding_4";
    const ENCODING_5                             = "encoding_5";
    const ENCODING_6                             = "encoding_6";
-   const RETRIEVAL_1                            = "reterieval_1";
-   const RETRIEVAL_2                            = "reterieval_2";
-   const RETRIEVAL_3                            = "reterieval_3";
+   const RETRIEVAL_1                            = "retrieval_1";
+   const RETRIEVAL_2                            = "retrieval_2";
+   const RETRIEVAL_3                            = "retrieval_3";
    const UNIQUE                                 = "unique";   
 }
 

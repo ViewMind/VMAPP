@@ -25,7 +25,8 @@
       "num_center_fix",
       "total_study_time",
       "arrow_type",
-      "trial_type"];
+      "trial_type",
+      "target_visualization_delay"];
 
       // The order in which data sets need to be processed. 
       $data_set_type = DataSetType::UNIQUE;
@@ -68,6 +69,8 @@
          return "Could not get response time. Error: " . $input->getError();
       }      
 
+      
+
       for ($t = 0; $t < $n_trials; $t++) {
 
          $trial = $input->getTrial($t);
@@ -82,6 +85,12 @@
 
          // Error check is NOT necessary here as the check in the previous get includes the same thing checked here.
          $data_set_computed_values = $trial[TrialField::DATA][$data_set_type][DataSetField::DATA_SET_VALUES];
+
+         // Getting the start of trial as the time stamp of the first raw eye_data. 
+         if (count($trial[TrialField::DATA][$data_set_type][DataSetField::RAW_DATA]) > 0)
+            $trial_start_time = $trial[TrialField::DATA][$data_set_type][DataSetField::RAW_DATA][0][DataVectorField::TIMESTAMP];
+         else // This check is simply to avoid the warning, as if there is no raw data there won't be any fixations and hence no rows in the final CSV. 
+            $trial_start_time = 0;
 
          // The number of fixations in the data set is a value.
          $nfl = count($fix);
@@ -108,6 +117,13 @@
             $row[] = $total_exp_time;
             $row[] = $arrow_type;
             $row[] = $trial_type;
+
+            $target_visualization_delay = 0;
+            if ($fix[$i][FixationVectorField::IS_IN] == 1){ // This fixation is inside the desired target. 
+               $target_visualization_delay = $fix[$i][FixationVectorField::START_TIME] - $trial_start_time;
+            }
+            $row[] = $target_visualization_delay;
+
             $csv_rows_l[] = implode(",",$row);
          }
 
@@ -134,6 +150,13 @@
             $row[] = $total_exp_time;
             $row[] = $arrow_type;
             $row[] = $trial_type;
+            
+            $target_visualization_delay = 0;
+            if ($fix[$i][FixationVectorField::IS_IN] == 1){ // This fixation is inside the desired target. 
+               $target_visualization_delay = $fix[$i][FixationVectorField::START_TIME] - $trial_start_time;
+            }
+            $row[] = $target_visualization_delay;
+
             $csv_rows_r[] = implode(",",$row);
          }
 

@@ -52,6 +52,7 @@ if (!(report_type in layout_resource)){
 }
 
 const layout_pages = layout_resource[report_type].pages;
+const standard_deviation_values = layout_resource[report_type].standard_deviations;
 
 // Creating the page structure.
 let page_data = {};
@@ -62,12 +63,24 @@ page_data.rightBoxData = {};
 
 page_data.leftBoxData[language.common.doctor] = report.medic;
 page_data.leftBoxData[language.common.evaluator] = report.evaluator;
-page_data.leftBoxData[language.common.date] = report.date;
+
+// Only a very very few early reports did not have the hour. This check is done in order to not invalidate them as accessing non existing field stops the nodejs execution. 
+let hour = "";
+if ("hour" in report) hour = report.hour;
+
+page_data.leftBoxData[language.common.date] = report.date + " " + hour;
 
 page_data.rightBoxData[language.common.patient] = report.patient;
 page_data.rightBoxData[language.common.age] = report.age;
 
 page_data.path = script_path;
+
+// Saving the wait that "standard deviation" is abbreviated in the language. 
+let sd_text = language.common.range_text_sd;
+if (sd_text === undefined){
+   console.log("Could not find SD Text");
+   process.exit(1);
+}
 
 //console.log("Page data");
 //console.log(page_data);
@@ -101,7 +114,8 @@ if ("pdiag" in layout_resource[report_type]){
 
 //console.log("PresumptiveDiagnosis index: " + report.presumptive_diagnosis);
 
-//report.presumptive_diagnosis = 7;
+// This line below is just used to force a presuptive diagnosis to know how the text fits in the box. 
+// report.presumptive_diagnosis = 6;
 
 // Each variable is stored keyed by the resulting color categorization. 
 let variableColorCodes = {}
@@ -131,6 +145,8 @@ for (var page_number = 0; page_number < layout_pages.length; page_number++){
    // Create the new page.
    let effective_area = report_page.createNewReportPage(page_titles);
 
+   //console.log("Effective area", effective_area);
+
    // Once the page is created we need to parse every item in the page according to its type.
    let items = layout_pages[page_number].items;
 
@@ -149,7 +165,13 @@ for (var page_number = 0; page_number < layout_pages.length; page_number++){
       item.variable_color_codes = variableColorCodes;
 
       if (item.type == "result_segment"){
+
+         // In this case the item needs to be enhanced with the sd_text and the sd_structure, if it exists.
+         item.sd_text = sd_text;
+         item.sd = standard_deviation_values;
+
          ret = LayoutParser.parseResultSegment(doc,item,text_replacer);
+
          if (!(ret.color in variableColorCodes)){
             variableColorCodes[ret.color] = [];            
          }

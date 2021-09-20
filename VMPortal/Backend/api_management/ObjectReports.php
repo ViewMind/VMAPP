@@ -547,11 +547,11 @@ class ObjectReports extends ObjectBaseClass
 
          $s["comparator"] = SelectColumnComparison::EQUAL;
          $s["value"] = $identifer;
-         $search_subj[TableSubject::COL_INTERNAL_ID] = $s;
+         $search_subj[TableSubject::COL_INTERNAL_ID] = [$s];
 
          $s["comparator"] = SelectColumnComparison::IN;
          $s["value"] = $institutions;
-         $search_subj[TableSubject::COL_INSTITUTION_ID] = $s; 
+         $search_subj[TableSubject::COL_INSTITUTION_ID] = [$s]; 
 
          $ts = new TableSubject($this->con_secure);
          $ans = $ts->search($search_subj);
@@ -606,17 +606,14 @@ class ObjectReports extends ObjectBaseClass
 
       $search = array();
       $search[TableEvaluations::COL_SUBJECT_ID] = [
-         "comparator" => SelectColumnComparison::IN,
-         "value" => $vmids
+         ["comparator" => SelectColumnComparison::IN, "value" => $vmids]
       ];
       $search[TableEvaluations::COL_STUDY_DATE] = [
-         "comparator" => SelectColumnComparison::GTE,
-         "value" => $minimum_date
+         ["comparator" => SelectColumnComparison::GTE, "value" => $minimum_date],
+         ["comparator" => SelectColumnComparison::LTE, "value" => $maximum_date]
       ];
-      $search[TableEvaluations::COL_STUDY_DATE] = [
-         "comparator" => SelectColumnComparison::LTE,
-         "value" => $maximum_date
-      ];
+
+      //error_log(json_encode($search,JSON_PRETTY_PRINT));
 
       $te = new TableEvaluations($this->con_main);
       $ans = $te->search($search);

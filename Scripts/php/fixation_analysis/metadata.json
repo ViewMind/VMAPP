@@ -1,0 +1,282 @@
+{
+    "binding\/gp_files\/binding_bc_3_l_2_2019_04_02_09_54.dat": {
+        "code": "GP - 3T - Novartis",
+        "f": 150,
+        "resolution": [
+            1366,
+            768
+        ],
+        "converter": "LegacyBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/gp_files\/binding_2021_09_07_18_11.json": {
+        "code": "GP - 2T - NR",
+        "f": 150,
+        "resolution": [
+            1920,
+            1080
+        ],
+        "converter": "JSONBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/gp_files\/binding_2021_09_03_07_04.json": {
+        "code": "GP - 2T - NR",
+        "f": 150,
+        "resolution": [
+            1366,
+            768
+        ],
+        "converter": "JSONBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/htc_files\/binding_bc_2_l_2_2020_11_25_20_58.dat": {
+        "code": "HTC2T - Nov",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "LegacyBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/htc_files\/binding_bc_3_l_2_2020_07_14_19_38.dat": {
+        "code": "HTC3T - Nov",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "LegacyBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/htc_files\/binding_bc_2_l_2_2021_06_21_20_34.dat": {
+        "code": "HTC2T - NovCtrl",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "LegacyBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/htc_files\/binding_2021_09_02_17_05.json": {
+        "code": "HTC2T - NR",
+        "f": 120,
+        "resolution": [
+            2452,
+            2208
+        ],
+        "converter": "JSONBindingBadLabel",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/hp_files\/binding_2021_08_05_16_47.json": {
+        "code": "HP - 3T - FT",
+        "f": 120,
+        "resolution": [
+            1158,
+            1188
+        ],
+        "converter": "JSONBindingBadLabel",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/hp_files\/binding_2021_09_03_07_46.json": {
+        "code": "HP - 2T-NR0",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "binding\/hp_files\/binding_2021_09_06_07_46.json": {
+        "code": "HP - 2T-NR1",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONBinding",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/eyelink_files\/Paolini.asc": {
+        "code": "EyeLink",
+        "f": 1000,
+        "resolution": [
+            1024,
+            768
+        ],
+        "converter": "ASCParser",
+        "md_to_fixation_method": "EyeLink"
+    },
+    "reading\/gp_files\/reading_2021_08_26_07_42.json": {
+        "code": "GP - NR0",
+        "f": 150,
+        "resolution": [
+            1920,
+            1080
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/gp_files\/reading_2021_09_03_06_55.json": {
+        "code": "GP - NR1",
+        "f": 150,
+        "resolution": [
+            1366,
+            768
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/hp_files\/reading_2021_08_26_07_29.json": {
+        "code": "HP - NR0",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/hp_files\/reading_2021_09_03_07_56.json": {
+        "code": "HP - NR1",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/smi_files\/jonatan_everti_reading_2018_09_18.dat": {
+        "code": "SMI",
+        "f": 120,
+        "resolution": [
+            1600,
+            900
+        ],
+        "converter": "LegacyReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "reading\/htc_files\/reading_2021_09_02_16_44.json": {
+        "code": "HTC - NR",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "JSONReading",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "gonogo\/htc_files\/gonogo_2021_09_02_18_23.json": {
+        "code": "HTC - Mati",
+        "f": 120,
+        "resolution": [
+            1764,
+            1584
+        ],
+        "converter": "JSONGoNoGO",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "gonogo\/htc_files\/gonogo_2021_09_07_17_45.json": {
+        "code": "HTC - NR",
+        "f": 120,
+        "resolution": [
+            2452,
+            2208
+        ],
+        "converter": "JSONGoNoGO",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "gonogo\/gp_files\/gonogo_2021_09_07_18_02.json": {
+        "code": "GP - NR",
+        "f": 150,
+        "resolution": [
+            1366,
+            768
+        ],
+        "converter": "JSONGoNoGO",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "gonogo\/gp_files\/gonogo_2021_09_07_18_24.json": {
+        "code": "GP - NR",
+        "f": 150,
+        "resolution": [
+            1920,
+            1080
+        ],
+        "converter": "JSONGoNoGO",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "gonogo\/hp_files\/gonogo_2021_09_07_17_13.json": {
+        "code": "HP - NR0",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONGoNoGO",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "gonogo\/hp_files\/gonogo_2021_09_06_07_33.json": {
+        "code": "HP - NR1",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONGoNoGO",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "nbackrt\/gp_files\/nbackrt_2021_09_07_17_54.json": {
+        "code": "GP - NR",
+        "f": 150,
+        "resolution": [
+            1366,
+            768
+        ],
+        "converter": "JSONNBackRT",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "nbackrt\/gp_files\/nbackrt_2021_09_07_18_18.json": {
+        "code": "GP - NR",
+        "f": 150,
+        "resolution": [
+            1920,
+            1080
+        ],
+        "converter": "JSONNBackRT",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "nbackrt\/hp_files\/nbackrt_2021_09_07_17_16.json": {
+        "code": "HP - NR",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONNBackRT",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "nbackrt\/htc_files\/nbackrt_2021_09_07_17_38.json": {
+        "code": "HTC - NR",
+        "f": 120,
+        "resolution": [
+            2452,
+            2208
+        ],
+        "converter": "JSONNBackRT",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "nbackrt\/htc_files\/nbackrt_2020_06_17_19_04.json": {
+        "code": "HTC - LRP",
+        "f": 120,
+        "resolution": [
+            1532,
+            1704
+        ],
+        "converter": "JSONNBackRT",
+        "md_to_fixation_method": "MaximumDispersion"
+    }
+}
