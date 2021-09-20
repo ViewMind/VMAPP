@@ -13,8 +13,37 @@
 static ConfigurationManager configuration;
 static CountryStruct countries;
 
+// Defining externs. When an extern is defined, it is declared in a SINGLE cpp file. The functions below will setup the values according to the actual conf file and they
+// will remaing constant and globally accessible for the rest fo the application's lifetime.
+// This allows control of the API Region and configured EyeTracker in compile time by manipulating the text file config.cnf.
+namespace Globals {
+   namespace Share {
+      QString EXPERIMENTER_VERSION = "";
+   }
+   namespace EyeTracker{
+      QString NAME = "";
+      bool ENABLE_GAZE_FOLLOW = false;
+      bool IS_VR = false;
+      QString PROCESSING_PARAMETER_KEY = "";
+      qreal VRSCALING = 1.0;
+   }
+}
+
 int main(int argc, char *argv[])
 {
+
+    // We need to load the defines to configure the rest of hte application.
+    ConfigurationManager defines;
+    if (!defines.loadConfiguration(":/configs/config.cnf",Globals::Share::TEXT_CODEC)){
+        qDebug() << "Could not load configuration file due to " << defines.getError();
+    }
+    else{
+        Globals::SetUpEyeTrackerNameSpace(defines.getString("et"));
+        Globals::SetUpRegion(defines.getString("region"));
+        //qDebug() << Globals::EyeTracker::NAME << Globals::REGION;
+        Globals::SetExperimenterVersion(); // This basically will show the correct information in the title bar.
+        //qDebug() << Globals::Share::EXPERIMENTER_VERSION;
+    }
 
     qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");
 

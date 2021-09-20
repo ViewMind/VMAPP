@@ -210,9 +210,9 @@ namespace VMDC {
        static const QString ENCODING_4 = "encoding_4";
        static const QString ENCODING_5 = "encoding_5";
        static const QString ENCODING_6 = "encoding_6";
-       static const QString RETRIEVAL_1 = "reterieval_1";
-       static const QString RETRIEVAL_2 = "reterieval_2";
-       static const QString RETRIEVAL_3 = "reterieval_3";
+       static const QString RETRIEVAL_1 = "retrieval_1";
+       static const QString RETRIEVAL_2 = "retrieval_2";
+       static const QString RETRIEVAL_3 = "retrieval_3";
        static const QString UNIQUE      = "unique";
        static const QStringList valid{ENCODING_1,ENCODING_2,ENCODING_3,ENCODING_4,ENCODING_5,ENCODING_6,RETRIEVAL_1,RETRIEVAL_2,RETRIEVAL_3,UNIQUE};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Data Set Type"); }
@@ -323,9 +323,10 @@ namespace VMDC {
        static const QString GONOGO_HITBOXES = "go_no_go_hitboxes";
        static const QString MIN_FIXATION_DURATION = "minimum_fixation_length";
        static const QString MAX_DISPERSION_WINDOW = "max_dispersion_window";
+       static const QString MAX_DISPERSION_WINDOW_PX = "max_disp_window_in_px";
        static const QString SAMPLE_FREQUENCY = "sample_frequency";
        static const QString LATENCY_ESCAPE_RADIOUS = "latency_escape_radious";
-       static const QStringList valid{RESOLUTION_HEIGHT,RESOLUTION_WIDTH,NBACK_HITBOXES,GONOGO_HITBOXES,MIN_FIXATION_DURATION,MAX_DISPERSION_WINDOW,SAMPLE_FREQUENCY,LATENCY_ESCAPE_RADIOUS};
+       static const QStringList valid{RESOLUTION_HEIGHT,RESOLUTION_WIDTH,NBACK_HITBOXES,GONOGO_HITBOXES,MIN_FIXATION_DURATION,MAX_DISPERSION_WINDOW,MAX_DISPERSION_WINDOW_PX,SAMPLE_FREQUENCY,LATENCY_ESCAPE_RADIOUS};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Processing Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

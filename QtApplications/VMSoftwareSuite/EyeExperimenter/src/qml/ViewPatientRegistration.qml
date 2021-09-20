@@ -245,6 +245,10 @@ VMBase {
                 z: 2
                 id: labelPreferredDoctor
                 width: parent.width - labelGender.width - parent.spacing
+                onVmCurrentIndexChanged: {
+                    console.log(width)
+                    console.log(height)
+                }
 //                onVmCurrentIndexChanged: {
 //                    console.log("Current index: " + vmCurrentIndex);
 //                    console.log("Selected keyid: " + vmMedicsModelList[vmCurrentIndex]["metadata"]);

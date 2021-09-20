@@ -51,8 +51,11 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
     yr = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Y).toFloat();
     zr = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Z).toFloat();
 
-    QVector4D vecL(xl, yl, zl,0);
-    QVector4D vecR(xr, yr, zr,0);
+    QVector4D vecL(xl/zl, yl/zl, zl,1);
+    QVector4D vecR(xr/zr, yr/zr, zr,1);
+
+    //QVector4D vecL(xl, yl, zl,0);
+    //QVector4D vecR(xr, yr, zr,0);
 
     vecL = lVRTransform*vecL;
     xl = vecL.x();
@@ -68,7 +71,6 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
     }
     else{
         // We need to convert.
-        //qDebug() << "Data";
         CalibrationLeastSquares::EyeInputData eid;
         eid.xl = static_cast<qreal>(xl);
         eid.xr = static_cast<qreal>(xr);

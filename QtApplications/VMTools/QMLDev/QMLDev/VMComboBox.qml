@@ -104,8 +104,8 @@ Item {
         Text {
             id: displayText
             text: "Test Text"
-            font.family: viewHome.robotoR.name
-            font.pixelSize: 13*viewHome.vmScale
+//            font.family: viewHome.robotoR.name
+//            font.pixelSize: 13*viewHome.vmScale
             color: "#58595b"
             verticalAlignment: Text.AlignVCenter
             anchors.bottom: divisorLine.top
@@ -216,8 +216,8 @@ Item {
                 Text {
                     id: textItem
                     text: vmText
-                    font.family: viewHome.robotoR.name
-                    font.pixelSize: 13*viewHome.vmScale
+//                    font.family: viewHome.robotoR.name
+//                    font.pixelSize: 13*viewHome.vmScale
                     color: "#58595b"
                     verticalAlignment: Text.AlignVCenter
                     anchors.left: parent.left
@@ -232,7 +232,7 @@ Item {
         Rectangle {
 
             id: scrollBar
-            width: 0.02*listContainer.width
+            width: 0.05*listContainer.width
             height: listContainer.height
             anchors.top: listContainer.top
             anchors.right: listContainer.right
@@ -247,8 +247,9 @@ Item {
                 var maxScrollY = scrollControlMA.height - scrollControl.height;
                 var yPosForList = totalH*y/maxScrollY
                 var itemThatShouldBeVisble = Math.ceil(yPosForList/vmComboBox.height)
-
+                console.log("Item that should be visible: " + itemThatShouldBeVisble)
                 listContainerListView.positionViewAtIndex(itemThatShouldBeVisble,ListView.End)
+
             }
 
             MouseArea {
@@ -280,24 +281,23 @@ Item {
                     }
                 }
 
-                // Since the onClick  does not work for the end of the bar and no one has any idea why, then I'm simply disabling it.
-//                onClicked: {
+                onClicked: {
+                    // If the click falls inside the scroll controller, then it is ignored.
+                    var y = mouseY
+                    var maxY = (scrollBar.height - scrollControl.height);
+                    if ( (y > scrollControl.y) && (y < (scrollControl.y + scrollControl.height)) ) return;
 
-//                    // If the click falls inside the scroll controller, then it is ignored.
-//                    var y = mouseY
-//                    var maxY = (scrollBar.height - scrollControl.height);
-//                    if ( (y > scrollControl.y) && (y < (scrollControl.y + scrollControl.height)) ) return;
+                    if (scrollBar.isScrolling) return;
 
-//                    if (scrollBar.isScrolling) return;
+                    y = y - scrollControl.height/2;
+                    if (y < 0) y = 0;
+                    if (y > maxY) y = maxY;
 
-//                    y = y - scrollControl.height/2;
-//                    if (y < 0) y = 0;
-//                    if (y > maxY) y = maxY;
+                    scrollControl.y = y;
+                    console.log("Scroll click is " + y);
+                    scrollBar.scroll(y)
 
-//                    scrollControl.y = y;
-//                    scrollBar.scroll(mouseY)
-
-//                }
+                }
 
             }
 
@@ -317,6 +317,7 @@ Item {
                 color: "#dadada"
                 onYChanged: {
                     if (!scrollBar.isScrolling) return;
+                    console.log("On moving Scroll Bar: " + y);
                     scrollBar.scroll(y)
                 }
             }
@@ -330,8 +331,8 @@ Item {
         id: errorMsg
         text: vmErrorMsg
         color:  "#ca2026"
-        font.family: viewHome.robotoR.name
-        font.pixelSize: 12*viewHome.vmScale
+//        font.family: viewHome.robotoR.name
+//        font.pixelSize: 12*viewHome.vmScale
         anchors.left: parent.left
         anchors.top: parent.bottom
         anchors.topMargin: mainWindow.height*0.007

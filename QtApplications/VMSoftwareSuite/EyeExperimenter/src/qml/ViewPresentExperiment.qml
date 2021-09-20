@@ -331,6 +331,7 @@ VMBase {
     function startNextStudy(){
 
         // Setting up the second monitor, if necessary.
+        //console.log("Setting up Second Monitor");
         flowControl.setupSecondMonitor();
 
         // Starting the experiment.
@@ -340,7 +341,7 @@ VMBase {
         var titleAndMsg;
         //console.log(JSON.stringify(viewStudyStart.vmSelectedExperiments));
         if (!loader.createSubjectStudyFile(viewStudyStart.vmSelectedExperiments[index],viewStudyStart.vmSelectedMedic,viewStudyStart.vmSelectedProtocol)){
-            vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
+            vmErrorDiag.vmErrorCode = vmErrorDiag.vmErrorCodeClose;
             titleAndMsg = viewHome.getErrorTitleAndMessage("error_programming");
             vmErrorDiag.vmErrorMessage = titleAndMsg[1];
             vmErrorDiag.vmErrorTitle = titleAndMsg[0];
@@ -349,6 +350,7 @@ VMBase {
         }
 
         // Actually starting the experiment.
+        //console.log("Starting New Experiment");
         if (!flowControl.startNewExperiment(viewStudyStart.vmSelectedExperiments[index])){
             vmErrorDiag.vmErrorCode = vmErrorDiag.vmERROR_PROG_ERROR;
             titleAndMsg = viewHome.getErrorTitleAndMessage("error_programming");

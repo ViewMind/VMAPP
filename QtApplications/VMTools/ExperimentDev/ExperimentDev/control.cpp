@@ -23,6 +23,12 @@ void Control::setEyeTracker(quint8 eye_tracker){
         connect(openvrco,SIGNAL(requestUpdate()),this,SLOT(onRequestUpdate()));
         renderState = RENDERING_NONE;
     }
+    else if (selectedEyeTracker == ET_HTC_VIVE){
+        openvrco = new OpenVRControlObject(this);
+        openvrco->setScreenColor(QColor("#aaaaaa"));
+        connect(openvrco,SIGNAL(requestUpdate()),this,SLOT(onRequestUpdate()));
+        renderState = RENDERING_NONE;
+    }
     else{
         MouseInterface *mi = new MouseInterface();
         eyetracker = mi;
@@ -61,8 +67,14 @@ void Control::testEyeTracking(){
         ct.setTestTargetFontScale(VRSCALING);
         ct.setTargetTest();
 
-        HPOmniceptInterface *hp = new HPOmniceptInterface(nullptr,s.width(),s.height());
-        eyetracker = hp;
+        if (selectedEyeTracker == ET_HP_REBERV){
+            HPOmniceptInterface *hp = new HPOmniceptInterface(nullptr,s.width(),s.height());
+            eyetracker = hp;
+        }
+        else if (selectedEyeTracker == ET_HTC_VIVE){
+            HTCViveEyeProEyeTrackingInterface *htc = new HTCViveEyeProEyeTrackingInterface(nullptr,s.width(),s.height());
+            eyetracker = htc;
+        }
 
         connect(eyetracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
         connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),eyetracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
@@ -78,7 +90,7 @@ void Control::testEyeTracking(){
 }
 
 void Control::startCalibration(){
-    if (selectedEyeTracker == ET_HP_REBERV){
+    if ((selectedEyeTracker == ET_HP_REBERV) || (selectedEyeTracker == ET_HTC_VIVE)){
 
         if (!openvrco->isRendering()) {
             if (!openvrco->startRendering()){
@@ -90,9 +102,16 @@ void Control::startCalibration(){
         // CRITICAL: Using the rendering size must be obtained AFTER we start rendering.
         QSize s = getRenderingSize();
 
-        HPOmniceptInterface *hp = new HPOmniceptInterface(nullptr,s.width(),s.height());
+        if (selectedEyeTracker == ET_HP_REBERV){
+           HPOmniceptInterface *hp = new HPOmniceptInterface(nullptr,s.width(),s.height());
+           eyetracker = hp;
+        }
+        else{
+           HTCViveEyeProEyeTrackingInterface *htc = new HTCViveEyeProEyeTrackingInterface(nullptr,s.width(),s.height());
+           eyetracker = htc;
+        }
+
         ct.initialize(s.width(),s.height());
-        eyetracker = hp;
 
         connect(eyetracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
         connect(openvrco,SIGNAL(newProjectionMatrixes(QMatrix4x4,QMatrix4x4)),eyetracker,SLOT(updateProjectionMatrices(QMatrix4x4,QMatrix4x4)));
@@ -130,7 +149,7 @@ void Control::onRequestUpdate(){
         QImage image = generateHMDImage();  // This function will generate the image to the HMD and update displayImage for the screen.
         //qDebug() << "Generated Image in" << m.elapsed();
         //m.start();
-        if (selectedEyeTracker == ET_HP_REBERV){
+        if ((selectedEyeTracker == ET_HP_REBERV) || (selectedEyeTracker == ET_HTC_VIVE)){
             openvrco->setImage(&image);
             //qDebug() << "Set image in" << m.elapsed();
         }
@@ -140,7 +159,7 @@ void Control::onRequestUpdate(){
 
 
 QImage Control::generateHMDImage(){
-    if (renderState == RENDERING_TARGET_TEST){        
+    if (renderState == RENDERING_TARGET_TEST){
         EyeTrackerData data;
         data = eyetracker->getLastData();
         //qDebug() << "GENIMAGE: LAST DATA IS" << data.toString();
@@ -167,9 +186,6 @@ void Control::onEyeTrackerControl(quint8 code){
         displayImage = ct.getClearScreen();
 
         qDebug() << "Calibration Finished. Disconnecting from EyeTracker";
-        eyetracker->enableUpdating(false);
-        eyetracker->disconnectFromEyeTracker();
-        delete eyetracker;
 
         switch (eyetracker->getCalibrationFailureType()){
         case EyeTrackerInterface::ETCFT_NONE:
@@ -188,6 +204,11 @@ void Control::onEyeTrackerControl(quint8 code){
             qDebug() << "Calibration Failure RIGHT";
             break;
         }
+
+        eyetracker->enableUpdating(false);
+        eyetracker->disconnectFromEyeTracker();
+        delete eyetracker;
+
         break;
     case EyeTrackerInterface::ET_CODE_CONNECTION_SUCCESS:
         qDebug() << "EyeTracking is running";

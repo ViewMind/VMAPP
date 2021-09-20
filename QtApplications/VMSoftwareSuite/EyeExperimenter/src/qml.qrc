@@ -48,5 +48,7 @@
         <file>qml/VMFinalizedStudyEntry.qml</file>
         <file>qml/ViewQC.qml</file>
         <file>qml/VMSelectorRect.qml</file>
+        <file>qml/ObjectListSorter.js</file>
+        <file>qml/DateLocalization.js</file>
     </qresource>
 </RCC>

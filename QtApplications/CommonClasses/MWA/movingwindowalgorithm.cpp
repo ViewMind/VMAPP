@@ -4,7 +4,11 @@ const qreal MovingWindowAlgorithm::PUPIL_ZERO_TOL = 1e-6;
 
 MovingWindowAlgorithm::MovingWindowAlgorithm()
 {
-    minimalFixations = false;
+    maxFixationLength = 0;
+}
+
+void MovingWindowAlgorithm::setOnlineFixationAnalysisFileOutput(const QString &filename){
+    onlineFixationLogFile = filename;
 }
 
 void FixationList::displayFixList() const{
@@ -142,8 +146,9 @@ Fixations MovingWindowAlgorithm::computeFixations(const DataMatrix &data, qint32
 
 }
 
-void MovingWindowAlgorithm::setMinimalFixations(bool enable){
-    minimalFixations = enable;
+void MovingWindowAlgorithm::setMaximumFixationLength(qint32 length_in_miliseconds){
+    if (length_in_miliseconds < 0) maxFixationLength = 0;
+    maxFixationLength = length_in_miliseconds;
 }
 
 Fixation MovingWindowAlgorithm::calculateFixationsOnline(qreal x, qreal y, qreal timeStamp, qreal pupil, qreal schar, qreal word){
@@ -155,30 +160,53 @@ Fixation MovingWindowAlgorithm::calculateFixationsOnline(qreal x, qreal y, qreal
     DataPoint p; p.x = x; p.y = y; p.timestamp = timeStamp; p.pupil = pupil; p.schar = schar; p.word = word;
     onlinePointsForFixation << p;
 
+    QVariantMap logItem;
+    logItem["type"] = "POINT";
+    logItem["x"] = p.x;
+    logItem["y"] = p.y;
+    logItem["time"] = p.timestamp;
+
     // If there are not enough points to consider a fixation, then there is no fixation.
-    if (onlinePointsForFixation.size() < parameters.getStartWindowSize()) return fixation;
+    if (onlinePointsForFixation.size() < parameters.getStartWindowSize()) {
+
+        // If the log file was set then the point is saved with the rest of the parameters as is.
+        if (!onlineFixationLogFile.isEmpty()){
+            logItem["online_list_size"] = onlinePointsForFixation.size();
+            logItem["min_x"] = onlineMMMX.min;
+            logItem["max_x"] = onlineMMMX.max;
+            logItem["min_y"] = onlineMMMY.min;
+            logItem["max_y"] = onlineMMMY.max;
+            logItem["dispersion"] = onlineMMMX.diff() + onlineMMMY.diff();
+            logItem["max_dispersion"] = parameters.maxDispersion;
+            logItem["sample_frequency"] = parameters.sampleFrequency;
+            logItem["minimum_window_size"] = parameters.getStartWindowSize();
+            onlineFixationLog << logItem;
+        }
+
+        return fixation;
+    }
 
     if (onlinePointsForFixation.size() == parameters.getStartWindowSize()){
+
         // This is the case where the dispersion is first computed.
         onlineFindDispLimits();
-#ifdef ENABLE_MWA_DEBUG
-        QString logstr;
-        logstr = "SET: ";
-        for (qint32 i = 0; i < onlinePointsForFixation.size(); i++){
-            logstr = logstr + onlinePointsForFixation.at(i).toString() + " ";
-        }
-        logstr = logstr + "XB: " + onlineMMMX.toString() + ". YB: " + onlineMMMY.toString() + "\n";
-#endif
         if ((onlineMMMX.diff() + onlineMMMY.diff()) > parameters.maxDispersion){
             // This means that this set of data cannot form a fixation, so the first value is discarded.
             onlinePointsForFixation.removeFirst();
-#ifdef ENABLE_MWA_DEBUG
-            logstr = logstr + "-----------";
-#endif
         }
-#ifdef ENABLE_MWA_DEBUG
-        logger.appendStandard(logstr);
-#endif
+
+        // If the log file was set then the point is saved with the rest of the parameters as is.
+        if (!onlineFixationLogFile.isEmpty()){
+            logItem["online_list_size"] = onlinePointsForFixation.size();
+            logItem["min_x"] = onlineMMMX.min;
+            logItem["max_x"] = onlineMMMX.max;
+            logItem["min_y"] = onlineMMMY.min;
+            logItem["max_y"] = onlineMMMY.max;
+            logItem["dispersion"] = onlineMMMX.diff() + onlineMMMY.diff();
+            logItem["max_dispersion"] = parameters.maxDispersion;
+            onlineFixationLog << logItem;
+        }
+
         return fixation;
     }
 
@@ -189,39 +217,79 @@ Fixation MovingWindowAlgorithm::calculateFixationsOnline(qreal x, qreal y, qreal
     onlineMMMX.min = qMin(onlineMMMX.min,x);
     onlineMMMY.min = qMin(onlineMMMY.min,y);
 
-#ifdef ENABLE_MWA_DEBUG
-    QString logstr;
-    logstr = "SET: ";
-    for (qint32 i = 0; i < onlinePointsForFixation.size(); i++){
-        logstr = logstr + onlinePointsForFixation.at(i).toString() + " ";
-    }
-    logstr = logstr + "XB: " + onlineMMMX.toString() + ". YB: " + onlineMMMY.toString() + "\n";
-#endif
-
     // Computing the minimalFixations condition.
-    bool minimalFixationCondition = minimalFixations && (onlinePointsForFixation.size() >= parameters.getStartWindowSize() + POINTS_OVER_MIN_TO_HOLD);
+    //bool minimalFixationCondition = minimalFixations && (onlinePointsForFixation.size() >= parameters.getStartWindowSize() + POINTS_OVER_MIN_TO_HOLD);
+    bool forceFixationFormation = false;
+    if ( maxFixationLength > 0 ){
+        qreal start = onlinePointsForFixation.first().timestamp;
+        qreal end = onlinePointsForFixation.last().timestamp;
+        qreal duration = end - start;
+        //qDebug() << "Comparing" << duration << "with" << maxFixationLength;
+        if (duration > maxFixationLength) {
+            forceFixationFormation = true;
+        }
+    }
+
+    // At this point, no other changes will ocurr with the variables, unles a fixation is formed. so we can save the log, if it was enabled.
+    if (!onlineFixationLogFile.isEmpty()){
+        logItem["online_list_size"] = onlinePointsForFixation.size();
+        logItem["min_x"] = onlineMMMX.min;
+        logItem["max_x"] = onlineMMMX.max;
+        logItem["min_y"] = onlineMMMY.min;
+        logItem["max_y"] = onlineMMMY.max;
+        logItem["dispersion"] = onlineMMMX.diff() + onlineMMMY.diff();
+        logItem["max_dispersion"] = parameters.maxDispersion;
+        onlineFixationLog << logItem;
+    }
 
     // We now check if the maximum dispersion allowed was breached. At this point a fixation is formed. It's just a matter of how long it is.
-    // For that reason if minimalFixations was enabled, the fixation is formed and we move on.
-    if (((onlineMMMX.diff() + onlineMMMY.diff()) > parameters.maxDispersion) || (minimalFixationCondition)){
-        // If it was then that means that the last point should removed. and a fixation is formed.
-        onlinePointsForFixation.removeLast();
-        fixation = onlineCalcuationOfFixationPoint();
-#ifdef ENABLE_MWA_DEBUG
-        logstr = logstr + "FIX FOUND: " + fixation.toString();
-#endif
-        onlinePointsForFixation.clear();
-        // The last point might be the start of a new fixation.
-        onlinePointsForFixation << p;
+    // For that reason if maximumFixations was enabled, the fixation is formed and we move on.
+    if (((onlineMMMX.diff() + onlineMMMY.diff()) > parameters.maxDispersion) || (forceFixationFormation)){
+
+        if (!forceFixationFormation){
+            // If it was then that means that the last point should removed. and a fixation is formed.
+            onlinePointsForFixation.removeLast();
+            fixation = onlineCalcuationOfFixationPoint();
+            onlinePointsForFixation.clear();
+            // The last point might be the start of a new fixation.
+            onlinePointsForFixation << p;
+
+            if (!onlineFixationLogFile.isEmpty()){
+                QVariantMap logItem;
+                logItem["type"] = "FIX";
+                logItem["x"] = fixation.x;
+                logItem["y"] = fixation.y;
+                logItem["time"] = fixation.time;
+                logItem["duration"] = fixation.duration;
+                onlineFixationLog << logItem;
+            }
+        }
+        else{
+            // If the fixation was forced there is no point in removing the last point. So that changes. Also the new online fixation starts from scratched.
+            fixation = onlineCalcuationOfFixationPoint();
+            onlinePointsForFixation.clear();
+            //qDebug() << "Fixation Forced";
+        }
+
     }
 
-#ifdef ENABLE_MWA_DEBUG
-    logger.appendStandard(logstr);
-#endif
     return fixation;
 }
 
-Fixation MovingWindowAlgorithm::finalizeOnlineFixationCalculation(){
+void MovingWindowAlgorithm::finalizeOnlineFixationLog(){
+    if (onlineFixationLogFile.isEmpty()) return;
+    QFile file(onlineFixationLogFile);
+    file.open(QFile::WriteOnly);
+    QTextStream writer(&file);
+    for (qint32 i = 0; i < onlineFixationLog.length(); i++){
+        QJsonDocument json = QJsonDocument::fromVariant(onlineFixationLog.at(i));
+        QByteArray data  = json.toJson(QJsonDocument::Compact);
+        writer << QString(data) + "\n";
+    }
+    file.close();
+}
+
+Fixation MovingWindowAlgorithm::finalizeOnlineFixationCalculation(const QString &logfileIdentier){
     // Computing the final fixation if there was one.
     Fixation fixation;
     fixation.indexFixationEnd = -1;
@@ -234,9 +302,27 @@ Fixation MovingWindowAlgorithm::finalizeOnlineFixationCalculation(){
 
     if (onlinePointsForFixation.size() >= parameters.getStartWindowSize()){
         fixation = onlineCalcuationOfFixationPoint();
-#ifdef ENABLE_MWA_DEBUG
-        logger.appendStandard("FIX FOUND: " + fixation.toString());
-#endif
+    }
+
+    // If the log file was set the fixation is saved and
+    if (!onlineFixationLogFile.isEmpty()){
+
+        // Adding the final fixation log line if it was valid.
+        if (fixation.isValid()){
+            QVariantMap logItem;
+            logItem["type"] = "FIX";
+            logItem["x"] = fixation.x;
+            logItem["y"] = fixation.y;
+            logItem["time"] = fixation.time;
+            logItem["duration"] = fixation.duration;
+            onlineFixationLog << logItem;
+        }
+
+        // Adding a new log line that separates the trial
+        QVariantMap temp;
+        temp["newtrial"] = logfileIdentier;
+        onlineFixationLog << temp;
+
     }
 
     onlinePointsForFixation.clear();

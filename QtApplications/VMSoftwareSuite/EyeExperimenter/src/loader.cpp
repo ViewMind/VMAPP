@@ -4,6 +4,11 @@
 Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
 {
 
+    qDebug() << "On Loader";
+    qDebug() << Globals::Share::EXPERIMENTER_VERSION;
+    qDebug() << Globals::EyeTracker::NAME;
+
+
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
     connect(&qc,&QualityControl::finished,this,&Loader::qualityControlFinished);
@@ -127,16 +132,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     }
     else partners = nullptr;
     partner_api = nullptr;
-
-//    // DebugCode
-//    QString todbug = "viewmind_etdata/1_0_20210707202158295/reading_2021_07_09_07_52.json";
-//    QString output = "debug.csv";
-//    QStringList list; list << VMDC::DataVectorField::WORD_L << VMDC::DataVectorField::WORD_R;
-//    ViewMindDataContainer tvmdc;
-//    if (!tvmdc.loadFromJSONFile(todbug)){
-//        qDebug() << "Load failed";
-//    }
-//    tvmdc.printRawDataCSV(output,VMDC::Study::READING,list);
 
 }
 
@@ -276,15 +271,15 @@ void Loader::partnerFinished(){
     QVariantList doctors = partner_api->getMedicInformation();
     QVariantList patients = partner_api->getRegisteredPatientInformation();
 
-//    std::cout << "Printing doctors" << std::endl;
-//    for (qint32 i = 0; i < doctors.size(); i++){
-//        Debug::prettpPrintQVariantMap(doctors.at(i).toMap());
-//    }
+    //    std::cout << "Printing doctors" << std::endl;
+    //    for (qint32 i = 0; i < doctors.size(); i++){
+    //        Debug::prettpPrintQVariantMap(doctors.at(i).toMap());
+    //    }
 
-//    std::cout  << "Printing patients" << std::endl;
-//    for (qint32 i = 0; i < patients.size(); i++){
-//        Debug::prettpPrintQVariantMap(patients.at(i).toMap());
-//    }
+    //    std::cout  << "Printing patients" << std::endl;
+    //    for (qint32 i = 0; i < patients.size(); i++){
+    //        Debug::prettpPrintQVariantMap(patients.at(i).toMap());
+    //    }
 
 
     if (partner_api->addMedicsAsNonLoginUsers()){
@@ -326,13 +321,13 @@ void Loader::partnerSynchFinishProcess(){
 
     // If necessary we add the doctors as app users.
     if (partner_api->addMedicsAsAppUsers()){
-         for (qint32 i = 0; i < doctors.size(); i++){
-             QVariantMap evaluator = doctors.at(i).toMap();
-             QString email = evaluator.value(PartnerMedic::EMAIL).toString();
-             QString name = evaluator.value(PartnerMedic::NAME).toString();
-             QString lastname = evaluator.value(PartnerMedic::LASTNAME).toString();
-             this->addOrModifyEvaluator(email,email,"1234",name,lastname);
-         }
+        for (qint32 i = 0; i < doctors.size(); i++){
+            QVariantMap evaluator = doctors.at(i).toMap();
+            QString email = evaluator.value(PartnerMedic::EMAIL).toString();
+            QString name = evaluator.value(PartnerMedic::NAME).toString();
+            QString lastname = evaluator.value(PartnerMedic::LASTNAME).toString();
+            this->addOrModifyEvaluator(email,email,"1234",name,lastname);
+        }
     }
 
 
@@ -595,6 +590,12 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         pp.insert(VMDC::ProcessingParameter::RESOLUTION_HEIGHT,configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
         pp.insert(VMDC::ProcessingParameter::RESOLUTION_WIDTH,configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH));
     }
+
+    // Computing the actual maximum dispersion to use.
+    qreal reference_for_md = qMax(pp.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toReal(),pp.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toReal());
+    qreal md_percent = pp.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
+    qint32 md_px = qRound(md_percent*reference_for_md/100.0);
+    pp.insert(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW_PX,md_px);
 
     // Setting the QC Parameters that will be used.
     QVariantMap qc = localDB.getQCParameters();
@@ -926,17 +927,18 @@ void Loader::receivedRequest(){
             //Debug::prettpPrintQVariantMap(mainData);
 
             // Checking for updates.
-            if (mainData.contains(APINames::UpdateParams::UPDATE_VERSION)) {
-                newVersionAvailable = mainData.value(APINames::UpdateParams::UPDATE_VERSION).toString();
-                if (mainData.contains(APINames::UpdateParams::UPDATE_ET_CHANGE)){
-                    newVersionAvailable = newVersionAvailable + " - " + mainData.value(APINames::UpdateParams::UPDATE_ET_CHANGE).toString();
+            if (!Globals::Debug::DISABLE_UPDATE_CHECK){
+                if (mainData.contains(APINames::UpdateParams::UPDATE_VERSION)) {
+                    newVersionAvailable = mainData.value(APINames::UpdateParams::UPDATE_VERSION).toString();
+                    if (mainData.contains(APINames::UpdateParams::UPDATE_ET_CHANGE)){
+                        newVersionAvailable = newVersionAvailable + " - " + mainData.value(APINames::UpdateParams::UPDATE_ET_CHANGE).toString();
+                    }
+                }
+
+                if (!newVersionAvailable.isEmpty()){
+                    logger.appendStandard("Update Available: " + newVersionAvailable);
                 }
             }
-
-            if (!newVersionAvailable.isEmpty()){
-                logger.appendStandard("Update Available: " + newVersionAvailable);
-            }
-
 
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
@@ -949,7 +951,7 @@ void Loader::receivedRequest(){
                 logger.appendSuccess("Received update succesfully. Unzipping");
 
                 // Just to test the update script.
-//                updater.start();
+                //                updater.start();
 
                 QDir dir(".");
                 dir.cdUp();

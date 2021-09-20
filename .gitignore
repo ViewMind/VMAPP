@@ -115,6 +115,8 @@ QtApplications/VMSoftwareSuite/EyeReportGenerator/bin/res/workdir/
 QtApplications/VMSoftwareSuite/EyeExperimenter/exe2019/viewmind_etdata*
 QtApplications/VMSoftwareSuite/EyeExperimenter/exe32
 QtApplications/VMSoftwareSuite/EyeExperimenter/EyeExperimenter/
+QtApplications/VMTools/ExperimentDev/exe/
+QtApplications/VMTools/QMLDev/exe/
 VMPortal/Backend/pdf_report_generation/node_modules/
 VMPortal/Backend/pdf_report_generation/package-lock.json
 VMPortal/Backend/pdf_report_generation/package.json

@@ -1,7 +1,7 @@
 #include "readingmanager.h"
 
 #ifdef EYETRACKER_HPOMNICENT
-const int ReadingManager::VR_READING_FONT_SIZE            = 20;
+const int ReadingManager::VR_READING_FONT_SIZE            = 32;
 const qreal ReadingManager::VR_READING_ESCAPE_POINT_XY_K  = 0.10;
 const char *ReadingManager::VR_READING_FONT_NAME          = "Courier New";
 #else

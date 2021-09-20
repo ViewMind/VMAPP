@@ -2,6 +2,7 @@ import QtQuick 2.6
 import QtQuick.Controls 2.3
 import QtGraphicalEffects 1.0
 import QtQuick.Dialogs 1.0
+import "ObjectListSorter.js" as OLS
 
 VMBase {
 
@@ -10,6 +11,11 @@ VMBase {
     readonly property real vmTableWidth: 0.70*mainWindow.width
     readonly property real vmTableHeight: 0.33*mainWindow.height
     property bool disableStudyStart: false;
+
+    readonly property string vmSORT_INDEX_SUBJECT: "name"
+    readonly property string vmSORT_INDEX_CREATION_DATE: "creation_date"
+    readonly property string vmSORT_INDEX_ID: "supplied_institution_id"
+
 
 
     Dialog {
@@ -183,21 +189,13 @@ VMBase {
         }
 
         // Getting the filtered list of patient map with all the info.
-        var patientNameList = loader.filterSubjectList(filterText);
+        OLS.setModelList( loader.filterSubjectList(filterText) );
 
-        // Clearing the current model.
-        patientList.clear()
+        // Default is descending order of creation date.
+        OLS.sortByIndex(vmSORT_INDEX_CREATION_DATE,OLS.ORDER_DESCENDING);
 
-        var index = 0;
-        for (var key in patientNameList) {
-            var map = patientNameList[key];
-            map["vmIsSelected"] = false;
-            map["vmItemIndex"] = index;
-            index++;
-            patientList.append(map);
-        }
-
-        patientListView.currentIndex = -1;
+        // Adding all the elements to the patient list.
+        fillOutPatientList();
 
         if (!flowControl.isVROk()){
             btnStart.enabled = false;
@@ -210,6 +208,23 @@ VMBase {
             return;
         }
 
+    }
+
+    function fillOutPatientList(){
+        // Clearing the current model.
+        patientList.clear()
+
+        var index = 0;
+        OLS.setupIteration()
+        while (OLS.hasNext()) {
+            var map = OLS.next()
+            map["vmIsSelected"] = false;
+            map["vmItemIndex"] = index;
+            index++;
+            patientList.append(map);
+        }
+
+        patientListView.currentIndex = -1;
     }
 
     function setCurrentPatient(){
@@ -384,6 +399,17 @@ VMBase {
             radius: 4
             width: vmTableWidth/3
             height: parent.height
+
+            MouseArea {
+                id: subjectMouseArea
+                anchors.fill: parent
+                onClicked: {
+                    OLS.toggleSortOrder();
+                    OLS.sortByIndex(vmSORT_INDEX_SUBJECT);
+                    fillOutPatientList();
+                }
+            }
+
             Text {
                 id: patientText
                 text:loader.getStringForKey("viewpatientlist_headerSubject");
@@ -393,6 +419,7 @@ VMBase {
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
+
         }
 
         Rectangle {
@@ -403,6 +430,17 @@ VMBase {
             radius: 4
             width: headerPatient.width
             height: parent.height
+
+            MouseArea {
+                id: idMouseArea
+                anchors.fill: parent
+                onClicked: {
+                    OLS.toggleSortOrder();
+                    OLS.sortByIndex(vmSORT_INDEX_ID);
+                    fillOutPatientList();
+                }
+            }
+
             Text {
                 id: idText
                 text: "ID";
@@ -422,6 +460,17 @@ VMBase {
             radius: 4
             width: headerPatient.width
             height: parent.height
+
+            MouseArea {
+                id: creationDateMouseArea
+                anchors.fill: parent
+                onClicked: {
+                    OLS.toggleSortOrder();
+                    OLS.sortByIndex(vmSORT_INDEX_CREATION_DATE);
+                    fillOutPatientList();
+                }
+            }
+
             Text {
                 id: creationDateText
                 text: loader.getStringForKey("viewpatientlist_headerCreationDate");

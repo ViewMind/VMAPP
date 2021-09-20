@@ -34,14 +34,14 @@ Dialog {
              * FOR DEBUGGING
              *********************************************/
 
-            //loader.setSelectedSubject("1_0_20210606090711350");
-            //viewStudyStart.vmSelectedMedic = "1";
-            //viewStudyStart.vmSelectedProtocol = "";
-            //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-            //viewFinishedStudies.loadEvaluatorStudies();
-            //swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies
-            //swiperControl.currentIndex = swiperControl.vmIndexViewQC;
-            //return;
+//            loader.setSelectedSubject("1_0_20210606090711350");
+//            viewStudyStart.vmSelectedMedic = "ariel.arelovich@viewmind.ai";
+//            viewStudyStart.vmSelectedProtocol = "";
+//            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+//            viewFinishedStudies.loadEvaluatorStudies();
+//            swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies
+//            swiperControl.currentIndex = swiperControl.vmIndexViewQC;
+//            return;
 
             /*************************************************/
 

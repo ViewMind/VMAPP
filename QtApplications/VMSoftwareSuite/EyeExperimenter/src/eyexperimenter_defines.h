@@ -8,10 +8,6 @@
 #include "../../../CommonClasses/Experiments/experiment.h"
 
 ///////////////////////// ONLY ONE OF THESE SHOULD BE ENABLED: DEFINES WHICH SERVER WILL BE USED BY THE API //////////////////////////
-#define CLIENT_REGION_EU
-//#define CLIENT_REGION_US
-//#define CLIENT_DEV_SERVER
-//#define LOCAL_DEBUG
 #include "../../../CommonClasses/eyetracker_defines.h"
 
 namespace Globals{
@@ -19,22 +15,23 @@ namespace Globals{
    const qint32 NUMBER_SECONDS_IN_A_DAY = 86400;
    const qint32 NUMBER_OF_PERCEPTION_PARTS = 8;
 
-#ifdef CLIENT_REGION_EU
-   const QString API_URL = "https://eu-api.viewmind.ai";
-   const QString REGION  = "EU";
-#endif
-#ifdef CLIENT_REGION_US
-   const QString API_URL = "https://us-api.viewmind.ai";
-   const QString REGION  = "US";
-#endif
-#ifdef CLIENT_DEV_SERVER
-   const QString API_URL = "https://testdev.viewmind.ai";
-   const QString REGION  = "REGION: DEV";
-#endif
-#ifdef LOCAL_DEBUG
-   const QString API_URL = "http://192.168.1.12/vmapi";
-   const QString REGION  = "REGION: Debug";
-#endif
+   namespace EU_REGION {
+      const QString API_URL = "https://eu-api.viewmind.ai";
+      const QString REGION  = "EU";
+   }
+
+   namespace DEV_SERVER {
+      const QString API_URL = "https://testdev.viewmind.ai";
+      const QString REGION  = "REGION: DEV";
+   }
+
+   namespace LOCAL {
+      const QString API_URL = "http://192.168.1.12/vmapi";
+      const QString REGION  = "REGION: Debug";
+   }
+
+   static QString API_URL = "";
+   static QString REGION  = "";
 
    namespace Labeling{
        static const QString MANUFACTURE_DATE = "07/10/2020";
@@ -100,6 +97,7 @@ namespace Globals{
       static const bool SHOW_EYE_POSITION       = false;
       static const bool DISABLE_RM_SENT_STUDIES = false;
       static const bool PRETTY_PRINT_JSON_DB    = false;
+      static const bool DISABLE_UPDATE_CHECK    = true;
    }
       
    namespace UILanguage {
@@ -108,13 +106,8 @@ namespace Globals{
    } 
    
    namespace Share {
-       // Developing version 16.2.0
-       static const QString EXPERIMENTER_VERSION_NUMBER = "16.2.0";
-       static const QString EXPERIMENTER_VERSION = EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + REGION
-               + (ExperimentGlobals::SHORT_STUDIES ? " - SHORT STUDIES" : "")
-               + (Debug::DISABLE_DB_CHECKSUM ? " - NO CHECKSUM" : "") +
-               + (Debug::PRETTY_PRINT_JSON_DB ? " - CLEAR_DB" : "")
-               + (Debug::DISABLE_RM_SENT_STUDIES ? " - NO RM STUDIES" : "");
+       static const QString EXPERIMENTER_VERSION_NUMBER = "16.4.1";
+       extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
        static const QString PATIENT_UID = "patient_uid";
@@ -127,6 +120,31 @@ namespace Globals{
        static const QString MONITOR_RESOLUTION_HEIGHT = "monitor_resolution_height";
        static const QString SELECTED_STUDY = "selected_study";
        static const char *  TEXT_CODEC = "UTF-8";
+   }
+
+   static void SetUpRegion(const QString &region){
+       if (region == "eu"){
+           API_URL = EU_REGION::API_URL;
+           REGION = EU_REGION::REGION;
+       }
+       else if (region == "local"){
+           API_URL = LOCAL::API_URL;
+           REGION = LOCAL::REGION;
+       }
+       else if (region == "dev"){
+           API_URL = DEV_SERVER::API_URL;
+           REGION = DEV_SERVER::REGION;
+       }
+   }
+
+   static void SetExperimenterVersion() {
+       Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + REGION
+               + (ExperimentGlobals::SHORT_STUDIES ? " - SHORT STUDIES" : "")
+               + (Debug::DISABLE_DB_CHECKSUM ? " - NO CHECKSUM" : "") +
+               + (Debug::PRETTY_PRINT_JSON_DB ? " - CLEAR_DB" : "")
+               + (Debug::DISABLE_RM_SENT_STUDIES ? " - NO RM STUDIES" : "")
+               + (ExperimentGlobals::ENABLE_FIX_LOG ? " - FIX_LOG_ENABLED": "")
+               + (Debug::DISABLE_UPDATE_CHECK ? " - UPDATE CHECK DISABLED" : "");
    }
 
    namespace BaseFileNames {

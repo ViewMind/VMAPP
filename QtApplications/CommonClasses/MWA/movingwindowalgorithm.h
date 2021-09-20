@@ -10,6 +10,9 @@
 #include <QtMath>
 #include <QList>
 #include <QDebug>
+#include <QJsonDocument>
+#include <QTextStream>
+#include <QFile>
 
 typedef QList<qreal>   DataRow;
 typedef QList<DataRow> DataMatrix;
@@ -104,12 +107,18 @@ public:
     // tI indicates the time column.
     Fixations computeFixations(const DataMatrix &data, qint32 xI, qint32 yI, qint32 tI);
 
-    // Controls use of minimal fixations.
-    void setMinimalFixations(bool enable);
+    // If this file is set a complete log of how the fixations were formed is stored and saved at the end of the trial.
+    void setOnlineFixationAnalysisFileOutput(const QString &filename);
+
+    // Saves the log file, if this was enabled.
+    void finalizeOnlineFixationLog();
+
+    // If set to anything greater than 0 (disabled), any fixation over the length specified will be forcibily formed.
+    void setMaximumFixationLength(qint32 length_in_miliseconds);
 
     // Uses the exact same algorithm to compute the fixation with one data point at a time.
     Fixation calculateFixationsOnline(qreal x, qreal y, qreal timeStamp, qreal pupil, qreal schar = 0, qreal word = 0);
-    Fixation finalizeOnlineFixationCalculation();
+    Fixation finalizeOnlineFixationCalculation(const QString &logfileIdentier = "");
 
     // Simple access to the parameters of the moving window algorithm
     MovingWindowParameters parameters;
@@ -154,11 +163,15 @@ private:
     MinMax onlineMMMY;
     MinMax onlineMMMX;
 
-    // This flag is used to generate fixations as soon as there are enough points to generate. This will effectively limit the fixation duration.
-    bool minimalFixations;
+    qint32 maxFixationLength;
 
-    // When minimal fixations are enable as soon as the number of points is this value over the miniumun the fixation si forcibly formed.
-    static const qint32 POINTS_OVER_MIN_TO_HOLD = 2;
+    QString onlineFixationLogFile;
+    /**
+     * @brief onlineFixationLog - Log that stores the fixation for file storage and later analysis.
+     * @details Each Item in the Log is composed of two fields: 'id' and 'list'. List field is a QVariantMap List with
+     * each item in the list having several fields to log in everything that happens during online fixations.
+     */
+    QList<QVariantMap> onlineFixationLog;
 
     static const qreal PUPIL_ZERO_TOL;
 

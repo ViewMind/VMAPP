@@ -61,7 +61,7 @@ Window {
             ComboBox {
                 id: eyeTrackingSelection
                 width: parent.width*0.1;
-                model: [ "Mouse", "HP Headset" ]
+                model: [ "Mouse", "HP Headset", "HTC Vive"]
             }
 
             Button {

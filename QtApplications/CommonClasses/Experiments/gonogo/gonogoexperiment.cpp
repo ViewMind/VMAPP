@@ -27,9 +27,7 @@ void GoNoGoExperiment::onTimeOut(){
         rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
 
         //qDebug() << "DRAWING TRIAL";
-        m->drawCurrentTrial();        
-        rMWA.finalizeOnlineFixationCalculation();
-        lMWA.finalizeOnlineFixationCalculation();
+        m->drawCurrentTrial();
         stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
         stateTimer.start();
         gngState = GNGS_ESTIMULUS;
@@ -42,8 +40,8 @@ void GoNoGoExperiment::onTimeOut(){
         qDebug() << "Timeout @ " << mtimer.elapsed();
         qDebug() << "================================";
 #endif
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();
         rawdata.finalizeTrial("");
 
         if (!m->drawCross()){
@@ -56,6 +54,9 @@ void GoNoGoExperiment::onTimeOut(){
                 return;
             }
             rawdata.markFileAsFinalized();
+
+            rMWA.finalizeOnlineFixationLog();
+            lMWA.finalizeOnlineFixationLog();
 
             stateTimer.stop();
             state = STATE_STOPPED;
@@ -92,7 +93,7 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
     // Go No Go only has 1 type of trial list.
     processingParameters = setGoNoGoTargetBoxes(processingParameters);
     if (!rawdata.setProcessingParameters(processingParameters)){
-        error = "Failed to set processing parameters when addign gonogo targetboxes";
+        error = "Failed to set processing parameters when adding gonogo targetboxes";
         emit(experimentEndend(ER_FAILURE));
         return false;
     }
@@ -111,8 +112,8 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
         this->activateWindow();
     }
 
-    rMWA.setMinimalFixations(true);
-    lMWA.setMinimalFixations(true);
+    //rMWA.setMaximumFixationLength(Globals::EyeTracker::GONOGO_MAX_FIXATION_LENGTH);
+    //lMWA.setMaximumFixationLength(Globals::EyeTracker::GONOGO_MAX_FIXATION_LENGTH);
 
     updateSecondMonitorORHMD();
 

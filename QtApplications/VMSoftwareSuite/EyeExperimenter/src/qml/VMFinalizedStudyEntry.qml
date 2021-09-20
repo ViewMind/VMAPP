@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import "DateLocalization.js" as DL
 
 Item {
 
@@ -33,7 +34,11 @@ Item {
             id: dateText
             font.family: viewHome.gothamR.name
             font.pixelSize: vmFontSize
-            text: date
+            text: {
+                //console.log("Setting the date to " + date)
+                DL.setDate(date,"dd/MM/yyyy HH:mm");
+                return DL.getDateAndTime()
+            }
             color: vmIsSelected? "#ffffff" : "#000000"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left

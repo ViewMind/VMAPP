@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Window 2.2
+import "DateLocalization.js" as DL;
 
 Window {
     id: mainWindow
@@ -31,6 +32,7 @@ Window {
         //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
         //viewVRDisplay.testCalibrationFailedDialog();
         //viewAbout.open();
+
     }
 
 

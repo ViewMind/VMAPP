@@ -71,8 +71,8 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_BLANK_1:
 
         // End retrieval 3. And trial.
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();        
         rawdata.finalizeTrial("");
 
         currentTrial++;
@@ -83,8 +83,8 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_BLANK_2:
 
         // End retrieval 2
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();
         // Start retrieval 3
         rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_3);
 
@@ -95,8 +95,8 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_BLANK_3:
 
         // End Retrieval 1
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();
         // Start Retrieval 2
         rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_2);
 
@@ -107,8 +107,8 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_DOT_1:
 
         // End Enconding 1
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();
         // Start enconding 2
         rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_2);
 
@@ -120,8 +120,9 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_DOT_2:
 
         // End Enconding 2
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();
+
         // Start enconding 3
         rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_3);
 
@@ -132,8 +133,8 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_DOT_3:
 
         // End Encondinng 3.
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();
 
         tstate = TSF_TRANSITION;
         stateTimer.setInterval(TIME_TRANSITION);

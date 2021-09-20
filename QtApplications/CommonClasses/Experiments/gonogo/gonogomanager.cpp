@@ -25,8 +25,8 @@ QList<QRectF> GoNoGoManager::getLeftAndRightHitBoxes() const {
 }
 
 void GoNoGoManager::enableDemoMode(){
-    while (gonogoTrials.size() > 20){
-    //while (gonogoTrials.size() > NUMBER_OF_TRIALS_IN_DEMO_MODE){
+    //while (gonogoTrials.size() > 20){
+    while (gonogoTrials.size() > NUMBER_OF_TRIALS_IN_DEMO_MODE){
         gonogoTrials.removeLast();
     }
 }

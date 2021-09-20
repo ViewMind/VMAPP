@@ -134,8 +134,10 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     MovingWindowParameters mwp;
     mwp.sampleFrequency = processingParameters.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
     mwp.minimumFixationLength =  processingParameters.value(VMDC::ProcessingParameter::MIN_FIXATION_DURATION).toReal();
-    mwp.maxDispersion =  processingParameters.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
+    mwp.maxDispersion =  processingParameters.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW_PX).toReal();
+    //mwp.maxDispersion =  35;
     mwp.calculateWindowSize();
+    qDebug() << "Processing parameters" << mwp.sampleFrequency << mwp.minimumFixationLength << mwp.maxDispersion << mwp.getStartWindowSize();
 
     if ((mwp.getStartWindowSize() <= 0) || (mwp.sampleFrequency <= 0) || (mwp.minimumFixationLength <= 0) || (mwp.maxDispersion <= 0)){
         error = "Invalid processing parameeters for MWA. MFL: " + QString::number(mwp.minimumFixationLength)
@@ -149,6 +151,14 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
 
     rMWA.parameters = mwp;
     lMWA.parameters = mwp;
+
+    if (ExperimentGlobals::ENABLE_FIX_LOG){
+        QFileInfo info(dataFile);
+        QString path = info.absolutePath();
+        QString basename = info.baseName();
+        rMWA.setOnlineFixationAnalysisFileOutput(path + "/" + basename + "_r" + ".log");
+        lMWA.setOnlineFixationAnalysisFileOutput(path + "/" + basename + "_l" + ".log");
+    }
 
     // And resetting just in case.
     rMWA.finalizeOnlineFixationCalculation();

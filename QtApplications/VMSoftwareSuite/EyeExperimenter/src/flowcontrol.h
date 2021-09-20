@@ -26,6 +26,7 @@
 #include "../../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h"
 #include "../../../CommonClasses/EyeTrackingInterface/GazePoint/opengazeinterface.h"
 #include "../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
+#include "../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
 
 #include "eyexperimenter_defines.h"
 

@@ -28,6 +28,7 @@ namespace ExperimentGlobals {
    static const char *  TEXT_CODEC              = "UTF-8";
    static const bool PRETTY_PRINT_OUTPUT_FILES  = true;
    static const bool SHORT_STUDIES              = false;
+   static const bool ENABLE_FIX_LOG             = false;
 }
 
 

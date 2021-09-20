@@ -210,8 +210,8 @@ void ImageExperiment::nextState(){
         //qWarning() << "ENTER: SHOW" << currentTrial;        
 
         // Encoding Ends.
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();
 
         trialState = TSB_TRANSITION;
         drawCurrentImage();
@@ -223,8 +223,8 @@ void ImageExperiment::nextState(){
         trialState = TSB_FINISH;
 
         // Retrieval Ends.
-        rawdata.finalizeDataSet();
         finalizeOnlineFixations();
+        rawdata.finalizeDataSet();
 
         rawdata.finalizeTrial(answer);
 

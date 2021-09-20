@@ -1,181 +1,129 @@
 #include "viveeyepoller.h"
 
+//QVariantMap HPOmniceptProvider::newEyeData = QVariantMap();
+
+ViveSR::anipal::Eye::EyeData VIVEEyePoller::newEyeData = ViveSR::anipal::Eye::EyeData();
+std::mutex VIVEEyePoller::mtx;
+bool VIVEEyePoller::isNewDataAvailable = false;
+
 VIVEEyePoller::VIVEEyePoller()
 {
     keepGoing = false;
-    isCalibrating = false;
-    resetEyeCorrectionCoeffs();
     wasInitialized = false;
+    compareTolerance = 0.001f;
+}
+
+QString VIVEEyePoller::getError() const{
+    return error;
+}
+
+bool VIVEEyePoller::isRunning() const {
+    return keepGoing;
 }
 
 bool VIVEEyePoller::initalizeEyeTracking(){
 
     if (wasInitialized) return true;
 
-    int error = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE, nullptr);
-    if (error == ViveSR::Error::WORK) {
+    int error_code = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE, nullptr);
+    if (error_code == ViveSR::Error::WORK) {
         wasInitialized = true;
-        return true;
     }
-    else if (error == ViveSR::Error::RUNTIME_NOT_FOUND) {
-        qDebug() << "Eye Tracking Runtime Not Found";
+    else if (error_code == ViveSR::Error::RUNTIME_NOT_FOUND) {
+        error = "Eye Tracking Runtime Not Found";
         return false;
     }
     else {
-        qDebug() << "Failed to initialize Eye engine. please refer the code " << error << " of ViveSR::Error";
+        error = "Failed to initialize Eye engine. please refer the code " + QString::number(error_code) + " of ViveSR::Error";
         return false;
     }
 
-}
-
-bool VIVEEyePoller::isRightEyeCalibrated(){
-    if (isCalibrating) return false;
-    if (!isCalibrated) return false;
-    return eyeCorrectionCoeffs.isRightEyeCalibrated();
-}
-
-bool VIVEEyePoller::isLeftEyeCalibrate(){
-    if (isCalibrating) return false;
-    if (!isCalibrated) return false;
-    return eyeCorrectionCoeffs.isLeftEyeCalibrated();
-}
-
-void VIVEEyePoller::run(){
-
-    ViveSR::anipal::Eye::EyeData eye_data;
-    previous.init(4,-2);
-    keepGoing = true;
-    bool areValid;
-    CalibrationLeastSquares::EyeInputData eyeData;
-    eyeData.xl = 0; eyeData.xr = 0; eyeData.yl = 0; eyeData.xr = 0;
-    qreal pl = 0.0, pr = 0.0;
-    timestampTimer.start();
-
-    //qDebug() << "VIVE EYE POLLER ENABLED";
-
-    while (keepGoing) {
-        int result = ViveSR::anipal::Eye::GetEyeData(&eye_data);
-        if (result == ViveSR::Error::WORK) {
-            ViveSR::anipal::Eye::SingleEyeData le = eye_data.verbose_data.left;
-            ViveSR::anipal::Eye::SingleEyeData re = eye_data.verbose_data.right;
-
-            ManyPointCompare now;
-            now.values << le.gaze_direction_normalized.x << le.gaze_direction_normalized.y << re.gaze_direction_normalized.x << re.gaze_direction_normalized.y;
-            if (now.areTheSame(previous)) {
-                previous = now;
-                continue;
-            }
-            previous = now;
-
-            QVector4D vecL(le.gaze_direction_normalized.x,le.gaze_direction_normalized.y,le.gaze_direction_normalized.z,0);
-            QVector4D vecR(re.gaze_direction_normalized.x,re.gaze_direction_normalized.y,re.gaze_direction_normalized.z,0);
-
-            pr = static_cast<qreal>(re.pupil_diameter_mm);
-            pl = static_cast<qreal>(le.pupil_diameter_mm);
-
-            vecL = pLe*vecL;
-            vecR = pRe*vecR;
-
-            areValid = (vecL.z() != 0.0f) || (vecR.z() != 0.0f);
-            
-            if (areValid){
-                if (vecL.z() != 0.0f){
-                   eyeData.xl = static_cast<qreal>(vecL.x())/static_cast<qreal>(vecL.z());
-                   eyeData.yl = static_cast<qreal>(vecL.y())/static_cast<qreal>(vecL.z());
-                }
-                else{
-                   eyeData.xl = 0;
-                   eyeData.yl = 0;
-                }
-                if (vecR.z() != 0.0f){
-                   eyeData.xr = static_cast<qreal>(vecR.x())/static_cast<qreal>(vecR.z());                
-                   eyeData.yr = static_cast<qreal>(vecR.y())/static_cast<qreal>(vecR.z());
-                }
-                else{
-                   eyeData.xr = 0;
-                   eyeData.yr = 0;                 
-                }
-            }
-
-            if (isCalibrating && shouldStoreCalibrationData && areValid ){
-                currentCalibrationData.eyeData << eyeData;
-            }
-
-            //qDebug() << "About to emmit" << areValid;
-
-            if (areValid){
-                updateEyeTrackerData(eyeData,pl,pr,timestampTimer.elapsed());
-                if (isCalibrated) {
-                    //qDebug() << "Sending signal";
-                    emit(newEyeData(lastData));
-                }
-            }
-
-        }
-    }
-}
-
-void VIVEEyePoller::updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l){
-    pRe = r;
-    pLe = l;
-}
-
-void VIVEEyePoller::updateEyeTrackerData(CalibrationLeastSquares::EyeInputData eyeData, qreal pl, qreal pr, qint64 timestamp){
-    lastData.time = timestamp;
-    eyeData = eyeCorrectionCoeffs.computeCorrections(eyeData);
-    //    lastData.xLeft = static_cast<qint32>(eyeCorrectionCoeffs.xl.m*xl + eyeCorrectionCoeffs.xl.b);
-    //    lastData.xRight = static_cast<qint32>(eyeCorrectionCoeffs.xr.m*eyeData + eyeCorrectionCoeffs.xr.b);
-    //    lastData.yLeft = static_cast<qint32>(eyeCorrectionCoeffs.yl.m*yl + eyeCorrectionCoeffs.yl.b);
-    //    lastData.yRight = static_cast<qint32>(eyeCorrectionCoeffs.yr.m*yr + eyeCorrectionCoeffs.yr.b);
-    lastData.xLeft = qMax(0,static_cast<qint32>(eyeData.xl));
-    lastData.xRight = qMax(0,static_cast<qint32>(eyeData.xr));
-    lastData.yLeft = qMax(0,static_cast<qint32>(eyeData.yl));
-    lastData.yRight = qMax(0,static_cast<qint32>(eyeData.yr));
-
-    lastData.pdLeft = pl;
-    lastData.pdRight = pr;
-
-    //qDebug() << "LAST DATA IS NOW" << lastData.toString() << "INPUT WAS" << eyeData.xl << eyeData.yl << eyeData.xr << eyeData.yr;
-}
-
-void VIVEEyePoller::resetEyeCorrectionCoeffs(){
-    eyeCorrectionCoeffs.xl.b = 0;
-    eyeCorrectionCoeffs.xl.m = 1;
-    eyeCorrectionCoeffs.xr.b = 0;
-    eyeCorrectionCoeffs.xr.m = 1;
-    eyeCorrectionCoeffs.yl.b = 0;
-    eyeCorrectionCoeffs.yl.m = 1;
-    eyeCorrectionCoeffs.yr.b = 0;
-    eyeCorrectionCoeffs.yr.m = 1;
-    isCalibrated = false;
-}
-
-bool VIVEEyePoller::calibrationDone(){
-    isCalibrating = false;
-    calibrationPointData << currentCalibrationData;
-    CalibrationLeastSquares cls;
-    if (!cls.computeCalibrationCoeffs(calibrationPointData)){
-        return false;
-    }
-    eyeCorrectionCoeffs = cls.getCalculatedCoeficients();
-
-//    qDebug() << "Printing calibration coefficients";
-//    qDebug() << "XR" << eyeCorrectionCoeffs.xr.m << eyeCorrectionCoeffs.xr.b << eyeCorrectionCoeffs.xr.valid;
-//    qDebug() << "XL" << eyeCorrectionCoeffs.xl.m << eyeCorrectionCoeffs.xl.b << eyeCorrectionCoeffs.xl.valid;
-//    qDebug() << "YR" << eyeCorrectionCoeffs.yr.m << eyeCorrectionCoeffs.yr.b << eyeCorrectionCoeffs.yr.valid;
-//    qDebug() << "YL" << eyeCorrectionCoeffs.yl.m << eyeCorrectionCoeffs.yl.b << eyeCorrectionCoeffs.yl.valid;
-
-    isCalibrated = true;
+    ViveSR::anipal::Eye::RegisterEyeDataCallback(VIVEEyePoller::EyeCallback);
 
     return true;
 
-    //    logger.setLogFileLocation("calibration_data");
-    //    for (qint32 i = 0; i < calibrationPointData.size(); i++){
-    //        logger.appendStandard("#POINT " + QString::number(i) + "\n");
-    //        QString temp = calibrationPointData.at(i).toString();
-    //        logger.appendStandard(temp);
-    //    }
+}
 
+
+void VIVEEyePoller::run(){
+
+    //ViveSR::anipal::Eye::EyeData eye_data;
+
+    keepGoing = true;
+
+    timestampTimer.start();
+
+    QVariantMap eye;
+
+    eye[HTCVIVE::Eye::X] = 0;
+    eye[HTCVIVE::Eye::Y] = 0;
+    eye[HTCVIVE::Eye::Z] = 0;
+
+    previousSample[HTCVIVE::LeftEye] = eye;
+    previousSample[HTCVIVE::RightEye] = eye;
+
+    qint64 previous = 0;
+
+
+    while (keepGoing) {
+        //int result = ViveSR::anipal::Eye::GetEyeData(&eye_data);
+
+        // Check if the call back made new data available.
+        ViveSR::anipal::Eye::EyeData result;
+        bool newDataReady = false;
+        mtx.lock();
+        if (isNewDataAvailable){
+            newDataReady = true;
+            result = newEyeData;
+            isNewDataAvailable = false;
+        }
+        mtx.unlock();
+
+        if (newDataReady) {
+
+            ViveSR::anipal::Eye::SingleEyeData le = result.verbose_data.left;
+            ViveSR::anipal::Eye::SingleEyeData re = result.verbose_data.right;
+            qint32 timestamp = result.timestamp;
+
+            float xl,xr,yl,yr,zl,zr,pl,pr;
+            xl = le.gaze_direction_normalized.x;
+            yl = le.gaze_direction_normalized.y;
+            zl = le.gaze_direction_normalized.z;
+            pl = le.pupil_diameter_mm;
+
+            xr = re.gaze_direction_normalized.x;
+            yr = re.gaze_direction_normalized.y;
+            zr = re.gaze_direction_normalized.z;
+            pr = re.pupil_diameter_mm;
+
+            // Ensuring that the sample is different. If it's not, then we return.
+            // if (isSampleSameAsPrevious(HTCVIVE::LeftEye,xl,yl,zl) && isSampleSameAsPrevious(HTCVIVE::LeftEye,xr,yr,zr)) continue;
+
+            QVariantMap l;
+            QVariantMap r;
+            l[HTCVIVE::Eye::X] = xl;
+            l[HTCVIVE::Eye::Y] = yl;
+            l[HTCVIVE::Eye::Z] = zl;
+            l[HTCVIVE::Eye::Pupil] = pl;
+
+            r[HTCVIVE::Eye::X] = xr;
+            r[HTCVIVE::Eye::Y] = yr;
+            r[HTCVIVE::Eye::Z] = zr;
+            r[HTCVIVE::Eye::Pupil] = pr;
+
+            //qint64 sampleRate = (timestampTimer.elapsed() - previous);
+            //previous = timestampTimer.elapsed();
+            //qint32 sampleRate = (timestamp - previousSample.value(HTCVIVE::Timestamp).toInt());
+            //qDebug() << "Sample Rate in MS" << sampleRate;
+
+            previousSample[HTCVIVE::LeftEye] = l;
+            previousSample[HTCVIVE::RightEye] = r;
+            previousSample[HTCVIVE::Timestamp] = timestamp;
+
+            emit(eyeDataAvailable(previousSample));
+
+        }
+    }
 }
 
 void VIVEEyePoller::stop(){
@@ -183,52 +131,33 @@ void VIVEEyePoller::stop(){
     //qDebug() << "VIVE EYE Poller Was Disabled";
 }
 
-void VIVEEyePoller::saveCalibrationCoefficients(const QString &file){
-    eyeCorrectionCoeffs.saveCalibrationCoefficients(file);
-}
+bool VIVEEyePoller::isSampleSameAsPrevious(const QString &whichEye, float x, float y, float z){
 
-void VIVEEyePoller::loadCalibrationCoefficients(const QString &file){
-    // There are no checks here as this will only be used for debugging.
-    isCalibrated = true;
-    isCalibrating = false;
-    eyeCorrectionCoeffs.loadCalibrationCoefficients(file);
-    qDebug() << "Loaded calibration coefficients";
-    qDebug() << eyeCorrectionCoeffs.xr.m << eyeCorrectionCoeffs.xr.b;
-    qDebug() << eyeCorrectionCoeffs.xl.m << eyeCorrectionCoeffs.xl.b;
-    qDebug() << eyeCorrectionCoeffs.yr.m << eyeCorrectionCoeffs.yr.b;
-    qDebug() << eyeCorrectionCoeffs.yl.m << eyeCorrectionCoeffs.yl.b;
-}
+    QVariantMap eye = previousSample.value(whichEye).toMap();
 
-void VIVEEyePoller::newCalibrationPoint(qint32 xtarget, qint32 ytarget){
-    if (!isCalibrating){
-        isCalibrating = true;
-        resetEyeCorrectionCoeffs();
-        calibrationPointData.clear();
-    }
-    else{
-        //qDebug() << "New calibration point on VIVE EYE Poller Adding calibration data of size" << currentCalibrationData.eyeData.size();
-        calibrationPointData << currentCalibrationData;
-    }
-    //qDebug() << "New calibration point" << xtarget << ytarget;
-    currentCalibrationData.clear();
-    CalibrationLeastSquares::EyeInputData cpoint;
-    cpoint.xl = xtarget; cpoint.xr = xtarget;
-    cpoint.yl = ytarget; cpoint.yr = ytarget;
-    currentCalibrationData.eyeData << cpoint;
-    shouldStoreCalibrationData = false;
+    float px = eye.value(HTCVIVE::Eye::X).toFloat();
+    float py = eye.value(HTCVIVE::Eye::X).toFloat();
+    float pz = eye.value(HTCVIVE::Eye::X).toFloat();
+
+    return (qAbs(px - x) < compareTolerance) && (qAbs(py - y) < compareTolerance) && (qAbs(pz - z) < compareTolerance);
 
 }
 
-void VIVEEyePoller::startStoringCalibrationData(){
-    shouldStoreCalibrationData = true;
+void VIVEEyePoller::EyeCallback(const ViveSR::anipal::Eye::EyeData &eye_data){
+
+    // Wait for the buffer to be ready.
+    mtx.lock();
+
+    // Storing the new informationn
+    newEyeData = eye_data;
+    isNewDataAvailable = true;
+    //qDebug() << "TS" << eye_data.timestamp;
+
+    // Realeasing the protection
+    mtx.unlock();
 }
 
-void VIVEEyePoller::setProjectionMatrices(quint8 whichEye, QMatrix4x4 p){
-    if (whichEye == 0){
-        pLe = p;
-    }
-    else if (whichEye == 1){
-        pRe = p;
-    }
-}
+
+
+
 

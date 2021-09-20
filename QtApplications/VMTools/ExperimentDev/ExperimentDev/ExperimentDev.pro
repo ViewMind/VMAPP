@@ -16,6 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.cpp \
         ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.cpp \
+        ../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
+        ../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/viveeyepoller.cpp \
         ../../../CommonClasses/EyeTrackingInterface/Mouse/calibrationarea.cpp \
         ../../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.cpp \
         ../../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.cpp \
@@ -49,6 +51,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h \
+    ../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
+    ../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/viveeyepoller.h \
     ../../../CommonClasses/EyeTrackingInterface/Mouse/calibrationarea.h \
     ../../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h \
     ../../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.h \
@@ -64,6 +68,7 @@ HEADERS += \
 
 LIBS += -L$$PWD/../../../CommonClasses/OpenVRControlObject/libs -lopenvr_api
 LIBS += -L$$PWD/../../../CommonClasses/EyeTrackingInterface/HPReverb/hp -lhp_omnicept
+LIBS += -L$$PWD/../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro -lSRanipal
 LIBS += -lWinTrust
 LIBS += -lRpcRT4
 LIBS += -lole32

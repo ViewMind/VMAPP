@@ -41,7 +41,7 @@ protected:
 
     // Constants
     static const qint32 GONOGO_TIME_CROSS     = 1000;
-    static const qint32 GONOGO_TIME_ESTIMULUS = 2000;
+    static const qint32 GONOGO_TIME_ESTIMULUS = 4000;
 
     QVariantMap setGoNoGoTargetBoxes(QVariantMap pp);
     bool addNewTrial();

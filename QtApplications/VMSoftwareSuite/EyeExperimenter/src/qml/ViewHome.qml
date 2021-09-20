@@ -582,6 +582,24 @@ VMBase {
         }
     }
 
+    // Combo Box To test ComboBox Design
+//    VMComboBox2{
+//        id: test_combo_box
+//        width: mainWindow.width*0.273
+//        anchors.top: btnGetStarted.bottom
+//        anchors.left: btnGetStarted.left
+//        onVmCurrentIndexChanged: {
+//            console.log("CurrentIndex Changed.")
+//        }
+//        Component.onCompleted: {
+//            var list = [];
+//            for (var i = 0; i < 10; i++){
+//                list.push("Item " + i);
+//            }
+//            test_combo_box.setModelList(list)
+//        }
+//    }
+
     VMButton {
         id: btnPartners;
         vmText: loader.getStringForKey("viewhome_btnPartners");

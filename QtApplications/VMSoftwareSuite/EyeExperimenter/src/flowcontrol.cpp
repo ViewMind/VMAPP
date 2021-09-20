@@ -245,7 +245,6 @@ void FlowControl::connectToEyeTracker(){
     // The new et is NOT calibrated.
     calibrated = false;
 
-    //qWarning() << "CONNECTING TO ET. Selected" << eyeTrackerSelected;
 
     if (configuration->getBool(Globals::VMPreferences::USE_MOUSE)){
         eyeTracker = new MouseInterface();
@@ -258,7 +257,9 @@ void FlowControl::connectToEyeTracker(){
                                              configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
 #endif
 #ifdef EYETRACKER_HTCVIVEPRO
-        eyeTracker = new HTCViveEyeProEyeTrackingInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
+        eyeTracker = new HTCViveEyeProEyeTrackingInterface(this,
+                                                           configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
+                                                           configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
 #endif
 #ifdef EYETRACKER_GAZEPOINT
         eyeTracker = new OpenGazeInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
@@ -290,7 +291,7 @@ void FlowControl::calibrateEyeTracker(quint8 eye_to_use){
     selected_eye_to_use = VMDC::Eye::fromInt(eye_to_use);
     eyeTracker->setEyeToTransmit(selected_eye_to_use);
 
-    //qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
+   // qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
 
     // Required during calibration.
     renderState = RENDERING_CALIBRATION_SCREEN;
@@ -493,8 +494,11 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
 
     // Making sure that that both experiment signals are connected.
     // Eyetracker should be connected by this point.
+    //qDebug() << "Connecting for experiment finished";
     connect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
+    //qDebug() << "Connecting for new data available" << (eyeTracker == nullptr) << (experiment == nullptr);
     connect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
+    //qDebug() << "Connecting for update VR Display";
     connect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
 
 
@@ -510,8 +514,8 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     experiment->setDebugMode(configuration->getBool(Globals::VMPreferences::DUAL_MONITOR_MODE));
 
     // Making sure that the eyetracker is sending data.
+    //qDebug() << "EyeTracker Enable Updating";
     eyeTracker->enableUpdating(true);
-
 
     // Start the experiment.
     experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),

@@ -15,6 +15,7 @@ RCC_DIR = QRC
 
 RESOURCES += qml.qrc \
     ../../../CommonClasses/Experiments/experiment_descriptions.qrc \
+    defines.qrc \
     fonts.qrc \
     images.qrc \
     languages.qrc
@@ -49,6 +50,8 @@ SOURCES += main.cpp \
     ../../../CommonClasses/EyeTrackingInterface/GazePoint/opengazeinterface.cpp \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.cpp \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.cpp \
+    ../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
+    ../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/viveeyepoller.cpp \
     ../../../CommonClasses/EyeTrackingInterface/Mouse/calibrationarea.cpp \
     ../../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.cpp \
     ../../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.cpp \
@@ -103,6 +106,8 @@ HEADERS += \
     ../../../CommonClasses/EyeTrackingInterface/GazePoint/opengazeinterface.h \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h \
+    ../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
+    ../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/viveeyepoller.h \
     ../../../CommonClasses/EyeTrackingInterface/Mouse/calibrationarea.h \
     ../../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h \
     ../../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.h \
@@ -141,9 +146,9 @@ HEADERS += \
 #             EyeTrackerInterface/RED/redinterface.h
 #}
 
-#LIBS += -L$$PWD/../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro -lSRanipal
 LIBS += -L$$PWD/../../../CommonClasses/OpenVRControlObject/libs -lopenvr_api
 LIBS += -L$$PWD/../../../CommonClasses/EyeTrackingInterface/HPReverb/hp -lhp_omnicept
+LIBS += -L$$PWD/../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro -lSRanipal
 LIBS += -lWinTrust
 LIBS += -lRpcRT4
 LIBS += -lole32
@@ -166,7 +171,8 @@ DISTFILES += \
     ../../../CommonClasses/Experiments/reading/descriptions/Reading_es.dat \
     ../../../CommonClasses/Experiments/reading/descriptions/Reading_fr.dat \
     ../../../CommonClasses/Experiments/reading/descriptions/Reading_fr_original.dat \
-    ../../../CommonClasses/Experiments/reading/descriptions/Reading_is.dat
+    ../../../CommonClasses/Experiments/reading/descriptions/Reading_is.dat \
+    configs/config.cnf
 
 
 

@@ -6,6 +6,7 @@
 #include "../../../CommonClasses/EyeTrackingInterface/calibrationtargets.h"
 #include "../../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h"
 #include "../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
+#include "../../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
 #include "../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
 
 class Control : public QObject
@@ -18,7 +19,8 @@ public:
     explicit Control(QObject *parent = nullptr);
 
     static const quint8 ET_MOUSE     = 0;
-    static const quint8 ET_HP_REBERV = 1;    
+    static const quint8 ET_HP_REBERV = 1;
+    static const quint8 ET_HTC_VIVE  = 2;
 
     /**
      * @brief When this function is called, the light up target test is used as the source of images.
@@ -68,7 +70,7 @@ private:
     typedef enum { RENDERING_NONE, RENDERING_TARGET_TEST, RENDERING_EXPERIMENT, RENDER_WAIT_SCREEN, RENDERING_CALIBRATION } RenderState;
     RenderState renderState;
 
-    qreal VRSCALING = 0.5;
+    qreal VRSCALING = 1.0;
 
     // Open VR.
     OpenVRControlObject *openvrco;

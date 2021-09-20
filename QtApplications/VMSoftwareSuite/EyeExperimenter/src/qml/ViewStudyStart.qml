@@ -888,7 +888,7 @@ VMBase {
                     vmCurrentExperimentIndex = -1;
                     viewPresentExperimet.advanceCurrentExperiment()
                     viewCalibrationStart.vmSelectedEye = cbEyeMsg.vmCurrentIndex;
-                    if (!loader.getConfigurationBoolean("use_mouse")){
+                    if (!loader.getConfigurationBoolean("use_mouse") && loader.isVREnabled()){
                         swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
                         viewVRDisplay.disableStartStudyButton(); // To enforce first calibraton.
                     }

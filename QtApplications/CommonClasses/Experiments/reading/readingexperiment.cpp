@@ -137,9 +137,10 @@ void ReadingExperiment::advanceToTheNextPhrase(){
         eyeSelector.reset();
 
         // Finalize both the data set and the trial.
+        finalizeOnlineFixations();
         rawdata.finalizeDataSet();
         rawdata.finalizeTrial(response);
-        finalizeOnlineFixations();
+
 
         // I move on to the next question only I'm in a question or phrase qstate.        
         if (currentQuestion < m->size()-1){
@@ -167,6 +168,9 @@ void ReadingExperiment::advanceToTheNextPhrase(){
                 return;
             }
             rawdata.markFileAsFinalized();
+
+            rMWA.finalizeOnlineFixationLog();
+            lMWA.finalizeOnlineFixationLog();
 
             if (!saveDataToHardDisk()){
                 emit (experimentEndend(ER_FAILURE));
