@@ -69,8 +69,8 @@
 
  $report["overall_performance"]["text"] = "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex – Overall Performance Graph Interpretation.";
  $report["overall_performance"]["vertex"]["processing_speed"]                 = "Processing Speed";
- $report["overall_performance"]["vertex"]["processing_speed_interference"]    = "Processing Speed\nInterference";
- $report["overall_performance"]["vertex"]["processing_speed_facilitated"]     = "Processing Speed\nFacilitated";
+ $report["overall_performance"]["vertex"]["processing_speed_interference"]    = "Visual Working\nMemory Interference";
+ $report["overall_performance"]["vertex"]["processing_speed_facilitated"]     = "Visual Working\nMemory Facilitated";
  $report["overall_performance"]["vertex"]["reaction_time_interference"]       = "Reaction Time\nInterference";
  $report["overall_performance"]["vertex"]["reaction_time_facilitated"]        = "Reaction Time\nFacilitated";
  $report["overall_performance"]["vertex"]["executive_functions"]              = "Executive\nFunctions";

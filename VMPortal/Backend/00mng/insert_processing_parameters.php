@@ -23,7 +23,7 @@ $tpp = new TableProcessingParameters($con_main);
 
 // Gazepoint
 $name = EyeTrackerCodes::GAZEPOINT;
-$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 197;
+$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 15;
 $pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
 $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 150;
 $pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
@@ -62,7 +62,7 @@ if ($ans === FALSE){
 
 // HTC Vive Eye Pro. 
 $name = EyeTrackerCodes::HTC_VIVE_EYE_PRO;
-$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 105;
+$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 3;
 $pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
 $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;
 $pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
@@ -100,7 +100,7 @@ if ($ans === FALSE){
 
 // HP Omnicept
 $name = EyeTrackerCodes::HP_OMNICEPT;
-$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 105;
+$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 2;
 $pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
 $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;
 $pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;

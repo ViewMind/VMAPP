@@ -282,8 +282,8 @@
                 "text": "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex \u2013 Overall Performance Graph Interpretation.",
                 "vertex": {
                     "processing_speed": "Processing Speed",
-                    "processing_speed_interference": "Processing Speed\nInterference",
-                    "processing_speed_facilitated": "Processing Speed\nFacilitated",
+                    "processing_speed_interference": "Visual Working\nMemory Interference",
+                    "processing_speed_facilitated": "Visual Working\nMemory Facilitated",
                     "reaction_time_interference": "Reaction Time\nInterference",
                     "reaction_time_facilitated": "Reaction Time\nFacilitated",
                     "executive_functions": "Executive\nFunctions",
