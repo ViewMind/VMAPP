@@ -50,7 +50,7 @@
    $item["title"] = "#binding.fixation_plotting.title_right#";
    $item["resolution"] = "&resolution&";
    $item["binding"] =  [ [0,2], [1,2] ];
-   $item["fixations"] = "&fixations.10.reterieval_1&";
+   $item["fixations"] = "&fixations.10.retrieval_1&";
    $page["items"][] = $item;
 
    $row_y = $row_y + $h + $space_between_rows;
@@ -78,7 +78,7 @@
    $item["h"] = $h;
    $item["resolution"] = "&resolution&";
    $item["binding"] = [ [0,0], [1,2] ];
-   $item["fixations"] = "&fixations.20.reterieval_1&";
+   $item["fixations"] = "&fixations.20.retrieval_1&";
    $page["items"][] = $item;
 
    $row_y = $row_y + $h + $space_between_rows;
@@ -106,7 +106,7 @@
    $item["h"] = $h;
    $item["resolution"] = "&resolution&";
    $item["binding"] = [ [0,2], [1,2] ];
-   $item["fixations"] = "&fixations.32.reterieval_1&";
+   $item["fixations"] = "&fixations.32.retrieval_1&";
    $page["items"][] = $item;   
 
    ///---------------- The Control Fixation Graph. 
