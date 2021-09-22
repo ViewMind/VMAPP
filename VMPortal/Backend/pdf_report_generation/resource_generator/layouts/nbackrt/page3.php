@@ -49,7 +49,7 @@
    $item["h"] = $h;
    $item["title"] = "#nbackrt.fixation_plotting.title_right#";
    $item["resolution"] = "&resolution&";
-   $item["nbackrt"] = [3,4,2];
+   $item["nbackrt"] = [4,0,5];
    $item["fixations"] = "&fixations.12.retrieval_1&";
    $page["items"][] = $item;
 
@@ -77,7 +77,7 @@
    $item["w"] = $w;
    $item["h"] = $h;
    $item["resolution"] = "&resolution&";
-   $item["nbackrt"] = [1,3,0];
+   $item["nbackrt"] = [0,2,3];
    $item["fixations"] = "&fixations.50.retrieval_1&";
    $page["items"][] = $item;
 
@@ -105,7 +105,7 @@
    $item["w"] = $w;
    $item["h"] = $h;
    $item["resolution"] = "&resolution&";
-   $item["nbackrt"] = [ 1,4,0 ];
+   $item["nbackrt"] = [ 1,2,3 ];
    $item["fixations"] = "&fixations.90.retrieval_1&";
    $page["items"][] = $item;   
 

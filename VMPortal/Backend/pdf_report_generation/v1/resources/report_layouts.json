@@ -3373,9 +3373,9 @@
                         "title": "#nbackrt.fixation_plotting.title_right#",
                         "resolution": "&resolution&",
                         "nbackrt": [
-                            3,
                             4,
-                            2
+                            0,
+                            5
                         ],
                         "fixations": "&fixations.12.retrieval_1&"
                     },
@@ -3400,9 +3400,9 @@
                         "h": 0.16666666666666666,
                         "resolution": "&resolution&",
                         "nbackrt": [
-                            1,
-                            3,
-                            0
+                            0,
+                            2,
+                            3
                         ],
                         "fixations": "&fixations.50.retrieval_1&"
                     },
@@ -3428,8 +3428,8 @@
                         "resolution": "&resolution&",
                         "nbackrt": [
                             1,
-                            4,
-                            0
+                            2,
+                            3
                         ],
                         "fixations": "&fixations.90.retrieval_1&"
                     }

@@ -44,7 +44,7 @@ abstract class TrialDisplayIndexes {
    const BINDING_3            = [19 => "10", 29 => "20",  41 => "32"];
    const BINDING_2            = [19 => "10", 29 => "20",  41 => "32"];
    const GONOGO               = [10 => "10", 25 => "25",  40 => "40", 55 => "55"];
-   const NBACKRT              = [13 => "12", 51 => "50",  91 => "90"];
+   const NBACKRT              = [13 => "12", 51 => "50",  91 => "90"]; // WARNING They actually correspondes to trial 13, 52 sfn 92 due to dumb mistake. 
 }
 
 function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){

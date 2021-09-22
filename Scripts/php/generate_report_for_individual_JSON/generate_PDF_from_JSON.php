@@ -10,6 +10,55 @@
    ////////////////////////// INPUTS 
    const PDF_GEN_PATH = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation";
    const VERSION = "v1";
+   const S3_BUCKET   = "vm-eu-raw-data";
+   const S3_PROFILE  = "viewmind_eu";
+   const WORK_DIR    = "local_work";
+
+   // If filelink is NOT empty, this is what will be processed. 
+   $filelink = "2021_09_22_13_51_24_324799.zip";
+
+   if ($filelink != "") {
+       shell_exec("rm -rf "  . WORK_DIR);
+       shell_exec("mkdir -p " . WORK_DIR);
+         
+       echo "Downloading from s3 ...\n";
+       $cmd = "aws s3 cp s3://" . S3_BUCKET . "/$filelink --profile=" . S3_PROFILE . " .";
+       echo "CMD: $cmd\n";
+       shell_exec($cmd);
+   
+       echo "Untarring ...\n";
+       $cmd = "tar -xvzf $filelink";
+       echo "CMD: $cmd\n";
+       shell_exec($cmd);
+   
+       echo "Removing zip file ...\n";
+       shell_exec("rm $filelink");
+   
+       echo "Flattening the file path....";
+   
+       $json = "home";
+       while (!is_file($json)) {
+           $all = scandir($json);
+           array_shift($all);
+           array_shift($all);
+           if (count($all) !=  1) {
+               echo "Flattening failed. Current path of $json does not contain a single directory\n";
+               exit();
+           }
+           $json = $json . "/" . $all[0];
+       }
+   
+       echo "File path $json\n";
+       $pathinfo = pathinfo($json);
+       $filename = WORK_DIR . "/" . $pathinfo["filename"] . ".json";
+       shell_exec("mv $json $filename");
+   
+       // Doign clean up
+       shell_exec("rm -rf home");
+   
+       $input_json_file = $filename;
+       
+   }
 
    ////////////////////////// SCRIPT START
 

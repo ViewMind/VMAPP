@@ -45,9 +45,9 @@
  $report["fixation_plotting"]["text"] = "Fixation Plotting Text";
  $report["fixation_plotting"]["title_left"] = "ENCODING";
  $report["fixation_plotting"]["title_right"] = "RECOGNITION";
- $report["fixation_plotting"]["row_1"] = "Trial 12";
- $report["fixation_plotting"]["row_2"] = "Trial 50";
- $report["fixation_plotting"]["row_3"] = "Trial 90";
+ $report["fixation_plotting"]["row_1"] = "Trial 14";
+ $report["fixation_plotting"]["row_2"] = "Trial 55";
+ $report["fixation_plotting"]["row_3"] = "Trial 92";
  $report["fixation_plotting"]["control"]["text"] = "Fixation Plotting Example";
  $report["fixation_plotting"]["control"]["label"] = "Example";
   

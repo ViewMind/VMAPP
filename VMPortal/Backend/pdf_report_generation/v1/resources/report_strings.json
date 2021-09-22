@@ -416,9 +416,9 @@
                 "text": "Fixation Plotting Text",
                 "title_left": "ENCODING",
                 "title_right": "RECOGNITION",
-                "row_1": "Trial 12",
-                "row_2": "Trial 50",
-                "row_3": "Trial 90",
+                "row_1": "Trial 14",
+                "row_2": "Trial 55",
+                "row_3": "Trial 92",
                 "control": {
                     "text": "Fixation Plotting Example",
                     "label": "Example"
