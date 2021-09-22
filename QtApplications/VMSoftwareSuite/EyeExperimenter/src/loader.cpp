@@ -7,7 +7,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 //    qDebug() << "On Loader";
 //    qDebug() << Globals::Share::EXPERIMENTER_VERSION;
 //    qDebug() << Globals::EyeTracker::NAME;
-
+//    qDebug() << Globals::API_URL;
 
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);

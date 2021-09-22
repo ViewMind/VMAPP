@@ -247,20 +247,26 @@ void FlowControl::connectToEyeTracker(){
     }
     else{
 
-#ifdef EYETRACKER_HPOMNICENT
-        eyeTracker = new HPOmniceptInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
-                                             configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-#endif
-#ifdef EYETRACKER_HTCVIVEPRO
-        eyeTracker = new HTCViveEyeProEyeTrackingInterface(this,
-                                                           configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
-                                                           configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-#endif
-#ifdef EYETRACKER_GAZEPOINT
-        eyeTracker = new OpenGazeInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-#endif
+        if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::HPReverb::PROCESSING_PARAMETER_KEY){
 
-        logger.appendStandard("Connecting to the EyeTracker ... ");
+            eyeTracker = new HPOmniceptInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
+                                                 configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
+        }
+        else if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::HTC::PROCESSING_PARAMETER_KEY){
+            eyeTracker = new HTCViveEyeProEyeTrackingInterface(this,
+                                                               configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
+                                                               configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
+        }
+        else if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::GP3HD::PROCESSING_PARAMETER_KEY){
+            eyeTracker = new OpenGazeInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
+                                               configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
+        }
+        else{
+            logger.appendError("Failed connecting to ET. Unknown key: " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+        }
+
+        logger.appendStandard("Connecting to the EyeTracker " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+
     }
 
     connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
@@ -286,7 +292,7 @@ void FlowControl::calibrateEyeTracker(quint8 eye_to_use){
     selected_eye_to_use = VMDC::Eye::fromInt(eye_to_use);
     eyeTracker->setEyeToTransmit(selected_eye_to_use);
 
-   // qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
+    // qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
 
     // Required during calibration.
     renderState = RENDERING_CALIBRATION_SCREEN;

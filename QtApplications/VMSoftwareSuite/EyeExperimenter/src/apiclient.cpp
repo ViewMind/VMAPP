@@ -35,6 +35,7 @@ bool APIClient::requestOperatingInfo(){
     rest_controller.resetRequest();
 
     // Forming the URL
+    // qDebug() << "URL for OI" << ENDPOINT_OPERATING_INFO + "/" + institution_id;
     rest_controller.setAPIEndpoint(ENDPOINT_OPERATING_INFO + "/" + institution_id);
     QVariantMap map;
     map.insert(URLPARAM_PPKEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
@@ -199,6 +200,7 @@ void APIClient::gotReply(){
             // The raw reply is a file to be saved.
             QMap<QString,QString> rheaders = rest_controller.getResponseHeaders();
             QString searchFor = "Content-Disposition";
+            searchFor = searchFor.toLower();
             if (rheaders.contains(searchFor)){
                 // Getting the file name.
                 QString filename = "";
@@ -213,7 +215,7 @@ void APIClient::gotReply(){
                 }
 
                 if (filename.isEmpty()){
-                    error = "Content-dispostion header did not contain a filename as expected";
+                    error = searchFor + " header did not contain a filename as expected";
                     return;
                 }
 
@@ -226,18 +228,19 @@ void APIClient::gotReply(){
                 }
 
                 QDataStream fileWriter(&receivedFile);
-                //qDebug() << "Raw Reply Size" << raw_reply.size();
-                fileWriter.writeRawData(raw_reply.constData(), raw_reply.size());
+                //qDebug() << "Raw Reply Size" << raw_reply.size();                
+                fileWriter.writeRawData(raw_reply.constData(), static_cast<qint32>(raw_reply.size()));
                 receivedFile.close();
                 //qDebug() << "Receive file size: " << receivedFile.size();
             }
             else{
-                error = "Expected header Content-Dispostion, but such header was not found";
+                QStringList headerNames = rheaders.keys();
+                error = "Expected header " + searchFor + ", but such header was not found. Response headers are: " + headerNames.join(",");
             }
 
         }
     }
-    emit(requestFinish());
+    emit APIClient::requestFinish();
 }
 
 bool APIClient::sendRequest(){

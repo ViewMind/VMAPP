@@ -34,7 +34,8 @@ Item {
     }
 
     function setSelection(selectedIndex){
-        vmCurrentIndex = selectedIndex;
+        if (itemList.count < 1) return;
+        vmCurrentIndex = selectedIndex;        
         displayText.text = itemList.get(selectedIndex).vmText;
         vmCurrentText = displayText.text;
         mouseOutTimer.running = false;

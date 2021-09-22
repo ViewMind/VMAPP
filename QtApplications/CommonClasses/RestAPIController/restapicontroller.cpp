@@ -379,6 +379,7 @@ void RESTAPIController::gotReply(){
         QNetworkReply::RawHeaderPair pair = temp.at(i);
         QString key = QString::fromUtf8(pair.first);
         QString value = QString::fromUtf8(pair.second);
+        key = key.toLower();
         responseHeaders[key] = value;
     }
 
@@ -386,7 +387,7 @@ void RESTAPIController::gotReply(){
         errorInReply = true;
         errors << reply->errorString();
     }
-    emit(gotReplyData());
+    emit RESTAPIController::gotReplyData();
 }
 
 

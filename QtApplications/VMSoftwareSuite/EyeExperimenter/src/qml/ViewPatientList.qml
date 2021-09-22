@@ -205,10 +205,19 @@ VMBase {
         OLS.setupIteration()
         while (OLS.hasNext()) {
             var map = OLS.next()
+
+            // This transforms all map values to string.
+            // This was required after moving to Qt 6, as it appears that if field A contains value 3 then no other field A in the ListModel can contain value "3".
+            // as the first is an interger and second is a string.
+            // Simple solution was to treat everything as a string.
+            for (var key in map){
+                map[key] = String(map[key])
+            }
+
             map["vmIsSelected"] = false;
             map["vmItemIndex"] = index;
             index++;
-            patientList.append(map);
+            patientList.append(map);            
         }
 
         patientListView.currentIndex = -1;

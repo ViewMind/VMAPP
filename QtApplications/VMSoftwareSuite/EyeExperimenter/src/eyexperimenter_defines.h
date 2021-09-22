@@ -22,16 +22,16 @@ namespace Globals{
 
    namespace DEV_SERVER {
       const QString API_URL = "https://testdev.viewmind.ai";
-      const QString REGION  = "REGION: DEV";
+      const QString REGION  = "DEV";
    }
 
    namespace LOCAL {
       const QString API_URL = "http://192.168.1.12/vmapi";
-      const QString REGION  = "REGION: Debug";
+      const QString REGION  = "Debug";
    }
 
-   static QString API_URL = "";
-   static QString REGION  = "";
+   extern QString API_URL;
+   extern QString REGION;
 
    namespace VMAppSpec {
       static const QString ET = "et";
@@ -95,6 +95,7 @@ namespace Globals{
       static const qint32 INDEX_NBACKVS = 5;
       static const qint32 INDEX_PERCEPTION = 6;
       static const qint32 INDEX_GONOGO = 7;
+
    }
    
    namespace Debug {
@@ -112,7 +113,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "17.0.0";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "17.2.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
@@ -127,19 +128,28 @@ namespace Globals{
        static const QString SELECTED_STUDY = "selected_study";
    }
 
-   static void SetUpRegion(const QString &region){
+   static bool SetUpRegion(const QString &reg){
+
+       QString region = reg;
+       region = region.toLower();
+
        if (region == "eu"){
            API_URL = EU_REGION::API_URL;
            REGION = EU_REGION::REGION;
+           return true;
        }
        else if (region == "local"){
            API_URL = LOCAL::API_URL;
            REGION = LOCAL::REGION;
+           return true;
        }
        else if (region == "dev"){
            API_URL = DEV_SERVER::API_URL;
            REGION = DEV_SERVER::REGION;
+           return true;
        }
+
+       return false;
    }
 
    static void SetExperimenterVersion() {

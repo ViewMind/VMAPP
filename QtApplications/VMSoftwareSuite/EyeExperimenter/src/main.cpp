@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include <QIcon>
 #include <QApplication>
+#include <QSslSocket>
 
 #include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h"
@@ -17,6 +18,11 @@ static CountryStruct countries;
 // will remaing constant and globally accessible for the rest fo the application's lifetime.
 // This allows control of the API Region and configured EyeTracker in compile time by manipulating the text file config.cnf.
 namespace Globals {
+
+   QString API_URL;
+
+   QString REGION;
+
    namespace Share {
       QString EXPERIMENTER_VERSION = "";
    }
@@ -51,9 +57,26 @@ int main(int argc, char *argv[])
             return 0;
         }
 
-        Globals::SetUpEyeTrackerNameSpace(defines.getString(Globals::VMAppSpec::ET));
-        Globals::SetUpRegion(defines.getString(Globals::VMAppSpec::Region));
+        bool OK = false;
+
+        OK = Globals::SetUpEyeTrackerNameSpace(defines.getString(Globals::VMAppSpec::ET));
+        if (!OK){
+            logger.appendError("Could not set up ET Configuration for " + defines.getString(Globals::VMAppSpec::ET));
+            return 0;
+        }
+
+        OK = Globals::SetUpRegion(defines.getString(Globals::VMAppSpec::Region));
+        if (!OK){
+            logger.appendError("Could not set up Region Configuration for " + defines.getString(Globals::VMAppSpec::Region));
+            return 0;
+        }
+
         Globals::SetExperimenterVersion(); // This basically will show the correct information in the title bar.
+    }
+
+    if (!QSslSocket::supportsSsl()){
+        logger.appendError("SSL NOT Supported. Will not be able to connect to the API");
+        return 0;
     }
 
     qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");

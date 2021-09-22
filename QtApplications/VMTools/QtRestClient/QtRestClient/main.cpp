@@ -9,7 +9,7 @@
 #include <QJsonDocument>
 #include <QFile>
 #include <QHttpMultiPart>
-#include <QTextCodec>
+//#include <QTextCodec>
 #include <QMessageAuthenticationCode>
 #include <QDataStream>
 #include <iostream>
@@ -24,8 +24,8 @@ int main(int argc, char *argv[]){
     QString secret                  = "d4c2b2f31022011176962021103ab004a7a430c5ff0aa6ad71410babf950ea331aa27133acffd5b6d308a49dca3cf09ffb98d6c2fd67de69b70d01910bb31921b6186d20f497da20140d51df786f33722c50564136c3924863add7b6d9f2963279f412237c772178e90b089699965f77a715785a5a52e6fee8ce3b9bf1807cf5";
 
     QString test_file                 = "my_test_file.json";
-    //QString APIURL                  = "http://192.168.1.12/vmapi";
-    QString APIURL                    = "http://localhost/vmapi";
+    QString APIURL                  = "http://192.168.1.12/vmapi";
+    //QString APIURL                    = "http://localhost/vmapi";
     //QString APIURL                  = "http://localhost/tests/";
     //QString APIURL                  = "https://eu-api.viewmind.ai/";
     QString endpoint                  = "/institution/operating_information/2";

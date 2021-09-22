@@ -75,9 +75,9 @@ VMBase {
     property var vmListOfSelectedStudies: [];
 
     //property var vmCurrentMultiPartStudyFile: ""
-    property var vmCurrentSelectedStudyName: ""
+    property string vmCurrentSelectedStudyName: ""
 
-    property var vmDisabledStudies: [vmINDEX_NBACKVS, vmINDEX_PERCEPTION];
+    property var vmDisabledStudies: [vmINDEX_NBACKVS, vmINDEX_PERCEPTION, vmINDEX_NBACKMS, vmINDEX_READING];
 
     property string vmSelectedProtocol: ""
     property string vmSelectedMedic: ""
@@ -202,7 +202,7 @@ VMBase {
         }
         else if ((currentStudy === vmINDEX_BINDING_BC) || (currentStudy === vmINDEX_BINDING_UC)){
             columnTargetQuatity.visible = true;
-            columnTargetSize.visible = true;
+            //columnTargetSize.visible = true;
         }
         else if (currentStudy === vmINDEX_NBACKVS){
             columnNumberOfNBackTargets.visible = true;
@@ -450,7 +450,7 @@ VMBase {
             VMComboBox2{
                 id: cbStudyDesign
                 width: parent.width
-                vmEnabled: true
+                vmEnabled: false
                 z:2
                 Component.onCompleted: {
                     cbStudyDesign.setModelList(loader.getStringListForKey("viewstudystart_patient_conditions"));
@@ -858,12 +858,16 @@ VMBase {
                         case 1: configuration_study_map[vmSCP_NUMBER_OF_TARGETS] = vmSCV_BINDING_TARGETS_3
                             break;
                         }
-                        switch(cbTargetSize.vmCurrentIndex){
-                        case 0: configuration_study_map[vmSCP_TARGET_SIZE] = vmSCV_BINDING_TARGETS_LARGE
-                            break;
-                        case 1: configuration_study_map[vmSCP_TARGET_SIZE] = vmSCV_BINDING_TARGETS_SMALL
-                            break;
-                        }
+                        // Target size selection is disabled for now. So we make sure targets are always large.
+                        configuration_study_map[vmSCP_TARGET_SIZE] = vmSCV_BINDING_TARGETS_LARGE
+
+                        //switch(cbTargetSize.vmCurrentIndex){
+                        //case 0: configuration_study_map[vmSCP_TARGET_SIZE] = vmSCV_BINDING_TARGETS_LARGE
+                        //    break;
+                        //case 1: configuration_study_map[vmSCP_TARGET_SIZE] = vmSCV_BINDING_TARGETS_SMALL
+                        //    break;
+                        //}
+
                         if (vmListOfSelectedStudies[i].vmStudyID === vmINDEX_BINDING_BC) configuration_study_map[vmSCP_BINDING_TYPE] = vmSCV_BINDING_TYPE_BOUND;
                         else configuration_study_map[vmSCP_BINDING_TYPE] = vmSCV_BINDING_TYPE_UNBOUND;
                     }
