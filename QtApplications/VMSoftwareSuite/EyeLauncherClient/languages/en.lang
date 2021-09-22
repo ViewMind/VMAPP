@@ -1,5 +1,0 @@
-# UI Language file: English
-
-msg_wait_update_check = Please wait while we check for updates ...;
-msg_downloading_updates = An update has been found. Downloading ...;
-msg_starting_the_appliation = Starting the application ...;

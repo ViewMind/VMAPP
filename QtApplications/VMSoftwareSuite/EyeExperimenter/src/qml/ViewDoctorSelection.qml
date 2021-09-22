@@ -1,25 +1,12 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
-import QtQuick.Dialogs 1.1
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
-Dialog {
+VMDialogBase {
 
     id: viewDoctorSelection
-    modal: true
     width: mainWindow.width*0.511
     height: mainWindow.height*0.942
-    closePolicy: Popup.NoAutoClose
-
-    contentItem: Rectangle {
-        id: rectDialog
-        anchors.fill: parent
-        layer.enabled: true
-        layer.effect: DropShadow{
-            radius: 5
-        }
-    }
-
 
     function logInAttempt(){
         if (loader.evaluatorLogIn(labelDrProfile.vmCurrentText,drPassword.getText())){
@@ -68,19 +55,6 @@ Dialog {
         //labelDrProfile.clear();
         drPassword.clear();
         updateDrProfile();
-    }
-
-
-    // Creating the close button
-    VMDialogCloseButton {
-        id: btnClose
-        anchors.top: parent.top
-        anchors.topMargin: mainWindow.height*0.032
-        anchors.right: parent.right
-        anchors.rightMargin: mainWindow.width*0.02
-        onClicked: {
-            viewDoctorSelection.close();
-        }
     }
 
     Image {

@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QString>
+#include <QMap>
 #include "../../eyetracker_defines.h"
 
 #define MAZE_SEPARATOR        "#=======>"

@@ -7,6 +7,7 @@ Window {
     visible: true
     title: qsTr("QML-VRTester & Experiment Graphical Designer")
     visibility: Window.Maximized
+    id: mainWindow
 
     Rectangle {
         id: background
@@ -16,7 +17,7 @@ Window {
 
     Connections{
         target: control
-        onNewImageAvailable: {
+        function onNewImageAvailable() {
             hmdView.image = control.image;
         }
     }
@@ -43,12 +44,14 @@ Window {
             id: row1
             spacing: parent.width*0.01;
             width: parent.width
-            height: parent.height*0.1
+            height: mainWindow.height*0.05
 
             Button {
                 id: startEyeTrackingTest
                 width: parent.width*0.1;
+                height: parent.height
                 text: "EyeTrackingTest"
+                hoverEnabled: false
                 onClicked: {
                     control.setRenderArea(hmdView.width,hmdView.height);
                     control.setEyeTracker(eyeTrackingSelection.currentIndex)
@@ -61,13 +64,16 @@ Window {
             ComboBox {
                 id: eyeTrackingSelection
                 width: parent.width*0.1;
+                height: parent.height
                 model: [ "Mouse", "HP Headset", "HTC Vive"]
             }
 
             Button {
                 id: startCalibration
                 width: parent.width*0.1;
+                height: parent.height
                 text: "Calibrate"
+                hoverEnabled: false
                 onClicked: {
                     control.setEyeTracker(eyeTrackingSelection.currentIndex)
                     control.startCalibration();
@@ -77,7 +83,9 @@ Window {
             Button {
                 id: startStopEyeTracking
                 width: parent.width*0.1;
+                height: parent.height
                 text: "Start/Stop"
+                hoverEnabled: false
                 onClicked: {
                     control.switchEyeTrackerEnableState();
                 }

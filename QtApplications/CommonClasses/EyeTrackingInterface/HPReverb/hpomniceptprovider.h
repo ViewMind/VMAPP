@@ -5,6 +5,7 @@
 #include <QString>
 #include <QDebug>
 #include <QMap>
+#include <QVariant>
 #include "./hp/omnicept/lib-abi-cpp/LicensingModel.h"
 #include "./hp/omnicept/lib-abi-cpp/SessionLicense.h"
 #include "./hp/omnicept/lib-abi-cpp/HandshakeError.h"
@@ -48,7 +49,7 @@ public:
     HPOmniceptProvider();
 
     // QThread function for the actual thread. It will run the client util it is stopped. After than it will destroy the client and connect must be called again.
-    void run();
+    void run() override;
 
     // Creates the HPClient and leaves it ready for running.
     bool connectToHPRuntime();

@@ -1,6 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 VMBase {
 
@@ -14,7 +14,7 @@ VMBase {
 
     Connections {
         target: loader
-        onFinishedRequest: {
+        function onFinishedRequest () {
             // Close the connection dialog and open the user selection dialog.
             //console.log("Finished request")
             if (loader.getLastAPIRequest() === vmAPI_OPINFO_REQUEST){
@@ -36,7 +36,7 @@ VMBase {
                 viewDrSelection.open();
             }
         }
-        onPartnerSequenceDone: {
+        function onPartnerSequenceDone() {
             connectionDialog.close();
             if (!allok){
                 var titleMsg = viewHome.getErrorTitleAndMessage("error_partner_failed");
@@ -111,9 +111,8 @@ VMBase {
     }
 
     // Dialog used to show a wall of text.
-    Dialog {
+    VMDialogBase {
         id: showTextDialog;
-        modal: true
         width: mainWindow.width*0.6
         height: mainWindow.height*0.87
 
@@ -122,16 +121,6 @@ VMBase {
 
         y: (parent.height - height)/2
         x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
-
-        contentItem: Rectangle {
-            id: rectDialog
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
 
         Text {
             id: diagTitle
@@ -153,7 +142,7 @@ VMBase {
             anchors.top : diagTitle.bottom
             anchors.topMargin: mainWindow.height*0.058
             clip: true
-            //horizontalScrollBarPolicy : Qt.ScrollBarAlwaysOff
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             TextEdit {
                 id: idContent
                 width: parent.width;
@@ -182,27 +171,14 @@ VMBase {
     }
 
     // Dialog to show the restart message.
-    Dialog {
+    VMDialogBase {
         id: restartDialog;
-        modal: true
+
         width: mainWindow.width*0.48
         height: mainWindow.height*0.29
-
+        vmNoCloseButton: true
         property string vmContent: ""
         property string vmTitle: ""
-
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
-
-        contentItem: Rectangle {
-            id: restartRectDialog
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
 
         Column {
             id: restartDiagRow
@@ -233,27 +209,15 @@ VMBase {
     }
 
     // Wait dialog for synching up.
-    Dialog {
+    VMDialogBase {
 
         property string vmTitle: "TITLE"
         property string vmMessage: "MESSAGE"
 
         id: connectionDialog;
-        modal: true
+        vmNoCloseButton: true
         width: mainWindow.width*0.48
         height: mainWindow.height*0.87
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
-
-        contentItem: Rectangle {
-            id: rectConnectionDialog
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
 
         onWidthChanged: {
             connectionDialog.repositionSlideAnimation();
@@ -308,27 +272,15 @@ VMBase {
     }
 
     // Update request dialog.
-    Dialog {
+    VMDialogBase {
         id: updateRequestDialog;
-        modal: true
+        vmNoCloseButton: true
         width: mainWindow.width*0.6
         height: mainWindow.height*0.5
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
 
         property string vmVersion: "0.0.0"
 
-        contentItem: Rectangle {
-            id: rectUpdateRequestDiag
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
-
-        // The instruction text
+        // The title
         Text {
             id: updateRequestTitle
             font.family: viewHome.gothamB.name
@@ -339,7 +291,6 @@ VMBase {
             color: "#297fca"
             text: loader.getStringForKey("viewhome_updateTitle") + " " + updateRequestDialog.vmVersion;
         }
-
 
         // The instruction text
         Text {
@@ -360,6 +311,7 @@ VMBase {
             }
         }
 
+        // No update button
         VMButton{
             id: btnNo
             vmFont: viewHome.gothamM.name
@@ -376,6 +328,7 @@ VMBase {
             }
         }
 
+        // Proceed with update button.
         VMButton{
             id: btnYes
             vmFont: viewHome.gothamM.name
@@ -400,23 +353,10 @@ VMBase {
     }
 
     // Partner dialog
-    Dialog {
+    VMDialogBase {
         id: partnerDialog;
-        modal: true
         width: mainWindow.width*0.4
         height: mainWindow.height*0.5
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
-
-        contentItem: Rectangle {
-            id: rectParterDiag
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
 
         // The instruction text
         Text {
@@ -523,6 +463,9 @@ VMBase {
     Button {
         id: btnConfSettings
         scale: btnConfSettings.pressed? 0.9:1
+        width: mainWindow.width*0.139
+        height: mainWindow.height*0.062
+        hoverEnabled: false
         Behavior on scale{
             NumberAnimation {
                 duration: 25
@@ -532,14 +475,16 @@ VMBase {
             id: btnConfSettingsRect
             radius: 3
             color: btnConfSettings.pressed? "#e8f2f8" :"#ffffff"
-            width: mainWindow.width*0.139
-            height: mainWindow.height*0.062
+            width: btnConfSettings.width
+            height: btnConfSettings.height
         }
         contentItem: Text{
-            anchors.centerIn: btnConfSettingsRect
+            anchors.centerIn: parent
             font.family: gothamM.name
             font.pixelSize: 13*viewHome.vmScale
             text: loader.getStringForKey("viewhome_btnConfSettings");
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             color: "#88b2d0"
         }
         anchors{

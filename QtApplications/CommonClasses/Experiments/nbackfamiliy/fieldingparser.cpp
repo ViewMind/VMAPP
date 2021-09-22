@@ -124,7 +124,7 @@ QList<qint32> FieldingParser::getSequenceForTrial(const QString &trialID){
 bool FieldingParser::parseFieldingExperiment(const QString &contents, qreal resolutionWidth, qreal resolutionHeight){
 
     // Generating the contents from the phrases
-    QStringList lines = contents.split('\n',QString::KeepEmptyParts);
+    QStringList lines = contents.split('\n',Qt::KeepEmptyParts);
 
     fieldingTrials.clear();
 
@@ -134,7 +134,7 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents, qreal reso
     // Checking the size of the first line to see if it is a version string.
     qint32 startI = 0;
     QString possibleHeader = lines.first();
-    QStringList headerParts = possibleHeader.split(" ",QString::SkipEmptyParts);
+    QStringList headerParts = possibleHeader.split(" ",Qt::SkipEmptyParts);
     if (headerParts.size() == 1){
         // Version string pesent
         startI = 1;
@@ -158,7 +158,7 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents, qreal reso
 
         if (lines.at(i).isEmpty()) continue;
 
-        QStringList tokens = lines.at(i).split(' ',QString::SkipEmptyParts);
+        QStringList tokens = lines.at(i).split(' ',Qt::SkipEmptyParts);
 
 
         if (tokens.size() != sizeCheck){

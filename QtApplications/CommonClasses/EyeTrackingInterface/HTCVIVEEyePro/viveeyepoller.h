@@ -7,6 +7,7 @@
 #include <QElapsedTimer>
 #include <QMatrix4x4>
 #include <QPoint>
+#include <QVariant>
 
 // Std libraries.
 #include <mutex>

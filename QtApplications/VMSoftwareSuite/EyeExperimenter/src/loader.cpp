@@ -4,10 +4,10 @@
 Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
 {
 
-    qDebug() << "On Loader";
-    qDebug() << Globals::Share::EXPERIMENTER_VERSION;
-    qDebug() << Globals::EyeTracker::NAME;
-
+//    qDebug() << "On Loader";
+//    qDebug() << Globals::Share::EXPERIMENTER_VERSION;
+//    qDebug() << Globals::EyeTracker::NAME;
+//    qDebug() << Globals::API_URL;
 
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
@@ -34,7 +34,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
-    if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION,Globals::Share::TEXT_CODEC)){
+    if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION)){
         logger.appendError("Errors loading the configuration file: " + configuration->getError());
         // The program should not be able to continue after loading the language.
         loadingError = true;
@@ -64,7 +64,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Merging the settings or loading the default configuration.
     settings.setupVerification(cv);
     if (QFile(Globals::Paths::SETTINGS).exists()){
-        if (!settings.loadConfiguration(Globals::Paths::SETTINGS,Globals::Share::TEXT_CODEC)){
+        if (!settings.loadConfiguration(Globals::Paths::SETTINGS)){
             logger.appendError("Errors loading the settings file: " + settings.getError());
             // Settings files should not have unwanted key words
             loadingError = true;
@@ -127,8 +127,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     if (QFile::exists(Globals::Paths::PARTNERS)){
         partners = new QSettings(Globals::Paths::PARTNERS,QSettings::IniFormat);
-        partners->setIniCodec(Globals::Share::TEXT_CODEC);
-
     }
     else partners = nullptr;
     partner_api = nullptr;
@@ -369,10 +367,10 @@ QStringList Loader::getLatestVersionChanges(){
         return QStringList();
     }
     QTextStream reader(&changelogFile);
-    reader.setCodec(Globals::Share::TEXT_CODEC);
+    reader.setEncoding(QStringConverter::Utf8);
     QString content = reader.readAll();
     changelogFile.close();
-    QStringList allVersions = content.split("|",QString::SkipEmptyParts);
+    QStringList allVersions = content.split("|",Qt::SkipEmptyParts);
     // The first version should be the latest.
     if (allVersions.size() < 1){
         logger.appendError("Something went wrong when parsing the changelog file " + changelogFile.fileName() + ". Could not split between versions using |");
@@ -409,7 +407,7 @@ bool Loader::getConfigurationBoolean(const QString &key){
 }
 
 void Loader::setSettingsValue(const QString &key, const QVariant &var){
-    ConfigurationManager::setValue(Globals::Paths::SETTINGS,Globals::Share::TEXT_CODEC,key,var.toString(),configuration);
+    ConfigurationManager::setValue(Globals::Paths::SETTINGS,key,var.toString(),configuration);
 }
 
 void Loader::setValueForConfiguration(const QString &key, const QVariant &var) {
@@ -1055,7 +1053,7 @@ QStringList Loader::getProtocolList() {
 void Loader::changeLanguage(){
     QString lang = configuration->getString(Globals::VMPreferences::UI_LANGUAGE);
     if (lang == Globals::UILanguage::ES){
-        if (!language.loadConfiguration(":/languages/es.lang",Globals::Share::TEXT_CODEC)){
+        if (!language.loadConfiguration(":/languages/es.lang")){
             // In a stable program this should NEVER happen.
             logger.appendError("CANNOT LOAD ES LANG FILE: " + language.getError());
             loadingError = true;
@@ -1064,7 +1062,7 @@ void Loader::changeLanguage(){
     }
     else{
         // Defaults to english
-        if (!language.loadConfiguration(":/languages/en.lang",Globals::Share::TEXT_CODEC)){
+        if (!language.loadConfiguration(":/languages/en.lang")){
             // In a stable program this should NEVER happen.
             logger.appendError("CANNOT LOAD EN LANG FILE: " + language.getError());
             loadingError = true;

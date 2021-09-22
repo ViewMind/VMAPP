@@ -1,29 +1,17 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
-import QtQuick.Dialogs 1.1
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
-Dialog {
+VMDialogBase {
 
-    id: viewProtocols
-    modal: true
+    id: viewProtocols    
     width: mainWindow.width*0.48
     height: mainWindow.height*0.522
-    closePolicy: Popup.NoAutoClose
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
             focus = true
-        }
-    }
-
-    contentItem: Rectangle {
-        id: rectDialog
-        anchors.fill: parent
-        layer.enabled: true
-        layer.effect: DropShadow{
-            radius: 5
         }
     }
 
@@ -60,19 +48,6 @@ Dialog {
         color: "#5499d5"
         text: loader.getStringForKey("viewprotocol_diagSubTitle");
     }
-
-    // Creating the close button
-    VMDialogCloseButton {
-        id: btnClose
-        anchors.top: parent.top
-        anchors.topMargin: mainWindow.height*0.032
-        anchors.right: parent.right
-        anchors.rightMargin: mainWindow.width*0.02
-        onClicked: {
-            viewProtocols.close();
-        }
-    }
-
 
     Row {
         id: rowAddProtocols

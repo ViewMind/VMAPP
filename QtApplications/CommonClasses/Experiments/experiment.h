@@ -13,6 +13,7 @@
 #include <QVBoxLayout>
 #include <QDebug>
 #include <QMessageBox>
+#include <QTextStream>
 
 #include "monitorscreen.h"
 #include "experimentdatapainter.h"
@@ -25,7 +26,6 @@
 namespace ExperimentGlobals {
    static const QString SUBJECT_DIR_ABORTED     = "exp_aborted";
    static const QString SUBJECT_DIR_SENT        = "sent";
-   static const char *  TEXT_CODEC              = "UTF-8";
    static const bool PRETTY_PRINT_OUTPUT_FILES  = true;
    static const bool SHORT_STUDIES              = false;
    static const bool ENABLE_FIX_LOG             = false;
@@ -76,7 +76,7 @@ public:
 signals:
 
     // Should be emitted when the experiment is finalized
-    void experimentEndend(const ExperimentResult &result);   
+    void experimentEndend(const Experiment::ExperimentResult &result);
 
     // This method will be used for calibration request in mid-experiment.
     // When called the receiving slot will call pauseExperiment.

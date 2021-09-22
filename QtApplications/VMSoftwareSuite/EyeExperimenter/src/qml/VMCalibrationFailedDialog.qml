@@ -1,29 +1,15 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
-Dialog {
+VMDialogBase {
 
     id: viewCalibrationFailedDiag
-    modal: true
+    vmNoCloseButton: true
     width: mainWindow.width*0.479
     height: mainWindow.height*0.758
-    y: (parent.height - height)/2
-    x: (parent.width - width)/2
-    closePolicy: Popup.NoAutoClose
-
     property bool vmLeftEyePassed: false
     property bool vmRightEyePassed: false
-
-    // The Drop shadow
-    contentItem: Rectangle {
-        id: rectDialog
-        anchors.fill: parent
-        layer.enabled: true
-        layer.effect: DropShadow{
-            radius: 5
-        }
-    }
 
     Text {
         id: viewTitle

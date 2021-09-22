@@ -1,10 +1,6 @@
 #ifndef EYE_TRACKER_DEFINES_H
 #define EYE_TRACKER_DEFINES_H
 
-//#define EYETRACKER_HPOMNICENT
-#define EYETRACKER_GAZEPOINT
-//#define EYETRACKER_HTCVIVEPRO
-
 #include <QString>
 
 namespace Globals {
@@ -17,7 +13,6 @@ namespace Globals {
       static const QString PROCESSING_PARAMETER_KEY = "htcviveeyepro";
       static const qreal VRSCALING = 1.0;
    }
-
 
    namespace HPReverb {
       static const QString NAME = "HP Omnicept";
@@ -44,13 +39,16 @@ namespace Globals {
       extern qreal VRSCALING;
    }
 
-   static void SetUpEyeTrackerNameSpace(const QString &key){
+
+
+   static bool SetUpEyeTrackerNameSpace(const QString &key){
        if (key == HTC::PROCESSING_PARAMETER_KEY){
            EyeTracker::NAME = HTC::NAME;
            EyeTracker::ENABLE_GAZE_FOLLOW = HTC::ENABLE_GAZE_FOLLOW;
            EyeTracker::IS_VR = HTC::IS_VR;
            EyeTracker::PROCESSING_PARAMETER_KEY = key;
            EyeTracker::VRSCALING = HTC::VRSCALING;
+           return true;
        }
        else if (key == GP3HD::PROCESSING_PARAMETER_KEY){
            EyeTracker::NAME = GP3HD::NAME;
@@ -58,6 +56,7 @@ namespace Globals {
            EyeTracker::IS_VR = GP3HD::IS_VR;
            EyeTracker::PROCESSING_PARAMETER_KEY = key;
            EyeTracker::VRSCALING = GP3HD::VRSCALING;
+           return true;
        }
        else if (key == HPReverb::PROCESSING_PARAMETER_KEY){
            EyeTracker::NAME = HPReverb::NAME;
@@ -65,6 +64,10 @@ namespace Globals {
            EyeTracker::IS_VR = HPReverb::IS_VR;
            EyeTracker::PROCESSING_PARAMETER_KEY = key;
            EyeTracker::VRSCALING = HPReverb::VRSCALING;
+           return true;
+       }
+       else{
+           return false;
        }
    }
 

@@ -1,5 +1,0 @@
-# UI Language file: Spanish
-
-msg_wait_update_check = Por favor espere mientras verificamos que si hay actualizaciones ...;
-msg_downloading_updates = Se ha encontrado una actualización. Descargando ...;
-msg_starting_the_appliation = Comenzando la aplicación ...;

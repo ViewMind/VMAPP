@@ -4,8 +4,10 @@ CalibrationArea::CalibrationArea(QWidget *parent) : QDialog(parent)
 {
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint);
 
-    int W = QApplication::desktop()->screenGeometry(0).width();
-    int H = QApplication::desktop()->screenGeometry(0).height();
+    QList<QScreen*> screens = QGuiApplication::screens();
+
+    int W = screens.at(0)->geometry().width();
+    int H = screens.at(0)->geometry().height();
 
     this->setGeometry(0,0,W,H);
 

@@ -1,7 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-//import QtQuick.Controls 1.4
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 VMBase {
 
@@ -245,10 +244,10 @@ VMBase {
                 z: 2
                 id: labelPreferredDoctor
                 width: parent.width - labelGender.width - parent.spacing
-                onVmCurrentIndexChanged: {
-                    console.log(width)
-                    console.log(height)
-                }
+//                onVmCurrentIndexChanged: {
+//                    console.log(width)
+//                    console.log(height)
+//                }
 //                onVmCurrentIndexChanged: {
 //                    console.log("Current index: " + vmCurrentIndex);
 //                    console.log("Selected keyid: " + vmMedicsModelList[vmCurrentIndex]["metadata"]);

@@ -309,7 +309,6 @@ void CalibrationLeastSquares::EyeCorrectionCoeffs::saveCalibrationCoefficients(c
     if (!file.open(QFile::WriteOnly)) return;
 
     QTextStream writer(&file);
-    writer.setCodec("UTF-8");
     writer << doc.toJson(QJsonDocument::Indented);
     file.close();
 }

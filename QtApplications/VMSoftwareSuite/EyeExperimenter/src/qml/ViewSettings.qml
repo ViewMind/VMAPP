@@ -1,7 +1,7 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
-import QtQuick.Dialogs 1.1
+import Qt.labs.platform 1.1 as Platform
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 Dialog {
 
@@ -197,7 +197,7 @@ Dialog {
     }
 
 
-    MessageDialog {
+    Platform.MessageDialog {
         id: restartRequiredDiag
         onAccepted: {
             Qt.quit()

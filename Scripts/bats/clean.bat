@@ -9,5 +9,7 @@ del .qmake.stash
 del release\*qrc_*.cpp
 del logfile.log
 del qml_*.cpp
+del qml_qmlcache.qrc
 del coeffs.kof
 del qmlcache_loader.cpp
+

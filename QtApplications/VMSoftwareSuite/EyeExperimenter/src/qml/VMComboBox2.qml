@@ -1,7 +1,4 @@
-import QtQuick 2.6
-//import QtQuick.Controls 2.3
-//import QtQuick.Controls.Styles 1.4
-//import QtQuick.Controls 1.4
+import QtQuick
 
 Item {
 
@@ -37,7 +34,8 @@ Item {
     }
 
     function setSelection(selectedIndex){
-        vmCurrentIndex = selectedIndex;
+        if (itemList.count < 1) return;
+        vmCurrentIndex = selectedIndex;        
         displayText.text = itemList.get(selectedIndex).vmText;
         vmCurrentText = displayText.text;
         mouseOutTimer.running = false;

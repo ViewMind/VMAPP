@@ -74,12 +74,12 @@ bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmal
     bool legacyDescription = false;
 
     // Splitting into lines.
-    QStringList lines = contents.split('\n',QString::KeepEmptyParts);
+    QStringList lines = contents.split('\n',Qt::KeepEmptyParts);
 
     // Checking for old interpretation marking
     /// TODO: Remove this when it is safe.
     QStringList tokens;
-    tokens = lines.first().split(' ',QString::SkipEmptyParts);
+    tokens = lines.first().split(' ',Qt::SkipEmptyParts);
 
     int horizontalGridPoints = 2; // Initialization done just o avoid a warning
 
@@ -183,7 +183,7 @@ bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmal
             }
         }
 
-        tokens = lines.at(i).split(' ',QString::SkipEmptyParts);
+        tokens = lines.at(i).split(' ',Qt::SkipEmptyParts);
 
         // Name [x|number] and [s|d]
         if (tokens.size() != 3){
@@ -241,7 +241,7 @@ bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmal
 
 
 bool BindingParser::parseFlagPositions(const QString &line, BindingTrial *trial,bool show){
-    QStringList tokens = line.split(' ',QString::SkipEmptyParts);
+    QStringList tokens = line.split(' ',Qt::SkipEmptyParts);
     if (tokens.size() != numberOfTargets){
         error = "Number of positions should be " + QString::number(numberOfTargets) + " @ line: " + line;
         return false;
@@ -282,7 +282,7 @@ bool BindingParser::parseFlagPositions(const QString &line, BindingTrial *trial,
 
 
 bool BindingParser::parseColors(const QString &line, BindingTrial *trial, bool background, bool show){
-    QStringList tokens = line.split(' ',QString::SkipEmptyParts);
+    QStringList tokens = line.split(' ',Qt::SkipEmptyParts);
     if (tokens.size() != numberOfTargets){
         error = "Number of colors should be " + QString::number(numberOfTargets) + " @ line: " + line;
         return false;
@@ -317,7 +317,7 @@ bool BindingParser::parseColors(const QString &line, BindingTrial *trial, bool b
 // description file.
 bool BindingParser::legacyParser(const QString &contents){
 
-    QStringList lines = contents.split("\n",QString::SkipEmptyParts);
+    QStringList lines = contents.split("\n",Qt::SkipEmptyParts);
     trials.clear();
 
     QMap<QString,qint32> dic;
@@ -331,7 +331,7 @@ bool BindingParser::legacyParser(const QString &contents){
 
         if (line.isEmpty()) continue;
 
-        QStringList tokens = line.split(" ",QString::SkipEmptyParts);
+        QStringList tokens = line.split(" ",Qt::SkipEmptyParts);
 
         if (tokens.size() != 13){
             error = "Line " + line + " does not contain 13 words";

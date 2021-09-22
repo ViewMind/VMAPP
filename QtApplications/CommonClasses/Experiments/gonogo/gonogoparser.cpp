@@ -53,7 +53,7 @@ QList<qint32> GoNoGoParser::getCorrectAnswerArray() const{
 bool GoNoGoParser::parseGoNoGoExperiment(const QString &contents, const qreal &resolutionWidth, const qreal &resolutionHeight){
 
 
-    QStringList lines = contents.split('\n',QString::SkipEmptyParts);
+    QStringList lines = contents.split('\n',Qt::SkipEmptyParts);
     if (lines.isEmpty()){
         error = "No lines in experiment description";
         return false;
@@ -118,7 +118,7 @@ bool GoNoGoParser::parseGoNoGoExperiment(const QString &contents, const qreal &r
 
 
     for (qint32 i = 1; i < lines.size(); i++){
-        QStringList tokens = lines.at(i).split(" ",QString::SkipEmptyParts);
+        QStringList tokens = lines.at(i).split(" ",Qt::SkipEmptyParts);
         if (tokens.size() != 2){
             error = "Invalid number of tokens in line " + lines.at(i) + " it should only have 2 parts";
             trials.clear();

@@ -1,6 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 VMBase {
 
@@ -108,14 +108,14 @@ VMBase {
 
     Connections {
         target: loader
-        onFinishedRequest: {
+        function onFinishedRequest () {
             // Close the connection dialog and open the user selection dialog.
             connectionDialog.close();
 
             var failCode = loader.wasThereAnProcessingUploadError();
 
             // This check needs to be done ONLY when on this screen.
-            if (( failCode !== vmFAIL_CODE_NONE ) && (swiperControl.currentIndex == swiperControl.vmIndexViewQC)){
+            if (( failCode !== vmFAIL_CODE_NONE ) && (swiperControl.currentIndex === swiperControl.vmIndexViewQC)){
 
                 var titleMsg = viewHome.getErrorTitleAndMessage("error_db_server_error");
                 vmErrorDiag.vmErrorMessage = titleMsg[1];
@@ -129,18 +129,15 @@ VMBase {
         }
     }
 
-    Dialog {
+    VMDialogBase {
 
         property string vmTitle: loader.getStringForKey("viewQC_WaitTitle")
         property string vmMessage: loader.getStringForKey("viewQC_WaitSubtitle")
 
         id: connectionDialog;
-        modal: true
         width: mainWindow.width*0.48
         height: mainWindow.height*0.87
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
+        vmNoCloseButton: true
 
         onWidthChanged: {
             connectionDialog.repositionSlideAnimation();
@@ -275,6 +272,7 @@ VMBase {
             id: viewStudySelectorArea
             anchors.fill: parent
             clip: true
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ListView {
                 id: qcStudyView
                 anchors.fill: parent

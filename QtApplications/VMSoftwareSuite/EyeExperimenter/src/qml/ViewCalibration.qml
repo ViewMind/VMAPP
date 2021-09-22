@@ -1,6 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.3
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 VMBase {
 
@@ -10,7 +10,7 @@ VMBase {
 
     Connections{
         target: flowControl
-        onConnectedToEyeTracker:{
+        function onConnectedToEyeTracker () {
             if (swiperControl.currentIndex !== swiperControl.vmIndexCalibrationStart) return;
             //console.log("Connected to eyetracker in ViewCalibration")
             var titleMsg;
@@ -25,7 +25,7 @@ VMBase {
             // All is good so the calibration is requested.
             flowControl.calibrateEyeTracker(vmSelectedEye);
         }
-        onCalibrationDone: {
+        function onCalibrationDone () {
             if (swiperControl.currentIndex !== swiperControl.vmIndexCalibrationStart) return;
             //console.log("Calibration done in ViewCalibration")
             var titleMsg;
@@ -54,28 +54,15 @@ VMBase {
         y: (mainWindow.height-height)/2
     }
 
-    Dialog {
+    VMDialogBase {
 
         id: viewCalibrationStartDiag
-        modal: true
+        vmNoCloseButton: true
         width: mainWindow.width*0.479
         height: mainWindow.height*0.758
-        y: (parent.height - height)/2
-        x: (parent.width - width)/2
-        closePolicy: Popup.NoAutoClose
 
         onWidthChanged: repositionImage();
         onHeightChanged: repositionImage();
-
-        // The Drop shadow
-        contentItem: Rectangle {
-            id: rectDialog
-            anchors.fill: parent
-            layer.enabled: true
-            layer.effect: DropShadow{
-                radius: 5
-            }
-        }
 
         // The configure settings title
         Text {
@@ -132,18 +119,6 @@ VMBase {
             }
         }
 
-        // Creating the close button
-        VMDialogCloseButton {
-            id: btnClose
-            anchors.top: parent.top
-            anchors.topMargin: mainWindow.height*0.032
-            anchors.right: parent.right
-            anchors.rightMargin: mainWindow.width*0.019
-            onClicked: {
-                viewCalibrationStartDiag.close()
-                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-            }
-        }
     }
 
 }

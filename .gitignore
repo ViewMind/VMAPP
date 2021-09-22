@@ -145,4 +145,8 @@ Scripts/AWS/EU/test.sh
 Scripts/php/fixation_analysis/nbackrt/
 Scripts/php/reprocess_legacy_data/work/
 
+QtApplications/VMTools/ExperimentDev/exeQt6/
+QtApplications/VMTools/QtRestClient/exeQt6/
+
+
 
