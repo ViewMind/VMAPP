@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>../../../CommonClasses/DataAnalysis/BarGrapher/bargraph.html</file>
-    </qresource>
-</RCC>

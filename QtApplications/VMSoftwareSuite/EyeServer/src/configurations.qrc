@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>../../../CommonClasses/DBConfigurations/db_production</file>
-        <file>../../../CommonClasses/DBConfigurations/db_localhost</file>
-    </qresource>
-</RCC>
