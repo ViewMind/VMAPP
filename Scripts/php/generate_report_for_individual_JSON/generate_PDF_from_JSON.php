@@ -4,7 +4,8 @@
    include_once(__DIR__."/../../../VMPortal/Backend/data_processing/RProcessing.php");
 
    ////////////////////////// INPUTS
-   $input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/reprocess_legacy_data/work/1145868706/524/2020_11_14_14_23_37/gonogo_2020_11_10_11_25.json";
+   //$input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/reprocess_legacy_data/work/1145868706/524/2020_11_14_14_23_37/gonogo_2020_11_10_11_25.json";
+   $input_json_file = "local_work/nbackrt_2021_09_22_10_44.json";
    $lang = "en";
 
    ////////////////////////// INPUTS 
@@ -15,7 +16,8 @@
    const WORK_DIR    = "local_work";
 
    // If filelink is NOT empty, this is what will be processed. 
-   $filelink = "2021_09_22_13_51_24_324799.zip";
+   //$filelink = "2021_09_22_13_51_24_324799.zip";
+   $filelink = "";
 
    if ($filelink != "") {
        shell_exec("rm -rf "  . WORK_DIR);

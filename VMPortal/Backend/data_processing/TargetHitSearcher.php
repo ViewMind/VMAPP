@@ -95,7 +95,13 @@ class TargetHitSearcher {
    }
 
    function dbugState($tab = ""){
-      echo "$tab Expected Target In Sequence: " . $this->expected_target_index_in_sequence . "\n";
+      if ($this->expected_target_index_in_sequence > -1){
+         $target = $this->trial_sequence[$this->expected_target_index_in_sequence];
+      }      
+      else{
+         $target = "N/A";
+      }
+      echo "$tab Expected Target In Sequence: $target (" . $this->expected_target_index_in_sequence . ")\n";
       echo "$tab Trial Sequence: " . implode("->",$this->trial_sequence) . "\n";
       echo "$tab MSHits: " . count($this->all_MS_target_hits) . "\n";
    }
@@ -143,8 +149,12 @@ class TargetHitSearcher {
             break;
          case DataSetType::RETRIEVAL_1:
             // We need to detect if the fixation sequence, here is correct.
-            // The expected target is the allwasy the last in the sequence.            
+            // The expected target is the allways the last in the sequence.            
             if ($this->expected_target_index_in_sequence > -1){
+
+               $temp_target = $ans[self::RET_TARGET_HIT];
+               $temp_required = $this->trial_sequence[$this->expected_target_index_in_sequence];
+
                $ans[self::RET_IS_IN] = 0;
                if ($this->trial_sequence[$this->expected_target_index_in_sequence] == $ans[self::RET_TARGET_HIT]){
                   $ans[self::RET_NBACK] = $this->expected_target_index_in_sequence+1;
@@ -154,7 +164,9 @@ class TargetHitSearcher {
                      $ans[self::RET_SEQ_COMPLETED] = 1;
                   }
                }
-            }
+
+               //echo "Fixation has hit target $temp_target. Required is $temp_required. Is IN: " . $ans[self::RET_IS_IN] . " SEQ COMPLETE " . $ans[self::RET_SEQ_COMPLETED] . "\n";
+            }            
             break;
       }
 
@@ -283,17 +295,19 @@ class TargetHitSearcher {
          $ans[self::COMPUTE_RET_ERROR] = "Error setting the new trial: " .  $error;
          return $ans;
       }
-   
+
+      //$is_right = false;   
       foreach ($fix_list_names as $fix_list) {
          foreach ($data_set_order as $data_set) {
+             $ths->reset();
              $fixation_list = $trial[TrialField::DATA][$data_set][$fix_list];
-             //echo "   DATASET: $data_set\n";
+             //if ($is_right) echo "   DATASET: $data_set\n";
              for ($i = 0; $i < count($fixation_list); $i++) {
-                 //echo "      FIX: (" . $fixation_list[$i][FixationVectorField::X] . ","  . $fixation_list[$i][FixationVectorField::Y] . ")\n";
-                 //$ths->dbugState("      ");
+                 //if ($is_right) echo "      FIX: (" . $fixation_list[$i][FixationVectorField::X] . ","  . $fixation_list[$i][FixationVectorField::Y] . ")\n";
+                 //if ($is_right) $ths->dbugState("      ");
                  $result = $ths->isHit($fixation_list[$i][FixationVectorField::X], $fixation_list[$i][FixationVectorField::Y], $data_set);
-                 //echo "      RESULT: TARGET HIT: " . $result[self::RET_TARGET_HIT] . ". IS IN: " . $result[self::RET_IS_IN] . "\n";
-                 //$ths->dbugState("      ");
+                 //if ($is_right) echo "      RESULT: TARGET HIT: " . $result[self::RET_TARGET_HIT] . ". IS IN: " . $result[self::RET_IS_IN] . "\n";
+                 //if ($is_right) $ths->dbugState("      ");
                  if ($result[self::RET_ERROR] != "") {
                      $ans[self::COMPUTE_RET_ERROR] = "Error computing ISHIT values for fixation $i for $data_set and $fix_list: " . $ans[self::RET_ERROR];
                      return $ans;
@@ -310,6 +324,7 @@ class TargetHitSearcher {
              // Storing the new values. 
              $fixation_list = $trial[TrialField::DATA][$data_set][$fix_list] = $fixation_list;
          }
+         $is_right = true;
       }
    
       return $ans;
