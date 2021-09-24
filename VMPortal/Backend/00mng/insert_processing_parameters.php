@@ -21,38 +21,58 @@ if ($con_main == NULL){
 
 $tpp = new TableProcessingParameters($con_main);
 
-// Gazepoint
-$name = EyeTrackerCodes::GAZEPOINT;
-$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 15;
-$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
-$pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 150;
-$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
+// Quallity control Parameters that depend ONLY on the study
+$study_qc = array();
 
-$fp = array();
-$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 5;
-$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 8;
-$fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; 
+$minimum_duration_reduction_constant = 0.9; // Used to provide some leeway in the minimum duration per trial. 
 
 // Reading parameters 
-$fp[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
-$fp[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 150;
+$study_qc[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]             = 150;  // DEPRACATED. Will not be in used after version 17.3.0
+$study_qc[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 3; 
+$study_qc[Study::READING][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 750*$minimum_duration_reduction_constant;  // ms.
+$study_qc[Study::READING][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;   // % of trials.
+$study_qc[Study::READING][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;   // % of trials. 
 
 // Binding parameters 
-$fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
-$fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 150;
+$study_qc[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]             = 150;  // DEPRACATED. Will not be in used after version 17.3.0
+$study_qc[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 4; 
+$study_qc[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 2750*$minimum_duration_reduction_constant;  // ms.
+$study_qc[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;        // % of trials.
+$study_qc[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;        // % of trials. 
+
 
 // NBack RT
-$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 30;
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]             = 30; // DEPRACATED. Will not be in used after version 17.3.0
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 6; 
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 1750*$minimum_duration_reduction_constant;  // ms.
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;        // % of trials.
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;        // % of trials. 
 
-// NBack MS 
-$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 30;
 
 // Go No Go parameters 
-$fp[Study::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 100;
+$study_qc[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]              = 100; // DEPRACATED. Will not be in used after version 17.3.0
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 2; 
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 700*$minimum_duration_reduction_constant;  // ms.
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;        // % of trials.
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;        // % of trials. 
 
+
+////////////////////////////////////// Gazepoint
+$name = EyeTrackerCodes::GAZEPOINT;
+$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 15;  // This is a % of the maximum value of the used resolution. 
+$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;  // ms.
+$pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 150; // Hz.   
+$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;  // Pixels. Absolute. 
+
+$fp = array();
+$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE]  = 5;   // USED FOR COMPUTATION BUT RESULTS NOT USED    
+$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE]  = 8;   // USED FOR COMPUTATION BUT RESULTS NOT USED 
+$fp[QualityControlParamterGlobal::MAX_GLITCHES]                         = 20;  // USED FOR COMPUTATION BUT RESULTS NOT USED
+
+$fp[QualityControlParamterGlobal::ALLOWED_SAMPLING_FREQ_VARIATION_MINUS] = 20;   // %.
+$fp[QualityControlParamterGlobal::ALLOWED_SAMPLING_FREQ_VARIATION_PLUS]  = 2;    // %.
+$fp[QualityControlParamterGlobal::THRESHOLD_NUM_TRIALS_VALID_F]          = 90;   // %.
+$fp = array_merge($fp,$study_qc);
 
 $ans = $tpp->addProductParameters($name,$pp,$fp);
 if ($ans === FALSE){
@@ -60,82 +80,51 @@ if ($ans === FALSE){
    return;
 }
 
-// HTC Vive Eye Pro. 
+////////////////////////////////////// HTC Vive Eye Pro. 
 $name = EyeTrackerCodes::HTC_VIVE_EYE_PRO;
-$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 3;
-$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
-$pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;
-$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
+$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 3;      // This is a % of the maximum value of the used resolution. 
+$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;     // ms. 
+$pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;    // Hz.     
+$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;     // Pixels. Absolute.  
 
 $fp = array();
-$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;
-$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 10;
-$fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; 
+$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;  // USED FOR COMPUTATION BUT RESULTS NOT USED    
+$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 10; // USED FOR COMPUTATION BUT RESULTS NOT USED 
+$fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; // USED FOR COMPUTATION BUT RESULTS NOT USED 
 
-// Reading parameters 
-$fp[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
-$fp[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
+$fp[QualityControlParamterGlobal::ALLOWED_SAMPLING_FREQ_VARIATION_MINUS] = 20;   // %.
+$fp[QualityControlParamterGlobal::ALLOWED_SAMPLING_FREQ_VARIATION_PLUS]  = 2;    // %.
+$fp[QualityControlParamterGlobal::THRESHOLD_NUM_TRIALS_VALID_F]          = 90;   // %.
+$fp = array_merge($fp,$study_qc);
 
-// Reading parameters 
-$fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
-$fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
-
-// NBack RT
-$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
-
-// NBack MS 
-$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
-
-// Go No Go parameters 
-$fp[Study::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 80;
-
-$tpp->addProductParameters($name,$pp,$fp);
+$ans = $tpp->addProductParameters($name,$pp,$fp);
 if ($ans === FALSE){
    echo "Failed on inserting $name: " . $tpp->getError() . "\n";
    return;
 }
 
-// HP Omnicept
+////////////////////////////////////// HP Omnicept
 $name = EyeTrackerCodes::HP_OMNICEPT;
-$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 2;
-$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;
-$pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;
-$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;
+$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 2;    // This is a % of the maximum value of the used resolution. 
+$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;   // ms. 
+$pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;  // Hz.     
+$pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;   // Pixels. Absolute.  
 
 $fp = array();
-$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;
-$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 10;
-$fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20; 
+$fp[QualityControlParamterGlobal::MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 6;   // USED FOR COMPUTATION BUT RESULTS NOT USED    
+$fp[QualityControlParamterGlobal::MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE] = 10;  // USED FOR COMPUTATION BUT RESULTS NOT USED 
+$fp[QualityControlParamterGlobal::MAX_GLITCHES]                        = 20;  // USED FOR COMPUTATION BUT RESULTS NOT USED
 
-// Reading parameters 
-$fp[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
-$fp[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
+$fp[QualityControlParamterGlobal::ALLOWED_SAMPLING_FREQ_VARIATION_MINUS] = 15;   // %.
+$fp[QualityControlParamterGlobal::ALLOWED_SAMPLING_FREQ_VARIATION_PLUS]  = 2;    // %.
+$fp[QualityControlParamterGlobal::THRESHOLD_NUM_TRIALS_VALID_F]          = 90;   // %.
+$fp = array_merge($fp,$study_qc);
 
-// Reading parameters 
-$fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 3;
-$fp[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 120;
-
-// NBack RT
-$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
-
-// NBack MS 
-$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::NBACKMS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 25;
-
-// Go No Go parameters 
-$fp[Study::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]    = 2;
-$fp[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL] = 80;
-
-$tpp->addProductParameters($name,$pp,$fp);
+$ans = $tpp->addProductParameters($name,$pp,$fp);
 if ($ans === FALSE){
    echo "Failed on inserting $name: " . $tpp->getError() . "\n";
    return;
 }
-
 
 echo "Finished\n";
 

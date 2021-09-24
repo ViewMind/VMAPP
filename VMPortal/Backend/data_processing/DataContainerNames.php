@@ -250,15 +250,24 @@ abstract class ProcessingParameter extends TypedString
 
 abstract class QualityControlParamterGlobal extends TypedString 
 {
-   const MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE    = "min_successive_timestamp_difference";
-   const MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE    = "max_successive_timestamp_difference";
-   const MAX_GLITCHES                           = "max_recommended_glitches" ;
+   const MIN_SUCCESSIVE_TIMESTAMP_DIFFERENCE    = "min_successive_timestamp_difference";  // Left because sampling glitches are still computed, but not currently in use. 
+   const MAX_SUCCESSIVE_TIMESTAMP_DIFFERENCE    = "max_successive_timestamp_difference";  // Left because sampling glitches are still computed, but not currently in use. 
+   const MAX_GLITCHES                           = "max_recommended_glitches" ;            // Left because sampling glitches are still computed, but not currently in use. 
+
+   const ALLOWED_SAMPLING_FREQ_VARIATION_PLUS   = "allowed_f_plus_variation";
+   const ALLOWED_SAMPLING_FREQ_VARIATION_MINUS  = "allowed_f_minus_variation";
+   const THRESHOLD_NUM_TRIALS_VALID_F           = "threshold_trials_with_valid_f";
+
 }
 
 abstract class QualityControlParamterStudy extends TypedString
 {
-   const MIN_POINTS_PER_TRIAL                   = "min_points_per_trial";
-   const MIN_FIX_PER_TRIAL                      = "min_fixations_per_trial";
+   const MIN_POINTS_PER_TRIAL                   = "min_points_per_trial";     // DEPRACATED LEFT JUST IN CASE
+   
+   const MIN_FIX_PER_TRIAL                      = "min_fixations_per_trial";  
+   const THRESHOLD_VALID_NUM_FIXATIONS          = "threshold_valid_num_fixations";
+   const MIN_TIME_DURATION_PER_TRIAL            = "min_time_duration_per_trial";
+   const THRESHOLD_VALID_NUM_DATA_POINTS        = "threshold_valid_num_datapoints";
 }
 
 abstract class QCFields extends TypedString
