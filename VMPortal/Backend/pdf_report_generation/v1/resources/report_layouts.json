@@ -2690,56 +2690,6 @@
             {
                 "title": [
                     {
-                        "text": "#gonogo.page_titles.2.0#",
-                        "py": 0
-                    },
-                    {
-                        "text": "#gonogo.page_titles.2.1#",
-                        "py": 0.5
-                    }
-                ],
-                "items": [
-                    {
-                        "type": "single_4_pt_graph",
-                        "id": "gaze_duration_graph",
-                        "x": 0.3,
-                        "y": 0.02,
-                        "w": 0.4,
-                        "h": 0.3,
-                        "left_column_text": "#gonogo.gaze_duration.xlabel.0#",
-                        "right_column_text": "#gonogo.gaze_duration.xlabel.1#",
-                        "ylabel": "#gonogo.gaze_duration.ylabel#",
-                        "yunits": "",
-                        "legend_data_set_0": "#gonogo.gaze_duration.legend.0#",
-                        "legend_data_set_1": "#gonogo.gaze_duration.legend.1#",
-                        "data_set_left": [
-                            525.2137,
-                            6.434115,
-                            563.5136,
-                            6.10936
-                        ],
-                        "data_set_right": [
-                            "&gaze_duration.facilitated_task.0&",
-                            "&gaze_duration.facilitated_task.1&",
-                            "&gaze_duration.inhibite_task.0&",
-                            "&gaze_duration.inhibite_task.1&"
-                        ]
-                    },
-                    {
-                        "type": "text",
-                        "text": "#gonogo.gaze_duration.text#",
-                        "id": "gaze_duration_text",
-                        "x": 0,
-                        "y": [
-                            "gaze_duration_graph",
-                            0.05
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": [
-                    {
                         "text": "#gonogo.page_titles.3.0#",
                         "py": 0
                     },
@@ -2826,6 +2776,52 @@
             {
                 "title": [
                     {
+                        "text": "#gonogo.page_titles.2.0#",
+                        "py": 0
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "single_4_pt_graph",
+                        "id": "gaze_duration_graph",
+                        "x": 0.3,
+                        "y": 0.02,
+                        "w": 0.4,
+                        "h": 0.3,
+                        "left_column_text": "#gonogo.gaze_duration.xlabel.0#",
+                        "right_column_text": "#gonogo.gaze_duration.xlabel.1#",
+                        "ylabel": "#gonogo.gaze_duration.ylabel#",
+                        "yunits": "",
+                        "legend_data_set_0": "#gonogo.gaze_duration.legend.0#",
+                        "legend_data_set_1": "#gonogo.gaze_duration.legend.1#",
+                        "data_set_left": [
+                            525.2137,
+                            6.434115,
+                            563.5136,
+                            6.10936
+                        ],
+                        "data_set_right": [
+                            "&gaze_duration.facilitated_task.0&",
+                            "&gaze_duration.facilitated_task.1&",
+                            "&gaze_duration.inhibite_task.0&",
+                            "&gaze_duration.inhibite_task.1&"
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "text": "#gonogo.gaze_duration.text#",
+                        "id": "gaze_duration_text",
+                        "x": 0,
+                        "y": [
+                            "gaze_duration_graph",
+                            0.05
+                        ]
+                    }
+                ]
+            },
+            {
+                "title": [
+                    {
                         "text": "#gonogo.page_titles.4.0#",
                         "py": 0
                     }
@@ -2860,26 +2856,18 @@
                         "h": 0.16666666666666666,
                         "title": "#gonogo.fixation_plotting.title_right#",
                         "resolution": [
-                            1366,
-                            768
+                            1584,
+                            1764
                         ],
                         "gonogo": "G->",
                         "fixations": [
                             [
-                                592,
-                                439
+                                790.6833333333333,
+                                867.95
                             ],
                             [
-                                606,
-                                429
-                            ],
-                            [
-                                649,
-                                412
-                            ],
-                            [
-                                1043,
-                                412
+                                1456.2666666666667,
+                                858.9333333333333
                             ]
                         ]
                     },
@@ -2903,34 +2891,18 @@
                         "w": 0.3,
                         "h": 0.16666666666666666,
                         "resolution": [
-                            1366,
-                            768
+                            1584,
+                            1764
                         ],
                         "gonogo": "R<-",
                         "fixations": [
                             [
-                                696,
-                                331
+                                789.6818181818181,
+                                882.8636363636364
                             ],
                             [
-                                706,
-                                371
-                            ],
-                            [
-                                674,
-                                374
-                            ],
-                            [
-                                675,
-                                387
-                            ],
-                            [
-                                688,
-                                404
-                            ],
-                            [
-                                1168,
-                                396
+                                1448.090909090909,
+                                863.6363636363636
                             ]
                         ]
                     },
@@ -2954,30 +2926,18 @@
                         "w": 0.3,
                         "h": 0.16666666666666666,
                         "resolution": [
-                            1366,
-                            768
+                            1584,
+                            1764
                         ],
                         "gonogo": "R->",
                         "fixations": [
                             [
-                                637,
-                                373
+                                789.25,
+                                874.0227272727273
                             ],
                             [
-                                657,
-                                395
-                            ],
-                            [
-                                631,
-                                441
-                            ],
-                            [
-                                653,
-                                443
-                            ],
-                            [
-                                145,
-                                417
+                                141.57142857142858,
+                                843.2857142857143
                             ]
                         ]
                     },
@@ -3001,38 +2961,18 @@
                         "w": 0.3,
                         "h": 0.16666666666666666,
                         "resolution": [
-                            1366,
-                            768
+                            1584,
+                            1764
                         ],
                         "gonogo": "G<-",
                         "fixations": [
                             [
-                                663,
-                                376
+                                782.62,
+                                872.04
                             ],
                             [
-                                676,
-                                400
-                            ],
-                            [
-                                676,
-                                427
-                            ],
-                            [
-                                625,
-                                392
-                            ],
-                            [
-                                617,
-                                407
-                            ],
-                            [
-                                619,
-                                419
-                            ],
-                            [
-                                93,
-                                398
+                                128.45454545454547,
+                                842
                             ]
                         ]
                     }
@@ -3084,11 +3024,11 @@
             },
             "correct_responses": {
                 "polygon": {
-                    "+1": "- 82*",
+                    "+1": "82* +",
                     "0": "60* 82",
                     "-1": "55* 60",
                     "-2": "50* 55",
-                    "-3": "49 +"
+                    "-3": "- 49"
                 },
                 "color": {
                     "blue": "81* +",
@@ -3114,8 +3054,8 @@
             },
             "inhibitory_processes": {
                 "polygon": {
-                    "+1": "- 3",
-                    "0": "3* 18*",
+                    "+1": "- 2*",
+                    "0": "2 18*",
                     "-1": "18 30*",
                     "-2": "30 45*",
                     "-3": "45 +"
@@ -3129,8 +3069,8 @@
             },
             "decoding_efficiency": {
                 "polygon": {
-                    "+1": "- 500",
-                    "0": "500* 650*",
+                    "+1": "- 499*",
+                    "0": "499 650*",
                     "-1": "650 800*",
                     "-2": "800 990*",
                     "-3": "990 +"
@@ -3290,6 +3230,75 @@
                 ],
                 "items": [
                     {
+                        "type": "bulleted_list",
+                        "id": "green_bullets",
+                        "x": 0,
+                        "y": 0.02,
+                        "title": "#nbackrt.affected_areas.green#",
+                        "dynamic_bullets": {
+                            "basestring": "nbackrt.affected_areas",
+                            "ref_color": [
+                                "green",
+                                "blue"
+                            ],
+                            "variables": [
+                                "visual_exploration_efficiency",
+                                "visual_working_memory",
+                                "correct_responses",
+                                "working_memory",
+                                "inhibitory_processes",
+                                "decoding_efficiency",
+                                "enconding_efficiency"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "bulleted_list",
+                        "id": "yellow_bullets",
+                        "x": 0,
+                        "y": [
+                            "green_bullets",
+                            0.02
+                        ],
+                        "title": "#nbackrt.affected_areas.yellow#",
+                        "dynamic_bullets": {
+                            "basestring": "nbackrt.affected_areas",
+                            "ref_color": "yellow",
+                            "variables": [
+                                "visual_exploration_efficiency",
+                                "visual_working_memory",
+                                "correct_responses",
+                                "working_memory",
+                                "inhibitory_processes",
+                                "decoding_efficiency",
+                                "enconding_efficiency"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "bulleted_list",
+                        "id": "red_bullets",
+                        "x": 0,
+                        "y": [
+                            "yellow_bullets",
+                            0.02
+                        ],
+                        "title": "#nbackrt.affected_areas.red#",
+                        "dynamic_bullets": {
+                            "basestring": "nbackrt.affected_areas",
+                            "ref_color": "red",
+                            "variables": [
+                                "visual_exploration_efficiency",
+                                "visual_working_memory",
+                                "correct_responses",
+                                "working_memory",
+                                "inhibitory_processes",
+                                "decoding_efficiency",
+                                "enconding_efficiency"
+                            ]
+                        }
+                    },
+                    {
                         "type": "text",
                         "text": "#nbackrt.overall_performance.text#",
                         "id": "overall_performance_explained",
@@ -3432,6 +3441,80 @@
                             3
                         ],
                         "fixations": "&fixations.90.retrieval_1&"
+                    },
+                    {
+                        "type": "text",
+                        "text": "#nbackrt.fixation_plotting.control.text#",
+                        "id": "fixation_plotting_control_text",
+                        "x": 0,
+                        "y": 0.72
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "control_left",
+                        "x": 0.17000000000000004,
+                        "y": 0.8099999999999999,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "label": "#nbackrt.fixation_plotting.control.label#",
+                        "title": "#nbackrt.fixation_plotting.title_left#",
+                        "legacy": true,
+                        "resolution": [
+                            1532,
+                            1704
+                        ],
+                        "nbackrt": [],
+                        "fixations": [
+                            [
+                                751,
+                                862
+                            ],
+                            [
+                                759,
+                                866
+                            ],
+                            [
+                                759,
+                                877
+                            ]
+                        ]
+                    },
+                    {
+                        "type": "fixation_plot",
+                        "id": "control_rigt",
+                        "x": 0.53,
+                        "y": 0.8099999999999999,
+                        "w": 0.3,
+                        "h": 0.16666666666666666,
+                        "legacy": true,
+                        "title": "#nbackrt.fixation_plotting.title_right#",
+                        "resolution": [
+                            1532,
+                            1704
+                        ],
+                        "nbackrt": [
+                            3,
+                            4,
+                            2
+                        ],
+                        "fixations": [
+                            [
+                                762,
+                                883
+                            ],
+                            [
+                                1400,
+                                809
+                            ],
+                            [
+                                567,
+                                1561
+                            ],
+                            [
+                                1001,
+                                1599
+                            ]
+                        ]
                     }
                 ]
             }

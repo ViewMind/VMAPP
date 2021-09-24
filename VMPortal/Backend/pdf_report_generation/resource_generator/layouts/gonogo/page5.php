@@ -46,13 +46,11 @@
    $item["w"] = $w;
    $item["h"] = $h;
    $item["title"] = "#gonogo.fixation_plotting.title_right#";
-   $item["resolution"] = [1366, 768];
+   $item["resolution"] = [1584, 1764];
    $item["gonogo"] = "G->";
    $item["fixations"] = [
-      [592,439],
-      [606,429],
-      [649,412],
-      [1043,412]
+      [790.6833333333333, 867.95],
+      [1456.2666666666667,858.9333333333333]
    ];
    $page["items"][] = $item;
 
@@ -79,15 +77,11 @@
    $item["y"] = $row_y;
    $item["w"] = $w;
    $item["h"] = $h;
-   $item["resolution"] = [1366, 768];
+   $item["resolution"] = [1584, 1764];
    $item["gonogo"] = "R<-";
    $item["fixations"] = [
-      [696,331],
-      [706,371],
-      [674,374],
-      [675,387],
-      [688,404],
-      [1168,396]
+      [789.6818181818181,882.8636363636364],
+      [1448.090909090909,863.6363636363636]
    ];
    $page["items"][] = $item;
 
@@ -115,19 +109,15 @@
    $item["y"] = $row_y;
    $item["w"] = $w;
    $item["h"] = $h;
-   $item["resolution"] = [1366, 768];
+   $item["resolution"] = [1584, 1764];
    $item["gonogo"] = "R->";
    $item["fixations"] = [
-      [637,373],
-      [657,395],
-      [631,441],
-      [653,443],
-      [145,417]
+      [789.25,874.0227272727273],
+      [141.57142857142858,843.2857142857143]
    ];
    $page["items"][] = $item;
 
    $row_y = $row_y + $h + $space_between_rows;   
-
 
    /// Third Row.
    $item = [];
@@ -150,16 +140,11 @@
    $item["y"] = $row_y;
    $item["w"] = $w;
    $item["h"] = $h;
-   $item["resolution"] = [1366, 768];
+   $item["resolution"] = [1584, 1764];
    $item["gonogo"] = "G<-";
    $item["fixations"] = [
-      [663,376],
-      [676,400],
-      [676,427],
-      [625,392],
-      [617,407],
-      [619,419],
-      [93,398],
+     [782.62,872.04],
+     [128.45454545454547,842]
    ];
    $page["items"][] = $item;
 

@@ -109,74 +109,54 @@
    $item["fixations"] = "&fixations.90.retrieval_1&";
    $page["items"][] = $item;   
 
-   // ///---------------- The Control Fixation Graph. 
-   // $item = [];
-   // $item["type"] = "text";
-   // $item["text"] = "#nbackrt.fixation_plotting.control.text#";
-   // $item["id"]   = "fixation_plotting_control_text";
-   // $item["x"] = 0;   
-   // $item["y"] = $ysubtitle + 0.02;
-   // $page["items"][] = $item;      
+   ///---------------- The Control Fixation Graph. 
+   $item = [];
+   $item["type"] = "text";
+   $item["text"] = "#nbackrt.fixation_plotting.control.text#";
+   $item["id"]   = "fixation_plotting_control_text";
+   $item["x"] = 0;   
+   $item["y"] = $ysubtitle + 0.02;
+   $page["items"][] = $item;      
 
-   // $row_y = $ysubtitle + 0.11;
+   $row_y = $ysubtitle + 0.11;
 
-   // $item = [];
-   // $item["type"] = "fixation_plot";
-   // $item["id"]   = "control_left";
-   // $item["x"] = $x_col_left;
-   // $item["y"] = $row_y;
-   // $item["w"] = $w;
-   // $item["h"] = $h;
-   // $item["label"] = "#nbackrt.fixation_plotting.control.label#";
-   // $item["title"] = "#nbackrt.fixation_plotting.title_left#";
-   // $item["legacy"] = true;
-   // $item["resolution"] = [1366, 768];
-   // $item["nbackrt"] = [ [1,2], [2,1], [0,0] ];
-   // $item["fixations"] = [
-   //    [409,136],
-   //    [407,150],
-   //    [406,160],
-   //    [444,129],
-   //    [442,144],
-   //    [605,312],
-   //    [688,311],
-   //    [694,342],
-   //    [669,554],
-   //    [696,543],
-   //    [909,322],
-   //    [931,279],
-   //    [943,300],
-   //    [948,318],
-   //    [972,301]
-   // ];
-   // $page["items"][] = $item;      
+   $item = [];
+   $item["type"] = "fixation_plot";
+   $item["id"]   = "control_left";
+   $item["x"] = $x_col_left;
+   $item["y"] = $row_y;
+   $item["w"] = $w;
+   $item["h"] = $h;
+   $item["label"] = "#nbackrt.fixation_plotting.control.label#";
+   $item["title"] = "#nbackrt.fixation_plotting.title_left#";
+   $item["legacy"] = true;
+   $item["resolution"] = [1532, 1704];
+   $item["nbackrt"] = [];
+   $item["fixations"] = [
+      [751,862],
+      [759,866],
+      [759,877]
+   ];
+   $page["items"][] = $item;      
 
-   // $item = [];
-   // $item["type"] = "fixation_plot";
-   // $item["id"]   = "control_rigt";
-   // $item["x"] = $x_col_right;
-   // $item["y"] = $row_y;
-   // $item["w"] = $w;
-   // $item["h"] = $h;
-   // $item["legacy"] = true;
-   // $item["title"] = "#nbackrt.fixation_plotting.title_right#";
-   // $item["resolution"] = [1366, 768];
-   // $item["nbackrt"] = [ [2,2], [0,2], [2,0] ];
-   // $item["fixations"] = [
-   //    [391,520],
-   //    [437,506],
-   //    [442,479],
-   //    [950,465],
-   //    [961,491],
-   //    [976,458],
-   //    [873,237],
-   //    [893,255],
-   //    [939,184],
-   //    [961,163],
-   //    [971,127]
-   // ];   
-   // $page["items"][] = $item;   
-   
-   
+   $item = [];
+   $item["type"] = "fixation_plot";
+   $item["id"]   = "control_rigt";
+   $item["x"] = $x_col_right;
+   $item["y"] = $row_y;
+   $item["w"] = $w;
+   $item["h"] = $h;
+   $item["legacy"] = true;
+   $item["title"] = "#nbackrt.fixation_plotting.title_right#";
+   $item["resolution"] = [1532, 1704];
+   $item["nbackrt"] = [ 3, 4, 2];
+   $item["fixations"] = [
+      [762,883],
+      [1400,809],
+      [567,1561],
+      [1001,1599]
+   ];   
+   $page["items"][] = $item;   
+      
    return $page;
 ?>

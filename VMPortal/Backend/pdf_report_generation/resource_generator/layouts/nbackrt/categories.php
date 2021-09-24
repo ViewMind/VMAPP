@@ -40,11 +40,11 @@
    /////
    $cat = array();
    $variable = "correct_responses";   
-   $cat["+1"]  = "- 82*";
+   $cat["+1"]  = "82* +";
    $cat["0"]   = "60* 82";
    $cat["-1"]  = "55* 60";
    $cat["-2"]  = "50* 55";
-   $cat["-3"]  = "49 +";
+   $cat["-3"]  = "- 49";
    $categories[$variable]["polygon"] = $cat;
 
    $cat = array();
@@ -75,8 +75,8 @@
    /////
    $cat = array();
    $variable = "inhibitory_processes";   
-   $cat["+1"]  = "- 3";
-   $cat["0"]   = "3* 18*";
+   $cat["+1"]  = "- 2*";
+   $cat["0"]   = "2 18*";
    $cat["-1"]  = "18 30*";
    $cat["-2"]  = "30 45*";
    $cat["-3"]  = "45 +";
@@ -92,8 +92,8 @@
    /////
    $cat = array();
    $variable = "decoding_efficiency";   
-   $cat["+1"]  = "- 500";
-   $cat["0"]   = "500* 650*";
+   $cat["+1"]  = "- 499*";
+   $cat["0"]   = "499 650*";
    $cat["-1"]  = "650 800*";
    $cat["-2"]  = "800 990*";
    $cat["-3"]  = "990 +";
@@ -122,7 +122,6 @@
    $cat["yellow"] = "300 430";
    $cat["red"]    = "430* +";
    $categories[$variable]["color"] = $cat;
-   
    
    return $categories;
    

@@ -33,6 +33,18 @@
  $report["enconding_efficiency"]["title"]                                        = "ENCODING EFFICIENCY";
  $report["enconding_efficiency"]["range_text"]                                   = "Normal value below 260";
 
+ $report["affected_areas"]["green"] = "Preserved Cognitive Functions & Brain Areas:";
+ $report["affected_areas"]["yellow"] = "Mildly Impaired Cognitive Functions & Brain Areas:";
+ $report["affected_areas"]["red"] = "Severely Impaired and/ or Pathological Cognitive Functions & Brain Areas:";
+
+ $report["affected_areas"]["visual_exploration_efficiency"] = "Visual Exploratory Efficiency: Basal Ganglia (BG) & Superior Colliculus (SC)";
+ $report["affected_areas"]["visual_working_memory"] = "Visual Working Memory: Medial Prefrontal Cortex (mPFC)";
+ $report["affected_areas"]["correct_responses"] = "Correct Responses: Prefrontal Cortex, Anterior Cingulate Cortex (ACC)";
+ $report["affected_areas"]["working_memory"] = "Working Memory: Frontal and Parietal Regions";
+ $report["affected_areas"]["inhibitory_processes"] = "Inhibitory Processes: Caudal Inferior Frontal Gyrus (cIFG)";
+ $report["affected_areas"]["decoding_efficiency"]  = "Decoding Efficiency: Lateral Geniculate Nucleus (lGN)";
+ $report["affected_areas"]["enconding_efficiency"]  = "Encoding Efficiency:  Lateral Posterior (LP) Nucleus";
+
  $report["overall_performance"]["text"] = "Overall Performance";
  $report["overall_performance"]["vertex"]["visual_exploration_efficiency"]       = "Visual Exploration\nEfficiency";
  $report["overall_performance"]["vertex"]["visual_working_memory"]               = "Visual Working\nMemory";
@@ -49,7 +61,7 @@
  $report["fixation_plotting"]["row_2"] = "Trial 55";
  $report["fixation_plotting"]["row_3"] = "Trial 92";
  $report["fixation_plotting"]["control"]["text"] = "Fixation Plotting Example";
- $report["fixation_plotting"]["control"]["label"] = "Example";
+ $report["fixation_plotting"]["control"]["label"] = "Control";
   
  return $report;
 

@@ -17,44 +17,44 @@
       "enconding_efficiency"
    ];
    
-   // $item = [];
-   // $item["type"]  = "bulleted_list";
-   // $item["id"]    = "green_bullets";
-   // $item["x"]     = 0;
-   // $item["y"]     = 0.02;
-   // $item["title"] = "#nbackrt.affected_areas.green#";
-   // $item["dynamic_bullets"] = [
-   //    "basestring" => "nbackrt.affected_areas", // This only represents the base from which the strings are generated. 
-   //    "ref_color"  => "green",
-   //    "variables" => $valid_vars
-   // ]; 
-   // $page["items"][] = $item;
+   $item = [];
+   $item["type"]  = "bulleted_list";
+   $item["id"]    = "green_bullets";
+   $item["x"]     = 0;
+   $item["y"]     = 0.02;
+   $item["title"] = "#nbackrt.affected_areas.green#";
+   $item["dynamic_bullets"] = [
+      "basestring" => "nbackrt.affected_areas", // This only represents the base from which the strings are generated. 
+      "ref_color"  => ["green", "blue"], // In this particular case green and blue are in the same category. 
+      "variables" => $valid_vars
+   ]; 
+   $page["items"][] = $item;
    
-   // $item = [];
-   // $item["type"]  = "bulleted_list";
-   // $item["id"]    = "yellow_bullets";
-   // $item["x"]     = 0;
-   // $item["y"]     = ["green_bullets",0.02];
-   // $item["title"] = "#nbackrt.affected_areas.yellow#";
-   // $item["dynamic_bullets"] = [
-   //    "basestring" => "nbackrt.affected_areas", // This only represents the base from which the strings are generated. 
-   //    "ref_color"  => "yellow",
-   //    "variables" => $valid_vars
-   // ]; 
-   // $page["items"][] = $item;
+   $item = [];
+   $item["type"]  = "bulleted_list";
+   $item["id"]    = "yellow_bullets";
+   $item["x"]     = 0;
+   $item["y"]     = ["green_bullets",0.02];
+   $item["title"] = "#nbackrt.affected_areas.yellow#";
+   $item["dynamic_bullets"] = [
+      "basestring" => "nbackrt.affected_areas", // This only represents the base from which the strings are generated. 
+      "ref_color"  => "yellow",
+      "variables" => $valid_vars
+   ]; 
+   $page["items"][] = $item;
    
-   // $item = [];
-   // $item["type"] = "bulleted_list";
-   // $item["id"]   = "red_bullets";
-   // $item["x"]     = 0;
-   // $item["y"]     = ["yellow_bullets",0.02];
-   // $item["title"] = "#nbackrt.affected_areas.red#";
-   // $item["dynamic_bullets"] = [
-   //    "basestring" => "nbackrt.affected_areas", // This only represents the base from which the strings are generated. 
-   //    "ref_color"  => "red",
-   //    "variables" => $valid_vars
-   // ]; 
-   // $page["items"][] = $item;
+   $item = [];
+   $item["type"] = "bulleted_list";
+   $item["id"]   = "red_bullets";
+   $item["x"]     = 0;
+   $item["y"]     = ["yellow_bullets",0.02];
+   $item["title"] = "#nbackrt.affected_areas.red#";
+   $item["dynamic_bullets"] = [
+      "basestring" => "nbackrt.affected_areas", // This only represents the base from which the strings are generated. 
+      "ref_color"  => "red",
+      "variables" => $valid_vars
+   ]; 
+   $page["items"][] = $item;
 
    // // Adding the presumptive diagnosis.
    // $item = [];
