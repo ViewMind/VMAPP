@@ -26,11 +26,7 @@
 namespace ExperimentGlobals {
    static const QString SUBJECT_DIR_ABORTED     = "exp_aborted";
    static const QString SUBJECT_DIR_SENT        = "sent";
-   static const bool PRETTY_PRINT_OUTPUT_FILES  = true;
-   static const bool SHORT_STUDIES              = false;
-   static const bool ENABLE_FIX_LOG             = false;
 }
-
 
 class Experiment : public QWidget
 {

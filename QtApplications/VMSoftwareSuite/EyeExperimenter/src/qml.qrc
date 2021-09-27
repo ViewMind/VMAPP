@@ -51,5 +51,7 @@
         <file>qml/ObjectListSorter.js</file>
         <file>qml/DateLocalization.js</file>
         <file>qml/VMDialogBase.qml</file>
+        <file>qml/VMUpDownIndicator.qml</file>
+        <file>qml/VMTableHeader.qml</file>
     </qresource>
 </RCC>

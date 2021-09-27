@@ -175,9 +175,6 @@ void APIClient::gotReply(){
     //    QMap<QString,QString> rheaders = rest_controller.getResponseHeaders();
     //    QString searchFor = "Content-Disposition";
 
-
-
-
     retdata.clear();
     QByteArray raw_reply = rest_controller.getReplyData();
     if (rest_controller.didReplyHaveAnError()){

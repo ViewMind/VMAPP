@@ -21,18 +21,19 @@ const char * LocalDB::APPUSER_EMAIL         = "email";
 const char * LocalDB::APPUSER_VIEWMIND_ID   = "viewmind_id";
 
 // Subject Fields
-const char * LocalDB::SUBJECT_NAME            = "name";
-const char * LocalDB::SUBJECT_LASTNAME        = "lastname";
-const char * LocalDB::SUBJECT_INSTITUTION_ID  = "supplied_institution_id";
-const char * LocalDB::SUBJECT_BIRTHDATE       = "birthdate";
-const char * LocalDB::SUBJECT_AGE             = "age";
-const char * LocalDB::SUBJECT_BIRTHCOUNTRY    = "birthcountry";
-const char * LocalDB::SUBJECT_YEARS_FORMATION = "years_formation";
-const char * LocalDB::SUBJECT_CREATION_DATE   = "creation_date";
-const char * LocalDB::SUBJECT_GENDER          = "gender";
-const char * LocalDB::SUBJECT_STUDY_MARKERS   = "subject_study_markers";
-const char * LocalDB::SUBJECT_LOCAL_ID        = "local_id";
-const char * LocalDB::SUBJECT_ASSIGNED_MEDIC  = "assigned_medic";
+const char * LocalDB::SUBJECT_NAME                  = "name";
+const char * LocalDB::SUBJECT_LASTNAME              = "lastname";
+const char * LocalDB::SUBJECT_INSTITUTION_ID        = "supplied_institution_id";
+const char * LocalDB::SUBJECT_BIRTHDATE             = "birthdate";
+const char * LocalDB::SUBJECT_AGE                   = "age";
+const char * LocalDB::SUBJECT_BIRTHCOUNTRY          = "birthcountry";
+const char * LocalDB::SUBJECT_YEARS_FORMATION       = "years_formation";
+const char * LocalDB::SUBJECT_CREATION_DATE         = "creation_date";
+const char * LocalDB::SUBJECT_CREATION_DATE_INDEX   = "creation_date_index";
+const char * LocalDB::SUBJECT_GENDER                = "gender";
+const char * LocalDB::SUBJECT_STUDY_MARKERS         = "subject_study_markers";
+const char * LocalDB::SUBJECT_LOCAL_ID              = "local_id";
+const char * LocalDB::SUBJECT_ASSIGNED_MEDIC        = "assigned_medic";
 
 // "Bookmark" fields
 const char * LocalDB::MARKER_VALUE            = "marker_value";
@@ -58,9 +59,9 @@ bool LocalDB::setApplicationVersion(const QString &version){
     }
     else{
         this->data[MAIN_APP_VERSION] = version;
-        this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = MAX_ALLOWED_UPDATE_DELAYS;
-        return false;
+        this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = MAX_ALLOWED_UPDATE_DELAYS;        
         saveAndBackup();
+        return false;
     }
     return false;
 }
@@ -427,7 +428,6 @@ bool LocalDB::setQCParametersFromServerResponse(const QVariantMap &response){
 
     QStringList allStudies;
     allStudies << VMDC::MultiPartStudyBaseName::BINDING
-               << VMDC::Study::NBACKMS
                << VMDC::Study::NBACKRT
                << VMDC::Study::GONOGO
                << VMDC::Study::READING;
@@ -440,6 +440,8 @@ bool LocalDB::setQCParametersFromServerResponse(const QVariantMap &response){
     QStringList shouldBeTherePerStudy;
 
     QVariantMap qc = response.value(APINames::FreqParams::NAME).toMap();
+
+    //Debug::prettpPrintQVariantMap(qc);
 
     // First we make sure that all fields are there.
     QStringList serverkeys = qc.keys();
@@ -472,7 +474,7 @@ bool LocalDB::setQCParametersFromServerResponse(const QVariantMap &response){
         }
 
         if (!shouldBeTherePerStudy.isEmpty()){
-            error = "The following qc study parameters were missing from server response: " + shouldBeThere.join(",");
+            error = "The following qc study parameters were missing from server response: " + shouldBeTherePerStudy.join(",") + ". For study: " + allStudies.at(i);
             return false;
         }
     }
@@ -513,7 +515,12 @@ QVariantMap LocalDB::getDisplaySubjectList(QString filter){
 
     for(qint32 i = 0; i < subject_ids.size(); i++){
         if (filterMatchSubject(subdata.value(subject_ids.at(i)).toMap(),filter)){
-            ans[subject_ids.at(i)] = subdata.value(subject_ids.at(i)).toMap();
+            QVariantMap map = subdata.value(subject_ids.at(i)).toMap();
+
+            // Adding the creation date sorting index value. This is required due to the very very bad way in which I store the dates.
+            map[SUBJECT_CREATION_DATE_INDEX] = QDateTime::fromString(map.value(SUBJECT_CREATION_DATE).toString(),"dd/MM/yyyy HH:mm").toSecsSinceEpoch();
+
+            ans[subject_ids.at(i)] = map;
         }
     }
 

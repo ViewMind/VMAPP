@@ -196,6 +196,9 @@ ApplicationWindow {
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewPatList.loadPatients();                
                 break;
+            case vmIndexFinishedStudies:
+                viewFinishedStudies.loadEvaluatorStudies();
+                break;
             case vmIndexViewQC:
                 viewQC.loadStudiesAndGraphs()
                 break;

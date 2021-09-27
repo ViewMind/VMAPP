@@ -191,11 +191,12 @@ void FlowControl::onRequestUpdate(){
         painter.setBrush(QBrush(QColor(0,0,255,100)));
         painter.drawEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
 
-        if (Globals::Debug::SHOW_EYE_POSITION){
-            openvrco->setImage(&displayImage);
+        if (!DBUGBOOL(Debug::Options::SHOW_EYES_IN_STUDY)){
+            openvrco->setImage(&image);
         }
         else{
-            openvrco->setImage(&image);
+            openvrco->setImage(&displayImage);
+
         }
 
         emit(newImageAvailable());
@@ -312,6 +313,19 @@ void FlowControl::calibrateEyeTracker(quint8 eye_to_use){
     if (Globals::EyeTracker::IS_VR) {
         eyeTracker->enableUpdating(true); // To ensure that eyetracking data is gathered.
     }
+
+    if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != ""){
+        // Check if the file exists
+        QString coefficient_file = DBUGSTR(Debug::Options::LOAD_CALIBRATION_K);
+        if (QFile(coefficient_file).exists()){
+            calibrationParams.forceCalibration = false;
+            calibrationParams.name = coefficient_file;
+            QString dbug = "DBUG: Loading calibration coefficients " + coefficient_file;
+            qDebug() << dbug;
+            logger.appendWarning(dbug);
+        }
+    }
+
     eyeTracker->calibrate(calibrationParams);
 }
 

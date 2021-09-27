@@ -37,7 +37,12 @@ VMBase {
     Connections{
         target: flowControl
         function onNewImageAvailable () {
-            hmdView.image = flowControl.image;
+            if (swiperControl.currentIndex === swiperControl.vmIndexVRDisplay){
+                hmdView.image = flowControl.image;
+            }
+            else if (swiperControl.currentIndex === swiperControl.vmIndexPresentExperiment){
+                viewPresentExperimet.setCurrentVRImage(flowControl.image);
+            }
         }
     }
 

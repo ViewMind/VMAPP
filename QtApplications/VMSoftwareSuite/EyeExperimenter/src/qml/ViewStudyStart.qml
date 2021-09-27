@@ -83,6 +83,26 @@ VMBase {
     property string vmSelectedMedic: ""
 
 
+    function startStudies(){
+        //console.log("STUDY START WITH:")
+        //console.log(JSON.stringify(vmSelectedExperiments));
+        if (vmSelectedExperiments.length > 0){
+            viewPresentExperimet.setTracker(vmSelectedExperiments);
+            vmCurrentExperimentIndex = -1;
+            viewPresentExperimet.advanceCurrentExperiment()
+            viewCalibrationStart.vmSelectedEye = cbEyeMsg.vmCurrentIndex;
+            if (!loader.getConfigurationBoolean("use_mouse") && loader.isVREnabled()){
+                //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
+                viewVRDisplay.disableStartStudyButton(); // To enforce first calibraton.
+                swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
+            }
+            else swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart
+        }
+        else{
+            labelNoInstructionSetError.visible = true;
+        }
+    }
+
 
     function setPatientName(){
         var subject_info = loader.getCurrentSubjectInfo();
@@ -111,7 +131,7 @@ VMBase {
         btnStart.enabled = false;
         btnAddStudy.enabled = true;
 
-        ////////////////////// TODO THIS IS CRUDE: IMPROVE ///////////////////////////////
+        ////////////////////// TODO: THIS IS CRUDE, IMPROVE ///////////////////////////////
         // Filling the part selection on perception.
         var model = Array();
         for (i = 0; i < 8; i++){
@@ -125,7 +145,7 @@ VMBase {
             perception_marker++; // Next part.
             cbofPerceptionPart.setSelection(perception_marker);
         }
-        ////////////////////// TODO THIS IS CRUDE: IMPROVE ///////////////////////////////
+        //////////////////////  TODO: THIS IS CRUDE, IMPROVE ///////////////////////////////
 
     }
 
@@ -506,7 +526,7 @@ VMBase {
                         delegate: VMStudyEntry {
                             width: studySelectBackground.width
                             height: studySelectBackground.height/4
-                            onItemSelected: {
+                            onItemSelected: function(vmIndex) {
                                 selectionChanged(vmIndex,true);
                             }
                         }
@@ -886,22 +906,8 @@ VMBase {
 
                 }
 
-                //console.log("STUDY START WITH:")
-                //console.log(JSON.stringify(vmSelectedExperiments));
-                if (vmSelectedExperiments.length > 0){
-                    viewPresentExperimet.setTracker(vmSelectedExperiments);
-                    vmCurrentExperimentIndex = -1;
-                    viewPresentExperimet.advanceCurrentExperiment()
-                    viewCalibrationStart.vmSelectedEye = cbEyeMsg.vmCurrentIndex;
-                    if (!loader.getConfigurationBoolean("use_mouse") && loader.isVREnabled()){
-                        swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
-                        viewVRDisplay.disableStartStudyButton(); // To enforce first calibraton.
-                    }
-                    else swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart
-                }
-                else{
-                    labelNoInstructionSetError.visible = true;
-                }
+                // Actully starting the studies after the setup.
+                startStudies();
 
             }
         }

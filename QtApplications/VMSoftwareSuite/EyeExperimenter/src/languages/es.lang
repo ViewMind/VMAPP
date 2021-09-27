@@ -24,6 +24,9 @@ viewhome_updateNo  = NO;
 viewhome_btnPartners = VINCULACIÓN;
 
 #********************************* DOCTOR MENU *********************************
+viewdrmenu_mode = Mode;
+
+#********************************* PARTNER MENU *********************************
 viewpartner_title = Importar Datos Externos;
 viewpartner_subTitle = Seleccionar vincualación;
 viewpartner_btnImport = IMPORTAR;
@@ -268,13 +271,14 @@ viewexpdone_btnContinue = FINALIZAR EVALUACIÓN;
 #********************************* QC SCREEN *********************************
 viewQC_Title = Control de Calidad;
 viewQC_SubPoints = Número de Puntos de Datos por Ensayo;
-viewQC_SubFixationsR = Número of Fijaciones del Ojo Derecho por Ensayo;
-viewQC_SubFixationsL = Número of Fijaciones del Ojo Izquierdo por Ensayo;
-viewQC_SubGlitches = Número de Fallas por Ensayo;
+viewQC_SubFixationsR = Número of Fijaciones por Ensayo;
 viewQC_SubFrequency = Velocidad de Sampleo Promedio por Ensayo;
 viewQC_Study = Estudio;
 viewQC_WaitTitle = Por favor espere ...;
 viewQC_WaitSubtitle = La información está siendo enviada a nuestros servidores;
+viewQC_subTitle = Verifique la calidad de los datos del estudio;
+viewQC_QC_Index = Índice de Control
+de Calidad;
 viewQC_StudyNameMap = 
 Reading|Lectura|
 Binding BC|Combinación de Colores| 
@@ -293,13 +297,27 @@ Perception 7|Percepción 7|
 Perception 8|Percepción 8;
 viewQC_GraphTitle = Gráficos;
 viewQC_GraphPoints = Puntos de Datos;
-viewQC_GraphFixationsL = Fijaciones (I);
-viewQC_GraphFixationsR = Fijaciones (D);
+viewQC_GraphFixations = Fijaciones;
 viewQC_GraphFreq = Velocidad de Sampleo;
 viewQC_GraphGlitches = Fallas de Sampleo;
 viewQC_btnSend = ENVIAR;
 viewQC_btnBack = VOLVER;
-
+viewQC_btnDiscard = ARCHIVAR;
+viewQC_discardTitle = ARCHIVAR ESTUDIO;
+viewQC_discardSubTitle = Si archiva el estudio, éste no será procesado pero se eliminará de la lista de estudios;
+viewQC_discardReasonLabel = Seleccione el motivo por el cual se archiva el estudio;
+viewQC_discardReasons = 
+low_data_points-Índice de Cotrol de Calidad para los puntos de datos es bajo|
+low_fixations-Índice de Cotrol de Calidad para las fijaciones es bajo|
+low_sample_rate-Índice de Cotrol de Calidad para la velocidad de sampleo es bajo|
+study_instructions_misunderstood-El sujeto con comprendió las instrucciones del estudio|
+bad_subjet_state-El estado del sujeto no era óptimo para el estudio|
+other-Otro;
+viewQC_discardOtherText = Especifique los motivos para archivar este estudio;
+viewQC_commentTitle = Comentarios;
+viewQC_commentSubtitle = Comentarios del evaluador presentes en el reporte final;
+viewQC_commentSizeError = Solo se permiten un máximo de <<L>> líneas de hasta <<C>> caracterers cada una;
+viewQC_btnCancel = CANCEL;
 
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Protocolos Médicos;

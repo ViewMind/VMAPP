@@ -67,7 +67,7 @@ void HTCViveEyeProEyeTrackingInterface::newEyeData(QVariantMap eyedata){
         lastData.time    = eyedata.value(HTCVIVE::Timestamp).toLongLong();
         lastData.pdLeft  = eyedata.value(HTCVIVE::LeftEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
         lastData.pdRight = eyedata.value(HTCVIVE::RightEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
-        emit(newDataAvailable(lastData));
+        emit EyeTrackerInterface::newDataAvailable(lastData);
     }
 
 }
@@ -84,6 +84,12 @@ void HTCViveEyeProEyeTrackingInterface::calibrate(EyeTrackerCalibrationParameter
     else{
         if (!correctionCoefficients.loadCalibrationCoefficients(params.name)){
             logger.appendError("Failed to set calibration parameters from file: " + params.name);
+            calibrationFailureType = ETCFT_UNKNOWN;
+            emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
+        }
+        else{
+            calibrationFailureType = ETCFT_NONE;
+            emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
         }
     }
 
@@ -96,7 +102,7 @@ void HTCViveEyeProEyeTrackingInterface::enableUpdating(bool enable){
 
 void HTCViveEyeProEyeTrackingInterface::disconnectFromEyeTracker(){
     enableUpdating(false);
-    emit(eyeTrackerControl(ET_CODE_DISCONNECTED_FROM_ET));
+    emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_DISCONNECTED_FROM_ET);
 }
 
 void HTCViveEyeProEyeTrackingInterface::onCalibrationFinished(){
@@ -110,10 +116,10 @@ void HTCViveEyeProEyeTrackingInterface::onCalibrationFinished(){
         }
         calibrationFailureType = ETCFT_NONE;
     }
-    emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+    emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
 }
 
 void HTCViveEyeProEyeTrackingInterface::onNewCalibrationImageAvailable(){
     this->calibrationImage = calibration.getCurrentCalibrationImage();
-    emit(eyeTrackerControl(ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE));
+    emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE);
 }

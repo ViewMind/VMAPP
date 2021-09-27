@@ -12,6 +12,15 @@ function toggleSortOrder() {
     else currentSortOrder = ORDER_DESCENDING;
 }
 
+function setSortOrderByBoolean(is_up){
+    if (is_up){
+       currentSortOrder = ORDER_ASCENDING;
+    }
+    else{
+       currentSortOrder = ORDER_DESCENDING;
+    }
+}
+
 function setModelList(list){
     modelList = list
     keyList = [];

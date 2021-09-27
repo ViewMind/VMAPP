@@ -12,10 +12,6 @@ VMBase {
 
     property bool experimentInProgress: false;
 
-    function enableContinue(){
-        btnContinue.enabled = true;
-    }
-
     Connections{
         target: flowControl
         function onExperimentHasFinished (){
@@ -43,6 +39,11 @@ VMBase {
         }
     }
 
+    function enableContinue(){
+        btnContinue.enabled = true;
+    }
+
+
     // The experiment tracker logic and math functions
     function enableTrackItem(item, place, accWidth, listLength){
         item.vmOrderInTracker = place+1;
@@ -62,6 +63,7 @@ VMBase {
     }
 
     function setStateOfItem(index,state){
+        index = parseInt(index);
         switch (index){
         case viewStudyStart.vmINDEX_BINDING_BC:
             itemBindingBC.vmTrackerItemState = state;
@@ -87,6 +89,9 @@ VMBase {
         case viewStudyStart.vmINDEX_PERCEPTION:
             itemPerception.vmTrackerItemState = state;
             break;
+        default:
+            console.log("Unkown index of type: " + index + " in setStateOfItem in ViewPresentExperiment");
+            break;
         }
     }
 
@@ -99,7 +104,7 @@ VMBase {
     }
 
     function setPropertiesForExperiment(study_config){
-        var index = study_config[viewStudyStart.vmUNIQUE_STUDY_ID];
+        var index = parseInt(study_config[viewStudyStart.vmUNIQUE_STUDY_ID]);
         switch(index){
         case viewStudyStart.vmINDEX_BINDING_BC:
             if (study_config[viewStudyStart.vmSCP_NUMBER_OF_TARGETS] === viewStudyStart.vmSCV_BINDING_TARGETS_3){
@@ -236,7 +241,9 @@ VMBase {
 
         for (var i = 0; i < L; i++){
 
-            switch (list[i][viewStudyStart.vmUNIQUE_STUDY_ID]){
+            let switchableIndex = parseInt(list[i][viewStudyStart.vmUNIQUE_STUDY_ID])
+
+            switch (switchableIndex){
             case viewStudyStart.vmINDEX_BINDING_BC: //viewStudyStart.vmINDEX_BINDING_BC:
                 accWidth = enableTrackItem(itemBindingBC,i,accWidth,L);
                 break;
@@ -270,7 +277,8 @@ VMBase {
         x = (mainWindow.width - x)/2;
         //console.log("Start x is " + x)
         for (i = 0; i < L; i++){
-            switch (list[i][viewStudyStart.vmUNIQUE_STUDY_ID]){
+            let switchableIndex = parseInt(list[i][viewStudyStart.vmUNIQUE_STUDY_ID]);
+            switch (switchableIndex){
             case viewStudyStart.vmINDEX_BINDING_BC:
                 x = setEnabledItemX(itemBindingBC,x,spacing);
                 break;
@@ -457,19 +465,19 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
-    // The description
-    Text{
-        id: slideDescription
-        textFormat: Text.RichText
-        font.pixelSize: 16*viewHome.vmScale
-        font.family: robotoR.name
-        color: "#297fca"
-        text: vmSlideExplanation
-        anchors.top: slideTitle.bottom
-        anchors.topMargin: mainWindow.height*0.099
-        anchors.left: parent.left
-        anchors.leftMargin: mainWindow.width*0.139
-    }
+//    // The description
+//    Text{
+//        id: slideDescription
+//        textFormat: Text.RichText
+//        font.pixelSize: 16*viewHome.vmScale
+//        font.family: robotoR.name
+//        color: "#297fca"
+//        text: vmSlideExplanation
+//        anchors.top: slideTitle.bottom
+//        anchors.topMargin: mainWindow.height*0.099
+//        anchors.left: parent.left
+//        anchors.leftMargin: mainWindow.width*0.139
+//    }
 
     VMSlideViewer {
         id: slideViewer
@@ -499,22 +507,23 @@ VMBase {
             }
         }
 
-        VMButton{
-            id: btnContinue
-            vmText: loader.getStringForKey("viewpresentexp_btnContinue")
-            vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
-            vmInvertColors: true
-            vmFont: viewPresentExperiment.gothamM.name
-            onClicked: {
-                btnContinue.enabled = false;
-                if (!loader.getConfigurationBoolean("use_mouse") && loader.isVREnabled()){
-                    swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
-                }
-                else {
-                    startNextStudy();
-                }
-            }
-        }
+//        VMButton{
+//            id: btnContinue
+//            vmText: loader.getStringForKey("viewpresentexp_btnContinue")
+//            vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
+//            vmInvertColors: true
+//            vmFont: viewPresentExperiment.gothamM.name
+//            onClicked: {
+//                btnContinue.enabled = false;
+//                startNextStudy();
+////                if (!loader.getConfigurationBoolean("use_mouse") && loader.isVREnabled()){
+////                    swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
+////                }
+////                else {
+////                    startNextStudy();
+////                }
+//            }
+//        }
 
     }
 

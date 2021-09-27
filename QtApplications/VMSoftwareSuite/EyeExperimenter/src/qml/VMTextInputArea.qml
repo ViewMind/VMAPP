@@ -16,7 +16,7 @@ Rectangle{
     id: textBoundRect
     radius: 2
     border.width: mainWindow.width*0.001
-    border.color: "#297fca"
+    border.color: enabled ? "#297fca" : "#ececec"
     TextArea {
         id: inpTextArea
         anchors.centerIn: parent
@@ -24,8 +24,6 @@ Rectangle{
         height: textBoundRect.height - 2*textBoundRect.border.width
         font.family: viewHome.robotoR.name
         font.pixelSize: 12*viewHome.vmScale
-        textColor: "#58595b"
-        frameVisible: false
     }
     Text{
         id: errorMsg

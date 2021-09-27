@@ -2,6 +2,7 @@
 #define EYE_TRACKER_DEFINES_H
 
 #include <QString>
+#include "debug.h"
 
 namespace Globals {
 
@@ -38,8 +39,6 @@ namespace Globals {
       extern QString PROCESSING_PARAMETER_KEY;
       extern qreal VRSCALING;
    }
-
-
 
    static bool SetUpEyeTrackerNameSpace(const QString &key){
        if (key == HTC::PROCESSING_PARAMETER_KEY){
