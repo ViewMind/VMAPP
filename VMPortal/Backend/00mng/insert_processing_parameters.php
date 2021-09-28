@@ -29,7 +29,7 @@ $minimum_duration_reduction_constant = 0.9; // Used to provide some leeway in th
 // Reading parameters 
 $study_qc[Study::READING][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]             = 150;  // DEPRACATED. Will not be in used after version 17.3.0
 $study_qc[Study::READING][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 3; 
-$study_qc[Study::READING][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 750*$minimum_duration_reduction_constant;  // ms.
+$study_qc[Study::READING][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 500*$minimum_duration_reduction_constant;  // ms.
 $study_qc[Study::READING][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;   // % of trials.
 $study_qc[Study::READING][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;   // % of trials. 
 
@@ -51,10 +51,10 @@ $study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXAT
 
 // Go No Go parameters 
 $study_qc[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]              = 100; // DEPRACATED. Will not be in used after version 17.3.0
-$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 2; 
-$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 700*$minimum_duration_reduction_constant;  // ms.
-$study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;        // % of trials.
-$study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;        // % of trials. 
+$study_qc[Study::GONOGO][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 2; 
+$study_qc[Study::GONOGO][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 500*$minimum_duration_reduction_constant;  // ms.
+$study_qc[Study::GONOGO][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;        // % of trials.
+$study_qc[Study::GONOGO][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;        // % of trials. 
 
 
 ////////////////////////////////////// Gazepoint

@@ -158,6 +158,8 @@ abstract class MetadataField extends TypedString
    const PROCESSING_PARAMETER_KEY                = "processing_parameters_key";   
    const MOUSE_USED                              = "mouse_used";   
    const PROTOCOL                                = "protocol";   
+   const DISCARD_REASON                          = "discard_reason";
+   const COMMENT                                 = "comments";
 }
 
 abstract class SubjectField extends TypedString {
@@ -278,6 +280,13 @@ abstract class QCFields extends TypedString
     const GLITCHES                              = "glitches_per_trial";
     const AVG_FREQ                              = "avg_freq_per_trial";
     const N_DATASETS                            = "number_of_datasets";
+}
+
+abstract class FinalizedResultFields extends TypedString {
+   const QC_PARAMETERS                          = "qc_parameters";
+   const QC_GRAPHS                              = "qc_graphs";
+   const DISCARD_REASON                         = "discard_reason";
+   const COMMENT                                = "comment";
 }
 
 abstract class MainFields extends TypedString

@@ -94,7 +94,7 @@ class ViewMindDataContainer {
       return $this->data[MainFields::SUBJECT];
    }
 
-   function getMetaDataField($metada_field){
+   function getMetaDataField($metada_field, $not_exists_returns_empty = false){
       if (!MetadataField::validate($metada_field)){
          $this->error = "$metada_field is an invalid metadata field";
          return "";
@@ -106,8 +106,15 @@ class ViewMindDataContainer {
       }
 
       if (!array_key_exists($metada_field,$this->data[MainFields::METADATA])){
-         $this->error = "The field $metada_field does not exist as part of the metadat";
-         return "";
+         if ($not_exists_returns_empty){
+            // This means that the field might not exists and that is ok. We simply return an empty string. 
+            // And we don't set the error. 
+            return "";
+         }
+         else {
+            $this->error = "The field $metada_field does not exist as part of the metadata";
+            return "";   
+         }
       }
 
       return $this->data[MainFields::METADATA][$metada_field];
@@ -258,8 +265,23 @@ class ViewMindDataContainer {
    }
 
    function getFinalizedResultString(){
-      if (!array_key_exists(MainFields::FINALIZED_RESULTS,$this->data)) return "";
-      return json_encode($this->data[MainFields::FINALIZED_RESULTS]);
+      if (!array_key_exists(MainFields::FINALIZED_RESULTS,$this->data)){
+         // It's possible taht this happens because the study is being discarded. We still need to store everything else. 
+         $data_to_return = array();
+      }
+      else $data_to_return = $this->data[MainFields::FINALIZED_RESULTS];
+      // Finalized results must include qc data and parameters ( so that indexes can be reproduced )
+      // Comments and discard reason. 
+      $data_to_return[FinalizedResultFields::DISCARD_REASON] = $this->getMetaDataField(MetadataField::DISCARD_REASON,true);
+      $data_to_return[FinalizedResultFields::COMMENT] = $this->getMetaDataField(MetadataField::COMMENT,true);
+      $data_to_return[FinalizedResultFields::QC_PARAMETERS] = $this->data[MainFields::QC_PARAMETERS];
+      $data_to_return[FinalizedResultFields::QC_GRAPHS] = array();
+      foreach ($this->available_studies as $study){
+         $data_to_return[FinalizedResultFields::QC_GRAPHS][$study] = array();
+         if (!array_key_exists(StudyField::QUALITY_CONTROL,$this->data[MainFields::STUDIES][$study])) continue;
+         $data_to_return[FinalizedResultFields::QC_GRAPHS][$study] = $this->data[MainFields::STUDIES][$study][StudyField::QUALITY_CONTROL];
+      }
+      return json_encode($data_to_return);
    }
 
    function getInsertableQualityControlParametersString(){

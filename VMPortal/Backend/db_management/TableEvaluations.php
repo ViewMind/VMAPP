@@ -24,6 +24,7 @@ class TableEvaluations extends TableBaseClass {
    const COL_QC_GRAPHS            =  "qc_graphs";
    const COL_STUDY_CONFIG         =  "study_configuration";
    const COL_FILE_LINK            =  "file_link";
+   const COL_DISCARD_REASON       =  "discard_reason";
 
    function __construct(PDO $con){
       parent::__construct($con);
@@ -44,6 +45,7 @@ class TableEvaluations extends TableBaseClass {
                           self::COL_PROTOCOL,
                           self::COL_FILE_LINK,
                           self::COL_STUDY_CONFIG,
+                          self::COL_DISCARD_REASON,
                           self::COL_RESULTS];
       $this->avoided = [self::COL_KEYID, self::COL_PROCESSING_DATE];
 

@@ -6,7 +6,8 @@
    ////////////////////////// INPUTS
    //$input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/reprocess_legacy_data/work/1145868706/524/2020_11_14_14_23_37/gonogo_2020_11_10_11_25.json";
    //$input_json_file = "local_work_nback/nbackrt_2021_09_22_10_44.json";
-   $input_json_file = "local_work/gonogo_2021_09_22_10_48.json";
+   //$input_json_file = "local_work/gonogo_2021_09_22_10_48.json";
+   $input_json_file = "oneshot/binding_2021_07_13_11_02.json";
    $lang = "en";
 
    ////////////////////////// INPUTS 

@@ -22,3 +22,7 @@ UPDATE secrets SET unique_id = CONCAT(institution_id,".",institution_instance);
 --------------------------------- 13/07/2021 ---------------------------------
 -- vm_secure
 ALTER TABLE portal_users ADD COLUMN partner_id VARCHAR(100) AFTER permissions;
+
+--------------------------------- 13/07/2021 ---------------------------------
+-- vm_main
+ALTER TABLE evaluations ADD COLUMN discard_reason VARCHAR(100) AFTER file_link

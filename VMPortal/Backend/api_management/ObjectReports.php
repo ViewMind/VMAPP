@@ -163,6 +163,10 @@ class ObjectReports extends ObjectBaseClass
       // Creating the processor. 
       $JSONProcessor = new Processing($vmdc->getProcessingParameters());
 
+      // Checking if this a discard file or a process request. 
+      $discard_reason = $vmdc->getMetaDataField(MetadataField::DISCARD_REASON,true);
+      $should_process = ($discard_reason == "");
+
       // Processing all studies. 
       $all_studies = $vmdc->getAvailableStudies();
       if (empty($all_studies)){
@@ -175,6 +179,9 @@ class ObjectReports extends ObjectBaseClass
       $csv_file = array();
 
       foreach ($all_studies as $study){
+
+         // If this file is stored for later analysis, then processing is moot. It's being discarded. 
+         if (!$should_process) continue;
          
          // Setting the study. 
          if ($vmdc->setRawDataAccessPathForStudy($study) === false){
@@ -214,35 +221,41 @@ class ObjectReports extends ObjectBaseClass
 
       }
 
-      // Generating the CSV
-      $csv_generating_function = Processing::CSV_FUNCTION_MAP[$study];
+      if ($should_process) {
+
+         // Generating the CSV
+         $csv_generating_function = Processing::CSV_FUNCTION_MAP[$study];
      
-      $csv_generating_error = call_user_func($csv_generating_function, $vmdc, $csv_file);
+         $csv_generating_error = call_user_func($csv_generating_function, $vmdc, $csv_file);
 
-      if ($csv_generating_error != ""){
-         $this->suggested_http_code = 500;
-         $this->error = "Failed processing file";
-         $logger->logError("Error generating CSV for study $study of file $json_filename. Reason: $csv_generating_error");
-         return false;             
+         if ($csv_generating_error != "") {
+             $this->suggested_http_code = 500;
+             $this->error = "Failed processing file";
+             $logger->logError("Error generating CSV for study $study of file $json_filename. Reason: $csv_generating_error");
+             return false;
+         }
+
+         // Pass the CSV through the RScript.
+         $ans = RProcessing($vmdc, $csv_file, $workdir);
+         if ($ans != "") {
+             $this->suggested_http_code = 500;
+             $this->error = "Failed processing file";
+             $logger->logError("Error processing file through R Script. Reason: $ans");
+             return false;
+         }
+
+         //
+         if (!$vmdc->save()) {
+             $this->suggested_http_code = 500;
+             $this->error = "Failed saving processing file";
+             $logger->logError("Failed saving new information into $json_filename");
+             return false;
+         }
+
       }
-
-      // Pass the CSV through the RScript. 
-      $ans = RProcessing($vmdc,$csv_file,$workdir);
-      if ($ans != ""){
-         $this->suggested_http_code = 500;
-         $this->error = "Failed processing file";
-         $logger->logError("Error processing file through R Script. Reason: $ans");
-         return false;             
-      }
-
-      // 
-      if (!$vmdc->save()){
-         $this->suggested_http_code = 500;
-         $this->error = "Failed saving processing file";
-         $logger->logError("Failed saving new information into $json_filename");
-         return false;                
-      }
-
+      else {
+         $logger->logProgress("Discard reason for file was set to $discard_reason");
+      } 
 
       ////////////// STORING IN DB. 
 
@@ -308,6 +321,7 @@ class ObjectReports extends ObjectBaseClass
       $evaluation[TableEvaluations::COL_QC_PARAMS] = $vmdc->getQCParametersAsJSONString();
       $evaluation[TableEvaluations::COL_QC_GRAPHS] = $vmdc->getInsertableQualityControlGraphValuesString();
       $evaluation[TableEvaluations::COL_STUDY_CONFIG] = $vmdc->getStudyConfigAsJSONString();
+      $evaluation[TableEvaluations::COL_DISCARD_REASON] = $discard_reason;
       $evaluation[TableEvaluations::COL_FILE_LINK] = $compressed_filename;
 
       $te = new TableEvaluations($this->con_main);
