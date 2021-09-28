@@ -172,11 +172,13 @@ void FlowControl::stopRenderingVR(){
 void FlowControl::onRequestUpdate(){
     if (renderState == RENDERING_EXPERIMENT){
         if (eyeTracker == nullptr) {
-            logger.appendWarning("VR Update Request: Rendering experiment with a non existant eyeTracker object");
+            logger.appendError("VR Update Request: Rendering experiment with a non existant eyeTracker object. Force stopping rendering");
+            openvrco->stopRendering();
             return;
         }
         if (experiment == nullptr) {
-            logger.appendWarning("VR Update Request: Rendering experiment with a non existant experiment object");
+            logger.appendError("VR Update Request: Rendering experiment with a non existant experiment object. Force stopping rendering");
+            openvrco->stopRendering();
             return;
         }
         QImage image = experiment->getVRDisplayImage();
@@ -535,8 +537,7 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     // Start the experiment.
     experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
                                 configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
-                                study_config,
-                                configuration->getBool(Globals::VMPreferences::USE_MOUSE));
+                                study_config);
 
 
     if (monitor != nullptr){
@@ -558,6 +559,11 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
 
 
     return true;
+}
+
+void FlowControl::startStudy(){
+    if (experiment != nullptr)
+    experiment->startExperimentNoManualMode();
 }
 
 void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){

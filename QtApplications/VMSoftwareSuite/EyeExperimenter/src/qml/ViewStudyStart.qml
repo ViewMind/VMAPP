@@ -90,13 +90,8 @@ VMBase {
             viewPresentExperimet.setTracker(vmSelectedExperiments);
             vmCurrentExperimentIndex = -1;
             viewPresentExperimet.advanceCurrentExperiment()
-            viewCalibrationStart.vmSelectedEye = cbEyeMsg.vmCurrentIndex;
-            if (!loader.getConfigurationBoolean("use_mouse") && loader.isVREnabled()){
-                //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
-                viewVRDisplay.disableStartStudyButton(); // To enforce first calibraton.
-                swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
-            }
-            else swiperControl.currentIndex = swiperControl.vmIndexCalibrationStart
+            viewPresentExperimet.vmSelectedEye = cbEyeMsg.vmCurrentIndex;
+            swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment
         }
         else{
             labelNoInstructionSetError.visible = true;

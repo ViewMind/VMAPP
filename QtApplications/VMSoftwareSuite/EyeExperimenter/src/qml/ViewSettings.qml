@@ -162,7 +162,7 @@ Dialog {
            vmPreviousMouseCheckValue = loader.getConfigurationBoolean("use_mouse");
            return vmPreviousMouseCheckValue;
         }
-        visible: true
+        visible: false
     }
 
     VMButton{

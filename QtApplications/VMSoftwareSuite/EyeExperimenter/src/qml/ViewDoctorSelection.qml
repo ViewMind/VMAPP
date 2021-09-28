@@ -70,17 +70,17 @@ VMDialogBase {
                 // -   Indicates separation between key and value.
 
                 var all_studies = dbug_setup_studies.split("---");
+                viewStudyStart.vmSelectedExperiments = [];
                 for (var s = 0; s < all_studies.length; s++){
                     var study_fields = all_studies[s].split("--");
                     var config = {};
                     for (var f = 0; f < study_fields.length; f++){
                         var key_and_value = study_fields[f].split("-");
                         config[key_and_value[0]] = key_and_value[1]
-                    }
-                    viewStudyStart.vmSelectedExperiments = [];
-                    viewStudyStart.vmSelectedExperiments.push(config);
-                    viewStudyStart.startStudies();
+                    }                    
+                    viewStudyStart.vmSelectedExperiments.push(config);                    
                 }
+                viewStudyStart.startStudies();
 
             }
         }

@@ -63,15 +63,12 @@ VMBase {
 
     function updateDrMenuText(){
         updateText()
-        viewCalibrationDone.updateText();
-        viewCalibrationStart.updateText();
         viewPatientReg.updateText()
         viewPresentExperimet.updateText()
         viewStudyStart.updateText()
         viewPatList.updateText()
         viewDrInfo.updateText();
         viewStudyDone.updateText();
-        viewVRDisplay.updateText();
         viewFinishedStudies.updateText()
         viewQC.updateText();
     }

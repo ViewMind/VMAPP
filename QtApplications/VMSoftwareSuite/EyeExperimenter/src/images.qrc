@@ -26,88 +26,7 @@
         <file>images/black_folder.png</file>
         <file>images/white-folder.png</file>
         <file>images/frecuency.png</file>
-        <file>images/unbound/0.gif</file>
-        <file>images/unbound/1.gif</file>
-        <file>images/unbound/2.gif</file>
-        <file>images/unbound/3.gif</file>
-        <file>images/unbound/4.gif</file>
-        <file>images/unbound/5.gif</file>
-        <file>images/unbound/6.gif</file>
-        <file>images/unbound/7.gif</file>
-        <file>images/unbound/8.gif</file>
-        <file>images/unbound/9.gif</file>
-        <file>images/unbound/10.gif</file>
-        <file>images/unbound/11.gif</file>
-        <file>images/unbound/12.gif</file>
-        <file>images/unbound/13.gif</file>
-        <file>images/unbound/14.gif</file>
-        <file>images/unbound3/0.gif</file>
-        <file>images/unbound3/1.gif</file>
-        <file>images/unbound3/2.gif</file>
-        <file>images/unbound3/3.gif</file>
-        <file>images/unbound3/4.gif</file>
-        <file>images/unbound3/5.gif</file>
-        <file>images/unbound3/6.gif</file>
-        <file>images/unbound3/7.gif</file>
-        <file>images/unbound3/8.gif</file>
-        <file>images/unbound3/9.gif</file>
-        <file>images/unbound3/10.gif</file>
-        <file>images/unbound3/11.gif</file>
-        <file>images/unbound3/12.gif</file>
-        <file>images/unbound3/13.gif</file>
-        <file>images/unbound3/14.gif</file>
-        <file>images/bound/0.gif</file>
-        <file>images/bound/1.gif</file>
-        <file>images/bound/2.gif</file>
-        <file>images/bound/3.gif</file>
-        <file>images/bound/4.gif</file>
-        <file>images/bound/5.gif</file>
-        <file>images/bound/6.gif</file>
-        <file>images/bound/7.gif</file>
-        <file>images/bound/8.gif</file>
-        <file>images/bound/9.gif</file>
-        <file>images/bound/10.gif</file>
-        <file>images/bound/11.gif</file>
-        <file>images/bound/12.gif</file>
-        <file>images/bound/13.gif</file>
-        <file>images/bound/14.gif</file>
-        <file>images/bound3/0.gif</file>
-        <file>images/bound3/1.gif</file>
-        <file>images/bound3/2.gif</file>
-        <file>images/bound3/3.gif</file>
-        <file>images/bound3/4.gif</file>
-        <file>images/bound3/5.gif</file>
-        <file>images/bound3/6.gif</file>
-        <file>images/bound3/7.gif</file>
-        <file>images/bound3/8.gif</file>
-        <file>images/bound3/9.gif</file>
-        <file>images/bound3/10.gif</file>
-        <file>images/bound3/11.gif</file>
-        <file>images/bound3/12.gif</file>
-        <file>images/bound3/13.gif</file>
-        <file>images/bound3/14.gif</file>
-        <file>images/reading_de/0.gif</file>
-        <file>images/reading_de/1.gif</file>
-        <file>images/reading_de/2.gif</file>
-        <file>images/reading_en/0.gif</file>
-        <file>images/reading_en/1.gif</file>
-        <file>images/reading_en/2.gif</file>
-        <file>images/reading_es/0.gif</file>
-        <file>images/reading_es/1.gif</file>
-        <file>images/reading_es/2.gif</file>
-        <file>images/reading_fr/0.gif</file>
-        <file>images/reading_fr/1.gif</file>
-        <file>images/reading_fr/2.gif</file>
-        <file>images/fielding/0.gif</file>
-        <file>images/reading_is/0.gif</file>
-        <file>images/reading_is/1.gif</file>
-        <file>images/reading_is/2.gif</file>
         <file>images/white_arrow.png</file>
-        <file>images/gonogo/0.gif</file>
-        <file>images/gonogo/1.gif</file>
-        <file>images/gonogo/2.gif</file>
-        <file>images/gonogo/3.gif</file>
-        <file>images/gonogo/4.gif</file>
         <file>images/labeling/ce_mark.jpg</file>
         <file>images/labeling/date_of_manufacture.jpg</file>
         <file>images/labeling/ec_rep.jpg</file>
@@ -115,9 +34,6 @@
         <file>images/labeling/manufacturer.jpg</file>
         <file>images/labeling/serial_number.jpg</file>
         <file>images/labeling/reference.jpg</file>
-        <file>images/perception/0.gif</file>
-        <file>images/perception/1.gif</file>
-        <file>images/perception/2.gif</file>
         <file>images/viewmind_wait_logo.png</file>
     </qresource>
 </RCC>

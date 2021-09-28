@@ -463,6 +463,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
         if (incomplete_study != ""){
             // An ongoing study requires unbound
+            logger.appendStandard("Setting file for ongoing binding study " + incomplete_study + " for BC");
             filename = incomplete_study;
             new_file = false;
         }
@@ -478,7 +479,8 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         }
 
         if (incomplete_study != ""){
-            // An ongoing study requires unbound
+            // An ongoing study requires bound
+            logger.appendStandard("Setting file for ongoing binding study " + incomplete_study + " for UC");
             filename = incomplete_study;
             new_file = false;
         }
@@ -606,6 +608,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     qreal reference_for_md = qMax(pp.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toReal(),pp.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toReal());
     qreal md_percent = pp.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
     qint32 md_px = qRound(md_percent*reference_for_md/100.0);
+    //qDebug() << "Setting the MD from" << reference_for_md << md_percent << " to " << md_px;
     pp.insert(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW_PX,md_px);
 
     // Setting the QC Parameters that will be used.
