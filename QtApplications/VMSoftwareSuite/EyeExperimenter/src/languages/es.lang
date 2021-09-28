@@ -110,7 +110,6 @@ viewstudystart_labelSelPatient = Paciente Seleccionado;
 viewstudystart_labelSelSubject = Sujeto Seleccionado;
 viewstudystart_labelReadingLanguge = Lengua de lectura;
 viewstudystart_labelNBackType = Tipo de NBack;
-viewstudystart_fieldingPauseText = Presione "N" para continuar el estudio;
 viewstudystart_labelChoose = Elija los estudios;
 viewstudystart_labelEvaluations = Estudios a realizar;
 viewstudystart_labelPatientConditionsCB = Evaluaciones recomendadas según patología;
@@ -171,7 +170,7 @@ viewpresentexp_msgTitleState = Estado Activo;
 viewpresentexp_msgTitleAction = Acción;
 viewpresentexp_states = Calibración Activa|Modo de Explicación|Evaluación Activa;
 viewpresentexp_actions = Presione N para avanzar|Presione Escape para frenar estudio|Presione S para indicar 
-objetivos identicos|Presione D para indicar|Presione N para seguir el estudio
+objetivos identicos|Presione D para indicar|Presione G para seguir el estudio
 luego de una pausa
 objetivos distintos;
 

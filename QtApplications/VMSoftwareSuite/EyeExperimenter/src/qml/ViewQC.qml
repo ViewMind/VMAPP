@@ -79,7 +79,7 @@ VMBase {
         qcStudyView.currentIndex = 0;
         qcStudyList.setProperty(0,"vmIsSelected",true)
         qcGraphsView.currentIndex = 0;
-        //loadGraph();
+        loadGraph();
     }
 
     function loadGraph(){
@@ -96,6 +96,9 @@ VMBase {
             // All values are the same. So the first of the upper bound is the highest value and the last of the lowest bound is the lower value.
             graph.vmFixedScale = [data["UpperREFData"][0],
                                   data["LowerREFData"][0]];
+
+            //console.log("Fixed Scaled")
+            //console.log(graph.vmFixedScale);
 
         }
         else{
@@ -249,6 +252,7 @@ VMBase {
                 dorcComments.enabled = true;
             }
             else{
+                dorcDiscardResonSelect.setSelection(0);
                 dorcComments.enabled = false;
             }
         }
@@ -663,8 +667,8 @@ VMBase {
                 lowestValue = minmax[1];
             }
             else{
-                highestValue = vmFixedScale[1];
-                lowestValue = vmFixedScale[0];
+                highestValue = vmFixedScale[0];
+                lowestValue = vmFixedScale[1];
             }
 
             // These values depend on the graph type or are helper values that can only be defined in one place.

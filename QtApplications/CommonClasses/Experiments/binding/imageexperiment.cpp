@@ -213,53 +213,60 @@ void ImageExperiment::nextState(){
             // This is done.
             if (!rawdata.finalizeStudy()){
                 error = "Failed on Binding study finalization: " + rawdata.getError();
-                emit(experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
                 return;
             }
 
             // We need to check if both binding bc AND bingin UC are part of this file, otherwise it is ongoing.
-           QStringList studylist = rawdata.getStudies();
+            QStringList studylist = rawdata.getStudies();
             if (studylist.contains(VMDC::Study::BINDING_BC) && studylist.contains(VMDC::Study::BINDING_UC)){
                 rawdata.markFileAsFinalized();
             }
 
 
-            if (!saveDataToHardDisk()) emit(experimentEndend(ER_FAILURE));
-            else emit(experimentEndend(ER_NORMAL));
+            if (!saveDataToHardDisk()) emit Experiment::experimentEndend(ER_FAILURE);
+            else emit Experiment::experimentEndend(ER_NORMAL);
         }
         return;
     case TSB_SHOW:
-        //qWarning() << "ENTER: SHOW" << currentTrial;        
+        //qWarning() << "ENTER: SHOW" << currentTrial;
 
         // Encoding Ends.
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
+        if (!manualMode){
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+        }
 
         trialState = TSB_TRANSITION;
         drawCurrentImage();
+
         stateTimer.setInterval(TIME_WHITE_TRANSITION);
         if (!manualMode) stateTimer.start();
+
         return;
     case TSB_TEST:
         //qWarning() << "ENTER: TEST" << currentTrial;
         trialState = TSB_FINISH;
 
         // Retrieval Ends.
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
-
-        rawdata.finalizeTrial(answer);
+        if (!manualMode){
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+            rawdata.finalizeTrial(answer);
+        }
 
         drawCurrentImage();
+
         stateTimer.setInterval(TIME_FINISH);
         if (!manualMode) stateTimer.start();
+
         return;
     case TSB_TRANSITION:
         //qWarning() << "ENTER: TRANSITION" << currentTrial;
         trialState = TSB_TEST;
 
         // Retrieval begins. We start the new dataset.
-        rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
+        if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
         answer = "N/A";
         drawCurrentImage();
@@ -278,12 +285,14 @@ bool ImageExperiment::addNewTrial(){
     if (currentTrialID.toUpper().contains("SAME")) type = "S";
     else if (currentTrialID.toUpper().contains("DIFFERENT")) type = "D";
 
-    // The type of trial is the right answer in this case.
-    if (!rawdata.addNewTrial(currentTrialID,type,type)){
-        error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
-        return false;
+    if (!manualMode){
+        // The type of trial is the right answer in this case.
+        if (!rawdata.addNewTrial(currentTrialID,type,type)){
+            error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
+            return false;
+        }
+        rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
     }
-    rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
     return true;
 }
 

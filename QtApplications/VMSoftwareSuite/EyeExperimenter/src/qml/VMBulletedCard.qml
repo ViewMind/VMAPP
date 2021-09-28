@@ -47,7 +47,11 @@ Rectangle {
         anchors.leftMargin: mainWindow.height*0.03;
         anchors.topMargin: mainWindow.height*0.01;
         delegate: VMBulletedText {
-            width: parent.width*0.8;
+            width: {
+                // PATCH: This is done simply to avoid the warning "TypeError: Cannot read property 'width' of null". I don't know why it happens. It changes nothing.
+                if (bulletCard === null) return 0
+                else return bulletCard.width*0.8;
+            }
             //height: parent.height/(modelBulletList.count+1);
             height: mainWindow.height*0.05;
         }

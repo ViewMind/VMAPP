@@ -7,8 +7,6 @@
 #include "../experiment.h"
 #include "gonogomanager.h"
 
-//#define DBUG_FIX_TO_MOVE
-
 class GoNoGoExperiment: public Experiment
 {
 public:
@@ -46,13 +44,7 @@ protected:
     QVariantMap setGoNoGoTargetBoxes(QVariantMap pp);
     bool addNewTrial();
 
-#ifdef DBUG_FIX_TO_MOVE
-    QElapsedTimer mtimer;
-    QElapsedTimer totalTimer;
-#endif
-
     void resetStudy() override;
-
 
 };
 

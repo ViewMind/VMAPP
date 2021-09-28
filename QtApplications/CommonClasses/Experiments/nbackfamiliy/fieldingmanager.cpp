@@ -24,8 +24,8 @@ const char * FieldingManager::CONFIG_PAUSE_TEXT_LANG   = "pause_text_lang";
 const char * FieldingManager::LANG_EN = "EN";
 const char * FieldingManager::LANG_ES = "ES";
 
-const char * FieldingManager::PAUSE_TEXT_SPANISH = "Presione \"G\" cuando se encuentre listo";
-const char * FieldingManager::PAUSE_TEXT_ENGLISH = "Press any \"G\" when you are ready";
+const char * FieldingManager::PAUSE_TEXT_SPANISH = "Presione \"G\" para continuar el estudio";
+const char * FieldingManager::PAUSE_TEXT_ENGLISH = "Press \"G\" to continue with study";
 
 FieldingManager::FieldingManager(){
     vr_being_used = false;

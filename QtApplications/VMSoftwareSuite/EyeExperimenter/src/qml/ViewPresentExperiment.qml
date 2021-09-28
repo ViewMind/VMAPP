@@ -33,6 +33,11 @@ VMBase {
     readonly property int vmBULLET_IDX_PRESS_D:     3
     readonly property int vmBULLET_IDX_NTORESUME:   4
 
+    VMCalibrationFailedDialog{
+        id: calibrationFailedDialog
+        x: (mainWindow.width-width)/2
+        y: (mainWindow.height-height)/2
+    }
 
     Connections{
         target: flowControl
@@ -469,6 +474,7 @@ VMBase {
             actionCard.setItemState(vmBULLET_IDX_PRESS_S,false);
             actionCard.setItemState(vmBULLET_IDX_PRESS_ESC,false);
             actionCard.setItemState(vmBULLET_IDX_PRESS_N,false);
+            actionCard.setItemState(vmBULLET_IDX_NTORESUME,false);
             break;
         }
     }
@@ -682,7 +688,7 @@ VMBase {
 
         switch(vmState){
         case vmSTATE_EVALUATION:
-            allowed_keys = [Qt.Key_Escape, Qt.Key_S, Qt.Key_D]
+            allowed_keys = [Qt.Key_Escape, Qt.Key_S, Qt.Key_D, Qt.Key_G]
             break;
         case vmSTATE_DEMO:
             allowed_keys = [Qt.Key_N, Qt.Key_Escape, Qt.Key_S, Qt.Key_D]

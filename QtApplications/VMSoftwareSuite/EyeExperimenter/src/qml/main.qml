@@ -18,21 +18,6 @@ ApplicationWindow {
         minimumWidth = width;
         maximumWidth = width;
 
-        //swiperControl.currentIndex = swiperControl.vmIndexHome;
-        //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-        //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
-        //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
-        //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-        //swiperControl.currentIndex = swiperControl.vmIndexResults;
-        //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
-        //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
-        //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
-        //swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
-        //swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
-        //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
-        //viewVRDisplay.testCalibrationFailedDialog();
-        //viewAbout.open();
-
     }
 
 

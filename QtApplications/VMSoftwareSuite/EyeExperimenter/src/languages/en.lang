@@ -110,7 +110,6 @@ viewstudystart_labelSelPatient = Selected Patient;
 viewstudystart_labelSelSubject = Selected Subject;
 viewstudystart_labelReadingLanguge = Reading language;
 viewstudystart_labelNBackType = NBack Type;
-viewstudystart_fieldingPauseText = Press "N" to continue study;
 viewstudystart_labelChoose = Choose the evaluations;
 viewstudystart_labelEvaluations = Evaluation to run;
 viewstudystart_labelPatientConditionsCB = Recommended Evaluations By Pathology;
@@ -172,7 +171,7 @@ viewpresentexp_msgTitleAction = Action;
 viewpresentexp_states = Calibration Active|Explanation Mode|Active Evaluation;
 viewpresentexp_actions = Press N to advance trial|Press ESC to stop study|Press S to indicate targets
 are the same|Press D to indicate targets
-are different|Press N to resume study
+are different|Press G to resume study
 after a pause;
 
 #********************************* PATIENT LIST *********************************

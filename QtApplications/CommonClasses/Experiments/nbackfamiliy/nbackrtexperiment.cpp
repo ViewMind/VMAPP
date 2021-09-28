@@ -118,19 +118,21 @@ void NBackRTExperiment::nextState(){
             return;
         }
         currentDataSetType = VMDC::DataSetType::ENCODING_1;
-        rawdata.setCurrentDataSet(currentDataSetType);
+        if (!manualMode) rawdata.setCurrentDataSet(currentDataSetType);
 
         break;
     case TSF_SHOW_TARGET:
 
         // End the previous data set.
-        rawdata.finalizeDataSet();
-        finalizeOnlineFixations();
+        if (!manualMode) {
+            rawdata.finalizeDataSet();
+            finalizeOnlineFixations();
+        }
         currentImage++;
         if (currentImage == nbackConfig.numberOfTargets){
 
             // Retrieval will begin
-            rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
+            if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
             tstate = TSF_SHOW_BLANKS;
             trialRecognitionMachine.reset(m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets));
@@ -140,8 +142,10 @@ void NBackRTExperiment::nextState(){
         else {
 
             // WE compute the next data set type
-            nextEncodingDataSetType();
-            rawdata.setCurrentDataSet(currentDataSetType);
+            if (!manualMode){
+                nextEncodingDataSetType();
+                rawdata.setCurrentDataSet(currentDataSetType);
+            }
 
             stateTimer.setInterval(nbackConfig.getCurrentHoldTime());
         }
@@ -149,9 +153,11 @@ void NBackRTExperiment::nextState(){
     case TSF_SHOW_BLANKS:
 
         // We can now finalize the dataset and the trial
-        rawdata.finalizeDataSet();
-        finalizeOnlineFixations();
-        rawdata.finalizeTrial("");
+        if (!manualMode) {
+            rawdata.finalizeDataSet();
+            finalizeOnlineFixations();
+            rawdata.finalizeTrial("");
+        }
 
         tstate = TSF_START;
 
@@ -246,7 +252,7 @@ void NBackRTExperiment::keyPressHandler(int keyPressed){
         if ((keyPressed == Qt::Key_N) && (state == STATE_RUNNING)){
             onTimeOut();
         }
-        else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_N)){
+        else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
             state = STATE_RUNNING;
             m->drawBackground();
             updateSecondMonitorORHMD();
@@ -356,9 +362,11 @@ bool NBackRTExperiment::addNewTrial(){
     QString type = m->getFullSequenceAsString(currentTrial);
     currentTrialID = QString::number(currentTrial);
 
-    if (!rawdata.addNewTrial(currentTrialID,type,"")){
-        error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
-        return false;
+    if (!manualMode){
+        if (!rawdata.addNewTrial(currentTrialID,type,"")){
+            error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
+            return false;
+        }
     }
     return true;
 }

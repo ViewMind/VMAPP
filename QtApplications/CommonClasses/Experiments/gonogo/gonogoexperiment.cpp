@@ -24,25 +24,23 @@ void GoNoGoExperiment::onTimeOut(){
             stateTimer.stop();
             return;
         }
-        rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
+
+
+        if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
 
         //qDebug() << "DRAWING TRIAL";
         m->drawCurrentTrial();
         stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
         if (!manualMode) stateTimer.start();
         gngState = GNGS_ESTIMULUS;
-#ifdef DBUG_FIX_TO_MOVE
-        mtimer.start();
-#endif
         break;
     case GNGS_ESTIMULUS:
-#ifdef DBUG_FIX_TO_MOVE
-        qDebug() << "Timeout @ " << mtimer.elapsed();
-        qDebug() << "================================";
-#endif
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
-        rawdata.finalizeTrial("");
+
+        if (!manualMode) {
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+            rawdata.finalizeTrial("");
+        }
 
         if (!m->drawCross()){
 
@@ -53,8 +51,8 @@ void GoNoGoExperiment::onTimeOut(){
                 stateTimer.stop();
                 return;
             }
-            rawdata.markFileAsFinalized();
 
+            rawdata.markFileAsFinalized();
             rMWA.finalizeOnlineFixationLog();
             lMWA.finalizeOnlineFixationLog();
 
@@ -64,12 +62,10 @@ void GoNoGoExperiment::onTimeOut(){
             if (error.isEmpty()) er = ER_NORMAL;
             else er = ER_WARNING;
             if (!saveDataToHardDisk()){
-                emit(experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
             }
-            else emit(experimentEndend(er));
-#ifdef DBUG_FIX_TO_MOVE
-            qDebug() << "TOTAL TIME" << totalTimer.elapsed();
-#endif
+            else emit Experiment::experimentEndend(er);
+
             return;
         }
         else{
@@ -107,10 +103,6 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
     //stateTimer.start();
     gngState = GNGS_CROSS;
     updateSecondMonitorORHMD();
-
-#ifdef DBUG_FIX_TO_MOVE
-    totalTimer.start();
-#endif
 
     return true;
 }
@@ -178,7 +170,6 @@ void GoNoGoExperiment::keyPressHandler(int keyPressed){
         return;
     }
     else if (keyPressed == Qt::Key_N){
-        //qDebug() << "KEY N";
         onTimeOut();
         return;
     }
@@ -200,9 +191,11 @@ bool GoNoGoExperiment::addNewTrial(){
     qint32 trial_id = parts.last().toInt();
     QString trial_type = GoNoGoParser::TrialTypeList.at(trial_id);
 
-    if (!rawdata.addNewTrial(parts.first(),trial_type,"")){
-        error = "Failed in creating go no for trial for header " + temp + ":  " + rawdata.getError();
-        return false;
+    if (!manualMode) {
+        if (!rawdata.addNewTrial(parts.first(),trial_type,"")){
+            error = "Failed in creating go no for trial for header " + temp + ":  " + rawdata.getError();
+            return false;
+        }
     }
     return true;
 }
