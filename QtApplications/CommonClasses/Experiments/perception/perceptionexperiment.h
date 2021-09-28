@@ -15,7 +15,7 @@ public:
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
-                         const QVariantMap &studyConfig, bool useMouse) override;
+                         const QVariantMap &studyConfig) override;
 
 
 public slots:
@@ -52,6 +52,8 @@ private:
     static const qint32 HOLD_TIME_YES_NO_TRAIN;
     static const qint32 HOLD_TIME_TRI_REHAB;
     static const qint32 HOLD_TIME_TRI_TRAIN;
+
+    void resetStudy() override;
 
 };
 

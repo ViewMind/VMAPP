@@ -45,8 +45,10 @@ public:
     // This is starts the experiment in a basically autonomous way.
     virtual bool startExperiment(const QString &workingDir,
                                  const QString &experimentFile,
-                                 const QVariantMap &studyConfig,
-                                 bool useMouse);
+                                 const QVariantMap &studyConfig);
+
+    // Disables manual mode and resets the experiment.
+    void startExperimentNoManualMode();
 
     // To obtain the experiment state
     ExperimentState getExperimentState() const {return state;}
@@ -123,6 +125,9 @@ protected:
     // Error message
     QString error;
 
+    // Flag used to indicate that the flow control of the experiment is manually controlled. Only the first N trials can be used.
+    bool manualMode;
+
     // Where the data file will be stored and any other required image.
     QString workingDirectory;
 
@@ -173,6 +178,12 @@ protected:
 
     // Transform the fixation struct into a the valid struct expected by the ViewMind Data Container.
     QVariantMap fixationToVariantMap(const Fixation &f);
+
+    // Each study has it's own implementation on how reset as if the experiment was just starting.
+    virtual void resetStudy();
+
+    // This is the number of trials to be used when manual mode is employed. When it reaches the number it loops back to the start.
+    const qint32 NUMBER_OF_TRIALS_IN_MANUAL_MODE = 3;
 
 };
 

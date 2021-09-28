@@ -20,7 +20,7 @@ void GoNoGoExperiment::onTimeOut(){
     case GNGS_CROSS:
 
         if (!addNewTrial()){
-            emit(experimentEndend(ER_FAILURE));
+            emit Experiment::experimentEndend(ER_FAILURE);
             stateTimer.stop();
             return;
         }
@@ -29,7 +29,7 @@ void GoNoGoExperiment::onTimeOut(){
         //qDebug() << "DRAWING TRIAL";
         m->drawCurrentTrial();
         stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
-        stateTimer.start();
+        if (!manualMode) stateTimer.start();
         gngState = GNGS_ESTIMULUS;
 #ifdef DBUG_FIX_TO_MOVE
         mtimer.start();
@@ -49,7 +49,7 @@ void GoNoGoExperiment::onTimeOut(){
             // Experiment is finished and marking as such. No ongoing for go no go.
             if (!rawdata.finalizeStudy()){
                 error = "Failed on GoNoGo finalization because: " + rawdata.getError();
-                emit(experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
                 stateTimer.stop();
                 return;
             }
@@ -74,7 +74,7 @@ void GoNoGoExperiment::onTimeOut(){
         }
         else{
             stateTimer.setInterval(GONOGO_TIME_CROSS);
-            stateTimer.start();
+            if (!manualMode) stateTimer.start();
             gngState = GNGS_CROSS;
         }
         break;
@@ -83,10 +83,10 @@ void GoNoGoExperiment::onTimeOut(){
 }
 
 bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                       const QVariantMap &studyConfig, bool useMouse){
+                                       const QVariantMap &studyConfig){
 
-    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse)){
-        emit(experimentEndend(ER_FAILURE));
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)){
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -94,7 +94,7 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
     processingParameters = setGoNoGoTargetBoxes(processingParameters);
     if (!rawdata.setProcessingParameters(processingParameters)){
         error = "Failed to set processing parameters when adding gonogo targetboxes";
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -104,17 +104,8 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
 
     m->drawCross();
     stateTimer.setInterval(GONOGO_TIME_CROSS);
-    stateTimer.start();
+    //stateTimer.start();
     gngState = GNGS_CROSS;
-
-    if (!Globals::EyeTracker::IS_VR || (useMouse)){
-        this->show();
-        this->activateWindow();
-    }
-
-    //rMWA.setMaximumFixationLength(Globals::EyeTracker::GONOGO_MAX_FIXATION_LENGTH);
-    //lMWA.setMaximumFixationLength(Globals::EyeTracker::GONOGO_MAX_FIXATION_LENGTH);
-
     updateSecondMonitorORHMD();
 
 #ifdef DBUG_FIX_TO_MOVE
@@ -124,8 +115,23 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
     return true;
 }
 
+void GoNoGoExperiment::resetStudy(){
+    m->resetStudy();
+    m->drawCross();
+    stateTimer.setInterval(GONOGO_TIME_CROSS);
+    gngState = GNGS_CROSS;
+    updateSecondMonitorORHMD();
+
+    if (!manualMode){
+        stateTimer.start();
+    }
+}
+
 void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
+
+    // During manual mode, eye tracking data is ignored for everything except updating the eye positions.
+    if (manualMode) return;
 
     if (state != STATE_RUNNING) return;
 

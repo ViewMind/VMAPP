@@ -32,7 +32,12 @@ public:
 
     bool isPointInSideCorrectTargetForCurrentTrial(qreal x, qreal y) const;
 
+    // This will make the next trial after loopValue be 0. Hence this will repeat the first few trials infinitely.
+    void loopTrialsAt(qint32 loopValue);
+
     void enableDemoMode() override;
+
+    void resetStudy();
 
     QRectF getArrowBox() const;
     QList<QRectF> getLeftAndRightHitBoxes() const;

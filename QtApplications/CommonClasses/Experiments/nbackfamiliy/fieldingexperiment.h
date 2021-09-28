@@ -25,7 +25,7 @@ public:
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
-                         const QVariantMap &studyConfig, bool useMouse) override;
+                         const QVariantMap &studyConfig) override;
 
 
 
@@ -81,6 +81,8 @@ private:
     // Possible pauses for the fielding experiment
     static const qint32 PAUSE_TRIAL_1;
     static const qint32 PAUSE_TRIAL_2;
+
+    void resetStudy() override;
     
 };
 

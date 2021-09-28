@@ -28,8 +28,7 @@ public:
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
-                         const QVariantMap &studyConfig,
-                         bool useMouse) override;
+                         const QVariantMap &studyConfig) override;
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -75,6 +74,8 @@ private:
 
     // RawDataContainer Management for adding a new trial.
     bool addNewTrial();
+
+    void resetStudy() override;
 
 };
 

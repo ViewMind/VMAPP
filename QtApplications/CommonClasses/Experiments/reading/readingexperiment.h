@@ -18,8 +18,7 @@ public:
     ~ReadingExperiment() override;
 
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
-                                     const QVariantMap &studyConfig,
-                                     bool useMouse) override;
+                                     const QVariantMap &studyConfig) override;
 
     bool loadConfiguration(const QString &fileName);
 
@@ -70,6 +69,8 @@ private:
 
     static const qreal  K_READING_HIT_TOLERANCE;
     static const qint32 TIME_TO_HOLD_FOR_SELECTION_IN_SECONDS;
+
+    void resetStudy() override;
 
 };
 

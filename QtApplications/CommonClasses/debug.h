@@ -43,6 +43,7 @@ namespace Debug {
        const QString FIX_QC_SHA_CHECKS    = "fix_qc_sha_checks";
        const QString STUDY_CONFIG_MAP     = "study_configutation_map";
        const QString LOAD_CALIBRATION_K   = "load_calibration_coeffs";
+       const QString ENABLE_GAZE_FOLLOW   = "enable_gaze_follow";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

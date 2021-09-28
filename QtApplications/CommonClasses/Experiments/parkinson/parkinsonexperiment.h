@@ -14,7 +14,7 @@ public:
     ParkinsonExperiment(QWidget *parent = nullptr, const QString &study_type = "");
     ~ParkinsonExperiment() override;
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
-                         const QVariantMap &studyConfig, bool useMouse) override;
+                         const QVariantMap &studyConfig) override;
     void togglePauseExperiment();
 
 public slots:
@@ -47,6 +47,8 @@ private:
     // Helper fucntion to do all the stuff that needs to be done when a new maze is drawn.
     void newMaze();
 
+
+    void resetStudy() override;
 };
 
 #endif // PARKINSONEXPERIMENT_H

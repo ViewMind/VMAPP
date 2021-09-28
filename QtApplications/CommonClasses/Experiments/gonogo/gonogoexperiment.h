@@ -16,8 +16,8 @@ public:
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
-                         const QVariantMap &studyConfig,
-                         bool useMouse) override;
+                         const QVariantMap &studyConfig) override;
+
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -50,6 +50,8 @@ protected:
     QElapsedTimer mtimer;
     QElapsedTimer totalTimer;
 #endif
+
+    void resetStudy() override;
 
 
 };

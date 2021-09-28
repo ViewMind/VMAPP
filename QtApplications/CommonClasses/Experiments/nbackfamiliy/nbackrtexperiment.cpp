@@ -28,7 +28,7 @@ NBackRTExperiment::NBackRTExperiment(QWidget *parent, const QString &study_type)
 }
 
 bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                        const QVariantMap &studyConfig, bool useMouse){
+                                        const QVariantMap &studyConfig){
 
     if (studyType == VMDC::Study::NBACKVS){
         nbackConfig.minHoldTime              = NBACKVS_MIN_HOLD_TIME;
@@ -49,18 +49,18 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
 
     }
 
-    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse)){
-        emit(experimentEndend(ER_FAILURE));
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)){
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
     QVariantMap config;
-    config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,(Globals::EyeTracker::IS_VR && (!useMouse)));
+    config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,Globals::EyeTracker::IS_VR);
     if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
         config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
     }
     else{
-        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
+        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_EN);
     }
     m->configure(config);
 
@@ -68,7 +68,7 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     processingParameters = addHitboxesToProcessingParameters(processingParameters);
     if (!rawdata.setProcessingParameters(processingParameters)){
         error = "Failed setting processing parameters on Reading: " + rawdata.getError();
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
     }
 
     currentImage = 0;
@@ -81,12 +81,11 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     state = STATE_RUNNING;
     tstate = TSF_START;
     stateTimer.setInterval(TIME_TRANSITION);
-    stateTimer.start();
 
     m->drawBackground();
     drawCurrentImage();
 
-    if (!Globals::EyeTracker::IS_VR || (useMouse)){
+    if (!Globals::EyeTracker::IS_VR){
         this->show();
         this->activateWindow();
     }
@@ -115,7 +114,7 @@ void NBackRTExperiment::nextState(){
 
         if (!addNewTrial()){
             stateTimer.stop();
-            emit(experimentEndend(ER_FAILURE));
+            emit Experiment::experimentEndend(ER_FAILURE);
             return;
         }
         currentDataSetType = VMDC::DataSetType::ENCODING_1;
@@ -155,16 +154,19 @@ void NBackRTExperiment::nextState(){
         rawdata.finalizeTrial("");
 
         tstate = TSF_START;
+
         currentTrial++;
+        if (m->getLoopValue() != -1){
+            if (currentTrial > m->getLoopValue()){
+                currentTrial = 0;
+            }
+        }
+
         if (finalizeExperiment()) return;
         stateTimer.setInterval(TIME_TRANSITION);
     }
 
-#ifdef MANUAL_TRIAL_PASS
-    if (tstate != TSF_SHOW_BLANKS) stateTimer.start();
-#else
-    stateTimer.start();
-#endif
+    if (!manualMode) stateTimer.start();
     drawCurrentImage();
 }
 
@@ -221,15 +223,15 @@ bool NBackRTExperiment::finalizeExperiment(){
     // Finalizing the study. NBacks are not multi part.
     if (!rawdata.finalizeStudy()){
         error = "Failed on NBack RT/VS study finalization: " + rawdata.getError();
-        emit (experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
     rawdata.markFileAsFinalized();
 
     if (!saveDataToHardDisk()){
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
     }
-    else emit(experimentEndend(er));
+    else emit Experiment::experimentEndend(er);
     return true;
 }
 
@@ -240,10 +242,11 @@ void NBackRTExperiment::keyPressHandler(int keyPressed){
         return;
     }
     else{
-        if ((keyPressed == Qt::Key_N) && (state == STATE_RUNNING) && (tstate == TSF_SHOW_BLANKS)){
+        //if ((keyPressed == Qt::Key_N) && (state == STATE_RUNNING) && (tstate == TSF_SHOW_BLANKS)){
+        if ((keyPressed == Qt::Key_N) && (state == STATE_RUNNING)){
             onTimeOut();
         }
-        else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
+        else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_N)){
             state = STATE_RUNNING;
             m->drawBackground();
             updateSecondMonitorORHMD();
@@ -257,10 +260,20 @@ QString NBackRTExperiment::getExperimentDescriptionFile(const QVariantMap &study
     return ":/nbackfamiliy/descriptions/fielding.dat";
 }
 
+void NBackRTExperiment::resetStudy(){
+    currentTrial = 0;
+    state = STATE_RUNNING;
+    tstate = TSF_START;
+    stateTimer.start();
+    m->drawBackground();
+    drawCurrentImage();
+}
+
 
 void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
-
     Experiment::newEyeDataAvailable(data);
+
+    if (manualMode) return;
 
     if (state != STATE_RUNNING) return;
     if (ignoreData) return;
@@ -278,19 +291,15 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (tstate == TSF_SHOW_BLANKS){
         bool isOver = trialRecognitionMachine.isSequenceOver(lastFixationR,lastFixationL,m);
-        emit(addFixations(lastFixationR.x,lastFixationR.y,lastFixationL.x,lastFixationL.y));
-        emit(addDebugMessage(trialRecognitionMachine.getMessages(),false));
+        emit Experiment::addFixations(lastFixationR.x,lastFixationR.y,lastFixationL.x,lastFixationL.y);
+        emit Experiment::addDebugMessage(trialRecognitionMachine.getMessages(),false);
         if (isOver){
-#ifdef MANUAL_TRIAL_PASS
-            emit(addDebugMessage(trialRecognitionMachine.getMessages() + "\nEND",false));
-#else
-            emit(addDebugMessage(trialRecognitionMachine.getMessages(),false));
+            emit Experiment::addDebugMessage(trialRecognitionMachine.getMessages(),false);
             nbackConfig.wasSequenceCompleted = true;
             onTimeOut();
-#endif
         }
         else{
-            emit(addDebugMessage(trialRecognitionMachine.getMessages(),false));
+            emit Experiment::addDebugMessage(trialRecognitionMachine.getMessages(),false);
         }
     }
 

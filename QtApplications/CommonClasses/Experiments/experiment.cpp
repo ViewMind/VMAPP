@@ -16,6 +16,9 @@ Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(pare
     this->studyType = studyType;
     metaStudyType = studyType;
 
+    // All studies start in manual mode until, it is removed.
+    manualMode = true;
+
 }
 
 void Experiment::setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height){
@@ -40,11 +43,9 @@ QString Experiment::getExperimentDescriptionFile(const QVariantMap &studyConfig)
     return "";
 }
 
-bool Experiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                 const QVariantMap &studyConfig,
-                                 bool useMouse){
-
-    Q_UNUSED(useMouse)
+bool Experiment::startExperiment(const QString &workingDir,
+                                 const QString &experimentFile,
+                                 const QVariantMap &studyConfig){
 
     error = "";
     workingDirectory = workingDir;
@@ -130,7 +131,7 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
         QString dbug = "DBUG: Short Studies Enabled";
         LogInterface logger;
         qDebug() << dbug;
-        logger.appendError(dbug);
+        logger.appendWarning(dbug);
         manager->enableDemoMode();
     }
 
@@ -144,7 +145,7 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     //qDebug() << "Processing parameters" << mwp.sampleFrequency << mwp.minimumFixationLength << mwp.maxDispersion << mwp.getStartWindowSize();
 
     if ((mwp.getStartWindowSize() <= 0) || (mwp.sampleFrequency <= 0) || (mwp.minimumFixationLength <= 0) || (mwp.maxDispersion <= 0)){
-        error = "Invalid processing parameeters for MWA. MFL: " + QString::number(mwp.minimumFixationLength)
+        error = "Invalid processing parameeters for MWA.\nMFL: " + QString::number(mwp.minimumFixationLength)
                 + "\nSF: " + QString::number(mwp.sampleFrequency)
                 + "\nMD: " + QString::number(mwp.maxDispersion);
         emit Experiment::experimentEndend(ER_FAILURE);
@@ -168,9 +169,18 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     rMWA.finalizeOnlineFixationCalculation();
     lMWA.finalizeOnlineFixationCalculation();
 
+    // The experiment is ALWAYS started in manual mode.
+    manager->setTrialCountLoopValue(NUMBER_OF_TRIALS_IN_MANUAL_MODE);
+
     return true;
 }
 
+
+void Experiment::startExperimentNoManualMode(){
+    manager->setTrialCountLoopValue(-1);
+    manualMode = false;
+    resetStudy();
+}
 
 void Experiment::newEyeDataAvailable(const EyeTrackerData &data){
     emit Experiment::updateEyePositions(data.xRight,data.yRight,data.xLeft,data.yLeft);
@@ -304,14 +314,18 @@ void Experiment::keyPressEvent(QKeyEvent *event){
 
 void Experiment::updateSecondMonitorORHMD(){
     if (Globals::EyeTracker::IS_VR){
-        emit(updateVRDisplay());
+        emit Experiment::updateVRDisplay();
     }
     else if (debugMode){
-        emit(updateBackground(manager->getImage()));
+        emit Experiment::updateBackground(manager->getImage());
     }
 }
 
 void Experiment::keyPressHandler(int keyPressed){
     Q_UNUSED(keyPressed)
+}
+
+void Experiment::resetStudy(){
+
 }
 
