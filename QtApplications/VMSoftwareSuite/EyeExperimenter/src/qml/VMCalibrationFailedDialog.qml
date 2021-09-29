@@ -14,7 +14,7 @@ VMDialogBase {
     Text {
         id: viewTitle
         font.pixelSize: 43*viewHome.vmScale
-        font.family: viewCalibrationStart.gothamB.name
+        font.family: gothamB.name
         color: "#297FCA"
         text: loader.getStringForKey("viewcalibfailed_viewTitle");
         anchors.horizontalCenter: parent.horizontalCenter
@@ -25,7 +25,7 @@ VMDialogBase {
     Text {
         id: viewSubTitle
         font.pixelSize: 13*viewHome.vmScale
-        font.family: viewCalibrationStart.robotoR.name
+        font.family: robotoR.name
         color: "#297FCA"
         text: loader.getStringForKey("viewcalibfailed_viewSubTitle");
         anchors.horizontalCenter: parent.horizontalCenter
@@ -44,7 +44,7 @@ VMDialogBase {
         Text {
             id: leftEyeText
             font.pixelSize: 16*viewHome.vmScale
-            font.family: viewCalibrationStart.gothamB.name
+            font.family: gothamB.name
             color: {
                 if (!vmLeftEyePassed) return "#ca2026";
                 else return "#5da655";
@@ -60,7 +60,7 @@ VMDialogBase {
         Text {
             id: rightEyeText
             font.pixelSize: 16*viewHome.vmScale
-            font.family: viewCalibrationStart.gothamB.name
+            font.family: gothamB.name
             color: {
                 if (!vmRightEyePassed) return "#ca2026";
                 else return "#5da655";

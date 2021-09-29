@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import com.qml 1.0
 
 VMBase {
 
@@ -8,18 +9,39 @@ VMBase {
     readonly property double vmExpTrackerItemWidth: mainWindow.width/5;
 
     property string vmSlideTitle: "NO TITLE SET";
-    property string vmSlideExplanation: "No explanation set";
+    property int vmSelectedEye;
+    property int vmState: 0
+    property int vmCurrentUniqueStudyIndexID: -1
 
-    property bool experimentInProgress: false;
+    ///////////////////// State Values for State Machine
+    readonly property int vmSTATE_START: 0
+    readonly property int vmSTATE_CALIBRATION: 1
+    readonly property int vmSTATE_CALIBRATION_DONE: 2
+    readonly property int vmSTATE_DEMO: 3
+    readonly property int vmSTATE_EVALUATION: 4
+    readonly property int vmSTATE_GOBACK: 5
 
-    function enableContinue(){
-        btnContinue.enabled = true;
+
+    ///////////////////// INDEXES FOR BULLETS FOR CONVENIENCE
+    readonly property int vmBULLET_IDX_CALIBRATION: 0
+    readonly property int vmBULLET_IDX_EXPLANATION: 1
+    readonly property int vmBULLET_IDX_EVALUATION:  2
+
+    readonly property int vmBULLET_IDX_PRESS_N:     0
+    readonly property int vmBULLET_IDX_PRESS_ESC:   1
+    readonly property int vmBULLET_IDX_PRESS_S:     2
+    readonly property int vmBULLET_IDX_PRESS_D:     3
+    readonly property int vmBULLET_IDX_NTORESUME:   4
+
+    VMCalibrationFailedDialog{
+        id: calibrationFailedDialog
+        x: (mainWindow.width-width)/2
+        y: (mainWindow.height-height)/2
     }
 
     Connections{
         target: flowControl
         function onExperimentHasFinished (){
-            btnContinue.enabled = true;
             if (!flowControl.isExperimentEndOk()){
                 var titleMsg
                 swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
@@ -28,19 +50,48 @@ VMBase {
                 titleMsg = viewHome.getErrorTitleAndMessage("error_experiment_end");
                 vmErrorDiag.vmErrorMessage = titleMsg[1];
                 vmErrorDiag.vmErrorTitle = titleMsg[0];
+                setActionsForState(vmSTATE_GOBACK);
                 vmErrorDiag.open();
-                btnContinue.enabled = false;
                 return;
             }
             else{
                 flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + vmSlideTitle);
-                viewVRDisplay.finishedStudySucessfully();
+                setActionsForState(vmSTATE_CALIBRATION_DONE);
             }
             if (advanceCurrentExperiment()){
-                btnContinue.enabled = true;
                 swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
             }
         }
+        function onNewImageAvailable () {
+            hmdView.image = flowControl.image;
+        }
+        function onConnectedToEyeTracker () {
+            var titleMsg;
+            if (!flowControl.isConnected()){
+                vmErrorDiag.vmErrorCode = vmErrorDiag.vmErrorCodeNotClose;
+                titleMsg = viewHome.getErrorTitleAndMessage("error_et_connect");
+                vmErrorDiag.vmErrorMessage = titleMsg[1];
+                vmErrorDiag.vmErrorTitle = titleMsg[0];
+                vmErrorDiag.open();
+                setActionsForState(vmSTATE_START);
+                return;
+            }
+            // All is good so the calibration is requested.
+            flowControl.calibrateEyeTracker(vmSelectedEye);
+        }
+        function onCalibrationDone() {
+            var titleMsg;
+            if (!flowControl.isCalibrated()){
+                calibrationFailedDialog.vmLeftEyePassed = flowControl.isLeftEyeCalibrated();
+                calibrationFailedDialog.vmRightEyePassed = flowControl.isRightEyeCalibrated();
+                calibrationFailedDialog.open();
+                setActionsForState(vmSTATE_START);
+                return;
+            }
+            flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
+            setActionsForState(vmSTATE_CALIBRATION_DONE);
+        }
+
     }
 
     // The experiment tracker logic and math functions
@@ -62,6 +113,7 @@ VMBase {
     }
 
     function setStateOfItem(index,state){
+        index = parseInt(index);
         switch (index){
         case viewStudyStart.vmINDEX_BINDING_BC:
             itemBindingBC.vmTrackerItemState = state;
@@ -87,126 +139,48 @@ VMBase {
         case viewStudyStart.vmINDEX_PERCEPTION:
             itemPerception.vmTrackerItemState = state;
             break;
+        default:
+            console.log("Unkown index of type: " + index + " in setStateOfItem in ViewPresentExperiment");
+            break;
         }
-    }
-
-    function setSlideImages(code,count){
-        var slides = [];
-        for (var i = 0; i < count; i++){
-            slides.push("qrc:/images/" + code + "/" + i + ".gif");
-        }
-        slideViewer.setImageList(slides);
     }
 
     function setPropertiesForExperiment(study_config){
-        var index = study_config[viewStudyStart.vmUNIQUE_STUDY_ID];
+        var index = parseInt(study_config[viewStudyStart.vmUNIQUE_STUDY_ID]);
         switch(index){
         case viewStudyStart.vmINDEX_BINDING_BC:
             if (study_config[viewStudyStart.vmSCP_NUMBER_OF_TARGETS] === viewStudyStart.vmSCV_BINDING_TARGETS_3){
                 vmSlideTitle = loader.getStringForKey("viewpresentexp_itemBindingBC3");
-                viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey("viewpresentexp_bindingBCExp");
-                //vmSlideAnimation = "qrc:/images/bound_3.gif"
-                slideViewer.imgScale = 1.3;
-                setSlideImages("bound3",15);
             }
             else{
                 vmSlideTitle = loader.getStringForKey("viewpresentexp_itemBindingBC");
-                viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey("viewpresentexp_bindingBCExp");
-                //vmSlideAnimation = "qrc:/images/bound.gif"
-                slideViewer.imgScale = 1.3;
-                setSlideImages("bound",15);
             }
-            //slideAnimation.visible = false;
-            slideDescription.visible = false;
             break;
         case viewStudyStart.vmINDEX_BINDING_UC:
             if (study_config[viewStudyStart.vmSCP_NUMBER_OF_TARGETS] === viewStudyStart.vmSCV_BINDING_TARGETS_3){
                 vmSlideTitle = loader.getStringForKey("viewpresentexp_itemBindingUC3");
-                viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey("viewpresentexp_bindingUCExp");
-                //vmSlideAnimation = "qrc:/images/unbound_3.gif"
-                slideViewer.imgScale = 1.3;
-                setSlideImages("unbound3",15);
             }
             else{
                 vmSlideTitle = loader.getStringForKey("viewpresentexp_itemBindingUC");
-                viewVRDisplay.vmStudyTitle = vmSlideTitle;
-                vmSlideExplanation = loader.getStringForKey("viewpresentexp_bindingUCExp");
-                //vmSlideAnimation = "qrc:/images/unbound.gif"
-                slideViewer.imgScale = 1.3;
-                setSlideImages("unbound",15);
             }
-            //slideAnimation.visible = false;
-            slideDescription.visible = false;
             break;
         case viewStudyStart.vmINDEX_READING:
             vmSlideTitle = loader.getStringForKey("viewpresentexp_itemReading");
-            viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = loader.getStringForKey("viewpresentexp_readingExp");
-            //vmSlideAnimation = "qrc:/images/reading.gif"
-            //slideAnimation.visible = false;
-            slideDescription.visible = false;
-            slideViewer.imgScale = 1.3;
-
-            var readlang = study_config[viewStudyStart.vmSCP_LANGUAGE];
-            if (readlang === viewStudyStart.vmSCV_LANG_DE){
-                setSlideImages("reading_de",3);
-            }
-            else if (readlang === viewStudyStart.vmSCV_LANG_ES){
-                setSlideImages("reading_es",3);
-            }
-            else if (readlang === viewStudyStart.vmSCV_LANG_IS){
-                setSlideImages("reading_is",3);
-            }
-            else if (readlang === viewStudyStart.vmSCV_LANG_FR){
-                setSlideImages("reading_fr",3);
-            }
-            else if (readlang === viewStudyStart.vmSCV_LANG_EN){
-                setSlideImages("reading_en",3);
-            }
-
             break;
         case viewStudyStart.vmINDEX_NBACKMS:
             vmSlideTitle = loader.getStringForKey("viewpresentexp_itemFielding");
-            viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = loader.getStringForKey("viewpresentexp_fieldingExp");
-            slideDescription.visible = false;
-            slideViewer.imgScale = 1.3;
-            setSlideImages("fielding",1);
             break;
         case viewStudyStart.vmINDEX_NBACKRT:
             vmSlideTitle = loader.getStringForKey("viewpresentexp_itemNBackRT");
-            viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = loader.getStringForKey("viewpresentexp_fieldingExp");
-            slideDescription.visible = false;
-            slideViewer.imgScale = 1.3;
-            setSlideImages("fielding",1);
             break;
         case viewStudyStart.vmINDEX_GONOGO:
             vmSlideTitle = loader.getStringForKey("viewpresentexp_itemGoNoGo");
-            viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = "";
-            slideDescription.visible = false;
-            slideViewer.imgScale = 1.3;
-            setSlideImages("gonogo",5);
             break;
         case viewStudyStart.vmINDEX_NBACKVS:
             vmSlideTitle = loader.getStringForKey("viewpresentexp_itemNBackVS");
-            viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = "";
-            slideDescription.visible = false;
-            slideViewer.imgScale = 1.3;
-            setSlideImages("fielding",1);
             break;
         case viewStudyStart.vmINDEX_PERCEPTION:
             vmSlideTitle = loader.getStringForKey("viewpresentexp_itemPerception");
-            viewVRDisplay.vmStudyTitle = vmSlideTitle;
-            vmSlideExplanation = "";
-            slideDescription.visible = false;
-            slideViewer.imgScale = 1.3;
-            setSlideImages("perception",3);
             break;
         }
 
@@ -236,7 +210,9 @@ VMBase {
 
         for (var i = 0; i < L; i++){
 
-            switch (list[i][viewStudyStart.vmUNIQUE_STUDY_ID]){
+            let switchableIndex = parseInt(list[i][viewStudyStart.vmUNIQUE_STUDY_ID])
+
+            switch (switchableIndex){
             case viewStudyStart.vmINDEX_BINDING_BC: //viewStudyStart.vmINDEX_BINDING_BC:
                 accWidth = enableTrackItem(itemBindingBC,i,accWidth,L);
                 break;
@@ -270,7 +246,8 @@ VMBase {
         x = (mainWindow.width - x)/2;
         //console.log("Start x is " + x)
         for (i = 0; i < L; i++){
-            switch (list[i][viewStudyStart.vmUNIQUE_STUDY_ID]){
+            let switchableIndex = parseInt(list[i][viewStudyStart.vmUNIQUE_STUDY_ID]);
+            switch (switchableIndex){
             case viewStudyStart.vmINDEX_BINDING_BC:
                 x = setEnabledItemX(itemBindingBC,x,spacing);
                 break;
@@ -314,6 +291,8 @@ VMBase {
         }
         // The new experiment is selected as done.
         index = viewStudyStart.vmSelectedExperiments[viewStudyStart.vmCurrentExperimentIndex][viewStudyStart.vmUNIQUE_STUDY_ID];
+        vmCurrentUniqueStudyIndexID = index;
+        //console.log("Current Study Index is: " + vmCurrentUniqueStudyIndexID);
         setStateOfItem(index,itemReading.vmTRACKER_ITEM_STATE_CURRENT)
 
         // Properties are set to the values of the curent experiment
@@ -328,7 +307,7 @@ VMBase {
         experimentTracker.changeBindingTitles(use3);
     }
 
-    function startNextStudy(){
+    function startNextStudyManualMode(){
 
         // Setting up the second monitor, if necessary.
         //console.log("Setting up Second Monitor");
@@ -360,6 +339,144 @@ VMBase {
             return;
         }
 
+    }
+
+    function startStudy(){
+        flowControl.startStudy();
+    }
+
+    function resetStateMachine(){
+
+        // Setting the subject name.
+        var displayName = "";
+        var subject_info = loader.getCurrentSubjectInfo();
+        if (subject_info.name === "") displayName = subject_info.supplied_institution_id
+        else displayName = subject_info.name + " " + subject_info.lastname;
+        subjectCard.setList([displayName]);
+
+        // Setting the state.
+        setActionsForState(vmSTATE_START);
+
+    }
+
+    function setActionsForState(state_to_set){
+
+        vmState = state_to_set;
+
+        //console.log("Setting actions for state: " + vmState);
+
+        switch (vmState){
+        case vmSTATE_CALIBRATION:
+            btnBack.visible = false;
+            btnStartDemoMode.visible = false;
+            btnStudyStart.visible = false;
+            btnCalibrate.visible = false;
+
+            statusCard.setItemState(vmBULLET_IDX_CALIBRATION,true);
+            statusCard.setItemState(vmBULLET_IDX_EXPLANATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EVALUATION,false);
+
+            actionCard.setItemState(vmBULLET_IDX_PRESS_D,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_S,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_ESC,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_N,false);
+            actionCard.setItemState(vmBULLET_IDX_NTORESUME,false);
+
+            break;
+        case vmSTATE_START:
+            btnBack.visible = true;
+            btnStartDemoMode.visible = false;
+            btnStudyStart.visible = false;
+            btnCalibrate.visible = true;
+
+            statusCard.setItemState(vmBULLET_IDX_CALIBRATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EXPLANATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EVALUATION,false);
+
+            actionCard.setItemState(vmBULLET_IDX_PRESS_D,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_S,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_ESC,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_N,false);
+            actionCard.setItemState(vmBULLET_IDX_NTORESUME,false);
+
+            break;
+        case vmSTATE_CALIBRATION_DONE:
+
+            btnBack.visible = true;
+            btnStartDemoMode.visible = true;
+            btnStudyStart.visible = false;
+            btnCalibrate.visible = true;
+
+            statusCard.setItemState(vmBULLET_IDX_CALIBRATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EXPLANATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EVALUATION,false);
+
+            actionCard.setItemState(vmBULLET_IDX_PRESS_D,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_S,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_ESC,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_N,false);
+            actionCard.setItemState(vmBULLET_IDX_NTORESUME,false);
+
+            break;
+        case vmSTATE_DEMO:
+            btnBack.visible = false;
+            btnStartDemoMode.visible = false;
+            btnStudyStart.visible = true;
+            btnCalibrate.visible = false;
+
+            statusCard.setItemState(vmBULLET_IDX_CALIBRATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EXPLANATION,true);
+            statusCard.setItemState(vmBULLET_IDX_EVALUATION,false);
+
+            actionCard.setItemState(vmBULLET_IDX_PRESS_D,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_S,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_ESC,true);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_N,true);
+            actionCard.setItemState(vmBULLET_IDX_NTORESUME,false);
+
+            break;
+        case vmSTATE_EVALUATION:
+            btnBack.visible = false;
+            btnStartDemoMode.visible = false;
+            btnStudyStart.visible = false;
+            btnCalibrate.visible = false;
+
+            statusCard.setItemState(vmBULLET_IDX_CALIBRATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EXPLANATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EVALUATION,true);
+
+            if ( (vmCurrentUniqueStudyIndexID == viewStudyStart.vmINDEX_BINDING_BC) ||
+                 (vmCurrentUniqueStudyIndexID == viewStudyStart.vmINDEX_BINDING_UC) ){
+                actionCard.setItemState(vmBULLET_IDX_PRESS_D,true);
+                actionCard.setItemState(vmBULLET_IDX_PRESS_S,true);
+            }
+            else if ( (vmCurrentUniqueStudyIndexID === viewStudyStart.vmINDEX_NBACKRT) ||
+                      (vmCurrentUniqueStudyIndexID === viewStudyStart.vmINDEX_NBACKVS) ||
+                      (vmCurrentUniqueStudyIndexID === viewStudyStart.vmINDEX_NBACKMS)) {
+                actionCard.setItemState(vmBULLET_IDX_NTORESUME,true);
+            }
+
+            actionCard.setItemState(vmBULLET_IDX_PRESS_ESC,true);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_N,false);
+            break;
+
+        case vmSTATE_GOBACK:
+            btnBack.visible = true;
+            btnStartDemoMode.visible = false;
+            btnStudyStart.visible = false;
+            btnCalibrate.visible = false;
+
+            statusCard.setItemState(vmBULLET_IDX_CALIBRATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EXPLANATION,false);
+            statusCard.setItemState(vmBULLET_IDX_EVALUATION,false);
+
+            actionCard.setItemState(vmBULLET_IDX_PRESS_D,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_S,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_ESC,false);
+            actionCard.setItemState(vmBULLET_IDX_PRESS_N,false);
+            actionCard.setItemState(vmBULLET_IDX_NTORESUME,false);
+            break;
+        }
     }
 
     // The experiment tracker
@@ -445,6 +562,7 @@ VMBase {
 
     }
 
+
     // The title of this slide
     Text{
         id: slideTitle
@@ -455,29 +573,55 @@ VMBase {
         anchors.top: experimentTracker.bottom
         anchors.topMargin: mainWindow.height*0.043
         anchors.horizontalCenter: parent.horizontalCenter
+        visible: false
     }
 
-    // The description
-    Text{
-        id: slideDescription
-        textFormat: Text.RichText
-        font.pixelSize: 16*viewHome.vmScale
-        font.family: robotoR.name
-        color: "#297fca"
-        text: vmSlideExplanation
-        anchors.top: slideTitle.bottom
-        anchors.topMargin: mainWindow.height*0.099
+
+    VMBulletedCard {
+        id: subjectCard
+        width: mainWindow.width*0.16
+        height: mainWindow.height*0.1
         anchors.left: parent.left
-        anchors.leftMargin: mainWindow.width*0.139
+        anchors.leftMargin: mainWindow.width*0.02
+        anchors.top: hmdView.top
+        anchors.topMargin: mainWindow.height*0.01
+        vmTitleText: loader.getStringForKey("viewpresentexp_msgTitleSubject");
     }
 
-    VMSlideViewer {
-        id: slideViewer
-        height: parent.height*0.5
-        width: parent.width*0.6
-        btnSide: mainWindow.width*0.0625
-        anchors.top: slideTitle.bottom
-        anchors.topMargin: mainWindow.height*0.014
+    VMBulletedCard {
+        id: statusCard
+        width: subjectCard.width
+        height: mainWindow.height*0.2
+        anchors.left: subjectCard.left
+        anchors.top: subjectCard.bottom
+        anchors.topMargin: mainWindow.height*0.01
+        vmTitleText: loader.getStringForKey("viewpresentexp_msgTitleState");
+        Component.onCompleted: {
+            statusCard.setList(loader.getStringListForKey("viewpresentexp_states"));
+        }
+    }
+
+    VMBulletedCard {
+        id: actionCard
+        width: subjectCard.width
+        height: mainWindow.height*0.35
+        anchors.right: parent.right
+        anchors.rightMargin: mainWindow.width*0.02
+        anchors.top: hmdView.top
+        anchors.topMargin: mainWindow.height*0.01
+        vmTitleText: loader.getStringForKey("viewpresentexp_msgTitleAction");
+        Component.onCompleted: {
+            actionCard.setList(loader.getStringListForKey("viewpresentexp_actions"));
+        }
+    }
+
+    QImageDisplay {
+        id: hmdView
+        width: parent.width*0.6;
+        height: parent.height*0.6;
+        //anchors.top: slideTitle.bottom
+        anchors.top: experimentTracker.bottom
+        anchors.topMargin: parent.height*0.002
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -488,6 +632,7 @@ VMBase {
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: mainWindow.width*0.04
 
+
         VMButton{
             id: btnBack
             vmText: loader.getStringForKey("viewpresentexp_btnBack")
@@ -495,24 +640,67 @@ VMBase {
             vmInvertColors: true
             vmFont: viewPresentExperiment.gothamM.name
             onClicked: {
-                swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
+                swiperControl.currentIndex = swiperControl.vmIndexStudyStart
             }
         }
 
         VMButton{
-            id: btnContinue
-            vmText: loader.getStringForKey("viewpresentexp_btnContinue")
+            id: btnCalibrate
+            vmText: loader.getStringForKey("viewpresentexp_btnCalibrate")
+            vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
+            vmFont: viewPresentExperiment.gothamM.name
+            onClicked: {
+                setActionsForState(vmSTATE_CALIBRATION);
+                if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
+                else flowControl.calibrateEyeTracker(vmSelectedEye);
+            }
+        }
+
+        VMButton{
+            id: btnStudyStart
+            vmText: loader.getStringForKey("viewpresentexp_btnStartStudy")
+            vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
+            vmFont: viewPresentExperiment.gothamM.name
+            visible: !btnStartDemoMode.visible // Only visible when study start is NOT visible.
+            onClicked: {
+                setActionsForState(vmSTATE_EVALUATION);
+                startStudy();
+            }
+        }
+
+        VMButton{
+            id: btnStartDemoMode
+            vmText: loader.getStringForKey("viewpresentexp_btnStartDemoMode")
             vmSize: [mainWindow.width*0.28, mainWindow.height*0.072]
             vmInvertColors: true
             vmFont: viewPresentExperiment.gothamM.name
             onClicked: {
-                btnContinue.enabled = false;
-                if (!loader.getConfigurationBoolean("use_mouse") && loader.isVREnabled()){
-                    swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
-                }
-                else {
-                    startNextStudy();
-                }
+                setActionsForState(vmSTATE_DEMO);
+                startNextStudyManualMode();
+            }
+        }
+
+    }
+
+    Keys.onPressed: function (event) {
+
+        var allowed_keys = [];
+
+        switch(vmState){
+        case vmSTATE_EVALUATION:
+            allowed_keys = [Qt.Key_Escape, Qt.Key_S, Qt.Key_D, Qt.Key_G]
+            break;
+        case vmSTATE_DEMO:
+            allowed_keys = [Qt.Key_N, Qt.Key_Escape, Qt.Key_S, Qt.Key_D]
+            break;
+        default:
+            return;
+        }
+
+        for (var i = 0; i < allowed_keys.length; i++){
+            if (event.key === allowed_keys[i]){
+                flowControl.keyboardKeyPressed(event.key);
+                return;
             }
         }
 

@@ -31,12 +31,6 @@ viewpartner_title = Import External Data;
 viewpartner_subTitle = Select partner;
 viewpartner_btnImport = IMPORT;
 
-
-#********************************* VIEW VR SCREEN *********************************
-viewvrscreen_btnStartExperiment  = START STUDY;
-viewvrscreen_btnStopExperiment   = STOP STUDY; 
-viewvrscreen_btnStartCalibration = CALIBRATE;
-
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Before starting please fill the information below;
 viewsettings_diagTitle = CONFIGURE SETTINGS;
@@ -116,7 +110,6 @@ viewstudystart_labelSelPatient = Selected Patient;
 viewstudystart_labelSelSubject = Selected Subject;
 viewstudystart_labelReadingLanguge = Reading language;
 viewstudystart_labelNBackType = NBack Type;
-viewstudystart_fieldingPauseText = Press any "G" when you are ready;
 viewstudystart_labelChoose = Choose the evaluations;
 viewstudystart_labelEvaluations = Evaluation to run;
 viewstudystart_labelPatientConditionsCB = Recommended Evaluations By Pathology;
@@ -147,11 +140,6 @@ viewdrsel_drpassword = Password;
 viewdrsel_drwrongpass = Wrong password;
 viewdrsel_drnopass = No password has been set;
 
-#********************************* CALIBRATION START SCREEN DIALOG *********************************
-viewcalibstart_viewTitle = Calibration;
-viewcalibstart_viewSubTitle = In order to proceed the eye tracker must be calibrated.;
-viewcalibstart_btnStart = START CALIBRATION;
-
 #********************************* CALIBRATION FAILED DIALOG *********************************
 viewcalibfailed_viewTitle = Calibration Error;
 viewcalibfailed_viewSubTitle = Result for each eye;
@@ -160,10 +148,6 @@ viewcalibfailed_msgOK     = OK;
 viewcalibfailed_leftEye   = Left Eye;
 viewcalibfailed_rightEye  = Right Eye;
 viewcalibfailed_btnRetry  = RETRY;
-
-#********************************* CALIBRATION DONE SCREEN DIALOG *********************************
-viewcalibdone_viewTitle = CALIBRATION DONE;
-viewcalibdone_btnContinue = END CALIBRATION;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Reading Evaluation;
@@ -177,37 +161,18 @@ viewpresentexp_itemParkinson = Parkinson Maze;
 viewpresentexp_itemGoNoGo    = Go NoGo Task;
 viewpresentexp_itemNBackVS   = N-Back Type RT For Training;
 viewpresentexp_itemPerception = Perception Study;
-
-viewpresentexp_readingExp = Look at the <b>red dot on the left side</b> of the screen.<br>
-When your gaze is located on the dot, it will vanish<br>
-and the sentence will appear. </b>Read the sentence silently</b><br>
-and a normal pace. Indicate the end of the reading <br>
-by looking at the <b> red dot on the lower right corner.</b><br><br>
-Repeat until the test is over.;
-
-viewpresentexp_bindingBCExp = Two images will appear on the screen. Each of them has a <br>
-colored shape, inside a squared colored frame. After 2 seconds,<br>
-the images will vanish and a new pair of images will appear<br><br>
-<b>Press "S" (same)</b> if both pair of images have the <b>same color</b><br>
-arrangements or <b>"D" (different)</b> if any of <b>two images swapped either</b><br>
-<b>the color from the cross or the from the squared frame</b>
-<br><br>
-The first 10 images are meant for practice.<br>
-They won't be considered in the results.;
-
-viewpresentexp_bindingUCExp = Two images will appear on the screen. Each of them has a <br>
-colored shape, inside a squared colored frame. After 2 seconds,<br>
-the images will vanish and a new pair of images will appear<br><br>
-<b>Press "S" (same)</b> if both pair of images have the <b>same color</b><br>
-arrangements or <b>"D" (different)</b> if any <b>colors of the two</b><br> 
-<b>images was replaced by a new color </b><br><br>
-The first 10 images are meant for practice.<br>
-They won't be considered in the results.;
-
-viewpresentexp_fieldingExp = Explanation of the<br><b>N-Back </b> study;
-
-viewpresentexp_btnContinue = START EVALUATION;
-viewpresentexp_btnBack = BACK TO STUDY SETTINGS;
+viewpresentexp_btnStartStudy = START EVALUATION;
+viewpresentexp_btnCalibrate = CALIBRATE;
+viewpresentexp_btnStartDemoMode = BEGIN EXPLANATION;
+viewpresentexp_btnBack = BACK;
+viewpresentexp_msgTitleSubject = Subject;
+viewpresentexp_msgTitleState = Active State;
+viewpresentexp_msgTitleAction = Action;
+viewpresentexp_states = Calibration Active|Explanation Mode|Active Evaluation;
+viewpresentexp_actions = Press N to advance trial|Press ESC to stop study|Press S to indicate targets
+are the same|Press D to indicate targets
+are different|Press G to resume study
+after a pause;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_titleSubject = Subject List;
@@ -272,13 +237,14 @@ viewexpdone_btnContinue = FINALIZE EVALUATION;
 #********************************* QC SCREEN *********************************
 viewQC_Title = Quality Control Check;
 viewQC_SubPoints = Number of Data Points per Trial;
-viewQC_SubFixationsR = Number of Fixations of Right Eye per Trial;
-viewQC_SubFixationsL = Number of Fixations of Right Eye per Trial;
-viewQC_SubGlitches = Number of Glitches per Trial;
+viewQC_SubFixations = Number of Fixations of per Trial;
 viewQC_SubFrequency = Average Sample Rate Per Trial;
 viewQC_Study = Study;
 viewQC_WaitTitle = Plese wait ...;
 viewQC_WaitSubtitle = Information is being sent to our servers;
+viewQC_subTitle = Verify quality of the study data;
+viewQC_QC_Index = Quality Control
+Index;
 viewQC_StudyNameMap = 
 Reading|Reading|
 Binding BC|Colour Combinations| 
@@ -297,13 +263,27 @@ Perception 7|Perception 7|
 Perception 8|Perception 8;
 viewQC_GraphTitle = Graphs;
 viewQC_GraphPoints = Data Points;
-viewQC_GraphFixationsL = Fixations (L);
-viewQC_GraphFixationsR = Fixations (R);
+viewQC_GraphFixations = Fixations;
 viewQC_GraphFreq = Sample Rate;
 viewQC_GraphGlitches = Sampling Glitches;
 viewQC_btnSend = SEND;
 viewQC_btnBack = BACK;
-
+viewQC_btnDiscard = ARCHIVE;
+viewQC_discardTitle = ARCHIVE STUDY;
+viewQC_discardSubTitle = If you archive the study it will not be processed but will be removed from the study list;
+viewQC_discardReasonLabel = Select reason for archiving the study;
+viewQC_discardReasons = 
+low_data_points-Quality Control Index for data points is too low|
+low_fixations-Quality Control Index for fixations is too low|
+low_sample_rate-Quality Control Index for sample rate is too low|
+study_instructions_misunderstood-The subject did not understand instructions for the study.|
+bad_subjet_state-The subject's state was not optimal for the study|
+other-Other;
+viewQC_discardOtherText = Please specify the reasons for archiving this study;
+viewQC_commentTitle = Comments;
+viewQC_commentSubtitle = Evaluator comments to be included in the final report;
+viewQC_commentSizeError = Only a maximum of  <<L>> lines of up to  <<C>> characters is allowed;
+viewQC_btnCancel = CANCEL;
 
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Medical Protocols;

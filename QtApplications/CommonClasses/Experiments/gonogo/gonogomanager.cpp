@@ -20,6 +20,10 @@ QRectF GoNoGoManager::getArrowBox() const{
     return arrowTargetBox;
 }
 
+void GoNoGoManager::resetStudy(){
+    trialIndex = 0;
+}
+
 QList<QRectF> GoNoGoManager::getLeftAndRightHitBoxes() const {
     return targetBoxes;
 }
@@ -112,7 +116,14 @@ void GoNoGoManager::drawCurrentTrial(){
     else{
         qDebug() << "UNKNOWN Go No Go Trial type " << gonogoTrials.at(trialIndex).type;
     }
+
     trialIndex++;
+    if (trialCountLoopValue > -1){
+       if (trialIndex > trialCountLoopValue){
+           trialIndex = 0;
+       }
+    }
+
 }
 
 void GoNoGoManager::setVisibilityToElementList(QList<QGraphicsItem *> list, bool makeVisible){

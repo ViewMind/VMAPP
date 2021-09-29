@@ -275,6 +275,24 @@ bool ViewMindDataContainer::setQCVector(const QString &studyName, const QString 
     return true;
 }
 
+bool ViewMindDataContainer::setQCValue(const QString &studyName, const QString &qcfield, const QVariant &value){
+    QString check = VMDC::QCFields::validate(qcfield);
+    if (check != ""){
+        error = "Setting QC Vector: " + check;
+        return false;
+    }
+    QStringList hieararchy; hieararchy << MAIN_FIELD_STUDIES << studyName;
+    if (!checkHiearchyChain(hieararchy)) return false;
+
+    QVariantMap studies = data.value(MAIN_FIELD_STUDIES).toMap();
+    QVariantMap study = studies.value(studyName).toMap();
+    QVariantMap qc = study.value(VMDC::StudyField::QUALITY_CONTROL).toMap();
+    qc[qcfield] = value;
+    study[VMDC::StudyField::QUALITY_CONTROL] = qc;
+    studies[studyName] = study;
+    data[MAIN_FIELD_STUDIES] = studies;
+    return true;
+}
 
 bool ViewMindDataContainer::setCurrentStudy(const QString &study){
 

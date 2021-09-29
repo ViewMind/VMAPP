@@ -7,8 +7,6 @@
 #include "../experiment.h"
 #include "gonogomanager.h"
 
-//#define DBUG_FIX_TO_MOVE
-
 class GoNoGoExperiment: public Experiment
 {
 public:
@@ -16,8 +14,8 @@ public:
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
-                         const QVariantMap &studyConfig,
-                         bool useMouse) override;
+                         const QVariantMap &studyConfig) override;
+
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -46,11 +44,7 @@ protected:
     QVariantMap setGoNoGoTargetBoxes(QVariantMap pp);
     bool addNewTrial();
 
-#ifdef DBUG_FIX_TO_MOVE
-    QElapsedTimer mtimer;
-    QElapsedTimer totalTimer;
-#endif
-
+    void resetStudy() override;
 
 };
 

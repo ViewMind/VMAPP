@@ -114,14 +114,29 @@ void HPOmniceptInterface::updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l){
 void HPOmniceptInterface::onCalibrationFinished(){
     if (!calibration.computeCalibrationCoeffs()){
         calibrationFailureType = ETCFT_UNKNOWN;
-
     }
     else{
         correctionCoefficients = calibration.getCalculatedCoeficients();
         if (coefficientsFile != ""){
             correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
         }
-        calibrationFailureType = ETCFT_NONE;
+
+        // Checking the coefficients are correctly computed.
+        bool fail_left =  ((!correctionCoefficients.xl.valid) || (!correctionCoefficients.yl.valid));
+        bool fail_right = ((!correctionCoefficients.xr.valid) || (!correctionCoefficients.yr.valid));
+        if (fail_left){
+            if (fail_right){
+                calibrationFailureType = ETCFT_FAILED_BOTH;
+            }
+            else calibrationFailureType = ETCFT_FAILED_LEFT;
+        }
+        else if (fail_right){
+            calibrationFailureType = ETCFT_FAILED_RIGHT;
+        }
+        else {
+            calibrationFailureType = ETCFT_NONE;
+        }
+
     }
     emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
 }

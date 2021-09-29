@@ -105,8 +105,10 @@ void PerceptionExperiment::onTimeOut(){
 }
 
 void PerceptionExperiment::newEyeDataAvailable(const EyeTrackerData &data){
-
     Experiment::newEyeDataAvailable(data);
+
+    if (manualMode) return;
+
     if (state != STATE_RUNNING) return;
     if (data.isLeftZero() && data.isRightZero()) return;
 
@@ -132,12 +134,16 @@ void PerceptionExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
 }
 
+void PerceptionExperiment::resetStudy(){
+
+}
+
 bool PerceptionExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                           const QVariantMap &studyConfig, bool useMouse){
+                                           const QVariantMap &studyConfig){
 
     bool isTraining = (studyConfig.value(VMDC::StudyParameter::PERCEPTION_TYPE) == VMDC::PerceptionType::TRAINING);
 
-    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse)) return false;
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)) return false;
 
     QVariantMap configuration;
     if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
@@ -174,11 +180,6 @@ bool PerceptionExperiment::startExperiment(const QString &workingDir, const QStr
     }
 
     stateTimer.start(HOLD_TIME_CROSS_ONLY);
-
-    if (!Globals::EyeTracker::IS_VR || (useMouse)){
-        this->show();
-        this->activateWindow();
-    }
 
     return true;
 

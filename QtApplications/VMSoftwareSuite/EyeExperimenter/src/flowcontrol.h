@@ -39,10 +39,11 @@ class FlowControl : public QWidget
 
 public:
     explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
-    ~FlowControl();
+    ~FlowControl() override;
     Q_INVOKABLE void connectToEyeTracker();
     Q_INVOKABLE void calibrateEyeTracker(quint8 eye_to_use);
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
+    Q_INVOKABLE void startStudy();
     Q_INVOKABLE bool isConnected() const { return connected; }
     Q_INVOKABLE bool isCalibrated() const;
     Q_INVOKABLE bool isRightEyeCalibrated() const;

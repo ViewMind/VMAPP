@@ -12,9 +12,9 @@ class QualityControl: public QThread
 public:
     QualityControl();
 
-    void run();
+    void run() override;
 
-    void setVMContainterFile(const QString &file);
+    void setVMContainterFile(const QString &file, const QVariantMap &updatedQC);
 
     QStringList getStudyList() const;
 
@@ -23,6 +23,8 @@ public:
     QString getError() const;
 
     QString getSetFileName() const;
+
+    bool setDiscardReasonAndComment(const QString &discard_reson_code, const QString &comment);
 
     // Should only be used for debugging.
     void disableCheckSumVerification();
@@ -39,12 +41,17 @@ private:
 
     QVariantMap qualityControlData;
 
+    QVariantMap updatedQCParameters;
+
     QStringList availableStudies;
 
     bool verifyFileIntegrity;
 
     static const char * GRAPH_DATA;
-    static const char * REF_DATA;
+    static const char * LOWER_REF_DATA;
+    static const char * UPPER_REF_DATA;
+    static const char * QC_INDEX;
+    static const char * QC_OK;
 
     bool computeQualityControlVectors(const QString &studyType, const QString &metaStudyName);
 };

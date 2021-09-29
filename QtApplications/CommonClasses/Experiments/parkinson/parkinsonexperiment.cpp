@@ -11,9 +11,9 @@ ParkinsonExperiment::ParkinsonExperiment(QWidget *parent, const QString &study_t
 
 
 bool ParkinsonExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                          const QVariantMap &studyConfig, bool useMouse){
+                                          const QVariantMap &studyConfig){
 
-    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse)) return false;
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)) return false;
     return false;
 
 //    // Setting the first question.
@@ -114,6 +114,10 @@ void ParkinsonExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 //         ( (diffXr <= tolerance ) && (diffYr <= tolerance ) ) ){
 //        on_timeOut();
 //    }
+
+}
+
+void ParkinsonExperiment::resetStudy(){
 
 }
 

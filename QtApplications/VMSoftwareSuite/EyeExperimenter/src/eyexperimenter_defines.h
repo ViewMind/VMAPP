@@ -6,8 +6,6 @@
 #include <QJsonObject>
 #include <iostream>
 #include "../../../CommonClasses/Experiments/experiment.h"
-
-///////////////////////// ONLY ONE OF THESE SHOULD BE ENABLED: DEFINES WHICH SERVER WILL BE USED BY THE API //////////////////////////
 #include "../../../CommonClasses/eyetracker_defines.h"
 
 namespace Globals{
@@ -27,7 +25,7 @@ namespace Globals{
 
    namespace LOCAL {
       const QString API_URL = "http://192.168.1.12/vmapi";
-      const QString REGION  = "Debug";
+      const QString REGION  = "DBUG";
    }
 
    extern QString API_URL;
@@ -58,6 +56,7 @@ namespace Globals{
       static const QString UPDATE_SCRIPT  = "update.bat";
       static const QString CHANGELOG_LOCATION = "changelog";
       static const QString CHANGELOG_BASE = "changelog_";      
+      static const QString DEBUG_OPTIONS_FILE = "vmdebug";
    }
    
    namespace VMConfig {
@@ -97,23 +96,14 @@ namespace Globals{
       static const qint32 INDEX_GONOGO = 7;
 
    }
-   
-   namespace Debug {
-      static const bool DISABLE_DB_CHECKSUM     = false;
-      static const bool SHOW_MOUSE_STUDY        = true;
-      static const bool SHOW_EYE_POSITION       = false;
-      static const bool DISABLE_RM_SENT_STUDIES = false;
-      static const bool PRETTY_PRINT_JSON_DB    = false;
-      static const bool DISABLE_UPDATE_CHECK    = false;
-   }
-      
+         
    namespace UILanguage {
       static const QString EN = "English";
       static const QString ES = "Spanish";
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "17.2.0";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "18.1.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
@@ -152,14 +142,19 @@ namespace Globals{
        return false;
    }
 
-   static void SetExperimenterVersion() {
-       Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + REGION
+   static void SetExperimenterVersion(const QString institutionDescription) {
+       QString dbug_str = Debug::CreateDebugOptionSummary();
+       Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + institutionDescription  + " - " + REGION;
+       if (!dbug_str.isEmpty()){
+           Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION + " - " + dbug_str;
+       }
+               /*
                + (ExperimentGlobals::SHORT_STUDIES ? " - SHORT STUDIES" : "")
                + (Debug::DISABLE_DB_CHECKSUM ? " - NO CHECKSUM" : "") +
                + (Debug::PRETTY_PRINT_JSON_DB ? " - CLEAR_DB" : "")
                + (Debug::DISABLE_RM_SENT_STUDIES ? " - NO RM STUDIES" : "")
                + (ExperimentGlobals::ENABLE_FIX_LOG ? " - FIX_LOG_ENABLED": "")
-               + (Debug::DISABLE_UPDATE_CHECK ? " - UPDATE CHECK DISABLED" : "");
+               + (Debug::DISABLE_UPDATE_CHECK ? " - UPDATE CHECK DISABLED" : "");*/
    }
 
    namespace BaseFileNames {

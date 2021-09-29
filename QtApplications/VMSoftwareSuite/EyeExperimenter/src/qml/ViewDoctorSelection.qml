@@ -9,33 +9,80 @@ VMDialogBase {
     height: mainWindow.height*0.942
 
     function logInAttempt(){
-        if (loader.evaluatorLogIn(labelDrProfile.vmCurrentText,drPassword.getText())){
-//        if (loader.evaluatorLogIn("aarelovich@gmail.com","1234")){
 
+        var user = labelDrProfile.vmCurrentText;
+        var password = drPassword.getText();
+        var correntSwiperIndexToLoad = swiperControl.vmIndexPatientList;
+
+        ////////////////////////////////////// START DEBUG SETUP ////////////////////////////////////
+
+        // Getting the Debug Options to see if any of this will be over ridden.
+        var dbug_user = loader.getDebugOption("login_user");
+        var dbug_password = loader.getDebugOption("login_password");
+        var dbug_index_to_load = loader.getDebugOption("view_index_to_show");
+        var dbug_selected_patient = loader.getDebugOption("selected_patient");
+        var dbug_selected_doctor = loader.getDebugOption("selected_doctor");
+        var dbug_qc_file_to_set = loader.getDebugOption("qc_file_path");
+        var dbug_setup_studies = loader.getDebugOption("study_configutation_map")
+
+
+        if (dbug_user !== ""){
+            user = dbug_user;
+            password = dbug_password;
+            console.log("DBUG: Logging in as " + user + ":" + password);
+        }
+        if (dbug_index_to_load !== ""){
+            correntSwiperIndexToLoad = dbug_index_to_load
+            console.log("DBUG: Loading View: " + dbug_index_to_load);
+        }
+
+        if (dbug_selected_doctor !== ""){
+            // WARNING: Actually selecting and patient and doctor normally will overwrite this.
+            console.log("DBUG: Setting selected doctor to " + dbug_selected_doctor);
+            viewStudyStart.vmSelectedMedic = dbug_selected_doctor;
+        }
+
+        if (dbug_selected_patient !== ""){
+            // WARNING: Actually selecting and patient and doctor normally will overwrite this.
+            console.log("DBUG: Setting selected patient to " + dbug_selected_patient);
+            loader.setSelectedSubject(dbug_selected_patient);
+        }
+
+        if (dbug_qc_file_to_set !== ""){
+            // WARNING: Actually selecting a file to QC in the report view will over write this.
+            console.log("DBUG: Setting File To QC to: " + dbug_qc_file_to_set);
+            loader.setCurrentStudyFileForQC(dbug_qc_file_to_set);
+        }
+
+        ////////////////////////////////////// END DEBUG SETUP ////////////////////////////////////
+
+        if (loader.evaluatorLogIn(user,password)){
             // Updating the text of the doctor menu.
             viewHome.updateDrMenuText();
             viewDoctorSelection.close();
             drPassword.vmErrorMsg = "";
+            swiperControl.currentIndex = correntSwiperIndexToLoad
+            if (dbug_setup_studies !== ""){
+                console.log("DBUG: Study string found. To parse: " + dbug_setup_studies);
 
-            /*********************************************
-             * FOR DEBUGGING
-             *********************************************/
+                // --- Indicates se paration between different studies.
+                // --  Indicates separation between different fields of the same study
+                // -   Indicates separation between key and value.
 
-//            loader.setSelectedSubject("1_0_20210606090711350");
-//            viewStudyStart.vmSelectedMedic = "ariel.arelovich@viewmind.ai";
-//            viewStudyStart.vmSelectedProtocol = "";
-//            swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-//            viewFinishedStudies.loadEvaluatorStudies();
-//            swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies
-//            swiperControl.currentIndex = swiperControl.vmIndexViewQC;
-//            return;
+                var all_studies = dbug_setup_studies.split("---");
+                viewStudyStart.vmSelectedExperiments = [];
+                for (var s = 0; s < all_studies.length; s++){
+                    var study_fields = all_studies[s].split("--");
+                    var config = {};
+                    for (var f = 0; f < study_fields.length; f++){
+                        var key_and_value = study_fields[f].split("-");
+                        config[key_and_value[0]] = key_and_value[1]
+                    }                    
+                    viewStudyStart.vmSelectedExperiments.push(config);                    
+                }
+                viewStudyStart.startStudies();
 
-            /*************************************************/
-
-
-
-            swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-
+            }
         }
         else{
             drPassword.vmErrorMsg = loader.getStringForKey("viewdrsel_drwrongpass");;

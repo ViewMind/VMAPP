@@ -12,7 +12,7 @@ ImageExperiment::ImageExperiment(QWidget *parent, const QString &study_type):Exp
 
 }
 
-bool ImageExperiment::startExperiment(const QString &workingDir, const QString &experimentFile, const QVariantMap &studyConfig, bool useMouse){
+bool ImageExperiment::startExperiment(const QString &workingDir, const QString &experimentFile, const QVariantMap &studyConfig){
 
     // We need to set up the target size before parsing.
     QVariantMap config;
@@ -20,7 +20,7 @@ bool ImageExperiment::startExperiment(const QString &workingDir, const QString &
                   (studyConfig.value(VMDC::StudyParameter::TARGET_SIZE).toString() == VMDC::BindingTargetSize::SMALL));
     m->configure(config);
 
-    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse)) return false;
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)) return false;
 
     // Setup data gathering.
     // If there were no problems the experiment can begin.
@@ -33,14 +33,14 @@ bool ImageExperiment::startExperiment(const QString &workingDir, const QString &
 
     // Adding a new trial for the first time.
     if (!addNewTrial()){
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
     drawCurrentImage();
     stateTimer.setInterval(TIME_START_CROSS);
-    stateTimer.start();
-    if (!Globals::EyeTracker::IS_VR || (useMouse)){
+    //stateTimer.start();
+    if (!Globals::EyeTracker::IS_VR){
         this->show();
         this->activateWindow();
     }
@@ -86,6 +86,11 @@ bool ImageExperiment::advanceTrial(){
 
     if (currentTrial < m->size()-1){
         currentTrial++;
+        if (m->getLoopValue() > 0){
+            if (currentTrial > m->getLoopValue()){
+                currentTrial = 0;
+            }
+        }
         return true;
     }
 
@@ -94,8 +99,10 @@ bool ImageExperiment::advanceTrial(){
     return false;
 }
 
-void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
+void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){    
     Experiment::newEyeDataAvailable(data);
+
+    if (manualMode) return;
 
     if (state != STATE_RUNNING) return;
     if (ignoreData) return;
@@ -105,6 +112,21 @@ void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
     computeOnlineFixations(data);
+
+}
+
+void ImageExperiment::resetStudy(){
+    currentTrial = 0;
+    error = "";
+    state = STATE_RUNNING;
+    atLast = false;
+    ignoreData = false;
+    trialState = TSB_CENTER_CROSS;
+
+    drawCurrentImage();
+    stateTimer.setInterval(TIME_START_CROSS);
+    stateTimer.start();
+    if (Globals::EyeTracker::IS_VR) updateSecondMonitorORHMD();
 
 }
 
@@ -175,7 +197,7 @@ void ImageExperiment::nextState(){
         }
 
         stateTimer.setInterval(TIME_IMAGE_1);
-        stateTimer.start();
+        if (!manualMode) stateTimer.start();
         drawCurrentImage();
         return;
     case TSB_FINISH:
@@ -184,65 +206,72 @@ void ImageExperiment::nextState(){
             trialState = TSB_CENTER_CROSS;
             drawCurrentImage();
             stateTimer.setInterval(TIME_START_CROSS);
-            stateTimer.start();
+            if (!manualMode) stateTimer.start();
         }
         else{
 
             // This is done.
             if (!rawdata.finalizeStudy()){
                 error = "Failed on Binding study finalization: " + rawdata.getError();
-                emit(experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
                 return;
             }
 
             // We need to check if both binding bc AND bingin UC are part of this file, otherwise it is ongoing.
-           QStringList studylist = rawdata.getStudies();
+            QStringList studylist = rawdata.getStudies();
             if (studylist.contains(VMDC::Study::BINDING_BC) && studylist.contains(VMDC::Study::BINDING_UC)){
                 rawdata.markFileAsFinalized();
             }
 
 
-            if (!saveDataToHardDisk()) emit(experimentEndend(ER_FAILURE));
-            else emit(experimentEndend(ER_NORMAL));
+            if (!saveDataToHardDisk()) emit Experiment::experimentEndend(ER_FAILURE);
+            else emit Experiment::experimentEndend(ER_NORMAL);
         }
         return;
     case TSB_SHOW:
-        //qWarning() << "ENTER: SHOW" << currentTrial;        
+        //qWarning() << "ENTER: SHOW" << currentTrial;
 
         // Encoding Ends.
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
+        if (!manualMode){
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+        }
 
         trialState = TSB_TRANSITION;
         drawCurrentImage();
+
         stateTimer.setInterval(TIME_WHITE_TRANSITION);
-        stateTimer.start();
+        if (!manualMode) stateTimer.start();
+
         return;
     case TSB_TEST:
         //qWarning() << "ENTER: TEST" << currentTrial;
         trialState = TSB_FINISH;
 
         // Retrieval Ends.
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
-
-        rawdata.finalizeTrial(answer);
+        if (!manualMode){
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+            rawdata.finalizeTrial(answer);
+        }
 
         drawCurrentImage();
+
         stateTimer.setInterval(TIME_FINISH);
-        stateTimer.start();
+        if (!manualMode) stateTimer.start();
+
         return;
     case TSB_TRANSITION:
         //qWarning() << "ENTER: TRANSITION" << currentTrial;
         trialState = TSB_TEST;
 
         // Retrieval begins. We start the new dataset.
-        rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
+        if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
         answer = "N/A";
         drawCurrentImage();
         stateTimer.setInterval(TIME_IMAGE_2_TIMEOUT);
-        stateTimer.start();
+        if (!manualMode) stateTimer.start();
         return;
     }
 
@@ -256,12 +285,14 @@ bool ImageExperiment::addNewTrial(){
     if (currentTrialID.toUpper().contains("SAME")) type = "S";
     else if (currentTrialID.toUpper().contains("DIFFERENT")) type = "D";
 
-    // The type of trial is the right answer in this case.
-    if (!rawdata.addNewTrial(currentTrialID,type,type)){
-        error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
-        return false;
+    if (!manualMode){
+        // The type of trial is the right answer in this case.
+        if (!rawdata.addNewTrial(currentTrialID,type,type)){
+            error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
+            return false;
+        }
+        rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
     }
-    rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
     return true;
 }
 

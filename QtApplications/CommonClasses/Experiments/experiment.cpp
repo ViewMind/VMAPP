@@ -16,6 +16,9 @@ Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(pare
     this->studyType = studyType;
     metaStudyType = studyType;
 
+    // All studies start in manual mode until, it is removed.
+    manualMode = true;
+
 }
 
 void Experiment::setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height){
@@ -40,11 +43,9 @@ QString Experiment::getExperimentDescriptionFile(const QVariantMap &studyConfig)
     return "";
 }
 
-bool Experiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                 const QVariantMap &studyConfig,
-                                 bool useMouse){
-
-    Q_UNUSED(useMouse)
+bool Experiment::startExperiment(const QString &workingDir,
+                                 const QString &experimentFile,
+                                 const QVariantMap &studyConfig){
 
     error = "";
     workingDirectory = workingDir;
@@ -54,7 +55,7 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     QFile expfile(this->getExperimentDescriptionFile(studyConfig));
     if (!expfile.open(QFile::ReadOnly)){
         error = "Could not open experiment configuration file: " + expfile.fileName();
-        emit (experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -67,13 +68,13 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     if (QFile(dataFile).exists()){
         if (!rawdata.loadFromJSONFile(dataFile)){
             error = "Failed loading existing experiment file: " + experimentFile + "even tough it exists: " + rawdata.getError();
-            emit (experimentEndend(ER_FAILURE));
+            emit Experiment::experimentEndend(ER_FAILURE);
             return false;
         }
     }
     else{
         error = "Set experiment file does not exist: "  + dataFile;
-        emit (experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -90,14 +91,14 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     // Configuring the experimet
     if (!manager->parseExpConfiguration(contents)){
         error = "ERROR parsing the configuration file " + expfile.fileName() + ": " + manager->getError();
-        emit (experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
     // Adding the study to the raw data container.
     if (!rawdata.addStudy(studyType,studyConfig,contents,manager->getVersion())){
         error = "Adding the study type: " + rawdata.getError();
-        emit (experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -122,11 +123,15 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     // Last thing to do is to actually set the current study to the study type
     if (!rawdata.setCurrentStudy(studyType)){
         error = "Failed setting current study of " + studyType + ". Reason: " + rawdata.getError();
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
-    if (ExperimentGlobals::SHORT_STUDIES){
+    if (DBUGBOOL(Debug::Options::SHORT_STUDIES)){
+        QString dbug = "DBUG: Short Studies Enabled";
+        LogInterface logger;
+        qDebug() << dbug;
+        logger.appendWarning(dbug);
         manager->enableDemoMode();
     }
 
@@ -137,13 +142,13 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     mwp.maxDispersion =  processingParameters.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW_PX).toReal();
     //mwp.maxDispersion =  35;
     mwp.calculateWindowSize();
-    qDebug() << "Processing parameters" << mwp.sampleFrequency << mwp.minimumFixationLength << mwp.maxDispersion << mwp.getStartWindowSize();
+    //qDebug() << "Processing parameters" << mwp.sampleFrequency << mwp.minimumFixationLength << mwp.maxDispersion << mwp.getStartWindowSize();
 
     if ((mwp.getStartWindowSize() <= 0) || (mwp.sampleFrequency <= 0) || (mwp.minimumFixationLength <= 0) || (mwp.maxDispersion <= 0)){
-        error = "Invalid processing parameeters for MWA. MFL: " + QString::number(mwp.minimumFixationLength)
+        error = "Invalid processing parameeters for MWA.\nMFL: " + QString::number(mwp.minimumFixationLength)
                 + "\nSF: " + QString::number(mwp.sampleFrequency)
                 + "\nMD: " + QString::number(mwp.maxDispersion);
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -152,7 +157,7 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     rMWA.parameters = mwp;
     lMWA.parameters = mwp;
 
-    if (ExperimentGlobals::ENABLE_FIX_LOG){
+    if (DBUGBOOL(Debug::Options::FIX_LOG_ENABLED)){
         QFileInfo info(dataFile);
         QString path = info.absolutePath();
         QString basename = info.baseName();
@@ -164,12 +169,21 @@ bool Experiment::startExperiment(const QString &workingDir, const QString &exper
     rMWA.finalizeOnlineFixationCalculation();
     lMWA.finalizeOnlineFixationCalculation();
 
+    // The experiment is ALWAYS started in manual mode.
+    manager->setTrialCountLoopValue(NUMBER_OF_TRIALS_IN_MANUAL_MODE);
+
     return true;
 }
 
 
+void Experiment::startExperimentNoManualMode(){
+    manager->setTrialCountLoopValue(-1);
+    manualMode = false;
+    resetStudy();
+}
+
 void Experiment::newEyeDataAvailable(const EyeTrackerData &data){
-    emit(updateEyePositions(data.xRight,data.yRight,data.xLeft,data.yLeft));
+    emit Experiment::updateEyePositions(data.xRight,data.yRight,data.xLeft,data.yLeft);
     manager->updateGazePoints(data.xRight,data.xLeft,data.yRight,data.yLeft);
 }
 
@@ -178,8 +192,8 @@ void Experiment::experimenteAborted(){
     this->hide();
 
     QString newfile = moveDataFileToAborted();
-    if (newfile.isEmpty()) emit(experimentEndend(ER_FAILURE));
-    else emit (experimentEndend(ER_ABORTED));
+    if (newfile.isEmpty()) emit Experiment::experimentEndend(ER_FAILURE);
+    else emit Experiment::experimentEndend(ER_ABORTED);
 
 }
 
@@ -276,11 +290,11 @@ bool Experiment::saveDataToHardDisk(){
     QString basename = info.baseName();
     QString idxFile = workingDirectory + "/" + basename + ".idx";
 
-    bool ans = rawdata.saveJSONFile(dataFile,ExperimentGlobals::PRETTY_PRINT_OUTPUT_FILES);
+    bool ans = rawdata.saveJSONFile(dataFile,true);
     if (!ans) return false;
 
     rawdata.clearTrialFieldsFromEachStudy();
-    ans = rawdata.saveJSONFile(idxFile,ExperimentGlobals::PRETTY_PRINT_OUTPUT_FILES);
+    ans = rawdata.saveJSONFile(idxFile,true);
 
     return ans;
 }
@@ -300,14 +314,18 @@ void Experiment::keyPressEvent(QKeyEvent *event){
 
 void Experiment::updateSecondMonitorORHMD(){
     if (Globals::EyeTracker::IS_VR){
-        emit(updateVRDisplay());
+        emit Experiment::updateVRDisplay();
     }
     else if (debugMode){
-        emit(updateBackground(manager->getImage()));
+        emit Experiment::updateBackground(manager->getImage());
     }
 }
 
 void Experiment::keyPressHandler(int keyPressed){
     Q_UNUSED(keyPressed)
+}
+
+void Experiment::resetStudy(){
+
 }
 

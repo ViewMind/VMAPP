@@ -5,8 +5,8 @@ import Qt5Compat.GraphicalEffects
 VMBase {
 
     id: viewStudyDone
-    width: viewCalibrationStart.vmWIDTH
-    height: viewCalibrationStart.vmHEIGHT
+    width: mainWindow.width
+    height: mainWindow.height
 
     function openDiag(){
         studyDoneDiag.open();

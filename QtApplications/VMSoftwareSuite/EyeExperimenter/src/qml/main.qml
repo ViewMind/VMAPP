@@ -18,21 +18,6 @@ ApplicationWindow {
         minimumWidth = width;
         maximumWidth = width;
 
-        //swiperControl.currentIndex = swiperControl.vmIndexHome;
-        //swiperControl.currentIndex = swiperControl.vmIndexPatientList;
-        //swiperControl.currentIndex = swiperControl.vmIndexPresentExperiment;
-        //swiperControl.currentIndex = swiperControl.vmIndexPatientReg;
-        //swiperControl.currentIndex = swiperControl.vmIndexStudyStart;
-        //swiperControl.currentIndex = swiperControl.vmIndexResults;
-        //swiperControl.currentIndex = swiperControl.vmIndexShowReports;
-        //swiperControl.currentIndex = swiperControl.vmIndexMedicalInformation;
-        //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
-        //swiperControl.currentIndex = swiperControl.vmIndexVRDisplay;
-        //swiperControl.currentIndex = swiperControl.vmIndexCalibrationDone;
-        //swiperControl.currentIndex = swiperControl.vmIndexStudyDone;
-        //viewVRDisplay.testCalibrationFailedDialog();
-        //viewAbout.open();
-
     }
 
 
@@ -73,12 +58,9 @@ ApplicationWindow {
         readonly property int vmIndexStudyStart: 3
         readonly property int vmIndexFinishedStudies: 4
         readonly property int vmIndexPatientReg: 5
-        readonly property int vmIndexCalibrationStart: 6
-        readonly property int vmIndexCalibrationDone: 7
-        readonly property int vmIndexPresentExperiment: 8
-        readonly property int vmIndexVRDisplay: 9
-        readonly property int vmIndexStudyDone: 10
-        readonly property int vmIndexViewQC: 11
+        readonly property int vmIndexPresentExperiment: 6
+        readonly property int vmIndexStudyDone: 7
+        readonly property int vmIndexViewQC: 8
 
         id: swiperControl
         currentIndex: vmIndexHome
@@ -131,33 +113,11 @@ ApplicationWindow {
 
 
         Item{
-            ViewCalibration{
-                id: viewCalibrationStart
-                anchors.fill: parent
-            }
-        }
-
-        Item{
-            ViewCalibrationDone{
-                id: viewCalibrationDone
-                anchors.fill: parent
-            }
-        }
-
-        Item{
             ViewPresentExperiment{
                 id: viewPresentExperimet
                 anchors.fill: parent
             }
         }
-
-        Item{
-            ViewVRDisplay {
-                id: viewVRDisplay
-                anchors.fill: parent
-            }
-        }
-
 
         Item{
             ViewStudyDone{
@@ -181,20 +141,15 @@ ApplicationWindow {
             case vmIndexHome:
                 loader.logOut();
                 break;
-            case vmIndexCalibrationStart:
-                viewCalibrationStart.openDiag()
-                break;
-            case vmIndexCalibrationDone:
-                viewCalibrationDone.openDiag()
-                break;
             case vmIndexPresentExperiment:
-                // The continue button is disabled to avoid pressing space or enter and starting the experiment again.
-                // viewStudyStart.testPresentExperimentScreen()
-                viewPresentExperimet.enableContinue();
+                viewPresentExperimet.resetStateMachine();
                 break;
             case vmIndexPatientList:
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewPatList.loadPatients();                
+                break;
+            case vmIndexFinishedStudies:
+                viewFinishedStudies.loadEvaluatorStudies();
                 break;
             case vmIndexViewQC:
                 viewQC.loadStudiesAndGraphs()
@@ -202,7 +157,6 @@ ApplicationWindow {
             case vmIndexStudyStart:
                 viewStudyStart.setPatientName();
                 viewStudyStart.setDefaultSelections();
-                viewVRDisplay.startStudy();
                 break;
             }
 

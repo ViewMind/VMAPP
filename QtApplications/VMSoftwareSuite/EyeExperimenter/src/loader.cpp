@@ -40,6 +40,10 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
         loadingError = true;
     }
 
+    QString titleString = configuration->getString(Globals::VMConfig::INSTITUTION_NAME) + " (" + configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "."
+            + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER) + ")";
+    Globals::SetExperimenterVersion(titleString);
+
     // Loading the settings.
     ConfigurationManager settings;
     cv.clear();
@@ -95,7 +99,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
         }
     }
 
-    if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,Globals::Debug::PRETTY_PRINT_JSON_DB,Globals::Debug::DISABLE_DB_CHECKSUM)){
+    if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,false,DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
         logger.appendError("Could not set local db file: " + localDB.getError());
         loadingError = true;
         return;
@@ -399,6 +403,13 @@ QString Loader::getConfigurationString(const QString &key){
     else return "";
 }
 
+QVariant Loader::getDebugOption(const QString &debugOption){
+   // Since this is for use in the QML/JS part of the code the string literal must be used.
+   QVariant option = Debug::DEBUG_OPTIONS.getVariant(debugOption);
+   if (!option.isValid()) return "";
+   else return option;
+}
+
 bool Loader::getConfigurationBoolean(const QString &key){
     if (configuration->containsKeyword(key)){
         return configuration->getBool(key);
@@ -452,6 +463,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
         if (incomplete_study != ""){
             // An ongoing study requires unbound
+            logger.appendStandard("Setting file for ongoing binding study " + incomplete_study + " for BC");
             filename = incomplete_study;
             new_file = false;
         }
@@ -467,7 +479,8 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         }
 
         if (incomplete_study != ""){
-            // An ongoing study requires unbound
+            // An ongoing study requires bound
+            logger.appendStandard("Setting file for ongoing binding study " + incomplete_study + " for UC");
             filename = incomplete_study;
             new_file = false;
         }
@@ -539,6 +552,8 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     metadata.insert(VMDC::MetadataField::PROC_PARAMETER_KEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
     metadata.insert(VMDC::MetadataField::STATUS,VMDC::StatusType::ONGOING);
     metadata.insert(VMDC::MetadataField::PROTOCOL,protocol);
+    metadata.insert(VMDC::MetadataField::DISCARD_REASON,"");
+    metadata.insert(VMDC::MetadataField::COMMENTS,"");
 
 
     // Creating the subject data
@@ -593,6 +608,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     qreal reference_for_md = qMax(pp.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toReal(),pp.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toReal());
     qreal md_percent = pp.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
     qint32 md_px = qRound(md_percent*reference_for_md/100.0);
+    //qDebug() << "Setting the MD from" << reference_for_md << md_percent << " to " << md_px;
     pp.insert(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW_PX,md_px);
 
     // Setting the QC Parameters that will be used.
@@ -627,7 +643,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         return false;
     }
 
-    if (!rdc.saveJSONFile(filename,ExperimentGlobals::PRETTY_PRINT_OUTPUT_FILES)){
+    if (!rdc.saveJSONFile(filename,true)){
         logger.appendError("Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
         return false;
     }
@@ -748,7 +764,7 @@ void Loader::addOrModifySubject(QString suid, const QString &name, const QString
 }
 
 QVariantMap Loader::filterSubjectList(const QString &filter){
-    return localDB.getDisplaySubjectList(filter);
+    return  localDB.getDisplaySubjectList(filter);
 }
 
 bool Loader::setSelectedSubject(const QString &suid){
@@ -831,8 +847,7 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
 
 void Loader::setCurrentStudyFileForQC(const QString &file){
     configuration->addKeyValuePair(Globals::Share::SELECTED_STUDY,file);
-    //qDebug() << "Processing file" << file;
-    qc.setVMContainterFile(file); // This will start processing in a separate thread.
+    qc.setVMContainterFile(file,localDB.getQCParameters()); // This will start processing in a separate thread.
 }
 
 QStringList Loader::getStudyList() const {
@@ -844,7 +859,7 @@ QVariantMap Loader::getStudyGraphData(const QString &study, qint32 selectedGraph
     //qDebug() << "Entered with" << study << "and" << selectedGraph;
 
     QString sgraph = "";
-    if ((selectedGraph >= 0) && (selectedGraph < VMDC::QCFields::valid.size())){
+    if ((selectedGraph >= 0) && (selectedGraph < NUMBER_OF_QC_GRAPHS)){
         sgraph = VMDC::QCFields::valid.at(selectedGraph);
     }
     else return QVariantMap();
@@ -861,11 +876,19 @@ void Loader::qualityControlFinished(){
     if (qc.getError() != ""){
         logger.appendError("Failed setting selected study to:  " + qc.getSetFileName() + ". Reason: " + qc.getError());
     }
-    emit(qualityControlDone());
+    emit Loader::qualityControlDone();
 }
 
 bool Loader::qualityControlFailed() const {
     return !qc.getError().isEmpty();
+}
+
+bool Loader::setDiscardReasonAndComment(const QString &discard_reason, const QString &comment){
+    if (!qc.setDiscardReasonAndComment(discard_reason,comment)){
+        logger.appendError("Could not set discard reason or comment. Reason: " + qc.getError());
+        return false;
+    }
+    return true;
 }
 
 
@@ -887,7 +910,7 @@ void Loader::sendStudy(){
 
     if (!apiclient.requestReportProcessing(configuration->getString(Globals::Share::SELECTED_STUDY))){
         logger.appendError("Requesting study report generation: " + apiclient.getError());
-        emit(finishedRequest());
+        emit Loader::finishedRequest();
     }
 
 }
@@ -902,7 +925,7 @@ void Loader::receivedRequest(){
         processingUploadError = FAIL_CODE_SERVER_ERROR;
         logger.appendError("Error Receiving Request :"  + apiclient.getError());
         if (apiclient.getLastRequestType() == APIClient::API_SYNC_PARTNER_MEDIC){
-            emit(partnerSequenceDone(false));
+            emit Loader::partnerSequenceDone(false);
             return; // So we don't emit the finsihed request.
         }
     }
@@ -925,7 +948,7 @@ void Loader::receivedRequest(){
             //Debug::prettpPrintQVariantMap(mainData);
 
             // Checking for updates.
-            if (!Globals::Debug::DISABLE_UPDATE_CHECK){
+            if (!DBUGBOOL(Debug::Options::DISABLE_UPDATE_CHECK)){
                 if (mainData.contains(APINames::UpdateParams::UPDATE_VERSION)) {
                     newVersionAvailable = mainData.value(APINames::UpdateParams::UPDATE_VERSION).toString();
                     if (mainData.contains(APINames::UpdateParams::UPDATE_ET_CHANGE)){
@@ -937,19 +960,28 @@ void Loader::receivedRequest(){
                     logger.appendStandard("Update Available: " + newVersionAvailable);
                 }
             }
+            else{
+                QString dbug = "DBUG: Update check is disabled";
+                qDebug() << dbug;
+                logger.appendError(dbug);
+            }
 
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
             logger.appendSuccess("Study file was successfully sent");
-            if (!Globals::Debug::DISABLE_RM_SENT_STUDIES) moveProcessedFiletToProcessedDirectory();
+            if (!DBUGBOOL(Debug::Options::NO_RM_STUDIES)) {
+                moveProcessedFiletToProcessedDirectory();
+            }
+            else{
+                QString dbug = "DBUG: Studies are not moved to sent directory";
+                qDebug() << dbug;
+                logger.appendError(dbug);
+            }
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_UPDATE){
             QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
             if (QFile::exists(expectedPath)){
                 logger.appendSuccess("Received update succesfully. Unzipping");
-
-                // Just to test the update script.
-                //                updater.start();
 
                 QDir dir(".");
                 dir.cdUp();
@@ -990,6 +1022,8 @@ void Loader::receivedRequest(){
 qint32 Loader::wasThereAnProcessingUploadError() const {
     return processingUploadError;
 }
+
+
 
 void Loader::moveProcessedFiletToProcessedDirectory(){
     QString sentFile = configuration->getString(Globals::Share::SELECTED_STUDY);

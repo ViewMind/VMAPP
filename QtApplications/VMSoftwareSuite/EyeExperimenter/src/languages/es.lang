@@ -24,14 +24,12 @@ viewhome_updateNo  = NO;
 viewhome_btnPartners = VINCULACIÓN;
 
 #********************************* DOCTOR MENU *********************************
+viewdrmenu_mode = Mode;
+
+#********************************* PARTNER MENU *********************************
 viewpartner_title = Importar Datos Externos;
 viewpartner_subTitle = Seleccionar vincualación;
 viewpartner_btnImport = IMPORTAR;
-
-#********************************* VIEW VR SCREEN *********************************
-viewvrscreen_btnStartExperiment  = COMENZAR ESTUDIO;
-viewvrscreen_btnStopExperiment   = PARAR ESTUDIO; 
-viewvrscreen_btnStartCalibration = CALIBRAR;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_diagSubTitle = Antes de comenzar, por favor llene los siguientes datos;
@@ -112,7 +110,6 @@ viewstudystart_labelSelPatient = Paciente Seleccionado;
 viewstudystart_labelSelSubject = Sujeto Seleccionado;
 viewstudystart_labelReadingLanguge = Lengua de lectura;
 viewstudystart_labelNBackType = Tipo de NBack;
-viewstudystart_fieldingPauseText = Presione "G" cuando se encuentre listo;
 viewstudystart_labelChoose = Elija los estudios;
 viewstudystart_labelEvaluations = Estudios a realizar;
 viewstudystart_labelPatientConditionsCB = Evaluaciones recomendadas según patología;
@@ -143,11 +140,6 @@ viewdrsel_drpassword = Contraseña;
 viewdrsel_drwrongpass = Contraseña incorrecta;
 viewdrsel_drnopass = No se ha fijado una contraseña;
 
-#********************************* CALIBRATION START SCREEN DIALOG *********************************
-viewcalibstart_viewTitle = Calibración;
-viewcalibstart_viewSubTitle = Para proceder, el EyeTracker se debe calibrar;
-viewcalibstart_btnStart = COMENZAR CALIBRACIÓN;
-
 #********************************* CALIBRATION FAILED DIALOG *********************************
 viewcalibfailed_viewTitle = Error en la Calibracion;
 viewcalibfailed_viewSubTitle = Resultado de cada Ojo;
@@ -156,10 +148,6 @@ viewcalibfailed_msgOK     = OK;
 viewcalibfailed_leftEye   = Ojo Izquierdo;
 viewcalibfailed_rightEye  = Ojo Derecho;
 viewcalibfailed_btnRetry  = REINTENTAR;
-
-#********************************* CALIBRATION DONE SCREEN DIALOG *********************************
-viewcalibdone_viewTitle = FIN DE LA CALIBRACIÓN;
-viewcalibdone_btnContinue = FINALIZAR CALIBRACIÓN;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Evaluación de Lectura;
@@ -173,37 +161,19 @@ viewpresentexp_itemParkinson = Laberinto Parkinson;
 viewpresentexp_itemGoNoGo    = Tarea Go NoGo;
 viewpresentexp_itemNBackVS   = N-Back Type RT Para Entrenamiento;
 viewpresentexp_itemPerception = Estudio de Percepción;
+viewpresentexp_btnStartStudy = COMENZAR EVALUACIÓN;
+viewpresentexp_btnCalibrate = CALIBRATE;
+viewpresentexp_btnStartDemoMode = COMENZAR EXPLICACIÓN;
+viewpresentexp_btnBack = ATRÁS;
+viewpresentexp_msgTitleSubject = Sujeto;
+viewpresentexp_msgTitleState = Estado Activo;
+viewpresentexp_msgTitleAction = Acción;
+viewpresentexp_states = Calibración Activa|Modo de Explicación|Evaluación Activa;
+viewpresentexp_actions = Presione N para avanzar|Presione Escape para frenar estudio|Presione S para indicar 
+objetivos identicos|Presione D para indicar|Presione G para seguir el estudio
+luego de una pausa
+objetivos distintos;
 
-viewpresentexp_readingExp = Mire al <b>punto rojo al costado izquierdo</b> de la pantalla. <br>
-Cuando su mira se encuentre ubicada sobre el punto, este desaparecerá <br>
-y la oración se dibujará. <b>Lea la oración en silencio</b> <br>
-y a un paso normal. Indique el final de la lectura mirando<br> 
-al <b>punto rojo en la esquina derecha inferior.</b><br><br> 
-Repita los pasos hasta finalizar la evaluación.;
-
-viewpresentexp_bindingBCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
-de color dentro de de un marco cuadrado de color. Luego de 2 segundos, <br>
-las images se desvanecerán y un nuevo par de imágenes se aparecerán. <br><br>
-<b>Presione "S"</b> si ambos pares de imágenes contienen los mismos colores <br>
-or <b>presione "D" </b> si alguna de las dos imágenes intercambió los <br>
-colores de las cruces o lo de los marcos. <br><br>
-Las primeras 10 imagenes serán de prueba. <br>
-No serán consideradas en los resultados.;
-
-
-viewpresentexp_bindingUCExp = Dos imágenes aparecerán en la pantalla. Cada una de ellas tiene una cruz<br>
-de color dentro de de un marco cuadrado de color. Luego de 2 segundos, <br>
-las images se desvanecerán y un nuevo par de imágenes se aparecerán. <br><br>
-<b>Presione "S"</b> si ambos pares de imágenes contienen los mismos colores <br>
-or <b>presione "D" </b> si alguno <b>de los colores de las dos</b> <br>
-<b>imágnes fueron reemplazados por un nuevo color</b> <br><br>
-Las primeras 10 imagenes serán de prueba. <br>
-No serán consideradas en los resultados.;
-
-viewpresentexp_fieldingExp = Explicación de la Evaluación <br><b>N-Back</b>;
-
-viewpresentexp_btnContinue = COMENZAR EVALUACIÓN;
-viewpresentexp_btnBack = VOLVER A SELECCION DE ESTUDIOS;
 
 #********************************* PATIENT LIST *********************************
 viewpatientlist_titleSubject = Lista de Sujetos;
@@ -268,13 +238,14 @@ viewexpdone_btnContinue = FINALIZAR EVALUACIÓN;
 #********************************* QC SCREEN *********************************
 viewQC_Title = Control de Calidad;
 viewQC_SubPoints = Número de Puntos de Datos por Ensayo;
-viewQC_SubFixationsR = Número of Fijaciones del Ojo Derecho por Ensayo;
-viewQC_SubFixationsL = Número of Fijaciones del Ojo Izquierdo por Ensayo;
-viewQC_SubGlitches = Número de Fallas por Ensayo;
+viewQC_SubFixationsR = Número of Fijaciones por Ensayo;
 viewQC_SubFrequency = Velocidad de Sampleo Promedio por Ensayo;
 viewQC_Study = Estudio;
 viewQC_WaitTitle = Por favor espere ...;
 viewQC_WaitSubtitle = La información está siendo enviada a nuestros servidores;
+viewQC_subTitle = Verifique la calidad de los datos del estudio;
+viewQC_QC_Index = Índice de Control
+de Calidad;
 viewQC_StudyNameMap = 
 Reading|Lectura|
 Binding BC|Combinación de Colores| 
@@ -293,13 +264,27 @@ Perception 7|Percepción 7|
 Perception 8|Percepción 8;
 viewQC_GraphTitle = Gráficos;
 viewQC_GraphPoints = Puntos de Datos;
-viewQC_GraphFixationsL = Fijaciones (I);
-viewQC_GraphFixationsR = Fijaciones (D);
+viewQC_GraphFixations = Fijaciones;
 viewQC_GraphFreq = Velocidad de Sampleo;
 viewQC_GraphGlitches = Fallas de Sampleo;
 viewQC_btnSend = ENVIAR;
 viewQC_btnBack = VOLVER;
-
+viewQC_btnDiscard = ARCHIVAR;
+viewQC_discardTitle = ARCHIVAR ESTUDIO;
+viewQC_discardSubTitle = Si archiva el estudio, éste no será procesado pero se eliminará de la lista de estudios;
+viewQC_discardReasonLabel = Seleccione el motivo por el cual se archiva el estudio;
+viewQC_discardReasons = 
+low_data_points-Índice de Cotrol de Calidad para los puntos de datos es bajo|
+low_fixations-Índice de Cotrol de Calidad para las fijaciones es bajo|
+low_sample_rate-Índice de Cotrol de Calidad para la velocidad de sampleo es bajo|
+study_instructions_misunderstood-El sujeto con comprendió las instrucciones del estudio|
+bad_subjet_state-El estado del sujeto no era óptimo para el estudio|
+other-Otro;
+viewQC_discardOtherText = Especifique los motivos para archivar este estudio;
+viewQC_commentTitle = Comentarios;
+viewQC_commentSubtitle = Comentarios del evaluador presentes en el reporte final;
+viewQC_commentSizeError = Solo se permiten un máximo de <<L>> líneas de hasta <<C>> caracterers cada una;
+viewQC_btnCancel = CANCEL;
 
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Protocolos Médicos;

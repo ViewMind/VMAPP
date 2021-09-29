@@ -22,13 +22,12 @@
 #include "qualitycontrol.h"
 #include "updater.h"
 
-
 class Loader : public QObject
 {
     Q_OBJECT
 public:
     explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr, CountryStruct *cs = nullptr);
-    ~Loader();
+    ~Loader() override;
 
     //////////////////////////// UI Functions ////////////////////////////
     Q_INVOKABLE QString getStringForKey(const QString &key);
@@ -89,6 +88,7 @@ public:
 
     //////////////////////////// CONFIGURATION FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getConfigurationString(const QString &key);
+    Q_INVOKABLE QVariant getDebugOption(const QString &debugOption);
     Q_INVOKABLE bool getConfigurationBoolean(const QString &key);
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
     Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var);
@@ -104,6 +104,7 @@ public:
     Q_INVOKABLE QVariantMap getStudyGraphData(const QString &study, qint32 selectedGraph);
     Q_INVOKABLE bool qualityControlFailed() const;
     Q_INVOKABLE qint32 wasThereAnProcessingUploadError() const;
+    Q_INVOKABLE bool setDiscardReasonAndComment(const QString &discard_reason, const QString &comment);
 
     ////////////////////////// API REQUESTS ////////////////////////////
     Q_INVOKABLE void requestOperatingInfo();
@@ -177,6 +178,9 @@ private:
     // Processing errors.
     static const qint32 FAIL_CODE_NONE = 0;
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
+
+    // Some constants.
+    static const qint32 NUMBER_OF_QC_GRAPHS = 3;;
 
 };
 
