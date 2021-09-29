@@ -28,6 +28,9 @@ VMBase {
     property int vmQCIndex: 0
     property bool vmQCIndexOK: false
 
+    property string vmQCIndexExplanation: ""
+    property string vmQCIndexExplantionTitle: ""
+
 
     function loadStudiesAndGraphs(){
 
@@ -105,6 +108,25 @@ VMBase {
             graph.vmGraphType = "bar";
             graph.vmFixedScale = [];
         }
+
+        // Get Explanation Text
+        vmQCIndexExplanation = "";
+        if (selectedGraph === vmINDEX_FREQ){
+            vmQCIndexExplanation = loader.getStringForKey("viewQC_limitSampleF")
+        }
+        else if (selectedGraph === vmINDEX_FIXATIONS){
+            vmQCIndexExplanation = loader.getStringForKey("viewQC_limitFixations")
+        }
+        else if (selectedGraph === vmINDEX_GRAPH_POINTS){
+            vmQCIndexExplanation = loader.getStringForKey("viewQC_limitDataPoints")
+        }
+
+        // Separating the explation text: The first line is the title.
+        vmQCIndexExplanation = vmQCIndexExplanation.replace("<<I>>",data["QCThreshold"]);
+        var text_parts = vmQCIndexExplanation.split("\n");
+        vmQCIndexExplantionTitle = text_parts[0];
+        text_parts.shift();
+        vmQCIndexExplanation =text_parts.join("\n");
 
         if ((qcGraphsView.currentIndex < 0) || (qcGraphsView.currentIndex >= vmSubTitleList.length)) return;
 
@@ -519,12 +541,12 @@ VMBase {
 
         ListView {
             id: qcGraphsView
-            width: headerGraph.width*qcGraphList.count;
+            width: headerGraph.width*1.5*qcGraphList.count;
             height: headerGraph.height;
             model: qcGraphList
             orientation: ListView.Horizontal
             delegate: VMSelectorRect {
-                width: headerGraph.width
+                width: headerGraph.width*1.5
             }
             onCurrentIndexChanged: {
                 for (var i = 0; i < model.count; i++){
@@ -903,10 +925,38 @@ VMBase {
             font.family: gothamB.name
             font.pixelSize: 30*viewHome.vmScale
             color: vmQCIndexOK ? ("#47994a") : ("#cc3b26")
-            anchors.centerIn: parent
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: qcIndexTitle.bottom
+            anchors.topMargin: mainWindow.height*0.02
+        }
+
+        Text {
+            id: qcIndextTextValueReference
+            text: vmQCIndexExplantionTitle
+            color: "#297fca"
+            font.family: gothamB.name
+            font.pixelSize: 12*viewHome.vmScale
+            horizontalAlignment: Text.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: qcIndextTextExplanation.top
+            anchors.bottomMargin: mainWindow.height*0.01
+        }
+
+        Text {
+            id: qcIndextTextExplanation
+            text: vmQCIndexExplanation
+            color: "#297fca"
+            font.family: gothamR.name
+            font.pixelSize: 12*viewHome.vmScale
+            horizontalAlignment: Text.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: mainWindow.height*0.05
         }
 
     }
+
+
 
     //////////////////////////////////////////////// BUTTONS /////////////////////////////////////////////////////
 

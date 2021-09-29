@@ -238,7 +238,7 @@ viewexpdone_btnContinue = FINALIZAR EVALUACIÓN;
 #********************************* QC SCREEN *********************************
 viewQC_Title = Control de Calidad;
 viewQC_SubPoints = Número de Puntos de Datos por Ensayo;
-viewQC_SubFixationsR = Número of Fijaciones por Ensayo;
+viewQC_SubFixations = Número of Fijaciones por Ensayo;
 viewQC_SubFrequency = Velocidad de Sampleo Promedio por Ensayo;
 viewQC_Study = Estudio;
 viewQC_WaitTitle = Por favor espere ...;
@@ -285,6 +285,20 @@ viewQC_commentTitle = Comentarios;
 viewQC_commentSubtitle = Comentarios del evaluador presentes en el reporte final;
 viewQC_commentSizeError = Solo se permiten un máximo de <<L>> líneas de hasta <<C>> caracterers cada una;
 viewQC_btnCancel = CANCEL;
+viewQC_limitDataPoints = Valor deseado de al menos <<I>>. 
+Esto asegura que no se haya 
+producido una pérdida signficativa 
+de datos;
+viewQC_limitFixations = Valor deseado de al menos <<I>>. 
+Esto asegura que el 
+comportamiento tanto del 
+sujeto como de sistema a 
+caído dentro de los parámetros 
+establecidos;
+viewQC_limitSampleF = Valor deseado de al menos <<I>>. 
+Esto aseguro que el seguidor o
+cular ha funcionado como se 
+esperaba;
 
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Protocolos Médicos;

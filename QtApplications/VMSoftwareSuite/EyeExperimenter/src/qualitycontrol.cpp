@@ -5,6 +5,7 @@ const char * QualityControl::UPPER_REF_DATA   = "UpperREFData";
 const char * QualityControl::LOWER_REF_DATA   = "LowerREFData";
 const char * QualityControl::QC_INDEX         = "QCIndex";
 const char * QualityControl::QC_OK            = "QCOk";
+const char * QualityControl::QC_THRESHOLD     = "QCThreshold";
 
 QualityControl::QualityControl()
 {
@@ -300,6 +301,7 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
     temp[LOWER_REF_DATA] = refPointsPerTrial;
     temp[QC_INDEX] = qc_dpoint_index;
     temp[QC_OK] = qc_ok_points;
+    temp[QC_THRESHOLD] = threshold_points;
     studyQC.insert(VMDC::QCFields::POINTS,temp);
 
     temp[GRAPH_DATA] = fixationsPerTrial;
@@ -307,6 +309,7 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
     temp[LOWER_REF_DATA] = refNFixations;
     temp[QC_INDEX] = qc_fix_index;
     temp[QC_OK] = qc_ok_fix;
+    temp[QC_THRESHOLD] = threshold_fix;
     studyQC.insert(VMDC::QCFields::FIXATIONS,temp);
 
     temp.clear();
@@ -315,6 +318,7 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
     temp[LOWER_REF_DATA] = lowerRefFreq;
     temp[QC_INDEX] = qc_freq_index;
     temp[QC_OK] = qc_ok_f;
+    temp[QC_THRESHOLD] = threshold_f;
     studyQC.insert(VMDC::QCFields::AVG_FREQ,temp);
 
     qualityControlData.insert(studyType,studyQC);

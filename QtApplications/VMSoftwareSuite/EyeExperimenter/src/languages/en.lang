@@ -284,6 +284,18 @@ viewQC_commentTitle = Comments;
 viewQC_commentSubtitle = Evaluator comments to be included in the final report;
 viewQC_commentSizeError = Only a maximum of  <<L>> lines of up to  <<C>> characters is allowed;
 viewQC_btnCancel = CANCEL;
+viewQC_limitDataPoints = Desired value to be at least <<I>>. 
+This ensures that not signficant 
+loss of data ocurred.;
+viewQC_limitFixations = Desired value to be at least <<I>>. 
+This ensures that subject and 
+application behaviour during the 
+study falls within expected 
+parameters.;
+viewQC_limitSampleF = Desired value to be at least <<I>>. 
+This ensures that headset worked
+as expected;
+
 
 #********************************* PROTOCOLSCREEN SCREEN *********************************
 viewprotocol_diagTitle = Medical Protocols;

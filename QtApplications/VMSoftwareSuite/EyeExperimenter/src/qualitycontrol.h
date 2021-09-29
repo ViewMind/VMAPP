@@ -52,6 +52,7 @@ private:
     static const char * UPPER_REF_DATA;
     static const char * QC_INDEX;
     static const char * QC_OK;
+    static const char * QC_THRESHOLD;
 
     bool computeQualityControlVectors(const QString &studyType, const QString &metaStudyName);
 };
