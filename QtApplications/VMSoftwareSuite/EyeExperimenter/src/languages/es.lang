@@ -169,10 +169,11 @@ viewpresentexp_msgTitleSubject = Sujeto;
 viewpresentexp_msgTitleState = Estado Activo;
 viewpresentexp_msgTitleAction = Acción;
 viewpresentexp_states = Calibración Activa|Modo de Explicación|Evaluación Activa;
-viewpresentexp_actions = Presione N para avanzar|Presione Escape para frenar estudio|Presione S para indicar 
-objetivos identicos|Presione D para indicar|Presione G para seguir el estudio
-luego de una pausa
-objetivos distintos;
+viewpresentexp_actions = Presione N para avanzar|Presione Escape para 
+frenar estudio|Presione S para indicar 
+objetivos identicos|Presione D para indicar
+objetivos distintos|Presione G para seguir el 
+estudio luego de una pausa;
 
 
 #********************************* PATIENT LIST *********************************
