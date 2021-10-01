@@ -20,41 +20,39 @@ void GoNoGoExperiment::onTimeOut(){
     case GNGS_CROSS:
 
         if (!addNewTrial()){
-            emit(experimentEndend(ER_FAILURE));
+            emit Experiment::experimentEndend(ER_FAILURE);
             stateTimer.stop();
             return;
         }
-        rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
+
+
+        if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
 
         //qDebug() << "DRAWING TRIAL";
         m->drawCurrentTrial();
         stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
-        stateTimer.start();
+        if (!manualMode) stateTimer.start();
         gngState = GNGS_ESTIMULUS;
-#ifdef DBUG_FIX_TO_MOVE
-        mtimer.start();
-#endif
         break;
     case GNGS_ESTIMULUS:
-#ifdef DBUG_FIX_TO_MOVE
-        qDebug() << "Timeout @ " << mtimer.elapsed();
-        qDebug() << "================================";
-#endif
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
-        rawdata.finalizeTrial("");
+
+        if (!manualMode) {
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+            rawdata.finalizeTrial("");
+        }
 
         if (!m->drawCross()){
 
             // Experiment is finished and marking as such. No ongoing for go no go.
             if (!rawdata.finalizeStudy()){
                 error = "Failed on GoNoGo finalization because: " + rawdata.getError();
-                emit(experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
                 stateTimer.stop();
                 return;
             }
-            rawdata.markFileAsFinalized();
 
+            rawdata.markFileAsFinalized();
             rMWA.finalizeOnlineFixationLog();
             lMWA.finalizeOnlineFixationLog();
 
@@ -64,17 +62,15 @@ void GoNoGoExperiment::onTimeOut(){
             if (error.isEmpty()) er = ER_NORMAL;
             else er = ER_WARNING;
             if (!saveDataToHardDisk()){
-                emit(experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
             }
-            else emit(experimentEndend(er));
-#ifdef DBUG_FIX_TO_MOVE
-            qDebug() << "TOTAL TIME" << totalTimer.elapsed();
-#endif
+            else emit Experiment::experimentEndend(er);
+
             return;
         }
         else{
             stateTimer.setInterval(GONOGO_TIME_CROSS);
-            stateTimer.start();
+            if (!manualMode) stateTimer.start();
             gngState = GNGS_CROSS;
         }
         break;
@@ -83,10 +79,10 @@ void GoNoGoExperiment::onTimeOut(){
 }
 
 bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                       const QVariantMap &studyConfig, bool useMouse){
+                                       const QVariantMap &studyConfig){
 
-    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse)){
-        emit(experimentEndend(ER_FAILURE));
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)){
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -94,7 +90,7 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
     processingParameters = setGoNoGoTargetBoxes(processingParameters);
     if (!rawdata.setProcessingParameters(processingParameters)){
         error = "Failed to set processing parameters when adding gonogo targetboxes";
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -104,28 +100,30 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
 
     m->drawCross();
     stateTimer.setInterval(GONOGO_TIME_CROSS);
-    stateTimer.start();
+    //stateTimer.start();
     gngState = GNGS_CROSS;
-
-    if (!Globals::EyeTracker::IS_VR || (useMouse)){
-        this->show();
-        this->activateWindow();
-    }
-
-    //rMWA.setMaximumFixationLength(Globals::EyeTracker::GONOGO_MAX_FIXATION_LENGTH);
-    //lMWA.setMaximumFixationLength(Globals::EyeTracker::GONOGO_MAX_FIXATION_LENGTH);
-
     updateSecondMonitorORHMD();
-
-#ifdef DBUG_FIX_TO_MOVE
-    totalTimer.start();
-#endif
 
     return true;
 }
 
+void GoNoGoExperiment::resetStudy(){
+    m->resetStudy();
+    m->drawCross();
+    stateTimer.setInterval(GONOGO_TIME_CROSS);
+    gngState = GNGS_CROSS;
+    updateSecondMonitorORHMD();
+
+    if (!manualMode){
+        stateTimer.start();
+    }
+}
+
 void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
+
+    // During manual mode, eye tracking data is ignored for everything except updating the eye positions.
+    if (manualMode) return;
 
     if (state != STATE_RUNNING) return;
 
@@ -172,7 +170,6 @@ void GoNoGoExperiment::keyPressHandler(int keyPressed){
         return;
     }
     else if (keyPressed == Qt::Key_N){
-        //qDebug() << "KEY N";
         onTimeOut();
         return;
     }
@@ -194,9 +191,11 @@ bool GoNoGoExperiment::addNewTrial(){
     qint32 trial_id = parts.last().toInt();
     QString trial_type = GoNoGoParser::TrialTypeList.at(trial_id);
 
-    if (!rawdata.addNewTrial(parts.first(),trial_type,"")){
-        error = "Failed in creating go no for trial for header " + temp + ":  " + rawdata.getError();
-        return false;
+    if (!manualMode) {
+        if (!rawdata.addNewTrial(parts.first(),trial_type,"")){
+            error = "Failed in creating go no for trial for header " + temp + ":  " + rawdata.getError();
+            return false;
+        }
     }
     return true;
 }

@@ -20,7 +20,6 @@ static CountryStruct countries;
 namespace Globals {
 
    QString API_URL;
-
    QString REGION;
 
    namespace Share {
@@ -33,6 +32,11 @@ namespace Globals {
       QString PROCESSING_PARAMETER_KEY = "";
       qreal VRSCALING = 1.0;
    }
+}
+
+// Debug Structure
+namespace Debug {
+   ConfigurationManager DEBUG_OPTIONS;
 }
 
 int main(int argc, char *argv[])
@@ -48,12 +52,12 @@ int main(int argc, char *argv[])
     else{
 
         if (!defines.containsKeyword(Globals::VMAppSpec::ET)){
-            logger.appendError("EyeTracker Specification is missing from app spect");
+            logger.appendError("EyeTracker Specification is missing from app spec");
             return 0;
         }
 
         if (!defines.containsKeyword(Globals::VMAppSpec::Region)){
-            logger.appendError("Application region is missing from app spect");
+            logger.appendError("Application region is missing from app spec");
             return 0;
         }
 
@@ -71,7 +75,12 @@ int main(int argc, char *argv[])
             return 0;
         }
 
-        Globals::SetExperimenterVersion(); // This basically will show the correct information in the title bar.
+        // Loading the DEBUG Options. This needs to happen BEFORE Setup Experimenter Version so as to ensure that the options oppear in the title bar.
+        QString error = Debug::LoadOptions(Globals::Paths::DEBUG_OPTIONS_FILE);
+        if (error != ""){
+            logger.appendError("Loading Debug Options File: " + error);
+        }
+
     }
 
     if (!QSslSocket::supportsSsl()){

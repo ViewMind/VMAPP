@@ -11,14 +11,14 @@ ReadingExperiment::ReadingExperiment(QWidget *parent, const QString &study_type)
 }
 
 bool ReadingExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                        const QVariantMap &studyConfig, bool useMouse){
+                                        const QVariantMap &studyConfig){
 
 
-    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse)) return false;
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)) return false;
 
     // Configure for VR or no values.
     QVariantMap config;
-    config.insert(ReadingManager::CONFIG_IS_USING_VR,(Globals::EyeTracker::IS_VR && (!useMouse)));
+    config.insert(ReadingManager::CONFIG_IS_USING_VR,Globals::EyeTracker::IS_VR);
     m->configure(config);
 
     // Computing the tolerance for the reading experiment.
@@ -37,7 +37,7 @@ bool ReadingExperiment::startExperiment(const QString &workingDir, const QString
 
     // This window is shown and given focus.
     //qDebug() << useMouse << Globals::EyeTracker::IS_VR;
-    if (!Globals::EyeTracker::IS_VR || (useMouse)){
+    if (!Globals::EyeTracker::IS_VR){
         this->show();
         this->activateWindow();
     }
@@ -51,7 +51,7 @@ bool ReadingExperiment::startExperiment(const QString &workingDir, const QString
     currentTrialID = QString::number(phrase.getID());
     if (!rawdata.addNewTrial(currentTrialID,phrase.getPhrase(),phrase.getRightAns())){
         error = "Failed to add new trial " + currentTrialID + ": " + rawdata.getError();
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
@@ -69,6 +69,8 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // Nothing should be done if the state is NOT running.
     if (state != STATE_RUNNING) return;
 
+    if (manualMode) return;
+
     Experiment::newEyeDataAvailable(data);
 
     //qDebug() << "READING DATA: " << data.toString();
@@ -76,30 +78,30 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // Determining what character the user is looking at.
     qint32 x,y;
     QList<qint32> indL, indR;
-    qreal rx, ry, lx, ly;
+    //qreal rx, ry, lx, ly;
     if (data.isLeftZero()){
         x = data.xRight;
         y = data.yRight;
         indR = calculateWordAndCharacterPostion(x,y);
         indL << -1 << -1;
-        lx = 0; ly = 0;
-        rx = x; ry = y;
+        //        lx = 0; ly = 0;
+        //        rx = x; ry = y;
     }
     else if (data.isRightZero()){
         x = data.xLeft;
         y = data.yLeft;
         indL = calculateWordAndCharacterPostion(x,y);
         indR << -1 << -1;
-        lx = x; ly = y;
-        rx = 0; ry = 0;
+        //        lx = x; ly = y;
+        //        rx = 0; ry = 0;
     }
     else{
         x = static_cast<qint32>(data.avgX());
         y = static_cast<qint32>(data.avgY());
         indL = calculateWordAndCharacterPostion(data.xLeft,data.yLeft);
         indR = calculateWordAndCharacterPostion(data.xRight,data.yRight);
-        lx = data.xLeft; ly = data.yLeft;
-        rx = data.xRight; ry = data.yRight;
+        //        lx = data.xLeft; ly = data.yLeft;
+        //        rx = data.xRight; ry = data.yRight;
     }
 
     // Data is ONLY saved when looking at a phrase.
@@ -142,9 +144,15 @@ void ReadingExperiment::advanceToTheNextPhrase(){
         rawdata.finalizeTrial(response);
 
 
-        // I move on to the next question only I'm in a question or phrase qstate.        
+        // I move on to the next question only I'm in a question or phrase qstate.
         if (currentQuestion < m->size()-1){
             currentQuestion++;
+
+            if (m->getLoopValue() > 0){
+                if (currentQuestion > m->getLoopValue()){
+                    currentQuestion = 0;
+                }
+            }
 
             // We just finished a question so now we advance.
             ReadingParser::Phrase phrase = m->getPhrase(currentQuestion);
@@ -152,7 +160,7 @@ void ReadingExperiment::advanceToTheNextPhrase(){
 
             if (!rawdata.addNewTrial(currentTrialID,phrase.getPhrase(),phrase.getRightAns())){
                 error = "Failed to add new trial " + currentTrialID + ": " + rawdata.getError();
-                emit(experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
                 return;
             }
 
@@ -164,7 +172,7 @@ void ReadingExperiment::advanceToTheNextPhrase(){
             // Finalizing the study and marking it as finalized. Reading has no other parts.
             if (!rawdata.finalizeStudy()){
                 error = "Failed on Reading study finalization: " + rawdata.getError();
-                emit (experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
                 return;
             }
             rawdata.markFileAsFinalized();
@@ -173,11 +181,11 @@ void ReadingExperiment::advanceToTheNextPhrase(){
             lMWA.finalizeOnlineFixationLog();
 
             if (!saveDataToHardDisk()){
-                emit (experimentEndend(ER_FAILURE));
+                emit Experiment::experimentEndend(ER_FAILURE);
                 return;
             }
             if (error.isEmpty()) emit(experimentEndend(ER_NORMAL));
-            else emit (experimentEndend(ER_WARNING));
+            else emit Experiment::experimentEndend(ER_WARNING);
             return;
         }
     }
@@ -222,6 +230,22 @@ void ReadingExperiment::determineQuestionState(){
         break;
     }
 
+}
+
+void ReadingExperiment::resetStudy(){
+
+    // Setting the first question.
+    currentQuestion = 0;
+
+    // Allways start drawing the point.
+    qstate = ReadingManager::ReadingManager::QS_POINT;
+    currentTrialID = "";
+
+    // The current state is running.
+    state = STATE_RUNNING;
+    m->drawPhrase(qstate,currentQuestion);
+
+    updateSecondMonitorORHMD();
 }
 
 void ReadingExperiment::keyPressHandler(int keyPressed){
@@ -277,10 +301,10 @@ void ReadingExperiment::appendEyeTrackerData(const EyeTrackerData &data,
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
     rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateReadingRawDataVector(data.time,
-                                                                               data.xRight,data.yRight ,data.xLeft,data.yLeft,
-                                                                               data.pdRight,data.pdLeft,
-                                                                               characterIndexR,characterIndexL,
-                                                                               wordIndexR,wordIndexL));
+                                                                                    data.xRight,data.yRight ,data.xLeft,data.yLeft,
+                                                                                    data.pdRight,data.pdLeft,
+                                                                                    characterIndexR,characterIndexL,
+                                                                                    wordIndexR,wordIndexL));
 
 }
 

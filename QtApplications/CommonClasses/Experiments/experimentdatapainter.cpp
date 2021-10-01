@@ -22,14 +22,12 @@ void ExperimentDataPainter::updateGazePosition(){
 }
 
 void ExperimentDataPainter::configure(const QVariantMap &configuration){
-    Q_UNUSED(configuration);
+    Q_UNUSED(configuration)
 }
 
 
 void ExperimentDataPainter::updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl){
-#ifndef ENABLE_GAZE_FOLLOW
-    return;
-#endif
+    if (!DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW)) return;
     gazeXl = xl;
     gazeXr = xr;
     gazeYl = yl;
@@ -38,11 +36,7 @@ void ExperimentDataPainter::updateGazePoints(qreal xr, qreal xl, qreal yr, qreal
 }
 
 void ExperimentDataPainter::redrawGazePoints(){
-
-#ifndef ENABLE_GAZE_FOLLOW
-    return;
-#endif
-
+    if (!DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW)) return;
     // Recreating the eye followers
     leftEyeTracker = canvas->addEllipse(0,0,2*R,2*R,QPen(),QBrush(QColor(0,0,255,100)));
     rightEyeTracker = canvas->addEllipse(0,0,2*R,2*R,QPen(),QBrush(QColor(0,255,0,100)));
@@ -62,6 +56,14 @@ QPixmap ExperimentDataPainter::getImage() const{
     painter.setRenderHint(QPainter::Antialiasing);
     canvas->render(&painter);
     return image;
+}
+
+void ExperimentDataPainter::setTrialCountLoopValue(qint32 loopValue){
+    trialCountLoopValue = loopValue;
+}
+
+qint32 ExperimentDataPainter::getLoopValue() const {
+    return trialCountLoopValue;
 }
 
 QImage ExperimentDataPainter::getQImage() const{

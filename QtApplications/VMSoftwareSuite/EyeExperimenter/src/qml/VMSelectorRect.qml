@@ -8,7 +8,7 @@ Item {
     readonly property int vmFontSize: 12*viewHome.vmScale
 
     height: vmHeight
-    width: selectedRect.width
+    //width: selectedRect.width
 
     MouseArea {
         id: selectArea
@@ -27,7 +27,7 @@ Item {
         border.color: "#EDEDEE"
         border.width: mainWindow.width*0.001
         height: vmHeight
-        width: headerStudy.width
+        width: vmSelectorRect.width
         anchors.left: parent.left
         anchors.top: parent.top
         Text {
@@ -36,9 +36,8 @@ Item {
             font.pixelSize: vmFontSize
             text: vmText
             color: vmIsSelected? "#ffffff" : "#000000"
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: mainWindow.width*0.016
+            horizontalAlignment: Text.AlignHCenter
+            anchors.centerIn: parent
         }
     }
 

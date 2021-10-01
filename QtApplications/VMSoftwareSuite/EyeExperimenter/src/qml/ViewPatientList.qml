@@ -12,7 +12,7 @@ VMBase {
     property bool disableStudyStart: false;
 
     readonly property string vmSORT_INDEX_SUBJECT: "name"
-    readonly property string vmSORT_INDEX_CREATION_DATE: "creation_date"
+    readonly property string vmSORT_INDEX_CREATION_DATE: "creation_date_index"
     readonly property string vmSORT_INDEX_ID: "supplied_institution_id"
 
 
@@ -151,7 +151,7 @@ VMBase {
                     // SET the protocol and the doctor.
                     if (protocolSelection.vmCurrentIndex > 0 ) viewStudyStart.vmSelectedProtocol = protocolSelection.vmCurrentText
                     else viewStudyStart.vmSelectedProtocol = "";
-                    //console.log(studyPreSetup.doctorList[doctorSelection.vmCurrentIndex]["metadata"]);
+                    //console.log("Setting selected doctor to: " + studyPreSetup.doctorList[doctorSelection.vmCurrentIndex]["metadata"]);
                     viewStudyStart.vmSelectedMedic = studyPreSetup.doctorList[doctorSelection.vmCurrentIndex]["metadata"]
                     loader.setSettingsValue("last_selected_protocol",protocolSelection.vmCurrentText);
                     studyPreSetup.close();
@@ -179,6 +179,7 @@ VMBase {
         OLS.setModelList( loader.filterSubjectList(filterText) );
 
         // Default is descending order of creation date.
+        headerCreationDate.setIndicator(false);
         OLS.sortByIndex(vmSORT_INDEX_CREATION_DATE,OLS.ORDER_DESCENDING);
 
         // Adding all the elements to the patient list.
@@ -231,6 +232,8 @@ VMBase {
         // Settign the titles for the medical record list and the medical record info screen.
         //viewMedRecordList.vmPatientName = displayName;
         //viewMedicalInformation.vmPatientName = displayName;
+
+        //console.log("Setting Current Patient to: " + patientList.get(patientListView.currentIndex).local_id);
 
         if (!loader.setSelectedSubject(patientList.get(patientListView.currentIndex).local_id)){
             vmErrorDiag.vmErrorCode = vmErrorDiag.vmErrorCodeNotClose;
@@ -315,8 +318,7 @@ VMBase {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: mainWindow.width*0.016
-            onClicked: {
-                viewFinishedStudies.loadEvaluatorStudies();
+            onClicked: {                
                 swiperControl.currentIndex = swiperControl.vmIndexFinishedStudies;
             }
         }
@@ -387,94 +389,45 @@ VMBase {
         anchors.left: toolBar.left
         height: mainWindow.height*0.043
 
-        Rectangle {
+        VMTableHeader {
             id: headerPatient
-            color: "#ffffff"
-            border.width: mainWindow.width*0.002
-            border.color: "#EDEDEE"
-            radius: 4
             width: vmTableWidth/3
             height: parent.height
-
-            MouseArea {
-                id: subjectMouseArea
-                anchors.fill: parent
-                onClicked: {
-                    OLS.toggleSortOrder();
-                    OLS.sortByIndex(vmSORT_INDEX_SUBJECT);
-                    fillOutPatientList();
-                }
+            vmText: loader.getStringForKey("viewpatientlist_headerSubject");
+            vmIndicatorVisible: true
+            onHeaderClicked: {
+                //OLS.toggleSortOrder();
+                OLS.setSortOrderByBoolean(headerPatient.indicatorStateIsUp())
+                OLS.sortByIndex(vmSORT_INDEX_SUBJECT);
+                fillOutPatientList();
             }
-
-            Text {
-                id: patientText
-                text:loader.getStringForKey("viewpatientlist_headerSubject");
-                width: parent.width
-                font.family: gothamB.name
-                font.pixelSize: 15*viewHome.vmScale
-                horizontalAlignment: Text.AlignHCenter
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
         }
 
-        Rectangle {
+        VMTableHeader {
             id: headerID
-            color: "#ffffff"
-            border.width: mainWindow.width*0.002
-            border.color: "#EDEDEE"
-            radius: 4
             width: headerPatient.width
             height: parent.height
-
-            MouseArea {
-                id: idMouseArea
-                anchors.fill: parent
-                onClicked: {
-                    OLS.toggleSortOrder();
-                    OLS.sortByIndex(vmSORT_INDEX_ID);
-                    fillOutPatientList();
-                }
-            }
-
-            Text {
-                id: idText
-                text: "ID";
-                width: parent.width
-                font.family: gothamB.name
-                font.pixelSize: 15*viewHome.vmScale
-                horizontalAlignment: Text.AlignHCenter
-                anchors.verticalCenter: parent.verticalCenter
+            vmText: "ID";
+            vmIndicatorVisible: true
+            onHeaderClicked: {
+                //OLS.toggleSortOrder();
+                OLS.setSortOrderByBoolean(headerID.indicatorStateIsUp())
+                OLS.sortByIndex(vmSORT_INDEX_ID);
+                fillOutPatientList();
             }
         }
 
-        Rectangle {
+        VMTableHeader {
             id: headerCreationDate
-            color: "#ffffff"
-            border.width: mainWindow.width*0.002
-            border.color: "#EDEDEE"
-            radius: 4
             width: headerPatient.width
             height: parent.height
-
-            MouseArea {
-                id: creationDateMouseArea
-                anchors.fill: parent
-                onClicked: {
-                    OLS.toggleSortOrder();
-                    OLS.sortByIndex(vmSORT_INDEX_CREATION_DATE);
-                    fillOutPatientList();
-                }
-            }
-
-            Text {
-                id: creationDateText
-                text: loader.getStringForKey("viewpatientlist_headerCreationDate");
-                width: parent.width
-                font.family: gothamB.name
-                font.pixelSize: 15*viewHome.vmScale
-                horizontalAlignment: Text.AlignHCenter
-                anchors.verticalCenter: parent.verticalCenter
+            vmText: loader.getStringForKey("viewpatientlist_headerCreationDate");
+            vmIndicatorVisible: true
+            onHeaderClicked: {
+                //OLS.toggleSortOrder();
+                OLS.setSortOrderByBoolean(headerCreationDate.indicatorStateIsUp())
+                OLS.sortByIndex(vmSORT_INDEX_CREATION_DATE);
+                fillOutPatientList();
             }
         }
 

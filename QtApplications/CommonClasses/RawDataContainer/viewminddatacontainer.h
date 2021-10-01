@@ -50,12 +50,14 @@ public:
     bool setSubjectData(const QVariantMap &subject_data);
     void setQCParameters(const QVariantMap &qcparams);
 
-    ////////////////////////// CUSTOM FIELDS
+    ////////////////////////// SET SPECIFICT FIELD
     void addCustomMetadataFields(const QString field_name, const QString field_value);
 
     bool setProcessingParameters(const QVariantMap &pp);
 
     bool setQCVector(const QString &study, const QString &qcfield ,const QVariantList &vector);
+
+    bool setQCValue(const QString &studyName, const QString &qcfield, const QVariant &value);
 
     ////////////////////////// FUNCTIONS FOR ADDING STUDY DATA.
 

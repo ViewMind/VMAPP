@@ -10,7 +10,6 @@ Rectangle {
     readonly property int vmTRACKER_ITEM_STATE_NOTDONE: 1    
     readonly property int vmTRACKER_ITEM_STATE_CURRENT: 2
 
-
     readonly property double vmSpaceBetweenNumberAndTitle: 0.005
 
     property int vmOrderInTracker: 1

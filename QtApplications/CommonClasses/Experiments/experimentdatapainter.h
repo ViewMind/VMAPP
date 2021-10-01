@@ -7,9 +7,10 @@
 #include <QApplication>
 #include "../ConfigurationManager/configurationmanager.h"
 #include "../eyetracker_defines.h"
+#include "../debug.h"
 
 // Number of actual trials to have in demo mode
-#define   NUMBER_OF_TRIALS_IN_DEMO_MODE                 3
+#define   NUMBER_OF_TRIALS_IN_DEMO_MODE                 5
 
 class ExperimentDataPainter
 {
@@ -33,6 +34,12 @@ public:
 
     // Trims the number of trials to number in demo mode.
     virtual void enableDemoMode(){}
+
+    // This will make the next trial after loopValue be 0, effectively putting the study in a cycle.
+    void setTrialCountLoopValue(qint32 loopValue);
+
+    // Some studies have the trial counter control outside, so we need to get this value.
+    qint32 getLoopValue() const;
 
     QPixmap getImage() const;
     QImage getQImage() const;
@@ -66,6 +73,8 @@ protected:
     QGraphicsScene *canvas;
     QString error;
     QString versionString;
+
+    qint32 trialCountLoopValue;
 
 };
 

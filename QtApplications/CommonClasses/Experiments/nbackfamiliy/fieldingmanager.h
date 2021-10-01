@@ -25,11 +25,11 @@ public:
     FieldingManager();
 
     // Basic functions to reimplement.
-    bool parseExpConfiguration(const QString &contents);
-    void init(qreal display_resolution_width, qreal display_resolution_height);
-    void configure(const QVariantMap &config);
-    qint32 size() const {return fieldingTrials.size();}
-    qreal sizeToProcess() const {return fieldingTrials.size()*3;}
+    bool parseExpConfiguration(const QString &contents) override;
+    void init(qreal display_resolution_width, qreal display_resolution_height) override;
+    void configure(const QVariantMap &config) override;
+    qint32 size() const override {return fieldingTrials.size();}
+    qreal sizeToProcess() const override {return fieldingTrials.size()*3;}
 
     // The actual drawing function for the background.
     void drawBackground();

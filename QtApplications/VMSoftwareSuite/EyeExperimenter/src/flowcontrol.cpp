@@ -172,11 +172,13 @@ void FlowControl::stopRenderingVR(){
 void FlowControl::onRequestUpdate(){
     if (renderState == RENDERING_EXPERIMENT){
         if (eyeTracker == nullptr) {
-            logger.appendWarning("VR Update Request: Rendering experiment with a non existant eyeTracker object");
+            logger.appendError("VR Update Request: Rendering experiment with a non existant eyeTracker object. Force stopping rendering");
+            openvrco->stopRendering();
             return;
         }
         if (experiment == nullptr) {
-            logger.appendWarning("VR Update Request: Rendering experiment with a non existant experiment object");
+            logger.appendError("VR Update Request: Rendering experiment with a non existant experiment object. Force stopping rendering");
+            openvrco->stopRendering();
             return;
         }
         QImage image = experiment->getVRDisplayImage();
@@ -191,11 +193,12 @@ void FlowControl::onRequestUpdate(){
         painter.setBrush(QBrush(QColor(0,0,255,100)));
         painter.drawEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
 
-        if (Globals::Debug::SHOW_EYE_POSITION){
-            openvrco->setImage(&displayImage);
+        if (!DBUGBOOL(Debug::Options::SHOW_EYES_IN_STUDY)){
+            openvrco->setImage(&image);
         }
         else{
-            openvrco->setImage(&image);
+            openvrco->setImage(&displayImage);
+
         }
 
         emit(newImageAvailable());
@@ -312,6 +315,19 @@ void FlowControl::calibrateEyeTracker(quint8 eye_to_use){
     if (Globals::EyeTracker::IS_VR) {
         eyeTracker->enableUpdating(true); // To ensure that eyetracking data is gathered.
     }
+
+    if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != ""){
+        // Check if the file exists
+        QString coefficient_file = DBUGSTR(Debug::Options::LOAD_CALIBRATION_K);
+        if (QFile(coefficient_file).exists()){
+            calibrationParams.forceCalibration = false;
+            calibrationParams.name = coefficient_file;
+            QString dbug = "DBUG: Loading calibration coefficients " + coefficient_file;
+            qDebug() << dbug;
+            logger.appendWarning(dbug);
+        }
+    }
+
     eyeTracker->calibrate(calibrationParams);
 }
 
@@ -521,8 +537,7 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     // Start the experiment.
     experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
                                 configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
-                                study_config,
-                                configuration->getBool(Globals::VMPreferences::USE_MOUSE));
+                                study_config);
 
 
     if (monitor != nullptr){
@@ -544,6 +559,11 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
 
 
     return true;
+}
+
+void FlowControl::startStudy(){
+    if (experiment != nullptr)
+    experiment->startExperimentNoManualMode();
 }
 
 void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){

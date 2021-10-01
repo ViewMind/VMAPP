@@ -19,17 +19,17 @@ FieldingExperiment::FieldingExperiment(QWidget *parent, const QString &study_typ
 }
 
 bool FieldingExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
-                                         const QVariantMap &studyConfig, bool useMouse){
+                                         const QVariantMap &studyConfig){
 
-    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig,useMouse)) return false;
+    if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)) return false;
 
     QVariantMap config;
-    config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,(Globals::EyeTracker::IS_VR && (!useMouse)));
+    config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,Globals::EyeTracker::IS_VR);
     if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
         config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
     }
     else{
-        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
+        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_EN);
     }
     m->configure(config);
 
@@ -55,11 +55,6 @@ bool FieldingExperiment::startExperiment(const QString &workingDir, const QStrin
 
     m->drawBackground();
     drawCurrentImage();
-
-    if (!Globals::EyeTracker::IS_VR || (useMouse)){
-        this->show();
-        this->activateWindow();
-    }
 
     return true;
 
@@ -275,6 +270,8 @@ QString FieldingExperiment::getExperimentDescriptionFile(const QVariantMap &stud
 void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
 
+    if (manualMode) return;
+
     if (state != STATE_RUNNING) return;
     if (ignoreData) return;
 
@@ -287,6 +284,10 @@ void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
 
     computeOnlineFixations(data);
+
+}
+
+void FieldingExperiment::resetStudy(){
 
 }
 

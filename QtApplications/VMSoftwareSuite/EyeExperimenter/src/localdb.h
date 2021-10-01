@@ -76,6 +76,7 @@ public:
     static const char * SUBJECT_BIRTHCOUNTRY;
     static const char * SUBJECT_YEARS_FORMATION;
     static const char * SUBJECT_CREATION_DATE;
+    static const char * SUBJECT_CREATION_DATE_INDEX;
     static const char * SUBJECT_GENDER;
     static const char * SUBJECT_STUDY_MARKERS;
     static const char * SUBJECT_LOCAL_ID;  // <- This is the local key as well.

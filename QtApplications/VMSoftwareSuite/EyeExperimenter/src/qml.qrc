@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/main.qml</file>
-        <file>qml/ViewCalibration.qml</file>
-        <file>qml/ViewCalibrationDone.qml</file>
         <file>qml/ViewHome.qml</file>
         <file>qml/ViewPresentExperiment.qml</file>
         <file>qml/ViewSettings.qml</file>
@@ -39,7 +37,6 @@
         <file>qml/VMComboBox2.qml</file>
         <file>qml/VMTextInputArea.qml</file>
         <file>qml/VMFolderButton.qml</file>
-        <file>qml/ViewVRDisplay.qml</file>
         <file>qml/VMCalibrationFailedDialog.qml</file>
         <file>qml/VMStudyEntry.qml</file>
         <file>qml/VMArrowButton.qml</file>
@@ -51,5 +48,9 @@
         <file>qml/ObjectListSorter.js</file>
         <file>qml/DateLocalization.js</file>
         <file>qml/VMDialogBase.qml</file>
+        <file>qml/VMUpDownIndicator.qml</file>
+        <file>qml/VMTableHeader.qml</file>
+        <file>qml/VMBulletedText.qml</file>
+        <file>qml/VMBulletedCard.qml</file>
     </qresource>
 </RCC>
