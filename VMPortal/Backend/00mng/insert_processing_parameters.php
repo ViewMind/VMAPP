@@ -43,8 +43,8 @@ $study_qc[MultiPartStudyBaseName::BINDING][QualityControlParamterStudy::THRESHOL
 
 // NBack RT
 $study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]             = 30; // DEPRACATED. Will not be in used after version 17.3.0
-$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 6; 
-$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 1750*$minimum_duration_reduction_constant;  // ms.
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 5; 
+$study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 1000*$minimum_duration_reduction_constant;  // ms.
 $study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;        // % of trials.
 $study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;        // % of trials. 
 
