@@ -102,6 +102,8 @@
       const FROM                    = "from";
       const TO                      = "to";
       const SEARCH                  = "search";
+      const ROLE                    = "role";
+      const DISCARDED               = "discarded";
    }
 
    abstract class URLSearchCriteria extends TypedString {

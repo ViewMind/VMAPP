@@ -53,15 +53,26 @@ class TableEvaluations extends TableBaseClass {
 
    }
 
-   function getAllSubjectsForInstitutionIDAndPortalUser($institution_id, $portal_user){
+   function getAllSubjectsWithEvaluationsForInstitutionIDAndPortalUser($institution_id, $portal_user){
 
       $columns_to_get = [self::COL_SUBJECT_ID];
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution_id);
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_PORTAL_USER,$portal_user);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution_id)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      // If not portal user is demanded, then we show ALL subjects with evaluatiosn for the institution. 
+      if ($portal_user != "") {
+         if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL, self::COL_PORTAL_USER, $portal_user)) {
+             $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+             return false;
+         }
+      }
       $this->avoided = [];
+      $select->setExtra(SelectExtras::ORDER,self::COL_STUDY_DATE);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
 
-      return $this->simpleSelect($columns_to_get,$select,self::COL_STUDY_DATE,self::ORDER_DESC);
+      return $this->simpleSelect($columns_to_get,$select);
 
    }
 
@@ -69,10 +80,16 @@ class TableEvaluations extends TableBaseClass {
 
       $columns_to_get = [];
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::IN,self::COL_SUBJECT_ID,$subject_id_list);
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_SUBJECT_ID,$subject_id_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
       $this->avoided = [];
 
-      return $this->simpleSelect($columns_to_get,$select,self::COL_STUDY_DATE,self::ORDER_DESC);
+      $select->setExtra(SelectExtras::ORDER,self::COL_STUDY_DATE);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
+
+      return $this->simpleSelect($columns_to_get,$select);
 
    }
 
@@ -84,21 +101,47 @@ class TableEvaluations extends TableBaseClass {
                          self::COL_EVALUATOR_NAME,
                          self::COL_EVALUATOR_LASTNAME,
                          self::COL_EVALUATOR_EMAIL,
+                         self::COL_PORTAL_USER,
+                         self::COL_DISCARD_REASON,
                          self::COL_KEYID];
 
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_SUBJECT_ID,$subject_id);
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_PORTAL_USER,$portal_user);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_SUBJECT_ID,$subject_id)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if ($portal_user != "") {
+         // This can be ignored with empty portal user for adminstrative users. 
+         if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL, self::COL_PORTAL_USER, $portal_user)) {
+             $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+             return false;
+         }
+      }
       $this->avoided = [];
-      return $this->simpleSelect($columns_to_get,$select,self::COL_STUDY_DATE,self::ORDER_DESC);
+
+      $select->setExtra(SelectExtras::ORDER,self::COL_STUDY_DATE);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
+
+      return $this->simpleSelect($columns_to_get,$select);
    }
 
    function getEvaluation($keyid,$portal_user){
       $columns_to_get = [];
 
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$keyid);
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_PORTAL_USER,$portal_user);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$keyid)) {
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+     }
+
+      // When portal user is empty, it is to void the check that the evaluation belongs to the login user.
+      // This will happen when an adminstrative user wants to download an evaluation. 
+      if ($portal_user != "") {
+         if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL, self::COL_PORTAL_USER, $portal_user)) {
+            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+            return false;
+         }   
+      }
 
       $this->avoided = [];
       return $this->simpleSelect($columns_to_get,$select);
@@ -108,8 +151,14 @@ class TableEvaluations extends TableBaseClass {
       $columns_to_get = [];
 
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$keyid);
-      $select->addConditionToANDList(SelectColumnComparison::IN,self::COL_INSTITUTION_ID,$institution_ids);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$keyid)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_INSTITUTION_ID,$institution_ids)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
 
       $this->avoided = [];
       return $this->simpleSelect($columns_to_get,$select);

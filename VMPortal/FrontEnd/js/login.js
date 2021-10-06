@@ -25,7 +25,6 @@ function login(username,password) {
               sessionStorage.setItem(GLOBALS.SESSION_KEYS.USER_ID,this.response.data["id"]);
               sessionStorage.setItem(GLOBALS.SESSION_KEYS.USER_FNAME,this.response.data["fname"]);
               sessionStorage.setItem(GLOBALS.SESSION_KEYS.USER_LNAME,this.response.data["lname"]);
-
               WaitDialog.open("Loading ...");
               API.listInstitutionsForUser("receivedInstitutionInfo")
            }

@@ -29,6 +29,7 @@ ACCESS.EVALUATIONS.EVALUATOR_NAME       =  "evaluator_name";
 ACCESS.EVALUATIONS.EVALUATOR_LASTNAME   =  "evaluator_lastname";
 ACCESS.EVALUATIONS.PROTOCOL             =  "protocol";
 ACCESS.EVALUATIONS.RESULTS              =  "results";
+ACCESS.EVALUATIONS.DISCARD_REASON       =  "discard_reason";
 ACCESS.EVALUATIONS.QC_PARAMS            =  "qc_parameters";
 ACCESS.EVALUATIONS.STUDY_CONFIG         =  "study_configuration";
 ACCESS.EVALUATIONS.QC_GRAPHS            =  "qc_graphs";
@@ -64,3 +65,8 @@ ACCESS.REPTEXT.PATIENT       = "patient"
 ACCESS.REPTEXT.AGE           = "age"
 ACCESS.REPTEXT.DATE          = "date"
 ACCESS.REPTEXT.REQDR         = "reqdr"
+
+// Checking if the report contains discard reason and comment. 
+ACCESS.REPORT = {};
+ACCESS.REPORT.DISCARD_REASON = "discard_reason";
+ACCESS.REPORT.COMMENT        = "comment";

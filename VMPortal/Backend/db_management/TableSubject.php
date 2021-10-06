@@ -93,10 +93,19 @@ class TableSubject extends TableBaseClass {
 
       $cols_to_get = [];
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_LASTEST,1);
-      $select->addConditionToANDList(SelectColumnComparison::IN,self::COL_UNIQUE_ID,$subject_list);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_LASTEST,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_UNIQUE_ID,$subject_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
 
-      return $this->simpleSelect($cols_to_get,$select,self::COL_LAST_NAME);
+      $select->setExtra(SelectExtras::ORDER,self::COL_LAST_NAME);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::ASC);
+
+      return $this->simpleSelect($cols_to_get,$select);
 
    }
 

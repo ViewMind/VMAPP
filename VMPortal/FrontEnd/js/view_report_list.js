@@ -1,3 +1,5 @@
+var discarded_reports = [];
+
 function loadViewReportList(){
 
    var subjectData = JSON.parse(sessionStorage.getItem(GLOBALS.PAGE_COMM.SELECTED_SUBJECT));
@@ -36,25 +38,61 @@ function onReceiveReportList(response){
    var colProcDate    = "Processing Date";
    var colEvaluator   = "Evaluator";
    var colEvalEmail   = "Evaluator Email";
+   var colPUser       = "Medical Professional";
+   var colDiscard     = "Discarded";
+
+   // Response data will contain both the portal user data and the evaluation list
+   var evaluation_list = response.data.evaluation_list;
+   var portal_users    = response.data.portal_users; // If this is empty the column is not shown.
+   var has_users       = (Object.keys(portal_users).length > 0)
 
    // Setting up the table. 
    var table = {};
    table.title = "Double click on a report to show results";
-   table.column_list = [colStudyType, colStudyDate, colProcDate, colEvaluator, colEvalEmail, ACCESS.COMMON.KEY];
+   if (has_users){
+      //console.log("Adding the PUser column");
+      table.column_list = [colStudyType, colDiscard, colStudyDate, colProcDate, colPUser ,colEvaluator, colEvalEmail, ACCESS.COMMON.KEY];
+   }
+   else{
+      table.column_list = [colStudyType, colDiscard, colStudyDate, colProcDate, colEvaluator, colEvalEmail, ACCESS.COMMON.KEY];
+   }
    table.unique_id = ACCESS.COMMON.KEY;
    table.show_unique = false;
    table.gotoFunction = "goToReportViewPage";
    table.data = [];
 
+   // List of discarded reports
+   discarded_reports =  [];
+
    // Now we create the data structure. 
-   for (var i = 0; i < response.data.length; i++){
+   for (var i = 0; i < evaluation_list.length; i++){
       var row = {};
-      row[colStudyType]       = response.data[i][ACCESS.EVALUATIONS.STUDY_TYPE]
-      row[colStudyDate]       = displayDate(response.data[i][ACCESS.EVALUATIONS.STUDY_DATE]);
-      row[colProcDate]        = displayDate(response.data[i][ACCESS.EVALUATIONS.PROCESSING_DATE]);
-      row[colEvaluator]       = response.data[i][ACCESS.EVALUATIONS.EVALUATOR_LASTNAME] + ", " + response.data[i][ACCESS.EVALUATIONS.EVALUATOR_NAME]
-      row[colEvalEmail]       = response.data[i][ACCESS.EVALUATIONS.EVALUATOR_EMAIL]
-      row[ACCESS.COMMON.KEY]  = response.data[i][ACCESS.COMMON.KEY]
+      row[colStudyType]       = evaluation_list[i][ACCESS.EVALUATIONS.STUDY_TYPE]
+      row[colStudyDate]       = displayDate(evaluation_list[i][ACCESS.EVALUATIONS.STUDY_DATE]);
+      row[colProcDate]        = displayDate(evaluation_list[i][ACCESS.EVALUATIONS.PROCESSING_DATE]);
+      row[colEvaluator]       = evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_LASTNAME] + ", " + evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_NAME]
+      row[colEvalEmail]       = evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_EMAIL]
+
+      // This will have the discard code. However all we care about if it's discarded or not. 
+      var discard             = evaluation_list[i][ACCESS.EVALUATIONS.DISCARD_REASON]; 
+      //console.log("Discard reason: " + discard);
+      if ((discard == null) || (discard == "")){
+         row[colDiscard] = "No";
+      }
+      else{
+         row[colDiscard] = "Yes";
+         discarded_reports.push(evaluation_list[i][ACCESS.COMMON.KEY])
+      }
+
+      if (has_users){         
+         row[colPUser] = portal_users[evaluation_list[i][ACCESS.EVALUATIONS.PORTAL_USER]];
+         //console.log("Adding the PUser " + row[colPUser]);
+      }
+
+      row[ACCESS.COMMON.KEY]  = evaluation_list[i][ACCESS.COMMON.KEY]
+
+      
+
       table.data.push(row);
    }
 
@@ -66,22 +104,39 @@ function goToReportViewPage(report_id){
 
    sessionStorage.setItem(GLOBALS.PAGE_COMM.SELECTED_REPORT,report_id);   
    // window.location.href = "index.html?" + GLOBALS.ROUTING.PARAMS.GOTO + "=" + GLOBALS.ROUTING.PAGES.VIEWREPORT;
-   var lang = "en";
-   WaitDialog.open("Retrieving report PDF");
-   API.getReport(report_id,lang,"onGetReportPDF");   
+   var lang = "en";   
+
+   report_id = parseInt(report_id);
+
+   discard = discarded_reports.includes(report_id);
+   if (!discard){
+      WaitDialog.open("Retrieving report PDF");
+   }
+
+   API.getReport(report_id,lang,discard,"onGetReportPDF");   
 
 }
 
 function onGetReportPDF(response){
    WaitDialog.close();
+
    if (response.message != "OK"){
       ErrorDialog.open("Server Error",response.message);
       return;
    }
    else{
       //console.log("Attempting to show PDF " + response.filename + " in a new tab");
-      var url = URL.createObjectURL(response.data);
-      
-      window.open("_blank").location = url;
+      //console.log("Checking if " + ACCESS.REPORT.DISCARD_REASON  + "  in response data");
+      if (ACCESS.REPORT.DISCARD_REASON in response.data){
+         // Discard reason, means that this is not a report. 
+         html = "<p><b>Discard Reason Code: </b> " + response.data[ACCESS.REPORT.DISCARD_REASON] + "</b></p>";
+         html = html + "<p><b>Comments</b></p></p>" + response.data[ACCESS.REPORT.COMMENT] + "</p>";
+         ErrorDialog.open("This study was discarded",html);
+      }
+      else{
+         // Regular report. 
+         var url = URL.createObjectURL(response.data);      
+         window.open("_blank").location = url;
+      }
    }
 }

@@ -379,20 +379,57 @@ class ObjectReports extends ObjectBaseClass
       $auth = explode(":",$auth);
       $portal_user = $auth[0];
 
+      //error_log("Inside evaluation list");
+
+      // Finding the role of the user.
+      $role = $this->portal_user_info[TablePortalUsers::COL_USER_ROLE];
+
+      if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN){
+         // In this case the portal user is ignored becase we need ALL evaluations for this subject. 
+         $portal_user = "";
+      }
+
       $tev = new TableEvaluations($this->con_main);
+      $tpu = new TablePortalUsers($this->con_secure);
 
       // If someone NOT authorized to get the information for this subject they will either not authenticate (because the token and the user ide will be a mistmach)
       // Or this will return empty because the specified subject id is NOT associated this this portal user in ANY evaluations. 
+      // In the administrative case, we actually could be sending back information not from that user. 
       $ans = $tev->getEvaluationListForSubjectAndPortalUser($subject_id,$portal_user);
-      
-      if ($ans == FALSE){
+      if ($ans === false){
          $this->suggested_http_code = 500;
-         $this->error = $tev->getError();
-         $this->returnable_error = "Internal Server Error";
+         $this->error = "Failed getting the evaluation list for $subject_id and portal user $portal_user: " . $tev->getError();
+         $this->returnable_error = "Internal database Error";
          return false;
       }
 
-      return $ans;
+      $ret["evaluation_list"] = $ans;
+      $ret["portal_users"] = [];
+
+      if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN) {
+          // We need to provide the nanem and last anme for all portal users.
+          $pp_ids = array();          
+          foreach ($ans as $row) {
+            //error_log(json_encode($row));
+            $pp_ids[] = $row[TableEvaluations::COL_PORTAL_USER];
+          }
+          $pp_ids = array_unique($pp_ids);
+          
+          // We need to get the name of the portal users.
+          $ans = $tpu->getAllNamesForIDList($pp_ids, [], []);
+          if ($ans === false) {
+              $this->suggested_http_code = 500;
+              $this->error = "Failed gettting portal user names for evaluations " . $tpu->getError();
+              $this->returnable_error = "Internal database error";
+              return false;
+          }
+
+          foreach ($ans as $row) {
+              $ret["portal_users"][$row[TableBaseClass::COL_KEYID]] = $row[TablePortalUsers::COL_LASTNAME] . ", " . $row[TablePortalUsers::COL_NAME];
+          }
+      }
+
+      return $ret;
    }
 
    function get($report_id,$parameters){
@@ -409,10 +446,29 @@ class ObjectReports extends ObjectBaseClass
          return false;         
       }
 
+      // Discarded needs to be checked here. Even though we check for this below, when the discareded flag is set,
+      // the wepage expects a JSON and NOT a Blob. Hece a JSON needs to be forced, even if later the discarded reason turns to be empty. 
+      // The other way around is also true. If a blob is expected, a blob must be sent. 
+      $discarded = false;
+      error_log(json_encode($parameters));
+      if (array_key_exists(URLParameterNames::DISCARDED,$parameters)){
+         if ($parameters[URLParameterNames::DISCARDED] == true){
+            $discarded = true;
+         }
+      }
+
       $tev = new TableEvaluations($this->con_main);
 
+      // Getting the role of the logged in user. 
+      $role = $this->portal_user_info[TablePortalUsers::COL_USER_ROLE];
+      if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN){
+         // And admin might solicit a report that is not his own. So we empyt the variable to forgo that check. 
+         $portal_user = "";
+      }
+
       // If someone NOT authorized to get the information for this report they will either not authenticate (because the token and the user ide will be a mistmach)
-      // Or this will return empty because the specified report is NOT associated this this portal user in ANY evaluations. 
+      // Or this will return empty because the specified report is NOT associated this this portal user in ANY evaluations.
+      // And administrative user will empty the portal user  so as to void this check. 
       $ans = $tev->getEvaluation($report_id,$portal_user);
       
       if ($ans === FALSE){
@@ -433,6 +489,38 @@ class ObjectReports extends ObjectBaseClass
 
       // Creating the json report structure.
       $report_row = $ans[0]; // Getting the report.
+
+      // Checking if this is a discarded report.
+      $discard_reason = $report_row[TableEvaluations::COL_DISCARD_REASON];
+
+      if ($discard_reason != null){
+         if ($discard_reason != ""){
+
+            if ($discarded === false){
+               $this->suggested_http_code = 500;
+               $this->error = "User $portal_user attempted to access evaluation $report_id which is discarded however parameter indicates it is not";
+               $this->returnable_error = "Discard status mismatch for report";
+               return false;      
+            }
+
+            // This is a discarded report. So the report results need to be parsed to obtain the comment field, if there is one. 
+            $report_result_data = json_decode($report_row[TableEvaluations::COL_RESULTS],true);
+            //error_log("KEYS in report row are : " . implode(",",array_keys($report_result_data)) );
+            $comment = $report_result_data[FinalizedResultFields::COMMENT];
+            $ret["discard_reason"] = $discard_reason;
+            $ret["comment"] = $comment;
+            $this->suggested_http_code = 201; // There is no error. But will nto be returning a blob. This is used to signal that. 
+            return $ret;
+         }
+      }
+
+      // The report is not discared. We check this is what was expected
+      if ($discarded === true){
+         $this->suggested_http_code = 500;
+         $this->error = "User $portal_user attempted to access evaluation $report_id which is not discarded however parameter indicates it is";
+         $this->returnable_error = "Discard status mismatch for report";
+         return false;      
+      }
 
       return $this->generatePDFReport($lang,$report_row);
 

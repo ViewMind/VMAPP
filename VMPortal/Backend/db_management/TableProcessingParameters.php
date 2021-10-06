@@ -35,10 +35,17 @@ class TableProcessingParameters extends TableBaseClass {
 
       $cols_to_get = [self::COL_PROC_PARAM, self::COL_FREQ_PARAM];
       $operation = new SelectOperation();
-      $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_PRODUCT,$pname);
+      if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_PRODUCT,$pname)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+         return false;                  
+      }
+
+      $operation->setExtra(SelectExtras::ORDER,self::COL_KEYID);
+      $operation->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
+      $operation->setExtra(SelectExtras::LIMIT,1);
 
       // The current Processing parameters are always the last inserted.
-      return $this->simpleSelect($cols_to_get,$operation,self::COL_KEYID,self::ORDER_DESC,1);
+      return $this->simpleSelect($cols_to_get,$operation);
 
    }
 

@@ -11,6 +11,7 @@ function Route(){
 
    if (whereToGo == GLOBALS.ROUTING.PAGES.SUBJECTS){
       loadViewSubjectList()
+      gotoIndex = false;
    }
    else if (whereToGo == GLOBALS.ROUTING.PAGES.REPORTS){
       loadViewReportList();

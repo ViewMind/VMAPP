@@ -118,7 +118,8 @@ $user_info = $auth_mng->getUserInfo();
 // }
 
 if (!$auth_mng->shouldDoOperation()){
-   // The endopoint should be ignored. For now the only time this happens is when a login operation is used to generate the authentication token.
+   // The endopoint should be ignored. For now the only time this happens is when a login operation is used to 
+   // generate the authentication token.
    $res[ResponseFields::DATA]["token"] = $auth_mng->getAuthToken();
    $res[ResponseFields::DATA]["id"]    = $user_info[TablePortalUsers::COL_KEYID];
    $res[ResponseFields::DATA]["fname"] = $user_info[TablePortalUsers::COL_NAME];
@@ -158,6 +159,8 @@ $object     = $route_parts[0];
 $operation  = $route_parts[1];
 $identifier = $route_parts[2];
 
+// error_log("ROUTE is $object / $operation / $identifier");
+
 // Routes will have three parts OBJECT/OPERATION/IDENTFIER. So first is object. 
 if (array_key_exists($object,$permissions)){
    
@@ -196,6 +199,7 @@ if (array_key_exists($object,$permissions)){
       $operating_object->setPermissions($permissions);
       $operating_object->setJSONData($auth_mng->getRawDataArray());
       $operating_object->setPortalUserUID($current_user_id);
+      $operating_object->setPortalUserInfo($user_info);
 
       $ans = $operating_object->$operation($identifier,$route_parser->getParameters());
       
@@ -258,8 +262,8 @@ else{
    // If the system got here all went well.
    $res[ResponseFields::DATA] = $ans;
    $res[ResponseFields::MESSAGE] = "OK";
-   $res[ResponseFields::HTTP_CODE] = 200;
-   http_response_code(200);
+   $res[ResponseFields::HTTP_CODE] = $operating_object->getSugesstedHTTPCode();
+   http_response_code($operating_object->getSugesstedHTTPCode());
    echo json_encode($res);
    return;
 }

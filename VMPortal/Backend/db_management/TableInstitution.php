@@ -42,7 +42,8 @@ class TableInstitution extends TableBaseClass {
 
       $select = new SelectOperation();
       if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_KEYID,$list_of_ids)){
-         $this->error = "Could not create select operation for getting institution information for id list: " . implode(",",$list_of_ids);
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
       }
 
       return $this->simpleSelect(array(),$select);

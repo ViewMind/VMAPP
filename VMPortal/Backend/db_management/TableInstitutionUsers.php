@@ -24,7 +24,7 @@ class TableInstitutionUsers extends TableBaseClass {
    function getUsersForInstitution($institution){
       $select = new SelectOperation();
       if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution)){
-         $this->error = "Getting all users for institution $institution: " . $select->getError();
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
          return false;
       }
       return $this->simpleSelect(array(),$select);
@@ -33,7 +33,8 @@ class TableInstitutionUsers extends TableBaseClass {
    function getInstitutionsForUser($user_id){
       $select = new SelectOperation();
       if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_PORTAL_USER,$user_id)){
-         $this->error = "Getting the insitution ids for user $user_id: " . $select->getError();
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
       }
       return $this->simpleSelect([self::COL_INSTITUTION_ID],$select);
    }

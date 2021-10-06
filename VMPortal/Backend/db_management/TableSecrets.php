@@ -70,12 +70,16 @@ class TableSecrets extends TableBaseClass {
       // There can't be another enabled row with the same instance and id. 
 
       $operation = new SelectOperation();
-      $res = true;
-      $res = $res && $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED);
-      $res = $res && $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution_id);
-      $res = $res && $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_INSTANCE,$instution_instance);
-      if ($res === false){
-         $this->error = "Getting Secret, Keys and Permissions: " . $operation->getError();
+      if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+         return false;
+      }
+      if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution_id)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+         return false;
+      }
+      if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_INSTANCE,$instution_instance)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
          return false;
       }
 
@@ -99,8 +103,14 @@ class TableSecrets extends TableBaseClass {
    function getPermissionsFrom($unique_ids){
       $cols_to_get = [self::COL_KEYID, self::COL_UNIQUE_ID , self::COL_PERMISSIONS];
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::IN,self::COL_UNIQUE_ID,$unique_ids);
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED);
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_UNIQUE_ID,$unique_ids)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
       return $this->simpleSelect($cols_to_get,$select);
    }
 
@@ -112,8 +122,14 @@ class TableSecrets extends TableBaseClass {
    function getEnabledInstancesForInstitution($institution_id){
 
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED);
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution_id);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution_id)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
       $cols_to_get = [self::COL_INSTITUTION_INSTANCE];
       return $this->simpleSelect($cols_to_get,$select);
 
