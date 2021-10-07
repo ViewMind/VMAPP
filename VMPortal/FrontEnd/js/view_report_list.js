@@ -40,6 +40,7 @@ function onReceiveReportList(response){
    var colEvalEmail   = "Evaluator Email";
    var colPUser       = "Medical Professional";
    var colDiscard     = "Discarded";
+   var colEvalID      = "Evaluation ID";
 
    // Response data will contain both the portal user data and the evaluation list
    var evaluation_list = response.data.evaluation_list;
@@ -51,10 +52,10 @@ function onReceiveReportList(response){
    table.title = "Double click on a report to show results";
    if (has_users){
       //console.log("Adding the PUser column");
-      table.column_list = [colStudyType, colDiscard, colStudyDate, colProcDate, colPUser ,colEvaluator, colEvalEmail, ACCESS.COMMON.KEY];
+      table.column_list = [colEvalID, colStudyType, colDiscard, colStudyDate, colProcDate, colPUser ,colEvaluator, colEvalEmail, ACCESS.COMMON.KEY];
    }
    else{
-      table.column_list = [colStudyType, colDiscard, colStudyDate, colProcDate, colEvaluator, colEvalEmail, ACCESS.COMMON.KEY];
+      table.column_list = [colEvalID, colStudyType, colDiscard, colStudyDate, colProcDate, colEvaluator, colEvalEmail, ACCESS.COMMON.KEY];
    }
    table.unique_id = ACCESS.COMMON.KEY;
    table.show_unique = false;
@@ -72,6 +73,7 @@ function onReceiveReportList(response){
       row[colProcDate]        = displayDate(evaluation_list[i][ACCESS.EVALUATIONS.PROCESSING_DATE]);
       row[colEvaluator]       = evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_LASTNAME] + ", " + evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_NAME]
       row[colEvalEmail]       = evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_EMAIL]
+      row[colEvalID]          = evaluation_list[i][ACCESS.COMMON.KEY]
 
       // This will have the discard code. However all we care about if it's discarded or not. 
       var discard             = evaluation_list[i][ACCESS.EVALUATIONS.DISCARD_REASON]; 

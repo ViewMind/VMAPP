@@ -189,6 +189,16 @@
         "converter": "JSONGoNoGO",
         "md_to_fixation_method": "MaximumDispersion"
     },
+    "gonogo\/htc_files\/gonogo_2021_10_05_13_28.json": {
+        "code": "HTC - BadMati",
+        "f": 120,
+        "resolution": [
+            2452,
+            2208
+        ],
+        "converter": "JSONGoNoGO",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
     "gonogo\/gp_files\/gonogo_2021_09_07_18_02.json": {
         "code": "GP - NR",
         "f": 150,
@@ -221,6 +231,16 @@
     },
     "gonogo\/hp_files\/gonogo_2021_09_06_07_33.json": {
         "code": "HP - NR1",
+        "f": 120,
+        "resolution": [
+            2316,
+            2376
+        ],
+        "converter": "JSONGoNoGO",
+        "md_to_fixation_method": "MaximumDispersion"
+    },
+    "gonogo\/hp_files\/gonogo_2021_10_05_17_47.json": {
+        "code": "HP - GoodMark",
         "f": 120,
         "resolution": [
             2316,

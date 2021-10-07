@@ -148,7 +148,7 @@ Scripts/php/reprocess_legacy_data/work/
 QtApplications/VMTools/ExperimentDev/exeQt6/
 QtApplications/VMTools/QtRestClient/exeQt6/
 
-Scripts/php/generate_report_for_individual_JSON/local_work*/
-Scripts/php/generate_report_for_individual_JSON/oneshot/
+Scripts/php/analyze_singular_JSON/local_work*/
+Scripts/php/analyze_singular_JSON/out.txt
 
 Scripts/php/.vscode/

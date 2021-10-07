@@ -197,6 +197,14 @@ $temp["converter"] = InputFileParser::JSON_GONOGO;
 $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
+$key = "$dir/$et_dir/gonogo_2021_10_05_13_28.json";
+$temp["code"] = ETCode::HTC . " - BadMati";
+$temp["f"] = SamplingFrequency::HTC;
+$temp["resolution"] = Resolutions::HTC_BIG;
+$temp["converter"] = InputFileParser::JSON_GONOGO;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
+
 ///////// GP
 $et_dir = "gp_files";
 
@@ -216,7 +224,7 @@ $temp["converter"] = InputFileParser::JSON_GONOGO;
 $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
-///////// GP
+///////// HP
 $et_dir = "hp_files";
 
 $key = "$dir/$et_dir/gonogo_2021_09_07_17_13.json";
@@ -235,6 +243,13 @@ $temp["converter"] = InputFileParser::JSON_GONOGO;
 $temp["md_to_fixation_method"] = FixationComputationMethod::MD;
 $metadata[$key] = $temp;
 
+$key = "$dir/$et_dir/gonogo_2021_10_05_17_47.json";
+$temp["code"] = ETCode::HP . " - GoodMark";
+$temp["f"] = SamplingFrequency::HP;
+$temp["resolution"] = Resolutions::HP_FULL;
+$temp["converter"] = InputFileParser::JSON_GONOGO;
+$temp["md_to_fixation_method"] = FixationComputationMethod::MD;
+$metadata[$key] = $temp;
 
 ///////////////////////////////////////////////////// NBACKRT
 $dir = "nbackrt";

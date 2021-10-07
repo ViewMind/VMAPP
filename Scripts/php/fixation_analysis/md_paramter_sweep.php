@@ -87,16 +87,14 @@
 
   /////////////////////////// SETTINGS FOR SINGLE FILE
   $file_list = [
-     "nbackrt/htc_files/nbackrt_2020_06_17_19_04.json",
-     "nbackrt/htc_files/nbackrt_2020_06_17_19_04.json",
+     "gonogo/hp_files/gonogo_2021_10_05_17_47.json",
+     "gonogo/htc_files/gonogo_2021_10_05_13_28.json",
   ];
-  // For this binding test of the system, we just use the HP file as a reference. 
   $reference_index = 0;
-  $md_for_reference = 3; // 2% For HP. 
-  // Rerence trials. Empty, means all. 
+  $md_for_reference = 2; // 2% For HP. 
   $reference_trials = [];
   $working_directory = "single_shot";
-  $md_of_interest = [6.16197]; 
+  $md_of_interest = [2, 3]; 
 
   ////////////////////////////////// MD SWEEP AND MERIT SETUP
 
