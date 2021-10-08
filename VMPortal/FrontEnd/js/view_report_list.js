@@ -73,7 +73,12 @@ function onReceiveReportList(response){
       row[colProcDate]        = displayDate(evaluation_list[i][ACCESS.EVALUATIONS.PROCESSING_DATE]);
       row[colEvaluator]       = evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_LASTNAME] + ", " + evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_NAME]
       row[colEvalEmail]       = evaluation_list[i][ACCESS.EVALUATIONS.EVALUATOR_EMAIL]
-      row[colEvalID]          = evaluation_list[i][ACCESS.COMMON.KEY]
+
+      // The evaluation ID contains a .extension which needs to be removed. 
+      var evalId = evaluation_list[i][ACCESS.EVALUATIONS.FILE_LINK];
+      evalId = evalId.split(".")[0];
+
+      row[colEvalID]          = evalId;
 
       // This will have the discard code. However all we care about if it's discarded or not. 
       var discard             = evaluation_list[i][ACCESS.EVALUATIONS.DISCARD_REASON]; 

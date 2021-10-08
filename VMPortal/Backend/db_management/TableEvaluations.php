@@ -103,6 +103,7 @@ class TableEvaluations extends TableBaseClass {
                          self::COL_EVALUATOR_EMAIL,
                          self::COL_PORTAL_USER,
                          self::COL_DISCARD_REASON,
+                         self::COL_FILE_LINK,
                          self::COL_KEYID];
 
       $select = new SelectOperation();

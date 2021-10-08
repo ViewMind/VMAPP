@@ -32,6 +32,7 @@ ACCESS.EVALUATIONS.RESULTS              =  "results";
 ACCESS.EVALUATIONS.DISCARD_REASON       =  "discard_reason";
 ACCESS.EVALUATIONS.QC_PARAMS            =  "qc_parameters";
 ACCESS.EVALUATIONS.STUDY_CONFIG         =  "study_configuration";
+ACCESS.EVALUATIONS.FILE_LINK            =  "file_link";
 ACCESS.EVALUATIONS.QC_GRAPHS            =  "qc_graphs";
 
 ACCESS.PORTALUSER = {}
