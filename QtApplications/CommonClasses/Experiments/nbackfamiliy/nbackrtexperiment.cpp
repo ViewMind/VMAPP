@@ -124,9 +124,9 @@ void NBackRTExperiment::nextState(){
     case TSF_SHOW_TARGET:
 
         // End the previous data set.
-        if (!manualMode) {
-            rawdata.finalizeDataSet();
+        if (!manualMode) {            
             finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
         }
         currentImage++;
         if (currentImage == nbackConfig.numberOfTargets){
@@ -154,8 +154,8 @@ void NBackRTExperiment::nextState(){
 
         // We can now finalize the dataset and the trial
         if (!manualMode) {
-            rawdata.finalizeDataSet();
             finalizeOnlineFixations();
+            rawdata.finalizeDataSet();            
             rawdata.finalizeTrial("");
         }
 

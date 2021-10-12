@@ -173,7 +173,7 @@ bool Loader::getLoaderError() const {
 }
 
 QString Loader::getWindowTilteVersion(){
-    return Globals::Share::EXPERIMENTER_VERSION + " - " + configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
+    return Globals::Share::EXPERIMENTER_VERSION;
 }
 
 QStringList Loader::getCountryList() {

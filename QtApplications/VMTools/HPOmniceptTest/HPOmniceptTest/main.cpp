@@ -5,14 +5,15 @@
 #include <QFile>
 #include <QTextStream>
 #include "receiver.h"
+//#include "../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    HPOmnicentProvider hpprovider;
+    HPOmniceptProvider hpprovider;
     Receiver receiver;
-    QObject::connect(&hpprovider,&HPOmnicentProvider::eyeDataAvailable,&receiver,&Receiver::newEyeData);
+    QObject::connect(&hpprovider,&HPOmniceptProvider::eyeDataAvailable,&receiver,&Receiver::newEyeData);
 
     if (!hpprovider.connectToHPRuntime()){
         qDebug() << "Could not connect to HP Runtime: " << hpprovider.getError();

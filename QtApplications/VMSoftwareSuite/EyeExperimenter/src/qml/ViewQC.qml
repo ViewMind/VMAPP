@@ -97,8 +97,8 @@ VMBase {
 
             // Getting the reference data to figure out the scale.
             // All values are the same. So the first of the upper bound is the highest value and the last of the lowest bound is the lower value.
-            graph.vmFixedScale = [data["UpperREFData"][0],
-                                  data["LowerREFData"][0]];
+            graph.vmFixedScale = [data["UpperREFData"][0],0];
+                                  //data["LowerREFData"][0]];
 
             //console.log("Fixed Scaled")
             //console.log(graph.vmFixedScale);

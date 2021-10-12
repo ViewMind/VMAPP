@@ -4,7 +4,8 @@
 #include <QObject>
 #include <QDebug>
 #include <iostream>
-#include "../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomnicentprovider.h"
+#include "../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h"
+
 
 class Receiver : public QObject
 {
