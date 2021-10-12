@@ -13,6 +13,8 @@ $required = ["new_version","upgrade_list"];
 
 DBCon::setPointerLocation("configs");  
 $params = readAndVerifyData($required,$section_name);
+// $params["upgrade_list"] = "x.x";
+// $params["new_version"] = "x.x";
 
 $dbcon = new DBCon();
 $con_main = $dbcon->dbOpenConnection(DBCon::DB_MAIN,DBCon::DB_SERVICE_ADMIN);
@@ -29,6 +31,20 @@ if ($con_secure == NULL){
 
 $tup = new TableUpdates($con_main);
 $ts  = new TableSecrets($con_secure);
+
+if ($params["upgrade_list"] == "x.x"){
+
+   echo "Updgrad all requested\n";
+   $ans = $tup->updateAllValidToNewerVersion($params["new_version"]);
+   if ($ans === false){
+      echo "Error when updating all: " . $tup->getError() . "\n";
+   }
+   else{
+      echo "Finished\n";
+   }
+   return;
+
+}
 
 $upgrade_list = expandShortInstanceListToConprenhensiveList($params["upgrade_list"],$ts);
 if ($upgrade_list === FALSE) exit();

@@ -4,11 +4,37 @@ include_once (__DIR__ . "/../common/TypedString.php");
 
 abstract class SelectColumnComparison extends TypedString {
    const IN                = "IN";
+   const IN_NO_BIND        = "IN_NO_BIND";
    const EQUAL             = "=";
+   const NOT_EQUAL         = "!=";
    const GT                = ">";
    const GTE               = ">=";
    const LT                = "<";
-   const LTE               = "<=";   
+   const LTE               = "<=";  
+   const ISNOTNULL         = "IS NOT NULL";
+   const LIKE              = "LIKE";
+   //const DATE_BETWEEN      = "BETWEEN";
+   const DATE_DIFF_BETWEEN = "DATE_DIFF_BETWEEN";
+}
+
+abstract class SelectOrderDirection extends TypedString {
+   const ASC  = "ASC";
+   const DESC = "DESC";
+   const RAND = "RAND()";
+}
+
+abstract class SelectExtras extends TypedString {
+   const ORDER             = "order";
+   const ORDER_DIRECTION   = "order_direction";
+   const LIMIT             = "limit";
+   const GROUPBY           = "groupby";
+   const COUNT             = "count";
+   const SUM               = "sum";
+}
+
+abstract class UnaryColumnOperationNode extends TypedString {
+   const YEAR              = "YEAR";
+   const MONTH             = "MONTH";
 }
 
 class SelectOperation {
@@ -16,15 +42,17 @@ class SelectOperation {
    private const AND = "AND";
    private const OR  = "OR";
 
-   private const NODE_VALUE        = "value";
-   private const NODE_OPERATOR     = "operator";
-   private const NODE_COLUMN       = "column";
+   private const NODE_VALUE             = "value";
+   private const NODE_OPERATOR          = "operator";
+   private const NODE_COLUMN            = "column";
+   private const NODE_UNARY_OPERATOR    = "unary_operaton";
 
    private $operation;   
    private $column_appearce_counter;
    private $error;
    private $bind_param_array;
    private $selectDistinct;
+   private $extras;
 
    function __construct(){
       $this->operation = array();
@@ -34,7 +62,31 @@ class SelectOperation {
       $this->bind_param_array = array();
       $this->error = "";
       $this->selectDistinct = "";
+
+      // Extras set up
+      $this->extras[SelectExtras::COUNT] = array();
+      $this->extras[SelectExtras::SUM]   = array();
+      $this->extras[SelectExtras::LIMIT] = -1;
+      $this->extras[SelectExtras::ORDER] = "";
+      $this->extras[SelectExtras::ORDER_DIRECTION] = SelectOrderDirection::ASC;
+      $this->extras[SelectExtras::GROUPBY] = array();
+
    }
+
+   // Getting any of the extra parameters.
+   function getExtra($extra){
+      if (SelectExtras::validate($extra)){
+         return $this->extras[$extra];
+      }
+      else return NULL;
+   }
+
+   function setExtra($name,$value){
+      if (SelectExtras::validate($name)){
+         return $this->extras[$name] = $value;
+      }      
+   }
+
 
    // Required for binding to the statement of the PDO.
    function getBindParameterArray(){
@@ -68,7 +120,7 @@ class SelectOperation {
     */
 
    function makeWhereClause(){
-      if (empty($this->operation[self::OR]) && (empty($this->operation[self::AND]))) return "";
+      if (empty($this->operation[self::OR]) && (empty($this->operation[self::AND]))) return "1"; // Returnign this is the same as saying all. 
       
       $this->bind_param_array = array();
       foreach ($this->column_appearce_counter as $col => $counter){
@@ -109,6 +161,7 @@ class SelectOperation {
    function makeOperation($node){
       $operation = "";
       $col = $node[self::NODE_COLUMN];
+      $unary_col_operation = $node[self::NODE_UNARY_OPERATOR];
 
       if ($node[self::NODE_OPERATOR] == SelectColumnComparison::IN){
          // Create the binding list.
@@ -121,35 +174,73 @@ class SelectOperation {
          }
          $operation = $col . " " . SelectColumnComparison::IN . " (" . implode(",",$list) . ")";
       }
+      else if ($node[self::NODE_OPERATOR] == SelectColumnComparison::IN_NO_BIND){
+         // This should be selcted wthen the number of items to bind is too large. This will create the query straight up with no binding necessary. 
+         $list = array();
+         foreach ($node[self::NODE_VALUE] as $item) {
+            $list[] = $item;
+         }
+         $operation = $col . " " . SelectColumnComparison::IN . " (" . implode(",",$list) . ")";
+      }
+      else if ($node[self::NODE_OPERATOR] === SelectColumnComparison::ISNOTNULL){
+         // IN this case the value is ignored. Its just the column name not being null. 
+         $operation = $col . " " . SelectColumnComparison::ISNOTNULL;
+      }
+      else if ($node[self::NODE_OPERATOR] == SelectColumnComparison::DATE_DIFF_BETWEEN){
+         // This operation is only usefull for date type columns. It comapres the number of days between 
+         $start_number_bind_name = ":$col" . "_" . $this->column_appearce_counter[$col];
+         $this->column_appearce_counter[$col]++;
+         $end_number_bind_name = ":$col" . "_" . $this->column_appearce_counter[$col];
+         $this->bind_param_array[$start_number_bind_name] = $node[self::NODE_VALUE]["min"];
+         $this->bind_param_array[$end_number_bind_name] = $node[self::NODE_VALUE]["max"];
+
+         if (array_key_exists("date",$node[self::NODE_VALUE])){
+            // When the date key exists comparison is done with the date provided.
+            // We must assume that the date has the proper format: YYYY-MM-dd.
+            $date = $node[self::NODE_VALUE]["date"];
+         }
+         else{
+            // If date key is not provided, then the current date is used for comparison
+            $date = "CURRENT_DATE()";
+         }
+
+         $operation = "(DATEDIFF($date, $col) BETWEEN $start_number_bind_name AND $end_number_bind_name)";
+
+      }
       else{
          // When IN is not the operation the logic is do column_name = :column_name_i where i is the counter on how many times the column name has appeared in the statement. 
          $bind_name = ":$col" . "_" . $this->column_appearce_counter[$col];
          $this->bind_param_array[$bind_name] = $node[self::NODE_VALUE];
          $this->column_appearce_counter[$col]++;
 
-         $operation = $col . " "  . $node[self::NODE_OPERATOR] . " " . $bind_name;
+         if ($unary_col_operation != ""){            
+            $operation = "$unary_col_operation($col)" . " "  . $node[self::NODE_OPERATOR] . " " . $bind_name;
+         }
+         else{
+            $operation = $col . " "  . $node[self::NODE_OPERATOR] . " " . $bind_name;
+         }
       }
 
       $operation = "(" . $operation . ")";
       return $operation;
    }
 
-   function addConditionToORList($operator, $column, $value){
-      return $this->addConditionToList($operator,$column,$value,self::OR);
+   function addConditionToORList($operator, $column, $value, $unary_col_operation = ""){
+      return $this->addConditionToList($operator,$column,$value,self::OR,$unary_col_operation);
    }
 
-   function addConditionToANDList($operator, $column, $value){
-      return $this->addConditionToList($operator,$column,$value,self::AND);
+   function addConditionToANDList($operator, $column, $value, $unary_col_operation = ""){
+      return $this->addConditionToList($operator,$column,$value,self::AND,$unary_col_operation);
    }
 
-   private function addConditionToList($operator,$column,$value, $list){
-      $node = $this->addCondition($operator,$column,$value);
+   private function addConditionToList($operator,$column,$value, $list, $unary_col_operation){
+      $node = $this->addCondition($operator,$column,$value,$unary_col_operation);
       if ($node === false) return false;
       $this->operation[$list][] = $node;
       return true;
    }
 
-   private function addCondition($operator, $column, $value){
+   private function addCondition($operator, $column, $value, $unary_col_operation){
 
       // Checking for a valid operator. 
       if (!SelectColumnComparison::validate($operator)) {
@@ -157,10 +248,41 @@ class SelectOperation {
          return false;
       }
 
+      if ($unary_col_operation != ""){
+         if (!UnaryColumnOperationNode::validate($unary_col_operation)){
+            $this->error = "Invalid unary column operator $unary_col_operation for condition on column $column";
+            return false;
+         }
+      }
+
       // If IN is used a value a array is necessary. 
-      if ($operator == SelectColumnComparison::IN){
+      if (($operator == SelectColumnComparison::IN) || ($operator == SelectColumnComparison::IN_NO_BIND)){
          if (!is_array($value)){
             $this->error = "IN operator requires a value array";
+            return false;
+         }
+      }
+      else if ($operator == SelectColumnComparison::DATE_DIFF_BETWEEN){
+         // This must be a two value number array where the first value must be higher than the second value. 
+         if (!is_array($value)){
+            $this->error = "DIFF_BETWEEN operator requires an object";
+            return false;
+         }
+
+         // At te very list, the comparison configuration must have a min and max parameters
+         $must_exist_keys = ["min","max"];
+         foreach ($must_exist_keys as $key){
+            if (!array_key_exists($key,$value)){
+               $this->error = "DIFF_BETWEEN operator requires a the array to have the key $key";
+               return false;
+            }
+         }
+
+         $start = intval($value["min"]);
+         $end   = intval($value["max"]);
+
+         if ($start >= $end){
+            $this->error = "Bad  range selected for column $column as $start >= $end";
             return false;
          }
       }
@@ -169,10 +291,10 @@ class SelectOperation {
          return false;
       }
 
-
-      $node[self::NODE_COLUMN]   = $column;
-      $node[self::NODE_VALUE]    = $value;
-      $node[self::NODE_OPERATOR] = $operator;
+      $node[self::NODE_COLUMN]         = $column;   
+      $node[self::NODE_VALUE]          = $value;
+      $node[self::NODE_OPERATOR]       = $operator;
+      $node[self::NODE_UNARY_OPERATOR] = $unary_col_operation;
 
       // Add the column to the list of all columns used in the where clause
       if (!array_key_exists($column, $this->column_appearce_counter)) {

@@ -32,6 +32,9 @@ class ObjectBaseClass{
    // The unique idenfifier for the user. Usefull in certain scenarios.
    protected $portal_user_unique_id;
 
+   // The complete user information row data, so that it can be used for any endpoint
+   protected $portal_user_info;
+
    function __construct($srv_name, $headers){
       $this->error = "";         
       $this->returnable_error = "";
@@ -56,6 +59,9 @@ class ObjectBaseClass{
       // Storing the json_data (allready an array)
       $this->json_data = array();
 
+      // Initializing the portal user info. 
+      $this->portal_user_info = array();
+
    }
 
    function setJSONData($jdata){
@@ -68,6 +74,10 @@ class ObjectBaseClass{
 
    function setPortalUserUID($uid){
       $this->portal_user_unique_id = $uid;
+   }
+
+   function setPortalUserInfo($info){
+      $this->portal_user_info = $info;
    }
    
    function getSugesstedHTTPCode(){

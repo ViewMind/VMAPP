@@ -81,11 +81,28 @@ API = {
 
   },
 
-  getReport: function (report_id, lang, callback){
+  getReport: function (report_id, lang, discarded ,callback){
+
+
     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
     GLOBALS.ENDPOINTS.REPORTS.GET + "/" + report_id + "?lang=" + lang;
+
+    var isBlob = true
+
+    //console.log("Discarded is " + discarded);
+
+    if (discarded != undefined){
+       if (discarded){
+          console.log("Is discareded")
+          endpoint = endpoint + "&discarded=true"
+          isBlob = false;
+       }
+    }
+
+    console.log(endpoint);
+
     //GLOBALS.ENDPOINTS.REPORTS.GET + "/" + report_id;
-    API.APICall(endpoint,callback,true);
+    API.APICall(endpoint,callback,isBlob);
   },
 
   modifyAccount: function(parameters,callback){

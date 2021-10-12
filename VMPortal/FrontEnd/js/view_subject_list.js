@@ -1,4 +1,3 @@
-
 var savedSubjectBasicList;
 
 function loadViewSubjectList(){
@@ -36,7 +35,7 @@ function onReceivePatientList(response){
 
    // Definining the Column Names.
    var colLastName  = "Last Name";
-   var colFirstName = "First Name";
+   var colFirstName = "First Name";   
    var colSubjectID = "Subject ID";
    var colBirthDate = "Birth Date";
    var colAge       = "Age";

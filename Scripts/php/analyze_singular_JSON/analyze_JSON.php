@@ -1,5 +1,6 @@
 <?php
 
+   include_once("dataset_grapher.php");
    include_once(__DIR__."/../reprocess_legacy_data/processing_common.php");
    include_once(__DIR__."/../../../VMPortal/Backend/data_processing/RProcessing.php");
 
@@ -7,7 +8,12 @@
    //$input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/reprocess_legacy_data/work/1145868706/524/2020_11_14_14_23_37/gonogo_2020_11_10_11_25.json";
    //$input_json_file = "local_work_nback/nbackrt_2021_09_22_10_44.json";
    //$input_json_file = "local_work/gonogo_2021_09_22_10_48.json";
-   $input_json_file = "oneshot/binding_2021_07_13_11_02.json";
+   //$input_json_file = "oneshot/binding_2021_07_13_11_02.json";   
+   //$input_json_file = "local_work_reprocessed_htc_gonogo/gonogo_2021_09_07_17_45_reprocessed.json";
+   //$input_json_file = "local_work_reprocessed_hp_gonogo/gonogo_2021_09_07_17_13_reprocessed.json";
+   //$input_json_file   = "local_work_gng_gera/gonogo_2021_10_06_18_40.json";
+   $input_json_file   = "local_work_mendoza_nbackrt/nbackrt_2021_10_04_10_20.json";
+
    $lang = "en";
 
    ////////////////////////// INPUTS 
@@ -15,10 +21,14 @@
    const VERSION = "v1";
    const S3_BUCKET   = "vm-eu-raw-data";
    const S3_PROFILE  = "viewmind_eu";
-   const WORK_DIR    = "local_work";
+   const WORK_DIR    = "local_work_mendoza_nbackrt";
 
    // If filelink is NOT empty, this is what will be processed. 
    //$filelink = "2021_09_22_13_51_53_795631.zip";
+   //$filelink = "2021_10_05_16_31_22_088792.zip";
+   //$filelink = "2021_10_05_21_50_11_857874.zip";
+   //$filelink = "2021_10_06_21_36_26_540637.zip";
+   //$filelink = "2021_10_06_21_30_19_261802.zip";
    $filelink = "";
 
    if ($filelink != "") {
@@ -72,6 +82,11 @@
    $basename = $pathinfo["filename"];
 
    echo "Work Directory Set to: $workdir\n";
+
+   echo "Creating Fixations and Raw Data Plots\n";
+   $grapher = new DataSetGrapher($input_json_file);
+   $grapher->plotDataSets();
+
    echo "Creating the CSV File\n";
 
    $csvs = [];

@@ -11,10 +11,8 @@ class TableBaseClass {
    // All classes will have a constant identifying the table name and the database where they are located. 
    const TABLE_NAME = "table_name";
    const IN_DB      = "in_db";
-
-   // Order directions
-   const ORDER_DESC = "DESC";
-   const ORDER_ASC  = "ASC";
+   
+   protected $REAL_DB_NAME;
 
    // A map that maps each column to a type required by the bind statement. Will be overwritten by each Child. 
    // const  COLUMN_TYPE_MAP = [];
@@ -37,7 +35,14 @@ class TableBaseClass {
    // A list of column names that should NOT be specified for a given function.  
    protected $avoided;
 
-   function __construct(PDO $con){
+   // The time consumed by the last query. 
+   private $time_for_last_query;
+
+   // The string for the last query issued.
+   private $last_query;
+
+   function __construct(PDO $con){      
+            
       $this->con = $con;      
       $this->error = "";
       $this->last_inserted = array();
@@ -54,6 +59,13 @@ class TableBaseClass {
          }
       }
 
+      $this->time_for_last_query = 0;
+
+   }
+
+   function getLastQueryTime($include_query_string = false){
+      if (!$include_query_string) return $this->time_for_last_query ;
+      else return $this->time_for_last_query . " ms, for QUERY: " . $this->last_query;
    }
 
    function getError(){
@@ -64,7 +76,12 @@ class TableBaseClass {
       return $this->last_inserted;
    }
 
+   function getLastQueryString(){
+      return $this->last_query;
+   }
 
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+   
    /**
     * @brief A generic simple search that returls all columns of a table of a the rows matching the criteria. 
     * @param search_params is an object where each key is a column and each value is an array of objects, each with with two keys:
@@ -99,8 +116,28 @@ class TableBaseClass {
 
       return $this->simpleSelect([],$select);
 
-   }      
+   }    
+   
+   /**
+    * Simple query to count the number of rows in a table.
+    */
 
+   public function countNumberOfRows(){
+      $sql = "SELECT COUNT(*) AS cnt FROM " . static::class::TABLE_NAME;
+      try {
+         $time = microtime(true);
+         $stmt = $this->con->prepare($sql);
+         $stmt->execute();
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
+         $this->last_query = $sql;
+         $row = $stmt->fetch();
+         return $row["cnt"];
+      }
+      catch (PDOException $e){
+         $this->error = "Failed counting the number of rows of table " . static::class::TABLE_NAME . ". Reason: "  . $e->getMessage() . ". SQL: $sql";
+         return false;
+      } 
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -175,19 +212,9 @@ class TableBaseClass {
       }
       else {
 
-         // Each object in $params is an array in this case. is a list.
-         // $new_params = array();
-         // foreach ($columns_to_insert as $p) {
-         //    $temp = array();
-         //    for ($i = 0; $i < count($params[$p]); $i++){
-         //       $new_name =  "$p" . "_" . $i;
-         //       $temp[] = ":$new_name";
-         //       $new_params[$new_name] = $params[$p][$i];
-         //    }
-         //    $placeholders[] = "(" . implode(",",$temp) . ")";
-         // }
 
          $new_params = array();
+         //echo "Count is $count\n";
          for ($i = 0; $i < $count; $i++){
             $temp = array();
             foreach ($columns_to_insert as $p) {
@@ -203,8 +230,11 @@ class TableBaseClass {
       }
 
       try {
+         $time = microtime(true);
          $stmt = $this->con->prepare($sql);
          $stmt->execute($params);
+         $this->last_query = $sql;
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
          $this->last_inserted[] = $this->con->lastInsertId();
       }
       catch (PDOException $e){
@@ -255,18 +285,28 @@ class TableBaseClass {
          $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",", $updates) . " WHERE $col_on_update IN (" . implode(",",$list_to_update) . ")";
       }
       else{
-         // Simple update. 1 row. 
-         $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",", $updates) . " WHERE $col_on_update = :$col_on_update";
-         $params[$col_on_update] = $value_on_update;
+         // Simple fix when the value to set is also the value on update
+         
+         $value_on_update_name = $col_on_update . "_toupdate";
+         
+         $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . implode(",", $updates) . " WHERE $col_on_update = :$value_on_update_name";
+         $params[$value_on_update_name] = $value_on_update;
+
+         //echo "UPDATE QUERY: $sql\n";
+         //var_dump($params);
       }
 
       try {
+         $time = microtime(true);
          $stmt = $this->con->prepare($sql);
-         $stmt->execute($params);
+         $stmt->execute($params);         
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
+         $this->last_query = $sql;
          $this->last_inserted[] = $this->con->lastInsertId();
       }
       catch (PDOException $e){
          $this->error = "Insertion failure for $customized_message: " . $e->getMessage() . ". SQL: $sql";
+         //var_dump($params);
          return false;
       }      
       
@@ -285,8 +325,7 @@ class TableBaseClass {
       
       $this->error = "";
       $this->last_inserted = array();
-
-      
+     
       if (!$this->validateInputArray($params,$customized_message)) return false;
 
       // Checking the validity of the columns in the where clause. 
@@ -311,8 +350,11 @@ class TableBaseClass {
       //var_dump($nparams);
 
       try {
+         $time = microtime(true);
          $stmt = $this->con->prepare($sql);
          $stmt->execute($nparams);
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
+         $this->last_query = $sql;
       }
       catch (PDOException $e){
          $this->error = "Update failure for $customized_message: " . $e->getMessage() . ". SQL: $sql";
@@ -323,7 +365,6 @@ class TableBaseClass {
       return array();      
       
    }    
-
 
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -346,9 +387,11 @@ class TableBaseClass {
       $params[$col_to_search] = $value;
 
       try {
+         $time = microtime(true);
          $stmt = $this->con->prepare($sql);
          $stmt->execute($params);
          $row = $stmt->fetch(); // The query will only return one row, always. 
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
          return [$row["result"]];
       }
       catch (PDOException $e){
@@ -392,22 +435,26 @@ class TableBaseClass {
       $bind["uid"]    = $unique_item_id;
       
       $latest = array();
+      $time = microtime(true);
       try {
          $stmt = $this->con->prepare($sql);
          $stmt->execute($bind);
          $ans = array();
+         $this->last_query = $sql;
          while($row = $stmt->fetch()){
             $latest[] = $row;
          } 
       }
       catch (PDOException $e){
          $this->error = "Select failure: " . $e->getMessage() . ". SQL: $sql";
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
          return false;
       }      
 
       // Checking there is only one answer:
       if (count($latest) > 1){
          $this->error = "Insert On Update Info: More than one row in " . static::class::TABLE_NAME . " for unique ID: $unique_item_id";
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
          return false;
       }
 
@@ -456,13 +503,16 @@ class TableBaseClass {
          // Creating the sql string.
          $sql =  "INSERT INTO " . static::class::TABLE_NAME .  " (" . implode(",",$columns_to_insert) . ") VALUES (" . implode(",",$placeholders) . ")";
    
-         try {
+         try {            
             $stmt = $this->con->prepare($sql);
+            $this->last_query = $sql;
             $stmt->execute($cols_to_compare);
             $this->last_inserted[] = $this->con->lastInsertId();
+            $this->time_for_last_query = (microtime(true) - $time)*1000;
          }
          catch (PDOException $e){
             $this->error = "Insertion failure for Insert On Update Info: " . $e->getMessage() . ". SQL: $sql";
+            $this->time_for_last_query = (microtime(true) - $time)*1000;
             return false;
          }      
                   
@@ -481,6 +531,7 @@ class TableBaseClass {
 
          try {
             $stmt = $this->con->prepare($sql);
+            $this->last_query = $sql;
             $stmt->execute($bind);
             $ans = array();
             while($row = $stmt->fetch()){
@@ -500,12 +551,20 @@ class TableBaseClass {
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
    /**
-    * SELECT operation on the table. 
+    * SELECT operation on the table. The SelectOperation contains all the conditions plus extras that could be used such as count, sum, group, ordering, limiting, etc. 
     */
 
-   protected function simpleSelect($cols_to_get, SelectOperation $operation, $order_by = "", $order_direction = "ASC" ,$limit = -1){
+   protected function simpleSelect($cols_to_get, SelectOperation $operation){
 
       $this->error = "";
+
+      // Getting the extras
+      $count_struct      = $operation->getExtra(SelectExtras::COUNT);
+      $sum_struct        = $operation->getExtra(SelectExtras::SUM);
+      $group_by          = $operation->getExtra(SelectExtras::GROUPBY);
+      $order_by          = $operation->getExtra(SelectExtras::ORDER);
+      $order_direction   = $operation->getExtra(SelectExtras::ORDER_DIRECTION);
+      $limit             = $operation->getExtra(SelectExtras::LIMIT);
 
       if (count($cols_to_get) == 0){
          // Empty column list means get all. 
@@ -520,6 +579,37 @@ class TableBaseClass {
               }
           }
       }
+
+      // If count struct is not empty, it should be an associative array which replaces the columns in $cols_to_get as COUNT(the_column) as NAME
+      foreach ($count_struct as $col => $ref_name){
+         $index = array_search($col,$cols_to_get);
+         if ($index === false){
+            $this->error = "COUNT column $col is not part of the requested columns";
+            return false;
+         }
+         $cols_to_get[$index] = "COUNT($col) as $ref_name";
+      }
+
+      // If count struct is not empty, it should be an associative array which replaces the columns in $cols_to_get as SUM(the_column) as NAME
+      foreach ($sum_struct as $col => $ref_name){
+         $index = array_search($col,$cols_to_get);
+         if ($index === false){
+            $this->error = "SUM column $col is not part of the requested columns";
+            return false;
+         }
+         $cols_to_get[$index] = "SUM($col) as $ref_name";
+      }
+
+      if (!empty($group_by)){
+         foreach ($group_by as $g) {
+             if (!in_array($g, $this->valid_columns)) {
+                 $this->error = "grouping column $g is not a column of table " . static::class::TABLE_NAME;
+                 return false;
+             }
+         }
+         $group_by = implode(",",$group_by);
+      }
+      else $group_by = "";
 
       // Checking the validity of the columns in the where clause. 
       foreach ($operation->getColumnsUsed() as $col){
@@ -537,6 +627,10 @@ class TableBaseClass {
 
       $sql = "SELECT $distinct" . implode(",",$cols_to_get) . " FROM " . static::class::TABLE_NAME . " WHERE " . $operation->makeWhereClause();
 
+      if ($group_by != ""){
+         $sql = $sql . " GROUP BY $group_by ";
+      }
+      
       //error_log($sql);
       //error_log(json_encode($operation->getBindParameterArray()));
 
@@ -546,12 +640,18 @@ class TableBaseClass {
             $this->error = "$order_by order by column is not a column of table " . static::class::TABLE_NAME;
             return false;
          }   
-         $sql = $sql . " ORDER BY  $order_by";  
-         if (($order_direction != self::ORDER_ASC) && ($order_direction != self::ORDER_DESC)){
-            $this->error = "Invalid order direction for ORDER BY: $order_direction " . static::class::TABLE_NAME;
-            return false;
+         if ($order_direction != SelectOrderDirection::RAND) {
+            $sql = $sql . " ORDER BY  $order_by";
+            if (($order_direction != SelectOrderDirection::ASC) && ($order_direction != SelectOrderDirection::DESC)) {
+                $this->error = "Invalid order direction for ORDER BY: $order_direction " . static::class::TABLE_NAME;
+                return false;
+            }
+            $sql = $sql . " " . $order_direction;
          }
-         $sql = $sql . " " . $order_direction;  
+         else{
+            $sql = $sql . " ORDER BY RAND()";
+         }
+
       } 
       if ($limit > -1){
          $sql = $sql . " LIMIT $limit";
@@ -561,8 +661,13 @@ class TableBaseClass {
       //echoOut($operation->getBindParameterArray(),true);
 
       try {
+         $time = microtime(true);
          $stmt = $this->con->prepare($sql);
          $stmt->execute($operation->getBindParameterArray());
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
+         $this->last_query = $sql;
+         //echo "QUERY: $sql\n";
+         //var_dump($operation->getBindParameterArray());
          $ans = array();
          while($row = $stmt->fetch()){
             $ans[] = $row;
@@ -610,6 +715,38 @@ class TableBaseClass {
 
       return true;
    }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+   
+   /**
+    * @brief Returns the size of the table in MB. This query does not require any parameters. 
+    */
+
+   public function getTableSize(){
+
+      // Query to get the obituary table size in MB. 
+      $sql = "SELECT TABLE_NAME AS " . static::class::TABLE_NAME . ", ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024) AS size FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".
+      $this->REAL_DB_NAME . "' AND TABLE_NAME = '" . static::class::TABLE_NAME . "'";
+
+      try {
+         $stmt = $this->con->prepare($sql);
+         $stmt->execute();
+         $ans = array();
+         //echo "Getting table size is all good. SQL: $sql\n";
+         while($row = $stmt->fetch()){
+            $ans[] = $row;
+         } 
+         return $ans;
+      }
+      catch (PDOException $e){
+         $this->error = "Get Table Size failure: " . $e->getMessage() . ". SQL: $sql";
+         return false;
+      }      
+
+   }
+
+
+
 }
 
 ?>

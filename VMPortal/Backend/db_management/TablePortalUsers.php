@@ -110,7 +110,10 @@ class TablePortalUsers extends TableBaseClass {
       // We need to return the creation Token.
       $select = new SelectOperation();
       $cols_to_get = [self::COL_CREATION_TOKEN];
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$params[self::COL_EMAIL]);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$params[self::COL_EMAIL])){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
 
       return $this->simpleSelect($cols_to_get,$select);
 
@@ -122,18 +125,23 @@ class TablePortalUsers extends TableBaseClass {
 
       $operation = new SelectOperation();
       if (is_numeric($email_or_id)) {
-         $ans = $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$email_or_id);
+         if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$email_or_id)){
+            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+            return false;   
+         }
       }
       else{
-         $ans = $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$email_or_id);
+         if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$email_or_id)){
+            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+            return false;   
+         }
       }
 
-      if ($enabled_only)
-         $ans = $operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ENABLED);
-
-      if ($ans === false){
-         $this->error = "Getting Info For User: " . $operation->getError();
-         return false;
+      if ($enabled_only) {
+         if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL, self::COL_ENABLED, self::ENABLED)){
+            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+            return false;   
+         }
       }
 
       return $this->simpleSelect($cols_to_get,$operation);
@@ -142,18 +150,26 @@ class TablePortalUsers extends TableBaseClass {
    function getAllNamesForIDList($id_list, $roles, $enabled_status){
       $cols_to_get = [self::COL_KEYID, self::COL_EMAIL, self::COL_NAME, self::COL_LASTNAME, self::COL_USER_ROLE];
       $operation = new SelectOperation();
-      $ans = $operation->addConditionToANDList(SelectColumnComparison::IN,self::COL_KEYID,$id_list);
+      
+      if (!$operation->addConditionToANDList(SelectColumnComparison::IN,self::COL_KEYID,$id_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+         return false;   
+      }
+      
+      
       if (!empty($roles)) {
          // Roles are limited ONLY if the list is not empty. 
-         $ans = $ans && $operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_USER_ROLE, $roles);
+         if (!$operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_USER_ROLE, $roles)){
+            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+            return false;   
+         }
       }
       if (!empty($enabled_status)){
          // Enable status is limited ONLY if the list is not empty. 
-         $ans = $ans && $operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_ENABLED, $enabled_status);
-      }
-      if ($ans === false){
-         $this->error = "Creating Portal User ID List: " . $operation->getError();
-         return false;
+         if (!$operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_ENABLED, $enabled_status)){
+            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+            return false;   
+         }
       }
       return $this->simpleSelect($cols_to_get,$operation);
    }
@@ -265,7 +281,10 @@ class TablePortalUsers extends TableBaseClass {
 
    function getUsersPermission($unique_id){
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$unique_id);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_EMAIL,$unique_id)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;   
+      }
       $cols_to_get = [self::COL_PERMISSIONS];
       return $this->simpleSelect($cols_to_get,$select);
    }

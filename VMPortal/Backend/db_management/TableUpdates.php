@@ -33,8 +33,14 @@ class TableUpdates extends TableBaseClass {
 
       // Now we check for presence. WE can't user insert on update, due to the $eyetracker_key not being present as option. IN that case we need to get it before we insert. 
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_UNIQUE_ID,$unique_key);
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,"1"); // The latest is marked by a 1 while all others are marked by a zero. 
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_UNIQUE_ID,$unique_key)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,"1")) { // The latest is marked by a 1 while all others are marked by a zero. 
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
 
       $cols_to_get = [self::COL_KEYID,self::COL_VERSION_STRING,self::COL_EYETRACKER_KEY];
 
@@ -127,8 +133,14 @@ class TableUpdates extends TableBaseClass {
 
       $select = new SelectOperation();
       $unique_key = $institution_id . "." . $number;
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_UNIQUE_ID,$unique_key);
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,1);
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_UNIQUE_ID,$unique_key)){         
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
       $cols_to_get = [self::COL_VERSION_STRING,self::COL_EYETRACKER_KEY];
       return $this->simpleSelect($cols_to_get,$select);
 
@@ -138,8 +150,14 @@ class TableUpdates extends TableBaseClass {
 
       $cols_to_get = [self::COL_INSTITUTION_ID, self::COL_INSTITUTION_INSTANCE, self::COL_EYETRACKER_KEY, self::COL_UNIQUE_ID];
       $select = new SelectOperation();
-      $select->addConditionToANDList(SelectColumnComparison::IN,self::COL_UNIQUE_ID,$update_list);
-      $select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,1);
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_UNIQUE_ID,$update_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
 
       // WE get all the values that we must reinsert before we make the same set of 
       $to_update = $this->simpleSelect($cols_to_get,$select);
@@ -166,6 +184,63 @@ class TableUpdates extends TableBaseClass {
 
       $ans = $this->insertionOperation($update_params,"Updating to new version $new_version");
       return $ans;
+
+   }
+
+   /**
+    * Updating all valid requires
+    * a) Getting a list of all valid institutions.
+    * b) Copying all info of those rows chainging only the new version.
+    * c) Updating all rows to be 0 
+    * d) Inserting the copied rows with the new version. 
+    */
+
+   function updateAllValidToNewerVersion($new_version){
+
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+
+      $cols_to_get = [self::COL_INSTITUTION_ID,self::COL_INSTITUTION_INSTANCE,self::COL_UNIQUE_ID,self::COL_EYETRACKER_KEY];
+
+      $ans = $this->simpleSelect($cols_to_get,$select);
+      if ($ans === false){
+         $this->error = "Failed getting the the valid updatable instances. Reason: " . $this->error;
+         return false;
+      }
+
+      // Creating insersion array
+      $cols_to_copy = [ self::COL_INSTITUTION_ID , self::COL_INSTITUTION_INSTANCE , self::COL_UNIQUE_ID, self::COL_EYETRACKER_KEY];
+
+      $insertion_array[self::COL_INSTITUTION_ID] = array();
+      $insertion_array[self::COL_INSTITUTION_INSTANCE] = array();
+      $insertion_array[self::COL_UNIQUE_ID] = array();
+      $insertion_array[self::COL_VERSION_STRING] = array();
+      $insertion_array[self::COL_VALID] = array();
+      $insertion_array[self::COL_EYETRACKER_KEY] = array();
+
+      // Copying the information that will nto change in the new rows. 
+      foreach ($ans as $row){
+         //echo "Valid key at " . $row[self::COL_UNIQUE_ID] . "\n";
+         foreach ($cols_to_copy as $col){            
+            $insertion_array[$col][] = $row[$col];
+         }
+         $insertion_array[self::COL_VALID][] = 1;
+         $insertion_array[self::COL_VERSION_STRING][] = $new_version;
+      }
+
+      //echo "INSERTION ARRAY\n";
+      //var_dump($insertion_array);
+
+      // Invalidating the old rows.
+      $params[self::COL_VALID] = 0;      
+      $ans = $this->updateOperation($params,"Invalidating current update rows",self::COL_VALID,1);   
+      if ($ans === false) return false;      
+
+      // Finally inserting the new rows.
+      return $this->insertionOperation($insertion_array,"Inserting new rows for all valid update");
 
    }
 

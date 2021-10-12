@@ -25,14 +25,24 @@ class ObjectSubjects extends ObjectBaseClass{
       $auth = explode(":",$auth);
       $portal_user = $auth[0];
 
-      // Create both table objects. 
+      // Finding the role of the user.
+      $role = $this->portal_user_info[TablePortalUsers::COL_USER_ROLE];
+
+      // Create all table objects. 
       $tev = new TableEvaluations($this->con_main);
       $tsu = new TableSubject($this->con_secure);
+      //$tpu = new TablePortalUsers($this->con_secure);
 
-      $ans = $tev->getAllSubjectsForInstitutionIDAndPortalUser($identifier,$portal_user);
+      if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN){         
+         $ans = $tev->getAllSubjectsWithEvaluationsForInstitutionIDAndPortalUser($identifier,"");
+      }
+      else{
+         $ans = $tev->getAllSubjectsWithEvaluationsForInstitutionIDAndPortalUser($identifier,$portal_user);         
+      }
+      
       if ($ans === FALSE){
          $this->suggested_http_code = 500;
-         $this->error = $tev->getError();
+         $this->error = "Failed getting all subject with evaluations for $identifier and portal user $portal_user whose role is $role: " . $tev->getError();
          $this->returnable_error = "Internal database error";
          return false;
       }
@@ -48,12 +58,11 @@ class ObjectSubjects extends ObjectBaseClass{
          $subjects[] = $sub[TableEvaluations::COL_SUBJECT_ID];
       }
 
-
       // And now we get the information for them.
       $ans = $tsu->getAllSubjectsFromList($subjects);
       if ($ans === FALSE){
          $this->suggested_http_code = 500;
-         $this->error = $tsu->getError();
+         $this->error = "Failed to get all subjects from a list: " . $tsu->getError();
          $this->returnable_error = "Internal database error";
          return false;
       }
@@ -64,6 +73,7 @@ class ObjectSubjects extends ObjectBaseClass{
          $this->returnable_error = "Internal database error";
          return false;
       }
+
       return $ans;
 
    }
