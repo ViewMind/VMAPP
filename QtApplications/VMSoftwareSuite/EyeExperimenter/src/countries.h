@@ -8,9 +8,8 @@ struct CountryStruct {
 public:
     void fillCountryList(bool inEnglish = true) {
         if (COUNTRY_CODE.size() != 0) return;
-        /// TODO: Get the country list in spanish.
         if (inEnglish) {
-            COUNTRY_LIST  << "No Countyr"
+            COUNTRY_LIST  << "No Country"
                           << "Afghanistan" << "Åland Islands" << "Albania" << "Algeria" << "American Samoa" << "Andorra" << "Angola" << "Anguilla" << "Antarctica"
                           << "Antigua and Barbuda" << "Argentina" << "Armenia" << "Aruba" << "Australia" << "Austria" << "Azerbaijan" << "Bahamas" << "Bahrain"
                           << "Bangladesh" << "Barbados" << "Belarus" << "Belgium" << "Belize" << "Benin" << "Bermuda" << "Bhutan" << "Bolivia, Plurinational State of"

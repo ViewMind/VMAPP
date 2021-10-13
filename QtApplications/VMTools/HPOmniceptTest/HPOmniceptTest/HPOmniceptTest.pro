@@ -15,7 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomnicentprovider.cpp \
+        ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.cpp \
         main.cpp \
         receiver.cpp
 
@@ -37,7 +37,7 @@ LIBS += -lshell32
 LIBS += -ladvapi32
 
 HEADERS += \
-    ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomnicentprovider.h \
+    ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h \
     receiver.h
 
 

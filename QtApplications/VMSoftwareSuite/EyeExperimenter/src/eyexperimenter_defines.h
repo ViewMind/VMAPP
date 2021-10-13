@@ -103,7 +103,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "18.1.2";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "18.1.3";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
@@ -148,13 +148,6 @@ namespace Globals{
        if (!dbug_str.isEmpty()){
            Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION + " - " + dbug_str;
        }
-               /*
-               + (ExperimentGlobals::SHORT_STUDIES ? " - SHORT STUDIES" : "")
-               + (Debug::DISABLE_DB_CHECKSUM ? " - NO CHECKSUM" : "") +
-               + (Debug::PRETTY_PRINT_JSON_DB ? " - CLEAR_DB" : "")
-               + (Debug::DISABLE_RM_SENT_STUDIES ? " - NO RM STUDIES" : "")
-               + (ExperimentGlobals::ENABLE_FIX_LOG ? " - FIX_LOG_ENABLED": "")
-               + (Debug::DISABLE_UPDATE_CHECK ? " - UPDATE CHECK DISABLED" : "");*/
    }
 
    namespace BaseFileNames {
