@@ -105,7 +105,7 @@ if ($ans === FALSE){
 
 ////////////////////////////////////// HP Omnicept
 $name = EyeTrackerCodes::HP_OMNICEPT;
-$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 2;    // This is a % of the maximum value of the used resolution. 
+$pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 3;    // This is a % of the maximum value of the used resolution. 
 $pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;   // ms. 
 $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 120;  // Hz.     
 $pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;   // Pixels. Absolute.  
