@@ -19,6 +19,12 @@ Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(pare
     // All studies start in manual mode until, it is removed.
     manualMode = true;
 
+    // Basically the screen is show if we ever setup an eyetracker that uses the main screen or we use the mouse debug option
+    activateScreenView = !Globals::EyeTracker::IS_VR || DBUGBOOL(Debug::Options::USE_MOUSE);
+
+    // Checking if the Override time is necessary.
+    overrideTime = DBUGINT(Debug::Options::OVERRIDE_TIME);
+
 }
 
 void Experiment::setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height){
@@ -172,6 +178,7 @@ bool Experiment::startExperiment(const QString &workingDir,
     // The experiment is ALWAYS started in manual mode.
     manager->setTrialCountLoopValue(NUMBER_OF_TRIALS_IN_MANUAL_MODE);
 
+
     return true;
 }
 
@@ -241,10 +248,10 @@ QString Experiment::moveDataFileToAborted(){
 void Experiment::finalizeOnlineFixations(){
     lastFixationR = rMWA.finalizeOnlineFixationCalculation();
     lastFixationL = lMWA.finalizeOnlineFixationCalculation();
-    if (lastFixationR.isValid()){
+    if (lastFixationR.hasFinished()){
         rawdata.addFixationVectorR(fixationToVariantMap(lastFixationR));
     }
-    if (lastFixationL.isValid()){
+    if (lastFixationL.hasFinished()){
         rawdata.addFixationVectorL(fixationToVariantMap(lastFixationL));
     }
 }
@@ -253,30 +260,30 @@ void Experiment::computeOnlineFixations(const EyeTrackerData &data, qreal l_scha
     lastFixationR = rMWA.calculateFixationsOnline(data.xRight,data.yRight,static_cast<qreal>(data.time),data.pdRight,r_schar,r_word);
     lastFixationL = lMWA.calculateFixationsOnline(data.xLeft,data.yLeft,static_cast<qreal>(data.time),data.pdLeft,l_schar,l_word);
 
-    if (lastFixationR.isValid() && rightEyeEnabled){
+    if (lastFixationR.hasFinished() && rightEyeEnabled){
         rawdata.addFixationVectorR(fixationToVariantMap(lastFixationR));
     }
 
-    if (lastFixationL.isValid() && leftEyeEnabled){
+    if (lastFixationL.hasFinished() && leftEyeEnabled){
         rawdata.addFixationVectorL(fixationToVariantMap(lastFixationL));
     }
 }
 
 QVariantMap Experiment::fixationToVariantMap(const Fixation &f){
     QVariantMap map;
-    map.insert(VMDC::FixationVectorField::X,f.x);
-    map.insert(VMDC::FixationVectorField::Y,f.y);
-    map.insert(VMDC::FixationVectorField::DURATION,f.duration);
-    map.insert(VMDC::FixationVectorField::TIME,f.time);
-    map.insert(VMDC::FixationVectorField::START_TIME,f.fixStart);
-    map.insert(VMDC::FixationVectorField::END_TIME,f.fixEnd);
-    map.insert(VMDC::FixationVectorField::START_INDEX,f.indexFixationStart);
-    map.insert(VMDC::FixationVectorField::END_INDEX,f.indexFixationEnd);
-    map.insert(VMDC::FixationVectorField::PUPIL,f.pupil);
-    map.insert(VMDC::FixationVectorField::ZERO_PUPIL,f.pupilZeroCount);
+    map.insert(VMDC::FixationVectorField::X,f.getX());
+    map.insert(VMDC::FixationVectorField::Y,f.getY());
+    map.insert(VMDC::FixationVectorField::DURATION,f.getDuration());
+    map.insert(VMDC::FixationVectorField::TIME,f.getTime());
+    map.insert(VMDC::FixationVectorField::START_TIME,f.getStartTime());
+    map.insert(VMDC::FixationVectorField::END_TIME,f.getEndTime());
+    map.insert(VMDC::FixationVectorField::START_INDEX,0);   // DEPRACATED. Left for legacy reasons.
+    map.insert(VMDC::FixationVectorField::END_INDEX,0);     // DEPRACATED. Left for legacy reasons.
+    map.insert(VMDC::FixationVectorField::PUPIL,f.getPupil());
+    map.insert(VMDC::FixationVectorField::ZERO_PUPIL,f.getBlinks());
     if (studyType == VMDC::Study::READING){
-        map.insert(VMDC::FixationVectorField::CHAR,f.sentence_char);
-        map.insert(VMDC::FixationVectorField::WORD,f.sentence_word);
+        map.insert(VMDC::FixationVectorField::CHAR,f.getChar());
+        map.insert(VMDC::FixationVectorField::WORD,f.getWord());
     }
     return map;
 }

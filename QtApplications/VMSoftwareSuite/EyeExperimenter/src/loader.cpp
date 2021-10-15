@@ -1,13 +1,16 @@
 #include "loader.h"
 
+const QString Loader::NO_REPORT_DISCARD_CODE = "no_report_available";
+
+const QStringList Loader::NO_REPORT_STUDIES = {VMDC::Study::NBACKMS,VMDC::Study::NBACKVS};
 
 Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
 {
 
-//    qDebug() << "On Loader";
-//    qDebug() << Globals::Share::EXPERIMENTER_VERSION;
-//    qDebug() << Globals::EyeTracker::NAME;
-//    qDebug() << Globals::API_URL;
+    //    qDebug() << "On Loader";
+    //    qDebug() << Globals::Share::EXPERIMENTER_VERSION;
+    //    qDebug() << Globals::EyeTracker::NAME;
+    //    qDebug() << Globals::API_URL;
 
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
@@ -266,12 +269,12 @@ void Loader::synchronizeToPartner(const QString &selectedPartner){
 void Loader::partnerFinished(){
     if (partner_api->getError() != ""){
         logger.appendError("Failed in requesting information for partner: " + partner_api->getPartnerType() + ". Reason: " + partner_api->getError());
-        emit(partnerSequenceDone(false));
+        emit Loader::partnerSequenceDone(false);
         return;
     }
 
-    QVariantList doctors = partner_api->getMedicInformation();
-    QVariantList patients = partner_api->getRegisteredPatientInformation();
+    // QVariantList doctors = partner_api->getMedicInformation();
+    // QVariantList patients = partner_api->getRegisteredPatientInformation();
 
     //    std::cout << "Printing doctors" << std::endl;
     //    for (qint32 i = 0; i < doctors.size(); i++){
@@ -288,7 +291,7 @@ void Loader::partnerFinished(){
         QVariantList doctors = partner_api->getMedicInformation();
         if (!apiclient.requestAdditionOfNonLoginPortalUsers(doctors)){
             logger.appendError("Failed on requesting the addition of NonLoginPortal Users: " + apiclient.getError());
-            emit(partnerSequenceDone(false));
+            emit Loader::partnerSequenceDone(false);
         }
     }
     else{
@@ -404,10 +407,10 @@ QString Loader::getConfigurationString(const QString &key){
 }
 
 QVariant Loader::getDebugOption(const QString &debugOption){
-   // Since this is for use in the QML/JS part of the code the string literal must be used.
-   QVariant option = Debug::DEBUG_OPTIONS.getVariant(debugOption);
-   if (!option.isValid()) return "";
-   else return option;
+    // Since this is for use in the QML/JS part of the code the string literal must be used.
+    QVariant option = Debug::DEBUG_OPTIONS.getVariant(debugOption);
+    if (!option.isValid()) return "";
+    else return option;
 }
 
 bool Loader::getConfigurationBoolean(const QString &key){
@@ -555,7 +558,6 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     metadata.insert(VMDC::MetadataField::DISCARD_REASON,"");
     metadata.insert(VMDC::MetadataField::COMMENTS,"");
 
-
     // Creating the subject data
     QVariantMap subject_data;
     subject_data.insert(VMDC::SubjectField::AGE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_AGE));
@@ -610,6 +612,17 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     qint32 md_px = qRound(md_percent*reference_for_md/100.0);
     //qDebug() << "Setting the MD from" << reference_for_md << md_percent << " to " << md_px;
     pp.insert(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW_PX,md_px);
+
+    // Computing the effective minimum fixation size to use.
+    qreal sample_frequency = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
+    qreal sample_period = 1/sample_frequency;
+    qreal minimum_fixation_length = qRound(sample_period*1000*MINIMUM_NUMBER_OF_DATAPOINTS_IN_FIXATION);
+    pp.insert(VMDC::ProcessingParameter::MIN_FIXATION_DURATION,minimum_fixation_length);
+    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+        QString dbug = "DBUG: Effective Minimum Fixation Computed At " + QString::number(minimum_fixation_length);
+        qDebug() << dbug;
+        logger.appendWarning(dbug);
+    }
 
     // Setting the QC Parameters that will be used.
     QVariantMap qc = localDB.getQCParameters();
@@ -883,7 +896,7 @@ bool Loader::qualityControlFailed() const {
     return !qc.getError().isEmpty();
 }
 
-bool Loader::setDiscardReasonAndComment(const QString &discard_reason, const QString &comment){
+bool Loader::setDiscardReasonAndComment(QString discard_reason, const QString &comment){
     if (!qc.setDiscardReasonAndComment(discard_reason,comment)){
         logger.appendError("Could not set discard reason or comment. Reason: " + qc.getError());
         return false;
@@ -908,7 +921,41 @@ void Loader::requestOperatingInfo(){
 void Loader::sendStudy(){
     processingUploadError = FAIL_CODE_NONE;
 
-    if (!apiclient.requestReportProcessing(configuration->getString(Globals::Share::SELECTED_STUDY))){
+    QString studyFileToSend = configuration->getString(Globals::Share::SELECTED_STUDY);
+
+    if (!NO_REPORT_STUDIES.empty()){
+        // The following check simply forces the discard reason to "no_report_available", only if
+        // there isn't a discard reason already (which means that the file is being sent to be processed)
+        // AND the study name is in the No Report Study List.
+        ViewMindDataContainer vmdc;
+        if (!vmdc.loadFromJSONFile(studyFileToSend)){
+            logger.appendError("Could not load file to send in order to check for no_report_studies. Reason: " + vmdc.getError());
+        }
+        else{
+            QString discard_reason = vmdc.getMetadataDiscardReason();
+            ///qDebug() << "LOADED FILE DISCARD REASON" << discard_reason;
+            if (discard_reason == ""){
+                // We now check if this is a now report study.
+                QStringList studies = vmdc.getStudies();
+                //qDebug() << "LOADED FILE STUDIES" << studies;
+                for (qint32 i = 0; i < studies.size(); i++){
+                    if (NO_REPORT_STUDIES.contains(studies.at(i))){
+                        //qDebug() << studies.at(i) << " IS A NO REPORT FILE";
+                        if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+                            QString msg = "DBUG: Setting file " + studyFileToSend + " as a NO REPORT STUDY";
+                            qDebug() << msg;
+                            logger.appendWarning(msg);
+                        }
+                        vmdc.addCustomMetadataFields(VMDC::MetadataField::DISCARD_REASON,NO_REPORT_DISCARD_CODE);
+                        vmdc.saveJSONFile(studyFileToSend);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (!apiclient.requestReportProcessing(studyFileToSend)){
         logger.appendError("Requesting study report generation: " + apiclient.getError());
         emit Loader::finishedRequest();
     }
@@ -938,6 +985,15 @@ void Loader::receivedRequest(){
             if (!localDB.setMedicInformationFromRemote(mainData)){
                 logger.appendError("Failed to set medical professionals info from server: " + localDB.getError());
             }
+
+            if (DBUGBOOL(Debug::Options::PRINT_PP)){
+                QVariantMap pp = mainData.value(APINames::ProcParams::NAME).toMap();
+                QString ppstr = Debug::QVariantMapToString(pp);
+                ppstr = "DBUG: RECEIVED PROCESSING PARAMETERS:\n" + ppstr;
+                qDebug() << ppstr;
+                logger.appendWarning(ppstr);
+            }
+
             if (!localDB.setProcessingParametersFromServerResponse(mainData)){
                 logger.appendError("Failed to set processing parameters from server: " + localDB.getError());
             }

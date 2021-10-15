@@ -53,8 +53,10 @@ bool FieldingExperiment::startExperiment(const QString &workingDir, const QStrin
     // Start enconding 1
     rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
 
-    m->drawBackground();
-    drawCurrentImage();
+    if (activateScreenView){
+        m->drawBackground();
+        drawCurrentImage();
+    }
 
     return true;
 
@@ -67,7 +69,7 @@ void FieldingExperiment::nextState(){
 
         // End retrieval 3. And trial.
         finalizeOnlineFixations();
-        rawdata.finalizeDataSet();        
+        rawdata.finalizeDataSet();
         rawdata.finalizeTrial("");
 
         currentTrial++;

@@ -82,7 +82,7 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
         lastData.time    = eyedata.value(HPProvider::Timestamp).toLongLong();
         lastData.pdLeft  = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Pupil).toReal();
         lastData.pdRight = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Pupil).toReal();
-        emit(newDataAvailable(lastData));
+        emit HPOmniceptInterface::newDataAvailable(lastData);
     }
 
 }

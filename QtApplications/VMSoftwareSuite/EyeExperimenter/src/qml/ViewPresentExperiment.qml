@@ -21,6 +21,8 @@ VMBase {
     readonly property int vmSTATE_EVALUATION: 4
     readonly property int vmSTATE_GOBACK: 5
 
+    ////////////////////// Place holder in language string for values when displaying study messages.
+    readonly property string vmMessageValuePlaceHolder: "<<N>>";
 
     ///////////////////// INDEXES FOR BULLETS FOR CONVENIENCE
     readonly property int vmBULLET_IDX_CALIBRATION: 0
@@ -90,6 +92,16 @@ VMBase {
             }
             flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
             setActionsForState(vmSTATE_CALIBRATION_DONE);
+        }
+        function onNewExperimentMessages(string_value_map){
+            var message_list = [];
+            for (var key in string_value_map){
+                var value = string_value_map[key];
+                var message_string = loader.getStringForKey(key)
+                message_string = message_string.replace(vmMessageValuePlaceHolder,value);
+                message_list.push(message_string)
+            }
+            messageCard.setList(message_list,true);
         }
 
     }
@@ -600,6 +612,32 @@ VMBase {
             statusCard.setList(loader.getStringListForKey("viewpresentexp_states"));
         }
     }
+
+    VMBulletedCard {
+        id: messageCard;
+        width: subjectCard.width
+        height: mainWindow.height*0.24
+        anchors.left: subjectCard.left
+        anchors.top: statusCard.bottom
+        anchors.topMargin: mainWindow.height*0.01
+        vmNoLeftMargin: true
+        vmTitleText: loader.getStringForKey("viewpresentexp_messages");
+//        Component.onCompleted: {
+//            let test = [];
+//            test.push(loader.getStringForKey("viewpresentexp_binding_correct"));
+//            test.push(loader.getStringForKey("viewpresentexp_binding_incorrect"));
+//            test.push(loader.getStringForKey("viewpresentexp_reading"));
+//            test.push(loader.getStringForKey("viewpresentexp_nback_sequence_hit"));
+//            test.push(loader.getStringForKey("viewpresentexp_nback_sequence_timeout"));
+//            test.push(loader.getStringForKey("viewpresentexp_nback_target_speed"));
+//            test.push(loader.getStringForKey("viewpresentexp_gonogo_ok"));
+//            test.push(loader.getStringForKey("viewpresentexp_gonogo_timeout"));
+//            test.push(loader.getStringForKey("viewpresentexp_gonogo_avg"));
+//            messageCard.setList(test,true)
+//        }
+    }
+
+
 
     VMBulletedCard {
         id: actionCard

@@ -58,12 +58,35 @@ bool GoNoGoManager::parseExpConfiguration(const QString &contents){
     arrowTargetBox = parser.getArrowTargetBox();
     answerArray = parser.getCorrectAnswerArray();
 
-    // For DEBUG only
-    //canvas->addRect(targetBoxes.at(0));
-    //canvas->addRect(targetBoxes.at(1));
-    //canvas->addRect(arrowTargetBox);
+    if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
+        // Target boxes must be drawn first.
+        qDebug() << "DBUG Drawing GoNoGo TargetBoxes";
 
-    // if (config->getBool(CONFIG_DEMO_MODE)) enableDemoMode();
+        QColor bkg(Qt::white);
+        bkg.setAlpha(0);
+
+        for (qint32 i = 0; i < targetBoxes.size(); i++){
+            // And Draws the Target Boxes.
+            QRectF hitBoxToDraw = targetBoxes.at(i);
+
+            qDebug() << "DBUG: GONOGO HITBOX" << i << hitBoxToDraw;
+
+            QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
+                                                       QPen(QBrush(Qt::blue),2),
+                                                       QBrush(bkg)); // Background is fully transparent
+
+            rect2->setPos(hitBoxToDraw.x(),hitBoxToDraw.y());
+            //rect2->setOpacity(0.5);
+        }
+
+        QRectF hitBoxToDraw = arrowTargetBox;
+        QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
+                                                   QPen(QBrush(Qt::blue),2),
+                                                   QBrush(bkg));
+        //rect2->setOpacity(0.5);
+        rect2->setPos(hitBoxToDraw.x(),hitBoxToDraw.y());
+
+    }
 
     return true;
 }
@@ -102,7 +125,7 @@ void GoNoGoManager::drawCurrentTrial(){
     setVisibilityToElementList(gTargets,true);
 
     if (gonogoTrials.at(trialIndex).type == GoNoGoParser::TRIAL_TYPE_RLEFT){
-         setVisibilityToElementList(gRLArrow,true);
+        setVisibilityToElementList(gRLArrow,true);
     }
     else if (gonogoTrials.at(trialIndex).type == GoNoGoParser::TRIAL_TYPE_GLEFT){
         setVisibilityToElementList(gGLArrow,true);
@@ -119,9 +142,9 @@ void GoNoGoManager::drawCurrentTrial(){
 
     trialIndex++;
     if (trialCountLoopValue > -1){
-       if (trialIndex > trialCountLoopValue){
-           trialIndex = 0;
-       }
+        if (trialIndex > trialCountLoopValue){
+            trialIndex = 0;
+        }
     }
 
 }
@@ -133,8 +156,6 @@ void GoNoGoManager::setVisibilityToElementList(QList<QGraphicsItem *> list, bool
 }
 
 void GoNoGoManager::drawAllElements(){
-
-    //qDebug() << "Draw All Elements";
 
     trialIndex = 0;
 
@@ -199,8 +220,6 @@ void GoNoGoManager::drawAllElements(){
     QGraphicsLineItem *green_right_arrow_ind_up = canvas->addLine(right_x0,centerY,right_x0-ka,centerY-ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
     QGraphicsLineItem *green_right_arrow_ind_dn = canvas->addLine(right_x0,centerY,right_x0-ka,centerY+ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
     gGRArrow << green_arrow << green_right_arrow_ind_up << green_right_arrow_ind_dn;
-
-    //qDebug() << "Finished Draw All Elements";
 
 }
 

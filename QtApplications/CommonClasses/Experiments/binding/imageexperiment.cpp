@@ -1,5 +1,8 @@
 #include "imageexperiment.h"
 
+const QString ImageExperiment::MSG_CORRECT = "viewpresentexp_binding_correct";
+const QString ImageExperiment::MSG_INCORRECT = "viewpresentexp_binding_incorrect";
+
 ImageExperiment::ImageExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type){
 
     manager = new BindingManager();
@@ -37,10 +40,13 @@ bool ImageExperiment::startExperiment(const QString &workingDir, const QString &
         return false;
     }
 
+    correctResponses = 0;
+    incorrectResponses = 0;
+
     drawCurrentImage();
     stateTimer.setInterval(TIME_START_CROSS);
     //stateTimer.start();
-    if (!Globals::EyeTracker::IS_VR){
+    if (activateScreenView){
         this->show();
         this->activateWindow();
     }
@@ -116,6 +122,12 @@ void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 }
 
 void ImageExperiment::resetStudy(){
+
+    // Resettign the stats.
+    incorrectResponses = 0;
+    correctResponses = 0;
+    updateStudyMessages();
+
     currentTrial = 0;
     error = "";
     state = STATE_RUNNING;
@@ -253,6 +265,13 @@ void ImageExperiment::nextState(){
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
             rawdata.finalizeTrial(answer);
+            if (answer != expectedResponse){
+                incorrectResponses++;
+            }
+            else{
+                correctResponses++;
+            }
+            updateStudyMessages();
         }
 
         drawCurrentImage();
@@ -285,6 +304,11 @@ bool ImageExperiment::addNewTrial(){
     if (currentTrialID.toUpper().contains("SAME")) type = "S";
     else if (currentTrialID.toUpper().contains("DIFFERENT")) type = "D";
 
+    expectedResponse = type;
+    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+        qDebug() << "Expected response " << type;
+    }
+
     if (!manualMode){
         // The type of trial is the right answer in this case.
         if (!rawdata.addNewTrial(currentTrialID,type,type)){
@@ -294,6 +318,13 @@ bool ImageExperiment::addNewTrial(){
         rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
     }
     return true;
+}
+
+void ImageExperiment::updateStudyMessages(){
+    studyMessages.clear();
+    studyMessages[MSG_CORRECT] = correctResponses;
+    studyMessages[MSG_INCORRECT] = incorrectResponses;
+    emit Experiment::updateStudyMessages(studyMessages);
 }
 
 

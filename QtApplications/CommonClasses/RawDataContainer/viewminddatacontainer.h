@@ -131,6 +131,8 @@ public:
 
     QStringList getMetaDataDateTime() ;  // Returns a display string and then a string that cna be used for sorting. The list always has two values.
 
+    QString getMetadataDiscardReason();
+
     QVariantMap getApplicationUserData(const QString &type);
 
     QVariantMap getSubjectData();

@@ -1,5 +1,10 @@
 #include "gonogoexperiment.h"
 
+const QString GoNoGoExperiment::MSG_OK_TRIALS      = "viewpresentexp_gonogo_ok";
+const QString GoNoGoExperiment::MSG_TIMEOUT_TRIALS = "viewpresentexp_gonogo_timeout";
+const QString GoNoGoExperiment::MSG_AVG_SPEED      = "viewpresentexp_gonogo_avg";
+
+
 GoNoGoExperiment::GoNoGoExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type)
 {
     manager = new GoNoGoManager();
@@ -25,12 +30,17 @@ void GoNoGoExperiment::onTimeOut(){
             return;
         }
 
+        // To measure the trial duration time.
+        timeMeasurer.start();
 
         if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
 
         //qDebug() << "DRAWING TRIAL";
         m->drawCurrentTrial();
-        stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
+
+        if (overrideTime != 0) stateTimer.setInterval(overrideTime);
+        else stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
+
         if (!manualMode) stateTimer.start();
         gngState = GNGS_ESTIMULUS;
         break;
@@ -41,6 +51,13 @@ void GoNoGoExperiment::onTimeOut(){
             rawdata.finalizeDataSet();
             rawdata.finalizeTrial("");
         }
+
+        // Updating the front end messages.
+        if (fixationFormedAtRightTarget) successfulTrials++;
+        else timedOutTrials++;
+        accumulatedTime = accumulatedTime + static_cast<qreal>(timeMeasurer.elapsed());
+        fixationFormedAtRightTarget = false;
+        updateStudyMessages();
 
         if (!m->drawCross()){
 
@@ -102,12 +119,32 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
     stateTimer.setInterval(GONOGO_TIME_CROSS);
     //stateTimer.start();
     gngState = GNGS_CROSS;
+
+    // Stat measuring reset
+    successfulTrials = 0;
+    timedOutTrials = 0;
+    accumulatedTime = 0;
+    fixationFormedAtRightTarget = false;
+    updateStudyMessages();
+
+    if (activateScreenView){
+        this->show();
+        this->activateWindow();
+    }
+
     updateSecondMonitorORHMD();
 
     return true;
 }
 
 void GoNoGoExperiment::resetStudy(){
+
+    fixationFormedAtRightTarget = false;
+    accumulatedTime = 0;
+    successfulTrials = 0;
+    timedOutTrials = 0;
+    updateStudyMessages();
+
     m->resetStudy();
     m->drawCross();
     stateTimer.setInterval(GONOGO_TIME_CROSS);
@@ -136,26 +173,21 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
 
     // Checking if there is a fixation inside the correct target.
-    //qDebug() << data.toString();
     computeOnlineFixations(data);
 
-    if (lastFixationR.isValid()){
-        //qDebug() << "RFIX" << r.toString();
-        if (m->isPointInSideCorrectTargetForCurrentTrial(lastFixationR.x,lastFixationR.y)){
-#ifdef DBUG_FIX_TO_MOVE
-            qDebug() << "END TRIAL " <<  m->getCurrentTrialHeader()  << " RIGHT FIX @"  << data.time << ". DUR" << lastFixationR.duration;
-#endif
-            onTimeOut();
-            return;
-        }
+    Fixation fixationToCheck;
+    if ((leftEyeEnabled) && (!rightEyeEnabled)){
+        fixationToCheck = lastFixationL;
+    }
+    else {
+        fixationToCheck = lastFixationR;
     }
 
-    if (lastFixationL.isValid()){
-        //qDebug() << "LFIX" << l.toString();
-        if (m->isPointInSideCorrectTargetForCurrentTrial(lastFixationL.x,lastFixationL.y)){
-#ifdef DBUG_FIX_TO_MOVE
-            qDebug() << "END TRIAL " <<  m->getCurrentTrialHeader()  << " LEFT FIX @"  << data.time << ". DUR" << lastFixationL.duration;
-#endif
+    // We need to check for both conditions as it is entirely possible for a fixation to start OUTSIDE of the hitbox
+    // and finish inside.
+    if ((fixationToCheck.hasStarted() || fixationToCheck.hasFinished())){
+        if (m->isPointInSideCorrectTargetForCurrentTrial(lastFixationR.getX(),lastFixationR.getY())){
+            fixationFormedAtRightTarget = true;
             onTimeOut();
             return;
         }
@@ -220,3 +252,15 @@ QVariantMap GoNoGoExperiment::setGoNoGoTargetBoxes(QVariantMap pp){
 
 }
 
+
+void GoNoGoExperiment::updateStudyMessages(){
+    studyMessages.clear();
+    qreal totalTrials = successfulTrials + timedOutTrials;
+    qreal speed;
+    if (totalTrials != 0.0) speed = qRound(accumulatedTime/(totalTrials));
+    else speed = 0;
+    studyMessages[MSG_AVG_SPEED] = speed;
+    studyMessages[MSG_OK_TRIALS] = successfulTrials;
+    studyMessages[MSG_TIMEOUT_TRIALS] = timedOutTrials;
+    emit Experiment::updateStudyMessages(studyMessages);
+}

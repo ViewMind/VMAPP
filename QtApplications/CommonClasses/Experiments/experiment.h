@@ -83,8 +83,13 @@ signals:
     // Used for drawing images and following the eyes in the second monitor.
     void updateBackground(const QPixmap &pixmap);    
     void updateEyePositions(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
+
+    // TODO: Review what these are used for.
     void addFixations(qreal rx, qreal ry, qreal lx, qreal ly);
     void addDebugMessage(const QString &message, bool append);
+
+    // Used to update the messages on the QML side where the study is being presented.
+    void updateStudyMessages(const QVariantMap &string_value_map);
 
     // Signal that provides VR with the image to show.
     void updateVRDisplay();
@@ -128,6 +133,9 @@ protected:
     // Flag used to indicate that the flow control of the experiment is manually controlled. Only the first N trials can be used.
     bool manualMode;
 
+    // Flag that indicates whether to draw to the VR Helmet or to the Screen.
+    bool activateScreenView;
+
     // Where the data file will be stored and any other required image.
     QString workingDirectory;
 
@@ -164,6 +172,12 @@ protected:
     // Variables necessary for raw data insertion control.
     QString currentTrialID;
 
+    // This variable will be filled by each individual study with the information to show in front end during the study duration.
+    QVariantMap studyMessages;
+
+    // Timer to measure different areas as required by most studies.
+    QElapsedTimer timeMeasurer;
+
     void keyPressEvent(QKeyEvent *event) override;
 
     // Update Image or HMD Logic is the same for all experiments
@@ -184,6 +198,9 @@ protected:
 
     // This is the number of trials to be used when manual mode is employed. When it reaches the number it loops back to the start.
     const qint32 NUMBER_OF_TRIALS_IN_MANUAL_MODE = 3;
+
+    // For debugging. If override time debug option is set then this value is used at critical time outs in experiments. To provide time for analysis.
+    qint32 overrideTime;
 
 };
 

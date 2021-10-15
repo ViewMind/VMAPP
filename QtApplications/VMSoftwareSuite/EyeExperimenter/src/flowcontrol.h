@@ -72,6 +72,9 @@ signals:
     // Signal to update QML Image on screen.
     void newImageAvailable();
 
+    // Singal to update the QML front end with new study string.
+    void newExperimentMessages(const QVariantMap &string_value_map);
+
 public slots:
 
     // When an experiment finishes.
@@ -79,6 +82,9 @@ public slots:
 
     // Eye tracker control changes
     void onEyeTrackerControl(quint8 code);
+
+    // Whenever the experiment updates message to the front end.
+    void onUpdatedExperimentMessages(const QVariantMap &string_value_map);
 
 
 private slots:

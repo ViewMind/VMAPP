@@ -44,6 +44,12 @@ namespace Debug {
        const QString STUDY_CONFIG_MAP     = "study_configutation_map";
        const QString LOAD_CALIBRATION_K   = "load_calibration_coeffs";
        const QString ENABLE_GAZE_FOLLOW   = "enable_gaze_follow";
+       const QString USE_MOUSE            = "use_mouse";
+       const QString OVERRIDE_TIME        = "override_time";
+       const QString DBUG_MSG             = "debug_messages";
+       const QString LIGHTUP_NBACKRT      = "lightup_nback_rt";
+       const QString PRINT_PP             = "print_pp";
+       const QString RENDER_HITBOXES      = "render_hitboxes";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

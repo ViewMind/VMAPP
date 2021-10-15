@@ -9,7 +9,6 @@ namespace Globals {
 
    namespace HTC {
       static const QString NAME = "HTCVive Pro";
-      static const bool ENABLE_GAZE_FOLLOW = true;
       static const bool IS_VR = true;
       static const QString PROCESSING_PARAMETER_KEY = "htcviveeyepro";
       static const qreal VRSCALING = 1.0;
@@ -17,7 +16,6 @@ namespace Globals {
 
    namespace HPReverb {
       static const QString NAME = "HP Omnicept";
-      static const bool ENABLE_GAZE_FOLLOW = true;
       static const bool IS_VR = true;
       static const QString PROCESSING_PARAMETER_KEY = "hpomnicept";
       static const qreal VRSCALING = 1.0;
@@ -26,7 +24,6 @@ namespace Globals {
 
    namespace GP3HD {
       static const QString NAME = "Gazepoint";
-      static const bool ENABLE_GAZE_FOLLOW = false;
       static const bool IS_VR = false;
       static const QString PROCESSING_PARAMETER_KEY = "gazepoint";
       static const qreal VRSCALING = 1.0; // UNUSED. Required for compilation
@@ -43,7 +40,6 @@ namespace Globals {
    static bool SetUpEyeTrackerNameSpace(const QString &key){
        if (key == HTC::PROCESSING_PARAMETER_KEY){
            EyeTracker::NAME = HTC::NAME;
-           EyeTracker::ENABLE_GAZE_FOLLOW = HTC::ENABLE_GAZE_FOLLOW;
            EyeTracker::IS_VR = HTC::IS_VR;
            EyeTracker::PROCESSING_PARAMETER_KEY = key;
            EyeTracker::VRSCALING = HTC::VRSCALING;
@@ -51,7 +47,6 @@ namespace Globals {
        }
        else if (key == GP3HD::PROCESSING_PARAMETER_KEY){
            EyeTracker::NAME = GP3HD::NAME;
-           EyeTracker::ENABLE_GAZE_FOLLOW = HTC::ENABLE_GAZE_FOLLOW;
            EyeTracker::IS_VR = GP3HD::IS_VR;
            EyeTracker::PROCESSING_PARAMETER_KEY = key;
            EyeTracker::VRSCALING = GP3HD::VRSCALING;
@@ -59,7 +54,6 @@ namespace Globals {
        }
        else if (key == HPReverb::PROCESSING_PARAMETER_KEY){
            EyeTracker::NAME = HPReverb::NAME;
-           EyeTracker::ENABLE_GAZE_FOLLOW = HPReverb::ENABLE_GAZE_FOLLOW;
            EyeTracker::IS_VR = HPReverb::IS_VR;
            EyeTracker::PROCESSING_PARAMETER_KEY = key;
            EyeTracker::VRSCALING = HPReverb::VRSCALING;

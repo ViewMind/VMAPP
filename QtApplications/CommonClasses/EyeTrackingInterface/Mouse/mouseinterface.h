@@ -15,20 +15,22 @@ class MouseInterface: public EyeTrackerInterface
 public:
     MouseInterface();
 
-    void connectToEyeTracker();
+    void connectToEyeTracker() override;
 
-    void enableUpdating(bool enable);
+    void enableUpdating(bool enable) override;
 
-    void disconnectFromEyeTracker();
+    void disconnectFromEyeTracker() override;
 
-    void calibrate(EyeTrackerCalibrationParameters params);
+    void calibrate(EyeTrackerCalibrationParameters params) override;
 
     void mouseSetCalibrationToTrue();
 
-    ~MouseInterface();
+    void overrideCalibration();
+
+    ~MouseInterface() override;
 
 private slots:
-    void on_pollTimer_Up();
+    void on_pollTimerUp();
     void on_calibrationCancelled();
 
 private:
@@ -42,6 +44,7 @@ private:
     bool isCalibrated;
     bool isBeingCalibrated;
     bool sendData;
+    bool overrideCalibrationFlag;
 
     CalibrationArea *calibrationScreen;
 

@@ -1,18 +1,5 @@
 #include "fieldingmanager.h"
 
-//#ifdef EYETRACKER_HTCVIVEPRO
-//const qreal FieldingManager::TARGET_R =                                   52.5;
-//const qreal FieldingManager::TARGET_OFFSET_X =                            48.75;
-//const qreal FieldingManager::TARGET_OFFSET_Y =                            43.75;
-//const qreal FieldingManager::K_CROSS_LINE_LENGTH =                        0.05;
-//#endif
-
-//#ifdef EYETRACKER_GAZEPOINT
-//const qreal FieldingManager::TARGET_R =                                   42;
-//const qreal FieldingManager::TARGET_OFFSET_X =                            39;
-//const qreal FieldingManager::TARGET_OFFSET_Y =                            39;
-//#endif
-
 const qreal FieldingManager::K_TARGET_R          =                        0.022; // of the width.
 const qreal FieldingManager::K_TARGET_OFFSET_X   =                        0.02;
 const qreal FieldingManager::K_TARGET_OFFSET_Y   =                        0.036;
@@ -29,11 +16,25 @@ const char * FieldingManager::PAUSE_TEXT_ENGLISH = "Press \"G\" to continue with
 
 FieldingManager::FieldingManager(){
     vr_being_used = false;
+    currentlyLitUp = -1;
+    connect(&litUpTimer,&QTimer::timeout,this,&FieldingManager::onLightOffTimeout);
 }
 
 void FieldingManager::enableDemoMode(){
     while (fieldingTrials.size() > NUMBER_OF_TRIALS_IN_DEMO_MODE){
         fieldingTrials.removeLast();
+    }
+}
+
+void FieldingManager::setDebugSequenceValue(qint32 next_target_box){
+    if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
+        if (next_target_box == -1){
+            gDebugSequenceValue->setZValue(-1);
+        }
+        else{
+            gDebugSequenceValue->setZValue(1);
+            gDebugSequenceValue->setText(QString::number(next_target_box));
+        }
     }
 }
 
@@ -52,6 +53,34 @@ bool FieldingManager::parseExpConfiguration(const QString &contents){
 
     return true;
 
+}
+
+void FieldingManager::ligthOffAllBoxes(){
+    //qDebug() << "Turn Off";
+    currentlyLitUp = -1;
+    for (qint32 i = 0; i < graphicalTargetBoxes.size(); i++){
+        graphicalTargetBoxes.at(i)->setBrush(QBrush(Qt::black));
+    }
+}
+
+void FieldingManager::onLightOffTimeout(){    
+    if (currentlyLitUp != -1){
+        graphicalTargetBoxes.at(currentlyLitUp)->setBrush(QBrush(Qt::black));
+        currentlyLitUp = -1;
+    }
+}
+
+bool FieldingManager::lightUpBox(qint32 box_index){
+    if (box_index < 0) return false;
+    if (box_index >= graphicalTargetBoxes.size()) return false;
+    if (box_index == currentlyLitUp) return false;
+    graphicalTargetBoxes.at(box_index)->setBrush(QBrush(QColor(228,228,228)));
+    currentlyLitUp = box_index;
+    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+        qDebug() << "DBUG: Lit UP Box" << box_index;
+    }
+    litUpTimer.start(LIGHT_OFF_TIME);
+    return true;
 }
 
 void FieldingManager::configure(const QVariantMap &config){
@@ -75,31 +104,43 @@ void FieldingManager::drawBackground(){
     dcc.setTargetResolution(ScreenResolutionWidth,ScreenResolutionHeight);
 
     // Background
-    canvas->clear();
+    this->clearCanvas();
+
+    graphicalTargetBoxes.clear();
     canvas->addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
 
     for (qint32 i = 0; i < drawTargetBoxes.size(); i++){
-#ifdef ENABLE_DRAW_OF_HIT_TARGET_BOXES        
 
-        QRectF hitBoxToDraw = hitTargetBoxes.at(i);
-        if ((i != TARGET_BOX_5) && (i != TARGET_BOX_2)){
-            hitBoxToDraw.setY(hitBoxToDraw.top()-hitBoxToDraw.height()/2);
-            hitBoxToDraw.setHeight(hitBoxToDraw.height()*2);
+        if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
+
+            // And Draws the Target Boxes.
+            QRectF hitBoxToDraw = hitTargetBoxes.at(i);
+
+            qDebug() << "DBUG NBACK HITBOX" << i << hitBoxToDraw;
+
+            QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
+                                                       QPen(QBrush(Qt::green),2),
+                                                       QBrush(Qt::black));
+
+            rect2->setPos(hitBoxToDraw.x(),hitBoxToDraw.y());
+
         }
-
-        QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
-                                                   QPen(QBrush(Qt::green),2),
-                                                   QBrush(Qt::black));
-
-        rect2->setPos(hitBoxToDraw.x(),hitBoxToDraw.y());
-#endif
 
         QGraphicsRectItem *rect = canvas->addRect(0,0,drawTargetBoxes.at(i).width(),drawTargetBoxes.at(i).height(),
                                                   QPen(QBrush(Qt::white),6),
                                                   QBrush(Qt::black));
         rect->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
 
+        if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
 
+            // Debug Message Draws The Number On the Hit Boxes
+            QGraphicsTextItem *item = canvas->addText(QString::number(i));
+            item->setDefaultTextColor(QColor(Qt::red));
+            item->setFont(QFont("Mono",46));
+            item->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
+        }
+
+        graphicalTargetBoxes << rect;
     }
 
     // Adding the cross
@@ -143,6 +184,14 @@ void FieldingManager::drawBackground(){
     gText3->setPos(x,y);
     gText3->setPen(QPen(Qt::white));
     gText3->setBrush(QBrush(Qt::white));
+
+    if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
+        gDebugSequenceValue = canvas->addSimpleText("-1",letterFont);
+        gDebugSequenceValue->setPos(x,y);
+        gDebugSequenceValue->setPen(QPen(Qt::white));
+        gDebugSequenceValue->setBrush(QBrush(Qt::white));
+        gDebugSequenceValue->setZValue(-1);
+    }
 
 }
 
@@ -231,7 +280,7 @@ QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial, q
     QList<qint32> hits;
     QList<qint32> sequence = fieldingTrials.at(trial).sequence.mid(0,targetNum);
 
-    for (qint32 i = sequence.size()-1; i >= 0; i--){
+    for (qsizetype i = sequence.size()-1; i >= 0; i--){
         hits << sequence.at(i);
     }
     return hits;
@@ -253,7 +302,7 @@ bool FieldingManager::isPointInTargetBox(qreal x, qreal y, qint32 targetBox) con
 
 void FieldingManager::drawPauseScreen(){
 
-    canvas->clear();
+    this->clearCanvas();
     qreal xpos, ypos;
 
     canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::black)));

@@ -83,7 +83,9 @@ void VIVEEyePoller::run(){
 
             ViveSR::anipal::Eye::SingleEyeData le = result.verbose_data.left;
             ViveSR::anipal::Eye::SingleEyeData re = result.verbose_data.right;
-            qint32 timestamp = result.timestamp;
+            //qint32 timestamp = result.timestamp;
+            // The use of this timer prevents the posibility of an overflow in the time stamp.
+            qint64 timestamp = timestampTimer.elapsed();
 
             float xl,xr,yl,yr,zl,zr,pl,pr;
             xl = le.gaze_direction_normalized.x;
@@ -120,7 +122,7 @@ void VIVEEyePoller::run(){
             previousSample[HTCVIVE::RightEye] = r;
             previousSample[HTCVIVE::Timestamp] = timestamp;
 
-            emit(eyeDataAvailable(previousSample));
+            emit VIVEEyePoller::eyeDataAvailable(previousSample);
 
         }
     }

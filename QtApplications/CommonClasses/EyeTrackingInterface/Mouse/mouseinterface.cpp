@@ -3,7 +3,7 @@
 MouseInterface::MouseInterface()
 {
     // Connecting the poll timer to time out to the slot.
-    connect(&pollTimer,&QTimer::timeout,this,&MouseInterface::on_pollTimer_Up);
+    connect(&pollTimer,&QTimer::timeout,this,&MouseInterface::on_pollTimerUp);
     sendData = false;
     isCalibrated = false;
     isBeingCalibrated = false;
@@ -16,15 +16,19 @@ MouseInterface::MouseInterface()
 
     calibrationFailureType = ETCFT_NONE;
 
+    overrideCalibrationFlag = false;
 
 }
 
+void MouseInterface::overrideCalibration(){
+    overrideCalibrationFlag = true;
+}
 
 void MouseInterface::connectToEyeTracker(){
     // "Connecting to the server"
     dataToSend.time = 0;
     pollTimer.start(TIMEOUT);
-    emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
+    emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS);
 }
 
 void MouseInterface::enableUpdating(bool enable){
@@ -41,15 +45,24 @@ void MouseInterface::mouseSetCalibrationToTrue(){
 
 void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
     Q_UNUSED(params)
+
+    if (overrideCalibrationFlag){
+        calibrationFailureType = ETCFT_NONE;
+        isCalibrated = true;
+        sendData = true;
+        emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
+        return;
+    }
+
     isBeingCalibrated = true;
     isCalibrated = false;
     calibrationScreen->exec();
     calibrationFailureType = ETCFT_NONE;
     if (isCalibrated)
-        emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+        emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
     else{
         logger.appendWarning("MOUSE TRACKER: Calibration was aborted");
-        emit(eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED));
+        emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED);
     }
 }
 
@@ -58,7 +71,7 @@ void MouseInterface::on_calibrationCancelled(){
     isBeingCalibrated = false;
 }
 
-void MouseInterface::on_pollTimer_Up(){
+void MouseInterface::on_pollTimerUp(){
 
     // Time is the time stamp in millisecond since the connection to the server started.
     // Time in microseconds.
@@ -101,7 +114,7 @@ void MouseInterface::on_pollTimer_Up(){
 
     lastData = dataToSend;
 
-    emit (newDataAvailable(dataToSend));
+    emit EyeTrackerInterface::newDataAvailable(dataToSend);
 
 }
 

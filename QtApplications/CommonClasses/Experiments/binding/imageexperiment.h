@@ -77,6 +77,17 @@ private:
 
     void resetStudy() override;
 
+    // String keys for Binding Messages.
+    static const QString MSG_CORRECT;
+    static const QString MSG_INCORRECT;
+
+    // Accounting for message related posts.
+    qint32 correctResponses;
+    qint32 incorrectResponses;
+    QString expectedResponse;
+
+    void updateStudyMessages();
+
 };
 
 #endif // IMAGEEXPERIMENT_H

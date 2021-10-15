@@ -63,8 +63,9 @@ private:
     // Flag to ensure that this is initialized only ONCE.
     bool wasInitialized;
 
-    // Timer used to compute the time stamp.
+    // Timer used to compute the time stamp. Required becuase it needs to prevent overflow in the study.
     QElapsedTimer timestampTimer;
+
 
     // Variable that starts and stop the EyeTracking Data flow.
     bool keepGoing;

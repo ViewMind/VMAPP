@@ -7,8 +7,6 @@
 #include "../experiment.h"
 #include "fieldingmanager.h"
 
-//#define MANUAL_TRIAL_PASS
-
 class NBackRTExperiment: public Experiment
 {
 public:
@@ -36,16 +34,13 @@ private:
 
     struct TrialRecognitionMachine {
         void reset(const QList<qint32> &trialRecogSeq);
-        bool isSequenceOver(const Fixation &r, const Fixation &l, FieldingManager *m);
-        Fixation rightLastFixation;
-        Fixation leftLastFixation;
-        QString getMessages() const { return messages.join("\n"); }
+        bool isSequenceOver(const Fixation &r, const Fixation &l, FieldingManager *m, bool *updateHUD);
+        bool useRightEye;
+        bool lightUpSquares;
     private:
         MovingWindowAlgorithm rMWA;
         MovingWindowAlgorithm lMWA;
-        QList<qint32> rTrialRecognitionSequence;
-        QList<qint32> lTrialRecognitionSequence;
-        QStringList messages;
+        QList<qint32> trialRecognitionSequence;
     };
 
     struct VariableSpeedAndTargetNumberConfig {
@@ -127,6 +122,17 @@ private:
     bool addNewTrial();
 
     void resetStudy() override;
+
+    // String identfiers for language strings used for messages.
+    static const QString MSG_SEQ_HITS;
+    static const QString MSG_SEQ_TOUT;
+    static const QString MSG_TARGET_VEL;
+
+    // Measuring variables.
+    qint32 successfullTrials;
+    qint32 timeoutTrials;
+
+    void updateFronEndMessages();
 
 };
 

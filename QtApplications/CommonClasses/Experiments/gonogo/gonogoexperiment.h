@@ -46,6 +46,20 @@ protected:
 
     void resetStudy() override;
 
+    // String keys for study messages
+    static const QString MSG_OK_TRIALS;
+    static const QString MSG_TIMEOUT_TRIALS;
+    static const QString MSG_AVG_SPEED;
+
+    // Measuring variables.
+    qreal successfulTrials;
+    qreal timedOutTrials;
+    qreal accumulatedTime;
+    bool fixationFormedAtRightTarget;
+
+    // Update messages to the front end.
+    void updateStudyMessages();
+
 };
 
 #endif // GONOGOEXPERIMENT_H

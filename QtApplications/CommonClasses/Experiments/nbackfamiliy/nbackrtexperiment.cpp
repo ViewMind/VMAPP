@@ -15,6 +15,9 @@ const qint32 NBackRTExperiment::NBACKVS_STEP_HOLD_TIME =                       5
 const qint32 NBackRTExperiment::NBACKVS_START_HOLD_TIME =                      250;
 const qint32 NBackRTExperiment::NBACKVS_NTRIAL_FOR_STEP_CHANGE =               2;
 
+const QString NBackRTExperiment::MSG_SEQ_HITS  = "viewpresentexp_nback_sequence_hit";
+const QString NBackRTExperiment::MSG_SEQ_TOUT  = "viewpresentexp_nback_sequence_timeout";
+const QString NBackRTExperiment::MSG_TARGET_VEL = "viewpresentexp_nback_target_speed";
 
 NBackRTExperiment::NBackRTExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type){
 
@@ -37,6 +40,7 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         nbackConfig.startHoldTime            = NBACKVS_START_HOLD_TIME;
         nbackConfig.numberOfTrialsForChange  = NBACKVS_NTRIAL_FOR_STEP_CHANGE;
         nbackConfig.numberOfTargets          = studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt();
+        trialRecognitionMachine.lightUpSquares = true;
     }
     else{
         // Variable Speed configuration for DEFAULT NBACK RT.
@@ -46,7 +50,11 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         nbackConfig.startHoldTime            = TIME_TARGET;
         nbackConfig.numberOfTrialsForChange  = 0;
         nbackConfig.numberOfTargets          = DEFAULT_NUMBER_OF_TARGETS;
-
+        if (DBUGBOOL(Debug::Options::LIGHTUP_NBACKRT)) {
+            qDebug() << "DBUG: Lighting Up Squares in NBackRT";
+            trialRecognitionMachine.lightUpSquares = true;
+        }
+        else trialRecognitionMachine.lightUpSquares = false;
     }
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)){
@@ -78,6 +86,14 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
 
     nbackConfig.resetVSStateMachine();
 
+    // Setting the eye to the EyeRecognition Machine.
+    if ((leftEyeEnabled) && (!rightEyeEnabled)){
+        trialRecognitionMachine.useRightEye = false;
+    }
+    else{
+        trialRecognitionMachine.useRightEye = true;
+    }
+
     state = STATE_RUNNING;
     tstate = TSF_START;
     stateTimer.setInterval(TIME_TRANSITION);
@@ -85,7 +101,12 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     m->drawBackground();
     drawCurrentImage();
 
-    if (!Globals::EyeTracker::IS_VR){
+    // Resetting measuring variables.
+    successfullTrials = false;
+    timeoutTrials = false;
+    updateFronEndMessages();
+
+    if (activateScreenView){
         this->show();
         this->activateWindow();
     }
@@ -97,7 +118,14 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
 void NBackRTExperiment::onTimeOut(){
 
     if (tstate == TSF_SHOW_BLANKS){
+        if (nbackConfig.wasSequenceCompleted){
+            successfullTrials++;
+        }
+        else{
+            timeoutTrials++;
+        }
         nbackConfig.adjustSpeed();
+        updateFronEndMessages();
     }
 
     stateTimer.stop();
@@ -108,6 +136,10 @@ void NBackRTExperiment::nextState(){
 
     switch (tstate){
     case TSF_START:
+
+        // If this is too much of light up box, then it can be removed by setting this as soon as the sequence is over.
+        m->ligthOffAllBoxes();
+
         tstate = TSF_SHOW_TARGET;
         currentImage = 0;
         stateTimer.setInterval(nbackConfig.getCurrentHoldTime());
@@ -124,7 +156,7 @@ void NBackRTExperiment::nextState(){
     case TSF_SHOW_TARGET:
 
         // End the previous data set.
-        if (!manualMode) {            
+        if (!manualMode) {
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
         }
@@ -135,9 +167,12 @@ void NBackRTExperiment::nextState(){
             if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
             tstate = TSF_SHOW_BLANKS;
-            trialRecognitionMachine.reset(m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets));
-            //qDebug() << "EXPECTED SEQUENCE FOR TRIAL" << m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets);
-            stateTimer.setInterval(TIME_OUT_BLANKS);
+            QList<qint32> expectedSequence = m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets);
+            m->setDebugSequenceValue(expectedSequence.first());
+            trialRecognitionMachine.reset(expectedSequence);
+
+            if (overrideTime != 0) stateTimer.setInterval(overrideTime);
+            else stateTimer.setInterval(TIME_OUT_BLANKS);
         }
         else {
 
@@ -155,7 +190,7 @@ void NBackRTExperiment::nextState(){
         // We can now finalize the dataset and the trial
         if (!manualMode) {
             finalizeOnlineFixations();
-            rawdata.finalizeDataSet();            
+            rawdata.finalizeDataSet();
             rawdata.finalizeTrial("");
         }
 
@@ -267,19 +302,25 @@ QString NBackRTExperiment::getExperimentDescriptionFile(const QVariantMap &study
 }
 
 void NBackRTExperiment::resetStudy(){
+
+    // Resetting measuring stats.
+    successfullTrials = 0;
+    timeoutTrials = 0;
+    updateFronEndMessages();
+
     currentTrial = 0;
     state = STATE_RUNNING;
     tstate = TSF_START;
     stateTimer.start();
     m->drawBackground();
     drawCurrentImage();
+    nbackConfig.resetVSStateMachine();
 }
 
 
 void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
 
-    if (manualMode) return;
 
     if (state != STATE_RUNNING) return;
     if (ignoreData) return;
@@ -289,23 +330,25 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (data.isLeftZero() && data.isRightZero()) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    if (!manualMode){
+        rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    }
 
     computeOnlineFixations(data);
 
-    //qDebug() << "X,Y" << data.xRight << data.xLeft;
-
     if (tstate == TSF_SHOW_BLANKS){
-        bool isOver = trialRecognitionMachine.isSequenceOver(lastFixationR,lastFixationL,m);
-        emit Experiment::addFixations(lastFixationR.x,lastFixationR.y,lastFixationL.x,lastFixationL.y);
-        emit Experiment::addDebugMessage(trialRecognitionMachine.getMessages(),false);
+
+        bool litUp = false;
+        bool isOver = trialRecognitionMachine.isSequenceOver(lastFixationR,lastFixationL,m,&litUp);
+
+        if (litUp){
+            updateSecondMonitorORHMD();
+        }
+
         if (isOver){
-            emit Experiment::addDebugMessage(trialRecognitionMachine.getMessages(),false);
+            m->setDebugSequenceValue(-1); // If DEBUG mode is enabled this WILL hide the sequence.
             nbackConfig.wasSequenceCompleted = true;
             onTimeOut();
-        }
-        else{
-            emit Experiment::addDebugMessage(trialRecognitionMachine.getMessages(),false);
         }
     }
 
@@ -371,47 +414,63 @@ bool NBackRTExperiment::addNewTrial(){
     return true;
 }
 
+void NBackRTExperiment::updateFronEndMessages(){
+    studyMessages[MSG_SEQ_HITS]   = successfullTrials;
+    studyMessages[MSG_SEQ_TOUT]   = timeoutTrials;
+    studyMessages[MSG_TARGET_VEL] = nbackConfig.getCurrentHoldTime();
+    emit Experiment::updateStudyMessages(studyMessages);
+}
 
 /////////////////////////////////////////// TRIAL RECOGNITION MACHINE
 void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &trialRecogSeq){    
-    rTrialRecognitionSequence = trialRecogSeq;
-    lTrialRecognitionSequence = trialRecogSeq;
-    messages.clear();
-    messages << "MWS: " + QString::number(rMWA.parameters.getStartWindowSize());
-    QString seq = "SEQ: ";
-    for (qint32 i = 0; i < trialRecogSeq.size(); i++){
-        seq = seq + QString::number(trialRecogSeq.at(i)) + " ";
-    }
-    messages << seq;
+    trialRecognitionSequence = trialRecogSeq;
 }
 
 
-bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &r, const Fixation &l, FieldingManager *m){
+bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &r, const Fixation &l, FieldingManager *m, bool *updateHUD){
 
-    rightLastFixation = r;
-    leftLastFixation = l;
+    if (trialRecognitionSequence.isEmpty()) return true;
 
-    if (rTrialRecognitionSequence.isEmpty()) return true;
-    if (lTrialRecognitionSequence.isEmpty()) return true;
+    Fixation fixationToUse;
+    if (useRightEye) fixationToUse = r;
+    else fixationToUse = l;
 
-    if (r.isValid()){
-        if (m->isPointInTargetBox(r.x,r.y,rTrialRecognitionSequence.first())){
-            //qDebug() << "Fixation" << r.toString() << "inside box" << rTrialRecognitionSequence.first();
-            messages << "RFIX IN: " + QString::number(rTrialRecognitionSequence.first());
-            rTrialRecognitionSequence.removeFirst();
+    // Indicataor to see if we need to update the image to the HMD or second screen.
+    *updateHUD = false;
+
+    if (fixationToUse.hasFinished() || fixationToUse.hasStarted()){
+        if (m->isPointInTargetBox(fixationToUse.getX(),fixationToUse.getY(),trialRecognitionSequence.first())){
+            if (lightUpSquares) {
+                *updateHUD = m->lightUpBox(trialRecognitionSequence.first());
+            }
+            if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+                qDebug() << "DBUG: NBackRT/VS Right Fixation FINISHED In " << trialRecognitionSequence.first();
+            }
+
+            trialRecognitionSequence.removeFirst();
+
+            if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
+                if (!trialRecognitionSequence.empty()){
+                    m->setDebugSequenceValue(trialRecognitionSequence.first());
+                    *updateHUD = true;
+                }
+            }
         }
     }
+    //    else {
+    //        if (fixationToUse.hasStarted()){
+    //            if (m->isPointInTargetBox(fixationToUse.getX(),fixationToUse.getY(),trialRecognitionSequence.first())){
+    //                if (lightUpSquares) {
+    //                    *updateHUD = m->lightUpBox(trialRecognitionSequence.first());
+    //                }
+    //                if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+    //                    qDebug() << "DBUG: NBackRT/VS Right Fixation BEGIN In " << trialRecognitionSequence.first();
+    //                }
+    //            }
+    //        }
+    //    }
 
-
-    if (l.isValid()){
-        if (m->isPointInTargetBox(l.x,l.y,lTrialRecognitionSequence.first())){
-            messages << "LFIX IN: " + QString::number(lTrialRecognitionSequence.first());
-            lTrialRecognitionSequence.removeFirst();
-        }
-    }
-
-    if (rTrialRecognitionSequence.isEmpty()) return true;
-    if (lTrialRecognitionSequence.isEmpty()) return true;
+    if (trialRecognitionSequence.isEmpty()) return true;
 
     return false;
 }
@@ -428,7 +487,9 @@ void NBackRTExperiment::VariableSpeedAndTargetNumberConfig::adjustSpeed(){
                 successfulConsecutiveSequences = 0;
                 if (currentHoldTime > minHoldTime){
                     currentHoldTime = qMax(currentHoldTime-stepHoldTime,minHoldTime);
-                    qDebug() << "CURRENT HOLD TIME IS DECREASED" << currentHoldTime;
+                    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+                        qDebug() << "CURRENT HOLD TIME IS DECREASED" << currentHoldTime;
+                    }
                 }
             }
         }
@@ -439,7 +500,9 @@ void NBackRTExperiment::VariableSpeedAndTargetNumberConfig::adjustSpeed(){
                 failedConsecutiveSequences = 0;
                 if (currentHoldTime < maxHoldTime){
                     currentHoldTime = qMin(currentHoldTime+stepHoldTime,maxHoldTime);
-                    qDebug() << "CURRENT HOLD TIME IS INCREASED" << currentHoldTime;
+                    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+                        qDebug() << "CURRENT HOLD TIME IS INCREASED" << currentHoldTime;
+                    }
                 }
             }
         }

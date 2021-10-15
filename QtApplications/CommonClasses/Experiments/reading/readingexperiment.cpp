@@ -36,8 +36,7 @@ bool ReadingExperiment::startExperiment(const QString &workingDir, const QString
     currentTrialID = "";
 
     // This window is shown and given focus.
-    //qDebug() << useMouse << Globals::EyeTracker::IS_VR;
-    if (!Globals::EyeTracker::IS_VR){
+    if (activateScreenView){
         this->show();
         this->activateWindow();
     }

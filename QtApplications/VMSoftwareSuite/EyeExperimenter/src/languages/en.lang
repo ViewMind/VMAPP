@@ -174,6 +174,18 @@ are the same|Press D to indicate targets
 are different|Press G to resume study
 after a pause;
 
+viewpresentexp_messages = Study Messages;
+viewpresentexp_binding_correct = Correct Responses: <<N>>;
+viewpresentexp_binding_incorrect = Incorrect Responses: <<N>>;
+viewpresentexp_reading = Average sentence time: <<N>> ms;
+viewpresentexp_nback_sequence_hit = Completed Sequences: <<N>>;
+viewpresentexp_nback_sequence_timeout = Timed Out Sequences: <<N>>;
+viewpresentexp_nback_target_speed = Targets shown for <<N>> ms;
+viewpresentexp_gonogo_ok = Sucessfull Reponses: <<N>>;
+viewpresentexp_gonogo_timeout = Timeouts: <<N>>;
+viewpresentexp_gonogo_avg = Average trial time: <<N>> ms;
+
+
 #********************************* PATIENT LIST *********************************
 viewpatientlist_titleSubject = Subject List;
 viewpatientlist_subtitleSubject = Select subject for study;

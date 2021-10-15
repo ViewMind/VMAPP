@@ -143,6 +143,12 @@ QStringList ViewMindDataContainer::getMetaDataDateTime(){
     return ans;
 }
 
+QString ViewMindDataContainer::getMetadataDiscardReason(){
+    QStringList hierarchy; hierarchy << MAIN_FIELD_METADATA << VMDC::MetadataField::DISCARD_REASON;
+    if (!checkHiearchyChain(hierarchy)) return "";
+    return data.value(MAIN_FIELD_METADATA).toMap().value(VMDC::MetadataField::DISCARD_REASON).toString();
+}
+
 QVariantMap ViewMindDataContainer::getApplicationUserData(const QString &type) {
 
     QVariantMap ret;

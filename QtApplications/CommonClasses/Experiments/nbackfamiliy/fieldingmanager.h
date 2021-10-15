@@ -8,14 +8,16 @@
 #include <QTextStream>
 #include <QFile>
 #include <QSet>
+#include <QTimer>
 
 #include "fieldingparser.h"
 #include "../experimentdatapainter.h"
 
 //#define ENABLE_DRAW_OF_HIT_TARGET_BOXES
 
-class FieldingManager: public ExperimentDataPainter
-{
+class FieldingManager: public QObject, public ExperimentDataPainter
+{    
+    Q_OBJECT
 public:
 
     // Draw states for the Fielding experiments
@@ -29,6 +31,8 @@ public:
     void init(qreal display_resolution_width, qreal display_resolution_height) override;
     void configure(const QVariantMap &config) override;
     qint32 size() const override {return fieldingTrials.size();}
+
+    // DEPRACATED.And wrong when using NBackVS with more than 3 targets.
     qreal sizeToProcess() const override {return fieldingTrials.size()*3;}
 
     // The actual drawing function for the background.
@@ -55,21 +59,32 @@ public:
     // Used mainly for raw data container data
     QString getFullSequenceAsString(qint32 trial);
 
+    // Used only in DBug Mode to show the next box to hit in the sequence.
+    void setDebugSequenceValue(qint32 next_target_box);
+
     // Auxiliary function that check if a point is in a given target box
     bool isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const;
 
     QList<QRectF> getHitTargetBoxes() const { return hitTargetBoxes; }
 
+    // Light Boxes ON/OFF.
+    bool lightUpBox(qint32 box_index);
+    void lightOffCheck();
+    void ligthOffAllBoxes();
+
     // Drawing the pause text
     void drawPauseScreen();
 
-    void enableDemoMode();
+    void enableDemoMode() override;
 
     static const char * CONFIG_IS_VR_BEING_USED;
     static const char * CONFIG_PAUSE_TEXT_LANG;
 
     static const char * LANG_ES;
     static const char * LANG_EN;
+
+private slots:
+    void onLightOffTimeout();
 
 private:
 
@@ -83,10 +98,18 @@ private:
     QGraphicsSimpleTextItem *gText1;
     QGraphicsSimpleTextItem *gText2;
     QGraphicsSimpleTextItem *gText3;
+    QGraphicsSimpleTextItem *gDebugSequenceValue;
 
     // The actual target boxes. (To recognize a hit AND to be drawn)
     QList<QRectF> hitTargetBoxes;
     QList<QRectF> drawTargetBoxes;
+
+    // Required for the use of the ligthup feature.
+    QList<QGraphicsRectItem*> graphicalTargetBoxes;
+
+    // Used for turning on and off the target boxes.
+    qint32 currentlyLitUp;
+    QTimer litUpTimer;
 
     static const qreal K_TARGET_R;
     static const qreal K_TARGET_OFFSET_X;
@@ -98,6 +121,8 @@ private:
 
     static const char * PAUSE_TEXT_SPANISH;
     static const char * PAUSE_TEXT_ENGLISH;
+
+    const qint32 LIGHT_OFF_TIME = 100; // Milliseconds.
 
 };
 

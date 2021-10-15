@@ -5,6 +5,7 @@ Rectangle {
     id: bulletCard
 
     property string vmTitleText: ""
+    property bool vmNoLeftMargin: false
 
     color: "#ffffff"
     border.color: "#bcbec0"
@@ -18,10 +19,13 @@ Rectangle {
         modelBulletList.setProperty(index,"vmEnabled",enabled)
     }
 
-    function setList (list) {
+    function setList (list,onlyText) {
+
+        if (onlyText === undefined) onlyText = false;
+
         modelBulletList.clear();
         for (var i = 0; i < list.length; i++){
-            modelBulletList.append({ "vmEnabled" : true, "vmText" : list[i], "visible": true });
+            modelBulletList.append({ "vmEnabled" : true, "vmText" : list[i], "visible": true, "vmTextOnly": onlyText });
         }
     }
 
@@ -44,7 +48,7 @@ Rectangle {
         height: parent.height-title.height
         anchors.top: title.bottom
         anchors.left: parent.left
-        anchors.leftMargin: mainWindow.height*0.03;
+        anchors.leftMargin: vmNoLeftMargin? mainWindow.height*0.01 : mainWindow.height*0.03;
         anchors.topMargin: mainWindow.height*0.01;
         delegate: VMBulletedText {
             width: {

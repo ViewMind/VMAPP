@@ -104,7 +104,7 @@ public:
     Q_INVOKABLE QVariantMap getStudyGraphData(const QString &study, qint32 selectedGraph);
     Q_INVOKABLE bool qualityControlFailed() const;
     Q_INVOKABLE qint32 wasThereAnProcessingUploadError() const;
-    Q_INVOKABLE bool setDiscardReasonAndComment(const QString &discard_reason, const QString &comment);
+    Q_INVOKABLE bool setDiscardReasonAndComment(QString discard_reason, const QString &comment);
 
     ////////////////////////// API REQUESTS ////////////////////////////
     Q_INVOKABLE void requestOperatingInfo();
@@ -179,8 +179,18 @@ private:
     static const qint32 FAIL_CODE_NONE = 0;
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
 
-    // Some constants.
-    static const qint32 NUMBER_OF_QC_GRAPHS = 3;;
+    // List of available studies with no reports ready.
+    static const QStringList NO_REPORT_STUDIES;
+
+    // Number of graphs to be shown during QC.
+    static const qint32 NUMBER_OF_QC_GRAPHS = 3;
+
+    // Minimum number of points to conform a fixation.
+    static const qint32 MINIMUM_NUMBER_OF_DATAPOINTS_IN_FIXATION = 4;
+
+    // When a study needs to run but no report can be generated, the study is treated EXACLTY
+    // like a discarded study, but the discard reason (a string code) is specific to this effect.
+    static const QString NO_REPORT_DISCARD_CODE;
 
 };
 

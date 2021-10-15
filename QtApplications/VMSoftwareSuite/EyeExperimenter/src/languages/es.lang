@@ -151,8 +151,8 @@ viewcalibfailed_btnRetry  = REINTENTAR;
 
 #********************************* EXPERIMENT PRESENTATION *********************************
 viewpresentexp_itemReading = Evaluación de Lectura;
-viewpresentexp_itemBindingUC = Identificación de Nuevos Colores;
-viewpresentexp_itemBindingBC = Identificación de Combinaciones de Colores;
+viewpresentexp_itemBindingUC = Nuevos Colores;
+viewpresentexp_itemBindingBC = Combinaciones de Colores;
 viewpresentexp_itemBindingUC3 = Identificación de Nuevos Colores;
 viewpresentexp_itemBindingBC3 = Identificación de Combinaciones de Colores;
 viewpresentexp_itemFielding = Evaluación N-Back Tipo MS;
@@ -174,6 +174,16 @@ frenar estudio|Presione S para indicar
 objetivos identicos|Presione D para indicar
 objetivos distintos|Presione G para seguir el 
 estudio luego de una pausa;
+viewpresentexp_messages = Mensajes de Estudio;
+viewpresentexp_binding_correct = Respuestas Correctas: <<N>>;
+viewpresentexp_binding_incorrect = Respuestas Incorrectas: <<N>>;
+viewpresentexp_reading = Tiempo de lectura promedio: <<N>> ms;
+viewpresentexp_nback_sequence_hit = Secuencias Completadas: <<N>>;
+viewpresentexp_nback_sequence_timeout = Secuencias No Completadas: <<N>>;
+viewpresentexp_nback_target_speed = Objetivos en pantalla por <<N>> ms;
+viewpresentexp_gonogo_ok = Respuestas Éxitosas: <<N>>;
+viewpresentexp_gonogo_timeout = Veces que el tiempo expiró: <<N>>;
+viewpresentexp_gonogo_avg = Tiempo promedio de ensayo: <<N>> ms;
 
 
 #********************************* PATIENT LIST *********************************
