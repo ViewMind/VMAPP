@@ -7,18 +7,16 @@
  */
 
 include_once(__DIR__."/../fixation_analysis/online_fixations.php");
-// include_once(__DIR__."/../../../VMPortal/Backend/data_processing/Processing.php");
-// include_once(__DIR__."/../../../VMPortal/Backend/data_processing/ViewMindDataContainer.php");
-// include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/CSVGoNoGo.php");
-// include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/CSVReading.php");
-// include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/CSVBinding.php");
-// include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/CSVNBackRT.php");
-include_once(__DIR__."/../../../VMPortal/Backend/common/log_manager.php");
+include_once("frequency_interpolator.php");
+include_once("qc_computations.php");
 
 ///////////////////////////// INPUTS /////////////////////////////////////////
 //$input_file = "/home/ariel/repos/viewmind_projects/Scripts/php/fixation_analysis/gonogo/htc_files/gonogo_2021_09_07_17_45.json";
-$input_file = "/home/ariel/repos/viewmind_projects/Scripts/php/fixation_analysis/gonogo/hp_files/gonogo_2021_09_07_17_13.json";
-$target_md = 2;
+//$input_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work_mendoza_nbackrt/nbackrt_2021_10_04_10_20.json";
+//$input_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work_aranda_nbackrt/nbackrt_2021_10_07_09_29.json";
+$input_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work_nback_negative/nbackrt_2021_10_14_15_15.json";
+$target_md = 3;
+$do_frequency_interpolation = false;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -60,6 +58,7 @@ function computeFixationsForDataSet($maximum_dispersion,$raw_data,$f,$min_fix_si
 
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 
 // Computing the output file name.
@@ -74,7 +73,16 @@ $path  = $pathinfo["dirname"];
 $output_file = "$path/$fname" . "_reprocessed.json";
 
 echo "INPUT: $input_file\n";
-echo "OUTPUT: $output_file\n";
+
+// Checking if frequency interpolation was set.
+if ($do_frequency_interpolation){
+   echo "FREQUENCY INTERPOLATOR IS ENABLED\n";
+   $fi = new FrequencyInterpolator($input_file);
+   $input_file = $fi->interpolate();
+   echo "   NEW INPUT FILE $input_file\n";
+}
+
+echo "OUTPUT FOR REGENERATING FIXATIONS: $output_file\n";
 
 // Loading the data. 
 $vmdata = json_decode(file_get_contents($input_file),true);
@@ -97,17 +105,20 @@ $vmdata["processing_parameters"]["max_disp_window_in_px"] = $md_px;
 // Computing the actual new fixations. 
 echo "Re computing fixations .... \n";
 foreach ($vmdata["studies"] as $study_name => $study_data){
+   
    $new_trial_list = array();
+   
    foreach ($study_data["trial_list"] as $trial){
-      $data = $trial["data"];
-      foreach ($data as $dataset_name => $dataset){
+   
+      foreach ($trial["data"] as $dataset_name => $dataset){
          $fixations = computeFixationsForDataSet($md_px,$dataset["raw_data"],$f,$mfd);
          $trial["data"][$dataset_name]["fixations_l"] = $fixations["L"];
-         $trial["data"][$dataset_name]["fixations_r"] = $fixations["R"];
-         $new_trial_list[] = $trial;
+         $trial["data"][$dataset_name]["fixations_r"] = $fixations["R"];         
       }
-      $study_data["trial_list"] = $new_trial_list;
+      $new_trial_list[] = $trial;
+      
    }
+   $study_data["trial_list"] = $new_trial_list;
    $vmdata["studies"][$study_name] = $study_data;
 }
 
@@ -115,6 +126,11 @@ foreach ($vmdata["studies"] as $study_name => $study_data){
 $fid = fopen($output_file,"w");
 fwrite($fid,json_encode($vmdata,JSON_PRETTY_PRINT));
 fclose($fid);
+
+echo "Correcting QC Computations\n";
+$qc = new QCComputations($output_file);
+$output_file = $qc->qcCompute();
+echo "   CORRECTED QC File: $output_file\n";
 
 echo "Done\n";
 

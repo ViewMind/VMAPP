@@ -77,14 +77,18 @@ class DataSetGrapher {
          $this->qcGraphs($study_name,$eye,$study_data["quality_control"],$this->vmdata["qc_parameters"]);
       
          foreach ($study_data["trial_list"] as $trial){
+            
             $trial_id = $trial["ID"];
+            $trial_type = $trial["trial_type"];
+            $trial_title = "$trial_id - $trial_type";
+
             foreach ($trial["data"] as $dataset_name => $dataset){
       
                $output_name = $this->output_dir . "/$basename" . "_" . $trial_id . "_" . $dataset_name . ".png";
       
-               echo "STUDY: $study_name. Trial: $trial_id. Dataset: $dataset_name\n";
+               //echo "STUDY: $study_name. Trial: $trial_id. Dataset: $dataset_name\n";
 
-               $this->generateDatasetImage($dataset,$eye,$output_name);
+               $this->generateDatasetImage($dataset,$eye,$trial_title,$output_name);
       
             }      
          }         
@@ -106,7 +110,7 @@ class DataSetGrapher {
       }
    }
 
-   private function generateDatasetImage($dataset,$eye,$output_name){
+   private function generateDatasetImage($dataset,$eye,$trial_title,$output_name){
       
       // Creating the image
       $image = imagecreatetruecolor($this->resolution[0], $this->resolution[1]);
@@ -134,6 +138,7 @@ class DataSetGrapher {
    
       // Color definitions
       $blue         = imagecolorallocate($image, 0, 0, 127);
+      $cyan         = imagecolorallocate($image, 28, 232, 255);
       $red          = imagecolorallocate($image, 170, 0, 0);
       $gray         = imagecolorallocate($image, 210, 210, 210);
       $green        = imagecolorallocate($image, 0, 85, 0);
@@ -156,19 +161,36 @@ class DataSetGrapher {
    
       // First we draw the hitboxes, if present.
       if (is_array($this->hitboxes)){
+         $counter = 0;
          foreach ($this->hitboxes as $hit_box){
             $x1 = $hit_box[0];
             $y1 = $hit_box[1];
             $x2 = $hit_box[0] + $hit_box[2];
             $y2 = $hit_box[1] + $hit_box[3];
+
+            // Text position
+            $xtext = $x1;
+            $ytext = $y1;
+            if ($xtext < 0) $xtext = 0;
+            if ($ytext < 0) $ytext = 0;
+
             imagerectangle($image, $x1, $y1, $x2, $y2, $green);         
+
+            // A numerical identifier for the target box. 
+            imagestring($image,$font,$xtext,$ytext,$counter,$black);
+            $counter++;
          }
       }
       
       // Second we draw the raw data, if present.
       if ($this->enable_raw_data_draw) {
          foreach ($raw_data as $point) {
-            imagefilledellipse($image, $point[$px], $point[$py], $raw_data_R, $raw_data_R, $blue);
+            
+            // We print interpolated points a different colors. 
+            $color = $blue;
+            if (array_key_exists("i",$point)) $color = $cyan;
+
+            imagefilledellipse($image, $point[$px], $point[$py], $raw_data_R, $raw_data_R, $color);
          }
       }
    
@@ -270,6 +292,9 @@ class DataSetGrapher {
    
       // Close the fixation analysis file
       fclose($fid);
+
+      // The last thing we do, before saving the image is printing the trial title in the upper left corner.
+      imagestring($image,$font,0,0,$trial_title,$black);
    
       // Finally we store the image. 
       imagepng($image, $output_name);

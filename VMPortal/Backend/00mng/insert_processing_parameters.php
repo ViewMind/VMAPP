@@ -48,6 +48,13 @@ $study_qc[Study::NBACKRT][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRI
 $study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;        // % of trials.
 $study_qc[Study::NBACKRT][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;        // % of trials. 
 
+// NBack VS - For now setting the same exact values as the NBack RT. 
+$study_qc[Study::NBACKVS][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]             = 30; // DEPRACATED. Will not be in used after version 17.3.0
+$study_qc[Study::NBACKVS][QualityControlParamterStudy::MIN_FIX_PER_TRIAL]                = 5; 
+$study_qc[Study::NBACKVS][QualityControlParamterStudy::MIN_TIME_DURATION_PER_TRIAL]      = 1000*$minimum_duration_reduction_constant;  // ms.
+$study_qc[Study::NBACKVS][QualityControlParamterStudy::THRESHOLD_VALID_NUM_DATA_POINTS]  = 85;        // % of trials.
+$study_qc[Study::NBACKVS][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATIONS]    = 80;        // % of trials. 
+
 
 // Go No Go parameters 
 $study_qc[Study::GONOGO][QualityControlParamterStudy::MIN_POINTS_PER_TRIAL]              = 100; // DEPRACATED. Will not be in used after version 17.3.0
@@ -60,7 +67,7 @@ $study_qc[Study::GONOGO][QualityControlParamterStudy::THRESHOLD_VALID_NUM_FIXATI
 ////////////////////////////////////// Gazepoint
 $name = EyeTrackerCodes::GAZEPOINT;
 $pp[ProcessingParameter::MAX_DISPERSION_WINDOW]   = 15;  // This is a % of the maximum value of the used resolution. 
-$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;  // ms.
+$pp[ProcessingParameter::MINIMUM_FIXATION_LENGTH] = 50;  // ms. // DEPRACATED. It's now computed based on the sampling frequency. 
 $pp[ProcessingParameter::SAMPLE_FREQUENCY]        = 150; // Hz.   
 $pp[ProcessingParameter::LATENCY_ESCAPE_RADIOUS]  = 80;  // Pixels. Absolute. 
 
