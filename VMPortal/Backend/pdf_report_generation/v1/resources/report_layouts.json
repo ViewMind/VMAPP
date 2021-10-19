@@ -2131,6 +2131,91 @@
             "exec_func": "3"
         }
     },
+    "qc": {
+        "categories": [],
+        "pages": [
+            {
+                "title": [
+                    {
+                        "text": "#qc.title#",
+                        "py": 0
+                    },
+                    {
+                        "text": "#qc.comments#",
+                        "py": 0.55
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "result_segment",
+                        "id": "data_points",
+                        "title": "#qc.data_points.title#",
+                        "range_text": "#qc.data_points.subtitle#",
+                        "x": 0,
+                        "y": 0.01,
+                        "w": 1,
+                        "h": 0.1,
+                        "value": "&qc_graphs.STUDY_NAME.qc_data_point_index&",
+                        "color_code": "",
+                        "nsegments": 2,
+                        "ndecimals": 0
+                    },
+                    {
+                        "type": "result_segment",
+                        "id": "fixations",
+                        "title": "#qc.fixations.title#",
+                        "range_text": "#qc.fixations.subtitle#",
+                        "x": 0,
+                        "y": 0.11,
+                        "w": 1,
+                        "h": 0.1,
+                        "value": "&qc_graphs.STUDY_NAME.qc_fix_index&",
+                        "color_code": "",
+                        "nsegments": 2,
+                        "ndecimals": 0
+                    },
+                    {
+                        "type": "result_segment",
+                        "id": "sample_rate",
+                        "title": "#qc.sample_rate.title#",
+                        "range_text": "#qc.sample_rate.subtitle#",
+                        "x": 0,
+                        "y": 0.21000000000000002,
+                        "w": 1,
+                        "h": 0.1,
+                        "value": "&qc_graphs.STUDY_NAME.qc_freq_index&",
+                        "color_code": "",
+                        "nsegments": 2,
+                        "ndecimals": 0
+                    },
+                    {
+                        "id": "qc_conclusion",
+                        "x": 0.020000000000000018,
+                        "y": 0.354,
+                        "w": 0.96,
+                        "h": 0.12,
+                        "type": "pdiag",
+                        "text_base": "qc.results",
+                        "text_index": "",
+                        "value": "",
+                        "left_title": "#qc.results.title#",
+                        "right_title": "",
+                        "separator": 0.66
+                    },
+                    {
+                        "id": "comment_box",
+                        "x": 0.020000000000000018,
+                        "w": 0.96,
+                        "y": 0.5800000000000001,
+                        "h": 0.37,
+                        "text": "&comment&",
+                        "type": "text_box"
+                    }
+                ]
+            }
+        ],
+        "standard_deviations": []
+    },
     "gonogo": {
         "categories": {
             "processing_speed": {
