@@ -39,7 +39,7 @@ function onReceiveReportList(response){
    var colEvaluator   = "Evaluator";
    var colEvalEmail   = "Evaluator Email";
    var colPUser       = "Medical Professional";
-   var colDiscard     = "Discarded";
+   var colDiscard     = "Status";
    var colEvalID      = "Evaluation ID";
 
    // Response data will contain both the portal user data and the evaluation list
@@ -84,10 +84,11 @@ function onReceiveReportList(response){
       var discard             = evaluation_list[i][ACCESS.EVALUATIONS.DISCARD_REASON]; 
       //console.log("Discard reason: " + discard);
       if ((discard == null) || (discard == "")){
-         row[colDiscard] = "No";
+         row[colDiscard] = "OK";
       }
       else{
-         row[colDiscard] = "Yes";
+         if (discard === "no_report_available") row[colDiscard] = "No Report Available";
+         else row[colDiscard] = "Discarded";
          discarded_reports.push(evaluation_list[i][ACCESS.COMMON.KEY])
       }
 

@@ -11,25 +11,37 @@
    //$input_json_file = "oneshot/binding_2021_07_13_11_02.json";   
    //$input_json_file = "local_work_reprocessed_htc_gonogo/gonogo_2021_09_07_17_45_reprocessed.json";
    //$input_json_file = "local_work_reprocessed_hp_gonogo/gonogo_2021_09_07_17_13_reprocessed.json";
-   //$input_json_file   = "local_work_gng_gera/gonogo_2021_10_06_18_40.json";
-   $input_json_file   = "local_work_mendoza_nbackrt/nbackrt_2021_10_04_10_20.json";
+   //$input_json_file = "local_work_gng_gera/gonogo_2021_10_06_18_40.json";
+   //$input_json_file = "local_work_mendoza_nbackrt/nbackrt_2021_10_04_10_20_reprocessed.json"; 
+   //$input_json_file = "local_work_aranda_nbackrt/nbackrt_2021_10_07_09_29_reprocessed_qc_corrected.json";
+   //$input_json_file = "local_work_aranda_nbackrt/nbackrt_2021_10_07_09_29_reprocessed_qc_corrected.json";
+   //$input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work_nback_negative/nbackrt_2021_10_14_15_15_reprocessed_qc_corrected.json";
+   $input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work/gonogo_2021_10_13_17_23.json";
 
+   
    $lang = "en";
 
    ////////////////////////// INPUTS 
    const PDF_GEN_PATH = "/home/ariel/repos/viewmind_projects/VMPortal/Backend/pdf_report_generation";
-   const VERSION = "v1";
-   const S3_BUCKET   = "vm-eu-raw-data";
-   const S3_PROFILE  = "viewmind_eu";
-   const WORK_DIR    = "local_work_mendoza_nbackrt";
+   const VERSION      = "v1";
+   const S3_BUCKET    = "vm-eu-raw-data";
+   const S3_PROFILE   = "viewmind_eu";
+   //const WORK_DIR    = "local_work_mercedes_nback";
+   //const WORK_DIR    = "local_work_aranda_nbackrt";
+   //const WORK_DIR    = "local_work_mark_athelete";
+   const WORK_DIR    = "local_work";
 
    // If filelink is NOT empty, this is what will be processed. 
+   $filelink = "";
    //$filelink = "2021_09_22_13_51_53_795631.zip";
    //$filelink = "2021_10_05_16_31_22_088792.zip";
    //$filelink = "2021_10_05_21_50_11_857874.zip";
    //$filelink = "2021_10_06_21_36_26_540637.zip";
-   //$filelink = "2021_10_06_21_30_19_261802.zip";
-   $filelink = "";
+   //$filelink = "2021_10_06_21_30_19_261802.zip";   
+   //$filelink = "2021_10_07_12_33_04_728107.zip";
+   //$filelink ="2021_10_12_13_29_13_921659.zip";
+   //$filelink = "2021_10_05_22_38_39_471318.zip";
+   //$filelink = "2021_10_13_21_29_20_210489.zip";
 
    if ($filelink != "") {
        shell_exec("rm -rf "  . WORK_DIR);
@@ -109,10 +121,18 @@
       exit();
    }
 
+   echo "Generating the report json ...\n";
+
+   // We need to get the finalized string.
+   $report_script = "$workdir/report_json_filename.json";
+   $fid = fopen($report_script,"w");
+   fwrite($fid,$vmdc->getFinalizedResultString());
+   fclose($fid);
+
    echo "Generating the PDF...\n";
 
    // Setting the variables for PDF report generation. 
-   $report_script = "$workdir/routput.json"; // The output of RProcessing is always routput.json in the work directory. 
+   //$report_script = "$workdir/routput.json"; // The output of RProcessing is always routput.json in the work directory. 
    $error_log = "$workdir/pdf_generate_error_log.log";
    $pdfoutput = "$workdir/$basename.pdf";
    $script = PDF_GEN_PATH . "/" . VERSION . "/pdf_report_generator.js";

@@ -217,6 +217,107 @@ for (var page_number = 0; page_number < layout_pages.length; page_number++){
 
 }
 
+// Checking if QC Page parameters are availabe, so we can create the QC Page.
+if ("qc_graphs" in report){
+
+   // We need to create the report page. We first get the layout.
+   let qc_layout = layout_resource["qc"]["pages"][0];  // Single page. 
+   let page_titles = qc_layout.title;
+
+   for (var i = 0; i < page_titles.length; i++){
+
+      // The first step is to parse the title. 
+      let parsed_string = text_replacer.reportString(page_titles[i].text);
+      if (parsed_string === false){
+         console.log("Getting title " + i + " on page " + page_number + " for report type: " + report_type + ": " + text_replacer.getError());
+         process.exit(1);
+      }
+
+      page_titles[i].text = parsed_string;
+      
+   }
+
+   // Create the quality report page.
+   let effective_area = report_page.createNewReportPage(page_titles);
+
+   // Getting the report name key, global qc parameters, qc graph data and study qc parameters. 
+   let report_app_study_name_key = Object.keys(report.qc_graphs)[0];
+   let qc_data = report.qc_graphs[report_app_study_name_key];
+   let qc_params_global = report.qc_parameters;
+   let qc_params_study = qc_params_global[report_app_study_name_key];
+   
+
+   // Each item requires some processing before show so we iterate over each item doing some string replacement first.
+
+   let green_counter = 0;
+   let red_counter   = 0;
+
+   for (var i = 0; i < qc_layout.items.length; i++){
+      
+      let item = qc_layout.items[i]
+      let ok_value_key = "";
+
+      item.effective_area = effective_area;
+
+      if (item.id == "data_points"){
+         item.value = item.value.replace("STUDY_NAME",report_app_study_name_key);
+         ok_value_key = "qc_data_point_index_ok";
+         item.second_replacement = []
+         item.second_replacement["<<X>>"] = qc_params_study.threshold_valid_num_datapoints;      
+      }
+      else if (item.id == "sample_rate"){
+         item.value = item.value.replace("STUDY_NAME",report_app_study_name_key);
+         ok_value_key = "qc_freq_index_ok";
+         item.second_replacement = []
+         item.second_replacement["<<X>>"] = qc_params_global.threshold_trials_with_valid_f;      
+      }
+      else if (item.id == "fixations"){
+         item.value = item.value.replace("STUDY_NAME",report_app_study_name_key);
+         ok_value_key = "qc_fix_index_ok";
+         item.second_replacement = []
+         item.second_replacement["<<X>>"] = qc_params_study.threshold_valid_num_fixations;      
+      }
+      else if (item.id == "qc_conclusion"){
+         if (red_counter > 0) item.text_index = "bad";
+         else item.text_index = "good"
+      }
+
+      let ret = [];
+
+      if (item.type == "result_segment"){
+
+         //console.log("Checking the value of " + ok_value_key + " for " + item.id);
+
+         if (qc_data[ok_value_key]){
+            //console.log("   IS GREEN")
+            item.color_code = Utils.ColorCategory.GREEN;
+            green_counter++;
+         }
+         else{
+            //console.log("   IS RED")
+            item.color_code = Utils.ColorCategory.RED;
+            red_counter++;
+         }         
+         ret = LayoutParser.parseResultSegment(doc,item,text_replacer)
+
+      }
+      else if (item.type == "pdiag"){
+         ret = LayoutParser.parsePresumptiveDiagnosis(doc,item,text_replacer);
+      }
+      else if (item.type == "text_box"){
+         ret = LayoutParser.parseTextBox(doc,item,text_replacer);
+      }
+
+      if (ret.error != ""){
+         console.log("Error on item type " + item.type + "  on QC page, item " + i +  " : " + ret.error + ". Item ID: " + item.id);
+         process.exit(1);
+      }   
+
+   }
+
+   
+}
+
 // Saving the report.
 doc.save(output_pdf);
 // Here we go.

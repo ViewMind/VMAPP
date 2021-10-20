@@ -435,6 +435,27 @@
                     "label": "Control"
                 }
             }
+        },
+        "qc": {
+            "title": "QUALITY CONTROL ANALYSIS",
+            "data_points": {
+                "title": "DATA POINTS",
+                "subtitle": "Acceptable value above <<X>>"
+            },
+            "fixations": {
+                "title": "FIXATIONS",
+                "subtitle": "Acceptable value above <<X>>"
+            },
+            "sample_rate": {
+                "title": "SAMPLE RATE",
+                "subtitle": "Acceptable value above <<X>>"
+            },
+            "results": {
+                "title": "QUALITY CONTROL RESULTS",
+                "good": "Data is suitable for analysis",
+                "bad": "Data is not within the expected quality parameters. We recommend repeating the study."
+            },
+            "comments": "COMMENTS FROM EVALUATOR"
         }
     }
 }
