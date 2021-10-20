@@ -83,6 +83,8 @@ private:
     static const qint32 PAUSE_TRIAL_2;
 
     void resetStudy() override;
+
+    void updateFrontEndMessages();
     
 };
 

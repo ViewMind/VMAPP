@@ -430,6 +430,8 @@ bool LocalDB::setQCParametersFromServerResponse(const QVariantMap &response){
     allStudies << VMDC::MultiPartStudyBaseName::BINDING
                << VMDC::Study::NBACKRT
                << VMDC::Study::GONOGO
+               << VMDC::Study::NBACKMS
+               << VMDC::Study::NBACKVS
                << VMDC::Study::READING;
 
 

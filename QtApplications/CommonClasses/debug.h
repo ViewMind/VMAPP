@@ -49,6 +49,7 @@ namespace Debug {
        const QString DBUG_MSG             = "debug_messages";
        const QString LIGHTUP_NBACKRT      = "lightup_nback_rt";
        const QString PRINT_PP             = "print_pp";
+       const QString PRINT_QC             = "print_qc";
        const QString RENDER_HITBOXES      = "render_hitboxes";
     }
 

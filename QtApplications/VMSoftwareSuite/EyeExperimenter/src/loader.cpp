@@ -997,6 +997,16 @@ void Loader::receivedRequest(){
             if (!localDB.setProcessingParametersFromServerResponse(mainData)){
                 logger.appendError("Failed to set processing parameters from server: " + localDB.getError());
             }
+
+            if (DBUGBOOL(Debug::Options::PRINT_QC)){
+                QVariantMap qc = mainData.value(APINames::FreqParams::NAME).toMap();
+                QString qcstr = Debug::QVariantMapToString(qc);
+                qcstr = "DBUG: RECEIVED QC PARAMETERS:\n" + qcstr;
+                qDebug() << qcstr;
+                logger.appendWarning(qcstr);
+
+            }
+
             if (!localDB.setQCParametersFromServerResponse(mainData)){
                 logger.appendError("Failed to set QC parameters from server: " + localDB.getError());
             }
