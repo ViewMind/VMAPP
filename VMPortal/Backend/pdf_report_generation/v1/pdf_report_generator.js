@@ -242,9 +242,22 @@ if ("qc_graphs" in report){
 
    // Getting the report name key, global qc parameters, qc graph data and study qc parameters. 
    let report_app_study_name_key = Object.keys(report.qc_graphs)[0];
+
+   // Multi Part Studies need to be Mapped To Single Part Names.
+   let multi_part_studies_to_single_name_map = [];
+   multi_part_studies_to_single_name_map["Binding BC"] = "Binding";
+   multi_part_studies_to_single_name_map["Binding UC"] = "Binding";
+
+   let param_key_name = report_app_study_name_key
+   for (var key in multi_part_studies_to_single_name_map){
+      if (report_app_study_name_key == key){
+         param_key_name = multi_part_studies_to_single_name_map[key];
+      }
+   }
+   
    let qc_data = report.qc_graphs[report_app_study_name_key];
    let qc_params_global = report.qc_parameters;
-   let qc_params_study = qc_params_global[report_app_study_name_key];
+   let qc_params_study = qc_params_global[param_key_name];
    
 
    // Each item requires some processing before show so we iterate over each item doing some string replacement first.
