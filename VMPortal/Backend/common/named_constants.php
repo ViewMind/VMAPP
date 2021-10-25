@@ -67,11 +67,12 @@
    }
 
    abstract class ResponseDataSubFields extends TypedString {
-      const MEDICS           = "medics";
-      const PROC_PARAMS      = "proc_params";
-      const FREQ_PARAMS      = "freq_params";
-      const UPDATE_ET_CHANGE = "update_et_change";
-      const UPDATE_VERSION   = "update_version";
+      const MEDICS              = "medics";
+      const PROC_PARAMS         = "proc_params";
+      const FREQ_PARAMS         = "freq_params";
+      const UPDATE_ET_CHANGE    = "update_et_change";
+      const UPDATE_VERSION      = "update_version";
+      const RECOVERY_PASSWORD   = "recovery_password";
    }
 
    abstract class APIEndpoints extends TypedString {

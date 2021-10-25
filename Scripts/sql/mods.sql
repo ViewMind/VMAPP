@@ -26,3 +26,13 @@ ALTER TABLE portal_users ADD COLUMN partner_id VARCHAR(100) AFTER permissions;
 --------------------------------- 13/07/2021 ---------------------------------
 -- vm_main
 ALTER TABLE evaluations ADD COLUMN discard_reason VARCHAR(100) AFTER file_link
+
+--------------------------------- 25/10/2021 ---------------------------------
+--vm_secure
+CREATE TABLE app_password_recovery (
+   keyid                  INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+   institution_id         INT UNSIGNED,
+   institution_instance   INT UNSIGNED,
+   unique_id              VARCHAR(50),
+   password_hash          VARCHAR(255)
+)
