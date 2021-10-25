@@ -347,35 +347,45 @@
          }
 
          // Then we append the raw file data. AND check no errors. If there are errors there is no point in moving on. 
-         foreach ($this->files as $fkey => $fstruct){
-            $message = $message . file_get_contents($fstruct[FileStructNames::TMP_LOCATION]);
+         foreach ($this->files as $fkey => $fstruct){            
             
             if ($fstruct[FileStructNames::ERROR] != UPLOAD_ERR_OK){
 
+               $this->error = "Failed to file upload. Reason: ";
+
                switch ($fstruct[FileStructNames::ERROR]){
                   case UPLOAD_ERR_CANT_WRITE:
-                     $this->error = "Failed to write upload to disk";
+                     $this->error = $this->error . "Failed to write upload to disk";
+                     break;
+                  case UPLOAD_ERR_INI_SIZE:
+                     $this->error = $this->error . "The uploaded file exceeds the upload_max_filesize directive in php.ini";
                      break;
                   case UPLOAD_ERR_EXTENSION:
-                     $this->error = "PHP Extension stopped file upload";
+                     $this->error = $this->error . "PHP Extension stopped file upload";
                      break;
                   case UPLOAD_ERR_FORM_SIZE:
-                     $this->error = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
+                     $this->error = $this->error . "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
                      break;
                   case UPLOAD_ERR_PARTIAL:
-                     $this->error = "The uploaded file was only partially uploaded";
+                     $this->error = $this->error . "The uploaded file was only partially uploaded";
                      break;
                   case UPLOAD_ERR_NO_TMP_DIR:
-                     $this->error = "Missing temporary folder for file upload";
+                     $this->error = $this->error . "Missing temporary folder for file upload";
                      break;
                   case UPLOAD_ERR_EXTENSION:
-                     $this->error = "PHP Extension stopped file upload";
+                     $this->error = $this->error . "PHP Extension stopped file upload";
+                     break;
+                  default:
+                     $this->error = $this->error . ". Unknown error code: " . $fstruct[FileStructNames::ERROR];
                      break;
                }
 
+               $this->returnable_error = "File upload failed";
                $this->http_code = 500;
                return false;
             }
+
+            $message = $message . file_get_contents($fstruct[FileStructNames::TMP_LOCATION]);
 
          }
 

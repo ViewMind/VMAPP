@@ -16,7 +16,7 @@ abstract class MultiPartStudyBaseName extends TypedString {
 
 abstract class Study extends TypedString {
    const BINDING_BC                              = MultiPartStudyBaseName::BINDING . " BC";
-   const BINDING_UC                              = "Binding UC";
+   const BINDING_UC                              = MultiPartStudyBaseName::BINDING . " UC";
    const GONOGO                                  = "Go No-Go";
    const NBACKMS                                 = "NBack MS";
    const NBACKRT                                 = "NBack RT";

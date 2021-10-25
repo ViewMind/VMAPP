@@ -240,13 +240,51 @@ if ("qc_graphs" in report){
    // Create the quality report page.
    let effective_area = report_page.createNewReportPage(page_titles);
 
-   // Getting the report name key, global qc parameters, qc graph data and study qc parameters. 
-   let report_app_study_name_key = Object.keys(report.qc_graphs)[0];
-   let qc_data = report.qc_graphs[report_app_study_name_key];
-   let qc_params_global = report.qc_parameters;
-   let qc_params_study = qc_params_global[report_app_study_name_key];
-   
 
+   // Getting the worst value for each qc_graph. For that we first initialized the structure that will contain the data. 
+   let map_value_data = {}; 
+   let all_qc_variables = ["data_points", "sample_rate", "fixations"];
+   for (var i in all_qc_variables){
+      let temp = {};
+      temp["value"] = 101;
+      temp["name"] = "";
+      temp["key"] = "";
+      map_value_data[all_qc_variables[i]] = temp;
+   }
+
+   for (var report_key  in report.qc_graphs){
+      let qcdata = report.qc_graphs[report_key];
+
+         
+      if (qcdata["qc_data_point_index"] < map_value_data["data_points"].value){
+         map_value_data["data_points"].value = qcdata["qc_data_point_index"];
+         map_value_data["data_points"].name = language.qc["study_name"][report_key];
+         map_value_data["data_points"].key  = report_key;
+      }
+
+      if (qcdata["qc_freq_index"] < map_value_data["sample_rate"].value){
+         map_value_data["sample_rate"].value = qcdata["qc_freq_index"];
+         map_value_data["sample_rate"].name = language.qc["study_name"][report_key];
+         map_value_data["sample_rate"].key  = report_key;
+      }
+
+      if (qcdata["qc_fix_index"] < map_value_data["fixations"].value){
+         map_value_data["fixations"].value = qcdata["qc_fix_index"];
+         map_value_data["fixations"].name = language.qc["study_name"][report_key];
+         map_value_data["fixations"].key  = report_key;
+      }
+
+
+   }
+
+   // Mapping the Study Key Names to The Study QC Parameters. (Only when they differ)
+   let study_key_names_to_study_qc_keys = {}
+   study_key_names_to_study_qc_keys["Binding BC"] = "Binding"
+   study_key_names_to_study_qc_keys["Binding UC"] = "Binding"
+
+   
+   let qc_params_global = report.qc_parameters;
+   //let qc_params_study = qc_params_global[param_key_name];
    // Each item requires some processing before show so we iterate over each item doing some string replacement first.
 
    let green_counter = 0;
@@ -258,23 +296,38 @@ if ("qc_graphs" in report){
       let ok_value_key = "";
 
       item.effective_area = effective_area;
+      let qc_data = [];
+      let qc_params_study = []
+      let report_app_study_name_key = "";
+
+      if (all_qc_variables.indexOf(item.id) != -1){
+         report_app_study_name_key = map_value_data[item.id].key;
+
+         let tempkey = report_app_study_name_key
+         if (report_app_study_name_key in study_key_names_to_study_qc_keys){
+            tempkey = study_key_names_to_study_qc_keys[report_app_study_name_key];
+         }
+
+         qc_data = report.qc_graphs[report_app_study_name_key];
+         qc_params_study = qc_params_global[tempkey];
+         item.second_replacement = []
+         item.second_replacement["<<Y>>"] = map_value_data[item.id].name;
+      }
 
       if (item.id == "data_points"){
          item.value = item.value.replace("STUDY_NAME",report_app_study_name_key);
-         ok_value_key = "qc_data_point_index_ok";
-         item.second_replacement = []
+         ok_value_key = "qc_data_point_index_ok";         
          item.second_replacement["<<X>>"] = qc_params_study.threshold_valid_num_datapoints;      
+         
       }
       else if (item.id == "sample_rate"){
          item.value = item.value.replace("STUDY_NAME",report_app_study_name_key);
          ok_value_key = "qc_freq_index_ok";
-         item.second_replacement = []
          item.second_replacement["<<X>>"] = qc_params_global.threshold_trials_with_valid_f;      
       }
       else if (item.id == "fixations"){
          item.value = item.value.replace("STUDY_NAME",report_app_study_name_key);
          ok_value_key = "qc_fix_index_ok";
-         item.second_replacement = []
          item.second_replacement["<<X>>"] = qc_params_study.threshold_valid_num_fixations;      
       }
       else if (item.id == "qc_conclusion"){
@@ -288,16 +341,18 @@ if ("qc_graphs" in report){
 
          //console.log("Checking the value of " + ok_value_key + " for " + item.id);
 
-         if (qc_data[ok_value_key]){
-            //console.log("   IS GREEN")
-            item.color_code = Utils.ColorCategory.GREEN;
-            green_counter++;
+         if (ok_value_key != ""){
+            if (qc_data[ok_value_key]){
+               //console.log("   IS GREEN")
+               item.color_code = Utils.ColorCategory.GREEN;
+               green_counter++;
+            }
+            else{
+               //console.log("   IS RED")
+               item.color_code = Utils.ColorCategory.RED;
+               red_counter++;
+            }         
          }
-         else{
-            //console.log("   IS RED")
-            item.color_code = Utils.ColorCategory.RED;
-            red_counter++;
-         }         
          ret = LayoutParser.parseResultSegment(doc,item,text_replacer)
 
       }
