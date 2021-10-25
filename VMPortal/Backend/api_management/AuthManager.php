@@ -347,8 +347,7 @@
          }
 
          // Then we append the raw file data. AND check no errors. If there are errors there is no point in moving on. 
-         foreach ($this->files as $fkey => $fstruct){
-            $message = $message . file_get_contents($fstruct[FileStructNames::TMP_LOCATION]);
+         foreach ($this->files as $fkey => $fstruct){            
             
             if ($fstruct[FileStructNames::ERROR] != UPLOAD_ERR_OK){
 
@@ -376,6 +375,8 @@
                $this->http_code = 500;
                return false;
             }
+
+            $message = $message . file_get_contents($fstruct[FileStructNames::TMP_LOCATION]);
 
          }
 
