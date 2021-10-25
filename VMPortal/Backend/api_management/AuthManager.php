@@ -357,6 +357,9 @@
                   case UPLOAD_ERR_CANT_WRITE:
                      $this->error = $this->error . "Failed to write upload to disk";
                      break;
+                  case UPLOAD_ERR_INI_SIZE:
+                     $this->error = $this->error . "The uploaded file exceeds the upload_max_filesize directive in php.ini";
+                     break;
                   case UPLOAD_ERR_EXTENSION:
                      $this->error = $this->error . "PHP Extension stopped file upload";
                      break;
@@ -377,6 +380,7 @@
                      break;
                }
 
+               $this->returnable_error = "File upload failed";
                $this->http_code = 500;
                return false;
             }
