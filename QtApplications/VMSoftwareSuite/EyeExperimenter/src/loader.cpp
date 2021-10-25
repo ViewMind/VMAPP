@@ -982,6 +982,11 @@ void Loader::receivedRequest(){
 
             QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
 
+            if (DBUGBOOL(Debug::Options::PRINT_SERVER_RESP)){
+                QString toprint = "DBUG: Received response:\n" + Debug::QVariantMapToString(mainData);
+                logger.appendWarning(toprint);
+            }
+
             if (!localDB.setMedicInformationFromRemote(mainData)){
                 logger.appendError("Failed to set medical professionals info from server: " + localDB.getError());
             }
@@ -1011,7 +1016,9 @@ void Loader::receivedRequest(){
                 logger.appendError("Failed to set QC parameters from server: " + localDB.getError());
             }
 
-            //Debug::prettpPrintQVariantMap(mainData);
+            if (!localDB.setRecoveryPasswordFromServerResponse(mainData)){
+                logger.appendError("Failed to set recovery password from server: " + localDB.getError());
+            }
 
             // Checking for updates.
             if (!DBUGBOOL(Debug::Options::DISABLE_UPDATE_CHECK)){

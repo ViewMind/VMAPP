@@ -51,6 +51,7 @@ namespace Debug {
        const QString PRINT_PP             = "print_pp";
        const QString PRINT_QC             = "print_qc";
        const QString RENDER_HITBOXES      = "render_hitboxes";
+       const QString PRINT_SERVER_RESP    = "print_server_response";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

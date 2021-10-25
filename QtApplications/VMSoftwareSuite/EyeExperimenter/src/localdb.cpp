@@ -11,6 +11,7 @@ const char * LocalDB::MAIN_QC_PARAMETERS                     = "qc_parameters";
 const char * LocalDB::MAIN_APP_VERSION                       = "app_version";
 const char * LocalDB::MAIN_APP_UPDATE_DELAY_COUNTER          = "update_delay_counter";
 const char * LocalDB::MAIN_DB_VERSION                        = "local_db_version";
+const char * LocalDB::MAIN_RECOVERY_PASSWORD                 = "recovery_password";
 
 
 // Evaluator fields
@@ -59,7 +60,7 @@ bool LocalDB::setApplicationVersion(const QString &version){
     }
     else{
         this->data[MAIN_APP_VERSION] = version;
-        this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = MAX_ALLOWED_UPDATE_DELAYS;        
+        this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = MAX_ALLOWED_UPDATE_DELAYS;
         saveAndBackup();
         return false;
     }
@@ -73,12 +74,12 @@ qint32 LocalDB::getRemainingUpdateDelays() const{
 }
 
 void LocalDB::deniedUpdate(){
-     if (this->data.contains(MAIN_APP_UPDATE_DELAY_COUNTER)){
-         qint32 counter = this->data.value(MAIN_APP_UPDATE_DELAY_COUNTER).toInt();
-         counter--;
-         this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = counter;
-         saveAndBackup();
-     }
+    if (this->data.contains(MAIN_APP_UPDATE_DELAY_COUNTER)){
+        qint32 counter = this->data.value(MAIN_APP_UPDATE_DELAY_COUNTER).toInt();
+        counter--;
+        this->data[MAIN_APP_UPDATE_DELAY_COUNTER] = counter;
+        saveAndBackup();
+    }
 }
 
 void LocalDB::replaceMedicKeys(){
@@ -341,6 +342,21 @@ bool LocalDB::processingParametersPresent() const {
     return data.contains(MAIN_PROCESSING_PARAMETERS);
 }
 
+bool LocalDB::setRecoveryPasswordFromServerResponse(const QVariantMap &response){
+    if (!response.contains(APINames::RecoveryPassword::NAME)){
+        error = "Expected field: " + QString(APINames::RecoveryPassword::NAME) + " but it wasn't found";
+        return false;
+    }
+
+    QString hash = response.value(APINames::RecoveryPassword::NAME).toString();
+    if (hash != data.value(MAIN_RECOVERY_PASSWORD,"").toString()){
+        data[MAIN_RECOVERY_PASSWORD] = response.value(APINames::RecoveryPassword::NAME).toString();
+        return saveAndBackup();
+    }
+    else return true;
+}
+
+
 bool LocalDB::setMedicInformationFromRemote(const QVariantMap &response){
     if (!response.contains(APINames::Medics::NAME)){
         error = "Expected medics field: " + QString(APINames::Medics::NAME) + " but it wasn't found";
@@ -352,6 +368,12 @@ bool LocalDB::setMedicInformationFromRemote(const QVariantMap &response){
     QStringList tocheck; tocheck << APINames::Medics::EMAIL << APINames::Medics::FNAME << APINames::Medics::KEYID << APINames::Medics::LASTNAME;
 
     QVariantMap local_medics = data.value(MAIN_MEDICS).toMap();
+
+    // We need to compute a checksum for medics to know when to save.
+    QString checksum(QCryptographicHash::hash(Debug::QVariantMapToString(local_medics).toUtf8(),QCryptographicHash::Sha3_512).toHex());
+
+    // Storing the server medics.
+    QVariantMap serverMedics;
 
     for (qint32 i = 0; i < allmedics.size(); i++){
 
@@ -377,14 +399,17 @@ bool LocalDB::setMedicInformationFromRemote(const QVariantMap &response){
         //std::cout << "Keyid " << keyid.toStdString() << std::endl;
         //Globals::Debug::prettpPrintQVariantMap(temp);
         //std::cout << "------------------------------" << std::endl;
-        local_medics[email] = medic;
+        serverMedics[email] = medic;
 
     }
 
-    //qDebug() << "Printing store of local medics";
-    //Globals::Debug::prettpPrintQVariantMap(local_medics);
+    QString checksum2(QCryptographicHash::hash(Debug::QVariantMapToString(serverMedics).toUtf8(),QCryptographicHash::Sha3_512).toHex());
 
-    data[MAIN_MEDICS] = local_medics;
+    if (checksum == checksum2) return true;  // No changes, nothing to do
+
+    qDebug() << "New Medic Data";
+
+    data[MAIN_MEDICS] = serverMedics;
     return saveAndBackup();
 }
 
@@ -497,12 +522,18 @@ bool LocalDB::passwordCheck(const QString &email, const QString &plaintext_passw
     //qDebug() << "Has evaluator" << email;
     if (!data.value(MAIN_EVALUATOR_DATA).toMap().contains(email)) return false;
     QString reference = data.value(MAIN_EVALUATOR_DATA).toMap().value(email).toMap().value(APPUSER_PASSWORD).toString();
+    QString recovery_password = data.value(MAIN_RECOVERY_PASSWORD).toString();
+
     //QString hash = QString(QCryptographicHash::hash(plaintext_password.toUtf8(),QCryptographicHash::Sha3_512).toHex());
     //qDebug() << "Checking for email " << email << plaintext_password;
     //qDebug() << "Hashed" << hash;
     //qDebug() << "Reference" << reference;
     //qDebug() << "Compare" << (reference == hash);
-    return (reference == QString(QCryptographicHash::hash(plaintext_password.toUtf8(),QCryptographicHash::Sha3_512).toHex()));
+    //qDebug() << "Recovery password" << recovery_password;
+
+    QString hash = QString(QCryptographicHash::hash(plaintext_password.toUtf8(),QCryptographicHash::Sha3_512).toHex());
+    return (reference == hash) || (recovery_password == hash);
+
 }
 
 
