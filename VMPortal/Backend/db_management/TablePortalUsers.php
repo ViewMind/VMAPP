@@ -52,6 +52,14 @@ class TablePortalUsers extends TableBaseClass {
       APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN ]
    ];
 
+   // Administrative Portal User Permissions
+   private const ADMIN_PORTAL_USER_PERMISSIONS = [
+      APIEndpoints::INSTITUTION  => [ InstitutionOperations::LIST ],
+      APIEndpoints::REPORTS      => [ ReportOperations::LIST_ALL_OWN_INST, ReportOperations::GET_OWN_INSTITUTION ],
+      APIEndpoints::SUBJECTS     => [ SubjectOperations::LIST_ALL_OWN_INST ],
+      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN ]
+   ];
+
    function __construct($con){
       parent::__construct($con);
    }

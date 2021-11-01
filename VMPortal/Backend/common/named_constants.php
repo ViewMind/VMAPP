@@ -81,6 +81,7 @@
       const RAWDATA                = "rawdata";
       const INSTITUTION            = "institution";
       const SUBJECTS               = "subjects";
+      const MEDICAL_RECORDS        = "medical_record";
    }
 
    abstract class PortalUserOperations extends TypedString {
@@ -89,6 +90,11 @@
       const MODIFY_OWN              = "modify_own";
       const ENABLE                  = "enable";
       const ADD_NO_LOG_PUSERS       = "addnologpusers";
+   }
+
+   abstract class FrontEndPermissions extends TypedString {
+      const SEE_ALL_OWN_INSTITUTION = "see_all_own_institution";
+      const LOAD_MEDICAL_RECORDS    = "load_medical_records";
    }
 
    abstract class URLParameterNames extends TypedString {
@@ -105,6 +111,7 @@
       const SEARCH                  = "search";
       const ROLE                    = "role";
       const DISCARDED               = "discarded";
+      const INSTITUTION             = "institution";
    }
 
    abstract class URLSearchCriteria extends TypedString {
@@ -118,16 +125,25 @@
       const GET_UPDATE             = "getupdate";
    }
 
+   abstract class MedRecordsOperations extends TypedString {
+      const MODIFY                 = "modify";
+      const LIST                   = "list";
+      const GET                    = "get";
+   }
+
    abstract class ReportOperations extends TypedString {
       const GENERATE               = "generate";
       const LIST                   = "list";
+      const LIST_ALL_OWN_INST      = "list_all_own_institution";
       const GET                    = "get";
+      const GET_OWN_INSTITUTION    = "get_own_institution";
       const REPORTLIST             = "reportlist";
       const INST_PDF               = "institutionPDF";
    }
 
    abstract class SubjectOperations extends TypedString {
       const LIST                   = "list";
+      const LIST_ALL_OWN_INST      = "list_all_own_institution";
    }
 
    abstract class ReturnableError extends TypedString {
@@ -147,6 +163,12 @@
       const HP_OMNICEPT      = "hpomnicept";
       const HTC_VIVE_EYE_PRO = "htcviveeyepro";
       const GAZEPOINT        = "gazepoint";
+   }
+
+   // Fields that need to compliment other defined structures. 
+   abstract class ComplimentaryDataFields extends TypedString {
+      const ASSOCIATED_INSTITUTIONS = "associated_institutions";
+      const PERMISSIONS = "permissions";
    }
 
    abstract class FinalizedStudyNames extends TypedString {

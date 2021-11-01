@@ -31,6 +31,7 @@ include_once ("api_management/ObjectPortalUsers.php");
 include_once ("api_management/ObjectInstitution.php");
 include_once ("api_management/ObjectReports.php");
 include_once ("api_management/ObjectSubjects.php");
+include_once ("api_management/ObjectMedicalRecord.php");
 
 //////////////////////////////////// LOG SETUP ////////////////////////////////
 $auth_log = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::AUTH_LOG_LOCATION]);
@@ -120,10 +121,11 @@ $user_info = $auth_mng->getUserInfo();
 if (!$auth_mng->shouldDoOperation()){
    // The endopoint should be ignored. For now the only time this happens is when a login operation is used to 
    // generate the authentication token.
-   $res[ResponseFields::DATA]["token"] = $auth_mng->getAuthToken();
-   $res[ResponseFields::DATA]["id"]    = $user_info[TablePortalUsers::COL_KEYID];
-   $res[ResponseFields::DATA]["fname"] = $user_info[TablePortalUsers::COL_NAME];
-   $res[ResponseFields::DATA]["lname"] = $user_info[TablePortalUsers::COL_LASTNAME];
+   $res[ResponseFields::DATA]["token"]       = $auth_mng->getAuthToken();
+   $res[ResponseFields::DATA]["id"]          = $user_info[TablePortalUsers::COL_KEYID];
+   $res[ResponseFields::DATA]["fname"]       = $user_info[TablePortalUsers::COL_NAME];
+   $res[ResponseFields::DATA]["lname"]       = $user_info[TablePortalUsers::COL_LASTNAME];
+   $res[ResponseFields::DATA]["permissions"] = $user_info[ComplimentaryDataFields::PERMISSIONS];
    $res[ResponseFields::MESSAGE] = "OK";
    $res[ResponseFields::HTTP_CODE] = 200;
    http_response_code(200);
@@ -164,7 +166,7 @@ $identifier = $route_parts[2];
 // Routes will have three parts OBJECT/OPERATION/IDENTFIER. So first is object. 
 if (array_key_exists($object,$permissions)){
    
-   // It means that there are permissions for this object. Next is the operator.
+   // It means that there are permissions for this object. Next is the operation.
 
    // echoOut($permissions[$object]);
 

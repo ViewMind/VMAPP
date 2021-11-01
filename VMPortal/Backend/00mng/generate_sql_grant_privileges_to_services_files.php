@@ -11,6 +11,7 @@
   include ("../db_management/TableSubject.php");
   include ("../db_management/TableUpdates.php");
   include ("../db_management/TableAppPasswordRecovery.php");
+  include ("../db_management/TableMedicalRecords.php");
 
   // Setting the pointer location for db conf
   DBCon::setPointerLocation("configs");  
@@ -74,6 +75,7 @@
   $srv["table_privileges"][TableEvaluations::IN_DB][TableEvaluations::TABLE_NAME]                         = [$PRIV_SELECT];
   //$srv["table_privileges"][TableProcessingParameters::IN_DB][TableProcessingParameters::TABLE_NAME]       = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   //$srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableMedicalRecords::IN_DB][TableMedicalRecords::TABLE_NAME]                   = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $services[] = $srv;
 
   

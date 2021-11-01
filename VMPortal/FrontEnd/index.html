@@ -33,6 +33,7 @@
         <script src="js/view_report_list.js"></script>
         <script src="js/view_render_report.js"></script>
         <script src="js/view_account.js"></script>
+        <script src="js/view_medrecs.js"></script>
 
     </head>
     <body class="sb-nav-fixed">
@@ -64,7 +65,6 @@
                         <li><hr class="dropdown-divider"/></li>
                         <li><a class="dropdown-item" style = "cursor: pointer;" onclick="logOut()">Logout</a></li>
                     </ul>
-
                 </li>
             </ul>
         </nav>
@@ -95,6 +95,18 @@
                             </a>
                             <div class="collapse" id="collapseInstitutions" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav" id = "side_bar_institution_list">
+                                    <a class="nav-link" href="">Institution 1</a>
+                                    <a class="nav-link" href="">Institution 2</a>
+                                </nav>
+                            </div>
+
+                            <a class="nav-link collapsed" id="side_bar_medrecs" style="display: none;" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMedRecords" aria-expanded="false" aria-controls="collapseMedRecords">
+                                <div class="sb-nav-link-icon"><i class="fas fa-university"></i></div>
+                                Medical Records
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseMedRecords" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav" id = "side_bar_med_record_institution_list">
                                     <a class="nav-link" href="">Institution 1</a>
                                     <a class="nav-link" href="">Institution 2</a>
                                 </nav>

@@ -97,6 +97,7 @@ class TableEvaluations extends TableBaseClass {
       $columns_to_get = [self::COL_STUDY_TYPE, 
                          self::COL_STUDY_DATE, 
                          self::COL_PROCESSING_DATE,
+                         self::COL_INSTITUTION_ID,
                          self::COL_PROTOCOL,
                          self::COL_EVALUATOR_NAME,
                          self::COL_EVALUATOR_LASTNAME,

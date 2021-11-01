@@ -30,12 +30,18 @@ function createCardsForInstitutionList(){
 
    for (var i = 0; i < institution_list.length; i++){
       var card = CARD;
+
       card = card.replace("##NAME##",institution_list[i][GLOBALS.INST_LIST.NAME]);
-      card = card.replace("##WHATTODO##",'goToInstitution('+  institution_list[i][GLOBALS.INST_LIST.ID] + ')');
+      card = card.replace("##WHATTODO##","goToInstitution("+  institution_list[i][GLOBALS.INST_LIST.ID] + ",'" + GLOBALS.ROUTING.PAGES.SUBJECTS + "')");
+
+      //console.log(card);
+
       html = html + card + "\n";
    }
 
    html = html + "</div>" // Closing the row;
+
+   
 
    document.getElementById(GLOBALS.HTML.MAIN.CONTENTS).innerHTML = html;
 }

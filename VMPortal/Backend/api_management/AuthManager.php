@@ -26,6 +26,19 @@
       private $user_info;
       private $json_data;
 
+      private const PERMISSION_KEYS = [
+
+         FrontEndPermissions::SEE_ALL_OWN_INSTITUTION => [
+            APIEndpoints::SUBJECTS => [SubjectOperations::LIST_ALL_OWN_INST],
+            APIEndpoints::REPORTS => [ReportOperations::GET_OWN_INSTITUTION, ReportOperations::LIST_ALL_OWN_INST]
+         ],
+
+         FrontEndPermissions::LOAD_MEDICAL_RECORDS => [
+            APIEndpoints::MEDICAL_RECORDS => [MedRecordsOperations::GET, MedRecordsOperations::LIST, MedRecordsOperations::MODIFY]
+         ]
+
+      ];
+
       public function __construct($headers, $post_data, $files, &$raw_data){
          $this->error = "";
          $this->dbuser = "";
@@ -34,10 +47,11 @@
          $this->http_code = 500; // If I forget the code, then it is a server error.
          $this->returnable_error = "";
          $this->should_do_operation = true;
-         $this->json_data_sent = array();
          $this->user_info = array();
 
+
          //error_log(json_encode($post_data));
+         //error_log(json_encode($raw_data));
 
          // This is to solve a problem where for an unknown reason AWS Apache changes the Header Casing and hence they are not recognized. 
          foreach ($headers as $headername => $value){
@@ -141,6 +155,7 @@
             }
             $this->user_id = $parts[0];
             $this->token = $parts[1];
+            $this->json_data = json_decode($raw_data);
          }
          else if ($this->auth_type == AuthValues::VMLOGIN){
             if (isset($_SERVER['PHP_AUTH_USER'])) {
@@ -252,6 +267,8 @@
 
          // User info will be returned. 
          $this->user_info = $user_info;
+         $this->permissions = json_decode($user_info[TablePortalUsers::COL_PERMISSIONS],true);
+         $this->user_info[ComplimentaryDataFields::PERMISSIONS] = $this->setUserPermission();
 
          // Checking that the user is a valid one. 
          if ($user_info[TablePortalUsers::COL_ENABLED] != TablePortalUsers::ENABLED){
@@ -421,6 +438,15 @@
             return false;
          }
 
+         $con_main = $dbcon->dbOpenConnection(DBCon::DB_MAIN,DBCon::DB_SERVICE_ADMIN);
+         if ($con_main == NULL){
+            $this->http_code = 500;
+            $this->error = "Error creating db connection: " . $dbcon->getError();
+            $this->returnable_error = ReturnableError::DATABASE_CON;
+            return false;
+         }
+
+
          $tu = new TablePortalUsers($con_secure);
          $ans = $tu->getInfoForUser($this->user_id,true);
          if ($ans === FALSE){
@@ -438,11 +464,32 @@
          }
 
          $user_info = $ans[0];
+         // Setting the permissions
+         $this->permissions = json_decode($user_info[TablePortalUsers::COL_PERMISSIONS],true);
+         // Setting the front end permissions
+         $this->user_info[ComplimentaryDataFields::PERMISSIONS] = $this->setUserPermission();
+
+         $tiu = new TableInstitutionUsers($con_main);
+         $ans = $tiu->getInstitutionsForUser($user_info[TableBaseClass::COL_KEYID]);
+         if ($ans === FALSE){
+            $this->http_code = 500;
+            $this->error = "Failed in authentication of partner " . $this->user_id . ". Reason: " . $tu->getError();
+            return false;
+         }
+
+         if (count($ans) < 1){
+            $this->http_code = 500;
+            $this->error = "Failed in authentication of partner " . $this->user_id . ". Reason: " . $tiu->getError();
+            return false;
+         }
+
+         // This way the user info has the associated institutions for it. 
+         $user_info[ComplimentaryDataFields::ASSOCIATED_INSTITUTIONS] = array();
+         foreach ($ans as $row){
+            $user_info[ComplimentaryDataFields::ASSOCIATED_INSTITUTIONS][] = $row[TableInstitutionUsers::COL_INSTITUTION_ID];
+         }
 
          //error_log("Found user with id");
-
-         // Setting the permissions.
-         $this->permissions = json_decode($user_info[TablePortalUsers::COL_PERMISSIONS],true);
 
          // And storing any other user information that might be necessary. 
          $this->user_info = $user_info;
@@ -504,6 +551,59 @@
          }
 
          return $ans;
+
+      }
+
+      /**
+       * The permissions returned here as simply issued to determine what to show in the front end. 
+       * The backend determines and verifies, each time, that an operation occurs, that the user actually can do what it requires.
+       * The way verification is carried out is that each front end permission has an associated list of objects and operations for these objects.
+       * If the DB permissions object has all of these for a given permission, then this front end permission is set to true. Otherwise it is set to false. 
+       * The code was written witht he possibility that the requirements for a single  permission are multiple objects wiht multiple operations required for each object. 
+       * 
+       * WARNING: This function requires the the permissions object of THIS objects be set before being called. 
+       * 
+       */
+
+      private function setUserPermission(){
+         
+         $permissions = array();
+
+         error_log(json_encode($this->permissions));
+
+         foreach (self::PERMISSION_KEYS as $front_end_permission_name => $required_keys){
+            
+            $permissions[$front_end_permission_name] = true;
+            
+            foreach ($required_keys as $object_name => $operations_array){
+               
+               if (array_key_exists($object_name,$this->permissions)){
+                  
+                  foreach ($operations_array as $operation){
+                     if (!in_array($operation,$this->permissions[$object_name])){
+                        $permissions[$front_end_permission_name] = false;
+                        error_log("Operation '$operation' does not exist in object '$object_name'");
+                        break;
+                     }
+                  }
+
+               }
+
+               else {
+                  error_log("Object '$object_name' does not exist in permissions");
+                  $permissions[$front_end_permission_name] = false;
+                  break;
+               }
+
+               if (!$permissions[$front_end_permission_name]) break;
+
+            }
+            
+         }
+
+         error_log("Returning " . json_encode($permissions));
+
+         return $permissions;
 
       }
 

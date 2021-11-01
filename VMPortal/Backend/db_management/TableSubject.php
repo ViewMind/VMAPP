@@ -109,6 +109,24 @@ class TableSubject extends TableBaseClass {
 
    }
 
+   function getAllSubjectsInInstitution($instituion_id){
+      $cols_to_get = [];
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_LASTEST,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$instituion_id)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+
+      $select->setExtra(SelectExtras::ORDER,self::COL_LAST_NAME);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::ASC);
+
+      return $this->simpleSelect($cols_to_get,$select);            
+   }
+
 
 }
 

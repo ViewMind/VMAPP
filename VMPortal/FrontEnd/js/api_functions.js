@@ -1,7 +1,15 @@
 
 API = {
 
-  APICall: function(endpoint,callback,isBlob) {
+   /**
+    * 
+    * @param {String} endpoint - The string containt the endpoint which is of the form object/operation?parameters
+    * @param {String} callback - The string containing the name of the JS function to be called when the transaction completes
+    * @param {Boolean} isBlob - Boolean. If true the response will await for a file (i.e a blob) if undefined or false then it's ignored.
+    * @param {Object} json_data - If defined this will represent the data sent to the backend. 
+    */
+
+  APICall: function(endpoint,callback,isBlob,json_data) {
      var xhr = new XMLHttpRequest();
      xhr.open('POST', endpoint, true);
      
@@ -54,7 +62,22 @@ API = {
         };
      }
      
-     xhr.send(null);
+     let to_send = null;
+     if (json_data !== undefined){
+      // Making user only JS objects are sent 
+      if (
+          (typeof json_data === 'object') &&
+          !Array.isArray(json_data) &&
+          (json_data !== null)
+         )
+        {
+           to_send = JSON.stringify(json_data);
+        }
+     }
+
+     //console.log("Sending: " + to_send);
+
+     xhr.send(to_send);
   },
 
   listInstitutionsForUser: function(callback){
@@ -66,26 +89,70 @@ API = {
 
   listPatientsForInstitutionForUser: function(institution_id, callback){
 
+     let permissions = JSON.parse(sessionStorage.getItem(GLOBALS.SESSION_KEYS.PERMISSIIONS));
+     let list_endpoint = GLOBALS.ENDPOINTS.SUBJECT.LIST
+     if (permissions[GLOBALS.PERMISSIIONS.SEE_ALL_OWN_INST]){
+        list_endpoint = GLOBALS.ENDPOINTS.SUBJECT.LIST_INST
+     }
+
      var endopoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
-     GLOBALS.ENDPOINTS.SUBJECT.LIST + "/" +  institution_id;
+     list_endpoint + "/" +  institution_id;
      
      API.APICall(endopoint,callback);
   },
 
   listReportsForSubject: function(subject_id, callback){
 
+    let permissions = JSON.parse(sessionStorage.getItem(GLOBALS.SESSION_KEYS.PERMISSIIONS));
+    let list_endpoint = GLOBALS.ENDPOINTS.REPORTS.LIST
+    if (permissions[GLOBALS.PERMISSIIONS.SEE_ALL_OWN_INST]){
+       list_endpoint = GLOBALS.ENDPOINTS.REPORTS.LIST_INST
+    }
+
     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
-    GLOBALS.ENDPOINTS.REPORTS.LIST + "/" + subject_id;
+    list_endpoint + "/" + subject_id;
 
     API.APICall(endpoint,callback);
 
   },
 
+  listMedicalRecordsForInsititution: function (institution, callback){
+
+     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
+     GLOBALS.ENDPOINTS.MEDRECORDS.LIST + "/" + institution;
+
+     API.APICall(endpoint,callback);
+
+  },
+
+  getMedicalRecord: function (med_rec_id, callback){
+
+     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
+     GLOBALS.ENDPOINTS.MEDRECORDS.GET + "/" + med_rec_id;
+
+     API.APICall(endpoint,callback);
+
+  },
+
+  modifyMedicalRecord: function(subject_id, med_rec, callback){
+
+     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
+     GLOBALS.ENDPOINTS.MEDRECORDS.MODIFY + "/" + subject_id;
+   
+     API.APICall(endpoint,callback,false,med_rec);
+
+  },
+
   getReport: function (report_id, lang, discarded ,callback){
 
+   let permissions = JSON.parse(sessionStorage.getItem(GLOBALS.SESSION_KEYS.PERMISSIIONS));
+   let report_endpoint = GLOBALS.ENDPOINTS.REPORTS.GET
+   if (permissions[GLOBALS.PERMISSIIONS.SEE_ALL_OWN_INST]){
+      report_endpoint = GLOBALS.ENDPOINTS.REPORTS.GET_INST
+   }    
 
     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
-    GLOBALS.ENDPOINTS.REPORTS.GET + "/" + report_id + "?lang=" + lang;
+    report_endpoint + "/" + report_id + "?lang=" + lang;
 
     var isBlob = true
 
