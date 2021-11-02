@@ -26,6 +26,7 @@ GLOBALS.PAGE_COMM.SELECTED_INSTITUTION_NAME = "selected_institution_name";
 GLOBALS.PAGE_COMM.SELECTED_SUBJECT          = "selected_subject";
 GLOBALS.PAGE_COMM.SELECTED_REPORT           = "selected_report";
 GLOBALS.PAGE_COMM.SELECTED_PDF              = "selected_PDF";
+GLOBALS.PAGE_COMM.SELECTED_MEDREC           = "selected_medical_record"
 
 // For accessing the inst construct.
 GLOBALS.INST_LIST = {};

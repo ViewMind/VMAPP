@@ -60,8 +60,52 @@ class TablePortalUsers extends TableBaseClass {
       APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN ]
    ];
 
+   private const MED_REC_PERMISSIONS = [
+      APIEndpoints::MEDICAL_RECORDS => [ MedRecordsOperations::MODIFY, MedRecordsOperations::GET, MedRecordsOperations::LIST ]
+   ];
+
    function __construct($con){
       parent::__construct($con);
+   }
+
+   static function getAdminPermissions(){
+      return self::ADMIN_PORTAL_USER_PERMISSIONS;
+   }
+
+   static function getStandardPermissions(){
+      return self::STANDARD_PORTAL_USER_PERMISSIONS;
+   }
+
+   static function getMedRecPermissions(){
+      return self::MED_REC_PERMISSIONS;
+   }
+
+   function getPermissionsForEmailList($email_list){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_EMAIL,$email_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }      
+      $cols_to_get = [self::COL_EMAIL,self::COL_PERMISSIONS];
+      return $this->simpleSelect($cols_to_get,$select);
+   }
+
+   function setStandardUserPermissionsToUserList($user_list){
+      return $this->setPermissionsToUserList($user_list,self::STANDARD_PORTAL_USER_PERMISSIONS);
+   }
+
+   function setAdminPortalPermissionsToUserList($user_list){
+      return $this->setPermissionsToUserList($user_list,self::ADMIN_PORTAL_USER_PERMISSIONS);
+   }
+
+   function setPermissionsToUserList($user_list,$permissions){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_EMAIL,$user_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }      
+      $params[self::COL_PERMISSIONS] = json_encode($permissions);
+      return $this->simpleUpdate($params,"Updateing User Permissions by Email List",$select);
    }
 
 

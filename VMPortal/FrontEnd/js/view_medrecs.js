@@ -59,6 +59,8 @@ function onReceiveMedRecList(response){
    table.container = "table_container"
    table.data = [];
 
+   //console.log(JSON.stringify(response.data))
+
    // Now we create the data structure. 
    for (var i = 0; i < response.data.length; i++){
       var row = {};
@@ -66,15 +68,6 @@ function onReceiveMedRecList(response){
       row[colFirstName] = displayValue(response.data[i],ACCESS.MEDREC.LAST);
       row[colSubjectID] = displayValue(response.data[i],ACCESS.MEDREC.UNIQUE_ID);
       row[colVMID]      = displayValue(response.data[i],ACCESS.MEDREC.VMID);
-
-      subjectData = {}
-
-      subjectData.fname = row[colLastName] 
-      subjectData.lname = row[colFirstName];
-      subjectData.did   = row[colSubjectID]
-      subjectData.age   = row[colAge];
-      subjectData.id    = row[colVMID];
-
       table.data.push(row);
    }
 
@@ -83,33 +76,27 @@ function onReceiveMedRecList(response){
 }
 
 function goToMedicalRecordPage(vm_id){
-   console.log("Asked to load the record for patient " + vm_id)
+   sessionStorage.setItem(GLOBALS.PAGE_COMM.SELECTED_MEDREC,vm_id);
+   window.location.href = "index.html?" + GLOBALS.ROUTING.PARAMS.GOTO + "=" + GLOBALS.ROUTING.PAGES.MEDRECEDIT;   
 }
 
-function doTest(){
+// function doTest(){
+//    console.log("Testing 1...2...3");
+//    let json_data = {
+//       anobject: {
+//          name: "value",
+//          name2: "value2"
+//       },
+//       key: "anothervalue",
+//       somearray: [1, 2, 3, 4, 5]
+//    }
+//    API.modifyMedicalRecord(1,json_data,"testCallBack")
+// }
 
-   console.log("Testing 1...2...3");
-
-   let json_data = {
-      anobject: {
-         name: "value",
-         name2: "value2"
-      },
-      key: "anothervalue",
-      somearray: [1, 2, 3, 4, 5]
-   }
-
-   API.modifyMedicalRecord(1,json_data,"testCallBack")
-
-}
-
-function testCallBack(response){
-   
-   if (response.message != "OK"){
-      ErrorDialog.open("Server Error",response.message);
-      return;
-   }   
-
-   console.log(response.data);
-
-}
+// function testCallBack(response){ 
+//    if (response.message != "OK"){
+//       ErrorDialog.open("Server Error",response.message);
+//       return;
+//    }   
+//    console.log(response.data);
+// }

@@ -137,7 +137,7 @@ class MultiKeyValuePairInput {
       return this.#element_base_html;
    }
 
-   setSelected(i){
+   setSelectedRow(i){
       this.#table_selected_index = i
       this.updateTableBody(false)
    }
@@ -154,6 +154,11 @@ class MultiKeyValuePairInput {
 
    getSelection(){
       return this.#table_data
+   }
+
+   setTableData(data){
+      this.#table_data = data;
+      this.updateTableBody(false);
    }
 
    checkIfSpecifyOtherEnabled(){
@@ -215,7 +220,7 @@ class MultiKeyValuePairInput {
 
    static rowClicked(object,index){
       //console.log("ROW CLICKED on Object " + object + " index at " + index)
-      window[object].setSelected(index)
+      window[object].setSelectedRow(index)
    }
 
    static removeButtonClicked(object,index){

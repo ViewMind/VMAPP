@@ -5,7 +5,7 @@ function Route(){
    let permissions = JSON.parse(sessionStorage.getItem(GLOBALS.SESSION_KEYS.PERMISSIIONS));
 
    if (permissions[GLOBALS.PERMISSIIONS.SEE_MED_RECS]){
-      console.log("Enabling MedRec Menu")
+      //console.log("Enabling MedRec Menu")
       document.getElementById(GLOBALS.HTML.MEDREC_SIDE_MENU).style = "";
    }
 

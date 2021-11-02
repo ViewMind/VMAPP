@@ -34,6 +34,8 @@ class ObjectMedicalRecord extends ObjectBaseClass {
 
       $tmr = new TableMedicalRecords($this->con_secure);
 
+      error_log("Modifying record with id $identifier");
+
       // We need to check if the record is new or not
       if ($identifier == 0){
          // This a new record.
@@ -88,6 +90,8 @@ class ObjectMedicalRecord extends ObjectBaseClass {
          return false;            
       }
       
+      //error_log("Returning a list of " . count($list) . " med recs for institution $identifier");
+
       return $list;
 
    }
@@ -103,7 +107,7 @@ class ObjectMedicalRecord extends ObjectBaseClass {
       $record = array();
 
       if ($identifier == 0){
-         // This is getting the information for a new medical records. Which means that the institution should be a paraemter. 
+         // This is getting the information for a new medical records. Which means that the institution should be a parameter. 
          if (!array_key_exists(URLParameterNames::INSTITUTION,$parameters)){
             $this->suggested_http_code = 401;
             $this->error = "Portal user $portal_user requested a new medical record with no institution parameter";
@@ -138,6 +142,8 @@ class ObjectMedicalRecord extends ObjectBaseClass {
 
       }
 
+      //error_log("GET Medical Records $identifier. Institution is '$institution_id'");
+
       // Verifying that the requested record is from a valid institution.
       if (!in_array($institution_id,$this->portal_user_info[ComplimentaryDataFields::ASSOCIATED_INSTITUTIONS])){
          $this->suggested_http_code = 403;
@@ -148,10 +154,10 @@ class ObjectMedicalRecord extends ObjectBaseClass {
 
       // Finally we get all the patients for a given institution.
       $tsu = new TableSubject($this->con_secure);
-      $ans = $tsu->getAllSubjectsInInstitution($identifier);
+      $ans = $tsu->getAllSubjectsInInstitution($institution_id);
       if ($ans === false){
          $this->suggested_http_code = 500;
-         $this->error = "Failed in getting all subjects for institution $identifier";
+         $this->error = "On Get Medical Record, failed in getting all subjects for institution $institution_id";
          $this->returnable_error = "Internal database error";
          return false;         
       }

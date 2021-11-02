@@ -61,6 +61,9 @@ if (!$route_parser->tokenizeURL($_SERVER['REQUEST_URI'],CONFIG[GlobalConfigGener
 
 //////////////////////////////////// CATCHING ENABLE USER REQUESTS ////////////////////////////////
 $route_parts = $route_parser->getRouteParts();
+//error_log("Created Route Parser: ");
+//error_log(vardumpIntoVar($route_parser->getParameters()));
+
 
 //error_log(json_encode($route_parts,JSON_PRETTY_PRINT));
 

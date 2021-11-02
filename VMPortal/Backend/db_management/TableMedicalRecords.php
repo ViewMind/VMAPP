@@ -15,7 +15,7 @@ class TableMedicalRecords extends TableBaseClass {
    const COL_INSTITUTION_ID       = "institution_id";
    const COL_SUBJECT_LINK         = "subject_link";
    const COL_RECORD               = "record";
-   const COL_LAST_MOD_BY          = "last_mod";
+   const COL_LAST_MOD_BY          = "last_mod_by";
    const COL_UPDATE               = "last_update";
    const COL_VALID                = "valid";
 
@@ -59,8 +59,9 @@ class TableMedicalRecords extends TableBaseClass {
          }
          $params[$col] = $record[$col];
       }
-      $params[self::COL_RECORD] = $record;
+      $params[self::COL_RECORD] = json_encode($record);
       $params[self::COL_VIEWMIND_ID] = $viewmind_id;
+      $params[self::COL_VALID] = 1;
 
       if (!array_key_exists(self::COL_INSTITUTION_ID,$record)){
          $this->error = "Cannot create medical record when column " . self::COL_INSTITUTION_ID . " is missing";
@@ -92,7 +93,7 @@ class TableMedicalRecords extends TableBaseClass {
 
    function updateMedicalRecord($record){
       // Any missing data is assumed empty, with the exception of the viewmind_id
-      $obligatory_data = [self::COL_NAME, self::COL_LAST_NAME, self::COL_UNIQUE_ID, self::COL_SUBJECT_LINK];
+      $obligatory_data = [self::COL_NAME, self::COL_LAST_NAME, self::COL_UNIQUE_ID, self::COL_SUBJECT_LINK, self::COL_INSTITUTION_ID, self::COL_LAST_MOD_BY];
 
       // We must ensure these columns ARE NOT in the record.
       $cols_to_unset = [self::COL_KEYID, self::COL_VALID, self::COL_VIEWMIND_ID];
@@ -118,14 +119,14 @@ class TableMedicalRecords extends TableBaseClass {
          }
          $params[$col] = $record[$col];
       }
-      $params[self::COL_RECORD] = $record;
+      $params[self::COL_RECORD] = json_encode($record);
 
       // Deleting unnncessary columns. 
       foreach ($cols_to_unset as $col){
          unset($record[$col]);
       }
 
-      return $this->insertOnUpdatedInfo($params,$record[self::COL_VIEWMIND_ID],self::COL_VIEWMIND_ID,self::COL_VALID);
+      return $this->insertOnUpdatedInfo($params,$unique_id,self::COL_VIEWMIND_ID,self::COL_VALID);
       
    }
 

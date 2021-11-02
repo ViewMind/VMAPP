@@ -125,10 +125,14 @@ API = {
 
   },
 
-  getMedicalRecord: function (med_rec_id, callback){
+  getMedicalRecord: function (med_rec_id, institution_id, callback){
 
      var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
      GLOBALS.ENDPOINTS.MEDRECORDS.GET + "/" + med_rec_id;
+
+     if (med_rec_id == 0){
+        endpoint = endpoint + "?institution=" + institution_id;      
+     }
 
      API.APICall(endpoint,callback);
 

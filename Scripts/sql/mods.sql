@@ -36,3 +36,19 @@ CREATE TABLE app_password_recovery (
    unique_id              VARCHAR(50),
    password_hash          VARCHAR(255)
 )
+
+--------------------------------- 27/10/2021 ---------------------------------
+--vm_secure
+CREATE TABLE medical_records (
+   keyid                  INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+   first_name             VARCHAR(100),
+   last_name              VARCHAR(100),
+   unique_id              VARCHAR(100),
+   viewmind_id            VARCHAR(40),
+   institution_id         INT UNSIGNED,
+   subject_link           VARCHAR(40),
+   record                 LONGTEXT,
+   last_mod_by            VARCHAR(255),
+   last_update            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   valid                  TINYINT DEFAULT 0   
+);

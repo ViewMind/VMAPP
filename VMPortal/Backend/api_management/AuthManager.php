@@ -155,7 +155,7 @@
             }
             $this->user_id = $parts[0];
             $this->token = $parts[1];
-            $this->json_data = json_decode($raw_data);
+            $this->json_data = json_decode($raw_data,true);
          }
          else if ($this->auth_type == AuthValues::VMLOGIN){
             if (isset($_SERVER['PHP_AUTH_USER'])) {
@@ -569,7 +569,7 @@
          
          $permissions = array();
 
-         error_log(json_encode($this->permissions));
+         //error_log(json_encode($this->permissions));
 
          foreach (self::PERMISSION_KEYS as $front_end_permission_name => $required_keys){
             
@@ -582,7 +582,7 @@
                   foreach ($operations_array as $operation){
                      if (!in_array($operation,$this->permissions[$object_name])){
                         $permissions[$front_end_permission_name] = false;
-                        error_log("Operation '$operation' does not exist in object '$object_name'");
+                        //error_log("Operation '$operation' does not exist in object '$object_name'");
                         break;
                      }
                   }
@@ -590,7 +590,7 @@
                }
 
                else {
-                  error_log("Object '$object_name' does not exist in permissions");
+                  //error_log("Object '$object_name' does not exist in permissions");
                   $permissions[$front_end_permission_name] = false;
                   break;
                }
@@ -601,7 +601,7 @@
             
          }
 
-         error_log("Returning " . json_encode($permissions));
+         //error_log("Returning " . json_encode($permissions));
 
          return $permissions;
 

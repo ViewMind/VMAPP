@@ -7,7 +7,7 @@ class RouteParser {
    private $parameters;
    private $endpoints_and_parameters;
 
-   function __constructor(){
+   function __construct(){
       $this->route_parts = array();
       $this->parameters = array();
       $this->error = "";
