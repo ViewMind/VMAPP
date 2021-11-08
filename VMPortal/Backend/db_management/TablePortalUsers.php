@@ -64,6 +64,10 @@ class TablePortalUsers extends TableBaseClass {
       APIEndpoints::MEDICAL_RECORDS => [ MedRecordsOperations::MODIFY, MedRecordsOperations::GET, MedRecordsOperations::LIST ]
    ];
 
+   private const MASTER_ADMIN_PERMISSIONS = [
+      APIEndpoints::REPORTS => [ ReportOperations::ADMIN_LIST ]
+   ];
+
    function __construct($con){
       parent::__construct($con);
    }
@@ -78,6 +82,10 @@ class TablePortalUsers extends TableBaseClass {
 
    static function getMedRecPermissions(){
       return self::MED_REC_PERMISSIONS;
+   }
+
+   static function getMasterAdminPermissions(){
+      return self::MASTER_ADMIN_PERMISSIONS;
    }
 
    function getPermissionsForEmailList($email_list){
@@ -197,6 +205,18 @@ class TablePortalUsers extends TableBaseClass {
       }
 
       return $this->simpleSelect($cols_to_get,$operation);
+   }
+
+   function getPPNameMap(){
+      $cols_to_get = [self::COL_KEYID, self::COL_NAME, self::COL_LASTNAME];
+      $select = new SelectOperation();
+      $ans = $this->simpleSelect($cols_to_get,$select);
+      if ($ans === false) return false;
+      $ret = array();
+      foreach ($ans as $row){
+         $ret[$row[self::COL_KEYID]] = $row[self::COL_LASTNAME] . ", " . $row[self::COL_NAME];
+      }
+      return $ret;
    }
 
    function getAllNamesForIDList($id_list, $roles, $enabled_status){

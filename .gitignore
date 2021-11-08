@@ -13,7 +13,7 @@
 *local_flag_file
 *local_config
 *.cnf
-.kate-swp
+*.kate-swp
 
 Doc/*.aux
 Doc/*.log
@@ -154,3 +154,4 @@ QtApplications/VMTools/HPOmniceptTest/exe/
 QtApplications/VMTools/HPOmniceptTest/hptest.zip
 Scripts/php/.vscode/
 Scripts/php/analyze_singular_JSON/*.txt
+VMPortal/Backend/00mng/test_output.json

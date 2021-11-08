@@ -18,6 +18,7 @@ GLOBALS.SESSION_KEYS.PERMISSIIONS      = "permissions";
 GLOBALS.PERMISSIIONS = {};
 GLOBALS.PERMISSIIONS.SEE_ALL_OWN_INST  = "see_all_own_institution";
 GLOBALS.PERMISSIIONS.SEE_MED_RECS      = "load_medical_records";
+GLOBALS.PERMISSIIONS.SEE_ADMIN_PANEL   = "admin_dashboard";
 
 // Simple comunicating between pages. 
 GLOBALS.PAGE_COMM = {}
@@ -53,6 +54,7 @@ GLOBALS.ENDPOINTS.REPORTS.LIST = "reports/list";
 GLOBALS.ENDPOINTS.REPORTS.GET  = "reports/get";
 GLOBALS.ENDPOINTS.REPORTS.LIST_INST = "reports/list_all_own_institution";
 GLOBALS.ENDPOINTS.REPORTS.GET_INST  = "reports/get_own_institution";
+GLOBALS.ENDPOINTS.REPORTS.ALL_EVALS  = "reports/admin_evaluation_list";
 GLOBALS.ENDPOINTS.SUBJECT = {}
 GLOBALS.ENDPOINTS.SUBJECT.LIST = "subjects/list";
 GLOBALS.ENDPOINTS.SUBJECT.LIST_INST = "subjects/list_all_own_institution";
@@ -84,6 +86,7 @@ GLOBALS.HTML.MAIN.CONTENTS = "main_contents";
 GLOBALS.HTML.MAIN.TABLE    = "main_table";
 GLOBALS.HTML.MAIN.TRAIL    = "main_trail";
 GLOBALS.HTML.MEDREC_SIDE_MENU = "side_bar_medrecs";
+GLOBALS.HTML.ADMIN_PANEL   = "admin_dashboard_panel";
 
 // The Routing Constants.
 GLOBALS.ROUTING = {}
@@ -97,6 +100,7 @@ GLOBALS.ROUTING.PAGES.REPORTS      = "reports";
 GLOBALS.ROUTING.PAGES.MEDRECS      = "medrecs";
 GLOBALS.ROUTING.PAGES.USER_ACCOUNT = "myaccount";
 GLOBALS.ROUTING.PAGES.MEDRECEDIT   = "medrecedit";
+GLOBALS.ROUTING.PAGES.ADMINEVAL    = "admineval";
 
 // Directory Map For Report Resources.
 GLOBALS.REPRESMAP = {}

@@ -80,8 +80,14 @@ API = {
      xhr.send(to_send);
   },
 
+
+  listAllEvaluations: function(callback){
+     var endopoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
+     GLOBALS.ENDPOINTS.REPORTS.ALL_EVALS + "/0"; // The identifier here, is ignored. 
+     API.APICall(endopoint,callback);
+  },
+
   listInstitutionsForUser: function(callback){
-  
      var endopoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
      GLOBALS.ENDPOINTS.INSTITUTION.LIST + "/" + sessionStorage.getItem(GLOBALS.SESSION_KEYS.USER_ID);
      API.APICall(endopoint,callback);

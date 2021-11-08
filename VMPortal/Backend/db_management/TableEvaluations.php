@@ -166,6 +166,28 @@ class TableEvaluations extends TableBaseClass {
       return $this->simpleSelect($columns_to_get,$select);
    }
 
+   function listAllEvaluations(){
+
+      $columns_to_get = [
+         self::COL_PORTAL_USER,
+         self::COL_INSTITUTION_ID,
+         self::COL_INSTITUTION_INSTANCE,
+         self::COL_FILE_LINK,
+         self::COL_EVALUATOR_NAME,
+         self::COL_EVALUATOR_LASTNAME,
+         self::COL_SUBJECT_ID,
+         self::COL_STUDY_TYPE,
+         self::COL_PROCESSING_DATE
+      ];
+
+      $select = new SelectOperation();
+      $select->setExtra(SelectExtras::ORDER,self::COL_PROCESSING_DATE);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
+
+      return $this->simpleSelect($columns_to_get,$select);
+
+   }
+
 }
 
 ?>

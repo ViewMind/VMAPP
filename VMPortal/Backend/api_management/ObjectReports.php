@@ -12,6 +12,7 @@ include_once (__DIR__ . "/../data_processing/RProcessing.php");
 include_once (__DIR__ . "/../db_management/TableEvaluations.php");
 include_once (__DIR__ . "/../db_management/TableSubject.php");
 include_once (__DIR__ . "/../db_management/TableInstitutionUsers.php");
+include_once (__DIR__ . "/../db_management/TableInstitution.php");
 
 
 class ObjectReports extends ObjectBaseClass
@@ -382,6 +383,54 @@ class ObjectReports extends ObjectBaseClass
 
    function get($report_id,$parameters){
       return $this->getReport($report_id,$parameters,true);
+   }
+
+   function admin_evaluation_list($identifier,$parameters){
+
+      $tev = new TableEvaluations($this->con_main);
+      $tpp = new TablePortalUsers($this->con_secure);
+      $ti  = new TableInstitution($this->con_main);
+      $ts  = new TableSubject($this->con_secure);
+
+      $ans = $tev->listAllEvaluations();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting the evaluation list " . $tev->getError();
+         $this->returnable_error = "Internal database Error";
+         return false;
+      }      
+      $ret["evaluations"]  = $ans;
+      
+      $ans = $tpp->getPPNameMap();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting the portal user name map " . $tpp->getError();
+         $this->returnable_error = "Internal database Error";
+         return false;
+      }
+      $ret["portal_users"] = $ans;
+
+
+      $ans = $ti->getInstitutionNameMap();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting the institution name map " . $ti->getError();
+         $this->returnable_error = "Internal database Error";
+         return false;
+      }
+      $ret["institutions"] = $ans;
+
+      $ans = $ts->getSubjectNameMap();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting the subject name map " . $ts->getError();
+         $this->returnable_error = "Internal database Error";
+         return false;
+      }
+      $ret["subjects"] = $ans;
+      
+      return $ret;
+
    }
 
    function get_own_institution($report_id,$parameters){

@@ -95,6 +95,7 @@
    abstract class FrontEndPermissions extends TypedString {
       const SEE_ALL_OWN_INSTITUTION = "see_all_own_institution";
       const LOAD_MEDICAL_RECORDS    = "load_medical_records";
+      const ADMIN_DASHBOARD         = "admin_dashboard";
    }
 
    abstract class URLParameterNames extends TypedString {
@@ -139,6 +140,7 @@
       const GET_OWN_INSTITUTION    = "get_own_institution";
       const REPORTLIST             = "reportlist";
       const INST_PDF               = "institutionPDF";
+      const ADMIN_LIST             = "admin_evaluation_list";
    }
 
    abstract class SubjectOperations extends TypedString {

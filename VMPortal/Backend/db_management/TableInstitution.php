@@ -50,6 +50,18 @@ class TableInstitution extends TableBaseClass {
 
    }
 
+   function getInstitutionNameMap(){
+      $cols_to_get = [self::COL_KEYID, self::COL_INSTITUTION_NAME];
+      $select = new SelectOperation();
+      $ans = $this->simpleSelect($cols_to_get,$select);
+      if ($ans === false) return false;
+      $ret = array();
+      foreach ($ans as $row){
+         $ret[$row[self::COL_KEYID]] = $row[self::COL_INSTITUTION_NAME];
+      }
+      return $ret;
+   }
+
 }
 
 ?>

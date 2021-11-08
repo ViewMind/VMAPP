@@ -6,14 +6,32 @@ include_once ("../db_management/TablePortalUsers.php");
 
 /////////////////////////////////////////////////////// INPUTS //////////////////////////////////////////////////
 
-$emails = ["ariel.arelovich@viewmind.ai","gerardo.fernandez@viewmind.ai"];
+$emails = ["ariel.arelovich@viewmind.ai"];
 
 //$action = "standard";
 $action = "admin";
 //$action = "custom";
 //$action = "add_medrec";
+$action = "add_control_admin";
 
 $permissions = array();
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function mergePermissionArrays($permissions, $to_add){
+   foreach ($to_add as $object => $operations){
+      if (!array_key_exists($object,$permissions)){
+         $permissions[$object] = array();
+      }
+
+      foreach ($operations as $operation){
+         $permissions[$object][] = $operation;
+      }
+
+      $permissions[$object] = array_unique($permissions[$object]);
+
+   }
+   return $permissions;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -53,6 +71,26 @@ else if ($action == "add_medrec"){
          exit();
       }   
    }
+}
+else if ($action == "add_control_admin"){
+   echo "Adding master admin to each user's permissions\n";
+   $ans = $table->getPermissionsForEmailList($emails);
+   if ($ans === false){
+      echo "Failed getting permissions list: " . $table->getError() . "\n";
+      exit();
+   }
+   foreach ($ans as $row){
+      $permissions = json_decode($row[TablePortalUsers::COL_PERMISSIONS],true);
+      $to_add = TablePortalUsers::getMasterAdminPermissions();
+      $permissions = mergePermissionArrays($permissions,$to_add);
+
+      $temp[] = $row[TablePortalUsers::COL_EMAIL];
+      $ans = $table->setPermissionsToUserList($temp,$permissions);
+      if ($ans === false){
+         echo "Failed setting permissions list to user " . $temp[0] . ". Reason:  " . $table->getError() . "\n";
+         exit();
+      }   
+   }   
 }
 else {
    echo "Setting Custom Permissions\n";

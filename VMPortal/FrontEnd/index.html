@@ -32,6 +32,7 @@
         <script src="js/view_account.js"></script>
         <script src="js/view_medrecs.js"></script>
         <script src="js/view_medrec_edit.js"></script>
+        <script src="js/view_admin_list.js"></script>
 
     </head>
     <body class="sb-nav-fixed">
@@ -109,6 +110,18 @@
                                     <a class="nav-link" href="">Institution 2</a>
                                 </nav>
                             </div>
+
+                            <a class="nav-link collapsed" id="admin_dashboard_panel" style="display: none;" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdminPanel" aria-expanded="false" aria-controls="collapseAdminPanel">
+                                <div class="sb-nav-link-icon"><i class="fas fa-university"></i></div>
+                                Admin Panel
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseAdminPanel" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav" id = "side_bar_institution_list">
+                                    <a class="nav-link" href="index.html?goto=admineval">Evaluation List</a>
+                                    <!-- <a class="nav-link" href="">Institution Stats</a> -->
+                                </nav>
+                            </div>                            
 
                         </div>
                     </div>

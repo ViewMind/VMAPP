@@ -35,6 +35,10 @@
 
          FrontEndPermissions::LOAD_MEDICAL_RECORDS => [
             APIEndpoints::MEDICAL_RECORDS => [MedRecordsOperations::GET, MedRecordsOperations::LIST, MedRecordsOperations::MODIFY]
+         ],
+
+         FrontEndPermissions::ADMIN_DASHBOARD => [
+            APIEndpoints::REPORTS => [ReportOperations::ADMIN_LIST]
          ]
 
       ];
