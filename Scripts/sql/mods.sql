@@ -52,3 +52,14 @@ CREATE TABLE medical_records (
    last_update            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    valid                  TINYINT DEFAULT 0   
 );
+
+--------------------------------- 17/11/2021 ---------------------------------
+--vm_main
+CREATE TABLE rate_limiting (
+   keyid                  INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+   ip                     VARCHAR(30),
+   rate_limit             INT DEFAULT 0,
+   requests               INT DEFAULT 0,
+   time_frame_start       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   UNIQUE(ip)
+);

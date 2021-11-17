@@ -27,7 +27,7 @@
             ],
             "color_code": {
                 "explanations": {
-                    "red": "Severe impairment\nand\/or pathological",
+                    "red": "Severe and\/or\npathological impairment",
                     "green": "No relevant problems\nwere encountered",
                     "yellow": "Mild impairment, not\nnecessarily pathological"
                 },
@@ -92,7 +92,7 @@
                 }
             },
             "overall_performance": {
-                "text": "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex \u2013 Overall Performance Graph Interpretation.",
+                "text": "The following graph displays the general cognitive performance of the patient.",
                 "vertex": {
                     "visual_search": "Visual Search",
                     "gaze_dur": "Visual Working Memory",
@@ -103,7 +103,7 @@
                 }
             },
             "gaze_duration": {
-                "text": "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages. For more\ninformation on how to interpret this graph, please refer to the ANNEX \u2013 Visual Working Memory\n Graph Interpretation.",
+                "text": "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages.",
                 "ylabel": "Visual Working Memory",
                 "graph_title": [
                     "PATIENT",
@@ -119,7 +119,7 @@
                 ]
             },
             "visual_scanning": {
-                "text": "The Visual Scanning graph displays the patient\u2019s visual scanning capabilities while looking for targets,\nin both Encoding and Recognition stages. For more information on how to interpret this graph,\nplease refer to the ANNEX \u2013 Visual Scanning Interpretation.",
+                "text": "The Visual Scanning graph displays the patient\u2019s visual scanning capabilities while looking for targets,\nin both Encoding and Recognition stages.",
                 "ylabel": "Visual Scanning",
                 "graph_title": [
                     "PATIENT",
@@ -135,7 +135,7 @@
                 ]
             },
             "fixation_duration": {
-                "text": "The Fixation Duration graph displays the average amount of time [ms] of the fixations performed by\nthe patient, in both Encoding and Recognition stages. For more information on how to interpret this\ngraph, please refer to the ANNEX \u2013 Fixation Duration Interpretation.",
+                "text": "The Fixation Duration graph displays the average amount of time [ms] of the fixations performed by\nthe patient, in both Encoding and Recognition stages.",
                 "ylabel": "Fixation Duration",
                 "graph_title": [
                     "PATIENT",
@@ -151,8 +151,8 @@
                 ]
             },
             "number_of_fixations": {
-                "text": "The Number of Fixations graph displays the number of fixations performed by the patient, in both\nEncoding and Recognition stages. For more information on how to interpret this graph, please refer\nto the ANNEX \u2013 Number of Fixations Interpretation.",
-                "ylabel": "Numbe of Fixations",
+                "text": "The Number of Fixations graph displays the number of fixations performed by the patient, in both\nEncoding and Recognition stages.",
+                "ylabel": "Number of Fixations",
                 "graph_title": [
                     "PATIENT",
                     "COGNITIVELY HEALTHY CONTROL"
@@ -214,7 +214,7 @@
             ],
             "color_code": {
                 "explanations": {
-                    "red": "Severe impairment\nand\/or pathological",
+                    "red": "Severe and\/or\npathological impairment",
                     "green": "No relevant problems\nwere encountered",
                     "yellow": "Mild impairment, not\nnecessarily pathological"
                 },
@@ -291,7 +291,7 @@
                 }
             },
             "gaze_duration": {
-                "text": "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages.",
+                "text": "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial.",
                 "ylabel": "Visual Working Memory",
                 "xlabel": [
                     "CONTROL",
@@ -303,7 +303,7 @@
                 ]
             },
             "study_duration": {
-                "text": "The Study Duration graph displays the average amount of time [ms] needed by the patient complete\nthe whole study, in both Encoding and Recognition stages.",
+                "text": "The Study Duration graph displays the average amount of time [ms] needed by the patient complete\nthe whole study.",
                 "ylabel": "Study Duration",
                 "xlabel": [
                     "CONTROL",
@@ -315,7 +315,7 @@
                 ]
             },
             "saccadic_behaviour": {
-                "text": "The Saccadic Behavior graph displays the visual scanning capabilities while looking for targets, in\nboth Encoding and Recognition stages.",
+                "text": "The Saccadic Behavior graph displays the visual scanning capabilities while looking for targets.",
                 "ylabel": "Saccadic Behaviour",
                 "xlabel": [
                     "CONTROL",
@@ -327,7 +327,7 @@
                 ]
             },
             "fixation_duration": {
-                "text": "The Fixation Duration graph displays the time for extracting relevant information in just once fixation,\nin both Encoding and Recognition stages.",
+                "text": "The Fixation Duration graph displays the time for extracting relevant information in just one fixation",
                 "ylabel": "Fixation Duration",
                 "xlabel": [
                     "CONTROL",
@@ -364,10 +364,10 @@
             ],
             "color_code": {
                 "explanations": {
-                    "red": "Severe impairment\nand\/or pathological",
+                    "red": "Severe and\/or\npathological impairment",
                     "green": "No relevant problems\nwere encountered",
                     "yellow": "Mild impairment, not\nnecessarily pathological",
-                    "blue": "Above avegerage\nPerformance"
+                    "blue": "Above average\nperformance"
                 },
                 "title": "For each cognitive function analyzed, the results are indicated by the following color coding:"
             },
@@ -424,7 +424,7 @@
                 }
             },
             "fixation_plotting": {
-                "text": "Fixation Plotting Text",
+                "text": "",
                 "title_left": "ENCODING",
                 "title_right": "RECOGNITION",
                 "row_1": "Trial 14",
@@ -464,6 +464,471 @@
                 "NBack RT": "NBack RT",
                 "NBack VS": "NBack RT For Training",
                 "Reading": "Reading"
+            }
+        }
+    },
+    "es": {
+        "binding": {
+            "page_titles": [
+                [
+                    "EVALUACI\u00d3N: TAREA DE COLORES - 2 OBJECTIVOS"
+                ],
+                [
+                    "EVALUACI\u00d3N: TAREA DE COLORES - 3 OBJECTIVOS"
+                ],
+                [
+                    "DESEMPE\u00d1O COGNITIVO Y \u00c1REAS DEL CEREBRO RELACIONADAS",
+                    "DESEMPE\u00d1O GENERAL"
+                ],
+                [
+                    "MEMORIA DE TRABAJO VISUAL ",
+                    "EXPLORACI\u00d3N VISUAL"
+                ],
+                [
+                    "DURACI\u00d3N DE FIJACIONES",
+                    "N\u00daMERO DE FIJACIONES"
+                ],
+                [
+                    "GR\u00c1FICO DE FIJACIONES",
+                    "GR\u00c1FICO DE FIJACIONES COGNITIVAMENTE SALUDABLE"
+                ]
+            ],
+            "color_code": {
+                "explanations": {
+                    "red": "Discapacidad severa\ny\/o patol\u00f3gica",
+                    "green": "No se encontraron\nproblemas relevantes",
+                    "yellow": "Discapacidad leve, no\nnecesariamente patol\u00f3gica"
+                },
+                "title": "Para cada funci\u00f3n cognitiva analizada, los resultados son \u00edndicados con el siguiente c\u00f3digo de colores:"
+            },
+            "visual_search": {
+                "title": "B\u00daSQUEDA VISUAL",
+                "range_text": "Valor normal por debajo de 3.5"
+            },
+            "gaze_dur": {
+                "title": "MEMORIA DE TRABAJO VISUAL",
+                "range_text": "Valor normal por encima de 800"
+            },
+            "int_mem_perf": {
+                "title": "DESPE\u00d1O DE MEMORIA INTEGRADORA",
+                "range_text": "Valor normal por encima de 68"
+            },
+            "assoc_mem_perf": {
+                "title": "DESEMPE\u00d1O DE MEMORIA ASOCIATIVA",
+                "range_text": "Valor normal por encima de 67"
+            },
+            "exec_functions": {
+                "title": "FUNCIONES EJECUTIVAS",
+                "range_text_3T": "Valor normal por debajo de 16",
+                "range_text_2T": "Valor normal por debajo de 11"
+            },
+            "parahipocampal_region": {
+                "title": "PRESERVACI\u00d3N DE LA REGI\u00d3N PARAHIPOCAMPAL",
+                "range_text_3T": "Valor normal por encima de 63",
+                "range_text_2T": "Valor normal por encima de 67"
+            },
+            "affected_areas": {
+                "green": "Funciones cognitivas y \u00e1reas cerebrales preservadas:",
+                "yellow": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad leve:",
+                "red": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad severa y\/o patol\u00f3gica:",
+                "visual_search": "B\u00fasqueda Visual: Ganglia Basal y Col\u00edculo Superior",
+                "gaze_dur": "Mirada: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC), Surco Temporal\nSuperior Anterior (aSTS) ",
+                "int_mem_perf": "Funciones de Memoria Integradora:  Corteza entorrinal, corteza perirrinal",
+                "assoc_mem_perf": "Desempe\u00f1o de Memoria Asociativa: Hipocampo",
+                "exec_func": "Funciones Ejecutivos: Corteza Prefrontal",
+                "parahipocampal_region": "Regi\u00f3n parahipocampal"
+            },
+            "presumptive_diagnosis": {
+                "left_title": "Diagnosis Presuntiva",
+                "right_title": "\u00cdndice de Desempe\u00f1o de A.I.",
+                "texts_3T": {
+                    "1": "Alteraci\u00f3n Cognitiva y del Cerebro Generalizada.\nRecomendamos repetir el estudio de colores con 2 objectivos.",
+                    "2": "Alteraci\u00f3n de la Memoria Associativa y C\u00f3rtica.\nRecomendamos repetir el estudio de colores con 2 objectivos.",
+                    "3": "Enfermedad de Alzheimer probable.\nRecomendamos repetir el estudio de colores con 2 objectivos.",
+                    "4": "Enfermedad de Alzheimer probable.",
+                    "5": "Desempe\u00f1o dentro de valores normales.",
+                    "6": "Resultados inconclusos. Por favor, verifique la calidad de los datos\nobtenidos. Recomendamos repetir el estudio.",
+                    "7": "Resultados inconclusos. Recomendamos repetir el estudio."
+                },
+                "texts_2T": {
+                    "1": "Alteraci\u00f3n Cognitiva y del Cerebro Generalizada.",
+                    "2": "Alteraci\u00f3n de la Memoria Associativa y C\u00f3rtica.\nRecomendamos repetir el estudio de colores con 2 objectivos y agregar el estudio Go No-Go.",
+                    "3": "Enfermedad de Alzheimer probable.\nRecomendamos realizar el estudio Go No-Go.",
+                    "4": "Enfermedad de Alzheimer probable.",
+                    "5": "Desempe\u00f1o dentro de valores normales.",
+                    "6": "Resultados inconclusos. Por favor, verifique la calidad de los datos\nobtenidos. Recomendamos repetir el estudio."
+                }
+            },
+            "overall_performance": {
+                "text": "El siguiente gr\u00e1fico muestra el desempe\u00f1o cognitivo general del paciente.",
+                "vertex": {
+                    "visual_search": "B\u00fasqueda Visual",
+                    "gaze_dur": "Memoria de Trabajo\nVisual",
+                    "int_mem_perf": "Memoria\nde Integraci\u00f3n",
+                    "assoc_mem_perf": "Memoria\nAsociativa",
+                    "exec_functions": "Funciones\nEjecutivas",
+                    "parahipocampal_region": "Regi\u00f3n\nParahipocampal"
+                }
+            },
+            "gaze_duration": {
+                "text": "El Gr\u00e1fico de Memoria de Trabajo Visual muestra el tiempo promedio [ms] requerido por un paciente\npara extraer informaci\u00f3n de una im\u00e1gen durante una prueba, tanto en la fase\nde Codificaci\u00f3n como en la de Reconocimiento",
+                "ylabel": "Memoria de Trabajo Visual",
+                "graph_title": [
+                    "PACIENTE",
+                    "CONTROL COGNITIVAMENTE SALUDABLE"
+                ],
+                "xlabel": [
+                    "CODIFICACI\u00d3N",
+                    "RECONOCIMIENTO"
+                ],
+                "legend": [
+                    "Memoria de Integraci\u00f3n",
+                    "Memoria Asociativa"
+                ]
+            },
+            "visual_scanning": {
+                "text": "El Gr\u00e1fico de Exploraci\u00f3n Visual, muestra las capacidades de exploraci\u00f3n visual del paciente mientras\nbusca a los objetivos tanto en la fase de Codificaci\u00f3n como en la de Reconocimiento",
+                "ylabel": "Exploraci\u00f3n Visual",
+                "graph_title": [
+                    "PACIENTE",
+                    "CONTROL COGNITIVAMENTE SALUDABLE"
+                ],
+                "xlabel": [
+                    "CODIFICACI\u00d3N",
+                    "RECONOCIMIENTO"
+                ],
+                "legend": [
+                    "Memoria de Integraci\u00f3n",
+                    "Memoria Asociativa"
+                ]
+            },
+            "fixation_duration": {
+                "text": "El Gr\u00e1fico de Duraci\u00f3n de Fijaciones muestra la duraci\u00f3n promedio de las fijaciones realizadas\npor el paciente tanto en la fase de Codificaci\u00f3n como en la de Reconocimiento",
+                "ylabel": "Duraci\u00f3n de las Fijaciones",
+                "graph_title": [
+                    "PACIENTE",
+                    "CONTROL COGNITIVAMENTE SALUDABLE"
+                ],
+                "xlabel": [
+                    "CODIFICACI\u00d3N",
+                    "RECONOCIMIENTO"
+                ],
+                "legend": [
+                    "Memoria de Integraci\u00f3n",
+                    "Memoria Asociativa"
+                ]
+            },
+            "number_of_fixations": {
+                "text": "El grafico del N\u00famero de Fijaciones muestra la cantidad de fijaciones realizadas por el paciente\ntanto en la fase de Codificaci\u00f3n como en la de Reconocimiento",
+                "ylabel": "N\u00famero de Fijaciones",
+                "graph_title": [
+                    "PACIENTE",
+                    "CONTROL COGNITIVAMENTE SALUDABLE"
+                ],
+                "xlabel": [
+                    "CODIFICACI\u00d3N",
+                    "RECONOCIMIENTO"
+                ],
+                "legend": [
+                    "Memoria de Integraci\u00f3n",
+                    "Memoria Asociativa"
+                ]
+            },
+            "fixation_plotting": {
+                "text": "El gr\u00e1fico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20y 31 en\nCodificaci\u00f3n (izquierda) y Reconocimiento (derecha), de la Tarea de Combinaci\u00f3n de Colores",
+                "title_left": "CODIFICACI\u00d3N",
+                "title_right": "RECONOCIMIENTO",
+                "row_1": "Prueba 10",
+                "row_2": "Prueba 20",
+                "row_3": "Prueba 32",
+                "control": {
+                    "text": "El gr\u00e1fico muestra las fijaciones realizadas por una persona sana en las fases de Codificaci\u00f3n (Izquierda)\ny Reconocimiento (Derecha), en la Tarea de Combinaci\u00f3n de Colores",
+                    "label": "Ejemplo"
+                }
+            }
+        },
+        "common": {
+            "doctor": "Doctor",
+            "evaluator": "Evaluador",
+            "date": "Fecha",
+            "patient": "Paciente",
+            "age": "Edad",
+            "motto": "Medida de Desempe\u00f1o Cognitivo y \u00c1reas del Cerebro Relacionadas\nAtrav\u00e9s del Seguimiento Ocular",
+            "range_text_sd": "DE"
+        },
+        "gonogo": {
+            "page_titles": [
+                [
+                    "EVALUACI\u00d3N: PRUEBA GO\/NO GO"
+                ],
+                [
+                    "DESEMPE\u00d1O COGNITIVO Y \u00c1REAS DEL CEREBRO RELACIONADAS",
+                    "DESEMPE\u00d1O GENERAL"
+                ],
+                [
+                    "MEMORIA DE TRABAJO VISUAL "
+                ],
+                [
+                    "COMPORTAMIENTO SAC\u00c1DICO",
+                    "DURACI\u00d3N DE FIJACIONES"
+                ],
+                [
+                    "GR\u00c1FICO DE FIJACIONES",
+                    "CONTROL DE FIJACIONES"
+                ]
+            ],
+            "color_code": {
+                "explanations": {
+                    "red": "Discapacidad severa\ny\/o patol\u00f3gica",
+                    "green": "No se encontraron\nproblemas relevantes",
+                    "yellow": "Discapacidad leve, no\nnecesariamente patol\u00f3gica"
+                },
+                "title": "Para cada funci\u00f3n cognitiva analizada, los resultados son \u00edndicados con el siguiente c\u00f3digo de colores:"
+            },
+            "processing_speed": {
+                "title": "VELOCIDAD DE PROCESAMIENTO",
+                "range_text": "Valor normal por debajo de 1.8"
+            },
+            "processing_speed_interference": {
+                "title": "MEMORIA DE TRABAJO VISUAL - INTERFERENCIA",
+                "range_text": "Valor normal por debajo de 93"
+            },
+            "processing_speed_facilitated": {
+                "title": "MEMORIA DE TRABAJO VISUAL - FACILITADA",
+                "range_text": "Valor normal por debajo de 49"
+            },
+            "reaction_time_facilitated": {
+                "title": "TIEMPO DE REACCI\u00d3N - FACILITADO",
+                "range_text": "Valor normal por debajo de 784"
+            },
+            "reaction_time_interference": {
+                "title": "TIEMPO DE REACCI\u00d3N - INTERFERENCIA",
+                "range_text": "Valor normal por debajo de 829"
+            },
+            "executive_functions": {
+                "title": "FUNCIONES EJECUTIVAS",
+                "range_text": "Valor normal por debajo de 320"
+            },
+            "index_error_facilitated": {
+                "title": "ALTERACIONES INHIBITORIAS - FACILITADAS",
+                "range_text": "Valor normal por debajo de 15"
+            },
+            "index_error_interference": {
+                "title": "ALTERACIONES INHIBITORIAS - INTERFERENCIA",
+                "range_text": "Valor normal por debajo de 31"
+            },
+            "affected_areas": {
+                "green": "Funciones cognitivas y \u00e1reas cerebrales preservadas:",
+                "yellow": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad leve:",
+                "red": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad severa y\/o patol\u00f3gica:",
+                "processing_speed": "Velocidad de Procesamiento: L\u00f3bulo Frontal",
+                "processing_speed_interference": "Memoria de Trabajo Visual - Interferencia: Corteza prefrontal, n\u00facleo caudado",
+                "processing_speed_facilitated": "Memoria de Trabajo Visual - Facilitada: Corteza prefrontal",
+                "reaction_time_interference": "Tiempro de Reacci\u00f3n  - Interferencia: Corteza prefrontal medial (mPFC), anterior, posterior",
+                "reaction_time_facilitated": "Tiempro de Reacci\u00f3n  - Facilitado: Corteza prefrontal medial (mPFC), n\u00facleo subtal\u00e1mico",
+                "executive_functions": "Funciones Ejecutivas: Corteza Prefrontal",
+                "index_error_facilitated": "Alteraciones Inhibitorias Facilitadas: Circunvoluci\u00f3n frontal inferior derecha (rIFG)",
+                "index_error_interference": "Alteraciones Inhibitorias Interferidas: Circunvoluci\u00f3n frontal inferior caudal (cIFG)"
+            },
+            "presumptive_diagnosis": {
+                "left_title": "Diagnosis Presuntiva",
+                "right_title": "\u00cdndice de Desempe\u00f1o de A.I.",
+                "texts": {
+                    "1": "Generalized Cognitive and Brain Alteration.",
+                    "2": "Problems for controlling cognitive and motor responses.",
+                    "3": "Delay when processing information.",
+                    "4": "Problems for encoding and decoding information",
+                    "5": "Performance within normal values",
+                    "6": "Problems for focusing dynamically on a particular activity"
+                }
+            },
+            "overall_performance": {
+                "text": "El siguiente gr\u00e1fico muestra el desempe\u00f1o cognitivo general del paciente.",
+                "vertex": {
+                    "processing_speed": "Velocidad de\nProcesamiento",
+                    "processing_speed_interference": "Memoria de Trabajo\nVisual Interferida",
+                    "processing_speed_facilitated": "Memoria de Trabajo\nVisual Facilitada",
+                    "reaction_time_interference": "Tiempo de Reacci\u00f3n\nInterferencia",
+                    "reaction_time_facilitated": "Tiempo de Reacci\u00f3n\nFacilitado",
+                    "executive_functions": "Funciones\nEjecutivas",
+                    "index_error_facilitated": "Alteraciones Inhibitorias\nFacilitadas",
+                    "index_error_interference": "Alteraciones Inhibitorias\nInterferidas"
+                }
+            },
+            "gaze_duration": {
+                "text": "El Gr\u00e1fico de Memoria de Trabajo Visual muestra el tiempo promedio [ms] requerido por el paciente para\nextraeer informaci\u00f3n de la imagen durante una prueba",
+                "ylabel": "Memoria de Trabajo Visual",
+                "xlabel": [
+                    "CONTROL",
+                    "PACIENTE"
+                ],
+                "legend": [
+                    "Tarea Facilitada",
+                    "Tarea Inhibitoria"
+                ]
+            },
+            "study_duration": {
+                "text": "The Study Duration graph displays the average amount of time [ms] needed by the patient complete\nthe whole study, in both Encoding and Recognition stages.",
+                "ylabel": "Duraci\u00f3n del Estudio",
+                "xlabel": [
+                    "CONTROL",
+                    "PACIENTE"
+                ],
+                "legend": [
+                    "Tarea Facilitada",
+                    "Tarea Inhibitoria"
+                ]
+            },
+            "saccadic_behaviour": {
+                "text": "El Gr\u00e1fico de Comportamiento Sac\u00e1dico muestra las capacidades de exploraci\u00f3n visual mientras se\nbuscan objectivos.",
+                "ylabel": "Comportami\u00e9nto Sac\u00e1dico",
+                "xlabel": [
+                    "CONTROL",
+                    "PACIENTE"
+                ],
+                "legend": [
+                    "Tarea Facilitada",
+                    "Tarea Inhibitoria"
+                ]
+            },
+            "fixation_duration": {
+                "text": "El Gr\u00e1fico de Duraci\u00f3n de Fijaciones muestra el tiempo requerido para extraer informaci\u00f3n relevante\ndurante una fijaci\u00f3n",
+                "ylabel": "Duraci\u00f3n de Fijaciones",
+                "xlabel": [
+                    "CONTROL",
+                    "PACIENTE"
+                ],
+                "legend": [
+                    "Tarea Facilitada",
+                    "Tarea Inhibitoria"
+                ]
+            },
+            "fixation_plotting": {
+                "text": "Los siguientes gr\u00e1ficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control\ncognitivamente saludable (derecha) durante algunas pruebas.Las tareas con flecha verde son las\nfacilitadas miestras que aquellas con flecha roja son con interferencia.",
+                "title_left": "PACIENTE",
+                "title_right": "CONTROL",
+                "row_1": "Prueba 10",
+                "row_2": "Prueba 25",
+                "row_3": "Prueba 40",
+                "row_4": "Prueba 55"
+            }
+        },
+        "nbackrt": {
+            "page_titles": [
+                [
+                    "EVALUACI\u00d3N: NBACK RT"
+                ],
+                [
+                    "DESEMPE\u00d1O COGNITIVO Y \u00c1REAS DEL CEREBRO RELACIONADAS",
+                    "DESEMPE\u00d1O GENERAL"
+                ],
+                [
+                    "GR\u00c1FICO DE FIJACIONES",
+                    "EJEMPLO DE FIJACIONES"
+                ]
+            ],
+            "color_code": {
+                "explanations": {
+                    "red": "Discapacidad severa\ny\/o patol\u00f3gica",
+                    "green": "No se encontraron\nproblemas relevantes",
+                    "yellow": "Discapacidad leve, no\nnecesariamente patol\u00f3gica",
+                    "blue": "Desempe\u00f1o por encima\ndel promedio"
+                },
+                "title": "Para cada funci\u00f3n cognitiva analizada, los resultados son \u00edndicados con el siguiente c\u00f3digo de colores:"
+            },
+            "visual_exploration_efficiency": {
+                "title": "EFICIENCIA EXPLORATORIA VISUAL",
+                "range_text": "Valores normales por encimad de  4"
+            },
+            "visual_working_memory": {
+                "title": "MEMORIA DE TRABAJO VISUAL",
+                "range_text": "Valores normales por debajo de 2400"
+            },
+            "correct_responses": {
+                "title": "RESPUESTAS CORRECTAS",
+                "range_text": "Valores normales por encimad de  60"
+            },
+            "working_memory": {
+                "title": "MEMORIA DE TRABAJO",
+                "range_text": "Valores normales por encimad de  58"
+            },
+            "inhibitory_processes": {
+                "title": "PROCESOS INHIBITORIOS",
+                "range_text": "Valores normales por debajo de 18"
+            },
+            "decoding_efficiency": {
+                "title": "EFICIENCIA DE DECODIFICACI\u00d3N",
+                "range_text": "Valores normales por debajo de 650"
+            },
+            "enconding_efficiency": {
+                "title": "EFICIENCIA DE CODFICACI\u00d3N",
+                "range_text": "Valores normales por debajo de 260"
+            },
+            "affected_areas": {
+                "green": "Funciones cognitivas y \u00e1reas cerebrales preservadas:",
+                "yellow": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad leve:",
+                "red": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad severa y\/o patol\u00f3gica:",
+                "visual_exploration_efficiency": "Eficiencia Exploratoria Visual: Ganglios basales (BG) y col\u00edculo superior (SC)",
+                "visual_working_memory": "Memoria de Trabajo Visual: Corteza prefrontal medial (mPFC)",
+                "correct_responses": "Respuestas Correctas: Corteza prefrontal, corteza cingulada anterior (ACC)",
+                "working_memory": "Memoria de Trabajo: Regiones frontales y parietales",
+                "inhibitory_processes": "Procesos Inhibitorios: Circunvoluci\u00f3n frontal inferior caudal (cIFG)",
+                "decoding_efficiency": "Eficiencia de Decodificaci\u00f3n: N\u00facleo geniculado lateral (lGN)",
+                "enconding_efficiency": "Eficiencia de Encodificaci\u00f3n: N\u00facleo lateral posterior (LP)"
+            },
+            "overall_performance": {
+                "text": "Desempe\u00f1o General",
+                "vertex": {
+                    "visual_exploration_efficiency": "Eficiencia de Exploraci\u00f3n\nVisual",
+                    "visual_working_memory": "Memoria de Trabajo\nVisual",
+                    "correct_responses": "Respuestas\nCorrectas",
+                    "working_memory": "Memoria de\nTrabajo",
+                    "inhibitory_processes": "Procesos\nInhibitorios",
+                    "decoding_efficiency": "Eficiencia de\nDecodificaci\u00f3n",
+                    "enconding_efficiency": "Eficiencia de\nEncodificaci\u00f3n"
+                }
+            },
+            "fixation_plotting": {
+                "text": "",
+                "title_left": "CODIFICACI\u00d3N",
+                "title_right": "RECONOCIMIENTO",
+                "row_1": "Prueba 14",
+                "row_2": "Prueba 55",
+                "row_3": "Prueba 92",
+                "control": {
+                    "text": "Ejemplo de Fijaciones",
+                    "label": "Control"
+                }
+            }
+        },
+        "qc": {
+            "title": "AN\u00c1LISIS DE CONTROL DE CALIDAD",
+            "data_points": {
+                "title": "PUNTOS DE DATOS (<<Y>>)",
+                "subtitle": "Valor aceptable por encima de <<X>>"
+            },
+            "fixations": {
+                "title": "FIJACIONES (<<Y>>)",
+                "subtitle": "Valor aceptable por encima de <<X>>"
+            },
+            "sample_rate": {
+                "title": "FREQUENCIA DE SAMPLEO (<<Y>>)",
+                "subtitle": "Valor aceptable por encima de <<X>>"
+            },
+            "results": {
+                "title": "RESULTADOS DE CONTROL DE CALIDAD",
+                "good": "Los datos son v\u00e1lidos para el an\u00e1lisis.",
+                "bad": "Los datos no se encuentran dentro de los m\u00e1rgenes de calidad esperados. Recomendamos repetir el estudio"
+            },
+            "comments": "COMENTARIOS DEL EVALUADOR",
+            "study_name": {
+                "Binding BC": "Combinaci\u00f3n de Colores",
+                "Binding UC": "Nuevos Colores",
+                "Go No-Go": "Go No-Go",
+                "NBack MS": "NBack Tipo MS",
+                "NBack RT": "NBack Tipo RT",
+                "NBack VS": "NBack Tipo RT Para Entrenamiento",
+                "Reading": "Lectura"
             }
         }
     }

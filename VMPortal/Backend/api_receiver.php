@@ -32,16 +32,47 @@ include_once ("api_management/ObjectInstitution.php");
 include_once ("api_management/ObjectReports.php");
 include_once ("api_management/ObjectSubjects.php");
 include_once ("api_management/ObjectMedicalRecord.php");
+include_once ("api_management/RateLimiter.php");
+
+/////////////////////////////// GETTING THE RIGHT IP ///////////////////////////
+// Getting all headers. 
+$headers = getallheaders();
+
+$REQUEST_IP = $_SERVER['REMOTE_ADDR'];
+$xforward_header = "X-Forwarded-For";
+if (array_key_exists($xforward_header,$headers)){
+   //error_log("X Forwarded Header Exists and it's value is " . $headers["X-Forwarded-For"]);
+   $REQUEST_IP = $headers["X-Forwarded-For"];
+}
+else{
+   $xforward_header = strtolower($xforward_header);
+   if (array_key_exists($xforward_header, $headers)) {
+       $REQUEST_IP = $headers["X-Forwarded-For"];
+   }
+}
+
 
 //////////////////////////////////// LOG SETUP ////////////////////////////////
 $auth_log = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::AUTH_LOG_LOCATION]);
-$auth_log->setSource($_SERVER['REMOTE_ADDR']);
+$auth_log->setSource($REQUEST_IP);
 
 $route_log = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::ROUTING_LOG_LOCATION]);
-$route_log->setSource($_SERVER['REMOTE_ADDR']);
+$route_log->setSource($REQUEST_IP);
 
 $base_log = new LogManager(CONFIG[GlobalConfigLogs::GROUP_NAME][GlobalConfigLogs::BASE_STD_LOG]);
-$base_log->setSource($_SERVER['REMOTE_ADDR']);
+$base_log->setSource($REQUEST_IP);
+
+//////////////////////////////////// RATE LIMITING CHECK ////////////////////////////////
+$rate_limiter = new RateLimiter();
+$ans = $rate_limiter->allowRequest($REQUEST_IP);
+if ($ans === false){
+   $route_log->logError($rate_limiter->getError());
+   $res[ResponseFields::MESSAGE] = "Too many requests";
+   $res[ResponseFields::HTTP_CODE] = 429;
+   http_response_code($code);
+   echo json_encode($res);
+   return;  
+}
 
 //////////////////////////////////// TOKENIZING THE ROUTE ////////////////////////////////
 $route_parser = new RouteParser();
@@ -88,8 +119,6 @@ if (count($route_parts) == 3){
 }
 
 //////////////////////////////////// AUTENTICATION OF REQUEST ////////////////////////////////
-// Getting all headers. 
-$headers = getallheaders();
 
 // Generating the message in case it needs to be signed. 
 $raw_data = file_get_contents("php://input");
@@ -105,6 +134,7 @@ if (!$auth_mng->authenticate($message)){
       $auth_log->logError($auth_mng->getError());
    }
    http_response_code($auth_mng->getSuggestedHTTPCode());
+   error_log(json_encode($res));
    echo json_encode($res);
    return;
 }

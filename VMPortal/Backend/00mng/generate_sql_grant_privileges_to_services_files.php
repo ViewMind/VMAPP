@@ -12,6 +12,7 @@
   include ("../db_management/TableUpdates.php");
   include ("../db_management/TableAppPasswordRecovery.php");
   include ("../db_management/TableMedicalRecords.php");
+  include ("../db_management/TableRateLimiting.php");
 
   // Setting the pointer location for db conf
   DBCon::setPointerLocation("configs");  
@@ -62,6 +63,7 @@
   $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TableUpdates::IN_DB][TableUpdates::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TableAppPasswordRecovery::IN_DB][TableAppPasswordRecovery::TABLE_NAME]         = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableRateLimiting::IN_DB][TableRateLimiting::TABLE_NAME]                       = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $services[] = $srv;
   
   // Partner privileges. 
