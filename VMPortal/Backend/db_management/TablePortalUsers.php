@@ -49,7 +49,7 @@ class TablePortalUsers extends TableBaseClass {
       APIEndpoints::INSTITUTION  => [ InstitutionOperations::LIST ],
       APIEndpoints::REPORTS      => [ ReportOperations::LIST, ReportOperations::GET ],
       APIEndpoints::SUBJECTS     => [ SubjectOperations::LIST ],
-      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN ]
+      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN, PortalUserOperations::LOGOUT]
    ];
 
    // Administrative Portal User Permissions
@@ -57,7 +57,7 @@ class TablePortalUsers extends TableBaseClass {
       APIEndpoints::INSTITUTION  => [ InstitutionOperations::LIST ],
       APIEndpoints::REPORTS      => [ ReportOperations::LIST_ALL_OWN_INST, ReportOperations::GET_OWN_INSTITUTION ],
       APIEndpoints::SUBJECTS     => [ SubjectOperations::LIST_ALL_OWN_INST ],
-      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN ]
+      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN, PortalUserOperations::LOGOUT ]
    ];
 
    private const MED_REC_PERMISSIONS = [
@@ -265,6 +265,11 @@ class TablePortalUsers extends TableBaseClass {
 
    }
 
+   function invalidateUserToken($keyid){
+      $params[self::COL_TOKEN] = "";
+      return $this->updateOperation($params,"Auth token set",self::COL_KEYID,$keyid);
+   }
+
    function setUserPassword($user, $password){
       $params[self::COL_PASSWD] = $password;
       return $this->updateOperation($params,"Password Set",self::COL_EMAIL,$user);
@@ -364,6 +369,34 @@ class TablePortalUsers extends TableBaseClass {
    function setUsersPermission($unique_id,$permissions){
       $params[self::COL_PERMISSIONS] = $permissions;
       return $this->updateOperation($params,"Setting Portal User Permissions",self::COL_EMAIL,$unique_id);
+   }
+
+   function addPermissionsToAll($to_add){
+      $select = new SelectOperation();
+      $cols_to_get = [self::COL_KEYID, self::COL_PERMISSIONS];
+      $rows = $this->simpleSelect($cols_to_get,$select);
+      if ($rows === false) return false;
+
+      $update = array();
+
+      foreach ($rows as $row){
+         $keyid = $row[self::COL_KEYID];
+         $permissions = json_decode($row[self::COL_PERMISSIONS],true);
+         //var_dump($to_add);
+         foreach ($to_add as $object => $operations){
+            if (!array_key_exists($object,$permissions)){
+               $permissions[$object] = array();
+            }
+            //echo "BEFORE " . implode(",",$permissions[$object]) ."\n";
+            $permissions[$object] = array_merge($permissions[$object],$operations);
+            //echo "AFTER " . implode(",",$permissions[$object]) ."\n";
+            $permissions[$object] = array_unique($permissions[$object]);
+         }
+         $update[$keyid] = json_encode($permissions);
+      }
+
+      return $this->batchUpdate($update,self::COL_KEYID,self::COL_PERMISSIONS);
+
    }
 
 }

@@ -80,6 +80,10 @@ API = {
      xhr.send(to_send);
   },
 
+  logout: function(callback){
+     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" + GLOBALS.ENDPOINTS.PORTAL_USER.LOGOUT + "/0"// the identifier here, is ignored.
+     API.APICall(endpoint,callback);
+  },
 
   listAllEvaluations: function(callback){
      var endopoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +

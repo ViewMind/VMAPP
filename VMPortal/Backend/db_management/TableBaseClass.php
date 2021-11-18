@@ -275,7 +275,7 @@ class TableBaseClass {
          // This means that we need to update several rows. 
          $list_to_update = array();
          $counter = 0;
-         foreach ($value_on_update as $value){
+         foreach ($value_on_update as $value){            
             $name = $col_on_update . "_" . $counter;
             $list_to_update[] = ":$name";
             $params[$name] = $value;
@@ -305,7 +305,7 @@ class TableBaseClass {
          $this->last_inserted[] = $this->con->lastInsertId();
       }
       catch (PDOException $e){
-         $this->error = "Insertion failure for $customized_message: " . $e->getMessage() . ". SQL: $sql";
+         $this->error = "Update failure for $customized_message: " . $e->getMessage() . ". SQL: $sql";
          //var_dump($params);
          return false;
       }      
@@ -545,6 +545,56 @@ class TableBaseClass {
          }         
 
       }
+
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////
+   /**
+    * BATCH UPDATE. Basically updates several different rows based on a simple condition.
+    */
+
+   protected function batchUpdate($update_array, $index_colum, $column_to_update){
+
+      if (!in_array($index_colum, $this->valid_columns)) {
+         $this->error = "Index column $index_colum is not a column of table " . static::class::TABLE_NAME;
+         return false;
+      }
+
+      if (!in_array($column_to_update, $this->valid_columns)) {
+         $this->error = "Column to update $column_to_update is not a column of table " . static::class::TABLE_NAME;
+         return false;
+      }
+
+
+      $sql = "UPDATE " . static::class::TABLE_NAME . " SET " . $column_to_update . " = CASE\n";
+      $bind_params = array();
+      $counter = 0;
+      foreach ($update_array as $index_value => $update_value){
+         $bind_index_name = ":$index_colum" . "_$counter";
+         $bind_value_name = ":$column_to_update" . "_$counter";
+         $bind_params[$bind_index_name] = $index_value;
+         $bind_params[$bind_value_name] = $update_value;
+         $counter++;
+         $sql = $sql . "   WHEN $index_colum = $bind_index_name THEN $bind_value_name\n";
+      }
+      $sql = $sql . "   END";
+
+      // echo "SQL for batch update\n";
+      // var_dump($sql);
+      // echo json_encode($bind_params, JSON_PRETTY_PRINT) . "\n";
+
+      try {
+         $time = microtime(true);
+         $stmt = $this->con->prepare($sql);
+         $stmt->execute($bind_params);
+         $this->time_for_last_query = (microtime(true) - $time)*1000;
+         $this->last_query = $sql;
+         return array();
+      }
+      catch (PDOException $e){
+         $this->error = "Update failure on Insert On Update Inf: " . $e->getMessage() . ". SQL: $sql";
+         return false;
+      }        
 
    }
 

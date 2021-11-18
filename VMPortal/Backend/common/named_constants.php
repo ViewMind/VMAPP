@@ -90,6 +90,7 @@
       const MODIFY_OWN              = "modify_own";
       const ENABLE                  = "enable";
       const ADD_NO_LOG_PUSERS       = "addnologpusers";
+      const LOGOUT                  = "logout";
    }
 
    abstract class FrontEndPermissions extends TypedString {

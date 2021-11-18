@@ -60,6 +60,7 @@ GLOBALS.ENDPOINTS.SUBJECT.LIST = "subjects/list";
 GLOBALS.ENDPOINTS.SUBJECT.LIST_INST = "subjects/list_all_own_institution";
 GLOBALS.ENDPOINTS.PORTAL_USER = {};
 GLOBALS.ENDPOINTS.PORTAL_USER.MODIFY_OWN = "portal_users/modify_own"
+GLOBALS.ENDPOINTS.PORTAL_USER.LOGOUT = "portal_users/logout"
 GLOBALS.ENDPOINTS.MEDRECORDS = {}
 GLOBALS.ENDPOINTS.MEDRECORDS.MODIFY = "medical_record/modify"
 GLOBALS.ENDPOINTS.MEDRECORDS.LIST = "medical_record/list"
@@ -511,6 +512,14 @@ function setUserName(){
 
 /// Simply logging out
 function logOut(){
+   API.logout("logOutReturnFunction");
+}
+
+function logOutReturnFunction (response){
+   if (response.message != "OK"){
+      ErrorDialog.open("Server Error",response.message);
+      return;
+   }
    sessionStorage.removeItem(GLOBALS.SESSION_KEYS.TOKEN);
    Token.checkLogIn();    
 }

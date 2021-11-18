@@ -9,12 +9,13 @@ include_once ("../db_management/TablePortalUsers.php");
 $emails = ["ariel.arelovich@viewmind.ai"];
 
 //$action = "standard";
-$action = "admin";
+//$action = "admin";
 //$action = "custom";
 //$action = "add_medrec";
-$action = "add_control_admin";
-
+//$action = "add_control_admin";
+$action = "add_to_all";
 $permissions = array();
+$permissions[ APIEndpoints::PORTAL_USERS] = [ PortalUserOperations::LOGOUT ];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function mergePermissionArrays($permissions, $to_add){
@@ -45,9 +46,14 @@ if ($con == NULL){
 
 $table = new TablePortalUsers($con);
 
+
 if ($action == "standard"){
    echo "Seting Standard Permissions\n";
    $ans = $table->setStandardUserPermissionsToUserList($emails);
+}
+else if ($action == "add_to_all"){
+   echo "Adding to all a set of permissions\n";
+   $ans = $table->addPermissionsToAll($permissions);
 }
 else if ($action == "admin"){
    echo "Seting Admin Permissions\n";
@@ -101,10 +107,7 @@ if ($ans === false){
    echo "Error doing the update: " . $table->getError() . "\n";
 }
 else {
-   echo "Update finished to emails\n   ";
-   echo implode("\n   ",$emails) . "\n";
+   echo "Update finished\n   ";
 }
-
-
 
 ?>
