@@ -71,16 +71,17 @@ function saveChanges(){
       }
    }
 
-
    var tomod = {};
    var nfname = document.getElementById("fname").value;
    var nlname = document.getElementById("lname").value;
    var passwd = document.getElementById("password").value;
    var cpasswd = document.getElementById("cpassword").value;
 
-   if (!checkPassword(passwd)){
-      ErrorDialog.open("Invalid Password","<p>The password must meet the following requirements<ul> <li> Between 8 and 64 caracters </li> <li> Must contains at least 1 uppercase, 1 lower case, 1 number and 1 special character </li>  <li>Must not contain the username </li> </ul></p>");
-      return;
+   if ((passwd != "") || (cpasswd != "")){
+      if (!checkPassword(passwd)){
+         ErrorDialog.open("Invalid Password","<p>The password must meet the following requirements<ul> <li> Between 8 and 64 caracters </li> <li> Must contains at least 1 uppercase, 1 lower case, 1 number and 1 special character </li>  <li>Must not contain the username </li> </ul></p>");
+         return;
+      }
    }
 
    if (nfname == ""){
