@@ -203,6 +203,24 @@ var WaitDialog = {
 
 }
 
+function noSpecialCharsInput(input){
+
+   var chars_to_check = "[&/\\#,+()$~%.'\":*?<>{}_]/";
+
+   console.log("Checking the input of " + input);
+
+   for (var i = 0; i < chars_to_check.length; i++){
+      var c = chars_to_check.charAt(i);
+      if (input.includes(c)){
+         console.log("Invalid character found: " + c);
+         return false;
+      }
+   }
+
+   return true;
+
+}
+
 /// Error dialog. Will show when an error occurs with the simplified server message. 
 var ErrorDialog  = {
 
