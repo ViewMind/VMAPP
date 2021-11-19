@@ -205,7 +205,7 @@ var WaitDialog = {
 
 function noSpecialCharsInput(input){
 
-   var chars_to_check = "[&/\\#,+()$~%.'\":*?<>{}_]/";
+   var chars_to_check = "[&/\\#,+()!$~%.'\":*?<>{}_]/";
 
    console.log("Checking the input of " + input);
 
