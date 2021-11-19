@@ -224,13 +224,13 @@
                 "title": "PROCESSING SPEED",
                 "range_text": "Normal value below 1.8"
             },
-            "processing_speed_interference": {
-                "title": "VISUAL WORKING MEMORY INTERFERENCE",
-                "range_text": "Normal value below 93"
-            },
             "processing_speed_facilitated": {
                 "title": "VISUAL WORKING MEMORY FACILITATED",
                 "range_text": "Normal value below 49"
+            },
+            "processing_speed_interference": {
+                "title": "VISUAL WORKING MEMORY INTERFERENCE",
+                "range_text": "Normal value below 93"
             },
             "reaction_time_facilitated": {
                 "title": "REACTION TIME FACILITATED",
@@ -490,7 +490,7 @@
                 ],
                 [
                     "GR\u00c1FICO DE FIJACIONES",
-                    "GR\u00c1FICO DE FIJACIONES COGNITIVAMENTE SALUDABLE"
+                    "GR\u00c1FICO DE FIJACIONES DE UN PACIENTE COGNITIVAMENTE SANO"
                 ]
             ],
             "color_code": {
@@ -532,15 +532,15 @@
                 "yellow": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad leve:",
                 "red": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad severa y\/o patol\u00f3gica:",
                 "visual_search": "B\u00fasqueda Visual: Ganglia Basal y Col\u00edculo Superior",
-                "gaze_dur": "Mirada: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC), Surco Temporal\nSuperior Anterior (aSTS) ",
-                "int_mem_perf": "Funciones de Memoria Integradora:  Corteza entorrinal, corteza perirrinal",
+                "gaze_dur": "Memoria de Trabajo Visual: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC),\nSurco Temporal, Superior Anterior (aSTS)",
+                "int_mem_perf": "Desempe\u00f1o de Memoria Integradora:  Corteza entorrinal, corteza perirrinal",
                 "assoc_mem_perf": "Desempe\u00f1o de Memoria Asociativa: Hipocampo",
                 "exec_func": "Funciones Ejecutivos: Corteza Prefrontal",
                 "parahipocampal_region": "Regi\u00f3n parahipocampal"
             },
             "presumptive_diagnosis": {
-                "left_title": "Diagnosis Presuntiva",
-                "right_title": "\u00cdndice de Desempe\u00f1o de A.I.",
+                "left_title": "Diagn\u00f3stico Presuntivo",
+                "right_title": "\u00cdndice de Desempe\u00f1o",
                 "texts_3T": {
                     "1": "Alteraci\u00f3n Cognitiva y del Cerebro Generalizada.\nRecomendamos repetir el estudio de colores con 2 objectivos.",
                     "2": "Alteraci\u00f3n de la Memoria Associativa y C\u00f3rtica.\nRecomendamos repetir el estudio de colores con 2 objectivos.",
@@ -571,11 +571,11 @@
                 }
             },
             "gaze_duration": {
-                "text": "El Gr\u00e1fico de Memoria de Trabajo Visual muestra el tiempo promedio [ms] requerido por un paciente\npara extraer informaci\u00f3n de una im\u00e1gen durante una prueba, tanto en la fase\nde Codificaci\u00f3n como en la de Reconocimiento",
+                "text": "El Gr\u00e1fico de Memoria de Trabajo Visual muestra el tiempo promedio [ms] requerido por un paciente\npara extraer informaci\u00f3n de una im\u00e1gen durante una prueba, tanto en la fase de Codificaci\u00f3n como\nen la de Reconocimiento",
                 "ylabel": "Memoria de Trabajo Visual",
                 "graph_title": [
                     "PACIENTE",
-                    "CONTROL COGNITIVAMENTE SALUDABLE"
+                    "CONTROL COGNITIVAMENTE SANO"
                 ],
                 "xlabel": [
                     "CODIFICACI\u00d3N",
@@ -591,7 +591,7 @@
                 "ylabel": "Exploraci\u00f3n Visual",
                 "graph_title": [
                     "PACIENTE",
-                    "CONTROL COGNITIVAMENTE SALUDABLE"
+                    "CONTROL COGNITIVAMENTE SANO"
                 ],
                 "xlabel": [
                     "CODIFICACI\u00d3N",
@@ -607,7 +607,7 @@
                 "ylabel": "Duraci\u00f3n de las Fijaciones",
                 "graph_title": [
                     "PACIENTE",
-                    "CONTROL COGNITIVAMENTE SALUDABLE"
+                    "CONTROL COGNITIVAMENTE SANO"
                 ],
                 "xlabel": [
                     "CODIFICACI\u00d3N",
@@ -623,7 +623,7 @@
                 "ylabel": "N\u00famero de Fijaciones",
                 "graph_title": [
                     "PACIENTE",
-                    "CONTROL COGNITIVAMENTE SALUDABLE"
+                    "CONTROL COGNITIVAMENTE SANO"
                 ],
                 "xlabel": [
                     "CODIFICACI\u00d3N",
@@ -635,7 +635,7 @@
                 ]
             },
             "fixation_plotting": {
-                "text": "El gr\u00e1fico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20y 31 en\nCodificaci\u00f3n (izquierda) y Reconocimiento (derecha), de la Tarea de Combinaci\u00f3n de Colores",
+                "text": "El gr\u00e1fico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20 y 31 en\nCodificaci\u00f3n (izquierda) y Reconocimiento (derecha), de la Tarea de Combinaci\u00f3n de Colores",
                 "title_left": "CODIFICACI\u00d3N",
                 "title_right": "RECONOCIMIENTO",
                 "row_1": "Prueba 10",
@@ -653,7 +653,7 @@
             "date": "Fecha",
             "patient": "Paciente",
             "age": "Edad",
-            "motto": "Medida de Desempe\u00f1o Cognitivo y \u00c1reas del Cerebro Relacionadas\nAtrav\u00e9s del Seguimiento Ocular",
+            "motto": "Medida de Desempe\u00f1o Cognitivo y Preservaci\u00f3n de\n\u00c1reas Cerebrales a trav\u00e9s del Seguimiento Ocular",
             "range_text_sd": "DE"
         },
         "gonogo": {
@@ -689,13 +689,13 @@
                 "title": "VELOCIDAD DE PROCESAMIENTO",
                 "range_text": "Valor normal por debajo de 1.8"
             },
-            "processing_speed_interference": {
-                "title": "MEMORIA DE TRABAJO VISUAL - INTERFERENCIA",
-                "range_text": "Valor normal por debajo de 93"
-            },
             "processing_speed_facilitated": {
                 "title": "MEMORIA DE TRABAJO VISUAL - FACILITADA",
                 "range_text": "Valor normal por debajo de 49"
+            },
+            "processing_speed_interference": {
+                "title": "MEMORIA DE TRABAJO VISUAL - INTERFERENCIA",
+                "range_text": "Valor normal por debajo de 93"
             },
             "reaction_time_facilitated": {
                 "title": "TIEMPO DE REACCI\u00d3N - FACILITADO",
@@ -728,11 +728,11 @@
                 "reaction_time_facilitated": "Tiempro de Reacci\u00f3n  - Facilitado: Corteza prefrontal medial (mPFC), n\u00facleo subtal\u00e1mico",
                 "executive_functions": "Funciones Ejecutivas: Corteza Prefrontal",
                 "index_error_facilitated": "Alteraciones Inhibitorias Facilitadas: Circunvoluci\u00f3n frontal inferior derecha (rIFG)",
-                "index_error_interference": "Alteraciones Inhibitorias Interferidas: Circunvoluci\u00f3n frontal inferior caudal (cIFG)"
+                "index_error_interference": "Alteraciones Inhibitorias - Interferencia: Circunvoluci\u00f3n frontal inferior caudal (cIFG)"
             },
             "presumptive_diagnosis": {
-                "left_title": "Diagnosis Presuntiva",
-                "right_title": "\u00cdndice de Desempe\u00f1o de A.I.",
+                "left_title": "Diagn\u00f3stico Presuntivo",
+                "right_title": "\u00cdndice de Desempe\u00f1o",
                 "texts": {
                     "1": "Generalized Cognitive and Brain Alteration.",
                     "2": "Problems for controlling cognitive and motor responses.",
@@ -746,7 +746,7 @@
                 "text": "El siguiente gr\u00e1fico muestra el desempe\u00f1o cognitivo general del paciente.",
                 "vertex": {
                     "processing_speed": "Velocidad de\nProcesamiento",
-                    "processing_speed_interference": "Memoria de Trabajo\nVisual Interferida",
+                    "processing_speed_interference": "Memoria de Trabajo\nVisual - Interferencia",
                     "processing_speed_facilitated": "Memoria de Trabajo\nVisual Facilitada",
                     "reaction_time_interference": "Tiempo de Reacci\u00f3n\nInterferencia",
                     "reaction_time_facilitated": "Tiempo de Reacci\u00f3n\nFacilitado",
@@ -764,7 +764,7 @@
                 ],
                 "legend": [
                     "Tarea Facilitada",
-                    "Tarea Inhibitoria"
+                    "Tarea con Interferencia"
                 ]
             },
             "study_duration": {
@@ -776,7 +776,7 @@
                 ],
                 "legend": [
                     "Tarea Facilitada",
-                    "Tarea Inhibitoria"
+                    "Tarea con Interferencia"
                 ]
             },
             "saccadic_behaviour": {
@@ -788,7 +788,7 @@
                 ],
                 "legend": [
                     "Tarea Facilitada",
-                    "Tarea Inhibitoria"
+                    "Tarea con Interferencia"
                 ]
             },
             "fixation_duration": {
@@ -800,11 +800,11 @@
                 ],
                 "legend": [
                     "Tarea Facilitada",
-                    "Tarea Inhibitoria"
+                    "Tarea con Interferencia"
                 ]
             },
             "fixation_plotting": {
-                "text": "Los siguientes gr\u00e1ficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control\ncognitivamente saludable (derecha) durante algunas pruebas.Las tareas con flecha verde son las\nfacilitadas miestras que aquellas con flecha roja son con interferencia.",
+                "text": "Los siguientes gr\u00e1ficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control\ncognitivamente saludable (derecha) durante algunas pruebas. Las tareas con flecha verde son las\nfacilitadas miestras que aquellas con flecha roja son con interferencia.",
                 "title_left": "PACIENTE",
                 "title_right": "CONTROL",
                 "row_1": "Prueba 10",
@@ -824,7 +824,7 @@
                 ],
                 [
                     "GR\u00c1FICO DE FIJACIONES",
-                    "EJEMPLO DE FIJACIONES"
+                    "GR\u00c1FICO DE FIJACIONES DE UN PACIENTE COGNITIVAMENTE SANO"
                 ]
             ],
             "color_code": {
@@ -877,7 +877,7 @@
                 "enconding_efficiency": "Eficiencia de Encodificaci\u00f3n: N\u00facleo lateral posterior (LP)"
             },
             "overall_performance": {
-                "text": "Desempe\u00f1o General",
+                "text": "El siguiente gr\u00e1fico muestra el desempe\u00f1o cognitivo general del paciente.",
                 "vertex": {
                     "visual_exploration_efficiency": "Eficiencia de Exploraci\u00f3n\nVisual",
                     "visual_working_memory": "Memoria de Trabajo\nVisual",
@@ -889,14 +889,14 @@
                 }
             },
             "fixation_plotting": {
-                "text": "",
+                "text": "El gr\u00e1fico muestra las fijaciones realizadas por el paciente, durante las pruebas 14, 55 y 92 en\nCodificaci\u00f3n (izquierda) y Reconocimiento (derecha), de la Tarea de Combinaci\u00f3n de Colores",
                 "title_left": "CODIFICACI\u00d3N",
                 "title_right": "RECONOCIMIENTO",
                 "row_1": "Prueba 14",
                 "row_2": "Prueba 55",
                 "row_3": "Prueba 92",
                 "control": {
-                    "text": "Ejemplo de Fijaciones",
+                    "text": "El gr\u00e1fico muestra las fijaciones realizadas por una persona sana en las fases de Codificaci\u00f3n (Izquierda)\ny Reconocimiento (Derecha), en la tarea.",
                     "label": "Control"
                 }
             }

@@ -175,6 +175,28 @@
                     </div>
                 </div> 
 
+
+                <!-- Modal: Language Selection Dialog -->
+                <div class="modal fade" id="langReportSelectDialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Select report language</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <select class="form-control" id="language_select">
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer" id="lang_select_footer">
+                                <!-- <button class="btn btn-primary" onclick="console.log('test me')">Test Me</button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>                 
+
             </div>
         
         </div>
@@ -191,6 +213,7 @@
             window.jsPDF = window.jspdf.jsPDF; // Required for JS PDF to work
             WaitDialog.init();
             ErrorDialog.init();
+            LangSelectDialog.init();
             Route();
             generateSideBarInstitutionList(); 
             setUserName();

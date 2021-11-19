@@ -21,10 +21,10 @@
 
  $report["processing_speed"]["title"]                    = "VELOCIDAD DE PROCESAMIENTO";
  $report["processing_speed"]["range_text"]               = "Valor normal por debajo de 1.8";
- $report["processing_speed_interference"]["title"]       = "MEMORIA DE TRABAJO VISUAL - INTERFERENCIA";
- $report["processing_speed_interference"]["range_text"]  = "Valor normal por debajo de 93";
  $report["processing_speed_facilitated"]["title"]        = "MEMORIA DE TRABAJO VISUAL - FACILITADA";
  $report["processing_speed_facilitated"]["range_text"]   = "Valor normal por debajo de 49";
+ $report["processing_speed_interference"]["title"]       = "MEMORIA DE TRABAJO VISUAL - INTERFERENCIA";
+ $report["processing_speed_interference"]["range_text"]  = "Valor normal por debajo de 93";
  $report["reaction_time_facilitated"]["title"]           = "TIEMPO DE REACCIÓN - FACILITADO";
  $report["reaction_time_facilitated"]["range_text"]      = "Valor normal por debajo de 784";
  $report["reaction_time_interference"]["title"]          = "TIEMPO DE REACCIÓN - INTERFERENCIA";
@@ -48,10 +48,10 @@
  $report["affected_areas"]["reaction_time_facilitated"] = "Tiempro de Reacción  - Facilitado: Corteza prefrontal medial (mPFC), núcleo subtalámico";
  $report["affected_areas"]["executive_functions"] = "Funciones Ejecutivas: Corteza Prefrontal";
  $report["affected_areas"]["index_error_facilitated"]  = "Alteraciones Inhibitorias Facilitadas: Circunvolución frontal inferior derecha (rIFG)";
- $report["affected_areas"]["index_error_interference"]  = "Alteraciones Inhibitorias Interferidas: Circunvolución frontal inferior caudal (cIFG)";
+ $report["affected_areas"]["index_error_interference"]  = "Alteraciones Inhibitorias - Interferencia: Circunvolución frontal inferior caudal (cIFG)";
 
- $report["presumptive_diagnosis"]["left_title"] = "Diagnosis Presuntiva";
- $report["presumptive_diagnosis"]["right_title"] = "Índice de Desempeño de A.I.";
+ $report["presumptive_diagnosis"]["left_title"] = "Diagnóstico Presuntivo";
+ $report["presumptive_diagnosis"]["right_title"] = "Índice de Desempeño";
  $report["presumptive_diagnosis"]["texts"] = [
   1 => "Generalized Cognitive and Brain Alteration.",
   2 => "Problems for controlling cognitive and motor responses.",
@@ -63,7 +63,7 @@
 
  $report["overall_performance"]["text"] = "El siguiente gráfico muestra el desempeño cognitivo general del paciente.";
  $report["overall_performance"]["vertex"]["processing_speed"]                 = "Velocidad de\nProcesamiento";
- $report["overall_performance"]["vertex"]["processing_speed_interference"]    = "Memoria de Trabajo\nVisual Interferida";
+ $report["overall_performance"]["vertex"]["processing_speed_interference"]    = "Memoria de Trabajo\nVisual - Interferencia";
  $report["overall_performance"]["vertex"]["processing_speed_facilitated"]     = "Memoria de Trabajo\nVisual Facilitada";
  $report["overall_performance"]["vertex"]["reaction_time_interference"]       = "Tiempo de Reacción\nInterferencia";
  $report["overall_performance"]["vertex"]["reaction_time_facilitated"]        = "Tiempo de Reacción\nFacilitado";
@@ -74,24 +74,24 @@
  $report["gaze_duration"]["text"]   = "El Gráfico de Memoria de Trabajo Visual muestra el tiempo promedio [ms] requerido por el paciente para\nextraeer información de la imagen durante una prueba";
  $report["gaze_duration"]["ylabel"] = "Memoria de Trabajo Visual";
  $report["gaze_duration"]["xlabel"] = ["CONTROL", "PACIENTE"];
- $report["gaze_duration"]["legend"] = ["Tarea Facilitada","Tarea Inhibitoria"];
+ $report["gaze_duration"]["legend"] = ["Tarea Facilitada","Tarea con Interferencia"];
 
  $report["study_duration"]["text"]   = "The Study Duration graph displays the average amount of time [ms] needed by the patient complete\nthe whole study, in both Encoding and Recognition stages.";
  $report["study_duration"]["ylabel"] = "Duración del Estudio";
  $report["study_duration"]["xlabel"] = ["CONTROL", "PACIENTE"];
- $report["study_duration"]["legend"] = ["Tarea Facilitada","Tarea Inhibitoria"];
+ $report["study_duration"]["legend"] = ["Tarea Facilitada","Tarea con Interferencia"];
 
  $report["saccadic_behaviour"]["text"]   = "El Gráfico de Comportamiento Sacádico muestra las capacidades de exploración visual mientras se\nbuscan objectivos.";
  $report["saccadic_behaviour"]["ylabel"] = "Comportamiénto Sacádico";
  $report["saccadic_behaviour"]["xlabel"] = ["CONTROL", "PACIENTE"];
- $report["saccadic_behaviour"]["legend"] = ["Tarea Facilitada","Tarea Inhibitoria"];
+ $report["saccadic_behaviour"]["legend"] = ["Tarea Facilitada","Tarea con Interferencia"];
 
  $report["fixation_duration"]["text"]   = "El Gráfico de Duración de Fijaciones muestra el tiempo requerido para extraer información relevante\ndurante una fijación";
  $report["fixation_duration"]["ylabel"] = "Duración de Fijaciones";
  $report["fixation_duration"]["xlabel"] = ["CONTROL", "PACIENTE"];
- $report["fixation_duration"]["legend"] = ["Tarea Facilitada","Tarea Inhibitoria"];
+ $report["fixation_duration"]["legend"] = ["Tarea Facilitada","Tarea con Interferencia"];
 
- $report["fixation_plotting"]["text"] = "Los siguientes gráficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control\ncognitivamente saludable (derecha) durante algunas pruebas.Las tareas con flecha verde son las\nfacilitadas miestras que aquellas con flecha roja son con interferencia.";
+ $report["fixation_plotting"]["text"] = "Los siguientes gráficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control\ncognitivamente saludable (derecha) durante algunas pruebas. Las tareas con flecha verde son las\nfacilitadas miestras que aquellas con flecha roja son con interferencia.";
  $report["fixation_plotting"]["title_left"] = "PACIENTE";
  $report["fixation_plotting"]["title_right"] = "CONTROL";
  $report["fixation_plotting"]["row_1"] = "Prueba 10";

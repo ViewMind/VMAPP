@@ -6,7 +6,7 @@
  $report["page_titles"] = [
    ["EVALUACIÓN: NBACK RT"],
    ["DESEMPEÑO COGNITIVO Y ÁREAS DEL CEREBRO RELACIONADAS","DESEMPEÑO GENERAL"],
-   ["GRÁFICO DE FIJACIONES","EJEMPLO DE FIJACIONES"]
+   ["GRÁFICO DE FIJACIONES","GRÁFICO DE FIJACIONES DE UN PACIENTE COGNITIVAMENTE SANO"]
  ];
 
  $report["color_code"]["explanations"] = [
@@ -16,7 +16,7 @@
   "blue"   => "Desempeño por encima\ndel promedio"
 ];
 
-$report["color_code"]["title"] = "Para cada función cognitiva analizada, los resultados son índicados con el siguiente código de colores:";
+ $report["color_code"]["title"] = "Para cada función cognitiva analizada, los resultados son índicados con el siguiente código de colores:";
 
  $report["visual_exploration_efficiency"]["title"]                               = "EFICIENCIA EXPLORATORIA VISUAL";
  $report["visual_exploration_efficiency"]["range_text"]                          = "Valores normales por encimad de  4";
@@ -45,7 +45,7 @@ $report["color_code"]["title"] = "Para cada función cognitiva analizada, los re
  $report["affected_areas"]["decoding_efficiency"]  = "Eficiencia de Decodificación: Núcleo geniculado lateral (lGN)";
  $report["affected_areas"]["enconding_efficiency"]  = "Eficiencia de Encodificación: Núcleo lateral posterior (LP)";
 
- $report["overall_performance"]["text"] = "Desempeño General";
+ $report["overall_performance"]["text"] = "El siguiente gráfico muestra el desempeño cognitivo general del paciente.";
  $report["overall_performance"]["vertex"]["visual_exploration_efficiency"]       = "Eficiencia de Exploración\nVisual";
  $report["overall_performance"]["vertex"]["visual_working_memory"]               = "Memoria de Trabajo\nVisual";
  $report["overall_performance"]["vertex"]["correct_responses"]                   = "Respuestas\nCorrectas";
@@ -54,13 +54,13 @@ $report["color_code"]["title"] = "Para cada función cognitiva analizada, los re
  $report["overall_performance"]["vertex"]["decoding_efficiency"]                 = "Eficiencia de\nDecodificación";
  $report["overall_performance"]["vertex"]["enconding_efficiency"]                = "Eficiencia de\nEncodificación";
 
- $report["fixation_plotting"]["text"] = "";
+ $report["fixation_plotting"]["text"] = "El gráfico muestra las fijaciones realizadas por el paciente, durante las pruebas 14, 55 y 92 en\nCodificación (izquierda) y Reconocimiento (derecha), de la Tarea de Combinación de Colores";
  $report["fixation_plotting"]["title_left"] = "CODIFICACIÓN";
  $report["fixation_plotting"]["title_right"] = "RECONOCIMIENTO";
  $report["fixation_plotting"]["row_1"] = "Prueba 14";
  $report["fixation_plotting"]["row_2"] = "Prueba 55";
  $report["fixation_plotting"]["row_3"] = "Prueba 92";
- $report["fixation_plotting"]["control"]["text"] = "Ejemplo de Fijaciones";
+ $report["fixation_plotting"]["control"]["text"] = "El gráfico muestra las fijaciones realizadas por una persona sana en las fases de Codificación (Izquierda)\ny Reconocimiento (Derecha), en la tarea.";
  $report["fixation_plotting"]["control"]["label"] = "Control";
   
  return $report;

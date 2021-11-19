@@ -6,7 +6,7 @@
     $common["date"] = "Fecha";
     $common["patient"] = "Paciente";
     $common["age"] = "Edad";
-    $common["motto"] = "Medida de Desempeño Cognitivo y Áreas del Cerebro Relacionadas\nAtravés del Seguimiento Ocular"; 
+    $common["motto"] = "Medida de Desempeño Cognitivo y Preservación de\nÁreas Cerebrales a través del Seguimiento Ocular"; 
     $common["range_text_sd"] = "DE";
     return $common;
  ?>

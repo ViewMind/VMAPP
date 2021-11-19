@@ -1,5 +1,25 @@
 var discarded_reports = [];
 
+/// Language Select Daiglog. Will show up when a user double clicks on a report
+var LangSelectDialog  = {
+
+   modal: undefined,
+
+   init: function(){
+      var myModal = document.getElementById(GLOBALS.HTML.LANG_SELECT_DIAG.MODAL);
+      this.modal = new bootstrap.Modal(myModal);
+   },
+
+   open: function (){
+      this.modal.show();
+   },
+
+   close: function(){
+      this.modal.hide();
+   }
+   
+}
+
 function loadViewReportList(){
 
    var subjectData = JSON.parse(sessionStorage.getItem(GLOBALS.PAGE_COMM.SELECTED_SUBJECT));
@@ -108,11 +128,19 @@ function onReceiveReportList(response){
 
 }
 
-function goToReportViewPage(report_id){
+function goToReportViewPage(report_id){   
+   //console.log("Setting the inner html of the dialog footer: " + GLOBALS.HTML.LANG_SELECT_DIAG.FOOTER);
+   document.getElementById(GLOBALS.HTML.LANG_SELECT_DIAG.FOOTER).innerHTML = '<button class="btn btn-primary" onclick="generateReport(' + report_id + ')">Generate Report</button>'
+   LangSelectDialog.open();
+}
+
+function generateReport(report_id){
+
+   LangSelectDialog.close();
 
    sessionStorage.setItem(GLOBALS.PAGE_COMM.SELECTED_REPORT,report_id);   
    // window.location.href = "index.html?" + GLOBALS.ROUTING.PARAMS.GOTO + "=" + GLOBALS.ROUTING.PAGES.VIEWREPORT;
-   var lang = "en";   
+   var lang = document.getElementById(GLOBALS.HTML.LANG_SELECT_DIAG.LANG_SELECT).value;   
 
    report_id = parseInt(report_id);
 

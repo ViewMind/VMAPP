@@ -22,10 +22,10 @@
 
  $report["processing_speed"]["title"]                    = "PROCESSING SPEED";
  $report["processing_speed"]["range_text"]               = "Normal value below 1.8";
- $report["processing_speed_interference"]["title"]       = "VISUAL WORKING MEMORY INTERFERENCE";
- $report["processing_speed_interference"]["range_text"]  = "Normal value below 93";
  $report["processing_speed_facilitated"]["title"]        = "VISUAL WORKING MEMORY FACILITATED";
  $report["processing_speed_facilitated"]["range_text"]   = "Normal value below 49";
+ $report["processing_speed_interference"]["title"]       = "VISUAL WORKING MEMORY INTERFERENCE";
+ $report["processing_speed_interference"]["range_text"]  = "Normal value below 93";
  $report["reaction_time_facilitated"]["title"]           = "REACTION TIME FACILITATED";
  $report["reaction_time_facilitated"]["range_text"]      = "Normal value below 784";
  $report["reaction_time_interference"]["title"]          = "REACTION TIME INTERFERENCE";

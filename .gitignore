@@ -155,3 +155,4 @@ QtApplications/VMTools/HPOmniceptTest/hptest.zip
 Scripts/php/.vscode/
 Scripts/php/analyze_singular_JSON/*.txt
 VMPortal/Backend/00mng/test_output.json
+QtApplications/VMTools/OldDBToJSon/bin/

@@ -18,21 +18,6 @@
    $cat["red"]    = "1.93 +";
    $categories[$variable]["color"] = $cat;
 
-   /////
-   $cat = array();
-   $variable = "processing_speed_interference";   
-   $cat["+1"]  = "- 49*";
-   $cat["0"]  = "49 93*";
-   $cat["-1"] = "93 103*";
-   $cat["-2"] = "100 110*";
-   $cat["-3"] = "110 +";
-   $categories[$variable]["polygon"] = $cat;  
-
-   $cat = array();
-   $cat["green"]  = "- 93*";
-   $cat["yellow"] = "93 110*";
-   $cat["red"]    = "110 +";
-   $categories[$variable]["color"] = $cat;   
 
    /////
    $cat = array();
@@ -49,6 +34,22 @@
    $cat["yellow"] = "85 105*";
    $cat["red"]    = "105 +";
    $categories[$variable]["color"] = $cat;      
+
+   /////
+   $cat = array();
+   $variable = "processing_speed_interference";   
+   $cat["+1"]  = "- 49*";
+   $cat["0"]  = "49 93*";
+   $cat["-1"] = "93 103*";
+   $cat["-2"] = "100 110*";
+   $cat["-3"] = "110 +";
+   $categories[$variable]["polygon"] = $cat;  
+   
+   $cat = array();
+   $cat["green"]  = "- 93*";
+   $cat["yellow"] = "93 110*";
+   $cat["red"]    = "110 +";
+   $categories[$variable]["color"] = $cat;   
 
    /////
    $cat = array();

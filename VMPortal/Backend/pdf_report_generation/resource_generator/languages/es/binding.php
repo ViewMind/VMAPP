@@ -10,7 +10,7 @@
    ["DESEMPEÑO COGNITIVO Y ÁREAS DEL CEREBRO RELACIONADAS","DESEMPEÑO GENERAL"],
    ["MEMORIA DE TRABAJO VISUAL ","EXPLORACIÓN VISUAL"],
    ["DURACIÓN DE FIJACIONES","NÚMERO DE FIJACIONES"],
-   ["GRÁFICO DE FIJACIONES","GRÁFICO DE FIJACIONES COGNITIVAMENTE SALUDABLE"],
+   ["GRÁFICO DE FIJACIONES","GRÁFICO DE FIJACIONES DE UN PACIENTE COGNITIVAMENTE SANO"],
  ];
 
  $report["color_code"]["explanations"] = [
@@ -41,14 +41,14 @@
  $report["affected_areas"]["red"] = "Funciones cognitivas y áreas cerebrales con discapcidad severa y/o patológica:";
  
  $report["affected_areas"]["visual_search"] = "Búsqueda Visual: Ganglia Basal y Colículo Superior";
- $report["affected_areas"]["gaze_dur"] = "Mirada: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC), Surco Temporal\nSuperior Anterior (aSTS) ";
- $report["affected_areas"]["int_mem_perf"] = "Funciones de Memoria Integradora:  Corteza entorrinal, corteza perirrinal";
+ $report["affected_areas"]["gaze_dur"] = "Memoria de Trabajo Visual: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC),\nSurco Temporal, Superior Anterior (aSTS)";
+ $report["affected_areas"]["int_mem_perf"] = "Desempeño de Memoria Integradora:  Corteza entorrinal, corteza perirrinal";
  $report["affected_areas"]["assoc_mem_perf"] = "Desempeño de Memoria Asociativa: Hipocampo";
  $report["affected_areas"]["exec_func"] = "Funciones Ejecutivos: Corteza Prefrontal";
  $report["affected_areas"]["parahipocampal_region"]  = "Región parahipocampal";
 
- $report["presumptive_diagnosis"]["left_title"] = "Diagnosis Presuntiva";
- $report["presumptive_diagnosis"]["right_title"] = "Índice de Desempeño de A.I.";
+ $report["presumptive_diagnosis"]["left_title"] = "Diagnóstico Presuntivo";
+ $report["presumptive_diagnosis"]["right_title"] = "Índice de Desempeño";
  $report["presumptive_diagnosis"]["texts_3T"] = [
   1 => "Alteración Cognitiva y del Cerebro Generalizada.\nRecomendamos repetir el estudio de colores con 2 objectivos.",
   2 => "Alteración de la Memoria Associativa y Córtica.\nRecomendamos repetir el estudio de colores con 2 objectivos.",
@@ -76,31 +76,31 @@ $report["presumptive_diagnosis"]["texts_2T"] = [
  $report["overall_performance"]["vertex"]["exec_functions"]        = "Funciones\nEjecutivas";
  $report["overall_performance"]["vertex"]["parahipocampal_region"] = "Región\nParahipocampal";
 
- $report["gaze_duration"]["text"] = "El Gráfico de Memoria de Trabajo Visual muestra el tiempo promedio [ms] requerido por un paciente\npara extraer información de una imágen durante una prueba, tanto en la fase\nde Codificación como en la de Reconocimiento";
+ $report["gaze_duration"]["text"] = "El Gráfico de Memoria de Trabajo Visual muestra el tiempo promedio [ms] requerido por un paciente\npara extraer información de una imágen durante una prueba, tanto en la fase de Codificación como\nen la de Reconocimiento";
  $report["gaze_duration"]["ylabel"] = "Memoria de Trabajo Visual";
- $report["gaze_duration"]["graph_title"] = ["PACIENTE","CONTROL COGNITIVAMENTE SALUDABLE"];
+ $report["gaze_duration"]["graph_title"] = ["PACIENTE","CONTROL COGNITIVAMENTE SANO"];
  $report["gaze_duration"]["xlabel"] = ["CODIFICACIÓN", "RECONOCIMIENTO"];
  $report["gaze_duration"]["legend"] = ["Memoria de Integración","Memoria Asociativa"];
  
  $report["visual_scanning"]["text"] = "El Gráfico de Exploración Visual, muestra las capacidades de exploración visual del paciente mientras\nbusca a los objetivos tanto en la fase de Codificación como en la de Reconocimiento";
  $report["visual_scanning"]["ylabel"] = "Exploración Visual";
- $report["visual_scanning"]["graph_title"] = ["PACIENTE","CONTROL COGNITIVAMENTE SALUDABLE"];
+ $report["visual_scanning"]["graph_title"] = ["PACIENTE","CONTROL COGNITIVAMENTE SANO"];
  $report["visual_scanning"]["xlabel"] = ["CODIFICACIÓN", "RECONOCIMIENTO"];
  $report["visual_scanning"]["legend"] = ["Memoria de Integración","Memoria Asociativa"];
 
  $report["fixation_duration"]["text"] = "El Gráfico de Duración de Fijaciones muestra la duración promedio de las fijaciones realizadas\npor el paciente tanto en la fase de Codificación como en la de Reconocimiento";
  $report["fixation_duration"]["ylabel"] = "Duración de las Fijaciones";
- $report["fixation_duration"]["graph_title"] = ["PACIENTE","CONTROL COGNITIVAMENTE SALUDABLE"];
+ $report["fixation_duration"]["graph_title"] = ["PACIENTE","CONTROL COGNITIVAMENTE SANO"];
  $report["fixation_duration"]["xlabel"] = ["CODIFICACIÓN", "RECONOCIMIENTO"];
  $report["fixation_duration"]["legend"] = ["Memoria de Integración","Memoria Asociativa"];
 
  $report["number_of_fixations"]["text"] = "El grafico del Número de Fijaciones muestra la cantidad de fijaciones realizadas por el paciente\ntanto en la fase de Codificación como en la de Reconocimiento";
  $report["number_of_fixations"]["ylabel"] = "Número de Fijaciones";
- $report["number_of_fixations"]["graph_title"] = ["PACIENTE","CONTROL COGNITIVAMENTE SALUDABLE"];
+ $report["number_of_fixations"]["graph_title"] = ["PACIENTE","CONTROL COGNITIVAMENTE SANO"];
  $report["number_of_fixations"]["xlabel"] = ["CODIFICACIÓN", "RECONOCIMIENTO"];
  $report["number_of_fixations"]["legend"] = ["Memoria de Integración","Memoria Asociativa"];
 
- $report["fixation_plotting"]["text"] = "El gráfico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20y 31 en\nCodificación (izquierda) y Reconocimiento (derecha), de la Tarea de Combinación de Colores";
+ $report["fixation_plotting"]["text"] = "El gráfico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20 y 31 en\nCodificación (izquierda) y Reconocimiento (derecha), de la Tarea de Combinación de Colores";
  $report["fixation_plotting"]["title_left"] = "CODIFICACIÓN";
  $report["fixation_plotting"]["title_right"] = "RECONOCIMIENTO";
  $report["fixation_plotting"]["row_1"] = "Prueba 10";
