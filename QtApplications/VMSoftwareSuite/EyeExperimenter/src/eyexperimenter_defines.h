@@ -19,7 +19,7 @@ namespace Globals{
    }
 
    namespace DEV_SERVER {
-      const QString API_URL = "https://testdev.viewmind.ai";
+      const QString API_URL = "https://devapi.viewmind.net";
       const QString REGION  = "DEV";
    }
 

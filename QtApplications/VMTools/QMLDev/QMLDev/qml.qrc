@@ -2,7 +2,14 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>VMComboBox.qml</file>
-        <file>VMComboBox2.qml</file>
         <file>DateStuff.js</file>
+        <file>VMGlobals.qml</file>
+        <file>VMSearchInput.qml</file>
+        <file>VMTextInput.qml</file>
+        <file>VMPasswordInput.qml</file>
+        <file>VMPrimaryButton.qml</file>
+        <file>VMToggle.qml</file>
+        <file>VMCheckBox.qml</file>
+        <file>VMRadioButton.qml</file>
     </qresource>
 </RCC>

@@ -1,78 +1,113 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
-import QtQuick.Controls 2.0
-import "DateStuff.js" as DS
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 ApplicationWindow {
 
     id: mainWindow
-
     visible: true
-    //visibility: Window.Maximized
-    width: 1000
-    height: 800
+    visibility: Window.Maximized
     title: qsTr("Hello World")
+    //color: "#99000000" <- Way to make it translucent.
+    color: "#ffffff"
 
-
-//    VMComboBox {
-//        id: testbox
-//        width: 839.0399999999997
-//        height: 89.31099999999999
-//        anchors.horizontalCenter: parent.horizontalCenter
-//        anchors.top: parent.top
-//        anchors.topMargin: 20
-//        Component.onCompleted: {
-
-//            var list = []
-//            //for (var i = 0; i < 8; i++){
-//            for (var i = 0; i < 100; i++){
-//                list.push("Item " + i);
-//            }
-
-//            testbox.setModelList(list);
-
-//            var dateString = "2021-08-25";
-//            var dateObject = new Date(dateString);
-//            console.log(dateObject.toLocaleDateString(Locale.ShortFormat));
-
-//        }
-//    }
-
-    Button {
-        id: myTestButton
-        width: 100
-        height: 50
-        text: "Click Me!"
-        anchors.centerIn: parent
-        hoverEnabled: false
-        onClicked: {
-            console.log("Button Was clicked")
-            DS.setDate("21/03/2020 18:45","dd/MM/yyyy HH:mm");
-            console.log(DS.getDate2())
-        }
+    VMGlobals {
+        id: vmGlobals
     }
 
-//    VMComboBox2 {
-//        id: testbox2
-//        width: 839.0399999999997
-//        height: 89.31099999999999
-//        anchors.top: testbox.bottom
-//        anchors.topMargin: width*0.5;
-//        anchors.left: testbox.left
-//        Component.onCompleted: {
+    Component.onCompleted: {
+        var list = [];
+        for (var i = 0; i < 100; i++){
+            list.push("Value " + i);
+        }
+        testComboBox.setModelList(list);
+    }
 
-//            var list = []
-//            //for (var i = 0; i < 8; i++){
-//            for (var i = 0; i < 100; i++){
-//                list.push("Item " + i);
-//            }
+    onHeightChanged: {
+        //console.log("New height is " + mainWindow.height)
+        vmGlobals.vmControlsHeight = mainWindow.height*0.06;
+    }
 
-//            testbox2.model = list;
+    Column {
+        id: testColumn
+        anchors.centerIn: parent
+        spacing: 50
 
+        VMComboBox {
+            id: testComboBox
+            vmPlaceHolderText: "Select a value"
+            vmLabel: "Some label to try out"
+            width: vmGlobals.vmControlsHeight*7.68
+            z: 10
+            onVmCurrentIndexChanged: {
+                if (vmCurrentIndex === 5){
+                    vmErrorMsg = "This is the wrong component to choose"
+                }
+            }
+        }
 
-//        }
+        VMSearchInput {
+            id: testSearchInput
+            vmPlaceHolderText: "Search for something here"
+            width: vmGlobals.vmControlsHeight*7.68
+            onTextChanged: {
+                console.log("Search for " + vmCurrentText)
+            }
+        }
 
-//    }
+        VMTextInput {
+            id: textInput
+            vmPlaceHolderText: "Text input"
+            vmLabel: "Label for text input"
+            width: vmGlobals.vmControlsHeight*7.68
+            onTextChanged: {
+                console.log("Text is " + vmCurrentText)
+                if (vmCurrentText == "juan"){
+                    console.log("ERROR")
+                    vmErrorMsg = "Value not acceptable";
+                }
+            }
+        }
+
+        VMPasswordInput {
+            id: passwordInput
+            vmPlaceHolderText: "Enter password"
+            width: vmGlobals.vmControlsHeight*7.68
+        }
+
+        Row {
+
+            id: rowPressableCotrols
+            spacing: testColumn.spacing
+
+            VMPrimaryButton {
+                id: testPrimaryButton
+                vmText: "START"
+            }
+
+            VMPrimaryButton {
+                id: testPrimaryButton2
+                vmText: "DISABLED"
+                vmEnabled: false
+            }
+
+            VMToggle {
+                id: testToggle
+            }
+
+            VMCheckBox {
+                id: testCheckBox
+            }
+
+            VMRadioButton {
+                id: testRadioButton
+            }
+
+        }
+
+    }
 
 
 }
