@@ -17,22 +17,22 @@
         <script src="resources/fontawsome.js"></script>        
         <script src="resources/jspdf.umd.min.js"></script>               
         <script src="resources/simple-datatables.js"></script>   
+        <script src="resources/report_reference.js"></script>
 
         <!-- Page Required Scripts -->
+        <script src="js/multi_key_value_pair_input.js"></script>
         <script src="js/access_constants.js"></script>
-        <script src="js/svgtopdfgenerator.js"></script>
-        <script src="js/svgfontmetrics.js"></script>
-        <script src="js/svgmultilinetext.js"></script>
         <script src="js/resultBar.js"></script>
         <script src="js/resultSegment.js"></script>
-        <script src="resources/report_reference.js"></script>
         <script src="js/api_functions.js"></script>
         <script src="js/common.js"></script>
         <script src="js/view_index.js"></script>
         <script src="js/view_subject_list.js"></script>
         <script src="js/view_report_list.js"></script>
-        <script src="js/view_render_report.js"></script>
         <script src="js/view_account.js"></script>
+        <script src="js/view_medrecs.js"></script>
+        <script src="js/view_medrec_edit.js"></script>
+        <script src="js/view_admin_list.js"></script>
 
     </head>
     <body class="sb-nav-fixed">
@@ -64,7 +64,6 @@
                         <li><hr class="dropdown-divider"/></li>
                         <li><a class="dropdown-item" style = "cursor: pointer;" onclick="logOut()">Logout</a></li>
                     </ul>
-
                 </li>
             </ul>
         </nav>
@@ -99,6 +98,30 @@
                                     <a class="nav-link" href="">Institution 2</a>
                                 </nav>
                             </div>
+
+                            <a class="nav-link collapsed" id="side_bar_medrecs" style="display: none;" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMedRecords" aria-expanded="false" aria-controls="collapseMedRecords">
+                                <div class="sb-nav-link-icon"><i class="fas fa-university"></i></div>
+                                Medical Records
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseMedRecords" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav" id = "side_bar_med_record_institution_list">
+                                    <a class="nav-link" href="">Institution 1</a>
+                                    <a class="nav-link" href="">Institution 2</a>
+                                </nav>
+                            </div>
+
+                            <a class="nav-link collapsed" id="admin_dashboard_panel" style="display: none;" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdminPanel" aria-expanded="false" aria-controls="collapseAdminPanel">
+                                <div class="sb-nav-link-icon"><i class="fas fa-university"></i></div>
+                                Admin Panel
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseAdminPanel" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav" id = "side_bar_institution_list">
+                                    <a class="nav-link" href="index.html?goto=admineval">Evaluation List</a>
+                                    <!-- <a class="nav-link" href="">Institution Stats</a> -->
+                                </nav>
+                            </div>                            
 
                         </div>
                     </div>
@@ -152,6 +175,28 @@
                     </div>
                 </div> 
 
+
+                <!-- Modal: Language Selection Dialog -->
+                <div class="modal fade" id="langReportSelectDialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Select report language</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <select class="form-control" id="language_select">
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer" id="lang_select_footer">
+                                <!-- <button class="btn btn-primary" onclick="console.log('test me')">Test Me</button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>                 
+
             </div>
         
         </div>
@@ -168,6 +213,7 @@
             window.jsPDF = window.jspdf.jsPDF; // Required for JS PDF to work
             WaitDialog.init();
             ErrorDialog.init();
+            LangSelectDialog.init();
             Route();
             generateSideBarInstitutionList(); 
             setUserName();

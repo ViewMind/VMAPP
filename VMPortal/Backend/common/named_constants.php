@@ -67,11 +67,12 @@
    }
 
    abstract class ResponseDataSubFields extends TypedString {
-      const MEDICS           = "medics";
-      const PROC_PARAMS      = "proc_params";
-      const FREQ_PARAMS      = "freq_params";
-      const UPDATE_ET_CHANGE = "update_et_change";
-      const UPDATE_VERSION   = "update_version";
+      const MEDICS              = "medics";
+      const PROC_PARAMS         = "proc_params";
+      const FREQ_PARAMS         = "freq_params";
+      const UPDATE_ET_CHANGE    = "update_et_change";
+      const UPDATE_VERSION      = "update_version";
+      const RECOVERY_PASSWORD   = "recovery_password";
    }
 
    abstract class APIEndpoints extends TypedString {
@@ -80,6 +81,7 @@
       const RAWDATA                = "rawdata";
       const INSTITUTION            = "institution";
       const SUBJECTS               = "subjects";
+      const MEDICAL_RECORDS        = "medical_record";
    }
 
    abstract class PortalUserOperations extends TypedString {
@@ -88,6 +90,13 @@
       const MODIFY_OWN              = "modify_own";
       const ENABLE                  = "enable";
       const ADD_NO_LOG_PUSERS       = "addnologpusers";
+      const LOGOUT                  = "logout";
+   }
+
+   abstract class FrontEndPermissions extends TypedString {
+      const SEE_ALL_OWN_INSTITUTION = "see_all_own_institution";
+      const LOAD_MEDICAL_RECORDS    = "load_medical_records";
+      const ADMIN_DASHBOARD         = "admin_dashboard";
    }
 
    abstract class URLParameterNames extends TypedString {
@@ -104,6 +113,7 @@
       const SEARCH                  = "search";
       const ROLE                    = "role";
       const DISCARDED               = "discarded";
+      const INSTITUTION             = "institution";
    }
 
    abstract class URLSearchCriteria extends TypedString {
@@ -117,16 +127,26 @@
       const GET_UPDATE             = "getupdate";
    }
 
+   abstract class MedRecordsOperations extends TypedString {
+      const MODIFY                 = "modify";
+      const LIST                   = "list";
+      const GET                    = "get";
+   }
+
    abstract class ReportOperations extends TypedString {
       const GENERATE               = "generate";
       const LIST                   = "list";
+      const LIST_ALL_OWN_INST      = "list_all_own_institution";
       const GET                    = "get";
+      const GET_OWN_INSTITUTION    = "get_own_institution";
       const REPORTLIST             = "reportlist";
       const INST_PDF               = "institutionPDF";
+      const ADMIN_LIST             = "admin_evaluation_list";
    }
 
    abstract class SubjectOperations extends TypedString {
       const LIST                   = "list";
+      const LIST_ALL_OWN_INST      = "list_all_own_institution";
    }
 
    abstract class ReturnableError extends TypedString {
@@ -146,6 +166,12 @@
       const HP_OMNICEPT      = "hpomnicept";
       const HTC_VIVE_EYE_PRO = "htcviveeyepro";
       const GAZEPOINT        = "gazepoint";
+   }
+
+   // Fields that need to compliment other defined structures. 
+   abstract class ComplimentaryDataFields extends TypedString {
+      const ASSOCIATED_INSTITUTIONS = "associated_institutions";
+      const PERMISSIONS = "permissions";
    }
 
    abstract class FinalizedStudyNames extends TypedString {

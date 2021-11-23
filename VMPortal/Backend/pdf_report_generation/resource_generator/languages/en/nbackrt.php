@@ -10,10 +10,10 @@
  ];
 
  $report["color_code"]["explanations"] = [
-    "red" => "Severe impairment\nand/or pathological",
+    "red" => "Severe and/or\npathological impairment",
     "green" => "No relevant problems\nwere encountered",
     "yellow" => "Mild impairment, not\nnecessarily pathological",
-    "blue"   => "Above avegerage\nPerformance"
+    "blue"   => "Above average\nperformance"
  ];
 
  $report["color_code"]["title"] = "For each cognitive function analyzed, the results are indicated by the following color coding:";
@@ -54,7 +54,7 @@
  $report["overall_performance"]["vertex"]["decoding_efficiency"]                 = "Decoding\nEfficiency";
  $report["overall_performance"]["vertex"]["enconding_efficiency"]                = "Encoding\nEfficiency";
 
- $report["fixation_plotting"]["text"] = "Fixation Plotting Text";
+ $report["fixation_plotting"]["text"] = "";
  $report["fixation_plotting"]["title_left"] = "ENCODING";
  $report["fixation_plotting"]["title_right"] = "RECOGNITION";
  $report["fixation_plotting"]["row_1"] = "Trial 14";

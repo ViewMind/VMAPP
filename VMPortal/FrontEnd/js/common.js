@@ -12,6 +12,13 @@ GLOBALS.SESSION_KEYS.USER_FNAME        = "user_first_name"
 GLOBALS.SESSION_KEYS.USER_LNAME        = "user_last_name"
 GLOBALS.SESSION_KEYS.TOKEN             = "token"
 GLOBALS.SESSION_KEYS.USER_INSTITUTIONS = "user_institutions"
+GLOBALS.SESSION_KEYS.PERMISSIIONS      = "permissions";
+
+// Permissions keys
+GLOBALS.PERMISSIIONS = {};
+GLOBALS.PERMISSIIONS.SEE_ALL_OWN_INST  = "see_all_own_institution";
+GLOBALS.PERMISSIIONS.SEE_MED_RECS      = "load_medical_records";
+GLOBALS.PERMISSIIONS.SEE_ADMIN_PANEL   = "admin_dashboard";
 
 // Simple comunicating between pages. 
 GLOBALS.PAGE_COMM = {}
@@ -20,6 +27,7 @@ GLOBALS.PAGE_COMM.SELECTED_INSTITUTION_NAME = "selected_institution_name";
 GLOBALS.PAGE_COMM.SELECTED_SUBJECT          = "selected_subject";
 GLOBALS.PAGE_COMM.SELECTED_REPORT           = "selected_report";
 GLOBALS.PAGE_COMM.SELECTED_PDF              = "selected_PDF";
+GLOBALS.PAGE_COMM.SELECTED_MEDREC           = "selected_medical_record"
 
 // For accessing the inst construct.
 GLOBALS.INST_LIST = {};
@@ -44,10 +52,19 @@ GLOBALS.ENDPOINTS.INSTITUTION.LIST = "institution/list";
 GLOBALS.ENDPOINTS.REPORTS = {}
 GLOBALS.ENDPOINTS.REPORTS.LIST = "reports/list";
 GLOBALS.ENDPOINTS.REPORTS.GET  = "reports/get";
+GLOBALS.ENDPOINTS.REPORTS.LIST_INST = "reports/list_all_own_institution";
+GLOBALS.ENDPOINTS.REPORTS.GET_INST  = "reports/get_own_institution";
+GLOBALS.ENDPOINTS.REPORTS.ALL_EVALS  = "reports/admin_evaluation_list";
 GLOBALS.ENDPOINTS.SUBJECT = {}
 GLOBALS.ENDPOINTS.SUBJECT.LIST = "subjects/list";
+GLOBALS.ENDPOINTS.SUBJECT.LIST_INST = "subjects/list_all_own_institution";
 GLOBALS.ENDPOINTS.PORTAL_USER = {};
 GLOBALS.ENDPOINTS.PORTAL_USER.MODIFY_OWN = "portal_users/modify_own"
+GLOBALS.ENDPOINTS.PORTAL_USER.LOGOUT = "portal_users/logout"
+GLOBALS.ENDPOINTS.MEDRECORDS = {}
+GLOBALS.ENDPOINTS.MEDRECORDS.MODIFY = "medical_record/modify"
+GLOBALS.ENDPOINTS.MEDRECORDS.LIST = "medical_record/list"
+GLOBALS.ENDPOINTS.MEDRECORDS.GET = "medical_record/get"
 GLOBALS.URLPARAMS = {}
 GLOBALS.URLPARAMS.SUBJECT = {}
 GLOBALS.URLPARAMS.SUBJECT.PORTAL_USER = "pp";
@@ -61,13 +78,20 @@ GLOBALS.HTML.ERROR_DIALOG = {}
 GLOBALS.HTML.ERROR_DIALOG.MODAL = "errorDialog";
 GLOBALS.HTML.ERROR_DIALOG.TITLE = "errorTitle";
 GLOBALS.HTML.ERROR_DIALOG.TEXT  = "errorMainBody";
+GLOBALS.HTML.LANG_SELECT_DIAG = {}
+GLOBALS.HTML.LANG_SELECT_DIAG.MODAL = "langReportSelectDialog"
+GLOBALS.HTML.LANG_SELECT_DIAG.LANG_SELECT = "language_select"
+GLOBALS.HTML.LANG_SELECT_DIAG.FOOTER = "lang_select_footer"
 GLOBALS.HTML.USERNAME = "display_user_name";
 GLOBALS.HTML.NAV_INST_LIST = "side_bar_institution_list";
+GLOBALS.HTML.MEDREC_INST_LIST = "side_bar_med_record_institution_list"
 GLOBALS.HTML.MAIN = {}
 GLOBALS.HTML.MAIN.TITLE    = "main_title";
 GLOBALS.HTML.MAIN.CONTENTS = "main_contents";
 GLOBALS.HTML.MAIN.TABLE    = "main_table";
 GLOBALS.HTML.MAIN.TRAIL    = "main_trail";
+GLOBALS.HTML.MEDREC_SIDE_MENU = "side_bar_medrecs";
+GLOBALS.HTML.ADMIN_PANEL   = "admin_dashboard_panel";
 
 // The Routing Constants.
 GLOBALS.ROUTING = {}
@@ -78,8 +102,10 @@ GLOBALS.ROUTING.PAGES = {};
 GLOBALS.ROUTING.PAGES.INSTITUTION  = "institution";
 GLOBALS.ROUTING.PAGES.SUBJECTS     = "subjects";
 GLOBALS.ROUTING.PAGES.REPORTS      = "reports";
-GLOBALS.ROUTING.PAGES.VIEWREPORT   = "viewreport";
+GLOBALS.ROUTING.PAGES.MEDRECS      = "medrecs";
 GLOBALS.ROUTING.PAGES.USER_ACCOUNT = "myaccount";
+GLOBALS.ROUTING.PAGES.MEDRECEDIT   = "medrecedit";
+GLOBALS.ROUTING.PAGES.ADMINEVAL    = "admineval";
 
 // Directory Map For Report Resources.
 GLOBALS.REPRESMAP = {}
@@ -177,6 +203,24 @@ var WaitDialog = {
 
 }
 
+function noSpecialCharsInput(input){
+
+   var chars_to_check = "[&/\\#,+()!$~%.'\":*?<>{}_]/";
+
+   console.log("Checking the input of " + input);
+
+   for (var i = 0; i < chars_to_check.length; i++){
+      var c = chars_to_check.charAt(i);
+      if (input.includes(c)){
+         console.log("Invalid character found: " + c);
+         return false;
+      }
+   }
+
+   return true;
+
+}
+
 /// Error dialog. Will show when an error occurs with the simplified server message. 
 var ErrorDialog  = {
 
@@ -224,17 +268,26 @@ function generateSideBarInstitutionList(){
       
    //console.log(JSON.stringify(inst_list));
 
-   var html = "";
+   var html  = ""; // For Subject List for Reports.
+   var html2 = ""; // For Medical Record List. 
 
    for (var i = 0; i < inst_list.length; i++){
-      html = html + '<a class = "nav-link" style = "cursor:pointer" onclick = "goToInstitution(\'' +  inst_list[i][GLOBALS.INST_LIST.ID] + '\')" >' 
+      
+      html = html + '<a class = "nav-link" style = "cursor:pointer" onclick = "goToInstitution(\'' 
+      + inst_list[i][GLOBALS.INST_LIST.ID] + '\',\'' + GLOBALS.ROUTING.PAGES.SUBJECTS  + '\')" >' 
       + inst_list[i][GLOBALS.INST_LIST.NAME]  + '</a>\n'
+
+      html2 = html2 + '<a class = "nav-link" style = "cursor:pointer" onclick = "goToInstitution(\'' 
+      + inst_list[i][GLOBALS.INST_LIST.ID] + '\',\'' + GLOBALS.ROUTING.PAGES.MEDRECS  + '\')" >' 
+      + inst_list[i][GLOBALS.INST_LIST.NAME]  + '</a>\n'
+
    }
    document.getElementById(GLOBALS.HTML.NAV_INST_LIST).innerHTML = html;
+   document.getElementById(GLOBALS.HTML.MEDREC_INST_LIST).innerHTML = html2;
 }
 
 /// Code to switch to the subject list of a particular institution. 
-function goToInstitution(id){
+function goToInstitution(id,what_view){
 
    var list = JSON.parse(sessionStorage.getItem(GLOBALS.SESSION_KEYS.USER_INSTITUTIONS));
    institution_name = "";
@@ -247,8 +300,9 @@ function goToInstitution(id){
    sessionStorage.setItem(GLOBALS.PAGE_COMM.SELECTED_INSTITUTION_ID,id);
    sessionStorage.setItem(GLOBALS.PAGE_COMM.SELECTED_INSTITUTION_NAME,institution_name);
 
-   window.location.href = "index.html?" + GLOBALS.ROUTING.PARAMS.GOTO + "=" + GLOBALS.ROUTING.PAGES.SUBJECTS;
+   window.location.href = "index.html?" + GLOBALS.ROUTING.PARAMS.GOTO + "=" + what_view;
 }
+
 
 /// Code for building a generic table as the main element of the page. 
 /**
@@ -261,6 +315,7 @@ function goToInstitution(id){
  *    - gotoFunction: When a row is double clicked this function will be called passing as an only parameter the value of the unique_id for that row.
  *    - unique_id: The column that contains the unique_id for the row. Needs to be part of the column_list as well as be in each array of the data structure. 
  *    - show_unique: Boolean. If false the unique_id column will be skipped. 
+ *    - container: String. If it exists, then this is the container (div) where the table will be put.
  * } table 
  */
 function buildTable(table){
@@ -395,7 +450,12 @@ function buildTable(table){
    // Insert the body table into the html
    html = html.replace("##TABLE_BODY##",table_body);
 
-   document.getElementById(GLOBALS.HTML.MAIN.CONTENTS).innerHTML = html;
+   if ("container" in table){
+      document.getElementById(table.container).innerHTML = html;
+   }
+   else{
+      document.getElementById(GLOBALS.HTML.MAIN.CONTENTS).innerHTML = html;
+   }
 
    //console.log(html);
 
@@ -474,6 +534,14 @@ function setUserName(){
 
 /// Simply logging out
 function logOut(){
+   API.logout("logOutReturnFunction");
+}
+
+function logOutReturnFunction (response){
+   if (response.message != "OK"){
+      ErrorDialog.open("Server Error",response.message);
+      return;
+   }
    sessionStorage.removeItem(GLOBALS.SESSION_KEYS.TOKEN);
    Token.checkLogIn();    
 }

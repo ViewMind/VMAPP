@@ -14,7 +14,7 @@
  ];
 
  $report["color_code"]["explanations"] = [
-    "red" => "Severe impairment\nand/or pathological",
+    "red" => "Severe and/or\npathological impairment",
     "green" => "No relevant problems\nwere encountered",
     "yellow" => "Mild impairment, not\nnecessarily pathological"
  ];
@@ -67,7 +67,7 @@ $report["presumptive_diagnosis"]["texts_2T"] = [
   6 => "Inconclusive Results. Please check the quality of the\ndata gathered. We recommend repeating the study.",
 ];
  
- $report["overall_performance"]["text"] = "The following graph displays the general cognitive performance of the patient. For more information\non how to interpret this graph, please refer to the Annex – Overall Performance Graph Interpretation.";
+ $report["overall_performance"]["text"] = "The following graph displays the general cognitive performance of the patient.";
  $report["overall_performance"]["vertex"]["visual_search"]         = "Visual Search";
  $report["overall_performance"]["vertex"]["gaze_dur"]              = "Visual Working Memory";
  $report["overall_performance"]["vertex"]["int_mem_perf"]          = "Integrative\nMemory";
@@ -75,26 +75,26 @@ $report["presumptive_diagnosis"]["texts_2T"] = [
  $report["overall_performance"]["vertex"]["exec_functions"]        = "Executive\nFunctions";
  $report["overall_performance"]["vertex"]["parahipocampal_region"] = "Parahipocampal\nregion";
 
- $report["gaze_duration"]["text"] = "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages. For more\ninformation on how to interpret this graph, please refer to the ANNEX – Visual Working Memory\n Graph Interpretation.";
+ $report["gaze_duration"]["text"] = "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages.";
  $report["gaze_duration"]["ylabel"] = "Visual Working Memory";
  $report["gaze_duration"]["graph_title"] = ["PATIENT","COGNITIVELY HEALTHY CONTROL"];
  $report["gaze_duration"]["xlabel"] = ["ENCODING", "RECOGNITION"];
  $report["gaze_duration"]["legend"] = ["Integrative Memory","Associative Memory"];
  
- $report["visual_scanning"]["text"] = "The Visual Scanning graph displays the patient’s visual scanning capabilities while looking for targets,\nin both Encoding and Recognition stages. For more information on how to interpret this graph,\nplease refer to the ANNEX – Visual Scanning Interpretation.";
+ $report["visual_scanning"]["text"] = "The Visual Scanning graph displays the patient’s visual scanning capabilities while looking for targets,\nin both Encoding and Recognition stages.";
  $report["visual_scanning"]["ylabel"] = "Visual Scanning";
  $report["visual_scanning"]["graph_title"] = ["PATIENT","COGNITIVELY HEALTHY CONTROL"];
  $report["visual_scanning"]["xlabel"] = ["ENCODING", "RECOGNITION"];
  $report["visual_scanning"]["legend"] = ["Integrative Memory","Associative Memory"];
 
- $report["fixation_duration"]["text"] = "The Fixation Duration graph displays the average amount of time [ms] of the fixations performed by\nthe patient, in both Encoding and Recognition stages. For more information on how to interpret this\ngraph, please refer to the ANNEX – Fixation Duration Interpretation.";
+ $report["fixation_duration"]["text"] = "The Fixation Duration graph displays the average amount of time [ms] of the fixations performed by\nthe patient, in both Encoding and Recognition stages.";
  $report["fixation_duration"]["ylabel"] = "Fixation Duration";
  $report["fixation_duration"]["graph_title"] = ["PATIENT","COGNITIVELY HEALTHY CONTROL"];
  $report["fixation_duration"]["xlabel"] = ["ENCODING", "RECOGNITION"];
  $report["fixation_duration"]["legend"] = ["Integrative Memory","Associative Memory"];
 
- $report["number_of_fixations"]["text"] = "The Number of Fixations graph displays the number of fixations performed by the patient, in both\nEncoding and Recognition stages. For more information on how to interpret this graph, please refer\nto the ANNEX – Number of Fixations Interpretation.";
- $report["number_of_fixations"]["ylabel"] = "Numbe of Fixations";
+ $report["number_of_fixations"]["text"] = "The Number of Fixations graph displays the number of fixations performed by the patient, in both\nEncoding and Recognition stages.";
+ $report["number_of_fixations"]["ylabel"] = "Number of Fixations";
  $report["number_of_fixations"]["graph_title"] = ["PATIENT","COGNITIVELY HEALTHY CONTROL"];
  $report["number_of_fixations"]["xlabel"] = ["ENCODING", "RECOGNITION"];
  $report["number_of_fixations"]["legend"] = ["Integrative Memory","Associative Memory"];

@@ -10,6 +10,9 @@
   include ("../db_management/TableEvaluations.php");
   include ("../db_management/TableSubject.php");
   include ("../db_management/TableUpdates.php");
+  include ("../db_management/TableAppPasswordRecovery.php");
+  include ("../db_management/TableMedicalRecords.php");
+  include ("../db_management/TableRateLimiting.php");
 
   // Setting the pointer location for db conf
   DBCon::setPointerLocation("configs");  
@@ -44,6 +47,7 @@
   $srv["table_privileges"][TableEvaluations::IN_DB][TableEvaluations::TABLE_NAME]                         = [$PRIV_INSERT];
   $srv["table_privileges"][TableSubject::IN_DB][TableSubject::TABLE_NAME]                                 = [$PRIV_INSERT, $PRIV_SELECT, $PRIV_UPDATE];
   $srv["table_privileges"][TableUpdates::IN_DB][TableUpdates::TABLE_NAME]                                 = [$PRIV_SELECT];
+  $srv["table_privileges"][TableAppPasswordRecovery::IN_DB][TableAppPasswordRecovery::TABLE_NAME]         = [$PRIV_SELECT];
   
   $services[] = $srv;
 
@@ -58,9 +62,10 @@
   $srv["table_privileges"][TableProcessingParameters::IN_DB][TableProcessingParameters::TABLE_NAME]       = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $srv["table_privileges"][TableUpdates::IN_DB][TableUpdates::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableAppPasswordRecovery::IN_DB][TableAppPasswordRecovery::TABLE_NAME]         = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableRateLimiting::IN_DB][TableRateLimiting::TABLE_NAME]                       = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $services[] = $srv;
   
-
   // Partner privileges. 
   $srv["mysql_user"] = $crendentials[DBcon::DBCNF_MAIN_SRV][DBCon::DB_SERVICE_PARTNERS][DBCon::DBCNF_SRV_USERNAME];
   $srv["mysql_pass"] = $crendentials[DBcon::DBCNF_MAIN_SRV][DBCon::DB_SERVICE_PARTNERS][DBCon::DBCNF_SRV_PASSWORD];
@@ -72,6 +77,7 @@
   $srv["table_privileges"][TableEvaluations::IN_DB][TableEvaluations::TABLE_NAME]                         = [$PRIV_SELECT];
   //$srv["table_privileges"][TableProcessingParameters::IN_DB][TableProcessingParameters::TABLE_NAME]       = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   //$srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
+  $srv["table_privileges"][TableMedicalRecords::IN_DB][TableMedicalRecords::TABLE_NAME]                   = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $services[] = $srv;
 
   

@@ -12,6 +12,7 @@ include_once (__DIR__ . "/../data_processing/RProcessing.php");
 include_once (__DIR__ . "/../db_management/TableEvaluations.php");
 include_once (__DIR__ . "/../db_management/TableSubject.php");
 include_once (__DIR__ . "/../db_management/TableInstitutionUsers.php");
+include_once (__DIR__ . "/../db_management/TableInstitution.php");
 
 
 class ObjectReports extends ObjectBaseClass
@@ -373,6 +374,70 @@ class ObjectReports extends ObjectBaseClass
    }
 
    function list($subject_id, $parameters){
+      return $this->listReports($subject_id,true);
+   }
+
+   function list_all_own_institution($subject_id,$parameters){
+      return $this->listReports($subject_id,false);
+   }
+
+   function get($report_id,$parameters){
+      return $this->getReport($report_id,$parameters,true);
+   }
+
+   function admin_evaluation_list($identifier,$parameters){
+
+      $tev = new TableEvaluations($this->con_main);
+      $tpp = new TablePortalUsers($this->con_secure);
+      $ti  = new TableInstitution($this->con_main);
+      $ts  = new TableSubject($this->con_secure);
+
+      $ans = $tev->listAllEvaluations();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting the evaluation list " . $tev->getError();
+         $this->returnable_error = "Internal database Error";
+         return false;
+      }      
+      $ret["evaluations"]  = $ans;
+      
+      $ans = $tpp->getPPNameMap();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting the portal user name map " . $tpp->getError();
+         $this->returnable_error = "Internal database Error";
+         return false;
+      }
+      $ret["portal_users"] = $ans;
+
+
+      $ans = $ti->getInstitutionNameMap();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting the institution name map " . $ti->getError();
+         $this->returnable_error = "Internal database Error";
+         return false;
+      }
+      $ret["institutions"] = $ans;
+
+      $ans = $ts->getSubjectNameMap();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting the subject name map " . $ts->getError();
+         $this->returnable_error = "Internal database Error";
+         return false;
+      }
+      $ret["subjects"] = $ans;
+      
+      return $ret;
+
+   }
+
+   function get_own_institution($report_id,$parameters){
+      return $this->getReport($report_id,$parameters,false);
+   }
+      
+   private function listReports($subject_id, $own_inst_only = true){
 
       // The portal user that requests the reports for this subject. 
       $auth = $this->headers[HeaderFields::AUTHORIZATION];
@@ -380,22 +445,14 @@ class ObjectReports extends ObjectBaseClass
       $portal_user = $auth[0];
 
       //error_log("Inside evaluation list");
-
-      // Finding the role of the user.
-      $role = $this->portal_user_info[TablePortalUsers::COL_USER_ROLE];
-
-      if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN){
-         // In this case the portal user is ignored becase we need ALL evaluations for this subject. 
-         $portal_user = "";
-      }
-
       $tev = new TableEvaluations($this->con_main);
       $tpu = new TablePortalUsers($this->con_secure);
 
-      // If someone NOT authorized to get the information for this subject they will either not authenticate (because the token and the user ide will be a mistmach)
-      // Or this will return empty because the specified subject id is NOT associated this this portal user in ANY evaluations. 
-      // In the administrative case, we actually could be sending back information not from that user. 
-      $ans = $tev->getEvaluationListForSubjectAndPortalUser($subject_id,$portal_user);
+      // Verification is ONLY needed when $own_inst_only is equal to false, as we need to ensure that the portal user's valid institutions belong to the report. 
+      $portal_user_to_use = $portal_user;
+      if (!$own_inst_only) $portal_user_to_use = "";
+
+      $ans = $tev->getEvaluationListForSubjectAndPortalUser($subject_id,$portal_user_to_use);
       if ($ans === false){
          $this->suggested_http_code = 500;
          $this->error = "Failed getting the evaluation list for $subject_id and portal user $portal_user: " . $tev->getError();
@@ -406,33 +463,45 @@ class ObjectReports extends ObjectBaseClass
       $ret["evaluation_list"] = $ans;
       $ret["portal_users"] = [];
 
-      if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN) {
-          // We need to provide the nanem and last anme for all portal users.
-          $pp_ids = array();          
-          foreach ($ans as $row) {
-            //error_log(json_encode($row));
-            $pp_ids[] = $row[TableEvaluations::COL_PORTAL_USER];
-          }
-          $pp_ids = array_unique($pp_ids);
-          
-          // We need to get the name of the portal users.
-          $ans = $tpu->getAllNamesForIDList($pp_ids, [], []);
-          if ($ans === false) {
-              $this->suggested_http_code = 500;
-              $this->error = "Failed gettting portal user names for evaluations " . $tpu->getError();
-              $this->returnable_error = "Internal database error";
-              return false;
-          }
+      if (!$own_inst_only) {
 
-          foreach ($ans as $row) {
-              $ret["portal_users"][$row[TableBaseClass::COL_KEYID]] = $row[TablePortalUsers::COL_LASTNAME] . ", " . $row[TablePortalUsers::COL_NAME];
-          }
+         $valid_institutions = $this->portal_user_info[ComplimentaryDataFields::ASSOCIATED_INSTITUTIONS];
+          
+         // We need to provide the name and last last for all portal users.
+         $pp_ids = array();          
+         foreach ($ans as $row) {
+           // We need to verify that all evaluations are from a valid institution.             
+           $inst = $row[TableEvaluations::COL_INSTITUTION_ID];
+           if (!in_array($inst,$valid_institutions)){
+              $this->suggested_http_code = 403;
+              $this->error = "Failed getting evaluations for portal user $portal_user and subject $subject_id. There is an evaluation associated with institution '$inst' while valid institutions are  " . implode(",",$valid_institutions);
+              $this->returnable_error = "Invalid institution request";
+              return false;  
+           }
+           $pp_ids[] = $row[TableEvaluations::COL_PORTAL_USER];
+         }
+         $pp_ids = array_unique($pp_ids);
+         
+         // We need to get the name of the portal users.
+         $ans = $tpu->getAllNamesForIDList($pp_ids, [], []);
+         if ($ans === false) {
+             $this->suggested_http_code = 500;
+             $this->error = "Failed getting portal user names for evaluations " . $tpu->getError();
+             $this->returnable_error = "Internal database error";
+             return false;
+         }
+
+         foreach ($ans as $row) {
+            $ret["portal_users"][$row[TableBaseClass::COL_KEYID]] = $row[TablePortalUsers::COL_LASTNAME] . ", " . $row[TablePortalUsers::COL_NAME];
+         }
       }
 
-      return $ret;
-   }
+      // If the the request is for a specific portal user and not administrative, no check is required as an invalid portal user will either not log in or return empty report list. 
 
-   function get($report_id,$parameters){
+      return $ret;
+   }   
+
+   private function getReport($report_id,$parameters,$own_report){
 
       // The portal user that requests the reports for this subject. 
       $auth = $this->headers[HeaderFields::AUTHORIZATION];
@@ -459,17 +528,18 @@ class ObjectReports extends ObjectBaseClass
 
       $tev = new TableEvaluations($this->con_main);
 
-      // Getting the role of the logged in user. 
-      $role = $this->portal_user_info[TablePortalUsers::COL_USER_ROLE];
-      if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN){
+      if (!$own_report){
          // And admin might solicit a report that is not his own. So we empyt the variable to forgo that check. 
-         $portal_user = "";
+         $portal_user_to_use = "";
+      }
+      else{
+         $portal_user_to_use = $portal_user;
       }
 
       // If someone NOT authorized to get the information for this report they will either not authenticate (because the token and the user ide will be a mistmach)
       // Or this will return empty because the specified report is NOT associated this this portal user in ANY evaluations.
       // And administrative user will empty the portal user  so as to void this check. 
-      $ans = $tev->getEvaluation($report_id,$portal_user);
+      $ans = $tev->getEvaluation($report_id,$portal_user_to_use);
       
       if ($ans === FALSE){
          $this->suggested_http_code = 401;
@@ -489,6 +559,17 @@ class ObjectReports extends ObjectBaseClass
 
       // Creating the json report structure.
       $report_row = $ans[0]; // Getting the report.
+
+      // Make sure the report is actually from the institution of the adminstrative user.
+      if (!$own_report){
+         if (!in_array($report_row[TableEvaluations::COL_INSTITUTION_ID],$this->portal_user_info[ComplimentaryDataFields::ASSOCIATED_INSTITUTIONS])){
+            $list = implode(",",$this->portal_user_info[ComplimentaryDataFields::ASSOCIATED_INSTITUTIONS]);
+            $this->suggested_http_code = 403;
+            $this->error = "Failed getting evaluation for portal user $portal_user report $report_id. Reason: Evaluation is associated with institution " . $report_row[TableEvaluations::COL_INSTITUTION_ID] . ", while valid institutions are $list";
+            $this->returnable_error = "Invalid institution request";
+            return false;  
+         }
+      }
 
       // Checking if this is a discarded report.
       $discard_reason = $report_row[TableEvaluations::COL_DISCARD_REASON];

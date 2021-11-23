@@ -37,7 +37,8 @@ $OperationsMap = [
    APIEndpoints::INSTITUTION => InstitutionOperations::getConstList(),
    APIEndpoints::PORTAL_USERS => PortalUserOperations::getConstList(),
    APIEndpoints::REPORTS => ReportOperations::getConstList(),
-   APIEndpoints::SUBJECTS => SubjectOperations::getConstList()
+   APIEndpoints::SUBJECTS => SubjectOperations::getConstList(),
+   APIEndpoints::MEDICAL_RECORDS => MedRecordsOperations::getConstList()
 ];
 
 // Verifying the object is with the operation. 

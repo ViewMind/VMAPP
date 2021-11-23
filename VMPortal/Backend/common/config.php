@@ -10,10 +10,11 @@ include_once (__DIR__ . "/../db_management/DBCon.php");
 
 // Defining the routing map. 
 const ROUTING = [
-   APIEndpoints::INSTITUTION  => "ObjectInstitution",
-   APIEndpoints::REPORTS      => "ObjectReports",
-   APIEndpoints::PORTAL_USERS => "ObjectPortalUsers",
-   APIEndpoints::SUBJECTS     => "ObjectSubjects"
+   APIEndpoints::INSTITUTION     => "ObjectInstitution",
+   APIEndpoints::REPORTS         => "ObjectReports",
+   APIEndpoints::PORTAL_USERS    => "ObjectPortalUsers",
+   APIEndpoints::SUBJECTS        => "ObjectSubjects",
+   APIEndpoints::MEDICAL_RECORDS => "ObjectMedicalRecord"
 ];
 
 // Loading the pointer location

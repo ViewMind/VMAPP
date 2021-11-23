@@ -100,9 +100,29 @@ class ObjectPortalUsers extends ObjectBaseClass{
       $ans = $tpu->updateOwnUser($portal_user,$parameters);
       if ($ans === FALSE){
          $this->suggested_http_code = 500;
-         $this->error = "When modifying user $portal_user, update failed. Reason: " + $tpu->getError();
+         $this->error = "When modifying user $portal_user, update failed. Reason: " . $tpu->getError();
          $this->returnable_error = "Internal Server Error";
          return false;         
+      }
+
+      return array();
+
+   }
+
+   function logout($identifier,$parameters){
+
+      $auth = $this->headers[HeaderFields::AUTHORIZATION];
+      $auth = explode(":",$auth);
+      $portal_user = $auth[0];
+
+      $tpu = new TablePortalUsers($this->con_secure);
+      //error_log("Logging out user $portal_user");
+      $ans = $tpu->invalidateUserToken($portal_user);
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->error = "Could not clear token for user $portal_user. Reason: " . $tpu->getError();
+         $this->returnable_error = "Internal server error";
+         return false;
       }
 
       return array();

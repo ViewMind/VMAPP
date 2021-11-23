@@ -33,7 +33,7 @@ echo "Verifying user existance\n";
 $email = $params[TablePortalUsers::COL_EMAIL];
 
 $tpu = new TablePortalUsers($con_secure);
-$ans = $tpu->getInfoForUser($email);
+$ans = $tpu->getInfoForUser($email,false);
 if ($ans === false){
    echo "Error user's existance: " . $tpu->getError();
    exit();

@@ -49,11 +49,71 @@ class TablePortalUsers extends TableBaseClass {
       APIEndpoints::INSTITUTION  => [ InstitutionOperations::LIST ],
       APIEndpoints::REPORTS      => [ ReportOperations::LIST, ReportOperations::GET ],
       APIEndpoints::SUBJECTS     => [ SubjectOperations::LIST ],
-      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN ]
+      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN, PortalUserOperations::LOGOUT]
+   ];
+
+   // Administrative Portal User Permissions
+   private const ADMIN_PORTAL_USER_PERMISSIONS = [
+      APIEndpoints::INSTITUTION  => [ InstitutionOperations::LIST ],
+      APIEndpoints::REPORTS      => [ ReportOperations::LIST_ALL_OWN_INST, ReportOperations::GET_OWN_INSTITUTION ],
+      APIEndpoints::SUBJECTS     => [ SubjectOperations::LIST_ALL_OWN_INST ],
+      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN, PortalUserOperations::LOGOUT ]
+   ];
+
+   private const MED_REC_PERMISSIONS = [
+      APIEndpoints::MEDICAL_RECORDS => [ MedRecordsOperations::MODIFY, MedRecordsOperations::GET, MedRecordsOperations::LIST ]
+   ];
+
+   private const MASTER_ADMIN_PERMISSIONS = [
+      APIEndpoints::REPORTS => [ ReportOperations::ADMIN_LIST ]
    ];
 
    function __construct($con){
       parent::__construct($con);
+   }
+
+   static function getAdminPermissions(){
+      return self::ADMIN_PORTAL_USER_PERMISSIONS;
+   }
+
+   static function getStandardPermissions(){
+      return self::STANDARD_PORTAL_USER_PERMISSIONS;
+   }
+
+   static function getMedRecPermissions(){
+      return self::MED_REC_PERMISSIONS;
+   }
+
+   static function getMasterAdminPermissions(){
+      return self::MASTER_ADMIN_PERMISSIONS;
+   }
+
+   function getPermissionsForEmailList($email_list){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_EMAIL,$email_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }      
+      $cols_to_get = [self::COL_EMAIL,self::COL_PERMISSIONS];
+      return $this->simpleSelect($cols_to_get,$select);
+   }
+
+   function setStandardUserPermissionsToUserList($user_list){
+      return $this->setPermissionsToUserList($user_list,self::STANDARD_PORTAL_USER_PERMISSIONS);
+   }
+
+   function setAdminPortalPermissionsToUserList($user_list){
+      return $this->setPermissionsToUserList($user_list,self::ADMIN_PORTAL_USER_PERMISSIONS);
+   }
+
+   function setPermissionsToUserList($user_list,$permissions){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_EMAIL,$user_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }      
+      $params[self::COL_PERMISSIONS] = json_encode($permissions);
+      return $this->simpleUpdate($params,"Updateing User Permissions by Email List",$select);
    }
 
 
@@ -147,6 +207,18 @@ class TablePortalUsers extends TableBaseClass {
       return $this->simpleSelect($cols_to_get,$operation);
    }
 
+   function getPPNameMap(){
+      $cols_to_get = [self::COL_KEYID, self::COL_NAME, self::COL_LASTNAME];
+      $select = new SelectOperation();
+      $ans = $this->simpleSelect($cols_to_get,$select);
+      if ($ans === false) return false;
+      $ret = array();
+      foreach ($ans as $row){
+         $ret[$row[self::COL_KEYID]] = $row[self::COL_LASTNAME] . ", " . $row[self::COL_NAME];
+      }
+      return $ret;
+   }
+
    function getAllNamesForIDList($id_list, $roles, $enabled_status){
       $cols_to_get = [self::COL_KEYID, self::COL_EMAIL, self::COL_NAME, self::COL_LASTNAME, self::COL_USER_ROLE];
       $operation = new SelectOperation();
@@ -191,6 +263,11 @@ class TablePortalUsers extends TableBaseClass {
       // And updating the table. 
       return $this->updateOperation($params,"Auth token set",self::COL_EMAIL,$email);
 
+   }
+
+   function invalidateUserToken($keyid){
+      $params[self::COL_TOKEN] = "";
+      return $this->updateOperation($params,"Auth token set",self::COL_KEYID,$keyid);
    }
 
    function setUserPassword($user, $password){
@@ -292,6 +369,34 @@ class TablePortalUsers extends TableBaseClass {
    function setUsersPermission($unique_id,$permissions){
       $params[self::COL_PERMISSIONS] = $permissions;
       return $this->updateOperation($params,"Setting Portal User Permissions",self::COL_EMAIL,$unique_id);
+   }
+
+   function addPermissionsToAll($to_add){
+      $select = new SelectOperation();
+      $cols_to_get = [self::COL_KEYID, self::COL_PERMISSIONS];
+      $rows = $this->simpleSelect($cols_to_get,$select);
+      if ($rows === false) return false;
+
+      $update = array();
+
+      foreach ($rows as $row){
+         $keyid = $row[self::COL_KEYID];
+         $permissions = json_decode($row[self::COL_PERMISSIONS],true);
+         //var_dump($to_add);
+         foreach ($to_add as $object => $operations){
+            if (!array_key_exists($object,$permissions)){
+               $permissions[$object] = array();
+            }
+            //echo "BEFORE " . implode(",",$permissions[$object]) ."\n";
+            $permissions[$object] = array_merge($permissions[$object],$operations);
+            //echo "AFTER " . implode(",",$permissions[$object]) ."\n";
+            $permissions[$object] = array_unique($permissions[$object]);
+         }
+         $update[$keyid] = json_encode($permissions);
+      }
+
+      return $this->batchUpdate($update,self::COL_KEYID,self::COL_PERMISSIONS);
+
    }
 
 }

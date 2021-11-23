@@ -25,6 +25,22 @@
    $item = [];
    $y = $y + $h;
    $item["type"]            = "result_segment";
+   $item["id"]              = "processing_speed_facilitated";
+   $item["title"]           = "#gonogo.processing_speed_facilitated.title#";
+   $item["range_text"]      = "#gonogo.processing_speed_facilitated.range_text#";
+   $item["x"]               = 0;
+   $item["y"]               = $y;
+   $item["w"]               = 1;
+   $item["h"]               = $h;
+   $item["value"]           = "&processing_speed_facilitated&";
+   $item["color_code"]      = "&indexes.color.processing_speed_facilitated&";
+   $item["nsegments"]       = 3;
+   $item["ndecimals"]       = 2;
+   $page["items"][] = $item;
+
+   $item = [];
+   $y = $y + $h;
+   $item["type"]            = "result_segment";
    $item["id"]              = "processing_speed_interference";
    $item["title"]           = "#gonogo.processing_speed_interference.title#";
    $item["range_text"]      = "#gonogo.processing_speed_interference.range_text#";
@@ -38,21 +54,6 @@
    $item["ndecimals"]       = 2;
    $page["items"][] = $item;
    
-   $item = [];
-   $y = $y + $h;
-   $item["type"]            = "result_segment";
-   $item["id"]              = "processing_speed_facilitated";
-   $item["title"]           = "#gonogo.processing_speed_facilitated.title#";
-   $item["range_text"]      = "#gonogo.processing_speed_facilitated.range_text#";
-   $item["x"]               = 0;
-   $item["y"]               = $y;
-   $item["w"]               = 1;
-   $item["h"]               = $h;
-   $item["value"]           = "&processing_speed_facilitated&";
-   $item["color_code"]      = "&indexes.color.processing_speed_facilitated&";
-   $item["nsegments"]       = 3;
-   $item["ndecimals"]       = 2;
-   $page["items"][] = $item;
 
    $item = [];
    $y = $y + $h;

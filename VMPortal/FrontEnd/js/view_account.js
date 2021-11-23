@@ -58,11 +58,31 @@ function saveChanges(){
    var fname = sessionStorage.getItem(GLOBALS.SESSION_KEYS.USER_FNAME);
    var lname = sessionStorage.getItem(GLOBALS.SESSION_KEYS.USER_LNAME);
 
+   var to_validate = {
+       fname: "First Name",
+       lname: "Last Name"
+   };
+
+   for (key in to_validate){
+      let name = to_validate[key];
+      if (!noSpecialCharsInput(document.getElementById(key).value)){
+        ErrorDialog.open("Field: " + name,"Invalid characters used. Make sure to only use letters and numbers");
+        return;
+      }
+   }
+
    var tomod = {};
    var nfname = document.getElementById("fname").value;
    var nlname = document.getElementById("lname").value;
    var passwd = document.getElementById("password").value;
    var cpasswd = document.getElementById("cpassword").value;
+
+   if ((passwd != "") || (cpasswd != "")){
+      if (!checkPassword(passwd)){
+         ErrorDialog.open("Invalid Password","<p>The password must meet the following requirements<ul> <li> Between 8 and 64 caracters </li> <li> Must contains at least 1 uppercase, 1 lower case, 1 number and 1 special character </li>  <li>Must not contain the username </li> </ul></p>");
+         return;
+      }
+   }
 
    if (nfname == ""){
       ErrorDialog.open("Input Error","First name cannot be empty");
@@ -100,6 +120,27 @@ function saveChanges(){
    API.modifyAccount(tomod,"onModFinished");
 
 }
+
+function checkPassword(password){
+
+    var username = sessionStorage.getItem(GLOBALS.SESSION_KEYS.USER);
+    var pattern = new RegExp(
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[-+_!@#$%^&*.,?]).+$"
+    );
+
+    // Checking if the password contains the username
+    if (password.includes(username)){
+        return false;
+    }
+
+    // Checking the length
+    if ((password.length < 8) || (password.length > 64)){
+        return false;
+    }
+
+    return pattern.test(password);
+}
+
 
 function onModFinished(response){
 

@@ -109,37 +109,43 @@ class TableSubject extends TableBaseClass {
 
    }
 
+   function getAllSubjectsInInstitution($instituion_id){
+      $cols_to_get = [];
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_LASTEST,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$instituion_id)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+
+      $select->setExtra(SelectExtras::ORDER,self::COL_LAST_NAME);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::ASC);
+
+      return $this->simpleSelect($cols_to_get,$select);            
+   }
+
+   function getSubjectNameMap(){
+      $cols_to_get = [self::COL_NAME, self::COL_LAST_NAME, self::COL_UNIQUE_ID];
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_LASTEST,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      $ans = $this->simpleSelect($cols_to_get,$select);
+      if ($ans === false) return false;
+
+      $ret = array();
+      foreach ($ans as $row){
+         $ret[$row[self::COL_UNIQUE_ID]] = $row[self::COL_LAST_NAME] . ", " . $row[self::COL_NAME];
+      }
+
+      return $ret;
+   }
 
 }
 
-// // Creating the connections. 
-// $dbcon = new DBCon();      
-// $con_secure = $dbcon->dbOpenConnection(DBCon::DB_SECURE,DBCon::DB_SERVICE_DP);
-// if ($con_secure == NULL){
-//    echo "Error creating db connection: " . $dbcon->getError() . "\n";
-// }
-
-// $ts = new TableSubject($con_secure);
-
-// $params[TableSubject::COL_BIRTH_DATE] = "2020-01-01";
-// $params[TableSubject::COL_GENDER] = "M";
-// $params[TableSubject::COL_INSTANCE_NUMBER] = "0";
-// $params[TableSubject::COL_INSTITUTION_ID] = "1000";
-// $params[TableSubject::COL_INTERNAL_ID] = "Something Else";
-// $params[TableSubject::COL_LAST_NAME] = "Smith Jr.";
-// $params[TableSubject::COL_NAME] = "John";
-// $params[TableSubject::COL_UNIQUE_ID] = "MyID0002";
-// $params[TableSubject::COL_YEARS_FORMATION] = "0";
-// $params[TableSubject::COL_BIRTH_COUNTRY_CODE] = "AR";
-// $params[TableSubject::COL_AGE] = "7";
-
-// $ans = $ts->addOrUpdateSubject($params);
-
-// if ($ans === FALSE){
-//    echo "Error: " . $ts->getError() . "\n";
-//    return;
-// }
-
-// echo "All good\n";
 
 ?>

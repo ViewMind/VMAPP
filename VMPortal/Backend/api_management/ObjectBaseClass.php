@@ -4,6 +4,7 @@ include_once (__DIR__ . "/../common/echo_out.php");
 include_once (__DIR__ . "/../common/named_constants.php");
 include_once (__DIR__ . "/../common/log_manager.php");
 include_once (__DIR__ ."./../common/config.php");
+include_once (__DIR__ . "/../db_management/TablePortalUsers.php"); // This one is required a lot for verification of same institution operations. 
 
 class ObjectBaseClass{
 

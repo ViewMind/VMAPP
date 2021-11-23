@@ -12,9 +12,24 @@ class ObjectSubjects extends ObjectBaseClass{
       parent::__construct($service,$headers);
    }
 
-   function list($identifier,$parameters){
+   /**
+    * Lists all the subjects for a portal user (which has logged on)
+    */
 
-      if ($identifier == ""){
+   function list($identifier,$parameters){
+      return $this->getSubjectList($identifier,false);
+   }
+
+   /**
+    * Lists all the subjects for the institution of a portal user (which has logged on)
+    */
+
+   function list_all_own_institution($identifier,$parameter){
+      return $this->getSubjectList($identifier,true);
+   }
+
+   private function getSubjectList($institution,$all){
+      if ($institution == ""){
          $this->suggested_http_code = 401;
          $this->error = "Empty institution identifier.";
          return false;
@@ -25,24 +40,24 @@ class ObjectSubjects extends ObjectBaseClass{
       $auth = explode(":",$auth);
       $portal_user = $auth[0];
 
-      // Finding the role of the user.
-      $role = $this->portal_user_info[TablePortalUsers::COL_USER_ROLE];
-
       // Create all table objects. 
       $tev = new TableEvaluations($this->con_main);
       $tsu = new TableSubject($this->con_secure);
-      //$tpu = new TablePortalUsers($this->con_secure);
 
-      if ($role == TablePortalUsers::ROLE_INTITUTION_ADMIN){         
-         $ans = $tev->getAllSubjectsWithEvaluationsForInstitutionIDAndPortalUser($identifier,"");
+      // Verifying that the requested institution is a valid one
+      if (!in_array($institution,$this->portal_user_info[ComplimentaryDataFields::ASSOCIATED_INSTITUTIONS])){
+         $this->suggested_http_code = 403;
+         $this->error = "Portal user $portal_user attempted to get subject list for institution $institution but it's only enabled for " . implode(",",$this->portal_user_info[ComplimentaryDataFields::ASSOCIATED_INSTITUTIONS]);
+         $this->returnable_error = "Instituion authentication error";
+         return false;
       }
-      else{
-         $ans = $tev->getAllSubjectsWithEvaluationsForInstitutionIDAndPortalUser($identifier,$portal_user);         
-      }
+
+      if ($all)  $ans = $tev->getAllSubjectsWithEvaluationsForInstitutionIDAndPortalUser($institution,"");
+      else $ans = $tev->getAllSubjectsWithEvaluationsForInstitutionIDAndPortalUser($institution,$portal_user);
       
       if ($ans === FALSE){
          $this->suggested_http_code = 500;
-         $this->error = "Failed getting all subject with evaluations for $identifier and portal user $portal_user whose role is $role: " . $tev->getError();
+         $this->error = "Failed getting all subject with evaluations for $institution and portal user $portal_user: " . $tev->getError();
          $this->returnable_error = "Internal database error";
          return false;
       }
@@ -69,13 +84,12 @@ class ObjectSubjects extends ObjectBaseClass{
       
       if (empty($ans)){
          $this->suggested_http_code = 500;
-         $this->error = "Got an empty array when attempting to get information for the patients of portal user $portal_user on institution $identifier";
+         $this->error = "Got an empty array when attempting to get information for the patients of portal user $portal_user on institution $institution";
          $this->returnable_error = "Internal database error";
          return false;
       }
 
-      return $ans;
-
+      return $ans;            
    }
 
 

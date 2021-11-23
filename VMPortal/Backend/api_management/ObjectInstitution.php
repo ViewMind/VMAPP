@@ -5,6 +5,7 @@ include_once (__DIR__ . "/../db_management/TableProcessingParameters.php");
 include_once (__DIR__ . "/../db_management/TableInstitution.php");
 include_once (__DIR__ . "/../db_management/TableInstitutionUsers.php");
 include_once (__DIR__ . "/../db_management/TableUpdates.php");
+include_once (__DIR__ . "/../db_management/TableAppPasswordRecovery.php");
 include_once (__DIR__ . "/../common/named_constants.php");
 
 class ObjectInstitution extends ObjectBaseClass{
@@ -125,6 +126,24 @@ class ObjectInstitution extends ObjectBaseClass{
               $ret[ResponseDataSubFields::UPDATE_VERSION] = $current_version;
           }
       }
+
+      // Adding the reset password hash.
+      $tapr = new TableAppPasswordRecovery($this->con_secure);
+      $result = $tapr->getInstancePassword($institution_id,$institution_instance);
+      if ($result === false){
+         $this->suggested_http_code = 500;
+         $this->returnable_error = "Failed to retrieve admin user password";
+         $this->error = "Attempting to get app recovery password for $institution_id.$institution_instance failed. Reason: " + $tapr->getError();
+         return false;
+      }
+
+      if (count($result) == 0){
+         $ret[ResponseDataSubFields::RECOVERY_PASSWORD] = "";
+      }
+      else{
+         $ret[ResponseDataSubFields::RECOVERY_PASSWORD] = $result[0][TableAppPasswordRecovery::COL_PASSWORD_HASH];
+      }
+
 
       return $ret;
 

@@ -67,6 +67,19 @@ ACCESS.REPTEXT.AGE           = "age"
 ACCESS.REPTEXT.DATE          = "date"
 ACCESS.REPTEXT.REQDR         = "reqdr"
 
+// General Medical Record Constants.
+ACCESS.MEDREC = {}
+ACCESS.MEDREC.NAME          = "first_name";
+ACCESS.MEDREC.LAST          = "last_name";
+ACCESS.MEDREC.UNIQUE_ID     = "unique_id";
+ACCESS.MEDREC.VMID          = "viewmind_id";
+ACCESS.MEDREC.INSTITUTION   = "institution_id";
+ACCESS.MEDREC.SUBJECT_LINK  = "subject_link";
+ACCESS.MEDREC.RECORD        = "record";
+ACCESS.MEDREC.LAST_MOD      = "last_mod";
+ACCESS.MEDREC.LAST_UPDATE   = "last_update";
+
+
 // Checking if the report contains discard reason and comment. 
 ACCESS.REPORT = {};
 ACCESS.REPORT.DISCARD_REASON = "discard_reason";

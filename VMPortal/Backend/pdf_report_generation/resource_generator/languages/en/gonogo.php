@@ -13,7 +13,7 @@
  ];
 
  $report["color_code"]["explanations"] = [
-    "red" => "Severe impairment\nand/or pathological",
+    "red" => "Severe and/or\npathological impairment",
     "green" => "No relevant problems\nwere encountered",
     "yellow" => "Mild impairment, not\nnecessarily pathological"
  ];
@@ -22,10 +22,10 @@
 
  $report["processing_speed"]["title"]                    = "PROCESSING SPEED";
  $report["processing_speed"]["range_text"]               = "Normal value below 1.8";
- $report["processing_speed_interference"]["title"]       = "VISUAL WORKING MEMORY INTERFERENCE";
- $report["processing_speed_interference"]["range_text"]  = "Normal value below 93";
  $report["processing_speed_facilitated"]["title"]        = "VISUAL WORKING MEMORY FACILITATED";
  $report["processing_speed_facilitated"]["range_text"]   = "Normal value below 49";
+ $report["processing_speed_interference"]["title"]       = "VISUAL WORKING MEMORY INTERFERENCE";
+ $report["processing_speed_interference"]["range_text"]  = "Normal value below 93";
  $report["reaction_time_facilitated"]["title"]           = "REACTION TIME FACILITATED";
  $report["reaction_time_facilitated"]["range_text"]      = "Normal value below 784";
  $report["reaction_time_interference"]["title"]          = "REACTION TIME INTERFERENCE";
@@ -72,22 +72,22 @@
  $report["overall_performance"]["vertex"]["index_error_facilitated"]          = "Inhibitory Alterations\nFacilitated";
  $report["overall_performance"]["vertex"]["index_error_interference"]         = "Inhibitory Alterations\nInterference";
 
- $report["gaze_duration"]["text"]   = "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial, in both Encoding and Recognition stages.";
+ $report["gaze_duration"]["text"]   = "The Visual Working Memory graph displays the average amount of time [ms] needed by the patient to extract\ninformation from an image during a trial.";
  $report["gaze_duration"]["ylabel"] = "Visual Working Memory";
  $report["gaze_duration"]["xlabel"] = ["CONTROL", "PATIENT"];
  $report["gaze_duration"]["legend"] = ["Facilitated Task","Inhibitory Task"];
 
- $report["study_duration"]["text"]   = "The Study Duration graph displays the average amount of time [ms] needed by the patient complete\nthe whole study, in both Encoding and Recognition stages.";
+ $report["study_duration"]["text"]   = "The Study Duration graph displays the average amount of time [ms] needed by the patient complete\nthe whole study.";
  $report["study_duration"]["ylabel"] = "Study Duration";
  $report["study_duration"]["xlabel"] = ["CONTROL", "PATIENT"];
  $report["study_duration"]["legend"] = ["Facilitated Task","Inhibitory Task"];
 
- $report["saccadic_behaviour"]["text"]   = "The Saccadic Behavior graph displays the visual scanning capabilities while looking for targets, in\nboth Encoding and Recognition stages.";
+ $report["saccadic_behaviour"]["text"]   = "The Saccadic Behavior graph displays the visual scanning capabilities while looking for targets.";
  $report["saccadic_behaviour"]["ylabel"] = "Saccadic Behaviour";
  $report["saccadic_behaviour"]["xlabel"] = ["CONTROL", "PATIENT"];
  $report["saccadic_behaviour"]["legend"] = ["Facilitated Task","Inhibitory Task"];
 
- $report["fixation_duration"]["text"]   = "The Fixation Duration graph displays the time for extracting relevant information in just once fixation,\nin both Encoding and Recognition stages.";
+ $report["fixation_duration"]["text"]   = "The Fixation Duration graph displays the time for extracting relevant information in just one fixation";
  $report["fixation_duration"]["ylabel"] = "Fixation Duration";
  $report["fixation_duration"]["xlabel"] = ["CONTROL", "PATIENT"];
  $report["fixation_duration"]["legend"] = ["Facilitated Task","Inhibitory Task"];
