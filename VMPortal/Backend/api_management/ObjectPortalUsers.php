@@ -71,12 +71,10 @@ class ObjectPortalUsers extends ObjectBaseClass{
       $auth = explode(":",$auth);
       $portal_user = $auth[0];
 
-      if ($portal_user != $identifier){
-         $this->suggested_http_code = 401;
-         $this->error = "Attempting to modify own data identifier ($identifier) and portal user ($portal_user) mistamatch";
-         $this->returnable_error = "Parameter error in API call";
-         return false;
-      }
+      // The identifier is ignored. As we can trust the $portal_user. 
+
+      // This was done because the information used to be part of the URL and no it is part of the body of the request. 
+      $parameters = $this->json_data;
 
       // Checking that only the allowed columns are modified. 
       $allowed_cols = [ TablePortalUsers::COL_COMPANY, TablePortalUsers::COL_PASSWD, TablePortalUsers::COL_NAME, TablePortalUsers::COL_LASTNAME ];
