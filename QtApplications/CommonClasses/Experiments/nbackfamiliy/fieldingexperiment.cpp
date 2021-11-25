@@ -42,20 +42,20 @@ bool FieldingExperiment::startExperiment(const QString &workingDir, const QStrin
     state = STATE_RUNNING;
     tstate = TSF_START;
     stateTimer.setInterval(TIME_TRANSITION);
-    stateTimer.start();
+    //stateTimer.start();
 
     if (!addNewTrial()){
         stateTimer.stop();
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
 
-    // Start enconding 1
-    rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
+    m->drawBackground();
+    drawCurrentImage();
 
     if (activateScreenView){
-        m->drawBackground();
-        drawCurrentImage();
+        this->show();
+        this->activateWindow();
     }
 
     return true;
@@ -68,9 +68,11 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_BLANK_1:
 
         // End retrieval 3. And trial.
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
-        rawdata.finalizeTrial("");
+        if (!manualMode){
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+            rawdata.finalizeTrial("");
+        }
 
         currentTrial++;
         if (finalizeExperiment()) return;
@@ -79,11 +81,13 @@ void FieldingExperiment::nextState(){
         break;
     case TSF_SHOW_BLANK_2:
 
-        // End retrieval 2
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
-        // Start retrieval 3
-        rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_3);
+        if (!manualMode){
+            // End retrieval 2
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+            // Start retrieval 3
+            rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_3);
+        }
 
         tstate = TSF_SHOW_BLANK_1;
         currentImage = 0;
@@ -91,11 +95,13 @@ void FieldingExperiment::nextState(){
         break;
     case TSF_SHOW_BLANK_3:
 
-        // End Retrieval 1
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
-        // Start Retrieval 2
-        rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_2);
+        if (!manualMode){
+            // End Retrieval 1
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+            // Start Retrieval 2
+            rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_2);
+        }
 
         tstate = TSF_SHOW_BLANK_2;
         currentImage = 1;
@@ -103,11 +109,13 @@ void FieldingExperiment::nextState(){
         break;
     case TSF_SHOW_DOT_1:
 
-        // End Enconding 1
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
-        // Start enconding 2
-        rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_2);
+        if (!manualMode){
+            // End Enconding 1
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+            // Start enconding 2
+            rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_2);
+        }
 
         tstate = TSF_SHOW_DOT_2;
         currentImage = 1;
@@ -116,12 +124,14 @@ void FieldingExperiment::nextState(){
 
     case TSF_SHOW_DOT_2:
 
-        // End Enconding 2
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
+        if (!manualMode){
+            // End Enconding 2
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
 
-        // Start enconding 3
-        rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_3);
+            // Start enconding 3
+            rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_3);
+        }
 
         tstate = TSF_SHOW_DOT_3;
         currentImage = 2;
@@ -130,8 +140,10 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_DOT_3:
 
         // End Encondinng 3.
-        finalizeOnlineFixations();
-        rawdata.finalizeDataSet();
+        if (!manualMode){
+            finalizeOnlineFixations();
+            rawdata.finalizeDataSet();
+        }
 
         tstate = TSF_TRANSITION;
         stateTimer.setInterval(TIME_TRANSITION);
@@ -140,12 +152,14 @@ void FieldingExperiment::nextState(){
 
         if (!addNewTrial()){
             stateTimer.stop();
-            emit(experimentEndend(ER_FAILURE));
+            emit Experiment::experimentEndend(ER_FAILURE);
             return;
         }
 
         // Start enconding 1
-        rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
+        if (!manualMode){
+            rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
+        }
 
         tstate = TSF_SHOW_DOT_1;
         currentImage = 0;
@@ -162,7 +176,7 @@ void FieldingExperiment::nextState(){
         break;
     }
 
-    stateTimer.start();
+    if (!manualMode) stateTimer.start();
     drawCurrentImage();
 }
 
@@ -229,7 +243,7 @@ bool FieldingExperiment::finalizeExperiment(){
 
     if (!rawdata.finalizeStudy()){
         error = "Failed on NBackMS study finalization: " + rawdata.getError();
-        emit (experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
     rawdata.markFileAsFinalized();
@@ -241,9 +255,9 @@ bool FieldingExperiment::finalizeExperiment(){
 
 
     if (!saveDataToHardDisk()){
-        emit(experimentEndend(ER_FAILURE));
+        emit Experiment::experimentEndend(ER_FAILURE);
     }
-    else emit(experimentEndend(er));
+    else emit Experiment::experimentEndend(er);
     return true;
 }
 
@@ -255,7 +269,11 @@ void FieldingExperiment::keyPressHandler(int keyPressed){
         return;
     }
     else{
-        if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
+        //if ((keyPressed == Qt::Key_N) && (state == STATE_RUNNING) && (tstate == TSF_SHOW_BLANKS)){
+        if ((keyPressed == Qt::Key_N) && (state == STATE_RUNNING)){
+            onTimeOut();
+        }
+        else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
             state = STATE_RUNNING;
             m->drawBackground();
             updateSecondMonitorORHMD();
@@ -282,17 +300,36 @@ void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
-    // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    if (!manualMode){
+        // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
+        rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    }
 
     computeOnlineFixations(data);
 
 }
 
 void FieldingExperiment::resetStudy(){
+    // Resetting messages (By clearing them).
+    updateFrontEndMessages();
+
+    currentTrial = 0;
+    state = STATE_RUNNING;
+    tstate = TSF_START;
+    stateTimer.start();
+
+    // Start enconding 1 (Making sure the right current data set is set)
+    rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
+
+    m->drawBackground();
+    drawCurrentImage();
 
 }
 
+void FieldingExperiment::updateFrontEndMessages(){
+    // The study is only enabled temporarily.
+    emit Experiment::updateStudyMessages(QVariantMap());
+}
 
 QVariantMap FieldingExperiment::addHitboxesToProcessingParameters(QVariantMap pp){
     QList<QRectF> hitBoxes = m->getHitTargetBoxes();
@@ -324,9 +361,11 @@ bool FieldingExperiment::addNewTrial(){
     QString type = m->getFullSequenceAsString(currentTrial);
     currentTrialID = QString::number(currentTrial);
 
-    if (!rawdata.addNewTrial(currentTrialID,type,"")){
-        error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
-        return false;
+    if (!manualMode){
+        if (!rawdata.addNewTrial(currentTrialID,type,"")){
+            error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
+            return false;
+        }
     }
     return true;
 }

@@ -19,7 +19,7 @@ namespace Globals{
    }
 
    namespace DEV_SERVER {
-      const QString API_URL = "https://testdev.viewmind.ai";
+      const QString API_URL = "https://devapi.viewmind.net";
       const QString REGION  = "DEV";
    }
 
@@ -103,7 +103,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "18.2.0";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "18.2.2";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

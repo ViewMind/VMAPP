@@ -18,8 +18,8 @@ VMBase {
     readonly property int vmFAIL_CODE_NONE: 0
     readonly property int vmFAIL_CODE_SERVER: 2
 
-    readonly property int vmMAX_L_COMMMENT_LINES: 5
-    readonly property int vmMAX_C_COMMENT_CHARS: 50
+    readonly property int vmMAX_L_COMMMENT_LINES: 19
+    readonly property int vmMAX_C_COMMENT_CHARS: 92
 
     property var vmStudyNameMap: []
     property var vmStdStudyNameByIndex: [];

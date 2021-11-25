@@ -27,6 +27,10 @@ namespace APINames {
       static const char * NAME = "freq_params";
    }
 
+   namespace RecoveryPassword {
+      static const char * NAME = "recovery_password";
+   }
+
    namespace UpdateParams{
       static const char * UPDATE_ET_CHANGE = "update_et_change";
       static const char * UPDATE_VERSION   = "update_version";
@@ -59,6 +63,7 @@ public:
     static const char * MAIN_APP_VERSION;
     static const char * MAIN_APP_UPDATE_DELAY_COUNTER;
     static const char * MAIN_DB_VERSION;
+    static const char * MAIN_RECOVERY_PASSWORD;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -171,6 +176,9 @@ public:
 
     // Set the medical info from the database.
     bool setMedicInformationFromRemote(const QVariantMap &response);
+
+    // Sets the recovery password from the operating information.
+    bool setRecoveryPasswordFromServerResponse(const QVariantMap &response);
 
     // Retrieves the processing parameters.
     QVariantMap getProcessingParameters() const;

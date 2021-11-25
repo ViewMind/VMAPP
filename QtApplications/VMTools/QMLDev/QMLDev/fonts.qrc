@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/fonts/segoe_ui_regular.ttf</file>
+    </qresource>
+</RCC>

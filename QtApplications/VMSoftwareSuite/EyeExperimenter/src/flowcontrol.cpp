@@ -338,11 +338,18 @@ void FlowControl::calibrateEyeTracker(quint8 eye_to_use){
 
     if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != ""){
         // Check if the file exists
+
         QString coefficient_file = DBUGSTR(Debug::Options::LOAD_CALIBRATION_K);
+        calibrationParams.name = coefficient_file;
+
         if (QFile(coefficient_file).exists()){
             calibrationParams.forceCalibration = false;
-            calibrationParams.name = coefficient_file;
             QString dbug = "DBUG: Loading calibration coefficients " + coefficient_file;
+            qDebug() << dbug;
+            logger.appendWarning(dbug);
+        }
+        else {
+            QString dbug = "DBUG: Calibration coefficients do no exist. File "  + calibrationParams.name + " will be created after next calibration";
             qDebug() << dbug;
             logger.appendWarning(dbug);
         }

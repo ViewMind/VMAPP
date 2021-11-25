@@ -1,12 +1,11 @@
-import QtQuick 2.6
-//import QtQuick.Controls 2.3
-//import QtQuick.Controls.Styles 1.4
-//import QtQuick.Controls 1.4
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 Item {
 
     id: vmComboBox
-    height: mainWindow.height*0.043
+    height: vmGlobals.vmControlsHeight
 
     property string vmErrorMsg: ""
     property bool vmEnabled: true
@@ -14,8 +13,15 @@ Item {
     property int vmCurrentIndex: -1
     property string vmCurrentText: ""
     property int vmListSize: 0
+    property string vmPlaceHolderText: "Placeholder"
+    property string vmLabel: ""
+
     readonly property int vmMOUSE_OUT_TIME: 200
 
+    readonly property double vmLeftMargin: Math.ceil(width*10/338);
+    readonly property double vmRightMargin: Math.ceil(width*18/338);
+    readonly property double vmDSOffset: width*0.01
+    readonly property double vmListContainerBorderWidth: Math.round(vmComboBox.width/338);
 
     ///////////////////// FUNCTIONS
     function setModelList(list){
@@ -24,19 +30,27 @@ Item {
         for (var i = 0; i < list.length; i++){
             //console.log(JSON.stringify(list[i]));
             if (typeof list[i] === 'object'){
-                //console.log("Is array");
                 itemList.append({"vmText": list[i]["value"], "vmIndex": i, "vmMetadata" : list[i]["metadata"], "hasMouse" : false});
             }
             else{
-                //console.log("Is not array");
                 itemList.append({"vmText": list[i], "vmIndex": i, "hasMouse" : false});
             }
         }
         vmListSize = list.length
-        setSelection(0)
+        setSelection(-1)
     }
 
     function setSelection(selectedIndex){
+        if (selectedIndex === -1){
+            //console.log("Setting placeholder " + vmPlaceHolderText)
+            vmCurrentIndex = -1;
+            vmCurrentText = vmPlaceHolderText
+            displayText.text = vmPlaceHolderText
+            mouseOutTimer.running = false;
+            listContainer.visible = false;
+            return
+        }
+        if (itemList.count < 1) return;
         vmCurrentIndex = selectedIndex;
         displayText.text = itemList.get(selectedIndex).vmText;
         vmCurrentText = displayText.text;
@@ -77,7 +91,6 @@ Item {
 
     signal selectionChanged();
 
-
     ///////////////////// DROPDOWN CLOSE CHECK TIMER
     Timer {
         id: mouseOutTimer
@@ -96,53 +109,73 @@ Item {
 
     ///////////////////// MAIN DISPLAY
     Rectangle {
+
         id: display
         anchors.fill: parent
-        color: vmEnabled? "#ebf3fa" : "#bcbec0"
+        color: {
+            if (vmErrorMsg === "") return  vmGlobals.vmWhite
+            else vmGlobals.vmRedErrorBackground
+        }
+        border.color: {
+            if (vmErrorMsg === ""){
+                return listContainer.visible? vmGlobals.vmBlueSelected : vmGlobals.vmGrayUnselectedBorder
+            }
+            else {
+                return vmGlobals.vmRedError;
+            }
+        }
+        border.width: Math.ceil(vmComboBox.width/300);
+        radius: Math.round(10*vmComboBox.height/44);
 
         // The display Text.
         Text {
             id: displayText
-            text: "Test Text"
-//            font.family: viewHome.robotoR.name
-//            font.pixelSize: 13*viewHome.vmScale
-            color: "#58595b"
+            text: "Placeholder"
+            font.pixelSize: vmGlobals.vmFontBaseSize
+            font.weight: 400
+            color: {
+                if (vmErrorMsg == ""){
+                    return listContainer.visible? vmGlobals.vmGrayAccented : vmGlobals.vmGrayPlaceholderText
+                }
+                else{
+                    return vmGlobals.vmBlackText
+                }
+            }
             verticalAlignment: Text.AlignVCenter
-            anchors.bottom: divisorLine.top
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: mainWindow.width*0.004
-        }
-
-        // The divisor line at the bottom.
-        Rectangle{
-            id: divisorLine
-            color: "#297fca"
-            border.color: "#297fca"
-            border.width: 0;
-            height: 1;
-            width: parent.width
-            anchors.bottom: parent.bottom
+            anchors.leftMargin: vmLeftMargin
         }
 
         // The triangle that functions as an indicator.
         Canvas {
             id: canvas
-            width: mainWindow.width*0.009
-            height: mainWindow.height*0.012
+
+            width: Math.round(8*display.width/338);
+            height: Math.round(4*display.height/44);
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            anchors.rightMargin: mainWindow.width*0.004
+            anchors.rightMargin: vmRightMargin
+
             contextType: "2d"
 
             onPaint: {
                 var ctx = canvas.getContext("2d");
                 ctx.reset();
-                ctx.moveTo(0, 0);
-                ctx.lineTo(width, 0);
-                ctx.lineTo(width / 2, height);
+                if (listContainer.visible){
+                    // Up triangle.
+                    ctx.moveTo(0, height);
+                    ctx.lineTo(width, height);
+                    ctx.lineTo(width / 2, 0);
+                }
+                else{
+                    // Down triangle.
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(width, 0);
+                    ctx.lineTo(width / 2, height);
+                }
                 ctx.closePath();
-                ctx.fillStyle = "#000000";
+                ctx.fillStyle = vmGlobals.vmGrayAccented;
                 ctx.fill();
             }
         }
@@ -153,6 +186,7 @@ Item {
             onClicked: {
                 if (vmEnabled){
                     listContainer.visible = true;
+                    vmErrorMsg = "";
                 }
             }
         }
@@ -162,10 +196,15 @@ Item {
     ///////////////////// DROP DOWN
     Rectangle {
         id: listContainer
-        color: "#dadada"
+        color: vmGlobals.vmWhite
+        border.color: vmGlobals.vmGrayUnselectedBorder
+        border.width: vmListContainerBorderWidth
         anchors.top: display.bottom
+        anchors.topMargin: Math.round(5*vmComboBox.height/44);
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
+        radius: display.radius
+
         height: {
             var numDisplay = vmMaxDisplayItems;
             if (numDisplay > vmListSize) {
@@ -177,13 +216,21 @@ Item {
             }
             return numDisplay*vmComboBox.height;
         }
+
         visible: false
-        clip: true
+
+        onVisibleChanged: {
+            canvas.requestPaint()
+        }
 
         ListView {
             id: listContainerListView
-            anchors.fill: parent
+            width: vmComboBox.width
+            // We need to tell the list view to occupy a bit less than the height of the container so that are no part of the items "out" of the container box.
+            height: listContainer.height*0.98
+            y: (listContainer.height - height)/2
             model: itemList
+            clip: true
 
             onContentYChanged: {
                 if (scrollBar.isScrolling) return;
@@ -192,11 +239,11 @@ Item {
             }
 
             delegate: Rectangle {
-                width: vmComboBox.width
+                width: vmComboBox.width*0.98
                 height: vmComboBox.height
-                border.width: mainWindow.width*0.002
-                border.color: "#dadada"
-                color: hasMouse? "#eeeeee" : "#ffffff"
+                x: (vmComboBox.width - width)/2
+                color: hasMouse? vmGlobals.vmBlueBackgroundHighlight : vmGlobals.vmWhite
+                radius: listContainer.radius
 
                 MouseArea {
                     id: mouseItemDetector
@@ -216,13 +263,13 @@ Item {
                 Text {
                     id: textItem
                     text: vmText
-//                    font.family: viewHome.robotoR.name
-//                    font.pixelSize: 13*viewHome.vmScale
-                    color: "#58595b"
+                    font.pixelSize: vmGlobals.vmFontLarge
+                    font.weight: 600
+                    color: hasMouse? vmGlobals.vmBlueTextHighlight : vmGlobals.vmBlackText
                     verticalAlignment: Text.AlignVCenter
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: mainWindow.width*0.004
+                    anchors.leftMargin: vmRightMargin - parent.x
                 }
             }
 
@@ -232,12 +279,12 @@ Item {
         Rectangle {
 
             id: scrollBar
-            width: 0.05*listContainer.width
-            height: listContainer.height
-            anchors.top: listContainer.top
+            width: 0.02*listContainer.width
+            height: listContainer.height - display.radius*2
+            anchors.verticalCenter: listContainer.verticalCenter
             anchors.right: listContainer.right
-            border.color: "#dadada"
-            radius: width*0.5;
+            anchors.rightMargin: vmListContainerBorderWidth*2
+            radius: listContainer.radius;
 
             property bool isScrolling: false
 
@@ -247,9 +294,8 @@ Item {
                 var maxScrollY = scrollControlMA.height - scrollControl.height;
                 var yPosForList = totalH*y/maxScrollY
                 var itemThatShouldBeVisble = Math.ceil(yPosForList/vmComboBox.height)
-                console.log("Item that should be visible: " + itemThatShouldBeVisble)
-                listContainerListView.positionViewAtIndex(itemThatShouldBeVisble,ListView.End)
 
+                listContainerListView.positionViewAtIndex(itemThatShouldBeVisble,ListView.End)
             }
 
             MouseArea {
@@ -281,24 +327,6 @@ Item {
                     }
                 }
 
-                onClicked: {
-                    // If the click falls inside the scroll controller, then it is ignored.
-                    var y = mouseY
-                    var maxY = (scrollBar.height - scrollControl.height);
-                    if ( (y > scrollControl.y) && (y < (scrollControl.y + scrollControl.height)) ) return;
-
-                    if (scrollBar.isScrolling) return;
-
-                    y = y - scrollControl.height/2;
-                    if (y < 0) y = 0;
-                    if (y > maxY) y = maxY;
-
-                    scrollControl.y = y;
-                    console.log("Scroll click is " + y);
-                    scrollBar.scroll(y)
-
-                }
-
             }
 
             Rectangle {
@@ -314,14 +342,24 @@ Item {
 
                 radius: scrollBar.radius
 
-                color: "#dadada"
+                color: vmGlobals.vmGrayAccented
                 onYChanged: {
                     if (!scrollBar.isScrolling) return;
-                    console.log("On moving Scroll Bar: " + y);
                     scrollBar.scroll(y)
                 }
             }
 
+        }
+
+
+        layer.enabled: true
+        layer.effect: DropShadow{
+            transparentBorder: true
+            source: listContainer
+            horizontalOffset: vmDSOffset
+            verticalOffset: vmDSOffset
+            radius: 10
+            color: vmGlobals.vmGrayTranslucent
         }
 
     }
@@ -330,14 +368,28 @@ Item {
     Text{
         id: errorMsg
         text: vmErrorMsg
-        color:  "#ca2026"
-//        font.family: viewHome.robotoR.name
-//        font.pixelSize: 12*viewHome.vmScale
+        color:  vmGlobals.vmRedError
+        font.pixelSize: vmGlobals.vmFontBaseSize
+        font.weight: 400
         anchors.left: parent.left
         anchors.top: parent.bottom
-        anchors.topMargin: mainWindow.height*0.007
+        anchors.topMargin: 10
         z: vmComboBox.z - 1
         visible: (vmErrorMsg !== "")
+    }
+
+    //////////////////// THE LABEL (if present).
+    Text {
+        id: label
+        text: vmLabel
+        color: vmGlobals.vmBlackText
+        font.pixelSize: vmGlobals.vmFontLarge
+        font.weight: 600
+        anchors.left: parent.left
+        anchors.bottom: parent.top
+        anchors.bottomMargin: 10;
+        z: vmComboBox.z - 1
+        visible: (vmLabel !== "")
     }
 
 }

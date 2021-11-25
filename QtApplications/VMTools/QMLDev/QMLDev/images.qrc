@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/pngs/20px_search.png</file>
+    </qresource>
+</RCC>

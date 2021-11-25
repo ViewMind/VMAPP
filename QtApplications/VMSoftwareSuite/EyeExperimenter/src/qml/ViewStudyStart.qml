@@ -77,7 +77,7 @@ VMBase {
     //property var vmCurrentMultiPartStudyFile: ""
     property string vmCurrentSelectedStudyName: ""
 
-    property var vmDisabledStudies: [vmINDEX_PERCEPTION, vmINDEX_NBACKMS, vmINDEX_READING];
+    property var vmDisabledStudies: [vmINDEX_PERCEPTION, vmINDEX_READING];
 
     property string vmSelectedProtocol: ""
     property string vmSelectedMedic: ""

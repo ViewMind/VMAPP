@@ -154,5 +154,8 @@ QtApplications/VMTools/HPOmniceptTest/exe/
 QtApplications/VMTools/HPOmniceptTest/hptest.zip
 Scripts/php/.vscode/
 Scripts/php/analyze_singular_JSON/*.txt
+QtApplications/VMSoftwareSuite/EyeExperimenter/Yappo1/
+QtApplications/VMSoftwareSuite/EyeExperimenter/Yappo2/
+QtApplications/VMTools/QMLDev/QMLDev/resources/
 VMPortal/Backend/00mng/test_output.json
 QtApplications/VMTools/OldDBToJSon/bin/
