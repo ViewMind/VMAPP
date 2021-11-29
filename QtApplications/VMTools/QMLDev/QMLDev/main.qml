@@ -85,6 +85,9 @@ ApplicationWindow {
             VMPrimaryButton {
                 id: testPrimaryButton
                 vmText: "START"
+                onCustomClicked: {
+                    console.log("Clicked")
+                }
             }
 
             VMPrimaryButton {

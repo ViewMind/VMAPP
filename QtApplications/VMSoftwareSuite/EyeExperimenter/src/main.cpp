@@ -25,6 +25,7 @@ namespace Globals {
    namespace Share {
       QString EXPERIMENTER_VERSION = "";
    }
+
    namespace EyeTracker{
       QString NAME = "";
       bool ENABLE_GAZE_FOLLOW = false;
@@ -32,6 +33,7 @@ namespace Globals {
       QString PROCESSING_PARAMETER_KEY = "";
       qreal VRSCALING = 1.0;
    }
+
 }
 
 // Debug Structure
@@ -88,8 +90,6 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");
-
     //QGuiApplication app(argc, argv);
     QApplication app(argc,argv);
 
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("ViewMind");
     app.setOrganizationDomain("ViewMind");
 
-    // Checking that there isn't another instance of an application running.    
+    // Checking that there isn't another instance of an application running.
     QSystemSemaphore semaphore(Globals::Share::SEMAPHORE_NAME, 1);  // create semaphore
     semaphore.acquire();                                            // Raise the semaphore, barring other instances to work with shared memory
     QSharedMemory sharedMemory(Globals::Share::SHAREDMEMORY_NAME);  // Create a copy of the shared memory
@@ -118,14 +118,13 @@ int main(int argc, char *argv[])
     }
 
     // The icon
-    app.setWindowIcon(QIcon(":/images/viewmind.png"));
+    app.setWindowIcon(QIcon(":/images/icon.png"));
 
     // The QML Engine
     QQmlApplicationEngine engine;
 
     // Laods all language related data
     FlowControl flowControl(nullptr,&configuration);
-
 
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);

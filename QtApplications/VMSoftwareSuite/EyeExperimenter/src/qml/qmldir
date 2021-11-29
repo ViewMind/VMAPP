@@ -1,0 +1,2 @@
+# qmldir
+singleton VMGlobals 1.0 VMGlobals.qml

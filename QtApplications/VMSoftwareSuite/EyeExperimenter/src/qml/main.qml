@@ -1,167 +1,91 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Window
-import "DateLocalization.js" as DL;
+import "./components"
+import "./views"
+import "."
 
 ApplicationWindow {
     id: mainWindow
     visible: true
-    title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()    
+    title: qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
     visibility: Window.Maximized
-    //flags: Qt.WindowTitleHint|Qt.WindowCloseButtonHint|Qt.WindowSystemMenuHint;
 
-    Component.onCompleted: {        
+    Component.onCompleted: {
         flowControl.resolutionCalculations();
         // This ensures that no resizing is possible.
         minimumHeight = height;
         maximumHeight = height;
         minimumWidth = width;
         maximumWidth = width;
-
+        VMGlobals.mainHeight = height;
+        VMGlobals.mainWidth = width;
     }
 
-
-
-    // The configurations dialog.
-    ViewSettings{
-        id: viewSettings
-        x: (parent.width - viewSettings.width)/2
-        y: (parent.height - viewSettings.height)/2
-        onUpdateMenus: {
-            viewHome.updateDrMenuText();
+    // For showing restart message.
+    VMMessageDialog {
+        id: messageDiag
+        onDismissed: {
+            messageDiag.close();
+            Qt.quit()
         }
     }
 
-    ViewAbout{
-        id: viewAbout
-        x: (parent.width - viewSettings.width)/2
-        y: (parent.height - viewSettings.height)/2
+
+    // Settings is a global dialog.
+    ViewSettings {
+        id: settingsDialog
+        onRestartRequired: {
+            messageDiag.loadFromKey("viewsettings_restart_msg")
+            messageDiag.open();
+        }
     }
 
-    ViewDoctorSelection {
-        id: viewDrSelection
-        x: (parent.width - viewDrSelection.width)/2
-        y: (parent.height - viewDrSelection.height)/2
-    }
-
-    ViewProtocols{
-        id: viewProtocols
-        x: (parent.width - viewProtocols.width)/2
-        y: (parent.height - viewProtocols.height)/2
+    // The wait screen
+    ViewWait {
+        id: waitScreen
     }
 
     SwipeView {
 
-        readonly property int vmIndexHome: 0
-        readonly property int vmIndexDrProfile: 1
-        readonly property int vmIndexPatientList: 2
-        readonly property int vmIndexStudyStart: 3
-        readonly property int vmIndexFinishedStudies: 4
-        readonly property int vmIndexPatientReg: 5
-        readonly property int vmIndexPresentExperiment: 6
-        readonly property int vmIndexStudyDone: 7
-        readonly property int vmIndexViewQC: 8
-
         id: swiperControl
-        currentIndex: vmIndexHome
+        //currentIndex: vmIndexHome
         interactive: false
         anchors.fill: parent
 
         Item{
-            ViewHome{
+            ViewStart{
                 id: viewHome
-                isHomePage: true;
-                anchors.fill: parent
             }
         }
 
         Item{
-            ViewDoctorProfile{
-                id: viewDrInfo
-                //isHomePage: true;
-                anchors.fill: parent
-            }
-        }
-
-        Item {
-            ViewPatientList {
-                id: viewPatList
-                anchors.fill: parent
-            }
-        }
-
-        Item{
-            ViewStudyStart{
-                id: viewStudyStart
-                anchors.fill: parent
-            }
-        }
-
-        Item {
-            ViewFinishedStudies {
-                id: viewFinishedStudies
-                anchors.fill: parent
-            }
-        }
-
-        Item{
-            ViewPatientRegistration{
-                id: viewPatientReg
-                anchors.fill: parent
-            }
-        }
-
-
-        Item{
-            ViewPresentExperiment{
-                id: viewPresentExperimet
-                anchors.fill: parent
-            }
-        }
-
-        Item{
-            ViewStudyDone{
-                id: viewStudyDone
-                anchors.fill: parent
-            }
-        }
-
-        Item {
-            ViewQC {
-                id: viewQC
-                anchors.fill: parent
+            ViewLogin{
+                id: viewLogin
             }
         }
 
         onCurrentIndexChanged: {
-
-            //console.log("Switching to" + currentIndex);
-
-            switch(currentIndex){
-            case vmIndexHome:
-                loader.logOut();
-                break;
-            case vmIndexPresentExperiment:
-                viewPresentExperimet.resetStateMachine();
-                break;
-            case vmIndexPatientList:
-                flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
-                viewPatList.loadPatients();                
-                break;
-            case vmIndexFinishedStudies:
-                viewFinishedStudies.loadEvaluatorStudies();
-                break;
-            case vmIndexViewQC:
-                viewQC.loadStudiesAndGraphs()
-                break;
-            case vmIndexStudyStart:
-                viewStudyStart.setPatientName();
-                viewStudyStart.setDefaultSelections();
+            switch (currentIndex){
+            case VMGlobals.vmSwipeIndexLogin:
+                viewLogin.updateProfileList();
                 break;
             }
-
         }
 
+    }
+
+    function swipeTo(index){
+        swiperControl.currentIndex = index;
+    }
+
+    function openWait(message){
+        waitScreen.vmText = message;
+        waitScreen.show()
+    }
+
+    function closeWait(){
+        waitScreen.hide();
     }
 
 }

@@ -12,6 +12,7 @@ namespace Globals{
 
    const qint32 NUMBER_SECONDS_IN_A_DAY = 86400;
    const qint32 NUMBER_OF_PERCEPTION_PARTS = 8;
+   const int    REBOOT_CODE = 568; // Just a random number that I thought of. I doens't have to have any real signficance.
 
    namespace EU_REGION {
       const QString API_URL = "https://eu-api.viewmind.ai";
@@ -57,6 +58,7 @@ namespace Globals{
       static const QString CHANGELOG_LOCATION = "changelog";
       static const QString CHANGELOG_BASE = "changelog_";      
       static const QString DEBUG_OPTIONS_FILE = "vmdebug";
+      static const QString USER_MANUAL = "report.pdf";
    }
    
    namespace VMConfig {
@@ -99,7 +101,7 @@ namespace Globals{
          
    namespace UILanguage {
       static const QString EN = "English";
-      static const QString ES = "Spanish";
+      static const QString ES = "Español";
    } 
    
    namespace Share {

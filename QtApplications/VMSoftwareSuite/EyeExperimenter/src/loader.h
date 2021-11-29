@@ -9,6 +9,7 @@
 #include <QSharedMemory>
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QDesktopServices>
 
 #include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -45,7 +46,9 @@ public:
     Q_INVOKABLE QString getManufactureDate() const;
     Q_INVOKABLE QString getSerialNumber() const;
     Q_INVOKABLE QString getUniqueAuthorizationNumber() const;
-    Q_INVOKABLE QString getInstitutionName() const;    
+    Q_INVOKABLE QString getInstitutionName() const;
+
+    Q_INVOKABLE void openUserManual();
 
     //////////////////////////// PARTNER RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QStringList getPartnerList() const;
@@ -116,6 +119,8 @@ public:
     Q_INVOKABLE void deleteProtocol(const QString &p);
     Q_INVOKABLE QStringList getProtocolList();
 
+
+
 signals:
     void finishedRequest();
     void qualityControlDone();
@@ -163,14 +168,14 @@ private:
     // The generic connection to a partner API.
     PartnerAPI *partner_api;
 
+    // Loads the appropiate language file.
+    void changeLanguage();
+
     // The last stage of the partner synchronization process. Actually does modifications to the localDB as needed.
     void partnerSynchFinishProcess();
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();
-
-    // Sets the language for program.
-    void changeLanguage();
 
     // Moves sent files to the processed directory
     void moveProcessedFiletToProcessedDirectory();

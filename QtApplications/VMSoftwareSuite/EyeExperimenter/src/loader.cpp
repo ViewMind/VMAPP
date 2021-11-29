@@ -89,8 +89,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     countries = cs;
 
     // Change the language array.
-    changeLanguage();
     if (loadingError) return;
+
+    changeLanguage();
 
     // Must make sure that the data directory exists
     QDir rawdata(Globals::Paths::WORK_DIRECTORY);
@@ -218,6 +219,23 @@ QString Loader::getInstitutionName() const {
     return configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
 }
 
+void Loader::openUserManual(){
+
+    // Attempting to find the user manual (it is different when running from the application, versus running from the IDE).
+    QString currentDirectory = QDir::currentPath();
+    QString filePath = currentDirectory + "/" + Globals::Paths::USER_MANUAL;
+    if (!QFile(filePath).exists()){
+        //filePath = currentDirectory + "/EyeExperimenter/" + Globals::Paths::USER_MANUAL;
+        logger.appendError("User manual could not be found at: " + filePath);
+        return;
+    }
+    filePath = "file:///" + filePath;
+
+    if (!QDesktopServices::openUrl(QUrl(filePath))){
+        logger.appendError("Could not open the user manual on file path: " + filePath);
+    }
+}
+
 ////////////////////////////////////////////////////////  PARTNER FUNCTIONS  ////////////////////////////////////////////////////////
 
 QStringList Loader::getPartnerList() const{
@@ -239,7 +257,7 @@ void Loader::synchronizeToPartner(const QString &selectedPartner){
     }
     else{
         logger.appendError("Selected unimplemented partner: " + selectedPartner);
-        emit(partnerSequenceDone(false));
+        emit Loader::partnerSequenceDone(false);
     }
 
     // Connecting to the right slot
