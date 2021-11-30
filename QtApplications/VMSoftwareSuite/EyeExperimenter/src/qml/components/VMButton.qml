@@ -172,7 +172,12 @@ Rectangle {
         hoverEnabled: true
         onClicked: clickSignal()
         enabled: vmEnabled
+        onPressed: {
+            vmPrimaryButton.forceActiveFocus()
+        }
     }
+
+
 
     scale: mouseArea.pressed ? 0.8 : 1
 

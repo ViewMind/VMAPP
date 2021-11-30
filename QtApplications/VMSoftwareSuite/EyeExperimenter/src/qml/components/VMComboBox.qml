@@ -51,7 +51,6 @@ Item {
             vmCurrentIndex = -1;
             vmCurrentText = vmPlaceHolderText
             displayText.text = vmPlaceHolderText
-            //mouseOutTimer.running = false;
             listContainer.visible = false;
             return
         }
@@ -59,54 +58,11 @@ Item {
         displayText.text = itemList.get(selectedIndex).vmText;        
         vmCurrentText = displayText.text;
         //console.log("Setting current text to " + vmCurrentText + " from index " + selectedIndex);
-        //mouseOutTimer.running = false;
         listContainer.visible = false;
         vmCurrentIndex = selectedIndex;
     }
 
-//    function shouldStartDropDownTimer(hasMouse){
-//        if (!hasMouse){
-//            if (!mouseOutTimer.running){
-//                mouseOutTimer.running = true;
-//            }
-//        }
-//        else mouseOutTimer.running = false;
-//    }
-
-//    function dropdownHasMouse(){
-
-//        //console.log("Dropdown Has Mouse");
-
-//        for (var i = 0; i < itemList.count; i++){
-//            var item = itemList.get(i);
-//            if (item.hasMouse) {
-//                //console.log("Item " + i + " has the mouse");
-//                return; // At least one item has the mouse.
-//            }
-//        }
-
-//        // No item has the mouse, we need to check if the scroll bar has it.
-//        if (scrollControlMA.containsMouse) {
-//            //console.log("Scroll bar has the mouse");
-//            return ;
-//        }
-
-//        listContainer.visible = false;
-
-//    }
-
     signal selectionChanged();
-
-//    ///////////////////// DROPDOWN CLOSE CHECK TIMER
-//    Timer {
-//        id: mouseOutTimer
-//        interval: vmMOUSE_OUT_TIME;
-//        running: false;
-//        repeat: false
-//        onTriggered: {
-//            dropdownHasMouse()
-//        }
-//    }
 
     ///////////////////// THE LIST MODEL
     ListModel {
@@ -271,7 +227,6 @@ Item {
                     }
                     onContainsMouseChanged: {
                         hasMouse = containsMouse;
-                        //shouldStartDropDownTimer(containsMouse);
                     }
                 }
 
