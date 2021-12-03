@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>VMSoftwareSuite/EyeExperimenter/src/font/segoe_ui_normal.ttf</file>
+        <file>VMSoftwareSuite/EyeExperimenter/src/font/segoe_ui_semibold.ttf</file>
+    </qresource>
+</RCC>

@@ -23,7 +23,8 @@ Rectangle {
     function reset(){
         vmAnyChanges = false;
         vmRestartRequired = false;
-        defaultCountry.setSelection(loader.getDefaultCountry(false))
+        vmLoadedCountry = loader.getDefaultCountry(false)
+        defaultCountry.setSelection(vmLoadedCountry)
     }
 
     // Rectangle that straightens the left side edge.
@@ -63,7 +64,6 @@ Rectangle {
         Component.onCompleted: {
             vmLoadedCountry = loader.getDefaultCountry(false);
             setModelList(loader.getCountryList())
-
         }
         onVmCurrentIndexChanged: {
             vmAnyChanges = vmAnyChanges || (vmLoadedCountry != vmCurrentIndex);

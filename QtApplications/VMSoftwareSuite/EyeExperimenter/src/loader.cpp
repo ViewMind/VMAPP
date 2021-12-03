@@ -329,16 +329,18 @@ void Loader::partnerSynchFinishProcess(){
         if (localDB.getSubjectDataByInternalID(uid).isEmpty()){
             // New subject needs to be created.
             // Debug::prettpPrintQVariantMap(patient);
-            this->addOrModifySubject("",
-                                     patient.value(ParterPatient::NAME,"").toString(),
-                                     patient.value(ParterPatient::LASTNAME,"").toString(),
-                                     uid,
-                                     patient.value(ParterPatient::AGE,0).toString(),
-                                     patient.value(ParterPatient::BIRTHDATE,"").toString(),
-                                     patient.value(ParterPatient::NATIONALITY,"ZZ").toString(),
-                                     patient.value(ParterPatient::GENDER,"").toString(),
-                                     patient.value(ParterPatient::YEARS_FORMATION,0).toInt(),
-                                     patient.value(ParterPatient::PARTNER_MEDIC_ID).toString());
+            QString assignedMedic = patient.value(ParterPatient::PARTNER_MEDIC_ID).toString();
+            QString newid = this->addOrModifySubject("",
+                                                     patient.value(ParterPatient::NAME,"").toString(),
+                                                     patient.value(ParterPatient::LASTNAME,"").toString(),
+                                                     uid,
+                                                     patient.value(ParterPatient::AGE,0).toString(),
+                                                     patient.value(ParterPatient::BIRTHDATE,"").toString(),
+                                                     patient.value(ParterPatient::NATIONALITY,"ZZ").toString(),
+                                                     patient.value(ParterPatient::GENDER,"").toString(),
+                                                     patient.value(ParterPatient::YEARS_FORMATION,0).toInt(),
+                                                     "");
+            this->modifySubjectSelectedMedic(newid,assignedMedic);
         }
     }
 
@@ -746,9 +748,9 @@ QStringList Loader::getLoginEmails() const {
 
 ////////////////////////////////////////////////////////////////// SUBJECT FUNCTIONS //////////////////////////////////////////////////////////////////
 
-void Loader::addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
-                                const QString &age, const QString &birthdate, const QString &birthCountry,
-                                const QString &gender, qint32 formative_years, QString selectedMedic){
+QString Loader::addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
+                                   const QString &age, const QString &birthdate, const QString &birthCountry,
+                                   const QString &gender, qint32 formative_years, const QString &email){
 
     //qDebug() << "Entering with suid" << suid;
 
@@ -786,16 +788,25 @@ void Loader::addOrModifySubject(QString suid, const QString &name, const QString
     map[LocalDB::SUBJECT_NAME] = name;
     map[LocalDB::SUBJECT_YEARS_FORMATION] = formative_years;
     map[LocalDB::SUBJECT_GENDER] = gender;
-    map[LocalDB::SUBJECT_ASSIGNED_MEDIC] = selectedMedic;
+    map[LocalDB::SUBJECT_EMAIL] = email;
+    //map[LocalDB::SUBJECT_ASSIGNED_MEDIC] = selectedMedic;
 
     // Adding the data to the local database.
     if (!localDB.addOrModifySubject(suid,map)){
         logger.appendError("While adding subject " + suid + " with data " + name + " " + lastname + " (" + institution_id + "): " + localDB.getError() );
+        return "";
+    }
+    return suid;
+}
+
+void Loader::modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic){
+    if (!localDB.modifyAssignedMedicToSubject(suid,selectedMedic)){
+        logger.appendError("While modifiying subject " + suid + " by setting meddig " + selectedMedic + ": " + localDB.getError() );
     }
 }
 
 QVariantMap Loader::filterSubjectList(const QString &filter){
-    return  localDB.getDisplaySubjectList(filter);
+    return  localDB.getDisplaySubjectList(filter,getStringListForKey("viewpatlist_months"));
 }
 
 bool Loader::setSelectedSubject(const QString &suid){
@@ -840,6 +851,10 @@ void Loader::clearSubjectSelection(){
 
 QString Loader::getCurrentlySelectedAssignedDoctor() const {
     return localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_ASSIGNED_MEDIC);
+}
+
+bool Loader::areThereAnySubjects() const {
+    return localDB.getSubjectCount() > 0;
 }
 
 ////////////////////////// MEDIC RELATED FUNCTIONS ////////////////////////////

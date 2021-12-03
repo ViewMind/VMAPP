@@ -74,10 +74,10 @@ public:
     Q_INVOKABLE QStringList getLoginEmails() const;
 
     //////////////////////////// SUBJECT REALATED FUNCTIONS ////////////////////////////
-    Q_INVOKABLE void addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
+    Q_INVOKABLE QString addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
                                         const QString &age, const QString &birthdate, const QString &birthCountry,
-                                        const QString &gender, qint32 formative_years, QString selectedMedic);
-
+                                        const QString &gender, qint32 formative_years, const QString &email);
+    Q_INVOKABLE void modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic);
     Q_INVOKABLE QVariantMap filterSubjectList(const QString &filter);
     Q_INVOKABLE bool setSelectedSubject(const QString &suid);    
     Q_INVOKABLE void setStudyMarkerFor(const QString &study, const QString &value);
@@ -85,6 +85,7 @@ public:
     Q_INVOKABLE QVariantMap getCurrentSubjectInfo();
     Q_INVOKABLE void clearSubjectSelection();
     Q_INVOKABLE QString getCurrentlySelectedAssignedDoctor() const;
+    Q_INVOKABLE bool areThereAnySubjects() const;
 
     //////////////////////////// MEDIC RELATED FUNCTION ////////////////////////////
     Q_INVOKABLE QVariantMap getMedicList() const;

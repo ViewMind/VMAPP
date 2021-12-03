@@ -31,10 +31,13 @@ const char * LocalDB::SUBJECT_BIRTHCOUNTRY          = "birthcountry";
 const char * LocalDB::SUBJECT_YEARS_FORMATION       = "years_formation";
 const char * LocalDB::SUBJECT_CREATION_DATE         = "creation_date";
 const char * LocalDB::SUBJECT_CREATION_DATE_INDEX   = "creation_date_index";
+const char * LocalDB::SUBJECT_BDATE_DISPLAY         = "bdate_display";
+const char * LocalDB::SUBJECT_SORTABLE_NAME         = "sortable_name";
 const char * LocalDB::SUBJECT_GENDER                = "gender";
 const char * LocalDB::SUBJECT_STUDY_MARKERS         = "subject_study_markers";
 const char * LocalDB::SUBJECT_LOCAL_ID              = "local_id";
 const char * LocalDB::SUBJECT_ASSIGNED_MEDIC        = "assigned_medic";
+const char * LocalDB::SUBJECT_EMAIL                 = "email";
 
 // "Bookmark" fields
 const char * LocalDB::MARKER_VALUE            = "marker_value";
@@ -252,6 +255,18 @@ bool LocalDB::addOrModifySubject(const QString &subject_id, QVariantMap subject_
     return saveAndBackup();
 }
 
+bool LocalDB::modifyAssignedMedicToSubject(const QString &subject_id, const QString &medic){
+    QVariantMap subject_data_map = data.value(MAIN_SUBJECT_DATA).toMap();
+    if (!subject_data_map.contains(subject_id)) return false;
+    QVariantMap subject_data = subject_data_map.value(subject_id).toMap();
+
+    subject_data[SUBJECT_ASSIGNED_MEDIC] = medic;
+
+    subject_data_map[subject_id] = subject_data;
+    data[MAIN_SUBJECT_DATA] = subject_data_map;
+    return saveAndBackup();
+}
+
 bool LocalDB::addOrModifyEvaluator(const QString &email, const QString &oldemail, QVariantMap evaluator_data){
     // Makign sure the password is NOT accidentally set here.
     if (evaluator_data.contains(APPUSER_PASSWORD)){
@@ -304,6 +319,10 @@ QVariantMap LocalDB::getEvaluatorData(const QString &evaluator) const{
 
 QVariantMap LocalDB::getSubjectData(const QString &subjectID) const{
     return data.value(MAIN_SUBJECT_DATA,QVariantMap()).toMap().value(subjectID,QVariantMap()).toMap();
+}
+
+qint32 LocalDB::getSubjectCount() const{
+    return static_cast<qint32>(data.value(MAIN_SUBJECT_DATA,QVariantMap()).toMap().size());
 }
 
 QVariantMap LocalDB::getSubjectDataByInternalID(const QString &internalID) const{
@@ -537,7 +556,7 @@ bool LocalDB::passwordCheck(const QString &email, const QString &plaintext_passw
 }
 
 
-QVariantMap LocalDB::getDisplaySubjectList(QString filter){
+QVariantMap LocalDB::getDisplaySubjectList(QString filter, const QStringList &months){
     QVariantMap ans;
 
     // All matches are done in lower case.
@@ -551,7 +570,22 @@ QVariantMap LocalDB::getDisplaySubjectList(QString filter){
             QVariantMap map = subdata.value(subject_ids.at(i)).toMap();
 
             // Adding the creation date sorting index value. This is required due to the very very bad way in which I store the dates.
-            map[SUBJECT_CREATION_DATE_INDEX] = QDateTime::fromString(map.value(SUBJECT_CREATION_DATE).toString(),"dd/MM/yyyy HH:mm").toSecsSinceEpoch();
+            //map[SUBJECT_CREATION_DATE_INDEX] = QDateTime::fromString(map.value(SUBJECT_CREATION_DATE).toString(),"dd/MM/yyyy HH:mm").toSecsSinceEpoch();
+
+            // Building the display date: Day 3LetterMonth Year.
+            QStringList bdate_parts = map.value(SUBJECT_BIRTHDATE).toString().split("-");
+            QString bdate = "";
+            if (bdate_parts.size() == 3){
+                qint32 monthIndex = bdate_parts.at(1).toInt();
+                monthIndex--;
+                bdate = " UKN ";
+                if ((monthIndex >= 0) && (monthIndex < months.size())){
+                    bdate = " " + months.at(monthIndex) + " ";
+                }
+                bdate = bdate_parts.last() + bdate + bdate_parts.first();
+            }
+            map[SUBJECT_BDATE_DISPLAY] = bdate;
+            map[SUBJECT_SORTABLE_NAME] = map.value(SUBJECT_LASTNAME).toString() + ", " + map.value(SUBJECT_NAME).toString();
 
             ans[subject_ids.at(i)] = map;
         }

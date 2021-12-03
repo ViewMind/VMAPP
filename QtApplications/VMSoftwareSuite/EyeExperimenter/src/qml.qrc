@@ -21,5 +21,16 @@
         <file>qml/views/ViewWait.qml</file>
         <file>qml/views/ViewBase.qml</file>
         <file>qml/views/ViewLogin.qml</file>
+        <file>qml/views/ViewAddEvaluator.qml</file>
+        <file>qml/views/ViewMainSetup.qml</file>
+        <file>qml/subscreens/SCNoPatients.qml</file>
+        <file>qml/subscreens/SCPatList.qml</file>
+        <file>qml/components/VMSortableTable.qml</file>
+        <file>qml/js/ObjectListSorter.js</file>
+        <file>qml/subscreens/SCAccount.qml</file>
+        <file>qml/components/VMNotification.qml</file>
+        <file>qml/views/ViewAddPatient.qml</file>
+        <file>qml/components/VMProgressLine.qml</file>
+        <file>qml/views/ViewEvaluations.qml</file>
     </qresource>
 </RCC>

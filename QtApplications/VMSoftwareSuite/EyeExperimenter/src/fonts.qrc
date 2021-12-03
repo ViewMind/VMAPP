@@ -1,3 +1,6 @@
 <RCC>
-    <qresource prefix="/"/>
+    <qresource prefix="/">
+        <file>font/segoe_ui_normal.ttf</file>
+        <file>font/segoe_ui_semibold.ttf</file>
+    </qresource>
 </RCC>

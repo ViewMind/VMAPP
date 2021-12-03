@@ -97,6 +97,8 @@ ViewBase {
         anchors.top: btnLogin.top
         anchors.leftMargin: VMGlobals.adjustWidth(20)
         onClickSignal: {
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexAddEval);
+            //mainWindow.popUpNotify(VMGlobals.vmNotificationBlue,"<b>Matias shulz</b> has been successfully<br>added to the list of evaluators")
         }
     }
 

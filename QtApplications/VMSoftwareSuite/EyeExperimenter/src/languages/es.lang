@@ -37,3 +37,84 @@ viewlogin_orline = ó;
 viewlogin_back = Volver;
 viewlogin_show = Mostrar;
 viewlogin_hide = Ocultar;
+viewlogin_wrong_pass = Contraseña incorrecta;
+
+#********************************* ADD NEW EVALUATOR SCREEN *********************************
+viewaddeval_title = Nuevo Evaluador;
+viewaddeval_subtitle = Por favor, llene la información debajo;
+viewaddeval_fname = Nombre;
+viewaddeval_lname = Apellido;
+viewaddeval_email = Correo Electrónico;
+viewaddeval_email_ph = Ingrese su correo electrónico;
+viewaddeval_fname_ph = Ingrese su nombre;
+viewaddeval_lname_ph = Ingrese su apellido;
+viewaddeval_addeval = AGREGAR EVALUADOR;
+viewaddeval_verifpass = Verificar Contraseña;
+viewaddeval_err_empty = No puede quedar vacío;
+viewaddeval_exmail_exists = El correo ya está en uso;
+viewaddeval_added = <b></b><br>ha sido agregado como evaluador;
+
+#********************************* PATIENT LIST *********************************
+viewpatlist_title = Lista de Pacientes;
+viewpatlist_search = Buscar por nombre, apellido o ID;
+viewpatlist_addpatient = AÑADIR PACIENTE;
+viewpatlist_name = Nombre;
+viewpatlist_bdate = Nacimiento;
+viewpatlist_sex = Sexo;
+viewpatlist_id = ID Personal;
+viewpatlist_action = Acción;
+viewpatlist_edit = Editar;
+viewpatlist_study = ESTUDIOS;
+viewpatlist_account = Cuenta;
+viewpatlist_logout = Salir;
+viewpatlist_qc = Control de Calidad;
+viewpatlist_protocol = Protocolo;
+viewpatlist_nopats = No se hallaron pacientes;
+viewpatlist_months = Ene|Feb|Mar|Abr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
+viewpatlist_nothing_found = No se hallaron coincidencias;
+viewpatlist_nothing_found_exp = No hay pacientes para ese nombre o ID.; 
+viewpatlist_vr_failed = <b>Falla de VR</b><br>Verificar las conexiones. Los estudios fueron desahbilitados;
+
+#********************************* ACCOUNT LIST *********************************
+viewaccount_save = GUARDAR;
+viewaccount_badpassverify = Las contraseñas no coinciden;
+viewaccount_mod_success = <b></b><br>ha sido modificado exitosamente;
+
+#********************************* PATIENT FORM *********************************
+viewpatform_title = Añadir Paciente;
+viewpatform_title_edit = Editar Paciente;
+viewpatform_subtitle = Por favor, complete la siguiente información;
+viewpatform_sex_ph = Selecione el sexo;
+viewpatform_sex_options = Hombre|Mujer|Otro;
+viewpatform_day_ph = Dia;
+viewpatform_month_ph = Mes;
+viewpatform_year_ph = Año;
+viewpatform_months = Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre;
+viewpatform_country = País;
+viewpatform_country_ph = Seleccione la nacionalida;
+viewpatform_personal_id_ph = Ingrese ID Personal;
+viewpatform_years_of_education = Años de educación;
+viewpatform_years_of_education_ph = Ingrese el número de años;
+viewpatform_optional = Opcional;
+viewpatform_incorrect = Incorrecto;
+viewpatform_cannotbeempty = No puede estar vacío;
+viewpatform_isnotanumber = No es un número;
+viewpatform_invalid_range = Rango inválido;
+viewpatform_success_edit = <b></b><br>ha sido editado;
+viewpatform_success_add = <b></b><br>ha sido agregado como paciente;
+
+#********************************* STUDY SETUP *********************************
+viewevaluation_date = Fecha;
+viewevaluation_patient = Paciente;
+viewevaluation_general_settings = Configuación General;
+viewevaluation_eval_settings = Configuración de Evaluaciones;
+viewevaluation_eval_setup    = Evaluaciones recomendadas por patología;
+viewevaluation_eval_setup_list = Estudio a medida;
+viewevaluation_doctor        = Doctor que ha pedido el estudio;
+viewevaluation_doctor_ph     = Seleccion un doctor;;
+viewevaluation_protocol_ph   = Seleccione un protocolo;
+viewevaluation_eye_selection = Seleccione el ojo;
+viewevaluation_next_button = SIGUIENTE;
+viewevaluation_eye_selection_list = Izquierdo|Derecho|Ambos (Defecto);
+viewevaluation_eval_list     = Tareas de Colores|N-Back RT| Go NoGo|N-Back RT Para Entrenamiento|N-Back MS;
+viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;

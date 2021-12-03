@@ -1,10 +1,11 @@
 import QtQuick
 import QtQuick.Controls
+import "../"
 
 Item {
 
     id: vmSearchInput
-    height: vmGlobals.vmControlsHeight
+    height: VMGlobals.vmControlsHeight
 
     property string vmErrorMsg: ""
     property bool vmEnabled: true
@@ -12,8 +13,8 @@ Item {
     property string vmLabel: ""
     property string vmCurrentText: ""
 
-    readonly property double vmLeftMargin: Math.ceil(width*10/338);
-    readonly property double vmRightMargin: Math.ceil(width*18/338);
+    readonly property double vmLeftMargin: VMGlobals.adjustWidth(10);
+    readonly property double vmRightMargin: VMGlobals.adjustWidth(18);
 
     signal textChanged()
 
@@ -22,33 +23,33 @@ Item {
         id: mainRect
         anchors.fill: parent
         color: {
-            if (vmErrorMsg === "") return  vmGlobals.vmWhite
-            else vmGlobals.vmRedErrorBackground
+            if (vmErrorMsg === "") return  VMGlobals.vmWhite
+            else VMGlobals.vmRedErrorBackground
         }
         border.color: {
             if (vmErrorMsg === ""){
-                return vmGlobals.vmGrayUnselectedBorder;
+                return VMGlobals.vmGrayUnselectedBorder;
             }
             else {
-                return vmGlobals.vmRedError;
+                return VMGlobals.vmRedError;
             }
         }
-        border.width: Math.ceil(vmSearchInput.width/300);
-        radius: Math.round(10*vmSearchInput.height/44);
+        border.width: VMGlobals.adjustHeight(1);
+        radius: VMGlobals.adjustHeight(10);
 
 
         // The display Text.
         TextInput {
             id: inputText
-            font.pixelSize: vmGlobals.vmFontBaseSize
+            font.pixelSize: VMGlobals.vmFontBaseSize
             font.weight: 400
             text: vmPlaceHolderText
             color: {
                 if (vmErrorMsg == ""){
-                    return (vmCurrentText == "")? vmGlobals.vmGrayPlaceholderText : vmGlobals.vmBlackText
+                    return (vmCurrentText == "")? VMGlobals.vmGrayPlaceholderText : VMGlobals.vmBlackText
                 }
                 else{
-                    return vmGlobals.vmBlackText
+                    return VMGlobals.vmBlackText
                 }
             }
             verticalAlignment: Text.AlignVCenter
@@ -64,10 +65,12 @@ Item {
                     if (vmCurrentText == "") text = ""
                 }
             }
+
             onTextEdited: {
                 vmCurrentText = inputText.text
-                vmSearchInput.textChanged();
+                vmSearchInput.textChanged();                
             }
+
             onEditingFinished: {
                 if (inputText.text == "") {
                     inputText.text = vmPlaceHolderText
@@ -85,7 +88,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: vmLeftMargin
-            source: "qrc:/resources/pngs/20px_search.png"
+            source: "qrc:/images/20px_search.png"
         }
 
     }

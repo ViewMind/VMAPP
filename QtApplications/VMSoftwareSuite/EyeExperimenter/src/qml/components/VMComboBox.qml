@@ -19,8 +19,8 @@ Item {
 
     readonly property int vmMOUSE_OUT_TIME: 200
 
-    readonly property double vmLeftMargin: Math.ceil(width*10/338);
-    readonly property double vmRightMargin: Math.ceil(width*18/338);
+    readonly property double vmLeftMargin: VMGlobals.adjustWidth(10);
+    readonly property double vmRightMargin: VMGlobals.adjustWidth(18);
     readonly property double vmDSOffset: width*0.01
     readonly property double vmListContainerBorderWidth: Math.round(vmComboBox.width/338);
 

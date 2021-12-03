@@ -15,11 +15,20 @@ Item {
     property string vmShowText: "Show"
     property string vmHideText: "Hide"
     property bool vmIsPaswordShown: false
+    property bool vmFocus: false
 
     readonly property double vmLeftMargin: Math.ceil(width*10/338);
     readonly property double vmRightMargin: Math.ceil(width*10/338);
 
     signal textChanged()
+
+    function clear(){
+        inputText.text = vmPlaceHolderText
+        vmCurrentText = "";
+        vmErrorMsg = ""
+        vmFocus = false
+        vmIsPaswordShown = false
+    }
 
     // Text input display.
     Rectangle {
@@ -45,7 +54,7 @@ Item {
         // The display Text.
         TextInput {
             id: inputText
-
+            focus: vmFocus
             height: parent.height
             width: parent.width - vmLeftMargin - vmRightMargin - showButton.width
             anchors.top: parent.top
@@ -78,15 +87,13 @@ Item {
                     if (vmCurrentText == "") text = ""
                 }
             }
-//            onActiveFocusChanged: {
-//                console.log("Active Focus Changed")
-//                if (!activeFocus) inputText.focus = false
-//            }
+
             onTextEdited: {
                 vmErrorMsg = ""
                 vmCurrentText = inputText.text
                 vmPasswordInput.textChanged();
             }
+
             onEditingFinished: {
                 if (inputText.text == "") {
                     inputText.text = vmPlaceHolderText

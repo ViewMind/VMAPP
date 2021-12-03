@@ -15,6 +15,7 @@ RCC_DIR = QRC
 
 RESOURCES += qml.qrc \
     ../../../CommonClasses/Experiments/experiment_descriptions.qrc \
+    fonts.qrc \
     images.qrc \
     languages.qrc
 

@@ -11,6 +11,20 @@ ApplicationWindow {
     title: qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
     visibility: Window.Maximized
 
+    readonly property alias vmSegoeNormal: segoeui_normal
+    readonly property alias vmSegoeHeavy: segoeui_heavy
+
+    FontLoader{
+        id: segoeui_normal
+        source: "qrc:/font/segoe_ui_normal.ttf"
+    }
+
+    FontLoader{
+        id: segoeui_heavy
+        source: "qrc:/font/segoe_ui_semibold.ttf"
+    }
+
+
     Component.onCompleted: {
         flowControl.resolutionCalculations();
         // This ensures that no resizing is possible.
@@ -31,6 +45,9 @@ ApplicationWindow {
         }
     }
 
+    VMNotification {
+        id: notification
+    }
 
     // Settings is a global dialog.
     ViewSettings {
@@ -65,10 +82,50 @@ ApplicationWindow {
             }
         }
 
+        Item {
+            ViewAddEvaluator {
+                id: viewAddEval
+            }
+        }
+
+        Item {
+            ViewMainSetup {
+                id: viewMainSetup
+            }
+        }
+
+        Item {
+            ViewAddPatient {
+                id: viewAddPatient
+            }
+        }
+
+        Item {
+            ViewEvaluations {
+                id: viewEvaluations
+            }
+        }
+
         onCurrentIndexChanged: {
             switch (currentIndex){
+            case VMGlobals.vmSwipeIndexHome:
+                loader.logOut();
+                break;
+            case VMGlobals.vmSwipeIndexMainScreen:
+                flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
+                viewMainSetup.enableStudyStart(true)
+                if (!flowControl.isVROk()){
+                    viewMainSetup.enableStudyStart(false)
+                    var message = loader.getStringForKey("viewpatlist_vr_failed");
+                    popUpNotify(VMGlobals.vmNotificationRed,message);
+                }
+                viewMainSetup.loadPatients();
+                break;
             case VMGlobals.vmSwipeIndexLogin:
                 viewLogin.updateProfileList();
+                break;
+            case VMGlobals.vmSwipeIndexAddEval:
+                viewAddEval.clear()
                 break;
             }
         }
@@ -86,6 +143,15 @@ ApplicationWindow {
 
     function closeWait(){
         waitScreen.hide();
+    }
+
+    function popUpNotify(type,message){
+        notification.show(type,message)
+    }
+
+    function showErrorMessage(key){
+        messageDiag.loadFromKey(key);
+        messageDiag.open();
     }
 
 }

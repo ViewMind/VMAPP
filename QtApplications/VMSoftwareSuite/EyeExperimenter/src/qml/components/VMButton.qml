@@ -34,6 +34,7 @@ Rectangle {
     property bool vmShowIcon: false
     property bool vmShowBackArrow: false;
     property bool vmShowPlus: false;
+    property bool vmShowChevronSide: false
 
     id: vmPrimaryButton
     height: vmThinButton ? VMGlobals.adjustHeight(36) : VMGlobals.vmControlsHeight
@@ -86,25 +87,21 @@ Rectangle {
     }
 
     onVmIconSourceChanged: {
+        vmShowBackArrow = false;
+        vmShowPlus = false;
+        vmShowIcon = false;
+        vmShowChevronSide = false;
         if (vmIconSource === "plus"){
             vmShowPlus = true;
-            vmShowBackArrow = false;
-            vmShowIcon = false;
         }
         else if (vmIconSource === "arrow"){
             vmShowBackArrow = true;
-            vmShowPlus = false;
-            vmShowIcon = false;
+        }
+        else if (vmIconSource == "next"){
+            vmShowChevronSide = true;
         }
         else if (vmIconSource !== ""){
-            vmShowBackArrow = false;
-            vmShowPlus = false;
             vmShowIcon = true;
-        }
-        else{
-            vmShowBackArrow = false;
-            vmShowPlus = false;
-            vmShowIcon = false;
         }
     }
 
@@ -139,7 +136,7 @@ Rectangle {
             w = w + icon.width
             sumSpacing++
         }
-        else if (vmShowPlus || vmShowBackArrow){
+        else if (vmShowPlus || vmShowBackArrow || vmShowChevronSide){
             w = w + canvas.width
             sumSpacing++
         }
@@ -198,7 +195,7 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         visible: (vmText != "")
         x : {
-            if (vmShowBackArrow || vmShowIcon || vmShowPlus){
+            if (vmShowBackArrow || vmShowIcon || vmShowPlus || vmShowChevronSide){
                 if (vmIconToTheRight){
                     return vmSideMargins
                 }
@@ -215,7 +212,7 @@ Rectangle {
     Image {
         id: icon
         source: {
-            if ((vmIconSource == "plus") || (vmIconSource == "arrow")) return ""
+            if ((vmIconSource == "plus") || (vmIconSource == "arrow") || (vmIconSource == "next")) return ""
             else return vmIconSource
         }
         height: VMGlobals.adjustHeight(16)
@@ -231,11 +228,12 @@ Rectangle {
         height: VMGlobals.adjustHeight(16)
         width: {
             if (vmShowPlus) return height
-            else height*12/11;
+            else if (vmShowBackArrow) height*12/11;
+            else height*5.62/10.12
         }
         anchors.verticalCenter: parent.verticalCenter
         x : imagePositioning(canvas.width)
-        visible: vmShowPlus || vmShowBackArrow
+        visible: vmShowPlus || vmShowBackArrow || vmShowChevronSide
         onPaint: {
 
             // Using round line caps extends the line past the point of finish by 1 measure of line with.
@@ -259,16 +257,27 @@ Rectangle {
                 ctx.moveTo(midw,lw)
                 ctx.lineTo(lw,midh)
                 ctx.lineTo(midw,fh)
+                ctx.moveTo(lw,midh)
+                ctx.lineTo(fw,midh)
             }
             else if (vmShowPlus){
                 ctx.moveTo(midw,lw)
-                ctx.lineTo(midw,fh)
+                ctx.lineTo(midw,fh)                
+                ctx.moveTo(lw,midh)
+                ctx.lineTo(fw,midh)
             }
-
-            // The horizontal line across the widht of the canvas is common for both the arrow and the + sign.
-            ctx.moveTo(lw,midh)
-            ctx.lineTo(fw,midh)
-
+            else if (vmShowChevronSide){
+                if (vmIconToTheRight){
+                    ctx.moveTo(lw,lw)
+                    ctx.lineTo(fw,midh)
+                    ctx.lineTo(lw,fh)
+                }
+                else{
+                    ctx.moveTo(fh,lw)
+                    ctx.lineTo(lw,midh)
+                    ctx.lineTo(fw,fh)
+                }
+            }
             ctx.stroke();
 
         }

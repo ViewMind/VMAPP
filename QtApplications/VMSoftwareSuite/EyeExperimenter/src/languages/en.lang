@@ -37,3 +37,86 @@ viewlogin_orline = or;
 viewlogin_back = Back;
 viewlogin_show = Show;
 viewlogin_hide = Hide;
+viewlogin_wrong_pass = Incorrect password;
+
+#********************************* ADD NEW EVALUATOR SCREEN *********************************
+viewaddeval_title = New Evaluator;
+viewaddeval_subtitle = Please, fill the information below;
+viewaddeval_fname = First Name;
+viewaddeval_lname = Last Name;
+viewaddeval_email = Email;
+viewaddeval_email_ph = Enter Email;
+viewaddeval_fname_ph = Enter First Name;
+viewaddeval_lname_ph = Enter Last Name;
+viewaddeval_addeval = ADD EVALUATOR;
+viewaddeval_verifpass = Verify Password;
+viewaddeval_err_empty = Cannot be empty;
+viewaddeval_exmail_exists = Email is already being used;
+viewaddeval_added = <b></b><br>has been added as evaluator;
+
+#********************************* PATIENT LIST *********************************
+viewpatlist_title = Patient List;
+viewpatlist_search = Search by first, lastname or ID;
+viewpatlist_addpatient = ADD PATIENT;
+viewpatlist_name = Name;
+viewpatlist_bdate = Birth Date;
+viewpatlist_sex = Sex;
+viewpatlist_id = Personal ID;
+viewpatlist_action = Action;
+viewpatlist_edit = Edit;
+viewpatlist_study = START STUDY;
+viewpatlist_account = Account;
+viewpatlist_logout = Logout;
+viewpatlist_qc = Quality Control;
+viewpatlist_protocol = Protocol;
+viewpatlist_nopats = No patients found;
+viewpatlist_months = Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
+viewpatlist_nothing_found = No entries found;
+viewpatlist_nothing_found_exp = There are not patients matching the specified name or ID.; 
+viewpatlist_vr_failed = <b>VR Intialization Failed</b><br>Please verify your setup. Studies are disabled;
+
+#********************************* ACCOUNT LIST *********************************
+viewaccount_save = SAVE;
+viewaccount_badpassverify = Passwords do not match;
+viewaccount_mod_success = <b></b><br>has been successfully modified;
+
+#********************************* PATIENT FORM *********************************
+viewpatform_title = Add Patient;
+viewpatform_title_edit = Edit Patient;
+viewpatform_subtitle = Please fill the information below;
+viewpatform_sex_ph = Select sex;
+viewpatform_sex_options = Male|Female|Other;
+viewpatform_day_ph = Day;
+viewpatform_month_ph = Month;
+viewpatform_year_ph = Year;
+viewpatform_months = January|February|March|April|May|June|July|August|September|October|November|Decemeber;
+viewpatform_country = Country;
+viewpatform_country_ph = Select country;
+viewpatform_personal_id_ph = Enter Personal ID;
+viewpatform_years_of_education = Years of Education;
+viewpatform_years_of_education_ph = Enter number of years;
+viewpatform_optional = Optional;
+viewpatform_incorrect = Incorrect;
+viewpatform_cannotbeempty = Cannot be empty;
+viewpatform_isnotanumber = Not a number;
+viewpatform_invalid_range = Invalid range;
+viewpatform_success_edit = <b></b><br>has been updated;
+viewpatform_success_add = <b></b><br>has been added as a patient;
+
+#********************************* STUDY SETUP *********************************
+viewevaluation_date = Date;
+viewevaluation_patient = Patient;
+viewevaluation_general_settings = General Settings;
+viewevaluation_eval_settings = Evaluation Settings;
+viewevaluation_eval_setup    = Recommended evaluations by pathology;
+viewevaluation_eval_setup_list = Custom Study;
+viewevaluation_doctor        = Doctor that requested the study;
+viewevaluation_doctor_ph     = Select doctor;
+viewevaluation_protocol_ph   = Select protocol;
+viewevaluation_eye_selection = Select eye;
+viewevaluation_next_button = NEXT;
+viewevaluation_eye_selection_list = Left|Right|Both (Default);
+viewevaluation_eval_list     = Color Tasks|N-Back RT| Go NoGo|N-Back RT For Training|N-Back MS;
+viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
+
+

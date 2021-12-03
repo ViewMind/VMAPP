@@ -1,5 +1,6 @@
 pragma Singleton
 import QtQuick
+
 QtObject {
 
     function adjustWidth(value){
@@ -34,7 +35,7 @@ QtObject {
     readonly property color vmBlueButtonHighlight:      "#5AAFFB"
     readonly property color vmBluePanelBKGSelected:     "#DDEAF6"
     readonly property color vmBlueButtonPressed:        "#2883D3"
-
+    readonly property color vmBlueNotSortIndicator:     "#B7D4ED"
 
     readonly property color vmGrayUnselectedBorder:     "#D8DDE8"
     readonly property color vmGrayAccented:             "#939393"
@@ -64,7 +65,17 @@ QtObject {
     readonly property int vmAPI_UPDATE_REQUEST: 3
 
     // Screens
-    readonly property int vmSwipeIndexHome:  0
-    readonly property int vmSwipeIndexLogin: 1
+    readonly property int vmSwipeIndexHome:         0
+    readonly property int vmSwipeIndexLogin:        1
+    readonly property int vmSwipeIndexAddEval:      2
+    readonly property int vmSwipeIndexMainScreen:   3
+    readonly property int vmSwipeIndexAddPatient:   4
+    readonly property int vmSwipeIndexEvalView:     5
+
+    // Notification colors
+    readonly property color vmNotificationBlue:       vmBlueSelected
+    readonly property color vmNotificationGreen:      "#2DB117"
+    readonly property color vmNotificationRed:        "#FD3D60"
+    readonly property color vmNotificationBlack:      vmBlackText
 
 }

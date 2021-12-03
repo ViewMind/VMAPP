@@ -6,6 +6,7 @@ Rectangle {
 
     property var vmItems: [];
     property int vmCurrentIndex: 0;
+    property bool vmLikeButton: false;
 
     readonly property double vmSpacing: VMGlobals.adjustHeight(5);
 
@@ -71,7 +72,7 @@ Rectangle {
             Text {
                 id: text
                 text: vmText
-                font.pixelSize: VMGlobals.vmFontBaseSize
+                font.pixelSize: vmLikeButton? VMGlobals.vmFontLarge : VMGlobals.vmFontBaseSize
                 font.weight: 600
                 color: vmSelected ? VMGlobals.vmBlueSelected : VMGlobals.vmBlackText
                 anchors.verticalCenter: parent.verticalCenter
@@ -81,12 +82,12 @@ Rectangle {
 
             Image {
                 id: icon
-                height: VMGlobals.adjustHeight(18) //18*VMGlobals.vmControlsHeight/VMGlobals.vmReferenceControlHeight;
+                height: vmLikeButton ? VMGlobals.adjustHeight(16) : VMGlobals.adjustHeight(18)
                 fillMode: Image.PreserveAspectFit
                 source: vmSelected ? vmIconSelected : vmIconNormal
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
-                anchors.leftMargin: VMGlobals.adjustWidth(13);
+                anchors.leftMargin:  vmLikeButton? VMGlobals.adjustWidth(20) : VMGlobals.adjustWidth(13);
             }
 
         }
