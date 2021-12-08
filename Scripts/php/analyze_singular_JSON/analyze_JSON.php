@@ -18,7 +18,7 @@
    //$input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work_nback_negative/nbackrt_2021_10_14_15_15_reprocessed_qc_corrected.json";
    //$input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work/gonogo_2021_10_13_17_23.json";
    //$input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work_binding/binding_2021_10_21_10_23.json";
-   $input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work/nbackrt_2021_10_15_04_58.json";
+   //$input_json_file = "/home/ariel/repos/viewmind_projects/Scripts/php/analyze_singular_JSON/local_work/nbackrt_2021_10_15_04_58.json";
 
    
    $lang = "en";
@@ -34,7 +34,7 @@
    const WORK_DIR    = "local_work";
 
    // If filelink is NOT empty, this is what will be processed. 
-   $filelink = "";
+   $filelink = "2021_12_07_23_53_00_971873.zip";
    //$filelink = "2021_09_22_13_51_53_795631.zip";
    //$filelink = "2021_10_05_16_31_22_088792.zip";
    //$filelink = "2021_10_05_21_50_11_857874.zip";
