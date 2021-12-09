@@ -19,7 +19,7 @@ ViewBase {
 
         var user = evaluatorSelection.vmCurrentText;
         var password = passwordInput.vmCurrentText
-        var correntSwiperIndexToLoad = VMGlobals.vmSwipeIndexMainScreen;
+        var currentSwiperIndexToLoad = VMGlobals.vmSwipeIndexMainScreen;
 
         ////////////////////////////////////// START DEBUG SETUP ////////////////////////////////////
 
@@ -39,7 +39,7 @@ ViewBase {
             console.log("DBUG: Logging in as " + user + ":" + password);
         }
         if (dbug_index_to_load !== ""){
-            correntSwiperIndexToLoad = dbug_index_to_load
+            currentSwiperIndexToLoad = dbug_index_to_load
             console.log("DBUG: Loading View: " + dbug_index_to_load);
         }
 
@@ -67,7 +67,6 @@ ViewBase {
         if (loader.evaluatorLogIn(user,password)){
             // Updating the text of the doctor menu.
             passwordInput.vmErrorMsg = "";
-            mainWindow.swipeTo(correntSwiperIndexToLoad);
 
             if (dbug_setup_studies !== ""){
                 console.log("DBUG: Study string found. To parse: " + dbug_setup_studies);
@@ -76,20 +75,58 @@ ViewBase {
                 // --  Indicates separation between different fields of the same study
                 // -   Indicates separation between key and value.
 
-                console.log("TODO Setup Studies")
-//                var all_studies = dbug_setup_studies.split("---");
-//                viewStudyStart.vmSelectedExperiments = [];
-//                for (var s = 0; s < all_studies.length; s++){
-//                    var study_fields = all_studies[s].split("--");
-//                    var config = {};
-//                    for (var f = 0; f < study_fields.length; f++){
-//                        var key_and_value = study_fields[f].split("-");
-//                        config[key_and_value[0]] = key_and_value[1]
-//                    }
-//                    viewStudyStart.vmSelectedExperiments.push(config);
-//                }
-//                viewStudyStart.startStudies();
+                var all_studies = dbug_setup_studies.split("---");
+                viewEvaluations.vmSelectedEvaluationConfigurations = [];
 
+                // We need the names.
+                let studyNames = [
+                        "NOT STRING - Reading",
+                        loader.getStringForKey("viewevaluation_binding_bc"),
+                        loader.getStringForKey("viewevaluation_binding_uc"),
+                        loader.getStringForKey("viewevaluation_eval_nbackms"),
+                        loader.getStringForKey("viewevaluation_eval_nbackrt"),
+                        loader.getStringForKey("viewevaluation_eval_nbackvs"),
+                        "NOT STRING - Perception",
+                        loader.getStringForKey("viewevaluation_eval_gonogo")
+                    ];
+
+                var study_names = [];
+
+                for (var s = 0; s < all_studies.length; s++){
+                    var study_fields = all_studies[s].split("--");
+                    var config = {};
+                    var name = "unknown"
+                    for (var f = 0; f < study_fields.length; f++){
+                        var key_and_value = study_fields[f].split("-");
+                        if (key_and_value[0] === VMGlobals.vmUNIQUE_STUDY_ID){
+                            name = studyNames[key_and_value[1]]
+                        }
+                        config[key_and_value[0]] = key_and_value[1]
+                    }
+                    console.log("   DBUG: Adding Study " + name)
+                    study_names.push(name);
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(config);
+                }
+                viewEvaluations.vmDebugSubScreen = viewEvaluations.vmSC_INDEX_EVALUATION_SCREEN
+                //viewEvaluations.vmDebugSubScreen = viewEvaluations.vmSC_INDEX_EVALUATION_FINISHED
+                mainWindow.swipeTo(VMGlobals.vmSwipeIndexEvalView);
+                //console.log("Study names: " + JSON.stringify(study_names));
+                viewEvaluations.setUpStudyNames(study_names)
+                viewEvaluations.vmSelectedDoctor = dbug_selected_doctor;
+            }
+            else if (dbug_qc_file_to_set !== ""){
+                if (loader.qualityControlFailed()){
+                    console.log("Failed to load QC File: " + dbug_qc_file_to_set + ". Proceeding as normal");
+                    mainWindow.swipeTo(currentSwiperIndexToLoad);
+                }
+                else{
+                    console.log("DBUG: Loading QC View with NO Patient Information")
+                    viewQC.loadProgressLine();
+                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexQCView);
+                }
+            }
+            else {
+                mainWindow.swipeTo(currentSwiperIndexToLoad);
             }
         }
         else{

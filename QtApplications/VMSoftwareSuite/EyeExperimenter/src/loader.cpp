@@ -147,7 +147,7 @@ QString Loader::getStringForKey(const QString &key){
     if (language.containsKeyword(key)){
         return language.getString(key);
     }
-    else return "ERROR: NOT FOUND";
+    else return "ERROR: STRING KEY " + key +  " NOT FOUND";
 }
 
 QStringList Loader::getStringListForKey(const QString &key){
@@ -589,6 +589,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     subject_data.insert(VMDC::SubjectField::LOCAL_ID,configuration->getString(Globals::Share::PATIENT_UID));
     subject_data.insert(VMDC::SubjectField::NAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_NAME));
     subject_data.insert(VMDC::SubjectField::YEARS_FORMATION,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_YEARS_FORMATION));
+    subject_data.insert(VMDC::SubjectField::EMAIL,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_EMAIL));
 
     // Setting the evaluator info. We do it here becuase it is required for the data file comparisons.
     QVariantMap evaluator;

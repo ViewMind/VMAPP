@@ -105,7 +105,7 @@ void ConfigurationManager::addKeyValuePair(const QString &name, const QVariant &
 }
 
 QString ConfigurationManager::getString(const QString &name, bool *ok) const{
-    if (data.value(name).canConvert(QMetaType::QString)){
+    if (data.value(name).canConvert(QMetaType(QMetaType::QString))){
         if (ok != nullptr){
             *ok = true;
         }
@@ -120,7 +120,7 @@ QString ConfigurationManager::getString(const QString &name, bool *ok) const{
 }
 
 bool ConfigurationManager::getBool(const QString &name, bool *ok) const{
-    if (data.value(name).canConvert(QMetaType::Bool)){
+    if (data.value(name).canConvert(QMetaType(QMetaType::Bool))){
         if (ok != nullptr){
             *ok = true;
         }
@@ -135,7 +135,7 @@ bool ConfigurationManager::getBool(const QString &name, bool *ok) const{
 }
 
 qint32 ConfigurationManager::getInt(const QString &name, bool *ok) const{
-    if (data.value(name).canConvert(QMetaType::Int)){
+    if (data.value(name).canConvert(QMetaType(QMetaType::Int))){
         if (ok != nullptr){
             *ok = true;
         }
@@ -150,7 +150,7 @@ qint32 ConfigurationManager::getInt(const QString &name, bool *ok) const{
 }
 
 qreal ConfigurationManager::getReal(const QString &name, bool *ok) const{
-    if (data.value(name).canConvert(QMetaType::Double)){
+    if (data.value(name).canConvert(QMetaType(QMetaType::Double))){
         if (ok != nullptr){
             *ok = true;
         }
@@ -167,7 +167,7 @@ qreal ConfigurationManager::getReal(const QString &name, bool *ok) const{
 QStringList ConfigurationManager::getStringList(const QString &name) const{
     if (!data.contains(name)) return QStringList();
     QVariantList list;
-    if (data.value(name).canConvert(QMetaType::QVariantList)){
+    if (data.value(name).canConvert(QMetaType(QMetaType::QVariantList))){
         list = data.value(name).toList();
     }
     else{
@@ -239,7 +239,7 @@ bool ConfigurationManager::verifyParsedCommands(){
         if (verif.value(parsed.at(i)).type == VT_LIST){
 
             QVariantList list;
-            if (!data.value(parsed.at(i)).canConvert(QMetaType::QVariantList)){
+            if (!data.value(parsed.at(i)).canConvert(QMetaType(QMetaType::QVariantList))){
                 // Have to assume is 1 value list for a multi size one.
                 list << data.value(parsed.at(i));
             }
@@ -298,7 +298,7 @@ QString ConfigurationManager::checkValidtyQVariant(const QVariant &data, const Q
     bool ok;
     switch (type){
     case VT_BOOL:
-        if (!data.canConvert(QMetaType::Bool)){
+        if (!data.canConvert(QMetaType(QMetaType::Bool))){
             return  "On keyword " + keyword + " value is invalid as boolean. It should be true or false";
         }
         break;
@@ -315,7 +315,7 @@ QString ConfigurationManager::checkValidtyQVariant(const QVariant &data, const Q
         }
         break;
     case VT_STRING:
-        if (!data.canConvert(QMetaType::QString)){
+        if (!data.canConvert(QMetaType(QMetaType::QString))){
             return  "On keyword " + keyword + " value is invalid string";
         }
         break;
@@ -348,7 +348,7 @@ bool ConfigurationManager::saveToFile(const QString &fileName, const Delimiters 
     for (qint32 i = 0; i < keys.size(); i++){
         QString value;
         QVariant datum = data.value(keys.at(i));
-        if (datum.canConvert(QMetaType::QVariantList)){
+        if (datum.canConvert(QMetaType(QMetaType::QVariantList))){
             QVariantList list = datum.toList();
             QStringList temp;
             for (qint32 j = 0; j < list.size(); j++){

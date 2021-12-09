@@ -7,9 +7,11 @@ import "../"
   *  1) With or withouth an icon. The Icon can be left or right. This is set with the icon source.
   *     However if the icon source is "plus" or "arrow" a canvas drawn plus or arrow is used instead.
   *  2) Fixed width or computed width.
-  *  3) Three button types: Primary, Secondary, Tertiary.
+  *  3) Four button types: Primary, Secondary, Tertiary and Warning.
   *  4) With or withouth text.
   *  5) Can be disabled.
+  *  6) 3  Types of predefined icons or select image as icon.
+  *  7) Icons can be configured to appear to the right or to the left of the text in the button.
   **/
 
 Rectangle {
@@ -17,6 +19,7 @@ Rectangle {
     readonly property int vmTypePrimary:   0
     readonly property int vmTypeSecondary: 1
     readonly property int vmTypeTertiary:  2
+    readonly property int vmTypeWarning:   3
 
     readonly property double vmSpacing: VMGlobals.adjustWidth(10);
     readonly property double vmSideMargins: VMGlobals.adjustWidth(20)
@@ -35,6 +38,7 @@ Rectangle {
     property bool vmShowBackArrow: false;
     property bool vmShowPlus: false;
     property bool vmShowChevronSide: false
+
 
     id: vmPrimaryButton
     height: vmThinButton ? VMGlobals.adjustHeight(36) : VMGlobals.vmControlsHeight
@@ -73,13 +77,24 @@ Rectangle {
             vmBorderColorDisabled = VMGlobals.vmGrayButtonPressed
             vmBorderColorHover = vmBorderColor
         }
-        else if (vmTypeTertiary){
+        else if (vmButtonType == vmTypeTertiary){
             vmHoverColor = VMGlobals.vmGrayHoverButton
             vmNormalColor = "transparent"
             vmPressedColor = VMGlobals.vmGrayButtonPressed
             vmTextColor = VMGlobals.vmBlackText
             vmTextColorDisabled = VMGlobals.vmBlackText
             vmBorderColor = "transparent"
+            vmBorderColorDisabled = vmBorderColor
+            vmDisabledColor = vmNormalColor
+            vmBorderColorHover = vmHoverColor
+        }
+        else if (vmButtonType == vmTypeWarning){
+            vmNormalColor = VMGlobals.vmRedError
+            vmHoverColor = Qt.lighter(vmNormalColor,1.5)            
+            vmPressedColor = Qt.darker(vmNormalColor,1.5)
+            vmTextColor = VMGlobals.vmWhite
+            vmTextColorDisabled = VMGlobals.vmWhite
+            vmBorderColor = vmNormalColor
             vmBorderColorDisabled = vmBorderColor
             vmDisabledColor = vmNormalColor
             vmBorderColorHover = vmHoverColor
@@ -125,6 +140,7 @@ Rectangle {
     ////////////// BASIC SETUP
     //width: (vmCustomWidth == 0) ?  (vmSideMargins*2 + metrics.width) : vmCustomWidth
     width: {
+        // console.log("Computing the width for " + vmText)
         if (vmCustomWidth != 0) return vmCustomWidth
         var w = vmSideMargins*2;
         var sumSpacing = 0;
@@ -273,7 +289,7 @@ Rectangle {
                     ctx.lineTo(lw,fh)
                 }
                 else{
-                    ctx.moveTo(fh,lw)
+                    ctx.moveTo(fw,lw)
                     ctx.lineTo(lw,midh)
                     ctx.lineTo(fw,fh)
                 }

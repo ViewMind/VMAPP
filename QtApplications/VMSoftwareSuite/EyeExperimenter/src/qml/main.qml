@@ -13,6 +13,12 @@ ApplicationWindow {
 
     readonly property alias vmSegoeNormal: segoeui_normal
     readonly property alias vmSegoeHeavy: segoeui_heavy
+    readonly property alias vmSegoeBold: segoeui_bold
+
+    FontLoader {
+        id: segoeui_bold
+        source: "qrc:/font/segoe_ui_bold.ttf"
+    }
 
     FontLoader{
         id: segoeui_normal
@@ -43,6 +49,17 @@ ApplicationWindow {
             messageDiag.close();
             Qt.quit()
         }
+    }
+
+    // Calibration error dialog
+    VMMessageDialog {
+        id: calibrationErrorDialog
+        onDismissed: {
+            calibrationErrorDialog.close()
+        }
+//        Component.onCompleted: {
+//            showCalibrationError(true,false)
+//        }
     }
 
     VMNotification {
@@ -106,6 +123,12 @@ ApplicationWindow {
             }
         }
 
+        Item {
+            ViewQC {
+                id: viewQC
+            }
+        }
+
         onCurrentIndexChanged: {
             switch (currentIndex){
             case VMGlobals.vmSwipeIndexHome:
@@ -119,13 +142,16 @@ ApplicationWindow {
                     var message = loader.getStringForKey("viewpatlist_vr_failed");
                     popUpNotify(VMGlobals.vmNotificationRed,message);
                 }
-                viewMainSetup.loadPatients();
+                viewMainSetup.swipeIntoMain()
                 break;
             case VMGlobals.vmSwipeIndexLogin:
                 viewLogin.updateProfileList();
                 break;
             case VMGlobals.vmSwipeIndexAddEval:
                 viewAddEval.clear()
+                break;
+            case VMGlobals.vmSwipeIndexEvalView:
+                viewEvaluations.setPatientForEvaluation()
                 break;
             }
         }
@@ -152,6 +178,31 @@ ApplicationWindow {
     function showErrorMessage(key){
         messageDiag.loadFromKey(key);
         messageDiag.open();
+    }
+
+    function getCurrentSwipeIndex(){
+        return swiperControl.currentIndex;
+    }
+
+    function showCalibrationError(leftEye,rightEye){
+        var title = loader.getStringForKey("viewevaluation_err_calib_title");
+        var body  = loader.getStringForKey("viewevaluation_err_calib_exp");
+
+        if (leftEye) body = body.replace("llee",loader.getStringForKey("viewevaluation_err_calib_ok"))
+        else body = body.replace("llee",loader.getStringForKey("viewevaluation_err_calib_fail"))
+
+        if (rightEye) body = body.replace("rree",loader.getStringForKey("viewevaluation_err_calib_ok"))
+        else body = body.replace("rree",loader.getStringForKey("viewevaluation_err_calib_fail"))
+
+        //console.log(body)
+
+        calibrationErrorDialog.vmTitle = title
+        calibrationErrorDialog.vmText = body
+        calibrationErrorDialog.vmLarge = true
+        calibrationErrorDialog.vmUseRedAlert = true
+
+        calibrationErrorDialog.open()
+
     }
 
 }

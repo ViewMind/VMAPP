@@ -11,5 +11,6 @@
         <file>VMToggle.qml</file>
         <file>VMCheckBox.qml</file>
         <file>VMRadioButton.qml</file>
+        <file>VMTextAreaInput.qml</file>
     </qresource>
 </RCC>

@@ -32,7 +32,7 @@ Rectangle {
         interval: vmNotificationDuration + animation.duration
         repeat: false
         onTriggered: {
-            console.log("Hiding notification");
+            //console.log("Hiding notification");
             hide();
         }
     }

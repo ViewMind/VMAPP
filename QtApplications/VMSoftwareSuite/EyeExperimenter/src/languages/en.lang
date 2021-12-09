@@ -6,6 +6,7 @@ viewstart_instruction = Login to your profile or add a new evaluator;
 viewstart_login = LOGIN;
 viewstart_addneweval = ADD A NEW EVALUATOR;
 viewstart_settings = Settings;
+viewstart_configuration_failed = Unable to Load Configuration|The application is unable to start\nPlease contatct ViewMind for help;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Advanced;
@@ -115,8 +116,103 @@ viewevaluation_doctor_ph     = Select doctor;
 viewevaluation_protocol_ph   = Select protocol;
 viewevaluation_eye_selection = Select eye;
 viewevaluation_next_button = NEXT;
+viewevaluation_eye_text = Select which eye to use;
 viewevaluation_eye_selection_list = Left|Right|Both (Default);
-viewevaluation_eval_list     = Color Tasks|N-Back RT| Go NoGo|N-Back RT For Training|N-Back MS;
+viewevaluation_eval_binding    = Color Tasks;
+viewevaluation_eval_nbackrt    = N-Back RT;
+viewevaluation_eval_nbackvs    = N-Back RT Training;
+viewevaluation_eval_nbackms    = N-Back MS;
+viewevaluation_eval_gonogo     = Go NoGo;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
+viewevaluation_must_select_doctor = A doctor must be selected;
+viewevaluation_start = START;
+viewevaluation_choose = Choose evaluations;
+viewevaluation_number_of_targets = Number of targets;
+viewevaluation_err_at_least_1_study = You must select at least 1 study;
+viewevaluation_binding_uc = New Colours;
+viewevaluation_binding_bc = Colour Combinations;
+viewevaluation_shortcuts = Shortcuts;
+viewevaluation_evaluation_steps = Calibration|Explanation|Evaluation;
+viewevaluation_keyboard_explanations = Stop study|Resume study after pause|Advace study step|Indicate targets are different|Indicate that targets are the same;
+viewevaluation_action_calibrate = CALIBRATE;
+viewevaluation_action_starteval = START EVALUATION;
+viewevaluation_err_noconnect = <b>Failed Connection to EyeTracker</b><br>Please contact ViewMind Support for help;
+viewevaluation_err_badend_study = <b>Study ended abruptly</b><br>If the study was not aborted, please try again;
+viewevaluation_err_calib_title = Calibration Error!;
+viewevaluation_err_calib_exp   = The calibration for the requested eyes could not be completed.<br>
+Please see the detail below and retry:<br><br>
+Left Eye: llee<br>
+Right Eye: rree;
+viewevaluation_err_calib_ok = <b>Success</b>;
+viewevaluation_err_calib_fail = <font color='#FD3D60'><b>Failed</b></font>;
+viewevaluation_err_programming = <b>Internal Application Error</b><br>Please contact ViewMind for Support;
+viewevalcalibration_success = <b>Calibration Successfull</b><br>Please proceed with evaluation explanation;
+viewevaluation_finish = Finish;
+viewevaluation_congrats = Congratulations!;
+viewevaluation_congrats_sub = You have successfully completed all evaluations;
+viewevaluation_skip_calibration = SKIP CALIBRATION;
+viewevaluation_finish_message = <b></b><br> has a new study that can be processed;
+
+#********************************* VR WAIT SCREEN MESSAGES *********************************
+waitscreenmsg_calibrationEnd = Calibration has ended;
+waitscreenmsg_studyEnd = Evaluation has ended;
+
+#********************************* Quality Control *********************************
+viewqc_no_reports_to_evaluate = No reports available for processing;
+viewqc_study = Study;
+viewqc_dr    = Doctor;
+viewqc_wait_msg = Please wait while study quality is checked;
+viewqc_qc_failed = <b>Quality Control Failed</b><br>Please contact ViewMind for support;
+viewqc_SubPoints = Data Points;
+viewqc_SubFixations = Fixations;
+viewqc_SubFrequency = Sample Rate;
+viewQC_StudyNameMap = 
+Reading|Reading|
+Binding BC|Colour Combinations| 
+Binding UC|New Colurs|
+NBack MS|N-Back MS|
+NBack RT|N-Back RT|
+NBack VS|N-Back VS|
+Go No-Go|Go NoGo;
+viewqc_previous = PREVIOUS;
+viewqc_archive = ARCHIVE;
+viewqc_send = SEND;
+view_qc_send_report = Send Studies;
+viewqc_index_names = Data Point Index|Fixations Index|Sample Frequency Index;
+viewQC_limitDataPoints = Desired value to be at least <<I>>. This ensures that not signficant loss of data ocurred.;
+viewQC_limitFixations = Desired value to be at least <<I>>. This ensures that subject and application behaviour during the study falls within expected parameters.;
+viewQC_limitSampleF = Desired value to be at least <<I>>. This ensures that headset worked as expected;
+viewqc_confirm_archive = Yes, Archive It;
+viewqc_comment = Comments;
+viewqc_archive_explanation = If you archive the study it will not be processed but
+it will be removed from the study list;
+viewqc_archive_reason = low_data_points-Quality Control Index for data points is too low|
+low_fixations-Quality Control Index for fixations is too low|
+low_sample_rate-Quality Control Index for sample rate is too low|
+study_instructions_misunderstood-The subject did not understand instructions for the study.|
+bad_subjet_state-The subject's state was not optimal for the study|
+other-Other; 
+viewqc_reason = Reason for archiving;
+viewqc_archive_reason_ph = Select reason ...;
+viewqc_comment_ph = Enter your comment;
+viewqc_send_wait = Please wait while information is being sent to our servers;
+viewqc_evaluator_comments = Evaluator comments will be included in the final report;
+viewqc_archive_studies = Archive Studies;
+viewQC_commentSizeError = Only a maximum of  <<L>> lines of up to  <<C>> characters is allowed;
+viewQC_specify_other = Specify other;
+viewqc_err_reason_missing = You must specify a reason for archiving;
+viewqc_err_server_error = <b>Server Error</b><br>A problem was detected in the server<br>Please contact the ViewMind for support;
+viewqc_success_on_send = <b>Success!</b><br>Information was correctly sent;
+
+#********************************* STUDY STATUS MESSAGES *********************************
+studystatus_binding_correct = Correct Responses: <<N>>;
+studystatus_binding_incorrect = Incorrect Responses: <<N>>;
+studystatus_reading = Average sentence time: <<N>> ms;
+studystatus_nback_sequence_hit = Completed Sequences: <<N>>;
+studystatus_nback_sequence_timeout = Timed Out Sequences: <<N>>;
+studystatus_nback_target_speed = Targets shown for <<N>> ms;
+studystatus_gonogo_ok = Sucessfull Reponses: <<N>>;
+studystatus_gonogo_timeout = Timeouts: <<N>>;
+studystatus_gonogo_avg = Average trial time: <<N>> ms;
 
 

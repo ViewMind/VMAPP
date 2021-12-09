@@ -62,6 +62,16 @@ Item {
         vmCurrentIndex = selectedIndex;
     }
 
+    function getCurrentlySelectedMetaDataField(){
+        if (vmCurrentIndex === -1) return ""
+        let item =  itemList.get(vmCurrentIndex);
+        if ("vmMetadata" in item) return item["vmMetadata"]
+        else {
+            console.log("Trying to get non existant field: vmMetadata");
+            console.log("Selected item is: " + JSON.stringify(item))
+        }
+    }
+
     signal selectionChanged();
 
     ///////////////////// THE LIST MODEL

@@ -13,6 +13,8 @@ Item {
 
     property string vmTitle: ""
     property string vmText: ""
+    property bool vmLarge: false
+    property bool vmUseRedAlert: false
 
     signal dismissed();
 
@@ -53,7 +55,7 @@ Item {
     Rectangle {
         id: dialog
         width: VMGlobals.adjustWidth(615)
-        height: VMGlobals.adjustHeight(227)
+        height: vmLarge ? VMGlobals.adjustHeight(308) : VMGlobals.adjustHeight(227)
         anchors.centerIn: parent
         radius: VMGlobals.adjustWidth(10);
         color: "#ffffff"
@@ -76,7 +78,7 @@ Item {
 
     Image {
         id: infoIcon
-        source: "qrc:/images/alert-triangle.png"
+        source: vmUseRedAlert ? "qrc:/images/alert-triangle-red.png" : "qrc:/images/alert-triangle.png"
         height: VMGlobals.adjustHeight(67)
         fillMode: Image.PreserveAspectFit
         anchors.top: dialog.top

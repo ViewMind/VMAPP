@@ -1,7 +1,7 @@
 #include "imageexperiment.h"
 
-const QString ImageExperiment::MSG_CORRECT = "viewpresentexp_binding_correct";
-const QString ImageExperiment::MSG_INCORRECT = "viewpresentexp_binding_incorrect";
+const QString ImageExperiment::MSG_CORRECT = "studystatus_binding_correct";
+const QString ImageExperiment::MSG_INCORRECT = "studystatus_binding_incorrect";
 
 ImageExperiment::ImageExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type){
 

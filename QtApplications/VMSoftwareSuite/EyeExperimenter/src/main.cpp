@@ -90,6 +90,9 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    // Registering the QImage Display Which allows to displays images generated in the C++ part of the application in the QML front end.
+    qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");
+
     //QGuiApplication app(argc, argv);
     QApplication app(argc,argv);
 

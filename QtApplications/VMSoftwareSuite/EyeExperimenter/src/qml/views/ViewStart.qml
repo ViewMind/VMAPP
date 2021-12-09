@@ -32,15 +32,25 @@ ViewBase {
         function onPartnerSequenceDone() {
             mainWindow.closeWait();
             if (!allok){
-                console.log("ERROR: Partener sequence failed");
+                console.log("ERROR: Partneer sequence failed");
             }
+        }
+    }
+
+    VMMessageDialog {
+        id: criticalFailure
+        onDismissed: {
+            messageDiag.close();
+            Qt.quit()
         }
     }
 
     Component.onCompleted: {
         // Checking that the everything was loaded correctly.
         if (loader.getLoaderError()){
-            console.log("ERROR loading the configuration. Dialog Missing");
+            criticalFailure.loadFromKey("viewstart_configuration_failed");
+            criticalFailure.open()
+            return;
         }
 
         // If this is the first time running this version the changes are shown.
@@ -101,7 +111,6 @@ ViewBase {
             //mainWindow.popUpNotify(VMGlobals.vmNotificationBlue,"<b>Matias shulz</b> has been successfully<br>added to the list of evaluators")
         }
     }
-
 
     // The ViewMind Logo.
     Image {

@@ -36,7 +36,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
         // Create the wait screen only once
         waitScreenBaseColor = QColor(Qt::gray);
 
-        logo = QImage(":/images/viewmind_wait_logo.png");
+        logo = QImage(":/images/logo.png");
         if (logo.isNull()){
             logger.appendError("The loaded wait screen image is null");
             return;
@@ -487,13 +487,13 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         break;
 
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
-        logger.appendStandard("STARTING BINDING BC EXPERÏMENT");
+        logger.appendStandard("STARTING BINDING BC EXPERIMENT");
         experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_BC);
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
-        logger.appendStandard("STARTING BINDING UC EXPERÏMENT");
+        logger.appendStandard("STARTING BINDING UC EXPERIMENT");
         experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_UC);
         background = QBrush(Qt::gray);
         if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));

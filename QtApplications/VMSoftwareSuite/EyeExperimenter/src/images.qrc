@@ -27,5 +27,11 @@
         <file>images/search.png</file>
         <file>images/info_notification.png</file>
         <file>images/alert-triangle-white.png</file>
+        <file>images/alert-triangle-red.png</file>
+        <file>images/congrats.png</file>
+        <file>images/info-green.png</file>
+        <file>images/reports.png</file>
+        <file>images/archive.png</file>
+        <file>images/archive-white.png</file>
     </qresource>
 </RCC>

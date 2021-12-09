@@ -12,6 +12,8 @@ ViewBase {
     readonly property int indexNoPatients: 0
     readonly property int indexPatList:    1
     readonly property int indexAccount:    2
+    readonly property int indexNoReports:  3
+    readonly property int indexReportList: 4
 
 
     property string vmInitials : "XX";
@@ -42,6 +44,15 @@ ViewBase {
 
     }
 
+    function swipeIntoMain(){
+        if (sideNavigationBar.vmCurrentIndex === 0){
+            loadPatients();
+        }
+        else if (sideNavigationBar.vmCurrentIndex === 1){
+            reportlist.loadReports()
+        }
+    }
+
     function goBackToPatientList(){
         sideNavigationBar.vmCurrentIndex = 0
         sideNavigationBarAccountOnly.vmCurrentIndex = -1;
@@ -51,6 +62,12 @@ ViewBase {
     function enableStudyStart(enable){
         patlist.vmStudiesEnabled = enable;
     }
+
+    function showNoReports(){
+        viewer.currentIndex = indexNoReports
+    }
+
+    //function show
 
     Rectangle {
         id: initials
@@ -144,6 +161,9 @@ ViewBase {
                 switch (vmCurrentIndex){
                 case 0:
                     viewer.currentIndex = indexPatList
+                    break;
+                case 1:
+                    viewer.currentIndex = indexReportList
                     break;
                 }
             }
@@ -262,6 +282,26 @@ ViewBase {
                 }
             }
 
+            Item {
+                SCNoReports {
+                    id: noreports
+                    radius: clipRect.radius
+                    border.width:  clipRect.border.width
+                    border.color: clipRect.border.color
+                    anchors.fill: parent
+                }
+            }
+
+            Item {
+                SCReportList {
+                    id: reportlist
+                    radius: clipRect.radius
+                    border.width:  clipRect.border.width
+                    border.color: clipRect.border.color
+                    anchors.fill: parent
+                }
+            }
+
             onCurrentIndexChanged: {
                 switch(currentIndex){
                 case indexPatList:
@@ -269,6 +309,9 @@ ViewBase {
                     break;
                 case indexAccount:
                     account.loadAccountInfo();
+                    break;
+                case indexReportList:
+                    reportlist.loadReports();
                     break;
                 }
             }

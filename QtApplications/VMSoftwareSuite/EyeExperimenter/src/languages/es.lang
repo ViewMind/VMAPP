@@ -6,6 +6,7 @@ viewstart_instruction = Ingrese a su perfil or agregue un nuevo evaluador;
 viewstart_login = INGRESAR;
 viewstart_addneweval = NUEVO EVALUADOR;
 viewstart_settings   = Configuración;
+viewstart_configuration_failed = Unable to Load Configuration|The application is unable to start\nPlease contatct ViewMind for help;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Avanzado;
@@ -115,6 +116,101 @@ viewevaluation_doctor_ph     = Seleccion un doctor;;
 viewevaluation_protocol_ph   = Seleccione un protocolo;
 viewevaluation_eye_selection = Seleccione el ojo;
 viewevaluation_next_button = SIGUIENTE;
+viewevaluation_eye_text = Seleccione que ojo utilizar;
 viewevaluation_eye_selection_list = Izquierdo|Derecho|Ambos (Defecto);
-viewevaluation_eval_list     = Tareas de Colores|N-Back RT| Go NoGo|N-Back RT Para Entrenamiento|N-Back MS;
+viewevaluation_eval_binding    = Tareas de Colores;
+viewevaluation_eval_nbackrt    = N-Back RT;
+viewevaluation_eval_nbackvs    = N-Back RT Entrenamiento;
+viewevaluation_eval_nbackms    = N-Back MS;
+viewevaluation_eval_gonogo     = Go NoGo;
 viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;
+viewevaluation_must_select_doctor = Se debe seleccionar un doctor;
+viewevaluation_start = COMENZAR;
+viewevaluation_choose = Seleccionar evaluaciones;
+viewevaluation_number_of_targets = Número de objectivos;
+viewevaluation_err_at_least_1_study = Debe elegir al menos un estudio;
+viewevaluation_binding_uc = Nuevos Colores;
+viewevaluation_binding_bc = Combinación de Colores;
+viewevaluation_shortcuts = Teclas;
+viewevaluation_evaluation_steps = Calibración|Explicación|Evaluación;
+viewevaluation_keyboard_explanations = Frenar estudios|Resumir estudio luego de pausa|Avanzar un paso en un estudio|Indicar objectivos distintos|Indicar objetivos iguales;
+viewevaluation_action_calibrate = CALIBRAR;
+viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
+viewevaluation_err_noconnect = <bFalla al conectarse al EyeTracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;
+viewevaluation_err_badend_study = <b>Estudio no terminó corectamente</b><br>Si el estudio no fue abortado, intente nuevamente;
+viewevaluation_err_calib_title = ¡Error de Calibración!;
+viewevaluation_err_calib_exp   = La calibración para los ojos seleccionados falló<br>
+Por favor vea el detalle aqui abajo y reintente: <br><br>
+Ojo Izquierdo: llee<br>
+Ojo Derecho: rree;
+viewevaluation_err_calib_ok = <b>Éxito</b>;
+viewevaluation_err_calib_fail = <font color='#FD3D60'><b>Falla</b></font>;
+viewevaluation_err_programming = <b>Error Interno en la App</b><br>Per favor contáctse con ViewMind por soporte;
+viewevalcalibration_success = <b>Calibration Exitosa</b><br>Por favor proceda con la explicación;
+viewevaluation_finish = Finalizar;
+viewevaluation_congrats = ¡Felicitaciones!;
+viewevaluation_congrats_sub = Ha finalizado exitósamente todas las evaluaciones;
+viewevaluation_skip_calibration = SALTEAR CALIBRACIÓN;
+viewevaluation_finish_message = <b></b><br> tiene un nuevo estudio listo para procesar;
+
+#********************************* VR WAIT SCREEN MESSAGES *********************************
+waitscreenmsg_calibrationEnd = La calibración ha concluido;
+waitscreenmsg_studyEnd = El estudio ha finalizado;
+
+#********************************* Quality Control *********************************
+viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
+vieqc_study = Estudio;
+viewqc_dr    = Doctor;
+viewqc_wait_msg = Por favor espere mientras la calidad del estudio es verificada;
+viewqc_qc_failed = <b>Control de Calidad Ha Fallado</b><br>Por favor contacte a ViewMind para soporte;
+viewqc_SubPoints = Puntos de Datos;
+viewqc_SubFixations = Fijaciones;
+viewqc_SubFrequency = Frecuencia de Sampleo;
+viewQC_StudyNameMap = 
+Reading|Lectura|
+Binding BC|Combinación de Colores| 
+Binding UC|Nuevos Colores|
+NBack MS|N-Back Tipo MS|
+NBack RT|N-Back Tipo RT|
+NBack VS|N-Back RT de Entranamiento|
+Go No-Go|Go NoGo;
+viewqc_previous = ANTERIOR;
+viewqc_archive = ARCHIVAR;
+viewqc_send = ENVIAR;
+view_qc_send_report = Enviar Estudios;
+viewqc_index_names = Índice de Número de Puntos|Índice de Fijaciones|Índice de Frecuencia de Muestreo;
+viewQC_limitDataPoints = Valor deseado de al menos <<I>>. Esto asegura que no se haya producido una pérdida signficativa de datos;
+viewQC_limitFixations = Valor deseado de al menos <<I>>. Esto asegura que el comportamiento tanto del sujeto como de sistema a caído dentro de los parámetros establecidos;
+viewQC_limitSampleF = Valor deseado de al menos <<I>>. Esto aseguro que el seguidor ocular ha funcionado como se esperaba;
+viewqc_confirm_archive = Si, Archivar el Estudio;
+viewqc_comment = Comentarios;
+viewqc_archive_explanation = Si archiva el estudio este no será procesado, pero 
+se eliminará de la lista de estudios;
+viewqc_archive_reason = low_data_points-Índice de Cotrol de Calidad para los puntos de datos es bajo|
+low_fixations-Índice de Cotrol de Calidad para las fijaciones es bajo|
+low_sample_rate-Índice de Cotrol de Calidad para la velocidad de sampleo es bajo|
+study_instructions_misunderstood-El sujeto con comprendió las instrucciones del estudio|
+bad_subjet_state-El estado del sujeto no era óptimo para el estudio|
+other-Otro; 
+viewqc_reason = Motivo por la cual se archiva;
+viewqc_archive_reason_ph = Seleccione el motivo ...;
+viewqc_comment_ph = Ingrese su comentario;
+viewqc_send_wait = Por favor espere mientras la inforamción es enviada a nuestros servidores;
+viewqc_evaluator_comments = Los comentarios del evaluador serán incluídos en el reporte final;
+viewqc_archive_studies = Archivar Estudios;
+viewQC_commentSizeError = Solo se permiten un máximo de <<L>> líneas de hasta <<C>> caracterers cada una;
+viewQC_specify_other = Especificar otro;
+viewqc_err_reason_missing = Debe especificar algún motivo por la cual se archiva;
+viewqc_err_server_error = <b>Error de Servidor</b><br>Un problema fue detectado en el servidor<br>Por favor contacte a ViewMind para soporte;
+viewqc_success_on_send = <b>¡Éxito!</b><br>La información fue enviada exitosamente;
+
+#********************************* STUDY STATUS MESSAGES *********************************
+studystatus_binding_correct = Respuestas Correctas: <<N>>;
+studystatus_binding_incorrect = Respuestas Incorrectas: <<N>>;
+studystatus_reading = Tiempo de lectura promedio: <<N>> ms;
+studystatus_nback_sequence_hit = Secuencias Completadas: <<N>>;
+studystatus_nback_sequence_timeout = Secuencias No Completadas: <<N>>;
+studystatus_nback_target_speed = Objetivos en pantalla por <<N>> ms;
+studystatus_gonogo_ok = Respuestas Éxitosas: <<N>>;
+studystatus_gonogo_timeout = Veces que el tiempo expiró: <<N>>;
+studystatus_gonogo_avg = Tiempo promedio de ensayo: <<N>> ms;

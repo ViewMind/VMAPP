@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>font/segoe_ui_normal.ttf</file>
         <file>font/segoe_ui_semibold.ttf</file>
+        <file>font/segoe_ui_bold.ttf</file>
     </qresource>
 </RCC>

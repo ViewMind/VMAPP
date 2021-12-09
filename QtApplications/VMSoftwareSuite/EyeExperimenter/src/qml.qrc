@@ -32,5 +32,20 @@
         <file>qml/views/ViewAddPatient.qml</file>
         <file>qml/components/VMProgressLine.qml</file>
         <file>qml/views/ViewEvaluations.qml</file>
+        <file>qml/subscreens/SCEvalGeneralSettings.qml</file>
+        <file>qml/subscreens/SCEvalConfiguration.qml</file>
+        <file>qml/subscreens/SCEvalRunEvaluation.qml</file>
+        <file>qml/components/VMCofigurableStudyItem.qml</file>
+        <file>qml/components/VMSingleChoiceMultiRadioButton.qml</file>
+        <file>qml/components/VMPercentWheel.qml</file>
+        <file>qml/subscreens/SCEValsFinished.qml</file>
+        <file>qml/subscreens/SCReportList.qml</file>
+        <file>qml/subscreens/SCNoReports.qml</file>
+        <file>qml/views/ViewQC.qml</file>
+        <file>qml/subscreens/SCQCGraphs.qml</file>
+        <file>qml/subscreens/SCArchive.qml</file>
+        <file>qml/components/VMScaler.qml</file>
+        <file>qml/subscreens/SCSendReport.qml</file>
+        <file>qml/components/VMTextAreaInput.qml</file>
     </qresource>
 </RCC>

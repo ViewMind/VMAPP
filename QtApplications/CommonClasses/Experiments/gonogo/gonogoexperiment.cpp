@@ -1,8 +1,8 @@
 #include "gonogoexperiment.h"
 
-const QString GoNoGoExperiment::MSG_OK_TRIALS      = "viewpresentexp_gonogo_ok";
-const QString GoNoGoExperiment::MSG_TIMEOUT_TRIALS = "viewpresentexp_gonogo_timeout";
-const QString GoNoGoExperiment::MSG_AVG_SPEED      = "viewpresentexp_gonogo_avg";
+const QString GoNoGoExperiment::MSG_OK_TRIALS      = "studystatus_gonogo_ok";
+const QString GoNoGoExperiment::MSG_TIMEOUT_TRIALS = "studystatus_gonogo_timeout";
+const QString GoNoGoExperiment::MSG_AVG_SPEED      = "studystatus_gonogo_avg";
 
 
 GoNoGoExperiment::GoNoGoExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type)
