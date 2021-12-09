@@ -170,8 +170,9 @@ abstract class SubjectField extends TypedString {
    const BIRTHDATE                               = "birth_date";
    const BIRTH_COUNTRY                           = "birth_country";
    const GENDER                                  = "gender";
-   const AGE                                     = "age";
+   const EMAIL                                   = "email";
    const LOCAL_ID                                = "local_id";
+   const AGE                                     = "age";
 }
 
 
