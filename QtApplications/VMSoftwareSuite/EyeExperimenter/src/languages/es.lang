@@ -218,7 +218,6 @@ protocol_err_exists = El ID ya existe. Los IDs de Protocolo deben ser únicos;
 protocol_name_ph = Ingrese el nombre del protocolo;
 protocol_id_ph = Ingrese el ID del protocolo;
 
-
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Respuestas Correctas: <<N>>;
 studystatus_binding_incorrect = Respuestas Incorrectas: <<N>>;
@@ -229,3 +228,14 @@ studystatus_nback_target_speed = Objetivos en pantalla por <<N>> ms;
 studystatus_gonogo_ok = Respuestas Éxitosas: <<N>>;
 studystatus_gonogo_timeout = Veces que el tiempo expiró: <<N>>;
 studystatus_gonogo_avg = Tiempo promedio de ensayo: <<N>> ms;
+
+#********************************* UPDATE DIALOGS *********************************
+update_title = Actualización Disponible;
+update_message = Hay una nueva versión disponible (<b>Versión <<N>></b>).<br> Desea actualizar arhoar?<br><br> Puede posponer la actualización <<M>> veces mas;
+update_now = ACTUALIZAR AHORA;
+update_later = RECORDAME MAS TARDE;
+update_success = ¡Actualización Exitosa!;
+update_version = Versión;
+update_close = CERRAR;
+update_download_wait = Por favor espere mientras se descarga la actualización;
+update_failed_message = <b>La actualización falló</b><br>Por favor contacte a ViewMind para soporte;

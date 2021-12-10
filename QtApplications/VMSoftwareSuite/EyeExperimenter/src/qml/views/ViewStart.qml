@@ -16,7 +16,10 @@ ViewBase {
                 mainWindow.closeWait()
 
                 if (loader.getNewUpdateVersionAvailable() !== ""){
-                    console.log("New version Available " + loader.getNewUpdateVersionAvailable())
+                    requestUpdateDialog.vmVersion = loader.getNewUpdateVersionAvailable()
+                    requestUpdateDialog.vmTimesRemaining = loader.getRemainingUpdateDenials();
+                    //console.log("New version Available " + loader.getNewUpdateVersionAvailable())
+                    requestUpdateDialog.open();
                 }
                 else {
                     mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
@@ -24,6 +27,7 @@ ViewBase {
             }
             else if (loader.getLastAPIRequest() === VMGlobals.vmAPI_UPDATE_REQUEST){
                 // If the application got here, we move on. But it means that the update failed.
+                mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("update_failed_message"));
                 mainWindow.closeWait()
                 mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
             }
@@ -37,12 +41,21 @@ ViewBase {
         }
     }
 
+
     VMMessageDialog {
         id: criticalFailure
         onDismissed: {
             messageDiag.close();
             Qt.quit()
         }
+    }
+
+    ViewChangeLog {
+        id: changelogDialog
+    }
+
+    ViewRequestUpdate{
+        id: requestUpdateDialog
     }
 
     Component.onCompleted: {
@@ -55,9 +68,27 @@ ViewBase {
 
         // If this is the first time running this version the changes are shown.
         if (loader.isFirstTimeRun()){
+        //if (1 === 1){
             var title_and_body = loader.getLatestVersionChanges();
-            console.log("Showing ChangeLog for version " + title_and_body[0])
-            console.log(title_and_body[1])
+
+            let versionText = title_and_body[0];
+            let titleParts = versionText.split(" - ")
+            changelogDialog.vmVersion = "<b>" + titleParts[0] + "</b> " + titleParts[1];
+
+            let changes = title_and_body[1].split("\r\n")
+            //console.log(JSON.stringify(changes));
+            let bullets = [];
+            for (var i = 0; i < changes.length; i++){
+                let line = changes[i];
+                if (line === "") continue;
+                if (line === undefined) continue;
+                line = line.replace(" - ","");
+                bullets.push(line);
+            }
+
+            changelogDialog.setChangedItems(bullets)
+            changelogDialog.open()
+
         }
 
     }
@@ -108,7 +139,6 @@ ViewBase {
         anchors.leftMargin: VMGlobals.adjustWidth(20)
         onClickSignal: {
             mainWindow.swipeTo(VMGlobals.vmSwipeIndexAddEval);
-            //mainWindow.popUpNotify(VMGlobals.vmNotificationBlue,"<b>Matias shulz</b> has been successfully<br>added to the list of evaluators")
         }
     }
 

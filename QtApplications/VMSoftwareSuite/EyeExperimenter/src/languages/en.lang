@@ -229,4 +229,14 @@ studystatus_gonogo_ok = Sucessfull Reponses: <<N>>;
 studystatus_gonogo_timeout = Timeouts: <<N>>;
 studystatus_gonogo_avg = Average trial time: <<N>> ms;
 
+#********************************* UPDATE DIALOGS *********************************
+update_title = Update Available;
+update_message = There is a new version available (<b>Version <<N>></b>).<br> Would you like to update now?<br><br> You can postpone the update <<M>> more times;
+update_now = UPDATE NOW;
+update_later = REMIND ME LATER;
+update_success = Update Success!;
+update_version = Version;
+update_close = CLOSE;
+update_download_wait = Please wait while we download the update;
+update_failed_message = <b>Update process failed</b><br>Please contanct viewmind team for support;
 

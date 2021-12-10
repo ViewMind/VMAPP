@@ -57,9 +57,6 @@ ApplicationWindow {
         onDismissed: {
             calibrationErrorDialog.close()
         }
-//        Component.onCompleted: {
-//            showCalibrationError(true,false)
-//        }
     }
 
     VMNotification {

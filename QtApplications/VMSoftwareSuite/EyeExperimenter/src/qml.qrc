@@ -47,5 +47,7 @@
         <file>qml/components/VMTextAreaInput.qml</file>
         <file>qml/subscreens/SCProtocolList.qml</file>
         <file>qml/views/ViewEditProtocol.qml</file>
+        <file>qml/views/ViewRequestUpdate.qml</file>
+        <file>qml/views/ViewChangeLog.qml</file>
     </qresource>
 </RCC>
