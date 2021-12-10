@@ -9,12 +9,10 @@ ViewBase {
 
     id: viewMainSetup
 
-    readonly property int indexNoPatients: 0
-    readonly property int indexPatList:    1
-    readonly property int indexAccount:    2
-    readonly property int indexNoReports:  3
-    readonly property int indexReportList: 4
-
+    readonly property int indexPatList:     0
+    readonly property int indexAccount:     1
+    readonly property int indexReportList:  2
+    readonly property int indexProtocols:   3
 
     property string vmInitials : "XX";
     property string vmEmail: ""
@@ -25,31 +23,32 @@ ViewBase {
       */
     function loadPatients(){
         var evaluator = loader.getCurrentEvaluatorInfo();
+        if (evaluator.email === undefined) return;
         vmEvaluator = evaluator.name  + " " + evaluator.lastname
         vmEmail     = evaluator.email
         vmInitials = "";
         if (evaluator.name.length > 0)  vmInitials = evaluator.name[0]
         if (evaluator.lastname.length > 0) vmInitials = vmInitials + evaluator.lastname[0]
         vmInitials = vmInitials.toUpperCase()
-
-        if (loader.areThereAnySubjects()) {
-            viewer.currentIndex = indexPatList
-            patlist.loadPatients()
-        }
-        else {
-            viewer.currentIndex = indexNoPatients;
-        }
-
+        patlist.vmNoPatientsAtAll = !loader.areThereAnySubjects();
+        patlist.loadPatients()
         sideNavigationBarAccountOnly.vmCurrentIndex = -1
-
     }
 
     function swipeIntoMain(){
-        if (sideNavigationBar.vmCurrentIndex === 0){
+        switch(viewer.currentIndex){
+        case indexPatList:
             loadPatients();
-        }
-        else if (sideNavigationBar.vmCurrentIndex === 1){
-            reportlist.loadReports()
+            break;
+        case indexAccount:
+            account.loadAccountInfo();
+            break;
+        case indexReportList:
+            reportlist.loadReports();
+            break;
+        case indexProtocols:
+            protocollist.loadProtocols();
+            break;
         }
     }
 
@@ -62,12 +61,6 @@ ViewBase {
     function enableStudyStart(enable){
         patlist.vmStudiesEnabled = enable;
     }
-
-    function showNoReports(){
-        viewer.currentIndex = indexNoReports
-    }
-
-    //function show
 
     Rectangle {
         id: initials
@@ -165,6 +158,9 @@ ViewBase {
                 case 1:
                     viewer.currentIndex = indexReportList
                     break;
+                case 2:
+                    viewer.currentIndex = indexProtocols
+                    break;
                 }
             }
         }
@@ -209,8 +205,10 @@ ViewBase {
             onVmCurrentIndexChanged: {
                 // Since this contains only one element, we need to "unselect" any element in the other sidebar
                 setItemSelected(vmCurrentIndex)
-                if (vmCurrentIndex == 0) sideNavigationBar.vmCurrentIndex = -1;
-                viewer.currentIndex = indexAccount
+                if (vmCurrentIndex == 0) {
+                    sideNavigationBar.vmCurrentIndex = -1;
+                    viewer.currentIndex = indexAccount
+                }
             }
         }
 
@@ -246,21 +244,11 @@ ViewBase {
         SwipeView {
             id: viewer
             interactive: false
-            currentIndex: 0
+            currentIndex: indexPatList
             width: clipRect.width - clipRect.vmBorderPadding*2
             height: clipRect.height - clipRect.radius - clipRect.vmBorderPadding
             x: clipRect.vmBorderPadding
             y: clipRect.vmBorderPadding
-
-            Item {
-                SCNoPatients {
-                    id: nopatients
-                    radius: clipRect.radius
-                    border.width:  clipRect.border.width
-                    border.color: clipRect.border.color
-                    anchors.fill: parent
-                }
-            }
 
             Item {
                 SCPatList {
@@ -282,15 +270,6 @@ ViewBase {
                 }
             }
 
-            Item {
-                SCNoReports {
-                    id: noreports
-                    radius: clipRect.radius
-                    border.width:  clipRect.border.width
-                    border.color: clipRect.border.color
-                    anchors.fill: parent
-                }
-            }
 
             Item {
                 SCReportList {
@@ -302,18 +281,20 @@ ViewBase {
                 }
             }
 
-            onCurrentIndexChanged: {
-                switch(currentIndex){
-                case indexPatList:
-                    loadPatients();
-                    break;
-                case indexAccount:
-                    account.loadAccountInfo();
-                    break;
-                case indexReportList:
-                    reportlist.loadReports();
-                    break;
+            Item {
+                SCProtocolList {
+                    id: protocollist
+                    radius: clipRect.radius
+                    border.width:  clipRect.border.width
+                    border.color: clipRect.border.color
+                    anchors.fill: parent
                 }
+            }
+
+            onCurrentIndexChanged: {
+                //console.log("Index has been changed to " + currentIndex + " in subscreen viewer")
+                //console.log("Calling swipe into main due to viewer in main setup change");
+                swipeIntoMain()
             }
 
 

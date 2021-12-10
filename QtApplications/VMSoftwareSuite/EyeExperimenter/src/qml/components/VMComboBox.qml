@@ -41,9 +41,6 @@ Item {
         setSelection(-1)
     }
 
-    onVmPlaceHolderTextChanged: {
-        setSelection(vmCurrentIndex)
-    }
 
     function setSelection(selectedIndex){
         if (selectedIndex === -1){
@@ -71,6 +68,7 @@ Item {
             console.log("Selected item is: " + JSON.stringify(item))
         }
     }
+
 
     signal selectionChanged();
 

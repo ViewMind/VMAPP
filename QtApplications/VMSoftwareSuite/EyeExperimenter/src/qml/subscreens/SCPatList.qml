@@ -20,10 +20,14 @@ Rectangle {
     property string vmCurrentSortOrder: vmSORT_INDEX_SUBJECT
     property string vmCurrentOrderDirection: OLS.ORDER_ASCENDING
     property int vmNumberOfPatients: 0
+    property bool vmNoPatientsAtAll: false;
     property bool vmStudiesEnabled: true;
 
 
     function loadPatients(){
+
+        if (vmNoPatientsAtAll) return;
+
         var filterText = searchInput.vmCurrentText
 
         OLS.setModelList(loader.filterSubjectList(filterText))
@@ -69,6 +73,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.leftMargin: VMGlobals.adjustWidth(30)
         anchors.topMargin: VMGlobals.adjustHeight(31)
+        visible: !vmNoPatientsAtAll
     }
 
     Text {
@@ -82,6 +87,7 @@ Rectangle {
         anchors.verticalCenter: title.verticalCenter
         anchors.left: title.right
         anchors.leftMargin: VMGlobals.adjustWidth(5)
+        visible: !vmNoPatientsAtAll
     }
 
     VMButton {
@@ -92,6 +98,7 @@ Rectangle {
         anchors.verticalCenter: title.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: VMGlobals.adjustWidth(32)
+        visible: !vmNoPatientsAtAll
         onClickSignal: {
             viewAddPatient.clear()
             mainWindow.swipeTo(VMGlobals.vmSwipeIndexAddPatient);
@@ -105,6 +112,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: addPatient.bottom
         anchors.topMargin: VMGlobals.adjustHeight(30)
+        visible: !vmNoPatientsAtAll
         onTextChanged: {
             if (searchInput.vmCurrentText.length >= 3){
                 loadPatients();
@@ -119,6 +127,7 @@ Rectangle {
         height: VMGlobals.adjustHeight(500)
         anchors.bottom: parent.bottom
         x: subScreenPatList.border.width
+        visible: !vmNoPatientsAtAll
 
         Component.onCompleted: {
 
@@ -179,7 +188,7 @@ Rectangle {
     Rectangle {
         id: noPatientsFoundScreen
         anchors.fill: patListTable
-        visible: (vmNumberOfPatients == 0)
+        visible: (vmNumberOfPatients == 0) && (!vmNoPatientsAtAll)
 
         Image {
             id: nothingFoundImage
@@ -215,8 +224,60 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: VMGlobals.adjustHeight(139)
         }
-
-
     }
+
+    Image {
+        id: image
+        source: "qrc:/images/docuemnts.png"
+        fillMode: Image.PreserveAspectFit
+        height: VMGlobals.adjustHeight(150)
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: VMGlobals.adjustHeight(153)
+        visible: vmNoPatientsAtAll
+    }
+
+    Text {
+        id: titleForNoPatients
+        text: loader.getStringForKey("viewpatlist_title")
+        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
+        font.weight: 400
+        color: VMGlobals.vmBlackText
+        height: VMGlobals.adjustHeight(42)
+        verticalAlignment: Text.AlignVCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: image.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(20)
+        visible: vmNoPatientsAtAll
+    }
+
+    Text {
+        id: subtitle
+        text: loader.getStringForKey("viewpatlist_nopats")
+        font.pixelSize: VMGlobals.vmFontLarge
+        font.weight: 400
+        color: VMGlobals.vmGrayPlaceholderText
+        height: VMGlobals.adjustHeight(21)
+        verticalAlignment: Text.AlignVCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: titleForNoPatients.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(10)
+        visible: vmNoPatientsAtAll
+    }
+
+
+    VMButton {
+        vmText: loader.getStringForKey("viewpatlist_addpatient")
+        vmIconSource: "plus"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: VMGlobals.adjustHeight(200)
+        visible: vmNoPatientsAtAll
+        onClickSignal: {
+            viewAddPatient.clear()
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexAddPatient);
+        }
+    }
+
 
 }

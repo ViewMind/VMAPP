@@ -23,7 +23,6 @@
         <file>qml/views/ViewLogin.qml</file>
         <file>qml/views/ViewAddEvaluator.qml</file>
         <file>qml/views/ViewMainSetup.qml</file>
-        <file>qml/subscreens/SCNoPatients.qml</file>
         <file>qml/subscreens/SCPatList.qml</file>
         <file>qml/components/VMSortableTable.qml</file>
         <file>qml/js/ObjectListSorter.js</file>
@@ -40,12 +39,13 @@
         <file>qml/components/VMPercentWheel.qml</file>
         <file>qml/subscreens/SCEValsFinished.qml</file>
         <file>qml/subscreens/SCReportList.qml</file>
-        <file>qml/subscreens/SCNoReports.qml</file>
         <file>qml/views/ViewQC.qml</file>
         <file>qml/subscreens/SCQCGraphs.qml</file>
         <file>qml/subscreens/SCArchive.qml</file>
         <file>qml/components/VMScaler.qml</file>
         <file>qml/subscreens/SCSendReport.qml</file>
         <file>qml/components/VMTextAreaInput.qml</file>
+        <file>qml/subscreens/SCProtocolList.qml</file>
+        <file>qml/views/ViewEditProtocol.qml</file>
     </qresource>
 </RCC>

@@ -26,7 +26,6 @@ const char * LocalDB::SUBJECT_NAME                  = "name";
 const char * LocalDB::SUBJECT_LASTNAME              = "lastname";
 const char * LocalDB::SUBJECT_INSTITUTION_ID        = "supplied_institution_id";
 const char * LocalDB::SUBJECT_BIRTHDATE             = "birthdate";
-const char * LocalDB::SUBJECT_AGE                   = "age";
 const char * LocalDB::SUBJECT_BIRTHCOUNTRY          = "birthcountry";
 const char * LocalDB::SUBJECT_YEARS_FORMATION       = "years_formation";
 const char * LocalDB::SUBJECT_CREATION_DATE         = "creation_date";
@@ -43,6 +42,10 @@ const char * LocalDB::SUBJECT_EMAIL                 = "email";
 const char * LocalDB::MARKER_VALUE            = "marker_value";
 const char * LocalDB::MARKER_TIME             = "marker_time";
 
+// Protocol Fields
+const char * LocalDB::PROTOCOL_NAME           = "protocol_name";
+const char * LocalDB::PROTOCOL_CREATION_DATE  = "creation_date";
+const char * LocalDB::PROTOCOL_ID             = "protocol_id";
 
 LocalDB::LocalDB()
 {
@@ -337,24 +340,47 @@ QVariantMap LocalDB::getSubjectDataByInternalID(const QString &internalID) const
     return QVariantMap();
 }
 
-bool LocalDB::addProtocol(const QString &protocol){
-    QStringList protocols = data.value(MAIN_PROTOCOL,QStringList()).toStringList();
-    if (protocols.contains(protocol)) return false;
-    protocols << protocol;
+bool LocalDB::addProtocol(const QString &protocol_name, const QString &protocol_id, bool edit){
+    QVariantMap protocols = data.value(MAIN_PROTOCOL,QVariantMap()).toMap();
+
+    QVariantMap newProtocol;
+
+    if (!edit) {
+        // If edit is false the protocol is new. So it can't exist.
+        if (protocols.contains(protocol_id)) return false;
+    }
+    else {
+        // If edit is true, the protocols is being eedited and it MUST exist.
+        if (!protocols.contains(protocol_id)) return false;
+        newProtocol = protocols.value(protocol_id).toMap();
+    }
+
+    newProtocol[PROTOCOL_NAME] = protocol_name;
+
+    // Creation date is ONLY set when being created.
+    if (!edit) {
+        newProtocol[PROTOCOL_CREATION_DATE] = QDate::currentDate().toString("yyyy-MM-dd");
+        newProtocol[PROTOCOL_ID] = protocol_id;
+    }
+
+    // Storing and saving the new protocol information.
+    protocols[protocol_id] = newProtocol;
     data[MAIN_PROTOCOL] = protocols;
     return saveAndBackup();
 }
 
-bool LocalDB::removeProtocol(const QString &protocol){
-    QStringList protocols = data.value(MAIN_PROTOCOL,QStringList()).toStringList();
-    if (!protocols.contains(protocol)) return true;
-    protocols.removeOne(protocol);
+bool LocalDB::removeProtocol(const QString &protocol_id){
+    QVariantMap protocols = data.value(MAIN_PROTOCOL,QVariantMap()).toMap();
+    if (!protocols.contains(protocol_id)) return true;
+
+    protocols.remove(protocol_id);
+
     data[MAIN_PROTOCOL] = protocols;
     return saveAndBackup();
 }
 
-QStringList LocalDB::getProtocolList() const {
-    return data.value(MAIN_PROTOCOL,QStringList()).toStringList();
+QVariantMap LocalDB::getProtocolList() const {
+    return data.value(MAIN_PROTOCOL,QVariantMap()).toMap();
 }
 
 bool LocalDB::processingParametersPresent() const {
@@ -684,4 +710,29 @@ QString LocalDB::computeDataHash(){
         hash = QString(QCryptographicHash::hash(json.toJson(QJsonDocument::Compact),QCryptographicHash::Sha3_512).toHex());
     }
     return hash;
+}
+
+
+void LocalDB::updatesToPreviousDBVersions(){
+
+    if (data[MAIN_DB_VERSION].toInt() == 2){
+
+        // DB version 2 requires reformatting the protocol list.
+        QStringList protocolList = data[MAIN_PROTOCOL].toStringList();
+
+        QVariantMap protocols;
+        for (qint32 i = 0; i < protocolList.size(); i++){
+            QVariantMap protocol_info;
+            protocol_info[PROTOCOL_NAME] = protocolList.at(i);
+            protocol_info[PROTOCOL_CREATION_DATE] = QDate::currentDate().toString("yyyy-MM-dd");
+            protocol_info[PROTOCOL_ID] = protocolList.at(i);
+            protocols[protocolList.at(i)] = protocol_info;
+        }
+
+        data[MAIN_PROTOCOL] = protocols;
+
+    }
+
+
+
 }

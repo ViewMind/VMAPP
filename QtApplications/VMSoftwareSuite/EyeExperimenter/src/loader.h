@@ -74,9 +74,8 @@ public:
     Q_INVOKABLE QStringList getLoginEmails() const;
 
     //////////////////////////// SUBJECT REALATED FUNCTIONS ////////////////////////////
-    Q_INVOKABLE QString addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
-                                        const QString &age, const QString &birthdate, const QString &birthCountry,
-                                        const QString &gender, qint32 formative_years, const QString &email);
+    Q_INVOKABLE QString addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id, const QString &birthdate,
+                                           const QString &birthCountry,  const QString &gender, qint32 formative_years, const QString &email);
     Q_INVOKABLE void modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic);
     Q_INVOKABLE QVariantMap filterSubjectList(const QString &filter);
     Q_INVOKABLE bool setSelectedSubject(const QString &suid);    
@@ -116,9 +115,10 @@ public:
     Q_INVOKABLE qint32 getLastAPIRequest();
 
     //////////////////////////// PROTOCOL RELATED FUNCTIONS ////////////////////////////
-    Q_INVOKABLE bool addProtocol(const QString &p);
-    Q_INVOKABLE void deleteProtocol(const QString &p);
-    Q_INVOKABLE QStringList getProtocolList();
+    Q_INVOKABLE bool addProtocol(const QString &name, const QString &id);
+    Q_INVOKABLE void editProtocol(const QString &id, const QString &newName);
+    Q_INVOKABLE void deleteProtocol(const QString &id);
+    Q_INVOKABLE QVariantMap getProtocolList();
 
 
 

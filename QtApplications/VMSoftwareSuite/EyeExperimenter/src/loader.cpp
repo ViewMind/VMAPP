@@ -334,7 +334,6 @@ void Loader::partnerSynchFinishProcess(){
                                                      patient.value(ParterPatient::NAME,"").toString(),
                                                      patient.value(ParterPatient::LASTNAME,"").toString(),
                                                      uid,
-                                                     patient.value(ParterPatient::AGE,0).toString(),
                                                      patient.value(ParterPatient::BIRTHDATE,"").toString(),
                                                      patient.value(ParterPatient::NATIONALITY,"ZZ").toString(),
                                                      patient.value(ParterPatient::GENDER,"").toString(),
@@ -580,7 +579,6 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
     // Creating the subject data
     QVariantMap subject_data;
-    subject_data.insert(VMDC::SubjectField::AGE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_AGE));
     subject_data.insert(VMDC::SubjectField::BIRTH_COUNTRY,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHCOUNTRY));
     subject_data.insert(VMDC::SubjectField::BIRTH_DATE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHDATE));
     subject_data.insert(VMDC::SubjectField::GENDER,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_GENDER));
@@ -750,7 +748,7 @@ QStringList Loader::getLoginEmails() const {
 ////////////////////////////////////////////////////////////////// SUBJECT FUNCTIONS //////////////////////////////////////////////////////////////////
 
 QString Loader::addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
-                                   const QString &age, const QString &birthdate, const QString &birthCountry,
+                                   const QString &birthdate, const QString &birthCountry,
                                    const QString &gender, qint32 formative_years, const QString &email){
 
     //qDebug() << "Entering with suid" << suid;
@@ -762,26 +760,25 @@ QString Loader::addOrModifySubject(QString suid, const QString &name, const QStr
         //qDebug() << "Computed new suid" << suid;
     }
 
-    // If a birthdate is provided, the age is computed
-    QString saveage;
-    if ((birthdate != "") && (age == "")){
-        // We are expecting the ISO date.
-        QDate bdate = QDate::fromString(birthdate,"yyyy-MM-dd");
-        QDate currentDate= QDate::currentDate();    // gets the current date
-        int currentAge = currentDate.year() - bdate.year();
-        if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ){
-            currentAge--;
-        }
-        saveage = QString::number(currentAge);
-    }
-    else saveage = age;
+//    // If a birthdate is provided, the age is computed
+//    QString saveage;
+//    if ((birthdate != "") && (age == "")){
+//        // We are expecting the ISO date.
+//        QDate bdate = QDate::fromString(birthdate,"yyyy-MM-dd");
+//        QDate currentDate= QDate::currentDate();    // gets the current date
+//        int currentAge = currentDate.year() - bdate.year();
+//        if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ){
+//            currentAge--;
+//        }
+//        saveage = QString::number(currentAge);
+//    }
+//    else saveage = age;
 
     // Getting the country code.
 
 
     // Create a map for the data as is. The caller function is reponsible for data verification.
     QVariantMap map;
-    map[LocalDB::SUBJECT_AGE] = saveage;
     map[LocalDB::SUBJECT_BIRTHCOUNTRY] = countries->getCodeForCountry(birthCountry);
     map[LocalDB::SUBJECT_BIRTHDATE] = birthdate;
     map[LocalDB::SUBJECT_INSTITUTION_ID] = institution_id;
@@ -1123,7 +1120,7 @@ void Loader::receivedRequest(){
             return; // So we don't emit the finsihed request.
         }
     }
-    emit(finishedRequest());
+    emit Loader::finishedRequest();
 }
 
 qint32 Loader::wasThereAnProcessingUploadError() const {
@@ -1175,16 +1172,23 @@ void Loader::moveProcessedFiletToProcessedDirectory(){
 
 ////////////////////////////////////////////////////////////////// PROTOCOL FUNCTIONS //////////////////////////////////////////////////////////////////
 
-bool Loader::addProtocol(const QString &p) {
-    return localDB.addProtocol(p);
+bool Loader::addProtocol(const QString &name, const QString &id) {
+    return localDB.addProtocol(name,id,false);
 }
-void Loader::deleteProtocol(const QString &p) {
-    if (!localDB.removeProtocol(p)){
+
+void Loader::editProtocol(const QString &id, const QString &newName){
+    if (!localDB.addProtocol(newName,id,true)){
+        logger.appendError("Error while modifying protocol: " + id + " to new name: " + newName + ". Error was: " + localDB.getError());
+    }
+}
+
+void Loader::deleteProtocol(const QString &id) {
+    if (!localDB.removeProtocol(id)){
         logger.appendError("Error while deleting protocol: " + localDB.getError());
     }
 }
 
-QStringList Loader::getProtocolList() {
+QVariantMap Loader::getProtocolList() {
     return localDB.getProtocolList();
 }
 

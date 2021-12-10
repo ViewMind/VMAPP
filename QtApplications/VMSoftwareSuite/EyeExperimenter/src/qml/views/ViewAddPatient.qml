@@ -143,14 +143,15 @@ ViewBase {
 
         loader.addOrModifySubject(vmCurrentlyLoadedPatient,
                                   fname.vmCurrentText,lname.vmCurrentText,
-                                  personalID.vmCurrentText,"",
+                                  personalID.vmCurrentText,
                                   bdate,country.vmCurrentText,selected_sex,
                                   yearsOfEducation.vmCurrentText,email.vmCurrentText)
+
         var message = "";
         if (vmCurrentlyLoadedPatient == "")  message = loader.getStringForKey("viewpatform_success_add");
         else message = loader.getStringForKey("viewpatform_success_edit");
         message = message.replace("<b></b>","<b>" + fname.vmCurrentText + " " + lname.vmCurrentText + "</b>")
-        console.log("Should be popping up a message");
+        //console.log("Should be popping up a message");
         mainWindow.popUpNotify(VMGlobals.vmNotificationGreen,message);
         mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
     }
@@ -225,6 +226,7 @@ ViewBase {
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewaddeval_fname")
                     vmPlaceHolderText: loader.getStringForKey("viewaddeval_fname_ph")
+                    Keys.onTabPressed: lname.vmFocus = true
                 }
 
                 Row {
@@ -238,6 +240,7 @@ ViewBase {
                         width: VMGlobals.adjustWidth(75)
                         vmLabel: loader.getStringForKey("viewpatlist_bdate")
                         vmPlaceHolderText: loader.getStringForKey("viewpatform_day_ph")
+                        Keys.onTabPressed: year.vmFocus = true
                     }
                     VMComboBox {
                         id: month
@@ -252,6 +255,7 @@ ViewBase {
                         id: year
                         width: VMGlobals.adjustWidth(80)
                         vmPlaceHolderText: loader.getStringForKey("viewpatform_year_ph")
+                        Keys.onTabPressed: personalID.vmFocus = true
                     }
                 }
 
@@ -271,6 +275,7 @@ ViewBase {
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewpatform_years_of_education")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_years_of_education_ph")
+                    Keys.onTabPressed: email.vmFocus = true
                 }
 
             }
@@ -285,6 +290,7 @@ ViewBase {
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewaddeval_lname")
                     vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
+                    Keys.onTabPressed: day.vmFocus = true
                 }
 
                 VMComboBox {
@@ -296,6 +302,7 @@ ViewBase {
                     Component.onCompleted: {
                         setModelList(loader.getStringListForKey("viewpatform_sex_options"))
                     }
+
                 }
 
                 VMTextInput {
@@ -303,6 +310,7 @@ ViewBase {
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewpatlist_id")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_personal_id_ph")
+                    Keys.onTabPressed: yearsOfEducation.vmFocus = true
                 }
 
                 VMTextInput {
@@ -311,6 +319,7 @@ ViewBase {
                     vmLabel: loader.getStringForKey("viewaddeval_email")
                     vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
                     vmClarification: "(" + loader.getStringForKey("viewpatform_optional") + ")"
+                    Keys.onTabPressed: fname.vmFocus = true
                 }
 
             }

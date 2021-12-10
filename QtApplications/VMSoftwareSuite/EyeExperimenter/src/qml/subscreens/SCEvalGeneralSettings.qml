@@ -39,18 +39,24 @@ Rectangle {
             }
         }
 
-        // Filling the protocol list.
-        let protocolList = loader.getProtocolList();
-        protocol.setModelList(protocolList);
-
-        // Setting the last selected protocol
+        // Getting the last selected protocol
         var selectedprotocol = loader.getConfigurationString("last_selected_protocol");
-        //console.log("Selected protocol: " + selectedprotocol);
-        for (i = 0; i < protocolList.length; i++){
-            if (protocolList[i] === selectedprotocol){
-                protocol.setSelection(i);
-            }
+        var selectedProtocolIndex = -1;
+
+        // Filling the protocol list while also searching for the last selected protocol
+        let protocolMap = loader.getProtocolList();
+        let protocolModelList = [];
+        i = 0;
+        for (var protocolID in protocolMap){
+            let name = protocolMap[protocolID]["protocol_name"];
+            let item = { "value" : name + " (" + protocolID + ")", "metadata" : protocolID  }
+            protocolModelList.push(item)
+            if (protocolID === selectedprotocol) selectedProtocolIndex = i;
+            i++;
         }
+
+        protocol.setModelList(protocolModelList);
+        protocol.setSelection(selectedProtocolIndex);
 
     }
 
@@ -61,8 +67,9 @@ Rectangle {
         }
 
         // Storing the last selected protocol
-        loader.setSettingsValue("last_selected_protocol",protocol.vmCurrentText);
-        viewEvaluations.vmSelectedProtocol = protocol.vmCurrentText;
+        let selectedProtocol = protocol.getCurrentlySelectedMetaDataField();
+        loader.setSettingsValue("last_selected_protocol",selectedProtocol);
+        viewEvaluations.vmSelectedProtocol = selectedProtocol;
 
         // Checking if the selected doctor for the patient changed. If it did, then it means that we must updated in the DB.
         if (doctorSelection.vmCurrentIndex !== vmSelectedDoctorIndex){

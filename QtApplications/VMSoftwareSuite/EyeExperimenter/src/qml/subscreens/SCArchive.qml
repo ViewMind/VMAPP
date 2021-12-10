@@ -31,6 +31,22 @@ Rectangle {
                 return
             }
         }
+
+        mainWindow.openWait(loader.getStringForKey("viewqc_send_wait"))
+
+        // Setting the discard reason to empty.
+        var discard_code_reason = vmReasonStringCodeList[archiveReason.vmCurrentIndex];
+        var comment = "";
+        if (archiveReason.vmCurrentIndex === vmIndexReasonOther){
+            comment = otherBox.getText();
+        }
+        loader.setDiscardReasonAndComment(discard_code_reason,comment)
+
+        // Sending the study to be processed.
+        loader.sendStudy();
+
+        // WARNING CONNECTION TO THIS IS THE CONNECTION IN SUBSCREEN TO SEND CODE.
+
     }
 
 

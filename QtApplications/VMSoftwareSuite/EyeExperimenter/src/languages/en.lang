@@ -204,6 +204,20 @@ viewqc_err_reason_missing = You must specify a reason for archiving;
 viewqc_err_server_error = <b>Server Error</b><br>A problem was detected in the server<br>Please contact the ViewMind for support;
 viewqc_success_on_send = <b>Success!</b><br>Information was correctly sent;
 
+#********************************* PROTOCOL VIEW *********************************
+protocol_no_protocols = No protocols have been created;
+protocol_add = Add Protocol;
+protocol_edit = Edit Protocol;
+protocol_id = Protocol ID;
+protocol_creation_date = Creation Date;
+protocol_delete = Delete;
+protocol_edit_protocol = Edit Protocol;
+protocol_successful_edit = <b></b><br>has been successfully edited;
+protocol_successful_created = <b></b><br>has been successfully created;
+protocol_err_exists = ID already exists. Protocol IDs must be unique;
+protocol_name_ph = Enter protocol name;
+protocol_id_ph = Enter protocol id;
+
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Correct Responses: <<N>>;
 studystatus_binding_incorrect = Incorrect Responses: <<N>>;

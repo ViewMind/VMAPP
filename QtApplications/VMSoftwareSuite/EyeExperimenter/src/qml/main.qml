@@ -129,6 +129,12 @@ ApplicationWindow {
             }
         }
 
+        Item {
+            ViewEditProtocol {
+                id: viewEditProtocol
+            }
+        }
+
         onCurrentIndexChanged: {
             switch (currentIndex){
             case VMGlobals.vmSwipeIndexHome:
@@ -142,6 +148,7 @@ ApplicationWindow {
                     var message = loader.getStringForKey("viewpatlist_vr_failed");
                     popUpNotify(VMGlobals.vmNotificationRed,message);
                 }
+                ///console.log("Calling swipe into main due to setting the global swipe view");
                 viewMainSetup.swipeIntoMain()
                 break;
             case VMGlobals.vmSwipeIndexLogin:

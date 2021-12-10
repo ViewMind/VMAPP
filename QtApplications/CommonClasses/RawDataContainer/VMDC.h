@@ -261,13 +261,12 @@ namespace VMDC {
        static const QString BIRTH_DATE = "birth_date";
        static const QString YEARS_FORMATION = "years_formation";
        static const QString GENDER = "gender";
-       static const QString AGE = "age";
        static const QString INSTITUTION_PROVIDED_ID = "institution_provided_id";
        static const QString LASTNAME = "lastname";
        static const QString LOCAL_ID = "local_id";
        static const QString NAME = "name";
        static const QString EMAIL = "email";
-       static const QStringList valid{NAME,BIRTH_COUNTRY,BIRTH_DATE,YEARS_FORMATION,GENDER,AGE,INSTITUTION_PROVIDED_ID,LASTNAME,LOCAL_ID,EMAIL};
+       static const QStringList valid{NAME,BIRTH_COUNTRY,BIRTH_DATE,YEARS_FORMATION,GENDER,INSTITUTION_PROVIDED_ID,LASTNAME,LOCAL_ID,EMAIL};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Subject Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

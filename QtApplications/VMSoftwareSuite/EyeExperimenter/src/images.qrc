@@ -33,5 +33,6 @@
         <file>images/reports.png</file>
         <file>images/archive.png</file>
         <file>images/archive-white.png</file>
+        <file>images/protocol.png</file>
     </qresource>
 </RCC>

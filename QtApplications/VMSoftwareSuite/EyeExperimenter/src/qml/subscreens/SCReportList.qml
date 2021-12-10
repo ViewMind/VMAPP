@@ -70,7 +70,6 @@ Rectangle {
         vmNumberOfReports = OLS.getCount()
 
         if (vmNumberOfReports === 0){
-            viewMainSetup.showNoReports();
             return;
         }
 
@@ -115,6 +114,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.leftMargin: VMGlobals.adjustWidth(30)
         anchors.topMargin: VMGlobals.adjustHeight(31)
+        visible: vmNumberOfReports !== 0
     }
 
     Text {
@@ -128,6 +128,7 @@ Rectangle {
         anchors.verticalCenter: title.verticalCenter
         anchors.left: title.right
         anchors.leftMargin: VMGlobals.adjustWidth(10)
+        visible: vmNumberOfReports !== 0
     }
 
 
@@ -138,6 +139,7 @@ Rectangle {
         height: VMGlobals.adjustHeight(580)
         anchors.bottom: parent.bottom
         x: subScreenReportList.border.width
+        visible: vmNumberOfReports !== 0
 
         Component.onCompleted: {
 
@@ -198,6 +200,45 @@ Rectangle {
 
     }
 
+
+    Image {
+        id: image
+        source: "qrc:/images/reports.png"
+        fillMode: Image.PreserveAspectFit
+        height: VMGlobals.adjustHeight(150)
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: VMGlobals.adjustHeight(153)
+        visible: vmNumberOfReports === 0
+    }
+
+    Text {
+        id: titleForNoReports
+        text: loader.getStringForKey("viewpatlist_qc")
+        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
+        font.weight: 400
+        color: VMGlobals.vmBlackText
+        height: VMGlobals.adjustHeight(42)
+        verticalAlignment: Text.AlignVCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: image.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(20)
+        visible: vmNumberOfReports === 0
+    }
+
+    Text {
+        id: subtitle
+        text: loader.getStringForKey("viewqc_no_reports_to_evaluate")
+        font.pixelSize: VMGlobals.vmFontLarge
+        font.weight: 400
+        color: VMGlobals.vmGrayPlaceholderText
+        height: VMGlobals.adjustHeight(21)
+        verticalAlignment: Text.AlignVCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: titleForNoReports.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(10)
+        visible: vmNumberOfReports === 0
+    }
 
 
 }
