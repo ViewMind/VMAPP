@@ -186,7 +186,7 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // We need to check for both conditions as it is entirely possible for a fixation to start OUTSIDE of the hitbox
     // and finish inside.
     if ((fixationToCheck.hasStarted() || fixationToCheck.hasFinished())){
-        if (m->isPointInSideCorrectTargetForCurrentTrial(lastFixationR.getX(),lastFixationR.getY())){
+        if (m->isPointInSideCorrectTargetForCurrentTrial(fixationToCheck.getX(),fixationToCheck.getY())){
             fixationFormedAtRightTarget = true;
             onTimeOut();
             return;

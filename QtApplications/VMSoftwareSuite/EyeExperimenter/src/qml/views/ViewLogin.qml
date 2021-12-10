@@ -101,6 +101,9 @@ ViewBase {
                         if (key_and_value[0] === VMGlobals.vmUNIQUE_STUDY_ID){
                             name = studyNames[key_and_value[1]]
                         }
+                        else if (key_and_value[0] === VMGlobals.vmSCP_EYES){
+                            viewEvaluations.vmSelectedEye = key_and_value[1]
+                        }
                         config[key_and_value[0]] = key_and_value[1]
                     }
                     console.log("   DBUG: Adding Study " + name)

@@ -109,7 +109,7 @@ bool Experiment::startExperiment(const QString &workingDir,
     }
 
 
-    QString validEye = studyConfig.value(VMDC::StudyParameter::VALID_EYE).toString();
+    QString validEye = studyConfig.value(VMDC::StudyParameter::VALID_EYE).toString();    
     if (validEye == VMDC::Eye::BOTH){
         leftEyeEnabled = true;
         rightEyeEnabled = true;
@@ -122,6 +122,7 @@ bool Experiment::startExperiment(const QString &workingDir,
         leftEyeEnabled = true;
         rightEyeEnabled = false;
     }
+    //qDebug() << "Valid Eye was " << validEye << " so L: " << leftEyeEnabled << " and R: " << rightEyeEnabled;
 
     //qDebug() << "Processing parameters";
     //Debug::prettpPrintQVariantMap(pp);

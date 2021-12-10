@@ -114,6 +114,9 @@ void MouseInterface::on_pollTimerUp(){
 
     lastData = dataToSend;
 
+    //qDebug() << "Eye to transmit" << eyeToTransmit;
+    //qDebug() << eyeToTransmit << dataToSend.toString();
+
     emit EyeTrackerInterface::newDataAvailable(dataToSend);
 
 }
