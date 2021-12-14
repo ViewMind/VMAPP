@@ -7,6 +7,7 @@ include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/C
 include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/CSVReading.php");
 include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/CSVBinding.php");
 include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/CSVNBackRT.php");
+include_once(__DIR__."/../../../VMPortal/Backend/data_processing/CSVGeneration/CSVNBackMS.php");
 include_once(__DIR__."/../../../VMPortal/Backend/common/log_manager.php");
 
 

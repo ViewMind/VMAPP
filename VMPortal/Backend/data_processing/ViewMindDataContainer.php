@@ -86,6 +86,19 @@ class ViewMindDataContainer {
       return $this->data[MainFields::SUBJECT][$subject_field];
    }
 
+   // This particular function was necessary because the AGE stopped being a DB field, but it did become something that some studies required. Hence it is set using this function. 
+   function setSubjectAge(){
+      $bdate_text = $this->getSubjectDataValue(SubjectField::BIRTHDATE);      
+      $age = "N/A";
+      if ($bdate_text != "") {
+         $bdate = new DateTime($bdate_text);
+         $now = new DateTime();
+         $interval = $now->diff($bdate);
+         $age = $interval->format("%Y");      
+      }
+      $this->data[MainFields::SUBJECT][SubjectField::AGE] = $age;
+   }
+
    function getAllSubjectData(){
       if (!array_key_exists(MainFields::SUBJECT,$this->data)){
          $this->error = "The main field subject does not exist";
@@ -175,6 +188,10 @@ class ViewMindDataContainer {
          return $this->data[MainFields::PROCESSING_PARAMETERS];
       }
       else return array();
+   }
+
+   function setProcessingParameters($pp){
+      $this->data[MainFields::PROCESSING_PARAMETERS] = $pp;
    }
 
    function setRawDataAccessPathForStudy($study){

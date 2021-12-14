@@ -17,6 +17,7 @@ class Processing
    const CSV_FUNCTION_MAP = [
       Study::GONOGO => "gonogoCSV",
       Study::NBACKRT => "nbackrtCSV",
+      Study::NBACKMS => "nbackmsCSV",
       Study::READING => "readingCSV",
       Study::BINDING_UC => "bindingCSV",
       Study::BINDING_UC => "bindingCSV"

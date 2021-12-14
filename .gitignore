@@ -159,3 +159,10 @@ QtApplications/VMSoftwareSuite/EyeExperimenter/Yappo2/
 QtApplications/VMTools/QMLDev/QMLDev/resources/
 VMPortal/Backend/00mng/test_output.json
 QtApplications/VMTools/OldDBToJSon/bin/
+
+Scripts/php/unified_csv/data_list
+Scripts/php/unified_csv/examples/
+Scripts/php/unified_csv/out.txt
+Scripts/php/unified_csv/raw_data/
+
+

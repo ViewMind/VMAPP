@@ -139,18 +139,7 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
       $ans = ExtraProcessing($vmdc,$results,$study,$valid_eye,$fixation_trial_list);
       if ($ans != "") return $ans;
 
-      // Adding the necessary metadata in order to generate the report.
-      // The age must be computed from the birth date
-      $bdate_text = $vmdc->getSubjectDataValue(SubjectField::BIRTHDATE);
-      $age = "N/A";
-      if ($bdate_text != "") {
-         $bdate = new DateTime($bdate_text);
-         $now = new DateTime();
-         $interval = $now->diff($bdate);
-         $age = $interval->format("%Y");      
-      }
-
-      $results[CommonResultKeys::AGE] = $age;
+      $results[CommonResultKeys::AGE] = $vmdc->getSubjectDataValue(SubjectField::AGE); //$age;
       $results[CommonResultKeys::PATIENT] = $vmdc->getSubjectDataValue(SubjectField::LASTNAME) . ", " . $vmdc->getSubjectDataValue(SubjectField::NAME);
       $results[CommonResultKeys::DATE] = $vmdc->getMetaDataField(MetadataField::DATE);
       $results[CommonResultKeys::HOUR] = $vmdc->getMetaDataField(MetadataField::HOUR);
