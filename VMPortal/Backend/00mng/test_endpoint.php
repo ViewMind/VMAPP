@@ -9,13 +9,17 @@ foreach (glob("../api_management/*.php") as $filename)
 
 
 $service = DBCon::DB_SERVICE_PARTNERS;
+//$service = DBCon::DB_SERVICE_ADMIN;
 $headers = array();
 $identifier = "";
 $parameters = array();
 
-$object = new ObjectReports($service, $headers);
+//$object = new ObjectReports($service, $headers);
+//$ans = $object->admin_evaluation_list($identifier, $parameters);
 
-$ans = $object->admin_evaluation_list($identifier, $parameters);
+$headers[HeaderFields::AUTHORIZATION] = "1:algo";
+$object = new ObjectInstitution($service,$headers);
+$ans = $object->list(1,$parameters);
 
 if ($ans === false){
    echo "Error: " . $object->getError() . "\n";

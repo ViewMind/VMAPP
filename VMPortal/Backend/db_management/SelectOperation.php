@@ -52,6 +52,7 @@ class SelectOperation {
    private $error;
    private $bind_param_array;
    private $selectDistinct;
+   private $countDistinct;
    private $extras;
 
    function __construct(){
@@ -62,6 +63,7 @@ class SelectOperation {
       $this->bind_param_array = array();
       $this->error = "";
       $this->selectDistinct = "";
+      $this->countDistinct = false;
 
       // Extras set up
       $this->extras[SelectExtras::COUNT] = array();
@@ -104,6 +106,14 @@ class SelectOperation {
 
    function shouldUseDistinct(){
       return $this->selectDistinct;
+   }
+
+   function setCountDistinct(){
+      $this->countDistinct = true;
+   }
+
+   function shouldCountDistinct(){
+      return $this->countDistinct;
    }
 
    // Any error meessage. 

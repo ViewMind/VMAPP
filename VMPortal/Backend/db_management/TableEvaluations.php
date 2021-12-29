@@ -166,6 +166,25 @@ class TableEvaluations extends TableBaseClass {
       return $this->simpleSelect($columns_to_get,$select);
    }
 
+   function getNumberOfDifferentPatientsWithEvaluationsInInstitutionList($institution_list){
+
+      $columns_to_get = [self::COL_SUBJECT_ID, self::COL_INSTITUTION_ID];
+      $count[self::COL_SUBJECT_ID] = "cnt";
+
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_INSTITUTION_ID,$institution_list)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+
+      $select->setExtra(SelectExtras::COUNT,$count);
+      $select->setCountDistinct();
+      $select->setExtra(SelectExtras::GROUPBY,[self::COL_INSTITUTION_ID]);
+
+      return $this->simpleSelect($columns_to_get,$select);
+
+   }
+
    function listAllEvaluations(){
 
       $columns_to_get = [
@@ -182,7 +201,7 @@ class TableEvaluations extends TableBaseClass {
 
       $select = new SelectOperation();
       $select->setExtra(SelectExtras::ORDER,self::COL_PROCESSING_DATE);
-      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);      
 
       return $this->simpleSelect($columns_to_get,$select);
 
