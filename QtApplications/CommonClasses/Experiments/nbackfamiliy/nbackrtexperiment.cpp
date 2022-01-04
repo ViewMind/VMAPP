@@ -375,6 +375,8 @@ QVariantMap NBackRTExperiment::addHitboxesToProcessingParameters(QVariantMap pp)
         modHitBoxes << static_cast<QVariant>(hitbox);
     }
 
+    qDebug() << "NBACK HITBOXES" << modHitBoxes;
+
     // Store them as part of the processing parameters.
     pp.insert(VMDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);
     return pp;

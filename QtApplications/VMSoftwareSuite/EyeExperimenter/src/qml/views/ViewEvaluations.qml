@@ -51,6 +51,7 @@ ViewBase {
         patientText.text = patient;
 
         dateValue.text = day + " " + month + " " +  year + ", " + hour + ":" + minutes;
+        //console.log(JSON.stringify(patientData));
         personalIDValue.text = patientData["supplied_institution_id"]
 
         vmSelectedPatientID = patientData["local_id"]

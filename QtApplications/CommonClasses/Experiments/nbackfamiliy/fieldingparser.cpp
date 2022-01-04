@@ -91,25 +91,25 @@ qint32 FieldingParser::getTargetBoxForImageNumber(const QString &trialID, qint32
     return ans;
 }
 
-bool FieldingParser::isHitInTargetBox(const QList<QRectF> &hitTargetBoxes, qint32 targetBox, qreal x, qreal y){
-    if ((targetBox < 0) || (targetBox >= hitTargetBoxes.size())) return  false;
-    //qDebug() << "CHECKING IF TARGET BOX" << targetBoxes.at(targetBox) << "contains" << x << y;
+//bool FieldingParser::isHitInTargetBox(const QList<QRectF> &hitTargetBoxes, qint32 targetBox, qreal x, qreal y){
+//    if ((targetBox < 0) || (targetBox >= hitTargetBoxes.size())) return  false;
+//    //qDebug() << "CHECKING IF TARGET BOX" << targetBoxes.at(targetBox) << "contains" << x << y;
 
-    // The only acurate cumputation of target hit will be done with boxes 5 and 2.
-    if ((targetBox == TARGET_BOX_5) || (targetBox == TARGET_BOX_2)){
-        return hitTargetBoxes.at(targetBox).contains(x,y);
-    }
+//    // The only acurate cumputation of target hit will be done with boxes 5 and 2.
+//    if ((targetBox == TARGET_BOX_5) || (targetBox == TARGET_BOX_2)){
+//        return hitTargetBoxes.at(targetBox).contains(x,y);
+//    }
 
-    // All other boxes get half a squre of leeway.
-    if (hitTargetBoxes.at(targetBox).contains(x,y)) return true;
+//    // All other boxes get half a squre of leeway.
+//    if (hitTargetBoxes.at(targetBox).contains(x,y)) return true;
 
-    qreal leeway = hitTargetBoxes.at(targetBox).height()/2;
+//    qreal leeway = hitTargetBoxes.at(targetBox).height()/2;
 
-    if (hitTargetBoxes.at(targetBox).contains(x,y+leeway)) return true;
-    if (hitTargetBoxes.at(targetBox).contains(x,y-leeway)) return true;
+//    if (hitTargetBoxes.at(targetBox).contains(x,y+leeway)) return true;
+//    if (hitTargetBoxes.at(targetBox).contains(x,y-leeway)) return true;
 
-    return false;
-}
+//    return false;
+//}
 
 
 QList<qint32> FieldingParser::getSequenceForTrial(const QString &trialID){
@@ -130,6 +130,8 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents, qreal reso
 
     // Needed to check for unique ids.
     QSet<QString> uniqueIDs;
+
+    //qDebug() << "Parsing Fielding Experiment. Resolution "  << resolutionWidth << resolutionHeight;
 
     // Checking the size of the first line to see if it is a version string.
     qint32 startI = 0;
@@ -250,16 +252,17 @@ bool FieldingParser::parseFieldingExperiment(const QString &contents, qreal reso
 
         /// PATCH: All boxes except 2 and 5 were to have the target box increased by half it's size.
         if ((i == TARGET_BOX_5) || (i == TARGET_BOX_2)){
+            //qDebug() << "ADDING TARGET BOX " << i << " as " << QRectF(x,y,w,h);
             hitTargetBoxes << QRectF(x,y,w,h);
         }
         else{
             qreal leeway = h/2;
             h = 2*h;
             y = y - leeway;
+            //qDebug() << "ADDING TARGET BOX " << i << " as " << QRectF(x,y,w,h);
             hitTargetBoxes << QRectF(x,y,w,h);
         }
     }
-
 
     return true;
 

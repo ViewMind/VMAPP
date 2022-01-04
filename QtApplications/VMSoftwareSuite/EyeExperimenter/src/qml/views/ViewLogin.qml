@@ -133,6 +133,7 @@ ViewBase {
             }
         }
         else{
+            console.
             passwordInput.vmErrorMsg = loader.getStringForKey("viewlogin_wrong_pass");;
         }
     }
