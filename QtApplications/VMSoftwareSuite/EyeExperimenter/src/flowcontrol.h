@@ -65,7 +65,7 @@ signals:
     // This tells QML that the experiment has finished.
     void experimentHasFinished();
 
-    // Signals to indicate all is good.
+    // Signals to indicate connection to eyetracker, calibration aborted or finalized.
     void connectedToEyeTracker(bool ok);
     void calibrationDone(bool ok);
 

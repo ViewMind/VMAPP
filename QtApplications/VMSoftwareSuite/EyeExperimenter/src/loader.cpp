@@ -200,21 +200,6 @@ QString Loader::getVersionNumber() const {
     return Globals::Share::EXPERIMENTER_VERSION_NUMBER;
 }
 
-QString Loader::getManufactureDate() const {
-    //return configuration->getString(Globals::VMPreferences::LABELLING_MANUFACTURE_DATE);
-    return Globals::Labeling::MANUFACTURE_DATE;
-}
-
-QString Loader::getSerialNumber() const {
-    //return configuration->getString(Globals::VMPreferences::LABELLING_SERIAL_NUMBER);
-    return Globals::Labeling::SERIAL_NUMBER;
-}
-
-QString Loader::getUniqueAuthorizationNumber() const {
-    //return configuration->getString(Globals::VMPreferences::LABELLING_AUTHORIZATION_UID);
-    return Globals::Labeling::AUTHORIZATION_UID;
-}
-
 QString Loader::getInstitutionName() const {
     return configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
 }

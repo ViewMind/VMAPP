@@ -43,9 +43,6 @@ public:
     Q_INVOKABLE int getCountryIndexFromCode(const QString &code);
 
     Q_INVOKABLE QString getVersionNumber() const;
-    Q_INVOKABLE QString getManufactureDate() const;
-    Q_INVOKABLE QString getSerialNumber() const;
-    Q_INVOKABLE QString getUniqueAuthorizationNumber() const;
     Q_INVOKABLE QString getInstitutionName() const;
 
     Q_INVOKABLE void openUserManual();

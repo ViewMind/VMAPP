@@ -13,6 +13,7 @@ MouseInterface::MouseInterface()
 
     // This makes it so that the calibration screen is never shown.
     calibrationScreen->setAutoCalibration(true);
+    //calibrationScreen->setAutoCalibration(false);
 
     calibrationFailureType = ETCFT_NONE;
 
@@ -56,8 +57,10 @@ void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
 
     isBeingCalibrated = true;
     isCalibrated = false;
+    //qDebug() << "Before executing calibration screen" << isCalibrated;
     calibrationScreen->exec();
     calibrationFailureType = ETCFT_NONE;
+    //qDebug() << "Starting calibration with isCalibrated" << isCalibrated;
     if (isCalibrated)
         emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
     else{

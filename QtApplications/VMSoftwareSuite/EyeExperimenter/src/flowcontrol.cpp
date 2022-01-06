@@ -165,7 +165,7 @@ void FlowControl::setupSecondMonitor(){
 void FlowControl::keyboardKeyPressed(int key){
     if (experiment != nullptr){
         experiment->keyboardKeyPressed(key);
-    }
+    }    
 }
 
 void FlowControl::stopRenderingVR(){

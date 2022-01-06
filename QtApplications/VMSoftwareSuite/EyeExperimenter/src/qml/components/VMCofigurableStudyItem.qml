@@ -32,6 +32,16 @@ Rectangle {
         updateSelectedOptions(vmIndex,getOptionsSelected())
     }
 
+    function toggleExpansion(){
+        internal.vmIsExpanded = !internal.vmIsExpanded
+        expandIndicator.requestPaint()
+    }
+
+    function setExpansionState(expanded){
+        internal.vmIsExpanded = expanded
+        expandIndicator.requestPaint();
+    }
+
 
     QtObject {
         id: internal
@@ -58,6 +68,8 @@ Rectangle {
         anchors.topMargin: VMGlobals.adjustHeight(15)
         onVmIsOnChanged: {
             //console.log(vmStudyName  + " check state change to " + vmIsOn)
+            if (vmIsOn && internal.vmCanBeExpanded) setExpansionState(true)
+            //else setExpansionState(false)
             selectionChanged(vmIndex,vmIsOn)
         }
     }
@@ -73,8 +85,7 @@ Rectangle {
         width: height*12/7
         enabled: internal.vmCanBeExpanded && studyCheckBox.vmIsOn
         onClicked: {
-            internal.vmIsExpanded = !internal.vmIsExpanded
-            expandIndicator.requestPaint()
+            toggleExpansion()
         }
 
         Canvas {

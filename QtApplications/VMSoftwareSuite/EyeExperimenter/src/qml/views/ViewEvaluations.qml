@@ -314,6 +314,8 @@ ViewBase {
                     //console.log("Should be setting the calibration button")
                     nextButton.vmText = loader.getStringForKey("viewevaluation_action_calibrate")
                     nextButton.vmIconSource = ""
+                    evaluationRun.vmEvaluationStage = evaluationRun.vmSTAGE_CALIBRATION
+                    evaluationRun.vmInCalibration = false;
                     // console.log(JSON.stringify(vmSelectedEvaluationConfigurations))
                     break;
                 case vmSC_INDEX_EVALUATION_FINISHED:
@@ -400,9 +402,19 @@ ViewBase {
 
         if (viewer.currentIndex !== vmSC_INDEX_EVALUATION_SCREEN) return;
 
+        //console.log("Inside the evaluation screen")
+
         var allowed_keys = [];
 
         switch(evaluationRun.vmEvaluationStage){
+        case evaluationRun.vmSTAGE_CALIBRATION:
+            if (event.key === Qt.Key_Escape){
+                if (!evaluationRun.vmInCalibration){
+                    flowControl.generateWaitScreen("");
+                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+                }
+            }
+            break;
         case evaluationRun.vmSTAGE_EVALUATION:
             allowed_keys = [Qt.Key_Escape, Qt.Key_S, Qt.Key_D, Qt.Key_G]
             break;

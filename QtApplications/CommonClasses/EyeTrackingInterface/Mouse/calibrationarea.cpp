@@ -41,6 +41,7 @@ CalibrationArea::CalibrationArea(QWidget *parent) : QDialog(parent)
 void CalibrationArea::showEvent(QShowEvent *event){
     Q_UNUSED(event)
     currentPoint = 0;
+    qDebug() << "Calibration area show event";
     drawCalibrationPoint();
 }
 

@@ -36,13 +36,6 @@ namespace Globals{
       static const QString ET = "et";
       static const QString Region = "region";
    }
-
-   namespace Labeling{
-       static const QString MANUFACTURE_DATE = "07/10/2020";
-       static const QString SERIAL_NUMBER = "0-00000000-000000";
-       static const QString UNIQUE_CHARACTERIZATION_NUMBER = "XXXX";
-       static const QString AUTHORIZATION_UID = "authorization_number";
-   }
    
    namespace Paths {
       static const QString WORK_DIRECTORY = "viewmind_etdata";
@@ -105,8 +98,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       //static const QString EXPERIMENTER_VERSION_NUMBER = "18.2.2";
-   static const QString EXPERIMENTER_VERSION_NUMBER = "19.0.0";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "19.1.1";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

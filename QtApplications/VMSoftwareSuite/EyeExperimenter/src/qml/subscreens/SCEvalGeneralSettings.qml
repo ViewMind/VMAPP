@@ -41,17 +41,24 @@ Rectangle {
 
         // Getting the last selected protocol
         var selectedprotocol = loader.getConfigurationString("last_selected_protocol");
-        var selectedProtocolIndex = -1;
+        var selectedProtocolIndex = 0;
 
         // Filling the protocol list while also searching for the last selected protocol
         let protocolMap = loader.getProtocolList();
-        let protocolModelList = [];
-        i = 0;
+        let protocolModelList = [];        
+
+        let noprotocol = loader.getStringForKey("viewevaluation_no_protocol");
+        let item_np = { "value" : noprotocol, "metadata" : ""  }
+        protocolModelList.push(item_np);
+        i = 1;
+
         for (var protocolID in protocolMap){
             let name = protocolMap[protocolID]["protocol_name"];
             let item = { "value" : name + " (" + protocolID + ")", "metadata" : protocolID  }
             protocolModelList.push(item)
-            if (protocolID === selectedprotocol) selectedProtocolIndex = i;
+            if (protocolID === selectedprotocol) {
+                selectedProtocolIndex = i;
+            }
             i++;
         }
 
@@ -67,7 +74,7 @@ Rectangle {
         }
 
         // Storing the last selected protocol
-        let selectedProtocol = protocol.getCurrentlySelectedMetaDataField();
+        let selectedProtocol = protocol.getCurrentlySelectedMetaDataField();        
         loader.setSettingsValue("last_selected_protocol",selectedProtocol);
         viewEvaluations.vmSelectedProtocol = selectedProtocol;
 

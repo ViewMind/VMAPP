@@ -17,7 +17,7 @@ Rectangle {
 
         availableEvaluations.clear()
         vmSelectedOptionsForEachStudy = {};
-        //vmDefaultStudyOrder = [];
+        vmSelectedStudies = [];
 
         let item = {}
         let options = {}

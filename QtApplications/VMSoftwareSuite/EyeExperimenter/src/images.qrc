@@ -35,5 +35,11 @@
         <file>images/archive-white.png</file>
         <file>images/protocol.png</file>
         <file>images/check-circle.png</file>
+        <file>images/labeling/ce.png</file>
+        <file>images/labeling/ec.png</file>
+        <file>images/labeling/industry.png</file>
+        <file>images/labeling/industry_white.png</file>
+        <file>images/labeling/manual.png</file>
+        <file>images/labeling/md.png</file>
     </qresource>
 </RCC>

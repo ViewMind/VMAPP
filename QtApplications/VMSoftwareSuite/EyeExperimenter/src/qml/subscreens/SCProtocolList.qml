@@ -39,13 +39,32 @@ Rectangle {
             var data = OLS.next();
             var row = [data[vmSORT_INDEX_PNAME],
                        data[vmSORT_INDEX_ID],
-                       data[vmSORT_INDEX_DATE]];
+                       convertDateToDisplayDate(data[vmSORT_INDEX_DATE])];
             tableTexts.push(row);
         }
 
         protocolTable.setList(tableTexts)
         protocolTable.setSortIndicator(vmSORT_COLUMNS.indexOf(vmCurrentSortOrder),vmCurrentOrderDirection)
 
+    }
+
+    function convertDateToDisplayDate(dbdate){
+        var dateParts = dbdate.split("-");
+        if (dateParts.length !== 3) return dbdate;
+        var day = dateParts[2]
+        var year = dateParts[1]
+        var mm = parseInt(dateParts[1]) - 1
+
+        var months = loader.getStringListForKey("viewpatlist_months");
+
+        var month = "";
+
+        if ((mm >= 0) && (mm <= months.length)){
+            month = months[mm]
+        }
+        else return dbdate;
+
+        return day + " " + month + " " + year;
     }
 
     function changeSortColumn(newColumn,newDirection){

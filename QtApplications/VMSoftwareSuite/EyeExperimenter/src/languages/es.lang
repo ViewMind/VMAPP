@@ -112,8 +112,9 @@ viewevaluation_eval_settings = Configuración de Evaluaciones;
 viewevaluation_eval_setup    = Evaluaciones recomendadas por patología;
 viewevaluation_eval_setup_list = Estudio a medida;
 viewevaluation_doctor        = Doctor que ha pedido el estudio;
-viewevaluation_doctor_ph     = Seleccion un doctor;;
+viewevaluation_doctor_ph     = Seleccion un doctor;
 viewevaluation_protocol_ph   = Seleccione un protocolo;
+viewevaluation_no_protocol   = Sin protocolo;
 viewevaluation_eye_selection = Seleccione el ojo;
 viewevaluation_next_button = SIGUIENTE;
 viewevaluation_eye_text = Seleccione que ojo utilizar;
@@ -239,3 +240,21 @@ update_version = Versión;
 update_close = CERRAR;
 update_download_wait = Por favor espere mientras se descarga la actualización;
 update_failed_message = <b>La actualización falló</b><br>Por favor contacte a ViewMind para soporte;
+
+#********************************* LABELING *********************************
+label_vm_body = <b>VIEWMIND S.A</b><br>Av. Belgrano Nro. 758, Ciudad de Sunchales Santa Fe, Argentina.<br>
+DT: Eng. Matias Shulz, MP: 1-3105-9;
+label_vm_contact = info@viewmind.com|www.viewmind.com;
+
+label_ecrep = <b>VIEWMIND S.A.R.L</b>
+<br>House of Biohealth, 27 Rue Henri Koch, 4354 Esch-sur-Alzette, Luxemburg.;
+
+label_md = EYE EXPLORER;
+
+label_manual = READ THE OPERATING INSTRUCTIONS;
+
+label_ec = EC MARKING under the Directive 93/42/EEC amended by 2007/47/EC.<br><br>
+AUTHORIZEDO BY ANMAT: <b>PM-2478-1</b>.<br>
+Exclusive use for professionals and health institutions;
+
+label_version = Versión;

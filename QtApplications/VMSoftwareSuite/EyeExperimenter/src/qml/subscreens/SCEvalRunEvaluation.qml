@@ -10,6 +10,8 @@ Rectangle {
     readonly property int vmSTAGE_EVALUATION:  2
 
     property int vmEvaluationStage : vmSTAGE_CALIBRATION
+    // The flag is required to indetify the moment between entering the strign and calibration actually staring.
+    property bool vmInCalibration: false
     property int vmCurrentEvaluation: 0
 
     signal allEvalsDone();
@@ -41,9 +43,11 @@ Rectangle {
             }
             // All is good so the calibration is requested.
             flowControl.calibrateEyeTracker(viewEvaluations.vmSelectedEye);
+            vmInCalibration = true;
         }
         function onCalibrationDone() {
 
+            vmInCalibration = false;
             prepareNextStudy(false);
 
             // flowControl.setupSecondMonitor(); // LEGACY CODE: This is where the old UI had it. Leaving it here for reference.
@@ -116,7 +120,10 @@ Rectangle {
     function onNextButtonPressed(){
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
             if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
-            else flowControl.calibrateEyeTracker(vmSelectedEye);
+            else {
+                flowControl.calibrateEyeTracker(viewEvaluations.vmSelectedEye);
+                vmInCalibration = true;
+            }
         }
         else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
             vmEvaluationStage = vmSTAGE_EVALUATION;
