@@ -63,3 +63,13 @@ CREATE TABLE rate_limiting (
    time_frame_start       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    UNIQUE(ip)
 );
+
+--------------------------------- 30/11/2021 ---------------------------------
+--vm_secure
+ALTER TABLE medical_records CHANGE last_update last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+--------------------------------- 09/12/2021 ---------------------------------
+--vm_secure
+ALTER TABLE subjects DROP COLUMN age;
+ALTER TABLE subjects ADD COLUMN email VARCHAR(200);
+   

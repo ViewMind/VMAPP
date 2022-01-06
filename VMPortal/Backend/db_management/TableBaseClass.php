@@ -616,6 +616,7 @@ class TableBaseClass {
       $order_direction   = $operation->getExtra(SelectExtras::ORDER_DIRECTION);
       $limit             = $operation->getExtra(SelectExtras::LIMIT);
 
+
       if (count($cols_to_get) == 0){
          // Empty column list means get all. 
          $cols_to_get = ["*"];
@@ -631,14 +632,19 @@ class TableBaseClass {
       }
 
       // If count struct is not empty, it should be an associative array which replaces the columns in $cols_to_get as COUNT(the_column) as NAME
+      $cdistinct = "";
+      if ($operation->shouldCountDistinct()){
+         $cdistinct = "DISTINCT ";
+      }
       foreach ($count_struct as $col => $ref_name){
          $index = array_search($col,$cols_to_get);
          if ($index === false){
             $this->error = "COUNT column $col is not part of the requested columns";
             return false;
          }
-         $cols_to_get[$index] = "COUNT($col) as $ref_name";
+         $cols_to_get[$index] = "COUNT($cdistinct$col) as $ref_name";
       }
+
 
       // If count struct is not empty, it should be an associative array which replaces the columns in $cols_to_get as SUM(the_column) as NAME
       foreach ($sum_struct as $col => $ref_name){

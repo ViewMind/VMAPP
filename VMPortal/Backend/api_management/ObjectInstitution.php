@@ -156,6 +156,7 @@ class ObjectInstitution extends ObjectBaseClass{
       // The $identifier in this case should be a portal user. 
       $tiu = new TableInstitutionUsers($this->con_main);
       $ti  = new TableInstitution($this->con_main);
+      $te  = new TableEvaluations($this->con_main);
 
       // The portal user that requests the reports for this subject. 
       $auth = $this->headers[HeaderFields::AUTHORIZATION];
@@ -198,7 +199,28 @@ class ObjectInstitution extends ObjectBaseClass{
          return false;
       }
 
-      return $ans;
+      // Now we need the number of patients that have evaluations in the institution. 
+      $npats = $te->getNumberOfDifferentPatientsWithEvaluationsInInstitutionList($id_list);
+      if ($npats === FALSE){
+         $this->suggested_http_code = 500;
+         $this->error = "Failed getting institution number of patients for user. Reason: " . $te->getError();
+         $this->returnable_error = "Internal Server Error";
+         return false;
+      }
+
+      $counts = array();
+      foreach ($npats as $row){
+         $inst_id = $row[TableEvaluations::COL_INSTITUTION_ID];
+         $counts[$inst_id] = $row["cnt"];
+      }
+
+      $data_to_return = array();
+      foreach ($ans as $row){
+         $row["number_of_patients"] = $counts[$row[TableInstitution::COL_KEYID]];
+         $data_to_return[] = $row;
+      }
+
+      return $data_to_return;
 
    }
 

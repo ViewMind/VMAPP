@@ -11,11 +11,11 @@ $emails = ["ariel.arelovich@viewmind.ai"];
 //$action = "standard";
 //$action = "admin";
 //$action = "custom";
-//$action = "add_medrec";
+$action = "add_medrec";
 //$action = "add_control_admin";
-$action = "add_to_all";
-$permissions = array();
-$permissions[ APIEndpoints::PORTAL_USERS] = [ PortalUserOperations::LOGOUT ];
+//$action = "add_to_all";
+//$permissions = array();
+//$permissions[ APIEndpoints::PORTAL_USERS] = [ PortalUserOperations::LOGOUT ];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function mergePermissionArrays($permissions, $to_add){

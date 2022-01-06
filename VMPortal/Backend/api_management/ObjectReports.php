@@ -7,6 +7,7 @@ include_once (__DIR__ . "/../data_processing/CSVGeneration/CSVGoNoGo.php");
 include_once (__DIR__ . "/../data_processing/CSVGeneration/CSVReading.php");
 include_once (__DIR__ . "/../data_processing/CSVGeneration/CSVBinding.php");
 include_once (__DIR__ . "/../data_processing/CSVGeneration/CSVNBackRT.php");
+include_once (__DIR__ . "/../data_processing/CSVGeneration/CSVNBackMS.php");
 include_once (__DIR__ . "/../data_processing/RProcessing.php");
 
 include_once (__DIR__ . "/../db_management/TableEvaluations.php");
@@ -129,6 +130,9 @@ class ObjectReports extends ObjectBaseClass
          $logger->logError("Failed loading $json_filename. Reason: " . $vmdc->getError());
          return false;
       }
+
+      // Setting the subject age according to Birthdate.
+      $vmdc->setSubjectAge();
 
       // Obtaining the medic information. 
       $medic = $vmdc->getAppUser(AppUserType::MEDIC);

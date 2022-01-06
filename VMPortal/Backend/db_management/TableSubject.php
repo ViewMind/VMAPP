@@ -12,7 +12,7 @@ class TableSubject extends TableBaseClass {
    const COL_LAST_NAME            = "last_name";
    const COL_BIRTH_COUNTRY_CODE   = "birth_country_code";
    const COL_BIRTH_DATE           = "birth_date";
-   const COL_AGE                  = "age";
+   const COL_EMAIL                = "email";
    const COL_YEARS_FORMATION      = "years_formation";
    const COL_INTERNAL_ID          = "internal_id";
    const COL_INSTITUTION_ID       = "institution_id";
@@ -34,7 +34,7 @@ class TableSubject extends TableBaseClass {
       $map[SubjectField::BIRTHDATE]                = self::COL_BIRTH_DATE;
       $map[SubjectField::BIRTH_COUNTRY]            = self::COL_BIRTH_COUNTRY_CODE;
       $map[SubjectField::GENDER]                   = self::COL_GENDER;
-      $map[SubjectField::AGE]                      = self::COL_AGE;
+      $map[SubjectField::EMAIL]                    = self::COL_EMAIL;
       $map[SubjectField::LOCAL_ID]                 = self::COL_UNIQUE_ID;
       $new = array();
       foreach($subject as $name => $value){
@@ -51,7 +51,7 @@ class TableSubject extends TableBaseClass {
       self::COL_LAST_NAME, 
       self::COL_BIRTH_COUNTRY_CODE, 
       self::COL_BIRTH_DATE, 
-      self::COL_AGE, 
+      self::COL_EMAIL, 
       self::COL_YEARS_FORMATION, 
       self::COL_GENDER,
       self::COL_INSTITUTION_ID,
@@ -61,6 +61,9 @@ class TableSubject extends TableBaseClass {
       $cols_to_check = $columns_that_will_be_compared;
       $cols_to_check[] = self::COL_UNIQUE_ID;
       $cols_to_compare = array();
+
+      // Some old reports do not have the email column. So we add it so an error doesn't come up later on. 
+      if (!array_key_exists(self::COL_EMAIL,$params)) $params[self::COL_EMAIL] = "";
 
       //echoOut($params,true);
 

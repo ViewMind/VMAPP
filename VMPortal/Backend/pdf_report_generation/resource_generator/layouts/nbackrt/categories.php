@@ -58,11 +58,11 @@
    /////
    $cat = array();
    $variable = "working_memory";   
-   $cat["+1"]  = "- 76*";
+   $cat["+1"]  = "76* +";
    $cat["0"]   = "58* 76";
    $cat["-1"]  = "49* 58";
    $cat["-2"]  = "45* 49";
-   $cat["-3"]  = "45 +";
+   $cat["-3"]  = "- 45";
    $categories[$variable]["polygon"] = $cat;
 
    $cat = array();

@@ -188,16 +188,17 @@ API = {
 
   modifyAccount: function(parameters,callback){
     var endpoint = sessionStorage.getItem(GLOBALS.SESSION_KEYS.API) + "/" +
-    GLOBALS.ENDPOINTS.PORTAL_USER.MODIFY_OWN + "/" + sessionStorage.getItem(GLOBALS.SESSION_KEYS.USER_ID) + "?";
+    GLOBALS.ENDPOINTS.PORTAL_USER.MODIFY_OWN + "/0"; // Parameter is zero because it's ignored.
 
-    var url_params = [];
-    for (p in parameters){
-       url_params.push(p + "=" + parameters[p]);
-    }
-    endpoint = endpoint + url_params.join("&");
+   //  var url_params = [];
+   //  for (p in parameters){
+   //     url_params.push(p + "=" + parameters[p]);
+   //  }
+   //  endpoint = endpoint + url_params.join("&");
     //console.log(endpoint);
 
-    API.APICall(endpoint,callback);
+    //API.APICall(endpoint,callback);
+    API.APICall(endpoint,callback,false,parameters)
 
   }
 

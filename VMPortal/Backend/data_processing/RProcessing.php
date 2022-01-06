@@ -139,8 +139,7 @@ function RProcessing(ViewMindDataContainer &$vmdc, $csv_array, $workdir){
       $ans = ExtraProcessing($vmdc,$results,$study,$valid_eye,$fixation_trial_list);
       if ($ans != "") return $ans;
 
-      // Adding the necessary metadata in order to generate the report.
-      $results[CommonResultKeys::AGE] = $vmdc->getSubjectDataValue(SubjectField::AGE);
+      $results[CommonResultKeys::AGE] = $vmdc->getSubjectDataValue(SubjectField::AGE); //$age;
       $results[CommonResultKeys::PATIENT] = $vmdc->getSubjectDataValue(SubjectField::LASTNAME) . ", " . $vmdc->getSubjectDataValue(SubjectField::NAME);
       $results[CommonResultKeys::DATE] = $vmdc->getMetaDataField(MetadataField::DATE);
       $results[CommonResultKeys::HOUR] = $vmdc->getMetaDataField(MetadataField::HOUR);
