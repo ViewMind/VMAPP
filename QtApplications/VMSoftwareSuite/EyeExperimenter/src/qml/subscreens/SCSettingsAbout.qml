@@ -65,7 +65,7 @@ Rectangle {
     Rectangle {
         id: div_app_name_bottom
         width: VMGlobals.adjustWidth(480)
-        anchors.horizontalCenter: parent
+        anchors.horizontalCenter: parent.horizontalCenter
         height: VMGlobals.adjustHeight(1)
         color: VMGlobals.vmGrayUnselectedBorder
         anchors.top: applicationName.bottom
@@ -150,7 +150,7 @@ Rectangle {
     Rectangle {
         id: div_vm_industry
         width: VMGlobals.adjustWidth(480)
-        anchors.horizontalCenter: parent
+        anchors.horizontalCenter: parent.horizontalCenter
         height: VMGlobals.adjustHeight(1)
         color: VMGlobals.vmGrayUnselectedBorder
         anchors.top: vmIndustryColumn.bottom
@@ -185,7 +185,7 @@ Rectangle {
     Rectangle {
         id: div_vm_ecrept
         width: VMGlobals.adjustWidth(480)
-        anchors.horizontalCenter: parent
+        anchors.horizontalCenter: parent.horizontalCenter
         height: VMGlobals.adjustHeight(1)
         color: VMGlobals.vmGrayUnselectedBorder
         anchors.top: ecrepText.bottom
@@ -219,7 +219,7 @@ Rectangle {
     Rectangle {
         id: div_vm_md
         width: VMGlobals.adjustWidth(480)
-        anchors.horizontalCenter: parent
+        anchors.horizontalCenter: parent.horizontalCenter
         height: VMGlobals.adjustHeight(1)
         color: VMGlobals.vmGrayUnselectedBorder
         anchors.top: mdText.bottom
@@ -265,7 +265,7 @@ Rectangle {
     Rectangle {
         id: div_vm_date
         width: VMGlobals.adjustWidth(480)
-        anchors.horizontalCenter: parent
+        anchors.horizontalCenter: parent.horizontalCenter
         height: VMGlobals.adjustHeight(1)
         color: VMGlobals.vmGrayUnselectedBorder
         anchors.top: dateText.bottom
@@ -299,7 +299,7 @@ Rectangle {
     Rectangle {
         id: div_vm_manual
         width: VMGlobals.adjustWidth(480)
-        anchors.horizontalCenter: parent
+        anchors.horizontalCenter: parent.horizontalCenter
         height: VMGlobals.adjustHeight(1)
         color: VMGlobals.vmGrayUnselectedBorder
         anchors.top: manualText.bottom

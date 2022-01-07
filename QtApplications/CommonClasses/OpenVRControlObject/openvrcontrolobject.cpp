@@ -349,6 +349,7 @@ QSize OpenVRControlObject::getRecommendedSize(){
 }
 
 void OpenVRControlObject::setScreenColor(QColor color){
+    //qDebug() << "SETTING SCREEN COLOR TO" << color;
     backgroundColor = color;
 }
 
