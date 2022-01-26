@@ -9,7 +9,6 @@ class TableInstitution extends TableBaseClass {
    const IN_DB                    = DBCon::DB_MAIN;
 
    const COL_INSTITUTION_NAME     = "institution_name";
-   const COL_INSTITUTION_ID       = "institution_id";
    const COL_EMAIL                = "email";
    const COL_ADDRESS              = "address";
    const COL_STATE_OR_PROVINCE    = "state_or_province";

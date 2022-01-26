@@ -46,6 +46,13 @@
       const AUTHORIZATION               = "authorization";
       const AUTHENTICATION              = "authentication";
       const SIGNATURE                   = "signature";
+      const LOGIN_TYPE                  = "logintype";
+   }
+
+   abstract class LoginMasks extends TypedString {
+      const WEB_PORTAL                 = 1;
+      const DISTRIBUTION_SITE          = 2;
+      const ADMIN_SITE                 = 4;
    }
   
    abstract class AuthValues extends TypedString {

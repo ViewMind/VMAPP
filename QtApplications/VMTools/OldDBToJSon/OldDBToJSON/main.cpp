@@ -12,8 +12,29 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    QStringList arguments = QCoreApplication::arguments();
+
+    for (qint32 i = 0; i < arguments.size(); i++){
+        qDebug() << "Argument" << i << arguments.at(i);
+    }
+
+    if (arguments.size() != 3){
+        qDebug() << "First input should be valid database file and second input should be desired output file. So only 2 arguments are needed";
+        return 0;
+    }
+
+    QString inputDatFile = arguments.at(1);
+    QString outputCSVFile = arguments.at(2);
+
     QVariantMap map;
-    QFile file("tosend.dat");
+    QFile file(inputDatFile);
+
+    if (!file.exists()){
+        qDebug() << "Input file " << inputDatFile << " does not exist";
+        return 0;
+    }
+
     file.open(QFile::ReadOnly);
     QDataStream reader(&file);
     qint32 version;
@@ -40,7 +61,7 @@ int main(int argc, char *argv[])
 
     qDebug() << ids;
 
-    QFile output("ids.csv");
+    QFile output(outputCSVFile);
     output.open(QFile::WriteOnly);
     QTextStream writer(&output);
     writer << fields.join(",") << "\n";
@@ -51,6 +72,5 @@ int main(int argc, char *argv[])
 
     output.close();
 
-
-    return a.exec();
+    return 0;
 }

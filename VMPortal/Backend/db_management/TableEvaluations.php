@@ -207,6 +207,38 @@ class TableEvaluations extends TableBaseClass {
 
    }
 
+   function getFileLinksForAllEvaluationsGivenAnInstitutionAndTimeFrame($institution_id, $start_date, $end_date){
+
+      $columns_to_get = [self::COL_INSTITUTION_ID, self::COL_FILE_LINK];
+
+      $select = new SelectOperation();
+
+      if (!is_array($institution_id)){
+         $this->error = "Searhing for file links requries institution ids to be an array";
+         return false;
+      }
+
+      if (!empty($institution_id)){
+         if (!$select->addConditionToANDList(SelectColumnComparison::IN,self::COL_INSTITUTION_ID,$institution_id)){
+            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+            return false;
+         }   
+      }
+
+      if (!$select->addConditionToANDList(SelectColumnComparison::GTE,self::COL_STUDY_DATE,$start_date)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+
+      if (!$select->addConditionToANDList(SelectColumnComparison::LTE,self::COL_STUDY_DATE,$end_date)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+
+      return $this->simpleSelect($columns_to_get,$select);
+
+   }
+
 }
 
 ?>
