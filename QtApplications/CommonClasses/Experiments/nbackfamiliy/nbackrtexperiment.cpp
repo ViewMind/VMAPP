@@ -15,9 +15,9 @@ const qint32 NBackRTExperiment::NBACKVS_STEP_HOLD_TIME =                       5
 const qint32 NBackRTExperiment::NBACKVS_START_HOLD_TIME =                      250;
 const qint32 NBackRTExperiment::NBACKVS_NTRIAL_FOR_STEP_CHANGE =               2;
 
-const QString NBackRTExperiment::MSG_SEQ_HITS  = "viewpresentexp_nback_sequence_hit";
-const QString NBackRTExperiment::MSG_SEQ_TOUT  = "viewpresentexp_nback_sequence_timeout";
-const QString NBackRTExperiment::MSG_TARGET_VEL = "viewpresentexp_nback_target_speed";
+const QString NBackRTExperiment::MSG_SEQ_HITS  = "studystatus_nback_sequence_hit";
+const QString NBackRTExperiment::MSG_SEQ_TOUT  = "studystatus_nback_sequence_timeout";
+const QString NBackRTExperiment::MSG_TARGET_VEL = "studystatus_nback_target_speed";
 
 NBackRTExperiment::NBackRTExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type){
 
@@ -374,6 +374,8 @@ QVariantMap NBackRTExperiment::addHitboxesToProcessingParameters(QVariantMap pp)
         // Then the JSON is interpreted as one long list instead of serveral lists of 4 values.
         modHitBoxes << static_cast<QVariant>(hitbox);
     }
+
+    qDebug() << "NBACK HITBOXES" << modHitBoxes;
 
     // Store them as part of the processing parameters.
     pp.insert(VMDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);

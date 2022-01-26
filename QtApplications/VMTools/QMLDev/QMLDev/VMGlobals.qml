@@ -3,9 +3,31 @@ import QtQuick.Controls
 
 Item {
 
-    property double vmControlsHeight: 44
-    readonly property double vmFontBaseSize: Math.round(14*vmControlsHeight/44)
-    readonly property double vmFontLarge: vmFontBaseSize*1.14
+    function adjustWidth(value){
+        return value*mainWidth/(1366-60)
+    }
+
+    function adjustHeight(value){
+        return value*mainHeight/(768-30)
+    }
+
+    // These should be over written on boot up.
+    property double mainHeight: 100
+    property double mainWidth:  100
+
+    property double vmReferenceControlHeight: 44
+    property double vmControlsHeight: vmReferenceControlHeight*mainHeight/(768 - 30)
+
+    readonly property double vmFontReference: 14
+    readonly property double vmFontSmall: vmFontBaseSize*12/vmFontReference
+    readonly property double vmFontBaseSize: Math.round(vmFontReference*vmControlsHeight/44)
+    readonly property double vmFontLarge: vmFontBaseSize*16/vmFontReference
+    readonly property double vmFontLarger: vmFontBaseSize*18/vmFontReference
+    readonly property double vmFontVeryLarge: vmFontBaseSize*24/vmFontReference
+    readonly property double vmFontExtraLarge: vmFontBaseSize*28/vmFontReference
+    readonly property double vmFontExtraExtraLarge: vmFontBaseSize*32/vmFontReference
+    readonly property double vmFontHuge: vmFontBaseSize*42/vmFontReference
+
 
     // Colors
     readonly property string vmBlueSelected:             "#3397ef"

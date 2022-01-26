@@ -50,7 +50,7 @@ public:
     QList<QRectF> getHitTargetBoxes() const;
 
     // Logic used to determine if a fixation is "in" the target box or not.
-    static bool isHitInTargetBox(const QList<QRectF> &hitTargetBoxes, qint32 tbID, qreal x, qreal y);
+    // static bool isHitInTargetBox(const QList<QRectF> &hitTargetBoxes, qint32 tbID, qreal x, qreal y);
 
 private:
     QString error;

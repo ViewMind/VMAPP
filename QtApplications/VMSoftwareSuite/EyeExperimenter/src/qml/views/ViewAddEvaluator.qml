@@ -1,0 +1,171 @@
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
+import "../"
+import "../components"
+
+ViewBase {
+
+    id: viewAddEvaluator
+
+    function clear(){
+        fname.clear()
+        lname.clear()
+        password.clear()
+        verifyPassword.clear()
+        email.clear()
+    }
+
+    function checkAndSave(){
+        if (password.vmCurrentText !== verifyPassword.vmCurrentText){
+            verifyPassword.vmErrorMsg = loader.getStringForKey("viewaccount_badpassverify");
+            return;
+        }
+
+        if (fname.vmCurrentText === ""){
+            fname.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            return;
+        }
+
+        if (lname.vmCurrentText === ""){
+            lname.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            return;
+        }
+
+        if (email.vmCurrentText === ""){
+            email.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            return;
+        }
+
+        // Ensuring tha the password is not empty and the email does not already exist.
+        if (password.vmCurrentText === ""){
+            password.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            return;
+        }
+        if (loader.checkIfEvaluatorEmailExists(email.vmCurrentText)){
+            labelMail.vmErrorMsg = loader.getStringForKey("viewaddeval_exmail_exists");
+            return;
+        }
+
+        loader.addOrModifyEvaluator(email.vmCurrentText,
+                                    "",
+                                    password.vmCurrentText,
+                                    fname.vmCurrentText,
+                                    lname.vmCurrentText);
+
+        var message = loader.getStringForKey("viewaddeval_added")
+        message = message.replace("<b></b>","<b>" + fname.vmCurrentText + " " + lname.vmCurrentText + "</b>")
+        mainWindow.popUpNotify(VMGlobals.vmNotificationGreen,message)
+        mainWindow.swipeTo(VMGlobals.vmSwipeIndexHome);
+    }
+
+
+    Text {
+        id: title
+        text: loader.getStringForKey("viewaddeval_title")
+        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
+        font.weight: 600
+        color: VMGlobals.vmBlackText
+        height: VMGlobals.adjustHeight(43)
+        verticalAlignment: Text.AlignVCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: VMGlobals.adjustHeight(645)
+    }
+
+    Text {
+        id: subtitle
+        text: loader.getStringForKey("viewaddeval_subtitle")
+        font.pixelSize: VMGlobals.vmFontLarge
+        font.weight: 400
+        color: VMGlobals.vmGrayPlaceholderText
+        verticalAlignment: Text.AlignVCenter
+        height: VMGlobals.adjustHeight(18)
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: title.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(10)
+    }
+
+    Column {
+
+        id: inputColumn
+        width: VMGlobals.adjustWidth(320)
+        spacing: VMGlobals.adjustHeight(54)
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: subtitle.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(54)
+
+        VMTextInput {
+            id: fname
+            vmPlaceHolderText: loader.getStringForKey("viewaddeval_fname_ph")
+            vmLabel: loader.getStringForKey("viewaddeval_fname")
+            width: parent.width
+            Keys.onTabPressed: lname.vmFocus = true;
+        }
+
+        VMTextInput {
+            id: lname
+            width: parent.width
+            vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
+            vmLabel: loader.getStringForKey("viewaddeval_lname")
+            Keys.onTabPressed: email.vmFocus = true;
+        }
+
+        VMTextInput {
+            id: email
+            width: parent.width
+            vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
+            vmLabel: loader.getStringForKey("viewaddeval_email")
+            Keys.onTabPressed: password.vmFocus = true;
+        }
+
+        VMPasswordInput {
+            id: password
+            width: parent.width
+            vmLabel: loader.getStringForKey("viewlogin_label_pass")
+            vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
+            vmShowText: loader.getStringForKey("viewlogin_show")
+            vmHideText: loader.getStringForKey("viewlogin_hide")
+            Keys.onTabPressed: verifyPassword.vmFocus = true;
+        }
+
+        VMPasswordInput {
+            id: verifyPassword
+            width: parent.width
+            vmLabel: loader.getStringForKey("viewaddeval_verifpass")
+            vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
+            vmShowText: loader.getStringForKey("viewlogin_show")
+            vmHideText: loader.getStringForKey("viewlogin_hide")
+            Keys.onTabPressed: fname.vmFocus = true;
+        }
+
+    }
+
+    VMButton {
+        id: addEvaluButton
+        vmText: loader.getStringForKey("viewaddeval_addeval")
+        vmCustomWidth: inputColumn.width
+        anchors.top: inputColumn.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(30)
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClickSignal: {
+            checkAndSave();
+        }
+    }
+
+    VMButton {
+        id: backButton
+        vmText: loader.getStringForKey("viewlogin_back")
+        vmIconSource: "arrow"
+        vmButtonType: backButton.vmTypeTertiary
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: VMGlobals.adjustHeight(592)
+        anchors.left: parent.left
+        anchors.leftMargin: VMGlobals.adjustWidth(5)
+        onClickSignal: {
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexHome)
+        }
+    }
+
+
+}

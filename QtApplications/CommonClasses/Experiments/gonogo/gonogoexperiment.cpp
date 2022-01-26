@@ -1,8 +1,8 @@
 #include "gonogoexperiment.h"
 
-const QString GoNoGoExperiment::MSG_OK_TRIALS      = "viewpresentexp_gonogo_ok";
-const QString GoNoGoExperiment::MSG_TIMEOUT_TRIALS = "viewpresentexp_gonogo_timeout";
-const QString GoNoGoExperiment::MSG_AVG_SPEED      = "viewpresentexp_gonogo_avg";
+const QString GoNoGoExperiment::MSG_OK_TRIALS      = "studystatus_gonogo_ok";
+const QString GoNoGoExperiment::MSG_TIMEOUT_TRIALS = "studystatus_gonogo_timeout";
+const QString GoNoGoExperiment::MSG_AVG_SPEED      = "studystatus_gonogo_avg";
 
 
 GoNoGoExperiment::GoNoGoExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type)
@@ -186,7 +186,7 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // We need to check for both conditions as it is entirely possible for a fixation to start OUTSIDE of the hitbox
     // and finish inside.
     if ((fixationToCheck.hasStarted() || fixationToCheck.hasFinished())){
-        if (m->isPointInSideCorrectTargetForCurrentTrial(lastFixationR.getX(),lastFixationR.getY())){
+        if (m->isPointInSideCorrectTargetForCurrentTrial(fixationToCheck.getX(),fixationToCheck.getY())){
             fixationFormedAtRightTarget = true;
             onTimeOut();
             return;

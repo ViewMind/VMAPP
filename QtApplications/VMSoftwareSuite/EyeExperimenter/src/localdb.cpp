@@ -26,20 +26,26 @@ const char * LocalDB::SUBJECT_NAME                  = "name";
 const char * LocalDB::SUBJECT_LASTNAME              = "lastname";
 const char * LocalDB::SUBJECT_INSTITUTION_ID        = "supplied_institution_id";
 const char * LocalDB::SUBJECT_BIRTHDATE             = "birthdate";
-const char * LocalDB::SUBJECT_AGE                   = "age";
 const char * LocalDB::SUBJECT_BIRTHCOUNTRY          = "birthcountry";
 const char * LocalDB::SUBJECT_YEARS_FORMATION       = "years_formation";
 const char * LocalDB::SUBJECT_CREATION_DATE         = "creation_date";
 const char * LocalDB::SUBJECT_CREATION_DATE_INDEX   = "creation_date_index";
+const char * LocalDB::SUBJECT_BDATE_DISPLAY         = "bdate_display";
+const char * LocalDB::SUBJECT_SORTABLE_NAME         = "sortable_name";
 const char * LocalDB::SUBJECT_GENDER                = "gender";
 const char * LocalDB::SUBJECT_STUDY_MARKERS         = "subject_study_markers";
 const char * LocalDB::SUBJECT_LOCAL_ID              = "local_id";
 const char * LocalDB::SUBJECT_ASSIGNED_MEDIC        = "assigned_medic";
+const char * LocalDB::SUBJECT_EMAIL                 = "email";
 
 // "Bookmark" fields
 const char * LocalDB::MARKER_VALUE            = "marker_value";
 const char * LocalDB::MARKER_TIME             = "marker_time";
 
+// Protocol Fields
+const char * LocalDB::PROTOCOL_NAME           = "protocol_name";
+const char * LocalDB::PROTOCOL_CREATION_DATE  = "creation_date";
+const char * LocalDB::PROTOCOL_ID             = "protocol_id";
 
 LocalDB::LocalDB()
 {
@@ -252,6 +258,18 @@ bool LocalDB::addOrModifySubject(const QString &subject_id, QVariantMap subject_
     return saveAndBackup();
 }
 
+bool LocalDB::modifyAssignedMedicToSubject(const QString &subject_id, const QString &medic){
+    QVariantMap subject_data_map = data.value(MAIN_SUBJECT_DATA).toMap();
+    if (!subject_data_map.contains(subject_id)) return false;
+    QVariantMap subject_data = subject_data_map.value(subject_id).toMap();
+
+    subject_data[SUBJECT_ASSIGNED_MEDIC] = medic;
+
+    subject_data_map[subject_id] = subject_data;
+    data[MAIN_SUBJECT_DATA] = subject_data_map;
+    return saveAndBackup();
+}
+
 bool LocalDB::addOrModifyEvaluator(const QString &email, const QString &oldemail, QVariantMap evaluator_data){
     // Makign sure the password is NOT accidentally set here.
     if (evaluator_data.contains(APPUSER_PASSWORD)){
@@ -306,6 +324,10 @@ QVariantMap LocalDB::getSubjectData(const QString &subjectID) const{
     return data.value(MAIN_SUBJECT_DATA,QVariantMap()).toMap().value(subjectID,QVariantMap()).toMap();
 }
 
+qint32 LocalDB::getSubjectCount() const{
+    return static_cast<qint32>(data.value(MAIN_SUBJECT_DATA,QVariantMap()).toMap().size());
+}
+
 QVariantMap LocalDB::getSubjectDataByInternalID(const QString &internalID) const{
     QVariantMap subjects = data.value(MAIN_SUBJECT_DATA,QVariantMap()).toMap();
     QStringList keys = subjects.keys();
@@ -318,24 +340,47 @@ QVariantMap LocalDB::getSubjectDataByInternalID(const QString &internalID) const
     return QVariantMap();
 }
 
-bool LocalDB::addProtocol(const QString &protocol){
-    QStringList protocols = data.value(MAIN_PROTOCOL,QStringList()).toStringList();
-    if (protocols.contains(protocol)) return false;
-    protocols << protocol;
+bool LocalDB::addProtocol(const QString &protocol_name, const QString &protocol_id, bool edit){
+    QVariantMap protocols = data.value(MAIN_PROTOCOL,QVariantMap()).toMap();
+
+    QVariantMap newProtocol;
+
+    if (!edit) {
+        // If edit is false the protocol is new. So it can't exist.
+        if (protocols.contains(protocol_id)) return false;
+    }
+    else {
+        // If edit is true, the protocols is being eedited and it MUST exist.
+        if (!protocols.contains(protocol_id)) return false;
+        newProtocol = protocols.value(protocol_id).toMap();
+    }
+
+    newProtocol[PROTOCOL_NAME] = protocol_name;
+
+    // Creation date is ONLY set when being created.
+    if (!edit) {
+        newProtocol[PROTOCOL_CREATION_DATE] = QDate::currentDate().toString("yyyy-MM-dd");
+        newProtocol[PROTOCOL_ID] = protocol_id;
+    }
+
+    // Storing and saving the new protocol information.
+    protocols[protocol_id] = newProtocol;
     data[MAIN_PROTOCOL] = protocols;
     return saveAndBackup();
 }
 
-bool LocalDB::removeProtocol(const QString &protocol){
-    QStringList protocols = data.value(MAIN_PROTOCOL,QStringList()).toStringList();
-    if (!protocols.contains(protocol)) return true;
-    protocols.removeOne(protocol);
+bool LocalDB::removeProtocol(const QString &protocol_id){
+    QVariantMap protocols = data.value(MAIN_PROTOCOL,QVariantMap()).toMap();
+    if (!protocols.contains(protocol_id)) return true;
+
+    protocols.remove(protocol_id);
+
     data[MAIN_PROTOCOL] = protocols;
     return saveAndBackup();
 }
 
-QStringList LocalDB::getProtocolList() const {
-    return data.value(MAIN_PROTOCOL,QStringList()).toStringList();
+QVariantMap LocalDB::getProtocolList() const {
+    return data.value(MAIN_PROTOCOL,QVariantMap()).toMap();
 }
 
 bool LocalDB::processingParametersPresent() const {
@@ -537,7 +582,7 @@ bool LocalDB::passwordCheck(const QString &email, const QString &plaintext_passw
 }
 
 
-QVariantMap LocalDB::getDisplaySubjectList(QString filter){
+QVariantMap LocalDB::getDisplaySubjectList(QString filter, const QStringList &months){
     QVariantMap ans;
 
     // All matches are done in lower case.
@@ -551,7 +596,22 @@ QVariantMap LocalDB::getDisplaySubjectList(QString filter){
             QVariantMap map = subdata.value(subject_ids.at(i)).toMap();
 
             // Adding the creation date sorting index value. This is required due to the very very bad way in which I store the dates.
-            map[SUBJECT_CREATION_DATE_INDEX] = QDateTime::fromString(map.value(SUBJECT_CREATION_DATE).toString(),"dd/MM/yyyy HH:mm").toSecsSinceEpoch();
+            //map[SUBJECT_CREATION_DATE_INDEX] = QDateTime::fromString(map.value(SUBJECT_CREATION_DATE).toString(),"dd/MM/yyyy HH:mm").toSecsSinceEpoch();
+
+            // Building the display date: Day 3LetterMonth Year.
+            QStringList bdate_parts = map.value(SUBJECT_BIRTHDATE).toString().split("-");
+            QString bdate = "";
+            if (bdate_parts.size() == 3){
+                qint32 monthIndex = bdate_parts.at(1).toInt();
+                monthIndex--;
+                bdate = " UKN ";
+                if ((monthIndex >= 0) && (monthIndex < months.size())){
+                    bdate = " " + months.at(monthIndex) + " ";
+                }
+                bdate = bdate_parts.last() + bdate + bdate_parts.first();
+            }
+            map[SUBJECT_BDATE_DISPLAY] = bdate;
+            map[SUBJECT_SORTABLE_NAME] = map.value(SUBJECT_LASTNAME).toString() + ", " + map.value(SUBJECT_NAME).toString();
 
             ans[subject_ids.at(i)] = map;
         }
@@ -650,4 +710,29 @@ QString LocalDB::computeDataHash(){
         hash = QString(QCryptographicHash::hash(json.toJson(QJsonDocument::Compact),QCryptographicHash::Sha3_512).toHex());
     }
     return hash;
+}
+
+
+void LocalDB::updatesToPreviousDBVersions(){
+
+    if (data[MAIN_DB_VERSION].toInt() == 2){
+
+        // DB version 2 requires reformatting the protocol list.
+        QStringList protocolList = data[MAIN_PROTOCOL].toStringList();
+
+        QVariantMap protocols;
+        for (qint32 i = 0; i < protocolList.size(); i++){
+            QVariantMap protocol_info;
+            protocol_info[PROTOCOL_NAME] = protocolList.at(i);
+            protocol_info[PROTOCOL_CREATION_DATE] = QDate::currentDate().toString("yyyy-MM-dd");
+            protocol_info[PROTOCOL_ID] = protocolList.at(i);
+            protocols[protocolList.at(i)] = protocol_info;
+        }
+
+        data[MAIN_PROTOCOL] = protocols;
+
+    }
+
+
+
 }

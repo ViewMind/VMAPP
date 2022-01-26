@@ -9,7 +9,7 @@ Rectangle {
     id: vmPrimaryButton
     height: vmGlobals.vmControlsHeight
 
-    signal clicked();
+    signal customClicked();
 
     width: Math.round(metrics.tightBoundingRect.width*88/42)
     color: mouseArea.containsMouse? vmGlobals.vmBlueButtonHighlight : vmGlobals.vmBlueTextHighlight
@@ -20,7 +20,10 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: clicked()
+        onClicked: {
+            console.log("VMPrimary Internal click");
+            customClicked()
+        }
         enabled: vmEnabled
     }
 

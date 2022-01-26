@@ -41,7 +41,7 @@ public:
     explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     ~FlowControl() override;
     Q_INVOKABLE void connectToEyeTracker();
-    Q_INVOKABLE void calibrateEyeTracker(quint8 eye_to_use);
+    Q_INVOKABLE void calibrateEyeTracker(const QString &eye_to_use);
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
     Q_INVOKABLE void startStudy();
     Q_INVOKABLE bool isConnected() const { return connected; }
@@ -65,7 +65,7 @@ signals:
     // This tells QML that the experiment has finished.
     void experimentHasFinished();
 
-    // Signals to indicate all is good.
+    // Signals to indicate connection to eyetracker, calibration aborted or finalized.
     void connectedToEyeTracker(bool ok);
     void calibrationDone(bool ok);
 

@@ -12,6 +12,7 @@ namespace Globals{
 
    const qint32 NUMBER_SECONDS_IN_A_DAY = 86400;
    const qint32 NUMBER_OF_PERCEPTION_PARTS = 8;
+   const int    REBOOT_CODE = 568; // Just a random number that I thought of. I doens't have to have any real signficance.
 
    namespace EU_REGION {
       const QString API_URL = "https://eu-api.viewmind.ai";
@@ -35,13 +36,6 @@ namespace Globals{
       static const QString ET = "et";
       static const QString Region = "region";
    }
-
-   namespace Labeling{
-       static const QString MANUFACTURE_DATE = "07/10/2020";
-       static const QString SERIAL_NUMBER = "0-00000000-000000";
-       static const QString UNIQUE_CHARACTERIZATION_NUMBER = "XXXX";
-       static const QString AUTHORIZATION_UID = "authorization_number";
-   }
    
    namespace Paths {
       static const QString WORK_DIRECTORY = "viewmind_etdata";
@@ -57,6 +51,7 @@ namespace Globals{
       static const QString CHANGELOG_LOCATION = "changelog";
       static const QString CHANGELOG_BASE = "changelog_";      
       static const QString DEBUG_OPTIONS_FILE = "vmdebug";
+      static const QString USER_MANUAL = "report.pdf";
    }
    
    namespace VMConfig {
@@ -99,11 +94,11 @@ namespace Globals{
          
    namespace UILanguage {
       static const QString EN = "English";
-      static const QString ES = "Spanish";
+      static const QString ES = "Español";
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "18.2.2";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "19.1.1";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

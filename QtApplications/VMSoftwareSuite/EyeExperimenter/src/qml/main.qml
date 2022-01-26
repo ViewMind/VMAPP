@@ -1,166 +1,211 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Window
-import "DateLocalization.js" as DL;
+import "./components"
+import "./views"
+import "."
 
 ApplicationWindow {
     id: mainWindow
     visible: true
-    title: qsTr("EyeExperimenter - ") + loader.getWindowTilteVersion()    
+    title: qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
     visibility: Window.Maximized
-    //flags: Qt.WindowTitleHint|Qt.WindowCloseButtonHint|Qt.WindowSystemMenuHint;
 
-    Component.onCompleted: {        
+    readonly property alias vmSegoeNormal: segoeui_normal
+    readonly property alias vmSegoeHeavy: segoeui_heavy
+    readonly property alias vmSegoeBold: segoeui_bold
+
+    FontLoader {
+        id: segoeui_bold
+        source: "qrc:/font/segoe_ui_bold.ttf"
+    }
+
+    FontLoader{
+        id: segoeui_normal
+        source: "qrc:/font/segoe_ui_normal.ttf"
+    }
+
+    FontLoader{
+        id: segoeui_heavy
+        source: "qrc:/font/segoe_ui_semibold.ttf"
+    }
+
+
+    Component.onCompleted: {
         flowControl.resolutionCalculations();
         // This ensures that no resizing is possible.
         minimumHeight = height;
         maximumHeight = height;
         minimumWidth = width;
         maximumWidth = width;
-
+        VMGlobals.mainHeight = height;
+        VMGlobals.mainWidth = width;
     }
 
-
-
-    // The configurations dialog.
-    ViewSettings{
-        id: viewSettings
-        x: (parent.width - viewSettings.width)/2
-        y: (parent.height - viewSettings.height)/2
-        onUpdateMenus: {
-            viewHome.updateDrMenuText();
+    // For showing restart message.
+    VMMessageDialog {
+        id: messageDiag
+        onDismissed: {
+            messageDiag.close();
+            Qt.quit()
         }
     }
 
-    ViewAbout{
-        id: viewAbout
-        x: (parent.width - viewSettings.width)/2
-        y: (parent.height - viewSettings.height)/2
+    // Calibration error dialog
+    VMMessageDialog {
+        id: calibrationErrorDialog
+        onDismissed: {
+            calibrationErrorDialog.close()
+        }
     }
 
-    ViewDoctorSelection {
-        id: viewDrSelection
-        x: (parent.width - viewDrSelection.width)/2
-        y: (parent.height - viewDrSelection.height)/2
+    VMNotification {
+        id: notification
     }
 
-    ViewProtocols{
-        id: viewProtocols
-        x: (parent.width - viewProtocols.width)/2
-        y: (parent.height - viewProtocols.height)/2
+    // Settings is a global dialog.
+    ViewSettings {
+        id: settingsDialog
+        onRestartRequired: {
+            messageDiag.loadFromKey("viewsettings_restart_msg")
+            messageDiag.open();
+        }
+    }
+
+    // The wait screen
+    ViewWait {
+        id: waitScreen
     }
 
     SwipeView {
 
-        readonly property int vmIndexHome: 0
-        readonly property int vmIndexDrProfile: 1
-        readonly property int vmIndexPatientList: 2
-        readonly property int vmIndexStudyStart: 3
-        readonly property int vmIndexFinishedStudies: 4
-        readonly property int vmIndexPatientReg: 5
-        readonly property int vmIndexPresentExperiment: 6
-        readonly property int vmIndexStudyDone: 7
-        readonly property int vmIndexViewQC: 8
-
         id: swiperControl
-        currentIndex: vmIndexHome
+        //currentIndex: vmIndexHome
         interactive: false
         anchors.fill: parent
 
         Item{
-            ViewHome{
+            ViewStart{
                 id: viewHome
-                isHomePage: true;
-                anchors.fill: parent
             }
         }
 
         Item{
-            ViewDoctorProfile{
-                id: viewDrInfo
-                //isHomePage: true;
-                anchors.fill: parent
+            ViewLogin{
+                id: viewLogin
             }
         }
 
         Item {
-            ViewPatientList {
-                id: viewPatList
-                anchors.fill: parent
-            }
-        }
-
-        Item{
-            ViewStudyStart{
-                id: viewStudyStart
-                anchors.fill: parent
+            ViewAddEvaluator {
+                id: viewAddEval
             }
         }
 
         Item {
-            ViewFinishedStudies {
-                id: viewFinishedStudies
-                anchors.fill: parent
+            ViewMainSetup {
+                id: viewMainSetup
             }
         }
 
-        Item{
-            ViewPatientRegistration{
-                id: viewPatientReg
-                anchors.fill: parent
+        Item {
+            ViewAddPatient {
+                id: viewAddPatient
             }
         }
 
-
-        Item{
-            ViewPresentExperiment{
-                id: viewPresentExperimet
-                anchors.fill: parent
-            }
-        }
-
-        Item{
-            ViewStudyDone{
-                id: viewStudyDone
-                anchors.fill: parent
+        Item {
+            ViewEvaluations {
+                id: viewEvaluations
             }
         }
 
         Item {
             ViewQC {
                 id: viewQC
-                anchors.fill: parent
+            }
+        }
+
+        Item {
+            ViewEditProtocol {
+                id: viewEditProtocol
             }
         }
 
         onCurrentIndexChanged: {
-
-            //console.log("Switching to" + currentIndex);
-
-            switch(currentIndex){
-            case vmIndexHome:
+            switch (currentIndex){
+            case VMGlobals.vmSwipeIndexHome:
                 loader.logOut();
                 break;
-            case vmIndexPresentExperiment:
-                viewPresentExperimet.resetStateMachine();
-                break;
-            case vmIndexPatientList:
+            case VMGlobals.vmSwipeIndexMainScreen:
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
-                viewPatList.loadPatients();                
+                viewMainSetup.enableStudyStart(true)
+                if (!flowControl.isVROk()){
+                    viewMainSetup.enableStudyStart(false)
+                    var message = loader.getStringForKey("viewpatlist_vr_failed");
+                    popUpNotify(VMGlobals.vmNotificationRed,message);
+                }
+                ///console.log("Calling swipe into main due to setting the global swipe view");
+                viewMainSetup.swipeIntoMain()
                 break;
-            case vmIndexFinishedStudies:
-                viewFinishedStudies.loadEvaluatorStudies();
+            case VMGlobals.vmSwipeIndexLogin:
+                viewLogin.updateProfileList();
                 break;
-            case vmIndexViewQC:
-                viewQC.loadStudiesAndGraphs()
+            case VMGlobals.vmSwipeIndexAddEval:
+                viewAddEval.clear()
                 break;
-            case vmIndexStudyStart:
-                viewStudyStart.setPatientName();
-                viewStudyStart.setDefaultSelections();
+            case VMGlobals.vmSwipeIndexEvalView:
+                viewEvaluations.setPatientForEvaluation()
                 break;
             }
-
         }
+
+    }
+
+    function swipeTo(index){
+        swiperControl.currentIndex = index;
+    }
+
+    function openWait(message){
+        waitScreen.vmText = message;
+        waitScreen.show()
+    }
+
+    function closeWait(){
+        waitScreen.hide();
+    }
+
+    function popUpNotify(type,message){
+        notification.show(type,message)
+    }
+
+    function showErrorMessage(key){
+        messageDiag.loadFromKey(key);
+        messageDiag.open();
+    }
+
+    function getCurrentSwipeIndex(){
+        return swiperControl.currentIndex;
+    }
+
+    function showCalibrationError(leftEye,rightEye){
+        var title = loader.getStringForKey("viewevaluation_err_calib_title");
+        var body  = loader.getStringForKey("viewevaluation_err_calib_exp");
+
+        if (leftEye) body = body.replace("llee",loader.getStringForKey("viewevaluation_err_calib_ok"))
+        else body = body.replace("llee",loader.getStringForKey("viewevaluation_err_calib_fail"))
+
+        if (rightEye) body = body.replace("rree",loader.getStringForKey("viewevaluation_err_calib_ok"))
+        else body = body.replace("rree",loader.getStringForKey("viewevaluation_err_calib_fail"))
+
+        //console.log(body)
+
+        calibrationErrorDialog.vmTitle = title
+        calibrationErrorDialog.vmText = body
+        calibrationErrorDialog.vmLarge = true
+        calibrationErrorDialog.vmUseRedAlert = true
+
+        calibrationErrorDialog.open()
 
     }
 

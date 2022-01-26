@@ -77,7 +77,6 @@ public:
     static const char * SUBJECT_LASTNAME;
     static const char * SUBJECT_INSTITUTION_ID;
     static const char * SUBJECT_BIRTHDATE;
-    static const char * SUBJECT_AGE;
     static const char * SUBJECT_BIRTHCOUNTRY;
     static const char * SUBJECT_YEARS_FORMATION;
     static const char * SUBJECT_CREATION_DATE;
@@ -86,12 +85,20 @@ public:
     static const char * SUBJECT_STUDY_MARKERS;
     static const char * SUBJECT_LOCAL_ID;  // <- This is the local key as well.
     static const char * SUBJECT_ASSIGNED_MEDIC;
+    static const char * SUBJECT_BDATE_DISPLAY;
+    static const char * SUBJECT_SORTABLE_NAME;
+    static const char * SUBJECT_EMAIL;
 
     // Marker for each subject
     static const char * MARKER_VALUE;
     static const char * MARKER_TIME;
 
-    static const qint32 LOCALDB_VERSION = 2;
+    // Protocol Fiedls
+    static const char * PROTOCOL_NAME;
+    static const char * PROTOCOL_CREATION_DATE;
+    static const char * PROTOCOL_ID;
+
+    static const qint32 LOCALDB_VERSION = 3;
 
 
     // Constructor
@@ -109,6 +116,9 @@ public:
 
     // Add or modify a subject. Modification ocurrs if the subject ID exists.
     bool addOrModifySubject(const QString &subject_id, QVariantMap subject_data);
+
+    // This function is specifically for changing the assigned medic for a given the subject. The subject MUST exist.
+    bool modifyAssignedMedicToSubject(const QString &subject_id, const QString &medic);
 
     // Add or modify an evaluator. Modification ocurrs if the subject ID exists. Passwords are set in a separate function.
     // Two email entries are provided because changing the email means changing the username adn the old one cannot be left in the system.
@@ -136,7 +146,7 @@ public:
     QVariantMap getSubjectDataByInternalID(const QString &internalID) const;
 
     // Returns a list with display data of all subjects that match the filter.
-    QVariantMap getDisplaySubjectList(QString filter);
+    QVariantMap getDisplaySubjectList(QString filter, const QStringList &months);
 
     // Returns a list of doctors to display
     QVariantMap getMedicDisplayList() const;
@@ -160,10 +170,10 @@ public:
     bool removeMarkerForSubject(const QString &suid, const QString &study);
 
     // Adds a protocol to the protocol list. Returs true if successfull or false if it exists.
-    bool addProtocol(const QString &protocol);
+    bool addProtocol(const QString &protocol_name, const QString &protocol_id, bool edit);
 
     // If it is exits, the protocol is removed from the list.
-    bool removeProtocol(const QString &protocol);
+    bool removeProtocol(const QString &protocol_id);
 
     // Checking if processing parameters have been set.
     bool processingParametersPresent() const;
@@ -184,7 +194,7 @@ public:
     QVariantMap getProcessingParameters() const;
 
     // Get the protocol list
-    QStringList getProtocolList() const;
+    QVariantMap getProtocolList() const;
 
     // Error string. For logging purposes.
     QString getError() const;
@@ -198,6 +208,9 @@ public:
 
     // Returns the number of times remaining that the user can say NO to an update. 0 if it doesn't exist.
     qint32 getRemainingUpdateDelays() const;
+
+    // Returns tht number of patients on the DB.
+    qint32 getSubjectCount() const;
 
 
 private:
@@ -219,6 +232,10 @@ private:
 
     // The maximum number of times an update can be delayed before the user is forced to update.
     const qint32 MAX_ALLOWED_UPDATE_DELAYS = 3;
+
+    // The contents of this function will change every time the DB changes versions as it might require modification of existing data.
+    // It needs to be called upon successfull loading of DB;
+    void updatesToPreviousDBVersions();
 
 };
 

@@ -1,10 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>fonts/Roboto-Bold.ttf</file>
-        <file>fonts/Roboto-Medium.ttf</file>
-        <file>fonts/Roboto-Regular.ttf</file>
-        <file>fonts/Gotham-Bold.otf</file>
-        <file>fonts/Gotham-Book.otf</file>
-        <file>fonts/Gotham-Medium.otf</file>
+        <file>font/segoe_ui_normal.ttf</file>
+        <file>font/segoe_ui_semibold.ttf</file>
+        <file>font/segoe_ui_bold.ttf</file>
     </qresource>
 </RCC>

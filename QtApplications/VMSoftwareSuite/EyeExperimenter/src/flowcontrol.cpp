@@ -36,7 +36,7 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
         // Create the wait screen only once
         waitScreenBaseColor = QColor(Qt::gray);
 
-        logo = QImage(":/images/viewmind_wait_logo.png");
+        logo = QImage(":/images/logo.png");
         if (logo.isNull()){
             logger.appendError("The loaded wait screen image is null");
             return;
@@ -165,7 +165,7 @@ void FlowControl::setupSecondMonitor(){
 void FlowControl::keyboardKeyPressed(int key){
     if (experiment != nullptr){
         experiment->keyboardKeyPressed(key);
-    }
+    }    
 }
 
 void FlowControl::stopRenderingVR(){
@@ -301,7 +301,7 @@ void FlowControl::connectToEyeTracker(){
     eyeTracker->connectToEyeTracker();
 }
 
-void FlowControl::calibrateEyeTracker(quint8 eye_to_use){
+void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
 
     EyeTrackerCalibrationParameters calibrationParams;
     calibrationParams.forceCalibration = true;
@@ -312,7 +312,9 @@ void FlowControl::calibrateEyeTracker(quint8 eye_to_use){
     leftEyeCalibrated = false;
 
     // Making sure the right eye is used, in both the calibration and the experiment.
-    selected_eye_to_use = VMDC::Eye::fromInt(eye_to_use);
+    selected_eye_to_use = eye_to_use;
+    //selected_eye_to_use = VMDC::Eye::toInt(eye_to_use);
+    qDebug() << "Setting eye to use to " << eye_to_use;
     eyeTracker->setEyeToTransmit(selected_eye_to_use);
 
     // qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
@@ -473,6 +475,7 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     // configuration->getString(CONFIG_PATIENT_DIRECTORY)
 
     QBrush background;
+    QColor backgroundForVRScreen;
     experimentIsOk = true;
     QString finalStudyName;
 
@@ -483,32 +486,37 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         logger.appendStandard("STARTING READING EXPERIMENT");
         experiment = new ReadingExperiment(nullptr,VMDC::Study::READING);
         background = QBrush(Qt::gray);
-        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+        //if (openvrco != nullptr) {openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray).darker(110);
         break;
 
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
-        logger.appendStandard("STARTING BINDING BC EXPERÏMENT");
+        logger.appendStandard("STARTING BINDING BC EXPERIMENT");
         experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_BC);
         background = QBrush(Qt::gray);
-        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray);
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
-        logger.appendStandard("STARTING BINDING UC EXPERÏMENT");
+        logger.appendStandard("STARTING BINDING UC EXPERIMENT");
         experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_UC);
         background = QBrush(Qt::gray);
-        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray);
         break;
     case Globals::StudyConfiguration::INDEX_NBACKMS:
         logger.appendStandard("STARTING N BACK TRACE FOR MS");
         experiment = new FieldingExperiment(nullptr,VMDC::Study::NBACKMS);
         background = QBrush(Qt::black);
-        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::black);
         break;
     case Globals::StudyConfiguration::INDEX_NBACKRT:
         logger.appendStandard("STARTING NBACK TRACE FOR RESPONSE TIME");
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKRT);
         background = QBrush(Qt::black);
-        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::black);
         break;
         //    case EXP_PARKINSON:
         //        logger.appendStandard("STARTING PARKINSON MAZE");
@@ -521,20 +529,23 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         logger.appendStandard("STARTING GO - NO GO");
         experiment = new GoNoGoExperiment(nullptr,VMDC::Study::GONOGO);
         background = QBrush(Qt::gray);
-        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray);
         break;
     case Globals::StudyConfiguration::INDEX_NBACKVS:
         logger.appendStandard("STARTING N BACK VS");
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKVS);
         background = QBrush(Qt::black);
-        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::black);
         break;
     case Globals::StudyConfiguration::INDEX_PERCEPTION:
         logger.appendStandard("STARTING PERCEPTION");
         finalStudyName = VMDC::MultiPartStudyBaseName::PERCEPTION + " " + study_config.value(VMDC::StudyParameter::PERCEPTION_PART).toString();
         experiment = new PerceptionExperiment(nullptr,finalStudyName);
         background = QBrush(Qt::gray);
-        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
+        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray).darker(110);
         break;
 
     default:
@@ -590,6 +601,7 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
                 return false;
             }
             renderState = RENDERING_EXPERIMENT;
+            openvrco->setScreenColor(backgroundForVRScreen);
         }
     }
 

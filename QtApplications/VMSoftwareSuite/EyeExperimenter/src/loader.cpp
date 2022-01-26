@@ -89,8 +89,9 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     countries = cs;
 
     // Change the language array.
-    changeLanguage();
     if (loadingError) return;
+
+    changeLanguage();
 
     // Must make sure that the data directory exists
     QDir rawdata(Globals::Paths::WORK_DIRECTORY);
@@ -146,7 +147,7 @@ QString Loader::getStringForKey(const QString &key){
     if (language.containsKeyword(key)){
         return language.getString(key);
     }
-    else return "ERROR: NOT FOUND";
+    else return "ERROR: STRING KEY " + key +  " NOT FOUND";
 }
 
 QStringList Loader::getStringListForKey(const QString &key){
@@ -199,23 +200,25 @@ QString Loader::getVersionNumber() const {
     return Globals::Share::EXPERIMENTER_VERSION_NUMBER;
 }
 
-QString Loader::getManufactureDate() const {
-    //return configuration->getString(Globals::VMPreferences::LABELLING_MANUFACTURE_DATE);
-    return Globals::Labeling::MANUFACTURE_DATE;
-}
-
-QString Loader::getSerialNumber() const {
-    //return configuration->getString(Globals::VMPreferences::LABELLING_SERIAL_NUMBER);
-    return Globals::Labeling::SERIAL_NUMBER;
-}
-
-QString Loader::getUniqueAuthorizationNumber() const {
-    //return configuration->getString(Globals::VMPreferences::LABELLING_AUTHORIZATION_UID);
-    return Globals::Labeling::AUTHORIZATION_UID;
-}
-
 QString Loader::getInstitutionName() const {
     return configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
+}
+
+void Loader::openUserManual(){
+
+    // Attempting to find the user manual (it is different when running from the application, versus running from the IDE).
+    QString currentDirectory = QDir::currentPath();
+    QString filePath = currentDirectory + "/" + Globals::Paths::USER_MANUAL;
+    if (!QFile(filePath).exists()){
+        //filePath = currentDirectory + "/EyeExperimenter/" + Globals::Paths::USER_MANUAL;
+        logger.appendError("User manual could not be found at: " + filePath);
+        return;
+    }
+    filePath = "file:///" + filePath;
+
+    if (!QDesktopServices::openUrl(QUrl(filePath))){
+        logger.appendError("Could not open the user manual on file path: " + filePath);
+    }
 }
 
 ////////////////////////////////////////////////////////  PARTNER FUNCTIONS  ////////////////////////////////////////////////////////
@@ -239,7 +242,7 @@ void Loader::synchronizeToPartner(const QString &selectedPartner){
     }
     else{
         logger.appendError("Selected unimplemented partner: " + selectedPartner);
-        emit(partnerSequenceDone(false));
+        emit Loader::partnerSequenceDone(false);
     }
 
     // Connecting to the right slot
@@ -311,16 +314,17 @@ void Loader::partnerSynchFinishProcess(){
         if (localDB.getSubjectDataByInternalID(uid).isEmpty()){
             // New subject needs to be created.
             // Debug::prettpPrintQVariantMap(patient);
-            this->addOrModifySubject("",
-                                     patient.value(ParterPatient::NAME,"").toString(),
-                                     patient.value(ParterPatient::LASTNAME,"").toString(),
-                                     uid,
-                                     patient.value(ParterPatient::AGE,0).toString(),
-                                     patient.value(ParterPatient::BIRTHDATE,"").toString(),
-                                     patient.value(ParterPatient::NATIONALITY,"ZZ").toString(),
-                                     patient.value(ParterPatient::GENDER,"").toString(),
-                                     patient.value(ParterPatient::YEARS_FORMATION,0).toInt(),
-                                     patient.value(ParterPatient::PARTNER_MEDIC_ID).toString());
+            QString assignedMedic = patient.value(ParterPatient::PARTNER_MEDIC_ID).toString();
+            QString newid = this->addOrModifySubject("",
+                                                     patient.value(ParterPatient::NAME,"").toString(),
+                                                     patient.value(ParterPatient::LASTNAME,"").toString(),
+                                                     uid,
+                                                     patient.value(ParterPatient::BIRTHDATE,"").toString(),
+                                                     patient.value(ParterPatient::NATIONALITY,"ZZ").toString(),
+                                                     patient.value(ParterPatient::GENDER,"").toString(),
+                                                     patient.value(ParterPatient::YEARS_FORMATION,0).toInt(),
+                                                     "");
+            this->modifySubjectSelectedMedic(newid,assignedMedic);
         }
     }
 
@@ -560,7 +564,6 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
     // Creating the subject data
     QVariantMap subject_data;
-    subject_data.insert(VMDC::SubjectField::AGE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_AGE));
     subject_data.insert(VMDC::SubjectField::BIRTH_COUNTRY,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHCOUNTRY));
     subject_data.insert(VMDC::SubjectField::BIRTH_DATE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHDATE));
     subject_data.insert(VMDC::SubjectField::GENDER,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_GENDER));
@@ -569,6 +572,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     subject_data.insert(VMDC::SubjectField::LOCAL_ID,configuration->getString(Globals::Share::PATIENT_UID));
     subject_data.insert(VMDC::SubjectField::NAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_NAME));
     subject_data.insert(VMDC::SubjectField::YEARS_FORMATION,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_YEARS_FORMATION));
+    subject_data.insert(VMDC::SubjectField::EMAIL,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_EMAIL));
 
     // Setting the evaluator info. We do it here becuase it is required for the data file comparisons.
     QVariantMap evaluator;
@@ -728,9 +732,9 @@ QStringList Loader::getLoginEmails() const {
 
 ////////////////////////////////////////////////////////////////// SUBJECT FUNCTIONS //////////////////////////////////////////////////////////////////
 
-void Loader::addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
-                                const QString &age, const QString &birthdate, const QString &birthCountry,
-                                const QString &gender, qint32 formative_years, QString selectedMedic){
+QString Loader::addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
+                                   const QString &birthdate, const QString &birthCountry,
+                                   const QString &gender, qint32 formative_years, const QString &email){
 
     //qDebug() << "Entering with suid" << suid;
 
@@ -741,26 +745,25 @@ void Loader::addOrModifySubject(QString suid, const QString &name, const QString
         //qDebug() << "Computed new suid" << suid;
     }
 
-    // If a birthdate is provided, the age is computed
-    QString saveage;
-    if ((birthdate != "") && (age == "")){
-        // We are expecting the ISO date.
-        QDate bdate = QDate::fromString(birthdate,"yyyy-MM-dd");
-        QDate currentDate= QDate::currentDate();    // gets the current date
-        int currentAge = currentDate.year() - bdate.year();
-        if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ){
-            currentAge--;
-        }
-        saveage = QString::number(currentAge);
-    }
-    else saveage = age;
+//    // If a birthdate is provided, the age is computed
+//    QString saveage;
+//    if ((birthdate != "") && (age == "")){
+//        // We are expecting the ISO date.
+//        QDate bdate = QDate::fromString(birthdate,"yyyy-MM-dd");
+//        QDate currentDate= QDate::currentDate();    // gets the current date
+//        int currentAge = currentDate.year() - bdate.year();
+//        if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ){
+//            currentAge--;
+//        }
+//        saveage = QString::number(currentAge);
+//    }
+//    else saveage = age;
 
     // Getting the country code.
 
 
     // Create a map for the data as is. The caller function is reponsible for data verification.
     QVariantMap map;
-    map[LocalDB::SUBJECT_AGE] = saveage;
     map[LocalDB::SUBJECT_BIRTHCOUNTRY] = countries->getCodeForCountry(birthCountry);
     map[LocalDB::SUBJECT_BIRTHDATE] = birthdate;
     map[LocalDB::SUBJECT_INSTITUTION_ID] = institution_id;
@@ -768,16 +771,25 @@ void Loader::addOrModifySubject(QString suid, const QString &name, const QString
     map[LocalDB::SUBJECT_NAME] = name;
     map[LocalDB::SUBJECT_YEARS_FORMATION] = formative_years;
     map[LocalDB::SUBJECT_GENDER] = gender;
-    map[LocalDB::SUBJECT_ASSIGNED_MEDIC] = selectedMedic;
+    map[LocalDB::SUBJECT_EMAIL] = email;
+    //map[LocalDB::SUBJECT_ASSIGNED_MEDIC] = selectedMedic;
 
     // Adding the data to the local database.
     if (!localDB.addOrModifySubject(suid,map)){
         logger.appendError("While adding subject " + suid + " with data " + name + " " + lastname + " (" + institution_id + "): " + localDB.getError() );
+        return "";
+    }
+    return suid;
+}
+
+void Loader::modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic){
+    if (!localDB.modifyAssignedMedicToSubject(suid,selectedMedic)){
+        logger.appendError("While modifiying subject " + suid + " by setting meddig " + selectedMedic + ": " + localDB.getError() );
     }
 }
 
 QVariantMap Loader::filterSubjectList(const QString &filter){
-    return  localDB.getDisplaySubjectList(filter);
+    return  localDB.getDisplaySubjectList(filter,getStringListForKey("viewpatlist_months"));
 }
 
 bool Loader::setSelectedSubject(const QString &suid){
@@ -822,6 +834,10 @@ void Loader::clearSubjectSelection(){
 
 QString Loader::getCurrentlySelectedAssignedDoctor() const {
     return localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_ASSIGNED_MEDIC);
+}
+
+bool Loader::areThereAnySubjects() const {
+    return localDB.getSubjectCount() > 0;
 }
 
 ////////////////////////// MEDIC RELATED FUNCTIONS ////////////////////////////
@@ -1089,7 +1105,7 @@ void Loader::receivedRequest(){
             return; // So we don't emit the finsihed request.
         }
     }
-    emit(finishedRequest());
+    emit Loader::finishedRequest();
 }
 
 qint32 Loader::wasThereAnProcessingUploadError() const {
@@ -1141,16 +1157,23 @@ void Loader::moveProcessedFiletToProcessedDirectory(){
 
 ////////////////////////////////////////////////////////////////// PROTOCOL FUNCTIONS //////////////////////////////////////////////////////////////////
 
-bool Loader::addProtocol(const QString &p) {
-    return localDB.addProtocol(p);
+bool Loader::addProtocol(const QString &name, const QString &id) {
+    return localDB.addProtocol(name,id,false);
 }
-void Loader::deleteProtocol(const QString &p) {
-    if (!localDB.removeProtocol(p)){
+
+void Loader::editProtocol(const QString &id, const QString &newName){
+    if (!localDB.addProtocol(newName,id,true)){
+        logger.appendError("Error while modifying protocol: " + id + " to new name: " + newName + ". Error was: " + localDB.getError());
+    }
+}
+
+void Loader::deleteProtocol(const QString &id) {
+    if (!localDB.removeProtocol(id)){
         logger.appendError("Error while deleting protocol: " + localDB.getError());
     }
 }
 
-QStringList Loader::getProtocolList() {
+QVariantMap Loader::getProtocolList() {
     return localDB.getProtocolList();
 }
 

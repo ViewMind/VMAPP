@@ -9,6 +9,7 @@
 #include <QSharedMemory>
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QDesktopServices>
 
 #include "../../../CommonClasses/LogInterface/loginterface.h"
 #include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
@@ -42,10 +43,9 @@ public:
     Q_INVOKABLE int getCountryIndexFromCode(const QString &code);
 
     Q_INVOKABLE QString getVersionNumber() const;
-    Q_INVOKABLE QString getManufactureDate() const;
-    Q_INVOKABLE QString getSerialNumber() const;
-    Q_INVOKABLE QString getUniqueAuthorizationNumber() const;
-    Q_INVOKABLE QString getInstitutionName() const;    
+    Q_INVOKABLE QString getInstitutionName() const;
+
+    Q_INVOKABLE void openUserManual();
 
     //////////////////////////// PARTNER RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QStringList getPartnerList() const;
@@ -71,10 +71,9 @@ public:
     Q_INVOKABLE QStringList getLoginEmails() const;
 
     //////////////////////////// SUBJECT REALATED FUNCTIONS ////////////////////////////
-    Q_INVOKABLE void addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
-                                        const QString &age, const QString &birthdate, const QString &birthCountry,
-                                        const QString &gender, qint32 formative_years, QString selectedMedic);
-
+    Q_INVOKABLE QString addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id, const QString &birthdate,
+                                           const QString &birthCountry,  const QString &gender, qint32 formative_years, const QString &email);
+    Q_INVOKABLE void modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic);
     Q_INVOKABLE QVariantMap filterSubjectList(const QString &filter);
     Q_INVOKABLE bool setSelectedSubject(const QString &suid);    
     Q_INVOKABLE void setStudyMarkerFor(const QString &study, const QString &value);
@@ -82,6 +81,7 @@ public:
     Q_INVOKABLE QVariantMap getCurrentSubjectInfo();
     Q_INVOKABLE void clearSubjectSelection();
     Q_INVOKABLE QString getCurrentlySelectedAssignedDoctor() const;
+    Q_INVOKABLE bool areThereAnySubjects() const;
 
     //////////////////////////// MEDIC RELATED FUNCTION ////////////////////////////
     Q_INVOKABLE QVariantMap getMedicList() const;
@@ -112,9 +112,12 @@ public:
     Q_INVOKABLE qint32 getLastAPIRequest();
 
     //////////////////////////// PROTOCOL RELATED FUNCTIONS ////////////////////////////
-    Q_INVOKABLE bool addProtocol(const QString &p);
-    Q_INVOKABLE void deleteProtocol(const QString &p);
-    Q_INVOKABLE QStringList getProtocolList();
+    Q_INVOKABLE bool addProtocol(const QString &name, const QString &id);
+    Q_INVOKABLE void editProtocol(const QString &id, const QString &newName);
+    Q_INVOKABLE void deleteProtocol(const QString &id);
+    Q_INVOKABLE QVariantMap getProtocolList();
+
+
 
 signals:
     void finishedRequest();
@@ -163,14 +166,14 @@ private:
     // The generic connection to a partner API.
     PartnerAPI *partner_api;
 
+    // Loads the appropiate language file.
+    void changeLanguage();
+
     // The last stage of the partner synchronization process. Actually does modifications to the localDB as needed.
     void partnerSynchFinishProcess();
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();
-
-    // Sets the language for program.
-    void changeLanguage();
 
     // Moves sent files to the processed directory
     void moveProcessedFiletToProcessedDirectory();

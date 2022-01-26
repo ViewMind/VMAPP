@@ -23,5 +23,9 @@ QImage QImageDisplay::getImage() const{
 void QImageDisplay::paint(QPainter *painter){
     //this->setWidth(displayImage.width());
     //this->setHeight(displayImage.height());
+    if (displayImage.isNull()) {
+        qDebug() << "Tying to paint a null image in the QImageDisplay";
+        return;
+    }
     painter->drawImage(0,0,displayImage.scaled(static_cast<qint32>(this->width()),static_cast<qint32>(this->height()),Qt::IgnoreAspectRatio));
 }

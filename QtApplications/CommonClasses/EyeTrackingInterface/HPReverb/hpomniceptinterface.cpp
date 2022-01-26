@@ -102,6 +102,12 @@ void HPOmniceptInterface::calibrate(EyeTrackerCalibrationParameters params){
     else{
         if (!correctionCoefficients.loadCalibrationCoefficients(params.name)){
             logger.appendError("Failed to set calibration parameters from file: " + params.name);
+            calibrationFailureType = ETCFT_UNKNOWN;
+            emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+        }
+        else {
+            calibrationFailureType = ETCFT_NONE;
+            emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
         }
     }
 }
