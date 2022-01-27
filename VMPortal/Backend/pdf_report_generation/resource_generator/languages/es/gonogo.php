@@ -31,9 +31,9 @@
  $report["reaction_time_interference"]["range_text"]     = "Valor normal por debajo de 829";
  $report["executive_functions"]["title"]                 = "FUNCIONES EJECUTIVAS";
  $report["executive_functions"]["range_text"]            = "Valor normal por debajo de 320";
- $report["index_error_facilitated"]["title"]             = "ALTERACIONES INHIBITORIAS - FACILITADAS";
+ $report["index_error_facilitated"]["title"]             = "CAPACIDADES INHIBITORIAS - FACILITADAS";
  $report["index_error_facilitated"]["range_text"]        = "Valor normal por debajo de 15";
- $report["index_error_interference"]["title"]            = "ALTERACIONES INHIBITORIAS - INTERFERENCIA";
+ $report["index_error_interference"]["title"]            = "CAPACIDADES INHIBITORIAS - INTERFERENCIA";
  $report["index_error_interference"]["range_text"]       = "Valor normal por debajo de 31";
 
 
@@ -47,18 +47,18 @@
  $report["affected_areas"]["reaction_time_interference"] = "Tiempro de Reacción  - Interferencia: Corteza prefrontal medial (mPFC), anterior, posterior";
  $report["affected_areas"]["reaction_time_facilitated"] = "Tiempro de Reacción  - Facilitado: Corteza prefrontal medial (mPFC), núcleo subtalámico";
  $report["affected_areas"]["executive_functions"] = "Funciones Ejecutivas: Corteza Prefrontal";
- $report["affected_areas"]["index_error_facilitated"]  = "Alteraciones Inhibitorias Facilitadas: Circunvolución frontal inferior derecha (rIFG)";
- $report["affected_areas"]["index_error_interference"]  = "Alteraciones Inhibitorias - Interferencia: Circunvolución frontal inferior caudal (cIFG)";
+ $report["affected_areas"]["index_error_facilitated"]  = "Capacidades Inhibitorias Facilitadas: Circunvolución frontal inferior derecha (rIFG)";
+ $report["affected_areas"]["index_error_interference"]  = "Capacidades Inhibitorias - Interferencia: Circunvolución frontal inferior caudal (cIFG)";
 
  $report["presumptive_diagnosis"]["left_title"] = "Diagnóstico Presuntivo";
  $report["presumptive_diagnosis"]["right_title"] = "Índice de Desempeño";
  $report["presumptive_diagnosis"]["texts"] = [
-  1 => "Generalized Cognitive and Brain Alteration.",
-  2 => "Problems for controlling cognitive and motor responses.",
-  3 => "Delay when processing information.",
-  4 => "Problems for encoding and decoding information",
-  5 => "Performance within normal values",
-  6 => "Problems for focusing dynamically on a particular activity",
+  1 => "Alteraciones Generales Cognitivas y Cerebrales.",
+  2 => "Problemas controlando respuestas motoras y cognitivas.",
+  3 => "Retraso al procesar información.",
+  4 => "Problemas codificando y decodificando información",
+  5 => "Desempeño dentro de valores nominales.",
+  6 => "Problemas al concentrarse dinámicamente en una actividad particular.",
 ];
 
  $report["overall_performance"]["text"] = "El siguiente gráfico muestra el desempeño cognitivo general del paciente.";
