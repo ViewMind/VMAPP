@@ -7,6 +7,11 @@ include_once (__DIR__ . "/../db_management/TableInstitutionUsers.php");
 
 class ObjectPortalUsers extends ObjectBaseClass{
 
+   const MODPERM_ID = "id";
+   const MODPERM_ACTION = "action";
+   const MODPERM_PERMISSIONS = "permissions";
+   const MODPERM_ROLE = "role";
+   const MODPERM_PERMISSION_LIST = "permission_list";
 
    function __construct($service,$headers){
       parent::__construct($service,$headers);
@@ -198,6 +203,123 @@ class ObjectPortalUsers extends ObjectBaseClass{
 
    }
 
+   function modify_permissions($identifier,$parameters){
+
+      // This endpoint requires information passed in the body of the request. As such the identifier should always be set to 0 as it will not be used. 
+      if ($identifier != 0){
+         $this->suggested_http_code = 401;
+         $this->error = "The expected identifier for modify permissions is 0. But got an $identifier instead";
+         $this->returnable_error = "Badly formed modify permissions URL";
+         return false;               
+      }
+
+      // Veryfing the structure of the request body. Both the id and the action must be present. 
+      $must_exist = [self::MODPERM_ID, self::MODPERM_ACTION];
+
+      foreach ($must_exist as $key){
+         if (!array_key_exists($key, $this->json_data)){
+            $this->suggested_http_code = 401;
+            $this->error = "Bad request body. Missing mandatory parameter $key";
+            return false;                  
+         }
+      }
+
+      // Creating the connection. 
+      $tpu = new TablePortalUsers($this->con_secure);
+
+      // The ID is required for all operation. For convenience the email is used instead of the actual number ID. 
+      $id = $this->json_data[self::MODPERM_ID];
+
+      // If the action is modify then the new set of permissions must be present. 
+      if ($this->json_data[self::MODPERM_ACTION] == EndpointBodyActions::SET){
+
+         $must_exist = [self::MODPERM_PERMISSIONS, self::MODPERM_ROLE];
+
+         foreach ($must_exist as $key){
+            if (!array_key_exists($key, $this->json_data)){
+               $this->suggested_http_code = 401;
+               $this->error = "Bad request body. Missing mandatory parameter $key when action is 'set'";
+               return false;                  
+            }
+         }
+
+         $permissions = json_encode($this->json_data[self::MODPERM_PERMISSIONS]);
+         $role        = $this->json_data[self::MODPERM_ROLE];
+
+         //var_dump($permissions);
+
+         $ans = $tpu->setUsersPermission($id,$permissions,$role);
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Could nto set permissions for user $id. Reason: " . $tpu->getError();
+            $this->returnable_error = "Internal database error";
+            return false;
+         }
+
+         // All is good we retrun an empty array();
+         return array();
+
+      }
+      else if ($this->json_data[self::MODPERM_ACTION] != EndpointBodyActions::GET){
+         $this->suggested_http_code = 401;
+         $this->error = "Bad action in request body: " . $this->json_data[self::MODPERM_ACTION] . ". Expected either 'set' or 'get'";
+         return false;                  
+      }
+      else {
+
+         // This is simple get.         
+
+         $info = $tpu->getInfoForUser($id,true);
+         if ($info === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in getting information for user $id. Reason: " . $tpu->getError();
+            $this->returnable_error = "Internal database error";
+            return false;
+         }
+
+         if (count($info) != 1){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in getting information for user $id. Reason returned rows matching id $id were " . count($info);
+            $this->returnable_error = "Internal database error";
+            return false;
+         }
+
+         $info = $info[0];
+         $permissions = json_decode($info[TablePortalUsers::COL_PERMISSIONS],true);
+         $role        = $info[TablePortalUsers::COL_USER_ROLE];
+
+         // Creating the list of possible permissions.
+         $list = array();
+         foreach (ROUTING as $name => $class_name){
+            $class = new ReflectionClass($class_name);
+            $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);     
+            $list[$name] = array();
+            foreach ($methods as $method){
+               
+               // Methods is a list of objects, not array elments. We need to access its values by using the object -> operaton. The methods will include the constructor and the functions from the base class. 
+               $method_name = $method->getName();
+               $method_class_name = $method->class;
+               
+
+               if ($class_name != $method_class_name) continue; // This will filter functions from the base class
+               if ($method_name == "__construct") continue; // This will filter the constructor method. 
+               
+               //echo "Function $method_class_name.$method_name";
+               //echo "=========\n";
+
+               $list[$name][] = $method_name;
+            }
+         }
+
+         $ret[self::MODPERM_ROLE] = $role;
+         $ret[self::MODPERM_PERMISSIONS] = $permissions;
+         $ret[self::MODPERM_PERMISSION_LIST] = $list;
+         
+         return $ret;
+
+      }
+
+   }
 
 }
 

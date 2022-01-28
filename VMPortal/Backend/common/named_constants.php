@@ -123,6 +123,12 @@
       const INSTITUTION             = "institution";
    }
 
+   abstract class EndpointBodyActions extends TypedString {
+      const CREATE                  = "create";
+      const GET                     = "get";
+      const SET                     = "set";
+   }
+
    abstract class URLSearchCriteria extends TypedString {
       const VMID                    = "vmid";
       const IUID                    = "iuid";
