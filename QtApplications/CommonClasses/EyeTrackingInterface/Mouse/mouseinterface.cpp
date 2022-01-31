@@ -8,12 +8,8 @@ MouseInterface::MouseInterface()
     isCalibrated = false;
     isBeingCalibrated = false;
 
-    calibrationScreen = new CalibrationArea();
-    connect(calibrationScreen,&CalibrationArea::calibrationCanceled,this,&MouseInterface::on_calibrationCancelled);
-
-    // This makes it so that the calibration screen is never shown.
-    calibrationScreen->setAutoCalibration(true);
-    //calibrationScreen->setAutoCalibration(false);
+    connect(&calibration,&CalibrationLeastSquares::newCalibrationImageAvailable,this,&MouseInterface::onNewCalibrationImageAvailable);
+    connect(&calibration,&CalibrationLeastSquares::calibrationDone,this,&MouseInterface::onCalibrationFinished);
 
     calibrationFailureType = ETCFT_NONE;
 
@@ -23,6 +19,11 @@ MouseInterface::MouseInterface()
 
 void MouseInterface::overrideCalibration(){
     overrideCalibrationFlag = true;
+}
+
+void MouseInterface::setCalibrationAreaDimensions(qreal w, qreal h){
+    screenWidth = w;
+    screenHeight = h;
 }
 
 void MouseInterface::connectToEyeTracker(){
@@ -40,8 +41,11 @@ void MouseInterface::disconnectFromEyeTracker(){
     pollTimer.stop();
 }
 
-void MouseInterface::mouseSetCalibrationToTrue(){
-    isCalibrated = true;
+
+void MouseInterface::onNewCalibrationImageAvailable(){
+    QImage newImage = calibration.getCurrentCalibrationImage();
+    qDebug() << "Setting the new image";
+    calibrationArea.setCurrentImage(newImage);
 }
 
 void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
@@ -54,19 +58,32 @@ void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
         emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
         return;
     }
-
-    isBeingCalibrated = true;
-    isCalibrated = false;
-    //qDebug() << "Before executing calibration screen" << isCalibrated;
-    calibrationScreen->exec();
-    calibrationFailureType = ETCFT_NONE;
-    //qDebug() << "Starting calibration with isCalibrated" << isCalibrated;
-    if (isCalibrated)
-        emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
-    else{
-        logger.appendWarning("MOUSE TRACKER: Calibration was aborted");
-        emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED);
+    else {
+        calibration.startCalibrationSequence(static_cast<qint32>(screenWidth),
+                                             static_cast<qint32>(screenHeight),
+                                             params.number_of_calibration_points);
+        calibrationArea.exec();
+        // Non empty file name will indicate coefficient storage.
     }
+
+//    isBeingCalibrated = true;
+//    isCalibrated = false;
+//    qDebug() << "Before executing calibration screen" << isCalibrated;
+//    calibrationScreen->exec();
+//    calibrationFailureType = ETCFT_NONE;
+//    qDebug() << "Starting calibration with isCalibrated" << isCalibrated;
+//    if (isCalibrated)
+//        emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
+//    else{
+//        logger.appendWarning("MOUSE TRACKER: Calibration was aborted");
+//        emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED);
+//    }
+}
+
+void MouseInterface::onCalibrationFinished(){
+    // Mouse calibration cannot fail as there data and coefficients are ignored. It's just for showing the calibration screen.
+    calibrationArea.hide();
+    emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
 }
 
 void MouseInterface::on_calibrationCancelled(){
@@ -82,48 +99,58 @@ void MouseInterface::on_pollTimerUp(){
     dataToSend.time = dataToSend.time + TIMEOUT;
 
     QPoint point = QCursor::pos();
-    //qDebug() << point;
-    if (isBeingCalibrated){
-        if (calibrationScreen->isInCalibrationPoint(point.x(),point.y())){
-            isCalibrated = true;
-            isBeingCalibrated = false;
-            calibrationScreen->hide();
+//    //qDebug() << point;
+//    if (isBeingCalibrated){
+//        if (calibrationScreen->isInCalibrationPoint(point.x(),point.y())){
+//            isCalibrated = true;
+//            isBeingCalibrated = false;
+//            calibrationScreen->hide();
+//        }
+//        else return;
+//    }
+
+    if (calibration.isCalibrating()){
+        calibration.addDataPointForCalibration(point.x(),point.y(),point.x(),point.y());
+    }
+    else {
+
+        if (!sendData) return;
+
+        if (canUseLeft()){
+            dataToSend.xLeft = point.x();
+            dataToSend.yLeft = point.y();
         }
-        else return;
+        else{
+            dataToSend.yLeft = 0;
+            dataToSend.xLeft = 0;
+        }
+        if (canUseRight()){
+            dataToSend.xRight = point.x();
+            dataToSend.yRight = point.y();
+        }
+        else{
+            dataToSend.xRight = 0;
+            dataToSend.yRight = 0;
+        }
+
+        dataToSend.pdRight = 0;
+        dataToSend.pdLeft = 0;
+
+        lastData = dataToSend;
+
+        //qDebug() << "Eye to transmit" << eyeToTransmit;
+        //qDebug() << eyeToTransmit << dataToSend.toString();
+
+        emit EyeTrackerInterface::newDataAvailable(dataToSend);
+
     }
 
-    // Assuming this is not a calibration.
-    if (!isCalibrated || !sendData) return;
+//    // Assuming this is not a calibration.
+//    if (!isCalibrated || !sendData) return;
 
-    if (canUseLeft()){
-        dataToSend.xLeft = point.x();
-        dataToSend.yLeft = point.y();
-    }
-    else{
-        dataToSend.yLeft = 0;
-        dataToSend.xLeft = 0;
-    }
-    if (canUseRight()){
-        dataToSend.xRight = point.x();
-        dataToSend.yRight = point.y();
-    }
-    else{
-        dataToSend.xRight = 0;
-        dataToSend.yRight = 0;
-    }
-
-    dataToSend.pdRight = 0;
-    dataToSend.pdLeft = 0;
-
-    lastData = dataToSend;
-
-    //qDebug() << "Eye to transmit" << eyeToTransmit;
-    //qDebug() << eyeToTransmit << dataToSend.toString();
-
-    emit EyeTrackerInterface::newDataAvailable(dataToSend);
 
 }
 
 MouseInterface::~MouseInterface(){
-    delete calibrationScreen;
+
 }

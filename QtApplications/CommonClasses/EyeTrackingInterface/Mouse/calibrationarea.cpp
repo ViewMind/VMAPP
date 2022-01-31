@@ -22,56 +22,63 @@ CalibrationArea::CalibrationArea(QWidget *parent) : QDialog(parent)
     gview->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     gview->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    QPoint p0(0.05*W,0.05*H);
-    calibrationPoints << p0;
-    QPoint p1(0.95*W,0.05*H);
-    calibrationPoints << p1;
-    QPoint p2(0.95*W,0.95*H);
-    calibrationPoints << p2;
-    QPoint p3(0.05*W,0.95*H);
-    calibrationPoints << p3;
-    R = 0.01*W;
+//    QPoint p0(0.05*W,0.05*H);
+//    calibrationPoints << p0;
+//    QPoint p1(0.95*W,0.05*H);
+//    calibrationPoints << p1;
+//    QPoint p2(0.95*W,0.95*H);
+//    calibrationPoints << p2;
+//    QPoint p3(0.05*W,0.95*H);
+//    calibrationPoints << p3;
+//    R = 0.01*W;
 
-    calibrationTarget = gview->scene()->addEllipse(0,0,2*R,2*R,QPen(QBrush(Qt::black),2),QBrush(Qt::red));
-    // To hide the target
-    calibrationTarget->setZValue(-10);
+//    calibrationTarget = gview->scene()->addEllipse(0,0,2*R,2*R,QPen(QBrush(Qt::black),2),QBrush(Qt::red));
+//    // To hide the target
+//    calibrationTarget->setZValue(-10);
 
 }
 
-void CalibrationArea::showEvent(QShowEvent *event){
-    Q_UNUSED(event)
-    currentPoint = 0;
-    qDebug() << "Calibration area show event";
-    drawCalibrationPoint();
+void CalibrationArea::setCurrentImage(const QImage &toshow){
+    toshow.save("00calibration.png");
+    QPixmap p = QPixmap::fromImage(toshow);
+    QGraphicsPixmapItem *item = gview->scene()->addPixmap(p);
+    item->setPos(0,0);
 }
 
-void CalibrationArea::drawCalibrationPoint(){
-    calibrationTarget->setZValue(10);
-    QPoint p = calibrationPoints.at(currentPoint);
-    int x = p.x() - R;
-    int y = p.y() - R;
-    calibrationTarget->setPos(x,y);
-}
+//void CalibrationArea::showEvent(QShowEvent *event){
+//    Q_UNUSED(event)
+//    currentPoint = 0;
+//    qDebug() << "Calibration area show event";
+//    drawCalibrationPoint();
+//}
 
-bool CalibrationArea::isInCalibrationPoint(int x, int y){
+//void CalibrationArea::drawCalibrationPoint(){
+//    calibrationTarget->setZValue(10);
+//    QPoint p = calibrationPoints.at(currentPoint);
+//    int x = p.x() - R;
+//    int y = p.y() - R;
+//    calibrationTarget->setPos(x,y);
+//}
 
-    if (autoCalibrate) return true;
+//bool CalibrationArea::isInCalibrationPoint(int x, int y){
 
-    if (currentPoint == calibrationPoints.size()) return true;
+//    if (autoCalibrate) return true;
 
-    QPoint center = calibrationPoints.at(currentPoint);
-    qreal diff = qSqrt((x - center.x())*(x - center.x()) + (y - center.y())*(y - center.y()));
-    if (diff < R){
-        currentPoint++;
-        if (currentPoint < calibrationPoints.size()){
-            drawCalibrationPoint();
-            return false;
-        }
-        else return true;
-    }
+//    if (currentPoint == calibrationPoints.size()) return true;
 
-    return false;
-}
+//    QPoint center = calibrationPoints.at(currentPoint);
+//    qreal diff = qSqrt((x - center.x())*(x - center.x()) + (y - center.y())*(y - center.y()));
+//    if (diff < R){
+//        currentPoint++;
+//        if (currentPoint < calibrationPoints.size()){
+//            drawCalibrationPoint();
+//            return false;
+//        }
+//        else return true;
+//    }
+
+//    return false;
+//}
 
 void CalibrationArea::keyPressEvent(QKeyEvent *event){
     if (event->key() == Qt::Key_Escape){

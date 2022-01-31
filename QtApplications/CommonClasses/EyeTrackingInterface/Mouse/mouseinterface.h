@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QCursor>
 #include "../eyetrackerinterface.h"
+#include "../calibrationleastsquares.h"
 #include "calibrationarea.h"
 
 // This class is prepared to simulate the behaviour of the eyetracker without the actual eyetracker.
@@ -23,15 +24,17 @@ public:
 
     void calibrate(EyeTrackerCalibrationParameters params) override;
 
-    void mouseSetCalibrationToTrue();
-
     void overrideCalibration();
+
+    void setCalibrationAreaDimensions(qreal w, qreal h);
 
     ~MouseInterface() override;
 
 private slots:
     void on_pollTimerUp();
     void on_calibrationCancelled();
+    void onNewCalibrationImageAvailable();
+    void onCalibrationFinished();
 
 private:
     QTimer pollTimer;
@@ -41,12 +44,18 @@ private:
 
     EyeTrackerData dataToSend;
 
+    // Required to transform the raw data into proper data.
+    CalibrationLeastSquares::EyeCorrectionCoeffs correctionCoefficients;
+
+    // Calibration via least squares.
+    CalibrationLeastSquares calibration;
+
     bool isCalibrated;
     bool isBeingCalibrated;
     bool sendData;
     bool overrideCalibrationFlag;
 
-    CalibrationArea *calibrationScreen;
+    CalibrationArea calibrationArea;
 
 };
 

@@ -67,8 +67,8 @@ ViewBase {
         }
 
         // If this is the first time running this version the changes are shown.
-        //if (loader.isFirstTimeRun()){
-        if (1 === 1){
+        if (loader.isFirstTimeRun()){
+        //if (1 === 1){
             var title_and_body = loader.getLatestVersionChanges();
 
             let versionText = title_and_body[0];
