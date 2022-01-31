@@ -170,6 +170,6 @@ Scripts/php/unified_csv/data_list
 Scripts/php/unified_csv/examples/
 Scripts/php/unified_csv/out.txt
 Scripts/php/unified_csv/raw_data/
-
-
-
+Scripts/php/dl_raw_data/
+Scripts/php/reprocess_legacy_data/.directory
+Scripts/php/reprocess_legacy_data/legacy_data.zip

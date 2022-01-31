@@ -46,6 +46,13 @@
       const AUTHORIZATION               = "authorization";
       const AUTHENTICATION              = "authentication";
       const SIGNATURE                   = "signature";
+      const LOGIN_TYPE                  = "logintype";
+   }
+
+   abstract class LoginMasks extends TypedString {
+      const WEB_PORTAL                 = 1;
+      const DISTRIBUTION_SITE          = 2;
+      const ADMIN_SITE                 = 4;
    }
   
    abstract class AuthValues extends TypedString {
@@ -114,6 +121,12 @@
       const ROLE                    = "role";
       const DISCARDED               = "discarded";
       const INSTITUTION             = "institution";
+   }
+
+   abstract class EndpointBodyActions extends TypedString {
+      const CREATE                  = "create";
+      const GET                     = "get";
+      const SET                     = "set";
    }
 
    abstract class URLSearchCriteria extends TypedString {

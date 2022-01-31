@@ -12,6 +12,7 @@
       private $error;
       private $returnable_error;
       private $auth_type;
+      private $login_type;
       private $institution_id;
       private $institution_instance;
       private $username;
@@ -70,7 +71,8 @@
             return;
          }
 
-         // And that is an expected value
+
+         // We store the auth type and login type. The login type tells us which page 
          $this->auth_type = $headers[HeaderFields::AUTH_TYPE];
 
          if (!AuthValues::validate($this->auth_type)){
@@ -162,6 +164,18 @@
             $this->json_data = json_decode($raw_data,true);
          }
          else if ($this->auth_type == AuthValues::VMLOGIN){
+
+            // And the same goes for the login mask
+            if (!array_key_exists(HeaderFields::LOGIN_TYPE,$headers)){            
+               $this->error = "Missing LoginType field in headers. Headers present are: " . implode(",",array_keys($headers));
+               $this->returnable_error = "Unindetified type of login";
+               $this->http_code = 403;
+               return;
+            }
+
+            // The login type is used as a mask to enable different portal users login into different web apps. 
+            $this->login_type = $headers[HeaderFields::LOGIN_TYPE];
+
             if (isset($_SERVER['PHP_AUTH_USER'])) {
                $this->username = $_SERVER['PHP_AUTH_USER'];
                $this->password = $_SERVER['PHP_AUTH_PW'];
@@ -271,6 +285,18 @@
 
          // User info will be returned. 
          $this->user_info = $user_info;
+
+         // Checking the role value to see if the user can, in effect login to the requested site. 
+         $role = intval($user_info[TablePortalUsers::COL_USER_ROLE]);
+         $this->login_type = intval($this->login_type);
+         error_log("Doing $role LOGIC AND " . $this->login_type . " Result is " . ($role & $this->login_type));
+         if (($role & $this->login_type) !== $this->login_type){
+            $this->http_code = 403;
+            $this->error = "User " . $this->username . " is attempting to login to a website to which they are not allowed. Requestesd site: " . $this->login_type . " User role: $role";
+            $this->returnable_error = "This user is not allowed to login to this site";
+            return false;
+         }
+
          $this->permissions = json_decode($user_info[TablePortalUsers::COL_PERMISSIONS],true);
          $this->user_info[ComplimentaryDataFields::PERMISSIONS] = $this->setUserPermission();
 

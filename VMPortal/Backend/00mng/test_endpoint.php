@@ -11,15 +11,36 @@ foreach (glob("../api_management/*.php") as $filename)
 $service = DBCon::DB_SERVICE_PARTNERS;
 //$service = DBCon::DB_SERVICE_ADMIN;
 $headers = array();
-$identifier = "";
+$identifier = "0";
 $parameters = array();
+
+// JSON DATA
+
 
 //$object = new ObjectReports($service, $headers);
 //$ans = $object->admin_evaluation_list($identifier, $parameters);
 
-$headers[HeaderFields::AUTHORIZATION] = "1:algo";
-$object = new ObjectInstitution($service,$headers);
-$ans = $object->list(1,$parameters);
+// The code below get users permission, sets the role to 7 (login in all sites and adds the permission to modify any user permission)
+$object = new ObjectPortalUsers($service,$headers);
+$data[ObjectPortalUsers::MODPERM_ID] = "ariel.arelovich@viewmind.ai";
+$data[ObjectPortalUsers::MODPERM_ACTION] = EndpointBodyActions::GET;
+$object->setJSONData($data);
+$ans = $object->modify_permissions($identifier,$parameters);
+
+// $ans[ObjectPortalUsers::MODPERM_ID] = $data[ObjectPortalUsers::MODPERM_ID];
+// $ans[ObjectPortalUsers::MODPERM_ACTION] = EndpointBodyActions::SET;
+// $ans[ObjectPortalUsers::MODPERM_ROLE] = 7;
+// $ans[ObjectPortalUsers::MODPERM_PERMISSIONS][APIEndpoints::PORTAL_USERS][] = "modify_permissions";
+
+// //var_dump($ans);
+
+// $object->setJSONData($ans);
+
+// $ans = $object->modify_permissions($identifier,$parameters);
+
+//$headers[HeaderFields::AUTHORIZATION] = "1:algo";
+//$object = new ObjectInstitution($service,$headers);
+//$ans = $object->list(1,$parameters);
 
 if ($ans === false){
    echo "Error: " . $object->getError() . "\n";

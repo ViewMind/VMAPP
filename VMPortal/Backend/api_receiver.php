@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *");  // Anyone can access
 header("Content-Type: application/json; charset=UTF-8"); // Will return json data. 
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authentication, Authorization , AuthType");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authentication, Authorization , AuthType, LoginType");
 
 // CORS INSANITY ..... Required for the preflight request. 
 $requestMethod = $_SERVER['REQUEST_METHOD'];

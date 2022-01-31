@@ -366,8 +366,12 @@ class TablePortalUsers extends TableBaseClass {
       return $this->simpleSelect($cols_to_get,$select);
    }
    
-   function setUsersPermission($unique_id,$permissions){
+   // Make sure that this still makes sense. 
+   function setUsersPermission($unique_id,$permissions,$role = -1){
       $params[self::COL_PERMISSIONS] = $permissions;
+      if ($role != -1){
+         $params[self::COL_USER_ROLE] = $role;
+      }
       return $this->updateOperation($params,"Setting Portal User Permissions",self::COL_EMAIL,$unique_id);
    }
 

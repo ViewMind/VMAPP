@@ -14,6 +14,8 @@ function login(username,password) {
 
     xhr.setRequestHeader(GLOBALS.HEADERS_NAMES.AUTHORIZATION, 
                          GLOBALS.HEADERS_VALUES.BASIC + " " + btoa(username + ":"  + password));
+
+    xhr.setRequestHeader(GLOBALS.HEADERS_NAMES.LOGIN_TYPE,"1")
     
     xhr.responseType = "json";
     

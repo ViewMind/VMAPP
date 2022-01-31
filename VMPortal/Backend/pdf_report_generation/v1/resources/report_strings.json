@@ -710,11 +710,11 @@
                 "range_text": "Valor normal por debajo de 320"
             },
             "index_error_facilitated": {
-                "title": "ALTERACIONES INHIBITORIAS - FACILITADAS",
+                "title": "CAPACIDADES INHIBITORIAS - FACILITADAS",
                 "range_text": "Valor normal por debajo de 15"
             },
             "index_error_interference": {
-                "title": "ALTERACIONES INHIBITORIAS - INTERFERENCIA",
+                "title": "CAPACIDADES INHIBITORIAS - INTERFERENCIA",
                 "range_text": "Valor normal por debajo de 31"
             },
             "affected_areas": {
@@ -727,19 +727,19 @@
                 "reaction_time_interference": "Tiempro de Reacci\u00f3n  - Interferencia: Corteza prefrontal medial (mPFC), anterior, posterior",
                 "reaction_time_facilitated": "Tiempro de Reacci\u00f3n  - Facilitado: Corteza prefrontal medial (mPFC), n\u00facleo subtal\u00e1mico",
                 "executive_functions": "Funciones Ejecutivas: Corteza Prefrontal",
-                "index_error_facilitated": "Alteraciones Inhibitorias Facilitadas: Circunvoluci\u00f3n frontal inferior derecha (rIFG)",
-                "index_error_interference": "Alteraciones Inhibitorias - Interferencia: Circunvoluci\u00f3n frontal inferior caudal (cIFG)"
+                "index_error_facilitated": "Capacidades Inhibitorias Facilitadas: Circunvoluci\u00f3n frontal inferior derecha (rIFG)",
+                "index_error_interference": "Capacidades Inhibitorias - Interferencia: Circunvoluci\u00f3n frontal inferior caudal (cIFG)"
             },
             "presumptive_diagnosis": {
                 "left_title": "Diagn\u00f3stico Presuntivo",
                 "right_title": "\u00cdndice de Desempe\u00f1o",
                 "texts": {
-                    "1": "Generalized Cognitive and Brain Alteration.",
-                    "2": "Problems for controlling cognitive and motor responses.",
-                    "3": "Delay when processing information.",
-                    "4": "Problems for encoding and decoding information",
-                    "5": "Performance within normal values",
-                    "6": "Problems for focusing dynamically on a particular activity"
+                    "1": "Alteraciones Generales Cognitivas y Cerebrales.",
+                    "2": "Problemas controlando respuestas motoras y cognitivas.",
+                    "3": "Retraso al procesar informaci\u00f3n.",
+                    "4": "Problemas codificando y decodificando informaci\u00f3n",
+                    "5": "Desempe\u00f1o dentro de valores nominales.",
+                    "6": "Problemas al concentrarse din\u00e1micamente en una actividad particular."
                 }
             },
             "overall_performance": {
