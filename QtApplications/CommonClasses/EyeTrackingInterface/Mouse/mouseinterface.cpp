@@ -43,9 +43,7 @@ void MouseInterface::disconnectFromEyeTracker(){
 
 
 void MouseInterface::onNewCalibrationImageAvailable(){
-    QImage newImage = calibration.getCurrentCalibrationImage();
-    qDebug() << "Setting the new image";
-    calibrationArea.setCurrentImage(newImage);
+    calibrationArea.setCurrentImage(calibration.getCurrentCalibrationImage());
 }
 
 void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){

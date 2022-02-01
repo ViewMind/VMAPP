@@ -6,6 +6,11 @@ CalibrationTargets::CalibrationTargets()
     leftEye = nullptr;
     rightEye = nullptr;
     vrScale = 1;
+
+    connect(&animationController,&SimpleAnimationController::nextStep,this,&CalibrationTargets::computeCurrentFrame);
+
+    // Setting the transition time for all animations.
+    animationController.setAnimatioDuration(K_TARGET_FRAMERATE,K_NUMBER_OF_STEPS);
 }
 
 void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration){
@@ -57,6 +62,10 @@ void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBord
 
 }
 
+QImage CalibrationTargets::getCurrentFrame() const{
+    return currentFrame;
+}
+
 QImage CalibrationTargets::getClearScreen(){
     canvas->clear();
     canvas->setBackgroundBrush(QBrush(Qt::gray));
@@ -96,31 +105,59 @@ QList<QPointF> CalibrationTargets::setupCalibrationSequence(qint32 npoints){
 
     indexInCalibrationSequence = -1;
 
+    //qDebug() << "Setup calibration returning target centers as" << targetCenters;
+
     return targetCenters;
 }
 
-QImage CalibrationTargets::nextSingleTarget(){
-    canvas->clear();
+qint32 CalibrationTargets::getCurrentlyShownTarget() const{
+    return indexInCalibrationSequence;
+}
+
+void CalibrationTargets::nextSingleTarget(){
 
     if (indexInCalibrationSequence <= (calibrationSequenceIndex.size()-1)){
         indexInCalibrationSequence++;
 
-        qreal offset = (R-r);
-
         qreal x = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).x();
         qreal y = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).y();
 
-        QGraphicsEllipseItem *circle = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(QColor("#81b2d2")));
-        QGraphicsEllipseItem *innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::white));
-        circle->setPos(x,y);
-        innerCircle->setPos(x+offset,y+offset);
+        if (indexInCalibrationSequence == 0){ // First step draws the target comming from the top left of the screen.
+            animationController.addAnimationVariable(ANIMATION_X,0,x);
+            animationController.addAnimationVariable(ANIMATION_Y,0,y);
+        }
+        else {
+            // We need to get the current x,y values to set as an start point.
+            qreal cx = animationController.getCurrentValueForVariable(ANIMATION_X);
+            qreal cy = animationController.getCurrentValueForVariable(ANIMATION_Y);
+            animationController.addAnimationVariable(ANIMATION_X,cx,x);
+            animationController.addAnimationVariable(ANIMATION_Y,cy,y);
+        }
+
+        computeCurrentFrame(false);
+        //qDebug() << "Started calibration animation with index in sequence" << indexInCalibrationSequence;
+        animationController.animationStart();
 
     }
 
-    QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
-    QPainter painter( &image );
+}
+
+void CalibrationTargets::computeCurrentFrame(bool transitionDone){
+    canvas->clear();
+    qreal offset = (R-r);
+    qreal x = animationController.getCurrentValueForVariable(ANIMATION_X);
+    qreal y = animationController.getCurrentValueForVariable(ANIMATION_Y);
+    QGraphicsEllipseItem *circle = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(QColor("#81b2d2")));
+    QGraphicsEllipseItem *innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::white));
+    circle->setPos(x,y);
+    innerCircle->setPos(x+offset,y+offset);
+
+    currentFrame = QImage(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
+    QPainter painter( &currentFrame );
     canvas->render( &painter );
-    return image;
+
+    emit CalibrationTargets::newImageAvailable(transitionDone);
+
 }
 
 void CalibrationTargets::setTargetTest(){

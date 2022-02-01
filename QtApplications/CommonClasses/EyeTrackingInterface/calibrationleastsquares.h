@@ -13,6 +13,7 @@
 #include <QJsonObject>
 #include "calibrationtargets.h"
 #include "eyetrackerdata.h"
+#include <iostream>
 
 class CalibrationLeastSquares: public QObject
 {
@@ -34,7 +35,7 @@ public:
         qreal y_reference;
         void clear();
         bool isValid();
-        QString toString() const;
+        QString toString(bool justRef = false) const;
     };
 
     struct LinearCoeffs{
@@ -84,6 +85,7 @@ signals:
 
 private slots:
     void calibrationTimeInTargetUp();
+    void newCalibrationFrameAvailable(bool isTransitionDone);
 
 private:
 
@@ -105,10 +107,10 @@ private:
     CalibrationData currentlyCollectingCalibrationPoints;
 
     // Holds the currently generated calibration image.
-    QImage currentCalibrationImage;
+    // QImage currentCalibrationImage;
 
     // Index of the list of collectedCalibrationDataPoints.
-    qint32 currentCalibrationPointIndex;
+    // qint32 currentCalibrationPointIndex;
 
     // The timer that indicates when to move the next target.
     QTimer calibrationTimer;

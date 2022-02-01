@@ -57,6 +57,7 @@ SOURCES += main.cpp \
     ../../../CommonClasses/EyeTrackingInterface/calibrationtargets.cpp \
     ../../../CommonClasses/EyeTrackingInterface/eyetrackerdata.cpp \
     ../../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.cpp \
+    ../../../CommonClasses/EyeTrackingInterface/simpleanimationcontroller.cpp \
     ../../../CommonClasses/MWA/fixation.cpp \
     ../../../CommonClasses/MWA/movingwindowalgorithm.cpp \
     ../../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
@@ -114,6 +115,7 @@ HEADERS += \
     ../../../CommonClasses/EyeTrackingInterface/calibrationtargets.h \
     ../../../CommonClasses/EyeTrackingInterface/eyetrackerdata.h \
     ../../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.h \
+    ../../../CommonClasses/EyeTrackingInterface/simpleanimationcontroller.h \
     ../../../CommonClasses/MWA/fixation.h \
     ../../../CommonClasses/MWA/movingwindowalgorithm.h \
     ../../../CommonClasses/OpenVRControlObject/openvr.h \
