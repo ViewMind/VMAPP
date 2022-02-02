@@ -53,6 +53,23 @@
       const WEB_PORTAL                 = 1;
       const DISTRIBUTION_SITE          = 2;
       const ADMIN_SITE                 = 4;
+
+      static function canLoginToPortal($role){
+         return self::canLogin($role,self::WEB_PORTAL);
+      }
+
+      static function canLoginToAdminSite($role){
+         return self::canLogin($role,self::ADMIN_SITE);
+      }
+
+      static function canLoginToDistribution($role){
+         return self::canLogin($role,self::DISTRIBUTION_SITE);
+      }
+
+      private static function canLogin($role,$mask){
+         return (($role & $mask) === $mask);
+      }
+
    }
   
    abstract class AuthValues extends TypedString {

@@ -47,12 +47,21 @@ class ObjectPortalUsers extends ObjectBaseClass{
       // Then we map those to the info. 
       $tpu = new TablePortalUsers($this->con_secure);
       $enabled_status = [TablePortalUsers::ENABLED, TablePortalUsers::NOLOG];
-      $ans = $tpu->getAllNamesForIDList($user_ids,[TablePortalUsers::ROLE_MEDICAL, TablePortalUsers::ROLE_INTITUTION_ADMIN],$enabled_status);
+      $ans = $tpu->getAllNamesForIDList($user_ids,$enabled_status);
       if ($ans === false){
          $this->suggested_http_code = 500;
          $this->returnable_error = "Could not get information on the users for this institution";
          $this->error = "Getting names for userids for institution $identifier: " . $tpu->getError();
          return false;
+      }
+
+      // We need to filter out the users that cannot login into the portal. 
+      $users = array();
+      foreach ($ans as $row){
+         $role = intval($row[TablePortalUsers::COL_USER_ROLE]);
+         if (LoginMasks::canLoginToPortal($role)){
+            $users[] = $row;
+         }
       }
 
       //echoOut($ans,true);

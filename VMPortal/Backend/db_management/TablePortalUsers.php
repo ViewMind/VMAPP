@@ -219,7 +219,8 @@ class TablePortalUsers extends TableBaseClass {
       return $ret;
    }
 
-   function getAllNamesForIDList($id_list, $roles, $enabled_status){
+   function getAllNamesForIDList($id_list, $enabled_status){
+      
       $cols_to_get = [self::COL_KEYID, self::COL_EMAIL, self::COL_NAME, self::COL_LASTNAME, self::COL_USER_ROLE];
       $operation = new SelectOperation();
       
@@ -227,15 +228,7 @@ class TablePortalUsers extends TableBaseClass {
          $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
          return false;   
       }
-      
-      
-      if (!empty($roles)) {
-         // Roles are limited ONLY if the list is not empty. 
-         if (!$operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_USER_ROLE, $roles)){
-            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
-            return false;   
-         }
-      }
+            
       if (!empty($enabled_status)){
          // Enable status is limited ONLY if the list is not empty. 
          if (!$operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_ENABLED, $enabled_status)){
@@ -243,6 +236,7 @@ class TablePortalUsers extends TableBaseClass {
             return false;   
          }
       }
+
       return $this->simpleSelect($cols_to_get,$operation);
    }
 
