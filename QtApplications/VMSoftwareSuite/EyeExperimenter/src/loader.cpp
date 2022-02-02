@@ -372,6 +372,7 @@ bool Loader::isFirstTimeRun() const{
 QStringList Loader::getLatestVersionChanges(){
     QString name = Globals::Paths::CHANGELOG_LOCATION + "/" + Globals::Paths::CHANGELOG_BASE;
     name = name  + configuration->getString(Globals::VMPreferences::UI_LANGUAGE) + ".txt";
+    qDebug() << "Opening file" << name;
     QFile changelogFile(name);
     if (!changelogFile.open(QFile::ReadOnly)){
         logger.appendError("Could not open changelog file " + changelogFile.fileName() + " for reading");
