@@ -464,8 +464,9 @@ class ObjectReports extends ObjectBaseClass
          return false;
       }
 
+      //echo "Found " . count($ans) . " evaluations for subject id $subject_id and user $portal_user_to_use\n";
+
       $ret["evaluation_list"] = $ans;
-      $ret["portal_users"] = [];
 
       if (!$own_inst_only) {
 
@@ -495,9 +496,24 @@ class ObjectReports extends ObjectBaseClass
              return false;
          }
 
+         $pp = array();
          foreach ($ans as $row) {
-            $ret["portal_users"][$row[TableBaseClass::COL_KEYID]] = $row[TablePortalUsers::COL_LASTNAME] . ", " . $row[TablePortalUsers::COL_NAME];
+            $pp[$row[TableBaseClass::COL_KEYID]] = $row[TablePortalUsers::COL_LASTNAME] . ", " . $row[TablePortalUsers::COL_NAME];
          }
+
+         // Now we replace the portal user id with the portal user name. 
+         $eval_list = array();
+         foreach ($ret["evaluation_list"] as $eval){
+            $ppid = $eval[TableEvaluations::COL_PORTAL_USER];
+            if (array_key_exists($ppid,$pp)){
+               $name = $pp[$ppid];
+            }
+            else $name = $ppid;
+            $eval[TableEvaluations::COL_PORTAL_USER] = $name;
+            $eval_list[] = $eval;
+         }
+         $ret["evaluation_list"] = $eval_list;
+
       }
 
       // If the the request is for a specific portal user and not administrative, no check is required as an invalid portal user will either not log in or return empty report list. 

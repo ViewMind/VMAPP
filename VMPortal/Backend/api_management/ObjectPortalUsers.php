@@ -12,6 +12,7 @@ class ObjectPortalUsers extends ObjectBaseClass{
    const MODPERM_PERMISSIONS = "permissions";
    const MODPERM_ROLE = "role";
    const MODPERM_PERMISSION_LIST = "permission_list";
+   
 
    function __construct($service,$headers){
       parent::__construct($service,$headers);
@@ -260,7 +261,7 @@ class ObjectPortalUsers extends ObjectBaseClass{
          $ans = $tpu->setUsersPermission($id,$permissions,$role);
          if ($ans === false){
             $this->suggested_http_code = 500;
-            $this->error = "Could nto set permissions for user $id. Reason: " . $tpu->getError();
+            $this->error = "Could not set permissions for user $id. Reason: " . $tpu->getError();
             $this->returnable_error = "Internal database error";
             return false;
          }
