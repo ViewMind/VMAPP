@@ -65,6 +65,34 @@ class TableSecrets extends TableBaseClass {
 
    }
 
+   function getLastInstanceForInstitution($institution_id){
+
+      $operation = new SelectOperation();
+      
+      if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ROW_ENABLED)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+         return false;
+      }
+
+      if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_INSTITUTION_ID,$institution_id)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
+         return false;
+      }
+
+      $operation->setExtra(SelectExtras::ORDER,self::COL_INSTITUTION_INSTANCE);
+      $operation->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
+      $operation->setExtra(SelectExtras::LIMIT,1);
+
+      $ans = $this->simpleSelect([self::COL_INSTITUTION_INSTANCE],$operation);
+      if ($ans === false){
+         $this->error = "Failed in getting the largest instance value for institution $institution_id: " . $this->error;
+         return false;
+      }
+
+      return $ans[0][self::COL_INSTITUTION_INSTANCE];
+
+   }
+
    function getKeySecretAndPermissions($institution_id, $instution_instance){      
 
       // There can't be another enabled row with the same instance and id. 

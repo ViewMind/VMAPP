@@ -106,6 +106,7 @@
       const INSTITUTION            = "institution";
       const SUBJECTS               = "subjects";
       const MEDICAL_RECORDS        = "medical_record";
+      const INSTANCES              = "instances";
    }
 
    abstract class PortalUserOperations extends TypedString {
@@ -138,12 +139,14 @@
       const ROLE                    = "role";
       const DISCARDED               = "discarded";
       const INSTITUTION             = "institution";
+      const EYETRACKER_KEY          = "et-key";
    }
 
    abstract class EndpointBodyActions extends TypedString {
       const CREATE                  = "create";
       const GET                     = "get";
       const SET                     = "set";
+      const LIST                    = "list";
    }
 
    abstract class URLSearchCriteria extends TypedString {

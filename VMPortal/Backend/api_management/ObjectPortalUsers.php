@@ -13,6 +13,11 @@ class ObjectPortalUsers extends ObjectBaseClass{
    const MODPERM_ROLE = "role";
    const MODPERM_PERMISSION_LIST = "permission_list";
    
+   const BASE_USER_PERMISSION_PORTAL        = "portal";
+   const BASE_USER_PERMISSION_ADMIN_PORTAL  = "portal-admin";
+   const BASE_USER_PERMISSION_CLEAN         = "clean";
+
+   const FORCE_ENABLE = "force_enable";
 
    function __construct($service,$headers){
       parent::__construct($service,$headers);
@@ -119,6 +124,228 @@ class ObjectPortalUsers extends ObjectBaseClass{
       }
 
       return array();
+
+   }
+
+   /**
+    * General administrative function that allows creation, modification and password reset for a given user. All using the request body.
+    */
+   function operate($identifier,$parameters){
+
+      // Action is always mandatory. 
+      if (!array_key_exists(self::MODPERM_ACTION,$this->json_data)){
+         $this->suggested_http_code = 401;
+         $this->error = "The request body must contain the 'action' field";
+         return false;            
+      }
+
+      // Creating the table elements.
+      $tpu = new TablePortalUsers($this->con_secure);
+      $ti = new TableInstitution($this->con_main);
+      $tiu = new TableInstitutionUsers($this->con_main);
+
+      $action = $this->json_data[self::MODPERM_ACTION];
+      if ($action === EndpointBodyActions::CREATE){
+
+         /**
+          * In this case the requiremets are
+          *   Name
+          *   Lastname
+          *   Email (this will be ignored in a update)
+          *   Password
+          *   Role Mask
+          *   Company. 
+          *   Institution ID. 
+          *   Force enable. 
+          *   Base permission set (Options are portal, admin or clean)
+          */
+
+         $required_fields = [
+            TablePortalUsers::COL_NAME,
+            TablePortalUsers::COL_LASTNAME,
+            TablePortalUsers::COL_EMAIL,
+            TablePortalUsers::COL_PASSWD,
+            TablePortalUsers::COL_USER_ROLE,
+            TablePortalUsers::COL_COMPANY,
+            TableInstitutionUsers::COL_INSTITUTION_ID,
+            TablePortalUsers::COL_PERMISSIONS,
+            self::FORCE_ENABLE,
+         ];
+
+         foreach ($required_fields as $reqfield){
+            if (!array_key_exists($reqfield,$this->json_data)){
+               $this->suggested_http_code = 401;
+               $this->error = "The request body must contain the '$reqfield' field when creating a new portal user";
+               return false;                  
+            }
+         }
+
+         // Verifying the instituion exists
+         $institution_id = $this->json_data[TableInstitutionUsers::COL_INSTITUTION_ID];
+
+         if (!$ti->exists($institution_id)){
+            $this->suggested_http_code = 401;
+            $this->error = "When creating a portal user, the institution id $institution_id does not exist";
+            return false;                  
+         }
+
+         // Hashing the password.
+         $password = password_hash($this->json_data[TablePortalUsers::COL_PASSWD], PASSWORD_BCRYPT, ["cost" => 10]);
+
+         // Getting the permissions.
+         $permtype = $this->json_data[TablePortalUsers::COL_PERMISSIONS];
+         $permissions = array();
+         if ($permtype === self::BASE_USER_PERMISSION_ADMIN_PORTAL){
+            $permissions = TablePortalUsers::getAdminPermissions();
+         }
+         else if ($permtype === self::BASE_USER_PERMISSION_PORTAL){
+            $permissions = TablePortalUsers::getStandardPermissions();
+         }
+         else if ($permtype === self::BASE_USER_PERMISSION_CLEAN){
+            $permissions = TablePortalUsers::getCleanPermissions();
+         }
+         else {
+            $this->suggested_http_code = 401;
+            $this->error = "Unknown base permision set when creating portal user: $permtype";
+            return false;                  
+         }
+         
+         $force_enabled = $this->json_data[self::FORCE_ENABLE];
+
+         // Copying all straight data to a clean array. 
+         $to_copy = [
+            TablePortalUsers::COL_NAME,
+            TablePortalUsers::COL_LASTNAME,
+            TablePortalUsers::COL_EMAIL,
+            TablePortalUsers::COL_USER_ROLE,
+            TablePortalUsers::COL_COMPANY,
+         ];
+
+         $params = array();
+         foreach ($to_copy as $key){
+            $params[$key] = $this->json_data[$key];
+         }
+
+         $params[TablePortalUsers::COL_PERMISSIONS] = json_encode($permissions);
+         $params[TablePortalUsers::COL_PASSWD] = $password;
+         
+         // Finally creating the new user. 
+         $ans = $tpu->addPortalUser($params, $force_enabled);
+
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in adding portal user. Reason: " . $tpu->getError();
+            $this->returnable_error = "Failed in database operation for adding new user";
+            return false;                  
+         }
+
+         // If not force enabled we need to return the creation token. Otherwise we return empty.
+         $ret["token"] = "";
+
+         if (!$force_enabled){
+            $ret["token"] = $ans[0];
+         }
+
+         // Finally we need to insert the user into the institution users table. 
+         $user_id = $tpu->getLastInserted()[0];
+         $ans = $tiu->linkUserToInstitution($user_id,$institution_id);
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in database operation for liking user $user_id to institution $institution_id. Reason: " . $tiu->getError();
+            $this->returnable_error = "Failed in database operation for liking user $user_id to institution $institution_id";
+            return false;                  
+         }
+
+         return $ret;
+
+      }
+      else if ($action === EndpointBodyActions::SET){
+
+         /**
+          * Here only the id is mandatory and all modifiable parameters are not. If they are present and not empty
+          * they are modified. Otherwise they are left alone. The only parameters taht can be modified by this operation are
+          *   Name
+          *   Last name
+          *   Company.
+          *   Password. 
+          */
+
+         if (!array_key_exists(self::MODPERM_ID,$this->json_data)){
+            $this->suggested_http_code = 401;
+            $this->error = "The request body must contain the 'id' field when modifying a portal user";
+            return false;                  
+         }
+         $user = $this->json_data[self::MODPERM_ID];
+
+         $to_check = [
+            TablePortalUsers::COL_NAME,
+            TablePortalUsers::COL_LASTNAME,
+            TablePortalUsers::COL_COMPANY,
+         ];         
+         
+         $params = [];
+         foreach ($to_check as $key){
+            if (array_key_exists($key,$this->json_data)){
+               $params[$key] = $this->json_data[$key];
+            }
+         }
+
+         // Checking if we are resetting the passwor.d
+         if (array_key_exists(TablePortalUsers::COL_PASSWD, $this->json_data)) {
+            $params[TablePortalUsers::COL_PASSWD] = password_hash($this->json_data[TablePortalUsers::COL_PASSWD], PASSWORD_BCRYPT, ["cost" => 10]);
+         }
+
+         // Finally checking if we are modifying anything.
+         if (count($params) == 0){
+            $this->suggested_http_code = 401;
+            $this->error = "The request body for modifying portal user $user contained no modifiable fields";
+            return false;                  
+         }
+
+         //If all is good we do the modification. 
+         $ans = $tpu->updateOwnUser($user,$params);
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in modifying portal user $user. Reason: " . $tpu->getError();
+            $this->returnable_error = "Failed in database operation for modifying user $user";
+            return false;                  
+         }
+
+         return array();
+
+      }
+      else if ($action === EndpointBodyActions::GET){
+
+         if (!array_key_exists(self::MODPERM_ID,$this->json_data)){
+            $this->suggested_http_code = 401;
+            $this->error = "The request body must contain the 'id' field when getting a portal user";
+            return false;                  
+         }
+         $user = $this->json_data[self::MODPERM_ID];
+
+         $ans = $tpu->getInfoForUser($user,true);
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in getting portal user $user. Reason: " . $tpu->getError();
+            $this->returnable_error = "Failed in database operation for retrieving user $user";
+            return false;                  
+         }
+
+         $to_return = $ans[0];
+
+         // Removing some fields
+         unset($to_return[TablePortalUsers::COL_PASSWD]);
+         unset($to_return[TablePortalUsers::COL_TOKEN]);
+         unset($to_return[TablePortalUsers::COL_TOKEN_EXPIRATION]);
+
+         return $to_return;
+
+      }
+      else {
+         $this->suggested_http_code = 401;
+         $this->error = "Unknwon action $action when operating on portal users";
+         return false;                  
+      }
 
    }
 

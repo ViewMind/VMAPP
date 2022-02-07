@@ -32,6 +32,7 @@ include_once ("api_management/ObjectInstitution.php");
 include_once ("api_management/ObjectReports.php");
 include_once ("api_management/ObjectSubjects.php");
 include_once ("api_management/ObjectMedicalRecord.php");
+include_once ("api_management/ObjectInstances.php");
 include_once ("api_management/RateLimiter.php");
 
 /////////////////////////////// GETTING THE RIGHT IP ///////////////////////////

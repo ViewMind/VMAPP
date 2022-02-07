@@ -80,6 +80,13 @@
   $srv["table_privileges"][TableMedicalRecords::IN_DB][TableMedicalRecords::TABLE_NAME]                   = [$PRIV_SELECT, $PRIV_INSERT, $PRIV_UPDATE];
   $services[] = $srv;
 
+  // Distribution privileges
+  $srv["mysql_user"] = $crendentials[DBcon::DBCNF_MAIN_SRV][DBCon::DB_SERVICE_DISTRIBUTION][DBCon::DBCNF_SRV_USERNAME];
+  $srv["mysql_pass"] = $crendentials[DBcon::DBCNF_MAIN_SRV][DBCon::DB_SERVICE_DISTRIBUTION][DBCon::DBCNF_SRV_PASSWORD];
+  $srv["table_privileges"][TableSecrets::IN_DB][TableSecrets::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT];
+  $srv["table_privileges"][TableUpdates::IN_DB][TableUpdates::TABLE_NAME]                                 = [$PRIV_SELECT, $PRIV_INSERT];
+  $services[] = $srv;
+
   
   $flag_local = is_file("local_flag_file");
   

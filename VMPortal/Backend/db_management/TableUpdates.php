@@ -244,6 +244,16 @@ class TableUpdates extends TableBaseClass {
 
    }
 
+   function getLatestVersion(){
+      $select = new SelectOperation();
+      $select->setExtra(SelectExtras::ORDER,self::COL_VERSION_STRING);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
+      $select->setExtra(SelectExtras::LIMIT,1);
+      $ans = $this->simpleSelect([self::COL_VERSION_STRING],$select);
+      if ($ans === false) return false;
+      else return $ans[0][self::COL_VERSION_STRING];
+   }
+
 }
 
 ?>

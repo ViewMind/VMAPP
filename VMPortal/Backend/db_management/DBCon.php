@@ -7,6 +7,7 @@ class DBCon {
    const DB_SERVICE_DP                     = "srv_dp";
    const DB_SERVICE_ADMIN                  = "srv_admin";
    const DB_SERVICE_PARTNERS               = "srv_partner";
+   const DB_SERVICE_DISTRIBUTION           = "srv_distribution";
 
    // The Databasse Names
    const DB_MAIN                           = "vm_main";
@@ -41,7 +42,8 @@ class DBCon {
 
    private const SRV_ARRAY = [self::DB_SERVICE_DP, 
                               self::DB_SERVICE_ADMIN,
-                              self::DB_SERVICE_PARTNERS
+                              self::DB_SERVICE_PARTNERS,
+                              self::DB_SERVICE_DISTRIBUTION
    ];
 
    private const DB_ARRAY  = [self::DB_MAIN,

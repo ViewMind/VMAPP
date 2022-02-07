@@ -60,6 +60,10 @@ class TablePortalUsers extends TableBaseClass {
       APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN, PortalUserOperations::LOGOUT ]
    ];
 
+   private const CLEAN_PERMISSIONS = [
+      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN, PortalUserOperations::LOGOUT ]
+   ];
+
    private const MED_REC_PERMISSIONS = [
       APIEndpoints::MEDICAL_RECORDS => [ MedRecordsOperations::MODIFY, MedRecordsOperations::GET, MedRecordsOperations::LIST ]
    ];
@@ -86,6 +90,10 @@ class TablePortalUsers extends TableBaseClass {
 
    static function getMasterAdminPermissions(){
       return self::MASTER_ADMIN_PERMISSIONS;
+   }
+
+   static function getCleanPermissions(){
+      return self::CLEAN_PERMISSIONS;
    }
 
    function getPermissionsForEmailList($email_list){
@@ -121,37 +129,37 @@ class TablePortalUsers extends TableBaseClass {
       return $this->generated_auth_token;
    }
 
-   function addAPIUserOnly($params){
-      $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
-      $params[self::COL_ENABLED] = self::ENABLED;
-      return $this->addPortalUser($params);
-   }
+   // function addAPIUserOnly($params){
+   //    $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
+   //    $params[self::COL_ENABLED] = self::ENABLED;
+   //    return $this->addPortalUser($params);
+   // }
    
-   function addMedicalRoleUser($params){
-      if (!array_key_exists(self::COL_PERMISSIONS,$params)){
-         // If permissions weren't provided, then standard permissions are set. 
-         $params[self::COL_PERMISSIONS] = json_encode(self::STANDARD_PORTAL_USER_PERMISSIONS);
-      }
-      $params[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
-      return $this->addPortalUser($params);
-   }
+   // function addMedicalRoleUser($params){
+   //    if (!array_key_exists(self::COL_PERMISSIONS,$params)){
+   //       // If permissions weren't provided, then standard permissions are set. 
+   //       $params[self::COL_PERMISSIONS] = json_encode(self::STANDARD_PORTAL_USER_PERMISSIONS);
+   //    }
+   //    $params[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
+   //    return $this->addPortalUser($params);
+   // }
 
-   function addInstitutionAdminRole($params){
-      if (!array_key_exists(self::COL_PERMISSIONS,$params)){
-         // If permissions weren't provided, then standard permissions are set. 
-         $params[self::COL_PERMISSIONS] = json_encode(self::STANDARD_PORTAL_USER_PERMISSIONS);
-      }
-      $params[self::COL_USER_ROLE] = self::ROLE_INTITUTION_ADMIN;
-      return $this->addPortalUser($params);
-   }
+   // function addInstitutionAdminRole($params){
+   //    if (!array_key_exists(self::COL_PERMISSIONS,$params)){
+   //       // If permissions weren't provided, then standard permissions are set. 
+   //       $params[self::COL_PERMISSIONS] = json_encode(self::STANDARD_PORTAL_USER_PERMISSIONS);
+   //    }
+   //    $params[self::COL_USER_ROLE] = self::ROLE_INTITUTION_ADMIN;
+   //    return $this->addPortalUser($params);
+   // }
 
-   function addAPIOnlyUser($params){
-      // When creating an api user only, the permissions NEED to be provided. 
-      $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
-      return $this->addPortalUser($params,true);
-   }
+   // function addAPIOnlyUser($params){
+   //    // When creating an api user only, the permissions NEED to be provided. 
+   //    $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
+   //    return $this->addPortalUser($params,true);
+   // }
 
-   private function addPortalUser($params, $force_enabled = false){
+   function addPortalUser($params, $force_enabled = false){
 
       $this->mandatory = [self::COL_NAME, self::COL_LASTNAME, self::COL_EMAIL, self::COL_USER_ROLE, self::COL_PERMISSIONS];
       
@@ -165,7 +173,7 @@ class TablePortalUsers extends TableBaseClass {
       else $params[self::COL_ENABLED] = self::PENDING; // All users are created with a pending status. 
 
       $ans = $this->insertionOperation($params,"Adding a Portal User");
-      if ($ans === FALSE) return;
+      if ($ans === false) return false;
 
       // We need to return the creation Token.
       $select = new SelectOperation();
@@ -282,6 +290,7 @@ class TablePortalUsers extends TableBaseClass {
 
    }
 
+
    function confirmPortalUser($email, $token){
       /// TODO: 
       /// 1) Check that the token corresponds to the email in the parameter and that the creation date is not too far off. 
@@ -335,20 +344,20 @@ class TablePortalUsers extends TableBaseClass {
 
    }
 
-   function addNonLoginParterUsers($insert){
+   // function addNonLoginParterUsers($insert){
       
-      $insert[self::COL_PERMISSIONS] = "{}";
-      $insert[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
-      $insert[self::COL_ENABLED] = self::NOLOG;
+   //    $insert[self::COL_PERMISSIONS] = "{}";
+   //    $insert[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
+   //    $insert[self::COL_ENABLED] = self::NOLOG;
 
-      //var_dump($insert);
+   //    //var_dump($insert);
 
-      $this->avoided = [self::COL_PASSWD, self::COL_TOKEN, self::COL_TOKEN_EXPIRATION, self::COL_CREATION_TOKEN, self::COL_KEYID];
-      $this->mandatory = [self::COL_EMAIL, self::COL_PARTNER_ID, self::COL_LASTNAME, self::COL_NAME, self::COL_PERMISSIONS, self::COL_USER_ROLE, self::COL_ENABLED];
+   //    $this->avoided = [self::COL_PASSWD, self::COL_TOKEN, self::COL_TOKEN_EXPIRATION, self::COL_CREATION_TOKEN, self::COL_KEYID];
+   //    $this->mandatory = [self::COL_EMAIL, self::COL_PARTNER_ID, self::COL_LASTNAME, self::COL_NAME, self::COL_PERMISSIONS, self::COL_USER_ROLE, self::COL_ENABLED];
 
-      return $this->insertionOperation($insert,"Inserting NonLoginPartner ",true);
+   //    return $this->insertionOperation($insert,"Inserting NonLoginPartner ",true);
 
-   }
+   // }
 
    function getUsersPermission($unique_id){
       $select = new SelectOperation();

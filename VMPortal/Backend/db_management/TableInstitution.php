@@ -49,6 +49,10 @@ class TableInstitution extends TableBaseClass {
 
    }
 
+   function updateInstitution($id,$params){
+      return $this->updateOperation($params,"Update Institution $id",self::COL_KEYID,$id);
+   }
+
    function getInstitutionNameMap(){
       $cols_to_get = [self::COL_KEYID, self::COL_INSTITUTION_NAME];
       $select = new SelectOperation();
