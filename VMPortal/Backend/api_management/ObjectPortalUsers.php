@@ -341,6 +341,48 @@ class ObjectPortalUsers extends ObjectBaseClass{
          return $to_return;
 
       }
+      else if ($action === EndpointBodyActions::LINK){
+         
+         // This will simply link a user to an institution. 
+         $required_fields = [
+            TableInstitutionUsers::COL_INSTITUTION_ID,
+            TableInstitutionUsers::COL_PORTAL_USER
+         ];
+
+         foreach ($required_fields as $reqfield){
+            if (!array_key_exists($reqfield,$this->json_data)){
+               $this->suggested_http_code = 401;
+               $this->error = "The request body must contain the '$reqfield' field when linking a portal user to an institution";
+               return false;                  
+            }
+         }
+
+         $user_id = $this->json_data[TableInstitutionUsers::COL_PORTAL_USER];
+         $inst_id = $this->json_data[TableInstitutionUsers::COL_INSTITUTION_ID];
+         $ans = $tiu->linkUserToInstitution($user_id,$inst_id);
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in linking institution $inst_id and user $user_id. Reason: " . $tiu->getError();
+            $this->returnable_error = "Failed in database operation for linking user and institution";
+            return false;                  
+         }
+
+         return array();
+
+      }
+      else if ($action === EndpointBodyActions::LIST){
+
+         $ans = $tpu->listEnabledUsers();
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in listing enabled users. Reason: " . $tpu->getError();
+            $this->returnable_error = "Failed in database operation for listing portal users";
+            return false;                  
+         }
+
+         return $ans;
+
+      }
       else {
          $this->suggested_http_code = 401;
          $this->error = "Unknwon action $action when operating on portal users";

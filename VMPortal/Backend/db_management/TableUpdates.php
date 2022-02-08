@@ -254,6 +254,15 @@ class TableUpdates extends TableBaseClass {
       else return $ans[0][self::COL_VERSION_STRING];
    }
 
+   function listCurrentVersionForAllInstances(){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      return $this->simpleSelect([],$select);
+   }
+
 }
 
 ?>

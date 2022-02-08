@@ -76,10 +76,10 @@ class APIComm {
       $final_url = $this->url . $url;
 
       if (!empty($body)) {
-         $curl_cmd = "curl -s -X POST \\\n $header_str \\\n -d '" . json_encode($body) .  "' \\\n" . $final_url;
+         $curl_cmd = "curl -s -X POST \\\n $header_str \\\n -d '" . json_encode($body) .  "' \\\n" . "'" . $final_url . "'";;
       }
       else {
-         $curl_cmd = "curl -s -X POST \\\n $header_str \\\n " . $final_url;
+         $curl_cmd = "curl -s -X POST \\\n $header_str \\\n " . "'" . $final_url . "'";
       }
       
       $this->last_curl_command = $curl_cmd;

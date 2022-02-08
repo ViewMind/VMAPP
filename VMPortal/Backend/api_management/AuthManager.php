@@ -557,7 +557,7 @@
          }
          else $this->dbuser = DBCon::DB_SERVICE_PARTNERS;
 
-         error_log("Login type is " . $this->login_type . " So user is " . $this->dbuser);
+         //error_log("Login type is " . $this->login_type . " So user is " . $this->dbuser);
 
          if (!hash_equals($user_info[TablePortalUsers::COL_TOKEN],$this->token)){
             $this->http_code = 401;

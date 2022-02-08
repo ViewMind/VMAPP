@@ -242,7 +242,7 @@ if (array_key_exists($object,$permissions)){
       if ($ans === false){
          // Something went wrong. 
          // error_log("Returning when something went wrong. Sending code: " . $operating_object->getSugesstedHTTPCode() . " and message " . $operating_object->getReturnableError());
-         $base_log->logError($operating_object->getError());
+         $base_log->logError( "$class::$operation -> " . $operating_object->getError());
          $res[ResponseFields::MESSAGE] = $operating_object->getReturnableError();
          $res[ResponseFields::HTTP_CODE] = $operating_object->getSugesstedHTTPCode();
          http_response_code($operating_object->getSugesstedHTTPCode());

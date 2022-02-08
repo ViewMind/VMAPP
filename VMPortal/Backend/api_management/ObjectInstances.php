@@ -9,10 +9,6 @@ include_once (__DIR__ . "/../common/named_constants.php");
 class ObjectInstances extends ObjectBaseClass{
 
 
-   private const OP_FIELD_ID = "id";
-   private const OP_FIELD_ACTION = "action";
-
-
    function __construct($service,$headers){
       parent::__construct($service,$headers);
    }
@@ -25,6 +21,8 @@ class ObjectInstances extends ObjectBaseClass{
       $ts      = new TableSecrets($this->con_secure);
       $tapr    = new TableAppPasswordRecovery($this->con_secure);
       $tupdate = new TableUpdates($this->con_main);
+
+      //error_log("Parameters when creating instance: " . json_encode($parameters));
 
       // The eyetracker key url parameters is required and must be valid (it's value must be among the possible values)
       if (!array_key_exists(URLParameterNames::EYETRACKER_KEY, $parameters)) {
@@ -125,6 +123,60 @@ class ObjectInstances extends ObjectBaseClass{
 
       return $ret;
    
+   }
+
+   function list($identifier,$parameters){
+      
+      // Creating the tables to be used. 
+      $ti      = new TableInstitution($this->con_main);
+      $tupdate = new TableUpdates($this->con_main);           
+      
+
+      // First we get teh list of all current version for each instance. 
+      $ans = $tupdate->listCurrentVersionForAllInstances();
+      if ($ans === false){
+         $this->suggested_http_code = 500;
+         $this->returnable_error = "Internal database error";
+         $this->error = "Failed in getting the list of current version for all instances: " . $tupdate->getError(); 
+         return false;
+      }
+
+      // The information is of little use so we need to categorize it by institution. Hece we list the instituions.
+      $institutions = $ti->getInstitutionNameMap();
+      if ($institutions === false){
+         $this->suggested_http_code = 500;
+         $this->returnable_error = "Internal database error";
+         $this->error = "Failed in getting the list of institutions: " . $ti->getError(); 
+         return false;
+      }
+
+      // Creating the return array. 
+      $ret = array();
+      foreach ($institutions as $inst_id => $inst_name){
+         $ret[$inst_id]["name"] = $inst_name;
+         $ret[$inst_id]["versions"] = array();
+      }
+
+
+      // adding the ifnormation from the update table. 
+      foreach ($ans as $row){
+         $version = $row[TableUpdates::COL_VERSION_STRING];
+         $instance = $row[TableUpdates::COL_INSTITUTION_INSTANCE];
+         $institution = $row[TableUpdates::COL_INSTITUTION_ID];
+
+         if (!array_key_exists($institution,$ret)){
+            $this->suggested_http_code = 500;
+            $this->returnable_error = "Internal congruencty error";
+            $this->error = "There is an instance with institution number $institution which is not present in the institution table"; 
+            return false;
+         }
+
+         $ret[$institution]["versions"][$instance] = $version;
+
+      }
+
+      return $ret;
+      
    }
 
 

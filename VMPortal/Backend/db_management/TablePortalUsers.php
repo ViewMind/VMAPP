@@ -406,5 +406,15 @@ class TablePortalUsers extends TableBaseClass {
 
    }
 
+   function listEnabledUsers(){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ENABLED)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;   
+      }
+      $cols_to_get = [self::COL_NAME,self::COL_LASTNAME,self::COL_EMAIL,self::COL_KEYID];
+      return $this->simpleSelect($cols_to_get,$select);
+   }
+
 }
 ?>

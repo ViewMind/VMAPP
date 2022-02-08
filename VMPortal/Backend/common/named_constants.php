@@ -147,6 +147,7 @@
       const GET                     = "get";
       const SET                     = "set";
       const LIST                    = "list";
+      const LINK                    = "link";
    }
 
    abstract class URLSearchCriteria extends TypedString {

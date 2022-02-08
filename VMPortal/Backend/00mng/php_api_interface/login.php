@@ -1,8 +1,10 @@
 <?php
 
 include_once ("api_comm.php");
+include_once ("load_inputs.php");
 
 $credential_file = "./local_credentials.cnf";
+$inputs_file = "./input.cnf";
 //$credential_file = "production_credentials.cnf";
 
 $credentials = json_decode(file_get_contents($credential_file),true);
