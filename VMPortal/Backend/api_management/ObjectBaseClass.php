@@ -41,6 +41,7 @@ class ObjectBaseClass{
       $this->returnable_error = "";
       $this->suggested_http_code = 200;
       $this->file_path_to_return = "";
+      $this->json_data = array();
 
       // Creating the connections. 
       $dbcon = new DBCon();      
@@ -67,6 +68,11 @@ class ObjectBaseClass{
 
    function setJSONData($jdata){
       $this->json_data = $jdata;
+      // This is done in order to prevent json data from being anyting other than an array. As that can provide
+      // fatals on other classes' methods. 
+      if (!is_array($this->json_data)){
+         $this->json_data = array();
+      }
    }
 
    function setPermissions($permissions){

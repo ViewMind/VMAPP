@@ -182,8 +182,7 @@ class TableUpdates extends TableBaseClass {
          $update_params[self::COL_VERSION_STRING][] = $new_version;
       }
 
-      $ans = $this->insertionOperation($update_params,"Updating to new version $new_version");
-      return $ans;
+      return $this->insertionOperation($update_params,"Updating to new version $new_version");
 
    }
 

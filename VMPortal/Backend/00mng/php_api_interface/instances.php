@@ -3,16 +3,18 @@
 include_once("login.php");
 
 class  Actions {
-   const LIST            = "list_instances";
-   const CREATE          = "new_instance";
+   const LIST                   = "list_instances";
+   const CREATE                 = "new_instance";
+   const UPDATE_SINGLE          = "update_single_instance";
 }
 
 /***
  * WARNING: When creating delete the version field from inputs in order to use the latest version. 
  */
 
-$action = Actions::LIST;
+//$action = Actions::LIST;
 //$action = Actions::CREATE;
+$action = Actions::UPDATE_SINGLE;
 
 $body = loadInputs($action);
 
@@ -58,6 +60,17 @@ else if ($action === Actions::CREATE){
       unset($data["vmconfiguration"]);
       echo "======\n";
       echo json_encode($data,JSON_PRETTY_PRINT);
+      echo "\n";
+   }
+}
+else if ($action === Actions::UPDATE_SINGLE){
+   $req_url = "instances/update/0";
+   $body["update_type"] = "single";
+   $ret = $api->APICall($req_url,$body);
+   if ($ret === false){
+      finishAndDie($api);
+   }
+   else {
       echo "\n";
    }
 }

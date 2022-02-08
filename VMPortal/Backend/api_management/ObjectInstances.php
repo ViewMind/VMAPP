@@ -7,7 +7,10 @@ include_once (__DIR__ . "/../db_management/TableAppPasswordRecovery.php");
 include_once (__DIR__ . "/../common/named_constants.php");
 
 class ObjectInstances extends ObjectBaseClass{
+   
+   const UPDATE_TYPE = "update_type";
 
+   const UPDATE_SINGLE = "single";
 
    function __construct($service,$headers){
       parent::__construct($service,$headers);
@@ -179,6 +182,50 @@ class ObjectInstances extends ObjectBaseClass{
       
    }
 
+   function update($identifier,$parameters){
+
+      if (!array_key_exists(self::UPDATE_TYPE, $this->json_data)) {
+         $this->suggested_http_code = 401;
+         $this->error = "The 'update_type' is a required field";
+         return false;
+      }
+      $update_type = $this->json_data[self::UPDATE_TYPE];
+
+      if ($update_type === self::UPDATE_SINGLE){
+
+         // A single instance update. We need to specify the institution ID and instance. 
+         $tupdate = new TableUpdates($this->con_main);
+
+         $req_fieds = [TableUpdates::COL_INSTITUTION_INSTANCE, 
+         TableUpdates::COL_INSTITUTION_ID, 
+         TableUpdates::COL_VERSION_STRING
+         ];
+         foreach ($req_fieds as $field){
+            if (!array_key_exists($field,$this->json_data)){
+               $this->suggested_http_code = 401;
+               $this->error = "Request body for update requires the field '$field'";
+               return false;      
+            }
+         }
+
+         // Unique ID value. 
+         $uid = $this->json_data[TableUpdates::COL_INSTITUTION_ID] . "."  
+         . $this->json_data[TableUpdates::COL_INSTITUTION_INSTANCE];
+         $version = $this->json_data[TableUpdates::COL_VERSION_STRING];
+
+         //error_log("Updating $uid to $version");
+
+         $ans = $tupdate->updateJustVersionOfList([$uid],$version);
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed to update single instance $uid. Reason: "  . $tupdate->getError();
+            return false;      
+         }
+
+      }
+
+
+   }
 
 
 }

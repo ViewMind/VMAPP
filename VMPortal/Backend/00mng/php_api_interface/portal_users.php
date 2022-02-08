@@ -12,17 +12,17 @@ class  Actions {
 }
 
 //$action = Actions::CREATE;
-//$action = Actions::MOD_PERMISSIONS;
+$action = Actions::MOD_PERMISSIONS;
 //$action = Actions::MODIFY;
 //$action = Actions::LINK;
-$action = Actions::LIST;
+//$action = Actions::LIST;
 
 $body = loadInputs($action);
 
 ////////////////////////////// Modifying permissions is done from here. 
-//$to_add[APIEndpoints::INSTITUTION] = ["operate"];
-$to_add[APIEndpoints::INSTANCES] = ["list"];
-//$to_add[APIEndpoints::PORTAL_USERS] = ["operate"];
+$to_add[APIEndpoints::INSTITUTION] = ["operate"];
+$to_add[APIEndpoints::INSTANCES] = ["create","list","update"];
+$to_add[APIEndpoints::PORTAL_USERS] = ["operate"];
 $to_remove = array();
 
 ////////////////////////////// Creating a new user

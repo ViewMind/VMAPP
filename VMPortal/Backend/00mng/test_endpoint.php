@@ -102,21 +102,30 @@ $parameters = array();
 // //$body["action"] = "get";
 // $body["action"] = "list";
 
-//======================= Create new institution secret
-$parameters["et-key"] = EyeTrackerCodes::HP_OMNICEPT;
-$parameters["version"] = "1.0.0";
-$identifier = 1;
-$object = new ObjectInstances($service,$headers);
-$ans = $object->create($identifier,$parameters);
+// //======================= Create new institution secret
+// $parameters["et-key"] = EyeTrackerCodes::HP_OMNICEPT;
+// $parameters["version"] = "1.0.0";
+// $identifier = 1;
+// $object = new ObjectInstances($service,$headers);
+// $ans = $object->create($identifier,$parameters);
 
-if ($ans === false){
-   echo "Error: " . $object->getError() . "\n";
-}
-else{
-   $fid = fopen("test_output.json","w");
-   fwrite($fid,json_encode($ans,JSON_PRETTY_PRINT));
-   fclose($fid);
-   echo "Finished\n";
-}
+// //========================= Updating single instance.
+// $body["institution_instance"] = 0;
+// $body["institution_id"] = 1;
+// $body["version_string"] = "21.9.9";
+// $body["update_type"] = "single";
+// $object = new ObjectInstances($service,$headers);
+// $object->setJSONData($body);
+// $ans = $object->update($identifier,$parameters);
+
+// if ($ans === false){
+//    echo "Error: " . $object->getError() . "\n";
+// }
+// else{
+//    $fid = fopen("test_output.json","w");
+//    fwrite($fid,json_encode($ans,JSON_PRETTY_PRINT));
+//    fclose($fid);
+//    echo "Finished\n";
+// }
 
 ?>
