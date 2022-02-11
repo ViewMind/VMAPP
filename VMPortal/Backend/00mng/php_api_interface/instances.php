@@ -12,9 +12,9 @@ class  Actions {
  * WARNING: When creating delete the version field from inputs in order to use the latest version. 
  */
 
-//$action = Actions::LIST;
+$action = Actions::LIST;
 //$action = Actions::CREATE;
-$action = Actions::UPDATE_SINGLE;
+//$action = Actions::UPDATE_SINGLE;
 
 $body = loadInputs($action);
 

@@ -12,9 +12,9 @@ class  Actions {
 }
 
 //$action = Actions::CREATE;
-$action = Actions::MOD_PERMISSIONS;
+//$action = Actions::MOD_PERMISSIONS;
 //$action = Actions::MODIFY;
-//$action = Actions::LINK;
+$action = Actions::LINK;
 //$action = Actions::LIST;
 
 $body = loadInputs($action);
@@ -61,6 +61,9 @@ if ($action === Actions::MOD_PERMISSIONS){
       $body["action"] = EndpointBodyActions::SET;
       $body["role"] = $ret["data"]["role"];
       $body["permissions"] = $permissions;
+
+      //echo json_encode($body,JSON_PRETTY_PRINT) . "\n";
+      //exit();
 
       $ret = $api->APICall($req_url,$body);
       if ($ret === false){

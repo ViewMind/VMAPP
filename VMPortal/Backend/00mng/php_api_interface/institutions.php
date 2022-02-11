@@ -8,8 +8,8 @@ class  Actions {
    const MODIFY          = "modify_institution";
 }
 
-//$action = Actions::LIST;
-$action = Actions::CREATE;
+$action = Actions::LIST;
+//$action = Actions::CREATE;
 
 $body = loadInputs($action);
 

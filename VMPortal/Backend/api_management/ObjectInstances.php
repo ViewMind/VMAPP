@@ -223,6 +223,11 @@ class ObjectInstances extends ObjectBaseClass{
          }
 
       }
+      else {
+         $this->suggested_http_code = 401;
+         $this->error = "Unknown update type $update_type";
+         return false;      
+      }
 
 
    }

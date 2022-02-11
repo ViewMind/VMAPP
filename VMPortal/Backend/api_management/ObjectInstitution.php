@@ -310,7 +310,6 @@ class ObjectInstitution extends ObjectBaseClass{
          TableInstitution::COL_COUNTRY,
          TableInstitution::COL_EMAIL,
          TableInstitution::COL_STATE_OR_PROVINCE,
-         TableInstitution::COL_ADDRESS,
          TableInstitution::COL_POSTAL_CODE,
          TableInstitution::COL_PHONE_NUMBER,
       ];
