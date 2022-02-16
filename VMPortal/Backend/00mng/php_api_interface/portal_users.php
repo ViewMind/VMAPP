@@ -9,26 +9,28 @@ class  Actions {
    const MODIFY          = "modify_user";
    const LINK            = "link_user_to_institution";
    const LIST            = "list_portal_users";
+   const GET_PERMISSIONS = "permissions";
 }
 
 //$action = Actions::CREATE;
-//$action = Actions::MOD_PERMISSIONS;
+$action = Actions::MOD_PERMISSIONS;
 //$action = Actions::MODIFY;
-$action = Actions::LINK;
+//$action = Actions::LINK;
 //$action = Actions::LIST;
+//$action = Actions::GET_PERMISSIONS;
 
 $body = loadInputs($action);
 
 ////////////////////////////// Modifying permissions is done from here. 
 $to_add[APIEndpoints::INSTITUTION] = ["operate"];
-$to_add[APIEndpoints::INSTANCES] = ["create","list","update"];
-$to_add[APIEndpoints::PORTAL_USERS] = ["operate"];
+// $to_add[APIEndpoints::INSTANCES] = ["create","list","update"];
+// $to_add[APIEndpoints::PORTAL_USERS] = ["operate"];
 $to_remove = array();
 
 ////////////////////////////// Creating a new user
 
 // After the login comes the actual request
-if ($action === Actions::MOD_PERMISSIONS){
+if (($action === Actions::MOD_PERMISSIONS) || ($action === Actions::GET_PERMISSIONS)){
 
    // First we get the permissions·
    $body["action"] = EndpointBodyActions::GET;
@@ -43,6 +45,12 @@ if ($action === Actions::MOD_PERMISSIONS){
       //var_dump($ret);
       $permissions = $ret["data"]["permissions"];
 
+      if ($action === Actions::GET_PERMISSIONS){
+         echo "Permsions for user " . $body["id"] . "\n";
+         echo json_encode($permissions,JSON_PRETTY_PRINT) . "\n";
+         exit();
+      }
+
       foreach ($to_add as $object => $list_to_add){
          $list = array();
          if (array_key_exists($object,$permissions)){
@@ -55,15 +63,13 @@ if ($action === Actions::MOD_PERMISSIONS){
          $permissions[$object] = $list;
       }
 
-      //var_dump($permissions);
-
       // Setting the permissions
       $body["action"] = EndpointBodyActions::SET;
       $body["role"] = $ret["data"]["role"];
       $body["permissions"] = $permissions;
 
-      //echo json_encode($body,JSON_PRETTY_PRINT) . "\n";
-      //exit();
+      echo json_encode($body,JSON_PRETTY_PRINT) . "\n";
+      exit();
 
       $ret = $api->APICall($req_url,$body);
       if ($ret === false){

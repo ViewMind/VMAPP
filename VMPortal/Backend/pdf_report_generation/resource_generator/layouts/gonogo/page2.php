@@ -1,6 +1,6 @@
 <?php
    $page = array();
-   $ysubtitle = 0.55;
+   $ysubtitle = 0.45;
    $page["title"] = [
       ["text" => "#gonogo.page_titles.1.0#", "py" => 0],
       ["text" => "#gonogo.page_titles.1.1#", "py" => $ysubtitle]
@@ -59,12 +59,11 @@
 
    // Adding the presumptive diagnosis.
    $item = [];
-   $w = 0.98;
-   $h = 0.12;
+   $h = 0.09;
    $item["id"]         = "pdiag";
-   $item["x"] = (1 - $w)/2;
-   $item["y"] = $ysubtitle - $h*1.35; 
-   $item["w"] = $w;
+   $item["x"] = 0;
+   $item["y"] = $ysubtitle - $h*1.8; 
+   $item["w"] = 1;
    $item["h"] = $h;
    $item["type"]        = "pdiag";
    $item["text_base"]   = "gonogo.presumptive_diagnosis.texts";
@@ -86,7 +85,7 @@
    $page["items"][] = $item;
 
    $item = [];
-   $poly_graph_w = 0.3;
+   $poly_graph_w = 0.4;
    $item["type"] = "polygon_graph";
    $item["id"]   = "polygon_graph";
    $item["x"] = (1 - $poly_graph_w)/2;

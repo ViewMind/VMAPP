@@ -22,6 +22,7 @@ class APIComm {
    }
 
    function printWelcome(){
+      echo "CONNECTED VIA API: " . $this->url . "\n";
       echo json_encode($this->login_info,JSON_PRETTY_PRINT);
       echo "\n";
    }

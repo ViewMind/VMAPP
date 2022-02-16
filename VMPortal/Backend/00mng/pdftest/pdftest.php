@@ -7,7 +7,7 @@
    $report_script  = $json["report"];
 
    $script = "$path/$version/pdf_report_generator.js";
-   $lang = "es";
+   $lang = $json["lang"];
    $pdfoutput   = "generated_report.pdf";
    $error_log = "error.log";
    

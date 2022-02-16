@@ -193,6 +193,7 @@ class TablePortalUsers extends TableBaseClass {
 
       $operation = new SelectOperation();
       if (is_numeric($email_or_id)) {
+         // This is so that we can query either via email or keyid. 
          if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$email_or_id)){
             $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
             return false;   
@@ -375,7 +376,14 @@ class TablePortalUsers extends TableBaseClass {
       if ($role != -1){
          $params[self::COL_USER_ROLE] = $role;
       }
-      return $this->updateOperation($params,"Setting Portal User Permissions",self::COL_EMAIL,$unique_id);
+
+      // This is done so that we can update on either mail or numerica ID acconding to convenience
+      $col_on_update = self::COL_EMAIL;
+      if (is_numeric($unique_id)){
+         $col_on_update = self::COL_KEYID;
+      }
+
+      return $this->updateOperation($params,"Setting Portal User Permissions",$col_on_update,$unique_id);
    }
 
    function addPermissionsToAll($to_add){

@@ -4,8 +4,8 @@
       ["text" => "#gonogo.page_titles.0.0#", "py" => 0]
    ];
    $page["items"] = array();
-   $y = 0.01;
-   $h = 0.098;
+   $y = 0;
+   $h = 0.0814;
    
    $item = [];
    $item["type"]            = "result_segment";
@@ -138,8 +138,9 @@
    $item = [];
    $item["type"] = "color_code";
    $item["id"]   = "res_seg_color_code";
-   $h = 0.15;
-   $y = 1 - $h;
+   $h = 0.13;
+   //$y = 1 - $h;
+   $y = 0.78;
    $item["x"]               = 0;
    $item["y"]               = $y;
    $item["w"]               = 1;
