@@ -414,12 +414,22 @@ class TablePortalUsers extends TableBaseClass {
 
    }
 
-   function listEnabledUsers(){
+   function listEnabledUsers($id_pool = array()){
       $select = new SelectOperation();
       if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ENABLED)){
          $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
          return false;   
       }
+
+      if (is_array($id_pool)){
+         if (!empty($id_pool)){
+            if (!$select->addConditionToANDList(SelectColumnComparison::IN_NO_BIND,self::COL_KEYID,$id_pool)){
+               $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+               return false;   
+            }      
+         }
+      }
+
       $cols_to_get = [self::COL_NAME,self::COL_LASTNAME,self::COL_EMAIL,self::COL_KEYID];
       return $this->simpleSelect($cols_to_get,$select);
    }

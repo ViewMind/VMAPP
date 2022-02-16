@@ -372,14 +372,38 @@ class ObjectPortalUsers extends ObjectBaseClass{
       }
       else if ($action === EndpointBodyActions::LIST){
 
-         $ans = $tpu->listEnabledUsers();
-         if ($ans === false){
-            $this->suggested_http_code = 500;
-            $this->error = "Failed in listing enabled users. Reason: " . $tpu->getError();
-            $this->returnable_error = "Failed in database operation for listing portal users";
-            return false;                  
+         $ids = array();
+         if (array_key_exists(TableInstitutionUsers::COL_INSTITUTION_ID,$this->json_data)) {
+            // We only list those of the specified institution. 
+            $inst_id = $this->json_data[TableInstitutionUsers::COL_INSTITUTION_ID];
+            $ans = $tiu->getUsersForInstitution($inst_id);
+            if ($ans === false){
+               $this->suggested_http_code = 500;
+               $this->error = "Failed in listing users of institution $inst_id. Reason: " . $tiu->getError();
+               $this->returnable_error = "Failed in database operation for listing portal users";
+               return false;
+            }
+            
+            foreach ($ans as $row){
+               $ids[] = $row[TableInstitutionUsers::COL_PORTAL_USER];
+            }
+
+            $ans = $tpu->listEnabledUsers();
+            if ($ans === false) {
+                $this->suggested_http_code = 500;
+                $this->error = "Failed in listing enabled users. Reason: " . $tpu->getError();
+                $this->returnable_error = "Failed in database operation for listing portal users";
+                return false;
+            }
          }
 
+         $ans = $tpu->listEnabledUsers($ids);
+         if ($ans === false) {
+             $this->suggested_http_code = 500;
+             $this->error = "Failed in listing enabled users. Reason: " . $tpu->getError();
+             $this->returnable_error = "Failed in database operation for listing portal users";
+             return false;
+         }
          return $ans;
 
       }

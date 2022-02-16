@@ -13,10 +13,10 @@ class  Actions {
 }
 
 //$action = Actions::CREATE;
-$action = Actions::MOD_PERMISSIONS;
+//$action = Actions::MOD_PERMISSIONS;
 //$action = Actions::MODIFY;
 //$action = Actions::LINK;
-//$action = Actions::LIST;
+$action = Actions::LIST;
 //$action = Actions::GET_PERMISSIONS;
 
 $body = loadInputs($action);
