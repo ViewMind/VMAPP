@@ -92,7 +92,7 @@
  $report["fixation_duration"]["xlabel"] = ["CONTROL", "PATIENT"];
  $report["fixation_duration"]["legend"] = ["Facilitated Task","Inhibitory Task"];
 
- $report["fixation_plotting"]["text"] = "The following graphs contain the plotting of the fixations done by the patient (left column) and by a\ncognitively healthy control (right column) while completing the different tasks. Tasks with a green\narrow are referred as facilitated task and red arrows as tasks with interference.\n";
+ $report["fixation_plotting"]["text"] = "The following graphs contain the plotting of the fixations done by the patient (left column) and by a cognitively healthy\ncontrol (right column) while completing the different tasks. Tasks with a green arrow are referred as facilitated task and\nred arrows as tasks with interference.\n";
  $report["fixation_plotting"]["title_left"] = "PATIENT";
  $report["fixation_plotting"]["title_right"] = "CONTROL";
  $report["fixation_plotting"]["row_1"] = "Trial 10";

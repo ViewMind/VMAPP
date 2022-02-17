@@ -177,3 +177,4 @@ Scripts/php/reprocess_legacy_data/legacy_data.zip
 *package-lock.json
 *package.json
 VMPortal/Backend/pdf_report_generation/v2/testbed.pdf
+VMPortal/Backend/pdf_report_generation/v1/resources/generated_report.pdf

@@ -91,7 +91,7 @@
  $report["fixation_duration"]["xlabel"] = ["CONTROL", "PACIENTE"];
  $report["fixation_duration"]["legend"] = ["Tarea Facilitada","Tarea con Interferencia"];
 
- $report["fixation_plotting"]["text"] = "Los siguientes gráficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control\ncognitivamente saludable (derecha) durante algunas pruebas. Las tareas con flecha verde son las\nfacilitadas miestras que aquellas con flecha roja son con interferencia.";
+ $report["fixation_plotting"]["text"] = "Los siguientes gráficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control cognitivamente\nsaludable (derecha) durante algunas pruebas. Las tareas con flecha verde son las facilitadas miestras que aquellas\ncon flecha roja son con interferencia.";
  $report["fixation_plotting"]["title_left"] = "PACIENTE";
  $report["fixation_plotting"]["title_right"] = "CONTROL";
  $report["fixation_plotting"]["row_1"] = "Prueba 10";

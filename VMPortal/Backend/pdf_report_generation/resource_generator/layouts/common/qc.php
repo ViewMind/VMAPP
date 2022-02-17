@@ -14,7 +14,7 @@ $page["title"] = [
 
 $page["items"] = array();
 $y = 0.01;
-$h = 0.10;
+$h = 0.08;
 
 $item = [];
 $item["type"]            = "result_segment";
@@ -88,11 +88,11 @@ $page["items"][] = $item;
 
 // Comment box
 $item = [];
-$w = 0.96;
+$w = 1;
 $item["id"] = "comment_box";
 $item["x"]  = (1 - $w)/2;
 $item["w"]  = $w;
-$item["y"]  = $ysubtitle + 0.03; 
+$item["y"]  = $ysubtitle + 0.01; 
 $item["h"]  = 0.37;
 $item["text"] = "&comment&";
 $item["type"]        = "text_box";

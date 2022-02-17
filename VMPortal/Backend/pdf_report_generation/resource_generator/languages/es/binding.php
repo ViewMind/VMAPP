@@ -41,7 +41,7 @@
  $report["affected_areas"]["red"] = "Funciones cognitivas y áreas cerebrales con discapcidad severa y/o patológica:";
  
  $report["affected_areas"]["visual_search"] = "Búsqueda Visual: Ganglia Basal y Colículo Superior";
- $report["affected_areas"]["gaze_dur"] = "Memoria de Trabajo Visual: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC),\nSurco Temporal, Superior Anterior (aSTS)";
+ $report["affected_areas"]["gaze_dur"] = "Memoria de Trabajo Visual: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC), Surco Temporal, Superior Anterior (aSTS)";
  $report["affected_areas"]["int_mem_perf"] = "Desempeño de Memoria Integradora:  Corteza entorrinal, corteza perirrinal";
  $report["affected_areas"]["assoc_mem_perf"] = "Desempeño de Memoria Asociativa: Hipocampo";
  $report["affected_areas"]["exec_func"] = "Funciones Ejecutivos: Corteza Prefrontal";
@@ -100,7 +100,7 @@ $report["presumptive_diagnosis"]["texts_2T"] = [
  $report["number_of_fixations"]["xlabel"] = ["CODIFICACIÓN", "RECONOCIMIENTO"];
  $report["number_of_fixations"]["legend"] = ["Memoria de Integración","Memoria Asociativa"];
 
- $report["fixation_plotting"]["text"] = "El gráfico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20 y 31 en\nCodificación (izquierda) y Reconocimiento (derecha), de la Tarea de Combinación de Colores";
+ $report["fixation_plotting"]["text"] = "El gráfico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20 y 31 en Codificación (izquierda) y\nReconocimiento (derecha), de la Tarea de Combinación de Colores";
  $report["fixation_plotting"]["title_left"] = "CODIFICACIÓN";
  $report["fixation_plotting"]["title_right"] = "RECONOCIMIENTO";
  $report["fixation_plotting"]["row_1"] = "Prueba 10";

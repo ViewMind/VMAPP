@@ -99,8 +99,8 @@
   $pages = [];
   $pages[] = include("binding/page1_3T.php");
   $pages[] = include("binding/page2_3T.php");
-  $pages[] = include("binding/page3_3T.php");
-  $pages[] = include("binding/page4_3T.php");
+  //$pages[] = include("binding/page3_3T.php");
+  //$pages[] = include("binding/page4_3T.php");
   $pages[] = include("binding/page5_3T.php");
 
   $ret["pages"] = $pages;

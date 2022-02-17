@@ -346,9 +346,9 @@
                         "type": "color_code",
                         "id": "res_seg_color_code",
                         "x": 0,
-                        "y": 0.85,
+                        "y": 0.78,
                         "w": 1,
-                        "h": 0.15,
+                        "h": 0.13,
                         "color_texts": "#binding.color_code.explanations#",
                         "title": "#binding.color_code.title#"
                     }
@@ -453,9 +453,9 @@
                     {
                         "type": "polygon_graph",
                         "id": "polygon_graph",
-                        "x": 0.35,
+                        "x": 0.3,
                         "y": 0.675,
-                        "w": 0.3,
+                        "w": 0.4,
                         "levels": [
                             "+1",
                             "0",
@@ -477,267 +477,6 @@
                             "#binding.overall_performance.vertex.int_mem_perf#",
                             "#binding.overall_performance.vertex.assoc_mem_perf#",
                             "#binding.overall_performance.vertex.exec_functions#"
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": [
-                    {
-                        "text": "#binding.page_titles.3.0#",
-                        "py": 0
-                    },
-                    {
-                        "text": "#binding.page_titles.3.1#",
-                        "py": 0.5
-                    }
-                ],
-                "items": [
-                    {
-                        "type": "side_by_side_4_pt_graph",
-                        "id": "gaze_duration_graph",
-                        "left_graph": {
-                            "x": 0.07967999999999997,
-                            "y": 0.02,
-                            "w": 0.43200000000000005,
-                            "h": 0.3,
-                            "left_set": [
-                                "&bc.gazing.encoding.0&",
-                                "&bc.gazing.encoding.1&",
-                                "&uc.gazing.encoding.0&",
-                                "&uc.gazing.encoding.1&"
-                            ],
-                            "right_set": [
-                                "&bc.gazing.retrieval.0&",
-                                "&bc.gazing.retrieval.1&",
-                                "&uc.gazing.retrieval.0&",
-                                "&uc.gazing.retrieval.1&"
-                            ],
-                            "title": "#binding.gaze_duration.graph_title.0#"
-                        },
-                        "left_column_text": "#binding.gaze_duration.xlabel.0#",
-                        "right_column_text": "#binding.gaze_duration.xlabel.1#",
-                        "ylabel": "#binding.gaze_duration.ylabel#",
-                        "yunits": "ms",
-                        "legend_data_set_0": "#binding.gaze_duration.legend.0#",
-                        "legend_data_set_1": "#binding.gaze_duration.legend.1#",
-                        "right_graph": {
-                            "x": 0.52032,
-                            "y": 0.02,
-                            "w": 0.4,
-                            "h": 0.3,
-                            "left_set": [
-                                1768.788,
-                                2.325715,
-                                1788.454,
-                                1.829591
-                            ],
-                            "right_set": [
-                                1471.864,
-                                12.494839,
-                                1717.571,
-                                14.808148
-                            ],
-                            "title": "#binding.gaze_duration.graph_title.1#"
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "#binding.gaze_duration.text#",
-                        "id": "gazing_graph_text",
-                        "x": 0,
-                        "y": [
-                            "gaze_duration_graph",
-                            0.05
-                        ]
-                    },
-                    {
-                        "type": "side_by_side_4_pt_graph",
-                        "id": "visual_scanning_graph",
-                        "left_graph": {
-                            "x": 0.07967999999999997,
-                            "y": 0.52,
-                            "w": 0.43200000000000005,
-                            "h": 0.3,
-                            "left_set": [
-                                "&bc.saccade.encoding.0&",
-                                "&bc.saccade.encoding.1&",
-                                "&uc.saccade.encoding.0&",
-                                "&uc.saccade.encoding.1&"
-                            ],
-                            "right_set": [
-                                "&bc.saccade.retrieval.0&",
-                                "&bc.saccade.retrieval.1&",
-                                "&uc.saccade.retrieval.0&",
-                                "&uc.saccade.retrieval.1&"
-                            ],
-                            "title": "#binding.visual_scanning.graph_title.0#"
-                        },
-                        "left_column_text": "#binding.visual_scanning.xlabel.0#",
-                        "right_column_text": "#binding.visual_scanning.xlabel.1#",
-                        "ylabel": "#binding.visual_scanning.ylabel#",
-                        "yunits": "",
-                        "legend_data_set_0": "#binding.visual_scanning.legend.0#",
-                        "legend_data_set_1": "#binding.visual_scanning.legend.1#",
-                        "ndecimals": 2,
-                        "right_graph": {
-                            "x": 0.52032,
-                            "y": 0.52,
-                            "w": 0.4,
-                            "h": 0.3,
-                            "left_set": [
-                                2.193599,
-                                0.03913513,
-                                2.442039,
-                                0.03711389
-                            ],
-                            "right_set": [
-                                2.325449,
-                                0.05862766,
-                                2.346819,
-                                0.04632124
-                            ],
-                            "title": "#binding.visual_scanning.graph_title.1#"
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "#binding.visual_scanning.text#",
-                        "id": "visual_scanning_graph_text",
-                        "x": 0,
-                        "y": [
-                            "visual_scanning_graph",
-                            0.05
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": [
-                    {
-                        "text": "#binding.page_titles.4.0#",
-                        "py": 0
-                    },
-                    {
-                        "text": "#binding.page_titles.4.1#",
-                        "py": 0.5
-                    }
-                ],
-                "items": [
-                    {
-                        "type": "side_by_side_4_pt_graph",
-                        "id": "fixation_duration_graph",
-                        "left_graph": {
-                            "x": 0.07967999999999997,
-                            "y": 0.02,
-                            "w": 0.43200000000000005,
-                            "h": 0.3,
-                            "left_set": [
-                                "&bc.duration.encoding.0&",
-                                "&bc.duration.encoding.1&",
-                                "&uc.duration.encoding.0&",
-                                "&uc.duration.encoding.1&"
-                            ],
-                            "right_set": [
-                                "&bc.duration.retrieval.0&",
-                                "&bc.duration.retrieval.1&",
-                                "&uc.duration.retrieval.0&",
-                                "&uc.duration.retrieval.1&"
-                            ],
-                            "title": "#binding.fixation_duration.graph_title.0#"
-                        },
-                        "left_column_text": "#binding.fixation_duration.xlabel.0#",
-                        "right_column_text": "#binding.fixation_duration.xlabel.1#",
-                        "ylabel": "#binding.fixation_duration.ylabel#",
-                        "yunits": "ms",
-                        "legend_data_set_0": "#binding.fixation_duration.legend.0#",
-                        "legend_data_set_1": "#binding.fixation_duration.legend.1#",
-                        "right_graph": {
-                            "x": 0.52032,
-                            "y": 0.02,
-                            "w": 0.4,
-                            "h": 0.3,
-                            "left_set": [
-                                227.2522,
-                                2.004669,
-                                213.3064,
-                                1.5859984
-                            ],
-                            "right_set": [
-                                219.5501,
-                                2.0547333,
-                                195.709,
-                                1.5606745
-                            ],
-                            "title": "#binding.fixation_duration.graph_title.1#"
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "#binding.fixation_duration.text#",
-                        "id": "fixation_duration_text",
-                        "x": 0,
-                        "y": [
-                            "fixation_duration_graph",
-                            0.05
-                        ]
-                    },
-                    {
-                        "type": "side_by_side_4_pt_graph",
-                        "id": "num_fixations_graph",
-                        "left_graph": {
-                            "x": 0.07967999999999997,
-                            "y": 0.52,
-                            "w": 0.43200000000000005,
-                            "h": 0.3,
-                            "left_set": [
-                                "&bc.num_fixations.encoding.0&",
-                                "&bc.num_fixations.encoding.1&",
-                                "&uc.num_fixations.encoding.0&",
-                                "&uc.num_fixations.encoding.1&"
-                            ],
-                            "right_set": [
-                                "&bc.num_fixations.retrieval.0&",
-                                "&bc.num_fixations.retrieval.1&",
-                                "&uc.num_fixations.retrieval.0&",
-                                "&uc.num_fixations.retrieval.1&"
-                            ],
-                            "title": "#binding.number_of_fixations.graph_title.0#"
-                        },
-                        "left_column_text": "#binding.number_of_fixations.xlabel.0#",
-                        "right_column_text": "#binding.number_of_fixations.xlabel.1#",
-                        "ylabel": "#binding.number_of_fixations.ylabel#",
-                        "yunits": "",
-                        "legend_data_set_0": "#binding.number_of_fixations.legend.0#",
-                        "legend_data_set_1": "#binding.number_of_fixations.legend.1#",
-                        "right_graph": {
-                            "x": 0.52032,
-                            "y": 0.52,
-                            "w": 0.4,
-                            "h": 0.3,
-                            "left_set": [
-                                8.443308,
-                                0.03341333,
-                                9.083555,
-                                0.03164692
-                            ],
-                            "right_set": [
-                                7.263889,
-                                0.06063463,
-                                9.711452,
-                                0.11451316
-                            ],
-                            "title": "#binding.number_of_fixations.graph_title.1#"
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "#binding.number_of_fixations.text#",
-                        "id": "num_fixations_graph_text",
-                        "x": 0,
-                        "y": [
-                            "num_fixations_graph",
-                            0.05
                         ]
                     }
                 ]
@@ -768,6 +507,7 @@
                         "y": 0.11,
                         "w": 0.3,
                         "h": 0.16666666666666666,
+                        "use_colored_title": true,
                         "label": "#binding.fixation_plotting.row_1#",
                         "title": "#binding.fixation_plotting.title_left#",
                         "resolution": "&resolution&",
@@ -900,6 +640,7 @@
                         "y": 0.8099999999999999,
                         "w": 0.3,
                         "h": 0.16666666666666666,
+                        "use_colored_title": true,
                         "label": "#binding.fixation_plotting.control.label#",
                         "title": "#binding.fixation_plotting.title_left#",
                         "legacy": true,
@@ -1384,9 +1125,9 @@
                         "type": "color_code",
                         "id": "res_seg_color_code",
                         "x": 0,
-                        "y": 0.85,
+                        "y": 0.78,
                         "w": 1,
-                        "h": 0.15,
+                        "h": 0.13,
                         "color_texts": "#binding.color_code.explanations#",
                         "title": "#binding.color_code.title#"
                     }
@@ -1491,9 +1232,9 @@
                     {
                         "type": "polygon_graph",
                         "id": "polygon_graph",
-                        "x": 0.35,
+                        "x": 0.3,
                         "y": 0.675,
-                        "w": 0.3,
+                        "w": 0.4,
                         "levels": [
                             "+1",
                             "0",
@@ -1515,267 +1256,6 @@
                             "#binding.overall_performance.vertex.int_mem_perf#",
                             "#binding.overall_performance.vertex.assoc_mem_perf#",
                             "#binding.overall_performance.vertex.exec_functions#"
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": [
-                    {
-                        "text": "#binding.page_titles.3.0#",
-                        "py": 0
-                    },
-                    {
-                        "text": "#binding.page_titles.3.1#",
-                        "py": 0.5
-                    }
-                ],
-                "items": [
-                    {
-                        "type": "side_by_side_4_pt_graph",
-                        "id": "gaze_duration_graph",
-                        "left_graph": {
-                            "x": 0.07967999999999997,
-                            "y": 0.02,
-                            "w": 0.43200000000000005,
-                            "h": 0.3,
-                            "left_set": [
-                                "&bc.gazing.encoding.0&",
-                                "&bc.gazing.encoding.1&",
-                                "&uc.gazing.encoding.0&",
-                                "&uc.gazing.encoding.1&"
-                            ],
-                            "right_set": [
-                                "&bc.gazing.retrieval.0&",
-                                "&bc.gazing.retrieval.1&",
-                                "&uc.gazing.retrieval.0&",
-                                "&uc.gazing.retrieval.1&"
-                            ],
-                            "title": "#binding.gaze_duration.graph_title.0#"
-                        },
-                        "left_column_text": "#binding.gaze_duration.xlabel.0#",
-                        "right_column_text": "#binding.gaze_duration.xlabel.1#",
-                        "ylabel": "#binding.gaze_duration.ylabel#",
-                        "yunits": "ms",
-                        "legend_data_set_0": "#binding.gaze_duration.legend.0#",
-                        "legend_data_set_1": "#binding.gaze_duration.legend.1#",
-                        "right_graph": {
-                            "x": 0.52032,
-                            "y": 0.02,
-                            "w": 0.4,
-                            "h": 0.3,
-                            "left_set": [
-                                1811.3527,
-                                0.6886,
-                                1786.9819,
-                                0.835
-                            ],
-                            "right_set": [
-                                2030.2978,
-                                4.8334,
-                                1860.3862,
-                                5.001
-                            ],
-                            "title": "#binding.gaze_duration.graph_title.1#"
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "#binding.gaze_duration.text#",
-                        "id": "gazing_graph_text",
-                        "x": 0,
-                        "y": [
-                            "gaze_duration_graph",
-                            0.05
-                        ]
-                    },
-                    {
-                        "type": "side_by_side_4_pt_graph",
-                        "id": "visual_scanning_graph",
-                        "left_graph": {
-                            "x": 0.07967999999999997,
-                            "y": 0.52,
-                            "w": 0.43200000000000005,
-                            "h": 0.3,
-                            "left_set": [
-                                "&bc.saccade.encoding.0&",
-                                "&bc.saccade.encoding.1&",
-                                "&uc.saccade.encoding.0&",
-                                "&uc.saccade.encoding.1&"
-                            ],
-                            "right_set": [
-                                "&bc.saccade.retrieval.0&",
-                                "&bc.saccade.retrieval.1&",
-                                "&uc.saccade.retrieval.0&",
-                                "&uc.saccade.retrieval.1&"
-                            ],
-                            "title": "#binding.visual_scanning.graph_title.0#"
-                        },
-                        "left_column_text": "#binding.visual_scanning.xlabel.0#",
-                        "right_column_text": "#binding.visual_scanning.xlabel.1#",
-                        "ylabel": "#binding.visual_scanning.ylabel#",
-                        "yunits": "",
-                        "legend_data_set_0": "#binding.visual_scanning.legend.0#",
-                        "legend_data_set_1": "#binding.visual_scanning.legend.1#",
-                        "ndecimals": 2,
-                        "right_graph": {
-                            "x": 0.52032,
-                            "y": 0.52,
-                            "w": 0.4,
-                            "h": 0.3,
-                            "left_set": [
-                                2.2052,
-                                0.0113,
-                                2.3637,
-                                0.0125
-                            ],
-                            "right_set": [
-                                2.7807,
-                                0.0177,
-                                2.7588,
-                                0.0181
-                            ],
-                            "title": "#binding.visual_scanning.graph_title.1#"
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "#binding.visual_scanning.text#",
-                        "id": "visual_scanning_graph_text",
-                        "x": 0,
-                        "y": [
-                            "visual_scanning_graph",
-                            0.05
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": [
-                    {
-                        "text": "#binding.page_titles.4.0#",
-                        "py": 0
-                    },
-                    {
-                        "text": "#binding.page_titles.4.1#",
-                        "py": 0.5
-                    }
-                ],
-                "items": [
-                    {
-                        "type": "side_by_side_4_pt_graph",
-                        "id": "fixation_duration_graph",
-                        "left_graph": {
-                            "x": 0.07967999999999997,
-                            "y": 0.02,
-                            "w": 0.43200000000000005,
-                            "h": 0.3,
-                            "left_set": [
-                                "&bc.duration.encoding.0&",
-                                "&bc.duration.encoding.1&",
-                                "&uc.duration.encoding.0&",
-                                "&uc.duration.encoding.1&"
-                            ],
-                            "right_set": [
-                                "&bc.duration.retrieval.0&",
-                                "&bc.duration.retrieval.1&",
-                                "&uc.duration.retrieval.0&",
-                                "&uc.duration.retrieval.1&"
-                            ],
-                            "title": "#binding.fixation_duration.graph_title.0#"
-                        },
-                        "left_column_text": "#binding.fixation_duration.xlabel.0#",
-                        "right_column_text": "#binding.fixation_duration.xlabel.1#",
-                        "ylabel": "#binding.fixation_duration.ylabel#",
-                        "yunits": "ms",
-                        "legend_data_set_0": "#binding.fixation_duration.legend.0#",
-                        "legend_data_set_1": "#binding.fixation_duration.legend.1#",
-                        "right_graph": {
-                            "x": 0.52032,
-                            "y": 0.02,
-                            "w": 0.4,
-                            "h": 0.3,
-                            "left_set": [
-                                227.2301,
-                                0.7214,
-                                208.8938,
-                                0.6297
-                            ],
-                            "right_set": [
-                                208.8938,
-                                0.6297,
-                                201.3191,
-                                0.6452
-                            ],
-                            "title": "#binding.fixation_duration.graph_title.1#"
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "#binding.fixation_duration.text#",
-                        "id": "fixation_duration_text",
-                        "x": 0,
-                        "y": [
-                            "fixation_duration_graph",
-                            0.05
-                        ]
-                    },
-                    {
-                        "type": "side_by_side_4_pt_graph",
-                        "id": "num_fixations_graph",
-                        "left_graph": {
-                            "x": 0.07967999999999997,
-                            "y": 0.52,
-                            "w": 0.43200000000000005,
-                            "h": 0.3,
-                            "left_set": [
-                                "&bc.num_fixations.encoding.0&",
-                                "&bc.num_fixations.encoding.1&",
-                                "&uc.num_fixations.encoding.0&",
-                                "&uc.num_fixations.encoding.1&"
-                            ],
-                            "right_set": [
-                                "&bc.num_fixations.retrieval.0&",
-                                "&bc.num_fixations.retrieval.1&",
-                                "&uc.num_fixations.retrieval.0&",
-                                "&uc.num_fixations.retrieval.1&"
-                            ],
-                            "title": "#binding.number_of_fixations.graph_title.0#"
-                        },
-                        "left_column_text": "#binding.number_of_fixations.xlabel.0#",
-                        "right_column_text": "#binding.number_of_fixations.xlabel.1#",
-                        "ylabel": "#binding.number_of_fixations.ylabel#",
-                        "yunits": "",
-                        "legend_data_set_0": "#binding.number_of_fixations.legend.0#",
-                        "legend_data_set_1": "#binding.number_of_fixations.legend.1#",
-                        "right_graph": {
-                            "x": 0.52032,
-                            "y": 0.52,
-                            "w": 0.4,
-                            "h": 0.3,
-                            "left_set": [
-                                9.0752,
-                                0.012,
-                                9.2888,
-                                0.012
-                            ],
-                            "right_set": [
-                                10.7987,
-                                0.0296,
-                                10.5517,
-                                0.0347
-                            ],
-                            "title": "#binding.number_of_fixations.graph_title.1#"
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": "#binding.number_of_fixations.text#",
-                        "id": "num_fixations_graph_text",
-                        "x": 0,
-                        "y": [
-                            "num_fixations_graph",
-                            0.05
                         ]
                     }
                 ]
@@ -1806,6 +1286,7 @@
                         "y": 0.11,
                         "w": 0.3,
                         "h": 0.16666666666666666,
+                        "use_colored_title": true,
                         "label": "#binding.fixation_plotting.row_1#",
                         "title": "#binding.fixation_plotting.title_left#",
                         "resolution": "&resolution&",
@@ -1962,6 +1443,7 @@
                         "y": 0.8099999999999999,
                         "w": 0.3,
                         "h": 0.16666666666666666,
+                        "use_colored_title": true,
                         "label": "#binding.fixation_plotting.control.label#",
                         "title": "#binding.fixation_plotting.title_left#",
                         "legacy": true,
@@ -2154,7 +1636,7 @@
                         "x": 0,
                         "y": 0.01,
                         "w": 1,
-                        "h": 0.1,
+                        "h": 0.08,
                         "value": "&qc_graphs.STUDY_NAME.qc_data_point_index&",
                         "color_code": "",
                         "nsegments": 2,
@@ -2166,9 +1648,9 @@
                         "title": "#qc.fixations.title#",
                         "range_text": "#qc.fixations.subtitle#",
                         "x": 0,
-                        "y": 0.11,
+                        "y": 0.09,
                         "w": 1,
-                        "h": 0.1,
+                        "h": 0.08,
                         "value": "&qc_graphs.STUDY_NAME.qc_fix_index&",
                         "color_code": "",
                         "nsegments": 2,
@@ -2180,9 +1662,9 @@
                         "title": "#qc.sample_rate.title#",
                         "range_text": "#qc.sample_rate.subtitle#",
                         "x": 0,
-                        "y": 0.21000000000000002,
+                        "y": 0.16999999999999998,
                         "w": 1,
-                        "h": 0.1,
+                        "h": 0.08,
                         "value": "&qc_graphs.STUDY_NAME.qc_freq_index&",
                         "color_code": "",
                         "nsegments": 2,
@@ -2191,7 +1673,7 @@
                     {
                         "id": "qc_conclusion",
                         "x": 0.020000000000000018,
-                        "y": 0.354,
+                        "y": 0.31399999999999995,
                         "w": 0.96,
                         "h": 0.12,
                         "type": "pdiag",
@@ -2204,9 +1686,9 @@
                     },
                     {
                         "id": "comment_box",
-                        "x": 0.020000000000000018,
-                        "w": 0.96,
-                        "y": 0.5800000000000001,
+                        "x": 0,
+                        "w": 1,
+                        "y": 0.56,
                         "h": 0.37,
                         "text": "&comment&",
                         "type": "text_box"
@@ -2775,138 +2257,6 @@
             {
                 "title": [
                     {
-                        "text": "#gonogo.page_titles.3.0#",
-                        "py": 0
-                    },
-                    {
-                        "text": "#gonogo.page_titles.3.1#",
-                        "py": 0.5
-                    }
-                ],
-                "items": [
-                    {
-                        "type": "single_4_pt_graph",
-                        "id": "saccadic_behaviour_graph",
-                        "x": 0.3,
-                        "y": 0.02,
-                        "w": 0.4,
-                        "h": 0.3,
-                        "left_column_text": "#gonogo.saccadic_behaviour.xlabel.0#",
-                        "right_column_text": "#gonogo.saccadic_behaviour.xlabel.1#",
-                        "ylabel": "#gonogo.saccadic_behaviour.ylabel#",
-                        "yunits": "",
-                        "legend_data_set_0": "#gonogo.saccadic_behaviour.legend.0#",
-                        "legend_data_set_1": "#gonogo.saccadic_behaviour.legend.1#",
-                        "data_set_left": [
-                            2.916667,
-                            0.1311396,
-                            3.761308,
-                            0.1486889
-                        ],
-                        "data_set_right": [
-                            "&saccade.facilitated_task.0&",
-                            "&saccade.facilitated_task.1&",
-                            "&saccade.inhibite_task.0&",
-                            "&saccade.inhibite_task.1&"
-                        ]
-                    },
-                    {
-                        "type": "text",
-                        "text": "#gonogo.saccadic_behaviour.text#",
-                        "id": "saccadic_behaviour_text",
-                        "x": 0,
-                        "y": [
-                            "saccadic_behaviour_graph",
-                            0.05
-                        ]
-                    },
-                    {
-                        "type": "single_4_pt_graph",
-                        "id": "fixation_duration_graph",
-                        "x": 0.3,
-                        "y": 0.52,
-                        "w": 0.4,
-                        "h": 0.3,
-                        "left_column_text": "#gonogo.fixation_duration.xlabel.0#",
-                        "right_column_text": "#gonogo.fixation_duration.xlabel.1#",
-                        "ylabel": "#gonogo.fixation_duration.ylabel#",
-                        "yunits": "",
-                        "legend_data_set_0": "#gonogo.fixation_duration.legend.0#",
-                        "legend_data_set_1": "#gonogo.fixation_duration.legend.1#",
-                        "data_set_left": [
-                            121.5165,
-                            3.146649,
-                            120.7572,
-                            2.65294
-                        ],
-                        "data_set_right": [
-                            "&duration.facilitated_task.0&",
-                            "&duration.facilitated_task.1&",
-                            "&duration.inhibite_task.0&",
-                            "&duration.inhibite_task.1&"
-                        ]
-                    },
-                    {
-                        "type": "text",
-                        "text": "#gonogo.fixation_duration.text#",
-                        "id": "fixation_duration_text",
-                        "x": 0,
-                        "y": [
-                            "fixation_duration_graph",
-                            0.05
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": [
-                    {
-                        "text": "#gonogo.page_titles.2.0#",
-                        "py": 0
-                    }
-                ],
-                "items": [
-                    {
-                        "type": "single_4_pt_graph",
-                        "id": "gaze_duration_graph",
-                        "x": 0.3,
-                        "y": 0.02,
-                        "w": 0.4,
-                        "h": 0.3,
-                        "left_column_text": "#gonogo.gaze_duration.xlabel.0#",
-                        "right_column_text": "#gonogo.gaze_duration.xlabel.1#",
-                        "ylabel": "#gonogo.gaze_duration.ylabel#",
-                        "yunits": "",
-                        "legend_data_set_0": "#gonogo.gaze_duration.legend.0#",
-                        "legend_data_set_1": "#gonogo.gaze_duration.legend.1#",
-                        "data_set_left": [
-                            525.2137,
-                            6.434115,
-                            563.5136,
-                            6.10936
-                        ],
-                        "data_set_right": [
-                            "&gaze_duration.facilitated_task.0&",
-                            "&gaze_duration.facilitated_task.1&",
-                            "&gaze_duration.inhibite_task.0&",
-                            "&gaze_duration.inhibite_task.1&"
-                        ]
-                    },
-                    {
-                        "type": "text",
-                        "text": "#gonogo.gaze_duration.text#",
-                        "id": "gaze_duration_text",
-                        "x": 0,
-                        "y": [
-                            "gaze_duration_graph",
-                            0.05
-                        ]
-                    }
-                ]
-            },
-            {
-                "title": [
-                    {
                         "text": "#gonogo.page_titles.4.0#",
                         "py": 0
                     }
@@ -2928,6 +2278,7 @@
                         "h": 0.16666666666666666,
                         "label": "#gonogo.fixation_plotting.row_1#",
                         "title": "#gonogo.fixation_plotting.title_left#",
+                        "use_colored_title": true,
                         "resolution": "&resolution&",
                         "gonogo": "G->",
                         "fixations": "&fixations.10&"
@@ -3294,9 +2645,9 @@
                         "type": "color_code",
                         "id": "res_seg_color_code",
                         "x": 0,
-                        "y": 0.85,
+                        "y": 0.78,
                         "w": 1,
-                        "h": 0.15,
+                        "h": 0.13,
                         "color_texts": "#nbackrt.color_code.explanations#",
                         "title": "#nbackrt.color_code.title#"
                     }
@@ -3310,7 +2661,7 @@
                     },
                     {
                         "text": "#nbackrt.page_titles.1.1#",
-                        "py": 0.55
+                        "py": 0.45
                     }
                 ],
                 "items": [
@@ -3388,14 +2739,14 @@
                         "text": "#nbackrt.overall_performance.text#",
                         "id": "overall_performance_explained",
                         "x": 0,
-                        "y": 0.5700000000000001
+                        "y": 0.47000000000000003
                     },
                     {
                         "type": "polygon_graph",
                         "id": "polygon_graph",
-                        "x": 0.35,
-                        "y": 0.675,
-                        "w": 0.3,
+                        "x": 0.3,
+                        "y": 0.575,
+                        "w": 0.4,
                         "levels": [
                             "+1",
                             "0",
@@ -3451,6 +2802,7 @@
                         "y": 0.11,
                         "w": 0.3,
                         "h": 0.16666666666666666,
+                        "use_colored_title": true,
                         "label": "#nbackrt.fixation_plotting.row_1#",
                         "title": "#nbackrt.fixation_plotting.title_left#",
                         "resolution": "&resolution&",
@@ -3541,6 +2893,7 @@
                         "y": 0.8099999999999999,
                         "w": 0.3,
                         "h": 0.16666666666666666,
+                        "use_colored_title": true,
                         "label": "#nbackrt.fixation_plotting.control.label#",
                         "title": "#nbackrt.fixation_plotting.title_left#",
                         "legacy": true,
