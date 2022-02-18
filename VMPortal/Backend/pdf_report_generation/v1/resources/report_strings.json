@@ -64,7 +64,7 @@
                 "yellow": "Mildly Impaired Cognitive Functions & Brain Areas:",
                 "red": "Severely Impaired and\/ or Pathological Cognitive Functions & Brain Areas:",
                 "visual_search": "Visual Search: Basal Ganglia, Superior Colicullus",
-                "gaze_dur": "Gaze: Lateral Parietal Cortex, Medial Prefrontal Cortex (mPFC), Anterior Superior\nTemporal Sulcus (aSTS) ",
+                "gaze_dur": "Gaze: Lateral Parietal Cortex, Medial Prefrontal Cortex (mPFC), Anterior Superior Temporal Sulcus (aSTS) ",
                 "int_mem_perf": "Integrative Memory Functions: Enthorinal Cortex, Perirhinal Cortex",
                 "assoc_mem_perf": "Associative Memory Performance: Hipocampus",
                 "exec_func": "Executive Functions: Prefrontal Cortex",
@@ -174,7 +174,7 @@
                 "row_2": "Trial 20",
                 "row_3": "Trial 32",
                 "control": {
-                    "text": "The Cognitively Healthy Control Fixations Plotting chart displays the fixations performed by a\nCognitively Healthy person, during the Encoding (left) and Recognition (Right) stages, in the Color\nCombination Test.",
+                    "text": "The Cognitively Healthy Control Fixations Plotting chart displays the fixations performed by a Cognitively Healthy person,\nduring the Encoding (left) and Recognition (Right) stages, in the Color Combination Test.",
                     "label": "Example"
                 }
             }
@@ -186,7 +186,20 @@
             "patient": "Patient",
             "age": "Age",
             "motto": "Measurement of Cognitive of Performance and Related\nBrain Areas through Eye-Tracking",
-            "range_text_sd": "SD"
+            "range_text_sd": "SD",
+            "month_list": [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec"
+            ]
         },
         "gonogo": {
             "page_titles": [
@@ -339,7 +352,7 @@
                 ]
             },
             "fixation_plotting": {
-                "text": "The following graphs contain the plotting of the fixations done by the patient (left column) and by a\ncognitively healthy control (right column) while completing the different tasks. Tasks with a green\narrow are referred as facilitated task and red arrows as tasks with interference.\n",
+                "text": "The following graphs contain the plotting of the fixations done by the patient (left column) and by a cognitively healthy\ncontrol (right column) while completing the different tasks. Tasks with a green arrow are referred as facilitated task and\nred arrows as tasks with interference.\n",
                 "title_left": "PATIENT",
                 "title_right": "CONTROL",
                 "row_1": "Trial 10",
@@ -532,7 +545,7 @@
                 "yellow": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad leve:",
                 "red": "Funciones cognitivas y \u00e1reas cerebrales con discapcidad severa y\/o patol\u00f3gica:",
                 "visual_search": "B\u00fasqueda Visual: Ganglia Basal y Col\u00edculo Superior",
-                "gaze_dur": "Memoria de Trabajo Visual: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC),\nSurco Temporal, Superior Anterior (aSTS)",
+                "gaze_dur": "Memoria de Trabajo Visual: Corteza Parietal Lateral, Corteza Prefrontal Medial (mPFC), Surco Temporal, Superior Anterior (aSTS)",
                 "int_mem_perf": "Desempe\u00f1o de Memoria Integradora:  Corteza entorrinal, corteza perirrinal",
                 "assoc_mem_perf": "Desempe\u00f1o de Memoria Asociativa: Hipocampo",
                 "exec_func": "Funciones Ejecutivos: Corteza Prefrontal",
@@ -635,7 +648,7 @@
                 ]
             },
             "fixation_plotting": {
-                "text": "El gr\u00e1fico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20 y 31 en\nCodificaci\u00f3n (izquierda) y Reconocimiento (derecha), de la Tarea de Combinaci\u00f3n de Colores",
+                "text": "El gr\u00e1fico muestra las fijaciones realizadas por el paciente, durante las pruebas 10, 20 y 31 en Codificaci\u00f3n (izquierda) y\nReconocimiento (derecha), de la Tarea de Combinaci\u00f3n de Colores",
                 "title_left": "CODIFICACI\u00d3N",
                 "title_right": "RECONOCIMIENTO",
                 "row_1": "Prueba 10",
@@ -654,7 +667,20 @@
             "patient": "Paciente",
             "age": "Edad",
             "motto": "Medida de Desempe\u00f1o Cognitivo y Preservaci\u00f3n de\n\u00c1reas Cerebrales a trav\u00e9s del Seguimiento Ocular",
-            "range_text_sd": "DE"
+            "range_text_sd": "DE",
+            "month_list": [
+                "Ene",
+                "Feb",
+                "Mar",
+                "Abr",
+                "May",
+                "Jun",
+                "Ago",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec"
+            ]
         },
         "gonogo": {
             "page_titles": [
@@ -804,7 +830,7 @@
                 ]
             },
             "fixation_plotting": {
-                "text": "Los siguientes gr\u00e1ficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control\ncognitivamente saludable (derecha) durante algunas pruebas. Las tareas con flecha verde son las\nfacilitadas miestras que aquellas con flecha roja son con interferencia.",
+                "text": "Los siguientes gr\u00e1ficos muestra las fijaciones realizadas por el paciente (izquierda) y por un control cognitivamente\nsaludable (derecha) durante algunas pruebas. Las tareas con flecha verde son las facilitadas miestras que aquellas\ncon flecha roja son con interferencia.",
                 "title_left": "PACIENTE",
                 "title_right": "CONTROL",
                 "row_1": "Prueba 10",
