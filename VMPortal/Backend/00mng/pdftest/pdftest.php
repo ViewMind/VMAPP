@@ -8,7 +8,7 @@
 
    $script = "$path/$version/pdf_report_generator.js";
    $lang = $json["lang"];
-   $pdfoutput   = "generated_report.pdf";
+   $pdfoutput = "generated_report.pdf";
    $error_log = "error.log";
    
    $cmd = "node $script $lang $report_script $pdfoutput > $error_log 2>&1";

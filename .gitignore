@@ -178,3 +178,4 @@ Scripts/php/reprocess_legacy_data/legacy_data.zip
 *package.json
 VMPortal/Backend/pdf_report_generation/v2/testbed.pdf
 VMPortal/Backend/pdf_report_generation/v1/resources/generated_report.pdf
+Scripts/php/download_and_generate_csvs_for_list_of_ids/work

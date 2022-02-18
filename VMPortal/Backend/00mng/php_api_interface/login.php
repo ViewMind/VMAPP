@@ -3,8 +3,8 @@
 include_once ("api_comm.php");
 include_once ("load_inputs.php");
 
-$credential_file = "./local_credentials.cnf";
-//$credential_file = "production_credentials.cnf";
+//$credential_file = "./local_credentials.cnf";
+$credential_file = "production_credentials.cnf";
 //$credential_file = "devapi_credentials.cnf";
 $inputs_file = "./input.cnf";
 
