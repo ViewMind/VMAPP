@@ -42,7 +42,7 @@ class TableMedicalRecords extends TableBaseClass {
       return $this->simpleSelect($cols_to_get,$select);
    }
 
-   function newMedicalRecord($record){
+   function newMedicalRecord($record,$user_id){
 
       // We generate the unique id.
       $now = new DateTime();
@@ -61,6 +61,7 @@ class TableMedicalRecords extends TableBaseClass {
       }
       $params[self::COL_RECORD] = json_encode($record);
       $params[self::COL_VIEWMIND_ID] = $viewmind_id;
+      $params[self::COL_LAST_MOD_BY] = $user_id;
       $params[self::COL_VALID] = 1;
 
       if (!array_key_exists(self::COL_INSTITUTION_ID,$record)){

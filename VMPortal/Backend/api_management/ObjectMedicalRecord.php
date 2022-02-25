@@ -39,7 +39,7 @@ class ObjectMedicalRecord extends ObjectBaseClass {
       // We need to check if the record is new or not
       if ($identifier == 0){
          // This a new record.
-         $ans = $tmr->newMedicalRecord($record);
+         $ans = $tmr->newMedicalRecord($record,$portal_user);
          if ($ans === false){
             $this->suggested_http_code = 500;
             $this->error = "Portal user $portal_user requested creation for medical record for institution $institution_id but it failed. Reason: " . $tmr->getError();
