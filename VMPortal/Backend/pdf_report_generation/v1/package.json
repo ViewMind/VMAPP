@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "image-size": "^1.0.0",
-    "jspdf": "^2.3.1",
-    "nodeplotlib": "^0.7.5"
-  }
-}
