@@ -292,17 +292,9 @@ Rectangle {
         anchors.top: hmdView.bottom
         anchors.topMargin: VMGlobals.adjustHeight(20)
         radius: VMGlobals.adjustHeight(8)
-        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION)
-
-        onVisibleChanged: {
-            if (visible){
-              console.log("Study explanation is now Visible");
-            }
-            else {
-              console.log("Study Explanation is now HIDDEN");
-            }
-        }
-
+        // Uncomment line below to enable feature.
+        visible: false;
+        //visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION)
 
         Image {
             id: studyExplanationInfoIcon
