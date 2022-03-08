@@ -287,7 +287,9 @@ void FlowControl::connectToEyeTracker(){
         else{
             logger.appendWarning("WARNING: Using Mouse EyeTracker DBug Option");
             eyeTracker = new MouseInterface();
-            static_cast<MouseInterface*>(eyeTracker)->overrideCalibration();
+            static_cast<MouseInterface*>(eyeTracker)->setCalibrationAreaDimensions(configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
+                                                                                   configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
+            //static_cast<MouseInterface*>(eyeTracker)->overrideCalibration();
         }
 
     }
@@ -314,7 +316,7 @@ void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
     // Making sure the right eye is used, in both the calibration and the experiment.
     selected_eye_to_use = eye_to_use;
     //selected_eye_to_use = VMDC::Eye::toInt(eye_to_use);
-    qDebug() << "Setting eye to use to " << eye_to_use;
+    //qDebug() << "Setting eye to use to " << eye_to_use;
     eyeTracker->setEyeToTransmit(selected_eye_to_use);
 
     // qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;

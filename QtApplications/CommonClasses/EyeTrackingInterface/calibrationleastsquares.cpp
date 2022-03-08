@@ -3,6 +3,7 @@
 CalibrationLeastSquares::CalibrationLeastSquares()
 {
     connect(&calibrationTimer,&QTimer::timeout,this,&CalibrationLeastSquares::calibrationTimeInTargetUp);
+    connect(&calibrationTargets,&CalibrationTargets::newImageAvailable,this,&CalibrationLeastSquares::newCalibrationFrameAvailable);
     isCalibratingFlag = false;
 }
 
@@ -16,13 +17,14 @@ bool CalibrationLeastSquares::CalibrationData::isValid(){
     return (eyeData.size() >= 2 );
 }
 
-QString CalibrationLeastSquares::CalibrationData::toString() const{
-    QString ans = "[";
+QString CalibrationLeastSquares::CalibrationData::toString(bool justRef) const{
+    QString ans = "Reference for point (" + QString::number(x_reference) + "," + QString::number(y_reference) + ") -> [\n";
+    if (justRef) return ans;
     for (qint32 i = 0; i < eyeData.size(); i++){
-        ans = ans + QString::number(eyeData.at(i).xr) + " "
-                + QString::number(eyeData.at(i).yr) + " "
-                + QString::number(eyeData.at(i).xl) + " "
-                + QString::number(eyeData.at(i).yl) + ";\n";
+        ans = ans + "   " +  QString::number(eyeData.at(i).xr) + " "
+                + "   " + QString::number(eyeData.at(i).yr) + " "
+                + "   " + QString::number(eyeData.at(i).xl) + " "
+                + "   " + QString::number(eyeData.at(i).yl) + ";\n";
     }
     ans.remove(ans.length()-1,1);
     ans= ans + "];";
@@ -30,7 +32,8 @@ QString CalibrationLeastSquares::CalibrationData::toString() const{
 }
 
 QImage CalibrationLeastSquares::getCurrentCalibrationImage() const{
-    return currentCalibrationImage;
+    //return currentCalibrationImage;
+    return calibrationTargets.getCurrentFrame();
 }
 
 bool CalibrationLeastSquares::isCalibrating() const{
@@ -48,6 +51,14 @@ void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, flo
     }
 }
 
+void CalibrationLeastSquares::newCalibrationFrameAvailable(bool isTransitionDone){
+    if (isTransitionDone){
+        //qDebug() << "Transition is done. Starting calibration timer for wait time";
+        calibrationTimer.start(CALIBRATION_WAIT_TIME);
+    }
+    emit CalibrationLeastSquares::newCalibrationImageAvailable();
+}
+
 void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 height, qint32 npoints){
 
     // Initializing the calibration image generator.
@@ -56,6 +67,8 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
     // Getting the centers of all the targets to be drawn.
     QList<QPointF> calibrationPoints = calibrationTargets.setupCalibrationSequence(npoints);
 
+    //qDebug() << "STARTING CALIBRATION SEQUENCE with " << calibrationPoints.size() << "points";
+
     // Creating the data point list.
     collectedCalibrationDataPoints.clear();
     for (qint32 i = 0; i < calibrationPoints.size(); i++){
@@ -63,47 +76,57 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
         cd.x_reference = calibrationPoints.at(i).x();
         cd.y_reference = calibrationPoints.at(i).y();
         collectedCalibrationDataPoints << cd;
+        //qDebug() << "Added calibration point init as" << cd.toString();
     }
 
     // Initializing the index and the structure for current collecting
-    currentCalibrationPointIndex = -1;
     isCalibratingFlag = true;
-    isDataGatheringEnabled = true;
-    calibrationTimeInTargetUp();
+    currentlyCollectingCalibrationPoints = collectedCalibrationDataPoints.first();
+    isDataGatheringEnabled = false;
+
+
+    //calibrationTimeInTargetUp();
+    calibrationTargets.nextSingleTarget();
 
 }
 
 void CalibrationLeastSquares::calibrationTimeInTargetUp(){
+
     calibrationTimer.stop();
+
+    // Safety check as the application calls this function AFTER the calibration has finished, one last time.
+    // if (currentCalibrationPointIndex >= collectedCalibrationDataPoints.size()) return;
 
     if (isDataGatheringEnabled){
 
         // This means that the We finished data gathreing and we should move on.
-        if (currentCalibrationPointIndex >= 0){
-            collectedCalibrationDataPoints[currentCalibrationPointIndex] = currentlyCollectingCalibrationPoints;
+        if (calibrationTargets.getCurrentlyShownTarget() >= 0){
+            //qDebug() << "Storing collected calibration data with reference" << currentlyCollectingCalibrationPoints.toString(true);
+            collectedCalibrationDataPoints[calibrationTargets.getCurrentlyShownTarget()] = currentlyCollectingCalibrationPoints;
         }
 
         // Checking if we are done.
-        if (currentCalibrationPointIndex == (collectedCalibrationDataPoints.size()-1)){
+        //qDebug() << "Comparing calibration index with " << calibrationTargets.getCurrentlyShownTarget() << " last expected index of " << (collectedCalibrationDataPoints.size()-1);
+        if (calibrationTargets.getCurrentlyShownTarget() == (collectedCalibrationDataPoints.size()-1)){
             isDataGatheringEnabled = false;
             isCalibratingFlag = false;
             //qDebug() << "Throwing Calibration Done";
-            emit(calibrationDone());
+            emit CalibrationLeastSquares::calibrationDone();
             return;
         }
 
-        currentCalibrationPointIndex++;
-        //qDebug() << "Calibrating point" << currentCalibrationPointIndex;
-        currentlyCollectingCalibrationPoints = collectedCalibrationDataPoints.at(currentCalibrationPointIndex);
-        currentCalibrationImage = calibrationTargets.nextSingleTarget();
+        //qDebug() << "Calibration least squares calling calibration next single target";
+        calibrationTargets.nextSingleTarget();
 
-        emit(newCalibrationImageAvailable());
-        calibrationTimer.start(CALIBRATION_WAIT_TIME);
+        //qDebug() << "Obtained new calibration point" << currentlyCollectingCalibrationPoints.toString(true) << " for index " << calibrationTargets.getCurrentlyShownTarget();
+        currentlyCollectingCalibrationPoints = collectedCalibrationDataPoints.at(calibrationTargets.getCurrentlyShownTarget());
+
         isDataGatheringEnabled = false;
     }
     else{
         // This means that we just finished waiting for the first part of the target. So we can start collecting data.
         isDataGatheringEnabled = true;
+        //qDebug() << "Start calibration timer for gathering data";
         calibrationTimer.start(CALIBRATION_GATHER_TIME);
     }
 
@@ -111,7 +134,7 @@ void CalibrationLeastSquares::calibrationTimeInTargetUp(){
 
 bool CalibrationLeastSquares::computeCalibrationCoeffs(){
 
-    QList<QPoint> calibrationPoints;
+    //QList<QPoint> calibrationPoints;
 
     // Getting the calibration points
     LeastSquaresData xr;
@@ -120,7 +143,8 @@ bool CalibrationLeastSquares::computeCalibrationCoeffs(){
     LeastSquaresData yl;
 
     for (int i = 0; i < collectedCalibrationDataPoints.size(); i++){
-        CalibrationData d = collectedCalibrationDataPoints.at(i);
+        CalibrationData d = collectedCalibrationDataPoints.at(i);                
+
         if (!d.isValid()) {
             ///qDebug() << "Calibration failed because a calibration data contains less that two values. Which means that NO DATA was gathered for a given calibration point";
             return false;
@@ -130,6 +154,8 @@ bool CalibrationLeastSquares::computeCalibrationCoeffs(){
         //QPoint point(static_cast<qint32>(d.xl.first()),static_cast<qint32>(d.yl.first()));
         qreal targetX = d.x_reference;
         qreal targetY = d.y_reference;
+
+        //qDebug().noquote() << d.toString();
 
         // Appending the list to the correspodning Least Squeres Struc
         for (qint32 i = 0; i < d.eyeData.size(); i++){
@@ -204,10 +230,13 @@ CalibrationLeastSquares::LinearCoeffs CalibrationLeastSquares::LeastSquaresData:
         return  lc;
     }
     else lc.valid = true;
+
+    //qDebug() << "Dividing by det " << det << " when calculating the coefficients";
     qreal im11 = m22/det;
     qreal im12 = -m12/det;
     qreal im21 = -m21/det;
     qreal im22 = m11/det;
+    //qDebug() << "After the division";
 
     // Target value vector
     lc.b = im11*t1 + im12*t2;

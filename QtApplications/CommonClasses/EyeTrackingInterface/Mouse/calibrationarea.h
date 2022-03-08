@@ -9,6 +9,8 @@
 #include <QGraphicsView>
 #include <QVBoxLayout>
 #include <QGraphicsEllipseItem>
+#include <QGraphicsPixmapItem>
+#include <QPixmap>
 #include <QDebug>
 #include <QtMath>
 
@@ -19,25 +21,27 @@ public:
     explicit CalibrationArea(QWidget *parent = nullptr);
 
     // Advances to the next calibration point. Returns true ONLY when the calibration is done.
-    bool isInCalibrationPoint(int x, int y);
-    void setAutoCalibration(bool autoc) {autoCalibrate = autoc;}
+    //bool isInCalibrationPoint(int x, int y);
+    //void setAutoCalibration(bool autoc) {autoCalibrate = autoc;}
+
+    void setCurrentImage(const QImage &toshow);
 
 signals:
     void calibrationCanceled();
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
-    void showEvent(QShowEvent *event) override;
+    //void showEvent(QShowEvent *event) override;
 
 private:
-    QGraphicsEllipseItem *calibrationTarget;
     QGraphicsView *gview;
-    QList<QPoint> calibrationPoints;
-    qint32 currentPoint;
-    qreal R;
-    bool autoCalibrate;
+//    QGraphicsEllipseItem *calibrationTarget;
+//    QList<QPoint> calibrationPoints;
+//    qint32 currentPoint;
+//    qreal R;
+//    bool autoCalibrate;
 
-    void drawCalibrationPoint();
+    //void drawCalibrationPoint();
 
 };
 
