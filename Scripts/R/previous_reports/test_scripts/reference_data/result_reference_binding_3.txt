@@ -1,2 +1,0 @@
-"Deterioro" "predicted_Deterioro" "predicted_group" "id" "mdur" "sdpupila" "mgaze" "sdnf" "mscore" "sdao" "sdgaze"
-"1" "NO" 0.738 "NO" NA 172.401812688822 0.157855249672374 1800.45921450151 1.63012022647418 68.75 2.64451783804776 118.426504499061

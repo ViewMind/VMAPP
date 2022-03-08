@@ -1,8 +1,0 @@
-#!/bin/bash
-
-./compile_eyedbmng
-./compile_eyerepgen
-./compile_eyeserver
-./compile_eyeupdaterserver
-./compile_monitoreyeserver
-./compile_monitoreyeupdaterserver
