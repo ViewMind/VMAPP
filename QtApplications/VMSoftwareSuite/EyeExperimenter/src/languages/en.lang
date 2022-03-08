@@ -241,6 +241,162 @@ update_close = CLOSE;
 update_download_wait = Please wait while we download the update;
 update_failed_message = <b>Update process failed</b><br>Please contanct viewmind team for support;
 
+#********************************* Text Loop Explanations *********************************
+explanation_gonogo = 
+This is the Go/No-Go test
+A cross will appear in the center of the screen. Look at the cross.
+The cross will disappear, and an arrow will appear.
+If the arrow is green, quickly look at a point in the direction of the arrow. 
+If the arrow is Red, you must quickly look in the opposite direction.
+We will now do some practice rounds|
+In this case, you should look at the point in the left|
+Again, you should look at the cross|
+Now, at the point in the right|
+Remember to look at the cross after each trial|||;
+
+explanation_binding_bc = 
+This is the Color Combination Test
+A cross will appear in the center of the screen. Look at the cross.|
+The cross will disappear and 2 (or 3) targets will appear. The targets 
+are composed of a square of one color, with a cross in its center of 
+another color. Remember the color combination of each target.
+After 2 seconds, the targets will disappear|
+A new group of targets will appear|
+You must identify if the color combination of each target remained the 
+same or if the colors have been swapped between targets.
+If the color combination is the same, you must quickly say “Same” out loud. 
+If the colors swapped from one target into another, quickly say “Different”.
+The first 10 exercises are a practice round. 
+They will not be considered in the results.||||||||||||||||;
+
+explanation_binding_uc =
+This is the New Colors Test
+Like in the other exercise, a cross will appear in the center of the screen. 
+Look at the cross.|
+The cross will disappear, and 2 (or 3) targets will appear.
+Remember the colors present in the targets.
+After 2 seconds, the targets will disappear|
+A new group of targets will appear|
+You must identify if new colors appeared. The color combination is not 
+important. If a new color appeared, you must quickly say “Different” 
+out loud. Otherwise, say “Same”. The first 10 exercises are a practice 
+round. They will not be considered in the results.||||||||||||||||;
+
+explanation_nbackrt =
+This is the N-back RT test
+The test is composed of 6 boxes and a central cross. 
+Look at the cross|
+A red circle will appear in one of the boxes. 
+Don’t take your eyes of the cross |
+The circle disappears and reappears on another box |
+Finally, the circle disappears and reappears on another box. 
+Remember not to take your eyes of the cross while the 
+circles appear|
+You must remember the location and the order in which the red circles 
+appeared. When the cross disappears, you must quickly look at the box where 
+the third circle appeared, then where the second one appeared, and finally 
+where the first one appeared. This is the inverse order in which they appeared.|||||||||||||||;
+
+explanation_nbackms = 
+This is the N-back MS test
+The test is composed of 6 boxes and a central cross. Look at the cross|
+A red circle will appear in one of the boxes. 
+Don’t take your eyes of the cross |
+The circle disappears and reappears on another box|
+Finally, the circle disappears and reappears on another box. 
+Remember not to take your eyes of the cross while the circles appear |
+You must remember the location and the order in which the red circles 
+appeared. |
+The cross will disappear, and a number 3 will appear. 
+You must quickly look at the box where the third circle appeared. |
+Then the number 2 will appear. 
+Quickly look at the box where the second circle appeared. |
+And finally, the number 1 will appear. 
+Quickly look at the box where the first circle appeared. 
+You must look at the circles in the inverse order in which they appeared.;
+
+explanation_nbackvs_3 = 
+This is the N-back Variable Speed test
+The test is composed of 6 boxes and a central cross. 
+Look at the cross|
+A red circle will appear in one of the boxes. 
+Don’t take your eyes of the cross |
+The circle disappears and reappears on another box |
+Finally, the circle disappears and reappears on another box. 
+Remember not to take your eyes of the cross while the 
+circles appear|
+You must remember the location and the order in which the red circles 
+appeared. When the cross disappears, you must quickly look at the box where 
+the last circle appeared, then where the second to last appeared and so on 
+until you looked at all the boxes where circles appeared.
+If you hit the correct box in the sequece, it will quicly flash
+As you hit correct sequences, the circles will be shown for less time.
+As you fail sequences the circles will be shown for more time. 
+|||||||||||||||;
+
+explanation_nbackvs_4 = 
+This is the N-back Variable Speed test
+The test is composed of 6 boxes and a central cross. 
+Look at the cross|
+A red circle will appear in one of the boxes. 
+Don’t take your eyes of the cross |
+The circle disappears and reappears on another box |
+The circle disappears and reappears on another box |
+Finally, the circle disappears and reappears on another box. 
+Remember not to take your eyes of the cross while the 
+circles appear|
+You must remember the location and the order in which the red circles 
+appeared. When the cross disappears, you must quickly look at the box where 
+the last circle appeared, then where the second to last appeared and so on 
+until you looked at all the boxes where circles appeared.
+If you hit the correct box in the sequece, it will quicly flash
+As you hit correct sequences, the circles will be shown for less time.
+As you fail sequences the circles will be shown for more time. 
+||||||||||||||||||;
+
+explanation_nbackvs_5 = 
+This is the N-back Variable Speed test
+The test is composed of 6 boxes and a central cross. 
+Look at the cross|
+A red circle will appear in one of the boxes. 
+Don’t take your eyes of the cross |
+The circle disappears and reappears on another box |
+The circle disappears and reappears on another box |
+The circle disappears and reappears on another box |
+Finally, the circle disappears and reappears on another box. 
+Remember not to take your eyes of the cross while the 
+circles appear|
+You must remember the location and the order in which the red circles 
+appeared. When the cross disappears, you must quickly look at the box where 
+the last circle appeared, then where the second to last appeared and so on 
+until you looked at all the boxes where circles appeared.
+If you hit the correct box in the sequece, it will quicly flash
+As you hit correct sequences, the circles will be shown for less time.
+As you fail sequences the circles will be shown for more time. 
+|||||||||||||||||||||;
+
+explanation_nbackvs_6 = 
+This is the N-back Variable Speed test
+The test is composed of 6 boxes and a central cross. 
+Look at the cross|
+A red circle will appear in one of the boxes. 
+Don’t take your eyes of the cross |
+The circle disappears and reappears on another box |
+The circle disappears and reappears on another box |
+The circle disappears and reappears on another box |
+The circle disappears and reappears on another box |
+Finally, the circle disappears and reappears on another box. 
+Remember not to take your eyes of the cross while the 
+circles appear|
+You must remember the location and the order in which the red circles 
+appeared. When the cross disappears, you must quickly look at the box where 
+the last circle appeared, then where the second to last appeared and so on 
+until you looked at all the boxes where circles appeared.
+If you hit the correct box in the sequece, it will quicly flash
+As you hit correct sequences, the circles will be shown for less time.
+As you fail sequences the circles will be shown for more time. 
+||||||||||||||||||||||||;
+
 #********************************* LABELING *********************************
 label_vm_body = <b>VIEWMIND S.A</b><br>Av. Belgrano Nro. 758, Ciudad de Sunchales Santa Fe, Argentina.<br>
 DT: Eng. Matias Shulz, MP: 1-3105-9;

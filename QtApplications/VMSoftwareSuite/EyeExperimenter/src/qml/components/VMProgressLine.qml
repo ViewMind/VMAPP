@@ -186,6 +186,9 @@ Rectangle {
         //console.log([widestFont,internal.vmLargeD,internal.vmHAirMainPoint])
         width = widestFont + internal.vmLargeD + internal.vmHAirMainPoint + internal.vmLineWidth*2
 
+        // The width is expanded a bit to make sure all text fits.
+        width = width*1.1;
+
         // To estimate the height it's the Number of Main States (N) + (N-2) connectors + length of the largest subchain.
         var largestChainHeight = internal.vmInterSegmentLength + 2*internal.vmAirInterSegmentBubble
         if (N > 0){

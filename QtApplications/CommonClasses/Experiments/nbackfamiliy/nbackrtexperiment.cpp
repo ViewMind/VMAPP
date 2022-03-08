@@ -197,8 +197,10 @@ void NBackRTExperiment::nextState(){
         tstate = TSF_START;
 
         currentTrial++;
+        //qDebug() << "NBack Current Trial" << currentTrial;
         if (m->getLoopValue() != -1){
             if (currentTrial > m->getLoopValue()){
+                //qDebug() << "NBack Setting current trial to zero";
                 currentTrial = 0;
             }
         }
@@ -375,7 +377,7 @@ QVariantMap NBackRTExperiment::addHitboxesToProcessingParameters(QVariantMap pp)
         modHitBoxes << static_cast<QVariant>(hitbox);
     }
 
-    qDebug() << "NBACK HITBOXES" << modHitBoxes;
+    //qDebug() << "NBACK HITBOXES" << modHitBoxes;
 
     // Store them as part of the processing parameters.
     pp.insert(VMDC::ProcessingParameter::NBACK_HITBOXES,modHitBoxes);

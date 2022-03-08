@@ -431,6 +431,14 @@ ViewBase {
             if (event.key === allowed_keys[i]){
                 //console.log("Passing on event key " + event.key)
                 flowControl.keyboardKeyPressed(event.key);
+
+                // Calling the advance explanation phrase logic.
+                if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_EXPLANATION){
+                    if (event.key === Qt.Key_N){
+                       evaluationRun.nextExplanationPhrase();
+                    }
+                }
+
                 return;
             }
         }

@@ -14,12 +14,15 @@ Rectangle {
     property bool vmInCalibration: false
     property int vmCurrentEvaluation: 0
 
+    property var vmExplanationTextArray: []
+    property int vmExplanationTextIndex: -1
+
     signal allEvalsDone();
 
     Connections{
         target: flowControl
         function onExperimentHasFinished (){
-            messageDisplay.visible = false;
+
             if (!flowControl.isExperimentEndOk()){
                 flowControl.generateWaitScreen("");
                 mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewevaluation_err_badend_study"))
@@ -55,7 +58,6 @@ Rectangle {
         }
         function onNewExperimentMessages(string_value_map){
 
-            messageDisplay.visible = true;
             let list = "<ul>"
             for (let key in string_value_map){
                 let message = loader.getStringForKey(key);
@@ -81,6 +83,38 @@ Rectangle {
         // Next state in the state machine.
         vmEvaluationStage = vmSTAGE_EXPLANATION;
 
+        // Loading the explanation text for the study.
+
+        // We load the text explanation depending on the study.
+        let unique_study_id = parseInt(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmUNIQUE_STUDY_ID]);
+        if (unique_study_id === VMGlobals.vmINDEX_GONOGO){
+            vmExplanationTextArray = loader.getStringListForKey("explanation_gonogo");            
+        }
+        else if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
+            vmExplanationTextArray = loader.getStringListForKey("explanation_binding_bc");
+        }
+        else if (unique_study_id === VMGlobals.vmINDEX_BINDING_UC){
+            vmExplanationTextArray = loader.getStringListForKey("explanation_binding_uc");
+        }
+        else if (unique_study_id === VMGlobals.vmINDEX_NBACKRT){
+            vmExplanationTextArray = loader.getStringListForKey("explanation_nbackrt");
+        }
+        else if (unique_study_id === VMGlobals.vmINDEX_NBACKVS){
+            let ntargets = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmSCP_NUMBER_OF_TARGETS]
+            vmExplanationTextArray = loader.getStringListForKey("explanation_nbackvs_" + ntargets);
+            //console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation]));
+            //vmExplanationTextArray = loader.getStringListForKey("explanation_nbackvs_3");
+        }
+        else if (unique_study_id === VMGlobals.vmINDEX_NBACKMS){
+            vmExplanationTextArray = loader.getStringListForKey("explanation_nbackms");
+        }
+        else {
+            vmExplanationTextArray = [""];
+        }
+
+        vmExplanationTextIndex = -1;
+        nextExplanationPhrase();
+
         // Button text must change to the next action, which is to start evaluation.
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"")
         var stageNames = loader.getStringListForKey("viewevaluation_evaluation_steps")
@@ -92,7 +126,10 @@ Rectangle {
         let current_study = evalTitle.text
         setStudyAndStage(current_study,stageNames[vmSTAGE_EXPLANATION])
 
+        //viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation]
+
         // Now we need to activate explanation mode. First step is creating the study file.
+
         if (!loader.createSubjectStudyFile(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation],
                                            viewEvaluations.vmSelectedDoctor,viewEvaluations.vmSelectedProtocol)){
             let title = loader.getStringForKey("viewevaluation_err_programming");
@@ -118,6 +155,7 @@ Rectangle {
     }
 
     function onNextButtonPressed(){
+        //console.log("PRESSED the NEXT Button in Stage" + vmEvaluationStage)
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
             if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
             else {
@@ -145,14 +183,24 @@ Rectangle {
             allEvalsDone()
         }
         else {
-
             // Changing the evaluation name and resetting the stage.
             vmEvaluationStage = vmSTAGE_CALIBRATION
             let studyAndStage = progressLine.getCurrentTexts();
             evaluationRun.setStudyAndStage(studyAndStage[0],studyAndStage[1])
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_calibrate"),"")
-
         }
+    }
+
+    function nextExplanationPhrase(){
+        vmExplanationTextIndex++;
+        // Modulus operation in order to ensure circularity.
+        vmExplanationTextIndex = (vmExplanationTextIndex % vmExplanationTextArray.length)
+        let phrase = vmExplanationTextArray[vmExplanationTextIndex];
+        studyExplanationText.text = phrase;
+    }
+
+    onVmEvaluationStageChanged: {
+        console.log("Evaluation STAGE CHANGED TO: " + vmEvaluationStage);
     }
 
     Text {
@@ -190,6 +238,7 @@ Rectangle {
         anchors.left: evalTitle.left
     }
 
+    // Message to display study progress messages.
     Rectangle {
         id: messageDisplay
         width: hmdView.width
@@ -199,7 +248,15 @@ Rectangle {
         anchors.top: hmdView.bottom
         anchors.topMargin: VMGlobals.adjustHeight(20)
         radius: VMGlobals.adjustHeight(8)
-        visible: false
+        visible: (vmEvaluationStage === vmSTAGE_EVALUATION)
+        onVisibleChanged: {
+            if (visible){
+              console.log("Message DISPLAY is now Visible");
+            }
+            else {
+              console.log("Message DISPLAY is now HIDDEN");
+            }
+        }
 
         Image {
             id: info_icon
@@ -225,6 +282,51 @@ Rectangle {
         }
 
     }
+
+    Rectangle {
+        id: studyExplantionDisplay
+        width: hmdView.width
+        color: VMGlobals.vmBlueVeryLightBkg
+        height: VMGlobals.adjustHeight(155)
+        anchors.left: hmdView.left
+        anchors.top: hmdView.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(20)
+        radius: VMGlobals.adjustHeight(8)
+        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION)
+
+        onVisibleChanged: {
+            if (visible){
+              console.log("Study explanation is now Visible");
+            }
+            else {
+              console.log("Study Explanation is now HIDDEN");
+            }
+        }
+
+
+        Image {
+            id: studyExplanationInfoIcon
+            source: "qrc:/images/info_blue.png"
+            height: VMGlobals.adjustHeight(21.5)
+            fillMode: Image.PreserveAspectFit
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.topMargin: VMGlobals.adjustHeight(10)
+            anchors.leftMargin: VMGlobals.adjustWidth(21.25)
+        }
+
+        Text {
+            id: studyExplanationText
+            color: VMGlobals.vmBlackText
+            font.pixelSize: VMGlobals.vmFontBaseSize
+            font.weight: 400
+            anchors.top: studyExplanationInfoIcon.top
+            anchors.left: studyExplanationInfoIcon.right
+            anchors.leftMargin: VMGlobals.adjustWidth(12.25)
+        }
+
+    }
+
 
     Rectangle {
         id: keysRect

@@ -37,6 +37,8 @@ QtObject {
     readonly property color vmBluePanelBKGSelected:     "#DDEAF6"
     readonly property color vmBlueButtonPressed:        "#2883D3"
     readonly property color vmBlueNotSortIndicator:     "#B7D4ED"
+    readonly property color vmBlueVeryLightBkg:         "#EEF7FF";
+
 
     readonly property color vmGrayUnselectedBorder:     "#D8DDE8"
     readonly property color vmGrayAccented:             "#939393"
