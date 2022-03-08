@@ -33,6 +33,7 @@
    $item["y"] = $row_y;
    $item["w"] = $w;
    $item["h"] = $h;
+   $item["use_colored_title"] = true;
    $item["label"] = "#binding.fixation_plotting.row_1#";
    $item["title"] = "#binding.fixation_plotting.title_left#";
    $item["resolution"] = "&resolution&";
@@ -127,6 +128,7 @@
    $item["y"] = $row_y;
    $item["w"] = $w;
    $item["h"] = $h;
+   $item["use_colored_title"] = true;
    $item["label"] = "#binding.fixation_plotting.control.label#";
    $item["title"] = "#binding.fixation_plotting.title_left#";
    $item["legacy"] = true;

@@ -33,6 +33,7 @@
    $item["h"] = $h;
    $item["label"] = "#gonogo.fixation_plotting.row_1#";
    $item["title"] = "#gonogo.fixation_plotting.title_left#";
+   $item["use_colored_title"] = true;
    $item["resolution"] = "&resolution&";
    $item["gonogo"] = "G->";
    $item["fixations"] = "&fixations.10&";

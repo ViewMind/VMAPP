@@ -53,6 +53,23 @@
       const WEB_PORTAL                 = 1;
       const DISTRIBUTION_SITE          = 2;
       const ADMIN_SITE                 = 4;
+
+      static function canLoginToPortal($role){
+         return self::canLogin($role,self::WEB_PORTAL);
+      }
+
+      static function canLoginToAdminSite($role){
+         return self::canLogin($role,self::ADMIN_SITE);
+      }
+
+      static function canLoginToDistribution($role){
+         return self::canLogin($role,self::DISTRIBUTION_SITE);
+      }
+
+      private static function canLogin($role,$mask){
+         return (($role & $mask) === $mask);
+      }
+
    }
   
    abstract class AuthValues extends TypedString {
@@ -89,6 +106,7 @@
       const INSTITUTION            = "institution";
       const SUBJECTS               = "subjects";
       const MEDICAL_RECORDS        = "medical_record";
+      const INSTANCES              = "instances";
    }
 
    abstract class PortalUserOperations extends TypedString {
@@ -121,12 +139,15 @@
       const ROLE                    = "role";
       const DISCARDED               = "discarded";
       const INSTITUTION             = "institution";
+      const EYETRACKER_KEY          = "et-key";
    }
 
    abstract class EndpointBodyActions extends TypedString {
       const CREATE                  = "create";
       const GET                     = "get";
       const SET                     = "set";
+      const LIST                    = "list";
+      const LINK                    = "link";
    }
 
    abstract class URLSearchCriteria extends TypedString {

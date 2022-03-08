@@ -77,7 +77,7 @@
    $page["items"][] = $item;
 
    $item = [];
-   $poly_graph_w = 0.3;
+   $poly_graph_w = 0.4;
    $item["type"] = "polygon_graph";
    $item["id"]   = "polygon_graph";
    $item["x"] = (1 - $poly_graph_w)/2;

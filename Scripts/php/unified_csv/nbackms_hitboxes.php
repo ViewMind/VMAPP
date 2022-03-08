@@ -124,6 +124,25 @@ function nbackMSHitBoxes ($resolutionWidth, $resolutionHeight){
 
 }
 
+
+function createComplimentaryNBackMSFile($input_json_file){
+    $pathinfo = pathinfo($input_json_file);
+    $dirname = $pathinfo["dirname"];
+    $fname   = $pathinfo["filename"];
+    $output_file = "$dirname/$fname-whb.json";
+ 
+    $json = json_decode(file_get_contents($input_json_file),true);
+    $h = $json["processing_parameters"]["resolution_height"];
+    $w = $json["processing_parameters"]["resolution_width"];
+    $json["processing_parameters"]["nback_hitboxes"] = nbackMSHitBoxes($w,$h);
+ 
+    $fid = fopen($output_file,"w");
+    fwrite($fid,json_encode($json));
+    fclose($fid);
+
+    return $output_file;
+}
+
 // $res = [1920, 1080];
 // $w = $res [0];
 // $h = $res[1];

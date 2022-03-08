@@ -43,6 +43,9 @@ const doc = new jsPDF();
 const font_dir = script_path + "/resources/encoded_fonts";
 Utils.Utils.loadFonts(doc,font_dir);
 
+// Configuring the dimension mapper
+Utils.DimensionMapper.configure(doc.internal.pageSize.getWidth(),doc.internal.pageSize.getHeight())
+
 // Getting the list of page layouts.
 const report_type = report.report_type;
 
@@ -72,6 +75,9 @@ page_data.leftBoxData[language.common.date] = report.date + " " + hour;
 
 page_data.rightBoxData[language.common.patient] = report.patient;
 page_data.rightBoxData[language.common.age] = report.age;
+
+page_data.langKey = language.common;
+page_data.langMonthList = language.common.month_list
 
 page_data.path = script_path;
 

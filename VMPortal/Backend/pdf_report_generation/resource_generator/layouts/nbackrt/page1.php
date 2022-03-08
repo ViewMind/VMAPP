@@ -121,8 +121,8 @@
    $item = [];
    $item["type"] = "color_code";
    $item["id"]   = "res_seg_color_code";
-   $h = 0.15;
-   $y = 1 - $h;
+   $h = 0.13;
+   $y = 0.78;
    $item["x"]               = 0;
    $item["y"]               = $y;
    $item["w"]               = 1;

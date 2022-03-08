@@ -60,6 +60,10 @@ class TablePortalUsers extends TableBaseClass {
       APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN, PortalUserOperations::LOGOUT ]
    ];
 
+   private const CLEAN_PERMISSIONS = [
+      APIEndpoints::PORTAL_USERS => [ PortalUserOperations::MODIFY_OWN, PortalUserOperations::LOGOUT ]
+   ];
+
    private const MED_REC_PERMISSIONS = [
       APIEndpoints::MEDICAL_RECORDS => [ MedRecordsOperations::MODIFY, MedRecordsOperations::GET, MedRecordsOperations::LIST ]
    ];
@@ -86,6 +90,10 @@ class TablePortalUsers extends TableBaseClass {
 
    static function getMasterAdminPermissions(){
       return self::MASTER_ADMIN_PERMISSIONS;
+   }
+
+   static function getCleanPermissions(){
+      return self::CLEAN_PERMISSIONS;
    }
 
    function getPermissionsForEmailList($email_list){
@@ -121,37 +129,37 @@ class TablePortalUsers extends TableBaseClass {
       return $this->generated_auth_token;
    }
 
-   function addAPIUserOnly($params){
-      $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
-      $params[self::COL_ENABLED] = self::ENABLED;
-      return $this->addPortalUser($params);
-   }
+   // function addAPIUserOnly($params){
+   //    $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
+   //    $params[self::COL_ENABLED] = self::ENABLED;
+   //    return $this->addPortalUser($params);
+   // }
    
-   function addMedicalRoleUser($params){
-      if (!array_key_exists(self::COL_PERMISSIONS,$params)){
-         // If permissions weren't provided, then standard permissions are set. 
-         $params[self::COL_PERMISSIONS] = json_encode(self::STANDARD_PORTAL_USER_PERMISSIONS);
-      }
-      $params[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
-      return $this->addPortalUser($params);
-   }
+   // function addMedicalRoleUser($params){
+   //    if (!array_key_exists(self::COL_PERMISSIONS,$params)){
+   //       // If permissions weren't provided, then standard permissions are set. 
+   //       $params[self::COL_PERMISSIONS] = json_encode(self::STANDARD_PORTAL_USER_PERMISSIONS);
+   //    }
+   //    $params[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
+   //    return $this->addPortalUser($params);
+   // }
 
-   function addInstitutionAdminRole($params){
-      if (!array_key_exists(self::COL_PERMISSIONS,$params)){
-         // If permissions weren't provided, then standard permissions are set. 
-         $params[self::COL_PERMISSIONS] = json_encode(self::STANDARD_PORTAL_USER_PERMISSIONS);
-      }
-      $params[self::COL_USER_ROLE] = self::ROLE_INTITUTION_ADMIN;
-      return $this->addPortalUser($params);
-   }
+   // function addInstitutionAdminRole($params){
+   //    if (!array_key_exists(self::COL_PERMISSIONS,$params)){
+   //       // If permissions weren't provided, then standard permissions are set. 
+   //       $params[self::COL_PERMISSIONS] = json_encode(self::STANDARD_PORTAL_USER_PERMISSIONS);
+   //    }
+   //    $params[self::COL_USER_ROLE] = self::ROLE_INTITUTION_ADMIN;
+   //    return $this->addPortalUser($params);
+   // }
 
-   function addAPIOnlyUser($params){
-      // When creating an api user only, the permissions NEED to be provided. 
-      $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
-      return $this->addPortalUser($params,true);
-   }
+   // function addAPIOnlyUser($params){
+   //    // When creating an api user only, the permissions NEED to be provided. 
+   //    $params[self::COL_USER_ROLE] = self::ROLE_API_USER_ONLY;
+   //    return $this->addPortalUser($params,true);
+   // }
 
-   private function addPortalUser($params, $force_enabled = false){
+   function addPortalUser($params, $force_enabled = false){
 
       $this->mandatory = [self::COL_NAME, self::COL_LASTNAME, self::COL_EMAIL, self::COL_USER_ROLE, self::COL_PERMISSIONS];
       
@@ -165,7 +173,7 @@ class TablePortalUsers extends TableBaseClass {
       else $params[self::COL_ENABLED] = self::PENDING; // All users are created with a pending status. 
 
       $ans = $this->insertionOperation($params,"Adding a Portal User");
-      if ($ans === FALSE) return;
+      if ($ans === false) return false;
 
       // We need to return the creation Token.
       $select = new SelectOperation();
@@ -185,6 +193,7 @@ class TablePortalUsers extends TableBaseClass {
 
       $operation = new SelectOperation();
       if (is_numeric($email_or_id)) {
+         // This is so that we can query either via email or keyid. 
          if (!$operation->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_KEYID,$email_or_id)){
             $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
             return false;   
@@ -219,7 +228,8 @@ class TablePortalUsers extends TableBaseClass {
       return $ret;
    }
 
-   function getAllNamesForIDList($id_list, $roles, $enabled_status){
+   function getAllNamesForIDList($id_list, $enabled_status){
+      
       $cols_to_get = [self::COL_KEYID, self::COL_EMAIL, self::COL_NAME, self::COL_LASTNAME, self::COL_USER_ROLE];
       $operation = new SelectOperation();
       
@@ -227,15 +237,7 @@ class TablePortalUsers extends TableBaseClass {
          $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
          return false;   
       }
-      
-      
-      if (!empty($roles)) {
-         // Roles are limited ONLY if the list is not empty. 
-         if (!$operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_USER_ROLE, $roles)){
-            $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $operation->getError();
-            return false;   
-         }
-      }
+            
       if (!empty($enabled_status)){
          // Enable status is limited ONLY if the list is not empty. 
          if (!$operation->addConditionToANDList(SelectColumnComparison::IN, self::COL_ENABLED, $enabled_status)){
@@ -243,6 +245,7 @@ class TablePortalUsers extends TableBaseClass {
             return false;   
          }
       }
+
       return $this->simpleSelect($cols_to_get,$operation);
    }
 
@@ -287,6 +290,7 @@ class TablePortalUsers extends TableBaseClass {
       return $this->updateOperation($params,"Update Own User",self::COL_KEYID,$user);
 
    }
+
 
    function confirmPortalUser($email, $token){
       /// TODO: 
@@ -341,20 +345,20 @@ class TablePortalUsers extends TableBaseClass {
 
    }
 
-   function addNonLoginParterUsers($insert){
+   // function addNonLoginParterUsers($insert){
       
-      $insert[self::COL_PERMISSIONS] = "{}";
-      $insert[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
-      $insert[self::COL_ENABLED] = self::NOLOG;
+   //    $insert[self::COL_PERMISSIONS] = "{}";
+   //    $insert[self::COL_USER_ROLE] = self::ROLE_MEDICAL;
+   //    $insert[self::COL_ENABLED] = self::NOLOG;
 
-      //var_dump($insert);
+   //    //var_dump($insert);
 
-      $this->avoided = [self::COL_PASSWD, self::COL_TOKEN, self::COL_TOKEN_EXPIRATION, self::COL_CREATION_TOKEN, self::COL_KEYID];
-      $this->mandatory = [self::COL_EMAIL, self::COL_PARTNER_ID, self::COL_LASTNAME, self::COL_NAME, self::COL_PERMISSIONS, self::COL_USER_ROLE, self::COL_ENABLED];
+   //    $this->avoided = [self::COL_PASSWD, self::COL_TOKEN, self::COL_TOKEN_EXPIRATION, self::COL_CREATION_TOKEN, self::COL_KEYID];
+   //    $this->mandatory = [self::COL_EMAIL, self::COL_PARTNER_ID, self::COL_LASTNAME, self::COL_NAME, self::COL_PERMISSIONS, self::COL_USER_ROLE, self::COL_ENABLED];
 
-      return $this->insertionOperation($insert,"Inserting NonLoginPartner ",true);
+   //    return $this->insertionOperation($insert,"Inserting NonLoginPartner ",true);
 
-   }
+   // }
 
    function getUsersPermission($unique_id){
       $select = new SelectOperation();
@@ -372,7 +376,14 @@ class TablePortalUsers extends TableBaseClass {
       if ($role != -1){
          $params[self::COL_USER_ROLE] = $role;
       }
-      return $this->updateOperation($params,"Setting Portal User Permissions",self::COL_EMAIL,$unique_id);
+
+      // This is done so that we can update on either mail or numerica ID acconding to convenience
+      $col_on_update = self::COL_EMAIL;
+      if (is_numeric($unique_id)){
+         $col_on_update = self::COL_KEYID;
+      }
+
+      return $this->updateOperation($params,"Setting Portal User Permissions",$col_on_update,$unique_id);
    }
 
    function addPermissionsToAll($to_add){
@@ -401,6 +412,26 @@ class TablePortalUsers extends TableBaseClass {
 
       return $this->batchUpdate($update,self::COL_KEYID,self::COL_PERMISSIONS);
 
+   }
+
+   function listEnabledUsers($id_pool = array()){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_ENABLED,self::ENABLED)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;   
+      }
+
+      if (is_array($id_pool)){
+         if (!empty($id_pool)){
+            if (!$select->addConditionToANDList(SelectColumnComparison::IN_NO_BIND,self::COL_KEYID,$id_pool)){
+               $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+               return false;   
+            }      
+         }
+      }
+
+      $cols_to_get = [self::COL_NAME,self::COL_LASTNAME,self::COL_EMAIL,self::COL_KEYID];
+      return $this->simpleSelect($cols_to_get,$select);
    }
 
 }

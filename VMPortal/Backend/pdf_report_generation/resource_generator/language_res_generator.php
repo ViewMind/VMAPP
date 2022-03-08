@@ -8,7 +8,7 @@
  */
 
 $languages = array();
-$output = "../v1/resources/report_strings.json";
+$output = "../v2/resources/report_strings.json";
 
 $lang_dir_path = "languages";
 $lang_dirs = scandir($lang_dir_path);

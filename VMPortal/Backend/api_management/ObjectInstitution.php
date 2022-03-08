@@ -14,6 +14,9 @@ class ObjectInstitution extends ObjectBaseClass{
 
    private const ApplicationFileName = "app.zip";
 
+   private const OP_FIELD_ID = "id";
+   private const OP_FIELD_ACTION = "action";
+
    function __construct($service,$headers){
       parent::__construct($service,$headers);
       $this->portal_users = new ObjectPortalUsers($service,$headers);
@@ -284,6 +287,119 @@ class ObjectInstitution extends ObjectBaseClass{
       }
 
       return array();      
+
+   }
+
+   function operate($identifier,$parameters){
+
+      // Action is always mandatory. 
+      if (!array_key_exists(self::OP_FIELD_ACTION,$this->json_data)){
+         $this->suggested_http_code = 401;
+         $this->error = "The request body must contain the 'action' field";
+         return false;            
+      }
+
+      // Creating the table elements.
+      $ti = new TableInstitution($this->con_main);
+
+      $action = $this->json_data[self::OP_FIELD_ACTION];
+
+      $possible_keys = [
+         TableInstitution::COL_INSTITUTION_NAME,
+         TableInstitution::COL_ADDRESS,
+         TableInstitution::COL_COUNTRY,
+         TableInstitution::COL_EMAIL,
+         TableInstitution::COL_STATE_OR_PROVINCE,
+         TableInstitution::COL_POSTAL_CODE,
+         TableInstitution::COL_PHONE_NUMBER,
+      ];
+
+      if (($action === EndpointBodyActions::CREATE) || ($action === EndpointBodyActions::SET)) {
+
+         $creating = ($action === EndpointBodyActions::CREATE);
+
+         if ($creating) {
+            if (!array_key_exists(TableInstitution::COL_INSTITUTION_NAME, $this->json_data)) {
+                $this->suggested_http_code = 401;
+                $this->error = "The request body must contain the 'instituion_name' field when creating a new institution";
+                return false;
+            }
+         }
+         else {
+            if (!array_key_exists(self::OP_FIELD_ID, $this->json_data)) {
+               $this->suggested_http_code = 401;
+               $this->error = "The request body must contain the 'id' field when modifying a institution";
+               return false;
+           }
+         }
+
+         // Copying whichever parameters are present. 
+         $params = array();
+         foreach ($possible_keys as $key){
+            if (array_key_exists($key,$this->json_data)){
+               $params[$key] = $this->json_data[$key];
+            }
+         }
+
+         // Creating or updating.
+         if ($creating) {
+            $ans = $ti->createInstitution($params);
+         }
+         else {
+            $ans = $ti->updateInstitution($this->json_data[self::OP_FIELD_ID],$params);
+         }
+
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in creating or updating institution. Reason: " . $ti->getError();
+            $this->returnable_error = "Failed in creation/modification of instituion. Internal DB error";
+            return false;
+         }
+
+         // Nothing to return.
+         return array();
+
+      }
+      else if ($action === EndpointBodyActions::LIST){
+         // This requires no parameters. 
+         $ans = $ti->getInstitutionNameMap();
+
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in retrieving institution name map. Reason: " . $ti->getError();
+            $this->returnable_error = "Internal DB error";
+            return false;
+         }
+
+         return $ans;
+
+      }
+      else if ($action === EndpointBodyActions::GET){
+
+         if (!array_key_exists(self::OP_FIELD_ID, $this->json_data)) {
+            $this->suggested_http_code = 401;
+            $this->error = "The request body must contain the 'id' field when getting an institution";
+            return false;
+         }
+
+         $iid = $this->json_data[self::OP_FIELD_ID];
+
+         $ans = $ti->getInstitutionInformationFor([$iid]);
+         if ($ans === false){
+            $this->suggested_http_code = 500;
+            $this->error = "Failed in retrieving institution $iid. Reason: " . $ti->getError();
+            $this->returnable_error = "Internal DB error";
+            return false;
+         }
+
+         return $ans[0];
+
+      }
+      else {
+         $this->suggested_http_code = 401;
+         $this->error = "Unknwon action $action when operating on institutions";
+         return false;                  
+      }
 
    }
 

@@ -79,7 +79,7 @@ function computeStandardDeviations($categories){
 
 }
 
-$output_file = "../v1/resources/report_layouts.json";
+$output_file = "../v2/resources/report_layouts.json";
 $layout = array();
 $layout_path = "layouts";
 

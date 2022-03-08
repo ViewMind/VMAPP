@@ -53,6 +53,7 @@
          $this->returnable_error = "";
          $this->should_do_operation = true;
          $this->user_info = array();
+         $this->json_data = array();
 
 
          //error_log(json_encode($post_data));
@@ -151,6 +152,23 @@
          }
 
          else if ($this->auth_type == AuthValues::VMPARTNER){
+
+            if (!array_key_exists(HeaderFields::AUTHORIZATION,$headers)){
+               $this->error = "Missing header 'Authorization' field in headers. Headers present are: " . implode(",",array_keys($headers));
+               $this->returnable_error = "Missing header required for transaction: Authorization";
+               $this->http_code = 403;
+               return;   
+            }
+
+            // If not present, login type is assumed by default to be portal. 
+            if (!array_key_exists(HeaderFields::LOGIN_TYPE,$headers)){
+               $this->login_type = LoginMasks::WEB_PORTAL;
+            }
+            else {
+               $this->login_type = intval($headers[HeaderFields::LOGIN_TYPE]);
+            }
+
+
             $authorization = $headers[HeaderFields::AUTHORIZATION];
             $parts = explode(":",$authorization);
             if (count($parts) != 2){
@@ -289,7 +307,7 @@
          // Checking the role value to see if the user can, in effect login to the requested site. 
          $role = intval($user_info[TablePortalUsers::COL_USER_ROLE]);
          $this->login_type = intval($this->login_type);
-         error_log("Doing $role LOGIC AND " . $this->login_type . " Result is " . ($role & $this->login_type));
+         //error_log("Doing $role LOGIC AND " . $this->login_type . " Result is " . ($role & $this->login_type));
          if (($role & $this->login_type) !== $this->login_type){
             $this->http_code = 403;
             $this->error = "User " . $this->username . " is attempting to login to a website to which they are not allowed. Requestesd site: " . $this->login_type . " User role: $role";
@@ -530,7 +548,17 @@
             $this->error = "Failed to decode JSON for permissiosn for user " . $this->user_id . ". JSON string: " . $user_info[TablePortalUsers::COL_PERMISSIONS];
             return false;
          }
-         $this->dbuser = DBCon::DB_SERVICE_PARTNERS;
+         
+         // The user to use, depends on where the user is attempting to log. At this point the user role check has been done, so the user has the permissions. 
+         if ($this->login_type === LoginMasks::ADMIN_SITE){
+            $this->dbuser = DBCon::DB_SERVICE_ADMIN;
+         }
+         else if ($this->login_type === LoginMasks::DISTRIBUTION_SITE){
+            $this->dbuser  = DBCon::DB_SERVICE_DISTRIBUTION;
+         }
+         else $this->dbuser = DBCon::DB_SERVICE_PARTNERS;
+
+         //error_log("Login type is " . $this->login_type . " So user is " . $this->dbuser);
 
          if (!hash_equals($user_info[TablePortalUsers::COL_TOKEN],$this->token)){
             $this->http_code = 401;

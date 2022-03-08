@@ -32,6 +32,7 @@ include_once ("api_management/ObjectInstitution.php");
 include_once ("api_management/ObjectReports.php");
 include_once ("api_management/ObjectSubjects.php");
 include_once ("api_management/ObjectMedicalRecord.php");
+include_once ("api_management/ObjectInstances.php");
 include_once ("api_management/RateLimiter.php");
 
 /////////////////////////////// GETTING THE RIGHT IP ///////////////////////////
@@ -241,7 +242,7 @@ if (array_key_exists($object,$permissions)){
       if ($ans === false){
          // Something went wrong. 
          // error_log("Returning when something went wrong. Sending code: " . $operating_object->getSugesstedHTTPCode() . " and message " . $operating_object->getReturnableError());
-         $base_log->logError($operating_object->getError());
+         $base_log->logError( "$class::$operation -> " . $operating_object->getError());
          $res[ResponseFields::MESSAGE] = $operating_object->getReturnableError();
          $res[ResponseFields::HTTP_CODE] = $operating_object->getSugesstedHTTPCode();
          http_response_code($operating_object->getSugesstedHTTPCode());

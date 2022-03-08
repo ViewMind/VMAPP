@@ -173,3 +173,11 @@ Scripts/php/unified_csv/raw_data/
 Scripts/php/dl_raw_data/
 Scripts/php/reprocess_legacy_data/.directory
 Scripts/php/reprocess_legacy_data/legacy_data.zip
+*node_modules*
+*package-lock.json
+*package.json
+VMPortal/Backend/pdf_report_generation/v2/testbed.pdf
+VMPortal/Backend/pdf_report_generation/v1/resources/generated_report.pdf
+Scripts/php/download_and_generate_csvs_for_list_of_ids/work
+Scripts/php/download_and_generate_csvs_for_list_of_ids/data.zip
+VMAPI/

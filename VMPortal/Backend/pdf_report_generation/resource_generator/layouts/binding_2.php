@@ -80,8 +80,8 @@
   $pages = [];
   $pages[] = include("binding/page1_2T.php");
   $pages[] = include("binding/page2_2T.php");
-  $pages[] = include("binding/page3_2T.php");
-  $pages[] = include("binding/page4_2T.php");
+  //$pages[] = include("binding/page3_2T.php");
+  //$pages[] = include("binding/page4_2T.php");
   $pages[] = include("binding/page5_2T.php");
 
   $ret["pages"] = $pages;

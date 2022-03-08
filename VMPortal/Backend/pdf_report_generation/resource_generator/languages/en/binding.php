@@ -40,7 +40,7 @@
  $report["affected_areas"]["yellow"] = "Mildly Impaired Cognitive Functions & Brain Areas:";
  $report["affected_areas"]["red"] = "Severely Impaired and/ or Pathological Cognitive Functions & Brain Areas:";
  $report["affected_areas"]["visual_search"] = "Visual Search: Basal Ganglia, Superior Colicullus";
- $report["affected_areas"]["gaze_dur"] = "Gaze: Lateral Parietal Cortex, Medial Prefrontal Cortex (mPFC), Anterior Superior\nTemporal Sulcus (aSTS) ";
+ $report["affected_areas"]["gaze_dur"] = "Gaze: Lateral Parietal Cortex, Medial Prefrontal Cortex (mPFC), Anterior Superior Temporal Sulcus (aSTS) ";
  $report["affected_areas"]["int_mem_perf"] = "Integrative Memory Functions: Enthorinal Cortex, Perirhinal Cortex";
  $report["affected_areas"]["assoc_mem_perf"] = "Associative Memory Performance: Hipocampus";
  $report["affected_areas"]["exec_func"] = "Executive Functions: Prefrontal Cortex";
@@ -105,7 +105,7 @@ $report["presumptive_diagnosis"]["texts_2T"] = [
  $report["fixation_plotting"]["row_1"] = "Trial 10";
  $report["fixation_plotting"]["row_2"] = "Trial 20";
  $report["fixation_plotting"]["row_3"] = "Trial 32";
- $report["fixation_plotting"]["control"]["text"] = "The Cognitively Healthy Control Fixations Plotting chart displays the fixations performed by a\nCognitively Healthy person, during the Encoding (left) and Recognition (Right) stages, in the Color\nCombination Test.";
+ $report["fixation_plotting"]["control"]["text"] = "The Cognitively Healthy Control Fixations Plotting chart displays the fixations performed by a Cognitively Healthy person,\nduring the Encoding (left) and Recognition (Right) stages, in the Color Combination Test.";
  $report["fixation_plotting"]["control"]["label"] = "Example";
  
  return $report;

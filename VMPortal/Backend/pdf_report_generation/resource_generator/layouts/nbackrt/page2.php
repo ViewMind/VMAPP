@@ -1,6 +1,6 @@
 <?php
    $page = array();
-   $ysubtitle = 0.55;
+   $ysubtitle = 0.45;
    $page["title"] = [
       ["text" => "#nbackrt.page_titles.1.0#", "py" => 0],
       ["text" => "#nbackrt.page_titles.1.1#", "py" => $ysubtitle]
@@ -84,7 +84,7 @@
    $page["items"][] = $item;
 
    $item = [];
-   $poly_graph_w = 0.3;
+   $poly_graph_w = 0.4;
    $item["type"] = "polygon_graph";
    $item["id"]   = "polygon_graph";
    $item["x"] = (1 - $poly_graph_w)/2;

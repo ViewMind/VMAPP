@@ -182,8 +182,7 @@ class TableUpdates extends TableBaseClass {
          $update_params[self::COL_VERSION_STRING][] = $new_version;
       }
 
-      $ans = $this->insertionOperation($update_params,"Updating to new version $new_version");
-      return $ans;
+      return $this->insertionOperation($update_params,"Updating to new version $new_version");
 
    }
 
@@ -242,6 +241,25 @@ class TableUpdates extends TableBaseClass {
       // Finally inserting the new rows.
       return $this->insertionOperation($insertion_array,"Inserting new rows for all valid update");
 
+   }
+
+   function getLatestVersion(){
+      $select = new SelectOperation();
+      $select->setExtra(SelectExtras::ORDER,self::COL_VERSION_STRING);
+      $select->setExtra(SelectExtras::ORDER_DIRECTION,SelectOrderDirection::DESC);
+      $select->setExtra(SelectExtras::LIMIT,1);
+      $ans = $this->simpleSelect([self::COL_VERSION_STRING],$select);
+      if ($ans === false) return false;
+      else return $ans[0][self::COL_VERSION_STRING];
+   }
+
+   function listCurrentVersionForAllInstances(){
+      $select = new SelectOperation();
+      if (!$select->addConditionToANDList(SelectColumnComparison::EQUAL,self::COL_VALID,1)){
+         $this->error = static::class . "::" . __FUNCTION__ . " Failed form SELECT. Reason: " . $select->getError();
+         return false;
+      }
+      return $this->simpleSelect([],$select);
    }
 
 }

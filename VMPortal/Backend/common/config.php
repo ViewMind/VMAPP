@@ -14,7 +14,8 @@ const ROUTING = [
    APIEndpoints::REPORTS         => "ObjectReports",
    APIEndpoints::PORTAL_USERS    => "ObjectPortalUsers",
    APIEndpoints::SUBJECTS        => "ObjectSubjects",
-   APIEndpoints::MEDICAL_RECORDS => "ObjectMedicalRecord"
+   APIEndpoints::MEDICAL_RECORDS => "ObjectMedicalRecord",
+   APIEndpoints::INSTANCES       => "ObjectInstances"
 ];
 
 // Loading the pointer location

@@ -14,6 +14,8 @@ class RouteParser {
    }
    
    function tokenizeURL($path,$endpoints_tokens_to_skip){
+
+      //error_log("Path to tokenize " . $path);
    
       $route_and_parameters = explode("?",$path);
       if (count($route_and_parameters) > 2){
@@ -26,7 +28,7 @@ class RouteParser {
       $parameters = "";
       if (count($route_and_parameters) == 2) {
          // Route and Parameters         
-         $parameters = $route_and_parameters[1];
+         $parameters = $route_and_parameters[1];         
       }
 
       // Splitting the route. 
