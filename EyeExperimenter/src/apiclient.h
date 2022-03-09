@@ -8,7 +8,7 @@
 #include <QProcess>
 #include <QFileInfo>
 #include <QMessageAuthenticationCode>
-#include "../../../CommonClasses/RestAPIController/restapicontroller.h"
+#include "../../CommonClasses/RestAPIController/restapicontroller.h"
 #include "eyexperimenter_defines.h"
 
 class APIClient : public QObject

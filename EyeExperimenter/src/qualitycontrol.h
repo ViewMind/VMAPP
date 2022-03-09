@@ -2,7 +2,7 @@
 #define QUALITYCONTROL_H
 
 #include <QThread>
-#include "../../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
+#include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 #include "eyexperimenter_defines.h"
 
 class QualityControl: public QThread

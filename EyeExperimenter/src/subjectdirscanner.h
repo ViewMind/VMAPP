@@ -2,7 +2,7 @@
 #define SUBJECTDIRSCANNER_H
 
 #include <QDir>
-#include "../../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
+#include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 #include "eyexperimenter_defines.h"
 
 class SubjectDirScanner

@@ -5,8 +5,8 @@
 #include <QApplication>
 #include <QSslSocket>
 
-#include "../../../CommonClasses/LogInterface/loginterface.h"
-#include "../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h"
+#include "../../CommonClasses/LogInterface/loginterface.h"
+#include "../../CommonClasses/QMLQImageDisplay/qimagedisplay.h"
 #include "loader.h"
 #include "flowcontrol.h"
 

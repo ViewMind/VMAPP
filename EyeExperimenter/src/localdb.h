@@ -11,8 +11,8 @@
 #include <QDir>
 #include <QTextStream>
 #include <QDebug>
-#include "../../../CommonClasses/debug.h"
-#include "../../../CommonClasses/RawDataContainer/VMDC.h"
+#include "../../CommonClasses/debug.h"
+#include "../../CommonClasses/RawDataContainer/VMDC.h"
 
 
 namespace APINames {

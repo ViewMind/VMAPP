@@ -11,10 +11,10 @@
 #include <QElapsedTimer>
 #include <QDesktopServices>
 
-#include "../../../CommonClasses/LogInterface/loginterface.h"
-#include "../../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../../CommonClasses/RestAPIController/orbitpartnerapi.h"
-#include "../../../CommonClasses/RestAPIController/partnerapi.h"
+#include "../../CommonClasses/LogInterface/loginterface.h"
+#include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
+#include "../../CommonClasses/RestAPIController/orbitpartnerapi.h"
+#include "../../CommonClasses/RestAPIController/partnerapi.h"
 #include "eyexperimenter_defines.h"
 #include "countries.h"
 #include "localdb.h"

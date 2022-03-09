@@ -5,8 +5,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <iostream>
-#include "../../../CommonClasses/Experiments/experiment.h"
-#include "../../../CommonClasses/eyetracker_defines.h"
+#include "../../CommonClasses/Experiments/experiment.h"
+#include "../../CommonClasses/eyetracker_defines.h"
 
 namespace Globals{
 
