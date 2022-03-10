@@ -160,7 +160,7 @@ waitscreenmsg_studyEnd = El estudio ha finalizado;
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
-vieqc_study = Estudio;
+viewqc_study = Estudio;
 viewqc_dr    = Doctor;
 viewqc_wait_msg = Por favor espere mientras la calidad del estudio es verificada;
 viewqc_qc_failed = <b>Control de Calidad Ha Fallado</b><br>Por favor contacte a ViewMind para soporte;
@@ -196,7 +196,7 @@ other-Otro;
 viewqc_reason = Motivo por la cual se archiva;
 viewqc_archive_reason_ph = Seleccione el motivo ...;
 viewqc_comment_ph = Ingrese su comentario;
-viewqc_send_wait = Por favor espere mientras la inforamción es enviada a nuestros servidores;
+viewqc_send_wait = Por favor espere mientras la información es enviada a nuestros servidores;
 viewqc_evaluator_comments = Los comentarios del evaluador serán incluídos en el reporte final;
 viewqc_archive_studies = Archivar Estudios;
 viewQC_commentSizeError = Solo se permiten un máximo de <<L>> líneas de hasta <<C>> caracterers cada una;
