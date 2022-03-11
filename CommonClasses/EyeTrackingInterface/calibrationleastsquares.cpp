@@ -38,6 +38,7 @@ bool CalibrationLeastSquares::isCalibrating() const{
 }
 
 void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, float xr, float yr){
+    //qDebug() << "Adding data points for calibration" << xl << yl << xr << yr;
     if (isDataGatheringEnabled){
         EyeInputData eid;
         eid.xl = static_cast<qreal>(xl);
@@ -65,6 +66,8 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
         collectedCalibrationDataPoints << cd;
     }
 
+    //qDebug() << "startingUpCalibration Seq. Number of Colleted Calibration Data Points Structs Created: " << collectedCalibrationDataPoints.size();
+
     // Initializing the index and the structure for current collecting
     currentCalibrationPointIndex = -1;
     isCalibratingFlag = true;
@@ -88,7 +91,7 @@ void CalibrationLeastSquares::calibrationTimeInTargetUp(){
             isDataGatheringEnabled = false;
             isCalibratingFlag = false;
             //qDebug() << "Throwing Calibration Done";
-            emit(calibrationDone());
+            emit CalibrationLeastSquares::calibrationDone();
             return;
         }
 
@@ -97,7 +100,7 @@ void CalibrationLeastSquares::calibrationTimeInTargetUp(){
         currentlyCollectingCalibrationPoints = collectedCalibrationDataPoints.at(currentCalibrationPointIndex);
         currentCalibrationImage = calibrationTargets.nextSingleTarget();
 
-        emit(newCalibrationImageAvailable());
+        emit CalibrationLeastSquares::newCalibrationImageAvailable();
         calibrationTimer.start(CALIBRATION_WAIT_TIME);
         isDataGatheringEnabled = false;
     }
@@ -111,16 +114,19 @@ void CalibrationLeastSquares::calibrationTimeInTargetUp(){
 
 bool CalibrationLeastSquares::computeCalibrationCoeffs(){
 
-    QList<QPoint> calibrationPoints;
-
     // Getting the calibration points
     LeastSquaresData xr;
     LeastSquaresData yr;
     LeastSquaresData xl;
     LeastSquaresData yl;
 
+    //qDebug() << "computeCalibrationCoefss. Number of Colleted Calibration Data Points Structs To Use: " << collectedCalibrationDataPoints.size();
+
     for (int i = 0; i < collectedCalibrationDataPoints.size(); i++){
         CalibrationData d = collectedCalibrationDataPoints.at(i);
+
+        //qDebug() << "Collected Calibration Data for point " << i << d.eyeData.size();
+
         if (!d.isValid()) {
             ///qDebug() << "Calibration failed because a calibration data contains less that two values. Which means that NO DATA was gathered for a given calibration point";
             return false;

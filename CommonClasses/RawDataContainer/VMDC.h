@@ -79,7 +79,8 @@ namespace VMDC {
        static const QString TARGET_SIZE        = "target_size";
        static const QString PERCEPTION_TYPE    = "perception_type";
        static const QString PERCEPTION_PART    = "perception_part";
-       static const QStringList valid{VALID_EYE,LANGUAGE,NUMBER_TARGETS,TARGET_SIZE,PERCEPTION_TYPE,PERCEPTION_PART};
+       static const QString NBACK_LIGHT_ALL    = "nback_light_all";
+       static const QStringList valid{VALID_EYE,LANGUAGE,NUMBER_TARGETS,TARGET_SIZE,PERCEPTION_TYPE,PERCEPTION_PART,NBACK_LIGHT_ALL};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
@@ -228,13 +229,23 @@ namespace VMDC {
        static const QString CORRECT_RESPONSE  = "correct_response";
        static const QString TRIAL_TYPE        = "trial_type";
        static const QString ID                = "ID";
-       static const QStringList valid{DATA,RESPONSE,TRIAL_TYPE,ID};
+       static const QString METADATA          = "metadata";
+       static const QStringList valid{DATA,RESPONSE,TRIAL_TYPE,ID,METADATA};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Trial Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
     }
-    
+
+    namespace TrialMetadataField {
+       static const QString NBACK_HOLD_TIME   = "nback_hold_time";
+       static const QStringList valid{NBACK_HOLD_TIME};
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Trial Metadata Field"); }
+       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
+       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+    }
+
     
     namespace MetadataField {
        static const QString DATE = "date";

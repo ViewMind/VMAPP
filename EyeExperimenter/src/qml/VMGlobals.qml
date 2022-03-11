@@ -117,6 +117,7 @@ QtObject {
     readonly property string vmSCP_TARGET_SIZE:              "target_size";
     readonly property string vmSCP_BINDING_TYPE:             "binding_type";
     readonly property string vmSCP_PERCEPTION_PART:          "perception_part";
+    readonly property string vmSCP_NBACK_LIGHTUP:            "nback_light_all"
 
     // Study configuration parameter values
     readonly property string vmSCV_BINDING_TARGETS_2:        "2";
@@ -152,6 +153,7 @@ QtObject {
     readonly property string vmSCO_OPTION_NAME:              "option_name"
     readonly property string vmSCO_OPTION_VAlUES:            "option_values"
     readonly property string vmSCO_OPTION_SELECTED:          "option_selected"
+    readonly property string vmSCO_OPTION_WIDTH:             "option_width"
 
     // This is only for UI unique identification
     readonly property string vmUNIQUE_STUDY_ID :             "unique_study_id";

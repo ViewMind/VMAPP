@@ -27,6 +27,8 @@ NBackRTExperiment::NBackRTExperiment(QWidget *parent, const QString &study_type)
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&NBackRTExperiment::onTimeOut);
 
+    // Making sure that by default the light up all value is false
+    lightUpAll = false;
 
 }
 
@@ -40,7 +42,12 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         nbackConfig.startHoldTime            = NBACKVS_START_HOLD_TIME;
         nbackConfig.numberOfTrialsForChange  = NBACKVS_NTRIAL_FOR_STEP_CHANGE;
         nbackConfig.numberOfTargets          = studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt();
-        trialRecognitionMachine.lightUpSquares = true;
+        if (!studyConfig.value(VMDC::StudyParameter::NBACK_LIGHT_ALL).toBool()){
+            trialRecognitionMachine.lightUpSquares = true;
+        }
+        else {
+            lightUpAll = true;
+        }
     }
     else{
         // Variable Speed configuration for DEFAULT NBACK RT.
@@ -112,7 +119,6 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     }
 
     return true;
-
 }
 
 void NBackRTExperiment::onTimeOut(){
@@ -319,7 +325,6 @@ void NBackRTExperiment::resetStudy(){
     nbackConfig.resetVSStateMachine();
 }
 
-
 void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
 
@@ -342,6 +347,25 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
         bool litUp = false;
         bool isOver = trialRecognitionMachine.isSequenceOver(lastFixationR,lastFixationL,m,&litUp);
+
+        // NOTE. If light up all is true lit up will NEVER be true. As the flag tellign to light up the correct sequence fixation box will be false.
+        if (lightUpAll){
+
+            // If lightUpAll is enabled, we use the data gathering eye to figure out if a fixation hast started (or finished) in a target box.
+            // And if it has we light it up anyways.
+
+            Fixation fixationToUse;
+            if (trialRecognitionMachine.useRightEye) fixationToUse = lastFixationR;
+            else fixationToUse = lastFixationL;
+
+            if (fixationToUse.hasStarted() || fixationToUse.hasFinished()){
+                qint32 targetBoxToLightUp = m->pointIsInWhichTargetBox(fixationToUse.getX(),fixationToUse.getY());
+                if (targetBoxToLightUp != -1){
+                    litUp = m->lightUpBox(targetBoxToLightUp);
+                }
+            }
+
+        }
 
         if (litUp){
             updateSecondMonitorORHMD();
@@ -384,7 +408,6 @@ QVariantMap NBackRTExperiment::addHitboxesToProcessingParameters(QVariantMap pp)
     return pp;
 }
 
-
 void NBackRTExperiment::nextEncodingDataSetType(){
     // A very very complicated way of doing a counter due to the way I defined the data set types as enum.
     // But at least is clean.
@@ -410,7 +433,11 @@ bool NBackRTExperiment::addNewTrial(){
     currentTrialID = QString::number(currentTrial);
 
     if (!manualMode){
-        if (!rawdata.addNewTrial(currentTrialID,type,"")){
+
+        QVariantMap metadata;
+        metadata[VMDC::TrialMetadataField::NBACK_HOLD_TIME] = nbackConfig.getCurrentHoldTime();
+
+        if (!rawdata.addNewTrial(currentTrialID,type,"",metadata)){
             error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
             return false;
         }
@@ -515,7 +542,6 @@ void NBackRTExperiment::VariableSpeedAndTargetNumberConfig::adjustSpeed(){
 
     wasSequenceCompleted = false;
 }
-
 
 
 qint32 NBackRTExperiment::VariableSpeedAndTargetNumberConfig::getCurrentHoldTime() const{

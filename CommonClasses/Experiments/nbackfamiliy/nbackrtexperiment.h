@@ -89,6 +89,9 @@ private:
     // Flag use to sincronize data writing to the file.
     bool ignoreData;
 
+    // Flag used to see if we need to light up all squares as soon as a fixations is formed.
+    bool lightUpAll;
+
     // Advancing to the next state
     void nextState();
 

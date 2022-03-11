@@ -414,6 +414,8 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     }
     else if (study == VMDC::Study::NBACKVS){
         valid_parameter_values[VMDC::StudyParameter::NUMBER_TARGETS] = VMDC::NBackVSTargetCount::valid;
+        QStringList boolean; boolean << "true" << "false";
+        valid_parameter_values[VMDC::StudyParameter::NBACK_LIGHT_ALL] = boolean;
     }
     else if ( (study == VMDC::Study::PERCEPTION_1) || (study == VMDC::Study::PERCEPTION_2) || (study == VMDC::Study::PERCEPTION_3) || (study == VMDC::Study::PERCEPTION_4) ||
               (study == VMDC::Study::PERCEPTION_5) || (study == VMDC::Study::PERCEPTION_6) || (study == VMDC::Study::PERCEPTION_7) || (study == VMDC::Study::PERCEPTION_8) ){
@@ -476,12 +478,21 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     }
     else if (study == VMDC::Study::NBACKVS){
         config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString();
+        if (finalStudyConfiguration.value(VMDC::StudyParameter::NBACK_LIGHT_ALL).toBool()){
+            config_code = config_code + "A";
+        }
+        else {
+            config_code = config_code + "S";
+        }
         abbreviation = "vs";
     }
     else if (study.contains(VMDC::MultiPartStudyBaseName::PERCEPTION)){
         valid_parameter_values[VMDC::StudyParameter::PERCEPTION_TYPE] = VMDC::PerceptionType::valid;
         config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::PERCEPTION_TYPE).toString().mid(0,1).toUpper();
     }
+
+    //qDebug() << "Setting STUDY CONFIG in Final Json VMDC";
+    //Debug::prettpPrintQVariantMap(finalStudyConfiguration);
 
     studyToConfigure.insert(VMDC::StudyField::DATE,date);
     studyToConfigure.insert(VMDC::StudyField::HOUR,hour);
@@ -523,7 +534,7 @@ void ViewMindDataContainer::clearTrialFieldsFromEachStudy(){
 }
 
 
-bool ViewMindDataContainer::addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response){
+bool ViewMindDataContainer::addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response, const QVariantMap &trialMetadata){
     currentTrial.clear();
     currentRawDataList.clear();
     currentLFixationVectorL.clear();
@@ -535,6 +546,8 @@ bool ViewMindDataContainer::addNewTrial(const QString &trial_id, const QString &
     currentTrial.insert(VMDC::TrialField::TRIAL_TYPE,type);
     currentTrial.insert(VMDC::TrialField::RESPONSE,"");
     currentTrial.insert(VMDC::TrialField::CORRECT_RESPONSE,correct_response);
+    // Adding any extra information that is required on a per trial basis for the study.
+    currentTrial.insert(VMDC::TrialField::METADATA,trialMetadata);
 
     if (type == "") {
         error = "Trial Type cannot be empty";

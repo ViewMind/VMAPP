@@ -96,6 +96,8 @@ QList<QPointF> CalibrationTargets::setupCalibrationSequence(qint32 npoints){
 
     indexInCalibrationSequence = -1;
 
+    //qDebug() << "Returning Target Centers: " << targetCenters;
+
     return targetCenters;
 }
 

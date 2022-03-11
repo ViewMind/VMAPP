@@ -65,6 +65,8 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
     xr = vecR.x();
     yr = vecR.y();
 
+    qDebug() << "Receving new Eye Data. HP. In calibration: " << calibration.isCalibrating();
+
     if (calibration.isCalibrating()){
         //qDebug() << "Calib";
         calibration.addDataPointForCalibration(xl,yl,xr,yr);

@@ -19,7 +19,7 @@ Rectangle {
 
     signal allEvalsDone();
 
-    Connections{
+    Connections {
         target: flowControl
         function onExperimentHasFinished (){
 
@@ -35,9 +35,11 @@ Rectangle {
                 viewEvaluations.enableNextButton(true)
             }
         }
+
         function onNewImageAvailable () {
             hmdView.image = flowControl.image;
         }
+
         function onConnectedToEyeTracker () {
             var titleMsg;
             if (!flowControl.isConnected()){
@@ -48,6 +50,7 @@ Rectangle {
             flowControl.calibrateEyeTracker(viewEvaluations.vmSelectedEye);
             vmInCalibration = true;
         }
+
         function onCalibrationDone() {
 
             vmInCalibration = false;
@@ -56,6 +59,7 @@ Rectangle {
             // flowControl.setupSecondMonitor(); // LEGACY CODE: This is where the old UI had it. Leaving it here for reference.
 
         }
+
         function onNewExperimentMessages(string_value_map){
 
             let list = "<ul>"
@@ -72,6 +76,7 @@ Rectangle {
     }
 
     function prepareNextStudy(calibrationSkipped){
+
         if (!flowControl.isCalibrated()){
             let leftEyeOk = flowControl.isLeftEyeCalibrated();
             let rightEyeOk = flowControl.isRightEyeCalibrated();
@@ -200,7 +205,7 @@ Rectangle {
     }
 
     onVmEvaluationStageChanged: {
-        console.log("Evaluation STAGE CHANGED TO: " + vmEvaluationStage);
+        //console.log("Evaluation STAGE CHANGED TO: " + vmEvaluationStage);
     }
 
     Text {
@@ -250,12 +255,12 @@ Rectangle {
         radius: VMGlobals.adjustHeight(8)
         visible: (vmEvaluationStage === vmSTAGE_EVALUATION)
         onVisibleChanged: {
-            if (visible){
-              console.log("Message DISPLAY is now Visible");
-            }
-            else {
-              console.log("Message DISPLAY is now HIDDEN");
-            }
+//            if (visible){
+//              console.log("Message DISPLAY is now Visible");
+//            }
+//            else {
+//              console.log("Message DISPLAY is now HIDDEN");
+//            }
         }
 
         Image {
@@ -413,7 +418,7 @@ Rectangle {
         var keys = ["ESC","G","N","D","S"]
 
         if (keys.length !== explanations.length){
-            console.log("Key Array is " + keys.length + " and explanation array is " + explanations.length)
+            //console.log("Key Array is " + keys.length + " and explanation array is " + explanations.length)
             return;
         }
 

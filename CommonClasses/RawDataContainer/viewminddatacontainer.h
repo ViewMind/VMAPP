@@ -65,7 +65,7 @@ public:
 
     bool setCurrentStudy(const QString &study);
 
-    bool addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response);
+    bool addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response, const QVariantMap &trialMetadata = QVariantMap());
 
     bool setCurrentDataSet(const QString &data_set_type);
 

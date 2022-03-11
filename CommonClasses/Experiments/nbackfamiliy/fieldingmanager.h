@@ -13,8 +13,6 @@
 #include "fieldingparser.h"
 #include "../experimentdatapainter.h"
 
-//#define ENABLE_DRAW_OF_HIT_TARGET_BOXES
-
 class FieldingManager: public QObject, public ExperimentDataPainter
 {    
     Q_OBJECT
@@ -65,6 +63,9 @@ public:
     // Auxiliary function that check if a point is in a given target box
     bool isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const;
 
+    // Variation of the function above. It verifies if x and y point is in any box. If it is it returns the index. Otherwise it returns -1
+    qint32 pointIsInWhichTargetBox(qreal x, qreal y) const;
+
     QList<QRectF> getHitTargetBoxes() const { return hitTargetBoxes; }
 
     // Light Boxes ON/OFF.
@@ -109,6 +110,7 @@ private:
 
     // Used for turning on and off the target boxes.
     qint32 currentlyLitUp;
+    qint32 lastBoxLitUp;
     QTimer litUpTimer;
 
     static const qreal K_TARGET_R;

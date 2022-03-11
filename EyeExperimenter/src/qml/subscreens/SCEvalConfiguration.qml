@@ -27,16 +27,19 @@ Rectangle {
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [2,3];
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 100;
         item = {
-            vmIndex: VMGlobals.vmINDEX_BINDING_BC,
+            vmIndex: VMGlobals.vmINDEX_BINDING_UC,
             vmStudyName : loader.getStringForKey("viewevaluation_eval_binding") ,
             vmIsLastSelected: false,
-            vmOptions: options
+            vmOptions: options,
+            vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS,
+            vmOptionValueMap: "2|3"
         }
         //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
-        vmSelectedOptionsForEachStudy[VMGlobals.vmINDEX_BINDING_BC] = {}
-        vmSelectedOptionsForEachStudy[VMGlobals.vmINDEX_BINDING_BC][VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 2;
+//        vmSelectedOptionsForEachStudy[VMGlobals.vmINDEX_BINDING_UC] = {}
+//        vmSelectedOptionsForEachStudy[VMGlobals.vmINDEX_BINDING_UC][VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 2;
 
         item = {}
         options = {}
@@ -44,7 +47,9 @@ Rectangle {
             vmIndex: VMGlobals.vmINDEX_NBACKRT,
             vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackrt") ,
             vmIsLastSelected: false,
-            vmOptions: options
+            vmOptions: options,
+            vmOrder: "",
+            vmOptionValueMap: ""
         }
         //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
@@ -55,7 +60,9 @@ Rectangle {
             vmIndex: VMGlobals.vmINDEX_GONOGO,
             vmStudyName : loader.getStringForKey("viewevaluation_eval_gonogo") ,
             vmIsLastSelected: false,
-            vmOptions: options
+            vmOptions: options,
+            vmOrder: "",
+            vmOptionValueMap: ""
         }
         //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
@@ -67,21 +74,35 @@ Rectangle {
             vmIndex: VMGlobals.vmINDEX_NBACKMS,
             vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackms") ,
             vmIsLastSelected: false,
-            vmOptions: options
+            vmOptions: options,
+            vmOrder: "",
+            vmOptionValueMap: ""
         }
         //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
 
         item = {}
+
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [3,4,5,6];
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 35;
+
+        options[VMGlobals.vmSCP_NBACK_LIGHTUP] = {}
+        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_nback_light_up_title");
+        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_nback_light_up_correct"),
+                                                                                     loader.getStringForKey("viewevaluation_nback_light_up_all")];
+        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
+
         item = {
             vmIndex: VMGlobals.vmINDEX_NBACKVS,
             vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackvs") ,
             vmIsLastSelected: false,
-            vmOptions: options
+            vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS + "|" + VMGlobals.vmSCP_NBACK_LIGHTUP,
+            vmOptions: options,
+            vmOptionValueMap: "3|4|5|6||false|true"
         }
         //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
@@ -157,6 +178,7 @@ Rectangle {
 
                 // Storing all options.
                 for (let key in options){
+                    // A MAP Between option name and value.
                     configuration[key] = options[key]
                 }
 
@@ -164,17 +186,17 @@ Rectangle {
                 viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration)
 
                 switch (study_unique_id){
-                case VMGlobals.vmINDEX_BINDING_BC:
+                case VMGlobals.vmINDEX_BINDING_UC:
 
-                    study_names.push(loader.getStringForKey("viewevaluation_binding_bc"));
                     study_names.push(loader.getStringForKey("viewevaluation_binding_uc"));
+                    study_names.push(loader.getStringForKey("viewevaluation_binding_bc"));
 
                     // Even though the option is no longer selectable, in the backend still exists. It needs to be set anyways
                     configuration[VMGlobals.vmSCP_TARGET_SIZE] = VMGlobals.vmSCV_BINDING_TARGETS_LARGE;
 
                     // This actually represents two studies, so we need to select both, with the same configuration.
                     let config2 = JSON.parse(JSON.stringify(configuration)) // Deep copying configuration.
-                    config2[VMGlobals.vmUNIQUE_STUDY_ID] = VMGlobals.vmINDEX_BINDING_UC
+                    config2[VMGlobals.vmUNIQUE_STUDY_ID] = VMGlobals.vmINDEX_BINDING_BC
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(config2)
                     break;
                 default:
@@ -188,10 +210,11 @@ Rectangle {
         // Setting up the progress line
         evaluationsView.setUpStudyNames(study_names);
 
-        goToEvalRun();
-
+        //console.log("Printing Selected Evaluation Configuration")
         //console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations));
+        //console.log("ONLY PRINTING");
 
+        goToEvalRun();
     }
 
     Text {

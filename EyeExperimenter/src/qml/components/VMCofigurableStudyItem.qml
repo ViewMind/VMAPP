@@ -47,14 +47,19 @@ Rectangle {
         id: internal
         readonly property int vmHEIGHT : VMGlobals.adjustHeight(52)
         readonly property int vmHEIGHT_EXPANDED : VMGlobals.adjustHeight(52+64)
-
         readonly property double vmOPTION_H_SPACING: VMGlobals.adjustWidth(30)
+        readonly property double vmOPTION_SECTION_HEIGHT: VMGlobals.adjustHeight(64)
+        readonly property double vmTOTAL_OPTION_WIDTH: configurableStudyItem.width - VMGlobals.adjustWidth(65)
 
         property bool vmCanBeExpanded: false
 
         property bool vmIsExpanded: false;
 
         property var vmKeyByIndex: [];
+
+        property var vmOptionSetWidths: [];
+
+        property var vmOptionIndexToValue: [];
 
     }
 
@@ -142,7 +147,8 @@ Rectangle {
 
     Row {
         id: optionRow
-        spacing: internal.vmOPTION_H_SPACING
+        //spacing: internal.vmOPTION_H_SPACING
+        spacing: 0
         visible: internal.vmIsExpanded && studyCheckBox.vmIsOn
         anchors.top: studyCheckBox.bottom
         anchors.topMargin: VMGlobals.adjustHeight(17)
@@ -153,10 +159,19 @@ Rectangle {
             id: optionSetRepeater
             model: optionSetList
 
-            Item {
+            //Item {
+            Rectangle {
                 id: optionSetItem
 
                 property string vmSelection: ""
+                height: internal.vmOPTION_SECTION_HEIGHT
+                width: internal.vmOptionSetWidths[index]
+                //color: configurableStudyItem.color
+                color: "transparent"
+
+                // Options left for debugging.
+                border.width: 0
+                border.color: "#000000"
 
                 Text {
                     id: name
@@ -166,11 +181,13 @@ Rectangle {
                     height: VMGlobals.adjustHeight(18)
                     verticalAlignment: Text.AlignVCenter
                 }
+
                 VMSingleChoiceMultiRadioButton{
                     id: optionSelection
                     anchors.left: name.left
                     anchors.top: name.bottom
                     anchors.topMargin: VMGlobals.adjustHeight(10.5)
+
                     Component.onCompleted: {
                         //console.log(JSON.stringify(vmOptions[index]))
                         let keyname = internal.vmKeyByIndex[index]
@@ -180,9 +197,13 @@ Rectangle {
                         optionSelection.setOptions(options)
                         optionSelection.setSelection(default_option)
                     }
+
                     onCurrentSelectionChanged: {
                         // Send an update to keep track of the options.
-                        vmSelection = optionSelection.getSelectedText()
+                        //vmSelection = optionSelection.getSelectedText()
+                        let optIndex = optionSelection.getSelectedIndex();
+                        let keyname = internal.vmKeyByIndex[index]
+                        vmSelection = internal.vmOptionIndexToValue[keyname][optIndex];
                         sendUpdatedOptions()
                     }
                 }
@@ -200,10 +221,37 @@ Rectangle {
         //console.log(JSON.stringify(vmOptions))
 
         optionSetList.clear();
-        internal.vmKeyByIndex = [];
-        for (var keyname in vmOptions){
+        internal.vmOptionSetWidths = [];
+        internal.vmKeyByIndex = [];               
+        internal.vmOptionIndexToValue = [];
+
+        //for (var keyname in vmOptions){
+        //console.log("vmOrder: " + vmOrder);
+        // HACK: The order list is passed as a string in order to avoid errors when passing actual string arrays to the delegate.
+        if (vmOrder === "") return;
+        let item_order = vmOrder.split("|");
+
+        /// HACK2: The index of the selected choice must correspond to an internal configuration value. This is coded in the vmOptionValueMap as follows:
+        // -> A || separates the value map of multiple option sets. its order must correspond to the order in the vmOrder parsed list.
+        // -> A | Separates two different internal values in a single set. The position of the values correspondes to option index.
+        let options_sets = vmOptionValueMap.split("||")
+        var i,j;
+        for (i = 0; i < options_sets.length; i++){
+            let keyname = item_order[i]
+            let values = options_sets[i].split("|");
+            internal.vmOptionIndexToValue[keyname] = values;
+        }
+
+        for (i = 0; i < item_order.length; i++){
+            let keyname = item_order[i]
             let name = vmOptions[keyname][VMGlobals.vmSCO_OPTION_NAME]
             internal.vmKeyByIndex.push(keyname);
+
+            let percentOfParent = vmOptions[keyname][VMGlobals.vmSCO_OPTION_WIDTH];
+            //let w = configurableStudyItem.width*percentOfParent/100.0;
+            let w = internal.vmTOTAL_OPTION_WIDTH*percentOfParent/100.0;
+
+            internal.vmOptionSetWidths.push(w)
             optionSetList.append({text: name})
         }
     }

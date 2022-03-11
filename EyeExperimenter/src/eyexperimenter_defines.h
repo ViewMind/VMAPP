@@ -72,6 +72,11 @@ namespace Globals{
       static const QString LAST_SELECTED_PROTOCOL = "last_selected_protocol";
    }
 
+   namespace VMUILanguages {
+      static const QString ES = "Español";
+      static const QString EN = "English";
+   }
+
    namespace Partners {
       static const QString ORBIT = "Orbit Labs";
    }
@@ -98,7 +103,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "19.1.2";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "19.2.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

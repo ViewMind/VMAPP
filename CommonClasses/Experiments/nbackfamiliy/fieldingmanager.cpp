@@ -58,6 +58,7 @@ bool FieldingManager::parseExpConfiguration(const QString &contents){
 void FieldingManager::ligthOffAllBoxes(){
     //qDebug() << "Turn Off";
     currentlyLitUp = -1;
+    lastBoxLitUp   = -1;
     for (qint32 i = 0; i < graphicalTargetBoxes.size(); i++){
         graphicalTargetBoxes.at(i)->setBrush(QBrush(Qt::black));
     }
@@ -66,6 +67,7 @@ void FieldingManager::ligthOffAllBoxes(){
 void FieldingManager::onLightOffTimeout(){    
     if (currentlyLitUp != -1){
         graphicalTargetBoxes.at(currentlyLitUp)->setBrush(QBrush(Qt::black));
+        lastBoxLitUp = currentlyLitUp;
         currentlyLitUp = -1;
     }
 }
@@ -74,10 +76,15 @@ bool FieldingManager::lightUpBox(qint32 box_index){
     if (box_index < 0) return false;
     if (box_index >= graphicalTargetBoxes.size()) return false;
     if (box_index == currentlyLitUp) return false;
+
+    // When all boxes are set to light up regardless whether it's the proper box or not, then this will prevent when staring at the same box for too long
+    // for it to remain lit up.
+    if (box_index == lastBoxLitUp) return false;
+
     graphicalTargetBoxes.at(box_index)->setBrush(QBrush(QColor(228,228,228)));
     currentlyLitUp = box_index;
     if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-        qDebug() << "DBUG: Lit UP Box" << box_index;
+        qDebug() << "DBUG: Lit UP Box" << box_index << "Last Box to Litup was" << lastBoxLitUp;
     }
     litUpTimer.start(LIGHT_OFF_TIME);
     return true;
@@ -298,6 +305,15 @@ QString FieldingManager::getFullSequenceAsString(qint32 trial){
 bool FieldingManager::isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const{
     //return FieldingParser::isHitInTargetBox(hitTargetBoxes,targetBox,x,y);
     return hitTargetBoxes.at(targetBox).contains(x,y);
+}
+
+qint32 FieldingManager::pointIsInWhichTargetBox(qreal x, qreal y) const{
+    for (qint32 i = 0; i < hitTargetBoxes.size(); i++){
+        if (hitTargetBoxes.at(i).contains(x,y)){
+            return i;
+        }
+    }
+    return -1;
 }
 
 void FieldingManager::drawPauseScreen(){
