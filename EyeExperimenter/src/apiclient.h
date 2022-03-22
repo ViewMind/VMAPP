@@ -20,10 +20,10 @@ public:
     // Command for compressor.
     static const QString TAR_EXE;
 
-    static const qint32 API_OPERATING_INFO     = 1;
-    static const qint32 API_REQUEST_REPORT     = 2;
-    static const qint32 API_REQUEST_UPDATE     = 3;
-    static const qint32 API_SYNC_PARTNER_MEDIC = 4;
+    static const qint32 API_OPERATING_INFO         = 1;
+    static const qint32 API_REQUEST_REPORT         = 2;
+    static const qint32 API_REQUEST_UPDATE         = 3;
+    static const qint32 API_SYNC_PARTNER_MEDIC     = 4;
 
     // Parameters required for configuration. Numbers must be used and sent as strings anyways. So string parameters are accepted.
     void configure(const QString &institution_id,
@@ -78,7 +78,7 @@ private:
 
     // The actual endpoints.    
     const QString ENDPOINT_OPERATING_INFO    = "/institution/operating_information";
-    const QString ENDPOINT_GET_UPDATE        = "/institution/getupdate";
+    const QString ENDPOINT_GET_UPDATE        = "/instances/getupdate";
     const QString ENDPOINT_REPORT_GENERATION = "/reports/generate";
     const QString ENDPOINT_ADDNOLOGIN_MEDIC  = "/portal_users/addnologpusers";
 

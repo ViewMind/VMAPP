@@ -15,6 +15,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
     connect(&qc,&QualityControl::finished,this,&Loader::qualityControlFinished);
+    connect(&fileDownloader,&FileDownloader::downloadCompleted,this,&Loader::updateDownloadFinished);
 
     // Loading the configuration file and checking for the must have configurations
     // The data is this file should NEVER change. Its values should be fixed.
@@ -1001,8 +1002,8 @@ void Loader::receivedRequest(){
     }
     else{
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO){
-            QVariantMap ret = apiclient.getMapDataReturned();
 
+            QVariantMap ret = apiclient.getMapDataReturned();
             QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
 
             if (DBUGBOOL(Debug::Options::PRINT_SERVER_RESP)){
@@ -1075,37 +1076,23 @@ void Loader::receivedRequest(){
             }
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_UPDATE){
+
+            QVariantMap ret = apiclient.getMapDataReturned();
+            QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
+
+            if (DBUGBOOL(Debug::Options::PRINT_SERVER_RESP)){
+                QString toprint = "DBUG: Received response to update request:\n" + Debug::QVariantMapToString(mainData);
+                logger.appendWarning(toprint);
+            }
+
+            // URL should be present.
+            QString dlurl = mainData.value(APINames::UpdateDLFields::URL).toString();
+
+            // Starting the download. And the process must now wait until the download is finished.
             QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
-            if (QFile::exists(expectedPath)){
-                logger.appendSuccess("Received update succesfully. Unzipping");
+            fileDownloader.download(dlurl,expectedPath);
+            return;
 
-                QDir dir(".");
-                dir.cdUp();
-
-                // Untarring the exe file.
-                QProcess process;
-                QStringList arguments;
-                arguments << "-xvzf" <<  dir.path() + "/" +  Globals::Paths::UPDATE_PACKAGE << "-C"  << dir.path();
-                process.setProcessChannelMode(QProcess::MergedChannels);
-                process.start(APIClient::TAR_EXE,arguments);
-
-                if (!process.waitForFinished()){
-                    QString output = QString::fromUtf8(process.readAllStandardOutput());
-                    logger.appendError("Untarring failed with " + process.errorString() + ". Tar output:\n" + output);
-                }
-
-                if (!QFile::exists("../" + Globals::Paths::UPDATE_SCRIPT)){
-                    QString output = QString::fromUtf8(process.readAllStandardOutput());
-                    logger.appendError("Failed to to uncompressed update file. Tar output:\n" + output);
-                }
-                else{
-                    updater.start();
-                }
-
-            }
-            else{
-                logger.appendError("The download apparently succeded but the file is not where it was expected: " + expectedPath);
-            }
         }
         else if (apiclient.getLastRequestType() == APIClient::API_SYNC_PARTNER_MEDIC){
             partnerSynchFinishProcess();
@@ -1113,6 +1100,50 @@ void Loader::receivedRequest(){
         }
     }
     emit Loader::finishedRequest();
+}
+
+void Loader::updateDownloadFinished(bool allOk){
+
+    if (!allOk){
+        logger.appendError("Failed to download update. Reason: " + fileDownloader.getError());
+        emit Loader::finishedRequest();
+        return;
+    }
+
+    QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
+    if (QFile::exists(expectedPath)){
+        logger.appendSuccess("Received update succesfully. Unzipping");
+
+        QDir dir(".");
+        dir.cdUp();
+
+        // Untarring the exe file.
+        QProcess process;
+        QStringList arguments;
+        arguments << "-xvzf" <<  dir.path() + "/" +  Globals::Paths::UPDATE_PACKAGE << "-C"  << dir.path();
+        process.setProcessChannelMode(QProcess::MergedChannels);
+        process.start(APIClient::TAR_EXE,arguments);
+
+        if (!process.waitForFinished()){
+            QString output = QString::fromUtf8(process.readAllStandardOutput());
+            logger.appendError("Untarring failed with " + process.errorString() + ". Tar output:\n" + output);
+        }
+
+        if (!QFile::exists("../" + Globals::Paths::UPDATE_SCRIPT)){
+            QString output = QString::fromUtf8(process.readAllStandardOutput());
+            logger.appendError("Failed to to uncompressed update file. Tar output:\n" + output);
+        }
+        else{
+            updater.start();
+        }
+
+    }
+    else{
+        logger.appendError("The download apparently succeded but the file is not where it was expected: " + expectedPath);
+    }
+
+    emit Loader::finishedRequest();
+
 }
 
 qint32 Loader::wasThereAnProcessingUploadError() const {

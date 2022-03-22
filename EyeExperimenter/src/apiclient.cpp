@@ -129,7 +129,13 @@ bool APIClient::requestUpdate(const QString &pathToSaveAFile){
     rest_controller.setAPIEndpoint(ENDPOINT_GET_UPDATE + "/" + institution_id);
     QVariantMap map;
     map.insert(URLPARAM_INSTANCE,instance_number);
-    map.insert(URLPARAM_REGION,region);
+
+    if ((region == Globals::LOCAL::REGION) || (region == Globals::DEV_SERVER::REGION)){
+        map.insert(URLPARAM_REGION,Globals::EU_REGION::REGION);
+    }
+    else {
+        map.insert(URLPARAM_REGION,region);
+    }
 
     // Setting the required post data.
     QVariantMap postdata;
@@ -182,60 +188,72 @@ void APIClient::gotReply(){
         error = error + "\nRaw Reply Data: " +  QString(raw_reply);
     }
     else {
-        if (lastRequest != API_REQUEST_UPDATE){
-            QJsonParseError json_error;
-            QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
-            if (doc.isNull()){
-                error = "Error decoding JSON Data: " + json_error.errorString();
-                error = error + "\nRaw Reply Data: " +  QString(raw_reply);
-            }
-            else{
-                retdata = doc.object().toVariantMap();
-            }
+
+        QJsonParseError json_error;
+        QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
+        if (doc.isNull()){
+            error = "Error decoding JSON Data: " + json_error.errorString();
+            error = error + "\nRaw Reply Data: " +  QString(raw_reply);
         }
         else{
-            // The raw reply is a file to be saved.
-            QMap<QString,QString> rheaders = rest_controller.getResponseHeaders();
-            QString searchFor = "Content-Disposition";
-            searchFor = searchFor.toLower();
-            if (rheaders.contains(searchFor)){
-                // Getting the file name.
-                QString filename = "";
-                QString content_disposition = rheaders.value(searchFor);
-                QStringList parts = content_disposition.split(";");
-                for (qint32 i = 0; i < parts.size(); i++){
-                    if (parts.at(i).contains("filename")){
-                        QStringList key_value = parts.at(i).split("=");
-                        filename = key_value.last();
-                        break;
-                    }
-                }
-
-                if (filename.isEmpty()){
-                    error = searchFor + " header did not contain a filename as expected";
-                    return;
-                }
-
-                filename = this->pathToSaveAFile + "/" + filename;
-
-                QFile receivedFile(filename);
-                if (!receivedFile.open(QFile::WriteOnly)){
-                    error = "Could not open " + receivedFile.fileName() + " for writing";
-                    return;
-                }
-
-                QDataStream fileWriter(&receivedFile);
-                //qDebug() << "Raw Reply Size" << raw_reply.size();                
-                fileWriter.writeRawData(raw_reply.constData(), static_cast<qint32>(raw_reply.size()));
-                receivedFile.close();
-                //qDebug() << "Receive file size: " << receivedFile.size();
-            }
-            else{
-                QStringList headerNames = rheaders.keys();
-                error = "Expected header " + searchFor + ", but such header was not found. Response headers are: " + headerNames.join(",");
-            }
-
+            retdata = doc.object().toVariantMap();
         }
+
+////// DEPRACATED as the Update Endpoint Now returns a download URL.
+//        if (lastRequest != API_REQUEST_UPDATE){
+//            QJsonParseError json_error;
+//            QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
+//            if (doc.isNull()){
+//                error = "Error decoding JSON Data: " + json_error.errorString();
+//                error = error + "\nRaw Reply Data: " +  QString(raw_reply);
+//            }
+//            else{
+//                retdata = doc.object().toVariantMap();
+//            }
+//        }
+//        else{
+//            // The raw reply is a file to be saved.
+//            QMap<QString,QString> rheaders = rest_controller.getResponseHeaders();
+//            QString searchFor = "Content-Disposition";
+//            searchFor = searchFor.toLower();
+//            if (rheaders.contains(searchFor)){
+//                // Getting the file name.
+//                QString filename = "";
+//                QString content_disposition = rheaders.value(searchFor);
+//                QStringList parts = content_disposition.split(";");
+//                for (qint32 i = 0; i < parts.size(); i++){
+//                    if (parts.at(i).contains("filename")){
+//                        QStringList key_value = parts.at(i).split("=");
+//                        filename = key_value.last();
+//                        break;
+//                    }
+//                }
+
+//                if (filename.isEmpty()){
+//                    error = searchFor + " header did not contain a filename as expected";
+//                    return;
+//                }
+
+//                filename = this->pathToSaveAFile + "/" + filename;
+
+//                QFile receivedFile(filename);
+//                if (!receivedFile.open(QFile::WriteOnly)){
+//                    error = "Could not open " + receivedFile.fileName() + " for writing";
+//                    return;
+//                }
+
+//                QDataStream fileWriter(&receivedFile);
+//                //qDebug() << "Raw Reply Size" << raw_reply.size();
+//                fileWriter.writeRawData(raw_reply.constData(), static_cast<qint32>(raw_reply.size()));
+//                receivedFile.close();
+//                //qDebug() << "Receive file size: " << receivedFile.size();
+//            }
+//            else{
+//                QStringList headerNames = rheaders.keys();
+//                error = "Expected header " + searchFor + ", but such header was not found. Response headers are: " + headerNames.join(",");
+//            }
+
+//        }
     }
     emit APIClient::requestFinish();
 }

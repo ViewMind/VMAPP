@@ -72,7 +72,7 @@ ViewBase {
             var title_and_body = loader.getLatestVersionChanges();
 
             let versionText = title_and_body[0];
-            let titleParts = versionText.split(" - ")
+            let titleParts = versionText.split(" -- ")
             changelogDialog.vmVersion = "<b>" + titleParts[0] + "</b> " + titleParts[1];
 
             let changes = title_and_body[1].split("\r\n")
@@ -82,7 +82,7 @@ ViewBase {
                 let line = changes[i];
                 if (line === "") continue;
                 if (line === undefined) continue;
-                line = line.replace(" - ","");
+                line = line.replace("-- ","");
                 bullets.push(line);
             }
 

@@ -15,6 +15,7 @@
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/RestAPIController/orbitpartnerapi.h"
 #include "../../CommonClasses/RestAPIController/partnerapi.h"
+#include "../../CommonClasses/FileDownloader/filedownloader.h"
 #include "eyexperimenter_defines.h"
 #include "countries.h"
 #include "localdb.h"
@@ -126,6 +127,7 @@ signals:
 
 private slots:
     void receivedRequest();
+    void updateDownloadFinished(bool allOk);
     void qualityControlFinished();
     void partnerFinished();
 
@@ -141,6 +143,9 @@ private:
 
     // The API communication client.
     APIClient apiclient;
+
+    // The object required to download the update files from the URL provided by the API.
+    FileDownloader fileDownloader;
 
     // The local database
     LocalDB localDB;

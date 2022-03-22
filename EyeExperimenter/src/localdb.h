@@ -31,6 +31,10 @@ namespace APINames {
       static const char * NAME = "recovery_password";
    }
 
+   namespace UpdateDLFields {
+      static const char *URL = "url";
+   }
+
    namespace UpdateParams{
       static const char * UPDATE_ET_CHANGE = "update_et_change";
       static const char * UPDATE_VERSION   = "update_version";

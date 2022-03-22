@@ -116,7 +116,7 @@ Item {
         anchors.topMargin: VMGlobals.adjustHeight(20)
         onClickSignal: {
             close();
-            mainWindow.openWait(loader.getStringListForKey("update_download_wait"));
+            mainWindow.openWait(loader.getStringForKey("update_download_wait"));
             loader.startUpdate();
         }
     }
