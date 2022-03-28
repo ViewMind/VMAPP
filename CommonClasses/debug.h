@@ -52,6 +52,7 @@ namespace Debug {
        const QString PRINT_QC             = "print_qc";
        const QString RENDER_HITBOXES      = "render_hitboxes";
        const QString PRINT_SERVER_RESP    = "print_server_response";
+       const QString FORCE_5_POINT_CALIB  = "use_5_pt_calibration";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

@@ -21,6 +21,8 @@ public:
 
     CalibrationLeastSquares();
 
+    typedef enum {EVS_BOTH, EVS_LEFT, EVS_RIGHT, EVS_NONE} EyeValidationsStatus;
+
     struct EyeInputData{
         qreal xr;
         qreal yr;
@@ -66,6 +68,9 @@ public:
     // Adding the data point for calibration.
     void addDataPointForCalibration(float xl, float yl, float xr, float yr);
 
+    // Addign the data point for verification
+    void addDataPointForVerification(const EyeInputData &eid);
+
     // This will compute the calibration coefficients once data gathering is done.
     bool computeCalibrationCoeffs();
 
@@ -77,6 +82,15 @@ public:
 
     // Returns true if the calibration process was started but has not ended.
     bool isCalibrating() const;
+
+    // Returns true if the calibation process is in it's validation phase.
+    bool isValidating() const;
+
+    // Prints some stats per target to see how well the calibration was. For the Log, mostly.
+    QString getValidationReport() const;
+
+    // Sumarizes the result of the Calibration Validation Process.
+    EyeValidationsStatus getEyeValidationStatus() const;
 
 signals:
     void newCalibrationImageAvailable();
@@ -91,6 +105,12 @@ private:
         QList<qreal> input;
         QList<qreal> target;
         LinearCoeffs computeLinearCoeffs();
+    };
+
+    struct ValidationTarget {
+        QList<EyeInputData> eyedata;
+        qint32 eyeRightHits = 0;
+        qint32 eyeLeftHits = 0;
     };
 
     EyeCorrectionCoeffs coeffs;
@@ -119,11 +139,23 @@ private:
     // Flag to indicate the duration of the calibration process.
     bool isCalibratingFlag;
 
+    // Flag to indicate the duration of the validation process.
+    bool isValidatingFlag;
+
+    // A Validation Target struct is required for each calibration point.
+    QList<ValidationTarget> validationData;
+
+    bool leftEyeValidated;
+    bool rightEyeValidated;
+
     // How long to wait to gather data for each target.
     static const qint32 CALIBRATION_WAIT_TIME = 1000;
 
     // How data is gathered for each target.
     static const qint32 CALIBRATION_GATHER_TIME = 2000;
+
+    static const qint32 VALIDATION_MIN_REQ_TARGET_HITS = 10;
+    static const qint32 VALIDATION_MAX_POINTS_FOR_ARRAY = 500;
 
 };
 

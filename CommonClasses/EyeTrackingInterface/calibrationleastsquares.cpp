@@ -4,6 +4,7 @@ CalibrationLeastSquares::CalibrationLeastSquares()
 {
     connect(&calibrationTimer,&QTimer::timeout,this,&CalibrationLeastSquares::calibrationTimeInTargetUp);
     isCalibratingFlag = false;
+    isValidatingFlag = false;
 }
 
 void CalibrationLeastSquares::CalibrationData::clear(){
@@ -37,6 +38,34 @@ bool CalibrationLeastSquares::isCalibrating() const{
     return isCalibratingFlag;
 }
 
+bool CalibrationLeastSquares::isValidating() const{
+    return isValidatingFlag;
+}
+
+QString CalibrationLeastSquares::getValidationReport() const{
+    QStringList lines;
+
+    for (qsizetype i = 0; i < validationData.size(); i++){
+        lines << " Validation Target 1. LEFT EYE: "
+                 + QString::number(validationData.at(i).eyeLeftHits) + " out of " + QString::number(validationData.at(i).eyedata.size())
+                 + ". RIGHT EYE: "
+                 + QString::number(validationData.at(i).eyeRightHits) + " out of " + QString::number(validationData.at(i).eyedata.size());
+    }
+
+    return lines.join("\n");
+}
+
+CalibrationLeastSquares::EyeValidationsStatus CalibrationLeastSquares::getEyeValidationStatus() const {
+    if (leftEyeValidated){
+        if (rightEyeValidated) return EVS_BOTH;
+        else return EVS_LEFT;
+    }
+    else if (rightEyeValidated){
+        return EVS_RIGHT;
+    }
+    return EVS_NONE;
+}
+
 void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, float xr, float yr){
     //qDebug() << "Adding data points for calibration" << xl << yl << xr << yr;
     if (isDataGatheringEnabled){
@@ -46,6 +75,51 @@ void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, flo
         eid.yl = static_cast<qreal>(yl);
         eid.yr = static_cast<qreal>(yr);
         currentlyCollectingCalibrationPoints.eyeData << eid;
+    }
+}
+
+void CalibrationLeastSquares::addDataPointForVerification(const EyeInputData &eid){
+    if (isValidatingFlag) {
+
+        if (calibrationTargets.isPointWithinCurrentTarget(eid.xl,eid.yl)){
+            validationData[currentCalibrationPointIndex].eyeLeftHits++;
+        }
+
+        if (calibrationTargets.isPointWithinCurrentTarget(eid.xr,eid.yr)){
+            validationData[currentCalibrationPointIndex].eyeRightHits++;
+        }
+
+        qint32 eyeLHits = validationData[currentCalibrationPointIndex].eyeLeftHits;
+        qint32 eyeRHits = validationData[currentCalibrationPointIndex].eyeRightHits;
+
+        validationData[currentCalibrationPointIndex].eyedata << eid;
+
+        // Checking if validation was a success.
+        leftEyeValidated = false;
+        rightEyeValidated = false;
+        leftEyeValidated = (eyeLHits >= VALIDATION_MIN_REQ_TARGET_HITS);
+        rightEyeValidated = (eyeRHits >= VALIDATION_MIN_REQ_TARGET_HITS);
+
+        if (leftEyeValidated && rightEyeValidated){
+            // The point was validated, we move on, unless this is the last point.
+            if (currentCalibrationPointIndex >= validationData.size()){
+                isValidatingFlag = false;
+                emit CalibrationLeastSquares::calibrationDone();
+            }
+            else {
+                currentCalibrationPointIndex++;
+                currentCalibrationImage = calibrationTargets.nextSingleTarget();
+                emit CalibrationLeastSquares::newCalibrationImageAvailable();
+            }
+        }
+        else {
+            // This is the cut off condition. If we get here, no point in moving on.
+            if (validationData.at(currentCalibrationPointIndex).eyedata.size() >= VALIDATION_MAX_POINTS_FOR_ARRAY){
+                isValidatingFlag = false;
+                emit CalibrationLeastSquares::calibrationDone();
+            }
+        }
+
     }
 }
 
@@ -64,6 +138,7 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
         cd.x_reference = calibrationPoints.at(i).x();
         cd.y_reference = calibrationPoints.at(i).y();
         collectedCalibrationDataPoints << cd;
+        validationData << ValidationTarget();
     }
 
     //qDebug() << "startingUpCalibration Seq. Number of Colleted Calibration Data Points Structs Created: " << collectedCalibrationDataPoints.size();
@@ -72,6 +147,7 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
     currentCalibrationPointIndex = -1;
     isCalibratingFlag = true;
     isDataGatheringEnabled = true;
+    isValidatingFlag = false;
     calibrationTimeInTargetUp();
 
 }
@@ -91,7 +167,13 @@ void CalibrationLeastSquares::calibrationTimeInTargetUp(){
             isDataGatheringEnabled = false;
             isCalibratingFlag = false;
             //qDebug() << "Throwing Calibration Done";
-            emit CalibrationLeastSquares::calibrationDone();
+
+            // Calibration has finished. So we setup verification. and continue gathering data.
+            isValidatingFlag = true;
+            currentCalibrationPointIndex = 0;
+            calibrationTargets.verificationInitialization();
+
+            //emit CalibrationLeastSquares::calibrationDone();
             return;
         }
 
@@ -163,7 +245,6 @@ bool CalibrationLeastSquares::computeCalibrationCoeffs(){
 
     return true;
 }
-
 
 bool CalibrationLeastSquares::EyeCorrectionCoeffs::isRightEyeCalibrated(){
     return xr.valid && yr.valid;
@@ -273,7 +354,6 @@ QString CalibrationLeastSquares::LinearCoeffs::toString() const{
     else ans = ans + ". INVALID";
     return ans;
 }
-
 
 void CalibrationLeastSquares::LinearCoeffs::fromMap(const QVariantMap &map){
     m = map.value("m").toDouble();

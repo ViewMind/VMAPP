@@ -18,6 +18,12 @@ public:
 
     void initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration = false);
 
+    // WARNING: This function NEEDS to be called AFTER the calibration has been completed.
+    void verificationInitialization();
+
+    // On verification this function is used to verify if a data point falls within the boundaries of the currently shown target.
+    quint8 isPointWithinCurrentTarget(qreal x, qreal y);
+
     // Sets up calibration interation for 5 or 9 points. Any parameter other than 5 will assume 9 points.
     // Returns a list where the center of the points will be located. The list will have 5 or 9 points accordingly.
     QList<QPointF> setupCalibrationSequence(qint32 npoints = 5);
@@ -25,17 +31,8 @@ public:
     // Iterates to the next target, after setting up the CalibrationSequence.
     QImage nextSingleTarget();
 
-    // For scaling the font if necesssary.
-    void setTestTargetFontScale(qreal scale);
-
     // Gets a clear screen with nothing to show.
     QImage getClearScreen();
-
-    void setTargetTest();
-    void saveCanvasToTestImageFile();
-
-    QImage renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly, qreal timestamp);
-
 
 
 private:
@@ -47,32 +44,10 @@ private:
     const qreal K_CALIBRATION_MC = 0.50;
     const qreal K_CALIBRATION_RB = 0.80;
 
-    struct MovingAverage {
-
-        MovingAverage();
-        void setWindowSize(qint32 n);
-        void add(qreal v);
-        qreal getAvearage();
-
-    private:
-        QList<qreal> window;
-        qreal avearage;
-        qint32 windowSize;
-    };
-
     QGraphicsScene *canvas;
-    QGraphicsEllipseItem *leftEye;
-    QGraphicsEllipseItem *rightEye;
-    QGraphicsTextItem *freqDisplay;
-    qreal freqDisplayY;
-    MovingAverage movingAverage;
-
-    qreal vrScale;
 
     qreal R;
     qreal r;
-
-    qreal lastTimeStamp;
 
     // These lists contains the upper left of the circles for all possible circles to either be drawn or shown as targets.
     QList<QPointF> borderTargets;
@@ -83,6 +58,9 @@ private:
 
     // Used as a bookmark for which calibration point we are drawing.
     qint32 indexInCalibrationSequence;
+
+    // Variable used to separate between calibration and verification
+    bool isVerification;
 
 
 };

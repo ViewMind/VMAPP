@@ -16,11 +16,12 @@ class OpenGazeInterface: public EyeTrackerInterface
 
 public:
     OpenGazeInterface(QObject *parent = nullptr, qreal width = 1, qreal height = 1);
-    ~OpenGazeInterface();
-    void connectToEyeTracker();
-    void enableUpdating(bool enable);
-    void disconnectFromEyeTracker();
-    void calibrate(EyeTrackerCalibrationParameters params);
+    ~OpenGazeInterface() override;
+    void connectToEyeTracker() override;
+    void enableUpdating(bool enable) override;
+    void disconnectFromEyeTracker() override;
+    void calibrate(EyeTrackerCalibrationParameters params) override;
+    QString getCalibrationValidationReport() const override;
 
 private slots:
 

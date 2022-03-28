@@ -67,6 +67,12 @@ void HTCViveEyeProEyeTrackingInterface::newEyeData(QVariantMap eyedata){
         lastData.time    = eyedata.value(HTCVIVE::Timestamp).toLongLong();
         lastData.pdLeft  = eyedata.value(HTCVIVE::LeftEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
         lastData.pdRight = eyedata.value(HTCVIVE::RightEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
+
+        if (calibration.isValidating()){
+            // While validating wee need to pass the data points to calibration.
+            calibration.addDataPointForVerification(eid);
+        }
+
         emit EyeTrackerInterface::newDataAvailable(lastData);
     }
 
@@ -95,6 +101,10 @@ void HTCViveEyeProEyeTrackingInterface::calibrate(EyeTrackerCalibrationParameter
 
 }
 
+QString HTCViveEyeProEyeTrackingInterface::getCalibrationValidationReport() const{
+    return calibration.getValidationReport();
+}
+
 void HTCViveEyeProEyeTrackingInterface::enableUpdating(bool enable){
     if (enable && !eyetracker.isRunning()) eyetracker.start();
     else if (!enable) eyetracker.stop();
@@ -115,9 +125,12 @@ void HTCViveEyeProEyeTrackingInterface::onCalibrationFinished(){
             correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
         }
 
-        // Checking the coefficients are correctly computed.
-        bool fail_left =  ((!correctionCoefficients.xl.valid) || (!correctionCoefficients.yl.valid));
-        bool fail_right = ((!correctionCoefficients.xr.valid) || (!correctionCoefficients.yr.valid));
+        // Checking the coefficients are correctly computed and that the corresponding eye validation was successfull.
+        CalibrationLeastSquares::EyeValidationsStatus evs = calibration.getEyeValidationStatus();
+
+        bool fail_left =  ( (!correctionCoefficients.xl.valid) || (!correctionCoefficients.yl.valid) || (evs == CalibrationLeastSquares::EVS_RIGHT) || (evs == CalibrationLeastSquares::EVS_NONE) );
+        bool fail_right = ( (!correctionCoefficients.xr.valid) || (!correctionCoefficients.yr.valid) || (evs == CalibrationLeastSquares::EVS_LEFT)  || (evs == CalibrationLeastSquares::EVS_NONE) );
+
         if (fail_left){
             if (fail_right){
                 calibrationFailureType = ETCFT_FAILED_BOTH;
@@ -130,7 +143,7 @@ void HTCViveEyeProEyeTrackingInterface::onCalibrationFinished(){
         else {
             calibrationFailureType = ETCFT_NONE;
         }
-    }
+    }   
     emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
 }
 

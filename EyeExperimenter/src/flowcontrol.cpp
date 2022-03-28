@@ -165,7 +165,7 @@ void FlowControl::setupSecondMonitor(){
 void FlowControl::keyboardKeyPressed(int key){
     if (experiment != nullptr){
         experiment->keyboardKeyPressed(key);
-    }    
+    }
 }
 
 void FlowControl::stopRenderingVR(){
@@ -306,7 +306,14 @@ void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
     EyeTrackerCalibrationParameters calibrationParams;
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "";
-    calibrationParams.number_of_calibration_points = 9;
+
+    if (DBUGBOOL(Debug::Options::FORCE_5_POINT_CALIB)){
+        calibrationParams.number_of_calibration_points = 5;
+    }
+    else{
+        calibrationParams.number_of_calibration_points = 9;
+    }
+
     calibrated = false;
     rightEyeCalibrated  = false;
     leftEyeCalibrated = false;
@@ -314,7 +321,7 @@ void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
     // Making sure the right eye is used, in both the calibration and the experiment.
     selected_eye_to_use = eye_to_use;
     //selected_eye_to_use = VMDC::Eye::toInt(eye_to_use);
-    qDebug() << "Setting eye to use to " << eye_to_use;
+    //qDebug() << "Setting eye to use to " << eye_to_use;
     eyeTracker->setEyeToTransmit(selected_eye_to_use);
 
     // qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
@@ -388,7 +395,9 @@ void FlowControl::onEyeTrackerControl(quint8 code){
         emit(calibrationDone(false));
         break;
     case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
-        logger.appendStandard("EyeTracker Control: Calibration processed finished. (This does not mean it was succesfull)");
+        logger.appendStandard("EyeTracker Control: Calibration and validation finished");
+        logger.appendStandard("VALIDATION REPORT:\n" + eyeTracker->getCalibrationValidationReport());
+
         calibrated = true;
         if (Globals::EyeTracker::IS_VR) eyeTracker->enableUpdating(false);
         renderState = RENDER_WAIT_SCREEN;
@@ -399,16 +408,19 @@ void FlowControl::onEyeTrackerControl(quint8 code){
             leftEyeCalibrated = true;
             break;
         case EyeTrackerInterface::ETCFT_UNKNOWN:
+            logger.appendWarning("EyeTracker Control: Calibration unknown failure");
             calibrated = false;
             rightEyeCalibrated  = false;
             leftEyeCalibrated = false;
             break;
         case EyeTrackerInterface::ETCFT_FAILED_BOTH:
+            logger.appendWarning("EyeTracker Control: Calibration both eyes failed");
             calibrated = false;
             rightEyeCalibrated  = false;
             leftEyeCalibrated = false;
             break;
         case EyeTrackerInterface::ETCFT_FAILED_LEFT:
+            logger.appendWarning("EyeTracker Control: Calibration left eye failed");
             rightEyeCalibrated  = true;
             leftEyeCalibrated = false;
             if (selected_eye_to_use == VMDC::Eye::LEFT){
@@ -418,6 +430,7 @@ void FlowControl::onEyeTrackerControl(quint8 code){
             else calibrated = true;
             break;
         case EyeTrackerInterface::ETCFT_FAILED_RIGHT:
+            logger.appendWarning("EyeTracker Control: Calibration right eye failed");
             rightEyeCalibrated  = false;
             leftEyeCalibrated = true;
             if (selected_eye_to_use == VMDC::Eye::RIGHT){
@@ -562,7 +575,7 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     // Eyetracker should be connected by this point.
     connect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
     connect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
-    connect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);    
+    connect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
     connect(experiment,&Experiment::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
 
 

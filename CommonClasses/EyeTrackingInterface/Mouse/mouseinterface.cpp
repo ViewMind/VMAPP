@@ -25,6 +25,10 @@ void MouseInterface::overrideCalibration(){
     overrideCalibrationFlag = true;
 }
 
+QString MouseInterface::getCalibrationValidationReport() const {
+    return "No Calibration Report Implemented For Mouse Interface";
+}
+
 void MouseInterface::connectToEyeTracker(){
     // "Connecting to the server"
     dataToSend.time = 0;

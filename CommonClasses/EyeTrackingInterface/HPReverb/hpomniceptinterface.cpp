@@ -124,14 +124,18 @@ void HPOmniceptInterface::onCalibrationFinished(){
         calibrationFailureType = ETCFT_UNKNOWN;
     }
     else{
+
         correctionCoefficients = calibration.getCalculatedCoeficients();
         if (coefficientsFile != ""){
             correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
         }
 
-        // Checking the coefficients are correctly computed.
-        bool fail_left =  ((!correctionCoefficients.xl.valid) || (!correctionCoefficients.yl.valid));
-        bool fail_right = ((!correctionCoefficients.xr.valid) || (!correctionCoefficients.yr.valid));
+        // Checking the coefficients are correctly computed and that the corresponding eye validation was successfull.
+        CalibrationLeastSquares::EyeValidationsStatus evs = calibration.getEyeValidationStatus();
+
+        bool fail_left =  ( (!correctionCoefficients.xl.valid) || (!correctionCoefficients.yl.valid) || (evs == CalibrationLeastSquares::EVS_RIGHT) || (evs == CalibrationLeastSquares::EVS_NONE) );
+        bool fail_right = ( (!correctionCoefficients.xr.valid) || (!correctionCoefficients.yr.valid) || (evs == CalibrationLeastSquares::EVS_LEFT)  || (evs == CalibrationLeastSquares::EVS_NONE) );
+
         if (fail_left){
             if (fail_right){
                 calibrationFailureType = ETCFT_FAILED_BOTH;
@@ -147,6 +151,10 @@ void HPOmniceptInterface::onCalibrationFinished(){
 
     }
     emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+}
+
+QString HPOmniceptInterface::getCalibrationValidationReport() const{
+    return calibration.getValidationReport();
 }
 
 void HPOmniceptInterface::onNewCalibrationImageAvailable(){

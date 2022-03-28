@@ -22,6 +22,8 @@ public:
 
     void calibrate(EyeTrackerCalibrationParameters params) override;
 
+    QString getCalibrationValidationReport() const override;
+
 public slots:
     void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l) override;
 

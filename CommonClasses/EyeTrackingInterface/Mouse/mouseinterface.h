@@ -23,6 +23,8 @@ public:
 
     void calibrate(EyeTrackerCalibrationParameters params) override;
 
+    QString getCalibrationValidationReport() const override;
+
     void mouseSetCalibrationToTrue();
 
     void overrideCalibration();

@@ -16,6 +16,9 @@ void EyeTrackerInterface::setEyeToTransmit(QString eye){
     }
 }
 
+QString EyeTrackerInterface::getCalibrationValidationReport() const {
+    return "";
+}
 
 void EyeTrackerInterface::connectToEyeTracker(){
 }

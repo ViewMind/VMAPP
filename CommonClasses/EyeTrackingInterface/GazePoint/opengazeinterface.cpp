@@ -31,6 +31,10 @@ void OpenGazeInterface::on_calibrationAborted(){
     emit(eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED));
 }
 
+QString OpenGazeInterface::getCalibrationValidationReport() const {
+    return "No Calibration Report Implemented For Open Gaze Interface";
+}
+
 //***************************************** Socket related functions.******************************************************
 void OpenGazeInterface::on_connected(){
     logger.appendSuccess("CONNECTED to OpenGaze EyeTracker Server");

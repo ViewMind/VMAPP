@@ -3,9 +3,6 @@
 CalibrationTargets::CalibrationTargets()
 {
     canvas = nullptr;
-    leftEye = nullptr;
-    rightEye = nullptr;
-    vrScale = 1;
 }
 
 void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration){
@@ -54,6 +51,29 @@ void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBord
 
     calibrationSequenceIndex.clear();
     indexInCalibrationSequence = 0;
+    isVerification = false;
+
+}
+
+void CalibrationTargets::verificationInitialization(){
+    indexInCalibrationSequence = -1;
+    isVerification = true;
+}
+
+quint8 CalibrationTargets::isPointWithinCurrentTarget(qreal x, qreal y){
+
+    if (indexInCalibrationSequence >= (calibrationSequenceIndex.size())) return 2;
+    if (indexInCalibrationSequence < 0) return 2;
+
+
+    qreal x_target = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).x();
+    qreal y_target = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).y();
+    if ((x >= x_target) && (x <= x_target + 2*R)){
+        if ((y >= y_target) && (y <= y_target + 2*R)){
+            return 1;
+        }
+    }
+    return 0;
 
 }
 
@@ -64,10 +84,6 @@ QImage CalibrationTargets::getClearScreen(){
     QPainter painter( &image );
     canvas->render( &painter );
     return image;
-}
-
-void CalibrationTargets::setTestTargetFontScale(qreal scale){
-    vrScale = scale;
 }
 
 
@@ -113,120 +129,28 @@ QImage CalibrationTargets::nextSingleTarget(){
         qreal y = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).y();
 
         QGraphicsEllipseItem *circle = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(QColor("#81b2d2")));
-        QGraphicsEllipseItem *innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::white));
+        QGraphicsEllipseItem *innerCircle;
+        if (isVerification){
+            innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::blue));
+        }
+        else {
+            innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::white));
+        }
         circle->setPos(x,y);
         innerCircle->setPos(x+offset,y+offset);
 
+    }
+    else {
+        isVerification = false;
     }
 
     QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
     QPainter painter( &image );
     canvas->render( &painter );
     return image;
-}
-
-void CalibrationTargets::setTargetTest(){
-    canvas->clear();
-
-    qint32 screenw = static_cast<qint32>(canvas->sceneRect().width());
-    qreal offset = R - r;
-
-    lastTimeStamp = -1;
-    movingAverage.setWindowSize(500);
-
-    for (qint32 i = 0; i < borderTargets.size(); i++){
-        QGraphicsEllipseItem *circle = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(Qt::darkBlue));
-        QGraphicsEllipseItem *innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::yellow));
-        qreal x = borderTargets.at(i).x();
-        qreal y = borderTargets.at(i).y();
-        circle->setPos(x,y);
-        innerCircle->setPos(x+offset,y+offset);
-    }
-
-    for (qint32 i = 0; i < calibrationTargets.size(); i++){
-        QGraphicsEllipseItem *circle = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(QColor("#81b2d2")));
-        QGraphicsEllipseItem *innerCircle = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::white));
-        qreal x = calibrationTargets.at(i).x();
-        qreal y = calibrationTargets.at(i).y();
-        circle->setPos(x,y);
-        innerCircle->setPos(x+offset,y+offset);
-    }
-
-    // Appending test text. Original sizes are 40 and 23.
-    qint32 large_font_scale = static_cast<qint32>(40*vrScale);
-    qint32 small_font_scale = static_cast<qint32>(23*vrScale);
-    QGraphicsTextItem *testText1 = canvas->addText("This is a very large sentence to test how the eye tracking works",QFont("Mono",large_font_scale,QFont::Bold));
-    QGraphicsTextItem *testText2 = canvas->addText("Esta es una oración larga para ver cuan bien fuciona el seguimiento ocular",QFont("Mono",small_font_scale,QFont::Bold));
-    freqDisplay = canvas->addText("0",QFont("Mono",large_font_scale,QFont::Bold));
-    testText1->setPos((screenw - testText1->boundingRect().width())/2,4*R);
-    freqDisplayY = testText1->pos().y() + testText1->boundingRect().height()*2;
-    freqDisplay->setPos((screenw - freqDisplay->boundingRect().width())/2,freqDisplayY);
-    testText2->setPos((screenw - testText2->boundingRect().width())/2,16*R);
-
-    // Initializing the
-    leftEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,0,255,100)));
-    rightEye = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,255,0,100)));
-}
-
-QImage CalibrationTargets::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly, qreal timestamp){
-    if (!canvas) return QImage();
-
-    leftEye->setPos(lx-r,ly-r);
-    rightEye->setPos(rx-r,ry-r);
-
-    qreal f = 0;
-    if (lastTimeStamp > 0){
-        qreal T = timestamp - lastTimeStamp;
-        f = 1000.0/T;
-    }
-    lastTimeStamp = timestamp;
-    movingAverage.add(f);
-    f = movingAverage.getAvearage();
-
-    qreal screenw = canvas->sceneRect().width();
-    freqDisplay->setPlainText(QString::number(f));
-    freqDisplay->setPos((screenw - freqDisplay->boundingRect().width())/2,freqDisplayY);
-
-    QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
-    QPainter painter( &image );
-    canvas->render( &painter );
-    return image;
-}
-
-void CalibrationTargets::saveCanvasToTestImageFile(){
-    QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
-    QPainter painter( &image );
-    canvas->render( &painter );
-    image.save("test.png");
 }
 
 CalibrationTargets::~CalibrationTargets(){
 
 }
-
-CalibrationTargets::MovingAverage::MovingAverage(){
-    windowSize = 10;
-    avearage = 0;
-}
-
-qreal CalibrationTargets::MovingAverage::getAvearage(){
-    return avearage;
-}
-
-void CalibrationTargets::MovingAverage::setWindowSize(qint32 n){
-    windowSize = n;
-}
-
-void CalibrationTargets::MovingAverage::add(qreal v){
-    window << v;
-    if (window.size() == windowSize){
-        qreal acc = 0;
-        for (qint32 i = 0; i < windowSize; i++){
-            acc = acc + v;
-        }
-        avearage = acc/windowSize;
-        window.clear();
-    }
-}
-
 

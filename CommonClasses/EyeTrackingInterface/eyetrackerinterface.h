@@ -33,6 +33,8 @@ public:
 
     virtual void calibrate(EyeTrackerCalibrationParameters params);
 
+    virtual QString getCalibrationValidationReport() const;
+
     ETCalibrationFailureType getCalibrationFailureType() const;
 
     QImage getCalibrationImage() const;
