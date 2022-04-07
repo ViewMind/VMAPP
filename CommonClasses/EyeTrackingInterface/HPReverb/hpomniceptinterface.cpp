@@ -1,5 +1,7 @@
 #include "hpomniceptinterface.h"
 
+const float HPOmniceptInterface::SAMPLING_FREQ = 120;
+
 HPOmniceptInterface::HPOmniceptInterface(QObject *parent, qreal width, qreal height):EyeTrackerInterface(parent,width,height)
 {
     connect(&calibration,&CalibrationLeastSquares::newCalibrationImageAvailable,this,&HPOmniceptInterface::onNewCalibrationImageAvailable);
@@ -65,8 +67,6 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
     xr = vecR.x();
     yr = vecR.y();
 
-    qDebug() << "Receving new Eye Data. HP. In calibration: " << calibration.isCalibrating();
-
     if (calibration.isCalibrating()){
         //qDebug() << "Calib";
         calibration.addDataPointForCalibration(xl,yl,xr,yr);
@@ -79,12 +79,19 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
         eid.yl = static_cast<qreal>(yl);
         eid.yr = static_cast<qreal>(yr);
 
-        lastData = correctionCoefficients.computeCorrections(eid);
+        if (calibration.isValidating()){
+            // While validating wee need to pass the converted data points to verify that the user is looking where we think.
+            calibration.addDataPointForVerification(eid);
+        }
+        else {
+            lastData = correctionCoefficients.computeCorrections(eid);
+            lastData.time    = eyedata.value(HPProvider::Timestamp).toLongLong();
+            lastData.pdLeft  = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Pupil).toReal();
+            lastData.pdRight = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Pupil).toReal();
 
-        lastData.time    = eyedata.value(HPProvider::Timestamp).toLongLong();
-        lastData.pdLeft  = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Pupil).toReal();
-        lastData.pdRight = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Pupil).toReal();
-        emit HPOmniceptInterface::newDataAvailable(lastData);
+            emit HPOmniceptInterface::newDataAvailable(lastData);
+        }
+
     }
 
 }
@@ -96,7 +103,7 @@ void HPOmniceptInterface::disconnectFromEyeTracker(){
 void HPOmniceptInterface::calibrate(EyeTrackerCalibrationParameters params){
     if (params.forceCalibration){
         calibration.startCalibrationSequence(static_cast<qint32>(screenWidth),
-                                             static_cast<qint32>(screenHeight),
+                                             static_cast<qint32>(screenHeight),                                             
                                              params.number_of_calibration_points);
         // Non empty file name will indicate coefficient storage.
         coefficientsFile = params.name;
@@ -120,7 +127,7 @@ void HPOmniceptInterface::updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l){
 }
 
 void HPOmniceptInterface::onCalibrationFinished(){
-    if (!calibration.computeCalibrationCoeffs()){
+    if (!calibration.wereCalibrationCoefficientsComputedSuccessfully()){
         calibrationFailureType = ETCFT_UNKNOWN;
     }
     else{
@@ -155,6 +162,15 @@ void HPOmniceptInterface::onCalibrationFinished(){
 
 QString HPOmniceptInterface::getCalibrationValidationReport() const{
     return calibration.getValidationReport();
+}
+
+QVariantMap HPOmniceptInterface::getCalibrationValidationData() const {
+    return calibration.getCalibrationValidationData();
+}
+
+void HPOmniceptInterface::configureCalibrationValidation(QVariantMap calibrationValidationParameters){
+    calibrationValidationParameters[VMDC::CalibrationFields::SAMPLING_FREQUENCY] = SAMPLING_FREQ;
+    calibration.configureValidation(calibrationValidationParameters);
 }
 
 void HPOmniceptInterface::onNewCalibrationImageAvailable(){

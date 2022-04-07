@@ -307,8 +307,8 @@ void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "";
 
-    if (DBUGBOOL(Debug::Options::FORCE_5_POINT_CALIB)){
-        calibrationParams.number_of_calibration_points = 5;
+    if (DBUGEXIST(Debug::Options::FORCE_N_CALIB_PTS)){
+        calibrationParams.number_of_calibration_points = DBUGINT(Debug::Options::FORCE_N_CALIB_PTS);
     }
     else{
         calibrationParams.number_of_calibration_points = 9;
@@ -364,6 +364,29 @@ void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
         }
     }
 
+    QVariantMap calibrationValidationParameters;
+    calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = 9;
+    calibrationValidationParameters[VMDC::CalibrationFields::ENABLE_GAZEFOLLOWING_DURING_VALIDATION] = false;
+    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
+    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE] = 0;
+    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_LENGTH] = 3000;
+
+    if (DBUGEXIST(Debug::Options::CONFIG_CALIB_VALID)){
+        QVariantMap configCalibValidDebugOptons = Debug::parseMultipleDebugOptionLine(DBUGSTR(Debug::Options::CONFIG_CALIB_VALID));
+
+        qDebug() << "DBUG: Configuration For Calibration Options Set Externally. Final set of options";
+
+        QStringList allkeys = configCalibValidDebugOptons.keys();
+        for (qint32 i = 0; i < allkeys.size(); i++){
+            QString key = allkeys.at(i);
+            qDebug() << "   Setting '" << key << "' -> " << configCalibValidDebugOptons.value(key);
+            calibrationValidationParameters[key] = configCalibValidDebugOptons[key];
+        }
+
+        //Debug::prettpPrintQVariantMap(calibrationValidationParameters);
+    }
+
+    eyeTracker->configureCalibrationValidation(calibrationValidationParameters);
     eyeTracker->calibrate(calibrationParams);
 }
 
@@ -396,7 +419,10 @@ void FlowControl::onEyeTrackerControl(quint8 code){
         break;
     case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
         logger.appendStandard("EyeTracker Control: Calibration and validation finished");
-        logger.appendStandard("VALIDATION REPORT:\n" + eyeTracker->getCalibrationValidationReport());
+
+        if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+           logger.appendStandard("VALIDATION REPORT:\n" + eyeTracker->getCalibrationValidationReport());
+        }
 
         calibrated = true;
         if (Globals::EyeTracker::IS_VR) eyeTracker->enableUpdating(false);
@@ -594,10 +620,16 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     //qDebug() << "EyeTracker Enable Updating";
     eyeTracker->enableUpdating(true);
 
+    // Setting the validation data from the calibration.
+    experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
+
     // Start the experiment.
     experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
                                 configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
                                 study_config);
+
+    // Setting the validation data from the calibration.
+    experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
 
 
     if (monitor != nullptr){

@@ -47,6 +47,9 @@ public:
                                  const QString &experimentFile,
                                  const QVariantMap &studyConfig);
 
+    // Sets the validation calibration data in the study structure so that information can be analyzed or used if needed.
+    void setCalibrationValidationData(const QVariantMap &calibrationValidationData);
+
     // Disables manual mode and resets the experiment.
     void startExperimentNoManualMode();
 

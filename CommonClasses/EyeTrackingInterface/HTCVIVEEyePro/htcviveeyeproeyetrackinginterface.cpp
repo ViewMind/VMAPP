@@ -1,5 +1,7 @@
 #include "htcviveeyeproeyetrackinginterface.h"
 
+const float HTCViveEyeProEyeTrackingInterface::SAMPLING_FREQ = 120;
+
 HTCViveEyeProEyeTrackingInterface::HTCViveEyeProEyeTrackingInterface(QObject *parent, qreal width, qreal height):EyeTrackerInterface(parent,width,height)
 {
     connect(&calibration,&CalibrationLeastSquares::newCalibrationImageAvailable,this,&HTCViveEyeProEyeTrackingInterface::onNewCalibrationImageAvailable);
@@ -62,18 +64,21 @@ void HTCViveEyeProEyeTrackingInterface::newEyeData(QVariantMap eyedata){
         eid.yl = static_cast<qreal>(yl);
         eid.yr = static_cast<qreal>(yr);
 
-        lastData = correctionCoefficients.computeCorrections(eid);
-
-        lastData.time    = eyedata.value(HTCVIVE::Timestamp).toLongLong();
-        lastData.pdLeft  = eyedata.value(HTCVIVE::LeftEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
-        lastData.pdRight = eyedata.value(HTCVIVE::RightEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
 
         if (calibration.isValidating()){
-            // While validating wee need to pass the data points to calibration.
+            // While validating we need to pass the data points to validation function.
             calibration.addDataPointForVerification(eid);
         }
+        else {
 
-        emit EyeTrackerInterface::newDataAvailable(lastData);
+            lastData = correctionCoefficients.computeCorrections(eid);
+
+            lastData.time    = eyedata.value(HTCVIVE::Timestamp).toLongLong();
+            lastData.pdLeft  = eyedata.value(HTCVIVE::LeftEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
+            lastData.pdRight = eyedata.value(HTCVIVE::RightEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
+
+            emit EyeTrackerInterface::newDataAvailable(lastData);
+        }
     }
 
 }
@@ -116,7 +121,7 @@ void HTCViveEyeProEyeTrackingInterface::disconnectFromEyeTracker(){
 }
 
 void HTCViveEyeProEyeTrackingInterface::onCalibrationFinished(){
-    if (!calibration.computeCalibrationCoeffs()){
+    if (!calibration.wereCalibrationCoefficientsComputedSuccessfully()){
         calibrationFailureType = ETCFT_UNKNOWN;
     }
     else{
@@ -143,7 +148,7 @@ void HTCViveEyeProEyeTrackingInterface::onCalibrationFinished(){
         else {
             calibrationFailureType = ETCFT_NONE;
         }
-    }   
+    }
     emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
 }
 

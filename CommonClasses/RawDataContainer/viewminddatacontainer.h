@@ -75,6 +75,8 @@ public:
 
     void addFixationVectorR(const QVariantMap &fixation_vector);
 
+    void setCalibrationValidationData(const QVariantMap &calibrationValidationData);
+
     void finalizeTrial(const QString &reponse = "");
 
     void finalizeDataSet();
@@ -175,6 +177,7 @@ private:
     static QString MAIN_FIELD_METADATA;
     static QString MAIN_FIELD_STUDIES;
     static QString MAIN_FIELD_HASH;
+    static QString MAIN_FIELD_CALIBRATION;
 
     // Constant strings to be used in all structures.
     static QString CURRENT_JSON_STRUCT_VERSION;

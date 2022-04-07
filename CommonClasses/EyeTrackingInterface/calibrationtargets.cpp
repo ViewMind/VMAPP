@@ -3,6 +3,17 @@
 CalibrationTargets::CalibrationTargets()
 {
     canvas = nullptr;
+    rightEyeTracker = nullptr;
+    rightEyeTracker = nullptr;
+    enableEyeTrackingInValidation = false;
+}
+
+void CalibrationTargets::enableEyeFollowersDuringValidation(bool enable){
+    enableEyeTrackingInValidation = enable;
+}
+
+bool CalibrationTargets::isGazeFollowingEnabled() const{
+    return enableEyeTrackingInValidation;
 }
 
 void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration){
@@ -55,21 +66,45 @@ void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBord
 
 }
 
-void CalibrationTargets::verificationInitialization(){
+void CalibrationTargets::verificationInitialization(qint32 npoints){
     indexInCalibrationSequence = -1;
     isVerification = true;
+    this->setupCalibrationSequence(npoints);
 }
 
-quint8 CalibrationTargets::isPointWithinCurrentTarget(qreal x, qreal y){
+qreal CalibrationTargets::getCalibrationTargetDiameter() const{
+    return 2*R;
+}
+
+QVariantList CalibrationTargets::getCalibrationTargetCorners() const{
+    QVariantList list;
+    for (qint32 i = 0; i < calibrationTargets.size(); i++){
+        QVariantMap point;
+        point["x"] =  calibrationTargets.at(i).x();
+        point["y"] =  calibrationTargets.at(i).y();
+        list << point;
+    }
+    return list;
+}
+
+quint8 CalibrationTargets::isPointWithinCurrentTarget(qreal x, qreal y, qreal tolerance){
 
     if (indexInCalibrationSequence >= (calibrationSequenceIndex.size())) return 2;
     if (indexInCalibrationSequence < 0) return 2;
 
-
     qreal x_target = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).x();
     qreal y_target = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).y();
-    if ((x >= x_target) && (x <= x_target + 2*R)){
-        if ((y >= y_target) && (y <= y_target + 2*R)){
+
+    qreal dimension = 2*R;
+    qreal tol = tolerance*dimension;
+    qreal tol_offset = tol/2;
+    qreal xmin = x_target - tol_offset;
+    qreal xmax = x_target + dimension + tol_offset;
+    qreal ymin = y_target - tol_offset;
+    qreal ymax = y_target + dimension + tol_offset;
+
+    if ((x >= xmin) && (x <= xmax)){
+        if ((y >= ymin) && (y <= ymax)){
             return 1;
         }
     }
@@ -79,13 +114,15 @@ quint8 CalibrationTargets::isPointWithinCurrentTarget(qreal x, qreal y){
 
 QImage CalibrationTargets::getClearScreen(){
     canvas->clear();
+    leftEyeTracker = nullptr;
+    rightEyeTracker = nullptr;
+    isVerification = false;
     canvas->setBackgroundBrush(QBrush(Qt::gray));
     QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
     QPainter painter( &image );
     canvas->render( &painter );
     return image;
 }
-
 
 QList<QPointF> CalibrationTargets::setupCalibrationSequence(qint32 npoints){
 
@@ -119,6 +156,8 @@ QList<QPointF> CalibrationTargets::setupCalibrationSequence(qint32 npoints){
 
 QImage CalibrationTargets::nextSingleTarget(){
     canvas->clear();
+    leftEyeTracker = nullptr;
+    rightEyeTracker = nullptr;
 
     if (indexInCalibrationSequence <= (calibrationSequenceIndex.size()-1)){
         indexInCalibrationSequence++;
@@ -143,6 +182,29 @@ QImage CalibrationTargets::nextSingleTarget(){
     else {
         isVerification = false;
     }
+
+    if (enableEyeTrackingInValidation && isVerification){
+        // Must create the dots again.
+        leftEyeTracker = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,0,255,100))); // Left is Blue
+        rightEyeTracker = canvas->addEllipse(0,0,2*r,2*r,QPen(),QBrush(QColor(0,255,0,100))); // Right is Green.
+
+        // If EyeTracking In Validation is enabled and we are actually validating. Then this means that the eye tracking values will generate the image and it does not need to be generated here.
+        return QImage();
+    }
+    else {
+        QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
+        QPainter painter( &image );
+        canvas->render( &painter );
+        return image;
+    }
+}
+
+QImage CalibrationTargets::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly){
+    if (!canvas) return QImage();
+    if (leftEyeTracker == nullptr) return QImage();
+
+    leftEyeTracker->setPos(lx-r,ly-r);
+    rightEyeTracker->setPos(rx-r,ry-r);
 
     QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
     QPainter painter( &image );

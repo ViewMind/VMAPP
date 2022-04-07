@@ -284,6 +284,27 @@ namespace VMDC {
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
     }
     
+    namespace CalibrationFields {
+       static const QString VALIDATION_POINT_LENGTH = "validation_point_length";
+       static const QString VALIDATION_POINT_ACCEPTANCE_THRESHOLD = "validation_point_acceptance_threshold";
+       static const QString REQ_NUMBER_OF_ACCEPTED_POINTS = "required_number_of_passing_points";
+       static const QString ENABLE_GAZEFOLLOWING_DURING_VALIDATION = "enable_gaze_following_during_validation";
+       static const QString VALIDATION_POINT_HIT_TOLERANCE = "validation_point_hit_tolerance";
+       static const QString SAMPLING_FREQUENCY = "sampling_frequency";
+       static const QString NUMBER_OF_CALIBRAION_POINTS = "number_of_calibration_points";
+       static const QString CALIBRATION_TARGET_LOCATION = "calibration_target_location";
+       static const QString LEFT_EYE_VALIDATION_DATA = "left_eye_validation_data";
+       static const QString RIGHT_EYE_VALIDATION_DATA = "right_eye_validation_data";
+       static const QString CALIBRATION_TARGET_DIAMETER = "calibration_target_diameter";
+       static const QStringList valid{VALIDATION_POINT_LENGTH,VALIDATION_POINT_ACCEPTANCE_THRESHOLD,REQ_NUMBER_OF_ACCEPTED_POINTS,ENABLE_GAZEFOLLOWING_DURING_VALIDATION,
+                   VALIDATION_POINT_HIT_TOLERANCE,SAMPLING_FREQUENCY,NUMBER_OF_CALIBRAION_POINTS,CALIBRATION_TARGET_LOCATION,LEFT_EYE_VALIDATION_DATA,RIGHT_EYE_VALIDATION_DATA,
+                   CALIBRATION_TARGET_DIAMETER};
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Subject Field"); }
+       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
+       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+    }
+
     
     namespace AppUserField {
        static const QString EMAIL = "email";

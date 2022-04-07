@@ -20,6 +20,14 @@ QString EyeTrackerInterface::getCalibrationValidationReport() const {
     return "";
 }
 
+void EyeTrackerInterface::configureCalibrationValidation(QVariantMap calibrationValidationParamters){
+    Q_UNUSED(calibrationValidationParamters)
+}
+
+QVariantMap EyeTrackerInterface::getCalibrationValidationData() const {
+    return QVariantMap();
+}
+
 void EyeTrackerInterface::connectToEyeTracker(){
 }
 

@@ -226,6 +226,10 @@ void ViewMindDataContainer::addCustomMetadataFields(const QString field_name, co
     data[MAIN_FIELD_METADATA] = current_metada;
 }
 
+void ViewMindDataContainer::setCalibrationValidationData(const QVariantMap &calibrationValidationData){
+    data[MAIN_FIELD_CALIBRATION] = calibrationValidationData;
+}
+
 bool ViewMindDataContainer::setProcessingParameters(const QVariantMap &pp){
 
     // All processing parameters will be considered mandatory.
@@ -746,6 +750,7 @@ QString ViewMindDataContainer::MAIN_FIELD_METADATA                    = "metadat
 QString ViewMindDataContainer::MAIN_FIELD_APPLICATION_USER            = "application_user";
 QString ViewMindDataContainer::MAIN_FIELD_STUDIES                     = "studies";
 QString ViewMindDataContainer::MAIN_FIELD_HASH                        = "hash";
+QString ViewMindDataContainer::MAIN_FIELD_CALIBRATION                 = "calibration_validation";
 
 QString ViewMindDataContainer::CURRENT_JSON_STRUCT_VERSION            = "1";
 

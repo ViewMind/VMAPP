@@ -24,6 +24,10 @@ public:
 
     QString getCalibrationValidationReport() const override;
 
+    void configureCalibrationValidation(QVariantMap calibrationValidationParameters) override;
+
+    QVariantMap getCalibrationValidationData() const override;
+
 public slots:
     void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l) override;
 
@@ -54,6 +58,8 @@ private:
     // The transformation matrixes provided by the HMD.
     QMatrix4x4 rVRTransform;
     QMatrix4x4 lVRTransform;
+
+    static const float SAMPLING_FREQ;
 
 };
 

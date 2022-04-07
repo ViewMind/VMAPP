@@ -35,6 +35,11 @@ public:
 
     virtual QString getCalibrationValidationReport() const;
 
+    virtual void configureCalibrationValidation(QVariantMap calibrationValidationParamters);
+
+    virtual QVariantMap getCalibrationValidationData() const;
+
+
     ETCalibrationFailureType getCalibrationFailureType() const;
 
     QImage getCalibrationImage() const;

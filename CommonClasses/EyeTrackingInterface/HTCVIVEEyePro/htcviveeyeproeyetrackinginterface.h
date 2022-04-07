@@ -48,6 +48,8 @@ private:
     QMatrix4x4 rVRTransform;
     QMatrix4x4 lVRTransform;
 
+    static const float SAMPLING_FREQ;
+
 };
 
 #endif // HTCVIVEEYEPROEYETRACKINGINTERFACE_H

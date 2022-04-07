@@ -42,17 +42,108 @@ bool CalibrationLeastSquares::isValidating() const{
     return isValidatingFlag;
 }
 
-QString CalibrationLeastSquares::getValidationReport() const{
-    QStringList lines;
+bool CalibrationLeastSquares::wereCalibrationCoefficientsComputedSuccessfully() const{
+    return successfullyComputedCoefficients;
+}
 
-    for (qsizetype i = 0; i < validationData.size(); i++){
-        lines << " Validation Target 1. LEFT EYE: "
-                 + QString::number(validationData.at(i).eyeLeftHits) + " out of " + QString::number(validationData.at(i).eyedata.size())
-                 + ". RIGHT EYE: "
-                 + QString::number(validationData.at(i).eyeRightHits) + " out of " + QString::number(validationData.at(i).eyedata.size());
+QVariantMap CalibrationLeastSquares::getCalibrationValidationData() const {
+    return calibrationValidationData;
+}
+
+void CalibrationLeastSquares::configureValidation(const QVariantMap &calibrationValidationParameters){
+    // Computing the number of data points required for the constant hold time based on the sampling frequency.
+    qreal sampling_frequency = calibrationValidationParameters.value(VMDC::CalibrationFields::SAMPLING_FREQUENCY).toReal();
+    qreal hold_time_for_validation = calibrationValidationParameters.value(VMDC::CalibrationFields::VALIDATION_POINT_LENGTH).toReal();
+    validationMaxNumberOfDataPoints = static_cast<qint32>(sampling_frequency*hold_time_for_validation/1000);
+
+    calibrationValidationData.clear();
+    calibrationValidationData = calibrationValidationParameters;
+    calibrationValidationData[VMDC::CalibrationFields::NUMBER_OF_CALIBRAION_POINTS] = calibrationPointsUsed;
+
+    //qDebug() << "Validation number of Data points" << validationMaxNumberOfDataPoints << " FROM " << sampling_frequency << hold_time_for_validation;
+
+    validationApproveThreshold = calibrationValidationParameters.value(VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD).toReal();
+    validationPointHitTolerance = calibrationValidationParameters.value(VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE).toReal();
+    validationPointsToPassForAcceptedValidation = calibrationValidationParameters.value(VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS).toInt();
+
+    if (calibrationValidationParameters.value(VMDC::CalibrationFields::ENABLE_GAZEFOLLOWING_DURING_VALIDATION).toBool()){
+        calibrationTargets.enableEyeFollowersDuringValidation(true);
     }
 
-    return lines.join("\n");
+}
+
+QString CalibrationLeastSquares::getValidationReport() const{
+    return validationReport;
+}
+
+void CalibrationLeastSquares::generateCalibrationReport(){
+    QStringList lines;
+
+    lines << "Validation Threshold " + QString::number(validationApproveThreshold)
+             + " %. Required Number of Passing Targets: " + QString::number(validationPointsToPassForAcceptedValidation);
+
+    leftEyeValidated = false;
+    rightEyeValidated = false;
+
+    qint32 leftEyePass = 0;
+    qint32 rightEyePass = 0;
+
+    QVariantMap rightEyeData;
+    QVariantMap leftEyeData;
+
+    for (qsizetype i = 0; i < validationData.size(); i++){
+
+        qreal pl = validationData.at(i).eyeLeftHits*100/validationData.at(i).eyedata.size();
+        qreal pr = validationData.at(i).eyeRightHits*100/validationData.at(i).eyedata.size();
+
+        QVariantList rightDataList;
+        QVariantList leftDataList;
+        for (qsizetype j = 0; j < validationData.at(i).eyedata.size(); j++){
+            QVariantMap left;
+            QVariantMap right;
+            left["x"] = validationData.at(i).eyedata.at(j).xLeft; left["y"] = validationData.at(i).eyedata.at(j).yLeft;
+            right["x"] = validationData.at(i).eyedata.at(j).xRight; right["y"] = validationData.at(i).eyedata.at(j).yRight;
+            rightDataList << right;
+            leftDataList << left;
+        }
+        rightEyeData["validation_target_" + QString::number(i)] = rightDataList;
+        leftEyeData["validation_target_" + QString::number(i)] = leftDataList;
+
+        if (pl >= validationApproveThreshold){
+            leftEyePass++;
+        }
+
+        if (pr >= validationApproveThreshold){
+            rightEyePass++;
+        }
+
+        lines << " Validation Target " + QString::number(i) +  ". LEFT EYE: "
+                 + QString::number(validationData.at(i).eyeLeftHits) + " out of " + QString::number(validationData.at(i).eyedata.size()) + ": " + QString::number(pl,'f',1) + " %"
+                 + ". RIGHT EYE: "
+                 + QString::number(validationData.at(i).eyeRightHits) + " out of " + QString::number(validationData.at(i).eyedata.size()) + ": " + QString::number(pr,'f',1) + " %";
+    }
+
+    if (leftEyePass >= validationPointsToPassForAcceptedValidation) {
+        leftEyeValidated = true;
+        lines << "LEFT EYE VALIDATED";
+    }
+    else{
+        lines << "LEFT EYE VALIDATION FAILED";
+    }
+    if (rightEyePass >= validationPointsToPassForAcceptedValidation) {
+        rightEyeValidated = true;
+        lines << "RIGHT EYE VALIDATED";
+    }
+    else {
+        lines << "RIGHT EYE VALIDATION FAILED";
+    }
+
+    calibrationValidationData[VMDC::CalibrationFields::LEFT_EYE_VALIDATION_DATA] = leftEyeData;
+    calibrationValidationData[VMDC::CalibrationFields::RIGHT_EYE_VALIDATION_DATA] = rightEyeData;
+    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_TARGET_DIAMETER] = calibrationTargets.getCalibrationTargetDiameter();
+    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_TARGET_LOCATION] = calibrationTargets.getCalibrationTargetCorners();
+
+    validationReport = lines.join("\n");
 }
 
 CalibrationLeastSquares::EyeValidationsStatus CalibrationLeastSquares::getEyeValidationStatus() const {
@@ -81,45 +172,48 @@ void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, flo
 void CalibrationLeastSquares::addDataPointForVerification(const EyeInputData &eid){
     if (isValidatingFlag) {
 
-        if (calibrationTargets.isPointWithinCurrentTarget(eid.xl,eid.yl)){
+        //qDebug() << "CLS: Received Verifcation data point";
+
+        EyeTrackerData etd = coeffs.computeCorrections(eid);
+
+        if (calibrationTargets.isPointWithinCurrentTarget(etd.xLeft,etd.yLeft,validationPointHitTolerance)){
             validationData[currentCalibrationPointIndex].eyeLeftHits++;
         }
 
-        if (calibrationTargets.isPointWithinCurrentTarget(eid.xr,eid.yr)){
+        if (calibrationTargets.isPointWithinCurrentTarget(etd.xRight,etd.yRight,validationPointHitTolerance)){
             validationData[currentCalibrationPointIndex].eyeRightHits++;
         }
 
-        qint32 eyeLHits = validationData[currentCalibrationPointIndex].eyeLeftHits;
-        qint32 eyeRHits = validationData[currentCalibrationPointIndex].eyeRightHits;
+        validationData[currentCalibrationPointIndex].eyedata << etd;
+        if (validationData.at(currentCalibrationPointIndex).eyedata.size() >= validationMaxNumberOfDataPoints){
 
-        validationData[currentCalibrationPointIndex].eyedata << eid;
-
-        // Checking if validation was a success.
-        leftEyeValidated = false;
-        rightEyeValidated = false;
-        leftEyeValidated = (eyeLHits >= VALIDATION_MIN_REQ_TARGET_HITS);
-        rightEyeValidated = (eyeRHits >= VALIDATION_MIN_REQ_TARGET_HITS);
-
-        if (leftEyeValidated && rightEyeValidated){
-            // The point was validated, we move on, unless this is the last point.
+            currentCalibrationPointIndex++;
             if (currentCalibrationPointIndex >= validationData.size()){
                 isValidatingFlag = false;
+
+                // Computing the calibration results and generating the report.
+                generateCalibrationReport();
+
+                currentCalibrationImage = calibrationTargets.getClearScreen();
+                emit CalibrationLeastSquares::newCalibrationImageAvailable();
                 emit CalibrationLeastSquares::calibrationDone();
             }
             else {
-                currentCalibrationPointIndex++;
-                currentCalibrationImage = calibrationTargets.nextSingleTarget();
-                emit CalibrationLeastSquares::newCalibrationImageAvailable();
+                if (calibrationTargets.isGazeFollowingEnabled()){
+                    calibrationTargets.nextSingleTarget();
+                    currentCalibrationImage = calibrationTargets.renderCurrentPosition(etd.xRight,etd.yRight,etd.xLeft,etd.yLeft);
+                    emit CalibrationLeastSquares::newCalibrationImageAvailable();
+                }
+                else {
+                    currentCalibrationImage = calibrationTargets.nextSingleTarget();
+                    emit CalibrationLeastSquares::newCalibrationImageAvailable();
+                }
             }
         }
-        else {
-            // This is the cut off condition. If we get here, no point in moving on.
-            if (validationData.at(currentCalibrationPointIndex).eyedata.size() >= VALIDATION_MAX_POINTS_FOR_ARRAY){
-                isValidatingFlag = false;
-                emit CalibrationLeastSquares::calibrationDone();
-            }
+        else if (calibrationTargets.isGazeFollowingEnabled()){
+            currentCalibrationImage = calibrationTargets.renderCurrentPosition(etd.xRight,etd.yRight,etd.xLeft,etd.yLeft);
+            emit CalibrationLeastSquares::newCalibrationImageAvailable();
         }
-
     }
 }
 
@@ -127,6 +221,9 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
 
     // Initializing the calibration image generator.
     calibrationTargets.initialize(width,height);
+
+    // Storing the information for the calibration validation data.
+    calibrationValidationData[VMDC::CalibrationFields::NUMBER_OF_CALIBRAION_POINTS] = npoints;
 
     // Getting the centers of all the targets to be drawn.
     QList<QPointF> calibrationPoints = calibrationTargets.setupCalibrationSequence(npoints);
@@ -148,6 +245,7 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
     isCalibratingFlag = true;
     isDataGatheringEnabled = true;
     isValidatingFlag = false;
+    successfullyComputedCoefficients = false;
     calibrationTimeInTargetUp();
 
 }
@@ -168,10 +266,28 @@ void CalibrationLeastSquares::calibrationTimeInTargetUp(){
             isCalibratingFlag = false;
             //qDebug() << "Throwing Calibration Done";
 
+            successfullyComputedCoefficients = computeCalibrationCoeffs();
+
+            if (!successfullyComputedCoefficients){
+                // Failed to compute the calibration coefficients, so there is no point in validating.
+                emit CalibrationLeastSquares::calibrationDone();
+                return;
+            }
+
             // Calibration has finished. So we setup verification. and continue gathering data.
             isValidatingFlag = true;
             currentCalibrationPointIndex = 0;
-            calibrationTargets.verificationInitialization();
+            calibrationTargets.verificationInitialization(VALIDATION_NPOINTS);
+            validationData.clear();
+            for (qint32 i = 0; i < VALIDATION_NPOINTS; i++){
+                validationData << ValidationTarget();
+            }
+
+            //qDebug() << "CLS: Initialized Verification";
+
+            // Showing the first target for verification.
+            currentCalibrationImage = calibrationTargets.nextSingleTarget();
+            emit CalibrationLeastSquares::newCalibrationImageAvailable();
 
             //emit CalibrationLeastSquares::calibrationDone();
             return;

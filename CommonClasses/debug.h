@@ -9,10 +9,11 @@
 #include <iostream>
 #include "ConfigurationManager/configurationmanager.h"
 
-#define DBUGSTR(x)  Debug::DEBUG_OPTIONS.getString(x)
-#define DBUGINT(x)  Debug::DEBUG_OPTIONS.getInt(x)
-#define DBUGBOOL(x) Debug::DEBUG_OPTIONS.getBool(x)
-#define DBUGREAL(x) Debug::DEBUG_OPTIONS.getReal(x)
+#define DBUGSTR(x)   Debug::DEBUG_OPTIONS.getString(x)
+#define DBUGINT(x)   Debug::DEBUG_OPTIONS.getInt(x)
+#define DBUGBOOL(x)  Debug::DEBUG_OPTIONS.getBool(x)
+#define DBUGREAL(x)  Debug::DEBUG_OPTIONS.getReal(x)
+#define DBUGEXIST(x) Debug::DEBUG_OPTIONS.containsKeyword(x)
 
 namespace Debug {
 
@@ -52,7 +53,8 @@ namespace Debug {
        const QString PRINT_QC             = "print_qc";
        const QString RENDER_HITBOXES      = "render_hitboxes";
        const QString PRINT_SERVER_RESP    = "print_server_response";
-       const QString FORCE_5_POINT_CALIB  = "use_5_pt_calibration";
+       const QString CONFIG_CALIB_VALID   = "config_calib_validation";
+       const QString FORCE_N_CALIB_PTS    = "force_n_calibration_points";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;
@@ -64,7 +66,7 @@ namespace Debug {
             }
             return "";
         }
-        // The purpose of this is approach is that the non existance of a debug file should set all debug options to being disabled. So this is not an error.
+        // The purpose of this is approach is that the non existance of a debug file should set all debug options to being disabled. So this is not an error.        
         return "";
     }
 
@@ -76,6 +78,18 @@ namespace Debug {
             summary = summary + " - " + key + ": " + DEBUG_OPTIONS.getString(key);
         }
         return summary;
+    }
+
+    static QVariantMap parseMultipleDebugOptionLine(const QString &debugValueLine){
+        QStringList keyValuePairs = debugValueLine.split("--",Qt::SkipEmptyParts);
+        QVariantMap result;
+        for (qint32 i = 0; i < keyValuePairs.size(); i++){
+            QStringList keyAndValue = keyValuePairs.at(i).split("-",Qt::SkipEmptyParts);
+            if (keyAndValue.size() == 2){
+                result[keyAndValue.at(0)] = keyAndValue.at(1);
+            }
+        }
+        return result;
     }
 
 

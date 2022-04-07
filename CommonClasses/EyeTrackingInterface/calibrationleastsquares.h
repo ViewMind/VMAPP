@@ -13,6 +13,7 @@
 #include <QJsonObject>
 #include "calibrationtargets.h"
 #include "eyetrackerdata.h"
+#include "../RawDataContainer/VMDC.h"
 
 class CalibrationLeastSquares: public QObject
 {
@@ -71,8 +72,8 @@ public:
     // Addign the data point for verification
     void addDataPointForVerification(const EyeInputData &eid);
 
-    // This will compute the calibration coefficients once data gathering is done.
-    bool computeCalibrationCoeffs();
+    // Returns the boolean result of the coeffiencient computation. This is in case there is any mathematical problems.
+    bool wereCalibrationCoefficientsComputedSuccessfully() const;
 
     // Getting the coefficients once computation is done
     EyeCorrectionCoeffs getCalculatedCoeficients() const;
@@ -92,6 +93,12 @@ public:
     // Sumarizes the result of the Calibration Validation Process.
     EyeValidationsStatus getEyeValidationStatus() const;
 
+    // Configure everything related to calibration validation.
+    void configureValidation(const QVariantMap &calibrationValidationParameters);
+
+    // Used for saving validation data in each specific study.
+    QVariantMap getCalibrationValidationData() const;
+
 signals:
     void newCalibrationImageAvailable();
     void calibrationDone();
@@ -108,7 +115,7 @@ private:
     };
 
     struct ValidationTarget {
-        QList<EyeInputData> eyedata;
+        QList<EyeTrackerData> eyedata;
         qint32 eyeRightHits = 0;
         qint32 eyeLeftHits = 0;
     };
@@ -145,8 +152,18 @@ private:
     // A Validation Target struct is required for each calibration point.
     QList<ValidationTarget> validationData;
 
+    // Where the validation report is stored.
+    QString validationReport;
+    QVariantMap calibrationValidationData;
+    qint32 calibrationPointsUsed;
+
     bool leftEyeValidated;
     bool rightEyeValidated;
+    bool successfullyComputedCoefficients;
+    qint32 validationMaxNumberOfDataPoints;
+    qreal validationApproveThreshold;
+    qreal validationPointHitTolerance;
+    qint32 validationPointsToPassForAcceptedValidation;
 
     // How long to wait to gather data for each target.
     static const qint32 CALIBRATION_WAIT_TIME = 1000;
@@ -154,8 +171,12 @@ private:
     // How data is gathered for each target.
     static const qint32 CALIBRATION_GATHER_TIME = 2000;
 
-    static const qint32 VALIDATION_MIN_REQ_TARGET_HITS = 10;
-    static const qint32 VALIDATION_MAX_POINTS_FOR_ARRAY = 500;
+    // Number of validations points is always nine.
+    static const qint32 VALIDATION_NPOINTS = 9;
+
+    // This will compute the calibration coefficients once data gathering is done.
+    bool computeCalibrationCoeffs();
+    void generateCalibrationReport();
 
 };
 

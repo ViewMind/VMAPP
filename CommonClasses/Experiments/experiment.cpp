@@ -179,10 +179,12 @@ bool Experiment::startExperiment(const QString &workingDir,
     // The experiment is ALWAYS started in manual mode.
     manager->setTrialCountLoopValue(NUMBER_OF_TRIALS_IN_MANUAL_MODE);
 
-
     return true;
 }
 
+void Experiment::setCalibrationValidationData(const QVariantMap &calibrationValidationData){
+    rawdata.setCalibrationValidationData(calibrationValidationData);
+}
 
 void Experiment::startExperimentNoManualMode(){
     manager->setTrialCountLoopValue(-1);

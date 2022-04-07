@@ -18,11 +18,17 @@ public:
 
     void initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration = false);
 
-    // WARNING: This function NEEDS to be called AFTER the calibration has been completed.
-    void verificationInitialization();
+    // WARNING: This function NEEDS to be called AFTER the calibration has been completed. It will set up the verification with a different number of points.
+    void verificationInitialization(qint32 npoints);
 
     // On verification this function is used to verify if a data point falls within the boundaries of the currently shown target.
-    quint8 isPointWithinCurrentTarget(qreal x, qreal y);
+    quint8 isPointWithinCurrentTarget(qreal x, qreal y, qreal tolerance);
+
+    // Required for storing calibration validation info.
+    qreal getCalibrationTargetDiameter() const;
+
+    // Required for storing calibration validation info.
+    QVariantList getCalibrationTargetCorners() const;
 
     // Sets up calibration interation for 5 or 9 points. Any parameter other than 5 will assume 9 points.
     // Returns a list where the center of the points will be located. The list will have 5 or 9 points accordingly.
@@ -33,6 +39,15 @@ public:
 
     // Gets a clear screen with nothing to show.
     QImage getClearScreen();
+
+    // Renders the image of the current eye positions
+    QImage renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
+
+    // Enable or disable eye following
+    void enableEyeFollowersDuringValidation(bool enable);
+
+    // Returns if Gaze Following was enabled.
+    bool isGazeFollowingEnabled() const;
 
 
 private:
@@ -61,6 +76,12 @@ private:
 
     // Variable used to separate between calibration and verification
     bool isVerification;
+
+    // Enable Eye Tracking In Validation.
+    bool enableEyeTrackingInValidation;
+
+    QGraphicsEllipseItem *leftEyeTracker;
+    QGraphicsEllipseItem *rightEyeTracker;
 
 
 };
