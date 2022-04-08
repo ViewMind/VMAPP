@@ -365,9 +365,9 @@ void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
     }
 
     QVariantMap calibrationValidationParameters;
-    calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = 9;
-    calibrationValidationParameters[VMDC::CalibrationFields::ENABLE_GAZEFOLLOWING_DURING_VALIDATION] = false;
-    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
+    calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = 4;
+    calibrationValidationParameters[VMDC::CalibrationFields::ENABLE_GAZEFOLLOWING_DURING_VALIDATION] = true;
+    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 50;
     calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE] = 0;
     calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_LENGTH] = 3000;
 

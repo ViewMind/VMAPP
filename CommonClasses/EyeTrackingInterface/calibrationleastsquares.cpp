@@ -172,15 +172,19 @@ void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, flo
 void CalibrationLeastSquares::addDataPointForVerification(const EyeInputData &eid){
     if (isValidatingFlag) {
 
-        //qDebug() << "CLS: Received Verifcation data point";
-
         EyeTrackerData etd = coeffs.computeCorrections(eid);
 
-        if (calibrationTargets.isPointWithinCurrentTarget(etd.xLeft,etd.yLeft,validationPointHitTolerance)){
+        bool hitL = false;
+        bool hitR = false;
+        currentCalibrationImage = calibrationTargets.renderCurrentPosition(etd.xRight,etd.yRight,etd.xLeft,etd.yLeft,validationPointHitTolerance,&hitL,&hitR);
+
+        //if (calibrationTargets.isPointWithinCurrentTarget(etd.xLeft,etd.yLeft,validationPointHitTolerance)){
+        if (hitL){
             validationData[currentCalibrationPointIndex].eyeLeftHits++;
         }
 
-        if (calibrationTargets.isPointWithinCurrentTarget(etd.xRight,etd.yRight,validationPointHitTolerance)){
+        //if (calibrationTargets.isPointWithinCurrentTarget(etd.xRight,etd.yRight,validationPointHitTolerance)){
+        if (hitR){
             validationData[currentCalibrationPointIndex].eyeRightHits++;
         }
 
@@ -188,6 +192,7 @@ void CalibrationLeastSquares::addDataPointForVerification(const EyeInputData &ei
         if (validationData.at(currentCalibrationPointIndex).eyedata.size() >= validationMaxNumberOfDataPoints){
 
             currentCalibrationPointIndex++;
+
             if (currentCalibrationPointIndex >= validationData.size()){
                 isValidatingFlag = false;
 
@@ -199,19 +204,11 @@ void CalibrationLeastSquares::addDataPointForVerification(const EyeInputData &ei
                 emit CalibrationLeastSquares::calibrationDone();
             }
             else {
-                if (calibrationTargets.isGazeFollowingEnabled()){
-                    calibrationTargets.nextSingleTarget();
-                    currentCalibrationImage = calibrationTargets.renderCurrentPosition(etd.xRight,etd.yRight,etd.xLeft,etd.yLeft);
-                    emit CalibrationLeastSquares::newCalibrationImageAvailable();
-                }
-                else {
-                    currentCalibrationImage = calibrationTargets.nextSingleTarget();
-                    emit CalibrationLeastSquares::newCalibrationImageAvailable();
-                }
+                calibrationTargets.moveValidationTarget();
+                emit CalibrationLeastSquares::newCalibrationImageAvailable();
             }
         }
-        else if (calibrationTargets.isGazeFollowingEnabled()){
-            currentCalibrationImage = calibrationTargets.renderCurrentPosition(etd.xRight,etd.yRight,etd.xLeft,etd.yLeft);
+        else {
             emit CalibrationLeastSquares::newCalibrationImageAvailable();
         }
     }
@@ -275,19 +272,19 @@ void CalibrationLeastSquares::calibrationTimeInTargetUp(){
             }
 
             // Calibration has finished. So we setup verification. and continue gathering data.
-            isValidatingFlag = true;
             currentCalibrationPointIndex = 0;
             calibrationTargets.verificationInitialization(VALIDATION_NPOINTS);
             validationData.clear();
             for (qint32 i = 0; i < VALIDATION_NPOINTS; i++){
                 validationData << ValidationTarget();
             }
+            isValidatingFlag = true;
 
             //qDebug() << "CLS: Initialized Verification";
 
             // Showing the first target for verification.
-            currentCalibrationImage = calibrationTargets.nextSingleTarget();
-            emit CalibrationLeastSquares::newCalibrationImageAvailable();
+            //currentCalibrationImage = calibrationTargets.nextSingleTarget();
+            //emit CalibrationLeastSquares::newCalibrationImageAvailable();
 
             //emit CalibrationLeastSquares::calibrationDone();
             return;

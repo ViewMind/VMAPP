@@ -40,14 +40,18 @@ public:
     // Gets a clear screen with nothing to show.
     QImage getClearScreen();
 
-    // Renders the image of the current eye positions
-    QImage renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
-
     // Enable or disable eye following
     void enableEyeFollowersDuringValidation(bool enable);
 
-    // Returns if Gaze Following was enabled.
-    bool isGazeFollowingEnabled() const;
+    // Creates the validation target and prepares it to move.
+    void setupValidationTarget();
+
+    // Moves the validation target to the next position.
+    void moveValidationTarget();
+
+    // Renders the image of the current eye positions, during validation
+    QImage renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly, qreal tolerance, bool *hitL, bool *hitR);
+
 
 
 private:
@@ -58,6 +62,14 @@ private:
     const qreal K_CALIBRATION_LT = 0.20;
     const qreal K_CALIBRATION_MC = 0.50;
     const qreal K_CALIBRATION_RB = 0.80;
+
+    const QColor COLOR_OUTSIDE_CIRCLE_CALIBRATION  = QColor(129,178,210);
+    const QColor COLOR_VALIDATION_TARGET_NOT_HIT   = QColor(255,255,255);
+    const QColor COLOR_VALIDATION_TARGET_HIT_LEFT  = QColor(0,0,255);
+    const QColor COLOR_VALIDATION_TARGET_HIT_RIGHT = QColor(0,255,0);
+    const QColor COLOR_VALIDATION_TARGET_HIT_BOTH  = QColor(0,255,255);
+    const QColor COLOR_LEFT_EYE_TRACKER            = QColor(0,0,255,100);
+    const QColor COLOR_RIGHT_EYE_TRACKER           = QColor(0,255,0,100);
 
     QGraphicsScene *canvas;
 
@@ -82,6 +94,9 @@ private:
 
     QGraphicsEllipseItem *leftEyeTracker;
     QGraphicsEllipseItem *rightEyeTracker;
+    QGraphicsEllipseItem *validationTarget;
+
+
 
 
 };
