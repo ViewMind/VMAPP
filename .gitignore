@@ -47,6 +47,7 @@ VMTools/HPOmniceptTest/exe/
 VMTools/HPOmniceptTest/hptest.zip
 VMTools/QMLDev/QMLDev/resources/
 VMTools/OldDBToJSon/bin/
+VMTools/AESDevelop/bin/
 
 EyeExperimenter/src/images/ViewMind.zip
 EyeExperimenter/src/images/ViewMind/
@@ -59,3 +60,4 @@ EyeExperimenter/Yappo2/
 EyeExperimenter/EyeExperimenter
 EyeExperimenter/src/experiment_data/perception_study.dat.short
 CommonClasses/EyeTrackingInterface/HPReverb/hp/hp_omnicept.lib
+
