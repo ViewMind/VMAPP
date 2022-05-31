@@ -56,11 +56,16 @@ Rectangle {
         vmLabel: loader.getStringForKey("viewsettings_default_country")
         vmPlaceHolderText: loader.getStringForKey("viewsettings_def_country_placeholder")
         width: VMGlobals.adjustWidth(350)
-        anchors.top: parent.top
-        anchors.topMargin: VMGlobals.adjustHeight(106);
-        anchors.left: parent.left
-        anchors.leftMargin: VMGlobals.adjustWidth(20)
+        //        anchors.top: parent.top
+        //        anchors.topMargin: VMGlobals.adjustHeight(106);
+        //        anchors.left: parent.left
+        //        anchors.leftMargin: VMGlobals.adjustWidth(20)
+        anchors.top: uiLanguage.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(54);
+        anchors.left: uiLanguage.left
         z: parent.z + 1
+        // Country for patients is removed in general for the application. Code is left in, just in case.
+        visible: false;
         Component.onCompleted: {
             vmLoadedCountry = loader.getDefaultCountry(false);
             setModelList(loader.getCountryList())
@@ -74,9 +79,13 @@ Rectangle {
         id: uiLanguage
         vmLabel: loader.getStringForKey("viewsettings_language")
         width: VMGlobals.adjustWidth(350)
-        anchors.top: defaultCountry.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(54);
-        anchors.left: defaultCountry.left
+        //        anchors.top: defaultCountry.bottom
+        //        anchors.topMargin: VMGlobals.adjustHeight(54);
+        //        anchors.left: defaultCountry.left
+        anchors.top: parent.top
+        anchors.topMargin: VMGlobals.adjustHeight(106);
+        anchors.left: parent.left
+        anchors.leftMargin: VMGlobals.adjustWidth(20)
         Component.onCompleted: {
             var langs = loader.getStringListForKey("viewsettings_langs")
             setModelList(loader.getStringListForKey("viewsettings_langs"))

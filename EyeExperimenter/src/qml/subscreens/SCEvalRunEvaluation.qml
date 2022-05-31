@@ -254,14 +254,14 @@ Rectangle {
         anchors.topMargin: VMGlobals.adjustHeight(20)
         radius: VMGlobals.adjustHeight(8)
         visible: (vmEvaluationStage === vmSTAGE_EVALUATION)
-        onVisibleChanged: {
+//        onVisibleChanged: {
 //            if (visible){
 //              console.log("Message DISPLAY is now Visible");
 //            }
 //            else {
 //              console.log("Message DISPLAY is now HIDDEN");
 //            }
-        }
+//        }
 
         Image {
             id: info_icon
@@ -298,8 +298,8 @@ Rectangle {
         anchors.topMargin: VMGlobals.adjustHeight(20)
         radius: VMGlobals.adjustHeight(8)
         // Uncomment line below to enable feature.
-        visible: false;
-        //visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION)
+        // visible: false;
+        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION)
 
         Image {
             id: studyExplanationInfoIcon

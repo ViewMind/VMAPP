@@ -101,10 +101,11 @@ ViewBase {
             return;
         }
 
-        if (country.vmCurrentIndex == -1){
-            country.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
-            return;
-        }
+// We no longer check for the country to be present.
+//        if (country.vmCurrentIndex == -1){
+//            country.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+//            return;
+//        }
 
 
         var check = numberCheck(yearsOfEducation.vmCurrentText,[0, 100])
@@ -144,7 +145,7 @@ ViewBase {
         loader.addOrModifySubject(vmCurrentlyLoadedPatient,
                                   fname.vmCurrentText,lname.vmCurrentText,
                                   personalID.vmCurrentText,
-                                  bdate,country.vmCurrentText,selected_sex,
+                                  bdate,"",selected_sex, // Country is always empty.
                                   yearsOfEducation.vmCurrentText,email.vmCurrentText)
 
         var message = "";
@@ -255,18 +256,7 @@ ViewBase {
                         id: year
                         width: VMGlobals.adjustWidth(80)
                         vmPlaceHolderText: loader.getStringForKey("viewpatform_year_ph")
-                        Keys.onTabPressed: personalID.vmFocus = true
-                    }
-                }
-
-                VMComboBox {
-                    id: country
-                    width: parent.width
-                    vmLabel: loader.getStringForKey("viewpatform_country")
-                    vmPlaceHolderText: loader.getStringForKey("viewpatform_country_ph")
-                    z: addPatientView.z + 1
-                    Component.onCompleted: {
-                        setModelList(loader.getCountryList())
+                        Keys.onTabPressed: yearsOfEducation.vmFocus = true
                     }
                 }
 
@@ -275,7 +265,16 @@ ViewBase {
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewpatform_years_of_education")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_years_of_education_ph")
-                    Keys.onTabPressed: email.vmFocus = true
+                    Keys.onTabPressed: personalID.vmFocus = true
+                }
+
+                VMTextInput {
+                    id: email
+                    width: parent.width
+                    vmLabel: loader.getStringForKey("viewaddeval_email")
+                    vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
+                    vmClarification: "(" + loader.getStringForKey("viewpatform_optional") + ")"
+                    Keys.onTabPressed: fname.vmFocus = true
                 }
 
             }
@@ -310,16 +309,21 @@ ViewBase {
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewpatlist_id")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_personal_id_ph")
-                    Keys.onTabPressed: yearsOfEducation.vmFocus = true
+                    Keys.onTabPressed: email.vmFocus = true
                 }
 
-                VMTextInput {
-                    id: email
+
+                VMComboBox {
+                    id: country
                     width: parent.width
-                    vmLabel: loader.getStringForKey("viewaddeval_email")
-                    vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
-                    vmClarification: "(" + loader.getStringForKey("viewpatform_optional") + ")"
-                    Keys.onTabPressed: fname.vmFocus = true
+                    vmLabel: loader.getStringForKey("viewpatform_country")
+                    vmPlaceHolderText: loader.getStringForKey("viewpatform_country_ph")
+                    z: addPatientView.z + 1
+                    // Country input is removed from the applicaiton but all the code is left in, just in case.
+                    visible: false;
+                    Component.onCompleted: {
+                        setModelList(loader.getCountryList())
+                    }
                 }
 
             }

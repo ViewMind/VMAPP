@@ -63,8 +63,8 @@ ViewBase {
 
         // Setting up the progress line.
         let plineSetup = {};
-        plineSetup[loader.getStringForKey("viewevaluation_eval_settings")] = [];
         plineSetup[loader.getStringForKey("viewevaluation_general_settings")] = [];
+        plineSetup[loader.getStringForKey("viewevaluation_eval_settings")] = [];        
         progressLine.vmOnlyColorCurrent = true;
         progressLine.setup(plineSetup);
         progressLine.reset();
@@ -435,6 +435,7 @@ ViewBase {
                 // Calling the advance explanation phrase logic.
                 if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_EXPLANATION){
                     if (event.key === Qt.Key_N){
+                       //console.log("Advancing explanation phrase");
                        evaluationRun.nextExplanationPhrase();
                     }
                 }

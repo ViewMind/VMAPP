@@ -9,9 +9,37 @@ Rectangle {
     //border.color: "transparent"
     //border.width: 1
 
+    /**
+      The progress line as provided by our graphical designer has the following structure
+
+      Main Point A
+         Sub Point 1
+         Sub Point 2
+         ...
+         Sub Point N
+      Main Point B
+         Sub Point 1
+         Sub Point 2
+         ...
+         Sub Point N
+      ...
+      Main Point XXXXX
+         Sub Point 1
+         Sub Point 2
+         ...
+         Sub Point N
+
+     Each main point is represented by a large circle with a number and to it's right text.
+     Each sub point is represented by a solid large dot and text next to it.
+     Subpoints are joined by a continous line.
+     Main point have a space between them and the line mentioned above.
+     If no subpoints are present, then a single line segments, with no dots, is drawn.
+
+     **/
+
     property bool vmOnlyColorCurrent: false
 
-    // I've only here learned how to do "private stuff". Which is why other QML classes that I did have it, but I don't
+    // I've only here learned how to do "private stuff". Which is why other QML classes that I did don't have it, but here it's presetn.
     QtObject {
         id: internal
 
@@ -25,13 +53,13 @@ Rectangle {
 
         readonly property double vmLargeD: VMGlobals.adjustWidth(32)
         readonly property double vmSmallD: VMGlobals.adjustWidth(7)
-        readonly property double vmInterSubSegmentLength : VMGlobals.adjustHeight(8+10+8)
-        readonly property double vmEndsSubSegmentLength  : VMGlobals.adjustHeight(8+10)
-        readonly property double vmInterSegmentLength    : VMGlobals.adjustHeight(10)
-        readonly property double vmAirInterSegmentBubble : VMGlobals.adjustHeight(5)
+        readonly property double vmInterSubSegmentLength : VMGlobals.adjustHeight(8+10+8) // The length of the segment between two two subpoints + the diameter of 2 subpoints. Required for drawing the middle of subpoint chains.
+        readonly property double vmEndsSubSegmentLength  : VMGlobals.adjustHeight(8+10)   // The length of the segment between two two subpoints + the diameter of a subpoint. Required for segmets drawn at the end of a chain o subpoints
+        readonly property double vmInterSegmentLength    : VMGlobals.adjustHeight(10)     // The length of the segment between two main points or two subpoints.
+        readonly property double vmAirInterSegmentBubble : VMGlobals.adjustHeight(5)      // Space between a main point and it's segment either before or after it.
         readonly property double vmLineWidth             : VMGlobals.adjustWidth(1)
-        readonly property double vmHAirSubPoint          : VMGlobals.adjustWidth(23)
-        readonly property double vmHAirMainPoint         : VMGlobals.adjustWidth(10)
+        readonly property double vmHAirSubPoint          : VMGlobals.adjustWidth(23) // Horizontal space between the Left Screen Margin and a sub point
+        readonly property double vmHAirMainPoint         : VMGlobals.adjustWidth(10) // Horizontal space between the Right Screen Margin and a Main Point.
 
 
         function drawMainCircles(ctx, yoffset, startIndex, endIndex){
@@ -40,6 +68,8 @@ Rectangle {
             let i = 0;
             let r = internal.vmLargeD/2
             let x = vmLineWidth
+
+            //console.log("Start Index " + startIndex + " End INdex " + endIndex + " main index " + vmMainIndex);
 
             for (i = startIndex; i <= endIndex; i++){
 
@@ -74,6 +104,7 @@ Rectangle {
                     // Drawing the connecting segement, if this is NOT the active main index.
                     if (i < endIndex){
                         ctx.moveTo(x+r,y+internal.vmLargeD+internal.vmAirInterSegmentBubble)
+                        //console.log("y " + y + " D " + internal.vmLargeD  + " air " + internal.vmAirInterSegmentBubble + " inter seg L " + internal.vmInterSegmentLength);
                         ctx.lineTo(x+r,y+internal.vmLargeD+internal.vmAirInterSegmentBubble + internal.vmInterSegmentLength)
                         ctx.stroke();
                     }
@@ -86,8 +117,8 @@ Rectangle {
                     if (N === 0){
                         // Since this is the active point and there are NO subpoints we need to draw a line for it, unless it's the last one
                         if (i < (vmMainPoints.length-1)){
-                            ctx.moveTo(x+r,y+internal.vmLargeD+internal.vmHAirMainPoint)
-                            ctx.lineTo(x+r,y+internal.vmLargeD+internal.vmHAirMainPoint + internal.vmInterSegmentLength)
+                            ctx.moveTo(x+r,y+internal.vmLargeD+internal.vmAirInterSegmentBubble)
+                            ctx.lineTo(x+r,y+internal.vmLargeD+internal.vmAirInterSegmentBubble + internal.vmInterSegmentLength)
                             ctx.stroke();
                         }
                     }
