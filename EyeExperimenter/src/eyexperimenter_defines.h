@@ -113,7 +113,8 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "19.3.4";
+       // REMEBER The previous version (19.3.4) still sent the NBackVS as a no report available study. NEED TO ADD THIS TO THE CHANGES WHEN DOING THE NEW RELEASE.
+       static const QString EXPERIMENTER_VERSION_NUMBER = "19.3.5";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

@@ -2,7 +2,7 @@
 
 const QString Loader::NO_REPORT_DISCARD_CODE = "no_report_available";
 
-const QStringList Loader::NO_REPORT_STUDIES = {VMDC::Study::NBACKMS,VMDC::Study::NBACKVS};
+const QStringList Loader::NO_REPORT_STUDIES = {VMDC::Study::NBACKMS};
 
 Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
 {
