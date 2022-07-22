@@ -49,5 +49,6 @@
         <file>qml/views/ViewEditProtocol.qml</file>
         <file>qml/views/ViewRequestUpdate.qml</file>
         <file>qml/views/ViewChangeLog.qml</file>
+        <file>qml/components/VMCalibrationValidation.qml</file>
     </qresource>
 </RCC>

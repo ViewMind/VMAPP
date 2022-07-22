@@ -60,6 +60,7 @@ Item {
         radius: VMGlobals.adjustWidth(10);
         color: "#ffffff"
     }
+
     /////////////////////////////////////////////////////////////////////
 
     Text {

@@ -156,6 +156,11 @@ viewevaluation_congrats = Congratulations!;
 viewevaluation_congrats_sub = You have successfully completed all evaluations;
 viewevaluation_skip_calibration = SKIP CALIBRATION;
 viewevaluation_finish_message = <b></b><br> has a new study that can be processed;
+viewevaluation_calib_res = CALIBRATION RESULTS;
+viewevaluation_left_eye = Left Eye;
+viewevaluation_right_eye = Right Eye;
+viewevaluation_calib_restart = RESTART CALIBRATION;
+viewevaluation_continue = CONTINUE;
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = Calibration has ended;

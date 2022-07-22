@@ -178,7 +178,9 @@ ViewBase {
         anchors.leftMargin: VMGlobals.adjustWidth(32.53)
         anchors.bottomMargin: VMGlobals.adjustHeight(32.75)
         onClickSignal: {
-            settingsDialog.open()
+            console.log("Settings disable for TESTING!!!!");
+            mainWindow.showCalibrationValidation()
+            //settingsDialog.open()
         }
     }
 

@@ -118,6 +118,9 @@ public:
     Q_INVOKABLE void deleteProtocol(const QString &id);
     Q_INVOKABLE QVariantMap getProtocolList();
 
+    //////////////////////////// FOR DEBUGGING ONLY ////////////////////////////
+    Q_INVOKABLE QVariantMap testGetCalibrationValidationData();
+
 
 
 signals:

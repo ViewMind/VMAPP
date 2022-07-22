@@ -51,11 +51,14 @@ ApplicationWindow {
         }
     }
 
-    // Calibration error dialog
-    VMMessageDialog {
-        id: calibrationErrorDialog
-        onDismissed: {
-            calibrationErrorDialog.close()
+    // Calibration Validation dialog
+    VMCalibrationValidation {
+        id: calibrationValidation
+        onCalibrationValidated: {
+
+        }
+        onRequestReCalibration: {
+
         }
     }
 
@@ -188,25 +191,14 @@ ApplicationWindow {
         return swiperControl.currentIndex;
     }
 
-    function showCalibrationError(leftEye,rightEye){
-        var title = loader.getStringForKey("viewevaluation_err_calib_title");
-        var body  = loader.getStringForKey("viewevaluation_err_calib_exp");
+    function showCalibrationValidation(){
 
-        if (leftEye) body = body.replace("llee",loader.getStringForKey("viewevaluation_err_calib_ok"))
-        else body = body.replace("llee",loader.getStringForKey("viewevaluation_err_calib_fail"))
-
-        if (rightEye) body = body.replace("rree",loader.getStringForKey("viewevaluation_err_calib_ok"))
-        else body = body.replace("rree",loader.getStringForKey("viewevaluation_err_calib_fail"))
-
-        //console.log(body)
-
-        calibrationErrorDialog.vmTitle = title
-        calibrationErrorDialog.vmText = body
-        calibrationErrorDialog.vmLarge = true
-        calibrationErrorDialog.vmUseRedAlert = true
-
-        calibrationErrorDialog.open()
-
+        var map = loader.testGetCalibrationValidationData();
+        let W = map["processing_parameters"]["resolution_width"];
+        let H = map["processing_parameters"]["resolution_height"];
+        calibrationValidation.configuringRenderingParameters(map["calibration_validation"],W,H)
+        calibrationValidation.redrawCanvas()
+        calibrationValidation.open()
     }
 
 }

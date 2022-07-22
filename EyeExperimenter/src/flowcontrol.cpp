@@ -629,10 +629,6 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
                                 configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
                                 study_config);
 
-    // Setting the validation data from the calibration.
-    experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
-
-
     if (monitor != nullptr){
         if (configuration->getBool(Globals::VMPreferences::DUAL_MONITOR_MODE)) {
             monitor->show();
