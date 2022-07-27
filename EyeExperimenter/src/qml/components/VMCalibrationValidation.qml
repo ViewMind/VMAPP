@@ -26,27 +26,46 @@ Item {
     property double vmKy: 1;
     // The list of upper left corner for each of the targets.
     property var vmCalibrationData: ({})
+    property bool vmIsLeftEyeValidated: false
+    property bool vmIsRightEyeValidated: false;
 
     ////////////////////////// CONVERSION FUNCTIONS: 2D HMD Data to Plot Data ////////////////////////
 
     function configuringRenderingParameters(cdata,width,height){
         vmCalibrationData = cdata;
 
+        // Checking if each eye is validated.
+        vmIsLeftEyeValidated =  vmCalibrationData["left_eye_validation_data"]["is_validated"];
+        vmIsRightEyeValidated =  vmCalibrationData["right_eye_validation_data"]["is_validated"];
+
+        setEyeResultTextElement(rigthEyeResult,vmIsRightEyeValidated)
+        setEyeResultTextElement(leftEyeResult,vmIsLeftEyeValidated)
+
         vmKx = vmScreenRepresentationWidth/width;
         vmKy = vmScreenRepresentationHeight/height;
         vmScreenRepresentationHeight = vmScreenRepresentationWidth*height/width;
-
     }
 
     ////////////////////////// DRAWING FUNCTIONS ////////////////////////
-    function renderScreenRepresentation(ctx){
+    function renderScreenRepresentation(ctx,left){
+
+        let fillColor = VMGlobals.vmGrayUnselectedBorder
+
+        if (left && !vmIsLeftEyeValidated)   fillColor = VMGlobals.vmRedCalibrationFailed;
+        if (!left && !vmIsRightEyeValidated) fillColor = VMGlobals.vmRedCalibrationFailed;
+
         let ry = 0.02*vmScreenRepresentationHeight;
         let rx = 0.02*vmScreenRepresentationWidth;
         ctx.beginPath();
-        ctx.fillStyle = VMGlobals.vmGrayUnselectedBorder
-        ctx.strokeStyle = VMGlobals.vmGrayUnselectedBorder
+        ctx.fillStyle = fillColor
         ctx.roundedRect(0,0,vmScreenRepresentationWidth,vmScreenRepresentationHeight,rx,ry)
         ctx.fill();
+
+    }
+
+    function setEyeResultTextElement(textElement, validated){
+        textElement.text = validated ? loader.getStringForKey("viewevaluation_success") : loader.getStringForKey("viewevaluation_failed");
+        textElement.color = validated ? VMGlobals.vmBlackText : VMGlobals.vmRedError
     }
 
     function redrawCanvas(){
@@ -57,6 +76,7 @@ Item {
     function renderTargets(ctx){
 
         let upperLeftCorners = vmCalibrationData["calibration_target_location"];
+        if (upperLeftCorners === undefined) return;
         let Dx = vmCalibrationData["calibration_target_diameter"]*vmKx;
         let Dy = vmCalibrationData["calibration_target_diameter"]*vmKy;
         let Rx = Dx/2;
@@ -92,11 +112,7 @@ Item {
 
         for (let key in datapoints){
 
-            // We filter out about the first third of data points in order to remove
-            // data points for transitions.
-            let NFilter = Math.round(datapoints[key].length/3);
-
-            for (let i = NFilter; i < datapoints[key].length; i++){
+            for (let i = 0; i < datapoints[key].length; i++){
                 let x = datapoints[key][i]["x"]*vmKx;
                 let y = datapoints[key][i]["y"]*vmKy;
                 ctx.beginPath();
@@ -112,7 +128,7 @@ Item {
     }
 
     function renderCompleteScreenRepresentation(ctx,left){
-        renderScreenRepresentation(ctx);
+        renderScreenRepresentation(ctx,left);
         renderTargets(ctx)
         renderDataPoints(ctx,left)
     }
@@ -123,8 +139,11 @@ Item {
     }
 
     function close(){
+        vmIsLeftEyeValidated = false;
+        vmIsRightEyeValidated = false;
         visible = false
     }
+
 
     MouseArea {
         id: mouseCatcher
@@ -167,10 +186,21 @@ Item {
         color: VMGlobals.vmGrayLightGrayText
         font.weight: 400
         font.pixelSize: VMGlobals.vmFontBaseSize
-        text: loader.getStringForKey("viewevaluation_left_eye")
+        text: loader.getStringForKey("viewevaluation_left_eye") + ":  "
         anchors.top: dialogTitle.bottom
         anchors.topMargin: VMGlobals.adjustHeight(10)
-        anchors.horizontalCenter: leftEyeCanvas.horizontalCenter
+        x: leftEyeCanvas.x
+    }
+
+    Text {
+        id: leftEyeResult
+        font.weight: 600
+        font.pixelSize: VMGlobals.vmFontBaseSize
+        anchors.verticalCenter: leftEyeTitle.verticalCenter
+        anchors.left: leftEyeTitle.right
+        onWidthChanged: {
+            leftEyeTitle.x = leftEyeCanvas.x + (leftEyeCanvas.width - leftEyeResult.width - leftEyeTitle.width)/2
+        }
     }
 
     Text {
@@ -178,10 +208,23 @@ Item {
         color: VMGlobals.vmGrayLightGrayText
         font.weight: 400
         font.pixelSize: VMGlobals.vmFontBaseSize
-        text: loader.getStringForKey("viewevaluation_right_eye")
+        text: loader.getStringForKey("viewevaluation_right_eye") + ":  "
         anchors.top: dialogTitle.bottom
         anchors.topMargin: VMGlobals.adjustHeight(10)
-        anchors.horizontalCenter: rightEyeCanvas.horizontalCenter
+        //anchors.horizontalCenter: rightEyeCanvas.horizontalCenter
+        x: rightEyeCanvas.x
+    }
+
+    Text {
+        id: rigthEyeResult
+        font.pixelSize: VMGlobals.vmFontBaseSize
+        font.weight: 600
+        anchors.verticalCenter: rightEyeTitle.verticalCenter
+        anchors.left: rightEyeTitle.right
+        onWidthChanged: {
+            rightEyeTitle.x = rightEyeCanvas.x + (rightEyeCanvas.width - rigthEyeResult.width - rightEyeTitle.width)/2
+        }
+
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -255,6 +298,7 @@ Item {
     VMButton {
         id: continueButton
         vmText: loader.getStringForKey("viewevaluation_continue");
+        vmEnabled: vmIsLeftEyeValidated || vmIsRightEyeValidated
         anchors.bottom: dialog.bottom
         anchors.bottomMargin: VMGlobals.adjustHeight(20)
         anchors.right: dialog.right

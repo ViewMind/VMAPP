@@ -65,6 +65,7 @@ QtObject {
     readonly property color vmBlackText:                "#242424"
 
     readonly property color vmRedErrorBackground:       "#0DFD3D60"
+    readonly property color vmRedCalibrationFailed:     "#3AFD3D60"
     readonly property color vmRedError:                 "#FD3D60"
     readonly property color vmRedBadIndexBackground:    "#FFF5F7"
 

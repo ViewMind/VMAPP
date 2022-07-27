@@ -21,8 +21,6 @@ public:
     static const quint8 ET_CODE_DISCONNECTED_FROM_ET            = 4;
     static const quint8 ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE = 5;
 
-    typedef enum {ETCFT_FAILED_LEFT, ETCFT_FAILED_RIGHT, ETCFT_FAILED_BOTH, ETCFT_NONE ,ETCFT_UNKNOWN}  ETCalibrationFailureType;
-
     explicit EyeTrackerInterface(QObject *parent = nullptr, qreal width = 1, qreal height = 1);
 
     virtual void connectToEyeTracker();
@@ -33,14 +31,14 @@ public:
 
     virtual void calibrate(EyeTrackerCalibrationParameters params);
 
-    virtual QString getCalibrationValidationReport() const;
 
     virtual void configureCalibrationValidation(QVariantMap calibrationValidationParamters);
 
     virtual QVariantMap getCalibrationValidationData() const;
 
+    virtual QString getCalibrationValidationReport() const;
 
-    ETCalibrationFailureType getCalibrationFailureType() const;
+    virtual QString getCalibrationRecommendedEye() const;
 
     QImage getCalibrationImage() const;
 
@@ -74,9 +72,6 @@ protected:
 
     // Calibration image if this needs to be displayed.
     QImage calibrationImage;
-
-    // Code that defines which eye failed the calibration.
-    ETCalibrationFailureType calibrationFailureType;
 
     // The last available data
     EyeTrackerData lastData;

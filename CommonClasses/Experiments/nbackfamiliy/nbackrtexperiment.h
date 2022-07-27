@@ -34,7 +34,7 @@ private:
 
     struct TrialRecognitionMachine {
         void reset(const QList<qint32> &trialRecogSeq);
-        bool isSequenceOver(const Fixation &r, const Fixation &l, FieldingManager *m, bool *updateHUD);
+        bool isSequenceOver(const Fixation &fixationToUse, FieldingManager *m, bool *updateHUD);
         bool useRightEye;
         bool lightUpSquares;
     private:

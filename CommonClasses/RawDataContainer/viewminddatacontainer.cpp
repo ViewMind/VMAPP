@@ -394,6 +394,7 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     QStringList parameters_to_check;
     QMap<QString,QStringList> valid_parameter_values;
     valid_parameter_values[VMDC::StudyParameter::VALID_EYE] = VMDC::Eye::valid;
+    valid_parameter_values[VMDC::StudyParameter::DEFAULT_EYE] = VMDC::Eye::valid;
 
     // Computing the time stamp fields
     QString date = QDateTime::currentDateTime().toString("dd/MM/yyyy");

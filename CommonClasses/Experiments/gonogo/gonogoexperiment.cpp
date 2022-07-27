@@ -14,6 +14,8 @@ GoNoGoExperiment::GoNoGoExperiment(QWidget *parent, const QString &study_type):E
     connect(&stateTimer,&QTimer::timeout,this,&GoNoGoExperiment::onTimeOut);
 
     this->studyType = study_type;
+
+    this->defaultStudyEye = VMDC::Eye::LEFT;
 }
 
 
@@ -175,18 +177,10 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // Checking if there is a fixation inside the correct target.
     computeOnlineFixations(data);
 
-    Fixation fixationToCheck;
-    if ((leftEyeEnabled) && (!rightEyeEnabled)){
-        fixationToCheck = lastFixationL;
-    }
-    else {
-        fixationToCheck = lastFixationR;
-    }
-
     // We need to check for both conditions as it is entirely possible for a fixation to start OUTSIDE of the hitbox
     // and finish inside.
-    if ((fixationToCheck.hasStarted() || fixationToCheck.hasFinished())){
-        if (m->isPointInSideCorrectTargetForCurrentTrial(fixationToCheck.getX(),fixationToCheck.getY())){
+    if ((studyLogicFixation.hasStarted() || studyLogicFixation.hasFinished())){
+        if (m->isPointInSideCorrectTargetForCurrentTrial(studyLogicFixation.getX(),studyLogicFixation.getY())){
             fixationFormedAtRightTarget = true;
             onTimeOut();
             return;

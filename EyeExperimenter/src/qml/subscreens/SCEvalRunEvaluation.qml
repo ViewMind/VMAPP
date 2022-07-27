@@ -47,16 +47,19 @@ Rectangle {
                 return;
             }
             // All is good so the calibration is requested.
-            flowControl.calibrateEyeTracker(viewEvaluations.vmSelectedEye);
+            flowControl.calibrateEyeTracker();
             vmInCalibration = true;
         }
 
         function onCalibrationDone() {
 
             vmInCalibration = false;
-            prepareNextStudy(false);
 
-            // flowControl.setupSecondMonitor(); // LEGACY CODE: This is where the old UI had it. Leaving it here for reference.
+            mainWindow.showCalibrationValidation();
+
+            //prepareNextStudy(false);
+
+            //flowControl.setupSecondMonitor(); // LEGACY CODE: This is where the old UI had it. Leaving it here for reference.
 
         }
 
@@ -164,7 +167,7 @@ Rectangle {
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
             if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
             else {
-                flowControl.calibrateEyeTracker(viewEvaluations.vmSelectedEye);
+                flowControl.calibrateEyeTracker();
                 vmInCalibration = true;
             }
         }
@@ -202,10 +205,6 @@ Rectangle {
         vmExplanationTextIndex = (vmExplanationTextIndex % vmExplanationTextArray.length)
         let phrase = vmExplanationTextArray[vmExplanationTextIndex];
         studyExplanationText.text = phrase;
-    }
-
-    onVmEvaluationStageChanged: {
-        //console.log("Evaluation STAGE CHANGED TO: " + vmEvaluationStage);
     }
 
     Text {
@@ -320,6 +319,16 @@ Rectangle {
             anchors.top: studyExplanationInfoIcon.top
             anchors.left: studyExplanationInfoIcon.right
             anchors.leftMargin: VMGlobals.adjustWidth(12.25)
+        }
+
+        Text {
+            id: pressKeyToContinue;
+            color: VMGlobals.vmBlueSelected
+            text: loader.getStringForKey("explanation_key_to_continue");
+            font.pixelSize: VMGlobals.vmFontBaseSize
+            font.weight: 600
+            anchors.top: studyExplanationText.bottom
+            anchors.left: studyExplanationText.left
         }
 
     }

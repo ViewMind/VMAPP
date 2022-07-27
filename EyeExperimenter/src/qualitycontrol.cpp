@@ -97,7 +97,19 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
 
     QVariantList trialList = rawdata.getStudyTrialList(studyType);
     QVariantMap studyConfiguration = rawdata.getStudyConfiguration(studyType);
-    QString validEye = studyConfiguration.value(VMDC::StudyParameter::VALID_EYE).toString();
+    QString fixationEyeToUse = studyConfiguration.value(VMDC::StudyParameter::VALID_EYE).toString();
+
+    if (fixationEyeToUse == VMDC::Eye::BOTH){
+        if (studyConfiguration.contains(VMDC::StudyParameter::DEFAULT_EYE)){
+            fixationEyeToUse = studyConfiguration.value(VMDC::StudyParameter::DEFAULT_EYE).toString();
+        }
+        else {
+            // This should never happen. It is left for legacy reason in case QC Procesing is done on files that do not contains the Default Eye Study Parameter.
+            fixationEyeToUse = VMDC::Eye::RIGHT;
+        }
+    }
+
+    //qDebug() << "USING QC Eye" << fixationEyeToUse;
 
     QVariantMap qc = rawdata.getQCParameters();
     QVariantMap pp = rawdata.getProcessingParameters();
@@ -176,7 +188,7 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
 
             // The easy stuff first: The number of data points and fixatons. The fixations shown will be those for the eye used in processing.
             pointsInTrial = pointsInTrial + rawData.size();
-            if (validEye == VMDC::Eye::LEFT){
+            if (fixationEyeToUse == VMDC::Eye::LEFT){
                 fixInTrial = fixInTrial + fixL.size();
             }
             else {

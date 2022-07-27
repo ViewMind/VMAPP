@@ -120,6 +120,9 @@ protected:
     // If a study type is 1 of a a multy study part this contains the overall name. Otherwise it's the same as studyType.
     QString metaStudyType;
 
+    // The default eye is the prefered eye in which the study study uses for it's logic.
+    QString defaultStudyEye;
+
     // The pointer to the GraphicsView where the drawing and showing will take place.
     QGraphicsView *gview;
 
@@ -153,6 +156,7 @@ protected:
     Fixation lastFixationR;
     MovingWindowAlgorithm rMWA;
     MovingWindowAlgorithm lMWA;
+    Fixation studyLogicFixation;
 
     // Gets the path to the description file of the study, depending on study type and configuration.
     virtual QString getExperimentDescriptionFile(const QVariantMap &studyConfig);
@@ -192,6 +196,9 @@ protected:
     // Feeds data to the online fixation maching. If a fixation is computed, it is stored in the rawdata structure.
     // The last two parameters are reading ONLY.
     void computeOnlineFixations(const EyeTrackerData &data, qreal l_schar = 0, qreal l_word = 0, qreal r_schar = 0, qreal r_word = 0);
+
+    // Logic to define which fixation is used for study logic.
+    void storeStudyLogicFixation();
 
     // Transform the fixation struct into a the valid struct expected by the ViewMind Data Container.
     QVariantMap fixationToVariantMap(const Fixation &f);

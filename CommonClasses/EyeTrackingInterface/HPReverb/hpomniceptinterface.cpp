@@ -44,6 +44,7 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
 
     // Passing the current values throught the transformation matrix.
     float xl, yl, zl, xr, yr, zr;
+    float oxl, oyl, ozl, oxr, oyr, ozr;
 
     xl = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::X).toFloat();
     yl = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Y).toFloat();
@@ -53,11 +54,23 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
     yr = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Y).toFloat();
     zr = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Z).toFloat();
 
-    QVector4D vecL(xl/zl, yl/zl, zl,1);
-    QVector4D vecR(xr/zr, yr/zr, zr,1);
+    oxl = xl; oyl = yl; ozl = zl; oyr = yr; ozr = zr; oxr = xr;
 
-    //QVector4D vecL(xl, yl, zl,0);
-    //QVector4D vecR(xr, yr, zr,0);
+    QVector4D vecL, vecR;
+
+    if (qAbs(static_cast<double>(zl)) > 1e-6 ){ // This is to avoid warning of comparing float to zero and to avoid a division by zero
+        vecL = QVector4D(xl/zl, yl/zl, zl,1);
+    }
+    else {
+        vecL = QVector4D(0, 0, 0,0);
+    }
+
+    if (qAbs(static_cast<double>(zr)) > 1e-6 ){ // This is to avoid warning of comparing float to zero and to avoid a division by zero.
+        vecR = QVector4D(xr/zr, yr/zr, zr,1);
+    }
+    else {
+        vecR = QVector4D(0, 0, 0,0);
+    }
 
     vecL = lVRTransform*vecL;
     xl = vecL.x();
@@ -69,28 +82,30 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
 
     if (calibration.isCalibrating()){
         //qDebug() << "Calib";
+        if (qIsNaN(xl) || qIsNaN(yl) || qIsNaN(xr) || qIsNaN(yr)){
+            qDebug() << "Original values" << oxl << oyl << ozl << "|" << oxr << oyr << ozr;
+            qDebug() << vecL;
+            qDebug() << vecR;
+            qDebug() << lVRTransform;
+            qDebug() << rVRTransform;
+            qDebug() << "==========================";
+        }
         calibration.addDataPointForCalibration(xl,yl,xr,yr);
     }
     else{
         // We need to convert.
-        CalibrationLeastSquares::EyeInputData eid;
-        eid.xl = static_cast<qreal>(xl);
-        eid.xr = static_cast<qreal>(xr);
-        eid.yl = static_cast<qreal>(yl);
-        eid.yr = static_cast<qreal>(yr);
+        EyeRealData eid;
+        eid.xLeft  = static_cast<qreal>(xl);
+        eid.xRight = static_cast<qreal>(xr);
+        eid.yLeft  = static_cast<qreal>(yl);
+        eid.yRight = static_cast<qreal>(yr);
 
-        if (calibration.isValidating()){
-            // While validating wee need to pass the converted data points to verify that the user is looking where we think.
-            calibration.addDataPointForVerification(eid);
-        }
-        else {
-            lastData = correctionCoefficients.computeCorrections(eid);
-            lastData.time    = eyedata.value(HPProvider::Timestamp).toLongLong();
-            lastData.pdLeft  = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Pupil).toReal();
-            lastData.pdRight = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Pupil).toReal();
+        lastData = correctionCoefficients.computeCorrections(eid);
+        lastData.time    = eyedata.value(HPProvider::Timestamp).toLongLong();
+        lastData.pdLeft  = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Pupil).toReal();
+        lastData.pdRight = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Pupil).toReal();
 
-            emit HPOmniceptInterface::newDataAvailable(lastData);
-        }
+        emit HPOmniceptInterface::newDataAvailable(lastData);
 
     }
 
@@ -103,7 +118,7 @@ void HPOmniceptInterface::disconnectFromEyeTracker(){
 void HPOmniceptInterface::calibrate(EyeTrackerCalibrationParameters params){
     if (params.forceCalibration){
         calibration.startCalibrationSequence(static_cast<qint32>(screenWidth),
-                                             static_cast<qint32>(screenHeight),                                             
+                                             static_cast<qint32>(screenHeight),
                                              params.number_of_calibration_points);
         // Non empty file name will indicate coefficient storage.
         coefficientsFile = params.name;
@@ -111,11 +126,9 @@ void HPOmniceptInterface::calibrate(EyeTrackerCalibrationParameters params){
     else{
         if (!correctionCoefficients.loadCalibrationCoefficients(params.name)){
             logger.appendError("Failed to set calibration parameters from file: " + params.name);
-            calibrationFailureType = ETCFT_UNKNOWN;
-            emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+            emit(eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED));
         }
         else {
-            calibrationFailureType = ETCFT_NONE;
             emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
         }
     }
@@ -127,36 +140,17 @@ void HPOmniceptInterface::updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l){
 }
 
 void HPOmniceptInterface::onCalibrationFinished(){
-    if (!calibration.wereCalibrationCoefficientsComputedSuccessfully()){
-        calibrationFailureType = ETCFT_UNKNOWN;
+
+    // NOTE at this point the correction coefficients might be entirely wrong.
+    // This information will be contained in the validation data and report.
+    // Even if no data was gathered or we had a zero determinant when doing least squares.
+
+    correctionCoefficients = calibration.getCalculatedCoeficients();
+
+    if (coefficientsFile != ""){
+        correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
     }
-    else{
 
-        correctionCoefficients = calibration.getCalculatedCoeficients();
-        if (coefficientsFile != ""){
-            correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
-        }
-
-        // Checking the coefficients are correctly computed and that the corresponding eye validation was successfull.
-        CalibrationLeastSquares::EyeValidationsStatus evs = calibration.getEyeValidationStatus();
-
-        bool fail_left =  ( (!correctionCoefficients.xl.valid) || (!correctionCoefficients.yl.valid) || (evs == CalibrationLeastSquares::EVS_RIGHT) || (evs == CalibrationLeastSquares::EVS_NONE) );
-        bool fail_right = ( (!correctionCoefficients.xr.valid) || (!correctionCoefficients.yr.valid) || (evs == CalibrationLeastSquares::EVS_LEFT)  || (evs == CalibrationLeastSquares::EVS_NONE) );
-
-        if (fail_left){
-            if (fail_right){
-                calibrationFailureType = ETCFT_FAILED_BOTH;
-            }
-            else calibrationFailureType = ETCFT_FAILED_LEFT;
-        }
-        else if (fail_right){
-            calibrationFailureType = ETCFT_FAILED_RIGHT;
-        }
-        else {
-            calibrationFailureType = ETCFT_NONE;
-        }
-
-    }
     emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
 }
 
@@ -168,8 +162,11 @@ QVariantMap HPOmniceptInterface::getCalibrationValidationData() const {
     return calibration.getCalibrationValidationData();
 }
 
+QString HPOmniceptInterface::getCalibrationRecommendedEye() const {
+    return calibration.getRecommendedEye();
+}
+
 void HPOmniceptInterface::configureCalibrationValidation(QVariantMap calibrationValidationParameters){
-    calibrationValidationParameters[VMDC::CalibrationFields::SAMPLING_FREQUENCY] = SAMPLING_FREQ;
     calibration.configureValidation(calibrationValidationParameters);
 }
 

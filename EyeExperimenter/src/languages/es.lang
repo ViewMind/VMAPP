@@ -159,6 +159,8 @@ viewevaluation_finish_message = <b></b><br> tiene un nuevo estudio listo para pr
 viewevaluation_calib_res = RESULTADOS DE CALIBRACIÓN;
 viewevaluation_left_eye = Ojo Izquierdo;
 viewevaluation_right_eye = Ojo Derectho;
+viewevaluation_success = Exitosa;
+viewevaluation_failed = Falló;
 viewevaluation_calib_restart = REINICIAR CALIBRACIÓN;
 viewevaluation_continue = CONTINUAR;
 
@@ -250,160 +252,151 @@ update_download_wait = Por favor espere mientras se descarga la actualización;
 update_failed_message = <b>La actualización falló</b><br>Por favor contacte a ViewMind para soporte;
 
 #********************************* Text Loop Explanations *********************************
-explanation_gonogo = 
-This is the Go/No-Go test
-A cross will appear in the center of the screen. Look at the cross.
-The cross will disappear, and an arrow will appear.
-If the arrow is green, quickly look at a point in the direction of the arrow. 
-If the arrow is Red, you must quickly look in the opposite direction.
-We will now do some practice rounds|
-In this case, you should look at the point in the left|
-Again, you should look at the cross|
-Now, at the point in the right|
-Remember to look at the cross after each trial|||;
+explanation_gonogo =
+Esta es la Evaluación de Go/No-Go
+Una cruz aparecerá en el centro de la pantalla. Mire la cruz.
+La cruz desaparecerá y en su lugar aparecerá una flecha.
+Si la flecha es color verde, mire rápidamente un punto en la dirección de
+la flecha. Si la flecha es color rojo, mire rápidamente en la dirección
+opuesta. Ahora haremos algunas rondas de práctica|
+En este caso, debe fijarse en el punto de la izquierda|
+Ahora debe mirar nuevamente la cruz|
+Aquí, debe mirar al punto de la derecha|
+Recuerde mirar la cruz después de cada prueba|||;
 
-explanation_binding_bc = 
-This is the Color Combination Test
-A cross will appear in the center of the screen. Look at the cross.|
-The cross will disappear and 2 (or 3) targets will appear. The targets 
-are composed of a square of one color, with a cross in its center of 
-another color. Remember the color combination of each target.
-After 2 seconds, the targets will disappear|
-A new group of targets will appear|
-You must identify if the color combination of each target remained the 
-same or if the colors have been swapped between targets.
-If the color combination is the same, you must quickly say “Same” out loud. 
-If the colors swapped from one target into another, quickly say “Different”.
-The first 10 exercises are a practice round. 
-They will not be considered in the results.||||||||||||||||;
+explanation_binding_bc =
+Esta es la prueba de Combinación de Colores.
+Una cruz aparecerá en el centro de la pantalla. Mire la cruz.|
+La cruz desaparecerá y aparecerán unas figuras. Recuerde la combinación
+de colores de cada figura. Después de 2 segundos, las figuras
+desaparecerán|
+Aparecerá un nuevo grupo de figuras|
+Debe identificar si la combinación de colores de cada figura se mantuvo
+o si los colores se han intercambiado entre las figuras. No aparecerán nuevos
+colores. Si la combinación de colores es la misma, debe decir rápidamente
+“Igual” en voz alta. Si los colores cambiaron de una figura a la otra,
+debe decir rápidamente "Diferente". Ahora haremos algunas rondas de práctica.||||||||||||||||;
 
 explanation_binding_uc =
-This is the New Colors Test
-Like in the other exercise, a cross will appear in the center of the screen. 
-Look at the cross.|
-The cross will disappear, and 2 (or 3) targets will appear.
-Remember the colors present in the targets.
-After 2 seconds, the targets will disappear|
-A new group of targets will appear|
-You must identify if new colors appeared. The color combination is not 
-important. If a new color appeared, you must quickly say “Different” 
-out loud. Otherwise, say “Same”. The first 10 exercises are a practice 
-round. They will not be considered in the results.||||||||||||||||;
+Esta es la Prueba de Nuevos Colores
+Una cruz aparecerá en el centro de la pantalla. Mire la cruz.|
+La cruz desaparecerá y aparecerán unas figuras. Las figuras
+se componen de un cuadrado de un color, con una cruz en su centro de
+otro color. Recuerde los colores presentes en las figuras.
+Después de 2 segundos, las figuras desaparecerán|
+Aparecerá un nuevo grupo de figuras|
+Debe identificar si apareció algún color nuevo. Si apareció un nuevo color,
+debe decir rápidamente “Diferente” en voz alta. De lo contrario, diga "Igual".
+Ahora haremos algunas rondas de práctica.||||||||||||||||;
 
 explanation_nbackrt =
-This is the N-back RT test
-The test is composed of 6 boxes and a central cross. 
-Look at the cross|
-A red circle will appear in one of the boxes. 
-Don’t take your eyes of the cross |
-The circle disappears and reappears on another box |
-Finally, the circle disappears and reappears on another box. 
-Remember not to take your eyes of the cross while the 
-circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
-the third circle appeared, then where the second one appeared, and finally 
-where the first one appeared. This is the inverse order in which they appeared.|||||||||||||||;
+Esta es la prueba N-back RT
+La prueba se compone de 6 casillas y una cruz central.
+Mire la cruz|
+Aparecerá un círculo rojo en una de las casillas.
+No aparte sus ojos de la cruz|
+El círculo desaparecerá y aparecerá en otra casilla|
+Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
+Recuerde no apartar los ojos de la cruz mientras aparecen los círculos|
+Debe recordar la ubicación y el orden en que aparecieron los círculos.
+Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde
+apareció el tercer círculo, luego donde apareció el segundo y, finalmente,
+donde apareció el primero. En el orden inverso en el que aparecieron.
+Ahora haremos algunas rondas de práctica.|||||||||||||||;
 
-explanation_nbackms = 
-This is the N-back MS test
-The test is composed of 6 boxes and a central cross. Look at the cross|
-A red circle will appear in one of the boxes. 
-Don’t take your eyes of the cross |
-The circle disappears and reappears on another box|
-Finally, the circle disappears and reappears on another box. 
-Remember not to take your eyes of the cross while the circles appear |
-You must remember the location and the order in which the red circles 
-appeared. |
-The cross will disappear, and a number 3 will appear. 
-You must quickly look at the box where the third circle appeared. |
-Then the number 2 will appear. 
-Quickly look at the box where the second circle appeared. |
-And finally, the number 1 will appear. 
-Quickly look at the box where the first circle appeared. 
-You must look at the circles in the inverse order in which they appeared.;
+explanation_nbackms =
+La prueba se compone de 6 casillas y una cruz central.
+Mire la cruz|
+Aparecerá un círculo rojo en una de las casillas.
+No aparte sus ojos de la cruz|
+El círculo desaparecerá y aparecerá en otra casilla|
+Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
+Recuerde no apartar los ojos de la cruz mientras aparecen los círculos|
+La cruz desaparecerá y aparecerá un número 3.
+Debe mirar rápidamente en la casilla donde apareció el tercer círculo.|
+Luego aparecerá el número 2.
+Mire rápidamente la casilla donde apareció el segundo círculo.|
+Y finalmente, aparecerá el número 1.
+Mire rápidamente la casilla donde apareció el primer círculo.
+Debes mirar los círculos en el orden inverso al que aparecieron.
+Ahora haremos algunas rondas de práctica.;
 
-explanation_nbackvs_3 = 
-This is the N-back Variable Speed test
-The test is composed of 6 boxes and a central cross. 
-Look at the cross|
-A red circle will appear in one of the boxes. 
-Don’t take your eyes of the cross |
-The circle disappears and reappears on another box |
-Finally, the circle disappears and reappears on another box. 
-Remember not to take your eyes of the cross while the 
-circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
-the last circle appeared, then where the second to last appeared and so on 
-until you looked at all the boxes where circles appeared.
-If you hit the correct box in the sequece, it will quicly flash
-As you hit correct sequences, the circles will be shown for less time.
-As you fail sequences the circles will be shown for more time. 
+explanation_nbackvs_3 =
+La prueba se compone de 6 casillas y una cruz central.
+Mire la cruz|
+Aparecerá un círculo rojo en una de las casillas.
+No aparte sus ojos de la cruz|
+El círculo desaparecerá y aparecerá en otra casilla|
+Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
+Recuerde no apartar los ojos de la cruz mientras aparecen los círculos
+Debe recordar la ubicación y el orden en que aparecieron los círculos.|
+Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde apareció el último 
+círculo, luego donde apareció el penúltimo y así sucesivamente, hasta que haya mirado 
+todas las casillas donde aparecieron los círculos, en orden inverso. Si mira la casilla 
+correcta, la misma se iluminará por un instante. A medida que realice el ejercicio 
+correctamente, los círculos se mostrarán menos tiempo. Si falla, los círculos se 
+mostrarán más tiempo. Ahora haremos algunas rondas de práctica.
 |||||||||||||||;
 
-explanation_nbackvs_4 = 
-This is the N-back Variable Speed test
-The test is composed of 6 boxes and a central cross. 
-Look at the cross|
-A red circle will appear in one of the boxes. 
-Don’t take your eyes of the cross |
-The circle disappears and reappears on another box |
-The circle disappears and reappears on another box |
-Finally, the circle disappears and reappears on another box. 
-Remember not to take your eyes of the cross while the 
-circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
-the last circle appeared, then where the second to last appeared and so on 
-until you looked at all the boxes where circles appeared.
-If you hit the correct box in the sequece, it will quicly flash
-As you hit correct sequences, the circles will be shown for less time.
-As you fail sequences the circles will be shown for more time. 
+
+explanation_nbackvs_4 =
+La prueba se compone de 6 casillas y una cruz central.
+Mire la cruz|
+Aparecerá un círculo rojo en una de las casillas.
+No aparte sus ojos de la cruz|
+El círculo desaparecerá y aparecerá en otra casilla|
+El círculo desaparecerá y aparecerá en otra casilla|
+Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
+Recuerde no apartar los ojos de la cruz mientras aparecen los círculos
+Debe recordar la ubicación y el orden en que aparecieron los círculos.|
+Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde apareció el último 
+círculo, luego donde apareció el penúltimo y así sucesivamente, hasta que haya mirado 
+todas las casillas donde aparecieron los círculos, en orden inverso. Si mira la casilla 
+correcta, la misma se iluminará por un instante. A medida que realice el ejercicio 
+correctamente, los círculos se mostrarán menos tiempo. Si falla, los círculos se 
+mostrarán más tiempo. Ahora haremos algunas rondas de práctica.
 ||||||||||||||||||;
 
-explanation_nbackvs_5 = 
-This is the N-back Variable Speed test
-The test is composed of 6 boxes and a central cross. 
-Look at the cross|
-A red circle will appear in one of the boxes. 
-Don’t take your eyes of the cross |
-The circle disappears and reappears on another box |
-The circle disappears and reappears on another box |
-The circle disappears and reappears on another box |
-Finally, the circle disappears and reappears on another box. 
-Remember not to take your eyes of the cross while the 
-circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
-the last circle appeared, then where the second to last appeared and so on 
-until you looked at all the boxes where circles appeared.
-If you hit the correct box in the sequece, it will quicly flash
-As you hit correct sequences, the circles will be shown for less time.
-As you fail sequences the circles will be shown for more time. 
+explanation_nbackvs_5 =
+La prueba se compone de 6 casillas y una cruz central.
+Mire la cruz|
+Aparecerá un círculo rojo en una de las casillas.
+No aparte sus ojos de la cruz|
+El círculo desaparecerá y aparecerá en otra casilla|
+El círculo desaparecerá y aparecerá en otra casilla|
+El círculo desaparecerá y aparecerá en otra casilla|
+Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
+Recuerde no apartar los ojos de la cruz mientras aparecen los círculos
+Debe recordar la ubicación y el orden en que aparecieron los círculos.|
+Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde apareció el último 
+círculo, luego donde apareció el penúltimo y así sucesivamente, hasta que haya mirado 
+todas las casillas donde aparecieron los círculos, en orden inverso. Si mira la casilla 
+correcta, la misma se iluminará por un instante. A medida que realice el ejercicio 
+correctamente, los círculos se mostrarán menos tiempo. Si falla, los círculos se 
+mostrarán más tiempo. Ahora haremos algunas rondas de práctica.
 |||||||||||||||||||||;
 
-explanation_nbackvs_6 = 
-This is the N-back Variable Speed test
-The test is composed of 6 boxes and a central cross. 
-Look at the cross|
-A red circle will appear in one of the boxes. 
-Don’t take your eyes of the cross |
-The circle disappears and reappears on another box |
-The circle disappears and reappears on another box |
-The circle disappears and reappears on another box |
-The circle disappears and reappears on another box |
-Finally, the circle disappears and reappears on another box. 
-Remember not to take your eyes of the cross while the 
-circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
-the last circle appeared, then where the second to last appeared and so on 
-until you looked at all the boxes where circles appeared.
-If you hit the correct box in the sequece, it will quicly flash
-As you hit correct sequences, the circles will be shown for less time.
-As you fail sequences the circles will be shown for more time. 
+explanation_nbackvs_6 =
+La prueba se compone de 6 casillas y una cruz central.
+Mire la cruz|
+Aparecerá un círculo rojo en una de las casillas.
+No aparte sus ojos de la cruz|
+El círculo desaparecerá y aparecerá en otra casilla|
+El círculo desaparecerá y aparecerá en otra casilla|
+El círculo desaparecerá y aparecerá en otra casilla|
+El círculo desaparecerá y aparecerá en otra casilla|
+Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
+Recuerde no apartar los ojos de la cruz mientras aparecen los círculos
+Debe recordar la ubicación y el orden en que aparecieron los círculos.|
+Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde apareció el último 
+círculo, luego donde apareció el penúltimo y así sucesivamente, hasta que haya mirado 
+todas las casillas donde aparecieron los círculos, en orden inverso. Si mira la casilla 
+correcta, la misma se iluminará por un instante. A medida que realice el ejercicio 
+correctamente, los círculos se mostrarán menos tiempo. Si falla, los círculos se 
+mostrarán más tiempo. Ahora haremos algunas rondas de práctica.
 ||||||||||||||||||||||||;
+
+explanation_key_to_continue = Presione N en el Teclado para avanzar;
 
 #********************************* LABELING *********************************
 label_vm_body = <b>VIEWMIND S.A</b><br>Av. Belgrano Nro. 758, Ciudad de Sunchales Santa Fe, Argentina.<br>

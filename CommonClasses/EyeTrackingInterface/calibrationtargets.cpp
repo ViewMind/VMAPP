@@ -3,15 +3,8 @@
 CalibrationTargets::CalibrationTargets()
 {
     canvas = nullptr;
-    rightEyeTracker = nullptr;
-    rightEyeTracker = nullptr;
-    validationTarget = nullptr;
-    enableEyeTrackingInValidation = false;
 }
 
-void CalibrationTargets::enableEyeFollowersDuringValidation(bool enable){
-    enableEyeTrackingInValidation = enable;
-}
 
 void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration){
 
@@ -59,16 +52,8 @@ void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBord
 
     calibrationSequenceIndex.clear();
     indexInCalibrationSequence = 0;
-    isVerification = false;
-
 }
 
-void CalibrationTargets::verificationInitialization(qint32 npoints){
-    indexInCalibrationSequence = -1;
-    this->setupCalibrationSequence(npoints);
-    this->setupValidationTarget();
-    isVerification = true;
-}
 
 qreal CalibrationTargets::getCalibrationTargetDiameter() const{
     return 2*R;
@@ -112,10 +97,6 @@ quint8 CalibrationTargets::isPointWithinCurrentTarget(qreal x, qreal y, qreal to
 
 QImage CalibrationTargets::getClearScreen(){
     canvas->clear();
-    leftEyeTracker = nullptr;
-    rightEyeTracker = nullptr;
-    validationTarget = nullptr;
-    isVerification = false;
     canvas->setBackgroundBrush(QBrush(Qt::gray));
     QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
     QPainter painter( &image );
@@ -170,70 +151,6 @@ QImage CalibrationTargets::nextSingleTarget(){
         innerCircle->setPos(x+offset,y+offset);
 
     }
-
-    QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
-    QPainter painter( &image );
-    canvas->render( &painter );
-    return image;
-}
-
-
-
-void CalibrationTargets::setupValidationTarget(){
-    canvas->clear();
-
-    // Creating the validation target.
-    validationTarget = canvas->addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(COLOR_VALIDATION_TARGET_NOT_HIT));
-
-    // Creating the eye tracking circles.
-    leftEyeTracker = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(COLOR_LEFT_EYE_TRACKER)); // Left is Blue
-    rightEyeTracker = canvas->addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(COLOR_RIGHT_EYE_TRACKER)); // Right is Green.
-
-    // Set it outside of the view
-    leftEyeTracker->setPos(-2*R,-2*R);
-    rightEyeTracker->setPos(-2*R,-2*R);
-
-    this->moveValidationTarget();
-
-}
-
-void CalibrationTargets::moveValidationTarget(){
-    if (indexInCalibrationSequence <= (calibrationSequenceIndex.size()-1)){
-        indexInCalibrationSequence++;
-        qreal x = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).x();
-        qreal y = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).y();
-        validationTarget->setPos(x,y);
-    }
-}
-
-QImage CalibrationTargets::renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly, qreal tolerance ,bool *hitL, bool *hitR){
-    if (!canvas) return QImage();
-    if (leftEyeTracker == nullptr) return QImage();
-    if (validationTarget == nullptr) return QImage();
-    if (!isVerification) return QImage();
-
-    if (enableEyeTrackingInValidation){
-        leftEyeTracker->setPos(lx-r,ly-r);
-        rightEyeTracker->setPos(rx-r,ry-r);
-    }
-
-    *hitL = this->isPointWithinCurrentTarget(lx,ly,tolerance);
-    *hitR = this->isPointWithinCurrentTarget(rx,ry,tolerance);
-
-    QColor target = COLOR_VALIDATION_TARGET_NOT_HIT;
-    if (*hitL){
-        if (*hitR){
-            target = COLOR_VALIDATION_TARGET_HIT_BOTH;
-        }
-        else {
-            target = COLOR_VALIDATION_TARGET_HIT_LEFT;
-        }
-    }
-    else if (*hitR){
-        target = COLOR_VALIDATION_TARGET_HIT_RIGHT;
-    }
-
-    validationTarget->setBrush(QBrush(target));
 
     QImage image(static_cast<int>(canvas->width()),static_cast<int>(canvas->height()),QImage::Format_RGB888);
     QPainter painter( &image );

@@ -55,9 +55,13 @@ SOURCES += main.cpp \
     ../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.cpp \
     ../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.cpp \
     ../../CommonClasses/EyeTrackingInterface/calibrationtargets.cpp \
+    ../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.cpp \
+    ../../CommonClasses/EyeTrackingInterface/eyerealdata.cpp \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerdata.cpp \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.cpp \
     ../../CommonClasses/FileDownloader/filedownloader.cpp \
+    ../../CommonClasses/LinearLeastSquares/linearcoefficients.cpp \
+    ../../CommonClasses/LinearLeastSquares/linearleastsquaresfit.cpp \
     ../../CommonClasses/MWA/fixation.cpp \
     ../../CommonClasses/MWA/movingwindowalgorithm.cpp \
     ../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
@@ -113,9 +117,13 @@ HEADERS += \
     ../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h \
     ../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.h \
     ../../CommonClasses/EyeTrackingInterface/calibrationtargets.h \
+    ../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.h \
+    ../../CommonClasses/EyeTrackingInterface/eyerealdata.h \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerdata.h \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.h \
     ../../CommonClasses/FileDownloader/filedownloader.h \
+    ../../CommonClasses/LinearLeastSquares/linearcoefficients.h \
+    ../../CommonClasses/LinearLeastSquares/linearleastsquaresfit.h \
     ../../CommonClasses/MWA/fixation.h \
     ../../CommonClasses/MWA/movingwindowalgorithm.h \
     ../../CommonClasses/OpenVRControlObject/openvr.h \

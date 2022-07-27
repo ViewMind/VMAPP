@@ -20,10 +20,12 @@ public:
     // The values dimension depend on the what the ET Provides.
 
     EyeTrackerData();
+
     qint32 xRight;
     qint32 yRight;
     qint32 xLeft;
     qint32 yLeft;
+
     qreal pdLeft;
     qreal pdRight;
     qint64 time;
@@ -33,8 +35,8 @@ public:
         return (d.time == time);
     }
 
-    double avgX() const {return ((qreal)xRight + (qreal)xLeft)/2;}
-    double avgY() const {return ((qreal)yRight + (qreal)yLeft)/2;}
+    double avgX() const {return (static_cast<qreal>(xRight) + static_cast<qreal>(xLeft) )/2;}
+    double avgY() const {return (static_cast<qreal>(yRight) + static_cast<qreal>(yLeft) )/2;}
 
     bool isRightZero() const {return ((xRight == 0) && (yRight == 0));}
     bool isLeftZero() const {return ((xLeft == 0) && (yLeft == 0));}

@@ -41,7 +41,7 @@ public:
     explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     ~FlowControl() override;
     Q_INVOKABLE void connectToEyeTracker();
-    Q_INVOKABLE void calibrateEyeTracker(const QString &eye_to_use);
+    Q_INVOKABLE void calibrateEyeTracker();
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
     Q_INVOKABLE void startStudy();
     Q_INVOKABLE bool isConnected() const { return connected; }
@@ -56,6 +56,9 @@ public:
     Q_INVOKABLE void stopRenderingVR();
     Q_INVOKABLE void generateWaitScreen(const QString &message);
     Q_INVOKABLE bool isVROk() const;
+    Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
+    // This is a debugging funciton which will only return true when a coefficient file is loaded or the mouse is selected.
+    Q_INVOKABLE bool autoValidateCalibration() const;
 
     // The image to be shown.
     QImage image() const;
@@ -103,9 +106,6 @@ private:
     // The second screen for monitoring the experiments.
     MonitorScreen *monitor;
 
-    // Selected eye for doing an study
-    QString selected_eye_to_use;
-
     // The currently selected experiment
     Experiment *experiment;
 
@@ -133,6 +133,9 @@ private:
 
     // The configuration structure
     ConfigurationManager *configuration;
+
+    // The eye as defined by the calibration.
+    QString selected_eye_to_use;
 
     // Flags to avoid reconnecting during recalibration
     bool connected;

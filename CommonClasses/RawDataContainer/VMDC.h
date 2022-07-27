@@ -80,7 +80,8 @@ namespace VMDC {
        static const QString PERCEPTION_TYPE    = "perception_type";
        static const QString PERCEPTION_PART    = "perception_part";
        static const QString NBACK_LIGHT_ALL    = "nback_light_all";
-       static const QStringList valid{VALID_EYE,LANGUAGE,NUMBER_TARGETS,TARGET_SIZE,PERCEPTION_TYPE,PERCEPTION_PART,NBACK_LIGHT_ALL};
+       static const QString DEFAULT_EYE        = "default_eye";
+       static const QStringList valid{VALID_EYE,LANGUAGE,NUMBER_TARGETS,TARGET_SIZE,PERCEPTION_TYPE,PERCEPTION_PART,NBACK_LIGHT_ALL,DEFAULT_EYE};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
@@ -260,7 +261,8 @@ namespace VMDC {
        static const QString PROTOCOL = "protocol";
        static const QString COMMENTS = "comments";
        static const QString DISCARD_REASON = "discard_reason";
-       static const QStringList valid{DATE,HOUR,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,MOUSE_USED,PROTOCOL,STATUS,COMMENTS,DISCARD_REASON};
+       static const QString APP_VERSION = "app_version";
+       static const QStringList valid{DATE,HOUR,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,MOUSE_USED,PROTOCOL,STATUS,COMMENTS,DISCARD_REASON,APP_VERSION};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Metadata Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
@@ -285,20 +287,19 @@ namespace VMDC {
     }
     
     namespace CalibrationFields {
-       static const QString VALIDATION_POINT_LENGTH = "validation_point_length";
        static const QString VALIDATION_POINT_ACCEPTANCE_THRESHOLD = "validation_point_acceptance_threshold";
        static const QString REQ_NUMBER_OF_ACCEPTED_POINTS = "required_number_of_passing_points";
-       static const QString ENABLE_GAZEFOLLOWING_DURING_VALIDATION = "enable_gaze_following_during_validation";
        static const QString VALIDATION_POINT_HIT_TOLERANCE = "validation_point_hit_tolerance";
-       static const QString SAMPLING_FREQUENCY = "sampling_frequency";
        static const QString NUMBER_OF_CALIBRAION_POINTS = "number_of_calibration_points";
        static const QString CALIBRATION_TARGET_LOCATION = "calibration_target_location";
        static const QString LEFT_EYE_VALIDATION_DATA = "left_eye_validation_data";
        static const QString RIGHT_EYE_VALIDATION_DATA = "right_eye_validation_data";
        static const QString CALIBRATION_TARGET_DIAMETER = "calibration_target_diameter";
-       static const QStringList valid{VALIDATION_POINT_LENGTH,VALIDATION_POINT_ACCEPTANCE_THRESHOLD,REQ_NUMBER_OF_ACCEPTED_POINTS,ENABLE_GAZEFOLLOWING_DURING_VALIDATION,
-                   VALIDATION_POINT_HIT_TOLERANCE,SAMPLING_FREQUENCY,NUMBER_OF_CALIBRAION_POINTS,CALIBRATION_TARGET_LOCATION,LEFT_EYE_VALIDATION_DATA,RIGHT_EYE_VALIDATION_DATA,
-                   CALIBRATION_TARGET_DIAMETER};
+       static const QString COFICIENT_OF_DETERMINATION = "coefficient_of_determination";
+       static const QString MATH_ISSUES_FOR_CALIBRATION = "math_issues_for_calibration";
+       static const QStringList valid{VALIDATION_POINT_ACCEPTANCE_THRESHOLD,REQ_NUMBER_OF_ACCEPTED_POINTS,
+                   VALIDATION_POINT_HIT_TOLERANCE,NUMBER_OF_CALIBRAION_POINTS,CALIBRATION_TARGET_LOCATION,LEFT_EYE_VALIDATION_DATA,RIGHT_EYE_VALIDATION_DATA,
+                   CALIBRATION_TARGET_DIAMETER,COFICIENT_OF_DETERMINATION,MATH_ISSUES_FOR_CALIBRATION};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Subject Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }

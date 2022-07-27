@@ -159,6 +159,8 @@ viewevaluation_finish_message = <b></b><br> has a new study that can be processe
 viewevaluation_calib_res = CALIBRATION RESULTS;
 viewevaluation_left_eye = Left Eye;
 viewevaluation_right_eye = Right Eye;
+viewevaluation_success = Success;
+viewevaluation_failed = Failed;
 viewevaluation_calib_restart = RESTART CALIBRATION;
 viewevaluation_continue = CONTINUE;
 
@@ -265,30 +267,29 @@ Remember to look at the cross after each trial|||;
 explanation_binding_bc = 
 This is the Color Combination Test
 A cross will appear in the center of the screen. Look at the cross.|
-The cross will disappear and 2 (or 3) targets will appear. The targets 
-are composed of a square of one color, with a cross in its center of 
-another color. Remember the color combination of each target.
-After 2 seconds, the targets will disappear|
+The cross will disappear and some targets will appear. Remember the 
+color combination of each target, After 2 seconds, the targets 
+will disappear|
 A new group of targets will appear|
 You must identify if the color combination of each target remained the 
-same or if the colors have been swapped between targets.
-If the color combination is the same, you must quickly say “Same” out loud. 
-If the colors swapped from one target into another, quickly say “Different”.
-The first 10 exercises are a practice round. 
-They will not be considered in the results.||||||||||||||||;
+same or if the colors have been swapped between targets. No new colors will
+appear. If the color combination is the same, you must quickly say 
+“Same” out loud. If the colors swapped from one target into another, quickly 
+say “Different”. 
+We will now do some practice rounds.||||||||||||||||;
 
 explanation_binding_uc =
 This is the New Colors Test
-Like in the other exercise, a cross will appear in the center of the screen. 
+A cross will appear in the center of the screen. 
 Look at the cross.|
-The cross will disappear, and 2 (or 3) targets will appear.
-Remember the colors present in the targets.
+The cross will disappear and some targets will appear. The targets 
+are composed of a square of one color, with a cross in its center of 
+another color. Remember the colors present in the targets.
 After 2 seconds, the targets will disappear|
 A new group of targets will appear|
-You must identify if new colors appeared. The color combination is not 
-important. If a new color appeared, you must quickly say “Different” 
-out loud. Otherwise, say “Same”. The first 10 exercises are a practice 
-round. They will not be considered in the results.||||||||||||||||;
+You must identify if new colors appeared. If a new color appeared, 
+you must quickly say “Different” out loud. Otherwise, say “Same”. 
+We will now do some practice rounds.||||||||||||||||;
 
 explanation_nbackrt =
 This is the N-back RT test
@@ -303,7 +304,8 @@ circles appear|
 You must remember the location and the order in which the red circles 
 appeared. When the cross disappears, you must quickly look at the box where 
 the third circle appeared, then where the second one appeared, and finally 
-where the first one appeared. This is the inverse order in which they appeared.|||||||||||||||;
+where the first one appeared. This is the inverse order in which they appeared.
+We will now do some practice rounds.|||||||||||||||;
 
 explanation_nbackms = 
 This is the N-back MS test
@@ -321,7 +323,8 @@ Then the number 2 will appear.
 Quickly look at the box where the second circle appeared. |
 And finally, the number 1 will appear. 
 Quickly look at the box where the first circle appeared. 
-You must look at the circles in the inverse order in which they appeared.;
+You must look at the circles in the inverse order in which they appeared.
+We will now do some practice rounds.;
 
 explanation_nbackvs_3 = 
 This is the N-back Variable Speed test
@@ -336,10 +339,11 @@ circles appear|
 You must remember the location and the order in which the red circles 
 appeared. When the cross disappears, you must quickly look at the box where 
 the last circle appeared, then where the second to last appeared and so on 
-until you looked at all the boxes where circles appeared.
+until you looked at all the boxes where circles appeared, in the inverse order.
 If you hit the correct box in the sequece, it will quicly flash
 As you hit correct sequences, the circles will be shown for less time.
 As you fail sequences the circles will be shown for more time. 
+We will now do some practice rounds.
 |||||||||||||||;
 
 explanation_nbackvs_4 = 
@@ -356,10 +360,11 @@ circles appear|
 You must remember the location and the order in which the red circles 
 appeared. When the cross disappears, you must quickly look at the box where 
 the last circle appeared, then where the second to last appeared and so on 
-until you looked at all the boxes where circles appeared.
+until you looked at all the boxes where circles appeared, in the inverse order.
 If you hit the correct box in the sequece, it will quicly flash
 As you hit correct sequences, the circles will be shown for less time.
 As you fail sequences the circles will be shown for more time. 
+We will now do some practice rounds.
 ||||||||||||||||||;
 
 explanation_nbackvs_5 = 
@@ -377,10 +382,11 @@ circles appear|
 You must remember the location and the order in which the red circles 
 appeared. When the cross disappears, you must quickly look at the box where 
 the last circle appeared, then where the second to last appeared and so on 
-until you looked at all the boxes where circles appeared.
+until you looked at all the boxes where circles appeared, in the inverse order.
 If you hit the correct box in the sequece, it will quicly flash
 As you hit correct sequences, the circles will be shown for less time.
 As you fail sequences the circles will be shown for more time. 
+We will now do some practice rounds.
 |||||||||||||||||||||;
 
 explanation_nbackvs_6 = 
@@ -399,11 +405,14 @@ circles appear|
 You must remember the location and the order in which the red circles 
 appeared. When the cross disappears, you must quickly look at the box where 
 the last circle appeared, then where the second to last appeared and so on 
-until you looked at all the boxes where circles appeared.
+until you looked at all the boxes where circles appeared, in the inverse order.
 If you hit the correct box in the sequece, it will quicly flash
 As you hit correct sequences, the circles will be shown for less time.
 As you fail sequences the circles will be shown for more time. 
+We will now do some practice rounds.
 ||||||||||||||||||||||||;
+
+explanation_key_to_continue = Press N on keyboard to advance;
 
 #********************************* LABELING *********************************
 label_vm_body = <b>VIEWMIND S.A</b><br>Av. Belgrano Nro. 758, Ciudad de Sunchales Santa Fe, Argentina.<br>

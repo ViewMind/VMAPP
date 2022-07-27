@@ -168,23 +168,6 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             //qWarning() << "Total" << total  << "LEFT VALID" << leftValid << "RIGHT VALID" << rightValid
             //           << "Can use left: " << canUseLeft() << "Can use right: " << canUseRight() << "Eye To Transmit" << eyeToTransmit;
 
-            if (total != leftValid){
-                if (total != rightValid){
-                    calibrationFailureType = ETCFT_FAILED_BOTH;
-                }
-                else{
-                    calibrationFailureType = ETCFT_FAILED_LEFT;
-                }
-            }
-            else{
-                if (total != rightValid){
-                    calibrationFailureType = ETCFT_FAILED_RIGHT;
-                }
-                else{
-                    calibrationFailureType = ETCFT_NONE;
-                }
-            }
-
             if (canUseLeft() && (total != leftValid)){
                 logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for left eye: " + QString::number(leftValid) + " out of " + QString::number(total));
                 sendOk = false;
@@ -214,7 +197,6 @@ void OpenGazeInterface::calibrate(EyeTrackerCalibrationParameters params){
     socket->write(cmd.prepareCommandToSend());
     cmd.setEnableCommand(GPC_CALIBRATE_START,true);
     socket->write(cmd.prepareCommandToSend());
-    calibrationFailureType = ETCFT_NONE;
     eventDetecter->showMaximized();
 }
 

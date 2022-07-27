@@ -5,7 +5,6 @@ EyeTrackerInterface::EyeTrackerInterface(QObject *parent, qreal width, qreal hei
     qRegisterMetaType<EyeTrackerData>("EyeTrackerData");
     screenHeight = height;
     screenWidth = width;
-    calibrationFailureType = ETCFT_UNKNOWN;
     eyeToTransmit = VMDC::Eye::BOTH;
     eyeTrackerEnabled = false;
 }
@@ -18,6 +17,10 @@ void EyeTrackerInterface::setEyeToTransmit(QString eye){
 
 QString EyeTrackerInterface::getCalibrationValidationReport() const {
     return "";
+}
+
+QString EyeTrackerInterface::getCalibrationRecommendedEye() const {
+    return VMDC::Eye::BOTH;
 }
 
 void EyeTrackerInterface::configureCalibrationValidation(QVariantMap calibrationValidationParamters){
@@ -59,6 +62,5 @@ bool EyeTrackerInterface::isEyeTrackerEnabled() const{
     return eyeTrackerEnabled;
 }
 
-EyeTrackerInterface::ETCalibrationFailureType EyeTrackerInterface::getCalibrationFailureType() const{
-    return calibrationFailureType;
-}
+
+

@@ -205,6 +205,11 @@ QString Loader::getInstitutionName() const {
     return configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
 }
 
+bool Loader::forceOpenValidationDialog() const {
+    if (DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF) != "") return true;
+    else return false;
+}
+
 void Loader::openUserManual(){
 
     // Attempting to find the user manual (it is different when running from the application, versus running from the IDE).
@@ -569,6 +574,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     metadata.insert(VMDC::MetadataField::PROTOCOL,protocol);
     metadata.insert(VMDC::MetadataField::DISCARD_REASON,"");
     metadata.insert(VMDC::MetadataField::COMMENTS,"");
+    metadata.insert(VMDC::MetadataField::APP_VERSION,this->getWindowTilteVersion());
 
     // Creating the subject data
     QVariantMap subject_data;

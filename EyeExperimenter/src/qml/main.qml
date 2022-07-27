@@ -55,10 +55,11 @@ ApplicationWindow {
     VMCalibrationValidation {
         id: calibrationValidation
         onCalibrationValidated: {
-
+            close();
+            viewEvaluations.calibrationValidated();
         }
         onRequestReCalibration: {
-
+            close()
         }
     }
 
@@ -193,10 +194,17 @@ ApplicationWindow {
 
     function showCalibrationValidation(){
 
-        var map = loader.testGetCalibrationValidationData();
-        let W = map["processing_parameters"]["resolution_width"];
-        let H = map["processing_parameters"]["resolution_height"];
-        calibrationValidation.configuringRenderingParameters(map["calibration_validation"],W,H)
+        if (flowControl.autoValidateCalibration()){
+            viewEvaluations.calibrationValidated();
+            return;
+        }
+
+        var map = flowControl.getCalibrationValidationData();
+        let W = map["W"];
+        let H = map["H"];
+
+        //calibrationValidation.configuringRenderingParameters(map["calibration_validation"],W,H)
+        calibrationValidation.configuringRenderingParameters(map,W,H);
         calibrationValidation.redrawCanvas()
         calibrationValidation.open()
     }

@@ -158,6 +158,7 @@ Rectangle {
             vmLabel: loader.getStringForKey("viewevaluation_eye_text")
             z: parent.z + 1
             vmMaxDisplayItems: 2
+            visible: false // Eye Selection is Disabled For the Time being.
             Component.onCompleted: {
                 var list = loader.getStringListForKey("viewevaluation_eye_selection_list")
                 setModelList(list)

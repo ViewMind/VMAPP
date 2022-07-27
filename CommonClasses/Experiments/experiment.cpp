@@ -25,6 +25,9 @@ Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(pare
     // Checking if the Override time is necessary.
     overrideTime = DBUGINT(Debug::Options::OVERRIDE_TIME);
 
+    // The default study eye is initialized as the right eye.
+    defaultStudyEye = VMDC::Eye::RIGHT;
+
 }
 
 void Experiment::setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height){
@@ -101,8 +104,12 @@ bool Experiment::startExperiment(const QString &workingDir,
         return false;
     }
 
+    // Adding the default eye for the study to the study configuration.
+    QVariantMap enhancedStudyConfig = studyConfig; // This is done so I don't have to change the function interface everywhere.
+    enhancedStudyConfig[VMDC::StudyParameter::DEFAULT_EYE] = defaultStudyEye;
+
     // Adding the study to the raw data container.
-    if (!rawdata.addStudy(studyType,studyConfig,contents,manager->getVersion())){
+    if (!rawdata.addStudy(studyType,enhancedStudyConfig,contents,manager->getVersion())){
         error = "Adding the study type: " + rawdata.getError();
         emit Experiment::experimentEndend(ER_FAILURE);
         return false;
@@ -122,8 +129,8 @@ bool Experiment::startExperiment(const QString &workingDir,
         leftEyeEnabled = true;
         rightEyeEnabled = false;
     }
-    //qDebug() << "Valid Eye was " << validEye << " so L: " << leftEyeEnabled << " and R: " << rightEyeEnabled;
 
+    //qDebug() << "Valid Eye was " << validEye << " so L: " << leftEyeEnabled << " and R: " << rightEyeEnabled;
     //qDebug() << "Processing parameters";
     //Debug::prettpPrintQVariantMap(pp);
 
@@ -251,12 +258,16 @@ QString Experiment::moveDataFileToAborted(){
 void Experiment::finalizeOnlineFixations(){
     lastFixationR = rMWA.finalizeOnlineFixationCalculation();
     lastFixationL = lMWA.finalizeOnlineFixationCalculation();
-    if (lastFixationR.hasFinished()){
+
+    if (lastFixationR.hasFinished() && rightEyeEnabled){
         rawdata.addFixationVectorR(fixationToVariantMap(lastFixationR));
     }
-    if (lastFixationL.hasFinished()){
+    if (lastFixationL.hasFinished() && leftEyeEnabled){
         rawdata.addFixationVectorL(fixationToVariantMap(lastFixationL));
     }
+
+    this->storeStudyLogicFixation();
+
 }
 
 void Experiment::computeOnlineFixations(const EyeTrackerData &data, qreal l_schar, qreal l_word, qreal r_schar, qreal r_word){
@@ -269,6 +280,26 @@ void Experiment::computeOnlineFixations(const EyeTrackerData &data, qreal l_scha
 
     if (lastFixationL.hasFinished() && leftEyeEnabled){
         rawdata.addFixationVectorL(fixationToVariantMap(lastFixationL));
+    }
+
+    this->storeStudyLogicFixation();
+
+}
+
+void Experiment::storeStudyLogicFixation(){
+    if (!leftEyeEnabled){
+        studyLogicFixation = lastFixationR;
+    }
+    else if (!rightEyeEnabled){
+        studyLogicFixation = lastFixationL;
+    }
+    else {
+        if (defaultStudyEye == VMDC::Eye::RIGHT){
+            studyLogicFixation = lastFixationR;
+        }
+        else {
+            studyLogicFixation = lastFixationL;
+        }
     }
 }
 

@@ -38,11 +38,21 @@ void HTCViveEyeProEyeTrackingInterface::newEyeData(QVariantMap eyedata){
     yr = eyedata.value(HTCVIVE::RightEye).toMap().value(HTCVIVE::Eye::Y).toFloat();
     zr = eyedata.value(HTCVIVE::RightEye).toMap().value(HTCVIVE::Eye::Z).toFloat();
 
-    QVector4D vecL(xl/zl, yl/zl, zl,1);
-    QVector4D vecR(xr/zr, yr/zr, zr,1);
+    QVector4D vecL, vecR;
 
-    //QVector4D vecL(xl, yl, zl,0);
-    //QVector4D vecR(xr, yr, zr,0);
+    if (qAbs(static_cast<double>(zl)) > 1e-6 ){ // This is to avoid warning of comparing float to zero.
+        vecL = QVector4D(xl/zl, yl/zl, zl,1);
+    }
+    else {
+        vecL = QVector4D(0, 0, 0,0);
+    }
+
+    if (qAbs(static_cast<double>(zr)) > 1e-6 ){ // This is to avoid warning of comparing float to zero.
+        vecR = QVector4D(xr/zr, yr/zr, zr,1);
+    }
+    else {
+        vecR = QVector4D(0, 0, 0,0);
+    }
 
     vecL = lVRTransform*vecL;
     xl = vecL.x();
@@ -58,27 +68,19 @@ void HTCViveEyeProEyeTrackingInterface::newEyeData(QVariantMap eyedata){
     }
     else{
         // We need to convert.
-        CalibrationLeastSquares::EyeInputData eid;
-        eid.xl = static_cast<qreal>(xl);
-        eid.xr = static_cast<qreal>(xr);
-        eid.yl = static_cast<qreal>(yl);
-        eid.yr = static_cast<qreal>(yr);
+        EyeRealData eid;
+        eid.xLeft  = static_cast<qreal>(xl);
+        eid.xRight = static_cast<qreal>(xr);
+        eid.yLeft  = static_cast<qreal>(yl);
+        eid.yRight = static_cast<qreal>(yr);
 
+        lastData = correctionCoefficients.computeCorrections(eid);
 
-        if (calibration.isValidating()){
-            // While validating we need to pass the data points to validation function.
-            calibration.addDataPointForVerification(eid);
-        }
-        else {
+        lastData.time    = eyedata.value(HTCVIVE::Timestamp).toLongLong();
+        lastData.pdLeft  = eyedata.value(HTCVIVE::LeftEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
+        lastData.pdRight = eyedata.value(HTCVIVE::RightEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
 
-            lastData = correctionCoefficients.computeCorrections(eid);
-
-            lastData.time    = eyedata.value(HTCVIVE::Timestamp).toLongLong();
-            lastData.pdLeft  = eyedata.value(HTCVIVE::LeftEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
-            lastData.pdRight = eyedata.value(HTCVIVE::RightEye).toMap().value(HTCVIVE::Eye::Pupil).toReal();
-
-            emit EyeTrackerInterface::newDataAvailable(lastData);
-        }
+        emit EyeTrackerInterface::newDataAvailable(lastData);
     }
 
 }
@@ -95,11 +97,11 @@ void HTCViveEyeProEyeTrackingInterface::calibrate(EyeTrackerCalibrationParameter
     else{
         if (!correctionCoefficients.loadCalibrationCoefficients(params.name)){
             logger.appendError("Failed to set calibration parameters from file: " + params.name);
-            calibrationFailureType = ETCFT_UNKNOWN;
+
             emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
         }
         else{
-            calibrationFailureType = ETCFT_NONE;
+
             emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
         }
     }
@@ -121,35 +123,13 @@ void HTCViveEyeProEyeTrackingInterface::disconnectFromEyeTracker(){
 }
 
 void HTCViveEyeProEyeTrackingInterface::onCalibrationFinished(){
-    if (!calibration.wereCalibrationCoefficientsComputedSuccessfully()){
-        calibrationFailureType = ETCFT_UNKNOWN;
+    correctionCoefficients = calibration.getCalculatedCoeficients();
+
+    if (coefficientsFile != ""){
+        correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
     }
-    else{
-        correctionCoefficients = calibration.getCalculatedCoeficients();
-        if (coefficientsFile != ""){
-            correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
-        }
 
-        // Checking the coefficients are correctly computed and that the corresponding eye validation was successfull.
-        CalibrationLeastSquares::EyeValidationsStatus evs = calibration.getEyeValidationStatus();
-
-        bool fail_left =  ( (!correctionCoefficients.xl.valid) || (!correctionCoefficients.yl.valid) || (evs == CalibrationLeastSquares::EVS_RIGHT) || (evs == CalibrationLeastSquares::EVS_NONE) );
-        bool fail_right = ( (!correctionCoefficients.xr.valid) || (!correctionCoefficients.yr.valid) || (evs == CalibrationLeastSquares::EVS_LEFT)  || (evs == CalibrationLeastSquares::EVS_NONE) );
-
-        if (fail_left){
-            if (fail_right){
-                calibrationFailureType = ETCFT_FAILED_BOTH;
-            }
-            else calibrationFailureType = ETCFT_FAILED_LEFT;
-        }
-        else if (fail_right){
-            calibrationFailureType = ETCFT_FAILED_RIGHT;
-        }
-        else {
-            calibrationFailureType = ETCFT_NONE;
-        }
-    }
-    emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
+    emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
 }
 
 void HTCViveEyeProEyeTrackingInterface::onNewCalibrationImageAvailable(){

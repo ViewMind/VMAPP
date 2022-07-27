@@ -36,7 +36,7 @@ private:
     VIVEEyePoller eyetracker;
 
     // Required to transform the raw data into proper data.
-    CalibrationLeastSquares::EyeCorrectionCoeffs correctionCoefficients;
+    EyeCorrectionCoefficients correctionCoefficients;
 
     // Calibration via least squares.
     CalibrationLeastSquares calibration;

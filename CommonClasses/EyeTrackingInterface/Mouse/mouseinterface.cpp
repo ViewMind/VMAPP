@@ -15,8 +15,6 @@ MouseInterface::MouseInterface()
     calibrationScreen->setAutoCalibration(true);
     //calibrationScreen->setAutoCalibration(false);
 
-    calibrationFailureType = ETCFT_NONE;
-
     overrideCalibrationFlag = false;
 
 }
@@ -52,7 +50,6 @@ void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
     Q_UNUSED(params)
 
     if (overrideCalibrationFlag){
-        calibrationFailureType = ETCFT_NONE;
         isCalibrated = true;
         sendData = true;
         emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
@@ -63,7 +60,6 @@ void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
     isCalibrated = false;
     //qDebug() << "Before executing calibration screen" << isCalibrated;
     calibrationScreen->exec();
-    calibrationFailureType = ETCFT_NONE;
     //qDebug() << "Starting calibration with isCalibrated" << isCalibrated;
     if (isCalibrated)
         emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);

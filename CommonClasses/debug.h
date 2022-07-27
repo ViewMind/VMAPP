@@ -55,6 +55,7 @@ namespace Debug {
        const QString PRINT_SERVER_RESP    = "print_server_response";
        const QString CONFIG_CALIB_VALID   = "config_calib_validation";
        const QString FORCE_N_CALIB_PTS    = "force_n_calibration_points";
+       const QString LOAD_FOR_CALIB_VERIF = "force_load_file_for_calibration_validation_dialog";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

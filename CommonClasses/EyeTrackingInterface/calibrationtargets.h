@@ -18,9 +18,6 @@ public:
 
     void initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration = false);
 
-    // WARNING: This function NEEDS to be called AFTER the calibration has been completed. It will set up the verification with a different number of points.
-    void verificationInitialization(qint32 npoints);
-
     // On verification this function is used to verify if a data point falls within the boundaries of the currently shown target.
     quint8 isPointWithinCurrentTarget(qreal x, qreal y, qreal tolerance);
 
@@ -39,20 +36,6 @@ public:
 
     // Gets a clear screen with nothing to show.
     QImage getClearScreen();
-
-    // Enable or disable eye following
-    void enableEyeFollowersDuringValidation(bool enable);
-
-    // Creates the validation target and prepares it to move.
-    void setupValidationTarget();
-
-    // Moves the validation target to the next position.
-    void moveValidationTarget();
-
-    // Renders the image of the current eye positions, during validation
-    QImage renderCurrentPosition(qint32 rx, qint32 ry, qint32 lx, qint32 ly, qreal tolerance, bool *hitL, bool *hitR);
-
-
 
 private:
 
@@ -85,19 +68,6 @@ private:
 
     // Used as a bookmark for which calibration point we are drawing.
     qint32 indexInCalibrationSequence;
-
-    // Variable used to separate between calibration and verification
-    bool isVerification;
-
-    // Enable Eye Tracking In Validation.
-    bool enableEyeTrackingInValidation;
-
-    QGraphicsEllipseItem *leftEyeTracker;
-    QGraphicsEllipseItem *rightEyeTracker;
-    QGraphicsEllipseItem *validationTarget;
-
-
-
 
 };
 

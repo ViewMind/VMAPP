@@ -346,7 +346,7 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (tstate == TSF_SHOW_BLANKS){
 
         bool litUp = false;
-        bool isOver = trialRecognitionMachine.isSequenceOver(lastFixationR,lastFixationL,m,&litUp);
+        bool isOver = trialRecognitionMachine.isSequenceOver(studyLogicFixation,m,&litUp);
 
         // NOTE. If light up all is true lit up will NEVER be true. As the flag tellign to light up the correct sequence fixation box will be false.
         if (lightUpAll){
@@ -458,13 +458,9 @@ void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &tria
 }
 
 
-bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &r, const Fixation &l, FieldingManager *m, bool *updateHUD){
+bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &fixationToUse, FieldingManager *m, bool *updateHUD){
 
     if (trialRecognitionSequence.isEmpty()) return true;
-
-    Fixation fixationToUse;
-    if (useRightEye) fixationToUse = r;
-    else fixationToUse = l;
 
     // Indicataor to see if we need to update the image to the HMD or second screen.
     *updateHUD = false;
@@ -488,18 +484,7 @@ bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &
             }
         }
     }
-    //    else {
-    //        if (fixationToUse.hasStarted()){
-    //            if (m->isPointInTargetBox(fixationToUse.getX(),fixationToUse.getY(),trialRecognitionSequence.first())){
-    //                if (lightUpSquares) {
-    //                    *updateHUD = m->lightUpBox(trialRecognitionSequence.first());
-    //                }
-    //                if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-    //                    qDebug() << "DBUG: NBackRT/VS Right Fixation BEGIN In " << trialRecognitionSequence.first();
-    //                }
-    //            }
-    //        }
-    //    }
+
 
     if (trialRecognitionSequence.isEmpty()) return true;
 

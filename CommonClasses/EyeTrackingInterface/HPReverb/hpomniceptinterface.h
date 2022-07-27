@@ -22,11 +22,14 @@ public:
 
     void calibrate(EyeTrackerCalibrationParameters params) override;
 
-    QString getCalibrationValidationReport() const override;
-
-    void configureCalibrationValidation(QVariantMap calibrationValidationParameters) override;
+    void configureCalibrationValidation(QVariantMap calibrationValidationParameters) override;   
 
     QVariantMap getCalibrationValidationData() const override;
+
+    QString getCalibrationValidationReport() const override;
+
+    QString getCalibrationRecommendedEye() const override;
+
 
 public slots:
     void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l) override;
@@ -47,7 +50,7 @@ private:
     HPOmniceptProvider hpprovider;
 
     // Required to transform the raw data into proper data.
-    CalibrationLeastSquares::EyeCorrectionCoeffs correctionCoefficients;
+    EyeCorrectionCoefficients correctionCoefficients;
 
     // Calibration via least squares.
     CalibrationLeastSquares calibration;

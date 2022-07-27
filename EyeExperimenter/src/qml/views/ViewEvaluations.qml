@@ -129,6 +129,10 @@ ViewBase {
         backButton.vmEnabled = enable;
     }
 
+    function calibrationValidated(){
+        evaluationRun.prepareNextStudy(false);
+    }
+
     VMButton {
         id: backButton
         vmText: loader.getStringForKey("viewlogin_back")
@@ -148,8 +152,8 @@ ViewBase {
         id: patientText
         font.pixelSize: VMGlobals.vmFontVeryLarge
         font.weight: 400
-        /// VERY VERY IMPORTANT. Qt BUG: So here is what happens. When I developed this rich text formatting got disabled if
-        /// before I set the text string a context form a Canvas object set a font. The work around I found is to simply 'have'
+        /// VERY VERY IMPORTANT. Qt BUG: So here is what happens. When I developed this, rich text formatting got disabled if
+        /// before I set the text string, a context from a Canvas object set a font. The work around I found is to simply 'have'
         /// HTML text, BEFORE the Canvas does it's operations and then when over writing the text, it shows up correctly.
         /// I managed to build a MWE (which I have since deleted). Steps to reproduce:
         ///    Create a Text QML object with "<b>Bold</b><br>Not Bold" (call it id: text)

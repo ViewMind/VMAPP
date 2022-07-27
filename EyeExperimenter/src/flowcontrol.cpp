@@ -301,14 +301,16 @@ void FlowControl::connectToEyeTracker(){
     eyeTracker->connectToEyeTracker();
 }
 
-void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
+void FlowControl::calibrateEyeTracker(){
 
     EyeTrackerCalibrationParameters calibrationParams;
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "";
 
+    int required_number_of_accepted_pts = 7;
     if (DBUGEXIST(Debug::Options::FORCE_N_CALIB_PTS)){
         calibrationParams.number_of_calibration_points = DBUGINT(Debug::Options::FORCE_N_CALIB_PTS);
+        required_number_of_accepted_pts = 0;
     }
     else{
         calibrationParams.number_of_calibration_points = 9;
@@ -319,10 +321,7 @@ void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
     leftEyeCalibrated = false;
 
     // Making sure the right eye is used, in both the calibration and the experiment.
-    selected_eye_to_use = eye_to_use;
-    //selected_eye_to_use = VMDC::Eye::toInt(eye_to_use);
-    //qDebug() << "Setting eye to use to " << eye_to_use;
-    eyeTracker->setEyeToTransmit(selected_eye_to_use);
+    eyeTracker->setEyeToTransmit(VMDC::Eye::BOTH);
 
     // qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
 
@@ -364,13 +363,11 @@ void FlowControl::calibrateEyeTracker(const QString &eye_to_use){
         }
     }
 
-    // Set so that ANY validation passes.
+    // Testing validations parameters.
     QVariantMap calibrationValidationParameters;
-    calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = 0;
-    calibrationValidationParameters[VMDC::CalibrationFields::ENABLE_GAZEFOLLOWING_DURING_VALIDATION] = true;
-    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 0;
+    calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = required_number_of_accepted_pts;
+    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
     calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE] = 0;
-    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_LENGTH] = 3000;
 
     if (DBUGEXIST(Debug::Options::CONFIG_CALIB_VALID)){
         QVariantMap configCalibValidDebugOptons = Debug::parseMultipleDebugOptionLine(DBUGSTR(Debug::Options::CONFIG_CALIB_VALID));
@@ -422,51 +419,23 @@ void FlowControl::onEyeTrackerControl(quint8 code){
         logger.appendStandard("EyeTracker Control: Calibration and validation finished");
 
         if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-           logger.appendStandard("VALIDATION REPORT:\n" + eyeTracker->getCalibrationValidationReport());
+            logger.appendStandard("VALIDATION REPORT:\n" + eyeTracker->getCalibrationValidationReport());
         }
 
         calibrated = true;
         if (Globals::EyeTracker::IS_VR) eyeTracker->enableUpdating(false);
         renderState = RENDER_WAIT_SCREEN;
-        switch (eyeTracker->getCalibrationFailureType()){
-        case EyeTrackerInterface::ETCFT_NONE:
-            calibrated = true;
-            rightEyeCalibrated  = true;
-            leftEyeCalibrated = true;
-            break;
-        case EyeTrackerInterface::ETCFT_UNKNOWN:
-            logger.appendWarning("EyeTracker Control: Calibration unknown failure");
-            calibrated = false;
-            rightEyeCalibrated  = false;
-            leftEyeCalibrated = false;
-            break;
-        case EyeTrackerInterface::ETCFT_FAILED_BOTH:
-            logger.appendWarning("EyeTracker Control: Calibration both eyes failed");
-            calibrated = false;
-            rightEyeCalibrated  = false;
-            leftEyeCalibrated = false;
-            break;
-        case EyeTrackerInterface::ETCFT_FAILED_LEFT:
-            logger.appendWarning("EyeTracker Control: Calibration left eye failed");
-            rightEyeCalibrated  = true;
-            leftEyeCalibrated = false;
-            if (selected_eye_to_use == VMDC::Eye::LEFT){
-                // The eye that failed was the one that was configured.
-                calibrated = false;
-            }
-            else calibrated = true;
-            break;
-        case EyeTrackerInterface::ETCFT_FAILED_RIGHT:
-            logger.appendWarning("EyeTracker Control: Calibration right eye failed");
-            rightEyeCalibrated  = false;
-            leftEyeCalibrated = true;
-            if (selected_eye_to_use == VMDC::Eye::RIGHT){
-                // The eye that failed was the one that was configured.
-                calibrated = false;
-            }
-            else calibrated = true;
-            break;
-        }
+
+        // At this point the calibration validation data structure should be available.
+        // The structure should be used in order to determine which eye will be the eye used in the study.
+
+        // We can now get the selected eye to use.
+        selected_eye_to_use = eyeTracker->getCalibrationRecommendedEye();
+        eyeTracker->setEyeToTransmit(selected_eye_to_use);
+        logger.appendStandard("Calibration Validation Report After Calibration Done");
+        logger.appendStandard(eyeTracker->getCalibrationValidationReport());
+        logger.appendStandard("Selected Eye: " + selected_eye_to_use);
+
         emit(calibrationDone(calibrated));
         break;
     case EyeTrackerInterface::ET_CODE_CONNECTION_FAIL:
@@ -486,12 +455,52 @@ void FlowControl::onEyeTrackerControl(quint8 code){
     case EyeTrackerInterface::ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE:
         //qDebug() << "Got a new calibration image";
         displayImage = eyeTracker->getCalibrationImage();
-        //openvrco->setImage(&displayImage);
-        //emit(newImageAvailable());
         break;
     }
 }
 
+
+QVariantMap FlowControl::getCalibrationValidationData() const {
+
+    if (DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF) != ""){
+
+        // Debug Code to Test Validation Graphics.
+        QString file_to_load = DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF);
+        QFile file(file_to_load);
+        file.open(QFile::ReadOnly);
+        QString content = file.readAll();
+        file.close();
+
+        QJsonParseError json_error;
+        QJsonDocument doc = QJsonDocument::fromJson(content.toUtf8(),&json_error);
+        QVariantMap data = doc.object().toVariantMap();
+        QVariantMap pp = data.value("processing_parameters").toMap();
+        data = data.value("calibration_validation").toMap();
+        data["W"] = pp.value("resolution_width");
+        data["H"] = pp.value("resolution_height");
+
+        return data;
+    }
+
+    if (eyeTracker != nullptr){
+
+        QVariantMap map = eyeTracker->getCalibrationValidationData();
+
+        // We add the resolution as it is required for plotting the calibration data.
+        map["W"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH);
+        map["H"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT);
+
+        return map;
+
+    }
+    return QVariantMap();
+
+}
+
+bool FlowControl::autoValidateCalibration() const {
+    if (DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF) != "") return false; // In this case we need the dialog since that the entire point of the debug option.
+    return (DBUGBOOL(Debug::Options::USE_MOUSE) || (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != ""));
+}
 
 void FlowControl::onUpdatedExperimentMessages(const QVariantMap &string_value_map){
     // This is simply a pass through from the experiment object to the QML front end
@@ -519,8 +528,11 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     experimentIsOk = true;
     QString finalStudyName;
 
-    // Using the polimorphism, the experiment object is created according to the selected index.
+    // Forcing the valid eye to the calibration selected eye.
+    study_config[VMDC::StudyParameter::VALID_EYE] = selected_eye_to_use;
+    //Debug::prettpPrintQVariantMap(study_config);
 
+    // Using the polimorphism, the experiment object is created according to the selected index.
     switch (study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt()){
     case Globals::StudyConfiguration::INDEX_READING:
         logger.appendStandard("STARTING READING EXPERIMENT");
@@ -621,13 +633,12 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     //qDebug() << "EyeTracker Enable Updating";
     eyeTracker->enableUpdating(true);
 
-    // Setting the validation data from the calibration.
-    experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
-
     // Start the experiment.
     experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
                                 configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
                                 study_config);
+
+    experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
 
     if (monitor != nullptr){
         if (configuration->getBool(Globals::VMPreferences::DUAL_MONITOR_MODE)) {

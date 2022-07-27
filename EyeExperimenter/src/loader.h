@@ -47,6 +47,7 @@ public:
     Q_INVOKABLE QString getInstitutionName() const;
 
     Q_INVOKABLE void openUserManual();
+    Q_INVOKABLE bool forceOpenValidationDialog() const; // FOR DEBUG ONLY!!
 
     //////////////////////////// PARTNER RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QStringList getPartnerList() const;
@@ -117,10 +118,6 @@ public:
     Q_INVOKABLE void editProtocol(const QString &id, const QString &newName);
     Q_INVOKABLE void deleteProtocol(const QString &id);
     Q_INVOKABLE QVariantMap getProtocolList();
-
-    //////////////////////////// FOR DEBUGGING ONLY ////////////////////////////
-    Q_INVOKABLE QVariantMap testGetCalibrationValidationData();
-
 
 
 signals:
