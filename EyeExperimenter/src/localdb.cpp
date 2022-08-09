@@ -467,7 +467,8 @@ bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &respo
 
     QStringList shouldBeThere;
     shouldBeThere << VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW << VMDC::ProcessingParameter::LATENCY_ESCAPE_RADIOUS
-                  << VMDC::ProcessingParameter::MIN_FIXATION_DURATION << VMDC::ProcessingParameter::SAMPLE_FREQUENCY;
+                  << VMDC::ProcessingParameter::MIN_FIXATION_DURATION << VMDC::ProcessingParameter::SAMPLE_FREQUENCY
+                  << VMDC::ProcessingParameter::GAZE_ON_CENTER_RADIOUS;
 
     QVariantMap pp = response.value(APINames::ProcParams::NAME).toMap();
 

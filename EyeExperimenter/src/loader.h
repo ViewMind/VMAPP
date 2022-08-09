@@ -48,6 +48,7 @@ public:
 
     Q_INVOKABLE void openUserManual();
     Q_INVOKABLE bool forceOpenValidationDialog() const; // FOR DEBUG ONLY!!
+    Q_INVOKABLE bool processingParametersArePresent() const;
 
     //////////////////////////// PARTNER RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QStringList getPartnerList() const;

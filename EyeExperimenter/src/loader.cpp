@@ -7,11 +7,6 @@ const QStringList Loader::NO_REPORT_STUDIES = {VMDC::Study::NBACKMS, VMDC::Study
 Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
 {
 
-    //    qDebug() << "On Loader";
-    //    qDebug() << Globals::Share::EXPERIMENTER_VERSION;
-    //    qDebug() << Globals::EyeTracker::NAME;
-    //    qDebug() << Globals::API_URL;
-
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
     connect(&qc,&QualityControl::finished,this,&Loader::qualityControlFinished);
@@ -225,6 +220,10 @@ void Loader::openUserManual(){
     if (!QDesktopServices::openUrl(QUrl(filePath))){
         logger.appendError("Could not open the user manual on file path: " + filePath);
     }
+}
+
+bool Loader::processingParametersArePresent() const {
+    return localDB.processingParametersPresent();
 }
 
 ////////////////////////////////////////////////////////  PARTNER FUNCTIONS  ////////////////////////////////////////////////////////

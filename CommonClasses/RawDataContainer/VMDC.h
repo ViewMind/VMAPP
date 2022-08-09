@@ -360,8 +360,9 @@ namespace VMDC {
        static const QString MAX_DISPERSION_WINDOW = "max_dispersion_window";
        static const QString MAX_DISPERSION_WINDOW_PX = "max_disp_window_in_px";
        static const QString SAMPLE_FREQUENCY = "sample_frequency";
+       static const QString GAZE_ON_CENTER_RADIOUS = "gaze_on_center_threshold_radius";
        static const QString LATENCY_ESCAPE_RADIOUS = "latency_escape_radious";
-       static const QStringList valid{RESOLUTION_HEIGHT,RESOLUTION_WIDTH,NBACK_HITBOXES,GONOGO_HITBOXES,MIN_FIXATION_DURATION,MAX_DISPERSION_WINDOW,MAX_DISPERSION_WINDOW_PX,SAMPLE_FREQUENCY,LATENCY_ESCAPE_RADIOUS};
+       static const QStringList valid{RESOLUTION_HEIGHT,RESOLUTION_WIDTH,NBACK_HITBOXES,GONOGO_HITBOXES,MIN_FIXATION_DURATION,MAX_DISPERSION_WINDOW,MAX_DISPERSION_WINDOW_PX,SAMPLE_FREQUENCY,LATENCY_ESCAPE_RADIOUS, GAZE_ON_CENTER_RADIOUS};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Processing Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

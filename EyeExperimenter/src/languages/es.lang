@@ -147,9 +147,10 @@ viewevaluation_err_calib_exp   = La calibración para los ojos seleccionados fal
 Por favor vea el detalle aqui abajo y reintente: <br><br>
 Ojo Izquierdo: llee<br>
 Ojo Derecho: rree;
+viewevaluation_err_no_pp = <b>Error al obtener datos del servidor</b><br>Por favor contáctse con ViewMind por soporte<br>No es posible continuar con estudios;
 viewevaluation_err_calib_ok = <b>Éxito</b>;
 viewevaluation_err_calib_fail = <font color='#FD3D60'><b>Falla</b></font>;
-viewevaluation_err_programming = <b>Error Interno en la App</b><br>Per favor contáctse con ViewMind por soporte;
+viewevaluation_err_programming = <b>Error Interno en la App</b><br>Por favor contáctse con ViewMind por soporte;
 viewevalcalibration_success = <b>Calibration Exitosa</b><br>Por favor proceda con la explicación;
 viewevaluation_finish = Finalizar;
 viewevaluation_congrats = ¡Felicitaciones!;

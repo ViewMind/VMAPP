@@ -144,11 +144,18 @@ ApplicationWindow {
             case VMGlobals.vmSwipeIndexMainScreen:
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewMainSetup.enableStudyStart(true)
+
                 if (!flowControl.isVROk()){
                     viewMainSetup.enableStudyStart(false)
-                    var message = loader.getStringForKey("viewpatlist_vr_failed");
+                    let message = loader.getStringForKey("viewpatlist_vr_failed");
                     popUpNotify(VMGlobals.vmNotificationRed,message);
                 }
+                else if (!loader.processingParametersArePresent()){
+                    viewMainSetup.enableStudyStart(false)
+                    let message = loader.getStringForKey("viewevaluation_err_no_pp");
+                    popUpNotify(VMGlobals.vmNotificationRed,message);
+                }
+
                 ///console.log("Calling swipe into main due to setting the global swipe view");
                 viewMainSetup.swipeIntoMain()
                 break;

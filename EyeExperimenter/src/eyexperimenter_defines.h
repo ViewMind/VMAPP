@@ -34,6 +34,11 @@ namespace Globals{
       const QString REGION  = "DEV";
    }
 
+   namespace DEV_SERVER_AI {
+      const QString API_URL = "https://devapi.viewmind.ai";
+      const QString REGION  = "DEV2";
+   }
+
    namespace LOCAL {
       const QString API_URL = "http://192.168.1.12/vmapi";
       const QString REGION  = "DBUG";
@@ -113,7 +118,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "19.4.1";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "19.4.3";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
@@ -158,7 +163,11 @@ namespace Globals{
            REGION = DEV_SERVER::REGION;
            return true;
        }
-
+       else if (region == "dev2"){
+           API_URL = DEV_SERVER_AI::API_URL;
+           REGION = DEV_SERVER_AI::REGION;
+           return true;
+       }
        return false;
    }
 

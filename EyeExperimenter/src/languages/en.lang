@@ -147,6 +147,7 @@ viewevaluation_err_calib_exp   = The calibration for the requested eyes could no
 Please see the detail below and retry:<br><br>
 Left Eye: llee<br>
 Right Eye: rree;
+viewevaluation_err_no_pp = <b>Error with retrieved server data</b><br>Please contact viewmind for support<br>Unable to continue with studies;
 viewevaluation_err_calib_ok = <b>Success</b>;
 viewevaluation_err_calib_fail = <font color='#FD3D60'><b>Failed</b></font>;
 viewevaluation_err_programming = <b>Internal Application Error</b><br>Please contact ViewMind for Support;
