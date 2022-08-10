@@ -9,6 +9,8 @@ Rectangle {
     readonly property int vmSTAGE_EXPLANATION: 1
     readonly property int vmSTAGE_EVALUATION:  2
 
+    readonly property string vmONGOING_STUDY_FIELD: "ongoing_study_file"
+
     property int vmEvaluationStage : vmSTAGE_CALIBRATION
     // The flag is required to indetify the moment between entering the strign and calibration actually staring.
     property bool vmInCalibration: false
@@ -16,6 +18,10 @@ Rectangle {
 
     property var vmExplanationTextArray: []
     property int vmExplanationTextIndex: -1
+
+    property bool vmBindingStudyStarted: false;
+
+    property bool vmSlowCalibrationSelected: false
 
     signal allEvalsDone();
 
@@ -47,7 +53,7 @@ Rectangle {
                 return;
             }
             // All is good so the calibration is requested.
-            flowControl.calibrateEyeTracker();
+            flowControl.calibrateEyeTracker(vmSlowCalibrationSelected);
             vmInCalibration = true;
         }
 
@@ -78,6 +84,12 @@ Rectangle {
         }
     }
 
+    function setOngoingFileNameForStudyConfiguration(){
+        let study_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+        study_config[vmONGOING_STUDY_FIELD] = loader.getCurrentSubjectStudyFile();
+        viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation] = study_config;
+    }
+
     function prepareNextStudy(calibrationSkipped){
 
         if (!flowControl.isCalibrated()){
@@ -95,13 +107,30 @@ Rectangle {
 
         // We load the text explanation depending on the study.
         let unique_study_id = parseInt(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmUNIQUE_STUDY_ID]);
+
+        if (vmCurrentEvaluation == 0){
+            vmBindingStudyStarted = false;
+        }
+
         if (unique_study_id === VMGlobals.vmINDEX_GONOGO){
             vmExplanationTextArray = loader.getStringListForKey("explanation_gonogo");            
         }
         else if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
+            if (vmBindingStudyStarted){
+                setOngoingFileNameForStudyConfiguration();
+            }
+            else {
+                vmBindingStudyStarted = true;
+            }
             vmExplanationTextArray = loader.getStringListForKey("explanation_binding_bc");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_BINDING_UC){
+            if (vmBindingStudyStarted){
+                setOngoingFileNameForStudyConfiguration();
+            }
+            else {
+                vmBindingStudyStarted = true;
+            }
             vmExplanationTextArray = loader.getStringListForKey("explanation_binding_uc");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_NBACKRT){
@@ -110,8 +139,6 @@ Rectangle {
         else if (unique_study_id === VMGlobals.vmINDEX_NBACKVS){
             let ntargets = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmSCP_NUMBER_OF_TARGETS]
             vmExplanationTextArray = loader.getStringListForKey("explanation_nbackvs_" + ntargets);
-            //console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation]));
-            //vmExplanationTextArray = loader.getStringListForKey("explanation_nbackvs_3");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_NBACKMS){
             vmExplanationTextArray = loader.getStringListForKey("explanation_nbackms");
@@ -167,7 +194,7 @@ Rectangle {
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
             if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
             else {
-                flowControl.calibrateEyeTracker();
+                flowControl.calibrateEyeTracker(vmSlowCalibrationSelected);
                 vmInCalibration = true;
             }
         }

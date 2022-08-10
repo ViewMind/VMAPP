@@ -90,7 +90,8 @@ void HTCViveEyeProEyeTrackingInterface::calibrate(EyeTrackerCalibrationParameter
     if (params.forceCalibration){
         calibration.startCalibrationSequence(static_cast<qint32>(screenWidth),
                                              static_cast<qint32>(screenHeight),
-                                             params.number_of_calibration_points);
+                                             params.number_of_calibration_points,
+                                             params.gather_time,params.wait_time);
         // Non empty file name will indicate coefficient storage.
         coefficientsFile = params.name;
     }

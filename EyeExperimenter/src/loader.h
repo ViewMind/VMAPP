@@ -99,6 +99,7 @@ public:
 
     //////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////
     Q_INVOKABLE bool createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol);
+    Q_INVOKABLE QString getCurrentSubjectStudyFile() const;
 
     ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
     Q_INVOKABLE QVariantMap getReportsForLoggedEvaluator();

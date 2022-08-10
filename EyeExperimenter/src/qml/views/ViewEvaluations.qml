@@ -81,6 +81,9 @@ ViewBase {
         viewer.currentIndex = vmDebugSubScreen;
         generalSettings.prepareSettings();
 
+        // Ensuring we start with normal calibration speed
+        setCalibrationSpeedToSlow(false)
+
     }
 
     function setUpStudyNames(study_names){
@@ -132,6 +135,18 @@ ViewBase {
     function calibrationValidated(){
         evaluationRun.prepareNextStudy(false);
     }
+
+    function setCalibrationSpeedToSlow(slow){
+        evaluationRun.vmSlowCalibrationSelected = slow;
+    }
+
+    VMConfirmDialog {
+        id: confirmStudyAbort
+        onConfirm: {
+            flowControl.keyboardKeyPressed(Qt.Key_Escape);
+        }
+    }
+
 
     VMButton {
         id: backButton
@@ -434,14 +449,23 @@ ViewBase {
         for (var i = 0; i < allowed_keys.length; i++){
             if (event.key === allowed_keys[i]){
                 //console.log("Passing on event key " + event.key)
-                flowControl.keyboardKeyPressed(event.key);
 
-                // Calling the advance explanation phrase logic.
-                if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_EXPLANATION){
-                    if (event.key === Qt.Key_N){
-                       //console.log("Advancing explanation phrase");
-                       evaluationRun.nextExplanationPhrase();
+                if (event.key === Qt.Key_Escape){
+                    confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                         loader.getStringForKey("viewevaluation_comfirm_abort_msg"))
+                }
+                else {
+
+                    flowControl.keyboardKeyPressed(event.key);
+
+                    // Calling the advance explanation phrase logic.
+                    if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_EXPLANATION){
+                        if (event.key === Qt.Key_N){
+                           //console.log("Advancing explanation phrase");
+                           evaluationRun.nextExplanationPhrase();
+                        }
                     }
+
                 }
 
                 return;

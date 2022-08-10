@@ -24,7 +24,7 @@ public:
 
     // This sets the calibration target class, initializes all variables and starts the calibration timer.
     // npoints can be 5 or 9 if anything other than 9 is used, 5 is assumed.
-    void startCalibrationSequence(qint32 width, qint32 height, qint32 npoints = 5);
+    void startCalibrationSequence(qint32 width, qint32 height, qint32 npoints, qint32 ms_gather_time_for_calib_pt, qint32 ms_wait_time_calib_pt);
 
     // Adding the data point for calibration.
     void addDataPointForCalibration(float xl, float yl, float xr, float yr);
@@ -100,10 +100,13 @@ private:
     qint32 validationPointsToPassForAcceptedValidation;
 
     // How long to wait to gather data for each target.
-    static const qint32 CALIBRATION_WAIT_TIME = 1000;
+    //static const qint32 CALIBRATION_WAIT_TIME = 1000;
 
     // How data is gathered for each target.
-    static const qint32 CALIBRATION_GATHER_TIME = 2000;
+    // static const qint32 CALIBRATION_GATHER_TIME = 2000;
+
+    qint32 calibration_wait_time;
+    qint32 calibration_gather_time;
 
     // Number of validations points is always nine.
     static const qint32 VALIDATION_NPOINTS = 9;

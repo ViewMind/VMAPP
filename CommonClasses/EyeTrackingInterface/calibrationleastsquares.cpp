@@ -54,7 +54,8 @@ void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, flo
     }
 }
 
-void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 height, qint32 npoints){
+void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 height, qint32 npoints,
+                                                       qint32 ms_gather_time_for_calib_pt, qint32 ms_wait_time_calib_pt){
 
     // Initializing the calibration image generator.
     calibrationTargets.initialize(width,height);
@@ -78,6 +79,8 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
     isCalibratingFlag = true;
     isDataGatheringEnabled = true;
     successfullyComputedCoefficients = false;
+    calibration_gather_time = ms_gather_time_for_calib_pt;
+    calibration_wait_time = ms_wait_time_calib_pt;
     calibrationTimeInTargetUp();
 
 }
@@ -108,13 +111,13 @@ void CalibrationLeastSquares::calibrationTimeInTargetUp(){
         currentCalibrationImage = calibrationTargets.nextSingleTarget();
 
         emit CalibrationLeastSquares::newCalibrationImageAvailable();
-        calibrationTimer.start(CALIBRATION_WAIT_TIME);
+        calibrationTimer.start(calibration_wait_time);
         isDataGatheringEnabled = false;
     }
     else{
         // This means that we just finished waiting for the first part of the target. So we can start collecting data.
         isDataGatheringEnabled = true;
-        calibrationTimer.start(CALIBRATION_GATHER_TIME);
+        calibrationTimer.start(calibration_gather_time);
     }
 
 }

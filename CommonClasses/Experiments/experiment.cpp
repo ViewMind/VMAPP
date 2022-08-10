@@ -75,6 +75,12 @@ bool Experiment::startExperiment(const QString &workingDir,
 
     // We need to load the experiment file as it will contain the subject dat, the meta data already set and the processing parameters.
     if (QFile(dataFile).exists()){
+
+        if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+            LogInterface logger;
+            logger.appendStandard("DBUG: Rawdata is being loaded from file: " + QFileInfo(dataFile).absoluteFilePath());
+        }
+
         if (!rawdata.loadFromJSONFile(dataFile)){
             error = "Failed loading existing experiment file: " + experimentFile + "even tough it exists: " + rawdata.getError();
             emit Experiment::experimentEndend(ER_FAILURE);
@@ -109,11 +115,16 @@ bool Experiment::startExperiment(const QString &workingDir,
     enhancedStudyConfig[VMDC::StudyParameter::DEFAULT_EYE] = defaultStudyEye;
 
     // Adding the study to the raw data container.
+
+    //qDebug() << "On Experiment Start. Printing the studies in the current raw data file before adding a study" << rawdata.getStudies();
+
     if (!rawdata.addStudy(studyType,enhancedStudyConfig,contents,manager->getVersion())){
         error = "Adding the study type: " + rawdata.getError();
         emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }
+
+    //qDebug() << "On Experiment Start. Printing the studies in the current raw data file after adding a study" << rawdata.getStudies();
 
 
     QString validEye = studyConfig.value(VMDC::StudyParameter::VALID_EYE).toString();    
@@ -135,6 +146,14 @@ bool Experiment::startExperiment(const QString &workingDir,
     //Debug::prettpPrintQVariantMap(pp);
 
     // Last thing to do is to actually set the current study to the study type
+
+    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+        QString dbug = "DBUG: Setting study on starting experiment of type '" + studyType + "'";
+        LogInterface logger;
+        qDebug() << dbug;
+        logger.appendWarning(dbug);
+    }
+
     if (!rawdata.setCurrentStudy(studyType)){
         error = "Failed setting current study of " + studyType + ". Reason: " + rawdata.getError();
         emit Experiment::experimentEndend(ER_FAILURE);

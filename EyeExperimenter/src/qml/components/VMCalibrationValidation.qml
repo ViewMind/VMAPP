@@ -12,7 +12,7 @@ Item {
     z: 10
 
     signal calibrationValidated();
-    signal requestReCalibration();
+    signal requestReCalibration(bool slow);
 
     // Horizontal space between the border of the screen and the start of the screen representation and between the screen representation and the middle of the dialog
     property double vmHorizotalMarginToScreenRepresentation: 0.08*dialog.width
@@ -251,7 +251,6 @@ Item {
         anchors.leftMargin: vmHorizotalMarginToScreenRepresentation
         anchors.top: leftEyeTitle.bottom
         anchors.topMargin: VMGlobals.adjustHeight(10)
-
         onPaint: {
 
             var ctx = getContext("2d")
@@ -309,6 +308,19 @@ Item {
     }
 
     VMButton {
+        id: slowCalibrationButton
+        vmButtonType: vmTypeSecondary
+        vmText: loader.getStringForKey("viewevaluation_slow_calib");
+        visible: !vmIsLeftEyeValidated && !vmIsRightEyeValidated
+        anchors.bottom: dialog.bottom
+        anchors.bottomMargin: VMGlobals.adjustHeight(20)
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClickSignal: {
+            requestReCalibration(true)
+        }
+    }
+
+    VMButton {
         id: restartCalibrationButton
         vmText: loader.getStringForKey("viewevaluation_calib_restart");
         anchors.bottom: dialog.bottom
@@ -316,7 +328,7 @@ Item {
         anchors.left: dialog.left
         anchors.leftMargin: VMGlobals.adjustWidth(30)
         onClickSignal: {
-            requestReCalibration()
+            requestReCalibration(false)
         }
     }
 

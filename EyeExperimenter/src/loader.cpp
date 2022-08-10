@@ -456,15 +456,13 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         logger.appendError("While creating a subject study file, Study Configuration Map does not contain " + Globals::StudyConfiguration::UNIQUE_STUDY_ID + " field. Cannot determine study");
         logger.appendError(Debug::QVariantMapToString(studyconfig));
         return false;
-    }
+    }    
 
     // The first part of the name is base on the study type.
     qint32 selectedStudy = studyconfig.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt();
-    QString filename;
 
+    QString filename = "";
     bool new_file = true;
-    QString incomplete_study;
-    qint32 percepetion_part;
 
     SubjectDirScanner sdc;
     sdc.setup(configuration->getString(Globals::Share::PATIENT_DIRECTORY),configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
@@ -473,34 +471,20 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
         filename = Globals::BaseFileNames::BINDING;
 
-        // We need to check for ongoing studies with just BC.
-        incomplete_study = sdc.findIncompleteBindingStudies(VMDC::Study::BINDING_UC,studyconfig);
-        if (sdc.getError() != ""){
-            logger.appendError("While scanning for incomplete binding files: " + sdc.getError());
-            return false;
-        }
-
-        if (incomplete_study != ""){
-            // An ongoing study requires unbound
-            logger.appendStandard("Setting file for ongoing binding study " + incomplete_study + " for BC");
-            filename = incomplete_study;
+        if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
+            filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
+            logger.appendStandard("Ongoing study file '" + filename + "'");
             new_file = false;
         }
+
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
         filename = Globals::BaseFileNames::BINDING;
 
-        // We need to check for ongoing studies with just BC.
-        incomplete_study = sdc.findIncompleteBindingStudies(VMDC::Study::BINDING_BC,studyconfig);
-        if (sdc.getError() != ""){
-            logger.appendError("While scanning for incomplete binding files: " + sdc.getError());
-            return false;
-        }
-
-        if (incomplete_study != ""){
-            // An ongoing study requires bound
-            logger.appendStandard("Setting file for ongoing binding study " + incomplete_study + " for UC");
-            filename = incomplete_study;
+        // If there is an ongoing binding Study, then we can remove this
+        if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
+            filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
+            logger.appendStandard("Ongoing study file '" + filename + "'");
             new_file = false;
         }
 
@@ -517,26 +501,6 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     case Globals::StudyConfiguration::INDEX_NBACKVS:
         filename = Globals::BaseFileNames::NBACKVS;
         break;
-    case Globals::StudyConfiguration::INDEX_PERCEPTION:
-        filename = Globals::BaseFileNames::PERCEPTION;
-
-        // This is the part of the perception study that we require.
-        percepetion_part = studyconfig.value(VMDC::StudyParameter::PERCEPTION_PART).toInt();
-
-        // We need to check for ongoing studies with not all the parts.
-        incomplete_study =  sdc.findIncompletedPerceptionStudy(percepetion_part,studyconfig);
-        if (sdc.getError() != ""){
-            logger.appendError("While scanning for incomplete binding files: " + sdc.getError());
-            return false;
-        }
-
-        if (incomplete_study != ""){
-            // An ongoing study requires unbound
-            filename = incomplete_study;
-            new_file = false;
-        }
-
-        break;
     case Globals::StudyConfiguration::INDEX_READING:
         filename = Globals::BaseFileNames::READING;
         break;
@@ -545,20 +509,27 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         break;
     }
 
-    // Adding the full path.
-    filename = Globals::Paths::WORK_DIRECTORY + "/" + configuration->getString(Globals::Share::PATIENT_UID) + "/" + filename;
 
-    if (!new_file){
-        // All is done we just need to set it as the current one.
-        logger.appendStandard("Continuing study in file " + filename);
-        configuration->addKeyValuePair(Globals::Share::PATIENT_STUDY_FILE,filename);
-        return true;
-    }
-
-    // Second part of the actuall file name is the time stamp.
     QString date = QDateTime::currentDateTime().toString("yyyy-MM-dd");
     QString hour = QDateTime::currentDateTime().toString("HH:mm:ss");
-    filename = filename + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm") + ".json";
+
+    if (new_file){
+        // Adding the full path.
+        filename = Globals::Paths::WORK_DIRECTORY + "/" + configuration->getString(Globals::Share::PATIENT_UID) + "/" + filename;
+
+        // Second part of the actuall file name is the time stamp.
+        filename = filename + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm") + ".json";
+    }
+
+    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+        logger.appendStandard("DBUG: Using file for study at '" + filename + "'");
+    }
+
+    if (!new_file){
+        // There is nothing more to do. We just return as everything is already set up
+        configuration->addKeyValuePair(Globals::Share::PATIENT_STUDY_FILE,filename); // This is probably redudntant
+        return true;
+    }
 
     // Creating the metadata.
     QVariantMap metadata;
@@ -673,6 +644,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         return false;
     }
 
+    qDebug() << "SAVING THE JSON FILE!!!!!!!!!!!";
     if (!rdc.saveJSONFile(filename,true)){
         logger.appendError("Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
         return false;
@@ -683,6 +655,10 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
     return true;
 
+}
+
+QString Loader::getCurrentSubjectStudyFile() const {
+    return configuration->getString(Globals::Share::PATIENT_STUDY_FILE);
 }
 
 ////////////////////////////////////////////////////////////////// EVALUATOR FUNCTIONS //////////////////////////////////////////////////////////////////

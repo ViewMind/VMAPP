@@ -7,6 +7,8 @@ struct EyeTrackerCalibrationParameters{
     QString name;
     bool forceCalibration;
     qint32 number_of_calibration_points;
+    qint32 gather_time;
+    qint32 wait_time;
 };
 
 class EyeTrackerData

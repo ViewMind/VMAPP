@@ -164,6 +164,11 @@ viewevaluation_success = Success;
 viewevaluation_failed = Failed;
 viewevaluation_calib_restart = RESTART CALIBRATION;
 viewevaluation_continue = CONTINUE;
+viewevaluation_slow_calib = SLOW CALIBRATION;
+viewevaluation_comfirm_abort_title = Cancel Study;
+viewevaluation_comfirm_abort_msg = Do you wish to stop the current study?<br>All progress will be lost and you will need to start again;
+viewevaluation_comfirm_abort_yes = YES;
+viewevaluation_comfirm_abort_no  = NO;
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = Calibration has ended;

@@ -164,6 +164,11 @@ viewevaluation_success = Exitosa;
 viewevaluation_failed = Falló;
 viewevaluation_calib_restart = REINICIAR CALIBRACIÓN;
 viewevaluation_continue = CONTINUAR;
+viewevaluation_slow_calib = CALIBRACIÓN LENTA;
+viewevaluation_comfirm_abort_title = Cancelar estudio;
+viewevaluation_comfirm_abort_msg = ¿Desea cancelar el estudio?<br>Todo el progreso se perderá y deberá comenzar nuevamente;
+viewevaluation_comfirm_abort_yes = SI;
+viewevaluation_comfirm_abort_no  = NO;
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;

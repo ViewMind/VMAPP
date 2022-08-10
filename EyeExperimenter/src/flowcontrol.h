@@ -41,7 +41,7 @@ public:
     explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     ~FlowControl() override;
     Q_INVOKABLE void connectToEyeTracker();
-    Q_INVOKABLE void calibrateEyeTracker();
+    Q_INVOKABLE void calibrateEyeTracker(bool useSlowCalibration);
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
     Q_INVOKABLE void startStudy();
     Q_INVOKABLE bool isConnected() const { return connected; }
@@ -155,6 +155,12 @@ private:
 
     // Only valid vlues are 5 or 9 anything else will assume 9
     static const qint32 NUMBER_OF_CALIBRATION_POINTS = 9;
+
+    static const qint32 CALIB_PT_WAIT_TIME_NORMAL = 1000;
+    static const qint32 CALIB_PT_GATHER_TIME_NORMAL = 2000;
+    static const qint32 CALIB_PT_WAIT_TIME_SLOW = 1500;
+    static const qint32 CALIB_PT_GATHER_TIME_SLOW = 3000;
+
 
 };
 

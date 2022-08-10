@@ -49,6 +49,9 @@ bool ViewMindDataContainer::loadFromJSONFile(const QString &file_name){
         return false;
     }
     data = doc.object().toVariantMap();
+
+    //Debug::prettpPrintQVariantMap(data);
+
     return true;
 }
 

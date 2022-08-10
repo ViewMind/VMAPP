@@ -99,6 +99,9 @@ namespace Globals{
    namespace StudyConfiguration {
       // These values NEED to match the ViewStudyStart definitions.
       static const QString UNIQUE_STUDY_ID = "unique_study_id";
+
+      // Will be used when multiple studies need to be in the same file.
+      static const QString ONGOING_STUDY_FILE = "ongoing_study_file";
        
       // Unique value index for each experiment, as selectable by the evaluator
       static const qint32 INDEX_READING = 0;
@@ -118,7 +121,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "19.4.3";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "19.5.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

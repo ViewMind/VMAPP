@@ -59,6 +59,7 @@ ApplicationWindow {
             viewEvaluations.calibrationValidated();
         }
         onRequestReCalibration: {
+            viewEvaluations.setCalibrationSpeedToSlow(slow);
             close()
         }
     }
@@ -210,7 +211,6 @@ ApplicationWindow {
         let W = map["W"];
         let H = map["H"];
 
-        //calibrationValidation.configuringRenderingParameters(map["calibration_validation"],W,H)
         calibrationValidation.configuringRenderingParameters(map,W,H);
         calibrationValidation.redrawCanvas()
         calibrationValidation.open()

@@ -297,9 +297,12 @@ namespace VMDC {
        static const QString CALIBRATION_TARGET_DIAMETER = "calibration_target_diameter";
        static const QString COFICIENT_OF_DETERMINATION = "coefficient_of_determination";
        static const QString MATH_ISSUES_FOR_CALIBRATION = "math_issues_for_calibration";
+       static const QString CALIBRATION_POINT_GATHERTIME  = "calib_pt_gather_time";
+       static const QString CALIBRATION_POINT_WAITTIME  = "calib_pt_wait_time";
        static const QStringList valid{VALIDATION_POINT_ACCEPTANCE_THRESHOLD,REQ_NUMBER_OF_ACCEPTED_POINTS,
                    VALIDATION_POINT_HIT_TOLERANCE,NUMBER_OF_CALIBRAION_POINTS,CALIBRATION_TARGET_LOCATION,LEFT_EYE_VALIDATION_DATA,RIGHT_EYE_VALIDATION_DATA,
-                   CALIBRATION_TARGET_DIAMETER,COFICIENT_OF_DETERMINATION,MATH_ISSUES_FOR_CALIBRATION};
+                   CALIBRATION_TARGET_DIAMETER,COFICIENT_OF_DETERMINATION,MATH_ISSUES_FOR_CALIBRATION,CALIBRATION_POINT_GATHERTIME,
+                   CALIBRATION_POINT_WAITTIME};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Subject Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }

@@ -301,7 +301,7 @@ void FlowControl::connectToEyeTracker(){
     eyeTracker->connectToEyeTracker();
 }
 
-void FlowControl::calibrateEyeTracker(){
+void FlowControl::calibrateEyeTracker(bool useSlowCalibration){
 
     EyeTrackerCalibrationParameters calibrationParams;
     calibrationParams.forceCalibration = true;
@@ -310,7 +310,7 @@ void FlowControl::calibrateEyeTracker(){
     int required_number_of_accepted_pts = 7;
     if (DBUGEXIST(Debug::Options::FORCE_N_CALIB_PTS)){
         calibrationParams.number_of_calibration_points = DBUGINT(Debug::Options::FORCE_N_CALIB_PTS);
-        required_number_of_accepted_pts = 0;
+        required_number_of_accepted_pts = 2;
     }
     else{
         calibrationParams.number_of_calibration_points = 9;
@@ -363,11 +363,26 @@ void FlowControl::calibrateEyeTracker(){
         }
     }
 
+    qint32 validation_point_acceptance_threshold = 70;
+    if (useSlowCalibration){
+        logger.appendStandard("Requested use of slow calibration");
+        validation_point_acceptance_threshold = 60;
+        calibrationParams.gather_time = CALIB_PT_GATHER_TIME_SLOW;
+        calibrationParams.wait_time = CALIB_PT_WAIT_TIME_SLOW;
+    }
+    else {
+        validation_point_acceptance_threshold = 60;
+        calibrationParams.gather_time = CALIB_PT_GATHER_TIME_NORMAL;
+        calibrationParams.wait_time = CALIB_PT_WAIT_TIME_NORMAL;
+    }
+
     // Testing validations parameters.
     QVariantMap calibrationValidationParameters;
     calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = required_number_of_accepted_pts;
     calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
     calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE] = 0;
+    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_GATHERTIME] = calibrationParams.gather_time;
+    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_WAITTIME] = calibrationParams.wait_time;
 
     if (DBUGEXIST(Debug::Options::CONFIG_CALIB_VALID)){
         QVariantMap configCalibValidDebugOptons = Debug::parseMultipleDebugOptionLine(DBUGSTR(Debug::Options::CONFIG_CALIB_VALID));
