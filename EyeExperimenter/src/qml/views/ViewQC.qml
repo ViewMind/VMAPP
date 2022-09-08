@@ -47,9 +47,8 @@ ViewBase {
 
         // Selecting the different types of graphps.
         let graphNames = [
-                loader.getStringForKey("viewqc_SubPoints"),
-                loader.getStringForKey("viewqc_SubFixations"),
-                loader.getStringForKey("viewqc_SubFrequency")
+                loader.getStringForKey("viewqc_SubICI"),
+                loader.getStringForKey("viewqc_SubFixations")
             ];
 
 

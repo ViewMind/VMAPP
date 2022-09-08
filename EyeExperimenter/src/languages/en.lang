@@ -169,6 +169,10 @@ viewevaluation_comfirm_abort_title = Cancel Study;
 viewevaluation_comfirm_abort_msg = Do you wish to stop the current study?<br>All progress will be lost and you will need to start again;
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
+viewevaluation_calibration_explanation = A blue circle with a white dot in the center will appear on the screen. 
+Look at the white dot in the center. The circle and dot will move through the screen. 
+You must follow it, always looking at the white dot. 
+It will appear for the first time in the upper left hand corner.;
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = Calibration has ended;
@@ -183,6 +187,7 @@ viewqc_qc_failed = <b>Quality Control Failed</b><br>Please contact ViewMind for 
 viewqc_SubPoints = Data Points;
 viewqc_SubFixations = Fixations;
 viewqc_SubFrequency = Sample Rate;
+viewqc_SubICI = ICI;
 viewQC_StudyNameMap = 
 Reading|Reading|
 Binding BC|Colour Combinations| 
@@ -195,10 +200,12 @@ viewqc_previous = PREVIOUS;
 viewqc_archive = ARCHIVE;
 viewqc_send = SEND;
 view_qc_send_report = Send Studies;
-viewqc_index_names = Data Point Index|Fixations Index|Sample Frequency Index;
+;viewqc_index_names = Data Point Index|Fixations Index|Sample Frequency Index;
+viewqc_index_names = Index Of Information Completion|Fixations Index;
 viewQC_limitDataPoints = Desired value to be at least <<I>>. This ensures that not signficant loss of data ocurred.;
 viewQC_limitFixations = Desired value to be at least <<I>>. This ensures that subject and application behaviour during the study falls within expected parameters.;
 viewQC_limitSampleF = Desired value to be at least <<I>>. This ensures that headset worked as expected;
+viewQC_limitICI = Desired value to be at least <<I>>. This ensures that headset worked as expected;
 viewqc_confirm_archive = Yes, Archive It;
 viewqc_comment = Comments;
 viewqc_archive_explanation = If you archive the study it will not be processed but

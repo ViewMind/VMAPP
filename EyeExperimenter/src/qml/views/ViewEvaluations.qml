@@ -334,6 +334,7 @@ ViewBase {
                     nextButton.vmText = loader.getStringForKey("viewevaluation_action_calibrate")
                     nextButton.vmIconSource = ""
                     evaluationRun.vmEvaluationStage = evaluationRun.vmSTAGE_CALIBRATION
+                    evaluationRun.setCalibrationExplantion() // Setting the calibration explanation message.
                     evaluationRun.vmInCalibration = false;
                     // console.log(JSON.stringify(vmSelectedEvaluationConfigurations))
                     break;

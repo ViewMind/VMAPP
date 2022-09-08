@@ -187,8 +187,8 @@ ApplicationWindow {
         waitScreen.hide();
     }
 
-    function popUpNotify(type,message){
-        notification.show(type,message)
+    function popUpNotify(type,message,showOnCenter = false){
+        notification.show(type,message,showOnCenter)
     }
 
     function showErrorMessage(key){

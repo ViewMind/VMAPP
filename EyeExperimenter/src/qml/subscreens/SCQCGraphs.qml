@@ -16,11 +16,12 @@ Rectangle {
 
     property bool vmIsLastGraph: false
 
-    readonly property int vmINDEX_GRAPH_POINTS: 0
+    readonly property int vmINDEX_ICI:          0
     readonly property int vmINDEX_FIXATIONS:    1
-    readonly property int vmINDEX_FREQ:         2
+    readonly property int vmINDEX_GRAPH_POINTS: 0
+    readonly property int vmINDEX_FREQ:         3
 
-    readonly property int vmNUMBER_OF_GRAPHS:   3
+    readonly property int vmNUMBER_OF_GRAPHS:   2
 
     function initializeForGraphTraversal(){
         vmStdStudyNameByIndex = loader.getStudyList();
@@ -101,6 +102,9 @@ Rectangle {
         }
         else if (vmCurrentlySelectedGraph === vmINDEX_GRAPH_POINTS){
             text = loader.getStringForKey("viewQC_limitDataPoints")
+        }
+        else if (vmCurrentlySelectedGraph === vmINDEX_ICI){
+            text = loader.getStringForKey("viewQC_limitICI");
         }
 
         // Separating the explation text: The first line is the title.

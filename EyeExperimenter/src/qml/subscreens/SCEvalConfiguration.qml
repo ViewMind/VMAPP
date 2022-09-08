@@ -67,19 +67,19 @@ Rectangle {
         //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
 
-
-        item = {}
-        options = {}
-        item = {
-            vmIndex: VMGlobals.vmINDEX_NBACKMS,
-            vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackms") ,
-            vmIsLastSelected: false,
-            vmOptions: options,
-            vmOrder: "",
-            vmOptionValueMap: ""
-        }
-        //vmDefaultStudyOrder.push(item["vmIndex"])
-        availableEvaluations.append(item)
+// 2022-08-23: Removed NBACK MS Evaluation. Hopefully Peramenently.
+//        item = {}
+//        options = {}
+//        item = {
+//            vmIndex: VMGlobals.vmINDEX_NBACKMS,
+//            vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackms") ,
+//            vmIsLastSelected: false,
+//            vmOptions: options,
+//            vmOrder: "",
+//            vmOptionValueMap: ""
+//        }
+//        //vmDefaultStudyOrder.push(item["vmIndex"])
+//        availableEvaluations.append(item)
 
         item = {}
 

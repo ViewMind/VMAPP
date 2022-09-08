@@ -6,7 +6,7 @@
 @ECHO OFF
 
 :: Defining constants. 
-SET VERSION=1.0.0
+SET VERSION=1.0.1
 SET CURRENT_DIR=%cd%
 
 :: Local Paths
@@ -75,9 +75,13 @@ if %ERRORLEVEL% neq 0 (
 :: Copying the ET Data Dir. 
 SET cdir=%cd%
 SET src=%FULL_PATH_APP_DIR%\%VMET_DATA%
-SET dest=%FULL_PATH_NEW_APP_DIR%\%VMET_DATA%\
-XCOPY %src% %dest% /E/S/H/Y > NUL
-ECHO -Porting viewmind_etdata directory: XCOPY %src% %dest% >> %LOG%
+SET dest=%FULL_PATH_NEW_APP_DIR%
+
+:: PREVIOUS VERSION: Copying the files is unbearably slow, if there are to many files So it was changed to move.
+:: XCOPY %src% %dest% /E/S/H/Y > NUL
+ECHO -Porting viewmind_etdata directory: MOVE %src% %dest% >> %LOG%
+MOVE %src% %dest%
+
 if %ERRORLEVEL% neq 0 (
    echo Updated failed: Please contact Viewmind Support
    echo - The following error was encountered when copying the application directory:%ERRORLEVEL% >> %LOG%

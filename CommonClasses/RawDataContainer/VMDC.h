@@ -379,8 +379,11 @@ namespace VMDC {
         static const QString ALLOWED_SAMPLING_FREQ_VARIATION_PLUS   = "allowed_f_plus_variation";
         static const QString ALLOWED_SAMPLING_FREQ_VARIATION_MINUS  = "allowed_f_minus_variation";
         static const QString THRESHOLD_NUM_TRIALS_VALID_F           = "threshold_trials_with_valid_f";
+        static const QString ICI_TRIAL_THRESHOLD                    = "information_completion_index_trial_threshold";
+        static const QString ICI_VALID_N_TRIAL_THRESHOLD            = "information_completion_index_valid_trial_threshold";
 
-        static const QStringList valid{MIN_TIMESTAMP_DIFF,MAX_TIMESTAMP_DIFF,MAX_GLITCHES,ALLOWED_SAMPLING_FREQ_VARIATION_MINUS,ALLOWED_SAMPLING_FREQ_VARIATION_PLUS,THRESHOLD_NUM_TRIALS_VALID_F};
+        static const QStringList valid{MIN_TIMESTAMP_DIFF,MAX_TIMESTAMP_DIFF,MAX_GLITCHES,ALLOWED_SAMPLING_FREQ_VARIATION_MINUS,ALLOWED_SAMPLING_FREQ_VARIATION_PLUS,
+                    THRESHOLD_NUM_TRIALS_VALID_F, ICI_TRIAL_THRESHOLD, ICI_VALID_N_TRIAL_THRESHOLD};
         static QString validate(const QString &str) { return VMDC::validate(str,valid,"Global QC Parameter"); }
         static qint32 toInt(const QString &str) {return valid.indexOf(str); }
         static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
@@ -406,6 +409,7 @@ namespace VMDC {
         static const QString FIXATIONS = "fixations_per_trial";
         static const QString GLITCHES = "glitches_per_trial";
         static const QString AVG_FREQ = "avg_freq_per_trial";
+        static const QString ICI = "index_of_information_completion";
         static const QString N_DATASETS = "number_of_datasets";
         static const QString QC_POINT_INDEX = "qc_data_point_index";
         static const QString QC_POINT_INDEX_OK = "qc_data_point_index_ok";
@@ -413,7 +417,10 @@ namespace VMDC {
         static const QString QC_FIX_INDEX_OK = "qc_fix_index_ok";
         static const QString QC_FREQ_INDEX = "qc_freq_index";
         static const QString QC_FREQ_INDEX_OK = "qc_freq_index_ok";
-        static const QStringList valid{POINTS,FIXATIONS,AVG_FREQ,GLITCHES,N_DATASETS,QC_POINT_INDEX,QC_POINT_INDEX_OK,QC_FIX_INDEX,QC_FIX_INDEX_OK,QC_FREQ_INDEX,QC_FREQ_INDEX_OK};
+        static const QString QC_ICI_INDEX = "qc_ici_index";
+        static const QString QC_ICI_INDEX_OK = "qc_ici_index_ok";
+        static const QStringList valid{ICI,FIXATIONS,POINTS,AVG_FREQ,GLITCHES,N_DATASETS,QC_POINT_INDEX,QC_POINT_INDEX_OK,QC_FIX_INDEX,
+                    QC_FIX_INDEX_OK,QC_FREQ_INDEX,QC_FREQ_INDEX_OK,QC_ICI_INDEX, QC_ICI_INDEX_OK};
         static QString validate(const QString &str) { return VMDC::validate(str,valid,"QC Computed Values"); }
         static qint32 toInt(const QString &str) {return valid.indexOf(str); }
         static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }

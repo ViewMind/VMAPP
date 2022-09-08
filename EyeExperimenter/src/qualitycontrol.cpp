@@ -113,7 +113,13 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
 
     QVariantMap qc = rawdata.getQCParameters();
     QVariantMap pp = rawdata.getProcessingParameters();
-    qreal sample_freq = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
+    qreal sample_freq = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();    
+
+    // Computing values necessary for the information completion index.
+    qreal sample_period = 1000.0/sample_freq; // In miliseconds.
+    qreal max_allowed_over_period = sample_period*1.2; // 20% overperiod.
+    qreal index_of_information_completion_threshold_in_trial = qc.value(VMDC::QCGlobalParameters::ICI_TRIAL_THRESHOLD).toReal()/100;
+    qreal threshold_ici = qc.value(VMDC::QCGlobalParameters::ICI_VALID_N_TRIAL_THRESHOLD).toReal();
 
     // All related computations for frequency glitches are computed but never used, for now.
     qreal max_diff = qc.value(VMDC::QCGlobalParameters::MAX_TIMESTAMP_DIFF).toReal();
@@ -154,15 +160,20 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
     QVariantList upperRefFreq;
     QVariantList lowerRefFreq;
 
+    QVariantList indexOfInformationCompletionPerTrial;
+    QVariantList refIndexOfInformationCompletion;
+
     qsizetype    ndatasets = 0;
 
     qreal number_of_trials_with_too_few_points = 0;
     qreal number_of_trials_with_too_few_fixations = 0;
     qreal number_of_trials_with_bad_avg_freq = 0;
+    qreal number_of_trials_with_low_ici = 0;
 
     qreal qc_fix_index = 0;
     qreal qc_dpoint_index = 0;
     qreal qc_freq_index = 0;
+    qreal qc_ici_index = 0;
 
     qreal number_of_trials = static_cast<qreal>(trialList.size());
 
@@ -176,6 +187,8 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
         qint32 glitchesInTrial = 0;
         qreal  periodAcc = 0;
         qreal  timestamp = -1;
+        qreal sum_of_missing_information_intervals = 0;
+        qreal sum_of_the_duration_of_all_data_sets = 0;
 
         ndatasets = dataset_names.size();
 
@@ -197,11 +210,20 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
 
             // The actual frequency analysis.
             if (rawData.size() > 2){
-                timestamp = rawData.at(0).toMap().value(VMDC::DataVectorField::TIMESTAMP).toReal();
+
+                qreal startTimeOfDataSet = rawData.first().toMap().value(VMDC::DataVectorField::TIMESTAMP).toReal();
+                qreal endTimeOfDataSet = rawData.last().toMap().value(VMDC::DataVectorField::TIMESTAMP).toReal();
+
+                sum_of_the_duration_of_all_data_sets = sum_of_the_duration_of_all_data_sets + (endTimeOfDataSet - startTimeOfDataSet);
+
+                timestamp = startTimeOfDataSet;
 
                 for (qint32 k = 1; k < rawData.size(); k++){
                     qreal ts = rawData.at(k).toMap().value(VMDC::DataVectorField::TIMESTAMP).toReal();
                     qreal diff = ts - timestamp;
+
+                    sum_of_missing_information_intervals = sum_of_missing_information_intervals + qMax(diff - max_allowed_over_period,0.0);
+
                     timestamp = ts;
 
                     periodAcc = periodAcc + diff;
@@ -215,6 +237,8 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
                 }
 
             }
+
+
 
         }
 
@@ -251,6 +275,14 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
         }
         qc_freq_index = ceil((number_of_trials - number_of_trials_with_bad_avg_freq)*100/number_of_trials);
 
+        // Computing the index of information completion for the trial.
+        qreal index_of_information_completion = 1 - sum_of_missing_information_intervals/sum_of_the_duration_of_all_data_sets;
+        indexOfInformationCompletionPerTrial << index_of_information_completion;
+        refIndexOfInformationCompletion << index_of_information_completion_threshold_in_trial;
+        if (static_cast<qreal>(index_of_information_completion) < index_of_information_completion_threshold_in_trial){
+            number_of_trials_with_low_ici++;
+        }
+        qc_ici_index = ceil((number_of_trials - number_of_trials_with_low_ici)*100/number_of_trials);
     }
 
     // Saving the vector information in the raw data.
@@ -274,19 +306,28 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
         return false;
     }
 
+    if (!rawdata.setQCVector(studyType,VMDC::QCFields::ICI,indexOfInformationCompletionPerTrial)){
+        error = "Setting ICI qc: " + rawdata.getError();
+        return false;
+    }
+
     // Boolean flags for the OK status.
     bool qc_ok_fix = (qc_fix_index >= threshold_fix);
     bool qc_ok_f   = (qc_freq_index >= threshold_f);
     bool qc_ok_points = (qc_dpoint_index >= threshold_points);
+    bool qc_ok_ici = (qc_ici_index >= threshold_ici);
 
     QVariantMap valuesToSet;
     valuesToSet[VMDC::QCFields::N_DATASETS] = ndatasets;
     valuesToSet[VMDC::QCFields::QC_FIX_INDEX] = qc_fix_index;
     valuesToSet[VMDC::QCFields::QC_FREQ_INDEX] = qc_freq_index;
     valuesToSet[VMDC::QCFields::QC_POINT_INDEX] = qc_dpoint_index;
+    valuesToSet[VMDC::QCFields::QC_ICI_INDEX] = qc_ici_index;
     valuesToSet[VMDC::QCFields::QC_FIX_INDEX_OK] = qc_ok_fix;
     valuesToSet[VMDC::QCFields::QC_FREQ_INDEX_OK] = qc_ok_f;
-    valuesToSet[VMDC::QCFields::QC_POINT_INDEX_OK] = qc_ok_points;
+    valuesToSet[VMDC::QCFields::QC_POINT_INDEX_OK] = qc_ok_points;    
+    valuesToSet[VMDC::QCFields::QC_ICI_INDEX_OK] = qc_ok_ici;
+
     QStringList keys = valuesToSet.keys();
     for (qint32 j = 0; j < keys.size(); j++){
         QString field = keys.at(j);
@@ -332,6 +373,15 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
     temp[QC_OK] = qc_ok_f;
     temp[QC_THRESHOLD] = threshold_f;
     studyQC.insert(VMDC::QCFields::AVG_FREQ,temp);
+
+    temp.clear();
+    temp[GRAPH_DATA] = indexOfInformationCompletionPerTrial;
+    temp[UPPER_REF_DATA] = refIndexOfInformationCompletion;
+    temp[LOWER_REF_DATA] = refIndexOfInformationCompletion;
+    temp[QC_INDEX] = qc_ici_index;
+    temp[QC_OK] = qc_ok_ici;
+    temp[QC_THRESHOLD] = threshold_ici;
+    studyQC.insert(VMDC::QCFields::ICI,temp);
 
     qualityControlData.insert(studyType,studyQC);
     return true;

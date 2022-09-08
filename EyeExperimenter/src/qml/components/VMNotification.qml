@@ -37,7 +37,15 @@ Rectangle {
         }
     }
 
-    function show(type,message){
+    function show(type,message,showOnCenter){
+
+        if (showOnCenter === true){
+            notificationPopUp.x = (VMGlobals.mainWidth - width)/2
+        }
+        else {
+           notificationPopUp.x = VMGlobals.mainWidth -  VMGlobals.adjustWidth(31) - width
+        }
+
         vmType = type
         vmText = message;
         animation.to = vmVisibleY

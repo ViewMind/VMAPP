@@ -169,6 +169,10 @@ viewevaluation_comfirm_abort_title = Cancelar estudio;
 viewevaluation_comfirm_abort_msg = ¿Desea cancelar el estudio?<br>Todo el progreso se perderá y deberá comenzar nuevamente;
 viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
+viewevaluation_calibration_explanation = Un circulo azul con un punto blanco en el centro aparecerá en la pantalla. 
+Mire el punto blanco. El circulo y el punto se moverán por la pantalla. 
+Se debe seguir el círculo siempre concentrandose en el punto blanco. 
+Aparecerá por primera vez en la esquina izquierda superior.;
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;
@@ -183,6 +187,7 @@ viewqc_qc_failed = <b>Control de Calidad Ha Fallado</b><br>Por favor contacte a 
 viewqc_SubPoints = Puntos de Datos;
 viewqc_SubFixations = Fijaciones;
 viewqc_SubFrequency = Frecuencia de Sampleo;
+viewqc_SubICI = ICI;
 viewQC_StudyNameMap = 
 Reading|Lectura|
 Binding BC|Combinación de Colores| 
@@ -195,10 +200,12 @@ viewqc_previous = ANTERIOR;
 viewqc_archive = ARCHIVAR;
 viewqc_send = ENVIAR;
 view_qc_send_report = Enviar Estudios;
-viewqc_index_names = Índice de Número de Puntos|Índice de Fijaciones|Índice de Frecuencia de Muestreo;
+;viewqc_index_names = Índice de Número de Puntos|Índice de Fijaciones|Índice de Frecuencia de Muestreo;
+viewqc_index_names = Índice de Completitud de Información|Índice de Fijaciones;
 viewQC_limitDataPoints = Valor deseado de al menos <<I>>. Esto asegura que no se haya producido una pérdida signficativa de datos;
 viewQC_limitFixations = Valor deseado de al menos <<I>>. Esto asegura que el comportamiento tanto del sujeto como de sistema a caído dentro de los parámetros establecidos;
 viewQC_limitSampleF = Valor deseado de al menos <<I>>. Esto aseguro que el seguidor ocular ha funcionado como se esperaba;
+viewQC_limitICI = Valor deseado de al menos <<I>>. Esto aseguro que el seguidor ocular ha funcionado como se esperaba;
 viewqc_confirm_archive = Si, Archivar el Estudio;
 viewqc_comment = Comentarios;
 viewqc_archive_explanation = Si archiva el estudio este no será procesado, pero 

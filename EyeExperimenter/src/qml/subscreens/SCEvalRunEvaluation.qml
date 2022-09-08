@@ -181,7 +181,9 @@ Rectangle {
         }
 
         if (calibrationSkipped) return;
-        popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewevalcalibration_success"))
+
+        // Disabling the notification for the calibration as it gets in the way of the start calibration buttton.
+        popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewevalcalibration_success"),true);
     }
 
     function setStudyAndStage(study,stage){
@@ -192,6 +194,7 @@ Rectangle {
     function onNextButtonPressed(){
         //console.log("PRESSED the NEXT Button in Stage" + vmEvaluationStage)
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
+
             if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
             else {
                 flowControl.calibrateEyeTracker(vmSlowCalibrationSelected);
@@ -232,6 +235,10 @@ Rectangle {
         vmExplanationTextIndex = (vmExplanationTextIndex % vmExplanationTextArray.length)
         let phrase = vmExplanationTextArray[vmExplanationTextIndex];
         studyExplanationText.text = phrase;
+    }
+
+    function setCalibrationExplantion(){
+        studyExplanationText.text = loader.getStringForKey("viewevaluation_calibration_explanation");
     }
 
     Text {
@@ -325,7 +332,7 @@ Rectangle {
         radius: VMGlobals.adjustHeight(8)
         // Uncomment line below to enable feature.
         // visible: false;
-        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION)
+        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage === vmSTAGE_CALIBRATION)
 
         Image {
             id: studyExplanationInfoIcon
@@ -356,6 +363,7 @@ Rectangle {
             font.weight: 600
             anchors.top: studyExplanationText.bottom
             anchors.left: studyExplanationText.left
+            visible: (vmEvaluationStage === vmSTAGE_EXPLANATION)
         }
 
     }
