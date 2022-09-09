@@ -205,6 +205,11 @@ void CalibrationLeastSquares::generateCalibrationReport(){
     lines << "Right Eye R^2: x: " + QString::number(R.xr,'f',3) + ". y: " + QString::number(R.yr,'f',3);
     lines << "Left Eye R^2: x: " + QString::number(R.xl,'f',3) + ". y: " + QString::number(R.yl,'f',3);
 
+    QString pointsWithNoData = coeffs.calibrationPointsWithNoData();
+    if (pointsWithNoData != ""){
+        lines << "The following calibration points had too few data points for calibration: " + pointsWithNoData;
+    }
+
     calibrationValidationData[VMDC::CalibrationFields::LEFT_EYE_VALIDATION_DATA]    = leftEyeData;
     calibrationValidationData[VMDC::CalibrationFields::RIGHT_EYE_VALIDATION_DATA]   = rightEyeData;
     calibrationValidationData[VMDC::CalibrationFields::MATH_ISSUES_FOR_CALIBRATION] = successfullyComputedCoefficients;

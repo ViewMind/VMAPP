@@ -153,6 +153,9 @@ bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmal
         qreal Xog = (ScreenResolutionWidth - Wx)/2;
         qreal Yog = (ScreenResolutionHeight - Wy)/2;
 
+        // Stored so it can be called upon by other code.
+        gridBoundingRect = QRectF(Xog,Yog,Wx,Wy);
+
         for (qint32 i = 0; i < horizontalGridPoints; i++){
             drawStructure.xpos << Xog + (i*Gxpx);
         }

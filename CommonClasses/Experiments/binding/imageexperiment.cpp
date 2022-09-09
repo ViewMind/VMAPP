@@ -23,6 +23,9 @@ bool ImageExperiment::startExperiment(const QString &workingDir, const QString &
                   (studyConfig.value(VMDC::StudyParameter::TARGET_SIZE).toString() == VMDC::BindingTargetSize::SMALL));
     m->configure(config);
 
+    // For the explanation the rendering mode is set to dual.
+    m->setRenderModeDual(true);
+
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)) return false;
 
     // Setup data gathering.
@@ -134,6 +137,9 @@ void ImageExperiment::resetStudy(){
     atLast = false;
     ignoreData = false;
     trialState = TSB_CENTER_CROSS;
+
+    // Here is where we disable dual rendering.
+    m->setRenderModeDual(false);
 
     drawCurrentImage();
     stateTimer.setInterval(TIME_START_CROSS);

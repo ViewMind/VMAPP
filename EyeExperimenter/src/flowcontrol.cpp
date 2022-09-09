@@ -648,12 +648,20 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     //qDebug() << "EyeTracker Enable Updating";
     eyeTracker->enableUpdating(true);
 
+    if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != ""){
+        // The eye needs to be forced in this instance
+        study_config[VMDC::StudyParameter::VALID_EYE] = VMDC::Eye::BOTH;
+    }
+
     // Start the experiment.
     experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
                                 configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
                                 study_config);
 
-    experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
+
+    if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) == ""){
+       experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
+    }
 
     if (monitor != nullptr){
         if (configuration->getBool(Globals::VMPreferences::DUAL_MONITOR_MODE)) {

@@ -173,7 +173,6 @@ Rectangle {
         }
 
         // Actually starting the experiment.
-        // console.log("Starting New Experiment");
         if (!flowControl.startNewExperiment(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation])){
             let title = loader.getStringForKey("viewevaluation_err_programming");
             mainWindow.popUpNotify(VMGlobals.vmNotificationRed,title);
@@ -182,7 +181,7 @@ Rectangle {
 
         if (calibrationSkipped) return;
 
-        // Disabling the notification for the calibration as it gets in the way of the start calibration buttton.
+        // Calibration notification success will be in the middle of the screen as not to obstruct the button.
         popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewevalcalibration_success"),true);
     }
 

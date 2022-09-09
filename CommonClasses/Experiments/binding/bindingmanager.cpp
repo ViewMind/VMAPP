@@ -5,15 +5,46 @@ const char * BindingManager::CONFIG_USE_SMALL_TARGETS = "use_small_targets";
 BindingManager::BindingManager()
 {
     canvas = nullptr;
+    enableRenderDualMode = false;
+    //enableRenderDualMode = true;
 }
 
-void BindingManager::drawFlags(const BindingParser::BindingSlide &slide){
+
+void BindingManager::setRenderModeDual(bool enable){
+    enableRenderDualMode = enable;
+}
+
+void BindingManager::drawFlags(const BindingParser::BindingSlide &primary, const BindingParser::BindingSlide &secondary, const RenderFlagType &rtf){
 
     clearCanvas();
 
-    // Each target is drawn according to its values.
+    if (rtf == RFT_NORMAL){
+        // Just draw the primary.
+        renderSingleFlag(primary,SRL_NORMAL);
+    }
+    else if (rtf == RFT_ENCODING_SIDE){
+        // We render the primary only on the left side.
+        renderSingleFlag(primary,SRL_LEFT);
+    }
+    else {
+        // We render the primary on the left and the secondary on the right.
+        renderSingleFlag(primary,SRL_LEFT,true);
+        renderSingleFlag(secondary,SRL_RIGHT);
+    }
+
+}
+
+void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, ScreenRenderLocation srl = ScreenRenderLocation::SRL_NORMAL, bool renderArrow){
+
+    QList<QGraphicsItem*> items;
+
+    // The grid bounding rect is added for reference.
+    QGraphicsRectItem * brect = canvas->addRect(gridBoundingRect);
+    if (srl == SRL_NORMAL) brect->setPen(QPen(Qt::gray)); // This will render it invisible as the color is the same as the background.
+    items << brect;
 
     for (qint32 i = 0; i < slide.size(); i++){
+
         QGraphicsRectItem *back  = canvas->addRect(0,0,parser.getDrawStructure().FlagSideH,parser.getDrawStructure().FlagSideV);
         QGraphicsRectItem *vrect = canvas->addRect(0,0,
                                                    parser.getDrawStructure().FlagSideH-2*parser.getDrawStructure().HLBorder,
@@ -33,10 +64,89 @@ void BindingManager::drawFlags(const BindingParser::BindingSlide &slide){
         vrect->setPen(QPen(slide.at(i).cross));
         hrect->setPen(QPen(slide.at(i).cross));
 
+        items << back << vrect << hrect;
+
+    }
+
+    QGraphicsItemGroup *group = canvas->createItemGroup(items);
+
+    if (srl != ScreenRenderLocation::SRL_NORMAL){
+
+        // The first point is to set the transform origin point to the center of the flag.
+        qreal x_center = ScreenResolutionWidth/2;
+        qreal y_center = ScreenResolutionHeight/2;
+
+        // The scale point is in the center of the screen.
+        group->setTransformOriginPoint(x_center,y_center);
+        group->setScale(DUAL_RENDERING_SCALE_FACTOR);
+
+
+        // Moving to the left or to the right accordingly leaving the proper margins.
+        qreal dx;
+        if (srl == ScreenRenderLocation::SRL_LEFT){
+            dx = -x_center + gridBoundingRect.width()*DUAL_RENDERING_SCALE_FACTOR/2 + ScreenResolutionWidth*DUAL_RENDERING_MARGIN_PERCENT_OF_W;
+        }
+        else {
+            dx = x_center - gridBoundingRect.width()*DUAL_RENDERING_SCALE_FACTOR/2 - ScreenResolutionWidth*DUAL_RENDERING_MARGIN_PERCENT_OF_W;
+        }
+
+        group->moveBy(dx,0);
+
+        // Drawing arrow indication if requested.
+        if (renderArrow){
+
+            // Computing the space between both blocks.
+            qreal slide_width          = gridBoundingRect.width()*DUAL_RENDERING_SCALE_FACTOR;
+            qreal left_margin_x        = ScreenResolutionWidth*DUAL_RENDERING_MARGIN_PERCENT_OF_W;
+            qreal space_between_slides = ScreenResolutionWidth - 2*left_margin_x- 2*slide_width;
+            qreal arrow_width          = space_between_slides*(1-2*DUAL_RENDERING_AIR_ARROW);
+            qreal arrow_height         = DUAL_RENDERING_ARROW_HTOW_RATIO*arrow_width;
+
+            QPolygonF poly_arrow_head;
+            poly_arrow_head.append(QPointF(x_center - arrow_width/2,y_center-arrow_height/2));
+
+            poly_arrow_head.append(QPointF(x_center + arrow_width/2,y_center));
+
+            poly_arrow_head.append(QPointF(x_center - arrow_width/2,y_center+arrow_height/2));
+
+//            // Computing all the arrow paramters.
+            QColor arrowColor = Qt::cyan;
+//            qreal arrow_total_length = DUAL_RENDERING_ARROW_WIDTH*ScreenResolutionWidth;
+//            qreal arrow_head_length  = DUAL_RENDERING_ARROW_HEAD*arrow_total_length;
+//            qreal arrow_head_height = DUAL_RENDERING_ARROW_HEIGHT*ScreenResolutionHeight;
+//            qreal arrow_body_length = arrow_total_length - arrow_head_length;
+//            qreal arrow_body_height = DUAL_RENDERING_ARROW_BODY_HEIGHT*ScreenResolutionHeight;
+
+//            qreal body_x = x_center - arrow_total_length/2;
+//            qreal body_y = y_center - arrow_body_height/2;
+
+//            QGraphicsRectItem *arrow_body = canvas->addRect(body_x,body_y,arrow_body_length,arrow_body_height);
+//            arrow_body->setBrush(QBrush(arrowColor));
+//            arrow_body->setPen(QPen(arrowColor));
+
+//            // Now a polygon for the Arrow Head.
+//            QPolygonF poly_arrow_head;
+//            poly_arrow_head.append(QPointF(body_x + arrow_body_length,y_center - arrow_head_height/2));
+
+//            poly_arrow_head.append(QPointF(body_x + arrow_total_length,y_center));
+
+//            poly_arrow_head.append(QPointF(body_x + arrow_body_length,y_center + arrow_head_height/2));
+
+//            poly_arrow_head.append(QPointF(body_x + arrow_body_length,y_center - arrow_head_height/2));
+
+            // Add the triangle polygon to the scene
+            QGraphicsPolygonItem* arrow_head = canvas->addPolygon(poly_arrow_head);
+            arrow_head->setBrush(QBrush(arrowColor));
+            arrow_head->setPen(QPen(arrowColor));
+
+        }
+
+//        canvas->addLine(x_center,0,x_center,ScreenResolutionHeight);
+//        canvas->addLine(0,y_center,ScreenResolutionWidth,y_center);
+
     }
 
 }
-
 
 bool BindingManager::drawFlags(const QString &trialName, bool show){
 
@@ -49,8 +159,11 @@ bool BindingManager::drawFlags(const QString &trialName, bool show){
         }
     }
     if (id == -1) return false;
-    if (show) drawFlags(parser.getTrials().at(id).show);
-    else drawFlags(parser.getTrials().at(id).test);
+
+    clearCanvas(); // We need to do this heare as render single flag no longer calls it.
+    if (show) renderSingleFlag(parser.getTrials().at(id).show);
+    else renderSingleFlag(parser.getTrials().at(id).test);
+
     return true;
 
 }
@@ -88,14 +201,33 @@ void BindingManager::drawCenter(){
 
 void BindingManager::drawTrial(qint32 currentTrial, bool show){
 
-    if (show){
-        //qWarning() << "Drawing show for" << currentTrial;
-        drawFlags(parser.getTrials().at(currentTrial).show);
+    BindingParser::BindingSlide primary;
+    BindingParser::BindingSlide secondary;
+
+    RenderFlagType rft = RFT_NORMAL;
+
+    if (enableRenderDualMode){
+
+        if (show) rft = RFT_ENCODING_SIDE;
+        else rft = RFT_SIDE_BY_SIDE;
+
+        primary = parser.getTrials().at(currentTrial).show;
+
+        if (!show){
+           secondary = parser.getTrials().at(currentTrial).test;
+        }
+
     }
-    else{
-        //qWarning() << "Drawing test for" << currentTrial;
-        drawFlags(parser.getTrials().at(currentTrial).test);
+    else {
+        if (show){
+            primary = parser.getTrials().at(currentTrial).show;
+        }
+        else {
+            primary = parser.getTrials().at(currentTrial).test;
+        }
     }
+
+    drawFlags(primary,secondary,rft);
 
 }
 
@@ -108,6 +240,7 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
     versionString = parser.getVersionString();
     expectedIDs = parser.getExpectedIDs();
     error = parser.getError();
+    gridBoundingRect = parser.getGridBoundingRect();
     return ans;
 }
 

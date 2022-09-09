@@ -143,6 +143,7 @@ ApplicationWindow {
                 loader.logOut();
                 break;
             case VMGlobals.vmSwipeIndexMainScreen:
+
                 flowControl.stopRenderingVR(); // Safe place to ensure we are not reandering and gathering data ALL the time.
                 viewMainSetup.enableStudyStart(true)
 

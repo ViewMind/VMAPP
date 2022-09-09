@@ -4,6 +4,7 @@
 #include "../../ConfigurationManager/configurationmanager.h"
 #include "../../eyetracker_defines.h"
 #include "../drawingconstantscalculator.h"
+#include <QRectF>
 #include <QColor>
 #include <QtMath>
 
@@ -105,6 +106,7 @@ public:
     BindingTrial getTrialByName(const QString &id) const;
     QList<BindingTrial> getTrialList() const {return trials;}
     QList<QStringList> getExpectedIDs() const {return expectedIDs;}
+    QRectF getGridBoundingRect() const {return gridBoundingRect;}
     void demoModeList(qint32 number_to_leave);
 
 
@@ -139,6 +141,9 @@ private:
 
     // The expected IDs
     QList<QStringList> expectedIDs;
+
+    // Represents the position and size of the grid bounding rect
+    QRectF gridBoundingRect;
 
     // Aux functions for parsing.
     bool parseFlagPositions(const QString &line, BindingTrial *trial, bool show);

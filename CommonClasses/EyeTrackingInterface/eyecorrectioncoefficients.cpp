@@ -25,6 +25,15 @@ void EyeCorrectionCoefficients::addPointForCoefficientComputation(const EyeRealD
     }
 }
 
+QString EyeCorrectionCoefficients::calibrationPointsWithNoData() const {
+    QStringList ans;
+    for (qint32 i = 0; i < calibrationData.size(); i++){
+        if (calibrationData.at(i).size() < 2) ans << QString::number(i);
+    }
+    if (ans.empty()) return "";
+    return ans.join(",");
+}
+
 bool EyeCorrectionCoefficients::computeCoefficients(){
 
     LinearLeastSquaresFit fitterXL;
@@ -36,8 +45,6 @@ bool EyeCorrectionCoefficients::computeCoefficients(){
 
         qreal xref = xtarget.at(i);
         qreal yref = ytarget.at(i);
-
-        // qDebug() << "Computing Coefficients. Target" << i << "has" << calibrationData.at(i).size() << "pts";
 
         if (calibrationData.at(i).size() < 2) return false;
 

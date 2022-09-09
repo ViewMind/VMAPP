@@ -644,7 +644,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         return false;
     }
 
-    qDebug() << "SAVING THE JSON FILE!!!!!!!!!!!";
+    //qDebug() << "SAVING THE JSON FILE!!!!!!!!!!!";
     if (!rdc.saveJSONFile(filename,true)){
         logger.appendError("Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
         return false;

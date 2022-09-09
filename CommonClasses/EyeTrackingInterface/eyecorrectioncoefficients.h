@@ -42,6 +42,8 @@ public:
 
     RCoefficients getRCoefficients() const;
 
+    QString calibrationPointsWithNoData() const;
+
 
 private:
     LinearCoefficients xr;
