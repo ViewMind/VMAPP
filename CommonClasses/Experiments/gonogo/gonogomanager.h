@@ -22,6 +22,8 @@ public:
     void init(qreal display_resolution_width, qreal display_resolution_height ) override;
     qint32 size() const override;
     qreal sizeToProcess() const override;
+    qint32 numberOfStudyExplanationScreens() const override {return 1;}
+    void renderStudyExplanationScreen(qint32 screen_index) override;
 
     // Will return false if the last trial drawn was the last.
     bool drawCross();

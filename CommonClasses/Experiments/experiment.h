@@ -15,7 +15,6 @@
 #include <QMessageBox>
 #include <QTextStream>
 
-#include "monitorscreen.h"
 #include "experimentdatapainter.h"
 
 #include "../EyeTrackingInterface/eyetrackerdata.h"
@@ -50,8 +49,11 @@ public:
     // Sets the validation calibration data in the study structure so that information can be analyzed or used if needed.
     void setCalibrationValidationData(const QVariantMap &calibrationValidationData);
 
-    // Disables manual mode and resets the experiment.
-    void startExperimentNoManualMode();
+    // Enters the study into the actual evaluation.
+    void setStudyPhaseToEvaluation();
+
+    // This is the legacy manual mode in which the evaluation only moves with the keyboard
+    void setStudyPhaseToExamples();
 
     // To obtain the experiment state
     ExperimentState getExperimentState() const {return state;}
@@ -61,9 +63,6 @@ public:
 
     // Getting the generated data file
     QString getDataFileLocation() const {return dataFile;}
-
-    // Enable and disable the debug mode
-    void setDebugMode(bool enable){debugMode = enable;}
 
     // Whenever not in mouse mode the cursor should be hidden
     void hideCursor() {this->setCursor(Qt::BlankCursor);}
@@ -105,6 +104,8 @@ public slots:
 
 protected:
 
+    typedef enum {SP_EXPLANATION, SP_EXAMPLE, SP_EVALUATION} StudyPhase;
+
     // The manager for the experiment
     ExperimentDataPainter *manager;
 
@@ -136,8 +137,8 @@ protected:
     // Error message
     QString error;
 
-    // Flag used to indicate that the flow control of the experiment is manually controlled. Only the first N trials can be used.
-    bool manualMode;
+    // Studies have three phases. Explantion, Examples and Evaluation. This distiguishes between the modes.
+    StudyPhase studyPhase;
 
     // Flag that indicates whether to draw to the VR Helmet or to the Screen.
     bool activateScreenView;
@@ -147,9 +148,6 @@ protected:
 
     // Where the data from the experiment will be stored
     QString dataFile;
-
-    // Flag used to indicate that debug mode is enabled. To be used to print auxiliary data.
-    bool debugMode;
 
     // Online fixation computation.
     Fixation lastFixationL;
@@ -201,16 +199,23 @@ protected:
     void storeStudyLogicFixation();
 
     // Transform the fixation struct into a the valid struct expected by the ViewMind Data Container.
-    QVariantMap fixationToVariantMap(const Fixation &f);
+    QVariantMap fixationToVariantMap(const Fixation &f);   
 
     // Each study has it's own implementation on how reset as if the experiment was just starting.
     virtual void resetStudy();
+
+    // This is the function that gets called to render explation screens.
+    void renderCurrentStudyExplanationScreen();
 
     // This is the number of trials to be used when manual mode is employed. When it reaches the number it loops back to the start.
     const qint32 NUMBER_OF_TRIALS_IN_MANUAL_MODE = 3;
 
     // For debugging. If override time debug option is set then this value is used at critical time outs in experiments. To provide time for analysis.
     qint32 overrideTime;
+
+    // Moves the study explanation index forward or back.
+    qint32 currentStudyExplanationScreen;
+    void moveStudyExplanationScreen(int key_pressed);
 
 };
 

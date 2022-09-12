@@ -29,20 +29,9 @@ SOURCES += main.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogoexperiment.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogomanager.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogoparser.cpp \
-    ../../CommonClasses/Experiments/monitorscreen.cpp \
-    ../../CommonClasses/Experiments/nbackfamiliy/fieldingexperiment.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/fieldingmanager.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/fieldingparser.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.cpp \
-    ../../CommonClasses/Experiments/parkinson/parkinsonexperiment.cpp \
-    ../../CommonClasses/Experiments/parkinson/parkinsonmanager.cpp \
-    ../../CommonClasses/Experiments/parkinson/parkinsonparser.cpp \
-    ../../CommonClasses/Experiments/perception/perceptionexperiment.cpp \
-    ../../CommonClasses/Experiments/perception/perceptionmanager.cpp \
-    ../../CommonClasses/Experiments/perception/perceptionparser.cpp \
-    ../../CommonClasses/Experiments/reading/readingexperiment.cpp \
-    ../../CommonClasses/Experiments/reading/readingmanager.cpp \
-    ../../CommonClasses/Experiments/reading/readingparser.cpp \
     ../../CommonClasses/EyeSelector/eyeselector.cpp \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/eventdetection.cpp \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/opengazecommand.cpp \
@@ -91,20 +80,9 @@ HEADERS += \
     ../../CommonClasses/Experiments/gonogo/gonogoexperiment.h \
     ../../CommonClasses/Experiments/gonogo/gonogomanager.h \
     ../../CommonClasses/Experiments/gonogo/gonogoparser.h \
-    ../../CommonClasses/Experiments/monitorscreen.h \
-    ../../CommonClasses/Experiments/nbackfamiliy/fieldingexperiment.h \
     ../../CommonClasses/Experiments/nbackfamiliy/fieldingmanager.h \
     ../../CommonClasses/Experiments/nbackfamiliy/fieldingparser.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h \
-    ../../CommonClasses/Experiments/parkinson/parkinsonexperiment.h \
-    ../../CommonClasses/Experiments/parkinson/parkinsonmanager.h \
-    ../../CommonClasses/Experiments/parkinson/parkinsonparser.h \
-    ../../CommonClasses/Experiments/perception/perceptionexperiment.h \
-    ../../CommonClasses/Experiments/perception/perceptionmanager.h \
-    ../../CommonClasses/Experiments/perception/perceptionparser.h \
-    ../../CommonClasses/Experiments/reading/readingexperiment.h \
-    ../../CommonClasses/Experiments/reading/readingmanager.h \
-    ../../CommonClasses/Experiments/reading/readingparser.h \
     ../../CommonClasses/EyeSelector/eyeselector.h \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/eventdetection.h \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/opengazecommand.h \

@@ -107,7 +107,7 @@ void PerceptionExperiment::onTimeOut(){
 void PerceptionExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
 
-    if (manualMode) return;
+    if (studyPhase != SP_EVALUATION) return;
 
     if (state != STATE_RUNNING) return;
     if (data.isLeftZero() && data.isRightZero()) return;

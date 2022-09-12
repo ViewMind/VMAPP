@@ -22,14 +22,12 @@ public:
     BindingManager();
 
     // Basic functions to reimplement.
-    bool parseExpConfiguration(const QString &contents);
-    void init(qreal display_resolution_width, qreal display_resolution_height);
-    void configure(const QVariantMap &configuration);
-    qint32 size() const { return parser.getTrials().size();}
-    qreal sizeToProcess() const { return parser.getTrials().size()*2;}
-
-    // When dual render mode is enabled the slides are rendered side by side.
-    void setRenderModeDual(bool enable);
+    bool parseExpConfiguration(const QString &contents) override;
+    void init(qreal display_resolution_width, qreal display_resolution_height) override;
+    void configure(const QVariantMap &configuration) override;
+    qint32 size() const override { return parser.getTrials().size();}
+    qreal sizeToProcess() const override { return parser.getTrials().size()*2;}
+    void renderStudyExplanationScreen(qint32 screen_index) override;
 
     // Draw the cross
     void drawCenter();
@@ -38,15 +36,15 @@ public:
     void drawClear() { clearCanvas(); }
 
     // Draw a particular trial
-    void drawTrial(qint32 currentTrial, bool show);
+    void drawTrial(qint32 currentTrial, bool show, bool enableRenderDualMode = false);
 
     // Get the info on one trial.
     BindingParser::BindingTrial getTrial(qint32 trial) {return parser.getTrials().at(trial);}
 
     void enableDemoMode();
 
-    // The number of targets is set simply by selectig which experimet file to parse.
-    static const char * CONFIG_USE_SMALL_TARGETS;
+    // Configuration required to know if the key for the explanation is for BC or UC
+    static const char * IS_BC
 
 private:
 
@@ -58,9 +56,6 @@ private:
 
     // The class that actually parses the experiment description.
     BindingParser parser;
-
-    // Controls if render is normal or with the slides side by side.
-    bool enableRenderDualMode;
 
     // Use small targets or not
     bool smallTargets;

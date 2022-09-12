@@ -29,6 +29,8 @@ public:
     void init(qreal display_resolution_width, qreal display_resolution_height) override;
     void configure(const QVariantMap &config) override;
     qint32 size() const override {return fieldingTrials.size();}
+    qint32 numberOfStudyExplanationScreens() const override {return 1;}
+    void renderStudyExplanationScreen(qint32 screen_index) override;
 
     // DEPRACATED.And wrong when using NBackVS with more than 3 targets.
     qreal sizeToProcess() const override {return fieldingTrials.size()*3;}

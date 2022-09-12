@@ -136,9 +136,10 @@ viewevaluation_err_at_least_1_study = Debe elegir al menos un estudio;
 viewevaluation_binding_uc = Nuevos Colores;
 viewevaluation_binding_bc = Combinación de Colores;
 viewevaluation_shortcuts = Teclas;
-viewevaluation_evaluation_steps = Calibración|Explicación|Evaluación;
+viewevaluation_evaluation_steps = Calibración|Explicación|Ejemplos|Evaluación;
 viewevaluation_keyboard_explanations = Frenar estudios|Resumir estudio luego de pausa|Avanzar un paso en un estudio|Indicar objectivos distintos|Indicar objetivos iguales;
 viewevaluation_action_calibrate = CALIBRAR;
+viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
 viewevaluation_err_noconnect = <b>Falla al conectarse al EyeTracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;
 viewevaluation_err_badend_study = <b>Estudio no terminó corectamente</b><br>Si el estudio no fue abortado, intente nuevamente;
@@ -263,6 +264,38 @@ update_version = Versión;
 update_close = CERRAR;
 update_download_wait = Por favor espere mientras se descarga la actualización;
 update_failed_message = <b>La actualización falló</b><br>Por favor contacte a ViewMind para soporte;
+
+#********************************* Explanation Phase Text *********************************
+
+explanation_binding_bc =
+Esta es la prueba de Combinación de Colores.
+Durante el estudio, en la pantalla aparecerán unas figuras. 
+Recuerde la combinación de colores de cada figura. 
+Después de 2 segundos, las figuras desaparecerán|
+Aparecerá un nuevo grupo de figuras
+Debe identificar si la combinación de colores de cada figura se mantuvo
+o si los colores se han intercambiado entre las figuras. 
+No aparecerán nuevos colores.|
+Veamos otro caso|
+Si la combinación de colores es la misma, debe decir rápidamente
+“Igual” en voz alta. Si los colores cambiaron de una figura a la otra,
+debe decir rápidamente "Diferente".;
+
+explanation_binding_uc =
+Slide 1|
+Slide 2|
+Slide 3|
+Slide 4;
+
+explanation_binding_uc = Slide 1|Slide 2;
+
+explanation_binding_bc = Slide 1|Slide 2;
+
+explanation_gonogo     = Slide 1|Slide 2;
+
+explanation_nbackrt    = Slide 1|Slide 2;
+
+explanation_nbackvs    = Slide 1|Slide 2;
 
 #********************************* Text Loop Explanations *********************************
 explanation_gonogo =

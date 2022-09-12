@@ -236,3 +236,8 @@ bool GoNoGoManager::isPointInSideCorrectTargetForCurrentTrial(qreal x, qreal y) 
     //qDebug() << "Checking target box " << targetBoxes.at(targetRectIndex) << ". Trial of Type" << gonogoTrials.at(trialIndex-1).type;
     return targetBoxes.at(targetRectIndex).contains(x,y);
 }
+
+void GoNoGoManager::renderStudyExplanationScreen(qint32 screen_index){
+    canvas->clear();
+    canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::blue)));
+}

@@ -156,13 +156,13 @@ void NBackRTExperiment::nextState(){
             return;
         }
         currentDataSetType = VMDC::DataSetType::ENCODING_1;
-        if (!manualMode) rawdata.setCurrentDataSet(currentDataSetType);
+        if (studyPhase == SP_EVALUATION) rawdata.setCurrentDataSet(currentDataSetType);
 
         break;
     case TSF_SHOW_TARGET:
 
         // End the previous data set.
-        if (!manualMode) {
+        if (studyPhase == SP_EVALUATION) {
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
         }
@@ -170,7 +170,7 @@ void NBackRTExperiment::nextState(){
         if (currentImage == nbackConfig.numberOfTargets){
 
             // Retrieval will begin
-            if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
+            if (studyPhase == SP_EVALUATION) rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
             tstate = TSF_SHOW_BLANKS;
             QList<qint32> expectedSequence = m->getExpectedTargetSequenceForTrial(currentTrial, nbackConfig.numberOfTargets);
@@ -183,7 +183,7 @@ void NBackRTExperiment::nextState(){
         else {
 
             // WE compute the next data set type
-            if (!manualMode){
+            if (studyPhase == SP_EVALUATION){
                 nextEncodingDataSetType();
                 rawdata.setCurrentDataSet(currentDataSetType);
             }
@@ -194,7 +194,7 @@ void NBackRTExperiment::nextState(){
     case TSF_SHOW_BLANKS:
 
         // We can now finalize the dataset and the trial
-        if (!manualMode) {
+        if (studyPhase == SP_EVALUATION) {
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
             rawdata.finalizeTrial("");
@@ -215,7 +215,7 @@ void NBackRTExperiment::nextState(){
         stateTimer.setInterval(TIME_TRANSITION);
     }
 
-    if (!manualMode) stateTimer.start();
+    if (studyPhase == SP_EVALUATION) stateTimer.start();
     drawCurrentImage();
 }
 
@@ -337,7 +337,7 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (data.isLeftZero() && data.isRightZero()) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    if (!manualMode){
+    if (studyPhase == SP_EVALUATION){
         rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
     }
 
@@ -432,7 +432,7 @@ bool NBackRTExperiment::addNewTrial(){
     QString type = m->getFullSequenceAsString(currentTrial);
     currentTrialID = QString::number(currentTrial);
 
-    if (!manualMode){
+    if (studyPhase == SP_EVALUATION){
 
         QVariantMap metadata;
         metadata[VMDC::TrialMetadataField::NBACK_HOLD_TIME] = nbackConfig.getCurrentHoldTime();

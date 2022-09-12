@@ -17,14 +17,13 @@ ImageExperiment::ImageExperiment(QWidget *parent, const QString &study_type):Exp
 
 bool ImageExperiment::startExperiment(const QString &workingDir, const QString &experimentFile, const QVariantMap &studyConfig){
 
-    // We need to set up the target size before parsing.
+    // We need to set up the target size for binding, before parsing.
     QVariantMap config;
     config.insert(BindingManager::CONFIG_USE_SMALL_TARGETS,
                   (studyConfig.value(VMDC::StudyParameter::TARGET_SIZE).toString() == VMDC::BindingTargetSize::SMALL));
+
     m->configure(config);
 
-    // For the explanation the rendering mode is set to dual.
-    m->setRenderModeDual(true);
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)) return false;
 
@@ -54,6 +53,8 @@ bool ImageExperiment::startExperiment(const QString &workingDir, const QString &
         this->activateWindow();
     }
     else updateSecondMonitorORHMD();
+
+    this->renderCurrentStudyExplanationScreen();
 
     return true;
 
@@ -111,7 +112,7 @@ bool ImageExperiment::advanceTrial(){
 void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){    
     Experiment::newEyeDataAvailable(data);
 
-    if (manualMode) return;
+    if (studyPhase != SP_EVALUATION) return;
 
     if (state != STATE_RUNNING) return;
     if (ignoreData) return;
@@ -138,12 +139,10 @@ void ImageExperiment::resetStudy(){
     ignoreData = false;
     trialState = TSB_CENTER_CROSS;
 
-    // Here is where we disable dual rendering.
-    m->setRenderModeDual(false);
-
     drawCurrentImage();
     stateTimer.setInterval(TIME_START_CROSS);
     stateTimer.start();
+
     if (Globals::EyeTracker::IS_VR) updateSecondMonitorORHMD();
 
 }
@@ -215,16 +214,18 @@ void ImageExperiment::nextState(){
         }
 
         stateTimer.setInterval(TIME_IMAGE_1);
-        if (!manualMode) stateTimer.start();
+        if (studyPhase == SP_EVALUATION) stateTimer.start();
         drawCurrentImage();
         return;
     case TSB_FINISH:
         //qWarning() << "ENTER: FINISH" << currentTrial;
         if (advanceTrial()){
+
             trialState = TSB_CENTER_CROSS;
             drawCurrentImage();
             stateTimer.setInterval(TIME_START_CROSS);
-            if (!manualMode) stateTimer.start();
+            if (studyPhase == SP_EVALUATION) stateTimer.start();
+
         }
         else{
 
@@ -250,7 +251,7 @@ void ImageExperiment::nextState(){
         //qWarning() << "ENTER: SHOW" << currentTrial;
 
         // Encoding Ends.
-        if (!manualMode){
+        if (studyPhase != SP_EVALUATION){
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
         }
@@ -259,7 +260,7 @@ void ImageExperiment::nextState(){
         drawCurrentImage();
 
         stateTimer.setInterval(TIME_WHITE_TRANSITION);
-        if (!manualMode) stateTimer.start();
+        if (studyPhase == SP_EVALUATION) stateTimer.start();
 
         return;
     case TSB_TEST:
@@ -267,7 +268,7 @@ void ImageExperiment::nextState(){
         trialState = TSB_FINISH;
 
         // Retrieval Ends.
-        if (!manualMode){
+        if (studyPhase == SP_EVALUATION){
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
             rawdata.finalizeTrial(answer);
@@ -283,7 +284,7 @@ void ImageExperiment::nextState(){
         drawCurrentImage();
 
         stateTimer.setInterval(TIME_FINISH);
-        if (!manualMode) stateTimer.start();
+        if (studyPhase == SP_EVALUATION) stateTimer.start();
 
         return;
     case TSB_TRANSITION:
@@ -291,12 +292,12 @@ void ImageExperiment::nextState(){
         trialState = TSB_TEST;
 
         // Retrieval begins. We start the new dataset.
-        if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
+        if (studyPhase == SP_EVALUATION) rawdata.setCurrentDataSet(VMDC::DataSetType::RETRIEVAL_1);
 
         answer = "N/A";
         drawCurrentImage();
         stateTimer.setInterval(TIME_IMAGE_2_TIMEOUT);
-        if (!manualMode) stateTimer.start();
+        if (studyPhase == SP_EVALUATION) stateTimer.start();
         return;
     }
 
@@ -315,7 +316,7 @@ bool ImageExperiment::addNewTrial(){
         qDebug() << "Expected response " << type;
     }
 
-    if (!manualMode){
+    if (studyPhase == SP_EVALUATION) {
         // The type of trial is the right answer in this case.
         if (!rawdata.addNewTrial(currentTrialID,type,type)){
             error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();

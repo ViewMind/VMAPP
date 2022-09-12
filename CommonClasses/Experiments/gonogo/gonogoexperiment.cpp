@@ -35,7 +35,7 @@ void GoNoGoExperiment::onTimeOut(){
         // To measure the trial duration time.
         timeMeasurer.start();
 
-        if (!manualMode) rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
+        if (studyPhase == SP_EVALUATION) rawdata.setCurrentDataSet(VMDC::DataSetType::UNIQUE);
 
         //qDebug() << "DRAWING TRIAL";
         m->drawCurrentTrial();
@@ -43,12 +43,12 @@ void GoNoGoExperiment::onTimeOut(){
         if (overrideTime != 0) stateTimer.setInterval(overrideTime);
         else stateTimer.setInterval(GONOGO_TIME_ESTIMULUS);
 
-        if (!manualMode) stateTimer.start();
+        if (studyPhase == SP_EVALUATION) stateTimer.start();
         gngState = GNGS_ESTIMULUS;
         break;
     case GNGS_ESTIMULUS:
 
-        if (!manualMode) {
+        if (studyPhase == SP_EVALUATION) {
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
             rawdata.finalizeTrial("");
@@ -89,7 +89,7 @@ void GoNoGoExperiment::onTimeOut(){
         }
         else{
             stateTimer.setInterval(GONOGO_TIME_CROSS);
-            if (!manualMode) stateTimer.start();
+            if (studyPhase == SP_EVALUATION) stateTimer.start();
             gngState = GNGS_CROSS;
         }
         break;
@@ -153,7 +153,7 @@ void GoNoGoExperiment::resetStudy(){
     gngState = GNGS_CROSS;
     updateSecondMonitorORHMD();
 
-    if (!manualMode){
+    if (studyPhase == SP_EVALUATION) {
         stateTimer.start();
     }
 }
@@ -162,7 +162,7 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
 
     // During manual mode, eye tracking data is ignored for everything except updating the eye positions.
-    if (manualMode) return;
+    if (studyPhase == SP_EVALUATION) return;
 
     if (state != STATE_RUNNING) return;
 
@@ -217,7 +217,7 @@ bool GoNoGoExperiment::addNewTrial(){
     qint32 trial_id = parts.last().toInt();
     QString trial_type = GoNoGoParser::TrialTypeList.at(trial_id);
 
-    if (!manualMode) {
+    if (studyPhase == SP_EVALUATION) {
         if (!rawdata.addNewTrial(parts.first(),trial_type,"")){
             error = "Failed in creating go no for trial for header " + temp + ":  " + rawdata.getError();
             return false;

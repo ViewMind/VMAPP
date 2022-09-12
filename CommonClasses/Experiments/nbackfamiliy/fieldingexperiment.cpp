@@ -68,7 +68,7 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_BLANK_1:
 
         // End retrieval 3. And trial.
-        if (!manualMode){
+        if (studyPhase == SP_EVALUATION){
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
             rawdata.finalizeTrial("");
@@ -81,7 +81,7 @@ void FieldingExperiment::nextState(){
         break;
     case TSF_SHOW_BLANK_2:
 
-        if (!manualMode){
+        if (studyPhase == SP_EVALUATION){
             // End retrieval 2
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
@@ -95,7 +95,7 @@ void FieldingExperiment::nextState(){
         break;
     case TSF_SHOW_BLANK_3:
 
-        if (!manualMode){
+        if (studyPhase == SP_EVALUATION){
             // End Retrieval 1
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
@@ -109,7 +109,7 @@ void FieldingExperiment::nextState(){
         break;
     case TSF_SHOW_DOT_1:
 
-        if (!manualMode){
+        if (studyPhase == SP_EVALUATION){
             // End Enconding 1
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
@@ -124,7 +124,7 @@ void FieldingExperiment::nextState(){
 
     case TSF_SHOW_DOT_2:
 
-        if (!manualMode){
+        if (studyPhase == SP_EVALUATION){
             // End Enconding 2
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
@@ -140,7 +140,7 @@ void FieldingExperiment::nextState(){
     case TSF_SHOW_DOT_3:
 
         // End Encondinng 3.
-        if (!manualMode){
+        if (studyPhase == SP_EVALUATION){
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
         }
@@ -157,7 +157,7 @@ void FieldingExperiment::nextState(){
         }
 
         // Start enconding 1
-        if (!manualMode){
+        if (studyPhase == SP_EVALUATION){
             rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
         }
 
@@ -176,7 +176,7 @@ void FieldingExperiment::nextState(){
         break;
     }
 
-    if (!manualMode) stateTimer.start();
+    if (studyPhase == SP_EVALUATION) stateTimer.start();
     drawCurrentImage();
 }
 
@@ -290,7 +290,7 @@ QString FieldingExperiment::getExperimentDescriptionFile(const QVariantMap &stud
 void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
 
-    if (manualMode) return;
+    if (studyPhase == SP_EXAMPLE) return;
 
     if (state != STATE_RUNNING) return;
     if (ignoreData) return;
@@ -300,7 +300,7 @@ void FieldingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     if (data.isLeftZero() && data.isRightZero()) return;
 
-    if (!manualMode){
+    if (studyPhase == SP_EVALUATION){
         // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
         rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
     }
@@ -316,7 +316,7 @@ void FieldingExperiment::resetStudy(){
     currentTrial = 0;
     state = STATE_RUNNING;
     tstate = TSF_START;
-    stateTimer.start();
+    if (studyPhase == SP_EVALUATION) stateTimer.start();
 
     // Start enconding 1 (Making sure the right current data set is set)
     rawdata.setCurrentDataSet(VMDC::DataSetType::ENCODING_1);
@@ -361,7 +361,7 @@ bool FieldingExperiment::addNewTrial(){
     QString type = m->getFullSequenceAsString(currentTrial);
     currentTrialID = QString::number(currentTrial);
 
-    if (!manualMode){
+    if (studyPhase == SP_EVALUATION){
         if (!rawdata.addNewTrial(currentTrialID,type,"")){
             error = "Creating a new trial for " + currentTrialID + " gave the following error: " + rawdata.getError();
             return false;

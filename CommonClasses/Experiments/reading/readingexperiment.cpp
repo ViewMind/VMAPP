@@ -68,7 +68,7 @@ void ReadingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     // Nothing should be done if the state is NOT running.
     if (state != STATE_RUNNING) return;
 
-    if (manualMode) return;
+    if (studyPhase == SP_EXAMPLE) return;
 
     Experiment::newEyeDataAvailable(data);
 

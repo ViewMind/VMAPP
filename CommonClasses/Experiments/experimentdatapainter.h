@@ -25,6 +25,9 @@ public:
     virtual qint32 size() const {return 0;}
     virtual qreal sizeToProcess() const {return 0;}
 
+    // Required for properly cycling through the explanation screen in a generic manner.
+    qint32 getNumberOfStudyExplanationScreens() const;
+
     // For debugging
     void setShortStudy();
 
@@ -34,6 +37,9 @@ public:
 
     // Trims the number of trials to number in demo mode.
     virtual void enableDemoMode(){}
+
+    // Renders the study explanation screen according to index.
+    virtual void renderStudyExplanationScreen(qint32 screen_index){Q_UNUSED(screen_index)}
 
     // This will make the next trial after loopValue be 0, effectively putting the study in a cycle.
     void setTrialCountLoopValue(qint32 loopValue);
@@ -59,6 +65,8 @@ protected:
     qreal ScreenResolutionWidth;
     qreal ScreenResolutionHeight;
 
+    QStringList explanationText;
+
     // Enable on-screen gaze tracking
     bool gazeUpdateEnabled; // This flag needs to be used to ensure that NO update is done when the ellipse items don´t exist;
     qreal gazeXr,gazeXl,gazeYr,gazeYl;
@@ -76,6 +84,17 @@ protected:
 
     qint32 trialCountLoopValue;
 
+    // The number of explanation screens and the text key for the explanation screen text. These will be filled by the constructor or each child class.
+    QString explanationListTextKey;
+    qint32 numberOfExplanationScreens;
+
+//    const char * STUDY_TEXT_KEY_BINDING_UC = "explanation_binding_uc";
+//    const char * STUDY_TEXT_KEY_BINDING_BC = "explanation_binding_bc";
+//    const char * STUDY_TEXT_KEY_GONOGO     = "explanation_gonogo";
+//    const char * STUDY_TEXT_KEY_NBACKRT    = "explanation_nbackrt";
+//    const char * STUDY_TEXT_KEY_NBACKVS    = "explanation_nbackvs";
+
 };
 
 #endif // EXPERIMENTDATAPAINTER_H
+

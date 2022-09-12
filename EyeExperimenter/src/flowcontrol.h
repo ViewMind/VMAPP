@@ -16,12 +16,10 @@
 
 #include "../../CommonClasses/Experiments/reading/readingexperiment.h"
 #include "../../CommonClasses/Experiments/binding/imageexperiment.h"
-#include "../../CommonClasses/Experiments/nbackfamiliy/fieldingexperiment.h"
 #include "../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h"
 #include "../../CommonClasses/Experiments/parkinson/parkinsonexperiment.h"
 #include "../../CommonClasses/Experiments/gonogo/gonogoexperiment.h"
 #include "../../CommonClasses/Experiments/perception/perceptionexperiment.h"
-#include "../../CommonClasses/Experiments/monitorscreen.h"
 
 #include "../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h"
 #include "../../CommonClasses/EyeTrackingInterface/GazePoint/opengazeinterface.h"
@@ -43,13 +41,13 @@ public:
     Q_INVOKABLE void connectToEyeTracker();
     Q_INVOKABLE void calibrateEyeTracker(bool useSlowCalibration);
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
-    Q_INVOKABLE void startStudy();
+    Q_INVOKABLE void startStudyEvaluationPhase();
+    Q_INVOKABLE void startStudyExamplePhase();
     Q_INVOKABLE bool isConnected() const { return connected; }
     Q_INVOKABLE bool isCalibrated() const;
     Q_INVOKABLE bool isRightEyeCalibrated() const;
     Q_INVOKABLE bool isLeftEyeCalibrated() const;
     Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
-    Q_INVOKABLE void setupSecondMonitor();
     Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
     Q_INVOKABLE void keyboardKeyPressed(int key);
@@ -102,9 +100,6 @@ private:
 
     // Delays saving the report until the wait dialog can be shown.
     QTimer delayTimer;
-
-    // The second screen for monitoring the experiments.
-    MonitorScreen *monitor;
 
     // The currently selected experiment
     Experiment *experiment;

@@ -4,6 +4,7 @@ ExperimentDataPainter::ExperimentDataPainter()
 {
     versionString = "v1";
     gazeUpdateEnabled = false;
+    numberOfExplanationScreens = 1;
 }
 
 void ExperimentDataPainter::init(qreal display_resolution_width, qreal display_resolution_height){
@@ -25,6 +26,9 @@ void ExperimentDataPainter::configure(const QVariantMap &configuration){
     Q_UNUSED(configuration)
 }
 
+qint32 ExperimentDataPainter::getNumberOfStudyExplanationScreens() const {
+    return numberOfExplanationScreens;
+}
 
 void ExperimentDataPainter::updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl){
     if (!DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW)) return;

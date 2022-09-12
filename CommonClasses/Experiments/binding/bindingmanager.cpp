@@ -1,18 +1,16 @@
 #include "bindingmanager.h"
 
 const char * BindingManager::CONFIG_USE_SMALL_TARGETS = "use_small_targets";
+const char * BindingManager::IS_BC = "is_bc";
 
 BindingManager::BindingManager()
 {
     canvas = nullptr;
-    enableRenderDualMode = false;
-    //enableRenderDualMode = true;
+    numberOfExplanationScreens = 4;
+    // explanationListTextKey =
 }
 
 
-void BindingManager::setRenderModeDual(bool enable){
-    enableRenderDualMode = enable;
-}
 
 void BindingManager::drawFlags(const BindingParser::BindingSlide &primary, const BindingParser::BindingSlide &secondary, const RenderFlagType &rtf){
 
@@ -109,30 +107,8 @@ void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, 
 
             poly_arrow_head.append(QPointF(x_center - arrow_width/2,y_center+arrow_height/2));
 
-//            // Computing all the arrow paramters.
+            // Computing all the arrow paramters.
             QColor arrowColor = Qt::cyan;
-//            qreal arrow_total_length = DUAL_RENDERING_ARROW_WIDTH*ScreenResolutionWidth;
-//            qreal arrow_head_length  = DUAL_RENDERING_ARROW_HEAD*arrow_total_length;
-//            qreal arrow_head_height = DUAL_RENDERING_ARROW_HEIGHT*ScreenResolutionHeight;
-//            qreal arrow_body_length = arrow_total_length - arrow_head_length;
-//            qreal arrow_body_height = DUAL_RENDERING_ARROW_BODY_HEIGHT*ScreenResolutionHeight;
-
-//            qreal body_x = x_center - arrow_total_length/2;
-//            qreal body_y = y_center - arrow_body_height/2;
-
-//            QGraphicsRectItem *arrow_body = canvas->addRect(body_x,body_y,arrow_body_length,arrow_body_height);
-//            arrow_body->setBrush(QBrush(arrowColor));
-//            arrow_body->setPen(QPen(arrowColor));
-
-//            // Now a polygon for the Arrow Head.
-//            QPolygonF poly_arrow_head;
-//            poly_arrow_head.append(QPointF(body_x + arrow_body_length,y_center - arrow_head_height/2));
-
-//            poly_arrow_head.append(QPointF(body_x + arrow_total_length,y_center));
-
-//            poly_arrow_head.append(QPointF(body_x + arrow_body_length,y_center + arrow_head_height/2));
-
-//            poly_arrow_head.append(QPointF(body_x + arrow_body_length,y_center - arrow_head_height/2));
 
             // Add the triangle polygon to the scene
             QGraphicsPolygonItem* arrow_head = canvas->addPolygon(poly_arrow_head);
@@ -140,9 +116,6 @@ void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, 
             arrow_head->setPen(QPen(arrowColor));
 
         }
-
-//        canvas->addLine(x_center,0,x_center,ScreenResolutionHeight);
-//        canvas->addLine(0,y_center,ScreenResolutionWidth,y_center);
 
     }
 
@@ -199,7 +172,7 @@ void BindingManager::drawCenter(){
     canvas->addLine(line1,QPen(QBrush(Qt::red),4));
 }
 
-void BindingManager::drawTrial(qint32 currentTrial, bool show){
+void BindingManager::drawTrial(qint32 currentTrial, bool show, bool enableRenderDualMode){
 
     BindingParser::BindingSlide primary;
     BindingParser::BindingSlide secondary;
@@ -243,4 +216,9 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
     gridBoundingRect = parser.getGridBoundingRect();
     return ans;
 }
+
+void BindingManager::renderStudyExplanationScreen(qint32 screen_index){
+
+}
+
 

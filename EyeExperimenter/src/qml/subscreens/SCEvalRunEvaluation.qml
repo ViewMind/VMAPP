@@ -7,7 +7,8 @@ Rectangle {
 
     readonly property int vmSTAGE_CALIBRATION: 0
     readonly property int vmSTAGE_EXPLANATION: 1
-    readonly property int vmSTAGE_EVALUATION:  2
+    readonly property int vmSTAGE_EXAMPLES:    2
+    readonly property int vmSTAGE_EVALUATION:  3
 
     readonly property string vmONGOING_STUDY_FIELD: "ongoing_study_file"
 
@@ -71,16 +72,27 @@ Rectangle {
 
         function onNewExperimentMessages(string_value_map){
 
-            let list = "<ul>"
-            for (let key in string_value_map){
-                let message = loader.getStringForKey(key);
-                //message = message.replace("<<N>>","<b>" + string_value_map[key] + "</b>");
-                message = message.replace("<<N>>",string_value_map[key]);
-                list = list + "<li>" + message + "</li>"
+            if (vmEvaluationStage == vmSTAGE_EVALUATION){
+                let list = "<ul>"
+                for (let key in string_value_map){
+                    let message = loader.getStringForKey(key);
+                    //message = message.replace("<<N>>","<b>" + string_value_map[key] + "</b>");
+                    message = message.replace("<<N>>",string_value_map[key]);
+                    list = list + "<li>" + message + "</li>"
+                }
+                list = list + "<ul>"
+                //console.log("DBUG: Setting Study Message: " + list)
+                studyMessages.text = list;
             }
-            list = list + "<ul>"
-            //console.log("DBUG: Setting Study Message: " + list)
-            studyMessages.text = list;
+            else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
+                // This should contains only one key. and it's value is the index value in the screen.
+                for (let key in string_value_map){
+                    let message_list = loader.getStringListForKey(key)
+                    let index = string_value_map[key];
+                    studyExplanationText.text = message_list[index]
+                }
+
+            }
         }
     }
 
@@ -113,7 +125,7 @@ Rectangle {
         }
 
         if (unique_study_id === VMGlobals.vmINDEX_GONOGO){
-            vmExplanationTextArray = loader.getStringListForKey("explanation_gonogo");            
+            vmExplanationTextArray = loader.getStringListForKey("explanation_gonogo");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
             if (vmBindingStudyStarted){
@@ -150,8 +162,8 @@ Rectangle {
         vmExplanationTextIndex = -1;
         nextExplanationPhrase();
 
-        // Button text must change to the next action, which is to start evaluation.
-        viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"")
+        // Button text must change to the next action, which is to start the examples.
+        viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_examples"),"")
         var stageNames = loader.getStringListForKey("viewevaluation_evaluation_steps")
 
         // Advance the left hand side indicator
@@ -201,10 +213,16 @@ Rectangle {
             }
         }
         else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
+            vmEvaluationStage = vmSTAGE_EXAMPLES;
+            flowControl.startStudyExamplePhase();
+            viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"");
+            viewEvaluations.advanceStudyIndicator();
+        }
+        else if (vmEvaluationStage == vmSTAGE_EXAMPLES){
             vmEvaluationStage = vmSTAGE_EVALUATION;
             viewEvaluations.enableNextButton(false);
             viewEvaluations.advanceStudyIndicator();
-            flowControl.startStudy();
+            flowControl.startStudyEvaluationPhase();
         }
         else if (vmEvaluationStage == vmSTAGE_EVALUATION){
             advanceStudy();
@@ -286,14 +304,6 @@ Rectangle {
         anchors.topMargin: VMGlobals.adjustHeight(20)
         radius: VMGlobals.adjustHeight(8)
         visible: (vmEvaluationStage === vmSTAGE_EVALUATION)
-//        onVisibleChanged: {
-//            if (visible){
-//              console.log("Message DISPLAY is now Visible");
-//            }
-//            else {
-//              console.log("Message DISPLAY is now HIDDEN");
-//            }
-//        }
 
         Image {
             id: info_icon
@@ -311,8 +321,6 @@ Rectangle {
             color: VMGlobals.vmBlackText
             font.pixelSize: VMGlobals.vmFontLarger
             font.weight: 400
-            //height: VMGlobals.adjustHeight(32)
-            //verticalAlignment: Text.AlignVCenter
             anchors.top: info_icon.top
             anchors.left: info_icon.right
             anchors.leftMargin: VMGlobals.adjustWidth(12.25)
@@ -331,7 +339,7 @@ Rectangle {
         radius: VMGlobals.adjustHeight(8)
         // Uncomment line below to enable feature.
         // visible: false;
-        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage === vmSTAGE_CALIBRATION)
+        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage === vmSTAGE_CALIBRATION) || (vmEvaluationStage == vmSTAGE_EXPLANATION)
 
         Image {
             id: studyExplanationInfoIcon

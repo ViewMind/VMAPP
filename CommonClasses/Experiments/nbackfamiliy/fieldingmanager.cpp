@@ -341,3 +341,9 @@ void FieldingManager::drawPauseScreen(){
     phraseToShow->setZValue(1);
 
 }
+
+
+void FieldingManager::renderStudyExplanationScreen(qint32 screen_index){
+    canvas->clear();
+    canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::blue)));
+}

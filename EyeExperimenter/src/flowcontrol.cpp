@@ -12,7 +12,6 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     leftEyeCalibrated = false;
     experiment = nullptr;
     openvrco = nullptr;
-    monitor = nullptr;
     renderState = RENDERING_NONE;
     this->setVisible(false);
     vrOK = false;
@@ -125,41 +124,6 @@ void FlowControl::resolutionCalculations(){
         configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT,screen.height());
     }
 
-}
-
-void FlowControl::setupSecondMonitor(){
-
-    /// Depracated code
-    /// QDesktopWidget *desktop = QApplication::desktop();
-    QList<QScreen*> screens = QGuiApplication::screens();
-
-    if (screens.size() < 2) {
-        // There is nothing to do as there is no second monitor.
-        if (monitor == nullptr) return;
-        // In case the monitor was disconnected.
-        logger.appendWarning("Attempting to restore situation in which second monitor seems to have been disconnected after it was created");
-        if (monitor != nullptr){
-            if (experiment != nullptr){
-                disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
-                disconnect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
-                disconnect(experiment,&Experiment::addFixations,monitor,&MonitorScreen::addFixations);
-                disconnect(experiment,&Experiment::addDebugMessage,monitor,&MonitorScreen::addMessages);
-            }
-            delete monitor;
-            monitor = nullptr;
-        }
-        return;
-    }
-
-    // Nothing to do.
-    if (monitor != nullptr) return;
-
-    // Creating the second monitor.
-    if (!configuration->getBool(Globals::VMPreferences::DUAL_MONITOR_MODE)) return;
-
-    // Setting up the monitor. Assuming 1 is the SECONDARY MONITOR.
-    QRect secondScreen = screens.at(1)->geometry();
-    monitor = new MonitorScreen(Q_NULLPTR,secondScreen,configuration->getReal(Globals::Share::MONITOR_RESOLUTION_WIDTH),configuration->getReal(Globals::Share::MONITOR_RESOLUTION_HEIGHT));
 }
 
 void FlowControl::keyboardKeyPressed(int key){
@@ -549,70 +513,37 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
 
     // Using the polimorphism, the experiment object is created according to the selected index.
     switch (study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt()){
-    case Globals::StudyConfiguration::INDEX_READING:
-        logger.appendStandard("STARTING READING EXPERIMENT");
-        experiment = new ReadingExperiment(nullptr,VMDC::Study::READING);
-        background = QBrush(Qt::gray);
-        //if (openvrco != nullptr) {openvrco->setScreenColor(QColor(Qt::gray).darker(110));
-        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray).darker(110);
-        break;
 
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
         logger.appendStandard("STARTING BINDING BC EXPERIMENT");
         experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_BC);
-        background = QBrush(Qt::gray);
-        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+
         if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray);
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
         logger.appendStandard("STARTING BINDING UC EXPERIMENT");
         experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_UC);
-        background = QBrush(Qt::gray);
-        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+
         if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray);
         break;
-    case Globals::StudyConfiguration::INDEX_NBACKMS:
-        logger.appendStandard("STARTING N BACK TRACE FOR MS");
-        experiment = new FieldingExperiment(nullptr,VMDC::Study::NBACKMS);
-        background = QBrush(Qt::black);
-        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
-        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::black);
-        break;
+
     case Globals::StudyConfiguration::INDEX_NBACKRT:
         logger.appendStandard("STARTING NBACK TRACE FOR RESPONSE TIME");
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKRT);
-        background = QBrush(Qt::black);
-        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+
         if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::black);
         break;
-        //    case EXP_PARKINSON:
-        //        logger.appendStandard("STARTING PARKINSON MAZE");
-        //        configuration->addKeyValuePair(CONFIG_EXP_CONFIG_FILE,":/experiment_data/parkinson.dat");
-        //        experiment = new ParkinsonExperiment();
-        //        background = QBrush(Qt::black);
-        //        if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
-        //        break;
     case Globals::StudyConfiguration::INDEX_GONOGO:
         logger.appendStandard("STARTING GO - NO GO");
         experiment = new GoNoGoExperiment(nullptr,VMDC::Study::GONOGO);
-        background = QBrush(Qt::gray);
-        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray));
+
         if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray);
         break;
     case Globals::StudyConfiguration::INDEX_NBACKVS:
         logger.appendStandard("STARTING N BACK VS");
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKVS);
-        background = QBrush(Qt::black);
-        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::black));
+
         if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::black);
-        break;
-    case Globals::StudyConfiguration::INDEX_PERCEPTION:
-        logger.appendStandard("STARTING PERCEPTION");
-        finalStudyName = VMDC::MultiPartStudyBaseName::PERCEPTION + " " + study_config.value(VMDC::StudyParameter::PERCEPTION_PART).toString();
-        experiment = new PerceptionExperiment(nullptr,finalStudyName);
-        background = QBrush(Qt::gray);
-        //if (openvrco != nullptr) openvrco->setScreenColor(QColor(Qt::gray).darker(110));
-        if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray).darker(110);
         break;
 
     default:
@@ -631,18 +562,6 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     connect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
     connect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
     connect(experiment,&Experiment::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
-
-
-    if ( (monitor != nullptr) && (!Globals::EyeTracker::IS_VR) ){
-        connect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
-        connect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
-        connect(experiment,&Experiment::addFixations,monitor,&MonitorScreen::addFixations);
-        connect(experiment,&Experiment::addDebugMessage,monitor,&MonitorScreen::addMessages);
-        monitor->setBackgroundBrush(background);
-    }
-
-    // Setting the debug mode according to the current configuration.
-    experiment->setDebugMode(configuration->getBool(Globals::VMPreferences::DUAL_MONITOR_MODE));
 
     // Making sure that the eyetracker is sending data.
     //qDebug() << "EyeTracker Enable Updating";
@@ -663,13 +582,6 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
        experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
     }
 
-    if (monitor != nullptr){
-        if (configuration->getBool(Globals::VMPreferences::DUAL_MONITOR_MODE)) {
-            monitor->show();
-        }
-        else monitor->hide();
-    }
-
     if (openvrco != nullptr){
         if (!configuration->getBool(Globals::VMPreferences::USE_MOUSE)){
             if (!openvrco->startRendering()){
@@ -681,13 +593,17 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         }
     }
 
-
     return true;
 }
 
-void FlowControl::startStudy(){
+void FlowControl::startStudyEvaluationPhase(){
     if (experiment != nullptr)
-        experiment->startExperimentNoManualMode();
+        experiment->setStudyPhaseToEvaluation();
+}
+
+void FlowControl::startStudyExamplePhase(){
+    if (experiment != nullptr)
+        experiment->setStudyPhaseToExamples();
 }
 
 void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
@@ -695,8 +611,7 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     // Make the experiment windown invisible.
     experiment->hide();
 
-    // Hide monitor if showing
-    if (monitor != nullptr) monitor->hide();
+    // Getting the information for the generated data file.
     QFileInfo info(experiment->getDataFileLocation());
 
     switch (er){
@@ -722,12 +637,6 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     disconnect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
     disconnect(experiment,&Experiment::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
 
-    if (monitor != nullptr){
-        disconnect(experiment,&Experiment::updateBackground,monitor,&MonitorScreen::updateBackground);
-        disconnect(experiment,&Experiment::updateEyePositions,monitor,&MonitorScreen::updateEyePositions);
-        disconnect(experiment,&Experiment::addFixations,monitor,&MonitorScreen::addFixations);
-        disconnect(experiment,&Experiment::addDebugMessage,monitor,&MonitorScreen::addMessages);
-    }
     delete experiment;
     experiment = nullptr;
 

@@ -7,17 +7,13 @@ Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(pare
     // The Experiment is created in the stopped state.
     state = STATE_STOPPED;
 
-    // Hiding the window
-    this->hide();
-
-    // Bye default data needs to be saved.
-    debugMode = false;
+    currentStudyExplanationScreen = 0;
 
     this->studyType = studyType;
     metaStudyType = studyType;
 
     // All studies start in manual mode until, it is removed.
-    manualMode = true;
+    studyPhase = SP_EXPLANATION;
 
     // Basically the screen is show if we ever setup an eyetracker that uses the main screen or we use the mouse debug option
     activateScreenView = !Globals::EyeTracker::IS_VR || DBUGBOOL(Debug::Options::USE_MOUSE);
@@ -102,6 +98,7 @@ bool Experiment::startExperiment(const QString &workingDir,
     manager->init(processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toInt(),
                   processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toInt());
     this->gview->setScene(manager->getCanvas());
+
 
     // Configuring the experimet
     if (!manager->parseExpConfiguration(contents)){
@@ -202,8 +199,7 @@ bool Experiment::startExperiment(const QString &workingDir,
     rMWA.finalizeOnlineFixationCalculation();
     lMWA.finalizeOnlineFixationCalculation();
 
-    // The experiment is ALWAYS started in manual mode.
-    manager->setTrialCountLoopValue(NUMBER_OF_TRIALS_IN_MANUAL_MODE);
+    // The experiment is ALWAYS started in the explanation phase
 
     return true;
 }
@@ -212,9 +208,15 @@ void Experiment::setCalibrationValidationData(const QVariantMap &calibrationVali
     rawdata.setCalibrationValidationData(calibrationValidationData);
 }
 
-void Experiment::startExperimentNoManualMode(){
+void Experiment::setStudyPhaseToEvaluation(){
     manager->setTrialCountLoopValue(-1);
-    manualMode = false;
+    studyPhase = SP_EVALUATION;
+    resetStudy();
+}
+
+void Experiment::setStudyPhaseToExamples(){
+    manager->setTrialCountLoopValue(NUMBER_OF_TRIALS_IN_MANUAL_MODE);
+    studyPhase = SP_EXAMPLE;
     resetStudy();
 }
 
@@ -365,24 +367,51 @@ QImage Experiment::getVRDisplayImage() const{
 }
 
 void Experiment::keyboardKeyPressed(int keyboardKey){
-    keyPressHandler(keyboardKey);
+    if (studyPhase == SP_EXPLANATION){
+        this->moveStudyExplanationScreen(keyboardKey);
+    }
+    else {
+       keyPressHandler(keyboardKey);
+    }
 }
 
 void Experiment::keyPressEvent(QKeyEvent *event){
-    keyPressHandler(event->key());
+    if (studyPhase == SP_EXPLANATION){
+        this->moveStudyExplanationScreen(event->key());
+    }
+    else {
+       keyPressHandler(event->key());
+    }
+}
+
+void Experiment::moveStudyExplanationScreen(int key_pressed){
+    if (key_pressed == Qt::Key_B){
+        if (currentStudyExplanationScreen > 0){
+            currentStudyExplanationScreen--;
+            renderCurrentStudyExplanationScreen();
+        }
+    }
+    else if (key_pressed == Qt::Key_N){
+        if (currentStudyExplanationScreen < manager->numberOfStudyExplanationScreens()){
+            currentStudyExplanationScreen++;
+            renderCurrentStudyExplanationScreen();
+        }
+    }
 }
 
 void Experiment::updateSecondMonitorORHMD(){
     if (Globals::EyeTracker::IS_VR){
         emit Experiment::updateVRDisplay();
     }
-    else if (debugMode){
-        emit Experiment::updateBackground(manager->getImage());
-    }
 }
 
 void Experiment::keyPressHandler(int keyPressed){
     Q_UNUSED(keyPressed)
+}
+
+void Experiment::renderCurrentStudyExplanationScreen(){
+    manager->renderStudyExplanationScreen(currentStudyExplanationScreen);
+    updateSecondMonitorORHMD();
 }
 
 void Experiment::resetStudy(){

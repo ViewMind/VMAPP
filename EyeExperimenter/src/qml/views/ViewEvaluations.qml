@@ -438,7 +438,7 @@ ViewBase {
         case evaluationRun.vmSTAGE_EVALUATION:
             allowed_keys = [Qt.Key_Escape, Qt.Key_S, Qt.Key_D, Qt.Key_G]
             break;
-        case evaluationRun.vmSTAGE_EXPLANATION:
+        case evaluationRun.vmSTAGE_EXAMPLES:
             allowed_keys = [Qt.Key_N, Qt.Key_Escape, Qt.Key_S, Qt.Key_D]
             break;
         default:
@@ -460,7 +460,7 @@ ViewBase {
                     flowControl.keyboardKeyPressed(event.key);
 
                     // Calling the advance explanation phrase logic.
-                    if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_EXPLANATION){
+                    if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_EXAMPLES){
                         if (event.key === Qt.Key_N){
                            //console.log("Advancing explanation phrase");
                            evaluationRun.nextExplanationPhrase();
