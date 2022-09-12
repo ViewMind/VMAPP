@@ -8,7 +8,7 @@ ExperimentDataPainter::ExperimentDataPainter()
 }
 
 void ExperimentDataPainter::init(qreal display_resolution_width, qreal display_resolution_height){
-    ScreenResolutionHeight = display_resolution_height; ; //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_HEIGHT);
+    ScreenResolutionHeight = display_resolution_height; //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_HEIGHT);
     ScreenResolutionWidth = display_resolution_width;  //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_WIDTH);
     canvas = new QGraphicsScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
     //qDebug() << "Experiment data painter. Scene Rect" << canvas->sceneRect();
@@ -30,6 +30,10 @@ qint32 ExperimentDataPainter::getNumberOfStudyExplanationScreens() const {
     return numberOfExplanationScreens;
 }
 
+QString ExperimentDataPainter::getStringKeyForStudyExplanationList() const {
+    return explanationListTextKey;
+}
+
 void ExperimentDataPainter::updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl){
     if (!DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW)) return;
     gazeXl = xl;
@@ -37,6 +41,10 @@ void ExperimentDataPainter::updateGazePoints(qreal xr, qreal xl, qreal yr, qreal
     gazeYl = yl;
     gazeYr = yr;
     updateGazePosition();
+}
+
+void ExperimentDataPainter::enableShortStudyMode() {
+    shortModeEnabled = true;
 }
 
 void ExperimentDataPainter::redrawGazePoints(){

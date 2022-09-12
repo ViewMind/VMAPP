@@ -14,12 +14,9 @@
 #include "../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
 #include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 
-#include "../../CommonClasses/Experiments/reading/readingexperiment.h"
-#include "../../CommonClasses/Experiments/binding/imageexperiment.h"
+#include "../../CommonClasses/Experiments/binding/bindingexperiment.h"
 #include "../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h"
-#include "../../CommonClasses/Experiments/parkinson/parkinsonexperiment.h"
 #include "../../CommonClasses/Experiments/gonogo/gonogoexperiment.h"
-#include "../../CommonClasses/Experiments/perception/perceptionexperiment.h"
 
 #include "../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h"
 #include "../../CommonClasses/EyeTrackingInterface/GazePoint/opengazeinterface.h"

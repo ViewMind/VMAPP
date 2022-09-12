@@ -516,13 +516,13 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
 
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
         logger.appendStandard("STARTING BINDING BC EXPERIMENT");
-        experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_BC);
+        experiment = new BindingExperiment(nullptr,VMDC::Study::BINDING_BC);
 
         if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray);
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
         logger.appendStandard("STARTING BINDING UC EXPERIMENT");
-        experiment = new ImageExperiment(nullptr,VMDC::Study::BINDING_UC);
+        experiment = new BindingExperiment(nullptr,VMDC::Study::BINDING_UC);
 
         if (openvrco != nullptr) backgroundForVRScreen = QColor(Qt::gray);
         break;

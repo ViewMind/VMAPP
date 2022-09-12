@@ -66,8 +66,6 @@ Rectangle {
 
             //prepareNextStudy(false);
 
-            //flowControl.setupSecondMonitor(); // LEGACY CODE: This is where the old UI had it. Leaving it here for reference.
-
         }
 
         function onNewExperimentMessages(string_value_map){
@@ -217,6 +215,8 @@ Rectangle {
             flowControl.startStudyExamplePhase();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"");
             viewEvaluations.advanceStudyIndicator();
+            vmExplanationTextIndex = -1; // Makes sure the next phrase is the first one.
+            nextExplanationPhrase();
         }
         else if (vmEvaluationStage == vmSTAGE_EXAMPLES){
             vmEvaluationStage = vmSTAGE_EVALUATION;
@@ -251,6 +251,9 @@ Rectangle {
         // Modulus operation in order to ensure circularity.
         vmExplanationTextIndex = (vmExplanationTextIndex % vmExplanationTextArray.length)
         let phrase = vmExplanationTextArray[vmExplanationTextIndex];
+
+        console.log("In next Explanation Phrase. Got Phrase: " + phrase);
+
         studyExplanationText.text = phrase;
     }
 
@@ -339,7 +342,7 @@ Rectangle {
         radius: VMGlobals.adjustHeight(8)
         // Uncomment line below to enable feature.
         // visible: false;
-        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage === vmSTAGE_CALIBRATION) || (vmEvaluationStage == vmSTAGE_EXPLANATION)
+        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage === vmSTAGE_CALIBRATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)
 
         Image {
             id: studyExplanationInfoIcon
@@ -370,8 +373,20 @@ Rectangle {
             font.weight: 600
             anchors.top: studyExplanationText.bottom
             anchors.left: studyExplanationText.left
+            visible: (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)
+        }
+
+        Text {
+            id: pressKeyToGoBack;
+            color: VMGlobals.vmBlueSelected
+            text: loader.getStringForKey("explanation_key_to_goback");
+            font.pixelSize: VMGlobals.vmFontBaseSize
+            font.weight: 600
+            anchors.top: pressKeyToContinue.bottom
+            anchors.left: pressKeyToContinue.left
             visible: (vmEvaluationStage === vmSTAGE_EXPLANATION)
         }
+
 
     }
 
@@ -466,7 +481,7 @@ Rectangle {
     Component.onCompleted: {
 
         var explanations = loader.getStringListForKey("viewevaluation_keyboard_explanations");
-        var keys = ["ESC","G","N","D","S"]
+        var keys = ["ESC","G","N","B","D","S"]
 
         if (keys.length !== explanations.length){
             //console.log("Key Array is " + keys.length + " and explanation array is " + explanations.length)

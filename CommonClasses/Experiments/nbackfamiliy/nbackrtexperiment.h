@@ -5,7 +5,7 @@
 #include <QSet>
 
 #include "../experiment.h"
-#include "fieldingmanager.h"
+#include "nbackmanager.h"
 
 class NBackRTExperiment: public Experiment
 {
@@ -34,7 +34,7 @@ private:
 
     struct TrialRecognitionMachine {
         void reset(const QList<qint32> &trialRecogSeq);
-        bool isSequenceOver(const Fixation &fixationToUse, FieldingManager *m, bool *updateHUD);
+        bool isSequenceOver(const Fixation &fixationToUse, NBackManager *m, bool *updateHUD);
         bool useRightEye;
         bool lightUpSquares;
     private:
@@ -70,7 +70,7 @@ private:
     VariableSpeedAndTargetNumberConfig nbackConfig;
 
     // Handle to the fielding manager. Can be used for this experiment as well.
-    FieldingManager *m;
+    NBackManager *m;
 
     // The current state of the experiment
     TrialStateNBackRT tstate;

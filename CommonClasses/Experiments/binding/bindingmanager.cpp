@@ -1,7 +1,7 @@
 #include "bindingmanager.h"
 
-const char * BindingManager::CONFIG_USE_SMALL_TARGETS = "use_small_targets";
-const char * BindingManager::IS_BC = "is_bc";
+const char * BindingManager::CONFIG_IS_BC = "is_bc";
+const char * BindingManager::CONFIG_N_TARGETS = "number_of_targets";
 
 BindingManager::BindingManager()
 {
@@ -160,10 +160,25 @@ void BindingManager::init(qreal display_resolution_width, qreal display_resoluti
 
 }
 
-void BindingManager::configure(const QVariantMap &configuration){
-    if (configuration.contains(CONFIG_USE_SMALL_TARGETS)){
-        smallTargets = configuration.value(CONFIG_USE_SMALL_TARGETS).toBool();
+qint32 BindingManager::size() const {
+    if (shortModeEnabled){
+        return NUMBER_OF_TRIALS_IN_SHORT_MODE;
     }
+    else {
+        return static_cast<qint32>(parser.getTrialList().size());
+    }
+}
+
+void BindingManager::configure(const QVariantMap &configuration){
+    if (configuration.value(CONFIG_IS_BC).toBool()){
+        explanationListTextKey = STUDY_TEXT_KEY_BINDING_BC;
+        isBC = true;
+    }
+    else {
+        explanationListTextKey = STUDY_TEXT_KEY_BINDING_UC;
+        isBC = false;
+    }
+    numberOfTargets = configuration.value(CONFIG_N_TARGETS).toInt();
 }
 
 void BindingManager::drawCenter(){
@@ -179,6 +194,8 @@ void BindingManager::drawTrial(qint32 currentTrial, bool show, bool enableRender
 
     RenderFlagType rft = RFT_NORMAL;
 
+    // qDebug() << "BindingManager::drawTrial. Number of Trials: " << parser.getTrials().size() << ". Accessing trial " << currentTrial;
+
     if (enableRenderDualMode){
 
         if (show) rft = RFT_ENCODING_SIDE;
@@ -187,7 +204,7 @@ void BindingManager::drawTrial(qint32 currentTrial, bool show, bool enableRender
         primary = parser.getTrials().at(currentTrial).show;
 
         if (!show){
-           secondary = parser.getTrials().at(currentTrial).test;
+            secondary = parser.getTrials().at(currentTrial).test;
         }
 
     }
@@ -204,12 +221,9 @@ void BindingManager::drawTrial(qint32 currentTrial, bool show, bool enableRender
 
 }
 
-void BindingManager::enableDemoMode(){    
-    parser.demoModeList(NUMBER_OF_TRIALS_IN_DEMO_MODE);
-}
 
 bool BindingManager::parseExpConfiguration(const QString &contents){    
-    bool ans = parser.parseBindingExperiment(contents,smallTargets,ScreenResolutionWidth,ScreenResolutionHeight);
+    bool ans = parser.parseBindingExperiment(contents,ScreenResolutionWidth,ScreenResolutionHeight);
     versionString = parser.getVersionString();
     expectedIDs = parser.getExpectedIDs();
     error = parser.getError();
@@ -218,6 +232,79 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
 }
 
 void BindingManager::renderStudyExplanationScreen(qint32 screen_index){
+
+    // qDebug() << "Rendering Study Explantion Binding: isBC" << isBC << "Screen Index" << screen_index << "Number of Targets" << numberOfTargets;
+
+    if (isBC){
+        if (screen_index == SE_BC_ENCODING_DIFF){
+            if (numberOfTargets == 2){
+                drawTrial(SE_BC_2_DIFF_TRIAL,true,true);
+            }
+            else {
+                drawTrial(SE_BC_3_DIFF_TRIAL,true,true);
+            }
+        }
+        else if (screen_index == SE_BC_DECODING_DIFF){
+            if (numberOfTargets == 2){
+                drawTrial(SE_BC_2_DIFF_TRIAL,false,true);
+            }
+            else {
+                drawTrial(SE_BC_3_DIFF_TRIAL,false,true);
+            }
+        }
+        else if (screen_index == SE_BC_ENCODING_SAME){
+            if (numberOfTargets == 2){
+                drawTrial(SE_BC_2_SAME_TRIAL,true,true);
+            }
+            else {
+                drawTrial(SE_BC_3_SAME_TRIAL,true,true);
+            }
+
+        }
+        else if (screen_index == SE_BC_DECODING_SAME){
+            if (numberOfTargets == 2){
+                drawTrial(SE_BC_2_SAME_TRIAL,false,true);
+            }
+            else {
+                drawTrial(SE_BC_3_SAME_TRIAL,false,true);
+            }
+        }
+    }
+    else {
+        if (screen_index == SE_UC_ENCODING_DIFF){
+            if (numberOfTargets == 2){
+                drawTrial(SE_UC_2_DIFF_TRIAL,true,true);
+            }
+            else {
+                drawTrial(SE_UC_3_DIFF_TRIAL,true,true);
+            }
+        }
+        else if (screen_index == SE_UC_DECODING_DIFF){
+            if (numberOfTargets == 2){
+                drawTrial(SE_UC_2_DIFF_TRIAL,false,true);
+            }
+            else {
+                drawTrial(SE_UC_3_DIFF_TRIAL,false,true);
+            }
+        }
+        else if (screen_index == SE_UC_ENCODING_SAME){
+            if (numberOfTargets == 2){
+                drawTrial(SE_UC_2_SAME_TRIAL,true,true);
+            }
+            else {
+                drawTrial(SE_UC_3_SAME_TRIAL,true,true);
+            }
+
+        }
+        else if (screen_index == SE_UC_DECODING_SAME){
+            if (numberOfTargets == 2){
+                drawTrial(SE_UC_2_SAME_TRIAL,false,true);
+            }
+            else {
+                drawTrial(SE_UC_3_SAME_TRIAL,false,true);
+            }
+        }
+    }
 
 }
 

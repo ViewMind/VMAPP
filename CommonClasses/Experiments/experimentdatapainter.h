@@ -9,9 +9,6 @@
 #include "../eyetracker_defines.h"
 #include "../debug.h"
 
-// Number of actual trials to have in demo mode
-#define   NUMBER_OF_TRIALS_IN_DEMO_MODE                 5
-
 class ExperimentDataPainter
 {
 public:
@@ -23,20 +20,17 @@ public:
     virtual void init(qreal display_resolution_width, qreal display_resolution_height);
     virtual void configure(const QVariantMap &configuration);
     virtual qint32 size() const {return 0;}
-    virtual qreal sizeToProcess() const {return 0;}
 
     // Required for properly cycling through the explanation screen in a generic manner.
     qint32 getNumberOfStudyExplanationScreens() const;
-
-    // For debugging
-    void setShortStudy();
+    QString getStringKeyForStudyExplanationList() const;
 
     // For on-screen gaze tracking.
     void updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl);
     void redrawGazePoints();
 
-    // Trims the number of trials to number in demo mode.
-    virtual void enableDemoMode(){}
+    // Sets the flag so that each study can finalized after a very reduce set of studies.
+    void enableShortStudyMode();
 
     // Renders the study explanation screen according to index.
     virtual void renderStudyExplanationScreen(qint32 screen_index){Q_UNUSED(screen_index)}
@@ -84,15 +78,21 @@ protected:
 
     qint32 trialCountLoopValue;
 
+    // Check if short mode is enabled.
+    bool shortModeEnabled;
+
     // The number of explanation screens and the text key for the explanation screen text. These will be filled by the constructor or each child class.
     QString explanationListTextKey;
     qint32 numberOfExplanationScreens;
 
-//    const char * STUDY_TEXT_KEY_BINDING_UC = "explanation_binding_uc";
-//    const char * STUDY_TEXT_KEY_BINDING_BC = "explanation_binding_bc";
-//    const char * STUDY_TEXT_KEY_GONOGO     = "explanation_gonogo";
-//    const char * STUDY_TEXT_KEY_NBACKRT    = "explanation_nbackrt";
-//    const char * STUDY_TEXT_KEY_NBACKVS    = "explanation_nbackvs";
+    // Different text explanation keys based on different studies.
+    const char * STUDY_TEXT_KEY_BINDING_UC = "explanation_phase_list_binding_uc";
+    const char * STUDY_TEXT_KEY_BINDING_BC = "explanation_phase_list_binding_bc";
+    const char * STUDY_TEXT_KEY_GONOGO     = "explanation_phase_list_gonogo";
+    const char * STUDY_TEXT_KEY_NBACKRT    = "explanation_phase_list_nbackrt";
+    const char * STUDY_TEXT_KEY_NBACKVS    = "explanation_phase_list_nbackvs";
+
+    const qint32 NUMBER_OF_TRIALS_IN_SHORT_MODE = 5;
 
 };
 

@@ -1,5 +1,5 @@
-#ifndef IMAGEEXPERIMENT_H
-#define IMAGEEXPERIMENT_H
+#ifndef BINDINGEXPERIMENT_H
+#define BINDINGEXPERIMENT_H
 
 #include <QTimer>
 #include <QElapsedTimer>
@@ -16,15 +16,15 @@
 #define   TIME_IMAGE_2_TIMEOUT                          10000
 #define   TIME_FINISH                                   1000
 
-class ImageExperiment : public Experiment
+class BindingExperiment : public Experiment
 {
 public:
 
     // State machine states for Binding trials
     typedef enum {TSB_CENTER_CROSS,TSB_SHOW,TSB_TRANSITION,TSB_TEST,TSB_FINISH} TrialStateBinding;
 
-    ImageExperiment(QWidget *parent = nullptr, const QString &study_type = "");
-    ~ImageExperiment() override;
+    BindingExperiment(QWidget *parent = nullptr, const QString &study_type = "");
+    ~BindingExperiment() override;
 
     // Reimplementation of virtual functions
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
@@ -90,4 +90,4 @@ private:
 
 };
 
-#endif // IMAGEEXPERIMENT_H
+#endif // BINDINGEXPERIMENT_H

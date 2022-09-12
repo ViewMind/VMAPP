@@ -5,15 +5,17 @@ const char* GoNoGoManager::GREEN_ARROW_COLOR         = "#28ab14";
 
 GoNoGoManager::GoNoGoManager()
 {
-
+    explanationListTextKey = STUDY_TEXT_KEY_GONOGO;
+    numberOfExplanationScreens = 4;
 }
 
 qint32 GoNoGoManager::size() const{
-    return gonogoTrials.size();
-}
-
-qreal GoNoGoManager::sizeToProcess() const{
-    return gonogoTrials.size();
+    if (shortModeEnabled) {
+        return NUMBER_OF_TRIALS_IN_SHORT_MODE;
+    }
+    else {
+        return static_cast<qint32>(gonogoTrials.size());
+    }
 }
 
 QRectF GoNoGoManager::getArrowBox() const{
@@ -28,12 +30,6 @@ QList<QRectF> GoNoGoManager::getLeftAndRightHitBoxes() const {
     return targetBoxes;
 }
 
-void GoNoGoManager::enableDemoMode(){
-    //while (gonogoTrials.size() > 20){
-    while (gonogoTrials.size() > NUMBER_OF_TRIALS_IN_DEMO_MODE){
-        gonogoTrials.removeLast();
-    }
-}
 
 void GoNoGoManager::init(qreal display_resolution_width, qreal display_resolution_height){
     ExperimentDataPainter::init(display_resolution_width,display_resolution_height);

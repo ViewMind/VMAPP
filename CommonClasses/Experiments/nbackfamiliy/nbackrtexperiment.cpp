@@ -21,8 +21,8 @@ const QString NBackRTExperiment::MSG_TARGET_VEL = "studystatus_nback_target_spee
 
 NBackRTExperiment::NBackRTExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type){
 
-    manager = new FieldingManager();
-    m = static_cast<FieldingManager*>(manager);
+    manager = new NBackManager();
+    m = static_cast<NBackManager*>(manager);
 
     // Connecting the timer time out with the time out function.
     connect(&stateTimer,&QTimer::timeout,this,&NBackRTExperiment::onTimeOut);
@@ -70,12 +70,13 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     }
 
     QVariantMap config;
-    config.insert(FieldingManager::CONFIG_IS_VR_BEING_USED,Globals::EyeTracker::IS_VR);
+    config.insert(NBackManager::CONFIG_IS_VR_BEING_USED,Globals::EyeTracker::IS_VR);
+    config.insert(NBackManager::CONFIG_IS_VS,(studyType == VMDC::Study::NBACKVS));
     if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
-        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_ES);
+        config.insert(NBackManager::CONFIG_PAUSE_TEXT_LANG,NBackManager::LANG_ES);
     }
     else{
-        config.insert(FieldingManager::CONFIG_PAUSE_TEXT_LANG,FieldingManager::LANG_EN);
+        config.insert(NBackManager::CONFIG_PAUSE_TEXT_LANG,NBackManager::LANG_EN);
     }
     m->configure(config);
 
@@ -229,10 +230,10 @@ void NBackRTExperiment::drawCurrentImage(){
 
     switch (tstate){
     case TSF_SHOW_BLANKS:
-        m->setDrawState(FieldingManager::DS_TARGET_BOX_ONLY);
+        m->setDrawState(NBackManager::DS_TARGET_BOX_ONLY);
         break;
     case TSF_SHOW_TARGET:
-        m->setDrawState(FieldingManager::DS_CROSS_TARGET);
+        m->setDrawState(NBackManager::DS_CROSS_TARGET);
         break;
     case TSF_START:
         // Before drawing the start of a new trial, we check if a pause is necessary.
@@ -249,7 +250,7 @@ void NBackRTExperiment::drawCurrentImage(){
             }
 
         }
-        m->setDrawState(FieldingManager::DS_CROSS);
+        m->setDrawState(NBackManager::DS_CROSS);
         currentImage=-1;
         break;
     }
@@ -458,7 +459,7 @@ void NBackRTExperiment::TrialRecognitionMachine::reset(const QList<qint32> &tria
 }
 
 
-bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &fixationToUse, FieldingManager *m, bool *updateHUD){
+bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &fixationToUse, NBackManager *m, bool *updateHUD){
 
     if (trialRecognitionSequence.isEmpty()) return true;
 

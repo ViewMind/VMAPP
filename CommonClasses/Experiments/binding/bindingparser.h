@@ -8,11 +8,6 @@
 #include <QColor>
 #include <QtMath>
 
-/// TODO: Eliminate this when legacy parsing can be deleted.
-// Strings for same and different in the CSV file.
-#define   STR_DIFFERENT                                 "different"
-#define   STR_SAME                                      "same"
-
 class BindingParser
 {
 public:
@@ -97,7 +92,7 @@ public:
 
     // Main interface to use this class for the Binding manager or simply to get info on the experiments.
     BindingParser();
-    bool parseBindingExperiment(const QString &contents, bool useSmall, qreal ScreenResolutionWidth, qreal ScreenResolutionHeight);
+    bool parseBindingExperiment(const QString &contents, qreal ScreenResolutionWidth, qreal ScreenResolutionHeight);
     QString getError() const {return error;}
     FlagDrawStructure getDrawStructure() const {return drawStructure;}
     qint32 getNumberOfTargets() const {return numberOfTargets;}
@@ -148,8 +143,7 @@ private:
     // Aux functions for parsing.
     bool parseFlagPositions(const QString &line, BindingTrial *trial, bool show);
     bool parseColors(const QString &line, BindingTrial *trial, bool background, bool show);
-    bool legacyParser(const QString &contents);
-    DrawValues loadDrawStructure(bool targetsSmall, qreal targetW, qreal targetH);
+    DrawValues loadDrawStructure(qreal targetW, qreal targetH);
 
 
     static const qreal  LARGE_BINDING_TARGET_SIDE;
@@ -171,21 +165,6 @@ private:
     static const qreal  SMALL_BINDING_GRID_SPACING_X_2FLAGS;
     static const qreal  SMALL_BINDING_GRID_SPACING_X_3FLAGS;
     static const qreal  SMALL_BINDING_GRID_SPACING_Y;
-
-    // XK and YK, originally represented  the px to mm ratio, horizontally and vertically respectively in a monitor
-    // They are now left as scaling and adjustment constants to make the squares have the right size in each
-    // eyetracking helmet to use.
-
-    #ifdef EYETRACKER_HTCVIVEPRO
-    static const qreal  CONFIG_XK;
-    static const qreal  CONFIG_YK;
-    #endif
-
-    #ifdef EYETRACKER_GAZEPOINT
-    static const qreal  CONFIG_XK;
-    static const qreal  CONFIG_YK;
-    #endif
-
 
 };
 

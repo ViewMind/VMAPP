@@ -21,8 +21,6 @@ public:
     bool parseExpConfiguration(const QString &contents) override;
     void init(qreal display_resolution_width, qreal display_resolution_height ) override;
     qint32 size() const override;
-    qreal sizeToProcess() const override;
-    qint32 numberOfStudyExplanationScreens() const override {return 1;}
     void renderStudyExplanationScreen(qint32 screen_index) override;
 
     // Will return false if the last trial drawn was the last.
@@ -36,8 +34,6 @@ public:
 
     // This will make the next trial after loopValue be 0. Hence this will repeat the first few trials infinitely.
     void loopTrialsAt(qint32 loopValue);
-
-    void enableDemoMode() override;
 
     void resetStudy();
 

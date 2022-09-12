@@ -52,12 +52,6 @@ BindingParser::BindingParser()
 }
 
 
-void BindingParser::demoModeList(qint32 number_to_leave){
-    while (trials.size() > number_to_leave){
-        trials.removeLast();
-    }
-}
-
 BindingParser::BindingTrial BindingParser::getTrialByName(const QString &id) const{
     BindingTrial trial;
     trial.name = "";
@@ -69,9 +63,7 @@ BindingParser::BindingTrial BindingParser::getTrialByName(const QString &id) con
     return trial;
 }
 
-bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmall,
-                                           qreal ScreenResolutionWidth, qreal ScreenResolutionHeight){
-    bool legacyDescription = false;
+bool BindingParser::parseBindingExperiment(const QString &contents, qreal ScreenResolutionWidth, qreal ScreenResolutionHeight){
 
     // Splitting into lines.
     QStringList lines = contents.split('\n',Qt::KeepEmptyParts);
@@ -83,30 +75,21 @@ bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmal
 
     int horizontalGridPoints = 2; // Initialization done just o avoid a warning
 
-    if (tokens.size() == 13) {
-        // This is a legacy binding description.
-        numberOfTargets = 2;
-        legacyDescription = true;
+    // Getting the number of targets in the trial
+    numberOfTargets = tokens.first().toInt();
+
+    // Last value, if it exists should be the version string
+    if (tokens.size() > 1){
+        versionString = tokens.last();
     }
-    else{
 
-        // Getting the number of targets in the trial
-        numberOfTargets = tokens.first().toInt();
+    // Even tough its the same value, there is no real relation between the grid size and the number of targets selected.
+    // For clarity a different variable is used.
+    horizontalGridPoints = numberOfTargets;
 
-        // Last value, if it exists should be the version string
-        if (tokens.size() > 1){
-            versionString = tokens.last();
-        }
-
-        // Even tough its the same value, there is no real relation between the grid size and the number of targets selected.
-        // For clarity a different variable is used.
-        horizontalGridPoints = numberOfTargets;
-
-        if ((numberOfTargets != 2) && (numberOfTargets != 3)){
-            error = "Invalid number of targets in the first line " + lines.first();
-            return false;
-        }
-
+    if ((numberOfTargets != 2) && (numberOfTargets != 3)){
+        error = "Invalid number of targets in the first line " + lines.first();
+        return false;
     }
 
     // Defining the values to draw the target.
@@ -114,61 +97,55 @@ bool BindingParser::parseBindingExperiment(const QString &contents, bool useSmal
     drawStructure.ypos.clear();
 
     // Loading the draw structure
-    DrawValues drawValues = loadDrawStructure(useSmall,ScreenResolutionWidth,ScreenResolutionHeight);
+    DrawValues drawValues = loadDrawStructure(ScreenResolutionWidth,ScreenResolutionHeight);
 
-    if (!legacyDescription){
+    // The mm values are transformed to pixels and the math is only once to define the possible target positions.
+    drawStructure.FlagSideH = drawValues.sideh*ScreenResolutionWidth;
+    drawStructure.FlagSideV = drawValues.sidev*ScreenResolutionHeight;
+    drawStructure.HSBorder  = drawValues.hs*ScreenResolutionWidth;
+    drawStructure.VLBorder  = drawValues.vl*ScreenResolutionHeight;
+    drawStructure.HLBorder  = drawValues.hl*ScreenResolutionWidth;
+    drawStructure.VSBorder  = drawValues.vs*ScreenResolutionHeight;
 
-        // The mm values are transformed to pixels and the math is only once to define the possible target positions.
-        drawStructure.FlagSideH = drawValues.sideh*ScreenResolutionWidth;
-        drawStructure.FlagSideV = drawValues.sidev*ScreenResolutionHeight;
-        drawStructure.HSBorder  = drawValues.hs*ScreenResolutionWidth;
-        drawStructure.VLBorder  = drawValues.vl*ScreenResolutionHeight;
-        drawStructure.HLBorder  = drawValues.hl*ScreenResolutionWidth;
-        drawStructure.VSBorder  = drawValues.vs*ScreenResolutionHeight;
+    //qDebug() << "Flag Side H" << drawStructure.FlagSideH << "V" << drawStructure.FlagSideV << "@" << ScreenResolutionWidth << "x" << ScreenResolutionHeight;
 
-        //qDebug() << "Flag Side H" << drawStructure.FlagSideH << "V" << drawStructure.FlagSideV << "@" << ScreenResolutionWidth << "x" << ScreenResolutionHeight;
+    qreal Gxpx = drawValues.gx*ScreenResolutionWidth;
+    qreal Gypx = drawValues.gy*ScreenResolutionHeight;
 
-        qreal Gxpx = drawValues.gx*ScreenResolutionWidth;
-        qreal Gypx = drawValues.gy*ScreenResolutionHeight;
+    //        qDebug() << "Draw Values for" << numberOfTargets << ". Small: " << useSmall;
+    //        qDebug() << "Resolution" << ScreenResolutionWidth << ScreenResolutionHeight;
+    //        qDebug() << "FSH" << drawStructure.FlagSideH/ScreenResolutionWidth;
+    //        qDebug() << "FSV" << drawStructure.FlagSideV/ScreenResolutionHeight;
+    //        qDebug() << "HSB" << drawStructure.HSBorder/ScreenResolutionWidth;
+    //        qDebug() << "VLB" << drawStructure.VLBorder/ScreenResolutionHeight;
+    //        qDebug() << "HLB" << drawStructure.HLBorder/ScreenResolutionWidth;
+    //        qDebug() << "VSB" << drawStructure.VSBorder/ScreenResolutionHeight;
+    //        qDebug() << "GX"  << (Gxpx)/ScreenResolutionWidth;
+    //        qDebug() << "GY"  << (Gypx)/ScreenResolutionHeight;
 
-//        qDebug() << "Draw Values for" << numberOfTargets << ". Small: " << useSmall;
-//        qDebug() << "Resolution" << ScreenResolutionWidth << ScreenResolutionHeight;
-//        qDebug() << "FSH" << drawStructure.FlagSideH/ScreenResolutionWidth;
-//        qDebug() << "FSV" << drawStructure.FlagSideV/ScreenResolutionHeight;
-//        qDebug() << "HSB" << drawStructure.HSBorder/ScreenResolutionWidth;
-//        qDebug() << "VLB" << drawStructure.VLBorder/ScreenResolutionHeight;
-//        qDebug() << "HLB" << drawStructure.HLBorder/ScreenResolutionWidth;
-//        qDebug() << "VSB" << drawStructure.VSBorder/ScreenResolutionHeight;
-//        qDebug() << "GX"  << (Gxpx)/ScreenResolutionWidth;
-//        qDebug() << "GY"  << (Gypx)/ScreenResolutionHeight;
+    qreal Sx = drawValues.sideh*ScreenResolutionWidth;
+    qreal Sy = drawValues.sidev*ScreenResolutionHeight;
 
-        qreal Sx = drawValues.sideh*ScreenResolutionWidth;
-        qreal Sy = drawValues.sidev*ScreenResolutionHeight;
+    // Total horizontal space required by the placement grid
+    qreal Wx = Gxpx*(horizontalGridPoints-1) + Sx;
+    // Total vertical space required by the placement grid
+    qreal Wy = Gypx*2 + Sy;
 
-        // Total horizontal space required by the placement grid
-        qreal Wx = Gxpx*(horizontalGridPoints-1) + Sx;
-        // Total vertical space required by the placement grid
-        qreal Wy = Gypx*2 + Sy;
+    qreal Xog = (ScreenResolutionWidth - Wx)/2;
+    qreal Yog = (ScreenResolutionHeight - Wy)/2;
 
-        qreal Xog = (ScreenResolutionWidth - Wx)/2;
-        qreal Yog = (ScreenResolutionHeight - Wy)/2;
+    // Stored so it can be called upon by other code.
+    gridBoundingRect = QRectF(Xog,Yog,Wx,Wy);
 
-        // Stored so it can be called upon by other code.
-        gridBoundingRect = QRectF(Xog,Yog,Wx,Wy);
-
-        for (qint32 i = 0; i < horizontalGridPoints; i++){
-            drawStructure.xpos << Xog + (i*Gxpx);
-        }
-
-        for (qint32 j = 0; j < 3; j++){
-            drawStructure.ypos << Yog + (j*Gypx);
-        }
-
+    for (qint32 i = 0; i < horizontalGridPoints; i++){
+        drawStructure.xpos << Xog + (i*Gxpx);
     }
-    else{
-        // Doing a Legacy parse.
-        return legacyParser(contents);
+
+    for (qint32 j = 0; j < 3; j++){
+        drawStructure.ypos << Yog + (j*Gypx);
     }
+
+
 
     // Clear structure.
     trials.clear();
@@ -271,8 +248,8 @@ bool BindingParser::parseFlagPositions(const QString &line, BindingTrial *trial,
                     + QString::number(drawStructure.ypos.size()) + " @ line: " + line;
             return false;
         }
-//        qWarning() << "For " << i << "Position" << flag.x << "from" << drawStructure.xpos << "is" << drawStructure.xpos.at(flag.x)
-//                   << "and" << "Position" << flag.y << "from" << drawStructure.ypos << "is" << drawStructure.ypos.at(flag.y);
+        //        qWarning() << "For " << i << "Position" << flag.x << "from" << drawStructure.xpos << "is" << drawStructure.xpos.at(flag.x)
+        //                   << "and" << "Position" << flag.y << "from" << drawStructure.ypos << "is" << drawStructure.ypos.at(flag.y);
         flag.x = static_cast<qint32>(drawStructure.xpos.at(flag.x));
         flag.y = static_cast<qint32>(drawStructure.ypos.at(flag.y));
 
@@ -315,160 +292,41 @@ bool BindingParser::parseColors(const QString &line, BindingTrial *trial, bool b
     return true;
 }
 
-
-// Legacy parse is maintained in case there is a need to draw targets that were described with the very first
-// description file.
-bool BindingParser::legacyParser(const QString &contents){
-
-    QStringList lines = contents.split("\n",Qt::SkipEmptyParts);
-    trials.clear();
-
-    QMap<QString,qint32> dic;
-    dic["u"] = 0;
-    dic["m"] = 1;
-    dic["l"] = 2;
-
-    for (qint32 i = 0; i < lines.size(); i++){
-
-        QString line = lines.at(i);
-
-        if (line.isEmpty()) continue;
-
-        QStringList tokens = line.split(" ",Qt::SkipEmptyParts);
-
-        if (tokens.size() != 13){
-            error = "Line " + line + " does not contain 13 words";
-            return false;
-        }
-
-        BindingTrial trial;
-        trial.name = tokens.at(0);
-        trial.isSame = trial.name.contains(STR_SAME);
-
-        BindingFlag sl, sr, tl, tr;
-
-        sl.back = QColor("#" + tokens.at(2));
-        sl.cross = QColor("#" + tokens.at(3));
-        sl.x = static_cast<qint32>(drawStructure.xpos.at(0));
-        sl.y = static_cast<qint32>(drawStructure.ypos.at(dic.value(tokens.at(1))));
-
-        sr.back = QColor("#" + tokens.at(5));
-        sr.cross = QColor("#" + tokens.at(6));
-        sr.x = static_cast<qint32>(drawStructure.xpos.at(1));
-        sr.y = static_cast<qint32>(drawStructure.ypos.at(dic.value(tokens.at(4))));
-
-        tl.back = QColor("#" + tokens.at(8));
-        tl.cross = QColor("#" + tokens.at(9));
-        tl.x = static_cast<qint32>(drawStructure.xpos.at(0));
-        tl.y = static_cast<qint32>(drawStructure.ypos.at(dic.value(tokens.at(7))));
-
-        tr.back = QColor("#" + tokens.at(11));
-        tr.cross = QColor("#" + tokens.at(12));
-        tr.x = static_cast<qint32>(drawStructure.xpos.at(1));
-        tr.y = static_cast<qint32>(drawStructure.ypos.at(dic.value(tokens.at(10))));
-
-        trial.show << sl << sr;
-        trial.test << tl << tr;
-
-        trials << trial;
-
-    }
-
-    return true;
-
-}
-
-//BindingParser::DrawValues BindingParser::loadDrawStructure(bool targetsSmall){
-//    DrawValues drawValues;
-//    if (targetsSmall){
-//        drawValues.hl = SMALL_BINDING_TARGET_HL;
-//        drawValues.hs = SMALL_BINDING_TARGET_HS;
-//        drawValues.vl = SMALL_BINDING_TARGET_VL;
-//        drawValues.vs = SMALL_BINDING_TARGET_VS;
-//        drawValues.side = SMALL_BINDING_TARGET_SIDE;
-//        if (numberOfTargets == 2){
-//            drawValues.gx = SMALL_BINDING_GRID_SPACING_X_2FLAGS;
-//            drawValues.gy = SMALL_BINDING_GRID_SPACING_Y;
-//        }
-//        else{
-//            // Assuming 3 targets
-//            drawValues.gx = SMALL_BINDING_GRID_SPACING_X_3FLAGS;
-//            drawValues.gy = SMALL_BINDING_GRID_SPACING_Y;
-//        }
-//    }
-//    else{
-//        // Using large targets.
-//        drawValues.hl = LARGE_BINDING_TARGET_HL;
-//        drawValues.hs = LARGE_BINDING_TARGET_HS;
-//        drawValues.vl = LARGE_BINDING_TARGET_VL;
-//        drawValues.vs = LARGE_BINDING_TARGET_VS;
-//        drawValues.side = LARGE_BINDING_TARGET_SIDE;
-//        if (numberOfTargets == 2){
-//            drawValues.gx = LARGE_BINDING_GRID_SPACING_X_2FLAGS;
-//            drawValues.gy = LARGE_BINDING_GRID_SPACING_Y;
-//        }
-//        else{
-//            // Assuming 3 targets
-//            drawValues.gx = LARGE_BINDING_GRID_SPACING_X_3FLAGS;
-//            drawValues.gy = LARGE_BINDING_GRID_SPACING_Y;
-//        }
-//    }
-//    return drawValues;
-//}
-
 /**
  * @brief BindingParser::loadDrawStructure
  * @details All the constants returned by this function where computed by using the old values to draw the squares in a 1920 x 1080 monitor
  * about 22 inches. These provided a ratio to the value to the width and height of the resoltuion. The values were left as is.
  * Using these values the drawing can be parametrized ONLY by the resolution.
- * @param targetsSmall: Retrurn values for small targets or not.
+ * @param targetW: The width of the resolution where the flags will be drawn
+ * @param targetH: The height of the resolution where the flags will be drawn
  * @return The drawing contstants.
  */
 
-BindingParser::DrawValues BindingParser::loadDrawStructure(bool targetsSmall, qreal targetW, qreal targetH){
+BindingParser::DrawValues BindingParser::loadDrawStructure(qreal targetW, qreal targetH){
 
-        DrawValues drawValues;
+    DrawValues drawValues;
 
-        // For computing the actual draw constants, based on resolution.
-        DrawingConstantsCalculator dcc;
-        dcc.setTargetResolution(targetW,targetH);
+    // For computing the actual draw constants, based on resolution.
+    DrawingConstantsCalculator dcc;
+    dcc.setTargetResolution(targetW,targetH);
 
-        if (targetsSmall){
-            drawValues.sideh = dcc.getHorizontalRatio(0.0208333);
-            drawValues.sidev = dcc.getVerticalRatio(0.037037);
-            drawValues.hl    = dcc.getHorizontalRatio(0.00541667);
-            drawValues.hs    = dcc.getHorizontalRatio(0.000520833);
-            drawValues.vl    = dcc.getVerticalRatio(0.0131111);
-            drawValues.vs    = dcc.getVerticalRatio(0.00492593);
+    drawValues.sideh = dcc.getHorizontalRatio(0.0942708);
+    drawValues.sidev = dcc.getVerticalRatio(0.167593);
+    drawValues.hl    = dcc.getHorizontalRatio(0.0244792);
+    drawValues.hs    = dcc.getHorizontalRatio(0.00208333);
+    drawValues.vl    = dcc.getVerticalRatio(0.0592593);
+    drawValues.vs    = dcc.getVerticalRatio(0.0222222);
 
-            if (numberOfTargets == 2){
-                drawValues.gx = dcc.getHorizontalRatio(0.0416667);
-                drawValues.gy = dcc.getVerticalRatio(0.0740741);
-            }
-            else{
-                // Assuming 3 targets
-                drawValues.gx = dcc.getHorizontalRatio(0.0416667);
-                drawValues.gy = dcc.getVerticalRatio(0.0740741);
-            }
-        }
-        else{
-            drawValues.sideh = dcc.getHorizontalRatio(0.0942708);
-            drawValues.sidev = dcc.getVerticalRatio(0.167593);
-            drawValues.hl    = dcc.getHorizontalRatio(0.0244792);
-            drawValues.hs    = dcc.getHorizontalRatio(0.00208333);
-            drawValues.vl    = dcc.getVerticalRatio(0.0592593);
-            drawValues.vs    = dcc.getVerticalRatio(0.0222222);
+    if (numberOfTargets == 2){
+        drawValues.gx = dcc.getHorizontalRatio(0.266667);
+        drawValues.gy = dcc.getVerticalRatio(0.177778);
+    }
+    else{
+        // Assuming 3 targets
+        drawValues.gx = dcc.getHorizontalRatio(0.133333);
+        drawValues.gy = dcc.getVerticalRatio(0.177778);
+    }
 
-            if (numberOfTargets == 2){
-                drawValues.gx = dcc.getHorizontalRatio(0.266667);
-                drawValues.gy = dcc.getVerticalRatio(0.177778);
-            }
-            else{
-                // Assuming 3 targets
-                drawValues.gx = dcc.getHorizontalRatio(0.133333);
-                drawValues.gy = dcc.getVerticalRatio(0.177778);
-            }
-        }
-        return drawValues;
+    return drawValues;
 }
 

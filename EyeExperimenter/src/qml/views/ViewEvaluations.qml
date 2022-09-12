@@ -441,6 +441,9 @@ ViewBase {
         case evaluationRun.vmSTAGE_EXAMPLES:
             allowed_keys = [Qt.Key_N, Qt.Key_Escape, Qt.Key_S, Qt.Key_D]
             break;
+        case evaluationRun.vmSTAGE_EXPLANATION:
+            allowed_keys = [Qt.Key_N, Qt.Key_B, Qt.Key_Escape];
+            break;
         default:
             return;
         }

@@ -25,8 +25,7 @@ public:
     bool parseExpConfiguration(const QString &contents) override;
     void init(qreal display_resolution_width, qreal display_resolution_height) override;
     void configure(const QVariantMap &configuration) override;
-    qint32 size() const override { return parser.getTrials().size();}
-    qreal sizeToProcess() const override { return parser.getTrials().size()*2;}
+    qint32 size() const override;
     void renderStudyExplanationScreen(qint32 screen_index) override;
 
     // Draw the cross
@@ -39,12 +38,11 @@ public:
     void drawTrial(qint32 currentTrial, bool show, bool enableRenderDualMode = false);
 
     // Get the info on one trial.
-    BindingParser::BindingTrial getTrial(qint32 trial) {return parser.getTrials().at(trial);}
-
-    void enableDemoMode();
+    BindingParser::BindingTrial getTrial(qint32 trial) {return parser.getTrials().at(trial); }
 
     // Configuration required to know if the key for the explanation is for BC or UC
-    static const char * IS_BC
+    static const char * CONFIG_IS_BC;
+    static const char * CONFIG_N_TARGETS;
 
 private:
 
@@ -55,13 +53,14 @@ private:
     QLineF line0, line1;
 
     // The class that actually parses the experiment description.
-    BindingParser parser;
-
-    // Use small targets or not
-    bool smallTargets;
+    BindingParser parser;    
 
     // Obtained from parsing study file and computing the drawing constants.
     QRectF gridBoundingRect;
+
+    // Flags used for proper rendering and messaging during study explantion.
+    bool isBC;
+    qint32 numberOfTargets;
 
     // Flag drawing function
     void drawFlags(const BindingParser::BindingSlide &primary, const BindingParser::BindingSlide &secondary, const RenderFlagType &rtf);
@@ -80,7 +79,32 @@ private:
     const qreal DUAL_RENDERING_ARROW_HEAD          = 0.2;  // Percent of arrow width width
 
     const qreal DUAL_RENDERING_AIR_ARROW           = 0.15; // Of the space between the slides.
-    const qreal DUAL_RENDERING_ARROW_HTOW_RATIO    = 1.5; // The arrow is this many times high as it is wide.
+    const qreal DUAL_RENDERING_ARROW_HTOW_RATIO    = 0.9; // The arrow is this many times high as it is wide.
+
+    // Index representing the first few slides fo the study, for reference used during study explanations.
+    const qint32 SE_BC_ENCODING_DIFF               = 0;
+    const qint32 SE_BC_DECODING_DIFF               = 1;
+    const qint32 SE_BC_ENCODING_SAME               = 2;
+    const qint32 SE_BC_DECODING_SAME               = 3;
+
+    const qint32 SE_UC_ENCODING_DIFF               = 0;
+    const qint32 SE_UC_DECODING_DIFF               = 1;
+    const qint32 SE_UC_ENCODING_SAME               = 2;
+    const qint32 SE_UC_DECODING_SAME               = 3;
+
+    // Index representing trials for the explanation phase.
+    const qint32 SE_BC_2_DIFF_TRIAL                = 7;
+    const qint32 SE_BC_2_SAME_TRIAL                = 6;
+
+    const qint32 SE_UC_2_DIFF_TRIAL                = 7;
+    const qint32 SE_UC_2_SAME_TRIAL                = 6;
+
+    const qint32 SE_BC_3_DIFF_TRIAL                = 7;
+    const qint32 SE_BC_3_SAME_TRIAL                = 6;
+
+    const qint32 SE_UC_3_DIFF_TRIAL                = 6;
+    const qint32 SE_UC_3_SAME_TRIAL                = 7;
+
 
 };
 

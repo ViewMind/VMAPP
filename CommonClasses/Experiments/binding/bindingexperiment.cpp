@@ -1,26 +1,26 @@
-#include "imageexperiment.h"
+#include "bindingexperiment.h"
 
-const QString ImageExperiment::MSG_CORRECT = "studystatus_binding_correct";
-const QString ImageExperiment::MSG_INCORRECT = "studystatus_binding_incorrect";
+const QString BindingExperiment::MSG_CORRECT = "studystatus_binding_correct";
+const QString BindingExperiment::MSG_INCORRECT = "studystatus_binding_incorrect";
 
-ImageExperiment::ImageExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type){
+BindingExperiment::BindingExperiment(QWidget *parent, const QString &study_type):Experiment(parent,study_type){
 
     manager = new BindingManager();
     m = static_cast<BindingManager*>(manager);
 
     // Connecting the timer time out with the time out function.
-    connect(&stateTimer,&QTimer::timeout,this,&ImageExperiment::nextState);
+    connect(&stateTimer,&QTimer::timeout,this,&BindingExperiment::nextState);
 
     metaStudyType = VMDC::MultiPartStudyBaseName::BINDING;
 
 }
 
-bool ImageExperiment::startExperiment(const QString &workingDir, const QString &experimentFile, const QVariantMap &studyConfig){
+bool BindingExperiment::startExperiment(const QString &workingDir, const QString &experimentFile, const QVariantMap &studyConfig){
 
-    // We need to set up the target size for binding, before parsing.
+    // We need to set up the binding type to know which of the explanation set of strings will be used.
     QVariantMap config;
-    config.insert(BindingManager::CONFIG_USE_SMALL_TARGETS,
-                  (studyConfig.value(VMDC::StudyParameter::TARGET_SIZE).toString() == VMDC::BindingTargetSize::SMALL));
+    config.insert(BindingManager::CONFIG_IS_BC,(studyType == VMDC::Study::BINDING_BC));
+    config.insert(BindingManager::CONFIG_N_TARGETS,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS));
 
     m->configure(config);
 
@@ -60,7 +60,7 @@ bool ImageExperiment::startExperiment(const QString &workingDir, const QString &
 
 }
 
-void ImageExperiment::drawCurrentImage(){
+void BindingExperiment::drawCurrentImage(){
 
     if (state != STATE_RUNNING) return;
 
@@ -90,7 +90,7 @@ void ImageExperiment::drawCurrentImage(){
 
 }
 
-bool ImageExperiment::advanceTrial(){
+bool BindingExperiment::advanceTrial(){
 
     //qWarning() << currentTrial;
 
@@ -109,7 +109,7 @@ bool ImageExperiment::advanceTrial(){
     return false;
 }
 
-void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){    
+void BindingExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
 
     if (studyPhase != SP_EVALUATION) return;
@@ -125,7 +125,7 @@ void ImageExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
 }
 
-void ImageExperiment::resetStudy(){
+void BindingExperiment::resetStudy(){
 
     // Resettign the stats.
     incorrectResponses = 0;
@@ -141,13 +141,13 @@ void ImageExperiment::resetStudy(){
 
     drawCurrentImage();
     stateTimer.setInterval(TIME_START_CROSS);
-    stateTimer.start();
+    if (studyPhase == SP_EVALUATION) stateTimer.start();
 
     if (Globals::EyeTracker::IS_VR) updateSecondMonitorORHMD();
 
 }
 
-void ImageExperiment::keyPressHandler(int keyPressed){
+void BindingExperiment::keyPressHandler(int keyPressed){
 
     // Making sure the experiment can be aborted
     if (keyPressed == Qt::Key_Escape){
@@ -178,7 +178,7 @@ void ImageExperiment::keyPressHandler(int keyPressed){
     }
 }
 
-QString ImageExperiment::getExperimentDescriptionFile(const QVariantMap &studyConfig){
+QString BindingExperiment::getExperimentDescriptionFile(const QVariantMap &studyConfig){
     if (studyType == VMDC::Study::BINDING_BC){
         if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toString() == VMDC::BindingTargetCount::TWO){
             return ":/binding/descriptions/bc.dat";
@@ -197,7 +197,7 @@ QString ImageExperiment::getExperimentDescriptionFile(const QVariantMap &studyCo
     }
 }
 
-void ImageExperiment::nextState(){
+void BindingExperiment::nextState(){
 
     //qWarning() << "TIME INTERVAL: " << mtime.elapsed();
     //mtime.start();
@@ -304,7 +304,7 @@ void ImageExperiment::nextState(){
 
 }
 
-bool ImageExperiment::addNewTrial(){
+bool BindingExperiment::addNewTrial(){
     QString type = "";
     currentTrialID = m->getTrial(currentTrial).name;
 
@@ -327,7 +327,7 @@ bool ImageExperiment::addNewTrial(){
     return true;
 }
 
-void ImageExperiment::updateStudyMessages(){
+void BindingExperiment::updateStudyMessages(){
     studyMessages.clear();
     studyMessages[MSG_CORRECT] = correctResponses;
     studyMessages[MSG_INCORRECT] = incorrectResponses;
@@ -336,5 +336,5 @@ void ImageExperiment::updateStudyMessages(){
 
 
 
-ImageExperiment::~ImageExperiment(){
+BindingExperiment::~BindingExperiment(){
 }

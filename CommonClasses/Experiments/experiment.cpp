@@ -162,7 +162,7 @@ bool Experiment::startExperiment(const QString &workingDir,
         LogInterface logger;
         qDebug() << dbug;
         logger.appendWarning(dbug);
-        manager->enableDemoMode();
+        manager->enableShortStudyMode();
     }
 
     // Setting up the fixation computer.
@@ -392,10 +392,20 @@ void Experiment::moveStudyExplanationScreen(int key_pressed){
         }
     }
     else if (key_pressed == Qt::Key_N){
-        if (currentStudyExplanationScreen < manager->numberOfStudyExplanationScreens()){
+        if (currentStudyExplanationScreen < manager->getNumberOfStudyExplanationScreens()-1){
             currentStudyExplanationScreen++;
             renderCurrentStudyExplanationScreen();
         }
+        else {
+            // Going forward at the end loops back to the beginning
+            currentStudyExplanationScreen = 0;
+            renderCurrentStudyExplanationScreen();
+        }
+    }
+
+    // Abort should still be possible, if required.
+    else if (key_pressed == Qt::Key_Escape){
+        keyPressHandler(key_pressed);
     }
 }
 
@@ -412,6 +422,10 @@ void Experiment::keyPressHandler(int keyPressed){
 void Experiment::renderCurrentStudyExplanationScreen(){
     manager->renderStudyExplanationScreen(currentStudyExplanationScreen);
     updateSecondMonitorORHMD();
+    // Now we send the signal for the proper message.
+    QVariantMap stringToDisplay;
+    stringToDisplay[manager->getStringKeyForStudyExplanationList()] = currentStudyExplanationScreen;
+    emit Experiment::updateStudyMessages(stringToDisplay);
 }
 
 void Experiment::resetStudy(){

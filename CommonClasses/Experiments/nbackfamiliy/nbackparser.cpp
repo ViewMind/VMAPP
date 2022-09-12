@@ -1,4 +1,4 @@
-#include "fieldingparser.h"
+#include "nbackparser.h"
 
 //#ifdef EYETRACKER_HTCVIVEPRO
 //const qreal FieldingParser::RECT_WIDTH =                               203.75; //163/4;
@@ -24,42 +24,42 @@
 //const qreal FieldingParser::TARGET_BOX_EX_H =                            0.268; //1.5/5.6;
 //#endif
 
-const qreal FieldingParser::K_RECT_WIDTH =                               0.085;
-const qreal FieldingParser::K_RECT_HEIGHT =                              0.143;
+const qreal NBackParser::K_RECT_WIDTH =                               0.085;
+const qreal NBackParser::K_RECT_HEIGHT =                              0.143;
 
-const qreal FieldingParser::K_HORIZONAL_MARGIN =                         0.06;
-const qreal FieldingParser::K_SPACE_BETWEEN_BOXES =                      0.09;
-const qreal FieldingParser::K_VERTICAL_MARGIN =                          0.06;
+const qreal NBackParser::K_HORIZONAL_MARGIN =                         0.06;
+const qreal NBackParser::K_SPACE_BETWEEN_BOXES =                      0.09;
+const qreal NBackParser::K_VERTICAL_MARGIN =                          0.06;
 
-const qreal FieldingParser::TARGET_BOX_EX_W =                            0.25;  //1.5/6.0;
-const qreal FieldingParser::TARGET_BOX_EX_H =                            0.268; //1.5/5.6;
+const qreal NBackParser::TARGET_BOX_EX_W =                            0.25;  //1.5/6.0;
+const qreal NBackParser::TARGET_BOX_EX_H =                            0.268; //1.5/5.6;
 
-FieldingParser::FieldingParser()
+NBackParser::NBackParser()
 {
 
 }
 
-QString FieldingParser::getError() const{
+QString NBackParser::getError() const{
     return error;
 }
 
-QList<FieldingParser::Trial> FieldingParser::getParsedTrials() const{
+QList<NBackParser::Trial> NBackParser::getParsedTrials() const{
     return fieldingTrials;
 }
 
-QString FieldingParser::getVersionString() const{
+QString NBackParser::getVersionString() const{
     return versionString;
 }
 
-QList<QRectF> FieldingParser::getHitTargetBoxes() const{
+QList<QRectF> NBackParser::getHitTargetBoxes() const{
     return hitTargetBoxes;
 }
 
-QList<QRectF> FieldingParser::getDrawTargetBoxes() const{
+QList<QRectF> NBackParser::getDrawTargetBoxes() const{
     return drawTargetBoxes;
 }
 
-qint32 FieldingParser::getTargetBoxForImageNumber(const QString &trialID, qint32 imgNum) const{
+qint32 NBackParser::getTargetBoxForImageNumber(const QString &trialID, qint32 imgNum) const{
     qint32 ans = -1;
     for (qint32 i = 0; i < fieldingTrials.size(); i++){
         if (fieldingTrials.at(i).id == trialID){
@@ -112,7 +112,7 @@ qint32 FieldingParser::getTargetBoxForImageNumber(const QString &trialID, qint32
 //}
 
 
-QList<qint32> FieldingParser::getSequenceForTrial(const QString &trialID){
+QList<qint32> NBackParser::getSequenceForTrial(const QString &trialID){
     for (qint32 i = 0; i < fieldingTrials.size(); i++){
         if (fieldingTrials.at(i).id == trialID){
             return fieldingTrials.at(i).sequence;
@@ -121,7 +121,7 @@ QList<qint32> FieldingParser::getSequenceForTrial(const QString &trialID){
     return QList<qint32>();
 }
 
-bool FieldingParser::parseFieldingExperiment(const QString &contents, qreal resolutionWidth, qreal resolutionHeight){
+bool NBackParser::parseFieldingExperiment(const QString &contents, qreal resolutionWidth, qreal resolutionHeight){
 
     // Generating the contents from the phrases
     QStringList lines = contents.split('\n',Qt::KeepEmptyParts);

@@ -10,10 +10,10 @@
 #include <QSet>
 #include <QTimer>
 
-#include "fieldingparser.h"
+#include "nbackparser.h"
 #include "../experimentdatapainter.h"
 
-class FieldingManager: public QObject, public ExperimentDataPainter
+class NBackManager: public QObject, public ExperimentDataPainter
 {    
     Q_OBJECT
 public:
@@ -22,18 +22,14 @@ public:
     typedef enum {DS_CROSS, DS_CROSS_TARGET, DS_1, DS_2, DS_3, DS_TARGET_BOX_ONLY} DrawState;
 
     // Constructor
-    FieldingManager();
+    NBackManager();
 
     // Basic functions to reimplement.
     bool parseExpConfiguration(const QString &contents) override;
     void init(qreal display_resolution_width, qreal display_resolution_height) override;
     void configure(const QVariantMap &config) override;
-    qint32 size() const override {return fieldingTrials.size();}
-    qint32 numberOfStudyExplanationScreens() const override {return 1;}
+    qint32 size() const override;
     void renderStudyExplanationScreen(qint32 screen_index) override;
-
-    // DEPRACATED.And wrong when using NBackVS with more than 3 targets.
-    qreal sizeToProcess() const override {return fieldingTrials.size()*3;}
 
     // The actual drawing function for the background.
     void drawBackground();
@@ -51,7 +47,7 @@ public:
     QPoint getTargetPoint(qint32 trial, qint32 image) const;
 
     // Getting an indivual trial.
-    FieldingParser::Trial getTrial(qint32 i) const { return fieldingTrials.at(i);}
+    NBackParser::Trial getTrial(qint32 i) const { return nbackTrials.at(i);}
 
     // Gets the expected hit sequence for a given trial
     QList<qint32> getExpectedTargetSequenceForTrial(qint32 trial, qint32 targetNum) const;
@@ -78,11 +74,9 @@ public:
     // Drawing the pause text
     void drawPauseScreen();
 
-    void enableDemoMode() override;
-
     static const char * CONFIG_IS_VR_BEING_USED;
     static const char * CONFIG_PAUSE_TEXT_LANG;
-
+    static const char * CONFIG_IS_VS;
     static const char * LANG_ES;
     static const char * LANG_EN;
 
@@ -92,7 +86,7 @@ private slots:
 private:
 
     // The list of trials
-    QList<FieldingParser::Trial> fieldingTrials;
+    QList<NBackParser::Trial> nbackTrials;
 
     // Graphical items shown in the screen
     QGraphicsEllipseItem    *gTarget;

@@ -137,7 +137,13 @@ viewevaluation_binding_uc = New Colours;
 viewevaluation_binding_bc = Colour Combinations;
 viewevaluation_shortcuts = Shortcuts;
 viewevaluation_evaluation_steps = Calibration|Explanation|Examples|Evaluation;
-viewevaluation_keyboard_explanations = Stop study|Resume study after pause|Advace study step|Indicate targets are different|Indicate that targets are the same;
+viewevaluation_keyboard_explanations = 
+Stop study|
+Resume study after pause|
+Advace study step in explanation|
+Back a study step in explanation|
+Indicate targets are different|
+Indicate that targets are the same;
 viewevaluation_action_calibrate = CALIBRATE;
 viewevaluation_action_examples = EXAMPLES;
 viewevaluation_action_starteval = START EVALUATION;
@@ -267,7 +273,7 @@ update_failed_message = <b>Update process failed</b><br>Please contanct viewmind
 
 #********************************* Explanation Phase Text *********************************
 
-explanation_binding_bc =
+explanation_phase_list_binding_bc =
 Esta es la prueba de Combinación de Colores.
 Durante el estudio, en la pantalla aparecerán unas figuras. 
 Recuerde la combinación de colores de cada figura. 
@@ -281,21 +287,17 @@ Si la combinación de colores es la misma, debe decir rápidamente
 “Igual” en voz alta. Si los colores cambiaron de una figura a la otra,
 debe decir rápidamente "Diferente".;
 
-explanation_binding_uc =
+explanation_phase_list_binding_uc =
 Slide 1|
 Slide 2|
 Slide 3|
 Slide 4;
 
-explanation_binding_uc = Slide 1|Slide 2;
+explanation_phase_list_gonogo     = Slide 1|Slide 2;
 
-explanation_binding_bc = Slide 1|Slide 2;
+explanation_phase_list_nbackrt    = Slide 1|Slide 2;
 
-explanation_gonogo     = Slide 1|Slide 2;
-
-explanation_nbackrt    = Slide 1|Slide 2;
-
-explanation_nbackvs    = Slide 1|Slide 2;
+explanation_phase_list_nbackvs    = Slide 1|Slide 2;
 
 #********************************* Text Loop Explanations *********************************
 explanation_gonogo = 
@@ -459,6 +461,7 @@ We will now do some practice rounds.
 ||||||||||||||||||||||||;
 
 explanation_key_to_continue = Press N on keyboard to advance;
+explanation_key_to_goback   = Press B on keyboard to move one slide back;
 
 #********************************* LABELING *********************************
 label_vm_body = <b>VIEWMIND S.A</b><br>Av. Belgrano Nro. 758, Ciudad de Sunchales Santa Fe, Argentina.<br>

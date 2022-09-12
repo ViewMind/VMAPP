@@ -1,32 +1,27 @@
-#include "fieldingmanager.h"
+#include "nbackmanager.h"
 
-const qreal FieldingManager::K_TARGET_R          =                        0.022; // of the width.
-const qreal FieldingManager::K_TARGET_OFFSET_X   =                        0.02;
-const qreal FieldingManager::K_TARGET_OFFSET_Y   =                        0.036;
-const qreal FieldingManager::K_CROSS_LINE_LENGTH =                        0.05;
+const qreal NBackManager::K_TARGET_R          =                        0.022; // of the width.
+const qreal NBackManager::K_TARGET_OFFSET_X   =                        0.02;
+const qreal NBackManager::K_TARGET_OFFSET_Y   =                        0.036;
+const qreal NBackManager::K_CROSS_LINE_LENGTH =                        0.05;
 
-const char * FieldingManager::CONFIG_IS_VR_BEING_USED  = "is_VR_used";
-const char * FieldingManager::CONFIG_PAUSE_TEXT_LANG   = "pause_text_lang";
+const char * NBackManager::CONFIG_IS_VR_BEING_USED  = "is_VR_used";
+const char * NBackManager::CONFIG_PAUSE_TEXT_LANG   = "pause_text_lang";
+const char * NBackManager::CONFIG_IS_VS             = "is_VS";
 
-const char * FieldingManager::LANG_EN = "EN";
-const char * FieldingManager::LANG_ES = "ES";
+const char * NBackManager::LANG_EN = "EN";
+const char * NBackManager::LANG_ES = "ES";
 
-const char * FieldingManager::PAUSE_TEXT_SPANISH = "Presione \"G\" para continuar el estudio";
-const char * FieldingManager::PAUSE_TEXT_ENGLISH = "Press \"G\" to continue with study";
+const char * NBackManager::PAUSE_TEXT_SPANISH = "Presione \"G\" para continuar el estudio";
+const char * NBackManager::PAUSE_TEXT_ENGLISH = "Press \"G\" to continue with study";
 
-FieldingManager::FieldingManager(){
+NBackManager::NBackManager(){
     vr_being_used = false;
     currentlyLitUp = -1;
-    connect(&litUpTimer,&QTimer::timeout,this,&FieldingManager::onLightOffTimeout);
+    connect(&litUpTimer,&QTimer::timeout,this,&NBackManager::onLightOffTimeout);
 }
 
-void FieldingManager::enableDemoMode(){
-    while (fieldingTrials.size() > NUMBER_OF_TRIALS_IN_DEMO_MODE){
-        fieldingTrials.removeLast();
-    }
-}
-
-void FieldingManager::setDebugSequenceValue(qint32 next_target_box){
+void NBackManager::setDebugSequenceValue(qint32 next_target_box){
     if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
         if (next_target_box == -1){
             gDebugSequenceValue->setZValue(-1);
@@ -38,15 +33,15 @@ void FieldingManager::setDebugSequenceValue(qint32 next_target_box){
     }
 }
 
-bool FieldingManager::parseExpConfiguration(const QString &contents){
+bool NBackManager::parseExpConfiguration(const QString &contents){
 
-    FieldingParser parser;
+    NBackParser parser;
     if (!parser.parseFieldingExperiment(contents,ScreenResolutionWidth,ScreenResolutionHeight)){
         error = parser.getError();
         return false;
     }
 
-    fieldingTrials  = parser.getParsedTrials();
+    nbackTrials  = parser.getParsedTrials();
     versionString   = parser.getVersionString();
     hitTargetBoxes  = parser.getHitTargetBoxes();
     drawTargetBoxes = parser.getDrawTargetBoxes();
@@ -55,7 +50,7 @@ bool FieldingManager::parseExpConfiguration(const QString &contents){
 
 }
 
-void FieldingManager::ligthOffAllBoxes(){
+void NBackManager::ligthOffAllBoxes(){
     //qDebug() << "Turn Off";
     currentlyLitUp = -1;
     lastBoxLitUp   = -1;
@@ -64,7 +59,7 @@ void FieldingManager::ligthOffAllBoxes(){
     }
 }
 
-void FieldingManager::onLightOffTimeout(){    
+void NBackManager::onLightOffTimeout(){
     if (currentlyLitUp != -1){
         graphicalTargetBoxes.at(currentlyLitUp)->setBrush(QBrush(Qt::black));
         lastBoxLitUp = currentlyLitUp;
@@ -72,7 +67,7 @@ void FieldingManager::onLightOffTimeout(){
     }
 }
 
-bool FieldingManager::lightUpBox(qint32 box_index){
+bool NBackManager::lightUpBox(qint32 box_index){
     if (box_index < 0) return false;
     if (box_index >= graphicalTargetBoxes.size()) return false;
     if (box_index == currentlyLitUp) return false;
@@ -90,19 +85,29 @@ bool FieldingManager::lightUpBox(qint32 box_index){
     return true;
 }
 
-void FieldingManager::configure(const QVariantMap &config){
+void NBackManager::configure(const QVariantMap &config){
     vr_being_used = config.value(CONFIG_IS_VR_BEING_USED,false).toBool();
     if (config.value(CONFIG_PAUSE_TEXT_LANG).toString() == LANG_ES) pauseText = PAUSE_TEXT_SPANISH;
     else pauseText = PAUSE_TEXT_ENGLISH;
+
+    if (config.value(CONFIG_IS_VS).toBool()){
+        explanationListTextKey = STUDY_TEXT_KEY_NBACKVS;
+        numberOfExplanationScreens = 2;
+    }
+    else {
+        explanationListTextKey = STUDY_TEXT_KEY_NBACKRT;
+        numberOfExplanationScreens = 2;
+    }
+
 }
 
-void FieldingManager::init(qreal display_resolution_width, qreal display_resolution_height){
+void NBackManager::init(qreal display_resolution_width, qreal display_resolution_height){
     ExperimentDataPainter::init(display_resolution_width,display_resolution_height);
     clearCanvas();
     drawBackground();
 }
 
-void FieldingManager::drawBackground(){
+void NBackManager::drawBackground(){
 
     qreal centerX = ScreenResolutionWidth/2;
     qreal centerY = ScreenResolutionHeight/2;
@@ -202,7 +207,7 @@ void FieldingManager::drawBackground(){
 
 }
 
-void FieldingManager::setDrawState(DrawState ds){
+void NBackManager::setDrawState(DrawState ds){
     switch (ds){
     case DS_1:
         gText1->setZValue(1);
@@ -255,10 +260,10 @@ void FieldingManager::setDrawState(DrawState ds){
     }
 }
 
-bool FieldingManager::setTargetPositionFromTrialName(const QString &trial, qint32 image){
+bool NBackManager::setTargetPositionFromTrialName(const QString &trial, qint32 image){
     qint32 id = -1;
-    for (qint32 i = 0; i < fieldingTrials.size(); i++){
-        if (fieldingTrials.at(i).id == trial){
+    for (qint32 i = 0; i < nbackTrials.size(); i++){
+        if (nbackTrials.at(i).id == trial){
             id = i;
             break;
         }
@@ -269,23 +274,23 @@ bool FieldingManager::setTargetPositionFromTrialName(const QString &trial, qint3
     return true;
 }
 
-void FieldingManager::setTargetPosition(qint32 trial, qint32 image){
+void NBackManager::setTargetPosition(qint32 trial, qint32 image){
 
     // Check to fix a small bug when using a sequence of six, when changing to a new image image number will be 6 and the following instruction will break.
-    if (image >= fieldingTrials.at(trial).sequence.size()) return;
+    if (image >= nbackTrials.at(trial).sequence.size()) return;
 
-    QRectF r = drawTargetBoxes.at(fieldingTrials.at(trial).sequence.at(image));
+    QRectF r = drawTargetBoxes.at(nbackTrials.at(trial).sequence.at(image));
     gTarget->setPos(r.x(),r.y());
 }
 
-QPoint FieldingManager::getTargetPoint(qint32 trial, qint32 image) const{
-    QRectF r = drawTargetBoxes.at(fieldingTrials.at(trial).sequence.at(image));
+QPoint NBackManager::getTargetPoint(qint32 trial, qint32 image) const{
+    QRectF r = drawTargetBoxes.at(nbackTrials.at(trial).sequence.at(image));
     return QPoint(static_cast<qint32>(r.x()),static_cast<qint32>(r.y()));
 }
 
-QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial, qint32 targetNum) const{
+QList<qint32> NBackManager::getExpectedTargetSequenceForTrial(qint32 trial, qint32 targetNum) const{
     QList<qint32> hits;
-    QList<qint32> sequence = fieldingTrials.at(trial).sequence.mid(0,targetNum);
+    QList<qint32> sequence = nbackTrials.at(trial).sequence.mid(0,targetNum);
 
     for (qsizetype i = sequence.size()-1; i >= 0; i--){
         hits << sequence.at(i);
@@ -293,8 +298,8 @@ QList<qint32> FieldingManager::getExpectedTargetSequenceForTrial(qint32 trial, q
     return hits;
 }
 
-QString FieldingManager::getFullSequenceAsString(qint32 trial){
-    QList<qint32> sequence = fieldingTrials.at(trial).sequence;
+QString NBackManager::getFullSequenceAsString(qint32 trial){
+    QList<qint32> sequence = nbackTrials.at(trial).sequence;
     QStringList strnumbers;
     for (qint32 i = 0; i < sequence.size(); i++){
         strnumbers << QString::number(sequence.at(i));
@@ -302,12 +307,12 @@ QString FieldingManager::getFullSequenceAsString(qint32 trial){
     return strnumbers.join(" ");
 }
 
-bool FieldingManager::isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const{
+bool NBackManager::isPointInTargetBox(qreal x, qreal y, qint32 targetBox) const{
     //return FieldingParser::isHitInTargetBox(hitTargetBoxes,targetBox,x,y);
     return hitTargetBoxes.at(targetBox).contains(x,y);
 }
 
-qint32 FieldingManager::pointIsInWhichTargetBox(qreal x, qreal y) const{
+qint32 NBackManager::pointIsInWhichTargetBox(qreal x, qreal y) const{
     for (qint32 i = 0; i < hitTargetBoxes.size(); i++){
         if (hitTargetBoxes.at(i).contains(x,y)){
             return i;
@@ -316,7 +321,16 @@ qint32 FieldingManager::pointIsInWhichTargetBox(qreal x, qreal y) const{
     return -1;
 }
 
-void FieldingManager::drawPauseScreen(){
+qint32 NBackManager::size() const {
+    if (shortModeEnabled){
+        return NUMBER_OF_TRIALS_IN_SHORT_MODE;
+    }
+    else {
+        return static_cast<qint32>(nbackTrials.size());
+    }
+}
+
+void NBackManager::drawPauseScreen(){
 
     this->clearCanvas();
     qreal xpos, ypos;
@@ -343,7 +357,7 @@ void FieldingManager::drawPauseScreen(){
 }
 
 
-void FieldingManager::renderStudyExplanationScreen(qint32 screen_index){
+void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
     canvas->clear();
     canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::blue)));
 }

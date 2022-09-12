@@ -20,17 +20,17 @@ RESOURCES += qml.qrc \
     languages.qrc
 
 SOURCES += main.cpp \
+    ../../CommonClasses/Experiments/binding/bindingexperiment.cpp \
     ../../CommonClasses/Experiments/binding/bindingmanager.cpp \
     ../../CommonClasses/Experiments/binding/bindingparser.cpp \
-    ../../CommonClasses/Experiments/binding/imageexperiment.cpp \
     ../../CommonClasses/Experiments/drawingconstantscalculator.cpp \
     ../../CommonClasses/Experiments/experiment.cpp \
     ../../CommonClasses/Experiments/experimentdatapainter.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogoexperiment.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogomanager.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogoparser.cpp \
-    ../../CommonClasses/Experiments/nbackfamiliy/fieldingmanager.cpp \
-    ../../CommonClasses/Experiments/nbackfamiliy/fieldingparser.cpp \
+    ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.cpp \
+    ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.cpp \
     ../../CommonClasses/EyeSelector/eyeselector.cpp \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/eventdetection.cpp \
@@ -71,17 +71,17 @@ SOURCES += main.cpp \
 
 
 HEADERS += \
+    ../../CommonClasses/Experiments/binding/bindingexperiment.h \
     ../../CommonClasses/Experiments/binding/bindingmanager.h \
     ../../CommonClasses/Experiments/binding/bindingparser.h \
-    ../../CommonClasses/Experiments/binding/imageexperiment.h \
     ../../CommonClasses/Experiments/drawingconstantscalculator.h \
     ../../CommonClasses/Experiments/experiment.h \
     ../../CommonClasses/Experiments/experimentdatapainter.h \
     ../../CommonClasses/Experiments/gonogo/gonogoexperiment.h \
     ../../CommonClasses/Experiments/gonogo/gonogomanager.h \
     ../../CommonClasses/Experiments/gonogo/gonogoparser.h \
-    ../../CommonClasses/Experiments/nbackfamiliy/fieldingmanager.h \
-    ../../CommonClasses/Experiments/nbackfamiliy/fieldingparser.h \
+    ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h \
+    ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h \
     ../../CommonClasses/EyeSelector/eyeselector.h \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/eventdetection.h \
