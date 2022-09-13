@@ -27,10 +27,18 @@ void QGraphicsExperiment::RunTests(){
 
     qreal delta = 300;
 
-    x2 = center_x + delta-250;
-    y2 = center_y + delta+10;
+    x2 = center_x + delta;
+    y2 = center_y + delta;
     arrow.setArrowColor(Qt::red);
     arrow.render(canvas,center_x,center_y,x2,y2);
+
+    qreal D = QGraphicsArrow::DistanceBetweenTwoPoints(QPointF(center_x,center_y),QPointF(x2,y2));
+    qDebug() << "D is" << D;
+    QPointF p = QGraphicsArrow::PointAlongRectThatCreatesAShorterLengthLine(center_x,center_y,x2,y2,D*0.8);
+
+    arrow.setArrowColor(QColor(Qt::blue));
+    arrow.setArrowWidth(5);
+    arrow.render(canvas,center_x,center_y,p.x(),p.y());
 
     x2 = center_x - delta;
     y2 = center_y - delta;
@@ -67,16 +75,6 @@ void QGraphicsExperiment::RunTests(){
     y2 = center_y;
     arrow.setArrowColor(Qt::darkGreen);
     arrow.render(canvas,center_x,center_y,x2,y2);
-
-//    x2 = center_x;
-//    y2 = center_y + delta;
-//    arrow.setArrowColor(Qt::blue);
-//    arrow.render(canvas,center_x,center_y,x2,y2);
-
-//    x2 = center_x;
-//    y2 = center_y - delta;
-//    arrow.setArrowColor(Qt::darkMagenta);
-//    arrow.render(canvas,center_x,center_y,x2,y2);
 
 
 }

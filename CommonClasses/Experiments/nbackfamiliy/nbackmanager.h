@@ -12,6 +12,7 @@
 
 #include "nbackparser.h"
 #include "../experimentdatapainter.h"
+#include "../qgraphicsarrow.h"
 
 class NBackManager: public QObject, public ExperimentDataPainter
 {    
@@ -88,6 +89,9 @@ private:
     // The list of trials
     QList<NBackParser::Trial> nbackTrials;
 
+    // The target Radious Size is used in several instances of the code, so it computed once and stored.
+    qreal TARGET_R;
+
     // Graphical items shown in the screen
     QGraphicsEllipseItem    *gTarget;
     QGraphicsLineItem       *gCrossLine0;
@@ -122,6 +126,36 @@ private:
 
     const qint32 LIGHT_OFF_TIME = 100; // Milliseconds.
 
+    // Renders arrows fromt the center of one target to the other.
+    // If source target is 0, then the center is the source.
+    void renderStudyArrows(qint32 source_target, qint32 dest_target, const QColor &color, bool drawStartMark = false);
+
+    // Renders barely visible targets to indicate where they used to be.
+    void renderPhantomTargets(QList<qint32> rectangle_indexes);
+
+    void setTargetPositionByRectangleIndex(qint32 rectangle_index);
+
+    // Common function that renders a target circle. To have the code all in the same place. It does not position the circle
+    // Returuns a pointer to the created circle
+    QGraphicsEllipseItem * renderTargetCircle();
+
+    // Referencing the slides for the explanations.
+    const qint32 STUDY_EXPLANTION_TARGET_1 = 0;
+    const qint32 STUDY_EXPLANTION_TARGET_2 = 1;
+    const qint32 STUDY_EXPLANTION_TARGET_3 = 2;
+    const qint32 STUDY_EXPLANTION_LOOK_3   = 3;
+    const qint32 STUDY_EXPLANTION_LOOK_2   = 4;
+    const qint32 STUDY_EXPLANTION_LOOK_1   = 5;
+    const qint32 STUDY_EXPLANTION_TARGET_4 = 6;
+    const qint32 STUDY_EXPLANTION_TARGET_5 = 7;
+    const qint32 STUDY_EXPLANTION_TARGET_6 = 8;
+    const qint32 STUDY_EXPLANTION_LOOK_6   = 9;
+    const qint32 STUDY_EXPLANTION_LOOK_5   = 10;
+    const qint32 STUDY_EXPLANTION_LOOK_4   = 11;
+
+    const qint32 NUMBER_OF_EXPLANATION_SLIDES = 12;
+
 };
 
 #endif // FIELDINGDRAW_H
+

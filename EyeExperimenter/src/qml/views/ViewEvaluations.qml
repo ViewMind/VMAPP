@@ -466,7 +466,7 @@ ViewBase {
                     if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_EXAMPLES){
                         if (event.key === Qt.Key_N){
                            //console.log("Advancing explanation phrase");
-                           evaluationRun.nextExplanationPhrase();
+                           evaluationRun.nextExampleTextPhrase();
                         }
                     }
 

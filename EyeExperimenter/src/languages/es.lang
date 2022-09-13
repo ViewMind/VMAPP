@@ -286,17 +286,76 @@ Veamos otro caso|
 Si la combinación de colores es la misma, debe decir rápidamente
 “Igual” en voz alta.;
 
+
 explanation_phase_list_binding_uc =
-Slide 1|
-Slide 2|
-Slide 3|
-Slide 4;
+Esta es la Prueba de Nuevos Colores.
+Durante el estudio, en la pantalla aparecerán unas figuras. 
+Recuerde la combinación de colores de cada figura. 
+Después de 2 segundos, las figuras desaparecerán|
+Aparecerá un nuevo grupo de figuras
+Debe identificar si apareció algún color nuevo. 
+Si apareció un nuevo color o no. 
+En este caso de decir rápidamente "Distinto" en voz alta|
+Veamos otro caso|
+Si no hay ningún color nuevo, como en este caso, debe 
+decir rápidamente “Igual” en voz alta.;
 
-explanation_phase_list_gonogo     = Slide 1|Slide 2;
 
-explanation_phase_list_nbackrt    = Slide 1|Slide 2;
+explanation_phase_list_gonogo     = 
+Esta es la Evaluación de Go/No-Go
+Cuando aparezca en panatalla una flecha roja apuntando a la derecha,
+debe mirar rápidamente al círculo de la izquierda|
+Cuando aparezca en panatalla una flecha verde apuntando a la derecha,
+debe mirar rápidamente al círculo de la derecha|
+Cuando aparezca en panatalla una flecha roja apuntando a la izquierda,
+debe mirar rápidamente al círculo de la derecha|
+Cuando aparezca en panatalla una flecha verde apuntando a la izquierda,
+debe mirar rápidamente al círculo de la izquierda;
 
-explanation_phase_list_nbackvs    = Slide 1|Slide 2;
+explanation_phase_list_nbackrt    = 
+Esta es la prueba N-back RT. 
+Se mostraran una serie de círculos rojos en pantalla en una secuencia determinada. 
+Mientras los círculos se mantengan en pantalla, usted debe mirar fijamente
+la cruz del centro. |
+Ahora aparece el segundo circulo de la secuencia |
+Finalmente, aparece el tercer y último ciruculo |
+Cuando la cruz desaparezca, se debe mirar al casillero donde apareció el último circulo.
+En la pantalla podrá ver indicadores de la ubicación de los círculos y el camino que
+debe trazar su mirada. Estos indicadores no aparecerám durante el estudio real.|
+Luego se debe mirar al casillero donde apareció  el segundo circulo|
+Y finalmente, al casillero donde apareció el primero|
+Probemos nuevamente. 
+Fije su mirada en el centro de la pantalla y note donde aparece el primer círculo.|
+Manteniendo la mirada en el centro, note el segundo ciruculo|
+Finalmente se muestra el tercer círculo.|
+Ahora mire al casillero donde apareció el tercer círculo|
+Ahora donde apareció el segundo circulo|
+Y finalmente donde apareció el tercero;
+
+explanation_phase_list_nbackvs    = 
+Esta es la prueba N-back De Entrenamiento. 
+Se mostraran una serie de círculos rojos en pantalla en una secuencia determinada. 
+Mientras los círculos se mantengan en pantalla, usted debe mirar fijamente
+la cruz del centro. 
+El número de circulos varía según la dificultad seleccionada del estudio. 
+Para este ejemplo se utilizarán 3|
+Ahora aparece el segundo circulo de la secuencia |
+Finalmente, aparece el tercer y último ciruculo|
+Cuando la cruz desaparezca, se debe mirar al casillero donde apareció el último circulo. 
+Durante el estudio, si se mira al rectángulo correcto, éste se iluminará. 
+En la pantalla podrá ver indicadores de la ubicación de los círculos y el camino que
+debe trazar su mirada. Estos indicadores no aparecerám durante el estudio real.|
+Luego se debe mirar al casillero donde apareció el segundo circulo|
+Y finalmente, al casillero donde apareció el primero.
+Con sucesivos éxitos, el tiempo que aparecen los círculos en pantalla disminuirá. 
+De la misma manera, con sucesivos fracasos, éste tiempo aumentará.|
+Probemos nuevamente. Fije su mirada en el centro de la pantalla y note 
+donde aparece el primer círculo.|
+Mantiendo la mirdad en el centro, note el segundo circulo|
+Finalmente se muestra el tercer círculo.|
+Ahora mire al casillero donde apareció el tercer círculo|
+Ahora donde apareció el segundo circulo|
+Y finalmente donde apareció el tercero;
 
 #********************************* Text Loop Explanations *********************************
 explanation_gonogo =

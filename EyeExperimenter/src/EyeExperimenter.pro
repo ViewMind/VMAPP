@@ -32,6 +32,7 @@ SOURCES += main.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.cpp \
+    ../../CommonClasses/Experiments/qgraphicsarrow.cpp \
     ../../CommonClasses/EyeSelector/eyeselector.cpp \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/eventdetection.cpp \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/opengazecommand.cpp \
@@ -83,6 +84,7 @@ HEADERS += \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h \
+    ../../CommonClasses/Experiments/qgraphicsarrow.h \
     ../../CommonClasses/EyeSelector/eyeselector.h \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/eventdetection.h \
     ../../CommonClasses/EyeTrackingInterface/GazePoint/opengazecommand.h \

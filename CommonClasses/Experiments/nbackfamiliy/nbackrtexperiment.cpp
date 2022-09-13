@@ -112,12 +112,13 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     // Resetting measuring variables.
     successfullTrials = false;
     timeoutTrials = false;
-    updateFronEndMessages();
 
     if (activateScreenView){
         this->show();
         this->activateWindow();
     }
+
+    this->renderCurrentStudyExplanationScreen();
 
     return true;
 }
@@ -312,18 +313,20 @@ QString NBackRTExperiment::getExperimentDescriptionFile(const QVariantMap &study
 
 void NBackRTExperiment::resetStudy(){
 
-    // Resetting measuring stats.
     successfullTrials = 0;
     timeoutTrials = 0;
-    updateFronEndMessages();
-
     currentTrial = 0;
     state = STATE_RUNNING;
     tstate = TSF_START;
-    stateTimer.start();
     m->drawBackground();
     drawCurrentImage();
     nbackConfig.resetVSStateMachine();
+
+    if (studyPhase == SP_EVALUATION){
+        updateFronEndMessages();
+        stateTimer.start();
+    }
+
 }
 
 void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){

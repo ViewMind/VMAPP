@@ -577,6 +577,9 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
                                 configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
                                 study_config);
 
+    // Since experiments starts in the explanation phase, it is then necessary to render the first screen.
+    // This will actually render the very first screen and update the text in the UI properly.
+    experiment->renderCurrentStudyExplanationScreen();
 
     if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) == ""){
        experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());

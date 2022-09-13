@@ -19,6 +19,7 @@ NBackManager::NBackManager(){
     vr_being_used = false;
     currentlyLitUp = -1;
     connect(&litUpTimer,&QTimer::timeout,this,&NBackManager::onLightOffTimeout);
+    numberOfExplanationScreens = NUMBER_OF_EXPLANATION_SLIDES;
 }
 
 void NBackManager::setDebugSequenceValue(qint32 next_target_box){
@@ -92,19 +93,23 @@ void NBackManager::configure(const QVariantMap &config){
 
     if (config.value(CONFIG_IS_VS).toBool()){
         explanationListTextKey = STUDY_TEXT_KEY_NBACKVS;
-        numberOfExplanationScreens = 2;
     }
     else {
         explanationListTextKey = STUDY_TEXT_KEY_NBACKRT;
-        numberOfExplanationScreens = 2;
     }
 
 }
 
 void NBackManager::init(qreal display_resolution_width, qreal display_resolution_height){
+
     ExperimentDataPainter::init(display_resolution_width,display_resolution_height);
     clearCanvas();
     drawBackground();
+
+    DrawingConstantsCalculator dcc;
+    dcc.setTargetResolution(ScreenResolutionWidth,ScreenResolutionHeight);
+    TARGET_R = dcc.getHorizontalRatio(K_TARGET_R)*ScreenResolutionWidth;
+
 }
 
 void NBackManager::drawBackground(){
@@ -168,11 +173,7 @@ void NBackManager::drawBackground(){
     gCrossLine1->setZValue(-1);
 
     // Adding the target
-    qreal TARGET_R = dcc.getHorizontalRatio(K_TARGET_R)*ScreenResolutionWidth;
-    gTarget = canvas->addEllipse(ScreenResolutionWidth*dcc.getHorizontalRatio(K_TARGET_OFFSET_X),
-                                 ScreenResolutionHeight*dcc.getVerticalRatio(K_TARGET_OFFSET_Y),
-                                 TARGET_R*2,TARGET_R*2,
-                                 QPen(),QBrush(Qt::red));
+    gTarget = renderTargetCircle();
 
     // Adding the text
     QFont letterFont;
@@ -279,8 +280,7 @@ void NBackManager::setTargetPosition(qint32 trial, qint32 image){
     // Check to fix a small bug when using a sequence of six, when changing to a new image image number will be 6 and the following instruction will break.
     if (image >= nbackTrials.at(trial).sequence.size()) return;
 
-    QRectF r = drawTargetBoxes.at(nbackTrials.at(trial).sequence.at(image));
-    gTarget->setPos(r.x(),r.y());
+    setTargetPositionByRectangleIndex(nbackTrials.at(trial).sequence.at(image));
 }
 
 QPoint NBackManager::getTargetPoint(qint32 trial, qint32 image) const{
@@ -358,6 +358,162 @@ void NBackManager::drawPauseScreen(){
 
 
 void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
+
+    QList<qint32> sequence;
+    if (screen_index >= STUDY_EXPLANTION_TARGET_4){
+        // Second example sequence
+        sequence << 2 << 5 << 0;
+    }
+    else {
+        // Third example sequence
+        sequence << 0 << 3 << 1;
+    }
+
+    QColor arrow(Qt::red);
+
     canvas->clear();
-    canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::blue)));
+    drawBackground();
+
+    if (screen_index == STUDY_EXPLANTION_TARGET_1){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(0));
+    }
+    else if (screen_index == STUDY_EXPLANTION_TARGET_2){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(1));
+    }
+    else if (screen_index == STUDY_EXPLANTION_TARGET_3){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(2));
+    }
+
+    else if (screen_index == STUDY_EXPLANTION_LOOK_3){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        renderPhantomTargets(sequence);
+        renderStudyArrows(-1,sequence.at(2),arrow,true);
+    }
+    else if (screen_index == STUDY_EXPLANTION_LOOK_2){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        renderPhantomTargets(sequence);
+        renderStudyArrows(-1,sequence.at(2),arrow,true);
+        renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
+    }
+    else if (screen_index == STUDY_EXPLANTION_LOOK_1){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        renderPhantomTargets(sequence);
+        renderStudyArrows(-1,sequence.at(2),arrow,true);
+        renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
+        renderStudyArrows(sequence.at(1),sequence.at(0),arrow);
+    }
+
+    else if (screen_index == STUDY_EXPLANTION_TARGET_4){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(0));
+    }
+    else if (screen_index == STUDY_EXPLANTION_TARGET_5){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(1));
+    }
+    else if (screen_index == STUDY_EXPLANTION_TARGET_6){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(2));
+    }
+
+    else if (screen_index == STUDY_EXPLANTION_LOOK_6){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        renderPhantomTargets(sequence);
+        renderStudyArrows(-1,sequence.at(2),arrow,true);
+    }
+    else if (screen_index == STUDY_EXPLANTION_LOOK_5){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        renderPhantomTargets(sequence);
+        renderStudyArrows(-1,sequence.at(2),arrow,true);
+        renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
+    }
+    else if (screen_index == STUDY_EXPLANTION_LOOK_4){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        renderPhantomTargets(sequence);
+        renderStudyArrows(-1,sequence.at(2),arrow,true);
+        renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
+        renderStudyArrows(sequence.at(1),sequence.at(0),arrow);
+    }
+
+}
+
+void NBackManager::renderPhantomTargets(QList<qint32> rectangle_indexes){
+
+    QFont letterFont;
+    letterFont.setFamily("Courier New");
+    letterFont.setPointSize(50);
+    letterFont.setBold(true);
+
+    for (qint32 i = 0; i < rectangle_indexes.size(); i++){
+        QGraphicsEllipseItem * circle = renderTargetCircle();
+        circle->setPen(QPen(Qt::gray));
+        circle->setBrush(QBrush(QColor(Qt::red).lighter(180)));
+        QRectF r = drawTargetBoxes.at(rectangle_indexes.at(i));
+        circle->setPos(r.x() + (r.width() - circle->boundingRect().width())/2,
+                       r.y() + (r.height() - circle->boundingRect().height())/2);
+
+
+        QGraphicsSimpleTextItem * indicator = canvas->addSimpleText(QString::number(i+1),letterFont);
+        qreal x = r.x() + (r.width() - indicator->boundingRect().width())/2;
+        qreal y = r.y() + (r.height() - indicator->boundingRect().height())/2;
+        indicator->setPos(x,y);
+        indicator->setBrush(QBrush(Qt::red));
+
+    }
+
+}
+
+void NBackManager::setTargetPositionByRectangleIndex(qint32 rectangle_index){
+    QRectF r = drawTargetBoxes.at(rectangle_index);
+    gTarget->setPos(r.x() + (r.width() - gTarget->boundingRect().width())/2,
+                   r.y() + (r.height() - gTarget->boundingRect().height())/2);
+
+}
+
+QGraphicsEllipseItem * NBackManager::renderTargetCircle(){
+    QGraphicsEllipseItem * circle = canvas->addEllipse(0,0,TARGET_R*2,TARGET_R*2,QPen(),QBrush(Qt::red));
+    return circle;
+}
+
+void NBackManager::renderStudyArrows(qint32 source_target, qint32 dest_target, const QColor &color, bool drawStartMark){
+
+    qreal xo, yo;
+    qreal xd, yd;
+
+    if (source_target >= 0){
+        QRectF r = drawTargetBoxes.at(source_target);
+        xo = r.x() + r.width()/2;
+        yo = r.y() + r.height()/2;
+    }
+    else {
+        // Screen center.
+        xo = ScreenResolutionWidth/2;
+        yo = ScreenResolutionHeight/2;
+    }
+
+    QRectF r = drawTargetBoxes.at(dest_target);
+    xd = r.x() + r.width()/2;
+    yd = r.y() + r.height()/2;
+
+    // The arrow is shortned
+    QList<qreal> deltas = QGraphicsArrow::PointDeltaToChangeSegmentLength(xo,yo,xd,yd,-2*TARGET_R);
+    qreal Dx = deltas.first();
+    qreal Dy = deltas.last();
+
+    deltas = QGraphicsArrow::PointDeltaToChangeSegmentLength(xo,yo,xd,yd,TARGET_R);
+    qreal Tx = deltas.first();
+    qreal Ty = deltas.last();
+
+    QGraphicsArrow arrow;
+    arrow.setArrowColor(color);
+
+    if (drawStartMark){
+        arrow.setArrowStartCircleParameters(3,color.lighter(130));
+    }
+
+    arrow.render(canvas,xo+Tx,yo+Ty,xd+Dx,yd+Dy,0.5);
+
 }

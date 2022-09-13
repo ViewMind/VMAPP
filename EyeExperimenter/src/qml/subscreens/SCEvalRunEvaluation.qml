@@ -17,8 +17,8 @@ Rectangle {
     property bool vmInCalibration: false
     property int vmCurrentEvaluation: 0
 
-    property var vmExplanationTextArray: []
-    property int vmExplanationTextIndex: -1
+    property var vmExampleTextArray: []
+    property int vmExampleTextIndex: -1
 
     property bool vmBindingStudyStarted: false;
 
@@ -87,6 +87,7 @@ Rectangle {
                 for (let key in string_value_map){
                     let message_list = loader.getStringListForKey(key)
                     let index = string_value_map[key];
+                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
                     studyExplanationText.text = message_list[index]
                 }
 
@@ -123,7 +124,7 @@ Rectangle {
         }
 
         if (unique_study_id === VMGlobals.vmINDEX_GONOGO){
-            vmExplanationTextArray = loader.getStringListForKey("explanation_gonogo");
+            vmExampleTextArray = loader.getStringListForKey("explanation_gonogo");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
             if (vmBindingStudyStarted){
@@ -132,7 +133,7 @@ Rectangle {
             else {
                 vmBindingStudyStarted = true;
             }
-            vmExplanationTextArray = loader.getStringListForKey("explanation_binding_bc");
+            vmExampleTextArray = loader.getStringListForKey("explanation_binding_bc");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_BINDING_UC){
             if (vmBindingStudyStarted){
@@ -141,24 +142,24 @@ Rectangle {
             else {
                 vmBindingStudyStarted = true;
             }
-            vmExplanationTextArray = loader.getStringListForKey("explanation_binding_uc");
+            vmExampleTextArray = loader.getStringListForKey("explanation_binding_uc");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_NBACKRT){
-            vmExplanationTextArray = loader.getStringListForKey("explanation_nbackrt");
+            vmExampleTextArray = loader.getStringListForKey("explanation_nbackrt");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_NBACKVS){
             let ntargets = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmSCP_NUMBER_OF_TARGETS]
-            vmExplanationTextArray = loader.getStringListForKey("explanation_nbackvs_" + ntargets);
+            vmExampleTextArray = loader.getStringListForKey("explanation_nbackvs_" + ntargets);
         }
         else if (unique_study_id === VMGlobals.vmINDEX_NBACKMS){
-            vmExplanationTextArray = loader.getStringListForKey("explanation_nbackms");
+            vmExampleTextArray = loader.getStringListForKey("explanation_nbackms");
         }
         else {
-            vmExplanationTextArray = [""];
+            vmExampleTextArray = [""];
         }
 
-        vmExplanationTextIndex = -1;
-        nextExplanationPhrase();
+        vmExampleTextIndex = -1;
+        nextExampleTextPhrase();
 
         // Button text must change to the next action, which is to start the examples.
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_examples"),"")
@@ -215,14 +216,17 @@ Rectangle {
             flowControl.startStudyExamplePhase();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"");
             viewEvaluations.advanceStudyIndicator();
-            vmExplanationTextIndex = -1; // Makes sure the next phrase is the first one.
-            nextExplanationPhrase();
+            vmExampleTextIndex = -1; // Makes sure the next phrase is the first one.
+            nextExampleTextPhrase();
         }
         else if (vmEvaluationStage == vmSTAGE_EXAMPLES){
             vmEvaluationStage = vmSTAGE_EVALUATION;
             viewEvaluations.enableNextButton(false);
             viewEvaluations.advanceStudyIndicator();
+            // Necessary to avoid confusing message between the end of an evaluation and the start of the next one.
+            studyExplanationText.text = "";
             flowControl.startStudyEvaluationPhase();
+
         }
         else if (vmEvaluationStage == vmSTAGE_EVALUATION){
             advanceStudy();
@@ -246,13 +250,13 @@ Rectangle {
         }
     }
 
-    function nextExplanationPhrase(){
-        vmExplanationTextIndex++;
+    function nextExampleTextPhrase(){
+        vmExampleTextIndex++;
         // Modulus operation in order to ensure circularity.
-        vmExplanationTextIndex = (vmExplanationTextIndex % vmExplanationTextArray.length)
-        let phrase = vmExplanationTextArray[vmExplanationTextIndex];
+        vmExampleTextIndex = (vmExampleTextIndex % vmExampleTextArray.length)
+        let phrase = vmExampleTextArray[vmExampleTextIndex];
 
-        console.log("In next Explanation Phrase. Got Phrase: " + phrase);
+        console.log("In next Example Phrase. Got Phrase: " + phrase);
 
         studyExplanationText.text = phrase;
     }

@@ -54,8 +54,6 @@ bool BindingExperiment::startExperiment(const QString &workingDir, const QString
     }
     else updateSecondMonitorORHMD();
 
-    this->renderCurrentStudyExplanationScreen();
-
     return true;
 
 }

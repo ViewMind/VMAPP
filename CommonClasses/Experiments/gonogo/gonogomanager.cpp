@@ -24,6 +24,8 @@ QRectF GoNoGoManager::getArrowBox() const{
 
 void GoNoGoManager::resetStudy(){
     trialIndex = 0;
+    clearCanvas();
+    drawAllElements();
 }
 
 QList<QRectF> GoNoGoManager::getLeftAndRightHitBoxes() const {
@@ -88,7 +90,7 @@ bool GoNoGoManager::parseExpConfiguration(const QString &contents){
 }
 
 bool GoNoGoManager::drawCross(){
-    if (trialIndex < gonogoTrials.size()){
+    if (trialIndex < this->size()){
         setVisibilityToElementList(gTargets,false);
         setVisibilityToElementList(gRLArrow,false);
         setVisibilityToElementList(gRRArrow,false);
@@ -159,6 +161,11 @@ void GoNoGoManager::drawAllElements(){
     qreal centerY = ScreenResolutionHeight/2;
 
     gTargets.clear();
+    gCross.clear();
+    gRLArrow.clear();
+    gRRArrow.clear();
+    gGRArrow.clear();
+    gGLArrow.clear();
 
     // Drawing targets.
     DrawingConstantsCalculator dcc;
@@ -235,5 +242,45 @@ bool GoNoGoManager::isPointInSideCorrectTargetForCurrentTrial(qreal x, qreal y) 
 
 void GoNoGoManager::renderStudyExplanationScreen(qint32 screen_index){
     canvas->clear();
-    canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::blue)));
+    drawAllElements();
+    setVisibilityToElementList(gCross,false);
+    setVisibilityToElementList(gTargets,true);
+    setVisibilityToElementList(gRRArrow,false);
+    setVisibilityToElementList(gRLArrow,false);
+    setVisibilityToElementList(gGRArrow,false);
+    setVisibilityToElementList(gGLArrow,false);
+
+    qint32 leftTarget = 0;
+    qint32 rightTarget = 1;
+    qint32 targetToLight = -1;
+
+    // qDebug() << "GO NO GO Explanation. Screen Index is " << screen_index;
+
+    if (screen_index == STUDY_EXPLANATION_IDX_RR){
+        setVisibilityToElementList(gRRArrow,true);
+        targetToLight = leftTarget;
+    }
+    else if (screen_index == STUDY_EXPLANATION_IDX_GR){
+        setVisibilityToElementList(gGRArrow,true);
+        targetToLight = rightTarget;
+    }
+    else if (screen_index == STUDY_EXPLANATION_IDX_RL){
+        setVisibilityToElementList(gRLArrow,true);
+        targetToLight = rightTarget;
+    }
+    else if (screen_index == STUDY_EXPLANATION_IDX_GL){
+        setVisibilityToElementList(gGLArrow,true);
+        targetToLight = leftTarget;
+    }
+
+    lightUpTarget(targetToLight);
+
+}
+
+void GoNoGoManager::lightUpTarget(qint32 index){
+    if ((index != 0) && (index != 1)) return;
+
+    QGraphicsEllipseItem * target = static_cast<QGraphicsEllipseItem*>(gTargets.at(index));
+    target->setBrush(QColor(Qt::gray).lighter(150));
+
 }

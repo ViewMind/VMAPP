@@ -62,6 +62,13 @@ private:
     static const char*  RED_ARROW_COLOR;
     static const char*  GREEN_ARROW_COLOR;
 
+    const qint32 STUDY_EXPLANATION_IDX_RR = 0;
+    const qint32 STUDY_EXPLANATION_IDX_GR = 1;
+    const qint32 STUDY_EXPLANATION_IDX_GL = 2;
+    const qint32 STUDY_EXPLANATION_IDX_RL = 3;
+
+    void lightUpTarget(qint32 index);
+
 };
 
 #endif // GONOGOMANAGER_H

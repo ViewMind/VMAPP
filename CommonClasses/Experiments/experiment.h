@@ -73,6 +73,9 @@ public:
     // Image required for VR Display
     QImage getVRDisplayImage() const;
 
+    // This is the function that gets called to render explation screens.
+    void renderCurrentStudyExplanationScreen();
+
 signals:
 
     // Should be emitted when the experiment is finalized
@@ -203,9 +206,6 @@ protected:
 
     // Each study has it's own implementation on how reset as if the experiment was just starting.
     virtual void resetStudy();
-
-    // This is the function that gets called to render explation screens.
-    void renderCurrentStudyExplanationScreen();
 
     // This is the number of trials to be used when manual mode is employed. When it reaches the number it loops back to the start.
     const qint32 NUMBER_OF_TRIALS_IN_MANUAL_MODE = 3;

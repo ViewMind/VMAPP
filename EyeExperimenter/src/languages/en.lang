@@ -274,30 +274,88 @@ update_failed_message = <b>Update process failed</b><br>Please contanct viewmind
 #********************************* Explanation Phase Text *********************************
 
 explanation_phase_list_binding_bc =
-Esta es la prueba de Combinación de Colores.
-Durante el estudio, en la pantalla aparecerán unas figuras. 
-Recuerde la combinación de colores de cada figura. 
-Después de 2 segundos, las figuras desaparecerán|
-Aparecerá un nuevo grupo de figuras
-Debe identificar si la combinación de colores de cada figura se mantuvo
-o si los colores se han intercambiado entre las figuras. 
-No aparecerán nuevos colores.|
-Veamos otro caso|
-Si la combinación de colores es la misma, debe decir rápidamente
-“Igual” en voz alta. Si los colores cambiaron de una figura a la otra,
-debe decir rápidamente "Diferente".;
+This is the Color Combination Test.
+During the study, the screen will display square targets.
+Remember the color combination of each target. 
+After 2 seconds, the targets will dissappear|
+A new group of targets will, then, appear. 
+You must identify if the color combination of each target remained the 
+same or if the colors have been swapped between targets. 
+No new colors will appear. 
+In this case you must quickly say "Different", out loud|
+Let's look at another case|
+If the color combination is the same, you must quickly say 
+“Same” out loud.;
 
 explanation_phase_list_binding_uc =
-Slide 1|
-Slide 2|
-Slide 3|
-Slide 4;
+This is the New Colors Test|
+During the study, the screen will display square targets.
+Remember the color combination of each target. 
+After 2 seconds, the targets will dissappear|
+A new group of targets will, then, appear. 
+You must identify if the color combination of each target remained the 
+same or if the colors have been swapped between targets. 
+No new colors will appear. 
+In this case you must quickly say "Different", out loud|
+Let's look at another case|
+If there is no new color, like in this case, you must quickly say
+same, out loud.;
 
-explanation_phase_list_gonogo     = Slide 1|Slide 2;
+explanation_phase_list_gonogo     = 
+This is the Go/No-Go test.
+When a red arrow pointing to the right appears on the screen, 
+you must quickly look to the left target.|
+When a green arrow pointing to the right appears on the screen, 
+you must quickly look to the right target.|
+When a red arrow pointing to the left appears on the screen, 
+you must quickly look to the right target.|
+When a green arrow pointing to the left appears on the screen, 
+you must quickly look to the left target.;
 
-explanation_phase_list_nbackrt    = Slide 1|Slide 2;
+explanation_phase_list_nbackrt    =
+This is the NBack RT Evaluation.
+Red circles will appear on the screen in a given sequence.
+While the cirles are being shown, please keep your eyes focused on the center cross|
+Now, a second circle will appear.| 
+Finally, the third and last circle of the sequence will be shown.|
+When the cross dissapears, you must look at the rectangle where the third circle appeared.
+The screen will show indicators for the circle locations and the path your gaze must do.
+These indicators will not be present during the real study.|
+You must now look at the rectangle where the second circle appeared before.|
+Finally you must look at the rectangle where the first circle was shown|
+Let's try again. Fix you eyes on the center cross and notice the first red circle.|
+While maintaining your eyes fixed on the cross, notice that the second circle appeared 
+on the screen.|
+Then the final third circle is shown|
+Now look at the rectangle where the third circle was shown|
+Then at the rectangle where the second one appeared|
+And finish by looking at the rectangle where the first circle appeared.;
 
-explanation_phase_list_nbackvs    = Slide 1|Slide 2;
+
+explanation_phase_list_nbackvs    = 
+This is the NBack Evaluation For Training.
+Red circles will appear on the screen in a given sequence.
+While the cirles are being shown, please keep your eyes focused on the center cross. 
+The number of circles in the sequence will depend on the selected difficulty. 
+This example will use 3.|
+Now, a second circle will appear.| 
+Finally, the third and last circle of the sequence will be shown.|
+When the cross dissapears, you must look at the rectangle where the third circle appeared. 
+During the study, a flash of light will indicate that you looked a the right rectangle.
+The screen will show indicators for the circle locations and the path your gaze must do.
+These indicators will not be present during the real study.|
+Then you must look at the rectangle where the second circle appeared before.|
+Finally you must look at the rectangle where the first circle was shown. 
+Successive completed sequences will decrease the time each circle is shown in the screen. 
+Likewise, successive failures will increase the time the circles are shown.|
+Let's try again. Fix you eyes on the center cross and notice the first red circle.|
+While maintaining your eyes fixed on the cross, notice that the second circle 
+appeared on the screen.|
+Then the final third circle is shown|
+Now look at the rectangle where the third circle was shown|
+Then at the rectangle where the second one appeared|
+And finish by looking at the rectangle where the first circle appeared.;
+
 
 #********************************* Text Loop Explanations *********************************
 explanation_gonogo = 
@@ -384,14 +442,12 @@ The circle disappears and reappears on another box |
 Finally, the circle disappears and reappears on another box. 
 Remember not to take your eyes of the cross while the 
 circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
+When the cross disappears, you must quickly look at the box where 
 the last circle appeared, then where the second to last appeared and so on 
 until you looked at all the boxes where circles appeared, in the inverse order.
 If you hit the correct box in the sequece, it will quicly flash
 As you hit correct sequences, the circles will be shown for less time.
 As you fail sequences the circles will be shown for more time. 
-We will now do some practice rounds.
 |||||||||||||||;
 
 explanation_nbackvs_4 = 
@@ -405,14 +461,12 @@ The circle disappears and reappears on another box |
 Finally, the circle disappears and reappears on another box. 
 Remember not to take your eyes of the cross while the 
 circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
+When the cross disappears, you must quickly look at the box where 
 the last circle appeared, then where the second to last appeared and so on 
 until you looked at all the boxes where circles appeared, in the inverse order.
 If you hit the correct box in the sequece, it will quicly flash
 As you hit correct sequences, the circles will be shown for less time.
 As you fail sequences the circles will be shown for more time. 
-We will now do some practice rounds.
 ||||||||||||||||||;
 
 explanation_nbackvs_5 = 
@@ -427,14 +481,12 @@ The circle disappears and reappears on another box |
 Finally, the circle disappears and reappears on another box. 
 Remember not to take your eyes of the cross while the 
 circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
+When the cross disappears, you must quickly look at the box where 
 the last circle appeared, then where the second to last appeared and so on 
 until you looked at all the boxes where circles appeared, in the inverse order.
 If you hit the correct box in the sequece, it will quicly flash
 As you hit correct sequences, the circles will be shown for less time.
 As you fail sequences the circles will be shown for more time. 
-We will now do some practice rounds.
 |||||||||||||||||||||;
 
 explanation_nbackvs_6 = 
@@ -450,14 +502,12 @@ The circle disappears and reappears on another box |
 Finally, the circle disappears and reappears on another box. 
 Remember not to take your eyes of the cross while the 
 circles appear|
-You must remember the location and the order in which the red circles 
-appeared. When the cross disappears, you must quickly look at the box where 
+When the cross disappears, you must quickly look at the box where 
 the last circle appeared, then where the second to last appeared and so on 
 until you looked at all the boxes where circles appeared, in the inverse order.
 If you hit the correct box in the sequece, it will quicly flash
 As you hit correct sequences, the circles will be shown for less time.
 As you fail sequences the circles will be shown for more time. 
-We will now do some practice rounds.
 ||||||||||||||||||||||||;
 
 explanation_key_to_continue = Press N on keyboard to advance;
