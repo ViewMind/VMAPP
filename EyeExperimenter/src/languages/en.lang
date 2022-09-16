@@ -177,7 +177,8 @@ viewevaluation_comfirm_abort_msg = Do you wish to stop the current study?<br>All
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
 viewevaluation_calibration_explanation = 
-A blue circle with a white dot will appear on the screen. Look at the white dot.
+A blue circle with a white dot in its center will appear on the screen. 
+Look at the white dot.
 The circle will move through the screen. You must follow it. Remember not to
 take your eyes off the circle until it disappears.
 
@@ -232,7 +233,7 @@ viewqc_comment_ph = Enter your comment;
 viewqc_send_wait = Please wait while information is being sent to our servers;
 viewqc_evaluator_comments = Evaluator comments will be included in the final report;
 viewqc_archive_studies = Archive Studies;
-viewQC_commentSizeError = Only a maximum of  <<L>> lines of up to  <<C>> characters is allowed;
+viewQC_commentSizeError = Text is too long;
 viewQC_specify_other = Specify other;
 viewqc_err_reason_missing = You must specify a reason for archiving;
 viewqc_err_server_error = <b>Server Error</b><br>A problem was detected in the server<br>Please contact the ViewMind for support;

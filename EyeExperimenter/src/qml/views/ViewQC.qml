@@ -26,22 +26,7 @@ ViewBase {
         viewer.currentIndex = vmSC_INDEX_QCGRAPHS
     }
 
-    function verifyCommentLength(comment){
-        // Preparing the error message.
-        var error = loader.getStringForKey("viewQC_commentSizeError");
-        // Language string needs to have these place holders for the maximum number of lines and characters
-        error = error.replace("<<L>>",vmMAX_L_COMMMENT_LINES)
-        error = error.replace("<<C>>",vmMAX_C_COMMENT_CHARS)
 
-        // Checking that every line is less htan the number of chars and that the total number of lines is less than the max.
-        var lines = comment.split("\n");
-        if (lines.length > vmMAX_L_COMMMENT_LINES) return error;
-        for (var l = 0; l < lines.length; l++){
-            if (lines[l].length > vmMAX_C_COMMENT_CHARS) return error;
-        }
-
-        return "";
-    }
 
     function loadProgressLine(){
 

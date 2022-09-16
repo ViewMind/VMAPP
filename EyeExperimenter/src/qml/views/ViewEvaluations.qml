@@ -110,6 +110,9 @@ ViewBase {
         // Index to indicate the current evaluation being performed.
         evaluationRun.vmCurrentEvaluation = 0;
 
+        // Making sure the is calibrated flag is set to false.
+        evaluationRun.vmIsCalibrated = false;
+
         // The back button is disabled past this point.
         backButton.vmEnabled = false;
 
@@ -133,6 +136,7 @@ ViewBase {
     }
 
     function calibrationValidated(){
+        evaluationRun.vmIsCalibrated = true;
         evaluationRun.prepareNextStudy(false);
     }
 
@@ -400,7 +404,8 @@ ViewBase {
             anchors.leftMargin: VMGlobals.adjustWidth(29)
             visible: {
                 if (evaluationRun.vmCurrentEvaluation === 0) return false;
-                if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_CALIBRATION) return true;
+                if (!evaluationRun.vmIsCalibrated) return false; // This takes precedence over the stage.
+                if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_CALIBRATION)  return true;
                 else return false;
             }
             onClickSignal: {

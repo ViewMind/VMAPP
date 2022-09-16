@@ -56,10 +56,6 @@ Rectangle {
         vmLabel: loader.getStringForKey("viewsettings_default_country")
         vmPlaceHolderText: loader.getStringForKey("viewsettings_def_country_placeholder")
         width: VMGlobals.adjustWidth(350)
-        //        anchors.top: parent.top
-        //        anchors.topMargin: VMGlobals.adjustHeight(106);
-        //        anchors.left: parent.left
-        //        anchors.leftMargin: VMGlobals.adjustWidth(20)
         anchors.top: uiLanguage.bottom
         anchors.topMargin: VMGlobals.adjustHeight(54);
         anchors.left: uiLanguage.left
@@ -69,6 +65,7 @@ Rectangle {
         Component.onCompleted: {
             vmLoadedCountry = loader.getDefaultCountry(false);
             setModelList(loader.getCountryList())
+            defaultCountry.setSelection(vmLoadedCountry)
         }
         onVmCurrentIndexChanged: {
             vmAnyChanges = vmAnyChanges || (vmLoadedCountry != vmCurrentIndex);

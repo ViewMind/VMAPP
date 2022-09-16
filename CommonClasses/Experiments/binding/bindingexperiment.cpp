@@ -249,7 +249,7 @@ void BindingExperiment::nextState(){
         //qWarning() << "ENTER: SHOW" << currentTrial;
 
         // Encoding Ends.
-        if (studyPhase != SP_EVALUATION){
+        if (studyPhase == SP_EVALUATION){
             finalizeOnlineFixations();
             rawdata.finalizeDataSet();
         }

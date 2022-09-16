@@ -15,6 +15,7 @@ Rectangle {
     property int vmEvaluationStage : vmSTAGE_CALIBRATION
     // The flag is required to indetify the moment between entering the strign and calibration actually staring.
     property bool vmInCalibration: false
+    property bool vmIsCalibrated: false;
     property int vmCurrentEvaluation: 0
 
     property bool vmBindingStudyStarted: false;
@@ -61,7 +62,6 @@ Rectangle {
 
             mainWindow.showCalibrationValidation();
 
-            //prepareNextStudy(false);
 
         }
 
@@ -196,6 +196,7 @@ Rectangle {
             if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
             else {
                 flowControl.calibrateEyeTracker(vmSlowCalibrationSelected);
+                vmIsCalibrated = false;
                 vmInCalibration = true;
             }
         }
