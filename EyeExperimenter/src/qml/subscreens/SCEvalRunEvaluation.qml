@@ -17,9 +17,6 @@ Rectangle {
     property bool vmInCalibration: false
     property int vmCurrentEvaluation: 0
 
-    property var vmExampleTextArray: []
-    property int vmExampleTextIndex: -1
-
     property bool vmBindingStudyStarted: false;
 
     property bool vmSlowCalibrationSelected: false
@@ -87,8 +84,17 @@ Rectangle {
                 for (let key in string_value_map){
                     let message_list = loader.getStringListForKey(key)
                     let index = string_value_map[key];
-                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
-                    studyExplanationText.text = message_list[index]
+                    //console.log("Showing explanation text " + index + " in a list of " + message_list.length);
+
+                    let message_to_display = message_list[index];
+
+                    let current_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+                    if (VMGlobals.vmSCP_NUMBER_OF_TARGETS in current_config){
+                        let ntargets = current_config[VMGlobals.vmSCP_NUMBER_OF_TARGETS]
+                        message_to_display = message_to_display.replace("<<N>>",ntargets);
+                    }
+
+                    studyExplanationText.text = message_to_display;
                 }
 
             }
@@ -123,17 +129,13 @@ Rectangle {
             vmBindingStudyStarted = false;
         }
 
-        if (unique_study_id === VMGlobals.vmINDEX_GONOGO){
-            vmExampleTextArray = loader.getStringListForKey("explanation_gonogo");
-        }
-        else if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
+        if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
             if (vmBindingStudyStarted){
                 setOngoingFileNameForStudyConfiguration();
             }
             else {
                 vmBindingStudyStarted = true;
             }
-            vmExampleTextArray = loader.getStringListForKey("explanation_binding_bc");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_BINDING_UC){
             if (vmBindingStudyStarted){
@@ -142,24 +144,10 @@ Rectangle {
             else {
                 vmBindingStudyStarted = true;
             }
-            vmExampleTextArray = loader.getStringListForKey("explanation_binding_uc");
-        }
-        else if (unique_study_id === VMGlobals.vmINDEX_NBACKRT){
-            vmExampleTextArray = loader.getStringListForKey("explanation_nbackrt");
         }
         else if (unique_study_id === VMGlobals.vmINDEX_NBACKVS){
             let ntargets = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmSCP_NUMBER_OF_TARGETS]
-            vmExampleTextArray = loader.getStringListForKey("explanation_nbackvs_" + ntargets);
         }
-        else if (unique_study_id === VMGlobals.vmINDEX_NBACKMS){
-            vmExampleTextArray = loader.getStringListForKey("explanation_nbackms");
-        }
-        else {
-            vmExampleTextArray = [""];
-        }
-
-        vmExampleTextIndex = -1;
-        nextExampleTextPhrase();
 
         // Button text must change to the next action, which is to start the examples.
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_examples"),"")
@@ -216,8 +204,7 @@ Rectangle {
             flowControl.startStudyExamplePhase();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"");
             viewEvaluations.advanceStudyIndicator();
-            vmExampleTextIndex = -1; // Makes sure the next phrase is the first one.
-            nextExampleTextPhrase();
+            studyExplanationText.text = "\n";
         }
         else if (vmEvaluationStage == vmSTAGE_EXAMPLES){
             vmEvaluationStage = vmSTAGE_EVALUATION;
@@ -248,17 +235,6 @@ Rectangle {
             evaluationRun.setStudyAndStage(studyAndStage[0],studyAndStage[1])
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_calibrate"),"")
         }
-    }
-
-    function nextExampleTextPhrase(){
-        vmExampleTextIndex++;
-        // Modulus operation in order to ensure circularity.
-        vmExampleTextIndex = (vmExampleTextIndex % vmExampleTextArray.length)
-        let phrase = vmExampleTextArray[vmExampleTextIndex];
-
-        console.log("In next Example Phrase. Got Phrase: " + phrase);
-
-        studyExplanationText.text = phrase;
     }
 
     function setCalibrationExplantion(){

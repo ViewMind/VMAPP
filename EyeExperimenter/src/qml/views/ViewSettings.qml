@@ -115,7 +115,8 @@ Item {
         anchors.bottom: buttonPanel.top
         width: buttonPanel.width
         border.width: 0
-        color: advanced.vmAnyChanges ? verticalDivider.color : advanced.color
+        //color: advanced.vmAnyChanges ? verticalDivider.color : advanced.color
+        color: verticalDivider.color
     }
 
 
@@ -135,7 +136,7 @@ Item {
             anchors.rightMargin: VMGlobals.adjustWidth(15)
             vmText: loader.getStringForKey("viewsettings_cancel")
             vmButtonType: btnCancel.vmTypeSecondary
-            visible: advanced.vmAnyChanges
+            //visible: advanced.vmAnyChanges
             onClickSignal: {
                 close()
             }
@@ -146,8 +147,9 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: VMGlobals.adjustWidth(20)
-            visible: advanced.vmAnyChanges
-            vmText: advanced.vmRestartRequired ? loader.getStringForKey("viewsettings_restart") : loader.getStringForKey("viewsettings_apply")
+            //visible: advanced.vmAnyChanges
+            //vmText: advanced.vmRestartRequired ? loader.getStringForKey("viewsettings_restart") : loader.getStringForKey("viewsettings_apply")
+            vmText: loader.getStringForKey("viewsettings_apply")
             onClickSignal: {
                 advanced.saveData();
                 settingsDialog.close()

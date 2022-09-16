@@ -360,6 +360,7 @@ void NBackManager::drawPauseScreen(){
 void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
 
     QList<qint32> sequence;
+    QMap<qint32,qint32> sequence_to_render;
     if (screen_index >= STUDY_EXPLANTION_TARGET_4){
         // Second example sequence
         sequence << 2 << 5 << 0;
@@ -389,20 +390,23 @@ void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
 
     else if (screen_index == STUDY_EXPLANTION_LOOK_3){
         setDrawState(DrawState::DS_TARGET_BOX_ONLY);
-        renderPhantomTargets(sequence);
+        sequence_to_render[3] = sequence.at(2);
+        renderPhantomTargets(sequence_to_render);
         renderStudyArrows(-1,sequence.at(2),arrow,true);
     }
     else if (screen_index == STUDY_EXPLANTION_LOOK_2){
         setDrawState(DrawState::DS_TARGET_BOX_ONLY);
-        renderPhantomTargets(sequence);
-        renderStudyArrows(-1,sequence.at(2),arrow,true);
+        sequence_to_render[3] = sequence.at(2);
+        sequence_to_render[2] = sequence.at(1);
+        renderPhantomTargets(sequence_to_render);
         renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
     }
     else if (screen_index == STUDY_EXPLANTION_LOOK_1){
         setDrawState(DrawState::DS_TARGET_BOX_ONLY);
-        renderPhantomTargets(sequence);
-        renderStudyArrows(-1,sequence.at(2),arrow,true);
-        renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
+        sequence_to_render[3] = sequence.at(2);
+        sequence_to_render[2] = sequence.at(1);
+        sequence_to_render[1] = sequence.at(0);
+        renderPhantomTargets(sequence_to_render);
         renderStudyArrows(sequence.at(1),sequence.at(0),arrow);
     }
 
@@ -421,42 +425,53 @@ void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
 
     else if (screen_index == STUDY_EXPLANTION_LOOK_6){
         setDrawState(DrawState::DS_TARGET_BOX_ONLY);
-        renderPhantomTargets(sequence);
+        sequence_to_render[3] = sequence.at(2);
+        renderPhantomTargets(sequence_to_render);
         renderStudyArrows(-1,sequence.at(2),arrow,true);
     }
     else if (screen_index == STUDY_EXPLANTION_LOOK_5){
         setDrawState(DrawState::DS_TARGET_BOX_ONLY);
-        renderPhantomTargets(sequence);
-        renderStudyArrows(-1,sequence.at(2),arrow,true);
+        sequence_to_render[3] = sequence.at(2);
+        sequence_to_render[2] = sequence.at(1);
+        renderPhantomTargets(sequence_to_render);
         renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
     }
     else if (screen_index == STUDY_EXPLANTION_LOOK_4){
         setDrawState(DrawState::DS_TARGET_BOX_ONLY);
-        renderPhantomTargets(sequence);
-        renderStudyArrows(-1,sequence.at(2),arrow,true);
-        renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
+        sequence_to_render[3] = sequence.at(2);
+        sequence_to_render[2] = sequence.at(1);
+        sequence_to_render[1] = sequence.at(0);
+        renderPhantomTargets(sequence_to_render);
         renderStudyArrows(sequence.at(1),sequence.at(0),arrow);
+    }
+    else {
+        setDrawState(DrawState::DS_CROSS);
     }
 
 }
 
-void NBackManager::renderPhantomTargets(QList<qint32> rectangle_indexes){
+void NBackManager::renderPhantomTargets(QMap<qint32, qint32> rectangle_indexes){
 
     QFont letterFont;
     letterFont.setFamily("Courier New");
     letterFont.setPointSize(50);
     letterFont.setBold(true);
 
-    for (qint32 i = 0; i < rectangle_indexes.size(); i++){
+    QList<qint32> target_numbers = rectangle_indexes.keys();
+
+    for (qint32 i = 0; i < target_numbers.size(); i++){
+
+        qint32 target_box = rectangle_indexes[target_numbers.at(i)];
+
         QGraphicsEllipseItem * circle = renderTargetCircle();
         circle->setPen(QPen(Qt::gray));
         circle->setBrush(QBrush(QColor(Qt::red).lighter(180)));
-        QRectF r = drawTargetBoxes.at(rectangle_indexes.at(i));
+        QRectF r = drawTargetBoxes.at(target_box);
         circle->setPos(r.x() + (r.width() - circle->boundingRect().width())/2,
                        r.y() + (r.height() - circle->boundingRect().height())/2);
 
 
-        QGraphicsSimpleTextItem * indicator = canvas->addSimpleText(QString::number(i+1),letterFont);
+        QGraphicsSimpleTextItem * indicator = canvas->addSimpleText(QString::number(target_numbers.at(i)),letterFont);
         qreal x = r.x() + (r.width() - indicator->boundingRect().width())/2;
         qreal y = r.y() + (r.height() - indicator->boundingRect().height())/2;
         indicator->setPos(x,y);

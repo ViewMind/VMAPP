@@ -98,11 +98,13 @@ Rectangle {
                 }
             }
         }
+
         onVmCurrentIndexChanged: {
             //console.log("Current lang text changed to: " + vmCurrentText + " while loaded lang is "  + vmCurrentLang)
             vmRestartRequired = (vmCurrentLang != vmCurrentText)
             vmAnyChanges = vmAnyChanges || vmRestartRequired;
         }
+
     }
 
 }

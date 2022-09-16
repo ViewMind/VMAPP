@@ -6,7 +6,7 @@ const char* GoNoGoManager::GREEN_ARROW_COLOR         = "#28ab14";
 GoNoGoManager::GoNoGoManager()
 {
     explanationListTextKey = STUDY_TEXT_KEY_GONOGO;
-    numberOfExplanationScreens = 4;
+    numberOfExplanationScreens = 8;
 }
 
 qint32 GoNoGoManager::size() const{
@@ -183,6 +183,7 @@ void GoNoGoManager::drawAllElements(){
 
     leftTarget->setPos(ScreenResolutionWidth*side_margin,centerY-target_radious);
     rightTarget->setPos(ScreenResolutionWidth*(1-side_margin)-diameter,centerY-target_radious);
+
     gTargets << leftTarget << rightTarget;
 
     // Drawing the cross.
@@ -272,6 +273,11 @@ void GoNoGoManager::renderStudyExplanationScreen(qint32 screen_index){
         setVisibilityToElementList(gGLArrow,true);
         targetToLight = leftTarget;
     }
+    else {
+        // We just need to show the cross.
+        setVisibilityToElementList(gTargets,false);
+        setVisibilityToElementList(gCross,true);
+    }
 
     lightUpTarget(targetToLight);
 
@@ -281,6 +287,18 @@ void GoNoGoManager::lightUpTarget(qint32 index){
     if ((index != 0) && (index != 1)) return;
 
     QGraphicsEllipseItem * target = static_cast<QGraphicsEllipseItem*>(gTargets.at(index));
-    target->setBrush(QColor(Qt::gray).lighter(150));
+    //target->setBrush(QColor(Qt::gray).lighter(150));
+
+    // In order for the circles to be truly concentric, the line width used to draw the target needed to be taken into accoutn.
+    DrawingConstantsCalculator dcc;
+    dcc.setTargetResolution(ScreenResolutionWidth,ScreenResolutionHeight);
+    qreal diameter = (ScreenResolutionWidth*dcc.getHorizontalRatio(GoNoGoParser::TARGET_SIZE));
+    qreal lwidth = diameter*GoNoGoParser::TARGET_LINE_WIDTH;
+
+    qreal D = target->boundingRect().width()*2; // We want a circle that is 2 times the diameter of the target circle.
+    qreal x = target->x() - D/4 - lwidth/2; // We want the center of the circle to be the same center as the target circle.
+    qreal y = target->y() - D/4 - lwidth/2;
+
+    canvas->addEllipse(x,y,D,D,QPen(Qt::blue,3));
 
 }

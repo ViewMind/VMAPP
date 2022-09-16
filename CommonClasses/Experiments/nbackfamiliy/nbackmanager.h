@@ -131,7 +131,7 @@ private:
     void renderStudyArrows(qint32 source_target, qint32 dest_target, const QColor &color, bool drawStartMark = false);
 
     // Renders barely visible targets to indicate where they used to be.
-    void renderPhantomTargets(QList<qint32> rectangle_indexes);
+    void renderPhantomTargets(QMap<qint32,qint32> rectangle_indexes);
 
     void setTargetPositionByRectangleIndex(qint32 rectangle_index);
 
@@ -140,20 +140,22 @@ private:
     QGraphicsEllipseItem * renderTargetCircle();
 
     // Referencing the slides for the explanations.
-    const qint32 STUDY_EXPLANTION_TARGET_1 = 0;
-    const qint32 STUDY_EXPLANTION_TARGET_2 = 1;
-    const qint32 STUDY_EXPLANTION_TARGET_3 = 2;
-    const qint32 STUDY_EXPLANTION_LOOK_3   = 3;
-    const qint32 STUDY_EXPLANTION_LOOK_2   = 4;
-    const qint32 STUDY_EXPLANTION_LOOK_1   = 5;
-    const qint32 STUDY_EXPLANTION_TARGET_4 = 6;
-    const qint32 STUDY_EXPLANTION_TARGET_5 = 7;
-    const qint32 STUDY_EXPLANTION_TARGET_6 = 8;
-    const qint32 STUDY_EXPLANTION_LOOK_6   = 9;
-    const qint32 STUDY_EXPLANTION_LOOK_5   = 10;
-    const qint32 STUDY_EXPLANTION_LOOK_4   = 11;
+    const qint32 STUDY_EXPLANTION_CROSS_1  = 0;
+    const qint32 STUDY_EXPLANTION_TARGET_1 = 1;
+    const qint32 STUDY_EXPLANTION_TARGET_2 = 2;
+    const qint32 STUDY_EXPLANTION_TARGET_3 = 3;
+    const qint32 STUDY_EXPLANTION_LOOK_3   = 4;
+    const qint32 STUDY_EXPLANTION_LOOK_2   = 5;
+    const qint32 STUDY_EXPLANTION_LOOK_1   = 6;
+    const qint32 STUDY_EXPLANTION_CROSS_2  = 7;
+    const qint32 STUDY_EXPLANTION_TARGET_4 = 8;
+    const qint32 STUDY_EXPLANTION_TARGET_5 = 9;
+    const qint32 STUDY_EXPLANTION_TARGET_6 = 10;
+    const qint32 STUDY_EXPLANTION_LOOK_6   = 11;
+    const qint32 STUDY_EXPLANTION_LOOK_5   = 12;
+    const qint32 STUDY_EXPLANTION_LOOK_4   = 13;
 
-    const qint32 NUMBER_OF_EXPLANATION_SLIDES = 12;
+    const qint32 NUMBER_OF_EXPLANATION_SLIDES = 14;
 
 };
 

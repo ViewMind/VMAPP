@@ -5,6 +5,7 @@ ExperimentDataPainter::ExperimentDataPainter()
     versionString = "v1";
     gazeUpdateEnabled = false;
     numberOfExplanationScreens = 1;
+    shortModeEnabled = false;
 }
 
 void ExperimentDataPainter::init(qreal display_resolution_width, qreal display_resolution_height){

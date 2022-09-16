@@ -142,7 +142,8 @@ Frenar estudios|
 Resumir estudio luego de pausa|
 Avanzar un paso en una explicación|
 Retroceder un paso en una explicación|
-Indicar objectivos distintos|Indicar objetivos iguales;
+Indicar objectivos distintos|
+Indicar objetivos iguales;
 viewevaluation_action_calibrate = CALIBRAR;
 viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
@@ -175,10 +176,13 @@ viewevaluation_comfirm_abort_title = Cancelar estudio;
 viewevaluation_comfirm_abort_msg = ¿Desea cancelar el estudio?<br>Todo el progreso se perderá y deberá comenzar nuevamente;
 viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
-viewevaluation_calibration_explanation = Un circulo azul con un punto blanco en el centro aparecerá en la pantalla. 
-Mire el punto blanco. El circulo y el punto se moverán por la pantalla. 
-Se debe seguir el círculo siempre concentrandose en el punto blanco. 
-Aparecerá por primera vez en la esquina izquierda superior.;
+viewevaluation_calibration_explanation = 
+Un círculo azul con un punto blanco en su centro aparecerá en la pantalla. Mire
+el punto blanco. El círculo se moverá por la pantalla. Usted debe seguirlo.
+Recuerde no quitar sus ojos del círculo hasta que este desaparezca.
+
+El primer círculo aparecerá en la esquina superior izquierda.;
+
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;
@@ -273,64 +277,75 @@ update_failed_message = <b>La actualización falló</b><br>Por favor contacte a 
 #********************************* Explanation Phase Text *********************************
 
 explanation_phase_list_binding_bc =
-Esta es la prueba de Combinación de Colores.
-Durante el estudio, en la pantalla aparecerán unas figuras. 
-Recuerde la combinación de colores de cada figura. 
-Después de 2 segundos, las figuras desaparecerán|
-Aparecerá un nuevo grupo de figuras
-Debe identificar si la combinación de colores de cada figura se mantuvo
-o si los colores se han intercambiado entre las figuras. 
-No aparecerán nuevos colores. 
-En este caso de decir rápidamente "Distinto" en voz alta|
-Veamos otro caso|
-Si la combinación de colores es la misma, debe decir rápidamente
-“Igual” en voz alta.;
-
+Esta es la prueba de Combinación de Colores. En esta prueba aparecerán <<N>> figuras.
+Las figuras se componen de un cuadrado de un color, con una cruz en su centro de
+otro color.
+En este caso debe recordar la combinación de colores de cada figura|
+Las figuras desaparecerán y aparecerá un nuevo grupo de figuras. Debe identificar 
+si la combinación de colores de las figuras es la misma o si los colores se han
+intercambiado entre las figuras. No parecerán nuevos colores. Si la combinación
+de colores es la misma, debe decir rápidamente “Igual” en voz alta. 
+“Diferente”, en caso contrario. En este caso diga "Diferente"
+Tenga en cuenta que la ubicación de las figuras no es importante.|
+Mire el siguiente ejemplo|
+En este caso, la combinación de colores de las figuras no ha cambiado,
+por lo tanto, debe decir "Igual".
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_binding_uc =
-Esta es la Prueba de Nuevos Colores.
-Durante el estudio, en la pantalla aparecerán unas figuras. 
-Recuerde la combinación de colores de cada figura. 
-Después de 2 segundos, las figuras desaparecerán|
-Aparecerá un nuevo grupo de figuras
-Debe identificar si apareció algún color nuevo. 
-Si apareció un nuevo color o no. 
-En este caso de decir rápidamente "Distinto" en voz alta|
-Veamos otro caso|
-Si no hay ningún color nuevo, como en este caso, debe 
-decir rápidamente “Igual” en voz alta.;
+Esta es la prueba de Nuevos Colores. En esta prueba aparecerán <<N>> figuras 
+como las que ve en la pantalla. Las figuras se componen de un cuadrado 
+de un color, con una cruz en su centro de otro color.
+Recuerde los colores presentes en las figuras.|
+Las figuras desaparecerán y aparecerá un nuevo grupo de figuras. Debe identificar
+si apareció algún color nuevo. Si apareció un nuevo color, debe decir rápidamente
+“Diferente” en voz alta. De lo contrario, diga “Igual”. Tenga en cuenta que la
+ubicación de las figuras no es importante, por lo tanto, no debe influir en
+su respuesta. En este caso, aparecieron 2 nuevos colores. Debe decir "Diferente"|
+Mire el siguiente ejemplo|
+En este caso, los colores son iguales, por lo tanto, debe decir "Igual"
+Ha entendido? Haremos algunas rondas de práctica antes de comenzar.;
 
 
 explanation_phase_list_gonogo     = 
-Esta es la Evaluación de Go/No-Go
-Cuando aparezca en panatalla una flecha roja apuntando a la derecha,
-debe mirar rápidamente al círculo de la izquierda|
-Cuando aparezca en panatalla una flecha verde apuntando a la derecha,
-debe mirar rápidamente al círculo de la derecha|
-Cuando aparezca en panatalla una flecha roja apuntando a la izquierda,
-debe mirar rápidamente al círculo de la derecha|
-Cuando aparezca en panatalla una flecha verde apuntando a la izquierda,
-debe mirar rápidamente al círculo de la izquierda;
+Esta es la evaluación de Go/No-go. Una cruz aparecerá en el centro de la
+pantalla. Mire la cruz. La cruz desaparecerá y en su lugar aparecerá una flecha.
+Si la flecha es color verde, mire rápidamente un punto en la dirección de la
+flecha. Si la flecha es color rojo, mire rápidamente en la dirección opuesta|
+En este caso, dado que la flecha es roja, mire al punto en la dirección opuesta,
+como lo indica el círculo azul.|
+Cuando la flecha desaparezca, mire rápidamente a la cruz.|
+En este caso, dado que la flecha es verde, mire en la dirección indicada por
+la flecha.|
+Mire de vuelta a la cruz.|
+Mire en la dirección de la flecha.|
+Mire de vuelta a la cruz.|
+Mire en la dirección opuesta a la flecha. Debe realizar el ejercicio lo más
+rápido que pueda.
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_nbackrt    = 
-Esta es la prueba N-back RT. 
-Se mostraran una serie de círculos rojos en pantalla en una secuencia determinada. 
-Mientras los círculos se mantengan en pantalla, usted debe mirar fijamente
-la cruz del centro. |
-Ahora aparece el segundo circulo de la secuencia |
-Finalmente, aparece el tercer y último ciruculo |
-Cuando la cruz desaparezca, se debe mirar al casillero donde apareció el último circulo.
-En la pantalla podrá ver indicadores de la ubicación de los círculos y el camino que
-debe trazar su mirada. Estos indicadores no aparecerám durante el estudio real.|
-Luego se debe mirar al casillero donde apareció  el segundo circulo|
-Y finalmente, al casillero donde apareció el primero|
-Probemos nuevamente. 
-Fije su mirada en el centro de la pantalla y note donde aparece el primer círculo.|
-Manteniendo la mirada en el centro, note el segundo ciruculo|
-Finalmente se muestra el tercer círculo.|
-Ahora mire al casillero donde apareció el tercer círculo|
-Ahora donde apareció el segundo circulo|
-Y finalmente donde apareció el tercero;
+Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
+Mantenga la mirada fija en la cruz.|
+Un círculo rojo aparecerá en una de las cajas. Esta es la Posición 1.|
+Luego, aparecerá en otra caja. Posición 2|
+Y finalmente en otra caja. Posición 3. Recuerde mantener su mirada fija en la cruz|
+Cuando la cruz desaparezca, debe mirar rápidamente a la Posición 3, donde apareció
+el última círculo, como lo indica la flecha.|
+Luego a la Posición 2, donde apareció el segundo círculo|
+Y finalmente a la posición 1, donde apareció el primer círculo. En el orden inverso
+en el que aparecieron.|
+Cuando termine, mire rápidamente a la cruz. Ahora la prueba se repetirá.|
+Posición 1|
+Posición 2|
+Posición 3|
+Ahora mire rápidamente a la Posición 3.|
+Posición 2|
+Y Posición 1.
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_nbackvs    = 
 Esta es la prueba N-back De Entrenamiento. 
@@ -356,151 +371,6 @@ Finalmente se muestra el tercer círculo.|
 Ahora mire al casillero donde apareció el tercer círculo|
 Ahora donde apareció el segundo circulo|
 Y finalmente donde apareció el tercero;
-
-#********************************* Text Loop Explanations *********************************
-explanation_gonogo =
-Esta es la Evaluación de Go/No-Go
-Una cruz aparecerá en el centro de la pantalla. Mire la cruz.
-La cruz desaparecerá y en su lugar aparecerá una flecha.
-Si la flecha es color verde, mire rápidamente un punto en la dirección de
-la flecha. Si la flecha es color rojo, mire rápidamente en la dirección
-opuesta. Ahora haremos algunas rondas de práctica|
-En este caso, debe fijarse en el punto de la izquierda|
-Ahora debe mirar nuevamente la cruz|
-Aquí, debe mirar al punto de la derecha|
-Recuerde mirar la cruz después de cada prueba|||;
-
-explanation_binding_bc =
-Esta es la prueba de Combinación de Colores.
-Una cruz aparecerá en el centro de la pantalla. Mire la cruz.|
-La cruz desaparecerá y aparecerán unas figuras. Recuerde la combinación
-de colores de cada figura. Después de 2 segundos, las figuras
-desaparecerán|
-Aparecerá un nuevo grupo de figuras|
-Debe identificar si la combinación de colores de cada figura se mantuvo
-o si los colores se han intercambiado entre las figuras. No aparecerán nuevos
-colores. Si la combinación de colores es la misma, debe decir rápidamente
-“Igual” en voz alta. Si los colores cambiaron de una figura a la otra,
-debe decir rápidamente "Diferente". Ahora haremos algunas rondas de práctica.||||||||||||||||;
-
-explanation_binding_uc =
-Esta es la Prueba de Nuevos Colores
-Una cruz aparecerá en el centro de la pantalla. Mire la cruz.|
-La cruz desaparecerá y aparecerán unas figuras. Las figuras
-se componen de un cuadrado de un color, con una cruz en su centro de
-otro color. Recuerde los colores presentes en las figuras.
-Después de 2 segundos, las figuras desaparecerán|
-Aparecerá un nuevo grupo de figuras|
-Debe identificar si apareció algún color nuevo. Si apareció un nuevo color,
-debe decir rápidamente “Diferente” en voz alta. De lo contrario, diga "Igual".
-Ahora haremos algunas rondas de práctica.||||||||||||||||;
-
-explanation_nbackrt =
-Esta es la prueba N-back RT
-La prueba se compone de 6 casillas y una cruz central.
-Mire la cruz|
-Aparecerá un círculo rojo en una de las casillas.
-No aparte sus ojos de la cruz|
-El círculo desaparecerá y aparecerá en otra casilla|
-Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
-Recuerde no apartar los ojos de la cruz mientras aparecen los círculos|
-Debe recordar la ubicación y el orden en que aparecieron los círculos.
-Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde
-apareció el tercer círculo, luego donde apareció el segundo y, finalmente,
-donde apareció el primero. En el orden inverso en el que aparecieron.
-Ahora haremos algunas rondas de práctica.|||||||||||||||;
-
-explanation_nbackms =
-La prueba se compone de 6 casillas y una cruz central.
-Mire la cruz|
-Aparecerá un círculo rojo en una de las casillas.
-No aparte sus ojos de la cruz|
-El círculo desaparecerá y aparecerá en otra casilla|
-Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
-Recuerde no apartar los ojos de la cruz mientras aparecen los círculos|
-La cruz desaparecerá y aparecerá un número 3.
-Debe mirar rápidamente en la casilla donde apareció el tercer círculo.|
-Luego aparecerá el número 2.
-Mire rápidamente la casilla donde apareció el segundo círculo.|
-Y finalmente, aparecerá el número 1.
-Mire rápidamente la casilla donde apareció el primer círculo.
-Debes mirar los círculos en el orden inverso al que aparecieron.
-Ahora haremos algunas rondas de práctica.;
-
-explanation_nbackvs_3 =
-La prueba se compone de 6 casillas y una cruz central.
-Mire la cruz|
-Aparecerá un círculo rojo en una de las casillas.
-No aparte sus ojos de la cruz|
-El círculo desaparecerá y aparecerá en otra casilla|
-Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
-Recuerde no apartar los ojos de la cruz mientras aparecen los círculos
-Debe recordar la ubicación y el orden en que aparecieron los círculos.|
-Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde apareció el último 
-círculo, luego donde apareció el penúltimo y así sucesivamente, hasta que haya mirado 
-todas las casillas donde aparecieron los círculos, en orden inverso. Si mira la casilla 
-correcta, la misma se iluminará por un instante. A medida que realice el ejercicio 
-correctamente, los círculos se mostrarán menos tiempo. Si falla, los círculos se 
-mostrarán más tiempo. Ahora haremos algunas rondas de práctica.
-|||||||||||||||;
-
-
-explanation_nbackvs_4 =
-La prueba se compone de 6 casillas y una cruz central.
-Mire la cruz|
-Aparecerá un círculo rojo en una de las casillas.
-No aparte sus ojos de la cruz|
-El círculo desaparecerá y aparecerá en otra casilla|
-El círculo desaparecerá y aparecerá en otra casilla|
-Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
-Recuerde no apartar los ojos de la cruz mientras aparecen los círculos
-Debe recordar la ubicación y el orden en que aparecieron los círculos.|
-Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde apareció el último 
-círculo, luego donde apareció el penúltimo y así sucesivamente, hasta que haya mirado 
-todas las casillas donde aparecieron los círculos, en orden inverso. Si mira la casilla 
-correcta, la misma se iluminará por un instante. A medida que realice el ejercicio 
-correctamente, los círculos se mostrarán menos tiempo. Si falla, los círculos se 
-mostrarán más tiempo. Ahora haremos algunas rondas de práctica.
-||||||||||||||||||;
-
-explanation_nbackvs_5 =
-La prueba se compone de 6 casillas y una cruz central.
-Mire la cruz|
-Aparecerá un círculo rojo en una de las casillas.
-No aparte sus ojos de la cruz|
-El círculo desaparecerá y aparecerá en otra casilla|
-El círculo desaparecerá y aparecerá en otra casilla|
-El círculo desaparecerá y aparecerá en otra casilla|
-Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
-Recuerde no apartar los ojos de la cruz mientras aparecen los círculos
-Debe recordar la ubicación y el orden en que aparecieron los círculos.|
-Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde apareció el último 
-círculo, luego donde apareció el penúltimo y así sucesivamente, hasta que haya mirado 
-todas las casillas donde aparecieron los círculos, en orden inverso. Si mira la casilla 
-correcta, la misma se iluminará por un instante. A medida que realice el ejercicio 
-correctamente, los círculos se mostrarán menos tiempo. Si falla, los círculos se 
-mostrarán más tiempo. Ahora haremos algunas rondas de práctica.
-|||||||||||||||||||||;
-
-explanation_nbackvs_6 =
-La prueba se compone de 6 casillas y una cruz central.
-Mire la cruz|
-Aparecerá un círculo rojo en una de las casillas.
-No aparte sus ojos de la cruz|
-El círculo desaparecerá y aparecerá en otra casilla|
-El círculo desaparecerá y aparecerá en otra casilla|
-El círculo desaparecerá y aparecerá en otra casilla|
-El círculo desaparecerá y aparecerá en otra casilla|
-Finalmente, el círculo desaparecerá y aparecerá en otra casilla.
-Recuerde no apartar los ojos de la cruz mientras aparecen los círculos
-Debe recordar la ubicación y el orden en que aparecieron los círculos.|
-Cuando la cruz desaparezca, debe mirar rápidamente la casilla donde apareció el último 
-círculo, luego donde apareció el penúltimo y así sucesivamente, hasta que haya mirado 
-todas las casillas donde aparecieron los círculos, en orden inverso. Si mira la casilla 
-correcta, la misma se iluminará por un instante. A medida que realice el ejercicio 
-correctamente, los círculos se mostrarán menos tiempo. Si falla, los círculos se 
-mostrarán más tiempo. Ahora haremos algunas rondas de práctica.
-||||||||||||||||||||||||;
 
 explanation_key_to_continue = Presione N en el Teclado para avanzar;
 explanation_key_to_goback   = Presione B en el Teclado para retroceder;

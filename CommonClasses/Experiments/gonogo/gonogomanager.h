@@ -62,10 +62,14 @@ private:
     static const char*  RED_ARROW_COLOR;
     static const char*  GREEN_ARROW_COLOR;
 
-    const qint32 STUDY_EXPLANATION_IDX_RR = 0;
-    const qint32 STUDY_EXPLANATION_IDX_GR = 1;
-    const qint32 STUDY_EXPLANATION_IDX_GL = 2;
-    const qint32 STUDY_EXPLANATION_IDX_RL = 3;
+    const qint32 STUDY_EXPLANATION_CROSS_0 = 0;
+    const qint32 STUDY_EXPLANATION_IDX_RR  = 1;
+    const qint32 STUDY_EXPLANATION_CROSS_1 = 2;
+    const qint32 STUDY_EXPLANATION_IDX_GR  = 3;
+    const qint32 STUDY_EXPLANATION_CROSS_2 = 4;
+    const qint32 STUDY_EXPLANATION_IDX_GL  = 5;
+    const qint32 STUDY_EXPLANATION_CROSS_3 = 6;
+    const qint32 STUDY_EXPLANATION_IDX_RL  = 7;
 
     void lightUpTarget(qint32 index);
 

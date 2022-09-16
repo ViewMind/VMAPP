@@ -170,6 +170,7 @@ qint32 BindingManager::size() const {
 }
 
 void BindingManager::configure(const QVariantMap &configuration){
+    numberOfTargets = configuration.value(CONFIG_N_TARGETS).toInt();
     if (configuration.value(CONFIG_IS_BC).toBool()){
         explanationListTextKey = STUDY_TEXT_KEY_BINDING_BC;
         isBC = true;
@@ -178,7 +179,6 @@ void BindingManager::configure(const QVariantMap &configuration){
         explanationListTextKey = STUDY_TEXT_KEY_BINDING_UC;
         isBC = false;
     }
-    numberOfTargets = configuration.value(CONFIG_N_TARGETS).toInt();
 }
 
 void BindingManager::drawCenter(){
