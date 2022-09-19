@@ -42,7 +42,8 @@ public:
 
     RCoefficients getRCoefficients() const;
 
-    QString calibrationPointsWithNoData() const;
+    QString getCalibrationPointsWithNoDataAsAString() const;
+    QVariantList getCalibrationPointsWithNoData() const;
 
 
 private:

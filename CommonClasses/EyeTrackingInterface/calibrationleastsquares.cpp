@@ -31,6 +31,7 @@ void CalibrationLeastSquares::configureValidation(const QVariantMap &calibration
     calibrationValidationData.clear();
     calibrationValidationData = calibrationValidationParameters;
     calibrationValidationData[VMDC::CalibrationFields::NUMBER_OF_CALIBRAION_POINTS] = calibrationPointsUsed;
+    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_PTS_NO_DATA] = QVariantList(); // It is initialized as en empty list.
 
     validationApproveThreshold = calibrationValidationParameters.value(VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD).toReal();
     validationPointHitTolerance = calibrationValidationParameters.value(VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE).toReal();
@@ -205,7 +206,7 @@ void CalibrationLeastSquares::generateCalibrationReport(){
     lines << "Right Eye R^2: x: " + QString::number(R.xr,'f',3) + ". y: " + QString::number(R.yr,'f',3);
     lines << "Left Eye R^2: x: " + QString::number(R.xl,'f',3) + ". y: " + QString::number(R.yl,'f',3);
 
-    QString pointsWithNoData = coeffs.calibrationPointsWithNoData();
+    QString pointsWithNoData = coeffs.getCalibrationPointsWithNoDataAsAString();
     if (pointsWithNoData != ""){
         lines << "The following calibration points had too few data points for calibration: " + pointsWithNoData;
     }
@@ -216,6 +217,7 @@ void CalibrationLeastSquares::generateCalibrationReport(){
     calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_TARGET_DIAMETER] = calibrationTargets.getCalibrationTargetDiameter();
     calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_TARGET_LOCATION] = calibrationTargets.getCalibrationTargetCorners();
     calibrationValidationData[VMDC::CalibrationFields::COFICIENT_OF_DETERMINATION]  = Rreport;
+    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_PTS_NO_DATA] = coeffs.getCalibrationPointsWithNoData();
 
     validationReport = lines.join("\n");
 

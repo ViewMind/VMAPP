@@ -184,6 +184,24 @@ Recuerde no quitar sus ojos del círculo hasta que este desaparezca.
 El primer círculo aparecerá en la esquina superior izquierda.;
 
 
+viewevaluation_calib_suggest_retry = 
+La calibración no pudo ser completada|
+Por favor, reintente calibrar.
+Si el problema subsiste, acomode nuevamente el casco sobre el paciente.;
+
+viewevaluation_calib_suggest_adjust = 
+La calibración no pudo ser completada|
+Por favor, acomode nuevamente el casco sobre el paciente e inténtelo nuevamente.;
+
+viewevaluation_calib_suggest_too_low = 
+La calibración no pudo ser completada|
+El casco parece estar ubicado demasiado bajo en la cabeza del paciente.
+Por favor ajuste la altura apropiadamente e intente calibrar nuevamente.;
+
+viewevaluation_calib_suggest_too_high = 
+La calibración no pudo ser completada|
+El casco parece estar ubicado demasiado alto en la cabeza del paciente.
+Por favor ajuste la altura apropiadamente e intente calibrar nuevamente.;
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;

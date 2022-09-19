@@ -47,7 +47,13 @@ ApplicationWindow {
         id: messageDiag
         onDismissed: {
             messageDiag.close();
-            Qt.quit()
+            if (vmCloseAppOnDismissed){
+                Qt.quit()
+            }
+            else {
+                messageDiag.vmCloseAppOnDismissed = true;
+            }
+
         }
     }
 
@@ -211,6 +217,59 @@ ApplicationWindow {
         var map = flowControl.getCalibrationValidationData();
         let W = map["W"];
         let H = map["H"];
+
+        let no_data_key = "calibration_points_with_too_few_data_points";
+        if (!(no_data_key in map)){
+            console.log("WARNING: Too Low Data POints Key Not Present in Calibration Validation Data Map. Moving on as if all ok");
+        }
+        else {
+
+            // We need to check what happened.
+            let no_data_calib_points = map[no_data_key];
+            let Nfail = no_data_calib_points.length
+
+            if (Nfail > 0){
+
+                // Something went wrong.
+                let upper_points = [0,1,2];
+                let lower_points = [6,7,8];
+
+                // Checking if at least two points are present from the upper points.
+                let upper_include = 0;
+                let i = 0;
+                for (i = 0; i < upper_points.length; i++){
+                    if (no_data_calib_points.includes(upper_points[i])) upper_include++;
+                }
+
+                // Checking if at least two points are present from the lower points.
+                let lower_include = 0;
+                for (i = 0; i < upper_points.length; i++){
+                    if (no_data_calib_points.includes(lower_points[i])) lower_include++;
+                }
+
+                if ((upper_include >= 2) && (lower_include === 0)){
+                    // Headset is too low.
+                    messageDiag.loadFromKey("viewevaluation_calib_suggest_too_low",true);
+                }
+                else if ((upper_include == 2) && (lower_include >= 2)){
+                    // Headset is too high.
+                    messageDiag.loadFromKey("viewevaluation_calib_suggest_too_high",true);
+                }
+                else if (Nfail === 1){
+                    // Generic retry. Likely a headset issue.
+                    messageDiag.loadFromKey("viewevaluation_calib_suggest_retry",true);
+                }
+                else {
+                    // Generic bad heaset. Adjust and retry.
+                    messageDiag.loadFromKey("viewevaluation_calib_suggest_adjust",true);
+                }
+
+                messageDiag.open(true) // The flag is to stop message diag from closing the applicaiton.
+                return;
+
+            }
+
+        }
 
         calibrationValidation.configuringRenderingParameters(map,W,H);
         calibrationValidation.redrawCanvas()

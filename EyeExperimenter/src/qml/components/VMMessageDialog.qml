@@ -15,19 +15,26 @@ Item {
     property string vmText: ""
     property bool vmLarge: false
     property bool vmUseRedAlert: false
+    property double vmWidthNormal: VMGlobals.adjustWidth(615)
+    property double vmWidthWide: VMGlobals.adjustWidth(715)
+    property bool vmCloseAppOnDismissed: true
 
     signal dismissed();
 
     ////////////////////////// BASE DIALOG FUNCTIONS ////////////////////////
-    function open(){
+    function open(doNotCloseAppOnDismissied){
         visible = true
+        if (doNotCloseAppOnDismissied === true){
+            vmCloseAppOnDismissed = false;
+        }
     }
 
     function close(){
         visible = false
     }
 
-    function loadFromKey(key){
+    function loadFromKey(key, makeWider){
+        //console.log("Loading from key '" + key + "'")
         var list = loader.getStringListForKey(key)
         //console.log(JSON.stringify(list));
         //console.log("List length " + list.length)
@@ -38,6 +45,15 @@ Item {
         }
         vmTitle = list[0]
         vmText = list[1]
+
+        if (makeWider === true){
+            dialog.width = vmWidthWide
+        }
+        else {
+            dialog.width = vmWidthNormal
+        }
+
+
     }
 
     MouseArea {
@@ -54,7 +70,7 @@ Item {
 
     Rectangle {
         id: dialog
-        width: VMGlobals.adjustWidth(615)
+        width: vmWidthNormal
         height: vmLarge ? VMGlobals.adjustHeight(308) : VMGlobals.adjustHeight(227)
         anchors.centerIn: parent
         radius: VMGlobals.adjustWidth(10);

@@ -25,13 +25,21 @@ void EyeCorrectionCoefficients::addPointForCoefficientComputation(const EyeRealD
     }
 }
 
-QString EyeCorrectionCoefficients::calibrationPointsWithNoData() const {
+QString EyeCorrectionCoefficients::getCalibrationPointsWithNoDataAsAString() const {
     QStringList ans;
     for (qint32 i = 0; i < calibrationData.size(); i++){
         if (calibrationData.at(i).size() < 2) ans << QString::number(i);
     }
     if (ans.empty()) return "";
     return ans.join(",");
+}
+
+QVariantList EyeCorrectionCoefficients::getCalibrationPointsWithNoData() const {
+    QVariantList ans;
+    for (qint32 i = 0; i < calibrationData.size(); i++){
+        if (calibrationData.at(i).size() < 2) ans << i;
+    }
+    return ans;
 }
 
 bool EyeCorrectionCoefficients::computeCoefficients(){

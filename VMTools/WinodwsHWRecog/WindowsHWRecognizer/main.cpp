@@ -15,11 +15,15 @@ int main(int argc, char *argv[])
         qDebug().noquote() << recog.getErrors().join("\n");
     }
 
-    HWRecognizer::HardwareMap hw = recog.getHardwareSpecs();
-    QStringList keys = hw.keys();
-    for (qint32 i = 0; i < keys.size(); i++){
-        qDebug() << keys.at(i) << "->" << hw.value(keys.at(i));
-    }
+//    HWRecognizer::HardwareMap hw = recog.getHardwareSpecs();
+//    QStringList keys = hw.keys();
+//    for (qint32 i = 0; i < keys.size(); i++){
+//        qDebug() << keys.at(i) << "->" << hw.value(keys.at(i));
+//    }
+
+    qDebug() << recog.toString(false);
+
+    qDebug().noquote() << recog.toString(true);
 
     //    QProcess process;
     //    QString path = "wmic";

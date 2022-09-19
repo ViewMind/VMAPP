@@ -21,6 +21,10 @@ public:
     static const quint8 ET_CODE_DISCONNECTED_FROM_ET            = 4;
     static const quint8 ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE = 5;
 
+    // Depending on the calibration results, it is sometimes possible to recomend different calibration suggestion.
+    // These will only be enabled when one or more of the calibration points cannot be computed.
+    typedef enum {CRM_NONE, CRM_HMD_ADJUST, CRM_RECALIBRATE, CRM_HMD_TOO_LOW, CRM_HMD_TOO_HIGH} CalibrationRetryMessage;
+
     explicit EyeTrackerInterface(QObject *parent = nullptr, qreal width = 1, qreal height = 1);
 
     virtual void connectToEyeTracker();
@@ -31,7 +35,6 @@ public:
 
     virtual void calibrate(EyeTrackerCalibrationParameters params);
 
-
     virtual void configureCalibrationValidation(QVariantMap calibrationValidationParamters);
 
     virtual QVariantMap getCalibrationValidationData() const;
@@ -39,6 +42,8 @@ public:
     virtual QString getCalibrationValidationReport() const;
 
     virtual QString getCalibrationRecommendedEye() const;
+
+    CalibrationRetryMessage getCalibrationRetryMessage() const;
 
     QImage getCalibrationImage() const;
 
@@ -69,6 +74,9 @@ protected:
     // The resolution, in case it is required by the eyetracker.
     qreal screenWidth;
     qreal screenHeight;
+
+    // The calibration retry message index.
+    CalibrationRetryMessage calib_retry_msg;
 
     // Calibration image if this needs to be displayed.
     QImage calibrationImage;

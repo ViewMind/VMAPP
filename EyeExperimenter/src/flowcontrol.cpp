@@ -397,10 +397,6 @@ void FlowControl::onEyeTrackerControl(quint8 code){
     case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
         logger.appendStandard("EyeTracker Control: Calibration and validation finished");
 
-        if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-            logger.appendStandard("VALIDATION REPORT:\n" + eyeTracker->getCalibrationValidationReport());
-        }
-
         calibrated = true;
         if (Globals::EyeTracker::IS_VR) eyeTracker->enableUpdating(false);
         renderState = RENDER_WAIT_SCREEN;

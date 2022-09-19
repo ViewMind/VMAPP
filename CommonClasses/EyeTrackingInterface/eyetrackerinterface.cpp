@@ -7,6 +7,7 @@ EyeTrackerInterface::EyeTrackerInterface(QObject *parent, qreal width, qreal hei
     screenWidth = width;
     eyeToTransmit = VMDC::Eye::BOTH;
     eyeTrackerEnabled = false;
+    calib_retry_msg = CRM_NONE; // By setting this to none, basically nothing will change unless the message is especifically implemented.
 }
 
 void EyeTrackerInterface::setEyeToTransmit(QString eye){
@@ -52,6 +53,10 @@ void EyeTrackerInterface::calibrate(EyeTrackerCalibrationParameters params){
 
 QImage EyeTrackerInterface::getCalibrationImage() const{
     return calibrationImage;
+}
+
+EyeTrackerInterface::CalibrationRetryMessage EyeTrackerInterface::getCalibrationRetryMessage() const{
+    return calib_retry_msg;
 }
 
 EyeTrackerData EyeTrackerInterface::getLastData() const{

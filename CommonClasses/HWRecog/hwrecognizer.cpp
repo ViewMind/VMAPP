@@ -19,6 +19,7 @@ HWRecognizer::HWRecognizer()
     QMap<QString,QString> keys_to_copy;
     keys_to_copy[SYSINFO_KEY_SYS_MANUFACTURER] = HWKeys::PC_BRAND;
     keys_to_copy[SYSINFO_KEY_SYS_MODEL] = HWKeys::PC_MODEL;
+    keys_to_copy[SYSINFO_KEY_RAM] = HWKeys::TOTAL_RAM;
     QStringList keys = keys_to_copy.keys();
     for (qint32 i = 0; i < keys.size(); i++){
         QString sysinfo_key = keys.at(i);
@@ -31,35 +32,57 @@ HWRecognizer::HWRecognizer()
         }
     }
 
+    QMap<QString,QStringList> info;
 
-    // Then we run the commands for each of the wmic commands.
-    WMICParseInfo wmic;
-
-    // Serial Number
-    wmic.n_words_for_brand = 0;
-    wmic.command = CMD_GET_DEVICE_SERIAL_NUMBER;
-    wmic.onlyFirstLine = true;
-    wmic.brand.clear(); wmic.model.clear();
-    parseWMICOutput(&wmic);
-    if (!wmic.model.empty()) specs[HWKeys::PC_SN] = wmic.model.first();
+    info = parseWMICOutputAsTable(CMD_GET_DEVICE_SERIAL_NUMBER);
+    if (!info.isEmpty()){
+        QStringList list = info.value(WMIC_KEY_SN);
+        if (!list.empty()){
+            specs[HWKeys::PC_SN] = list.first();
+        }
+    }
 
     // CPU Brand And Model
-    wmic.n_words_for_brand = 1;
-    wmic.command = CMD_GET_CPU_NAME;
-    wmic.onlyFirstLine = true;
-    wmic.brand.clear(); wmic.model.clear();
-    parseWMICOutput(&wmic);
-    if (!wmic.model.empty()) specs[HWKeys::CPU_MODEL] = wmic.model.first();
-    if (!wmic.brand.empty()) specs[HWKeys::CPU_BRAND] = wmic.brand.first();
+    info = parseWMICOutputAsTable(CMD_GET_CPU_NAME);
+    if (!info.isEmpty()){
+        QStringList list = info.value(WMIC_KEY_NAME);
+        if (!list.empty()){
+            QStringList keysToInsert; keysToInsert << HWKeys::CPU_BRAND << HWKeys::CPU_MODEL;
+            QList<qint32> count; count << 1;
+            parseStringIntoMap(list.first(),keysToInsert,count);
+        }
+    }
 
     // GPU Brand And Model.
-    wmic.n_words_for_brand = 1;
-    wmic.command = CMD_GET_GPU_NAME;
-    wmic.onlyFirstLine = true;
-    wmic.brand.clear(); wmic.model.clear();
-    parseWMICOutput(&wmic);
-    if (!wmic.model.empty()) specs[HWKeys::GPU_BRAND] = wmic.model.first();
-    if (!wmic.brand.empty()) specs[HWKeys::GPU_MODEL] = wmic.brand.first();
+    info = parseWMICOutputAsTable(CMD_GET_GPU_NAME);
+    if (!info.isEmpty()){
+        QStringList list = info.value(WMIC_KEY_NAME);
+        if (!list.empty()){
+            QStringList keysToInsert; keysToInsert << HWKeys::GPU_BRAND << HWKeys::GPU_MODEL;
+            QList<qint32> count; count << 1;
+            parseStringIntoMap(list.first(),keysToInsert,count);
+        }
+    }
+
+    // HDD Info
+    info = parseWMICOutputAsTable(CMD_GET_HDD_INFO);
+
+    if (!info.isEmpty()){
+
+        QStringList list = info.value(WMIC_KEY_MODEL);
+        if (!list.empty()){
+            specs[HWKeys::DISK_MODEL] = list.first();
+        }
+        list = info.value(WMIC_KEY_SN);
+        if (!list.empty()){
+            specs[HWKeys::DISK_SN] = list.first();
+        }
+        list = info.value(WMIC_KEY_SIZE);
+        if (!list.empty()){
+            specs[HWKeys::DISK_SIZE] = list.first();
+        }
+
+    }
 
 }
 
@@ -90,62 +113,115 @@ QString HWRecognizer::runCommand(const QString &command, const QStringList &args
 
 }
 
-bool HWRecognizer::parseWMICOutput(WMICParseInfo *wmic_struct){
+QMap<QString, QStringList> HWRecognizer::parseWMICOutputAsTable(const QString &cmd){
 
-    QStringList args = wmic_struct->command.split(" ");
+    QMap<QString, QStringList> parsedInformation;
+    QStringList args = cmd.split(" ");
     QString command = args.first();
     args.removeFirst();
     bool ok = true;
 
     QString cmd_output = runCommand(command,args,&ok);
 
-    if (!ok) return false;
+    if (!ok) return parsedInformation;
 
     cmd_output = cmd_output.remove('\r');
 
     QStringList lines = cmd_output.split("\n",Qt::SkipEmptyParts);
 
-    if (lines.size() > 1) lines.removeFirst(); // The very first line is usually the tile.
+    if (lines.size() < 2) {
+        this->lastErrors.append("Number of lines obtained in output when running command '" + cmd + "' is too low");
+        return parsedInformation;
+    }
+
+    // The first line is a table. The starting position of it's Name and It's value provide the formatting.
+    QString header = lines.first().trimmed();
+
+    QStringList keys;
+    QList<qint32> key_start_positions;
+    QString key = "";
+    qint32 position_start = 0;
+    bool searching_for_key = false;
 
 
-    for (qint32 i = 0; i < lines.size(); i++){
 
-        QStringList words = lines.at(i).split(" ",Qt::SkipEmptyParts);
-        QString brand;
-        QString model;
+    for (qint32 i = 0; i < header.size(); i++){
+        QChar c = header.at(i);
+        if (isspace(c.toLatin1())){
 
-        QStringList temp;
-        if (words.size() > wmic_struct->n_words_for_brand){
-            for (qint32 j = 0; j < wmic_struct->n_words_for_brand; j++){
-                temp << words.at(j);
+            if (!searching_for_key){
+                if (key == ""){
+                    this->lastErrors.append("Could not parse header. Found a space with empty key. Header: '" + header + "'");
+                    parsedInformation.clear();
+                    return parsedInformation;
+                }
+                else {
+                    keys << key;
+                    key_start_positions << position_start;
+                    parsedInformation[key] = QStringList();
+                    key = "";
+                    searching_for_key = true;
+                }
             }
-            brand = temp.join(" ");
 
-            temp.clear();
-            for (qint32 j = wmic_struct->n_words_for_brand; j < words.size(); j++){
-                temp << words.at(j);
-            }
-            model = temp.join(" ");
         }
         else {
-            // Default in case of un expected value in th word cout is to just treat the entire line as a model.
-            model = lines.at(i);
+
+            if (searching_for_key){
+                // This is a character when we are searching for the start of a key name.
+                key = QString("") + c;
+                searching_for_key = false;
+                position_start = i;
+            }
+            else {
+                key = key + c;
+            }
+
+        }
+    }
+
+    // When we reached the end, we need to check if key is non empty.
+    if (key != ""){
+        keys << key;
+        key_start_positions << position_start;
+        parsedInformation[key] = QStringList();
+    }
+
+
+
+    // Now armed with this information we can process all other lines.
+    for (qint32 i = 1; i < lines.size(); i++){
+        QString line = lines.at(i);
+
+        QString acc = "";
+        qint32 pos_in_str = 0;
+
+        for (qint32 j = 0; j < key_start_positions.size(); j++){
+            qint32 end;
+
+            if ( j < key_start_positions.size()-1) {
+                end = key_start_positions.at(j+1);
+            }
+            else {
+                end = static_cast<qint32>(line.size());
+            }
+
+            while (pos_in_str < end){
+                acc = acc + line.at(pos_in_str);
+                pos_in_str++;
+            }
+
+            // The key is actually indexed by the previous value.
+            parsedInformation[keys.at(j)] << acc.trimmed();
+            acc = "";
         }
 
-        wmic_struct->brand << brand;
-        wmic_struct->model << model;
-
-        if ((i == 0) && (wmic_struct->onlyFirstLine)){
-            // We ignore all lines other than the first one, after the header.
-            break;
-        }
 
     }
 
-    return true;
+    return parsedInformation;
 
 }
-
 
 void HWRecognizer::parseSystemInfo() {
 
@@ -216,5 +292,66 @@ void HWRecognizer::parseSystemInfo() {
     //    }
 
     //qDebug() << systemInfo;
+
+}
+
+void HWRecognizer::parseStringIntoMap(const QString &line, const QStringList &keys, const QList<qint32> count){
+
+    QStringList words = line.split(" ",Qt::SkipEmptyParts);
+
+    if (keys.size()-1 != count.size()) return;
+
+    // Special case of a single word.
+    if (keys.size() == 1){
+        specs.insert(keys.first(),line);
+        return;
+    }
+
+    qint32 cnt = count.first();
+    qint32 cnt_idx = 0;
+    QStringList temp;
+    qint32 i = 0;
+    for (i = 0; i < words.size(); i++){
+        temp << words.at(i);
+        if (temp.size() == cnt){
+            specs.insert(keys.at(i),temp.join(" "));
+            temp.clear();
+            cnt_idx++;
+            if (cnt_idx < count.size()){
+                cnt = count.at(cnt_idx);
+            }
+            else {
+                cnt = -1; // The if will never be true and so temp will have all the remaining word.s
+            }
+        }
+    }
+
+    // Temp has all the remaining words.
+    specs.insert(keys.last(),temp.join(" "));
+
+}
+
+QString HWRecognizer::toString(bool prettyPrint) const{
+
+    QStringList keys = specs.keys();
+
+    QStringList ans;
+
+    for (qint32 i = 0; i < keys.size(); i++){
+        QString value = specs.value(keys.at(i));
+        if (prettyPrint){
+            ans << keys.at(i) + ": " + value;
+        }
+        else {
+            ans << keys.at(i) + "|" + value;
+        }
+    }
+
+    if (prettyPrint){
+        return "\n   " + ans.join("\n   ");
+    }
+    else {
+        return ans.join("||");
+    }
 
 }

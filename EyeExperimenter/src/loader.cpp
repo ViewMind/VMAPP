@@ -150,7 +150,10 @@ QStringList Loader::getStringListForKey(const QString &key){
     if (language.containsKeyword(key)){
         return language.getStringList(key);
     }
-    else return QStringList();
+    else {
+        //qDebug() << language.getAllKeys();
+        return QStringList();
+    }
 }
 
 
