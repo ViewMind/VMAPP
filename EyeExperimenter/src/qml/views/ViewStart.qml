@@ -33,12 +33,6 @@ ViewBase {
             }
         }
 
-        function onPartnerSequenceDone() {
-            mainWindow.closeWait();
-            if (!allok){
-                console.log("ERROR: Partneer sequence failed");
-            }
-        }
     }
 
 

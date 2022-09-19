@@ -13,9 +13,8 @@
 
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../CommonClasses/RestAPIController/orbitpartnerapi.h"
-#include "../../CommonClasses/RestAPIController/partnerapi.h"
 #include "../../CommonClasses/FileDownloader/filedownloader.h"
+#include "../../CommonClasses/HWRecog/hwrecognizer.h"
 #include "eyexperimenter_defines.h"
 #include "countries.h"
 #include "localdb.h"
@@ -49,10 +48,6 @@ public:
     Q_INVOKABLE void openUserManual();
     Q_INVOKABLE bool forceOpenValidationDialog() const; // FOR DEBUG ONLY!!
     Q_INVOKABLE bool processingParametersArePresent() const;
-
-    //////////////////////////// PARTNER RELATED FUNCTIONS ////////////////////////////
-    Q_INVOKABLE QStringList getPartnerList() const;
-    Q_INVOKABLE void synchronizeToPartner(const QString &selectedPartner);
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
 
@@ -125,13 +120,11 @@ public:
 signals:
     void finishedRequest();
     void qualityControlDone();
-    void partnerSequenceDone(bool allok);
 
 private slots:
     void receivedRequest();
     void updateDownloadFinished(bool allOk);
     void qualityControlFinished();
-    void partnerFinished();
 
 private:
 
@@ -139,6 +132,9 @@ private:
     bool loadingError;
     ConfigurationManager *configuration;
     ConfigurationManager language;
+
+    // Module to recognize HW in computer.
+    HWRecognizer hwRecognizer;
 
     // String that stores the new version of the application if one is avaible. For display.
     QString newVersionAvailable;
@@ -167,17 +163,8 @@ private:
     // In order for the update to function properly the system command that calls the update script needs to be started in a separate thread.
     Updater updater;
 
-    // Stores the ini file information for partner connections. If the file exists.
-    QSettings *partners;
-
-    // The generic connection to a partner API.
-    PartnerAPI *partner_api;
-
     // Loads the appropiate language file.
     void changeLanguage();
-
-    // The last stage of the partner synchronization process. Actually does modifications to the localDB as needed.
-    void partnerSynchFinishProcess();
 
     // Loads default configurations when they don't exist.
     void loadDefaultConfigurations();

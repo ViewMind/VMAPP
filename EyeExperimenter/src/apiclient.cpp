@@ -27,7 +27,7 @@ void APIClient::configure(const QString &institution_id, const QString &instance
     this->region = region;
 }
 
-bool APIClient::requestOperatingInfo(){
+bool APIClient::requestOperatingInfo(const QString &hardware_description_string){
 
     error = "";
 
@@ -46,6 +46,7 @@ bool APIClient::requestOperatingInfo(){
     QVariantMap postdata;
     postdata.insert(POST_FIELD_INSTITUTION_ID,institution_id);
     postdata.insert(POST_FIELD_INSTITUTION_INSTANCE,instance_number);
+    postdata.insert(POST_FIELD_HW_STRING, hardware_description_string);
     rest_controller.setPOSTDataToSend(postdata);
 
     rest_controller.setURLParameters(map);

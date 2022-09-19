@@ -58,8 +58,6 @@ SOURCES += main.cpp \
     ../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.cpp \
-    ../../CommonClasses/RestAPIController/orbitpartnerapi.cpp \
-    ../../CommonClasses/RestAPIController/partnerapi.cpp \
     ../../CommonClasses/RestAPIController/restapicontroller.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     ../../CommonClasses/LogInterface/loginterface.cpp \
@@ -113,8 +111,6 @@ HEADERS += \
     ../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
     ../../CommonClasses/RawDataContainer/VMDC.h \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.h \
-    ../../CommonClasses/RestAPIController/orbitpartnerapi.h \
-    ../../CommonClasses/RestAPIController/partnerapi.h \
     ../../CommonClasses/RestAPIController/restapicontroller.h \
     ../../CommonClasses/debug.h \
     ../../CommonClasses/eyetracker_defines.h \

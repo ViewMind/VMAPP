@@ -34,7 +34,7 @@ public:
                    const QString &hash_code);
 
     // Request the list of medical professionals associated with this institution.
-    bool requestOperatingInfo();
+    bool requestOperatingInfo(const QString &hardware_description_string);
 
     // Request processing for report.
     bool requestReportProcessing(const QString &jsonFile);
@@ -97,6 +97,7 @@ private:
     // POST Data.
     const QString POST_FIELD_INSTITUTION_ID       = "institution_id";
     const QString POST_FIELD_INSTITUTION_INSTANCE = "institution_instance";
+    const QString POST_FIELD_HW_STRING            = "hardware_description_string";
 
     // Key for the $_FILES structure.
     const QString FILE_KEY                        = "FileToProcess";
