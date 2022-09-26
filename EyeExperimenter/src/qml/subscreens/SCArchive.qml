@@ -24,14 +24,6 @@ Rectangle {
             return;
         }
 
-        if (archiveReason.vmCurrentIndex === vmIndexReasonOther){
-            let ok = viewQC.verifyCommentLength(otherBox.getText())
-            if (ok !== ""){
-                otherBox.vmErrorMsg = ok;
-                return
-            }
-        }
-
         mainWindow.openWait(loader.getStringForKey("viewqc_send_wait"))
 
         // Setting the discard reason to empty.

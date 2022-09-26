@@ -4,16 +4,21 @@ HWRecognizer::HWRecognizer()
 {
 
     // Initialize the specs to all empty.
-    specs[HWKeys::CPU_BRAND] = "";
     specs[HWKeys::CPU_MODEL] = "";
-    specs[HWKeys::GPU_BRAND] = "";
     specs[HWKeys::GPU_MODEL] = "";
+    specs[HWKeys::GPU_BRAND] = "";
     specs[HWKeys::PC_BRAND] = "";
     specs[HWKeys::PC_MODEL] = "";
     specs[HWKeys::PC_SN] = "";
+    specs[HWKeys::DISK_MODEL] = "";
+    specs[HWKeys::DISK_SIZE] = "";
+    specs[HWKeys::DISK_SN] = "";
 
     // We parse the sytem info.
     parseSystemInfo();
+
+    // And the PNP info.
+    parsePNPUtilInfo();
 
     // Copy the relevant information.
     QMap<QString,QString> keys_to_copy;
@@ -47,10 +52,14 @@ HWRecognizer::HWRecognizer()
     if (!info.isEmpty()){
         QStringList list = info.value(WMIC_KEY_NAME);
         if (!list.empty()){
-            QStringList keysToInsert; keysToInsert << HWKeys::CPU_BRAND << HWKeys::CPU_MODEL;
-            QList<qint32> count; count << 1;
-            parseStringIntoMap(list.first(),keysToInsert,count);
+            specs[HWKeys::CPU_MODEL] = list.first();
         }
+    }
+
+    // We search for the entry of the CPU in the PNP Info.
+    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,specs.value(HWKeys::CPU_MODEL));
+    if (search_results.size() > 0){
+        specs[HWKeys::CPU_BRAND] = search_results.first().value(PNP_KEY_BRAND);
     }
 
     // GPU Brand And Model.
@@ -58,10 +67,14 @@ HWRecognizer::HWRecognizer()
     if (!info.isEmpty()){
         QStringList list = info.value(WMIC_KEY_NAME);
         if (!list.empty()){
-            QStringList keysToInsert; keysToInsert << HWKeys::GPU_BRAND << HWKeys::GPU_MODEL;
-            QList<qint32> count; count << 1;
-            parseStringIntoMap(list.first(),keysToInsert,count);
+            qDebug() << "MODELO";
+            specs[HWKeys::GPU_MODEL] = list.first();
         }
+    }
+
+    search_results = searchPNPInfo(PNP_KEY_DESC,specs.value(HWKeys::GPU_MODEL));
+    if (search_results.size() > 0){
+        specs[HWKeys::GPU_BRAND] = search_results.first().value(PNP_KEY_BRAND);
     }
 
     // HDD Info
@@ -353,5 +366,69 @@ QString HWRecognizer::toString(bool prettyPrint) const{
     else {
         return ans.join("||");
     }
+
+}
+
+QList< QMap<QString,QString> > HWRecognizer::searchPNPInfo(const QString &key, const QString &value){
+
+    QList< QMap<QString,QString> > ans;
+
+    for (qint32 i = 0; i < pnputilinfo.size(); i++){
+        if (pnputilinfo.value(i).value(key) == value){
+            ans << pnputilinfo.value(i);
+        }
+    }
+
+    return ans;
+
+}
+
+
+void HWRecognizer::parsePNPUtilInfo(){
+
+    QStringList args = CMD_PNPINFO.split(" ");
+    QString command = args.first();
+    args.removeFirst();
+    bool ok = true;
+
+    QString cmd_output = runCommand(command,args,&ok);
+
+    if (!ok) return;
+
+    cmd_output = cmd_output.remove('\r');
+
+    QStringList lines = cmd_output.split("\n");
+    QStringList entry;
+
+    pnputilinfo.clear();
+
+    for (qint32 i = 0; i < lines.size(); i++){
+        if (lines.at(i).trimmed() == ""){
+            if (!entry.empty()){
+                pnputilinfo << parseSinglePNPInfoEntry(entry);
+                entry.clear();
+            }
+        }
+        else {
+            entry << lines.at(i);
+        }
+    }
+
+}
+
+QMap<QString,QString> HWRecognizer::parseSinglePNPInfoEntry(const QStringList &lines){
+
+    QMap<QString,QString> parsed;
+
+    for (qint32 i = 0; i < lines.size(); i++){
+        QStringList parts = lines.at(i).split(":",Qt::SkipEmptyParts);
+        if (parts.size() < 2) continue;
+        QString key = parts.first();
+        parts.removeFirst();
+        QString value = parts.join(" ").trimmed();
+        parsed[key] = value;
+    }
+
+    return parsed;
 
 }

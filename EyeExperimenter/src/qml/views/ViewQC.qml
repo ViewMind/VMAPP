@@ -26,8 +26,6 @@ ViewBase {
         viewer.currentIndex = vmSC_INDEX_QCGRAPHS
     }
 
-
-
     function loadProgressLine(){
 
         // Selecting the different types of graphps.
