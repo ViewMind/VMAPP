@@ -27,5 +27,20 @@ void QImageDisplay::paint(QPainter *painter){
         qDebug() << "Tying to paint a null image in the QImageDisplay";
         return;
     }
-    painter->drawImage(0,0,displayImage.scaled(static_cast<qint32>(this->width()),static_cast<qint32>(this->height()),Qt::IgnoreAspectRatio));
+
+    //painter->drawImage(0,0,displayImage.scaled(static_cast<qint32>(this->width()),static_cast<qint32>(this->height()),Qt::IgnoreAspectRatio));
+
+    QImage toDisplay = displayImage.scaled(static_cast<qint32>(this->width()),static_cast<qint32>(this->height()),Qt::KeepAspectRatio);
+
+    // Now that the image is scaled, we compute the values to center the image.
+    qint32 x = 0;
+    qint32 y = 0;
+    if (toDisplay.width() < this->width()){
+        x = static_cast<qint32>((this->width() - toDisplay.width())/2);
+    }
+    if (toDisplay.height() < this->height()){
+        y = static_cast<qint32>((this->height() - toDisplay.height())/2);
+    }
+
+    painter->drawImage(x,y,toDisplay);
 }

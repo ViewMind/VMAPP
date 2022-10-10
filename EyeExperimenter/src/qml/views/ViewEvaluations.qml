@@ -34,7 +34,7 @@ ViewBase {
 
         var date = new Date();
         var year = date.getFullYear()
-        var day  = date.getDay()
+        var day  = date.getDate()
         var month = date.getMonth();
         var hour = date.getHours()
         var minutes =  date.getMinutes();

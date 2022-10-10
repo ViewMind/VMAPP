@@ -12,6 +12,7 @@ class QImageDisplay : public QQuickPaintedItem
     Q_OBJECT
     //Q_PROPERTY(QImage image READ image WRITE setImage NOTIFY imageChanged)
     Q_PROPERTY(QImage image READ getImage WRITE setImage)
+
 public:
     QImageDisplay(QQuickItem *parent = nullptr);
 
@@ -20,13 +21,13 @@ public:
     void setImage(const QImage &image);
 
     // Reimplemented function
-    void paint(QPainter *painter);
+    void paint(QPainter *painter) override;
 
 signals:
     //void imageChanged();
 
 private:
-    void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     QImage displayImage;
