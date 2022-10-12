@@ -9,6 +9,10 @@ Window {
     height: 1080
     visible: true
     title: qsTr("Render Server Development Helper App")
+    //flags: Qt.FramelessWindowHint | Qt.WA_TranslucentBackground
+    color: "transparent"
+    //color: "#00000000"
+    //opacity: 100
 
     Connections {
         target: control
@@ -59,23 +63,26 @@ Window {
 
     Rectangle {
         id: frame
-        width: renderServerView.width*1.01
-        height: renderServerView.height*1.01
-        border.color: "#000000";
-        border.width: 5;
-        anchors.centerIn: renderServerView
-    }
-
-
-    // Where all images will be displayed.
-    QImageDisplay {
-        id: renderServerView
         width: parent.width*0.7;
         height: parent.height*0.8;
+        border.color: "#000000";
+        border.width: 5;
+        //anchors.centerIn: renderServerView
         anchors.centerIn: parent
-        Component.onCompleted: {
-            control.setTargetInDisplayResolution(width,height);
-        }
+        color: "transparent"
+        opacity: 0
     }
+
+
+//    // Where all images will be displayed.
+//    QImageDisplay {
+//        id: renderServerView
+//        width: parent.width*0.7;
+//        height: parent.height*0.8;
+//        anchors.centerIn: parent
+//        Component.onCompleted: {
+//            control.setTargetInDisplayResolution(width,height);
+//        }
+//    }
 
 }
