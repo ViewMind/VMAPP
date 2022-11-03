@@ -1,25 +1,45 @@
-import QtQuick 2.12
-import QtQuick.Window 2.12
-import QtQuick.Controls 2.0
-import com.qml 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Window
+import Qt5Compat.GraphicalEffects
 
-Window {
+ApplicationWindow {
 
-    width: 1920
-    height: 1080
+    id: root
+    width: 1000
+    height: 900
     visible: true
     title: qsTr("Render Server Development Helper App")
-    //flags: Qt.FramelessWindowHint | Qt.WA_TranslucentBackground
-    color: "transparent"
-    //color: "#00000000"
-    //opacity: 100
+
+    property int clear_x: 0
+    property int clear_y: 0
+    property int clear_w: 0
+    property int clear_h: 0
 
     Connections {
         target: control
-        function onNewImageAvailable () {
-            renderServerView.image = control.image;
+        function onRequestWindowGeometry () {
+            onMove();
         }
     }
+
+    function onMove(){
+        console.log("QML WINDOW: (" + x + "," + y +") " + width + "x" + height);
+        control.setRenderWindowGeometry(frame.x,frame.y,frame.width,frame.height);
+    }
+
+    LinearGradient {
+        anchors.fill: parent
+        start: Qt.point(0, 0)
+        end: Qt.point(width,height)
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#ff0000" }
+            GradientStop { position: 0.034; color: "#ff0000" }
+            GradientStop { position: 0.7792; color: "#0000ff" }
+            GradientStop { position: 1.0; color: "#0000ff" }
+        }
+    }
+
 
     Column {
 
@@ -29,35 +49,24 @@ Window {
         anchors.top: parent.top
 
         Button {
-            id: btnConnect
+            id: btnHide
             hoverEnabled: false;
             width: parent.width
-            text: "CONNECT"
+            text: "HIDE"
             onClicked: {
-                control.connectToRenderServer();
+                control.hideRenderWindow();
             }
         }
 
-//        Button {
-//            id: btnLoadImage
-//            hoverEnabled: false;
-//            width: parent.width
-//            text: "LOAD IMAGE"
-//            onClicked: {
-//                control.loadImageFromFile("C:/Users/ViewMind/Documents/UnityProjects/CommunicationDev/screenshot_0.png");
-//            }
-//        }
-
-//        Button {
-//            id: btnSendTestData
-//            hoverEnabled: false;
-//            width: parent.width
-//            text: "SEND TEST DATA"
-//            onClicked: {
-//                control.sendTestData();
-//            }
-//        }
-
+        Button {
+            id: btnShow
+            hoverEnabled: false;
+            width: parent.width
+            text: "SHOW"
+            onClicked: {
+                control.showRenderWindow();
+            }
+        }
 
     }
 
@@ -67,22 +76,27 @@ Window {
         height: parent.height*0.8;
         border.color: "#000000";
         border.width: 5;
-        //anchors.centerIn: renderServerView
         anchors.centerIn: parent
         color: "transparent"
-        opacity: 0
     }
 
+    onWidthChanged: {
+        onMove()
+    }
 
-//    // Where all images will be displayed.
-//    QImageDisplay {
-//        id: renderServerView
-//        width: parent.width*0.7;
-//        height: parent.height*0.8;
-//        anchors.centerIn: parent
-//        Component.onCompleted: {
-//            control.setTargetInDisplayResolution(width,height);
-//        }
-//    }
+    onYChanged: {
+        onMove()
+    }
+
+    onXChanged: {
+        onMove()
+    }
+
+    onHeightChanged: {
+        onMove()
+    }
+
+    onWindowStateChanged: {
+    }
 
 }

@@ -7,8 +7,8 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        ../../../CommonClasses/LogInterface/loginterface.cpp \
-        ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
+        ../../../CommonClasses/LogInterface/loggerthread.cpp \
+        ../../../CommonClasses/LogInterface/staticthreadlogger.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacket.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacketrecognizer.cpp \
         ../../../CommonClasses/RenderServerClient/renderserverclient.cpp \
@@ -34,10 +34,17 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    ../../../CommonClasses/LogInterface/loginterface.h \
-    ../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
+    ../../../CommonClasses/LogInterface/loggerthread.h \
+    ../../../CommonClasses/LogInterface/staticthreadlogger.h \
     ../../../CommonClasses/RenderServerClient/RenderServerPackets/RenderServerPacketNames.h \
     ../../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacket.h \
     ../../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacketrecognizer.h \
     ../../../CommonClasses/RenderServerClient/renderserverclient.h \
     control.h
+
+LIBS += -lWinTrust
+LIBS += -lRpcRT4
+LIBS += -lole32
+LIBS += -lshell32
+LIBS += -ladvapi32
+LIBS += -luser32

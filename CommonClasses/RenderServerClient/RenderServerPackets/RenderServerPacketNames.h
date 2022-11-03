@@ -5,8 +5,7 @@
 #include <QVariantMap>
 
 namespace RenderServerPacketType {
-   static const QString TYPE_IMAGE                    = "image";
-   static const QString TYPE_REMOTE_TARGET_RESOLUTION = "remote_target_resolution";
+   static const QString TYPE_LOG_LOCATION             = "log_location";
    static const QString TYPE_CURRENT_EYE_POSITION     = "current_eye_position";
    static const QString TYPE_GONOGO_SPHERE            = "gonogo_sphere";
 }
@@ -23,19 +22,10 @@ namespace RenderServerPacketFields {
 
 }
 
-namespace PacketFrame {
+namespace PacketLogLocation {
 
-   static const QString IMAGE  = "base64EncodedFrame";
-   static const QString WIDTH  = "frameWidth";
-   static const QString HEIGHT = "frameHeight";
-   static const QString FRAME  = "frameNumber";
-
-}
-
-namespace PacketResolution {
-
-   static const QString WIDTH  = "width";
-   static const QString HEIGHT = "height";
+   static const QString LOG_LOCATION  = "log_location";
+   static const QString APP_NAME      = "app_designation";
 
 }
 

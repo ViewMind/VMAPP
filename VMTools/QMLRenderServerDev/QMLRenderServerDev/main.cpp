@@ -1,9 +1,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QWindow>
 
-#include "../../../CommonClasses/QMLQImageDisplay/qimagedisplay.h"
 #include "control.h"
+#include "../../../CommonClasses/LogInterface/staticthreadlogger.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,17 +12,14 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    // Registering the QImage Display Which allows to displays images generated in the C++ part of the application in the QML front end.
-    qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");
-
     QGuiApplication app(argc, argv);
+
+    StaticThreadLogger::StartLogger("QMLRenderDev","logfile.log");
 
     Control control;
 
-
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("control", &control);
-
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
@@ -30,6 +28,13 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
+
+    if (QWindow *window = qobject_cast<QWindow*>(engine.rootObjects().at(0))){
+        control.setWindowID(window->winId());
+        //control.runUnityRenderServer();
+    }
+
+
 
     return app.exec();
 }
