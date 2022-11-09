@@ -8,8 +8,55 @@ Control::Control(QObject *parent):QObject(parent)
     connect(&renderServer,&RenderServerClient::newPacketArrived,this,&Control::onNewPacketArrived);
     connect(&renderServer,&RenderServerClient::connectionEstablished,this,&Control::onConnectionEstablished);
     connect(&renderServer,&RenderServerClient::newMessage,this,&Control::onNewMessage);
+    connect(&renderServer,&RenderServerClient::readyToRender,this,&Control::onReadyToRender);
     connect(&baseUpdateTimer,&QTimer::timeout,this,&Control::onTimeOut);
+    connect(&fastTimer,&QTimer::timeout,this,&Control::onFastTimer);
 
+}
+
+void Control::onReadyToRender() {
+
+   QSize size = renderServer.getRenderResolution();
+   QFile file("C:/Users/ViewMind/Documents/VMAPP/CommonClasses/Experiments/nbackfamiliy/descriptions/fielding.dat");
+   file.open(QFile::ReadOnly);
+   QTextStream reader(&file);
+   QString content = reader.readAll();
+   file.close();
+
+
+   QVariantMap cnf;
+   cnf[NBackManager::CONFIG_IS_VR_BEING_USED] = true;
+   cnf[NBackManager::CONFIG_IS_VS] = true;
+   cnf[NBackManager::CONFIG_PAUSE_TEXT_LANG] = NBackManager::LANG_EN;
+   nback.configure(cnf);
+
+   nback.init(size.width(),size.height());
+   if (!nback.parseExpConfiguration(content)){
+       qDebug() << "Failed in parsing the study description";
+       return;
+   }
+   else {
+       qDebug() << "Study description parsed";
+   }
+
+
+
+   expScreen = 0;
+   nback.renderStudyExplanationScreen(0);
+
+   renderServer.sendPacket(nback.getImage());
+
+   renderServer.sendEnable2DRenderPacket(true);
+
+   //fastTimer.start(500);
+
+}
+
+void Control::nextStudyExplanation() {
+    expScreen++;
+    expScreen = (expScreen % nback.getNumberOfStudyExplanationScreens());
+    nback.renderStudyExplanationScreen(expScreen);
+    renderServer.sendPacket(nback.getImage());
 }
 
 void Control::onNewMessage(const QString &msg, const quint8 &msgType){
@@ -106,6 +153,9 @@ void Control::setRenderWindowGeometry(int target_x, int target_y, int target_w, 
 
 }
 
+void Control::onFastTimer(){
+    nextStudyExplanation();
+}
 
 void Control::onTimeOut(){
 
@@ -136,6 +186,8 @@ void Control::onConnectionEstablished(){
     packet.setPayloadField(PacketLogLocation::APP_NAME,"RenderServer");
     renderServer.sendPacket(packet);
 
+    onNewMessage("Sent log relocation packet",RenderServerClient::MSG_TYPE_INFO);
+
     emit Control::requestWindowGeometry();
 
     // baseUpdateTimer.start(30);
@@ -143,25 +195,7 @@ void Control::onConnectionEstablished(){
 }
 
 void Control::onNewPacketArrived(){
-
     RenderServerPacket packet = renderServer.getPacket();
-
-    //    if (packet.isPacketOfType(RenderServerPacketType::TYPE_IMAGE)){
-
-    //        // This is an image packet. For now we just print the frame number.
-
-    //        QByteArray imageData = QByteArray::fromBase64(packet.getPayloadField(PacketFrame::IMAGE).toString().toLatin1());
-    //        QString res = packet.getPayloadField(PacketFrame::WIDTH).toString() + "x" + packet.getPayloadField(PacketFrame::HEIGHT).toString();
-
-    //        QString msg = "FRAME NUMBER " + packet.getPayloadField(PacketFrame::FRAME).toString() + ". IMAGE DATA SIZE " + QString::number(imageData.size()) + ". RES: " + res;
-    //        if (debugDataFrameCounter < 500){
-    //            debugDataFrameCounter++;
-    //            logger.appendStandard(msg);
-    //        }
-
-    //    }
-
-
 }
 
 

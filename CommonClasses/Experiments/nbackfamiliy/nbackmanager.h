@@ -1,10 +1,10 @@
 #ifndef FIELDINGDRAW_H
 #define FIELDINGDRAW_H
 
-#include <QGraphicsLineItem>
-#include <QGraphicsSimpleTextItem>
-#include <QGraphicsEllipseItem>
-#include <QGraphicsScene>
+//#include <QGraphicsLineItem>
+//#include <QGraphicsSimpleTextItem>
+//#include <QGraphicsEllipseItem>
+//#include <QGraphicsScene>
 #include <QTextStream>
 #include <QFile>
 #include <QSet>
@@ -12,7 +12,7 @@
 
 #include "nbackparser.h"
 #include "../experimentdatapainter.h"
-#include "../qgraphicsarrow.h"
+#include "../linemath.h"
 
 class NBackManager: public QObject, public ExperimentDataPainter
 {    
@@ -93,20 +93,29 @@ private:
     qreal TARGET_R;
 
     // Graphical items shown in the screen
-    QGraphicsEllipseItem    *gTarget;
-    QGraphicsLineItem       *gCrossLine0;
-    QGraphicsLineItem       *gCrossLine1;
-    QGraphicsSimpleTextItem *gText1;
-    QGraphicsSimpleTextItem *gText2;
-    QGraphicsSimpleTextItem *gText3;
-    QGraphicsSimpleTextItem *gDebugSequenceValue;
+//    QGraphicsEllipseItem    *gTarget;
+//    QGraphicsLineItem       *gCrossLine0;
+//    QGraphicsLineItem       *gCrossLine1;
+//    QGraphicsSimpleTextItem *gText1;
+//    QGraphicsSimpleTextItem *gText2;
+//    QGraphicsSimpleTextItem *gText3;
+//    QGraphicsSimpleTextItem *gDebugSequenceValue;
+    RenderServerCircleItem    *gTarget;
+    RenderServerLineItem      *gCrossLine0;
+    RenderServerLineItem      *gCrossLine1;
+    RenderServerTextItem      *gText1;
+    RenderServerTextItem      *gText2;
+    RenderServerTextItem      *gText3;
+    RenderServerTextItem      *gDebugSequenceValue;
+
 
     // The actual target boxes. (To recognize a hit AND to be drawn)
     QList<QRectF> hitTargetBoxes;
     QList<QRectF> drawTargetBoxes;
 
     // Required for the use of the ligthup feature.
-    QList<QGraphicsRectItem*> graphicalTargetBoxes;
+    //QList<QGraphicsRectItem*> graphicalTargetBoxes;
+    QList<RenderServerRectItem*> graphicalTargetBoxes;
 
     // Used for turning on and off the target boxes.
     qint32 currentlyLitUp;
@@ -137,7 +146,8 @@ private:
 
     // Common function that renders a target circle. To have the code all in the same place. It does not position the circle
     // Returuns a pointer to the created circle
-    QGraphicsEllipseItem * renderTargetCircle();
+    //QGraphicsEllipseItem * renderTargetCircle();
+    RenderServerCircleItem * renderTargetCircle();
 
     // Referencing the slides for the explanations.
     const qint32 STUDY_EXPLANTION_CROSS_1  = 0;

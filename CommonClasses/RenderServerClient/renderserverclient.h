@@ -42,10 +42,15 @@ public:
 
     void resizeRenderWindow(qint32 x, qint32 y, qint32 w, qint32 h);
 
+    QSize getRenderResolution() const;
+
+    void sendEnable2DRenderPacket(bool enable);
+
 signals:
 
     void newPacketArrived();
     void connectionEstablished();
+    void readyToRender();
     void newMessage(const QString &msg, const quint8 &msgType);
 
 private slots:
@@ -85,6 +90,11 @@ private:
     // Timer used to get the window handle
     QTimer waitTimer;
 
+    // Used to see if there are any packets to send.
+    QList<RenderServerPacket> sendPacketQueue;
+    bool bytesAreBeingSent;
+    bool sentResolutionRequest;
+
     // The Handle to render Window.
     static HWND renderHandle;
 
@@ -93,9 +103,15 @@ private:
 
     const QString PORT_FILE = "selected_port";
     const qint32 POLL_INTERVAL_TO_GET_WINDOW_HANDLE = 600;
+    const qint32 POLL_INTERVAL_FOR_SEND_PACKET_CHECK = 10;
+
+    // Resolution constants.
+    qint32 screenResolutionWidth;
+    qint32 screenResolutionHeight;
 
     /// PRIVATE FUNCTIONS
     void connectToRenderServer();
+    void sendTopQueuePacket(qint64 nbytes);
 
 };
 

@@ -135,7 +135,7 @@ void NBackManager::drawBackground(){
 
             qDebug() << "DBUG NBACK HITBOX" << i << hitBoxToDraw;
 
-            QGraphicsRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
+            RenderServerRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
                                                        QPen(QBrush(Qt::green),2),
                                                        QBrush(Qt::black));
 
@@ -143,7 +143,7 @@ void NBackManager::drawBackground(){
 
         }
 
-        QGraphicsRectItem *rect = canvas->addRect(0,0,drawTargetBoxes.at(i).width(),drawTargetBoxes.at(i).height(),
+        RenderServerRectItem *rect = canvas->addRect(0,0,drawTargetBoxes.at(i).width(),drawTargetBoxes.at(i).height(),
                                                   QPen(QBrush(Qt::white),6),
                                                   QBrush(Qt::black));
         rect->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
@@ -151,7 +151,7 @@ void NBackManager::drawBackground(){
         if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
 
             // Debug Message Draws The Number On the Hit Boxes
-            QGraphicsTextItem *item = canvas->addText(QString::number(i));
+            RenderServerTextItem *item = canvas->addText(QString::number(i));
             item->setDefaultTextColor(QColor(Qt::red));
             item->setFont(QFont("Mono",46));
             item->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
@@ -346,7 +346,8 @@ void NBackManager::drawPauseScreen(){
     }
 
     // Chaging the current target point to escape point
-    QGraphicsSimpleTextItem *phraseToShow = canvas->addSimpleText(pauseText,font);
+    //QGraphicsSimpleTextItem *phraseToShow = canvas->addSimpleText(pauseText,font);
+    RenderServerTextItem *phraseToShow = canvas->addSimpleText(pauseText,font);
     phraseToShow->setPen(QPen(QColor(Qt::white)));
     phraseToShow->setBrush(QBrush(QColor(Qt::white)));
     xpos = (canvas->width() - phraseToShow->boundingRect().width())/2;
@@ -454,7 +455,7 @@ void NBackManager::renderPhantomTargets(QMap<qint32, qint32> rectangle_indexes){
 
     QFont letterFont;
     letterFont.setFamily("Courier New");
-    letterFont.setPointSize(50);
+    letterFont.setPointSize(100);
     letterFont.setBold(true);
 
     QList<qint32> target_numbers = rectangle_indexes.keys();
@@ -463,18 +464,23 @@ void NBackManager::renderPhantomTargets(QMap<qint32, qint32> rectangle_indexes){
 
         qint32 target_box = rectangle_indexes[target_numbers.at(i)];
 
-        QGraphicsEllipseItem * circle = renderTargetCircle();
+        RenderServerCircleItem * circle = renderTargetCircle();
         circle->setPen(QPen(Qt::gray));
         circle->setBrush(QBrush(QColor(Qt::red).lighter(180)));
         QRectF r = drawTargetBoxes.at(target_box);
-        circle->setPos(r.x() + (r.width() - circle->boundingRect().width())/2,
-                       r.y() + (r.height() - circle->boundingRect().height())/2);
+        qreal pos_x = r.x() + (r.width() - circle->boundingRect().width())/2;
+        qreal pos_y = r.y() + (r.height() - circle->boundingRect().height())/2;
+        circle->setPos(pos_x,pos_y);
 
 
-        QGraphicsSimpleTextItem * indicator = canvas->addSimpleText(QString::number(target_numbers.at(i)),letterFont);
-        qreal x = r.x() + (r.width() - indicator->boundingRect().width())/2;
-        qreal y = r.y() + (r.height() - indicator->boundingRect().height())/2;
-        indicator->setPos(x,y);
+        RenderServerTextItem * indicator = canvas->addSimpleText(QString::number(target_numbers.at(i)),letterFont);
+//        qreal x = r.x() + (r.width() - indicator->boundingRect().width())/2;
+//        qreal y = r.y() + (r.height() - indicator->boundingRect().height())/2;
+//        indicator->setPos(x,y);
+
+        qDebug() << "Circle position for indicator is" << circle->boundingRect();
+
+        indicator->setPos(pos_x+TARGET_R,pos_y+TARGET_R); // Should be the center of the circle
         indicator->setBrush(QBrush(Qt::red));
 
     }
@@ -488,12 +494,15 @@ void NBackManager::setTargetPositionByRectangleIndex(qint32 rectangle_index){
 
 }
 
-QGraphicsEllipseItem * NBackManager::renderTargetCircle(){
-    QGraphicsEllipseItem * circle = canvas->addEllipse(0,0,TARGET_R*2,TARGET_R*2,QPen(),QBrush(Qt::red));
+RenderServerCircleItem * NBackManager::renderTargetCircle(){
+    //qDebug() << "Adding target cicle";
+    RenderServerCircleItem * circle = canvas->addEllipse(0,0,TARGET_R*2,TARGET_R*2,QPen(),QBrush(Qt::red));
     return circle;
 }
 
 void NBackManager::renderStudyArrows(qint32 source_target, qint32 dest_target, const QColor &color, bool drawStartMark){
+
+    Q_UNUSED(drawStartMark)
 
     qreal xo, yo;
     qreal xd, yd;
@@ -514,21 +523,27 @@ void NBackManager::renderStudyArrows(qint32 source_target, qint32 dest_target, c
     yd = r.y() + r.height()/2;
 
     // The arrow is shortned
-    QList<qreal> deltas = QGraphicsArrow::PointDeltaToChangeSegmentLength(xo,yo,xd,yd,-2*TARGET_R);
+    QList<qreal> deltas = LineMath::PointDeltaToChangeSegmentLength(xo,yo,xd,yd,-2*TARGET_R);
     qreal Dx = deltas.first();
     qreal Dy = deltas.last();
 
-    deltas = QGraphicsArrow::PointDeltaToChangeSegmentLength(xo,yo,xd,yd,TARGET_R);
+    deltas = LineMath::PointDeltaToChangeSegmentLength(xo,yo,xd,yd,TARGET_R);
     qreal Tx = deltas.first();
     qreal Ty = deltas.last();
 
-    QGraphicsArrow arrow;
-    arrow.setArrowColor(color);
+    qreal arrowWidth = 10;
+    qreal arrowHeadHeightMultiplier = 4;
+    qreal arrowHeadHeight = arrowWidth*arrowHeadHeightMultiplier;
+    qreal arrowHeadLength = 2*arrowHeadHeight;
 
-    if (drawStartMark){
-        arrow.setArrowStartCircleParameters(3,color.lighter(130));
-    }
+    RenderServerArrowItem * arrow =  canvas->addArrow(xo+Tx,yo+Ty,xd+Dx,yd+Dy,arrowHeadHeightMultiplier,arrowHeadLength,color);
+    arrow->setPen(QPen(color,arrowWidth));
 
-    arrow.render(canvas,xo+Tx,yo+Ty,xd+Dx,yd+Dy,0.5);
+//    QGraphicsArrow arrow;
+//    arrow.setArrowColor(color);
+//    if (drawStartMark){
+//        arrow.setArrowStartCircleParameters(3,color.lighter(130));
+//    }
+//    arrow.render(canvas,xo+Tx,yo+Ty,xd+Dx,yd+Dy,0.5);
 
 }

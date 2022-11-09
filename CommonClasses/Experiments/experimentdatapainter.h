@@ -1,10 +1,18 @@
 #ifndef EXPERIMENTDATAPAINTER_H
 #define EXPERIMENTDATAPAINTER_H
 
-#include <QGraphicsScene>
-#include <QGraphicsEllipseItem>
+//#include <QGraphicsScene>
+//#include <QGraphicsEllipseItem>
 #include <QPainter>
-#include <QApplication>
+//#include <QApplication>
+#include "../RenderServerClient/RenderServerPackets/renderserverpacket.h"
+#include "../RenderServerClient/RenderServerGraphics/renderservercircleitem.h"
+#include "../RenderServerClient/RenderServerGraphics/renderserverscene.h"
+#include "../RenderServerClient/RenderServerGraphics/renderserverarrowitem.h"
+#include "../RenderServerClient/RenderServerGraphics/renderserverlineitem.h"
+#include "../RenderServerClient/RenderServerGraphics/renderserverrectitem.h"
+#include "../RenderServerClient/RenderServerGraphics/renderservertextitem.h"
+#include "../RenderServerClient/RenderServerGraphics/renderserverscene.h"
 #include "../ConfigurationManager/configurationmanager.h"
 #include "../eyetracker_defines.h"
 #include "../debug.h"
@@ -41,11 +49,15 @@ public:
     // Some studies have the trial counter control outside, so we need to get this value.
     qint32 getLoopValue() const;
 
-    QPixmap getImage() const;
-    QImage getQImage() const;
+//    QPixmap getImage() const;
+//    QImage getQImage() const;
+      RenderServerPacket getImage() const;
+      RenderServerPacket getQImage() const;
+
     QString getError() const {return error;}
 
-    QGraphicsScene * getCanvas() {return canvas;}
+    //QGraphicsScene * getCanvas() {return canvas;}
+    RenderServerScene *getCanvas() {return canvas;}
 
     QString getVersion() const { return versionString; }
 
@@ -64,15 +76,18 @@ protected:
     // Enable on-screen gaze tracking
     bool gazeUpdateEnabled; // This flag needs to be used to ensure that NO update is done when the ellipse items don´t exist;
     qreal gazeXr,gazeXl,gazeYr,gazeYl;
-    QGraphicsEllipseItem *leftEyeTracker;
-    QGraphicsEllipseItem *rightEyeTracker;
+//    QGraphicsEllipseItem *leftEyeTracker;
+//    QGraphicsEllipseItem *rightEyeTracker;
+    RenderServerCircleItem *leftEyeTracker;
+    RenderServerCircleItem *rightEyeTracker;
     qreal R;
 
     // The expected ids for the experiment
     QList<QStringList> expectedIDs;
 
     //ConfigurationManager *config;
-    QGraphicsScene *canvas;
+    //QGraphicsScene *canvas;
+    RenderServerScene *canvas;
     QString error;
     QString versionString;
 

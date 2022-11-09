@@ -34,6 +34,7 @@ public:
     void setPacketType(const QString &type);
     void setPayloadField(const QString &name, const QVariant &vallue);
     QVariant getPayloadField(const QString &name) const;
+    bool containsPayloadField(const QString &name) const;
     bool isPacketOfType (const QString &type) const;
 
 private:

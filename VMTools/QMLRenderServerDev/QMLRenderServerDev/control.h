@@ -15,6 +15,8 @@
 
 #include "../../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "../../../CommonClasses/RenderServerClient/renderserverclient.h"
+#include "../../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h"
+
 
 class Control : public QObject
 {
@@ -29,6 +31,7 @@ public:
     Q_INVOKABLE void setRenderWindowGeometry(int target_x, int target_y, int target_w, int target_h);
     Q_INVOKABLE void hideRenderWindow();
     Q_INVOKABLE void showRenderWindow();
+    Q_INVOKABLE void nextStudyExplanation();
 
     void setWindowID(WId winID);
 
@@ -41,6 +44,8 @@ private slots:
     void onNewPacketArrived();
     void onConnectionEstablished();
     void onTimeOut();
+    void onFastTimer();
+    void onReadyToRender();
     void onNewMessage(const QString &msg, const quint8 &msgType);
 
 private:
@@ -48,8 +53,12 @@ private:
     RenderServerClient renderServer;
 
     QTimer baseUpdateTimer;
+    QTimer fastTimer;
 
     QProcess renderServerProcess;
+
+    NBackManager nback;
+    qint32 expScreen;
 
     WId mainWindowID;
     static HWND renderHandle;

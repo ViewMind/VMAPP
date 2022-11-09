@@ -81,6 +81,10 @@ QVariant RenderServerPacket::getPayloadField(const QString &name) const {
     return this->payload.value(name);
 }
 
+bool RenderServerPacket::containsPayloadField(const QString &name) const{
+    return this->payload.contains(name);
+}
+
 void RenderServerPacket::resetForRX(){
     this->rxBuffer.clear();
     this->type = "";

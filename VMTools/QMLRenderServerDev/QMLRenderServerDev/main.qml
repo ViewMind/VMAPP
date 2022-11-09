@@ -24,7 +24,7 @@ ApplicationWindow {
     }
 
     function onMove(){
-        console.log("QML WINDOW: (" + x + "," + y +") " + width + "x" + height);
+        //console.log("QML WINDOW: (" + x + "," + y +") " + width + "x" + height);
         control.setRenderWindowGeometry(frame.x,frame.y,frame.width,frame.height);
     }
 
@@ -65,6 +65,16 @@ ApplicationWindow {
             text: "SHOW"
             onClicked: {
                 control.showRenderWindow();
+            }
+        }
+
+        Button {
+            id: btnNextExplanation
+            hoverEnabled: false;
+            width: parent.width
+            text: "Next Study Explanation";
+            onClicked: {
+                control.nextStudyExplanation();
             }
         }
 

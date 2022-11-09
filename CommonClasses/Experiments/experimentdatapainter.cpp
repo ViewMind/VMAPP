@@ -11,7 +11,8 @@ ExperimentDataPainter::ExperimentDataPainter()
 void ExperimentDataPainter::init(qreal display_resolution_width, qreal display_resolution_height){
     ScreenResolutionHeight = display_resolution_height; //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_HEIGHT);
     ScreenResolutionWidth = display_resolution_width;  //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_WIDTH);
-    canvas = new QGraphicsScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
+    //canvas = new QGraphicsScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
+    canvas = new RenderServerScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
     //qDebug() << "Experiment data painter. Scene Rect" << canvas->sceneRect();
     R = 0.007*ScreenResolutionWidth;
     //config = c;
@@ -59,17 +60,8 @@ void ExperimentDataPainter::redrawGazePoints(){
     // Updating the position based on the last position.
     gazeUpdateEnabled = true;  // WARNING. Its the resposibility of the child class to DISABLE gazeUpdateEnabled whenever the followers are cleared.
     updateGazePosition();
-
 }
 
-QPixmap ExperimentDataPainter::getImage() const{
-    // Drawing the graphics scene onto the painter.
-    QPixmap image(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()));
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    canvas->render(&painter);
-    return image;
-}
 
 void ExperimentDataPainter::setTrialCountLoopValue(qint32 loopValue){
     trialCountLoopValue = loopValue;
@@ -79,13 +71,30 @@ qint32 ExperimentDataPainter::getLoopValue() const {
     return trialCountLoopValue;
 }
 
-QImage ExperimentDataPainter::getQImage() const{
-    QImage image(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()),QImage::Format_RGB32);
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    canvas->render(&painter);
-    return image;
+RenderServerPacket ExperimentDataPainter::getQImage() const{
+    return this->getImage();
 }
+
+RenderServerPacket ExperimentDataPainter::getImage() const{
+    return canvas->render();
+}
+
+//QImage ExperimentDataPainter::getQImage() const{
+//    QImage image(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()),QImage::Format_RGB32);
+//    QPainter painter(&image);
+//    painter.setRenderHint(QPainter::Antialiasing);
+//    canvas->render(&painter);
+//    return image;
+//}
+
+//QPixmap ExperimentDataPainter::getImage() const{
+//    // Drawing the graphics scene onto the painter.
+//    QPixmap image(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()));
+//    QPainter painter(&image);
+//    painter.setRenderHint(QPainter::Antialiasing);
+//    canvas->render(&painter);
+//    return image;
+//}
 
 void ExperimentDataPainter::clearCanvas(){
     gazeUpdateEnabled = false;

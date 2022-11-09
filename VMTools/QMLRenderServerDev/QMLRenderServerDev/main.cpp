@@ -4,7 +4,13 @@
 #include <QWindow>
 
 #include "control.h"
+#include "../../../CommonClasses/debug.h"
 #include "../../../CommonClasses/LogInterface/staticthreadlogger.h"
+
+// Debug Structure
+namespace Debug {
+   ConfigurationManager DEBUG_OPTIONS;
+}
 
 int main(int argc, char *argv[])
 {

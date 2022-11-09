@@ -20,6 +20,7 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
     connect(socket,&QTcpSocket::errorOccurred,this,&RenderServerClient::onErrorOcurred);
     connect(socket,&QTcpSocket::disconnected,this,&RenderServerClient::onDisconnected);
     connect(socket,&QTcpSocket::readyRead,this,&RenderServerClient::onReadyRead);
+    connect(socket,&QTcpSocket::bytesWritten,this,&RenderServerClient::sendTopQueuePacket);
 
     connect(&renderServerProcess,&QProcess::errorOccurred,this,&RenderServerClient::onProcessErrorOcurred);
     connect(&renderServerProcess,&QProcess::stateChanged,this,&RenderServerClient::onProcessStateChanged);
@@ -31,11 +32,23 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
     mainWindowID = 0;
     renderHandle = nullptr;
 
+    screenResolutionHeight = 0;
+    screenResolutionWidth = 0;
+
+    sentResolutionRequest = false;
+    bytesAreBeingSent = false;
 
 }
 
 void RenderServerClient::resizeRenderWindow(qint32 x, qint32 y, qint32 w, qint32 h){
     MoveWindow(RenderServerClient::renderHandle,x,y,w,h,TRUE);
+}
+
+QSize RenderServerClient::getRenderResolution() const{
+    QSize size;
+    size.setWidth(screenResolutionWidth);
+    size.setHeight(screenResolutionHeight);
+    return size;
 }
 
 void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinID){
@@ -107,7 +120,31 @@ RenderServerPacket RenderServerClient::getPacket() {
 }
 
 void RenderServerClient::sendPacket(const RenderServerPacket &packet){
-    socket->write(packet.getByteArrayToSend());
+    sendPacketQueue << packet;
+    if (!bytesAreBeingSent){
+        sendTopQueuePacket(0);
+    }
+}
+
+void RenderServerClient::sendTopQueuePacket(qint64 nbytes){
+    Q_UNUSED(nbytes)
+    bytesAreBeingSent = false;
+    if (!sendPacketQueue.isEmpty()){
+        RenderServerPacket p = sendPacketQueue.takeFirst();
+        //qDebug() << "Sending Packet of type" << p.getType();
+        socket->write(p.getByteArrayToSend());
+        bytesAreBeingSent = true;
+    }
+}
+
+void RenderServerClient::sendEnable2DRenderPacket(bool enable){
+    if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)) return; // No point in sending the packet in this situation.
+    RenderServerPacket request;
+    request.setPacketType(RenderServerPacketType::TYPE_2D_CONTROL);
+    request.setPayloadField(RenderControlPacketFields::WIDTH,screenResolutionWidth);
+    request.setPayloadField(RenderControlPacketFields::HEIGHT,screenResolutionHeight);
+    request.setPayloadField(RenderControlPacketFields::ENABLE_2D_RENDER,enable);
+    this->sendPacket(request);
 }
 
 ////////////////////////////////////// WAIT TIMER SLOTS ////////////////////////////////////
@@ -124,9 +161,28 @@ void RenderServerClient::onWaitTimerTimeout(){
     if (socket->state() == QAbstractSocket::UnconnectedState){
         emit RenderServerClient::newMessage("Attempting connection to TCP Server ...",MSG_TYPE_INFO);
         this->connectToRenderServer();
+        return;
     }
 
-    // waitTimer.stop();
+    if (socket->state() == QAbstractSocket::ConnectedState){
+        if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)){
+            // If we got here the render handle is effectively set and we are connected. So The next step is to get the render canvas dimensions.
+            if (!sentResolutionRequest){
+                RenderServerPacket request;
+                request.setPacketType(RenderServerPacketType::TYPE_2D_CONTROL);
+                request.setPayloadField(RenderControlPacketFields::WIDTH,0);
+                request.setPayloadField(RenderControlPacketFields::HEIGHT,0);
+                request.setPayloadField(RenderControlPacketFields::ENABLE_2D_RENDER,false);
+                this->sendPacket(request);
+                sentResolutionRequest = true;
+                emit RenderServerClient::newMessage("Sent request for resolution",MSG_TYPE_INFO);
+            }
+            else return;
+        }
+    }
+    else return;
+
+    waitTimer.stop(); // Once all the conditions have been met the timer can be stopped.
 
 }
 
@@ -137,6 +193,26 @@ void RenderServerClient::onReadyRead() {
     RenderServerPacket::RXState state =  this->rxPacket.rxBytes(socket->readAll());
     if (state == RenderServerPacket::RX_DONE){
         //qDebug() << "New Packet Arrived";
+
+        // A new packet arrived. However if the packet if of type control adn we are waiting for resolution data, then the signal is NOT emitted.
+        if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)){
+            if (this->rxPacket.getType() == RenderServerPacketType::TYPE_2D_CONTROL){
+
+                screenResolutionWidth = this->rxPacket.getPayloadField(RenderControlPacketFields::WIDTH).toInt();
+                screenResolutionHeight = this->rxPacket.getPayloadField(RenderControlPacketFields::HEIGHT).toInt();
+
+                sentResolutionRequest = false;
+                this->rxPacket.resetForRX();
+
+                emit RenderServerClient::newMessage("Set the working resolution to " + QString::number(screenResolutionWidth) + "x" + QString::number(screenResolutionHeight),MSG_TYPE_INFO);
+                if ((screenResolutionHeight != 0) && (screenResolutionWidth != 0)) emit RenderServerClient::readyToRender();
+                this->rxPacket.resetForRX();
+
+                return;
+
+            }
+        }
+
         emit RenderServerClient::newPacketArrived();
     }
     else if (state == RenderServerPacket::RX_ERROR){
@@ -146,7 +222,7 @@ void RenderServerClient::onReadyRead() {
 }
 
 void RenderServerClient::onConnected() {
-    waitTimer.stop(); // We can now stop the poll timer.
+    // waitTimer.stop(); // We can now stop the poll timer.
     emit RenderServerClient::connectionEstablished();
 }
 
@@ -188,7 +264,7 @@ void RenderServerClient::onProcessFinished(int exitCode, QProcess::ExitStatus ex
 
 void RenderServerClient::onProcessStarted(){
     // Once the process has started we need to wait a "while" and the get the window handle.
-    waitTimer.start(POLL_INTERVAL_TO_GET_WINDOW_HANDLE);
+    waitTimer.start(POLL_INTERVAL_TO_GET_WINDOW_HANDLE);    
 }
 
 void RenderServerClient::onProcessStateChanged(QProcess::ProcessState newState){
