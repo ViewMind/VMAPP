@@ -8,9 +8,6 @@
 
 #include "../experimentdatapainter.h"
 #include "bindingparser.h"
-#include <QGraphicsScene>
-#include <QGraphicsRectItem>
-#include <QGraphicsItemGroup>
 #include <QFile>
 #include <QTextStream>
 #include <QtMath>

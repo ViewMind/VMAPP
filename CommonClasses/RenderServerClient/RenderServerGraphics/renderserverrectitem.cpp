@@ -54,3 +54,30 @@ void RenderServerRectItem::render(RenderServerPacket *packet) const {
     packet->setPayloadField(RenderControlPacketFields::SPEC_LIST,b);
 
 }
+
+void RenderServerRectItem::scale(qreal scale){
+
+    // Scales to it's center.
+
+    if (scale < 0) return;
+
+    QPointF newTL = this->scaleAPointAroundTFOrigin(this->left,this->top,scale);
+    this->height = this->height*scale;
+    this->width = this->width*scale;
+    this->top = newTL.y();
+    this->left = newTL.x();
+
+}
+
+qreal RenderServerRectItem::x() const {
+    return this->left;
+}
+
+qreal RenderServerRectItem::y() const {
+    return this->top;
+}
+
+void RenderServerRectItem::moveBy(qreal dx, qreal dy){
+    this->top = this->top + dy;
+    this->left = this->left + dx;
+}

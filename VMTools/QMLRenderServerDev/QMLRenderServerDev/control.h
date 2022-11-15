@@ -1,6 +1,10 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#define  BINDING
+//#define  NBACK
+//#define GONOGO
+
 #include <QObject>
 #include <QImage>
 #include <QTimer>
@@ -16,7 +20,8 @@
 #include "../../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "../../../CommonClasses/RenderServerClient/renderserverclient.h"
 #include "../../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h"
-
+#include "../../../CommonClasses/Experiments/binding/bindingmanager.h"
+#include "../../../CommonClasses/Experiments/gonogo/gonogomanager.h"
 
 class Control : public QObject
 {
@@ -58,6 +63,8 @@ private:
     QProcess renderServerProcess;
 
     NBackManager nback;
+    BindingManager binding;
+    GoNoGoManager gonogo;
     qint32 expScreen;
 
     WId mainWindowID;

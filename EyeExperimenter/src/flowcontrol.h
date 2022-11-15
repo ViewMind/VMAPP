@@ -7,12 +7,16 @@
 #include <QtMath>
 #include <QFileDialog>
 #include <QScreen>
-
+#include <Windows.h>
+#include <WinUser.h>
 #include <iostream>
 
+#include "../../CommonClasses/debug.h"
+
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
-#include "../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h"
 #include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
+
+#include "../../CommonClasses/RenderServerClient/renderserverclient.h"
 
 #include "../../CommonClasses/Experiments/binding/bindingexperiment.h"
 #include "../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h"
@@ -24,7 +28,6 @@
 #include "../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
 
 #include "eyexperimenter_defines.h"
-
 
 class FlowControl : public QWidget
 {

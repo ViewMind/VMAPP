@@ -9,13 +9,18 @@ public:
     RenderServerLineItem(qreal x1, qreal y1, qreal x2, qreal y2);
     void setPos (qreal x, qreal y) override;
     void render(RenderServerPacket *packet) const override;
+    void scale(qreal scale) override;
+    void moveBy(qreal dx, qreal dy) override;
+    qreal x() const override;
+    qreal y() const override;
+
+    void setRoundCapUse(bool enable);
 
 private:
     qreal x1;
     qreal y1;
     qreal x2;
     qreal y2;
-
     void updateBRect();
 
 };

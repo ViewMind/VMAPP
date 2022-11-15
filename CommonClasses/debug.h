@@ -8,6 +8,7 @@
 #include <QFile>
 #include <iostream>
 #include "ConfigurationManager/configurationmanager.h"
+#include "LogInterface/staticthreadlogger.h"
 
 #define DBUGSTR(x)   Debug::DEBUG_OPTIONS.getString(x)
 #define DBUGINT(x)   Debug::DEBUG_OPTIONS.getInt(x)

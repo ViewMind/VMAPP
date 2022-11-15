@@ -33,6 +33,7 @@ void RenderServerLineItem::render(RenderServerPacket *packet) const{
     spec[RenderControlPacketFields::TYPE] = GL2DItemType::TYPE_LINE;
     spec[RenderControlPacketFields::X] = x;
     spec[RenderControlPacketFields::Y] = y;
+    spec[RenderControlPacketFields::USE_ROUND_CAPS] = this->roundCaps;
     spec[RenderControlPacketFields::COLOR] = this->borderColor;
     spec[RenderControlPacketFields::BORDER_WIDTH] = this->borderWidth;
 
@@ -52,4 +53,30 @@ void RenderServerLineItem::updateBRect(){
     this->bRect.setWidth(max_x - min_x);
     this->bRect.setHeight(max_y - min_y);
 
+}
+
+qreal RenderServerLineItem::x() const {
+    return this->x1;
+}
+
+qreal RenderServerLineItem::y() const {
+    return this->y1;
+}
+
+void RenderServerLineItem::scale(qreal scale){
+    QPointF p1 = this->scaleAPointAroundTFOrigin(this->x1,this->y1,scale);
+    QPointF p2 = this->scaleAPointAroundTFOrigin(this->x2,this->y2,scale);
+    this->x1 = p1.x();
+    this->y1 = p1.y();
+    this->x2 = p2.x();
+    this->y2 = p2.y();
+    this->updateBRect();
+}
+
+void RenderServerLineItem::moveBy(qreal dx, qreal dy){
+    this->x1 = this->x1 + dx;
+    this->y1 = this->y1 + dy;
+    this->x2 = this->x2 + dx;
+    this->y2 = this->y2 + dy;
+    this->updateBRect();
 }

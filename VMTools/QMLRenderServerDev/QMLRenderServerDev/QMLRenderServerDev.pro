@@ -8,8 +8,12 @@ CONFIG += c++11
 
 SOURCES += \
         ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+        ../../../CommonClasses/Experiments/binding/bindingmanager.cpp \
+        ../../../CommonClasses/Experiments/binding/bindingparser.cpp \
         ../../../CommonClasses/Experiments/drawingconstantscalculator.cpp \
         ../../../CommonClasses/Experiments/experimentdatapainter.cpp \
+        ../../../CommonClasses/Experiments/gonogo/gonogomanager.cpp \
+        ../../../CommonClasses/Experiments/gonogo/gonogoparser.cpp \
         ../../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.cpp \
         ../../../CommonClasses/Experiments/nbackfamiliy/nbackparser.cpp \
         ../../../CommonClasses/Experiments/linemath.cpp \
@@ -18,6 +22,7 @@ SOURCES += \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservercircleitem.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritem.cpp \
+        ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritemgroup.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverlineitem.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverrectitem.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverscene.cpp \
@@ -49,8 +54,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../../CommonClasses/Experiments/binding/bindingmanager.h \
+    ../../../CommonClasses/Experiments/binding/bindingparser.h \
     ../../../CommonClasses/Experiments/drawingconstantscalculator.h \
     ../../../CommonClasses/Experiments/experimentdatapainter.h \
+    ../../../CommonClasses/Experiments/gonogo/gonogomanager.h \
+    ../../../CommonClasses/Experiments/gonogo/gonogoparser.h \
     ../../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h \
     ../../../CommonClasses/Experiments/nbackfamiliy/nbackparser.h \
     ../../../CommonClasses/Experiments/linemath.h \
@@ -59,6 +68,7 @@ HEADERS += \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservercircleitem.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritem.h \
+    ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritemgroup.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverlineitem.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverrectitem.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverscene.h \

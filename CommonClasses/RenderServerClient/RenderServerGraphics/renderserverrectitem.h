@@ -11,6 +11,10 @@ public:
 
     void setPos(qreal x, qreal y) override;
     void render(RenderServerPacket *packet) const override;
+    void scale(qreal scale) override;
+    void moveBy(qreal dx, qreal dy) override;
+    qreal x() const override;
+    qreal y() const override;
 
 private:
     qreal top;

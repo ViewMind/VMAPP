@@ -17,6 +17,13 @@ void RenderServerCircleItem::setPos(qreal x, qreal y){
     this->updateBRect();
 }
 
+qreal RenderServerCircleItem::x() const {
+    return this->center_x - this->R;
+}
+
+qreal RenderServerCircleItem::y() const {
+    return this->center_y - this->R;
+}
 
 void RenderServerCircleItem::render(RenderServerPacket *packet) const {
 
@@ -25,7 +32,7 @@ void RenderServerCircleItem::render(RenderServerPacket *packet) const {
         c = packet->getPayloadField(RenderControlPacketFields::SPEC_LIST).toList();
     }
 
-    qDebug() << "Redering circle";
+    //qDebug() << "Redering circle";
 
     QVariantList x,y;
     x << this->center_x;
@@ -50,4 +57,20 @@ void RenderServerCircleItem::updateBRect(){
     this->bRect.setTop(this->center_y - this->R);
     this->bRect.setWidth(2*this->R);
     this->bRect.setHeight(2*this->R);
+}
+
+void RenderServerCircleItem::scale(qreal scale){
+    // Assuming scale change maitaining it's center.
+    if (scale < 0) return;
+    this->R = this->R*scale;
+    QPointF newCenter = this->scaleAPointAroundTFOrigin(this->center_x,this->center_y,scale);
+    this->center_x = newCenter.x();
+    this->center_y = newCenter.y();
+    this->updateBRect();
+}
+
+void RenderServerCircleItem::moveBy(qreal dx, qreal dy) {
+    this->center_x = this->center_x + dx;
+    this->center_y = this->center_y + dy;
+    this->updateBRect();
 }

@@ -53,14 +53,26 @@ SOURCES += main.cpp \
     ../../CommonClasses/HWRecog/hwrecognizer.cpp \
     ../../CommonClasses/LinearLeastSquares/linearcoefficients.cpp \
     ../../CommonClasses/LinearLeastSquares/linearleastsquaresfit.cpp \
+    ../../CommonClasses/LogInterface/loggerthread.cpp \
+    ../../CommonClasses/LogInterface/staticthreadlogger.cpp \
     ../../CommonClasses/MWA/fixation.cpp \
     ../../CommonClasses/MWA/movingwindowalgorithm.cpp \
-    ../../CommonClasses/OpenVRControlObject/openvrcontrolobject.cpp \
     ../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservercircleitem.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritem.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritemgroup.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverlineitem.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverrectitem.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverscene.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservertextitem.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservertriangleitem.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacket.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacketrecognizer.cpp \
+    ../../CommonClasses/RenderServerClient/renderserverclient.cpp \
     ../../CommonClasses/RestAPIController/restapicontroller.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
-    ../../CommonClasses/LogInterface/loginterface.cpp \
     apiclient.cpp \
     loader.cpp \
     flowcontrol.cpp \
@@ -104,18 +116,30 @@ HEADERS += \
     ../../CommonClasses/HWRecog/hwrecognizer.h \
     ../../CommonClasses/LinearLeastSquares/linearcoefficients.h \
     ../../CommonClasses/LinearLeastSquares/linearleastsquaresfit.h \
+    ../../CommonClasses/LogInterface/loggerthread.h \
+    ../../CommonClasses/LogInterface/staticthreadlogger.h \
     ../../CommonClasses/MWA/fixation.h \
     ../../CommonClasses/MWA/movingwindowalgorithm.h \
-    ../../CommonClasses/OpenVRControlObject/openvr.h \
-    ../../CommonClasses/OpenVRControlObject/openvrcontrolobject.h \
     ../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
     ../../CommonClasses/RawDataContainer/VMDC.h \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservercircleitem.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritem.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritemgroup.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverlineitem.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverrectitem.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverscene.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservertextitem.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservertriangleitem.h \
+    ../../CommonClasses/RenderServerClient/RenderServerPackets/RenderServerPacketNames.h \
+    ../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacket.h \
+    ../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacketrecognizer.h \
+    ../../CommonClasses/RenderServerClient/renderserverclient.h \
     ../../CommonClasses/RestAPIController/restapicontroller.h \
     ../../CommonClasses/debug.h \
     ../../CommonClasses/eyetracker_defines.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
-    ../../CommonClasses/LogInterface/loginterface.h \
     apiclient.h \
     eyexperimenter_defines.h \
     loader.h \
@@ -135,7 +159,7 @@ HEADERS += \
 #             EyeTrackerInterface/RED/redinterface.h
 #}
 
-LIBS += -L$$PWD/../../CommonClasses/OpenVRControlObject/libs -lopenvr_api
+#LIBS += -L$$PWD/../../CommonClasses/OpenVRControlObject/libs -lopenvr_api
 LIBS += -L$$PWD/../../CommonClasses/EyeTrackingInterface/HPReverb/hp -lhp_omnicept
 LIBS += -L$$PWD/../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro -lSRanipal
 LIBS += -lWinTrust
@@ -143,6 +167,7 @@ LIBS += -lRpcRT4
 LIBS += -lole32
 LIBS += -lshell32
 LIBS += -ladvapi32
+LIBS += -luser32
 
 DISTFILES += \
     ../../CommonClasses/Experiments/binding/descriptions/bc.dat \

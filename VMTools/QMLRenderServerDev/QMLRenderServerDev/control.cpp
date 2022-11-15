@@ -17,7 +17,20 @@ Control::Control(QObject *parent):QObject(parent)
 void Control::onReadyToRender() {
 
    QSize size = renderServer.getRenderResolution();
+
+
+#ifdef NBACK
    QFile file("C:/Users/ViewMind/Documents/VMAPP/CommonClasses/Experiments/nbackfamiliy/descriptions/fielding.dat");
+#endif
+
+#ifdef BINDING
+   QFile file("C:/Users/ViewMind/Documents/VMAPP/CommonClasses/Experiments/binding/descriptions/bc_3.dat");
+#endif
+
+#ifdef GONOGO
+   QFile file("C:/Users/ViewMind/Documents/VMAPP/CommonClasses/Experiments/gonogo/descriptions/go_no_go.dat");
+#endif
+
    file.open(QFile::ReadOnly);
    QTextStream reader(&file);
    QString content = reader.readAll();
@@ -28,8 +41,36 @@ void Control::onReadyToRender() {
    cnf[NBackManager::CONFIG_IS_VR_BEING_USED] = true;
    cnf[NBackManager::CONFIG_IS_VS] = true;
    cnf[NBackManager::CONFIG_PAUSE_TEXT_LANG] = NBackManager::LANG_EN;
-   nback.configure(cnf);
 
+   cnf[BindingManager::CONFIG_IS_BC] = true;
+   cnf[BindingManager::CONFIG_N_TARGETS] = 3;
+
+#ifdef GONOGO
+   gonogo.configure(cnf);
+   gonogo.init(size.width(),size.height());
+   if (!gonogo.parseExpConfiguration(content)){
+       qDebug() << "Failed in parsing the study description";
+       return;
+   }
+   else {
+       qDebug() << "Study description parsed";
+   }
+#endif
+
+#ifdef BINDING
+   binding.configure(cnf);
+   binding.init(size.width(),size.height());
+   if (!binding.parseExpConfiguration(content)){
+       qDebug() << "Failed in parsing the study description";
+       return;
+   }
+   else {
+       qDebug() << "Study description parsed";
+   }
+#endif
+
+#ifdef NBACK
+   nback.configure(cnf);
    nback.init(size.width(),size.height());
    if (!nback.parseExpConfiguration(content)){
        qDebug() << "Failed in parsing the study description";
@@ -38,25 +79,53 @@ void Control::onReadyToRender() {
    else {
        qDebug() << "Study description parsed";
    }
-
+#endif
 
 
    expScreen = 0;
-   nback.renderStudyExplanationScreen(0);
 
+#ifdef NBACK
+   nback.renderStudyExplanationScreen(0);
    renderServer.sendPacket(nback.getImage());
+#endif
+
+#ifdef BINDING
+   binding.renderStudyExplanationScreen(0);
+   renderServer.sendPacket(binding.getImage());
+#endif
+
+#ifdef GONOGO
+   gonogo.renderStudyExplanationScreen(0);
+   renderServer.sendPacket(gonogo.getImage());
+#endif
 
    renderServer.sendEnable2DRenderPacket(true);
 
-   //fastTimer.start(500);
+   //fastTimer.start(30);
 
 }
 
 void Control::nextStudyExplanation() {
     expScreen++;
+
+#ifdef NBACK
     expScreen = (expScreen % nback.getNumberOfStudyExplanationScreens());
     nback.renderStudyExplanationScreen(expScreen);
     renderServer.sendPacket(nback.getImage());
+#endif
+
+#ifdef BINDING
+    expScreen = (expScreen % binding.getNumberOfStudyExplanationScreens());
+    binding.renderStudyExplanationScreen(expScreen);
+    renderServer.sendPacket(binding.getImage());
+#endif
+
+#ifdef GONOGO
+    expScreen = (expScreen % gonogo.getNumberOfStudyExplanationScreens());
+    gonogo.renderStudyExplanationScreen(expScreen);
+    renderServer.sendPacket(gonogo.getImage());
+#endif
+
 }
 
 void Control::onNewMessage(const QString &msg, const quint8 &msgType){

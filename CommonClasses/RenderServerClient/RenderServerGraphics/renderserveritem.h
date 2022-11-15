@@ -30,10 +30,13 @@ public:
      * So in here, even though the value is kept it is used as way to make the item visible or not.
      */
     void setZValue(double z);
+    qreal z() const;
     bool isVisible() const;
+    void setVisible(bool visible);
 
     void setBrush(const QBrush &brush);
     void setPen(const QPen &pen);
+    void setTransformOriginPoint(qreal x, qreal y);
 
     /**
      * @brief render
@@ -42,17 +45,47 @@ public:
      * "Renders" the item to it's specs on a render server packet.
      */
     virtual void render(RenderServerPacket *packet) const;
+
+    /**
+     * @brief scale - scales the item. It does so differently for each item type. If not implemented for the item, it does nothing.
+     * @param scale - Scale factor. Larger than one the item grows in size. Smaller than one the item reduces it's size. Less than zero does nothing.
+     */
+    virtual void scale(qreal scale);
+
+    /**
+     * @brief moveBy - Moves the item on x and y.
+     * @param dx How much to move on x
+     * @param dy How much to move on y
+     */
+    virtual void moveBy(qreal dx, qreal dy);
+
     QString getType() const;
     QRectF boundingRect() const;
+
+    virtual qreal x() const;
+    virtual qreal y() const;
+
+    /**
+     * @brief setReferenceYForTransformations - When doing transformations a regular y axis is assumed. This sets the max vertical resolution so the proper transformation can be done.
+     * @param refY
+     */
+    void setReferenceYForTransformations(qreal refY);
 
 protected:
     QString fillColor;
     QString borderColor;
-    float borderWidth;
-    float zValue;
+    qreal borderWidth;
+    qreal zValue;
     bool visible;
+    bool roundCaps;
     QRectF bRect;
     QString itemType;
+    QPointF tfOrigin;
+    qreal referenceYTF;
+    qint32 renderOrder;
+
+    QPointF scaleAPointAroundTFOrigin(qreal x, qreal y, qreal scale) const;
+    QPointF scaleAPointAroundTFOrigin(const QPointF &point, qreal scale) const;
 
 };
 

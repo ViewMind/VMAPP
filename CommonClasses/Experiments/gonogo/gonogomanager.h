@@ -1,10 +1,6 @@
 #ifndef GONOGOMANAGER_H
 #define GONOGOMANAGER_H
 
-#include <QGraphicsLineItem>
-#include <QGraphicsSimpleTextItem>
-#include <QGraphicsEllipseItem>
-#include <QGraphicsScene>
 #include <QTextStream>
 #include <QFile>
 #include <QSet>
@@ -48,16 +44,16 @@ private:
 
     void drawAllElements();
 
-    QList<QGraphicsItem*>  gCross;
-    QList<QGraphicsItem*>  gGRArrow;
-    QList<QGraphicsItem*>  gGLArrow;
-    QList<QGraphicsItem*>  gRRArrow;
-    QList<QGraphicsItem*>  gRLArrow;
-    QList<QGraphicsItem*>  gTargets;
+    QList<RenderServerItem*>  gCross;
+    QList<RenderServerItem*>  gGRArrow;
+    QList<RenderServerItem*>  gGLArrow;
+    QList<RenderServerItem*>  gRRArrow;
+    QList<RenderServerItem*>  gRLArrow;
+    QList<RenderServerItem*>  gTargets;
 
     qint32 trialIndex;
 
-    void setVisibilityToElementList(QList<QGraphicsItem*> list, bool makeVisible);
+    void setVisibilityToElementList(QList<RenderServerItem*> list, bool makeVisible);
 
     static const char*  RED_ARROW_COLOR;
     static const char*  GREEN_ARROW_COLOR;

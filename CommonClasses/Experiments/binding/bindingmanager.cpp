@@ -34,20 +34,30 @@ void BindingManager::drawFlags(const BindingParser::BindingSlide &primary, const
 
 void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, ScreenRenderLocation srl = ScreenRenderLocation::SRL_NORMAL, bool renderArrow){
 
-    QList<QGraphicsItem*> items;
+    QList<RenderServerItem*> items;
+
+//    // FOR DEBUGGING.
+//    RenderServerRectItem *debugRect = canvas->addRect(gridBoundingRect);
+//    debugRect->setBrush(QBrush(Qt::white));
+
+//    qDebug() << "Grid bounding rect cx" << gridBoundingRect.x() + gridBoundingRect.width()/2
+//             << "cy" << gridBoundingRect.y() + gridBoundingRect.height()/2
+//             << gridBoundingRect;
 
     // The grid bounding rect is added for reference.
-    QGraphicsRectItem * brect = canvas->addRect(gridBoundingRect);
-    if (srl == SRL_NORMAL) brect->setPen(QPen(Qt::gray)); // This will render it invisible as the color is the same as the background.
+    RenderServerRectItem * brect = canvas->addRect(gridBoundingRect);
+    brect->setBrush(QBrush(QColor(canvas->getBackgroundColorName())));
+    if (srl == SRL_NORMAL) brect->setPen(QPen(Qt::gray)); // This will render it invisible as the color is the same as the background.   
+    else brect->setPen(QPen(Qt::black));
     items << brect;
 
     for (qint32 i = 0; i < slide.size(); i++){
 
-        QGraphicsRectItem *back  = canvas->addRect(0,0,parser.getDrawStructure().FlagSideH,parser.getDrawStructure().FlagSideV);
-        QGraphicsRectItem *vrect = canvas->addRect(0,0,
+        RenderServerRectItem *back  = canvas->addRect(0,0,parser.getDrawStructure().FlagSideH,parser.getDrawStructure().FlagSideV);
+        RenderServerRectItem *vrect = canvas->addRect(0,0,
                                                    parser.getDrawStructure().FlagSideH-2*parser.getDrawStructure().HLBorder,
                                                    parser.getDrawStructure().FlagSideV-2*parser.getDrawStructure().VSBorder);
-        QGraphicsRectItem *hrect = canvas->addRect(0,0,
+        RenderServerRectItem *hrect = canvas->addRect(0,0,
                                                    parser.getDrawStructure().FlagSideH-2*parser.getDrawStructure().HSBorder,
                                                    parser.getDrawStructure().FlagSideV-2*parser.getDrawStructure().VLBorder);
         back->setPos(slide.at(i).x,slide.at(i).y);
@@ -66,13 +76,15 @@ void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, 
 
     }
 
-    QGraphicsItemGroup *group = canvas->createItemGroup(items);
+    RenderServerItemGroup *group = canvas->createItemGroup(items);
 
     if (srl != ScreenRenderLocation::SRL_NORMAL){
 
         // The first point is to set the transform origin point to the center of the flag.
         qreal x_center = ScreenResolutionWidth/2;
         qreal y_center = ScreenResolutionHeight/2;
+
+        //qDebug() << "SCREEN CENTER" << x_center << y_center;
 
         // The scale point is in the center of the screen.
         group->setTransformOriginPoint(x_center,y_center);
@@ -107,11 +119,14 @@ void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, 
 
             poly_arrow_head.append(QPointF(x_center - arrow_width/2,y_center+arrow_height/2));
 
+            // qDebug() << "ARROW POINTS" << poly_arrow_head;
+
             // Computing all the arrow paramters.
             QColor arrowColor = Qt::cyan;
 
             // Add the triangle polygon to the scene
-            QGraphicsPolygonItem* arrow_head = canvas->addPolygon(poly_arrow_head);
+            //QGraphicsPolygonItem* arrow_head = canvas->addPolygon(poly_arrow_head);
+            RenderServerTriangleItem* arrow_head = canvas->addTriangle(poly_arrow_head);
             arrow_head->setBrush(QBrush(arrowColor));
             arrow_head->setPen(QPen(arrowColor));
 
@@ -194,7 +209,7 @@ void BindingManager::drawTrial(qint32 currentTrial, bool show, bool enableRender
 
     RenderFlagType rft = RFT_NORMAL;
 
-    // qDebug() << "BindingManager::drawTrial. Number of Trials: " << parser.getTrials().size() << ". Accessing trial " << currentTrial;
+    //qDebug() << "BindingManager::drawTrial. Number of Trials: " << parser.getTrials().size() << ". Accessing trial " << currentTrial;
 
     if (enableRenderDualMode){
 
@@ -233,7 +248,7 @@ bool BindingManager::parseExpConfiguration(const QString &contents){
 
 void BindingManager::renderStudyExplanationScreen(qint32 screen_index){
 
-    // qDebug() << "Rendering Study Explantion Binding: isBC" << isBC << "Screen Index" << screen_index << "Number of Targets" << numberOfTargets;
+    //qDebug() << "Rendering Study Explantion Binding: isBC" << isBC << "Screen Index" << screen_index << "Number of Targets" << numberOfTargets;
 
     if (isBC){
         if (screen_index == SE_BC_ENCODING_DIFF){

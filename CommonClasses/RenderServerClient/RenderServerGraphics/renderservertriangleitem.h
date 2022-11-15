@@ -8,10 +8,13 @@ class RenderServerTriangleItem : public RenderServerItem
 
 public:
 
-    RenderServerTriangleItem(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3);
-
-    void setPos(qreal x, qreal y) override;
+    RenderServerTriangleItem(const QPolygonF &triangle);
+    void setPos (qreal x, qreal y) override;
     void render(RenderServerPacket *packet) const override;
+    void scale(qreal scale) override;
+    void moveBy(qreal dx, qreal dy) override;
+    qreal x() const override;
+    qreal y() const override;
 
 private:
     qreal x1;
