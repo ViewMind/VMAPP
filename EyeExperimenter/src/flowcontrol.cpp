@@ -11,46 +11,59 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     rightEyeCalibrated  = false;
     leftEyeCalibrated = false;
     experiment = nullptr;
-    openvrco = nullptr;
     renderState = RENDERING_NONE;
     this->setVisible(false);
     vrOK = false;
+    usingVR = false;
+
+    // These two can't be initialized until ready rendering.
+    displayImage = nullptr;
+    waitScreen = nullptr;
 
     // Creating the OpenVR Object if so defined.
     if ((Globals::EyeTracker::IS_VR) && (!DBUGBOOL(Debug::Options::USE_MOUSE))){
-        openvrco = new OpenVRControlObject(this);
-        connect(openvrco,SIGNAL(requestUpdate()),this,SLOT(onRequestUpdate()));
 
-        // Intializing the OpenVR Solution.
-        if (!openvrco->startRendering()){
-            logger.appendError("OpenVRControl Object intilization failed. Will not be creating the wait screen");
-            return;
-        }
+        //Making all the connections to the render server.
+        connect(&renderServerClient,&RenderServerClient::newPacketArrived,this,&FlowControl::onNewPacketArrived);
+        connect(&renderServerClient,&RenderServerClient::connectionEstablished,this,&FlowControl::onConnectionEstablished);
+        connect(&renderServerClient,&RenderServerClient::newMessage,this,&FlowControl::onNewMessage);
+        connect(&renderServerClient,&RenderServerClient::readyToRender,this,&FlowControl::onReadyToRender);
+        usingVR = true;
 
-        vrOK = true;
 
-        // If rendering was started, is now stopped so as not to consume resources.
-        openvrco->stopRendering();
+//        openvrco = new OpenVRControlObject(this);
+//        connect(openvrco,SIGNAL(requestUpdate()),this,SLOT(onRequestUpdate()));
 
-        // Create the wait screen only once
-        waitScreenBaseColor = QColor(Qt::gray);
+//        // Intializing the OpenVR Solution.
+//        if (!openvrco->startRendering()){
+//            logger.appendError("OpenVRControl Object intilization failed. Will not be creating the wait screen");
+//            return;
+//        }
 
-        logo = QImage(":/images/logo.png");
-        if (logo.isNull()){
-            logger.appendError("The loaded wait screen image is null");
-            return;
-        }
+//        vrOK = true;
 
-        waitFont = QFont("Mono",static_cast<qint32>(32*Globals::EyeTracker::VRSCALING));
+//        // If rendering was started, is now stopped so as not to consume resources.
+//        openvrco->stopRendering();
 
-        // We start with a blank wait screen.
-        generateWaitScreen("");
+//        // Create the wait screen only once
+//        waitScreenBaseColor = QColor(Qt::gray);
+
+//        logo = QImage(":/images/logo.png");
+//        if (logo.isNull()){
+//            logger.appendError("The loaded wait screen image is null");
+//            return;
+//        }
+
+//        waitFont = QFont("Mono",static_cast<qint32>(32*Globals::EyeTracker::VRSCALING));
+
+//        // We start with a blank wait screen.
+//        generateWaitScreen("");
 
     }
     else {
         if (DBUGBOOL(Debug::Options::USE_MOUSE)){
             qDebug() << "DBUG: Mouse Use Enabled";
-            logger.appendWarning("DBUG: Using Mouse as EyeTracker");
+            StaticThreadLogger::warning("FlowControl::FlowControl","DBUG: Using Mouse as EyeTracker");
         }
         vrOK = true;
     }
@@ -58,52 +71,149 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     if (DBUGINT(Debug::Options::OVERRIDE_TIME) != 0){
         QString msg = "DBUG: Override Time has been set to " + QString::number(DBUGINT(Debug::Options::OVERRIDE_TIME));
         qDebug() << msg;
-        logger.appendWarning(msg);
+        StaticThreadLogger::warning("FlowControl::FlowControl",msg);
     }
 
 }
 
+void FlowControl::startRenderServerAndSetWindowID(WId winID){
+    mainWindowID = winID;
+    // The redner server client can only be started once we have the window ID.
+    QString location = Globals::RemoteRenderServerParameters::DIR + "/" + Globals::RemoteRenderServerParameters::EXE;
+    renderServerClient.startRenderServer(location,winID);
+}
+
+void FlowControl::hideRenderWindow(){
+    renderServerClient.resizeRenderWindow(0,0,0,0);
+}
+
+void FlowControl::showRenderWindow(){
+    emit FlowControl::requestWindowGeometry();
+}
+
+void FlowControl::setRenderWindowGeometry(int target_x, int target_y, int target_w, int target_h){
+
+    // We need to use the Window Function to get DPI multiplication being used by the system as it affects the sizes and positions we need to set
+    // to the Unity Render Server Window Geometry.
+    quint32 DPI = GetDpiForWindow((HWND) mainWindowID);
+
+    float dpi_multiplier = static_cast<float>(DPI)/96.0f;
+
+    target_x = static_cast<qint32>( static_cast<float>(target_x)*dpi_multiplier );
+    target_y = static_cast<qint32>( static_cast<float>(target_y)*dpi_multiplier );
+    target_w = static_cast<qint32>( static_cast<float>(target_w)*dpi_multiplier );
+    target_h = static_cast<qint32>( static_cast<float>(target_h)*dpi_multiplier );
+
+    renderServerClient.resizeRenderWindow(target_x,target_y,target_w,target_h);
+
+}
+
+void FlowControl::onNewMessage(const QString &msg, const quint8 &msgType){
+    if (msgType == RenderServerClient::MSG_TYPE_ERROR){
+        StaticThreadLogger::error("FlowControl::onNewMessage",msg);
+    }
+    else if (msgType == RenderServerClient::MSG_TYPE_INFO){
+        StaticThreadLogger::log("FlowControl::onNewMessage",msg);
+    }
+    else if (msgType == RenderServerClient::MSG_TYPE_WARNING){
+        StaticThreadLogger::warning("FlowControl::onNewMessage",msg);
+    }
+}
+
+void FlowControl::onConnectionEstablished(){
+
+    StaticThreadLogger::log("FlowControl::onConnectionEstablished","Render Server Connection established");
+
+    RenderServerPacket packet;
+    packet.setPacketType(RenderServerPacketType::TYPE_LOG_LOCATION);
+    packet.setPayloadField(PacketLogLocation::LOG_LOCATION,StaticThreadLogger::getFullLogFilePath());
+    packet.setPayloadField(PacketLogLocation::APP_NAME,"RenderServer");
+    renderServerClient.sendPacket(packet);
+
+    onNewMessage("Sent log relocation packet",RenderServerClient::MSG_TYPE_INFO);
+
+    emit FlowControl::requestWindowGeometry();
+
+}
+
+void FlowControl::onNewPacketArrived(){
+    RenderServerPacket packet = renderServerClient.getPacket();
+    /// TODO: See what to do when a server packet arrives.
+}
+
+void FlowControl::onReadyToRender() {
+
+    StaticThreadLogger::log("FlowControl::onReadyToRender","Generating wait screen and sending");
+
+    // A this point we know that the server is ready to render and we know the rendering resolution.
+    // So we add the resolutions to the configuration
+    this->resolutionCalculations();
+    vrOK = true;
+
+    // Now we create the render server packet that will serve a as a Wait Screen.
+    QSize s = renderServerClient.getRenderResolution();
+    qreal W = s.width();
+    qreal H = s.height();
+    waitScreen = new RenderServerScene(0,0,W,H);
+    displayImage = new RenderServerScene(0,0,W,H);
+    waitScreen->setBackgroundBrush(QBrush(Qt::gray));
+    QFont font;
+    font.setPointSizeF(50);
+    font.setWeight(QFont::Bold);
+    RenderServerTextItem * text = waitScreen->addSimpleText("VIEWMIND",font);
+    QRectF brect = text->boundingRect();
+    qreal x = (W - brect.width())/2;
+    qreal y = (H - brect.height())/2;
+    text->setPos(x,y);
+
+    // We send the packet to render server, and also we enable 2D rendering
+    renderServerClient.sendEnable2DRenderPacket(true);
+    renderServerClient.sendPacket(waitScreen->render());
+
+}
+
 bool FlowControl::isVROk() const{
-    return vrOK;
+    if (!usingVR) return true;
+    return (vrOK && renderServerClient.isRenderServerWorking());
 }
 
-void FlowControl::generateWaitScreen(const QString &message){
+//void FlowControl::generateWaitScreen(const QString &message){
 
-    if (openvrco == nullptr) return;
+//    if (openvrco == nullptr) return;
 
-    QFontMetrics fmetrics(waitFont);
-    QRect btextrect = fmetrics.boundingRect(message);
+//    QFontMetrics fmetrics(waitFont);
+//    QRect btextrect = fmetrics.boundingRect(message);
 
-    QSize s = openvrco->getRecommendedSize();
-    openvrco->setScreenColor(waitScreenBaseColor);
+//    QSize s = openvrco->getRecommendedSize();
+//    openvrco->setScreenColor(waitScreenBaseColor);
 
-    qint32 swidth  = static_cast<qint32>(s.width()*Globals::EyeTracker::VRSCALING);
-    qint32 sheight = static_cast<qint32>(s.height()*Globals::EyeTracker::VRSCALING);
+//    qint32 swidth  = static_cast<qint32>(s.width()*Globals::EyeTracker::VRSCALING);
+//    qint32 sheight = static_cast<qint32>(s.height()*Globals::EyeTracker::VRSCALING);
 
-    logo = logo.scaled(swidth,sheight,Qt::KeepAspectRatio);
+//    logo = logo.scaled(swidth,sheight,Qt::KeepAspectRatio);
 
-    // Drawing the logo in the center of the screen.
-    waitScreen = QImage(swidth, sheight, QImage::Format_RGB32);
-    QPainter painter(&waitScreen);
-    painter.fillRect(0,0,swidth,sheight,QBrush(waitScreenBaseColor));
-    qreal xoffset = (swidth - logo.width())/2;
-    qreal yoffset = (sheight - logo.height())/2;
+//    // Drawing the logo in the center of the screen.
+//    waitScreen = QImage(swidth, sheight, QImage::Format_RGB32);
+//    QPainter painter(&waitScreen);
+//    painter.fillRect(0,0,swidth,sheight,QBrush(waitScreenBaseColor));
+//    qreal xoffset = (swidth - logo.width())/2;
+//    qreal yoffset = (sheight - logo.height())/2;
 
-    QRectF source(0,0,logo.width(),logo.height());
-    QRectF target(xoffset,yoffset,logo.width(),logo.height());
-    painter.drawImage(target,logo,source);
+//    QRectF source(0,0,logo.width(),logo.height());
+//    QRectF target(xoffset,yoffset,logo.width(),logo.height());
+//    painter.drawImage(target,logo,source);
 
-    // Drawing the text, below the image.
-    painter.setPen(QColor(Qt::black));
-    painter.setFont(waitFont);
-    xoffset = (swidth - btextrect.width())/2;
-    yoffset = yoffset + logo.height() + btextrect.height();
-    QRect targetTextRect(0,static_cast<qint32>(yoffset),swidth,static_cast<qint32>(btextrect.height()*2.2));
-    painter.drawText(targetTextRect,Qt::AlignCenter,message);
+//    // Drawing the text, below the image.
+//    painter.setPen(QColor(Qt::black));
+//    painter.setFont(waitFont);
+//    xoffset = (swidth - btextrect.width())/2;
+//    yoffset = yoffset + logo.height() + btextrect.height();
+//    QRect targetTextRect(0,static_cast<qint32>(yoffset),swidth,static_cast<qint32>(btextrect.height()*2.2));
+//    painter.drawText(targetTextRect,Qt::AlignCenter,message);
 
-    painter.end();
+//    painter.end();
 
-}
+//}
 
 ////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
 
@@ -113,9 +223,10 @@ void FlowControl::resolutionCalculations(){
     configuration->addKeyValuePair(Globals::Share::MONITOR_RESOLUTION_WIDTH,screen.width());
     configuration->addKeyValuePair(Globals::Share::MONITOR_RESOLUTION_HEIGHT,screen.height());
 
-    if (openvrco != nullptr){
+    if (usingVR){
         // This menas the resolution for drawing should be the one recommende by OpenVR.
-        QSize s = openvrco->getRecommendedSize();
+        //QSize s = openvrco->getRecommendedSize();
+        QSize s = renderServerClient.getRenderResolution();
         configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH, s.width()*Globals::EyeTracker::VRSCALING);
         configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT,s.height()*Globals::EyeTracker::VRSCALING);
     }
@@ -134,9 +245,12 @@ void FlowControl::keyboardKeyPressed(int key){
 
 void FlowControl::stopRenderingVR(){
     //qDebug() << "On FlowControl::stopRenderingVR()";
-    if (openvrco != nullptr){
-        openvrco->stopRendering();
-    }
+//    if (openvrco != nullptr){
+//        openvrco->stopRendering();
+//    }
+//    if (usingVR){
+//        renderServerClient.sendEnable2DRenderPacket(false);
+//    }
     if (eyeTracker != nullptr){
         eyeTracker->enableUpdating(false);
     }
@@ -148,33 +262,40 @@ void FlowControl::stopRenderingVR(){
 void FlowControl::onRequestUpdate(){
     if (renderState == RENDERING_EXPERIMENT){
         if (eyeTracker == nullptr) {
-            logger.appendError("VR Update Request: Rendering experiment with a non existant eyeTracker object. Force stopping rendering");
-            openvrco->stopRendering();
+            StaticThreadLogger::error("FlowControl::onRequestUpdate","VR Update Request: Rendering experiment with a non existant eyeTracker object. Force stopping rendering");
+            //openvrco->stopRendering();
             return;
         }
         if (experiment == nullptr) {
-            logger.appendError("VR Update Request: Rendering experiment with a non existant experiment object. Force stopping rendering");
-            openvrco->stopRendering();
+            StaticThreadLogger::error("FlowControl::onRequestUpdate","VR Update Request: Rendering experiment with a non existant experiment object. Force stopping rendering");
+            //openvrco->stopRendering();
             return;
         }
-        QImage image = experiment->getVRDisplayImage();
+        //QImage image = experiment->getVRDisplayImage();
+        RenderServerScene image = experiment->getVRDisplayImage();
 
         // On experiment images, the eye position is added.
         EyeTrackerData data = eyeTracker->getLastData();
-        displayImage = image;
-        QPainter painter(&displayImage);
-        qreal r = 0.01*displayImage.width();
-        painter.setBrush(QBrush(QColor(0,255,0,100)));
-        painter.drawEllipse(static_cast<qint32>(data.xLeft-r),static_cast<qint32>(data.yLeft-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
-        painter.setBrush(QBrush(QColor(0,0,255,100)));
-        painter.drawEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
+        //displayImage = image;
+        displayImage->copyFrom(&image);
+        //QPainter painter(&displayImage);
+//        qreal r = 0.01*displayImage.width();
+//        painter.setBrush(QBrush(QColor(0,255,0,100)));
+//        painter.drawEllipse(static_cast<qint32>(data.xLeft-r),static_cast<qint32>(data.yLeft-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
+//        painter.setBrush(QBrush(QColor(0,0,255,100)));
+//        painter.drawEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r));
+
+        qreal r = 0.01*displayImage->width();
+        displayImage->addEllipse(static_cast<qint32>(data.xLeft-r),static_cast<qint32>(data.yLeft-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,255,0,100)));
+        displayImage->addEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,0,255,100)));
 
         if (!DBUGBOOL(Debug::Options::SHOW_EYES_IN_STUDY)){
-            openvrco->setImage(&image);
+            //openvrco->setImage(&image);
+            renderServerClient.sendPacket(image.render());
         }
         else{
-            openvrco->setImage(&displayImage);
-
+            renderServerClient.sendPacket(displayImage->render());
+            //openvrco->setImage(&displayImage);
         }
 
         emit(newImageAvailable());
@@ -182,19 +303,22 @@ void FlowControl::onRequestUpdate(){
     else if (renderState == RENDER_WAIT_SCREEN){
         if (displayImage != waitScreen){
             displayImage = waitScreen;
-            openvrco->setScreenColor(waitScreenBaseColor);
-            openvrco->setImage(&displayImage);
+            //openvrco->setScreenColor(waitScreenBaseColor);
+            //openvrco->setImage(&displayImage);
+            renderServerClient.sendPacket(displayImage->render());
             emit(newImageAvailable());
         }
     }
     else if (renderState == RENDERING_CALIBRATION_SCREEN){
-        openvrco->setImage(&displayImage);
+        //openvrco->setImage(&displayImage);
+        renderServerClient.sendPacket(displayImage->render());
         emit(newImageAvailable());
     }
 }
 
 QImage FlowControl::image() const{
-    return displayImage;
+    return QImage();
+    //return displayImage;
 }
 
 void FlowControl::eyeTrackerChanged(){
@@ -214,7 +338,7 @@ void FlowControl::connectToEyeTracker(){
     // Creating the connection with the EyeTracker
     if (eyeTracker != nullptr) delete eyeTracker;
 
-    logger.appendStandard("Creating new EyeTracker Object");
+    StaticThreadLogger::log("FlowControl::connectToEyeTracker","Creating new EyeTracker Object");
 
     // The new et is NOT calibrated.
     calibrated = false;
@@ -222,7 +346,7 @@ void FlowControl::connectToEyeTracker(){
 
     if (configuration->getBool(Globals::VMPreferences::USE_MOUSE)){
         eyeTracker = new MouseInterface();
-        logger.appendStandard("Connecting to the Mouse ... ");
+        StaticThreadLogger::log("FlowControl::connectToEyeTracker","Connecting to the Mouse ... ");
     }
     else{
 
@@ -243,13 +367,13 @@ void FlowControl::connectToEyeTracker(){
                                                    configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
             }
             else{
-                logger.appendError("Failed connecting to ET. Unknown key: " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+                StaticThreadLogger::error("FlowControl::connectToEyeTracker","Failed connecting to ET. Unknown key: " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
             }
 
-            logger.appendStandard("Connecting to the EyeTracker " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+            StaticThreadLogger::log("FlowControl::connectToEyeTracker","Connecting to the EyeTracker " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
         }
         else{
-            logger.appendWarning("WARNING: Using Mouse EyeTracker DBug Option");
+            StaticThreadLogger::warning("FlowControl::connectToEyeTracker","Using Mouse EyeTracker DBug Option");
             eyeTracker = new MouseInterface();
             static_cast<MouseInterface*>(eyeTracker)->overrideCalibration();
         }

@@ -71,7 +71,8 @@ public:
     void keyboardKeyPressed(int keyboardKey);
 
     // Image required for VR Display
-    QImage getVRDisplayImage() const;
+    //QImage getVRDisplayImage() const;
+    RenderServerScene getVRDisplayImage() const;
 
     // This is the function that gets called to render explation screens.
     void renderCurrentStudyExplanationScreen();

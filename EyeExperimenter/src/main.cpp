@@ -7,6 +7,7 @@
 
 #include "../../CommonClasses/LogInterface/loginterface.h"
 #include "../../CommonClasses/QMLQImageDisplay/qimagedisplay.h"
+#include "../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "loader.h"
 #include "flowcontrol.h"
 
@@ -44,22 +45,23 @@ namespace Debug {
 int main(int argc, char *argv[])
 {
 
-    LogInterface logger;
+    //LogInterface logger;
+    StaticThreadLogger::StartLogger("EyeExplorer","logfile.log");
 
     // We need to load the defines to configure the rest of hte application.
     ConfigurationManager defines;
     if (!defines.loadConfiguration(Globals::Paths::APPSPEC)){
-        logger.appendError("Could not load configuration file due to " + defines.getError());
+         StaticThreadLogger::error("main","Could not load configuration file due to " + defines.getError());
     }
     else{
 
         if (!defines.containsKeyword(Globals::VMAppSpec::ET)){
-            logger.appendError("EyeTracker Specification is missing from app spec");
+             StaticThreadLogger::error("main","EyeTracker Specification is missing from app spec");
             return 0;
         }
 
         if (!defines.containsKeyword(Globals::VMAppSpec::Region)){
-            logger.appendError("Application region is missing from app spec");
+             StaticThreadLogger::error("main","Application region is missing from app spec");
             return 0;
         }
 
@@ -67,26 +69,26 @@ int main(int argc, char *argv[])
 
         OK = Globals::SetUpEyeTrackerNameSpace(defines.getString(Globals::VMAppSpec::ET));
         if (!OK){
-            logger.appendError("Could not set up ET Configuration for " + defines.getString(Globals::VMAppSpec::ET));
+             StaticThreadLogger::error("main","Could not set up ET Configuration for " + defines.getString(Globals::VMAppSpec::ET));
             return 0;
         }
 
         OK = Globals::SetUpRegion(defines.getString(Globals::VMAppSpec::Region));
         if (!OK){
-            logger.appendError("Could not set up Region Configuration for " + defines.getString(Globals::VMAppSpec::Region));
+             StaticThreadLogger::error("main","Could not set up Region Configuration for " + defines.getString(Globals::VMAppSpec::Region));
             return 0;
         }
 
         // Loading the DEBUG Options. This needs to happen BEFORE Setup Experimenter Version so as to ensure that the options oppear in the title bar.
         QString error = Debug::LoadOptions(Globals::Paths::DEBUG_OPTIONS_FILE);
         if (error != ""){
-            logger.appendError("Loading Debug Options File: " + error);
+             StaticThreadLogger::error("main","Loading Debug Options File: " + error);
         }
 
     }
 
     if (!QSslSocket::supportsSsl()){
-        logger.appendError("SSL NOT Supported. Will not be able to connect to the API");
+         StaticThreadLogger::error("main","SSL NOT Supported. Will not be able to connect to the API");
         return 0;
     }
 
@@ -116,7 +118,7 @@ int main(int argc, char *argv[])
 
     Loader loader(nullptr,&configuration,&countries);
     if (isRunning){
-        logger.appendError("Another instance of the application was detected. Exiting");
+         StaticThreadLogger::error("main","Another instance of the application was detected. Exiting");
         return 0;
     }
 
@@ -136,6 +138,13 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
+
+
+    // We need to set the identification window which starts the server render process.
+    if (QWindow *window = qobject_cast<QWindow*>(engine.rootObjects().at(0))){
+        flowControl.startRenderServerAndSetWindowID(window->winId());
+        //control.runUnityRenderServer();
+    }
 
     return app.exec();
 }

@@ -5,7 +5,7 @@ RenderServerRectItem::RenderServerRectItem(qreal x, qreal y, qreal width, qreal 
     this->left = x;
     this->width = width;
     this->height = height;
-    this->itemType = "Rect";
+    this->itemType = RenderServerItemTypeName::RECT;
     //qDebug() << x << y << width << height;
 }
 
@@ -21,6 +21,24 @@ void RenderServerRectItem::updateBRect() {
     this->bRect.setHeight(this->height);
 }
 
+RenderServerRectItem::RenderServerRectItem(const QVariantMap &itemData): RenderServerItem(itemData) {
+
+    this->top = itemData[RenderControlPacketFields::TOP].toReal();
+    this->left = itemData[RenderControlPacketFields::LEFT].toReal();
+    this->width = itemData[RenderControlPacketFields::WIDTH].toReal();
+    this->height = itemData[RenderControlPacketFields::HEIGHT].toReal();
+
+    this->updateBRect();
+}
+
+QVariantMap RenderServerRectItem::getItemData() const {
+    QVariantMap itemData = RenderServerItem::getItemData();
+    itemData[RenderControlPacketFields::TOP] = this->top;
+    itemData[RenderControlPacketFields::LEFT] = this->left;
+    itemData[RenderControlPacketFields::WIDTH] = this->width;
+    itemData[RenderControlPacketFields::HEIGHT] = this->height;
+    return itemData;
+}
 
 void RenderServerRectItem::render(RenderServerPacket *packet) const {
 

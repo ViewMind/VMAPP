@@ -12,6 +12,33 @@ RenderServerItem::RenderServerItem()
     this->roundCaps = false;
 }
 
+RenderServerItem::RenderServerItem(const QVariantMap &itemData){
+    this->borderColor       =  itemData[RenderControlPacketFields::BORDER_COLOR].toString();
+    this->fillColor         =  itemData[RenderControlPacketFields::COLOR].toString()       ;
+    this->zValue            =  itemData[RenderControlPacketFields::Z].toReal()             ;
+    this->visible           =  itemData[RenderControlPacketFields::VISIBLE].toBool()       ;
+    this->tfOrigin          =  itemData[RenderControlPacketFields::TF_ORIGIN].toPointF()   ;
+    this->referenceYTF      =  itemData[RenderControlPacketFields::REF_Y].toReal()         ;
+    this->roundCaps         =  itemData[RenderControlPacketFields::USE_ROUND_CAPS].toBool();
+    this->itemType          =  itemData[RenderControlPacketFields::TYPE].toString();
+    this->borderWidth       =  itemData[RenderControlPacketFields::BORDER_WIDTH].toReal();
+}
+
+QVariantMap RenderServerItem::getItemData() const {
+    QVariantMap itemData;
+    itemData[RenderControlPacketFields::BORDER_COLOR]   = this->borderColor;
+    itemData[RenderControlPacketFields::COLOR]          = this->fillColor;
+    itemData[RenderControlPacketFields::Z]              = this->zValue;
+    itemData[RenderControlPacketFields::VISIBLE]        = this->visible;
+    itemData[RenderControlPacketFields::TF_ORIGIN]      = this->tfOrigin;
+    itemData[RenderControlPacketFields::REF_Y]          = this->referenceYTF;
+    itemData[RenderControlPacketFields::USE_ROUND_CAPS] = this->roundCaps;
+    itemData[RenderControlPacketFields::BORDER_WIDTH]   = this->borderWidth;
+    itemData[RenderControlPacketFields::TYPE]           = this->itemType;
+
+    return itemData;
+}
+
 void RenderServerItem::setZValue(double z){
     this->zValue =z;
     if (z <= 0) this->visible = false;

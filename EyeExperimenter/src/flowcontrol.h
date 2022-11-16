@@ -58,8 +58,16 @@ public:
     // This is a debugging funciton which will only return true when a coefficient file is loaded or the mouse is selected.
     Q_INVOKABLE bool autoValidateCalibration() const;
 
+    // Remote render server Window Validation Control
+    Q_INVOKABLE void setRenderWindowGeometry(int target_x, int target_y, int target_w, int target_h);
+    Q_INVOKABLE void hideRenderWindow();
+    Q_INVOKABLE void showRenderWindow();
+
     // The image to be shown.
     QImage image() const;
+
+    // Required for the ID setting handshake.
+    void startRenderServerAndSetWindowID(WId winID);
 
 signals:
 
@@ -76,6 +84,9 @@ signals:
     // Singal to update the QML front end with new study string.
     void newExperimentMessages(const QVariantMap &string_value_map);
 
+    // Puts in a request to the QML Front end to get the geometry for the render server window.
+    void requestWindowGeometry();
+
 public slots:
 
     // When an experiment finishes.
@@ -87,6 +98,17 @@ public slots:
     // Whenever the experiment updates message to the front end.
     void onUpdatedExperimentMessages(const QVariantMap &string_value_map);
 
+    // When a new packet arrives from the render server.
+    void onNewPacketArrived();
+
+    // Connection to the render server has been established.
+    void onConnectionEstablished();
+
+    // The Render Server is ready to start rendering.
+    void onReadyToRender();
+
+    // New Message from the render server client object.
+    void onNewMessage(const QString &msg, const quint8 &msgType);
 
 private slots:
 
@@ -107,24 +129,32 @@ private:
     // The currently selected eyetracker
     EyeTrackerInterface *eyeTracker;
 
-    // Open VR Control object if VR is ENABLED.
-    OpenVRControlObject *openvrco;
+    // Remote Render Server Control. (Client) and required variables.
+    RenderServerClient renderServerClient;
+    QProcess renderServerProcess;
+    WId mainWindowID;
+    static HWND renderWindowHandle;
 
     // Flag if the open vr object could be properly initialized.
     bool vrOK;
+
+    // Flag to indicate if VR is in use.
+    bool usingVR;
 
     // Definining the render state for VR
     RenderState renderState;
 
     // Display image used when using VR Solution. And the Wait Screen.
-    QImage displayImage;
-    QImage waitScreen;
-    QImage logo;  // the viewmind logo.
-    QFont waitFont;
-    QColor waitScreenBaseColor;
+//    QImage displayImage;
+    RenderServerScene *displayImage;
+//    QImage waitScreen;
+//    QImage logo;  // the viewmind logo.
+//    QFont waitFont;
+//    QColor waitScreenBaseColor;
+    RenderServerScene *waitScreen;
 
     // The Log interface
-    LogInterface logger;
+    // LogInterface logger;
 
     // The configuration structure
     ConfigurationManager *configuration;

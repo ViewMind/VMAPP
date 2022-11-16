@@ -114,6 +114,12 @@ namespace Globals{
       static const qint32 INDEX_GONOGO = 7;
 
    }
+
+   namespace RemoteRenderServerParameters {
+      static const QString DIR = "render_server";
+      static const QString EXE = "DEV.exe";
+      static const QString PORT_FILE = "selected_port";
+   }
          
    namespace UILanguage {
       static const QString EN = "English";

@@ -27,6 +27,9 @@ class RenderServerScene
 public:
 
     RenderServerScene(double x, double y, double width, double height);
+    RenderServerScene(RenderServerScene *anotherScene);
+
+    void copyFrom(RenderServerScene *scene);
 
     RenderServerCircleItem * addEllipse(QRectF brect, const QPen &pen = QPen(), const QBrush &brush = QBrush());
     RenderServerCircleItem * addEllipse(qreal x, qreal y, qreal w, qreal h, const QPen &pen = QPen(), const QBrush &brush = QBrush());
@@ -48,6 +51,8 @@ public:
     qreal height() const;
 
     void clear();
+
+    QList<RenderServerItem *> getItemList() const;
 
 private:
     qreal sceneWidth;

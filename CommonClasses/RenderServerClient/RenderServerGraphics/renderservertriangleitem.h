@@ -9,6 +9,9 @@ class RenderServerTriangleItem : public RenderServerItem
 public:
 
     RenderServerTriangleItem(const QPolygonF &triangle);
+    RenderServerTriangleItem(const QVariantMap &itemData);
+    QVariantMap getItemData() const override;
+
     void setPos (qreal x, qreal y) override;
     void render(RenderServerPacket *packet) const override;
     void scale(qreal scale) override;

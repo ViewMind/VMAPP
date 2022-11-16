@@ -5,9 +5,25 @@ RenderServerCircleItem::RenderServerCircleItem(qreal x, qreal y, qreal w, qreal 
     this->R = w/2;
     this->center_x = x + this->R;
     this->center_y = y + this->R;
-    this->itemType = "Circle";
+    this->itemType = RenderServerItemTypeName::CIRCLE;
     this->updateBRect();
 }
+
+RenderServerCircleItem::RenderServerCircleItem(const QVariantMap &itemData): RenderServerItem(itemData) {
+    this->center_x = itemData.value(RenderControlPacketFields::X).toReal();
+    this->center_y = itemData.value(RenderControlPacketFields::Y).toReal();
+    this->R = itemData.value(RenderControlPacketFields::RADIOUS).toReal();
+    this->updateBRect();
+}
+
+QVariantMap RenderServerCircleItem::getItemData() const {
+    QVariantMap itemData = RenderServerItem::getItemData();
+    itemData[RenderControlPacketFields::X] = this->center_x;
+    itemData[RenderControlPacketFields::Y] = this->center_y;
+    itemData[RenderControlPacketFields::RADIOUS] = this->R;
+    return itemData;
+}
+
 
 // Since the interface is that of the QGraphicsEllipse Item, the x and y coordinates
 // used are that of the top left corner of the item. So they need to be compesated.

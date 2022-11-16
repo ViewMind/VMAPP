@@ -9,7 +9,7 @@ RenderServerArrowItem::RenderServerArrowItem(qreal x1, qreal y1, qreal x2, qreal
     this->headHeightMultiplier = arrowHeadHeightMult;
     this->headLength = arrowHeadLength;
     this->isTriangleArrow = isTriangleArrow;
-    this->itemType = "Arrow";
+    this->itemType = RenderServerItemTypeName::ARROW;
     this->updateBRect();
 
 }
@@ -18,6 +18,38 @@ void RenderServerArrowItem::setPos(qreal x, qreal y){
     this->x1 = x;
     this->y1 = y;
     this->updateBRect();
+}
+
+RenderServerArrowItem::RenderServerArrowItem(const QVariantMap &itemData): RenderServerItem(itemData) {
+    QVariantList x, y;
+    x = itemData.value(RenderControlPacketFields::X).toList();
+    y = itemData.value(RenderControlPacketFields::Y).toList();
+
+    if ((x.size() != 3) || (y.size() != 3)) return;
+    this->x1 = x[0].toReal();
+    this->x2 = x[1].toReal();
+
+
+    this->y1 = y[0].toReal();
+    this->y2 = y[1].toReal();
+
+    this->isTriangleArrow = itemData[RenderControlPacketFields::ARROW_TYPE_TRIANGLE].toBool();
+    this->headHeightMultiplier = itemData[RenderControlPacketFields::ARROW_HEAD_HEIGHT].toReal();
+    this->headLength = itemData[RenderControlPacketFields::ARROW_HEAD_LENGTH].toReal();
+
+    this->updateBRect();
+}
+
+QVariantMap RenderServerArrowItem::getItemData() const {
+    QVariantMap itemData = RenderServerItem::getItemData();
+    QVariantList x; x << this->x1 << this->x2;
+    QVariantList y; x << this->y1 << this->y2;
+    itemData[RenderControlPacketFields::X] = x;
+    itemData[RenderControlPacketFields::Y] = y;
+    itemData[RenderControlPacketFields::ARROW_TYPE_TRIANGLE] = this->isTriangleArrow;
+    itemData[RenderControlPacketFields::ARROW_HEAD_HEIGHT] = this->headHeightMultiplier;
+    itemData[RenderControlPacketFields::ARROW_HEAD_LENGTH] = this->headLength;
+    return itemData;
 }
 
 qreal RenderServerArrowItem::x() const {

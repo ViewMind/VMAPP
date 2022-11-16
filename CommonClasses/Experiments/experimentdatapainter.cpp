@@ -71,12 +71,13 @@ qint32 ExperimentDataPainter::getLoopValue() const {
     return trialCountLoopValue;
 }
 
-RenderServerPacket ExperimentDataPainter::getQImage() const{
+RenderServerScene ExperimentDataPainter::getQImage() const{
     return this->getImage();
 }
 
-RenderServerPacket ExperimentDataPainter::getImage() const{
-    return canvas->render();
+RenderServerScene ExperimentDataPainter::getImage() const{
+    RenderServerScene newScene(canvas);
+    return newScene;
 }
 
 //QImage ExperimentDataPainter::getQImage() const{

@@ -21,10 +21,35 @@ RenderServerTriangleItem::RenderServerTriangleItem(const QPolygonF &triangle): R
     this->x3 = triangle.at(2).x();
     this->y3 = triangle.at(2).y();
 
-    this->itemType = "Triangle";
+    this->itemType = RenderServerItemTypeName::TRIANGLE;
 
 }
 
+RenderServerTriangleItem::RenderServerTriangleItem(const QVariantMap &itemData): RenderServerItem(itemData) {
+    QVariantList x, y;
+    x = itemData.value(RenderControlPacketFields::X).toList();
+    y = itemData.value(RenderControlPacketFields::Y).toList();
+
+    if ((x.size() != 3) || (y.size() != 3)) return;
+    this->x1 = x[0].toReal();
+    this->x2 = x[1].toReal();
+    this->x3 = x[2].toReal();
+
+    this->y1 = y[0].toReal();
+    this->y2 = y[1].toReal();
+    this->y3 = y[2].toReal();
+
+    this->updateBRect();
+}
+
+QVariantMap RenderServerTriangleItem::getItemData() const {
+    QVariantMap itemData = RenderServerItem::getItemData();
+    QVariantList x; x << this->x1 << this->x2 << this->x3;
+    QVariantList y; x << this->y1 << this->y2 << this->y3;
+    itemData[RenderControlPacketFields::X] = x;
+    itemData[RenderControlPacketFields::Y] = y;
+    return itemData;
+}
 
 void RenderServerTriangleItem::setPos (qreal x, qreal y){
     qreal dx = x - this->x1;

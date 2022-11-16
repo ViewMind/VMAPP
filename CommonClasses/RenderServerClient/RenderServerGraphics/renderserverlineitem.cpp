@@ -7,9 +7,37 @@ RenderServerLineItem::RenderServerLineItem(qreal x1, qreal y1, qreal x2, qreal y
     this->x2 = x2;
     this->y2 = y2;
     this->borderWidth = 1.0;
-    this->itemType = "Line";
+    this->itemType = RenderServerItemTypeName::LINE;
     this->updateBRect();
 }
+
+
+RenderServerLineItem::RenderServerLineItem(const QVariantMap &itemData): RenderServerItem(itemData) {
+    QVariantList x, y;
+    x = itemData.value(RenderControlPacketFields::X).toList();
+    y = itemData.value(RenderControlPacketFields::Y).toList();
+
+    if ((x.size() != 3) || (y.size() != 3)) return;
+    this->x1 = x[0].toReal();
+    this->x2 = x[1].toReal();
+
+
+    this->y1 = y[0].toReal();
+    this->y2 = y[1].toReal();
+
+
+    this->updateBRect();
+}
+
+QVariantMap RenderServerLineItem::getItemData() const {
+    QVariantMap itemData = RenderServerItem::getItemData();
+    QVariantList x; x << this->x1 << this->x2;
+    QVariantList y; x << this->y1 << this->y2;
+    itemData[RenderControlPacketFields::X] = x;
+    itemData[RenderControlPacketFields::Y] = y;
+    return itemData;
+}
+
 
 void RenderServerLineItem::setPos(qreal x, qreal y){
     this->x1 = x;

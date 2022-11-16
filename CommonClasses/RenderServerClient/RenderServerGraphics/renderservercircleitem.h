@@ -8,6 +8,9 @@ class RenderServerCircleItem : public RenderServerItem
 {
 public:
     RenderServerCircleItem(qreal x, qreal y, qreal w, qreal h);
+    RenderServerCircleItem(const QVariantMap &itemData);
+    QVariantMap getItemData() const override;
+
     void setPos (qreal x, qreal y) override;
     void render(RenderServerPacket *packet) const override;
     void scale(qreal scale) override;

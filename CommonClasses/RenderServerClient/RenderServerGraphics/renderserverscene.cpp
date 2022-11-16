@@ -8,6 +8,52 @@ RenderServerScene::RenderServerScene(double x, double y, double width, double he
     this->backgroundColor = "#000000";
 }
 
+RenderServerScene::RenderServerScene(RenderServerScene *scene){
+    this->copyFrom(scene);
+}
+
+
+void RenderServerScene::copyFrom(RenderServerScene *scene){
+    // Copy construnctor.
+    this->sceneHeight = scene->width();
+    this->sceneWidth  = scene->height();
+    this->backgroundColor = scene->getBackgroundColorName();
+    this->itemsInScene.clear();
+
+    QList<RenderServerItem*> list = scene->getItemList();
+
+    for (qint32 i = 0; i < list.size(); i++){
+
+        RenderServerItem * item = list.at(i);
+        if (item->getType() == RenderServerItemTypeName::ARROW){
+            RenderServerArrowItem *created_item = new RenderServerArrowItem(item->getItemData());
+            this->itemsInScene.append(created_item);
+        }
+        if (item->getType() == RenderServerItemTypeName::RECT){
+            RenderServerRectItem *created_item = new RenderServerRectItem(item->getItemData());
+            this->itemsInScene.append(created_item);
+        }
+        if (item->getType() == RenderServerItemTypeName::TEXT){
+            RenderServerTextItem *created_item = new RenderServerTextItem(item->getItemData());
+            this->itemsInScene.append(created_item);
+        }
+        if (item->getType() == RenderServerItemTypeName::CIRCLE){
+            RenderServerCircleItem *created_item = new RenderServerCircleItem(item->getItemData());
+            this->itemsInScene.append(created_item);
+        }
+        if (item->getType() == RenderServerItemTypeName::LINE){
+            RenderServerLineItem *created_item = new RenderServerLineItem(item->getItemData());
+            this->itemsInScene.append(created_item);
+        }
+        if (item->getType() == RenderServerItemTypeName::TRIANGLE){
+            RenderServerTriangleItem *created_item = new RenderServerTriangleItem(item->getItemData());
+            this->itemsInScene.append(created_item);
+        }
+
+    }
+
+}
+
 qreal RenderServerScene::width() const{
     return this->sceneWidth;
 }

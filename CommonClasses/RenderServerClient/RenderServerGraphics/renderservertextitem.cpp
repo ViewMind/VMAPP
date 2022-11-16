@@ -9,12 +9,36 @@ RenderServerTextItem::RenderServerTextItem(const QString &text)
     this->bRect.setLeft(this->x);
     this->bRect.setWidth(100);
     this->bRect.setHeight(100);
-    this->itemType = "Text";
+    this->itemType = RenderServerItemTypeName::TEXT;
     this->borderWidth = 20;
     this->fontSize = 10;
     this->lineSpacing = 1;
     this->alignment = ALIGN_CENTER;
+}
 
+RenderServerTextItem::RenderServerTextItem(const QVariantMap &itemData):RenderServerItem(itemData){
+
+    this->x = itemData.value(RenderControlPacketFields::X).toReal();
+    this->y = itemData.value(RenderControlPacketFields::Y).toReal();
+    this->fontSize = itemData.value(RenderControlPacketFields::FONT_SIZE).toReal();
+    this->lineSpacing = itemData.value(RenderControlPacketFields::LINE_SPACING).toReal();
+    this->alignment = itemData.value(RenderControlPacketFields::TEXT_ALIGNMENT).toChar().toLatin1();
+    this->text = itemData.value(RenderControlPacketFields::TEXT).toString();
+    this->computeBoundingRect();
+
+}
+
+QVariantMap RenderServerTextItem::getItemData() const {
+    QVariantMap itemData = RenderServerItem::getItemData();
+
+    itemData[RenderControlPacketFields::X] = this->x;
+    itemData[RenderControlPacketFields::Y] = this->y;
+    itemData[RenderControlPacketFields::FONT_SIZE] = this->fontSize;
+    itemData[RenderControlPacketFields::LINE_SPACING] = this->lineSpacing;
+    itemData[RenderControlPacketFields::TEXT_ALIGNMENT] = this->alignment;
+    itemData[RenderControlPacketFields::TEXT] = this->text;
+
+    return itemData;
 }
 
 void RenderServerTextItem::setPos(qreal x, qreal y){
@@ -58,18 +82,18 @@ void RenderServerTextItem::setFont(const QFont &font){
     this->fontSize = font.pointSizeF();
 
     // Computing the border with according the following formula
-    float char_h = static_cast<float>(this->fontSize);
-    float char_w = static_cast<float>(DEFAULT_LETTER_RATIO)*char_h;
+    qreal char_h = this->fontSize;
+    qreal char_w = DEFAULT_LETTER_RATIO*char_h;
 
-    float normal = 10.0f/char_w;
-    float weight = static_cast<float>(font.weight());
+    qreal normal = 10.0/char_w;
+    qreal weight = static_cast<qreal>(font.weight());
 
     // Weight scale goes from 100 to 900 where the middle is 500 which is my normal.
     // So this computes a constant which tells me how to multiply the char with in order to obtain
     // the line width for the text.
-    this->borderWidth = char_w*normal*weight/500.0f;
+    this->borderWidth = char_w*normal*weight/500.0;
 
-    qDebug() << "Setting font border width to " << this->borderWidth;
+    // qDebug() << "Setting font border width to " << this->borderWidth;
 
     this->computeBoundingRect();
 }
@@ -116,7 +140,7 @@ void RenderServerTextItem::computeBoundingRect() {
     qreal left = this->x - brw/2;
     qreal top  = this->y - brh/2;
 
-    qDebug() << "The text width is" << brw << " The text height is" << brh << " so to center in " << this->x << this->y << " we define top left as " << top << left;
+    // qDebug() << "The text width is" << brw << " The text height is" << brh << " so to center in " << this->x << this->y << " we define top left as " << top << left;
 
     this->bRect.setTop(top);
     this->bRect.setLeft(left);

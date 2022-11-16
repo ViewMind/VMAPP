@@ -51,8 +51,8 @@ public:
 
 //    QPixmap getImage() const;
 //    QImage getQImage() const;
-      RenderServerPacket getImage() const;
-      RenderServerPacket getQImage() const;
+    RenderServerScene getImage() const;
+    RenderServerScene getQImage() const;
 
     QString getError() const {return error;}
 

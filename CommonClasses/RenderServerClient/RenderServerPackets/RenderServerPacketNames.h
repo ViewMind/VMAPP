@@ -80,6 +80,13 @@ namespace RenderControlPacketFields {
     static const QString TEXT                     = "text";
     static const QString BG_COLOR                 = "bg";
     static const QString TEXT_ALIGNMENT           = "a";
+
+    // Some extras used fro the item value map.
+    static const QString Z                        = "z";
+    static const QString TF_ORIGIN                = "tfo";
+    static const QString VISIBLE                  = "v";
+    static const QString LINE_SPACING             = "ls";
+    static const QString REF_Y                    = "ref_y";
 }
 
 #endif // RENDERSERVERPACKETNAMES_H

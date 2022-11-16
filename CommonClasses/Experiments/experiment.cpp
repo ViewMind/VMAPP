@@ -362,7 +362,7 @@ bool Experiment::saveDataToHardDisk(){
 }
 
 
-QImage Experiment::getVRDisplayImage() const{
+RenderServerScene Experiment::getVRDisplayImage() const{
     return manager->getQImage();
 }
 

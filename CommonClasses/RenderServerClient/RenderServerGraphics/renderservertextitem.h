@@ -15,6 +15,8 @@ class RenderServerTextItem : public RenderServerItem
 {
 public:
     RenderServerTextItem(const QString &text);
+    RenderServerTextItem(const QVariantMap &itemData);
+
 
     /**
      * @brief setPos
@@ -23,8 +25,9 @@ public:
      * Unlike the QGraphicsSimpleTextItem, for simplicity this is sets the ceter mas point for where the text will be displayed.
      */
     void setPos (qreal x, qreal y) override;
-
     void render(RenderServerPacket *packet) const override;
+    QVariantMap getItemData() const override;
+
     void setText(const QString &text);
     void setFont(const QFont &font);
     void setDefaultTextColor(const QColor &col);

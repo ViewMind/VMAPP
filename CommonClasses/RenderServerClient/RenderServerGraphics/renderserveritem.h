@@ -14,11 +14,21 @@
 #include "../RenderServerPackets/RenderServerPacketNames.h"
 #include "../RenderServerPackets/renderserverpacket.h"
 
+namespace RenderServerItemTypeName {
+   const QString CIRCLE   = "Circle";
+   const QString LINE     = "Line";
+   const QString RECT     = "Rectangle";
+   const QString TRIANGLE = "Triangle";
+   const QString ARROW    = "Arrow";
+   const QString TEXT     = "Text";
+}
 
 class RenderServerItem
 {
 public:
+
     RenderServerItem();
+    RenderServerItem(const QVariantMap &itemData);
 
     virtual void setPos(qreal x, qreal y);
     virtual ~RenderServerItem();
@@ -71,6 +81,12 @@ public:
      */
     void setReferenceYForTransformations(qreal refY);
 
+    /**
+     * @brief getItemData - List of all values necessary to recreate the item.
+     * @return A List of values to be interpreted by the copy constructor of the tiem.
+     */
+    virtual QVariantMap getItemData() const;
+
 protected:
     QString fillColor;
     QString borderColor;
@@ -82,7 +98,6 @@ protected:
     QString itemType;
     QPointF tfOrigin;
     qreal referenceYTF;
-    qint32 renderOrder;
 
     QPointF scaleAPointAroundTFOrigin(qreal x, qreal y, qreal scale) const;
     QPointF scaleAPointAroundTFOrigin(const QPointF &point, qreal scale) const;

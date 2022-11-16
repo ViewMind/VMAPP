@@ -8,6 +8,9 @@ class RenderServerRectItem : public RenderServerItem
 
 public:
     RenderServerRectItem(qreal x, qreal y, qreal width, qreal height);
+    RenderServerRectItem(const QVariantMap &itemData);
+    QVariantMap getItemData() const override;
+
 
     void setPos(qreal x, qreal y) override;
     void render(RenderServerPacket *packet) const override;
