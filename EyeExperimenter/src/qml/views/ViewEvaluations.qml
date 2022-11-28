@@ -305,6 +305,8 @@ ViewBase {
                     border.width:  0
                     width: parent.width
                     height: parent.height + radius
+                    renderWindowOffsetX: mainRect.x + viewer.x
+                    renderWindowOffsetY: mainRect.y + viewer.y
                     onAllEvalsDone: {
                         viewer.currentIndex = vmSC_INDEX_EVALUATION_FINISHED
                     }
@@ -322,6 +324,9 @@ ViewBase {
             }
 
             onCurrentIndexChanged: {
+
+                flowControl.hideRenderWindow();
+
                 switch (currentIndex){
                 case vmSC_INDEX_GENERAL_SETTINGS:
                     nextButton.vmIconSource = "next";
@@ -335,6 +340,10 @@ ViewBase {
                     break;
                 case vmSC_INDEX_EVALUATION_SCREEN:
                     //console.log("Should be setting the calibration button")
+
+                    flowControl.setRenderWindowState(false);
+                    flowControl.showRenderWindow();
+
                     nextButton.vmText = loader.getStringForKey("viewevaluation_action_calibrate")
                     nextButton.vmIconSource = ""
                     evaluationRun.vmEvaluationStage = evaluationRun.vmSTAGE_CALIBRATION
@@ -435,7 +444,7 @@ ViewBase {
         case evaluationRun.vmSTAGE_CALIBRATION:
             if (event.key === Qt.Key_Escape){
                 if (!evaluationRun.vmInCalibration){
-                    flowControl.generateWaitScreen("");
+                    flowControl.renderWaitScreen("");
                     mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
                 }
             }

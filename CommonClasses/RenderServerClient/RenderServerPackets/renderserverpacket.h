@@ -41,9 +41,7 @@ private:
 
     QString type;
     QVariantMap payload;
-
     QByteArray rxBuffer;
-
     QString error;
 
     RenderServerPacketRecognizer recognizer;

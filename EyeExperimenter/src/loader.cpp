@@ -33,8 +33,8 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
-    if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION)){
-        logger.appendError("Errors loading the configuration file: " + configuration->getError());
+    if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION)){        
+        StaticThreadLogger::error("Loader::Loader","Errors loading the configuration file: " + configuration->getError());
         // The program should not be able to continue after loading the language.
         loadingError = true;
     }
@@ -68,7 +68,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     settings.setupVerification(cv);
     if (QFile(Globals::Paths::SETTINGS).exists()){
         if (!settings.loadConfiguration(Globals::Paths::SETTINGS)){
-            logger.appendError("Errors loading the settings file: " + settings.getError());
+            StaticThreadLogger::error("Loader::Loader","Errors loading the settings file: " + settings.getError());
             // Settings files should not have unwanted key words
             loadingError = true;
         }
@@ -93,14 +93,14 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     QDir rawdata(Globals::Paths::WORK_DIRECTORY);
     if (!rawdata.exists()){
         if (!QDir(".").mkdir(Globals::Paths::WORK_DIRECTORY)){
-            logger.appendError("Cannot create viewmind_data directory");
+            StaticThreadLogger::error("Loader::Loader","Cannot create viewmind_data directory");
             loadingError = true;
             return;
         }
     }
 
     if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,false,DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
-        logger.appendError("Could not set local db file: " + localDB.getError());
+        StaticThreadLogger::error("Loader::Loader","Could not set local db file: " + localDB.getError());
         loadingError = true;
         return;
     }
@@ -108,7 +108,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
 
     if (!localDB.processingParametersPresent()){
-        logger.appendWarning("Processing parameters are not present in local database. Will not be able to do any studies");
+        StaticThreadLogger::warning("Loader::Loader","Processing parameters are not present in local database. Will not be able to do any studies");
     }
 
     // Setting the current version and check if it changed. If it did this is a first time run.
@@ -130,7 +130,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     }
 
     // Getting the HW Data, and printing out for debugging.
-    logger.appendStandard("HW SPECS\n" + hwRecognizer.toString(true));
+    StaticThreadLogger::log("Loader::Loader","HW SPECS\n" + hwRecognizer.toString(true));
 
 
 }
@@ -213,13 +213,13 @@ void Loader::openUserManual(){
     QString filePath = currentDirectory + "/" + Globals::Paths::USER_MANUAL;
     if (!QFile(filePath).exists()){
         //filePath = currentDirectory + "/EyeExperimenter/" + Globals::Paths::USER_MANUAL;
-        logger.appendError("User manual could not be found at: " + filePath);
+        StaticThreadLogger::error("Loader::openUserManual","User manual could not be found at: " + filePath);
         return;
     }
     filePath = "file:///" + filePath;
 
     if (!QDesktopServices::openUrl(QUrl(filePath))){
-        logger.appendError("Could not open the user manual on file path: " + filePath);
+        StaticThreadLogger::error("Loader::openUserManual","Could not open the user manual on file path: " + filePath);
     }
 }
 
@@ -244,7 +244,7 @@ void Loader::updateDenied(){
 void Loader::startUpdate(){
     processingUploadError = FAIL_CODE_NONE;
     if (!apiclient.requestUpdate("../")){
-        logger.appendError("Request updated download error: "  + apiclient.getError());
+        StaticThreadLogger::error("Loader::openUserManual","Request updated download error: "  + apiclient.getError());
     }
 }
 
@@ -265,7 +265,7 @@ QStringList Loader::getLatestVersionChanges(){
     //qDebug() << "Opening file" << name;
     QFile changelogFile(name);
     if (!changelogFile.open(QFile::ReadOnly)){
-        logger.appendError("Could not open changelog file " + changelogFile.fileName() + " for reading");
+        StaticThreadLogger::error("Loader::getLatestVersionChanges","Could not open changelog file " + changelogFile.fileName() + " for reading");
         return QStringList();
     }
     QTextStream reader(&changelogFile);
@@ -275,7 +275,7 @@ QStringList Loader::getLatestVersionChanges(){
     QStringList allVersions = content.split("|",Qt::SkipEmptyParts);
     // The first version should be the latest.
     if (allVersions.size() < 1){
-        logger.appendError("Something went wrong when parsing the changelog file " + changelogFile.fileName() + ". Could not split between versions using |");
+        StaticThreadLogger::error("Loader::getLatestVersionChanges","Something went wrong when parsing the changelog file " + changelogFile.fileName() + ". Could not split between versions using |");
         return QStringList();
     }
     QString lastVersion = allVersions.first();
@@ -332,8 +332,8 @@ bool Loader::isVREnabled() const{
 bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol){
 
     if (!studyconfig.contains(Globals::StudyConfiguration::UNIQUE_STUDY_ID)){
-        logger.appendError("While creating a subject study file, Study Configuration Map does not contain " + Globals::StudyConfiguration::UNIQUE_STUDY_ID + " field. Cannot determine study");
-        logger.appendError(Debug::QVariantMapToString(studyconfig));
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","While creating a subject study file, Study Configuration Map does not contain " + Globals::StudyConfiguration::UNIQUE_STUDY_ID + " field. Cannot determine study");
+        StaticThreadLogger::error("Loader::createSubjectStudyFile",Debug::QVariantMapToString(studyconfig));
         return false;
     }    
 
@@ -352,7 +352,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
         if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
             filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
-            logger.appendStandard("Ongoing study file '" + filename + "'");
+            StaticThreadLogger::log("Loader::createSubjectStudyFile","Ongoing study file '" + filename + "'");
             new_file = false;
         }
 
@@ -363,7 +363,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         // If there is an ongoing binding Study, then we can remove this
         if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
             filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
-            logger.appendStandard("Ongoing study file '" + filename + "'");
+            StaticThreadLogger::log("Loader::createSubjectStudyFile","Ongoing study file '" + filename + "'");
             new_file = false;
         }
 
@@ -384,7 +384,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         filename = Globals::BaseFileNames::READING;
         break;
     default:
-        logger.appendError("Trying to create study file for an unknown study: " + QString::number(selectedStudy));
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","Trying to create study file for an unknown study: " + QString::number(selectedStudy));
         break;
     }
 
@@ -401,7 +401,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     }
 
     if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-        logger.appendStandard("DBUG: Using file for study at '" + filename + "'");
+        StaticThreadLogger::log("Loader::createSubjectStudyFile","DBUG: Using file for study at '" + filename + "'");
     }
 
     if (!new_file){
@@ -452,7 +452,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     QVariantMap medic_to_store;
     QVariantMap medic_local_data = localDB.getMedicData(medic);
     if (medic_local_data.empty()){
-        logger.appendError("Failed to retrieve medic local data: " + medic);
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed to retrieve medic local data: " + medic);
         return false;
     }
     medic_to_store.insert(VMDC::AppUserField::EMAIL,medic_local_data.value(LocalDB::APPUSER_EMAIL));
@@ -488,7 +488,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     if (DBUGBOOL(Debug::Options::DBUG_MSG)){
         QString dbug = "DBUG: Effective Minimum Fixation Computed At " + QString::number(minimum_fixation_length);
         qDebug() << dbug;
-        logger.appendWarning(dbug);
+        StaticThreadLogger::warning("Loader::createSubjectStudyFile",dbug);
     }
 
     // Setting the QC Parameters that will be used.
@@ -500,32 +500,32 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     rdc.setQCParameters(qc);
 
     if (!rdc.setSubjectData(subject_data)){
-        logger.appendError("Failed setting subject data to new study. Reason: " + rdc.getError());
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed setting subject data to new study. Reason: " + rdc.getError());
         return false;
     }
     if (!rdc.setMetadata(metadata)){
-        logger.appendError("Failed setting study metadata to new study. Reason: " + rdc.getError());
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed setting study metadata to new study. Reason: " + rdc.getError());
         return false;
     }
 
     if (!rdc.setApplicationUserData(VMDC::AppUserType::EVALUATOR,evaluator)){
-        logger.appendError("Failed to store evaluator data: " + rdc.getError());
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed to store evaluator data: " + rdc.getError());
         return false;
     }
 
     if (!rdc.setApplicationUserData(VMDC::AppUserType::MEDIC,medic_to_store)){
-        logger.appendError("Failed to store medic data: " + rdc.getError());
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed to store medic data: " + rdc.getError());
         return false;
     }
 
     if (!rdc.setProcessingParameters(pp)){
-        logger.appendError("Failed to store processing parameters: " + rdc.getError());
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed to store processing parameters: " + rdc.getError());
         return false;
     }
 
     //qDebug() << "SAVING THE JSON FILE!!!!!!!!!!!";
     if (!rdc.saveJSONFile(filename,true)){
-        logger.appendError("Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
+        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
         return false;
     }
 
@@ -564,7 +564,7 @@ void Loader::addOrModifyEvaluator(const QString &email, const QString &oldemail 
 
     // We store the data.
     if (!localDB.addOrModifyEvaluator(email,oldemail,map)){
-        logger.appendError("While adding evaluator " + email + " with data " + name + " " + lastname + " (" + email + "): " + localDB.getError() );
+        StaticThreadLogger::error("Loader::addOrModifyEvaluator","While adding evaluator " + email + " with data " + name + " " + lastname + " (" + email + "): " + localDB.getError() );
         return;
     }
 
@@ -613,22 +613,6 @@ QString Loader::addOrModifySubject(QString suid, const QString &name, const QStr
         //qDebug() << "Computed new suid" << suid;
     }
 
-//    // If a birthdate is provided, the age is computed
-//    QString saveage;
-//    if ((birthdate != "") && (age == "")){
-//        // We are expecting the ISO date.
-//        QDate bdate = QDate::fromString(birthdate,"yyyy-MM-dd");
-//        QDate currentDate= QDate::currentDate();    // gets the current date
-//        int currentAge = currentDate.year() - bdate.year();
-//        if ( (bdate.month() > currentDate.month()) || ( (bdate.month() == currentDate.month()) && (bdate.day() > currentDate.day()) ) ){
-//            currentAge--;
-//        }
-//        saveage = QString::number(currentAge);
-//    }
-//    else saveage = age;
-
-    // Getting the country code.
-
 
     // Create a map for the data as is. The caller function is reponsible for data verification.
     QVariantMap map;
@@ -644,7 +628,7 @@ QString Loader::addOrModifySubject(QString suid, const QString &name, const QStr
 
     // Adding the data to the local database.
     if (!localDB.addOrModifySubject(suid,map)){
-        logger.appendError("While adding subject " + suid + " with data " + name + " " + lastname + " (" + institution_id + "): " + localDB.getError() );
+        StaticThreadLogger::error("Loader::addOrModifySubject","While adding subject " + suid + " with data " + name + " " + lastname + " (" + institution_id + "): " + localDB.getError() );
         return "";
     }
     return suid;
@@ -652,7 +636,7 @@ QString Loader::addOrModifySubject(QString suid, const QString &name, const QStr
 
 void Loader::modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic){
     if (!localDB.modifyAssignedMedicToSubject(suid,selectedMedic)){
-        logger.appendError("While modifiying subject " + suid + " by setting meddig " + selectedMedic + ": " + localDB.getError() );
+        StaticThreadLogger::error("Loader::modifySubjectSelectedMedic","While modifiying subject " + suid + " by setting meddig " + selectedMedic + ": " + localDB.getError() );
     }
 }
 
@@ -673,7 +657,7 @@ bool Loader::setSelectedSubject(const QString &suid){
     }
 
     if (!QDir(patdirPath).exists()){
-        logger.appendError("Could not create patient dir " + suid + " in directory");
+        StaticThreadLogger::error("Loader::setSelectedSubject","Could not create patient dir " + suid + " in directory");
         return false;
     }
 
@@ -684,7 +668,7 @@ bool Loader::setSelectedSubject(const QString &suid){
 
 void Loader::setStudyMarkerFor(const QString &study, const QString &value){
     if (!localDB.addStudyMarkerForSubject(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR),study,value)){
-        logger.appendError("Failed in setting study marker: " + localDB.getError());
+        StaticThreadLogger::error("Loader::setStudyMarkerFor","Failed in setting study marker: " + localDB.getError());
     }
 }
 
@@ -730,7 +714,7 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
         sdc.setup(Globals::Paths::WORK_DIRECTORY + "/" + directory_list.at(i),current_evaluator);
         studiesToAnalyze << sdc.scanSubjectDirectoryForEvalutionsFrom();
         if (!sdc.getError().isEmpty()){
-            logger.appendError("Error while analyzig " + sdc.getSetDirectory() + " for finished studies: " + sdc.getError());
+            StaticThreadLogger::error("Loader::getReportsForLoggedEvaluator","Error while analyzig " + sdc.getSetDirectory() + " for finished studies: " + sdc.getError());
         }
         //qDebug() << "Added " << sdc.getSetDirectory() << " and now we have " << studiesToAnalyze.size();
     }
@@ -771,7 +755,7 @@ QVariantMap Loader::getStudyGraphData(const QString &study, qint32 selectedGraph
 
 void Loader::qualityControlFinished(){
     if (qc.getError() != ""){
-        logger.appendError("Failed setting selected study to:  " + qc.getSetFileName() + ". Reason: " + qc.getError());
+        StaticThreadLogger::error("Loader::qualityControlFinished","Failed setting selected study to:  " + qc.getSetFileName() + ". Reason: " + qc.getError());
     }
     emit Loader::qualityControlDone();
 }
@@ -782,7 +766,7 @@ bool Loader::qualityControlFailed() const {
 
 bool Loader::setDiscardReasonAndComment(QString discard_reason, const QString &comment){
     if (!qc.setDiscardReasonAndComment(discard_reason,comment)){
-        logger.appendError("Could not set discard reason or comment. Reason: " + qc.getError());
+        StaticThreadLogger::error("Loader::setDiscardReasonAndComment","Could not set discard reason or comment. Reason: " + qc.getError());
         return false;
     }
     return true;
@@ -798,7 +782,7 @@ void Loader::requestOperatingInfo(){
 
     //qDebug() << "Requesting Operating Info";
     if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false))){
-        logger.appendError("Request operating info error: "  + apiclient.getError());
+        StaticThreadLogger::error("Loader::requestOperatingInfo","Request operating info error: "  + apiclient.getError());
     }
 }
 
@@ -813,7 +797,7 @@ void Loader::sendStudy(){
         // AND the study name is in the No Report Study List.
         ViewMindDataContainer vmdc;
         if (!vmdc.loadFromJSONFile(studyFileToSend)){
-            logger.appendError("Could not load file to send in order to check for no_report_studies. Reason: " + vmdc.getError());
+            StaticThreadLogger::error("Loader::sendStudy","Could not load file to send in order to check for no_report_studies. Reason: " + vmdc.getError());
         }
         else{
             QString discard_reason = vmdc.getMetadataDiscardReason();
@@ -828,7 +812,7 @@ void Loader::sendStudy(){
                         if (DBUGBOOL(Debug::Options::DBUG_MSG)){
                             QString msg = "DBUG: Setting file " + studyFileToSend + " as a NO REPORT STUDY";
                             qDebug() << msg;
-                            logger.appendWarning(msg);
+                            StaticThreadLogger::warning("Loader::sendStudy",msg);
                         }
                         vmdc.addCustomMetadataFields(VMDC::MetadataField::DISCARD_REASON,NO_REPORT_DISCARD_CODE);
                         vmdc.saveJSONFile(studyFileToSend);
@@ -840,7 +824,7 @@ void Loader::sendStudy(){
     }
 
     if (!apiclient.requestReportProcessing(studyFileToSend)){
-        logger.appendError("Requesting study report generation: " + apiclient.getError());
+        StaticThreadLogger::error("Loader::sendStudy","Requesting study report generation: " + apiclient.getError());
         emit Loader::finishedRequest();
     }
 
@@ -854,7 +838,7 @@ void Loader::receivedRequest(){
 
     if (!apiclient.getError().isEmpty()){
         processingUploadError = FAIL_CODE_SERVER_ERROR;
-        logger.appendError("Error Receiving Request :"  + apiclient.getError());
+        StaticThreadLogger::error("Loader::receivedRequest","Error Receiving Request :"  + apiclient.getError());
     }
     else{
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO){
@@ -864,11 +848,11 @@ void Loader::receivedRequest(){
 
             if (DBUGBOOL(Debug::Options::PRINT_SERVER_RESP)){
                 QString toprint = "DBUG: Received response:\n" + Debug::QVariantMapToString(mainData);
-                logger.appendWarning(toprint);
+                StaticThreadLogger::warning("Loader::receivedRequest",toprint);
             }
 
             if (!localDB.setMedicInformationFromRemote(mainData)){
-                logger.appendError("Failed to set medical professionals info from server: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedRequest","Failed to set medical professionals info from server: " + localDB.getError());
             }
 
             if (DBUGBOOL(Debug::Options::PRINT_PP)){
@@ -876,11 +860,11 @@ void Loader::receivedRequest(){
                 QString ppstr = Debug::QVariantMapToString(pp);
                 ppstr = "DBUG: RECEIVED PROCESSING PARAMETERS:\n" + ppstr;
                 qDebug() << ppstr;
-                logger.appendWarning(ppstr);
+                StaticThreadLogger::warning("Loader::receivedRequest",ppstr);
             }
 
             if (!localDB.setProcessingParametersFromServerResponse(mainData)){
-                logger.appendError("Failed to set processing parameters from server: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedRequest","Failed to set processing parameters from server: " + localDB.getError());
             }
 
             if (DBUGBOOL(Debug::Options::PRINT_QC)){
@@ -888,16 +872,16 @@ void Loader::receivedRequest(){
                 QString qcstr = Debug::QVariantMapToString(qc);
                 qcstr = "DBUG: RECEIVED QC PARAMETERS:\n" + qcstr;
                 qDebug() << qcstr;
-                logger.appendWarning(qcstr);
+                StaticThreadLogger::warning("Loader::receivedRequest",qcstr);
 
             }
 
             if (!localDB.setQCParametersFromServerResponse(mainData)){
-                logger.appendError("Failed to set QC parameters from server: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedRequest","Failed to set QC parameters from server: " + localDB.getError());
             }
 
             if (!localDB.setRecoveryPasswordFromServerResponse(mainData)){
-                logger.appendError("Failed to set recovery password from server: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedRequest","Failed to set recovery password from server: " + localDB.getError());
             }
 
             // Checking for updates.
@@ -910,25 +894,25 @@ void Loader::receivedRequest(){
                 }
 
                 if (!newVersionAvailable.isEmpty()){
-                    logger.appendStandard("Update Available: " + newVersionAvailable);
+                    StaticThreadLogger::log("Loader::receivedRequest","Update Available: " + newVersionAvailable);
                 }
             }
             else{
                 QString dbug = "DBUG: Update check is disabled";
                 qDebug() << dbug;
-                logger.appendError(dbug);
+                StaticThreadLogger::error("Loader::receivedRequest",dbug);
             }
 
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
-            logger.appendSuccess("Study file was successfully sent");
+            StaticThreadLogger::log("Loader::receivedRequest","Study file was successfully sent");
             if (!DBUGBOOL(Debug::Options::NO_RM_STUDIES)) {
                 moveProcessedFiletToProcessedDirectory();
             }
             else{
                 QString dbug = "DBUG: Studies are not moved to sent directory";
                 qDebug() << dbug;
-                logger.appendError(dbug);
+                StaticThreadLogger::error("Loader::receivedRequest",dbug);
             }
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_UPDATE){
@@ -938,7 +922,7 @@ void Loader::receivedRequest(){
 
             if (DBUGBOOL(Debug::Options::PRINT_SERVER_RESP)){
                 QString toprint = "DBUG: Received response to update request:\n" + Debug::QVariantMapToString(mainData);
-                logger.appendWarning(toprint);
+                StaticThreadLogger::warning("Loader::receivedRequest",toprint);
             }
 
             // URL should be present.
@@ -957,14 +941,14 @@ void Loader::receivedRequest(){
 void Loader::updateDownloadFinished(bool allOk){
 
     if (!allOk){
-        logger.appendError("Failed to download update. Reason: " + fileDownloader.getError());
+        StaticThreadLogger::error("Loader::updateDownloadFinished","Failed to download update. Reason: " + fileDownloader.getError());
         emit Loader::finishedRequest();
         return;
     }
 
     QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
     if (QFile::exists(expectedPath)){
-        logger.appendSuccess("Received update succesfully. Unzipping");
+        StaticThreadLogger::log("Loader::updateDownloadFinished","Received update succesfully. Unzipping");
 
         QDir dir(".");
         dir.cdUp();
@@ -978,12 +962,12 @@ void Loader::updateDownloadFinished(bool allOk){
 
         if (!process.waitForFinished()){
             QString output = QString::fromUtf8(process.readAllStandardOutput());
-            logger.appendError("Untarring failed with " + process.errorString() + ". Tar output:\n" + output);
+            StaticThreadLogger::error("Loader::updateDownloadFinished","Untarring failed with " + process.errorString() + ". Tar output:\n" + output);
         }
 
         if (!QFile::exists("../" + Globals::Paths::UPDATE_SCRIPT)){
             QString output = QString::fromUtf8(process.readAllStandardOutput());
-            logger.appendError("Failed to to uncompressed update file. Tar output:\n" + output);
+            StaticThreadLogger::error("Loader::updateDownloadFinished","Failed to to uncompressed update file. Tar output:\n" + output);
         }
         else{
             updater.start();
@@ -991,7 +975,7 @@ void Loader::updateDownloadFinished(bool allOk){
 
     }
     else{
-        logger.appendError("The download apparently succeded but the file is not where it was expected: " + expectedPath);
+        StaticThreadLogger::error("Loader::updateDownloadFinished","The download apparently succeded but the file is not where it was expected: " + expectedPath);
     }
 
     emit Loader::finishedRequest();
@@ -1015,7 +999,7 @@ void Loader::moveProcessedFiletToProcessedDirectory(){
     QDir(patientWorkingDirectory).mkdir(ExperimentGlobals::SUBJECT_DIR_SENT);
     QString processedDir = patientWorkingDirectory + "/" + ExperimentGlobals::SUBJECT_DIR_SENT;
     if (!QDir(processedDir).exists()){
-        logger.appendError("Failed to create patient sent directory at: " + processedDir);
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to create patient sent directory at: " + processedDir);
         return;
     }
 
@@ -1024,23 +1008,23 @@ void Loader::moveProcessedFiletToProcessedDirectory(){
     QString jsonFile = patientWorkingDirectory + "/" +baseFileName + ".json";
 
     if (!QFile::copy(idxFile,processedDir + "/" + baseFileName + ".idx")){
-        logger.appendError("Failed to move " + baseFileName + " idx file from " + patientWorkingDirectory + " to " + processedDir);
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to move " + baseFileName + " idx file from " + patientWorkingDirectory + " to " + processedDir);
         return;
     }
 
     // Movign the JSON File.
     if (!QFile::copy(jsonFile,processedDir + "/" + baseFileName + ".json")){
-        logger.appendError("Failed to move " + baseFileName + " json file from " + patientWorkingDirectory + " to " + processedDir);
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to move " + baseFileName + " json file from " + patientWorkingDirectory + " to " + processedDir);
         return;
     }
 
     // Cleaning up the file.
     if (!QFile(idxFile).remove()){
-        logger.appendError("Failed to remove idx file: " + idxFile);
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to remove idx file: " + idxFile);
     }
 
     if (!QFile(jsonFile).remove()){
-        logger.appendError("Failed to remove json file: " + jsonFile);
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to remove json file: " + jsonFile);
     }
 
 }
@@ -1053,13 +1037,13 @@ bool Loader::addProtocol(const QString &name, const QString &id) {
 
 void Loader::editProtocol(const QString &id, const QString &newName){
     if (!localDB.addProtocol(newName,id,true)){
-        logger.appendError("Error while modifying protocol: " + id + " to new name: " + newName + ". Error was: " + localDB.getError());
+        StaticThreadLogger::error("Loader::editProtocol","Error while modifying protocol: " + id + " to new name: " + newName + ". Error was: " + localDB.getError());
     }
 }
 
 void Loader::deleteProtocol(const QString &id) {
     if (!localDB.removeProtocol(id)){
-        logger.appendError("Error while deleting protocol: " + localDB.getError());
+        StaticThreadLogger::error("Loader::deleteProtocol","Error while deleting protocol: " + localDB.getError());
     }
 }
 
@@ -1075,7 +1059,7 @@ void Loader::changeLanguage(){
     if (lang == Globals::UILanguage::ES){
         if (!language.loadConfiguration(":/languages/es.lang")){
             // In a stable program this should NEVER happen.
-            logger.appendError("CANNOT LOAD ES LANG FILE: " + language.getError());
+            StaticThreadLogger::error("Loader::changeLanguage","CANNOT LOAD ES LANG FILE: " + language.getError());
             loadingError = true;
         }
         else countries->fillCountryList(false);
@@ -1084,7 +1068,7 @@ void Loader::changeLanguage(){
         // Defaults to english
         if (!language.loadConfiguration(":/languages/en.lang")){
             // In a stable program this should NEVER happen.
-            logger.appendError("CANNOT LOAD EN LANG FILE: " + language.getError());
+            StaticThreadLogger::error("Loader::changeLanguage","CANNOT LOAD EN LANG FILE: " + language.getError());
             loadingError = true;
         }
         else countries->fillCountryList(true);

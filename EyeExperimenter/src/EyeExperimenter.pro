@@ -29,20 +29,14 @@ SOURCES += main.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogoexperiment.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogomanager.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogoparser.cpp \
+    ../../CommonClasses/Experiments/linemath.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.cpp \
     ../../CommonClasses/Experiments/qgraphicsarrow.cpp \
     ../../CommonClasses/EyeSelector/eyeselector.cpp \
-    ../../CommonClasses/EyeTrackingInterface/GazePoint/eventdetection.cpp \
-    ../../CommonClasses/EyeTrackingInterface/GazePoint/opengazecommand.cpp \
-    ../../CommonClasses/EyeTrackingInterface/GazePoint/opengazeinterface.cpp \
-    ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.cpp \
-    ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.cpp \
     ../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
     ../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/viveeyepoller.cpp \
-    ../../CommonClasses/EyeTrackingInterface/Mouse/calibrationarea.cpp \
-    ../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.cpp \
     ../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.cpp \
     ../../CommonClasses/EyeTrackingInterface/calibrationtargets.cpp \
     ../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.cpp \
@@ -59,8 +53,10 @@ SOURCES += main.cpp \
     ../../CommonClasses/MWA/movingwindowalgorithm.cpp \
     ../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.cpp \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.cpp \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservercircleitem.cpp \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverimageitem.cpp \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritem.cpp \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritemgroup.cpp \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverlineitem.cpp \
@@ -92,20 +88,14 @@ HEADERS += \
     ../../CommonClasses/Experiments/gonogo/gonogoexperiment.h \
     ../../CommonClasses/Experiments/gonogo/gonogomanager.h \
     ../../CommonClasses/Experiments/gonogo/gonogoparser.h \
+    ../../CommonClasses/Experiments/linemath.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h \
     ../../CommonClasses/Experiments/qgraphicsarrow.h \
     ../../CommonClasses/EyeSelector/eyeselector.h \
-    ../../CommonClasses/EyeTrackingInterface/GazePoint/eventdetection.h \
-    ../../CommonClasses/EyeTrackingInterface/GazePoint/opengazecommand.h \
-    ../../CommonClasses/EyeTrackingInterface/GazePoint/opengazeinterface.h \
-    ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h \
-    ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h \
     ../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
     ../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/viveeyepoller.h \
-    ../../CommonClasses/EyeTrackingInterface/Mouse/calibrationarea.h \
-    ../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h \
     ../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.h \
     ../../CommonClasses/EyeTrackingInterface/calibrationtargets.h \
     ../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.h \
@@ -123,8 +113,10 @@ HEADERS += \
     ../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
     ../../CommonClasses/RawDataContainer/VMDC.h \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.h \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.h \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservercircleitem.h \
+    ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverimageitem.h \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritem.h \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritemgroup.h \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverlineitem.h \
@@ -140,6 +132,7 @@ HEADERS += \
     ../../CommonClasses/debug.h \
     ../../CommonClasses/eyetracker_defines.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../CommonClasses/wait.h \
     apiclient.h \
     eyexperimenter_defines.h \
     loader.h \

@@ -52,21 +52,12 @@ ApplicationWindow {
             id: btnHide
             hoverEnabled: false;
             width: parent.width
-            text: "HIDE"
+            text: "Start Study Explanation"
             onClicked: {
-                control.hideRenderWindow();
+                control.startRenderingStudy();
             }
         }
 
-        Button {
-            id: btnShow
-            hoverEnabled: false;
-            width: parent.width
-            text: "SHOW"
-            onClicked: {
-                control.showRenderWindow();
-            }
-        }
 
         Button {
             id: btnNextExplanation
@@ -75,6 +66,52 @@ ApplicationWindow {
             text: "Next Study Explanation";
             onClicked: {
                 control.nextStudyExplanation();
+            }
+        }
+
+        Button {
+            id: btnEanblePacketLog
+            hoverEnabled: false;
+            width: parent.width
+            text: "Enable Packet Log";
+            onClicked: {
+                control.enablePacketLog(true);
+            }
+        }
+
+        Button {
+            id: btnDisablePacketLog
+            hoverEnabled: false;
+            width: parent.width
+            text: "Disable Packet Log";
+            onClicked: {
+                control.enablePacketLog(false);
+            }
+        }
+
+        Button {
+            id: btnPacketBurst
+            hoverEnabled: false;
+            width: parent.width
+            text: "PACKET BURST";
+            onClicked: {
+                control.packetBurst();
+            }
+        }
+
+        Button {
+            id: btnCloseServer
+            hoverEnabled: false;
+            width: parent.width
+            text: "STATUS:";
+            onClicked: {
+                //control.appClose();
+                if (!control.checkRenderServerStatus()){
+                    btnCloseServer.text = "STATUS: NOT WORKING";
+                }
+                else {
+                    btnCloseServer.text = "STATUS: WORKING";
+                }
             }
         }
 
@@ -106,7 +143,8 @@ ApplicationWindow {
         onMove()
     }
 
-    onWindowStateChanged: {
+    onClosing: {
+        control.appClose();
     }
 
 }

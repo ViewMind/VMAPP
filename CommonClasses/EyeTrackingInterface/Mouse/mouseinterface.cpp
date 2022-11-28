@@ -64,7 +64,7 @@ void MouseInterface::calibrate(EyeTrackerCalibrationParameters params){
     if (isCalibrated)
         emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
     else{
-        logger.appendWarning("MOUSE TRACKER: Calibration was aborted");
+        StaticThreadLogger::warning("MouseInterface::calibrate","MOUSE TRACKER: Calibration was aborted");
         emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED);
     }
 }

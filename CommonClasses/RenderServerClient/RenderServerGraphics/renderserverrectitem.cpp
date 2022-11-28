@@ -1,76 +1,50 @@
 #include "renderserverrectitem.h"
 
 RenderServerRectItem::RenderServerRectItem(qreal x, qreal y, qreal width, qreal height):RenderServerItem() {
-    this->top = y;
-    this->left = x;
-    this->width = width;
-    this->height = height;
-    this->itemType = RenderServerItemTypeName::RECT;
-    //qDebug() << x << y << width << height;
+
+    QStringList renderItemList = itemData.value(RenderControlPacketFields::RENDER_LIST).toStringList();
+
+    renderItemList << RenderControlPacketFields::X
+                   << RenderControlPacketFields::Y
+                   << RenderControlPacketFields::COLOR
+                   << RenderControlPacketFields::BORDER_COLOR
+                   << RenderControlPacketFields::BORDER_WIDTH
+                   << RenderControlPacketFields::WIDTH
+                   << RenderControlPacketFields::HEIGHT;
+
+    itemData[RenderControlPacketFields::RENDER_LIST] = renderItemList;
+
+    QVariantList xl; xl << x;
+    QVariantList yl; yl << y;
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
+    itemData[RenderControlPacketFields::WIDTH] = width;
+    itemData[RenderControlPacketFields::HEIGHT] = height;
+
+    itemData[RenderControlPacketFields::TYPE]      = GL2DItemType::TYPE_RECT;
+    itemData[RenderControlPacketFields::TYPE_NAME] = RenderServerItemTypeName::RECT;
+
 }
 
 void RenderServerRectItem::setPos(qreal x, qreal y){
-    this->top = y;
-    this->left = x;
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    xl[0] = x;
+    yl[0] = y;
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
 }
 
 void RenderServerRectItem::updateBRect() {
-    this->bRect.setTop(this->top);
-    this->bRect.setLeft(this->left);
-    this->bRect.setWidth(this->width);
-    this->bRect.setHeight(this->height);
+    bRect.setTop(itemData[RenderControlPacketFields::Y].toList().first().toReal());
+    bRect.setLeft(itemData[RenderControlPacketFields::X].toList().first().toReal());
+    bRect.setWidth(itemData[RenderControlPacketFields::WIDTH].toReal());
+    bRect.setHeight(itemData[RenderControlPacketFields::HEIGHT].toReal());
 }
 
-RenderServerRectItem::RenderServerRectItem(const QVariantMap &itemData): RenderServerItem(itemData) {
-
-    this->top = itemData[RenderControlPacketFields::TOP].toReal();
-    this->left = itemData[RenderControlPacketFields::LEFT].toReal();
-    this->width = itemData[RenderControlPacketFields::WIDTH].toReal();
-    this->height = itemData[RenderControlPacketFields::HEIGHT].toReal();
-
-    this->updateBRect();
-}
-
-QVariantMap RenderServerRectItem::getItemData() const {
-    QVariantMap itemData = RenderServerItem::getItemData();
-    itemData[RenderControlPacketFields::TOP] = this->top;
-    itemData[RenderControlPacketFields::LEFT] = this->left;
-    itemData[RenderControlPacketFields::WIDTH] = this->width;
-    itemData[RenderControlPacketFields::HEIGHT] = this->height;
-    return itemData;
-}
-
-void RenderServerRectItem::render(RenderServerPacket *packet) const {
-
-
-    QVariantList b;
-    if (packet->containsPayloadField(RenderControlPacketFields::SPEC_LIST)){
-        b = packet->getPayloadField(RenderControlPacketFields::SPEC_LIST).toList();
-    }
-
-    // qDebug() << "Rendeing Box" << top << left << width << height;
-
-    QVariantMap spec;
-
-    QVariantList x,y;
-    x << this->left;
-    y << this->top;
-
-    spec[RenderControlPacketFields::X] = x;
-    spec[RenderControlPacketFields::Y] = y;
-
-    spec[RenderControlPacketFields::TYPE] = GL2DItemType::TYPE_RECT;
-    spec[RenderControlPacketFields::TOP] = this->top;
-    spec[RenderControlPacketFields::LEFT] = this->left;
-    spec[RenderControlPacketFields::WIDTH] = this->width;
-    spec[RenderControlPacketFields::HEIGHT] = this->height;
-    spec[RenderControlPacketFields::COLOR] = this->fillColor;
-    spec[RenderControlPacketFields::BORDER_COLOR] = this->borderColor;
-    spec[RenderControlPacketFields::BORDER_WIDTH] = this->borderWidth;
-
-    b << spec;
-    packet->setPayloadField(RenderControlPacketFields::SPEC_LIST,b);
-
+RenderServerRectItem::RenderServerRectItem(const QVariantMap &idata): RenderServerItem(idata) {
 }
 
 void RenderServerRectItem::scale(qreal scale){
@@ -79,23 +53,38 @@ void RenderServerRectItem::scale(qreal scale){
 
     if (scale < 0) return;
 
-    QPointF newTL = this->scaleAPointAroundTFOrigin(this->left,this->top,scale);
-    this->height = this->height*scale;
-    this->width = this->width*scale;
-    this->top = newTL.y();
-    this->left = newTL.x();
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+
+    QPointF newTL = scaleAPointAroundTFOrigin(xl[0].toReal(),yl[0].toReal(),scale);
+    itemData[RenderControlPacketFields::HEIGHT] = itemData[RenderControlPacketFields::HEIGHT].toReal()*scale;
+    itemData[RenderControlPacketFields::WIDTH] = itemData[RenderControlPacketFields::WIDTH].toReal()*scale;
+    yl[0] = newTL.y();
+    xl[0] = newTL.x();
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
 
 }
 
 qreal RenderServerRectItem::x() const {
-    return this->left;
+    return itemData.value(RenderControlPacketFields::X).toList().first().toReal();
 }
 
 qreal RenderServerRectItem::y() const {
-    return this->top;
+    return itemData.value(RenderControlPacketFields::Y).toList().first().toReal();
 }
 
 void RenderServerRectItem::moveBy(qreal dx, qreal dy){
-    this->top = this->top + dy;
-    this->left = this->left + dx;
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+
+    xl[0] = xl.value(0).toReal() + dx;
+    yl[0] = yl.value(0).toReal() + dy;
+
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
 }

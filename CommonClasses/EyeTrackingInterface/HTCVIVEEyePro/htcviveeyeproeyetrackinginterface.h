@@ -21,9 +21,6 @@ public:
 
     QString getCalibrationValidationReport() const override;
 
-public slots:
-    void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l) override;
-
 private slots:
     void onNewCalibrationImageAvailable();
 
@@ -43,10 +40,6 @@ private:
 
     // Optionally, when calibration is done, coefficients can be stored in a file.
     QString coefficientsFile;
-
-    // The transformation matrixes provided by the HMD.
-    QMatrix4x4 rVRTransform;
-    QMatrix4x4 lVRTransform;
 
     static const float SAMPLING_FREQ;
 

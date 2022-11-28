@@ -27,7 +27,7 @@ OpenGazeInterface::OpenGazeInterface(QObject *parent, qreal width, qreal height)
 
 void OpenGazeInterface::on_calibrationAborted(){
     eventDetecter->hide();
-    logger.appendWarning("OpenGaze ET: Calibration aborted");
+    StaticThreadLogger::warning("OpenGazeInterface::on_calibrationAborted","OpenGaze ET: Calibration aborted");
     emit(eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED));
 }
 
@@ -37,7 +37,7 @@ QString OpenGazeInterface::getCalibrationValidationReport() const {
 
 //***************************************** Socket related functions.******************************************************
 void OpenGazeInterface::on_connected(){
-    logger.appendSuccess("CONNECTED to OpenGaze EyeTracker Server");
+    StaticThreadLogger::log("OpenGazeInterface::on_connected","CONNECTED to OpenGaze EyeTracker Server");
     emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
 
     isConnecting = false;
@@ -54,7 +54,7 @@ void OpenGazeInterface::on_connected(){
 
 void OpenGazeInterface::on_socketError(QAbstractSocket::SocketError error){
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    logger.appendError(QString("OPEN GAZE SOCKET ERROR: ") +  metaEnum.valueToKey(error));
+    StaticThreadLogger::error("OpenGazeInterface::on_socketError",QString("OPEN GAZE SOCKET ERROR: ") +  metaEnum.valueToKey(error));
 }
 
 void OpenGazeInterface::on_readyRead(){
@@ -70,7 +70,7 @@ void OpenGazeInterface::on_readyRead(){
                 processReceivedCommand(cmd);
             }
             else{
-                logger.appendError("Buffering error: " + err);
+                StaticThreadLogger::error("OpenGazeInterface::on_readyRead","Buffering error: " + err);
             }
             buffer = "";
         }
@@ -80,8 +80,8 @@ void OpenGazeInterface::on_readyRead(){
 void OpenGazeInterface::on_disconnected(){    
     //qWarning() << "SHOULD DISCONNECT" << shouldDisconnect;
     if (!shouldDisconnect) {
-        logger.appendError("DISCONNECTED from OpenGaze EyeTracker Server");
-        emit(eyeTrackerControl(ET_CODE_DISCONNECTED_FROM_ET));
+        StaticThreadLogger::error("OpenGazeInterface::on_disconnected","DISCONNECTED from OpenGaze EyeTracker Server");
+        emit OpenGazeInterface::eyeTrackerControl(ET_CODE_DISCONNECTED_FROM_ET);
     }
 }
 
@@ -142,7 +142,7 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             data.time = static_cast<qint32>(cmd.getField(GPF_TIME).toDouble()*1000); // (Transforming seconds into ms);
             //qWarning() << "Original time stamp of" << cmd.getField(GPF_TIME).toDouble() << "timedata" << data.time;
             lastData = data;
-            emit(newDataAvailable(data));
+            emit OpenGazeInterface::newDataAvailable(data);
         }
 
     }
@@ -152,7 +152,6 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             qreal leftValid = 0;
             qreal rightValid = 0;
             qreal total = 0;
-            bool sendOk = true;
 
             for (qint32 i = 1; i <= 9; i++){
                 QString lv = cmd.getField("LV"+QString::number(i));
@@ -169,13 +168,11 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             //           << "Can use left: " << canUseLeft() << "Can use right: " << canUseRight() << "Eye To Transmit" << eyeToTransmit;
 
             if (canUseLeft() && (total != leftValid)){
-                logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for left eye: " + QString::number(leftValid) + " out of " + QString::number(total));
-                sendOk = false;
+                StaticThreadLogger::error("OpenGazeInterface::processReceivedCommand","Gazepoint ET: Calbration failed due to poor calibration results for left eye: " + QString::number(leftValid) + " out of " + QString::number(total));
             }
 
             if (canUseRight() && (total != rightValid)){
-                logger.appendError("Gazepoint ET: Calbration failed due to poor calibration results for right eye: " + QString::number(rightValid) + " out of " + QString::number(total));
-                sendOk = false;
+                StaticThreadLogger::error("OpenGazeInterface::processReceivedCommand","Gazepoint ET: Calbration failed due to poor calibration results for right eye: " + QString::number(rightValid) + " out of " + QString::number(total));
             }
 
             // Do clean up and send the correct signal.
@@ -184,7 +181,7 @@ void OpenGazeInterface::processReceivedCommand(const OpenGazeCommand &cmd){
             closeWindow.setEnableCommand(GPC_CALIBRATE_SHOW,false);
             socket->write(closeWindow.prepareCommandToSend());
             //qWarning() << "SENDING THE CALIBRATION FINISH COMMAND" << sendOk;
-            emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+            emit OpenGazeInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
 
         }
     }

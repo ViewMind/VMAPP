@@ -135,6 +135,7 @@ Item {
 
     ////////////////////////// BASE DIALOG FUNCTIONS ////////////////////////
     function open(){
+        flowControl.hideRenderWindow();
         visible = true
     }
 
@@ -142,6 +143,7 @@ Item {
         vmIsLeftEyeValidated = false;
         vmIsRightEyeValidated = false;
         visible = false
+        flowControl.showRenderWindow();
     }
 
 

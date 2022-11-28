@@ -42,16 +42,12 @@ void EyeTrackerInterface::enableUpdating(bool enable){
 void EyeTrackerInterface::disconnectFromEyeTracker(){
 }
 
-void EyeTrackerInterface::updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l){
-    Q_UNUSED(r)
-    Q_UNUSED(l)
-}
-
 void EyeTrackerInterface::calibrate(EyeTrackerCalibrationParameters params){
     Q_UNUSED(params)
 }
 
-QImage EyeTrackerInterface::getCalibrationImage() const{
+//QImage EyeTrackerInterface::getCalibrationImage() const{
+RenderServerScene EyeTrackerInterface::getCalibrationImage() const{
     return calibrationImage;
 }
 

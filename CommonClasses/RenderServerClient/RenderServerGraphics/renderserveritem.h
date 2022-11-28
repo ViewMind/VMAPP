@@ -21,14 +21,20 @@ namespace RenderServerItemTypeName {
    const QString TRIANGLE = "Triangle";
    const QString ARROW    = "Arrow";
    const QString TEXT     = "Text";
+   const QString IMAGE    = "Image";
 }
 
 class RenderServerItem
 {
 public:
 
+    static const qint32 ANIMATION_BEGIN_NO_DELAY = 0;
+    static const qint32 ANIMATION_BEGIN_DELAY    = 1;
+    static const qint32 ANIMATION_DELAY_END      = 2;
+    static const qint32 ANIMATION_END            = 3;
+
     RenderServerItem();
-    RenderServerItem(const QVariantMap &itemData);
+    RenderServerItem(const QVariantMap &idata);
 
     virtual void setPos(qreal x, qreal y);
     virtual ~RenderServerItem();
@@ -48,13 +54,15 @@ public:
     void setPen(const QPen &pen);
     void setTransformOriginPoint(qreal x, qreal y);
 
+    void setDisplayOnly(bool disp_only);
+
     /**
      * @brief render
      * @param packet
      *
      * "Renders" the item to it's specs on a render server packet.
      */
-    virtual void render(RenderServerPacket *packet) const;
+    void render(RenderServerPacket *packet) const;
 
     /**
      * @brief scale - scales the item. It does so differently for each item type. If not implemented for the item, it does nothing.
@@ -75,6 +83,9 @@ public:
     virtual qreal x() const;
     virtual qreal y() const;
 
+    void setItemID(const qint32 &id);
+    qint32 getItemID() const;
+
     /**
      * @brief setReferenceYForTransformations - When doing transformations a regular y axis is assumed. This sets the max vertical resolution so the proper transformation can be done.
      * @param refY
@@ -85,22 +96,43 @@ public:
      * @brief getItemData - List of all values necessary to recreate the item.
      * @return A List of values to be interpreted by the copy constructor of the tiem.
      */
-    virtual QVariantMap getItemData() const;
+    QVariantMap getItemData() const;
+
+    /**
+     * @brief addAnimationParameter - Configures an item parameter to be animated, that is changed linearly at a fixed space. On real value type paramters can be animated.
+     * @param name - The name of the animation paramter
+     * @param start -  The start value of the parater
+     * @param end - The end value of the parameter.
+     * @param duration - Number of ms the animation shall last, for the parameter to get from start to end.
+     * @param animationInterval - The rate at which the parameter of the item needs to be moved. Used for computing the number of steps.
+     * @param delay - Number of ms before actually starting moving the parameter. During this time the parameter will remain in it's initial value.
+     * @return The error message if there was one. Otherwise an empty string if all was ok.
+     * @details The animation parameter needs to be able to be cast to real value and it the item needs to be have a set ID.
+     */
+    QString addAnimationParameter(const QString &name, qreal start, qreal end, qreal duration, qreal animationInterval, qreal delay);
+
+    /**
+     * @brief animate - Animates all parameters added with addAnimationParameters.
+     * @return Retunrs a map of parameters which triggered signals. The value of the map is the signal triggered.
+     */
+    QMap<QString, qint32> animate();
+
+    /**
+     * @brief clearAnimationData - deletes the animation structures.
+     */
+    void clearAnimationData();
+
+    static QString AnimationSignalType2String(qint32 type);
 
 protected:
-    QString fillColor;
-    QString borderColor;
-    qreal borderWidth;
-    qreal zValue;
-    bool visible;
-    bool roundCaps;
     QRectF bRect;
-    QString itemType;
-    QPointF tfOrigin;
-    qreal referenceYTF;
+    QVariantMap itemData;
 
     QPointF scaleAPointAroundTFOrigin(qreal x, qreal y, qreal scale) const;
     QPointF scaleAPointAroundTFOrigin(const QPointF &point, qreal scale) const;
+
+
+
 
 };
 

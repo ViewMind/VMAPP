@@ -2,12 +2,16 @@
 
 CalibrationLeastSquares::CalibrationLeastSquares()
 {
-    connect(&calibrationTimer,&QTimer::timeout,this,&CalibrationLeastSquares::calibrationTimeInTargetUp);
+
     isCalibratingFlag = false;
+    connect(&calibrationTargets,&CalibrationTargets::calibrationPointStatus,this,&CalibrationLeastSquares::onCalibrationPointStatus);
+    connect(&calibrationTargets,&CalibrationTargets::newAnimationFrame,this,&CalibrationLeastSquares::onNewAnimationFrame);
+    connect(&waitToGatherTimer,&QTimer::timeout,this,&CalibrationLeastSquares::onWaitToDataGather);
+
 }
 
-QImage CalibrationLeastSquares::getCurrentCalibrationImage() const{
-    return currentCalibrationImage;
+RenderServerScene CalibrationLeastSquares::getCurrentCalibrationImage() const{
+    return calibrationTargets.getCurrentCalibrationAnimationFrame();
 }
 
 bool CalibrationLeastSquares::isCalibrating() const{
@@ -25,6 +29,35 @@ QString CalibrationLeastSquares::getRecommendedEye() const {
 EyeCorrectionCoefficients CalibrationLeastSquares::getCalculatedCoeficients() const {
     return coeffs;
 }
+
+void CalibrationLeastSquares::onWaitToDataGather(){
+    isDataGatheringEnabled = true;
+    waitToGatherTimer.stop();
+}
+
+void CalibrationLeastSquares::onNewAnimationFrame(){
+    if (!isCalibratingFlag) return;
+    emit CalibrationLeastSquares::newCalibrationImageAvailable();
+}
+
+void CalibrationLeastSquares::onCalibrationPointStatus(qint32 whichCalibrationPoint, bool isMoving){
+
+    //qDebug() << "Calibration Point Status Update" <<  whichCalibrationPoint << isMoving;
+
+    if (isMoving){
+        isDataGatheringEnabled = false;
+        if (whichCalibrationPoint == (numberOfCalibrationPoints-1)){
+            // We've reached the end.
+            calibrationTargets.calibrationAnimationControl(false);
+            finalizeCalibrationProcess();
+        }
+    }
+    else {
+        waitToGatherTimer.start(calibration_wait_time);
+        currentCalibrationPointIndex = whichCalibrationPoint;
+    }
+}
+
 
 void CalibrationLeastSquares::configureValidation(const QVariantMap &calibrationValidationParameters){
 
@@ -68,7 +101,7 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
     calibrationValidationData[VMDC::CalibrationFields::NUMBER_OF_CALIBRAION_POINTS] = npoints;
 
     // Getting the centers of all the targets to be drawn.
-    QList<QPointF> calibrationPoints = calibrationTargets.setupCalibrationSequence(npoints);
+    QList<QPointF> calibrationPoints = calibrationTargets.setupCalibrationSequence(npoints,ms_gather_time_for_calib_pt + ms_wait_time_calib_pt);
 
     // Creating the data point list.
     coeffs.configureForCoefficientComputation(calibrationPoints);
@@ -78,49 +111,24 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
     // Initializing the index and the structure for current collecting
     currentCalibrationPointIndex = -1;
     isCalibratingFlag = true;
-    isDataGatheringEnabled = true;
+    isDataGatheringEnabled = false;
     successfullyComputedCoefficients = false;
     calibration_gather_time = ms_gather_time_for_calib_pt;
     calibration_wait_time = ms_wait_time_calib_pt;
-    calibrationTimeInTargetUp();
 
+    calibrationTargets.calibrationAnimationControl(true);
 }
 
-void CalibrationLeastSquares::calibrationTimeInTargetUp(){
-    calibrationTimer.stop();
+void CalibrationLeastSquares::finalizeCalibrationProcess() {
+    isDataGatheringEnabled = false;
+    isCalibratingFlag = false;
 
-    if (isDataGatheringEnabled){
+    successfullyComputedCoefficients = coeffs.computeCoefficients();
 
-        // Checking if we are done.
-        if (currentCalibrationPointIndex == (numberOfCalibrationPoints-1) ){
-            isDataGatheringEnabled = false;
-            isCalibratingFlag = false;
-            //qDebug() << "Throwing Calibration Done";
+    // Now we generate the calibration report.
+    generateCalibrationReport();
 
-            successfullyComputedCoefficients = coeffs.computeCoefficients();
-
-            // Now we generate the calibration report.
-            generateCalibrationReport();
-
-            emit CalibrationLeastSquares::calibrationDone();
-            return;
-
-        }
-
-        currentCalibrationPointIndex++;
-        //qDebug() << "Calibrating point" << currentCalibrationPointIndex;
-        currentCalibrationImage = calibrationTargets.nextSingleTarget();
-
-        emit CalibrationLeastSquares::newCalibrationImageAvailable();
-        calibrationTimer.start(calibration_wait_time);
-        isDataGatheringEnabled = false;
-    }
-    else{
-        // This means that we just finished waiting for the first part of the target. So we can start collecting data.
-        isDataGatheringEnabled = true;
-        calibrationTimer.start(calibration_gather_time);
-    }
-
+    emit CalibrationLeastSquares::calibrationDone();
 }
 
 void CalibrationLeastSquares::generateCalibrationReport(){

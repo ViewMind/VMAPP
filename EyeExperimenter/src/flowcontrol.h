@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "../../CommonClasses/debug.h"
+#include "../../CommonClasses/wait.h"
 
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
@@ -33,8 +34,6 @@ class FlowControl : public QWidget
 {
     Q_OBJECT
 
-    Q_PROPERTY(QImage image READ image NOTIFY newImageAvailable)
-
 public:
     explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     ~FlowControl() override;
@@ -52,7 +51,6 @@ public:
     Q_INVOKABLE void resolutionCalculations();
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE void stopRenderingVR();
-    Q_INVOKABLE void generateWaitScreen(const QString &message);
     Q_INVOKABLE bool isVROk() const;
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
     // This is a debugging funciton which will only return true when a coefficient file is loaded or the mouse is selected.
@@ -60,11 +58,12 @@ public:
 
     // Remote render server Window Validation Control
     Q_INVOKABLE void setRenderWindowGeometry(int target_x, int target_y, int target_w, int target_h);
+    Q_INVOKABLE void setRenderWindowState(bool hidden);
     Q_INVOKABLE void hideRenderWindow();
     Q_INVOKABLE void showRenderWindow();
 
-    // The image to be shown.
-    QImage image() const;
+    // Used mostly for debugging.
+    Q_INVOKABLE void renderWaitScreen(const QString &message);
 
     // Required for the ID setting handshake.
     void startRenderServerAndSetWindowID(WId winID);
@@ -86,6 +85,9 @@ signals:
 
     // Puts in a request to the QML Front end to get the geometry for the render server window.
     void requestWindowGeometry();
+
+    // Wrongfull disconnect with remote render server.
+    void renderServerDisconnect();
 
 public slots:
 
@@ -115,12 +117,15 @@ private slots:
     // Slot that requests new image to draw from the OpenVR Control Object
     void onRequestUpdate();
 
+    // Required to sincronize window switching to show the calibration resutls.
+    void onDelayTimerUp();
+
 private:
 
     // Render state allows to define what to send to the HMD when using the VR Solution.
     typedef enum { RENDERING_NONE, RENDERING_EXPERIMENT, RENDER_WAIT_SCREEN, RENDERING_CALIBRATION_SCREEN} RenderState;
 
-    // Delays saving the report until the wait dialog can be shown.
+    // Delays for a specific time.
     QTimer delayTimer;
 
     // The currently selected experiment
@@ -140,21 +145,6 @@ private:
 
     // Flag to indicate if VR is in use.
     bool usingVR;
-
-    // Definining the render state for VR
-    RenderState renderState;
-
-    // Display image used when using VR Solution. And the Wait Screen.
-//    QImage displayImage;
-    RenderServerScene *displayImage;
-//    QImage waitScreen;
-//    QImage logo;  // the viewmind logo.
-//    QFont waitFont;
-//    QColor waitScreenBaseColor;
-    RenderServerScene *waitScreen;
-
-    // The Log interface
-    // LogInterface logger;
 
     // The configuration structure
     ConfigurationManager *configuration;
@@ -177,6 +167,9 @@ private:
     QStringList countryList;
     QStringList countryCodes;
     void fillCountryList();
+
+    // Stored value of the Viewmind Logo requried for background image math rendering
+    QSizeF backgroundLogoSize;
 
     // Only valid vlues are 5 or 9 anything else will assume 9
     static const qint32 NUMBER_OF_CALIBRATION_POINTS = 9;

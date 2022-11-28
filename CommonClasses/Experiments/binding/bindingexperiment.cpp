@@ -52,7 +52,7 @@ bool BindingExperiment::startExperiment(const QString &workingDir, const QString
         this->show();
         this->activateWindow();
     }
-    else updateSecondMonitorORHMD();
+    else updateDisplay();
 
     return true;
 
@@ -65,14 +65,14 @@ void BindingExperiment::drawCurrentImage(){
     if (trialState == TSB_CENTER_CROSS){
         //qWarning() << "DRAWING: Center Cross" << currentTrial;
         m->drawCenter();
-        updateSecondMonitorORHMD();
+        updateDisplay();
         return;
     }
 
     if ((trialState == TSB_TRANSITION) || (trialState == TSB_FINISH)){
         //qWarning() << "DRAWING: Transition" << currentTrial;
         m->drawClear();
-        updateSecondMonitorORHMD();
+        updateDisplay();
         return;
     }
 
@@ -84,7 +84,7 @@ void BindingExperiment::drawCurrentImage(){
         //qWarning() << "DRAWING: Test" << currentTrial;
         m->drawTrial(currentTrial,false);
     }
-    updateSecondMonitorORHMD();
+    updateDisplay();
 
 }
 
@@ -141,7 +141,7 @@ void BindingExperiment::resetStudy(){
     stateTimer.setInterval(TIME_START_CROSS);
     if (studyPhase == SP_EVALUATION) stateTimer.start();
 
-    if (Globals::EyeTracker::IS_VR) updateSecondMonitorORHMD();
+    if (Globals::EyeTracker::IS_VR) updateDisplay();
 
 }
 

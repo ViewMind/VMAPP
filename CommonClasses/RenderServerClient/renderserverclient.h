@@ -17,6 +17,7 @@
 #include <WinUser.h>
 
 #include "RenderServerPackets/renderserverpacket.h"
+#include "../debug.h"
 
 class RenderServerClient : public QObject
 {
@@ -40,17 +41,29 @@ public:
 
     RenderServerPacket getPacket();
 
+    // Stores the window positiona and size. Then calls show.
     void resizeRenderWindow(qint32 x, qint32 y, qint32 w, qint32 h);
+
+    // Hide Render Window. It does not CHANGE it's hidden state.
+    void hideRenderWindow();
+
+    // Shows only if the hidden flag is false.
+    void showRenderWindow();
+
+    void setRenderWindowHiddenFlag(bool flag);
 
     QSize getRenderResolution() const;
 
     void sendEnable2DRenderPacket(bool enable);
+
+    void closeRenderServer();
 
 signals:
 
     void newPacketArrived();
     void connectionEstablished();
     void readyToRender();
+    void renderWindowHandleReady();
     void newMessage(const QString &msg, const quint8 &msgType);
 
 private slots:
@@ -70,6 +83,7 @@ private slots:
 
     // Timer slots
     void onWaitTimerTimeout();
+    void onCoolDownTimerTimeout();
 
 private:
     // The socket for the client connection.
@@ -90,13 +104,24 @@ private:
     // Timer used to get the window handle
     QTimer waitTimer;
 
+    // Requires wait time between sending packets.
+    QTimer cooldownTimer;
+    QElapsedTimer mtimer;
+
     // Used to see if there are any packets to send.
     QList<RenderServerPacket> sendPacketQueue;
     bool bytesAreBeingSent;
     bool sentResolutionRequest;
 
+    // Render handle ready emitted flag.
+    bool emittedRenderHandleReady;
+
     // The Handle to render Window.
     static HWND renderHandle;
+
+    // The dimension and position of the render window.
+    QRect renderWindowGeometry;
+    bool renderWindowHidden;
 
     // The callback that allows to get the handle for the render window.
     static BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam);
@@ -104,14 +129,17 @@ private:
     const QString PORT_FILE = "selected_port";
     const qint32 POLL_INTERVAL_TO_GET_WINDOW_HANDLE = 600;
     const qint32 POLL_INTERVAL_FOR_SEND_PACKET_CHECK = 10;
+    const qint32 COOLDOWN_BETWEEN_PACKETS = 3; // Wait time between two consecutive packages.
 
     // Resolution constants.
     qint32 screenResolutionWidth;
     qint32 screenResolutionHeight;
 
+    // Variable to know when we are closing.
+    bool onClosing;
+
     /// PRIVATE FUNCTIONS
     void connectToRenderServer();
-    void sendTopQueuePacket(qint64 nbytes);
 
 };
 

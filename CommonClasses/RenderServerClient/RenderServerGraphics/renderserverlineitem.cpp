@@ -2,109 +2,116 @@
 
 RenderServerLineItem::RenderServerLineItem(qreal x1, qreal y1, qreal x2, qreal y2)
 {
-    this->x1 = x1;
-    this->y1 = y1;
-    this->x2 = x2;
-    this->y2 = y2;
-    this->borderWidth = 1.0;
-    this->itemType = RenderServerItemTypeName::LINE;
-    this->updateBRect();
-}
+
+    QStringList renderItemList = itemData.value(RenderControlPacketFields::RENDER_LIST).toStringList();
+
+    renderItemList << RenderControlPacketFields::X
+    << RenderControlPacketFields::Y
+    << RenderControlPacketFields::BORDER_COLOR
+    << RenderControlPacketFields::BORDER_WIDTH
+    << RenderControlPacketFields::USE_ROUND_CAPS;
+
+    itemData[RenderControlPacketFields::RENDER_LIST] = renderItemList;
 
 
-RenderServerLineItem::RenderServerLineItem(const QVariantMap &itemData): RenderServerItem(itemData) {
-    QVariantList x, y;
-    x = itemData.value(RenderControlPacketFields::X).toList();
-    y = itemData.value(RenderControlPacketFields::Y).toList();
-
-    if ((x.size() != 3) || (y.size() != 3)) return;
-    this->x1 = x[0].toReal();
-    this->x2 = x[1].toReal();
-
-
-    this->y1 = y[0].toReal();
-    this->y2 = y[1].toReal();
-
-
-    this->updateBRect();
-}
-
-QVariantMap RenderServerLineItem::getItemData() const {
-    QVariantMap itemData = RenderServerItem::getItemData();
-    QVariantList x; x << this->x1 << this->x2;
-    QVariantList y; x << this->y1 << this->y2;
+    QVariantList x; x << x1 << x2;
+    QVariantList y; y << y1 << y2;
     itemData[RenderControlPacketFields::X] = x;
     itemData[RenderControlPacketFields::Y] = y;
-    return itemData;
+    itemData[RenderControlPacketFields::BORDER_WIDTH] = 1;
+
+    itemData[RenderControlPacketFields::TYPE]      = GL2DItemType::TYPE_LINE;
+    itemData[RenderControlPacketFields::TYPE_NAME] = RenderServerItemTypeName::LINE;
+
+
+    updateBRect();
+}
+
+
+RenderServerLineItem::RenderServerLineItem(const QVariantMap &idata): RenderServerItem(idata) {
+    updateBRect();
 }
 
 
 void RenderServerLineItem::setPos(qreal x, qreal y){
-    this->x1 = x;
-    this->y1 = y;
-    this->updateBRect();
-}
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
 
+    xl[0] = x;
+    yl[0] = y;
 
-void RenderServerLineItem::render(RenderServerPacket *packet) const{
-    QVariantList l;
-    if (packet->containsPayloadField(RenderControlPacketFields::SPEC_LIST)){
-        l = packet->getPayloadField(RenderControlPacketFields::SPEC_LIST).toList();
-    }
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
 
-    QVariantMap spec;
-
-    QVariantList x,y;
-    x << this->x1 << this->x2;
-    y << this->y1 << this->y2;
-
-    spec[RenderControlPacketFields::TYPE] = GL2DItemType::TYPE_LINE;
-    spec[RenderControlPacketFields::X] = x;
-    spec[RenderControlPacketFields::Y] = y;
-    spec[RenderControlPacketFields::USE_ROUND_CAPS] = this->roundCaps;
-    spec[RenderControlPacketFields::COLOR] = this->borderColor;
-    spec[RenderControlPacketFields::BORDER_WIDTH] = this->borderWidth;
-
-    l << spec;
-    packet->setPayloadField(RenderControlPacketFields::SPEC_LIST,l);
+    updateBRect();
 }
 
 void RenderServerLineItem::updateBRect(){
 
-    qreal max_x = qMax(this->x1,this->x2);
-    qreal min_x = qMin(this->x1,this->x2);
-    qreal max_y = qMax(this->y1,this->y2);
-    qreal min_y = qMin(this->y1,this->y2);
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
 
-    this->bRect.setTop(min_y);
-    this->bRect.setLeft(min_x);
-    this->bRect.setWidth(max_x - min_x);
-    this->bRect.setHeight(max_y - min_y);
+    qreal x1 = xl.first().toReal();
+    qreal x2 = xl.last().toReal();
+    qreal y1 = yl.first().toReal();
+    qreal y2 = yl.last().toReal();
+
+    qreal max_x = qMax(x1,x2);
+    qreal min_x = qMin(x1,x2);
+    qreal max_y = qMax(y1,y2);
+    qreal min_y = qMin(y1,y2);
+
+    bRect.setTop(min_y);
+    bRect.setLeft(min_x);
+    bRect.setWidth(max_x - min_x);
+    bRect.setHeight(max_y - min_y);
 
 }
 
 qreal RenderServerLineItem::x() const {
-    return this->x1;
+    return itemData.value(RenderControlPacketFields::X).toList().first().toReal();
 }
 
 qreal RenderServerLineItem::y() const {
-    return this->y1;
+    return itemData.value(RenderControlPacketFields::Y).toList().first().toReal();
 }
 
 void RenderServerLineItem::scale(qreal scale){
-    QPointF p1 = this->scaleAPointAroundTFOrigin(this->x1,this->y1,scale);
-    QPointF p2 = this->scaleAPointAroundTFOrigin(this->x2,this->y2,scale);
-    this->x1 = p1.x();
-    this->y1 = p1.y();
-    this->x2 = p2.x();
-    this->y2 = p2.y();
-    this->updateBRect();
+
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    qreal x1 = xl.first().toReal();
+    qreal x2 = xl.last().toReal();
+    qreal y1 = yl.first().toReal();
+    qreal y2 = yl.last().toReal();
+
+
+    QPointF p1 = scaleAPointAroundTFOrigin(x1,y1,scale);
+    QPointF p2 = scaleAPointAroundTFOrigin(x2,y2,scale);
+    xl[0] = p1.x();
+    yl[0] = p1.y();
+    xl[1] = p2.x();
+    yl[1] = p2.y();
+
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
+
+
+    updateBRect();
 }
 
 void RenderServerLineItem::moveBy(qreal dx, qreal dy){
-    this->x1 = this->x1 + dx;
-    this->y1 = this->y1 + dy;
-    this->x2 = this->x2 + dx;
-    this->y2 = this->y2 + dy;
-    this->updateBRect();
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    for (qint32 i = 0; i < 2; i++){
+        xl[i] = xl.value(i).toReal() + dx;
+        yl[i] = yl.value(i).toReal() + dy;
+    }
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
+    updateBRect();
 }

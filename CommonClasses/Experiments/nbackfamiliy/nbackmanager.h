@@ -93,13 +93,6 @@ private:
     qreal TARGET_R;
 
     // Graphical items shown in the screen
-//    QGraphicsEllipseItem    *gTarget;
-//    QGraphicsLineItem       *gCrossLine0;
-//    QGraphicsLineItem       *gCrossLine1;
-//    QGraphicsSimpleTextItem *gText1;
-//    QGraphicsSimpleTextItem *gText2;
-//    QGraphicsSimpleTextItem *gText3;
-//    QGraphicsSimpleTextItem *gDebugSequenceValue;
     RenderServerCircleItem    *gTarget;
     RenderServerLineItem      *gCrossLine0;
     RenderServerLineItem      *gCrossLine1;
@@ -114,7 +107,6 @@ private:
     QList<QRectF> drawTargetBoxes;
 
     // Required for the use of the ligthup feature.
-    //QList<QGraphicsRectItem*> graphicalTargetBoxes;
     QList<RenderServerRectItem*> graphicalTargetBoxes;
 
     // Used for turning on and off the target boxes.
@@ -146,7 +138,6 @@ private:
 
     // Common function that renders a target circle. To have the code all in the same place. It does not position the circle
     // Returuns a pointer to the created circle
-    //QGraphicsEllipseItem * renderTargetCircle();
     RenderServerCircleItem * renderTargetCircle();
 
     // Referencing the slides for the explanations.

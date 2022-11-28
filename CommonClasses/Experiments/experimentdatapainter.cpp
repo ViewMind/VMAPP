@@ -76,7 +76,7 @@ RenderServerScene ExperimentDataPainter::getQImage() const{
 }
 
 RenderServerScene ExperimentDataPainter::getImage() const{
-    RenderServerScene newScene(canvas);
+    RenderServerScene newScene(*canvas);
     return newScene;
 }
 

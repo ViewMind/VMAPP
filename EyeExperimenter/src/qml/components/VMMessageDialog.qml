@@ -23,6 +23,7 @@ Item {
 
     ////////////////////////// BASE DIALOG FUNCTIONS ////////////////////////
     function open(doNotCloseAppOnDismissied){
+        flowControl.hideRenderWindow();
         visible = true
         if (doNotCloseAppOnDismissied === true){
             vmCloseAppOnDismissed = false;
@@ -31,6 +32,7 @@ Item {
 
     function close(){
         visible = false
+        flowControl.showRenderWindow();
     }
 
     function loadFromKey(key, makeWider){

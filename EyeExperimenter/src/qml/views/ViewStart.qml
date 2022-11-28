@@ -36,6 +36,18 @@ ViewBase {
     }
 
 
+    Connections {
+        target: flowControl
+
+        function onRenderServerDisconnect(){
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexHome);
+            var message = loader.getStringForKey("viewstart_vr_disconnect");
+            mainWindow.popUpNotify(VMGlobals.vmNotificationRed,message,false);
+            btnLogin.vmEnabled = false;
+        }
+    }
+
+
     VMMessageDialog {
         id: criticalFailure
         onDismissed: {

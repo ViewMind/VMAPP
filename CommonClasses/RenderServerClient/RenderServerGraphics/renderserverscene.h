@@ -12,6 +12,7 @@
 #include <QString>
 #include <QList>
 #include <QFont>
+#include <QTimer>
 
 #include "renderservercircleitem.h"
 #include "renderserverrectitem.h"
@@ -20,16 +21,24 @@
 #include "renderserverarrowitem.h"
 #include "renderservertextitem.h"
 #include "renderservertriangleitem.h"
+#include "renderserverimageitem.h"
 #include "renderserveritemgroup.h"
 
 class RenderServerScene
 {
+
 public:
 
-    RenderServerScene(double x, double y, double width, double height);
-    RenderServerScene(RenderServerScene *anotherScene);
+    RenderServerScene(double x, double y, double width, double height);    
+    RenderServerScene(const RenderServerScene &anotherScene);
+    RenderServerScene();
+    virtual ~RenderServerScene();
 
-    void copyFrom(RenderServerScene *scene);
+    void copyFrom(const RenderServerScene &scene);
+    bool isValid() const;
+
+    void setSceneRect(const QRectF &rect);
+    void setSceneRect(qreal x, qreal y, qreal w, qreal h);
 
     RenderServerCircleItem * addEllipse(QRectF brect, const QPen &pen = QPen(), const QBrush &brush = QBrush());
     RenderServerCircleItem * addEllipse(qreal x, qreal y, qreal w, qreal h, const QPen &pen = QPen(), const QBrush &brush = QBrush());
@@ -41,8 +50,14 @@ public:
     RenderServerLineItem * addLine(qreal x1, qreal y1, qreal x2, qreal y2, const QPen &pen = QPen());
     RenderServerArrowItem * addArrow(qreal x1, qreal y1, qreal x2, qreal y2, qreal hH, qreal hL, const QColor &color);
     RenderServerTriangleItem *addTriangle(const QPolygonF &triangle);
+    RenderServerImageItem * addImage(const QString &fname, bool fitToWidth, qreal w, qreal h, qreal value_to_fit);
     RenderServerItemGroup * createItemGroup (const QList<RenderServerItem*> items);
     RenderServerPacket render() const;
+
+    // Animation functions.
+    void clearAnimationData();
+    RenderServerItem * getItemByID(const qint32 &id) const;
+    QMap<QString, qint32> animate();
 
     void setBackgroundBrush(const QBrush &brush);
     QString getBackgroundColorName() const;

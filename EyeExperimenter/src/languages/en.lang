@@ -7,6 +7,7 @@ viewstart_login = LOGIN;
 viewstart_addneweval = ADD A NEW EVALUATOR;
 viewstart_settings = Settings;
 viewstart_configuration_failed = Unable to Load Configuration|The application is unable to start\nPlease contatct ViewMind for help;
+viewstart_vr_disconnect = <b>Connection to HMD Lost</b><br>Please restart the application;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Advanced;
@@ -177,7 +178,7 @@ viewevaluation_comfirm_abort_msg = Do you wish to stop the current study?<br>All
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
 viewevaluation_calibration_explanation = 
-A blue circle with a white dot in its center will appear on the screen. 
+A red pulsating circle with a white dot in its center will appear on the screen. 
 Look at the white dot.
 The circle will move through the screen. You must follow it. Remember not to
 take your eyes off the circle until it disappears.

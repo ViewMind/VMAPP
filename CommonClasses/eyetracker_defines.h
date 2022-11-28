@@ -38,21 +38,21 @@ namespace Globals {
    }
 
    static bool SetUpEyeTrackerNameSpace(const QString &key){
-       if (key == HTC::PROCESSING_PARAMETER_KEY){
-           EyeTracker::NAME = HTC::NAME;
-           EyeTracker::IS_VR = HTC::IS_VR;
-           EyeTracker::PROCESSING_PARAMETER_KEY = key;
-           EyeTracker::VRSCALING = HTC::VRSCALING;
-           return true;
-       }
-       else if (key == GP3HD::PROCESSING_PARAMETER_KEY){
-           EyeTracker::NAME = GP3HD::NAME;
-           EyeTracker::IS_VR = GP3HD::IS_VR;
-           EyeTracker::PROCESSING_PARAMETER_KEY = key;
-           EyeTracker::VRSCALING = GP3HD::VRSCALING;
-           return true;
-       }
-       else if (key == HPReverb::PROCESSING_PARAMETER_KEY){
+//       if (key == HTC::PROCESSING_PARAMETER_KEY){
+//           EyeTracker::NAME = HTC::NAME;
+//           EyeTracker::IS_VR = HTC::IS_VR;
+//           EyeTracker::PROCESSING_PARAMETER_KEY = key;
+//           EyeTracker::VRSCALING = HTC::VRSCALING;
+//           return true;
+//       }
+//       else if (key == GP3HD::PROCESSING_PARAMETER_KEY){
+//           EyeTracker::NAME = GP3HD::NAME;
+//           EyeTracker::IS_VR = GP3HD::IS_VR;
+//           EyeTracker::PROCESSING_PARAMETER_KEY = key;
+//           EyeTracker::VRSCALING = GP3HD::VRSCALING;
+//           return true;
+//       }
+       if (key == HPReverb::PROCESSING_PARAMETER_KEY){
            EyeTracker::NAME = HPReverb::NAME;
            EyeTracker::IS_VR = HPReverb::IS_VR;
            EyeTracker::PROCESSING_PARAMETER_KEY = key;

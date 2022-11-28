@@ -139,7 +139,6 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-
     // We need to set the identification window which starts the server render process.
     if (QWindow *window = qobject_cast<QWindow*>(engine.rootObjects().at(0))){
         flowControl.startRenderServerAndSetWindowID(window->winId());

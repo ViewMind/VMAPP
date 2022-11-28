@@ -30,7 +30,6 @@ ApplicationWindow {
         source: "qrc:/font/segoe_ui_semibold.ttf"
     }
 
-
     Component.onCompleted: {
         flowControl.resolutionCalculations();
         // This ensures that no resizing is possible.
@@ -144,6 +143,10 @@ ApplicationWindow {
         }
 
         onCurrentIndexChanged: {
+
+            flowControl.setRenderWindowState(true);
+            flowControl.hideRenderWindow();
+
             switch (currentIndex){
             case VMGlobals.vmSwipeIndexHome:
                 loader.logOut();

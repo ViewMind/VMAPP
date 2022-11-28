@@ -2,123 +2,122 @@
 
 RenderServerArrowItem::RenderServerArrowItem(qreal x1, qreal y1, qreal x2, qreal y2, qreal arrowHeadLength, qreal arrowHeadHeightMult, bool isTriangleArrow):RenderServerItem(){
 
-    this->x1 = x1;
-    this->x2 = x2;
-    this->y1 = y1;
-    this->y2 = y2;
-    this->headHeightMultiplier = arrowHeadHeightMult;
-    this->headLength = arrowHeadLength;
-    this->isTriangleArrow = isTriangleArrow;
-    this->itemType = RenderServerItemTypeName::ARROW;
-    this->updateBRect();
+    QStringList renderItemList = itemData.value(RenderControlPacketFields::RENDER_LIST).toStringList();
 
+    renderItemList << RenderControlPacketFields::X
+    << RenderControlPacketFields::Y
+    << RenderControlPacketFields::COLOR
+    << RenderControlPacketFields::BORDER_COLOR
+    << RenderControlPacketFields::BORDER_WIDTH
+    << RenderControlPacketFields::ARROW_HEAD_HEIGHT
+    << RenderControlPacketFields::ARROW_HEAD_LENGTH
+    << RenderControlPacketFields::ARROW_TYPE_TRIANGLE;
+
+    itemData[RenderControlPacketFields::RENDER_LIST] = renderItemList;
+
+    QVariantList x; x << x1 << x2;
+    QVariantList y; y << y1 << y2;
+    itemData[RenderControlPacketFields::X] = x;
+    itemData[RenderControlPacketFields::Y] = y;
+    itemData[RenderControlPacketFields::ARROW_TYPE_TRIANGLE] = isTriangleArrow;
+    itemData[RenderControlPacketFields::ARROW_HEAD_HEIGHT] = arrowHeadHeightMult;
+    itemData[RenderControlPacketFields::ARROW_HEAD_LENGTH] = arrowHeadLength;
+
+    itemData[RenderControlPacketFields::TYPE]      = GL2DItemType::TYPE_ARROW;
+    itemData[RenderControlPacketFields::TYPE_NAME] = RenderServerItemTypeName::ARROW;
+
+    updateBRect();
+}
+
+RenderServerArrowItem::RenderServerArrowItem(const QVariantMap &idata): RenderServerItem(idata) {
+    updateBRect();
 }
 
 void RenderServerArrowItem::setPos(qreal x, qreal y){
-    this->x1 = x;
-    this->y1 = y;
-    this->updateBRect();
+
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    xl[0] = x;
+    yl[0] = y;
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
+    updateBRect();
 }
 
-RenderServerArrowItem::RenderServerArrowItem(const QVariantMap &itemData): RenderServerItem(itemData) {
-    QVariantList x, y;
-    x = itemData.value(RenderControlPacketFields::X).toList();
-    y = itemData.value(RenderControlPacketFields::Y).toList();
-
-    if ((x.size() != 3) || (y.size() != 3)) return;
-    this->x1 = x[0].toReal();
-    this->x2 = x[1].toReal();
-
-
-    this->y1 = y[0].toReal();
-    this->y2 = y[1].toReal();
-
-    this->isTriangleArrow = itemData[RenderControlPacketFields::ARROW_TYPE_TRIANGLE].toBool();
-    this->headHeightMultiplier = itemData[RenderControlPacketFields::ARROW_HEAD_HEIGHT].toReal();
-    this->headLength = itemData[RenderControlPacketFields::ARROW_HEAD_LENGTH].toReal();
-
-    this->updateBRect();
-}
-
-QVariantMap RenderServerArrowItem::getItemData() const {
-    QVariantMap itemData = RenderServerItem::getItemData();
-    QVariantList x; x << this->x1 << this->x2;
-    QVariantList y; x << this->y1 << this->y2;
-    itemData[RenderControlPacketFields::X] = x;
-    itemData[RenderControlPacketFields::Y] = y;
-    itemData[RenderControlPacketFields::ARROW_TYPE_TRIANGLE] = this->isTriangleArrow;
-    itemData[RenderControlPacketFields::ARROW_HEAD_HEIGHT] = this->headHeightMultiplier;
-    itemData[RenderControlPacketFields::ARROW_HEAD_LENGTH] = this->headLength;
-    return itemData;
-}
 
 qreal RenderServerArrowItem::x() const {
-    return this->x1;
+    return itemData.value(RenderControlPacketFields::X).toList().first().toReal();
 }
 
 qreal RenderServerArrowItem::y() const {
-    return this->y1;
-}
-
-void RenderServerArrowItem::render(RenderServerPacket *packet) const {
-
-    QVariantList a;
-    if (packet->containsPayloadField(RenderControlPacketFields::SPEC_LIST)){
-        a = packet->getPayloadField(RenderControlPacketFields::SPEC_LIST).toList();
-    }
-
-    QVariantMap arrow;
-
-    QVariantList x, y;
-    x << this->x1 << this->x2;
-    y << this->y1 << this->y2;
-
-    arrow[RenderControlPacketFields::TYPE] = GL2DItemType::TYPE_ARROW;
-    arrow[RenderControlPacketFields::X] = x;
-    arrow[RenderControlPacketFields::Y] = y;
-    arrow[RenderControlPacketFields::COLOR] = this->fillColor;
-    arrow[RenderControlPacketFields::BORDER_COLOR] = this->borderColor;
-    arrow[RenderControlPacketFields::BORDER_WIDTH] = this->borderWidth;
-    arrow[RenderControlPacketFields::ARROW_HEAD_HEIGHT] = this->headHeightMultiplier;
-    arrow[RenderControlPacketFields::ARROW_HEAD_LENGTH] = this->headLength;
-    arrow[RenderControlPacketFields::ARROW_TYPE_TRIANGLE] = this->isTriangleArrow;
-
-    a << arrow;
-
-    packet->setPayloadField(RenderControlPacketFields::SPEC_LIST,a);
-
+    return itemData.value(RenderControlPacketFields::Y).toList().first().toReal();
 }
 
 void RenderServerArrowItem::updateBRect(){
 
-    qreal max_x = qMax(this->x1,this->x2);
-    qreal min_x = qMin(this->x1,this->x2);
-    qreal max_y = qMax(this->y1,this->y2);
-    qreal min_y = qMin(this->y1,this->y2);
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
 
-    this->bRect.setTop(min_y);
-    this->bRect.setLeft(min_x);
-    this->bRect.setWidth(max_x - min_x);
-    this->bRect.setHeight(max_y - min_y);
+    qreal x1 = xl.first().toReal();
+    qreal x2 = xl.last().toReal();
+    qreal y1 = yl.first().toReal();
+    qreal y2 = yl.last().toReal();
+
+    qreal max_x = qMax(x1,x2);
+    qreal min_x = qMin(x1,x2);
+    qreal max_y = qMax(y1,y2);
+    qreal min_y = qMin(y1,y2);
+
+    bRect.setTop(min_y);
+    bRect.setLeft(min_x);
+    bRect.setWidth(max_x - min_x);
+    bRect.setHeight(max_y - min_y);
 
 }
 
 void RenderServerArrowItem::scale(qreal scale){
-    QPointF p1 = this->scaleAPointAroundTFOrigin(this->x1,this->y1,scale);
-    QPointF p2 = this->scaleAPointAroundTFOrigin(this->x2,this->y2,scale);
-    this->x1 = p1.x();
-    this->y1 = p1.y();
-    this->x2 = p2.x();
-    this->y2 = p2.y();
-    this->headHeightMultiplier = this->headHeightMultiplier*scale;
-    this->headLength = this->headLength*scale;
-    this->updateBRect();
+
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    qreal x1 = xl.first().toReal();
+    qreal x2 = xl.last().toReal();
+    qreal y1 = yl.first().toReal();
+    qreal y2 = yl.last().toReal();
+
+    qreal headHeightMultiplier = itemData.value(RenderControlPacketFields::ARROW_HEAD_HEIGHT).toReal();
+    qreal headLength           = itemData.value(RenderControlPacketFields::ARROW_HEAD_LENGTH).toReal();
+
+    QPointF p1 = scaleAPointAroundTFOrigin(x1,y1,scale);
+    QPointF p2 = scaleAPointAroundTFOrigin(x2,y2,scale);
+    xl[0] = p1.x();
+    yl[0] = p1.y();
+    xl[1] = p2.x();
+    yl[1] = p2.y();
+    headHeightMultiplier = headHeightMultiplier*scale;
+    headLength = headLength*scale;
+
+    itemData[RenderControlPacketFields::ARROW_HEAD_HEIGHT] = headHeightMultiplier;
+    itemData[RenderControlPacketFields::ARROW_HEAD_LENGTH] = headLength;
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
+
+    updateBRect();
 }
 
 void RenderServerArrowItem::moveBy(qreal dx, qreal dy){
-    this->x1 = this->x1 + dx;
-    this->y1 = this->y1 + dy;
-    this->x2 = this->x2 + dx;
-    this->y2 = this->y2 + dy;
-    this->updateBRect();
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    for (qint32 i = 0; i < 2; i++){
+        xl[i] = xl.value(i).toReal() + dx;
+        yl[i] = yl.value(i).toReal() + dy;
+    }
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
+    updateBRect();
 }

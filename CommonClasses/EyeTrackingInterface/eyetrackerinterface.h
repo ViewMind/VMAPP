@@ -6,7 +6,8 @@
 #include <QImage>
 #include <QMatrix4x4>
 #include "eyetrackerdata.h"
-#include "../LogInterface/loginterface.h"
+#include "../LogInterface/staticthreadlogger.h"
+#include "../RenderServerClient/RenderServerGraphics/renderserverscene.h"
 #include "../RawDataContainer/VMDC.h"
 
 class EyeTrackerInterface : public QObject
@@ -45,16 +46,14 @@ public:
 
     CalibrationRetryMessage getCalibrationRetryMessage() const;
 
-    QImage getCalibrationImage() const;
+    //QImage getCalibrationImage() const;
+    RenderServerScene getCalibrationImage() const;
 
     void setEyeToTransmit(QString eye);
 
     EyeTrackerData getLastData() const;
 
     bool isEyeTrackerEnabled() const;
-
-public slots:
-    virtual void updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l);
 
 signals:
     void newDataAvailable(EyeTrackerData data);
@@ -66,7 +65,6 @@ signals:
     void disconnectedFromET();
 
 protected:
-    LogInterface logger;
 
     // Which EyeDataToTransmit
     QString eyeToTransmit;
@@ -79,7 +77,8 @@ protected:
     CalibrationRetryMessage calib_retry_msg;
 
     // Calibration image if this needs to be displayed.
-    QImage calibrationImage;
+    //QImage calibrationImage;
+    RenderServerScene calibrationImage;
 
     // The last available data
     EyeTrackerData lastData;

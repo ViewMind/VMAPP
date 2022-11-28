@@ -46,7 +46,7 @@ namespace Debug {
        const QString STUDY_CONFIG_MAP     = "study_configutation_map";
        const QString LOAD_CALIBRATION_K   = "load_calibration_coeffs";
        const QString ENABLE_GAZE_FOLLOW   = "enable_gaze_follow";
-       const QString USE_MOUSE            = "use_mouse";
+       //const QString USE_MOUSE            = "use_mouse";
        const QString OVERRIDE_TIME        = "override_time";
        const QString DBUG_MSG             = "debug_messages";
        const QString LIGHTUP_NBACKRT      = "lightup_nback_rt";
@@ -57,6 +57,7 @@ namespace Debug {
        const QString CONFIG_CALIB_VALID   = "config_calib_validation";
        const QString FORCE_N_CALIB_PTS    = "force_n_calibration_points";
        const QString LOAD_FOR_CALIB_VERIF = "force_load_file_for_calibration_validation_dialog";
+       const QString RENDER_PACKET_DBUG   = "render_packet_debug_enable";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

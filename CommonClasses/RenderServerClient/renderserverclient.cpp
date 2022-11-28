@@ -20,7 +20,6 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
     connect(socket,&QTcpSocket::errorOccurred,this,&RenderServerClient::onErrorOcurred);
     connect(socket,&QTcpSocket::disconnected,this,&RenderServerClient::onDisconnected);
     connect(socket,&QTcpSocket::readyRead,this,&RenderServerClient::onReadyRead);
-    connect(socket,&QTcpSocket::bytesWritten,this,&RenderServerClient::sendTopQueuePacket);
 
     connect(&renderServerProcess,&QProcess::errorOccurred,this,&RenderServerClient::onProcessErrorOcurred);
     connect(&renderServerProcess,&QProcess::stateChanged,this,&RenderServerClient::onProcessStateChanged);
@@ -28,6 +27,7 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
     connect(&renderServerProcess,&QProcess::finished,this,&RenderServerClient::onProcessFinished);
 
     connect(&waitTimer,&QTimer::timeout,this,&RenderServerClient::onWaitTimerTimeout);
+    connect(&cooldownTimer,&QTimer::timeout,this,&RenderServerClient::onCoolDownTimerTimeout);
 
     mainWindowID = 0;
     renderHandle = nullptr;
@@ -38,11 +38,42 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
     sentResolutionRequest = false;
     bytesAreBeingSent = false;
 
+    renderWindowHidden = false;
+
+    onClosing = false;
+
+    mtimer.elapsed();
+
 }
 
 void RenderServerClient::resizeRenderWindow(qint32 x, qint32 y, qint32 w, qint32 h){
-    MoveWindow(RenderServerClient::renderHandle,x,y,w,h,TRUE);
+    renderWindowGeometry.setX(x);
+    renderWindowGeometry.setY(y);
+    renderWindowGeometry.setWidth(w);
+    renderWindowGeometry.setHeight(h);
 }
+
+void RenderServerClient::hideRenderWindow(){
+    MoveWindow(RenderServerClient::renderHandle,renderWindowGeometry.x(),renderWindowGeometry.y(),0,0,TRUE);
+    //ShowWindow(RenderServerClient::renderHandle,SW_HIDE);
+    //SetWindowPos(RenderServerClient::renderHandle,HWND_BOTTOM,0,0,0,0,SWP_HIDEWINDOW|SWP_NOMOVE|SWP_NOSIZE);
+}
+
+void RenderServerClient::showRenderWindow() {
+    //qDebug() << "Entering Show of RanderWindow with" << renderWindowHidden << renderWindowGeometry;
+    if (renderWindowHidden) return;  // Does nothing.
+    //SetWindowPos(RenderServerClient::renderHandle,HWND_BOTTOM,0,0,0,0,SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
+    //SetWindowPos(RenderServerClient::renderHandle,HWND_TOP,0,0,0,0,SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
+    //SetWindowPos(RenderServerClient::renderHandle,(HWND) mainWindowID,0,0,0,0,0);
+
+    //ShowWindow(RenderServerClient::renderHandle,SW_SHOW);
+    MoveWindow(RenderServerClient::renderHandle,renderWindowGeometry.x(),renderWindowGeometry.y(),renderWindowGeometry.width(),renderWindowGeometry.height(),TRUE);
+}
+
+void RenderServerClient::setRenderWindowHiddenFlag(bool flag){
+    renderWindowHidden = flag;
+}
+
 
 QSize RenderServerClient::getRenderResolution() const{
     QSize size;
@@ -64,6 +95,8 @@ void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinI
     mainWindowID = mainWinID;
     renderServerProcess.setProgram(fullPath);
 
+    emittedRenderHandleReady = false;
+
     QStringList arguments;
     arguments << "-popupwindow";
     arguments << "-parentHWND";
@@ -77,8 +110,11 @@ void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinI
 bool RenderServerClient::isRenderServerWorking() const {
     if (mainWindowID == 0) return false;
     if (renderHandle == nullptr) return false;
-    bool condition1 = (socket->state() == QTcpSocket::ConnectedState);
-    return (condition1 && (renderServerProcess.state() == QProcess::Running));
+    if (socket->state() != QTcpSocket::ConnectedState) return false;
+    if (renderServerProcess.state() != QProcess::Running) return false;
+    if (screenResolutionHeight == 0) return false;
+    if (screenResolutionWidth == 0) return false;
+    return true;
 }
 
 void RenderServerClient::connectToRenderServer() {
@@ -120,21 +156,46 @@ RenderServerPacket RenderServerClient::getPacket() {
 }
 
 void RenderServerClient::sendPacket(const RenderServerPacket &packet){
-    sendPacketQueue << packet;
-    if (!bytesAreBeingSent){
-        sendTopQueuePacket(0);
+
+//    if (packet.getType() == RenderServerPacketType::TYPE_2D_RENDER){
+//        qDebug() << "SENDING PACKET";
+//        Debug::prettpPrintQVariantMap(packet.getPayload());
+//    }
+
+    if (socket->state() != QAbstractSocket::ConnectedState){
+        emit RenderServerClient::newMessage("Socket is disconnnected. Clearing message queue",MSG_TYPE_WARNING);
+        sendPacketQueue.clear();
+        cooldownTimer.stop();
+        return;
     }
+
+    sendPacketQueue << packet;
+    //qDebug() << "==Adding packet. " << packet.getType() << " at " << mtimer.elapsed() << " Packet count is" << sendPacketQueue.size();
+    if (!cooldownTimer.isActive()){
+        //qDebug() << "==Activating timer at " << mtimer.elapsed();
+        cooldownTimer.start(COOLDOWN_BETWEEN_PACKETS);
+    }
+
 }
 
-void RenderServerClient::sendTopQueuePacket(qint64 nbytes){
-    Q_UNUSED(nbytes)
-    bytesAreBeingSent = false;
+void RenderServerClient::onCoolDownTimerTimeout() {
+
+    cooldownTimer.stop();
+
+    //qDebug() << "In coolodwon timer tiemout at " << mtimer.elapsed();
+
     if (!sendPacketQueue.isEmpty()){
         RenderServerPacket p = sendPacketQueue.takeFirst();
-        //qDebug() << "Sending Packet of type" << p.getType();
+        //qDebug() << "Sending packet " << p.getType() << "at" << mtimer.elapsed() << " Remaining is " << sendPacketQueue.size();
         socket->write(p.getByteArrayToSend());
-        bytesAreBeingSent = true;
+        socket->waitForBytesWritten(3000);
+        //qDebug() << "Starting Cooldown timer again";
+        cooldownTimer.start(COOLDOWN_BETWEEN_PACKETS);
     }
+//    else {
+//        qDebug() << "No more packets";
+//    }
+
 }
 
 void RenderServerClient::sendEnable2DRenderPacket(bool enable){
@@ -156,6 +217,12 @@ void RenderServerClient::onWaitTimerTimeout(){
         EnumChildWindows(hwnd, RenderServerClient::EnumChildProc, 0);
         return;
     }
+
+    if (!emittedRenderHandleReady) {
+        emittedRenderHandleReady = true;
+        emit RenderServerClient::renderWindowHandleReady();
+    }
+
 
     // If we got the handle, we now connect to the server
     if (socket->state() == QAbstractSocket::UnconnectedState){
@@ -201,6 +268,8 @@ void RenderServerClient::onReadyRead() {
                 screenResolutionWidth = this->rxPacket.getPayloadField(RenderControlPacketFields::WIDTH).toInt();
                 screenResolutionHeight = this->rxPacket.getPayloadField(RenderControlPacketFields::HEIGHT).toInt();
 
+                qDebug() << "SET WORKING RESOLUTION TO" << screenResolutionHeight << screenResolutionWidth;
+
                 sentResolutionRequest = false;
                 this->rxPacket.resetForRX();
 
@@ -227,6 +296,7 @@ void RenderServerClient::onConnected() {
 }
 
 void RenderServerClient::onDisconnected(){
+    if (onClosing) return;
     emit RenderServerClient::newMessage("Got Disconnected",MSG_TYPE_WARNING);
 }
 
@@ -238,6 +308,7 @@ void RenderServerClient::onErrorOcurred(QAbstractSocket::SocketError socketError
 }
 
 void RenderServerClient::onStateChanged(QAbstractSocket::SocketState socketState){
+    if (onClosing) return;
     QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
     QString name = metaEnum.valueToKey(socketState);
     name = "Socket State Change: " +  name;
@@ -247,6 +318,7 @@ void RenderServerClient::onStateChanged(QAbstractSocket::SocketState socketState
 
 ////////////////////////////////////// PROCESS SLOTS ////////////////////////////////////
 void RenderServerClient::onProcessErrorOcurred(QProcess::ProcessError error){
+    if (onClosing) return;
     QMetaEnum metaEnum = QMetaEnum::fromType<QProcess::ProcessError>();
     QString name = metaEnum.valueToKey(error);
     name = "Render Server Process Error: " +  name + " from " + renderServerProcess.program();
@@ -254,6 +326,7 @@ void RenderServerClient::onProcessErrorOcurred(QProcess::ProcessError error){
 }
 
 void RenderServerClient::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus){
+    if (onClosing) return;
     if (exitCode != 0){
         QMetaEnum metaEnum = QMetaEnum::fromType<QProcess::ExitStatus>();
         QString name = metaEnum.valueToKey(exitStatus);
@@ -268,8 +341,19 @@ void RenderServerClient::onProcessStarted(){
 }
 
 void RenderServerClient::onProcessStateChanged(QProcess::ProcessState newState){
+    if (onClosing) return;
     QMetaEnum metaEnum = QMetaEnum::fromType<QProcess::ProcessState>();
     QString name = metaEnum.valueToKey(newState);
     name = "Render Server Process hast changed state to: " +  name;
     emit RenderServerClient::newMessage(name,MSG_TYPE_WARNING);
+}
+
+
+////////////////////////////////////// Closing Process ////////////////////////////////////
+void RenderServerClient::closeRenderServer(){
+    onClosing = true;
+    socket->disconnectFromHost();
+    while (socket->state() != QAbstractSocket::UnconnectedState);
+    renderServerProcess.close();
+    renderServerProcess.waitForFinished();
 }

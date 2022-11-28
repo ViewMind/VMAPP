@@ -474,13 +474,14 @@ void NBackManager::renderPhantomTargets(QMap<qint32, qint32> rectangle_indexes){
 
 
         RenderServerTextItem * indicator = canvas->addSimpleText(QString::number(target_numbers.at(i)),letterFont);
-//        qreal x = r.x() + (r.width() - indicator->boundingRect().width())/2;
-//        qreal y = r.y() + (r.height() - indicator->boundingRect().height())/2;
-//        indicator->setPos(x,y);
+        //qDebug() << "Circle position for indicator is" << circle->boundingRect();
 
-        qDebug() << "Circle position for indicator is" << circle->boundingRect();
+        // Want the center of the circle to coincide with the center of the tex.
+        QRectF textBoundingRect = indicator->boundingRect();
+        qreal textX = pos_x+TARGET_R - textBoundingRect.width()/2;
+        qreal textY = pos_y+TARGET_R - textBoundingRect.height()/2;
 
-        indicator->setPos(pos_x+TARGET_R,pos_y+TARGET_R); // Should be the center of the circle
+        indicator->setPos(textX,textY); // Should be the center of the circle
         indicator->setBrush(QBrush(Qt::red));
 
     }

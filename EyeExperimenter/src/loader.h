@@ -11,7 +11,7 @@
 #include <QElapsedTimer>
 #include <QDesktopServices>
 
-#include "../../CommonClasses/LogInterface/loginterface.h"
+#include "../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/FileDownloader/filedownloader.h"
 #include "../../CommonClasses/HWRecog/hwrecognizer.h"
@@ -128,7 +128,6 @@ private slots:
 
 private:
 
-    LogInterface logger;
     bool loadingError;
     ConfigurationManager *configuration;
     ConfigurationManager language;

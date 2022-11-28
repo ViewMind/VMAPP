@@ -19,8 +19,10 @@ SOURCES += \
         ../../../CommonClasses/Experiments/linemath.cpp \
         ../../../CommonClasses/LogInterface/loggerthread.cpp \
         ../../../CommonClasses/LogInterface/staticthreadlogger.cpp \
+        ../../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservercircleitem.cpp \
+        ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverimageitem.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritem.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritemgroup.cpp \
         ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverlineitem.cpp \
@@ -65,8 +67,10 @@ HEADERS += \
     ../../../CommonClasses/Experiments/linemath.h \
     ../../../CommonClasses/LogInterface/loggerthread.h \
     ../../../CommonClasses/LogInterface/staticthreadlogger.h \
+    ../../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderservercircleitem.h \
+    ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverimageitem.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritem.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserveritemgroup.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverlineitem.h \

@@ -245,7 +245,7 @@ void NBackRTExperiment::drawCurrentImage(){
                 state = STATE_PAUSED;
                 stateTimer.stop();
                 m->drawPauseScreen();
-                updateSecondMonitorORHMD();
+                updateDisplay();
                 //qDebug() << "Pausing wihth current trial" << currentTrial;
                 return;
             }
@@ -256,7 +256,7 @@ void NBackRTExperiment::drawCurrentImage(){
         break;
     }
 
-    updateSecondMonitorORHMD();
+    updateDisplay();
 
     //qDebug() << 6;
 }
@@ -300,7 +300,7 @@ void NBackRTExperiment::keyPressHandler(int keyPressed){
         else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
             state = STATE_RUNNING;
             m->drawBackground();
-            updateSecondMonitorORHMD();
+            updateDisplay();
             nextState();
         }
     }
@@ -372,7 +372,7 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
         }
 
         if (litUp){
-            updateSecondMonitorORHMD();
+            updateDisplay();
         }
 
         if (isOver){

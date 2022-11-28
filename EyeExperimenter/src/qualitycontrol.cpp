@@ -30,8 +30,7 @@ void QualityControl::run(){
     if (DBUGBOOL(Debug::Options::FIX_QC_SHA_CHECKS)){
         QString dbug = "DBUG FORCE FIX QC SHA CHECKS";
         qDebug() << dbug;
-        LogInterface logger;
-        logger.appendWarning(dbug);
+        StaticThreadLogger::warning("QualityControl::run",dbug);
         rawdata.setChecksumHash();
     }
 

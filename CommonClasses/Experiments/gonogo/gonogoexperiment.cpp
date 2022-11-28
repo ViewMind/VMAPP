@@ -94,7 +94,7 @@ void GoNoGoExperiment::onTimeOut(){
         }
         break;
     }
-    updateSecondMonitorORHMD();
+    updateDisplay();
 }
 
 bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
@@ -134,7 +134,7 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
         this->activateWindow();
     }
 
-    updateSecondMonitorORHMD();
+    updateDisplay();
 
     return true;
 }
@@ -151,7 +151,7 @@ void GoNoGoExperiment::resetStudy(){
     m->drawCross();
     stateTimer.setInterval(GONOGO_TIME_CROSS);
     gngState = GNGS_CROSS;
-    updateSecondMonitorORHMD();
+    updateDisplay();
 
     if (studyPhase == SP_EVALUATION) {
         stateTimer.start();

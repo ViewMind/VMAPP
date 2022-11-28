@@ -8,19 +8,39 @@ RenderServerScene::RenderServerScene(double x, double y, double width, double he
     this->backgroundColor = "#000000";
 }
 
-RenderServerScene::RenderServerScene(RenderServerScene *scene){
+RenderServerScene::RenderServerScene(const RenderServerScene &scene){
     this->copyFrom(scene);
 }
 
+RenderServerScene::RenderServerScene(){
+    this->sceneHeight = 0;
+    this->sceneWidth = 0;
+    this->backgroundColor = "#000000";
+}
 
-void RenderServerScene::copyFrom(RenderServerScene *scene){
+void RenderServerScene::setSceneRect(const QRectF &rect){
+    this->setSceneRect(rect.x(),rect.y(),rect.width(),rect.height());
+}
+
+void RenderServerScene::setSceneRect(qreal x, qreal y, qreal w, qreal h){
+    Q_UNUSED(x)
+    Q_UNUSED(y)
+    this->sceneWidth = w;
+    this->sceneHeight = h;
+}
+
+bool RenderServerScene::isValid() const {
+    return ((this->sceneHeight > 0) && (this->sceneWidth > 0));
+}
+
+void RenderServerScene::copyFrom(const RenderServerScene &scene){
     // Copy construnctor.
-    this->sceneHeight = scene->width();
-    this->sceneWidth  = scene->height();
-    this->backgroundColor = scene->getBackgroundColorName();
+    this->sceneHeight = scene.width();
+    this->sceneWidth  = scene.height();
+    this->backgroundColor = scene.getBackgroundColorName();
     this->itemsInScene.clear();
 
-    QList<RenderServerItem*> list = scene->getItemList();
+    QList<RenderServerItem*> list = scene.getItemList();
 
     for (qint32 i = 0; i < list.size(); i++){
 
@@ -49,9 +69,17 @@ void RenderServerScene::copyFrom(RenderServerScene *scene){
             RenderServerTriangleItem *created_item = new RenderServerTriangleItem(item->getItemData());
             this->itemsInScene.append(created_item);
         }
+        if (item->getType() == RenderServerItemTypeName::IMAGE){
+            RenderServerImageItem *created_item = new RenderServerImageItem(item->getItemData());
+            this->itemsInScene.append(created_item);
+        }
 
     }
 
+}
+
+QList<RenderServerItem*> RenderServerScene::getItemList() const {
+    return this->itemsInScene;
 }
 
 qreal RenderServerScene::width() const{
@@ -73,12 +101,13 @@ RenderServerCircleItem* RenderServerScene::addEllipse(const QRectF brect, const 
 
 RenderServerCircleItem* RenderServerScene::addEllipse(qreal x, qreal y, qreal w, qreal h, const QPen &pen, const QBrush &brush){
     // Since we are adding a circle only the width is considere as the diameter and the height is ignored
-    RenderServerCircleItem *circle = new RenderServerCircleItem(x,y,w,h);
-    circle->setPen(pen);
-    circle->setBrush(brush);
-    circle->setReferenceYForTransformations(this->sceneHeight);
-    this->itemsInScene.append(circle);
-    return circle;
+    RenderServerCircleItem *item = new RenderServerCircleItem(x,y,w,h);
+    item->setPen(pen);
+    item->setBrush(brush);
+    item->setReferenceYForTransformations(this->sceneHeight);
+    item->setItemID(static_cast<qint32>(this->itemsInScene.size()));
+    this->itemsInScene.append(item);
+    return item;
 }
 
 RenderServerRectItem* RenderServerScene::addRect(const QRectF &rect){
@@ -86,12 +115,13 @@ RenderServerRectItem* RenderServerScene::addRect(const QRectF &rect){
 }
 
 RenderServerRectItem* RenderServerScene::addRect(qreal x, qreal y, qreal w, qreal h, const QPen &pen, const QBrush &brush){
-    RenderServerRectItem *rect = new RenderServerRectItem(x,y,w,h);
-    rect->setPen(pen);
-    rect->setBrush(brush);
-    rect->setReferenceYForTransformations(this->sceneHeight);
-    this->itemsInScene.append(rect);
-    return rect;
+    RenderServerRectItem *item = new RenderServerRectItem(x,y,w,h);
+    item->setPen(pen);
+    item->setBrush(brush);
+    item->setReferenceYForTransformations(this->sceneHeight);
+    item->setItemID(static_cast<qint32>(this->itemsInScene.size()));
+    this->itemsInScene.append(item);
+    return item;
 }
 
 void RenderServerScene::setBackgroundBrush(const QBrush &brush){
@@ -112,14 +142,25 @@ RenderServerTextItem* RenderServerScene::addText(const QString &text, const QFon
     RenderServerTextItem *item = new RenderServerTextItem(text);
     item->setFont(font);
     item->setReferenceYForTransformations(this->sceneHeight);
+    item->setItemID(static_cast<qint32>(this->itemsInScene.size()));
     this->itemsInScene.append(item);
     return item;
 }
 
 RenderServerTriangleItem *RenderServerScene::addTriangle(const QPolygonF &triangle){
     RenderServerTriangleItem *item = new RenderServerTriangleItem(triangle);
-    this->itemsInScene.append(item);
+    item->setItemID(static_cast<qint32>(this->itemsInScene.size()));
+    this->itemsInScene.append(item);    
     item->setReferenceYForTransformations(this->sceneHeight);
+    return item;
+}
+
+RenderServerImageItem* RenderServerScene::addImage(const QString &fname, bool fitToWidth, qreal w, qreal h, qreal value_to_fit){
+    RenderServerImageItem *item = new RenderServerImageItem(fname);
+    item->setDimensions(fitToWidth,value_to_fit,w,h);
+    item->setReferenceYForTransformations(this->sceneHeight);
+    item->setItemID(static_cast<qint32>(this->itemsInScene.size()));
+    this->itemsInScene.append(item);
     return item;
 }
 
@@ -136,6 +177,7 @@ RenderServerLineItem* RenderServerScene::addLine(const QLineF line, const QPen &
     RenderServerLineItem *item = new RenderServerLineItem(line.x1(),line.y1(),line.x2(),line.y2());
     item->setPen(pen);
     item->setReferenceYForTransformations(this->sceneHeight);
+    item->setItemID(static_cast<qint32>(this->itemsInScene.size()));
     this->itemsInScene.append(item);
     return item;
 }
@@ -145,6 +187,7 @@ RenderServerLineItem* RenderServerScene::addLine(qreal x1, qreal y1, qreal x2, q
     RenderServerLineItem *item = new RenderServerLineItem(x1,y1,x2,y2);
     item->setPen(pen);
     item->setReferenceYForTransformations(this->sceneHeight);
+    item->setItemID(static_cast<qint32>(this->itemsInScene.size()));
     this->itemsInScene.append(item);
     return item;
 }
@@ -208,7 +251,42 @@ QList<RenderServerItem*> RenderServerScene::getRenderServerOrder() const {
 
 }
 
+void RenderServerScene::clearAnimationData(){
+    for (qint32 i = 0; i < itemsInScene.size(); i++){
+        itemsInScene[i]->clearAnimationData();
+    }
+}
+
+RenderServerItem* RenderServerScene::getItemByID(const qint32 &id) const{
+
+    if ((id < 0) || (id >= itemsInScene.size())) return nullptr;
+    return itemsInScene.at(id);
+
+}
+
+QMap<QString,qint32> RenderServerScene::animate() {
+
+    QMap<QString,qint32> endParams;
+
+    for (qint32 i = 0; i < itemsInScene.size(); i++){
+        QMap<QString,qint32> ans = itemsInScene.at(i)->animate();
+        if (ans.size() > 0){
+            QStringList keys = ans.keys();
+            for (qint32 j = 0; j < keys.size(); j++){
+                endParams[keys.at(j)] = ans.value(keys.at(j));
+            }
+        }
+    }
+
+    return endParams;
+
+}
+
 
 void RenderServerScene::clear(){
+    this->itemsInScene.clear();
+}
+
+RenderServerScene::~RenderServerScene(){
     this->itemsInScene.clear();
 }

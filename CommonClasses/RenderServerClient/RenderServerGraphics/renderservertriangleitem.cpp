@@ -3,126 +3,116 @@
 RenderServerTriangleItem::RenderServerTriangleItem(const QPolygonF &triangle): RenderServerItem()
 {
 
-    this->x1 = 0;
-    this->x2 = 0;
-    this->x3 = 0;
-    this->y1 = 0;
-    this->y2 = 0;
-    this->y3 = 0;
+    QPolygonF tri;
 
-    if (triangle.size() < 3) return;
+    if (triangle.size() < 3) {
+        tri.append(QPointF(0,0));
+        tri.append(QPointF(0,0));
+        tri.append(QPointF(0,0));
+    }
+    else {
+        tri = triangle;
+    }
 
-    this->x1 = triangle.at(0).x();
-    this->y1 = triangle.at(0).y();
+    QStringList renderItemList = itemData.value(RenderControlPacketFields::RENDER_LIST).toStringList();
 
-    this->x2 = triangle.at(1).x();
-    this->y2 = triangle.at(1).y();
+    renderItemList << RenderControlPacketFields::X
+    << RenderControlPacketFields::Y
+    << RenderControlPacketFields::COLOR
+    << RenderControlPacketFields::BORDER_COLOR
+    << RenderControlPacketFields::BORDER_WIDTH;
 
-    this->x3 = triangle.at(2).x();
-    this->y3 = triangle.at(2).y();
+    itemData[RenderControlPacketFields::RENDER_LIST] = renderItemList;
 
-    this->itemType = RenderServerItemTypeName::TRIANGLE;
-
-}
-
-RenderServerTriangleItem::RenderServerTriangleItem(const QVariantMap &itemData): RenderServerItem(itemData) {
-    QVariantList x, y;
-    x = itemData.value(RenderControlPacketFields::X).toList();
-    y = itemData.value(RenderControlPacketFields::Y).toList();
-
-    if ((x.size() != 3) || (y.size() != 3)) return;
-    this->x1 = x[0].toReal();
-    this->x2 = x[1].toReal();
-    this->x3 = x[2].toReal();
-
-    this->y1 = y[0].toReal();
-    this->y2 = y[1].toReal();
-    this->y3 = y[2].toReal();
-
-    this->updateBRect();
-}
-
-QVariantMap RenderServerTriangleItem::getItemData() const {
-    QVariantMap itemData = RenderServerItem::getItemData();
-    QVariantList x; x << this->x1 << this->x2 << this->x3;
-    QVariantList y; x << this->y1 << this->y2 << this->y3;
+    QVariantList x; x << tri.at(0).x() << tri.at(1).x() << tri.at(2).x();
+    QVariantList y; y << tri.at(0).y() << tri.at(1).y() << tri.at(2).y();
     itemData[RenderControlPacketFields::X] = x;
     itemData[RenderControlPacketFields::Y] = y;
-    return itemData;
+
+    itemData[RenderControlPacketFields::TYPE]      = GL2DItemType::TYPE_TRIANGLE;
+    itemData[RenderControlPacketFields::TYPE_NAME] = RenderServerItemTypeName::TRIANGLE;
+
+}
+
+RenderServerTriangleItem::RenderServerTriangleItem(const QVariantMap &idata): RenderServerItem(idata) {
+    updateBRect();
 }
 
 void RenderServerTriangleItem::setPos (qreal x, qreal y){
-    qreal dx = x - this->x1;
-    qreal dy = y - this->y1;
-    this->moveBy(dx,dy);
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+    qreal dx = x - xl[0].toReal();
+    qreal dy = y - yl[0].toReal();
+    moveBy(dx,dy);
 }
 
-void RenderServerTriangleItem::render(RenderServerPacket *packet) const {
 
-    QVariantList t;
-    if (packet->containsPayloadField(RenderControlPacketFields::SPEC_LIST)){
-        t = packet->getPayloadField(RenderControlPacketFields::SPEC_LIST).toList();
-    }
-
-    QVariantMap tri;
-
-    QVariantList x, y;
-    x << this->x1 << this->x2 << this->x3;
-    y << this->y1 << this->y2 << this->y3;
-
-    tri[RenderControlPacketFields::TYPE] = GL2DItemType::TYPE_TRIANGLE;
-    tri[RenderControlPacketFields::X] = x;
-    tri[RenderControlPacketFields::Y] = y;
-    tri[RenderControlPacketFields::COLOR] = this->fillColor;
-    tri[RenderControlPacketFields::BORDER_COLOR] = this->borderColor;
-    tri[RenderControlPacketFields::BORDER_WIDTH] = this->borderWidth;
-
-    t << tri;
-
-    packet->setPayloadField(RenderControlPacketFields::SPEC_LIST,t);
-
-}
 
 void RenderServerTriangleItem::scale(qreal scale){
-    QPointF p1 = this->scaleAPointAroundTFOrigin(this->x1,this->y1,scale);
-    QPointF p2 = this->scaleAPointAroundTFOrigin(this->x2,this->y2,scale);
-    QPointF p3 = this->scaleAPointAroundTFOrigin(this->x3,this->y3,scale);
-    this->x1 = p1.x();
-    this->y1 = p1.y();
-    this->x2 = p2.x();
-    this->y2 = p2.y();
-    this->x3 = p3.x();
-    this->y3 = p3.y();
-    this->updateBRect();
+
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    QPointF p1 = scaleAPointAroundTFOrigin(xl[0].toReal(),yl[0].toReal(),scale);
+    QPointF p2 = scaleAPointAroundTFOrigin(xl[1].toReal(),yl[1].toReal(),scale);
+    QPointF p3 = scaleAPointAroundTFOrigin(xl[2].toReal(),yl[2].toReal(),scale);
+
+    xl[0] = p1.x();
+    yl[0] = p1.y();
+    xl[1] = p2.x();
+    yl[1] = p2.y();
+    xl[2] = p3.x();
+    yl[3] = p3.y();
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
+	 
+    updateBRect();
 }
 
 void RenderServerTriangleItem::moveBy(qreal dx, qreal dy){
-    this->x1 = this->x1 + dx;
-    this->y1 = this->y1 + dy;
-    this->x2 = this->x2 + dx;
-    this->y2 = this->y2 + dy;
-    this->x3 = this->x3 + dx;
-    this->y3 = this->y3 + dy;
-    this->updateBRect();
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    for (qint32 i = 0; i < 3; i++){
+        xl[i] = xl.value(i).toReal() + dx;
+        yl[i] = yl.value(i).toReal() + dy;
+    }
+
+    itemData[RenderControlPacketFields::X] = xl;
+    itemData[RenderControlPacketFields::Y] = yl;
+    updateBRect();
 }
 
 qreal RenderServerTriangleItem::x() const {
-    return this->x1;
+    return itemData.value(RenderControlPacketFields::X).toList().first().toReal();
 }
 
 qreal RenderServerTriangleItem::y()  const {
-    return this->y1;
+    return itemData.value(RenderControlPacketFields::Y).toList().first().toReal();
 }
 
 
 void RenderServerTriangleItem::updateBRect(){
-    qreal max_x = qMax(this->x1,qMax(this->x2,this->x3));
-    qreal min_x = qMin(this->x1,qMin(this->x2,this->x3));
-    qreal max_y = qMax(this->y1,qMax(this->y2,this->y3));
-    qreal min_y = qMin(this->y1,qMin(this->y2,this->y3));
 
-    this->bRect.setTop(min_y);
-    this->bRect.setLeft(min_x);
-    this->bRect.setWidth(max_x - min_x);
-    this->bRect.setHeight(max_y - min_y);
+    QVariantList xl = itemData.value(RenderControlPacketFields::X).toList();
+    QVariantList yl = itemData.value(RenderControlPacketFields::Y).toList();
+
+    qreal x1 = xl.first().toReal();
+    qreal x2 = xl[1].toReal();
+    qreal x3 = xl.last().toReal();
+    qreal y1 = yl.first().toReal();
+    qreal y2 = yl[1].toReal();
+    qreal y3 = yl.last().toReal();
+
+    qreal max_x = qMax(x1,qMax(x2,x3));
+    qreal min_x = qMin(x1,qMin(x2,x3));
+    qreal max_y = qMax(y1,qMax(y2,y3));
+    qreal min_y = qMin(y1,qMin(y2,y3));
+
+    bRect.setTop(min_y);
+    bRect.setLeft(min_x);
+    bRect.setWidth(max_x - min_x);
+    bRect.setHeight(max_y - min_y);
+
 }

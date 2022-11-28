@@ -11,19 +11,15 @@ HTCViveEyeProEyeTrackingInterface::HTCViveEyeProEyeTrackingInterface(QObject *pa
 
 void HTCViveEyeProEyeTrackingInterface::connectToEyeTracker(){
     if (!eyetracker.initalizeEyeTracking()){
-        emit(eyeTrackerControl(ET_CODE_CONNECTION_FAIL));
+        emit HTCViveEyeProEyeTrackingInterface::eyeTrackerControl(ET_CODE_CONNECTION_FAIL);
         return;
     }
     else {
-        emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
+        emit HTCViveEyeProEyeTrackingInterface::eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS);
         return;
     }
 }
 
-void HTCViveEyeProEyeTrackingInterface::updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l){
-    rVRTransform = r;
-    lVRTransform = l;
-}
 
 void HTCViveEyeProEyeTrackingInterface::newEyeData(QVariantMap eyedata){
 
@@ -54,11 +50,9 @@ void HTCViveEyeProEyeTrackingInterface::newEyeData(QVariantMap eyedata){
         vecR = QVector4D(0, 0, 0,0);
     }
 
-    vecL = lVRTransform*vecL;
     xl = vecL.x();
     yl = vecL.y();
 
-    vecR = rVRTransform*vecR;
     xr = vecR.x();
     yr = vecR.y();
 
@@ -96,8 +90,8 @@ void HTCViveEyeProEyeTrackingInterface::calibrate(EyeTrackerCalibrationParameter
         coefficientsFile = params.name;
     }
     else{
-        if (!correctionCoefficients.loadCalibrationCoefficients(params.name)){
-            logger.appendError("Failed to set calibration parameters from file: " + params.name);
+        if (!correctionCoefficients.loadCalibrationCoefficients(params.name)){            
+            StaticThreadLogger::error("HTCViveEyeProEyeTrackingInterface::calibrate","Failed to set calibration parameters from file: " + params.name);
 
             emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
         }
@@ -130,7 +124,7 @@ void HTCViveEyeProEyeTrackingInterface::onCalibrationFinished(){
         correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
     }
 
-    emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+    emit EyeTrackerInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
 }
 
 void HTCViveEyeProEyeTrackingInterface::onNewCalibrationImageAvailable(){

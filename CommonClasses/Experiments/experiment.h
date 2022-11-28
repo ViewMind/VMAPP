@@ -86,10 +86,6 @@ signals:
     // When called the receiving slot will call pauseExperiment.
     void calibrationRequest();
 
-    // Used for drawing images and following the eyes in the second monitor.
-    void updateBackground(const QPixmap &pixmap);    
-    void updateEyePositions(qint32 rx, qint32 ry, qint32 lx, qint32 ly);
-
     // TODO: Review what these are used for.
     void addFixations(qreal rx, qreal ry, qreal lx, qreal ly);
     void addDebugMessage(const QString &message, bool append);
@@ -190,7 +186,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
     // Update Image or HMD Logic is the same for all experiments
-    void updateSecondMonitorORHMD();
+    void updateDisplay();
 
     // Finalizes and restes the state machine for computing online fixations.
     void finalizeOnlineFixations();

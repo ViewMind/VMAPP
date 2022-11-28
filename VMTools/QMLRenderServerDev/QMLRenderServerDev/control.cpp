@@ -9,15 +9,30 @@ Control::Control(QObject *parent):QObject(parent)
     connect(&renderServer,&RenderServerClient::connectionEstablished,this,&Control::onConnectionEstablished);
     connect(&renderServer,&RenderServerClient::newMessage,this,&Control::onNewMessage);
     connect(&renderServer,&RenderServerClient::readyToRender,this,&Control::onReadyToRender);
+
     connect(&baseUpdateTimer,&QTimer::timeout,this,&Control::onTimeOut);
-    connect(&fastTimer,&QTimer::timeout,this,&Control::onFastTimer);
+
+    connect(&animator,&AnimationManager::animationUpdated,this,&Control::onUpdateAnimation);
+    connect(&animator,&AnimationManager::reachedAnimationStop,this,&Control::onReachedAnimationStop);
 
 }
 
 void Control::onReadyToRender() {
 
-   QSize size = renderServer.getRenderResolution();
+    // Let's create the image for the backend. For that we need the logo.
+    RenderServerPacket p;
+    p.setPacketType(RenderServerPacketType::TYPE_IMG_SIZE_REQ);
+    p.setPayloadField(PacketImgSizeRequest::HEIGHT,0);
+    p.setPayloadField(PacketImgSizeRequest::WIDTH,0);
+    p.setPayloadField(PacketImgSizeRequest::NAME,"logo");
+    renderServer.sendPacket(p);
 
+
+}
+
+void Control::startRenderingStudy() {
+
+   QSize size = renderServer.getRenderResolution();
 
 #ifdef NBACK
    QFile file("C:/Users/ViewMind/Documents/VMAPP/CommonClasses/Experiments/nbackfamiliy/descriptions/fielding.dat");
@@ -36,7 +51,6 @@ void Control::onReadyToRender() {
    QString content = reader.readAll();
    file.close();
 
-
    QVariantMap cnf;
    cnf[NBackManager::CONFIG_IS_VR_BEING_USED] = true;
    cnf[NBackManager::CONFIG_IS_VS] = true;
@@ -44,6 +58,7 @@ void Control::onReadyToRender() {
 
    cnf[BindingManager::CONFIG_IS_BC] = true;
    cnf[BindingManager::CONFIG_N_TARGETS] = 3;
+
 
 #ifdef GONOGO
    gonogo.configure(cnf);
@@ -69,6 +84,7 @@ void Control::onReadyToRender() {
    }
 #endif
 
+
 #ifdef NBACK
    nback.configure(cnf);
    nback.init(size.width(),size.height());
@@ -81,25 +97,25 @@ void Control::onReadyToRender() {
    }
 #endif
 
-
    expScreen = 0;
 
 #ifdef NBACK
    nback.renderStudyExplanationScreen(0);
-   renderServer.sendPacket(nback.getImage());
+   updateImage = nback.getImage();
 #endif
 
 #ifdef BINDING
    binding.renderStudyExplanationScreen(0);
-   renderServer.sendPacket(binding.getImage());
+   updateImage = binding.getImage();
 #endif
 
 #ifdef GONOGO
    gonogo.renderStudyExplanationScreen(0);
-   renderServer.sendPacket(gonogo.getImage());
+   updateImage = gonogo.getImage().render();
 #endif
 
-   renderServer.sendEnable2DRenderPacket(true);
+   //renderServer.sendEnable2DRenderPacket(true);
+   renderServer.sendPacket(updateImage.render());
 
    //fastTimer.start(30);
 
@@ -111,21 +127,30 @@ void Control::nextStudyExplanation() {
 #ifdef NBACK
     expScreen = (expScreen % nback.getNumberOfStudyExplanationScreens());
     nback.renderStudyExplanationScreen(expScreen);
-    renderServer.sendPacket(nback.getImage());
+    updateImage = nback.getImage();
 #endif
 
 #ifdef BINDING
     expScreen = (expScreen % binding.getNumberOfStudyExplanationScreens());
     binding.renderStudyExplanationScreen(expScreen);
-    renderServer.sendPacket(binding.getImage());
+    updateImage = binding.getImage();
 #endif
 
 #ifdef GONOGO
     expScreen = (expScreen % gonogo.getNumberOfStudyExplanationScreens());
     gonogo.renderStudyExplanationScreen(expScreen);
-    renderServer.sendPacket(gonogo.getImage());
+    updateImage = gonogo.getImage();
 #endif
 
+    renderServer.sendPacket(updateImage.render());
+
+}
+
+void Control::enablePacketLog(bool enable){
+    RenderServerPacket rsp;
+    rsp.setPacketType(RenderServerPacketType::TYPE_2D_DBUG_ENABLE);
+    rsp.setPayloadField(RenderControlPacketFields::ENABLE_RENDER_P_DBUG,enable);
+    renderServer.sendPacket(rsp);
 }
 
 void Control::onNewMessage(const QString &msg, const quint8 &msgType){
@@ -173,34 +198,7 @@ void Control::showRenderWindow(){
 
 void Control::setRenderWindowGeometry(int target_x, int target_y, int target_w, int target_h){
 
-//    RECT window_rectangle, client_rectangle;
-//    GetWindowRect((HWND) mainWindowID, &window_rectangle);
-//    GetClientRect((HWND) mainWindowID, &client_rectangle);
     quint32 DPI = GetDpiForWindow((HWND) mainWindowID);
-
-//    qint32 wh = window_rectangle.bottom - window_rectangle.top;
-//    qint32 ww = window_rectangle.right - window_rectangle.left;
-//    qint32 ch = client_rectangle.bottom - client_rectangle.top;
-//    qint32 cw = client_rectangle.right - client_rectangle.left;
-//    qint32 dW = ww - cw;
-//    qint32 dH = wh - ch;
-//    if ((dW < 0) || (dH < 0)) return;
-
-//    float dpi_multiplier = 1;
-//    switch(DPI){
-//       case 120:
-//        dpi_multiplier = 1.25;
-//        break;
-//    case 144:
-//        dpi_multiplier = 1.5;
-//        break;
-//    case 192:
-//        dpi_multiplier = 2.0;
-//        break;
-//    default:
-//        dpi_multiplier = 1.0;
-//        break;
-//    }
 
     float dpi_multiplier = static_cast<float>(DPI)/96.0f;
 
@@ -209,39 +207,50 @@ void Control::setRenderWindowGeometry(int target_x, int target_y, int target_w, 
     target_w = static_cast<qint32>( static_cast<float>(target_w)*dpi_multiplier );
     target_h = static_cast<qint32>( static_cast<float>(target_h)*dpi_multiplier );
 
-//    qDebug() << "Window Rectangle: (" << window_rectangle.left << "," << window_rectangle.top << ")" << ww << "x" << wh;
-//    qDebug() << "Client Rectangle: (" << client_rectangle.left << "," << client_rectangle.top << ")" << cw << "x" << ch;
-//    qDebug() << "Win - Client. H:" << dH << ". W" << dW << ". Target Coordinates (" << target_x << "," << target_y << ")";
-//    qDebug() << "DPI IS NOW" << DPI;
-
-//    qDebug() << "Setting inner window to (" << target_x << "," << target_y << ")" << target_w << "x" << target_h;
-//    qDebug() << "============================";
-
-//    renderServer.resizeRenderWindow(x,y,w,h);
     renderServer.resizeRenderWindow(target_x,target_y,target_w,target_h);
+    renderServer.showRenderWindow();
 
 }
 
-void Control::onFastTimer(){
-    nextStudyExplanation();
+void Control::onUpdateAnimation(){
+    renderServer.sendPacket(animator.getCurrentFrame());
+}
+
+void Control::onReachedAnimationStop(const QString &variable, qint32 animationStopIndex, qint32 animationSignalType){    
+
+    RenderServerItem *item = animator.getItemByID(messageID);
+    RenderServerTextItem *text = static_cast<RenderServerTextItem*>(item);
+
+    QString type = RenderServerItem::AnimationSignalType2String(animationSignalType);
+    qDebug() << "Animation Stop for variable" << variable << " and stop index of " << animationStopIndex << ". Signal Type" << type << "(" << mtimer.elapsed() << ")";
+    mtimer.start();
+
+    text->setText("Got " + variable + "@" + QString::number(animationStopIndex) + ". Type: " + type);
+    QRectF brect = text->boundingRect();
+
+    // We need to correct the x so as to center the text.
+    QSize screen = renderServer.getRenderResolution();
+    qreal x = (screen.width() - brect.width())/2;
+    qreal y = text->y();
+    text->setPos(x,y);
+
+    renderServer.sendPacket(animator.getCurrentFrame());
 }
 
 void Control::onTimeOut(){
 
-    // Regularly send eye tracking data.
-    RenderServerPacket packet;
-    QVariantMap right, left;
-    right[PacketEyeTrackingData::EyeData::X] = 1;
-    right[PacketEyeTrackingData::EyeData::Y] = 2;
+    QSize size = renderServer.getRenderResolution();
+    QRandomGenerator gen(static_cast<quint32>(QTime::currentTime().msec()));
+    qreal x = gen.bounded(size.width());
+    qreal y = gen.bounded(size.height());
+    qreal R = size.width()*0.01;
 
-    left[PacketEyeTrackingData::EyeData::X] = 4;
-    left[PacketEyeTrackingData::EyeData::Y] = 5;
+    RenderServerScene pic;
+    pic.copyFrom(updateImage);
+    RenderServerCircleItem * eyepos = pic.addEllipse(x-R,y-R,2*R,2*R,QPen(),QBrush(QColor("#080000")));
+    eyepos->setDisplayOnly(true);
 
-    packet.setPacketType(RenderServerPacketType::TYPE_CURRENT_EYE_POSITION);
-    packet.setPayloadField(PacketEyeTrackingData::LEFT,left);
-    packet.setPayloadField(PacketEyeTrackingData::RIGHT,right);
-
-    renderServer.sendPacket(packet);
+    renderServer.sendPacket(pic.render());
 
 }
 
@@ -259,64 +268,135 @@ void Control::onConnectionEstablished(){
 
     emit Control::requestWindowGeometry();
 
-    // baseUpdateTimer.start(30);
 
 }
 
 void Control::onNewPacketArrived(){
     RenderServerPacket packet = renderServer.getPacket();
+    // We are expecting the packet for setting the backend.
+    if (packet.getType() == RenderServerPacketType::TYPE_IMG_SIZE_REQ){
+        qreal w = packet.getPayloadField(PacketImgSizeRequest::WIDTH).toReal();
+        qreal h = packet.getPayloadField(PacketImgSizeRequest::HEIGHT).toReal();
+        if ((w < 1) || (h < 1)){
+            qDebug() << "Got BAD image size" << w << h << " for image " <<  packet.getPayloadField(PacketImgSizeRequest::NAME).toString();
+        }
+        else {
+            qDebug() << "Image size is " << w << "x" << h;
+            setBackgroundImage(w,h);
+        }
+    }
 }
 
 
-//void Control::runUnityRenderServer(){
+void Control::setBackgroundImage(qreal w, qreal h){
 
-//    QString filename = "C:/Users/ViewMind/Documents/UnityProjects/RemoteRenderServerComponents/00FinalBuild/DEV.exe";
-//    filename = "C:/Users/ViewMind/Documents/VMApp3D/GoNoGoSpheres.exe";
+    RenderServerScene bg;
+    bg.setBackgroundBrush(QBrush(Qt::gray));
 
-//    QFileInfo info(filename);
-//    QString dir = info.absoluteDir().path();
+    QSize screen = renderServer.getRenderResolution();
+    bg.setSceneRect(0,0,screen.width(),screen.height());
 
-//    qDebug() << "Setting working dir to" << dir;
+    qreal tw = 0.7*screen.width();
 
-//    renderServerProcess.setProgram(filename);
-//    QStringList arguments;
-//    arguments << "-popupwindow";
-//    arguments << "-parentHWND";
-//    arguments << QString::number(mainWindowID);
-//    renderServerProcess.setArguments(arguments);
-//    renderServerProcess.start();
-//    HWND hwnd = (HWND) mainWindowID;
-//    if (!renderServerProcess.waitForStarted()){
-//        qDebug() << "Wait for started returned false";
-//    }
-//    // qDebug() << "PID" << renderServerProcess.processId();
+    RenderServerImageItem *img = bg.addImage("logo",true,w,h,tw);
+    img->setPos(0.15*screen.width(),0.3*screen.height());
 
-////    PROCESS_INFORMATION procInfo = {0};
-////    STARTUPINFO startupInfo = {0};
-////    startupInfo.cb = sizeof(startupInfo);
-////    startupInfo.dwFlags = STARTF_USESTDHANDLES;
-////    startupInfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-////    startupInfo.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-////    startupInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+    QFont font;
+    font.setPointSizeF(80);
+    font.setWeight(QFont::Normal);
+    RenderServerTextItem *text = bg.addText("Hello World",font);
+    messageID = text->getItemID();
+    text->setBrush(QBrush(QColor("#2A3990")));
+    text->setAlignment(text->ALIGN_CENTER);
+    QRectF br = text->boundingRect();
+    QRectF imgbr = img->boundingRect();
 
-////    QString _args = QString(" -popupwindow -parentHWND %1").arg(mainWindowID);
+    //qDebug() << "Image bounding rect" << imgbr;
 
-////    HWND hwnd = (HWND) mainWindowID;
-////    LPWSTR cmd = (LPWSTR) filename.utf16();
-////    LPWSTR args = (LPWSTR) _args.utf16();
-////    LPWSTR wdir  = (LPWSTR) dir.utf16();
+    qreal x = (screen.width() - br.width())/2;
+    qreal y = imgbr.top() + imgbr.height() + 50;
+    text->setPos(x,y);
 
-////    BOOL bProcessStarted = CreateProcess(cmd,args , NULL, NULL, TRUE, CREATE_NO_WINDOW,
-////                                         NULL, wdir, &startupInfo, &procInfo);
+    QList<QPointF> circleAnimationCenters;
 
-////    if(!bProcessStarted){
-////        qDebug() << "There was an error starting the process";
-////    }
+    circleAnimationCenters << QPointF(0.5*screen.width(),0.5*screen.height());
+    circleAnimationCenters << QPointF(0.25*screen.width(),0.25*screen.height());
+    circleAnimationCenters << QPointF(0.75*screen.width(),0.25*screen.height());
+    circleAnimationCenters << QPointF(0.5*screen.width(),0.5*screen.height());
+    circleAnimationCenters << QPointF(0.25*screen.width(),0.75*screen.height());
+    circleAnimationCenters << QPointF(0.75*screen.width(),0.75*screen.height());
 
-////    QTime dieTime= QTime::currentTime().addSecs(3);
-////    while (QTime::currentTime() < dieTime);
+    qreal smallR = 0.01*screen.width();
+    qreal bigR = 0.02*screen.width();
 
-//    //
-//    EnumChildWindows(hwnd, Control::EnumChildProc, 0);
-//}
+    QColor color(Qt::red);
+    color.setAlpha(127);
+    RenderServerCircleItem * circle = bg.addEllipse(0,0,2*bigR,2*bigR,QPen(),QBrush(color));
+    movingCircleID = circle->getItemID();
+
+    // We now set up the animation.
+    animator.setScene(bg);
+
+    if (!animator.addVariableStop(movingCircleID,RenderControlPacketFields::RADIOUS,smallR,800,false)){
+        qDebug() << "Failed to adding big R stop" << animator.getError();
+        return;
+    }
+    if (!animator.addVariableStop(movingCircleID,RenderControlPacketFields::RADIOUS,bigR,800,false)){
+        qDebug() << "Failed to adding big R stop" << animator.getError();
+        return;
+    }
+
+    qint32 delay = 3000;
+    qint32 anim  = 3000;
+
+    for (qint32 i = 0; i < circleAnimationCenters.size(); i++){
+        QPointF p = circleAnimationCenters.at(i);
+        QString xname = RenderControlPacketFields::X + ".0";
+        QString yname = RenderControlPacketFields::Y + ".0";
+        if (!animator.addVariableStop(movingCircleID,xname,p.x(),anim,true,delay)){
+            qDebug() << "Could not add variable" << movingCircleID << xname << ". Reason:" << animator.getError();
+            return;
+        }
+        if (!animator.addVariableStop(movingCircleID,yname,p.y(),anim,false,delay)){
+            qDebug() << "Could not add variable" << movingCircleID << yname << ". Reason:" << animator.getError();
+            return;
+        }
+    }
+
+    updateImage.copyFrom(bg);
+
+    //this->enablePacketLog(true);
+    renderServer.sendEnable2DRenderPacket(true);
+
+    animator.startAnimation();
+    mtimer.start();
+
+    //renderServer.sendPacket(updateImage.render());
+
+
+
+
+}
+
+
+void Control::packetBurst() {
+
+    for (qint32 i = 0; i < 20; i++){
+        RenderServerPacket p;
+        p.setPacketType(RenderServerPacketType::TYPE_LOG_MESSAGE);
+        p.setPayloadField(PacketNumberedLog::NUMBER,i);
+        p.setPayloadField(PacketNumberedLog::MESSAGE,"This is log number " + QString::number(i));
+        renderServer.sendPacket(p);
+    }
+
+}
+
+void Control::appClose(){
+    renderServer.closeRenderServer();
+}
+
+bool Control::checkRenderServerStatus(){
+    return renderServer.isRenderServerWorking();
+}
+
 

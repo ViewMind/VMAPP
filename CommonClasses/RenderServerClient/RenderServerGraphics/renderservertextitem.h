@@ -15,7 +15,7 @@ class RenderServerTextItem : public RenderServerItem
 {
 public:
     RenderServerTextItem(const QString &text);
-    RenderServerTextItem(const QVariantMap &itemData);
+    RenderServerTextItem(const QVariantMap &idata);
 
 
     /**
@@ -25,12 +25,14 @@ public:
      * Unlike the QGraphicsSimpleTextItem, for simplicity this is sets the ceter mas point for where the text will be displayed.
      */
     void setPos (qreal x, qreal y) override;
-    void render(RenderServerPacket *packet) const override;
-    QVariantMap getItemData() const override;
+    void setAlignment(char alignment);
 
     void setText(const QString &text);
     void setFont(const QFont &font);
     void setDefaultTextColor(const QColor &col);
+
+    qreal x() const override;
+    qreal y() const override;
 
     const qreal DEFAULT_LETTER_RATIO = 361.0/601.0;
     const char ALIGN_LEFT   = 'l';
@@ -39,16 +41,7 @@ public:
 
 
 private:
-    qreal x;
-    qreal y;
-    qreal fontSize;    
-    qreal lineSpacing;
-    char alignment;
-    QString text;
-
     void computeBoundingRect();
-    void computeTopLeftInRenderServer();
-
 };
 
 #endif // RENDERSERVERTEXTITEM_H

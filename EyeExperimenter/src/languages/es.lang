@@ -7,6 +7,7 @@ viewstart_login = INGRESAR;
 viewstart_addneweval = NUEVO EVALUADOR;
 viewstart_settings   = Configuración;
 viewstart_configuration_failed = Unable to Load Configuration|The application is unable to start\nPlease contatct ViewMind for help;
+viewstart_vr_disconnect = <b>Pérdida de conexión al HMD</b><br>Por favor reinicie la aplicación;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Avanzado;
@@ -177,8 +178,8 @@ viewevaluation_comfirm_abort_msg = ¿Desea cancelar el estudio?<br>Todo el progr
 viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
 viewevaluation_calibration_explanation = 
-Un círculo azul con un punto blanco en su centro aparecerá en la pantalla. Mire
-el punto blanco. El círculo se moverá por la pantalla. Usted debe seguirlo.
+Un círculo rojo pulsante con un punto blanco en su centro aparecerá en la pantalla. 
+Mire el punto blanco. El círculo se moverá por la pantalla. Usted debe seguirlo.
 Recuerde no quitar sus ojos del círculo hasta que este desaparezca.
 
 El primer círculo aparecerá en la esquina superior izquierda.;

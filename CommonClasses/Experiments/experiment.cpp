@@ -73,8 +73,7 @@ bool Experiment::startExperiment(const QString &workingDir,
     if (QFile(dataFile).exists()){
 
         if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-            LogInterface logger;
-            logger.appendStandard("DBUG: Rawdata is being loaded from file: " + QFileInfo(dataFile).absoluteFilePath());
+            StaticThreadLogger::log("Experiment::startExperiment","DBUG: Rawdata is being loaded from file: " + QFileInfo(dataFile).absoluteFilePath());
         }
 
         if (!rawdata.loadFromJSONFile(dataFile)){
@@ -97,7 +96,7 @@ bool Experiment::startExperiment(const QString &workingDir,
               processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toInt());
     manager->init(processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toInt(),
                   processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toInt());
-    this->gview->setScene(manager->getCanvas());
+    //this->gview->setScene(manager->getCanvas());
 
 
     // Configuring the experimet
@@ -146,9 +145,8 @@ bool Experiment::startExperiment(const QString &workingDir,
 
     if (DBUGBOOL(Debug::Options::DBUG_MSG)){
         QString dbug = "DBUG: Setting study on starting experiment of type '" + studyType + "'";
-        LogInterface logger;
         qDebug() << dbug;
-        logger.appendWarning(dbug);
+        StaticThreadLogger::warning("Experiment::startExperiment",dbug);
     }
 
     if (!rawdata.setCurrentStudy(studyType)){
@@ -159,9 +157,8 @@ bool Experiment::startExperiment(const QString &workingDir,
 
     if (DBUGBOOL(Debug::Options::SHORT_STUDIES)){
         QString dbug = "DBUG: Short Studies Enabled";
-        LogInterface logger;
         qDebug() << dbug;
-        logger.appendWarning(dbug);
+        StaticThreadLogger::warning("Experiment::startExperiment",dbug);
         manager->enableShortStudyMode();
     }
 
@@ -221,8 +218,8 @@ void Experiment::setStudyPhaseToExamples(){
 }
 
 void Experiment::newEyeDataAvailable(const EyeTrackerData &data){
-    emit Experiment::updateEyePositions(data.xRight,data.yRight,data.xLeft,data.yLeft);
-    manager->updateGazePoints(data.xRight,data.xLeft,data.yRight,data.yLeft);
+    Q_UNUSED(data)
+    updateDisplay();
 }
 
 void Experiment::experimenteAborted(){
@@ -409,10 +406,8 @@ void Experiment::moveStudyExplanationScreen(int key_pressed){
     }
 }
 
-void Experiment::updateSecondMonitorORHMD(){
-    if (Globals::EyeTracker::IS_VR){
-        emit Experiment::updateVRDisplay();
-    }
+void Experiment::updateDisplay(){
+    emit Experiment::updateVRDisplay();
 }
 
 void Experiment::keyPressHandler(int keyPressed){
@@ -421,10 +416,11 @@ void Experiment::keyPressHandler(int keyPressed){
 
 void Experiment::renderCurrentStudyExplanationScreen(){
     manager->renderStudyExplanationScreen(currentStudyExplanationScreen);
-    updateSecondMonitorORHMD();
+    updateDisplay();
     // Now we send the signal for the proper message.
     QVariantMap stringToDisplay;
     stringToDisplay[manager->getStringKeyForStudyExplanationList()] = currentStudyExplanationScreen;
+    // qDebug() << "Rendering Current Explanation Screen";
     emit Experiment::updateStudyMessages(stringToDisplay);
 }
 

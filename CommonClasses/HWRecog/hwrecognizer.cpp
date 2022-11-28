@@ -67,7 +67,7 @@ HWRecognizer::HWRecognizer()
     if (!info.isEmpty()){
         QStringList list = info.value(WMIC_KEY_NAME);
         if (!list.empty()){
-            qDebug() << "MODELO";
+            //qDebug() << "MODELO";
             specs[HWKeys::GPU_MODEL] = list.first();
         }
     }

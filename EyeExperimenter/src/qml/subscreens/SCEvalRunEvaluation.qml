@@ -22,27 +22,36 @@ Rectangle {
 
     property bool vmSlowCalibrationSelected: false
 
+    property int renderWindowOffsetX: 0;
+    property int renderWindowOffsetY: 0;
+
     signal allEvalsDone();
 
     Connections {
         target: flowControl
+
+        function onRequestWindowGeometry () {
+            onMove();
+        }
+
         function onExperimentHasFinished (){
 
             if (!flowControl.isExperimentEndOk()){
-                flowControl.generateWaitScreen("");
+                //flowControl.generateWaitScreen("");
+                flowControl.renderWaitScreen("");
                 mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewevaluation_err_badend_study"))
                 mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
                 return;
             }
             else{
-                flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + evalTitle.text);
+                flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + evalTitle.text);
                 viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_next_button"),"next")
                 viewEvaluations.enableNextButton(true)
             }
         }
 
         function onNewImageAvailable () {
-            hmdView.image = flowControl.image;
+            //hmdView.image = flowControl.image;
         }
 
         function onConnectedToEyeTracker () {
@@ -56,12 +65,15 @@ Rectangle {
             vmInCalibration = true;
         }
 
-        function onCalibrationDone() {
+        function onCalibrationDone(calibrated) {
+
+            if (calibrated) {
+                flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
+            }
+            else flowControl.renderWaitScreen("");
 
             vmInCalibration = false;
-
             mainWindow.showCalibrationValidation();
-
 
         }
 
@@ -84,7 +96,11 @@ Rectangle {
                 for (let key in string_value_map){
                     let message_list = loader.getStringListForKey(key)
                     let index = string_value_map[key];
-                    //console.log("Showing explanation text " + index + " in a list of " + message_list.length);
+
+//                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
+//                    for (var i = 0; i < message_list.length; i++){
+//                        console.log("  Message in index " + i + " is " + message_list[i]);
+//                    }
 
                     let message_to_display = message_list[index];
 
@@ -114,8 +130,9 @@ Rectangle {
             let rightEyeOk = flowControl.isRightEyeCalibrated();
             mainWindow.showCalibrationError(leftEyeOk,rightEyeOk)
             return;
-        }
-        flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
+        }        
+        //flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
+        flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
 
         // Next state in the state machine.
         vmEvaluationStage = vmSTAGE_EXPLANATION;
@@ -242,6 +259,15 @@ Rectangle {
         studyExplanationText.text = loader.getStringForKey("viewevaluation_calibration_explanation");
     }
 
+    function onMove(){
+        let x = this.x + renderWindowOffsetX + hmdView.x
+        let y = this.y + renderWindowOffsetY + hmdView.y
+//        console.log("SCEvalRunEvaluation: Render Window Position: X of Element: " + this.x + " offset x " + renderWindowOffsetX + " and hmdView.x " + hmdView.x);
+//        console.log("SCEvalRunEvaluation: Render Window Position: Y of Element: " + this.y + " offset y " + renderWindowOffsetY + " and hmdView.y " + hmdView.y);
+        flowControl.setRenderWindowGeometry(x,y,hmdView.width,hmdView.height);
+    }
+
+
     Text {
         id: evalTitle
         color: VMGlobals.vmBlackText
@@ -267,7 +293,17 @@ Rectangle {
         anchors.leftMargin: VMGlobals.adjustWidth(10)
     }
 
-    QImageDisplay {
+    //    QImageDisplay {
+    //        id: hmdView
+    //        width: VMGlobals.adjustWidth(597);
+    //        height: VMGlobals.adjustHeight(310);
+    //        //anchors.top: slideTitle.bottom
+    //        anchors.top: evalTitle.bottom
+    //        anchors.topMargin: VMGlobals.adjustHeight(34);
+    //        anchors.left: evalTitle.left
+    //    }
+
+    Rectangle {
         id: hmdView
         width: VMGlobals.adjustWidth(597);
         height: VMGlobals.adjustHeight(310);
@@ -275,7 +311,25 @@ Rectangle {
         anchors.top: evalTitle.bottom
         anchors.topMargin: VMGlobals.adjustHeight(34);
         anchors.left: evalTitle.left
+        border.width: 0
+        color: "#ffffff"
+        onWidthChanged: {
+            onMove()
+        }
+
+        onYChanged: {
+            onMove()
+        }
+
+        onXChanged: {
+            onMove()
+        }
+
+        onHeightChanged: {
+            onMove()
+        }
     }
+
 
     // Message to display study progress messages.
     Rectangle {
