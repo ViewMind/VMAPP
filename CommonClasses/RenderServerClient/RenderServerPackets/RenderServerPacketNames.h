@@ -88,6 +88,7 @@ namespace RenderControlPacketFields {
     static const QString DISPLAY_ONLY_FLAG        = "od";
     static const QString FIT_TO_WIDTH             = "fW";
     static const QString FILE_NAME                = "fname";    
+    static const QString RENDER_SERVER_VERSION    = "server_version";
 
     // Some extras used for the value map.
     static const QString ID                       = "id";

@@ -15,9 +15,6 @@ Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(pare
     // All studies start in manual mode until, it is removed.
     studyPhase = SP_EXPLANATION;
 
-    // Basically the screen is show if we ever setup an eyetracker that uses the main screen or we use the mouse debug option
-    activateScreenView = !Globals::EyeTracker::IS_VR || DBUGBOOL(Debug::Options::USE_MOUSE);
-
     // Checking if the Override time is necessary.
     overrideTime = DBUGINT(Debug::Options::OVERRIDE_TIME);
 

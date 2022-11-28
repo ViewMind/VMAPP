@@ -140,9 +140,6 @@ protected:
     // Studies have three phases. Explantion, Examples and Evaluation. This distiguishes between the modes.
     StudyPhase studyPhase;
 
-    // Flag that indicates whether to draw to the VR Helmet or to the Screen.
-    bool activateScreenView;
-
     // Where the data file will be stored and any other required image.
     QString workingDirectory;
 

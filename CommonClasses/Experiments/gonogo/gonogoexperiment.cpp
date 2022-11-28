@@ -129,11 +129,6 @@ bool GoNoGoExperiment::startExperiment(const QString &workingDir, const QString 
     fixationFormedAtRightTarget = false;
     updateStudyMessages();
 
-    if (activateScreenView){
-        this->show();
-        this->activateWindow();
-    }
-
     updateDisplay();
 
     return true;

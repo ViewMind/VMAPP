@@ -35,8 +35,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.cpp \
     ../../CommonClasses/Experiments/qgraphicsarrow.cpp \
     ../../CommonClasses/EyeSelector/eyeselector.cpp \
-    ../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.cpp \
-    ../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/viveeyepoller.cpp \
+    ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.cpp \
+    ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.cpp \
     ../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.cpp \
     ../../CommonClasses/EyeTrackingInterface/calibrationtargets.cpp \
     ../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.cpp \
@@ -94,8 +94,8 @@ HEADERS += \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h \
     ../../CommonClasses/Experiments/qgraphicsarrow.h \
     ../../CommonClasses/EyeSelector/eyeselector.h \
-    ../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h \
-    ../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/viveeyepoller.h \
+    ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h \
+    ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h \
     ../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.h \
     ../../CommonClasses/EyeTrackingInterface/calibrationtargets.h \
     ../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.h \

@@ -113,11 +113,6 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     successfullTrials = false;
     timeoutTrials = false;
 
-    if (activateScreenView){
-        this->show();
-        this->activateWindow();
-    }
-
     this->renderCurrentStudyExplanationScreen();
 
     return true;

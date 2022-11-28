@@ -27,10 +27,12 @@ Item {
 
     ////////////////////////// BASE DIALOG FUNCTIONS ////////////////////////
     function open(){
+        flowControl.hideRenderWindow();
         visible = true
     }
 
     function close(){
+        flowControl.showRenderWindow();
         visible = false
     }
 

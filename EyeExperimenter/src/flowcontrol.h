@@ -65,6 +65,9 @@ public:
     // Used mostly for debugging.
     Q_INVOKABLE void renderWaitScreen(const QString &message);
 
+    // Required when closing hte application
+    Q_INVOKABLE void closeApplication();
+
     // Required for the ID setting handshake.
     void startRenderServerAndSetWindowID(WId winID);
 
@@ -140,11 +143,8 @@ private:
     WId mainWindowID;
     static HWND renderWindowHandle;
 
-    // Flag if the open vr object could be properly initialized.
+    // Flag to indicate we reached the ready to render state.
     bool vrOK;
-
-    // Flag to indicate if VR is in use.
-    bool usingVR;
 
     // The configuration structure
     ConfigurationManager *configuration;

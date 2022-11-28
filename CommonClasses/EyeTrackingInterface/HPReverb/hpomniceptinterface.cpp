@@ -13,11 +13,11 @@ HPOmniceptInterface::HPOmniceptInterface(QObject *parent, qreal width, qreal hei
 
 void HPOmniceptInterface::connectToEyeTracker(){
     if (hpprovider.connectToHPRuntime()) {
-        emit(eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS));
+        emit HPOmniceptInterface::eyeTrackerControl(ET_CODE_CONNECTION_SUCCESS);
     }
     else{
-        logger.appendError("Failed connection to HPRuntime. Reason" + hpprovider.getError());
-        emit(eyeTrackerControl(ET_CODE_CONNECTION_FAIL));
+        StaticThreadLogger::error("HPOmniceptInterface::connectToEyeTracker","Failed connection to HPRuntime. Reason" + hpprovider.getError());
+        emit HPOmniceptInterface::eyeTrackerControl(ET_CODE_CONNECTION_FAIL);
     }
 }
 
@@ -72,11 +72,9 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
         vecR = QVector4D(0, 0, 0,0);
     }
 
-    vecL = lVRTransform*vecL;
     xl = vecL.x();
     yl = vecL.y();
 
-    vecR = rVRTransform*vecR;
     xr = vecR.x();
     yr = vecR.y();
 
@@ -86,8 +84,6 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
             qDebug() << "Original values" << oxl << oyl << ozl << "|" << oxr << oyr << ozr;
             qDebug() << vecL;
             qDebug() << vecR;
-            qDebug() << lVRTransform;
-            qDebug() << rVRTransform;
             qDebug() << "==========================";
         }
         calibration.addDataPointForCalibration(xl,yl,xr,yr);
@@ -127,18 +123,13 @@ void HPOmniceptInterface::calibrate(EyeTrackerCalibrationParameters params){
     }
     else{
         if (!correctionCoefficients.loadCalibrationCoefficients(params.name)){
-            logger.appendError("Failed to set calibration parameters from file: " + params.name);
-            emit(eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED));
+            StaticThreadLogger::error("HPOmniceptInterface::calibrate","Failed to set calibration parameters from file: " + params.name);
+            emit HPOmniceptInterface::eyeTrackerControl(ET_CODE_CALIBRATION_ABORTED);
         }
         else {
-            emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+            emit HPOmniceptInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
         }
     }
-}
-
-void HPOmniceptInterface::updateProjectionMatrices(QMatrix4x4 r, QMatrix4x4 l){
-    rVRTransform = r;
-    lVRTransform = l;
 }
 
 void HPOmniceptInterface::onCalibrationFinished(){
@@ -153,7 +144,7 @@ void HPOmniceptInterface::onCalibrationFinished(){
         correctionCoefficients.saveCalibrationCoefficients(coefficientsFile);
     }
 
-    emit(eyeTrackerControl(ET_CODE_CALIBRATION_DONE));
+    emit HPOmniceptInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
 }
 
 QString HPOmniceptInterface::getCalibrationValidationReport() const{
@@ -174,5 +165,5 @@ void HPOmniceptInterface::configureCalibrationValidation(QVariantMap calibration
 
 void HPOmniceptInterface::onNewCalibrationImageAvailable(){
     this->calibrationImage = calibration.getCurrentCalibrationImage();
-    emit(eyeTrackerControl(ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE));
+    emit HPOmniceptInterface::eyeTrackerControl(ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE);
 }

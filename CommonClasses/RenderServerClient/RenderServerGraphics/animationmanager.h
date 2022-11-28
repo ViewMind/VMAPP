@@ -51,7 +51,7 @@ private slots:
 
 private:
 
-    static const qint32 ANIMATION_INTERVAL = 23; // milliseconds.
+    static const qint32 ANIMATION_INTERVAL = 18; // milliseconds.
 
     typedef struct {
         qreal start;

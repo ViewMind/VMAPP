@@ -11,6 +11,7 @@
  * the text in the server.
  */
 
+
 class RenderServerTextItem : public RenderServerItem
 {
 public:
@@ -25,7 +26,7 @@ public:
      * Unlike the QGraphicsSimpleTextItem, for simplicity this is sets the ceter mas point for where the text will be displayed.
      */
     void setPos (qreal x, qreal y) override;
-    void setAlignment(char alignment);
+    void setAlignment(const QString &alignment);
 
     void setText(const QString &text);
     void setFont(const QFont &font);

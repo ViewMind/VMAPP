@@ -13,28 +13,14 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     experiment = nullptr;
     this->setVisible(false);
     vrOK = false;
-    usingVR = false;
 
     connect(&delayTimer,&QTimer::timeout,this,&FlowControl::onDelayTimerUp);
 
-    // Creating the OpenVR Object if so defined.
-    if ((Globals::EyeTracker::IS_VR) && (!DBUGBOOL(Debug::Options::USE_MOUSE))){
-
-        //Making all the connections to the render server.
-        connect(&renderServerClient,&RenderServerClient::newPacketArrived,this,&FlowControl::onNewPacketArrived);
-        connect(&renderServerClient,&RenderServerClient::connectionEstablished,this,&FlowControl::onConnectionEstablished);
-        connect(&renderServerClient,&RenderServerClient::newMessage,this,&FlowControl::onNewMessage);
-        connect(&renderServerClient,&RenderServerClient::readyToRender,this,&FlowControl::onReadyToRender);
-        usingVR = true;
-
-    }
-    else {
-        if (DBUGBOOL(Debug::Options::USE_MOUSE)){
-            qDebug() << "DBUG: Mouse Use Enabled";
-            StaticThreadLogger::warning("FlowControl::FlowControl","DBUG: Using Mouse as EyeTracker");
-        }
-        vrOK = true;
-    }
+    //Making all the connections to the render server.
+    connect(&renderServerClient,&RenderServerClient::newPacketArrived,this,&FlowControl::onNewPacketArrived);
+    connect(&renderServerClient,&RenderServerClient::connectionEstablished,this,&FlowControl::onConnectionEstablished);
+    connect(&renderServerClient,&RenderServerClient::newMessage,this,&FlowControl::onNewMessage);
+    connect(&renderServerClient,&RenderServerClient::readyToRender,this,&FlowControl::onReadyToRender);
 
     if (DBUGINT(Debug::Options::OVERRIDE_TIME) != 0){
         QString msg = "DBUG: Override Time has been set to " + QString::number(DBUGINT(Debug::Options::OVERRIDE_TIME));
@@ -208,7 +194,7 @@ void FlowControl::renderWaitScreen(const QString &message){
         font.setWeight(QFont::Normal);
         RenderServerTextItem *text = waitScreen.addText(message,font);
         text->setBrush(QBrush(QColor("#2A3990")));
-        text->setAlignment(text->ALIGN_CENTER);
+        text->setAlignment(QString(text->ALIGN_CENTER));
         QRectF br = text->boundingRect();
         QRectF imgbr = img->boundingRect();
 
@@ -220,9 +206,12 @@ void FlowControl::renderWaitScreen(const QString &message){
     renderServerClient.sendPacket(waitScreen.render());
 }
 
+void FlowControl::closeApplication(){
+   renderServerClient.closeRenderServer();
+}
+
 
 bool FlowControl::isVROk() const{
-    if (!usingVR) return true;
     return (vrOK && renderServerClient.isRenderServerWorking());
 }
 
@@ -235,17 +224,9 @@ void FlowControl::resolutionCalculations(){
     configuration->addKeyValuePair(Globals::Share::MONITOR_RESOLUTION_WIDTH,screen.width());
     configuration->addKeyValuePair(Globals::Share::MONITOR_RESOLUTION_HEIGHT,screen.height());
 
-    if (usingVR){
-        // This menas the resolution for drawing should be the one recommende by OpenVR.
-        //QSize s = openvrco->getRecommendedSize();
-        QSize s = renderServerClient.getRenderResolution();
-        configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH, s.width()*Globals::EyeTracker::VRSCALING);
-        configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT,s.height()*Globals::EyeTracker::VRSCALING);
-    }
-    else {
-        configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH, screen.width());
-        configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT,screen.height());
-    }
+    QSize s = renderServerClient.getRenderResolution();
+    configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH, s.width());
+    configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT,s.height());
 
 }
 
@@ -329,42 +310,15 @@ void FlowControl::connectToEyeTracker(){
     // The new et is NOT calibrated.
     calibrated = false;
 
-
-    if (configuration->getBool(Globals::VMPreferences::USE_MOUSE)){
-        eyeTracker = new MouseInterface();
-        StaticThreadLogger::log("FlowControl::connectToEyeTracker","Connecting to the Mouse ... ");
+    if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::HPReverb::PROCESSING_PARAMETER_KEY){
+        eyeTracker = new HPOmniceptInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
+                                             configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
     }
     else{
-
-        if (!DBUGBOOL(Debug::Options::USE_MOUSE)){
-
-            if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::HPReverb::PROCESSING_PARAMETER_KEY){
-
-                eyeTracker = new HPOmniceptInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
-                                                     configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-            }
-            else if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::HTC::PROCESSING_PARAMETER_KEY){
-                eyeTracker = new HTCViveEyeProEyeTrackingInterface(this,
-                                                                   configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
-                                                                   configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-            }
-            else if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::GP3HD::PROCESSING_PARAMETER_KEY){
-                eyeTracker = new OpenGazeInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
-                                                   configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-            }
-            else{
-                StaticThreadLogger::error("FlowControl::connectToEyeTracker","Failed connecting to ET. Unknown key: " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
-            }
-
-            StaticThreadLogger::log("FlowControl::connectToEyeTracker","Connecting to the EyeTracker " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
-        }
-        else{
-            StaticThreadLogger::warning("FlowControl::connectToEyeTracker","Using Mouse EyeTracker DBug Option");
-            eyeTracker = new MouseInterface();
-            static_cast<MouseInterface*>(eyeTracker)->overrideCalibration();
-        }
-
+        StaticThreadLogger::error("FlowControl::connectToEyeTracker","Failed connecting to ET. Unknown key: " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
     }
+
+    StaticThreadLogger::log("FlowControl::connectToEyeTracker","Connecting to the EyeTracker " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
 
     connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
 
@@ -575,7 +529,7 @@ QVariantMap FlowControl::getCalibrationValidationData() const {
 
 bool FlowControl::autoValidateCalibration() const {
     if (DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF) != "") return false; // In this case we need the dialog since that the entire point of the debug option.
-    return (DBUGBOOL(Debug::Options::USE_MOUSE) || (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != ""));
+    return (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != "");
 }
 
 void FlowControl::onUpdatedExperimentMessages(const QVariantMap &string_value_map){
@@ -615,32 +569,28 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING BINDING BC EXPERIMENT");
         experiment = new BindingExperiment(nullptr,VMDC::Study::BINDING_BC);
-        if (!usingVR) backgroundForVRScreen = QColor(Qt::gray);
+        backgroundForVRScreen = QColor(Qt::gray);
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING BINDING UC EXPERIMENT");
         experiment = new BindingExperiment(nullptr,VMDC::Study::BINDING_UC);
-
-        if (!usingVR) backgroundForVRScreen = QColor(Qt::gray);
+        backgroundForVRScreen = QColor(Qt::gray);
         break;
 
     case Globals::StudyConfiguration::INDEX_NBACKRT:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING NBACK TRACE FOR RESPONSE TIME");
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKRT);
-
-        if (!usingVR) backgroundForVRScreen = QColor(Qt::black);
+        backgroundForVRScreen = QColor(Qt::black);
         break;
     case Globals::StudyConfiguration::INDEX_GONOGO:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO");
         experiment = new GoNoGoExperiment(nullptr,VMDC::Study::GONOGO);
-
-        if (!usingVR) backgroundForVRScreen = QColor(Qt::gray);
+        backgroundForVRScreen = QColor(Qt::gray);
         break;
     case Globals::StudyConfiguration::INDEX_NBACKVS:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING N BACK VS");
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKVS);
-
-        if (!usingVR) backgroundForVRScreen = QColor(Qt::black);
+        backgroundForVRScreen = QColor(Qt::black);
         break;
 
     default:
@@ -648,10 +598,8 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         return false;
     }
 
-    // Hiding cursor UNLESS the ET is in mouse mode.
-    if (!DBUGBOOL(Debug::Options::USE_MOUSE)){
-        experiment->hideCursor();
-    }
+    // Hiding cursor. Legacy code. Not sure if necessary but left here because it's harmless, as it only hides the mouse on the experiment in the screen which is never shown.
+    experiment->hideCursor();
 
     // Making sure that that both experiment signals are connected.
     // Eyetracker should be connected by this point.

@@ -57,7 +57,7 @@ private:
 
     // Animation constants. (times are in milliseconds).
     const qint32 ANIMATION_OUTTER_CIRCLE_PULSATING_R      = 800;
-    const qint32 ANIMATION_MOVE_TIME                      = 1000;
+    const qint32 ANIMATION_MOVE_TIME                      = 600;
     const qint32 ANIMATION_HOLD_TIME_INTIAL_CENTER_TARGET = 500;
 
     //const QColor COLOR_OUTSIDE_CIRCLE_CALIBRATION  = QColor(129,178,210);

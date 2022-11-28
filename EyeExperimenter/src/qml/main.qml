@@ -279,4 +279,8 @@ ApplicationWindow {
         calibrationValidation.open()
     }
 
+    onClosing: {
+
+    }
+
 }

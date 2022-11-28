@@ -267,13 +267,18 @@ void RenderServerClient::onReadyRead() {
 
                 screenResolutionWidth = this->rxPacket.getPayloadField(RenderControlPacketFields::WIDTH).toInt();
                 screenResolutionHeight = this->rxPacket.getPayloadField(RenderControlPacketFields::HEIGHT).toInt();
+                QString serverVersion = this->rxPacket.getPayloadField(RenderControlPacketFields::RENDER_SERVER_VERSION).toString();
 
-                qDebug() << "SET WORKING RESOLUTION TO" << screenResolutionHeight << screenResolutionWidth;
+                //qDebug() << "SET WORKING RESOLUTION TO" << screenResolutionHeight << screenResolutionWidth;
 
                 sentResolutionRequest = false;
                 this->rxPacket.resetForRX();
 
-                emit RenderServerClient::newMessage("Set the working resolution to " + QString::number(screenResolutionWidth) + "x" + QString::number(screenResolutionHeight),MSG_TYPE_INFO);
+                QString message = "Set the working resolution to " + QString::number(screenResolutionWidth) + "x" + QString::number(screenResolutionHeight);
+                message = message + ". RenderServerVersion: " + serverVersion;
+
+
+                emit RenderServerClient::newMessage(message,MSG_TYPE_INFO);
                 if ((screenResolutionHeight != 0) && (screenResolutionWidth != 0)) emit RenderServerClient::readyToRender();
                 this->rxPacket.resetForRX();
 

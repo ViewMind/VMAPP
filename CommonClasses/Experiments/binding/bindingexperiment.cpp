@@ -48,11 +48,7 @@ bool BindingExperiment::startExperiment(const QString &workingDir, const QString
     drawCurrentImage();
     stateTimer.setInterval(TIME_START_CROSS);
     //stateTimer.start();
-    if (activateScreenView){
-        this->show();
-        this->activateWindow();
-    }
-    else updateDisplay();
+    updateDisplay();
 
     return true;
 

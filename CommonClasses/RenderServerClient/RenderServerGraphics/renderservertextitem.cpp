@@ -30,7 +30,7 @@ RenderServerTextItem::RenderServerTextItem(const QString &text):RenderServerItem
 
     itemData[RenderControlPacketFields::FONT_SIZE] = 10;
     itemData[RenderControlPacketFields::LINE_SPACING] = 1;
-    itemData[RenderControlPacketFields::TEXT_ALIGNMENT] = ALIGN_CENTER;
+    itemData[RenderControlPacketFields::TEXT_ALIGNMENT] = QString(ALIGN_CENTER);
 
     itemData[RenderControlPacketFields::TYPE]      = GL2DItemType::TYPE_TEXT;
     itemData[RenderControlPacketFields::TYPE_NAME] = RenderServerItemTypeName::TEXT;
@@ -58,7 +58,7 @@ void RenderServerTextItem::setText(const QString &text){
     computeBoundingRect();
 }
 
-void RenderServerTextItem::setAlignment(char alignment){
+void RenderServerTextItem::setAlignment(const QString &alignment){
     itemData[RenderControlPacketFields::TEXT_ALIGNMENT] = alignment;
     computeBoundingRect();
 }
