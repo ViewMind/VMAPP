@@ -3,6 +3,7 @@
 RenderServerPacket::RenderServerPacket() {
     this->error = "";
     this->type = "";
+    this->isSkippable = false;
 }
 
 RenderServerPacket::RXState RenderServerPacket::rxBytes(const QByteArray &bytes){
@@ -73,8 +74,41 @@ void RenderServerPacket::setPayloadField(const QString &name, const QVariant &va
     this->payload[name] = value;
 }
 
+void RenderServerPacket::setPacketSkippable(bool skippable) {
+    this->isSkippable = skippable;
+}
+
 bool RenderServerPacket::isPacketOfType(const QString &type) const{
     return (this->type == type);
+}
+
+QString RenderServerPacket::getStringSummary() const {
+    if (this->type == RenderServerPacketType::TYPE_2D_RENDER){
+
+        QVariantMap counters;
+        QVariantList specs = this->payload.value(RenderControlPacketFields::SPEC_LIST).toList();
+        for (qint32 i = 0; i < specs.size(); i++){
+            QVariantMap item = specs.at(i).toMap();
+            QString name = GL2DItemType::Name(item.value(RenderControlPacketFields::TYPE).toInt());
+            if (counters.contains(name)){
+                qint32 c = counters.value(name).toInt();
+                c++;
+                counters[name] = c;
+            }
+            else {
+                counters[name] = 1;
+            }
+        }
+
+        QStringList types = counters.keys();
+        QStringList anslist;
+        for (qint32 i = 0; i < types.size(); i++){
+            anslist << counters.value(types.at(i)).toString() + " " + types.at(i);
+        }
+        return anslist.join(", ");
+
+    }
+    else return "";
 }
 
 QVariant RenderServerPacket::getPayloadField(const QString &name) const {
@@ -96,6 +130,11 @@ QByteArray RenderServerPacket::getByteArrayToSend() const{
     // We first need to transformor the payload to a string.
     QVariantMap map;
     map[RenderServerPacketFields::TYPE] = this->type;
+
+    if (this->isSkippable){ // False can be marked by simply not adding the field.
+        qDebug() << "SETTING SKIPPPABLE";
+        map[RenderServerPacketFields::SKIPPABLE] = true;
+    }
 
     QJsonDocument doc = QJsonDocument::fromVariant(this->payload);
     map[RenderServerPacketFields::PAYLOAD] = QString(doc.toJson(QJsonDocument::Compact));

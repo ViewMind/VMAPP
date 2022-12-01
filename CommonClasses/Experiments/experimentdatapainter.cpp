@@ -12,7 +12,7 @@ void ExperimentDataPainter::init(qreal display_resolution_width, qreal display_r
     ScreenResolutionHeight = display_resolution_height; //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_HEIGHT);
     ScreenResolutionWidth = display_resolution_width;  //c->getReal(CONFIG_STUDY_DISPLAY_RESOLUTION_WIDTH);
     //canvas = new QGraphicsScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
-    canvas = new RenderServerScene(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
+    canvas.setSceneRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight);
     //qDebug() << "Experiment data painter. Scene Rect" << canvas->sceneRect();
     R = 0.007*ScreenResolutionWidth;
     //config = c;
@@ -52,8 +52,8 @@ void ExperimentDataPainter::enableShortStudyMode() {
 void ExperimentDataPainter::redrawGazePoints(){
     if (!DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW)) return;
     // Recreating the eye followers
-    leftEyeTracker = canvas->addEllipse(0,0,2*R,2*R,QPen(),QBrush(QColor(0,0,255,100)));
-    rightEyeTracker = canvas->addEllipse(0,0,2*R,2*R,QPen(),QBrush(QColor(0,255,0,100)));
+    leftEyeTracker = canvas.addEllipse(0,0,2*R,2*R,QPen(),QBrush(QColor(0,0,255,100)));
+    rightEyeTracker = canvas.addEllipse(0,0,2*R,2*R,QPen(),QBrush(QColor(0,255,0,100)));
     leftEyeTracker->setZValue(10);
     rightEyeTracker->setZValue(10);
 
@@ -71,39 +71,16 @@ qint32 ExperimentDataPainter::getLoopValue() const {
     return trialCountLoopValue;
 }
 
-RenderServerScene ExperimentDataPainter::getQImage() const{
-    return this->getImage();
-}
 
 RenderServerScene ExperimentDataPainter::getImage() const{
-    RenderServerScene newScene(*canvas);
-    return newScene;
+    return canvas;
 }
-
-//QImage ExperimentDataPainter::getQImage() const{
-//    QImage image(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()),QImage::Format_RGB32);
-//    QPainter painter(&image);
-//    painter.setRenderHint(QPainter::Antialiasing);
-//    canvas->render(&painter);
-//    return image;
-//}
-
-//QPixmap ExperimentDataPainter::getImage() const{
-//    // Drawing the graphics scene onto the painter.
-//    QPixmap image(static_cast<qint32>(canvas->width()),static_cast<qint32>(canvas->height()));
-//    QPainter painter(&image);
-//    painter.setRenderHint(QPainter::Antialiasing);
-//    canvas->render(&painter);
-//    return image;
-//}
 
 void ExperimentDataPainter::clearCanvas(){
     gazeUpdateEnabled = false;
-    canvas->clear();
+    canvas.clear();
     redrawGazePoints();
 }
 
 ExperimentDataPainter::~ExperimentDataPainter(){
-    delete canvas;
-    canvas = nullptr;
 }

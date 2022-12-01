@@ -4,8 +4,7 @@ const char * BindingManager::CONFIG_IS_BC = "is_bc";
 const char * BindingManager::CONFIG_N_TARGETS = "number_of_targets";
 
 BindingManager::BindingManager()
-{
-    canvas = nullptr;
+{    
     numberOfExplanationScreens = 4;
     // explanationListTextKey =
 }
@@ -37,7 +36,7 @@ void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, 
     QList<RenderServerItem*> items;
 
 //    // FOR DEBUGGING.
-//    RenderServerRectItem *debugRect = canvas->addRect(gridBoundingRect);
+//    RenderServerRectItem *debugRect = canvas.addRect(gridBoundingRect);
 //    debugRect->setBrush(QBrush(Qt::white));
 
 //    qDebug() << "Grid bounding rect cx" << gridBoundingRect.x() + gridBoundingRect.width()/2
@@ -45,19 +44,19 @@ void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, 
 //             << gridBoundingRect;
 
     // The grid bounding rect is added for reference.
-    RenderServerRectItem * brect = canvas->addRect(gridBoundingRect);
-    brect->setBrush(QBrush(QColor(canvas->getBackgroundColorName())));
+    RenderServerRectItem * brect = canvas.addRect(gridBoundingRect);
+    brect->setBrush(QBrush(QColor(canvas.getBackgroundColorName())));
     if (srl == SRL_NORMAL) brect->setPen(QPen(Qt::gray)); // This will render it invisible as the color is the same as the background.   
     else brect->setPen(QPen(Qt::black));
     items << brect;
 
     for (qint32 i = 0; i < slide.size(); i++){
 
-        RenderServerRectItem *back  = canvas->addRect(0,0,parser.getDrawStructure().FlagSideH,parser.getDrawStructure().FlagSideV);
-        RenderServerRectItem *vrect = canvas->addRect(0,0,
+        RenderServerRectItem *back  = canvas.addRect(0,0,parser.getDrawStructure().FlagSideH,parser.getDrawStructure().FlagSideV);
+        RenderServerRectItem *vrect = canvas.addRect(0,0,
                                                    parser.getDrawStructure().FlagSideH-2*parser.getDrawStructure().HLBorder,
                                                    parser.getDrawStructure().FlagSideV-2*parser.getDrawStructure().VSBorder);
-        RenderServerRectItem *hrect = canvas->addRect(0,0,
+        RenderServerRectItem *hrect = canvas.addRect(0,0,
                                                    parser.getDrawStructure().FlagSideH-2*parser.getDrawStructure().HSBorder,
                                                    parser.getDrawStructure().FlagSideV-2*parser.getDrawStructure().VLBorder);
         back->setPos(slide.at(i).x,slide.at(i).y);
@@ -76,7 +75,7 @@ void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, 
 
     }
 
-    RenderServerItemGroup *group = canvas->createItemGroup(items);
+    RenderServerItemGroup *group = canvas.createItemGroup(items);
 
     if (srl != ScreenRenderLocation::SRL_NORMAL){
 
@@ -125,8 +124,8 @@ void BindingManager::renderSingleFlag(const BindingParser::BindingSlide &slide, 
             QColor arrowColor = Qt::cyan;
 
             // Add the triangle polygon to the scene
-            //QGraphicsPolygonItem* arrow_head = canvas->addPolygon(poly_arrow_head);
-            RenderServerTriangleItem* arrow_head = canvas->addTriangle(poly_arrow_head);
+            //QGraphicsPolygonItem* arrow_head = canvas.addPolygon(poly_arrow_head);
+            RenderServerTriangleItem* arrow_head = canvas.addTriangle(poly_arrow_head);
             arrow_head->setBrush(QBrush(arrowColor));
             arrow_head->setPen(QPen(arrowColor));
 
@@ -159,12 +158,12 @@ bool BindingManager::drawFlags(const QString &trialName, bool show){
 void BindingManager::init(qreal display_resolution_width, qreal display_resolution_height){
     ExperimentDataPainter::init(display_resolution_width,display_resolution_height);
 
-    canvas->setBackgroundBrush(QBrush(Qt::gray));
+    canvas.setBackgroundBrush(QBrush(Qt::gray));
 
     // Old code. These are obviously the same values as the parameters.
     qreal WScreen, HScreen;
-    WScreen = canvas->width();
-    HScreen = canvas->height();
+    WScreen = canvas.width();
+    HScreen = canvas.height();
 
     // Calculating the points for the cross
     qreal delta = 0.05*WScreen;
@@ -198,8 +197,8 @@ void BindingManager::configure(const QVariantMap &configuration){
 
 void BindingManager::drawCenter(){
     clearCanvas();
-    canvas->addLine(line0,QPen(QBrush(Qt::red),4));
-    canvas->addLine(line1,QPen(QBrush(Qt::red),4));
+    canvas.addLine(line0,QPen(QBrush(Qt::red),4));
+    canvas.addLine(line1,QPen(QBrush(Qt::red),4));
 }
 
 void BindingManager::drawTrial(qint32 currentTrial, bool show, bool enableRenderDualMode){

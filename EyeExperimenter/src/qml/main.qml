@@ -280,7 +280,7 @@ ApplicationWindow {
     }
 
     onClosing: {
-
+        flowControl.closeApplication();
     }
 
 }

@@ -9,6 +9,10 @@ const qint32 NBackRTExperiment::DEFAULT_NUMBER_OF_TARGETS =                    3
 const qint32 NBackRTExperiment::PAUSE_TRIAL_1 =                                32;
 const qint32 NBackRTExperiment::PAUSE_TRIAL_2 =                                64;
 
+//const qint32 NBackRTExperiment::PAUSE_TRIAL_1 =                                3;
+//const qint32 NBackRTExperiment::PAUSE_TRIAL_2 =                                6;
+
+
 const qint32 NBackRTExperiment::NBACKVS_MIN_HOLD_TIME =                        50;
 const qint32 NBackRTExperiment::NBACKVS_MAX_HOLD_TIME =                        250;
 const qint32 NBackRTExperiment::NBACKVS_STEP_HOLD_TIME =                       50;
@@ -121,6 +125,7 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
 void NBackRTExperiment::onTimeOut(){
 
     if (tstate == TSF_SHOW_BLANKS){
+
         if (nbackConfig.wasSequenceCompleted){
             successfullTrials++;
         }
@@ -129,6 +134,22 @@ void NBackRTExperiment::onTimeOut(){
         }
         nbackConfig.adjustSpeed();
         updateFronEndMessages();
+
+        // Before drawing the start of a new trial, we check if a pause is necessary.
+        if ( (currentTrial == PAUSE_TRIAL_1) || (currentTrial == PAUSE_TRIAL_2)){
+
+            // Paused must be set to zero.
+            if (state == STATE_RUNNING){
+                state = STATE_PAUSED;
+                stateTimer.stop();
+                m->drawPauseScreen();
+                updateDisplay();
+                //qDebug() << "Pausing wihth current trial" << currentTrial;
+                return;
+            }
+
+        }
+
     }
 
     stateTimer.stop();
@@ -218,11 +239,10 @@ void NBackRTExperiment::nextState(){
 
 void NBackRTExperiment::drawCurrentImage(){
 
-    //qDebug() << 5;
+    //qDebug() << "Drawing Current Image " << currentTrial << currentImage << mtimer.elapsed();
+    mtimer.start();
 
     m->setTargetPosition(currentTrial,currentImage);
-
-    //qDebug() << 7;
 
     switch (tstate){
     case TSF_SHOW_BLANKS:
@@ -232,23 +252,10 @@ void NBackRTExperiment::drawCurrentImage(){
         m->setDrawState(NBackManager::DS_CROSS_TARGET);
         break;
     case TSF_START:
-        // Before drawing the start of a new trial, we check if a pause is necessary.
-        if ( (currentTrial == PAUSE_TRIAL_1) || (currentTrial == PAUSE_TRIAL_2)){
-
-            // Paused must be set to zero.
-            if (state == STATE_RUNNING){
-                state = STATE_PAUSED;
-                stateTimer.stop();
-                m->drawPauseScreen();
-                updateDisplay();
-                //qDebug() << "Pausing wihth current trial" << currentTrial;
-                return;
-            }
-
-        }
         m->setDrawState(NBackManager::DS_CROSS);
         currentImage=-1;
         break;
+
     }
 
     updateDisplay();
@@ -293,9 +300,10 @@ void NBackRTExperiment::keyPressHandler(int keyPressed){
             onTimeOut();
         }
         else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
-            state = STATE_RUNNING;
+            qDebug() << "UNPAUSING THE NBACK STUDY. Current state"  << tstate;
             m->drawBackground();
             updateDisplay();
+            state = STATE_RUNNING;
             nextState();
         }
     }
@@ -326,7 +334,6 @@ void NBackRTExperiment::resetStudy(){
 
 void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     Experiment::newEyeDataAvailable(data);
-
 
     if (state != STATE_RUNNING) return;
     if (ignoreData) return;
@@ -480,7 +487,7 @@ bool NBackRTExperiment::TrialRecognitionMachine::isSequenceOver(const Fixation &
                     m->setDebugSequenceValue(trialRecognitionSequence.first());
                     *updateHUD = true;
                 }
-            }
+            }            
         }
     }
 

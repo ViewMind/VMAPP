@@ -357,7 +357,7 @@ bool Experiment::saveDataToHardDisk(){
 
 
 RenderServerScene Experiment::getVRDisplayImage() const{
-    return manager->getQImage();
+    return manager->getImage();
 }
 
 void Experiment::keyboardKeyPressed(int keyboardKey){

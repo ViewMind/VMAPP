@@ -86,6 +86,9 @@ private:
     // The timer and the counter.
     QTimer stateTimer;
 
+    // Elapsed timer.
+    QElapsedTimer mtimer;
+
     // Flag use to sincronize data writing to the file.
     bool ignoreData;
 

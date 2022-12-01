@@ -47,6 +47,7 @@ namespace Debug {
        const QString LOAD_CALIBRATION_K   = "load_calibration_coeffs";
        const QString ENABLE_GAZE_FOLLOW   = "enable_gaze_follow";
        //const QString USE_MOUSE            = "use_mouse";
+       const QString SEND_RENDER_2D_PRINT = "send_render_2D_packet_summary_enable";
        const QString OVERRIDE_TIME        = "override_time";
        const QString DBUG_MSG             = "debug_messages";
        const QString LIGHTUP_NBACKRT      = "lightup_nback_rt";

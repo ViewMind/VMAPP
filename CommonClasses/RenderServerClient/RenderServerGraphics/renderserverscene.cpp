@@ -193,7 +193,7 @@ RenderServerLineItem* RenderServerScene::addLine(qreal x1, qreal y1, qreal x2, q
 }
 
 
-RenderServerPacket RenderServerScene::render() const {
+RenderServerPacket RenderServerScene::render(bool skippable) const {
     RenderServerPacket p;
 
     p.setPacketType(RenderServerPacketType::TYPE_2D_RENDER);
@@ -204,6 +204,10 @@ RenderServerPacket RenderServerScene::render() const {
 
     for (qint32 i = 0; i < list.size(); i++){
        list.at(i)->render(&p);
+    }
+
+    if (skippable){ // Can be skipped if necessary.
+        p.setPacketSkippable();
     }
 
     return p;

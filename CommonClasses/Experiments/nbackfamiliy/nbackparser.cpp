@@ -1,29 +1,5 @@
 #include "nbackparser.h"
 
-//#ifdef EYETRACKER_HTCVIVEPRO
-//const qreal FieldingParser::RECT_WIDTH =                               203.75; //163/4;
-//const qreal FieldingParser::RECT_HEIGHT =                              193.75; //155/4;
-
-//const qreal FieldingParser::K_HORIZONAL_MARGIN =                         0.06;
-//const qreal FieldingParser::K_SPACE_BETWEEN_BOXES =                      0.09;
-//const qreal FieldingParser::K_VERTICAL_MARGIN =                          0.06;
-
-//const qreal FieldingParser::TARGET_BOX_EX_W =                            0.25;  //1.5/6.0;
-//const qreal FieldingParser::TARGET_BOX_EX_H =                            0.268; //1.5/5.6;
-//#endif
-
-//#ifdef EYETRACKER_GAZEPOINT
-//const qreal FieldingParser::RECT_WIDTH =                                163.0; //163/4;
-//const qreal FieldingParser::RECT_HEIGHT =                               155.0; //155/4;
-
-//const qreal FieldingParser::K_HORIZONAL_MARGIN =                         0.06;
-//const qreal FieldingParser::K_SPACE_BETWEEN_BOXES =                      0.09;
-//const qreal FieldingParser::K_VERTICAL_MARGIN =                          0.06;
-
-//const qreal FieldingParser::TARGET_BOX_EX_W =                            0.25;  //1.5/6.0;
-//const qreal FieldingParser::TARGET_BOX_EX_H =                            0.268; //1.5/5.6;
-//#endif
-
 const qreal NBackParser::K_RECT_WIDTH =                               0.085;
 const qreal NBackParser::K_RECT_HEIGHT =                              0.143;
 
@@ -90,26 +66,6 @@ qint32 NBackParser::getTargetBoxForImageNumber(const QString &trialID, qint32 im
     }
     return ans;
 }
-
-//bool FieldingParser::isHitInTargetBox(const QList<QRectF> &hitTargetBoxes, qint32 targetBox, qreal x, qreal y){
-//    if ((targetBox < 0) || (targetBox >= hitTargetBoxes.size())) return  false;
-//    //qDebug() << "CHECKING IF TARGET BOX" << targetBoxes.at(targetBox) << "contains" << x << y;
-
-//    // The only acurate cumputation of target hit will be done with boxes 5 and 2.
-//    if ((targetBox == TARGET_BOX_5) || (targetBox == TARGET_BOX_2)){
-//        return hitTargetBoxes.at(targetBox).contains(x,y);
-//    }
-
-//    // All other boxes get half a squre of leeway.
-//    if (hitTargetBoxes.at(targetBox).contains(x,y)) return true;
-
-//    qreal leeway = hitTargetBoxes.at(targetBox).height()/2;
-
-//    if (hitTargetBoxes.at(targetBox).contains(x,y+leeway)) return true;
-//    if (hitTargetBoxes.at(targetBox).contains(x,y-leeway)) return true;
-
-//    return false;
-//}
 
 
 QList<qint32> NBackParser::getSequenceForTrial(const QString &trialID){

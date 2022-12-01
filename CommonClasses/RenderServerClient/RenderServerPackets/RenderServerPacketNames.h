@@ -27,11 +27,25 @@ namespace GL2DItemType {
    static const int TYPE_TEXT     = 5;
    static const int TYPE_IMAGE    = 6;
 
+   static QString Name(qint32 type){
+       switch (type){
+       case TYPE_ARROW: return "Arrow";
+       case TYPE_CIRCLE: return "Circle";
+       case TYPE_IMAGE: return "Image";
+       case TYPE_LINE: return "Line";
+       case TYPE_RECT: return "Rect";
+       case TYPE_TEXT: return "Text";
+       case TYPE_TRIANGLE: return "Tri";
+       default: return "Unknown " + QString::number(type);
+       }
+   }
+
 }
 
 namespace RenderServerPacketFields {
    static const QString TYPE = "type";
    static const QString PAYLOAD = "payload";
+   static const QString SKIPPABLE = "s";
 
    static bool ArePresent(const QVariantMap &map){
        if (!map.contains(TYPE)) return false;

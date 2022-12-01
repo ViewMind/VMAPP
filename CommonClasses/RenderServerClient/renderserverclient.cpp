@@ -42,7 +42,7 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
 
     onClosing = false;
 
-    mtimer.elapsed();
+    mtimer.start();
 
 }
 
@@ -158,9 +158,18 @@ RenderServerPacket RenderServerClient::getPacket() {
 void RenderServerClient::sendPacket(const RenderServerPacket &packet){
 
 //    if (packet.getType() == RenderServerPacketType::TYPE_2D_RENDER){
-//        qDebug() << "SENDING PACKET";
+//        qDebug() << "SENDING PACKET @ " << mtimer.elapsed();
+//        mtimer.start();
 //        Debug::prettpPrintQVariantMap(packet.getPayload());
 //    }
+
+    if (DBUGBOOL(Debug::Options::SEND_RENDER_2D_PRINT)){
+        if (packet.getType() == RenderServerPacketType::TYPE_2D_RENDER){
+            qDebug() << "SENDING PACKET" << packet.getStringSummary() << "@ " << mtimer.elapsed();
+            mtimer.start();
+        }
+    }
+
 
     if (socket->state() != QAbstractSocket::ConnectedState){
         emit RenderServerClient::newMessage("Socket is disconnnected. Clearing message queue",MSG_TYPE_WARNING);
@@ -182,8 +191,6 @@ void RenderServerClient::onCoolDownTimerTimeout() {
 
     cooldownTimer.stop();
 
-    //qDebug() << "In coolodwon timer tiemout at " << mtimer.elapsed();
-
     if (!sendPacketQueue.isEmpty()){
         RenderServerPacket p = sendPacketQueue.takeFirst();
         //qDebug() << "Sending packet " << p.getType() << "at" << mtimer.elapsed() << " Remaining is " << sendPacketQueue.size();
@@ -192,9 +199,6 @@ void RenderServerClient::onCoolDownTimerTimeout() {
         //qDebug() << "Starting Cooldown timer again";
         cooldownTimer.start(COOLDOWN_BETWEEN_PACKETS);
     }
-//    else {
-//        qDebug() << "No more packets";
-//    }
 
 }
 

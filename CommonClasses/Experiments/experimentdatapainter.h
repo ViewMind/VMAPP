@@ -49,15 +49,12 @@ public:
     // Some studies have the trial counter control outside, so we need to get this value.
     qint32 getLoopValue() const;
 
-//    QPixmap getImage() const;
-//    QImage getQImage() const;
     RenderServerScene getImage() const;
-    RenderServerScene getQImage() const;
 
     QString getError() const {return error;}
 
     //QGraphicsScene * getCanvas() {return canvas;}
-    RenderServerScene *getCanvas() {return canvas;}
+    RenderServerScene *getCanvas() {return &canvas;}
 
     QString getVersion() const { return versionString; }
 
@@ -76,8 +73,6 @@ protected:
     // Enable on-screen gaze tracking
     bool gazeUpdateEnabled; // This flag needs to be used to ensure that NO update is done when the ellipse items don´t exist;
     qreal gazeXr,gazeXl,gazeYr,gazeYl;
-//    QGraphicsEllipseItem *leftEyeTracker;
-//    QGraphicsEllipseItem *rightEyeTracker;
     RenderServerCircleItem *leftEyeTracker;
     RenderServerCircleItem *rightEyeTracker;
     qreal R;
@@ -85,9 +80,7 @@ protected:
     // The expected ids for the experiment
     QList<QStringList> expectedIDs;
 
-    //ConfigurationManager *config;
-    //QGraphicsScene *canvas;
-    RenderServerScene *canvas;
+    RenderServerScene canvas;
     QString error;
     QString versionString;
 

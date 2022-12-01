@@ -52,7 +52,7 @@ public:
     RenderServerTriangleItem *addTriangle(const QPolygonF &triangle);
     RenderServerImageItem * addImage(const QString &fname, bool fitToWidth, qreal w, qreal h, qreal value_to_fit);
     RenderServerItemGroup * createItemGroup (const QList<RenderServerItem*> items);
-    RenderServerPacket render() const;
+    RenderServerPacket render(bool skippable = false) const;
 
     // Animation functions.
     void clearAnimationData();

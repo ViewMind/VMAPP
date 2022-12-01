@@ -124,7 +124,7 @@ void NBackManager::drawBackground(){
     this->clearCanvas();
 
     graphicalTargetBoxes.clear();
-    canvas->addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
+    canvas.addRect(0,0,ScreenResolutionWidth,ScreenResolutionHeight,QPen(),QBrush(Qt::black));
 
     for (qint32 i = 0; i < drawTargetBoxes.size(); i++){
 
@@ -135,7 +135,7 @@ void NBackManager::drawBackground(){
 
             qDebug() << "DBUG NBACK HITBOX" << i << hitBoxToDraw;
 
-            RenderServerRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
+            RenderServerRectItem *rect2 = canvas.addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
                                                        QPen(QBrush(Qt::green),2),
                                                        QBrush(Qt::black));
 
@@ -143,7 +143,7 @@ void NBackManager::drawBackground(){
 
         }
 
-        RenderServerRectItem *rect = canvas->addRect(0,0,drawTargetBoxes.at(i).width(),drawTargetBoxes.at(i).height(),
+        RenderServerRectItem *rect = canvas.addRect(0,0,drawTargetBoxes.at(i).width(),drawTargetBoxes.at(i).height(),
                                                   QPen(QBrush(Qt::white),6),
                                                   QBrush(Qt::black));
         rect->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
@@ -151,7 +151,7 @@ void NBackManager::drawBackground(){
         if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
 
             // Debug Message Draws The Number On the Hit Boxes
-            RenderServerTextItem *item = canvas->addText(QString::number(i));
+            RenderServerTextItem *item = canvas.addText(QString::number(i));
             item->setDefaultTextColor(QColor(Qt::red));
             item->setFont(QFont("Mono",46));
             item->setPos(drawTargetBoxes.at(i).x(),drawTargetBoxes.at(i).y());
@@ -162,10 +162,10 @@ void NBackManager::drawBackground(){
 
     // Adding the cross
     qreal halfLine = ScreenResolutionWidth*dcc.getHorizontalRatio(K_CROSS_LINE_LENGTH)/2.0;
-    gCrossLine0 = canvas->addLine(centerX-halfLine,centerY,
+    gCrossLine0 = canvas.addLine(centerX-halfLine,centerY,
                                   centerX+halfLine,centerY,
                                   QPen(QBrush(Qt::white),4));
-    gCrossLine1 = canvas->addLine(centerX,centerY-halfLine,
+    gCrossLine1 = canvas.addLine(centerX,centerY-halfLine,
                                   centerX,centerY+halfLine,
                                   QPen(QBrush(Qt::white),4));
 
@@ -181,25 +181,25 @@ void NBackManager::drawBackground(){
     letterFont.setPointSize(50);
     letterFont.setBold(true);
 
-    gText1 = canvas->addSimpleText("1",letterFont);
+    gText1 = canvas.addSimpleText("1",letterFont);
     qreal x = (ScreenResolutionWidth - gText1->boundingRect().width())/2;
     qreal y = (ScreenResolutionHeight - gText1->boundingRect().height())/2;
     gText1->setPos(x,y);
     gText1->setPen(QPen(Qt::white));
     gText1->setBrush(QBrush(Qt::white));
 
-    gText2 = canvas->addSimpleText("2",letterFont);
+    gText2 = canvas.addSimpleText("2",letterFont);
     gText2->setPos(x,y);
     gText2->setPen(QPen(Qt::white));
     gText2->setBrush(QBrush(Qt::white));
 
-    gText3 = canvas->addSimpleText("3",letterFont);
+    gText3 = canvas.addSimpleText("3",letterFont);
     gText3->setPos(x,y);
     gText3->setPen(QPen(Qt::white));
     gText3->setBrush(QBrush(Qt::white));
 
     if (DBUGBOOL(Debug::Options::RENDER_HITBOXES)){
-        gDebugSequenceValue = canvas->addSimpleText("-1",letterFont);
+        gDebugSequenceValue = canvas.addSimpleText("-1",letterFont);
         gDebugSequenceValue->setPos(x,y);
         gDebugSequenceValue->setPen(QPen(Qt::white));
         gDebugSequenceValue->setBrush(QBrush(Qt::white));
@@ -335,23 +335,15 @@ void NBackManager::drawPauseScreen(){
     this->clearCanvas();
     qreal xpos, ypos;
 
-    canvas->addRect(0,0,canvas->width(),canvas->height(),QPen(),QBrush(QColor(Qt::black)));
-
     QFont font;
-    if (vr_being_used){
-        font = QFont("Mono",32);
-    }
-    else{
-        font = QFont("Courier New",20);
-    }
+    font = QFont("Mono",50);
 
     // Chaging the current target point to escape point
-    //QGraphicsSimpleTextItem *phraseToShow = canvas->addSimpleText(pauseText,font);
-    RenderServerTextItem *phraseToShow = canvas->addSimpleText(pauseText,font);
+    RenderServerTextItem *phraseToShow = canvas.addSimpleText(pauseText,font);
     phraseToShow->setPen(QPen(QColor(Qt::white)));
     phraseToShow->setBrush(QBrush(QColor(Qt::white)));
-    xpos = (canvas->width() - phraseToShow->boundingRect().width())/2;
-    ypos = (canvas->height() - phraseToShow->boundingRect().height())/2;
+    xpos = (canvas.width() - phraseToShow->boundingRect().width())/2;
+    ypos = (canvas.height() - phraseToShow->boundingRect().height())/2;
     phraseToShow->setPos(xpos,ypos);
     phraseToShow->setZValue(1);
 
@@ -373,7 +365,7 @@ void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
 
     QColor arrow(Qt::red);
 
-    canvas->clear();
+    canvas.clear();
     drawBackground();
 
     if (screen_index == STUDY_EXPLANTION_TARGET_1){
@@ -473,7 +465,7 @@ void NBackManager::renderPhantomTargets(QMap<qint32, qint32> rectangle_indexes){
         circle->setPos(pos_x,pos_y);
 
 
-        RenderServerTextItem * indicator = canvas->addSimpleText(QString::number(target_numbers.at(i)),letterFont);
+        RenderServerTextItem * indicator = canvas.addSimpleText(QString::number(target_numbers.at(i)),letterFont);
         //qDebug() << "Circle position for indicator is" << circle->boundingRect();
 
         // Want the center of the circle to coincide with the center of the tex.
@@ -497,7 +489,7 @@ void NBackManager::setTargetPositionByRectangleIndex(qint32 rectangle_index){
 
 RenderServerCircleItem * NBackManager::renderTargetCircle(){
     //qDebug() << "Adding target cicle";
-    RenderServerCircleItem * circle = canvas->addEllipse(0,0,TARGET_R*2,TARGET_R*2,QPen(),QBrush(Qt::red));
+    RenderServerCircleItem * circle = canvas.addEllipse(0,0,TARGET_R*2,TARGET_R*2,QPen(),QBrush(Qt::red));
     return circle;
 }
 
@@ -537,7 +529,7 @@ void NBackManager::renderStudyArrows(qint32 source_target, qint32 dest_target, c
     qreal arrowHeadHeight = arrowWidth*arrowHeadHeightMultiplier;
     qreal arrowHeadLength = 2*arrowHeadHeight;
 
-    RenderServerArrowItem * arrow =  canvas->addArrow(xo+Tx,yo+Ty,xd+Dx,yd+Dy,arrowHeadHeightMultiplier,arrowHeadLength,color);
+    RenderServerArrowItem * arrow =  canvas.addArrow(xo+Tx,yo+Ty,xd+Dx,yd+Dy,arrowHeadHeightMultiplier,arrowHeadLength,color);
     arrow->setPen(QPen(color,arrowWidth));
 
 //    QGraphicsArrow arrow;

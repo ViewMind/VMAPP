@@ -38,7 +38,7 @@ void GoNoGoManager::init(qreal display_resolution_width, qreal display_resolutio
     clearCanvas();
 
     // Setting the background brush.
-    canvas->setBackgroundBrush(QBrush(Qt::gray));
+    canvas.setBackgroundBrush(QBrush(Qt::gray));
 
     drawAllElements();
 }
@@ -69,7 +69,7 @@ bool GoNoGoManager::parseExpConfiguration(const QString &contents){
 
             qDebug() << "DBUG: GONOGO HITBOX" << i << hitBoxToDraw;
 
-            RenderServerRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
+            RenderServerRectItem *rect2 = canvas.addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
                                                        QPen(QBrush(Qt::blue),2),
                                                        QBrush(bkg)); // Background is fully transparent
 
@@ -78,7 +78,7 @@ bool GoNoGoManager::parseExpConfiguration(const QString &contents){
         }
 
         QRectF hitBoxToDraw = arrowTargetBox;
-        RenderServerRectItem *rect2 = canvas->addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
+        RenderServerRectItem *rect2 = canvas.addRect(0,0,hitBoxToDraw.width(),hitBoxToDraw.height(),
                                                    QPen(QBrush(Qt::blue),2),
                                                    QBrush(bkg));
         //rect2->setOpacity(0.5);
@@ -176,8 +176,8 @@ void GoNoGoManager::drawAllElements(){
     qreal target_radious = diameter/2.0;
     QRectF targetRect(0,0,diameter,diameter);
 
-    RenderServerCircleItem *leftTarget = canvas->addEllipse(targetRect,QPen(Qt::black,lwidth),QBrush(QColor(Qt::gray).darker(150)));
-    RenderServerCircleItem *rightTarget = canvas->addEllipse(targetRect,QPen(Qt::black,lwidth),QBrush(QColor(Qt::gray).darker(150)));
+    RenderServerCircleItem *leftTarget = canvas.addEllipse(targetRect,QPen(Qt::black,lwidth),QBrush(QColor(Qt::gray).darker(150)));
+    RenderServerCircleItem *rightTarget = canvas.addEllipse(targetRect,QPen(Qt::black,lwidth),QBrush(QColor(Qt::gray).darker(150)));
 
     qreal side_margin = dcc.getHorizontalRatio(GoNoGoParser::SIDE_MARGIN);
 
@@ -189,8 +189,8 @@ void GoNoGoManager::drawAllElements(){
     // Drawing the cross.
     qreal line_length = ScreenResolutionWidth*dcc.getHorizontalRatio(GoNoGoParser::CROSS_LINE_LENGTH);
     lwidth = line_length*GoNoGoParser::LINE_WIDTH;
-    RenderServerLineItem *vline = canvas->addLine(centerX,centerY-line_length/2,centerX,centerY+line_length/2,QPen(Qt::black,lwidth));
-    RenderServerLineItem *hline = canvas->addLine(centerX-line_length/2,centerY,centerX+line_length/2,centerY,QPen(Qt::black,lwidth));
+    RenderServerLineItem *vline = canvas.addLine(centerX,centerY-line_length/2,centerX,centerY+line_length/2,QPen(Qt::black,lwidth));
+    RenderServerLineItem *hline = canvas.addLine(centerX-line_length/2,centerY,centerX+line_length/2,centerY,QPen(Qt::black,lwidth));
     gCross << vline << hline;
 
     // Drawing the arrows.
@@ -199,30 +199,30 @@ void GoNoGoManager::drawAllElements(){
     // Red arrow main trunk
     qreal left_x0 = centerX-line_length/2;
     qreal right_x0 = centerX+line_length/2;
-    RenderServerLineItem *red_arrow = canvas->addLine(left_x0,centerY,right_x0,centerY,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
-    RenderServerLineItem *green_arrow = canvas->addLine(left_x0,centerY,right_x0,centerY,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *red_arrow = canvas.addLine(left_x0,centerY,right_x0,centerY,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *green_arrow = canvas.addLine(left_x0,centerY,right_x0,centerY,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
 
     // Offset to build indicators
     qreal ka = qSqrt(2)*indicator_line_length/2;
 
     // Red Left Arrow
-    RenderServerLineItem *red_left_arrow_ind_up = canvas->addLine(left_x0,centerY,left_x0+ka,centerY-ka,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
-    RenderServerLineItem *red_left_arrow_ind_dn = canvas->addLine(left_x0,centerY,left_x0+ka,centerY+ka,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *red_left_arrow_ind_up = canvas.addLine(left_x0,centerY,left_x0+ka,centerY-ka,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *red_left_arrow_ind_dn = canvas.addLine(left_x0,centerY,left_x0+ka,centerY+ka,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
     gRLArrow << red_arrow << red_left_arrow_ind_up << red_left_arrow_ind_dn;
 
     // Red Right Arrow.
-    RenderServerLineItem *red_right_arrow_ind_up = canvas->addLine(right_x0,centerY,right_x0-ka,centerY-ka,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
-    RenderServerLineItem *red_right_arrow_ind_dn = canvas->addLine(right_x0,centerY,right_x0-ka,centerY+ka,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *red_right_arrow_ind_up = canvas.addLine(right_x0,centerY,right_x0-ka,centerY-ka,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *red_right_arrow_ind_dn = canvas.addLine(right_x0,centerY,right_x0-ka,centerY+ka,QPen(QColor(RED_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
     gRRArrow << red_arrow << red_right_arrow_ind_dn << red_right_arrow_ind_up;
 
     // Green Left Arrow
-    RenderServerLineItem *green_left_arrow_ind_up = canvas->addLine(left_x0,centerY,left_x0+ka,centerY-ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
-    RenderServerLineItem *green_left_arrow_ind_dn = canvas->addLine(left_x0,centerY,left_x0+ka,centerY+ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *green_left_arrow_ind_up = canvas.addLine(left_x0,centerY,left_x0+ka,centerY-ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *green_left_arrow_ind_dn = canvas.addLine(left_x0,centerY,left_x0+ka,centerY+ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
     gGLArrow << green_arrow << green_left_arrow_ind_up << green_left_arrow_ind_dn;
 
     // Green Right Arrow
-    RenderServerLineItem *green_right_arrow_ind_up = canvas->addLine(right_x0,centerY,right_x0-ka,centerY-ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
-    RenderServerLineItem *green_right_arrow_ind_dn = canvas->addLine(right_x0,centerY,right_x0-ka,centerY+ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *green_right_arrow_ind_up = canvas.addLine(right_x0,centerY,right_x0-ka,centerY-ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
+    RenderServerLineItem *green_right_arrow_ind_dn = canvas.addLine(right_x0,centerY,right_x0-ka,centerY+ka,QPen(QColor(GREEN_ARROW_COLOR),lwidth,Qt::SolidLine,Qt::RoundCap));
     gGRArrow << green_arrow << green_right_arrow_ind_up << green_right_arrow_ind_dn;
 
 }
@@ -242,7 +242,7 @@ bool GoNoGoManager::isPointInSideCorrectTargetForCurrentTrial(qreal x, qreal y) 
 }
 
 void GoNoGoManager::renderStudyExplanationScreen(qint32 screen_index){
-    canvas->clear();
+    canvas.clear();
     drawAllElements();
     setVisibilityToElementList(gCross,false);
     setVisibilityToElementList(gTargets,true);
@@ -299,7 +299,7 @@ void GoNoGoManager::lightUpTarget(qint32 index){
     qreal x = target->x() - D/4 - lwidth/2; // We want the center of the circle to be the same center as the target circle.
     qreal y = target->y() - D/4 - lwidth/2;
 
-    RenderServerCircleItem * highlight = canvas->addEllipse(x,y,D,D,QPen(Qt::blue,3),QBrush(QColor(canvas->getBackgroundColorName())));
+    RenderServerCircleItem * highlight = canvas.addEllipse(x,y,D,D,QPen(Qt::blue,3),QBrush(QColor(canvas.getBackgroundColorName())));
     highlight->setZValue(0.5);
 
 }

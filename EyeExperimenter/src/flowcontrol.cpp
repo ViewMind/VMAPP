@@ -272,13 +272,14 @@ void FlowControl::onRequestUpdate(){
     RenderServerCircleItem *  left  = displayImage.addEllipse(static_cast<qint32>(data.xLeft-r),static_cast<qint32>(data.yLeft-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,255,0,100)));
     RenderServerCircleItem *  right = displayImage.addEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,0,255,100)));
 
-    StaticThreadLogger::log("FlowControl::onRequestUpdate","Sending experiment image rendering packet");
+    //StaticThreadLogger::log("FlowControl::onRequestUpdate","Sending experiment image rendering packet");
+
     if (!DBUGBOOL(Debug::Options::SHOW_EYES_IN_STUDY)){
         left->setDisplayOnly(true);
         right->setDisplayOnly(true);
     }
 
-    renderServerClient.sendPacket(displayImage.render());
+    renderServerClient.sendPacket(displayImage.render(true));
 
 }
 

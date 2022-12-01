@@ -31,8 +31,8 @@ Item {
         visible = true
     }
 
-    function close(){
-        flowControl.showRenderWindow();
+    function close(rejected){
+        if (rejected) flowControl.showRenderWindow();
         visible = false
     }
 
@@ -107,7 +107,7 @@ Item {
         anchors.right: dialog.right
         anchors.rightMargin: VMGlobals.adjustWidth(30)
         onClickSignal: {
-            close()
+            close(false)
             confirm()
         }
     }
@@ -119,7 +119,7 @@ Item {
         anchors.left: dialog.left
         anchors.leftMargin: VMGlobals.adjustWidth(30)
         onClickSignal: {
-            close()
+            close(true)
             reject()
         }
     }
