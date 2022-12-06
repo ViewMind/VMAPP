@@ -188,6 +188,25 @@ void Control::setWindowID(WId winID){
 
 }
 
+void Control::forceConnect(){
+    QFile file("where_to_search.txt");
+    QString location = "";
+    if (!file.exists()){
+        StaticThreadLogger::error("Control::setWindowID","Cannot find where_to_search.txt");
+    }
+    else {
+        if (file.open(QFile::ReadOnly)){
+            QTextStream reader(&file);
+            location = reader.readAll();
+            location = location.trimmed();
+            file.close();
+        }
+    }
+
+    // This is the path to the executable, so we can now start the server.
+    renderServer.startRenderServer(location,mainWindowID);
+}
+
 void Control::hideRenderWindow(){
     renderServer.resizeRenderWindow(0,0,0,0);
 }
@@ -307,7 +326,7 @@ void Control::setBackgroundImage(qreal w, qreal h){
     RenderServerTextItem *text = bg.addText("Hello World",font);
     messageID = text->getItemID();
     text->setBrush(QBrush(QColor("#2A3990")));
-    text->setAlignment(text->ALIGN_CENTER);
+    text->setAlignment(QString(text->ALIGN_CENTER));
     QRectF br = text->boundingRect();
     QRectF imgbr = img->boundingRect();
 

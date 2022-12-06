@@ -115,16 +115,83 @@ ApplicationWindow {
             }
         }
 
+
+        Button {
+            id: btnForceConnect
+            hoverEnabled: false;
+            width: parent.width
+            text: "Force Connect";
+            onClicked: {
+                control.forceConnect();
+            }
+        }
+
+    }
+
+    Column {
+
+        id: studyControlColumn
+        width: 0.2*parent.width
+        anchors.right: parent.right
+        anchors.top: parent.top
+        spacing: 30;
+
+        ComboBox {
+            id: packetSelect
+            model: ["Request Packet Description","Start Hand Calibration","Explantion - Next","Explanation - Previous","Examples - Start","Examples - Next","Study - Start"];
+            width: parent.width
+        }
+
+
+        Button {
+            id: goTest;
+            text: "GO";
+            width: parent.width
+            onClicked: {
+                // Need to send the messages.
+            }
+        }
+
+
+        Rectangle {
+            width: parent.width
+            height: 20;
+            color: "#ffffff"
+            TextInput {
+                id: value;
+                anchors.fill: parent
+            }
+        }
+
+
     }
 
     Rectangle {
         id: frame
         width: parent.width*0.7;
-        height: parent.height*0.8;
+        height: parent.height*0.7;
         border.color: "#000000";
         border.width: 5;
         anchors.centerIn: parent
         color: "transparent"
+    }
+
+    Rectangle {
+        id: messageBox
+        width: parent.width
+        height: parent.height*0.08;
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+
+        Text {
+
+            id: textMsg
+            text: "Received packet types will appear here"
+            width: parent.width;
+            horizontalAlignment: Text.AlignHCenter;
+
+        }
+
     }
 
     onWidthChanged: {

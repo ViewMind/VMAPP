@@ -45,6 +45,7 @@ public:
     Q_INVOKABLE void packetBurst();
     Q_INVOKABLE void appClose();
     Q_INVOKABLE bool checkRenderServerStatus();
+    Q_INVOKABLE void forceConnect();
 
     void setWindowID(WId winID);
 
