@@ -131,35 +131,41 @@ ApplicationWindow {
     Column {
 
         id: studyControlColumn
-        width: 0.2*parent.width
+        width: 0.1*parent.width
         anchors.right: parent.right
         anchors.top: parent.top
         spacing: 30;
 
         ComboBox {
             id: packetSelect
-            model: ["Request Packet Description","Start Hand Calibration","Explantion - Next","Explanation - Previous","Examples - Start","Examples - Next","Study - Start"];
+            model: ["Request Packet Description", //0
+                "Start Hand Calibration", //1
+                "Explantion - Next", //2
+                "Explanation - Previous", //3
+                "Examples - Start", //4
+                "Examples - Next", //5
+                "Study - Start", // 6
+                "End Hand Calib" ]; // 7
             width: parent.width
+        }
+
+        CheckBox {
+            id: shortStudy
+            text: "Short Study"
+            width: parent.width;
         }
 
 
         Button {
             id: goTest;
             text: "GO";
+            hoverEnabled: false;
             width: parent.width
             onClicked: {
                 // Need to send the messages.
-            }
-        }
-
-
-        Rectangle {
-            width: parent.width
-            height: 20;
-            color: "#ffffff"
-            TextInput {
-                id: value;
-                anchors.fill: parent
+                var what = packetSelect.currentIndex;
+                var sstudy = shortStudy.checked
+                control.sendStudy3DControl(what,sstudy)
             }
         }
 
@@ -176,23 +182,6 @@ ApplicationWindow {
         color: "transparent"
     }
 
-    Rectangle {
-        id: messageBox
-        width: parent.width
-        height: parent.height*0.08;
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-
-        Text {
-
-            id: textMsg
-            text: "Received packet types will appear here"
-            width: parent.width;
-            horizontalAlignment: Text.AlignHCenter;
-
-        }
-
-    }
 
     onWidthChanged: {
         onMove()

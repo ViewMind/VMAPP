@@ -11,6 +11,7 @@ Control::Control(QObject *parent):QObject(parent)
     connect(&renderServer,&RenderServerClient::readyToRender,this,&Control::onReadyToRender);
 
     connect(&baseUpdateTimer,&QTimer::timeout,this,&Control::onTimeOut);
+    connect(&requestUpdateTimer,&QTimer::timeout,this,&Control::onRequestTimerUpdate);
 
     connect(&animator,&AnimationManager::animationUpdated,this,&Control::onUpdateAnimation);
     connect(&animator,&AnimationManager::reachedAnimationStop,this,&Control::onReachedAnimationStop);
@@ -292,6 +293,7 @@ void Control::onConnectionEstablished(){
 
 void Control::onNewPacketArrived(){
     RenderServerPacket packet = renderServer.getPacket();
+
     // We are expecting the packet for setting the backend.
     if (packet.getType() == RenderServerPacketType::TYPE_IMG_SIZE_REQ){
         qreal w = packet.getPayloadField(PacketImgSizeRequest::WIDTH).toReal();
@@ -303,6 +305,11 @@ void Control::onNewPacketArrived(){
             qDebug() << "Image size is " << w << "x" << h;
             setBackgroundImage(w,h);
         }
+    }
+
+    else {
+        // This is part of the of the Simulated 3D Control Study.
+        simulatedStudyNewPacket(packet);
     }
 }
 
@@ -387,13 +394,8 @@ void Control::setBackgroundImage(qreal w, qreal h){
     //this->enablePacketLog(true);
     renderServer.sendEnable2DRenderPacket(true);
 
-    animator.startAnimation();
-    mtimer.start();
-
-    //renderServer.sendPacket(updateImage.render());
-
-
-
+    //animator.startAnimation();
+    //mtimer.start();
 
 }
 
@@ -419,3 +421,132 @@ bool Control::checkRenderServerStatus(){
 }
 
 
+void Control::onRequestTimerUpdate() {
+
+    //requestUpdateTimer.stop()
+
+    // Send the packet.
+    RenderServerPacket p;
+    p.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+    p.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_EYEPOS_AND_SYNCH);
+    QVariantList el, er;
+    el << 0.2 << 0.3 << 0.93;
+    er << 0.93 << 0.2 << 0.3;
+    p.setPayloadField(Packet3DStudyControl::EYE_LEFT,el);
+    p.setPayloadField(Packet3DStudyControl::EYE_RIGHT,el);
+    p.setPayloadField(Packet3DStudyControl::TIMESTAMP,mtimer.elapsed());
+    renderServer.sendPacket(p);
+
+}
+
+void Control::simulatedStudyNewPacket(RenderServerPacket p){
+
+    if (p.getType() == RenderServerPacketType::TYPE_STUDY_DESCRIPTION){
+        // We log the description.
+        QString description = p.getPayloadField(PacketStudyDescription::STUDY_DESC).toString();        
+
+        // We need to decode de description.
+        QJsonParseError json_error;
+        QJsonDocument doc = QJsonDocument::fromJson(description.toLatin1(),&json_error);
+        if (doc.isNull()){
+            StaticThreadLogger::error("Control::simulatedStudyNewPacket","Failed to decode JSON String for description Reason: " + json_error.errorString());
+            return;
+        }
+
+        // If parsing went well we need the two obligatory fields.
+        QVariantMap map = doc.object().toVariantMap();
+        p.setPayloadField(PacketStudyDescription::STUDY_DESC,map);
+
+        StaticThreadLogger::log("Control::simulatedStudyNewPacket","Received new study description. Packet is\n" + Debug::QVariantMapToString(p.getPayload()));
+        //StaticThreadLogger::log("Control::simulatedStudyNewPacket","DESCRIPTION:\n" + Debug::QVariantMapToString(map));
+
+        studyData.insert(p.getPayload());
+
+        //Debug::prettpPrintQVariantMap(studyData);
+
+    }
+    else if (p.getType() == RenderServerPacketType::TYPE_3DSTUDY_CONTROL){
+        // It should have messages.
+        StaticThreadLogger::log("Control::simulatedStudyNewPacket","Received study control packet\n" + Debug::QVariantMapToString(p.getPayload()));
+    }
+    else if (p.getType() == RenderServerPacketType::TYPE_STUDY_DATA){
+        StaticThreadLogger::log("Control::simulatedStudyNewPacket","End of Study, Study DAta" + Debug::QVariantMapToString(p.getPayload()));
+        studyData.insert(p.getPayload());
+        requestUpdateTimer.stop();
+
+        qDebug() << "Saving";
+        //Debug::prettpPrintQVariantMap(studyData);
+
+        QString study_string = Debug::QVariantMapToString(studyData);
+        QFile file("study_data.json");
+        file.open(QFile::WriteOnly);
+        QTextStream writer(&file);
+        writer << study_string;
+        file.close();
+
+
+    }
+    else {
+        StaticThreadLogger::warning("Control::simulatedStudyNewPacket","Received packet of unknown type: " + p.getType());
+    }
+
+}
+
+void Control::sendStudy3DControl(qint32 selected_option, bool checkedState){
+
+    if (selected_option == 0){ // Request packet description.
+        studyData.clear();
+        RenderServerPacket cmd;
+        cmd.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_REQUEST_STUDY_DESCRIPTION);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND_ARG,Study3DNames::GO_NO_GO_SPHERE);
+        cmd.setPayloadField(Packet3DStudyControl::SHORT_STUDIES,checkedState);
+        renderServer.sendPacket(cmd); // Now we should receive a study description.
+    }
+    else if (selected_option == 1){
+        RenderServerPacket cmd;
+        cmd.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_START_HAND_CALIBRATION);
+        renderServer.sendPacket(cmd); // Now we should receive a study description.
+    }
+    else if (selected_option == 2){
+        RenderServerPacket cmd;
+        cmd.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_NEXT_EXPLANATION);
+        renderServer.sendPacket(cmd); // Now we should receive a study description.
+    }
+    else if (selected_option == 3){
+        RenderServerPacket cmd;
+        cmd.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_PREVIOUS_EXPLANATION);
+        renderServer.sendPacket(cmd); // Now we should receive a study description.
+    }
+    else if (selected_option == 4){
+        RenderServerPacket cmd;
+        cmd.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_START_EXAMPLES);
+        renderServer.sendPacket(cmd); // Now we should receive a study description.
+    }
+    else if (selected_option == 5){
+        RenderServerPacket cmd;
+        cmd.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_NEXT_EXAMPLES);
+        renderServer.sendPacket(cmd); // Now we should receive a study description.
+    }
+    else if (selected_option == 6){
+        RenderServerPacket cmd;
+        mtimer.start();
+        cmd.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_STUDY_START);
+        cmd.setPayloadField(Packet3DStudyControl::TIMESTAMP,mtimer.elapsed());
+        renderServer.sendPacket(cmd); // Now we should receive a study description.
+        requestUpdateTimer.start(25); // 40 FPS is about every 25 ms.        
+    }
+    else if (selected_option == 7){
+        RenderServerPacket cmd;
+        cmd.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        cmd.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_END_HAND_CALIBRATION);
+        renderServer.sendPacket(cmd);
+    }
+
+}

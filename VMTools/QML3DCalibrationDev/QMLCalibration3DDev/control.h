@@ -1,10 +1,6 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#define BINDING
-//#define NBACK
-//#define GONOGO
-
 #include <QObject>
 #include <QImage>
 #include <QTimer>
@@ -22,9 +18,7 @@
 #include "../../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.h"
 #include "../../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "../../../CommonClasses/RenderServerClient/renderserverclient.h"
-#include "../../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h"
-#include "../../../CommonClasses/Experiments/binding/bindingmanager.h"
-#include "../../../CommonClasses/Experiments/gonogo/gonogomanager.h"
+//#include "../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
 
 class Control : public QObject
 {
@@ -39,14 +33,9 @@ public:
     Q_INVOKABLE void setRenderWindowGeometry(int target_x, int target_y, int target_w, int target_h);
     Q_INVOKABLE void hideRenderWindow();
     Q_INVOKABLE void showRenderWindow();
-    Q_INVOKABLE void nextStudyExplanation();
     Q_INVOKABLE void enablePacketLog(bool enable);
-    Q_INVOKABLE void startRenderingStudy();
-    Q_INVOKABLE void packetBurst();
     Q_INVOKABLE void appClose();
     Q_INVOKABLE bool checkRenderServerStatus();
-    Q_INVOKABLE void forceConnect();
-    Q_INVOKABLE void sendStudy3DControl(qint32 selected_option, bool checkedState);
 
     void setWindowID(WId winID);
 
@@ -75,11 +64,6 @@ private:
 
     QProcess renderServerProcess;
 
-    NBackManager nback;
-    BindingManager binding;
-    GoNoGoManager gonogo;
-    qint32 expScreen;
-
     RenderServerScene updateImage;
     QString messageInScene;
 
@@ -90,17 +74,14 @@ private:
     WId mainWindowID;
     static HWND renderHandle;
 
+    //HPOmniceptInterface *eyetracker;
+
     void sendRemoteRenderWindowInformation();
 
     void setBackgroundImage(qreal w, qreal h);
 
-    bool configureCircleAnimation();
-
-
-    // For the study simulation.
-    void simulatedStudyNewPacket (RenderServerPacket p);
     QTimer requestUpdateTimer;
-    QVariantMap studyData;
+
 
 };
 

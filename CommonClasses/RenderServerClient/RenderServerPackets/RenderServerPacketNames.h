@@ -11,6 +11,30 @@ namespace RenderServerPacketType {
    static const QString TYPE_2D_DBUG_ENABLE           = "debug_enable";
    static const QString TYPE_IMG_SIZE_REQ             = "img_size_req";          // Requests an image dimensions.
    static const QString TYPE_LOG_MESSAGE              = "log_message";           // Numbered packets with a message for logging. Used almost exclusively on debug.
+   static const QString TYPE_3DSTUDY_CONTROL          = "3D_study_control";      // Control packet containing generic 3D study commands that tells the server what to do.
+   static const QString TYPE_STUDY_DESCRIPTION        = "study_description";     // The contentes of the packet represent the study description for a given 3D Study.
+   static const QString TYPE_STUDY_DATA               = "study_data";            // Study data which signals the end of the study.
+}
+
+namespace Study3DNames {
+
+   static const QString GO_NO_GO_SPHERE = "gonogo_spheres";
+
+}
+
+namespace Study3DControlCommands {
+
+   static const int CMD_UPDATE_MESSAGES              = 0;
+   static const int CMD_NEXT_EXPLANATION             = 1;
+   static const int CMD_PREVIOUS_EXPLANATION         = 2;
+   static const int CMD_STUDY_START                  = 3;
+   static const int CMD_START_EXAMPLES               = 4;
+   static const int CMD_NEXT_EXAMPLES                = 5;
+   static const int CMD_START_HAND_CALIBRATION       = 6;
+   static const int CMD_END_HAND_CALIBRATION         = 7;
+   static const int CMD_REQUEST_STUDY_DESCRIPTION    = 8;
+   static const int CMD_EYEPOS_AND_SYNCH             = 9;
+
 }
 
 namespace RenderServerImageNames {
@@ -70,6 +94,34 @@ namespace PacketImgSizeRequest {
    static const QString WIDTH = "w";
    static const QString HEIGHT = "h";
    static const QString NAME = "name";
+}
+
+namespace PacketStudyDescription {
+
+   static const QString FOV        = "field_of_view";
+   static const QString TYPE       = "study_type";
+   static const QString HAND_MESH  = "hand_mesh";
+   static const QString STUDY_DESC = "study_description";
+   static const QString ELEMENTS   = "elements_to_track";
+
+}
+
+namespace Packet3DStudyControl  {
+
+   static const QString COMMAND           = "cmd";
+   static const QString COMMAND_ARG       = "cmd_arg";
+   static const QString STUDY_MESSAGES    = "s_msg";
+   static const QString TIMESTAMP         = "ts";
+   static const QString EYE_LEFT          = "el";
+   static const QString EYE_RIGHT         = "er";
+   static const QString SHORT_STUDIES     = "ss";
+
+}
+
+namespace PacketEndStudyData {
+   static const QString TIME          = "time_vector";
+   static const QString TIME_RECEIVED = "elements";
+   static const QString PACKET_NUMBER = "sample_interval";
 }
 
 /**
