@@ -8,11 +8,14 @@ CONFIG += c++11
 
 SOURCES += \
         ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+        ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.cpp \
         ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.cpp \
         ../../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.cpp \
         ../../../CommonClasses/EyeTrackingInterface/calibrationtargets.cpp \
         ../../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.cpp \
         ../../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.cpp \
+        ../../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.cpp \
+        ../../../CommonClasses/LinearLeastSquares/simplematrix.cpp \
         ../../../CommonClasses/LogInterface/loggerthread.cpp \
         ../../../CommonClasses/LogInterface/staticthreadlogger.cpp \
         ../../../CommonClasses/RawDataContainer/viewminddatacontainer.cpp \
@@ -65,10 +68,13 @@ LIBS += -luser32
 
 HEADERS += \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h \
     ../../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.h \
     ../../../CommonClasses/EyeTrackingInterface/calibrationtargets.h \
     ../../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.h \
+    ../../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.h \
+    ../../../CommonClasses/LinearLeastSquares/simplematrix.h \
     ../../../CommonClasses/LogInterface/loggerthread.h \
     ../../../CommonClasses/LogInterface/staticthreadlogger.h \
     ../../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.h \

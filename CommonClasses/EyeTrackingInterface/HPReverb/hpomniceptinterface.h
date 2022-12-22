@@ -30,6 +30,8 @@ public:
 
     QString getCalibrationRecommendedEye() const override;
 
+    void setCalibrationVectors(const QList<QVector3D> &calibVecs) override;
+
 
 private slots:
 
@@ -56,6 +58,9 @@ private:
     QString coefficientsFile;
 
     static const float SAMPLING_FREQ;
+
+    void newEyeData3D(QVariantMap eyedata);
+    void newEyeData2D(QVariantMap eyedata);
 
 };
 

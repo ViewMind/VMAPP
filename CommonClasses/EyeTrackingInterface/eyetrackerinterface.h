@@ -4,15 +4,22 @@
 #include <QObject>
 #include <QString>
 #include <QImage>
+#include <QVector3D>
 #include <QMatrix4x4>
 #include "eyetrackerdata.h"
 #include "../LogInterface/staticthreadlogger.h"
 #include "../RenderServerClient/RenderServerGraphics/renderserverscene.h"
 #include "../RawDataContainer/VMDC.h"
 
+/**
+ * @brief The EyeTrackerInterface class
+ * The EyeTrackingMOde (2D or 3D) is determined simply by setting the field of view to values greater than zero.
+ */
+
 class EyeTrackerInterface : public QObject
 {
     Q_OBJECT
+
 public:
 
     static const quint8 ET_CODE_CALIBRATION_DONE                = 0;
@@ -44,12 +51,18 @@ public:
 
     virtual QString getCalibrationRecommendedEye() const;
 
+    virtual void setCalibrationVectors(const QList<QVector3D> &calibVecs);
+
+    QList<QPointF> getCalibrationPoints() const;
+
     CalibrationRetryMessage getCalibrationRetryMessage() const;
 
-    //QImage getCalibrationImage() const;
     RenderServerScene getCalibrationImage() const;
 
     void setEyeToTransmit(QString eye);
+
+    // If both vfov and hfov are greater than zero, then this will behave in 3 Mode.
+    void setFieldOfView(qreal vfov, qreal hfov);
 
     EyeTrackerData getLastData() const;
 
@@ -83,7 +96,14 @@ protected:
     // The last available data
     EyeTrackerData lastData;
 
+    // If the interface uses the calibration points, these will be available right here.
+    QList<QPointF> calibrationPoints;
+
     bool eyeTrackerEnabled;
+
+    // The vertical field of view functions as a Mode 3D Flag.
+    float vFOV;
+    float hFOV;
 
     // Shorcut functions for clarity.
     bool canUseLeft() const {return ((eyeToTransmit == VMDC::Eye::BOTH) || (eyeToTransmit == VMDC::Eye::LEFT));}

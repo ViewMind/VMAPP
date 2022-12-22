@@ -82,6 +82,14 @@ QSize RenderServerClient::getRenderResolution() const{
     return size;
 }
 
+qreal RenderServerClient::getHorizontalFieldOfView() const {
+    return hFOV;
+}
+
+qreal RenderServerClient::getVerticalFieldOfView() const {
+    return vFOV;
+}
+
 void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinID){
 
     QFileInfo processExecutableInfo(fullPath);
@@ -269,9 +277,11 @@ void RenderServerClient::onReadyRead() {
         if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)){
             if (this->rxPacket.getType() == RenderServerPacketType::TYPE_2D_CONTROL){
 
-                screenResolutionWidth = this->rxPacket.getPayloadField(RenderControlPacketFields::WIDTH).toInt();
-                screenResolutionHeight = this->rxPacket.getPayloadField(RenderControlPacketFields::HEIGHT).toInt();
-                QString serverVersion = this->rxPacket.getPayloadField(RenderControlPacketFields::RENDER_SERVER_VERSION).toString();
+                screenResolutionWidth  = this->rxPacket.getPayloadField(Render2DControlPacketFields::WIDTH).toInt();
+                screenResolutionHeight = this->rxPacket.getPayloadField(Render2DControlPacketFields::HEIGHT).toInt();
+                hFOV = this->rxPacket.getPayloadField(Render2DControlPacketFields::HFOV).toReal();
+                vFOV = this->rxPacket.getPayloadField(Render2DControlPacketFields::VFOV).toReal();
+                QString serverVersion = this->rxPacket.getPayloadField(Render2DControlPacketFields::VERSION).toString();
 
                 //qDebug() << "SET WORKING RESOLUTION TO" << screenResolutionHeight << screenResolutionWidth;
 

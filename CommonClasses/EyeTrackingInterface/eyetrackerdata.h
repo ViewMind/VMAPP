@@ -3,9 +3,12 @@
 
 #include <QtCore>
 
+#define TOL_ZERO 1e-6
+
 struct EyeTrackerCalibrationParameters{
     QString name;
     bool forceCalibration;
+    bool mode3D;
     qint32 number_of_calibration_points;
     qint32 gather_time;
     qint32 wait_time;
@@ -15,38 +18,62 @@ class EyeTrackerData
 {
 public:
 
-
-    typedef enum {TU_MS, TU_US} TimeUnit;
-
-    // The Eyetracker data should have the pixel being looked at by the left and right eyes and the pupil diameter.
-    // The values dimension depend on the what the ET Provides.
-
     EyeTrackerData();
 
-    qint32 xRight;
-    qint32 yRight;
-    qint32 xLeft;
-    qint32 yLeft;
+    qreal xr() const;
+    qreal yr() const;
+    qreal zr() const;
 
-    qreal pdLeft;
-    qreal pdRight;
-    qint64 time;
-    TimeUnit timeUnit;
+    qreal xl() const;
+    qreal yl() const;
+    qreal zl() const;
+
+    qint32 ixr() const;
+    qint32 iyr() const;
+
+    qint32 ixl() const;
+    qint32 iyl() const;
+
+    void setXR(qreal x);
+    void setYR(qreal y);
+    void setZR(qreal z);
+
+    void setXL(qreal x);
+    void setYL(qreal y);
+    void setZL(qreal z);
+
+    void setPupilRight(qreal p);
+    void setPupilLeft(qreal p);
+
+    qreal pr() const;
+    qreal pl() const;
+
+    void setTimeStamp(qint64 t);
+    qint64 timestamp() const;
 
     bool operator==(const EyeTrackerData &d){
         return (d.time == time);
     }
 
-    double avgX() const {return (static_cast<qreal>(xRight) + static_cast<qreal>(xLeft) )/2;}
-    double avgY() const {return (static_cast<qreal>(yRight) + static_cast<qreal>(yLeft) )/2;}
+    double avgX2D() const;
+    double avgY2D() const;
 
-    bool isRightZero() const {return ((xRight == 0) && (yRight == 0));}
-    bool isLeftZero() const {return ((xLeft == 0) && (yLeft == 0));}
+    bool isRightZero(bool mode3D) const;
+    bool isLeftZero(bool mode3D) const;
 
-    QString toString() const;
+    QString toString(bool mode3D) const;
 
 private:
 
+    qreal xRight;
+    qreal yRight;
+    qreal xLeft;
+    qreal yLeft;
+    qreal zRight;
+    qreal zLeft;
+    qreal pdLeft;
+    qreal pdRight;
+    qint64 time;
 
 };
 

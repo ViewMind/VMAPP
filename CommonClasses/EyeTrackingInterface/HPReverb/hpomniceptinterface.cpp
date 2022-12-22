@@ -41,6 +41,66 @@ void HPOmniceptInterface::providedStarted(){
 }
 
 void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
+    if (vFOV > 0){
+        newEyeData3D(eyedata);
+    }
+    else {
+        newEyeData2D(eyedata);
+    }
+}
+
+void HPOmniceptInterface::newEyeData3D(QVariantMap eyedata){
+
+    // Passing the current values throught the transformation matrix.
+    float xl, yl, zl, xr, yr, zr;
+
+    xl = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::X).toFloat();
+    yl = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Y).toFloat();
+    zl = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Z).toFloat();
+
+    xr = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::X).toFloat();
+    yr = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Y).toFloat();
+    zr = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Z).toFloat();
+
+
+    if (calibration.isCalibrating()){
+        //qDebug() << "Calib";
+        if (qIsNaN(xl) || qIsNaN(yl) || qIsNaN(xr) || qIsNaN(yr)){
+            qDebug() << "GOT NAN as the new Eye Data";
+        }
+        calibration.addDataPointForCalibration(xl,yl,xr,yr,zl,zr);
+    }
+    else{
+        // We need to convert.
+        EyeRealData eid;
+        eid.xLeft  = static_cast<qreal>(xl);
+        eid.xRight = static_cast<qreal>(xr);
+        eid.yLeft  = static_cast<qreal>(yl);
+        eid.yRight = static_cast<qreal>(yr);
+        eid.zRight = static_cast<qreal>(zr);
+        eid.zLeft  = static_cast<qreal>(zl);
+
+        lastData = correctionCoefficients.computeCorrections(eid);
+//        lastData.setXL(xl);
+//        lastData.setXR(xr);
+//        lastData.setYR(yr);
+//        lastData.setYL(yl);
+//        lastData.setZL(zl);
+//        lastData.setZR(zr);
+
+        lastData.setTimeStamp(eyedata.value(HPProvider::Timestamp).toLongLong());
+        lastData.setPupilLeft(eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Pupil).toReal());
+        lastData.setPupilRight(eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Pupil).toReal());
+
+        //qDebug() << lastData.toString(true);
+
+        emit HPOmniceptInterface::newDataAvailable(lastData);
+
+    }
+
+}
+
+void HPOmniceptInterface::newEyeData2D(QVariantMap eyedata){
 
     // Passing the current values throught the transformation matrix.
     float xl, yl, zl, xr, yr, zr;
@@ -86,7 +146,7 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
             qDebug() << vecR;
             qDebug() << "==========================";
         }
-        calibration.addDataPointForCalibration(xl,yl,xr,yr);
+        calibration.addDataPointForCalibration(xl,yl,xr,yr,0,0);
     }
     else{
         // We need to convert.
@@ -97,9 +157,9 @@ void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
         eid.yRight = static_cast<qreal>(yr);
 
         lastData = correctionCoefficients.computeCorrections(eid);
-        lastData.time    = eyedata.value(HPProvider::Timestamp).toLongLong();
-        lastData.pdLeft  = eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Pupil).toReal();
-        lastData.pdRight = eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Pupil).toReal();
+        lastData.setTimeStamp(eyedata.value(HPProvider::Timestamp).toLongLong());
+        lastData.setPupilLeft(eyedata.value(HPProvider::LeftEye).toMap().value(HPProvider::Eye::Pupil).toReal());
+        lastData.setPupilRight(eyedata.value(HPProvider::RightEye).toMap().value(HPProvider::Eye::Pupil).toReal());
 
         emit HPOmniceptInterface::newDataAvailable(lastData);
 
@@ -112,11 +172,14 @@ void HPOmniceptInterface::disconnectFromEyeTracker(){
 }
 
 void HPOmniceptInterface::calibrate(EyeTrackerCalibrationParameters params){
+
     if (params.forceCalibration){
         calibration.startCalibrationSequence(static_cast<qint32>(screenWidth),
                                              static_cast<qint32>(screenHeight),
                                              params.number_of_calibration_points,
-                                             params.gather_time,params.wait_time);
+                                             params.gather_time,params.wait_time,vFOV,hFOV);
+
+        calibrationPoints = calibration.getCalibratiionTargetCenters();
 
         // Non empty file name will indicate coefficient storage.
         coefficientsFile = params.name;
@@ -145,6 +208,10 @@ void HPOmniceptInterface::onCalibrationFinished(){
     }
 
     emit HPOmniceptInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
+}
+
+void HPOmniceptInterface::setCalibrationVectors(const QList<QVector3D> &calibVecs){
+    calibration.set3DCalibrationVectors(calibVecs);
 }
 
 QString HPOmniceptInterface::getCalibrationValidationReport() const{

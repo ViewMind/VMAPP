@@ -18,7 +18,7 @@
 #include "../../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.h"
 #include "../../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "../../../CommonClasses/RenderServerClient/renderserverclient.h"
-//#include "../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
+#include "../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
 
 class Control : public QObject
 {
@@ -36,6 +36,7 @@ public:
     Q_INVOKABLE void enablePacketLog(bool enable);
     Q_INVOKABLE void appClose();
     Q_INVOKABLE bool checkRenderServerStatus();
+    Q_INVOKABLE void startCalibration();
 
     void setWindowID(WId winID);
 
@@ -43,6 +44,7 @@ signals:
 
     void requestWindowGeometry();
     void updateEyeTracker(qreal x, qreal y);
+    void eyeTrackerConnected();
 
 private slots:
 
@@ -54,6 +56,7 @@ private slots:
     void onReadyToRender();
     void onNewMessage(const QString &msg, const quint8 &msgType);
     void onRequestTimerUpdate();
+    void onEyeTrackerControl(quint8);
 
 private:
 
@@ -71,14 +74,18 @@ private:
     qint32 messageID;
     qint32 movingCircleID;
 
+    QSize imageSize;
+
     WId mainWindowID;
     static HWND renderHandle;
 
-    //HPOmniceptInterface *eyetracker;
+    HPOmniceptInterface *eyetracker;
 
     void sendRemoteRenderWindowInformation();
 
-    void setBackgroundImage(qreal w, qreal h);
+    void setBackgroundImage();
+
+    //void constructAndSetCalibrationVector(RenderServerPacket p);
 
     QTimer requestUpdateTimer;
 

@@ -14,6 +14,7 @@
 #include "eyecorrectioncoefficients.h"
 #include "../RawDataContainer/VMDC.h"
 #include "../LinearLeastSquares/linearleastsquaresfit.h"
+#include "../LogInterface/staticthreadlogger.h"
 
 
 class CalibrationLeastSquares: public QObject
@@ -26,10 +27,13 @@ public:
 
     // This sets the calibration target class, initializes all variables and starts the calibration timer.
     // npoints can be 5 or 9 if anything other than 9 is used, 5 is assumed.
-    void startCalibrationSequence(qint32 width, qint32 height, qint32 npoints, qint32 ms_gather_time_for_calib_pt, qint32 ms_wait_time_calib_pt);
+    void startCalibrationSequence(qint32 width, qint32 height, qint32 npoints, qint32 ms_gather_time_for_calib_pt, qint32 ms_wait_time_calib_pt, float vFOV, float hFOV);
+
+    // Required fro 3D calibrations as the values come from the render server.
+    void set3DCalibrationVectors(const QList<QVector3D> &targetVectors);
 
     // Adding the data point for calibration.
-    void addDataPointForCalibration(float xl, float yl, float xr, float yr);
+    void addDataPointForCalibration(float xl, float yl, float xr, float yr, float zl, float zr);
 
     // Getting the coefficients once computation is done
     EyeCorrectionCoefficients getCalculatedCoeficients() const;
@@ -55,6 +59,9 @@ public:
     // This will return the recommended eye to use for evaluation/processing of the study.
     QString getRecommendedEye() const;
 
+    // Access to the calibration targets required for sendint a packet to the Render Server
+    QList<QPointF> getCalibratiionTargetCenters() const;
+
 signals:
     void newCalibrationImageAvailable();
     void calibrationDone();
@@ -74,6 +81,8 @@ private:
 
     // This is the image that will be shown.
     CalibrationTargets calibrationTargets;
+
+    QList<QPointF> calibrationCenters;
 
     // Timer to indicate when to start gathering data
     QTimer waitToGatherTimer;

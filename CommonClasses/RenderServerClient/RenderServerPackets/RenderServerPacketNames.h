@@ -22,6 +22,12 @@ namespace Study3DNames {
 
 }
 
+namespace CalibrationPointRequestFields {
+   static const QString TARGETS_2D_X = "vector_2d_target_x";
+   static const QString TARGETS_2D_Y = "vector_2d_target_y";
+   static const QString TARGETS_3D = "vector_3d_target_centers";
+}
+
 namespace Study3DControlCommands {
 
    static const int CMD_UPDATE_MESSAGES              = 0;
@@ -35,6 +41,15 @@ namespace Study3DControlCommands {
    static const int CMD_REQUEST_STUDY_DESCRIPTION    = 8;
    static const int CMD_EYEPOS_AND_SYNCH             = 9;
 
+}
+
+namespace Render2DControlPacketFields {
+   static const QString WIDTH   = "w";
+   static const QString HEIGHT  = "h";
+   static const QString ENABLE  = "enable";
+   static const QString VERSION = "string server_version";
+   static const QString VFOV    = "vfov";
+   static const QString HFOV    = "hfov";
 }
 
 namespace RenderServerImageNames {
@@ -154,7 +169,6 @@ namespace RenderControlPacketFields {
     static const QString DISPLAY_ONLY_FLAG        = "od";
     static const QString FIT_TO_WIDTH             = "fW";
     static const QString FILE_NAME                = "fname";    
-    static const QString RENDER_SERVER_VERSION    = "server_version";
 
     // Some extras used for the value map.
     static const QString ID                       = "id";

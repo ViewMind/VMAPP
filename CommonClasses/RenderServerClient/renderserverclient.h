@@ -54,6 +54,10 @@ public:
 
     QSize getRenderResolution() const;
 
+    qreal getVerticalFieldOfView() const;
+
+    qreal getHorizontalFieldOfView() const;
+
     void sendEnable2DRenderPacket(bool enable);
 
     void closeRenderServer();
@@ -131,9 +135,11 @@ private:
     const qint32 POLL_INTERVAL_FOR_SEND_PACKET_CHECK = 10;
     const qint32 COOLDOWN_BETWEEN_PACKETS = 3; // Wait time between two consecutive packages.
 
-    // Resolution constants.
+    // Resolution constants and the field of view.
     qint32 screenResolutionWidth;
     qint32 screenResolutionHeight;
+    qreal hFOV;
+    qreal vFOV;
 
     // Variable to know when we are closing.
     bool onClosing;

@@ -15,6 +15,9 @@ ApplicationWindow {
         function onRequestWindowGeometry () {
             onMove();
         }
+        function onEyeTrackerConnected(){
+            goBtn.enabled = true;
+        }
     }
 
     function onMove(){
@@ -35,12 +38,15 @@ ApplicationWindow {
     Button {
         id: goBtn
         text: "TEST STUFF"
+        hoverEnabled: false
         width: 0.5*parent.width
         height: 0.1*parent.height
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        enabled: false
         onClicked: {
-            console.log("Ready To Calibrate");
+            //console.log("Ready To Calibrate");
+            control.startCalibration();
         }
     }
 

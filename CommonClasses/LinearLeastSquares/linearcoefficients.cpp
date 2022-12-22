@@ -15,6 +15,10 @@ LinearCoefficients::LinearCoefficients(qreal mm, qreal bb)
     b = bb;
     valid = true;
 
+    mx = 0;
+    my = 0;
+    mz = 0;
+
 }
 
 LinearCoefficients::LinearCoefficients()
@@ -27,6 +31,10 @@ LinearCoefficients::LinearCoefficients()
 qreal LinearCoefficients::predict(qreal x) const{
     // qDebug() << "M" << m << "b" << b << "@" << x << m*x+b;
     return m*x + b;
+}
+
+qreal LinearCoefficients::predict(qreal x, qreal y, qreal z) const {
+    return mx*x + my*y + mz*z + c;
 }
 
 qreal LinearCoefficients::getM() const {
@@ -45,19 +53,46 @@ QVariantMap LinearCoefficients::toMap() const {
     QVariantMap map;
     map.insert("m",m);
     map.insert("b",b);
+    map.insert("mx",mx);
+    map.insert("my",my);
+    map.insert("mz",mz);
+    map.insert("c",c);
     map.insert("valid",valid);
     return map;
 }
 
-QString LinearCoefficients::toString() const{
-    QString ans =  "M: " + QString::number(m) + ". B: " + QString::number(b);
+QString LinearCoefficients::toString(bool twoDString) const{
+    if (twoDString){
+        QString ans =  "M: " + QString::number(m) + ". B: " + QString::number(b);
+        if (valid) ans = ans + ". VALID";
+        else ans = ans + ". INVALID";
+        return ans;
+    }
+
+    QString ans =  "MX: " + QString::number(mx) + ". MY: " + QString::number(my) + ". MZ: " + QString::number(mz) + ". C: " + QString::number(c);
     if (valid) ans = ans + ". VALID";
     else ans = ans + ". INVALID";
     return ans;
+
+
 }
 
 void LinearCoefficients::fromMap(const QVariantMap &map){
-    m = map.value("m").toDouble();
-    b = map.value("b").toDouble();
+    m  = map.value("m").toDouble();
+    b  = map.value("b").toDouble();
+    mx = map.value("mx").toDouble();
+    my = map.value("my").toDouble();
+    mz = map.value("mz").toDouble();
+    c  = map.value("c").toDouble();
     valid = map.value("valid").toBool();
+}
+
+void LinearCoefficients::fromSimpleMatrix(const SimpleMatrix &beta) {
+    SimpleMatrix::MatDim md = beta.getDim();
+    if ((md.nrows != 4) || (md.ncols != 1)) return;
+    mx = beta.get(0,0);
+    my = beta.get(1,0);
+    mz = beta.get(2,0);
+    c  = beta.get(3,0);
+    valid = true;
 }

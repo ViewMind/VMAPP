@@ -118,6 +118,7 @@ namespace Globals{
    namespace RemoteRenderServerParameters {
       static const QString DIR = "render_server";
       static const QString EXE = "DEV.exe";
+      //static const QString EXE = "3DCalibration.exe";
       static const QString PORT_FILE = "selected_port";
    }
          

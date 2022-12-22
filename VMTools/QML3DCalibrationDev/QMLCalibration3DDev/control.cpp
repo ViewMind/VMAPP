@@ -20,6 +20,13 @@ Control::Control(QObject *parent):QObject(parent)
 
 void Control::onReadyToRender() {
 
+    QSize res = renderServer.getRenderResolution();
+
+    eyetracker = new HPOmniceptInterface(this,res.width(),res.height());
+    connect(eyetracker,&HPOmniceptInterface::eyeTrackerControl,this,&Control::onEyeTrackerControl);
+    eyetracker->connectToEyeTracker();
+
+
     // Let's create the image for the backend. For that we need the logo.
     RenderServerPacket p;
     p.setPacketType(RenderServerPacketType::TYPE_IMG_SIZE_REQ);
@@ -27,6 +34,69 @@ void Control::onReadyToRender() {
     p.setPayloadField(PacketImgSizeRequest::WIDTH,0);
     p.setPayloadField(PacketImgSizeRequest::NAME,"logo");
     renderServer.sendPacket(p);
+
+}
+
+void Control::onEyeTrackerControl(quint8 code) {
+
+    switch(code){
+    case EyeTrackerInterface::ET_CODE_CALIBRATION_ABORTED:
+        StaticThreadLogger::warning("Control::onEyeTrackerControl","EyeTracker Control: Calibration aborted");
+        break;
+    case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
+        StaticThreadLogger::log("Control::onEyeTrackerControl","EyeTracker Control: Calibration and validation finished");
+        StaticThreadLogger::log("Control::onEyeTrackerControl", "Selected Eye To Use: "  + eyetracker->getCalibrationRecommendedEye());
+        eyetracker->setEyeToTransmit(eyetracker->getCalibrationRecommendedEye());
+        StaticThreadLogger::log("Control::onEyeTrackerControl","Calibration Validation Report After Calibration Done");
+        StaticThreadLogger::log("Control::onEyeTrackerControl",eyetracker->getCalibrationValidationReport());
+        renderServer.sendEnable2DRenderPacket(false);
+        requestUpdateTimer.start(25);
+        //setBackgroundImage();
+        break;
+    case EyeTrackerInterface::ET_CODE_CONNECTION_FAIL:
+        StaticThreadLogger::error("Control::onEyeTrackerControl","EyeTracker Control: Connection to EyeTracker Failed");
+        break;
+    case EyeTrackerInterface::ET_CODE_CONNECTION_SUCCESS:
+        StaticThreadLogger::log("Control::onEyeTrackerControl","EyeTracker Control: Connection to EyeTracker Established");
+        emit Control::eyeTrackerConnected();
+        break;
+    case EyeTrackerInterface::ET_CODE_DISCONNECTED_FROM_ET:
+        StaticThreadLogger::error("Control::onEyeTrackerControl","EyeTracker Control: Disconnected from EyeTracker");
+        break;
+    case EyeTrackerInterface::ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE:
+        renderServer.sendPacket(eyetracker->getCalibrationImage().render());
+        break;
+    }
+
+}
+
+void Control::startCalibration() {
+    EyeTrackerCalibrationParameters calibrationParams;
+    calibrationParams.forceCalibration = true;
+    calibrationParams.name = "check_coeff.txt"; // In order to take a look and check the results.
+    calibrationParams.number_of_calibration_points = 5;
+    //calibrationParams.number_of_calibration_points = 9;
+
+    // Making sure the right eye is used, in both the calibration and the experiment.
+    eyetracker->setEyeToTransmit(VMDC::Eye::BOTH);
+
+    qint32 validation_point_acceptance_threshold = 70;
+    validation_point_acceptance_threshold = 60;
+    calibrationParams.gather_time = 2000;
+    calibrationParams.wait_time = 1000;
+
+    // Testing validations parameters.
+    QVariantMap calibrationValidationParameters;
+    calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = 5;
+    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
+    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE] = 0;
+    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_GATHERTIME] = calibrationParams.gather_time;
+    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_WAITTIME] = calibrationParams.wait_time;
+
+    eyetracker->enableUpdating(true);
+    eyetracker->configureCalibrationValidation(calibrationValidationParameters);
+    eyetracker->setFieldOfView(renderServer.getVerticalFieldOfView(),renderServer.getHorizontalFieldOfView());
+    eyetracker->calibrate(calibrationParams);
 
 }
 
@@ -168,7 +238,9 @@ void Control::onNewPacketArrived(){
         }
         else {
             qDebug() << "Image size is " << w << "x" << h;
-            setBackgroundImage(w,h);
+            imageSize.setWidth(w);
+            imageSize.setHeight(h);
+            setBackgroundImage();
         }
     }
 
@@ -179,7 +251,7 @@ void Control::onNewPacketArrived(){
 }
 
 
-void Control::setBackgroundImage(qreal w, qreal h){
+void Control::setBackgroundImage(){
 
     RenderServerScene bg;
     bg.setBackgroundBrush(QBrush(Qt::gray));
@@ -188,6 +260,9 @@ void Control::setBackgroundImage(qreal w, qreal h){
     bg.setSceneRect(0,0,screen.width(),screen.height());
 
     qreal tw = 0.7*screen.width();
+
+    qreal w = imageSize.width();
+    qreal h = imageSize.height();
 
     RenderServerImageItem *img = bg.addImage("logo",true,w,h,tw);
     img->setPos(0.15*screen.width(),0.3*screen.height());
@@ -234,13 +309,56 @@ void Control::onRequestTimerUpdate() {
     RenderServerPacket p;
     p.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
     p.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_EYEPOS_AND_SYNCH);
+
+    EyeTrackerData etd = eyetracker->getLastData();
+
     QVariantList el, er;
-    el << 0.2 << 0.3 << 0.93;
-    er << 0.93 << 0.2 << 0.3;
+    el << etd.xl() << etd.yl() << etd.zl();
+    er << etd.xr() << etd.yr() << etd.zr();
     p.setPayloadField(Packet3DStudyControl::EYE_LEFT,el);
-    p.setPayloadField(Packet3DStudyControl::EYE_RIGHT,el);
+    p.setPayloadField(Packet3DStudyControl::EYE_RIGHT,er);
     p.setPayloadField(Packet3DStudyControl::TIMESTAMP,mtimer.elapsed());
     renderServer.sendPacket(p);
 
 }
 
+//void Control::constructAndSetCalibrationVector(RenderServerPacket p){
+
+//    QList<QVector3D> tvectors;
+
+//    QVariantList output = p.getPayloadField(CalibrationPointRequestFields::TARGETS_3D).toList();
+
+//    qDebug() << "Target Vector List Packet";
+//    Debug::prettpPrintQVariantMap(p.getPayload());
+
+//    for (qint32 i = 0; i < output.size(); i++){
+//        QVariantList tv = output.at(i).toList();
+//        QVector3D v;
+//        if (tv.size() != 3){
+//            qDebug() << "BAD TARGET VECTOR. Size"  << tv.size();
+//        }
+//        else {
+//            v.setX(tv.at(0).toFloat());
+//            v.setY(tv.at(1).toFloat());
+//            v.setZ(tv.at(2).toFloat());
+//        }
+//        tvectors << v;
+//    }
+
+//    //// OVERWRITE WITH HARD CODED VECTORS:
+//    QVector3D v;
+//    tvectors.clear();
+//    v.setX(0.31921951f);  v.setY(0.31098159f);  v.setZ(0.89520353f);
+//    tvectors << v;
+//    v.setX(-0.31921951f); v.setY(0.31098159f);  v.setZ(0.89520353f);
+//    tvectors << v;
+//    v.setX(0);            v.setY(0);            v.setZ(1);
+//    tvectors << v;
+//    v.setX(0.31921951f);  v.setY(-0.31098159f); v.setZ(0.89520353f);
+//    tvectors << v;
+//    v.setX(-0.31921951f); v.setY(-0.31098159f); v.setZ(0.89520353f);
+//    tvectors << v;
+
+//    //eyetracker->setCalibrationVectors(tvectors);
+
+//}

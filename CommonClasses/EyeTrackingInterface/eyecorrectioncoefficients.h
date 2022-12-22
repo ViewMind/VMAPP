@@ -5,9 +5,11 @@
 #include <QJsonObject>
 #include <QHash>
 #include <QPointF>
+#include <QVector3D>
 #include "eyerealdata.h"
 #include "eyetrackerdata.h"
 #include "../LinearLeastSquares/linearleastsquaresfit.h"
+#include "../LinearLeastSquares/ordinaryleastsquares.h"
 
 class EyeCorrectionCoefficients
 {
@@ -18,11 +20,24 @@ public:
         qreal yr;
         qreal xl;
         qreal yl;
+        qreal zl;
+        qreal zr;
     };
 
     EyeCorrectionCoefficients();
 
-    void configureForCoefficientComputation(const QList<QPointF> &target);
+    void setMode(bool is3D);
+    bool isIn3DMode() const;
+
+    // 2D Calibration Functions.
+    void configureForCoefficientComputation(const QList<QPointF> &target);    
+
+    // 3D Calibration functions.
+    void configureForCoefficientComputationOf3DVectors(qint32 N_targets);
+    void set3DTargetVectors(const QList<QVector3D> &targetVectors);
+
+
+    // Common functions.
     void addPointForCoefficientComputation(const EyeRealData &etdata, qint32 calibrationTargetIndex);
     bool computeCoefficients();
 
@@ -47,20 +62,31 @@ public:
 
 
 private:
+
     LinearCoefficients xr;
     LinearCoefficients yr;
     LinearCoefficients xl;
     LinearCoefficients yl;
+    LinearCoefficients zr;
+    LinearCoefficients zl;
 
     RCoefficients R2;
 
     QList<qreal> xtarget;
     QList<qreal> ytarget;
+    QList<qreal> ztarget;
+
     QList< QList<EyeRealData> > calibrationData;
 
     QList< QList<EyeTrackerData> > fittedEyeDataPoints;
 
+    bool mode3D; // Flag to indicate whether we are doing a 3D calibration or 2D calibration.
+
     bool isPointInside(qreal x, qreal y, qreal upperLeftX, qreal upperLeftY, qreal side, qreal tolerance);
+    bool isVectorCloseEnough(qreal xt, qreal yt, qreal zt, qreal x, qreal y, qreal z, qreal tolerance);
+
+    bool computeCoefficients2D();
+    bool computeCoefficients3D();
 
 };
 

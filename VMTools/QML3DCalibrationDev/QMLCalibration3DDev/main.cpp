@@ -6,6 +6,7 @@
 #include "control.h"
 #include "../../../CommonClasses/debug.h"
 #include "../../../CommonClasses/LogInterface/staticthreadlogger.h"
+#include "../../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.h"
 
 // Debug Structure
 namespace Debug {
@@ -38,7 +39,6 @@ int main(int argc, char *argv[])
 
     if (QWindow *window = qobject_cast<QWindow*>(engine.rootObjects().at(0))){
         control.setWindowID(window->winId());
-        //control.runUnityRenderServer();
     }
 
     return app.exec();

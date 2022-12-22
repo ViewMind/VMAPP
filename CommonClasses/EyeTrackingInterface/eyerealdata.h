@@ -13,10 +13,18 @@ public:
     qreal xRight;
     qreal yLeft;
     qreal yRight;
+    qreal zLeft;
+    qreal zRight;
 
-    QString toString() const;
-    bool validRight() const;
-    bool validLeft() const;
+    QVector<qreal> leftVector() const;
+    QVector<qreal> rightVector() const;
+
+    QString toString(bool useFor3dData) const;
+    bool validRight(bool useFor3dData) const;
+    bool validLeft(bool useFor3dData) const;
+
+private:
+    bool useFor3dData;
 
 };
 
