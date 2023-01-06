@@ -154,8 +154,10 @@ void FlowControl::onReadyToRender() {
     if (DBUGBOOL(Debug::Options::RENDER_PACKET_DBUG)){
         StaticThreadLogger::warning("FlowControl::onReadyToRender","Render Packet DBug Enabled");
         RenderServerPacket p;
-        p.setPacketType(RenderServerPacketType::TYPE_2D_DBUG_ENABLE);
-        p.setPayloadField(RenderControlPacketFields::ENABLE_RENDER_P_DBUG,true);
+        p.setPacketType(RenderServerPacketType::TYPE_2D_DEBUG_CONTROL);
+        QVariantMap map;
+        map[RemoteRenderServerDebugControls::ENABLE_2D_RENDER_LOG] = true;
+        p.setPayloadField(RemoteRenderServerDebugControls::JSON_DICT_FIELD,map);
         renderServerClient.sendPacket(p);
     }
 
@@ -269,8 +271,8 @@ void FlowControl::onRequestUpdate(){
     EyeTrackerData data = eyeTracker->getLastData();
 
     qreal r = 0.01*displayImage.width();
-    RenderServerCircleItem *  left  = displayImage.addEllipse(static_cast<qint32>(data.xLeft-r),static_cast<qint32>(data.yLeft-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,255,0,100)));
-    RenderServerCircleItem *  right = displayImage.addEllipse(static_cast<qint32>(data.xRight-r),static_cast<qint32>(data.yRight-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,0,255,100)));
+    RenderServerCircleItem *  left  = displayImage.addEllipse(static_cast<qint32>(data.xl()-r),static_cast<qint32>(data.yl()-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,255,0,100)));
+    RenderServerCircleItem *  right = displayImage.addEllipse(static_cast<qint32>(data.xr()-r),static_cast<qint32>(data.yr()-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,0,255,100)));
 
     //StaticThreadLogger::log("FlowControl::onRequestUpdate","Sending experiment image rendering packet");
 

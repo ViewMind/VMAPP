@@ -117,8 +117,7 @@ namespace Globals{
 
    namespace RemoteRenderServerParameters {
       static const QString DIR = "render_server";
-      static const QString EXE = "DEV.exe";
-      //static const QString EXE = "3DCalibration.exe";
+      static const QString EXE = "RRS.exe";
       static const QString PORT_FILE = "selected_port";
    }
          
@@ -128,7 +127,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "21.0.3";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "22.0.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

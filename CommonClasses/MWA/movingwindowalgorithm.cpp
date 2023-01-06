@@ -10,11 +10,11 @@ void MovingWindowAlgorithm::setOnlineFixationAnalysisFileOutput(const QString &f
 }
 
 
-Fixation MovingWindowAlgorithm::calculateFixationsOnline(qreal x, qreal y, qreal timeStamp, qreal pupil, qreal schar, qreal word){
+Fixation MovingWindowAlgorithm::calculateFixationsOnline(qreal x, qreal y, qreal timeStamp, qreal pupil){
     Fixation fixation;
 
     // Creating the data point and adding it to the list.
-    Fixation::DataPoint p; p.x = x; p.y = y; p.timestamp = timeStamp; p.pupil = pupil; p.schar = schar; p.word = word;
+    Fixation::DataPoint p; p.x = x; p.y = y; p.timestamp = timeStamp; p.pupil = pupil;
     onlinePointsForFixation << p;
 
     QVariantMap logItem;

@@ -190,7 +190,7 @@ protected:
 
     // Feeds data to the online fixation maching. If a fixation is computed, it is stored in the rawdata structure.
     // The last two parameters are reading ONLY.
-    void computeOnlineFixations(const EyeTrackerData &data, qreal l_schar = 0, qreal l_word = 0, qreal r_schar = 0, qreal r_word = 0);
+    void computeOnlineFixations(const EyeTrackerData &data);
 
     // Logic to define which fixation is used for study logic.
     void storeStudyLogicFixation();

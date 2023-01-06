@@ -121,11 +121,6 @@ quint8 CalibrationTargets::isPointWithinCurrentTarget(qreal x, qreal y, qreal to
 
 }
 
-//RenderServerScene CalibrationTargets::getClearScreen(){
-//    canvas.clear();
-//    canvas.setBackgroundBrush(QBrush(Qt::gray));
-//    return canvas;
-//}
 
 QList<QPointF> CalibrationTargets::setupCalibrationSequence(qint32 npoints, qint32 hold_time_for_targets){
 
@@ -218,32 +213,6 @@ void CalibrationTargets::calibrationAnimationControl(bool start){
         animator.stopAnimation();
     }
 }
-
-//RenderServerScene CalibrationTargets::nextSingleTarget(){
-//    canvas.clear();
-
-//    if (indexInCalibrationSequence <= (calibrationSequenceIndex.size()-1)){
-//        indexInCalibrationSequence++;
-
-//        qreal offset = (R-r);
-
-//        qreal x = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).x();
-//        qreal y = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).y();
-
-//        RenderServerCircleItem *circle = canvas.addEllipse(0,0,2*R,2*R,QPen(Qt::black),QBrush(COLOR_OUTSIDE_CIRCLE_CALIBRATION));
-//        RenderServerCircleItem *innerCircle = canvas.addEllipse(0,0,2*r,2*r,QPen(Qt::black),QBrush(Qt::white));
-//        circle->setPos(x,y);
-//        innerCircle->setPos(x+offset,y+offset);
-
-//    }
-
-//    RenderServerScene image (canvas);
-//    return image;
-////    QImage image(static_cast<int>(canvas.width()),static_cast<int>(canvas.height()),QImage::Format_RGB888);
-////    QPainter painter( &image );
-////    canvas.render( &painter );
-////    return image;
-//}
 
 CalibrationTargets::~CalibrationTargets(){
 

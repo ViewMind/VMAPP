@@ -27,10 +27,13 @@ public:
 
     // This sets the calibration target class, initializes all variables and starts the calibration timer.
     // npoints can be 5 or 9 if anything other than 9 is used, 5 is assumed.
-    void startCalibrationSequence(qint32 width, qint32 height, qint32 npoints, qint32 ms_gather_time_for_calib_pt, qint32 ms_wait_time_calib_pt, float vFOV, float hFOV);
+    void startCalibrationSequence(qint32 width, qint32 height, qint32 npoints, qint32 ms_gather_time_for_calib_pt, qint32 ms_wait_time_calib_pt, bool mode3D);
+
+    // This is used for outside control of data gathering.
+    void controlDataGatheringOnCalibrationPoint(qint32 point, bool enable);
 
     // Required fro 3D calibrations as the values come from the render server.
-    void set3DCalibrationVectors(const QList<QVector3D> &targetVectors);
+    void set3DCalibrationVectors(const QList<QVector3D> &targetVectors, qreal validationRadious);
 
     // Adding the data point for calibration.
     void addDataPointForCalibration(float xl, float yl, float xr, float yr, float zl, float zr);

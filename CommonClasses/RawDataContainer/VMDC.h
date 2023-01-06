@@ -300,10 +300,12 @@ namespace VMDC {
        static const QString CALIBRATION_POINT_GATHERTIME  = "calib_pt_gather_time";
        static const QString CALIBRATION_POINT_WAITTIME  = "calib_pt_wait_time";
        static const QString CALIBRATION_PTS_NO_DATA     = "calibration_points_with_too_few_data_points";
+       static const QString CALIBRATION_NON_NORM_VECS   = "calibration_non_normalized_vectors";
+       static const QString CALIBRATION_VALIDATION_R    = "calibration_validation_radious";
        static const QStringList valid{VALIDATION_POINT_ACCEPTANCE_THRESHOLD,REQ_NUMBER_OF_ACCEPTED_POINTS,
                    VALIDATION_POINT_HIT_TOLERANCE,NUMBER_OF_CALIBRAION_POINTS,CALIBRATION_TARGET_LOCATION,LEFT_EYE_VALIDATION_DATA,RIGHT_EYE_VALIDATION_DATA,
                    CALIBRATION_TARGET_DIAMETER,COFICIENT_OF_DETERMINATION,MATH_ISSUES_FOR_CALIBRATION,CALIBRATION_POINT_GATHERTIME,
-                   CALIBRATION_POINT_WAITTIME, CALIBRATION_PTS_NO_DATA};
+                   CALIBRATION_POINT_WAITTIME, CALIBRATION_PTS_NO_DATA,CALIBRATION_NON_NORM_VECS,CALIBRATION_VALIDATION_R};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Subject Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }

@@ -51,7 +51,9 @@ public:
 
     virtual QString getCalibrationRecommendedEye() const;
 
-    virtual void setCalibrationVectors(const QList<QVector3D> &calibVecs);
+    virtual void setCalibrationVectors(const QList<QVector3D> &calibVecs, qreal validationR);
+
+    virtual void controlCalibrationPointDataStore(qint32 cpoint, bool enable);
 
     QList<QPointF> getCalibrationPoints() const;
 
@@ -61,7 +63,6 @@ public:
 
     void setEyeToTransmit(QString eye);
 
-    // If both vfov and hfov are greater than zero, then this will behave in 3 Mode.
     void setFieldOfView(qreal vfov, qreal hfov);
 
     EyeTrackerData getLastData() const;

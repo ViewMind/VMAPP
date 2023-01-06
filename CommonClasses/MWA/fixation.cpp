@@ -13,21 +13,12 @@ void Fixation::construct(const QList<DataPoint> &onlinePointsForFixation, bool i
     y = 0;
     pupil = 0;
     pupilZeroCount = 0;
-    sentence_char = 0;
-    sentence_word = 0;
-
-    qreal valid_chars = 0;
 
     for (qint32 i = 0; i < onlinePointsForFixation.size(); i++){
         x = x + onlinePointsForFixation.at(i).x;
         y = y + onlinePointsForFixation.at(i).y;
         pupil = pupil + onlinePointsForFixation.at(i).pupil;
-        // We need to make sure that in a reading experiment these are valid (fall within the sentence). They will be -1 if they are not.
-        if (onlinePointsForFixation.at(i).schar >= 0){
-            valid_chars++;
-            sentence_char = sentence_char + onlinePointsForFixation.at(i).schar;
-            sentence_word = sentence_word + onlinePointsForFixation.at(i).word;
-        }
+
         if (qAbs(pupil) < PUPIL_ZERO_TOL){
             pupilZeroCount++;
         }
@@ -36,15 +27,6 @@ void Fixation::construct(const QList<DataPoint> &onlinePointsForFixation, bool i
     x = x/size;
     y = y/size;
     pupil = pupil/size;
-
-    if (valid_chars > 0){
-        sentence_char = sentence_char/valid_chars;
-        sentence_word = sentence_word/valid_chars;
-    }
-    else {
-        sentence_char = 0;
-        sentence_word = 0;
-    }
 
     fixStart = onlinePointsForFixation.first().timestamp;
     fixEnd   = onlinePointsForFixation.last().timestamp;

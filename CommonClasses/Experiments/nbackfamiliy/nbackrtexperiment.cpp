@@ -340,11 +340,17 @@ void NBackRTExperiment::newEyeDataAvailable(const EyeTrackerData &data){
 
     // Not saving data during transition screens.
     if (tstate == TSF_START) return;
-    if (data.isLeftZero() && data.isRightZero()) return;
+    if (data.isLeftZero(false) && data.isRightZero(false)) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
     if (studyPhase == SP_EVALUATION){
-        rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+        rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(static_cast<qreal>(data.timestamp()),
+                                                                                    data.xr(),
+                                                                                    data.yr(),
+                                                                                    data.xl(),
+                                                                                    data.yl(),
+                                                                                    data.pr(),
+                                                                                    data.pl()));
     }
 
     computeOnlineFixations(data);

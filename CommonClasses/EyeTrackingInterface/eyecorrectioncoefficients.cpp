@@ -18,7 +18,7 @@ void EyeCorrectionCoefficients::configureForCoefficientComputation(const QList<Q
     }
 }
 
-void EyeCorrectionCoefficients::setMode(bool is3D){
+void EyeCorrectionCoefficients::set3DMode(bool is3D){
     mode3D = is3D;
 }
 
@@ -47,12 +47,18 @@ void EyeCorrectionCoefficients::addPointForCoefficientComputation(const EyeRealD
     }
 }
 
-void EyeCorrectionCoefficients::set3DTargetVectors(const QList<QVector3D> &targetVectors){
-    qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
+void EyeCorrectionCoefficients::set3DTargetVectors(const QList<QVector3D> &targetVectors, qreal validationRadiousValue){
+    //qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
+
+    // The vectors need to be normalized. So the original values must be saved.
+    nonNormalizedTargetVectors = targetVectors;
+    validationRadious = validationRadiousValue;
+
     for (qint32 i = 0; i < targetVectors.size(); i++){
-        xtarget << static_cast<qreal>(targetVectors.at(i).x());
-        ytarget << static_cast<qreal>(targetVectors.at(i).y());
-        ztarget << static_cast<qreal>(targetVectors.at(i).z());
+        QVector3D ntv = targetVectors.at(i).normalized();
+        xtarget << static_cast<qreal>(ntv.x());
+        ytarget << static_cast<qreal>(ntv.y());
+        ztarget << static_cast<qreal>(ntv.z());
     }
 }
 
@@ -242,13 +248,15 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
             EyeRealData erd = calibrationData.at(i).at(j);
             EyeTrackerData etd;
 
-            etd.setXR(xr.predict(erd.xRight));
-            etd.setYR(yr.predict(erd.yRight));
-            etd.setZR(zr.predict(erd.zRight));
+            etd.setXR(xr.predict(erd.xRight,erd.yRight,erd.zRight));
+            etd.setYR(yr.predict(erd.xRight,erd.yRight,erd.zRight));
+            etd.setZR(zr.predict(erd.xRight,erd.yRight,erd.zRight));
 
-            etd.setXL(xl.predict(erd.xLeft));
-            etd.setYL(yl.predict(erd.yLeft));
-            etd.setZL(zl.predict(erd.zLeft));
+            etd.setXL(xl.predict(erd.xLeft,erd.yLeft,erd.zLeft));
+            etd.setYL(yl.predict(erd.xLeft,erd.yLeft,erd.zLeft));
+            etd.setZL(zl.predict(erd.xLeft,erd.yLeft,erd.zLeft));
+
+            //qDebug() << "Raw Data Point" << erd.toString(true) << " Fitted to " << etd.toString(true);
 
             f << etd;
         }
@@ -406,7 +414,9 @@ bool EyeCorrectionCoefficients::isLeftEyeCalibrated(){
 }
 
 QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qreal tolerance, bool forLeftEye){
+
     QList<qint32> hits;
+
 
     for (qint32 i = 0; i < fittedEyeDataPoints.size(); i++){
 
@@ -430,8 +440,9 @@ QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qrea
             }
 
             if (mode3D){
-                qreal zref = ztarget.at(i);
-                if (isVectorCloseEnough(xref,yref,zref,x,y,z,tolerance)){
+                //qDebug() << "Fitted raw data point of" << x << y << z;
+                QVector3D nonNormalizedTargetVector = nonNormalizedTargetVectors.at(i);
+                if (isVectorCloseEnough(nonNormalizedTargetVector,x,y,z)){
                     counter++;
                 }
             }
@@ -473,8 +484,22 @@ bool EyeCorrectionCoefficients::isPointInside(qreal x, qreal y, qreal x_target, 
 
 }
 
-bool EyeCorrectionCoefficients::isVectorCloseEnough(qreal xt, qreal yt, qreal zt, qreal x, qreal y, qreal z, qreal tolerance){
-    qreal arg = (xt-x)*(xt-x) + (yt-y)*(yt-y) + (zt -z)*(zt -z);
-    qreal dis = qSqrt(arg);
-    return (dis <= tolerance);
+bool EyeCorrectionCoefficients::isVectorCloseEnough(QVector3D tv, qreal x, qreal y, qreal z){
+
+    qreal module = static_cast<qreal>(tv.length());
+    x = x*module;
+    y = y*module;
+    z = z*module;
+
+    qDebug() << "TARGET VECTOR" << tv << " Predicted Point" << x << y << z << "After using module" << module;
+
+    qreal xt = static_cast<qreal>(tv.x());
+    qreal yt = static_cast<qreal>(tv.y());
+    qreal zt = static_cast<qreal>(tv.z());
+
+    qreal sqrt_arg = (xt-x)*(xt-x) + (yt-y)*(yt-y) + (zt -z)*(zt -z);
+
+    qreal dis = qSqrt(sqrt_arg);
+
+    return (dis <= validationRadious);
 }

@@ -74,8 +74,14 @@ QList<QPointF> EyeTrackerInterface::getCalibrationPoints() const{
     return calibrationPoints;
 }
 
-void EyeTrackerInterface::setCalibrationVectors(const QList<QVector3D> &calibVecs){
+void EyeTrackerInterface::setCalibrationVectors(const QList<QVector3D> &calibVecs, qreal validationR){
     Q_UNUSED(calibVecs)
+    Q_UNUSED(validationR)
+}
+
+void EyeTrackerInterface::controlCalibrationPointDataStore(qint32 cpoint, bool enable){
+    Q_UNUSED(cpoint)
+    Q_UNUSED(enable)
 }
 
 

@@ -6,8 +6,6 @@
 
 namespace Globals {
 
-
-
    namespace HPReverb {
       static const QString NAME = "HP Omnicept";
       static const bool IS_VR = true;

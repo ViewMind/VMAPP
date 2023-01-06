@@ -15,9 +15,6 @@ public:
         qreal y;
         qreal timestamp;
         qreal pupil;
-        // Used only for reading.
-        qreal word;
-        qreal schar;
         QString toString() const { return "@" + QString::number(timestamp) + "(" + QString::number(x) + "," + QString::number(y) + ")"; }
     };
 

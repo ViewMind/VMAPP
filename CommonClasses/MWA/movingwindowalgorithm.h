@@ -41,7 +41,7 @@ public:
     void finalizeOnlineFixationLog();
 
     // Uses the exact same algorithm to compute the fixation with one data point at a time.
-    Fixation calculateFixationsOnline(qreal x, qreal y, qreal timeStamp, qreal pupil, qreal schar = 0, qreal word = 0);
+    Fixation calculateFixationsOnline(qreal x, qreal y, qreal timeStamp, qreal pupil);
     Fixation finalizeOnlineFixationCalculation(const QString &logfileIdentier = "");
 
     // Simple access to the parameters of the moving window algorithm

@@ -164,10 +164,16 @@ void GoNoGoExperiment::newEyeDataAvailable(const EyeTrackerData &data){
     if (ignoreData) return;
     if (gngState != GNGS_ESTIMULUS) return;
 
-    if (data.isLeftZero() && data.isRightZero()) return;
+    if (data.isLeftZero(false) && data.isRightZero(false)) return;
 
     // Format: Image ID, time stamp for right and left, word index, character index, sentence length and pupil diameter for left and right eye.
-    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(data.time,data.xRight,data.yRight,data.xLeft,data.yLeft,data.pdRight,data.pdLeft));
+    rawdata.addNewRawDataVector(ViewMindDataContainer::GenerateStdRawDataVector(static_cast<qreal>(data.timestamp()),
+                                                                                data.xr(),
+                                                                                data.yr(),
+                                                                                data.xl(),
+                                                                                data.yl(),
+                                                                                data.pr(),
+                                                                                data.pl()));
 
     // Checking if there is a fixation inside the correct target.
     computeOnlineFixations(data);

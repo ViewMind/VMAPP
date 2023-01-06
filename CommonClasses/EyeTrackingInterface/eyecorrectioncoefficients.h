@@ -26,7 +26,7 @@ public:
 
     EyeCorrectionCoefficients();
 
-    void setMode(bool is3D);
+    void set3DMode(bool is3D);
     bool isIn3DMode() const;
 
     // 2D Calibration Functions.
@@ -34,7 +34,7 @@ public:
 
     // 3D Calibration functions.
     void configureForCoefficientComputationOf3DVectors(qint32 N_targets);
-    void set3DTargetVectors(const QList<QVector3D> &targetVectors);
+    void set3DTargetVectors(const QList<QVector3D> &targetVectors, qreal validationRadiousValue);
 
 
     // Common functions.
@@ -76,6 +76,9 @@ private:
     QList<qreal> ytarget;
     QList<qreal> ztarget;
 
+    QList<QVector3D> nonNormalizedTargetVectors;
+    qreal validationRadious;
+
     QList< QList<EyeRealData> > calibrationData;
 
     QList< QList<EyeTrackerData> > fittedEyeDataPoints;
@@ -83,7 +86,7 @@ private:
     bool mode3D; // Flag to indicate whether we are doing a 3D calibration or 2D calibration.
 
     bool isPointInside(qreal x, qreal y, qreal upperLeftX, qreal upperLeftY, qreal side, qreal tolerance);
-    bool isVectorCloseEnough(qreal xt, qreal yt, qreal zt, qreal x, qreal y, qreal z, qreal tolerance);
+    bool isVectorCloseEnough(QVector3D tv, qreal x, qreal y, qreal z);
 
     bool computeCoefficients2D();
     bool computeCoefficients3D();

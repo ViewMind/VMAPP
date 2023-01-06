@@ -33,7 +33,7 @@ bool OrdinaryLeastSquares::computeCoefficients() {
     X.fill(samples);
 
     // The number of observations.
-    qint32 n = static_cast<qint32>(samples.size());
+    // qint32 n = static_cast<qint32>(samples.size());
 
     //qDebug() << "X Created. Size" << X.getDim().str() << X.checkMatrixConsistency();
 

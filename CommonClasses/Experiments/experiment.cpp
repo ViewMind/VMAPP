@@ -285,9 +285,9 @@ void Experiment::finalizeOnlineFixations(){
 
 }
 
-void Experiment::computeOnlineFixations(const EyeTrackerData &data, qreal l_schar, qreal l_word, qreal r_schar, qreal r_word){
-    lastFixationR = rMWA.calculateFixationsOnline(data.xRight,data.yRight,static_cast<qreal>(data.time),data.pdRight,r_schar,r_word);
-    lastFixationL = lMWA.calculateFixationsOnline(data.xLeft,data.yLeft,static_cast<qreal>(data.time),data.pdLeft,l_schar,l_word);
+void Experiment::computeOnlineFixations(const EyeTrackerData &data){
+    lastFixationR = rMWA.calculateFixationsOnline(data.xr(),data.yr(),static_cast<qreal>(data.timestamp()),data.pr());
+    lastFixationL = lMWA.calculateFixationsOnline(data.xl(),data.yl(),static_cast<qreal>(data.timestamp()),data.pl());
 
     if (lastFixationR.hasFinished() && rightEyeEnabled){
         rawdata.addFixationVectorR(fixationToVariantMap(lastFixationR));

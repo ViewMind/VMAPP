@@ -85,7 +85,7 @@ private:
 
     void setBackgroundImage();
 
-    //void constructAndSetCalibrationVector(RenderServerPacket p);
+    void processCalibrationControlPacket(RenderServerPacket p);
 
     QTimer requestUpdateTimer;
 

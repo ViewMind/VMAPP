@@ -96,77 +96,53 @@ void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, flo
     }
 }
 
-void CalibrationLeastSquares::set3DCalibrationVectors(const QList<QVector3D> &targetVectors){
-    coeffs.set3DTargetVectors(targetVectors);
+void CalibrationLeastSquares::set3DCalibrationVectors(const QList<QVector3D> &targetVectors, qreal validationRadious){
+
+    // In order to properly stored the no normalized vectors, we need to transform to a map. As a list of lists gets transformed into a single list.
+    QVariantMap tvecs;
+    for (qint32 i = 0; i < targetVectors.size(); i++){
+        QVariantList tv;
+        QVector3D vect = targetVectors.at(i);
+        tv << vect.x() << vect.y() << vect.z();
+        tvecs[QString::number(i)] = tv;
+    }
+
+    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_NON_NORM_VECS] = tvecs;
+    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_VALIDATION_R] = validationRadious;
+
+    coeffs.set3DTargetVectors(targetVectors,validationRadious);
 }
 
 void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 height, qint32 npoints,
                                                        qint32 ms_gather_time_for_calib_pt, qint32 ms_wait_time_calib_pt,
-                                                       float vFOV, float hFOV){
+                                                       bool mode3D){
 
-    // Initializing the calibration image generator.
-    calibrationTargets.initialize(width,height);
-
-    // Resetting the recommended eye to both
-    recommendedEye = VMDC::Eye::BOTH;
-
-    // Storing the information for the calibration validation data.
-    calibrationValidationData[VMDC::CalibrationFields::NUMBER_OF_CALIBRAION_POINTS] = npoints;
-
-    // Getting the centers of all the targets to be drawn.
-    QList<QPointF> calibrationPoints = calibrationTargets.setupCalibrationSequence(npoints,ms_gather_time_for_calib_pt + ms_wait_time_calib_pt);
-    calibrationCenters = calibrationPoints;
 
     // Creating the data point list.
-    if ((qAbs(vFOV) > 0) && (qAbs(hFOV) > 0)){ // A Less than zero value means we are using 3D Mode.
-        coeffs.setMode(true);
+    if (mode3D){ // A Less than zero value means we are using 3D Mode.
+        coeffs.set3DMode(true);
         coeffs.configureForCoefficientComputationOf3DVectors(npoints);
-
-        // Now we compute the target vectors.
-        // The following code are Gaston's trigonometric computations for the 3D target vectors representing 2D points,
-        // Assuming that the rectangle of width and height provided occupies the entire screen, exactly in the HMD.
-        // More specifically, it assumes the rectangle lines up perfectly wih the top and bottom of the HMD screen (all visible).
-
-        float w = static_cast<float>(width);
-        float h = static_cast<float>(height);
-
-        //float hFOV = vFOV*w/h;
-        float zx = w/(2*qTan(qDegreesToRadians(hFOV)/2));
-        float zy = h/(2*qTan(qDegreesToRadians(vFOV)/2));
-        float z = (zx+zy)/2;
-
-        QList<QVector3D> target_vectors;
-
-        for (qint32 i = 0; i < calibrationPoints.size(); i++){
-
-            float x = static_cast<float>(calibrationPoints.at(i).x());
-            float y = static_cast<float>(calibrationPoints.at(i).y());
-
-            x = w/2  - x;
-            y = h/2  - y;
-
-            float module = static_cast<float>(qSqrt(x*x + y*y + z*z));
-
-            QVector3D tvector;
-            tvector.setX(x/module);
-            tvector.setY(y/module);
-            tvector.setZ(z/module);
-
-            qDebug() << "TARGET VECTOR OF" << tvector << "hFOV" << hFOV << "compared to" << vFOV*w/h << "vFOV" << vFOV;
-
-            target_vectors << tvector;
-
-        }
-
-        coeffs.set3DTargetVectors(target_vectors);
-
     }
     else {
-        coeffs.setMode(false);
+        // Initializing the calibration image generator.
+        calibrationTargets.initialize(width,height);
+
+        // Resetting the recommended eye to both
+        recommendedEye = VMDC::Eye::BOTH;
+
+        // Storing the information for the calibration validation data.
+        calibrationValidationData[VMDC::CalibrationFields::NUMBER_OF_CALIBRAION_POINTS] = npoints;
+
+        // Getting the centers of all the targets to be drawn.
+        QList<QPointF> calibrationPoints = calibrationTargets.setupCalibrationSequence(npoints,ms_gather_time_for_calib_pt + ms_wait_time_calib_pt);
+        calibrationCenters = calibrationPoints;
+
+        coeffs.set3DMode(false);
         coeffs.configureForCoefficientComputation(calibrationPoints);
+        calibrationTargets.calibrationAnimationControl(true);
     }
 
-    numberOfCalibrationPoints = static_cast<qint32>(calibrationPoints.size());
+    numberOfCalibrationPoints = static_cast<qint32>(npoints);
 
     // Initializing the index and the structure for current collecting
     currentCalibrationPointIndex = -1;
@@ -176,30 +152,49 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
     calibration_gather_time = ms_gather_time_for_calib_pt;
     calibration_wait_time = ms_wait_time_calib_pt;
 
-    calibrationTargets.calibrationAnimationControl(true);
+}
+
+void CalibrationLeastSquares::controlDataGatheringOnCalibrationPoint(qint32 point, bool enable){
+    if (point == -1) return;  // The first command is the calibration stop fo the middle start point.
+
+    if (enable){
+        isDataGatheringEnabled = true;
+        currentCalibrationPointIndex = point;
+    }
+    else {
+        isDataGatheringEnabled = false;
+        if (point == (numberOfCalibrationPoints-1)){
+            // We've reached the end.
+            finalizeCalibrationProcess();
+        }
+    }
 }
 
 void CalibrationLeastSquares::finalizeCalibrationProcess() {
-    qDebug() << "Finalizing Calibration Process";
+    //qDebug() << "Finalizing Calibration Process";
     isDataGatheringEnabled = false;
     isCalibratingFlag = false;
 
-    qDebug() << "Computing Coefficients";
+    //qDebug() << "Computing Coefficients";
     successfullyComputedCoefficients = coeffs.computeCoefficients();
 
-    qDebug() << "Generate calibration report";
+    //qDebug() << "Generate calibration report";
     // Now we generate the calibration report.
     generateCalibrationReport();
 
-    qDebug() << "Sending Calibration Done Signal";
+    //qDebug() << "Sending Calibration Done Signal";
     emit CalibrationLeastSquares::calibrationDone();
 }
 
 void CalibrationLeastSquares::generateCalibrationReport(){
     QStringList lines;
 
-    qDebug() << "Generating Calibration Report. Is Mode 3D" << coeffs.isIn3DMode();
+    //qDebug() << "Generating Calibration Report. Is Mode 3D" << coeffs.isIn3DMode();
 
+    QString mode = "2D";
+    if (coeffs.isIn3DMode()) mode = "3D";
+
+    lines << "Calibration Report. Mode: " + mode;
     lines << "Validation Threshold " + QString::number(validationApproveThreshold)
              + " %. Required Number of Passing Targets: " + QString::number(validationPointsToPassForAcceptedValidation);
 

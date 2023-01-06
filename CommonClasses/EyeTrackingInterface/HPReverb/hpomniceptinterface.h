@@ -30,7 +30,9 @@ public:
 
     QString getCalibrationRecommendedEye() const override;
 
-    void setCalibrationVectors(const QList<QVector3D> &calibVecs) override;
+    void setCalibrationVectors(const QList<QVector3D> &calibVecs, qreal validationR) override;
+
+    void controlCalibrationPointDataStore(qint32 cpoint, bool enable) override;
 
 
 private slots:

@@ -47,6 +47,8 @@ SOURCES += main.cpp \
     ../../CommonClasses/HWRecog/hwrecognizer.cpp \
     ../../CommonClasses/LinearLeastSquares/linearcoefficients.cpp \
     ../../CommonClasses/LinearLeastSquares/linearleastsquaresfit.cpp \
+    ../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.cpp \
+    ../../CommonClasses/LinearLeastSquares/simplematrix.cpp \
     ../../CommonClasses/LogInterface/loggerthread.cpp \
     ../../CommonClasses/LogInterface/staticthreadlogger.cpp \
     ../../CommonClasses/MWA/fixation.cpp \
@@ -106,6 +108,8 @@ HEADERS += \
     ../../CommonClasses/HWRecog/hwrecognizer.h \
     ../../CommonClasses/LinearLeastSquares/linearcoefficients.h \
     ../../CommonClasses/LinearLeastSquares/linearleastsquaresfit.h \
+    ../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.h \
+    ../../CommonClasses/LinearLeastSquares/simplematrix.h \
     ../../CommonClasses/LogInterface/loggerthread.h \
     ../../CommonClasses/LogInterface/staticthreadlogger.h \
     ../../CommonClasses/MWA/fixation.h \

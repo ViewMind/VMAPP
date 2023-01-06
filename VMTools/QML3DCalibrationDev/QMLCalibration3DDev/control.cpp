@@ -71,11 +71,12 @@ void Control::onEyeTrackerControl(quint8 code) {
 }
 
 void Control::startCalibration() {
+
     EyeTrackerCalibrationParameters calibrationParams;
     calibrationParams.forceCalibration = true;
     calibrationParams.name = "check_coeff.txt"; // In order to take a look and check the results.
-    calibrationParams.number_of_calibration_points = 5;
-    //calibrationParams.number_of_calibration_points = 9;
+    //calibrationParams.number_of_calibration_points = 5;
+    calibrationParams.number_of_calibration_points = 9;
 
     // Making sure the right eye is used, in both the calibration and the experiment.
     eyetracker->setEyeToTransmit(VMDC::Eye::BOTH);
@@ -84,6 +85,7 @@ void Control::startCalibration() {
     validation_point_acceptance_threshold = 60;
     calibrationParams.gather_time = 2000;
     calibrationParams.wait_time = 1000;
+    calibrationParams.mode3D = true;
 
     // Testing validations parameters.
     QVariantMap calibrationValidationParameters;
@@ -97,6 +99,24 @@ void Control::startCalibration() {
     eyetracker->configureCalibrationValidation(calibrationValidationParameters);
     eyetracker->setFieldOfView(renderServer.getVerticalFieldOfView(),renderServer.getHorizontalFieldOfView());
     eyetracker->calibrate(calibrationParams);
+
+    if (calibrationParams.mode3D) {
+
+        // We need to disable the 2D rendeering
+        renderServer.sendEnable2DRenderPacket(false);
+
+        // We need to send the request for the 3D Calibration.
+        RenderServerPacket p;
+        p.setPacketType(RenderServerPacketType::TYPE_CALIB_CONTROL);
+        p.setPayloadField(CalibrationControlPacketFields::COMMAND,CalibrationControlCommands::CMD_SETUP);
+        p.setPayloadField(CalibrationControlPacketFields::GATHER_TIME,calibrationParams.gather_time);
+        // The calibration "waits" the calibration point "moves"
+        p.setPayloadField(CalibrationControlPacketFields::MOVE_TIME,calibrationParams.wait_time);
+        p.setPayloadField(CalibrationControlPacketFields::N_CALIB_POINTS,calibrationParams.number_of_calibration_points);
+
+        renderServer.sendPacket(p);
+
+    }
 
 }
 
@@ -243,10 +263,57 @@ void Control::onNewPacketArrived(){
             setBackgroundImage();
         }
     }
-
+    else if (packet.getType() == RenderServerPacketType::TYPE_CALIB_CONTROL){
+        processCalibrationControlPacket(packet);
+    }
     else {
         // This is part of the of the Simulated 3D Control Study.
         qDebug() << "Got Packet of Type" << packet.getType();
+    }
+}
+
+void Control::processCalibrationControlPacket(RenderServerPacket p){
+
+    qint32 command = p.getPayloadField(CalibrationControlPacketFields::COMMAND).toInt();
+
+    if (command == CalibrationControlCommands::CMD_SETUP){
+        // This is the calibration point vector.
+        QVariantList x = p.getPayloadField(CalibrationControlPacketFields::CALIBRATION_TARGETS_X).toList();
+        QVariantList y = p.getPayloadField(CalibrationControlPacketFields::CALIBRATION_TARGETS_Y).toList();
+        QVariantList z = p.getPayloadField(CalibrationControlPacketFields::CALIBRATION_TARGETS_Z).toList();
+        qreal vR       = p.getPayloadField(CalibrationControlPacketFields::VALIDATION_R).toReal();
+        QList<QVector3D> target_vectors;
+
+        qDebug() << "TARGET VECTOR RECEIVED. Validation Radious of" << vR;
+
+        if ((x.size() != y.size()) || (y.size() != z.size())){
+            qDebug() << "Wrong sizes" << x.size() << y.size() << z.size();
+        }
+
+        for (qint32 i = 0; i < x.size(); i++){
+            QVector3D target_vector;
+            target_vector.setX(x.at(i).toFloat());
+            target_vector.setY(y.at(i).toFloat());
+            target_vector.setZ(z.at(i).toFloat());
+            qDebug() << "Target Vector " << i << " is " <<  target_vector << " when normalized we get " << target_vector.normalized();
+            target_vectors << target_vector;
+        }
+
+        eyetracker->setCalibrationVectors(target_vectors,vR);
+
+    }
+    else if (command == CalibrationControlCommands::CMD_CALIBRATION_POINT_GATHER){
+        qint32 cpoint = p.getPayloadField(CalibrationControlPacketFields::CALIB_PT_INDEX).toInt();
+        qDebug() << "Start gathering data for calibration point" << cpoint;
+        eyetracker->controlCalibrationPointDataStore(cpoint,true);
+    }
+    else if (command == CalibrationControlCommands::CMD_CALIBRATION_POINT_STOP){
+        qint32 cpoint = p.getPayloadField(CalibrationControlPacketFields::CALIB_PT_INDEX).toInt();
+        qDebug() << "Stop gathering data for calibration point" << cpoint;
+        eyetracker->controlCalibrationPointDataStore(cpoint,false);
+    }
+    else {
+        qDebug() << "Received unknown command for calibration control" << command;
     }
 }
 
@@ -322,43 +389,3 @@ void Control::onRequestTimerUpdate() {
 
 }
 
-//void Control::constructAndSetCalibrationVector(RenderServerPacket p){
-
-//    QList<QVector3D> tvectors;
-
-//    QVariantList output = p.getPayloadField(CalibrationPointRequestFields::TARGETS_3D).toList();
-
-//    qDebug() << "Target Vector List Packet";
-//    Debug::prettpPrintQVariantMap(p.getPayload());
-
-//    for (qint32 i = 0; i < output.size(); i++){
-//        QVariantList tv = output.at(i).toList();
-//        QVector3D v;
-//        if (tv.size() != 3){
-//            qDebug() << "BAD TARGET VECTOR. Size"  << tv.size();
-//        }
-//        else {
-//            v.setX(tv.at(0).toFloat());
-//            v.setY(tv.at(1).toFloat());
-//            v.setZ(tv.at(2).toFloat());
-//        }
-//        tvectors << v;
-//    }
-
-//    //// OVERWRITE WITH HARD CODED VECTORS:
-//    QVector3D v;
-//    tvectors.clear();
-//    v.setX(0.31921951f);  v.setY(0.31098159f);  v.setZ(0.89520353f);
-//    tvectors << v;
-//    v.setX(-0.31921951f); v.setY(0.31098159f);  v.setZ(0.89520353f);
-//    tvectors << v;
-//    v.setX(0);            v.setY(0);            v.setZ(1);
-//    tvectors << v;
-//    v.setX(0.31921951f);  v.setY(-0.31098159f); v.setZ(0.89520353f);
-//    tvectors << v;
-//    v.setX(-0.31921951f); v.setY(-0.31098159f); v.setZ(0.89520353f);
-//    tvectors << v;
-
-//    //eyetracker->setCalibrationVectors(tvectors);
-
-//}

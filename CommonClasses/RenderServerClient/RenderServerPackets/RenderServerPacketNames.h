@@ -8,12 +8,31 @@ namespace RenderServerPacketType {
    static const QString TYPE_LOG_LOCATION             = "log_location";
    static const QString TYPE_2D_RENDER                = "render_2d";             // RRS receives this packet to know where to draw 2D.
    static const QString TYPE_2D_CONTROL               = "render_2d_control";     // RRS sends this packet so that the receiver knows the resolution is getting.  It also receives this packet so that it knows to go into 2D render mode or not.
-   static const QString TYPE_2D_DBUG_ENABLE           = "debug_enable";
+   static const QString TYPE_2D_DEBUG_CONTROL         = "debug_control";         // Used to send debug options to the RRS.
    static const QString TYPE_IMG_SIZE_REQ             = "img_size_req";          // Requests an image dimensions.
    static const QString TYPE_LOG_MESSAGE              = "log_message";           // Numbered packets with a message for logging. Used almost exclusively on debug.
    static const QString TYPE_3DSTUDY_CONTROL          = "3D_study_control";      // Control packet containing generic 3D study commands that tells the server what to do.
    static const QString TYPE_STUDY_DESCRIPTION        = "study_description";     // The contentes of the packet represent the study description for a given 3D Study.
    static const QString TYPE_STUDY_DATA               = "study_data";            // Study data which signals the end of the study.
+   static const QString TYPE_CALIB_CONTROL            = "calibration_control";        // Calibration control packet.
+}
+
+namespace CalibrationControlPacketFields {
+   static const QString COMMAND               = "cmd";      // The command.
+   static const QString CALIBRATION_TARGETS_X = "x";       // The calibration targets
+   static const QString CALIBRATION_TARGETS_Y = "y";       // The calibration targets
+   static const QString CALIBRATION_TARGETS_Z = "z";       // The calibration targets
+   static const QString GATHER_TIME           = "gt";       // Gather Timer
+   static const QString MOVE_TIME             = "mt";       // Move Time;
+   static const QString N_CALIB_POINTS        = "n";        // Number of calibration points.
+   static const QString CALIB_PT_INDEX        = "ccp";      // Current Calibration point
+   static const QString VALIDATION_R          = "vR";       // The validation Radious
+}
+
+namespace RemoteRenderServerDebugControls {
+   static const QString JSON_DICT_FIELD            = "dbug";
+   static const QString ENABLE_2D_RENDER_LOG      = "enable_2d_render_log";
+   static const QString ENABLE_3D_HMD_LASER_SIGHT = "enable_3d_hmd_laser_sight";
 }
 
 namespace Study3DNames {
@@ -22,10 +41,12 @@ namespace Study3DNames {
 
 }
 
-namespace CalibrationPointRequestFields {
-   static const QString TARGETS_2D_X = "vector_2d_target_x";
-   static const QString TARGETS_2D_Y = "vector_2d_target_y";
-   static const QString TARGETS_3D = "vector_3d_target_centers";
+namespace CalibrationControlCommands {
+   static const int CMD_SETUP                        = 0;
+   static const int CMD_CALIBRATION_START            = 1;
+   static const int CMD_CALIBRATION_POINT_GATHER     = 2;
+   static const int CMD_CALIBRATION_POINT_STOP       = 3;
+   static const int CMD_CALIBRATION_END              = 4;
 }
 
 namespace Study3DControlCommands {

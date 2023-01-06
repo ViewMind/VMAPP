@@ -177,7 +177,7 @@ void HPOmniceptInterface::calibrate(EyeTrackerCalibrationParameters params){
         calibration.startCalibrationSequence(static_cast<qint32>(screenWidth),
                                              static_cast<qint32>(screenHeight),
                                              params.number_of_calibration_points,
-                                             params.gather_time,params.wait_time,vFOV,hFOV);
+                                             params.gather_time,params.wait_time,params.mode3D);
 
         calibrationPoints = calibration.getCalibratiionTargetCenters();
 
@@ -210,8 +210,12 @@ void HPOmniceptInterface::onCalibrationFinished(){
     emit HPOmniceptInterface::eyeTrackerControl(ET_CODE_CALIBRATION_DONE);
 }
 
-void HPOmniceptInterface::setCalibrationVectors(const QList<QVector3D> &calibVecs){
-    calibration.set3DCalibrationVectors(calibVecs);
+void HPOmniceptInterface::setCalibrationVectors(const QList<QVector3D> &calibVecs, qreal validationR){
+    calibration.set3DCalibrationVectors(calibVecs,validationR);
+}
+
+void HPOmniceptInterface::controlCalibrationPointDataStore(qint32 cpoint, bool enable){
+    calibration.controlDataGatheringOnCalibrationPoint(cpoint,enable);
 }
 
 QString HPOmniceptInterface::getCalibrationValidationReport() const{
