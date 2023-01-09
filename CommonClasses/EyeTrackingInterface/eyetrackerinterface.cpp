@@ -8,8 +8,7 @@ EyeTrackerInterface::EyeTrackerInterface(QObject *parent, qreal width, qreal hei
     eyeToTransmit = VMDC::Eye::BOTH;
     eyeTrackerEnabled = false;
     calib_retry_msg = CRM_NONE; // By setting this to none, basically nothing will change unless the message is especifically implemented.
-    vFOV = -1;
-    hFOV = -1;
+    mode3D = true;
 }
 
 void EyeTrackerInterface::setEyeToTransmit(QString eye){
@@ -44,9 +43,13 @@ void EyeTrackerInterface::enableUpdating(bool enable){
 void EyeTrackerInterface::disconnectFromEyeTracker(){
 }
 
-void EyeTrackerInterface::setFieldOfView(qreal vfov, qreal hfov){
-    vFOV = static_cast<float>(vfov);
-    hFOV = static_cast<float>(hfov);
+
+void EyeTrackerInterface::setEyeTrackerTo3DMode(bool enable){
+    mode3D = enable;
+}
+
+bool EyeTrackerInterface::isEyeTrackerIn3DMode() const {
+    return mode3D;
 }
 
 void EyeTrackerInterface::calibrate(EyeTrackerCalibrationParameters params){

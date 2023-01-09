@@ -8,13 +8,14 @@ namespace RenderServerPacketType {
    static const QString TYPE_LOG_LOCATION             = "log_location";
    static const QString TYPE_2D_RENDER                = "render_2d";             // RRS receives this packet to know where to draw 2D.
    static const QString TYPE_2D_CONTROL               = "render_2d_control";     // RRS sends this packet so that the receiver knows the resolution is getting.  It also receives this packet so that it knows to go into 2D render mode or not.
-   static const QString TYPE_2D_DEBUG_CONTROL         = "debug_control";         // Used to send debug options to the RRS.
    static const QString TYPE_IMG_SIZE_REQ             = "img_size_req";          // Requests an image dimensions.
    static const QString TYPE_LOG_MESSAGE              = "log_message";           // Numbered packets with a message for logging. Used almost exclusively on debug.
    static const QString TYPE_3DSTUDY_CONTROL          = "3D_study_control";      // Control packet containing generic 3D study commands that tells the server what to do.
    static const QString TYPE_STUDY_DESCRIPTION        = "study_description";     // The contentes of the packet represent the study description for a given 3D Study.
    static const QString TYPE_STUDY_DATA               = "study_data";            // Study data which signals the end of the study.
-   static const QString TYPE_CALIB_CONTROL            = "calibration_control";        // Calibration control packet.
+   static const QString TYPE_CALIB_CONTROL            = "calibration_control";   // Calibration control packet.
+   static const QString TYPE_HAND_CALIB_CONTROL       = "hand_calibration_control";   // Controls hand calibration.
+   static const QString TYPE_DBUG_CONTROL             = "debug_control";              // Enable and disables several debug features.
 }
 
 namespace CalibrationControlPacketFields {
@@ -33,6 +34,19 @@ namespace RemoteRenderServerDebugControls {
    static const QString JSON_DICT_FIELD            = "dbug";
    static const QString ENABLE_2D_RENDER_LOG      = "enable_2d_render_log";
    static const QString ENABLE_3D_HMD_LASER_SIGHT = "enable_3d_hmd_laser_sight";
+}
+
+namespace HandCalibrationRequest {
+   static const int CALIBRATION_LEFT  = 0;
+   static const int CALIBRATION_RIGHT = 1;
+   static const int CALIBRATION_BOTH  = 2;
+}
+
+namespace PacketDebugControl {
+   static const QString JSON_DICT_FIELD           = "dbug";
+   static const QString ENABLE_RENDER_2D_LOG      = "enable_2d_render_log";
+   static const QString ENABLE_3D_HMD_LASER_SIGHT = "enable_3d_hmd_laser_sight";
+
 }
 
 namespace Study3DNames {
@@ -57,10 +71,8 @@ namespace Study3DControlCommands {
    static const int CMD_STUDY_START                  = 3;
    static const int CMD_START_EXAMPLES               = 4;
    static const int CMD_NEXT_EXAMPLES                = 5;
-   static const int CMD_START_HAND_CALIBRATION       = 6;
-   static const int CMD_END_HAND_CALIBRATION         = 7;
-   static const int CMD_REQUEST_STUDY_DESCRIPTION    = 8;
-   static const int CMD_EYEPOS_AND_SYNCH             = 9;
+   static const int CMD_REQUEST_STUDY_DESCRIPTION    = 6;
+   static const int CMD_EYEPOS_AND_SYNCH             = 7;
 
 }
 
@@ -140,6 +152,14 @@ namespace PacketStudyDescription {
    static const QString STUDY_DESC = "study_description";
    static const QString ELEMENTS   = "elements_to_track";
 
+}
+
+namespace PacketHandCalibrationControl {
+  static const QString VERTICAL       = "vertical";
+  static const QString HORIZONTAL     = "horizonal";
+  static const QString HANDS          = "hands";
+  static const QString H_CALIB_RESULT = "h_calibration_result";
+  static const QString V_CALIB_RESULT = "v_calibration_result";
 }
 
 namespace Packet3DStudyControl  {

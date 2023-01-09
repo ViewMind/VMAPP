@@ -41,7 +41,6 @@ namespace Debug {
        const QString SELECTED_DOCTOR      = "selected_doctor";
        const QString QC_STUDY_TO_LOAD     = "qc_study_to_load";
        const QString VIEW_INDEX_TO_LOAD   = "view_index_to_show";
-       const QString SHOW_EYES_IN_STUDY   = "show_eyes_in_study";
        const QString FIX_QC_SHA_CHECKS    = "fix_qc_sha_checks";
        const QString STUDY_CONFIG_MAP     = "study_configutation_map";
        const QString LOAD_CALIBRATION_K   = "load_calibration_coeffs";

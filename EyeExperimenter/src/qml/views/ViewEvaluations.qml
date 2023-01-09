@@ -86,14 +86,26 @@ ViewBase {
 
     }
 
-    function setUpStudyNames(study_names){
+    function setUpStudyNames(study_names, uses_h_calib){
 
         let eval_steps = loader.getStringListForKey("viewevaluation_evaluation_steps")
+        let eval_steps_with_hcalib = loader.getStringListForKey("viewevaluation_evaluation_steps_with_hand_calib")
 
         let plineSetup = {};
-        for (let i in study_names){
-            plineSetup[study_names[i]] = eval_steps;
+
+
+        for (let i = 0; i < study_names.length; i++){
+            if (uses_h_calib[i]){
+                plineSetup[study_names[i]] = eval_steps_with_hcalib;
+            }
+            else {
+                plineSetup[study_names[i]] = eval_steps;
+            }
         }
+
+//        for (let i in study_names){
+//            plineSetup[study_names[i]] = eval_steps;
+//        }
 
         // Adding the "finish" step. No substeps.
         plineSetup[loader.getStringForKey("viewevaluation_finish")] = []
@@ -137,7 +149,7 @@ ViewBase {
 
     function calibrationValidated(){
         evaluationRun.vmIsCalibrated = true;
-        evaluationRun.prepareNextStudy(false);
+        evaluationRun.prepareNextStudyOrHandCalibration(false);
     }
 
     function setCalibrationSpeedToSlow(slow){
@@ -418,7 +430,7 @@ ViewBase {
                 else return false;
             }
             onClickSignal: {
-                evaluationRun.prepareNextStudy(true)
+                evaluationRun.prepareNextStudyOrHandCalibration(true)
             }
         }
 

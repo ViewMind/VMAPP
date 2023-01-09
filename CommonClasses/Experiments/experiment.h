@@ -77,6 +77,8 @@ public:
     // This is the function that gets called to render explation screens.
     void renderCurrentStudyExplanationScreen();
 
+    qlonglong getElapsedTimeFromStart() const;
+
 signals:
 
     // Should be emitted when the experiment is finalized
@@ -179,6 +181,8 @@ protected:
 
     // Timer to measure different areas as required by most studies.
     QElapsedTimer timeMeasurer;
+
+    QElapsedTimer timeFromStudyStart;
 
     void keyPressEvent(QKeyEvent *event) override;
 

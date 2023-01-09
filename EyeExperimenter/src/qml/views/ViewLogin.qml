@@ -87,15 +87,18 @@ ViewBase {
                         loader.getStringForKey("viewevaluation_eval_nbackrt"),
                         loader.getStringForKey("viewevaluation_eval_nbackvs"),
                         "NOT STRING - Perception",
-                        loader.getStringForKey("viewevaluation_eval_gonogo")
+                        loader.getStringForKey("viewevaluation_eval_gonogo"),
+                        loader.getStringForKey("viewevaluation_eval_gonogo3D")
                     ];
 
                 var study_names = [];
+                var uses_h_calib = [];
 
                 for (var s = 0; s < all_studies.length; s++){
                     var study_fields = all_studies[s].split("--");
                     var config = {};
                     var name = "unknown"
+                    var hcalib = false;
                     for (var f = 0; f < study_fields.length; f++){
                         var key_and_value = study_fields[f].split("-");
                         if (key_and_value[0] === VMGlobals.vmUNIQUE_STUDY_ID){
@@ -104,17 +107,24 @@ ViewBase {
                         else if (key_and_value[0] === VMGlobals.vmSCP_EYES){
                             viewEvaluations.vmSelectedEye = key_and_value[1]
                         }
-                        config[key_and_value[0]] = key_and_value[1]
+                        else {
+                           if (key_and_value[0] === VMGlobals.vmSCP_STUDY_REQ_H_CALIB){
+                               hcalib = true;
+                           }
+                           config[key_and_value[0]] = key_and_value[1]
+                        }
+
                     }
-                    console.log("   DBUG: Adding Study " + name)
+                    console.log("   DBUG: Adding Study " + name + " With use of hand calibration equal to " + hcalib);
                     study_names.push(name);
+                    uses_h_calib.push(hcalib);
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(config);
                 }
                 viewEvaluations.vmDebugSubScreen = viewEvaluations.vmSC_INDEX_EVALUATION_SCREEN
                 //viewEvaluations.vmDebugSubScreen = viewEvaluations.vmSC_INDEX_EVALUATION_FINISHED
                 mainWindow.swipeTo(VMGlobals.vmSwipeIndexEvalView);
                 //console.log("Study names: " + JSON.stringify(study_names));
-                viewEvaluations.setUpStudyNames(study_names)
+                viewEvaluations.setUpStudyNames(study_names,uses_h_calib);
                 viewEvaluations.vmSelectedDoctor = dbug_selected_doctor;
             }
             else if (dbug_qc_file_to_set !== ""){

@@ -102,6 +102,7 @@ QtObject {
     readonly property int vmINDEX_NBACKVS:                    5
     readonly property int vmINDEX_PERCEPTION:                 6
     readonly property int vmINDEX_GONOGO:                     7
+    readonly property int vmINDEX_GONOGO3D:                   8
 
     readonly property string vmSTUDY_BINDING:                "Binding";
     readonly property string vmSTUDY_GONOGO :                "Go No-Go";
@@ -110,6 +111,7 @@ QtObject {
     readonly property string vmSTUDY_NBACKVS:                "NBack VS";
     readonly property string vmSTUDY_PERCEPTION:             "Perception";
     readonly property string vmSTUDY_READING:                "Reading";
+    readonly property string vmSTUDY_GONOGO3D:               "Go No-Go 3D Spheres";
 
     // Study configuration parameter names.
     readonly property string vmSCP_EYES:                     "valid_eye";
@@ -119,6 +121,8 @@ QtObject {
     readonly property string vmSCP_BINDING_TYPE:             "binding_type";
     readonly property string vmSCP_PERCEPTION_PART:          "perception_part";
     readonly property string vmSCP_NBACK_LIGHTUP:            "nback_light_all"
+    readonly property string vmSCP_IS_STUDY_3D:              "is_3d_study";
+    readonly property string vmSCP_STUDY_REQ_H_CALIB:        "study_reqs_hand_calib";
 
     // Study configuration parameter values
     readonly property string vmSCV_BINDING_TARGETS_2:        "2";
@@ -135,20 +139,10 @@ QtObject {
     readonly property string vmSCV_LANG_IS:                  "Iselandic";
     readonly property string vmSCV_BINDING_TYPE_BOUND:       "bound";
     readonly property string vmSCV_BINDING_TYPE_UNBOUND:     "unbound";
-    readonly property string vmSCV_PERCEPTION_TYPE_TRAINING: "training";
-    readonly property string vmSCV_PERCEPTION_TYPE_REHAB:    "rehab";
     readonly property string vmSCV_NBACKVS_TARGETS_3:        "3";
     readonly property string vmSCV_NBACKVS_TARGETS_4:        "4";
     readonly property string vmSCV_NBACKVS_TARGETS_5:        "5";
     readonly property string vmSCV_NBACKVS_TARGETS_6:        "6";
-    readonly property string vmSCV_PERCEPTION_STUDY_PART_1:  "Part1";
-    readonly property string vmSCV_PERCEPTION_STUDY_PART_2:  "Part2";
-    readonly property string vmSCV_PERCEPTION_STUDY_PART_3:  "Part3";
-    readonly property string vmSCV_PERCEPTION_STUDY_PART_4:  "Part4";
-    readonly property string vmSCV_PERCEPTION_STUDY_PART_5:  "Part5";
-    readonly property string vmSCV_PERCEPTION_STUDY_PART_6:  "Part6";
-    readonly property string vmSCV_PERCEPTION_STUDY_PART_7:  "Part7";
-    readonly property string vmSCV_PERCEPTION_STUDY_PART_8:  "Part8";
 
     // Option Key Names for The Study Configuration options
     readonly property string vmSCO_OPTION_NAME:              "option_name"

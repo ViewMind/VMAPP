@@ -63,7 +63,9 @@ public:
 
     void setEyeToTransmit(QString eye);
 
-    void setFieldOfView(qreal vfov, qreal hfov);
+    void setEyeTrackerTo3DMode(bool enable);
+
+    bool isEyeTrackerIn3DMode() const;
 
     EyeTrackerData getLastData() const;
 
@@ -102,9 +104,8 @@ protected:
 
     bool eyeTrackerEnabled;
 
-    // The vertical field of view functions as a Mode 3D Flag.
-    float vFOV;
-    float hFOV;
+    // Flag so that we know if the eyetracker should work in 3D Mode Or not.
+    bool mode3D;
 
     // Shorcut functions for clarity.
     bool canUseLeft() const {return ((eyeToTransmit == VMDC::Eye::BOTH) || (eyeToTransmit == VMDC::Eye::LEFT));}

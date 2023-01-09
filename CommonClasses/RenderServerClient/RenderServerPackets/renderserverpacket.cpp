@@ -132,7 +132,7 @@ QByteArray RenderServerPacket::getByteArrayToSend() const{
     map[RenderServerPacketFields::TYPE] = this->type;
 
     if (this->isSkippable){ // False can be marked by simply not adding the field.
-        qDebug() << "SETTING SKIPPPABLE";
+        //qDebug() << "SETTING SKIPPPABLE";
         map[RenderServerPacketFields::SKIPPABLE] = true;
     }
 

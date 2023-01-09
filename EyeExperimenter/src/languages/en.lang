@@ -125,6 +125,7 @@ viewevaluation_eval_nbackrt    = N-Back RT;
 viewevaluation_eval_nbackvs    = N-Back RT Training;
 viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
+viewevaluation_eval_gonogo3D   = Go NoGo Spheres;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
 viewevaluation_must_select_doctor = A doctor must be selected;
 viewevaluation_start = START;
@@ -138,6 +139,7 @@ viewevaluation_binding_uc = New Colours;
 viewevaluation_binding_bc = Colour Combinations;
 viewevaluation_shortcuts = Shortcuts;
 viewevaluation_evaluation_steps = Calibration|Explanation|Examples|Evaluation;
+viewevaluation_evaluation_steps_with_hand_calib = Calibration|Hands - Horizontal|Hands - Vertical|Explanation|Examples|Evaluation;
 viewevaluation_keyboard_explanations = 
 Stop study|
 Resume study after pause|
@@ -146,6 +148,8 @@ Back a study step in explanation|
 Indicate targets are different|
 Indicate that targets are the same;
 viewevaluation_action_calibrate = CALIBRATE;
+viewevaluation_action_hcalib_v  = HORIZONTAL HAND CALIBRATION;
+viewevaluation_action_hcalib_end = END HAND CALIBRATION;
 viewevaluation_action_examples = EXAMPLES;
 viewevaluation_action_starteval = START EVALUATION;
 viewevaluation_err_noconnect = <b>Failed Connection to EyeTracker</b><br>Please contact ViewMind Support for help;

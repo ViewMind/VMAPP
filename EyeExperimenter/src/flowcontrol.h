@@ -38,7 +38,7 @@ public:
     explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     ~FlowControl() override;
     Q_INVOKABLE void connectToEyeTracker();
-    Q_INVOKABLE void calibrateEyeTracker(bool useSlowCalibration);
+    Q_INVOKABLE void calibrateEyeTracker(bool useSlowCalibration, bool mode3D);
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
     Q_INVOKABLE void startStudyEvaluationPhase();
     Q_INVOKABLE void startStudyExamplePhase();
@@ -55,6 +55,8 @@ public:
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
     // This is a debugging funciton which will only return true when a coefficient file is loaded or the mouse is selected.
     Q_INVOKABLE bool autoValidateCalibration() const;
+
+    Q_INVOKABLE void handCalibrationControl(qint32 command, qint32 which_hand);
 
     // Remote render server Window Validation Control
     Q_INVOKABLE void setRenderWindowGeometry(int target_x, int target_y, int target_w, int target_h);
@@ -120,9 +122,6 @@ private slots:
     // Slot that requests new image to draw from the OpenVR Control Object
     void onRequestUpdate();
 
-    // Required to sincronize window switching to show the calibration resutls.
-    void onDelayTimerUp();
-
 private:
 
     // Render state allows to define what to send to the HMD when using the VR Solution.
@@ -130,6 +129,9 @@ private:
 
     // Delays for a specific time.
     QTimer delayTimer;
+
+    QTimer update3DEyeDirectionsAndTimeSynchTimer;
+
 
     // The currently selected experiment
     Experiment *experiment;
@@ -178,6 +180,12 @@ private:
     static const qint32 CALIB_PT_GATHER_TIME_NORMAL = 2000;
     static const qint32 CALIB_PT_WAIT_TIME_SLOW = 1500;
     static const qint32 CALIB_PT_GATHER_TIME_SLOW = 3000;
+
+    static const qint32 HAND_CALIB_START_H = 0;
+    static const qint32 HAND_CALIB_START_V = 1;
+    static const qint32 HAND_CALIB_END     = 2;
+
+    void processCalibrationControlPacket(RenderServerPacket p);
 
 
 };

@@ -82,9 +82,9 @@ QString CalibrationLeastSquares::getValidationReport() const{
     return validationReport;
 }
 
-void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, float xr, float yr, float zl, float zr){
-    // qDebug() << "Adding data points for calibration" << xl << yl << xr << yr;
+void CalibrationLeastSquares::addDataPointForCalibration(float xl, float yl, float xr, float yr, float zl, float zr){    
     if (isDataGatheringEnabled){
+        // qDebug() << "Adding data points for calibration" << "CalibPtInd" << currentCalibrationPointIndex << "values: " << xl << yl << zl << xr << yr << zr;
         EyeRealData eid;
         eid.xLeft = static_cast<qreal>(xl);
         eid.xRight = static_cast<qreal>(xr);
@@ -118,14 +118,15 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
                                                        bool mode3D){
 
 
-    // Creating the data point list.
+    // Initializing the calibration image generator.
+    // This also initilaizes the calibration target locations. So in 3D Mode it is still necessary to draw the Calibration Validation Output.
+    calibrationTargets.initialize(width,height);
+
     if (mode3D){ // A Less than zero value means we are using 3D Mode.
         coeffs.set3DMode(true);
         coeffs.configureForCoefficientComputationOf3DVectors(npoints);
     }
     else {
-        // Initializing the calibration image generator.
-        calibrationTargets.initialize(width,height);
 
         // Resetting the recommended eye to both
         recommendedEye = VMDC::Eye::BOTH;
@@ -155,7 +156,7 @@ void CalibrationLeastSquares::startCalibrationSequence(qint32 width, qint32 heig
 }
 
 void CalibrationLeastSquares::controlDataGatheringOnCalibrationPoint(qint32 point, bool enable){
-    if (point == -1) return;  // The first command is the calibration stop fo the middle start point.
+    if (point == -1) return;  // The first command is the calibration stop of the middle start point.
 
     if (enable){
         isDataGatheringEnabled = true;

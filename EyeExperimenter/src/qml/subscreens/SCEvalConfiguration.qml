@@ -22,7 +22,6 @@ Rectangle {
         let item = {}
         let options = {}
 
-
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [2,3];
@@ -36,10 +35,7 @@ Rectangle {
             vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS,
             vmOptionValueMap: "2|3"
         }
-        //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
-//        vmSelectedOptionsForEachStudy[VMGlobals.vmINDEX_BINDING_UC] = {}
-//        vmSelectedOptionsForEachStudy[VMGlobals.vmINDEX_BINDING_UC][VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 2;
 
         item = {}
         options = {}
@@ -51,7 +47,6 @@ Rectangle {
             vmOrder: "",
             vmOptionValueMap: ""
         }
-        //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
 
         item = {}
@@ -64,7 +59,18 @@ Rectangle {
             vmOrder: "",
             vmOptionValueMap: ""
         }
-        //vmDefaultStudyOrder.push(item["vmIndex"])
+        availableEvaluations.append(item)
+
+        item = {}
+        options = {}
+        item = {
+            vmIndex: VMGlobals.vmINDEX_GONOGO3D,
+            vmStudyName : loader.getStringForKey("viewevaluation_eval_gonogo3D") ,
+            vmIsLastSelected: false,
+            vmOptions: options,
+            vmOrder: "",
+            vmOptionValueMap: ""
+        }
         availableEvaluations.append(item)
 
 // 2022-08-23: Removed NBACK MS Evaluation. Hopefully Peramenently.
@@ -104,7 +110,6 @@ Rectangle {
             vmOptions: options,
             vmOptionValueMap: "3|4|5|6||false|true"
         }
-        //vmDefaultStudyOrder.push(item["vmIndex"])
         availableEvaluations.append(item)
 
     }
@@ -154,6 +159,9 @@ Rectangle {
         // Names used for setting up the progress line.
         let study_names = [];
 
+        // The progress line changes if the evaluation requires hand calibration. (Horizontal First and Then Vertical)
+        let requires_hand_calibration = [];
+
         if (vmSelectedStudies.length == 0){
             popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewevaluation_err_at_least_1_study"))
             return;
@@ -182,25 +190,46 @@ Rectangle {
                     configuration[key] = options[key]
                 }
 
-                // Adding it to the list.
-                viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration)
-
                 switch (study_unique_id){
                 case VMGlobals.vmINDEX_BINDING_UC:
 
                     study_names.push(loader.getStringForKey("viewevaluation_binding_uc"));
                     study_names.push(loader.getStringForKey("viewevaluation_binding_bc"));
+                    requires_hand_calibration.push(false);
+                    requires_hand_calibration.push(false);
 
                     // Even though the option is no longer selectable, in the backend still exists. It needs to be set anyways
                     configuration[VMGlobals.vmSCP_TARGET_SIZE] = VMGlobals.vmSCV_BINDING_TARGETS_LARGE;
+
+                    // Standard 2D study.
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = false;
+                    configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
 
                     // This actually represents two studies, so we need to select both, with the same configuration.
                     let config2 = JSON.parse(JSON.stringify(configuration)) // Deep copying configuration.
                     config2[VMGlobals.vmUNIQUE_STUDY_ID] = VMGlobals.vmINDEX_BINDING_BC
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(config2)
                     break;
+                case VMGlobals.vmINDEX_GONOGO3D:
+                    study_names.push(study_name);
+
+                    // Standard 3D study.
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = true;
+                    configuration[VMGlobals.vmSCP_IS_STUDY_3D] = true;
+
+                    requires_hand_calibration.push(true);
+                    break;
                 default:
                     study_names.push(study_name)
+
+                    // Standard 2D study.
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = false;
+                    configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
+
+                    // Adding it to the configuration list.
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration);
+
+                    requires_hand_calibration.push(false);
                     break;
                 }
 
@@ -208,7 +237,7 @@ Rectangle {
         }
 
         // Setting up the progress line
-        evaluationsView.setUpStudyNames(study_names);
+        evaluationsView.setUpStudyNames(study_names, requires_hand_calibration);
 
         //console.log("Printing Selected Evaluation Configuration")
         //console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations));

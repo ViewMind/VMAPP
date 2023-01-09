@@ -41,7 +41,7 @@ void HPOmniceptInterface::providedStarted(){
 }
 
 void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
-    if (vFOV > 0){
+    if (mode3D){
         newEyeData3D(eyedata);
     }
     else {

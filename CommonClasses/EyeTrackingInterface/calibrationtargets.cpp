@@ -81,6 +81,7 @@ void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBord
 }
 
 
+
 qreal CalibrationTargets::getCalibrationTargetDiameter() const{
     return 2*R;
 }

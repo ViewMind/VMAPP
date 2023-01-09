@@ -125,6 +125,7 @@ viewevaluation_eval_nbackrt    = N-Back RT;
 viewevaluation_eval_nbackvs    = N-Back RT Entrenamiento;
 viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
+viewevaluation_eval_gonogo3D   = Esferas Go NoGo;
 viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;
 viewevaluation_must_select_doctor = Se debe seleccionar un doctor;
 viewevaluation_start = COMENZAR;
@@ -138,6 +139,7 @@ viewevaluation_binding_uc = Nuevos Colores;
 viewevaluation_binding_bc = Combinación de Colores;
 viewevaluation_shortcuts = Teclas;
 viewevaluation_evaluation_steps = Calibración|Explicación|Ejemplos|Evaluación;
+viewevaluation_evaluation_steps_with_hand_calib = Calibración|Manos - Horizontal|Manos - Vertical|Explicación|Ejemplos|Evaluación;
 viewevaluation_keyboard_explanations = 
 Frenar estudios|
 Resumir estudio luego de pausa|
@@ -146,6 +148,8 @@ Retroceder un paso en una explicación|
 Indicar objectivos distintos|
 Indicar objetivos iguales;
 viewevaluation_action_calibrate = CALIBRAR;
+viewevaluation_action_hcalib_v  = CALIBRAR MANOS VERTICAL;
+viewevaluation_action_hcalib_end = FIN CALIBRACIÓN MANOS;
 viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
 viewevaluation_err_noconnect = <b>Falla al conectarse al EyeTracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;

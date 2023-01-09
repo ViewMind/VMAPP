@@ -5,10 +5,20 @@ import com.qml 1.0
 
 Rectangle {
 
-    readonly property int vmSTAGE_CALIBRATION: 0
-    readonly property int vmSTAGE_EXPLANATION: 1
-    readonly property int vmSTAGE_EXAMPLES:    2
-    readonly property int vmSTAGE_EVALUATION:  3
+    readonly property int vmSTAGE_CALIBRATION:      0
+    readonly property int vmSTAGE_HAND_CALIB_H:     1
+    readonly property int vmSTAGE_HAND_CALIB_V:     2
+    readonly property int vmSTAGE_EXPLANATION:      3
+    readonly property int vmSTAGE_EXAMPLES:         4
+    readonly property int vmSTAGE_EVALUATION:       5
+
+    readonly property int vmHAND_CALIB_START_H : 0;
+    readonly property int vmHAND_CALIB_START_V : 1;
+    readonly property int vmHAND_CALIB_END     : 2;
+
+    readonly property int vmCALIB_HAND_LEFT: 0
+    readonly property int vmCALIB_HAND_RIGHT: 1
+    readonly property int vmCALIB_HAND_BOTH: 2
 
     readonly property string vmONGOING_STUDY_FIELD: "ongoing_study_file"
 
@@ -16,11 +26,13 @@ Rectangle {
     // The flag is required to indetify the moment between entering the strign and calibration actually staring.
     property bool vmInCalibration: false
     property bool vmIsCalibrated: false;
-    property int vmCurrentEvaluation: 0
+    property int  vmCurrentEvaluation: 0
 
     property bool vmBindingStudyStarted: false;
 
     property bool vmSlowCalibrationSelected: false
+
+    property int vmWhichHandToCalibrate: vmCALIB_HAND_BOTH;
 
     property int renderWindowOffsetX: 0;
     property int renderWindowOffsetY: 0;
@@ -37,7 +49,6 @@ Rectangle {
         function onExperimentHasFinished (){
 
             if (!flowControl.isExperimentEndOk()){
-                //flowControl.generateWaitScreen("");
                 flowControl.renderWaitScreen("");
                 mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewevaluation_err_badend_study"))
                 mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
@@ -50,10 +61,6 @@ Rectangle {
             }
         }
 
-        function onNewImageAvailable () {
-            //hmdView.image = flowControl.image;
-        }
-
         function onConnectedToEyeTracker () {
             var titleMsg;
             if (!flowControl.isConnected()){
@@ -61,16 +68,24 @@ Rectangle {
                 return;
             }
             // All is good so the calibration is requested.
-            flowControl.calibrateEyeTracker(vmSlowCalibrationSelected);
+
+            let mode3d = isCurrentEvaluationA3DStudy();
+
+            //console.log("Starting calibration. 3D Mode is: " + mode3d);
+
+            flowControl.calibrateEyeTracker(vmSlowCalibrationSelected, mode3d);
             vmInCalibration = true;
         }
 
         function onCalibrationDone(calibrated) {
 
+            //console.log("Rendering Wait Screen of On Calibration Done");
             if (calibrated) {
                 flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
             }
-            else flowControl.renderWaitScreen("");
+            else {
+                flowControl.renderWaitScreen("");
+            }
 
             vmInCalibration = false;
             mainWindow.showCalibrationValidation();
@@ -117,13 +132,29 @@ Rectangle {
         }
     }
 
+    function doesCurrentEvalutionRequiredHandCalibration(){
+        var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+        if (VMGlobals.vmSCP_STUDY_REQ_H_CALIB in current_config){
+           return current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
+        }
+        else return false;
+    }
+
+    function isCurrentEvaluationA3DStudy() {
+        var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+        if (VMGlobals.vmSCP_IS_STUDY_3D in current_config){
+           return current_config[VMGlobals.vmSCP_IS_STUDY_3D];
+        }
+        else return false;
+    }
+
     function setOngoingFileNameForStudyConfiguration(){
         let study_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
         study_config[vmONGOING_STUDY_FIELD] = loader.getCurrentSubjectStudyFile();
         viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation] = study_config;
     }
 
-    function prepareNextStudy(calibrationSkipped){
+    function prepareNextStudyOrHandCalibration(calibrationSkipped){
 
         if (!flowControl.isCalibrated()){
             let leftEyeOk = flowControl.isLeftEyeCalibrated();
@@ -131,8 +162,35 @@ Rectangle {
             mainWindow.showCalibrationError(leftEyeOk,rightEyeOk)
             return;
         }        
-        //flowControl.generateWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
-        flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
+
+        if (!calibrationSkipped) {
+            // Calibration notification success will be in the middle of the screen as not to obstruct the button.
+            popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewevalcalibration_success"),true);
+        }
+
+        // The next state depends on whether the hand calibration is necessary or not.
+        let current_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+        if (current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB]){
+            //console.log("Preparing for Hand Calibration");
+            prepareForHandCalibration()
+        }
+        else {
+            prepareStudyStart();
+        }
+
+    }
+
+    function prepareForHandCalibration(){
+
+        vmEvaluationStage = vmSTAGE_HAND_CALIB_H;
+        viewEvaluations.advanceStudyIndicator();
+        viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_hcalib_v"),"");
+        flowControl.handCalibrationControl(vmHAND_CALIB_START_H,vmWhichHandToCalibrate);
+        /// TODO: Show text explanation.
+
+    }
+
+    function prepareStudyStart(){
 
         // Next state in the state machine.
         vmEvaluationStage = vmSTAGE_EXPLANATION;
@@ -195,10 +253,6 @@ Rectangle {
             return;
         }
 
-        if (calibrationSkipped) return;
-
-        // Calibration notification success will be in the middle of the screen as not to obstruct the button.
-        popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewevalcalibration_success"),true);
     }
 
     function setStudyAndStage(study,stage){
@@ -212,10 +266,23 @@ Rectangle {
 
             if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
             else {
-                flowControl.calibrateEyeTracker(vmSlowCalibrationSelected);
+                let mode3d = isCurrentEvaluationA3DStudy();
+                console.log("Starting EyeTracker Calibratration Slowly. Is Mode3D: " + mode3d);
+                flowControl.calibrateEyeTracker(vmSlowCalibrationSelected,mode3d);
                 vmIsCalibrated = false;
                 vmInCalibration = true;
             }
+        }
+        else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_H){
+            vmEvaluationStage = vmSTAGE_HAND_CALIB_V;
+            flowControl.handCalibrationControl(vmHAND_CALIB_START_V,vmWhichHandToCalibrate);
+            viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_hcalib_end"),"");
+            viewEvaluations.advanceStudyIndicator();
+        }
+        else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_V){
+            vmEvaluationStage = vmSTAGE_EXPLANATION;
+            flowControl.handCalibrationControl(vmHAND_CALIB_END,vmWhichHandToCalibrate);
+            prepareStudyStart();
         }
         else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
             vmEvaluationStage = vmSTAGE_EXAMPLES;
@@ -262,11 +329,8 @@ Rectangle {
     function onMove(){
         let x = this.x + renderWindowOffsetX + hmdView.x
         let y = this.y + renderWindowOffsetY + hmdView.y
-//        console.log("SCEvalRunEvaluation: Render Window Position: X of Element: " + this.x + " offset x " + renderWindowOffsetX + " and hmdView.x " + hmdView.x);
-//        console.log("SCEvalRunEvaluation: Render Window Position: Y of Element: " + this.y + " offset y " + renderWindowOffsetY + " and hmdView.y " + hmdView.y);
         flowControl.setRenderWindowGeometry(x,y,hmdView.width,hmdView.height);
     }
-
 
     Text {
         id: evalTitle
@@ -292,16 +356,6 @@ Rectangle {
         anchors.left: evalTitle.right
         anchors.leftMargin: VMGlobals.adjustWidth(10)
     }
-
-    //    QImageDisplay {
-    //        id: hmdView
-    //        width: VMGlobals.adjustWidth(597);
-    //        height: VMGlobals.adjustHeight(310);
-    //        //anchors.top: slideTitle.bottom
-    //        anchors.top: evalTitle.bottom
-    //        anchors.topMargin: VMGlobals.adjustHeight(34);
-    //        anchors.left: evalTitle.left
-    //    }
 
     Rectangle {
         id: hmdView
@@ -329,7 +383,6 @@ Rectangle {
             onMove()
         }
     }
-
 
     // Message to display study progress messages.
     Rectangle {
@@ -424,7 +477,6 @@ Rectangle {
 
 
     }
-
 
     Rectangle {
         id: keysRect

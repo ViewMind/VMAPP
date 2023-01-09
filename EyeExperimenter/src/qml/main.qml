@@ -218,12 +218,16 @@ ApplicationWindow {
         }
 
         var map = flowControl.getCalibrationValidationData();
+
+//        console.log("MAP DATA FOR CALIB VALIDATION");
+//        console.log(JSON.stringify(map));
+
         let W = map["W"];
         let H = map["H"];
 
         let no_data_key = "calibration_points_with_too_few_data_points";
         if (!(no_data_key in map)){
-            console.log("WARNING: Too Low Data POints Key Not Present in Calibration Validation Data Map. Moving on as if all ok");
+            console.log("WARNING: Too Low Data Points Key Not Present in Calibration Validation Data Map. Moving on as if all ok");
         }
         else {
 

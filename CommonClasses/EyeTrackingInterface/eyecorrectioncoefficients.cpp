@@ -491,7 +491,7 @@ bool EyeCorrectionCoefficients::isVectorCloseEnough(QVector3D tv, qreal x, qreal
     y = y*module;
     z = z*module;
 
-    qDebug() << "TARGET VECTOR" << tv << " Predicted Point" << x << y << z << "After using module" << module;
+    // qDebug() << "TARGET VECTOR" << tv << " Predicted Point" << x << y << z << "After using module" << module;
 
     qreal xt = static_cast<qreal>(tv.x());
     qreal yt = static_cast<qreal>(tv.y());
