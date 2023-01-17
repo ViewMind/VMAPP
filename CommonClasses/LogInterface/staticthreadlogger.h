@@ -14,6 +14,7 @@ public:
     static void log(const QString trace, const QString message);
     static void error(const QString trace, const QString message);
     static void warning(const QString trace, const QString message);
+    static void kill();
 
     static QString getFullLogFilePath();
 

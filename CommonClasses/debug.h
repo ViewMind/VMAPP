@@ -14,6 +14,7 @@
 #define DBUGINT(x)   Debug::DEBUG_OPTIONS.getInt(x)
 #define DBUGBOOL(x)  Debug::DEBUG_OPTIONS.getBool(x)
 #define DBUGREAL(x)  Debug::DEBUG_OPTIONS.getReal(x)
+#define DBUGSLIST(x) Debug::DEBUG_OPTIONS.getStringList(x)
 #define DBUGEXIST(x) Debug::DEBUG_OPTIONS.containsKeyword(x)
 
 namespace Debug {
@@ -43,9 +44,8 @@ namespace Debug {
        const QString VIEW_INDEX_TO_LOAD   = "view_index_to_show";
        const QString FIX_QC_SHA_CHECKS    = "fix_qc_sha_checks";
        const QString STUDY_CONFIG_MAP     = "study_configutation_map";
-       const QString LOAD_CALIBRATION_K   = "load_calibration_coeffs";
+       const QString LOAD_PREFIX_CALIB    = "load_calibration_constants";
        const QString ENABLE_GAZE_FOLLOW   = "enable_gaze_follow";
-       //const QString USE_MOUSE            = "use_mouse";
        const QString SEND_RENDER_2D_PRINT = "send_render_2D_packet_summary_enable";
        const QString OVERRIDE_TIME        = "override_time";
        const QString DBUG_MSG             = "debug_messages";
@@ -56,8 +56,8 @@ namespace Debug {
        const QString PRINT_SERVER_RESP    = "print_server_response";
        const QString CONFIG_CALIB_VALID   = "config_calib_validation";
        const QString FORCE_N_CALIB_PTS    = "force_n_calibration_points";
-       const QString LOAD_FOR_CALIB_VERIF = "force_load_file_for_calibration_validation_dialog";
        const QString RENDER_PACKET_DBUG   = "render_packet_debug_enable";
+       const QString HAND_CALIB_RESULTS   = "hand_calib_results";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

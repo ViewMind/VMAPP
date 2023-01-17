@@ -184,12 +184,7 @@ ViewBase {
         anchors.leftMargin: VMGlobals.adjustWidth(32.53)
         anchors.bottomMargin: VMGlobals.adjustHeight(32.75)
         onClickSignal: {
-            if (loader.forceOpenValidationDialog()){
-               mainWindow.showCalibrationValidation()
-            }
-            else {
-               settingsDialog.open()
-            }
+            settingsDialog.open()
         }
     }
 

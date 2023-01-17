@@ -39,9 +39,6 @@ public:
     // Returns the newest file, if it finds it. Empty string otherwise.
     QString findIncompleteBindingStudies(const QString &missing_study, const QVariantMap study_configuration);
 
-    // Searches for a perception study
-    QString findIncompletedPerceptionStudy(const qint32 missing_part, const QVariantMap &study_configuration);
-
     // Returns the last error message.
     QString getError() const;
 

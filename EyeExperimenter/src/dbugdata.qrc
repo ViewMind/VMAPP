@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>debug_files/3dCalibData.json</file>
+        <file>debug_files/2dCalibData.json</file>
+    </qresource>
+</RCC>

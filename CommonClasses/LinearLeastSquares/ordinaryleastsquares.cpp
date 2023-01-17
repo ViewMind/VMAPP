@@ -124,6 +124,10 @@ bool OrdinaryLeastSquares::computeCoefficients() {
         denominator = denominator + b*b;
     }
 
+    if (qAbs(denominator) < 0.00001){
+        qDebug() << "Will have an R of zero. Number of targets" << targets.size();
+    }
+
     Rsquared = numerator/denominator;
 
     return true;

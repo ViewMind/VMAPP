@@ -12,6 +12,8 @@ public:
     LinearCoefficients();
     LinearCoefficients(qreal m, qreal b);
 
+    bool loadFromString (const QString &comma_separted_values);
+
     bool isValid() const;
     qreal getM() const;
     qreal getB() const;

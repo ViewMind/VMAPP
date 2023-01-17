@@ -154,12 +154,12 @@ Rectangle {
             nameWidthMap[loader.getStringForKey("viewevaluation_patient")] = element;
 
             element = {}
-            element["width"] = (193)/949;
+            element["width"] = (173)/949;
             element["sortable"] = true;
             nameWidthMap[loader.getStringForKey("viewevaluation_date")] = element;
 
             element = {}
-            element["width"] = (112)/949;  // <- Modified so that new buttons don't have to be designed
+            element["width"] = (132)/949;  // <- Modified so that new buttons don't have to be designed
             element["sortable"] = false;
             nameWidthMap[loader.getStringForKey("viewqc_study")] = element
 

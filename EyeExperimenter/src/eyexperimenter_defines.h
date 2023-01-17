@@ -107,11 +107,10 @@ namespace Globals{
       static const qint32 INDEX_READING = 0;
       static const qint32 INDEX_BINDING_BC = 1;
       static const qint32 INDEX_BINDING_UC = 2;
-      static const qint32 INDEX_NBACKMS = 3;
       static const qint32 INDEX_NBACKRT = 4;
       static const qint32 INDEX_NBACKVS = 5;
-      static const qint32 INDEX_PERCEPTION = 6;
       static const qint32 INDEX_GONOGO = 7;
+      static const qint32 INDEX_GNG_SPHERE = 8;
 
    }
 
@@ -140,6 +139,7 @@ namespace Globals{
        static const QString MONITOR_RESOLUTION_WIDTH = "monitor_resolution_width";
        static const QString MONITOR_RESOLUTION_HEIGHT = "monitor_resolution_height";
        static const QString SELECTED_STUDY = "selected_study";
+       static const QString HAND_CALIB_RES = "hand_calibration_results";
    }
 
    static bool SetUpRegion(const QString &reg){
@@ -189,13 +189,12 @@ namespace Globals{
    }
 
    namespace BaseFileNames {
-       static const QString READING = "reading";
-       static const QString BINDING = "binding";
-       static const QString NBACKVS = "nbackvs";
-       static const QString NBACKRT = "nbackrt";
-       static const QString NBACKMS = "nbackms";
-       static const QString PERCEPTION = "perception";
-       static const QString GONOGO = "gonogo";
+       static const QString READING     = "reading";
+       static const QString BINDING     = "binding";
+       static const QString NBACKVS     = "nbackvs";
+       static const QString NBACKRT     = "nbackrt";
+       static const QString GONOGO_3D   = "gonogo_spheres";
+       static const QString GONOGO      = "gonogo";
    }
  
 }

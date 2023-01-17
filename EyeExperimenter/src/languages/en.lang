@@ -134,6 +134,10 @@ viewevaluation_number_of_targets = Number of targets;
 viewevaluation_nback_light_up_title = Light Up Targets;
 viewevaluation_nback_light_up_all = All;
 viewevaluation_nback_light_up_correct = Correct Sequence;
+viewevaluation_gng3D_hand_sel = Select which hand to use;
+viewevaluation_gng3D_hand_left = Left;
+viewevaluation_gng3D_hand_right = Right;
+viewevaluation_gng3D_hand_both = Both;
 viewevaluation_err_at_least_1_study = You must select at least 1 study;
 viewevaluation_binding_uc = New Colours;
 viewevaluation_binding_bc = Colour Combinations;
@@ -185,9 +189,15 @@ viewevaluation_calibration_explanation =
 A red pulsating circle with a white dot in its center will appear on the screen. 
 Look at the white dot.
 The circle will move through the screen. You must follow it. Remember not to
-take your eyes off the circle until it disappears.
+take your eyes off the circle until it disappears.;
 
-It will appear for the first time in the upper left corner.;
+viewevaluation_hand_calib_h = 
+Strech your arms, to the sides of your body.
+Reach as far as you can.;
+
+viewevaluation_hand_calib_v = 
+Strech your arms, upwards towards the ceiling.
+Reach as far as you can.;
 
 viewevaluation_calib_suggest_retry = 
 Calibration could not be completed| 
@@ -229,7 +239,8 @@ Binding UC|New Colurs|
 NBack MS|N-Back MS|
 NBack RT|N-Back RT|
 NBack VS|N-Back VS|
-Go No-Go|Go NoGo;
+Go No-Go|Go NoGo|
+Go No-Go Sphere| Go No-Go Spheres;
 viewqc_previous = PREVIOUS;
 viewqc_archive = ARCHIVE;
 viewqc_send = SEND;
@@ -286,6 +297,9 @@ studystatus_nback_target_speed = Targets shown for <<N>> ms;
 studystatus_gonogo_ok = Sucessfull Reponses: <<N>>;
 studystatus_gonogo_timeout = Timeouts: <<N>>;
 studystatus_gonogo_avg = Average trial time: <<N>> ms;
+studystatus_gonogo3D_green_hit = <<N>> green spheres hit;
+studystatus_gonogo3D_red_hit = <<N>> red spheres hit;
+
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Update Available;
@@ -313,6 +327,8 @@ Look at the second example.|
 In this case, color combination remained the same. You must say "Same".
 Did you understand?
 We will do some practice rounds before starting the test.;
+
+
 
 
 explanation_phase_list_binding_uc =
@@ -346,6 +362,19 @@ Back at the cross|
 Look in the opposite direction. You must do this exercise as fast
 as you can. Did you understand?
 We will do some practice rounds before starting the test.;
+
+explanation_phase_list_gonogo_3D = This is Go/No-Go Sphere Evaluation.
+During this evaluation green and red spheres will be sent from the dark
+points in front of you. Si the sphere is green you must try to touch it.
+If you make contact with the sphere you will feel your controller vibrate.|
+If the sphere is red, you must move your hands to avoid touching the sphere.
+If contact is made anyway, then your controller will still vibrate. | 
+Now try to touch the green sphere again. | 
+Avoid touching the red shphere.
+If you touch and avoid the spheres correctly the, spheres will start to go faster.
+If your performance worsens the spheres will go slower.;
+
+
 
 
 explanation_phase_list_nbackrt    =

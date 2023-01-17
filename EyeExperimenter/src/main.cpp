@@ -29,10 +29,8 @@ namespace Globals {
 
    namespace EyeTracker{
       QString NAME = "";
-      bool ENABLE_GAZE_FOLLOW = false;
       bool IS_VR = false;
       QString PROCESSING_PARAMETER_KEY = "";
-      qreal VRSCALING = 1.0;
    }
 
 }
@@ -92,8 +90,6 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    // Registering the QImage Display Which allows to displays images generated in the C++ part of the application in the QML front end.
-    qmlRegisterType<QImageDisplay>("com.qml",1,0,"QImageDisplay");
 
     //QGuiApplication app(argc, argv);
     QApplication app(argc,argv);
@@ -118,7 +114,7 @@ int main(int argc, char *argv[])
 
     Loader loader(nullptr,&configuration,&countries);
     if (isRunning){
-         StaticThreadLogger::error("main","Another instance of the application was detected. Exiting");
+        StaticThreadLogger::error("main","Another instance of the application was detected. Exiting");
         return 0;
     }
 

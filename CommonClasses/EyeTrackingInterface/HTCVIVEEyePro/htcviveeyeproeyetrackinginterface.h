@@ -2,7 +2,7 @@
 #define HTCVIVEEYEPROEYETRACKINGINTERFACE_H
 
 #include "../eyetrackerinterface.h"
-#include "../calibrationleastsquares.h"
+#include "../calibrationvalidation.h"
 #include "viveeyepoller.h"
 
 class HTCViveEyeProEyeTrackingInterface: public EyeTrackerInterface
@@ -36,7 +36,7 @@ private:
     EyeCorrectionCoefficients correctionCoefficients;
 
     // Calibration via least squares.
-    CalibrationLeastSquares calibration;
+    CalibrationValidation calibration;
 
     // Optionally, when calibration is done, coefficients can be stored in a file.
     QString coefficientsFile;

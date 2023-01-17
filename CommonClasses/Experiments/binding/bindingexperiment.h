@@ -42,10 +42,6 @@ protected:
     QString getExperimentDescriptionFile(const QVariantMap &studyConfig) override;
 private:
 
-    //QElapsedTimer mtime;
-
-    LogInterface *logger;
-
     // The Binding manager handle
     BindingManager *m;
 

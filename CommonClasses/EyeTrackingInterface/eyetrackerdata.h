@@ -5,15 +5,6 @@
 
 #define TOL_ZERO 1e-6
 
-struct EyeTrackerCalibrationParameters{
-    QString name;
-    bool forceCalibration;
-    bool mode3D;
-    qint32 number_of_calibration_points;
-    qint32 gather_time;
-    qint32 wait_time;
-};
-
 class EyeTrackerData
 {
 public:
@@ -45,6 +36,9 @@ public:
     void setPupilRight(qreal p);
     void setPupilLeft(qreal p);
 
+    QVector<qreal> leftVector() const;
+    QVector<qreal> rightVector() const;
+
     qreal pr() const;
     qreal pl() const;
 
@@ -58,10 +52,10 @@ public:
     double avgX2D() const;
     double avgY2D() const;
 
-    bool isRightZero(bool mode3D) const;
-    bool isLeftZero(bool mode3D) const;
+    bool isRightZero(bool mode3D = false) const;
+    bool isLeftZero(bool mode3D = false) const;
 
-    QString toString(bool mode3D) const;
+    QString toString(bool mode3D = false) const;
 
 private:
 

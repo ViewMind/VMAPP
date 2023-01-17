@@ -39,6 +39,8 @@ Rectangle {
 
     property bool vmOnlyColorCurrent: false
 
+    signal progressLineUpdated();
+
     // I've only here learned how to do "private stuff". Which is why other QML classes that I did don't have it, but here it's presetn.
     QtObject {
         id: internal
@@ -258,6 +260,7 @@ Rectangle {
             }
         }
         drawCanvas.requestPaint();
+        progressLineUpdated();
     }
 
     function indicatePrevious(){
@@ -274,6 +277,7 @@ Rectangle {
             }
         }
         drawCanvas.requestPaint();
+        progressLineUpdated();
     }
 
     function getCurrentTexts(){

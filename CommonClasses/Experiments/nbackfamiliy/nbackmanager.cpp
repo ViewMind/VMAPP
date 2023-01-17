@@ -5,7 +5,6 @@ const qreal NBackManager::K_TARGET_OFFSET_X   =                        0.02;
 const qreal NBackManager::K_TARGET_OFFSET_Y   =                        0.036;
 const qreal NBackManager::K_CROSS_LINE_LENGTH =                        0.05;
 
-const char * NBackManager::CONFIG_IS_VR_BEING_USED  = "is_VR_used";
 const char * NBackManager::CONFIG_PAUSE_TEXT_LANG   = "pause_text_lang";
 const char * NBackManager::CONFIG_IS_VS             = "is_VS";
 
@@ -16,7 +15,6 @@ const char * NBackManager::PAUSE_TEXT_SPANISH = "Presione \"G\" para continuar e
 const char * NBackManager::PAUSE_TEXT_ENGLISH = "Press \"G\" to continue with study";
 
 NBackManager::NBackManager(){
-    vr_being_used = false;
     currentlyLitUp = -1;
     connect(&litUpTimer,&QTimer::timeout,this,&NBackManager::onLightOffTimeout);
     numberOfExplanationScreens = NUMBER_OF_EXPLANATION_SLIDES;
@@ -87,7 +85,6 @@ bool NBackManager::lightUpBox(qint32 box_index){
 }
 
 void NBackManager::configure(const QVariantMap &config){
-    vr_being_used = config.value(CONFIG_IS_VR_BEING_USED,false).toBool();
     if (config.value(CONFIG_PAUSE_TEXT_LANG).toString() == LANG_ES) pauseText = PAUSE_TEXT_SPANISH;
     else pauseText = PAUSE_TEXT_ENGLISH;
 

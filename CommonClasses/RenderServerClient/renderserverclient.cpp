@@ -171,6 +171,8 @@ void RenderServerClient::sendPacket(const RenderServerPacket &packet){
 //        Debug::prettpPrintQVariantMap(packet.getPayload());
 //    }
 
+//    qDebug() << "Sending Packet of Type: " << packet.getType();
+
     if (DBUGBOOL(Debug::Options::SEND_RENDER_2D_PRINT)){
         if (packet.getType() == RenderServerPacketType::TYPE_2D_RENDER){
             qDebug() << "SENDING PACKET" << packet.getStringSummary() << "@ " << mtimer.elapsed();

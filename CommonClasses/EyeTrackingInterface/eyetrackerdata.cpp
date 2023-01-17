@@ -100,10 +100,24 @@ bool EyeTrackerData::isRightZero(bool mode3D) const{
     if (mode3D) return ((qAbs(xRight) < TOL_ZERO) && (qAbs(yRight) < TOL_ZERO) && (qAbs(zRight) < TOL_ZERO));
     else return ((qAbs(xRight) < TOL_ZERO) && (qAbs(yRight) < TOL_ZERO));
 }
+
 bool EyeTrackerData::isLeftZero(bool mode3D) const{
     if (mode3D) return ((qAbs(xLeft) < TOL_ZERO) && (qAbs(yLeft) < TOL_ZERO) && (qAbs(zLeft) < TOL_ZERO) );
     else return ((qAbs(xLeft) < TOL_ZERO) && (qAbs(yLeft) < TOL_ZERO));
 }
+
+QVector<qreal> EyeTrackerData::leftVector() const {
+    QVector<qreal> v;
+    v << xLeft << yLeft << zLeft;
+    return v;
+}
+
+QVector<qreal> EyeTrackerData::rightVector() const {
+    QVector<qreal> v;
+    v << xRight << yRight << zRight;
+    return v;
+}
+
 
 QString EyeTrackerData::toString(bool mode3D) const{
     QString ans = "Time: " + QString::number(time);
@@ -120,3 +134,4 @@ QString EyeTrackerData::toString(bool mode3D) const{
 
     return ans;
 }
+

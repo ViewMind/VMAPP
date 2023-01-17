@@ -7,6 +7,7 @@
 #include <QtMath>
 #include <QFileDialog>
 #include <QScreen>
+#include <QGuiApplication>
 #include <Windows.h>
 #include <WinUser.h>
 #include <iostream>
@@ -22,11 +23,11 @@
 #include "../../CommonClasses/Experiments/binding/bindingexperiment.h"
 #include "../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h"
 #include "../../CommonClasses/Experiments/gonogo/gonogoexperiment.h"
+#include "../../CommonClasses/Experiments/gonogo_spheres/gonogosphereexperiment.h"
 
-#include "../../CommonClasses/EyeTrackingInterface/Mouse/mouseinterface.h"
-#include "../../CommonClasses/EyeTrackingInterface/GazePoint/opengazeinterface.h"
 #include "../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
-#include "../../CommonClasses/EyeTrackingInterface/HTCVIVEEyePro/htcviveeyeproeyetrackinginterface.h"
+
+#include "../../CommonClasses/Calibration/calibrationmanager.h"
 
 #include "eyexperimenter_defines.h"
 
@@ -37,26 +38,21 @@ class FlowControl : public QWidget
 public:
     explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     ~FlowControl() override;
-    Q_INVOKABLE void connectToEyeTracker();
     Q_INVOKABLE void calibrateEyeTracker(bool useSlowCalibration, bool mode3D);
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
     Q_INVOKABLE void startStudyEvaluationPhase();
     Q_INVOKABLE void startStudyExamplePhase();
-    Q_INVOKABLE bool isConnected() const { return connected; }
-    Q_INVOKABLE bool isCalibrated() const;
-    Q_INVOKABLE bool isRightEyeCalibrated() const;
-    Q_INVOKABLE bool isLeftEyeCalibrated() const;
+
     Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
-    Q_INVOKABLE void eyeTrackerChanged();
     Q_INVOKABLE void resolutionCalculations();
     Q_INVOKABLE void keyboardKeyPressed(int key);
-    Q_INVOKABLE void stopRenderingVR();
     Q_INVOKABLE bool isVROk() const;
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
-    // This is a debugging funciton which will only return true when a coefficient file is loaded or the mouse is selected.
-    Q_INVOKABLE bool autoValidateCalibration() const;
 
-    Q_INVOKABLE void handCalibrationControl(qint32 command, qint32 which_hand);
+    // Eye Tracking Control commands.
+    Q_INVOKABLE bool isConnected() const;
+
+    Q_INVOKABLE void handCalibrationControl(qint32 command, const QString &which_hand);
 
     // Remote render server Window Validation Control
     Q_INVOKABLE void setRenderWindowGeometry(int target_x, int target_y, int target_w, int target_h);
@@ -79,11 +75,10 @@ signals:
     void experimentHasFinished();
 
     // Signals to indicate connection to eyetracker, calibration aborted or finalized.
-    void connectedToEyeTracker(bool ok);
     void calibrationDone(bool ok);
 
-    // Signal to update QML Image on screen.
-    void newImageAvailable();
+    // Required in order to continue through normal study flow whenever hand calibration is involved.
+    void handCalibrationDone();
 
     // Singal to update the QML front end with new study string.
     void newExperimentMessages(const QVariantMap &string_value_map);
@@ -99,11 +94,11 @@ public slots:
     // When an experiment finishes.
     void on_experimentFinished(const Experiment::ExperimentResult & er);
 
-    // Eye tracker control changes
-    void onEyeTrackerControl(quint8 code);
-
     // Whenever the experiment updates message to the front end.
     void onUpdatedExperimentMessages(const QVariantMap &string_value_map);
+
+    // Whenerver a new control packet needs to be sent to the remote render server this signal is emitted by the current study.
+    void onNewControlPacketAvailableFromStudy();
 
     // When a new packet arrives from the render server.
     void onNewPacketArrived();
@@ -116,6 +111,16 @@ public slots:
 
     // New Message from the render server client object.
     void onNewMessage(const QString &msg, const quint8 &msgType);
+
+    // Signals that a new packet needs to be sent to the Remote Render Server.
+    void onNewCalibrationRenderServerPacketAvailable();
+
+    // When the calibration process is finished.
+    void onCalibrationDone(qint32 code);
+
+    // Receives data from the eye tracker. Corrects it. And passes it on.
+    void onNewEyeDataAvailable(const EyeTrackerData &data);
+
 
 private slots:
 
@@ -130,14 +135,14 @@ private:
     // Delays for a specific time.
     QTimer delayTimer;
 
-    QTimer update3DEyeDirectionsAndTimeSynchTimer;
-
-
     // The currently selected experiment
     Experiment *experiment;
 
     // The currently selected eyetracker
     EyeTrackerInterface *eyeTracker;
+
+    // The Calibration Manager.
+    CalibrationManager calibrationManager;
 
     // Remote Render Server Control. (Client) and required variables.
     RenderServerClient renderServerClient;
@@ -145,25 +150,14 @@ private:
     WId mainWindowID;
     static HWND renderWindowHandle;
 
-    // Flag to indicate we reached the ready to render state.
-    bool vrOK;
-
     // The configuration structure
     ConfigurationManager *configuration;
 
-    // The eye as defined by the calibration.
-    QString selected_eye_to_use;
-
-    // Flags to avoid reconnecting during recalibration
-    bool connected;
-
-    // Flag to check if the eyetracker is calibrated or not. And if not which eye failed.
-    bool calibrated;
-    bool rightEyeCalibrated;
-    bool leftEyeCalibrated;
-
     // Binary status for the end of an experiment.
     bool experimentIsOk;
+
+    // Auxiliary flag used to determine the established connection to the Remote Render Server.
+    bool vrOK;
 
     // The country codes and the function to load them
     QStringList countryList;

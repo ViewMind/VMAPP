@@ -32,9 +32,10 @@ RenderServerScene CalibrationTargets::getCurrentCalibrationAnimationFrame() cons
 }
 
 
-void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration){
+void CalibrationTargets::initialize(qint32 screenw,
+                                    qint32 screenh,
+                                    bool useBorderTargetsAsCalibration){
 
-    if (canvas.isValid()) return;
 
     //canvas = new QGraphicsScene(0,0,screenw,screenh);
     canvas.setSceneRect(0,0,screenw,screenh);
@@ -81,47 +82,23 @@ void CalibrationTargets::initialize(qint32 screenw, qint32 screenh, bool useBord
 }
 
 
-
 qreal CalibrationTargets::getCalibrationTargetDiameter() const{
     return 2*R;
 }
 
 QVariantList CalibrationTargets::getCalibrationTargetCorners() const{
+
     QVariantList list;
-    for (qint32 i = 0; i < calibrationTargets.size(); i++){
+    for (qint32 i = 1; i < calibrationSequenceIndex.size(); i++){
         QVariantMap point;
-        point["x"] =  calibrationTargets.at(i).x();
-        point["y"] =  calibrationTargets.at(i).y();
+        QPointF p = calibrationTargets.at(calibrationSequenceIndex.at(i));
+        point["x"] = p.x();
+        point["y"] = p.y();
         list << point;
     }
+
     return list;
 }
-
-quint8 CalibrationTargets::isPointWithinCurrentTarget(qreal x, qreal y, qreal tolerance){
-
-    if (indexInCalibrationSequence >= (calibrationSequenceIndex.size())) return 2;
-    if (indexInCalibrationSequence < 0) return 2;
-
-    qreal x_target = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).x();
-    qreal y_target = calibrationTargets.at(calibrationSequenceIndex.at(indexInCalibrationSequence)).y();
-
-    qreal dimension = 2*R;
-    qreal tol = tolerance*dimension;
-    qreal tol_offset = tol/2;
-    qreal xmin = x_target - tol_offset;
-    qreal xmax = x_target + dimension + tol_offset;
-    qreal ymin = y_target - tol_offset;
-    qreal ymax = y_target + dimension + tol_offset;
-
-    if ((x >= xmin) && (x <= xmax)){
-        if ((y >= ymin) && (y <= ymax)){
-            return 1;
-        }
-    }
-    return 0;
-
-}
-
 
 QList<QPointF> CalibrationTargets::setupCalibrationSequence(qint32 npoints, qint32 hold_time_for_targets){
 

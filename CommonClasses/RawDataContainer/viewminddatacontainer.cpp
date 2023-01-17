@@ -165,7 +165,7 @@ QVariantMap ViewMindDataContainer::getApplicationUserData(const QString &type) {
     QStringList hierarchy; hierarchy << MAIN_FIELD_APPLICATION_USER << type;
     if (!checkHiearchyChain(hierarchy)) return ret;
     return data.value(MAIN_FIELD_APPLICATION_USER).toMap().value(type).toMap();
-    return ret;
+
 }
 
 QVariantMap ViewMindDataContainer::getSubjectData() {
@@ -180,6 +180,10 @@ QVariantMap ViewMindDataContainer::getProcessingParameters() const {
 
 QVariantMap ViewMindDataContainer::getQCParameters() const {
     return data.value(MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS).toMap();
+}
+
+void ViewMindDataContainer::DebugPrintContentToConsole() const{
+    Debug::prettpPrintQVariantMap(data);
 }
 
 
@@ -314,6 +318,8 @@ bool ViewMindDataContainer::setCurrentStudy(const QString &study){
         return false;
     }
 
+    //qDebug() << "Setting current study to " << study;
+
     currentlySelectedStudy = study;
     currentDataSetMap.clear();
     currentRawDataList.clear();
@@ -321,6 +327,29 @@ bool ViewMindDataContainer::setCurrentStudy(const QString &study){
     currentLFixationVectorR.clear();
     currentTrial.clear();
     currentTrialList.clear();
+
+    return true;
+
+}
+
+bool ViewMindDataContainer::setExperimentDescriptionMap(const QVariantMap &expDesc){
+
+    if (currentlySelectedStudy == ""){
+        error = "Trying to set experiment description withouth setting the study first";
+        return false;
+    }
+
+    if (!data.value(MAIN_FIELD_STUDIES).toMap().contains(currentlySelectedStudy)){
+        error = currentlySelectedStudy + " has not been configured for this container";
+        return false;
+    }
+
+    QVariantMap studies = data.value(MAIN_FIELD_STUDIES).toMap();
+    QVariantMap cstudy  = studies.value(currentlySelectedStudy).toMap();
+    cstudy[VMDC::StudyField::EXPERIMENT_DESCRIPTION] = expDesc;
+    studies[currentlySelectedStudy] = cstudy;
+
+    data[MAIN_FIELD_STUDIES] = studies;
 
     return true;
 
@@ -411,40 +440,27 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     else if (study == VMDC::Study::READING){
         valid_parameter_values[ VMDC::StudyParameter::LANGUAGE] = VMDC::ReadingLanguage::valid;
     }
-    else if (study == VMDC::Study::GONOGO){
-
-    }
-    else if (study == VMDC::Study::NBACKMS){
-
-    }
-    else if (study == VMDC::Study::NBACKRT){
-
-    }
     else if (study == VMDC::Study::NBACKVS){
         valid_parameter_values[VMDC::StudyParameter::NUMBER_TARGETS] = VMDC::NBackVSTargetCount::valid;
         QStringList boolean; boolean << "true" << "false";
         valid_parameter_values[VMDC::StudyParameter::NBACK_LIGHT_ALL] = boolean;
     }
-    else if ( (study == VMDC::Study::PERCEPTION_1) || (study == VMDC::Study::PERCEPTION_2) || (study == VMDC::Study::PERCEPTION_3) || (study == VMDC::Study::PERCEPTION_4) ||
-              (study == VMDC::Study::PERCEPTION_5) || (study == VMDC::Study::PERCEPTION_6) || (study == VMDC::Study::PERCEPTION_7) || (study == VMDC::Study::PERCEPTION_8) ){
-        valid_parameter_values[VMDC::StudyParameter::PERCEPTION_TYPE] = VMDC::PerceptionType::valid;
-    }
 
     // Now we validate both the that all parameters are there and their values.
-    QVariantMap finalStudyConfiguration;
+    QVariantMap finalStudyConfiguration = studyConfiguration;
     parameters_to_check = valid_parameter_values.keys();
     for (qint32 i = 0; i < parameters_to_check.size(); i++){
         QString parameter = parameters_to_check.at(i);
-        if (!studyConfiguration.contains(parameter)){
+        if (!finalStudyConfiguration.contains(parameter)){
             error = "Parameter for configuring study " + study + " is missing: " + parameters_to_check.at(i);
             return false;
         }
-        QString value = studyConfiguration.value(parameter).toString();
+        QString value = finalStudyConfiguration.value(parameter).toString();
         if (!valid_parameter_values.value(parameter).contains(value)){
             error = "Invalid parameter value " + value  + " for parameter " + parameter + " for study " + study;
             return false;
         }
-        finalStudyConfiguration.insert(parameter,value);
+        //finalStudyConfiguration.insert(parameter,value);
     }
 
     QVariantMap studies = data.value(MAIN_FIELD_STUDIES,QVariantMap()).toMap();
@@ -455,8 +471,6 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     if (eye == VMDC::Eye::LEFT) config_code = "L";
     else if (eye == VMDC::Eye::RIGHT) config_code = "R";
     else config_code = "B";
-
-    //studyToConfigure[RDC::StudyParameter::VALID_EYE] = mapStudyValues.value(studyConfiguration[SCP_EYES]);
 
     // Specific study configurations.
     QString abbreviation;
@@ -494,9 +508,8 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
         }
         abbreviation = "vs";
     }
-    else if (study.contains(VMDC::MultiPartStudyBaseName::PERCEPTION)){
-        valid_parameter_values[VMDC::StudyParameter::PERCEPTION_TYPE] = VMDC::PerceptionType::valid;
-        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::PERCEPTION_TYPE).toString().mid(0,1).toUpper();
+    else if (study == VMDC::Study::GONOGO_SPHERE){
+        abbreviation = "gng3D";
     }
 
     //qDebug() << "Setting STUDY CONFIG in Final Json VMDC";
@@ -529,13 +542,15 @@ void ViewMindDataContainer::markFileAsFinalized(){
     data[MAIN_FIELD_METADATA] = metadata;
 }
 
-void ViewMindDataContainer::clearTrialFieldsFromEachStudy(){
+void ViewMindDataContainer::clearFieldsForIndexFileCreation(){
     // This is used to create a "just the header file" for quick loading of information.
     QStringList allstudies = data.value(MAIN_FIELD_STUDIES).toMap().keys();
     QVariantMap allstudymaps = data.value(MAIN_FIELD_STUDIES).toMap();
     for (qint32  i = 0; i < allstudies.size(); i++){
         QVariantMap study = allstudymaps.value(allstudies.at(i)).toMap();
-        study[VMDC::StudyField::TRIAL_LIST] = QVariantMap();
+        study[VMDC::StudyField::TRIAL_LIST] = QVariantMap(); // This is for 2D studies.
+        study[VMDC::StudyField::STUDY_DATA] = QVariantMap(); // This is for 3D Studies
+        study[VMDC::StudyField::EXPERIMENT_DESCRIPTION] = QVariantMap(); // In 3D studies this can contain base64 encoded files which are very large.
         allstudymaps[allstudies.at(i)] = study;
     }
     data[MAIN_FIELD_STUDIES] = allstudymaps;
@@ -609,9 +624,14 @@ void ViewMindDataContainer::finalizeTrial(const QString &response){
 }
 
 bool ViewMindDataContainer::finalizeStudy(){
+    return finalizeStudy(QVariantMap());
+}
+
+bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data){
+
 
     // Getting the current study structure from the current studies list.
-    QString studyName =currentlySelectedStudy;
+    QString studyName = currentlySelectedStudy;
 
     if (studyName == ""){
         error = "Trying to finalize an unitialized study";
@@ -622,12 +642,18 @@ bool ViewMindDataContainer::finalizeStudy(){
     QVariantMap study = studies.value(studyName).toMap();
 
     // Storing the trial list for the study.
-    study.insert(VMDC::StudyField::TRIAL_LIST,currentTrialList);
+    if (data.empty()){
+        study.insert(VMDC::StudyField::TRIAL_LIST,currentTrialList);
+    }
+    else {
+        qDebug() << "Inserting the field study data in the study " << studyName;
+        study.insert(VMDC::StudyField::STUDY_DATA,study_data);
+    }
+
     study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
 
-    //qDebug() << "Finalizing Study" << studyName << " of value " << currentlySelectedStudy;
-
     studies[studyName] = study;
+
     data[MAIN_FIELD_STUDIES] = studies;
 
     // Clearing all data.
@@ -664,7 +690,21 @@ QVariantList ViewMindDataContainer::getStudyTrialList(const QString &study){
     return data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::TRIAL_LIST).toList();
 }
 
+QVariant ViewMindDataContainer::get3DStudyData(const QString &study, const QString &field){
+    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study << VMDC::StudyField::STUDY_DATA;
+    if (!checkHiearchyChain(hierarchy)) return QVariant();
 
+    QVariant sdata = data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::STUDY_DATA);
+
+    if (field != ""){
+        if (sdata.toMap().contains(field)){
+            return sdata.toMap().value(field);
+        }
+        else return sdata;
+    }
+    else return sdata;
+
+}
 
 ////////////////////////////////////// HIEARCHY CHECK FUNCTION //////////////////////////////////////
 bool ViewMindDataContainer::checkHiearchyChain(const QStringList &hieararchy) {

@@ -20,14 +20,21 @@ namespace RenderServerPacketType {
 
 namespace CalibrationControlPacketFields {
    static const QString COMMAND               = "cmd";      // The command.
-   static const QString CALIBRATION_TARGETS_X = "x";       // The calibration targets
-   static const QString CALIBRATION_TARGETS_Y = "y";       // The calibration targets
-   static const QString CALIBRATION_TARGETS_Z = "z";       // The calibration targets
+   static const QString CALIBRATION_TARGETS_X = "x";        // The calibration targets
+   static const QString CALIBRATION_TARGETS_Y = "y";        // The calibration targets
+   static const QString CALIBRATION_TARGETS_Z = "z";        // The calibration targets
+   static const QString CALIB_DATA_LX         = "lx";
+   static const QString CALIB_DATA_LY         = "ly";
+   static const QString CALIB_DATA_LZ         = "lz";
+   static const QString CALIB_DATA_RX         = "rx";
+   static const QString CALIB_DATA_RY         = "ry";
+   static const QString CALIB_DATA_RZ         = "rz";
    static const QString GATHER_TIME           = "gt";       // Gather Timer
    static const QString MOVE_TIME             = "mt";       // Move Time;
    static const QString N_CALIB_POINTS        = "n";        // Number of calibration points.
-   static const QString CALIB_PT_INDEX        = "ccp";      // Current Calibration point
-   static const QString VALIDATION_R          = "vR";       // The validation Radious
+   static const QString VALIDATION_R          = "validation_R";       // The validation Radious
+   static const QString COEFFS_R              = "rcoeff";
+   static const QString COEFFS_l              = "lcoeff";
 }
 
 namespace RemoteRenderServerDebugControls {
@@ -46,7 +53,7 @@ namespace PacketDebugControl {
    static const QString JSON_DICT_FIELD           = "dbug";
    static const QString ENABLE_RENDER_2D_LOG      = "enable_2d_render_log";
    static const QString ENABLE_3D_HMD_LASER_SIGHT = "enable_3d_hmd_laser_sight";
-
+   static const QString ENABLE_FORCE_HAND_CALIB   = "force_hand_calibration_results";
 }
 
 namespace Study3DNames {
@@ -56,11 +63,9 @@ namespace Study3DNames {
 }
 
 namespace CalibrationControlCommands {
-   static const int CMD_SETUP                        = 0;
-   static const int CMD_CALIBRATION_START            = 1;
-   static const int CMD_CALIBRATION_POINT_GATHER     = 2;
-   static const int CMD_CALIBRATION_POINT_STOP       = 3;
-   static const int CMD_CALIBRATION_END              = 4;
+   static const int CMD_SETUP        = 0;
+   static const int CMD_CALIB_DATA   = 1;
+   static const int CMD_COEFFICIENTS = 2;
 }
 
 namespace Study3DControlCommands {
@@ -72,7 +77,6 @@ namespace Study3DControlCommands {
    static const int CMD_START_EXAMPLES               = 4;
    static const int CMD_NEXT_EXAMPLES                = 5;
    static const int CMD_REQUEST_STUDY_DESCRIPTION    = 6;
-   static const int CMD_EYEPOS_AND_SYNCH             = 7;
 
 }
 
@@ -167,10 +171,8 @@ namespace Packet3DStudyControl  {
    static const QString COMMAND           = "cmd";
    static const QString COMMAND_ARG       = "cmd_arg";
    static const QString STUDY_MESSAGES    = "s_msg";
-   static const QString TIMESTAMP         = "ts";
-   static const QString EYE_LEFT          = "el";
-   static const QString EYE_RIGHT         = "er";
    static const QString SHORT_STUDIES     = "ss";
+   static const QString DESCRIPTION       = "sdesc";
 
 }
 

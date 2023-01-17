@@ -34,6 +34,10 @@ void StaticThreadLogger::warning(const QString trace, const QString message){
     StaticThreadLogger::writeLine(trace,message,"WARNING");
 }
 
+void StaticThreadLogger::kill() {
+    thread.stopLoggerThread();
+}
+
 QString StaticThreadLogger::getFullLogFilePath() {
     return thread.getFullLogFilePath();
 }

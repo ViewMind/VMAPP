@@ -62,32 +62,6 @@ Rectangle {
         availableEvaluations.append(item)
 
         item = {}
-        options = {}
-        item = {
-            vmIndex: VMGlobals.vmINDEX_GONOGO3D,
-            vmStudyName : loader.getStringForKey("viewevaluation_eval_gonogo3D") ,
-            vmIsLastSelected: false,
-            vmOptions: options,
-            vmOrder: "",
-            vmOptionValueMap: ""
-        }
-        availableEvaluations.append(item)
-
-// 2022-08-23: Removed NBACK MS Evaluation. Hopefully Peramenently.
-//        item = {}
-//        options = {}
-//        item = {
-//            vmIndex: VMGlobals.vmINDEX_NBACKMS,
-//            vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackms") ,
-//            vmIsLastSelected: false,
-//            vmOptions: options,
-//            vmOrder: "",
-//            vmOptionValueMap: ""
-//        }
-//        //vmDefaultStudyOrder.push(item["vmIndex"])
-//        availableEvaluations.append(item)
-
-        item = {}
 
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
@@ -98,7 +72,7 @@ Rectangle {
         options[VMGlobals.vmSCP_NBACK_LIGHTUP] = {}
         options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_nback_light_up_title");
         options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_nback_light_up_correct"),
-                                                                                     loader.getStringForKey("viewevaluation_nback_light_up_all")];
+                                                                                 loader.getStringForKey("viewevaluation_nback_light_up_all")];
         options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
         options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
 
@@ -109,6 +83,26 @@ Rectangle {
             vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS + "|" + VMGlobals.vmSCP_NBACK_LIGHTUP,
             vmOptions: options,
             vmOptionValueMap: "3|4|5|6||false|true"
+        }
+        availableEvaluations.append(item)
+
+        item = {}
+        options = {};
+        options[VMGlobals.vmSCP_HAND_TO_USE] = {}
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_gng3D_hand_sel");
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_gng3D_hand_right"),
+                                                                               loader.getStringForKey("viewevaluation_gng3D_hand_left"),
+                                                                               loader.getStringForKey("viewevaluation_gng3D_hand_both")];
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_SELECTED] = 2;
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
+
+        item = {
+            vmIndex: VMGlobals.vmINDEX_GONOGO3D,
+            vmStudyName : loader.getStringForKey("viewevaluation_eval_gonogo3D") ,
+            vmIsLastSelected: false,
+            vmOptions: options,
+            vmOrder: VMGlobals.vmSCP_HAND_TO_USE,
+            vmOptionValueMap: "right|left|both" // These are the values inside the study configuration map corresponding to each of the option values.
         }
         availableEvaluations.append(item)
 
@@ -154,6 +148,7 @@ Rectangle {
     function setupEvaluations(){
 
         // Clearing the previous selection.
+        // console.log("Setting up evaluations");
         viewEvaluations.vmSelectedEvaluationConfigurations = []
 
         // Names used for setting up the progress line.
@@ -202,7 +197,7 @@ Rectangle {
                     configuration[VMGlobals.vmSCP_TARGET_SIZE] = VMGlobals.vmSCV_BINDING_TARGETS_LARGE;
 
                     // Standard 2D study.
-                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = false;
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = "";
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
 
                     // This actually represents two studies, so we need to select both, with the same configuration.
@@ -214,16 +209,22 @@ Rectangle {
                     study_names.push(study_name);
 
                     // Standard 3D study.
-                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = true;
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = configuration[VMGlobals.vmSCP_HAND_TO_USE];
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = true;
+                    //configuration[VMGlobals.vmSCP_HAND_TO_USE] = "both";
+                    configuration[VMGlobals.vmSCP_MIN_SPEED] = 10;
+                    configuration[VMGlobals.vmSCP_MAX_SPEED] = 100;
+                    configuration[VMGlobals.vmSCP_INITIAL_SPEED] = 30;
 
                     requires_hand_calibration.push(true);
+
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration);
                     break;
                 default:
                     study_names.push(study_name)
 
                     // Standard 2D study.
-                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = false;
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = "";
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
 
                     // Adding it to the configuration list.
@@ -237,7 +238,7 @@ Rectangle {
         }
 
         // Setting up the progress line
-        evaluationsView.setUpStudyNames(study_names, requires_hand_calibration);
+        evaluationsView.setUpStudyNames(study_names, requires_hand_calibration);        
 
         //console.log("Printing Selected Evaluation Configuration")
         //console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations));

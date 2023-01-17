@@ -29,11 +29,14 @@ ViewBase {
     function loadProgressLine(){
 
         // Selecting the different types of graphps.
-        let graphNames = [
+        let graphNames2D = [
                 loader.getStringForKey("viewqc_SubICI"),
                 loader.getStringForKey("viewqc_SubFixations")
             ];
 
+        let graphNames3D = [
+                loader.getStringForKey("viewqc_SubICI")
+            ];
 
         // Creating the study name language map
         var nameList = loader.getStringListForKey("viewQC_StudyNameMap");
@@ -52,14 +55,20 @@ ViewBase {
             }
         }
 
-        // Getting the study list.
+        // Getting the study list. Each item is a map with a boolean to tell whether it's a 3D study or not.
         var studies = loader.getStudyList();
 
         // Setting up the progress line.
         let plineSetup = {};
         for (i in studies){
-            let name = vmStudyNameMap[studies[i]]
-            plineSetup[name] = graphNames;
+            let name_and_flag = studies[i];
+            let name = vmStudyNameMap[name_and_flag["name"]];
+            if (name_and_flag["3D"]){
+                plineSetup[name] = graphNames3D;
+            }
+            else {
+                plineSetup[name] = graphNames2D;
+            }
         }
 
         // Adding the "Send Evaluations" step. No substeps.
@@ -281,6 +290,16 @@ ViewBase {
             onClickSignal: {
                 switch(viewer.currentIndex){
                 case vmSC_INDEX_QCGRAPHS:
+
+                    // Logic for the special circumstance of only 1 graph.
+                    if (qcgraphs.vmOnly1Graph){
+                        moveProgressLine(true)
+                        qcgraphs.vmIsLastGraph = true;
+                        viewer.setCurrentIndex(vmSC_INDEX_SEND_REPORT);
+                        return;
+                    }
+
+
                     if (qcgraphs.vmIsLastGraph){
                         moveProgressLine(true)
                         viewer.setCurrentIndex(vmSC_INDEX_SEND_REPORT)
@@ -334,7 +353,7 @@ ViewBase {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: VMGlobals.adjustWidth(29)
-            visible: (viewer.currentIndex === vmSC_INDEX_QCGRAPHS)
+            visible: ((viewer.currentIndex === vmSC_INDEX_QCGRAPHS) && (!qcgraphs.vmOnly1Graph)) // If there is only one graph this button should not be visble.
             onClickSignal: {
                 qcgraphs.moveGraph(false)
             }

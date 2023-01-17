@@ -143,7 +143,7 @@ void BindingExperiment::resetStudy(){
     stateTimer.setInterval(TIME_START_CROSS);
     if (studyPhase == SP_EVALUATION) stateTimer.start();
 
-    if (Globals::EyeTracker::IS_VR) updateDisplay();
+    updateDisplay();
 
 }
 

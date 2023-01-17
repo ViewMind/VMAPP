@@ -101,18 +101,19 @@ ViewBase {
                     var hcalib = false;
                     for (var f = 0; f < study_fields.length; f++){
                         var key_and_value = study_fields[f].split("-");
+
                         if (key_and_value[0] === VMGlobals.vmUNIQUE_STUDY_ID){
                             name = studyNames[key_and_value[1]]
                         }
                         else if (key_and_value[0] === VMGlobals.vmSCP_EYES){
                             viewEvaluations.vmSelectedEye = key_and_value[1]
                         }
-                        else {
-                           if (key_and_value[0] === VMGlobals.vmSCP_STUDY_REQ_H_CALIB){
-                               hcalib = true;
-                           }
-                           config[key_and_value[0]] = key_and_value[1]
+
+                        if (key_and_value[0] === VMGlobals.vmSCP_STUDY_REQ_H_CALIB){
+                            hcalib = true;
                         }
+
+                        config[key_and_value[0]] = key_and_value[1]
 
                     }
                     console.log("   DBUG: Adding Study " + name + " With use of hand calibration equal to " + hcalib);
@@ -125,7 +126,12 @@ ViewBase {
                 mainWindow.swipeTo(VMGlobals.vmSwipeIndexEvalView);
                 //console.log("Study names: " + JSON.stringify(study_names));
                 viewEvaluations.setUpStudyNames(study_names,uses_h_calib);
+
                 viewEvaluations.vmSelectedDoctor = dbug_selected_doctor;
+
+                //console.log("DBUG: Printing selected evaluation configurations");
+                //console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations));
+
             }
             else if (dbug_qc_file_to_set !== ""){
                 if (loader.qualityControlFailed()){

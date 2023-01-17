@@ -75,7 +75,6 @@ public:
     // Drawing the pause text
     void drawPauseScreen();
 
-    static const char * CONFIG_IS_VR_BEING_USED;
     static const char * CONFIG_PAUSE_TEXT_LANG;
     static const char * CONFIG_IS_VS;
     static const char * LANG_ES;
@@ -120,7 +119,6 @@ private:
     static const qreal K_CROSS_LINE_LENGTH;
 
     QString pauseText;
-    bool vr_being_used;
 
     static const char * PAUSE_TEXT_SPANISH;
     static const char * PAUSE_TEXT_ENGLISH;

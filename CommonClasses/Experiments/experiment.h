@@ -18,8 +18,9 @@
 #include "experimentdatapainter.h"
 
 #include "../EyeTrackingInterface/eyetrackerdata.h"
+#include "../RenderServerClient/RenderServerPackets/renderserverpacket.h"
 #include "../RawDataContainer/viewminddatacontainer.h"
-#include "../LogInterface/loginterface.h"
+#include "../LogInterface/staticthreadlogger.h"
 #include "../MWA/movingwindowalgorithm.h"
 
 namespace ExperimentGlobals {
@@ -27,13 +28,13 @@ namespace ExperimentGlobals {
    static const QString SUBJECT_DIR_SENT        = "sent";
 }
 
-class Experiment : public QWidget
+class Experiment : public QObject
 {
     Q_OBJECT
 public:
 
     // The constructor will set up the basic background view for the widget.
-    explicit Experiment(QWidget *parent = nullptr, const QString &studyType = "");
+    explicit Experiment(QObject *parent = nullptr, const QString &studyType = "");
 
     // Used to determine how the experiment
     typedef enum {ER_NORMAL, ER_ABORTED, ER_FAILURE, ER_WARNING} ExperimentResult;
@@ -45,6 +46,12 @@ public:
     virtual bool startExperiment(const QString &workingDir,
                                  const QString &experimentFile,
                                  const QVariantMap &studyConfig);
+
+    // This interface will receive the new eye tracker data. The implementation should decide what to do with it.
+    virtual void newEyeDataAvailable(const EyeTrackerData &data);
+
+    // Processes the study control packets for 3D study control
+    void process3DStudyControlPacket(const RenderServerPacket &p);
 
     // Sets the validation calibration data in the study structure so that information can be analyzed or used if needed.
     void setCalibrationValidationData(const QVariantMap &calibrationValidationData);
@@ -64,9 +71,6 @@ public:
     // Getting the generated data file
     QString getDataFileLocation() const {return dataFile;}
 
-    // Whenever not in mouse mode the cursor should be hidden
-    void hideCursor() {this->setCursor(Qt::BlankCursor);}
-
     // Keyboard press handling function
     void keyboardKeyPressed(int keyboardKey);
 
@@ -74,23 +78,17 @@ public:
     //QImage getVRDisplayImage() const;
     RenderServerScene getVRDisplayImage() const;
 
-    // This is the function that gets called to render explation screens.
-    void renderCurrentStudyExplanationScreen();
+    // The control packets used for controlling 3D Studies.
+    RenderServerPacket getControlPacket() const;
 
-    qlonglong getElapsedTimeFromStart() const;
+    // This is the function that gets called to render explation screens. The parameter is only used for 3D Studies.
+    void renderCurrentStudyExplanationScreen(bool forward = true);
+
 
 signals:
 
     // Should be emitted when the experiment is finalized
     void experimentEndend(const Experiment::ExperimentResult &result);
-
-    // This method will be used for calibration request in mid-experiment.
-    // When called the receiving slot will call pauseExperiment.
-    void calibrationRequest();
-
-    // TODO: Review what these are used for.
-    void addFixations(qreal rx, qreal ry, qreal lx, qreal ly);
-    void addDebugMessage(const QString &message, bool append);
 
     // Used to update the messages on the QML side where the study is being presented.
     void updateStudyMessages(const QVariantMap &string_value_map);
@@ -98,15 +96,18 @@ signals:
     // Signal that provides VR with the image to show.
     void updateVRDisplay();
 
-
-public slots:
-
-    // This slot will receive the new eye tracker data. The implementation should decide what to do with it.
-    virtual void newEyeDataAvailable(const EyeTrackerData &data);
+    // Signal becuase there is ia new Remote Render Server control packet available.
+    void remoteRenderServerPacketAvailable();
 
 protected:
 
     typedef enum {SP_EXPLANATION, SP_EXAMPLE, SP_EVALUATION} StudyPhase;
+    typedef enum {S3S_NONE, S3S_EXPECTING_STUDY_DESCRIPTION, S3S_WAITING_FOR_STUDY_END} Study3DStates;
+
+    // Self explanatory and should be used in the constructor of each study.
+    bool isStudy3D;
+
+    Study3DStates study3DState;
 
     // The manager for the experiment
     ExperimentDataPainter *manager;
@@ -126,11 +127,11 @@ protected:
     // The default eye is the prefered eye in which the study study uses for it's logic.
     QString defaultStudyEye;
 
-    // The pointer to the GraphicsView where the drawing and showing will take place.
-    QGraphicsView *gview;
-
     // Deterimine if the experiment is running
     ExperimentState state;
+
+    // The latest packet available for remote render server control.
+    RenderServerPacket rrsControlPacket;
 
     // The eye used for the experiment.
     bool leftEyeEnabled;
@@ -161,9 +162,6 @@ protected:
     // So that the logic of handling keys can be implemente by each experiment.
     virtual void keyPressHandler(int keyPressed);
 
-    // Sets up the view given the configuration
-    void setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height);
-
     // Steps for aborted experiment
     void experimenteAborted();
 
@@ -182,9 +180,7 @@ protected:
     // Timer to measure different areas as required by most studies.
     QElapsedTimer timeMeasurer;
 
-    QElapsedTimer timeFromStudyStart;
-
-    void keyPressEvent(QKeyEvent *event) override;
+    // void keyPressEvent(QKeyEvent *event);
 
     // Update Image or HMD Logic is the same for all experiments
     void updateDisplay();
@@ -214,6 +210,8 @@ protected:
     // Moves the study explanation index forward or back.
     qint32 currentStudyExplanationScreen;
     void moveStudyExplanationScreen(int key_pressed);
+
+    virtual void newDataForStudyMessageFor3DStudies(const QVariantList &msg);
 
 };
 

@@ -46,7 +46,6 @@ public:
     Q_INVOKABLE QString getInstitutionName() const;
 
     Q_INVOKABLE void openUserManual();
-    Q_INVOKABLE bool forceOpenValidationDialog() const; // FOR DEBUG ONLY!!
     Q_INVOKABLE bool processingParametersArePresent() const;
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
@@ -90,7 +89,6 @@ public:
     Q_INVOKABLE bool getConfigurationBoolean(const QString &key);
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
     Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var);
-    Q_INVOKABLE bool isVREnabled() const;
 
     //////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////
     Q_INVOKABLE bool createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol);
@@ -99,7 +97,7 @@ public:
     ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
     Q_INVOKABLE QVariantMap getReportsForLoggedEvaluator();
     Q_INVOKABLE void setCurrentStudyFileForQC(const QString &file);
-    Q_INVOKABLE QStringList getStudyList() const;
+    Q_INVOKABLE QVariantList getStudyList() const;
     Q_INVOKABLE QVariantMap getStudyGraphData(const QString &study, qint32 selectedGraph);
     Q_INVOKABLE bool qualityControlFailed() const;
     Q_INVOKABLE qint32 wasThereAnProcessingUploadError() const;

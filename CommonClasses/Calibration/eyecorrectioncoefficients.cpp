@@ -4,29 +4,45 @@ EyeCorrectionCoefficients::EyeCorrectionCoefficients(){
     mode3D = false;
 }
 
-void EyeCorrectionCoefficients::configureForCoefficientComputation(const QList<QPointF> &target){
 
-    xtarget.clear();
-    ytarget.clear();
-    calibrationData.clear();
-    fittedEyeDataPoints.clear();
-
-    for (qint32 i = 0; i < target.size(); i++){
-        xtarget << target.at(i).x();
-        ytarget << target.at(i).y();
-        calibrationData << QList<EyeRealData>();
+void EyeCorrectionCoefficients::addPointForCoefficientComputation(const EyeTrackerData &etdata, qint32 calibrationTargetIndex){
+    if ((calibrationTargetIndex >= 0) && (calibrationTargetIndex < calibrationData.size()) ){
+        // qDebug() << "Calibration Point" << calibrationTargetIndex << ":" << etdata.toString();
+        calibrationData[calibrationTargetIndex].append(etdata);
     }
 }
 
-void EyeCorrectionCoefficients::set3DMode(bool is3D){
-    mode3D = is3D;
+void EyeCorrectionCoefficients::configureFor2DCoefficientComputation(const QList<QPointF> &target){
+    QList<QVector3D> vectors;
+    for (qint32 i = 0; i < target.size(); i++){
+        QVector3D v(static_cast<float>(target.at(i).x()),static_cast<float>(target.at(i).y()),0);
+        vectors << v;
+    }
+    mode3D = false;
+    configureForCoefficientComputation(vectors);
 }
 
-bool EyeCorrectionCoefficients::isIn3DMode() const {
-    return mode3D;
+
+void EyeCorrectionCoefficients::configureFor3DCoefficientComputation(const QList<QVector3D> &targetVectors, qreal validationRadiousValue){
+    //qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
+
+    // The vectors need to be normalized. So the original values must be saved.
+    nonNormalizedTargetVectors = targetVectors;
+    validationRadious = validationRadiousValue;
+    QList<QVector3D> normalizedVectors;
+
+    for (qint32 i = 0; i < targetVectors.size(); i++){
+        QVector3D ntv = targetVectors.at(i).normalized();
+        normalizedVectors << ntv;
+    }
+
+    mode3D = true;
+
+    configureForCoefficientComputation(normalizedVectors);
 }
 
-void EyeCorrectionCoefficients::configureForCoefficientComputationOf3DVectors(qint32 N_targets){
+void EyeCorrectionCoefficients::configureForCoefficientComputation(const QList<QVector3D> &targetVectors){
+    //qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
 
     xtarget.clear();
     ytarget.clear();
@@ -34,32 +50,14 @@ void EyeCorrectionCoefficients::configureForCoefficientComputationOf3DVectors(qi
     calibrationData.clear();
     fittedEyeDataPoints.clear();
 
-    for (qint32 i = 0; i < N_targets; i++){
-        calibrationData << QList<EyeRealData>();
-    }
-
-}
-
-void EyeCorrectionCoefficients::addPointForCoefficientComputation(const EyeRealData &etdata, qint32 calibrationTargetIndex){    
-    if ((calibrationTargetIndex >= 0) && (calibrationTargetIndex < calibrationData.size()) ){
-        // qDebug() << "Calibration Point" << calibrationTargetIndex << ":" << etdata.toString();
-        calibrationData[calibrationTargetIndex].append(etdata);
-    }
-}
-
-void EyeCorrectionCoefficients::set3DTargetVectors(const QList<QVector3D> &targetVectors, qreal validationRadiousValue){
-    //qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
-
-    // The vectors need to be normalized. So the original values must be saved.
-    nonNormalizedTargetVectors = targetVectors;
-    validationRadious = validationRadiousValue;
-
     for (qint32 i = 0; i < targetVectors.size(); i++){
-        QVector3D ntv = targetVectors.at(i).normalized();
+        calibrationData << QList<EyeTrackerData>();
+        QVector3D ntv = targetVectors.at(i);
         xtarget << static_cast<qreal>(ntv.x());
         ytarget << static_cast<qreal>(ntv.y());
         ztarget << static_cast<qreal>(ntv.z());
     }
+
 }
 
 QString EyeCorrectionCoefficients::getCalibrationPointsWithNoDataAsAString() const {
@@ -80,8 +78,11 @@ QVariantList EyeCorrectionCoefficients::getCalibrationPointsWithNoData() const {
 }
 
 bool EyeCorrectionCoefficients::computeCoefficients(){
-    if (mode3D) return computeCoefficients3D();
-    else return computeCoefficients2D();
+    error_msg = "";
+    resultOfLastComputation = false;
+    if (mode3D) resultOfLastComputation = computeCoefficients3D();
+    else resultOfLastComputation = computeCoefficients2D();
+    return resultOfLastComputation;
 }
 
 bool EyeCorrectionCoefficients::computeCoefficients2D(){
@@ -102,30 +103,37 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
 
 
 
-            EyeRealData erd = calibrationData.at(i).at(j);
-            fitterXL.addInputAndTarget(erd.xLeft,xref);
-            fitterYL.addInputAndTarget(erd.yLeft,yref);
+            EyeTrackerData erd = calibrationData.at(i).at(j);
+            fitterXL.addInputAndTarget(erd.xl(),xref);
+            fitterYL.addInputAndTarget(erd.yl(),yref);
 
-            fitterXR.addInputAndTarget(erd.xRight,xref);
-            fitterYR.addInputAndTarget(erd.yRight,yref);
+            fitterXR.addInputAndTarget(erd.xr(),xref);
+            fitterYR.addInputAndTarget(erd.yr(),yref);
         }
     }
 
     //qDebug() << "LINEAR FITTING XL";
+    QStringList invalidCoefficients;
+
     xl = fitterXL.linearFit();
-    if (!xl.isValid()) return false;
+    if (!xl.isValid()) invalidCoefficients << "XL";
 
     //qDebug() << "LINEAR FITTING XR";
     xr = fitterXR.linearFit();
-    if (!xr.isValid()) return false;
+    if (!xr.isValid()) invalidCoefficients << "XR";
 
     //qDebug() << "LINEAR FITTING YL";
     yl = fitterYL.linearFit();
-    if (!yl.isValid()) return false;
+    if (!yl.isValid()) invalidCoefficients << "XR";
 
     //qDebug() << "LINEAR FITTING YR";
     yr = fitterYR.linearFit();
-    if (!yr.isValid()) return false;
+    if (!yr.isValid()) invalidCoefficients << "XR";
+
+    if (!invalidCoefficients.empty()){
+        error_msg = "The following components did not have valid coefficients: " + invalidCoefficients.join(",");
+        return false;
+    }
 
     // We now compute the the fitted data points, for each target.
     fittedEyeDataPoints.clear();
@@ -135,16 +143,16 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
         QList<EyeTrackerData> f;
 
         for (qint32 j = 0; j < calibrationData.at(i).size(); j++){
-            EyeRealData erd = calibrationData.at(i).at(j);
-            EyeTrackerData etd;
+            EyeTrackerData input = calibrationData.at(i).at(j);
+            EyeTrackerData prediction;
 
-            etd.setXR(xr.predict(erd.xRight));
-            etd.setYR(yr.predict(erd.yRight));
+            prediction.setXR(xr.predict(input.xr()));
+            prediction.setYR(yr.predict(input.yr()));
 
-            etd.setXL(xl.predict(erd.xLeft));
-            etd.setYL(yl.predict(erd.yLeft));
+            prediction.setXL(xl.predict(input.xl()));
+            prediction.setYL(yl.predict(input.yl()));
 
-            f << etd;
+            f << prediction;
         }
 
         fittedEyeDataPoints << f;
@@ -173,7 +181,7 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
     OrdinaryLeastSquares fitterZR;
     OrdinaryLeastSquares fitterZL;
 
-    QStringList textdata;
+    // QStringList textdata;
 
     for (qint32 i = 0; i < calibrationData.size(); i++){
 
@@ -183,17 +191,17 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
         qreal yref = ytarget.at(i);
         qreal zref = ztarget.at(i);
 
-        textdata << QString::number(xref) + ", " + QString::number(yref) + ", " + QString::number(zref);
+        // textdata << QString::number(xref) + ", " + QString::number(yref) + ", " + QString::number(zref);
 
         if (calibrationData.at(i).size() < 2) return false;
 
         for (qint32 j = 0; j < calibrationData.at(i).size(); j++){
-            EyeRealData erd = calibrationData.at(i).at(j);
+            EyeTrackerData input = calibrationData.at(i).at(j);
 
-            textdata << erd.toString(true);
+            // textdata << input.toString(true);
 
-            QVector<qreal> lsample = erd.leftVector();
-            QVector<qreal> rsample = erd.rightVector();
+            QVector<qreal> lsample = input.leftVector();
+            QVector<qreal> rsample = input.rightVector();
             lsample << 1;
             rsample << 1;
 
@@ -210,32 +218,38 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
 
 
     //qDebug() << "LINEAR FITTING XL";
-    if (!fitterXL.computeCoefficients()) return false;
+    QStringList invalidCoefficients;
+    if (!fitterXL.computeCoefficients()) invalidCoefficients << "XL";
     xl.fromSimpleMatrix(fitterXL.getCoefficients());
-    if (!xl.isValid()) return false;
+    if (!xl.isValid()) invalidCoefficients << "XL";
 
     //qDebug() << "LINEAR FITTING XR";
-    if (!fitterXR.computeCoefficients()) return false;
+    if (!fitterXR.computeCoefficients()) invalidCoefficients << "XR";
     xr.fromSimpleMatrix(fitterXR.getCoefficients());
-    if (!xr.isValid()) return false;
+    if (!xr.isValid()) invalidCoefficients << "XR";
 
     //qDebug() << "LINEAR FITTING YL";
-    if (!fitterYL.computeCoefficients()) return false;
+    if (!fitterYL.computeCoefficients()) invalidCoefficients << "YL";
     yl.fromSimpleMatrix(fitterYL.getCoefficients());
-    if (!yl.isValid()) return false;
+    if (!yl.isValid()) invalidCoefficients << "YL";
 
     //qDebug() << "LINEAR FITTING YR";
-    if (!fitterYR.computeCoefficients()) return false;
+    if (!fitterYR.computeCoefficients()) invalidCoefficients << "YR";
     yr.fromSimpleMatrix(fitterYR.getCoefficients());
-    if (!yr.isValid()) return false;
+    if (!yr.isValid()) invalidCoefficients << "YR";
 
-    if (!fitterZR.computeCoefficients()) return false;
+    if (!fitterZR.computeCoefficients()) invalidCoefficients << "ZR";
     zr.fromSimpleMatrix(fitterZR.getCoefficients());
-    if (!zr.isValid()) return false;
+    if (!zr.isValid()) invalidCoefficients << "ZR";
 
-    if (!fitterZL.computeCoefficients()) return false;
+    if (!fitterZL.computeCoefficients()) invalidCoefficients << "ZL";
     zl.fromSimpleMatrix(fitterZL.getCoefficients());
-    if (!zl.isValid()) return false;
+    if (!zl.isValid()) invalidCoefficients << "ZL";
+
+    if (!invalidCoefficients.empty()){
+        error_msg = "The following components did not have valid coefficients: " + invalidCoefficients.join(",");
+        return false;
+    }
 
     // We now compute the the fitted data points, for each target.
     fittedEyeDataPoints.clear();
@@ -245,16 +259,16 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
         QList<EyeTrackerData> f;
 
         for (qint32 j = 0; j < calibrationData.at(i).size(); j++){
-            EyeRealData erd = calibrationData.at(i).at(j);
+            EyeTrackerData input = calibrationData.at(i).at(j);
             EyeTrackerData etd;
 
-            etd.setXR(xr.predict(erd.xRight,erd.yRight,erd.zRight));
-            etd.setYR(yr.predict(erd.xRight,erd.yRight,erd.zRight));
-            etd.setZR(zr.predict(erd.xRight,erd.yRight,erd.zRight));
+            etd.setXR(xr.predict(input.xr(),input.yr(),input.zr()));
+            etd.setYR(yr.predict(input.xr(),input.yr(),input.zr()));
+            etd.setZR(zr.predict(input.xr(),input.yr(),input.zr()));
 
-            etd.setXL(xl.predict(erd.xLeft,erd.yLeft,erd.zLeft));
-            etd.setYL(yl.predict(erd.xLeft,erd.yLeft,erd.zLeft));
-            etd.setZL(zl.predict(erd.xLeft,erd.yLeft,erd.zLeft));
+            etd.setXL(xl.predict(input.xl(),input.yl(),input.zl()));
+            etd.setYL(yl.predict(input.xl(),input.yl(),input.zl()));
+            etd.setZL(zl.predict(input.xl(),input.yl(),input.zl()));
 
             //qDebug() << "Raw Data Point" << erd.toString(true) << " Fitted to " << etd.toString(true);
 
@@ -275,13 +289,11 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
     R2.zr = fitterZR.getRSquared();
     R2.zl = fitterZL.getRSquared();
 
-    // qDebug() << "R: EyeR " << R2.xr << R2.yr << " EyeL " << R2.xl << R2.yl;
-
-    QFile file("calibration_data.txt");
-    file.open(QFile::WriteOnly);
-    QTextStream writer (&file);
-    writer << textdata.join("\n");
-    file.close();
+//    QFile file("calibration_data.txt");
+//    file.open(QFile::WriteOnly);
+//    QTextStream writer (&file);
+//    writer << textdata.join("\n");
+//    file.close();
 
     return true;
 
@@ -300,30 +312,42 @@ QList<qreal> EyeCorrectionCoefficients::getCalibrationPointsYCordinates() const 
     return ytarget;
 }
 
+QList<QVector3D> EyeCorrectionCoefficients::getNonNormalizedTargetVector() const {
+    return nonNormalizedTargetVectors;
+}
+
 EyeCorrectionCoefficients::RCoefficients EyeCorrectionCoefficients::getRCoefficients() const {
     return R2;
 }
 
-EyeTrackerData EyeCorrectionCoefficients::computeCorrections(const EyeRealData &input) const {
+QString EyeCorrectionCoefficients::getLastError() const {
+    return error_msg;
+}
+
+bool EyeCorrectionCoefficients::getResultOfLastComputation() const {
+    return resultOfLastComputation;
+}
+
+EyeTrackerData EyeCorrectionCoefficients::computeCorrections(const EyeTrackerData &input) const {
 
     qreal nxl,nxr,nyl,nyr,nzl,nzr;
 
     if (mode3D){
 
-        nxl = xl.predict(input.xLeft,input.yLeft,input.zLeft);
-        nyl = yl.predict(input.xLeft,input.yLeft,input.zLeft);
-        nzl = zl.predict(input.xLeft,input.yLeft,input.zLeft);
+        nxl = xl.predict(input.xl(),input.yl(),input.zl());
+        nyl = yl.predict(input.xl(),input.yl(),input.zl());
+        nzl = zl.predict(input.xl(),input.yl(),input.zl());
 
-        nxr = xr.predict(input.xRight,input.yRight,input.zRight);
-        nyr = yr.predict(input.yRight,input.yRight,input.zRight);
-        nzr = zr.predict(input.yRight,input.yRight,input.zRight);
+        nxr = xr.predict(input.xr(),input.yr(),input.zr());
+        nyr = yr.predict(input.yr(),input.yr(),input.zr());
+        nzr = zr.predict(input.yr(),input.yr(),input.zr());
 
     }
     else {
-        nxl = xl.predict(input.xLeft);
-        nxr = xr.predict(input.xRight);
-        nyl = yl.predict(input.yLeft);
-        nyr = yr.predict(input.yRight);
+        nxl = xl.predict(input.xl());
+        nxr = xr.predict(input.xr());
+        nyl = yl.predict(input.yl());
+        nyr = yr.predict(input.yr());
         nzl = 0;
         nzr = 0;
 
@@ -338,6 +362,9 @@ EyeTrackerData EyeCorrectionCoefficients::computeCorrections(const EyeRealData &
     if (qIsNaN(nzr)) nzr = 0;
 
     EyeTrackerData etd;
+    etd.setPupilLeft(input.pl());
+    etd.setPupilRight(input.pr());
+    etd.setTimeStamp(input.timestamp());
     etd.setXL(nxl);
     etd.setXR(nxr);
     etd.setYR(nyr);
@@ -385,7 +412,7 @@ bool EyeCorrectionCoefficients::loadCalibrationCoefficients(const QString &file_
 
 }
 
-void EyeCorrectionCoefficients::saveCalibrationCoefficients(const QString &file_name){
+void EyeCorrectionCoefficients::saveCalibrationCoefficients(const QString &file_name) const{
     QVariantMap map;
     map.insert("xl",xl.toMap());
     map.insert("xr",xr.toMap());
@@ -413,7 +440,7 @@ bool EyeCorrectionCoefficients::isLeftEyeCalibrated(){
     return xl.isValid() && yl.isValid();
 }
 
-QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qreal tolerance, bool forLeftEye){
+QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qreal tolerance, bool forLeftEye) const{
 
     QList<qint32> hits;
 
@@ -439,10 +466,11 @@ QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qrea
                 z = etd.zr();
             }
 
-            if (mode3D){
-                //qDebug() << "Fitted raw data point of" << x << y << z;
-                QVector3D nonNormalizedTargetVector = nonNormalizedTargetVectors.at(i);
+            if (mode3D){                
+                QVector3D nonNormalizedTargetVector = nonNormalizedTargetVectors.at(i);                
+                //qDebug() << "Fitted raw data point of" << x << y << z << "As comparted to " << nonNormalizedTargetVector << validationRadious;
                 if (isVectorCloseEnough(nonNormalizedTargetVector,x,y,z)){
+                    //qDebug() << "Fitted raw data point of" << x << y << z << "As comparted to " << nonNormalizedTargetVector << validationRadious;
                     counter++;
                 }
             }
@@ -462,7 +490,7 @@ QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qrea
 
 }
 
-bool EyeCorrectionCoefficients::isPointInside(qreal x, qreal y, qreal x_target, qreal y_target, qreal dimension, qreal tolerance){
+bool EyeCorrectionCoefficients::isPointInside(qreal x, qreal y, qreal x_target, qreal y_target, qreal dimension, qreal tolerance) const {
 
     // The target x and y are the center of the circle. So we compute the upper left corner.
     qreal tol = tolerance*dimension;
@@ -484,7 +512,7 @@ bool EyeCorrectionCoefficients::isPointInside(qreal x, qreal y, qreal x_target, 
 
 }
 
-bool EyeCorrectionCoefficients::isVectorCloseEnough(QVector3D tv, qreal x, qreal y, qreal z){
+bool EyeCorrectionCoefficients::isVectorCloseEnough(QVector3D tv, qreal x, qreal y, qreal z) const{
 
     qreal module = static_cast<qreal>(tv.length());
     x = x*module;
@@ -502,4 +530,49 @@ bool EyeCorrectionCoefficients::isVectorCloseEnough(QVector3D tv, qreal x, qreal
     qreal dis = qSqrt(sqrt_arg);
 
     return (dis <= validationRadious);
+}
+
+
+QVariantMap EyeCorrectionCoefficients::getCalibrationControlPacketCompatibleMap(bool left_eye) const{
+
+    QVariantMap map;
+
+    if (left_eye){
+        map["ccx"] = xl.toMap();
+        map["ccy"] = yl.toMap();
+        map["ccz"] = zl.toMap();
+    }
+    else {
+        map["ccx"] = xr.toMap();
+        map["ccy"] = yr.toMap();
+        map["ccz"] = zr.toMap();
+    }
+
+    return map;
+}
+
+
+bool EyeCorrectionCoefficients::loadFromTextMatrix(const QString &text){
+
+
+    QStringList vectors = text.split("\n",Qt::SkipEmptyParts);
+    if (vectors.size() == 6){
+        if (!xl.loadFromString(vectors.at(0))) return false;
+        if (!yl.loadFromString(vectors.at(1))) return false;
+        if (!zl.loadFromString(vectors.at(2))) return false;
+        if (!xr.loadFromString(vectors.at(3))) return false;
+        if (!yr.loadFromString(vectors.at(4))) return false;
+        if (!zr.loadFromString(vectors.at(5))) return false;
+    }
+    else if (vectors.size() == 4){
+        if (!xl.loadFromString(vectors.at(0))) return false;
+        if (!yl.loadFromString(vectors.at(1))) return false;
+        if (!xr.loadFromString(vectors.at(2))) return false;
+        if (!yr.loadFromString(vectors.at(3))) return false;
+    }
+    else return false;
+
+    resultOfLastComputation = true;
+
+    return true;
 }

@@ -1,9 +1,5 @@
 #include "loader.h"
 
-const QString Loader::NO_REPORT_DISCARD_CODE = "no_report_available";
-
-const QStringList Loader::NO_REPORT_STUDIES = {VMDC::Study::NBACKMS, VMDC::Study::NBACKVS};
-
 Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
 {
 
@@ -201,10 +197,6 @@ QString Loader::getInstitutionName() const {
     return configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
 }
 
-bool Loader::forceOpenValidationDialog() const {
-    if (DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF) != "") return true;
-    else return false;
-}
 
 void Loader::openUserManual(){
 
@@ -323,10 +315,6 @@ void Loader::setValueForConfiguration(const QString &key, const QVariant &var) {
     configuration->addKeyValuePair(key,var);
 }
 
-bool Loader::isVREnabled() const{
-    return Globals::EyeTracker::IS_VR;
-}
-
 //////////////////////////////////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////////////////////////////////
 
 bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol){
@@ -371,9 +359,6 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     case Globals::StudyConfiguration::INDEX_GONOGO:
         filename = Globals::BaseFileNames::GONOGO;
         break;
-    case Globals::StudyConfiguration::INDEX_NBACKMS:
-        filename = Globals::BaseFileNames::NBACKMS;
-        break;
     case Globals::StudyConfiguration::INDEX_NBACKRT:
         filename = Globals::BaseFileNames::NBACKRT;
         break;
@@ -382,6 +367,9 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         break;
     case Globals::StudyConfiguration::INDEX_READING:
         filename = Globals::BaseFileNames::READING;
+        break;
+    case Globals::StudyConfiguration::INDEX_GNG_SPHERE:
+        filename = Globals::BaseFileNames::GONOGO_3D;
         break;
     default:
         StaticThreadLogger::error("Loader::createSubjectStudyFile","Trying to create study file for an unknown study: " + QString::number(selectedStudy));
@@ -463,6 +451,12 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
     // Need to insert them as in in the file.
     QVariantMap pp = localDB.getProcessingParameters();
+
+    // Check if we need to add the hand calibration data.
+    if (configuration->containsKeyword(Globals::Share::HAND_CALIB_RES)){
+        pp.insert(VMDC::ProcessingParameter::HAND_CALIB_RESULTS,configuration->getVariant(Globals::Share::HAND_CALIB_RES));
+    }
+
     if (configuration->getBool(Globals::VMPreferences::USE_MOUSE)){
         pp.insert(VMDC::ProcessingParameter::RESOLUTION_HEIGHT,configuration->getInt(Globals::Share::MONITOR_RESOLUTION_HEIGHT));
         pp.insert(VMDC::ProcessingParameter::RESOLUTION_WIDTH,configuration->getInt(Globals::Share::MONITOR_RESOLUTION_WIDTH));
@@ -731,7 +725,7 @@ void Loader::setCurrentStudyFileForQC(const QString &file){
     qc.setVMContainterFile(file,localDB.getQCParameters()); // This will start processing in a separate thread.
 }
 
-QStringList Loader::getStudyList() const {
+QVariantList Loader::getStudyList() const {
     return qc.getStudyList();
 }
 
@@ -790,38 +784,6 @@ void Loader::sendStudy(){
     processingUploadError = FAIL_CODE_NONE;
 
     QString studyFileToSend = configuration->getString(Globals::Share::SELECTED_STUDY);
-
-    if (!NO_REPORT_STUDIES.empty()){
-        // The following check simply forces the discard reason to "no_report_available", only if
-        // there isn't a discard reason already (which means that the file is being sent to be processed)
-        // AND the study name is in the No Report Study List.
-        ViewMindDataContainer vmdc;
-        if (!vmdc.loadFromJSONFile(studyFileToSend)){
-            StaticThreadLogger::error("Loader::sendStudy","Could not load file to send in order to check for no_report_studies. Reason: " + vmdc.getError());
-        }
-        else{
-            QString discard_reason = vmdc.getMetadataDiscardReason();
-            ///qDebug() << "LOADED FILE DISCARD REASON" << discard_reason;
-            if (discard_reason == ""){
-                // We now check if this is a now report study.
-                QStringList studies = vmdc.getStudies();
-                //qDebug() << "LOADED FILE STUDIES" << studies;
-                for (qint32 i = 0; i < studies.size(); i++){
-                    if (NO_REPORT_STUDIES.contains(studies.at(i))){
-                        //qDebug() << studies.at(i) << " IS A NO REPORT FILE";
-                        if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-                            QString msg = "DBUG: Setting file " + studyFileToSend + " as a NO REPORT STUDY";
-                            qDebug() << msg;
-                            StaticThreadLogger::warning("Loader::sendStudy",msg);
-                        }
-                        vmdc.addCustomMetadataFields(VMDC::MetadataField::DISCARD_REASON,NO_REPORT_DISCARD_CODE);
-                        vmdc.saveJSONFile(studyFileToSend);
-                        break;
-                    }
-                }
-            }
-        }
-    }
 
     if (!apiclient.requestReportProcessing(studyFileToSend)){
         StaticThreadLogger::error("Loader::sendStudy","Requesting study report generation: " + apiclient.getError());

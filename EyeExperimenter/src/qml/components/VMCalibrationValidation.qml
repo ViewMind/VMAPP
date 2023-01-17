@@ -14,6 +14,8 @@ Item {
     signal calibrationValidated();
     signal requestReCalibration(bool slow);
 
+    readonly property string vmCalib3DKey: "calibration_target_percents";
+
     // Horizontal space between the border of the screen and the start of the screen representation and between the screen representation and the middle of the dialog
     property double vmHorizotalMarginToScreenRepresentation: 0.08*dialog.width
     // The width of the screen representation
@@ -24,10 +26,14 @@ Item {
     property double vmKx: 1;
     // The ratio of the screen representation height to the actual HMD resolution height
     property double vmKy: 1;
-    // The list of upper left corner for each of the targets.
+    // The complete calibration validation structure.
     property var vmCalibrationData: ({})
+    // Flag to determine where we are drawing the 3D mode validation screen or the 2D Mode one.
+    property bool vm3DModeValidationScreen: false
+
     property bool vmIsLeftEyeValidated: false
     property bool vmIsRightEyeValidated: false;
+
 
     ////////////////////////// CONVERSION FUNCTIONS: 2D HMD Data to Plot Data ////////////////////////
 
@@ -44,6 +50,15 @@ Item {
         vmKx = vmScreenRepresentationWidth/width;
         vmKy = vmScreenRepresentationHeight/height;
         vmScreenRepresentationHeight = vmScreenRepresentationWidth*height/width;
+
+
+        if (vmCalib3DKey in vmCalibrationData){
+            vm3DModeValidationScreen = true;
+        }
+        else {
+            vm3DModeValidationScreen = false;
+        }
+
     }
 
     ////////////////////////// DRAWING FUNCTIONS ////////////////////////
@@ -95,11 +110,81 @@ Item {
 
     }
 
+    function renderColoredTargetsWithHitPercents(ctx, left){
+
+        let upperLeftCorners = vmCalibrationData["calibration_target_location"];
+        let percentData = vmCalibrationData[vmCalib3DKey];
+        if (left) percentData = percentData["l"];
+        else percentData = percentData["r"];
+
+        if (upperLeftCorners === undefined) return;
+        if (upperLeftCorners.length !== percentData.length){
+            console.log("The number of targets is " + upperLeftCorners.length + " but the number of percents is " + percentData.length);
+            return;
+        }
+
+        // We multiply the diameters times two as the circles are representations now and we want to make suer the text fits.
+        let Dx = vmCalibrationData["calibration_target_diameter"]*vmKx*2;
+        let Dy = vmCalibrationData["calibration_target_diameter"]*vmKy*2;
+
+        // We are making the circles twice as big to so we need to displace the centers up and left their previous size.
+        let offsetX = Dx/4;
+        let offsetY = Dy/4;
+
+        let Rx = Dx/2;
+        let Ry = Dy/2;
+
+        let color_change_enable = false;
+        // Color change is enabled only when the eye is NOT validated.
+        if (left){
+            if (!vmIsLeftEyeValidated) color_change_enable = true;
+        }
+        else {
+            if (!vmIsRightEyeValidated) color_change_enable = true;
+        }
+
+
+        for (let i = 0; i < upperLeftCorners.length; i++){
+
+            let calibPointData = percentData[i]
+
+            // We draw the circle.
+            let x = upperLeftCorners[i]["x"]*vmKx;
+            let y = upperLeftCorners[i]["y"]*vmKy;
+            ctx.beginPath();
+            ctx.fillStyle = VMGlobals.vmWhite
+            ctx.strokeStyle = VMGlobals.vmGrayDialogDivider
+            ctx.roundedRect(x-offsetX,y-offsetY,Dx,Dy,Rx,Ry)
+            ctx.stroke();
+            ctx.fill();
+
+            // We now draw numbers considering that wheter the calibration point passed or not.
+            let color = VMGlobals.vmBlueSelected
+            if ((!calibPointData["ok"]) && (color_change_enable)) color = VMGlobals.vmRedError;
+
+            let pText = Math.round(calibPointData["p"]) + "%";
+            let cx = x - offsetX + Rx
+            let cy = y - offsetY + Ry
+
+            ctx.beginPath()
+            let fontString = '700 %1px "%2"'.arg(VMGlobals.vmFontVeryLarge).arg(mainWindow.vmSegoeBold.name);
+            //console.log("Using font " + fontString)
+            ctx.font = fontString
+            ctx.textBaseline = "middle"
+            ctx.textAlign  = "center"
+            ctx.fillStyle = color
+            ctx.strokeStyle = color
+            //console.log("Drawing text " + vmPercent);
+            ctx.fillText(pText,cx,cy)
+
+        }
+
+    }
+
     function renderDataPoints(ctx, left){
         var datapoints;
 
         let array_names = [];
-        let base_key_name = "validation_target_";
 
         if (left){
             datapoints = vmCalibrationData["left_eye_validation_data"];
@@ -129,8 +214,13 @@ Item {
 
     function renderCompleteScreenRepresentation(ctx,left){
         renderScreenRepresentation(ctx,left);
-        renderTargets(ctx)
-        renderDataPoints(ctx,left)
+        if (vm3DModeValidationScreen){
+            renderColoredTargetsWithHitPercents(ctx,left);
+        }
+        else {
+            renderTargets(ctx)
+            renderDataPoints(ctx,left)
+        }
     }
 
     ////////////////////////// BASE DIALOG FUNCTIONS ////////////////////////

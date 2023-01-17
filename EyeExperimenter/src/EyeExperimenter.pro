@@ -15,11 +15,13 @@ RCC_DIR = QRC
 
 RESOURCES += qml.qrc \
     ../../CommonClasses/Experiments/experiment_descriptions.qrc \
+    dbugdata.qrc \
     fonts.qrc \
     images.qrc \
     languages.qrc
 
 SOURCES += main.cpp \
+    ../../CommonClasses/Calibration/calibrationmanager.cpp \
     ../../CommonClasses/Experiments/binding/bindingexperiment.cpp \
     ../../CommonClasses/Experiments/binding/bindingmanager.cpp \
     ../../CommonClasses/Experiments/binding/bindingparser.cpp \
@@ -29,6 +31,9 @@ SOURCES += main.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogoexperiment.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogomanager.cpp \
     ../../CommonClasses/Experiments/gonogo/gonogoparser.cpp \
+    ../../CommonClasses/Experiments/gonogo_spheres/gonogosperemanager.cpp \
+    ../../CommonClasses/Experiments/gonogo_spheres/gonogosphereexperiment.cpp \
+    ../../CommonClasses/Experiments/gonogo_spheres/gonogosphereparser.cpp \
     ../../CommonClasses/Experiments/linemath.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.cpp \
@@ -37,10 +42,9 @@ SOURCES += main.cpp \
     ../../CommonClasses/EyeSelector/eyeselector.cpp \
     ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.cpp \
     ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.cpp \
-    ../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.cpp \
-    ../../CommonClasses/EyeTrackingInterface/calibrationtargets.cpp \
-    ../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.cpp \
-    ../../CommonClasses/EyeTrackingInterface/eyerealdata.cpp \
+    ../../CommonClasses/Calibration/calibrationtargets.cpp \
+    ../../CommonClasses/Calibration/calibrationvalidation.cpp \
+    ../../CommonClasses/Calibration/eyecorrectioncoefficients.cpp \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerdata.cpp \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.cpp \
     ../../CommonClasses/FileDownloader/filedownloader.cpp \
@@ -53,7 +57,6 @@ SOURCES += main.cpp \
     ../../CommonClasses/LogInterface/staticthreadlogger.cpp \
     ../../CommonClasses/MWA/fixation.cpp \
     ../../CommonClasses/MWA/movingwindowalgorithm.cpp \
-    ../../CommonClasses/QMLQImageDisplay/qimagedisplay.cpp \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.cpp \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.cpp \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/renderserverarrowitem.cpp \
@@ -81,6 +84,7 @@ SOURCES += main.cpp \
 
 
 HEADERS += \
+    ../../CommonClasses/Calibration/calibrationmanager.h \
     ../../CommonClasses/Experiments/binding/bindingexperiment.h \
     ../../CommonClasses/Experiments/binding/bindingmanager.h \
     ../../CommonClasses/Experiments/binding/bindingparser.h \
@@ -90,6 +94,9 @@ HEADERS += \
     ../../CommonClasses/Experiments/gonogo/gonogoexperiment.h \
     ../../CommonClasses/Experiments/gonogo/gonogomanager.h \
     ../../CommonClasses/Experiments/gonogo/gonogoparser.h \
+    ../../CommonClasses/Experiments/gonogo_spheres/gonogosperemanager.h \
+    ../../CommonClasses/Experiments/gonogo_spheres/gonogosphereexperiment.h \
+    ../../CommonClasses/Experiments/gonogo_spheres/gonogosphereparser.h \
     ../../CommonClasses/Experiments/linemath.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.h \
@@ -98,10 +105,9 @@ HEADERS += \
     ../../CommonClasses/EyeSelector/eyeselector.h \
     ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h \
     ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h \
-    ../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.h \
-    ../../CommonClasses/EyeTrackingInterface/calibrationtargets.h \
-    ../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.h \
-    ../../CommonClasses/EyeTrackingInterface/eyerealdata.h \
+    ../../CommonClasses/Calibration/calibrationtargets.h \
+    ../../CommonClasses/Calibration/calibrationvalidation.h \
+    ../../CommonClasses/Calibration/eyecorrectioncoefficients.h \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerdata.h \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.h \
     ../../CommonClasses/FileDownloader/filedownloader.h \
@@ -114,7 +120,6 @@ HEADERS += \
     ../../CommonClasses/LogInterface/staticthreadlogger.h \
     ../../CommonClasses/MWA/fixation.h \
     ../../CommonClasses/MWA/movingwindowalgorithm.h \
-    ../../CommonClasses/QMLQImageDisplay/qimagedisplay.h \
     ../../CommonClasses/RawDataContainer/VMDC.h \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.h \
     ../../CommonClasses/RenderServerClient/RenderServerGraphics/animationmanager.h \

@@ -452,8 +452,6 @@ bool LocalDB::setMedicInformationFromRemote(const QVariantMap &response){
 
     if (checksum == checksum2) return true;  // No changes, nothing to do
 
-    qDebug() << "New Medic Data";
-
     data[MAIN_MEDICS] = serverMedics;
     return saveAndBackup();
 }

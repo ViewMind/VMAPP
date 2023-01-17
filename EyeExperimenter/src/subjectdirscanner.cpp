@@ -87,7 +87,6 @@ QList<QVariantMap> SubjectDirScanner::scanSubjectDirectoryForEvalutionsFrom() {
         QString study = list.first();
         QString study_type = study;
         if (study.contains(VMDC::MultiPartStudyBaseName::BINDING)) study_type = VMDC::MultiPartStudyBaseName::BINDING;
-        else if (study.contains(VMDC::MultiPartStudyBaseName::PERCEPTION)) study_type = VMDC::MultiPartStudyBaseName::PERCEPTION;
 
         //qDebug() << "Selected study" << study;
 
@@ -235,79 +234,6 @@ QString SubjectDirScanner::findIncompleteBindingStudies(const QString &missing_s
         }
     }
     // If we got here, no file was found.
-    return "";
-}
-
-
-QString SubjectDirScanner::findIncompletedPerceptionStudy(const qint32 missing_part, const QVariantMap &study_configuration){
-
-    QStringList filters; filters << "*.json";
-    QStringList filelist = QDir(workDirectory).entryList(filters,QDir::Files,QDir::Name);
-
-    QStringList studies_that_must_be_contained;
-    for (qint32 i = 1; i < missing_part; i++){
-        studies_that_must_be_contained << VMDC::MultiPartStudyBaseName::PERCEPTION + " " + QString::number(i);
-    }
-
-    QString next_part =  VMDC::MultiPartStudyBaseName::PERCEPTION + " " + QString::number(missing_part);
-
-    for (qint32 i = 0; i < filelist.size(); i++){
-
-        if (filelist.at(i).contains(Globals::BaseFileNames::PERCEPTION)){
-
-            ViewMindDataContainer rdc;
-            if (!rdc.loadFromJSONFile(workDirectory + "/" + filelist.at(i))){
-                error = "Error loading JSON File for ongoing analysis: " + rdc.getError();
-                return "";
-            }
-
-            // File is old and we can ignore.
-            QStringList study_datetime = rdc.getMetaDataDateTime();
-            QDateTime dt = QDateTime::fromString(study_datetime.first() + " " + study_datetime.last(), "yyyy-MM-dd HH:mm");
-            if (dt.secsTo(QDateTime::currentDateTime()) > Globals::NUMBER_SECONDS_IN_A_DAY) continue;
-
-            // The study has what we need. Next we check that the evaluator is the same. A study cannot be continued by a different evaluator as it is signed.
-            if (rdc.getApplicationUserData(VMDC::AppUserType::EVALUATOR).value(VMDC::AppUserField::EMAIL).toString() != loggedInUser){
-                //qDebug() << "Moving on due to being different evaluators";
-                continue;
-            }
-
-            QStringList studies = rdc.getStudies();
-
-            if (studies.contains(next_part)){
-                // Completed study.
-                continue;
-            }
-
-            // We check that these are all perception studies and that they are all of the same type.
-            bool aresame = true;
-            for (qint32 j = 0; j < studies.size(); j++){
-                if (!studies.contains(VMDC::MultiPartStudyBaseName::PERCEPTION)){
-                    error = "Found perceptio file with a wrong study name: " + studies.at(j);
-                    return "";
-                }
-                QVariantMap sc = rdc.getStudyConfiguration(studies_that_must_be_contained.at(j));
-                aresame = aresame && (sc.value(VMDC::StudyParameter::VALID_EYE) == study_configuration.value(VMDC::StudyParameter::VALID_EYE));
-                aresame = aresame && (sc.value(VMDC::StudyParameter::PERCEPTION_TYPE) == study_configuration.value(VMDC::StudyParameter::PERCEPTION_TYPE));
-                if (!aresame) break;
-            }
-
-            // Finally we check for any missing parts:
-            for (qint32 j = 0; j < studies_that_must_be_contained.size(); j++){
-                // Verify all previous studies are there.
-                if (!studies.contains(studies_that_must_be_contained.at(j))){
-                    error = "Attempting to start perception study part " + QString::number(missing_part) + " but found that file "
-                            + workDirectory + "/" + filelist.at(i) + " are missing: " + studies_that_must_be_contained.at(j);
-                    return "";
-                }
-            }
-
-            // So if we got here, we have a perception study that does not missing_part, but has all previous ones and it has the same configuration and is from the same evalutor
-            // It is also less than a day old.
-            return filelist.at(i);
-
-        }
-    }
     return "";
 }
 

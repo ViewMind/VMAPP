@@ -33,10 +33,6 @@ public:
     qint32 getNumberOfStudyExplanationScreens() const;
     QString getStringKeyForStudyExplanationList() const;
 
-    // For on-screen gaze tracking.
-    void updateGazePoints(qreal xr, qreal xl, qreal yr, qreal yl);
-    void redrawGazePoints();
-
     // Sets the flag so that each study can finalized after a very reduce set of studies.
     void enableShortStudyMode();
 
@@ -70,13 +66,6 @@ protected:
 
     QStringList explanationText;
 
-    // Enable on-screen gaze tracking
-    bool gazeUpdateEnabled; // This flag needs to be used to ensure that NO update is done when the ellipse items don´t exist;
-    qreal gazeXr,gazeXl,gazeYr,gazeYl;
-    RenderServerCircleItem *leftEyeTracker;
-    RenderServerCircleItem *rightEyeTracker;
-    qreal R;
-
     // The expected ids for the experiment
     QList<QStringList> expectedIDs;
 
@@ -97,6 +86,7 @@ protected:
     const char * STUDY_TEXT_KEY_BINDING_UC = "explanation_phase_list_binding_uc";
     const char * STUDY_TEXT_KEY_BINDING_BC = "explanation_phase_list_binding_bc";
     const char * STUDY_TEXT_KEY_GONOGO     = "explanation_phase_list_gonogo";
+    const char * STUDY_TEXT_KEY_GONOGO_3D  = "explanation_phase_list_gonogo_3D";
     const char * STUDY_TEXT_KEY_NBACKRT    = "explanation_phase_list_nbackrt";
     const char * STUDY_TEXT_KEY_NBACKVS    = "explanation_phase_list_nbackvs";
 

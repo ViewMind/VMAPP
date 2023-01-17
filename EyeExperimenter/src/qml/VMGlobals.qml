@@ -119,10 +119,14 @@ QtObject {
     readonly property string vmSCP_NUMBER_OF_TARGETS:        "number_targets";
     readonly property string vmSCP_TARGET_SIZE:              "target_size";
     readonly property string vmSCP_BINDING_TYPE:             "binding_type";
-    readonly property string vmSCP_PERCEPTION_PART:          "perception_part";
     readonly property string vmSCP_NBACK_LIGHTUP:            "nback_light_all"
     readonly property string vmSCP_IS_STUDY_3D:              "is_3d_study";
     readonly property string vmSCP_STUDY_REQ_H_CALIB:        "study_reqs_hand_calib";
+    readonly property string vmSCP_HAND_TO_USE:              "hand_to_use";
+    readonly property string vmSCP_MAX_SPEED:                "max_speed";
+    readonly property string vmSCP_MIN_SPEED:                "min_speed";
+    readonly property string vmSCP_INITIAL_SPEED:            "initial_speed";
+
 
     // Study configuration parameter values
     readonly property string vmSCV_BINDING_TARGETS_2:        "2";

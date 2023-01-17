@@ -16,7 +16,7 @@ public:
 
     void setVMContainterFile(const QString &file, const QVariantMap &updatedQC);
 
-    QStringList getStudyList() const;
+    QVariantList getStudyList() const;
 
     QVariantMap getGraphDataAndReferenceDataForStudy(const QString &study);
 
@@ -31,6 +31,7 @@ public:
 
     bool checkFileIntegrity();
 
+
 private:
 
     ViewMindDataContainer rawdata;
@@ -44,6 +45,7 @@ private:
     QVariantMap updatedQCParameters;
 
     QStringList availableStudies;
+    QList<bool> listOfStudy3DFlag;
 
     bool verifyFileIntegrity;
 
@@ -55,6 +57,9 @@ private:
     static const char * QC_THRESHOLD;
 
     bool computeQualityControlVectors(const QString &studyType, const QString &metaStudyName);
+    bool computeQualityControlVectorsFor3DStudies(const QString &studyType, const QString &metaStudyName);
+    bool computeQualityControlVectorsFor2DStudies(const QString &studyType, const QString &metaStudyName);
+
 };
 
 #endif // QUALITYCONTROL_H

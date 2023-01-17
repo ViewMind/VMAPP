@@ -74,7 +74,6 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     }
 
     QVariantMap config;
-    config.insert(NBackManager::CONFIG_IS_VR_BEING_USED,Globals::EyeTracker::IS_VR);
     config.insert(NBackManager::CONFIG_IS_VS,(studyType == VMDC::Study::NBACKVS));
     if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
         config.insert(NBackManager::CONFIG_PAUSE_TEXT_LANG,NBackManager::LANG_ES);

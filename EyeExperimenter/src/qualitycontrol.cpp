@@ -20,6 +20,7 @@ bool QualityControl::checkFileIntegrity(){
     return rawdata.verifyChecksumHash();
 }
 
+
 void QualityControl::run(){
 
     if (!rawdata.loadFromJSONFile(originalFileName)){
@@ -45,6 +46,7 @@ void QualityControl::run(){
     availableStudies = rawdata.getStudies();
     qualityControlData.clear();
 
+    listOfStudy3DFlag.clear();
     for (qint32 i = 0; i < availableStudies.size(); i++){
         QString study = availableStudies.at(i);
         QString metaStudy = VMDC::MultiPartStudyBaseName::getMetaStudy(study);
@@ -76,8 +78,22 @@ QVariantMap QualityControl::getGraphDataAndReferenceDataForStudy(const QString &
     return QVariantMap();
 }
 
-QStringList QualityControl::getStudyList() const {
-    return availableStudies;
+QVariantList QualityControl::getStudyList() const {
+    if (listOfStudy3DFlag.size() != availableStudies.size()){
+        StaticThreadLogger::error("QualityControl::getStudyList","When getting study list, the list of available studies is of size: " + QString::number(availableStudies.size())
+                                  + " while the list of 3D study flags is of size: " + QString::number(listOfStudy3DFlag.size()));
+        return QVariantList();
+    }
+
+    QVariantList list;
+    for (qint32 i = 0; i < availableStudies.size(); i++){
+        QVariantMap t;
+        t["name"] = availableStudies.at(i);
+        t["3D"] = listOfStudy3DFlag.at(i);
+        list << t;
+    }
+
+    return list;
 }
 
 
@@ -89,8 +105,25 @@ QString QualityControl::getSetFileName() const {
     return originalFileName;
 }
 
-
 bool QualityControl::computeQualityControlVectors(const QString &studyType, const QString &metaStudyName){
+    QVariantMap studyConfiguration = rawdata.getStudyConfiguration(studyType);
+    if (studyConfiguration.contains(VMDC::StudyParameter::IS_3D_STUDY)){
+        if (studyConfiguration.value(VMDC::StudyParameter::IS_3D_STUDY).toBool()){
+            listOfStudy3DFlag << true;
+            return computeQualityControlVectorsFor3DStudies(studyType,metaStudyName);
+        }
+        else {
+            listOfStudy3DFlag << false;
+            return computeQualityControlVectorsFor2DStudies(studyType,metaStudyName);
+        }
+    }
+    else {
+        listOfStudy3DFlag << false;
+        return computeQualityControlVectorsFor2DStudies(studyType,metaStudyName);
+    }
+}
+
+bool QualityControl::computeQualityControlVectorsFor2DStudies(const QString &studyType, const QString &metaStudyName){
 
     //qDebug() << "Quality control for" << studyType << metaStudyName;
 
@@ -384,5 +417,178 @@ bool QualityControl::computeQualityControlVectors(const QString &studyType, cons
 
     qualityControlData.insert(studyType,studyQC);
     return true;
+
+}
+
+bool QualityControl::computeQualityControlVectorsFor3DStudies(const QString &studyType, const QString &metaStudyName){
+
+    Q_UNUSED(metaStudyName)
+
+    QVariantMap studyConfiguration = rawdata.getStudyConfiguration(studyType);
+
+    QVariantMap qc = rawdata.getQCParameters();
+    QVariantMap pp = rawdata.getProcessingParameters();
+    qreal sample_freq = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
+
+    // Computing values necessary for the information completion index.
+    qreal sample_period = 1000.0/sample_freq; // In miliseconds.
+    qreal max_allowed_over_period = sample_period*1.2; // 20% overperiod.
+    qreal index_of_information_completion_threshold_in_trial = qc.value(VMDC::QCGlobalParameters::ICI_TRIAL_THRESHOLD).toReal()/100;
+    qreal threshold_ici = qc.value(VMDC::QCGlobalParameters::ICI_VALID_N_TRIAL_THRESHOLD).toReal();
+
+
+    // We need to get the time vector and either split it into N bins or into a number that ensure at least M points per bin.
+    qint32 targetNumberOfBins = 80;
+    if (qc.contains(VMDC::QCGlobalParameters::ICI_3D_TARGET_NUMBER_OF_BINS)){
+        targetNumberOfBins = qc.value(VMDC::QCGlobalParameters::ICI_3D_TARGET_NUMBER_OF_BINS).toInt();
+    }
+    else {
+        StaticThreadLogger::warning("QualityControl::computeQualityControlVectorsFor3DStudies","Unavailable information for the Target Number Of Bins in a 3D Study. Using the default of 80");
+    }
+    qint32 minimumNumberOfDataPointsPerBin = 100;
+    if (qc.contains(VMDC::QCGlobalParameters::ICI_3D_MIN_BIN_N_POINTS)){
+        targetNumberOfBins = qc.value(VMDC::QCGlobalParameters::ICI_3D_MIN_BIN_N_POINTS).toInt();
+    }
+    else {
+        StaticThreadLogger::warning("QualityControl::computeQualityControlVectorsFor3DStudies","Unavailable information for the Minimum Number of Points In a Bin For a 3D Study. Using the default of 100");
+    }
+
+    QVariant timevec = rawdata.get3DStudyData(studyType,VMDC::Study3DDataFields::TIME_VECTOR);
+    QVariantList timeVector = timevec.toList();
+    QList< QList<qreal> > timeVectorBins;
+
+    qreal qc_ici_index = 0;
+
+    // Now we transform the time vector in to a list of lists. Each list is a "bin" akin to the datasets of 2D studies.
+    if (timeVector.length() < minimumNumberOfDataPointsPerBin*targetNumberOfBins){
+
+        // Time vector is too short, so we prioritize number of data points per bin, over the number of bins.
+        QList<qreal> bin;
+        for (qint32 i = 0; i < timeVector.size(); i++){
+            bin << timeVector.at(i).toReal();
+            if (bin.size() == minimumNumberOfDataPointsPerBin){
+                timeVectorBins << bin;
+                bin.clear();
+            }
+        }
+
+        if (bin.size() > 0){
+            timeVectorBins << bin; // Adding the last bin.
+        }
+
+    }
+    else {
+
+        // We have enough points, so we make the target number of bins.
+        qreal N = static_cast<qreal>(timeVector.size());
+        qreal M = static_cast<qreal>(targetNumberOfBins);
+        qint32 nPointsPerBin = static_cast<qint32>(qFloor(N/M));
+
+
+        QList<qreal> bin;
+        for (qint32 i = 0; i < timeVector.size(); i++){
+            bin << timeVector.at(i).toReal();
+
+            // So we only check if we reached the target number of points per bin in all bins except the last one. The last one needs to be as long as it needs to
+            if (timeVectorBins.size() < (targetNumberOfBins-1)){
+                if (bin.size() == nPointsPerBin){
+                    timeVectorBins << bin;
+                    bin.clear();
+                }
+            }
+
+        }
+        timeVectorBins << bin; // Adding the last bin.
+
+    }
+
+
+
+    //qDebug() << "min points per trial" << min_points_per_trial;
+
+    QVariantList indexOfInformationCompletionPerTrial;
+    QVariantList refIndexOfInformationCompletion;
+
+    qreal number_of_trials_with_low_ici = 0;
+
+    qreal number_of_bins = static_cast<qreal>(timeVectorBins.size());
+
+    for (qint32 i = 0; i < timeVectorBins.size(); i++){
+
+        qreal  timestamp = -1;
+        qreal sum_of_missing_information_in_bin = 0;
+        qreal sum_of_the_duration_of_all_bins = 0;
+
+        qreal startTimeOfDataSet = timeVectorBins.at(i).first();
+        qreal endTimeOfDataSet = timeVectorBins.at(i).last();
+
+        sum_of_the_duration_of_all_bins = sum_of_the_duration_of_all_bins + (endTimeOfDataSet - startTimeOfDataSet);
+        timestamp = startTimeOfDataSet;
+
+        for (qint32 k = 1; k < timeVectorBins.at(i).size(); k++){
+            qreal ts = timeVectorBins.at(i).at(k);
+            qreal diff = ts - timestamp;
+
+            sum_of_missing_information_in_bin = sum_of_missing_information_in_bin + qMax(diff - max_allowed_over_period,0.0);
+
+            timestamp = ts;
+        }
+
+
+        // Computing the index of information completion for the trial.
+        qreal index_of_information_completion = 1 - sum_of_missing_information_in_bin/sum_of_the_duration_of_all_bins;
+        indexOfInformationCompletionPerTrial << index_of_information_completion;
+        refIndexOfInformationCompletion << index_of_information_completion_threshold_in_trial;
+        if (static_cast<qreal>(index_of_information_completion) < index_of_information_completion_threshold_in_trial){
+            number_of_trials_with_low_ici++;
+        }
+        qc_ici_index = ceil((number_of_bins - number_of_trials_with_low_ici)*100/number_of_bins);
+    }
+
+
+    if (!rawdata.setQCVector(studyType,VMDC::QCFields::ICI,indexOfInformationCompletionPerTrial)){
+        error = "Setting ICI qc: " + rawdata.getError();
+        return false;
+    }
+
+    // Boolean flags for the OK status.
+    bool qc_ok_ici = (qc_ici_index >= threshold_ici);
+
+    QVariantMap valuesToSet;
+    valuesToSet[VMDC::QCFields::QC_ICI_INDEX] = qc_ici_index;
+    valuesToSet[VMDC::QCFields::QC_ICI_INDEX_OK] = qc_ok_ici;
+
+    QStringList keys = valuesToSet.keys();
+    for (qint32 j = 0; j < keys.size(); j++){
+        QString field = keys.at(j);
+        QVariant value = valuesToSet.value(field);
+        if (!rawdata.setQCValue(studyType,field,value)){
+            error = "Setting " + field + " in qc: " + rawdata.getError();
+            return false;
+        }
+    }
+
+    // Saving the info to HD:
+    if (!rawdata.saveJSONFile(originalFileName,true)){
+        error = "Could not save " + originalFileName + " after QC appending. Reason: " + rawdata.getError();
+        return false;
+    }
+
+    // Finally we save the data for graphs.
+    QVariantMap studyQC;
+    QVariantMap temp;
+
+    temp.clear();
+    temp[GRAPH_DATA] = indexOfInformationCompletionPerTrial;
+    temp[UPPER_REF_DATA] = refIndexOfInformationCompletion;
+    temp[LOWER_REF_DATA] = refIndexOfInformationCompletion;
+    temp[QC_INDEX] = qc_ici_index;
+    temp[QC_OK] = qc_ok_ici;
+    temp[QC_THRESHOLD] = threshold_ici;
+    studyQC.insert(VMDC::QCFields::ICI,temp);
+
+    qualityControlData.insert(studyType,studyQC);
+    return true;
+
 
 }

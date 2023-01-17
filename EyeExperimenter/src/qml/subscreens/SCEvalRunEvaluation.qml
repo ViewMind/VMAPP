@@ -1,7 +1,6 @@
 import QtQuick
 import "../"
 import "../components"
-import com.qml 1.0
 
 Rectangle {
 
@@ -16,23 +15,20 @@ Rectangle {
     readonly property int vmHAND_CALIB_START_V : 1;
     readonly property int vmHAND_CALIB_END     : 2;
 
-    readonly property int vmCALIB_HAND_LEFT: 0
-    readonly property int vmCALIB_HAND_RIGHT: 1
-    readonly property int vmCALIB_HAND_BOTH: 2
-
     readonly property string vmONGOING_STUDY_FIELD: "ongoing_study_file"
 
     property int vmEvaluationStage : vmSTAGE_CALIBRATION
     // The flag is required to indetify the moment between entering the strign and calibration actually staring.
     property bool vmInCalibration: false
     property bool vmIsCalibrated: false;
+    property bool vmIsPreviousCalibrationType3D: false;
     property int  vmCurrentEvaluation: 0
 
     property bool vmBindingStudyStarted: false;
 
     property bool vmSlowCalibrationSelected: false
 
-    property int vmWhichHandToCalibrate: vmCALIB_HAND_BOTH;
+    property string vmWhichHandToCalibrate: "";
 
     property int renderWindowOffsetX: 0;
     property int renderWindowOffsetY: 0;
@@ -61,21 +57,6 @@ Rectangle {
             }
         }
 
-        function onConnectedToEyeTracker () {
-            var titleMsg;
-            if (!flowControl.isConnected()){
-                mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewevaluation_err_noconnect"))
-                return;
-            }
-            // All is good so the calibration is requested.
-
-            let mode3d = isCurrentEvaluationA3DStudy();
-
-            //console.log("Starting calibration. 3D Mode is: " + mode3d);
-
-            flowControl.calibrateEyeTracker(vmSlowCalibrationSelected, mode3d);
-            vmInCalibration = true;
-        }
 
         function onCalibrationDone(calibrated) {
 
@@ -87,9 +68,21 @@ Rectangle {
                 flowControl.renderWaitScreen("");
             }
 
+            if (isCurrentEvaluationA3DStudy()){
+                vmIsPreviousCalibrationType3D = true;
+            }
+            else {
+                vmIsPreviousCalibrationType3D = false;
+            }
+
             vmInCalibration = false;
             mainWindow.showCalibrationValidation();
 
+        }
+
+        function onHandCalibrationDone(){
+            // When the hand calibration is done, we always continue to start study.
+            prepareStudyStart();
         }
 
         function onNewExperimentMessages(string_value_map){
@@ -133,7 +126,9 @@ Rectangle {
     }
 
     function doesCurrentEvalutionRequiredHandCalibration(){
-        var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+//        console.log("Checkig if we require hand calibration");
+//        console.log(JSON.stringify(evaluationsView.vmSelectedEvaluationConfigurations));
+        var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];        
         if (VMGlobals.vmSCP_STUDY_REQ_H_CALIB in current_config){
            return current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
         }
@@ -156,13 +151,6 @@ Rectangle {
 
     function prepareNextStudyOrHandCalibration(calibrationSkipped){
 
-        if (!flowControl.isCalibrated()){
-            let leftEyeOk = flowControl.isLeftEyeCalibrated();
-            let rightEyeOk = flowControl.isRightEyeCalibrated();
-            mainWindow.showCalibrationError(leftEyeOk,rightEyeOk)
-            return;
-        }        
-
         if (!calibrationSkipped) {
             // Calibration notification success will be in the middle of the screen as not to obstruct the button.
             popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewevalcalibration_success"),true);
@@ -170,9 +158,10 @@ Rectangle {
 
         // The next state depends on whether the hand calibration is necessary or not.
         let current_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
-        if (current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB]){
+        if (current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] !== ""){
             //console.log("Preparing for Hand Calibration");
-            prepareForHandCalibration()
+            vmWhichHandToCalibrate = current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
+            startHorizontalHandCalibration()
         }
         else {
             prepareStudyStart();
@@ -180,14 +169,12 @@ Rectangle {
 
     }
 
-    function prepareForHandCalibration(){
-
+    function startHorizontalHandCalibration(){
         vmEvaluationStage = vmSTAGE_HAND_CALIB_H;
         viewEvaluations.advanceStudyIndicator();
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_hcalib_v"),"");
         flowControl.handCalibrationControl(vmHAND_CALIB_START_H,vmWhichHandToCalibrate);
-        /// TODO: Show text explanation.
-
+        studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_calib_h");
     }
 
     function prepareStudyStart(){
@@ -195,9 +182,10 @@ Rectangle {
         // Next state in the state machine.
         vmEvaluationStage = vmSTAGE_EXPLANATION;
 
-        // Loading the explanation text for the study.
+//        console.log("SCEvalRunEvaluation.prepareStudyStart: Printing study configuration for the current evaluation: " + vmCurrentEvaluation + " out of " + viewEvaluations.vmSelectedEvaluationConfigurations.length);
+//        console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation],null,2));
 
-        // We load the text explanation depending on the study.
+        // We load the text explanation depending on the study. so we get the study unique number id.
         let unique_study_id = parseInt(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmUNIQUE_STUDY_ID]);
 
         if (vmCurrentEvaluation == 0){
@@ -226,19 +214,21 @@ Rectangle {
 
         // Button text must change to the next action, which is to start the examples.
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_examples"),"")
-        var stageNames = loader.getStringListForKey("viewevaluation_evaluation_steps")
+        var stageNames;
+        if (doesCurrentEvalutionRequiredHandCalibration()){
+            stageNames = loader.getStringListForKey("viewevaluation_evaluation_steps_with_hand_calib")
+        }
+        else {
+            stageNames = loader.getStringListForKey("viewevaluation_evaluation_steps")
+        }
 
         // Advance the left hand side indicator
         viewEvaluations.advanceStudyIndicator();
 
         // Change the stage text in the title.
         let current_study = evalTitle.text
-        setStudyAndStage(current_study,stageNames[vmSTAGE_EXPLANATION])
-
-        //viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation]
 
         // Now we need to activate explanation mode. First step is creating the study file.
-
         if (!loader.createSubjectStudyFile(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation],
                                            viewEvaluations.vmSelectedDoctor,viewEvaluations.vmSelectedProtocol)){
             let title = loader.getStringForKey("viewevaluation_err_programming");
@@ -255,34 +245,44 @@ Rectangle {
 
     }
 
-    function setStudyAndStage(study,stage){
-        evalTitle.text = study;
-        evalStage.text = "/ " + stage;
+    function setStudyAndStage(){
+        var texts = progressLine.getCurrentTexts();
+        if (texts.length !== 2){
+            console.log("Current texts from progress line are not 2 but: " + texts.length);
+            return;
+        }
+        evalTitle.text = texts[0];
+        evalStage.text = "/ " + texts[1];
     }
 
     function onNextButtonPressed(){
         //console.log("PRESSED the NEXT Button in Stage" + vmEvaluationStage)
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
 
-            if (!flowControl.isConnected()) flowControl.connectToEyeTracker();
-            else {
-                let mode3d = isCurrentEvaluationA3DStudy();
-                console.log("Starting EyeTracker Calibratration Slowly. Is Mode3D: " + mode3d);
-                flowControl.calibrateEyeTracker(vmSlowCalibrationSelected,mode3d);
-                vmIsCalibrated = false;
-                vmInCalibration = true;
+            // If we are not connected there is something wrong and we get notified and don't move forward.
+            if (!flowControl.isConnected()){
+                mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewevaluation_err_noconnect"))
+                return;
             }
+            // All is good so the calibration is requested.
+
+            let mode3d = isCurrentEvaluationA3DStudy();
+
+            vmIsCalibrated = false;
+            vmInCalibration = true;
+            flowControl.calibrateEyeTracker(vmSlowCalibrationSelected, mode3d);
+
         }
         else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_H){
             vmEvaluationStage = vmSTAGE_HAND_CALIB_V;
+            studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_calib_v");
             flowControl.handCalibrationControl(vmHAND_CALIB_START_V,vmWhichHandToCalibrate);
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_hcalib_end"),"");
             viewEvaluations.advanceStudyIndicator();
         }
         else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_V){
-            vmEvaluationStage = vmSTAGE_EXPLANATION;
             flowControl.handCalibrationControl(vmHAND_CALIB_END,vmWhichHandToCalibrate);
-            prepareStudyStart();
+            // When onHandCalibrationDone is called the next stage will be called.
         }
         else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
             vmEvaluationStage = vmSTAGE_EXAMPLES;
@@ -316,9 +316,13 @@ Rectangle {
         else {
             // Changing the evaluation name and resetting the stage.
             vmEvaluationStage = vmSTAGE_CALIBRATION
-            let studyAndStage = progressLine.getCurrentTexts();
-            evaluationRun.setStudyAndStage(studyAndStage[0],studyAndStage[1])
+
+            // If the previous calibration is of a different type than the current we need to set the vmIsCalibrated to false.
+            if ((vmIsPreviousCalibrationType3D) && (!isCurrentEvaluationA3DStudy())) vmIsCalibrated = false;
+            else if ((!vmIsPreviousCalibrationType3D) && (isCurrentEvaluationA3DStudy())) vmIsCalibrated = false;
+
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_calibrate"),"")
+            evaluationRun.setCalibrationExplantion() // Setting the calibration explanation message.
         }
     }
 
@@ -428,9 +432,11 @@ Rectangle {
         anchors.top: hmdView.bottom
         anchors.topMargin: VMGlobals.adjustHeight(20)
         radius: VMGlobals.adjustHeight(8)
-        // Uncomment line below to enable feature.
-        // visible: false;
-        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage === vmSTAGE_CALIBRATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)
+        visible:  (vmEvaluationStage === vmSTAGE_EXPLANATION) ||
+                  (vmEvaluationStage === vmSTAGE_CALIBRATION) ||
+                  (vmEvaluationStage == vmSTAGE_EXAMPLES)     ||
+                  (vmEvaluationStage == vmSTAGE_HAND_CALIB_H) ||
+                  (vmEvaluationStage == vmSTAGE_HAND_CALIB_V)
 
         Image {
             id: studyExplanationInfoIcon

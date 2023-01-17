@@ -134,6 +134,10 @@ viewevaluation_number_of_targets = Número de objectivos;
 viewevaluation_nback_light_up_title = Iluminar Objectivos;
 viewevaluation_nback_light_up_all = Todos;
 viewevaluation_nback_light_up_correct = Secuencia Correcta;
+viewevaluation_gng3D_hand_sel = Seleccione que mano utilizar;
+viewevaluation_gng3D_hand_left = Izquierda;
+viewevaluation_gng3D_hand_right = Derecha;
+viewevaluation_gng3D_hand_both = Ambas;
 viewevaluation_err_at_least_1_study = Debe elegir al menos un estudio;
 viewevaluation_binding_uc = Nuevos Colores;
 viewevaluation_binding_bc = Combinación de Colores;
@@ -184,9 +188,15 @@ viewevaluation_comfirm_abort_no  = NO;
 viewevaluation_calibration_explanation = 
 Un círculo rojo pulsante con un punto blanco en su centro aparecerá en la pantalla. 
 Mire el punto blanco. El círculo se moverá por la pantalla. Usted debe seguirlo.
-Recuerde no quitar sus ojos del círculo hasta que este desaparezca.
+Recuerde no quitar sus ojos del círculo hasta que este desaparezca.;
 
-El primer círculo aparecerá en la esquina superior izquierda.;
+
+viewevaluation_hand_calib_h = 
+Coloque sus manos de manera horizontal. 
+Estire sus brazos lo mas que pueda hacia sus costados.;
+
+viewevaluation_hand_calib_v = 
+Alce sus brazos estirando al máximo los mismos.;
 
 
 viewevaluation_calib_suggest_retry = 
@@ -229,7 +239,8 @@ Binding UC|Nuevos Colores|
 NBack MS|N-Back Tipo MS|
 NBack RT|N-Back Tipo RT|
 NBack VS|N-Back RT de Entranamiento|
-Go No-Go|Go NoGo;
+Go No-Go|Go NoGo|
+Go No-Go Sphere| Esféras Go No-Go;
 viewqc_previous = ANTERIOR;
 viewqc_archive = ARCHIVAR;
 viewqc_send = ENVIAR;
@@ -286,6 +297,8 @@ studystatus_nback_target_speed = Objetivos en pantalla por <<N>> ms;
 studystatus_gonogo_ok = Respuestas Éxitosas: <<N>>;
 studystatus_gonogo_timeout = Veces que el tiempo expiró: <<N>>;
 studystatus_gonogo_avg = Tiempo promedio de ensayo: <<N>> ms;
+studystatus_gonogo3D_green_hit = Contacto con <<N>> esferas verdes;
+studystatus_gonogo3D_red_hit = Contacto con <<N>> esferas rojas;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Actualización Disponible;
@@ -349,6 +362,20 @@ Mire en la dirección opuesta a la flecha. Debe realizar el ejercicio lo más
 rápido que pueda.
 Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
+
+explanation_phase_list_gonogo_3D = Este es las Evaluación Esferas Go/No-Go.
+Durante esta evaluación esferas rojas y verdes serán enviadas de los puntos que
+se encuentran frente suyo. Si la esfera es verde debe intentar tocarla.
+Si realiza contacto sentirá a su control vibrar. 
+Toque la esfera verde.  | 
+Si la esfera es roja, debe mover sus manos para evitar que la esfera
+entre en contacto con ella. Si el contacto se realiza, su control vibrará.
+Evite tocar la esfera roja.| 
+Ahora toque nuevamente la esfera verde.| 
+Evite tocar la esfera roja.
+Si toca y esquiva correctamente las esferas durante el estudio, la velocidad
+de las esferas aumentara. Si su desempeño cae, la velocidad de las esferas 
+disminuirá;
 
 explanation_phase_list_nbackrt    = 
 Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.

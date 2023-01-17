@@ -13,5 +13,6 @@
         <file>reading/descriptions/Reading_es.dat</file>
         <file>reading/descriptions/Reading_fr.dat</file>
         <file>reading/descriptions/Reading_is.dat</file>
+        <file>gonogo_spheres/descriptions/gonogo_spheres.dat</file>
     </qresource>
 </RCC>

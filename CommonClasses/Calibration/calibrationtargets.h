@@ -18,10 +18,7 @@ public:
 
     void initialize(qint32 screenw, qint32 screenh, bool useBorderTargetsAsCalibration = false);
 
-    // On verification this function is used to verify if a data point falls within the boundaries of the currently shown target.
-    quint8 isPointWithinCurrentTarget(qreal x, qreal y, qreal tolerance);
-
-    // Required for storing calibration validation info.
+        // Required for storing calibration validation info.
     qreal getCalibrationTargetDiameter() const;
 
     // Required for storing calibration validation info.
@@ -37,6 +34,7 @@ public:
     // The current image.
     RenderServerScene  getCurrentCalibrationAnimationFrame() const;
 
+    qreal getScreenRatioForLeftTop() const { return K_CALIBRATION_LT; }
 
 signals:
     void newAnimationFrame();

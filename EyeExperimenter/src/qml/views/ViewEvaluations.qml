@@ -361,6 +361,7 @@ ViewBase {
                     evaluationRun.vmEvaluationStage = evaluationRun.vmSTAGE_CALIBRATION
                     evaluationRun.setCalibrationExplantion() // Setting the calibration explanation message.
                     evaluationRun.vmInCalibration = false;
+                    evaluationRun.setStudyAndStage("",evaluationRun.vmSTAGE_CALIBRATION);
                     // console.log(JSON.stringify(vmSelectedEvaluationConfigurations))
                     break;
                 case vmSC_INDEX_EVALUATION_FINISHED:
@@ -442,6 +443,11 @@ ViewBase {
         anchors.topMargin: VMGlobals.adjustHeight(20)
         anchors.left: parent.left
         anchors.leftMargin: VMGlobals.adjustWidth(15)
+        onProgressLineUpdated: {
+            if (viewer.currentIndex === vmSC_INDEX_EVALUATION_SCREEN){
+                evaluationRun.setStudyAndStage();
+            }
+        }
     }
 
     Keys.onPressed: function (event) {
@@ -485,17 +491,7 @@ ViewBase {
                                                          loader.getStringForKey("viewevaluation_comfirm_abort_msg"))
                 }
                 else {
-
                     flowControl.keyboardKeyPressed(event.key);
-
-                    // Calling the advance explanation phrase logic.
-                    if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_EXAMPLES){
-                        if (event.key === Qt.Key_N){
-                           //console.log("Advancing explanation phrase");
-                           evaluationRun.nextExampleTextPhrase();
-                        }
-                    }
-
                 }
 
                 return;

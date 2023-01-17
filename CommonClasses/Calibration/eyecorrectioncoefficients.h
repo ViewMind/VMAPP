@@ -6,8 +6,7 @@
 #include <QHash>
 #include <QPointF>
 #include <QVector3D>
-#include "eyerealdata.h"
-#include "eyetrackerdata.h"
+#include "../EyeTrackingInterface/eyetrackerdata.h"
 #include "../LinearLeastSquares/linearleastsquaresfit.h"
 #include "../LinearLeastSquares/ordinaryleastsquares.h"
 
@@ -26,40 +25,46 @@ public:
 
     EyeCorrectionCoefficients();
 
-    void set3DMode(bool is3D);
-    bool isIn3DMode() const;
+    // 2D Calibration Setup Configures For 2D Calibration Process.
+    void configureFor2DCoefficientComputation(const QList<QPointF> &target);
 
-    // 2D Calibration Functions.
-    void configureForCoefficientComputation(const QList<QPointF> &target);    
-
-    // 3D Calibration functions.
-    void configureForCoefficientComputationOf3DVectors(qint32 N_targets);
-    void set3DTargetVectors(const QList<QVector3D> &targetVectors, qreal validationRadiousValue);
-
+    // 3D Calibration Setup. Configures For 3D Calibration Process
+    //void configureForCoefficientComputationOf3DVectors(qint32 N_targets);
+    void configureFor3DCoefficientComputation(const QList<QVector3D> &targetVectors, qreal validationRadiousValue);
 
     // Common functions.
-    void addPointForCoefficientComputation(const EyeRealData &etdata, qint32 calibrationTargetIndex);
+    void addPointForCoefficientComputation(const EyeTrackerData &etdata, qint32 calibrationTargetIndex);
     bool computeCoefficients();
 
-    EyeTrackerData computeCorrections(const EyeRealData &input) const;
+    EyeTrackerData computeCorrections(const EyeTrackerData &input) const;
 
     QList< QList<EyeTrackerData> > getFittedData() const;
-    QList< qint32 > getHitsInTarget(qreal dimension, qreal tolerance, bool forLeftEye);
+    QList< qint32 > getHitsInTarget(qreal dimension, qreal tolerance, bool forLeftEye) const;
 
     QList<qreal> getCalibrationPointsXCordinates() const;
     QList<qreal> getCalibrationPointsYCordinates() const;
 
+    QList<QVector3D> getNonNormalizedTargetVector() const;
+
     bool isRightEyeCalibrated();
     bool isLeftEyeCalibrated();
-    void saveCalibrationCoefficients(const QString &file_name);
+    void saveCalibrationCoefficients(const QString &file_name) const;
     bool loadCalibrationCoefficients(const QString &file_name);
     QString toString() const;
 
+    QString getLastError() const;
+
     RCoefficients getRCoefficients() const;
 
-    QString getCalibrationPointsWithNoDataAsAString() const;
-    QVariantList getCalibrationPointsWithNoData() const;
+    bool getResultOfLastComputation() const;
 
+    QString getCalibrationPointsWithNoDataAsAString() const;
+    QVariantList getCalibrationPointsWithNoData() const;    
+
+    QVariantMap getCalibrationControlPacketCompatibleMap(bool left_eye) const;
+
+    // For debugging
+    bool loadFromTextMatrix (const QString &text);
 
 private:
 
@@ -76,20 +81,26 @@ private:
     QList<qreal> ytarget;
     QList<qreal> ztarget;
 
+    QString error_msg;
+
     QList<QVector3D> nonNormalizedTargetVectors;
     qreal validationRadious;
 
-    QList< QList<EyeRealData> > calibrationData;
+    bool resultOfLastComputation;
+
+    QList< QList<EyeTrackerData> > calibrationData;
 
     QList< QList<EyeTrackerData> > fittedEyeDataPoints;
 
     bool mode3D; // Flag to indicate whether we are doing a 3D calibration or 2D calibration.
 
-    bool isPointInside(qreal x, qreal y, qreal upperLeftX, qreal upperLeftY, qreal side, qreal tolerance);
-    bool isVectorCloseEnough(QVector3D tv, qreal x, qreal y, qreal z);
+    bool isPointInside(qreal x, qreal y, qreal upperLeftX, qreal upperLeftY, qreal side, qreal tolerance) const;
+    bool isVectorCloseEnough(QVector3D tv, qreal x, qreal y, qreal z) const;
 
     bool computeCoefficients2D();
     bool computeCoefficients3D();
+
+    void configureForCoefficientComputation(const QList<QVector3D> &targetVectors);
 
 };
 

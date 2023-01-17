@@ -15,22 +15,54 @@ Rectangle {
     property int vmQCThreshold: 0
 
     property bool vmIsLastGraph: false
+    property var vmNumberOfGraphsPerStudy;
+
+    // When there is only one graph the logic needs to change. So we create this flag for convenience
+    property bool vmOnly1Graph: false;
 
     readonly property int vmINDEX_ICI:          0
     readonly property int vmINDEX_FIXATIONS:    1
     readonly property int vmINDEX_GRAPH_POINTS: 0
     readonly property int vmINDEX_FREQ:         3
 
-    readonly property int vmNUMBER_OF_GRAPHS:   2
+
 
     function initializeForGraphTraversal(){
-        vmStdStudyNameByIndex = loader.getStudyList();
+        let studyAndFlagMap = loader.getStudyList();
+
+        vmStdStudyNameByIndex = [];
+        vmNumberOfGraphsPerStudy = [];
+        let totalNStudies = 0;
+        for (let i in studyAndFlagMap){
+            let name_and_flag = studyAndFlagMap[i];
+            vmStdStudyNameByIndex.push(name_and_flag["name"]);
+            if (name_and_flag["3D"]){
+                vmNumberOfGraphsPerStudy.push(1);
+                totalNStudies = totalNStudies + 1;
+            }
+            else {
+                vmNumberOfGraphsPerStudy.push(2);
+                totalNStudies = totalNStudies + 2;
+            }
+        }
+
         vmCurrentlySelectedStudy = 0;
         vmCurrentlySelectedGraph = 0;
         vmIsLastGraph = false;
 
+        if (totalNStudies == 1){
+            vmOnly1Graph = true;
+        }
+        else {
+            vmOnly1Graph = false;
+        }
+
+//        console.log("Total number of studies is " + totalNStudies);
+//        console.log("Is Only 1 Graph: " + vmOnly1Graph);
+
         // We now load the first graph
         loadGraph();
+
 
     }
 
@@ -40,14 +72,14 @@ Rectangle {
     }
 
     function isLastGraph(){
-        let condition = (vmCurrentlySelectedGraph == (vmNUMBER_OF_GRAPHS-1));
+        let condition = (vmCurrentlySelectedGraph == (vmNumberOfGraphsPerStudy[vmCurrentlySelectedStudy]-1));
         condition = condition && (vmCurrentlySelectedStudy == vmStdStudyNameByIndex.length-1)
         vmIsLastGraph = condition;
     }
 
     function moveGraph(forward){
         if (forward){
-            if (vmCurrentlySelectedGraph < (vmNUMBER_OF_GRAPHS-1)){
+            if (vmCurrentlySelectedGraph < (vmNumberOfGraphsPerStudy[vmCurrentlySelectedStudy]-1)){
                 vmCurrentlySelectedGraph++;
             }
             else {
@@ -65,7 +97,7 @@ Rectangle {
             else {
                 if (vmCurrentlySelectedStudy > 0){
                     vmCurrentlySelectedStudy--;
-                    vmCurrentlySelectedGraph = vmNUMBER_OF_GRAPHS-1;
+                    vmCurrentlySelectedGraph = vmNumberOfGraphsPerStudy[vmCurrentlySelectedStudy]-1;
                 }
             }
         }

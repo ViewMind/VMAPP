@@ -65,6 +65,8 @@ public:
 
     bool setCurrentStudy(const QString &study);
 
+    bool setExperimentDescriptionMap(const QVariantMap &expDesc);
+
     bool addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response, const QVariantMap &trialMetadata = QVariantMap());
 
     bool setCurrentDataSet(const QString &data_set_type);
@@ -82,10 +84,11 @@ public:
     void finalizeDataSet();
 
     bool finalizeStudy();
+    bool finalizeStudy(const QVariantMap &data);
 
     void markFileAsFinalized();
 
-    void clearTrialFieldsFromEachStudy();
+    void clearFieldsForIndexFileCreation();
 
     ////////////////////////// DEBUGGING FUNCTION
     void printRawDataCSV(const QString &filename, const QString &study, const QStringList whichRawDataValues);
@@ -121,6 +124,8 @@ public:
     ////////////////////////// FUNCTION FOR READING DATA. ONLY WHAT IS ABSOLUTELY NECESSARY.
     QVariantList getStudyTrialList(const QString &study);
 
+    QVariant get3DStudyData(const QString &study, const QString& field = "");
+
     QStringList getStudies() ;
 
     QString getStudyStatus(const QString &study);
@@ -143,6 +148,7 @@ public:
 
     QVariantMap getQCParameters() const;
 
+    void DebugPrintContentToConsole() const;
 
 private:
     QVariantMap data;

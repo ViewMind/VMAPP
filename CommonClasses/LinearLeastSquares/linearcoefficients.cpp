@@ -18,6 +18,7 @@ LinearCoefficients::LinearCoefficients(qreal mm, qreal bb)
     mx = 0;
     my = 0;
     mz = 0;
+    c  = 0;
 
 }
 
@@ -25,6 +26,10 @@ LinearCoefficients::LinearCoefficients()
 {
     m = 0;
     b = 0;
+    mx = 0;
+    my = 0;
+    mz = 0;
+    c = 0;
     valid = false;
 }
 
@@ -47,6 +52,24 @@ qreal LinearCoefficients::getB() const {
 
 bool LinearCoefficients::isValid() const {
     return valid;
+}
+
+bool LinearCoefficients::loadFromString(const QString &comma_separted_values){
+    QStringList parts = comma_separted_values.split(",",Qt::SkipEmptyParts);
+    if (parts.size() == 2){
+        valid = true;
+        m = parts.at(0).toDouble();
+        b = parts.at(1).toDouble();
+    }
+    else if (parts.size() == 4){
+        mx = parts.at(0).toDouble();
+        my = parts.at(1).toDouble();
+        mz = parts.at(2).toDouble();
+        c  = parts.at(3).toDouble();
+    }
+    else return false;
+
+    return true;
 }
 
 QVariantMap LinearCoefficients::toMap() const {

@@ -5,20 +5,19 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
 
     // Intializing the eyetracker pointer
     configuration = c;
-    eyeTracker = nullptr;
-    connected = false;
-    calibrated = false;
-    rightEyeCalibrated  = false;
-    leftEyeCalibrated = false;
     experiment = nullptr;
-    this->setVisible(false);
     vrOK = false;
+    this->setVisible(false);
 
-    //Making all the connections to the render server.
+    // Making all the connections to the render server.
     connect(&renderServerClient,&RenderServerClient::newPacketArrived,this,&FlowControl::onNewPacketArrived);
     connect(&renderServerClient,&RenderServerClient::connectionEstablished,this,&FlowControl::onConnectionEstablished);
     connect(&renderServerClient,&RenderServerClient::newMessage,this,&FlowControl::onNewMessage);
     connect(&renderServerClient,&RenderServerClient::readyToRender,this,&FlowControl::onReadyToRender);
+
+    // Making all the connection to the calibration manager.
+    connect(&calibrationManager,&CalibrationManager::calibrationDone,this,&FlowControl::onCalibrationDone);
+    connect(&calibrationManager,&CalibrationManager::newPacketAvailable,this,&FlowControl::onNewCalibrationRenderServerPacketAvailable);
 
     if (DBUGINT(Debug::Options::OVERRIDE_TIME) != 0){
         QString msg = "DBUG: Override Time has been set to " + QString::number(DBUGINT(Debug::Options::OVERRIDE_TIME));
@@ -26,6 +25,20 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
         StaticThreadLogger::warning("FlowControl::FlowControl",msg);
     }
 
+    StaticThreadLogger::log("FlowControl::connectToEyeTracker","Creating new EyeTracker Object");
+
+    if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::HPReverb::PROCESSING_PARAMETER_KEY){
+        eyeTracker = new HPOmniceptInterface();
+    }
+    else{
+        StaticThreadLogger::error("FlowControl::connectToEyeTracker","Failed creating to ET Object. Unknown key: " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+    }
+
+    StaticThreadLogger::log("FlowControl::connectToEyeTracker","Connecting to the EyeTracker " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+
+    connect(eyeTracker,&EyeTrackerInterface::newDataAvailable,this,&FlowControl::onNewEyeDataAvailable);
+
+    eyeTracker->connectToEyeTracker();
 
 }
 
@@ -67,8 +80,6 @@ void FlowControl::setRenderWindowState(bool hidden){
     renderServerClient.setRenderWindowHiddenFlag(hidden);
 }
 
-
-
 void FlowControl::onNewMessage(const QString &msg, const quint8 &msgType){
     if (msgType == RenderServerClient::MSG_TYPE_ERROR){
         StaticThreadLogger::error("FlowControl::onNewMessage",msg);
@@ -109,6 +120,7 @@ void FlowControl::onNewPacketArrived(){
 
     // StaticThreadLogger::log("FlowControl::onNewPacketArrived" , "Received Render Server Packet of Type: '" + packet.getType() + "'");
 
+
     if (packet.getType() == RenderServerPacketType::TYPE_IMG_SIZE_REQ){
         QString name = packet.getPayloadField(PacketImgSizeRequest::NAME).toString();
         qreal w = packet.getPayloadField(PacketImgSizeRequest::WIDTH).toReal();
@@ -131,7 +143,33 @@ void FlowControl::onNewPacketArrived(){
         }
     }
     else if (packet.getType() == RenderServerPacketType::TYPE_CALIB_CONTROL){
-        processCalibrationControlPacket(packet);
+        // The only packet regarding calibration that we should be receiving is the one wiht the calibration data to compute the coefficients.
+        calibrationManager.process3DCalibrationEyeTrackingData(packet);
+    }
+    else if (packet.getType() == RenderServerPacketType::TYPE_HAND_CALIB_CONTROL){
+        // This should be the packet which contains the hand calibration values. They should be added to the processing parameters when a new study is created.
+        QVariantList result;
+        qreal hres = packet.getPayloadField(PacketHandCalibrationControl::H_CALIB_RESULT).toReal();
+        qreal vres = packet.getPayloadField(PacketHandCalibrationControl::V_CALIB_RESULT).toReal();
+        StaticThreadLogger::log("FlowControl::onNewPacketArrived","Received hand calibration results. H: " + QString::number(hres) + ". V: " + QString::number(vres));
+        result << hres << vres;
+        configuration->addKeyValuePair(Globals::Share::HAND_CALIB_RES,result);
+
+        // If we go the hand calibration packet, we can effectively move on.
+        emit FlowControl::handCalibrationDone();
+
+    }
+    else if ( (packet.getType() == RenderServerPacketType::TYPE_3DSTUDY_CONTROL) ||
+              (packet.getType() == RenderServerPacketType::TYPE_STUDY_DATA) ||
+              (packet.getType() == RenderServerPacketType::TYPE_STUDY_DESCRIPTION) ){
+
+        if (experiment == nullptr){
+            StaticThreadLogger::error("FlowControl::onNewPacketArrived","Received packet of type " + packet.getType() + " however no study is being run");
+            return;
+        }
+
+        experiment->process3DStudyControlPacket(packet);
+
     }
     else {
         StaticThreadLogger::warning("FlowControl::onNewPacketArrived","Unexpected packet arrival of type '" + packet.getType() + "'");
@@ -155,16 +193,24 @@ void FlowControl::onReadyToRender() {
     // Setting the remote debug options.
     bool logRender2DPackets = DBUGBOOL(Debug::Options::RENDER_PACKET_DBUG);
     bool enableGazeFollow   = DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW);
-    bool sendDebugPacket = (logRender2DPackets || sendDebugPacket);
+    QStringList handCalibValues = DBUGSLIST(Debug::Options::HAND_CALIB_RESULTS);
+
+    //qDebug() << "HAND CALIB VALUES" << handCalibValues;
+
+    bool sendDebugPacket = (logRender2DPackets || sendDebugPacket || !handCalibValues.isEmpty());
 
     if (sendDebugPacket){
         if (logRender2DPackets) StaticThreadLogger::warning("FlowControl::onReadyToRender","Render Packet DBug Enabled");
         if (enableGazeFollow) StaticThreadLogger::warning("FlowControl::onReadyToRender","Gaze Following in HMD Enabled");
+        if (!handCalibValues.isEmpty()) StaticThreadLogger::warning("FlowControl::onReadyToRender","Will force set hand calibration to " + handCalibValues.join("|"));
         RenderServerPacket p;
         p.setPacketType(RenderServerPacketType::TYPE_DBUG_CONTROL);
         QVariantMap map;
         map[PacketDebugControl::ENABLE_RENDER_2D_LOG] = logRender2DPackets;
         map[PacketDebugControl::ENABLE_3D_HMD_LASER_SIGHT] = enableGazeFollow;
+        if (!handCalibValues.isEmpty()){
+            map[PacketDebugControl::ENABLE_FORCE_HAND_CALIB] = handCalibValues.join("|");
+        }
         p.setPayloadField(PacketDebugControl::JSON_DICT_FIELD,map);
         renderServerClient.sendPacket(p);
     }
@@ -219,7 +265,8 @@ void FlowControl::renderWaitScreen(const QString &message){
 }
 
 void FlowControl::closeApplication(){
-   renderServerClient.closeRenderServer();
+    StaticThreadLogger::kill();
+    renderServerClient.closeRenderServer();
 }
 
 
@@ -248,17 +295,6 @@ void FlowControl::keyboardKeyPressed(int key){
     }
 }
 
-void FlowControl::stopRenderingVR(){
-    // We could stop rendering in 2D but that only makes sense when we are going to show ONLY 3D stuff.
-    //    if (usingVR){
-    //        renderServerClient.sendEnable2DRenderPacket(false);
-    //    }
-    if (eyeTracker != nullptr){
-        eyeTracker->enableUpdating(false);
-    }
-}
-
-
 ////////////////////////////// FLOW CONTROL FUNCTIONS ///////////////////////////////////////
 
 void FlowControl::onRequestUpdate(){
@@ -279,6 +315,7 @@ void FlowControl::onRequestUpdate(){
 
     // On experiment images, the eye position is added.
     EyeTrackerData data = eyeTracker->getLastData();
+    data = calibrationManager.correct2DData(data);
 
     qreal r = 0.01*displayImage.width();
     RenderServerCircleItem *  left  = displayImage.addEllipse(static_cast<qint32>(data.xl()-r),static_cast<qint32>(data.yl()-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,255,0,100)));
@@ -292,50 +329,48 @@ void FlowControl::onRequestUpdate(){
     }
 
     renderServerClient.sendPacket(displayImage.render(true));
+    //renderServerClient.sendPacket(displayImage.render());
 
 }
 
+void FlowControl::onNewEyeDataAvailable(const EyeTrackerData &data){
 
-void FlowControl::eyeTrackerChanged(){
-
-    if (eyeTracker != nullptr){
-        if (experiment != nullptr){
-            disconnect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
-        }
-        delete eyeTracker;
-        eyeTracker = nullptr;
+    if (calibrationManager.requires2DCalibrationDataPointSamples()){
+        calibrationManager.addEyeDataToCalibrationPoint(static_cast<float>(data.xl()),
+                                                        static_cast<float>(data.xr()),
+                                                        static_cast<float>(data.yl()),
+                                                        static_cast<float>(data.yr()),
+                                                        static_cast<float>(data.zl()),
+                                                        static_cast<float>(data.zr()));
+        return;
     }
-    connected = false;
+
+    if (experiment != nullptr){
+        EyeTrackerData corrected = calibrationManager.correct2DData(data);
+        experiment->newEyeDataAvailable(corrected);
+    }
 }
 
-void FlowControl::connectToEyeTracker(){
-
-    // Creating the connection with the EyeTracker
-    if (eyeTracker != nullptr) delete eyeTracker;
-
-    StaticThreadLogger::log("FlowControl::connectToEyeTracker","Creating new EyeTracker Object");
-
-    // The new et is NOT calibrated.
-    calibrated = false;
-
-    if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::HPReverb::PROCESSING_PARAMETER_KEY){
-        eyeTracker = new HPOmniceptInterface(this,configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH),
-                                             configuration->getReal(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-    }
-    else{
-        StaticThreadLogger::error("FlowControl::connectToEyeTracker","Failed connecting to ET. Unknown key: " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
-    }
-
-    StaticThreadLogger::log("FlowControl::connectToEyeTracker","Connecting to the EyeTracker " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
-
-    connect(eyeTracker,SIGNAL(eyeTrackerControl(quint8)),this,SLOT(onEyeTrackerControl(quint8)));
-
-    eyeTracker->connectToEyeTracker();
+void FlowControl::onNewControlPacketAvailableFromStudy(){
+    renderServerClient.sendPacket(experiment->getControlPacket());
 }
 
-void FlowControl::handCalibrationControl(qint32 command, qint32 which_hand){
+void FlowControl::handCalibrationControl(qint32 command, const QString &which_hand){
 
     //qDebug() << "Hand Calibration Command" << command << " hand " << which_hand;
+    qint32 hand_sel = -1;
+    if (which_hand == VMDC::Hand::LEFT){
+        hand_sel = 0;
+    }
+    else if (which_hand == VMDC::Hand::RIGHT){
+        hand_sel = 1;
+    }
+    else if (which_hand == VMDC::Hand::BOTH){
+        hand_sel = 2;
+    }
+    else {
+        StaticThreadLogger::error("FlowControl::handCalibrationControl","Received unknown hand parameter to calibrae: " + which_hand);
+    }
 
     RenderServerPacket p;
     p.setPacketType(RenderServerPacketType::TYPE_HAND_CALIB_CONTROL);
@@ -348,15 +383,15 @@ void FlowControl::handCalibrationControl(qint32 command, qint32 which_hand){
     case HAND_CALIB_START_H:
         p.setPayloadField(PacketHandCalibrationControl::HORIZONTAL,true);
         p.setPayloadField(PacketHandCalibrationControl::VERTICAL,false);
-        p.setPayloadField(PacketHandCalibrationControl::HANDS,which_hand);
+        p.setPayloadField(PacketHandCalibrationControl::HANDS,hand_sel);
         break;
     case HAND_CALIB_START_V:
         p.setPayloadField(PacketHandCalibrationControl::HORIZONTAL,false);
         p.setPayloadField(PacketHandCalibrationControl::VERTICAL,true);
-        p.setPayloadField(PacketHandCalibrationControl::HANDS,which_hand);
+        p.setPayloadField(PacketHandCalibrationControl::HANDS,hand_sel);
         break;
     default:
-        StaticThreadLogger::error("","Received unknown hand calibration control command: " + QString::number(command));
+        StaticThreadLogger::error("FlowControl::handCalibrationControl","Received unknown hand calibration control command: " + QString::number(command));
         return;
     }
 
@@ -366,22 +401,13 @@ void FlowControl::handCalibrationControl(qint32 command, qint32 which_hand){
 
 void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
 
-    EyeTrackerCalibrationParameters calibrationParams;
-    calibrationParams.forceCalibration = true;
-    calibrationParams.name = "";
 
     int required_number_of_accepted_pts = 7;
+    int ncalibration_points = 9;
     if (DBUGEXIST(Debug::Options::FORCE_N_CALIB_PTS)){
-        calibrationParams.number_of_calibration_points = DBUGINT(Debug::Options::FORCE_N_CALIB_PTS);
+        ncalibration_points = DBUGINT(Debug::Options::FORCE_N_CALIB_PTS);
         required_number_of_accepted_pts = 2;
     }
-    else{
-        calibrationParams.number_of_calibration_points = 9;
-    }
-
-    calibrated = false;
-    rightEyeCalibrated  = false;
-    leftEyeCalibrated = false;
 
     // Making sure the right eye is used, in both the calibration and the experiment.
     eyeTracker->setEyeToTransmit(VMDC::Eye::BOTH);
@@ -392,57 +418,34 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
     if (mode3D) strmode = "3D";
     StaticThreadLogger::log("FlowControl::calibrateEyeTracker","Calibrating the eyetracker: " + strmode);
 
-    //qDebug() << "In FlowwControl::calibrateEyeTracker, is VR ENABLED?"  <<configuration->getBool(Globals::Share::VR_ENABLED);
-
-    if (Globals::EyeTracker::IS_VR) {
+    if (!mode3D) { // Local eyetracking is required only for 2D Calibration
         eyeTracker->enableUpdating(true); // To ensure that eyetracking data is gathered.
     }
 
-    bool coefficientsLoaded = false;
 
-    if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != ""){
-        // Check if the file exists
-
-        QString coefficient_file = DBUGSTR(Debug::Options::LOAD_CALIBRATION_K);
-        calibrationParams.name = coefficient_file;
-
-        if (QFile(coefficient_file).exists()){
-            calibrationParams.forceCalibration = false;
-            QString dbug = "DBUG: Loading calibration coefficients " + coefficient_file;
-            qDebug() << dbug;
-            StaticThreadLogger::warning("FlowControl::calibrateEyeTracker",dbug);
-            coefficientsLoaded = true;
-        }
-        else {
-            QString dbug = "DBUG: Calibration coefficients do no exist. File "  + calibrationParams.name + " will be created after next calibration";
-            qDebug() << dbug;
-            StaticThreadLogger::warning("FlowControl::calibrateEyeTracker",dbug);
-        }
-    }
-
+    QString coefficient_file = "";    
     qint32 validation_point_acceptance_threshold = 70;
+    qint32 gather_time, wait_time;
+
     if (useSlowCalibration){
         StaticThreadLogger::log("FlowControl::calibrateEyeTracker","Requested use of slow calibration");
         validation_point_acceptance_threshold = 60;
-        calibrationParams.gather_time = CALIB_PT_GATHER_TIME_SLOW;
-        calibrationParams.wait_time = CALIB_PT_WAIT_TIME_SLOW;
+        gather_time = CALIB_PT_GATHER_TIME_SLOW;
+        wait_time = CALIB_PT_WAIT_TIME_SLOW;
     }
     else {
         validation_point_acceptance_threshold = 60;
-        calibrationParams.gather_time = CALIB_PT_GATHER_TIME_NORMAL;
-        calibrationParams.wait_time = CALIB_PT_WAIT_TIME_NORMAL;
+        gather_time = CALIB_PT_GATHER_TIME_NORMAL;
+        wait_time = CALIB_PT_WAIT_TIME_NORMAL;
     }
-
-    // Setting if the calibration is 3D or not.
-    calibrationParams.mode3D = mode3D;
 
     // Testing validations parameters.
     QVariantMap calibrationValidationParameters;
     calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = required_number_of_accepted_pts;
     calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
     calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE] = 0;
-    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_GATHERTIME] = calibrationParams.gather_time;
-    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_WAITTIME] = calibrationParams.wait_time;
+    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_GATHERTIME] = gather_time;
+    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_WAITTIME] = wait_time;
 
     if (DBUGEXIST(Debug::Options::CONFIG_CALIB_VALID)){
         QVariantMap configCalibValidDebugOptons = Debug::parseMultipleDebugOptionLine(DBUGSTR(Debug::Options::CONFIG_CALIB_VALID));
@@ -459,207 +462,66 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
         //Debug::prettpPrintQVariantMap(calibrationValidationParameters);
     }
 
-    eyeTracker->setEyeTrackerTo3DMode(mode3D);
-    eyeTracker->configureCalibrationValidation(calibrationValidationParameters);
+    QSize s = renderServerClient.getRenderResolution();
 
-    // The only time calibrate is NOT called if when coefficients are loaded in 3DMode
-    bool send3dCalibrationPacket = !(coefficientsLoaded && mode3D);
-
-    //qDebug() << coefficientsLoaded << mode3D << startCalibration;
-    eyeTracker->calibrate(calibrationParams);
-
-    if (calibrationParams.mode3D) {
-
-        // If we are skipping the calibration this needs to be skipped.
-        if (!send3dCalibrationPacket){
-            return;
-        }
-
-        // We need to send the request for the 3D Calibration.
-        RenderServerPacket p;
-        p.setPacketType(RenderServerPacketType::TYPE_CALIB_CONTROL);
-        p.setPayloadField(CalibrationControlPacketFields::COMMAND,CalibrationControlCommands::CMD_SETUP);
-        p.setPayloadField(CalibrationControlPacketFields::GATHER_TIME,calibrationParams.gather_time);
-        // The calibration "waits" the calibration point "moves"
-        p.setPayloadField(CalibrationControlPacketFields::MOVE_TIME,calibrationParams.wait_time);
-        p.setPayloadField(CalibrationControlPacketFields::N_CALIB_POINTS,calibrationParams.number_of_calibration_points);
-
-        renderServerClient.sendPacket(p);
-
-    }
+    calibrationManager.startCalibration(s.width(),s.height(),
+                                        ncalibration_points,wait_time,gather_time,
+                                        mode3D,
+                                        calibrationValidationParameters,coefficient_file);
 
 }
 
-
-void FlowControl::processCalibrationControlPacket(RenderServerPacket p){
-
-    qint32 command = p.getPayloadField(CalibrationControlPacketFields::COMMAND).toInt();
-
-    if (eyeTracker == nullptr){
-        StaticThreadLogger::error("FlowControl::processCalibrationControlPacket","Received calibration packet on a null eyetracker variable");
-        return;
-    }
-
-    if (command == CalibrationControlCommands::CMD_SETUP){
-        // This is the calibration point vector.
-        QVariantList x = p.getPayloadField(CalibrationControlPacketFields::CALIBRATION_TARGETS_X).toList();
-        QVariantList y = p.getPayloadField(CalibrationControlPacketFields::CALIBRATION_TARGETS_Y).toList();
-        QVariantList z = p.getPayloadField(CalibrationControlPacketFields::CALIBRATION_TARGETS_Z).toList();
-
-        // The validation radious use.
-        qreal vR       = p.getPayloadField(CalibrationControlPacketFields::VALIDATION_R).toReal();
-        QList<QVector3D> target_vectors;
-
-        StaticThreadLogger::log("FlowControl::processCalibrationControlPacket","TARGET VECTOR RECEIVED. Validation Radious of " + QString::number(vR));
-
-        if ((x.size() != y.size()) || (y.size() != z.size())){
-            QString msg = "Calibration target vectors have inconsistent sizes: x: " + QString::number(x.size())
-                    + " y: " + QString::number(y.size()) + " z: " + QString::number(z.size());
-            StaticThreadLogger::error("FlowControl::processCalibrationControlPacket",msg);
-        }
-
-        for (qint32 i = 0; i < x.size(); i++){
-            QVector3D target_vector;
-            target_vector.setX(x.at(i).toFloat());
-            target_vector.setY(y.at(i).toFloat());
-            target_vector.setZ(z.at(i).toFloat());
-            //qDebug() << "Target Vector " << i << " is " <<  target_vector << " when normalized we get " << target_vector.normalized();
-            target_vectors << target_vector;
-        }
-
-        eyeTracker->setCalibrationVectors(target_vectors,vR);
-
-    }
-    else if (command == CalibrationControlCommands::CMD_CALIBRATION_POINT_GATHER){
-        qint32 cpoint = p.getPayloadField(CalibrationControlPacketFields::CALIB_PT_INDEX).toInt();
-        StaticThreadLogger::log("FlowControl::processCalibrationControlPacket","Start gathering data for calibration point: " + QString::number(cpoint));
-        eyeTracker->controlCalibrationPointDataStore(cpoint,true);
-    }
-    else if (command == CalibrationControlCommands::CMD_CALIBRATION_POINT_STOP){
-        qint32 cpoint = p.getPayloadField(CalibrationControlPacketFields::CALIB_PT_INDEX).toInt();
-        StaticThreadLogger::log("FlowControl::processCalibrationControlPacket","Stop gathering data for calibration point: " + QString::number(cpoint));
-        eyeTracker->controlCalibrationPointDataStore(cpoint,false);
-    }
-    else {
-        StaticThreadLogger::error("FlowControl::processCalibrationControlPacket","Received unknown command for calibration control: " + QString::number(command));
-    }
+// Signals that a new packet needs to be sent to the Remote Render Server.
+void FlowControl::onNewCalibrationRenderServerPacketAvailable(){
+    renderServerClient.sendPacket(calibrationManager.getRenderServerPacket());
 }
 
-bool FlowControl::isCalibrated() const{
-    return calibrated;
+bool FlowControl::isConnected() const{
+    return eyeTracker->isEyeTrackerConnected();
 }
 
-bool FlowControl::isRightEyeCalibrated() const{
-    return rightEyeCalibrated;
-}
+// When the calibration process is finished.
+void FlowControl::onCalibrationDone(qint32 code){
 
-bool FlowControl::isLeftEyeCalibrated() const{
-    return leftEyeCalibrated;
-}
-
-void FlowControl::onEyeTrackerControl(quint8 code){
-    //qDebug() << "ON FlowControl::EYETRACKER CONTROL" << code;
-
-    if (eyeTracker == nullptr){
-        StaticThreadLogger::error("FlowControl::onEyeTrackerControl","Possible crash alert: Entering onEyeTrackerControl with a null pointer eyeTracker object");
-    }
-
-    switch(code){
-    case EyeTrackerInterface::ET_CODE_CALIBRATION_ABORTED:
-        StaticThreadLogger::warning("FlowControl::onEyeTrackerControl","EyeTracker Control: Calibration aborted");
-        calibrated = false;
-
-        if (Globals::EyeTracker::IS_VR) eyeTracker->enableUpdating(false);
-        renderWaitScreen("");
-
-        // We need to wait a few milliseconds otherwise the end screen does NOT get shown.
-        emit FlowControl::calibrationDone(calibrated);
-
-        break;
-    case EyeTrackerInterface::ET_CODE_CALIBRATION_DONE:
-        StaticThreadLogger::log("FlowControl::onEyeTrackerControl","EyeTracker Control: Calibration and validation finished");
-
-        calibrated = true;
-
-        if (Globals::EyeTracker::IS_VR) eyeTracker->enableUpdating(false);
+    if (code == CalibrationManager::CALIBRATION_SUCCESSFUL){
+        StaticThreadLogger::log("FlowControl::onCalibrationDone","EyeTracker Control: Calibration and validation finished");
 
         // At this point the calibration validation data structure should be available.
         // The structure should be used in order to determine which eye will be the eye used in the study.
 
         // We can now get the selected eye to use.
-        selected_eye_to_use = eyeTracker->getCalibrationRecommendedEye();
-        eyeTracker->setEyeToTransmit(selected_eye_to_use);
-        StaticThreadLogger::log("FlowControl::onEyeTrackerControl","Calibration Validation Report After Calibration Done");
-        StaticThreadLogger::log("FlowControl::onEyeTrackerControl",eyeTracker->getCalibrationValidationReport());
-        StaticThreadLogger::log("FlowControl::onEyeTrackerControl","Selected Eye: " + selected_eye_to_use);
+        eyeTracker->setEyeToTransmit(calibrationManager.getRecommendedEye());
+        StaticThreadLogger::log("FlowControl::onCalibrationDone","Calibration Validation Report After Calibration Done");
+        StaticThreadLogger::log("FlowControl::onCalibrationDone",calibrationManager.getCalibrationValidationReport());
+        StaticThreadLogger::log("FlowControl::onCalibrationDone","Selected Eye: " + calibrationManager.getRecommendedEye());
 
         // We need to wait a few milliseconds otherwise the end screen does NOT get shown.
-        emit FlowControl::calibrationDone(calibrated);
-
-        break;
-    case EyeTrackerInterface::ET_CODE_CONNECTION_FAIL:
-        StaticThreadLogger::error("FlowControl::onEyeTrackerControl","EyeTracker Control: Connection to EyeTracker Failed");
-        connected = false;
-        emit(connectedToEyeTracker(false));
-        break;
-    case EyeTrackerInterface::ET_CODE_CONNECTION_SUCCESS:
-        StaticThreadLogger::log("FlowControl::onEyeTrackerControl","EyeTracker Control: Connection to EyeTracker Established");
-        connected = true;
-        emit(connectedToEyeTracker(true));
-        break;
-    case EyeTrackerInterface::ET_CODE_DISCONNECTED_FROM_ET:
-        StaticThreadLogger::error("FlowControl::onEyeTrackerControl","EyeTracker Control: Disconnected from EyeTracker");
-        connected = false;
-        break;
-    case EyeTrackerInterface::ET_CODE_NEW_CALIBRATION_IMAGE_AVAILABLE:
-        //qDebug() << "Got a new calibration image";
-        renderServerClient.sendPacket(eyeTracker->getCalibrationImage().render());
-        break;
+        emit FlowControl::calibrationDone(true);
     }
+    else {
+        StaticThreadLogger::error("FlowControl::onCalibrationDone","Calibration could not be completed");
+
+        renderWaitScreen("");
+
+        // We need to wait a few milliseconds otherwise the end screen does NOT get shown.
+        emit FlowControl::calibrationDone(false);
+    }
+
 }
 
 
 QVariantMap FlowControl::getCalibrationValidationData() const {
 
-    if (DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF) != ""){
+    QVariantMap map = calibrationManager.getCalibrationValidationData();
 
-        // Debug Code to Test Validation Graphics.
-        QString file_to_load = DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF);
-        QFile file(file_to_load);
-        file.open(QFile::ReadOnly);
-        QString content = file.readAll();
-        file.close();
+    // We add the resolution as it is required for plotting the calibration data.
+    map["W"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH);
+    map["H"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT);
 
-        QJsonParseError json_error;
-        QJsonDocument doc = QJsonDocument::fromJson(content.toUtf8(),&json_error);
-        QVariantMap data = doc.object().toVariantMap();
-        QVariantMap pp = data.value("processing_parameters").toMap();
-        data = data.value("calibration_validation").toMap();
-        data["W"] = pp.value("resolution_width");
-        data["H"] = pp.value("resolution_height");
-
-        return data;
-    }
-
-    if (eyeTracker != nullptr){
-
-        QVariantMap map = eyeTracker->getCalibrationValidationData();
-
-        // We add the resolution as it is required for plotting the calibration data.
-        map["W"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH);
-        map["H"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT);
-
-        return map;
-
-    }
-    return QVariantMap();
+    return map;
 
 }
 
-bool FlowControl::autoValidateCalibration() const {
-    if (DBUGSTR(Debug::Options::LOAD_FOR_CALIB_VERIF) != "") return false; // In this case we need the dialog since that the entire point of the debug option.
-    return (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != "");
-}
 
 void FlowControl::onUpdatedExperimentMessages(const QVariantMap &string_value_map){
 
@@ -689,7 +551,7 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     QString finalStudyName;
 
     // Forcing the valid eye to the calibration selected eye.
-    study_config[VMDC::StudyParameter::VALID_EYE] = selected_eye_to_use;
+    study_config[VMDC::StudyParameter::VALID_EYE] = calibrationManager.getRecommendedEye();
     //Debug::prettpPrintQVariantMap(study_config);
 
     // Using the polimorphism, the experiment object is created according to the selected index.
@@ -721,45 +583,41 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKVS);
         backgroundForVRScreen = QColor(Qt::black);
         break;
-
+    case Globals::StudyConfiguration::INDEX_GNG_SPHERE:
+        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO SPHERES");
+        experiment = new GoNoGoSphereExperiment(nullptr,VMDC::Study::GONOGO_SPHERE);
+        backgroundForVRScreen = QColor(Qt::black); // This is ignore in all 3D studies.
+        break;
     default:
         StaticThreadLogger::error("FlowControl::startNewExperiment","Unknown experiment was selected " + study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toString());
         return false;
     }
 
-    // Hiding cursor. Legacy code. Not sure if necessary but left here because it's harmless, as it only hides the mouse on the experiment in the screen which is never shown.
-    experiment->hideCursor();
-
     // Making sure that that both experiment signals are connected.
     // Eyetracker should be connected by this point.
     connect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
-    connect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
     connect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
     connect(experiment,&Experiment::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
+    connect(experiment,&Experiment::remoteRenderServerPacketAvailable,this,&FlowControl::onNewControlPacketAvailableFromStudy);
 
-    // Making sure that the eyetracker is sending data.
-    //qDebug() << "EyeTracker Enable Updating";
-    eyeTracker->enableUpdating(true);
-
-    if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) != ""){
-        // The eye needs to be forced in this instance
-        study_config[VMDC::StudyParameter::VALID_EYE] = VMDC::Eye::BOTH;
-    }
+    // Making sure that the eyetracker is sending data, but only if it's a 2D study.
+    bool studyIs3D = study_config.value("is_3d_study").toBool();
+    //qDebug() << "IS STARTING STUDY 3D" << studyIs3D;
+    if (!studyIs3D) eyeTracker->enableUpdating(true);
 
     // Start the experiment.
-    experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
+    qDebug() << "Calling start experiment";
+    if (!experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
                                 configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
-                                study_config);
+                                study_config)){
+        return false;
+    }
 
-    //renderServerClient.sendEnable2DRenderPacket(true);
 
     // Since experiments starts in the explanation phase, it is then necessary to render the first screen.
     // This will actually render the very first screen and update the text in the UI properly.
     experiment->renderCurrentStudyExplanationScreen();
-
-    if (DBUGSTR(Debug::Options::LOAD_CALIBRATION_K) == ""){
-        experiment->setCalibrationValidationData(eyeTracker->getCalibrationValidationData());
-    }
+    experiment->setCalibrationValidationData(calibrationManager.getCalibrationValidationData());
 
     return true;
 }
@@ -776,8 +634,11 @@ void FlowControl::startStudyExamplePhase(){
 
 void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
-    // Make the experiment windown invisible.
-    experiment->hide();
+    // Making sure we are no longer receing EyeTracker info, even if it's only for 3D Studies.
+    eyeTracker->enableUpdating(false);
+
+    // If there was a hand calibration result, we need to remove it.
+    configuration->removeKey(Globals::Share::HAND_CALIB_RES);
 
     // Getting the information for the generated data file.
     QFileInfo info(experiment->getDataFileLocation());
@@ -801,9 +662,9 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
     // Destroying the experiment and reactivating the start experiment.
     disconnect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
-    disconnect(eyeTracker,&EyeTrackerInterface::newDataAvailable,experiment,&Experiment::newEyeDataAvailable);
     disconnect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
     disconnect(experiment,&Experiment::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
+    disconnect(experiment,&Experiment::remoteRenderServerPacketAvailable,this,&FlowControl::onNewCalibrationRenderServerPacketAvailable);
 
     delete experiment;
     experiment = nullptr;

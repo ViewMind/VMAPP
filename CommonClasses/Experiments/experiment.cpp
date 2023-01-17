@@ -1,8 +1,7 @@
 #include "experiment.h"
 
 
-Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(parent)
-{
+Experiment::Experiment(QObject *parent, const QString &studyType): QObject(parent) {
 
     // The Experiment is created in the stopped state.
     state = STATE_STOPPED;
@@ -21,23 +20,10 @@ Experiment::Experiment(QWidget *parent, const QString &studyType) : QWidget(pare
     // The default study eye is initialized as the right eye.
     defaultStudyEye = VMDC::Eye::RIGHT;
 
-}
+    // Default is false. Expect 3D Studies to change this.
+    isStudy3D = false;
+    study3DState = S3S_NONE;
 
-void Experiment::setupView(qint32 monitor_resolution_width, qint32 monitor_resolution_height){
-    // Making this window frameless and making sure it stays on top.
-    this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::Window);
-
-    // Setting the geometry to the current desktop resolution.
-    this->setGeometry(0,0,monitor_resolution_width,monitor_resolution_height);
-
-    // Creating a graphics widget and adding it to the layout
-    gview = new QGraphicsView(this);
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0,0,0,0);
-    layout->addWidget(gview);
-
-    gview->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    gview->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 QString Experiment::getExperimentDescriptionFile(const QVariantMap &studyConfig){
@@ -87,14 +73,9 @@ bool Experiment::startExperiment(const QString &workingDir,
 
     processingParameters = rawdata.getProcessingParameters();
 
-    // Initializing the graphical interface and passing on the configuration.
-    /// WARNING: Should be using the MONITOR display values, but they are not available in this function. This quick fix, SHOULD be the same.
-    setupView(processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toInt(),
-              processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toInt());
+    // Initializing the experiment data painters in general.
     manager->init(processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toInt(),
                   processingParameters.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toInt());
-    //this->gview->setScene(manager->getCanvas());
-
 
     // Configuring the experimet
     if (!manager->parseExpConfiguration(contents)){
@@ -120,7 +101,7 @@ bool Experiment::startExperiment(const QString &workingDir,
     //qDebug() << "On Experiment Start. Printing the studies in the current raw data file after adding a study" << rawdata.getStudies();
 
 
-    QString validEye = studyConfig.value(VMDC::StudyParameter::VALID_EYE).toString();    
+    QString validEye = studyConfig.value(VMDC::StudyParameter::VALID_EYE).toString();
     if (validEye == VMDC::Eye::BOTH){
         leftEyeEnabled = true;
         rightEyeEnabled = true;
@@ -152,11 +133,28 @@ bool Experiment::startExperiment(const QString &workingDir,
         return false;
     }
 
+    // Base setup for the request study description packet.
+    if (isStudy3D){
+        //qDebug() << "Creating the Request for study description packet";
+        rrsControlPacket.resetForRX();
+        rrsControlPacket.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        rrsControlPacket.setPayloadField(Packet3DStudyControl::COMMAND, Study3DControlCommands::CMD_REQUEST_STUDY_DESCRIPTION);
+
+    }
+
     if (DBUGBOOL(Debug::Options::SHORT_STUDIES)){
         QString dbug = "DBUG: Short Studies Enabled";
         qDebug() << dbug;
         StaticThreadLogger::warning("Experiment::startExperiment",dbug);
-        manager->enableShortStudyMode();
+        if (isStudy3D){
+            rrsControlPacket.setPayloadField(Packet3DStudyControl::SHORT_STUDIES,true);
+        }
+        else manager->enableShortStudyMode();
+    }
+    else {
+        if (isStudy3D){
+            rrsControlPacket.setPayloadField(Packet3DStudyControl::SHORT_STUDIES,false);
+        }
     }
 
     // Setting up the fixation computer.
@@ -202,16 +200,121 @@ void Experiment::setCalibrationValidationData(const QVariantMap &calibrationVali
     rawdata.setCalibrationValidationData(calibrationValidationData);
 }
 
+void Experiment::process3DStudyControlPacket(const RenderServerPacket &p) {
+
+    if (study3DState == S3S_EXPECTING_STUDY_DESCRIPTION){
+
+        if (p.getType() != RenderServerPacketType::TYPE_STUDY_DESCRIPTION){
+            StaticThreadLogger::error("Experiment::process3DStudyControlPacket","In study '" + this->studyType  + "' on state expecting the study description. But Got Packet of Type: " + p.getType());
+            return;
+        }
+
+        // The first step is to parse the study description back to a map.
+        QVariantMap map = p.getPayload();
+        QString study_description = map.value(PacketStudyDescription::STUDY_DESC).toString();
+
+        // Parsing the JSON of the map.
+        QVariantMap study_desc_as_map;
+        QJsonParseError json_error;
+        QJsonDocument doc = QJsonDocument::fromJson(study_description.toUtf8(),&json_error);
+        if (doc.isNull()){
+            StaticThreadLogger::error("Experiment::process3DStudyControlPacket","Error parsing the JSON string of the study description: " + json_error.errorString());
+        }
+        else {
+            study_desc_as_map = doc.object().toVariantMap();
+        }
+
+        map[PacketStudyDescription::STUDY_DESC] = study_desc_as_map;
+
+        // Now we need to store this in the experiment_description field of the current study.
+        if (!rawdata.setExperimentDescriptionMap(map)){
+            StaticThreadLogger::error("Experiment::process3DStudyControlPacket","Error setting the study description: " + rawdata.getError());
+        }
+
+        StaticThreadLogger::log("Experiment::process3DStudyControlPacket","Received 3D Study Description Packet");
+        study3DState = S3S_WAITING_FOR_STUDY_END;
+
+    }
+    else if (study3DState == S3S_WAITING_FOR_STUDY_END){
+
+        QString packetType = p.getType();
+
+        if (packetType == RenderServerPacketType::TYPE_3DSTUDY_CONTROL){
+
+            qint32 cmd = p.getPayloadField(Packet3DStudyControl::COMMAND).toInt();
+            if (cmd == Study3DControlCommands::CMD_UPDATE_MESSAGES){
+                newDataForStudyMessageFor3DStudies(p.getPayloadField(Packet3DStudyControl::STUDY_MESSAGES).toList());
+            }
+            else{
+                StaticThreadLogger::error("Experiment::process3DStudyControlPacket","In study '" + this->studyType  + "' on state expecting study's end. But received study control packet of with command " + QString::number(cmd));
+            }
+        }
+        else if (packetType == RenderServerPacketType::TYPE_STUDY_DATA){
+
+            StaticThreadLogger::log("Experiment::process3DStudyControlPacket","Received 3D Study Data");
+
+//            qDebug() << "Data Received from study";
+//            Debug::prettpPrintQVariantMap(p.getPayload());
+
+            // This finalizes the study.
+            if (!rawdata.finalizeStudy(p.getPayload())){
+                error = "Failed on GoNoGo Sphere finalization because: " + rawdata.getError();
+                emit Experiment::experimentEndend(ER_FAILURE);
+                return;
+            }
+
+            rawdata.markFileAsFinalized();
+
+            rMWA.finalizeOnlineFixationLog();
+            lMWA.finalizeOnlineFixationLog();
+            state = STATE_STOPPED;
+
+            ExperimentResult er;
+            if (error.isEmpty()) er = ER_NORMAL;
+
+            if (!saveDataToHardDisk()){
+                emit Experiment::experimentEndend(ER_FAILURE);
+            }
+            else emit Experiment::experimentEndend(ER_NORMAL);
+
+        }
+        else {
+            StaticThreadLogger::error("Experiment::process3DStudyControlPacket","In study '" + this->studyType  + "' on state expecting study's end. But Got Packet of Type: " + p.getType());
+        }
+
+
+    }
+
+}
+
 void Experiment::setStudyPhaseToEvaluation(){
-    manager->setTrialCountLoopValue(-1);
     studyPhase = SP_EVALUATION;
-    resetStudy();
+    if (isStudy3D){
+        // Send the packet indicating the study start.
+        rrsControlPacket.resetForRX();
+        rrsControlPacket.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        rrsControlPacket.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_STUDY_START);
+        emit Experiment::remoteRenderServerPacketAvailable();
+    }
+    else {
+        manager->setTrialCountLoopValue(-1);
+        resetStudy();
+    }
 }
 
 void Experiment::setStudyPhaseToExamples(){
-    manager->setTrialCountLoopValue(NUMBER_OF_TRIALS_IN_MANUAL_MODE);
     studyPhase = SP_EXAMPLE;
-    resetStudy();
+    if (isStudy3D){
+        // Send the packet indicating the start of the example phase.
+        rrsControlPacket.resetForRX();
+        rrsControlPacket.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        rrsControlPacket.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_START_EXAMPLES);
+        emit Experiment::remoteRenderServerPacketAvailable();
+    }
+    else {
+        manager->setTrialCountLoopValue(NUMBER_OF_TRIALS_IN_MANUAL_MODE);
+        resetStudy();
+    }
 }
 
 void Experiment::newEyeDataAvailable(const EyeTrackerData &data){
@@ -221,12 +324,9 @@ void Experiment::newEyeDataAvailable(const EyeTrackerData &data){
 
 void Experiment::experimenteAborted(){
     state = STATE_STOPPED;
-    this->hide();
-
     QString newfile = moveDataFileToAborted();
     if (newfile.isEmpty()) emit Experiment::experimentEndend(ER_FAILURE);
     else emit Experiment::experimentEndend(ER_ABORTED);
-
 }
 
 QString Experiment::moveDataFileToAborted(){
@@ -349,7 +449,7 @@ bool Experiment::saveDataToHardDisk(){
     bool ans = rawdata.saveJSONFile(dataFile,true);
     if (!ans) return false;
 
-    rawdata.clearTrialFieldsFromEachStudy();
+    rawdata.clearFieldsForIndexFileCreation();
     ans = rawdata.saveJSONFile(idxFile,true);
 
     return ans;
@@ -360,40 +460,48 @@ RenderServerScene Experiment::getVRDisplayImage() const{
     return manager->getImage();
 }
 
+RenderServerPacket Experiment::getControlPacket() const {
+    return rrsControlPacket;
+}
+
 void Experiment::keyboardKeyPressed(int keyboardKey){
     if (studyPhase == SP_EXPLANATION){
         this->moveStudyExplanationScreen(keyboardKey);
     }
     else {
-       keyPressHandler(keyboardKey);
+        keyPressHandler(keyboardKey);
     }
 }
 
-void Experiment::keyPressEvent(QKeyEvent *event){
-    if (studyPhase == SP_EXPLANATION){
-        this->moveStudyExplanationScreen(event->key());
-    }
-    else {
-       keyPressHandler(event->key());
-    }
+//void Experiment::keyPressEvent(QKeyEvent *event){
+//    if (studyPhase == SP_EXPLANATION){
+//        this->moveStudyExplanationScreen(event->key());
+//    }
+//    else {
+//       keyPressHandler(event->key());
+//    }
+//}
+
+void Experiment::newDataForStudyMessageFor3DStudies(const QVariantList &msg){
+    Q_UNUSED(msg)
 }
 
 void Experiment::moveStudyExplanationScreen(int key_pressed){
     if (key_pressed == Qt::Key_B){
         if (currentStudyExplanationScreen > 0){
             currentStudyExplanationScreen--;
-            renderCurrentStudyExplanationScreen();
+            renderCurrentStudyExplanationScreen(false);
         }
     }
     else if (key_pressed == Qt::Key_N){
         if (currentStudyExplanationScreen < manager->getNumberOfStudyExplanationScreens()-1){
             currentStudyExplanationScreen++;
-            renderCurrentStudyExplanationScreen();
+            renderCurrentStudyExplanationScreen(true);
         }
         else {
             // Going forward at the end loops back to the beginning
             currentStudyExplanationScreen = 0;
-            renderCurrentStudyExplanationScreen();
+            renderCurrentStudyExplanationScreen(true);
         }
     }
 
@@ -404,17 +512,33 @@ void Experiment::moveStudyExplanationScreen(int key_pressed){
 }
 
 void Experiment::updateDisplay(){
-    emit Experiment::updateVRDisplay();
+    if (!isStudy3D) emit Experiment::updateVRDisplay();
 }
 
 void Experiment::keyPressHandler(int keyPressed){
     Q_UNUSED(keyPressed)
 }
 
-void Experiment::renderCurrentStudyExplanationScreen(){
-    manager->renderStudyExplanationScreen(currentStudyExplanationScreen);
-    updateDisplay();
-    // Now we send the signal for the proper message.
+void Experiment::renderCurrentStudyExplanationScreen(bool forward){
+    if (isStudy3D){
+        StaticThreadLogger::log("Experiment::renderCurrentStudyExplanationScreen","Sending next explanation packet");
+        rrsControlPacket.resetForRX();
+        rrsControlPacket.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        if (forward){
+            rrsControlPacket.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_NEXT_EXPLANATION);
+        }
+        else {
+            rrsControlPacket.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_PREVIOUS_EXPLANATION);
+        }
+        emit Experiment::remoteRenderServerPacketAvailable();
+    }
+    else {
+        manager->renderStudyExplanationScreen(currentStudyExplanationScreen);
+        updateDisplay();
+        // Now we send the signal for the proper message.
+    }
+
+    // No matter the study type we need to update the messages.
     QVariantMap stringToDisplay;
     stringToDisplay[manager->getStringKeyForStudyExplanationList()] = currentStudyExplanationScreen;
     // qDebug() << "Rendering Current Explanation Screen";
