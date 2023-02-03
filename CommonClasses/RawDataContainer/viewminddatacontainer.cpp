@@ -638,15 +638,20 @@ bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data){
         return false;
     }
 
+    //qDebug() << "Finalizing Study" << studyName << "with input variant map";
+    //Debug::prettpPrintQVariantMap(study_data);
+    //qDebug() << "Is Empty" << study_data.isEmpty() << study_data.empty() << " And count" << study_data.size();
+
     QVariantMap studies = data.value(MAIN_FIELD_STUDIES).toMap();
     QVariantMap study = studies.value(studyName).toMap();
 
     // Storing the trial list for the study.
-    if (data.empty()){
+    if (study_data.isEmpty()){
+        //qDebug() << "Inserting a list of" << currentTrialList.size();
         study.insert(VMDC::StudyField::TRIAL_LIST,currentTrialList);
     }
     else {
-        qDebug() << "Inserting the field study data in the study " << studyName;
+        //qDebug() << "Inserting the field study data in the study " << studyName;
         study.insert(VMDC::StudyField::STUDY_DATA,study_data);
     }
 

@@ -11,7 +11,6 @@
 namespace Globals{
 
    const qint32 NUMBER_SECONDS_IN_A_DAY = 86400;
-   const qint32 NUMBER_OF_PERCEPTION_PARTS = 8;
    const int    REBOOT_CODE = 568; // Just a random number that I thought of. I doens't have to have any real signficance.
 
    namespace EU_REGION {
@@ -126,7 +125,7 @@ namespace Globals{
    } 
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "22.0.0";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "23.1.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

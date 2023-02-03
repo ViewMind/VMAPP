@@ -5,8 +5,6 @@
 #include <QApplication>
 #include <QSslSocket>
 
-#include "../../CommonClasses/LogInterface/loginterface.h"
-#include "../../CommonClasses/QMLQImageDisplay/qimagedisplay.h"
 #include "../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "loader.h"
 #include "flowcontrol.h"
@@ -29,7 +27,6 @@ namespace Globals {
 
    namespace EyeTracker{
       QString NAME = "";
-      bool IS_VR = false;
       QString PROCESSING_PARAMETER_KEY = "";
    }
 
@@ -85,8 +82,19 @@ int main(int argc, char *argv[])
 
     }
 
+//    qDebug() << "Active SSL BackEnd: " << QSslSocket::activeBackend();
+//    qDebug() << "Available SSL BackEnds " << QSslSocket::availableBackends();
+//    qDebug() << "SSL Lib Build version Number" <<  QSslSocket::sslLibraryBuildVersionNumber();
+//    qDebug() << "SSL Lib Build version string" <<  QSslSocket::sslLibraryBuildVersionString();
+//    qDebug() << "SSL Library Version Number" <<  QSslSocket::sslLibraryVersionNumber();
+//    qDebug() << "SSL Library Version String" <<  QSslSocket::sslLibraryVersionString();
+
     if (!QSslSocket::supportsSsl()){
-         StaticThreadLogger::error("main","SSL NOT Supported. Will not be able to connect to the API");
+         StaticThreadLogger::error("main","SSL NOT Supported. Will not be able to connect to the API. Was compiled against version: "
+                                   + QSslSocket::sslLibraryBuildVersionString()
+                                   + QString::number(QSslSocket::sslLibraryBuildVersionNumber())
+                                   + QString::number(QSslSocket::sslLibraryVersionNumber())
+                                   + QSslSocket::sslLibraryVersionString() );
         return 0;
     }
 

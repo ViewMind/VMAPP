@@ -117,6 +117,9 @@ ViewBase {
 
                     }
                     console.log("   DBUG: Adding Study " + name + " With use of hand calibration equal to " + hcalib);
+                    if (!(VMGlobals.vmSCP_STUDY_REQ_H_CALIB in config)){
+                        config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = "";
+                    }
                     study_names.push(name);
                     uses_h_calib.push(hcalib);
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(config);

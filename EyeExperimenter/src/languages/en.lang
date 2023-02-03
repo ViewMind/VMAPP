@@ -152,7 +152,7 @@ Back a study step in explanation|
 Indicate targets are different|
 Indicate that targets are the same;
 viewevaluation_action_calibrate = CALIBRATE;
-viewevaluation_action_hcalib_v  = HORIZONTAL HAND CALIBRATION;
+viewevaluation_action_hcalib_v  = VERTICAL HAND CALIBRATION;
 viewevaluation_action_hcalib_end = END HAND CALIBRATION;
 viewevaluation_action_examples = EXAMPLES;
 viewevaluation_action_starteval = START EVALUATION;
