@@ -177,6 +177,7 @@ void BindingManager::init(qreal display_resolution_width, qreal display_resoluti
 qint32 BindingManager::size() const {
     if (shortModeEnabled){
         return NUMBER_OF_TRIALS_IN_SHORT_MODE;
+        //return 2;
     }
     else {
         return static_cast<qint32>(parser.getTrialList().size());

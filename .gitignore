@@ -51,6 +51,7 @@ VMTools/QML3DCalibrationDev/exe-debug/
 VMTools/QML3DCalibrationDev/exe/
 VMTools/OLSTest/exe-debug/
 VMTools/OLSTest/exe/
+VMTools/BallOriginAlgDev/exe/
 
 VMTools/QMLRenderServerDev/exe.rar
 VMTools/OldDBToJSon/bin/

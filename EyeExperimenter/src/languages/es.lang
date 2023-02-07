@@ -16,7 +16,7 @@ viewsettings_default_country = País por defecto;
 viewsettings_def_country_placeholder = Seleccione el pais por defecto;
 viewsettings_language = Lenguaje;
 viewsettings_langs = English|Español;
-viewsettings_umanual = Manual de Usario;
+viewsettings_umanual = Manual de Usuario;
 viewsettings_cancel = CANCELAR;
 viewsettings_restart = REINICIAR;
 viewsettings_apply = APLICAR;
@@ -255,9 +255,8 @@ viewqc_confirm_archive = Si, Archivar el Estudio;
 viewqc_comment = Comentarios;
 viewqc_archive_explanation = Si archiva el estudio este no será procesado, pero 
 se eliminará de la lista de estudios;
-viewqc_archive_reason = low_data_points-Índice de Cotrol de Calidad para los puntos de datos es bajo|
-low_fixations-Índice de Cotrol de Calidad para las fijaciones es bajo|
-low_sample_rate-Índice de Cotrol de Calidad para la velocidad de sampleo es bajo|
+viewqc_archive_reason = low_ici-Índice de Control de Calidad ICI es bajo|
+low_fixations-Índice de Control de Calidad para las fijaciones es bajo|
 study_instructions_misunderstood-El sujeto con comprendió las instrucciones del estudio|
 bad_subjet_state-El estado del sujeto no era óptimo para el estudio|
 other-Otro; 

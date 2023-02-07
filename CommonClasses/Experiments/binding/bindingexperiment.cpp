@@ -149,6 +149,8 @@ void BindingExperiment::resetStudy(){
 
 void BindingExperiment::keyPressHandler(int keyPressed){
 
+    //qDebug() << "BINDING with KEY: " << keyPressed;
+
     // Making sure the experiment can be aborted
     if (keyPressed == Qt::Key_Escape){
         experimenteAborted();

@@ -123,6 +123,14 @@ void SimpleMatrix::set(qint32 i, qint32 j, qreal v){
     m[i] = vec;
 }
 
+void SimpleMatrix::increseBy1(qint32 i, qint32 j){
+    set(i,j,get(i,j)+1);
+}
+
+void SimpleMatrix::decreaseBy1(qint32 i, qint32 j){
+    set(i,j,get(i,j)-1);
+}
+
 SimpleMatrix::MatDim SimpleMatrix::getDim() const {
     MatDim md;
     md.nrows = static_cast<qint32>(m.size());
@@ -242,23 +250,23 @@ SimpleMatrix SimpleMatrix::adjoint() const {
     qreal sign = 1;
 
     for (qint32 i = 0; i < m.size(); i++){
-      for (qint32 j = 0; j < m.at(i).size(); j++){
+        for (qint32 j = 0; j < m.at(i).size(); j++){
 
-          // Get the cofactor of i,j
-          SimpleMatrix cofactor = getCofactor(i,j);
+            // Get the cofactor of i,j
+            SimpleMatrix cofactor = getCofactor(i,j);
 
-          // Sign of the adjunct of i,j is positive when the index sum of the row and column is even.
-          if (((i+j) % 2) == 0){
-              sign = 1;
-          }
-          else {
-              sign = -1;
-          }
+            // Sign of the adjunct of i,j is positive when the index sum of the row and column is even.
+            if (((i+j) % 2) == 0){
+                sign = 1;
+            }
+            else {
+                sign = -1;
+            }
 
-          // We interchange the rows and columns to get the transpose of the cofactor matrix.
-          sm.set(j,i,sign * cofactor.getDeterminant());
+            // We interchange the rows and columns to get the transpose of the cofactor matrix.
+            sm.set(j,i,sign * cofactor.getDeterminant());
 
-      }
+        }
     }
 
     return sm;
@@ -357,9 +365,9 @@ SimpleMatrix SimpleMatrix::scaleBy(qreal value) const {
     sm.clear(md.nrows,md.ncols);
 
     for (qint32 i = 0; i < m.size(); i++){
-      for (qint32 j = 0; j < m.at(i).size(); j++){
-          sm.set(i,j,get(i,j)*value);
-      }
+        for (qint32 j = 0; j < m.at(i).size(); j++){
+            sm.set(i,j,get(i,j)*value);
+        }
     }
 
     return sm;
@@ -375,9 +383,9 @@ SimpleMatrix SimpleMatrix::addOrSub(const SimpleMatrix &b, qreal mod) const{
     sm.clear(md.nrows,md.ncols);
 
     for (qint32 i = 0; i < m.size(); i++){
-      for (qint32 j = 0; j < m.at(i).size(); j++){
-          sm.set(i,j,get(i,j) + mod*b.get(i,j));
-      }
+        for (qint32 j = 0; j < m.at(i).size(); j++){
+            sm.set(i,j,get(i,j) + mod*b.get(i,j));
+        }
     }
 
     return sm;
@@ -449,4 +457,71 @@ SimpleMatrix SimpleMatrix::FromString(const QString &matrix) {
 
     return m;
 
+}
+
+qreal SimpleMatrix::sum() const{
+    qreal s = 0;
+    for (qint32 i = 0; i < m.size(); i++){
+        for (qint32 j = 0; j < m.at(i).size(); j++){
+            s = s + m.at(i).at(j);
+        }
+    }
+    return s;
+}
+
+qint32 SimpleMatrix::sumForceInt() const{
+    qint32 s = 0;
+    for (qint32 i = 0; i < m.size(); i++){
+        for (qint32 j = 0; j < m.at(i).size(); j++){
+            s = s + static_cast<qint32>(m.at(i).at(j));
+        }
+    }
+    return s;
+}
+
+SimpleMatrix SimpleMatrix::flatten() const{
+    SimpleMatrix ans;
+    QVector< QVector<qreal> > temp_data;
+    QVector<qreal> long_row;
+    for (qint32 i = 0; i < m.size(); i++){
+        long_row.append(m.at(i));
+    }
+    temp_data << long_row;
+    ans.fill(temp_data);
+    return ans;
+}
+
+SimpleMatrix SimpleMatrix::normalizeEachElement() const {
+    SimpleMatrix ans;
+    ans.clear(this->getDim().nrows,this->getDim().ncols,0);
+
+    qreal min = m.first().first();
+    qreal max = m.first().first();
+
+    for (qint32 i = 0; i < m.size(); i++){
+        for (qint32 j = 0; j < m.at(i).size(); j++){
+            max = qMax(m.at(i).at(j),max);
+            min = qMin(m.at(i).at(j),min);
+        }
+    }
+
+    if (qAbs(max-min) < 0.00001){
+        ans.fill(m);
+        return ans;
+    }
+
+    for (qint32 i = 0; i < m.size(); i++){
+        for (qint32 j = 0; j < m.at(i).size(); j++){
+            ans.set(i,j,(get(i,j)-min)/(max-min));
+        }
+    }
+
+    return ans;
+}
+
+qreal SimpleMatrix::mean() const {
+    qreal n = static_cast<qreal>(getDim().nrows);
+    n = n * static_cast<qreal>(getDim().ncols);
+    if (n < 1) return 0; // empty matrix.
+    return sum()/n;
 }

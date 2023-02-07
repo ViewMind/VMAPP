@@ -36,6 +36,12 @@ public:
     // Sets value in row i, column j to v
     void set(qint32 i, qint32 j, qreal v);
 
+    // Increase by 1.
+    void increseBy1(qint32 i , qint32 j);
+
+    // Decrease by one.
+    void decreaseBy1(qint32 i, qint32 j);
+
     // Gets value in row i, column j.
     qreal get(qint32 i, qint32 j) const;
 
@@ -86,6 +92,22 @@ public:
     SimpleMatrix add(const SimpleMatrix &b) const;
     SimpleMatrix substract(const SimpleMatrix &b) const;
     SimpleMatrix scaleBy(qreal value) const;
+
+    // Creates a single vector by concatenating all rows in the matrix.
+    SimpleMatrix flatten() const;
+
+    // Sums all values of the matrix forcing each value as an int.
+    qint32 sumForceInt() const;
+
+    // Sums all values of the matrix.
+    qreal sum() const;
+
+    // Scales each element in the matrix in such a way that it's biggest value becomes 1 and it's smallest zero.
+    // If the minimum and maximum value are the same, it does nothing.
+    SimpleMatrix normalizeEachElement() const;
+
+    // Sum of all elements divided by the number of the elements.
+    qreal mean() const;
 
 
 private:

@@ -203,7 +203,9 @@ Rectangle {
                     // This actually represents two studies, so we need to select both, with the same configuration.
                     let config2 = JSON.parse(JSON.stringify(configuration)) // Deep copying configuration.
                     config2[VMGlobals.vmUNIQUE_STUDY_ID] = VMGlobals.vmINDEX_BINDING_BC
-                    viewEvaluations.vmSelectedEvaluationConfigurations.push(config2)
+
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(config2) // BC goes first.
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration); // UC goes second.
                     break;
                 case VMGlobals.vmINDEX_GONOGO3D:
                     study_names.push(study_name);
@@ -240,8 +242,8 @@ Rectangle {
         // Setting up the progress line
         evaluationsView.setUpStudyNames(study_names, requires_hand_calibration);        
 
-        //console.log("Printing Selected Evaluation Configuration")
-        //console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations));
+        console.log("Printing Selected Evaluation Configuration")
+        console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations));
         //console.log("ONLY PRINTING");
 
         goToEvalRun();

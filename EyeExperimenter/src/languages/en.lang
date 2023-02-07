@@ -255,9 +255,8 @@ viewqc_confirm_archive = Yes, Archive It;
 viewqc_comment = Comments;
 viewqc_archive_explanation = If you archive the study it will not be processed but
 it will be removed from the study list;
-viewqc_archive_reason = low_data_points-Quality Control Index for data points is too low|
+viewqc_archive_reason = low_ici-Quality Control Index for ICI is too low|
 low_fixations-Quality Control Index for fixations is too low|
-low_sample_rate-Quality Control Index for sample rate is too low|
 study_instructions_misunderstood-The subject did not understand instructions for the study.|
 bad_subjet_state-The subject's state was not optimal for the study|
 other-Other; 
