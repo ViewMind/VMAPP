@@ -84,15 +84,12 @@ namespace Globals{
       static const QString DUAL_MONITOR_MODE = "dual_monitor_mode";
       static const QString DEFAULT_READING_LANGUAGE = "default_reading_study_language";
       static const QString LAST_SELECTED_PROTOCOL = "last_selected_protocol";
+      static const QString EXPLANATION_LANGUAGE = "explanation_language";
    }
 
    namespace VMUILanguages {
       static const QString ES = "Español";
       static const QString EN = "English";
-   }
-
-   namespace Partners {
-      static const QString ORBIT = "Orbit Labs";
    }
       
    namespace StudyConfiguration {
@@ -123,9 +120,20 @@ namespace Globals{
       static const QString EN = "English";
       static const QString ES = "Español";
    } 
+
+   namespace ExplanationLanguage {
+
+      static QVariantMap GetNameCodeMap() {
+         QVariantMap map;
+         map["English"] = "en";
+         map["Spanish"] = "es";
+         return map;
+
+      }
+   }
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "23.2.1";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "23.3.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

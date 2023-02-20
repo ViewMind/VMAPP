@@ -102,7 +102,7 @@ Rectangle {
             else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
                 // This should contains only one key. and it's value is the index value in the screen.
                 for (let key in string_value_map){
-                    let message_list = loader.getStringListForKey(key)
+                    let message_list = loader.getStringListForKey(key,false)
                     let index = string_value_map[key];
 
 //                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
@@ -174,7 +174,7 @@ Rectangle {
         viewEvaluations.advanceStudyIndicator();
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_hcalib_v"),"");
         flowControl.handCalibrationControl(vmHAND_CALIB_START_H,vmWhichHandToCalibrate);
-        studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_calib_h");
+        studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_calib_h",false);
     }
 
     function prepareStudyStart(){
@@ -275,7 +275,7 @@ Rectangle {
         }
         else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_H){
             vmEvaluationStage = vmSTAGE_HAND_CALIB_V;
-            studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_calib_v");
+            studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_calib_v",false);
             flowControl.handCalibrationControl(vmHAND_CALIB_START_V,vmWhichHandToCalibrate);
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_hcalib_end"),"");
             viewEvaluations.advanceStudyIndicator();
@@ -327,7 +327,7 @@ Rectangle {
     }
 
     function setCalibrationExplantion(){
-        studyExplanationText.text = loader.getStringForKey("viewevaluation_calibration_explanation");
+        studyExplanationText.text = loader.getStringForKey("viewevaluation_calibration_explanation",false);
     }
 
     function onMove(){

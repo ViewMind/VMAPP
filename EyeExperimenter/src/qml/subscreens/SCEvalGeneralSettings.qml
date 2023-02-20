@@ -8,13 +8,11 @@ Rectangle {
     id: subScreenEvaluationGeneralSettings
 
     property int vmSelectedDoctorIndex: -1
+    property var vmExpLangCodeList: [];
 
     signal goToEvalSetup();
 
     function prepareSettings(){
-
-        // Settign the Eye Configuration to the Default.
-        eye.setSelection(2);
 
         // Filling the doctor selection combo box.
         var medics = loader.getMedicList();
@@ -85,15 +83,7 @@ Rectangle {
             loader.modifySubjectSelectedMedic(viewEvaluations.vmSelectedPatientID,newDoctor);
         }
 
-        switch(eye.vmCurrentIndex){
-        case 0: viewEvaluations.vmSelectedEye = VMGlobals.vmSCV_EYE_LEFT;
-            break;
-        case 1: viewEvaluations.vmSelectedEye = VMGlobals.vmSCV_EYE_RIGHT;
-            break;
-        case 2: viewEvaluations.vmSelectedEye = VMGlobals.vmSCV_EYE_BOTH;
-            break;
-        }
-
+        viewEvaluations.vmSelectedEye = VMGlobals.vmSCV_EYE_BOTH;
         viewEvaluations.vmSelectedDoctor = doctorSelection.getCurrentlySelectedMetaDataField();
 
         goToEvalSetup();
@@ -147,22 +137,40 @@ Rectangle {
         VMComboBox {
             id: protocol
             width: parent.width
-            z: eye.z + 1;
+            z: explanationLanguage.z + 1;
             vmLabel: loader.getStringForKey("viewpatlist_protocol")
             vmPlaceHolderText: loader.getStringForKey("viewevaluation_protocol_ph")
         }
 
         VMComboBox {
-            id: eye
+            id: explanationLanguage
             width: parent.width
-            vmLabel: loader.getStringForKey("viewevaluation_eye_text")
+            vmLabel: loader.getStringForKey("viewevaluation_exp_lang")
             z: parent.z + 1
-            vmMaxDisplayItems: 2
-            visible: false // Eye Selection is Disabled For the Time being.
+            vmMaxDisplayItems: 3
             Component.onCompleted: {
-                var list = loader.getStringListForKey("viewevaluation_eye_selection_list")
-                setModelList(list)
-                setSelection(2); // Both eyes selected by default
+
+                var map = loader.getExplanationLangMap();
+                let currenSelection = map["--"];
+                let lang_list = []
+                vmExpLangCodeList = [];
+                let selection = 0;
+                for (let key in map){
+                    if (key === "--") continue;
+                    let value = map[key];
+                    if (value === currenSelection) selection = lang_list.length;
+                    lang_list.push(key);
+                    vmExpLangCodeList.push(value);
+                }
+                setModelList(lang_list)
+                console.log("Setting selection to index " + selection + " from lang code " + currenSelection)
+                setSelection(selection);
+
+            }
+            onVmCurrentIndexChanged: {
+                let lang_code = vmExpLangCodeList[vmCurrentIndex]
+                loader.setSettingsValue("explanation_language",lang_code);
+                loader.setExplanationLanguage();
             }
         }
 

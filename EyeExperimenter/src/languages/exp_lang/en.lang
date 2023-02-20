@@ -1,0 +1,147 @@
+viewevaluation_calibration_explanation = 
+A red pulsating circle with a white dot in its center will appear on the screen. 
+Look at the white dot.
+The circle will move through the screen. You must follow it. Remember not to
+take your eyes off the circle until it disappears.;
+
+viewevaluation_hand_calib_h = 
+Strech your arms, to the sides of your body.
+Reach as far as you can.;
+
+viewevaluation_hand_calib_v = 
+Strech your arms, upwards towards the ceiling.
+Reach as far as you can.;
+
+explanation_phase_list_binding_bc =
+This is the Color Combination Test. In this study, <<N>> targets will appear on the screen,
+Each target has a color on the outside and a color on the inside. In this case,
+remember the color combination of each target.|
+The first targets will disappear and a new set of targets will appear. You must
+identify if the color combination of each target remained the same or if the
+colors have been swapped between targets. The position is not important.
+If the colors have swapped between targets, say "Different". If not say, "Same".
+In this case, the colors swapped between targets. You must say "Different"|
+Look at the second example.|
+In this case, color combination remained the same. You must say "Same".
+Did you understand?
+We will do some practice rounds before starting the test.;
+
+
+
+
+explanation_phase_list_binding_uc =
+This is the New Colors Test. In this study, <<N>> targets will appear on the screen,
+like the targets you are seeing on the left. Each target has a color on the outside
+and a color on the inside. Remember the colors present in the targets.|
+The first targets will disappear and a new set of targets will appear. You have to
+identify if any new colors appeared or if all the colors are the same. 
+The position of the targets is not important. If new colors appeared, 
+quickly say "Different" out loud. If not, say "Same". In this case, two new colors 
+appeared in the center of each target. You must say "Different".|
+Look at the second example.|
+In this case, no new colors appeared. You must say "Same".
+Did you understand?
+We will do some practice rounds before starting the test.;
+
+
+explanation_phase_list_gonogo     = 
+This is the Go/No Go test. Look at the cross in the center of the screen.
+The cross will disappears and an arrow will appear.
+If the arrow is green, look in the direction of the arrow. And if it is
+red, look in the opposite direction.|
+In this case, because the arrow is red, look at the circle in the
+opposite direction, as indicated by the blue circle.|
+When the arrow disappears, quickly look back at the cross|
+In this case, because the arrow is green, look in the direction of
+the arrow.|
+Look back at the cross|
+Look in the direction of the arrow|
+Back at the cross|
+Look in the opposite direction. You must do this exercise as fast
+as you can. Did you understand?
+We will do some practice rounds before starting the test.;
+
+
+explanation_phase_list_gonogo_3D = This is Go/No-Go Sphere Evaluation.
+During this evaluation green and red spheres will be sent from the dark
+points in front of you. Si the sphere is green you must try to touch it.
+If you make contact with the sphere you will feel your controller vibrate.|
+If the sphere is red, you must move your hands to avoid touching the sphere.
+If contact is made anyway, then your controller will still vibrate. | 
+Now try to touch the green sphere again. | 
+Avoid touching the red shphere.
+If you touch and avoid the spheres correctly the, spheres will start to go faster.
+If your performance worsens the spheres will go slower.;
+
+
+
+
+explanation_phase_list_nbackrt    =
+This is the N-Back Test. The test is composed of 6 boxes and one cross in
+the center of the screen. You must keep your eyes on the cross.|
+A red circle will appear on one of the boxes. Position 1|
+Then it will appear on another box. Position 2|
+And finally on another box. Position 3. Remeber to always keep your eyes on
+the cross|
+When the cross disappears, you must quickly look at Position 3, where the last
+circle appeared, as indicated by the arrow.|
+Then look at Position 2, where the second circle appeared|
+And finally, at Position 1, where the first circle appeared. In the inverse order|
+When you finish, quickly look back at the cross. Now the test will be repeated|
+Position 1|
+Position 2|
+Position 3|
+Now quickly look at Position 3|
+Position 2|
+And Position 1. Did you understand?
+We will do some practice rounds before starting the test.;
+
+
+explanation_phase_list_nbackrt_slow    =
+This is the N-Back Test. The test is composed of 6 boxes and one cross in
+the center of the screen. You must keep your eyes on the cross.|
+A red circle will appear on one of the boxes. Position 1|
+Then it will appear on another box. Position 2|
+Then it will appear on another box. Position 3|
+And finally on another box. Position 4. Remeber to always keep your eyes on
+the cross|
+When the cross disappears, you must quickly look at Position 4, where the last
+circle appeared, as indicated by the arrow.|
+Then look at Position 3, where the third circle appeared|
+Then look at Position 2, where the second circle appeared|
+And finally, at Position 1, where the first circle appeared. In the inverse order|
+When you finish, quickly look back at the cross. Now the test will be repeated|
+Position 1|
+Position 2|
+Position 3|
+Position 4|
+Now quickly look at Position 4|
+Position 3|
+Position 2|
+And Position 1. Did you understand?
+We will do some practice rounds before starting the test.;
+
+
+explanation_phase_list_nbackvs    = 
+This is the NBack Evaluation For Training.
+Red circles will appear on the screen in a given sequence.
+While the cirles are being shown, please keep your eyes focused on the center cross. 
+The number of circles in the sequence will depend on the selected difficulty. 
+This example will use 3.|
+Now, a second circle will appear.| 
+Finally, the third and last circle of the sequence will be shown.|
+When the cross dissapears, you must look at the rectangle where the third circle appeared. 
+During the study, a flash of light will indicate that you looked a the right rectangle.
+The screen will show indicators for the circle locations and the path your gaze must do.
+These indicators will not be present during the real study.|
+Then you must look at the rectangle where the second circle appeared before.|
+Finally you must look at the rectangle where the first circle was shown. 
+Successive completed sequences will decrease the time each circle is shown in the screen. 
+Likewise, successive failures will increase the time the circles are shown.|
+Let's try again. Fix you eyes on the center cross and notice the first red circle.|
+While maintaining your eyes fixed on the cross, notice that the second circle 
+appeared on the screen.|
+Then the final third circle is shown|
+Now look at the rectangle where the third circle was shown|
+Then at the rectangle where the second one appeared|
+And finish by looking at the rectangle where the first circle appeared.;

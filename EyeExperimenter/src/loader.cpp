@@ -48,6 +48,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     // The strings.
     cv[Globals::VMPreferences::DEFAULT_COUNTRY] = cmd;
     cv[Globals::VMPreferences::UI_LANGUAGE]     = cmd;
+    cv[Globals::VMPreferences::EXPLANATION_LANGUAGE] = cmd;
     cv[Globals::VMPreferences::LAST_SELECTED_PROTOCOL]     = cmd;
 
     // The booleans
@@ -84,6 +85,8 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     if (loadingError) return;
 
     changeLanguage();
+    //qDebug() << "LOADER CONSTRUCTOR. Teh explanation language is " << configuration->getString(Globals::VMPreferences::EXPLANATION_LANGUAGE);
+    setExplanationLanguage();
 
     // Must make sure that the data directory exists
     QDir rawdata(Globals::Paths::WORK_DIRECTORY);
@@ -133,23 +136,76 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
 //////////////////////////////////////////////////////// UI Functions ////////////////////////////////////////////////////////
 
-QString Loader::getStringForKey(const QString &key){
-    if (language.containsKeyword(key)){
-        return language.getString(key);
-    }
-    else return "ERROR: STRING KEY " + key +  " NOT FOUND";
-}
-
-QStringList Loader::getStringListForKey(const QString &key){
-    if (language.containsKeyword(key)){
-        return language.getStringList(key);
+QString Loader::getStringForKey(const QString &key, bool fromLangFile){
+    if (!fromLangFile) qDebug() << "Entering with key " << key << " but false from langfile";
+    if (fromLangFile){
+        if (language.containsKeyword(key)){
+            return language.getString(key);
+        }
+        else {
+            //qDebug() << "Could nto find" << key << "in lang file";
+            return "ERROR: STRING KEY " + key +  " NOT FOUND";
+        }
     }
     else {
-        //qDebug() << language.getAllKeys();
-        return QStringList();
+        if (explanationStrings.containsKeyword(key)){
+            return explanationStrings.getString(key);
+        }
+        else return "ERROR: EXPLANATION STRING KEY " + key +  " NOT FOUND";
     }
 }
 
+QStringList Loader::getStringListForKey(const QString &key, bool fromLangFile){
+    if (fromLangFile){
+        if (language.containsKeyword(key)){
+            return language.getStringList(key);
+        }
+        else {
+            //qDebug() << language.getAllKeys();
+            return QStringList();
+        }
+    }
+    else {
+        if (explanationStrings.containsKeyword(key)){
+            return explanationStrings.getStringList(key);
+        }
+        else {
+            //qDebug() << language.getAllKeys();
+            return QStringList();
+        }
+    }
+}
+
+void Loader::setExplanationLanguage(){
+    //qDebug() << "Setting the explanation language";
+    if (!configuration->containsKeyword(Globals::VMPreferences::EXPLANATION_LANGUAGE)){
+        //qDebug() << "Configuration DOES NOT CONATAIN explanation language";
+        configuration->addKeyValuePair(Globals::VMPreferences::EXPLANATION_LANGUAGE,"en");
+    }
+
+    QString lang_code = configuration->getString(Globals::VMPreferences::EXPLANATION_LANGUAGE);
+
+    //qDebug() << "Switching language explanations to " << lang_code;
+
+    QString exp_lang_file = ":/languages/exp_lang/" + lang_code + ".lang";
+
+    if (!QFile::exists(exp_lang_file)){
+        StaticThreadLogger::error("Loader::setExplanationLanguage","Cannot find lang file '" + exp_lang_file  +"'. Defaulting to English");
+        exp_lang_file = ":/languages/exp_lang/en.lang";
+    }
+
+    if (!explanationStrings.loadConfiguration(exp_lang_file)){
+        // In a stable program this should NEVER happen.
+        StaticThreadLogger::error("Loader::setExplanationLanguage","CANNOT LOAD Explanation language file LANG FILE: '" + exp_lang_file + "'. Reason: " + language.getError());
+    }
+
+}
+
+QVariantMap Loader::getExplanationLangMap() const {
+    QVariantMap map =  Globals::ExplanationLanguage::GetNameCodeMap();
+    map["--"] = configuration->getString(Globals::VMPreferences::EXPLANATION_LANGUAGE);
+    return map;
+}
 
 int Loader::getDefaultCountry(bool offset){
     QString countryCode = configuration->getString(Globals::VMPreferences::DEFAULT_COUNTRY);
@@ -308,6 +364,7 @@ bool Loader::getConfigurationBoolean(const QString &key){
 }
 
 void Loader::setSettingsValue(const QString &key, const QVariant &var){
+    //qDebug() << "Setting " << key << "to" << var;
     ConfigurationManager::setValue(Globals::Paths::SETTINGS,key,var.toString(),configuration);
 }
 
@@ -1040,6 +1097,7 @@ void Loader::changeLanguage(){
 void Loader::loadDefaultConfigurations(){
 
     if (!configuration->containsKeyword(Globals::VMPreferences::UI_LANGUAGE)) configuration->addKeyValuePair(Globals::VMPreferences::UI_LANGUAGE,Globals::UILanguage::EN);
+    if (!configuration->containsKeyword(Globals::VMPreferences::EXPLANATION_LANGUAGE)) configuration->addKeyValuePair(Globals::VMPreferences::EXPLANATION_LANGUAGE,"en");
     if (!configuration->containsKeyword(Globals::VMPreferences::DEFAULT_COUNTRY)) configuration->addKeyValuePair(Globals::VMPreferences::DEFAULT_COUNTRY,"AR");
     if (!configuration->containsKeyword(Globals::VMPreferences::DEMO_MODE)) configuration->addKeyValuePair(Globals::VMPreferences::DEMO_MODE,false);
     if (!configuration->containsKeyword(Globals::VMPreferences::USE_MOUSE)) configuration->addKeyValuePair(Globals::VMPreferences::USE_MOUSE,true);

@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>languages/en.lang</file>
         <file>languages/es.lang</file>
+        <file>languages/exp_lang/en.lang</file>
+        <file>languages/exp_lang/es.lang</file>
     </qresource>
 </RCC>

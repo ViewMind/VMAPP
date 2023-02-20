@@ -31,8 +31,10 @@ public:
     ~Loader() override;
 
     //////////////////////////// UI Functions ////////////////////////////
-    Q_INVOKABLE QString getStringForKey(const QString &key);
-    Q_INVOKABLE QStringList getStringListForKey(const QString &key);
+    Q_INVOKABLE QString getStringForKey(const QString &key, bool fromLangFile = true);
+    Q_INVOKABLE QStringList getStringListForKey(const QString &key, bool fromLangFile = true);
+    Q_INVOKABLE void setExplanationLanguage();
+    Q_INVOKABLE QVariantMap getExplanationLangMap() const;
     Q_INVOKABLE bool getLoaderError() const;
 
     Q_INVOKABLE QString getWindowTilteVersion();
@@ -129,6 +131,7 @@ private:
     bool loadingError;
     ConfigurationManager *configuration;
     ConfigurationManager language;
+    ConfigurationManager explanationStrings;
 
     // Module to recognize HW in computer.
     HWRecognizer hwRecognizer;
