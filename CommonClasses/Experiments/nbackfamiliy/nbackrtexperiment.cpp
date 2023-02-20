@@ -1,7 +1,6 @@
 #include "nbackrtexperiment.h"
 
 const qint32 NBackRTExperiment::TIME_TRANSITION =                              500;
-const qint32 NBackRTExperiment::TIME_TARGET =                                  250;
 const qint32 NBackRTExperiment::TIME_OUT_BLANKS =                              3000;
 const qint32 NBackRTExperiment::DEFAULT_NUMBER_OF_TARGETS =                    3;
 
@@ -11,7 +10,6 @@ const qint32 NBackRTExperiment::PAUSE_TRIAL_2 =                                6
 
 //const qint32 NBackRTExperiment::PAUSE_TRIAL_1 =                                3;
 //const qint32 NBackRTExperiment::PAUSE_TRIAL_2 =                                6;
-
 
 const qint32 NBackRTExperiment::NBACKVS_MIN_HOLD_TIME =                        50;
 const qint32 NBackRTExperiment::NBACKVS_MAX_HOLD_TIME =                        250;
@@ -39,6 +37,8 @@ NBackRTExperiment::NBackRTExperiment(QWidget *parent, const QString &study_type)
 bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString &experimentFile,
                                         const QVariantMap &studyConfig){
 
+    reducedTrialSet = false;
+
     if (studyType == VMDC::Study::NBACKVS){
         nbackConfig.minHoldTime              = NBACKVS_MIN_HOLD_TIME;
         nbackConfig.maxHoldTime              = NBACKVS_MAX_HOLD_TIME;
@@ -55,12 +55,18 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     }
     else{
         // Variable Speed configuration for DEFAULT NBACK RT.
-        nbackConfig.minHoldTime              = TIME_TARGET;
-        nbackConfig.maxHoldTime              = TIME_TARGET;
+        qint32 hold_time = studyConfig.value(VMDC::StudyParameter::NBACK_HOLD_TIME).toInt();
+        nbackConfig.minHoldTime              = hold_time;
+        nbackConfig.maxHoldTime              = hold_time;
         nbackConfig.stepHoldTime             = 0;
-        nbackConfig.startHoldTime            = TIME_TARGET;
+        nbackConfig.startHoldTime            = hold_time;
         nbackConfig.numberOfTrialsForChange  = 0;
-        nbackConfig.numberOfTargets          = DEFAULT_NUMBER_OF_TARGETS;
+        //nbackConfig.numberOfTargets          = DEFAULT_NUMBER_OF_TARGETS;
+        nbackConfig.numberOfTargets          = studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt();
+
+        // The reduced trial set is used with 3 targets. This is a quick way to test if it's being used.
+        reducedTrialSet = (nbackConfig.numberOfTargets != DEFAULT_NUMBER_OF_TARGETS);
+
         if (DBUGBOOL(Debug::Options::LIGHTUP_NBACKRT)) {
             qDebug() << "DBUG: Lighting Up Squares in NBackRT";
             trialRecognitionMachine.lightUpSquares = true;
@@ -75,12 +81,14 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
 
     QVariantMap config;
     config.insert(NBackManager::CONFIG_IS_VS,(studyType == VMDC::Study::NBACKVS));
+    config.insert(NBackManager::CONFIG_SLOW_STUDY_REDUCE_TRIAL_NUMBER,reducedTrialSet);
     if (studyConfig.value(VMDC::StudyParameter::LANGUAGE).toString() == VMDC::UILanguage::SPANISH){
         config.insert(NBackManager::CONFIG_PAUSE_TEXT_LANG,NBackManager::LANG_ES);
     }
     else{
         config.insert(NBackManager::CONFIG_PAUSE_TEXT_LANG,NBackManager::LANG_EN);
     }
+
     m->configure(config);
 
     // The processing parameters requires the hitboxes that are going to be used, so they are added before they are set.
@@ -135,7 +143,7 @@ void NBackRTExperiment::onTimeOut(){
         updateFronEndMessages();
 
         // Before drawing the start of a new trial, we check if a pause is necessary.
-        if ( (currentTrial == PAUSE_TRIAL_1) || (currentTrial == PAUSE_TRIAL_2)){
+        if ( (currentTrial == PAUSE_TRIAL_1) || ( (currentTrial == PAUSE_TRIAL_2) && !reducedTrialSet) ){
 
             // Paused must be set to zero.
             if (state == STATE_RUNNING){

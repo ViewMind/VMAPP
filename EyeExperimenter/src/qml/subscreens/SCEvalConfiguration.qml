@@ -11,6 +11,9 @@ Rectangle {
     property var vmSelectedStudies: [];
     property var vmSelectedOptionsForEachStudy: ({});
 
+    readonly property int vmNBACK_RT_STD_HOLD_TIME: 250
+    readonly property int vmNBACK_RT_SLOW_HOLD_TIME: 400
+
     signal goToEvalRun();
 
     function resetStudySelection(){
@@ -39,13 +42,20 @@ Rectangle {
 
         item = {}
         options = {}
+        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] = {}
+        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_NAME]   = loader.getStringForKey("viewevaluation_nbackrt_hold_time");
+        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_nbackrt_hold_time_default"),
+                                                                                     loader.getStringForKey("viewevaluation_nbackrt_hold_time_slow")];
+        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_WIDTH]    = 30;
+
         item = {
             vmIndex: VMGlobals.vmINDEX_NBACKRT,
             vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackrt") ,
             vmIsLastSelected: false,
             vmOptions: options,
-            vmOrder: "",
-            vmOptionValueMap: ""
+            vmOrder: VMGlobals.vmSCP_NBACKRT_HOLD_TIME,
+            vmOptionValueMap: vmNBACK_RT_STD_HOLD_TIME + "|" + vmNBACK_RT_SLOW_HOLD_TIME // Default speed is a hold time of 250 ms. While slow speed is a hold time of 400 ms.
         }
         availableEvaluations.append(item)
 
@@ -204,8 +214,8 @@ Rectangle {
                     let config2 = JSON.parse(JSON.stringify(configuration)) // Deep copying configuration.
                     config2[VMGlobals.vmUNIQUE_STUDY_ID] = VMGlobals.vmINDEX_BINDING_BC
 
-                    viewEvaluations.vmSelectedEvaluationConfigurations.push(config2) // BC goes first.
-                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration); // UC goes second.
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration); // UC goes first.
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(config2) // BC goes second.
                     break;
                 case VMGlobals.vmINDEX_GONOGO3D:
                     study_names.push(study_name);
@@ -221,6 +231,27 @@ Rectangle {
                     requires_hand_calibration.push(true);
 
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration);
+                    break;
+
+                case VMGlobals.vmINDEX_NBACKRT:
+                    study_names.push(study_name)
+                    // Standard 2D study.
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = "";
+                    configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
+
+                    // If the slow version of the study was selected the number of targets is 4.
+                    if (configuration[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] == vmNBACK_RT_STD_HOLD_TIME){ // Will assume
+                        configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 3;
+                    }
+                    else {
+                        configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 4;
+                    }
+
+                    // Adding it to the configuration list.
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration);
+
+                    requires_hand_calibration.push(false);
+
                     break;
                 default:
                     study_names.push(study_name)

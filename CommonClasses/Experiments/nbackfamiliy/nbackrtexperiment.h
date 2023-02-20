@@ -107,9 +107,11 @@ private:
     // Shows in screen the message "Presione una tecla para seguir" for 32 and 64 trials pauses
     void drawPauseImage();
 
-    // Timer timess
+    // Flag to indicate reduced size.
+    bool reducedTrialSet;
+
+    // Timer times
     static const qint32 TIME_TRANSITION;
-    static const qint32 TIME_TARGET;
     static const qint32 TIME_OUT_BLANKS;
     static const qint32 DEFAULT_NUMBER_OF_TARGETS;
 

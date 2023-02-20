@@ -5,8 +5,9 @@ const qreal NBackManager::K_TARGET_OFFSET_X   =                        0.02;
 const qreal NBackManager::K_TARGET_OFFSET_Y   =                        0.036;
 const qreal NBackManager::K_CROSS_LINE_LENGTH =                        0.05;
 
-const char * NBackManager::CONFIG_PAUSE_TEXT_LANG   = "pause_text_lang";
-const char * NBackManager::CONFIG_IS_VS             = "is_VS";
+const char * NBackManager::CONFIG_PAUSE_TEXT_LANG                       = "pause_text_lang";
+const char * NBackManager::CONFIG_IS_VS                                 = "is_VS";
+const char * NBackManager::CONFIG_SLOW_STUDY_REDUCE_TRIAL_NUMBER        = "use_reduce_trial";
 
 const char * NBackManager::LANG_EN = "EN";
 const char * NBackManager::LANG_ES = "ES";
@@ -18,6 +19,7 @@ NBackManager::NBackManager(){
     currentlyLitUp = -1;
     connect(&litUpTimer,&QTimer::timeout,this,&NBackManager::onLightOffTimeout);
     numberOfExplanationScreens = NUMBER_OF_EXPLANATION_SLIDES;
+    reducedTrialNumber = false;
 }
 
 void NBackManager::setDebugSequenceValue(qint32 next_target_box){
@@ -85,14 +87,23 @@ bool NBackManager::lightUpBox(qint32 box_index){
 }
 
 void NBackManager::configure(const QVariantMap &config){
+
     if (config.value(CONFIG_PAUSE_TEXT_LANG).toString() == LANG_ES) pauseText = PAUSE_TEXT_SPANISH;
     else pauseText = PAUSE_TEXT_ENGLISH;
+
+    reducedTrialNumber = config.value(CONFIG_SLOW_STUDY_REDUCE_TRIAL_NUMBER).toBool();
 
     if (config.value(CONFIG_IS_VS).toBool()){
         explanationListTextKey = STUDY_TEXT_KEY_NBACKVS;
     }
     else {
-        explanationListTextKey = STUDY_TEXT_KEY_NBACKRT;
+        if (reducedTrialNumber) explanationListTextKey = STUDY_TEXT_KEY_NBACKRT_SLOW;
+        else explanationListTextKey = STUDY_TEXT_KEY_NBACKRT;
+    }
+
+
+    if (reducedTrialNumber){
+        numberOfExplanationScreens = NUMBER_OF_EXPLANATION_SLIDES_4_TARGETS;
     }
 
 }
@@ -323,7 +334,8 @@ qint32 NBackManager::size() const {
         return NUMBER_OF_TRIALS_IN_SHORT_MODE;
     }
     else {
-        return static_cast<qint32>(nbackTrials.size());
+        if (reducedTrialNumber) return NUMBER_OF_TRIALS_IN_REDUCED_SIZE;
+        else return static_cast<qint32>(nbackTrials.size());
     }
 }
 
@@ -348,7 +360,16 @@ void NBackManager::drawPauseScreen(){
 
 
 void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
+    if (reducedTrialNumber){
+        renderStudyExplanationScreen4Targets(screen_index);
+    }
+    else{
+        renderStudyExplanationScreen3Targets(screen_index);
+    }
+}
 
+
+void NBackManager::renderStudyExplanationScreen3Targets(qint32 screen_index){
     QList<qint32> sequence;
     QMap<qint32,qint32> sequence_to_render;
     if (screen_index >= STUDY_EXPLANTION_TARGET_4){
@@ -439,6 +460,125 @@ void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
     }
 
 }
+
+void NBackManager::renderStudyExplanationScreen4Targets(qint32 screen_index){
+    QList<qint32> sequence;
+    QMap<qint32,qint32> sequence_to_render;
+    if (screen_index >= SLOW_STUDY_EXPLANTION_TARGET_5){
+        // Second example sequence
+        sequence << 2 << 5 << 0 << 3;
+    }
+    else {
+        // Third example sequence
+        sequence << 0 << 3 << 1 << 4;
+    }
+
+    QColor arrow(Qt::red);
+
+    canvas.clear();
+    drawBackground();
+
+    if (screen_index == SLOW_STUDY_EXPLANTION_TARGET_1){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(0));
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_TARGET_2){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(1));
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_TARGET_3){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(2));
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_TARGET_4){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(3));
+    }
+
+    else if (screen_index == SLOW_STUDY_EXPLANTION_LOOK_4){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        sequence_to_render[4] = sequence.at(3);
+        renderPhantomTargets(sequence_to_render);
+        renderStudyArrows(-1,sequence.at(3),arrow,true);
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_LOOK_3){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        sequence_to_render[4] = sequence.at(3);
+        sequence_to_render[3] = sequence.at(2);
+        renderPhantomTargets(sequence_to_render);
+        renderStudyArrows(sequence.at(3),sequence.at(2),arrow);
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_LOOK_2){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        sequence_to_render[4] = sequence.at(3);
+        sequence_to_render[3] = sequence.at(2);
+        sequence_to_render[2] = sequence.at(1);
+        renderPhantomTargets(sequence_to_render);
+        renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_LOOK_1){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        sequence_to_render[4] = sequence.at(3);
+        sequence_to_render[3] = sequence.at(2);
+        sequence_to_render[2] = sequence.at(1);
+        sequence_to_render[1] = sequence.at(0);
+        renderPhantomTargets(sequence_to_render);
+        renderStudyArrows(sequence.at(1),sequence.at(0),arrow);
+    }
+
+    else if (screen_index == SLOW_STUDY_EXPLANTION_TARGET_5){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(0));
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_TARGET_6){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(1));
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_TARGET_7){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(2));
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_TARGET_8){
+        setDrawState(DrawState::DS_CROSS_TARGET);
+        setTargetPositionByRectangleIndex(sequence.at(3));
+    }
+
+    else if (screen_index == SLOW_STUDY_EXPLANTION_LOOK_8){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        sequence_to_render[4] = sequence.at(3);
+        renderPhantomTargets(sequence_to_render);
+        renderStudyArrows(-1,sequence.at(3),arrow,true);
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_LOOK_7){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        sequence_to_render[4] = sequence.at(3);
+        sequence_to_render[3] = sequence.at(2);
+        renderPhantomTargets(sequence_to_render);
+        renderStudyArrows(sequence.at(3),sequence.at(2),arrow);
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_LOOK_6){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        sequence_to_render[4] = sequence.at(3);
+        sequence_to_render[3] = sequence.at(2);
+        sequence_to_render[2] = sequence.at(1);
+        renderPhantomTargets(sequence_to_render);
+        renderStudyArrows(sequence.at(2),sequence.at(1),arrow);
+    }
+    else if (screen_index == SLOW_STUDY_EXPLANTION_LOOK_5){
+        setDrawState(DrawState::DS_TARGET_BOX_ONLY);
+        sequence_to_render[4] = sequence.at(3);
+        sequence_to_render[3] = sequence.at(2);
+        sequence_to_render[2] = sequence.at(1);
+        sequence_to_render[1] = sequence.at(0);
+        renderPhantomTargets(sequence_to_render);
+        renderStudyArrows(sequence.at(1),sequence.at(0),arrow);
+    }
+    else {
+        setDrawState(DrawState::DS_CROSS);
+    }
+
+}
+
 
 void NBackManager::renderPhantomTargets(QMap<qint32, qint32> rectangle_indexes){
 

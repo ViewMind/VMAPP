@@ -82,6 +82,7 @@ namespace VMDC {
        static const QString NUMBER_TARGETS     = "number_targets";
        static const QString TARGET_SIZE        = "target_size";
        static const QString NBACK_LIGHT_ALL    = "nback_light_all";
+       static const QString NBACK_HOLD_TIME    = "nback_rt_hold_time";
        static const QString DEFAULT_EYE        = "default_eye";
        static const QString IS_3D_STUDY        = "is_3d_study";
        static const QString HAND_TO_USE        = "hand_to_use";

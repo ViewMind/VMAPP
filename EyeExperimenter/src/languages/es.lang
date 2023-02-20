@@ -134,6 +134,9 @@ viewevaluation_number_of_targets = Número de objectivos;
 viewevaluation_nback_light_up_title = Iluminar Objectivos;
 viewevaluation_nback_light_up_all = Todos;
 viewevaluation_nback_light_up_correct = Secuencia Correcta;
+viewevaluation_nbackrt_hold_time = Velocidad del estudio; 
+viewevaluation_nbackrt_hold_time_default = Velocidad Nominal;
+viewevaluation_nbackrt_hold_time_slow = Baja Velocidad;
 viewevaluation_gng3D_hand_sel = Seleccione que mano utilizar;
 viewevaluation_gng3D_hand_left = Izquierda;
 viewevaluation_gng3D_hand_right = Derecha;
@@ -392,6 +395,31 @@ Posición 1|
 Posición 2|
 Posición 3|
 Ahora mire rápidamente a la Posición 3.|
+Posición 2|
+Y Posición 1.
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
+
+explanation_phase_list_nbackrt_slow    = 
+Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
+Mantenga la mirada fija en la cruz.|
+Un círculo rojo aparecerá en una de las cajas. Esta es la Posición 1.|
+Luego, aparecerá en otra caja. Posición 2|
+Luego, aparecerá en otra caja. Posición 3|
+Y finalmente en otra caja. Posición 4. Recuerde mantener su mirada fija en la cruz|
+Cuando la cruz desaparezca, debe mirar rápidamente a la Posición 4, donde apareció
+el última círculo, como lo indica la flecha.|
+Luego a la Posición 3, donde apareció el tercer círculo|
+Luego a la Posición 2, donde apareció el segundo círculo|
+Y finalmente a la posición 1, donde apareció el primer círculo. En el orden inverso
+en el que aparecieron.|
+Cuando termine, mire rápidamente a la cruz. Ahora la prueba se repetirá.|
+Posición 1|
+Posición 2|
+Posición 3|
+Posición 4|
+Ahora mire rápidamente a la Posición 4.|
+Posición 3|
 Posición 2|
 Y Posición 1.
 Ha entendido?

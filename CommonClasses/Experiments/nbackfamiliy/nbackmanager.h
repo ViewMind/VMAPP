@@ -77,6 +77,7 @@ public:
 
     static const char * CONFIG_PAUSE_TEXT_LANG;
     static const char * CONFIG_IS_VS;
+    static const char * CONFIG_SLOW_STUDY_REDUCE_TRIAL_NUMBER;
     static const char * LANG_ES;
     static const char * LANG_EN;
 
@@ -113,6 +114,9 @@ private:
     qint32 lastBoxLitUp;
     QTimer litUpTimer;
 
+    // Flag indicating if we should use only 64 trials (NBAckRT slow 400 Ms hold time mode).
+    bool reducedTrialNumber;
+
     static const qreal K_TARGET_R;
     static const qreal K_TARGET_OFFSET_X;
     static const qreal K_TARGET_OFFSET_Y;
@@ -142,7 +146,7 @@ private:
     const qint32 STUDY_EXPLANTION_CROSS_1  = 0;
     const qint32 STUDY_EXPLANTION_TARGET_1 = 1;
     const qint32 STUDY_EXPLANTION_TARGET_2 = 2;
-    const qint32 STUDY_EXPLANTION_TARGET_3 = 3;
+    const qint32 STUDY_EXPLANTION_TARGET_3 = 3;    
     const qint32 STUDY_EXPLANTION_LOOK_3   = 4;
     const qint32 STUDY_EXPLANTION_LOOK_2   = 5;
     const qint32 STUDY_EXPLANTION_LOOK_1   = 6;
@@ -154,7 +158,32 @@ private:
     const qint32 STUDY_EXPLANTION_LOOK_5   = 12;
     const qint32 STUDY_EXPLANTION_LOOK_4   = 13;
 
+    const qint32 SLOW_STUDY_EXPLANTION_CROSS_1  = 0;
+    const qint32 SLOW_STUDY_EXPLANTION_TARGET_1 = 1;
+    const qint32 SLOW_STUDY_EXPLANTION_TARGET_2 = 2;
+    const qint32 SLOW_STUDY_EXPLANTION_TARGET_3 = 3;
+    const qint32 SLOW_STUDY_EXPLANTION_TARGET_4 = 4;
+    const qint32 SLOW_STUDY_EXPLANTION_LOOK_4   = 5;
+    const qint32 SLOW_STUDY_EXPLANTION_LOOK_3   = 6;
+    const qint32 SLOW_STUDY_EXPLANTION_LOOK_2   = 7;
+    const qint32 SLOW_STUDY_EXPLANTION_LOOK_1   = 8;
+    const qint32 SLOW_STUDY_EXPLANTION_CROSS_2  = 9;
+    const qint32 SLOW_STUDY_EXPLANTION_TARGET_5 = 10;
+    const qint32 SLOW_STUDY_EXPLANTION_TARGET_6 = 11;
+    const qint32 SLOW_STUDY_EXPLANTION_TARGET_7 = 12;
+    const qint32 SLOW_STUDY_EXPLANTION_TARGET_8 = 13;
+    const qint32 SLOW_STUDY_EXPLANTION_LOOK_8   = 14;
+    const qint32 SLOW_STUDY_EXPLANTION_LOOK_7   = 15;
+    const qint32 SLOW_STUDY_EXPLANTION_LOOK_6   = 16;
+    const qint32 SLOW_STUDY_EXPLANTION_LOOK_5   = 17;
+
     const qint32 NUMBER_OF_EXPLANATION_SLIDES = 14;
+    const qint32 NUMBER_OF_EXPLANATION_SLIDES_4_TARGETS = 18;
+
+    const qint32 NUMBER_OF_TRIALS_IN_REDUCED_SIZE = 64;
+
+    void renderStudyExplanationScreen3Targets(qint32 screen_index);
+    void renderStudyExplanationScreen4Targets(qint32 screen_index);
 
 };
 
