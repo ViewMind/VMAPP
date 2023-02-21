@@ -127,6 +127,7 @@ QtObject {
     readonly property string vmSCP_MIN_SPEED:                "min_speed";
     readonly property string vmSCP_INITIAL_SPEED:            "initial_speed";
     readonly property string vmSCP_NBACKRT_HOLD_TIME:        "nback_rt_hold_time";
+    readonly property string vmSCP_NBACKRT_TIMEOUT:          "nback_timeout";
 
 
     // Study configuration parameter values

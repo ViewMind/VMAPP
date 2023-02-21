@@ -1,7 +1,6 @@
 #include "nbackrtexperiment.h"
 
 const qint32 NBackRTExperiment::TIME_TRANSITION =                              500;
-const qint32 NBackRTExperiment::TIME_OUT_BLANKS =                              3000;
 const qint32 NBackRTExperiment::DEFAULT_NUMBER_OF_TARGETS =                    3;
 
 // Possible pauses for the fielding experiment
@@ -73,6 +72,8 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         }
         else trialRecognitionMachine.lightUpSquares = false;
     }
+
+    timeOutTime = studyConfig.value(VMDC::StudyParameter::NBACK_TIMEOUT).toInt();
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)){
         emit Experiment::experimentEndend(ER_FAILURE);
@@ -203,7 +204,7 @@ void NBackRTExperiment::nextState(){
             trialRecognitionMachine.reset(expectedSequence);
 
             if (overrideTime != 0) stateTimer.setInterval(overrideTime);
-            else stateTimer.setInterval(TIME_OUT_BLANKS);
+            else stateTimer.setInterval(timeOutTime);
         }
         else {
 

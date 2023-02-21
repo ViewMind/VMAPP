@@ -78,6 +78,7 @@ private:
     // Variables to define which sequence and which image to show
     qint32 currentTrial;
     qint32 currentImage;
+    qint32 timeOutTime;
     QString currentDataSetType;
 
     // Used as a state machine to count down correct hits, for the follow through logic.
@@ -112,7 +113,6 @@ private:
 
     // Timer times
     static const qint32 TIME_TRANSITION;
-    static const qint32 TIME_OUT_BLANKS;
     static const qint32 DEFAULT_NUMBER_OF_TARGETS;
 
     // Possible pauses for the fielding experiment

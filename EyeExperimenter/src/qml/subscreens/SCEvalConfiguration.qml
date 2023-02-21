@@ -13,6 +13,8 @@ Rectangle {
 
     readonly property int vmNBACK_RT_STD_HOLD_TIME: 250
     readonly property int vmNBACK_RT_SLOW_HOLD_TIME: 400
+    readonly property int vmNBACK_RT_TIME_OUT_DEFAULT: 3000
+    readonly property int vmNBACK_RT_TIME_OUT_SLOW: 5000
 
     signal goToEvalRun();
 
@@ -242,9 +244,11 @@ Rectangle {
                     // If the slow version of the study was selected the number of targets is 4.
                     if (configuration[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] == vmNBACK_RT_STD_HOLD_TIME){ // Will assume
                         configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 3;
+                        configuration[VMGlobals.vmSCP_NBACKRT_TIMEOUT] = vmNBACK_RT_TIME_OUT_DEFAULT
                     }
                     else {
                         configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 4;
+                        configuration[VMGlobals.vmSCP_NBACKRT_TIMEOUT] = vmNBACK_RT_TIME_OUT_SLOW
                     }
 
                     // Adding it to the configuration list.
