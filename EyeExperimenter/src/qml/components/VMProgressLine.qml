@@ -39,6 +39,8 @@ Rectangle {
 
     property bool vmOnlyColorCurrent: false
 
+    property int vmSuggestedWidth: 0;
+
     signal progressLineUpdated();
 
     // I've only here learned how to do "private stuff". Which is why other QML classes that I did don't have it, but here it's presetn.
@@ -221,6 +223,9 @@ Rectangle {
 
         // The width is expanded a bit to make sure all text fits.
         width = width*1.1;
+
+        // Getting the larger of the two.
+        width = (width > vmSuggestedWidth)? width: vmSuggestedWidth
 
         // To estimate the height it's the Number of Main States (N) + (N-2) connectors + length of the largest subchain.
         var largestChainHeight = internal.vmInterSegmentLength + 2*internal.vmAirInterSegmentBubble

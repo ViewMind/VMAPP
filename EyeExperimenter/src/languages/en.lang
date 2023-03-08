@@ -127,6 +127,7 @@ viewevaluation_eval_nbackvs    = N-Back RT Training;
 viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
 viewevaluation_eval_gonogo3D   = Go NoGo Spheres;
+viewevaluation_eval_passball   = PassBall;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
 viewevaluation_must_select_doctor = A doctor must be selected;
 viewevaluation_start = START;
@@ -190,6 +191,13 @@ viewevaluation_comfirm_abort_msg = Do you wish to stop the current study?<br>All
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
 
+viewevaluation_hand_calib_h = 
+Place your hands horizontally. 
+Strech your arms, as much as you can, to your sides;
+
+viewevaluation_hand_calib_v = 
+Raise your hands streatching your arms as much as you can;
+
 viewevaluation_calib_suggest_retry = 
 Calibration could not be completed| 
 Please perform the calibration again. 
@@ -208,6 +216,7 @@ viewevaluation_calib_suggest_too_high =
 Calibration could not be completed| 
 The headset seems to be located too high on the patient's head.
 Please adjust the height as necessary and retry the calibration.;
+
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = Calibration has ended;
@@ -231,7 +240,8 @@ NBack MS|N-Back MS|
 NBack RT|N-Back RT|
 NBack VS|N-Back VS|
 Go No-Go|Go NoGo|
-Go No-Go Sphere| Go No-Go Spheres;
+Go No-Go Sphere| Go No-Go Spheres|
+PassBall|Pass Ball;
 viewqc_previous = PREVIOUS;
 viewqc_archive = ARCHIVE;
 viewqc_send = SEND;
@@ -289,6 +299,9 @@ studystatus_gonogo_timeout = Timeouts: <<N>>;
 studystatus_gonogo_avg = Average trial time: <<N>> ms;
 studystatus_gonogo3D_green_hit = <<N>> green spheres hit;
 studystatus_gonogo3D_red_hit = <<N>> red spheres hit;
+studystatus_passball_completed = Completed Passes: <<N>>;
+studystatus_passball_missed = MIssed Passes: <<N>>;
+
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Update Available;

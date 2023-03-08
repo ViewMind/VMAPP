@@ -443,6 +443,7 @@ ViewBase {
         anchors.topMargin: VMGlobals.adjustHeight(20)
         anchors.left: parent.left
         anchors.leftMargin: VMGlobals.adjustWidth(15)
+        vmSuggestedWidth: VMGlobals.mainWidth - mainRect.width - mainRect.anchors.rightMargin
         onProgressLineUpdated: {
             if (viewer.currentIndex === vmSC_INDEX_EVALUATION_SCREEN){
                 evaluationRun.setStudyAndStage();

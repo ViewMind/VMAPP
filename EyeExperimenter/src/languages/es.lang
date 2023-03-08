@@ -127,6 +127,7 @@ viewevaluation_eval_nbackvs    = N-Back RT Entrenamiento;
 viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
 viewevaluation_eval_gonogo3D   = Esferas Go NoGo;
+viewevaluation_eval_passball   = Balón Pase;
 viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;
 viewevaluation_must_select_doctor = Se debe seleccionar un doctor;
 viewevaluation_start = COMENZAR;
@@ -189,11 +190,6 @@ viewevaluation_comfirm_abort_title = Cancelar estudio;
 viewevaluation_comfirm_abort_msg = ¿Desea cancelar el estudio?<br>Todo el progreso se perderá y deberá comenzar nuevamente;
 viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
-viewevaluation_calibration_explanation = 
-Un círculo rojo pulsante con un punto blanco en su centro aparecerá en la pantalla. 
-Mire el punto blanco. El círculo se moverá por la pantalla. Usted debe seguirlo.
-Recuerde no quitar sus ojos del círculo hasta que este desaparezca.;
-
 
 viewevaluation_hand_calib_h = 
 Coloque sus manos de manera horizontal. 
@@ -244,7 +240,8 @@ NBack MS|N-Back Tipo MS|
 NBack RT|N-Back Tipo RT|
 NBack VS|N-Back RT de Entranamiento|
 Go No-Go|Go NoGo|
-Go No-Go Sphere| Esféras Go No-Go;
+Go No-Go Sphere| Esféras Go No-Go|
+PassBall|Balón Pase;
 viewqc_previous = ANTERIOR;
 viewqc_archive = ARCHIVAR;
 viewqc_send = ENVIAR;
@@ -302,6 +299,9 @@ studystatus_gonogo_timeout = Veces que el tiempo expiró: <<N>>;
 studystatus_gonogo_avg = Tiempo promedio de ensayo: <<N>> ms;
 studystatus_gonogo3D_green_hit = Contacto con <<N>> esferas verdes;
 studystatus_gonogo3D_red_hit = Contacto con <<N>> esferas rojas;
+studystatus_passball_completed = Pases Completados: <<N>>;
+studystatus_passball_missed = Pases no completados: <<N>>;
+
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Actualización Disponible;

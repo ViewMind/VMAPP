@@ -1,5 +1,5 @@
 viewevaluation_calibration_explanation = 
-Un círculo rojo pulsante con un punto blanco en su centro aparecerá en la pantalla. 
+Un círculo rojo con un punto blanco en su centro aparecerá en la pantalla. 
 Mire el punto blanco. El círculo se moverá por la pantalla. Usted debe seguirlo.
 Recuerde no quitar sus ojos del círculo hasta que este desaparezca.;
 
@@ -146,3 +146,8 @@ Finalmente se muestra el tercer círculo.|
 Ahora mire al casillero donde apareció el tercer círculo|
 Ahora donde apareció el segundo circulo|
 Y finalmente donde apareció el tercero;
+
+explanation_phase_list_pass_ball = | 
+|
+|
+|;

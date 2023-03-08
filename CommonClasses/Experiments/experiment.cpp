@@ -40,17 +40,23 @@ bool Experiment::startExperiment(const QString &workingDir,
     dataFile = experimentFile;
 
     // Loading the experiment configuration file.
-    QFile expfile(this->getExperimentDescriptionFile(studyConfig));
-    if (!expfile.open(QFile::ReadOnly)){
-        error = "Could not open experiment configuration file: " + expfile.fileName();
-        emit Experiment::experimentEndend(ER_FAILURE);
-        return false;
+    QString experiment_file_name = this->getExperimentDescriptionFile(studyConfig);
+    QString contents = "";
+
+    if (experiment_file_name != ""){ // Some studies do not need to load files as the experimet descriptions are created in a differnt way.
+        QFile expfile(experiment_file_name);
+        if (!expfile.open(QFile::ReadOnly)){
+            error = "Could not open experiment configuration file: " + expfile.fileName();
+            emit Experiment::experimentEndend(ER_FAILURE);
+            return false;
+        }
+
+        QTextStream reader(&expfile);
+        reader.setEncoding(QStringConverter::Utf8);
+        contents = reader.readAll();
+        expfile.close();
     }
 
-    QTextStream reader(&expfile);
-    reader.setEncoding(QStringConverter::Utf8);
-    QString contents = reader.readAll();
-    expfile.close();
 
     // We need to load the experiment file as it will contain the subject dat, the meta data already set and the processing parameters.
     if (QFile(dataFile).exists()){
@@ -79,7 +85,7 @@ bool Experiment::startExperiment(const QString &workingDir,
 
     // Configuring the experimet
     if (!manager->parseExpConfiguration(contents)){
-        error = "ERROR parsing the configuration file " + expfile.fileName() + ": " + manager->getError();
+        error = "ERROR parsing the configuration file " + experiment_file_name + ": " + manager->getError();
         emit Experiment::experimentEndend(ER_FAILURE);
         return false;
     }

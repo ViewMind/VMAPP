@@ -1,14 +1,10 @@
 #include "nbackrtexperiment.h"
 
-const qint32 NBackRTExperiment::TIME_TRANSITION =                              500;
 const qint32 NBackRTExperiment::DEFAULT_NUMBER_OF_TARGETS =                    3;
 
 // Possible pauses for the fielding experiment
 const qint32 NBackRTExperiment::PAUSE_TRIAL_1 =                                32;
 const qint32 NBackRTExperiment::PAUSE_TRIAL_2 =                                64;
-
-//const qint32 NBackRTExperiment::PAUSE_TRIAL_1 =                                3;
-//const qint32 NBackRTExperiment::PAUSE_TRIAL_2 =                                6;
 
 const qint32 NBackRTExperiment::NBACKVS_MIN_HOLD_TIME =                        50;
 const qint32 NBackRTExperiment::NBACKVS_MAX_HOLD_TIME =                        250;
@@ -74,6 +70,7 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
     }
 
     timeOutTime = studyConfig.value(VMDC::StudyParameter::NBACK_TIMEOUT).toInt();
+    timeOutTransition = studyConfig.value(VMDC::StudyParameter::NBACK_TRANSITION).toInt();
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)){
         emit Experiment::experimentEndend(ER_FAILURE);
@@ -116,7 +113,7 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
 
     state = STATE_RUNNING;
     tstate = TSF_START;
-    stateTimer.setInterval(TIME_TRANSITION);
+    stateTimer.setInterval(timeOutTransition);
 
     m->drawBackground();
     drawCurrentImage();
@@ -238,7 +235,7 @@ void NBackRTExperiment::nextState(){
         }
 
         if (finalizeExperiment()) return;
-        stateTimer.setInterval(TIME_TRANSITION);
+        stateTimer.setInterval(timeOutTransition);
     }
 
     if (studyPhase == SP_EVALUATION) stateTimer.start();

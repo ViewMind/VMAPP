@@ -21,6 +21,7 @@ RESOURCES += qml.qrc \
     languages.qrc
 
 SOURCES += main.cpp \
+    ../../CommonClasses/BallPathGenerator/ballpathgenerator.cpp \
     ../../CommonClasses/Calibration/calibrationmanager.cpp \
     ../../CommonClasses/Experiments/binding/bindingexperiment.cpp \
     ../../CommonClasses/Experiments/binding/bindingmanager.cpp \
@@ -38,6 +39,9 @@ SOURCES += main.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.cpp \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.cpp \
+    ../../CommonClasses/Experiments/passball/passballexperiment.cpp \
+    ../../CommonClasses/Experiments/passball/passballmanager.cpp \
+    ../../CommonClasses/Experiments/passball/passballparser.cpp \
     ../../CommonClasses/Experiments/qgraphicsarrow.cpp \
     ../../CommonClasses/EyeSelector/eyeselector.cpp \
     ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.cpp \
@@ -84,6 +88,7 @@ SOURCES += main.cpp \
 
 
 HEADERS += \
+    ../../CommonClasses/BallPathGenerator/ballpathgenerator.h \
     ../../CommonClasses/Calibration/calibrationmanager.h \
     ../../CommonClasses/Experiments/binding/bindingexperiment.h \
     ../../CommonClasses/Experiments/binding/bindingmanager.h \
@@ -101,6 +106,9 @@ HEADERS += \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackmanager.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackparser.h \
     ../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h \
+    ../../CommonClasses/Experiments/passball/passballexperiment.h \
+    ../../CommonClasses/Experiments/passball/passballmanager.h \
+    ../../CommonClasses/Experiments/passball/passballparser.h \
     ../../CommonClasses/Experiments/qgraphicsarrow.h \
     ../../CommonClasses/EyeSelector/eyeselector.h \
     ../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h \

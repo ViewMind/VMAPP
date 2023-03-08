@@ -24,6 +24,7 @@
 #include "../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h"
 #include "../../CommonClasses/Experiments/gonogo/gonogoexperiment.h"
 #include "../../CommonClasses/Experiments/gonogo_spheres/gonogosphereexperiment.h"
+#include "../../CommonClasses/Experiments/passball/passballexperiment.h"
 
 #include "../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
 

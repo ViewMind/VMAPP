@@ -369,7 +369,7 @@ void FlowControl::handCalibrationControl(qint32 command, const QString &which_ha
         hand_sel = 2;
     }
     else {
-        StaticThreadLogger::error("FlowControl::handCalibrationControl","Received unknown hand parameter to calibrae: " + which_hand);
+        StaticThreadLogger::error("FlowControl::handCalibrationControl","Received unknown hand parameter of which hadnd to caibrate: " + which_hand);
     }
 
     RenderServerPacket p;
@@ -545,10 +545,8 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
 
     // configuration->getString(CONFIG_PATIENT_DIRECTORY)
 
-    QBrush background;
     QColor backgroundForVRScreen;
     experimentIsOk = true;
-    QString finalStudyName;
 
     // Forcing the valid eye to the calibration selected eye.
     study_config[VMDC::StudyParameter::VALID_EYE] = calibrationManager.getRecommendedEye();
@@ -586,6 +584,11 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     case Globals::StudyConfiguration::INDEX_GNG_SPHERE:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO SPHERES");
         experiment = new GoNoGoSphereExperiment(nullptr,VMDC::Study::GONOGO_SPHERE);
+        backgroundForVRScreen = QColor(Qt::black); // This is ignore in all 3D studies.
+        break;
+    case Globals::StudyConfiguration::INDEX_PASSBALL:
+        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING PASSBALL");
+        experiment = new PassBallExperiment(nullptr,VMDC::Study::PASSBALL);
         backgroundForVRScreen = QColor(Qt::black); // This is ignore in all 3D studies.
         break;
     default:

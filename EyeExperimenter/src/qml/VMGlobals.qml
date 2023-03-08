@@ -97,10 +97,9 @@ QtObject {
     readonly property int vmINDEX_READING:                    0
     readonly property int vmINDEX_BINDING_BC:                 1
     readonly property int vmINDEX_BINDING_UC:                 2
-    readonly property int vmINDEX_NBACKMS:                    3
     readonly property int vmINDEX_NBACKRT:                    4
     readonly property int vmINDEX_NBACKVS:                    5
-    readonly property int vmINDEX_PERCEPTION:                 6
+    readonly property int vmINDEX_PASSBALL:                   6
     readonly property int vmINDEX_GONOGO:                     7
     readonly property int vmINDEX_GONOGO3D:                   8
 
@@ -109,7 +108,7 @@ QtObject {
     readonly property string vmSTUDY_NBACKMS :               "NBack MS";
     readonly property string vmSTUDY_NBACKRT:                "NBack RT";
     readonly property string vmSTUDY_NBACKVS:                "NBack VS";
-    readonly property string vmSTUDY_PERCEPTION:             "Perception";
+    readonly property string vmSTUDY_PASSBALL:               "PassBall";
     readonly property string vmSTUDY_READING:                "Reading";
     readonly property string vmSTUDY_GONOGO3D:               "Go No-Go 3D Spheres";
 
@@ -128,6 +127,7 @@ QtObject {
     readonly property string vmSCP_INITIAL_SPEED:            "initial_speed";
     readonly property string vmSCP_NBACKRT_HOLD_TIME:        "nback_rt_hold_time";
     readonly property string vmSCP_NBACKRT_TIMEOUT:          "nback_timeout";
+    readonly property string vmSCP_NBACKRT_TRANSITION:       "nback_transition";
 
 
     // Study configuration parameter values

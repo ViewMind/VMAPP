@@ -1,5 +1,5 @@
 viewevaluation_calibration_explanation = 
-A red pulsating circle with a white dot in its center will appear on the screen. 
+A red circle with a white dot in its center will appear on the screen. 
 Look at the white dot.
 The circle will move through the screen. You must follow it. Remember not to
 take your eyes off the circle until it disappears.;
@@ -64,7 +64,7 @@ We will do some practice rounds before starting the test.;
 
 explanation_phase_list_gonogo_3D = This is Go/No-Go Sphere Evaluation.
 During this evaluation green and red spheres will be sent from the dark
-points in front of you. Si the sphere is green you must try to touch it.
+points in front of you. If the sphere is green you must try to touch it.
 If you make contact with the sphere you will feel your controller vibrate.|
 If the sphere is red, you must move your hands to avoid touching the sphere.
 If contact is made anyway, then your controller will still vibrate. | 
@@ -145,3 +145,9 @@ Then the final third circle is shown|
 Now look at the rectangle where the third circle was shown|
 Then at the rectangle where the second one appeared|
 And finish by looking at the rectangle where the first circle appeared.;
+
+
+explanation_phase_list_pass_ball = | 
+|
+|
+|;

@@ -87,6 +87,7 @@ protected:
     const char * STUDY_TEXT_KEY_BINDING_BC     = "explanation_phase_list_binding_bc";
     const char * STUDY_TEXT_KEY_GONOGO         = "explanation_phase_list_gonogo";
     const char * STUDY_TEXT_KEY_GONOGO_3D      = "explanation_phase_list_gonogo_3D";
+    const char * STUDY_TEXT_KEY_PASS_BALL      = "explanation_phase_list_pass_ball";
     const char * STUDY_TEXT_KEY_NBACKRT        = "explanation_phase_list_nbackrt";
     const char * STUDY_TEXT_KEY_NBACKRT_SLOW   = "explanation_phase_list_nbackrt_slow";
     const char * STUDY_TEXT_KEY_NBACKVS        = "explanation_phase_list_nbackvs";

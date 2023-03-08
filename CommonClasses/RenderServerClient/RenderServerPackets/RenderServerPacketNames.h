@@ -59,6 +59,7 @@ namespace PacketDebugControl {
 namespace Study3DNames {
 
    static const QString GO_NO_GO_SPHERE = "gonogo_spheres";
+   static const QString PASS_BALL       = "pass_ball";
 
 }
 

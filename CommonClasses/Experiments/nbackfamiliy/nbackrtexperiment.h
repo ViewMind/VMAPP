@@ -79,6 +79,7 @@ private:
     qint32 currentTrial;
     qint32 currentImage;
     qint32 timeOutTime;
+    qint32 timeOutTransition;
     QString currentDataSetType;
 
     // Used as a state machine to count down correct hits, for the follow through logic.

@@ -43,6 +43,11 @@ namespace Globals{
       const QString REGION  = "DBUG";
    }
 
+   namespace GLOBAL {
+      const QString API_URL = "http://api.viewmind.ai";
+      const QString REGION = "GLOBAL";
+   }
+
    extern QString API_URL;
    extern QString REGION;
 
@@ -105,6 +110,7 @@ namespace Globals{
       static const qint32 INDEX_BINDING_UC = 2;
       static const qint32 INDEX_NBACKRT = 4;
       static const qint32 INDEX_NBACKVS = 5;
+      static const qint32 INDEX_PASSBALL = 6;
       static const qint32 INDEX_GONOGO = 7;
       static const qint32 INDEX_GNG_SPHERE = 8;
 
@@ -133,7 +139,7 @@ namespace Globals{
    }
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "23.3.1";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "24.1.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
@@ -184,6 +190,11 @@ namespace Globals{
            REGION = DEV_SERVER_AI::REGION;
            return true;
        }
+       else if (region == "global"){
+           API_URL = GLOBAL::API_URL;
+           REGION  = GLOBAL::REGION;
+           return true;
+       }
        return false;
    }
 
@@ -202,6 +213,7 @@ namespace Globals{
        static const QString NBACKRT     = "nbackrt";
        static const QString GONOGO_3D   = "gonogo_spheres";
        static const QString GONOGO      = "gonogo";
+       static const QString PASSBALL    = "passball";
    }
  
 }

@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     // We need to load the defines to configure the rest of hte application.
     ConfigurationManager defines;
     if (!defines.loadConfiguration(Globals::Paths::APPSPEC)){
-         StaticThreadLogger::error("main","Could not load configuration file due to " + defines.getError());
+        StaticThreadLogger::error("main","Could not load configuration file due to " + defines.getError());
     }
     else{
 
@@ -56,7 +56,9 @@ int main(int argc, char *argv[])
         }
 
         if (!defines.containsKeyword(Globals::VMAppSpec::Region)){
-             StaticThreadLogger::error("main","Application region is missing from app spec");
+            // In this case the region now defaults to Global
+            defines.addKeyValuePair(Globals::VMAppSpec::Region,"GLOBAL");
+            StaticThreadLogger::warning("main","No region defined. Defaulting to global");
             return 0;
         }
 

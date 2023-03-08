@@ -86,7 +86,7 @@ ViewBase {
                         loader.getStringForKey("viewevaluation_eval_nbackms"),
                         loader.getStringForKey("viewevaluation_eval_nbackrt"),
                         loader.getStringForKey("viewevaluation_eval_nbackvs"),
-                        "NOT STRING - Perception",
+                        loader.getStringForKey("viewevaluation_eval_passball"),
                         loader.getStringForKey("viewevaluation_eval_gonogo"),
                         loader.getStringForKey("viewevaluation_eval_gonogo3D")
                     ];

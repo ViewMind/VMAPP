@@ -29,7 +29,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
-    if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION)){        
+    if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION)){
         StaticThreadLogger::error("Loader::Loader","Errors loading the configuration file: " + configuration->getError());
         // The program should not be able to continue after loading the language.
         loadingError = true;
@@ -137,7 +137,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 //////////////////////////////////////////////////////// UI Functions ////////////////////////////////////////////////////////
 
 QString Loader::getStringForKey(const QString &key, bool fromLangFile){
-    if (!fromLangFile) qDebug() << "Entering with key " << key << " but false from langfile";
+    //if (!fromLangFile) qDebug() << "Entering with key " << key << " but false from langfile";
     if (fromLangFile){
         if (language.containsKeyword(key)){
             return language.getString(key);
@@ -380,7 +380,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         StaticThreadLogger::error("Loader::createSubjectStudyFile","While creating a subject study file, Study Configuration Map does not contain " + Globals::StudyConfiguration::UNIQUE_STUDY_ID + " field. Cannot determine study");
         StaticThreadLogger::error("Loader::createSubjectStudyFile",Debug::QVariantMapToString(studyconfig));
         return false;
-    }    
+    }
 
     // The first part of the name is base on the study type.
     qint32 selectedStudy = studyconfig.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt();
@@ -427,6 +427,9 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         break;
     case Globals::StudyConfiguration::INDEX_GNG_SPHERE:
         filename = Globals::BaseFileNames::GONOGO_3D;
+        break;
+    case Globals::StudyConfiguration::INDEX_PASSBALL:
+        filename = Globals::BaseFileNames::PASSBALL;
         break;
     default:
         StaticThreadLogger::error("Loader::createSubjectStudyFile","Trying to create study file for an unknown study: " + QString::number(selectedStudy));
@@ -1022,20 +1025,28 @@ void Loader::moveProcessedFiletToProcessedDirectory(){
         return;
     }
 
-    // Moving the idx file
     QString idxFile = patientWorkingDirectory + "/" +baseFileName + ".idx";
     QString jsonFile = patientWorkingDirectory + "/" +baseFileName + ".json";
+    QString tarFile  = patientWorkingDirectory + "/" +baseFileName + ".zip";
 
-    if (!QFile::copy(idxFile,processedDir + "/" + baseFileName + ".idx")){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to move " + baseFileName + " idx file from " + patientWorkingDirectory + " to " + processedDir);
+    if (!QFile::exists(tarFile)){
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Unable to locate the TAR file for the study '" + tarFile + "'. Not Deleting Anything");
         return;
     }
 
-    // Movign the JSON File.
-    if (!QFile::copy(jsonFile,processedDir + "/" + baseFileName + ".json")){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to move " + baseFileName + " json file from " + patientWorkingDirectory + " to " + processedDir);
-        return;
-    }
+    // If the tar file exist, we just remove the json and idx files to save space. We don't need to move the tar file as it's harmless to the system.
+
+//    // Moving the idx file
+//    if (!QFile::copy(idxFile,processedDir + "/" + baseFileName + ".idx")){
+//        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to move " + baseFileName + " idx file from " + patientWorkingDirectory + " to " + processedDir);
+//        return;
+//    }
+
+//    // Movign the JSON File.
+//    if (!QFile::copy(jsonFile,processedDir + "/" + baseFileName + ".json")){
+//        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to move " + baseFileName + " json file from " + patientWorkingDirectory + " to " + processedDir);
+//        return;
+//    }
 
     // Cleaning up the file.
     if (!QFile(idxFile).remove()){

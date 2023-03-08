@@ -15,6 +15,8 @@ Rectangle {
     readonly property int vmNBACK_RT_SLOW_HOLD_TIME: 400
     readonly property int vmNBACK_RT_TIME_OUT_DEFAULT: 3000
     readonly property int vmNBACK_RT_TIME_OUT_SLOW: 5000
+    readonly property int vmNBACK_RT_TRANSITION_DEFAULT: 500
+    readonly property int vmNBACK_RT_TRANSITION_SLOW : 1000
 
     signal goToEvalRun();
 
@@ -46,8 +48,8 @@ Rectangle {
         options = {}
         options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] = {}
         options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_NAME]   = loader.getStringForKey("viewevaluation_nbackrt_hold_time");
-        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_nbackrt_hold_time_default"),
-                                                                                     loader.getStringForKey("viewevaluation_nbackrt_hold_time_slow")];
+        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_nbackrt_hold_time_slow"),
+                                                                                     loader.getStringForKey("viewevaluation_nbackrt_hold_time_default")];
         options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
         options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_WIDTH]    = 30;
 
@@ -57,7 +59,7 @@ Rectangle {
             vmIsLastSelected: false,
             vmOptions: options,
             vmOrder: VMGlobals.vmSCP_NBACKRT_HOLD_TIME,
-            vmOptionValueMap: vmNBACK_RT_STD_HOLD_TIME + "|" + vmNBACK_RT_SLOW_HOLD_TIME // Default speed is a hold time of 250 ms. While slow speed is a hold time of 400 ms.
+            vmOptionValueMap: vmNBACK_RT_SLOW_HOLD_TIME + "|" + vmNBACK_RT_STD_HOLD_TIME // Default speed is a hold time of 250 ms. While slow speed is a hold time of 400 ms.
         }
         availableEvaluations.append(item)
 
@@ -118,6 +120,27 @@ Rectangle {
         }
         availableEvaluations.append(item)
 
+        item = {}
+        options = {};
+        options[VMGlobals.vmSCP_HAND_TO_USE] = {}
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_gng3D_hand_sel");
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_gng3D_hand_right"),
+                                                                               loader.getStringForKey("viewevaluation_gng3D_hand_left"),
+                                                                               loader.getStringForKey("viewevaluation_gng3D_hand_both")];
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_SELECTED] = 2;
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
+
+        item = {
+            vmIndex: VMGlobals.vmINDEX_PASSBALL,
+            vmStudyName : loader.getStringForKey("viewevaluation_eval_passball") ,
+            vmIsLastSelected: false,
+            vmOptions: options,
+            vmOrder: VMGlobals.vmSCP_HAND_TO_USE,
+            vmOptionValueMap: "right|left|both" // These are the values inside the study configuration map corresponding to each of the option values.
+        }
+        //Disabling ONLY the option for selecting passball.
+        ///availableEvaluations.append(item)
+
     }
 
     function reorderStudies(studyCode,isSelected){
@@ -125,7 +148,6 @@ Rectangle {
         for (var j = 0; j < availableEvaluations.count; j++){
             availableEvaluations.get(j).vmIsLastSelected = false;
         }
-
 
         if (isSelected){
             // Needs to be added to the study list.
@@ -235,6 +257,21 @@ Rectangle {
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration);
                     break;
 
+
+                case VMGlobals.vmINDEX_PASSBALL:
+
+                    study_names.push(study_name);
+
+                    // Standard 3D study.
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = configuration[VMGlobals.vmSCP_HAND_TO_USE];
+                    configuration[VMGlobals.vmSCP_IS_STUDY_3D] = true;
+
+                    requires_hand_calibration.push(true);
+
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration);
+
+                    break;
+
                 case VMGlobals.vmINDEX_NBACKRT:
                     study_names.push(study_name)
                     // Standard 2D study.
@@ -245,10 +282,12 @@ Rectangle {
                     if (configuration[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] == vmNBACK_RT_STD_HOLD_TIME){ // Will assume
                         configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 3;
                         configuration[VMGlobals.vmSCP_NBACKRT_TIMEOUT] = vmNBACK_RT_TIME_OUT_DEFAULT
+                        configuration[VMGlobals.vmSCP_NBACKRT_TRANSITION] = vmNBACK_RT_TRANSITION_DEFAULT
                     }
                     else {
                         configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 4;
                         configuration[VMGlobals.vmSCP_NBACKRT_TIMEOUT] = vmNBACK_RT_TIME_OUT_SLOW
+                        configuration[VMGlobals.vmSCP_NBACKRT_TRANSITION] = vmNBACK_RT_TRANSITION_SLOW
                     }
 
                     // Adding it to the configuration list.

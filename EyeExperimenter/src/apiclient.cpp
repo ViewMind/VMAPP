@@ -68,7 +68,8 @@ bool APIClient::requestReportProcessing(const QString &jsonFile){
     QString basename = info.baseName();
 
     QString localJSON = basename + ".json";
-    QString zipfile =  basename + ".zip";
+    QString localIDX  = basename + ".idx";
+    QString zipfile   = basename + ".zip";
 
     QStringList arguments;
     arguments << "-c";
@@ -76,6 +77,7 @@ bool APIClient::requestReportProcessing(const QString &jsonFile){
     arguments << "-f";
     arguments << zipfile;
     arguments << localJSON;
+    arguments << localIDX;
 
     //qDebug() << "jsonFile" << jsonFile << "zip" << zipfile;
 
