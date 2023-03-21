@@ -4,5 +4,6 @@
         <file>languages/es.lang</file>
         <file>languages/exp_lang/en.lang</file>
         <file>languages/exp_lang/es.lang</file>
+        <file>languages/exp_lang/cn.lang</file>
     </qresource>
 </RCC>

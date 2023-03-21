@@ -1,0 +1,155 @@
+viewevaluation_calibration_explanation = 
+在屏幕上会出现一个红色的圆圈，中间有个白点。
+请你看着那个白点。
+红色的圆圈会在屏幕移动。你的视线必须跟着它。请记住，在圆圈消失之前，请不要
+把视线从圆圈上移开。
+圆圈会首先出现在屏幕的左上角;
+
+
+viewevaluation_hand_calib_h = 
+Coloque sus manos de manera horizontal. 
+Estire sus brazos lo mas que pueda hacia sus costados.;
+
+viewevaluation_hand_calib_v = 
+Alce sus brazos estirando al máximo los mismos.;
+
+
+explanation_phase_list_binding_bc =
+Esta es la prueba de Combinación de Colores. En esta prueba aparecerán <<N>> figuras.
+Las figuras se componen de un cuadrado de un color, con una cruz en su centro de
+otro color.
+En este caso debe recordar la combinación de colores de cada figura|
+Las figuras desaparecerán y aparecerá un nuevo grupo de figuras. Debe identificar 
+si la combinación de colores de las figuras es la misma o si los colores se han
+intercambiado entre las figuras. No parecerán nuevos colores. Si la combinación
+de colores es la misma, debe decir rápidamente “Igual” en voz alta. 
+Diga “Diferente”, en caso contrario. En este caso debe decir "Diferente".
+Tenga en cuenta que la ubicación de las figuras no es importante.|
+Mire el siguiente ejemplo|
+En este caso, la combinación de colores de las figuras no ha cambiado,
+por lo tanto, debe decir "Igual".
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
+
+explanation_phase_list_binding_uc =
+Esta es la prueba de Nuevos Colores. En esta prueba aparecerán <<N>> figuras 
+como las que ve en la pantalla. Las figuras se componen de un cuadrado 
+de un color, con una cruz en su centro de otro color.
+Recuerde los colores presentes en las figuras.|
+Las figuras desaparecerán y aparecerá un nuevo grupo de figuras. Debe identificar
+si apareció algún color nuevo. Si apareció un nuevo color, debe decir rápidamente
+“Diferente” en voz alta. De lo contrario, diga “Igual”. Tenga en cuenta que la
+ubicación de las figuras no es importante, por lo tanto, no debe influir en
+su respuesta. En este caso, aparecieron 2 nuevos colores. Debe decir "Diferente"|
+Mire el siguiente ejemplo|
+En este caso, los colores son iguales, por lo tanto, debe decir "Igual"
+Ha entendido? Haremos algunas rondas de práctica antes de comenzar.;
+
+
+explanation_phase_list_gonogo     = 
+Esta es la evaluación de Go/No-go. Una cruz aparecerá en el centro de la
+pantalla. Mire la cruz. La cruz desaparecerá y en su lugar aparecerá una flecha.
+Si la flecha es color verde, mire rápidamente un punto en la dirección de la
+flecha. Si la flecha es color rojo, mire rápidamente en la dirección opuesta|
+En este caso, dado que la flecha es roja, mire al punto en la dirección opuesta,
+como lo indica el círculo azul.|
+Cuando la flecha desaparezca, mire rápidamente a la cruz.|
+En este caso, dado que la flecha es verde, mire en la dirección indicada por
+la flecha.|
+Mire de vuelta a la cruz.|
+Mire en la dirección de la flecha.|
+Mire de vuelta a la cruz.|
+Mire en la dirección opuesta a la flecha. Debe realizar el ejercicio lo más
+rápido que pueda.
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
+
+explanation_phase_list_gonogo_3D = Este es las Evaluación Esferas Go/No-Go.
+Durante esta evaluación esferas rojas y verdes serán enviadas de los puntos que
+se encuentran frente suyo. Si la esfera es verde debe intentar tocarla.
+Si realiza contacto sentirá a su control vibrar. 
+Toque la esfera verde.  | 
+Si la esfera es roja, debe mover sus manos para evitar que la esfera
+entre en contacto con ella. Si el contacto se realiza, su control vibrará.
+Evite tocar la esfera roja.| 
+Ahora toque nuevamente la esfera verde.| 
+Evite tocar la esfera roja.
+Si toca y esquiva correctamente las esferas durante el estudio, la velocidad
+de las esferas aumentara. Si su desempeño cae, la velocidad de las esferas 
+disminuirá;
+
+explanation_phase_list_nbackrt    = 
+Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
+Mantenga la mirada fija en la cruz.|
+Un círculo rojo aparecerá en una de las cajas. Esta es la Posición 1.|
+Luego, aparecerá en otra caja. Posición 2|
+Y finalmente en otra caja. Posición 3. Recuerde mantener su mirada fija en la cruz|
+Cuando la cruz desaparezca, debe mirar rápidamente a la Posición 3, donde apareció
+el última círculo, como lo indica la flecha.|
+Luego a la Posición 2, donde apareció el segundo círculo|
+Y finalmente a la posición 1, donde apareció el primer círculo. En el orden inverso
+en el que aparecieron.|
+Cuando termine, mire rápidamente a la cruz. Ahora la prueba se repetirá.|
+Posición 1|
+Posición 2|
+Posición 3|
+Ahora mire rápidamente a la Posición 3.|
+Posición 2|
+Y Posición 1.
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
+
+explanation_phase_list_nbackrt_slow    = 
+Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
+Mantenga la mirada fija en la cruz.|
+Un círculo rojo aparecerá en una de las cajas. Esta es la Posición 1.|
+Luego, aparecerá en otra caja. Posición 2|
+Luego, aparecerá en otra caja. Posición 3|
+Y finalmente en otra caja. Posición 4. Recuerde mantener su mirada fija en la cruz|
+Cuando la cruz desaparezca, debe mirar rápidamente a la Posición 4, donde apareció
+el última círculo, como lo indica la flecha.|
+Luego a la Posición 3, donde apareció el tercer círculo|
+Luego a la Posición 2, donde apareció el segundo círculo|
+Y finalmente a la posición 1, donde apareció el primer círculo. En el orden inverso
+en el que aparecieron.|
+Cuando termine, mire rápidamente a la cruz. Ahora la prueba se repetirá.|
+Posición 1|
+Posición 2|
+Posición 3|
+Posición 4|
+Ahora mire rápidamente a la Posición 4.|
+Posición 3|
+Posición 2|
+Y Posición 1.
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
+
+explanation_phase_list_nbackvs    = 
+Esta es la prueba N-back De Entrenamiento. 
+Se mostraran una serie de círculos rojos en pantalla en una secuencia determinada. 
+Mientras los círculos se mantengan en pantalla, usted debe mirar fijamente
+la cruz del centro. 
+El número de circulos varía según la dificultad seleccionada del estudio. 
+Para este ejemplo se utilizarán 3|
+Ahora aparece el segundo circulo de la secuencia |
+Finalmente, aparece el tercer y último ciruculo|
+Cuando la cruz desaparezca, se debe mirar al casillero donde apareció el último circulo. 
+Durante el estudio, si se mira al rectángulo correcto, éste se iluminará. 
+En la pantalla podrá ver indicadores de la ubicación de los círculos y el camino que
+debe trazar su mirada. Estos indicadores no aparecerám durante el estudio real.|
+Luego se debe mirar al casillero donde apareció el segundo circulo|
+Y finalmente, al casillero donde apareció el primero.
+Con sucesivos éxitos, el tiempo que aparecen los círculos en pantalla disminuirá. 
+De la misma manera, con sucesivos fracasos, éste tiempo aumentará.|
+Probemos nuevamente. Fije su mirada en el centro de la pantalla y note 
+donde aparece el primer círculo.|
+Mantiendo la mirdad en el centro, note el segundo circulo|
+Finalmente se muestra el tercer círculo.|
+Ahora mire al casillero donde apareció el tercer círculo|
+Ahora donde apareció el segundo circulo|
+Y finalmente donde apareció el tercero;
+
+explanation_phase_list_pass_ball = | 
+|
+|
+|;

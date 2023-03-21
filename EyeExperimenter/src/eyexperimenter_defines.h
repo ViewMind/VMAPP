@@ -112,7 +112,8 @@ namespace Globals{
       static QVariantMap GetNameCodeMap() {
          QVariantMap map;
          map["English"] = "en";
-         map["Spanish"] = "es";
+         map["Español"] = "es";
+         map["Chinese"] = "cn";
          return map;
 
       }
