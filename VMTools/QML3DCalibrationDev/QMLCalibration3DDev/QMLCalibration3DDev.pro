@@ -10,8 +10,6 @@ SOURCES += \
         ../../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
         ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.cpp \
         ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.cpp \
-        ../../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.cpp \
-        ../../../CommonClasses/EyeTrackingInterface/calibrationtargets.cpp \
         ../../../CommonClasses/EyeTrackingInterface/eyecorrectioncoefficients.cpp \
         ../../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.cpp \
         ../../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.cpp \
@@ -70,8 +68,6 @@ HEADERS += \
     ../../../CommonClasses/ConfigurationManager/configurationmanager.h \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h \
     ../../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptprovider.h \
-    ../../../CommonClasses/EyeTrackingInterface/calibrationleastsquares.h \
-    ../../../CommonClasses/EyeTrackingInterface/calibrationtargets.h \
     ../../../CommonClasses/EyeTrackingInterface/eyetrackerinterface.h \
     ../../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.h \
     ../../../CommonClasses/LinearLeastSquares/simplematrix.h \

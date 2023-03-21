@@ -125,6 +125,8 @@ private:
     static const qint32 NBACKVS_STEP_HOLD_TIME;
     static const qint32 NBACKVS_START_HOLD_TIME;
     static const qint32 NBACKVS_NTRIAL_FOR_STEP_CHANGE;
+    static const qint32 NBACKVS_RETRIEVAL_TIMEOUT;
+    static const qint32 NBACKVS_TRANSITION_TIME;
 
     QVariantMap addHitboxesToProcessingParameters(QVariantMap pp);
     void nextEncodingDataSetType();

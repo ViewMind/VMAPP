@@ -134,7 +134,7 @@ bool APIClient::requestUpdate(const QString &pathToSaveAFile){
     map.insert(URLPARAM_INSTANCE,instance_number);
 
     if ((region == Globals::LOCAL::REGION) || (region == Globals::DEV_SERVER::REGION)){
-        map.insert(URLPARAM_REGION,Globals::EU_REGION::REGION);
+        map.insert(URLPARAM_REGION,Globals::GLOBAL::REGION);
     }
     else {
         map.insert(URLPARAM_REGION,region);

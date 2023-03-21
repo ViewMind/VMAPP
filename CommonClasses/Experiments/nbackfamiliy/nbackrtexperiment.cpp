@@ -11,6 +11,8 @@ const qint32 NBackRTExperiment::NBACKVS_MAX_HOLD_TIME =                        2
 const qint32 NBackRTExperiment::NBACKVS_STEP_HOLD_TIME =                       50;
 const qint32 NBackRTExperiment::NBACKVS_START_HOLD_TIME =                      250;
 const qint32 NBackRTExperiment::NBACKVS_NTRIAL_FOR_STEP_CHANGE =               2;
+const qint32 NBackRTExperiment::NBACKVS_RETRIEVAL_TIMEOUT =                    3000;
+const qint32 NBackRTExperiment::NBACKVS_TRANSITION_TIME =                      500;
 
 const QString NBackRTExperiment::MSG_SEQ_HITS  = "studystatus_nback_sequence_hit";
 const QString NBackRTExperiment::MSG_SEQ_TOUT  = "studystatus_nback_sequence_timeout";
@@ -47,6 +49,10 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         else {
             lightUpAll = true;
         }
+
+        timeOutTime = NBACKVS_RETRIEVAL_TIMEOUT;
+        timeOutTransition = NBACKVS_TRANSITION_TIME;
+
     }
     else{
         // Variable Speed configuration for DEFAULT NBACK RT.
@@ -67,10 +73,12 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
             trialRecognitionMachine.lightUpSquares = true;
         }
         else trialRecognitionMachine.lightUpSquares = false;
+
+        timeOutTime = studyConfig.value(VMDC::StudyParameter::NBACK_TIMEOUT).toInt();
+        timeOutTransition = studyConfig.value(VMDC::StudyParameter::NBACK_TRANSITION).toInt();
+
     }
 
-    timeOutTime = studyConfig.value(VMDC::StudyParameter::NBACK_TIMEOUT).toInt();
-    timeOutTransition = studyConfig.value(VMDC::StudyParameter::NBACK_TRANSITION).toInt();
 
     if (!Experiment::startExperiment(workingDir,experimentFile,studyConfig)){
         emit Experiment::experimentEndend(ER_FAILURE);
