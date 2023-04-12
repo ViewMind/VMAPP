@@ -1,0 +1,152 @@
+viewevaluation_calibration_explanation = 
+Auf dem Bildschirm wird ein roter, pulsierender Kreis mit einem weißen Punkt in der Mitte 
+erscheinen.  Schauen Sie auf den weißen Punkt. Der Kreis wird sich auf dem Bildschirm 
+bewegen. Folgen Sie ihm mit Ihren Augen. Vergessen Sie nicht, den Kreis im Auge zu 
+behalten, bis er verschwindet.;
+
+viewevaluation_hand_calib_h = 
+Strecken Sie Ihre Arme zur Seite Ihres Körpers aus. Strecken Sie ihre Arme 
+soweit wie möglich.;
+
+viewevaluation_hand_calib_v = 
+Strecken Sie Ihre Arme zur nach oben zur Decke aus. Strecken Sie ihre Arme 
+soweit wie möglich.;
+
+explanation_phase_list_binding_bc =
+Dies ist der Farbkombinationstest. In dieser Studie werden <<N>> Ziele auf dem
+Bildschirm erscheinen. Jedes Ziel hat eine Farbe außen und eine Farbe innen. 
+In diesem Fall, merken Sie sich bitte die Farbkombination jedes Ziels.|
+Die ersten Ziele werden verschwinden und ein neuer Satz von Zielen wird erscheinen. Sie 
+müssen feststellen, ob die Farbkombination jedes Ziels gleich geblieben ist oder ob die 
+Farben zwischen den Zielen ausgetauscht wurden. Die Position der Ziele ist dabei nicht 
+wichtig. Wenn die Farben zwischen den Zielen ausgetauscht wurden, sagen Sie "Verschieden". 
+Wenn nicht, sagen Sie "Gleich". In diesem Fall wurden die Farben zwischen den Zielen 
+ausgetauscht. Sie müssen "Verschieden" sagen.|
+Schauen Sie sich das zweite Beispiel an.|
+In diesem Fall sind die Farbkombinationen gleich geblieben. Sie müssen "Gleich" sagen.
+Haben Sie es verstanden?
+Wir werden einige Übungsrunden durchführen, bevor wir mit dem Test beginnen.;
+
+
+
+explanation_phase_list_binding_uc =
+Dies ist der neue Farben Test. In dieser Studie werden <<N>> Ziele auf dem 
+Bildschirm erscheinen. Sowie die Ziele, die Sie auf der linken Seite sehen. 
+Jedes Ziel hat eine Farbe außen und eine Farbe innen. In diesem Fall, 
+merken Sie sich bitte die Farben, die in den Zielen vorhanden sind.|
+Die ersten Ziele werden verschwinden und ein neuer Satz von Zielen wird erscheinen. Sie 
+müssen feststellen, ob neue Farben erschienen sind oder ob alle Farben gleich geblieben 
+sind. Die Position der Ziele ist dabei nicht wichtig. Wenn neue Farben erschienen sind, 
+sagen Sie "Verschieden". Wenn nicht, sagen Sie "Gleich". In diesem Fall sind zwei neue 
+Farben in der Mitte jedes Ziels erschienen. Sie müssen "Verschieden" sagen.|
+Schauen Sie sich das zweite Beispiel an.|
+In diesem Fall sind keine neuen Farben erschienen. Sie müssen "Gleich" sagen.
+Haben Sie es verstanden?
+Wir werden einige Übungsrunden durchführen, bevor wir mit dem Test beginnen.;
+
+explanation_phase_list_gonogo =
+Dies ist der Go/No-Go-Test. Schauen Sie auf das Kreuz in der Mitte des Bildschirms. Das 
+Kreuz wird verschwinden und ein Pfeil wird erscheinen. Wenn der Pfeil grün ist, schauen 
+Sie in die Richtung des Pfeils. Wenn er rot ist, schauen Sie in die entgegengesetzte 
+Richtung, In diesem Fall, weil der Pfeil rot ist schauen Sie in die entgegengesetzte 
+Richtung wie es durch den blauen Kreis angezeigt wird. Wenn der Pfeil verschwindet, 
+schauen Sie schnell zurück auf das Kreuz.|
+In diesem Fall, weil der Pfeil grün ist schauen Sie in die Richtung des Pfeil Wenn 
+der Pfeil grün ist, schauen Sie in die Richtung des Pfeils.|
+Schauen Sie zurück auf das Kreuz.|
+Schauen Sie in die Richtung des Pfeils.|
+Zurück aud das Kreuz.|
+Schauen Sie in die entgegengesetzte Richtung. Sie müssen diese Übung so 
+schnell wie möglich machen. Haben Sie verstanden?
+Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.|
+
+explanation_phase_list_gonogo_3D = 
+Dies ist die Go/No-Go Sphere Evaluation. Während dieser Evaluation werden grüne und
+rote Kugeln von den dunklen Punkten vor Ihnen ausgesendet. Wenn die Kugel grün ist, 
+müssen Sie versuchen, sie mit ihrer Hand zu berühren. Wenn Sie Kontakt mit der Kugel 
+haben, wird Ihr Controller vibrieren.|
+Wenn die Kugel rot ist, müssen Sie Ihre Hände fortbewegen, um zu vermeiden, dass 
+Sie die Kugel berühren. Wenn Sie trotzdem Kontakt haben, wird Ihr Controller i 
+vibrieren.|
+Versuchen Sie nun, die grüne Kugel zu berühren.|
+Vermeiden Sie, die rote Kugel zu berühren. Wenn Sie die grünen Kugeln richtig 
+berühren und die roten Kuglen vermeiden, werden die Kugeln schneller werden. 
+Wenn Ihre Leistung nachlässt, werden die Kugeln langsamer.;
+
+
+
+explanation_phase_list_nbackrt    =
+Dies ist der N-Back-Test. Der Test besteht aus 6 Boxen und einem Kreuz in der 
+Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
+Ein roter Kreis erscheint in einer der Boxen. Position 1|
+Dann erscheint er in einer anderen Box. Position 2|
+Und schließlich in einer anderen Box. Position 3. Denken Sie daran, 
+ihren Blick immer auf das Kreuz zu richten.|
+Wenn das Kreuz verschwindet, müssen Sie schnell auf Position 3 schauen, 
+wo der letzte Kreis erschien, wie durch den Pfeil angezeigt.|
+Dann schauen Sie auf Position 2, wo der zweite Kreis erschienen ist|
+Und schließlich auf Position 1, wo der erste Kreis erschien. Wenn Sie 
+fertig sind, schauen Sie schnell zurück auf das Kreuz. Jetzt wird der 
+Test wiederholt.|
+Position 1.|
+Position 2.|
+Position 3.|
+Schauen Sie jetzt schnell auf Position 3.|
+Position 2.|
+Und Position 1. Haben Sie verstanden?
+Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
+
+explanation_phase_list_nbackrt_slow    =
+Dies ist der N-Back-Test. Der Test besteht aus 6 Boxen und einem Kreuz in der 
+Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
+Ein roter Kreis erscheint in einer der Boxen. Position 1|
+Dann erscheint er in einer anderen Box. Position 2|
+Dann erscheint er in einer anderen Box. Position 3|
+Und schließlich in einer anderen Box. Position 4. Denken Sie daran, 
+ihren Blick immer auf das Kreuz zu richten.|
+Wenn das Kreuz verschwindet, müssen Sie schnell auf Position 4 schauen, 
+wo der letzte Kreis erschien, wie durch den Pfeil angezeigt.|
+Dann schauen Sie auf Position 3, wo der dritte Kreis erschienen ist.|
+Dann schauen Sie auf Position 2, wo der zweite Kreis erschienen ist.|
+Und schließlich auf Position 1, wo der erste Kreis erschien.|
+Wenn Sie fertig sind, schauen Sie schnell zurück auf das Kreuz. 
+Jetzt wird der Test wiederholt.|
+Position 1.|
+Position 2.|
+Position 3.|
+Position 4.|
+Schauen Sie jetzt schnell auf Position 4.|
+Position 3.|
+Position 2.|
+Und Position 1. Haben Sie verstanden?
+Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
+
+
+explanation_phase_list_nbackvs    = 
+Dies ist die N-Back Evaluierung fürs Training. Rote Kreise werden in einer 
+bestimmten Sequenz auf dem Bildschirm erscheinen.Während die Kreise gezeigt 
+werden, halten Sie bitte Ihre Augen auf das Kreuz in der Mitte gerichtet. 
+Die Anzahl der nacheinander gezeigten Kreise hängt von der gewählten 
+Schwierigkeitsstufe ab. In diesem Beispiel werden wir 3 Kreise verwenden.|
+Jetzt wird ein zweiter Kreis erscheinen.|
+Schließlich wird der dritte und letzte Kreis der Sequenz gezeigt werden.|
+Wenn das Kreuz verschwindet, müssen Sie auf das Rechteck schauen, wo der 
+dritte Kreis erschienen ist. Während der Studie wird ein Lichtblitz 
+anzeigen, dass Sie auf das richtige Rechteck geschaut haben.|
+Dann müssen Sie auf das Rechteck schauen, wo der zweite Kreis zuvor erschienen 
+ist. Schließlich müssen Sie auf das Rechteck schauen, wo der erste Kreis 
+erschien. Erfolgreich abgeschlossene Sequenzen werden die Zeit reduzieren, in 
+der die Kreise auf dem Bildschirm angezeigt werden. Ebenso werden 
+aufeinanderfolgende Fehler die Zeit erhöhen, in der die Kreise gezeigt werden.|
+Lassen Sie uns es noch einmal versuchen. Fixieren Sie Ihre Augen auf das 
+Kreuz in der Mitte, wenn der erste rote Kreis erscheint.|
+Halten Sie Ihre Augen auf das Kreuz gerichtet, wenn der zweite Kreis auf 
+dem Bildschirm erscheint.|
+Dann wird der letzte dritte Kreis gezeigt.|
+Schauen Sie jetzt auf das Rechteck, wo der dritte Kreis erschienen ist.|
+Dann auf das Rechteck, wo der zweite Kreis erschien. Und beenden Sie damit, 
+indem Sie auf das Rechteck schauen, wo der erste Kreis erschienen ist.
+Sind Sie bereit, zu beginnen?;
+
+
+

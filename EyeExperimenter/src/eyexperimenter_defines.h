@@ -113,14 +113,15 @@ namespace Globals{
          QVariantMap map;
          map["English"] = "en";
          map["Español"] = "es";
-         map["Chinese"] = "cn";
+         //map["中国人"]   = "cn"; Chinese was a test and is not fully available yet.
+         map["Deutsch"] = "de";
          return map;
 
       }
    }
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "24.1.2";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "24.1.2.newlang.1";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

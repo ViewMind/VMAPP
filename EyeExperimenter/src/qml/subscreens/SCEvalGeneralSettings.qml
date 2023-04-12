@@ -7,6 +7,8 @@ Rectangle {
 
     id: subScreenEvaluationGeneralSettings
 
+    z:10
+
     property int vmSelectedDoctorIndex: -1
     property var vmExpLangCodeList: [];
 
@@ -147,7 +149,7 @@ Rectangle {
             width: parent.width
             vmLabel: loader.getStringForKey("viewevaluation_exp_lang")
             z: parent.z + 1
-            vmMaxDisplayItems: 3
+            vmMaxDisplayItems: 2
             Component.onCompleted: {
 
                 var map = loader.getExplanationLangMap();
