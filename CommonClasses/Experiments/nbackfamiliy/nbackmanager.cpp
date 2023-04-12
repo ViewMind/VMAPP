@@ -12,8 +12,8 @@ const char * NBackManager::CONFIG_SLOW_STUDY_REDUCE_TRIAL_NUMBER        = "use_r
 const char * NBackManager::LANG_EN = "EN";
 const char * NBackManager::LANG_ES = "ES";
 
-const char * NBackManager::PAUSE_TEXT_SPANISH = "Presione \"G\" para continuar el estudio";
-const char * NBackManager::PAUSE_TEXT_ENGLISH = "Press \"G\" to continue with study";
+const char * NBackManager::PAUSE_TEXT_SPANISH = "Presione \"G\" para\n continuar el estudio";
+const char * NBackManager::PAUSE_TEXT_ENGLISH = "Press \"G\" to\n continue with study";
 
 NBackManager::NBackManager(){
     currentlyLitUp = -1;
@@ -345,11 +345,15 @@ void NBackManager::drawPauseScreen(){
     qreal xpos, ypos;
 
     QFont font;
-    font = QFont("Mono",50);
+    font = QFont("Mono",200);
+
+    QPen pen;
+    pen.setColor(QColor(Qt::white));
+    pen.setWidthF(16);
 
     // Chaging the current target point to escape point
     RenderServerTextItem *phraseToShow = canvas.addSimpleText(pauseText,font);
-    phraseToShow->setPen(QPen(QColor(Qt::white)));
+    phraseToShow->setPen(pen);
     phraseToShow->setBrush(QBrush(QColor(Qt::white)));
     xpos = (canvas.width() - phraseToShow->boundingRect().width())/2;
     ypos = (canvas.height() - phraseToShow->boundingRect().height())/2;

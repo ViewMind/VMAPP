@@ -568,6 +568,12 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
 
     case Globals::StudyConfiguration::INDEX_NBACKRT:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING NBACK TRACE FOR RESPONSE TIME");
+        if (configuration->getString(Globals::VMPreferences::UI_LANGUAGE) == Globals::UILanguage::ES){
+            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::SPANISH;
+        }
+        else {
+            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::ENGLISH;
+        }
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKRT);
         backgroundForVRScreen = QColor(Qt::black);
         break;
@@ -578,6 +584,12 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         break;
     case Globals::StudyConfiguration::INDEX_NBACKVS:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING N BACK VS");
+        if (configuration->getString(Globals::VMPreferences::UI_LANGUAGE) == Globals::UILanguage::ES){
+            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::SPANISH;
+        }
+        else {
+            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::ENGLISH;
+        }
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKVS);
         backgroundForVRScreen = QColor(Qt::black);
         break;

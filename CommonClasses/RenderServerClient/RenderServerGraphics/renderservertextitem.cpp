@@ -74,12 +74,11 @@ void RenderServerTextItem::setFont(const QFont &font){
     qreal normal = 10.0/char_w;
     qreal weight = static_cast<qreal>(font.weight());
 
+
     // Weight scale goes from 100 to 900 where the middle is 500 which is my normal.
     // So this computes a constant which tells me how to multiply the char with in order to obtain
     // the line width for the text.
     itemData[RenderControlPacketFields::BORDER_WIDTH] = char_w*normal*weight/500.0;
-
-    // qDebug() << "Setting font border width to " << borderWidth;
 
     computeBoundingRect();
 }

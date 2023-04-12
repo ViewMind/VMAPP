@@ -9,38 +9,38 @@ Strecken Sie Ihre Arme zur Seite Ihres Körpers aus. Strecken Sie ihre Arme
 soweit wie möglich.;
 
 viewevaluation_hand_calib_v = 
-Strecken Sie Ihre Arme zur nach oben zur Decke aus. Strecken Sie ihre Arme 
+Strecken Sie Ihre Arme nach oben zur Decke aus. Strecken Sie ihre Arme 
 soweit wie möglich.;
 
 explanation_phase_list_binding_bc =
-Dies ist der Farbkombinationstest. In dieser Studie werden <<N>> Ziele auf dem
-Bildschirm erscheinen. Jedes Ziel hat eine Farbe außen und eine Farbe innen. 
-In diesem Fall, merken Sie sich bitte die Farbkombination jedes Ziels.|
-Die ersten Ziele werden verschwinden und ein neuer Satz von Zielen wird erscheinen. Sie 
-müssen feststellen, ob die Farbkombination jedes Ziels gleich geblieben ist oder ob die 
-Farben zwischen den Zielen ausgetauscht wurden. Die Position der Ziele ist dabei nicht 
-wichtig. Wenn die Farben zwischen den Zielen ausgetauscht wurden, sagen Sie "Verschieden". 
-Wenn nicht, sagen Sie "Gleich". In diesem Fall wurden die Farben zwischen den Zielen 
-ausgetauscht. Sie müssen "Verschieden" sagen.|
+Dies ist der Farbkombinationstest. Bei dieser Übung werden <<N>> Figuren auf dem
+Bildschirm erscheinen. Jede Figur hat eine Farbe außen und eine Farbe innen. 
+Ist dies der Fall, merken Sie sich bitte die Farbkombination jeder Figur.|
+Die ersten Figuren werden verschwinden und ein neuer Satz von Figuren wird erscheinen. Sie 
+müssen feststellen, ob die Farbkombination jeder Figur gleich geblieben ist oder ob die 
+Farben zwischen den Figuren ausgetauscht wurden. Die Position der Figuren ist dabei nicht 
+wichtig. Wenn die Farben zwischen den Figuren ausgetauscht wurden, sagen Sie "anders". 
+Wenn nicht, sagen Sie "gleich". In diesem Fall wurden die Farben zwischen den Figuren 
+ausgetauscht. Sie müssen "anders" sagen.|
 Schauen Sie sich das zweite Beispiel an.|
-In diesem Fall sind die Farbkombinationen gleich geblieben. Sie müssen "Gleich" sagen.
+In diesem Fall sind die Farbkombinationen gleich geblieben. Sie müssen "gleich" sagen.
 Haben Sie es verstanden?
 Wir werden einige Übungsrunden durchführen, bevor wir mit dem Test beginnen.;
 
 
 
 explanation_phase_list_binding_uc =
-Dies ist der neue Farben Test. In dieser Studie werden <<N>> Ziele auf dem 
-Bildschirm erscheinen. Sowie die Ziele, die Sie auf der linken Seite sehen. 
-Jedes Ziel hat eine Farbe außen und eine Farbe innen. In diesem Fall, 
-merken Sie sich bitte die Farben, die in den Zielen vorhanden sind.|
-Die ersten Ziele werden verschwinden und ein neuer Satz von Zielen wird erscheinen. Sie 
-müssen feststellen, ob neue Farben erschienen sind oder ob alle Farben gleich geblieben 
-sind. Die Position der Ziele ist dabei nicht wichtig. Wenn neue Farben erschienen sind, 
-sagen Sie "Verschieden". Wenn nicht, sagen Sie "Gleich". In diesem Fall sind zwei neue 
-Farben in der Mitte jedes Ziels erschienen. Sie müssen "Verschieden" sagen.|
+Dies ist der neue Farben Test. In dieser Studie werden <<N>> Figuren auf dem 
+Bildschirm erscheinen. So, wie die Figuren, die Sie auf der linken Seite sehen. 
+Jede Figur hat eine Farbe außen und eine Farbe innen. In diesem Fall, 
+merken Sie sich bitte die Farben, die in den Figuren vorhanden sind.|
+Die ersten Figuren werden verschwinden und ein neuer Satz von Figuren wird erscheinen. 
+Sie müssen feststellen, ob neue Farben erschienen sind oder ob alle Farben gleich 
+geblieben sind. Die Position der Figuren ist dabei nicht wichtig. Wenn neue Farben 
+erschienen sind, sagen Sie "anders". Wenn nicht, sagen Sie "gleich". In diesem Fall 
+sind zwei neue Farben in der Mitte jedes Ziels erschienen. Sie müssen "anders" sagen.|
 Schauen Sie sich das zweite Beispiel an.|
-In diesem Fall sind keine neuen Farben erschienen. Sie müssen "Gleich" sagen.
+In diesem Fall sind keine neuen Farben erschienen. Sie müssen "gleich" sagen.
 Haben Sie es verstanden?
 Wir werden einige Übungsrunden durchführen, bevor wir mit dem Test beginnen.;
 
@@ -48,16 +48,16 @@ explanation_phase_list_gonogo =
 Dies ist der Go/No-Go-Test. Schauen Sie auf das Kreuz in der Mitte des Bildschirms. Das 
 Kreuz wird verschwinden und ein Pfeil wird erscheinen. Wenn der Pfeil grün ist, schauen 
 Sie in die Richtung des Pfeils. Wenn er rot ist, schauen Sie in die entgegengesetzte 
-Richtung, In diesem Fall, weil der Pfeil rot ist schauen Sie in die entgegengesetzte 
-Richtung wie es durch den blauen Kreis angezeigt wird. Wenn der Pfeil verschwindet, 
+Richtung. In diesem Fall, weil der Pfeil rot ist, schauen Sie in die entgegengesetzte 
+Richtung, so wie es durch den blauen Kreis angezeigt wird. Wenn der Pfeil verschwindet, 
 schauen Sie schnell zurück auf das Kreuz.|
-In diesem Fall, weil der Pfeil grün ist schauen Sie in die Richtung des Pfeil Wenn 
-der Pfeil grün ist, schauen Sie in die Richtung des Pfeils.|
+In diesem Fall, weil der Pfeil grün ist, schauen Sie in die Richtung des Pfeils. 
+Wenn der Pfeil grün ist, schauen Sie in die Richtung des Pfeils.|
 Schauen Sie zurück auf das Kreuz.|
 Schauen Sie in die Richtung des Pfeils.|
 Zurück aud das Kreuz.|
 Schauen Sie in die entgegengesetzte Richtung. Sie müssen diese Übung so 
-schnell wie möglich machen. Haben Sie verstanden?
+schnell wie möglich machen. Haben Sie alles verstanden?
 Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.|
 
 explanation_phase_list_gonogo_3D = 
@@ -76,14 +76,14 @@ Wenn Ihre Leistung nachlässt, werden die Kugeln langsamer.;
 
 
 explanation_phase_list_nbackrt    =
-Dies ist der N-Back-Test. Der Test besteht aus 6 Boxen und einem Kreuz in der 
-Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
+Dies ist der N-Back-Test. Während des Tests sehen Sie 6 Boxen und ein Kreuz 
+in der Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
 Ein roter Kreis erscheint in einer der Boxen. Position 1|
 Dann erscheint er in einer anderen Box. Position 2|
 Und schließlich in einer anderen Box. Position 3. Denken Sie daran, 
 ihren Blick immer auf das Kreuz zu richten.|
 Wenn das Kreuz verschwindet, müssen Sie schnell auf Position 3 schauen, 
-wo der letzte Kreis erschien, wie durch den Pfeil angezeigt.|
+wo der letzte Kreis erschien, wie durch den Pfeil gekennzeichnet.|
 Dann schauen Sie auf Position 2, wo der zweite Kreis erschienen ist|
 Und schließlich auf Position 1, wo der erste Kreis erschien. Wenn Sie 
 fertig sind, schauen Sie schnell zurück auf das Kreuz. Jetzt wird der 
@@ -97,15 +97,15 @@ Und Position 1. Haben Sie verstanden?
 Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
 
 explanation_phase_list_nbackrt_slow    =
-Dies ist der N-Back-Test. Der Test besteht aus 6 Boxen und einem Kreuz in der 
-Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
+Dies ist der N-Back-Test. Während des Tests sehen Sie 6 Boxen und ein Kreuz 
+in der Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
 Ein roter Kreis erscheint in einer der Boxen. Position 1|
 Dann erscheint er in einer anderen Box. Position 2|
 Dann erscheint er in einer anderen Box. Position 3|
 Und schließlich in einer anderen Box. Position 4. Denken Sie daran, 
 ihren Blick immer auf das Kreuz zu richten.|
 Wenn das Kreuz verschwindet, müssen Sie schnell auf Position 4 schauen, 
-wo der letzte Kreis erschien, wie durch den Pfeil angezeigt.|
+wo der letzte Kreis erschien, wie durch den Pfeil gekennzeichnet.|
 Dann schauen Sie auf Position 3, wo der dritte Kreis erschienen ist.|
 Dann schauen Sie auf Position 2, wo der zweite Kreis erschienen ist.|
 Und schließlich auf Position 1, wo der erste Kreis erschien.|
