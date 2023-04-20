@@ -8,7 +8,6 @@ CalibrationManager::CalibrationManager(QObject *parent) : QObject(parent)
     connect(&waitToGatherTimer,&QTimer::timeout,this,&CalibrationManager::onWaitToDataGather);
     enableSendAnimationFrames = false;
 
-
 }
 
 ////////////////////// Configure and Starte Calibration //////////////////
@@ -165,6 +164,7 @@ void CalibrationManager::onCalibrationPointStatus(qint32 whichCalibrationPoint, 
     //qDebug() << "Calibration Point Status Update" <<  whichCalibrationPoint << isMoving;
 
     QString str = QString::number(whichCalibrationPoint);
+
     if (isMoving) str = str + ". Is Moving: true";
     else str = str + ". Is Moving: false";
     str = str + ". Number of Calibration Points: " + QString::number(numberOfCalibrationPoints);

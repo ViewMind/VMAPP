@@ -336,6 +336,7 @@ void FlowControl::onRequestUpdate(){
 void FlowControl::onNewEyeDataAvailable(const EyeTrackerData &data){
 
     if (calibrationManager.requires2DCalibrationDataPointSamples()){
+
         calibrationManager.addEyeDataToCalibrationPoint(static_cast<float>(data.xl()),
                                                         static_cast<float>(data.xr()),
                                                         static_cast<float>(data.yl()),
@@ -343,6 +344,7 @@ void FlowControl::onNewEyeDataAvailable(const EyeTrackerData &data){
                                                         static_cast<float>(data.zl()),
                                                         static_cast<float>(data.zr()));
         return;
+
     }
 
     if (experiment != nullptr){

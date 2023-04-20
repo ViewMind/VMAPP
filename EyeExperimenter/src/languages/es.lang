@@ -305,7 +305,7 @@ studystatus_passball_missed = Pases no completados: <<N>>;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Actualización Disponible;
-update_message = Hay una nueva versión disponible (<b>Versión <<N>></b>).<br> Desea actualizar arhoar?<br><br> Puede posponer la actualización <<M>> veces mas;
+update_message = Hay una nueva versión disponible (<b>Versión <<N>></b>).<br> Desea actualizar ahora?<br><br> Puede posponer la actualización <<M>> veces mas;
 update_now = ACTUALIZAR AHORA;
 update_later = RECORDAME MAS TARDE;
 update_success = ¡Actualización Exitosa!;

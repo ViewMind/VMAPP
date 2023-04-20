@@ -51,6 +51,11 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string)
 
     rest_controller.setURLParameters(map);
 
+//    qDebug() << "Printing the post data on requesting operating info";
+//    Debug::prettpPrintQVariantMap(postdata);
+//    qDebug() << "Printing URL Map on requesting operating info";
+//    Debug::prettpPrintQVariantMap(map);
+
     lastRequest = API_OPERATING_INFO;
 
     return sendRequest();
