@@ -40,9 +40,11 @@ Item {
     function configuringRenderingParameters(cdata,width,height){
         vmCalibrationData = cdata;
 
+        //console.log(JSON.stringify(cdata));
+
         // Checking if each eye is validated.
         vmIsLeftEyeValidated =  vmCalibrationData["left_eye_validation_data"]["is_validated"];
-        vmIsRightEyeValidated =  vmCalibrationData["right_eye_validation_data"]["is_validated"];
+        vmIsRightEyeValidated =  vmCalibrationData["right_eye_validation_data"]["is_validated"];          
 
         setEyeResultTextElement(rigthEyeResult,vmIsRightEyeValidated)
         setEyeResultTextElement(leftEyeResult,vmIsLeftEyeValidated)
@@ -186,6 +188,9 @@ Item {
 
         let array_names = [];
 
+        let start_indexes = vmCalibrationData["calibration_data_use_start_index"];
+        //console.log(JSON.stringify(start_indexes));
+
         if (left){
             datapoints = vmCalibrationData["left_eye_validation_data"];
         }
@@ -197,7 +202,35 @@ Item {
 
         for (let key in datapoints){
 
-            for (let i = 0; i < datapoints[key].length; i++){
+            if (key === "is_validated") continue; // Its part of the structure but does not contain validation data.
+
+            // let start_index = start_indexes[key];
+            let start_index = 0;
+
+            let parts = key.split("_");
+
+            if (parts.length !== 3){
+                console.log("Unexpected key format when plotting calibration data points: " + key)
+                continue;
+            }
+
+            let index = parts[2]; // The third part of the key name is the calibration point index
+            start_index = start_indexes[index];
+
+            //console.log("The key is now " + key + " so the index would be " + index +  " and the start would be " + start_index);
+
+//            for (let i = 0; i < datapoints[key].length; i++){
+//                let x = datapoints[key][i]["x"]*vmKx;
+//                let y = datapoints[key][i]["y"]*vmKy;
+//                ctx.beginPath();
+//                ctx.fillStyle = "#00ff00"
+//                ctx.strokeStyle = "#00ff00"
+//                ctx.roundedRect(x,y,2*R,2*R,R,R)
+//                ctx.stroke();
+//                ctx.fill();
+//            }
+
+            for (let i = start_index; i < datapoints[key].length; i++){
                 let x = datapoints[key][i]["x"]*vmKx;
                 let y = datapoints[key][i]["y"]*vmKy;
                 ctx.beginPath();
@@ -207,6 +240,7 @@ Item {
                 ctx.stroke();
                 ctx.fill();
             }
+
         }
 
 

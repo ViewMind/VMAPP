@@ -58,6 +58,7 @@ private:
         void resetVSStateMachine();
         void adjustSpeed();
         qint32 getCurrentHoldTime() const;
+        void debugPrintOptions() const;
 
     private:
         qint32 successfulConsecutiveSequences;

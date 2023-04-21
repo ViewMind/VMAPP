@@ -102,11 +102,13 @@ QtObject {
     readonly property int vmINDEX_PASSBALL:                   6
     readonly property int vmINDEX_GONOGO:                     7
     readonly property int vmINDEX_GONOGO3D:                   8
+    readonly property int vmINDEX_NBACK:                      9
 
     readonly property string vmSTUDY_BINDING:                "Binding";
     readonly property string vmSTUDY_GONOGO :                "Go No-Go";
     readonly property string vmSTUDY_NBACKMS :               "NBack MS";
     readonly property string vmSTUDY_NBACKRT:                "NBack RT";
+    readonly property string vmSTUDY_NBACK:                  "NBack";
     readonly property string vmSTUDY_NBACKVS:                "NBack VS";
     readonly property string vmSTUDY_PASSBALL:               "PassBall";
     readonly property string vmSTUDY_READING:                "Reading";

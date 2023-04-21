@@ -26,6 +26,7 @@ Rectangle {
         vmSelectedOptionsForEachStudy = {};
         vmSelectedStudies = [];
 
+        ////////////////////////////////////////////////////////////////// Binding  ////////////////////////////////////////////////////////////////////
         let item = {}
         let options = {}
 
@@ -44,25 +45,41 @@ Rectangle {
         }
         availableEvaluations.append(item)
 
+//        /////////////////////////////////////////////////////////////////// NBack RT (Depracated) /////////////////////////////////////////////////////////////////////
+//        item = {}
+//        options = {}
+//        item = {
+//            vmIndex: VMGlobals.vmINDEX_NBACKRT,
+//            vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackrt") ,
+//            vmIsLastSelected: false,
+//            vmOptions: options,
+//            vmOrder: "",
+//            vmOptionValueMap: ""
+//        }
+//        availableEvaluations.append(item)
+
+
+        //////////////////////////////////////////////////////////////// NBack (New Version. Slow)  /////////////////////////////////////////////////////////////////
         item = {}
         options = {}
-        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] = {}
-        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_NAME]   = loader.getStringForKey("viewevaluation_nbackrt_hold_time");
-        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_nbackrt_hold_time_slow"),
-                                                                                     loader.getStringForKey("viewevaluation_nbackrt_hold_time_default")];
-        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
-        options[VMGlobals.vmSCP_NBACKRT_HOLD_TIME][VMGlobals.vmSCO_OPTION_WIDTH]    = 30;
+
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [4,3];
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 100;
 
         item = {
-            vmIndex: VMGlobals.vmINDEX_NBACKRT,
-            vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackrt") ,
+            vmIndex: VMGlobals.vmINDEX_NBACK,
+            vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackslow") ,
             vmIsLastSelected: false,
             vmOptions: options,
-            vmOrder: VMGlobals.vmSCP_NBACKRT_HOLD_TIME,
-            vmOptionValueMap: vmNBACK_RT_SLOW_HOLD_TIME + "|" + vmNBACK_RT_STD_HOLD_TIME // Default speed is a hold time of 250 ms. While slow speed is a hold time of 400 ms.
+            vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS,
+            vmOptionValueMap: "4|3" // Default NBack number of targets should be 4.
         }
         availableEvaluations.append(item)
 
+        //////////////////////////////////////////////////////////////// Go No Go //////////////////////////////////////////////////////////////////////////
         item = {}
         options = {}
         item = {
@@ -75,8 +92,8 @@ Rectangle {
         }
         availableEvaluations.append(item)
 
+        /////////////////////////////////////////////////////////// NBack Variable Speed /////////////////////////////////////////////////////////////////
         item = {}
-
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [3,4,5,6];
@@ -100,6 +117,7 @@ Rectangle {
         }
         availableEvaluations.append(item)
 
+        /////////////////////////////////////////////////////////// GNG Spheres /////////////////////////////////////////////////////////////////////////
         item = {}
         options = {};
         options[VMGlobals.vmSCP_HAND_TO_USE] = {}
@@ -120,6 +138,7 @@ Rectangle {
         }
         availableEvaluations.append(item)
 
+        ////////////////////////////////////////////////////////// Pass Ball /////////////////////////////////////////////////////////////////////////
         item = {}
         options = {};
         options[VMGlobals.vmSCP_HAND_TO_USE] = {}
@@ -241,6 +260,7 @@ Rectangle {
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration); // UC goes first.
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(config2) // BC goes second.
                     break;
+
                 case VMGlobals.vmINDEX_GONOGO3D:
                     study_names.push(study_name);
 
@@ -277,19 +297,30 @@ Rectangle {
                     // Standard 2D study.
                     configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = "";
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
+                    configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 3;
+                    configuration[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] = vmNBACK_RT_STD_HOLD_TIME
+                    configuration[VMGlobals.vmSCP_NBACKRT_TIMEOUT] = vmNBACK_RT_TIME_OUT_DEFAULT
+                    configuration[VMGlobals.vmSCP_NBACKRT_TRANSITION] = vmNBACK_RT_TRANSITION_DEFAULT
 
-                    // If the slow version of the study was selected the number of targets is 4.
-                    if (configuration[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] == vmNBACK_RT_STD_HOLD_TIME){ // Will assume
-                        configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 3;
-                        configuration[VMGlobals.vmSCP_NBACKRT_TIMEOUT] = vmNBACK_RT_TIME_OUT_DEFAULT
-                        configuration[VMGlobals.vmSCP_NBACKRT_TRANSITION] = vmNBACK_RT_TRANSITION_DEFAULT
-                    }
-                    else {
-                        configuration[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = 4;
-                        configuration[VMGlobals.vmSCP_NBACKRT_TIMEOUT] = vmNBACK_RT_TIME_OUT_SLOW
-                        configuration[VMGlobals.vmSCP_NBACKRT_TRANSITION] = vmNBACK_RT_TRANSITION_SLOW
-                    }
+                    // Adding it to the configuration list.
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration);
 
+                    requires_hand_calibration.push(false);
+
+                    break;
+
+                case VMGlobals.vmINDEX_NBACK:
+
+                    study_names.push(study_name)
+
+                    // Standard 2D study.
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = "";
+                    configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
+                    configuration[VMGlobals.vmSCP_NBACKRT_HOLD_TIME] = vmNBACK_RT_SLOW_HOLD_TIME
+                    configuration[VMGlobals.vmSCP_NBACKRT_TIMEOUT] = vmNBACK_RT_TIME_OUT_SLOW
+                    configuration[VMGlobals.vmSCP_NBACKRT_TRANSITION] = vmNBACK_RT_TRANSITION_SLOW
+
+                    // Number of targets should be part of the configuration so we don't need to set it.
                     // Adding it to the configuration list.
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration);
 

@@ -30,8 +30,9 @@ void CalibrationManager::startCalibration(qint32 width,
     isCalibrated = false;
 
     enableSendAnimationFrames = false;
-    currentCalibrationPointIndex = -1;
-    isDataGatheringEnabled = false;
+    currentCalibrationPointIndex = 0;
+    //isDataGatheringEnabled = false;
+    isDataGatheringEnabled = true; // We only stop data gathering when the calibration is finished.
 
     if (DBUGBOOL(Debug::Options::LOAD_PREFIX_CALIB)){
         if (mode3D){            
@@ -148,7 +149,8 @@ void CalibrationManager::finalizeCalibrationProcess(qint32 code, bool sendCalibr
 
 ////////////////////// 2D Calibration Functions //////////////////
 void CalibrationManager::onWaitToDataGather(){
-    isDataGatheringEnabled = true;
+    //isDataGatheringEnabled = true;
+    correctionCoefficients.setStartPointForValidCalibrationRawData(currentCalibrationPointIndex);
     waitToGatherTimer.stop();
 }
 
@@ -161,28 +163,32 @@ void CalibrationManager::onNewAnimationFrame(){
 
 void CalibrationManager::onCalibrationPointStatus(qint32 whichCalibrationPoint, bool isMoving){
 
-    //qDebug() << "Calibration Point Status Update" <<  whichCalibrationPoint << isMoving;
-
     QString str = QString::number(whichCalibrationPoint);
 
     if (isMoving) str = str + ". Is Moving: true";
     else str = str + ". Is Moving: false";
     str = str + ". Number of Calibration Points: " + QString::number(numberOfCalibrationPoints);
 
-    StaticThreadLogger::log("CalibrationLeastSquares::onCalibrationPointStatus","Calibration Point Update to: " + str);
+    // StaticThreadLogger::log("CalibrationLeastSquares::onCalibrationPointStatus","Calibration Point Update to: " + str);
 
     if (isMoving){
-        isDataGatheringEnabled = false;
-        if (whichCalibrationPoint == (numberOfCalibrationPoints-1)){
+        // isDataGatheringEnabled = false;
+        currentCalibrationPointIndex++;
+        //if (whichCalibrationPoint == (numberOfCalibrationPoints-1)){
+        if (currentCalibrationPointIndex == numberOfCalibrationPoints){
             // We've reached the end.
             calibration2DTargetControl.calibrationAnimationControl(false);
+            isDataGatheringEnabled = false; // Calibration done.
             finalizeCalibrationProcess(CALIBRATION_SUCCESSFUL,false);
         }
     }
     else {
         waitToGatherTimer.start(calibration_wait_time);
-        currentCalibrationPointIndex = whichCalibrationPoint;
+        //currentCalibrationPointIndex = whichCalibrationPoint;
     }
+
+    // qDebug() << "Calibration Point Status Update" <<  whichCalibrationPoint << isMoving << " Current Calibration point " << currentCalibrationPointIndex;
+
 }
 
 EyeTrackerData CalibrationManager::correct2DData(EyeTrackerData input){
@@ -203,6 +209,16 @@ void CalibrationManager::process3DCalibrationEyeTrackingData(const RenderServerP
 
     // Creating the target vectors.
     qsizetype N = tx.size();
+
+    QVariantList start_index_list = calibrationData.getPayloadField(CalibrationControlPacketFields::CALIB_DATA_START_IND).toList();
+
+    if (start_index_list.size() != N){
+        StaticThreadLogger::error("CalibrationManager::process3DCalibrationEyeTrackingData","The number start indexes for calibration (" + QString::number(start_index_list.size()) + ") differs from the number of points " + QString::number(N));
+        start_index_list.clear();
+        for (qint32 i = 0; i < N; i++){
+            start_index_list << 0;
+        }
+    }
 
     // List starts at 1 as the first target is the middle dummy target.
     for (qsizetype i = 1; i < N; i++){
@@ -225,6 +241,7 @@ void CalibrationManager::process3DCalibrationEyeTrackingData(const RenderServerP
     QVariantList lz = calibrationData.getPayloadField(CalibrationControlPacketFields::CALIB_DATA_LZ).toList();
 
     for (qsizetype i = 1; i < N; i++){
+
         QVariantList cdxr = rx.value(i).toList();
         QVariantList cdxl = lx.value(i).toList();
         QVariantList cdyr = ry.value(i).toList();
@@ -235,6 +252,17 @@ void CalibrationManager::process3DCalibrationEyeTrackingData(const RenderServerP
         qsizetype M = cdxr.size(); // They should all be the same size.
         currentCalibrationPointIndex = static_cast<qint32>(i)-1;
 
+        qint32 start_index = start_index_list.value(i).toInt();
+        if (start_index == -1){
+            StaticThreadLogger::error("CalibrationManager::process3DCalibrationEyeTrackingData","The calibration start index for calibration point  " + QString::number(i) + " has not been set");
+            start_index = 0;
+        }
+        else if (start_index >= (M-1)) {
+            StaticThreadLogger::error("CalibrationManager::process3DCalibrationEyeTrackingData","The calibration start index for calibration point  " + QString::number(i) + " has been set to "
+                                      + QString::number(start_index) + " however the number of data points is " + QString::number(M));
+            start_index = 0;
+        }
+
         //qDebug() << "DATA FOR TARGET VECTOR " << nonNormalizedTargetVectors.at(currentCalibrationPointIndex);
 
         // Adding ieach of the sample to the coefficients using the convenience funtion.
@@ -242,13 +270,17 @@ void CalibrationManager::process3DCalibrationEyeTrackingData(const RenderServerP
             addEyeDataToCalibrationPoint(cdxl.at(j).toFloat(),cdxr.at(j).toFloat(),
                                          cdyl.at(j).toFloat(),cdyr.at(j).toFloat(),
                                          cdzl.at(j).toFloat(),cdzr.at(j).toFloat());
+
+            if (j == start_index){
+                // Setting the cuttoff index for this target.
+                correctionCoefficients.setStartPointForValidCalibrationRawData(currentCalibrationPointIndex);
+            }
         }
 
     }
 
     // Now that the data we can finalize the calibration process.
     finalizeCalibrationProcess(CALIBRATION_SUCCESSFUL,true);
-
 
 }
 

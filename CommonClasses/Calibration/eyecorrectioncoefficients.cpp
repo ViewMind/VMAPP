@@ -12,6 +12,13 @@ void EyeCorrectionCoefficients::addPointForCoefficientComputation(const EyeTrack
     }
 }
 
+void EyeCorrectionCoefficients::setStartPointForValidCalibrationRawData(qint32 calibrationTargetIndex){
+    if ((calibrationTargetIndex >= 0) && (calibrationTargetIndex < calibrationData.size()) ){
+        qint32 index = calibrationData.at(calibrationTargetIndex).size();
+        cuttoffForCalibrationDataForCumputation[calibrationTargetIndex] = index;
+    }
+}
+
 void EyeCorrectionCoefficients::configureFor2DCoefficientComputation(const QList<QPointF> &target){
     QList<QVector3D> vectors;
     for (qint32 i = 0; i < target.size(); i++){
@@ -49,9 +56,11 @@ void EyeCorrectionCoefficients::configureForCoefficientComputation(const QList<Q
     ztarget.clear();
     calibrationData.clear();
     fittedEyeDataPoints.clear();
+    cuttoffForCalibrationDataForCumputation.clear();
 
     for (qint32 i = 0; i < targetVectors.size(); i++){
         calibrationData << QList<EyeTrackerData>();
+        cuttoffForCalibrationDataForCumputation << -1;
         QVector3D ntv = targetVectors.at(i);
         xtarget << static_cast<qreal>(ntv.x());
         ytarget << static_cast<qreal>(ntv.y());
@@ -77,6 +86,14 @@ QVariantList EyeCorrectionCoefficients::getCalibrationPointsWithNoData() const {
     return ans;
 }
 
+QVariantList EyeCorrectionCoefficients::getCutoffIndexesListAsVariantList() const {
+    QVariantList ans;
+    for (qint32 i = 0; i < cuttoffForCalibrationDataForCumputation.size(); i++){
+        ans << cuttoffForCalibrationDataForCumputation.at(i);
+    }
+    return ans;
+}
+
 bool EyeCorrectionCoefficients::computeCoefficients(){
     error_msg = "";
     resultOfLastComputation = false;
@@ -97,11 +114,13 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
         qreal xref = xtarget.at(i);
         qreal yref = ytarget.at(i);
 
+        qint32 start_point = cuttoffForCalibrationDataForCumputation.at(i);
+
         if (calibrationData.at(i).size() < 2) return false;
 
-        for (qint32 j = 0; j < calibrationData.at(i).size(); j++){
+        // qDebug() << "Compute Coefficients 2D. Processing Calibration data for point " << i << " which has " << calibrationData.at(i).size() << " points and valid data starts at " << start_point;
 
-
+        for (qint32 j = start_point; j < calibrationData.at(i).size(); j++){
 
             EyeTrackerData erd = calibrationData.at(i).at(j);
             fitterXL.addInputAndTarget(erd.xl(),xref);
@@ -129,6 +148,10 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
     //qDebug() << "LINEAR FITTING YR";
     yr = fitterYR.linearFit();
     if (!yr.isValid()) invalidCoefficients << "XR";
+
+//    qDebug() << "Computed Coefficients";
+//    qDebug() << xl.toString() << yl.toString();
+//    qDebug() << xr.toString() << yr.toString();
 
     if (!invalidCoefficients.empty()){
         error_msg = "The following components did not have valid coefficients: " + invalidCoefficients.join(",");
@@ -181,7 +204,7 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
     OrdinaryLeastSquares fitterZR;
     OrdinaryLeastSquares fitterZL;
 
-    // QStringList textdata;
+    // QStringList textdata;    
 
     for (qint32 i = 0; i < calibrationData.size(); i++){
 
@@ -191,11 +214,13 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
         qreal yref = ytarget.at(i);
         qreal zref = ztarget.at(i);
 
+        qint32 start_point = cuttoffForCalibrationDataForCumputation.at(i);
+
         // textdata << QString::number(xref) + ", " + QString::number(yref) + ", " + QString::number(zref);
 
         if (calibrationData.at(i).size() < 2) return false;
 
-        for (qint32 j = 0; j < calibrationData.at(i).size(); j++){
+        for (qint32 j = start_point; j < calibrationData.at(i).size(); j++){
             EyeTrackerData input = calibrationData.at(i).at(j);
 
             // textdata << input.toString(true);
@@ -440,9 +465,9 @@ bool EyeCorrectionCoefficients::isLeftEyeCalibrated(){
     return xl.isValid() && yl.isValid();
 }
 
-QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qreal tolerance, bool forLeftEye) const{
+QList<qreal> EyeCorrectionCoefficients::getHitPercentInTarget(qreal dimension, qreal tolerance, bool forLeftEye) const{
 
-    QList<qint32> hits;
+    QList<qreal> hits;
 
 
     for (qint32 i = 0; i < fittedEyeDataPoints.size(); i++){
@@ -450,9 +475,15 @@ QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qrea
         qreal xref = xtarget.at(i);
         qreal yref = ytarget.at(i);
 
-        qint32 counter = 0;
+        qreal counter = 0;
+        qreal total = 0;
 
-        for (qint32 j = 0; j < fittedEyeDataPoints.at(i).size(); j++){
+        qint32 start_index = cuttoffForCalibrationDataForCumputation.at(i);
+
+        for (qint32 j = start_index; j < fittedEyeDataPoints.at(i).size(); j++){
+
+            total++;
+
             EyeTrackerData etd = fittedEyeDataPoints.at(i).at(j);
             qreal x, y, z;
             if (forLeftEye){
@@ -482,7 +513,7 @@ QList< qint32 > EyeCorrectionCoefficients::getHitsInTarget(qreal dimension, qrea
 
         }
 
-        hits << counter;
+        hits << counter*100.0/total;
 
     }
 

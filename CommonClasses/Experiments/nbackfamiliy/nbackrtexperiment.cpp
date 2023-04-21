@@ -54,7 +54,7 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         timeOutTransition = NBACKVS_TRANSITION_TIME;
 
     }
-    else{
+    else {
         // Variable Speed configuration for DEFAULT NBACK RT.
         qint32 hold_time = studyConfig.value(VMDC::StudyParameter::NBACK_HOLD_TIME).toInt();
         nbackConfig.minHoldTime              = hold_time;
@@ -65,8 +65,8 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         //nbackConfig.numberOfTargets          = DEFAULT_NUMBER_OF_TARGETS;
         nbackConfig.numberOfTargets          = studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt();
 
-        // The reduced trial set is used with 3 targets. This is a quick way to test if it's being used.
-        reducedTrialSet = (nbackConfig.numberOfTargets != DEFAULT_NUMBER_OF_TARGETS);
+        // The reduced trial set is used with 3 or 4 targets in the slow (now the new default) version of the study.
+        reducedTrialSet = (studyType == VMDC::Study::NBACK);
 
         if (DBUGBOOL(Debug::Options::LIGHTUP_NBACKRT)) {
             qDebug() << "DBUG: Lighting Up Squares in NBackRT";
@@ -76,6 +76,11 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
 
         timeOutTime = studyConfig.value(VMDC::StudyParameter::NBACK_TIMEOUT).toInt();
         timeOutTransition = studyConfig.value(VMDC::StudyParameter::NBACK_TRANSITION).toInt();
+
+//        qDebug() << "Printing NBack Config Options for Non VS NBack";
+//        nbackConfig.debugPrintOptions();
+//        qDebug() << "Time out" << timeOutTime;
+//        qDebug() << "Time out transition" << timeOutTransition;
 
     }
 
@@ -556,6 +561,11 @@ void NBackRTExperiment::VariableSpeedAndTargetNumberConfig::adjustSpeed(){
 
 qint32 NBackRTExperiment::VariableSpeedAndTargetNumberConfig::getCurrentHoldTime() const{
     return currentHoldTime;
+}
+
+void NBackRTExperiment::VariableSpeedAndTargetNumberConfig::debugPrintOptions() const {
+    qDebug() << "   Number of Targets" << this->numberOfTargets;
+    qDebug() << "   Hold Time Range"  << this->minHoldTime << " to " << this->maxHoldTime << " starting at " << this->startHoldTime;
 }
 
 

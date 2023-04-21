@@ -87,8 +87,8 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
     leftEyeData["is_validated"] = false;
 
     QList< QList<EyeTrackerData> > validationData = coeffs.getFittedData();
-    QList< qint32 > rightHits = coeffs.getHitsInTarget(diameterFor2D,validationPointHitTolerance,false);
-    QList< qint32 > leftHits = coeffs.getHitsInTarget(diameterFor2D,validationPointHitTolerance,true);
+    QList< qreal > rightHits = coeffs.getHitPercentInTarget(diameterFor2D,validationPointHitTolerance,false);
+    QList< qreal > leftHits  = coeffs.getHitPercentInTarget(diameterFor2D,validationPointHitTolerance,true);
 
     QVariantMap percents;
     QVariantList percent_right;
@@ -98,16 +98,19 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
         //qDebug() << "Validation data at" << i << " of " << validationData.size();
 
-        qreal pl = leftHits.at(i)*100/validationData.at(i).size();
-        qreal pr = rightHits.at(i)*100/validationData.at(i).size();
+        qreal pl = leftHits.at(i);
+        qreal pr = rightHits.at(i);
 
         QVariantList rightDataList;
         QVariantList leftDataList;
+
         for (qsizetype j = 0; j < validationData.at(i).size(); j++){
             QVariantMap left;
             QVariantMap right;
+
             left["x"] = validationData.at(i).at(j).xl(); left["y"] = validationData.at(i).at(j).yl();
             right["x"] = validationData.at(i).at(j).xr(); right["y"] = validationData.at(i).at(j).yr();
+
             if (configuredFor3D){
                 left["z"] = validationData.at(i).at(j).zl();
                 right["z"] = validationData.at(i).at(j).zr();
@@ -116,6 +119,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
             rightDataList << right;
             leftDataList << left;
         }
+
         rightEyeData["validation_target_" + QString::number(i)] = rightDataList;
         leftEyeData["validation_target_" + QString::number(i)] = leftDataList;
 
@@ -143,6 +147,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
                  + QString::number(leftHits.at(i)) + " out of " + QString::number(validationData.at(i).size()) + ": " + QString::number(pl,'f',1) + " %"
                  + ". RIGHT EYE: "
                  + QString::number(rightHits.at(i)) + " out of " + QString::number(validationData.at(i).size()) + ": " + QString::number(pr,'f',1) + " %";
+
     }
 
     bool wasCalibrationSuccessFull = false;
@@ -193,11 +198,13 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
         lines << "The following calibration points had too few data points for calibration: " + pointsWithNoData;
     }
 
-    calibrationValidationData[VMDC::CalibrationFields::LEFT_EYE_VALIDATION_DATA]    = leftEyeData;
-    calibrationValidationData[VMDC::CalibrationFields::RIGHT_EYE_VALIDATION_DATA]   = rightEyeData;
-    calibrationValidationData[VMDC::CalibrationFields::MATH_ISSUES_FOR_CALIBRATION] = !coeffs.getResultOfLastComputation();
-    calibrationValidationData[VMDC::CalibrationFields::COFICIENT_OF_DETERMINATION]  = Rreport;
-    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_PTS_NO_DATA]     = coeffs.getCalibrationPointsWithNoData();
+    calibrationValidationData[VMDC::CalibrationFields::LEFT_EYE_VALIDATION_DATA]         = leftEyeData;
+    calibrationValidationData[VMDC::CalibrationFields::RIGHT_EYE_VALIDATION_DATA]        = rightEyeData;
+    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_DATA_USE_START_INDEX] = coeffs.getCutoffIndexesListAsVariantList();
+
+    calibrationValidationData[VMDC::CalibrationFields::MATH_ISSUES_FOR_CALIBRATION]      = !coeffs.getResultOfLastComputation();
+    calibrationValidationData[VMDC::CalibrationFields::COFICIENT_OF_DETERMINATION]       = Rreport;
+    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_PTS_NO_DATA]          = coeffs.getCalibrationPointsWithNoData();
 
     // Storing the coefficients. This works wheter it is a 2D calibration or a 3D one.
     QVariantMap cc;
@@ -205,7 +212,6 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
     cc["right"] = coeffs.getCalibrationControlPacketCompatibleMap(false);
 
     calibrationValidationData[VMDC::CalibrationFields::CORRECTION_COEFICIENTS]      = cc;
-
 
     if (configuredFor3D){
         percents["l"] = percent_left;

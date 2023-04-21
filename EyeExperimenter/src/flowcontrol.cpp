@@ -578,6 +578,17 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         }
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKRT);
         backgroundForVRScreen = QColor(Qt::black);
+        break;        
+    case Globals::StudyConfiguration::INDEX_NBACK:
+        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING NBACK SLOW DEFAULT VERSION");
+        if (configuration->getString(Globals::VMPreferences::UI_LANGUAGE) == Globals::UILanguage::ES){
+            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::SPANISH;
+        }
+        else {
+            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::ENGLISH;
+        }
+        experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACK);
+        backgroundForVRScreen = QColor(Qt::black);
         break;
     case Globals::StudyConfiguration::INDEX_GONOGO:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO");

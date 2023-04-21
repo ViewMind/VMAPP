@@ -123,6 +123,7 @@ viewevaluation_eye_text = Seleccione que ojo utilizar;
 viewevaluation_eye_selection_list = Izquierdo|Derecho|Ambos (Defecto);
 viewevaluation_eval_binding    = Tareas de Colores;
 viewevaluation_eval_nbackrt    = N-Back RT;
+viewevaluation_eval_nbackslow  = N-Back;
 viewevaluation_eval_nbackvs    = N-Back RT Entrenamiento;
 viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
@@ -236,6 +237,7 @@ viewQC_StudyNameMap =
 Reading|Lectura|
 Binding BC|Combinación de Colores| 
 Binding UC|Nuevos Colores|
+NBack|N-Back|
 NBack MS|N-Back Tipo MS|
 NBack RT|N-Back Tipo RT|
 NBack VS|N-Back RT de Entranamiento|

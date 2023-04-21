@@ -419,6 +419,9 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     case Globals::StudyConfiguration::INDEX_NBACKRT:
         filename = Globals::BaseFileNames::NBACKRT;
         break;
+    case Globals::StudyConfiguration::INDEX_NBACK:
+        filename = Globals::BaseFileNames::NBACK;
+        break;
     case Globals::StudyConfiguration::INDEX_NBACKVS:
         filename = Globals::BaseFileNames::NBACKVS;
         break;

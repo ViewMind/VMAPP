@@ -57,10 +57,11 @@ namespace VMDC {
        static const QString NBACKMS          = "NBack MS";
        static const QString NBACKRT          = "NBack RT";
        static const QString NBACKVS          = "NBack VS";
+       static const QString NBACK            = "NBack";
        static const QString GONOGO           = "Go No-Go";
        static const QString GONOGO_SPHERE    = "Go No-Go Sphere";
        static const QString PASSBALL         = "PassBall";
-       static const QStringList valid {READING,BINDING_BC,BINDING_UC,NBACKMS,NBACKRT,NBACKVS,GONOGO,GONOGO_SPHERE,PASSBALL};
+       static const QStringList valid {READING,BINDING_BC,BINDING_UC,NBACKMS,NBACKRT,NBACKVS,NBACK,GONOGO,GONOGO_SPHERE,PASSBALL};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
@@ -306,6 +307,7 @@ namespace VMDC {
        static const QString CALIBRATION_TARGET_LOCATION           = "calibration_target_location";
        static const QString LEFT_EYE_VALIDATION_DATA              = "left_eye_validation_data";
        static const QString RIGHT_EYE_VALIDATION_DATA             = "right_eye_validation_data";
+       static const QString CALIBRATION_DATA_USE_START_INDEX      = "calibration_data_use_start_index";
        static const QString CALIBRATION_TARGET_DIAMETER           = "calibration_target_diameter";
        static const QString COFICIENT_OF_DETERMINATION            = "coefficient_of_determination";
        static const QString MATH_ISSUES_FOR_CALIBRATION           = "math_issues_for_calibration";

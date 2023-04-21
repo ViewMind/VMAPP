@@ -3,6 +3,7 @@
   "W": 2480,
   "calib_pt_gather_time": 2000,
   "calib_pt_wait_time": 1000,
+  "calibration_data_use_start_index": [0,0,0,0,0],
   "calibration_non_normalized_vectors": {
     "0": [
       -8,

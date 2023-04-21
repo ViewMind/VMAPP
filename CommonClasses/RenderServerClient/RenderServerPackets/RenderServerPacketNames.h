@@ -35,6 +35,7 @@ namespace CalibrationControlPacketFields {
    static const QString VALIDATION_R          = "validation_R";       // The validation Radious
    static const QString COEFFS_R              = "rcoeff";
    static const QString COEFFS_l              = "lcoeff";
+   static const QString CALIB_DATA_START_IND  = "rdata_start"; // The list of indexes which indicates where the actual data to use for computation of coefficients starts.
 }
 
 namespace RemoteRenderServerDebugControls {

@@ -501,6 +501,7 @@ bool LocalDB::setQCParametersFromServerResponse(const QVariantMap &response){
                << VMDC::Study::GONOGO
                << VMDC::Study::NBACKMS
                << VMDC::Study::NBACKVS
+               << VMDC::Study::NBACK
                << VMDC::Study::READING;
 
 

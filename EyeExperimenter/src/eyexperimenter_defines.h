@@ -93,6 +93,7 @@ namespace Globals{
       static const qint32 INDEX_PASSBALL = 6;
       static const qint32 INDEX_GONOGO = 7;
       static const qint32 INDEX_GNG_SPHERE = 8;
+      static const qint32 INDEX_NBACK = 9;
 
    }
 
@@ -121,7 +122,7 @@ namespace Globals{
    }
    
    namespace Share {
-       static const QString EXPERIMENTER_VERSION_NUMBER = "24.1.4";
+       static const QString EXPERIMENTER_VERSION_NUMBER = "24.2.0";
        extern QString EXPERIMENTER_VERSION;
        static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
        static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
@@ -173,6 +174,7 @@ namespace Globals{
        static const QString BINDING     = "binding";
        static const QString NBACKVS     = "nbackvs";
        static const QString NBACKRT     = "nbackrt";
+       static const QString NBACK       = "nback";
        static const QString GONOGO_3D   = "gonogo_spheres";
        static const QString GONOGO      = "gonogo";
        static const QString PASSBALL    = "passball";
