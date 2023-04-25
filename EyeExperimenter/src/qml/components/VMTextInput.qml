@@ -82,6 +82,8 @@ Item {
             verticalAlignment: Text.AlignVCenter
 
             onFocusChanged: {
+                //console.log("Focus Changed: vmCurrentText '" + vmCurrentText + "'")
+                //console.log("Focus Changed: inputText.text '" + inputText.text + "'")
                 if (focus){
                     if (vmCurrentText == "") {
                         inputText.text = ""
@@ -89,13 +91,39 @@ Item {
                 }
             }
 
+            // The active focus changes is required for when clicking out of the applications instead of just out of the editing box.
+            // I'm not 100% sure between the differnce between active focus and the other focus
+            // But if you click into the box, both the active focus and the focus will change
+            // If you then click out of the application the active focus will change and focus will remaion on.
+            // Clicking back in the box will AGAIN change the active focus to true and focus will still be true.
+            onActiveFocusChanged: {
+                if (focus){
+                    if (vmCurrentText == "") {
+                        inputText.text = ""
+                    }
+                }
+                if (!activeFocus){
+                    if (inputText.text == "") {
+                        //console.log("Setting the placehoder of " + vmPlaceHolderText);
+                        inputText.text = vmPlaceHolderText
+                        vmCurrentText = "";
+                    }
+                }
+            }
+
             onTextEdited: {
+                //console.log("Text Edited: vmCurrentText '" + vmCurrentText + "'")
+                //console.log("Text Edited: inputText.text '" + inputText.text + "'")
                 vmErrorMsg = ""
                 vmCurrentText = inputText.text
                 vmTextInput.textChanged();
             }
 
             onEditingFinished: {
+
+                //console.log("Editing Finished: vmCurrentText '" + vmCurrentText + "'")
+                //console.log("Editing Finished: inputText.text '" + inputText.text + "'")
+
                 if (inputText.text == "") {
                     //console.log("Setting the placehoder of " + vmPlaceHolderText);
                     inputText.text = vmPlaceHolderText
