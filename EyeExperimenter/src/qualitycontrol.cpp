@@ -145,7 +145,7 @@ bool QualityControl::computeQualityControlVectorsFor2DStudies(const QString &stu
 
     QVariantMap qc = rawdata.getQCParameters();
     QVariantMap pp = rawdata.getProcessingParameters();
-    qreal sample_freq = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();    
+    qreal sample_freq = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
 
     // Computing values necessary for the information completion index.
     qreal sample_period = 1000.0/sample_freq; // In miliseconds.
@@ -215,6 +215,7 @@ bool QualityControl::computeQualityControlVectorsFor2DStudies(const QString &stu
         QVariantMap data = trial.value(VMDC::TrialField::DATA).toMap();
         QStringList dataset_names = data.keys();
         qsizetype pointsInTrial = 0;
+        qreal     total_sampling_time = 0;
         qsizetype fixInTrial = 0;
         qint32 glitchesInTrial = 0;
         qreal  periodAcc = 0;
@@ -249,6 +250,8 @@ bool QualityControl::computeQualityControlVectorsFor2DStudies(const QString &stu
                 sum_of_the_duration_of_all_data_sets = sum_of_the_duration_of_all_data_sets + (endTimeOfDataSet - startTimeOfDataSet);
 
                 timestamp = startTimeOfDataSet;
+
+                total_sampling_time = total_sampling_time + (endTimeOfDataSet - startTimeOfDataSet);
 
                 for (qint32 k = 1; k < rawData.size(); k++){
                     qreal ts = rawData.at(k).toMap().value(VMDC::DataVectorField::TIMESTAMP).toReal();
@@ -357,7 +360,7 @@ bool QualityControl::computeQualityControlVectorsFor2DStudies(const QString &stu
     valuesToSet[VMDC::QCFields::QC_ICI_INDEX] = qc_ici_index;
     valuesToSet[VMDC::QCFields::QC_FIX_INDEX_OK] = qc_ok_fix;
     valuesToSet[VMDC::QCFields::QC_FREQ_INDEX_OK] = qc_ok_f;
-    valuesToSet[VMDC::QCFields::QC_POINT_INDEX_OK] = qc_ok_points;    
+    valuesToSet[VMDC::QCFields::QC_POINT_INDEX_OK] = qc_ok_points;
     valuesToSet[VMDC::QCFields::QC_ICI_INDEX_OK] = qc_ok_ici;
 
     QStringList keys = valuesToSet.keys();
@@ -424,7 +427,7 @@ bool QualityControl::computeQualityControlVectorsFor3DStudies(const QString &stu
 
     Q_UNUSED(metaStudyName)
 
-    QVariantMap studyConfiguration = rawdata.getStudyConfiguration(studyType);
+    // QVariantMap studyConfiguration = rawdata.getStudyConfiguration(studyType);
 
     QVariantMap qc = rawdata.getQCParameters();
     QVariantMap pp = rawdata.getProcessingParameters();
@@ -432,8 +435,7 @@ bool QualityControl::computeQualityControlVectorsFor3DStudies(const QString &stu
 
     // Computing values necessary for the information completion index.
     qreal sample_period = 1000.0/sample_freq; // In miliseconds.
-    qreal max_allowed_over_period = sample_period*1.2; // 20% overperiod.
-    qreal index_of_information_completion_threshold_in_trial = qc.value(VMDC::QCGlobalParameters::ICI_TRIAL_THRESHOLD).toReal()/100;
+    qreal index_of_information_completion_threshold_in_trial = qc.value(VMDC::QCGlobalParameters::ICI_TRIAL_THRESHOLD).toReal();
     qreal threshold_ici = qc.value(VMDC::QCGlobalParameters::ICI_VALID_N_TRIAL_THRESHOLD).toReal();
 
 
@@ -458,6 +460,15 @@ bool QualityControl::computeQualityControlVectorsFor3DStudies(const QString &stu
     QList< QList<qreal> > timeVectorBins;
 
     qreal qc_ici_index = 0;
+
+//    // Over all verification.
+//    qreal npoints = timeVector.size();
+//    qreal total_length = timeVector.last().toReal() - timeVector.first().toReal();
+//    qreal total_expected = total_length/sample_period;
+
+//    qDebug() << "Total n points in vector is " << npoints << " total vector time " << total_length << " and the expected number of pints in that legth is " << total_expected
+//             << " in % it is " << npoints*100/total_expected;
+
 
     // Now we transform the time vector in to a list of lists. Each list is a "bin" akin to the datasets of 2D studies.
     if (timeVector.length() < minimumNumberOfDataPointsPerBin*targetNumberOfBins){
@@ -484,7 +495,6 @@ bool QualityControl::computeQualityControlVectorsFor3DStudies(const QString &stu
         qreal M = static_cast<qreal>(targetNumberOfBins);
         qint32 nPointsPerBin = static_cast<qint32>(qFloor(N/M));
 
-
         QList<qreal> bin;
         for (qint32 i = 0; i < timeVector.size(); i++){
             bin << timeVector.at(i).toReal();
@@ -499,10 +509,38 @@ bool QualityControl::computeQualityControlVectorsFor3DStudies(const QString &stu
 
         }
         timeVectorBins << bin; // Adding the last bin.
-
     }
 
+//    /////////////////////// BIN FILTERING
+//    /// It has been known for time stamps to be repeated. So we do filter the bins in order to property compute the ICI.
+//    QList < QList<qreal> > filteredTimeVectorBins;
 
+//    for (qint32 i = 0; i < timeVectorBins.size(); i++){
+
+//        QList<qreal> filteredBin;
+
+//        for (qint32 j = 0; j < timeVectorBins.at(i).size(); j++){
+//            qreal value = timeVectorBins.at(i).at(j);
+//            if (filteredBin.size() > 0){
+//                // This filter assumes that duped time stamp values are actually consecutive. Which is why we only need to compared to the last.
+//                if (value != filteredBin.last()){
+//                    filteredBin << value;
+//                }
+//            }
+//            else {
+//                filteredBin << value;
+//            }
+//        }
+
+//        filteredTimeVectorBins << filteredBin;
+
+//    }
+
+//    // The filtered bins replace the time vector bins. And we clear the excess variable.
+//    timeVectorBins = filteredTimeVectorBins;
+//    filteredTimeVectorBins.clear();
+
+    //////////////////////////// Actual ICI Computation.
 
     //qDebug() << "min points per trial" << min_points_per_trial;
 
@@ -515,35 +553,37 @@ bool QualityControl::computeQualityControlVectorsFor3DStudies(const QString &stu
 
     for (qint32 i = 0; i < timeVectorBins.size(); i++){
 
-        qreal  timestamp = -1;
-        qreal sum_of_missing_information_in_bin = 0;
-        qreal sum_of_the_duration_of_all_bins = 0;
+        // For each bin, we check the time stamp differnte between the beginning and the end. Assuming there is more than 2 data points.
+        qreal index_of_information_completion = 0;
 
-        qreal startTimeOfDataSet = timeVectorBins.at(i).first();
-        qreal endTimeOfDataSet = timeVectorBins.at(i).last();
+        if (timeVectorBins.size() > 2){
+            qreal start = timeVectorBins.at(i).first();
+            qreal end   = timeVectorBins.at(i).last();
+            qreal diff = end - start;
+            qreal expected_number_of_data_points = diff/sample_period; // We then compute how many data points should there be based on the time difference.
+            index_of_information_completion = static_cast<qreal>(timeVectorBins.at(i).size())*100/expected_number_of_data_points; // Finally the ICI is the percent of the number of points, there actually are.
+            if (index_of_information_completion > 100) index_of_information_completion = 100;
 
-        sum_of_the_duration_of_all_bins = sum_of_the_duration_of_all_bins + (endTimeOfDataSet - startTimeOfDataSet);
-        timestamp = startTimeOfDataSet;
+//            /// This entire section of code is for DEBUGGINING ONLY.
+//            if (index_of_information_completion < 70){
+//                qDebug() << "Printing Differences for bin" << i << ". Size" << timeVectorBins.at(i).size() << ". Expected size: " << expected_number_of_data_points;
+//                qreal last = 0;
+//                for (qint32 j = 0; j < timeVectorBins.at(i).size(); j++){
+//                    qDebug() << timeVectorBins.at(i).at(j) << "diff" << timeVectorBins.at(i).at(j) - last;
+//                    last = timeVectorBins.at(i).at(j);
+//                }
+//            }
 
-        for (qint32 k = 1; k < timeVectorBins.at(i).size(); k++){
-            qreal ts = timeVectorBins.at(i).at(k);
-            qreal diff = ts - timestamp;
-
-            sum_of_missing_information_in_bin = sum_of_missing_information_in_bin + qMax(diff - max_allowed_over_period,0.0);
-
-            timestamp = ts;
         }
-
-
-        // Computing the index of information completion for the trial.
-        qreal index_of_information_completion = 1 - sum_of_missing_information_in_bin/sum_of_the_duration_of_all_bins;
-        indexOfInformationCompletionPerTrial << index_of_information_completion;
-        refIndexOfInformationCompletion << index_of_information_completion_threshold_in_trial;
-        if (static_cast<qreal>(index_of_information_completion) < index_of_information_completion_threshold_in_trial){
+        indexOfInformationCompletionPerTrial << index_of_information_completion; // We store the result for this trial.
+        refIndexOfInformationCompletion << index_of_information_completion_threshold_in_trial; // We store the reference yet again. This is required for plotting.
+        if (index_of_information_completion < index_of_information_completion_threshold_in_trial){
             number_of_trials_with_low_ici++;
         }
-        qc_ici_index = ceil((number_of_bins - number_of_trials_with_low_ici)*100/number_of_bins);
+
     }
+
+    qc_ici_index = ceil((number_of_bins - number_of_trials_with_low_ici)*100/number_of_bins);
 
 
     if (!rawdata.setQCVector(studyType,VMDC::QCFields::ICI,indexOfInformationCompletionPerTrial)){
