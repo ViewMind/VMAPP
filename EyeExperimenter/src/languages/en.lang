@@ -202,7 +202,8 @@ Raise your hands streatching your arms as much as you can;
 viewevaluation_calib_suggest_retry = 
 Calibration could not be completed| 
 Please perform the calibration again. 
-If the problem subsists, readjust the headset on the patient's head.;
+If the problem subsists, try to reconnect the headset.
+If that does not work, please restart your computer;
 
 viewevaluation_calib_suggest_adjust = 
 Calibration could not be completed|

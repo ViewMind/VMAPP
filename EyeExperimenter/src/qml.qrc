@@ -51,5 +51,6 @@
         <file>qml/views/ViewChangeLog.qml</file>
         <file>qml/components/VMCalibrationValidation.qml</file>
         <file>qml/components/VMConfirmDialog.qml</file>
+        <file>qml/components/VMArrowButton.qml</file>
     </qresource>
 </RCC>

@@ -78,6 +78,7 @@ public:
     static const char * CONFIG_PAUSE_TEXT_LANG;
     static const char * CONFIG_IS_VS;
     static const char * CONFIG_SLOW_STUDY_REDUCE_TRIAL_NUMBER;
+    static const char * CONFIG_N_TARGETS;
     static const char * LANG_ES;
     static const char * LANG_EN;
 
@@ -116,6 +117,9 @@ private:
 
     // Flag indicating if we should use only 64 trials (NBAckRT slow 400 Ms hold time mode).
     bool reducedTrialNumber;
+
+    // Flag ot indicate which explanation is necessary.
+    bool use4TargetExplanation;
 
     static const qreal K_TARGET_R;
     static const qreal K_TARGET_OFFSET_X;

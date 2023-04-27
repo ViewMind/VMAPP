@@ -29,6 +29,7 @@
 #include "../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
 
 #include "../../CommonClasses/Calibration/calibrationmanager.h"
+#include "../../CommonClasses/Calibration/calibrationhistory.h"
 
 #include "eyexperimenter_defines.h"
 
@@ -60,6 +61,8 @@ public:
     Q_INVOKABLE void setRenderWindowState(bool hidden);
     Q_INVOKABLE void hideRenderWindow();
     Q_INVOKABLE void showRenderWindow();
+
+    Q_INVOKABLE void resetCalibrationHistory();
 
     // Used mostly for debugging.
     Q_INVOKABLE void renderWaitScreen(const QString &message);
@@ -167,6 +170,9 @@ private:
 
     // Stored value of the Viewmind Logo requried for background image math rendering
     QSizeF backgroundLogoSize;
+
+    // Structure where the the calibration attempts are stored.
+    CalibrationHistory calibrationHistory;
 
     // Only valid vlues are 5 or 9 anything else will assume 9
     static const qint32 NUMBER_OF_CALIBRATION_POINTS = 9;

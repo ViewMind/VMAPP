@@ -14,8 +14,6 @@ Item {
     signal calibrationValidated();
     signal requestReCalibration(bool slow);
 
-    readonly property string vmCalib3DKey: "calibration_target_percents";
-
     // Horizontal space between the border of the screen and the start of the screen representation and between the screen representation and the middle of the dialog
     property double vmHorizotalMarginToScreenRepresentation: 0.08*dialog.width
     // The width of the screen representation
@@ -43,8 +41,8 @@ Item {
         //console.log(JSON.stringify(cdata));
 
         // Checking if each eye is validated.
-        vmIsLeftEyeValidated =  vmCalibrationData["left_eye_validation_data"]["is_validated"];
-        vmIsRightEyeValidated =  vmCalibrationData["right_eye_validation_data"]["is_validated"];          
+        vmIsLeftEyeValidated =  vmCalibrationData["left_eye_data"]["is_validated"];
+        vmIsRightEyeValidated =  vmCalibrationData["right_eye_data"]["is_validated"];
 
         setEyeResultTextElement(rigthEyeResult,vmIsRightEyeValidated)
         setEyeResultTextElement(leftEyeResult,vmIsLeftEyeValidated)
@@ -53,8 +51,8 @@ Item {
         vmKy = vmScreenRepresentationHeight/height;
         vmScreenRepresentationHeight = vmScreenRepresentationWidth*height/width;
 
-
-        if (vmCalib3DKey in vmCalibrationData){
+        if (vmCalibrationData["is_3d"]){
+            //console.log("This is a 3D Calibration");
             vm3DModeValidationScreen = true;
         }
         else {
@@ -115,7 +113,7 @@ Item {
     function renderColoredTargetsWithHitPercents(ctx, left){
 
         let upperLeftCorners = vmCalibrationData["calibration_target_location"];
-        let percentData = vmCalibrationData[vmCalib3DKey];
+        let percentData = vmCalibrationData["calibration_target_percents"];
         if (left) percentData = percentData["l"];
         else percentData = percentData["r"];
 
@@ -126,12 +124,15 @@ Item {
         }
 
         // We multiply the diameters times two as the circles are representations now and we want to make suer the text fits.
-        let Dx = vmCalibrationData["calibration_target_diameter"]*vmKx*2;
-        let Dy = vmCalibrationData["calibration_target_diameter"]*vmKy*2;
+        let scaling = 1.2;
+        let Dx = vmCalibrationData["calibration_target_diameter"]*vmKx*scaling;
+        let Dy = vmCalibrationData["calibration_target_diameter"]*vmKy*scaling;
 
-        // We are making the circles twice as big to so we need to displace the centers up and left their previous size.
-        let offsetX = Dx/4;
-        let offsetY = Dy/4;
+        // Since we are scaling the circle, in order for the center to be in the same position (which is x + original_diameter/2 and y + original_diameter/2)
+        // we need to compute a new offset for the top left corner of the bounding square for the circle. We compute here only the offset to the original
+        // top left corner. If Scaling is larger than 1 (as it should be) these offsets need to be substracted.
+        let offsetX = Dx*(scaling - 1)/2;
+        let offsetY = Dy*(scaling - 1)/2;
 
         let Rx = Dx/2;
         let Ry = Dy/2;
@@ -169,7 +170,7 @@ Item {
             let cy = y - offsetY + Ry
 
             ctx.beginPath()
-            let fontString = '700 %1px "%2"'.arg(VMGlobals.vmFontVeryLarge).arg(mainWindow.vmSegoeBold.name);
+            let fontString = '700 %1px "%2"'.arg(VMGlobals.vmFontLarge).arg(mainWindow.vmSegoeBold.name);
             //console.log("Using font " + fontString)
             ctx.font = fontString
             ctx.textBaseline = "middle"
@@ -192,10 +193,10 @@ Item {
         //console.log(JSON.stringify(start_indexes));
 
         if (left){
-            datapoints = vmCalibrationData["left_eye_validation_data"];
+            datapoints = vmCalibrationData["left_eye_data"];
         }
         else {
-            datapoints = vmCalibrationData["right_eye_validation_data"];
+            datapoints = vmCalibrationData["right_eye_data"];
         }
 
         let R = vmCalibrationData["calibration_target_diameter"]*vmKx*0.05;

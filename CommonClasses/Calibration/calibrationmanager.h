@@ -22,11 +22,7 @@ public:
 
     explicit CalibrationManager(QObject *parent = nullptr);
 
-    void startCalibration(qint32 width, // The widht of the screen. Required by the 2D Calibration.And to draw the validation graph.
-            qint32 height,              // The height of the screen. Required by the 2D Calibration. And to draw the validation graph.
-            qint32 ncalib_pts,          // Number of calibration points. 5 or 9.
-            qint32 wait_time,           // The time to wait before start gathering data for eyetracking.
-            qint32 gather_time,         // The time to actually gather data.
+    void startCalibration(qint32 width,  qint32 height, //   The dimentions of the screen. Required by the 2D Calibration.And to draw the validation graph.
             bool mode3D, const QVariantMap &calib_valid_params, // The calibration validation parameters.
             const QString coefficient_file_name // The name of the file where we should store the resulting coefficients. If the file exists this is loaded from there.
     );
@@ -35,7 +31,9 @@ public:
 
     QString getRecommendedEye() const;
 
-    QVariantMap getCalibrationValidationData() const;
+    QVariantMap getCalibrationAttemptData() const;
+
+    QVariantMap getCalibrationConfigurationParameters() const;
 
     QString getCalibrationValidationReport() const;
 
@@ -50,6 +48,9 @@ public:
     void resetCalibrationCompleted();
 
     EyeTrackerData correct2DData(EyeTrackerData input);
+
+    // For Debugging ONLY.
+    void debugSaveCalibrationValidationData(const QString &filename);
 
 signals:
     void newPacketAvailable();
@@ -124,7 +125,6 @@ private:
     ////////////////////////////// DEBUG LOAD FUNCTIONS /////////////////
     bool debugLoadFixed3DCalibrationParameters();
     bool debugLoadFixed2DCalibrationParameters();
-
 
 };
 

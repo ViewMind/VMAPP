@@ -13,18 +13,15 @@ CalibrationManager::CalibrationManager(QObject *parent) : QObject(parent)
 ////////////////////// Configure and Starte Calibration //////////////////
 void CalibrationManager::startCalibration(qint32 width,
                                           qint32 height,
-                                          qint32 ncalib_pts,
-                                          qint32 wait_time,
-                                          qint32 gather_time,
                                           bool mode3D,
                                           const QVariantMap &calib_valid_params,
                                           const QString coefficient_file_name){
 
     calibrationMode3D = mode3D;
     coefficientFileName = coefficient_file_name;
-    calibration_wait_time = wait_time;
-    calibration_gather_time = gather_time;
-    numberOfCalibrationPoints = ncalib_pts;
+    calibration_wait_time = calib_valid_params[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_WAITTIME].toInt();
+    calibration_gather_time = calib_valid_params[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_GATHERTIME].toInt();
+    numberOfCalibrationPoints = calib_valid_params[VMDC::CalibrationConfigurationFields::NUMBER_OF_CALIBRAION_POINTS].toInt();
     calibrationValidationData = calib_valid_params;
 
     isCalibrated = false;
@@ -76,8 +73,12 @@ RenderServerPacket CalibrationManager::getRenderServerPacket() const {
     return renderServerPacket;
 }
 
-QVariantMap CalibrationManager::getCalibrationValidationData() const {
-    return calibrationValidation.getCalibrationValidationData();
+QVariantMap CalibrationManager::getCalibrationAttemptData() const {
+    return calibrationValidation.getCalibrationAttemptData();
+}
+
+QVariantMap CalibrationManager::getCalibrationConfigurationParameters() const {
+    return calibrationValidation.getCalibrationConfigurationData();
 }
 
 QString CalibrationManager::getRecommendedEye() const {
@@ -127,7 +128,8 @@ void CalibrationManager::finalizeCalibrationProcess(qint32 code, bool sendCalibr
     calibrationValidation.configureValidation(calibrationValidationData,
                                               nonNormalizedTargetVectors,validationRadious,
                                               calibration2DTargetControl.getCalibrationTargetCorners(),
-                                              calibration2DTargetControl.getCalibrationTargetDiameter());
+                                              calibration2DTargetControl.getCalibrationTargetDiameter(),
+                                              calibrationMode3D);
 
     // And we actually generate it.
     bool wasSuccessfull = calibrationValidation.generateCalibrationReport(correctionCoefficients);
@@ -294,6 +296,10 @@ void CalibrationManager::sendCalibrationCoefficientPacket(){
 }
 
 ////////////////////// DEBUG LOAD FUNCTIONS //////////////////
+void CalibrationManager::debugSaveCalibrationValidationData(const QString &filename){
+    calibrationValidation.saveToJSONFile(filename);
+}
+
 bool CalibrationManager::debugLoadFixed3DCalibrationParameters() {
 
     QFile file(":/debug_files/3dCalibData.json");

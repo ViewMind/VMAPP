@@ -49,9 +49,13 @@ private:
     const qreal K_LARGE_D = 0.1;
     const qreal K_SMALL_D = 0.02;
 
-    const qreal K_CALIBRATION_LT = 0.20;
+    const qreal K_CALIBRATION_LT = 0.30;
     const qreal K_CALIBRATION_MC = 0.50;
-    const qreal K_CALIBRATION_RB = 0.80;
+    const qreal K_CALIBRATION_RB = 0.70;
+
+//    const qreal K_CALIBRATION_LT = 0.20;
+//    const qreal K_CALIBRATION_MC = 0.50;
+//    const qreal K_CALIBRATION_RB = 0.80;
 
     // Animation constants. (times are in milliseconds).
     const qint32 ANIMATION_OUTTER_CIRCLE_PULSATING_R      = 800;

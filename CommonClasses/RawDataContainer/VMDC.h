@@ -300,32 +300,59 @@ namespace VMDC {
     }
     
     namespace CalibrationFields {
+       static const QString CONFIG_PARAMS                         = "configuration_parameters";
+       static const QString CALIBRATION_ATTEMPTS                  = "calibration_attempts";
+       static const QStringList valid{CONFIG_PARAMS,CALIBRATION_ATTEMPTS};
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Calibration Field"); }
+       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
+       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+    }
+
+
+    namespace CalibrationAttemptFields {
+
+       static const QString LEFT_EYE_DATA                         = "left_eye_data";
+       static const QString RIGHT_EYE_DATA                        = "right_eye_data";
+       static const QString SUCCESSFUL                            = "successful";
+       static const QString COFICIENT_OF_DETERMINATION            = "coefficient_of_determination";
+       static const QString CORRECTION_COEFICIENTS                = "correction_coefficients";
+       static const QString CALIBRATION_TARGET_PERCENTS           = "calibration_target_percents";
        static const QString VALIDATION_POINT_ACCEPTANCE_THRESHOLD = "validation_point_acceptance_threshold";
+       static const QString CALIBRATION_POINT_GATHERTIME          = "calib_pt_gather_time";
+       static const QString CALIBRATION_POINT_WAITTIME            = "calib_pt_wait_time";
+       static const QString CALIBRATION_DATA_USE_START_INDEX      = "calibration_data_use_start_index";
+       static const QString MATH_ISSUES_FOR_CALIBRATION           = "math_issues_for_calibration";
+       static const QString CALIBRATION_PTS_NO_DATA               = "calibration_points_with_too_few_data_points";
+       static const QString TIMESTAMP                             = "timestamp";
+       static const QString IS_3D                                 = "is_3d";
+
+       static const QStringList valid{VALIDATION_POINT_ACCEPTANCE_THRESHOLD,LEFT_EYE_DATA,RIGHT_EYE_DATA, COFICIENT_OF_DETERMINATION,MATH_ISSUES_FOR_CALIBRATION,
+                   CALIBRATION_POINT_GATHERTIME,CALIBRATION_POINT_WAITTIME, CALIBRATION_PTS_NO_DATA,CALIBRATION_TARGET_PERCENTS,IS_3D,
+                   CORRECTION_COEFICIENTS, TIMESTAMP};
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Calibration Attempt Field"); }
+       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
+       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
+       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+    }
+
+    namespace CalibrationConfigurationFields {
+
        static const QString REQ_NUMBER_OF_ACCEPTED_POINTS         = "required_number_of_passing_points";
        static const QString VALIDATION_POINT_HIT_TOLERANCE        = "validation_point_hit_tolerance";
        static const QString NUMBER_OF_CALIBRAION_POINTS           = "number_of_calibration_points";
        static const QString CALIBRATION_TARGET_LOCATION           = "calibration_target_location";
-       static const QString LEFT_EYE_VALIDATION_DATA              = "left_eye_validation_data";
-       static const QString RIGHT_EYE_VALIDATION_DATA             = "right_eye_validation_data";
-       static const QString CALIBRATION_DATA_USE_START_INDEX      = "calibration_data_use_start_index";
        static const QString CALIBRATION_TARGET_DIAMETER           = "calibration_target_diameter";
-       static const QString COFICIENT_OF_DETERMINATION            = "coefficient_of_determination";
-       static const QString MATH_ISSUES_FOR_CALIBRATION           = "math_issues_for_calibration";
-       static const QString CALIBRATION_POINT_GATHERTIME          = "calib_pt_gather_time";
-       static const QString CALIBRATION_POINT_WAITTIME            = "calib_pt_wait_time";
-       static const QString CALIBRATION_PTS_NO_DATA               = "calibration_points_with_too_few_data_points";
        static const QString CALIBRATION_NON_NORM_VECS             = "calibration_non_normalized_vectors";
        static const QString CALIBRATION_VALIDATION_R              = "calibration_validation_radious";
-       static const QString CALIBRATION_TARGET_PERCENTS           = "calibration_target_percents";
-       static const QString CORRECTION_COEFICIENTS                = "correction_coefficients";
-       static const QStringList valid{VALIDATION_POINT_ACCEPTANCE_THRESHOLD,REQ_NUMBER_OF_ACCEPTED_POINTS,
-                   VALIDATION_POINT_HIT_TOLERANCE,NUMBER_OF_CALIBRAION_POINTS,CALIBRATION_TARGET_LOCATION,LEFT_EYE_VALIDATION_DATA,RIGHT_EYE_VALIDATION_DATA,
-                   CALIBRATION_TARGET_DIAMETER,COFICIENT_OF_DETERMINATION,MATH_ISSUES_FOR_CALIBRATION,CALIBRATION_POINT_GATHERTIME,
-                   CALIBRATION_POINT_WAITTIME, CALIBRATION_PTS_NO_DATA,CALIBRATION_NON_NORM_VECS,CALIBRATION_VALIDATION_R,CALIBRATION_TARGET_PERCENTS, CORRECTION_COEFICIENTS};
-       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Subject Field"); }
+       static const QString CALIBRATION_UID                       = "calibration_uid";
+       static const QStringList valid{REQ_NUMBER_OF_ACCEPTED_POINTS,VALIDATION_POINT_HIT_TOLERANCE,NUMBER_OF_CALIBRAION_POINTS,CALIBRATION_TARGET_LOCATION,
+                   CALIBRATION_TARGET_DIAMETER, CALIBRATION_NON_NORM_VECS, CALIBRATION_VALIDATION_R, CALIBRATION_UID};
+       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Calibration Configuration Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
+
     }
 
     

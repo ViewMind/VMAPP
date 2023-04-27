@@ -351,7 +351,11 @@ Rectangle {
         console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations));
         //console.log("ONLY PRINTING");
 
+        // Once the evaluations are setup we KNOW that this is the start of an evaluation run. This is when the calibration history needs to be reset.
+        flowControl.resetCalibrationHistory();
+
         goToEvalRun();
+
     }
 
     Text {

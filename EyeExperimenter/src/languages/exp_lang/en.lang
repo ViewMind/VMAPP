@@ -97,7 +97,28 @@ And Position 1. Did you understand?
 We will do some practice rounds before starting the test.;
 
 
-explanation_phase_list_nbackrt_slow    =
+explanation_phase_list_nback_3    =
+This is the N-Back Test. The test is composed of 6 boxes and one cross in
+the center of the screen. You must keep your eyes on the cross.|
+A red circle will appear on one of the boxes. Position 1|
+Then it will appear on another box. Position 2|
+And finally on another box. Position 3. Remeber to always keep your eyes on
+the cross|
+When the cross disappears, you must quickly look at Position 3, where the last
+circle appeared, as indicated by the arrow.|
+Then look at Position 2, where the second circle appeared|
+And finally, at Position 1, where the first circle appeared. In the inverse order|
+When you finish, quickly look back at the cross. Now the test will be repeated|
+Position 1|
+Position 2|
+Position 3|
+Now quickly look at Position 3|
+Position 3|
+Position 2|
+And Position 1. Did you understand?
+We will do some practice rounds before starting the test.;
+
+explanation_phase_list_nback_4    =
 This is the N-Back Test. The test is composed of 6 boxes and one cross in
 the center of the screen. You must keep your eyes on the cross.|
 A red circle will appear on one of the boxes. Position 1|

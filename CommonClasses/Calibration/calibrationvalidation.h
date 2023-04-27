@@ -35,7 +35,7 @@ public:
                              const QList<QVector3D> &nonNormalizedTargetVecs,
                              qreal validationRadious,
                              const QVariantList &calibrationTargetCornersFor2D,
-                             qreal calibrationDiameterFor2D);
+                             qreal calibrationDiameterFor2D, bool is3DMode);
 
     // Used the created data to generate the calibration report values. Returns whether the calibration was successfull or not.
     bool generateCalibrationReport(const EyeCorrectionCoefficients & coeffs);
@@ -44,13 +44,17 @@ public:
     QString getValidationReport() const;
 
     // Used for saving validation data in each specific study.
-    QVariantMap getCalibrationValidationData() const;
+    QVariantMap getCalibrationAttemptData() const;
+
+    // Used for getting the calibration configuration to be stored in the study output file.
+    QVariantMap getCalibrationConfigurationData() const;
 
     // This will return the recommended eye to use for evaluation/processing of the study.
     QString getRecommendedEye() const;
 
     // FOR DEBUGGING.
     void setDataFromString(const QString &json);
+    void saveToJSONFile(const QString &filename);
 
 private:
 
@@ -62,14 +66,13 @@ private:
 
     // Where the validation report is stored.
     QString validationReport;
-    QVariantMap calibrationValidationData;
+    QVariantMap calibrationAttempt;
+    QVariantMap calibrationConfiguration;
 
     qreal validationApproveThreshold;
     qreal validationPointHitTolerance;
     qint32 validationPointsToPassForAcceptedValidation;
 
-    qint32 calibration_wait_time;
-    qint32 calibration_gather_time;
 
     QVariantList fitted3DVectorsTo2DValidationGraphApproximation(const EyeCorrectionCoefficients &coeffs);
 

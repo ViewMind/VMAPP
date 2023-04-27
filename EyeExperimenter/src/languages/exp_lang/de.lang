@@ -96,7 +96,7 @@ Position 2.|
 Und Position 1. Haben Sie verstanden?
 Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
 
-explanation_phase_list_nbackrt_slow    =
+explanation_phase_list_nback_4    =
 Dies ist der N-Back-Test. Während des Tests sehen Sie 6 Boxen und ein Kreuz 
 in der Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
 Ein roter Kreis erscheint in einer der Boxen. Position 1|
@@ -116,6 +116,28 @@ Position 2.|
 Position 3.|
 Position 4.|
 Schauen Sie jetzt schnell auf Position 4.|
+Position 3.|
+Position 2.|
+Und Position 1. Haben Sie verstanden?
+Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
+
+explanation_phase_list_nback_3    =
+Dies ist der N-Back-Test. Während des Tests sehen Sie 6 Boxen und ein Kreuz 
+in der Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
+Ein roter Kreis erscheint in einer der Boxen. Position 1|
+Dann erscheint er in einer anderen Box. Position 2|
+Und schließlich in einer anderen Box. Position 3. Denken Sie daran, 
+ihren Blick immer auf das Kreuz zu richten.|
+Wenn das Kreuz verschwindet, müssen Sie schnell auf Position 3 schauen, 
+wo der letzte Kreis erschien, wie durch den Pfeil gekennzeichnet.|
+Dann schauen Sie auf Position 2, wo der zweite Kreis erschienen ist.|
+Und schließlich auf Position 1, wo der erste Kreis erschien.|
+Wenn Sie fertig sind, schauen Sie schnell zurück auf das Kreuz. 
+Jetzt wird der Test wiederholt.|
+Position 1.|
+Position 2.|
+Position 3.|
+Schauen Sie jetzt schnell auf Position 3.|
 Position 3.|
 Position 2.|
 Und Position 1. Haben Sie verstanden?

@@ -8,6 +8,7 @@ const qreal NBackManager::K_CROSS_LINE_LENGTH =                        0.05;
 const char * NBackManager::CONFIG_PAUSE_TEXT_LANG                       = "pause_text_lang";
 const char * NBackManager::CONFIG_IS_VS                                 = "is_VS";
 const char * NBackManager::CONFIG_SLOW_STUDY_REDUCE_TRIAL_NUMBER        = "use_reduce_trial";
+const char * NBackManager::CONFIG_N_TARGETS                             = "number_of_targets";
 
 const char * NBackManager::LANG_EN = "EN";
 const char * NBackManager::LANG_ES = "ES";
@@ -91,19 +92,30 @@ void NBackManager::configure(const QVariantMap &config){
     if (config.value(CONFIG_PAUSE_TEXT_LANG).toString() == LANG_ES) pauseText = PAUSE_TEXT_SPANISH;
     else pauseText = PAUSE_TEXT_ENGLISH;
 
+    // The reduces trial number indicates that this a regular N Back.
     reducedTrialNumber = config.value(CONFIG_SLOW_STUDY_REDUCE_TRIAL_NUMBER).toBool();
+    qint32 ntargets = config.value(CONFIG_N_TARGETS).toInt();
 
     if (config.value(CONFIG_IS_VS).toBool()){
         explanationListTextKey = STUDY_TEXT_KEY_NBACKVS;
     }
     else {
-        if (reducedTrialNumber) explanationListTextKey = STUDY_TEXT_KEY_NBACKRT_SLOW;
-        else explanationListTextKey = STUDY_TEXT_KEY_NBACKRT;
+        if (reducedTrialNumber) {
+            if (ntargets == 3) explanationListTextKey = STUDY_TEXT_KEY_NBACK_3;
+            else explanationListTextKey = STUDY_TEXT_KEY_NBACK_4;
+        }
+        else {
+            explanationListTextKey = STUDY_TEXT_KEY_NBACKRT;
+        }
     }
 
-
     if (reducedTrialNumber){
-        numberOfExplanationScreens = NUMBER_OF_EXPLANATION_SLIDES_4_TARGETS;
+        if (ntargets == 3) numberOfExplanationScreens = NUMBER_OF_EXPLANATION_SLIDES;
+        else numberOfExplanationScreens = NUMBER_OF_EXPLANATION_SLIDES_4_TARGETS;
+    }
+    else {
+        // 3 Target explanation number of slides.
+        numberOfExplanationScreens = NUMBER_OF_EXPLANATION_SLIDES;
     }
 
 }
@@ -364,7 +376,7 @@ void NBackManager::drawPauseScreen(){
 
 
 void NBackManager::renderStudyExplanationScreen(qint32 screen_index){
-    if (reducedTrialNumber){
+    if (numberOfExplanationScreens == NUMBER_OF_EXPLANATION_SLIDES_4_TARGETS){
         renderStudyExplanationScreen4Targets(screen_index);
     }
     else{

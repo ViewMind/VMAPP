@@ -10,6 +10,8 @@ PassBallManager::PassBallManager()
 
 bool PassBallManager::parseExpConfiguration(const QString &contents) {
 
+    Q_UNUSED(contents)
+
     if (!pbParser.generatePassBallSequence()){
         error = pbParser.getError();
         return false;

@@ -63,7 +63,7 @@ ApplicationWindow {
             close();
             viewEvaluations.calibrationValidated();
         }
-        onRequestReCalibration: {
+        onRequestReCalibration: function (slow) {
             viewEvaluations.setCalibrationSpeedToSlow(slow);
             close()
         }
@@ -234,7 +234,7 @@ ApplicationWindow {
 
                 // Something went wrong.
                 let upper_points = [0,1,2];
-                let lower_points = [6,7,8];
+                let lower_points = [6,5,4];
 
                 // Checking if at least two points are present from the upper points.
                 let upper_include = 0;

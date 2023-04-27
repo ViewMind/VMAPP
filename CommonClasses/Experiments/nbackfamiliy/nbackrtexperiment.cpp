@@ -100,6 +100,8 @@ bool NBackRTExperiment::startExperiment(const QString &workingDir, const QString
         config.insert(NBackManager::CONFIG_PAUSE_TEXT_LANG,NBackManager::LANG_EN);
     }
 
+    config.insert(NBackManager::CONFIG_N_TARGETS,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt());
+
     m->configure(config);
 
     // The processing parameters requires the hitboxes that are going to be used, so they are added before they are set.

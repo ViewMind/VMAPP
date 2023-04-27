@@ -228,6 +228,10 @@ void FlowControl::onReadyToRender() {
 
 }
 
+void FlowControl::resetCalibrationHistory(){
+    calibrationHistory.reset();
+}
+
 void FlowControl::renderWaitScreen(const QString &message){
 
     //qDebug() << "Render Wait Screen";
@@ -403,7 +407,6 @@ void FlowControl::handCalibrationControl(qint32 command, const QString &which_ha
 
 void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
 
-
     int required_number_of_accepted_pts = 7;
     int ncalibration_points = 9;
     if (DBUGEXIST(Debug::Options::FORCE_N_CALIB_PTS)){
@@ -443,11 +446,12 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
 
     // Testing validations parameters.
     QVariantMap calibrationValidationParameters;
-    calibrationValidationParameters[VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = required_number_of_accepted_pts;
-    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
-    calibrationValidationParameters[VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE] = 0;
-    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_GATHERTIME] = gather_time;
-    calibrationValidationParameters[VMDC::CalibrationFields::CALIBRATION_POINT_WAITTIME] = wait_time;
+    calibrationValidationParameters[VMDC::CalibrationConfigurationFields::REQ_NUMBER_OF_ACCEPTED_POINTS] = required_number_of_accepted_pts;
+    calibrationValidationParameters[VMDC::CalibrationConfigurationFields::VALIDATION_POINT_HIT_TOLERANCE] = 0;
+    calibrationValidationParameters[VMDC::CalibrationConfigurationFields::NUMBER_OF_CALIBRAION_POINTS] = ncalibration_points;
+    calibrationValidationParameters[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_GATHERTIME] = gather_time;
+    calibrationValidationParameters[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_WAITTIME] = wait_time;
+    calibrationValidationParameters[VMDC::CalibrationAttemptFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
 
     if (DBUGEXIST(Debug::Options::CONFIG_CALIB_VALID)){
         QVariantMap configCalibValidDebugOptons = Debug::parseMultipleDebugOptionLine(DBUGSTR(Debug::Options::CONFIG_CALIB_VALID));
@@ -466,8 +470,7 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
 
     QSize s = renderServerClient.getRenderResolution();
 
-    calibrationManager.startCalibration(s.width(),s.height(),
-                                        ncalibration_points,wait_time,gather_time,
+    calibrationManager.startCalibration(s.width(),s.height(),                                        
                                         mode3D,
                                         calibrationValidationParameters,coefficient_file);
 
@@ -484,6 +487,14 @@ bool FlowControl::isConnected() const{
 
 // When the calibration process is finished.
 void FlowControl::onCalibrationDone(qint32 code){
+
+    // We now store the current calibration attempt.
+    calibrationHistory.setConfiguration(calibrationManager.getCalibrationConfigurationParameters());
+    calibrationHistory.addCalibrationAttempt(calibrationManager.getCalibrationAttemptData());
+
+
+    // For Debugging only
+    // calibrationManager.debugSaveCalibrationValidationData("zz.json");
 
     if (code == CalibrationManager::CALIBRATION_SUCCESSFUL){
         StaticThreadLogger::log("FlowControl::onCalibrationDone","EyeTracker Control: Calibration and validation finished");
@@ -514,7 +525,7 @@ void FlowControl::onCalibrationDone(qint32 code){
 
 QVariantMap FlowControl::getCalibrationValidationData() const {
 
-    QVariantMap map = calibrationManager.getCalibrationValidationData();
+    QVariantMap map = calibrationHistory.getMapOfLastAttempt();
 
     // We add the resolution as it is required for plotting the calibration data.
     map["W"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH);
@@ -645,7 +656,9 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     // Since experiments starts in the explanation phase, it is then necessary to render the first screen.
     // This will actually render the very first screen and update the text in the UI properly.
     experiment->renderCurrentStudyExplanationScreen();
-    experiment->setCalibrationValidationData(calibrationManager.getCalibrationValidationData());
+
+    // We add the calibration history as this function is called once the calibration is approved.
+    experiment->setCalibrationValidationData(calibrationHistory.getHistory());
 
     return true;
 }

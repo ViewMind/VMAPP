@@ -6,8 +6,12 @@ CalibrationValidation::CalibrationValidation()
 }
 
 
-QVariantMap CalibrationValidation::getCalibrationValidationData() const {
-    return calibrationValidationData;
+QVariantMap CalibrationValidation::getCalibrationAttemptData() const {
+    return calibrationAttempt;
+}
+
+QVariantMap CalibrationValidation::getCalibrationConfigurationData() const {
+    return calibrationConfiguration;
 }
 
 QString CalibrationValidation::getRecommendedEye() const {
@@ -19,24 +23,47 @@ void CalibrationValidation::configureValidation(const QVariantMap &calibrationVa
                                                 const QList<QVector3D> &nonNormalizedTargetVecs,
                                                 qreal validationRadious,
                                                 const QVariantList &calibrationTargetCornersFor2D,
-                                                qreal calibrationDiameterFor2D){
+                                                qreal calibrationDiameterFor2D,
+                                                bool is3DMode){
 
-    calibrationValidationData.clear();
-    calibrationValidationData = calibrationValidationParameters;    
-    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_PTS_NO_DATA] = QVariantList(); // It is initialized as en empty list.
+    calibrationAttempt.clear();
+    calibrationConfiguration.clear();
 
-    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_TARGET_DIAMETER] = calibrationDiameterFor2D;
-    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_TARGET_LOCATION] = calibrationTargetCornersFor2D;
+    validationApproveThreshold                  = calibrationValidationParameters.value(VMDC::CalibrationAttemptFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD).toReal();
+    validationPointHitTolerance                 = calibrationValidationParameters.value(VMDC::CalibrationConfigurationFields::VALIDATION_POINT_HIT_TOLERANCE).toReal();
+    validationPointsToPassForAcceptedValidation = calibrationValidationParameters.value(VMDC::CalibrationConfigurationFields::REQ_NUMBER_OF_ACCEPTED_POINTS).toInt();
 
-    validationApproveThreshold = calibrationValidationParameters.value(VMDC::CalibrationFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD).toReal();
-    validationPointHitTolerance = calibrationValidationParameters.value(VMDC::CalibrationFields::VALIDATION_POINT_HIT_TOLERANCE).toReal();
-    validationPointsToPassForAcceptedValidation = calibrationValidationParameters.value(VMDC::CalibrationFields::REQ_NUMBER_OF_ACCEPTED_POINTS).toInt();
+    // Setting up the configuration. This will actually be overwritten with each attempt. and the values never change.
+    // But in order to keep the function interfaces with previous versions we simply recreate it, every single time.
+    calibrationConfiguration[VMDC::CalibrationConfigurationFields::CALIBRATION_NON_NORM_VECS]      = QVariantList();
+    calibrationConfiguration[VMDC::CalibrationConfigurationFields::CALIBRATION_TARGET_DIAMETER]    = calibrationDiameterFor2D;
+    calibrationConfiguration[VMDC::CalibrationConfigurationFields::CALIBRATION_TARGET_LOCATION]    = calibrationTargetCornersFor2D;
+    calibrationConfiguration[VMDC::CalibrationConfigurationFields::CALIBRATION_VALIDATION_R]       = 0;
+    calibrationConfiguration[VMDC::CalibrationConfigurationFields::NUMBER_OF_CALIBRAION_POINTS]    = 0;
+    calibrationConfiguration[VMDC::CalibrationConfigurationFields::REQ_NUMBER_OF_ACCEPTED_POINTS]  = validationPointsToPassForAcceptedValidation;
+    calibrationConfiguration[VMDC::CalibrationConfigurationFields::VALIDATION_POINT_HIT_TOLERANCE] = validationPointHitTolerance;
+
+    // Creating the new attempt.
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_DATA_USE_START_INDEX]           = QVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_GATHERTIME]               = calibrationValidationParameters[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_GATHERTIME];
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_WAITTIME]                 = calibrationValidationParameters[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_WAITTIME];
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_PTS_NO_DATA]                    = QVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_TARGET_PERCENTS]                = QVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::COFICIENT_OF_DETERMINATION]                 = QVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CORRECTION_COEFICIENTS]                     = QVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::LEFT_EYE_DATA]                              = QVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::RIGHT_EYE_DATA]                             = QVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::MATH_ISSUES_FOR_CALIBRATION]                = false;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::SUCCESSFUL]                                 = false;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD]      = validationApproveThreshold;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::TIMESTAMP]                                  = "";
+    calibrationAttempt[VMDC::CalibrationAttemptFields::IS_3D]                                      = false;
 
     recommendedEye = VMDC::Eye::BOTH;
 
-    if (nonNormalizedTargetVecs.isEmpty()){
+    if (!is3DMode){
         configuredFor3D = false;
-        calibrationValidationData[VMDC::CalibrationFields::NUMBER_OF_CALIBRAION_POINTS] = calibrationTargetCornersFor2D.size();
+        calibrationConfiguration[VMDC::CalibrationConfigurationFields::NUMBER_OF_CALIBRAION_POINTS] = calibrationTargetCornersFor2D.size();
     }
     else {
 
@@ -51,9 +78,9 @@ void CalibrationValidation::configureValidation(const QVariantMap &calibrationVa
             tvecs[QString::number(i)] = tv;
         }
 
-        calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_NON_NORM_VECS] = tvecs;
-        calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_VALIDATION_R] = validationRadious;
-        calibrationValidationData[VMDC::CalibrationFields::NUMBER_OF_CALIBRAION_POINTS] = tvecs.size();
+        calibrationConfiguration[VMDC::CalibrationConfigurationFields::CALIBRATION_NON_NORM_VECS] = tvecs;
+        calibrationConfiguration[VMDC::CalibrationConfigurationFields::CALIBRATION_VALIDATION_R] = validationRadious;
+        calibrationConfiguration[VMDC::CalibrationConfigurationFields::NUMBER_OF_CALIBRAION_POINTS] = tvecs.size();
     }
 
 }
@@ -71,7 +98,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
     QString mode = "2D";
     if (configuredFor3D) mode = "3D";
 
-    qreal diameterFor2D = calibrationValidationData.value(VMDC::CalibrationFields::CALIBRATION_TARGET_DIAMETER).toReal();
+    qreal diameterFor2D = calibrationConfiguration.value(VMDC::CalibrationConfigurationFields::CALIBRATION_TARGET_DIAMETER).toReal();
 
     lines << "Calibration Report. Mode: " + mode;
     lines << "Validation Threshold " + QString::number(validationApproveThreshold)
@@ -198,26 +225,26 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
         lines << "The following calibration points had too few data points for calibration: " + pointsWithNoData;
     }
 
-    calibrationValidationData[VMDC::CalibrationFields::LEFT_EYE_VALIDATION_DATA]         = leftEyeData;
-    calibrationValidationData[VMDC::CalibrationFields::RIGHT_EYE_VALIDATION_DATA]        = rightEyeData;
-    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_DATA_USE_START_INDEX] = coeffs.getCutoffIndexesListAsVariantList();
-
-    calibrationValidationData[VMDC::CalibrationFields::MATH_ISSUES_FOR_CALIBRATION]      = !coeffs.getResultOfLastComputation();
-    calibrationValidationData[VMDC::CalibrationFields::COFICIENT_OF_DETERMINATION]       = Rreport;
-    calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_PTS_NO_DATA]          = coeffs.getCalibrationPointsWithNoData();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::LEFT_EYE_DATA]                    = leftEyeData;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::RIGHT_EYE_DATA]                   = rightEyeData;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_DATA_USE_START_INDEX] = coeffs.getCutoffIndexesListAsVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::MATH_ISSUES_FOR_CALIBRATION]      = !coeffs.getResultOfLastComputation();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::COFICIENT_OF_DETERMINATION]       = Rreport;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_PTS_NO_DATA]          = coeffs.getCalibrationPointsWithNoData();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::IS_3D]                            = configuredFor3D;
 
     // Storing the coefficients. This works wheter it is a 2D calibration or a 3D one.
     QVariantMap cc;
     cc["left"] = coeffs.getCalibrationControlPacketCompatibleMap(true);
     cc["right"] = coeffs.getCalibrationControlPacketCompatibleMap(false);
 
-    calibrationValidationData[VMDC::CalibrationFields::CORRECTION_COEFICIENTS]      = cc;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CORRECTION_COEFICIENTS]          = cc;
 
-    if (configuredFor3D){
-        percents["l"] = percent_left;
-        percents["r"] = percent_right;
-        calibrationValidationData[VMDC::CalibrationFields::CALIBRATION_TARGET_PERCENTS]     = percents;
-    }
+    //if (configuredFor3D){
+    percents["l"] = percent_left;
+    percents["r"] = percent_right;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_TARGET_PERCENTS]     = percents;
+    //}
 
     validationReport = lines.join("\n");
 
@@ -233,7 +260,32 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
         recommendedEye = VMDC::Eye::RIGHT;
     }
 
+    QString date = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+    QString hour = QDateTime::currentDateTime().toString("HH:mm:ss");
+
+    calibrationAttempt[VMDC::CalibrationAttemptFields::SUCCESSFUL] = wasCalibrationSuccessFull;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::TIMESTAMP] = date + " " + hour;
+
     return wasCalibrationSuccessFull;
+
+}
+
+// This is strictly a debugging function. So no checkes of any kind are done.
+void CalibrationValidation::saveToJSONFile(const QString &filename){
+
+    QVariantMap map;
+    map[VMDC::CalibrationFields::CALIBRATION_ATTEMPTS] = calibrationAttempt;
+    map[VMDC::CalibrationFields::CONFIG_PARAMS] = calibrationConfiguration;
+    QJsonDocument json = QJsonDocument::fromVariant(map);
+    QByteArray data  = json.toJson(QJsonDocument::Indented);
+
+    QFile file(filename);
+    file.open(QFile::WriteOnly);
+    QTextStream writer(&file);
+
+    writer << QString(data);
+
+    file.close();
 
 }
 
@@ -244,5 +296,7 @@ void CalibrationValidation::setDataFromString(const QString &json){
         StaticThreadLogger::error("CalibrationValidation::setDataFromString","Error parsing the JSON string of the study description: " + json_error.errorString());
         return;
     }
-    calibrationValidationData = doc.object().toVariantMap();
+    QVariantMap map = doc.object().toVariantMap();
+    calibrationAttempt = map.value(VMDC::CalibrationFields::CALIBRATION_ATTEMPTS).toMap();
+    calibrationConfiguration = map.value(VMDC::CalibrationFields::CONFIG_PARAMS).toMap();
 }

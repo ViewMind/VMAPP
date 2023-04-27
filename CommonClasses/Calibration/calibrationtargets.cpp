@@ -108,14 +108,16 @@ QList<QPointF> CalibrationTargets::setupCalibrationSequence(qint32 npoints, qint
     calibrationSequenceIndex << 4; // Calibration point shall alwasy start in the middle before moving on to it's actual end.
 
     if (npoints == 9){
-        calibrationSequenceIndex << 0 << 1 << 2
-                                 << 3 << 4 << 5
-                                 << 6 << 7 << 8;
+//        calibrationSequenceIndex << 0 << 1 << 2
+//                                 << 3 << 4 << 5
+//                                 << 6 << 7 << 8;
+        calibrationSequenceIndex << 0 << 1 << 2 << 5 << 8 << 7 << 6 << 3 << 4;
     }
     else{
-        calibrationSequenceIndex << 0      << 2
-                                 << 4
-                                 << 6      << 8;
+//        calibrationSequenceIndex << 0      << 2
+//                                 << 4
+//                                 << 6      << 8;
+        calibrationSequenceIndex << 0 << 2 << 8 << 6 << 4;
     }
 
     for (qint32 i = 0; i < calibrationSequenceIndex.size(); i++){

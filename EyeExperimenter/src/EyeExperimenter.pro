@@ -22,6 +22,7 @@ RESOURCES += qml.qrc \
 
 SOURCES += main.cpp \
     ../../CommonClasses/BallPathGenerator/ballpathgenerator.cpp \
+    ../../CommonClasses/Calibration/calibrationhistory.cpp \
     ../../CommonClasses/Calibration/calibrationmanager.cpp \
     ../../CommonClasses/Experiments/binding/bindingexperiment.cpp \
     ../../CommonClasses/Experiments/binding/bindingmanager.cpp \
@@ -89,6 +90,7 @@ SOURCES += main.cpp \
 
 HEADERS += \
     ../../CommonClasses/BallPathGenerator/ballpathgenerator.h \
+    ../../CommonClasses/Calibration/calibrationhistory.h \
     ../../CommonClasses/Calibration/calibrationmanager.h \
     ../../CommonClasses/Experiments/binding/bindingexperiment.h \
     ../../CommonClasses/Experiments/binding/bindingmanager.h \

@@ -76,6 +76,7 @@ Rectangle {
             }
 
             vmInCalibration = false;
+            evaluationRun.vmSlowCalibrationSelected = false; // This is very important. If the slow calibration was selected, it was a once off. It needs to be reselected.
             mainWindow.showCalibrationValidation();
 
         }
@@ -105,20 +106,28 @@ Rectangle {
                     let message_list = loader.getStringListForKey(key,false)
                     let index = string_value_map[key];
 
-//                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
-//                    for (var i = 0; i < message_list.length; i++){
-//                        console.log("  Message in index " + i + " is " + message_list[i]);
-//                    }
+                    //                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
+                    //                    for (var i = 0; i < message_list.length; i++){
+                    //                        console.log("  Message in index " + i + " is " + message_list[i]);
+                    //                    }
+
+                    if (message_list.length < 1) return; // IN this case there is nothing to do.
 
                     let message_to_display = message_list[index];
-
                     let current_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+
                     if (VMGlobals.vmSCP_NUMBER_OF_TARGETS in current_config){
                         let ntargets = current_config[VMGlobals.vmSCP_NUMBER_OF_TARGETS]
                         message_to_display = message_to_display.replace("<<N>>",ntargets);
                     }
 
-                    studyExplanationText.text = message_to_display;
+                    if (message_to_display === undefined){
+                        console.log("Got an undefined message when getting message of index " + index +  " out of a list of " + message_list.length);
+                    }
+                    else {
+                        studyExplanationText.text = message_to_display;
+                    }
+
                 }
 
             }
@@ -126,19 +135,29 @@ Rectangle {
     }
 
     function doesCurrentEvalutionRequiredHandCalibration(){
-//        console.log("Checkig if we require hand calibration");
-//        console.log(JSON.stringify(evaluationsView.vmSelectedEvaluationConfigurations));
-        var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];        
+        //        console.log("Checkig if we require hand calibration");
+        //        console.log(JSON.stringify(evaluationsView.vmSelectedEvaluationConfigurations));
+        var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
         if (VMGlobals.vmSCP_STUDY_REQ_H_CALIB in current_config){
-           return current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
+            return current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
         }
         else return false;
     }
 
     function isCurrentEvaluationA3DStudy() {
+
+        //console.log("Checking if current evaluation is 3D study. Current evaluation index is " + vmCurrentEvaluation)
+
         var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+
+        //console.log(JSON.stringify(current_config));
+
         if (VMGlobals.vmSCP_IS_STUDY_3D in current_config){
-           return current_config[VMGlobals.vmSCP_IS_STUDY_3D];
+
+            //console.log(VMGlobals.vmSCP_IS_STUDY_3D + "  was detected in the current configuration. Its value is")
+            //console.log(current_config[VMGlobals.vmSCP_IS_STUDY_3D]);
+
+            return current_config[VMGlobals.vmSCP_IS_STUDY_3D];
         }
         else return false;
     }
@@ -182,8 +201,8 @@ Rectangle {
         // Next state in the state machine.
         vmEvaluationStage = vmSTAGE_EXPLANATION;
 
-//        console.log("SCEvalRunEvaluation.prepareStudyStart: Printing study configuration for the current evaluation: " + vmCurrentEvaluation + " out of " + viewEvaluations.vmSelectedEvaluationConfigurations.length);
-//        console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation],null,2));
+        //        console.log("SCEvalRunEvaluation.prepareStudyStart: Printing study configuration for the current evaluation: " + vmCurrentEvaluation + " out of " + viewEvaluations.vmSelectedEvaluationConfigurations.length);
+        //        console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation],null,2));
 
         // We load the text explanation depending on the study. so we get the study unique number id.
         let unique_study_id = parseInt(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmUNIQUE_STUDY_ID]);
@@ -267,6 +286,9 @@ Rectangle {
             // All is good so the calibration is requested.
 
             let mode3d = isCurrentEvaluationA3DStudy();
+
+            //console.log("Starting the eye tracking calibration with mode 3d equal to ");
+            //console.log(mode3d);
 
             vmIsCalibrated = false;
             vmInCalibration = true;
@@ -459,27 +481,52 @@ Rectangle {
             anchors.leftMargin: VMGlobals.adjustWidth(12.25)
         }
 
-        Text {
-            id: pressKeyToContinue;
-            color: VMGlobals.vmBlueSelected
-            text: loader.getStringForKey("explanation_key_to_continue");
-            font.pixelSize: VMGlobals.vmFontBaseSize
-            font.weight: 600
-            anchors.top: studyExplanationText.bottom
-            anchors.left: studyExplanationText.left
+        VMArrowButton {
+            id: pressKeyToContinue
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            anchors.bottomMargin: VMGlobals.adjustHeight(5);
+            anchors.rightMargin: VMGlobals.adjustWidth(5);
+            vmArrowPointsForward: true
             visible: (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)
+            onArrowPressed: {
+                flowControl.keyboardKeyPressed(Qt.Key_N);
+            }
         }
 
-        Text {
-            id: pressKeyToGoBack;
-            color: VMGlobals.vmBlueSelected
-            text: loader.getStringForKey("explanation_key_to_goback");
-            font.pixelSize: VMGlobals.vmFontBaseSize
-            font.weight: 600
-            anchors.top: pressKeyToContinue.bottom
-            anchors.left: pressKeyToContinue.left
+        VMArrowButton {
+            id: pressKeyToGoBack
+            anchors.bottom: pressKeyToContinue.bottom
+            anchors.right: pressKeyToContinue.left
+            anchors.rightMargin: VMGlobals.adjustWidth(1);
+            vmArrowPointsForward: false
             visible: (vmEvaluationStage === vmSTAGE_EXPLANATION)
+            onArrowPressed: {
+                flowControl.keyboardKeyPressed(Qt.Key_B);
+            }
         }
+
+        //        Text {
+        //            id: pressKeyToContinue;
+        //            color: VMGlobals.vmBlueSelected
+        //            text: loader.getStringForKey("explanation_key_to_continue");
+        //            font.pixelSize: VMGlobals.vmFontBaseSize
+        //            font.weight: 600
+        //            anchors.top: studyExplanationText.bottom
+        //            anchors.left: studyExplanationText.left
+        //            visible: (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)
+        //        }
+
+        //        Text {
+        //            id: pressKeyToGoBack;
+        //            color: VMGlobals.vmBlueSelected
+        //            text: loader.getStringForKey("explanation_key_to_goback");
+        //            font.pixelSize: VMGlobals.vmFontBaseSize
+        //            font.weight: 600
+        //            anchors.top: pressKeyToContinue.bottom
+        //            anchors.left: pressKeyToContinue.left
+        //            visible: (vmEvaluationStage === vmSTAGE_EXPLANATION)
+        //        }
 
 
     }
@@ -575,6 +622,8 @@ Rectangle {
 
         var explanations = loader.getStringListForKey("viewevaluation_keyboard_explanations");
         var keys = ["ESC","G","N","B","D","S"]
+        var to_skip = ["N","B"]; // This is added JUST so we don't need to change the language file in order to print out a smaller set of keys.
+        //var keys = ["ESC","G","D","S"]
 
         if (keys.length !== explanations.length){
             //console.log("Key Array is " + keys.length + " and explanation array is " + explanations.length)
@@ -582,6 +631,9 @@ Rectangle {
         }
 
         for (var i = 0; i < keys.length; i++){
+
+            if (to_skip.includes(keys[i])) continue;
+
             let item = { "key" : keys[i], "explanation": explanations[i] };
             keysModel.append(item);
         }

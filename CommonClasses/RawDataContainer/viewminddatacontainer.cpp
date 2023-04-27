@@ -799,7 +799,7 @@ QString ViewMindDataContainer::MAIN_FIELD_METADATA                    = "metadat
 QString ViewMindDataContainer::MAIN_FIELD_APPLICATION_USER            = "application_user";
 QString ViewMindDataContainer::MAIN_FIELD_STUDIES                     = "studies";
 QString ViewMindDataContainer::MAIN_FIELD_HASH                        = "hash";
-QString ViewMindDataContainer::MAIN_FIELD_CALIBRATION                 = "calibration_validation";
+QString ViewMindDataContainer::MAIN_FIELD_CALIBRATION                 = "calibration";
 
 QString ViewMindDataContainer::CURRENT_JSON_STRUCT_VERSION            = "1";
 

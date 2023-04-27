@@ -89,7 +89,8 @@ protected:
     const char * STUDY_TEXT_KEY_GONOGO_3D      = "explanation_phase_list_gonogo_3D";
     const char * STUDY_TEXT_KEY_PASS_BALL      = "explanation_phase_list_pass_ball";
     const char * STUDY_TEXT_KEY_NBACKRT        = "explanation_phase_list_nbackrt";
-    const char * STUDY_TEXT_KEY_NBACKRT_SLOW   = "explanation_phase_list_nbackrt_slow";
+    const char * STUDY_TEXT_KEY_NBACK_3        = "explanation_phase_list_nback_3";
+    const char * STUDY_TEXT_KEY_NBACK_4        = "explanation_phase_list_nback_4";
     const char * STUDY_TEXT_KEY_NBACKVS        = "explanation_phase_list_nbackvs";
 
     const qint32 NUMBER_OF_TRIALS_IN_SHORT_MODE = 5;
