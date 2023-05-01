@@ -50,6 +50,7 @@ public:
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE bool isVROk() const;
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
+    Q_INVOKABLE void finalizeStudyOperation() const;
 
     // Eye Tracking Control commands.
     Q_INVOKABLE bool isConnected() const;
@@ -92,6 +93,10 @@ signals:
 
     // Wrongfull disconnect with remote render server.
     void renderServerDisconnect();
+
+    // Once study operations are finalized this signal is emitted. The final operations make take time. So the study end signaled so that the front end might put up
+    // a wait screen. And then the study end processing is carried out on a background thread.
+    void studyEndProcessingDone();
 
 public slots:
 

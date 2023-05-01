@@ -69,7 +69,7 @@ public:
     QString getError() const {return error;}
 
     // Getting the generated data file
-    QString getDataFileLocation() const {return dataFile;}
+    QStringList getDataFilesLocation() const;
 
     // Keyboard press handling function
     void keyboardKeyPressed(int keyboardKey);
@@ -146,8 +146,9 @@ protected:
     // Where the data file will be stored and any other required image.
     QString workingDirectory;
 
-    // Where the data from the experiment will be stored
+    // Where the data from the experiment will be stored same for the idx file.
     QString dataFile;
+    QString idxFile;
 
     // Online fixation computation.
     Fixation lastFixationL;

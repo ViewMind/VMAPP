@@ -23,37 +23,42 @@ bool QualityControl::checkFileIntegrity(){
 
 void QualityControl::run(){
 
-    if (!rawdata.loadFromJSONFile(originalFileName)){
-        error = "Could not load the raw data file: " + originalFileName + ". Reason: " + rawdata.getError();
-        return;
-    }
+//    if (!rawdata.loadFromJSONFile(originalFileName)){
+//        error = "Could not load the raw data file: " + originalFileName + ". Reason: " + rawdata.getError();
+//        return;
+//    }
 
-    if (DBUGBOOL(Debug::Options::FIX_QC_SHA_CHECKS)){
-        QString dbug = "DBUG FORCE FIX QC SHA CHECKS";
-        qDebug() << dbug;
-        StaticThreadLogger::warning("QualityControl::run",dbug);
-        rawdata.setChecksumHash();
-    }
+//    if (DBUGBOOL(Debug::Options::FIX_QC_SHA_CHECKS)){
+//        QString dbug = "DBUG FORCE FIX QC SHA CHECKS";
+//        qDebug() << dbug;
+//        StaticThreadLogger::warning("QualityControl::run",dbug);
+//        rawdata.setChecksumHash();
+//    }
 
-    if (!rawdata.verifyChecksumHash()){
-        error = "Checksum verification changed in the raw data file";
-        return;
-    }
+//    if (!rawdata.verifyChecksumHash()){
+//        error = "Checksum verification changed in the raw data file";
+//        return;
+//    }
 
-    // This allows to recompute QC factors if, online, those factors were updated.
-    rawdata.setQCParameters(updatedQCParameters);
+//    // This allows to recompute QC factors if, online, those factors were updated.
+//    rawdata.setQCParameters(updatedQCParameters);
 
-    availableStudies = rawdata.getStudies();
-    qualityControlData.clear();
+//    availableStudies = rawdata.getStudies();
+//    qualityControlData.clear();
 
-    listOfStudy3DFlag.clear();
-    for (qint32 i = 0; i < availableStudies.size(); i++){
-        QString study = availableStudies.at(i);
-        QString metaStudy = VMDC::MultiPartStudyBaseName::getMetaStudy(study);
-        if (!computeQualityControlVectors(study,metaStudy)) return;
-    }
+//    listOfStudy3DFlag.clear();
+//    for (qint32 i = 0; i < availableStudies.size(); i++){
+//        QString study = availableStudies.at(i);
+//        QString metaStudy = VMDC::MultiPartStudyBaseName::getMetaStudy(study);
+//        if (!computeQualityControlVectors(study,metaStudy)) return;
+//    }
 
-    return;
+//    return;
+
+    QElapsedTimer t;
+    t.start();
+    while (t.elapsed() < 3000)
+
 }
 
 void QualityControl::setVMContainterFile(const QString &file, const QVariantMap &updateQC){

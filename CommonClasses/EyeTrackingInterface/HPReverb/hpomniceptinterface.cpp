@@ -40,8 +40,6 @@ void HPOmniceptInterface::enableUpdating(bool enable){
 
 void HPOmniceptInterface::newEyeData(QVariantMap eyedata){
 
-    //qDebug() << eyedata;
-
     // Passing the current values throught the transformation matrix.
     float xl, yl, zl, xr, yr, zr;
     float oxl, oyl, ozl, oxr, oyr, ozr;

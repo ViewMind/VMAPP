@@ -40,6 +40,8 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
 
     eyeTracker->connectToEyeTracker();
 
+    calibrationHistory.reset();
+
 }
 
 void FlowControl::startRenderServerAndSetWindowID(WId winID){
@@ -339,7 +341,10 @@ void FlowControl::onRequestUpdate(){
 
 void FlowControl::onNewEyeDataAvailable(const EyeTrackerData &data){
 
+
     if (calibrationManager.requires2DCalibrationDataPointSamples()){
+
+        qDebug() << "Adding data to calib point";
 
         calibrationManager.addEyeDataToCalibrationPoint(static_cast<float>(data.xl()),
                                                         static_cast<float>(data.xr()),
@@ -352,6 +357,9 @@ void FlowControl::onNewEyeDataAvailable(const EyeTrackerData &data){
     }
 
     if (experiment != nullptr){
+
+        qDebug() << "Experiment data";
+
         EyeTrackerData corrected = calibrationManager.correct2DData(data);
         experiment->newEyeDataAvailable(corrected);
     }

@@ -450,7 +450,7 @@ bool Experiment::saveDataToHardDisk(){
     // Hence it is much much lighter to quickly load for information reference.
     QFileInfo info(dataFile);
     QString basename = info.baseName();
-    QString idxFile = workingDirectory + "/" + basename + ".idx";
+    idxFile = workingDirectory + "/" + basename + ".idx";
 
     bool ans = rawdata.saveJSONFile(dataFile,true);
     if (!ans) return false;
@@ -458,6 +458,12 @@ bool Experiment::saveDataToHardDisk(){
     rawdata.clearFieldsForIndexFileCreation();
     ans = rawdata.saveJSONFile(idxFile,true);
 
+    return ans;
+}
+
+QStringList Experiment::getDataFilesLocation() const{
+    QStringList ans;
+    ans << dataFile << idxFile;
     return ans;
 }
 

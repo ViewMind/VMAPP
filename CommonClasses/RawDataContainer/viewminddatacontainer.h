@@ -134,7 +134,9 @@ public:
 
     QVariantMap getStudyConfiguration(const QString study_type) ;
 
-    QString getStudyCode(const QString &study) ;
+    QString getStudyCode(const QString &study);
+
+    qreal getStudyDuration(const QString &study);
 
     QStringList getMetaDataDateTime() ;  // Returns a display string and then a string that cna be used for sorting. The list always has two values.
 

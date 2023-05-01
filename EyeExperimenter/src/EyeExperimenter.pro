@@ -84,6 +84,7 @@ SOURCES += main.cpp \
     flowcontrol.cpp \
     localdb.cpp \
     qualitycontrol.cpp \
+    studyendoperations.cpp \
     subjectdirscanner.cpp \
     updater.cpp
 
@@ -159,6 +160,7 @@ HEADERS += \
     localdb.h \
     countries.h \
     qualitycontrol.h \
+    studyendoperations.h \
     subjectdirscanner.h \
     updater.h
 

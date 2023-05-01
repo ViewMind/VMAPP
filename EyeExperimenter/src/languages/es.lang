@@ -27,6 +27,8 @@ Por favor, ábrala nuevamente para ver reflejado los cambios;
 #********************************* WAIT SCREEN *********************************
 viewwait_synching = Obteniendo información del portal.
 Por favor espere ... ;
+viewwait_study_end = Finalizando estudio. 
+Por favor espere ... ;
 
 #********************************* LOGIN SCREEN *********************************
 viewlogin_title = Ingreso Evaluador;

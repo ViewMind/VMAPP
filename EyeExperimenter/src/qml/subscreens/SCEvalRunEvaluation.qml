@@ -52,11 +52,18 @@ Rectangle {
             }
             else{
                 flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + evalTitle.text);
-                viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_next_button"),"next")
-                viewEvaluations.enableNextButton(true)
+                // We show the wait screen while we do some background processing.
+                mainWindow.openWait(loader.getStringForKey("viewwait_study_end"));
+                flowControl.finalizeStudyOperation();
+
             }
         }
 
+
+        function onStudyEndProcessingDone() {
+            viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_next_button"),"next")
+            viewEvaluations.enableNextButton(true)
+        }
 
         function onCalibrationDone(calibrated) {
 
