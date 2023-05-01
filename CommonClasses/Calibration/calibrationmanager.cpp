@@ -327,6 +327,8 @@ bool CalibrationManager::debugLoadFixed3DCalibrationParameters() {
 
     emit CalibrationManager::calibrationDone(CALIBRATION_SUCCESSFUL);
 
+    isDataGatheringEnabled = false;
+
     return true;
 }
 
@@ -349,11 +351,13 @@ bool CalibrationManager::debugLoadFixed2DCalibrationParameters(){
     -2063.753443167157,1245.5719666971615\n\
     -2095.759211028236,1337.245378319595";
 
-    //qDebug() << "Loading from matrix";
+    //qDebug() << "Loading from matrix 2D Parameters";
 
     if (!correctionCoefficients.loadFromTextMatrix(matrix)) return false;
 
     //qDebug() << "Emitting calibration successfull";
+
+    isDataGatheringEnabled = false;
 
     emit CalibrationManager::calibrationDone(CALIBRATION_SUCCESSFUL);
 

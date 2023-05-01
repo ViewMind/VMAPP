@@ -27,6 +27,8 @@ You must open it back up for the changes to take effect;
 #********************************* WAIT SCREEN *********************************
 viewwait_synching = Retrieving portal information.
 Please wait ... ;
+viewwait_study_end = Finalizing study.
+Please wait ...;
 
 #********************************* LOGIN SCREEN *********************************
 viewlogin_title = Evaluator Login;

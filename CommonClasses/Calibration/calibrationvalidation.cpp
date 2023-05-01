@@ -93,7 +93,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
     QStringList lines;
 
-    //qDebug() << "Generating Calibration Report. Is Mode 3D" << coeffs.isIn3DMode();
+    qDebug() << "Generating Calibration Report. Is Mode 3D" << configuredFor3D;
 
     QString mode = "2D";
     if (configuredFor3D) mode = "3D";
@@ -123,7 +123,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
     for (qsizetype i = 0; i < validationData.size(); i++){
 
-        //qDebug() << "Validation data at" << i << " of " << validationData.size();
+        qDebug() << "Validation data at" << i << " of " << validationData.size();
 
         qreal pl = leftHits.at(i);
         qreal pr = rightHits.at(i);
@@ -297,6 +297,9 @@ void CalibrationValidation::setDataFromString(const QString &json){
         return;
     }
     QVariantMap map = doc.object().toVariantMap();
-    calibrationAttempt = map.value(VMDC::CalibrationFields::CALIBRATION_ATTEMPTS).toMap();
+
+    // Debug::prettpPrintQVariantMap(map);
+
+    calibrationAttempt = map.value(VMDC::CalibrationFields::CALIBRATION_ATTEMPTS).toList().first().toMap();
     calibrationConfiguration = map.value(VMDC::CalibrationFields::CONFIG_PARAMS).toMap();
 }

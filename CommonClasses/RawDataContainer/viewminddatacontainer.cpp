@@ -134,6 +134,27 @@ QString ViewMindDataContainer::getStudyCode(const QString &study) {
 
 }
 
+qreal ViewMindDataContainer::getStudyDuration(const QString &study){
+
+
+    QString check = VMDC::Study::validate(study);
+
+    if (check != ""){
+        error = "Attempting to get study configuration: " + check;
+        return -1;
+    }
+
+    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study;
+    if (!checkHiearchyChain(hierarchy)) return -1;
+
+    //data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::)
+
+    QString code = data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::ABBREVIATION).toString();
+    code = code + data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::CONFIG_CODE).toString();
+    return code;
+
+}
+
 QStringList ViewMindDataContainer::getMetaDataDateTime(){
     QStringList hierarchy; hierarchy << MAIN_FIELD_METADATA;
     if (!checkHiearchyChain(hierarchy)) return QStringList();
