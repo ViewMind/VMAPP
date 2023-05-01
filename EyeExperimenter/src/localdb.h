@@ -68,6 +68,7 @@ public:
     static const char * MAIN_APP_UPDATE_DELAY_COUNTER;
     static const char * MAIN_DB_VERSION;
     static const char * MAIN_RECOVERY_PASSWORD;
+    static const char * MAIN_QC_STUDY_INDEX;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -101,6 +102,14 @@ public:
     static const char * PROTOCOL_NAME;
     static const char * PROTOCOL_CREATION_DATE;
     static const char * PROTOCOL_ID;
+
+    // QC Index Fields
+    static const char * QCI_MEDIC;
+    static const char * QCI_DATE;
+    static const char * QCI_INDEX;
+    static const char * QCI_STUDY_TYPE;
+    static const char * QCI_SUBJECT;
+    static const char * QCI_FILE;
 
     static const qint32 LOCALDB_VERSION = 3;
 
@@ -215,6 +224,13 @@ public:
 
     // Returns tht number of patients on the DB.
     qint32 getSubjectCount() const;
+
+    // Add the QC Study index to the indexed list. This list is the list which will be used to display the study to send list.
+    void addQCStudyIndex(const QString &evaluator_email, const QString &subject_id, const QString &file_name,
+                         qreal qc_index, const QString &date, const QString &std_study_name, const QString &target_doctor_email);
+
+    // Returns the QC data to generate the study table. It's a list of maps. Each of those with the key of each data field required to display in the table.
+    QVariantList getQCStudyTable(const QString &evaluator) const;
 
 
 private:

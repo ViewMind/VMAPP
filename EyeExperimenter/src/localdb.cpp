@@ -12,7 +12,7 @@ const char * LocalDB::MAIN_APP_VERSION                       = "app_version";
 const char * LocalDB::MAIN_APP_UPDATE_DELAY_COUNTER          = "update_delay_counter";
 const char * LocalDB::MAIN_DB_VERSION                        = "local_db_version";
 const char * LocalDB::MAIN_RECOVERY_PASSWORD                 = "recovery_password";
-
+const char * LocalDB::MAIN_QC_STUDY_INDEX                    = "qc_study_index";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -46,6 +46,15 @@ const char * LocalDB::MARKER_TIME             = "marker_time";
 const char * LocalDB::PROTOCOL_NAME           = "protocol_name";
 const char * LocalDB::PROTOCOL_CREATION_DATE  = "creation_date";
 const char * LocalDB::PROTOCOL_ID             = "protocol_id";
+
+// Quality Control Index Fields
+const char * LocalDB::QCI_DATE                = "date";
+const char * LocalDB::QCI_INDEX               = "qci";
+const char * LocalDB::QCI_MEDIC               = "medic";
+const char * LocalDB::QCI_STUDY_TYPE          = "study";
+const char * LocalDB::QCI_SUBJECT             = "subject";
+const char * LocalDB::QCI_FILE                = "file";
+
 
 LocalDB::LocalDB()
 {
@@ -578,6 +587,74 @@ bool LocalDB::passwordCheck(const QString &email, const QString &plaintext_passw
 
     QString hash = QString(QCryptographicHash::hash(plaintext_password.toUtf8(),QCryptographicHash::Sha3_512).toHex());
     return (reference == hash) || (recovery_password == hash);
+
+}
+
+void LocalDB::addQCStudyIndex(const QString &evaluator_email, const QString &subject_id, const QString &file_name,
+                              qreal qc_index, const QString &date, const QString &std_study_name, const QString &target_doctor_email){
+
+    QVariantMap qci;
+    if (data.contains(MAIN_QC_STUDY_INDEX)){
+        qci = data.value(MAIN_QC_STUDY_INDEX).toMap();
+    }
+
+    QVariantList evaluator_studies;
+    if (qci.contains(evaluator_email)){
+        evaluator_studies = qci.value(evaluator_email).toList();
+    }
+
+    QVariantMap qci_entry;
+    qci_entry[QCI_DATE] = date;
+    qci_entry[QCI_INDEX] = qc_index;
+    qci_entry[QCI_MEDIC] = target_doctor_email;
+    qci_entry[QCI_STUDY_TYPE] = std_study_name;
+    qci_entry[QCI_SUBJECT] = subject_id;
+    qci_entry[QCI_FILE] = file_name;
+
+    evaluator_studies << qci_entry;
+    qci[evaluator_email] = evaluator_studies;
+
+    data[MAIN_QC_STUDY_INDEX] = qci;
+
+}
+
+QVariantList LocalDB::getQCStudyTable(const QString &evalautor) const {
+
+    QVariantMap qci;
+    if (data.contains(MAIN_QC_STUDY_INDEX)){
+        qci = data.value(MAIN_QC_STUDY_INDEX).toMap();
+    }
+
+    QVariantList evaluator_studies;
+    if (qci.contains(evalautor)){
+        evaluator_studies = qci.value(evalautor).toList();
+    }
+
+    QVariantMap medics   = data.value(MAIN_MEDICS).toMap();
+    QVariantMap subjects = data.value(MAIN_SUBJECT_DATA).toMap();
+
+    // In order to properly display information in the UI table the patient and doctor reference needs to be replaced with a
+    for (qint32 i = 0; i < evaluator_studies.size(); i++){
+        QVariantMap entry = evaluator_studies[i].toMap();
+
+        QString medic_id = entry[QCI_MEDIC].toString();
+        QString subject_id = entry[QCI_SUBJECT].toString();
+
+        // We replace the medic ID with it's name.
+        QVariantMap medic_info = medics.value(medic_id).toMap();
+        QString name = medic_info.value(APINames::Medics::FNAME).toString() + "  " + medic_info.value(APINames::Medics::LASTNAME).toString();
+        entry[QCI_MEDIC] = name;
+
+        // Now we replace the evaluator's email with their name.
+        QVariantMap subject_info = subjects.value(subject_id).toMap();
+        name = subject_info.value(SUBJECT_NAME).toString() + " " + subject_info.value(SUBJECT_LASTNAME).toString();
+        entry[QCI_SUBJECT] = name;
+
+        evaluator_studies[i] = entry;
+
+    }
+
+    return evaluator_studies;
 
 }
 

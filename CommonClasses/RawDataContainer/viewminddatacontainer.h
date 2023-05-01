@@ -14,6 +14,7 @@
 #include <QDateTime>
 #include <QSet>
 #include <QDebug>
+#include <QElapsedTimer>
 #include <QCryptographicHash>
 #include "VMDC.h"
 #include "../debug.h"
@@ -64,6 +65,8 @@ public:
     bool addStudy(const QString &study, const QVariantMap &studyConfiguration, const QString &experimentDescription, const QString &version);
 
     bool setCurrentStudy(const QString &study);
+
+    void setCurrentStudyStart();
 
     bool setExperimentDescriptionMap(const QVariantMap &expDesc);
 
@@ -148,11 +151,16 @@ public:
 
     QVariantMap getQCParameters() const;
 
+    bool isStudy3D(const QString &study) const;
+
     void DebugPrintContentToConsole() const;
 
 private:
     QVariantMap data;
     QString error;
+
+    QElapsedTimer studyDurationMeasure;
+    QString startTimeForCurrentStudy;
 
     // Variables where information is stored as it is being gerated . On finalization they are passed on to the permanent structure.
     QVariantList currentTrialList;

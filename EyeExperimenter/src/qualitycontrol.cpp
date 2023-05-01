@@ -20,7 +20,6 @@ bool QualityControl::checkFileIntegrity(){
     return rawdata.verifyChecksumHash();
 }
 
-
 void QualityControl::run(){
 
     if (!rawdata.loadFromJSONFile(originalFileName)){
@@ -95,7 +94,6 @@ QVariantList QualityControl::getStudyList() const {
 
     return list;
 }
-
 
 QString QualityControl::getError() const {
     return error;
@@ -629,6 +627,62 @@ bool QualityControl::computeQualityControlVectorsFor3DStudies(const QString &stu
 
     qualityControlData.insert(studyType,studyQC);
     return true;
+
+
+}
+
+
+////////////////////////////////////////// Individual QC Computing Functions //////////////////////////////////////////////
+
+qreal QualityControl::computeQCStudy(qreal sampling_frequency){
+
+    // First we get a list of studies.
+    QStringList studies = rawdata.getStudies();
+
+    // Then we iterate over each study getting the number of data points
+    qreal n_datapoints_collected = 0;
+    for (qint32 i = 0; i < studies.size(); i++){
+
+        QString study = studies.at(i);
+
+        if (rawdata.isStudy3D(study)){
+
+
+        }
+        else {
+
+            // This a 3D study. We need to get the trial list.
+            QVariantList trialList = rawdata.getStudyTrialList(study);
+
+            for (qint32 i = 0; i < trialList.size(); i++){
+
+                QVariantMap trial = trialList.at(i).toMap();
+                QVariantMap data = trial.value(VMDC::TrialField::DATA).toMap();
+                QStringList dataset_names = data.keys();
+
+                for (qint32 j = 0; j < dataset_names.size(); j++){
+
+                    QVariantMap dataSet = data.value(dataset_names.at(j)).toMap();
+                    QVariantList rawData = dataSet.value(VMDC::DataSetField::RAW_DATA).toList();
+
+                    // Must make sure that there is something to check.
+                    if (rawData.size() < 2) continue;
+
+                    //QVariantMap first = rawData.first().toMap();
+
+                }
+
+
+            }
+
+
+
+        }
+
+
+    }
+
+    return 0.0;
 
 
 }

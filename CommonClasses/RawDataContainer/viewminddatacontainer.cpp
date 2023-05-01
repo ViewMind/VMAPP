@@ -186,6 +186,13 @@ void ViewMindDataContainer::DebugPrintContentToConsole() const{
     Debug::prettpPrintQVariantMap(data);
 }
 
+bool ViewMindDataContainer::isStudy3D(const QString &study) const {
+    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study;
+    // We base the search on finding (or not) the trial_list field in the study itself.
+    if (data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().contains(VMDC::StudyField::TRIAL_LIST)) return false;
+    else return true;
+}
+
 
 ///////////////////////////////////////////////// SETTING DATA FUNCTIONS /////////////////////////////////////////////////////////////////////////
 
@@ -332,6 +339,13 @@ bool ViewMindDataContainer::setCurrentStudy(const QString &study){
 
 }
 
+void ViewMindDataContainer::setCurrentStudyStart(){
+
+    startTimeForCurrentStudy = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    studyDurationMeasure.start();
+
+}
+
 bool ViewMindDataContainer::setExperimentDescriptionMap(const QVariantMap &expDesc){
 
     if (currentlySelectedStudy == ""){
@@ -429,8 +443,8 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     valid_parameter_values[VMDC::StudyParameter::DEFAULT_EYE] = VMDC::Eye::valid;
 
     // Computing the time stamp fields
-    QString date = QDateTime::currentDateTime().toString("dd/MM/yyyy");
-    QString hour = QDateTime::currentDateTime().toString("HH:mm");
+    //QString date = QDateTime::currentDateTime().toString("dd/MM/yyyy");
+    //QString hour = QDateTime::currentDateTime().toString("HH:mm");
 
     // Set the list of the parameters to check depending on study.
     if ((study == VMDC::Study::BINDING_BC) || (study == VMDC::Study::BINDING_UC)){
@@ -515,8 +529,8 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     //qDebug() << "Setting STUDY CONFIG in Final Json VMDC";
     //Debug::prettpPrintQVariantMap(finalStudyConfiguration);
 
-    studyToConfigure.insert(VMDC::StudyField::DATE,date);
-    studyToConfigure.insert(VMDC::StudyField::HOUR,hour);
+    //studyToConfigure.insert(VMDC::StudyField::DATE,date);
+    //studyToConfigure.insert(VMDC::StudyField::HOUR,hour);
     studyToConfigure.insert(VMDC::StudyField::EXPERIMENT_DESCRIPTION,experimentDescription);
     studyToConfigure.insert(VMDC::StudyField::VERSION,version);
     studyToConfigure.insert(VMDC::StudyField::CONFIG_CODE,config_code);
@@ -656,6 +670,10 @@ bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data){
     }
 
     study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
+
+    study.insert(VMDC::StudyField::START_TIME,startTimeForCurrentStudy);
+    study.insert(VMDC::StudyField::END_TIME,QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    study.insert(VMDC::StudyField::STUDY_DURATION,studyDurationMeasure.elapsed());
 
     studies[studyName] = study;
 

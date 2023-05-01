@@ -295,6 +295,7 @@ void Experiment::process3DStudyControlPacket(const RenderServerPacket &p) {
 
 void Experiment::setStudyPhaseToEvaluation(){
     studyPhase = SP_EVALUATION;
+    rawdata.setCurrentStudyStart();
     if (isStudy3D){
         // Send the packet indicating the study start.
         rrsControlPacket.resetForRX();
@@ -302,7 +303,7 @@ void Experiment::setStudyPhaseToEvaluation(){
         rrsControlPacket.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_STUDY_START);
         emit Experiment::remoteRenderServerPacketAvailable();
     }
-    else {
+    else {        
         manager->setTrialCountLoopValue(-1);
         resetStudy();
     }

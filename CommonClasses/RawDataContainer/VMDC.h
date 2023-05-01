@@ -382,8 +382,11 @@ namespace VMDC {
     
     
     namespace StudyField {
-       static const QString DATE                   = "date";
-       static const QString HOUR                   = "hour";
+//       static const QString DATE                   = "date";
+//       static const QString HOUR                   = "hour";
+       static const QString START_TIME             = "start_time";
+       static const QString END_TIME               = "end_time";
+       static const QString STUDY_DURATION         = "study_duration";
        static const QString EXPERIMENT_DESCRIPTION = "experiment_description";
        static const QString STUDY_CONFIGURATION    = "study_configuration";
        static const QString TRIAL_LIST             = "trial_list";
@@ -393,7 +396,7 @@ namespace VMDC {
        static const QString ABBREVIATION           = "abbreviation";
        static const QString CONFIG_CODE            = "config_code";
        static const QString QUALITY_CONTROL        = "quality_control";
-       static const QStringList valid{DATE,HOUR,EXPERIMENT_DESCRIPTION,STUDY_CONFIGURATION,TRIAL_LIST,VERSION,STATUS,ABBREVIATION,CONFIG_CODE,QUALITY_CONTROL};
+       static const QStringList valid{START_TIME,END_TIME,STUDY_DURATION,EXPERIMENT_DESCRIPTION,STUDY_CONFIGURATION,TRIAL_LIST,VERSION,STATUS,ABBREVIATION,CONFIG_CODE,QUALITY_CONTROL};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
