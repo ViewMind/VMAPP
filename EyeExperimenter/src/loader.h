@@ -15,6 +15,7 @@
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/FileDownloader/filedownloader.h"
 #include "../../CommonClasses/HWRecog/hwrecognizer.h"
+#include "studyendoperations.h"
 #include "eyexperimenter_defines.h"
 #include "countries.h"
 #include "localdb.h"
@@ -22,6 +23,7 @@
 #include "apiclient.h"
 #include "qualitycontrol.h"
 #include "updater.h"
+
 
 class Loader : public QObject
 {
@@ -124,7 +126,8 @@ signals:
 private slots:
     void receivedRequest();
     void updateDownloadFinished(bool allOk);
-    void qualityControlFinished();
+    void qualityControlFinished();    
+    void startUpSequenceCheck(); // Start up sequence value checker. When it reaches 2 the start up sequence finished. Needs to be a slot that the qc checker can connect to when finished
 
 private:
 
@@ -141,6 +144,13 @@ private:
 
     // The API communication client.
     APIClient apiclient;
+
+    // Start up sequence flag. It requires two process to be done in order to actually kill the wait screen.
+    quint8 startUpSequenceFlag;
+
+    // The object is used to make sure al QCI files are generated. Will almost certainly be ONLY of use when updating to the version of the
+    // APP that started using the unified QC.
+    StudyEndOperations qcChecker;
 
     // The object required to download the update files from the URL provided by the API.
     FileDownloader fileDownloader;
@@ -188,6 +198,7 @@ private:
     // When a study needs to run but no report can be generated, the study is treated EXACLTY
     // like a discarded study, but the discard reason (a string code) is specific to this effect.
     static const QString NO_REPORT_DISCARD_CODE;
+
 
 };
 

@@ -6,7 +6,8 @@ viewstart_instruction = Ingrese a su perfil or agregue un nuevo evaluador;
 viewstart_login = INGRESAR;
 viewstart_addneweval = NUEVO EVALUADOR;
 viewstart_settings   = Configuración;
-viewstart_configuration_failed = Unable to Load Configuration|The application is unable to start\nPlease contatct ViewMind for help;
+viewstart_configuration_failed = No es posible cargar la configuracion|La aplicación no puede empezar.
+Por favor contáctese con ViewMind;
 viewstart_vr_disconnect = <b>Pérdida de conexión al HMD</b><br>Por favor reinicie la aplicación;
 
 #********************************* SETTINGS DIALOG *********************************

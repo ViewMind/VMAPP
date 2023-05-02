@@ -17,6 +17,7 @@ public:
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
                          const QVariantMap &studyConfig) override;
 
+    static const qint32 NBACKVS_TRANSITION_TIME;
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -126,8 +127,7 @@ private:
     static const qint32 NBACKVS_STEP_HOLD_TIME;
     static const qint32 NBACKVS_START_HOLD_TIME;
     static const qint32 NBACKVS_NTRIAL_FOR_STEP_CHANGE;
-    static const qint32 NBACKVS_RETRIEVAL_TIMEOUT;
-    static const qint32 NBACKVS_TRANSITION_TIME;
+    static const qint32 NBACKVS_RETRIEVAL_TIMEOUT;    
 
     QVariantMap addHitboxesToProcessingParameters(QVariantMap pp);
     void nextEncodingDataSetType();

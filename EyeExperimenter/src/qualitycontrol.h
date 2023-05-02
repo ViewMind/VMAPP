@@ -61,19 +61,6 @@ private:
     bool computeQualityControlVectorsFor2DStudies(const QString &studyType, const QString &metaStudyName);
 
 
-    /**
-     * @brief computeQCStudy
-     * @param sampling_frequency - The eye tracking sampling frequency.
-     * @details QC computes the nubmer of data points obtained versus the number of datapoints that we actually got.
-     * This is done by summing up both the number of points and of data gathering intervals and then computing,
-     * using the smapling frequency the expected number of data points. The Final QC is the ratio or obtained data points
-     * to expected data points.
-     * If more than one study is present this is totalled over all studies.
-     * @return
-     */
-
-    qreal computeQCStudy(qreal sampling_frequency);
-
 };
 
 #endif // QUALITYCONTROL_H

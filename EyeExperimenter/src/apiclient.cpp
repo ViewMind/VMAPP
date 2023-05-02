@@ -1,7 +1,5 @@
 #include "apiclient.h"
 
-const QString APIClient::TAR_EXE = "tar.exe";
-
 APIClient::APIClient(QObject *parent) : QObject(parent)
 {
     API = Globals::API_URL;
@@ -61,42 +59,12 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string)
     return sendRequest();
 }
 
-bool APIClient::requestReportProcessing(const QString &jsonFile){
+bool APIClient::requestReportProcessing(const QString &tarFile){
 
     error = "";
 
-    // Before sending the file must be compressed. We use tar.exe.
-    // First we need to get the working directory.
-    QFileInfo info(jsonFile);
-
-    QString directory = info.absolutePath();
-    QString basename = info.baseName();
-
-    QString localJSON = basename + ".json";
-    QString localIDX  = basename + ".idx";
-    QString zipfile   = basename + ".zip";
-
-    QStringList arguments;
-    arguments << "-c";
-    arguments << "-z";
-    arguments << "-f";
-    arguments << zipfile;
-    arguments << localJSON;
-    arguments << localIDX;
-
-    //qDebug() << "jsonFile" << jsonFile << "zip" << zipfile;
-
-    QProcess tar;
-    tar.setWorkingDirectory(directory);
-    tar.start(TAR_EXE,arguments);
-    tar.waitForFinished();
-
-    qint32 exit_code = tar.exitCode();
-
-    zipfile = directory + "/" + zipfile;
-
-    if (!QFile(zipfile).exists()){
-        error = "Could not zip the input file " + jsonFile + ". Exit code for TAR.exe is: " + QString::number(exit_code);
+    if (!QFile(tarFile).exists()){
+        error = "Could not fint the input file " + tarFile;
         return false;
     }
 
@@ -117,8 +85,8 @@ bool APIClient::requestReportProcessing(const QString &jsonFile){
 
     rest_controller.setURLParameters(map);
 
-    if (!rest_controller.appendFileForRequest(zipfile,FILE_KEY)){
-        error = "Could not append ZIP File " + zipfile + " for request. Reason: " + rest_controller.getErrors().join("\n");
+    if (!rest_controller.appendFileForRequest(tarFile,FILE_KEY)){
+        error = "Could not append ZIP File " + tarFile + " for request. Reason: " + rest_controller.getErrors().join("\n");
         return false;
     }
 

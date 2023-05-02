@@ -16,6 +16,9 @@ public:
     bool startExperiment(const QString &workingDir, const QString &experimentFile,
                          const QVariantMap &studyConfig) override;
 
+    // Constants
+    static const qint32 GONOGO_TIME_CROSS     = 1000;
+    static const qint32 GONOGO_TIME_ESTIMULUS = 4000;
 
 public slots:
     void newEyeDataAvailable(const EyeTrackerData &data) override;
@@ -36,10 +39,6 @@ protected:
 
     // When to ignore data.
     bool ignoreData;
-
-    // Constants
-    static const qint32 GONOGO_TIME_CROSS     = 1000;
-    static const qint32 GONOGO_TIME_ESTIMULUS = 4000;
 
     QVariantMap setGoNoGoTargetBoxes(QVariantMap pp);
     bool addNewTrial();

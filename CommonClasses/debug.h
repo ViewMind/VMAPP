@@ -36,6 +36,7 @@ namespace Debug {
        const QString LOGIN_PASSWORD       = "login_password";
        const QString DISABLE_DB_CHECKSUM  = "disable_db_checksum";
        const QString NO_RM_STUDIES        = "do_no_remove_studies";
+       const QString PRETTY_PRINT_DB      = "pretty_print_db";
        const QString FIX_LOG_ENABLED      = "enable_fixation_logs";
        const QString SHORT_STUDIES        = "short_studies";
        const QString PATIENT_TO_LOAD      = "selected_patient";

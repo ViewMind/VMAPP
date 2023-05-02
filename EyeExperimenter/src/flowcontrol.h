@@ -31,6 +31,8 @@
 #include "../../CommonClasses/Calibration/calibrationmanager.h"
 #include "../../CommonClasses/Calibration/calibrationhistory.h"
 
+#include "studyendoperations.h"
+
 #include "eyexperimenter_defines.h"
 
 class FlowControl : public QWidget
@@ -44,13 +46,14 @@ public:
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
     Q_INVOKABLE void startStudyEvaluationPhase();
     Q_INVOKABLE void startStudyExamplePhase();
+    Q_INVOKABLE void finalizeStudyOperations();
 
     Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
     Q_INVOKABLE void resolutionCalculations();
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE bool isVROk() const;
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
-    Q_INVOKABLE void finalizeStudyOperation() const;
+
 
     // Eye Tracking Control commands.
     Q_INVOKABLE bool isConnected() const;
@@ -130,6 +133,9 @@ public slots:
     // Receives data from the eye tracker. Corrects it. And passes it on.
     void onNewEyeDataAvailable(const EyeTrackerData &data);
 
+    // The sstudy end process is triggered and this funciton is called. For storing data in the local DB and notifying the front end.
+    void onStudyEndProcessFinished();
+
 
 private slots:
 
@@ -172,6 +178,9 @@ private:
     QStringList countryList;
     QStringList countryCodes;
     void fillCountryList();
+
+    // The Study End Processor.
+    StudyEndOperations studyEndProcessor;
 
     // Stored value of the Viewmind Logo requried for background image math rendering
     QSizeF backgroundLogoSize;

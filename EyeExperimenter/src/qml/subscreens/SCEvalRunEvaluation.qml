@@ -53,14 +53,18 @@ Rectangle {
             else{
                 flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + evalTitle.text);
                 // We show the wait screen while we do some background processing.
+                flowControl.hideRenderWindow();
                 mainWindow.openWait(loader.getStringForKey("viewwait_study_end"));
-                flowControl.finalizeStudyOperation();
+                flowControl.finalizeStudyOperations();
 
             }
         }
 
 
         function onStudyEndProcessingDone() {
+            // Since flowcontrol does nto have access to the local DB, we need to get the entry from flow control and pass it on to loader.
+            mainWindow.closeWait();
+            flowControl.showRenderWindow();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_next_button"),"next")
             viewEvaluations.enableNextButton(true)
         }

@@ -19,6 +19,9 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
     connect(&calibrationManager,&CalibrationManager::calibrationDone,this,&FlowControl::onCalibrationDone);
     connect(&calibrationManager,&CalibrationManager::newPacketAvailable,this,&FlowControl::onNewCalibrationRenderServerPacketAvailable);
 
+    // Making the connection to the end of the study processor.
+    connect(&studyEndProcessor,&StudyEndOperations::finished,this,&FlowControl::onStudyEndProcessFinished);
+
     if (DBUGINT(Debug::Options::OVERRIDE_TIME) != 0){
         QString msg = "DBUG: Override Time has been set to " + QString::number(DBUGINT(Debug::Options::OVERRIDE_TIME));
         qDebug() << msg;
@@ -344,8 +347,6 @@ void FlowControl::onNewEyeDataAvailable(const EyeTrackerData &data){
 
     if (calibrationManager.requires2DCalibrationDataPointSamples()){
 
-        qDebug() << "Adding data to calib point";
-
         calibrationManager.addEyeDataToCalibrationPoint(static_cast<float>(data.xl()),
                                                         static_cast<float>(data.xr()),
                                                         static_cast<float>(data.yl()),
@@ -358,12 +359,21 @@ void FlowControl::onNewEyeDataAvailable(const EyeTrackerData &data){
 
     if (experiment != nullptr){
 
-        qDebug() << "Experiment data";
-
         EyeTrackerData corrected = calibrationManager.correct2DData(data);
         experiment->newEyeDataAvailable(corrected);
     }
 }
+
+void FlowControl::onStudyEndProcessFinished(){
+    // We are done processing we notify the front end.
+    emit FlowControl::studyEndProcessingDone();
+}
+
+void FlowControl::finalizeStudyOperations() {
+    // We start the end of operations processing for the last saved files.
+    studyEndProcessor.start();
+}
+
 
 void FlowControl::onNewControlPacketAvailableFromStudy(){
     renderServerClient.sendPacket(experiment->getControlPacket());
@@ -689,9 +699,6 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     // If there was a hand calibration result, we need to remove it.
     configuration->removeKey(Globals::Share::HAND_CALIB_RES);
 
-    // Getting the information for the generated data file.
-    QFileInfo info(experiment->getDataFileLocation());
-
     switch (er){
     case Experiment::ER_ABORTED:
         StaticThreadLogger::log("FlowControl::on_experimentFinished","EXPERIMENT aborted");
@@ -714,6 +721,10 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
     disconnect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
     disconnect(experiment,&Experiment::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
     disconnect(experiment,&Experiment::remoteRenderServerPacketAvailable,this,&FlowControl::onNewCalibrationRenderServerPacketAvailable);
+
+    // We get the files for this experiment and set them. The processing will start AFTER we can get the wait screen up.
+    QStringList files = experiment->getDataFilesLocation();
+    studyEndProcessor.setFileToProcess(files.first(),files.last());
 
     delete experiment;
     experiment = nullptr;

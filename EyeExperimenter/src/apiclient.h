@@ -17,9 +17,6 @@ class APIClient : public QObject
 public:
     explicit APIClient(QObject *parent = nullptr);
 
-    // Command for compressor.
-    static const QString TAR_EXE;
-
     static const qint32 API_OPERATING_INFO         = 1;
     static const qint32 API_REQUEST_REPORT         = 2;
     static const qint32 API_REQUEST_UPDATE         = 3;
@@ -37,7 +34,7 @@ public:
     bool requestOperatingInfo(const QString &hardware_description_string);
 
     // Request processing for report.
-    bool requestReportProcessing(const QString &jsonFile);
+    bool requestReportProcessing(const QString &tarFile);
 
     // Resquest the download of the update file.
     bool requestUpdate(const QString &pathToSaveAFile);

@@ -7,6 +7,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
     connect(&qc,&QualityControl::finished,this,&Loader::qualityControlFinished);
     connect(&fileDownloader,&FileDownloader::downloadCompleted,this,&Loader::updateDownloadFinished);
+    connect(&qcChecker,&StudyEndOperations::finished,this,&Loader::startUpSequenceCheck);
 
     // Loading the configuration file and checking for the must have configurations
     // The data is this file should NEVER change. Its values should be fixed.
@@ -98,7 +99,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
         }
     }
 
-    if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,false,DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
+    if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,DBUGBOOL(Debug::Options::PRETTY_PRINT_DB),DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
         StaticThreadLogger::error("Loader::Loader","Could not set local db file: " + localDB.getError());
         loadingError = true;
         return;
@@ -749,6 +750,7 @@ bool Loader::areThereAnySubjects() const {
     return localDB.getSubjectCount() > 0;
 }
 
+
 ////////////////////////// MEDIC RELATED FUNCTIONS ////////////////////////////
 QVariantMap Loader::getMedicList() const {
     return localDB.getMedicDisplayList();
@@ -837,6 +839,16 @@ void Loader::requestOperatingInfo(){
     newVersionAvailable = "";
     processingUploadError = FAIL_CODE_NONE;
 
+    // We reset the startup sequence flag.
+    startUpSequenceFlag = 0;
+
+    // Now we set the work directory for generate any missing QCI files.
+    qcChecker.setFilesToProcessFromViewMindDataDirectory();
+
+    // We start the qcChecker in the background.
+    qcChecker.start();
+
+    // And now we request the operating info
     //qDebug() << "Requesting Operating Info";
     if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false))){
         StaticThreadLogger::error("Loader::requestOperatingInfo","Request operating info error: "  + apiclient.getError());
@@ -858,6 +870,16 @@ void Loader::sendStudy(){
 qint32 Loader::getLastAPIRequest(){
     return apiclient.getLastRequestType();
 }
+
+void Loader::startUpSequenceCheck() {
+    startUpSequenceFlag++;
+    if (startUpSequenceFlag >= 2){
+        startUpSequenceFlag = 0;
+        StaticThreadLogger::log("Loader::startUpSequenceCheck","Finsihed start up sequence (Operating Info and QCI Regen Check)");
+        emit Loader::finishedRequest();
+    }
+}
+
 
 void Loader::receivedRequest(){
 
@@ -928,6 +950,10 @@ void Loader::receivedRequest(){
                 StaticThreadLogger::error("Loader::receivedRequest",dbug);
             }
 
+            // We straight up call the start up sequence checker and get out.
+            startUpSequenceCheck();
+            return;
+
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
             StaticThreadLogger::log("Loader::receivedRequest","Study file was successfully sent");
@@ -983,7 +1009,7 @@ void Loader::updateDownloadFinished(bool allOk){
         QStringList arguments;
         arguments << "-xvzf" <<  dir.path() + "/" +  Globals::Paths::UPDATE_PACKAGE << "-C"  << dir.path();
         process.setProcessChannelMode(QProcess::MergedChannels);
-        process.start(APIClient::TAR_EXE,arguments);
+        process.start(Globals::Paths::TAR_EXE,arguments);
 
         if (!process.waitForFinished()){
             QString output = QString::fromUtf8(process.readAllStandardOutput());

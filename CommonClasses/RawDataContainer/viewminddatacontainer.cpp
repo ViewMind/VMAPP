@@ -136,7 +136,6 @@ QString ViewMindDataContainer::getStudyCode(const QString &study) {
 
 qreal ViewMindDataContainer::getStudyDuration(const QString &study){
 
-
     QString check = VMDC::Study::validate(study);
 
     if (check != ""){
@@ -147,11 +146,7 @@ qreal ViewMindDataContainer::getStudyDuration(const QString &study){
     QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study;
     if (!checkHiearchyChain(hierarchy)) return -1;
 
-    //data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::)
-
-    QString code = data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::ABBREVIATION).toString();
-    code = code + data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::CONFIG_CODE).toString();
-    return code;
+    return data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::STUDY_DURATION).toReal();
 
 }
 
@@ -337,6 +332,19 @@ bool ViewMindDataContainer::setQCValue(const QString &studyName, const QString &
     studies[studyName] = study;
     data[MAIN_FIELD_STUDIES] = studies;
     return true;
+}
+
+void ViewMindDataContainer::setQCStudyStructClear() {
+
+    QVariantMap studies = data.value(MAIN_FIELD_STUDIES).toMap();
+    QStringList keys = studies.keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        QVariantMap studydata = studies.value(keys.at(i)).toMap();
+        studydata[VMDC::StudyField::QUALITY_CONTROL] = QVariantMap();
+        studies[keys.at(i)] = studydata;
+    }
+    data[MAIN_FIELD_STUDIES] = studies;
+
 }
 
 bool ViewMindDataContainer::setCurrentStudy(const QString &study){

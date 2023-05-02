@@ -60,6 +60,8 @@ public:
 
     bool setQCValue(const QString &studyName, const QString &qcfield, const QVariant &value);
 
+    void setQCStudyStructClear();
+
     ////////////////////////// FUNCTIONS FOR ADDING STUDY DATA.
 
     bool addStudy(const QString &study, const QVariantMap &studyConfiguration, const QString &experimentDescription, const QString &version);
