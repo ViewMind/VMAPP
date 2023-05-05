@@ -103,15 +103,6 @@ public:
     static const char * PROTOCOL_CREATION_DATE;
     static const char * PROTOCOL_ID;
 
-    // QC Index Fields
-    static const char * QCI_MEDIC;
-    static const char * QCI_DATE;
-    static const char * QCI_INDEX;
-    static const char * QCI_STUDY_TYPE;
-    static const char * QCI_EVALUATOR;
-    static const char * QCI_FILE;
-    static const char * QCI_PASS;
-
     static const qint32 LOCALDB_VERSION = 3;
 
 

@@ -68,6 +68,12 @@ public:
     // Check if there was an error in the request.
     bool didReplyHaveAnError() const;
 
+    // When sending a file in a multi part message, the file is opened but cannot be closed unit the API interaction is completed
+    // So manipulation of that file unitl the application itself is closed is not possible.
+    // To solve this issue the temporary file handles are stored in a list of pointers. Calling this function the calls the "close"
+    // function for all file handles and clears the list of file handles itself.
+    void clearFileToSendHandles();
+
     // Get the payload of a request.
     // If setJSONData was used the concatenation of the json string + endpoint_and_parameters is used.
     // Otherwise the json string of the data to send + all the files + endpoint_and_parameters is used.
@@ -102,6 +108,7 @@ private:
     QVariantMap dataToSend;
     QString dataToSendAsRawData;
     QMap<QString,QString> filesToSend;
+    QList<QFile*> filesToSendHandles;
     QNetworkAccessManager manager;
     QNetworkReply *reply;
     QByteArray replyData;

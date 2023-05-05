@@ -70,6 +70,12 @@ public:
 
     void setCurrentStudyStart();
 
+    void setExamplePhaseStart();
+
+    void setExplanationPhaseStart();
+
+    void studyPauseSet(bool start);
+
     bool setExperimentDescriptionMap(const QVariantMap &expDesc);
 
     bool addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response, const QVariantMap &trialMetadata = QVariantMap());
@@ -143,6 +149,8 @@ public:
 
     qreal getStudyDuration(const QString &study);
 
+    qreal getStudyPauseDuration(const QString &study);
+
     QStringList getMetaDataDateTime() ;  // Returns a display string and then a string that cna be used for sorting. The list always has two values.
 
     QString getMetadataDiscardReason();
@@ -164,7 +172,11 @@ private:
     QString error;
 
     QElapsedTimer studyDurationMeasure;
+    QElapsedTimer pauseDurationMeasure;
     QString startTimeForCurrentStudy;
+    qint32 explanationPhaseDuration;
+    qint32 examplePhaseDuration;
+    QVariantList pauseDuration;
 
     // Variables where information is stored as it is being gerated . On finalization they are passed on to the permanent structure.
     QVariantList currentTrialList;

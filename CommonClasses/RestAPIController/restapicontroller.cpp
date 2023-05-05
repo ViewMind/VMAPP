@@ -191,6 +191,7 @@ bool RESTAPIController::sendPOSTRequest() {
                 QString filename = filesToSend.value(file_key);
 
                 QFile *file = new QFile(filename);
+                filesToSendHandles << file;
                 if(!file->open(QIODevice::ReadOnly)){
                     delete  file;
                     delete multipart;
@@ -388,6 +389,14 @@ void RESTAPIController::gotReply(){
         errors << reply->errorString();
     }
     emit RESTAPIController::gotReplyData();
+}
+
+void RESTAPIController::clearFileToSendHandles(){
+    for (qint32 i = 0; i < filesToSendHandles.size(); i++){
+        QFile *file = filesToSendHandles.at(i);
+        file->close();
+    }
+    filesToSendHandles.clear();
 }
 
 

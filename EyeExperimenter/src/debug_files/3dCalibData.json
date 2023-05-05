@@ -1,5 +1,6 @@
 {
-    "calibration_attempts": {
+    "calibration_attempts": [
+    {
         "calib_pt_gather_time": 2000,
         "calib_pt_wait_time": 1000,
         "calibration_data_use_start_index": [
@@ -39222,7 +39223,8 @@
         "successful": true,
         "timestamp": "2023-04-26 07:59:32",
         "validation_point_acceptance_threshold": 70
-    },
+    }
+    ],
     "configuration_parameters": {
         "calibration_non_normalized_vectors": {
             "0": [

@@ -150,6 +150,10 @@ QString APIClient::getError() const{
     return error;
 }
 
+void APIClient::clearFileToSendHandles() {
+    rest_controller.clearFileToSendHandles();
+}
+
 
 void APIClient::gotReply(){
 

@@ -19,9 +19,7 @@
 #include "eyexperimenter_defines.h"
 #include "countries.h"
 #include "localdb.h"
-#include "subjectdirscanner.h"
 #include "apiclient.h"
-#include "qualitycontrol.h"
 #include "updater.h"
 
 
@@ -37,15 +35,14 @@ public:
     Q_INVOKABLE QStringList getStringListForKey(const QString &key, bool fromLangFile = true);
     Q_INVOKABLE void setExplanationLanguage();
     Q_INVOKABLE QVariantMap getExplanationLangMap() const;
+    Q_INVOKABLE QVariantMap getStudyNameMap();
     Q_INVOKABLE bool getLoaderError() const;
-
     Q_INVOKABLE QString getWindowTilteVersion();
     Q_INVOKABLE QStringList getCountryList();
     Q_INVOKABLE QStringList getCountryCodeList();
     Q_INVOKABLE int getDefaultCountry(bool offset = true);
     Q_INVOKABLE QString getCountryCodeForCountry(const QString &country);
     Q_INVOKABLE int getCountryIndexFromCode(const QString &code);
-
     Q_INVOKABLE QString getVersionNumber() const;
     Q_INVOKABLE QString getInstitutionName() const;
 
@@ -53,7 +50,6 @@ public:
     Q_INVOKABLE bool processingParametersArePresent() const;
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
-
     Q_INVOKABLE QString getNewUpdateVersionAvailable() const;
     Q_INVOKABLE qint32 getRemainingUpdateDenials() const;
     Q_INVOKABLE void updateDenied();
@@ -100,16 +96,12 @@ public:
 
     ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
     Q_INVOKABLE QVariantMap getReportsForLoggedEvaluator();
-    Q_INVOKABLE void setCurrentStudyFileForQC(const QString &file);
-    Q_INVOKABLE QVariantList getStudyList() const;
-    Q_INVOKABLE QVariantMap getStudyGraphData(const QString &study, qint32 selectedGraph);
-    Q_INVOKABLE bool qualityControlFailed() const;
+    Q_INVOKABLE void setCurrentStudyFileToSendOrDiscard(const QString &file);
     Q_INVOKABLE qint32 wasThereAnProcessingUploadError() const;
-    Q_INVOKABLE bool setDiscardReasonAndComment(QString discard_reason, const QString &comment);
 
     ////////////////////////// API REQUESTS ////////////////////////////
     Q_INVOKABLE void requestOperatingInfo();
-    Q_INVOKABLE void sendStudy();
+    Q_INVOKABLE void sendStudy(QString discard_reason, const QString &comment);
     Q_INVOKABLE qint32 getLastAPIRequest();
 
     //////////////////////////// PROTOCOL RELATED FUNCTIONS ////////////////////////////
@@ -121,12 +113,10 @@ public:
 
 signals:
     void finishedRequest();
-    void qualityControlDone();
 
 private slots:
     void receivedRequest();
     void updateDownloadFinished(bool allOk);
-    void qualityControlFinished();    
     void startUpSequenceCheck(); // Start up sequence value checker. When it reaches 2 the start up sequence finished. Needs to be a slot that the qc checker can connect to when finished
 
 private:
@@ -161,9 +151,6 @@ private:
     // Flag that indicates that it's the first time running this particular version of the application.
     bool firstTimeRun;
 
-    // Quality Control Computations
-    QualityControl qc;
-
     // The list of countries and their codes.
     CountryStruct *countries;
 
@@ -185,6 +172,7 @@ private:
     // Processing errors.
     static const qint32 FAIL_CODE_NONE = 0;
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
+    static const qint32 FAIL_FILE_CREATION = 3;
 
     // List of available studies with no reports ready.
     static const QStringList NO_REPORT_STUDIES;

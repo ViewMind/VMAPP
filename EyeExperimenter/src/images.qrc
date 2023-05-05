@@ -41,5 +41,6 @@
         <file>images/labeling/industry_white.png</file>
         <file>images/labeling/manual.png</file>
         <file>images/labeling/md.png</file>
+        <file>images/archive-gray.png</file>
     </qresource>
 </RCC>

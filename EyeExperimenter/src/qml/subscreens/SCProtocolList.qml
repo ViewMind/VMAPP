@@ -152,7 +152,7 @@ Rectangle {
             protocolTable.configureTable(nameWidthMap,loader.getStringForKey("viewpatlist_action"))
 
             // Defining the enabled actions (A custom button and the Edit action) by simply setting the language texts.
-            var actions = ["","",""];
+            var actions = ["","","",""];
             actions[protocolTable.vmActionEdit] = loader.getStringForKey("viewpatlist_edit")
             actions[protocolTable.vmActionDelete] = loader.getStringForKey("protocol_delete")
             protocolTable.vmActionEnabledTexts = actions;

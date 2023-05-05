@@ -8,12 +8,14 @@ Rectangle {
 
     id: table
 
-    readonly property int vmActionEdit:   0
-    readonly property int vmActionDelete: 1
-    readonly property int vmActionButton: 2
+    readonly property int vmActionEdit:    0
+    readonly property int vmActionDelete:  1
+    readonly property int vmActionButton:  2
+    readonly property int vmActionArchive: 3
 
     readonly property double vmRowHeight: VMGlobals.adjustHeight(66);
     readonly property double vmLeftMargin: VMGlobals.adjustWidth(29);
+    readonly property double vmPercentWheelRowHeightRatio: 0.84
     property double vmActionOffset: 0
 
     property var vmColWidths: [];
@@ -22,10 +24,12 @@ Rectangle {
     property var vmActionEnabledTexts: [];
     property var vmDataMatrix: [];
     property bool vmCustomActionsEnabled: true;
+    property var vmShowNumericWheel: []
 
     signal sortChanged(int col, string order)
     signal editClicked(int rowIndex)
     signal deleteClicked(int rowIndex)
+    signal archiveClicked(int rowIndex)
     signal customButtonClicked(int rowIndex)
 
     function configureTable(nameWidthMap,actionColName){
@@ -262,6 +266,61 @@ Rectangle {
                     font.weight: 400
                     verticalAlignment: Text.AlignVCenter
                     x: computeXBasedOnIndex(index)
+                    visible: {
+                        if (vmShowNumericWheel.includes(index)) return false;
+                        return true;
+                    }
+                }
+            }
+
+
+            Repeater {
+
+                model: vmColWidths.length-1
+                VMPercentWheel {
+                    x: computeXBasedOnIndex(index) + table.width*vmColWidths[index]/2 - vmRowHeight*vmPercentWheelRowHeightRatio/2
+                    y: vmRowHeight*(1-vmPercentWheelRowHeightRatio)/2
+                    vmAnimationDuration: 800
+                    vmPercent: {
+                        vmOuterColor = VMGlobals.vmRedError
+                        vmInnerColor = VMGlobals.vmRedBadIndexBackground
+
+                        // PATCH: Avoids a warning that does not affect behaviour. Because at some point the data is found and shown.
+                        if (vmDataMatrix[vmIndex] === undefined) {
+                            return 0
+                        }
+                        let value = vmDataMatrix[vmIndex][index]
+
+                        // In order to specify both the value and if it passes or not, the string used cotains the number | the boolean.
+                        let value_parts = value.split("|");
+
+                        if (value_parts.length !== 2){
+                            return 0
+                        }
+
+                        let pass = value_parts[1]
+                        value = parseInt(value_parts[0]);
+
+                        // If it is effectively a number (the first part) then we know the data is formatted properly
+                        // In this case if pass is true then we retun the value and set the color to green.
+                        if (typeof value === 'number') {
+                            if (pass === "true"){
+                                vmOuterColor = VMGlobals.vmGreenSolidQCIndicator
+                                vmInnerColor = VMGlobals.vmGreenBKGStudyMessages
+                            }
+                            return value;
+                        }
+                        else {
+                            return 0;
+                        }
+                    }
+                    onVmPercentChanged: {
+                        setDesiredCircleHeight(vmRowHeight*vmPercentWheelRowHeightRatio);
+                    }
+                    visible: {
+                        if (vmShowNumericWheel.includes(index)) return true;
+                        return false;
+                    }
                 }
             }
 
@@ -281,7 +340,7 @@ Rectangle {
                     vmButtonType: editButton.vmTypeTertiary
                     vmThinButton: true
                     anchors.verticalCenter: parent.verticalCenter
-                    visible: (vmActionEnabledTexts[vmActionEdit] !== "")                    
+                    visible: (vmActionEnabledTexts[vmActionEdit] !== "")
                     onClickSignal: {
                         editClicked(vmIndex)
                     }
@@ -298,6 +357,20 @@ Rectangle {
                     visible: (vmActionEnabledTexts[vmActionDelete] !== "")
                     onClickSignal: {
                         deleteClicked(vmIndex)
+                    }
+                }
+
+                VMButton {
+                    id: archiveButton
+                    //vmText: "BORRAR"
+                    vmText: vmActionEnabledTexts[vmActionArchive]
+                    vmIconSource: "qrc:/images/archive-gray.png"
+                    vmButtonType: editButton.vmTypeTertiary
+                    vmThinButton: true
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: (vmActionEnabledTexts[vmActionArchive] !== "")
+                    onClickSignal: {
+                        archiveClicked(vmIndex)
                     }
                 }
 

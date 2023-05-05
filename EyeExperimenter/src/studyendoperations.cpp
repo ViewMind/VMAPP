@@ -180,6 +180,7 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
     qreal numberOfDataPointsObatained = 0;
 
     qreal studyDuration = vmdc.getStudyDuration(study);
+    qreal pauseDuration = vmdc.getStudyPauseDuration(study);
 
     if ((study == VMDC::Study::BINDING_BC) || (study == VMDC::Study::BINDING_UC)) {
 
@@ -214,7 +215,7 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
         numberOfDataPointsObatained = computeNumberOfDataPointsIn2DStudy(trials);
         numberOfTrials = trials.size();
         // Nback studies are not collecting data ONLY when transition from one trial to the next.
-        timeWithNoDataPerTrial = config.value(VMDC::StudyParameter::NBACK_TRANSITION).toReal();
+        timeWithNoDataPerTrial = config.value(VMDC::StudyParameter::NBACK_TRANSITION).toReal() + pauseDuration/numberOfTrials;
 
     }
 
@@ -224,7 +225,7 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
         numberOfDataPointsObatained = computeNumberOfDataPointsIn2DStudy(trials);
         numberOfTrials = trials.size();
         // Nback studies are not collecting data ONLY when transition from one trial to the next.
-        timeWithNoDataPerTrial = NBackRTExperiment::NBACKVS_TRANSITION_TIME;
+        timeWithNoDataPerTrial = NBackRTExperiment::NBACKVS_TRANSITION_TIME + pauseDuration/numberOfTrials;
 
     }
 
@@ -238,9 +239,9 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
     qreal expectedNumberOfDataPoints = estimatedDataGatheringTime/sampling_period;
     qreal qci = qMin(numberOfDataPointsObatained*100.0/expectedNumberOfDataPoints,100.0);
 
-    qDebug() << "Study duration" << studyDuration << ". Time with No Data PerTrial" << timeWithNoDataPerTrial << ". Number of Trials" << numberOfTrials;
-    qDebug() << "Expected Data Gathering Time" << estimatedDataGatheringTime << "Expected Number of Data Points" << expectedNumberOfDataPoints;
-    qDebug() << "Number of points obtained" << numberOfDataPointsObatained << "QCI" << qci;
+//    qDebug() << "Study duration" << studyDuration << ". Time with No Data PerTrial" << timeWithNoDataPerTrial << ". Number of Trials" << numberOfTrials;
+//    qDebug() << "Expected Data Gathering Time" << estimatedDataGatheringTime << "Expected Number of Data Points" << expectedNumberOfDataPoints;
+//    qDebug() << "Number of points obtained" << numberOfDataPointsObatained << "QCI" << qci;
 
     return qci;
 
@@ -303,16 +304,22 @@ bool StudyEndOperations::createQCIStudyFile() {
 
     QVariantMap dbEvaluationEntry;
 
+
     dbEvaluationEntry.clear();
 
-    dbEvaluationEntry[LocalDB::QCI_DATE] = vmdc.getMetaDataDateTime().first();
-    dbEvaluationEntry[LocalDB::QCI_FILE]  = compressedFileName;
-    dbEvaluationEntry[LocalDB::QCI_INDEX] = fileQCIndex;
-    dbEvaluationEntry[LocalDB::QCI_PASS]  = fileQCPass;
+    QStringList dateData = vmdc.getMetaDataDateTime();
+
+    dbEvaluationEntry[Globals::QCIFields::DATE] = dateData.first();
+    dbEvaluationEntry[Globals::QCIFields::DATE_ORDERCODE]  = dateData.last();
+    dbEvaluationEntry[Globals::QCIFields::EVALUATOR] =
+    dbEvaluationEntry[Globals::QCIFields::PASS]  = fileQCPass;
+    dbEvaluationEntry[Globals::QCIFields::INDEX] = fileQCIndex;
 
     QVariantMap medic = vmdc.getApplicationUserData(VMDC::AppUserType::MEDIC);
+    QVariantMap evaluator = vmdc.getApplicationUserData(VMDC::AppUserType::EVALUATOR);
 
-    dbEvaluationEntry[LocalDB::QCI_MEDIC] = medic.value(VMDC::AppUserField::EMAIL).toString();
+    dbEvaluationEntry[Globals::QCIFields::MEDIC] = medic.value(VMDC::AppUserField::NAME).toString() + " " + medic.value(VMDC::AppUserField::LASTNAME).toString();
+    dbEvaluationEntry[Globals::QCIFields::EVALUATOR] = evaluator.value(VMDC::AppUserField::EMAIL).toString();
 
     QStringList studylist = vmdc.getStudies();
     QString study_type;
@@ -323,7 +330,7 @@ bool StudyEndOperations::createQCIStudyFile() {
         study_type = studylist.first();
     }
 
-    dbEvaluationEntry[LocalDB::QCI_STUDY_TYPE] = study_type;
+    dbEvaluationEntry[Globals::QCIFields::STUDY_TYPE] = study_type;
 
     QFile file (qciFile);
     if (!file.open(QFile::WriteOnly)){

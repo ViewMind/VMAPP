@@ -12,87 +12,23 @@ ViewBase {
     readonly property int vmMAX_L_COMMMENT_LINES: 19
     readonly property int vmMAX_C_COMMENT_CHARS: 92
 
-    readonly property int vmSC_INDEX_QCGRAPHS:       0
-    readonly property int vmSC_INDEX_SEND_REPORT:    1
-    readonly property int vmSC_INDEX_ARCHIVE:        2
+    readonly property int vmSC_INDEX_SEND_REPORT:    0
+    readonly property int vmSC_INDEX_ARCHIVE:        1
 
-    function configurePatientInformation(name, id, reportdate){
+    function configurePatientInformation(name, id, reportdate, study_name, toSend){
         var patient = loader.getStringForKey("viewevaluation_patient") + ",<br>";
         patient = patient + "<b>" + name + "</b>";
         //console.log("Setting patient to " + patient)
         patientText.text = patient;
         personalIDValue.text = id;
         dateValue.text = reportdate
-        viewer.currentIndex = vmSC_INDEX_QCGRAPHS
-    }
-
-    function loadProgressLine(){
-
-        // Selecting the different types of graphps.
-        let graphNames2D = [
-                loader.getStringForKey("viewqc_SubICI"),
-                loader.getStringForKey("viewqc_SubFixations")
-            ];
-
-        let graphNames3D = [
-                loader.getStringForKey("viewqc_SubICI")
-            ];
-
-        // Creating the study name language map
-        var nameList = loader.getStringListForKey("viewQC_StudyNameMap");
-        let vmStudyNameMap = [];
-        var key;
-        var i = 0;
-        for (i = 0; i < nameList.length; i++){
-            var name = nameList[i].replace("\n","");
-            if ((i % 2) === 0){
-                // This is a key:
-                key = name;
-            }
-            else{
-                // This is a value.
-                vmStudyNameMap[key] = name;
-            }
+        studyValue.text = study_name
+        if (toSend){
+            viewer.currentIndex = vmSC_INDEX_SEND_REPORT
         }
-
-        // Getting the study list. Each item is a map with a boolean to tell whether it's a 3D study or not.
-        var studies = loader.getStudyList();
-
-        // Setting up the progress line.
-        let plineSetup = {};
-        for (i in studies){
-            let name_and_flag = studies[i];
-            let name = vmStudyNameMap[name_and_flag["name"]];
-            if (name_and_flag["3D"]){
-                plineSetup[name] = graphNames3D;
-            }
-            else {
-                plineSetup[name] = graphNames2D;
-            }
+        else {
+            viewer.currentIndex = vmSC_INDEX_ARCHIVE
         }
-
-        // Adding the "Send Evaluations" step. No substeps.
-        plineSetup[loader.getStringForKey("view_qc_send_report")] = []
-
-        progressLine.vmOnlyColorCurrent = true;
-        progressLine.setup(plineSetup);
-        progressLine.reset();
-
-        let evalNameAndGraph = progressLine.getCurrentTexts()
-        qcgraphs.setStudyAndGraphName(evalNameAndGraph[0],evalNameAndGraph[1])
-
-        // Initializing and loading the first graph.
-        qcgraphs.initializeForGraphTraversal();
-
-        // Making sure the previous button is visible
-        // previousButton.visible = true;
-
-    }
-
-    function moveProgressLine(advance){
-        if (advance)  progressLine.indicateNext();
-        else progressLine.indicatePrevious();
-        return progressLine.getCurrentTexts();
     }
 
     VMButton {
@@ -105,15 +41,7 @@ ViewBase {
         anchors.left: parent.left
         anchors.leftMargin: VMGlobals.adjustWidth(5)
         onClickSignal: {
-            switch (viewer.currentIndex){
-            case vmSC_INDEX_QCGRAPHS:
-                mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
-                break;
-            default:
-                loadProgressLine()
-                viewer.setCurrentIndex(vmSC_INDEX_QCGRAPHS)
-                break;
-            }
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
         }
     }
 
@@ -122,7 +50,6 @@ ViewBase {
         id: patientText
         font.pixelSize: VMGlobals.vmFontVeryLarge
         font.weight: 400
-        visible: viewer.currentIndex != vmSC_INDEX_ARCHIVE
         /// VERY VERY IMPORTANT. Qt BUG: So here is what happens. When I developed this rich text formatting got disabled if
         /// before I set the text string a context form a Canvas object set a font. The work around I found is to simply 'have'
         /// HTML text, BEFORE the Canvas does it's operations and then when over writing the text, it shows up correctly.
@@ -151,7 +78,6 @@ ViewBase {
         anchors.left: patientText.left
         anchors.topMargin: VMGlobals.adjustHeight(14)
         spacing: VMGlobals.adjustWidth(5)
-        visible: viewer.currentIndex != vmSC_INDEX_ARCHIVE
 
         Text {
             id: personalIDName
@@ -179,7 +105,6 @@ ViewBase {
         anchors.topMargin: VMGlobals.adjustHeight(10)
         anchors.left: patientText.left
         spacing: VMGlobals.adjustWidth(5)
-        visible: viewer.currentIndex != vmSC_INDEX_ARCHIVE
 
         Text {
             id: dateName
@@ -192,6 +117,33 @@ ViewBase {
         }
         Text {
             id: dateValue
+            height: parent.height
+            verticalAlignment: Text.AlignVCenter
+            color: VMGlobals.vmBlackText
+            font.pixelSize: VMGlobals.vmFontBaseSize
+            font.weight: 400
+        }
+    }
+
+    Row {
+        id: studyRow
+        height: VMGlobals.adjustHeight(20)
+        anchors.top: dateRow.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(10)
+        anchors.left: patientText.left
+        spacing: VMGlobals.adjustWidth(5)
+
+        Text {
+            id: studyName
+            text: loader.getStringForKey("viewqc_study") + ":"
+            height: parent.height
+            verticalAlignment: Text.AlignVCenter
+            color: VMGlobals.vmGrayPlaceholderText
+            font.pixelSize: VMGlobals.vmFontBaseSize
+            font.weight: 400
+        }
+        Text {
+            id: studyValue
             height: parent.height
             verticalAlignment: Text.AlignVCenter
             color: VMGlobals.vmBlackText
@@ -223,18 +175,6 @@ ViewBase {
             height: mainRect.height - mainRect.radius - mainRect.vmBorderPadding
             x: mainRect.vmBorderPadding
             y: mainRect.vmBorderPadding
-
-            Item {
-                SCQCGraphs {
-                    id: qcgraphs
-                    radius: mainRect.radius
-                    border.width:  mainRect.border.width
-                    border.color: mainRect.border.color
-                    //anchors.fill: parent
-                    width: parent.width
-                    height: parent.height + radius
-                }
-            }
 
             Item {
                 SCSendReport {
@@ -280,39 +220,16 @@ ViewBase {
 
         VMButton {
             id: nextButton
-            vmText: qcgraphs.vmIsLastGraph ? loader.getStringForKey("viewqc_send") : loader.getStringForKey("viewevaluation_next_button")
-            vmIconSource: qcgraphs.vmIsLastGraph ? "" : "next"
+            vmText: loader.getStringForKey("viewqc_send")
+            //vmIconSource: qcgraphs.vmIsLastGraph ? "" : "next"
+            vmIconSource: "next"
             vmIconToTheRight: true
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: VMGlobals.adjustWidth(29)
-            visible: (viewer.currentIndex != vmSC_INDEX_ARCHIVE)
+            visible: (viewer.currentIndex !== vmSC_INDEX_ARCHIVE)
             onClickSignal: {
-                switch(viewer.currentIndex){
-                case vmSC_INDEX_QCGRAPHS:
-
-                    // Logic for the special circumstance of only 1 graph.
-                    if (qcgraphs.vmOnly1Graph){
-                        moveProgressLine(true)
-                        qcgraphs.vmIsLastGraph = true;
-                        viewer.setCurrentIndex(vmSC_INDEX_SEND_REPORT);
-                        return;
-                    }
-
-
-                    if (qcgraphs.vmIsLastGraph){
-                        moveProgressLine(true)
-                        viewer.setCurrentIndex(vmSC_INDEX_SEND_REPORT)
-                    }
-                    else {
-                        qcgraphs.moveGraph(true)
-                    }
-                    break;
-                case vmSC_INDEX_SEND_REPORT:
-                    sendReport.sendToProcess();
-                    break;
-                }
-
+                sendReport.sendToProcess();
             }
         }
 
@@ -330,44 +247,6 @@ ViewBase {
             }
         }
 
-        VMButton {
-            id: archiveButton
-            vmText:loader.getStringForKey("viewqc_archive")
-            vmButtonType: archiveButton.vmTypeSecondary
-            //vmIconToTheRight: false
-            vmIconSource: "qrc:/images/archive.png"
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: nextButton.left
-            anchors.rightMargin: VMGlobals.adjustWidth(20)
-            visible: (qcgraphs.vmIsLastGraph && (viewer.currentIndex == vmSC_INDEX_QCGRAPHS))
-            onClickSignal: {
-                viewer.setCurrentIndex(vmSC_INDEX_ARCHIVE)
-            }
-        }
-
-        VMButton {
-            id: previousButton
-            vmText: loader.getStringForKey("viewqc_previous")
-            vmIconSource: "next"
-            vmIconToTheRight: false
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: VMGlobals.adjustWidth(29)
-            visible: ((viewer.currentIndex === vmSC_INDEX_QCGRAPHS) && (!qcgraphs.vmOnly1Graph)) // If there is only one graph this button should not be visble.
-            onClickSignal: {
-                qcgraphs.moveGraph(false)
-            }
-        }
-
-    }
-
-    VMProgressLine {
-        id: progressLine
-        anchors.top: dateRow.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(20)
-        anchors.left: parent.left
-        anchors.leftMargin: VMGlobals.adjustWidth(15)
-        visible: (viewer.currentIndex !== vmSC_INDEX_ARCHIVE)
     }
 
 }

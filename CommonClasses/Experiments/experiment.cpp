@@ -198,6 +198,7 @@ bool Experiment::startExperiment(const QString &workingDir,
     lMWA.finalizeOnlineFixationCalculation();
 
     // The experiment is ALWAYS started in the explanation phase
+    rawdata.setExplanationPhaseStart();
 
     return true;
 }
@@ -311,6 +312,7 @@ void Experiment::setStudyPhaseToEvaluation(){
 
 void Experiment::setStudyPhaseToExamples(){
     studyPhase = SP_EXAMPLE;
+    rawdata.setExamplePhaseStart();
     if (isStudy3D){
         // Send the packet indicating the start of the example phase.
         rrsControlPacket.resetForRX();

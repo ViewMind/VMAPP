@@ -42,6 +42,8 @@ public:
     // Request to add non login portal users sent as JSON data.
     bool requestAdditionOfNonLoginPortalUsers(const QVariantList &pusers);
 
+    // Call function of the same name on the rest api controller.
+    void clearFileToSendHandles();
 
     QString getError() const;
 

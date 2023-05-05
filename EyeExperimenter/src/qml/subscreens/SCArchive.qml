@@ -32,13 +32,12 @@ Rectangle {
         if (archiveReason.vmCurrentIndex === vmIndexReasonOther){
             comment = otherBox.getText();
         }
-        loader.setDiscardReasonAndComment(discard_code_reason,comment)
+
 
         // Sending the study to be processed.
-        loader.sendStudy();
+        loader.sendStudy(discard_code_reason,comment);
 
         // WARNING CONNECTION TO THIS IS THE CONNECTION IN SUBSCREEN TO SEND CODE.
-
     }
 
 

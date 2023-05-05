@@ -5,7 +5,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
-    connect(&qc,&QualityControl::finished,this,&Loader::qualityControlFinished);
+    //connect(&qc,&QualityControl::finished,this,&Loader::qualityControlFinished);
     connect(&fileDownloader,&FileDownloader::downloadCompleted,this,&Loader::updateDownloadFinished);
     connect(&qcChecker,&StudyEndOperations::finished,this,&Loader::startUpSequenceCheck);
 
@@ -208,6 +208,26 @@ QVariantMap Loader::getExplanationLangMap() const {
     return map;
 }
 
+QVariantMap Loader::getStudyNameMap() {
+
+    QStringList word_list = getStringListForKey("viewQC_StudyNameMap");
+    QVariantMap map;
+    QString lastKey = "";
+
+    // The map is structured as a list where the sequence is Study Name -> Language Name.
+    for (qint32 i = 0; i < word_list.size(); i++){
+        if ((i % 2) == 0){
+            lastKey = word_list.at(i);
+        }
+        else {
+            map[lastKey] = word_list.at(i);
+        }
+    }
+
+    return map;
+
+}
+
 int Loader::getDefaultCountry(bool offset){
     QString countryCode = configuration->getString(Globals::VMPreferences::DEFAULT_COUNTRY);
     if (countryCode.isEmpty()) return 0;
@@ -388,9 +408,6 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
     QString filename = "";
     bool new_file = true;
-
-    SubjectDirScanner sdc;
-    sdc.setup(configuration->getString(Globals::Share::PATIENT_DIRECTORY),configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
 
     switch(selectedStudy){
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
@@ -758,79 +775,85 @@ QVariantMap Loader::getMedicList() const {
 
 ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
 QVariantMap Loader::getReportsForLoggedEvaluator(){
+
     QStringList directory_list = QDir(Globals::Paths::WORK_DIRECTORY).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot,QDir::Name);
     QString current_evaluator = configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
+
     QList<QVariantMap> studiesToAnalyze;
 
-    SubjectDirScanner sdc;
+    QStringList filters;
+    filters << "*.qci";
 
-    //qDebug() << "Will analyze list of directories" << directory_list;
-    //QElapsedTimer timer;
+    // We need to get the map from subject id to name.
 
-    //timer.start();
     for (qint32 i = 0; i < directory_list.size(); i++){
 
-        sdc.setup(Globals::Paths::WORK_DIRECTORY + "/" + directory_list.at(i),current_evaluator);
-        studiesToAnalyze << sdc.scanSubjectDirectoryForEvalutionsFrom();
-        if (!sdc.getError().isEmpty()){
-            StaticThreadLogger::error("Loader::getReportsForLoggedEvaluator","Error while analyzig " + sdc.getSetDirectory() + " for finished studies: " + sdc.getError());
+        //sdc.setup(Globals::Paths::WORK_DIRECTORY + "/" + directory_list.at(i),current_evaluator);
+
+        QString subject_id = directory_list.at(i);
+        QString subject_dir_path = Globals::Paths::WORK_DIRECTORY + "/" + subject_id;
+
+        // We need to get the subject data in order to get it's name.
+        QVariantMap subject_data = localDB.getSubjectData(subject_id);
+
+        QString subject_name = subject_data.value(LocalDB::SUBJECT_NAME).toString() + " " + subject_data.value(LocalDB::SUBJECT_LASTNAME).toString();
+        QString subject_inst_id = subject_data.value(LocalDB::SUBJECT_INSTITUTION_ID).toString();
+
+        // We now scan all qci files in the subject dir.
+        QDir subject_dir(subject_dir_path);
+
+        QStringList qcifiles = subject_dir.entryList(filters,QDir::Files);
+        QString error; // Required for error reporting while loading QCI Files.
+
+        for (qint32 j = 0; j < qcifiles.size(); j++){
+            error = "";
+
+            QString full_path = subject_dir_path + "/" + qcifiles.at(j);
+            QString study_file = qcifiles.at(j);
+            study_file = study_file.replace(".qci",".zip");
+            study_file = subject_dir_path + "/" + study_file;
+
+            QVariantMap map = Globals::LoadJSONFileToVariantMap(full_path,&error);
+            if (error != ""){
+                StaticThreadLogger::error("Loader::getReportsForLoggedEvaluator","Error loading QCI File: " + error);
+                continue;
+            }
+
+            //qDebug() << "Checking File" << subject_dir_path + "/" + qcifiles.at(i) << "for current evaluator" << current_evaluator;
+
+            // First we check that the evaluator matches.
+            if (map.value(Globals::QCIFields::EVALUATOR).toString() != current_evaluator) continue;
+
+            //Debug::prettpPrintQVariantMap(map);
+
+            // Now we set the subject.
+            map[Globals::QCIFields::SUBJECT]            = subject_name;
+            map[Globals::QCIFields::SUBJECT_INST_ID]    = subject_inst_id;
+
+            // And we need to set the study file.
+            map[Globals::QCIFields::STUDY_FILE]         = study_file;
+
+            studiesToAnalyze << map;
+
         }
-        //qDebug() << "Added " << sdc.getSetDirectory() << " and now we have " << studiesToAnalyze.size();
+
     }
-    //qDebug() << timer.elapsed() << "ms";
 
     // Sort the generated list by the order code before returning it (chronologically).
-    return SubjectDirScanner::sortSubjectDataListByOrder(studiesToAnalyze);
+
+    QVariantMap returnmap = Globals::SortMapListByStringValue(studiesToAnalyze,Globals::QCIFields::DATE_ORDERCODE);
+
+    //Debug::prettpPrintQVariantMap(returnmap);
+
+    return returnmap;
 
 }
 
 
-void Loader::setCurrentStudyFileForQC(const QString &file){
+void Loader::setCurrentStudyFileToSendOrDiscard(const QString &file){
     configuration->addKeyValuePair(Globals::Share::SELECTED_STUDY,file);
-    qc.setVMContainterFile(file,localDB.getQCParameters()); // This will start processing in a separate thread.
+    //qc.setVMContainterFile(file,localDB.getQCParameters()); // This will start processing in a separate thread.
 }
-
-QVariantList Loader::getStudyList() const {
-    return qc.getStudyList();
-}
-
-QVariantMap Loader::getStudyGraphData(const QString &study, qint32 selectedGraph){
-
-    //qDebug() << "Entered with" << study << "and" << selectedGraph;
-
-    QString sgraph = "";
-    if ((selectedGraph >= 0) && (selectedGraph < NUMBER_OF_QC_GRAPHS)){
-        sgraph = VMDC::QCFields::valid.at(selectedGraph);
-    }
-    else return QVariantMap();
-
-    //qDebug() << "Entered with" << study << "and" << sgraph;
-
-    QVariantMap allgraphsforStudy = qc.getGraphDataAndReferenceDataForStudy(study);
-    return allgraphsforStudy.value(sgraph).toMap();
-
-
-}
-
-void Loader::qualityControlFinished(){
-    if (qc.getError() != ""){
-        StaticThreadLogger::error("Loader::qualityControlFinished","Failed setting selected study to:  " + qc.getSetFileName() + ". Reason: " + qc.getError());
-    }
-    emit Loader::qualityControlDone();
-}
-
-bool Loader::qualityControlFailed() const {
-    return !qc.getError().isEmpty();
-}
-
-bool Loader::setDiscardReasonAndComment(QString discard_reason, const QString &comment){
-    if (!qc.setDiscardReasonAndComment(discard_reason,comment)){
-        StaticThreadLogger::error("Loader::setDiscardReasonAndComment","Could not set discard reason or comment. Reason: " + qc.getError());
-        return false;
-    }
-    return true;
-}
-
 
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
 
@@ -855,12 +878,57 @@ void Loader::requestOperatingInfo(){
     }
 }
 
-void Loader::sendStudy(){
-    processingUploadError = FAIL_CODE_NONE;
+void Loader::sendStudy(QString discard_reason, const QString &comment){
+    processingUploadError = FAIL_FILE_CREATION;
 
     QString studyFileToSend = configuration->getString(Globals::Share::SELECTED_STUDY);
 
-    if (!apiclient.requestReportProcessing(studyFileToSend)){
+    // Since the file has allready been compresed. We need to create a second file and then tarball both of those files toghter in the final file.
+    // So we take advantange of the QCI file and load that.
+
+    // Now we store that map in a JSON file. For that we need the base name of the study to send.
+    QFileInfo info(studyFileToSend);
+    QString directory   = info.absolutePath();
+    QString basename    = info.baseName();
+
+    QString tarOutputFile = directory + "/" + basename + ".tar.gz";
+    QString qcifile = directory + "/" + basename + ".qci";
+
+    QString loadError = "";
+    QVariantMap map = Globals::LoadJSONFileToVariantMap(qcifile, &loadError);
+    map[VMDC::MetadataField::COMMENTS] = comment;
+    map[VMDC::MetadataField::DISCARD_REASON] = discard_reason;
+
+    // Now we create the JSON file.
+    if (!Globals::SaveVariantMapToJSONFile(qcifile,map)){
+        StaticThreadLogger::error("Loader::sendStudy","Failed in resaving the qci file as '" + qcifile + "'");
+        emit Loader::finishedRequest();
+    }
+
+    // Now we create the tar output.
+    QStringList arguments;
+    arguments << "-c";
+    arguments << "-z";
+    arguments << "-f";
+    arguments << tarOutputFile;
+    arguments << basename + ".zip";
+    arguments << basename + ".qci";
+
+    QProcess tar;
+    tar.setWorkingDirectory(directory);
+    tar.start(Globals::Paths::TAR_EXE,arguments);
+    tar.waitForFinished();
+
+    qint32 exit_code = tar.exitCode();
+
+    if (!QFile(tarOutputFile).exists()){
+        StaticThreadLogger::error("Loader::sendStudy","Could not tar the .json and the .zip files for '" + basename + "'. Exit code for TAR.exe is: " + QString::number(exit_code));
+        emit Loader::finishedRequest();
+    }
+
+    processingUploadError = FAIL_CODE_NONE;
+
+    if (!apiclient.requestReportProcessing(tarOutputFile)){
         StaticThreadLogger::error("Loader::sendStudy","Requesting study report generation: " + apiclient.getError());
         emit Loader::finishedRequest();
     }
@@ -957,6 +1025,9 @@ void Loader::receivedRequest(){
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
             StaticThreadLogger::log("Loader::receivedRequest","Study file was successfully sent");
+
+            apiclient.clearFileToSendHandles();
+
             if (!DBUGBOOL(Debug::Options::NO_RM_STUDIES)) {
                 moveProcessedFiletToProcessedDirectory();
             }
@@ -1040,7 +1111,9 @@ qint32 Loader::wasThereAnProcessingUploadError() const {
 
 
 void Loader::moveProcessedFiletToProcessedDirectory(){
+
     QString sentFile = configuration->getString(Globals::Share::SELECTED_STUDY);
+
     // Getting the patient directory.
     QFileInfo info(sentFile);
     QString patientWorkingDirectory = info.path();
@@ -1054,37 +1127,29 @@ void Loader::moveProcessedFiletToProcessedDirectory(){
         return;
     }
 
-    QString idxFile = patientWorkingDirectory + "/" +baseFileName + ".idx";
-    QString jsonFile = patientWorkingDirectory + "/" +baseFileName + ".json";
-    QString tarFile  = patientWorkingDirectory + "/" +baseFileName + ".zip";
+    QString tarGzFile = patientWorkingDirectory + "/" + baseFileName + ".tar.gz";
+    QString qciFile = patientWorkingDirectory   + "/"   + baseFileName + ".qci";
 
-    if (!QFile::exists(tarFile)){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Unable to locate the TAR file for the study '" + tarFile + "'. Not Deleting Anything");
+    if (!QFile::exists(tarGzFile)){
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Unable to locate the TAR.GZ file '" + tarGzFile + "'. Not Deleting Anything");
+    }
+    else {
+        if (!QFile::remove(tarGzFile)){
+            StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Unable to delete the TAR.GZ file '" + tarGzFile + "'");
+        }
+    }
+
+    // Moving the qci file
+    if (!QFile::copy(qciFile,processedDir + "/" + baseFileName + ".qci")){
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to copy " + qciFile + " file from " + patientWorkingDirectory + " to " + processedDir);
         return;
     }
 
-    // If the tar file exist, we just remove the json and idx files to save space. We don't need to move the tar file as it's harmless to the system.
-
-//    // Moving the idx file
-//    if (!QFile::copy(idxFile,processedDir + "/" + baseFileName + ".idx")){
-//        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to move " + baseFileName + " idx file from " + patientWorkingDirectory + " to " + processedDir);
-//        return;
-//    }
-
-//    // Movign the JSON File.
-//    if (!QFile::copy(jsonFile,processedDir + "/" + baseFileName + ".json")){
-//        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to move " + baseFileName + " json file from " + patientWorkingDirectory + " to " + processedDir);
-//        return;
-//    }
-
-    // Cleaning up the file.
-    if (!QFile(idxFile).remove()){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to remove idx file: " + idxFile);
+    // Deleting the qci file.
+    if (!QFile::remove(qciFile)){
+        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to delete " + qciFile + " qci file from " + patientWorkingDirectory);
     }
 
-    if (!QFile(jsonFile).remove()){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to remove json file: " + jsonFile);
-    }
 
 }
 

@@ -98,11 +98,8 @@ Rectangle {
 
         mainWindow.openWait(loader.getStringForKey("viewqc_send_wait"))
 
-        // Setting the discard reason to empty.
-        loader.setDiscardReasonAndComment("",formatted_text)
-
         // Sending the study to be processed.
-        loader.sendStudy();
+        loader.sendStudy("",formatted_text)
 
     }
 

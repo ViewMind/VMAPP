@@ -231,6 +231,7 @@ waitscreenmsg_studyEnd = El estudio ha finalizado;
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
 viewqc_study = Estudio;
 viewqc_dr    = Doctor;
+viewqc_data_quality = Data Quality;
 viewqc_wait_msg = Por favor espere mientras la calidad del estudio es verificada;
 viewqc_qc_failed = <b>Control de Calidad Ha Fallado</b><br>Por favor contacte a ViewMind para soporte;
 viewqc_SubPoints = Puntos de Datos;
@@ -241,12 +242,13 @@ viewQC_StudyNameMap =
 Reading|Lectura|
 Binding BC|Combinación de Colores| 
 Binding UC|Nuevos Colores|
+Binding|Tareas de Colores|
 NBack|N-Back|
 NBack MS|N-Back Tipo MS|
 NBack RT|N-Back Tipo RT|
-NBack VS|N-Back RT de Entranamiento|
+NBack VS|N-Back De Entranamiento|
 Go No-Go|Go NoGo|
-Go No-Go Sphere| Esféras Go No-Go|
+Go No-Go Sphere|Esféras Go No-Go|
 PassBall|Balón Pase;
 viewqc_previous = ANTERIOR;
 viewqc_archive = ARCHIVAR;
@@ -262,8 +264,7 @@ viewqc_confirm_archive = Si, Archivar el Estudio;
 viewqc_comment = Comentarios;
 viewqc_archive_explanation = Si archiva el estudio este no será procesado, pero 
 se eliminará de la lista de estudios;
-viewqc_archive_reason = low_ici-Índice de Control de Calidad ICI es bajo|
-low_fixations-Índice de Control de Calidad para las fijaciones es bajo|
+viewqc_archive_reason = low_dqi-Índice de Calidad de Datos es bajo|
 study_instructions_misunderstood-El sujeto con comprendió las instrucciones del estudio|
 bad_subjet_state-El estado del sujeto no era óptimo para el estudio|
 other-Otro; 

@@ -160,6 +160,7 @@ void NBackRTExperiment::onTimeOut(){
 
             // Paused must be set to zero.
             if (state == STATE_RUNNING){
+                rawdata.studyPauseSet(true);
                 state = STATE_PAUSED;
                 stateTimer.stop();
                 m->drawPauseScreen();
@@ -320,7 +321,8 @@ void NBackRTExperiment::keyPressHandler(int keyPressed){
             onTimeOut();
         }
         else if ((state == STATE_PAUSED) && (keyPressed == Qt::Key_G)){
-            qDebug() << "UNPAUSING THE NBACK STUDY. Current state"  << tstate;
+            //qDebug() << "UNPAUSING THE NBACK STUDY. Current state"  << tstate;
+            rawdata.studyPauseSet(false);
             m->drawBackground();
             updateDisplay();
             state = STATE_RUNNING;

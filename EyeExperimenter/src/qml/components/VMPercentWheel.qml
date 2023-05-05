@@ -10,6 +10,15 @@ Rectangle {
     property color vmOuterColor: "#000000"
     property color vmInnerColor: "#999999"
     property int vmPercent: 75
+    property int vmAnimationDuration: 0 // 0 milliseconds of animation duration disaables it.
+
+    Item {
+        id: own
+        property int percent: 0
+        property int percentValueSet: 0
+        property double percentCounter: 0
+        property double percentStep: 0
+    }
 
 
     function setDesiredCircleHeight(value){
@@ -21,6 +30,23 @@ Rectangle {
     }
 
     onVmPercentChanged: {
+
+        if (vmAnimationDuration > 0){
+            own.percentValueSet = vmPercent
+            own.percent = 0;
+            own.percentCounter = 0;
+
+            // Now we do the math to know the numbr of animation steps.
+            let numberOfSteps = Math.floor(vmAnimationDuration/animationTimer.interval);
+            own.percentStep = vmPercent/numberOfSteps
+
+            animationTimer.running = true;
+        }
+        else {
+            own.percentValueSet = vmPercent
+            own.percent = vmPercent;
+        }
+
         canvas.requestPaint()
     }
 
@@ -30,6 +56,26 @@ Rectangle {
 
     onVmInnerColorChanged: {
         canvas.requestPaint()
+    }
+
+    Timer {
+        id: animationTimer
+        interval: 17;
+        running: false;
+        repeat: true
+        onTriggered: {
+            own.percentCounter = own.percentCounter + own.percentStep;
+
+            if (own.percentCounter >= own.percentValueSet){
+                // we are done.
+                running = false;
+                own.percent = own.percentValueSet
+            }
+            else {
+                own.percent = Math.round(own.percentCounter)
+            }
+            canvas.requestPaint()
+        }
     }
 
     Canvas {
@@ -56,7 +102,7 @@ Rectangle {
 
             // This angle formula is because 0 is Pi/2 and 100 % is -3pi/2
             //console.log("Set percent is " + vmPercent);
-            let angle = 2*Math.PI*vmPercent/100 - Math.PI/2
+            let angle = 2*Math.PI*own.percent/100 - Math.PI/2
 
             let offset = 2;
             let R = width/2 - offset
@@ -97,7 +143,7 @@ Rectangle {
             // Drawing the actual percent
             ctx.beginPath()
             //mainWindow.vmSegoeBold.name
-            let fontString = '700 %1px "%2"'.arg(VMGlobals.vmFontVeryLarge).arg(mainWindow.vmSegoeBold.name);
+            let fontString = '700 %1px "%2"'.arg(VMGlobals.vmFontLarger).arg(mainWindow.vmSegoeBold.name);
             //console.log("Using font " + fontString)
             ctx.font = fontString
             ctx.textBaseline = "middle"
@@ -105,7 +151,7 @@ Rectangle {
             ctx.fillStyle = vmOuterColor
             ctx.strokeStyle = vmOuterColor
             //console.log("Drawing text " + vmPercent);
-            ctx.fillText(vmPercent,cx,cy)
+            ctx.fillText(own.percent,cx,cy)
 
         }
 

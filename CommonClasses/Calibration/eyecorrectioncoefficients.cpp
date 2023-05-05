@@ -415,17 +415,9 @@ QString EyeCorrectionCoefficients::toString() const{
 
 bool EyeCorrectionCoefficients::loadCalibrationCoefficients(const QString &file_name){
 
-    QJsonParseError json_error;
+    QString error;
+    QVariantMap data = Globals::LoadJSONFileToVariantMap(file_name,&error);
 
-    QFile file(file_name);
-    if (!file.open(QFile::ReadOnly)) return false;
-    QString val = file.readAll();
-    file.close();
-
-    QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8(),&json_error);
-    if (doc.isNull()) return  false;
-
-    QVariantMap data = doc.object().toVariantMap();
     xl.fromMap(data.value("xl").toMap());
     xr.fromMap(data.value("xr").toMap());
     yl.fromMap(data.value("yl").toMap());

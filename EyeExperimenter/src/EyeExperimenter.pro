@@ -83,9 +83,7 @@ SOURCES += main.cpp \
     loader.cpp \
     flowcontrol.cpp \
     localdb.cpp \
-    qualitycontrol.cpp \
     studyendoperations.cpp \
-    subjectdirscanner.cpp \
     updater.cpp
 
 
@@ -159,9 +157,7 @@ HEADERS += \
     flowcontrol.h \
     localdb.h \
     countries.h \
-    qualitycontrol.h \
     studyendoperations.h \
-    subjectdirscanner.h \
     updater.h
 
 #contains(DEFINES, USE_IVIEW) {

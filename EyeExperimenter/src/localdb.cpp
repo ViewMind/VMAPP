@@ -47,15 +47,6 @@ const char * LocalDB::PROTOCOL_NAME           = "protocol_name";
 const char * LocalDB::PROTOCOL_CREATION_DATE  = "creation_date";
 const char * LocalDB::PROTOCOL_ID             = "protocol_id";
 
-// Quality Control Index Fields
-const char * LocalDB::QCI_DATE                = "date";
-const char * LocalDB::QCI_INDEX               = "qci";
-const char * LocalDB::QCI_MEDIC               = "medic";
-const char * LocalDB::QCI_STUDY_TYPE          = "study";
-const char * LocalDB::QCI_EVALUATOR           = "subject";
-const char * LocalDB::QCI_FILE                = "file";
-const char * LocalDB::QCI_PASS                = "pass";
-
 
 LocalDB::LocalDB()
 {

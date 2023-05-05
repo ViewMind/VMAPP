@@ -7,25 +7,6 @@ Rectangle {
 
     id: subScreenReportList
 
-    Connections {
-        target: loader
-        function onQualityControlDone () {
-
-            // Close the wait message.
-            mainWindow.closeWait()
-
-            if (loader.qualityControlFailed()){
-                mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewqc_qc_failed"));
-                return;
-            }
-
-            mainWindow.swipeTo(VMGlobals.vmSwipeIndexQCView)
-
-            viewQC.loadProgressLine();
-
-        }
-    }
-
     readonly property string vmSORT_INDEX_PATIENT: "subject_name"
     readonly property string vmSORT_INDEX_DATE: "order_code"
 
@@ -85,7 +66,9 @@ Rectangle {
             var row = [data["subject_name"],
                        convertDateToDisplayDate(data["date"]),
                        data["type"],
-                       data["medic_name"] ];
+                       //data["medic_name"],
+                       Math.round(data["qci"]) + "|" + data["qci_pass"]
+                    ];
             tableTexts.push(row);
 
         }
@@ -140,6 +123,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         x: subScreenReportList.border.width
         visible: vmNumberOfReports !== 0
+        vmShowNumericWheel: [3]
 
         Component.onCompleted: {
 
@@ -149,33 +133,35 @@ Rectangle {
             let element = {};
 
             element = {}
-            element["width"]    = 239/949;
+            element["width"]    = 230/949;
             element["sortable"] = true;
             nameWidthMap[loader.getStringForKey("viewevaluation_patient")] = element;
 
             element = {}
-            element["width"] = (173)/949;
+            element["width"] = 173/949;
             element["sortable"] = true;
             nameWidthMap[loader.getStringForKey("viewevaluation_date")] = element;
 
             element = {}
-            element["width"] = (132)/949;  // <- Modified so that new buttons don't have to be designed
+            element["width"] = 172/949;
             element["sortable"] = false;
             nameWidthMap[loader.getStringForKey("viewqc_study")] = element
 
             element = {}
-            element["width"] = (47+124)/949;   // <- Modified so that new buttons don't have to be designed
+            element["width"] = 120/949;
             element["sortable"] = false;
-            nameWidthMap[loader.getStringForKey("viewqc_dr")] = element
+            nameWidthMap[loader.getStringForKey("viewqc_data_quality")] = element
 
             // console.log("Settign up sortable table with: " + JSON.stringify(nameWidthMap));
 
             reportListTable.configureTable(nameWidthMap,loader.getStringForKey("viewpatlist_action"))
 
-            // Defining the enabled actions (A custom button) by simply setting the language texts.
-            var actions = ["","",""];
-            actions[reportListTable.vmActionButton] = loader.getStringForKey("viewpatlist_qc").toUpperCase()
+            // Defining the enabled actions (A custom button and the Edit action) by simply setting the language texts.
+            var actions = ["","","",""];
+            actions[reportListTable.vmActionButton] = loader.getStringForKey("viewqc_send")
+            actions[reportListTable.vmActionArchive] = loader.getStringForKey("viewqc_archive");
             reportListTable.vmActionEnabledTexts = actions;
+
         }
 
         onSortChanged: function(col,order) {
@@ -184,18 +170,33 @@ Rectangle {
         }
 
         onCustomButtonClicked: function(vmIndex) {
-            //console.log("Should start QC fo the report at list position " + OLS.getDataAtIndex(vmIndex).file_path)
-            mainWindow.openWait(loader.getStringForKey("viewqc_wait_msg"))
-            //console.log("Data of selected report " + JSON.stringify(OLS.getDataAtIndex(vmIndex)));
+            callSendOrDiscard(vmIndex,true)
+        }
+
+        onArchiveClicked: function (vmIndex) {
+            callSendOrDiscard(vmIndex,false)
+        }
+
+        function callSendOrDiscard(vmIndex,isSend){
 
             let data = OLS.getDataAtIndex(vmIndex);
+
+            console.log("Getting the data at vmIndex: " + vmIndex)
+            console.log(JSON.stringify(data));
+
+            let studyNameMap = loader.getStudyNameMap()
+            let study_name = studyNameMap[data.type];
 
             // Getting the configuration data for the QC View.
             viewQC.configurePatientInformation(data.subject_name,
                                                data.subject_insitution_id,
-                                               convertDateToDisplayDate(data.date))
+                                               convertDateToDisplayDate(data.date),
+                                               study_name, isSend)
 
-            loader.setCurrentStudyFileForQC(data.file_path);
+            loader.setCurrentStudyFileToSendOrDiscard(data.file);
+
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexQCView)
+
         }
 
     }

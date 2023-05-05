@@ -150,6 +150,29 @@ qreal ViewMindDataContainer::getStudyDuration(const QString &study){
 
 }
 
+qreal ViewMindDataContainer::getStudyPauseDuration(const QString &study){
+
+    QString check = VMDC::Study::validate(study);
+
+    if (check != ""){
+        error = "Attempting to get study configuration: " + check;
+        return -1;
+    }
+
+    QStringList hierarchy; hierarchy << MAIN_FIELD_STUDIES << study;
+    if (!checkHiearchyChain(hierarchy)) return -1;
+
+    QVariantList pauseDurations =  data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::PAUSE_DURATION).toList();
+
+    qreal total = 0;
+    for (qint32 i = 0; i < pauseDurations.size(); i++){
+        total = total + pauseDurations.at(i).toReal();
+    }
+
+    return total;
+
+}
+
 QStringList ViewMindDataContainer::getMetaDataDateTime(){
     QStringList hierarchy; hierarchy << MAIN_FIELD_METADATA;
     if (!checkHiearchyChain(hierarchy)) return QStringList();
@@ -368,7 +391,32 @@ bool ViewMindDataContainer::setCurrentStudy(const QString &study){
 
 }
 
+void ViewMindDataContainer::setExplanationPhaseStart(){
+    studyDurationMeasure.start();
+    explanationPhaseDuration = 0;
+    examplePhaseDuration = 0;
+}
+
+void ViewMindDataContainer::studyPauseSet(bool start){
+    if (start){
+        pauseDurationMeasure.start();
+    }
+    else {
+        pauseDuration << pauseDurationMeasure.elapsed();
+    }
+}
+
+void ViewMindDataContainer::setExamplePhaseStart(){
+    // When the example phase starts then the explanation phase has ended.
+    explanationPhaseDuration = studyDurationMeasure.elapsed();
+    studyDurationMeasure.start();
+}
+
 void ViewMindDataContainer::setCurrentStudyStart(){
+
+    // When the study actually starts, then the example phase has ended.
+    examplePhaseDuration = studyDurationMeasure.elapsed();
+    studyDurationMeasure.start();
 
     startTimeForCurrentStudy = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     studyDurationMeasure.start();
@@ -472,8 +520,8 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     valid_parameter_values[VMDC::StudyParameter::DEFAULT_EYE] = VMDC::Eye::valid;
 
     // Computing the time stamp fields
-    //QString date = QDateTime::currentDateTime().toString("dd/MM/yyyy");
-    //QString hour = QDateTime::currentDateTime().toString("HH:mm");
+    QString date = QDateTime::currentDateTime().toString("dd/MM/yyyy");
+    QString hour = QDateTime::currentDateTime().toString("HH:mm");
 
     // Set the list of the parameters to check depending on study.
     if ((study == VMDC::Study::BINDING_BC) || (study == VMDC::Study::BINDING_UC)){
@@ -558,8 +606,11 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     //qDebug() << "Setting STUDY CONFIG in Final Json VMDC";
     //Debug::prettpPrintQVariantMap(finalStudyConfiguration);
 
-    //studyToConfigure.insert(VMDC::StudyField::DATE,date);
-    //studyToConfigure.insert(VMDC::StudyField::HOUR,hour);
+    // Date and Hour are redundant with the study start.
+    // However I want to keep them so that it is not necessary to update backend processing.
+
+    studyToConfigure.insert(VMDC::StudyField::DATE,date);
+    studyToConfigure.insert(VMDC::StudyField::HOUR,hour);
     studyToConfigure.insert(VMDC::StudyField::EXPERIMENT_DESCRIPTION,experimentDescription);
     studyToConfigure.insert(VMDC::StudyField::VERSION,version);
     studyToConfigure.insert(VMDC::StudyField::CONFIG_CODE,config_code);
@@ -699,10 +750,14 @@ bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data){
     }
 
     study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
-
+    study.insert(VMDC::StudyField::EXAMPLE_TIME,examplePhaseDuration);
+    study.insert(VMDC::StudyField::EXPLANATION_TIME,explanationPhaseDuration);
     study.insert(VMDC::StudyField::START_TIME,startTimeForCurrentStudy);
+    study.insert(VMDC::StudyField::PAUSE_DURATION,pauseDuration);
     study.insert(VMDC::StudyField::END_TIME,QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
     study.insert(VMDC::StudyField::STUDY_DURATION,studyDurationMeasure.elapsed());
+
+    pauseDuration.clear(); // Once stored we make sure it's clear for the following studies.
 
     studies[studyName] = study;
 
