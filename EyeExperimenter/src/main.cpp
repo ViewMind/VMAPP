@@ -40,7 +40,7 @@ namespace Debug {
 int main(int argc, char *argv[])
 {
 
-    //LogInterface logger;
+    // The first thing we do is start up the logger.
     StaticThreadLogger::StartLogger("EyeExplorer","logfile.log");
 
     // We need to load the defines to configure the rest of hte application.

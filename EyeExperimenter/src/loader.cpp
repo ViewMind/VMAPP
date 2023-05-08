@@ -875,7 +875,7 @@ void Loader::setCurrentStudyFileToSendOrDiscard(const QString &file){
 
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
 
-void Loader::requestOperatingInfo(){
+void Loader::requestOperatingInfo(bool logOnly){
 
     newVersionAvailable = "";
     processingUploadError = FAIL_CODE_NONE;
@@ -891,7 +891,14 @@ void Loader::requestOperatingInfo(){
 
     // And now we request the operating info
     //qDebug() << "Requesting Operating Info";
-    if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false))){
+
+    bool sendLog = false;
+    if (logOnly) sendLog = true; // The ONLY purpose of the call is to send the log.
+    else {
+        sendLog = localDB.checkForLogUpload();
+    }
+
+    if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false),sendLog,logOnly)){
         StaticThreadLogger::error("Loader::requestOperatingInfo","Request operating info error: "  + apiclient.getError());
         emit Loader::finishedRequest();
     }
@@ -970,7 +977,7 @@ void Loader::startUpSequenceCheck() {
     startUpSequenceFlag++;
     if (startUpSequenceFlag >= 2){
         startUpSequenceFlag = 0;
-        StaticThreadLogger::log("Loader::startUpSequenceCheck","Finsihed start up sequence (Operating Info and QCI Regen Check)");
+        StaticThreadLogger::log("Loader::startUpSequenceCheck","Finished start up sequence (Operating Info and QCI Regen Check)");
         emit Loader::finishedRequest();
     }
 }
@@ -983,7 +990,20 @@ void Loader::receivedRequest(){
         StaticThreadLogger::error("Loader::receivedRequest","Error Receiving Request :"  + apiclient.getError());
     }
     else{
-        if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO){
+        if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO || apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
+
+            if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
+                StaticThreadLogger::log("Loader::receivedRequest","Returned from operating information call with log uplaod"); // This log line serves as the purpose of ensuring that the logfile.log will exist.
+
+                apiclient.clearFileToSendHandles();
+                QFile::remove(apiclient.getLastGeneratedLogFileName()); // This will fail if no file exists. So we don't check for errors.
+
+                // We mark now as the last log upload.
+                localDB.setLogUploadMark();
+            }
+            else {
+                StaticThreadLogger::log("Loader::receivedRequest","Got Operating Information. No Log Upload");
+            }
 
             QVariantMap ret = apiclient.getMapDataReturned();
             QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
@@ -1121,6 +1141,14 @@ void Loader::receivedRequest(){
             writer << license_data;
             vmconfig_file.close();
 
+        }
+        else if (apiclient.getLastRequestType() == APIClient::API_OP_INFO_LOG_ONLY){
+            // In this case there is nothing todo really other than notify the fron end.
+            StaticThreadLogger::log("Loader::receivedRequest","Tech support log upload, successful");
+            emit Loader::logUploadFinished();
+        }
+        else {
+            StaticThreadLogger::error("Loader::receivedRequest","Received unknown API Request Type finish:  " + QString::number(apiclient.getLastRequestType()));
         }
     }
     emit Loader::finishedRequest();

@@ -13,6 +13,7 @@ viewstart_vr_disconnect = <b>Pérdida de conexión al HMD</b><br>Por favor reini
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Avanzado;
 viewsettings_about = Acerca de;
+viewsettings_tech_support = Soporte ténico;
 viewsettings_default_country = País por defecto;
 viewsettings_def_country_placeholder = Seleccione el pais por defecto;
 viewsettings_language = Lenguaje;
@@ -21,6 +22,7 @@ viewsettings_umanual = Manual de Usuario;
 viewsettings_cancel = CANCELAR;
 viewsettings_restart = REINICIAR;
 viewsettings_apply = APLICAR;
+viewsettings_upload_logs = ENVIAR REGISTROS;
 viewsettings_restart_msg = Es necesario reiniciar|La aplicación se cerrará.
 Por favor, ábrala nuevamente para ver reflejado los cambios;
 
@@ -74,7 +76,7 @@ viewpatlist_edit = Editar;
 viewpatlist_study = ESTUDIOS;
 viewpatlist_account = Cuenta;
 viewpatlist_logout = Salir;
-viewpatlist_qc = Control de Calidad;
+viewpatlist_qc = Enviar Estudios;
 viewpatlist_protocol = Protocolo;
 viewpatlist_nopats = No se hallaron pacientes;
 viewpatlist_months = Ene|Feb|Mar|Abr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;

@@ -4,6 +4,7 @@ APIClient::APIClient(QObject *parent) : QObject(parent)
 {
     API = Globals::API_URL;
     rest_controller.setBaseAPI(API);
+    lastGeneratedLogFileName = "";
     connect(&rest_controller,&RESTAPIController::gotReplyData,this,&APIClient::gotReply);
 
 }
@@ -25,9 +26,10 @@ void APIClient::configure(const QString &institution_id, const QString &instance
     this->region = region;
 }
 
-bool APIClient::requestOperatingInfo(const QString &hardware_description_string){
+bool APIClient::requestOperatingInfo(const QString &hardware_description_string, bool sendLog, bool logOnly){
 
     error = "";
+    lastGeneratedLogFileName = "";
 
     // Clearing everything but the URL.
     rest_controller.resetRequest();
@@ -49,12 +51,31 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string)
 
     rest_controller.setURLParameters(map);
 
-//    qDebug() << "Printing the post data on requesting operating info";
-//    Debug::prettpPrintQVariantMap(postdata);
-//    qDebug() << "Printing URL Map on requesting operating info";
-//    Debug::prettpPrintQVariantMap(map);
+    // In order to append the log file we need to make a copy of it and change it's name.
+    // Othewise when storing in the server the files would be overwritten.
+    if (sendLog){
+        lastGeneratedLogFileName = institution_id + "_" + instance_number + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + ".log";
+        if (!QFile::rename(Globals::Paths::LOGFILE,lastGeneratedLogFileName)){
+            error = "Unable to remane the logfile to a new temporary name of " + lastGeneratedLogFileName;
+            return false;
+        }
 
-    lastRequest = API_OPERATING_INFO;
+        if (!rest_controller.appendFileForRequest(lastGeneratedLogFileName,FILE_KEY)){
+            error = "Could not append log File " + lastGeneratedLogFileName + " for request. Reason: " + rest_controller.getErrors().join("\n");
+            return false;
+        }
+    }
+
+    // If we are using this endpoint ONLY to send the log then we need to check that.
+    if (sendLog && logOnly){
+        lastRequest = API_OP_INFO_LOG_ONLY;
+    }
+    else if (sendLog){
+        lastRequest = API_OPERATING_INFO_AND_LOG;
+    }
+    else {
+        lastRequest = API_OPERATING_INFO;
+    }
 
     return sendRequest();
 }
@@ -151,6 +172,9 @@ bool APIClient::requestUpdate(const QString &pathToSaveAFile){
     return sendRequest();
 }
 
+QString APIClient::getLastGeneratedLogFileName() const {
+    return lastGeneratedLogFileName;
+}
 
 QString APIClient::getError() const{
     return error;

@@ -17,10 +17,12 @@ class APIClient : public QObject
 public:
     explicit APIClient(QObject *parent = nullptr);
 
-    static const qint32 API_OPERATING_INFO         = 1;
+    static const qint32 API_OPERATING_INFO         = 1;    
     static const qint32 API_REQUEST_REPORT         = 2;
     static const qint32 API_REQUEST_UPDATE         = 3;
     static const qint32 API_ACTIVATE               = 4;
+    static const qint32 API_OP_INFO_LOG_ONLY       = 5;
+    static const qint32 API_OPERATING_INFO_AND_LOG = 6;
 
     // Parameters required for configuration. Numbers must be used and sent as strings anyways. So string parameters are accepted.
     void configure(const QString &institution_id,
@@ -30,8 +32,10 @@ public:
                    const QString &key,
                    const QString &hash_code);
 
-    // Request the list of medical professionals associated with this institution.
-    bool requestOperatingInfo(const QString &hardware_description_string);
+    // Request the list of medical professionals associated with this institution, along with QC threshold and processing parameters.
+    // If sendLog is true then the current logfile is uploaded.
+    // If logOnly is true AND sendLog is true, then the code for the last API request is set to API_OP_INFO_LOG_ONLY
+    bool requestOperatingInfo(const QString &hardware_description_string, bool sendLog, bool logOnly);
 
     // Request processing for report.
     bool requestReportProcessing(const QString &tarFile);
@@ -45,7 +49,11 @@ public:
     // Call function of the same name on the rest api controller.
     void clearFileToSendHandles();
 
+    // Gets the error.
     QString getError() const;
+
+    // If requesting the operating information generated a new logfile name, that name will be stored and will can be read using this fucntion.
+    QString getLastGeneratedLogFileName() const;
 
     // Returning the parsed information.
     QVariantMap getMapDataReturned() const;
@@ -74,6 +82,7 @@ private:
     QString pathToSaveAFile;
     QVariantMap retdata;
     qint32 lastRequest;
+    QString lastGeneratedLogFileName;
 
     // The actual endpoints.    
     const QString ENDPOINT_OPERATING_INFO      = "/institution/operating_information";

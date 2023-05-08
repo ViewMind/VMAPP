@@ -11,7 +11,8 @@ ViewBase {
         function onFinishedRequest () {
             // Close the connection dialog and open the user selection dialog.
             //console.log("Finished request")
-            if (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPINFO_REQUEST){
+            if ( (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPINFO_REQUEST) ||
+                 (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO_AND_LOG)){
                 //console.log("Last request was an OP INFO call")
                 mainWindow.closeWait()
 
@@ -137,7 +138,7 @@ ViewBase {
         anchors.topMargin: VMGlobals.adjustHeight(30)
         onClickSignal: {
             mainWindow.openWait(loader.getStringForKey("viewwait_synching"))
-            loader.requestOperatingInfo();
+            loader.requestOperatingInfo(false);
         }
     }
 

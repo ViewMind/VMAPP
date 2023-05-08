@@ -13,6 +13,7 @@ viewstart_vr_disconnect = <b>Connection to HMD Lost</b><br>Please restart the ap
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Advanced;
 viewsettings_about = About;
+viewsettings_tech_support = Tech support;
 viewsettings_default_country = Default country;
 viewsettings_def_country_placeholder = Select the default country;
 viewsettings_language = Language;
@@ -21,6 +22,7 @@ viewsettings_umanual = User Manual;
 viewsettings_cancel = CANCEL;
 viewsettings_restart = RESTART NOW;
 viewsettings_apply = APPLY;
+viewsettings_upload_logs = SEND LOGS;
 viewsettings_restart_msg = Restart required|The application will now close.
 You must open it back up for the changes to take effect;
 
@@ -74,7 +76,7 @@ viewpatlist_edit = Edit;
 viewpatlist_study = START STUDY;
 viewpatlist_account = Account;
 viewpatlist_logout = Logout;
-viewpatlist_qc = Quality Control;
+viewpatlist_qc = Upload Studies;
 viewpatlist_protocol = Protocol;
 viewpatlist_nopats = No patients found;
 viewpatlist_months = Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;

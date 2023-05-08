@@ -102,7 +102,7 @@ public:
     Q_INVOKABLE qint32 wasThereAnProcessingUploadError() const;
 
     ////////////////////////// API REQUESTS ////////////////////////////
-    Q_INVOKABLE void requestOperatingInfo();
+    Q_INVOKABLE void requestOperatingInfo(bool logOnly);
     Q_INVOKABLE void sendStudy(QString discard_reason, const QString &comment);
     Q_INVOKABLE qint32 getLastAPIRequest();
     Q_INVOKABLE void requestActivation(int institution, int instance, const QString &key);
@@ -116,6 +116,7 @@ public:
 
 signals:
     void finishedRequest();
+    void logUploadFinished();
 
 private slots:
     void receivedRequest();

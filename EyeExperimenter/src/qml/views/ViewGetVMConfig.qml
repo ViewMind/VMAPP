@@ -13,17 +13,16 @@ ViewBase {
     Connections {
         target: loader
         function onFinishedRequest () {
+            if (mainWindow.getCurrentSwipeIndex() !== VMGlobals.vmSwipeIndexGetVMConfig) return;
+
             // Close the connection dialog and open the user selection dialog.
             mainWindow.closeWait()
-
             var failCode = loader.wasThereAnProcessingUploadError();
 
             // This check needs to be done ONLY when on this screen.
-            if (( failCode !== VMGlobals.vmFAIL_CODE_NONE ) && (mainWindow.getCurrentSwipeIndex() === VMGlobals.vmSwipeIndexGetVMConfig)){
-
+            if (failCode !== VMGlobals.vmFAIL_CODE_NONE){
                 popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewgetconfig_error"));
                 return;
-
             }
 
             //console.log("All good with the activation!!!");

@@ -13,6 +13,7 @@ const char * LocalDB::MAIN_APP_UPDATE_DELAY_COUNTER          = "update_delay_cou
 const char * LocalDB::MAIN_DB_VERSION                        = "local_db_version";
 const char * LocalDB::MAIN_RECOVERY_PASSWORD                 = "recovery_password";
 const char * LocalDB::MAIN_QC_STUDY_INDEX                    = "qc_study_index";
+const char * LocalDB::MAIN_LAST_LOG_UPLOAD                   = "last_log_upload";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -237,6 +238,23 @@ bool LocalDB::removeMarkerForSubject(const QString &suid, const QString &study){
     data[MAIN_SUBJECT_DATA] = all_subject_data;
 
     return saveAndBackup();
+}
+
+bool LocalDB::checkForLogUpload(){
+
+    if (!data.contains(MAIN_LAST_LOG_UPLOAD)) return true;
+
+    QDateTime last = data.value(MAIN_LAST_LOG_UPLOAD).toDateTime();
+    QDateTime now  = QDateTime::currentDateTime();
+    qint64 msElapsed = last.msecsTo(now);
+
+    if (msElapsed >= LOG_UPLOAD_FREQ_IN_MS) return true;
+    return false;
+
+}
+
+void LocalDB::setLogUploadMark(){
+    data[MAIN_LAST_LOG_UPLOAD] = QDateTime::currentDateTime();
 }
 
 

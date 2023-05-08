@@ -69,6 +69,7 @@ public:
     static const char * MAIN_DB_VERSION;
     static const char * MAIN_RECOVERY_PASSWORD;
     static const char * MAIN_QC_STUDY_INDEX;
+    static const char * MAIN_LAST_LOG_UPLOAD;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -137,6 +138,12 @@ public:
 
     // Checks if an evaluator username exists.
     bool checkEvaluatorExists(const QString &evaluator) const;
+
+    // Returns true if a log upload is necessary. False otherwise.
+    bool checkForLogUpload();
+
+    // Sets the last log upload date.
+    void setLogUploadMark();
 
     // Returns, if it exists, the value of a particular field for a given subject.
     QString getSubjectFieldValue(const QString &subject_id, const QString &field) const;
@@ -237,6 +244,9 @@ private:
 
     // The maximum number of times an update can be delayed before the user is forced to update.
     const qint32 MAX_ALLOWED_UPDATE_DELAYS = 3;
+
+    // The log upload frequency, expressed in milisecons.
+    const qint64 LOG_UPLOAD_FREQ_IN_MS = 2*24*60*60*1000; // 2 Days expressed in ms.
 
     // The contents of this function will change every time the DB changes versions as it might require modification of existing data.
     // It needs to be called upon successfull loading of DB;

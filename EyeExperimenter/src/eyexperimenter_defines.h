@@ -52,6 +52,7 @@ static const QString CHANGELOG_BASE = "changelog_";
 static const QString DEBUG_OPTIONS_FILE = "vmdebug";
 static const QString USER_MANUAL = "report.pdf";
 static const QString TAR_EXE     = "tar.exe";
+static const QString LOGFILE     = "logfile.log";
 }
 
 namespace QCIFields {

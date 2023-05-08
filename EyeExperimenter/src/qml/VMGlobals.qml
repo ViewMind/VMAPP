@@ -73,6 +73,8 @@ QtObject {
     readonly property int vmAPI_OPINFO_REQUEST: 1
     readonly property int vmAPI_REPORT_REQUEST: 2
     readonly property int vmAPI_UPDATE_REQUEST: 3
+    readonly property int vmAPI_OPERATING_INFO_AND_LOG: 6
+
     readonly property int vmFAIL_CODE_NONE: 0
     readonly property int vmFAIL_CODE_SERVER: 2
 

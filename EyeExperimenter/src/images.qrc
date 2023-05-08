@@ -42,5 +42,7 @@
         <file>images/labeling/manual.png</file>
         <file>images/labeling/md.png</file>
         <file>images/archive-gray.png</file>
+        <file>images/tech_support_blue.png</file>
+        <file>images/tech_support_gray.png</file>
     </qresource>
 </RCC>
