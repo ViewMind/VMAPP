@@ -40,7 +40,6 @@
         <file>qml/subscreens/SCEValsFinished.qml</file>
         <file>qml/subscreens/SCReportList.qml</file>
         <file>qml/views/ViewQC.qml</file>
-        <file>qml/subscreens/SCQCGraphs.qml</file>
         <file>qml/subscreens/SCArchive.qml</file>
         <file>qml/components/VMScaler.qml</file>
         <file>qml/subscreens/SCSendReport.qml</file>
@@ -52,5 +51,6 @@
         <file>qml/components/VMCalibrationValidation.qml</file>
         <file>qml/components/VMConfirmDialog.qml</file>
         <file>qml/components/VMArrowButton.qml</file>
+        <file>qml/views/ViewGetVMConfig.qml</file>
     </qresource>
 </RCC>

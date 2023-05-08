@@ -20,7 +20,7 @@ public:
     static const qint32 API_OPERATING_INFO         = 1;
     static const qint32 API_REQUEST_REPORT         = 2;
     static const qint32 API_REQUEST_UPDATE         = 3;
-    static const qint32 API_SYNC_PARTNER_MEDIC     = 4;
+    static const qint32 API_ACTIVATE               = 4;
 
     // Parameters required for configuration. Numbers must be used and sent as strings anyways. So string parameters are accepted.
     void configure(const QString &institution_id,
@@ -39,8 +39,8 @@ public:
     // Resquest the download of the update file.
     bool requestUpdate(const QString &pathToSaveAFile);
 
-    // Request to add non login portal users sent as JSON data.
-    bool requestAdditionOfNonLoginPortalUsers(const QVariantList &pusers);
+    // Sends a query to the activation endpoint.
+    bool requestActivation(qint32 institution, qint32 instance, const QString &key);
 
     // Call function of the same name on the rest api controller.
     void clearFileToSendHandles();
@@ -76,16 +76,18 @@ private:
     qint32 lastRequest;
 
     // The actual endpoints.    
-    const QString ENDPOINT_OPERATING_INFO    = "/institution/operating_information";
-    const QString ENDPOINT_GET_UPDATE        = "/instances/getupdate";
-    const QString ENDPOINT_REPORT_GENERATION = "/reports/generate";
-    const QString ENDPOINT_ADDNOLOGIN_MEDIC  = "/portal_users/addnologpusers";
+    const QString ENDPOINT_OPERATING_INFO      = "/institution/operating_information";
+    const QString ENDPOINT_GET_UPDATE          = "/instances/getupdate";
+    const QString ENDPOINT_REPORT_GENERATION   = "/reports/generate";
+    const QString ENDPOINT_ACTIVATION_ENDPOINT = "/instances/activate";
 
     // URL parameters.
     const QString URLPARAM_PPKEY            = "ppkey";
     const QString URLPARAM_INSTANCE         = "instance";
     const QString URLPARAM_VERSION          = "version";
     const QString URLPARAM_REGION           = "region";
+    const QString URLPARAM_INSTITUTION      = "institution";
+    const QString URLPARAM_KEY              = "key";
 
     // Header values.
     const QString HEADER_AUTHTYPE           = "AuthType";
@@ -102,7 +104,7 @@ private:
     const QString FILE_KEY                        = "FileToProcess";
 
     // Signs the message and sends the request.
-    bool sendRequest();
+    bool sendRequest(bool nosign = false);
 
 };
 

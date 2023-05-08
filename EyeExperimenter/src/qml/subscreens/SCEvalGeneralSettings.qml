@@ -165,7 +165,7 @@ Rectangle {
                     vmExpLangCodeList.push(value);
                 }
                 setModelList(lang_list)
-                console.log("Setting selection to index " + selection + " from lang code " + currenSelection)
+                // console.log("Setting selection to index " + selection + " from lang code " + currenSelection)
                 setSelection(selection);
 
             }

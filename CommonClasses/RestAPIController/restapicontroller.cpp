@@ -226,7 +226,7 @@ bool RESTAPIController::sendPOSTRequest() {
     // Building the url and sending the post request.
     QString address = baseAPIURL;
     if (endPointAndParameters != "") address = address + "/" + endPointAndParameters;
-    //qDebug() << "Setting the URL to" << address;
+    // qDebug() << "Setting the URL to" << address;
     QUrl url(address);
     QNetworkRequest request(url);
     if (sendDataAsJSON){

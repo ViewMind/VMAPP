@@ -59,6 +59,28 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string)
     return sendRequest();
 }
 
+bool APIClient::requestActivation(qint32 institution, qint32 instance, const QString &key){
+
+    error = "";
+
+    // Clearing everything but the URL.
+    rest_controller.resetRequest();
+
+    // Forming the URL
+    // qDebug() << "URL for OI" << ENDPOINT_OPERATING_INFO + "/" + institution_id;
+    rest_controller.setAPIEndpoint(ENDPOINT_ACTIVATION_ENDPOINT + "/" + QString::number(instance));
+    QVariantMap map;
+    map.insert(URLPARAM_INSTITUTION,institution);
+    map.insert(URLPARAM_KEY,key);
+
+    rest_controller.setURLParameters(map);
+
+    lastRequest = API_ACTIVATE;
+
+    return sendRequest(true);
+
+}
+
 bool APIClient::requestReportProcessing(const QString &tarFile){
 
     error = "";
@@ -129,22 +151,6 @@ bool APIClient::requestUpdate(const QString &pathToSaveAFile){
     return sendRequest();
 }
 
-bool APIClient::requestAdditionOfNonLoginPortalUsers(const QVariantList &pusers){
-    error = "";
-    rest_controller.resetRequest();
-    rest_controller.setAPIEndpoint(ENDPOINT_ADDNOLOGIN_MEDIC + "/" + institution_id);
-
-    QVariantMap data;
-    data.insert("institution_id",institution_id);
-    data.insert("institution_instance",instance_number);
-    data.insert("data",pusers);
-
-    rest_controller.setJSONData(data);
-
-    lastRequest = API_SYNC_PARTNER_MEDIC;
-
-    return sendRequest();
-}
 
 QString APIClient::getError() const{
     return error;
@@ -179,76 +185,27 @@ void APIClient::gotReply(){
             retdata = doc.object().toVariantMap();
         }
 
-////// DEPRACATED as the Update Endpoint Now returns a download URL.
-//        if (lastRequest != API_REQUEST_UPDATE){
-//            QJsonParseError json_error;
-//            QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
-//            if (doc.isNull()){
-//                error = "Error decoding JSON Data: " + json_error.errorString();
-//                error = error + "\nRaw Reply Data: " +  QString(raw_reply);
-//            }
-//            else{
-//                retdata = doc.object().toVariantMap();
-//            }
-//        }
-//        else{
-//            // The raw reply is a file to be saved.
-//            QMap<QString,QString> rheaders = rest_controller.getResponseHeaders();
-//            QString searchFor = "Content-Disposition";
-//            searchFor = searchFor.toLower();
-//            if (rheaders.contains(searchFor)){
-//                // Getting the file name.
-//                QString filename = "";
-//                QString content_disposition = rheaders.value(searchFor);
-//                QStringList parts = content_disposition.split(";");
-//                for (qint32 i = 0; i < parts.size(); i++){
-//                    if (parts.at(i).contains("filename")){
-//                        QStringList key_value = parts.at(i).split("=");
-//                        filename = key_value.last();
-//                        break;
-//                    }
-//                }
 
-//                if (filename.isEmpty()){
-//                    error = searchFor + " header did not contain a filename as expected";
-//                    return;
-//                }
-
-//                filename = this->pathToSaveAFile + "/" + filename;
-
-//                QFile receivedFile(filename);
-//                if (!receivedFile.open(QFile::WriteOnly)){
-//                    error = "Could not open " + receivedFile.fileName() + " for writing";
-//                    return;
-//                }
-
-//                QDataStream fileWriter(&receivedFile);
-//                //qDebug() << "Raw Reply Size" << raw_reply.size();
-//                fileWriter.writeRawData(raw_reply.constData(), static_cast<qint32>(raw_reply.size()));
-//                receivedFile.close();
-//                //qDebug() << "Receive file size: " << receivedFile.size();
-//            }
-//            else{
-//                QStringList headerNames = rheaders.keys();
-//                error = "Expected header " + searchFor + ", but such header was not found. Response headers are: " + headerNames.join(",");
-//            }
-
-//        }
     }
     emit APIClient::requestFinish();
 }
 
-bool APIClient::sendRequest(){
+bool APIClient::sendRequest(bool nosign){
 
     // Adding salt to ensure uniqueness of signature.
-    rest_controller.addSalt();
-    QString auth_string = QMessageAuthenticationCode::hash(rest_controller.getPayload(), secret.toUtf8(), QCryptographicHash::Sha3_512).toHex();
+    QString auth_string = "";
+    if (!nosign){
+        rest_controller.addSalt();
+        auth_string = QMessageAuthenticationCode::hash(rest_controller.getPayload(), secret.toUtf8(), QCryptographicHash::Sha3_512).toHex();
+    }
 
     // Adding headers to the request.
     // qDebug() << HEADER_AUTHENTICATION << HEADER_AUTHTYPE;
     rest_controller.addHeaderToRequest(HEADER_AUTHTYPE,AUTH_TYPE);
-    rest_controller.addHeaderToRequest(HEADER_AUTHENTICATION,key);
-    rest_controller.addHeaderToRequest(HEADER_SIGNATURE,auth_string);
+    if (!nosign){
+        rest_controller.addHeaderToRequest(HEADER_AUTHENTICATION,key);
+        rest_controller.addHeaderToRequest(HEADER_SIGNATURE,auth_string);
+    }
 
     // Generate the request.
     if (!rest_controller.sendPOSTRequest()){

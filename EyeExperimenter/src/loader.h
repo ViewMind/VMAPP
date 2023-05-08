@@ -45,6 +45,8 @@ public:
     Q_INVOKABLE int getCountryIndexFromCode(const QString &code);
     Q_INVOKABLE QString getVersionNumber() const;
     Q_INVOKABLE QString getInstitutionName() const;
+    Q_INVOKABLE bool isVMConfigPresent() const;
+    Q_INVOKABLE void changeGetVMConfigScreenLanguage(const QString &var);
 
     Q_INVOKABLE void openUserManual();
     Q_INVOKABLE bool processingParametersArePresent() const;
@@ -103,6 +105,7 @@ public:
     Q_INVOKABLE void requestOperatingInfo();
     Q_INVOKABLE void sendStudy(QString discard_reason, const QString &comment);
     Q_INVOKABLE qint32 getLastAPIRequest();
+    Q_INVOKABLE void requestActivation(int institution, int instance, const QString &key);
 
     //////////////////////////// PROTOCOL RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE bool addProtocol(const QString &name, const QString &id);
@@ -122,6 +125,7 @@ private slots:
 private:
 
     bool loadingError;
+    bool isLicenceFilePresent;
     ConfigurationManager *configuration;
     ConfigurationManager language;
     ConfigurationManager explanationStrings;
@@ -171,6 +175,7 @@ private:
 
     // Processing errors.
     static const qint32 FAIL_CODE_NONE = 0;
+    static const qint32 FAIL_BAD_ACTIVATION_RETURN = 1;
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
     static const qint32 FAIL_FILE_CREATION = 3;
 

@@ -72,6 +72,12 @@ ViewBase {
             return;
         }
 
+        if (!loader.isVMConfigPresent()){
+            // VM Config is Not present. We need to go the licensce screent.
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexGetVMConfig)
+            return;
+        }
+
         // If this is the first time running this version the changes are shown.
         if (loader.isFirstTimeRun()){
         //if (1 === 1){

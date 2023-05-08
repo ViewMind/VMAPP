@@ -30,14 +30,22 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // This cannot have ANY ERRORS
     configuration->setupVerification(cv);
+    isLicenceFilePresent = true;
     if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION)){
         StaticThreadLogger::error("Loader::Loader","Errors loading the configuration file: " + configuration->getError());
-        // The program should not be able to continue after loading the language.
-        loadingError = true;
+        // If the license file hast error or ist not present then we neeed to set up for autoconfiguration.
+        isLicenceFilePresent = false;
+        // loadingError = true;
     }
 
-    QString titleString = configuration->getString(Globals::VMConfig::INSTITUTION_NAME) + " (" + configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "."
-            + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER) + ")";
+
+    QString titleString = "";
+
+    if (isLicenceFilePresent){
+        titleString = configuration->getString(Globals::VMConfig::INSTITUTION_NAME)
+                + " (" + configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "." + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER) + ")";
+    }
+
     Globals::SetExperimenterVersion(titleString);
 
     // Loading the settings.
@@ -136,6 +144,16 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 }
 
 //////////////////////////////////////////////////////// UI Functions ////////////////////////////////////////////////////////
+bool Loader::isVMConfigPresent() const {
+    return isLicenceFilePresent;
+}
+
+void Loader::changeGetVMConfigScreenLanguage(const QString &var){
+    // The language selection is stored in the preferences file.
+    ConfigurationManager::setValue(Globals::Paths::SETTINGS,Globals::VMPreferences::UI_LANGUAGE,var,configuration);
+    // And then it's loaded.
+    changeLanguage();
+}
 
 QString Loader::getStringForKey(const QString &key, bool fromLangFile){
     //if (!fromLangFile) qDebug() << "Entering with key " << key << " but false from langfile";
@@ -875,6 +893,15 @@ void Loader::requestOperatingInfo(){
     //qDebug() << "Requesting Operating Info";
     if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false))){
         StaticThreadLogger::error("Loader::requestOperatingInfo","Request operating info error: "  + apiclient.getError());
+        emit Loader::finishedRequest();
+    }
+}
+
+void Loader::requestActivation(int institution, int instance, const QString &key){
+    processingUploadError = FAIL_CODE_NONE;
+    if (!apiclient.requestActivation(institution,instance,key)){
+        StaticThreadLogger::error("Loader::requestActivation","Request activation error: "  + apiclient.getError());
+        emit Loader::finishedRequest();
     }
 }
 
@@ -1054,6 +1081,45 @@ void Loader::receivedRequest(){
             QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
             fileDownloader.download(dlurl,expectedPath);
             return;
+
+        }
+        else if (apiclient.getLastRequestType() == APIClient::API_ACTIVATE){
+
+            StaticThreadLogger::log("Loader::receivedRequest","Successfully finished an activation request");
+
+            QVariantMap ret = apiclient.getMapDataReturned();
+            QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
+
+            // We need to create a file with the name of what should be the sole key.
+            QStringList keys = mainData.keys();
+
+            // processingUploadError = FAIL_BAD_ACTIVATION_RETURN;
+
+            if (keys.empty()){
+                StaticThreadLogger::error("Loader::receivedRequest","Received activation request with a map with no keys");
+                processingUploadError = FAIL_BAD_ACTIVATION_RETURN;
+                emit Loader::finishedRequest();
+                return;
+            }
+
+            QString vmconfig_filename = keys.first();
+            if (keys.size() > 1){
+                StaticThreadLogger::warning("Loader::receivedRequest","More that one key recieved in the map resulting in activiation request. Proceeding with first key: " + vmconfig_filename);
+            }
+
+            // Now we save the contennts of the map to a file
+            QString license_data = mainData.value(vmconfig_filename).toString();
+            QFile vmconfig_file(vmconfig_filename);
+            if (!vmconfig_file.open(QFile::WriteOnly)){
+                StaticThreadLogger::error("Loader::receivedRequest","Unable to create license file '" + vmconfig_filename + "'");
+                processingUploadError = FAIL_BAD_ACTIVATION_RETURN;
+                emit Loader::finishedRequest();
+                return;
+            }
+
+            QTextStream writer(&vmconfig_file);
+            writer << license_data;
+            vmconfig_file.close();
 
         }
     }

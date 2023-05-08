@@ -30,6 +30,8 @@ viewwait_synching = Obteniendo información del portal.
 Por favor espere ... ;
 viewwait_study_end = Finalizando estudio. 
 Por favor espere ... ;
+viewait_get_license = Buscando los datos en nuestros servidores.
+Por favor espere ...;
 
 #********************************* LOGIN SCREEN *********************************
 viewlogin_title = Ingreso Evaluador;
@@ -226,6 +228,20 @@ Por favor ajuste la altura apropiadamente e intente calibrar nuevamente.;
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;
 waitscreenmsg_studyEnd = El estudio ha finalizado;
+
+#********************************* VM GET CONFIG SCREEN *********************************
+viewgetconfig_welcome = Bienvenido al EyeExplorer;
+viewgetconfig_instructions = Por favor complete los siguientes datos para comenzar a utilizar la aplicación; 
+viewgetconfig_institution = Número de Institución;
+viewgetconfig_instance = Número de Instancia;
+viewgetconfig_institution_ph = Ingrese el Número de Institución;
+viewgetconfig_instance_ph = Ingrese el Número de Instancia;
+viewgetconfig_code_ph  = Ingrese el código de activacion;
+viewgetconfig_code     = Código de Activación;
+viewgetconfig_get      = OBTENER LICENCIA;
+viewgetconfig_error    = <b>No se pudo activar la aplicación</b><br>Pruebe nuevamente.<br>Si el problema persiste contactese con ViewMind;
+viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.
+Por favor, para comenzar a usar el EyeExplorer vuelva a iniciarla;
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;

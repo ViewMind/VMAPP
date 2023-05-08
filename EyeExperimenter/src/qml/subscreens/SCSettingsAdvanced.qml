@@ -15,16 +15,13 @@ Rectangle {
     property bool vmAnyChanges: false
 
     function saveData(){
-        var newCountry = loader.getCountryCodeForCountry(defaultCountry.vmCurrentText);
         loader.setSettingsValue("ui_language",uiLanguage.vmCurrentText);
-        loader.setSettingsValue("default_country",newCountry);
     }
 
     function reset(){
         vmAnyChanges = false;
         vmRestartRequired = false;
         vmLoadedCountry = loader.getDefaultCountry(false)
-        defaultCountry.setSelection(vmLoadedCountry)
     }
 
     // Rectangle that straightens the left side edge.
@@ -51,34 +48,11 @@ Rectangle {
         anchors.leftMargin: VMGlobals.adjustWidth(19)
     }
 
-    VMComboBox {
-        id: defaultCountry
-        vmLabel: loader.getStringForKey("viewsettings_default_country")
-        vmPlaceHolderText: loader.getStringForKey("viewsettings_def_country_placeholder")
-        width: VMGlobals.adjustWidth(350)
-        anchors.top: uiLanguage.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(54);
-        anchors.left: uiLanguage.left
-        z: parent.z + 1
-        // Country for patients is removed in general for the application. Code is left in, just in case.
-        visible: false;
-        Component.onCompleted: {
-            vmLoadedCountry = loader.getDefaultCountry(false);
-            setModelList(loader.getCountryList())
-            defaultCountry.setSelection(vmLoadedCountry)
-        }
-        onVmCurrentIndexChanged: {
-            vmAnyChanges = vmAnyChanges || (vmLoadedCountry != vmCurrentIndex);
-        }
-    }
 
     VMComboBox {
         id: uiLanguage
         vmLabel: loader.getStringForKey("viewsettings_language")
         width: VMGlobals.adjustWidth(350)
-        //        anchors.top: defaultCountry.bottom
-        //        anchors.topMargin: VMGlobals.adjustHeight(54);
-        //        anchors.left: defaultCountry.left
         anchors.top: parent.top
         anchors.topMargin: VMGlobals.adjustHeight(106);
         anchors.left: parent.left

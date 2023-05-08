@@ -142,6 +142,16 @@ ApplicationWindow {
             }
         }
 
+        Item {
+            ViewGetVMConfig {
+                id: viewGetVMConfig
+                onSuccessActivation: {
+                    messageDiag.loadFromKey("viewgetconfig_success")
+                    messageDiag.open();
+                }
+            }
+        }
+
         onCurrentIndexChanged: {
 
             flowControl.setRenderWindowState(true);
