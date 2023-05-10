@@ -111,6 +111,7 @@ private:
 
     // Key for the $_FILES structure.
     const QString FILE_KEY                        = "FileToProcess";
+    const QString FAILED_CALIBRATION_FILE_PREFIX  = "FailedCalibrationFile_";
 
     // Signs the message and sends the request.
     bool sendRequest(bool nosign = false);

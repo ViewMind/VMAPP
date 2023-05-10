@@ -25,7 +25,6 @@ public:
     // Get full map of the last attempt. This is required to display calibration data.
     QVariantMap getMapOfLastAttempt() const;
 
-
 private:
 
     QVariantMap calibrationConfiguration;

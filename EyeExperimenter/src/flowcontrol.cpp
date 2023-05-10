@@ -568,6 +568,64 @@ QVariantMap FlowControl::getCalibrationValidationData() const {
 
 }
 
+void FlowControl::storeCalibrationHistoryAsFailedCalibration() {
+
+    // Here we must do the following
+    // 1) Make sure that the destination directory exists.
+
+    QDir dir(".");
+    dir.mkdir(Globals::Paths::FAILED_CALIBRATION_DIR);
+    QDir dirinfo(Globals::Paths::FAILED_CALIBRATION_DIR);
+    if (!dirinfo.exists()){
+        StaticThreadLogger::error("FlowControl::storeCalibrationHistoryAsFailedCalibration","Failed in creating the failed calibration directory");
+        return;
+    }
+
+    QString filename_base = QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss");
+    QString json_basename = filename_base + + ".json";
+    QString tar_basename  = filename_base + + ".tar.gz";
+
+    QString filename = Globals::Paths::FAILED_CALIBRATION_DIR + "/" + json_basename;
+    QString filename_tar = Globals::Paths::FAILED_CALIBRATION_DIR + "/" + tar_basename;
+
+    // 2) Stored the failed calibration with a file name indicative of the date in that directory.
+    QVariantMap history = calibrationHistory.getHistory();
+    if (!Globals::SaveVariantMapToJSONFile(filename,history,true)){
+        StaticThreadLogger::error("FlowControl::storeCalibrationHistoryAsFailedCalibration","Failed in storing failed calibration history at: '" + filename + "'");
+        return;
+    }
+
+    QFileInfo info(filename);
+
+    // 3) Compress the file so that it doesn't take up space.
+    QStringList arguments;
+    arguments << "-c";
+    arguments << "-z";
+    arguments << "-f";
+    arguments << tar_basename;
+    arguments << json_basename;
+
+    //qDebug() << "jsonFile" << jsonFile << "zip" << zipfile;
+
+    QProcess tar;
+    tar.setWorkingDirectory(info.absolutePath());
+    tar.start(Globals::Paths::TAR_EXE,arguments);
+    tar.waitForFinished();
+
+    tar.exitCode();
+    if (!QFile().exists(filename_tar)){
+        StaticThreadLogger::error("FlowControl::storeCalibrationHistoryAsFailedCalibration","Failed in compressing failed calibration history at: '" + filename_tar + "'");
+        return;
+    }
+
+    // 4) Delete the json file
+    QFile(filename).remove();
+
+    // 5) Clear calibration history.
+    calibrationHistory.reset();
+
+}
+
 
 void FlowControl::onUpdatedExperimentMessages(const QVariantMap &string_value_map){
 

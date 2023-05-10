@@ -992,10 +992,11 @@ void Loader::receivedRequest(){
     else{
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO || apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
 
+            apiclient.clearFileToSendHandles();
+
             if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
                 StaticThreadLogger::log("Loader::receivedRequest","Returned from operating information call with log uplaod"); // This log line serves as the purpose of ensuring that the logfile.log will exist.
 
-                apiclient.clearFileToSendHandles();
                 QFile::remove(apiclient.getLastGeneratedLogFileName()); // This will fail if no file exists. So we don't check for errors.
 
                 // We mark now as the last log upload.
@@ -1004,6 +1005,9 @@ void Loader::receivedRequest(){
             else {
                 StaticThreadLogger::log("Loader::receivedRequest","Got Operating Information. No Log Upload");
             }
+
+            // Just in case we clear the calibration failed directory.
+            cleanCalibrationDirectory();
 
             QVariantMap ret = apiclient.getMapDataReturned();
             QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
@@ -1202,7 +1206,21 @@ qint32 Loader::wasThereAnProcessingUploadError() const {
     return processingUploadError;
 }
 
+void Loader::cleanCalibrationDirectory() {
 
+    QDir calib_dir(Globals::Paths::FAILED_CALIBRATION_DIR);
+    if (calib_dir.exists()){
+
+        QStringList filters; filters  << "*.tar.gz";
+        QStringList tar_files = calib_dir.entryList(filters,QDir::Files|QDir::NoDotAndDotDot);
+
+        for (qint32 i = 0; i < tar_files.size(); i++){
+            QFile(Globals::Paths::FAILED_CALIBRATION_DIR + "/" + tar_files.at(i)).remove();
+        }
+
+    }
+
+}
 
 void Loader::moveProcessedFiletToProcessedDirectory(){
 

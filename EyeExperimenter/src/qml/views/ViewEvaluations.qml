@@ -291,6 +291,8 @@ ViewBase {
                     height: parent.height + radius
                     onGoToEvalSetup: {
                         progressLine.indicateNext()
+                        // Leaving this a place holder to
+                        // evaluationSetup.loadEvaluationSequences("My Sequence");
                         viewer.currentIndex = vmSC_INDEX_EVAL_SETTINGS
                     }
                 }
@@ -464,6 +466,8 @@ ViewBase {
             if (event.key === Qt.Key_Escape){
                 if (!evaluationRun.vmInCalibration){
                     flowControl.renderWaitScreen("");
+                    // Store calibration history right here.
+                    flowControl.storeCalibrationHistoryAsFailedCalibration();
                     mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
                 }
             }

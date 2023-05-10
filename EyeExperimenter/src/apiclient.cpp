@@ -66,6 +66,25 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
         }
     }
 
+    // Whether we are sending the log or not. If there are failed calibration files we send them.
+    QDir calib_dir(Globals::Paths::FAILED_CALIBRATION_DIR);
+    if (calib_dir.exists()){
+
+        QStringList filters; filters  << "*.tar.gz";
+        QStringList tar_files = calib_dir.entryList(filters,QDir::Files|QDir::NoDotAndDotDot);
+
+        qDebug() << "TAR FILES for failed calibrations" << tar_files;
+
+        QString prefix = FAILED_CALIBRATION_FILE_PREFIX + "_" + institution_id + "_" + instance_number + "_";
+
+        for (qint32 i = 0; i < tar_files.size(); i++){
+            qDebug() << "Appending file" << tar_files.at(i);
+            rest_controller.appendFileForRequest(Globals::Paths::FAILED_CALIBRATION_DIR + "/" + tar_files.at(i),prefix + QString::number(i));
+        }
+
+    }
+
+
     // If we are using this endpoint ONLY to send the log then we need to check that.
     if (sendLog && logOnly){
         lastRequest = API_OP_INFO_LOG_ONLY;

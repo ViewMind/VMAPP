@@ -53,7 +53,7 @@ public:
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE bool isVROk() const;
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
-
+    Q_INVOKABLE void storeCalibrationHistoryAsFailedCalibration();
 
     // Eye Tracking Control commands.
     Q_INVOKABLE bool isConnected() const;
@@ -159,6 +159,9 @@ private:
     // The Calibration Manager.
     CalibrationManager calibrationManager;
 
+    // Structure where the the calibration attempts are stored.
+    CalibrationHistory calibrationHistory;
+
     // Remote Render Server Control. (Client) and required variables.
     RenderServerClient renderServerClient;
     QProcess renderServerProcess;
@@ -188,9 +191,6 @@ private:
 
     // Stored value of the Viewmind Logo requried for background image math rendering
     QSizeF backgroundLogoSize;
-
-    // Structure where the the calibration attempts are stored.
-    CalibrationHistory calibrationHistory;
 
     // Only valid vlues are 5 or 9 anything else will assume 9
     static const qint32 NUMBER_OF_CALIBRATION_POINTS = 9;

@@ -37,22 +37,21 @@ static const QString Region = "region";
 }
 
 namespace Paths {
-static const QString WORK_DIRECTORY = "viewmind_etdata";
-static const QString LOCALDB = "viewmind_etdata/localdb.dat";
-static const QString DBBKPDIR = "dbbkp";
-static const QString CONFIGURATION = "vmconfiguration";
-static const QString SETTINGS = "vmsettings";
-static const QString PARTNERS = "vmpartners";
-static const QString APPSPEC  = "vmappspec";
-static const QString PROCESSING_PARAMETERS = "vmpp";
-static const QString UPDATE_PACKAGE = "app.zip";
-static const QString UPDATE_SCRIPT  = "update.bat";
-static const QString CHANGELOG_LOCATION = "changelog";
-static const QString CHANGELOG_BASE = "changelog_";
-static const QString DEBUG_OPTIONS_FILE = "vmdebug";
-static const QString USER_MANUAL = "report.pdf";
-static const QString TAR_EXE     = "tar.exe";
-static const QString LOGFILE     = "logfile.log";
+static const QString WORK_DIRECTORY          = "viewmind_etdata";
+static const QString LOCALDB                 = "viewmind_etdata/localdb.dat";
+static const QString DBBKPDIR                = "dbbkp";
+static const QString CONFIGURATION           = "vmconfiguration";
+static const QString SETTINGS                = "vmsettings";
+static const QString APPSPEC                 = "vmappspec";
+static const QString UPDATE_PACKAGE          = "app.zip";
+static const QString UPDATE_SCRIPT           = "update.bat";
+static const QString CHANGELOG_LOCATION      = "changelog";
+static const QString CHANGELOG_BASE          = "changelog_";
+static const QString DEBUG_OPTIONS_FILE      = "vmdebug";
+static const QString USER_MANUAL             = "report.pdf";
+static const QString TAR_EXE                 = "tar.exe";
+static const QString LOGFILE                 = "logfile.log";
+static const QString FAILED_CALIBRATION_DIR  = "failed_calibrations";
 }
 
 namespace QCIFields {

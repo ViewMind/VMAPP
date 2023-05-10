@@ -174,6 +174,9 @@ private:
     // Moves sent files to the processed directory
     void moveProcessedFiletToProcessedDirectory();
 
+    // Clean the failed calibrations directory.
+    void cleanCalibrationDirectory();
+
     // Processing errors.
     static const qint32 FAIL_CODE_NONE = 0;
     static const qint32 FAIL_BAD_ACTIVATION_RETURN = 1;

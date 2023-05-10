@@ -43,7 +43,7 @@ Rectangle {
     }
 
 
-    QtObject {
+    Item {
         id: internal
         readonly property int vmHEIGHT : VMGlobals.adjustHeight(52)
         readonly property int vmHEIGHT_EXPANDED : VMGlobals.adjustHeight(52+64)
@@ -164,6 +164,7 @@ Rectangle {
                 id: optionSetItem
 
                 property string vmSelection: ""
+                //property string vmIndex: index
                 height: internal.vmOPTION_SECTION_HEIGHT
                 width: internal.vmOptionSetWidths[index]
                 //color: configurableStudyItem.color
@@ -182,11 +183,12 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                VMSingleChoiceMultiRadioButton{
+                VMSingleChoiceMultiRadioButton{                    
                     id: optionSelection
                     anchors.left: name.left
                     anchors.top: name.bottom
                     anchors.topMargin: VMGlobals.adjustHeight(10.5)
+
 
                     Component.onCompleted: {
                         //console.log(JSON.stringify(vmOptions[index]))

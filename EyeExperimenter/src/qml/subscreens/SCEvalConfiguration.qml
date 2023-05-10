@@ -10,6 +10,7 @@ Rectangle {
 
     property var vmSelectedStudies: [];
     property var vmSelectedOptionsForEachStudy: ({});
+    property var vmPreSelectedStudySequence: []
 
     readonly property int vmNBACK_RT_STD_HOLD_TIME: 250
     readonly property int vmNBACK_RT_SLOW_HOLD_TIME: 400
@@ -19,6 +20,75 @@ Rectangle {
     readonly property int vmNBACK_RT_TRANSITION_SLOW : 1000
 
     signal goToEvalRun();
+
+    function loadEvaluationSequences(sequence_name){
+
+        if (sequence_name === ""){
+            vmPreSelectedStudySequence = [];
+        }
+        else{
+
+           /// TODO: Call Loader and actually get the preselected sequence given the sequence name.
+           let configString = "[{\"valid_eye\":\"both\",\"unique_study_id\":9,\"number_targets\":\"3\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false,\"nback_rt_hold_time\":400,\"nback_timeout\":5000,\"nback_transition\":1000},{\"valid_eye\":\"both\",\"unique_study_id\":2,\"number_targets\":\"3\",\"target_size\":\"large\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false},{\"valid_eye\":\"both\",\"unique_study_id\":1,\"number_targets\":\"3\",\"target_size\":\"large\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false},{\"valid_eye\":\"both\",\"unique_study_id\":8,\"hand_to_use\":\"left\",\"study_reqs_hand_calib\":\"left\",\"is_3d_study\":true,\"min_speed\":90,\"max_speed\":90,\"initial_speed\":90}]"
+           vmPreSelectedStudySequence = JSON.parse(configString);
+//           console.log("PreSelected Study Sequence is")
+//           console.log(JSON.stringify(vmPreSelectedStudySequence));
+
+        }
+
+    }
+
+    // The purpose of this function is to modify the created item appended to availableEvaluations
+    // So that it may properly display the selected options BASED on vmPreSelectedStudySequence
+
+    function configureItemBasedOnPreSelectedSequence(item){
+
+        for (let i = 0; i < vmPreSelectedStudySequence.length; i++){
+            let preconfigItem = vmPreSelectedStudySequence[i];
+
+            if (item.vmIndex === preconfigItem[VMGlobals.vmUNIQUE_STUDY_ID]){
+
+                // So now we parse teh value map. The ORDER of the map should be the same as the ORDER of the keys.
+                let stringArrays = item.vmOptionValueMap.split("||"); // This will now contain as many arrays (in the form of strings) as there are sets of options.
+                let optionNames  = [];
+                for (let name in item.vmOptions){
+                    optionNames.push(name);
+                }
+
+                // This item is part of the preconfiguration. So now we search the options of the item that were selected and get their stored value.
+                for (let j = 0; j < optionNames.length; j++){
+                    let optionName = optionNames[j];
+
+                    // We now parse the option array.
+                    let possibleValues = stringArrays[j].split("|");
+
+                    let option_value = preconfigItem[optionName];
+                    // Now we search for the index of the option value in the possible values.
+                    // console.log("Searching for option value " + option_value + " on " + optionName + " for study " + item.vmIndex + " on " + JSON.stringify(possibleValues))
+                    let index = -1
+
+                    // The search needs to be done by hand as using indexOf provides bad matches when data type changes, i.e. 3 vs "3" will not be found.
+                    for (let k = 0; k < possibleValues.length; k++){
+                        if (possibleValues[k] == option_value){
+                            index = k;
+                            break;
+                        }
+                    }
+
+                    if (index !== -1){
+                        // We've found the option and we set it.
+                        // console.log("Setting the option: " + optionName + " to index of " + index + " for study " + item.vmIndex);
+                        item.vmOptions[optionName][VMGlobals.vmSCO_OPTION_SELECTED] = index
+                    }
+                }
+
+            }
+
+        }
+
+        return item;
+
+    }
 
     function resetStudySelection(){
 
@@ -43,7 +113,7 @@ Rectangle {
             vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS,
             vmOptionValueMap: "2|3"
         }
-        availableEvaluations.append(item)
+        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
 //        /////////////////////////////////////////////////////////////////// NBack RT (Depracated) /////////////////////////////////////////////////////////////////////
 //        item = {}
@@ -77,7 +147,8 @@ Rectangle {
             vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS,
             vmOptionValueMap: "4|3" // Default NBack number of targets should be 4.
         }
-        availableEvaluations.append(item)
+        //availableEvaluations.append(item)
+        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
         //////////////////////////////////////////////////////////////// Go No Go //////////////////////////////////////////////////////////////////////////
         item = {}
@@ -90,7 +161,8 @@ Rectangle {
             vmOrder: "",
             vmOptionValueMap: ""
         }
-        availableEvaluations.append(item)
+        //availableEvaluations.append(item)
+        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
         /////////////////////////////////////////////////////////// NBack Variable Speed /////////////////////////////////////////////////////////////////
         item = {}
@@ -115,7 +187,8 @@ Rectangle {
             vmOptions: options,
             vmOptionValueMap: "3|4|5|6||false|true"
         }
-        availableEvaluations.append(item)
+        //availableEvaluations.append(item)
+        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
         /////////////////////////////////////////////////////////// GNG Spheres /////////////////////////////////////////////////////////////////////////
         item = {}
@@ -136,7 +209,8 @@ Rectangle {
             vmOrder: VMGlobals.vmSCP_HAND_TO_USE,
             vmOptionValueMap: "right|left|both" // These are the values inside the study configuration map corresponding to each of the option values.
         }
-        availableEvaluations.append(item)
+        //availableEvaluations.append(item)
+        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
         ////////////////////////////////////////////////////////// Pass Ball /////////////////////////////////////////////////////////////////////////
         item = {}
@@ -159,6 +233,7 @@ Rectangle {
         }
         //Disabling ONLY the option for selecting passball.
         ///availableEvaluations.append(item)
+        ///availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
     }
 
@@ -409,6 +484,7 @@ Rectangle {
             }
             onUpdateSelectedOptions: function (vmIndex, options){
                 vmSelectedOptionsForEachStudy[vmIndex] = options
+                //console.log("Updating selected options for index " + vmIndex + ". The options are");
                 //console.log(JSON.stringify(vmSelectedOptionsForEachStudy))
             }
         }

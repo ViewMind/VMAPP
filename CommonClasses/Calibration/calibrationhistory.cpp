@@ -49,3 +49,4 @@ QVariantMap CalibrationHistory::getMapOfLastAttempt()  const {
     return map;
 
 }
+
