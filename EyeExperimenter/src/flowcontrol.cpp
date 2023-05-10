@@ -125,7 +125,6 @@ void FlowControl::onNewPacketArrived(){
 
     // StaticThreadLogger::log("FlowControl::onNewPacketArrived" , "Received Render Server Packet of Type: '" + packet.getType() + "'");
 
-
     if (packet.getType() == RenderServerPacketType::TYPE_IMG_SIZE_REQ){
         QString name = packet.getPayloadField(PacketImgSizeRequest::NAME).toString();
         qreal w = packet.getPayloadField(PacketImgSizeRequest::WIDTH).toReal();
@@ -165,16 +164,18 @@ void FlowControl::onNewPacketArrived(){
 
     }
     else if ( (packet.getType() == RenderServerPacketType::TYPE_3DSTUDY_CONTROL) ||
-              (packet.getType() == RenderServerPacketType::TYPE_STUDY_DATA) ||
               (packet.getType() == RenderServerPacketType::TYPE_STUDY_DESCRIPTION) ){
 
         if (experiment == nullptr){
             StaticThreadLogger::error("FlowControl::onNewPacketArrived","Received packet of type " + packet.getType() + " however no study is being run");
             return;
         }
-
         experiment->process3DStudyControlPacket(packet);
-
+    }
+    else if (packet.getType() == RenderServerPacketType::TYPE_STUDY_DATA){
+        // A 3D Study will send it's data AFTER the experiment has endend and the experiment object has been destroyed. So we need to Reload the VMDC file and then add the proper data to it.
+        StaticThreadLogger::log("FlowControl::onNewPacketArrived","Received study data packet");
+        processStudyDataPacketFor3DStudy(packet);
     }
     else {
         StaticThreadLogger::warning("FlowControl::onNewPacketArrived","Unexpected packet arrival of type '" + packet.getType() + "'");
@@ -370,8 +371,22 @@ void FlowControl::onStudyEndProcessFinished(){
 }
 
 void FlowControl::finalizeStudyOperations() {
-    // We start the end of operations processing for the last saved files.
-    studyEndProcessor.start();
+
+    // On a 3D study, the study end operations need to include receiving waiting for the data from the remote render server.
+    // Which means sending the RRS a packet requesting the study to finish.
+    if (current3DStudy != ""){
+
+        RenderServerPacket packet;
+        packet.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
+        packet.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_REQUEST_STUDY_DATA);
+        renderServerClient.sendPacket(packet);
+
+    }
+    else {
+        // On a 2D study, We start the end of operations processing for the last saved files.
+        studyEndProcessor.start();
+    }
+
 }
 
 
@@ -446,7 +461,7 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
     }
 
 
-    QString coefficient_file = "";    
+    QString coefficient_file = "";
     qint32 validation_point_acceptance_threshold = 70;
     qint32 gather_time, wait_time;
 
@@ -488,7 +503,7 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
 
     QSize s = renderServerClient.getRenderResolution();
 
-    calibrationManager.startCalibration(s.width(),s.height(),                                        
+    calibrationManager.startCalibration(s.width(),s.height(),
                                         mode3D,
                                         calibrationValidationParameters,coefficient_file);
 
@@ -578,6 +593,7 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
 
     QColor backgroundForVRScreen;
     experimentIsOk = true;
+    current3DStudy = "";
 
     // Forcing the valid eye to the calibration selected eye.
     study_config[VMDC::StudyParameter::VALID_EYE] = calibrationManager.getRecommendedEye();
@@ -607,7 +623,7 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         }
         experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKRT);
         backgroundForVRScreen = QColor(Qt::black);
-        break;        
+        break;
     case Globals::StudyConfiguration::INDEX_NBACK:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING NBACK SLOW DEFAULT VERSION");
         if (configuration->getString(Globals::VMPreferences::UI_LANGUAGE) == Globals::UILanguage::ES){
@@ -639,11 +655,13 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO SPHERES");
         experiment = new GoNoGoSphereExperiment(nullptr,VMDC::Study::GONOGO_SPHERE);
         backgroundForVRScreen = QColor(Qt::black); // This is ignore in all 3D studies.
+        current3DStudy = VMDC::Study::GONOGO_SPHERE;
         break;
     case Globals::StudyConfiguration::INDEX_PASSBALL:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING PASSBALL");
         experiment = new PassBallExperiment(nullptr,VMDC::Study::PASSBALL);
         backgroundForVRScreen = QColor(Qt::black); // This is ignore in all 3D studies.
+        current3DStudy = VMDC::Study::PASSBALL;
         break;
     default:
         StaticThreadLogger::error("FlowControl::startNewExperiment","Unknown experiment was selected " + study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toString());
@@ -658,15 +676,15 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     connect(experiment,&Experiment::remoteRenderServerPacketAvailable,this,&FlowControl::onNewControlPacketAvailableFromStudy);
 
     // Making sure that the eyetracker is sending data, but only if it's a 2D study.
-    bool studyIs3D = study_config.value("is_3d_study").toBool();
-    //qDebug() << "IS STARTING STUDY 3D" << studyIs3D;
-    if (!studyIs3D) eyeTracker->enableUpdating(true);
+    // isCurrentStudy3D = study_config.value("is_3d_study").toBool();
+    // qDebug() << "IS STARTING STUDY 3D" << studyIs3D;
+    if (current3DStudy == "") eyeTracker->enableUpdating(true);
 
     // Start the experiment.
-    qDebug() << "Calling start experiment";
+    // qDebug() << "Calling start experiment";
     if (!experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
-                                configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
-                                study_config)){
+                                     configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
+                                     study_config)){
         return false;
     }
 
@@ -734,7 +752,60 @@ void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
 
 }
 
+
+///////////////////////////////////////////////////////////////////
+void FlowControl::processStudyDataPacketFor3DStudy(RenderServerPacket p){
+
+    // We need to finish loading the raw data file and save it. For that we first get the file.
+
+    QString raw_data_file = configuration->getString(Globals::Share::PATIENT_STUDY_FILE);
+    ViewMindDataContainer rawdata;
+    if (!rawdata.loadFromJSONFile(raw_data_file)){
+        StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed to load lastly finished Study 3D file: " + raw_data_file + " For study of type '" + current3DStudy + "'");
+        emit FlowControl::studyEndProcessingDone();
+        return;
+    }
+
+    // Now we set teh current study.
+    if (!rawdata.setCurrentStudy(current3DStudy)){
+        StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed setting current study of " + current3DStudy + ". Reason: " + rawdata.getError());
+        emit FlowControl::studyEndProcessingDone();
+        return;
+    }
+
+    // We need to over write the study duration.
+    qint64 study_duration = p.getPayloadField(Study3DDataPacketFields::STUDY_DURATION).toLongLong();
+
+    // qDebug() << "Study duration for 3D study is " << study_duration;
+
+    // We load the packet data, which finalizes the study.
+    if (!rawdata.finalizeStudy(p.getPayload(),study_duration,true)){
+        StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed to finalize and load data of file because: " + rawdata.getError());
+        emit FlowControl::studyEndProcessingDone();
+        return;
+    }
+
+    // Since we are only storing the data the finalize study function doesn't actually mark the study as finalized.
+    rawdata.markFileAsFinalized();
+
+
+    // Now that it's done, we save the file back with all the data.
+    if (!rawdata.saveJSONFile(raw_data_file,true)){
+        StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed on GoNoGo Sphere finalization because: " + rawdata.getError());
+        emit FlowControl::studyEndProcessingDone();
+        return;
+    }
+
+    // At this point we start the study end processing data.
+    qDebug() << "Starring study end process on 3D Study end";
+    studyEndProcessor.start();
+
+}
+
+
+
 ///////////////////////////////////////////////////////////////////
 FlowControl::~FlowControl(){
 
 }
+

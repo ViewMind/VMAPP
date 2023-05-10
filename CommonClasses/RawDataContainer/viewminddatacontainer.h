@@ -95,7 +95,7 @@ public:
     void finalizeDataSet();
 
     bool finalizeStudy();
-    bool finalizeStudy(const QVariantMap &data);
+    bool finalizeStudy(const QVariantMap &data, qint64 overwrite_study_duration = -1, bool onlyStoreData = false);
 
     void markFileAsFinalized();
 

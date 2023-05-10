@@ -419,6 +419,7 @@ void ViewMindDataContainer::setCurrentStudyStart(){
     studyDurationMeasure.start();
 
     startTimeForCurrentStudy = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
     studyDurationMeasure.start();
 
 }
@@ -721,7 +722,7 @@ bool ViewMindDataContainer::finalizeStudy(){
     return finalizeStudy(QVariantMap());
 }
 
-bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data){
+bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data, qint64 overwrite_study_duration, bool onlyStoreData){
 
 
     // Getting the current study structure from the current studies list.
@@ -749,13 +750,16 @@ bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data){
         study.insert(VMDC::StudyField::STUDY_DATA,study_data);
     }
 
-    study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
-    study.insert(VMDC::StudyField::EXAMPLE_TIME,examplePhaseDuration);
-    study.insert(VMDC::StudyField::EXPLANATION_TIME,explanationPhaseDuration);
-    study.insert(VMDC::StudyField::START_TIME,startTimeForCurrentStudy);
-    study.insert(VMDC::StudyField::PAUSE_DURATION,pauseDuration);
-    study.insert(VMDC::StudyField::END_TIME,QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-    study.insert(VMDC::StudyField::STUDY_DURATION,studyDurationMeasure.elapsed());
+    if (!onlyStoreData){
+        study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
+        study.insert(VMDC::StudyField::EXAMPLE_TIME,examplePhaseDuration);
+        study.insert(VMDC::StudyField::EXPLANATION_TIME,explanationPhaseDuration);
+        study.insert(VMDC::StudyField::START_TIME,startTimeForCurrentStudy);
+        study.insert(VMDC::StudyField::PAUSE_DURATION,pauseDuration);
+        study.insert(VMDC::StudyField::END_TIME,QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    }
+    if (overwrite_study_duration < 0) study.insert(VMDC::StudyField::STUDY_DURATION,studyDurationMeasure.elapsed());
+    else study.insert(VMDC::StudyField::STUDY_DURATION,overwrite_study_duration);
 
     pauseDuration.clear(); // Once stored we make sure it's clear for the following studies.
 

@@ -73,7 +73,7 @@ bool GoNoGoSphereExperiment::startExperiment(const QString &workingDir, const QS
     rrsControlPacket.setPayloadField(Packet3DStudyControl::DESCRIPTION, map);
 
     study3DState = S3S_EXPECTING_STUDY_DESCRIPTION;
-    studyPhase = SP_EXPLANATION;
+    studyPhase   = SP_EXPLANATION;
 
     StaticThreadLogger::log("GoNoGoSphereExperiment::startExperiment","Sending request study explanation packet");
     emit Experiment::remoteRenderServerPacketAvailable();

@@ -252,39 +252,31 @@ void Experiment::process3DStudyControlPacket(const RenderServerPacket &p) {
             if (cmd == Study3DControlCommands::CMD_UPDATE_MESSAGES){
                 newDataForStudyMessageFor3DStudies(p.getPayloadField(Packet3DStudyControl::STUDY_MESSAGES).toList());
             }
+            else if (cmd == Study3DControlCommands::CMD_STUDY_END){
+                StaticThreadLogger::log("Experiment::process3DStudyControlPacket","Received 3D Study End");
+
+                // Before we go we need to ta make sure that the file name is saved.
+                rawdata.finalizeStudy(QVariantMap(), 0); // We finalized the study with empty data so that all metadata is stored.
+
+                rMWA.finalizeOnlineFixationLog();
+                lMWA.finalizeOnlineFixationLog();
+                state = STATE_STOPPED;
+
+                ExperimentResult er;
+                if (error.isEmpty()) er = ER_NORMAL;
+
+                if (!saveDataToHardDisk()){
+                    emit Experiment::experimentEndend(ER_FAILURE);
+                }
+                else emit Experiment::experimentEndend(ER_NORMAL);
+
+
+            }
             else{
                 StaticThreadLogger::error("Experiment::process3DStudyControlPacket","In study '" + this->studyType  + "' on state expecting study's end. But received study control packet of with command " + QString::number(cmd));
             }
         }
-        else if (packetType == RenderServerPacketType::TYPE_STUDY_DATA){
 
-            StaticThreadLogger::log("Experiment::process3DStudyControlPacket","Received 3D Study Data");
-
-//            qDebug() << "Data Received from study";
-//            Debug::prettpPrintQVariantMap(p.getPayload());
-
-            // This finalizes the study.
-            if (!rawdata.finalizeStudy(p.getPayload())){
-                error = "Failed on GoNoGo Sphere finalization because: " + rawdata.getError();
-                emit Experiment::experimentEndend(ER_FAILURE);
-                return;
-            }
-
-            rawdata.markFileAsFinalized();
-
-            rMWA.finalizeOnlineFixationLog();
-            lMWA.finalizeOnlineFixationLog();
-            state = STATE_STOPPED;
-
-            ExperimentResult er;
-            if (error.isEmpty()) er = ER_NORMAL;
-
-            if (!saveDataToHardDisk()){
-                emit Experiment::experimentEndend(ER_FAILURE);
-            }
-            else emit Experiment::experimentEndend(ER_NORMAL);
-
-        }
         else {
             StaticThreadLogger::error("Experiment::process3DStudyControlPacket","In study '" + this->studyType  + "' on state expecting study's end. But Got Packet of Type: " + p.getType());
         }
@@ -304,7 +296,7 @@ void Experiment::setStudyPhaseToEvaluation(){
         rrsControlPacket.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_STUDY_START);
         emit Experiment::remoteRenderServerPacketAvailable();
     }
-    else {        
+    else {
         manager->setTrialCountLoopValue(-1);
         resetStudy();
     }

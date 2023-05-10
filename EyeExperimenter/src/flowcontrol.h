@@ -174,6 +174,10 @@ private:
     // Auxiliary flag used to determine the established connection to the Remote Render Server.
     bool vrOK;
 
+    // We need to know if the study is 3D as it changes the flow of the application at the very end.
+    // It needs to wait for another packet AFTER the study has been finished.
+    QString current3DStudy;
+
     // The country codes and the function to load them
     QStringList countryList;
     QStringList countryCodes;
@@ -200,7 +204,7 @@ private:
     static const qint32 HAND_CALIB_START_V = 1;
     static const qint32 HAND_CALIB_END     = 2;
 
-    void processCalibrationControlPacket(RenderServerPacket p);
+    void processStudyDataPacketFor3DStudy(RenderServerPacket p);
 
 
 };

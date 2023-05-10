@@ -102,7 +102,7 @@ signals:
 protected:
 
     typedef enum {SP_EXPLANATION, SP_EXAMPLE, SP_EVALUATION} StudyPhase;
-    typedef enum {S3S_NONE, S3S_EXPECTING_STUDY_DESCRIPTION, S3S_WAITING_FOR_STUDY_END} Study3DStates;
+    typedef enum {S3S_NONE, S3S_EXPECTING_STUDY_DESCRIPTION, S3S_WAITING_FOR_STUDY_END, S3S_WAITING_FOR_STUDY_DATA} Study3DStates;
 
     // Self explanatory and should be used in the constructor of each study.
     bool isStudy3D;

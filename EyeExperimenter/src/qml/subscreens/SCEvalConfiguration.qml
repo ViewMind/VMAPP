@@ -268,9 +268,9 @@ Rectangle {
                     configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = configuration[VMGlobals.vmSCP_HAND_TO_USE];
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = true;
                     //configuration[VMGlobals.vmSCP_HAND_TO_USE] = "both";
-                    configuration[VMGlobals.vmSCP_MIN_SPEED] = 10;
-                    configuration[VMGlobals.vmSCP_MAX_SPEED] = 100;
-                    configuration[VMGlobals.vmSCP_INITIAL_SPEED] = 30;
+                    configuration[VMGlobals.vmSCP_MIN_SPEED]     = 90; //= 10;
+                    configuration[VMGlobals.vmSCP_MAX_SPEED]     = 90; //= 100;
+                    configuration[VMGlobals.vmSCP_INITIAL_SPEED] = 90; //= 30;
 
                     requires_hand_calibration.push(true);
 

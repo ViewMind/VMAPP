@@ -79,7 +79,13 @@ namespace Study3DControlCommands {
    static const int CMD_START_EXAMPLES               = 4;
    static const int CMD_NEXT_EXAMPLES                = 5;
    static const int CMD_REQUEST_STUDY_DESCRIPTION    = 6;
+   static const int CMD_STUDY_END                    = 7;
+   static const int CMD_REQUEST_STUDY_DATA           = 8;
 
+}
+
+namespace Study3DDataPacketFields {
+   static const QString STUDY_DURATION = "study_duration"; // This is the only field that must be accessed by name.
 }
 
 namespace Render2DControlPacketFields {
