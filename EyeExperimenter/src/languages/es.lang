@@ -117,8 +117,8 @@ viewevaluation_date = Fecha;
 viewevaluation_patient = Paciente;
 viewevaluation_general_settings = Configuación General;
 viewevaluation_eval_settings = Configuración de Evaluaciones;
-viewevaluation_eval_setup    = Evaluaciones recomendadas por patología;
-viewevaluation_eval_setup_list = Estudio a medida;
+viewevaluation_eval_setup    = Secuencias de estudio creadas;
+viewevaluation_eval_setup_list = Secuencia a medida;
 viewevaluation_doctor        = Doctor que ha pedido el estudio;
 viewevaluation_doctor_ph     = Seleccion un doctor;
 viewevaluation_protocol_ph   = Seleccione un protocolo;
@@ -198,6 +198,11 @@ viewevaluation_comfirm_abort_title = Cancelar estudio;
 viewevaluation_comfirm_abort_msg = ¿Desea cancelar el estudio?<br>Todo el progreso se perderá y deberá comenzar nuevamente;
 viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
+viewevaluation_seq_name_ph    = Ingrese un nombre para la secuencia actual;
+viewevaluation_start_sequence = COMENZAR SECUENCIA;
+viewevaluation_del_sequence   = ELIMINAR SECUENCIA;
+viewevaluation_seq_name = Secuencia Actual;
+viewevaluation_popup_save = La sequencia <b></b><br> ha sido guardada exitosamente;
 
 viewevaluation_hand_calib_h = 
 Coloque sus manos de manera horizontal. 

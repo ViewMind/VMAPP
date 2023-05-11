@@ -70,6 +70,7 @@ public:
     static const char * MAIN_RECOVERY_PASSWORD;
     static const char * MAIN_QC_STUDY_INDEX;
     static const char * MAIN_LAST_LOG_UPLOAD;
+    static const char * MAIN_STORED_SEQUENCES;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -94,6 +95,10 @@ public:
     static const char * SUBJECT_BDATE_DISPLAY;
     static const char * SUBJECT_SORTABLE_NAME;
     static const char * SUBJECT_EMAIL;
+
+    // Stored sequences field.
+    static const char * STORED_SEQ_LAST_SELECTED;
+    static const char * STORED_SEQ_SEQUENCES;
 
     // Marker for each subject
     static const char * MARKER_VALUE;
@@ -224,6 +229,23 @@ public:
     // Returns tht number of patients on the DB.
     qint32 getSubjectCount() const;
 
+    // Stores a created study sequence. Returns false only on failed db writing to disk.
+    bool storeStudySequence(const QString &name, const QVariantList &sequence);
+
+    // Stores the last selected sequence. Should be a key to the sequence map. Returs false only on disk failed.
+    bool setLastSelectedSequence(const QString &name);
+
+    // Retrieves a study sequence by name.
+    QVariantList getStudySequence(const QString &name);
+
+    // Retrieves the last selected sequence.
+    QString getLastSelectedSequence() const;
+
+    // The names of all the stored sequences.
+    QStringList getStudySequenceList() const;
+
+    // Removes a study sequence.
+    bool deleteStudySequence(const QString &name);
 
 private:
 

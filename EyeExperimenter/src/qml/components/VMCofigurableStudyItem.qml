@@ -8,6 +8,7 @@ Rectangle {
     //    vmIsLastSelected: True if it's a selected study that his last on the list. So that we know where to draw the divisor.
     //    vmStudyName       String for the study name
     //    vmOptions         Object. Each key contains a string list. The key is the option name. The String list are the radio button text
+    //    vmIsSelected      Can control whether the checkbox is on or not.
 
     id: configurableStudyItem
     height: (internal.vmIsExpanded && studyCheckBox.vmIsOn) ? internal.vmHEIGHT_EXPANDED : internal.vmHEIGHT
@@ -38,6 +39,7 @@ Rectangle {
     }
 
     function setExpansionState(expanded){
+        //console.log("Setting expansion repaint request. Is expanded is now " + expanded);
         internal.vmIsExpanded = expanded
         expandIndicator.requestPaint();
     }
@@ -61,19 +63,31 @@ Rectangle {
 
         property var vmOptionIndexToValue: [];
 
+        onVmCanBeExpandedChanged: {
+            if (vmCanBeExpanded){
+                //console.log("Changed " + vmStudyName + " to can be expanded");
+                if (studyCheckBox.vmIsOn){
+                    setExpansionState(true);
+                }
+            }
+        }
+
     }
 
     VMCheckBox {
         id: studyCheckBox
         vmText: vmStudyName
-        //vmIsOn: vmIsSelected
+        vmIsOn: vmIsSelected
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.leftMargin:  VMGlobals.adjustWidth(30)
         anchors.topMargin: VMGlobals.adjustHeight(15)
         onVmIsOnChanged: {
-            //console.log(vmStudyName  + " check state change to " + vmIsOn)
-            if (vmIsOn && internal.vmCanBeExpanded) setExpansionState(true)
+            //console.log(vmStudyName  + " check state change to " + vmIsOn + " and can be expanded is " + internal.vmCanBeExpanded)
+            if (vmIsOn && internal.vmCanBeExpanded) {
+                //console.log("Requesting expansion");
+                setExpansionState(true)
+            }
             //else setExpansionState(false)
             selectionChanged(vmIndex,vmIsOn)
         }

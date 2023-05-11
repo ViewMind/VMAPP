@@ -65,6 +65,8 @@ Rectangle {
         protocol.setModelList(protocolModelList);
         protocol.setSelection(selectedProtocolIndex);
 
+        reloadEvalSequenceList()
+
     }
 
     function onNext(){
@@ -89,6 +91,30 @@ Rectangle {
         viewEvaluations.vmSelectedDoctor = doctorSelection.getCurrentlySelectedMetaDataField();
 
         goToEvalSetup();
+    }
+
+    function clearSequenceSelection(){
+        autoStudySetup.setSelection = 0;
+    }
+
+    function reloadEvalSequenceList(){
+        var list = [];
+        list.push(loader.getStringForKey("viewevaluation_eval_setup_list"))
+
+        var map = loader.getStudySequenceListAndCurrentlySelected();
+        var options = map.list;
+        var selected = map.current;
+        let selectedIndex = 0;
+
+        for (let i = 0; i < options.length; i++){
+            if (options[i] === selected){
+                selectedIndex = i+1 // 0 is selecting nothing.
+            }
+            list.push(options[i]);
+        }
+
+        autoStudySetup.setModelList(list);
+        autoStudySetup.setSelection(selectedIndex);
     }
 
     Text {
@@ -118,10 +144,15 @@ Rectangle {
             vmLabel: loader.getStringForKey("viewevaluation_eval_setup")
             z: doctorSelection.z + 1
             Component.onCompleted: {
-                var list = [];
-                list.push(loader.getStringForKey("viewevaluation_eval_setup_list"))
-                setModelList(list);
-                setSelection(0);
+                reloadEvalSequenceList()
+            }
+            onVmCurrentIndexChanged: {
+                if (vmCurrentIndex == 0){
+                    viewEvaluations.setCurrentStudySequence("");
+                }
+                else {
+                    viewEvaluations.setCurrentStudySequence(vmCurrentText);
+                }
             }
         }
 

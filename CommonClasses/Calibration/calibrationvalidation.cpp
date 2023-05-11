@@ -123,7 +123,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
     for (qsizetype i = 0; i < validationData.size(); i++){
 
-        qDebug() << "Validation data at" << i << " of " << validationData.size();
+        // qDebug() << "Validation data at" << i << " of " << validationData.size();
 
         qreal pl = leftHits.at(i);
         qreal pr = rightHits.at(i);

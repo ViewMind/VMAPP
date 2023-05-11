@@ -47,6 +47,11 @@ public:
     Q_INVOKABLE QString getInstitutionName() const;
     Q_INVOKABLE bool isVMConfigPresent() const;
     Q_INVOKABLE void changeGetVMConfigScreenLanguage(const QString &var);
+    Q_INVOKABLE void storeNewStudySequence(const QString &name, const QVariantList &sequence);
+    Q_INVOKABLE QVariantList getStudySequence(const QString &name);
+    Q_INVOKABLE QVariantMap getStudySequenceListAndCurrentlySelected() const;
+    Q_INVOKABLE void deleteStudySequence(const QString &name);
+
 
     Q_INVOKABLE void openUserManual();
     Q_INVOKABLE bool processingParametersArePresent() const;

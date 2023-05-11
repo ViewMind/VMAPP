@@ -11,6 +11,7 @@ Rectangle {
     property var vmSelectedStudies: [];
     property var vmSelectedOptionsForEachStudy: ({});
     property var vmPreSelectedStudySequence: []
+    property int vmIgnoreSelectedSignal: 0;
 
     readonly property int vmNBACK_RT_STD_HOLD_TIME: 250
     readonly property int vmNBACK_RT_SLOW_HOLD_TIME: 400
@@ -27,12 +28,10 @@ Rectangle {
             vmPreSelectedStudySequence = [];
         }
         else{
-
-           /// TODO: Call Loader and actually get the preselected sequence given the sequence name.
-           let configString = "[{\"valid_eye\":\"both\",\"unique_study_id\":9,\"number_targets\":\"3\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false,\"nback_rt_hold_time\":400,\"nback_timeout\":5000,\"nback_transition\":1000},{\"valid_eye\":\"both\",\"unique_study_id\":2,\"number_targets\":\"3\",\"target_size\":\"large\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false},{\"valid_eye\":\"both\",\"unique_study_id\":1,\"number_targets\":\"3\",\"target_size\":\"large\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false},{\"valid_eye\":\"both\",\"unique_study_id\":8,\"hand_to_use\":\"left\",\"study_reqs_hand_calib\":\"left\",\"is_3d_study\":true,\"min_speed\":90,\"max_speed\":90,\"initial_speed\":90}]"
-           vmPreSelectedStudySequence = JSON.parse(configString);
-//           console.log("PreSelected Study Sequence is")
-//           console.log(JSON.stringify(vmPreSelectedStudySequence));
+//           let configString = "[{\"valid_eye\":\"both\",\"unique_study_id\":9,\"number_targets\":\"3\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false,\"nback_rt_hold_time\":400,\"nback_timeout\":5000,\"nback_transition\":1000},{\"valid_eye\":\"both\",\"unique_study_id\":2,\"number_targets\":\"3\",\"target_size\":\"large\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false},{\"valid_eye\":\"both\",\"unique_study_id\":1,\"number_targets\":\"3\",\"target_size\":\"large\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false},{\"valid_eye\":\"both\",\"unique_study_id\":8,\"hand_to_use\":\"left\",\"study_reqs_hand_calib\":\"left\",\"is_3d_study\":true,\"min_speed\":90,\"max_speed\":90,\"initial_speed\":90}]"
+           vmPreSelectedStudySequence = loader.getStudySequence(sequence_name);
+           console.log("PreSelected Study Sequence name: " + sequence_name + " its values are")
+           console.log(JSON.stringify(vmPreSelectedStudySequence));
 
         }
 
@@ -80,13 +79,69 @@ Rectangle {
                         // console.log("Setting the option: " + optionName + " to index of " + index + " for study " + item.vmIndex);
                         item.vmOptions[optionName][VMGlobals.vmSCO_OPTION_SELECTED] = index
                     }
+
                 }
+
+                break; // We are only ever pre configuring 1 item.
 
             }
 
         }
 
         return item;
+
+    }
+
+    function setStudyOrderAccordingToPreSelectedSequence(){
+
+        //console.log("Setting ignore signals to true");
+
+        // We need to ignore the change selection. Since the signals are emitted AFTER all the vmIsSelected Changes.
+        // We need to do this with a counter of how many signals we need to ignore.
+        // To add to the complication, some stored sequences are composed of multiple studies that represent only 1 graphical item
+        // (i.e Only Binding at the time of writing this) So in order to know the propert number of "clicks" to ignore we need to figure out
+        // Which of the graphical items are actually beign clicked.
+
+        vmIgnoreSelectedSignal = 0
+        for (let i = 0; i < vmPreSelectedStudySequence.length; i++){
+            let preconfigItem = vmPreSelectedStudySequence[i];
+            for (let j = 0; j < availableEvaluations.count; j++){
+                if (availableEvaluations.get(j).vmIndex == preconfigItem[VMGlobals.vmUNIQUE_STUDY_ID]){
+                    vmIgnoreSelectedSignal++;
+                }
+            }
+        }
+
+
+        // We need to separate marking the orders as selected from actually re ordering the items.
+        // The reason for this is that the delay between changing the "selected" property and actually
+        // calling reorder which screws up the availableEvaluations order itself.
+
+        for (let i = 0; i < vmPreSelectedStudySequence.length; i++){
+            let preconfigItem = vmPreSelectedStudySequence[i];
+            for (let j = 0; j < availableEvaluations.count; j++){
+                if (availableEvaluations.get(j).vmIndex == preconfigItem[VMGlobals.vmUNIQUE_STUDY_ID]){
+                    //console.log("Selecting evaluation " + preconfigItem[VMGlobals.vmUNIQUE_STUDY_ID]);
+                    availableEvaluations.setProperty(j,"vmIsSelected",true)
+                    break;
+                }
+            }
+        }
+
+        //console.log("Setting ignore signals to false");
+
+        // The final step is to actually call reorder studies so that that the sequence is properly implemented graphically.
+        // We need to make sure that we ONLY call it on graphically represented studies.
+        for (let i = 0; i < vmPreSelectedStudySequence.length; i++){
+            let preconfigItem = vmPreSelectedStudySequence[i];
+            for (let j = 0; j < availableEvaluations.count; j++){
+                if (availableEvaluations.get(j).vmIndex == preconfigItem[VMGlobals.vmUNIQUE_STUDY_ID]){
+                    //console.log("Selecting evaluation " + preconfigItem[VMGlobals.vmUNIQUE_STUDY_ID] + " to order " + i);
+                    reorderStudies(preconfigItem[VMGlobals.vmUNIQUE_STUDY_ID],true);
+                    break;
+                }
+            }
+        }
 
     }
 
@@ -111,7 +166,8 @@ Rectangle {
             vmIsLastSelected: false,
             vmOptions: options,
             vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS,
-            vmOptionValueMap: "2|3"
+            vmOptionValueMap: "2|3",
+            vmIsSelected: false
         }
         availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
@@ -124,7 +180,8 @@ Rectangle {
 //            vmIsLastSelected: false,
 //            vmOptions: options,
 //            vmOrder: "",
-//            vmOptionValueMap: ""
+//            vmOptionValueMap: "",
+//            vmIsSelected: false
 //        }
 //        availableEvaluations.append(item)
 
@@ -145,7 +202,8 @@ Rectangle {
             vmIsLastSelected: false,
             vmOptions: options,
             vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS,
-            vmOptionValueMap: "4|3" // Default NBack number of targets should be 4.
+            vmOptionValueMap: "4|3", // Default NBack number of targets should be 4.
+            vmIsSelected: false
         }
         //availableEvaluations.append(item)
         availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
@@ -159,7 +217,8 @@ Rectangle {
             vmIsLastSelected: false,
             vmOptions: options,
             vmOrder: "",
-            vmOptionValueMap: ""
+            vmOptionValueMap: "",
+            vmIsSelected: false
         }
         //availableEvaluations.append(item)
         availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
@@ -185,7 +244,8 @@ Rectangle {
             vmIsLastSelected: false,
             vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS + "|" + VMGlobals.vmSCP_NBACK_LIGHTUP,
             vmOptions: options,
-            vmOptionValueMap: "3|4|5|6||false|true"
+            vmOptionValueMap: "3|4|5|6||false|true",
+            vmIsSelected: false
         }
         //availableEvaluations.append(item)
         availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
@@ -207,7 +267,8 @@ Rectangle {
             vmIsLastSelected: false,
             vmOptions: options,
             vmOrder: VMGlobals.vmSCP_HAND_TO_USE,
-            vmOptionValueMap: "right|left|both" // These are the values inside the study configuration map corresponding to each of the option values.
+            vmOptionValueMap: "right|left|both", // These are the values inside the study configuration map corresponding to each of the option values.
+            vmIsSelected: false
         }
         //availableEvaluations.append(item)
         availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
@@ -229,11 +290,16 @@ Rectangle {
             vmIsLastSelected: false,
             vmOptions: options,
             vmOrder: VMGlobals.vmSCP_HAND_TO_USE,
-            vmOptionValueMap: "right|left|both" // These are the values inside the study configuration map corresponding to each of the option values.
+            vmOptionValueMap: "right|left|both", // These are the values inside the study configuration map corresponding to each of the option values.
+            vmIsSelected: false
         }
         //Disabling ONLY the option for selecting passball.
         ///availableEvaluations.append(item)
         ///availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+
+
+        // Function that sets the propert study sequece, if one was selected.
+        setStudyOrderAccordingToPreSelectedSequence();
 
     }
 
@@ -265,6 +331,7 @@ Rectangle {
                         availableEvaluations.setProperty(j,"vmIsLastSelected",true)
                     }
                     // Found the study. We now do the move.
+                    // console.log("Would move " + j + " to " + i);
                     availableEvaluations.move(j,i,1)
                     break;
                 }
@@ -273,7 +340,7 @@ Rectangle {
 
     }
 
-    function setupEvaluations(){
+    function setupEvaluations(nameToStore, forceLoadPreSet){
 
         // Clearing the previous selection.
         // console.log("Setting up evaluations");
@@ -343,9 +410,9 @@ Rectangle {
                     configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = configuration[VMGlobals.vmSCP_HAND_TO_USE];
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = true;
                     //configuration[VMGlobals.vmSCP_HAND_TO_USE] = "both";
-                    configuration[VMGlobals.vmSCP_MIN_SPEED]     = 90; //= 10;
-                    configuration[VMGlobals.vmSCP_MAX_SPEED]     = 90; //= 100;
-                    configuration[VMGlobals.vmSCP_INITIAL_SPEED] = 90; //= 30;
+                    configuration[VMGlobals.vmSCP_MIN_SPEED]     = 50; //= 10;
+                    configuration[VMGlobals.vmSCP_MAX_SPEED]     = 50; //= 100;
+                    configuration[VMGlobals.vmSCP_INITIAL_SPEED] = 50; //= 30;
 
                     requires_hand_calibration.push(true);
 
@@ -424,7 +491,26 @@ Rectangle {
 
         console.log("Printing Selected Evaluation Configuration")
         console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations));
-        //console.log("ONLY PRINTING");
+
+        // If the input parameter was not empty, it means that we need to store, under that name, the complete configuration.
+        if (nameToStore !== ""){
+            //console.log("Storing config as " + nameToStore);
+            loader.storeNewStudySequence(nameToStore,viewEvaluations.vmSelectedEvaluationConfigurations)
+
+            // Showing a popup that we've saved the sequence.
+            let popup = loader.getStringForKey("viewevaluation_popup_save")
+            popup = popup.replace("<b></b>","<b>" + nameToStore + "</b>")
+            mainWindow.popUpNotify(VMGlobals.vmNotificationGreen,popup)
+
+        }
+
+        // We NOT passing through the UI of this subscreen (on loading a pre made sequence) some configuration options are NOT properly created.
+        // But they were properly stored. Which is why we force the vmSelectedEvaluationConfigurations to the preselected list of configs.
+
+        if (forceLoadPreSet){
+            viewEvaluations.vmSelectedEvaluationConfigurations = vmPreSelectedStudySequence;
+        }
+
 
         // Once the evaluations are setup we KNOW that this is the start of an evaluation run. This is when the calibration history needs to be reset.
         flowControl.resetCalibrationHistory();
@@ -479,7 +565,13 @@ Rectangle {
         delegate: VMCofigurableStudyItem {
             width: evaluationConfiguration.width
             //vmOptionStruct: vmOptions
-            onSelectionChanged: function (studyCode, isSelected) {
+            onSelectionChanged: function (studyCode, isSelected) {                
+                if (vmIgnoreSelectedSignal > 0){
+                    vmIgnoreSelectedSignal--;
+                    //console.log("Ignoring signal Number of signals to ignore is now: " + vmIgnoreSelectedSignal)
+                    return;
+                }
+                // console.log("Calling selection changed: " + studyCode +  " is selected " + isSelected);
                 reorderStudies(studyCode,isSelected)
             }
             onUpdateSelectedOptions: function (vmIndex, options){

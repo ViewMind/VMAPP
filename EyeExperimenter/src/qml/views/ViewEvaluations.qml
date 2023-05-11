@@ -15,6 +15,7 @@ ViewBase {
     property string vmSelectedDoctor: ""
     property string vmSelectedPatientName: ""
     property var vmSelectedEvaluationConfigurations: []
+    property string vmCurrentStudySequence: ""
 
 
     // Used for debugging ONLY
@@ -64,7 +65,7 @@ ViewBase {
         // Setting up the progress line.
         let plineSetup = {};
         plineSetup[loader.getStringForKey("viewevaluation_general_settings")] = [];
-        plineSetup[loader.getStringForKey("viewevaluation_eval_settings")] = [];        
+        plineSetup[loader.getStringForKey("viewevaluation_eval_settings")] = [];
         progressLine.vmOnlyColorCurrent = true;
         progressLine.setup(plineSetup);
         progressLine.reset();
@@ -102,10 +103,6 @@ ViewBase {
                 plineSetup[study_names[i]] = eval_steps;
             }
         }
-
-//        for (let i in study_names){
-//            plineSetup[study_names[i]] = eval_steps;
-//        }
 
         // Adding the "finish" step. No substeps.
         plineSetup[loader.getStringForKey("viewevaluation_finish")] = []
@@ -154,6 +151,13 @@ ViewBase {
 
     function setCalibrationSpeedToSlow(slow){
         evaluationRun.vmSlowCalibrationSelected = slow;
+    }
+
+    function setCurrentStudySequence(name){
+        vmCurrentStudySequence = name;
+        if (name === "") sequenceName.clear();
+        else sequenceName.setText(name)
+
     }
 
     VMConfirmDialog {
@@ -291,8 +295,8 @@ ViewBase {
                     height: parent.height + radius
                     onGoToEvalSetup: {
                         progressLine.indicateNext()
-                        // Leaving this a place holder to
-                        // evaluationSetup.loadEvaluationSequences("My Sequence");
+                        // If an evaluation sequece was selected then we set that sequence at this point.
+                        evaluationSetup.loadEvaluationSequences(vmCurrentStudySequence);
                         viewer.currentIndex = vmSC_INDEX_EVAL_SETTINGS
                     }
                 }
@@ -401,7 +405,7 @@ ViewBase {
                     generalSettings.onNext()
                     break;
                 case vmSC_INDEX_EVAL_SETTINGS:
-                    evaluationSetup.setupEvaluations();
+                    evaluationSetup.setupEvaluations(sequenceName.vmCurrentText,false);
                     break;
                 case vmSC_INDEX_EVALUATION_SCREEN:
                     evaluationRun.onNextButtonPressed();
@@ -418,6 +422,69 @@ ViewBase {
                 }
             }
         }
+
+        Row {
+            id: sequenceNameInputRow
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: VMGlobals.adjustWidth(20)
+            visible: viewer.currentIndex === vmSC_INDEX_EVAL_SETTINGS
+            spacing: VMGlobals.adjustWidth(10)
+
+            Text {
+                id: sequenceNameLabel
+                text: loader.getStringForKey("viewevaluation_seq_name")
+                color: VMGlobals.vmBlackText
+                font.pixelSize: VMGlobals.vmFontLarge
+                font.weight: 600
+                anchors.verticalCenter: sequenceName.verticalCenter
+            }
+
+            VMTextInput {
+                id: sequenceName
+                vmPlaceHolderText: loader.getStringForKey("viewevaluation_seq_name_ph")
+                vmLabel: ""
+                width: VMGlobals.adjustWidth(320)
+            }
+
+        }
+
+
+
+        VMButton {
+            id: btnStartStudySequence
+            vmButtonType: btnStartStudySequence.vmTypeSecondary
+            vmText: loader.getStringForKey("viewevaluation_start_sequence")
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: nextButton.left
+            anchors.rightMargin: VMGlobals.adjustWidth(10)
+            visible: (viewer.currentIndex === vmSC_INDEX_GENERAL_SETTINGS) && (vmCurrentStudySequence != "")
+            onClickSignal: {
+                generalSettings.onNext()
+                evaluationSetup.loadEvaluationSequences(vmCurrentStudySequence)
+                evaluationSetup.resetStudySelection()
+                evaluationSetup.setupEvaluations("",true);
+            }
+        }
+
+
+        VMButton {
+            id: btnDeleteSequence
+            vmText: loader.getStringForKey("viewevaluation_del_sequence")
+            vmButtonType: btnDeleteSequence.vmTypeWarning
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: VMGlobals.adjustWidth(29)
+            visible: (viewer.currentIndex === vmSC_INDEX_GENERAL_SETTINGS) && (vmCurrentStudySequence != "")
+            onClickSignal: {
+                loader.deleteStudySequence(vmCurrentStudySequence);
+                vmCurrentStudySequence = "";
+                generalSettings.reloadEvalSequenceList()
+                generalSettings.clearSequenceSelection();
+            }
+        }
+
+
 
         VMButton {
             id: skipCalibrationButton

@@ -117,8 +117,8 @@ viewevaluation_date = Date;
 viewevaluation_patient = Patient;
 viewevaluation_general_settings = General Settings;
 viewevaluation_eval_settings = Evaluation Settings;
-viewevaluation_eval_setup    = Recommended evaluations by pathology;
-viewevaluation_eval_setup_list = Custom Study;
+viewevaluation_eval_setup    = Stored study sequences;
+viewevaluation_eval_setup_list = Custom Sequence;
 viewevaluation_doctor        = Doctor that requested the study;
 viewevaluation_doctor_ph     = Select doctor;
 viewevaluation_protocol_ph   = Select protocol;
@@ -198,6 +198,11 @@ viewevaluation_comfirm_abort_title = Cancel Study;
 viewevaluation_comfirm_abort_msg = Do you wish to stop the current study?<br>All progress will be lost and you will need to start again;
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
+viewevaluation_seq_name_ph    = Input name for current sequence;
+viewevaluation_start_sequence = START SEQUENE;
+viewevaluation_del_sequence   = DELETE SEQUENCE;
+viewevaluation_seq_name = Current Sequence;
+viewevaluation_popup_save = Sequence <b></b><br> has been successfully saved;
 
 viewevaluation_hand_calib_h = 
 Place your hands horizontally. 

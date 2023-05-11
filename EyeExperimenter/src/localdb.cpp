@@ -14,6 +14,7 @@ const char * LocalDB::MAIN_DB_VERSION                        = "local_db_version
 const char * LocalDB::MAIN_RECOVERY_PASSWORD                 = "recovery_password";
 const char * LocalDB::MAIN_QC_STUDY_INDEX                    = "qc_study_index";
 const char * LocalDB::MAIN_LAST_LOG_UPLOAD                   = "last_log_upload";
+const char * LocalDB::MAIN_STORED_SEQUENCES                  = "stored_sequences";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -38,6 +39,11 @@ const char * LocalDB::SUBJECT_STUDY_MARKERS         = "subject_study_markers";
 const char * LocalDB::SUBJECT_LOCAL_ID              = "local_id";
 const char * LocalDB::SUBJECT_ASSIGNED_MEDIC        = "assigned_medic";
 const char * LocalDB::SUBJECT_EMAIL                 = "email";
+
+
+const char * LocalDB::STORED_SEQ_LAST_SELECTED      = "last_selected";
+const char * LocalDB::STORED_SEQ_SEQUENCES          = "stored_sequences";
+
 
 // "Bookmark" fields
 const char * LocalDB::MARKER_VALUE            = "marker_value";
@@ -754,4 +760,48 @@ void LocalDB::updatesToPreviousDBVersions(){
 
 
 
+}
+
+bool LocalDB::storeStudySequence(const QString &name, const QVariantList &sequence){
+
+    QVariantMap main_map = data.value(MAIN_STORED_SEQUENCES).toMap();
+    QVariantMap seq_map  = main_map.value(STORED_SEQ_SEQUENCES).toMap();
+    seq_map[name] = sequence;
+    main_map[STORED_SEQ_SEQUENCES] = seq_map;
+    data[MAIN_STORED_SEQUENCES] = main_map;
+    return saveAndBackup();
+
+}
+
+bool LocalDB::setLastSelectedSequence(const QString &name){
+
+    QVariantMap main_map = data.value(MAIN_STORED_SEQUENCES).toMap();
+    main_map[STORED_SEQ_LAST_SELECTED] = name;
+    data[MAIN_STORED_SEQUENCES] = main_map;
+    return saveAndBackup();
+
+}
+
+QVariantList LocalDB::getStudySequence(const QString &name){
+
+    QVariantMap main_map = data.value(MAIN_STORED_SEQUENCES).toMap();
+    return main_map.value(STORED_SEQ_SEQUENCES).toMap().value(name).toList();
+
+}
+
+QString LocalDB::getLastSelectedSequence() const{
+    return data.value(MAIN_STORED_SEQUENCES).toMap().value(STORED_SEQ_LAST_SELECTED).toString();
+}
+
+QStringList LocalDB::getStudySequenceList() const {
+    return data.value(MAIN_STORED_SEQUENCES).toMap().value(STORED_SEQ_SEQUENCES).toMap().keys();
+}
+
+bool LocalDB::deleteStudySequence(const QString &name){
+    QVariantMap main_map = data.value(MAIN_STORED_SEQUENCES).toMap();
+    QVariantMap seq_map  = main_map.value(STORED_SEQ_SEQUENCES).toMap();
+    seq_map.remove(name);
+    main_map[STORED_SEQ_SEQUENCES] = seq_map;
+    data[MAIN_STORED_SEQUENCES] = main_map;
+    return saveAndBackup();
 }

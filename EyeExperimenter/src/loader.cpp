@@ -148,6 +148,44 @@ bool Loader::isVMConfigPresent() const {
     return isLicenceFilePresent;
 }
 
+void Loader::storeNewStudySequence(const QString &name, const QVariantList &sequence){
+    if (!localDB.storeStudySequence(name,sequence)){
+        StaticThreadLogger::error("Loader::storeNewStudySequence","Failed to write db file to disk on storing new study sequence");
+    }
+
+    // Whenever we store a sequence, that sequence becomes the last selected sequence.
+    if (!localDB.setLastSelectedSequence(name)){
+        StaticThreadLogger::error("Loader::storeNewStudySequence","Failed to write db file to disk on storing last selected sequence");
+    }
+
+}
+
+QVariantList Loader::getStudySequence(const QString &name){
+    QVariantList list = localDB.getStudySequence(name);
+    // Whenever a study sequece is selected that is a new study sequence. If it's the empty sequence then that is what it is.
+    if (!localDB.setLastSelectedSequence(name)){
+        StaticThreadLogger::error("Loader::getStudySequence","Failed to write db file to disk on storing last selected sequence");
+    }
+    return list;
+}
+
+QVariantMap Loader::getStudySequenceListAndCurrentlySelected() const{
+
+    QString seqname = localDB.getLastSelectedSequence();
+    QStringList list = localDB.getStudySequenceList();
+    QVariantMap map;
+    map["current"] = seqname;
+    map["list"] = list;
+    return map;
+
+}
+
+void Loader::deleteStudySequence(const QString &name){
+    if (!localDB.deleteStudySequence(name)){
+        StaticThreadLogger::error("Loader::deleteStudySequence","Failed to write db file to disk on deleting sequence");
+    }
+}
+
 void Loader::changeGetVMConfigScreenLanguage(const QString &var){
     // The language selection is stored in the preferences file.
     ConfigurationManager::setValue(Globals::Paths::SETTINGS,Globals::VMPreferences::UI_LANGUAGE,var,configuration);
