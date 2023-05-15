@@ -147,6 +147,8 @@ Rectangle {
                 reloadEvalSequenceList()
             }
             onVmCurrentIndexChanged: {
+                console.log("Auto study setup with vmIndex of " + vmCurrentIndex)
+                if (vmCurrentIndex == -1) return;
                 if (vmCurrentIndex == 0){
                     viewEvaluations.setCurrentStudySequence("");
                 }

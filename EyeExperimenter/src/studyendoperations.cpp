@@ -96,8 +96,7 @@ void StudyEndOperations::doStudyFileProcessing(){
     fileQCPass  = true;
 
     QStringList studyList = vmdc.getStudies();
-    /// PLACEHOLDER. TODO: Replace with the a true value.
-    qreal ok_threshold = vmdc.getQCParameters().value(VMDC::QCGlobalParameters::ICI_TRIAL_THRESHOLD).toReal();
+    qreal ok_threshold = vmdc.getQCParameters().value(VMDC::QCGlobalParameters::DQI_THRESHOLD).toReal();
 
     // Making sure QC is cleared.
     vmdc.setQCStudyStructClear();
@@ -134,8 +133,8 @@ void StudyEndOperations::doStudyFileProcessing(){
         bool  qci_ok = (qci >= ok_threshold);
 
         // We set the quality control to the actual file.
-        vmdc.setQCValue(study,VMDC::QCFields::QC_ICI_INDEX,qci);
-        vmdc.setQCValue(study,VMDC::QCFields::QC_ICI_INDEX_OK,qci_ok);
+        vmdc.setQCValue(study,VMDC::QCFields::DQI,qci);
+        vmdc.setQCValue(study,VMDC::QCFields::DQI_OK,qci_ok);
 
         // Each file is represented by a single row in the Upload Studies Table.
         // Hence if a file has multiple studies the QC Index is the index of the lowest QC and if that is not passing, then the files does not pass.

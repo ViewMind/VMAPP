@@ -520,60 +520,30 @@ bool LocalDB::setQCParametersFromServerResponse(const QVariantMap &response){
         return false;
     }
 
-    QStringList allStudies;
-    allStudies << VMDC::MultiPartStudyBaseName::BINDING
-               << VMDC::Study::NBACKRT
-               << VMDC::Study::GONOGO
-               << VMDC::Study::NBACKMS
-               << VMDC::Study::NBACKVS
-               << VMDC::Study::NBACK
-               << VMDC::Study::READING;
-
-
     QStringList shouldBeThere;
-    shouldBeThere << VMDC::QCGlobalParameters::valid;
-    shouldBeThere << allStudies; // There should be a field for each study.
+    shouldBeThere << VMDC::QCGlobalParameters::DQI_THRESHOLD;
 
-    QStringList shouldBeTherePerStudy;
-
-    QVariantMap qc = response.value(APINames::FreqParams::NAME).toMap();
+    QVariantMap qc_server = response.value(APINames::FreqParams::NAME).toMap();
+    QVariantMap qc;
 
     //Debug::prettpPrintQVariantMap(qc);
 
-    // First we make sure that all fields are there.
-    QStringList serverkeys = qc.keys();
-    for (qint32 i = 0; i < serverkeys.size(); i++){
-        if (!shouldBeThere.contains(serverkeys.at(i))){
-            error = "Unknown server side qc parameter " + serverkeys.at(i);
-            return false;
+    // We are only interested in the required fields. Any other are ignored.
+    QStringList missing;
+    for (qint32 i = 0; i < shouldBeThere.size(); i++){
+        if (!qc_server.contains(shouldBeThere.at(i))){
+            missing << shouldBeThere.at(i);
         }
-        shouldBeThere.removeOne(serverkeys.at(i));
+        else {
+            qc[shouldBeThere.at(i)] = qc_server[shouldBeThere.at(i)];
+        }
     }
 
-    if (!shouldBeThere.isEmpty()){
-        error = "The following qc parameters were missing from server response: " + shouldBeThere.join(",");
+    // We make sure to print all missing fields.
+    if (!missing.isEmpty()){
+        error = "The following qc parameters were missing from server response: " + missing.join(",");
         return false;
-    }
 
-
-    // Now for each study we verify that all the keys for each study are there.
-    for (qint32 i = 0; i < allStudies.size(); i++){
-        shouldBeTherePerStudy << VMDC::QCStudyParameters::valid;
-
-        serverkeys = qc.value(allStudies.at(i)).toMap().keys();
-
-        for (qint32 i = 0; i < serverkeys.size(); i++){
-            if (!shouldBeTherePerStudy.contains(serverkeys.at(i))){
-                error = "Unknown server side qc study parameter " + serverkeys.at(i);
-                return false;
-            }
-            shouldBeTherePerStudy.removeOne(serverkeys.at(i));
-        }
-
-        if (!shouldBeTherePerStudy.isEmpty()){
-            error = "The following qc study parameters were missing from server response: " + shouldBeTherePerStudy.join(",") + ". For study: " + allStudies.at(i);
-            return false;
-        }
     }
 
     // All checks out, we can save it as is.

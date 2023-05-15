@@ -157,7 +157,7 @@ ViewBase {
         vmCurrentStudySequence = name;
         if (name === "") sequenceName.clear();
         else sequenceName.setText(name)
-
+        loader.setCurrentStudySequence(name);
     }
 
     VMConfirmDialog {

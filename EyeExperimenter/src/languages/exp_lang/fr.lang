@@ -1,0 +1,179 @@
+viewevaluation_calibration_explanation = 
+Un cercle rouge clignotant avec un point blanc au centre va apparaître à l'écran.
+Regardez le point blanc. Le cercle se déplacera sur l'écran. Vous devez le suivre
+des yeux. Rappelez-vous de ne pas quitter le cercle des yeux jusqu'à ce qu'il
+disparaisse.
+Il apparaîtra la première fois, dans le coin supérieur gauche.;
+
+viewevaluation_hand_calib_h = 
+Tendez les bras le long du corps, aussi loin que possible.;
+
+
+viewevaluation_hand_calib_v = 
+Tendez les bras vers le plafond, aussi loin que possible.;
+
+
+explanation_phase_list_binding_bc =
+Voici le test de combinaison de couleurs. Dans cette étude, <<N>> cibles apparaîtront
+à l'écran. Chaque cible a une couleur à l'extérieur et une couleur à l'intérieur.
+Vous devez vous rappeler de la combinaison de couleurs de chaque cible.|
+Lorsque les premières cibles disparaîtront, un nouvel ensemble de cibles apparaîtra. Vous
+devez déterminer si la combinaison de couleurs de chaque cible est restée la même ou si les
+couleurs ont été permutées entre les cibles. La position des cibles n'a pas d'importance.
+Si les couleurs ont été permutées entre les cibles, dites différent. Sinon, dites pareil.
+Dans cet exemple, les couleurs ont été permutées entre les cibles. Vous devez dire différent|
+Regardez le deuxième exemple.|
+Dans ce cas, la combinaison de couleurs est restée la même. Vous devez dire pareil.
+Avez-vous compris?
+Nous allons à présent nous entraîner avant de commencer le test.;
+
+
+explanation_phase_list_binding_uc =
+Voici le test des nouvelles couleurs. Dans cette étude, <<N>> cibles apparaîtront
+à l'écran, comme les cibles que vous voyez à gauche. Chaque cible a une couleur
+à l'extérieur et une couleur à l'intérieur. Vous devez vous rappeler des couleurs
+présentes dans les cibles.|
+Lorsque les premières cibles disparaîtront, un nouvel ensemble de cibles apparaîtra.
+Vous devez déterminer si de nouvelles couleurs sont apparues ou si toutes les couleurs
+sont restées identiques. La position des cibles n'a pas d'importance. Si de nouvelles
+couleurs apparaissent, dites rapidement et à haute voix différent. Sinon, dites pareil.
+Dans cet exemple, deux nouvelles couleurs sont apparues au centre de chaque cible.
+Vous devez dire différent.|
+Regardez le deuxième exemple.|
+Dans ce cas, aucune nouvelle couleur n'est apparue. Vous devez dire pareil.
+Avez-vous compris?
+Nous allons à présent nous entraîner avant de commencer le test.;
+
+explanation_phase_list_gonogo = 
+Voici le test Go/No Go. Regardez la croix au centre de l'écran.
+La croix disparaîtra et une flèche apparaîtra.
+Si la flèche est verte, regardez dans la direction de la flèche.
+Et si elle est rouge, regardez dans la direction opposée.|
+Dans cet exemple, parce que la flèche est rouge, regardez le cercle 
+dans la direction opposée, comme indiqué par le cercle bleu.|
+Lorsque la flèche disparaît, regardez de nouveau rapidement la croix.|
+Dans ce cas, parce que la flèche est verte, regardez dans le sens de la flèche.|
+Regardez de nouveau la croix.|
+Regardez dans le sens de la flèche.|
+De nouveau la croix.|
+Regardez dans la direction opposée.
+Vous devez faire cet exercice aussi vite que possible.
+Avez-vous compris?
+Nous allons à présent nous entraîner avant de commencer le test.;
+
+
+explanation_phase_list_gonogo_3D = 
+This is Go/No-Go Sphere Evaluation.
+During this evaluation green and red spheres will be sent from the dark
+points in front of you. Si the sphere is green you must try to touch it.
+If you make contact with the sphere you will feel your controller vibrate.|
+If the sphere is red, you must move your hands to avoid touching the sphere.
+If contact is made anyway, then your controller will still vibrate. | 
+Now try to touch the green sphere again. | 
+Avoid touching the red sphere.
+If you touch and avoid the spheres correctly the, spheres will start to go faster.
+If your performance worsens the spheres will go slower.;
+
+
+explanation_phase_list_nback_3 =
+Voici le test N-Back. Ce test est composé de 6 cases et d'une croix au centre de l'écran.
+Vous devez garder les yeux sur la croix.|
+Un cercle rouge apparaîtra sur l'une des cases, Position 1.|
+Ensuite, il apparaîtra sur une autre case. Position 2.|
+Et enfin sur une autre case. Position 3. Rappelez-vous de toujours
+garder les yeux sur la croix.|
+Lorsque la croix disparaît, vous devez rapidement regarder la position 3, où le
+dernier cercle est apparu, comme indiqué par la flèche.|
+Regardez ensuite la position 2, où le deuxième cercle est apparu.|
+Et enfin, la position 1, où le premier cercle est apparu.
+Vous suivez donc l'ordre inverse d’apparition.|
+Lorsque vous avez terminé, regardez de nouveau rapidement la croix.
+Maintenant, le test va être répété.|
+Position 1.|
+Position 2.|
+Position 3.|
+Maintenant, regardez rapidement la position 3.|
+Position 2.|
+et Position 1.
+Avez-vous compris?
+Nous allons à présent nous entraîner avant de commencer le test.;
+
+explanation_phase_list_nback_4 =
+Voici le test N-Back. Ce test est composé de 6 cases et d'une croix au centre de l'écran.
+Vous devez garder les yeux sur la croix.|
+Un cercle rouge apparaîtra sur l'une des cases, Position 1.|
+Ensuite, il apparaîtra sur une autre case. Position 2.|
+Ensuite, il apparaîtra sur une autre case. Position 3.|
+Et enfin sur une autre case. Position 4. Rappelez-vous de toujours
+garder les yeux sur la croix.|
+Lorsque la croix disparaît, vous devez rapidement regarder la position 4, où le
+dernier cercle est apparu, comme indiqué par la flèche.|
+Regardez ensuite la position 3, où le deuxième cercle est apparu.|
+Regardez ensuite la position 2 où le deuxième cercle est apparu.|
+Et enfin, la position 1, où le premier cercle est apparu.
+Vous suivez donc l'ordre inverse d’apparition.|
+Lorsque vous avez terminé, regardez de nouveau rapidement la croix.
+Maintenant, le test va être répété.|
+Position 1.|
+Position 2.|
+Position 3.|
+Position 4.|
+Maintenant, regardez rapidement la position 4.|
+Position 3.|
+Position 2.|
+et Position 1.
+Avez-vous compris?
+Nous allons à présent nous entraîner avant de commencer le test.;
+
+explanation_phase_list_nbackrt    =
+This is the N-Back Test. The test is composed of 6 boxes and one cross in
+the center of the screen. You must keep your eyes on the cross.|
+A red circle will appear on one of the boxes. Position 1|
+Then it will appear on another box. Position 2|
+And finally on another box. Position 3. Remeber to always keep your eyes on
+the cross|
+When the cross disappears, you must quickly look at Position 3, where the last
+circle appeared, as indicated by the arrow.|
+Then look at Position 2, where the second circle appeared|
+And finally, at Position 1, where the first circle appeared. In the inverse order|
+When you finish, quickly look back at the cross. Now the test will be repeated|
+Position 1|
+Position 2|
+Position 3|
+Now quickly look at Position 3|
+Position 2|
+And Position 1. Did you understand?
+We will do some practice rounds before starting the test.;
+
+
+
+
+
+explanation_phase_list_nbackvs = 
+This is the NBack Evaluation For Training.
+Red circles will appear on the screen in a given sequence.
+While the circles are being shown, please keep your eyes focused on the center cross. 
+The number of circles in the sequence will depend on the selected difficulty. 
+This example will use 3.|
+Now, a second circle will appear.| 
+Finally, the third and last circle of the sequence will be shown.|
+When the cross disappears, you must look at the rectangle where the third circle appeared. 
+During the study, a flash of light will indicate that you looked a the right rectangle.|
+Then you must look at the rectangle where the second circle appeared before.|
+Finally you must look at the rectangle where the first circle was shown. 
+Successive completed sequences will decrease the time each circle is shown in the screen. 
+Likewise, successive failures will increase the time the circles are shown.|
+Let's try again. Fix you eyes on the center cross while first red circle.|
+Maintaining your eyes fixed on the cross while second circle 
+appears on the screen.|
+Then the final third circle is shown|
+Now look at the rectangle where the third circle was shown|
+Then at the rectangle where the second one appeared|
+And finish by looking at the rectangle where the first circle appeared.
+Are you ready to begin?;
+
+
+explanation_phase_list_pass_ball = | 
+|
+|
+|;

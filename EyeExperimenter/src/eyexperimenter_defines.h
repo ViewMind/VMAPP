@@ -126,20 +126,19 @@ static const QString ES = "Español";
 }
 
 namespace ExplanationLanguage {
-
 static QVariantMap GetNameCodeMap() {
     QVariantMap map;
-    map["English"] = "en";
-    map["Español"] = "es";
+    map["English"]   = "en";
+    map["Español"]   = "es";
     //map["中国人"]   = "cn"; Chinese was a test and is not fully available yet.
-    map["Deutsch"] = "de";
+    map["Deutsch"]   = "de";
+    map["Français "] = "fr";
     return map;
-
 }
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "24.2.1";
+static const QString EXPERIMENTER_VERSION_NUMBER = "25.0.0.preview.1";
 extern QString EXPERIMENTER_VERSION;
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";

@@ -169,6 +169,12 @@ QVariantList Loader::getStudySequence(const QString &name){
     return list;
 }
 
+void Loader::setCurrentStudySequence(const QString &name){
+    if (!localDB.setLastSelectedSequence(name)){
+        StaticThreadLogger::error("Loader::setCurrentStudySequence","Failed to write db file to disk on storing last selected sequence");
+    }
+}
+
 QVariantMap Loader::getStudySequenceListAndCurrentlySelected() const{
 
     QString seqname = localDB.getLastSelectedSequence();

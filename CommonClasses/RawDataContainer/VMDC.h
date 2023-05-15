@@ -440,56 +440,19 @@ namespace VMDC {
     }
 
     namespace QCGlobalParameters {
-        static const QString MIN_TIMESTAMP_DIFF                     = "min_successive_timestamp_difference";     // Results computed but not used.
-        static const QString MAX_TIMESTAMP_DIFF                     = "max_successive_timestamp_difference";     // Results computed but not used.
-        static const QString MAX_GLITCHES                           = "max_recommended_glitches";                // Basically DEPRACATED
-        static const QString ALLOWED_SAMPLING_FREQ_VARIATION_PLUS   = "allowed_f_plus_variation";
-        static const QString ALLOWED_SAMPLING_FREQ_VARIATION_MINUS  = "allowed_f_minus_variation";
-        static const QString THRESHOLD_NUM_TRIALS_VALID_F           = "threshold_trials_with_valid_f";
-        static const QString ICI_TRIAL_THRESHOLD                    = "information_completion_index_trial_threshold";
-        static const QString ICI_VALID_N_TRIAL_THRESHOLD            = "information_completion_index_valid_trial_threshold";
-        static const QString ICI_3D_MIN_BIN_N_POINTS                = "information_completion_index_minimum_number_of_data_points_per_bin_in_3D_study";
-        static const QString ICI_3D_TARGET_NUMBER_OF_BINS           = "information_completion_index_target_number_of_bins_in_3D_study";
+        static const QString DQI_THRESHOLD                          = "data_quality_index_threshold";
 
-        static const QStringList valid{MIN_TIMESTAMP_DIFF,MAX_TIMESTAMP_DIFF,MAX_GLITCHES,ALLOWED_SAMPLING_FREQ_VARIATION_MINUS,ALLOWED_SAMPLING_FREQ_VARIATION_PLUS,
-                    THRESHOLD_NUM_TRIALS_VALID_F, ICI_TRIAL_THRESHOLD, ICI_VALID_N_TRIAL_THRESHOLD,ICI_3D_MIN_BIN_N_POINTS,ICI_3D_TARGET_NUMBER_OF_BINS};
+        static const QStringList valid{DQI_THRESHOLD};
         static QString validate(const QString &str) { return VMDC::validate(str,valid,"Global QC Parameter"); }
         static qint32 toInt(const QString &str) {return valid.indexOf(str); }
         static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
         static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
     }
 
-    namespace QCStudyParameters {
-        static const QString MIN_POINTS_PER_TRIAL = "min_points_per_trial";   // DEPRACATED. To be removed.
-        static const QString MIN_FIXS_PER_TRIAL                     = "min_fixations_per_trial";
-        static const QString THRESHOLD_VALID_NUM_FIXATIONS          = "threshold_valid_num_fixations";
-        static const QString MIN_TIME_DURATION_PER_TRIAL            = "min_time_duration_per_trial";
-        static const QString THRESHOLD_VALID_NUM_DATA_POINTS        = "threshold_valid_num_datapoints";
-
-        static const QStringList valid{MIN_POINTS_PER_TRIAL,MIN_FIXS_PER_TRIAL,THRESHOLD_VALID_NUM_FIXATIONS,MIN_TIME_DURATION_PER_TRIAL,THRESHOLD_VALID_NUM_DATA_POINTS};
-        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study QC Parameter"); }
-        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
-        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
-        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
-    }
-
     namespace QCFields {
-        static const QString POINTS = "points_per_trial";
-        static const QString FIXATIONS = "fixations_per_trial";
-        static const QString GLITCHES = "glitches_per_trial";
-        static const QString AVG_FREQ = "avg_freq_per_trial";
-        static const QString ICI = "index_of_information_completion";
-        static const QString N_DATASETS = "number_of_datasets";
-        static const QString QC_POINT_INDEX = "qc_data_point_index";
-        static const QString QC_POINT_INDEX_OK = "qc_data_point_index_ok";
-        static const QString QC_FIX_INDEX = "qc_fix_index";
-        static const QString QC_FIX_INDEX_OK = "qc_fix_index_ok";
-        static const QString QC_FREQ_INDEX = "qc_freq_index";
-        static const QString QC_FREQ_INDEX_OK = "qc_freq_index_ok";
-        static const QString QC_ICI_INDEX = "qc_ici_index";
-        static const QString QC_ICI_INDEX_OK = "qc_ici_index_ok";
-        static const QStringList valid{ICI,FIXATIONS,POINTS,AVG_FREQ,GLITCHES,N_DATASETS,QC_POINT_INDEX,QC_POINT_INDEX_OK,QC_FIX_INDEX,
-                    QC_FIX_INDEX_OK,QC_FREQ_INDEX,QC_FREQ_INDEX_OK,QC_ICI_INDEX, QC_ICI_INDEX_OK};
+        static const QString DQI = "data_quality_index";
+        static const QString DQI_OK = "data_quality_index_ok";
+        static const QStringList valid{DQI, DQI_OK};
         static QString validate(const QString &str) { return VMDC::validate(str,valid,"QC Computed Values"); }
         static qint32 toInt(const QString &str) {return valid.indexOf(str); }
         static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }
