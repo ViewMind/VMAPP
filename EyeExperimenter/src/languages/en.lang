@@ -198,11 +198,12 @@ viewevaluation_comfirm_abort_title = Cancel Study;
 viewevaluation_comfirm_abort_msg = Do you wish to stop the current study?<br>All progress will be lost and you will need to start again;
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
-viewevaluation_seq_name_ph    = Input name for current sequence;
+viewevaluation_seq_name_ph    = Input a name for the selected sequence;
 viewevaluation_start_sequence = START SEQUENE;
 viewevaluation_del_sequence   = DELETE SEQUENCE;
-viewevaluation_seq_name = Current Sequence;
-viewevaluation_popup_save = Sequence <b></b><br> has been successfully saved;
+viewevaluation_seq_name = Save sequence as;
+viewevaluation_popup_save = Sequence<br><b></b><br> has been successfully saved;
+viewevaluation_goback = GO BACK;
 
 viewevaluation_hand_calib_h = 
 Place your hands horizontally. 
@@ -254,7 +255,7 @@ Please start Eye Explorer again to begin using it.;
 viewqc_no_reports_to_evaluate = No reports available for processing;
 viewqc_study = Study;
 viewqc_dr    = Doctor;
-viewqc_data_quality = Calidad de Datos;
+viewqc_data_quality = Data Quality;
 viewqc_wait_msg = Please wait while study quality is checked;
 viewqc_qc_failed = <b>Quality Control Failed</b><br>Please contact ViewMind for support;
 viewqc_SubPoints = Data Points;

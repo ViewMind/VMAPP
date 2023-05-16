@@ -14,6 +14,7 @@ Item {
     property string vmCurrentText: ""
     property bool vmFocus: false
     property string vmClarification: ""
+    property int vmMaxLength: 0
 
     readonly property double vmLeftMargin: VMGlobals.adjustWidth(10);
     readonly property double vmRightMargin: VMGlobals.adjustWidth(18);
@@ -54,6 +55,14 @@ Item {
         border.width: Math.ceil(vmTextInput.width/300);
         radius: Math.round(10*vmTextInput.height/44);
 
+        TextMetrics {
+            id: textMeasure
+            font: inputText.font
+            text: vmCurrentText
+            //text: "a"
+            //text: inputText.text
+        }
+
 
         // The display Text.
         TextInput {
@@ -66,8 +75,18 @@ Item {
             enabled: vmEnabled
             font.pixelSize: VMGlobals.vmFontBaseSize
             font.weight: 400
+            autoScroll: true
 
             text: vmPlaceHolderText
+
+//            onWidthChanged: {
+//                // We estimate the numbe maximum number of characters that the input can hold by assuming they are all "a" usually the widest character.
+//                let nchars = width/textMeasure.advanceWidth;
+//                maximumLength = Math.floor(nchars)
+//                if (vmCurrentText == ""){
+//                    clear()
+//                }
+//            }
 
             color: {
                 if (!vmEnabled) return VMGlobals.vmGrayPlaceholderText
@@ -116,7 +135,21 @@ Item {
                 //console.log("Text Edited: inputText.text '" + inputText.text + "'")
                 vmErrorMsg = ""
                 vmCurrentText = inputText.text
+                //console.log("Measured text: " + textMeasure.advanceWidth)
+                if (vmMaxLength == 0){
+                    if (textMeasure.advanceWidth >= (width - vmLeftMargin*2)){
+                        maximumLength = inputText.text.length;
+                    }
+                    else {
+                        maximumLength = 32767 // This is the default value.
+                    }
+                }
+                else {
+                    maximumLength = vmMaxLength
+                }
+                //console.log("Maximum length is now: " + maximumLength)
                 vmTextInput.textChanged();
+
             }
 
             onEditingFinished: {

@@ -155,9 +155,23 @@ ViewBase {
 
     function setCurrentStudySequence(name){
         vmCurrentStudySequence = name;
-        if (name === "") sequenceName.clear();
-        else sequenceName.setText(name)
+        sequenceName.clear();
         loader.setCurrentStudySequence(name);
+    }
+
+    function finalizeSequenceAction(goToReports){
+
+        let popup = loader.getStringForKey("viewevaluation_finish_message")
+        popup = popup.replace("<b></b>",vmSelectedPatientName)
+
+        mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+
+        mainWindow.popUpNotify(VMGlobals.vmNotificationGreen,popup)
+
+        if (goToReports){
+            viewMainSetup.goToReportList();
+        }
+
     }
 
     VMConfirmDialog {
@@ -372,7 +386,7 @@ ViewBase {
                     break;
                 case vmSC_INDEX_EVALUATION_FINISHED:
                     enableNextButton(true);
-                    nextButton.vmText = "OK";
+                    nextButton.vmText = loader.getStringForKey("view_qc_send_report").toUpperCase();
                     nextButton.vmIconSource = "";
                     break;
                 }
@@ -411,16 +425,25 @@ ViewBase {
                     evaluationRun.onNextButtonPressed();
                     break;
                 case vmSC_INDEX_EVALUATION_FINISHED:
-
-                    let popup = loader.getStringForKey("viewevaluation_finish_message")
-                    popup = popup.replace("<b></b>",vmSelectedPatientName)
-
-                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
-
-                    mainWindow.popUpNotify(VMGlobals.vmNotificationGreen,popup)
+                    finalizeSequenceAction(true)
                     break;
                 }
             }
+        }
+
+        VMButton {
+            id: btnBackToPatientScreen
+            vmText: loader.getStringForKey("viewevaluation_goback");
+            vmButtonType: btnBackToPatientScreen.vmTypeSecondary
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: nextButton.left
+            anchors.rightMargin: VMGlobals.adjustWidth(29)
+            visible: (viewer.currentIndex === vmSC_INDEX_EVALUATION_FINISHED)
+            onClickSignal: {
+                finalizeSequenceAction(false)
+            }
+
+
         }
 
         Row {
@@ -444,47 +467,30 @@ ViewBase {
                 id: sequenceName
                 vmPlaceHolderText: loader.getStringForKey("viewevaluation_seq_name_ph")
                 vmLabel: ""
-                width: VMGlobals.adjustWidth(320)
+                width: VMGlobals.adjustWidth(300)
+                vmMaxLength: 41
             }
 
         }
 
 
-
-        VMButton {
-            id: btnStartStudySequence
-            vmButtonType: btnStartStudySequence.vmTypeSecondary
-            vmText: loader.getStringForKey("viewevaluation_start_sequence")
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: nextButton.left
-            anchors.rightMargin: VMGlobals.adjustWidth(10)
-            visible: (viewer.currentIndex === vmSC_INDEX_GENERAL_SETTINGS) && (vmCurrentStudySequence != "")
-            onClickSignal: {
-                generalSettings.onNext()
-                evaluationSetup.loadEvaluationSequences(vmCurrentStudySequence)
-                evaluationSetup.resetStudySelection()
-                evaluationSetup.setupEvaluations("",true);
-            }
-        }
-
-
-        VMButton {
-            id: btnDeleteSequence
-            vmText: loader.getStringForKey("viewevaluation_del_sequence")
-            vmButtonType: btnDeleteSequence.vmTypeWarning
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: VMGlobals.adjustWidth(29)
-            visible: (viewer.currentIndex === vmSC_INDEX_GENERAL_SETTINGS) && (vmCurrentStudySequence != "")
-            onClickSignal: {
-                loader.deleteStudySequence(vmCurrentStudySequence);
-                vmCurrentStudySequence = "";
-                generalSettings.reloadEvalSequenceList()
-                generalSettings.clearSequenceSelection();
-            }
-        }
-
-
+/////////////// It is unlikely that the button will ever be activated again.
+/////////////// But it took me a long time to figure out the right sequence fo calls in order to start the sequence with no errors. So I'm leaving it here.
+//        VMButton {
+//            id: btnStartStudySequence
+//            vmButtonType: btnStartStudySequence.vmTypeSecondary
+//            vmText: loader.getStringForKey("viewevaluation_start_sequence")
+//            anchors.verticalCenter: parent.verticalCenter
+//            anchors.right: nextButton.left
+//            anchors.rightMargin: VMGlobals.adjustWidth(10)
+//            visible: (viewer.currentIndex === vmSC_INDEX_GENERAL_SETTINGS) && (vmCurrentStudySequence != "")
+//            onClickSignal: {
+//                generalSettings.onNext()
+//                evaluationSetup.loadEvaluationSequences(vmCurrentStudySequence)
+//                evaluationSetup.resetStudySelection()
+//                evaluationSetup.setupEvaluations("",true);
+//            }
+//        }
 
         VMButton {
             id: skipCalibrationButton

@@ -278,7 +278,8 @@ Rectangle {
 
                 model: vmColWidths.length-1
                 VMPercentWheel {
-                    x: computeXBasedOnIndex(index) + table.width*vmColWidths[index]/2 - vmRowHeight*vmPercentWheelRowHeightRatio/2
+                    //x: computeXBasedOnIndex(index) + table.width*vmColWidths[index]/2 - vmRowHeight*vmPercentWheelRowHeightRatio/2
+                    x: computeXBasedOnIndex(index)
                     y: vmRowHeight*(1-vmPercentWheelRowHeightRatio)/2
                     vmAnimationDuration: 800
                     vmPercent: {

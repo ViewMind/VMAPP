@@ -142,12 +142,18 @@ Rectangle {
             id: autoStudySetup
             width: parent.width
             vmLabel: loader.getStringForKey("viewevaluation_eval_setup")
+            vmShowRemoveButton: true
             z: doctorSelection.z + 1
             Component.onCompleted: {
                 reloadEvalSequenceList()
             }
+
+            onRemoveClicked: function (index, text) {
+                loader.deleteStudySequence(text);
+                reloadEvalSequenceList();
+            }
             onVmCurrentIndexChanged: {
-                console.log("Auto study setup with vmIndex of " + vmCurrentIndex)
+                // console.log("Auto study setup with vmIndex of " + vmCurrentIndex)
                 if (vmCurrentIndex == -1) return;
                 if (vmCurrentIndex == 0){
                     viewEvaluations.setCurrentStudySequence("");

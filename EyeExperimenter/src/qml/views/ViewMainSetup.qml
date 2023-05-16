@@ -62,6 +62,11 @@ ViewBase {
         patlist.vmStudiesEnabled = enable;
     }
 
+    function goToReportList(){
+        viewer.setCurrentIndex(indexReportList)
+        sideNavigationBar.vmCurrentIndex = 1; // This should be the index of the Report List.
+    }
+
     Rectangle {
         id: initials
         width: VMGlobals.adjustWidth(62)

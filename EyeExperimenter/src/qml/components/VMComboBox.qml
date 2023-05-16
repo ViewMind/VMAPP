@@ -16,6 +16,7 @@ Item {
     property int vmListSize: 0
     property string vmPlaceHolderText: "Placeholder"
     property string vmLabel: ""
+    property bool vmShowRemoveButton: false
 
     readonly property int vmMOUSE_OUT_TIME: 200
 
@@ -51,8 +52,8 @@ Item {
             listContainer.visible = false;
             return
         }
-        if (itemList.count < 1) return;        
-        displayText.text = itemList.get(selectedIndex).vmText;        
+        if (itemList.count < 1) return;
+        displayText.text = itemList.get(selectedIndex).vmText;
         vmCurrentText = displayText.text;
         //console.log("Setting current text to " + vmCurrentText + " from index " + selectedIndex);
         listContainer.visible = false;
@@ -68,6 +69,7 @@ Item {
 
 
     signal selectionChanged();
+    signal removeClicked(int index, string text);
 
     ///////////////////// THE LIST MODEL
     ListModel {
@@ -215,6 +217,7 @@ Item {
             }
 
             delegate: Rectangle {
+                id: containerRect
                 width: vmComboBox.width*0.98
                 height: vmComboBox.height
                 x: (vmComboBox.width - width)/2
@@ -245,6 +248,83 @@ Item {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.leftMargin: vmRightMargin - parent.x
+                }
+
+                MouseArea {
+                    id: btnRemove
+                    height: VMGlobals.adjustHeight(10)
+                    width: height
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.rightMargin: VMGlobals.adjustWidth(10)
+                    hoverEnabled: true
+                    propagateComposedEvents: true
+                    visible: vmShowRemoveButton
+                    onClicked: {
+                        let text = itemList.get(vmIndex).vmText
+                        removeClicked(vmIndex,text)
+                    }
+                    onContainsMouseChanged: {
+                        closeButton.requestPaint();
+                    }
+                    onPressed: {
+                        closeButton.requestPaint();
+                    }
+                    onReleased: {
+                        closeButton.requestPaint();
+                    }
+
+                    Canvas {
+                        id: closeButton
+                        anchors.fill: parent
+                        visible: vmShowRemoveButton
+                        contextType: "2d"
+                        onPaint: {
+
+                            var lw = VMGlobals.adjustHeight(1);
+
+                            var ctx = closeButton.getContext("2d");
+                            ctx.reset();
+
+                            let w = width
+                            let h = height
+                            let x = 0
+                            let y = 0;
+
+                            if (btnRemove.containsPress){
+                                w = w*0.8;
+                                h = h*0.8;
+                                x = w*0.1
+                                y = h*0.1
+                            }
+
+                            let cx = w/2
+                            let cy = h/2
+
+                            if (btnRemove.containsMouse){
+                                ctx.strokeStyle = VMGlobals.vmGrayButtonPressed
+                                ctx.fillStyle = VMGlobals.vmGrayButtonPressed
+                                ctx.fillRect(x,y,w,h)
+                            }
+                            else {
+                                ctx.strokeStyle = containerRect.color
+                                ctx.fillStyle = containerRect.color
+                                ctx.fillRect(x,y,w,h)
+                            }
+
+                            ctx.strokeStyle = VMGlobals.vmBlackText
+                            ctx.lineWidth = lw
+                            ctx.lineCap = "round"
+
+                            ctx.moveTo(lw+x,lw+y);
+                            ctx.lineTo(w-lw-x,h-lw-y)
+                            ctx.moveTo(w-lw-x,lw+y)
+                            ctx.lineTo(lw+x,h-lw-y)
+
+                            ctx.stroke()
+                        }
+                    }
+
                 }
             }
 
