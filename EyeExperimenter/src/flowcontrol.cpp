@@ -848,7 +848,7 @@ void FlowControl::processStudyDataPacketFor3DStudy(RenderServerPacket p){
 
 
     // Now that it's done, we save the file back with all the data.
-    if (!rawdata.saveJSONFile(raw_data_file,true)){
+    if (!rawdata.saveJSONFile(raw_data_file)){
         StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed on GoNoGo Sphere finalization because: " + rawdata.getError());
         emit FlowControl::studyEndProcessingDone();
         return;

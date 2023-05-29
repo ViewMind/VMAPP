@@ -144,13 +144,13 @@ void StudyEndOperations::doStudyFileProcessing(){
     }
 
     // We now need to save to both the JSON file and ICX files.
-    if (!vmdc.saveJSONFile(dataFile,true)){
+    if (!vmdc.saveJSONFile(dataFile)){
         StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data with QC parameters to file '" + dataFile + "'");
         return;
     }
 
     vmdc.clearFieldsForIndexFileCreation();
-    if (!vmdc.saveJSONFile(idxFile,true)){
+    if (!vmdc.saveJSONFile(idxFile)){
         StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data with QC parameters to file '" + idxFile + "'");
         return;
     }

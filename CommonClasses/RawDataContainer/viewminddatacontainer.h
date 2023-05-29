@@ -28,10 +28,9 @@ public:
     /**
      * @brief saveJSONFile The UTF-8 JSON enconded string representing all the stored internal data, is saved to the file passed as a parameter.
      * @param file_name Where to save the file
-     * @param pretty_print If true prints a human readable JSON (use only for debugging).
      * @return True if the file was generated, false otherwise. Error will contain the error message.
      */
-    bool saveJSONFile(const QString &file_name, bool pretty_print = false);
+    bool saveJSONFile(const QString &file_name);
 
     bool loadFromJSONFile(const QString &file_name);
 

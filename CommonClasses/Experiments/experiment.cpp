@@ -447,11 +447,11 @@ bool Experiment::saveDataToHardDisk(){
     QString basename = info.baseName();
     idxFile = workingDirectory + "/" + basename + ".idx";
 
-    bool ans = rawdata.saveJSONFile(dataFile,true);
+    bool ans = rawdata.saveJSONFile(dataFile);
     if (!ans) return false;
 
     rawdata.clearFieldsForIndexFileCreation();
-    ans = rawdata.saveJSONFile(idxFile,true);
+    ans = rawdata.saveJSONFile(idxFile);
 
     return ans;
 }

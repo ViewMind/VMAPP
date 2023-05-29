@@ -5,7 +5,7 @@ ViewMindDataContainer::ViewMindDataContainer()
     error = "";
 }
 
-bool ViewMindDataContainer::saveJSONFile(const QString &file_name, bool pretty_print){
+bool ViewMindDataContainer::saveJSONFile(const QString &file_name){
 
     // Compute the hash every time before saving
     setChecksumHash();
@@ -19,6 +19,12 @@ bool ViewMindDataContainer::saveJSONFile(const QString &file_name, bool pretty_p
     }
 
     QTextStream writer(&file);
+
+    bool pretty_print = false;
+    if (DBUGBOOL(Debug::Options::PRETTY_PRINT_STUDIES)){
+        pretty_print = true;
+    }
+
     if (pretty_print) writer << json.toJson(QJsonDocument::Indented);
     else writer << json.toJson(QJsonDocument::Compact);
     file.close();

@@ -375,7 +375,7 @@ void Loader::updateDenied(){
 void Loader::startUpdate(){
     processingUploadError = FAIL_CODE_NONE;
     if (!apiclient.requestUpdate("../")){
-        StaticThreadLogger::error("Loader::openUserManual","Request updated download error: "  + apiclient.getError());
+        StaticThreadLogger::error("Loader::startUpdate","Request updated download error: "  + apiclient.getError());
     }
 }
 
@@ -661,7 +661,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     }
 
     //qDebug() << "SAVING THE JSON FILE!!!!!!!!!!!";
-    if (!rdc.saveJSONFile(filename,true)){
+    if (!rdc.saveJSONFile(filename)){
         StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
         return false;
     }
