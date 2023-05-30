@@ -70,18 +70,21 @@ void EyeCorrectionCoefficients::configureForCoefficientComputation(const QList<Q
 }
 
 QString EyeCorrectionCoefficients::getCalibrationPointsWithNoDataAsAString() const {
+    QVariantList pts = getCalibrationPointsWithNoData();
+    if (pts.isEmpty()) return "";
     QStringList ans;
-    for (qint32 i = 0; i < calibrationData.size(); i++){
-        if (calibrationData.at(i).size() < 2) ans << QString::number(i);
+    for (qint32 i = 0; i < pts.size(); i++){
+        ans << pts.at(i).toString();
     }
-    if (ans.empty()) return "";
     return ans.join(",");
 }
 
 QVariantList EyeCorrectionCoefficients::getCalibrationPointsWithNoData() const {
     QVariantList ans;
-    for (qint32 i = 0; i < calibrationData.size(); i++){
-        if (calibrationData.at(i).size() < 2) ans << i;
+    for (qint32 i = 0; i < fittedEyeDataPoints.size(); i++){
+        qint32 start_index = cuttoffForCalibrationDataForCumputation.at(i);
+        qreal total = fittedEyeDataPoints.at(i).size() - start_index;
+        if (total < 2) ans << i;
     }
     return ans;
 }
@@ -115,10 +118,6 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
         qreal yref = ytarget.at(i);
 
         qint32 start_point = cuttoffForCalibrationDataForCumputation.at(i);
-
-        if (calibrationData.at(i).size() < 2) return false;
-
-        // qDebug() << "Compute Coefficients 2D. Processing Calibration data for point " << i << " which has " << calibrationData.at(i).size() << " points and valid data starts at " << start_point;
 
         for (qint32 j = start_point; j < calibrationData.at(i).size(); j++){
 
@@ -204,7 +203,7 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
     OrdinaryLeastSquares fitterZR;
     OrdinaryLeastSquares fitterZL;
 
-    // QStringList textdata;    
+    // QStringList textdata;
 
     for (qint32 i = 0; i < calibrationData.size(); i++){
 
@@ -314,11 +313,11 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
     R2.zr = fitterZR.getRSquared();
     R2.zl = fitterZL.getRSquared();
 
-//    QFile file("calibration_data.txt");
-//    file.open(QFile::WriteOnly);
-//    QTextStream writer (&file);
-//    writer << textdata.join("\n");
-//    file.close();
+    //    QFile file("calibration_data.txt");
+    //    file.open(QFile::WriteOnly);
+    //    QTextStream writer (&file);
+    //    writer << textdata.join("\n");
+    //    file.close();
 
     return true;
 
@@ -457,9 +456,11 @@ bool EyeCorrectionCoefficients::isLeftEyeCalibrated(){
     return xl.isValid() && yl.isValid();
 }
 
-QList<qreal> EyeCorrectionCoefficients::getHitPercentInTarget(qreal dimension, qreal tolerance, bool forLeftEye) const{
+QList< QList<qreal> > EyeCorrectionCoefficients::getHitPercentInTarget(qreal dimension, qreal tolerance, bool forLeftEye) const{
 
-    QList<qreal> hits;
+    QList<qreal> hitsAsPercent;
+    QList<qreal> hitsAsNumber;
+    QList<qreal> numberOfPointsTried;
 
 
     for (qint32 i = 0; i < fittedEyeDataPoints.size(); i++){
@@ -489,8 +490,8 @@ QList<qreal> EyeCorrectionCoefficients::getHitPercentInTarget(qreal dimension, q
                 z = etd.zr();
             }
 
-            if (mode3D){                
-                QVector3D nonNormalizedTargetVector = nonNormalizedTargetVectors.at(i);                
+            if (mode3D){
+                QVector3D nonNormalizedTargetVector = nonNormalizedTargetVectors.at(i);
                 //qDebug() << "Fitted raw data point of" << x << y << z << "As comparted to " << nonNormalizedTargetVector << validationRadious;
                 if (isVectorCloseEnough(nonNormalizedTargetVector,x,y,z)){
                     //qDebug() << "Fitted raw data point of" << x << y << z << "As comparted to " << nonNormalizedTargetVector << validationRadious;
@@ -505,11 +506,23 @@ QList<qreal> EyeCorrectionCoefficients::getHitPercentInTarget(qreal dimension, q
 
         }
 
-        hits << counter*100.0/total;
+        if (total < 1){
+            hitsAsPercent << 0;
+            hitsAsNumber << 0;
+        }
+        else {
+            hitsAsPercent << counter*100.0/total;
+            hitsAsNumber << counter;
+        }
 
+        numberOfPointsTried << total;
     }
 
-    return hits;
+    QList< QList<qreal> > ans;
+
+    ans << hitsAsPercent << hitsAsNumber << numberOfPointsTried;
+
+    return ans;
 
 }
 

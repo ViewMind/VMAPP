@@ -41,7 +41,7 @@ public:
     EyeTrackerData computeCorrections(const EyeTrackerData &input) const;
 
     QList< QList<EyeTrackerData> > getFittedData() const;
-    QList< qreal > getHitPercentInTarget(qreal dimension, qreal tolerance, bool forLeftEye) const;
+    QList<QList<qreal> > getHitPercentInTarget(qreal dimension, qreal tolerance, bool forLeftEye) const;
 
     QList<qreal> getCalibrationPointsXCordinates() const;
     QList<qreal> getCalibrationPointsYCordinates() const;
@@ -96,6 +96,8 @@ private:
     QList< QList<EyeTrackerData> > fittedEyeDataPoints;
 
     QList<qint32> cuttoffForCalibrationDataForCumputation;
+
+    QList<qint32> effectiveNumberOfDataPointsUsedPerCalibrationPoint;
 
     bool mode3D; // Flag to indicate whether we are doing a 3D calibration or 2D calibration.
 

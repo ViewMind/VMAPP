@@ -52,6 +52,7 @@ public:
     Q_INVOKABLE QVariantMap getStudySequenceListAndCurrentlySelected() const;
     Q_INVOKABLE void deleteStudySequence(const QString &name);
     Q_INVOKABLE void setCurrentStudySequence(const QString &name);
+    Q_INVOKABLE void logUIMessage(const QString &message, bool isError);
 
 
     Q_INVOKABLE void openUserManual();

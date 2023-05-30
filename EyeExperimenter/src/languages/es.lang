@@ -214,9 +214,9 @@ Alce sus brazos estirando al máximo los mismos.;
 
 viewevaluation_calib_suggest_retry = 
 La calibración no pudo ser completada|
-Por favor, reintente calibrar.
-Si el problema subsiste, intente reconectar el casco.
-Si el problema aún subsiste. por favor reinicie su computadora ;
+El sistema no ha recibido suficientes datos como para calibrar. 
+Por favor, inténtelo nuevamente.
+Si el problema persiste. por favor reinicie su computadora;
 
 viewevaluation_calib_suggest_adjust = 
 La calibración no pudo ser completada|

@@ -169,6 +169,15 @@ QVariantList Loader::getStudySequence(const QString &name){
     return list;
 }
 
+void Loader::logUIMessage(const QString &message, bool isError){
+    if (isError){
+        StaticThreadLogger::error("Loader::logUIMessage",message);
+    }
+    else {
+        StaticThreadLogger::log("Loader::logUIMessage",message);
+    }
+}
+
 void Loader::setCurrentStudySequence(const QString &name){
     if (!localDB.setLastSelectedSequence(name)){
         StaticThreadLogger::error("Loader::setCurrentStudySequence","Failed to write db file to disk on storing last selected sequence");

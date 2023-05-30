@@ -77,6 +77,7 @@ ApplicationWindow {
     ViewSettings {
         id: settingsDialog
         onRestartRequired: {
+            messageDiag.vmLarge = false
             messageDiag.loadFromKey("viewsettings_restart_msg")
             messageDiag.open();
         }
@@ -146,6 +147,7 @@ ApplicationWindow {
             ViewGetVMConfig {
                 id: viewGetVMConfig
                 onSuccessActivation: {
+                    messageDiag.vmLarge = false;
                     messageDiag.loadFromKey("viewgetconfig_success")
                     messageDiag.open();
                 }
@@ -211,6 +213,7 @@ ApplicationWindow {
     }
 
     function showErrorMessage(key){
+        messageDiag.vmLarge = false;
         messageDiag.loadFromKey(key);
         messageDiag.open();
     }
@@ -224,61 +227,39 @@ ApplicationWindow {
         var map = flowControl.getCalibrationValidationData();
 
         let no_data_key = "calibration_points_with_too_few_data_points";
+        let calib_target_key = "calibration_target_location";
+        let math_issues_key = "math_issues_for_calibration";
+        let keys_to_check = [no_data_key, calib_target_key, math_issues_key];
+        let do_pts_check = true;
+        for (let i in keys_to_check){
+            if (!(keys_to_check[i] in map)){
+                do_pts_check = false
+                loader.logUIMessage("WARNING: key " + keys_to_check + " in Calibration Validation Data Map. Moving on as if all ok",true);
+            }
+        }
 
-//        console.log("MAP DATA FOR CALIB VALIDATION");
-//        console.log(JSON.stringify(map,null,2));
+
+        //console.log("MAP DATA FOR CALIB VALIDATION");
+        //console.log(JSON.stringify(map,null,1));
+        //console.log(JSON.stringify(map));
 
         let W = map["W"];
         let H = map["H"];
 
-        if (!(no_data_key in map)){
-            console.log("WARNING: Too Low Data Points Key Not Present in Calibration Validation Data Map. Moving on as if all ok");
-        }
-        else {
+        if (do_pts_check){
 
-            // We need to check what happened.
+            // We need to check if the total number of calibration points with no values is the same as the total number of points.
             let no_data_calib_points = map[no_data_key];
             let Nfail = no_data_calib_points.length
+            let calib_target_locs = map[calib_target_key]
+            let NPts  = calib_target_locs.length;
+            let math_issues = map[math_issues_key];
 
-            if (Nfail > 0){
-
-                // Something went wrong.
-                let upper_points = [0,1,2];
-                let lower_points = [6,5,4];
-
-                // Checking if at least two points are present from the upper points.
-                let upper_include = 0;
-                let i = 0;
-                for (i = 0; i < upper_points.length; i++){
-                    if (no_data_calib_points.includes(upper_points[i])) upper_include++;
-                }
-
-                // Checking if at least two points are present from the lower points.
-                let lower_include = 0;
-                for (i = 0; i < upper_points.length; i++){
-                    if (no_data_calib_points.includes(lower_points[i])) lower_include++;
-                }
-
-                if ((upper_include >= 2) && (lower_include === 0)){
-                    // Headset is too low.
-                    messageDiag.loadFromKey("viewevaluation_calib_suggest_too_low",true);
-                }
-                else if ((upper_include == 2) && (lower_include >= 2)){
-                    // Headset is too high.
-                    messageDiag.loadFromKey("viewevaluation_calib_suggest_too_high",true);
-                }
-                else if (Nfail === 1){
-                    // Generic retry. Likely a headset issue.
-                    messageDiag.loadFromKey("viewevaluation_calib_suggest_retry",true);
-                }
-                else {
-                    // Generic bad heaset. Adjust and retry.
-                    messageDiag.loadFromKey("viewevaluation_calib_suggest_adjust",true);
-                }
-
+            if ((NPts === Nfail) || math_issues){
+                messageDiag.vmLarge = true; // Makes it a bit taller, so that more text can fit.
+                messageDiag.loadFromKey("viewevaluation_calib_suggest_retry",true);
                 messageDiag.open(true) // The flag is to stop message diag from closing the applicaiton.
                 return;
-
             }
 
         }

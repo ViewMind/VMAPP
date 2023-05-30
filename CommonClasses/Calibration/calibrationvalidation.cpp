@@ -93,7 +93,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
     QStringList lines;
 
-    qDebug() << "Generating Calibration Report. Is Mode 3D" << configuredFor3D;
+    // qDebug() << "Generating Calibration Report. Is Mode 3D" << configuredFor3D;
 
     QString mode = "2D";
     if (configuredFor3D) mode = "3D";
@@ -114,8 +114,23 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
     leftEyeData["is_validated"] = false;
 
     QList< QList<EyeTrackerData> > validationData = coeffs.getFittedData();
-    QList< qreal > rightHits = coeffs.getHitPercentInTarget(diameterFor2D,validationPointHitTolerance,false);
-    QList< qreal > leftHits  = coeffs.getHitPercentInTarget(diameterFor2D,validationPointHitTolerance,true);
+
+    QList< QList<qreal> > temp;
+    QList< qreal > rightHits;
+    QList< qreal > leftHits;
+    QList< qreal > rightHitsAsNumber;
+    QList< qreal > leftHitsAsNumber;
+    QList< qreal > numberOfAttemptsPerCalibrationPoint;
+
+    temp  = coeffs.getHitPercentInTarget(diameterFor2D,validationPointHitTolerance,false);
+    //qDebug() << "Returning" << temp.size();
+    rightHits = temp.first(); rightHitsAsNumber = temp.at(1);
+
+    numberOfAttemptsPerCalibrationPoint = temp.last(); // The number of attempts is the same for both the right and left eye as it is the same as the number of calibration points.
+
+    temp  = coeffs.getHitPercentInTarget(diameterFor2D,validationPointHitTolerance,true);
+    //qDebug() << "Returning" << temp.size();
+    leftHits = temp.first(); leftHitsAsNumber = temp.at(1);
 
     QVariantMap percents;
     QVariantList percent_right;
@@ -127,6 +142,9 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
         qreal pl = leftHits.at(i);
         qreal pr = rightHits.at(i);
+        qreal nl = leftHitsAsNumber.at(i);
+        qreal nr = rightHitsAsNumber.at(i);
+        qreal np = numberOfAttemptsPerCalibrationPoint.at(i);
 
         QVariantList rightDataList;
         QVariantList leftDataList;
@@ -171,9 +189,9 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
         percent_right << mpr;
 
         lines << " Validation Target " + QString::number(i) +  ". LEFT EYE: "
-                 + QString::number(leftHits.at(i)) + " out of " + QString::number(validationData.at(i).size()) + ": " + QString::number(pl,'f',1) + " %"
+                 + QString::number(nl) + " out of " + QString::number(np) + ": " + QString::number(pl,'f',1) + " %"
                  + ". RIGHT EYE: "
-                 + QString::number(rightHits.at(i)) + " out of " + QString::number(validationData.at(i).size()) + ": " + QString::number(pr,'f',1) + " %";
+                 + QString::number(nr) + " out of " + QString::number(np) + ": " + QString::number(pr,'f',1) + " %";
 
     }
 
@@ -181,20 +199,20 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
     if (leftEyePass >= validationPointsToPassForAcceptedValidation) {
         leftEyeData["is_validated"] = true;
-        lines << "LEFT EYE VALIDATED";
+        lines << "LEFT EYE VALIDATED with " + QString::number(leftEyePass) + ". THRESHOLD: " + QString::number(validationPointsToPassForAcceptedValidation);
         wasCalibrationSuccessFull = wasCalibrationSuccessFull || true;
     }
     else{
-        lines << "LEFT EYE VALIDATION FAILED";
+        lines << "LEFT EYE VALIDATION FAILED with " + QString::number(leftEyePass) + ". THRESHOLD: " + QString::number(validationPointsToPassForAcceptedValidation);
     }
 
     if (rightEyePass >= validationPointsToPassForAcceptedValidation) {
         rightEyeData["is_validated"] = true;
-        lines << "RIGHT EYE VALIDATED";
+        lines << "RIGHT EYE VALIDATED with " + QString::number(rightEyePass) + ". THRESHOLD: " + QString::number(validationPointsToPassForAcceptedValidation);
         wasCalibrationSuccessFull = wasCalibrationSuccessFull || true;
     }
     else {
-        lines << "RIGHT EYE VALIDATION FAILED";
+        lines << "RIGHT EYE VALIDATION FAILED with " + QString::number(rightEyePass) + ". THRESHOLD: " + QString::number(validationPointsToPassForAcceptedValidation);
     }
 
     // Adding each of the R squared coefficients to the calibration reprot data.
@@ -232,6 +250,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
     calibrationAttempt[VMDC::CalibrationAttemptFields::COFICIENT_OF_DETERMINATION]       = Rreport;
     calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_PTS_NO_DATA]          = coeffs.getCalibrationPointsWithNoData();
     calibrationAttempt[VMDC::CalibrationAttemptFields::IS_3D]                            = configuredFor3D;
+
 
     // Storing the coefficients. This works wheter it is a 2D calibration or a 3D one.
     QVariantMap cc;

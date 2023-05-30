@@ -15,7 +15,6 @@
 *.cnf
 *.kate-swp
 
-
 VMTools/QtRestClient/exe/
 VMTools/QtRestClient/bin/
 VMTools/RawJSONDataDev/bin/
@@ -72,4 +71,4 @@ EyeExperimenter/Yappo2/
 EyeExperimenter/EyeExperimenter
 EyeExperimenter/src/experiment_data/perception_study.dat.short
 CommonClasses/EyeTrackingInterface/HPReverb/hp/hp_omnicept.lib
-
+EyeExperimenter/other_configs/
