@@ -356,10 +356,15 @@ Rectangle {
 
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_calibrate"),"")
             evaluationRun.setCalibrationExplantion() // Setting the calibration explanation message.
+
+
         }
     }
 
     function setCalibrationExplantion(){
+        // Loading the screen with the 4 corner targets to check if all are visible.
+        //console.log("Sending the command for rendering the 4 target wait screen");
+        flowControl.renderWaitScreen("",true);
         studyExplanationText.text = loader.getStringForKey("viewevaluation_calibration_explanation",false);
     }
 

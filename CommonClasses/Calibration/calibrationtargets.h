@@ -36,6 +36,13 @@ public:
 
     qreal getScreenRatioForLeftTop() const { return K_CALIBRATION_LT; }
 
+    // Will return the information necessary for rendering the wait screen targets.
+    // This includes the 4 corner target centers , the circle radious, and it's color.
+    // Inout pointers are used due to the varied nature of the information.
+    // The function requires calling initialize first.
+    void getWaitScreenInfo(qreal *RR, qreal *rr, QColor *outerCircleColor, QList<QPointF> *outsideCenters);
+
+
 signals:
     void newAnimationFrame();
     void calibrationPointStatus(qint32 whichCalibrationPoint, bool isMoving);

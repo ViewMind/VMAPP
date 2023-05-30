@@ -217,7 +217,7 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
 
         // textdata << QString::number(xref) + ", " + QString::number(yref) + ", " + QString::number(zref);
 
-        if (calibrationData.at(i).size() < 2) return false;
+        // if (calibrationData.at(i).size() < 2) return false;
 
         for (qint32 j = start_point; j < calibrationData.at(i).size(); j++){
             EyeTrackerData input = calibrationData.at(i).at(j);

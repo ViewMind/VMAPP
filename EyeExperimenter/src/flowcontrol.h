@@ -69,7 +69,7 @@ public:
     Q_INVOKABLE void resetCalibrationHistory();
 
     // Used mostly for debugging.
-    Q_INVOKABLE void renderWaitScreen(const QString &message);
+    Q_INVOKABLE void renderWaitScreen(const QString &message, bool renderAsCornerTargets = false);
 
     // Required when closing hte application
     Q_INVOKABLE void closeApplication();

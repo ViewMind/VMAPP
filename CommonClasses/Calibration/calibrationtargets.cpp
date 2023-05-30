@@ -28,6 +28,12 @@ void CalibrationTargets::onReachedAnimationStop(const QString &variable, qint32 
 
 
 RenderServerScene CalibrationTargets::getCurrentCalibrationAnimationFrame() const {
+//    RenderServerScene s = animator.getCurrentFrameAsScene();
+//    qreal hw = canvas.width()/2;
+//    qreal hh = canvas.height()/2;
+//    s.addLine(hw,0,hw,canvas.height(),QPen());
+//    s.addLine(0,hh,canvas.width(),hh,QPen());
+//    return s;
     return animator.getCurrentFrameAsScene();
 }
 
@@ -181,6 +187,24 @@ QList<QPointF> CalibrationTargets::setupCalibrationSequence(qint32 npoints, qint
     targetCenters.removeFirst();
 
     return targetCenters;
+}
+
+void CalibrationTargets::getWaitScreenInfo(qreal *RR, qreal *rr, QColor *outerCircleColor, QList<QPointF> *outsideCenters){
+    outsideCenters->clear();
+    outerCircleColor->setNamedColor(COLOR_OUTSIDE_CIRCLE_CALIBRATION.name());
+    *RR = R;
+    *rr = r;
+
+    QList<qint32> cornerIndexes; cornerIndexes << 0 << 2 << 6 << 8;
+
+    for (qint32 i = 0; i < calibrationTargets.size(); i++){
+        if (!cornerIndexes.contains(i)) continue;
+        QPointF p = calibrationTargets.at(i);
+        // The list hast the upper left corner of the circle. It's center is +R lower and to the right.
+        p.setX(p.x()+R);
+        p.setY(p.y()+R);
+        outsideCenters->append(p);
+    }
 }
 
 void CalibrationTargets::calibrationAnimationControl(bool start){

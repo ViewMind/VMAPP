@@ -238,7 +238,7 @@ void FlowControl::resetCalibrationHistory(){
     calibrationHistory.reset();
 }
 
-void FlowControl::renderWaitScreen(const QString &message){
+void FlowControl::renderWaitScreen(const QString &message, bool renderAsCornerTargets){
 
     //qDebug() << "Render Wait Screen";
 
@@ -248,27 +248,72 @@ void FlowControl::renderWaitScreen(const QString &message){
     QSize screen = renderServerClient.getRenderResolution();
     waitScreen.setSceneRect(0,0,screen.width(),screen.height());
 
-    qreal w = backgroundLogoSize.width();
-    qreal h = backgroundLogoSize.height();
+    if (!renderAsCornerTargets){
 
-    qreal tw = 0.7*screen.width();
+        qreal w = backgroundLogoSize.width();
+        qreal h = backgroundLogoSize.height();
 
-    RenderServerImageItem *img = waitScreen.addImage(RenderServerImageNames::BACKGROUND_LOGO,true,w,h,tw);
-    img->setPos(0.15*screen.width(),0.3*screen.height());
+        qreal tw = 0.7*screen.width();
 
-    if (message != ""){
-        QFont font;
-        font.setPointSizeF(80);
-        font.setWeight(QFont::Normal);
-        RenderServerTextItem *text = waitScreen.addText(message,font);
-        text->setBrush(QBrush(QColor("#2A3990")));
-        text->setAlignment(QString(text->ALIGN_CENTER));
-        QRectF br = text->boundingRect();
-        QRectF imgbr = img->boundingRect();
+        RenderServerImageItem *img = waitScreen.addImage(RenderServerImageNames::BACKGROUND_LOGO,true,w,h,tw);
+        img->setPos(0.15*screen.width(),0.3*screen.height());
 
-        qreal x = (screen.width() - br.width())/2;
-        qreal y = imgbr.top() + imgbr.height() + 50;
-        text->setPos(x,y);
+        if (message != ""){
+            QFont font;
+            font.setPointSizeF(80);
+            font.setWeight(QFont::Normal);
+            RenderServerTextItem *text = waitScreen.addText(message,font);
+            text->setBrush(QBrush(QColor("#2A3990")));
+            text->setAlignment(QString(text->ALIGN_CENTER));
+            QRectF br = text->boundingRect();
+            QRectF imgbr = img->boundingRect();
+
+            qreal x = (screen.width() - br.width())/2;
+            qreal y = imgbr.top() + imgbr.height() + 50;
+            text->setPos(x,y);
+        }
+
+    }
+
+    else {
+
+        // Render the corner calibration circles, for that we need to know, the radii, their locations and the outer circle color.
+        CalibrationTargets temp;
+        temp.initialize(screen.width(),screen.height());
+        QList<QPointF> circleCenters;
+        qreal R, r;
+        QColor outsideColor;
+
+        temp.getWaitScreenInfo(&R,&r,&outsideColor,&circleCenters);
+
+        // No we add each of the items.
+        QBrush outer(outsideColor);
+        QBrush inner(Qt::white);
+
+        //    qreal hw = screen.width()/2;
+        //    qreal hh = screen.height()/2;
+
+        //    waitScreen.addLine(hw,0,hw,screen.height(),QPen());
+        //    waitScreen.addLine(0,hh,screen.width(),hh,QPen());
+
+        for (qint32 i = 0; i < circleCenters.size(); i++){
+        //for (qint32 i = 0; i < 1; i++){
+
+            qreal x,y;
+            // The outer circle goes first.
+            x = circleCenters.at(i).x() - R;
+            y = circleCenters.at(i).y() - R;
+            RenderServerCircleItem * outerc = waitScreen.addEllipse(0,0,2*R,2*R,QPen(),outer);
+            outerc->setPos(x,y);
+
+
+            // Now the inner circle.
+            x = circleCenters.at(i).x() - r;
+            y = circleCenters.at(i).y() - r;
+            RenderServerCircleItem * innerc = waitScreen.addEllipse(0,0,2*r,2*r,QPen(),inner);
+            innerc->setPos(x,y);
+
+        }
     }
 
     renderServerClient.sendPacket(waitScreen.render());
