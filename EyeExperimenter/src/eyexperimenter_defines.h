@@ -138,7 +138,7 @@ static QVariantMap GetNameCodeMap() {
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "25.0.1";
+static const QString EXPERIMENTER_VERSION_NUMBER = "25.1.0";
 extern QString EXPERIMENTER_VERSION;
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
