@@ -41,7 +41,7 @@ static const QString WORK_DIRECTORY          = "viewmind_etdata";
 static const QString LOCALDB                 = "viewmind_etdata/localdb.dat";
 static const QString DBBKPDIR                = "dbbkp";
 static const QString CONFIGURATION           = "vmconfiguration";
-static const QString SETTINGS                = "vmsettings";
+//static const QString SETTINGS                = "vmsettings";
 static const QString APPSPEC                 = "vmappspec";
 static const QString UPDATE_PACKAGE          = "app.zip";
 static const QString UPDATE_SCRIPT           = "update.bat";
@@ -76,17 +76,6 @@ static const QString INSTANCE_NUMBER = "instance_number";
 static const QString INSTANCE_KEY = "instance_key";
 static const QString INSTANCE_HASH_KEY = "instance_hash_key";
 static const QString INSTITUTION_NAME = "institution_name";
-}
-
-namespace VMPreferences {
-static const QString UI_LANGUAGE = "ui_language";
-static const QString DEMO_MODE = "demo_mode";
-static const QString USE_MOUSE = "use_mouse";
-static const QString DEFAULT_COUNTRY = "default_country";
-static const QString DUAL_MONITOR_MODE = "dual_monitor_mode";
-static const QString DEFAULT_READING_LANGUAGE = "default_reading_study_language";
-static const QString LAST_SELECTED_PROTOCOL = "last_selected_protocol";
-static const QString EXPLANATION_LANGUAGE = "explanation_language";
 }
 
 namespace VMUILanguages {
@@ -138,7 +127,7 @@ static QVariantMap GetNameCodeMap() {
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "25.1.0";
+static const QString EXPERIMENTER_VERSION_NUMBER = "26.0.0.etall";
 extern QString EXPERIMENTER_VERSION;
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
@@ -146,12 +135,9 @@ static const QString PATIENT_UID = "patient_uid";
 static const QString PATIENT_DIRECTORY = "patient_directory";
 static const QString PATIENT_STUDY_FILE = "patient_study_file";
 static const QString CURRENTLY_LOGGED_EVALUATOR = "evaluator_logged";
-static const QString STUDY_DISPLAY_RESOLUTION_WIDTH = "study_display_resolution_width";
-static const QString STUDY_DISPLAY_RESOLUTION_HEIGHT = "study_display_resolution_height";
-static const QString MONITOR_RESOLUTION_WIDTH = "monitor_resolution_width";
-static const QString MONITOR_RESOLUTION_HEIGHT = "monitor_resolution_height";
 static const QString SELECTED_STUDY = "selected_study";
 static const QString HAND_CALIB_RES = "hand_calibration_results";
+static const QString NBACK_WAIT_MSG = "nback_wait_msg";
 }
 
 static bool SetUpRegion(const QString &reg){

@@ -33,6 +33,7 @@ public:
     // Creation and data extraction function.
     void setPacketType(const QString &type);
     void setPayloadField(const QString &name, const QVariant &vallue);
+    void setFullPayload(const QVariantMap &map);
     void setPacketSkippable(bool skippable = true);
     QVariant getPayloadField(const QString &name) const;
     bool containsPayloadField(const QString &name) const;

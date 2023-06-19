@@ -112,6 +112,8 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
     LinearLeastSquaresFit fitterYL;
     LinearLeastSquaresFit fitterYR;
 
+    QList< QList<EyeTrackerData> >  points2Fit;
+
     for (qint32 i = 0; i < calibrationData.size(); i++){
 
         qreal xref = xtarget.at(i);
@@ -119,15 +121,50 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
 
         qint32 start_point = cuttoffForCalibrationDataForCumputation.at(i);
 
-        for (qint32 j = start_point; j < calibrationData.at(i).size(); j++){
+        QList<EyeTrackerData> adjustedRawData;
+
+        for (qint32 j = 0; j < calibrationData.at(i).size(); j++){
 
             EyeTrackerData erd = calibrationData.at(i).at(j);
-            fitterXL.addInputAndTarget(erd.xl(),xref);
-            fitterYL.addInputAndTarget(erd.yl(),yref);
 
-            fitterXR.addInputAndTarget(erd.xr(),xref);
-            fitterYR.addInputAndTarget(erd.yr(),yref);
+            // The data is now comming raw FROM the eye tracker. Which means the division by Z is not done.
+            // We need to do it here.
+            qreal rxl,ryl, rxr, ryr;
+
+            if ( qAbs(erd.zl()) > 1e-6 ){
+                rxl = erd.xl()/erd.zl();
+                ryl = erd.yl()/erd.zl();
+            }
+            else {
+                rxl = 0;
+                ryl = 0;
+            }
+
+            if ( qAbs(erd.zr()) > 1e-6 ){
+                rxr = erd.xr()/erd.zr();
+                ryr = erd.yr()/erd.zr();
+            }
+            else {
+                rxr = 0;
+                ryr = 0;
+            }
+
+            // We stored the modified points for prediction.
+            EyeTrackerData netd;
+            netd.setXL(rxl); netd.setXR(rxr); netd.setYL(ryl); netd.setYR(ryr);
+            adjustedRawData << netd;
+
+            if (j < start_point) continue; // We only compute the coefficients from the starting point onwards.
+
+            fitterXL.addInputAndTarget(rxl,xref);
+            fitterYL.addInputAndTarget(ryl,yref);
+
+            fitterXR.addInputAndTarget(rxr,xref);
+            fitterYR.addInputAndTarget(ryr,yref);
         }
+
+        points2Fit << adjustedRawData;
+
     }
 
     //qDebug() << "LINEAR FITTING XL";
@@ -160,12 +197,12 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
     // We now compute the the fitted data points, for each target.
     fittedEyeDataPoints.clear();
 
-    for (qint32 i = 0; i < calibrationData.size(); i++){
+    for (qint32 i = 0; i < points2Fit.size(); i++){ // All 4 vectors should be the same size.
 
         QList<EyeTrackerData> f;
 
-        for (qint32 j = 0; j < calibrationData.at(i).size(); j++){
-            EyeTrackerData input = calibrationData.at(i).at(j);
+        for (qint32 j = 0; j < points2Fit.at(i).size(); j++){
+            EyeTrackerData input = points2Fit.at(i).at(j);
             EyeTrackerData prediction;
 
             prediction.setXR(xr.predict(input.xr()));

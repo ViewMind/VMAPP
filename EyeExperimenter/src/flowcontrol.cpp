@@ -1,13 +1,10 @@
 #include "flowcontrol.h"
 
-FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(parent)
+FlowControl::FlowControl(QObject *parent, ConfigurationManager *c) : QObject(parent)
 {
 
     // Intializing the eyetracker pointer
     configuration = c;
-    experiment = nullptr;
-    vrOK = false;
-    this->setVisible(false);
 
     // Making all the connections to the render server.
     connect(&renderServerClient,&RenderServerClient::newPacketArrived,this,&FlowControl::onNewPacketArrived);
@@ -17,31 +14,14 @@ FlowControl::FlowControl(QWidget *parent, ConfigurationManager *c) : QWidget(par
 
     // Making all the connection to the calibration manager.
     connect(&calibrationManager,&CalibrationManager::calibrationDone,this,&FlowControl::onCalibrationDone);
-    connect(&calibrationManager,&CalibrationManager::newPacketAvailable,this,&FlowControl::onNewCalibrationRenderServerPacketAvailable);
 
     // Making the connection to the end of the study processor.
     connect(&studyEndProcessor,&StudyEndOperations::finished,this,&FlowControl::onStudyEndProcessFinished);
 
-    if (DBUGINT(Debug::Options::OVERRIDE_TIME) != 0){
-        QString msg = "DBUG: Override Time has been set to " + QString::number(DBUGINT(Debug::Options::OVERRIDE_TIME));
-        qDebug() << msg;
-        StaticThreadLogger::warning("FlowControl::FlowControl",msg);
-    }
-
-    StaticThreadLogger::log("FlowControl::connectToEyeTracker","Creating new EyeTracker Object");
-
-    if (Globals::EyeTracker::PROCESSING_PARAMETER_KEY == Globals::HPReverb::PROCESSING_PARAMETER_KEY){
-        eyeTracker = new HPOmniceptInterface();
-    }
-    else{
-        StaticThreadLogger::error("FlowControl::connectToEyeTracker","Failed creating to ET Object. Unknown key: " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
-    }
-
-    StaticThreadLogger::log("FlowControl::connectToEyeTracker","Connecting to the EyeTracker " + Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
-
-    connect(eyeTracker,&EyeTrackerInterface::newDataAvailable,this,&FlowControl::onNewEyeDataAvailable);
-
-    eyeTracker->connectToEyeTracker();
+    // Making the connections with study control.
+    connect(&studyControl,&StudyControl::newPacketAvailable,this,&FlowControl::onNewControlPacketAvailableFromStudy);
+    connect(&studyControl,&StudyControl::studyEnd,this,&FlowControl::onStudyEnd);
+    connect(&studyControl,&StudyControl::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
 
     calibrationHistory.reset();
 
@@ -96,8 +76,7 @@ void FlowControl::onNewMessage(const QString &msg, const quint8 &msgType){
         StaticThreadLogger::warning("FlowControl::onNewMessage",msg);
     }
 
-    // vrOK needs to be checked as we might get several messages at startup before the render server is working.
-    if (!renderServerClient.isRenderServerWorking() && (vrOK)){
+    if (!renderServerClient.isRenderServerWorking()){
         emit FlowControl::renderServerDisconnect();
     }
 
@@ -123,38 +102,23 @@ void FlowControl::onNewPacketArrived(){
 
     RenderServerPacket packet = renderServerClient.getPacket();
 
-    // StaticThreadLogger::log("FlowControl::onNewPacketArrived" , "Received Render Server Packet of Type: '" + packet.getType() + "'");
 
-    if (packet.getType() == RenderServerPacketType::TYPE_IMG_SIZE_REQ){
-        QString name = packet.getPayloadField(PacketImgSizeRequest::NAME).toString();
-        qreal w = packet.getPayloadField(PacketImgSizeRequest::WIDTH).toReal();
-        qreal h = packet.getPayloadField(PacketImgSizeRequest::HEIGHT).toReal();
-
-        if ((w < 1) || (h < 1)){
-            StaticThreadLogger::error("FlowControl::onNewPacketArrived","Got BAD image size of " + QString::number(w) + "x" + QString::number(h) + " for image " + name);
-            return;
-        }
-
-        if (name == RenderServerImageNames::BACKGROUND_LOGO){
-            backgroundLogoSize.setWidth(w);
-            backgroundLogoSize.setHeight(h);
-            QString size = QString::number(w) + "x" + QString::number(h);
-            StaticThreadLogger::log("FlowControl::onNewPacketArrived" , "Background image resolution of " + size);
-            renderWaitScreen("");
+    if (packet.getType() == RRS::PacketType::TYPE_CALIB_CONTROL){
+        // The only packet regarding calibration that we should be receiving is the one with the calibration data to compute the coefficients.
+        QString command = packet.getPayloadField(RRS::PacketCalibrationControl::COMMAND).toString();
+        if ( (command == RRS::CommandCalibrationControls::CMD_DATA_2D) || (command == RRS::CommandCalibrationControls::CMD_DATA_3D) ){
+            calibrationManager.processCalibrationData(packet);
         }
         else {
-            StaticThreadLogger::warning("FlowControl::onNewPacketArrived","Image size request of unexpected image of name '" + name + "'");
+            StaticThreadLogger::error("FlowControl::onNewPacketArrived","Received unepected calibration command of " + command);
         }
     }
-    else if (packet.getType() == RenderServerPacketType::TYPE_CALIB_CONTROL){
-        // The only packet regarding calibration that we should be receiving is the one wiht the calibration data to compute the coefficients.
-        calibrationManager.process3DCalibrationEyeTrackingData(packet);
-    }
-    else if (packet.getType() == RenderServerPacketType::TYPE_HAND_CALIB_CONTROL){
-        // This should be the packet which contains the hand calibration values. They should be added to the processing parameters when a new study is created.
+    else if (packet.getType() == RRS::PacketType::TYPE_HAND_CALIB_CONTROL){
+        // This should be the packet which contains the hand calibration values.
+        // They should be added to the processing parameters when a new study is created.
         QVariantList result;
-        qreal hres = packet.getPayloadField(PacketHandCalibrationControl::H_CALIB_RESULT).toReal();
-        qreal vres = packet.getPayloadField(PacketHandCalibrationControl::V_CALIB_RESULT).toReal();
+        qreal hres = packet.getPayloadField(RRS::PacketHandCalibrationControl::H_CALIB_RESULT).toReal();
+        qreal vres = packet.getPayloadField(RRS::PacketHandCalibrationControl::V_CALIB_RESULT).toReal();
         StaticThreadLogger::log("FlowControl::onNewPacketArrived","Received hand calibration results. H: " + QString::number(hres) + ". V: " + QString::number(vres));
         result << hres << vres;
         configuration->addKeyValuePair(Globals::Share::HAND_CALIB_RES,result);
@@ -163,19 +127,11 @@ void FlowControl::onNewPacketArrived(){
         emit FlowControl::handCalibrationDone();
 
     }
-    else if ( (packet.getType() == RenderServerPacketType::TYPE_3DSTUDY_CONTROL) ||
-              (packet.getType() == RenderServerPacketType::TYPE_STUDY_DESCRIPTION) ){
+    else if ( (packet.getType() == RRS::PacketType::TYPE_STUDY_CONTROL ) ||
+              (packet.getType() == RRS::PacketType::TYPE_STUDY_DATA) ){
+        // These packets are processed by study control
+        studyControl.receiveRenderServerPacket(packet);
 
-        if (experiment == nullptr){
-            StaticThreadLogger::error("FlowControl::onNewPacketArrived","Received packet of type " + packet.getType() + " however no study is being run");
-            return;
-        }
-        experiment->process3DStudyControlPacket(packet);
-    }
-    else if (packet.getType() == RenderServerPacketType::TYPE_STUDY_DATA){
-        // A 3D Study will send it's data AFTER the experiment has endend and the experiment object has been destroyed. So we need to Reload the VMDC file and then add the proper data to it.
-        StaticThreadLogger::log("FlowControl::onNewPacketArrived","Received study data packet");
-        processStudyDataPacketFor3DStudy(packet);
     }
     else {
         StaticThreadLogger::warning("FlowControl::onNewPacketArrived","Unexpected packet arrival of type '" + packet.getType() + "'");
@@ -185,52 +141,37 @@ void FlowControl::onNewPacketArrived(){
 
 void FlowControl::onReadyToRender() {
 
-    StaticThreadLogger::log("FlowControl::onReadyToRender","Enabling 2D Rendering and Sending background image request");
-
-    // A this point we know that the server is ready to render and we know the rendering resolution.
-    // So we add the resolutions to the configuration
-    this->resolutionCalculations();
-    vrOK = true;
-
-    // We send the packet to render server, and also we enable 2D rendering
-    // renderServerClient.sendEnable2DRenderPacket(true);
-    // renderWaitScreen("");
+    StaticThreadLogger::log("FlowControl::onReadyToRender","Ready to render");
 
     // Setting the remote debug options.
-    bool logRender2DPackets = DBUGBOOL(Debug::Options::RENDER_PACKET_DBUG);
     bool enableGazeFollow   = DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW);
     QStringList handCalibValues = DBUGSLIST(Debug::Options::HAND_CALIB_RESULTS);
 
     //qDebug() << "HAND CALIB VALUES" << handCalibValues;
 
-    bool sendDebugPacket = (logRender2DPackets || sendDebugPacket || !handCalibValues.isEmpty());
+    bool sendDebugPacket = (enableGazeFollow || !handCalibValues.isEmpty());
 
     if (sendDebugPacket){
-        if (logRender2DPackets) StaticThreadLogger::warning("FlowControl::onReadyToRender","Render Packet DBug Enabled");
         if (enableGazeFollow) StaticThreadLogger::warning("FlowControl::onReadyToRender","Gaze Following in HMD Enabled");
         if (!handCalibValues.isEmpty()) StaticThreadLogger::warning("FlowControl::onReadyToRender","Will force set hand calibration to " + handCalibValues.join("|"));
+
         RenderServerPacket p;
-        p.setPacketType(RenderServerPacketType::TYPE_DBUG_CONTROL);
+        p.setPacketType(RRS::PacketType::TYPE_DBUG_CONTROL);
+
         QVariantMap map;
-        map[PacketDebugControl::ENABLE_RENDER_2D_LOG] = logRender2DPackets;
-        map[PacketDebugControl::ENABLE_3D_HMD_LASER_SIGHT] = enableGazeFollow;
+        if (enableGazeFollow) map[RRS::PacketDebugControl::ENABLE_HMD_EYE_FOLLOW] = "true";
         if (!handCalibValues.isEmpty()){
-            map[PacketDebugControl::ENABLE_FORCE_HAND_CALIB] = handCalibValues.join("|");
+            map[RRS::PacketDebugControl::ENABLE_FORCE_HAND_CALIB] = handCalibValues.join("|");
         }
-        p.setPayloadField(PacketDebugControl::JSON_DICT_FIELD,map);
+        p.setPayloadField(RRS::PacketDebugControl::JSON_DICT_FIELD,map);
         renderServerClient.sendPacket(p);
     }
 
-    // We need to request the image dimensions.
-    RenderServerPacket logoDimRequest;
-    logoDimRequest.setPacketType(RenderServerPacketType::TYPE_IMG_SIZE_REQ);
-    logoDimRequest.setPayloadField(PacketImgSizeRequest::HEIGHT,0);
-    logoDimRequest.setPayloadField(PacketImgSizeRequest::WIDTH,0);
-    logoDimRequest.setPayloadField(PacketImgSizeRequest::NAME,RenderServerImageNames::BACKGROUND_LOGO);
-    renderServerClient.sendPacket(logoDimRequest);
-
     // And now we hide the render window.
     this->hideRenderWindow();
+
+    // We can now enable the rendering of the waitscreen. No message.
+    this->renderWaitScreen("");
 
 }
 
@@ -239,84 +180,11 @@ void FlowControl::resetCalibrationHistory(){
 }
 
 void FlowControl::renderWaitScreen(const QString &message, bool renderAsCornerTargets){
-
-    //qDebug() << "Render Wait Screen";
-
-    RenderServerScene waitScreen;
-    waitScreen.setBackgroundBrush(QBrush(Qt::gray));
-
-    QSize screen = renderServerClient.getRenderResolution();
-    waitScreen.setSceneRect(0,0,screen.width(),screen.height());
-
-    if (!renderAsCornerTargets){
-
-        qreal w = backgroundLogoSize.width();
-        qreal h = backgroundLogoSize.height();
-
-        qreal tw = 0.7*screen.width();
-
-        RenderServerImageItem *img = waitScreen.addImage(RenderServerImageNames::BACKGROUND_LOGO,true,w,h,tw);
-        img->setPos(0.15*screen.width(),0.3*screen.height());
-
-        if (message != ""){
-            QFont font;
-            font.setPointSizeF(80);
-            font.setWeight(QFont::Normal);
-            RenderServerTextItem *text = waitScreen.addText(message,font);
-            text->setBrush(QBrush(QColor("#2A3990")));
-            text->setAlignment(QString(text->ALIGN_CENTER));
-            QRectF br = text->boundingRect();
-            QRectF imgbr = img->boundingRect();
-
-            qreal x = (screen.width() - br.width())/2;
-            qreal y = imgbr.top() + imgbr.height() + 50;
-            text->setPos(x,y);
-        }
-
-    }
-
-    else {
-
-        // Render the corner calibration circles, for that we need to know, the radii, their locations and the outer circle color.
-        CalibrationTargets temp;
-        temp.initialize(screen.width(),screen.height());
-        QList<QPointF> circleCenters;
-        qreal R, r;
-        QColor outsideColor;
-
-        temp.getWaitScreenInfo(&R,&r,&outsideColor,&circleCenters);
-
-        // No we add each of the items.
-        QBrush outer(outsideColor);
-        QBrush inner(Qt::white);
-
-        //    qreal hw = screen.width()/2;
-        //    qreal hh = screen.height()/2;
-
-        //    waitScreen.addLine(hw,0,hw,screen.height(),QPen());
-        //    waitScreen.addLine(0,hh,screen.width(),hh,QPen());
-
-        for (qint32 i = 0; i < circleCenters.size(); i++){
-        //for (qint32 i = 0; i < 1; i++){
-
-            qreal x,y;
-            // The outer circle goes first.
-            x = circleCenters.at(i).x() - R;
-            y = circleCenters.at(i).y() - R;
-            RenderServerCircleItem * outerc = waitScreen.addEllipse(0,0,2*R,2*R,QPen(),outer);
-            outerc->setPos(x,y);
-
-
-            // Now the inner circle.
-            x = circleCenters.at(i).x() - r;
-            y = circleCenters.at(i).y() - r;
-            RenderServerCircleItem * innerc = waitScreen.addEllipse(0,0,2*r,2*r,QPen(),inner);
-            innerc->setPos(x,y);
-
-        }
-    }
-
-    renderServerClient.sendPacket(waitScreen.render());
+    RenderServerPacket waitScreen;
+    waitScreen.setPacketType(RRS::PacketType::TYPE_WAIT_MSG);
+    waitScreen.setPayloadField(RRS::PacketWaitMsg::MSG,message);
+    waitScreen.setPayloadField(RRS::PacketWaitMsg::RENDER_BORDERS,renderAsCornerTargets);
+    renderServerClient.sendPacket(waitScreen);
 }
 
 void FlowControl::closeApplication(){
@@ -325,118 +193,51 @@ void FlowControl::closeApplication(){
 }
 
 
-bool FlowControl::isVROk() const{
-    return (vrOK && renderServerClient.isRenderServerWorking());
+bool FlowControl::isRenderServerWorking() const{
+    return renderServerClient.isRenderServerWorking();
 }
 
 
 ////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
+void FlowControl::keyboardKeyPressed(int key){
 
-void FlowControl::resolutionCalculations(){
-
-    QRect screen = QGuiApplication::primaryScreen()->geometry();
-    configuration->addKeyValuePair(Globals::Share::MONITOR_RESOLUTION_WIDTH,screen.width());
-    configuration->addKeyValuePair(Globals::Share::MONITOR_RESOLUTION_HEIGHT,screen.height());
-
-    QSize s = renderServerClient.getRenderResolution();
-    configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH, s.width());
-    configuration->addKeyValuePair(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT,s.height());
-
+    switch (key){
+    case Qt::Key_S:
+        studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_BINDING_SAME);
+        break;
+    case Qt::Key_D:
+        studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_BINDING_DIFF);
+        break;
+    case Qt::Key_Escape:
+        studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_ABORT);
+        break;
+    case Qt::Key_G:
+        studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_CONTINUE);
+        break;
+    default:
+        StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as the key was not recognized: " + QString::number(key));
+        break;
+    }
 }
 
-void FlowControl::keyboardKeyPressed(int key){
-    if (experiment != nullptr){
-        experiment->keyboardKeyPressed(key);
-    }
+bool FlowControl::isExperimentEndOk() const{
+    return (studyControl.getStudyEndStatus() == StudyControl::SES_OK);
 }
 
 ////////////////////////////// FLOW CONTROL FUNCTIONS ///////////////////////////////////////
-
-void FlowControl::onRequestUpdate(){
-
-    if (eyeTracker == nullptr) {
-        StaticThreadLogger::error("FlowControl::onRequestUpdate","VR Update Request: Rendering experiment with a non existant eyeTracker object. Force stopping rendering");
-        renderWaitScreen("");
-        return;
-    }
-    if (experiment == nullptr) {
-        StaticThreadLogger::error("FlowControl::onRequestUpdate","VR Update Request: Rendering experiment with a non existant experiment object. Force stopping rendering");
-        renderWaitScreen("");
-        return;
-    }
-
-    //QImage image = experiment->getVRDisplayImage();
-    RenderServerScene displayImage = experiment->getVRDisplayImage();
-
-    // On experiment images, the eye position is added.
-    EyeTrackerData data = eyeTracker->getLastData();
-    data = calibrationManager.correct2DData(data);
-
-    qreal r = 0.01*displayImage.width();
-    RenderServerCircleItem *  left  = displayImage.addEllipse(static_cast<qint32>(data.xl()-r),static_cast<qint32>(data.yl()-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,255,0,100)));
-    RenderServerCircleItem *  right = displayImage.addEllipse(static_cast<qint32>(data.xr()-r),static_cast<qint32>(data.yr()-r),static_cast<qint32>(2*r),static_cast<qint32>(2*r),QPen(),QBrush(QColor(0,0,255,100)));
-
-    //StaticThreadLogger::log("FlowControl::onRequestUpdate","Sending experiment image rendering packet");
-
-    if (!DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW)){
-        left->setDisplayOnly(true);
-        right->setDisplayOnly(true);
-    }
-
-    renderServerClient.sendPacket(displayImage.render(true));
-    //renderServerClient.sendPacket(displayImage.render());
-
-}
-
-void FlowControl::onNewEyeDataAvailable(const EyeTrackerData &data){
-
-
-    if (calibrationManager.requires2DCalibrationDataPointSamples()){
-
-        calibrationManager.addEyeDataToCalibrationPoint(static_cast<float>(data.xl()),
-                                                        static_cast<float>(data.xr()),
-                                                        static_cast<float>(data.yl()),
-                                                        static_cast<float>(data.yr()),
-                                                        static_cast<float>(data.zl()),
-                                                        static_cast<float>(data.zr()));
-        return;
-
-    }
-
-    if (experiment != nullptr){
-
-        EyeTrackerData corrected = calibrationManager.correct2DData(data);
-        experiment->newEyeDataAvailable(corrected);
-    }
-}
-
 void FlowControl::onStudyEndProcessFinished(){
     // We are done processing we notify the front end.
     emit FlowControl::studyEndProcessingDone();
 }
 
 void FlowControl::finalizeStudyOperations() {
-
-    // On a 3D study, the study end operations need to include receiving waiting for the data from the remote render server.
-    // Which means sending the RRS a packet requesting the study to finish.
-    if (current3DStudy != ""){
-
-        RenderServerPacket packet;
-        packet.setPacketType(RenderServerPacketType::TYPE_3DSTUDY_CONTROL);
-        packet.setPayloadField(Packet3DStudyControl::COMMAND,Study3DControlCommands::CMD_REQUEST_STUDY_DATA);
-        renderServerClient.sendPacket(packet);
-
-    }
-    else {
-        // On a 2D study, We start the end of operations processing for the last saved files.
-        studyEndProcessor.start();
-    }
-
+    // We start the end of processing study.
+    studyEndProcessor.start();
 }
 
 
 void FlowControl::onNewControlPacketAvailableFromStudy(){
-    renderServerClient.sendPacket(experiment->getControlPacket());
+    renderServerClient.sendPacket(studyControl.getControlPacket());
 }
 
 void FlowControl::handCalibrationControl(qint32 command, const QString &which_hand){
@@ -457,22 +258,22 @@ void FlowControl::handCalibrationControl(qint32 command, const QString &which_ha
     }
 
     RenderServerPacket p;
-    p.setPacketType(RenderServerPacketType::TYPE_HAND_CALIB_CONTROL);
+    p.setPacketType(RRS::PacketType::TYPE_HAND_CALIB_CONTROL);
 
     switch (command) {
     case HAND_CALIB_END:
-        p.setPayloadField(PacketHandCalibrationControl::HORIZONTAL,false);
-        p.setPayloadField(PacketHandCalibrationControl::VERTICAL,false);
+        p.setPayloadField(RRS::PacketHandCalibrationControl::HORIZONTAL,false);
+        p.setPayloadField(RRS::PacketHandCalibrationControl::VERTICAL,false);
         break;
     case HAND_CALIB_START_H:
-        p.setPayloadField(PacketHandCalibrationControl::HORIZONTAL,true);
-        p.setPayloadField(PacketHandCalibrationControl::VERTICAL,false);
-        p.setPayloadField(PacketHandCalibrationControl::HANDS,hand_sel);
+        p.setPayloadField(RRS::PacketHandCalibrationControl::HORIZONTAL,true);
+        p.setPayloadField(RRS::PacketHandCalibrationControl::VERTICAL,false);
+        p.setPayloadField(RRS::PacketHandCalibrationControl::HANDS,hand_sel);
         break;
     case HAND_CALIB_START_V:
-        p.setPayloadField(PacketHandCalibrationControl::HORIZONTAL,false);
-        p.setPayloadField(PacketHandCalibrationControl::VERTICAL,true);
-        p.setPayloadField(PacketHandCalibrationControl::HANDS,hand_sel);
+        p.setPayloadField(RRS::PacketHandCalibrationControl::HORIZONTAL,false);
+        p.setPayloadField(RRS::PacketHandCalibrationControl::VERTICAL,true);
+        p.setPayloadField(RRS::PacketHandCalibrationControl::HANDS,hand_sel);
         break;
     default:
         StaticThreadLogger::error("FlowControl::handCalibrationControl","Received unknown hand calibration control command: " + QString::number(command));
@@ -492,19 +293,9 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
         required_number_of_accepted_pts = 2;
     }
 
-    // Making sure the right eye is used, in both the calibration and the experiment.
-    eyeTracker->setEyeToTransmit(VMDC::Eye::BOTH);
-
-    // qDebug() << "Selected eye to use number" << eye_to_use << "translated to" << selected_eye_to_use;
-
     QString strmode = "2D";
     if (mode3D) strmode = "3D";
     StaticThreadLogger::log("FlowControl::calibrateEyeTracker","Calibrating the eyetracker: " + strmode);
-
-    if (!mode3D) { // Local eyetracking is required only for 2D Calibration
-        eyeTracker->enableUpdating(true); // To ensure that eyetracking data is gathered.
-    }
-
 
     QString coefficient_file = "";
     qint32 validation_point_acceptance_threshold = 70;
@@ -546,21 +337,10 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
         //Debug::prettpPrintQVariantMap(calibrationValidationParameters);
     }
 
-    QSize s = renderServerClient.getRenderResolution();
+    calibrationManager.startCalibration(mode3D,
+                                        calibrationValidationParameters,
+                                        coefficient_file);
 
-    calibrationManager.startCalibration(s.width(),s.height(),
-                                        mode3D,
-                                        calibrationValidationParameters,coefficient_file);
-
-}
-
-// Signals that a new packet needs to be sent to the Remote Render Server.
-void FlowControl::onNewCalibrationRenderServerPacketAvailable(){
-    renderServerClient.sendPacket(calibrationManager.getRenderServerPacket());
-}
-
-bool FlowControl::isConnected() const{
-    return eyeTracker->isEyeTrackerConnected();
 }
 
 // When the calibration process is finished.
@@ -569,7 +349,6 @@ void FlowControl::onCalibrationDone(qint32 code){
     // We now store the current calibration attempt.
     calibrationHistory.setConfiguration(calibrationManager.getCalibrationConfigurationParameters());
     calibrationHistory.addCalibrationAttempt(calibrationManager.getCalibrationAttemptData());
-
 
     // For Debugging only
     // calibrationManager.debugSaveCalibrationValidationData("zz.json");
@@ -581,7 +360,6 @@ void FlowControl::onCalibrationDone(qint32 code){
         // The structure should be used in order to determine which eye will be the eye used in the study.
 
         // We can now get the selected eye to use.
-        eyeTracker->setEyeToTransmit(calibrationManager.getRecommendedEye());
         StaticThreadLogger::log("FlowControl::onCalibrationDone","Calibration Validation Report After Calibration Done");
         StaticThreadLogger::log("FlowControl::onCalibrationDone",calibrationManager.getCalibrationValidationReport());
         StaticThreadLogger::log("FlowControl::onCalibrationDone","Selected Eye: " + calibrationManager.getRecommendedEye());
@@ -606,8 +384,9 @@ QVariantMap FlowControl::getCalibrationValidationData() const {
     QVariantMap map = calibrationHistory.getMapOfLastAttempt();
 
     // We add the resolution as it is required for plotting the calibration data.
-    map["W"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH);
-    map["H"] = configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT);
+    QSize s = calibrationManager.getResolution();
+    map["W"] = s.width();
+    map["H"] = s.height();
 
     return map;
 
@@ -690,222 +469,95 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
     // 1) Know the patient directory.
     // 2) Know the study configuration
     // 3) If Binding we need to figure out if new file or load an existing one.
-    // 4) If Perception same thing.
-
-    // configuration->getString(CONFIG_PATIENT_DIRECTORY)
-
-    QColor backgroundForVRScreen;
-    experimentIsOk = true;
-    current3DStudy = "";
 
     // Forcing the valid eye to the calibration selected eye.
     study_config[VMDC::StudyParameter::VALID_EYE] = calibrationManager.getRecommendedEye();
-    //Debug::prettpPrintQVariantMap(study_config);
+    QString studyName;
 
-    // Using the polimorphism, the experiment object is created according to the selected index.
+    // We now set the study
     switch (study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt()){
 
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING BINDING BC EXPERIMENT");
-        experiment = new BindingExperiment(nullptr,VMDC::Study::BINDING_BC);
-        backgroundForVRScreen = QColor(Qt::gray);
+        studyName = VMDC::Study::BINDING_BC;
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING BINDING UC EXPERIMENT");
-        experiment = new BindingExperiment(nullptr,VMDC::Study::BINDING_UC);
-        backgroundForVRScreen = QColor(Qt::gray);
-        break;
-
-    case Globals::StudyConfiguration::INDEX_NBACKRT:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING NBACK TRACE FOR RESPONSE TIME");
-        if (configuration->getString(Globals::VMPreferences::UI_LANGUAGE) == Globals::UILanguage::ES){
-            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::SPANISH;
-        }
-        else {
-            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::ENGLISH;
-        }
-        experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKRT);
-        backgroundForVRScreen = QColor(Qt::black);
+        studyName = VMDC::Study::BINDING_UC;
         break;
     case Globals::StudyConfiguration::INDEX_NBACK:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING NBACK SLOW DEFAULT VERSION");
-        if (configuration->getString(Globals::VMPreferences::UI_LANGUAGE) == Globals::UILanguage::ES){
-            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::SPANISH;
-        }
-        else {
-            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::ENGLISH;
-        }
-        experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACK);
-        backgroundForVRScreen = QColor(Qt::black);
+        study_config[VMDC::StudyParameter::WAIT_MESSAGE] = configuration->getString(Globals::Share::NBACK_WAIT_MSG);
+        studyName = VMDC::Study::NBACK;
         break;
     case Globals::StudyConfiguration::INDEX_GONOGO:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO");
-        experiment = new GoNoGoExperiment(nullptr,VMDC::Study::GONOGO);
-        backgroundForVRScreen = QColor(Qt::gray);
+        studyName = VMDC::Study::GONOGO;
         break;
     case Globals::StudyConfiguration::INDEX_NBACKVS:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING N BACK VS");
-        if (configuration->getString(Globals::VMPreferences::UI_LANGUAGE) == Globals::UILanguage::ES){
-            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::SPANISH;
-        }
-        else {
-            study_config[VMDC::StudyParameter::LANGUAGE] = VMDC::UILanguage::ENGLISH;
-        }
-        experiment = new NBackRTExperiment(nullptr,VMDC::Study::NBACKVS);
-        backgroundForVRScreen = QColor(Qt::black);
+        study_config[VMDC::StudyParameter::WAIT_MESSAGE] = configuration->getString(Globals::Share::NBACK_WAIT_MSG);
+        studyName = VMDC::Study::NBACKVS;
         break;
     case Globals::StudyConfiguration::INDEX_GNG_SPHERE:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO SPHERES");
-        experiment = new GoNoGoSphereExperiment(nullptr,VMDC::Study::GONOGO_SPHERE);
-        backgroundForVRScreen = QColor(Qt::black); // This is ignore in all 3D studies.
-        current3DStudy = VMDC::Study::GONOGO_SPHERE;
+        studyName = VMDC::Study::GONOGO_SPHERE;
         break;
     case Globals::StudyConfiguration::INDEX_PASSBALL:
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING PASSBALL");
-        experiment = new PassBallExperiment(nullptr,VMDC::Study::PASSBALL);
-        backgroundForVRScreen = QColor(Qt::black); // This is ignore in all 3D studies.
-        current3DStudy = VMDC::Study::PASSBALL;
+        studyName = VMDC::Study::PASSBALL;
         break;
     default:
         StaticThreadLogger::error("FlowControl::startNewExperiment","Unknown experiment was selected " + study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toString());
         return false;
     }
 
-    // Making sure that that both experiment signals are connected.
-    // Eyetracker should be connected by this point.
-    connect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
-    connect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
-    connect(experiment,&Experiment::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
-    connect(experiment,&Experiment::remoteRenderServerPacketAvailable,this,&FlowControl::onNewControlPacketAvailableFromStudy);
-
-    // Making sure that the eyetracker is sending data, but only if it's a 2D study.
-    // isCurrentStudy3D = study_config.value("is_3d_study").toBool();
-    // qDebug() << "IS STARTING STUDY 3D" << studyIs3D;
-    if (current3DStudy == "") eyeTracker->enableUpdating(true);
-
-    // Start the experiment.
-    // qDebug() << "Calling start experiment";
-    if (!experiment->startExperiment(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
-                                     configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
-                                     study_config)){
-        return false;
-    }
-
-
-    // Since experiments starts in the explanation phase, it is then necessary to render the first screen.
-    // This will actually render the very first screen and update the text in the UI properly.
-    experiment->renderCurrentStudyExplanationScreen();
+    studyControl.startStudy(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
+                            configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
+                            study_config,studyName);
 
     // We add the calibration history as this function is called once the calibration is approved.
-    experiment->setCalibrationValidationData(calibrationHistory.getHistory());
+    studyControl.setCalibrationValidationData(calibrationHistory.getHistory());
+
 
     return true;
 }
 
 void FlowControl::startStudyEvaluationPhase(){
-    if (experiment != nullptr)
-        experiment->setStudyPhaseToEvaluation();
+    studyControl.startEvaluation();
 }
 
 void FlowControl::startStudyExamplePhase(){
-    if (experiment != nullptr)
-        experiment->setStudyPhaseToExamples();
+    studyControl.startExamplesPhase();
 }
 
-void FlowControl::on_experimentFinished(const Experiment::ExperimentResult &er){
-
-    // Making sure we are no longer receing EyeTracker info, even if it's only for 3D Studies.
-    eyeTracker->enableUpdating(false);
+void FlowControl::onStudyEnd(){
 
     // If there was a hand calibration result, we need to remove it.
     configuration->removeKey(Globals::Share::HAND_CALIB_RES);
 
-    switch (er){
-    case Experiment::ER_ABORTED:
-        StaticThreadLogger::log("FlowControl::on_experimentFinished","EXPERIMENT aborted");
-        experimentIsOk = false;
+    StudyControl::StudyEndStatus ses = studyControl.getStudyEndStatus();
+
+    switch (ses){
+    case StudyControl::SES_ABORTED:
+        StaticThreadLogger::log("FlowControl::onStudyEnd","EXPERIMENT aborted");
         break;
-    case Experiment::ER_FAILURE:
-        StaticThreadLogger::error("FlowControl::on_experimentFinished","EXPERIMENT FAILURE: " + experiment->getError());
-        experimentIsOk = false;
+    case StudyControl::SES_FAILED:
+        StaticThreadLogger::error("FlowControl::onStudyEnd","EXPERIMENT was ended by failure");
         break;
-    case Experiment::ER_NORMAL:
-        StaticThreadLogger::log("FlowControl::on_experimentFinished","EXPERIMENT Finshed Successfully");
-        break;
-    case Experiment::ER_WARNING:
-        StaticThreadLogger::warning("FlowControl::on_experimentFinished","EXPERIMENT WARNING: " + experiment->getError());
+    case StudyControl::SES_OK:
+        StaticThreadLogger::log("FlowControl::onStudyEnd","EXPERIMENT Finshed Successfully");
         break;
     }
 
-    // Destroying the experiment and reactivating the start experiment.
-    disconnect(experiment,&Experiment::experimentEndend,this,&FlowControl::on_experimentFinished);
-    disconnect(experiment,&Experiment::updateVRDisplay,this,&FlowControl::onRequestUpdate);
-    disconnect(experiment,&Experiment::updateStudyMessages,this,&FlowControl::onUpdatedExperimentMessages);
-    disconnect(experiment,&Experiment::remoteRenderServerPacketAvailable,this,&FlowControl::onNewCalibrationRenderServerPacketAvailable);
-
     // We get the files for this experiment and set them. The processing will start AFTER we can get the wait screen up.
-    QStringList files = experiment->getDataFilesLocation();
+    QStringList files = studyControl.getDataFilesLocation();
     studyEndProcessor.setFileToProcess(files.first(),files.last());
-
-    delete experiment;
-    experiment = nullptr;
 
     // Notifying the QML.
     emit(experimentHasFinished());
 
 }
-
-
-///////////////////////////////////////////////////////////////////
-void FlowControl::processStudyDataPacketFor3DStudy(RenderServerPacket p){
-
-    // We need to finish loading the raw data file and save it. For that we first get the file.
-
-    QString raw_data_file = configuration->getString(Globals::Share::PATIENT_STUDY_FILE);
-    ViewMindDataContainer rawdata;
-    if (!rawdata.loadFromJSONFile(raw_data_file)){
-        StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed to load lastly finished Study 3D file: " + raw_data_file + " For study of type '" + current3DStudy + "'");
-        emit FlowControl::studyEndProcessingDone();
-        return;
-    }
-
-    // Now we set teh current study.
-    if (!rawdata.setCurrentStudy(current3DStudy)){
-        StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed setting current study of " + current3DStudy + ". Reason: " + rawdata.getError());
-        emit FlowControl::studyEndProcessingDone();
-        return;
-    }
-
-    // We need to over write the study duration.
-    qint64 study_duration = p.getPayloadField(Study3DDataPacketFields::STUDY_DURATION).toLongLong();
-
-    // qDebug() << "Study duration for 3D study is " << study_duration;
-
-    // We load the packet data, which finalizes the study.
-    if (!rawdata.finalizeStudy(p.getPayload(),study_duration,true)){
-        StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed to finalize and load data of file because: " + rawdata.getError());
-        emit FlowControl::studyEndProcessingDone();
-        return;
-    }
-
-    // Since we are only storing the data the finalize study function doesn't actually mark the study as finalized.
-    rawdata.markFileAsFinalized();
-
-
-    // Now that it's done, we save the file back with all the data.
-    if (!rawdata.saveJSONFile(raw_data_file)){
-        StaticThreadLogger::error("FlowControl::processStudyDataPacketFor3DStudy", "Failed on GoNoGo Sphere finalization because: " + rawdata.getError());
-        emit FlowControl::studyEndProcessingDone();
-        return;
-    }
-
-    // At this point we start the study end processing data.
-    qDebug() << "Starring study end process on 3D Study end";
-    studyEndProcessor.start();
-
-}
-
-
 
 ///////////////////////////////////////////////////////////////////
 FlowControl::~FlowControl(){

@@ -11,7 +11,6 @@
 
 // Global Configuration
 static ConfigurationManager configuration;
-static CountryStruct countries;
 
 // Defining externs. When an extern is defined, it is declared in a SINGLE cpp file. The functions below will setup the values according to the actual conf file and they
 // will remaing constant and globally accessible for the rest fo the application's lifetime.
@@ -122,7 +121,7 @@ int main(int argc, char *argv[])
     semaphore.release();
 
 
-    Loader loader(nullptr,&configuration,&countries);
+    Loader loader(nullptr,&configuration);
     if (isRunning){
         StaticThreadLogger::error("main","Another instance of the application was detected. Exiting");
         return 0;

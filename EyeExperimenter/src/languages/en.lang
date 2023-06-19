@@ -232,6 +232,9 @@ Calibration could not be completed|
 The headset seems to be located too high on the patient's head.
 Please adjust the height as necessary and retry the calibration.;
 
+viewevaluation_nback_wait_msg = Press "G" to
+continue with study;
+
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = Calibration has ended;

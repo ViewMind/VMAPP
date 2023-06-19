@@ -186,7 +186,9 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
         QVariantList trials = vmdc.getStudyTrialList(study);
         numberOfDataPointsObatained = computeNumberOfDataPointsIn2DStudy(trials);
         numberOfTrials = trials.size();
-        timeWithNoDataPerTrial = TIME_FINISH + TIME_START_CROSS + TIME_WHITE_TRANSITION;
+        timeWithNoDataPerTrial = StudyConstTimes::Binding::TIME_FINISH
+                + StudyConstTimes::Binding::TIME_START_CROSS
+                + StudyConstTimes::Binding::TIME_WHITE_TRANSITION;
 
     }
     else if (study == VMDC::Study::GONOGO){
@@ -194,7 +196,7 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
         QVariantList trials = vmdc.getStudyTrialList(study);
         numberOfDataPointsObatained = computeNumberOfDataPointsIn2DStudy(trials);
         numberOfTrials = trials.size();
-        timeWithNoDataPerTrial = GoNoGoExperiment::GONOGO_TIME_CROSS;
+        timeWithNoDataPerTrial = StudyConstTimes::GoNoGo::TIME_CROSS;
 
     }
     else if ( (study == VMDC::Study::GONOGO_SPHERE) || (study == VMDC::Study::PASSBALL) ){
@@ -224,7 +226,7 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
         numberOfDataPointsObatained = computeNumberOfDataPointsIn2DStudy(trials);
         numberOfTrials = trials.size();
         // Nback studies are not collecting data ONLY when transition from one trial to the next.
-        timeWithNoDataPerTrial = NBackRTExperiment::NBACKVS_TRANSITION_TIME + pauseDuration/numberOfTrials;
+        timeWithNoDataPerTrial = StudyConstTimes::NBack::TRANSITION_TIME + pauseDuration/numberOfTrials;
 
     }
 
@@ -291,11 +293,7 @@ bool StudyEndOperations::createTarFileAndCleanup() {
     //qDebug() << "Removed file" << localJSON << ". Result" << ans;
     ans = QFile::remove(localIDX);
     //qDebug() << "Removed file" << localIDX << ". Result" << ans;
-
-
-
     return true;
-
 
 }
 

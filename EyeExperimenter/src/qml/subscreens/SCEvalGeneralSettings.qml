@@ -40,7 +40,7 @@ Rectangle {
         }
 
         // Getting the last selected protocol
-        var selectedprotocol = loader.getConfigurationString("last_selected_protocol");
+        var selectedprotocol = loader.getSettingsString("last_selected_protocol");
         var selectedProtocolIndex = 0;
 
         // Filling the protocol list while also searching for the last selected protocol

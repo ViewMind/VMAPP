@@ -15,6 +15,7 @@
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/FileDownloader/filedownloader.h"
 #include "../../CommonClasses/HWRecog/hwrecognizer.h"
+#include "../../CommonClasses/StudyControl/studycontrol.h"
 #include "studyendoperations.h"
 #include "eyexperimenter_defines.h"
 #include "countries.h"
@@ -27,22 +28,17 @@ class Loader : public QObject
 {
     Q_OBJECT
 public:
-    explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr, CountryStruct *cs = nullptr);
+    explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr);
     ~Loader() override;
 
     //////////////////////////// UI Functions ////////////////////////////
     Q_INVOKABLE QString getStringForKey(const QString &key, bool fromLangFile = true);
     Q_INVOKABLE QStringList getStringListForKey(const QString &key, bool fromLangFile = true);
     Q_INVOKABLE void setExplanationLanguage();
-    Q_INVOKABLE QVariantMap getExplanationLangMap() const;
+    Q_INVOKABLE QVariantMap getExplanationLangMap();
     Q_INVOKABLE QVariantMap getStudyNameMap();
     Q_INVOKABLE bool getLoaderError() const;
     Q_INVOKABLE QString getWindowTilteVersion();
-    Q_INVOKABLE QStringList getCountryList();
-    Q_INVOKABLE QStringList getCountryCodeList();
-    Q_INVOKABLE int getDefaultCountry(bool offset = true);
-    Q_INVOKABLE QString getCountryCodeForCountry(const QString &country);
-    Q_INVOKABLE int getCountryIndexFromCode(const QString &code);
     Q_INVOKABLE QString getVersionNumber() const;
     Q_INVOKABLE QString getInstitutionName() const;
     Q_INVOKABLE bool isVMConfigPresent() const;
@@ -53,8 +49,6 @@ public:
     Q_INVOKABLE void deleteStudySequence(const QString &name);
     Q_INVOKABLE void setCurrentStudySequence(const QString &name);
     Q_INVOKABLE void logUIMessage(const QString &message, bool isError);
-
-
     Q_INVOKABLE void openUserManual();
     Q_INVOKABLE bool processingParametersArePresent() const;
 
@@ -77,8 +71,7 @@ public:
     Q_INVOKABLE QStringList getLoginEmails() const;
 
     //////////////////////////// SUBJECT REALATED FUNCTIONS ////////////////////////////
-    Q_INVOKABLE QString addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id, const QString &birthdate,
-                                           const QString &birthCountry,  const QString &gender, qint32 formative_years, const QString &email);
+    Q_INVOKABLE QString addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id, const QString &birthdate,  const QString &gender, qint32 formative_years, const QString &email);
     Q_INVOKABLE void modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic);
     Q_INVOKABLE QVariantMap filterSubjectList(const QString &filter);
     Q_INVOKABLE bool setSelectedSubject(const QString &suid);    
@@ -93,11 +86,9 @@ public:
     Q_INVOKABLE QVariantMap getMedicList() const;
 
     //////////////////////////// CONFIGURATION FUNCTIONS ////////////////////////////
-    Q_INVOKABLE QString getConfigurationString(const QString &key);
     Q_INVOKABLE QVariant getDebugOption(const QString &debugOption);
-    Q_INVOKABLE bool getConfigurationBoolean(const QString &key);
+    Q_INVOKABLE QString getSettingsString(const QString &key, const QString &defvalue = "");
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
-    Q_INVOKABLE void setValueForConfiguration(const QString &key, const QVariant &var);
 
     //////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////
     Q_INVOKABLE bool createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol);
@@ -163,9 +154,6 @@ private:
     // Flag that indicates that it's the first time running this particular version of the application.
     bool firstTimeRun;
 
-    // The list of countries and their codes.
-    CountryStruct *countries;
-
     // Flag for checking uplaod error
     qint32 processingUploadError;
 
@@ -174,9 +162,6 @@ private:
 
     // Loads the appropiate language file.
     void changeLanguage();
-
-    // Loads default configurations when they don't exist.
-    void loadDefaultConfigurations();
 
     // Moves sent files to the processed directory
     void moveProcessedFiletToProcessedDirectory();

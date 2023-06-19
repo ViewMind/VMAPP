@@ -145,7 +145,7 @@ ViewBase {
         loader.addOrModifySubject(vmCurrentlyLoadedPatient,
                                   fname.vmCurrentText,lname.vmCurrentText,
                                   personalID.vmCurrentText,
-                                  bdate,"",selected_sex, // Country is always empty.
+                                  bdate,selected_sex, // Country is always empty.
                                   yearsOfEducation.vmCurrentText,email.vmCurrentText)
 
         var message = "";
@@ -310,20 +310,6 @@ ViewBase {
                     vmLabel: loader.getStringForKey("viewpatlist_id")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_personal_id_ph")
                     Keys.onTabPressed: email.vmFocus = true
-                }
-
-
-                VMComboBox {
-                    id: country
-                    width: parent.width
-                    vmLabel: loader.getStringForKey("viewpatform_country")
-                    vmPlaceHolderText: loader.getStringForKey("viewpatform_country_ph")
-                    z: addPatientView.z + 1
-                    // Country input is removed from the applicaiton but all the code is left in, just in case.
-                    visible: false;
-                    Component.onCompleted: {
-                        setModelList(loader.getCountryList())
-                    }
                 }
 
             }

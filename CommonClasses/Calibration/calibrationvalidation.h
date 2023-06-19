@@ -10,7 +10,6 @@
 #include <QObject>
 #include <QTimer>
 
-#include "calibrationtargets.h"
 #include "eyecorrectioncoefficients.h"
 #include "../RawDataContainer/VMDC.h"
 #include "../LinearLeastSquares/linearleastsquaresfit.h"

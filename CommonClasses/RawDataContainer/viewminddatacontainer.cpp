@@ -657,6 +657,46 @@ void ViewMindDataContainer::clearFieldsForIndexFileCreation(){
     data[MAIN_FIELD_STUDIES] = allstudymaps;
 }
 
+bool ViewMindDataContainer::setFullTrialList(const QVariantList &fullTrialList,
+                                             qint32 explanationPhaseDuration,
+                                             qint32 examplePhaseDuration,
+                                             qint32 pauseDuration,
+                                             qint32 evaluationDuration,
+                                             const QString &startTime,
+                                             bool shouldStudyBeFinalized){
+
+    // Getting the current study structure from the current studies list.
+    QString studyName = currentlySelectedStudy;
+    QVariantMap studies = data.value(MAIN_FIELD_STUDIES).toMap();
+    QVariantMap study = studies.value(studyName).toMap();
+
+    study.insert(VMDC::StudyField::TRIAL_LIST,fullTrialList);
+    study.insert(VMDC::StudyField::EXAMPLE_TIME,examplePhaseDuration);
+    study.insert(VMDC::StudyField::EXPLANATION_TIME,explanationPhaseDuration);
+    study.insert(VMDC::StudyField::START_TIME,startTime);
+    study.insert(VMDC::StudyField::PAUSE_DURATION,pauseDuration);
+    study.insert(VMDC::StudyField::END_TIME,QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    study.insert(VMDC::StudyField::STUDY_DURATION,evaluationDuration);
+
+    if (shouldStudyBeFinalized) study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
+    else study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::ONGOING);
+
+    studies[currentlySelectedStudy] = study;
+
+    data[MAIN_FIELD_STUDIES] = studies;
+
+    // Clearing all data.
+    currentDataSetMap.clear();
+    currentTrial.clear();
+    currentRawDataList.clear();
+    currentLFixationVectorL.clear();
+    currentLFixationVectorR.clear();
+    currentTrialList.clear();
+
+    return true;
+
+
+}
 
 bool ViewMindDataContainer::addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response, const QVariantMap &trialMetadata){
     currentTrial.clear();
@@ -728,7 +768,9 @@ bool ViewMindDataContainer::finalizeStudy(){
     return finalizeStudy(QVariantMap());
 }
 
-bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data, qint64 overwrite_study_duration, bool onlyStoreData){
+bool ViewMindDataContainer::finalizeStudy(const QVariantMap &study_data,
+                                          qint64 overwrite_study_duration,
+                                          bool onlyStoreData){
 
 
     // Getting the current study structure from the current studies list.
@@ -844,38 +886,38 @@ bool ViewMindDataContainer::checkHiearchyChain(const QStringList &hieararchy) {
 
 ////////////////////////////////////// DEBUG FUNCTIONS //////////////////////////////////////
 void ViewMindDataContainer::printRawDataCSV(const QString &filename, const QString &study , const QStringList whichRawDataValues){
-   QVariantList trial_list = data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::TRIAL_LIST).toList();
-   QStringList rows;
-   for (qint32 t = 0; t < trial_list.size(); t++){
-       //qDebug() << trial_list.size();
-       QString trialID = trial_list.at(t).toMap().value(VMDC::TrialField::ID).toString();
-       QString trialType = trial_list.at(t).toMap().value(VMDC::TrialField::TRIAL_TYPE).toString();
-       QString trialTypeSize = QString::number(trialType.split(" ").size());
-       QVariantMap trial_data = trial_list.at(t).toMap().value(VMDC::TrialField::DATA).toMap();
-       //qDebug() << trial_data.size();
-       QStringList DataSetTypes = trial_data.keys();
-       //qDebug() << DataSetTypes.size();
-       for (qint32 dst = 0; dst < DataSetTypes.size(); dst++){
-           QVariantList raw_data = trial_data.value(DataSetTypes.at(dst)).toMap().value(VMDC::DataSetField::RAW_DATA).toList();
-           //qDebug() << raw_data.size();
-           for (qint32 i = 0; i < raw_data.size(); i++){
-               QStringList row;
-               row << trialID << DataSetTypes.at(dst) << trialTypeSize;
-               QVariantMap datum = raw_data.at(i).toMap();
-               for (qint32 k = 0; k < whichRawDataValues.size(); k++){
-                   row << datum.value(whichRawDataValues.at(k)).toString();
-               }
-               rows << row.join(",");
-           }
+    QVariantList trial_list = data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::TRIAL_LIST).toList();
+    QStringList rows;
+    for (qint32 t = 0; t < trial_list.size(); t++){
+        //qDebug() << trial_list.size();
+        QString trialID = trial_list.at(t).toMap().value(VMDC::TrialField::ID).toString();
+        QString trialType = trial_list.at(t).toMap().value(VMDC::TrialField::TRIAL_TYPE).toString();
+        QString trialTypeSize = QString::number(trialType.split(" ").size());
+        QVariantMap trial_data = trial_list.at(t).toMap().value(VMDC::TrialField::DATA).toMap();
+        //qDebug() << trial_data.size();
+        QStringList DataSetTypes = trial_data.keys();
+        //qDebug() << DataSetTypes.size();
+        for (qint32 dst = 0; dst < DataSetTypes.size(); dst++){
+            QVariantList raw_data = trial_data.value(DataSetTypes.at(dst)).toMap().value(VMDC::DataSetField::RAW_DATA).toList();
+            //qDebug() << raw_data.size();
+            for (qint32 i = 0; i < raw_data.size(); i++){
+                QStringList row;
+                row << trialID << DataSetTypes.at(dst) << trialTypeSize;
+                QVariantMap datum = raw_data.at(i).toMap();
+                for (qint32 k = 0; k < whichRawDataValues.size(); k++){
+                    row << datum.value(whichRawDataValues.at(k)).toString();
+                }
+                rows << row.join(",");
+            }
 
-       }
-   }
+        }
+    }
 
-   QFile towrite(filename);
-   if (!towrite.open(QFile::WriteOnly)) return;
-   QTextStream writer(&towrite);
-   writer << rows.join("\n");
-   towrite.close();
+    QFile towrite(filename);
+    if (!towrite.open(QFile::WriteOnly)) return;
+    QTextStream writer(&towrite);
+    writer << rows.join("\n");
+    towrite.close();
 }
 
 ////////////////////////////////////// Generate Vector Functions //////////////////////////////////////

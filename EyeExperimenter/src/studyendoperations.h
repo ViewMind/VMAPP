@@ -4,13 +4,25 @@
 #include <QThread>
 #include <QProcess>
 
-#include "../../CommonClasses/Experiments/binding/bindingexperiment.h"
-#include "../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h"
-#include "../../CommonClasses/Experiments/gonogo/gonogoexperiment.h"
-#include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
-
 #include "localdb.h"
 #include "eyexperimenter_defines.h"
+
+namespace StudyConstTimes {
+
+   namespace Binding {
+       static const qint32 TIME_FINISH = 1000;
+       static const qint32 TIME_START_CROSS = 2000;
+       static const qint32 TIME_WHITE_TRANSITION = 900;
+   }
+
+   namespace GoNoGo {
+      static const qint32 TIME_CROSS = 1000;
+   }
+
+   namespace NBack {
+      static const qint32 TRANSITION_TIME = 500;
+   }
+}
 
 class StudyEndOperations : public QThread
 {

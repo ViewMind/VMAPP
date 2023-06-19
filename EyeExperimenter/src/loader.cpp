@@ -1,6 +1,6 @@
 #include "loader.h"
 
-Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QObject(parent)
+Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
 {
 
     // Connecting the API Client slot.
@@ -48,54 +48,20 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     Globals::SetExperimenterVersion(titleString);
 
-    // Loading the settings.
-    ConfigurationManager settings;
-    cv.clear();
-    cmd.clear();
-    cmd.optional = true; // All settings are optional.
-
-    // The strings.
-    cv[Globals::VMPreferences::DEFAULT_COUNTRY] = cmd;
-    cv[Globals::VMPreferences::UI_LANGUAGE]     = cmd;
-    cv[Globals::VMPreferences::EXPLANATION_LANGUAGE] = cmd;
-    cv[Globals::VMPreferences::LAST_SELECTED_PROTOCOL]     = cmd;
-
-    // The booleans
-    cmd.type = ConfigurationManager::VT_BOOL;
-    cv[Globals::VMPreferences::DUAL_MONITOR_MODE] = cmd;
-    cv[Globals::VMPreferences::DEMO_MODE] = cmd;
-    cv[Globals::VMPreferences::USE_MOUSE] = cmd;
-
-    // The ints
-    cmd.type = ConfigurationManager::VT_INT;
-    cv[Globals::VMPreferences::DEFAULT_READING_LANGUAGE] = cmd;
-
-    // Merging the settings or loading the default configuration.
-    settings.setupVerification(cv);
-    if (QFile(Globals::Paths::SETTINGS).exists()){
-        if (!settings.loadConfiguration(Globals::Paths::SETTINGS)){
-            StaticThreadLogger::error("Loader::Loader","Errors loading the settings file: " + settings.getError());
-            // Settings files should not have unwanted key words
-            loadingError = true;
-        }
-        else{
-            configuration->merge(settings);
-        }
-    }
-    else{
-        // We don't need to save the settings file as the function only loads those settings that weren't set.
-        loadDefaultConfigurations();
+    // Now we load the local DB.
+    if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,DBUGBOOL(Debug::Options::PRETTY_PRINT_DB),DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
+        StaticThreadLogger::error("Loader::Loader","Could not set local db file: " + localDB.getError());
+        loadingError = true;
+        return;
     }
 
-    // The country to to country code map.
-    countries = cs;
-
-    // Change the language array.
-    if (loadingError) return;
 
     changeLanguage();
     //qDebug() << "LOADER CONSTRUCTOR. Teh explanation language is " << configuration->getString(Globals::VMPreferences::EXPLANATION_LANGUAGE);
     setExplanationLanguage();
+
+    // We now load the number of Slides that each explanation contains. This is independant of language, but we do need the language file loaded.
+    StudyControl::FillNumberOfSlidesInExplanations(&language);
 
     // Must make sure that the data directory exists
     QDir rawdata(Globals::Paths::WORK_DIRECTORY);
@@ -106,14 +72,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
             return;
         }
     }
-
-    if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,DBUGBOOL(Debug::Options::PRETTY_PRINT_DB),DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
-        StaticThreadLogger::error("Loader::Loader","Could not set local db file: " + localDB.getError());
-        loadingError = true;
-        return;
-    }
-
-
 
     if (!localDB.processingParametersPresent()){
         StaticThreadLogger::warning("Loader::Loader","Processing parameters are not present in local database. Will not be able to do any studies");
@@ -139,7 +97,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c, CountryStruct *cs) : QO
 
     // Getting the HW Data, and printing out for debugging.
     StaticThreadLogger::log("Loader::Loader","HW SPECS\n" + hwRecognizer.toString(true));
-
 
 }
 
@@ -203,7 +160,7 @@ void Loader::deleteStudySequence(const QString &name){
 
 void Loader::changeGetVMConfigScreenLanguage(const QString &var){
     // The language selection is stored in the preferences file.
-    ConfigurationManager::setValue(Globals::Paths::SETTINGS,Globals::VMPreferences::UI_LANGUAGE,var,configuration);
+    localDB.setPreference(LocalDB::PREF_UI_LANG,var);
     // And then it's loaded.
     changeLanguage();
 }
@@ -249,13 +206,8 @@ QStringList Loader::getStringListForKey(const QString &key, bool fromLangFile){
 }
 
 void Loader::setExplanationLanguage(){
-    //qDebug() << "Setting the explanation language";
-    if (!configuration->containsKeyword(Globals::VMPreferences::EXPLANATION_LANGUAGE)){
-        //qDebug() << "Configuration DOES NOT CONATAIN explanation language";
-        configuration->addKeyValuePair(Globals::VMPreferences::EXPLANATION_LANGUAGE,"en");
-    }
 
-    QString lang_code = configuration->getString(Globals::VMPreferences::EXPLANATION_LANGUAGE);
+    QString lang_code = localDB.getPreference(LocalDB::PREF_EXP_LANG,"en").toString();
 
     //qDebug() << "Switching language explanations to " << lang_code;
 
@@ -273,9 +225,9 @@ void Loader::setExplanationLanguage(){
 
 }
 
-QVariantMap Loader::getExplanationLangMap() const {
+QVariantMap Loader::getExplanationLangMap() {
     QVariantMap map =  Globals::ExplanationLanguage::GetNameCodeMap();
-    map["--"] = configuration->getString(Globals::VMPreferences::EXPLANATION_LANGUAGE);
+    map["--"] = localDB.getPreference(LocalDB::PREF_EXP_LANG,"en").toString();
     return map;
 }
 
@@ -299,42 +251,12 @@ QVariantMap Loader::getStudyNameMap() {
 
 }
 
-int Loader::getDefaultCountry(bool offset){
-    QString countryCode = configuration->getString(Globals::VMPreferences::DEFAULT_COUNTRY);
-    if (countryCode.isEmpty()) return 0;
-    int ans = countries->getIndexFromCode(countryCode);
-    if (offset){
-        // -1 Means that no selction is done, which means 0 code. All indexes are offseted by 1, due to this.
-        return ans + 1;
-    }
-    else {
-        if (ans == -1) return 0;
-        else return ans;
-    }
-}
-
 bool Loader::getLoaderError() const {
     return loadingError;
 }
 
 QString Loader::getWindowTilteVersion(){
     return Globals::Share::EXPERIMENTER_VERSION;
-}
-
-QStringList Loader::getCountryList() {
-    return countries->getCountryList();
-}
-
-QStringList Loader::getCountryCodeList() {
-    return countries->getCodeList();
-}
-
-QString Loader::getCountryCodeForCountry(const QString &country) {
-    return countries->getCodeForCountry(country);
-}
-
-int Loader::getCountryIndexFromCode(const QString &code) {
-    return countries->getIndexFromCode(code);
 }
 
 QString Loader::getVersionNumber() const {
@@ -397,7 +319,7 @@ QStringList Loader::getLatestVersionChanges(){
     QString name = Globals::Paths::CHANGELOG_LOCATION + "/" + Globals::Paths::CHANGELOG_BASE;
 
     QString changeLogLangName = "English";
-    if (configuration->getString(Globals::VMPreferences::UI_LANGUAGE) == Globals::VMUILanguages::ES){
+    if (localDB.getPreference(LocalDB::PREF_UI_LANG,"en").toString() == Globals::VMUILanguages::ES){
         changeLogLangName = "Spanish";
     }
 
@@ -434,11 +356,8 @@ QStringList Loader::getLatestVersionChanges(){
 
 ////////////////////////////////////////////////////////  CONFIGURATION FUNCTIONS  ////////////////////////////////////////////////////////
 
-QString Loader::getConfigurationString(const QString &key){
-    if (configuration->containsKeyword(key)){
-        return configuration->getString(key);
-    }
-    else return "";
+QString Loader::getSettingsString(const QString &key, const QString &defvalue){
+    return localDB.getPreference(key,defvalue).toString();
 }
 
 QVariant Loader::getDebugOption(const QString &debugOption){
@@ -448,20 +367,10 @@ QVariant Loader::getDebugOption(const QString &debugOption){
     else return option;
 }
 
-bool Loader::getConfigurationBoolean(const QString &key){
-    if (configuration->containsKeyword(key)){
-        return configuration->getBool(key);
-    }
-    else return false;
-}
-
 void Loader::setSettingsValue(const QString &key, const QVariant &var){
-    //qDebug() << "Setting " << key << "to" << var;
-    ConfigurationManager::setValue(Globals::Paths::SETTINGS,key,var.toString(),configuration);
-}
-
-void Loader::setValueForConfiguration(const QString &key, const QVariant &var) {
-    configuration->addKeyValuePair(key,var);
+    if (!localDB.setPreference(key,var)){
+        StaticThreadLogger::error("Loader::setSettingsValue","Failed to store local DB file.");
+    }
 }
 
 //////////////////////////////////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////////////////////////////////
@@ -557,7 +466,6 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     metadata.insert(VMDC::MetadataField::INSTITUTION_ID,configuration->getString(Globals::VMConfig::INSTITUTION_ID));
     metadata.insert(VMDC::MetadataField::INSTITUTION_INSTANCE,configuration->getString(Globals::VMConfig::INSTANCE_NUMBER));
     metadata.insert(VMDC::MetadataField::INSTITUTION_NAME,configuration->getString(Globals::VMConfig::INSTITUTION_NAME));
-    metadata.insert(VMDC::MetadataField::MOUSE_USED,configuration->getString(Globals::VMPreferences::USE_MOUSE));
     metadata.insert(VMDC::MetadataField::PROC_PARAMETER_KEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
     metadata.insert(VMDC::MetadataField::STATUS,VMDC::StatusType::ONGOING);
     metadata.insert(VMDC::MetadataField::PROTOCOL,protocol);
@@ -607,16 +515,6 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     // Check if we need to add the hand calibration data.
     if (configuration->containsKeyword(Globals::Share::HAND_CALIB_RES)){
         pp.insert(VMDC::ProcessingParameter::HAND_CALIB_RESULTS,configuration->getVariant(Globals::Share::HAND_CALIB_RES));
-    }
-
-    if (configuration->getBool(Globals::VMPreferences::USE_MOUSE)){
-        pp.insert(VMDC::ProcessingParameter::RESOLUTION_HEIGHT,configuration->getInt(Globals::Share::MONITOR_RESOLUTION_HEIGHT));
-        pp.insert(VMDC::ProcessingParameter::RESOLUTION_WIDTH,configuration->getInt(Globals::Share::MONITOR_RESOLUTION_WIDTH));
-    }
-    else{
-        // The display study resolution needs to be used when using the helmet (if no helmet both values are identical and hence there is no issue).
-        pp.insert(VMDC::ProcessingParameter::RESOLUTION_HEIGHT,configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_HEIGHT));
-        pp.insert(VMDC::ProcessingParameter::RESOLUTION_WIDTH,configuration->getInt(Globals::Share::STUDY_DISPLAY_RESOLUTION_WIDTH));
     }
 
     // Computing the actual maximum dispersion to use.
@@ -747,7 +645,7 @@ QStringList Loader::getLoginEmails() const {
 ////////////////////////////////////////////////////////////////// SUBJECT FUNCTIONS //////////////////////////////////////////////////////////////////
 
 QString Loader::addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id,
-                                   const QString &birthdate, const QString &birthCountry,
+                                   const QString &birthdate,
                                    const QString &gender, qint32 formative_years, const QString &email){
 
     //qDebug() << "Entering with suid" << suid;
@@ -762,7 +660,6 @@ QString Loader::addOrModifySubject(QString suid, const QString &name, const QStr
 
     // Create a map for the data as is. The caller function is reponsible for data verification.
     QVariantMap map;
-    map[LocalDB::SUBJECT_BIRTHCOUNTRY] = countries->getCodeForCountry(birthCountry);
     map[LocalDB::SUBJECT_BIRTHDATE] = birthdate;
     map[LocalDB::SUBJECT_INSTITUTION_ID] = institution_id;
     map[LocalDB::SUBJECT_LASTNAME] = lastname;
@@ -1344,14 +1241,13 @@ QVariantMap Loader::getProtocolList() {
 ////////////////////////////////////////////////////////////////// PRIVATE FUNCTIONS //////////////////////////////////////////////////////////////////
 
 void Loader::changeLanguage(){
-    QString lang = configuration->getString(Globals::VMPreferences::UI_LANGUAGE);
+    QString lang = localDB.getPreference(LocalDB::PREF_UI_LANG,"en").toString();
     if (lang == Globals::UILanguage::ES){
         if (!language.loadConfiguration(":/languages/es.lang")){
             // In a stable program this should NEVER happen.
             StaticThreadLogger::error("Loader::changeLanguage","CANNOT LOAD ES LANG FILE: " + language.getError());
             loadingError = true;
         }
-        else countries->fillCountryList(false);
     }
     else{
         // Defaults to english
@@ -1360,19 +1256,10 @@ void Loader::changeLanguage(){
             StaticThreadLogger::error("Loader::changeLanguage","CANNOT LOAD EN LANG FILE: " + language.getError());
             loadingError = true;
         }
-        else countries->fillCountryList(true);
     }
-}
 
-void Loader::loadDefaultConfigurations(){
-
-    if (!configuration->containsKeyword(Globals::VMPreferences::UI_LANGUAGE)) configuration->addKeyValuePair(Globals::VMPreferences::UI_LANGUAGE,Globals::UILanguage::EN);
-    if (!configuration->containsKeyword(Globals::VMPreferences::EXPLANATION_LANGUAGE)) configuration->addKeyValuePair(Globals::VMPreferences::EXPLANATION_LANGUAGE,"en");
-    if (!configuration->containsKeyword(Globals::VMPreferences::DEFAULT_COUNTRY)) configuration->addKeyValuePair(Globals::VMPreferences::DEFAULT_COUNTRY,"AR");
-    if (!configuration->containsKeyword(Globals::VMPreferences::DEMO_MODE)) configuration->addKeyValuePair(Globals::VMPreferences::DEMO_MODE,false);
-    if (!configuration->containsKeyword(Globals::VMPreferences::USE_MOUSE)) configuration->addKeyValuePair(Globals::VMPreferences::USE_MOUSE,true);
-    if (!configuration->containsKeyword(Globals::VMPreferences::DUAL_MONITOR_MODE)) configuration->addKeyValuePair(Globals::VMPreferences::DUAL_MONITOR_MODE,false);
-    if (!configuration->containsKeyword(Globals::VMPreferences::DEFAULT_READING_LANGUAGE)) configuration->addKeyValuePair(Globals::VMPreferences::DEFAULT_READING_LANGUAGE,0);
+    // We now set the wait message for the studies.
+    configuration->addKeyValuePair(Globals::Share::NBACK_WAIT_MSG,language.getString("viewevaluation_nback_wait_msg"));
 
 }
 

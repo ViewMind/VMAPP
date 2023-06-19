@@ -32,8 +32,8 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
     mainWindowID = 0;
     renderHandle = nullptr;
 
-    screenResolutionHeight = 0;
-    screenResolutionWidth = 0;
+//    screenResolutionHeight = 0;
+//    screenResolutionWidth = 0;
 
     sentResolutionRequest = false;
     bytesAreBeingSent = false;
@@ -75,20 +75,20 @@ void RenderServerClient::setRenderWindowHiddenFlag(bool flag){
 }
 
 
-QSize RenderServerClient::getRenderResolution() const{
-    QSize size;
-    size.setWidth(screenResolutionWidth);
-    size.setHeight(screenResolutionHeight);
-    return size;
-}
+//QSize RenderServerClient::getRenderResolution() const{
+//    QSize size;
+//    size.setWidth(screenResolutionWidth);
+//    size.setHeight(screenResolutionHeight);
+//    return size;
+//}
 
-qreal RenderServerClient::getHorizontalFieldOfView() const {
-    return hFOV;
-}
+//qreal RenderServerClient::getHorizontalFieldOfView() const {
+//    return hFOV;
+//}
 
-qreal RenderServerClient::getVerticalFieldOfView() const {
-    return vFOV;
-}
+//qreal RenderServerClient::getVerticalFieldOfView() const {
+//    return vFOV;
+//}
 
 void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinID){
 
@@ -120,8 +120,8 @@ bool RenderServerClient::isRenderServerWorking() const {
     if (renderHandle == nullptr) return false;
     if (socket->state() != QTcpSocket::ConnectedState) return false;
     if (renderServerProcess.state() != QProcess::Running) return false;
-    if (screenResolutionHeight == 0) return false;
-    if (screenResolutionWidth == 0) return false;
+//    if (screenResolutionHeight == 0) return false;
+//    if (screenResolutionWidth == 0) return false;
     return true;
 }
 
@@ -150,7 +150,7 @@ void RenderServerClient::connectToRenderServer() {
     bool ok = false;
     PORT = static_cast<quint16> (portString.toUInt(&ok));
     if (!ok){
-        emit RenderServerClient::newMessage("Bad content in the por file. Invalid int: '" + portString + "'",MSG_TYPE_ERROR);
+        emit RenderServerClient::newMessage("Bad content in the port file. Invalid int: '" + portString + "'",MSG_TYPE_ERROR);
         return;
     }
 
@@ -173,12 +173,12 @@ void RenderServerClient::sendPacket(const RenderServerPacket &packet){
 
 //    qDebug() << "Sending Packet of Type: " << packet.getType();
 
-    if (DBUGBOOL(Debug::Options::SEND_RENDER_2D_PRINT)){
-        if (packet.getType() == RenderServerPacketType::TYPE_2D_RENDER){
-            qDebug() << "SENDING PACKET" << packet.getStringSummary() << "@ " << mtimer.elapsed();
-            mtimer.start();
-        }
-    }
+//    if (DBUGBOOL(Debug::Options::SEND_RENDER_2D_PRINT)){
+//        if (packet.getType() == RenderServerPacketType::TYPE_2D_RENDER){
+//            qDebug() << "SENDING PACKET" << packet.getStringSummary() << "@ " << mtimer.elapsed();
+//            mtimer.start();
+//        }
+//    }
 
 
     if (socket->state() != QAbstractSocket::ConnectedState){
@@ -212,15 +212,15 @@ void RenderServerClient::onCoolDownTimerTimeout() {
 
 }
 
-void RenderServerClient::sendEnable2DRenderPacket(bool enable){
-    if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)) return; // No point in sending the packet in this situation.
-    RenderServerPacket request;
-    request.setPacketType(RenderServerPacketType::TYPE_2D_CONTROL);
-    request.setPayloadField(RenderControlPacketFields::WIDTH,screenResolutionWidth);
-    request.setPayloadField(RenderControlPacketFields::HEIGHT,screenResolutionHeight);
-    request.setPayloadField(RenderControlPacketFields::ENABLE_2D_RENDER,enable);
-    this->sendPacket(request);
-}
+//void RenderServerClient::sendEnable2DRenderPacket(bool enable){
+//    if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)) return; // No point in sending the packet in this situation.
+//    RenderServerPacket request;
+//    request.setPacketType(RenderServerPacketType::TYPE_2D_CONTROL);
+//    request.setPayloadField(RenderControlPacketFields::WIDTH,screenResolutionWidth);
+//    request.setPayloadField(RenderControlPacketFields::HEIGHT,screenResolutionHeight);
+//    request.setPayloadField(RenderControlPacketFields::ENABLE_2D_RENDER,enable);
+//    this->sendPacket(request);
+//}
 
 ////////////////////////////////////// WAIT TIMER SLOTS ////////////////////////////////////
 void RenderServerClient::onWaitTimerTimeout(){
@@ -246,20 +246,21 @@ void RenderServerClient::onWaitTimerTimeout(){
     }
 
     if (socket->state() == QAbstractSocket::ConnectedState){
-        if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)){
-            // If we got here the render handle is effectively set and we are connected. So The next step is to get the render canvas dimensions.
-            if (!sentResolutionRequest){
-                RenderServerPacket request;
-                request.setPacketType(RenderServerPacketType::TYPE_2D_CONTROL);
-                request.setPayloadField(RenderControlPacketFields::WIDTH,0);
-                request.setPayloadField(RenderControlPacketFields::HEIGHT,0);
-                request.setPayloadField(RenderControlPacketFields::ENABLE_2D_RENDER,false);
-                this->sendPacket(request);
-                sentResolutionRequest = true;
-                emit RenderServerClient::newMessage("Sent request for resolution",MSG_TYPE_INFO);
-            }
-            else return;
-        }
+//        if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)){
+//            // If we got here the render handle is effectively set and we are connected. So The next step is to get the render canvas dimensions.
+//            if (!sentResolutionRequest){
+//                RenderServerPacket request;
+//                request.setPacketType(RenderServerPacketType::TYPE_2D_CONTROL);
+//                request.setPayloadField(RenderControlPacketFields::WIDTH,0);
+//                request.setPayloadField(RenderControlPacketFields::HEIGHT,0);
+//                request.setPayloadField(RenderControlPacketFields::ENABLE_2D_RENDER,false);
+//                this->sendPacket(request);
+//                sentResolutionRequest = true;
+//                emit RenderServerClient::newMessage("Sent request for resolution",MSG_TYPE_INFO);
+//            }
+//            else return;
+//        }
+        emit RenderServerClient::readyToRender();
     }
     else return;
 
@@ -275,33 +276,33 @@ void RenderServerClient::onReadyRead() {
     if (state == RenderServerPacket::RX_DONE){
         //qDebug() << "New Packet Arrived";
 
-        // A new packet arrived. However if the packet if of type control adn we are waiting for resolution data, then the signal is NOT emitted.
-        if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)){
-            if (this->rxPacket.getType() == RenderServerPacketType::TYPE_2D_CONTROL){
+//        // A new packet arrived. However if the packet if of type control adn we are waiting for resolution data, then the signal is NOT emitted.
+//        if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)){
+//            if (this->rxPacket.getType() == RenderServerPacketType::TYPE_2D_CONTROL){
 
-                screenResolutionWidth  = this->rxPacket.getPayloadField(Render2DControlPacketFields::WIDTH).toInt();
-                screenResolutionHeight = this->rxPacket.getPayloadField(Render2DControlPacketFields::HEIGHT).toInt();
-                hFOV = this->rxPacket.getPayloadField(Render2DControlPacketFields::HFOV).toReal();
-                vFOV = this->rxPacket.getPayloadField(Render2DControlPacketFields::VFOV).toReal();
-                QString serverVersion = this->rxPacket.getPayloadField(Render2DControlPacketFields::VERSION).toString();
+//                screenResolutionWidth  = this->rxPacket.getPayloadField(Render2DControlPacketFields::WIDTH).toInt();
+//                screenResolutionHeight = this->rxPacket.getPayloadField(Render2DControlPacketFields::HEIGHT).toInt();
+//                hFOV = this->rxPacket.getPayloadField(Render2DControlPacketFields::HFOV).toReal();
+//                vFOV = this->rxPacket.getPayloadField(Render2DControlPacketFields::VFOV).toReal();
+//                QString serverVersion = this->rxPacket.getPayloadField(Render2DControlPacketFields::VERSION).toString();
 
-                //qDebug() << "SET WORKING RESOLUTION TO" << screenResolutionHeight << screenResolutionWidth;
+//                //qDebug() << "SET WORKING RESOLUTION TO" << screenResolutionHeight << screenResolutionWidth;
 
-                sentResolutionRequest = false;
-                this->rxPacket.resetForRX();
+//                sentResolutionRequest = false;
+//                this->rxPacket.resetForRX();
 
-                QString message = "Set the working resolution to " + QString::number(screenResolutionWidth) + "x" + QString::number(screenResolutionHeight);
-                message = message + ". RenderServerVersion: " + serverVersion;
+//                QString message = "Set the working resolution to " + QString::number(screenResolutionWidth) + "x" + QString::number(screenResolutionHeight);
+//                message = message + ". RenderServerVersion: " + serverVersion;
 
 
-                emit RenderServerClient::newMessage(message,MSG_TYPE_INFO);
-                if ((screenResolutionHeight != 0) && (screenResolutionWidth != 0)) emit RenderServerClient::readyToRender();
-                this->rxPacket.resetForRX();
+//                emit RenderServerClient::newMessage(message,MSG_TYPE_INFO);
+//                if ((screenResolutionHeight != 0) && (screenResolutionWidth != 0)) emit RenderServerClient::readyToRender();
+//                this->rxPacket.resetForRX();
 
-                return;
+//                return;
 
-            }
-        }
+//            }
+//        }
 
         emit RenderServerClient::newPacketArrived();
     }

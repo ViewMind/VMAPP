@@ -93,8 +93,9 @@ namespace VMDC {
        static const QString INITIAL_SPEED      = "initial_speed";
        static const QString NBACK_TIMEOUT      = "nback_timeout";
        static const QString NBACK_TRANSITION   = "nback_transition";
+       static const QString WAIT_MESSAGE       = "wait_message";
        static const QStringList valid{VALID_EYE,LANGUAGE,NUMBER_TARGETS,TARGET_SIZE,NBACK_LIGHT_ALL,DEFAULT_EYE,IS_3D_STUDY,HAND_TO_USE,MIN_SPEED,
-                   MAX_SPEED,NBACK_TIMEOUT,NBACK_TRANSITION};
+                   MAX_SPEED,NBACK_TIMEOUT,NBACK_TRANSITION,WAIT_MESSAGE};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }

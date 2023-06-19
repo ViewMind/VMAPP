@@ -219,7 +219,7 @@ namespace RenderControlPacketFields {
     static const QString TEXT_ALIGNMENT           = "a";
     static const QString DISPLAY_ONLY_FLAG        = "od";
     static const QString FIT_TO_WIDTH             = "fW";
-    static const QString FILE_NAME                = "fname";    
+    static const QString FILE_NAME                = "fname";
 
     // Some extras used for the value map.
     static const QString ID                       = "id";

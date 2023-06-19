@@ -5,9 +5,10 @@
 #include <QFile>
 
 #include "eyecorrectioncoefficients.h"
-#include "calibrationtargets.h"
 #include "calibrationvalidation.h"
 #include "../LogInterface/staticthreadlogger.h"
+#include "../RenderServerClient/RenderServerPackets/renderserverpacket.h"
+#include "../RenderServerClient/RenderServerPackets/RenderServerStrings.h"
 
 class CalibrationManager : public QObject
 {
@@ -22,12 +23,11 @@ public:
 
     explicit CalibrationManager(QObject *parent = nullptr);
 
-    void startCalibration(qint32 width,  qint32 height, //   The dimentions of the screen. Required by the 2D Calibration.And to draw the validation graph.
-            bool mode3D, const QVariantMap &calib_valid_params, // The calibration validation parameters.
-            const QString coefficient_file_name // The name of the file where we should store the resulting coefficients. If the file exists this is loaded from there.
+    void startCalibration(bool mode3D, // To decide on either 2D or 3D calibration.
+                          const QVariantMap &calib_valid_params, // The calibration validation parameters.
+                          const QString coefficient_file_name // The name of the file where we should store the resulting coefficients. If the file exists this is loaded from there.
     );
 
-    void addEyeDataToCalibrationPoint(float xl, float xr, float yl, float yr, float zl, float zr);
 
     QString getRecommendedEye() const;
 
@@ -37,17 +37,15 @@ public:
 
     QString getCalibrationValidationReport() const;
 
-    void process3DCalibrationEyeTrackingData(const RenderServerPacket &calibrationData);
+    void processCalibrationData(const RenderServerPacket &calibrationData);
 
     RenderServerPacket getRenderServerPacket() const;
 
     bool isCalibrationCompleted() const;
 
-    bool requires2DCalibrationDataPointSamples() const;
-
     void resetCalibrationCompleted();
 
-    EyeTrackerData correct2DData(EyeTrackerData input);
+    QSize getResolution() const;
 
     // For Debugging ONLY.
     void debugSaveCalibrationValidationData(const QString &filename);
@@ -55,11 +53,6 @@ public:
 signals:
     void newPacketAvailable();
     void calibrationDone(qint32 code);
-
-private slots:
-    void onWaitToDataGather();
-    void onNewAnimationFrame();
-    void onCalibrationPointStatus(qint32 whichCalibrationPoint, bool isMoving);
 
 private:
 
@@ -70,9 +63,6 @@ private:
 
     // Holds the number of ms when we gather data.
     qint32 calibration_gather_time;
-
-    // Index of the list of collectedCalibrationDataPoints.
-    qint32 currentCalibrationPointIndex;
 
     // Number of calibration points
     qint32 numberOfCalibrationPoints;
@@ -98,33 +88,29 @@ private:
     // Simple flag to determine whether the calibration has been done at least once.
     bool isCalibrated;
 
-    ////////////////////////////// 2D Calibration VARIABLES //////////////////////
-    CalibrationTargets calibration2DTargetControl;
-
-    // Timer to indicate when to start gathering data
-    QTimer waitToGatherTimer;
-
-    // Flag that indicates if we are in the wait time of calibration or the gather time.
-    bool isDataGatheringEnabled;
-
-    // Flag to indicate the whether to send or not the animation frame packet.
-    bool enableSendAnimationFrames;
-
-    ////////////////////////////// 3D Calibration VARIABLES //////////////////////
-
     // The target vectors used to compute the calibration. Before normalization.
     QList<QVector3D> nonNormalizedTargetVectors;
+
+    // This are the 2D coordinates for 2D calibration.
+    QList<QPointF> targetPoints2D;
 
     // The validation radious. This is used to know if the predicted corrections for the raw data are close enough to its corresponding target vector.
     qreal validationRadious;
 
+    // The 2D resolution dimensions that come with the calibration packet. Necessary in order to properly render the result dialog.
+    qint32 resolutionWidth;
+    qint32 resolutionHeight;
+
     ////////////////////////////// GENERAL Functions /////////////////
-    void finalizeCalibrationProcess(qint32 code, bool sendCalibrationCoefficientsToServer = false);
+    void finalizeCalibrationProcess(qint32 code);
     void sendCalibrationCoefficientPacket();
+    void addEyeDataToCalibrationPoint(float xl, float xr, float yl, float yr, float zl, float zr, qint32 index);
 
     ////////////////////////////// DEBUG LOAD FUNCTIONS /////////////////
     bool debugLoadFixed3DCalibrationParameters();
     bool debugLoadFixed2DCalibrationParameters();
+
+    const qreal K_LARGE_D = 0.1;
 
 };
 

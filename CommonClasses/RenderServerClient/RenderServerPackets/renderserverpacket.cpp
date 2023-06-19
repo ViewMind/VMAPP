@@ -74,6 +74,10 @@ void RenderServerPacket::setPayloadField(const QString &name, const QVariant &va
     this->payload[name] = value;
 }
 
+void RenderServerPacket::setFullPayload(const QVariantMap &map){
+    this->payload = map;
+}
+
 void RenderServerPacket::setPacketSkippable(bool skippable) {
     this->isSkippable = skippable;
 }

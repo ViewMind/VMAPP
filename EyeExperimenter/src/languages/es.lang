@@ -232,6 +232,11 @@ La calibración no pudo ser completada|
 El casco parece estar ubicado demasiado alto en la cabeza del paciente.
 Por favor ajuste la altura apropiadamente e intente calibrar nuevamente.;
 
+viewevaluation_nback_wait_msg = Presione "G"
+para
+continuar el estudio;
+
+
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;
 waitscreenmsg_studyEnd = El estudio ha finalizado;

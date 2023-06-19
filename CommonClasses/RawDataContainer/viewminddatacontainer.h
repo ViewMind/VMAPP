@@ -77,6 +77,14 @@ public:
 
     bool setExperimentDescriptionMap(const QVariantMap &expDesc);
 
+    bool setFullTrialList (const QVariantList &fullTrialList,
+                           qint32 explanationPhaseDuration,
+                           qint32 examplePhaseDuration,
+                           qint32 pauseDuration,
+                           qint32 evaluationDuration,
+                           const QString &startTime,
+                           bool shouldStudyBeFinalized);
+
     bool addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response, const QVariantMap &trialMetadata = QVariantMap());
 
     bool setCurrentDataSet(const QString &data_set_type);

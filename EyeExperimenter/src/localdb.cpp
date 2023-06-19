@@ -15,6 +15,7 @@ const char * LocalDB::MAIN_RECOVERY_PASSWORD                 = "recovery_passwor
 const char * LocalDB::MAIN_QC_STUDY_INDEX                    = "qc_study_index";
 const char * LocalDB::MAIN_LAST_LOG_UPLOAD                   = "last_log_upload";
 const char * LocalDB::MAIN_STORED_SEQUENCES                  = "stored_sequences";
+const char * LocalDB::MAIN_PREFERENCES                       = "preferences";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -53,6 +54,11 @@ const char * LocalDB::MARKER_TIME             = "marker_time";
 const char * LocalDB::PROTOCOL_NAME           = "protocol_name";
 const char * LocalDB::PROTOCOL_CREATION_DATE  = "creation_date";
 const char * LocalDB::PROTOCOL_ID             = "protocol_id";
+
+// Preferences.
+const char * LocalDB::PREF_UI_LANG            = "ui_language";
+const char * LocalDB::PREF_EXP_LANG           = "explanation_language";
+const char * LocalDB::PREF_LAST_SEL_PROTOCOL  = "last_selected_protocol";
 
 
 LocalDB::LocalDB()
@@ -774,4 +780,31 @@ bool LocalDB::deleteStudySequence(const QString &name){
     main_map[STORED_SEQ_SEQUENCES] = seq_map;
     data[MAIN_STORED_SEQUENCES] = main_map;
     return saveAndBackup();
+}
+
+////////////////////////////// PREFERENCES ///////////////////////////////
+bool LocalDB::setPreference(const QString &preference, const QVariant &variant){
+    QVariantMap map;
+    if (data.contains(MAIN_PREFERENCES)){
+        map = data.value(MAIN_PREFERENCES).toMap();
+    }
+    map[preference] = variant;
+    data[MAIN_PREFERENCES] = map;
+    return saveAndBackup();
+}
+
+QVariant LocalDB::getPreference(const QString &preference, const QString &retAndStoreIfDoenstExist) {
+    QVariantMap map;
+    if (data.contains(MAIN_PREFERENCES)){
+        map = data.value(MAIN_PREFERENCES).toMap();
+    }
+
+    if (!map.contains(preference)){
+        if (retAndStoreIfDoenstExist != ""){
+            setPreference(preference,retAndStoreIfDoenstExist);
+            return retAndStoreIfDoenstExist;
+        }
+    }
+
+    return map.value(preference).toString();
 }

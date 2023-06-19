@@ -71,6 +71,7 @@ public:
     static const char * MAIN_QC_STUDY_INDEX;
     static const char * MAIN_LAST_LOG_UPLOAD;
     static const char * MAIN_STORED_SEQUENCES;
+    static const char * MAIN_PREFERENCES;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -108,6 +109,11 @@ public:
     static const char * PROTOCOL_NAME;
     static const char * PROTOCOL_CREATION_DATE;
     static const char * PROTOCOL_ID;
+
+    // Settings field
+    static const char * PREF_UI_LANG;
+    static const char * PREF_EXP_LANG;
+    static const char * PREF_LAST_SEL_PROTOCOL;
 
     static const qint32 LOCALDB_VERSION = 3;
 
@@ -246,6 +252,13 @@ public:
 
     // Removes a study sequence.
     bool deleteStudySequence(const QString &name);
+
+    // Sets a preferences in the DB.
+    bool setPreference(const QString &preference, const QVariant &variant);
+
+    // Returns a preference that was set, as a string. As of the writing of this, we only need strings.
+    // The second parameter can be used to return a store and return a value if the required one doesn't exist
+    QVariant getPreference(const QString &preference, const QString &retAndStoreIfDoenstExist = "");
 
 private:
 

@@ -60,7 +60,7 @@ Rectangle {
         Component.onCompleted: {
             var langs = loader.getStringListForKey("viewsettings_langs")
             setModelList(loader.getStringListForKey("viewsettings_langs"))
-            var lang = loader.getConfigurationString("ui_language")
+            var lang = loader.getSettingsString("ui_language","en");
             for (var i = 0; i < langs.length; i++){
                 if (langs[i] === lang){
                     vmCurrentLang = lang

@@ -31,7 +31,6 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        flowControl.resolutionCalculations();
         // This ensures that no resizing is possible.
         minimumHeight = height;
         maximumHeight = height;
@@ -167,7 +166,7 @@ ApplicationWindow {
 
                 viewMainSetup.enableStudyStart(true)
 
-                if (!flowControl.isVROk()){
+                if (!flowControl.isRenderServerWorking()){
                     viewMainSetup.enableStudyStart(false)
                     let message = loader.getStringForKey("viewpatlist_vr_failed");
                     popUpNotify(VMGlobals.vmNotificationRed,message);

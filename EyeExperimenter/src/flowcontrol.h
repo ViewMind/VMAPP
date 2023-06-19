@@ -13,20 +13,13 @@
 #include <iostream>
 
 #include "../../CommonClasses/debug.h"
-#include "../../CommonClasses/wait.h"
 
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 
 #include "../../CommonClasses/RenderServerClient/renderserverclient.h"
 
-#include "../../CommonClasses/Experiments/binding/bindingexperiment.h"
-#include "../../CommonClasses/Experiments/nbackfamiliy/nbackrtexperiment.h"
-#include "../../CommonClasses/Experiments/gonogo/gonogoexperiment.h"
-#include "../../CommonClasses/Experiments/gonogo_spheres/gonogosphereexperiment.h"
-#include "../../CommonClasses/Experiments/passball/passballexperiment.h"
-
-#include "../../CommonClasses/EyeTrackingInterface/HPReverb/hpomniceptinterface.h"
+#include "../../CommonClasses/StudyControl/studycontrol.h"
 
 #include "../../CommonClasses/Calibration/calibrationmanager.h"
 #include "../../CommonClasses/Calibration/calibrationhistory.h"
@@ -35,12 +28,12 @@
 
 #include "eyexperimenter_defines.h"
 
-class FlowControl : public QWidget
+class FlowControl : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit FlowControl(QWidget *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
+    explicit FlowControl(QObject *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
     ~FlowControl() override;
     Q_INVOKABLE void calibrateEyeTracker(bool useSlowCalibration, bool mode3D);
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
@@ -48,15 +41,11 @@ public:
     Q_INVOKABLE void startStudyExamplePhase();
     Q_INVOKABLE void finalizeStudyOperations();
 
-    Q_INVOKABLE bool isExperimentEndOk() const {return experimentIsOk;}
-    Q_INVOKABLE void resolutionCalculations();
+    Q_INVOKABLE bool isExperimentEndOk() const;
     Q_INVOKABLE void keyboardKeyPressed(int key);
-    Q_INVOKABLE bool isVROk() const;
+    Q_INVOKABLE bool isRenderServerWorking() const;
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
     Q_INVOKABLE void storeCalibrationHistoryAsFailedCalibration();
-
-    // Eye Tracking Control commands.
-    Q_INVOKABLE bool isConnected() const;
 
     Q_INVOKABLE void handCalibrationControl(qint32 command, const QString &which_hand);
 
@@ -104,7 +93,7 @@ signals:
 public slots:
 
     // When an experiment finishes.
-    void on_experimentFinished(const Experiment::ExperimentResult & er);
+    void onStudyEnd();
 
     // Whenever the experiment updates message to the front end.
     void onUpdatedExperimentMessages(const QVariantMap &string_value_map);
@@ -124,37 +113,20 @@ public slots:
     // New Message from the render server client object.
     void onNewMessage(const QString &msg, const quint8 &msgType);
 
-    // Signals that a new packet needs to be sent to the Remote Render Server.
-    void onNewCalibrationRenderServerPacketAvailable();
-
     // When the calibration process is finished.
     void onCalibrationDone(qint32 code);
-
-    // Receives data from the eye tracker. Corrects it. And passes it on.
-    void onNewEyeDataAvailable(const EyeTrackerData &data);
 
     // The sstudy end process is triggered and this funciton is called. For storing data in the local DB and notifying the front end.
     void onStudyEndProcessFinished();
 
 
-private slots:
-
-    // Slot that requests new image to draw from the OpenVR Control Object
-    void onRequestUpdate();
-
 private:
-
-    // Render state allows to define what to send to the HMD when using the VR Solution.
-    typedef enum { RENDERING_NONE, RENDERING_EXPERIMENT, RENDER_WAIT_SCREEN, RENDERING_CALIBRATION_SCREEN} RenderState;
 
     // Delays for a specific time.
     QTimer delayTimer;
 
-    // The currently selected experiment
-    Experiment *experiment;
-
-    // The currently selected eyetracker
-    EyeTrackerInterface *eyeTracker;
+    // Controlling the study class
+    StudyControl studyControl;
 
     // The Calibration Manager.
     CalibrationManager calibrationManager;
@@ -171,41 +143,20 @@ private:
     // The configuration structure
     ConfigurationManager *configuration;
 
-    // Binary status for the end of an experiment.
-    bool experimentIsOk;
-
-    // Auxiliary flag used to determine the established connection to the Remote Render Server.
-    bool vrOK;
-
-    // We need to know if the study is 3D as it changes the flow of the application at the very end.
-    // It needs to wait for another packet AFTER the study has been finished.
-    QString current3DStudy;
-
-    // The country codes and the function to load them
-    QStringList countryList;
-    QStringList countryCodes;
-    void fillCountryList();
-
     // The Study End Processor.
     StudyEndOperations studyEndProcessor;
-
-    // Stored value of the Viewmind Logo requried for background image math rendering
-    QSizeF backgroundLogoSize;
 
     // Only valid vlues are 5 or 9 anything else will assume 9
     static const qint32 NUMBER_OF_CALIBRATION_POINTS = 9;
 
-    static const qint32 CALIB_PT_WAIT_TIME_NORMAL = 1000;
-    static const qint32 CALIB_PT_GATHER_TIME_NORMAL = 2000;
-    static const qint32 CALIB_PT_WAIT_TIME_SLOW = 1500;
-    static const qint32 CALIB_PT_GATHER_TIME_SLOW = 3000;
+    static const qint32 CALIB_PT_WAIT_TIME_NORMAL    = 1000;
+    static const qint32 CALIB_PT_GATHER_TIME_NORMAL  = 2000;
+    static const qint32 CALIB_PT_WAIT_TIME_SLOW      = 1500;
+    static const qint32 CALIB_PT_GATHER_TIME_SLOW    = 3000;
 
-    static const qint32 HAND_CALIB_START_H = 0;
-    static const qint32 HAND_CALIB_START_V = 1;
-    static const qint32 HAND_CALIB_END     = 2;
-
-    void processStudyDataPacketFor3DStudy(RenderServerPacket p);
-
+    static const qint32 HAND_CALIB_START_H           = 0;
+    static const qint32 HAND_CALIB_START_V           = 1;
+    static const qint32 HAND_CALIB_END               = 2;
 
 };
 
